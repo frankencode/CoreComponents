@@ -156,7 +156,7 @@ String fixed(float64_t x, int ni, int nf)
 
 String dec(const Variant &x, int n)
 {
-    return (Variant::type(x) == Variant::FloatType) ?
+    return (Variant::type(x) == VariantType::Float) ?
         dec(float(x), n > 0 ? n : 7) :
         dec(int(x), n);
 }

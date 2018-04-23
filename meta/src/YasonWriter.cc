@@ -29,38 +29,38 @@ void YasonWriter::write(Variant value)
 
 void YasonWriter::writeValue(Variant value, int depth)
 {
-    if ( Variant::type(value) == Variant::IntType ||
-         Variant::type(value) == Variant::BoolType ||
-         Variant::type(value) == Variant::FloatType ||
-         Variant::type(value) == Variant::ColorType ||
-         Variant::type(value) == Variant::VersionType )
+    if ( Variant::type(value) == VariantType::Int ||
+         Variant::type(value) == VariantType::Bool ||
+         Variant::type(value) == VariantType::Float ||
+         Variant::type(value) == VariantType::Color ||
+         Variant::type(value) == VariantType::Version )
     {
         format_ << value;
     }
-    else if (Variant::type(value) == Variant::StringType) {
+    else if (Variant::type(value) == VariantType::String) {
         String s = value;
         if (s->contains("\""))
             s = s->replace("\"", "\\\"");
         s = s->escape();
         format_ << "\"" << s << "\"";
     }
-    else if (Variant::type(value) == Variant::ListType) {
+    else if (Variant::type(value) == VariantType::List) {
         writeList(value, depth);
     }
-    else if (Variant::type(value) == Variant::ObjectType) {
+    else if (Variant::type(value) == VariantType::Object) {
         writeObject(value, depth);
     }
 }
 
 void YasonWriter::writeList(Variant value, int depth)
 {
-    if (Variant::itemType(value) == Variant::IntType)
+    if (Variant::itemType(value) == VariantType::Int)
         writeTypedList<int>(value, depth);
-    else if (Variant::itemType(value) == Variant::BoolType)
+    else if (Variant::itemType(value) == VariantType::Bool)
         writeTypedList<bool>(value, depth);
-    else if (Variant::itemType(value) == Variant::FloatType)
+    else if (Variant::itemType(value) == VariantType::Float)
         writeTypedList<float>(value, depth);
-    else if (Variant::itemType(value) == Variant::StringType)
+    else if (Variant::itemType(value) == VariantType::String)
         writeTypedList<String>(value, depth);
     else
         writeTypedList<Variant>(value, depth);

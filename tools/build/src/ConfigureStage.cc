@@ -96,8 +96,8 @@ bool ConfigureStage::run()
                     }
                     {
                         Variant value = object->value("version");
-                        if (Variant::type(value) == Variant::StringType) version = Version(String(value));
-                        else if (Variant::type(value) == Variant::VersionType) version = Version(value);
+                        if (Variant::type(value) == VariantType::String) version = Version(String(value));
+                        else if (Variant::type(value) == VariantType::Version) version = Version(value);
                     }
                 }
             }
@@ -283,9 +283,9 @@ Ref<StringList> ConfigureStage::getFlags(const MetaObject *object, String proper
 {
     Variant value;
     if (object->lookup(propertyName, &value)) {
-        if (Variant::type(value) == Variant::StringType)
+        if (Variant::type(value) == VariantType::String)
             return String(value)->split(" ");
-        else if (Variant::type(value) == Variant::ListType && Variant::itemType(value) == Variant::StringType)
+        else if (Variant::type(value) == VariantType::List && Variant::itemType(value) == VariantType::String)
             return Variant::cast<StringList *>(value);
     }
     return Ref<StringList>();

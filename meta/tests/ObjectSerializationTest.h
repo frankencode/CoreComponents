@@ -69,11 +69,11 @@ protected:
         );
 
         if (fromYason) {
-            CC_VERIFY(Variant::type(object->value("version")) == Variant::VersionType);
+            CC_VERIFY(Variant::type(object->value("version")) == VariantType::Version);
             CC_VERIFY(object->value("version") == Version(1, 0, 0));
         }
         else {
-            CC_VERIFY(Variant::type(object->value("version")) == Variant::StringType);
+            CC_VERIFY(Variant::type(object->value("version")) == VariantType::String);
             CC_VERIFY(String(object->value("version")) == "1.0.0");
         }
         CC_VERIFY(String(object->value("name")) == "Hans Mustermann");

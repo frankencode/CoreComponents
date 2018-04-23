@@ -40,12 +40,12 @@ protected:
     YasonSyntax(int options = 0);
 
     String readName(const CharArray *text, Token *token) const;
-    Variant readValue(const CharArray *text, Token *token, int expectedType = Variant::UndefType, int expectedItemType = Variant::UndefType) const;
-    Variant readList(const CharArray *text, Token *token, int expectedItemType = Variant::UndefType) const;
+    Variant readValue(const CharArray *text, Token *token, VariantType expectedType = VariantType::Undefined, VariantType expectedItemType = VariantType::Undefined) const;
+    Variant readList(const CharArray *text, Token *token, VariantType expectedItemType = VariantType::Undefined) const;
     String readText(const CharArray *text, Token *token) const;
 
     template<class T>
-    Ref< List<T> > parseTypedList(const CharArray *text, Token *token, int expectedItemType) const;
+    Ref< List<T> > parseTypedList(const CharArray *text, Token *token, VariantType expectedItemType) const;
 
     int item_;
     int line_;
@@ -67,7 +67,7 @@ protected:
 };
 
 template<class T>
-Ref< List<T> > YasonSyntax::parseTypedList(const CharArray *text, Token *token, int expectedItemType) const
+Ref< List<T> > YasonSyntax::parseTypedList(const CharArray *text, Token *token, VariantType expectedItemType) const
 {
     Ref< List<T> > list = List<T>::create(token->countChildren());
     int i = 0;

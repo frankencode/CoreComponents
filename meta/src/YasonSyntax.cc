@@ -420,7 +420,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
                             text, token->i1()
                         );
                     }
-                    if (Variant::type(defaultValue) == Variant::ObjectType)
+                    if (Variant::type(defaultValue) == VariantType::Object)
                         memberPrototype = Variant::cast<MetaObject *>(defaultValue);
                 }
             }
@@ -525,16 +525,16 @@ String YasonSyntax::readName(const CharArray *text, Token *token) const
     return text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
 }
 
-Variant YasonSyntax::readValue(const CharArray *text, Token *token, int expectedType, int expectedItemType) const
+Variant YasonSyntax::readValue(const CharArray *text, Token *token, VariantType expectedType, VariantType expectedItemType) const
 {
     Variant value;
     bool typeError = false;
 
     if (token->rule() == float_)
     {
-        if ( expectedType == Variant::UndefType ||
-             expectedType == Variant::FloatType ||
-             expectedItemType == Variant::FloatType )
+        if ( expectedType == VariantType::Undefined ||
+             expectedType == VariantType::Float ||
+             expectedItemType == VariantType::Float )
         {
             float64_t x;
             FloatSyntax::instance()->read(&x, text, token);
@@ -545,16 +545,16 @@ Variant YasonSyntax::readValue(const CharArray *text, Token *token, int expected
     }
     else if (token->rule() == integer_)
     {
-        if ( expectedType == Variant::UndefType ||
-             expectedType == Variant::FloatType ||
-             expectedType == Variant::IntType ||
-             expectedItemType == Variant::FloatType ||
-             expectedItemType == Variant::IntType )
+        if ( expectedType == VariantType::Undefined ||
+             expectedType == VariantType::Float ||
+             expectedType == VariantType::Int ||
+             expectedItemType == VariantType::Float ||
+             expectedItemType == VariantType::Int )
         {
             uint64_t x; int s;
             IntegerSyntax::instance()->read(&x, &s, text, token);
             value = int(x) * s;
-            if (expectedType == Variant::FloatType)
+            if (expectedType == VariantType::Float)
                 value = Variant::Float(value);
         }
         else
@@ -562,9 +562,9 @@ Variant YasonSyntax::readValue(const CharArray *text, Token *token, int expected
     }
     else if (token->rule() == color_)
     {
-        if ( expectedType == Variant::UndefType ||
-             expectedType == Variant::ColorType ||
-             expectedItemType == Variant::ColorType )
+        if ( expectedType == VariantType::Undefined ||
+             expectedType == VariantType::Color ||
+             expectedItemType == VariantType::Color )
         {
             value = Color(String(text->copyRange(token)));
         }
@@ -573,15 +573,15 @@ Variant YasonSyntax::readValue(const CharArray *text, Token *token, int expected
     }
     else if (token->rule() == version_)
     {
-        if ( expectedType == Variant::UndefType ||
-             expectedType == Variant::VersionType ||
-             expectedType == Variant::StringType ||
-             expectedItemType == Variant::VersionType ||
-             expectedItemType == Variant::StringType )
+        if ( expectedType == VariantType::Undefined ||
+             expectedType == VariantType::Version ||
+             expectedType == VariantType::String ||
+             expectedItemType == VariantType::Version ||
+             expectedItemType == VariantType::String )
         {
             String chunk = text->copyRange(token);
-            if ( expectedType == Variant::StringType ||
-                 expectedItemType == Variant::StringType )
+            if ( expectedType == VariantType::String ||
+                 expectedItemType == VariantType::String )
                 value = chunk;
             else
                 value = Version(chunk);
@@ -591,14 +591,14 @@ Variant YasonSyntax::readValue(const CharArray *text, Token *token, int expected
     }
     else if (token->rule() == text_)
     {
-        if ( expectedType == Variant::UndefType ||
-             expectedType == Variant::StringType ||
-             expectedItemType == Variant::StringType )
+        if ( expectedType == VariantType::Undefined ||
+             expectedType == VariantType::String ||
+             expectedItemType == VariantType::String )
         {
             value = readText(text, token);
         }
-        else if ( expectedType == Variant::ColorType ||
-                  expectedItemType == Variant::ColorType )
+        else if ( expectedType == VariantType::Color ||
+                  expectedItemType == VariantType::Color )
         {
             String s = readText(text, token);
             bool ok = false;
@@ -614,17 +614,17 @@ Variant YasonSyntax::readValue(const CharArray *text, Token *token, int expected
     }
     else if (token->rule() == list_)
     {
-        if ( expectedType == Variant::UndefType ||
-             expectedType == Variant::ListType )
+        if ( expectedType == VariantType::Undefined ||
+             expectedType == VariantType::List )
             value = readList(text, token, expectedItemType);
         else
             typeError = true;
     }
     else if (token->rule() == boolean_)
     {
-        if ( expectedType == Variant::UndefType ||
-             expectedType == Variant::BoolType ||
-             expectedItemType == Variant::BoolType )
+        if ( expectedType == VariantType::Undefined ||
+             expectedType == VariantType::Bool ||
+             expectedItemType == VariantType::Bool )
         {
             if (token->keyword() == true_)
                 value = true;
@@ -642,23 +642,23 @@ Variant YasonSyntax::readValue(const CharArray *text, Token *token, int expected
         );
     }
 
-    if (expectedType == Variant::ListType && Variant::type(value) != Variant::ListType) {
-        if (expectedItemType == Variant::IntType) {
+    if (expectedType == VariantType::List && Variant::type(value) != VariantType::List) {
+        if (expectedItemType == VariantType::Int) {
             Ref< List<int> > list = List<int>::create();
             list->append(value);
             value = list;
         }
-        else if (expectedItemType == Variant::BoolType) {
+        else if (expectedItemType == VariantType::Bool) {
             Ref< List<bool> > list = List<bool>::create();
             list->append(value);
             value = list;
         }
-        else if (expectedItemType == Variant::FloatType) {
+        else if (expectedItemType == VariantType::Float) {
             Ref< List<float> > list = List<float>::create();
             list->append(value);
             value = list;
         }
-        else if (expectedItemType == Variant::StringType) {
+        else if (expectedItemType == VariantType::String) {
             Ref< List<String> > list = List<String>::create();
             list->append(value);
             value = list;
@@ -673,16 +673,16 @@ Variant YasonSyntax::readValue(const CharArray *text, Token *token, int expected
     return value;
 }
 
-Variant YasonSyntax::readList(const CharArray *text, Token *token, int expectedItemType) const
+Variant YasonSyntax::readList(const CharArray *text, Token *token, VariantType expectedItemType) const
 {
     Variant list;
-    if (expectedItemType == Variant::IntType)
+    if (expectedItemType == VariantType::Int)
         list = parseTypedList<int>(text, token, expectedItemType);
-    else if (expectedItemType == Variant::BoolType)
+    else if (expectedItemType == VariantType::Bool)
         list = parseTypedList<bool>(text, token, expectedItemType);
-    else if (expectedItemType == Variant::FloatType)
+    else if (expectedItemType == VariantType::Float)
         list = parseTypedList<float>(text, token, expectedItemType);
-    else if (expectedItemType == Variant::StringType)
+    else if (expectedItemType == VariantType::String)
         list = parseTypedList<String>(text, token, expectedItemType);
     else
         list = parseTypedList<Variant>(text, token, expectedItemType);

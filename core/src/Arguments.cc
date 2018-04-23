@@ -68,18 +68,18 @@ void Arguments::validate(const VariantMap *prototype)
         if (!prototype->lookup(name, &defaultValue))
             throw UsageError(Format("No such option: \"%%\"") << name);
         if (defaultValue == Variant()) continue;
-        int valueType = Variant::type(value);
-        int defaultType = Variant::type(defaultValue);
+        VariantType valueType = Variant::type(value);
+        VariantType defaultType = Variant::type(defaultValue);
         if (valueType != defaultType) {
-            if (valueType == Variant::IntType && defaultType == Variant::BoolType) {
+            if (valueType == VariantType::Int && defaultType == VariantType::Bool) {
                 int intValue = value;
                 if (intValue == 0 || intValue == 1)
                     options_->establish(name, intValue == 1);
             }
-            else if (valueType == Variant::IntType && defaultType == Variant::FloatType) {
+            else if (valueType == VariantType::Int && defaultType == VariantType::Float) {
                 options_->establish(name, float(int(value)));
             }
-            else if (valueType != Variant::ObjectType && defaultType == Variant::StringType) {
+            else if (valueType != VariantType::Object && defaultType == VariantType::String) {
                 options_->establish(name, str(value));
             }
             else {
