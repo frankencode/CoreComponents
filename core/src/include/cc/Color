@@ -30,13 +30,13 @@ public:
     /** Construct an invalid color
       */
     Color():
-        w_{0x00FFFFFFu}
+        instance_{0x00FFFFFFu}
     {}
 
     /** Construct a valid color from a 32-bit word \a w
       */
     Color(uint32_t w):
-        w_{w | (w < 0x1000000u ? 0xFF000000u : 0u)}
+        instance_{w | (w < 0x1000000u ? 0xFF000000u : 0u)}
     {}
 
     /** \copydoc Color(const String &s)
@@ -45,10 +45,10 @@ public:
     {
         bool ok = false;
         *this = parse(s, &ok);
-        if (!ok) *this = Color();
+        if (!ok) *this = Color{};
     }
 
-    /** Construct a color from a color literal or name \a s.
+    /** Construct a color from a color literal or name \a s
       * \param s color specification to parse
       * %Color literals can be either SVG color names (e.g. 'AliceBlue') or literal RGB tuples (\#RRGGBB, \#RRGGBBAA, \#RGB, \#RGBA).
       */
@@ -56,10 +56,10 @@ public:
     {
         bool ok = false;
         *this = parse(s, &ok);
-        if (!ok) *this = Color();
+        if (!ok) *this = Color{};
     }
 
-    /** Construct a color from a color value stored in a Variant \a v.
+    /** Construct a color from a color value stored in a Variant \a v
       */
     Color(const Variant &v);
 
@@ -71,27 +71,15 @@ public:
       */
     template<class T>
     Color(T r, T g, T b, T a = 0xFF):
-        w_{compose(r, g, b, a)}
+        instance_{r, g, b, a}
     {}
 
-    /** Construct a color from a palette value \a v.
+    /** Construct a color from a palette value \a v
       */
     template<class PaletteValue>
     Color(PaletteValue v):
-        Color(static_cast<uint32_t>(v))
+        Color{static_cast<uint32_t>(v)}
     {}
-
-    /** Create a color tone from this color with \a percent opacity
-      */
-    inline Color operator()(int percent) const
-    {
-        return Color(
-            redComponent(*this),
-            greenComponent(*this),
-            blueComponent(*this),
-            uint32_t(percent) * 0xFF / 100
-        );
-    }
 
     /** \copydoc Color(const char *)
       * \param ok return true if \a s is a valid color literal or name
@@ -100,7 +88,7 @@ public:
 
     /** Construct a color from a 32-bit word \a w
       */
-    inline static Color fromWord(uint32_t w) { Color c; c.w_ = w; return c; }
+    inline static Color fromWord(uint32_t w) { Color c; c->w_ = w; return c; }
 
     /** Return the full color with hue \a h
       * \param h hue in range [0, 360]
@@ -121,113 +109,174 @@ public:
       */
     static Color fromHsl(double h, double s, double l);
 
-      /** Check if color \c is valid
-      * A color is considered invalid, if alpha is zero and red, green or blue is non-zero.
+    /** Alpha-blend color \a a over color \a b and return result
       */
-    inline static bool isValid(Color c) {
-        return !(
-            alphaComponent(c) == 0 && (
-                redComponent(c)   != 0 ||
-                greenComponent(c) != 0 ||
-                blueComponent(c)  != 0
-            )
-        );
+    inline static Color blend(Color a, Color b)
+    {
+        b->applyOver(a);
+        return b;
     }
 
-    /** Convenience function to check if \a c is a fully opaque color
-      */
-    inline static bool isOpaque(Color c) {
-        return alphaComponent(c) == 0xFF;
-    }
+    class Instance {
+    public:
+        /** Check if color \c is valid
+          * A color is considered invalid, if alpha is zero and red, green or blue is non-zero.
+          */
+        inline bool isValid() const {
+            return !(
+                alpha() == 0 && (
+                    red()   != 0 ||
+                    green() != 0 ||
+                    blue()  != 0
+                )
+            );
+        }
 
-    /** Getters for individual color components
-      * @{
+        /** Convenience function to check if \a c is a fully opaque color
+          */
+        inline bool isOpaque() const {
+            return alpha() == 0xFF;
+        }
+
+        /** Getters for individual color components
+          * @{
+          */
+        inline uint32_t alpha() const { return component<AlphaShift>(); }
+        inline uint32_t red  () const { return component<RedShift  >(); }
+        inline uint32_t green() const { return component<GreenShift>(); }
+        inline uint32_t blue () const { return component<BlueShift >(); }
+        /** @}
+          */
+
+        /** Alpha-blend color \a b over this color
+          */
+        void applyOver(Color b);
+
+        /** Translate this color from non-premultiplied to the premultiplied representation
+          */
+        inline Color premultiplied() const
+        {
+            Color c = Color::fromWord(w_);
+            c->premultiply();
+            return c;
+        }
+
+        /** Translate this color from premultiplied to non-premultiplied representation
+          */
+        inline Color normalized() const
+        {
+            Color c = Color::fromWord(w_);
+            c->normalize();
+            return c;
+        }
+
+        /** \copydoc premultiplied()
+          */
+        inline void premultiply()
+        {
+            uint32_t h = w_;
+            uint16_t a = component<AlphaShift, uint16_t>(h);
+            if (a == 0 || a == 0xFF) return;
+            typedef uint16_t v4ui16 __attribute__((vector_size(8)));
+            v4ui16 v {
+                component<RedShift,   uint16_t>(h),
+                component<GreenShift, uint16_t>(h),
+                component<BlueShift,  uint16_t>(h),
+                0
+            };
+            v = (a * v) / 0xFF;
+            w_ = compose(v[0], v[1], v[2], a);
+        }
+
+        /** \copydoc normalized()
+          */
+        inline void normalize()
+        {
+            uint32_t h = w_;
+            uint16_t a = component<AlphaShift, uint16_t>(h);
+            if (a == 0 || a == 0xFF) return;
+            typedef uint16_t v4ui16 __attribute__((vector_size(8)));
+            v4ui16 v {
+                component<RedShift,   uint16_t>(h),
+                component<GreenShift, uint16_t>(h),
+                component<BlueShift,  uint16_t>(h),
+                0
+            };
+            v = (0xFF * v) / a;
+            w_ = compose(v[0], v[1], v[2], a);
+        }
+
+    private:
+        friend class Color;
+
+        Instance()
+        {}
+
+        Instance(uint32_t w):
+            w_{w}
+        {}
+
+        template<class T>
+        Instance(T r, T g, T b, T a = 0xFF):
+            w_{compose(r, g, b, a)}
+        {}
+
+        enum {
+            AlphaShift = 24,
+            RedShift   = 16,
+            GreenShift =  8,
+            BlueShift  =  0
+        };
+
+        template<int Shift, class T = uint32_t>
+        inline T component() const { return component<Shift, T>(w_); }
+
+        template<int Shift, class T = uint32_t>
+        inline static T component(uint32_t w) { return (w >> Shift) & 0xFF; }
+
+        template<class T>
+        inline static uint32_t compose(T r, T g, T b, T a = 0xFF) {
+            return
+                (uint32_t(a) << AlphaShift) |
+                (uint32_t(r) << RedShift  ) |
+                (uint32_t(g) << GreenShift) |
+                (uint32_t(b) << BlueShift ) ;
+        };
+
+        uint32_t w_;
+    };
+
+    /** Create a color tone from this color with \a percent opacity
       */
-    inline static uint32_t alphaComponent(Color c) { return component<AlphaShift>(c); }
-    inline static uint32_t redComponent  (Color c) { return component<RedShift  >(c); }
-    inline static uint32_t greenComponent(Color c) { return component<GreenShift>(c); }
-    inline static uint32_t blueComponent (Color c) { return component<BlueShift >(c); }
-    /** @}
-      */
+    inline Color operator()(int percent) const
+    {
+        return Color{
+            (*this)->red(),
+            (*this)->green(),
+            (*this)->blue(),
+            uint32_t(percent) * 0xFF / 100
+        };
+    }
 
     /** Automatic conversion to a 32-bit word
       */
-    inline operator uint32_t() { return w_; }
+    inline operator uint32_t() { return (*this)->w_; }
 
     /** Comparism operators
       * @{
       */
-    inline bool operator==(const Color &b) const { return w_ == b.w_; }
-    inline bool operator!=(const Color &b) const { return w_ != b.w_; }
+    inline bool operator==(const Color &b) const { return (*this)->w_ == b->w_; }
+    inline bool operator!=(const Color &b) const { return (*this)->w_ != b->w_; }
     /** @}
       */
 
-    /** Alpha-blend color \a a over color \a b
-      */
-    static Color blend(Color a, Color b);
-
-    /** Return the premultiplied version of color \a c
-      */
-    inline static Color premultiplied(Color c)
-    {
-        uint32_t h = c.w_;
-        uint16_t a = component<AlphaShift, uint16_t>(h);
-        if (a == 0 || a == 0xFF) return c;
-        typedef uint16_t v4ui16 __attribute__((vector_size(8)));
-        v4ui16 v {
-            component<RedShift,   uint16_t>(h),
-            component<GreenShift, uint16_t>(h),
-            component<BlueShift,  uint16_t>(h),
-            0
-        };
-        v = (a * v) / 0xFF;
-        return Color(v[0], v[1], v[2], a);
-    }
-
-    /** Translate a premultiplied color to a non-premultiplied color
-      */
-    inline static void normalize(Color *c)
-    {
-        uint32_t h = c->w_;
-        uint16_t a = component<AlphaShift, uint16_t>(h);
-        if (a == 0 || a == 0xFF) return;
-        typedef uint16_t v4ui16 __attribute__((vector_size(8)));
-        v4ui16 v {
-            component<RedShift,   uint16_t>(h),
-            component<GreenShift, uint16_t>(h),
-            component<BlueShift,  uint16_t>(h),
-            0
-        };
-        v = (0xFF * v) / a;
-        c->w_ = compose(v[0], v[1], v[2], a);
-    }
+    inline const Instance *operator->() const { return &instance_; }
+    inline Instance *operator->() { return &instance_; }
 
 private:
     friend class Variant;
 
-    enum {
-        AlphaShift = 24,
-        RedShift   = 16,
-        GreenShift =  8,
-        BlueShift  =  0
-    };
-
-    template<int Shift, class T = uint32_t>
-    inline static T component(Color c) { return component<Shift, T>(c.w_); }
-
-    template<int Shift, class T = uint32_t>
-    inline static T component(uint32_t w) { return (w >> Shift) & 0xFF; }
-
-    template<class T>
-    inline static uint32_t compose(T r, T g, T b, T a) {
-        return
-            (uint32_t(a) << AlphaShift) |
-            (uint32_t(r) << RedShift  ) |
-            (uint32_t(g) << GreenShift) |
-            (uint32_t(b) << BlueShift ) ;
-    };
-
-    uint32_t w_;
+    Instance instance_;
 };
 
 /// Stringify color \a c

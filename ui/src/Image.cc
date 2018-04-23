@@ -44,7 +44,7 @@ void Image::normalize()
     const int n = data_->itemCount<Color>();
     Color *p = &mutate(data_)->item<Color>(0);
     for (int i = 0; i < n; ++i)
-        Color::normalize(p + i);
+        p[i]->normalize();
 }
 
 void Image::shadowBlur(int radius, Color shadowColor)

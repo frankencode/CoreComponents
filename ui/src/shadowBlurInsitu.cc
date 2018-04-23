@@ -120,27 +120,27 @@ void shadowBlurInsitu(Image *image, int radius, Color shadowColor)
         }
     }
 
-    uint32_t sr = Color::redComponent(shadowColor);
-    uint32_t sg = Color::greenComponent(shadowColor);
-    uint32_t sb = Color::blueComponent(shadowColor);
-    uint32_t sa = Color::alphaComponent(shadowColor);
+    uint32_t sr = shadowColor->red();
+    uint32_t sg = shadowColor->green();
+    uint32_t sb = shadowColor->blue();
+    uint32_t sa = shadowColor->alpha();
 
     if (sa == 0xFF) {
         for (int i = 0, n = image->count(); i < n; ++i) {
             Color &pixel = image->pixel(i);
-            pixel = Color{
+            pixel = Color {
                 sr, sg, sb,
-                Color::alphaComponent(pixel)
+                pixel->alpha()
             };
         }
     }
     else {
         for (int i = 0, n = image->count(); i < n; ++i) {
             Color &pixel = image->pixel(i);
-            pixel = Color{
+            pixel = Color {
                 sr, sg, sb,
-                uint32_t(uint16_t(Color::alphaComponent(pixel) * sa) / 255)
-            };
+                uint32_t(uint16_t(pixel->alpha()) * sa) / 255
+           };
         }
     }
 }

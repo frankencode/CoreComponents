@@ -138,86 +138,90 @@ Color Color::fromHsl(double h, double s, double l)
     };
 }
 
-Color Color::blend(Color a, Color b)
+void Color::Instance::applyOver(Color b)
 {
-    const uint32_t h = component<AlphaShift, uint32_t>(b);
+    const uint32_t h = component<AlphaShift, uint32_t>();
 
     if (h == 0xFF)
     {
-        uint16_t o_a = component<AlphaShift, uint16_t>(a);
-        if (o_a == 0xFF) return a;
+        uint16_t o_b = b->component<AlphaShift, uint16_t>();
+        if (o_b == 0xFF) {
+            w_ = b->w_;
+            return;
+        }
 
-        uint16_t n_a = 0x100 - o_a;
+        uint16_t n_b = 0x100 - o_b;
 
         typedef uint16_t v4ui16 __attribute__((vector_size(8)));
 
-        v4ui16 v_a {
-            component<RedShift  , uint16_t>(a),
-            component<GreenShift, uint16_t>(a),
-            component<BlueShift , uint16_t>(a),
-            0
-        };
-
         v4ui16 v_b {
-            component<RedShift,   uint16_t>(b),
-            component<GreenShift, uint16_t>(b),
-            component<BlueShift,  uint16_t>(b),
+            b->component<RedShift  , uint16_t>(),
+            b->component<GreenShift, uint16_t>(),
+            b->component<BlueShift , uint16_t>(),
             0
         };
 
-        v_b = (o_a * v_a + n_a * v_b) >> 8;
+        v4ui16 v_a {
+            component<RedShift,   uint16_t>(),
+            component<GreenShift, uint16_t>(),
+            component<BlueShift,  uint16_t>(),
+            0
+        };
 
-        b = Color { v_b[0], v_b[1], v_b[2] };
+        v_a = (o_b * v_b + n_b * v_a) >> 8;
+
+        w_ = compose(v_a[0], v_a[1], v_a[2]);
     }
     else {
-        uint32_t o_a = component<AlphaShift, uint32_t>(a);
-        if (o_a == 0xFF) return a;
+        uint32_t o_b = b->component<AlphaShift, uint32_t>();
+        if (o_b == 0xFF) {
+            w_ = b->w_;
+            return;
+        }
 
-        uint32_t n_a = 0xFF - o_a;
-        uint32_t o_b = h;
+        uint32_t n_b = 0xFF - o_b;
+        uint32_t o_a = h;
 
-        o_a <<= 8;
-        n_a *= o_b;
-        uint32_t h = o_a + n_a;
+        o_b <<= 8;
+        n_b *= o_a;
+        uint32_t h = o_b + n_b;
 
         if ((h >> 8) > 0)
         {
             typedef uint32_t v4ui32 __attribute__((vector_size(16)));
 
-            v4ui32 v_a {
-                component<RedShift,   uint32_t>(a),
-                component<GreenShift, uint32_t>(a),
-                component<BlueShift,  uint32_t>(a),
-                0
-            };
-
             v4ui32 v_b {
-                component<RedShift,   uint32_t>(b),
-                component<GreenShift, uint32_t>(b),
-                component<BlueShift,  uint32_t>(b),
+                b->component<RedShift,   uint32_t>(),
+                b->component<GreenShift, uint32_t>(),
+                b->component<BlueShift,  uint32_t>(),
                 0
             };
 
-            v_b = (o_a * v_a + n_a * v_b) / h;
+            v4ui32 v_a {
+                component<RedShift,   uint32_t>(),
+                component<GreenShift, uint32_t>(),
+                component<BlueShift,  uint32_t>(),
+                0
+            };
 
-            b = Color { v_b[0], v_b[1], v_b[2], h >> 8 };
+            v_a = (o_b * v_b + n_b * v_a) / h;
+
+            w_ = compose(v_a[0], v_a[1], v_a[2], h >> 8);
         }
         else {
-            b.w_ = 0;
+            w_ = 0;
         }
     }
-
-    return b;
 }
 
 String str(Color c)
 {
     return Format()
         << "#"
-        << hex(Color::redComponent  (c), 2)
-        << hex(Color::greenComponent(c), 2)
-        << hex(Color::blueComponent (c), 2)
-        << hex(Color::alphaComponent(c), 2);
+        << hex(c->red(), 2)
+        << hex(c->green(), 2)
+        << hex(c->blue(), 2)
+        << hex(c->alpha(), 2);
 }
 
 } // namespace cc

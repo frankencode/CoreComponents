@@ -119,12 +119,12 @@ void View::centerInParent()
 
 bool View::isOpaque() const
 {
-    return Color::isOpaque(color());
+    return color()->isOpaque();
 }
 
 bool View::isPainted() const
 {
-    return Color::isValid(color());
+    return color()->isValid();
 }
 
 bool View::isStatic() const
@@ -134,7 +134,7 @@ bool View::isStatic() const
 
 void View::clear()
 {
-    image()->clear(Color::premultiplied(color()));
+    image()->clear(color()->premultiplied());
 }
 
 void View::paint()

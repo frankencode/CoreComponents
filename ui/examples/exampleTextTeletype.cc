@@ -32,7 +32,7 @@ class MainView: public View
         bgColors_ = Array<Color>::create(glyphRun_->text()->count());
         Color fg, bg;
         for (int i = 0; i < glyphRun_->text()->count(); ++i) {
-            if (!Color::isValid(fg)) {
+            if (!fg->isValid()) {
                 int angle = random->get(0, 360);
                 fg = Color::fromHue(angle);
                 bg = Color::fromHue((angle + 180) % 360);
