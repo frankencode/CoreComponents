@@ -214,14 +214,14 @@ void Color::Instance::applyOver(Color b)
     }
 }
 
-String str(Color c)
+String Color::Instance::toString() const
 {
     return Format()
         << "#"
-        << hex(c->red(), 2)
-        << hex(c->green(), 2)
-        << hex(c->blue(), 2)
-        << hex(c->alpha(), 2);
+        << hex(red(), 2)
+        << hex(green(), 2)
+        << hex(blue(), 2)
+        << hex(alpha(), 2);
 }
 
 } // namespace cc

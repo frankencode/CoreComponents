@@ -17,7 +17,6 @@ class Variant;
 /** \class Color cc/Color
   * \ingroup misc
   * \brief 32-bit ARGB color value
-  * \see ColorNames
   */
 class Color
 {
@@ -206,6 +205,9 @@ public:
             w_ = compose(v[0], v[1], v[2], a);
         }
 
+        /// Stringify this color
+        String toString() const;
+
     private:
         friend class Color;
 
@@ -280,6 +282,6 @@ private:
 };
 
 /// Stringify color \a c
-String str(Color c);
+inline String str(Color c) { return c->toString(); }
 
 } // namespace cc

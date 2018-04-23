@@ -555,7 +555,7 @@ Variant YasonSyntax::readValue(const CharArray *text, Token *token, int expected
             IntegerSyntax::instance()->read(&x, &s, text, token);
             value = int(x) * s;
             if (expectedType == Variant::FloatType)
-                value = Variant::real(value);
+                value = Variant::Float(value);
         }
         else
             typeError = true;
