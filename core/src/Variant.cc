@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -69,7 +69,7 @@ bool Variant::operator==(const Variant &b) const
     else if ((type_ & VersionType) && (b.type_ & VersionType))
         equal = (word_ == b.word_);
     else if ((type_ == StringType) && (b.type_ == StringType))
-        equal = (String(Variant::cast<CharArray *>(*this)) == String(Variant::cast<CharArray *>(b)));
+        equal = Variant::cast<CharArray *>(*this)->equals(Variant::cast<CharArray *>(b));
     else if ((type_ == ObjectType) && (b.type_ == ObjectType))
         equal = (ref().get() == b.ref().get());
     else
@@ -87,9 +87,9 @@ bool Variant::operator<(const Variant &b) const
     else if ((type_ & FloatType) && (b.type_ & FloatType))
         below = (float_ < b.float_);
     else if ((type_ & VersionType) && (b.type_ & VersionType))
-        below = (Version::cast(word_) < Version::cast(b.word_));
+        below = (Version::fromWord(word_) < Version::fromWord(b.word_));
     else if ((type_ == StringType) && (b.type_ == StringType))
-        below = String(Variant::cast<CharArray *>(*this)) < String(Variant::cast<CharArray *>(b));
+        below = Variant::cast<CharArray *>(*this)->below(Variant::cast<CharArray *>(b));
     else if ((type_ == ObjectType) && (b.type_ == ObjectType))
         below = (ref().get() < b.ref().get());
 

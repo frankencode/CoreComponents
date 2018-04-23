@@ -16,6 +16,9 @@ namespace cc {
 class Object;
 class Variant;
 
+template<class, bool>
+class VariantCast;
+
 template<class T>
 class Ref;
 
@@ -123,6 +126,9 @@ protected:
     template<class T2> friend class Ref;
     friend class Object;
     friend class Variant;
+
+    template<class, bool>
+    friend class VariantCast;
 
     inline T *get() const { return a_; }
 

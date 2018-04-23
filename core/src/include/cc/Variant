@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -20,6 +20,9 @@ class Variant;
 
 typedef List<Variant> VariantList;
 typedef Map<String, Variant> VariantMap;
+
+template<class T, bool IsPointer>
+class VariantCast {};
 
 /** \class Variant cc/Variant
   * \ingroup misc
@@ -62,13 +65,16 @@ public:
       */
     static Variant read(String s);
 
-    Variant():              type_(UndefType),   itemType_(UndefType)                   {}
-    Variant(int value):     type_(IntType),     itemType_(UndefType), int_(value)      {}
-    Variant(bool value):    type_(BoolType),    itemType_(UndefType), int_(value)      {}
-    Variant(float value):   type_(FloatType),   itemType_(UndefType), float_(value)    {}
-    Variant(double value):  type_(FloatType),   itemType_(UndefType), float_(value)    {}
-    Variant(Color value):   type_(ColorType),   itemType_(UndefType), word_(value)     {}
-    Variant(Version value): type_(VersionType), itemType_(UndefType), word_(value.n()) {}
+    template<class T>
+    inline static T cast(const Variant &value) { return VariantCast<T, CC_IS_POINTER(T)>::cast(value); }
+
+    Variant():              type_(UndefType),   itemType_(UndefType)                         {}
+    Variant(int value):     type_(IntType),     itemType_(UndefType), int_(value)            {}
+    Variant(bool value):    type_(BoolType),    itemType_(UndefType), int_(value)            {}
+    Variant(float value):   type_(FloatType),   itemType_(UndefType), float_(value)          {}
+    Variant(double value):  type_(FloatType),   itemType_(UndefType), float_(value)          {}
+    Variant(Color value):   type_(ColorType),   itemType_(UndefType), word_(value->toWord()) {}
+    Variant(Version value): type_(VersionType), itemType_(UndefType), word_(value->toWord()) {}
 
     Variant(const char *value):   type_(StringType), itemType_(UndefType) { initRef(mutate(String(value))); }
     Variant(const String &value): type_(StringType), itemType_(UndefType) { initRef(mutate(value)); }
@@ -100,8 +106,8 @@ public:
     inline const Variant &operator=(int value)           { type_ = IntType;  int_ = value; return *this; }
     inline const Variant &operator=(float value)         { type_ = FloatType; float_ = value; return *this; }
     inline const Variant &operator=(double value)        { type_ = FloatType; float_ = value; return *this; }
-    inline const Variant &operator=(Color value)         { type_ = ColorType; word_ = value; return *this; }
-    inline const Variant &operator=(Version value)       { type_ = VersionType; word_ = value.n(); return *this; }
+    inline const Variant &operator=(Color value)         { type_ = ColorType; word_ = value->toWord(); return *this; }
+    inline const Variant &operator=(Version value)       { type_ = VersionType; word_ = value->toWord(); return *this; }
     inline const Variant &operator=(const char *value)   { return *this = Variant(value); }
     inline const Variant &operator=(const String &value) { return *this = Variant(value); }
     template<class T>
@@ -140,28 +146,14 @@ public:
         return Color::fromWord(word_);
     }
     inline operator Version() const {
-        return toVersion(*this);
+        if (!type_) return Version();
+        CC_ASSERT2(type_ & VersionType, illegalConversion);
+        return Version::fromWord(word_);
     }
     inline operator String() const {
-        return toString(*this);
-    }
-
-    inline static Color toColor(const Variant &value) {
-        if (!value.type_) return Color();
-        CC_ASSERT2(value.type_ & ColorType, illegalConversion);
-        return Color::fromWord(value.word_);
-    }
-
-    inline static Version toVersion(const Variant &value) {
-        if (!value.type_) return Version();
-        CC_ASSERT2(value.type_ & VersionType, illegalConversion);
-        return Version::cast(value.word_);
-    }
-
-    inline static String toString(const Variant &value) {
-        if (!value.type_) return String();
-        CC_ASSERT2(value.type_ & StringType, illegalConversion);
-        return Variant::cast<CharArray *>(value);
+        if (!type_) return String();
+        CC_ASSERT2(type_ & StringType, illegalConversion);
+        return Variant::cast<CharArray *>(*this);
     }
 
     template<class T>
@@ -179,35 +171,15 @@ public:
     inline bool operator<=(const Variant &b) const { return (*this < b) || (*this == b); }
     inline bool operator>=(const Variant &b) const { return (b < *this) || (*this == b); }
 
-    template<class T>
-    inline static T cast(const Variant &value) { return VariantCast<T, CC_IS_POINTER(T)>::cast(value); }
-
 private:
+    template<class, bool>
+    friend class VariantCast;
+
     friend String str(const Variant &x);
     friend int type(const Variant &value);
     friend int itemType(const Variant &value);
 
     static constexpr const char *illegalConversion = "Illegal Variant conversion";
-
-    template<class T, bool IsPointer>
-    class VariantCast {};
-
-    template<class T>
-    class VariantCast<T, true> {
-    public:
-        inline static T cast(const Variant &value) {
-            typedef typename CC_DEREF(T) U;
-            return type(value) & Variant::ObjectType ? Object::cast<U *>(value.ref().get()) : nullptr;
-        }
-    };
-
-    template<class T>
-    class VariantCast<T, false> {
-    public:
-        inline static T cast(const Variant &value) {
-            return T(value);
-        }
-    };
 
     template<class U>
     friend U *cast(const Variant &value);
@@ -233,6 +205,47 @@ private:
         float32_t float_;
         mutable char dummy_[sizeof(Ref<Object>)];
     };
+};
+
+template<class T>
+class VariantCast<T, true> {
+public:
+    inline static T cast(const Variant &value) {
+        typedef typename CC_DEREF(T) U;
+        return Variant::type(value) & Variant::ObjectType ? Object::cast<U *>(value.ref().get()) : nullptr;
+    }
+};
+
+template<class T>
+class VariantCast<T, false> {
+public:
+    inline static T cast(const Variant &value) {
+        return T(value);
+    }
+};
+
+template<>
+class VariantCast<String, false> {
+public:
+    inline static String cast(const Variant &value) {
+        return Variant::cast<CharArray *>(value);
+    }
+};
+
+template<>
+class VariantCast<Color, false> {
+public:
+    inline static Color cast(const Variant &value) {
+        return Color::fromWord(value.word_);
+    }
+};
+
+template<>
+class VariantCast<Version, false> {
+public:
+    inline static Version cast(const Variant &value) {
+        return Version::fromWord(value.word_);
+    }
 };
 
 String str(const Variant &x);

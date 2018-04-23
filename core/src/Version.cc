@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -11,28 +11,12 @@
 
 namespace cc {
 
-Version::Version(const char* s):
-    major_(0),
-    minor_(0),
-    patch_(0)
-{
-    read(s);
-}
-
-Version::Version(const String &s):
-    major_(0),
-    minor_(0),
-    patch_(0)
-{
-    read(s);
-}
-
 Version::Version(const Variant &v)
 {
-    *this = Variant::toVersion(v);
+    *this = Variant::cast<Version>(v);
 }
 
-void Version::read(String s)
+Version::Instance::Instance(const String &s)
 {
     Ref<StringList> parts = s->trim("v")->split('.');
     if (parts->has(0)) major_ = parts->at(0)->toNumber<int>();
@@ -40,9 +24,9 @@ void Version::read(String s)
     if (parts->has(2)) patch_ = parts->at(2)->toNumber<int>();
 }
 
-String str(Version v)
+String Version::Instance::toString() const
 {
-    return Format("%%.%%.%%") << Version::major(v) << Version::minor(v) << Version::patch(v);
+    return Format("%%.%%.%%") << major_ << minor_ << patch_;
 }
 
 } // namespace cc

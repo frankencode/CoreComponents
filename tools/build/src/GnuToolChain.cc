@@ -193,7 +193,7 @@ String GnuToolChain::linkCommand(const BuildPlan *plan) const
 
     if (options & BuildPlan::Library) {
         args << (
-            Format() << "-Wl,-soname,lib" << name << ".so." << Version::major(version)
+            Format() << "-Wl,-soname,lib" << name << ".so." << version->major()
         )->join();
     }
 

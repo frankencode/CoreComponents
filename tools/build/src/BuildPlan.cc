@@ -494,15 +494,15 @@ void BuildPlan::readPrerequisites()
 
 void BuildPlan::findVersion()
 {
-    if (!Version::isValid(version_)) {
+    if (!version_->isValid()) {
         String path = findPrerequisite("..");
         if (path != "") {
             Ref<BuildPlan> plan = BuildPlan::create(path);
-            if (!Version::isValid(plan->version_)) plan->findVersion();
-            if (Version::isValid(plan->version_)) version_ = plan->version_;
+            if (!plan->version_->isValid()) plan->findVersion();
+            if (plan->version_->isValid()) version_ = plan->version_;
         }
     }
-    if (!Version::isValid(version_))
+    if (!version_->isValid())
         version_ = Version(0, 1, 0);
 }
 

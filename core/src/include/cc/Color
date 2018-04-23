@@ -205,6 +205,9 @@ public:
             w_ = compose(v[0], v[1], v[2], a);
         }
 
+        /// convert to a 32-bit word
+        inline uint32_t toWord() const { return w_; }
+
         /// Stringify this color
         String toString() const;
 

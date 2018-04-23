@@ -22,7 +22,7 @@ namespace cc {
 Ref<const CharArray>::Ref(const Variant &b):
     a_(0)
 {
-    set(Variant::toString(b));
+    set(Variant::cast<String>(b));
 }
 
 Ref<const CharArray>::Ref(const Format &b):

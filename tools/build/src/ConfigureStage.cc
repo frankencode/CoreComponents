@@ -128,11 +128,11 @@ bool ConfigureStage::run()
             try {
                 Version versionMin = prerequisite->versionMin();
                 Version versionMax = prerequisite->versionMax();
-                if (Version::isValid(versionMin)) {
+                if (versionMin->isValid()) {
                     if (version < versionMin)
                         throw(String(Format() << "At least version " << versionMin << " is required (version " << version << " detected)"));
                 }
-                if (Version::isValid(versionMax)) {
+                if (versionMax->isValid()) {
                     if (versionMax < version)
                         throw(String(Format() << "At most version " << versionMax << " is supported (version " << version << " detected)"));
                 }
@@ -154,7 +154,7 @@ bool ConfigureStage::run()
                 if (
                     prerequisite->customCompileFlags()->count() > 0 ||
                     prerequisite->customLinkFlags()->count() > 0 ||
-                    Version::isValid(version)
+                    version->isValid()
                 ) {
                     if (firstLine) {
                         firstLine = false;
@@ -167,7 +167,7 @@ bool ConfigureStage::run()
                         ferr() << "  " << ns << "compile-flags: " << prerequisite->customCompileFlags()->join(" ") << nl;
                     if (prerequisite->customLinkFlags()->count() > 0)
                         ferr() << "  " << ns << "link-flags: " << prerequisite->customLinkFlags()->join(" ") << nl;
-                    if (Version::isValid(version))
+                    if (version->isValid())
                         ferr() << "  " << ns << "version: " << version << nl;
                     ferr() << nl;
                 }

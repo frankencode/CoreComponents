@@ -21,7 +21,7 @@ const Color Color::White       { 0xFF, 0xFF, 0xFF };
 
 Color::Color(const Variant &v)
 {
-    *this = Variant::toColor(v);
+    *this = Variant::cast<Color>(v);
 }
 
 Color Color::parse(const char *s, bool *ok)
