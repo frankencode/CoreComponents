@@ -19,6 +19,7 @@ namespace ui {
 
 class Surface;
 class GlyphRun;
+class FtGlyphRun;
 class TextRun;
 
 class Painter
@@ -101,9 +102,13 @@ public:
 
     private:
         friend class Painter;
+
         void checkForError();
         Instance(Surface *surface);
         ~Instance();
+
+        void fillGlyphRunBackground(const FtGlyphRun *ftGlyphRun);
+
         cairo_t *cr_;
     };
 

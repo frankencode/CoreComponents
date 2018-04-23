@@ -1,11 +1,12 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
+#include <cc/debug>
 #include <cc/ui/PlatformManager>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/TimeMaster>
@@ -114,7 +115,13 @@ bool Application::feedMouseEvent(Window *window, MouseEvent *event)
             pressedControl = control;
         }
 
-        hoverControl = Ref<Control>{};
+        if (
+            textInputFocus() && textInputFocus()->isValid() &&
+            !(pressedControl() && pressedControl()->focus())
+        )
+            textInputFocus = nullptr;
+
+        hoverControl = nullptr;
     }
     else if (event->action() == PointerAction::Released)
     {

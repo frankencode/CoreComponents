@@ -40,8 +40,11 @@ public:
         Decoration decoration() const { return decoration_; }
         void setDecoration(Decoration newValue) { decoration_ = newValue; }
 
-        Color color() const { return color_; }
-        void setColor(Color newValue) { color_ = newValue; }
+        Color ink() const { return ink_; }
+        void setInk(Color newValue) { ink_ = newValue; }
+
+        Color paper() const { return paper_; }
+        void setPaper(Color newValue) { paper_ = newValue; }
 
         const ScaledFont *getScaledFont() const;
         const FontMetrics *getMetrics() const;
@@ -53,16 +56,17 @@ public:
         inline static StylePlugin *style() { return Font::style(); }
 
         Instance(): size_{-1} {}
-        Instance(double size): size_{size} {}
-        Instance(String family, double size): family_{family}, size_{size} {}
+        Instance(double size): size_{float(size)} {}
+        Instance(String family, double size): family_{family}, size_{float(size)} {}
 
         String family_;
-        double size_;
+        float size_;
         Slant slant_ { Slant::Normal };
         Weight weight_ { Weight::Normal };
         Stretch stretch_ { Stretch::Normal };
         Decoration decoration_ { Decoration::None };
-        Color color_;
+        Color ink_;
+        Color paper_;
 
         mutable Ref<const ScaledFont> scaledFont_;
     };
@@ -93,7 +97,7 @@ public:
     Font &operator<<(Pitch pitch);
 
     Font &operator<<(Color color) {
-        (*this)->setColor(color);
+        (*this)->setInk(color);
         return *this;
     }
 

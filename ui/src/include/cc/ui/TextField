@@ -15,6 +15,7 @@ namespace ui {
 
 class TextLine;
 class HLine;
+class TextRun;
 
 class TextField: public Control
 {
@@ -35,13 +36,10 @@ private:
 
     bool onPointerClicked(const PointerEvent *event);
 
-    TextLine *labelTextLine_;
-    TextLine *inputTextLine_;
-    TextLine *placeholderTextLine_;
-    HLine *inputLine_;
-    TextLine *helpTextLine_;
-    TextLine *statusTextLine_;
-    TextLine *errorTextLine_;
+    void updateTextRun();
+
+    Property<String> editText;
+    Ref<TextRun> textRun_;
 };
 
 }} // namespace cc::ui

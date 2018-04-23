@@ -21,11 +21,12 @@ class Control: public View
 public:
     Property< Ref<const Cursor> > cursor;
 
-    Property<bool> hover;
-    Property<bool> pressed;
-    Property<bool> focus;
+    Property<bool> hover;   ///< mouse pointer is hovering over this control
+    Property<bool> pressed; ///< the control is pressed by the user
+    Property<bool> focus;   ///< this control holds text input focus
 
-    bool gainTextInputFocus();
+    bool acquireTextInputFocus();
+    void releaseTextInputFocus();
 
 protected:
     Control(View *parent = 0);

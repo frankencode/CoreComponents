@@ -7,18 +7,18 @@
  */
 
 #include <cc/ui/Application>
-#include <cc/ui/View>
+#include <cc/ui/Control>
 #include <cc/ui/TextInputFocus>
 
 namespace cc {
 namespace ui {
 
-Ref<TextInputFocus> TextInputFocus::create(View *target)
+const TextInputFocus *TextInputFocus::create(Control *target)
 {
     return new TextInputFocus(target);
 }
 
-TextInputFocus::TextInputFocus(View *target):
+TextInputFocus::TextInputFocus(Control *target):
     target_(target)
 {
     if (isValid()) {
@@ -43,7 +43,6 @@ TextInputFocus::~TextInputFocus()
 {
     if (isValid()) {
         Application::instance()->stopTextInput();
-        Application::instance()->textInputFocus = Ref<const TextInputFocus>{};
         target_->onTextInputStopped();
     }
 }
@@ -53,7 +52,7 @@ bool TextInputFocus::isValid() const
     return target_ && target_->window() && !Application::fin();
 }
 
-View *TextInputFocus::target() const
+Control *TextInputFocus::target() const
 {
     return target_;
 }

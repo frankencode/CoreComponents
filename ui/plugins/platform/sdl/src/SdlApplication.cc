@@ -50,6 +50,7 @@ SdlApplication::SdlApplication():
 
 SdlApplication::~SdlApplication()
 {
+    fin_ = true;
     delete event_;
     windows_->deplete();
     SDL_Quit();

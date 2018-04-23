@@ -13,22 +13,21 @@
 namespace cc {
 namespace ui {
 
-class View;
 class Control;
 
 class TextInputFocus: public Object
 {
 public:
-    static Ref<TextInputFocus> create(View *target = 0);
+    static const TextInputFocus *create(Control *target = 0);
 
     bool isValid() const;
-    View *target() const;
+    Control *target() const;
 
 private:
-    TextInputFocus(View *target);
+    TextInputFocus(Control *target);
     ~TextInputFocus();
 
-    View *target_;
+    Control *target_;
 };
 
 }} // namespace cc::ui

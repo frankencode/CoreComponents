@@ -78,20 +78,22 @@ bool Font::differ(const Font &a, const Font &b)
         a->slant()      != b->slant()      ||
         a->stretch()    != b->stretch()    ||
         a->decoration() != b->decoration() ||
-        a->color()      != b->color();
+        a->ink()        != b->ink() ||
+        a->paper()      != b->paper();
 }
 
 String str(const Font &font)
 {
     return Format()
-        << "ScaledFont {" << nl
+        << "Font {" << nl
         << "  family: " << font->family() << nl
         << "  size: " << font->size() << nl
         << "  weight: " << font->weight() << nl
         << "  slant: " << font->slant() << nl
         << "  stretch: " << font->stretch() << nl
         << "  decoration: " << font->decoration() << nl
-        << "  color: " << font->color() << nl
+        << "  ink: " << font->ink() << nl
+        << "  paper: " << font->paper() << nl
         << "}";
 }
 

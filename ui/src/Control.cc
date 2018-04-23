@@ -23,12 +23,20 @@ Control::Control(View *parent):
 }
 
 Control::~Control()
-{}
+{
+    releaseTextInputFocus();
+}
 
-bool Control::gainTextInputFocus()
+bool Control::acquireTextInputFocus()
 {
     if (focus()) return true;
     return TextInputFocus::create(this)->isValid();
+}
+
+void Control::releaseTextInputFocus()
+{
+    if (!Application::fin())
+        app()->textInputFocus = nullptr;
 }
 
 }} // namespace cc::ui
