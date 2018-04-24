@@ -29,38 +29,39 @@ void YasonWriter::write(Variant value)
 
 void YasonWriter::writeValue(Variant value, int depth)
 {
-    if ( Variant::type(value) == VariantType::Int ||
-         Variant::type(value) == VariantType::Bool ||
-         Variant::type(value) == VariantType::Float ||
-         Variant::type(value) == VariantType::Color ||
-         Variant::type(value) == VariantType::Version )
-    {
+    if (
+        value->type() == VariantType::Int ||
+        value->type() == VariantType::Bool ||
+        value->type() == VariantType::Float ||
+        value->type() == VariantType::Color ||
+        value->type() == VariantType::Version
+    ) {
         format_ << value;
     }
-    else if (Variant::type(value) == VariantType::String) {
+    else if (value->type() == VariantType::String) {
         String s = value;
         if (s->contains("\""))
             s = s->replace("\"", "\\\"");
         s = s->escape();
         format_ << "\"" << s << "\"";
     }
-    else if (Variant::type(value) == VariantType::List) {
+    else if (value->type() == VariantType::List) {
         writeList(value, depth);
     }
-    else if (Variant::type(value) == VariantType::Object) {
+    else if (value->type() == VariantType::Object) {
         writeObject(value, depth);
     }
 }
 
 void YasonWriter::writeList(Variant value, int depth)
 {
-    if (Variant::itemType(value) == VariantType::Int)
+    if (value->itemType() == VariantType::Int)
         writeTypedList<int>(value, depth);
-    else if (Variant::itemType(value) == VariantType::Bool)
+    else if (value->itemType() == VariantType::Bool)
         writeTypedList<bool>(value, depth);
-    else if (Variant::itemType(value) == VariantType::Float)
+    else if (value->itemType() == VariantType::Float)
         writeTypedList<float>(value, depth);
-    else if (Variant::itemType(value) == VariantType::String)
+    else if (value->itemType() == VariantType::String)
         writeTypedList<String>(value, depth);
     else
         writeTypedList<Variant>(value, depth);

@@ -77,24 +77,46 @@ Variant Variant::read(String s)
     return Variant(s);
 }
 
+const char *Variant::Instance::typeName() const
+{
+    return Variant::typeName(type_, itemType_);
+}
+
+String Variant::Instance::toString() const
+{
+    switch (type_) {
+        case VariantType::Undefined: return String{};
+        case VariantType::Bool     : return str(int_ != 0);
+        case VariantType::Int      : return str(int_);
+        case VariantType::Float    : return str(float_);
+        case VariantType::Color    : return str(Color::fromWord(word_));
+        case VariantType::Version  : return str(Version::fromWord(word_));
+        case VariantType::String   : return Variant::cast<CharArray *>(ref().get());
+        case VariantType::Object   : return str((void *)Variant::cast<Object *>(ref().get()));
+        default                    : return String{};
+    };
+
+    return String{};
+}
+
 bool Variant::operator==(const Variant &b) const
 {
     bool equal = false;
 
-    if (+(type_ & VariantType::Int) && +(b.type_ & VariantType::Int))
-        equal = (int_ == b.int_);
-    else if (+(type_ & VariantType::Float) && +(b.type_ & VariantType::Float))
-        equal = (float_ == b.float_);
-    else if (+(type_ & VariantType::Color) && +(b.type_ & VariantType::Color))
-        equal = (word_ == b.word_);
-    else if (+(type_ & VariantType::Version) && +(b.type_ & VariantType::Version))
-        equal = (word_ == b.word_);
-    else if ((type_ == VariantType::String) && (b.type_ == VariantType::String))
+    if (+((*this)->type_ & VariantType::Int) && +(b->type_ & VariantType::Int))
+        equal = ((*this)->int_ == b->int_);
+    else if (+((*this)->type_ & VariantType::Float) && +(b->type_ & VariantType::Float))
+        equal = ((*this)->float_ == b->float_);
+    else if (+((*this)->type_ & VariantType::Color) && +(b->type_ & VariantType::Color))
+        equal = ((*this)->word_ == b->word_);
+    else if (+((*this)->type_ & VariantType::Version) && +(b->type_ & VariantType::Version))
+        equal = ((*this)->word_ == b->word_);
+    else if (((*this)->type_ == VariantType::String) && (b->type_ == VariantType::String))
         equal = Variant::cast<CharArray *>(*this)->equals(Variant::cast<CharArray *>(b));
-    else if ((type_ == VariantType::Object) && (b.type_ == VariantType::Object))
-        equal = (ref().get() == b.ref().get());
+    else if (((*this)->type_ == VariantType::Object) && (b->type_ == VariantType::Object))
+        equal = ((*this)->ref().get() == b->ref().get());
     else
-        equal = ((type_ == VariantType::Undefined) && (b.type_ == VariantType::Undefined));
+        equal = (((*this)->type_ == VariantType::Undefined) && (b->type_ == VariantType::Undefined));
 
     return equal;
 }
@@ -103,35 +125,18 @@ bool Variant::operator<(const Variant &b) const
 {
     bool below = false;
 
-    if (+(type_ & VariantType::Int) && +(b.type_ & VariantType::Int))
-        below = (int_ < b.int_);
-    else if (+(type_ & VariantType::Float) && +(b.type_ & VariantType::Float))
-        below = (float_ < b.float_);
-    else if (+(type_ & VariantType::Version) && +(b.type_ & VariantType::Version))
-        below = (Version::fromWord(word_) < Version::fromWord(b.word_));
-    else if ((type_ == VariantType::String) && (b.type_ == VariantType::String))
+    if (+((*this)->type_ & VariantType::Int) && +(b->type_ & VariantType::Int))
+        below = ((*this)->int_ < b->int_);
+    else if (+((*this)->type_ & VariantType::Float) && +(b->type_ & VariantType::Float))
+        below = ((*this)->float_ < b->float_);
+    else if (+((*this)->type_ & VariantType::Version) && +(b->type_ & VariantType::Version))
+        below = (Version::fromWord((*this)->word_) < Version::fromWord(b->word_));
+    else if (((*this)->type_ == VariantType::String) && (b->type_ == VariantType::String))
         below = Variant::cast<CharArray *>(*this)->below(Variant::cast<CharArray *>(b));
-    else if ((type_ == VariantType::Object) && (b.type_ == VariantType::Object))
-        below = (ref().get() < b.ref().get());
+    else if (((*this)->type_ == VariantType::Object) && (b->type_ == VariantType::Object))
+        below = ((*this)->ref().get() < b->ref().get());
 
     return below;
-}
-
-String str(const Variant &x)
-{
-    switch (Variant::type(x)) {
-        case VariantType::Undefined: return String{};
-        case VariantType::Bool     : return str(bool(x));
-        case VariantType::Int      : return str(int(x));
-        case VariantType::Float    : return str(float(x));
-        case VariantType::Color    : return str(Color(x));
-        case VariantType::Version  : return str(Version(x));
-        case VariantType::String   : return Variant::cast<CharArray *>(x);
-        case VariantType::Object   : return str((void *)Variant::cast<Object *>(x));
-        default                    : return String{};
-    };
-
-    return String{};
 }
 
 } // namespace cc

@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug>
 #include <cc/testing/TestSuite>
 
 using namespace cc;
@@ -69,13 +70,14 @@ protected:
         );
 
         if (fromYason) {
-            CC_VERIFY(Variant::type(object->value("version")) == VariantType::Version);
+            CC_VERIFY(object->value("version")->type() == VariantType::Version);
             CC_VERIFY(object->value("version") == Version(1, 0, 0));
         }
         else {
-            CC_VERIFY(Variant::type(object->value("version")) == VariantType::String);
+            CC_VERIFY(object->value("version")->type() == VariantType::String);
             CC_VERIFY(String(object->value("version")) == "1.0.0");
         }
+        // CC_INSPECT(object->value("hobbies"));
         CC_VERIFY(String(object->value("name")) == "Hans Mustermann");
         CC_VERIFY(int(object->value("age")) == 17);
 
@@ -85,7 +87,7 @@ protected:
         CC_VERIFY(String(hobbies->at(2)) == "Poetry");
 
         const MetaObject *picture = Variant::cast<const MetaObject *>(object->value("picture"));
-        ferr() << "Variant::type(object->value(\"picture\")) = " << Variant::type(object->value("picture")) << nl;
+        ferr() << "Variant::type(object->value(\"picture\")) = " << object->value("picture")->type() << nl;
         CC_VERIFY(String(picture->value("uri")) == "http://www.hans-mustermann.de/photo.jpg");
         CC_VERIFY(int(picture->value("width")) == 400);
         CC_VERIFY(int(picture->value("height")) == 300);

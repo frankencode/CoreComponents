@@ -420,7 +420,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
                             text, token->i1()
                         );
                     }
-                    if (Variant::type(defaultValue) == VariantType::Object)
+                    if (defaultValue->type() == VariantType::Object)
                         memberPrototype = Variant::cast<MetaObject *>(defaultValue);
                 }
             }
@@ -431,7 +431,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
             if (memberPrototype)
                 value = readObject(text, token, 0, memberPrototype);
             else
-                value = readValue(text, token, Variant::type(defaultValue), Variant::itemType(defaultValue));
+                value = readValue(text, token, defaultValue->type(), defaultValue->itemType());
 
             Variant existingValue;
             if (object->lookup(name, &existingValue)) {
@@ -642,7 +642,7 @@ Variant YasonSyntax::readValue(const CharArray *text, Token *token, VariantType 
         );
     }
 
-    if (expectedType == VariantType::List && Variant::type(value) != VariantType::List) {
+    if (expectedType == VariantType::List && value->type() != VariantType::List) {
         if (expectedItemType == VariantType::Int) {
             Ref< List<int> > list = List<int>::create();
             list->append(value);
