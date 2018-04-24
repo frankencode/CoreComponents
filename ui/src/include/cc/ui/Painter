@@ -8,8 +8,8 @@
 
 #pragma once
 
+#include <functional>
 #include <cc/Exception>
-#include <cc/Array>
 #include <cc/ui/types>
 
 typedef struct _cairo cairo_t;
@@ -71,11 +71,13 @@ public:
         /** Text rendering
           * @{
           */
+        typedef std::function<Color(int)> GetColor; ///< get color for a given byte offset
+
         void showGlyphRun(Point pos, const GlyphRun *glyphRun);
-        void showGlyphRun(Point pos, const GlyphRun *glyphRun, const Array<Color> *fgColors, const Array<Color> *bgColors = 0); // FIXME: rename 'fgColors' to 'ink' and 'bgColors' to 'paper'
-        // void showTextRun(Point pos, const TextRun *textRun, Range selection, Color selectionInk, Color selectionPaper); // TODO...
+        void showGlyphRun(Point pos, const GlyphRun *glyphRun, const GetColor &ink, const GetColor &paper = GetColor{});
+
         void showTextRun(Point pos, const TextRun *textRun);
-        // void showTextRun(Point pos, const TextRun *textRun, Range selection, Color selectionInk, Color selectionPaper); // TODO...
+        void showTextRun(Point pos, const TextRun *textRun, const GetColor &ink, const GetColor &paper = GetColor{});
         /** @}
           */
 

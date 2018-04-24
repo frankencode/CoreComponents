@@ -1,4 +1,5 @@
 #include <cc/Random>
+#include <cc/Array>
 #include <cc/ui/Application>
 #include <cc/ui/View>
 #include <cc/ui/FontManager>
@@ -59,7 +60,17 @@ class MainView: public View
         p->rectangle(Point{size()[0]-margins_, 0}, Size{margins_, size()[1]});
         p->fill();
         p->setSource(Color{"#000000"});
-        p->showGlyphRun(Point{margins_, margins_ + fontSize_}, wrappedGlyphRun_, fgColors_, bgColors_);
+        p->showGlyphRun(
+            Point{margins_, margins_ + fontSize_}, wrappedGlyphRun_,
+            [=](int i) {
+                if (fgColors_->has(i)) return fgColors_->at(i);
+                return Color{};
+            },
+            [=](int i) {
+                if (bgColors_->has(i)) return bgColors_->at(i);
+                return Color{};
+            }
+        );
     }
 
     const double margins_ = 30;

@@ -140,6 +140,8 @@ void Painter::Instance::fillGlyphRunBackground(const FtGlyphRun *ftGlyphRun)
     Color color = ftGlyphRun->font()->paper();
     if (!color->isValid()) return;
 
+    setSource(color);
+
     Ref<const FontMetrics> metrics = ftGlyphRun->font()->getScaledFont()->getMetrics();
     double dy0 = metrics->ascender() + (metrics->lineHeight() - (metrics->ascender() - metrics->descender())) / 2;
 
@@ -163,7 +165,6 @@ void Painter::Instance::fillGlyphRunBackground(const FtGlyphRun *ftGlyphRun)
                 Point{glyph0->x, glyph0->y - dy0},
                 Size{x1 - glyph0->x, metrics->lineHeight()}
             );
-            setSource(color);
             fill();
 
             glyph0 = glyph;
@@ -275,7 +276,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
     cairo_set_matrix(cr_, &matrixSaved);
 }
 
-void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const Array<Color> *fgColors, const Array<Color> *bgColors)
+void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const GetColor &ink, const GetColor &paper)
 {
     if (glyphRun->text()->count() == 0) return;
 
@@ -291,7 +292,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
     if (glyphRun->font()->paper()->isValid())
         fillGlyphRunBackground(ftGlyphRun);
 
-    if (bgColors && bgColors->count() > 0)
+    if (paper)
     {
         Ref<const FontMetrics> metrics = glyphRun->font()->getScaledFont()->getMetrics();
         double dy0 = metrics->ascender() + (metrics->lineHeight() - (metrics->ascender() - metrics->descender())) / 2;
@@ -299,7 +300,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         int byteOffset = 0;
         int glyphOffset = 0;
 
-        Color bgColor0 = bgColors->at(0);
+        Color bgColor0 = paper(0);
         const cairo_glyph_t *glyph0 = &ftGlyphRun->cairoGlyphs()->at(0);
 
         for (int clusterIndex = 0, clusterCount = ftGlyphRun->cairoTextClusters()->count(); clusterIndex < clusterCount + 1; ++clusterIndex)
@@ -310,7 +311,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
             Color bgColor;
             const cairo_glyph_t *glyph = 0;
 
-            if (byteOffset < bgColors->count()) bgColor = bgColors->at(byteOffset);
+            bgColor = paper(byteOffset);
             if (glyphOffset < ftGlyphRun->cairoGlyphs()->count()) glyph = &ftGlyphRun->cairoGlyphs()->at(glyphOffset);
 
             if (bgColor != bgColor0 || !glyph || glyph->y != glyph0->y) {
@@ -319,7 +320,8 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
                     Point{glyph0->x, glyph0->y - dy0},
                     Size{x1 - glyph0->x, metrics->lineHeight()}
                 );
-                setSource(bgColor0);
+                if (bgColor != bgColor0)
+                    setSource(bgColor0);
                 fill();
 
                 bgColor0 = bgColor;
@@ -333,13 +335,13 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         }
     }
 
-    if (fgColors && fgColors->count() > 0)
+    if (ink)
     {
         int byteOffset = 0;
         int glyphOffset = 0;
 
         Color fgDefaultColor = ftGlyphRun->font()->ink();
-        Color fgColor0 = fgColors->at(0);
+        Color fgColor0 = ink(0);
         if (!fgColor0->isValid()) fgColor0 = fgDefaultColor;
         int byteOffset0 = 0;
         int glyphOffset0 = 0;
@@ -353,11 +355,8 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
             glyphOffset += cluster->num_glyphs;
             ++clusterIndex;
 
-            Color fgColor;
-            if (fgColors->has(byteOffset)) {
-                fgColor = fgColors->at(byteOffset);
-                if (!fgColor->isValid()) fgColor = fgDefaultColor;
-            }
+            Color fgColor = ink(byteOffset);
+            if (!fgColor->isValid()) fgColor = fgDefaultColor;
 
             if (fgColor0 != fgColor) {
                 setSource(fgColor0);
@@ -403,6 +402,19 @@ void Painter::Instance::showTextRun(Point pos, const TextRun *textRun)
     const FtTextRun *ftTextRun = Object::cast<const FtTextRun *>(textRun);
     for (const GlyphRun *glyphRun: ftTextRun->glyphRuns_)
         showGlyphRun(pos, glyphRun);
+}
+
+void Painter::Instance::showTextRun(Point pos, const TextRun *textRun, const GetColor &ink, const GetColor &paper)
+{
+    const FtTextRun *ftTextRun = Object::cast<const FtTextRun *>(textRun);
+    int i0 = 0;
+    for (const GlyphRun *glyphRun: ftTextRun->glyphRuns_) {
+        showGlyphRun(pos, glyphRun,
+            [=](int i) { return ink(i + i0); },
+            [=](int i) { return paper(i + i0); }
+        );
+        i0 += glyphRun->byteCount();
+    }
 }
 
 void Painter::Instance::translate(Step step)

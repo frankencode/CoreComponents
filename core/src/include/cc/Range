@@ -10,6 +10,8 @@
 
 namespace cc {
 
+/** \brief index range
+  */
 class Range
 {
 public:
@@ -24,11 +26,6 @@ public:
     private:
         friend class Range;
 
-        Instance():
-            i0_(0),
-            i1_(-1)
-        {}
-
         Instance(int i0, int i1):
             i0_{i0},
             i1_{i1}
@@ -38,7 +35,8 @@ public:
         int i1_;
     };
 
-    Range()
+    Range():
+        instance_{0, -1}
     {}
 
     Range(int i0, int i1):
