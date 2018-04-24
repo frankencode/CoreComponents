@@ -8,36 +8,33 @@
 
 #pragma once
 
-#include <cc/ui/View>
-#include <cc/ui/Font>
+#include <cc/ui/Control>
 
 namespace cc {
 namespace ui {
 
 class TextRun;
+class TextCursor;
+class Timer;
 
-class TextLine: public View
+class TextInput: public Control
 {
     friend class Object;
 
 public:
-    static TextLine *create(View *parent, String text = String{});
+    static Ref<TextInput> create(View *parent = 0);
 
     Property<String> text;
     Property<Font> font;
-    Property<Color> ink;
-    Property<Size> margin;
 
-protected:
-    TextLine(View *parent, String text);
-    ~TextLine();
-
-    void updateLayout();
-    bool updateSize();
+private:
+    TextInput(View *parent = 0);
 
     void paint() override;
 
     Ref<TextRun> textRun_;
+    Ref<TextCursor> textCursor_;
+    Ref<Timer> timer_;
 };
 
 }} // namespace cc::ui

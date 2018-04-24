@@ -35,11 +35,6 @@ private:
     TextField(View *parent, String nameText);
 
     bool onPointerClicked(const PointerEvent *event);
-
-    void updateTextRun();
-
-    Property<String> editText;
-    Ref<TextRun> textRun_;
 };
 
 }} // namespace cc::ui

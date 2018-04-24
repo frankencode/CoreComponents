@@ -14,30 +14,25 @@
 namespace cc {
 namespace ui {
 
-TextLine *TextLine::create(View *parent, String text, const Font &font)
+TextLine *TextLine::create(View *parent, String text)
 {
-    return Object::create<TextLine>(parent, text, font);
+    return Object::create<TextLine>(parent, text);
 }
 
-TextLine *TextLine::create(View *parent, const Font &font)
-{
-    return TextLine::create(parent, "", font);
-}
-
-TextLine::TextLine(View *parent, String text_, const Font &font_):
+TextLine::TextLine(View *parent, String text_):
     View(parent),
     text(text_)
 {
-    font->bind([=]{ return font_ * app()->textZoom(); });
-    // margin->bind([=]{ return style()->defaultMargin(font()->size()); });
-
     color = Color::Transparent;
 
-    updateLayout();
+    font->bind([=]{ return app()->defaultFont(); });
 
     text  ->connect([=]{ updateLayout(); });
     font  ->connect([=]{ updateLayout(); });
+    ink   ->connect([=]{ update(); });
     margin->connect([=]{ updateSize(); });
+
+    updateLayout();
 }
 
 TextLine::~TextLine()
@@ -62,7 +57,9 @@ bool TextLine::updateSize()
 
 void TextLine::paint()
 {
-    Painter(this)->showTextRun(
+    Painter p(this);
+    if (ink()) p->setSource(ink());
+    p->showTextRun(
         center() + 0.5 * Step { -textRun_->size()[0], textRun_->size()[1] },
         textRun_
     );

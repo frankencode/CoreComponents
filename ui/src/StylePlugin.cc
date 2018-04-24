@@ -26,6 +26,20 @@ void StylePlugin::init()
 {
     theme = dayTheme();
     StyleManager::instance()->registerPlugin(this);
+
+    Application *app = Application::instance();
+
+    app->defaultFont->bind([=]{
+        return Font(sp(
+            theme()->defaultFontSize() * app->textZoom()
+        ));
+    });
+
+    Application::instance()->smallFont->bind([=]{
+        return Font(sp(
+            theme()->smallFontSize() * app->textZoom()
+        ));
+    });
 }
 
 Size StylePlugin::defaultMargin(double fontSize) const

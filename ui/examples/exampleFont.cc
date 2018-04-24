@@ -13,17 +13,17 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Color{"#FFFFFF"};
+        color = style()->theme()->windowColor();
 
         ScrollView *scroll = ScrollView::create(this);
         ColumnLayout::setup(scroll->carrier());
 
         for (int i = 16; i <= 64; i += 8) {
             String text = "A small brown fox... (" + str(i) + ")";
-            Label::create(scroll, text, Font(i));
-            Label::create(scroll, text, Font(i) << Slant::Italic);
-            Label::create(scroll, text, Font(i) << Weight::Bold);
-            Label::create(scroll, text, Font(i) << Slant::Italic << Weight::Bold);
+            Label::create(scroll, text)->font = Font(i);
+            Label::create(scroll, text)->font = Font(i) << Slant::Italic;
+            Label::create(scroll, text)->font = Font(i) << Weight::Bold;
+            Label::create(scroll, text)->font = Font(i) << Slant::Italic << Weight::Bold;
         }
     }
 };

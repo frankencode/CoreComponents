@@ -409,10 +409,11 @@ void Painter::Instance::showTextRun(Point pos, const TextRun *textRun, const Get
     const FtTextRun *ftTextRun = Object::cast<const FtTextRun *>(textRun);
     int i0 = 0;
     for (const GlyphRun *glyphRun: ftTextRun->glyphRuns_) {
-        showGlyphRun(pos, glyphRun,
-            [=](int i) { return ink(i + i0); },
-            [=](int i) { return paper(i + i0); }
-        );
+        GetColor ink_;
+        GetColor paper_;
+        if (ink) ink_ = [=](int i) { return ink(i + i0); };
+        if (paper) paper_ = [=](int i) { return paper(i + i0); };
+        showGlyphRun(pos, glyphRun, ink_, paper_);
         i0 += glyphRun->byteCount();
     }
 }

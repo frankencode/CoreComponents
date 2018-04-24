@@ -18,10 +18,10 @@ class Label: public TextLine
     friend class Object;
 
 public:
-    static Label *create(View *parent, String text, const Font &font = Font{});
+    static Label *create(View *parent, String text);
 
 protected:
-    Label(View *parent, String text, const Font &font);
+    Label(View *parent, String text);
 };
 
 }} // namespace cc::ui

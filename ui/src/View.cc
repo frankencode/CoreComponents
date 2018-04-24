@@ -160,12 +160,6 @@ bool View::onWheelMoved(const WheelEvent *event) { return false; }
 bool View::onKeyPressed(const KeyEvent *event) { return false; }
 bool View::onKeyReleased(const KeyEvent *event) { return false; }
 
-Rect View::textInputArea() const { return Rect{}; }
-void View::onTextInputStarted() {}
-void View::onTextInputStopped() {}
-void View::onTextEdited(String text, int start, int length) {}
-void View::onTextInput(String text) {}
-
 void View::update(UpdateReason reason)
 {
     Window *w = window();

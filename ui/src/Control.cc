@@ -39,4 +39,10 @@ void Control::releaseTextInputFocus()
         app()->textInputFocus = nullptr;
 }
 
+Rect Control::textInputArea() const { return Rect{}; }
+void Control::onTextInputStarted() {}
+void Control::onTextInputStopped() {}
+void Control::onTextEdited(String text, int start, int length) {}
+void Control::onTextInput(String text) {}
+
 }} // namespace cc::ui

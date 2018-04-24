@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/ui/Window>
+#include <cc/ui/Font>
 #include <cc/ui/Cursor>
 #include <cc/ui/TextInputFocus>
 
@@ -31,6 +32,8 @@ public:
     Property<bool> screenSaverEnabled { false };
 
     Property<double> textZoom { 1 };
+    Property<Font> defaultFont;
+    Property<Font> smallFont;
 
     Property< Ref<const TextInputFocus> > textInputFocus;
 

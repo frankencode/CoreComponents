@@ -29,8 +29,17 @@ public:
     void releaseTextInputFocus();
 
 protected:
+    friend class Application;
+    friend class TextInputFocus;
+
     Control(View *parent = 0);
     ~Control();
+
+    virtual Rect textInputArea() const;
+    virtual void onTextInputStarted();
+    virtual void onTextInputStopped();
+    virtual void onTextEdited(String text, int start, int length);
+    virtual void onTextInput(String text);
 };
 
 }} // namespace cc::ui

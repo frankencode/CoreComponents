@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include <functional>
 #include <cc/Exception>
 #include <cc/ui/types>
 

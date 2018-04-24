@@ -100,12 +100,6 @@ protected:
     virtual bool onKeyPressed(const KeyEvent *event);
     virtual bool onKeyReleased(const KeyEvent *event);
 
-    virtual Rect textInputArea() const;
-    virtual void onTextInputStarted();
-    virtual void onTextInputStopped();
-    virtual void onTextEdited(String text, int start, int length);
-    virtual void onTextInput(String text);
-
     void update(UpdateReason reason = UpdateReason::Changed);
 
     virtual bool feedFingerEvent(FingerEvent *event);
