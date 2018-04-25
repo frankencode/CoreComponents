@@ -278,6 +278,8 @@ public:
     inline const Instance *operator->() const { return &instance_; }
     inline Instance *operator->() { return &instance_; }
 
+    inline explicit operator bool() const { return (*this)->isValid(); }
+
 private:
     friend class Variant;
 

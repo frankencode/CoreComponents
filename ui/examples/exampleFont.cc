@@ -20,10 +20,10 @@ class MainView: public View
 
         for (int i = 16; i <= 64; i += 8) {
             String text = "A small brown fox... (" + str(i) + ")";
-            Label::create(scroll, text)->font = Font(i);
-            Label::create(scroll, text)->font = Font(i) << Slant::Italic;
-            Label::create(scroll, text)->font = Font(i) << Weight::Bold;
-            Label::create(scroll, text)->font = Font(i) << Slant::Italic << Weight::Bold;
+            Label::create(scroll, text, Font(i));
+            Label::create(scroll, text, Font(i) << Slant::Italic);
+            Label::create(scroll, text, Font(i) << Weight::Bold);
+            Label::create(scroll, text, Font(i) << Slant::Italic << Weight::Bold);
         }
     }
 };

@@ -14,18 +14,21 @@
 namespace cc {
 namespace ui {
 
-TextLine *TextLine::create(View *parent, String text)
+TextLine *TextLine::create(View *parent, String text, Font font)
 {
-    return Object::create<TextLine>(parent, text);
+    return Object::create<TextLine>(parent, text, font);
 }
 
-TextLine::TextLine(View *parent, String text_):
+TextLine::TextLine(View *parent, String text_, Font font_):
     View(parent),
     text(text_)
 {
     color = Color::Transparent;
 
-    font->bind([=]{ return app()->defaultFont(); });
+    if (font_)
+        font = font_;
+    else
+        font->bind([=]{ return app()->defaultFont(); });
 
     text  ->connect([=]{ updateLayout(); });
     font  ->connect([=]{ updateLayout(); });

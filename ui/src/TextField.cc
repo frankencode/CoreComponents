@@ -90,4 +90,5 @@ bool TextField::onPointerClicked(const PointerEvent *event)
     if (!focus()) acquireTextInputFocus();
     return true;
 }
+
 }} // namespace cc::ui

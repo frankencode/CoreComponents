@@ -11,13 +11,13 @@
 namespace cc {
 namespace ui {
 
-Label *Label::create(View *parent, String text)
+Label *Label::create(View *parent, String text, Font font)
 {
-    return Object::create<Label>(parent, text);
+    return Object::create<Label>(parent, text, font);
 }
 
-Label::Label(View *parent, String text_):
-    TextLine(parent, text_)
+Label::Label(View *parent, String text_, Font font_):
+    TextLine(parent, text_, font_)
 {
     margin->bind([=]{ return style()->defaultMargin(font()->size()); });
     ink->bind([=]{ return style()->theme()->primaryTextColor(); });
