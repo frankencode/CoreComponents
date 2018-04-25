@@ -21,10 +21,17 @@ class Variant;
 class Color
 {
 public:
-    /// Convenience color constant
+    /** Convenience color constants
+      * @{
+      */
     static const Color Transparent;
     static const Color Black;
     static const Color White;
+    static const Color Red;
+    static const Color Green;
+    static const Color Blue;
+    /** @}
+      */
 
     /** Construct an invalid color
       */

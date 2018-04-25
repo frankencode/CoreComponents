@@ -102,12 +102,6 @@ protected:
 
     void update(UpdateReason reason = UpdateReason::Changed);
 
-    virtual bool feedFingerEvent(FingerEvent *event);
-    virtual bool feedMouseEvent(MouseEvent *event);
-    virtual bool feedWheelEvent(WheelEvent *event);
-    virtual bool feedKeyEvent(KeyEvent *event);
-
-    void init();
     virtual void childReady(View *child);
     virtual void childDone(View *child);
 
@@ -123,6 +117,12 @@ protected:
     void adoptChild(View *parent, View *child);
 
 private:
+    virtual bool feedFingerEvent(FingerEvent *event);
+    virtual bool feedMouseEvent(MouseEvent *event);
+    virtual bool feedWheelEvent(WheelEvent *event);
+    virtual bool feedKeyEvent(KeyEvent *event);
+
+    void init();
     void polish(Window *window);
 
     uint64_t nextSerial() const;

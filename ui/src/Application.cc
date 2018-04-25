@@ -91,54 +91,53 @@ bool Application::feedMouseEvent(Window *window, MouseEvent *event)
 {
     if (event->action() == PointerAction::Moved)
     {
-        Control *control = window->view()->getTopControlAt(event->pos());
-
-        if (control && control->cursor() && cursor() != control->cursor()) {
-            setCursor(control->cursor());
-            cursorWindow_ = window;
-            cursorWindow_->cursorControl_ = control;
-        }
-        else if (cursor()) {
-            if (cursorWindow_ != window || !cursorWindow_->cursorControl_->containsGlobal(event->pos())) {
-                unsetCursor();
-                cursorWindow_->cursorControl_ = nullptr;
-                cursorWindow_ = nullptr;
-            }
-        }
-
-        hoverControl = control;
+        hoverControl = window->view()->getTopControlAt(event->pos());
     }
     else if (event->action() == PointerAction::Pressed)
     {
-        if (!pressedControl()) {
-            Control *control = window->view()->getTopControlAt(event->pos());
-            pressedControl = control;
-        }
-
-        if (
-            textInputFocus() && textInputFocus()->isValid() &&
-            !(pressedControl() && pressedControl()->focus())
-        )
-            textInputFocus = nullptr;
+        if (!pressedControl())
+            pressedControl = window->view()->getTopControlAt(event->pos());
 
         hoverControl = nullptr;
     }
     else if (event->action() == PointerAction::Released)
     {
+        if (
+            textInputFocus() && textInputFocus()->isValid() &&
+            textInputFocus()->target() != pressedControl()
+        )
+            textInputFocus = nullptr;
+
         hoverControl = window->view()->getTopControlAt(event->pos());
     }
 
+    bool eaten = false;
+
     if (pressedControl())
     {
-        bool eaten = pressedControl()->feedMouseEvent(event);
+        eaten = pressedControl()->feedMouseEvent(event);
 
         if (event->action() == PointerAction::Released)
             pressedControl = nullptr;
-
-        if (eaten) return true;
     }
 
-    return window->view()->feedMouseEvent(event);
+    if (!eaten)
+        eaten = window->view()->feedMouseEvent(event);
+
+    if (hoverControl() && hoverControl()->cursor() && cursor() != hoverControl()->cursor()) {
+        setCursor(hoverControl()->cursor());
+        cursorWindow_ = window;
+        cursorWindow_->cursorControl_ = hoverControl();
+    }
+    else if (cursor()) {
+        if (cursorWindow_ != window || !cursorWindow_->cursorControl_->containsGlobal(event->pos())) {
+            unsetCursor();
+            cursorWindow_->cursorControl_ = nullptr;
+            cursorWindow_ = nullptr;
+        }
+    }
+
+    return eaten;
 }
 
 bool Application::feedWheelEvent(Window *window, WheelEvent *event)

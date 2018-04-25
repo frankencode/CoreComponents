@@ -16,7 +16,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Color{"#FFFFFF"};
+        color = style()->theme()->windowColor();
 
         auto getClockText = []{
             Ref<const Date> date = Date::breakdown(System::now());
@@ -24,10 +24,10 @@ class MainView: public View
         };
 
         Label *label = Label::create(this, getClockText());
-        label->font = Font("DejaVu Sans", 40);
-        label->color = Color{"#D0D0FF"};
+        label->font = Font { "DejaVu Sans", 40 };
+        label->color = Color { 0xD0D0FF };
         label->ink = Color::Black;
-        label->margin = Size{20};
+        label->margin = Size { 20 };
         label->pos->bind([=]{ return center() - label->center(); });
 
         easeOn(label->angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));

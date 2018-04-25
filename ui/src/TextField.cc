@@ -9,7 +9,7 @@
 #include <cc/ui/ColumnLayout>
 #include <cc/ui/HLine>
 #include <cc/ui/TextLine>
-#include <cc/ui/TextRun>
+#include <cc/ui/TextInput>
 #include <cc/ui/TextField>
 
 namespace cc {
@@ -26,27 +26,30 @@ TextField::TextField(View *parent, String labelText_):
 {
     ColumnLayout::setup(this);
 
-    TextLine *labelTextLine = TextLine::create(this);
-    labelTextLine->text->bind([=]{ return labelText(); });
-    labelTextLine->font->bind([=]{
-        return (inputText() != "" || focus()) ? app()->smallFont() : app()->defaultFont();
-    });
-    labelTextLine->ink->bind([=]{
+    // color = Color::Red(10);
+
+    TextLine *label = TextLine::create(this);
+    label->text->bind([=]{ return labelText(); });
+    label->padding = dp(16);
+
+    input_ = TextInput::create(this);
+    input_->focus->bind([=]{ return focus(); });
+    input_->visible->bind([=]{ return input_->text() != "" || focus(); });
+    input_->padding = dp(8);
+
+    label->ink->bind([=]{
         return (pressed() || focus()) ?
             style()->theme()->focusTextColor() :
             style()->theme()->secondaryTextColor();
     });
-    labelTextLine->padding = dp(16);
+    label->font->bind([=]{
+        return input_->visible() ? app()->smallFont() : app()->defaultFont();
+    });
 
-    TextLine *inputTextLine = TextLine::create(this);
-    inputTextLine->visible->bind([=]{ return focus(); });
-    inputTextLine->text->bind([=]{ return inputText(); });
-    inputTextLine->padding = dp(8);
-
-    TextLine *placeholderTextLine = TextLine::create(this);
-    placeholderTextLine->visible->bind([=]{ return inputText() == "" && focus(); });
-    placeholderTextLine->text->bind([=]{ return placeholderText(); });
-    placeholderTextLine->padding = dp(8);
+    TextLine *placeholder = TextLine::create(this);
+    placeholder->visible->bind([=]{ return placeholder->text() != "" && !input_->visible(); });
+    placeholder->text->bind([=]{ return placeholderText(); });
+    placeholder->padding = dp(8);
 
     HLine *inputLine = HLine::create(this, dp(2));
     inputLine->thickness->bind([=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); });
@@ -62,32 +65,33 @@ TextField::TextField(View *parent, String labelText_):
     messageArea->size->bind([=]{ return Size { size()[0], sp(12) }; });
     messageArea->padding = dp(8);
 
-    TextLine *helpTextLine = TextLine::create(messageArea);
-    helpTextLine->font->bind([=]{ return app()->smallFont(); });
-    helpTextLine->ink->bind([=]{ return style()->theme()->secondaryTextColor(); });
-    helpTextLine->text->bind([=]{ return helpText(); });
+    TextLine *help = TextLine::create(messageArea);
+    help->font->bind([=]{ return app()->smallFont(); });
+    help->ink->bind([=]{ return style()->theme()->secondaryTextColor(); });
+    help->text->bind([=]{ return helpText(); });
 
-    TextLine *errorTextLine = TextLine::create(messageArea);
-    errorTextLine->font->bind([=]{ return app()->smallFont(); });
-    helpTextLine->ink->bind([=]{ return style()->theme()->alertColor(); });
-    errorTextLine->text->bind([=]{ return "Error: " + errorText(); });
+    TextLine *error = TextLine::create(messageArea);
+    error->font->bind([=]{ return app()->smallFont(); });
+    error->ink->bind([=]{ return style()->theme()->alertColor(); });
+    error->text->bind([=]{ return "Error: " + errorText(); });
 
-    TextLine *statusTextLine = TextLine::create(this);
-    statusTextLine->font->bind([=]{ return app()->smallFont(); });
-    statusTextLine->text->bind([=]{ return statusText(); });
-    statusTextLine->pos->bind([=]{ return Point { messageArea->size()[0] - statusTextLine->size()[0], 0 }; });
+    TextLine *status = TextLine::create(this);
+    status->font->bind([=]{ return app()->smallFont(); });
+    status->text->bind([=]{ return statusText(); });
+    status->pos->bind([=]{ return Point { messageArea->size()[0] - status->size()[0], 0 }; });
 
-    helpTextLine->visible->bind([=]{ return helpText() != "" && !errorTextLine->visible() && focus(); } );
-    statusTextLine->visible->bind([=]{ return statusText() != "" && !errorTextLine->visible() && focus(); });
-    errorTextLine->visible->bind([=]{ return errorText() != "" && focus(); });
-    messageArea->visible->bind([=]{ return helpTextLine->visible() || errorTextLine->visible() || statusTextLine->visible(); });
+    help->visible->bind([=]{ return helpText() != "" && !error->visible() && input_->visible(); } );
+    status->visible->bind([=]{ return statusText() != "" && !error->visible() && focus(); });
+    error->visible->bind([=]{ return errorText() != "" && focus(); });
+    messageArea->visible->bind([=]{ return help->visible() || error->visible() || status->visible(); });
 
-    cursor = Cursor::create(CursorShape::IBeam);
+    cursor->bind([=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); });
 }
 
 bool TextField::onPointerClicked(const PointerEvent *event)
 {
-    if (!focus()) acquireTextInputFocus();
+    if (!focus())
+        acquireTextInputFocus();
     return true;
 }
 

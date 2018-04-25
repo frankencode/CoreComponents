@@ -104,6 +104,7 @@ public:
     }
 
     Font &operator*=(double scale);
+    Font &operator/=(double scale) { return (*this) *= (1/scale); }
 
     const Instance *operator->() const { return &instance_; }
     Instance *operator->() { return &instance_; }
@@ -124,6 +125,11 @@ private:
 
 inline Font operator*(const Font &font, double scale) { Font f = font; return f *= scale; }
 inline Font operator*(double scale, const Font &font) { return font * scale; }
+inline Font operator/(const Font &font, double scale) { return (1/scale) * font; }
+
+inline Font operator+(const Font &a, const Font &b) {
+    return Font(a->family(), a->size() + b->size());
+}
 
 String str(const Font &font);
 

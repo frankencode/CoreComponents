@@ -7,7 +7,6 @@
  */
 
 #include <cc/ui/Application>
-#include <cc/ui/FtFontMetrics>
 #include <cc/ui/FtScaledFont>
 
 namespace cc {
@@ -73,20 +72,25 @@ FtScaledFont::~FtScaledFont()
     cairo_font_face_destroy(cairoFontFace_);
 }
 
-Ref<FontMetrics> FtScaledFont::getMetrics() const
+const FontMetrics *FtScaledFont::getMetrics() const
 {
-    FtFaceGuard guard(this);
-    FT_Face ftFace = guard->ftFace();
+    if (!ftFontMetrics_) {
+        auto metrics = Object::create<FtFontMetrics>();
 
-    Ref<FtFontMetrics> metrics = Object::create<FtFontMetrics>();
-    metrics->fontSize_ = size_;
-    metrics->unitsPerEm_ = ftFace->units_per_EM;
-    metrics->ascender_ = ftFace->ascender;
-    metrics->descender_ = ftFace->descender;
-    metrics->lineHeight_ = ftFace->height;
-    metrics->underlinePosition_ = ftFace->underline_position;
-    metrics->underlineThickness_ = ftFace->underline_thickness;
-    return metrics;
+        FtFaceGuard guard(this);
+        FT_Face ftFace = guard->ftFace();
+        metrics->fontSize_ = size_;
+        metrics->unitsPerEm_ = ftFace->units_per_EM;
+        metrics->ascender_ = ftFace->ascender;
+        metrics->descender_ = ftFace->descender;
+        metrics->lineHeight_ = ftFace->height;
+        metrics->underlinePosition_ = ftFace->underline_position;
+        metrics->underlineThickness_ = ftFace->underline_thickness;
+
+        ftFontMetrics_ = metrics;
+    }
+
+    return ftFontMetrics_;
 }
 
 Step FtScaledFont::getGlyphAdvance(unsigned int glyphIndex) const

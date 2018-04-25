@@ -24,7 +24,9 @@ public:
     virtual Stretch stretch() const = 0;
     virtual Pitch pitch() const = 0;
 
-    virtual Ref<FontMetrics> getMetrics() const = 0;
+    virtual const FontMetrics *getMetrics() const = 0;
+
+    virtual String toString() const;
 };
 
 }} // namespace cc::ui

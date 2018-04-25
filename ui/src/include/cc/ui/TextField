@@ -13,9 +13,7 @@
 namespace cc {
 namespace ui {
 
-class TextLine;
-class HLine;
-class TextRun;
+class TextInput;
 
 class TextField: public Control
 {
@@ -35,6 +33,8 @@ private:
     TextField(View *parent, String nameText);
 
     bool onPointerClicked(const PointerEvent *event);
+
+    TextInput *input_;
 };
 
 }} // namespace cc::ui
