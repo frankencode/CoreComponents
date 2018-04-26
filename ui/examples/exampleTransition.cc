@@ -41,6 +41,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Click me!", WindowMode::Default|WindowMode::Accelerated);
+    Window::open(Object::create<MainView>(), "Click me!", WindowMode::Accelerated);
     return app->run();
 }

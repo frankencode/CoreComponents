@@ -18,7 +18,7 @@ class Label: public TextLine
     friend class Object;
 
 public:
-    static Label *create(View *parent, String text, Font font = Font{});
+    static Label *create(View *parent, String text = String{}, Font font = Font{});
 
 protected:
     Label(View *parent, String text, Font font);
