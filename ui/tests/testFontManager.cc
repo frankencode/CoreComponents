@@ -65,13 +65,10 @@ public:
         return new TestFontManager;
     }
 
-    Ref<ScaledFont> selectFont(
-        String family,
-        double size = 10,
-        Weight weight = Weight::Normal,
-        Slant slant = Slant::Normal,
-        Stretch stretch = Stretch::Normal
-    ) const override { return Ref<ScaledFont>{}; }
+    Ref<ScaledFont> selectFont(const Font &font) const override
+    {
+        return Ref<ScaledFont>{};
+    }
 
     Ref<GlyphRun> typeSet(const String &text, const Font &font, const Point &origin) const override
     {
@@ -84,7 +81,7 @@ public:
     }
 
 private:
-    Ref<FontFace> openFontFace(String) override { return nullptr; }
+    Ref<FontFace> openFontFace(const String &) override { return nullptr; }
 
     TestFontManager()
     {

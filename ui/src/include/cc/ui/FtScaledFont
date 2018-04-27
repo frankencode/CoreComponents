@@ -13,6 +13,7 @@
 #include <cairo/cairo.h>
 #include <cairo/cairo-ft.h>
 #include <cc/ui/ScaledFont>
+#include <cc/ui/Font>
 #include <cc/ui/FtFontFace>
 #include <cc/ui/FtFontMetrics>
 
@@ -22,12 +23,8 @@ namespace ui {
 class FtScaledFont: public ScaledFont
 {
 public:
-    String family() const override { return ftFontFace_->family(); }
-    double size() const override { return size_; }
-    Weight weight() const override { return ftFontFace_->weight(); }
-    Slant slant() const override { return ftFontFace_->slant(); }
-    Stretch stretch() const override { return ftFontFace_->stretch(); }
-    Pitch pitch() const override { return ftFontFace_->pitch(); }
+    Font font() const override { return font_; }
+    double size() const { return font_->size(); }
 
     const FontMetrics *getMetrics() const override;
 
@@ -38,12 +35,12 @@ public:
 private:
     friend class Object;
 
-    FtScaledFont(const FtFontFace *ftFontFace, double size);
+    FtScaledFont(const FtFontFace *ftFontFace, const Font &font);
     ~FtScaledFont();
 
+    Font font_;
     Ref<const FtFontFace> ftFontFace_;
     mutable Ref<const FtFontMetrics> ftFontMetrics_;
-    double size_;
     cairo_font_face_t *cairoFontFace_;
     cairo_scaled_font_t *cairoScaledFont_;
 };

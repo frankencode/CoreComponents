@@ -17,8 +17,8 @@ class MainView: public View
         label_ = Label::create(this, "Press + | - (zoom in/out)");
         label_->font = Font { 40 };
         label_->ink = Color::Black;
-        label_->margin = Size{ 2 };
-        label_->centerInParent();
+        label_->margin = Size{ 1 };
+        // label_->centerInParent();
 
         easeOn(label_->font, 1, easing::Bezier(0.5, -0.4, 0.5, 1.4));
     }

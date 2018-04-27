@@ -50,8 +50,8 @@ public:
     virtual String getClipboardText() const = 0;
     virtual void setClipboardText(String text) = 0;
 
-    TextSmoothing textSmoothing() const;
-    void setTextSmoothing(TextSmoothing newValue) { textSmoothing_ = newValue; }
+    FontSmoothing fontSmoothing() const;
+    void setTextSmoothing(FontSmoothing newValue) { textSmoothing_ = newValue; }
 
     virtual int run() = 0;
 
@@ -80,7 +80,7 @@ protected:
     bool feedTextEditingEvent(const String &text, int start, int length);
     bool feedTextInputEvent(const String &text);
 
-    TextSmoothing textSmoothing_ { TextSmoothing::Default };
+    FontSmoothing textSmoothing_ { FontSmoothing::Default };
 
     typedef Map<TouchFingerId, Ref<Control> > TouchTargets; // FIXME: rename to TouchedControl
     Ref<TouchTargets> touchTargets_;

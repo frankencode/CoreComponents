@@ -15,9 +15,34 @@
 using namespace cc;
 using namespace cc::testing;
 
+class ArgumentPassing: public TestCase
+{
+    inline void byValue(String s) {
+        CC_INSPECT(s->refCount());
+    }
+
+    void byConstValue(const String s) {
+        CC_INSPECT(s->refCount());
+    }
+
+    void byConstRef(const String &s) {
+        CC_INSPECT(s->refCount());
+    }
+
+    void run() override
+    {
+        String a("123");
+        byValue(a);
+        byConstValue(a);
+        byConstRef(a);
+        byValue("123");
+        byConstRef("123");
+    }
+};
+
 class ConstructionComparism: public TestCase
 {
-    void run()
+    void run() override
     {
         String a = "Test!", b("1, 2, 3, ...");
         fout() << a << " " << b << nl;
@@ -28,7 +53,7 @@ class ConstructionComparism: public TestCase
 
 class CountCopySplitJoin: public TestCase
 {
-    void run()
+    void run() override
     {
         String s = "Übertragung";
         CC_VERIFY(s != "123" && s == "Übertragung");
@@ -52,7 +77,7 @@ class CountCopySplitJoin: public TestCase
 
 class UnicodeEscapes: public TestCase
 {
-    void run()
+    void run() override
     {
         String s = "Hallo!, \n\\u041F\\u0440\\u0438\\u0432\\u0435\\u0442!, \\ud834\\udd22, Hello!";
         fout("s = \"%%\"\n") << s;
@@ -64,7 +89,8 @@ class UnicodeEscapes: public TestCase
 
 class FindSplitReplace: public TestCase
 {
-    void run() {
+    void run() override
+    {
         {
             String s = "bin/testPath";
             // fout("s = \"%%\"\n") << s;
@@ -85,7 +111,7 @@ class FindSplitReplace: public TestCase
 
 class SyntaxSugar: public TestCase
 {
-    void run()
+    void run() override
     {
         {
             String s = "123";
@@ -107,6 +133,7 @@ class SyntaxSugar: public TestCase
 
 int main(int argc, char **argv)
 {
+    CC_TESTSUITE_ADD(ArgumentPassing);
     CC_TESTSUITE_ADD(ConstructionComparism);
     CC_TESTSUITE_ADD(CountCopySplitJoin);
     CC_TESTSUITE_ADD(UnicodeEscapes);

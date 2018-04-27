@@ -8,11 +8,13 @@
 
 #pragma once
 
-#include <cc/ui/ScaledFont>
+#include <cc/ui/types>
+#include <cc/ui/FontMetrics>
 
 namespace cc {
 namespace ui {
 
+class ScaledFont;
 class StylePlugin;
 
 /** Text styling
@@ -34,11 +36,20 @@ public:
         Weight weight() const { return weight_; }
         void setWeight(Weight newValue) { weight_ = newValue; }
 
-        Stretch stretch() const { return stretch_; }
-        void setStretch(Stretch newValue) { stretch_ = newValue; }
+        Stretch stretch() const { return static_cast<Stretch>(stretch_); }
+        void setStretch(Stretch newValue) { stretch_ = static_cast<uint8_t>(newValue); }
 
-        Decoration decoration() const { return decoration_; }
-        void setDecoration(Decoration newValue) { decoration_ = newValue; }
+        Decoration decoration() const { return static_cast<Decoration>(decoration_); }
+        void setDecoration(Decoration newValue) { decoration_ = static_cast<uint8_t>(newValue); }
+
+        FontSmoothing smoothing() const { return static_cast<FontSmoothing>(smoothing_); }
+        void setSmoothing(FontSmoothing newValue) { smoothing_ = static_cast<uint8_t>(newValue); }
+
+        OutlineHinting outlineHinting() const { return static_cast<OutlineHinting>(outlineHinting_); }
+        void setOutlineHinting(OutlineHinting newValue) { outlineHinting_ = static_cast<uint8_t>(newValue); }
+
+        MetricsHinting metricsHinting() const { return static_cast<MetricsHinting>(metricsHinting_); }
+        void setMetricsHinting(MetricsHinting newValue) { metricsHinting_ = static_cast<uint8_t>(newValue); }
 
         Color ink() const { return ink_; }
         void setInk(Color newValue) { ink_ = newValue; }
@@ -57,16 +68,21 @@ public:
 
         inline static StylePlugin *style() { return Font::style(); }
 
-        Instance(): size_{-1} {}
-        Instance(double size): size_{float(size)} {}
-        Instance(String family, double size): family_{family}, size_{float(size)} {}
+        Instance();
+        Instance(double size);
+        Instance(String family, double size);
+        Instance(const Instance &b);
+        ~Instance();
 
         String family_;
         float size_;
         Slant slant_ { Slant::Normal };
         Weight weight_ { Weight::Normal };
-        Stretch stretch_ { Stretch::Normal };
-        Decoration decoration_ { Decoration::None };
+        uint8_t stretch_ : 4;
+        uint8_t decoration_ : 4;
+        uint8_t smoothing_ : 3;
+        uint8_t outlineHinting_ : 3;
+        uint8_t metricsHinting_ : 2;
         Color ink_;
         Color paper_;
 
@@ -119,6 +135,8 @@ private:
 
     static StylePlugin *style();
     static bool differ(const Font &a, const Font &b);
+
+    Font(const Font::Instance &b): instance_(b) {}
 
     Instance instance_;
 };

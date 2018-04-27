@@ -23,35 +23,31 @@ class FontManager: public Object
 public:
     static FontManager *instance();
 
-    void addPath(String path);
+    void addPath(const String &path);
 
     Ref< Source<const FontFamily *> > getFontFamilies() const;
 
-    const FontFamily *selectFontFamily(String name) const;
+    const FontFamily *selectFontFamily(const String &name) const;
 
-    virtual Ref<ScaledFont> selectFont(
-        String family,
-        double size = 10,
-        Weight weight = Weight::Normal,
-        Slant slant = Slant::Normal,
-        Stretch stretch = Stretch::Normal
-    ) const = 0;
+    virtual Ref<ScaledFont> selectFont(const Font &font) const = 0;
 
     virtual Ref<GlyphRun> typeSet(const String &text, const Font &font, const Point &origin = Point{}) const = 0;
 
     virtual Ref<TextRun> createTextRun() const = 0;
 
 protected:
+    static Font fixup(const Font & font);
+
     FontManager();
     ~FontManager();
 
-    virtual bool isFontFace(String path) const;
-    virtual Ref<FontFace> openFontFace(String path) = 0;
+    virtual bool isFontFace(const String &path) const;
+    virtual Ref<FontFace> openFontFace(const String &path) = 0;
 
     void addFontFace(const FontFace *fontFace);
-    const FontFamily *selectNearestFontFamily(String name) const;
+    const FontFamily *selectNearestFontFamily(const String &name) const;
 
-    static Ref<StringList> familySearchPattern(String name);
+    static Ref<StringList> familySearchPattern(const String &name);
 
     typedef Map< String, Ref<FontFamily> > FontFamilies;
     Ref<FontFamilies> fontFamilies_;

@@ -9,6 +9,8 @@
 #include <cc/Map>
 #include <cc/DirWalker>
 #include <cc/ui/PlatformPlugin>
+#include <cc/ui/StylePlugin>
+#include <cc/ui/Application>
 #include <cc/ui/FontManager>
 
 namespace cc {
@@ -19,7 +21,7 @@ FontManager *FontManager::instance()
     return PlatformPlugin::instance()->fontManager();
 }
 
-void FontManager::addPath(String dirPath)
+void FontManager::addPath(const String &dirPath)
 {
     Ref<DirWalker> walker = DirWalker::open(dirPath);
     String path;
@@ -35,7 +37,7 @@ Ref< Source<const FontFamily *> > FontManager::getFontFamilies() const
     return fontFamilies_->getAllValues<const FontFamily *>();
 }
 
-const FontFamily *FontManager::selectFontFamily(String family) const
+const FontFamily *FontManager::selectFontFamily(const String &family) const
 {
     String key = family->normalize();
     Ref<FontFamily> fontFamily;
@@ -45,6 +47,15 @@ const FontFamily *FontManager::selectFontFamily(String family) const
     return selectNearestFontFamily(family);
 }
 
+Font FontManager::fixup(const Font &font)
+{
+    Font f = font;
+    if (!f->family_) f->family_ = StylePlugin::instance()->defaultFont()->family();
+    if (f->size_ <= 0) f->size_ = StylePlugin::instance()->defaultFont()->size();
+    if (f->smoothing() == FontSmoothing::Default) f->smoothing_ = static_cast<uint8_t>(Application::instance()->fontSmoothing());
+    return f;
+}
+
 FontManager::FontManager():
     fontFamilies_(FontFamilies::create())
 {}
@@ -52,7 +63,7 @@ FontManager::FontManager():
 FontManager::~FontManager()
 {}
 
-bool FontManager::isFontFace(String path) const
+bool FontManager::isFontFace(const String &path) const
 {
     String suffix = path->fileSuffix();
     mutate(suffix)->downcaseInsitu();
@@ -70,7 +81,7 @@ void FontManager::addFontFace(const FontFace *fontFace)
     fontFamily->fontFaces_->append(fontFace);
 }
 
-const FontFamily *FontManager::selectNearestFontFamily(String name) const
+const FontFamily *FontManager::selectNearestFontFamily(const String &name) const
 {
     Ref<StringList> searchPattern = familySearchPattern(name);
 
@@ -106,7 +117,7 @@ const FontFamily *FontManager::selectNearestFontFamily(String name) const
     return bestMatch;
 }
 
-Ref<StringList> FontManager::familySearchPattern(String name)
+Ref<StringList> FontManager::familySearchPattern(const String &name)
 {
     Ref<StringList> searchPattern = StringList::create();
     for (String component: name->toLower()->split(' ')) {

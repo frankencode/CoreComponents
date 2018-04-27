@@ -24,11 +24,11 @@ public:
     virtual int getDisplayCount() const = 0;
 
     double displayDensityRatio() const { return displayDensityRatio_; }
-    TextSmoothing defaultTextSmoothing() const { return defaultTextSmoothing_; }
+    FontSmoothing defaultFontSmoothing() const { return defaultFontSmoothing_; }
 
 protected:
     double displayDensityRatio_ { 1 };
-    TextSmoothing defaultTextSmoothing_ { TextSmoothing::Grayscale };
+    FontSmoothing defaultFontSmoothing_ { FontSmoothing::Grayscale };
 };
 
 }} // namespace cc::ui

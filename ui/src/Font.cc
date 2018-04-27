@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/ui/ScaledFont>
 #include <cc/ui/StyleManager>
 #include <cc/ui/FontManager>
 #include <cc/ui/Font>
@@ -13,27 +14,60 @@
 namespace cc {
 namespace ui {
 
+Font::Instance::Instance():
+    size_{-1},
+    stretch_ { uint8_t(Stretch::Normal) },
+    decoration_ { uint8_t(Decoration::None) },
+    smoothing_ { uint8_t(FontSmoothing::Default) },
+    outlineHinting_ { uint8_t(OutlineHinting::Default) },
+    metricsHinting_ { uint8_t(MetricsHinting::Default) }
+{}
+
+Font::Instance::Instance(double size):
+    size_{float(size)},
+    stretch_ { uint8_t(Stretch::Normal) },
+    decoration_ { uint8_t(Decoration::None) },
+    smoothing_ { uint8_t(FontSmoothing::Default) },
+    outlineHinting_ { uint8_t(OutlineHinting::Default) },
+    metricsHinting_ { uint8_t(MetricsHinting::Default) }
+{}
+
+Font::Instance::Instance(String family, double size):
+    family_{family},
+    size_{float(size)},
+    stretch_ { uint8_t(Stretch::Normal) },
+    decoration_ { uint8_t(Decoration::None) },
+    smoothing_ { uint8_t(FontSmoothing::Default) },
+    outlineHinting_ { uint8_t(OutlineHinting::Default) },
+    metricsHinting_ { uint8_t(MetricsHinting::Default) }
+{}
+
+Font::Instance::~Instance()
+{}
+
+Font::Instance::Instance(const Instance &b)
+{
+    *this = b;
+}
+
 const ScaledFont *Font::Instance::getScaledFont() const
 {
     if (scaledFont_) {
+        Font f = scaledFont_->font();
         if (
-            (family()->count() == 0 || scaledFont_->family()  == family()) &&
-            scaledFont_->size()    == size()    &&
-            scaledFont_->weight()  == weight()  &&
-            scaledFont_->slant()   == slant()   &&
-            scaledFont_->stretch() == stretch()
+            (family()->count() == 0 || f->family_ == family_)
+            && f->size_           == size_
+            && f->weight_         == weight_
+            && f->slant_          == slant_
+            && f->stretch_        == stretch_
+            && f->smoothing_      == smoothing_
+            && f->outlineHinting_ == outlineHinting_
+            && f->metricsHinting_ == metricsHinting_
         )
             return scaledFont_;
     }
 
-    scaledFont_ =
-        FontManager::instance()->selectFont(
-            (family()) ? family() : style()->defaultFont()->family(),
-            (size() > 0) ? size() : style()->defaultFont()->size(),
-            weight(),
-            slant(),
-            stretch()
-        );
+    scaledFont_ = FontManager::instance()->selectFont(*this);
 
     return scaledFont_;
 }
@@ -72,14 +106,17 @@ Font &Font::operator*=(double scale)
 bool Font::differ(const Font &a, const Font &b)
 {
     return
-        a->family()     != b->family()     ||
-        a->size()       != b->size()       ||
-        a->weight()     != b->weight()     ||
-        a->slant()      != b->slant()      ||
-        a->stretch()    != b->stretch()    ||
-        a->decoration() != b->decoration() ||
-        a->ink()        != b->ink() ||
-        a->paper()      != b->paper();
+        a->family_         != b->family_         ||
+        a->size_           != b->size_           ||
+        a->weight_         != b->weight_         ||
+        a->slant_          != b->slant_          ||
+        a->stretch_        != b->stretch_        ||
+        a->decoration_     != b->decoration_     ||
+        a->smoothing_      != b->smoothing_      ||
+        a->outlineHinting_ != b->outlineHinting_ ||
+        a->metricsHinting_ != b->metricsHinting_ ||
+        a->ink_            != b->ink_            ||
+        a->paper_          != b->paper_;
 }
 
 String str(const Font &font)
@@ -92,6 +129,9 @@ String str(const Font &font)
         << "  slant: " << font->slant() << nl
         << "  stretch: " << font->stretch() << nl
         << "  decoration: " << font->decoration() << nl
+        << "  smoothing: " << font->smoothing() << nl
+        << "  outlineHinting: " << font->outlineHinting() << nl
+        << "  metricsHinting: " << font->metricsHinting() << nl
         << "  ink: " << font->ink() << nl
         << "  paper: " << font->paper() << nl
         << "}";

@@ -27,21 +27,26 @@ FtFontManager *FtFontManager::instance()
     return ThreadLocalSingleton<FtFontManager>::instance();
 }
 
-Ref<FontFace> FtFontManager::openFontFace(String path)
+Ref<FontFace> FtFontManager::openFontFace(const String &path)
 {
     return FtFontFace::open(path);
 }
 
-Ref<ScaledFont> FtFontManager::selectFont(
-    String family,
-    double size,
-    Weight weight,
-    Slant slant,
-    Stretch stretch
-) const
+Ref<ScaledFont> FtFontManager::selectFont(const Font &font) const
 {
-    const FtFontFace *fontFace = Object::cast<const FtFontFace *>(selectFontFamily(family)->selectFontFace(weight, slant, stretch));
-    return Object::create<FtScaledFont>(fontFace, size);
+    #if 0
+    String family = font->family();
+    double size = font->size();
+    if (!family) family = StylePlugin::instance()->defaultFont()->family();
+    if (size <= 0) size = StylePlugin::instance()->defaultFont()->size();
+    #endif
+    Font f = fixup(font);
+    const FtFontFace *fontFace =
+        Object::cast<const FtFontFace *>(
+            selectFontFamily(f->family())->selectFontFace(f->weight(), f->slant(), f->stretch())
+        );
+
+    return Object::create<FtScaledFont>(fontFace, f->size());
 }
 
 Ref<GlyphRun> FtFontManager::typeSet(const String &text, const Font &font, const Point &origin) const

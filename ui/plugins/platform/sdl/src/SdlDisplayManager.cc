@@ -44,12 +44,12 @@ SdlDisplayManager::SdlDisplayManager()
         displayDensityRatio_ = (1 + 0.666 * !largestDisplay->isHandheld()) * avg(largestDisplay->dpi()) / 160;
 
         if (allDesktop && !allHighResolution) {
-            if (allLandscape) defaultTextSmoothing_ = TextSmoothing::RgbSubpixel;
-            else if (allPortrait) defaultTextSmoothing_ = TextSmoothing::VrgbSubpixel;
-            else defaultTextSmoothing_ = TextSmoothing::Grayscale;
+            if (allLandscape) defaultFontSmoothing_ = FontSmoothing::RgbSubpixel;
+            else if (allPortrait) defaultFontSmoothing_ = FontSmoothing::VrgbSubpixel;
+            else defaultFontSmoothing_ = FontSmoothing::Grayscale;
         }
         else
-            defaultTextSmoothing_ = TextSmoothing::Grayscale;
+            defaultFontSmoothing_ = FontSmoothing::Grayscale;
     }
 }
 

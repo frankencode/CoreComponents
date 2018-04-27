@@ -14,15 +14,18 @@
 namespace cc {
 namespace ui {
 
+class Font;
+
 class ScaledFont: public Object
 {
 public:
-    virtual String family() const = 0;
+    /*virtual String family() const = 0;
     virtual double size() const = 0;
     virtual Weight weight() const = 0;
     virtual Slant slant() const = 0;
     virtual Stretch stretch() const = 0;
-    virtual Pitch pitch() const = 0;
+    virtual Pitch pitch() const = 0;*/
+    virtual Font font() const = 0;
 
     virtual const FontMetrics *getMetrics() const = 0;
 

@@ -22,13 +22,7 @@ class FtFontManager: public FontManager
 public:
     static FtFontManager *instance();
 
-    Ref<ScaledFont> selectFont(
-        String family,
-        double size = 10,
-        Weight weight = Weight::Normal,
-        Slant slant = Slant::Normal,
-        Stretch stretch = Stretch::Normal
-    ) const override;
+    Ref<ScaledFont> selectFont(const Font &font) const override;
 
     Ref<GlyphRun> typeSet(const String &text, const Font &font, const Point &origin = Point{}) const override;
     Ref<FtGlyphRun> ftTypeSet(const String &text, const Font &font, const Point &origin = Point{}) const;
@@ -40,7 +34,7 @@ private:
 
     FtFontManager() {}
 
-    Ref<FontFace> openFontFace(String path) override;
+    Ref<FontFace> openFontFace(const String &path) override;
 };
 
 }} // namespace cc::ui

@@ -7,6 +7,7 @@
  */
 
 #include <cc/Format>
+#include <cc/ui/Font>
 #include <cc/ui/ScaledFont>
 
 namespace cc {
@@ -14,15 +15,7 @@ namespace ui {
 
 String ScaledFont::toString() const
 {
-    return Format()
-        << "ScaledFont {\n"
-        << "  family: " << family() << nl
-        << "  size: " << size() << nl
-        << "  weight: " << weight() << nl
-        << "  slant: " << slant() << nl
-        << "  stretch: " << stretch() << nl
-        << "  pitch: " << pitch() << nl
-        << "}";
+    return "Scaled" + str(font());
 }
 
 }} // namespace cc::ui

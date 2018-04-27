@@ -18,12 +18,12 @@
 namespace cc {
 namespace ui {
 
-Ref<FtFontFace> FtFontFace::open(String path)
+Ref<FtFontFace> FtFontFace::open(const String &path)
 {
     return (new FtFontFace(path))->open();
 }
 
-FtFontFace::FtFontFace(String path):
+FtFontFace::FtFontFace(const String &path):
     ftLibrary_(FtLibrary::instance()),
     path_(path)
 {}

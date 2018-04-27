@@ -19,19 +19,41 @@ namespace ui {
 
 using cc::str;
 
-/** Text anti-aliasing strategy
+/** text anti-aliasing strategy
   */
-enum class TextSmoothing {
-    Default,
-    None,
-    Grayscale,
-    RgbSubpixel,
-    BgrSubpixel,
-    VrgbSubpixel,
-    VbgrSubpixel
+enum class FontSmoothing: uint8_t {
+    Default      = 0,
+    None         = 1,
+    Grayscale    = 2,
+    RgbSubpixel  = 3,
+    BgrSubpixel  = 4,
+    VrgbSubpixel = 5,
+    VbgrSubpixel = 6
 };
 
-String str(TextSmoothing smoothing);
+String str(FontSmoothing smoothing);
+
+/** glyph outline hinting strategy
+  */
+enum class OutlineHinting: uint8_t {
+    Default = 0,
+    None    = 1,
+    Slight  = 2,
+    Medium  = 3,
+    Full    = 4,
+};
+
+String str(OutlineHinting outlineHinting);
+
+/** font metrics hinting strategy
+  */
+enum class MetricsHinting: uint8_t {
+    Default = 0,
+    Off     = 1,
+    On      = 2
+};
+
+String str(MetricsHinting metricsHinting);
 
 /** font slant
   */
@@ -42,22 +64,6 @@ enum class Slant: uint8_t {
 };
 
 String str(Slant slant);
-
-/** font width to height ratio
-  */
-enum class Stretch: uint8_t {
-    UltraCondensed = 1,
-    ExtraCondensed = 2,
-    Condensed      = 3,
-    SemiCondensed  = 4,
-    Normal         = 5,
-    SemiExpanded   = 6,
-    Expanded       = 7,
-    ExtraExpanded  = 8,
-    UltraExpanded  = 9
-};
-
-String str(Stretch stretch);
 
 /** visual thickness of a font
   */
@@ -74,6 +80,22 @@ enum class Weight: uint8_t {
 };
 
 String str(Weight weight);
+
+/** font width to height ratio
+  */
+enum class Stretch: uint8_t {
+    UltraCondensed = 1,
+    ExtraCondensed = 2,
+    Condensed      = 3,
+    SemiCondensed  = 4,
+    Normal         = 5,
+    SemiExpanded   = 6,
+    Expanded       = 7,
+    ExtraExpanded  = 8,
+    UltraExpanded  = 9
+};
+
+String str(Stretch stretch);
 
 /** font pitch
   */

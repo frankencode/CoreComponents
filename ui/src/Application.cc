@@ -40,10 +40,10 @@ Application::~Application()
     fin_ = true;
 }
 
-TextSmoothing Application::textSmoothing() const
+FontSmoothing Application::fontSmoothing() const
 {
-    if (textSmoothing_ == TextSmoothing::Default)
-        return PlatformManager::instance()->activePlugin()->displayManager()->defaultTextSmoothing();
+    if (textSmoothing_ == FontSmoothing::Default)
+        return PlatformManager::instance()->activePlugin()->displayManager()->defaultFontSmoothing();
 
     return textSmoothing_;
 }

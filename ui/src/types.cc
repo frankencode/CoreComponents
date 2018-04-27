@@ -16,20 +16,44 @@
 namespace cc {
 namespace ui {
 
-String str(TextSmoothing smoothing)
+String str(FontSmoothing smoothing)
 {
     switch (smoothing) {
-        case TextSmoothing::Default     : return "TextSmoothing::Default";
-        case TextSmoothing::None        : return "TextSmoothing::None";
-        case TextSmoothing::Grayscale   : return "TextSmoothing::Grayscale";
-        case TextSmoothing::RgbSubpixel : return "TextSmoothing::RgbSubpixel";
-        case TextSmoothing::BgrSubpixel : return "TextSmoothing::BgrSubpixel";
-        case TextSmoothing::VrgbSubpixel: return "TextSmoothing::VrgbSubpixel";
-        case TextSmoothing::VbgrSubpixel: return "TextSmoothing::VbgrSubpixel";
+        case FontSmoothing::Default     : return "FontSmoothing::Default";
+        case FontSmoothing::None        : return "FontSmoothing::None";
+        case FontSmoothing::Grayscale   : return "FontSmoothing::Grayscale";
+        case FontSmoothing::RgbSubpixel : return "FontSmoothing::RgbSubpixel";
+        case FontSmoothing::BgrSubpixel : return "FontSmoothing::BgrSubpixel";
+        case FontSmoothing::VrgbSubpixel: return "FontSmoothing::VrgbSubpixel";
+        case FontSmoothing::VbgrSubpixel: return "FontSmoothing::VbgrSubpixel";
     }
 
     return String{};
 }
+
+String str(OutlineHinting outlineHinting)
+{
+    switch (outlineHinting) {
+        case OutlineHinting::Default: return "OutlineHinting::Default";
+        case OutlineHinting::None   : return "OutlineHinting::None";
+        case OutlineHinting::Slight : return "OutlineHinting::Slight";
+        case OutlineHinting::Medium : return "OutlineHinting::Medium";
+        case OutlineHinting::Full   : return "OutlineHinting::Full";
+    }
+
+    return String {};
+}
+
+String str(MetricsHinting metricsHinting)
+{
+    switch (metricsHinting) {
+        case MetricsHinting::Default: return "MetricsHinting::Default";
+        case MetricsHinting::On     : return "MetricsHinting::On";
+        case MetricsHinting::Off    : return "MetricsHinting::Off";
+    }
+
+    return String{};
+};
 
 String str(Slant slant)
 {
@@ -37,23 +61,6 @@ String str(Slant slant)
         case Slant::Normal : return "Slant::Normal";
         case Slant::Italic : return "Slant::Italic";
         // case Slant::Oblique: return "Oblique";
-    }
-
-    return String{};
-}
-
-String str(Stretch stretch)
-{
-    switch (stretch) {
-        case Stretch::UltraCondensed: return "Stretch::UltraCondensed";
-        case Stretch::ExtraCondensed: return "Stretch::ExtraCondensed";
-        case Stretch::Condensed     : return "Stretch::Condensed";
-        case Stretch::SemiCondensed : return "Stretch::SemiCondensed";
-        case Stretch::Normal        : return "Stretch::Normal";
-        case Stretch::SemiExpanded  : return "Stretch::SemiExpanded";
-        case Stretch::Expanded      : return "Stretch::Expaned";
-        case Stretch::ExtraExpanded : return "Stretch::ExtraExpanded";
-        case Stretch::UltraExpanded : return "Stretch::UltraExpanded";
     }
 
     return String{};
@@ -71,6 +78,23 @@ String str(Weight weight)
         case Weight::Bold      : return "Weight::Bold";
         case Weight::ExtraBold : return "Weight::ExtraBold";
         case Weight::Black     : return "Weight::Black";
+    }
+
+    return String{};
+}
+
+String str(Stretch stretch)
+{
+    switch (stretch) {
+        case Stretch::UltraCondensed: return "Stretch::UltraCondensed";
+        case Stretch::ExtraCondensed: return "Stretch::ExtraCondensed";
+        case Stretch::Condensed     : return "Stretch::Condensed";
+        case Stretch::SemiCondensed : return "Stretch::SemiCondensed";
+        case Stretch::Normal        : return "Stretch::Normal";
+        case Stretch::SemiExpanded  : return "Stretch::SemiExpanded";
+        case Stretch::Expanded      : return "Stretch::Expaned";
+        case Stretch::ExtraExpanded : return "Stretch::ExtraExpanded";
+        case Stretch::UltraExpanded : return "Stretch::UltraExpanded";
     }
 
     return String{};

@@ -11,6 +11,7 @@
 #include <cc/ui/types>
 #include <cc/ui/UpdateRequest>
 #include <cc/ui/Image>
+#include <cc/ui/ScaledFont>
 
 namespace cc { template<class> class Queue; }
 
