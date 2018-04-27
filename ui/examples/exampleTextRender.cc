@@ -1,3 +1,4 @@
+#include <cc/debug>
 #include <cc/ui/Application>
 #include <cc/ui/View>
 #include <cc/ui/FontManager>
@@ -16,20 +17,25 @@ class MainView: public View
 
         glyphRuns_ = List< Ref<const GlyphRun> >::create();
 
-        String pangram = "The quick brown fox jumps over the lazy dog";
+        String pangram = "the quick brown fox jumps over the lazy dog";
+        pangram = pangram->toUpper() + " / " + pangram;
 
         for (const FontFamily *fontFamily: FontManager::instance()->getFontFamilies())
         {
-            String text = Format("%%: %%") << fontFamily->name() << pangram;
+            String text = Format("%% (%%)") << pangram << fontFamily->name();
 
-            Font font;
+            // CC_INSPECT(fontFamily->name());
+
+            if (fontFamily->name()->split(" ")->count() > 2) continue;
+                // skip special regions fonts
+
+            Font font(fontFamily->name());
             glyphRuns_ << GlyphRun::typeSet(text, font);
 
-            font->setWeight(Weight::Bold);
+            font << Weight::Bold;
             glyphRuns_ << GlyphRun::typeSet(text, font);
 
-            font->setWeight(Weight::Normal);
-            font->setSlant(Slant::Italic);
+            font << Weight::Normal << Slant::Italic;
             glyphRuns_ << GlyphRun::typeSet(text, font);
         }
     }

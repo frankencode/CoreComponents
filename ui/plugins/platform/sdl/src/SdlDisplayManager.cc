@@ -22,14 +22,17 @@ SdlDisplayManager::SdlDisplayManager()
 {
     const int n = getDisplayCount_();
     Ref<const Display> largestDisplay;
+    #if 0
     bool allDesktop = true;
     bool allLandscape = true;
     bool allPortrait = true;
     bool allHighResolution = true;
+    #endif
     for (int i = 0; i < n; ++i) {
         Ref<const Display> display = getDisplay_(i);
         if (!largestDisplay || display->diagonal() > largestDisplay->diagonal())
             largestDisplay = display;
+        #if 0
         if (display->size()[1] < display->size()[0])
             allPortrait = false;
         if (display->size()[0] < display->size()[1])
@@ -38,11 +41,20 @@ SdlDisplayManager::SdlDisplayManager()
             allDesktop = false;
         if (largestDisplay->dpi()[0] < 150)
             allHighResolution = false;
+        #endif
     }
 
     if (largestDisplay) {
         displayDensityRatio_ = (1 + 0.666 * !largestDisplay->isHandheld()) * avg(largestDisplay->dpi()) / 160;
 
+        if (largestDisplay->dpi()[0] < 140) {
+            if (largestDisplay->size()[1] < largestDisplay->size()[0]) defaultFontSmoothing_ = FontSmoothing::RgbSubpixel;
+            else defaultFontSmoothing_ = FontSmoothing::VrgbSubpixel;
+        }
+        else
+            defaultFontSmoothing_ = FontSmoothing::Grayscale;
+
+        #if 0
         if (allDesktop && !allHighResolution) {
             if (allLandscape) defaultFontSmoothing_ = FontSmoothing::RgbSubpixel;
             else if (allPortrait) defaultFontSmoothing_ = FontSmoothing::VrgbSubpixel;
@@ -50,7 +62,10 @@ SdlDisplayManager::SdlDisplayManager()
         }
         else
             defaultFontSmoothing_ = FontSmoothing::Grayscale;
+        #endif
     }
+    else
+        defaultFontSmoothing_ = FontSmoothing::Grayscale;
 }
 
 Ref<Display> SdlDisplayManager::getDisplay(int index) const

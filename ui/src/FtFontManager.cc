@@ -34,19 +34,13 @@ Ref<FontFace> FtFontManager::openFontFace(const String &path)
 
 Ref<ScaledFont> FtFontManager::selectFont(const Font &font) const
 {
-    #if 0
-    String family = font->family();
-    double size = font->size();
-    if (!family) family = StylePlugin::instance()->defaultFont()->family();
-    if (size <= 0) size = StylePlugin::instance()->defaultFont()->size();
-    #endif
     Font f = fixup(font);
     const FtFontFace *fontFace =
         Object::cast<const FtFontFace *>(
             selectFontFamily(f->family())->selectFontFace(f->weight(), f->slant(), f->stretch())
         );
 
-    return Object::create<FtScaledFont>(fontFace, f->size());
+    return Object::create<FtScaledFont>(fontFace, f);
 }
 
 Ref<GlyphRun> FtFontManager::typeSet(const String &text, const Font &font, const Point &origin) const
@@ -61,6 +55,30 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
 
     const FtScaledFont *ftScaledFont = Object::cast<const FtScaledFont *>(font->getScaledFont());
     FT_Face ftFace = cairo_ft_scaled_font_lock_face(ftScaledFont->cairoScaledFont());
+
+    FT_UInt32 glyphLoadingFlags =
+        [](const Font &f) -> FT_UInt32 {
+            OutlineHinting h = f->outlineHinting();
+            switch (f->smoothing()) {
+                case FontSmoothing::Default:
+                case FontSmoothing::Grayscale: {
+                    if (h == OutlineHinting::Slight)
+                        return FT_LOAD_TARGET_LIGHT;
+                    else
+                        return FT_LOAD_DEFAULT;
+                }
+                case FontSmoothing::RgbSubpixel:
+                case FontSmoothing::BgrSubpixel:
+                    return FT_LOAD_TARGET_LCD;
+                case FontSmoothing::VrgbSubpixel:
+                case FontSmoothing::VbgrSubpixel:
+                    return FT_LOAD_TARGET_LCD_V;
+                case FontSmoothing::None: {
+                    return FT_LOAD_TARGET_MONO;
+                }
+            }
+            return FT_LOAD_DEFAULT;
+        }(ftScaledFont->font());
 
     Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text, font);
 
@@ -108,7 +126,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
         catch (GlyphLoadingError &) {
             glyphIndex = FT_Get_Char_Index(ftFace, 0xFFFD /* � */);
             if (glyphIndex == 0) continue;
-            if (FT_Load_Glyph(ftFace, glyphIndex, FT_LOAD_DEFAULT) != 0) continue;
+            if (FT_Load_Glyph(ftFace, glyphIndex, glyphLoadingFlags) != 0) continue;
         }
 
         cairoGlyphs->at(cairoGlyphsCount).index = glyphIndex;
@@ -131,7 +149,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
         }
 
         glyphAdvance = Step {
-            double(ftFace->glyph->advance.x),
+            double(ftFace->glyph->advance.x + ftFace->glyph->rsb_delta - ftFace->glyph->lsb_delta),
             double(ftFace->glyph->advance.y)
         } / 64.;
 

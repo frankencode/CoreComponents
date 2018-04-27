@@ -45,7 +45,8 @@ enum class OutlineHinting: uint8_t {
 
 String str(OutlineHinting outlineHinting);
 
-/** font metrics hinting strategy
+/** return hinted font metrics
+  * \see Font::getMetrics()
   */
 enum class MetricsHinting: uint8_t {
     Default = 0,

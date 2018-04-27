@@ -42,10 +42,10 @@ Application::~Application()
 
 FontSmoothing Application::fontSmoothing() const
 {
-    if (textSmoothing_ == FontSmoothing::Default)
+    if (fontSmoothing_ == FontSmoothing::Default)
         return PlatformManager::instance()->activePlugin()->displayManager()->defaultFontSmoothing();
 
-    return textSmoothing_;
+    return fontSmoothing_;
 }
 
 void Application::notifyTimer(Timer *t)
