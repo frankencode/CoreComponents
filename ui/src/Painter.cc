@@ -114,13 +114,23 @@ void Painter::Instance::circle(Point center, double radius)
 
 void Painter::Instance::setSource(Color color)
 {
-    cairo_set_source_rgba(
-        cr_,
-        color->red()   / 255.,
-        color->green() / 255.,
-        color->blue()  / 255.,
-        color->alpha() / 255.
-    );
+    if (color->isOpaque()) {
+        cairo_set_source_rgb(
+            cr_,
+            color->red()   / 255.,
+            color->green() / 255.,
+            color->blue()  / 255.
+        );
+    }
+    else {
+        cairo_set_source_rgba(
+            cr_,
+            color->red()   / 255.,
+            color->green() / 255.,
+            color->blue()  / 255.,
+            color->alpha() / 255.
+        );
+    }
 }
 
 void Painter::Instance::fill()

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -94,7 +94,8 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
 
     Point pos = origin;
     Point pos0 = origin;
-    double maxGlyphHeight = 0;
+    const double ascender = std::ceil( ftFace->ascender * ftScaledFont->size() / ftFace->units_per_EM );
+    ftGlyphRun->minMargin_ = Size { 0, std::ceil( std::abs( ftFace->descender * ftScaledFont->size() / ftFace->units_per_EM ) ) };
 
     Step glyphAdvance;
 
@@ -155,11 +156,6 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
 
         pos += glyphAdvance;
 
-        {
-            double glyphHeight = ftFace->glyph->metrics.height / 64.;
-            if (maxGlyphHeight < glyphHeight) maxGlyphHeight = glyphHeight;
-        }
-
         previousGlyphIndex = glyphIndex;
     }
 
@@ -167,7 +163,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
         Step step = pos - pos0;
         Size size {
             std::abs(step[0]),
-            std::abs(step[1]) + maxGlyphHeight
+            std::abs(step[1]) + ascender
         };
 
         ftGlyphRun->advance_ = pos;

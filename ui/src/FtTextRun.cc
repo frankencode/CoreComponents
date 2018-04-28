@@ -27,11 +27,15 @@ Ref<TextRun> FtTextRun::copy() const
     for (int i = 0, n = glyphRuns_->count(); i < n; ++i)
         textRun->glyphRuns_->at(i) = glyphRuns_->at(i)->ftCopy();
     textRun->advance_ = advance_;
+    textRun->firstLineHeight_ = firstLineHeight_;
+    textRun->size_ = size_;
+    textRun->minMargin_ = minMargin_;
+    textRun->lineCount_ = lineCount_;
     textRun->byteCount_ = byteCount_;
     return textRun;
 }
 
-void FtTextRun::append(String text, const Font &font)
+void FtTextRun::append(const String &text, const Font &font)
 {
     Ref<const FtGlyphRun> run = FtFontManager::instance()->ftTypeSet(text, font, advance_);
     glyphRuns_->append(run);
@@ -43,6 +47,12 @@ void FtTextRun::append(String text, const Font &font)
     else
         size_[1] = firstLineHeight_ + run->advance()[1];
     if (size_[0] < run->advance()[0]) size_[0] = run->advance()[0];
+
+    {
+        Size m = run->minMargin();
+        if (minMargin_[0] < m[0]) minMargin_[0] = m[0];
+        if (minMargin_[1] < m[1]) minMargin_[1] = m[1];
+    }
 
     advance_ = run->advance();
     byteCount_ += text->count();
@@ -219,7 +229,7 @@ double FtTextRun::maxLineHeight(const FtGlyphRuns *glyphRuns)
     return max;
 }
 
-Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns)
+Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
 {
     if (glyphRuns->count() == 1) return glyphRuns->at(0);
 
@@ -262,21 +272,24 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns)
         metaBlock->font_ = lastRun->font_;
         metaBlock->advance_ = lastRun->advance_;
         metaBlock->size_[0] = lastRun->advance_[0];
-        metaBlock->finalGlyphAdvance_ = lastRun->finalGlyphAdvance_;
         for (const FtGlyphRun *glyphRun: glyphRuns) {
             if (metaBlock->size_[1] < glyphRun->size_[1])
                 metaBlock->size_[1] = glyphRun->size_[1];
         }
+        metaBlock->finalGlyphAdvance_ = lastRun->finalGlyphAdvance_;
     }
+
+    metaBlock->minMargin_ = minMargin_;
 
     return metaBlock;
 }
 
-Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns)
+Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns) const
 {
     Ref<FtTextRun> textRun = Object::create<FtTextRun>();
     textRun->advance_ = metaBlock->advance_;
     textRun->size_ = metaBlock->size_;
+    textRun->minMargin_ = metaBlock->minMargin_;
     textRun->byteCount_ = metaBlock->text_->count();
     textRun->lineCount_ = metaBlock->lineCount_;
 

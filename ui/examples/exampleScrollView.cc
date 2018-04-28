@@ -14,7 +14,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Color{"#FFFFFF"};
+        color = style()->theme()->windowColor();
 
         ScrollView *scroll = ScrollView::create(this);
 
@@ -29,7 +29,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    app->textZoom = 2;
     Window::open(Object::create<MainView>(), "Hello, world!");
     return app->run();
 }

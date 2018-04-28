@@ -124,6 +124,10 @@ class NormalizationTest: public TestCase
             fout() << c << nl;
             CC_VERIFY(c == Color(0x00, 0x00, 0xFF, 0xFF));
         }
+        {
+            Color c { 0x9C, 0x27, 0xB0, 0xDD }; // purple 87%
+            fout() << c->premultiplied()->normalized() << nl;
+        }
     }
 };
 

@@ -19,7 +19,7 @@ Ref<TextRun> TextRun::create()
     return FontManager::instance()->createTextRun();
 }
 
-Ref<TextRun> TextRun::create(String text, const Font &font)
+Ref<TextRun> TextRun::create(const String &text, const Font &font)
 {
     Ref<TextRun> textRun = TextRun::create();
     if (text->countCharsIn("<>&") > 0)
@@ -36,7 +36,7 @@ void TextRun::append(const TextRun *textRun)
         append(glyphRun->text(), glyphRun->font());
 }
 
-void TextRun::appendHtml(String text, const Font &font)
+void TextRun::appendHtml(const String &text, const Font &font)
 {
     struct StyleNode: public Object {
         StyleNode(const Font &font, String tagName = String{}, const StyleNode *parent = nullptr):
@@ -88,7 +88,7 @@ void TextRun::appendHtml(String text, const Font &font)
     if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->font_);
 }
 
-String TextRun::replaceEntities(String text)
+String TextRun::replaceEntities(const String &text)
 {
     if (text->contains('&')) {
         mutate(text)->replaceInsitu("&gt;", ">");

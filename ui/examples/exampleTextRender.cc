@@ -13,7 +13,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Color{"#FFFFFF"};
+        color = Color::White;
 
         glyphRuns_ = List< Ref<const GlyphRun> >::create();
 
@@ -43,7 +43,7 @@ class MainView: public View
     void paint() override
     {
         Painter p(this);
-        p->setSource(Color{"#000000"});
+        p->setSource(Color::Black);
         int i = 0;
         for (const GlyphRun *glyphRun: glyphRuns_) {
             p->showGlyphRun(

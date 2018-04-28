@@ -26,10 +26,11 @@ public:
 
     Ref<TextRun> copy() const override;
 
-    void append(String text, const Font &font) override;
+    void append(const String &text, const Font &font) override;
 
     Point advance() const override { return advance_; }
     Size size() const override { return size_; }
+    Size minMargin() const override { return minMargin_; }
     int byteCount() const override { return byteCount_; }
     int lineCount() const override { return lineCount_; }
 
@@ -50,8 +51,8 @@ private:
     typedef List< Ref<const FtGlyphRun> > FtGlyphRuns;
 
     static double maxLineHeight(const FtGlyphRuns *glyphRuns);
-    static Ref<const FtGlyphRun> fold(const FtGlyphRuns *glyphRuns);
-    static Ref<FtTextRun> unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns);
+    Ref<const FtGlyphRun> fold(const FtGlyphRuns *glyphRuns) const;
+    Ref<FtTextRun> unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns) const;
 
     FtTextRun();
 
@@ -62,6 +63,7 @@ private:
     Point advance_;
     double firstLineHeight_;
     Size size_;
+    Size minMargin_;
     int byteCount_;
     int lineCount_;
 

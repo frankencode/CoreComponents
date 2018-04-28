@@ -26,7 +26,12 @@ TextField::TextField(View *parent, String labelText_):
 {
     ColumnLayout::setup(this);
 
+    if (parent && parent->color())
+        color = parent->color();
+    else
+        color->bind([=]{ return style()->theme()->windowColor(); });
     // color = Color::Red(10);
+    // color = Color::Transparent;
 
     TextLine *label = TextLine::create(this);
     label->text->bind([=]{ return labelText(); });
@@ -62,6 +67,7 @@ TextField::TextField(View *parent, String labelText_):
     });
 
     View *messageArea = View::create(this);
+    messageArea->color->bind([=]{ return color(); });
     messageArea->size->bind([=]{ return Size { size()[0], sp(12) }; });
     messageArea->padding = dp(8);
 

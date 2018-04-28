@@ -14,58 +14,44 @@
 namespace cc {
 namespace ui {
 
-TextLine *TextLine::create(View *parent, String text, Font font)
+TextLine *TextLine::create(View *parent, const String &text, const Font &font)
 {
     return Object::create<TextLine>(parent, text, font);
 }
 
-TextLine::TextLine(View *parent, String text_, Font font_):
+TextLine::TextLine(View *parent, const String &text_, const Font &font_):
     View(parent),
     text(text_)
 {
-    color = Color::Transparent;
+    if (parent && parent->color())
+        color = parent->color();
+    else
+        color->bind([=]{ return style()->theme()->windowColor(); });
 
     if (font_)
         font = font_;
     else
         font->bind([=]{ return app()->defaultFont(); });
 
-    text  ->connect([=]{ updateLayout(); });
-    font  ->connect([=]{ updateLayout(); });
-    ink   ->connect([=]{ update(); });
-    margin->connect([=]{ updateSize(); });
+    textRun->bind([=]{ return TextRun::create(text(), font()); });
+    margin->bind([=]{ return textRun()->minMargin(); });
+    size->bind([=]{ return textRun()->size() + 2 * margin(); });
 
-    updateLayout();
+    textRun->connect([=]{ update(); });
+    ink->connect([=]{ update(); });
 }
 
 TextLine::~TextLine()
 {}
 
-void TextLine::updateLayout()
-{
-    textRun_ = TextRun::create(text(), font());
-    if (!updateSize())
-        update();
-}
-
-bool TextLine::updateSize()
-{
-    Size newSize = textRun_->size() + 2 * margin();
-    if (size() != newSize) {
-        size = newSize;
-        return true;
-    }
-    return false;
-}
-
 void TextLine::paint()
 {
     Painter p(this);
     if (ink()) p->setSource(ink());
-    p->showTextRun(
-        center() + 0.5 * Step { -textRun_->size()[0], textRun_->size()[1] },
-        textRun_
-    );
+    Point pos = center() + 0.5 * Step { -textRun()->size()[0], textRun()->size()[1] };
+    pos[0] = std::floor(pos[0]);
+    pos[1] = std::floor(pos[1]);
+    p->showTextRun(pos, textRun());
 }
 
 }} // namespace cc::ui

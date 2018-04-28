@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug>
 #include <cc/Map>
 #include <cc/DirWalker>
 #include <cc/ui/PlatformPlugin>
@@ -52,7 +53,8 @@ Font FontManager::fixup(const Font &font)
     Font f = font;
     if (!f->family_) f->family_ = StylePlugin::instance()->defaultFont()->family();
     if (f->size_ <= 0) f->size_ = StylePlugin::instance()->defaultFont()->size();
-    if (f->smoothing() == FontSmoothing::Default) f->smoothing_ = static_cast<uint8_t>(Application::instance()->fontSmoothing());
+    if (f->smoothing() == FontSmoothing::Default)
+        f->smoothing_ = static_cast<uint8_t>( Application::instance()->fontSmoothing() );
     return f;
 }
 

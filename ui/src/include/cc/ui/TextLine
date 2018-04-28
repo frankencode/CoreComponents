@@ -21,7 +21,7 @@ class TextLine: public View
     friend class Object;
 
 public:
-    static TextLine *create(View *parent, String text = String{}, Font font = Font{});
+    static TextLine *create(View *parent, const String &text = String{}, const Font &font = Font{});
 
     Property<String> text;
     Property<Font> font;
@@ -29,15 +29,12 @@ public:
     Property<Size> margin;
 
 protected:
-    TextLine(View *parent, String text, Font font_ = Font{});
+    Property< Ref<const TextRun> > textRun;
+
+    TextLine(View *parent, const String &text, const Font &font_ = Font{});
     ~TextLine();
 
-    void updateLayout();
-    bool updateSize();
-
     void paint() override;
-
-    Ref<TextRun> textRun_;
 };
 
 }} // namespace cc::ui
