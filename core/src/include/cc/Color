@@ -270,10 +270,6 @@ public:
         };
     }
 
-    /** Automatic conversion to a 32-bit word
-      */
-    inline operator uint32_t() { return (*this)->w_; }
-
     /** Comparism operators
       * @{
       */

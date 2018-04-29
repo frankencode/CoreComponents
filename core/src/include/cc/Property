@@ -134,8 +134,10 @@ public:
 
     inline T operator()() const { return instance_->value(); }
 
+    inline Property &operator=(const T &b) { instance_->setValue(b); return *this; }
+
     template<class T2>
-    inline Property &operator=(const T2 &b) { instance_->setValue(b); return *this; }
+    inline Property &operator=(const T2 &b) { instance_->setValue(T(b)); return *this; }
 
     template<class T2>
     inline Property &operator+=(const T2 &b) { instance_->setValue(instance_->value() + b); return *this; }

@@ -25,6 +25,7 @@ public:
     Vector() {}
     Vector(std::initializer_list<T> l): instance_(l) {}
     Vector(const Vector &b): instance_(b.instance_) {}
+    Vector(T b): Vector{b} {}
 
     class Instance {
     public:

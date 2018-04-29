@@ -116,7 +116,7 @@ void View::inheritColor()
     for (View *view = parent(); view; view = view->parent()) {
         if (view->color()) {
             color->bind([=]{ return view->color(); });
-            break;
+            return;
         }
     }
 

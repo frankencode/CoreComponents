@@ -8,6 +8,17 @@
 using namespace cc;
 using namespace cc::ui;
 
+class Item: public Label
+{
+    friend class Object;
+
+    Item(View *parent, const String &text):
+        Label(parent, text)
+    {
+        margin = dp(20);
+    }
+};
+
 class MainView: public View
 {
     friend class Object;
@@ -23,15 +34,15 @@ class MainView: public View
 
         RowLayout::setup(box);
 
-        Label::create(box, "• Item 1");
-        Label::create(box, "• Item 2");
+        Object::create<Item>(box, "• Item 1");
+        Object::create<Item>(box, "• Item 2");
 
         View *subBox = View::create(box);
         subBox->color = Color{"#D0FFD0"};
 
         ColumnLayout::setup(subBox);
-        Label::create(subBox, "• Item A");
-        Label::create(subBox, "• Item B"); // ◦
+        Object::create<Item>(subBox, "• Item A");
+        Object::create<Item>(subBox, "• Item B"); // ◦
     }
 };
 

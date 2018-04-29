@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug>
 #include <cc/System>
 #include <cc/ui/easing>
 #include <cc/ui/Timer>
@@ -63,7 +62,7 @@ bool ScrollView::onPointerReleased(const PointerEvent *event)
         if (System::now() - lastDragTime_ > minHoldTime()) speed_ = Point{};
         isDragged_ = false;
     }
-    CC_INSPECT(carrierInsideBoundary());
+
     if (carrierInsideBoundary()) {
         carrierBounceStart();
     }

@@ -5,6 +5,17 @@
 using namespace cc;
 using namespace cc::ui;
 
+class Item: public Label
+{
+    friend class Object;
+
+    Item(View *parent, const String &text):
+        Label(parent, text)
+    {
+        margin = dp(20);
+    }
+};
+
 class MainView: public View
 {
     friend class Object;
@@ -12,29 +23,29 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Color{"#FFFFFF"};
+        color = 0xFFFFFF;
 
         View *box = View::create(this);
-        box->color = Color{"#D0D0FF"};
+        box->color = 0xD0D0FF;
         box->centerInParent();
 
         ColumnLayout::setup(box);
 
-        Label::create(box, "• Item 1");
-        Label::create(box, "• Item 2");
-        Label::create(box, "• Item 3");
+        Object::create<Item>(box, "• Item 1");
+        Object::create<Item>(box, "• Item 2");
+        Object::create<Item>(box, "• Item 3");
 
         {
             View *subBox = View::create(box);
-            subBox->color = Color{"#D0FFD0"};
+            subBox->color = 0xD0FFD0;
 
             ColumnLayout::setup(subBox)->indent->bind([=]{
                 return style()->defaultFont()->size();
             });
 
-            Label::create(subBox, "• Item A");
-            Label::create(subBox, "• Item B");
-            Label::create(subBox, "• Item C"); // ◦
+            Object::create<Item>(subBox, "• Item A");
+            Object::create<Item>(subBox, "• Item B");
+            Object::create<Item>(subBox, "• Item C"); // ◦
         }
     }
 };

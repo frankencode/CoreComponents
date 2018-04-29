@@ -14,15 +14,17 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = style()->theme()->windowColor();
+        inheritColor();
 
         ScrollView *scroll = ScrollView::create(this);
 
         ColumnLayout::setup(scroll->carrier());
         // ColumnLayout::setup(scroll); // TODO
 
-        for (int i = 0; i < 20; ++i)
-            Label::create(scroll, "Item " + str(i + 1))->color = color;
+        for (int i = 0; i < 50; ++i) {
+            Label *label = Label::create(scroll, "Item " + str(i + 1));
+            label->margin = Size{20};
+        }
     }
 };
 
