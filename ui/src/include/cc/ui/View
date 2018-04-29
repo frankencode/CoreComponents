@@ -60,6 +60,7 @@ public:
     View *getTopViewAt(Point g);
     Control *getTopControlAt(Point g);
 
+    void inheritColor();
     void centerInParent();
     void disband();
 

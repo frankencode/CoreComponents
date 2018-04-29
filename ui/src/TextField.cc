@@ -8,7 +8,7 @@
 
 #include <cc/ui/ColumnLayout>
 #include <cc/ui/HLine>
-#include <cc/ui/TextLine>
+#include <cc/ui/Label>
 #include <cc/ui/TextInput>
 #include <cc/ui/TextField>
 
@@ -26,14 +26,9 @@ TextField::TextField(View *parent, String labelText_):
 {
     ColumnLayout::setup(this);
 
-    if (parent && parent->color())
-        color = parent->color();
-    else
-        color->bind([=]{ return style()->theme()->windowColor(); });
     // color = Color::Red(10);
-    // color = Color::Transparent;
 
-    TextLine *label = TextLine::create(this);
+    Label *label = Label::create(this);
     label->text->bind([=]{ return labelText(); });
     label->padding = dp(16);
 
@@ -51,10 +46,10 @@ TextField::TextField(View *parent, String labelText_):
         return input_->visible() ? app()->smallFont() : app()->defaultFont();
     });
 
-    TextLine *placeholder = TextLine::create(this);
-    placeholder->visible->bind([=]{ return placeholder->text() != "" && !input_->visible(); });
-    placeholder->text->bind([=]{ return placeholderText(); });
-    placeholder->padding = dp(8);
+    Label *dummy = Label::create(this);
+    dummy->visible->bind([=]{ return dummy->text() != "" && !input_->visible(); });
+    dummy->text->bind([=]{ return placeholderText(); });
+    dummy->padding = dp(8);
 
     HLine *inputLine = HLine::create(this, dp(2));
     inputLine->thickness->bind([=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); });
@@ -67,21 +62,20 @@ TextField::TextField(View *parent, String labelText_):
     });
 
     View *messageArea = View::create(this);
-    messageArea->color->bind([=]{ return color(); });
     messageArea->size->bind([=]{ return Size { size()[0], sp(12) }; });
     messageArea->padding = dp(8);
 
-    TextLine *help = TextLine::create(messageArea);
+    Label *help = Label::create(messageArea);
     help->font->bind([=]{ return app()->smallFont(); });
     help->ink->bind([=]{ return style()->theme()->secondaryTextColor(); });
     help->text->bind([=]{ return helpText(); });
 
-    TextLine *error = TextLine::create(messageArea);
+    Label *error = Label::create(messageArea);
     error->font->bind([=]{ return app()->smallFont(); });
     error->ink->bind([=]{ return style()->theme()->alertColor(); });
     error->text->bind([=]{ return "Error: " + errorText(); });
 
-    TextLine *status = TextLine::create(this);
+    Label *status = Label::create(this);
     status->font->bind([=]{ return app()->smallFont(); });
     status->text->bind([=]{ return statusText(); });
     status->pos->bind([=]{ return Point { messageArea->size()[0] - status->size()[0], 0 }; });

@@ -111,6 +111,18 @@ Control *View::getTopControlAt(Point g)
     return view ? Object::cast<Control *>(view) : nullptr;
 }
 
+void View::inheritColor()
+{
+    for (View *view = parent(); view; view = view->parent()) {
+        if (view->color()) {
+            color->bind([=]{ return view->color(); });
+            break;
+        }
+    }
+
+    color->bind([=]{ return style()->theme()->windowColor(); });
+}
+
 void View::centerInParent()
 {
     if (parent())

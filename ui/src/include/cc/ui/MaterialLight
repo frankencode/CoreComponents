@@ -18,8 +18,12 @@ class MaterialLight: public Theme
     friend class Object;
 
 public:
-    Color primaryColor         () const override { return Material::Purple500; }
-    Color secondaryColor       () const override { return Material::Cyan500; }
+    Color primaryColor         () const override { return Material::Blue500; }
+    Color primaryDarkColor     () const          { return 0x0069c0; }
+    Color primaryLightColor    () const          { return 0x6ec6ff; }
+    Color secondaryColor       () const override { return Material::Lime500; }
+    Color secondaryDarkColor   () const          { return 0x99aa00; }
+    Color secondaryLightColor  () const          { return 0xffff6e; }
     Color alertColor           () const override { return Material::RedA400; }
 
     Color statusBarColor       () const override { return Material::Grey300; }
@@ -28,15 +32,15 @@ public:
     Color popupColor           () const override { return Color::White; }
 
     Color titleTextColor       () const override { return Color::White; }
-    Color focusTextColor       () const override { return primaryColor()(87); }
+    Color focusTextColor       () const override { return primaryDarkColor()(87); }
     Color primaryTextColor     () const override { return Color::Black(87); }
     Color secondaryTextColor   () const override { return Color::Black(54); }
     Color inactiveTextColor    () const override { return Color::Black(38); }
 
     Color inputLineColor       () const override { return Color::Black(42); }
     Color hoverInputLineColor  () const override { return primaryTextColor(); }
-    Color pressedInputLineColor() const override { return primaryColor(); }
-    Color focusInputLineColor  () const override { return primaryColor(); }
+    Color pressedInputLineColor() const override { return primaryDarkColor(); }
+    Color focusInputLineColor  () const override { return primaryDarkColor(); }
 
 private:
     MaterialLight() {}

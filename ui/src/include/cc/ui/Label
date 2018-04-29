@@ -8,20 +8,33 @@
 
 #pragma once
 
-#include <cc/ui/TextLine>
+#include <cc/ui/View>
+#include <cc/ui/Font>
 
 namespace cc {
 namespace ui {
 
-class Label: public TextLine
+class TextRun;
+
+class Label: public View
 {
     friend class Object;
 
 public:
-    static Label *create(View *parent, String text = String{}, Font font = Font{});
+    static Label *create(View *parent, const String &text = String{}, const Font &font = Font{});
+
+    Property<String> text;
+    Property<Font> font;
+    Property<Color> ink;
+    Property<Size> margin;
 
 protected:
-    Label(View *parent, String text, Font font);
+    Property< Ref<const TextRun> > textRun;
+
+    Label(View *parent, const String &text, const Font &font_ = Font{});
+    ~Label();
+
+    void paint() override;
 };
 
 }} // namespace cc::ui
