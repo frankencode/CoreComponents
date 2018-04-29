@@ -1,8 +1,6 @@
-#include <cc/debug>
 #include <cc/ui/Application>
-#include <cc/ui/RowLayout>
-#include <cc/ui/ColumnLayout>
-#include <cc/ui/StylePlugin>
+#include <cc/ui/Row>
+#include <cc/ui/Column>
 #include <cc/ui/Label>
 
 using namespace cc;
@@ -26,29 +24,30 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Color{"#FFFFFF"};
+        color = 0xFFFFFF;
 
-        View *box = View::create(this);
-        box->color = Color{"#D0D0FF"};
+        View *box = add<View>();
+        box->color = 0xD0D0FF;
         box->centerInParent();
 
-        RowLayout::setup(box);
+        box->organize<Row>();
 
-        Object::create<Item>(box, "• Item 1");
-        Object::create<Item>(box, "• Item 2");
+        box->add<Item>("• Item 1");
+        box->add<Item>("• Item 2");
 
-        View *subBox = View::create(box);
-        subBox->color = Color{"#D0FFD0"};
+        View *subBox = box->add<View>();
+        subBox->color = 0xD0FFD0;
 
-        ColumnLayout::setup(subBox);
-        Object::create<Item>(subBox, "• Item A");
-        Object::create<Item>(subBox, "• Item B"); // ◦
+        subBox->organize<Column>();
+
+        subBox->add<Item>("• Item A");
+        subBox->add<Item>("• Item B"); // ◦
     }
 };
 
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Hello, world!");
+    Window::open<MainView>("Hello, world!");
     return app->run();
 }

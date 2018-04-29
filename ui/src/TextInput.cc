@@ -14,45 +14,33 @@
 namespace cc {
 namespace ui {
 
-TextInput *TextInput::create(View *parent)
-{
-    return Object::create<TextInput>(parent);
-}
-
 TextInput::TextInput(View *parent):
     Control(parent),
     timer_(Timer::create(0.5))
 {
-    color = Color::Transparent;
+    inheritColor();
 
     font->bind([=]{ return app()->defaultFont(); });
 
-    text  ->connect([=]{ updateLayout(); });
-    font  ->connect([=]{ updateLayout(); });
-    ink   ->connect([=]{ update(); });
-    margin->connect([=]{ updateSize(); });
+    textRun->bind([=]{ return TextRun::create(text(), font()); });
 
-    updateLayout();
+    margin->bind([=]{ return textRun()->minMargin(); });
+
+    size->bind([=]{
+        return Size {
+            parent->size()[0],
+            textRun()->size()[1] + 2 * margin()[1]
+        };
+    });
+
+    ink->bind([=]{ return style()->theme()->primaryTextColor(); });
+
+    textRun->connect([=]{ update(); });
+    ink->connect([=]{ update(); });
 }
 
 TextInput::~TextInput()
 {}
-
-void TextInput::updateLayout()
-{
-    textRun_ = TextRun::create(text(), font());
-    updateSize();
-}
-
-void TextInput::updateSize()
-{
-    size = Size {
-        textRun_->size()[0],
-        std::ceil(font()->getMetrics()->ascender())
-    } + 2 * margin();
-
-    update();
-}
 
 bool TextInput::onPointerClicked(const PointerEvent *event)
 {
@@ -67,8 +55,11 @@ void TextInput::paint()
     Painter p(this);
     if (ink()) p->setSource(ink());
     p->showTextRun(
-        center() + 0.5 * Step { -textRun_->size()[0], textRun_->size()[1] },
-        textRun_
+        Point {
+            margin()[0],
+            0.5 * (size()[1] - textRun()->size()[1])
+        },
+        textRun()
     );
 }
 

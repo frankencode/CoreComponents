@@ -7,19 +7,19 @@
  */
 
 #include <cc/ui/View>
-#include <cc/ui/Layout>
+#include <cc/ui/Organizer>
 
 namespace cc {
 namespace ui {
 
-Layout::Layout(View *view):
+Organizer::Organizer(View *view):
     view_(view)
 {
-    if (view->layout_) delete view->layout_;
-    view->layout_ = this;
+    if (view->organizer_) delete view->organizer_;
+    view->organizer_ = this;
 }
 
-void Layout::updateView()
+void Organizer::updateView()
 {
     view_->update();
 }

@@ -15,12 +15,12 @@ namespace ui {
 
 class View;
 
-class Layout: public Object
+class Organizer: public Object
 {
 protected:
     friend class View;
 
-    Layout(View *view);
+    Organizer(View *view);
 
     virtual void childReady(View *child) = 0;
     virtual void childDone(View *child) = 0;

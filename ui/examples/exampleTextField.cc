@@ -12,9 +12,9 @@ class MainView: public View
     MainView()
     {
         size = Size { 640, 480 };
-        color->bind([=]{ return style()->theme()->windowColor(); });
+        inheritColor();
 
-        TextField *textField = TextField::create(this, "First name");
+        TextField *textField = add<TextField>("First name");
         textField->centerInParent();
         textField->hover->connect([=]{ CC_INSPECT(textField->hover()); });
         textField->pressed->connect([=]{ CC_INSPECT(textField->pressed()); });
@@ -25,6 +25,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Hello, world!");
+    Window::open<MainView>("Hello, world!");
     return Application::instance()->run();
 }

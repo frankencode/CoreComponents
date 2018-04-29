@@ -14,11 +14,6 @@
 namespace cc {
 namespace ui {
 
-Label *Label::create(View *parent, const String &text, const Font &font)
-{
-    return Object::create<Label>(parent, text, font);
-}
-
 Label::Label(View *parent, const String &text_, const Font &font_):
     View(parent),
     text(text_)
@@ -31,6 +26,7 @@ Label::Label(View *parent, const String &text_, const Font &font_):
         font->bind([=]{ return app()->defaultFont(); });
 
     textRun->bind([=]{ return TextRun::create(text(), font()); });
+    textPos->bind([=]{ return center() + 0.5 * Step { -textRun()->size()[0], textRun()->size()[1] }; });
     margin->bind([=]{ return textRun()->minMargin(); });
     size->bind([=]{ return textRun()->size() + 2 * margin(); });
     ink->bind([=]{ return style()->theme()->primaryTextColor(); });
@@ -46,10 +42,7 @@ void Label::paint()
 {
     Painter p(this);
     if (ink()) p->setSource(ink());
-    Point pos = center() + 0.5 * Step { -textRun()->size()[0], textRun()->size()[1] };
-    pos[0] = std::floor(pos[0]);
-    pos[1] = std::floor(pos[1]);
-    p->showTextRun(pos, textRun());
+    p->showTextRun(textPos(), textRun());
 }
 
 }} // namespace cc::ui

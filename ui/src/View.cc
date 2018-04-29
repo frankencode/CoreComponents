@@ -17,11 +17,6 @@
 namespace cc {
 namespace ui {
 
-Ref<View> View::create(View *parent)
-{
-    return Object::create<View>(parent);
-}
-
 View::View(View *parent):
     serial_(0),
     window_(0),
@@ -52,8 +47,8 @@ View::View(View *parent):
 
 View::~View()
 {
-    layout_ = 0;
-        // destroy the layout before releasing the children for efficiency
+    organizer_ = nullptr;
+        // destroy the organizer before releasing the children for efficiency
 }
 
 void View::disband()
@@ -321,12 +316,12 @@ void View::init()
 
 void View::childReady(View *child)
 {
-    if (layout_) layout_->childReady(child);
+    if (organizer_) organizer_->childReady(child);
 }
 
 void View::childDone(View *child)
 {
-    if (layout_) layout_->childDone(child);
+    if (organizer_) organizer_->childDone(child);
 }
 
 Application *View::app() const

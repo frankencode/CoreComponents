@@ -16,14 +16,14 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = style()->theme()->windowColor();
+        inheritColor();
 
         auto getClockText = []{
             Ref<const Date> date = Date::breakdown(System::now());
             return dec(date->hour(), 2) + "∶" + dec(date->minutes(), 2) + "∶" + dec(date->seconds(), 2);
         };
 
-        Label *label = Label::create(this, getClockText());
+        Label *label = add<Label>(getClockText());
         label->font = Font { "DejaVu Sans", 40 };
         label->color = Color { 0xD0D0FF };
         label->ink = Color::Black;
@@ -51,6 +51,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Hello, world!");
+    Window::open<MainView>("Hello, world!");
     return app->run();
 }

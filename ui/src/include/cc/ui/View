@@ -12,7 +12,7 @@
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Surface>
 #include <cc/ui/UpdateRequest>
-#include <cc/ui/Layout>
+#include <cc/ui/Organizer>
 #include <cc/ui/PointerEvent>
 #include <cc/ui/MouseEvent>
 #include <cc/ui/FingerEvent>
@@ -30,8 +30,6 @@ class Control;
 class View: public Surface
 {
 public:
-    static Ref<View> create(View *parent = 0);
-
     Property<bool> visible { true };
     Property<Color> color;
 
@@ -50,7 +48,7 @@ public:
     Property<int> childCount { 0 };
     View *childAt(int i) const { return children_->valueAt(i); }
 
-    inline Layout *layout() const { return layout_; }
+    inline Organizer *organizer() const { return organizer_; }
 
     Point mapToGlobal(Point l) const;
     Point mapToLocal(Point g) const;
@@ -64,11 +62,17 @@ public:
     void centerInParent();
     void disband();
 
+    template<class T>
+    T *organize() { return Object::create<T>(this); }
+
+    template<class T, class... Args>
+    T *add(Args... args) { return Object::create<T>(this, args...); }
+
 protected:
     friend class Object;
     friend class Window;
     friend class Application;
-    friend class Layout;
+    friend class Organizer;
     friend class TextInputFocus;
 
     View(View *parent = 0);
@@ -139,7 +143,7 @@ private:
 
     Ref<Image> image_;
     Ref<Object> context_;
-    Ref<Layout> layout_;
+    Ref<Organizer> organizer_;
 };
 
 }} // namespace cc::ui

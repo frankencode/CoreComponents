@@ -2,7 +2,7 @@
 #include <cc/ui/Application>
 #include <cc/ui/SlideView>
 #include <cc/ui/Transition>
-#include <cc/ui/ColumnLayout>
+#include <cc/ui/Column>
 #include <cc/ui/Label>
 
 using namespace cc;
@@ -15,9 +15,7 @@ class Slide1: public View
     Slide1(View *parent):
         View(parent)
     {
-        color = Color{"#FFFFFF"};
-
-        Label::create(this, "Press (->)")->centerInParent();
+        add<Label>("Press (->)")->centerInParent();
     }
 };
 
@@ -28,17 +26,15 @@ class Slide2: public View
     Slide2(View *parent):
         View(parent)
     {
-        color = Color{"#FFFFFF"};
-
-        View *box = View::create(this);
-        box->color = Color{"#D0D0FF"};
+        View *box = add<View>();
+        box->color = 0xD0D0FF;
         box->centerInParent();
 
-        ColumnLayout::setup(box);
+        box->organize<Column>();
 
-        Label::create(box, "• Item 1");
-        Label::create(box, "• Item 2");
-        Label::create(box, "• Item 3");
+        box->add<Label>("• Item 1");
+        box->add<Label>("• Item 2");
+        box->add<Label>("• Item 3");
     }
 };
 
@@ -49,9 +45,10 @@ class MainView: public SlideView
     MainView()
     {
         size = Size{640, 480};
+        color = 0xFFFFFF;
 
-        Object::create<Slide1>(this);
-        Object::create<Slide2>(this);
+        add<Slide1>();
+        add<Slide2>();
 
         easeOn(slideCarrier()->pos, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
     }
@@ -78,6 +75,6 @@ class MainView: public SlideView
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Hello, world!", WindowMode::Default|WindowMode::Accelerated);
+    Window::open<MainView>("Hello, world!", WindowMode::Accelerated);
     return app->run();
 }

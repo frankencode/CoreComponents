@@ -25,7 +25,7 @@ ScrollView::ScrollView(View *parent):
     isDragged_(false),
     timer_(Timer::create(1./60))
 {
-    carrier_ = View::create(this);
+    carrier_ = add<View>();
 
     if (parent) size->bind([=]{ return parent->size(); });
 

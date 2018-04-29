@@ -21,20 +21,20 @@ class Label: public View
     friend class Object;
 
 public:
-    static Label *create(View *parent, const String &text = String{}, const Font &font = Font{});
-
     Property<String> text;
+    Property<Point> textPos;
     Property<Font> font;
     Property<Color> ink;
     Property<Size> margin;
 
 protected:
-    Property< Ref<const TextRun> > textRun;
-
-    Label(View *parent, const String &text, const Font &font_ = Font{});
+    Label(View *parent, const String &text = String{}, const Font &font = Font{});
     ~Label();
 
-    void paint() override;
+private:
+    void paint() final;
+
+    Property< Ref<const TextRun> > textRun;
 };
 
 }} // namespace cc::ui

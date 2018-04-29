@@ -18,13 +18,11 @@ class HLine: public View
     friend class Object;
 
 public:
-    static Ref<HLine> create(View *parent, double maxThickness = dp(2));
-
     Property<double> thickness { dp(1) };
     Property<Color> ink { Color { 0x000000 } };
 
 protected:
-    HLine(View *parent, double maxThickness);
+    HLine(View *parent, double maxThickness = dp(1));
     void paint() override;
 };
 

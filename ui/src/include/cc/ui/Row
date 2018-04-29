@@ -8,25 +8,26 @@
 
 #pragma once
 
-#include <cc/ui/Layout>
+#include <cc/ui/Organizer>
 
 namespace cc {
 namespace ui {
 
-class RowLayout: public Layout
+class Row: public Organizer
 {
-public:
-    static RowLayout *setup(View *view);
+    friend class Object;
 
+public:
     Property<RowAlign> align { RowAlign::Top };
     Property<Size> margin;
     Property<double> spacing { 0 };
 
 protected:
-    RowLayout(View *view);
+    Row(View *view);
 
-    virtual void childReady(View *child) override;
-    virtual void childDone(View *child) override;
+private:
+    virtual void childReady(View *child) final;
+    virtual void childDone(View *child) final;
 
     void updateChildPos(View *child, Size innerSize, double x);
     void updateLayout();

@@ -20,8 +20,6 @@ class TextField: public Control
     friend class Object;
 
 public:
-    static TextField *create(View *parent, String labelText);
-
     Property<String> labelText;
     Property<String> inputText;
     Property<String> placeholderText;
@@ -30,7 +28,7 @@ public:
     Property<String> errorText;
 
 private:
-    TextField(View *parent, String nameText);
+    TextField(View *parent, const String &labelText);
 
     bool onPointerClicked(const PointerEvent *event);
 

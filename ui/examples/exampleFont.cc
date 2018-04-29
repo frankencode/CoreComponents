@@ -1,6 +1,6 @@
 #include <cc/ui/Application>
 #include <cc/ui/ScrollView>
-#include <cc/ui/ColumnLayout>
+#include <cc/ui/Column>
 #include <cc/ui/Label>
 
 using namespace cc;
@@ -16,14 +16,14 @@ class MainView: public View
         color = style()->theme()->windowColor();
 
         ScrollView *scroll = ScrollView::create(this);
-        ColumnLayout::setup(scroll->carrier());
+        scroll->carrier()->organize<Column>();
 
         for (int i = 16; i <= 64; i += 8) {
             String text = "A small brown fox... (" + str(i) + ")";
-            Label::create(scroll, text, Font(i));
-            Label::create(scroll, text, Font(i) << Slant::Italic);
-            Label::create(scroll, text, Font(i) << Weight::Bold);
-            Label::create(scroll, text, Font(i) << Slant::Italic << Weight::Bold);
+            scroll->add<Label>(text, Font(i));
+            scroll->add<Label>(text, Font(i) << Slant::Italic);
+            scroll->add<Label>(text, Font(i) << Weight::Bold);
+            scroll->add<Label>(text, Font(i) << Slant::Italic << Weight::Bold);
         }
     }
 };
@@ -31,6 +31,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Hello, world!");
+    Window::open<MainView>("Hello, world!");
     return app->run();
 }

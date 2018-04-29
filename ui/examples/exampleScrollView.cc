@@ -1,11 +1,22 @@
 #include <cc/debug>
 #include <cc/ui/Application>
 #include <cc/ui/ScrollView>
-#include <cc/ui/ColumnLayout>
+#include <cc/ui/Column>
 #include <cc/ui/Label>
 
 using namespace cc;
 using namespace cc::ui;
+
+class Item: public Label
+{
+    friend class Object;
+
+    Item(View *parent, const String &text):
+        Label(parent, text)
+    {
+        margin = Size{20};
+    }
+};
 
 class MainView: public View
 {
@@ -16,21 +27,18 @@ class MainView: public View
         size = Size{640, 480};
         inheritColor();
 
-        ScrollView *scroll = ScrollView::create(this);
+        ScrollView *scroll = add<ScrollView>();
 
-        ColumnLayout::setup(scroll->carrier());
-        // ColumnLayout::setup(scroll); // TODO
+        scroll->carrier()->organize<Column>();
 
-        for (int i = 0; i < 50; ++i) {
-            Label *label = Label::create(scroll, "Item " + str(i + 1));
-            label->margin = Size{20};
-        }
+        for (int i = 0; i < 50; ++i)
+            scroll->add<Item>("Item " + str(i + 1));
     }
 };
 
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Hello, world!");
+    Window::open<MainView>("Hello, world!");
     return app->run();
 }

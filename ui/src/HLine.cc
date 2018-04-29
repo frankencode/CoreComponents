@@ -11,11 +11,6 @@
 namespace cc {
 namespace ui {
 
-Ref<HLine> HLine::create(View *parent, double maxThickness)
-{
-    return Object::create<HLine>(parent, maxThickness);
-}
-
 HLine::HLine(View *parent, double maxThickness):
     View(parent)
 {

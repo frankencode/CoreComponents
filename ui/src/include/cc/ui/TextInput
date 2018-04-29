@@ -22,22 +22,21 @@ class TextInput: public Control
     friend class Object;
 
 public:
-    static TextInput *create(View *parent = 0);
-
     Property<String> text;
+    Property<String> placeholderText;
     Property<Font> font;
     Property<Color> ink;
     Property<Size> margin;
 
-private:
+protected:
     TextInput(View *parent = 0);
     ~TextInput();
 
-    void updateLayout();
-    void updateSize();
+private:
+    Property< Ref<const TextRun> > textRun;
 
-    bool onPointerClicked(const PointerEvent *event) override;
-    void paint() override;
+    bool onPointerClicked(const PointerEvent *event) final;
+    void paint() final;
 
     Ref<TextRun> textRun_;
     Ref<TextCursor> textCursor_;

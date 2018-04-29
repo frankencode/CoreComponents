@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/ui/ColumnLayout>
+#include <cc/ui/Column>
 #include <cc/ui/HLine>
 #include <cc/ui/Label>
 #include <cc/ui/TextInput>
@@ -15,24 +15,19 @@
 namespace cc {
 namespace ui {
 
-TextField *TextField::create(View *parent, String nameText)
-{
-    return Object::create<TextField>(parent, nameText);
-}
-
-TextField::TextField(View *parent, String labelText_):
+TextField::TextField(View *parent, const String &labelText_):
     Control(parent),
     labelText(labelText_)
 {
-    ColumnLayout::setup(this);
-
     // color = Color::Red(10);
 
-    Label *label = Label::create(this);
+    organize<Column>();
+
+    Label *label = add<Label>();
     label->text->bind([=]{ return labelText(); });
     label->padding = dp(16);
 
-    input_ = TextInput::create(this);
+    input_ = add<TextInput>();
     input_->focus->bind([=]{ return focus(); });
     input_->visible->bind([=]{ return input_->text() != "" || focus(); });
     input_->padding = dp(8);
@@ -46,12 +41,12 @@ TextField::TextField(View *parent, String labelText_):
         return input_->visible() ? app()->smallFont() : app()->defaultFont();
     });
 
-    Label *dummy = Label::create(this);
+    Label *dummy = add<Label>();
     dummy->visible->bind([=]{ return dummy->text() != "" && !input_->visible(); });
     dummy->text->bind([=]{ return placeholderText(); });
     dummy->padding = dp(8);
 
-    HLine *inputLine = HLine::create(this, dp(2));
+    HLine *inputLine = add<HLine>(dp(2));
     inputLine->thickness->bind([=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); });
     inputLine->padding->bind([=]{ return dp(8) - inputLine->size()[1]; });
     inputLine->ink->bind([=]{
@@ -61,21 +56,21 @@ TextField::TextField(View *parent, String labelText_):
         return style()->theme()->inputLineColor();
     });
 
-    View *messageArea = View::create(this);
+    View *messageArea = add<View>();
     messageArea->size->bind([=]{ return Size { size()[0], sp(12) }; });
     messageArea->padding = dp(8);
 
-    Label *help = Label::create(messageArea);
+    Label *help = messageArea->add<Label>();
     help->font->bind([=]{ return app()->smallFont(); });
     help->ink->bind([=]{ return style()->theme()->secondaryTextColor(); });
     help->text->bind([=]{ return helpText(); });
 
-    Label *error = Label::create(messageArea);
+    Label *error = messageArea->add<Label>();
     error->font->bind([=]{ return app()->smallFont(); });
     error->ink->bind([=]{ return style()->theme()->alertColor(); });
     error->text->bind([=]{ return "Error: " + errorText(); });
 
-    Label *status = Label::create(this);
+    Label *status = messageArea->add<Label>();
     status->font->bind([=]{ return app()->smallFont(); });
     status->text->bind([=]{ return statusText(); });
     status->pos->bind([=]{ return Point { messageArea->size()[0] - status->size()[0], 0 }; });

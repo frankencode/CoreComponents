@@ -12,12 +12,11 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = style()->theme()->windowColor();
+        inheritColor();
 
-        label_ = Label::create(this, "Press + | - (zoom in/out)");
+        label_ = add<Label>("Press + | - (zoom in/out)");
         label_->font = Font { 40 };
         label_->ink = Color::Black;
-        label_->margin = Size{ 1 };
         // label_->centerInParent();
 
         easeOn(label_->font, 1, easing::Bezier(0.5, -0.4, 0.5, 1.4));
@@ -25,7 +24,7 @@ class MainView: public View
 
     bool isStatic() const override { return false; }
 
-    bool onKeyPressed(const KeyEvent *event)
+    bool onKeyPressed(const KeyEvent *event) override
     {
         if (+(event->modifiers() & KeyModifier::Control))
         {
@@ -44,6 +43,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Hello, world!", WindowMode::Accelerated);
+    Window::open<MainView>("Hello, world!", WindowMode::Accelerated);
     return app->run();
 }

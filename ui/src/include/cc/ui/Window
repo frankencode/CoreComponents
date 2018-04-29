@@ -59,6 +59,11 @@ class Window: public Object
 public:
     static Window *open(View *view, String title = String{}, WindowMode mode = WindowMode::Default);
 
+    template<class T>
+    static Window *open(String title = String{}, WindowMode mode = WindowMode::Default) {
+        return open(Object::create<T>(), title, mode);
+    }
+
     View *view() const { return view_; }
 
     Property<bool> visible { true };
