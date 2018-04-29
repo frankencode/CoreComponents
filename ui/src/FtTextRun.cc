@@ -14,10 +14,7 @@ namespace cc {
 namespace ui {
 
 FtTextRun::FtTextRun():
-    glyphRuns_(FtGlyphRuns::create()),
-    firstLineHeight_(0),
-    byteCount_(0),
-    textAlign_(TextAlign::Left)
+    glyphRuns_(FtGlyphRuns::create())
 {}
 
 Ref<TextRun> FtTextRun::copy() const
@@ -29,7 +26,8 @@ Ref<TextRun> FtTextRun::copy() const
     textRun->advance_ = advance_;
     textRun->firstLineHeight_ = firstLineHeight_;
     textRun->size_ = size_;
-    textRun->minMargin_ = minMargin_;
+    textRun->maxAscender_ = maxAscender_;
+    textRun->minDescender_ = minDescender_;
     textRun->lineCount_ = lineCount_;
     textRun->byteCount_ = byteCount_;
     return textRun;
@@ -41,18 +39,15 @@ void FtTextRun::append(const String &text, const Font &font)
     glyphRuns_->append(run);
 
     if (run->advance()[1] == 0) {
-        Size size = run->size();
-        if (firstLineHeight_ < size[1]) size_[1] = firstLineHeight_ = size[1];
+        if (firstLineHeight_ < run->size()[1])
+            size_[1] = firstLineHeight_ = run->size()[1];
     }
     else
         size_[1] = firstLineHeight_ + run->advance()[1];
     if (size_[0] < run->advance()[0]) size_[0] = run->advance()[0];
 
-    {
-        Size m = run->minMargin();
-        if (minMargin_[0] < m[0]) minMargin_[0] = m[0];
-        if (minMargin_[1] < m[1]) minMargin_[1] = m[1];
-    }
+    if (run->maxAscender() > maxAscender_) maxAscender_ = run->maxAscender();
+    if (run->minDescender() < minDescender_) minDescender_ = run->minDescender();
 
     advance_ = run->advance();
     byteCount_ += text->count();
@@ -279,7 +274,8 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
         metaBlock->finalGlyphAdvance_ = lastRun->finalGlyphAdvance_;
     }
 
-    metaBlock->minMargin_ = minMargin_;
+    metaBlock->maxAscender_ = maxAscender_;
+    metaBlock->minDescender_ = minDescender_;
 
     return metaBlock;
 }
@@ -289,7 +285,8 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
     Ref<FtTextRun> textRun = Object::create<FtTextRun>();
     textRun->advance_ = metaBlock->advance_;
     textRun->size_ = metaBlock->size_;
-    textRun->minMargin_ = metaBlock->minMargin_;
+    textRun->maxAscender_ = metaBlock->maxAscender_;
+    textRun->minDescender_ = metaBlock->minDescender_;
     textRun->byteCount_ = metaBlock->text_->count();
     textRun->lineCount_ = metaBlock->lineCount_;
 

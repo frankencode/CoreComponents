@@ -24,10 +24,10 @@ class MainView: public View
         };
 
         Label *label = add<Label>(getClockText());
-        label->font = Font { "DejaVu Sans", 40 };
-        label->color = Color { 0xD0D0FF };
-        label->ink = Color::Black;
-        label->margin = Size { 20 };
+        label->font = Font { "DejaVu Sans", sp(40) };
+        label->color = 0xD0D0FF;
+        label->ink = 0x000000;
+        label->margin = sp(20);
         label->pos->bind([=]{ return center() - label->center(); });
 
         easeOn(label->angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));

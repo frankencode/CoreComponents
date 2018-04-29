@@ -22,7 +22,6 @@ class Label: public View
 
 public:
     Property<String> text;
-    Property<Point> textPos;
     Property<Font> font;
     Property<Color> ink;
     Property<Size> margin;
@@ -32,7 +31,9 @@ protected:
     ~Label();
 
 private:
-    void paint() final;
+    Property<Point> textPos;
+
+    void paint() override;
 
     Property< Ref<const TextRun> > textRun;
 };

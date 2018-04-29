@@ -31,7 +31,8 @@ public:
 
     Point advance() const override { return advance_; }
     Size size() const override { return size_ ; }
-    Size minMargin() const override { return minMargin_; }
+    double maxAscender() const override { return maxAscender_; }
+    double minDescender() const override { return minDescender_; }
 
     int byteCount() const override { return text_->count(); }
     int lineCount() const override { return lineCount_; }
@@ -76,8 +77,9 @@ private:
 
     Point advance_;
     Size size_;
-    Size minMargin_;
-    int lineCount_;
+    double maxAscender_ { 0 };
+    double minDescender_ { 0 };
+    int lineCount_ { 1 };
 
     Ref<CairoGlyphs> cairoGlyphs_;
     Ref<CairoTextClusters> cairoTextClusters_;

@@ -30,7 +30,8 @@ public:
 
     virtual Point advance() const = 0;
     virtual Size size() const = 0;
-    virtual Size minMargin() const = 0;
+    virtual double maxAscender() const = 0;
+    virtual double minDescender() const = 0;
     virtual int byteCount() const = 0;
     virtual int lineCount() const = 0;
     double lineHeight() const;

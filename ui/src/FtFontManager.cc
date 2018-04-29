@@ -73,9 +73,8 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
                 case FontSmoothing::VrgbSubpixel:
                 case FontSmoothing::VbgrSubpixel:
                     return FT_LOAD_TARGET_LCD_V;
-                case FontSmoothing::None: {
+                case FontSmoothing::None:
                     return FT_LOAD_TARGET_MONO;
-                }
             }
             return FT_LOAD_DEFAULT;
         }(ftScaledFont->font());
@@ -94,8 +93,9 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
 
     Point pos = origin;
     Point pos0 = origin;
-    const double ascender = std::ceil( ftFace->ascender * ftScaledFont->size() / ftFace->units_per_EM );
-    ftGlyphRun->minMargin_ = Size { 0, std::ceil( std::abs( ftFace->descender * ftScaledFont->size() / ftFace->units_per_EM ) ) };
+    const double maxGlyphHeight =
+        std::ceil( ftFace->ascender * ftScaledFont->size() / ftFace->units_per_EM ) +
+        std::ceil( -ftFace->descender * ftScaledFont->size() / ftFace->units_per_EM );
 
     Step glyphAdvance;
 
@@ -135,10 +135,11 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
         cairoGlyphs->at(cairoGlyphsCount).y = pos[1];
         ++cairoGlyphsCount;
 
-        if (
-            ftFace->glyph->advance.x == 0 &&
-            ftFace->glyph->advance.y == 0 &&
-            cairoTextClustersCount > 0
+        auto g = ftFace->glyph;
+        auto a = &ftFace->glyph->advance;
+        auto m = &ftFace->glyph->metrics;
+
+        if (a->x == 0 && a->y == 0 && cairoTextClustersCount > 0
         ) {
             cairoTextClusters->at(cairoTextClustersCount - 1).num_bytes += byteCount;
             cairoTextClusters->at(cairoTextClustersCount - 1).num_glyphs += 1;
@@ -149,9 +150,14 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
             ++cairoTextClustersCount;
         }
 
+        const double ascender = std::ceil(m->horiBearingY / 64.);
+        const double descender = std::floor(ascender - m->height / 64.);
+        if (ftGlyphRun->maxAscender_ < ascender) ftGlyphRun->maxAscender_ = ascender;
+        if (ftGlyphRun->minDescender_ > descender) ftGlyphRun->minDescender_ = descender;
+
         glyphAdvance = Step {
-            double(ftFace->glyph->advance.x + ftFace->glyph->rsb_delta - ftFace->glyph->lsb_delta),
-            double(ftFace->glyph->advance.y)
+            double(a->x + g->rsb_delta - g->lsb_delta),
+            double(a->y)
         } / 64.;
 
         pos += glyphAdvance;
@@ -163,7 +169,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, c
         Step step = pos - pos0;
         Size size {
             std::abs(step[0]),
-            std::abs(step[1]) + ascender
+            std::abs(step[1]) + maxGlyphHeight
         };
 
         ftGlyphRun->advance_ = pos;

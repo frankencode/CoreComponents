@@ -23,7 +23,6 @@ class TextInput: public Control
 
 public:
     Property<String> text;
-    Property<String> placeholderText;
     Property<Font> font;
     Property<Color> ink;
     Property<Size> margin;

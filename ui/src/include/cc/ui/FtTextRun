@@ -30,7 +30,8 @@ public:
 
     Point advance() const override { return advance_; }
     Size size() const override { return size_; }
-    Size minMargin() const override { return minMargin_; }
+    double maxAscender() const override { return maxAscender_; }
+    double minDescender() const override { return minDescender_; }
     int byteCount() const override { return byteCount_; }
     int lineCount() const override { return lineCount_; }
 
@@ -61,13 +62,13 @@ private:
 
     Ref<FtGlyphRuns> glyphRuns_;
     Point advance_;
-    double firstLineHeight_;
+    double firstLineHeight_ { 0 };
     Size size_;
-    Size minMargin_;
-    int byteCount_;
-    int lineCount_;
-
-    TextAlign textAlign_;
+    double maxAscender_ { 0 };
+    double minDescender_ { 0 };
+    int byteCount_ { 0 };
+    int lineCount_ { 1 };
+    TextAlign textAlign_ { TextAlign::Left };
 };
 
 }} // namespace cc::ui

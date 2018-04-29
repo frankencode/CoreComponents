@@ -24,8 +24,6 @@ TextInput::TextInput(View *parent):
 
     textRun->bind([=]{ return TextRun::create(text(), font()); });
 
-    margin->bind([=]{ return textRun()->minMargin(); });
-
     size->bind([=]{
         return Size {
             parent->size()[0],
