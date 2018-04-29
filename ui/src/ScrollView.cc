@@ -63,6 +63,7 @@ bool ScrollView::onPointerReleased(const PointerEvent *event)
         if (System::now() - lastDragTime_ > minHoldTime()) speed_ = Point{};
         isDragged_ = false;
     }
+    CC_INSPECT(carrierInsideBoundary());
     if (carrierInsideBoundary()) {
         carrierBounceStart();
     }
@@ -113,7 +114,7 @@ bool ScrollView::carrierInsideBoundary() const
 
     return
         (w > size()[0] && (x > 0 || x + w < size()[0])) ||
-        (h > size()[0] && (y > 0 || y + h < size()[1]));
+        (h > size()[1] && (y > 0 || y + h < size()[1]));
 }
 
 Point ScrollView::carrierStep(Point p, double b)
