@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug>
 #include <cc/ui/Application>
 #include <cc/ui/TextRun>
 #include <cc/ui/Label>
@@ -30,19 +29,6 @@ Label::Label(View *parent, const String &text_, const Font &font_):
 
     textRun->bind([=]{ return TextRun::create(text(), font()); });
 
-    textPos->bind([=]{
-        return
-            0.5 * size() -
-            0.5 * Size {
-                textRun()->size()[0],
-                textRun()->maxAscender() - textRun()->minDescender()
-            } +
-            Size {
-                0,
-                textRun()->maxAscender()
-            };
-    });
-
     size->bind([=]{
         return
             2 * margin() +
@@ -58,12 +44,25 @@ Label::Label(View *parent, const String &text_, const Font &font_):
         ink->bind([=]{ return style()->theme()->primaryTextColor(); });
 
     textRun->connect([=]{ update(); });
-    textPos->connect([=]{ update(); });
     ink->connect([=]{ update(); });
 }
 
 Label::~Label()
 {}
+
+Point Label::textPos() const
+{
+    return
+        center() -
+        0.5 * Size {
+            textRun()->size()[0],
+            textRun()->maxAscender() - textRun()->minDescender()
+        } +
+        Size {
+            0,
+            textRun()->maxAscender()
+        };
+}
 
 void Label::paint()
 {

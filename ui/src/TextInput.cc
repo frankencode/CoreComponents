@@ -35,10 +35,18 @@ TextInput::TextInput(View *parent):
 
     textRun->connect([=]{ update(); });
     ink->connect([=]{ update(); });
+
+    cursor->bind([=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); });
 }
 
 TextInput::~TextInput()
 {}
+
+Point TextInput::textPos() const
+{
+    double a = std::ceil(font()->getMetrics()->ascender());
+    return margin() + Point { 0, a };
+}
 
 bool TextInput::onPointerClicked(const PointerEvent *event)
 {
@@ -52,13 +60,7 @@ void TextInput::paint()
 {
     Painter p(this);
     if (ink()) p->setSource(ink());
-    p->showTextRun(
-        Point {
-            margin()[0],
-            0.5 * (size()[1] - textRun()->size()[1])
-        },
-        textRun()
-    );
+    p->showTextRun(textPos(), textRun());
 }
 
 }} // namespace cc::ui

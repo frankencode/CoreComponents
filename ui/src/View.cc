@@ -103,7 +103,8 @@ Control *View::getTopControlAt(Point g)
 {
     View *view = getTopViewAt(g);
     while (view && !Object::cast<Control *>(view)) view = view->parent();
-    return view ? Object::cast<Control *>(view) : nullptr;
+    if (!view) return nullptr;
+    return Object::cast<Control *>(view);
 }
 
 void View::inheritColor()
@@ -332,6 +333,11 @@ Application *View::app() const
 StylePlugin *View::style() const
 {
     return StyleManager::instance()->activePlugin();
+}
+
+const Theme *View::theme() const
+{
+    return style()->theme();
 }
 
 Window *View::window() const

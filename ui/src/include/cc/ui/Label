@@ -26,13 +26,13 @@ public:
     Property<Color> ink;
     Property<Size> margin;
 
+    Point textPos() const;
+
 protected:
     Label(View *parent, const String &text = String{}, const Font &font = Font{});
     ~Label();
 
 private:
-    Property<Point> textPos;
-
     void paint() override;
 
     Property< Ref<const TextRun> > textRun;

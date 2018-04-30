@@ -22,7 +22,7 @@ class TextField: public Control
 public:
     Property<String> labelText;
     Property<String> inputText;
-    Property<String> placeholderText;
+    Property<String> dummyText;
     Property<String> helpText;
     Property<String> statusText;
     Property<String> errorText;
@@ -31,8 +31,6 @@ private:
     TextField(View *parent, const String &labelText);
 
     bool onPointerClicked(const PointerEvent *event);
-
-    TextInput *input_;
 };
 
 }} // namespace cc::ui

@@ -27,6 +27,8 @@ public:
     Property<Color> ink;
     Property<Size> margin;
 
+    Point textPos() const;
+
 protected:
     TextInput(View *parent = 0);
     ~TextInput();
