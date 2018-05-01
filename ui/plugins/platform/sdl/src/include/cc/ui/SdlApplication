@@ -29,7 +29,6 @@ public:
 
     Ref<Cursor> createCursor(CursorShape shape) override;
 
-    const Cursor *cursor() const override;
     void setCursor(const Cursor *cursor) override;
     void unsetCursor() override;
 
@@ -65,8 +64,6 @@ private:
 
     typedef Map<uint32_t, Ref<SdlWindow> > Windows;
     Ref<Windows> windows_;
-
-    Ref<const Cursor> cursor_;
 
     SDL_Event *event_;
     Uint32 timerEvent_;

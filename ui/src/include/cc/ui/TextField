@@ -30,7 +30,7 @@ public:
 private:
     TextField(View *parent, const String &labelText);
 
-    bool onPointerClicked(const PointerEvent *event);
+    TextInput *input_;
 };
 
 }} // namespace cc::ui

@@ -51,14 +51,6 @@ View::~View()
         // destroy the organizer before releasing the children for efficiency
 }
 
-void View::disband()
-{
-    CC_ASSERT2(parent_, "Cannot manually destroy the top-level view");
-    if (!parent_) return;
-    visible = false;
-    parent_->removeChild(this);
-}
-
 Point View::mapToGlobal(Point l) const
 {
     for (const View *view = this; view->parent_; view = view->parent_)
@@ -87,15 +79,11 @@ bool View::containsGlobal(Point g) const
 
 View *View::getTopViewAt(Point g)
 {
-    for (auto pair: children_)
-    {
+    for (auto pair: children_) {
         View *child = pair->value();
-        if (child->containsGlobal(g)) {
-            View *grandChild = child->getTopViewAt(g);
-            return (child == grandChild) ? child : grandChild;
-        }
+        if (child->containsGlobal(g))
+            return child->getTopViewAt(g);
     }
-
     return this;
 }
 
@@ -104,7 +92,18 @@ Control *View::getTopControlAt(Point g)
     View *view = getTopViewAt(g);
     while (view && !Object::cast<Control *>(view)) view = view->parent();
     if (!view) return nullptr;
-    return Object::cast<Control *>(view);
+    Control *control = Object::cast<Control *>(view);
+    if (!control->delegate()) return control;
+    return control->delegate();
+}
+
+bool View::isParentOfOrEqual(View *other) const
+{
+    for (View *view = other; view; view = view->parent()) {
+        if (view == this)
+            return true;
+    }
+    return false;
 }
 
 void View::inheritColor()
@@ -123,6 +122,134 @@ void View::centerInParent()
 {
     if (parent())
         pos->bind([=]{ return 0.5 * (parent()->size() - size()); });
+}
+
+bool View::feedFingerEvent(FingerEvent *event)
+{
+    PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
+
+    if (event->action() == PointerAction::Pressed)
+    {
+        if (onPointerPressed(event) || onFingerPressed(event))
+            return true;
+    }
+    else if (event->action() == PointerAction::Released)
+    {
+        bool eaten = onPointerReleased(event) || onFingerReleased(event);
+
+        if (app()->pressedControl()) {
+            if (onPointerClicked(event) || onFingerClicked(event))
+                eaten = true;
+        }
+
+        if (eaten) return true;
+    }
+    else if (event->action() == PointerAction::Moved)
+    {
+        if (onPointerMoved(event) || onFingerMoved(event))
+            return true;
+    }
+
+    for (auto pair: children_)
+    {
+        View *child = pair->value();
+
+        if (child->visible() && child->containsGlobal(event->pos()))
+        {
+            if (child->feedFingerEvent(event))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool View::feedMouseEvent(MouseEvent *event)
+{
+    PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
+
+    if (event->action() == PointerAction::Pressed)
+    {
+        if (onPointerPressed(event) || onMousePressed(event))
+            return true;
+    }
+    else if (event->action() == PointerAction::Released)
+    {
+        bool eaten = onPointerReleased(event) || onMouseReleased(event);
+
+        if (app()->pressedControl()) {
+            if (onPointerClicked(event) || onMouseClicked(event))
+                eaten = true;
+        }
+
+        if (eaten) return true;
+    }
+    else if (event->action() == PointerAction::Moved)
+    {
+        if (
+            (event->button() != MouseButton::None && onPointerMoved(event)) ||
+            onMouseMoved(event)
+        )
+            return true;
+    }
+
+    for (auto pair: children_)
+    {
+        View *child = pair->value();
+
+        if (child->visible() && child->containsGlobal(event->pos()))
+        {
+            if (child->feedMouseEvent(event))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool View::feedWheelEvent(WheelEvent *event)
+{
+    if (containsGlobal(event->mousePos()))
+    {
+        if (onWheelMoved(event))
+            return true;
+    }
+
+    for (auto pair: children_)
+    {
+        View *child = pair->value();
+
+        if (child->visible() && child->containsGlobal(event->mousePos()))
+        {
+            if (child->feedWheelEvent(event))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool View::feedKeyEvent(KeyEvent *event)
+{
+    if (event->action() == KeyAction::Pressed)
+    {
+        if (onKeyPressed(event)) return true;
+    }
+    else if (event->action() == KeyAction::Released)
+    {
+        if (onKeyReleased(event)) return true;
+    }
+
+    for (auto pair: children_)
+    {
+        View *child = pair->value();
+        if (child->visible()) {
+            if (child->feedKeyEvent(event))
+                return true;
+        }
+    }
+
+    return false;
 }
 
 bool View::isOpaque() const
@@ -186,135 +313,6 @@ void View::update(UpdateReason reason)
     w->addToFrame(UpdateRequest::create(reason, this));
 }
 
-bool View::feedFingerEvent(FingerEvent *event)
-{
-    PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
-
-    if (event->action() == PointerAction::Pressed)
-    {
-        if (onPointerPressed(event) || onFingerPressed(event))
-            return true;
-    }
-    else if (event->action() == PointerAction::Released)
-    {
-        bool eaten = onPointerReleased(event) || onFingerReleased(event);
-
-        if (containsLocal(event->pos()))
-        {
-            if (onPointerClicked(event) || onFingerClicked(event))
-                eaten = true;
-        }
-
-        if (eaten) return true;
-    }
-    else if (event->action() == PointerAction::Moved)
-    {
-        if (onPointerMoved(event) || onFingerMoved(event))
-            return true;
-    }
-
-    for (auto pair: children_)
-    {
-        View *child = pair->value();
-
-        if (child->containsGlobal(event->pos()))
-        {
-            if (child->feedFingerEvent(event))
-                return true;
-        }
-    }
-
-    return false;
-}
-
-bool View::feedMouseEvent(MouseEvent *event)
-{
-    PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
-
-    if (event->action() == PointerAction::Pressed)
-    {
-        if (onPointerPressed(event) || onMousePressed(event))
-            return true;
-    }
-    else if (event->action() == PointerAction::Released)
-    {
-        bool eaten = onPointerReleased(event) || onMouseReleased(event);
-
-        if (containsLocal(event->pos()))
-        {
-            if (onPointerClicked(event) || onMouseClicked(event))
-                eaten = true;
-        }
-
-        if (eaten) return true;
-    }
-    else if (event->action() == PointerAction::Moved)
-    {
-        if (
-            (event->button() != MouseButton::None && onPointerMoved(event)) ||
-            onMouseMoved(event)
-        )
-            return true;
-    }
-
-    for (auto pair: children_)
-    {
-        View *child = pair->value();
-
-        if (child->containsGlobal(event->pos()))
-        {
-            if (child->feedMouseEvent(event))
-                return true;
-        }
-    }
-
-    return false;
-}
-
-bool View::feedWheelEvent(WheelEvent *event)
-{
-    if (containsGlobal(event->mousePos()))
-    {
-        if (onWheelMoved(event))
-            return true;
-    }
-
-    for (auto pair: children_)
-    {
-        View *child = pair->value();
-
-        if (child->feedWheelEvent(event))
-            return true;
-    }
-
-    return false;
-}
-
-bool View::feedKeyEvent(KeyEvent *event)
-{
-    if (event->action() == KeyAction::Pressed)
-    {
-        if (onKeyPressed(event)) return true;
-    }
-    else if (event->action() == KeyAction::Released)
-    {
-        if (onKeyReleased(event)) return true;
-    }
-
-    for (auto pair: children_)
-    {
-        if (pair->value()->feedKeyEvent(event))
-            return true;
-    }
-
-    return false;
-}
-
-void View::init()
-{
-    if (parent()) parent()->childReady(this);
-}
-
 void View::childReady(View *child)
 {
     if (organizer_) organizer_->childReady(child);
@@ -354,6 +352,11 @@ Image *View::image()
     if (!image_ || image_->size() != Size{::ceil(size()[0]), ::ceil(size()[1])})
         image_ = Image::create(size());
     return image_;
+}
+
+void View::init()
+{
+    if (parent()) parent()->childReady(this);
 }
 
 uint64_t View::nextSerial() const

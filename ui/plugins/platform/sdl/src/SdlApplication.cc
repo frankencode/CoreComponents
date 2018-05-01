@@ -73,21 +73,14 @@ Ref<Cursor> SdlApplication::createCursor(CursorShape shape)
     return SdlCursor::create(shape);
 }
 
-const Cursor *SdlApplication::cursor() const
-{
-    return cursor_;
-}
-
 void SdlApplication::setCursor(const Cursor *cursor)
 {
     SDL_SetCursor(Object::cast<const SdlCursor *>(cursor)->sdlCursor_);
-    cursor_ = cursor;
 }
 
 void SdlApplication::unsetCursor()
 {
     SDL_SetCursor(SDL_GetDefaultCursor());
-    cursor_ = nullptr;
 }
 
 String SdlApplication::getClipboardText() const

@@ -50,9 +50,7 @@ Point TextInput::textPos() const
 
 bool TextInput::onPointerClicked(const PointerEvent *event)
 {
-    if (!focus())
-        acquireTextInputFocus();
-
+    app()->focusControl = this;
     return true;
 }
 

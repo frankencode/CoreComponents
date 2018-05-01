@@ -14,35 +14,20 @@ namespace ui {
 Control::Control(View *parent):
     View(parent)
 {
-    hover->bind([=]{ return app()->hoverControl() == this; });
-    pressed->bind([=]{ return app()->pressedControl() == this; });
-
-    focus->bind([=]{
-        return app()->textInputFocus() ? (app()->textInputFocus()->target() == this) : false;
-    });
+    hover->bind([=]{ return isParentOfOrEqual(app()->hoverControl()); });
+    pressed->bind([=]{ return isParentOfOrEqual(app()->pressedControl()); });
+    focus->bind([=]{ return isParentOfOrEqual(app()->focusControl()); });
 }
 
-Control::~Control()
+Rect Control::textInputArea() const
 {
-    releaseTextInputFocus();
+    return Rect{ Point{}, size() };
 }
 
-bool Control::acquireTextInputFocus()
-{
-    if (focus()) return true;
-    return TextInputFocus::create(this)->isValid();
-}
+void Control::onTextEdited(String text, int start, int length)
+{}
 
-void Control::releaseTextInputFocus()
-{
-    if (!Application::fin())
-        app()->textInputFocus = nullptr;
-}
-
-Rect Control::textInputArea() const { return Rect{}; }
-void Control::onTextInputStarted() {}
-void Control::onTextInputStopped() {}
-void Control::onTextEdited(String text, int start, int length) {}
-void Control::onTextInput(String text) {}
+void Control::onTextInput(String text)
+{}
 
 }} // namespace cc::ui

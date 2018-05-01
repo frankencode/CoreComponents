@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug>
 #include <cc/ui/PlatformManager>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/TimeMaster>
@@ -33,7 +32,29 @@ Application *Application::instance()
 
 Application::Application():
     touchTargets_(TouchTargets::create())
-{}
+{
+    focusControl->connect([=]{
+        if (focusControlSaved_) stopTextInput();
+        focusControlSaved_ = focusControl();
+        if (focusControl()) {
+            Rect a = focusControl()->textInputArea();
+            startTextInput(
+                focusControl()->window(),
+                Rect { focusControl()->mapToGlobal(a->pos()), a->size() }
+            );
+        }
+    });
+
+    cursorControl->connect([=]{
+        if (cursorControl()) cursor = cursorControl()->cursor();
+        else cursor = nullptr;
+    });
+
+    cursor->connect([=]{
+        if (cursor()) setCursor(cursor());
+        else unsetCursor();
+    });
+}
 
 Application::~Application()
 {
@@ -57,15 +78,8 @@ void Application::notifyTimer(Timer *t)
 
 bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 {
-    if (cursor()) {
-        unsetCursor();
-        cursorWindow_->cursorControl_ = nullptr;
-        cursorWindow_ = nullptr;
-    }
-
-    if (hoverControl())
-        hoverControl = nullptr;
-
+    cursorControl = nullptr;
+    hoverControl = nullptr;
 
     if (event->action() == PointerAction::Pressed)
     {
@@ -89,26 +103,25 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 
 bool Application::feedMouseEvent(Window *window, MouseEvent *event)
 {
+    Control *topControl = window->view()->getTopControlAt(event->pos());
+
     if (event->action() == PointerAction::Moved)
     {
-        hoverControl = window->view()->getTopControlAt(event->pos());
+        hoverControl = topControl;
     }
     else if (event->action() == PointerAction::Pressed)
     {
         if (!pressedControl())
-            pressedControl = window->view()->getTopControlAt(event->pos());
+            pressedControl = topControl;
 
         hoverControl = nullptr;
     }
     else if (event->action() == PointerAction::Released)
     {
-        if (
-            textInputFocus() && textInputFocus()->isValid() &&
-            textInputFocus()->target() != pressedControl()
-        )
-            textInputFocus = nullptr;
+        if (focusControl() != pressedControl())
+            focusControl = nullptr;
 
-        hoverControl = window->view()->getTopControlAt(event->pos());
+        hoverControl = topControl;
     }
 
     bool eaten = false;
@@ -124,18 +137,7 @@ bool Application::feedMouseEvent(Window *window, MouseEvent *event)
     if (!eaten)
         eaten = window->view()->feedMouseEvent(event);
 
-    if (hoverControl() && hoverControl()->cursor() && cursor() != hoverControl()->cursor()) {
-        setCursor(hoverControl()->cursor());
-        cursorWindow_ = window;
-        cursorWindow_->cursorControl_ = hoverControl();
-    }
-    else if (cursor()) {
-        if (cursorWindow_ != window || !cursorWindow_->cursorControl_->containsGlobal(event->pos())) {
-            unsetCursor();
-            cursorWindow_->cursorControl_ = nullptr;
-            cursorWindow_ = nullptr;
-        }
-    }
+    cursorControl = topControl;
 
     return eaten;
 }
@@ -152,8 +154,8 @@ bool Application::feedKeyEvent(Window *window, KeyEvent *event)
 
 bool Application::feedTextEditingEvent(const String &text, int start, int length)
 {
-    if (textInputFocus() && textInputFocus()->isValid()) {
-        textInputFocus()->target()->onTextEdited(text, start, length);
+    if (focusControl()) {
+        focusControl()->onTextEdited(text, start, length);
         return true;
     }
 
@@ -162,8 +164,8 @@ bool Application::feedTextEditingEvent(const String &text, int start, int length
 
 bool Application::feedTextInputEvent(const String &text)
 {
-    if (textInputFocus() && textInputFocus()->isValid()) {
-        textInputFocus()->target()->onTextInput(text);
+    if (focusControl()) {
+        focusControl()->onTextInput(text);
         return true;
     }
 

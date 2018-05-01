@@ -25,19 +25,15 @@ public:
     Property<bool> pressed; ///< the control is pressed by the user
     Property<bool> focus;   ///< this control holds text input focus
 
-    bool acquireTextInputFocus();
-    void releaseTextInputFocus();
-
 protected:
+    friend class View;
     friend class Application;
-    friend class TextInputFocus;
+
+    Property< Ref<Control> > delegate;
 
     Control(View *parent = 0);
-    ~Control();
 
     virtual Rect textInputArea() const;
-    virtual void onTextInputStarted();
-    virtual void onTextInputStopped();
     virtual void onTextEdited(String text, int start, int length);
     virtual void onTextInput(String text);
 };

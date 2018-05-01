@@ -94,8 +94,6 @@ protected:
 
     Ref<View> view_;
     Ref<Frame> nextFrame_;
-
-    const Control *cursorControl_ { nullptr };
 };
 
 }} // namespace cc::ui

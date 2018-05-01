@@ -57,6 +57,7 @@ public:
 
     View *getTopViewAt(Point g);
     Control *getTopControlAt(Point g);
+    bool isParentOfOrEqual(View *other) const;
 
     double left() const { return pos()[0]; }
     double right() const { return pos()[0] + size()[0]; }
@@ -69,7 +70,6 @@ public:
 
     void inheritColor();
     void centerInParent();
-    void disband();
 
     template<class T>
     T *organize() { return Object::create<T>(this); }
@@ -77,12 +77,16 @@ public:
     template<class T, class... Args>
     T *add(Args... args) { return Object::create<T>(this, args...); }
 
+    virtual bool feedFingerEvent(FingerEvent *event);
+    virtual bool feedMouseEvent(MouseEvent *event);
+    virtual bool feedWheelEvent(WheelEvent *event);
+    virtual bool feedKeyEvent(KeyEvent *event);
+
 protected:
     friend class Object;
     friend class Window;
     friend class Application;
     friend class Organizer;
-    friend class TextInputFocus;
 
     View(View *parent = 0);
     ~View();
@@ -132,11 +136,6 @@ protected:
     void adoptChild(View *parent, View *child);
 
 private:
-    virtual bool feedFingerEvent(FingerEvent *event);
-    virtual bool feedMouseEvent(MouseEvent *event);
-    virtual bool feedWheelEvent(WheelEvent *event);
-    virtual bool feedKeyEvent(KeyEvent *event);
-
     void init();
     void polish(Window *window);
 

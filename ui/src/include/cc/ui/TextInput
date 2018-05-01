@@ -36,8 +36,8 @@ protected:
 private:
     Property< Ref<const TextRun> > textRun;
 
-    bool onPointerClicked(const PointerEvent *event) final;
-    void paint() final;
+    bool onPointerClicked(const PointerEvent *event) override;
+    void paint() override;
 
     Ref<TextRun> textRun_;
     Ref<TextCursor> textCursor_;

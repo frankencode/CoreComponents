@@ -11,7 +11,6 @@
 #include <cc/ui/Window>
 #include <cc/ui/Font>
 #include <cc/ui/Cursor>
-#include <cc/ui/TextInputFocus>
 
 namespace cc { template<class> class Set; }
 
@@ -35,17 +34,15 @@ public:
     Property<Font> defaultFont;
     Property<Font> smallFont;
 
-    Property< Ref<const TextInputFocus> > textInputFocus;
-
     Property< Ref<Control> > hoverControl;
     Property< Ref<Control> > pressedControl;
+    Property< Ref<Control> > focusControl;
+    Property< Ref<Control> > cursorControl; // FIXME: make private?
+    Property< Ref<const Cursor> > cursor; // FIXME: make private?
 
     virtual Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) = 0;
 
     virtual Ref<Cursor> createCursor(CursorShape shape) = 0;
-    virtual const Cursor *cursor() const = 0;
-    virtual void setCursor(const Cursor *cursor) = 0;
-    virtual void unsetCursor() = 0;
 
     virtual String getClipboardText() const = 0;
     virtual void setClipboardText(String text) = 0;
@@ -59,7 +56,6 @@ public:
 
 protected:
     friend class View;
-    friend class TextInputFocus;
 
     static bool fin_;
 
@@ -67,6 +63,9 @@ protected:
     ~Application();
 
     virtual void init(int argc, char **argv) = 0;
+
+    virtual void setCursor(const Cursor *cursor) = 0;
+    virtual void unsetCursor() = 0;
 
     virtual void startTextInput(const Window *window, const Rect &inputArea) = 0;
     virtual void stopTextInput() = 0;
@@ -85,7 +84,7 @@ protected:
     typedef Map<TouchFingerId, Ref<Control> > TouchTargets; // FIXME: rename to TouchedControl
     Ref<TouchTargets> touchTargets_;
 
-    Window *cursorWindow_ { nullptr };
+    const Control *focusControlSaved_ { nullptr };
 };
 
 }} // namespace cc::ui
