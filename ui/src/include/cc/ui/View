@@ -72,6 +72,7 @@ public:
     void anchorTopRightTo(Point l) { pos->bind([=]{ return l - Step { size()[0], 0 }; }); }
     void anchorBottomLeftTo(Point l) { pos->bind([=]{ return l - Step { 0, size()[1] }; }); }
     void anchorBottomRighTo(Point l) { pos->bind([=]{ return l - size(); }); }
+    void anchorCenterTo(Point l) { pos->bind([=]{ return l - center(); }); }
 
     void inheritColor();
     void centerInParent();
