@@ -59,14 +59,19 @@ public:
     Control *getTopControlAt(Point g);
     bool isParentOfOrEqual(View *other) const;
 
-    double left() const { return pos()[0]; }
-    double right() const { return pos()[0] + size()[0]; }
     double top() const { return pos()[1]; }
+    double left() const { return pos()[0]; }
     double bottom() const { return pos()[1] + size()[1]; }
+    double right() const { return pos()[0] + size()[0]; }
     Point topLeft() const { return pos(); }
     Point topRight() const { return pos() + Step { size()[0], 0 }; }
     Point bottomLeft() const { return pos() + Step { 0, size()[1] }; }
     Point bottomRight() const { return pos() + size(); }
+
+    void anchorTopLeftTo(Point l) { pos->bind([=]{ return l; }); }
+    void anchorTopRightTo(Point l) { pos->bind([=]{ return l - Step { size()[0], 0 }; }); }
+    void anchorBottomLeftTo(Point l) { pos->bind([=]{ return l - Step { 0, size()[1] }; }); }
+    void anchorBottomRighTo(Point l) { pos->bind([=]{ return l - size(); }); }
 
     void inheritColor();
     void centerInParent();
