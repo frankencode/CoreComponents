@@ -34,13 +34,17 @@ protected:
     ~TextInput();
 
 private:
-    Property< Ref<const TextRun> > textRun;
+    Property<Ref<const TextRun>> textRun;
+    Property<Ref<TextCursor>> textCursor;
+    Property<int> textCursorOffset;
+
+    void onTextEdited(const String &chunk, int start, int length) override;
+    void onTextInput(const String &chunk);
 
     bool onPointerClicked(const PointerEvent *event) override;
+
     void paint() override;
 
-    Ref<TextRun> textRun_;
-    Ref<TextCursor> textCursor_;
     Ref<Timer> timer_;
 };
 

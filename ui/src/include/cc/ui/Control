@@ -34,8 +34,8 @@ protected:
     Control(View *parent = 0);
 
     virtual Rect textInputArea() const;
-    virtual void onTextEdited(String text, int start, int length);
-    virtual void onTextInput(String text);
+    virtual void onTextEdited(const String &text, int start, int length);
+    virtual void onTextInput(const String &text);
 };
 
 }} // namespace cc::ui

@@ -24,10 +24,10 @@ Rect Control::textInputArea() const
     return Rect{ Point{}, size() };
 }
 
-void Control::onTextEdited(String text, int start, int length)
+void Control::onTextEdited(const String &text, int start, int length)
 {}
 
-void Control::onTextInput(String text)
+void Control::onTextInput(const String &text)
 {}
 
 }} // namespace cc::ui

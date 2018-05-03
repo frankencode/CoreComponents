@@ -23,6 +23,7 @@ TextInput::TextInput(View *parent):
     font->bind([=]{ return app()->defaultFont(); });
 
     textRun->bind([=]{ return TextRun::create(text(), font()); });
+    textCursor->bind([=]{ return textRun()->getTextCursor(textCursorOffset()); });
 
     size->bind([=]{
         return Size {
@@ -34,6 +35,7 @@ TextInput::TextInput(View *parent):
     ink->bind([=]{ return style()->theme()->primaryTextColor(); });
 
     textRun->connect([=]{ update(); });
+    textCursor->connect([=]{ update(); });
     ink->connect([=]{ update(); });
 
     cursor->bind([=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); });
@@ -48,6 +50,21 @@ Point TextInput::textPos() const
     return margin() + Point { 0, a };
 }
 
+void TextInput::onTextEdited(const String &chunk, int start, int length)
+{
+    CC_INSPECT(chunk);
+}
+
+void TextInput::onTextInput(const String &chunk)
+{
+    text =
+        text()->copy(0, textCursorOffset()) +
+        chunk +
+        text()->copy(textCursorOffset(), text()->count());
+
+    textCursorOffset += chunk->count();
+}
+
 bool TextInput::onPointerClicked(const PointerEvent *event)
 {
     app()->focusControl = this;
@@ -59,6 +76,11 @@ void TextInput::paint()
     Painter p(this);
     if (ink()) p->setSource(ink());
     p->showTextRun(textPos(), textRun());
+    p->rectangle(
+        textPos() + textCursor()->posA(),
+        Size { dp(1), (textCursor()->posB() - textCursor()->posA())[1] }
+    );
+    p->fill();
 }
 
 }} // namespace cc::ui
