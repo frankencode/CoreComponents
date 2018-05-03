@@ -74,4 +74,10 @@ private:
     mutable volatile int refCount_;
 };
 
+template<class T, class... Args>
+inline Ref<T> fly(Args... args)
+{
+    return Object::create<T>(args...);
+}
+
 } // namespace cc
