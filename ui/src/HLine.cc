@@ -14,7 +14,7 @@ namespace ui {
 HLine::HLine(View *parent, double maxThickness):
     View(parent)
 {
-    color = Color::Transparent;
+    inheritPaper();
 
     size->bind([=]{
         return Size { parent->size()[0], maxThickness };

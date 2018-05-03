@@ -17,7 +17,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Color{"#FFFFFF"};
+        paper = 0xFFFFFF;
     }
 
     void paint() override
@@ -26,15 +26,15 @@ class MainView: public View
 
         p->translate(size()/2);
 
-        p->setSource(Color{"#FF000080"});
+        p->setSource(0xFF000080);
         p->circle(-Point{30, 0}, 60);
         p->fill();
 
-        p->setSource(Color{"#00FF0080"});
+        p->setSource(0x00FF0080);
         p->circle(Point{0, 0}, 60);
         p->fill();
 
-        p->setSource(Color{"#0000FF80"});
+        p->setSource(0x0000FF80);
         p->circle(Point{30, 0}, 60);
         p->fill();
     }
@@ -61,6 +61,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Hello, world!", WindowMode::Default|WindowMode::InputFocus);
+    Window::open(Object::create<MainView>(), "Hello, world!", WindowMode::InputFocus);
     return app->run();
 }

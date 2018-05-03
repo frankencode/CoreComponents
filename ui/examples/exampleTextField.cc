@@ -12,13 +12,10 @@ class MainView: public View
     MainView()
     {
         size = Size { 640, 480 };
-        inheritColor();
+        inheritPaper();
 
-        TextField *textField = add<TextField>("First name");
-        textField->centerInParent();
-        /*textField->hover->connect([=]{ CC_INSPECT(textField->hover()); });
-        textField->pressed->connect([=]{ CC_INSPECT(textField->pressed()); });
-        textField->focus->connect([=]{ CC_INSPECT(textField->focus()); });*/
+        add<TextField>("First name")
+            ->centerInParent();
     }
 };
 

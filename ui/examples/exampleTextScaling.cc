@@ -12,7 +12,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        inheritColor();
+        inheritPaper();
 
         label_ = add<Label>("Press + | - (zoom in/out)");
         label_->font = Font { 40 };

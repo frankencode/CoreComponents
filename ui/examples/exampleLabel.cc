@@ -16,7 +16,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        inheritColor();
+        inheritPaper();
 
         auto getClockText = []{
             Ref<const Date> date = Date::breakdown(System::now());
@@ -25,7 +25,7 @@ class MainView: public View
 
         Label *label = add<Label>(getClockText());
         label->font = Font { "DejaVu Sans", sp(40) };
-        label->color = 0xD0D0FF;
+        label->paper = 0xD0D0FF;
         label->ink = 0x000000;
         label->margin = sp(20);
         label->pos->bind([=]{ return center() - label->center(); });

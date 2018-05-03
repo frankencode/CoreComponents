@@ -27,7 +27,7 @@ class Slide2: public View
         View(parent)
     {
         View *box = add<View>();
-        box->color = 0xD0D0FF;
+        box->paper = 0xD0D0FF;
         box->centerInParent();
 
         box->organize<Column>();
@@ -45,7 +45,7 @@ class MainView: public SlideView
     MainView()
     {
         size = Size{640, 480};
-        color = 0xFFFFFF;
+        paper = 0xFFFFFF;
 
         add<Slide1>();
         add<Slide2>();

@@ -12,7 +12,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Color{"#FFFFFF"};
+        paper = 0xFFFFFF;
 
         glyphRun_ =
             GlyphRun::typeSet(

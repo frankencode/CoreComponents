@@ -23,9 +23,9 @@ Label::Label(View *parent, const String &text_, const Font &font_):
         font->bind([=]{ return app()->defaultFont(); });
 
     if (font_->paper())
-        color = font_->paper();
+        paper = font_->paper();
     else
-        inheritColor();
+        inheritPaper();
 
     textRun->bind([=]{ return TextRun::create(text(), font()); });
 

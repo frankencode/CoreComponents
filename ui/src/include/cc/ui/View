@@ -31,7 +31,7 @@ class View: public Surface
 {
 public:
     Property<bool> visible { true };
-    Property<Color> color;
+    Property<Color> paper;
 
     Signal exposed;
 
@@ -47,8 +47,6 @@ public:
 
     Property<int> childCount { 0 };
     View *childAt(int i) const { return children_->valueAt(i); }
-
-    inline Organizer *organizer() const { return organizer_; }
 
     Point mapToGlobal(Point l) const;
     Point mapToLocal(Point g) const;
@@ -73,9 +71,11 @@ public:
     void anchorBottomLeftTo(Point l) { pos->bind([=]{ return l - Step { 0, size()[1] }; }); }
     void anchorBottomRighTo(Point l) { pos->bind([=]{ return l - size(); }); }
     void anchorCenterTo(Point l) { pos->bind([=]{ return l - center(); }); }
-
-    void inheritColor();
     void centerInParent();
+
+    void inheritPaper();
+
+    inline Organizer *organizer() const { return organizer_; }
 
     template<class T>
     T *organize() { return Object::create<T>(this); }

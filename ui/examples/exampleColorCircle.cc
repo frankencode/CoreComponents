@@ -12,7 +12,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = 0xFFFFFF;
+        paper = 0xFFFFFF;
     }
 
     void paint() override

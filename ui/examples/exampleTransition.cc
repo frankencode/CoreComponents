@@ -14,7 +14,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Material::White;
+        paper = Material::White;
 
         // easeOn(angle, 0.5, easing::outElastic);
         easeOn(angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));

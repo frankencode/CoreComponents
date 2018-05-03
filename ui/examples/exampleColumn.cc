@@ -23,10 +23,10 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = 0xFFFFFF;
+        paper = 0xFFFFFF;
 
         View *box = add<View>();
-        box->color = 0xD0D0FF;
+        box->paper = 0xD0D0FF;
         box->centerInParent();
 
         box->organize<Column>();
@@ -37,7 +37,7 @@ class MainView: public View
 
         {
             View *subBox = box->add<View>();
-            subBox->color = 0xD0FFD0;
+            subBox->paper = 0xD0FFD0;
 
             subBox->organize<Column>()
                 ->indent->bind([=]{

@@ -23,7 +23,7 @@ protected:
     TouchPoint(View *parent):
         View(parent)
     {
-        color = Color::Transparent;
+        paper = Color::Transparent;
         size = Size{100, 100};
     }
 
@@ -46,7 +46,7 @@ class MainView: public View
         touchDevice_(TouchDeviceManager::instance()->getTouchDevice(0))
     {
         size = DisplayManager::instance()->getDisplay(0)->nativeMode()->resolution();
-        color = Color{"#FFFFFF"};
+        paper = 0xFFFFFF;
 
         Color fgColors[] = {
             { 0xFF, 0x00, 0x00, 0xFF },

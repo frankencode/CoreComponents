@@ -13,7 +13,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        inheritColor();
+        inheritPaper();
 
         ScrollView *scroll = ScrollView::create(this);
         scroll->carrier()->organize<Column>();

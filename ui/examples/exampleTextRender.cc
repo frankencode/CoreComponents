@@ -13,7 +13,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        color = Color::White;
+        paper = Color::White;
 
         glyphRuns_ = List< Ref<const GlyphRun> >::create();
 

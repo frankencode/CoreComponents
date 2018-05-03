@@ -18,7 +18,7 @@ TextInput::TextInput(View *parent):
     Control(parent),
     timer_(Timer::create(0.5))
 {
-    inheritColor();
+    inheritPaper();
 
     font->bind([=]{ return app()->defaultFont(); });
 

@@ -23,11 +23,11 @@ class MainView: public View
 
     MainView()
     {
-        size = Size{640, 480};
-        color = 0xFFFFFF;
+        size = Size{ 640, 480 };
+        paper = 0xFFFFFF;
 
         View *box = add<View>();
-        box->color = 0xD0D0FF;
+        box->paper = 0xD0D0FF;
         box->centerInParent();
 
         box->organize<Row>();
@@ -36,7 +36,7 @@ class MainView: public View
         box->add<Item>("• Item 2");
 
         View *subBox = box->add<View>();
-        subBox->color = 0xD0FFD0;
+        subBox->paper = 0xD0FFD0;
 
         subBox->organize<Column>();
 

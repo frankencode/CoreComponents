@@ -25,7 +25,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        inheritColor();
+        inheritPaper();
 
         ScrollView *scroll = add<ScrollView>();
 

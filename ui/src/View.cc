@@ -36,7 +36,7 @@ View::View(View *parent):
     }
 
     size ->connect([=]{ update(UpdateReason::Resized); });
-    color->connect([=]{ update(UpdateReason::Changed); });
+    paper->connect([=]{ update(UpdateReason::Changed); });
     angle->connect([=]{ update(UpdateReason::Moved); });
     scale->connect([=]{ update(UpdateReason::Moved); });
 
@@ -106,22 +106,22 @@ bool View::isParentOfOrEqual(View *other) const
     return false;
 }
 
-void View::inheritColor()
+void View::centerInParent()
+{
+    if (parent()) pos->bind([=]{ return 0.5 * (parent()->size() - size()); });
+    else pos = Point{};
+}
+
+void View::inheritPaper()
 {
     for (View *view = parent(); view; view = view->parent()) {
-        if (view->color()) {
-            color->bind([=]{ return view->color(); });
+        if (view->paper()) {
+            paper->bind([=]{ return view->paper(); });
             return;
         }
     }
 
-    color->bind([=]{ return style()->theme()->windowColor(); });
-}
-
-void View::centerInParent()
-{
-    if (parent())
-        pos->bind([=]{ return 0.5 * (parent()->size() - size()); });
+    paper->bind([=]{ return style()->theme()->windowColor(); });
 }
 
 bool View::feedFingerEvent(FingerEvent *event)
@@ -254,12 +254,12 @@ bool View::feedKeyEvent(KeyEvent *event)
 
 bool View::isOpaque() const
 {
-    return color()->isOpaque();
+    return paper()->isOpaque();
 }
 
 bool View::isPainted() const
 {
-    return color()->isValid();
+    return paper()->isValid();
 }
 
 bool View::isStatic() const
@@ -269,7 +269,7 @@ bool View::isStatic() const
 
 void View::clear()
 {
-    image()->clear(color()->premultiplied());
+    image()->clear(paper()->premultiplied());
 }
 
 void View::paint()
