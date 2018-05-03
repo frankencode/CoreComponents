@@ -76,6 +76,7 @@ protected:
     bool feedMouseEvent(Window *window, MouseEvent *event);
     bool feedWheelEvent(Window *window, WheelEvent *event);
     bool feedKeyEvent(Window *window, KeyEvent *event);
+    bool feedExposedEvent(Window *window);
     bool feedTextEditingEvent(const String &text, int start, int length);
     bool feedTextInputEvent(const String &text);
 

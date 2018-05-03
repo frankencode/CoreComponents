@@ -33,7 +33,6 @@ private:
     void onWindowMoved(Point newPos);
     void onWindowShown();
     void onWindowHidden();
-    void onWindowExposed();
 
     void renderFrame(Frame *frame) override;
 

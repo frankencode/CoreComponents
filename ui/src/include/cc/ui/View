@@ -33,8 +33,6 @@ public:
     Property<bool> visible { true };
     Property<Color> paper;
 
-    Signal exposed;
-
     Property<Point> pos;
     Property<Size> size;
     Property<double> padding { 0 };
@@ -83,11 +81,6 @@ public:
     template<class T, class... Args>
     T *add(Args... args) { return Object::create<T>(this, args...); }
 
-    virtual bool feedFingerEvent(FingerEvent *event);
-    virtual bool feedMouseEvent(MouseEvent *event);
-    virtual bool feedWheelEvent(WheelEvent *event);
-    virtual bool feedKeyEvent(KeyEvent *event);
-
 protected:
     friend class Object;
     friend class Window;
@@ -124,6 +117,8 @@ protected:
     virtual bool onKeyPressed(const KeyEvent *event);
     virtual bool onKeyReleased(const KeyEvent *event);
 
+    virtual bool onExposed();
+
     void update(UpdateReason reason = UpdateReason::Changed);
 
     virtual void childReady(View *child);
@@ -142,10 +137,16 @@ protected:
     void adoptChild(View *parent, View *child);
 
 private:
-    void init();
-    void polish(Window *window);
+    virtual bool feedFingerEvent(FingerEvent *event);
+    virtual bool feedMouseEvent(MouseEvent *event);
+    virtual bool feedWheelEvent(WheelEvent *event);
+    virtual bool feedKeyEvent(KeyEvent *event);
+    virtual bool feedExposedEvent();
 
+    void init();
     uint64_t nextSerial() const;
+
+    void polish(Window *window);
 
     cairo_surface_t *cairoSurface() const override;
 

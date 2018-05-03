@@ -152,6 +152,11 @@ bool Application::feedKeyEvent(Window *window, KeyEvent *event)
     return window->view()->feedKeyEvent(event);
 }
 
+bool Application::feedExposedEvent(Window *window)
+{
+    return window->view()->feedExposedEvent();
+}
+
 bool Application::feedTextEditingEvent(const String &text, int start, int length)
 {
     if (focusControl()) {

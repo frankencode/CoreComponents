@@ -353,7 +353,7 @@ void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)
         case SDL_WINDOWEVENT_EXPOSED: {
             SdlWindow *window = 0;
             if (windows_->lookup(e->windowID, &window))
-                window->onWindowExposed();
+                feedExposedEvent(window);
             break;
         }
         case SDL_WINDOWEVENT_MOVED: {

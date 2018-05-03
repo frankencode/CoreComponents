@@ -124,6 +124,132 @@ void View::inheritPaper()
     paper->bind([=]{ return style()->theme()->windowColor(); });
 }
 
+bool View::isOpaque() const
+{
+    return paper()->isOpaque();
+}
+
+bool View::isPainted() const
+{
+    return paper()->isValid();
+}
+
+bool View::isStatic() const
+{
+    return true;
+}
+
+void View::clear()
+{
+    image()->clear(paper()->premultiplied());
+}
+
+void View::paint()
+{}
+
+bool View::onPointerPressed(const PointerEvent *event) { return false; }
+bool View::onPointerReleased(const PointerEvent *event) { return false; }
+bool View::onPointerClicked(const PointerEvent *event) { return false; }
+bool View::onPointerMoved(const PointerEvent *event) { return false; }
+
+bool View::onMousePressed(const MouseEvent *event) { return false; }
+bool View::onMouseReleased(const MouseEvent *event) { return false; }
+bool View::onMouseClicked(const MouseEvent *event) { return false; }
+bool View::onMouseMoved(const MouseEvent *event) { return false; }
+
+bool View::onFingerPressed(const FingerEvent *event) { return false; }
+bool View::onFingerReleased(const FingerEvent *event) { return false; }
+bool View::onFingerClicked(const FingerEvent *event) { return false; }
+bool View::onFingerMoved(const FingerEvent *event) { return false; }
+
+bool View::onWheelMoved(const WheelEvent *event) { return false; }
+
+bool View::onKeyPressed(const KeyEvent *event) { return false; }
+bool View::onKeyReleased(const KeyEvent *event) { return false; }
+
+bool View::onExposed() { return false; }
+
+void View::update(UpdateReason reason)
+{
+    Window *w = window();
+    if (!w) return;
+
+    if (
+        isPainted() &&
+        (reason == UpdateReason::Changed || reason == UpdateReason::Resized)
+    ) {
+        clear();
+        paint();
+    }
+
+    if (!visible() && reason != UpdateReason::Hidden) return;
+
+    w->addToFrame(UpdateRequest::create(reason, this));
+}
+
+void View::childReady(View *child)
+{
+    if (organizer_) organizer_->childReady(child);
+}
+
+void View::childDone(View *child)
+{
+    if (organizer_) organizer_->childDone(child);
+}
+
+Application *View::app() const
+{
+    return Application::instance();
+}
+
+StylePlugin *View::style() const
+{
+    return StyleManager::instance()->activePlugin();
+}
+
+const Theme *View::theme() const
+{
+    return style()->theme();
+}
+
+Window *View::window() const
+{
+    if (!window_) {
+        if (parent_)
+            return parent_->window();
+    }
+    return window_;
+}
+
+Image *View::image()
+{
+    if (!image_ || image_->size() != Size{::ceil(size()[0]), ::ceil(size()[1])})
+        image_ = Image::create(size());
+    return image_;
+}
+
+void View::insertChild(View *child)
+{
+    child->parent_ = this;
+    child->serial_ = nextSerial();
+    children_->insert(child->serial_, child);
+    childCount += 1;
+}
+
+void View::removeChild(View *child)
+{
+    Ref<View> hook = child;
+    children_->remove(child->serial_);
+    child->serial_ = 0;
+    childCount -= 1;
+    childDone(child);
+}
+
+void View::adoptChild(View *parent, View *child)
+{
+    parent->insertChild(child);
+}
+
 bool View::feedFingerEvent(FingerEvent *event)
 {
     PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
@@ -252,106 +378,20 @@ bool View::feedKeyEvent(KeyEvent *event)
     return false;
 }
 
-bool View::isOpaque() const
+bool View::feedExposedEvent()
 {
-    return paper()->isOpaque();
-}
+    if (onExposed()) return true;
 
-bool View::isPainted() const
-{
-    return paper()->isValid();
-}
-
-bool View::isStatic() const
-{
-    return true;
-}
-
-void View::clear()
-{
-    image()->clear(paper()->premultiplied());
-}
-
-void View::paint()
-{}
-
-bool View::onPointerPressed(const PointerEvent *event) { return false; }
-bool View::onPointerReleased(const PointerEvent *event) { return false; }
-bool View::onPointerClicked(const PointerEvent *event) { return false; }
-bool View::onPointerMoved(const PointerEvent *event) { return false; }
-
-bool View::onMousePressed(const MouseEvent *event) { return false; }
-bool View::onMouseReleased(const MouseEvent *event) { return false; }
-bool View::onMouseClicked(const MouseEvent *event) { return false; }
-bool View::onMouseMoved(const MouseEvent *event) { return false; }
-
-bool View::onFingerPressed(const FingerEvent *event) { return false; }
-bool View::onFingerReleased(const FingerEvent *event) { return false; }
-bool View::onFingerClicked(const FingerEvent *event) { return false; }
-bool View::onFingerMoved(const FingerEvent *event) { return false; }
-
-bool View::onWheelMoved(const WheelEvent *event) { return false; }
-
-bool View::onKeyPressed(const KeyEvent *event) { return false; }
-bool View::onKeyReleased(const KeyEvent *event) { return false; }
-
-void View::update(UpdateReason reason)
-{
-    Window *w = window();
-    if (!w) return;
-
-    if (
-        isPainted() &&
-        (reason == UpdateReason::Changed || reason == UpdateReason::Resized)
-    ) {
-        clear();
-        paint();
+    for (auto pair: children_)
+    {
+        View *child = pair->value();
+        if (child->visible()) {
+            if (child->feedExposedEvent())
+                return true;
+        }
     }
 
-    if (!visible() && reason != UpdateReason::Hidden) return;
-
-    w->addToFrame(UpdateRequest::create(reason, this));
-}
-
-void View::childReady(View *child)
-{
-    if (organizer_) organizer_->childReady(child);
-}
-
-void View::childDone(View *child)
-{
-    if (organizer_) organizer_->childDone(child);
-}
-
-Application *View::app() const
-{
-    return Application::instance();
-}
-
-StylePlugin *View::style() const
-{
-    return StyleManager::instance()->activePlugin();
-}
-
-const Theme *View::theme() const
-{
-    return style()->theme();
-}
-
-Window *View::window() const
-{
-    if (!window_) {
-        if (parent_)
-            return parent_->window();
-    }
-    return window_;
-}
-
-Image *View::image()
-{
-    if (!image_ || image_->size() != Size{::ceil(size()[0]), ::ceil(size()[1])})
-        image_ = Image::create(size());
-    return image_;
+    return false;
 }
 
 void View::init()
@@ -362,28 +402,6 @@ void View::init()
 uint64_t View::nextSerial() const
 {
     return (children_->count() > 0) ? children_->keyAt(children_->count() - 1) + 1 : 1;
-}
-
-void View::insertChild(View *child)
-{
-    child->parent_ = this;
-    child->serial_ = nextSerial();
-    children_->insert(child->serial_, child);
-    childCount += 1;
-}
-
-void View::removeChild(View *child)
-{
-    Ref<View> hook = child;
-    children_->remove(child->serial_);
-    child->serial_ = 0;
-    childCount -= 1;
-    childDone(child);
-}
-
-void View::adoptChild(View *parent, View *child)
-{
-    parent->insertChild(child);
 }
 
 void View::polish(Window *window)

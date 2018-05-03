@@ -143,11 +143,6 @@ void SdlWindow::onWindowHidden()
     visible = false;
 }
 
-void SdlWindow::onWindowExposed()
-{
-    view()->exposed();
-}
-
 void SdlWindow::renderFrame(Frame *frame)
 {
     while (frame->count() > 0) {
