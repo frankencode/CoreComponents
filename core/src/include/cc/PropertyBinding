@@ -40,6 +40,7 @@ protected:
     virtual void disband();
 
     bool dirty_;
+    std::function<void()> s_;
 
 private:
     static thread_local PropertyBinding *activeInstance_;

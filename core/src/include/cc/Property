@@ -64,6 +64,12 @@ public:
             changed->connect(h);
         }
 
+        template<class S>
+        inline void schedule(const S &s)
+        {
+            s_ = s;
+        }
+
     private:
         friend class Property;
         friend class PropertyMutator<T>;

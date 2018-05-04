@@ -77,6 +77,7 @@ void PropertyBinding::emit()
             }
             else {
                 other->dirty_ = true;
+                if (other->s_) other->s_();
             }
         }
     }
