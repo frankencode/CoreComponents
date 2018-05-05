@@ -76,9 +76,23 @@ class ConstrainingTest: public TestCase
     }
 };
 
+class VoidScheduleTest: public TestCase
+{
+    Property<String> surface { "?" };
+    Property<void> paint;
+
+    void run() override
+    {
+        paint->bind([=]{ fout() << "Filling the " << surface() << nl; });
+        paint->schedule([=]{ fout() << "Scheduling a paint operation" << nl; paint(); });
+        surface = "void";
+    }
+};
+
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(BasicBindingTest);
     CC_TESTSUITE_ADD(ConstrainingTest);
+    CC_TESTSUITE_ADD(VoidScheduleTest);
     return TestSuite::instance()->run(argc, argv);
 };

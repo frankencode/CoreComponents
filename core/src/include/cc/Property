@@ -17,7 +17,6 @@ namespace cc {
 template<class T>
 class PropertyMutator;
 
-// \TODO: fix alias assignment
 template<class T>
 class Property
 {
@@ -29,8 +28,9 @@ public:
     inline Property &operator=(const Property &b) { instance_->setValue(b->value()); return *this; }
 
     Property(Property &&b): instance_(std::move(b.instance_)) {}
+    inline Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
 
-    Property(const std::function<T()> &f): instance_(Instance::create()) { instance_->bind(f); }
+    Property(const std::function<T()> &f): instance_(Instance::create()) { instance_->associate(f); }
     inline Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
 
     ~Property() { instance_->disband(); }
@@ -47,6 +47,15 @@ public:
             cascade();
         }
 
+        template<class F>
+        void associate(const F &f)
+        {
+            clearDependencies();
+
+            f_ = f;
+            dirty_ = true;
+        }
+
         template<class G>
         void restrict(const G &g)
         {
@@ -54,7 +63,7 @@ public:
         }
 
         template<class H>
-        inline void connect(const H &h)
+        void connect(const H &h)
         {
             if (dirty_) {
                 dirty_ = false;
@@ -62,12 +71,6 @@ public:
             }
 
             changed->connect(h);
-        }
-
-        template<class S>
-        inline void schedule(const S &s)
-        {
-            s_ = s;
         }
 
     private:
@@ -78,7 +81,6 @@ public:
         friend Property<T2> alias(Property<T2> &p);
 
         inline static Ref<Instance> create(const T &b = T()) { return new Instance{b}; }
-        inline static Ref<Instance> create(const std::function<T()> &f) { return new Instance{f}; }
 
         Instance(const T &b):
             PropertyBinding(false),
@@ -156,6 +158,97 @@ public:
 
     template<class T2>
     inline Property &operator/=(const T2 &b) { instance_->setValue(instance_->value() / b); return *this; }
+
+private:
+    friend class Instance;
+
+    Property(Instance *instance, bool): instance_(instance) {}
+
+    Ref<Instance> instance_;
+};
+
+template<>
+class Property<void>
+{
+public:
+    Property(): instance_(Instance::create()) {}
+
+    Property(Property &&b): instance_(std::move(b.instance_)) {}
+    inline Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
+
+    Property(const std::function<void()> &f): instance_(Instance::create()) { instance_->associate(f); }
+    inline Property &operator=(const std::function<void()> &f) { instance_->bind(f); return *this; }
+
+    ~Property() { instance_->disband(); }
+
+    class Instance: public PropertyBinding {
+    public:
+        template<class F>
+        void bind(const F &f)
+        {
+            clearDependencies();
+
+            f_ = f;
+            dirty_ = false;
+            cascade();
+        }
+
+        template<class F>
+        void associate(const F &f)
+        {
+            clearDependencies();
+
+            f_ = f;
+            dirty_ = true;
+        }
+
+        template<class S>
+        void schedule(const S &s)
+        {
+            s_ = s;
+        }
+
+    private:
+        friend class Property;
+
+        template<class T2>
+        friend Property<T2> alias(Property<T2> &p);
+
+        inline static Ref<Instance> create() { return new Instance{}; }
+
+        Instance():
+            PropertyBinding(true)
+        {}
+
+        void value() const
+        {
+            preAccess();
+        }
+
+        void evaluate() override
+        {
+            f_();
+        }
+
+        void evaluateLater() override
+        {
+            s_();
+        }
+
+        void disband() override
+        {
+            PropertyBinding::disband();
+            f_ = std::function<void()>{};
+        }
+
+        std::function<void()> f_;
+        std::function<void()> s_;
+    };
+
+    inline Instance *operator->() { return instance_; }
+    inline const Instance *operator->() const { return instance_; }
+
+    inline void operator()() const { instance_->value(); }
 
 private:
     friend class Instance;

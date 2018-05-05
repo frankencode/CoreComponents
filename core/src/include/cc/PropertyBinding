@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -37,10 +37,10 @@ protected:
     void cascade();
 
     virtual void evaluate() = 0;
+    virtual void evaluateLater() {}
     virtual void disband();
 
     bool dirty_;
-    std::function<void()> s_;
 
 private:
     static thread_local PropertyBinding *activeInstance_;

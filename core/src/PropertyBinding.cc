@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -77,7 +77,7 @@ void PropertyBinding::emit()
             }
             else {
                 other->dirty_ = true;
-                if (other->s_) other->s_();
+                other->evaluateLater();
             }
         }
     }
