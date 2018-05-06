@@ -24,7 +24,6 @@ class TextInput: public Control
 public:
     Property<String> text;
     Property<Font> font;
-    Property<Color> ink;
     Property<Size> margin;
 
     Point textPos() const;
@@ -37,11 +36,17 @@ private:
     Property<Ref<const TextRun>> textRun;
     Property<Ref<TextCursor>> textCursor;
     Property<int> textCursorOffset;
+    Property<bool> textCursorVisible;
+
+    void startBlink();
+    void stopBlink();
+
+    bool onPointerClicked(const PointerEvent *event) override;
 
     void onTextEdited(const String &chunk, int start, int length) override;
     void onTextInput(const String &chunk);
 
-    bool onPointerClicked(const PointerEvent *event) override;
+    bool onKeyPressed(const KeyEvent *event) override;
 
     void paint() override;
 

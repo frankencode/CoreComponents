@@ -41,6 +41,7 @@ public:
     Color hoverInputLineColor  () const override { return primaryTextColor(); }
     Color pressedInputLineColor() const override { return primaryDarkColor(); }
     Color focusInputLineColor  () const override { return primaryDarkColor(); }
+    Color textCursorColor      () const override { return primaryColor(); }
 
 private:
     MaterialLight() {}

@@ -16,8 +16,8 @@ namespace ui {
 class TextCursor: public Object
 {
 public:
-    virtual Point posA() const = 0;
-    virtual Point posB() const = 0;
+    virtual Point posA() const = 0; // TODO: make a property
+    virtual Point posB() const = 0; // TODO: make a property
     virtual Point advance() const = 0;
 
     virtual int byteOffset() const = 0;

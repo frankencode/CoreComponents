@@ -26,7 +26,7 @@ TimeWorker::TimeWorker(TimeMaster *master):
     ack_(Semaphore::create())
 {}
 
-void TimeWorker::startTimer(const Timer *timer)
+void TimeWorker::startTimer(Timer *timer)
 {
     startRequests_->pushBack(Timeout::create(timer));
 }
@@ -53,7 +53,7 @@ void TimeWorker::run()
 
             if (!startRequests_->popBackBefore(timeout->nextTime_, &request))
             {
-                if (!timeout->timer_->isActive_) {
+                if (!timeout->isActive()) {
                     timeouts_->removeAt(0);
                     continue;
                 }

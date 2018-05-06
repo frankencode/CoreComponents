@@ -9,6 +9,7 @@
 #pragma once
 
 #include <atomic>
+#include <memory>
 #include <cc/Signal>
 
 namespace cc {
@@ -58,16 +59,14 @@ private:
     friend class Application;
 
     Timer(double interval):
-        isActive_(false),
-        firstTime_(0),
-        startTime_(0),
-        interval_(interval)
+        interval_{interval}
     {}
 
-    mutable std::atomic_bool isActive_;
-    double firstTime_;
-    double startTime_;
+    mutable std::atomic_bool isActive_ { false };
+    double firstTime_ { 0 };
+    double startTime_ { 0 };
     double interval_;
+    std::atomic<void *> timeout_ { nullptr };
 };
 
 }} // namespace cc::ui

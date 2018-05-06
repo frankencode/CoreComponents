@@ -20,7 +20,6 @@ void Timer::start()
 
 void Timer::startAt(double startTime)
 {
-    if (isActive_) return;
     isActive_ = true;
     firstTime_ = startTime_ = startTime;
     TimeMaster::instance()->startTimer(this);
@@ -28,7 +27,6 @@ void Timer::startAt(double startTime)
 
 void Timer::startIn(double delayTime)
 {
-    if (isActive_) return;
     isActive_ = true;
     startTime_ = System::now();
     firstTime_ = startTime_ + delayTime;

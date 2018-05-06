@@ -23,7 +23,7 @@ class TimeWorker: public Thread
 {
 public:
     static Ref<TimeWorker> create(TimeMaster *master);
-    void startTimer(const Timer *timer);
+    void startTimer(Timer *timer);
     void ack();
     void shutdown();
 
@@ -36,8 +36,12 @@ protected:
 
     class Timeout: public Object {
     public:
-        static Ref<Timeout> create(const Timer *timer) {
+        static Ref<Timeout> create(Timer *timer) {
             return new Timeout(timer);
+        }
+
+        inline bool isActive() const {
+            return timer_->isActive_ && timer_->timeout_ == static_cast<const void *>(this);
         }
 
         Ref<const Timer> timer_;
@@ -45,11 +49,13 @@ protected:
         double interval_;
 
     private:
-        Timeout(const Timer *timer):
+        Timeout(Timer *timer):
             timer_(timer),
             nextTime_(timer->firstTime()),
             interval_(timer->interval())
-        {}
+        {
+            timer->timeout_ = this;
+        }
     };
 
     class TimeKey {

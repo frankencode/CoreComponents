@@ -15,8 +15,7 @@ namespace cc {
 namespace ui {
 
 TextInput::TextInput(View *parent):
-    Control(parent),
-    timer_(Timer::create(0.5))
+    Control(parent)
 {
     inheritPaper();
 
@@ -32,17 +31,44 @@ TextInput::TextInput(View *parent):
         };
     });
 
-    ink->bind([=]{ return style()->theme()->primaryTextColor(); });
     cursor->bind([=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); });
+
+    focus->connect([=]{
+        if (focus()) startBlink();
+        else stopBlink();
+    });
+
+    timer_ = Timer::create(0.5);
+    timer_->triggered->connect([=]{
+        textCursorVisible = !textCursorVisible();
+    });
 }
 
 TextInput::~TextInput()
 {}
 
+void TextInput::startBlink()
+{
+    textCursorVisible = false;
+    timer_->startIn(0);
+}
+
+void TextInput::stopBlink()
+{
+    timer_->stop();
+    textCursorVisible = false;
+}
+
 Point TextInput::textPos() const
 {
     double a = std::ceil(font()->getMetrics()->ascender());
     return margin() + Point { 0, a };
+}
+
+bool TextInput::onPointerClicked(const PointerEvent *event)
+{
+    app()->focusControl = this;
+    return true;
 }
 
 void TextInput::onTextEdited(const String &chunk, int start, int length)
@@ -58,24 +84,42 @@ void TextInput::onTextInput(const String &chunk)
         text()->copy(textCursorOffset(), text()->count());
 
     textCursorOffset += chunk->count();
+
+    startBlink();
 }
 
-bool TextInput::onPointerClicked(const PointerEvent *event)
+bool TextInput::onKeyPressed(const KeyEvent *event)
 {
-    app()->focusControl = this;
+    if (event->scanCode() == ScanCode::Key_Left)
+    {
+        // CC_INSPECT(event);
+        textCursor()->step(-1);
+        startBlink();
+        update();
+    }
+    else if (event->scanCode() == ScanCode::Key_Right)
+    {
+        textCursor()->step(1);
+        startBlink();
+        update();
+    }
+
     return true;
 }
 
 void TextInput::paint()
 {
     Painter p(this);
-    if (ink()) p->setSource(ink());
+    p->setSource(style()->theme()->primaryTextColor());
     p->showTextRun(textPos(), textRun());
-    p->rectangle(
-        textPos() + textCursor()->posA(),
-        Size { dp(1), (textCursor()->posB() - textCursor()->posA())[1] }
-    );
-    p->fill();
+    if ((focus() || pressed()) && textCursorVisible()) {
+        p->setSource(theme()->textCursorColor());
+        p->rectangle(
+            textPos() + textCursor()->posA(),
+            Size { dp(1), (textCursor()->posB() - textCursor()->posA())[1] }
+        );
+        p->fill();
+    }
 }
 
 }} // namespace cc::ui

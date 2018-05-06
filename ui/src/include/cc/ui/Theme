@@ -35,6 +35,7 @@ public:
     virtual Color hoverInputLineColor  () const = 0;
     virtual Color pressedInputLineColor() const = 0;
     virtual Color focusInputLineColor  () const = 0;
+    virtual Color textCursorColor      () const = 0;
 
     virtual double defaultFontSize     () const { return 16; }
     virtual double smallFontSize       () const { return 12; }
