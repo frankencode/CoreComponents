@@ -2,7 +2,7 @@
 #include <cc/debug>
 #include <cc/System>
 #include <cc/ui/Application>
-#include <cc/ui/View>
+#include <cc/ui/Control>
 #include <cc/ui/PointerEvent>
 #include <cc/ui/WheelEvent>
 #include <cc/ui/FingerEvent>
@@ -10,7 +10,7 @@
 using namespace cc;
 using namespace cc::ui;
 
-class MainView: public View
+class MainView: public Control
 {
     friend class Object;
 
@@ -26,15 +26,15 @@ class MainView: public View
 
         p->translate(size()/2);
 
-        p->setSource(0xFF000080);
+        p->setSource(Color{0xFF0000}(50));
         p->circle(-Point{30, 0}, 60);
         p->fill();
 
-        p->setSource(0x00FF0080);
+        p->setSource(Color{0x00FF00}(50));
         p->circle(Point{0, 0}, 60);
         p->fill();
 
-        p->setSource(0x0000FF80);
+        p->setSource(Color{0x0000FF}(50));
         p->circle(Point{30, 0}, 60);
         p->fill();
     }
@@ -61,6 +61,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Hello, world!", WindowMode::InputFocus);
+    Window::open<MainView>("Hello, world!", WindowMode::InputFocus);
     return app->run();
 }

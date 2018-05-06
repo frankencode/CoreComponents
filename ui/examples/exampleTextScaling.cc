@@ -26,13 +26,10 @@ class MainView: public View
 
     bool onKeyPressed(const KeyEvent *event) override
     {
-        if (+(event->modifiers() & KeyModifier::Control))
-        {
-            if (event->keyCode() == '+')
-                label_->font *= 2;
-            else if (event->keyCode() == '-')
-                label_->font /= 2;
-        }
+        if (event->keyCode() == '+')
+            label_->font *= 2;
+        else if (event->keyCode() == '-')
+            label_->font /= 2;
 
         return true;
     }

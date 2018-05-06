@@ -1,13 +1,13 @@
 #include <cc/stdio>
 #include <cc/ui/Application>
-#include <cc/ui/View>
+#include <cc/ui/Control>
 #include <cc/ui/Transition>
 #include <cc/ui/colors>
 
 using namespace cc;
 using namespace cc::ui;
 
-class MainView: public View
+class MainView: public Control
 {
     friend class Object;
 
@@ -25,7 +25,7 @@ class MainView: public View
         Painter p(this);
 
         p->translate(center());
-        p->setSource(Material::Red500);
+        p->setSource(Material::Blue500);
         p->rectangle(-Point{50, 50}, Size{100, 100});
         p->fill();
     }
@@ -41,6 +41,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    Window::open(Object::create<MainView>(), "Click me!", WindowMode::Accelerated);
+    Window::open<MainView>("Click me!", WindowMode::Accelerated);
     return app->run();
 }

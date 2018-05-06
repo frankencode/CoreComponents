@@ -35,8 +35,8 @@ View::View(View *parent):
         pos->restrict([](Point&, Point) { return false; });
     }
 
-    size ->connect([=]{ update(UpdateReason::Resized); });
-    paper->connect([=]{ update(UpdateReason::Changed); });
+    picture->schedule([=]{ update(UpdateReason::Changed); });
+
     angle->connect([=]{ update(UpdateReason::Moved); });
     scale->connect([=]{ update(UpdateReason::Moved); });
 
@@ -149,17 +149,14 @@ void View::paint()
 
 bool View::onPointerPressed(const PointerEvent *event) { return false; }
 bool View::onPointerReleased(const PointerEvent *event) { return false; }
-bool View::onPointerClicked(const PointerEvent *event) { return false; }
 bool View::onPointerMoved(const PointerEvent *event) { return false; }
 
 bool View::onMousePressed(const MouseEvent *event) { return false; }
 bool View::onMouseReleased(const MouseEvent *event) { return false; }
-bool View::onMouseClicked(const MouseEvent *event) { return false; }
 bool View::onMouseMoved(const MouseEvent *event) { return false; }
 
 bool View::onFingerPressed(const FingerEvent *event) { return false; }
 bool View::onFingerReleased(const FingerEvent *event) { return false; }
-bool View::onFingerClicked(const FingerEvent *event) { return false; }
 bool View::onFingerMoved(const FingerEvent *event) { return false; }
 
 bool View::onWheelMoved(const WheelEvent *event) { return false; }
@@ -177,10 +174,8 @@ void View::update(UpdateReason reason)
     if (
         isPainted() &&
         (reason == UpdateReason::Changed || reason == UpdateReason::Resized)
-    ) {
-        clear();
-        paint();
-    }
+    )
+        picture();
 
     if (!visible() && reason != UpdateReason::Hidden) return;
 
@@ -264,7 +259,10 @@ bool View::feedFingerEvent(FingerEvent *event)
         bool eaten = onPointerReleased(event) || onFingerReleased(event);
 
         if (app()->pressedControl()) {
-            if (onPointerClicked(event) || onFingerClicked(event))
+            if (
+                app()->pressedControl()->onPointerClicked(event) ||
+                app()->pressedControl()->onFingerClicked(event)
+            )
                 eaten = true;
         }
 
@@ -304,7 +302,10 @@ bool View::feedMouseEvent(MouseEvent *event)
         bool eaten = onPointerReleased(event) || onMouseReleased(event);
 
         if (app()->pressedControl()) {
-            if (onPointerClicked(event) || onMouseClicked(event))
+            if (
+                app()->pressedControl()->onPointerClicked(event) ||
+                app()->pressedControl()->onMouseClicked(event)
+            )
                 eaten = true;
         }
 
@@ -409,8 +410,7 @@ void View::polish(Window *window)
     for (int i = 0; i < children_->count(); ++i)
         children_->valueAt(i)->polish(window);
 
-    clear();
-    paint();
+    picture();
 
     window->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
 }

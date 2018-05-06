@@ -72,11 +72,11 @@ class MainView: public View
     void paint() override
     {
         Painter p(this);
-        p->setSource(Color{"#E0F0FF"});
+        p->setSource(0xE0F0FF);
         p->rectangle(Point{0, 0}, Size{margins_, size()[1]});
         p->rectangle(Point{size()[0]-margins_, 0}, Size{margins_, size()[1]});
         p->fill();
-        p->setSource(Color{"#000000"});
+        p->setSource(0x000000);
         p->showGlyphRun(Point{margins_, margins_ + fontSize_}, wrappedGlyphRun_);
     }
 
@@ -92,6 +92,6 @@ int main(int argc, char **argv)
     String fontPath = "/usr/share/fonts/truetype/dejavu/";
     if (argc > 1) fontPath = argv[1];
     FontManager::instance()->addPath(fontPath);
-    Window::open(Object::create<MainView>(), fontPath);
+    Window::open<MainView>(fontPath);
     return app->run();
 }

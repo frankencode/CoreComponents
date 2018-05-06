@@ -29,6 +29,8 @@ class Control;
 
 class View: public Surface
 {
+    friend class Object;
+
 public:
     Property<bool> visible { true };
     Property<Color> paper;
@@ -82,7 +84,6 @@ public:
     T *add(Args... args) { return Object::create<T>(this, args...); }
 
 protected:
-    friend class Object;
     friend class Window;
     friend class Application;
     friend class Organizer;
@@ -99,17 +100,14 @@ protected:
 
     virtual bool onPointerPressed(const PointerEvent *event);
     virtual bool onPointerReleased(const PointerEvent *event);
-    virtual bool onPointerClicked(const PointerEvent *event);
     virtual bool onPointerMoved(const PointerEvent *event);
 
     virtual bool onMousePressed(const MouseEvent *event);
     virtual bool onMouseReleased(const MouseEvent *event);
-    virtual bool onMouseClicked(const MouseEvent *event);
     virtual bool onMouseMoved(const MouseEvent *event);
 
     virtual bool onFingerPressed(const FingerEvent *event);
     virtual bool onFingerReleased(const FingerEvent *event);
-    virtual bool onFingerClicked(const FingerEvent *event);
     virtual bool onFingerMoved(const FingerEvent *event);
 
     virtual bool onWheelMoved(const WheelEvent *event);
@@ -137,6 +135,8 @@ protected:
     void adoptChild(View *parent, View *child);
 
 private:
+    Property<void> picture { [=]{ clear(); paint(); } };
+
     virtual bool feedFingerEvent(FingerEvent *event);
     virtual bool feedMouseEvent(MouseEvent *event);
     virtual bool feedWheelEvent(WheelEvent *event);

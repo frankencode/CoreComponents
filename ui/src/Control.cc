@@ -19,6 +19,21 @@ Control::Control(View *parent):
     focus->bind([=]{ return isParentOfOrEqual(app()->focusControl()); });
 }
 
+bool Control::onPointerClicked(const PointerEvent *event)
+{
+    return false;
+}
+
+bool Control::onMouseClicked(const MouseEvent *event)
+{
+    return false;
+}
+
+bool Control::onFingerClicked(const FingerEvent *event)
+{
+    return false;
+}
+
 Rect Control::textInputArea() const
 {
     return Rect{ Point{}, size() };

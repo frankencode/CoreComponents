@@ -42,9 +42,6 @@ Label::Label(View *parent, const String &text_, const Font &font_):
         ink = font_->ink();
     else
         ink->bind([=]{ return style()->theme()->primaryTextColor(); });
-
-    textRun->connect([=]{ update(); });
-    ink->connect([=]{ update(); });
 }
 
 Label::~Label()

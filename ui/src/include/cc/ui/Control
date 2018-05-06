@@ -33,6 +33,10 @@ protected:
 
     Control(View *parent = 0);
 
+    virtual bool onPointerClicked(const PointerEvent *event);
+    virtual bool onMouseClicked(const MouseEvent *event);
+    virtual bool onFingerClicked(const FingerEvent *event);
+
     virtual Rect textInputArea() const;
     virtual void onTextEdited(const String &text, int start, int length);
     virtual void onTextInput(const String &text);

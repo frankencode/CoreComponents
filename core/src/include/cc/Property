@@ -232,7 +232,7 @@ public:
 
         void evaluateLater() override
         {
-            s_();
+            if (s_) s_();
         }
 
         void disband() override

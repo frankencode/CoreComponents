@@ -33,11 +33,6 @@ TextInput::TextInput(View *parent):
     });
 
     ink->bind([=]{ return style()->theme()->primaryTextColor(); });
-
-    textRun->connect([=]{ update(); });
-    textCursor->connect([=]{ update(); });
-    ink->connect([=]{ update(); });
-
     cursor->bind([=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); });
 }
 
