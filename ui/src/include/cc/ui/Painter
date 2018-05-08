@@ -24,6 +24,8 @@ class TextRun;
 class Painter
 {
 public:
+    typedef std::function<Color(int)> GetColor; ///< get color for a given byte offset
+
     Painter(Surface *surface):
         instance_(surface)
     {}
@@ -70,8 +72,6 @@ public:
         /** Text rendering
           * @{
           */
-        typedef std::function<Color(int)> GetColor; ///< get color for a given byte offset
-
         void showGlyphRun(Point pos, const GlyphRun *glyphRun);
         void showGlyphRun(Point pos, const GlyphRun *glyphRun, const GetColor &ink, const GetColor &paper = GetColor{});
 

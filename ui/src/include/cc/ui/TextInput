@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/Range>
 #include <cc/ui/Control>
 
 namespace cc {
@@ -29,14 +30,14 @@ public:
     Point textPos() const;
 
 protected:
-    TextInput(View *parent = 0);
+    TextInput(View *parent = 0, const String &initialText = String{});
     ~TextInput();
 
 private:
     Property<Ref<const TextRun>> textRun;
     Property<Ref<TextCursor>> textCursor;
-    Property<int> textCursorOffset;
     Property<bool> textCursorVisible;
+    Property<Range> selection;
 
     void startBlink();
     void stopBlink();
@@ -48,9 +49,13 @@ private:
 
     bool onKeyPressed(const KeyEvent *event) override;
 
+    void paste(const String &chunk);
+    void paste(Range selection, const String &chunk);
+
     void paint() override;
 
     Ref<Timer> timer_;
+    int nextTextCursorOffset_ { 0 };
 };
 
 }} // namespace cc::ui

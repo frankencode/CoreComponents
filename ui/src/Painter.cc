@@ -324,15 +324,19 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
             bgColor = paper(byteOffset);
             if (glyphOffset < ftGlyphRun->cairoGlyphs()->count()) glyph = &ftGlyphRun->cairoGlyphs()->at(glyphOffset);
 
-            if (bgColor != bgColor0 || !glyph || glyph->y != glyph0->y) {
+            if (bgColor != bgColor0 || !glyph || glyph->y != glyph0->y)
+            {
                 double x1 = (!glyph || glyph->y != glyph0->y) ? ftGlyphRun->size()[0] : glyph->x;
-                rectangle(
-                    Point{glyph0->x, glyph0->y - dy0},
-                    Size{x1 - glyph0->x, metrics->lineHeight()}
-                );
-                if (bgColor != bgColor0)
-                    setSource(bgColor0);
-                fill();
+
+                if (bgColor0) {
+                    rectangle(
+                        Point{glyph0->x, glyph0->y - dy0},
+                        Size{x1 - glyph0->x, metrics->lineHeight()}
+                    );
+                    if (bgColor != bgColor0)
+                        setSource(bgColor0);
+                    fill();
+                }
 
                 bgColor0 = bgColor;
                 glyph0 = glyph;
@@ -366,10 +370,15 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
             ++clusterIndex;
 
             Color fgColor = ink(byteOffset);
-            if (!fgColor->isValid()) fgColor = fgDefaultColor;
+            if (!fgColor->isValid()) {
+                if (fgDefaultColor->isValid())
+                    fgColor = fgDefaultColor;
+                else
+                    cairo_set_source(cr_, sourceSaved);
+            }
 
             if (fgColor0 != fgColor) {
-                setSource(fgColor0);
+                if (fgColor0) setSource(fgColor0);
                 cairo_show_text_glyphs(
                     cr_,
                     ftGlyphRun->text()->chars() + byteOffset0,
@@ -389,6 +398,8 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         }
     }
     else {
+        if (paper) cairo_set_source(cr_, sourceSaved);
+
         cairo_show_text_glyphs(
             cr_,
             ftGlyphRun->text()->chars(),

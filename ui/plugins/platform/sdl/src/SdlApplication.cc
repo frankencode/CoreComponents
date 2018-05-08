@@ -89,7 +89,7 @@ String SdlApplication::getClipboardText() const
     return SDL_GetClipboardText();
 }
 
-void SdlApplication::setClipboardText(String text)
+void SdlApplication::setClipboardText(const String &text)
 {
     /*int ret =*/ SDL_SetClipboardText(text);
     // TODO: error handling?

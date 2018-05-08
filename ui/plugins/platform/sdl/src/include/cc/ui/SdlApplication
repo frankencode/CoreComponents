@@ -33,7 +33,7 @@ public:
     void unsetCursor() override;
 
     String getClipboardText() const override;
-    void setClipboardText(String text) override;
+    void setClipboardText(const String &text) override;
 
     int run() override;
 

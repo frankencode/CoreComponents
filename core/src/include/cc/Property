@@ -80,7 +80,7 @@ public:
         template<class T2>
         friend Property<T2> alias(Property<T2> &p);
 
-        inline static Ref<Instance> create(const T &b = T()) { return new Instance{b}; }
+        inline static Ref<Instance> create(const T &b = T{}) { return new Instance{b}; }
 
         Instance(const T &b):
             PropertyBinding(false),

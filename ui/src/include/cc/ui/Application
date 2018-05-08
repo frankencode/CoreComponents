@@ -45,7 +45,7 @@ public:
     virtual Ref<Cursor> createCursor(CursorShape shape) = 0;
 
     virtual String getClipboardText() const = 0;
-    virtual void setClipboardText(String text) = 0;
+    virtual void setClipboardText(const String &text) = 0;
 
     FontSmoothing fontSmoothing() const;
     void setTextSmoothing(FontSmoothing newValue) { fontSmoothing_ = newValue; }

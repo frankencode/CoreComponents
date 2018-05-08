@@ -9,6 +9,7 @@
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
 #include <cc/debug>
+#include <cc/Range>
 #include <cc/Property>
 
 using namespace cc;
