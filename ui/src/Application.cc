@@ -46,7 +46,11 @@ Application::Application():
     });
 
     cursorControl->connect([=]{
-        if (cursorControl()) cursor = cursorControl()->cursor();
+        if (cursorControl()) {
+            cursor->bind([=]{
+                return cursorControl() ? cursorControl()->cursor() : nullptr;
+            });
+        }
         else cursor = nullptr;
     });
 
