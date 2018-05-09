@@ -17,13 +17,15 @@ namespace ui {
 class TextRun;
 class TextCursor;
 class Timer;
+class Editor;
 
 class TextInput: public Control
 {
     friend class Object;
 
 public:
-    Property<String> text;
+    String text() const;
+
     Property<Font> font;
     Property<Size> margin;
 
@@ -56,6 +58,7 @@ private:
 
     void paint() override;
 
+    Ref<Editor> editor_;
     Ref<Timer> timer_;
 };
 

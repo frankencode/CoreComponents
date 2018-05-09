@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/debug>
 #include <cc/ui/FtTextCursor>
 #include <cc/ui/TextRun>
 #include <cc/ui/Timer>
+#include <cc/ui/Editor>
 #include <cc/ui/TextInput>
 
 namespace cc {
@@ -17,7 +17,7 @@ namespace ui {
 
 TextInput::TextInput(View *parent, const String &initialText):
     Control(parent),
-    text{initialText}
+    editor_(Object::create<Editor>(initialText))
 {
     inheritPaper();
 
@@ -57,6 +57,11 @@ TextInput::TextInput(View *parent, const String &initialText):
 
 TextInput::~TextInput()
 {}
+
+String TextInput::text() const
+{
+    return editor_->text();
+}
 
 void TextInput::startBlink()
 {
@@ -140,7 +145,7 @@ bool TextInput::onPointerMoved(const PointerEvent *event)
 
 void TextInput::onTextEdited(const String &chunk, int start, int length)
 {
-    CC_INSPECT(chunk);
+    // CC_INSPECT(chunk);
 }
 
 void TextInput::onTextInput(const String &chunk)
@@ -266,6 +271,25 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
         String chunk = app()->getClipboardText();
         if (chunk) paste(chunk);
     }
+    else if (
+        (+(event->modifiers() & KeyModifier::Control)) &&
+        event->scanCode() == ScanCode::Key_Y
+    ) {
+        Range range;
+        if (+(event->modifiers() & KeyModifier::Shift)) {
+            if (editor_->canRedo()) textCursor = nullptr;
+            range = editor_->redo();
+        }
+        else {
+            if (editor_->canUndo()) textCursor = nullptr;
+            range = editor_->undo();
+        }
+
+        if (range) {
+            textCursor = textRun()->getTextCursor(range->i1());
+            startBlink();
+        }
+    }
 
     return true;
 }
@@ -285,7 +309,7 @@ void TextInput::paste(Range range, const String &chunk)
     selection = Range{};
     textCursor = nullptr;
 
-    text = text()->paste(range->i0(), range->i1(), chunk);
+    editor_->paste(range, chunk);
 
     textCursor = textRun()->getTextCursor(range->i0() + chunk->count());
     startBlink();

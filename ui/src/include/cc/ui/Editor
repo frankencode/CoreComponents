@@ -23,7 +23,7 @@ class Editor: public Object
 public:
     String text() const { return text_(); }
 
-    bool paste(const Range &range, const String &newChunk);
+    bool paste(Range range, const String &newChunk);
 
     bool canUndo() const;
     bool canRedo() const;

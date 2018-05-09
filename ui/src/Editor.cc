@@ -17,7 +17,7 @@ Editor::Editor(const String &initialText):
     future_{History::create()}
 {}
 
-bool Editor::paste(const Range &range, const String &newChunk)
+bool Editor::paste(Range range, const String &newChunk)
 {
     if (!(0 <= range->i0() && range->i1() <= text_()->count())) return false;
 
@@ -49,9 +49,9 @@ Range Editor::undo()
     if (!canUndo()) return Range{};
     auto delta = past_->popBack();
     future_->pushFront(delta);
-    Range range = delta->oldRange();
-    text_ = text_()->paste(range->i0(), range->i1(), delta->oldChunk());
-    return range;
+    Range newRange = delta->newRange();
+    text_ = text_()->paste(newRange->i0(), newRange->i1(), delta->oldChunk());
+    return delta->oldRange();
 }
 
 Range Editor::redo()
@@ -59,9 +59,9 @@ Range Editor::redo()
     if (!canRedo()) return Range{};
     auto delta = future_->popFront();
     past_->pushBack(delta);
-    Range range = delta->newRange();
-    text_ = text_()->paste(range->i0(), range->i1(), delta->newChunk());
-    return range;
+    Range oldRange = delta->oldRange();
+    text_ = text_()->paste(oldRange->i0(), oldRange->i1(), delta->newChunk());
+    return delta->newRange();
 }
 
 }} // namespace cc::ui
