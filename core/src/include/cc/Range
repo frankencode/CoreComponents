@@ -22,6 +22,8 @@ public:
 
         int i0() const { return i0_; }
         int i1() const { return i1_; }
+        int begin() const { return i0_; }
+        int end() const { return i1_; }
         int count() const { return isValid() ? i1_ - i0_ : 0; }
 
     private:

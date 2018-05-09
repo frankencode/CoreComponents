@@ -1,0 +1,67 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Property>
+#include <cc/List>
+#include <cc/String>
+#include <cc/Range>
+
+namespace cc {
+namespace ui {
+
+class Editor: public Object
+{
+    friend class Object;
+
+public:
+    String text() const { return text_(); }
+
+    bool paste(const Range &range, const String &newChunk);
+
+    bool canUndo() const;
+    bool canRedo() const;
+    Range undo();
+    Range redo();
+
+private:
+    Property<String> text_;
+
+    Editor(const String &initialText = String{});
+
+    class Delta: public Object
+    {
+        friend class Object;
+
+    public:
+        int byteOffset() const { return byteOffset_; }
+        String oldChunk() const { return oldChunk_; }
+        String newChunk() const { return newChunk_; }
+
+        Range oldRange() const { return Range { byteOffset_, byteOffset_ + oldChunk_->count() }; }
+        Range newRange() const { return Range { byteOffset_, byteOffset_ + newChunk_->count() }; }
+
+    private:
+        Delta(int byteOffset, const String &oldChunk, const String &newChunk):
+            byteOffset_{byteOffset},
+            oldChunk_{oldChunk},
+            newChunk_{newChunk}
+        {}
+
+        int byteOffset_;
+        String oldChunk_;
+        String newChunk_;
+    };
+
+    typedef List< Ref<const Delta> > History;
+    Ref<History> past_;
+    Ref<History> future_;
+};
+
+}} // namespace cc::ui

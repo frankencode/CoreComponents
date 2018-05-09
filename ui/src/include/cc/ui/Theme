@@ -41,6 +41,7 @@ public:
 
     virtual double defaultFontSize     () const { return 16; }
     virtual double smallFontSize       () const { return 12; }
+    virtual double textCursorWidth     () const { return dp(1); }
 };
 
 }} // namespace cc::ui

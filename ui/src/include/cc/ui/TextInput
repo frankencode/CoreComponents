@@ -34,8 +34,8 @@ protected:
     ~TextInput();
 
 private:
-    Property<Ref<const TextRun>> textRun;
-    Property<Ref<TextCursor>> textCursor;
+    Property< Ref<const TextRun> > textRun;
+    Property< Ref<TextCursor> > textCursor;
     Property<bool> textCursorVisible;
     Property<Range> selection;
 

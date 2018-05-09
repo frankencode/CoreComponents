@@ -279,22 +279,15 @@ void TextInput::paste(const String &chunk)
 
 void TextInput::paste(Range range, const String &chunk)
 {
-    if (!
-        (0 <= range->i0() && range->i1() <= text()->count())
-    )
+    if (! (0 <= range->i0() && range->i1() <= text()->count()) )
         return;
 
     selection = Range{};
-
     textCursor = nullptr;
 
-    text =
-        text()->copy(0, range->i0()) +
-        chunk +
-        text()->copy(range->i1(), text()->count());
+    text = text()->paste(range->i0(), range->i1(), chunk);
 
     textCursor = textRun()->getTextCursor(range->i0() + chunk->count());
-
     startBlink();
 }
 
@@ -325,7 +318,7 @@ void TextInput::paint()
         p->setSource(theme()->textCursorColor());
         p->rectangle(
             textPos() + textCursor()->posA(),
-            Size { dp(1), (textCursor()->posB() - textCursor()->posA())[1] }
+            Size { theme()->textCursorWidth(), (textCursor()->posB() - textCursor()->posA())[1] }
         );
         p->fill();
     }
