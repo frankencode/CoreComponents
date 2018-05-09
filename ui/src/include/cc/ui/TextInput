@@ -43,6 +43,8 @@ private:
     void stopBlink();
 
     bool onPointerClicked(const PointerEvent *event) override;
+    bool onPointerPressed(const PointerEvent *event) override;
+    bool onPointerMoved(const PointerEvent *event) override;
 
     void onTextEdited(const String &chunk, int start, int length) override;
     void onTextInput(const String &chunk);
@@ -55,7 +57,6 @@ private:
     void paint() override;
 
     Ref<Timer> timer_;
-    int nextTextCursorOffset_ { 0 };
 };
 
 }} // namespace cc::ui

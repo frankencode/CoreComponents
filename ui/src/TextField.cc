@@ -21,8 +21,6 @@ TextField::TextField(View *parent, const String &labelText_):
     Control(parent),
     labelText(labelText_)
 {
-    // color = Color::Red(10);
-
     input_ = add<TextInput>();
     input_->pos = Point { 0, dp(16) };
 

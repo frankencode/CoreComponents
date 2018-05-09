@@ -38,7 +38,8 @@ public:
     Color pressedInputLineColor() const override { return primaryColor(); }
     Color focusInputLineColor  () const override { return primaryColor(); }
     Color textCursorColor      () const override { return primaryColor(); }
-    Color textSelectionColor   () const override { return secondaryColor(); }
+    Color textSelectionInk     () const override { return primaryTextColor(); }
+    Color textSelectionPaper   () const override { return secondaryColor(); }
 
 private:
     MaterialDark() {}

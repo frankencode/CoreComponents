@@ -7,6 +7,7 @@
  */
 
 #include <cc/debug>
+#include <cc/ui/FtTextCursor>
 #include <cc/ui/TextRun>
 #include <cc/ui/Timer>
 #include <cc/ui/TextInput>
@@ -22,13 +23,17 @@ TextInput::TextInput(View *parent, const String &initialText):
 
     font->bind([=]{ return app()->defaultFont(); });
 
-    if (text()->count() > 0) {
-        selection = Range { 0, text()->count() };
-        nextTextCursorOffset_ = text()->count();
-    }
-
     textRun->bind([=]{ return TextRun::create(text(), font()); });
-    textCursor->bind([=]{ return textRun()->getTextCursor(nextTextCursorOffset_); });
+
+    if (text()->count() > 0)
+        selection = Range { 0, text()->count() };
+
+    textCursor = textRun()->getTextCursor(text()->count());
+
+    textRun->connect([=]{
+        if (textCursor())
+            textCursor = textRun()->getTextCursor(textCursor()->byteOffset());
+    });
 
     size->bind([=]{
         return Size {
@@ -73,8 +78,64 @@ Point TextInput::textPos() const
 
 bool TextInput::onPointerClicked(const PointerEvent *event)
 {
-    app()->focusControl = this;
+    if (!focus()) {
+        app()->focusControl = this;
+        return true;
+    }
+
+    Ref<const MouseEvent> mouseEvent = event;
+    if (mouseEvent) {
+        if (mouseEvent->clickCount() == 2) {
+            selection = Range { 0, text()->count() };
+            textCursor()->step(text()->count());
+            startBlink();
+        }
+    }
+
     return true;
+}
+
+bool TextInput::onPointerPressed(const PointerEvent *event)
+{
+    if (!focus()) return false;
+
+    selection = Range{};
+    textCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
+
+    startBlink();
+
+    return true;
+}
+
+bool TextInput::onPointerMoved(const PointerEvent *event)
+{
+    if (focus()) {
+        Ref<TextCursor> newTextCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
+
+        if (newTextCursor->byteOffset() == textCursor()->byteOffset())
+            return true;
+
+        if (!selection()) {
+            selection = Range { newTextCursor->byteOffset(), textCursor()->byteOffset() };
+        }
+        else {
+            Range newSelection;
+            if (textCursor()->byteOffset() == selection()->i0())
+                newSelection = Range { newTextCursor->byteOffset(), selection()->i1() };
+            else if (textCursor()->byteOffset() == selection()->i1())
+                newSelection = Range { selection()->i0(), newTextCursor->byteOffset() };
+            if (newSelection->count() > 0)
+                selection = newSelection;
+            else
+                selection = Range{};
+        }
+
+        textCursor = newTextCursor;
+        startBlink();
+        return true;
+    }
+
+    return false;
 }
 
 void TextInput::onTextEdited(const String &chunk, int start, int length)
@@ -225,12 +286,14 @@ void TextInput::paste(Range range, const String &chunk)
 
     selection = Range{};
 
-    nextTextCursorOffset_ = range->i0() + chunk->count();
+    textCursor = nullptr;
 
     text =
         text()->copy(0, range->i0()) +
         chunk +
         text()->copy(range->i1(), text()->count());
+
+    textCursor = textRun()->getTextCursor(range->i0() + chunk->count());
 
     startBlink();
 }
@@ -239,16 +302,18 @@ void TextInput::paint()
 {
     Painter p(this);
 
-    p->setSource(style()->theme()->primaryTextColor());
+    p->setSource(theme()->primaryTextColor());
 
     if (selection() && focus()) {
         int s0 = selection()->i0();
         int s1 = selection()->i1();
         p->showTextRun(
             textPos(), textRun(),
-            Painter::GetColor{},
             [=](int byteOffset) -> Color {
-                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionColor() : Color{};
+                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionInk() : Color{};
+            },
+            [=](int byteOffset) -> Color {
+                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionPaper() : Color{};
             }
         );
     }
@@ -256,7 +321,7 @@ void TextInput::paint()
         p->showTextRun(textPos(), textRun());
     }
 
-    if ((focus() || pressed()) && textCursorVisible()) {
+    if ((focus() || pressed()) && textCursorVisible() && textCursor()) {
         p->setSource(theme()->textCursorColor());
         p->rectangle(
             textPos() + textCursor()->posA(),

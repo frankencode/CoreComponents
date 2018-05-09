@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <cairo/cairo.h>
+#include <cc/debug>
 #include <cc/ui/Surface>
 #include <cc/ui/FtGlyphRun>
 #include <cc/ui/FtTextRun>
@@ -354,14 +355,13 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         int byteOffset = 0;
         int glyphOffset = 0;
 
-        Color fgDefaultColor = ftGlyphRun->font()->ink();
         Color fgColor0 = ink(0);
-        if (!fgColor0->isValid()) fgColor0 = fgDefaultColor;
+
         int byteOffset0 = 0;
         int glyphOffset0 = 0;
         int clusterIndex0 = 0;
 
-        for (int clusterIndex = 0; clusterIndex < ftGlyphRun->cairoTextClusters()->count();)
+        for (int clusterIndex = 0, clusterCount = ftGlyphRun->cairoTextClusters()->count(); clusterIndex < clusterCount;)
         {
             const cairo_text_cluster_t *cluster = &ftGlyphRun->cairoTextClusters()->at(clusterIndex);
 
@@ -370,15 +370,13 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
             ++clusterIndex;
 
             Color fgColor = ink(byteOffset);
-            if (!fgColor->isValid()) {
-                if (fgDefaultColor->isValid())
-                    fgColor = fgDefaultColor;
-                else
-                    cairo_set_source(cr_, sourceSaved);
-            }
 
-            if (fgColor0 != fgColor) {
-                if (fgColor0) setSource(fgColor0);
+            if (fgColor0 != fgColor || clusterIndex == clusterCount)
+            {
+                if (fgColor0->isValid()) setSource(fgColor0);
+                else if (glyphRun->font()->ink()) setSource(glyphRun->font()->ink());
+                else cairo_set_source(cr_, sourceSaved);
+
                 cairo_show_text_glyphs(
                     cr_,
                     ftGlyphRun->text()->chars() + byteOffset0,
@@ -396,9 +394,11 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
                 clusterIndex0 = clusterIndex;
             }
         }
+
+        cairo_set_source(cr_, sourceSaved);
     }
     else {
-        if (paper) cairo_set_source(cr_, sourceSaved);
+        cairo_set_source(cr_, sourceSaved);
 
         cairo_show_text_glyphs(
             cr_,
@@ -412,7 +412,6 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         );
     }
 
-    cairo_set_source(cr_, sourceSaved);
     cairo_pattern_destroy(sourceSaved);
 
     cairo_set_matrix(cr_, &matrixSaved);

@@ -30,7 +30,13 @@ public:
         Instance(int i0, int i1):
             i0_{i0},
             i1_{i1}
-        {}
+        {
+            if (0 <= i1_ && i1_ < i0_) {
+                int h = i0_;
+                i0_ = i1_;
+                i1_ = h;
+            }
+        }
 
         int i0_;
         int i1_;

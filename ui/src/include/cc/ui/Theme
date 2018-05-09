@@ -36,7 +36,8 @@ public:
     virtual Color pressedInputLineColor() const = 0;
     virtual Color focusInputLineColor  () const = 0;
     virtual Color textCursorColor      () const = 0;
-    virtual Color textSelectionColor   () const = 0;
+    virtual Color textSelectionInk     () const = 0;
+    virtual Color textSelectionPaper   () const = 0;
 
     virtual double defaultFontSize     () const { return 16; }
     virtual double smallFontSize       () const { return 12; }
