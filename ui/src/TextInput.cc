@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug>
 #include <cc/ui/FtTextCursor>
 #include <cc/ui/TextRun>
 #include <cc/ui/Timer>
@@ -145,7 +146,7 @@ bool TextInput::onPointerMoved(const PointerEvent *event)
 
 void TextInput::onTextEdited(const String &chunk, int start, int length)
 {
-    // CC_INSPECT(chunk);
+    CC_INSPECT(chunk);
 }
 
 void TextInput::onTextInput(const String &chunk)
@@ -240,14 +241,22 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
     else if (event->scanCode() == ScanCode::Key_Backspace)
     {
         Range s = selection();
-        if (!s) s = Range { textCursor()->byteOffset() - 1, textCursor()->byteOffset() };
-        paste(s, String{});
+        if (!s) {
+            int i1 = textCursor()->byteOffset();
+            if (textCursor()->step(-1))
+                s = Range { textCursor()->byteOffset(), i1 };
+        }
+        if (s) paste(s, String{});
     }
     else if (event->scanCode() == ScanCode::Key_Delete)
     {
         Range s = selection();
-        if (!s) s = Range { textCursor()->byteOffset(), textCursor()->byteOffset() + 1 };
-        paste(s, String{});
+        if (!s) {
+            int i0 = textCursor()->byteOffset();
+            if (textCursor()->step(1))
+            s = Range { i0, textCursor()->byteOffset() };
+        }
+        if (s) paste(s, String{});
     }
     else if (
         (+(event->modifiers() & KeyModifier::Control)) && (
