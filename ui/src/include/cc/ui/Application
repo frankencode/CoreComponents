@@ -59,6 +59,8 @@ protected:
 
     static bool fin_;
 
+    Property<Rect> textInputArea;
+
     Application();
     ~Application();
 
@@ -67,7 +69,8 @@ protected:
     virtual void setCursor(const Cursor *cursor) = 0;
     virtual void unsetCursor() = 0;
 
-    virtual void startTextInput(const Window *window, const Rect &inputArea) = 0;
+    virtual void startTextInput(const Window *window) = 0;
+    virtual void setTextInputArea(const Rect &inputArea) = 0;
     virtual void stopTextInput() = 0;
 
     void notifyTimer(Timer *t);

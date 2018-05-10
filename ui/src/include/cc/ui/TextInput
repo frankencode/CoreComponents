@@ -36,6 +36,7 @@ protected:
     ~TextInput();
 
 private:
+    Property<String> imeChunk;
     Property< Ref<const TextRun> > textRun;
     Property< Ref<TextCursor> > textCursor;
     Property<bool> textCursorVisible;
@@ -48,6 +49,7 @@ private:
     bool onPointerPressed(const PointerEvent *event) override;
     bool onPointerMoved(const PointerEvent *event) override;
 
+    Rect textInputArea() const override;
     void onTextEdited(const String &chunk, int start, int length) override;
     void onTextInput(const String &chunk);
 

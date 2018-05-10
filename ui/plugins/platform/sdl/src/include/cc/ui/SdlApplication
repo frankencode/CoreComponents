@@ -57,7 +57,8 @@ private:
     static String windowEventToString(const SDL_WindowEvent *e);
     void handleWindowEvent(const SDL_WindowEvent *e);
 
-    void startTextInput(const Window *window, const Rect &inputArea) override;
+    void startTextInput(const Window *window) override;
+    void setTextInputArea(const Rect &inputArea) override;
     void stopTextInput() override;
 
     void triggerTimer(const Timer *timer);

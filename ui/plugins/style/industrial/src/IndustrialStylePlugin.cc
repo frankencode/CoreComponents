@@ -34,7 +34,8 @@ void IndustrialStylePlugin::activate()
         defaultFixedFont = Font("DejaVu Sans Mono", sp(16));
     }
 
-    String notoPath = "/usr/share/fonts/truetype/noto";
+    // String notoPath = "/usr/share/fonts/truetype/noto";
+    String notoPath = "/usr/share/fonts/opentype/noto";
     if (Dir::exists(notoPath)) {
         FontManager::instance()->addPath(notoPath);
         defaultFont = Font("Noto Sans", sp(16));

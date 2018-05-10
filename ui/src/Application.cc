@@ -33,16 +33,28 @@ Application *Application::instance()
 Application::Application():
     touchTargets_(TouchTargets::create())
 {
+    textInputArea->connect([=]{
+        if (focusControl())
+            setTextInputArea(textInputArea());
+    });
+
     focusControl->connect([=]{
         if (focusControlSaved_) stopTextInput();
         focusControlSaved_ = focusControl();
+
         if (focusControl()) {
-            Rect a = focusControl()->textInputArea();
-            startTextInput(
-                focusControl()->window(),
-                Rect { focusControl()->mapToGlobal(a->pos()), a->size() }
-            );
+            startTextInput(focusControl()->window());
+
+            textInputArea->bind([=]{
+                if (!focusControl()) return Rect{};
+                Rect a = focusControl()->textInputArea();
+                return Rect { focusControl()->mapToGlobal(a->pos()), a->size() };
+            });
+
+            setTextInputArea(textInputArea());
         }
+        else
+            textInputArea = Rect{};
     });
 
     cursorControl->connect([=]{

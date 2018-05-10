@@ -47,9 +47,8 @@ class MainView: public View
                 #if 0
                 "古池や蛙飛び込む水の音ふるいけやかわずとびこむみずのおと (Bashō's old pond)",
                 #endif
-                #if 0
                 "人之初，性本善。性相近，习相远。苟不教，性乃迁。教之道，贵以专。昔孟母，择邻处。子不学，断机杼，窦燕山，有义方，教五子，名俱扬。养不教，父之过。教不严，师之惰。 (Confucius)",
-                #endif
+                #if 0
                 "Es war einmal eine Königstochter, die ging hinaus in den Wald und setzte "
                 "sich an einen kühlen Brunnen. Sie hatte eine goldene Kugel, die war ihr "
                 "liebstes Spielwerk, die warf sie in die Höhe und fing sie wieder in der "
@@ -57,7 +56,8 @@ class MainView: public View
                 "sie hatte die Hand schon ausgestreckt und die Finger gekrümmt, um sie "
                 "wieder zufangen, da schlug sie neben vorbei auf die Erde, rollte und rollte "
                 "und geradezu in das Wasser hinein.",
-                Font(fontSize_)
+                #endif
+                Font("Noto Sans CJK JP", fontSize_)
             );
 
         auto updateTextWrap = [=]{
@@ -89,7 +89,7 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    String fontPath = "/usr/share/fonts/truetype/dejavu/";
+    String fontPath = "/usr/share/fonts/opentype/noto";
     if (argc > 1) fontPath = argv[1];
     FontManager::instance()->addPath(fontPath);
     Window::open<MainView>(fontPath);

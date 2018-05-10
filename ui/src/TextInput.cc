@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug>
 #include <cc/ui/FtTextCursor>
 #include <cc/ui/TextRun>
 #include <cc/ui/Timer>
@@ -24,7 +23,18 @@ TextInput::TextInput(View *parent, const String &initialText):
 
     font->bind([=]{ return app()->defaultFont(); });
 
-    textRun->bind([=]{ return TextRun::create(text(), font()); });
+    textRun->bind([=]{
+        if (imeChunk()->count() > 0) {
+            auto run = TextRun::create();
+            if (textCursor()->byteOffset() > 0)
+                run->append(text()->copy(0, textCursor()->byteOffset()), font());
+            run->append(imeChunk(), font());
+            if (textCursor()->byteOffset() < text()->count())
+                run->append(text()->copy(textCursor()->byteOffset(), text()->count()), font());
+            return run;
+        }
+        return TextRun::create(text(), font());
+    });
 
     if (text()->count() > 0)
         selection = Range { 0, text()->count() };
@@ -106,6 +116,7 @@ bool TextInput::onPointerPressed(const PointerEvent *event)
     if (!focus()) return false;
 
     selection = Range{};
+    imeChunk = String{};
     textCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
 
     startBlink();
@@ -144,20 +155,37 @@ bool TextInput::onPointerMoved(const PointerEvent *event)
     return false;
 }
 
+Rect TextInput::textInputArea() const
+{
+    double cx = (textCursor()) ? textCursor()->posA()[0] : 0.;
+
+    Point origin { textPos()[0] + cx, 0 };
+
+    return Rect {
+        origin,
+        Size {
+            size()[0] - origin[0],
+            size()[1]
+        }
+    };
+}
+
 void TextInput::onTextEdited(const String &chunk, int start, int length)
 {
-    CC_INSPECT(chunk);
+    imeChunk = chunk;
 }
 
 void TextInput::onTextInput(const String &chunk)
 {
     Range s = selection();
-    if (!s) s = textCursor()->byteOffset();
+    if (!s) s = Range { textCursor()->byteOffset() };
     paste(s, chunk);
 }
 
 bool TextInput::onKeyPressed(const KeyEvent *event)
 {
+    imeChunk = String{};
+
     if (
         (+(event->modifiers() & KeyModifier::Control)) &&
         event->keyCode() == KeyCode::Key_A
@@ -299,6 +327,10 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
             startBlink();
         }
     }
+    else if (event->scanCode() == ScanCode::Key_Escape)
+    {
+        imeChunk = String{};
+    }
 
     return true;
 }
@@ -317,6 +349,7 @@ void TextInput::paste(Range range, const String &chunk)
 
     selection = Range{};
     textCursor = nullptr;
+    imeChunk = String{};
 
     editor_->paste(range, chunk);
 

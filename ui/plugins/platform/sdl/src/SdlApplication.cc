@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/debug> // DEBUG
+#include <cc/debug>
 #include <cc/exceptions>
 #include <cc/Singleton>
 #include <cc/Format>
@@ -365,7 +365,7 @@ void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)
     };
 }
 
-void SdlApplication::startTextInput(const Window *window, const Rect &inputArea)
+void SdlApplication::startTextInput(const Window *window)
 {
     const SdlWindow *w = Object::cast<const SdlWindow *>(window);
 
@@ -375,16 +375,17 @@ void SdlApplication::startTextInput(const Window *window, const Rect &inputArea)
     if (SDL_GetKeyboardFocus() != w->sdlWindow_)
         SDL_RaiseWindow(w->sdlWindow_);
 
-    {
-        SDL_Rect rect;
-        rect.x = inputArea->pos()[0];
-        rect.y = inputArea->pos()[1];
-        rect.w = inputArea->size()[0];
-        rect.h = inputArea->size()[1];
-        SDL_SetTextInputRect(&rect);
-    }
-
     SDL_StartTextInput();
+}
+
+void SdlApplication::setTextInputArea(const Rect &inputArea)
+{
+    SDL_Rect rect;
+    rect.x = inputArea->pos()[0];
+    rect.y = inputArea->pos()[1];
+    rect.w = inputArea->size()[0];
+    rect.h = inputArea->size()[1];
+    SDL_SetTextInputRect(&rect);
 }
 
 void SdlApplication::stopTextInput()
