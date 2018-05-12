@@ -116,18 +116,4 @@ const FontMetrics *FtScaledFont::getMetrics() const
     return ftFontMetrics_;
 }
 
-Step FtScaledFont::getGlyphAdvance(unsigned int glyphIndex) const
-{
-    FtFaceGuard guard(this);
-    FT_Face ftFace = guard->ftFace();
-
-    if (FT_Load_Glyph(ftFace, glyphIndex, FT_LOAD_DEFAULT) != 0)
-        return Step{};
-
-    return Step {
-        double(ftFace->glyph->advance.x),
-        double(ftFace->glyph->advance.y)
-    } / 64.;
-}
-
 }} // namespace cc::ui

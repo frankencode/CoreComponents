@@ -30,8 +30,6 @@ public:
 
     cairo_scaled_font_t *cairoScaledFont() const { return cairoScaledFont_; }
 
-    Step getGlyphAdvance(unsigned int glyphIndex) const;
-
 private:
     friend class Object;
 

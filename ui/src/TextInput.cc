@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug>
 #include <cc/ui/FtTextCursor>
 #include <cc/ui/TextRun>
 #include <cc/ui/Timer>
@@ -24,16 +25,16 @@ TextInput::TextInput(View *parent, const String &initialText):
     font->bind([=]{ return app()->defaultFont(); });
 
     textRun->bind([=]{
-        if (imeChunk()->count() > 0) {
-            auto run = TextRun::create();
-            if (textCursor()->byteOffset() > 0)
-                run->append(text()->copy(0, textCursor()->byteOffset()), font());
-            run->append(imeChunk(), font());
-            if (textCursor()->byteOffset() < text()->count())
-                run->append(text()->copy(textCursor()->byteOffset(), text()->count()), font());
-            return run;
+        auto run = TextRun::create();
+        if (imeChunks()) {
+            for (const String &chunk: imeChunks()) {
+                if (chunk->count() > 0)
+                    run->append(chunk, font());
+            }
         }
-        return TextRun::create(text(), font());
+        else
+            run->append(text(), font());
+        return run;
     });
 
     if (text()->count() > 0)
@@ -116,7 +117,7 @@ bool TextInput::onPointerPressed(const PointerEvent *event)
     if (!focus()) return false;
 
     selection = Range{};
-    imeChunk = String{};
+    imeChunks = nullptr;
     textCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
 
     startBlink();
@@ -148,7 +149,6 @@ bool TextInput::onPointerMoved(const PointerEvent *event)
         }
 
         textCursor = newTextCursor;
-        startBlink();
         return true;
     }
 
@@ -172,7 +172,11 @@ Rect TextInput::textInputArea() const
 
 void TextInput::onTextEdited(const String &chunk, int start, int length)
 {
-    imeChunk = chunk;
+    imeChunks =
+        StringList::create()
+            << text()->copy(0, textCursor()->byteOffset())
+            << chunk
+            << text()->copy(textCursor()->byteOffset(), text()->count());
 }
 
 void TextInput::onTextInput(const String &chunk)
@@ -184,7 +188,7 @@ void TextInput::onTextInput(const String &chunk)
 
 bool TextInput::onKeyPressed(const KeyEvent *event)
 {
-    imeChunk = String{};
+    imeChunks = nullptr;
 
     if (
         (+(event->modifiers() & KeyModifier::Control)) &&
@@ -329,7 +333,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
     }
     else if (event->scanCode() == ScanCode::Key_Escape)
     {
-        imeChunk = String{};
+        imeChunks = nullptr;
     }
 
     return true;
@@ -349,7 +353,7 @@ void TextInput::paste(Range range, const String &chunk)
 
     selection = Range{};
     textCursor = nullptr;
-    imeChunk = String{};
+    imeChunks = nullptr;
 
     editor_->paste(range, chunk);
 

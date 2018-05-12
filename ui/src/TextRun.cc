@@ -22,11 +22,14 @@ Ref<TextRun> TextRun::create()
 Ref<TextRun> TextRun::create(const String &text, const Font &font)
 {
     Ref<TextRun> textRun = TextRun::create();
-    if (text->countCharsIn("<>&") > 0)
-        textRun->appendHtml(text, font);
-    else
-        textRun->append(text, font);
+    textRun->append(text, font);
+    return textRun;
+}
 
+Ref<TextRun> TextRun::createHtml(const String &text, const Font &font)
+{
+    Ref<TextRun> textRun = TextRun::create();
+    textRun->appendHtml(text, font);
     return textRun;
 }
 
@@ -105,8 +108,8 @@ double TextRun::lineHeight() const
 
 Ref<TextCursor> TextRun::getNearestTextCursor(Point pointerPos) const
 {
-    Ref<TextCursor> nearestCursor;
     double nearestDistance = std::numeric_limits<double>::max();
+    int nearestOffset = 0;
 
     Ref<TextCursor> cursor = getTextCursor();
     do {
@@ -115,11 +118,11 @@ Ref<TextCursor> TextRun::getNearestTextCursor(Point pointerPos) const
 
         if (distanceA < nearestDistance || distanceB < nearestDistance) {
             nearestDistance = (distanceA < distanceB) ? distanceA : distanceB;
-            nearestCursor = cursor->copy();
+            nearestOffset = cursor->byteOffset();
         }
     } while (cursor->step(1));
 
-    return nearestCursor;
+    return getTextCursor(nearestOffset);
 }
 
 Ref<TextCursor> TextRun::getNearestTextCursorBelow(const TextCursor *cursor) const

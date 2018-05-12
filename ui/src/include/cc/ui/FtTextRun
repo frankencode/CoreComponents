@@ -26,7 +26,7 @@ public:
 
     Ref<TextRun> copy() const override;
 
-    void append(const String &text, const Font &font) override;
+    void append(const String &text, const Font &font = Font{}) override;
 
     Point advance() const override { return advance_; }
     Size size() const override { return size_; }

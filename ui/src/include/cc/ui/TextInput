@@ -36,7 +36,7 @@ protected:
     ~TextInput();
 
 private:
-    Property<String> imeChunk;
+    Property< Ref<const StringList> > imeChunks;
     Property< Ref<const TextRun> > textRun;
     Property< Ref<TextCursor> > textCursor;
     Property<bool> textCursorVisible;

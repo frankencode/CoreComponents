@@ -24,7 +24,7 @@ class MainView: public View
         };
 
         Label *label = add<Label>(getClockText());
-        label->font = Font { "DejaVu Sans", sp(40) };
+        label->font = Font { sp(40) };
         label->paper = 0xD0D0FF;
         label->ink = 0x000000;
         label->margin = sp(20);

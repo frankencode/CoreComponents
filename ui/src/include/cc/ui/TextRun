@@ -18,15 +18,16 @@ class TextRun: public Object
 {
 public:
     static Ref<TextRun> create();
-    static Ref<TextRun> create(const String &text, const Font &font = Font());
+    static Ref<TextRun> create(const String &text, const Font &font = Font{});
+    static Ref<TextRun> createHtml(const String &text, const Font &font = Font{});
 
     static Ref<TextRun> copy(const TextRun *other) { return other->copy(); }
 
     virtual Ref<TextRun> copy() const = 0;
 
-    virtual void append(const String &text, const Font &font = Font()) = 0;
+    virtual void append(const String &text, const Font &font = Font{}) = 0;
     void append(const TextRun *textRun);
-    void appendHtml(const String &text, const Font &font = Font());
+    void appendHtml(const String &text, const Font &font = Font{});
 
     virtual Point advance() const = 0;
     virtual Size size() const = 0;

@@ -27,7 +27,7 @@ Label::Label(View *parent, const String &text_, const Font &font_):
     else
         inheritPaper();
 
-    textRun->bind([=]{ return TextRun::create(text(), font()); });
+    textRun->bind([=]{ return TextRun::createHtml(text(), font()); });
 
     size->bind([=]{
         return

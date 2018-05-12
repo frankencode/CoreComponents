@@ -34,13 +34,16 @@ void IndustrialStylePlugin::activate()
         defaultFixedFont = Font("DejaVu Sans Mono", sp(16));
     }
 
-    // String notoPath = "/usr/share/fonts/truetype/noto";
-    String notoPath = "/usr/share/fonts/opentype/noto";
+    String notoPath = "/usr/share/fonts/truetype/noto";
     if (Dir::exists(notoPath)) {
         FontManager::instance()->addPath(notoPath);
-        defaultFont = Font("Noto Sans", sp(16));
+        defaultFont = Font("Noto Sans Display UI", sp(16));
         defaultFixedFont = Font("Noto Mono", sp(16));
     }
+
+    String notoPath2 = "/usr/share/fonts/opentype/noto";
+    if (Dir::exists(notoPath2))
+        FontManager::instance()->addPath(notoPath2);
 }
 
 Theme *IndustrialStylePlugin::dayTheme() const
