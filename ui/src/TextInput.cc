@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug>
 #include <cc/ui/FtTextCursor>
 #include <cc/ui/TextRun>
 #include <cc/ui/Timer>
@@ -116,6 +115,8 @@ bool TextInput::onPointerPressed(const PointerEvent *event)
 {
     if (!focus()) return false;
 
+    if (shiftKey_) return onPointerMoved(event);
+
     selection = Range{};
     imeChunks = nullptr;
     textCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
@@ -127,32 +128,31 @@ bool TextInput::onPointerPressed(const PointerEvent *event)
 
 bool TextInput::onPointerMoved(const PointerEvent *event)
 {
-    if (focus()) {
-        Ref<TextCursor> newTextCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
+    if (!focus()) return false;
 
-        if (newTextCursor->byteOffset() == textCursor()->byteOffset())
-            return true;
+    Ref<TextCursor> newTextCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
 
-        if (!selection()) {
-            selection = Range { newTextCursor->byteOffset(), textCursor()->byteOffset() };
-        }
-        else {
-            Range newSelection;
-            if (textCursor()->byteOffset() == selection()->i0())
-                newSelection = Range { newTextCursor->byteOffset(), selection()->i1() };
-            else if (textCursor()->byteOffset() == selection()->i1())
-                newSelection = Range { selection()->i0(), newTextCursor->byteOffset() };
-            if (newSelection->count() > 0)
-                selection = newSelection;
-            else
-                selection = Range{};
-        }
-
-        textCursor = newTextCursor;
+    if (newTextCursor->byteOffset() == textCursor()->byteOffset())
         return true;
+
+    if (!selection()) {
+        selection = Range { newTextCursor->byteOffset(), textCursor()->byteOffset() };
+    }
+    else {
+        Range newSelection;
+        if (textCursor()->byteOffset() == selection()->i0())
+            newSelection = Range { newTextCursor->byteOffset(), selection()->i1() };
+        else if (textCursor()->byteOffset() == selection()->i1())
+            newSelection = Range { selection()->i0(), newTextCursor->byteOffset() };
+        if (newSelection->count() > 0)
+            selection = newSelection;
+        else
+            selection = Range{};
     }
 
-    return false;
+    textCursor = newTextCursor;
+
+    return true;
 }
 
 Rect TextInput::textInputArea() const
@@ -331,10 +331,22 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
             startBlink();
         }
     }
-    else if (event->scanCode() == ScanCode::Key_Escape)
-    {
-        imeChunks = nullptr;
-    }
+    else if (
+        event->scanCode() == ScanCode::Key_LeftShift ||
+        event->scanCode() == ScanCode::Key_RightShift
+    )
+        shiftKey_ = true;
+
+    return true;
+}
+
+bool TextInput::onKeyReleased(const KeyEvent *event)
+{
+    if (
+        event->scanCode() == ScanCode::Key_LeftShift ||
+        event->scanCode() == ScanCode::Key_RightShift
+    )
+        shiftKey_ = false;
 
     return true;
 }

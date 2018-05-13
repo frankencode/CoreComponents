@@ -54,6 +54,7 @@ private:
     void onTextInput(const String &chunk);
 
     bool onKeyPressed(const KeyEvent *event) override;
+    bool onKeyReleased(const KeyEvent *event) override;
 
     void paste(const String &chunk);
     void paste(Range selection, const String &chunk);
@@ -62,6 +63,7 @@ private:
 
     Ref<Editor> editor_;
     Ref<Timer> timer_;
+    bool shiftKey_ { false };
 };
 
 }} // namespace cc::ui
