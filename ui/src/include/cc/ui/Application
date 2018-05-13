@@ -32,6 +32,7 @@ public:
 
     Property<double> textZoom { 1 };
     Property<Font> defaultFont;
+    Property<Font> defaultFixedFont;
     Property<Font> smallFont;
 
     Property< Ref<Control> > hoverControl;

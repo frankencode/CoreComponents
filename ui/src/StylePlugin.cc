@@ -35,6 +35,12 @@ void StylePlugin::init()
         ));
     });
 
+    app->defaultFixedFont->bind([=]{
+        return Font(sp(
+            theme()->defaultFixedFontSize() * app->textZoom()
+        )) << Pitch::Fixed;
+    });
+
     Application::instance()->smallFont->bind([=]{
         return Font(sp(
             theme()->smallFontSize() * app->textZoom()
