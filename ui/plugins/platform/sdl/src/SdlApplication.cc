@@ -110,11 +110,23 @@ int SdlApplication::run()
         }
         else switch(event_->type) {
             case SDL_FINGERMOTION:
+                while (
+                    SDL_PeepEvents(
+                        event_, 1, SDL_GETEVENT,
+                        SDL_FINGERMOTION, SDL_FINGERMOTION
+                    ) > 0
+                );
             case SDL_FINGERDOWN:
             case SDL_FINGERUP:
                 handleFingerEvent(&event_->tfinger);
                 break;
             case SDL_MOUSEMOTION:
+                while (
+                    SDL_PeepEvents(
+                        event_, 1, SDL_GETEVENT,
+                        SDL_MOUSEMOTION, SDL_MOUSEMOTION
+                    ) > 0
+                );
                 handleMouseMotionEvent(&event_->motion);
                 break;
             case SDL_MOUSEBUTTONDOWN:

@@ -22,6 +22,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application::open(argc, argv);
-    Window::open<MainView>("Hello, world!", WindowMode::Accelerated);
+    Window::open<MainView>("Hello, world!"/*, WindowMode::Accelerated*/);
     return Application::instance()->run();
 }
