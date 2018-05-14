@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <cc/String>
+
 namespace cc {
 
 /** \brief index range
