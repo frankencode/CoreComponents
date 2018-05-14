@@ -6,22 +6,27 @@
  *
  */
 
-#include <cc/ui/FtTextCursor>
 #include <cc/ui/TextRun>
+#include <cc/ui/LineEditor>
 #include <cc/ui/Timer>
-#include <cc/ui/Editor>
 #include <cc/ui/TextInput>
 
 namespace cc {
 namespace ui {
 
 TextInput::TextInput(View *parent, const String &initialText):
-    InputControl(parent),
-    editor_(Object::create<Editor>(initialText))
+    InputControl{parent}
+{}
+
+TextInput::~TextInput()
+{}
+
+void TextInput::init()
 {
+    editor_ = createEditor();
     inheritPaper();
 
-    font->bind([=]{ return app()->defaultFont(); });
+    if (!font()) font->bind([=]{ return app()->defaultFont(); });
 
     textRun->bind([=]{
         auto run = TextRun::create();
@@ -48,7 +53,7 @@ TextInput::TextInput(View *parent, const String &initialText):
 
     size->bind([=]{
         return Size {
-            parent->size()[0],
+            parent()->size()[0],
             textRun()->size()[1] + 2 * margin()[1]
         };
     });
@@ -66,8 +71,10 @@ TextInput::TextInput(View *parent, const String &initialText):
     });
 }
 
-TextInput::~TextInput()
-{}
+Ref<TextEditor> TextInput::createEditor()
+{
+    return Object::create<LineEditor>();
+}
 
 String TextInput::text() const
 {
@@ -346,8 +353,21 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
     else if (
         event->scanCode() == ScanCode::Key_LeftShift ||
         event->scanCode() == ScanCode::Key_RightShift
-    )
+    ) {
         shiftKey_ = true;
+    }
+    else if (
+        event->scanCode() == ScanCode::Key_Return ||
+        event->scanCode() == ScanCode::Key_Return2
+    ) {
+        accepted();
+    }
+    else if (
+        event->scanCode() == ScanCode::Key_Escape
+    ) {
+        rejected();
+    }
+
 
     return true;
 }
@@ -366,7 +386,7 @@ bool TextInput::onKeyReleased(const KeyEvent *event)
 void TextInput::paste(const String &chunk)
 {
     Range s = selection();
-    if (!s) s = textCursor()->byteOffset();
+    if (!s) s = Range { textCursor()->byteOffset() };
     paste(s, chunk);
 }
 

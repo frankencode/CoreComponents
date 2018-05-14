@@ -6,18 +6,23 @@
  *
  */
 
-#include <cc/ui/Editor>
+#include <cc/ui/LineEditor>
 
 namespace cc {
 namespace ui {
 
-Editor::Editor(const String &initialText):
+LineEditor::LineEditor(const String &initialText):
     text_{initialText},
     past_{History::create()},
     future_{History::create()}
 {}
 
-Range Editor::paste(Range range, const String &newChunk)
+String LineEditor::text() const
+{
+    return text_();
+}
+
+Range LineEditor::paste(Range range, const String &newChunk)
 {
     if (!(0 <= range->i0() && range->i1() <= text_()->count())) return Range{};
 
@@ -34,17 +39,17 @@ Range Editor::paste(Range range, const String &newChunk)
     return delta->newRange();
 }
 
-bool Editor::canUndo() const
+bool LineEditor::canUndo() const
 {
     return past_->count() > 0;
 }
 
-bool Editor::canRedo() const
+bool LineEditor::canRedo() const
 {
     return future_->count() > 0;
 }
 
-Range Editor::undo()
+Range LineEditor::undo()
 {
     if (!canUndo()) return Range{};
     auto delta = past_->popBack();
@@ -54,7 +59,7 @@ Range Editor::undo()
     return delta->oldRange();
 }
 
-Range Editor::redo()
+Range LineEditor::redo()
 {
     if (!canRedo()) return Range{};
     auto delta = future_->popFront();

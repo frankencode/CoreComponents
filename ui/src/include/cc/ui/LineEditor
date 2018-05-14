@@ -9,31 +9,30 @@
 #pragma once
 
 #include <cc/Property>
-#include <cc/List>
-#include <cc/String>
-#include <cc/Range>
+#include <cc/ui/TextEditor>
 
 namespace cc {
 namespace ui {
 
-class Editor: public Object
+class LineEditor: public TextEditor
 {
     friend class Object;
 
 public:
-    String text() const { return text_(); }
+    String text() const override;
 
-    Range paste(Range range, const String &newChunk);
+    Range paste(Range range, const String &newChunk) override;
 
-    bool canUndo() const;
-    bool canRedo() const;
-    Range undo();
-    Range redo();
+    bool canUndo() const override;
+    bool canRedo() const override;
+    Range undo() override;
+    Range redo() override;
+
+protected:
+    LineEditor(const String &initialText = String{});
 
 private:
     Property<String> text_;
-
-    Editor(const String &initialText = String{});
 
     class Delta: public Object
     {

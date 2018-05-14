@@ -23,6 +23,9 @@ public:
     Property<String> statusText;
     Property<String> errorText;
 
+    Signal accepted;
+    Signal rejected;
+
 protected:
     InputField(View *parent, const String &labelText);
     void init();

@@ -26,6 +26,8 @@ void InputField::init()
 {
     InputControl *input = addInputControl();
     input->pos = Point { 0, dp(16) };
+    input->accepted->connect([=]{ accepted(); });
+    input->rejected->connect([=]{ rejected(); });
 
     Label *dummy = add<Label>();
     dummy->text->bind([=]{ return dummyText(); });

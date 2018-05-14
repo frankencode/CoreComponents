@@ -17,7 +17,7 @@ namespace ui {
 class TextRun;
 class TextCursor;
 class Timer;
-class Editor;
+class TextEditor;
 
 class TextInput: public InputControl
 {
@@ -33,6 +33,10 @@ public:
 protected:
     TextInput(View *parent = 0, const String &initialText = String{});
     ~TextInput();
+
+    void init();
+
+    virtual Ref<TextEditor> createEditor();
 
 private:
     Property< Ref<const StringList> > imeChunks;
@@ -60,7 +64,7 @@ private:
 
     void paint() override;
 
-    Ref<Editor> editor_;
+    Ref<TextEditor> editor_;
     Ref<Timer> timer_;
     bool shiftKey_ { false };
 };

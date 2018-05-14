@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/Range>
+
+namespace cc {
+namespace ui {
+
+class TextEditor: public Object
+{
+public:
+    virtual String text() const = 0;
+
+    virtual Range paste(Range range, const String &newChunk) = 0;
+
+    virtual bool canUndo() const = 0;
+    virtual bool canRedo() const = 0;
+    virtual Range undo() = 0;
+    virtual Range redo() = 0;
+};
+
+}} // namespace cc::ui
