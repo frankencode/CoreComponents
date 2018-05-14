@@ -17,21 +17,21 @@ Editor::Editor(const String &initialText):
     future_{History::create()}
 {}
 
-bool Editor::paste(Range range, const String &newChunk)
+Range Editor::paste(Range range, const String &newChunk)
 {
-    if (!(0 <= range->i0() && range->i1() <= text_()->count())) return false;
+    if (!(0 <= range->i0() && range->i1() <= text_()->count())) return Range{};
 
     future_->deplete();
-    past_->pushBack(
+    auto delta =
         Object::create<Delta>(
             range->i0(),
             text_()->copy(range->i0(), range->i1()),
             newChunk
-        )
-    );
+        );
+    past_->pushBack(delta);
     text_ = text_()->paste(range->i0(), range->i1(), newChunk);
 
-    return true;
+    return delta->newRange();
 }
 
 bool Editor::canUndo() const

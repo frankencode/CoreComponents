@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Range>
-#include <cc/ui/Control>
+#include <cc/ui/InputControl>
 
 namespace cc {
 namespace ui {
@@ -19,17 +19,16 @@ class TextCursor;
 class Timer;
 class Editor;
 
-class TextInput: public Control
+class TextInput: public InputControl
 {
     friend class Object;
 
 public:
-    String text() const;
+    String text() const override;
+    Point textPos() const override;
 
     Property<Font> font;
     Property<Size> margin;
-
-    Point textPos() const;
 
 protected:
     TextInput(View *parent = 0, const String &initialText = String{});
@@ -51,7 +50,7 @@ private:
 
     Rect textInputArea() const override;
     void onTextEdited(const String &chunk, int start, int length) override;
-    void onTextInput(const String &chunk);
+    void onTextInput(const String &chunk) override;
 
     bool onKeyPressed(const KeyEvent *event) override;
     bool onKeyReleased(const KeyEvent *event) override;

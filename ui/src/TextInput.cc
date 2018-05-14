@@ -16,7 +16,7 @@ namespace cc {
 namespace ui {
 
 TextInput::TextInput(View *parent, const String &initialText):
-    Control(parent),
+    InputControl(parent),
     editor_(Object::create<Editor>(initialText))
 {
     inheritPaper();
@@ -74,6 +74,12 @@ String TextInput::text() const
     return editor_->text();
 }
 
+Point TextInput::textPos() const
+{
+    double a = std::ceil(font()->getMetrics()->ascender());
+    return margin() + Point { 0, a };
+}
+
 void TextInput::startBlink()
 {
     textCursorVisible = false;
@@ -84,12 +90,6 @@ void TextInput::stopBlink()
 {
     timer_->stop();
     textCursorVisible = false;
-}
-
-Point TextInput::textPos() const
-{
-    double a = std::ceil(font()->getMetrics()->ascender());
-    return margin() + Point { 0, a };
 }
 
 bool TextInput::onPointerClicked(const PointerEvent *event)
@@ -291,6 +291,18 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
         if (s) paste(s, String{});
     }
     else if (
+        (+(event->modifiers() & KeyModifier::Control)) &&
+        event->keyCode() == KeyCode::Key_X
+    )
+    {
+        if (selection()) {
+            app()->setClipboardText(
+                text()->copy(selection()->i0(), selection()->i1())
+            );
+            paste(selection(), String{});
+        }
+    }
+    else if (
         (+(event->modifiers() & KeyModifier::Control)) && (
             event->scanCode() == ScanCode::Key_Insert ||
             event->keyCode() == KeyCode::Key_C
@@ -367,10 +379,11 @@ void TextInput::paste(Range range, const String &chunk)
     textCursor = nullptr;
     imeChunks = nullptr;
 
-    editor_->paste(range, chunk);
-
-    textCursor = textRun()->getTextCursor(range->i0() + chunk->count());
-    startBlink();
+    Range newRange = editor_->paste(range, chunk);
+    if (newRange) {
+        textCursor = textRun()->getTextCursor(newRange->i1());
+        startBlink();
+    }
 }
 
 void TextInput::paint()

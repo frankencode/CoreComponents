@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright (C) 2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
@@ -8,21 +8,21 @@
 
 #pragma once
 
-#include <cc/ui/InputField>
+#include <cc/ui/Control>
 
 namespace cc {
 namespace ui {
 
-class TextInput;
-
-class TextField: public InputField
+class InputControl: public Control
 {
-    friend class Object;
+public:
+    virtual String text() const = 0;
+    virtual Point textPos() const = 0;
 
 protected:
-    TextField(View *parent, const String &labelText);
-
-    InputControl *addInputControl() override;
+    InputControl(View *parent):
+        Control(parent)
+    {}
 };
 
 }} // namespace cc::ui

@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/InputControl>
+
+namespace cc {
+namespace ui {
+
+class InputField: public Control
+{
+public:
+    Property<String> labelText;
+    Property<String> inputText;
+    Property<String> dummyText;
+    Property<String> helpText;
+    Property<String> statusText;
+    Property<String> errorText;
+
+protected:
+    InputField(View *parent, const String &labelText);
+    void init();
+
+    virtual InputControl *addInputControl() = 0;
+};
+
+}} // namespace cc::ui
