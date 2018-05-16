@@ -8,7 +8,6 @@
 
 #include <cmath>
 #include <cairo/cairo.h>
-#include <cc/debug>
 #include <cc/ui/Surface>
 #include <cc/ui/FtGlyphRun>
 #include <cc/ui/FtTextRun>
@@ -327,15 +326,14 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
 
             if (bgColor != bgColor0 || !glyph || glyph->y != glyph0->y)
             {
-                double x1 = (!glyph || glyph->y != glyph0->y) ? ftGlyphRun->size()[0] : glyph->x;
+                double x1 = (!glyph || glyph->y != glyph0->y) ? ftGlyphRun->advance()[0] : glyph->x;
 
                 if (bgColor0) {
+                    setSource(bgColor0);
                     rectangle(
                         Point{glyph0->x, glyph0->y - dy0},
                         Size{x1 - glyph0->x, metrics->lineHeight()}
                     );
-                    if (bgColor != bgColor0)
-                        setSource(bgColor0);
                     fill();
                 }
 
@@ -428,11 +426,11 @@ void Painter::Instance::showTextRun(Point pos, const TextRun *textRun, const Get
 {
     const FtTextRun *ftTextRun = Object::cast<const FtTextRun *>(textRun);
     int i0 = 0;
+    GetColor ink_;
+    GetColor paper_;
+    if (ink) ink_ = [&](int i) { return ink(i + i0); };
+    if (paper) paper_ = [&](int i) { return paper(i + i0); };
     for (const GlyphRun *glyphRun: ftTextRun->glyphRuns_) {
-        GetColor ink_;
-        GetColor paper_;
-        if (ink) ink_ = [=](int i) { return ink(i + i0); };
-        if (paper) paper_ = [=](int i) { return paper(i + i0); };
         showGlyphRun(pos, glyphRun, ink_, paper_);
         i0 += glyphRun->byteCount();
     }
