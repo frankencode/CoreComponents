@@ -12,6 +12,7 @@
 #include <cairo/cairo.h>
 #include <cairo/cairo-ft.h>
 #include <cmath>
+#include <cc/debug>
 #include <cc/Utf8Walker>
 #include <cc/ThreadLocalSingleton>
 #include <cc/ui/FtGlyphRun>
@@ -81,7 +82,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 
     Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text, font);
 
-    int codePointsCount = Utf8Walker::countCodePoints(text);
+    const int codePointsCount = Utf8Walker::countCodePoints(text);
 
     Ref<CairoGlyphs> cairoGlyphs = CairoGlyphs::create(codePointsCount);
     Ref<CairoTextClusters> cairoTextClusters = CairoTextClusters::create(codePointsCount);
@@ -190,6 +191,90 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 Ref<TextRun> FtFontManager::createTextRun() const
 {
     return FtTextRun::create();
+}
+
+void FtFontManager::selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const
+{
+    bool allAscii = true;
+    for (int i = 0, n = text->count(); i < n; ++i) {
+        if (text->byteAt(i) >= 0x80) {
+            allAscii = false;
+            break;
+        }
+    }
+
+    if (allAscii) {
+        fontRange(font, 0, text->count());
+        return;
+    }
+
+    Font targetFont = fixup(font);
+    const FtFontFace *targetFontFace = Object::cast<const FtScaledFont *>(targetFont->getScaledFont())->ftFontFace();
+
+    for (Utf8Walker walker(text); walker;)
+    {
+        const int start = walker->offset();
+
+        uchar_t ch = 0;
+        while (walker) {
+            ch = walker->getChar();
+            if (FT_Get_Char_Index(targetFontFace->ftFace(), ch) == 0) break;
+            ++walker;
+        }
+
+        if (start < walker->offset())
+            fontRange(targetFont, start, walker->offset());
+
+        if (!walker) break;
+
+        bool searchExhausted = true;
+
+        for (auto entry: fontFamilies_)
+        {
+            if (
+                entry->key() == targetFont->family() ||
+                entry->value()->pitch() == Pitch::Fixed
+            ) continue;
+
+            const FtFontFace *fallbackFontFace =
+                Object::cast<const FtFontFace *>(
+                    entry->value()->selectFontFace(
+                        targetFont->weight(),
+                        targetFont->slant(),
+                        targetFont->stretch()
+                    )
+                );
+
+            if (FT_Get_Char_Index(fallbackFontFace->ftFace(), ch) == 0) continue;
+            const int start = walker->offset();
+            ++walker;
+
+            searchExhausted = false;
+
+            while (walker) {
+                ch = walker->getChar();
+                if (
+                    FT_Get_Char_Index(targetFontFace->ftFace(), ch) != 0 ||
+                    FT_Get_Char_Index(fallbackFontFace->ftFace(), ch) == 0
+                ) break;
+                ++walker;
+            }
+
+            Font fallbackFont = targetFont;
+            fallbackFont->setFamily (fallbackFontFace->family());
+            fallbackFont->setWeight (fallbackFontFace->weight());
+            fallbackFont->setSlant  (fallbackFontFace->slant());
+            fallbackFont->setStretch(fallbackFontFace->stretch());
+            fontRange(fallbackFont, start, walker->offset());
+            break;
+        }
+
+        if (searchExhausted) {
+            const int start = walker->offset();
+            ++walker;
+            fontRange(targetFont, start, walker->offset());
+        }
+    }
 }
 
 }} // namespace cc::ui

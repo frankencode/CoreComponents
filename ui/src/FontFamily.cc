@@ -32,7 +32,7 @@ const FontFace *FontFamily::selectFontFace(Weight weight, Slant slant, Stretch s
     const FontFace *farChoice = 0;
     const FontFace *fallbackChoice = 0;
 
-    for (const FontFace *candidate: getFontFaces())
+    for (const FontFace *candidate: fontFaces_)
     {
         if (!fallbackChoice)
             fallbackChoice = candidate;

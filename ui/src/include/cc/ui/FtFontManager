@@ -29,6 +29,8 @@ public:
 
     Ref<TextRun> createTextRun() const override;
 
+    void selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const override;
+
 private:
     friend class ThreadLocalSingleton<FtFontManager>;
 

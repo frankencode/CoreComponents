@@ -28,6 +28,7 @@ public:
 
     const FontMetrics *getMetrics() const override;
 
+    const FtFontFace *ftFontFace() const { return ftFontFace_; }
     cairo_scaled_font_t *cairoScaledFont() const { return cairoScaledFont_; }
 
 private:

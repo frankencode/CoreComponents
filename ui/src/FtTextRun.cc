@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug>
 #include <cc/ui/FtFontManager>
 #include <cc/ui/FtTextCursor>
 #include <cc/ui/FtTextRun>
@@ -35,22 +36,28 @@ Ref<TextRun> FtTextRun::copy() const
 
 void FtTextRun::append(const String &text, const Font &font)
 {
-    Ref<const FtGlyphRun> run = FtFontManager::instance()->ftTypeset(text, font, advance_);
-    glyphRuns_->append(run);
+    FtFontManager::instance()->selectFontRanges(text, font,
+        [=](const Font &font, int i0, int i1) {
+            String chunk = (i0 == 0 && i1 == text->count()) ? text : text->copy(i0, i1);
 
-    if (run->advance()[1] == 0) {
-        if (firstLineHeight_ < run->size()[1])
-            size_[1] = firstLineHeight_ = run->size()[1];
-    }
-    else
-        size_[1] = firstLineHeight_ + run->advance()[1];
-    if (size_[0] < run->advance()[0]) size_[0] = run->advance()[0];
+            Ref<const FtGlyphRun> run = FtFontManager::instance()->ftTypeset(chunk, font, advance_);
+            glyphRuns_->append(run);
 
-    if (run->maxAscender() > maxAscender_) maxAscender_ = run->maxAscender();
-    if (run->minDescender() < minDescender_) minDescender_ = run->minDescender();
+            if (run->advance()[1] == 0) {
+                if (firstLineHeight_ < run->size()[1])
+                    size_[1] = firstLineHeight_ = run->size()[1];
+            }
+            else
+                size_[1] = firstLineHeight_ + run->advance()[1];
+            if (size_[0] < run->advance()[0]) size_[0] = run->advance()[0];
 
-    advance_ = run->advance();
-    byteCount_ += text->count();
+            if (run->maxAscender() > maxAscender_) maxAscender_ = run->maxAscender();
+            if (run->minDescender() < minDescender_) minDescender_ = run->minDescender();
+
+            advance_ = run->advance();
+            byteCount_ += chunk->count();
+        }
+    );
 }
 
 Ref<TextRun> FtTextRun::wrap(double maxWidth, double lineHeight, const TextWrapBehind &wrapBehind) const

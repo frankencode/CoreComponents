@@ -80,6 +80,11 @@ public:
         return Ref<TextRun>{};
     }
 
+    void selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const override
+    {
+        fontRange(font, 0, text->count());
+    }
+
 private:
     Ref<FontFace> openFontFace(const String &) override { return nullptr; }
 

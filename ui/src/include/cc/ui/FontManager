@@ -29,9 +29,12 @@ public:
     const FontFamily *selectFontFamily(const String &name) const;
 
     virtual Ref<const ScaledFont> selectFont(const Font &font) const = 0;
-
     virtual Ref<GlyphRun> typeset(const String &text, const Font &font, const Point &origin = Point{}) const = 0;
+
     virtual Ref<TextRun> createTextRun() const = 0;
+
+    typedef std::function<void(const Font &font, int i0, int i1)> ReturnFontRange;
+    virtual void selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const = 0;
 
 protected:
     static Font fixup(const Font & font);
