@@ -12,9 +12,9 @@
 namespace cc {
 namespace ui {
 
-Ref<GlyphRun> GlyphRun::typeSet(const String &text, const Font &font, const Point &origin)
+Ref<GlyphRun> GlyphRun::typeset(const String &text, const Font &font, const Point &origin)
 {
-    return FontManager::instance()->typeSet(text, font, origin);
+    return FontManager::instance()->typeset(text, font, origin);
 }
 
 }} // namespace cc::ui

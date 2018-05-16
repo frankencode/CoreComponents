@@ -17,7 +17,7 @@ class MainView: public View
         paper = 0xFFFFFF;
 
         glyphRun_ =
-            GlyphRun::typeSet(
+            GlyphRun::typeset(
                 "Es war einmal eine Königstochter, die ging hinaus in den Wald und setzte "
                 "sich an einen kühlen Brunnen. Sie hatte eine goldene Kugel, die war ihr "
                 "liebstes Spielwerk, die warf sie in die Höhe und fing sie wieder in der "

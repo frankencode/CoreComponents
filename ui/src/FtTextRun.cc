@@ -35,7 +35,7 @@ Ref<TextRun> FtTextRun::copy() const
 
 void FtTextRun::append(const String &text, const Font &font)
 {
-    Ref<const FtGlyphRun> run = FtFontManager::instance()->ftTypeSet(text, font, advance_);
+    Ref<const FtGlyphRun> run = FtFontManager::instance()->ftTypeset(text, font, advance_);
     glyphRuns_->append(run);
 
     if (run->advance()[1] == 0) {

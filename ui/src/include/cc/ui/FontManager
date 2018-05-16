@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -26,13 +26,11 @@ public:
     void addPath(const String &path);
 
     Ref< Source<const FontFamily *> > getFontFamilies() const;
-
     const FontFamily *selectFontFamily(const String &name) const;
 
-    virtual Ref<ScaledFont> selectFont(const Font &font) const = 0;
+    virtual Ref<const ScaledFont> selectFont(const Font &font) const = 0;
 
-    virtual Ref<GlyphRun> typeSet(const String &text, const Font &font, const Point &origin = Point{}) const = 0;
-
+    virtual Ref<GlyphRun> typeset(const String &text, const Font &font, const Point &origin = Point{}) const = 0;
     virtual Ref<TextRun> createTextRun() const = 0;
 
 protected:

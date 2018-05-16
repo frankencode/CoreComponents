@@ -15,7 +15,7 @@ class MainView: public View
         paper = 0xFFFFFF;
 
         glyphRun_ =
-            GlyphRun::typeSet(
+            GlyphRun::typeset(
                 #if 0
                 "Tοσοῦτον δ' ἀπολέλοιπεν ἡ πόλις ἡμῶν περὶ τὸ φρονεῖν καὶ "
                 "λέγειν τοὺς ἄλλους ἀνθρώπους, ὥσθ' οἱ ταύτης μαθηταὶ τῶν "

@@ -32,7 +32,7 @@ Ref<FontFace> FtFontManager::openFontFace(const String &path)
     return FtFontFace::open(path);
 }
 
-Ref<ScaledFont> FtFontManager::selectFont(const Font &font) const
+Ref<const ScaledFont> FtFontManager::selectFont(const Font &font) const
 {
     Font f = fixup(font);
     const FtFontFace *fontFace =
@@ -43,15 +43,15 @@ Ref<ScaledFont> FtFontManager::selectFont(const Font &font) const
     return Object::create<FtScaledFont>(fontFace, f);
 }
 
-Ref<GlyphRun> FtFontManager::typeSet(const String &text, const Font &font, const Point &origin) const
+Ref<GlyphRun> FtFontManager::typeset(const String &text, const Font &font, const Point &origin) const
 {
-    return ftTypeSet(text, font, origin);
+    return ftTypeset(text, font, origin);
 }
 
-Ref<FtGlyphRun> FtFontManager::ftTypeSet(const String &text, const Font &font, const Point &origin) const
+Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, const Point &origin) const
 {
     if (text->contains('\n'))
-        return ftTypeSet(text->replace("\n", " ")->simplify(), font, origin);
+        return ftTypeset(text->replace("\n", " ")->simplify(), font, origin);
 
     const FtScaledFont *ftScaledFont = Object::cast<const FtScaledFont *>(font->getScaledFont());
     FT_Face ftFace = cairo_ft_scaled_font_lock_face(ftScaledFont->cairoScaledFont());

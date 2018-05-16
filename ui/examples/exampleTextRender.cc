@@ -30,13 +30,13 @@ class MainView: public View
                 // skip special regions fonts
 
             Font font(fontFamily->name());
-            glyphRuns_ << GlyphRun::typeSet(text, font);
+            glyphRuns_ << GlyphRun::typeset(text, font);
 
             font << Weight::Bold;
-            glyphRuns_ << GlyphRun::typeSet(text, font);
+            glyphRuns_ << GlyphRun::typeset(text, font);
 
             font << Weight::Normal << Slant::Italic;
-            glyphRuns_ << GlyphRun::typeSet(text, font);
+            glyphRuns_ << GlyphRun::typeset(text, font);
         }
     }
 

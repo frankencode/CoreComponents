@@ -65,12 +65,12 @@ public:
         return new TestFontManager;
     }
 
-    Ref<ScaledFont> selectFont(const Font &font) const override
+    Ref<const ScaledFont> selectFont(const Font &font) const override
     {
-        return Ref<ScaledFont>{};
+        return Ref<const ScaledFont>{};
     }
 
-    Ref<GlyphRun> typeSet(const String &text, const Font &font, const Point &origin) const override
+    Ref<GlyphRun> typeset(const String &text, const Font &font, const Point &origin) const override
     {
         return Ref<GlyphRun>{};
     }

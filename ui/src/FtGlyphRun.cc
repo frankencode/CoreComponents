@@ -226,7 +226,7 @@ Ref<GlyphRun> FtGlyphRun::elide(double maxWidth) const
 {
     if (advance_[0] <= maxWidth) return const_cast<FtGlyphRun *>(this);
 
-    Ref<const FtGlyphRun> ellipsis = FtFontManager::instance()->ftTypeSet("...", font());
+    Ref<const FtGlyphRun> ellipsis = FtFontManager::instance()->ftTypeset("...", font());
     maxWidth -= ellipsis->advance()[0];
 
     Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text_, font());
