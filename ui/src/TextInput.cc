@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug>
 #include <cc/ui/TextRun>
 #include <cc/ui/LineEditor>
 #include <cc/ui/Timer>
@@ -52,9 +53,10 @@ void TextInput::init()
     });
 
     size->bind([=]{
+        Ref<const FontMetrics> m = font()->getMetrics(); // FIXME: Why is a Ref<...> needed here?
         return Size {
             parent()->size()[0],
-            textRun()->size()[1] + 2 * margin()[1]
+            std::ceil(m->ascender()) - std::floor(m->descender()) + 2 * margin()[1]
         };
     });
 
