@@ -87,18 +87,9 @@ FtScaledFont::FtScaledFont(const FtFontFace *ftFontFace, const Font &font):
     cairoScaledFont_ = cairo_scaled_font_create(cairoFontFace_, &fontMatrix, &userToDeviceMatrix, fontOptions);
 
     cairo_font_options_destroy(fontOptions);
-}
 
-FtScaledFont::~FtScaledFont()
-{
-    cairo_scaled_font_destroy(cairoScaledFont_);
-    cairo_font_face_destroy(cairoFontFace_);
-}
-
-const FontMetrics *FtScaledFont::getMetrics() const
-{
-    if (!ftFontMetrics_) {
-        auto metrics = Object::create<FtFontMetrics>();
+    {
+        Ref<FtFontMetrics> metrics = Object::create<FtFontMetrics>();
 
         FtFaceGuard guard(this);
         FT_Face ftFace = guard->ftFace();
@@ -112,8 +103,12 @@ const FontMetrics *FtScaledFont::getMetrics() const
 
         ftFontMetrics_ = metrics;
     }
+}
 
-    return ftFontMetrics_;
+FtScaledFont::~FtScaledFont()
+{
+    cairo_scaled_font_destroy(cairoScaledFont_);
+    cairo_font_face_destroy(cairoFontFace_);
 }
 
 }} // namespace cc::ui

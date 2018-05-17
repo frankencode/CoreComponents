@@ -59,8 +59,8 @@ public:
 
         bool isValid() const { return size_ > 0; }
 
-        const ScaledFont *getScaledFont() const;
-        const FontMetrics *getMetrics() const;
+        Ref<const FontMetrics> getMetrics() const;
+        Ref<const ScaledFont> getScaledFont() const;
 
     private:
         friend class Font;
@@ -85,8 +85,6 @@ public:
         uint8_t metricsHinting_ : 2;
         Color ink_;
         Color paper_;
-
-        mutable Ref<const ScaledFont> scaledFont_;
     };
 
     Font(double size = -1): instance_{size} {}

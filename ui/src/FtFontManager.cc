@@ -12,7 +12,6 @@
 #include <cairo/cairo.h>
 #include <cairo/cairo-ft.h>
 #include <cmath>
-#include <cc/debug>
 #include <cc/Utf8Walker>
 #include <cc/ThreadLocalSingleton>
 #include <cc/ui/FtGlyphRun>
@@ -28,6 +27,10 @@ FtFontManager *FtFontManager::instance()
     return ThreadLocalSingleton<FtFontManager>::instance();
 }
 
+FtFontManager::FtFontManager():
+    fontCache_(FontCache::create())
+{}
+
 Ref<FontFace> FtFontManager::openFontFace(const String &path)
 {
     return FtFontFace::open(path);
@@ -35,13 +38,38 @@ Ref<FontFace> FtFontManager::openFontFace(const String &path)
 
 Ref<const ScaledFont> FtFontManager::selectFont(const Font &font) const
 {
-    Font f = fixup(font);
+    Font target = fixup(font);
+
+    Ref<RecentFonts> recentFonts;
+    if (fontCache_->lookup(target->family(), &recentFonts)) {
+        for (int i = 0; i < recentFonts->count(); ++i) {
+            const FtScaledFont *candidate = recentFonts->at(i);
+            if (
+                candidate->font()->size() == target->size() &&
+                candidate->font()->slant() == target->slant() &&
+                candidate->font()->weight() == target->weight() &&
+                candidate->font()->stretch() == target->stretch() &&
+                candidate->font()->smoothing() == target->smoothing()
+            )
+                return candidate;
+        }
+    }
+    else {
+        recentFonts = RecentFonts::create(6);
+            // buffer size is small to support scaling animations
+
+        fontCache_->insert(target->family(), recentFonts);
+    }
+
     const FtFontFace *fontFace =
         Object::cast<const FtFontFace *>(
-            selectFontFamily(f->family())->selectFontFace(f->weight(), f->slant(), f->stretch())
+            selectFontFamily(target->family())->selectFontFace(target->weight(), target->slant(), target->stretch())
         );
 
-    return Object::create<FtScaledFont>(fontFace, f);
+    Ref<const FtScaledFont> scaledFont = Object::create<FtScaledFont>(fontFace, target);
+    recentFonts->pushBack(scaledFont);
+
+    return scaledFont;
 }
 
 Ref<GlyphRun> FtFontManager::typeset(const String &text, const Font &font, const Point &origin) const
@@ -80,7 +108,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
             return FT_LOAD_DEFAULT;
         }(ftScaledFont->font());
 
-    Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text, font);
+    Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text, font, origin);
 
     const int codePointsCount = Utf8Walker::countCodePoints(text);
 

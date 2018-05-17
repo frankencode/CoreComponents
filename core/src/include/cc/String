@@ -165,10 +165,10 @@ public:
     String &operator+=(const Ref<StringList> &b);
 
     /// Contextual conversion to bool (true if s->count() > 0)
-    explicit inline operator bool() { return a_; }
+    operator bool();
 
     /// Contextual conversion to bool (true if s->count() > 0)
-    explicit inline operator bool() const { return a_; }
+    operator bool() const;
 
     /// Convert to a C string
     operator const char *();
@@ -1107,6 +1107,8 @@ inline String &Ref<const CharArray>::operator=(const char *b)
     return *this;
 }
 
+inline Ref<const CharArray>::operator bool() { return a_ && a_->count() > 0; }
+inline Ref<const CharArray>::operator bool() const { return a_ && a_->count() > 0; }
 inline Ref<const CharArray>::operator const char *() const { return get()->chars(); }
 inline Ref<const CharArray>::operator const char *() { return get()->chars(); }
 

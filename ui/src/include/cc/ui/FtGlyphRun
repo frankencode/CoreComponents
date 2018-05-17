@@ -29,6 +29,7 @@ public:
     String text() const override { return text_; }
     Font font() const override { return font_; }
 
+    Point origin() const override { return origin_; }
     Point advance() const override { return advance_; }
     Size size() const override { return size_ ; }
     double maxAscender() const override { return maxAscender_; }
@@ -53,7 +54,7 @@ private:
     friend class FtTextRun;
 
     FtGlyphRun(): lineCount_(1) {}
-    FtGlyphRun(String text, const Font &font);
+    FtGlyphRun(const String &text, const Font &font, const Point &origin);
 
     Ref<FtGlyphRun> ftCopy() const;
 
@@ -75,6 +76,7 @@ private:
     String text_;
     Font font_;
 
+    Point origin_;
     Point advance_;
     Size size_;
     double maxAscender_ { 0 };

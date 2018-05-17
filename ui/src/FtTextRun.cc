@@ -86,7 +86,7 @@ Ref<TextCursor> FtTextRun::getTextCursor(int byteOffset) const
         cursor->runIndex_ = runIndex;
         cursor->clusterIndex_ = run->cairoTextClusters_->count();
         cursor->glyphIndex_ = run->cairoGlyphs_->count();
-        Ref<const FontMetrics> metrics = run->ftScaledFont()->getMetrics();
+        Ref<const FontMetrics> metrics = run->ftScaledFont()->metrics();
         cursor->posA_ = Point { advance()[0], advance()[1] - metrics->ascender()  };
         cursor->posB_ = Point { advance()[0], advance()[1] - metrics->descender() };
         return cursor;
@@ -113,7 +113,7 @@ Ref<TextCursor> FtTextRun::getTextCursor(int byteOffset) const
                     cursor->clusterIndex_ = clusterIndex;
                     cursor->glyphIndex_ = glyphIndex;
                     const cairo_glyph_t *glyph = &run->cairoGlyphs_->at(glyphIndex);
-                    Ref<const FontMetrics> metrics = run->ftScaledFont()->getMetrics();
+                    Ref<const FontMetrics> metrics = run->ftScaledFont()->metrics();
                     cursor->posA_ = Point { glyph->x, glyph->y - metrics->ascender()  };
                     cursor->posB_ = Point { glyph->x, glyph->y - metrics->descender() };
                     return cursor;
@@ -204,7 +204,7 @@ int FtTextRun::moveTextCursor(FtTextCursor *cursor, int steps) const
     cursor->byteOffset_ = byteOffset;
 
     const FtGlyphRun *run = glyphRuns_->at(runIndex);
-    Ref<const FontMetrics> metrics = run->ftScaledFont()->getMetrics();
+    Ref<const FontMetrics> metrics = run->ftScaledFont()->metrics();
 
     if (byteOffset < byteCount()) {
         const cairo_glyph_t *glyph = &run->cairoGlyphs_->at(glyphIndex);
@@ -270,8 +270,10 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
     }
 
     if (glyphRuns->count() > 0) {
+        const FtGlyphRun *firstRun = glyphRuns->at(0);
         const FtGlyphRun *lastRun = glyphRuns->at(glyphRuns->count() - 1);
         metaBlock->font_ = lastRun->font_;
+        metaBlock->origin_ = firstRun->origin_;
         metaBlock->advance_ = lastRun->advance_;
         metaBlock->size_[0] = lastRun->advance_[0];
         for (const FtGlyphRun *glyphRun: glyphRuns) {
@@ -302,7 +304,7 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
     int k = 0;
     for (int i = 0; i < glyphRuns->count(); ++i) {
         const FtGlyphRun *glyphRun = glyphRuns->at(i);
-        Ref<FtGlyphRun> newGlyphRun = Object::create<FtGlyphRun>(glyphRun->text_, glyphRun->font_);
+        Ref<FtGlyphRun> newGlyphRun = Object::create<FtGlyphRun>(glyphRun->text_, glyphRun->font_, glyphRun->origin_);
         {
             int n = glyphRun->cairoGlyphs_->count();
             newGlyphRun->cairoGlyphs_ = metaBlock->cairoGlyphs_->select(j, j + n);

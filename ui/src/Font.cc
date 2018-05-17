@@ -6,9 +6,12 @@
  *
  */
 
+#include <cc/debug>
+#include <cc/System>
 #include <cc/ui/ScaledFont>
 #include <cc/ui/StyleManager>
 #include <cc/ui/FontManager>
+#include <cc/ui/Application>
 #include <cc/ui/Font>
 
 namespace cc {
@@ -50,31 +53,14 @@ Font::Instance::Instance(const Instance &b)
     *this = b;
 }
 
-const ScaledFont *Font::Instance::getScaledFont() const
+Ref<const FontMetrics> Font::Instance::getMetrics() const
 {
-    if (scaledFont_) {
-        Font f = scaledFont_->font();
-        if (
-            (family()->count() == 0 || f->family_ == family_)
-            && f->size_           == size_
-            && f->weight_         == weight_
-            && f->slant_          == slant_
-            && f->stretch_        == stretch_
-            && f->smoothing_      == smoothing_
-            && f->outlineHinting_ == outlineHinting_
-            && f->metricsHinting_ == metricsHinting_
-        )
-            return scaledFont_;
-    }
-
-    scaledFont_ = FontManager::instance()->selectFont(*this);
-
-    return scaledFont_;
+    return getScaledFont()->metrics();
 }
 
-const FontMetrics *Font::Instance::getMetrics() const
+Ref<const ScaledFont> Font::Instance::getScaledFont() const
 {
-    return getScaledFont()->getMetrics();
+    return FontManager::instance()->selectFont(*this);
 }
 
 StylePlugin *Font::style()

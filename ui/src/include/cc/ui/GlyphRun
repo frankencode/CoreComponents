@@ -22,6 +22,7 @@ public:
     virtual String text() const = 0;
     virtual Font font() const = 0;
 
+    virtual Point origin() const = 0;
     virtual Point advance() const = 0;
     virtual Size size() const = 0;
     virtual double maxAscender() const = 0;

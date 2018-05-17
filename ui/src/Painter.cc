@@ -152,7 +152,7 @@ void Painter::Instance::fillGlyphRunBackground(const FtGlyphRun *ftGlyphRun)
 
     setSource(color);
 
-    Ref<const FontMetrics> metrics = ftGlyphRun->font()->getScaledFont()->getMetrics();
+    Ref<const FontMetrics> metrics = ftGlyphRun->font()->getMetrics();
     double dy0 = metrics->ascender() + (metrics->lineHeight() - (metrics->ascender() - metrics->descender())) / 2;
 
     int byteOffset = 0;
@@ -216,7 +216,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
     {
         double u = 0;
         double v = 0; {
-            Ref<const FontMetrics> metrics = ftGlyphRun->font()->getScaledFont()->getMetrics();
+            Ref<const FontMetrics> metrics = ftGlyphRun->font()->getMetrics();
             v = metrics->underlineThickness();
             if (+(decoration & Decoration::Underline))
                 u = -metrics->underlinePosition() + v / 2;
@@ -304,7 +304,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
 
     if (paper)
     {
-        Ref<const FontMetrics> metrics = glyphRun->font()->getScaledFont()->getMetrics();
+        Ref<const FontMetrics> metrics = glyphRun->font()->getScaledFont()->metrics();
         double dy0 = metrics->ascender() + (metrics->lineHeight() - (metrics->ascender() - metrics->descender())) / 2;
 
         int byteOffset = 0;
@@ -326,7 +326,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
 
             if (bgColor != bgColor0 || !glyph || glyph->y != glyph0->y)
             {
-                double x1 = (!glyph || glyph->y != glyph0->y) ? ftGlyphRun->advance()[0] : glyph->x;
+                double x1 = (!glyph || glyph->y != glyph0->y) ? ftGlyphRun->origin()[0] + ftGlyphRun->size()[0] : glyph->x;
 
                 if (bgColor0) {
                     setSource(bgColor0);

@@ -23,7 +23,7 @@ class MainView: public View
                 "sie hatte die Hand schon ausgestreckt und die Finger gekrümmt, um sie "
                 "wieder zufangen, da schlug sie neben vorbei auf die Erde, rollte und rollte "
                 "und geradezu in das Wasser hinein.",
-                Font("sans", fontSize_)
+                Font(fontSize_)
             );
 
         auto updateTextElide = [=]{
@@ -55,9 +55,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     Application *app = Application::open(argc, argv);
-    String fontPath = "/usr/share/fonts/truetype/dejavu/";
-    if (argc > 1) fontPath = argv[1];
-    FontManager::instance()->addPath(fontPath);
-    Window::open(Object::create<MainView>(), fontPath);
+    Window::open<MainView>("Hello, world!");
     return app->run();
 }

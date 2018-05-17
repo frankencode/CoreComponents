@@ -12,14 +12,15 @@
 namespace cc {
 namespace ui {
 
-FtGlyphRun::FtGlyphRun(String text, const Font &font):
+FtGlyphRun::FtGlyphRun(const String &text, const Font &font, const Point &origin):
     text_(text),
-    font_(font)
+    font_(font),
+    origin_(origin)
 {}
 
 Ref<FtGlyphRun> FtGlyphRun::ftCopy() const
 {
-    Ref<FtGlyphRun> glyphRun = new FtGlyphRun(text_, font_);
+    Ref<FtGlyphRun> glyphRun = new FtGlyphRun(text_, font_, origin_);
     glyphRun->advance_ = advance_;
     glyphRun->size_ = size_;
     glyphRun->maxAscender_ = maxAscender_;
@@ -44,7 +45,7 @@ Ref<GlyphRun> FtGlyphRun::wrap(double maxWidth, TextAlign textAlign, double line
             return const_cast<FtGlyphRun *>(this);
     }
 
-    Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text_, font_);
+    Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text_, font_, origin_);
 
     ftGlyphRun->cairoGlyphs_ = CairoGlyphs::create(cairoGlyphs_->count());
     ftGlyphRun->cairoTextClusters_ = cairoTextClusters_;
@@ -226,10 +227,10 @@ Ref<GlyphRun> FtGlyphRun::elide(double maxWidth) const
 {
     if (advance_[0] <= maxWidth) return const_cast<FtGlyphRun *>(this);
 
-    Ref<const FtGlyphRun> ellipsis = FtFontManager::instance()->ftTypeset("...", font());
+    Ref<const FtGlyphRun> ellipsis = FtFontManager::instance()->ftTypeset("...", font_);
     maxWidth -= ellipsis->advance()[0];
 
-    Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text_, font());
+    Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text_, font_, origin_);
 
     int byteOffset = 0;
     int glyphOffset = 0;

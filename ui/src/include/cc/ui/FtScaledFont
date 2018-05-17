@@ -26,7 +26,7 @@ public:
     Font font() const override { return font_; }
     double size() const { return font_->size(); }
 
-    const FontMetrics *getMetrics() const override;
+    const FontMetrics *metrics() const override { return ftFontMetrics_; }
 
     const FtFontFace *ftFontFace() const { return ftFontFace_; }
     cairo_scaled_font_t *cairoScaledFont() const { return cairoScaledFont_; }

@@ -41,7 +41,7 @@ void StylePlugin::init()
         )) << Pitch::Fixed;
     });
 
-    Application::instance()->smallFont->bind([=]{
+    app->smallFont->bind([=]{
         return Font(sp(
             theme()->smallFontSize() * app->textZoom()
         ));

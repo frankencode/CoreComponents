@@ -21,7 +21,7 @@ class ScaledFont: public Object
 public:
     virtual Font font() const = 0;
 
-    virtual const FontMetrics *getMetrics() const = 0;
+    virtual const FontMetrics *metrics() const = 0;
 
     virtual String toString() const;
 };
