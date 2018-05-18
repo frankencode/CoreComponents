@@ -132,7 +132,7 @@ Ref<TextCursor> FtTextRun::getTextCursor(int byteOffset) const
 
 Point FtTextRun::advance(const FtTextCursor *cursor) const
 {
-    const CairoGlyphs *cairoGlyphs = glyphRuns_->at(cursor->runIndex_)->cairoGlyphs_;
+    const FtGlyphRun::CairoGlyphs *cairoGlyphs = glyphRuns_->at(cursor->runIndex_)->cairoGlyphs_;
     if (cursor->glyphIndex_ < cairoGlyphs->count()) {
         const cairo_glyph_t *glyph = &cairoGlyphs->at(cursor->glyphIndex_);
         return Point { glyph->x, glyph->y };
@@ -251,8 +251,8 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
             n += glyphRun->cairoGlyphs_->count();
             m += glyphRun->cairoTextClusters_->count();
         }
-        metaBlock->cairoGlyphs_ = CairoGlyphs::create(n);
-        metaBlock->cairoTextClusters_ = CairoTextClusters::create(m);
+        metaBlock->cairoGlyphs_ = FtGlyphRun::CairoGlyphs::create(n);
+        metaBlock->cairoTextClusters_ = FtGlyphRun::CairoTextClusters::create(m);
     }
     {
         int j = 0;

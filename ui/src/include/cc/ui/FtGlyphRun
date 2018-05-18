@@ -20,9 +20,6 @@ namespace ui {
 class FtFontManager;
 class FtTextRun;
 
-typedef Array<cairo_glyph_t> CairoGlyphs;
-typedef Array<cairo_text_cluster_t> CairoTextClusters;
-
 class FtGlyphRun: public GlyphRun
 {
 public:
@@ -45,8 +42,13 @@ public:
 
     const FtScaledFont *ftScaledFont() const { return Object::cast<const FtScaledFont *>(font_->getScaledFont()); }
 
-    CairoGlyphs *cairoGlyphs() const { return cairoGlyphs_; }
-    CairoTextClusters *cairoTextClusters() const { return cairoTextClusters_; }
+    typedef Array<cairo_glyph_t> CairoGlyphs;
+    typedef Array<cairo_text_cluster_t> CairoTextClusters;
+    typedef Array<double> GlyphAdvances;
+
+    const CairoGlyphs *cairoGlyphs() const { return cairoGlyphs_; }
+    const CairoTextClusters *cairoTextClusters() const { return cairoTextClusters_; }
+    const GlyphAdvances *glyphAdvances() const { return glyphAdvances_; }
 
 private:
     friend class Object;
@@ -85,6 +87,8 @@ private:
 
     Ref<CairoGlyphs> cairoGlyphs_;
     Ref<CairoTextClusters> cairoTextClusters_;
+    Ref<GlyphAdvances> glyphAdvances_;
+
     Step finalGlyphAdvance_;
 };
 

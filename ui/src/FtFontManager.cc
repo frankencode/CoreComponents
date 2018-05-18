@@ -85,7 +85,9 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
         return ftTypeset(text->replace("\n", " ")->simplify(), font, origin);
 
     const FtScaledFont *ftScaledFont = Object::cast<const FtScaledFont *>(font->getScaledFont());
-    FT_Face ftFace = cairo_ft_scaled_font_lock_face(ftScaledFont->cairoScaledFont());
+
+    FtFaceGuard guard(ftScaledFont);
+    FT_Face ftFace = guard->ftFace();
 
     FT_UInt32 glyphLoadingFlags =
         [](const Font &f) -> FT_UInt32 {
@@ -114,8 +116,9 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 
     const int codePointsCount = Utf8Walker::countCodePoints(text);
 
-    Ref<CairoGlyphs> cairoGlyphs = CairoGlyphs::create(codePointsCount);
-    Ref<CairoTextClusters> cairoTextClusters = CairoTextClusters::create(codePointsCount);
+    auto cairoGlyphs = FtGlyphRun::CairoGlyphs::create(codePointsCount);
+    auto cairoTextClusters = FtGlyphRun::CairoTextClusters::create(codePointsCount);
+    auto glyphAdvances = FtGlyphRun::GlyphAdvances::create(codePointsCount);
     int cairoGlyphsCount = 0;
     int cairoTextClustersCount = 0;
 
@@ -130,7 +133,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 
     Step glyphAdvance;
 
-    while (true)
+    for (;; ++cairoGlyphsCount)
     {
         uchar_t ch = 0;
         int byteCount = walker->offset();
@@ -164,7 +167,6 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
         cairoGlyphs->at(cairoGlyphsCount).index = glyphIndex;
         cairoGlyphs->at(cairoGlyphsCount).x = pos[0];
         cairoGlyphs->at(cairoGlyphsCount).y = pos[1];
-        ++cairoGlyphsCount;
 
         auto g = ftFace->glyph;
         auto a = &ftFace->glyph->advance;
@@ -191,6 +193,8 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
             double(a->y)
         } / 64.;
 
+        glyphAdvances->at(cairoGlyphsCount) = glyphAdvance[0];
+
         pos += glyphAdvance;
 
         previousGlyphIndex = glyphIndex;
@@ -209,11 +213,10 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 
     cairoGlyphs->truncate(cairoGlyphsCount);
     cairoTextClusters->truncate(cairoTextClustersCount);
+    glyphAdvances->truncate(cairoGlyphsCount);
     ftGlyphRun->cairoGlyphs_ = cairoGlyphs;
     ftGlyphRun->cairoTextClusters_ = cairoTextClusters;
     ftGlyphRun->finalGlyphAdvance_ = glyphAdvance;
-
-    cairo_ft_scaled_font_unlock_face(ftScaledFont->cairoScaledFont());
 
     return ftGlyphRun;
 }
