@@ -30,8 +30,8 @@ public:
     virtual int byteCount() const = 0;
     virtual int lineCount() const = 0;
 
-    virtual Ref<GlyphRun> wrap(double maxWidth, TextAlign textAlign = TextAlign::Left, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const = 0;
-    virtual Ref<GlyphRun> elide(double maxWidth) const = 0;
+    virtual Ref<const GlyphRun> wrap(double maxWidth, TextAlign textAlign = TextAlign::Left, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const = 0;
+    virtual Ref<const GlyphRun> elide(double maxWidth) const = 0;
 
     virtual Ref<GlyphRun> copy() const = 0;
 };

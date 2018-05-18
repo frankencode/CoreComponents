@@ -38,8 +38,8 @@ public:
     int byteCount() const override { return text_->count(); }
     int lineCount() const override { return lineCount_; }
 
-    Ref<GlyphRun> wrap(double maxWidth, TextAlign textAlign = TextAlign::Left, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const override;
-    Ref<GlyphRun> elide(double maxWidth) const override;
+    Ref<const GlyphRun> wrap(double maxWidth, TextAlign textAlign = TextAlign::Left, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const override;
+    Ref<const GlyphRun> elide(double maxWidth) const override;
 
     Ref<GlyphRun> copy() const override;
 

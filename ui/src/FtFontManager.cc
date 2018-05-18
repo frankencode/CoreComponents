@@ -49,7 +49,9 @@ Ref<const ScaledFont> FtFontManager::selectFont(const Font &font) const
                 candidate->font()->slant() == target->slant() &&
                 candidate->font()->weight() == target->weight() &&
                 candidate->font()->stretch() == target->stretch() &&
-                candidate->font()->smoothing() == target->smoothing()
+                candidate->font()->smoothing() == target->smoothing() &&
+                candidate->font()->outlineHinting() == target->outlineHinting() &&
+                candidate->font()->metricsHinting() == target->metricsHinting()
             )
                 return candidate;
         }

@@ -31,10 +31,9 @@ Ref<FtGlyphRun> FtGlyphRun::ftCopy() const
     return glyphRun;
 }
 
-Ref<GlyphRun> FtGlyphRun::wrap(double maxWidth, TextAlign textAlign, double lineHeight, const TextWrapBehind &wrapBehind) const
+Ref<const GlyphRun> FtGlyphRun::wrap(double maxWidth, TextAlign textAlign, double lineHeight, const TextWrapBehind &wrapBehind) const
 {
-    if (cairoGlyphs_->count() == 0)
-        return const_cast<FtGlyphRun *>(this);
+    if (cairoGlyphs_->count() == 0) return this;
 
     if (advance_[0] <= maxWidth)
     {
@@ -223,9 +222,9 @@ void FtGlyphRun::lineShift(FtGlyphRun *ftGlyphRun, double shiftX)
         ftGlyphRun->cairoGlyphs_->at(j).x += shiftX;
 }
 
-Ref<GlyphRun> FtGlyphRun::elide(double maxWidth) const
+Ref<const GlyphRun> FtGlyphRun::elide(double maxWidth) const
 {
-    if (advance_[0] <= maxWidth) return const_cast<FtGlyphRun *>(this);
+    if (advance_[0] <= maxWidth) return this;
 
     Ref<const FtGlyphRun> ellipsis = FtFontManager::instance()->ftTypeset("...", font_);
     maxWidth -= ellipsis->advance()[0];

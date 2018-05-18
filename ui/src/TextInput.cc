@@ -29,7 +29,7 @@ void TextInput::init()
 
     if (!font()) font->bind([=]{ return app()->defaultFont(); });
 
-    textRun->bind([=]{
+    unwrappedTextRun->bind([=]{
         auto run = TextRun::create();
         if (imeChunks()) {
             for (const String &chunk: imeChunks()) {
@@ -40,6 +40,10 @@ void TextInput::init()
         else
             run->append(text(), font());
         return run;
+    });
+
+    textRun->bind([=]{
+        return unwrappedTextRun()->wrap(parent()->size()[0]);
     });
 
     if (text()->count() > 0)
@@ -53,11 +57,14 @@ void TextInput::init()
     });
 
     size->bind([=]{
-        Ref<const FontMetrics> m = font()->getMetrics(); // FIXME: Why is a Ref<...> needed here?
-        return Size {
-            parent()->size()[0],
-            std::ceil(m->ascender()) - std::floor(m->descender()) + 2 * margin()[1]
-        };
+        double h = 2 * margin()[1];
+        if (textRun()->lineCount() < 2) {
+            Ref<const FontMetrics> m = font()->getMetrics();
+            h += std::ceil(m->ascender()) - std::floor(m->descender());
+        }
+        else
+            h += textRun()->size()[1];
+        return Size { parent()->size()[0], h };
     });
 
     cursor->bind([=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); });
@@ -401,7 +408,10 @@ void TextInput::paste(Range range, const String &chunk)
     textCursor = nullptr;
     imeChunks = nullptr;
 
-    Range newRange = editor_->paste(range, chunk);
+    String filteredChunk = chunk;
+    mutate(filteredChunk)->replaceInsitu("\n", " ");
+
+    Range newRange = editor_->paste(range, filteredChunk);
     if (newRange) {
         textCursor = textRun()->getTextCursor(newRange->i1());
         startBlink();
