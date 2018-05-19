@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug>
 #include <cc/ui/TextRun>
 #include <cc/ui/LineEditor>
 #include <cc/ui/Timer>
@@ -115,7 +114,7 @@ bool TextInput::onPointerClicked(const PointerEvent *event)
         return true;
     }
 
-    Ref<const MouseEvent> mouseEvent = event;
+    const MouseEvent *mouseEvent = Object::cast<const MouseEvent *>(event);
     if (mouseEvent) {
         if (mouseEvent->clickCount() == 2) {
             selection = Range { 0, text()->count() };
@@ -136,7 +135,6 @@ bool TextInput::onPointerPressed(const PointerEvent *event)
     selection = Range{};
     imeChunks = nullptr;
     textCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
-
     startBlink();
 
     return true;
@@ -216,70 +214,46 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
     }
     else if (
         event->scanCode() == ScanCode::Key_Left ||
-        event->scanCode() == ScanCode::Key_Home
-    )
-    {
-        bool shrinkSelection =
-            (+(event->modifiers() & KeyModifier::Shift)) &&
-            selection() &&
-            selection()->count() > 1 &&
-            selection()->i1() == textCursor()->byteOffset();
-
-        bool growSelection =
-            (+(event->modifiers() & KeyModifier::Shift)) &&
-            selection() &&
-            selection()->i0() == textCursor()->byteOffset();
-
-        bool createSelection =
-            (+(event->modifiers() & KeyModifier::Shift)) &&
-            !selection();
-
-        int newSelectionEnd = textCursor()->byteOffset();
-
-        textCursor()->step((event->scanCode() == ScanCode::Key_Home) ? -text()->count() : -1);
-
-        if (shrinkSelection)
-            selection = Range { selection()->i0(), textCursor()->byteOffset() };
-        else if (growSelection)
-            selection = Range { textCursor()->byteOffset(), selection()->i1() };
-        else if (createSelection && newSelectionEnd != textCursor()->byteOffset())
-            selection = Range { textCursor()->byteOffset(), newSelectionEnd };
-        else
-            selection = Range{};
-
-        startBlink();
-        update();
-    }
-    else if (
         event->scanCode() == ScanCode::Key_Right ||
+        event->scanCode() == ScanCode::Key_Up ||
+        event->scanCode() == ScanCode::Key_Down ||
+        event->scanCode() == ScanCode::Key_Home ||
         event->scanCode() == ScanCode::Key_End
     )
     {
-        bool shrinkSelection =
-            (+(event->modifiers() & KeyModifier::Shift)) &&
-            selection() &&
-            selection()->count() > 1 &&
-            selection()->i0() == textCursor()->byteOffset();
+        int o = textCursor()->byteOffset();
 
-        bool growSelection =
-            (+(event->modifiers() & KeyModifier::Shift)) &&
-            selection() &&
-            selection()->i1() == textCursor()->byteOffset();
+        textCursor()->step(
+            -1 * (event->scanCode() == ScanCode::Key_Left)
+            +1 * (event->scanCode() == ScanCode::Key_Right)
+            -text()->count() * (event->scanCode() == ScanCode::Key_Home)
+            +text()->count() * (event->scanCode() == ScanCode::Key_End)
+        );
 
-        bool createSelection =
-            (+(event->modifiers() & KeyModifier::Shift)) &&
-            !selection();
+        textCursor()->lineStep(
+            -1 * (event->scanCode() == ScanCode::Key_Up)
+            +1 * (event->scanCode() == ScanCode::Key_Down)
+        );
 
-        int newSelectionStart = textCursor()->byteOffset();
+        int n = textCursor()->byteOffset();
 
-        textCursor()->step((event->scanCode() == ScanCode::Key_End) ? text()->count() : 1);
+        if (+(event->modifiers() & KeyModifier::Shift))
+        {
+            if (selection()) {
+                int s = selection()->begin();
+                int e = selection()->end();
 
-        if (shrinkSelection)
-            selection = Range { textCursor()->byteOffset(), selection()->i1() };
-        else if (growSelection)
-            selection = Range { selection()->i0(), textCursor()->byteOffset() };
-        else if (createSelection && newSelectionStart != textCursor()->byteOffset())
-            selection = Range { newSelectionStart, textCursor()->byteOffset() };
+                if (o == s) s = n;
+                else if (o == e) e = n;
+
+                if (s != e)
+                    selection = Range{s, e};
+                else
+                    selection = Range{};
+            }
+            else if (n != o)
+                selection = Range{o, n};
+        }
         else
             selection = Range{};
 

@@ -127,44 +127,50 @@ Ref<TextCursor> TextRun::getNearestTextCursor(Point pointerPos) const
 
 Ref<TextCursor> TextRun::getNearestTextCursorBelow(const TextCursor *cursor) const
 {
-    Ref<TextCursor> nearestCursor = cursor->copy();
+    Ref<TextCursor> lineStart = cursor->copy();
+    do {
+        if (!lineStart->step(1)) return cursor->copy();
+    } while (lineStart->posA()[1] == cursor->posA()[1]);
+
+    Ref<TextCursor> nearestCursor = lineStart->copy();
+    Ref<TextCursor> candidate = lineStart->copy();
     double nearestDistance = std::numeric_limits<double>::max();
 
-    Point targetPos = cursor->advance() + 0.5 * Step { 0, lineHeight() };
-    Ref<TextCursor> candidate = cursor->copy();
-    do {
-        if (candidate->advance()[1] <= cursor->advance()[1]) continue;
-
-        const double distanceA = absPow2((candidate->posA() - targetPos));
-        const double distanceB = absPow2((candidate->posB() - targetPos));
-
-        if (distanceA < nearestDistance || distanceB < nearestDistance) {
-            nearestDistance = (distanceA < distanceB) ? distanceA : distanceB;
+    while (candidate->posA()[1] == lineStart->posA()[1])
+    {
+        Point pos = 0.5 * (candidate->posA() + candidate->posB());
+        const double distance = absPow2(cursor->posB() - pos);
+        if (distance < nearestDistance) {
+            nearestDistance = distance;
             nearestCursor->assign(candidate);
         }
-    } while (candidate->step(1));
+        if (!candidate->step(1)) break;
+    }
 
     return nearestCursor;
 }
 
 Ref<TextCursor> TextRun::getNearestTextCursorAbove(const TextCursor *cursor) const
 {
-    Ref<TextCursor> nearestCursor = cursor->copy();
+    Ref<TextCursor> lineStart = cursor->copy();
+    do {
+        if (!lineStart->step(-1)) return cursor->copy();
+    } while (lineStart->posA()[1] == cursor->posA()[1]);
+
+    Ref<TextCursor> nearestCursor = lineStart->copy();
+    Ref<TextCursor> candidate = lineStart->copy();
     double nearestDistance = std::numeric_limits<double>::max();
 
-    Point targetPos = cursor->advance() - 0.5 * Step { 0, lineHeight() };
-    Ref<TextCursor> candidate = cursor->copy();
-    do {
-        if (candidate->advance()[1] >= cursor->advance()[1]) continue;
-
-        const double distanceA = absPow2((candidate->posA() - targetPos));
-        const double distanceB = absPow2((candidate->posB() - targetPos));
-
-        if (distanceA < nearestDistance || distanceB < nearestDistance) {
-            nearestDistance = (distanceA < distanceB) ? distanceA : distanceB;
-            nearestCursor = candidate->copy();
+    while (candidate->posA()[1] == lineStart->posA()[1])
+    {
+        Point pos = 0.5 * (candidate->posA() + candidate->posB());
+        const double distance = absPow2(cursor->posB() - pos);
+        if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestCursor->assign(candidate);
         }
-    } while (candidate->step(-1));
+        if (!candidate->step(-1)) break;
+    }
 
     return nearestCursor;
 }
