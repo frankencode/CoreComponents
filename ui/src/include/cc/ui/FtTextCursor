@@ -29,6 +29,7 @@ public:
     int lineStep(int steps) override;
 
     Ref<TextCursor> copy() const override;
+    void assign(const TextCursor *other) override;
 
     String toString() const;
 

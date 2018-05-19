@@ -84,6 +84,20 @@ Ref<FtTextCursor> FtTextCursor::ftCopy() const
     return Object::create<FtTextCursor>(this);
 }
 
+void FtTextCursor::assign(const TextCursor *other)
+{
+    const FtTextCursor *target = Object::cast<const FtTextCursor *>(other);
+    if (target) {
+        ftTextRun_    = target->ftTextRun_;
+        posA_         = target->posA_;
+        posB_         = target->posB_;
+        byteOffset_   = target->byteOffset_;
+        runIndex_     = target->runIndex_;
+        clusterIndex_ = target->clusterIndex_;
+        glyphIndex_   = target->glyphIndex_;
+    }
+}
+
 String FtTextCursor::toString() const
 {
     return Format()

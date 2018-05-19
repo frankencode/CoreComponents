@@ -108,17 +108,17 @@ double TextRun::lineHeight() const
 
 Ref<TextCursor> TextRun::getNearestTextCursor(Point pointerPos) const
 {
-    Ref<TextCursor> nearestCursor;
+    Ref<TextCursor> cursor = getTextCursor();
+    Ref<TextCursor> nearestCursor = cursor->copy();
     double nearestDistance = std::numeric_limits<double>::max();
 
-    Ref<TextCursor> cursor = getTextCursor();
     do {
-        const double distanceA = absPow2((cursor->posA() - pointerPos));
-        const double distanceB = absPow2((cursor->posB() - pointerPos));
+        Point pos = 0.5 * (cursor->posA() + cursor->posB());
+        const double distance = absPow2(pos - pointerPos);
 
-        if (distanceA < nearestDistance || distanceB < nearestDistance) {
-            nearestDistance = (distanceA < distanceB) ? distanceA : distanceB;
-            nearestCursor = cursor->copy();
+        if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestCursor->assign(cursor);
         }
     } while (cursor->step(1));
 
@@ -140,7 +140,7 @@ Ref<TextCursor> TextRun::getNearestTextCursorBelow(const TextCursor *cursor) con
 
         if (distanceA < nearestDistance || distanceB < nearestDistance) {
             nearestDistance = (distanceA < distanceB) ? distanceA : distanceB;
-            nearestCursor = candidate->copy();
+            nearestCursor->assign(candidate);
         }
     } while (candidate->step(1));
 

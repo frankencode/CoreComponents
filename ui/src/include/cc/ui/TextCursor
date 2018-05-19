@@ -27,6 +27,7 @@ public:
     virtual int lineStep(int steps) = 0;
 
     virtual Ref<TextCursor> copy() const = 0;
+    virtual void assign(const TextCursor *other) = 0;
 
     String toString() const;
 };
