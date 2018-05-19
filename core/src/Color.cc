@@ -217,6 +217,29 @@ void Color::Instance::applyOver(Color b)
     }
 }
 
+void Color::Instance::mixIn(Color b, int percent)
+{
+    typedef uint32_t v4ui32 __attribute__((vector_size(16)));
+
+    v4ui32 v_a {
+        component<RedShift,   uint32_t>(),
+        component<GreenShift, uint32_t>(),
+        component<BlueShift,  uint32_t>(),
+        component<AlphaShift, uint32_t>()
+    };
+
+    v4ui32 v_b {
+        component<RedShift,   uint32_t>(),
+        component<GreenShift, uint32_t>(),
+        component<BlueShift,  uint32_t>(),
+        component<AlphaShift, uint32_t>()
+    };
+
+    v_a = (v_a * (100 - percent) + v_b * percent) * 100;
+
+    w_ = compose(v_a[0], v_a[1], v_a[2], v_a[2]);
+}
+
 String Color::Instance::toString() const
 {
     return Format()

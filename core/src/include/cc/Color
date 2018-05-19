@@ -158,6 +158,26 @@ public:
           */
         void applyOver(Color b);
 
+        /** Mix another color \a b into this color
+          */
+        void mixIn(Color b, int percent);
+
+        /** Return a lighter version of this color
+          */
+        inline Color lighter(int percent) const {
+            Color c = Color::fromWord(w_);
+            c->mixIn(Color::White, percent);
+            return c;
+        }
+
+        /** Return a darker version of this color
+          */
+        inline Color darker(int percent) const {
+            Color c = Color::fromWord(w_);
+            c->mixIn(Color::Black, percent);
+            return c;
+        }
+
         /** Translate this color from non-premultiplied to the premultiplied representation
           */
         inline Color premultiplied() const
