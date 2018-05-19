@@ -253,6 +253,7 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
         }
         metaBlock->cairoGlyphs_ = FtGlyphRun::CairoGlyphs::create(n);
         metaBlock->cairoTextClusters_ = FtGlyphRun::CairoTextClusters::create(m);
+        metaBlock->glyphAdvances_ = FtGlyphRun::GlyphAdvances::create(n);
     }
     {
         int j = 0;
@@ -260,6 +261,7 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
         for (const FtGlyphRun *glyphRun: glyphRuns) {
             for (int i = 0, n = glyphRun->cairoGlyphs_->count(); i < n; ++i) {
                 metaBlock->cairoGlyphs_->at(j) = glyphRun->cairoGlyphs_->at(i);
+                metaBlock->glyphAdvances_->at(j) = glyphRun->glyphAdvances_->at(i);
                 ++j;
             }
             for (int i = 0, m = glyphRun->cairoTextClusters_->count(); i < m; ++i) {
@@ -315,6 +317,7 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
             newGlyphRun->cairoTextClusters_ = metaBlock->cairoTextClusters_->select(k, k + m);
             k += m;
         }
+        newGlyphRun->glyphAdvances_ = glyphRun->glyphAdvances_;
         newGlyphRun->finalGlyphAdvance_ = glyphRun->finalGlyphAdvance_;
         if (metaBlock->cairoGlyphs_->has(j)) {
             const cairo_glyph_t *glyph = &metaBlock->cairoGlyphs_->at(j);
