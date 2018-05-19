@@ -327,6 +327,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
             if (bgColor != bgColor0 || !glyph || glyph->y != glyph0->y)
             {
                 double x1 = (!glyph || glyph->y != glyph0->y) ? ftGlyphRun->origin()[0] + ftGlyphRun->size()[0] : glyph->x;
+                    // FIXME: reformulate using FtGlyphRun::glyphAdvances()
 
                 if (bgColor0) {
                     setSource(bgColor0);

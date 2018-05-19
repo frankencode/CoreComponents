@@ -26,7 +26,8 @@ Ref<FtGlyphRun> FtGlyphRun::ftCopy() const
     glyphRun->maxAscender_ = maxAscender_;
     glyphRun->minDescender_ = minDescender_;
     glyphRun->cairoGlyphs_ = cairoGlyphs_->copy();
-    glyphRun->cairoTextClusters_ = cairoTextClusters_->copy();
+    glyphRun->cairoTextClusters_ = cairoTextClusters_;
+    glyphRun->glyphAdvances_ = glyphAdvances_;
     glyphRun->finalGlyphAdvance_ = finalGlyphAdvance_;
     return glyphRun;
 }
@@ -48,6 +49,7 @@ Ref<const GlyphRun> FtGlyphRun::wrap(double maxWidth, TextAlign textAlign, doubl
 
     ftGlyphRun->cairoGlyphs_ = CairoGlyphs::create(cairoGlyphs_->count());
     ftGlyphRun->cairoTextClusters_ = cairoTextClusters_;
+    ftGlyphRun->glyphAdvances_ = glyphAdvances_;
     ftGlyphRun->finalGlyphAdvance_ = finalGlyphAdvance_;
 
     int glyphOffset = 0;
@@ -229,6 +231,17 @@ Ref<const GlyphRun> FtGlyphRun::elide(double maxWidth) const
     Ref<const FtGlyphRun> ellipsis = FtFontManager::instance()->ftTypeset("...", font_);
     maxWidth -= ellipsis->advance()[0];
 
+    if (maxWidth <= 0) {
+        Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>("", font_, origin_);
+        ftGlyphRun->cairoGlyphs_ = CairoGlyphs::create(0);
+        ftGlyphRun->glyphAdvances_ = GlyphAdvances::create(0);
+        ftGlyphRun->cairoTextClusters_ = CairoTextClusters::create(0);
+        ftGlyphRun->size_ = Size{0, size_[1]};
+        ftGlyphRun->maxAscender_ = maxAscender_;
+        ftGlyphRun->minDescender_ = minDescender_;
+        return ftGlyphRun;
+    }
+
     Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text_, font_, origin_);
 
     int byteOffset = 0;
@@ -242,14 +255,18 @@ Ref<const GlyphRun> FtGlyphRun::elide(double maxWidth) const
         if (cairoGlyphs_->has(nextGlyphOffset) && maxWidth <= cairoGlyphs_->at(nextGlyphOffset).x)
         {
             ftGlyphRun->cairoGlyphs_ = CairoGlyphs::create(glyphOffset + ellipsis->cairoGlyphs_->count());
+            ftGlyphRun->glyphAdvances_ = GlyphAdvances::create(ftGlyphRun->cairoGlyphs_->count());
 
-            for (int j = 0; j < glyphOffset; ++j)
+            for (int j = 0; j < glyphOffset; ++j) {
                 ftGlyphRun->cairoGlyphs_->at(j) = cairoGlyphs_->at(j);
+                ftGlyphRun->glyphAdvances_->at(j) = glyphAdvances_->at(j);
+            }
             {
                 double shiftX = cairoGlyphs_->at(glyphOffset).x;
                 for (int j = 0; j < ellipsis->cairoGlyphs_->count(); ++j) {
                     ftGlyphRun->cairoGlyphs_->at(glyphOffset + j) = ellipsis->cairoGlyphs_->at(j);
                     ftGlyphRun->cairoGlyphs_->at(glyphOffset + j).x += shiftX;
+                    ftGlyphRun->glyphAdvances_->at(glyphOffset + j) = ellipsis->glyphAdvances_->at(j);
                 }
             }
 

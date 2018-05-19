@@ -216,6 +216,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
     glyphAdvances->truncate(cairoGlyphsCount);
     ftGlyphRun->cairoGlyphs_ = cairoGlyphs;
     ftGlyphRun->cairoTextClusters_ = cairoTextClusters;
+    ftGlyphRun->glyphAdvances_ = glyphAdvances;
     ftGlyphRun->finalGlyphAdvance_ = glyphAdvance;
 
     return ftGlyphRun;
