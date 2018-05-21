@@ -23,6 +23,13 @@ public:
     Property<String> statusText;
     Property<String> errorText;
 
+    enum class Type {
+        Filled,
+        Outline
+    };
+
+    Property<Type> type { Type::Filled };
+
     Signal accepted;
     Signal rejected;
 
@@ -31,6 +38,9 @@ protected:
     void init();
 
     virtual InputControl *addInputControl() = 0;
+
+    void clear() override;
+    void paint() override;
 };
 
 }} // namespace cc::ui

@@ -139,9 +139,14 @@ bool View::isStatic() const
     return true;
 }
 
+void View::clear(Color color)
+{
+    image()->clear(color->premultiplied());
+}
+
 void View::clear()
 {
-    image()->clear(paper()->premultiplied());
+    clear(paper());
 }
 
 void View::paint()

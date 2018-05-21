@@ -13,7 +13,7 @@
 namespace cc {
 namespace ui {
 
-class HLine: public View
+class InputLine: public View
 {
     friend class Object;
 
@@ -22,7 +22,7 @@ public:
     Property<Color> ink { Color { 0x000000 } };
 
 protected:
-    HLine(View *parent, double maxThickness = dp(1));
+    InputLine(View *parent, double maxThickness = dp(1));
     void paint() override;
 };
 

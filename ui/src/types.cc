@@ -237,7 +237,7 @@ bool textWrapBehindDefault(String text, int byteOffset, int byteCount)
     return canWrap;
 }
 
-double degrees(double angle)
+double degree(double angle)
 {
     return M_PI * angle / 180;
 }

@@ -209,8 +209,8 @@ bool textWrapBehindDefault(String text, int byteOffset, int byteCount);
 typedef int64_t TouchDeviceId;
 typedef int64_t TouchFingerId;
 
-/// translate \a angle in to degrees (0..360) to radians (0..2*M_PI)
-double degrees(double angle);
+/// translate \a angle in degree (0..360) to radians (0..2*M_PI)
+double degree(double angle);
 
 /// translate design units to pixels
 double dp(double x);

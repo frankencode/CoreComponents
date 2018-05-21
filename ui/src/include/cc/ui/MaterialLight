@@ -45,6 +45,8 @@ public:
     Color textSelectionInk     () const override { return primaryTextColor(); }
     Color textSelectionPaper   () const override { return secondaryLightColor(); }
 
+    Color inputFieldFillColor  () const override { return windowColor()->darker(5); }
+
 private:
     MaterialLight() {}
 };

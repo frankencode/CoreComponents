@@ -42,7 +42,7 @@ void TextInput::init()
     });
 
     textRun->bind([=]{
-        return unwrappedTextRun()->wrap(parent()->size()[0]);
+        return unwrappedTextRun()->wrap(size()[0]);
     });
 
     if (text()->count() > 0)
@@ -56,14 +56,14 @@ void TextInput::init()
     });
 
     size->bind([=]{
-        double h = 2 * margin()[1];
+        double h = 0;
         if (textRun()->lineCount() < 2) {
             Ref<const FontMetrics> m = font()->getMetrics();
             h += std::ceil(m->ascender()) - std::floor(m->descender());
         }
         else
             h += textRun()->size()[1];
-        return Size { parent()->size()[0], h };
+        return Size { parent()->size()[0] - 2 * pos()[0], h };
     });
 
     cursor->bind([=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); });
@@ -91,8 +91,7 @@ String TextInput::text() const
 
 Point TextInput::textPos() const
 {
-    double a = std::ceil(font()->getMetrics()->ascender());
-    return margin() + Point { 0, a };
+    return Point { 0, std::ceil(font()->getMetrics()->ascender()) };
 }
 
 void TextInput::startBlink()

@@ -6,25 +6,25 @@
  *
  */
 
-#include <cc/ui/HLine>
+#include <cc/ui/InputLine>
 
 namespace cc {
 namespace ui {
 
-HLine::HLine(View *parent, double maxThickness):
+InputLine::InputLine(View *parent, double maxThickness):
     View(parent)
 {
     inheritPaper();
 
     size->bind([=]{
-        return Size { parent->size()[0], maxThickness };
+        return Size { parent->size()[0], std::ceil(maxThickness) };
     });
 }
 
-void HLine::paint()
+void InputLine::paint()
 {
     Painter p(this);
-    p->rectangle(Point{ 0, 0 }, Size { size()[0], thickness() });
+    p->rectangle(Point{ 0, size()[1] - thickness() }, size());
     p->setSource(ink());
     p->fill();
 }

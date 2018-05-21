@@ -27,6 +27,8 @@ class Window;
 class Image;
 class Control;
 
+typedef std::function<Point()> AnchorPoint;
+
 class View: public Surface
 {
     friend class Object;
@@ -61,16 +63,18 @@ public:
     double left() const { return pos()[0]; }
     double bottom() const { return pos()[1] + size()[1]; }
     double right() const { return pos()[0] + size()[0]; }
+
     Point topLeft() const { return pos(); }
     Point topRight() const { return pos() + Step { size()[0], 0 }; }
     Point bottomLeft() const { return pos() + Step { 0, size()[1] }; }
     Point bottomRight() const { return pos() + size(); }
 
-    void anchorTopLeftTo(Point l) { pos->bind([=]{ return l; }); }
-    void anchorTopRightTo(Point l) { pos->bind([=]{ return l - Step { size()[0], 0 }; }); }
-    void anchorBottomLeftTo(Point l) { pos->bind([=]{ return l - Step { 0, size()[1] }; }); }
-    void anchorBottomRighTo(Point l) { pos->bind([=]{ return l - size(); }); }
-    void anchorCenterTo(Point l) { pos->bind([=]{ return l - center(); }); }
+    void anchorTopLeftTo(const AnchorPoint &l) { pos->bind([=]{ return l(); }); }
+    void anchorTopRightTo(const AnchorPoint &l) { pos->bind([=]{ return l() - Step { size()[0], 0 }; }); }
+    void anchorBottomLeftTo(const AnchorPoint &l) { pos->bind([=]{ return l() - Step { 0, size()[1] }; }); }
+    void anchorBottomRighTo(const AnchorPoint &l) { pos->bind([=]{ return l() - size(); }); }
+    void anchorCenterTo(const AnchorPoint &l) { pos->bind([=]{ return l() - center(); }); }
+
     void centerInParent();
 
     void inheritPaper();
@@ -94,6 +98,8 @@ protected:
     virtual bool isOpaque() const;
     virtual bool isPainted() const;
     virtual bool isStatic() const;
+
+    void clear(Color color);
 
     virtual void clear();
     virtual void paint();

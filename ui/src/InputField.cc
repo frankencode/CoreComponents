@@ -8,7 +8,7 @@
 
 #include <cc/debug>
 #include <cc/ui/Column>
-#include <cc/ui/HLine>
+#include <cc/ui/InputLine>
 #include <cc/ui/Label>
 #include <cc/ui/TextInput>
 #include <cc/ui/Transition>
@@ -20,14 +20,27 @@ namespace ui {
 InputField::InputField(View *parent, const String &labelText_):
     Control(parent),
     labelText(labelText_)
-{}
+{
+    paper->bind([=]{
+        return theme()->inputFieldFillColor();
+            // FIXME: should be a function on background color
+            // FIXME: make depend on input field type
+    });
+}
 
 void InputField::init()
 {
     InputControl *input = addInputControl();
-    input->pos = Point { 0, dp(16) };
+    input->pos = Point { dp(12), dp(24) };
     input->accepted->connect([=]{ accepted(); });
     input->rejected->connect([=]{ rejected(); });
+
+    size->bind([=]{
+        return Size {
+            parent()->size()[0] - dp(24),
+            std::ceil(dp(32)) + input->size()[1]
+        };
+    });
 
     Label *dummy = add<Label>();
     dummy->text->bind([=]{ return dummyText(); });
@@ -35,8 +48,8 @@ void InputField::init()
     dummy->visible->bind([=]{ return dummy->text() && !input->text(); });
     dummy->pos->bind([=]{
         return Point {
-            input->pos()[0],
-            input->center()[1] - dummy->size()[1] / 2
+            input->left(),
+            input->size()[1]/2 - dummy->size()[1] / 2
         };
     });
 
@@ -51,13 +64,13 @@ void InputField::init()
         Label *smallLabel = add<Label>();
         smallLabel->text->bind([=]{ return labelText(); });
         smallLabel->font->bind([=]{ return app()->smallFont(); });
-        smallLabel->pos->bind([=]{ return input->pos() - Step { 0, dp(16) }; });
+        smallLabel->pos->bind([=]{ return Point { dp(12), dp(12) }; });
         smallLabel->visible = false;
 
         Label *bigLabel = add<Label>();
         bigLabel->text->bind([=]{ return labelText(); });
         bigLabel->font->bind([=]{ return app()->defaultFont(); });
-        bigLabel->pos->bind([=]{ return input->pos() + Step { 0, input->textPos()[1] - bigLabel->textPos()[1] }; });
+        bigLabel->pos->bind([=]{ return Point { dp(12), size()[1] / 2 - bigLabel->size()[1] / 2 }; });
         bigLabel->visible = false;
 
         label->font->bind([=]{
@@ -76,24 +89,20 @@ void InputField::init()
         easeOn(label->pos, 0.1, easing);
     }
 
-    HLine *underline = add<HLine>(dp(2));
-    underline->thickness->bind([=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); });
-    underline->ink->bind([=]{
+    InputLine *inputLine = add<InputLine>(dp(2));
+    inputLine->thickness->bind([=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); });
+    inputLine->ink->bind([=]{
         if (pressed()) return style()->theme()->pressedInputLineColor();
         if (focus()) return style()->theme()->focusInputLineColor();
         if (hover()) return style()->theme()->hoverInputLineColor();
         return style()->theme()->inputLineColor();
     });
-    underline->pos->bind([=]{
-        return input->bottomLeft() + Size{ 0, dp(8) };
+
+    inputLine->pos->bind([=]{
+        return Point { 0, std::ceil(size()[1]) - inputLine->size()[1] };
     });
 
-    size->bind([=]{
-        return Size {
-            parent()->size()[0],
-            underline->pos()[1] + underline->size()[1]
-        };
-    });
+    // inputLine->anchorBottomLeftTo(bottomLeft());
 
     delegate = input;
     #if 0
@@ -121,6 +130,28 @@ void InputField::init()
     error->visible->bind([=]{ return errorText() != "" && focus(); });
     messageArea->visible->bind([=]{ return help->visible() || error->visible() || status->visible(); });
     #endif
+}
+
+void InputField::clear()
+{
+    View::clear(parent()->paper());
+}
+
+void InputField::paint()
+{
+    const double w = size()[0];
+    const double h = size()[1];
+    const double r = dp(6);
+
+    Painter p(this);
+    p->moveTo(Point{0, h});
+    p->lineTo(Point{0, r});
+    p->arc(Point{r, r}, r, degree(180), degree(270));
+    p->lineTo(Point{w - r, 0});
+    p->arc(Point{w - r, r}, r, degree(270), degree(360));
+    p->lineTo(Point{w, h});
+    p->setSource(paper());
+    p->fill();
 }
 
 }} // namespace cc::ui

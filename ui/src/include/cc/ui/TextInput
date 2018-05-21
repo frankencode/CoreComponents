@@ -28,7 +28,6 @@ public:
     Point textPos() const override;
 
     Property<Font> font;
-    Property<Size> margin;
 
 protected:
     TextInput(View *parent = 0, const String &initialText = String{});

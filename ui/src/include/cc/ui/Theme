@@ -39,6 +39,8 @@ public:
     virtual Color textSelectionInk     () const = 0;
     virtual Color textSelectionPaper   () const = 0;
 
+    virtual Color inputFieldFillColor  () const = 0;
+
     virtual double defaultFontSize     () const { return 16; }
     virtual double defaultFixedFontSize() const { return 16; }
     virtual double smallFontSize       () const { return 12; }
