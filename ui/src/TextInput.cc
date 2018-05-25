@@ -56,14 +56,7 @@ void TextInput::init()
     });
 
     size->bind([=]{
-        double h = 0;
-        if (textRun()->lineCount() < 2) {
-            Ref<const FontMetrics> m = font()->getMetrics();
-            h += std::ceil(m->ascender()) - std::floor(m->descender());
-        }
-        else
-            h += textRun()->size()[1];
-        return Size { parent()->size()[0] - 2 * pos()[0], h };
+        return preferredSize();
     });
 
     cursor->bind([=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); });
@@ -77,6 +70,28 @@ void TextInput::init()
     timer_->triggered->connect([=]{
         textCursorVisible = !textCursorVisible();
     });
+}
+
+Size TextInput::preferredSize() const
+{
+    double h = 0;
+    if (textRun()->lineCount() < 2) {
+        Ref<const FontMetrics> m = font()->getMetrics();
+        h += std::ceil(m->ascender()) - std::floor(m->descender());
+    }
+    else
+        h += textRun()->size()[1];
+    return Size{ 280, h };
+}
+
+Size TextInput::minSize() const
+{
+    return Size{ 0, preferredSize()[1] };
+}
+
+Size TextInput::maxSize() const
+{
+    return Size{ std::numeric_limits<double>::max(), preferredSize()[1] };
 }
 
 Ref<TextEditor> TextInput::createEditor()

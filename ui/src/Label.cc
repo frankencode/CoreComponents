@@ -29,14 +29,7 @@ Label::Label(View *parent, const String &text_, const Font &font_):
 
     textRun->bind([=]{ return TextRun::createHtml(text(), font()); });
 
-    size->bind([=]{
-        return
-            2 * margin() +
-            Size {
-                textRun()->size()[0],
-                textRun()->maxAscender() - textRun()->minDescender()
-            };
-    });
+    size->bind([=]{ return preferredSize(); });
 
     if (font_->ink())
         ink = font_->ink();
@@ -59,6 +52,21 @@ Point Label::textPos() const
             0,
             textRun()->maxAscender()
         };
+}
+
+Size Label::preferredSize() const
+{
+    return
+        2 * margin() +
+        Size {
+            textRun()->size()[0],
+            textRun()->maxAscender() - textRun()->minDescender()
+        };
+}
+
+Size Label::minSize() const
+{
+    return preferredSize();
 }
 
 void Label::paint()

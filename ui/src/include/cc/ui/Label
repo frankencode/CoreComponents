@@ -28,6 +28,9 @@ public:
 
     Point textPos() const;
 
+    Size preferredSize() const override;
+    Size minSize() const override;
+
 protected:
     Label(View *parent, const String &text = String{}, const Font &font = Font{});
     ~Label();

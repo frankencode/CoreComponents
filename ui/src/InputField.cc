@@ -34,13 +34,9 @@ void InputField::init()
     input->pos = Point { dp(12), dp(24) };
     input->accepted->connect([=]{ accepted(); });
     input->rejected->connect([=]{ rejected(); });
+    input_ = input;
 
-    size->bind([=]{
-        return Size {
-            parent()->size()[0] - dp(24),
-            std::ceil(dp(32)) + input->size()[1]
-        };
-    });
+    size->bind([=]{ return preferredSize(); });
 
     Label *dummy = add<Label>();
     dummy->text->bind([=]{ return dummyText(); });
@@ -105,6 +101,7 @@ void InputField::init()
     // inputLine->anchorBottomLeftTo(bottomLeft());
 
     delegate = input;
+
     #if 0
     View *messageArea = add<View>();
     messageArea->size->bind([=]{ return Size { size()[0], sp(12) }; });
@@ -130,6 +127,21 @@ void InputField::init()
     error->visible->bind([=]{ return errorText() != "" && focus(); });
     messageArea->visible->bind([=]{ return help->visible() || error->visible() || status->visible(); });
     #endif
+}
+
+Size InputField::preferredSize() const
+{
+    return input_->preferredSize() + Size { std::ceil(24), std::ceil(dp(32)) };
+}
+
+Size InputField::minSize() const
+{
+    return input_->minSize() + Size { std::ceil(24), std::ceil(dp(32)) };
+}
+
+Size InputField::maxSize() const
+{
+    return input_->maxSize() + Size { std::ceil(24), std::ceil(dp(32)) };
 }
 
 void InputField::clear()

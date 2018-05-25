@@ -6,7 +6,6 @@
  *
  */
 
-#include <limits>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/FontManager>
 #include <cc/ui/TextRun>

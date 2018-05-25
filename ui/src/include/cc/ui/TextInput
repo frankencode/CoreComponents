@@ -24,10 +24,14 @@ class TextInput: public InputControl
     friend class Object;
 
 public:
+    Property<Font> font;
+
     String text() const override;
     Point textPos() const override;
 
-    Property<Font> font;
+    Size preferredSize() const override;
+    Size minSize() const override;
+    Size maxSize() const override;
 
 protected:
     TextInput(View *parent = 0, const String &initialText = String{});

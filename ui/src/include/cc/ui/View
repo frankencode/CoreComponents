@@ -74,8 +74,11 @@ public:
     void anchorBottomLeftTo(const AnchorPoint &l) { pos->bind([=]{ return l() - Step { 0, size()[1] }; }); }
     void anchorBottomRighTo(const AnchorPoint &l) { pos->bind([=]{ return l() - size(); }); }
     void anchorCenterTo(const AnchorPoint &l) { pos->bind([=]{ return l() - center(); }); }
-
     void centerInParent();
+
+    virtual Size preferredSize() const { return Size{}; }
+    virtual Size minSize() const { return Size{}; }
+    virtual Size maxSize() const { return Size{ std::numeric_limits<double>::max() }; }
 
     void inheritPaper();
 

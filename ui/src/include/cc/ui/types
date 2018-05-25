@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <limits>
 #include <cc/bitmask>
 #include <cc/Property>
 #include <cc/String>

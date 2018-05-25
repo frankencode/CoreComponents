@@ -33,6 +33,10 @@ public:
     Signal accepted;
     Signal rejected;
 
+    Size preferredSize() const override;
+    Size minSize() const override;
+    Size maxSize() const override;
+
 protected:
     InputField(View *parent, const String &labelText);
     void init();
@@ -41,6 +45,9 @@ protected:
 
     void clear() override;
     void paint() override;
+
+private:
+    InputControl *input_;
 };
 
 }} // namespace cc::ui

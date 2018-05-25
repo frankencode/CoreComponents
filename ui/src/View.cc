@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug> // DEBUG
 #include <cc/List>
 #include <cc/ui/StyleManager>
 #include <cc/ui/Window>
