@@ -256,7 +256,9 @@ public:
       */
     static String create(int size, char preset)
     {
-        return mutate(create(size))->fill(preset);
+        String s = create(size);
+        mutate(s)->fill(preset);
+        return s;
     }
 
     /** Create a copy of a C string
@@ -302,7 +304,10 @@ public:
     virtual bool isZeroTerminated() const { return true; }
 
     /// %Set all characters to \a zero
-    String fill(char zero);
+    void fill(char zero);
+
+    /// %Set the first \a n characters to \a zero
+    void fill(char zero, int n);
 
     /// Cut this string down to \a newSize characters
     void truncate(int newSize);
@@ -1051,7 +1056,9 @@ inline Ref<const CharArray>::Ref(const char *other, int size):
 inline Ref<const CharArray>::Ref(int size, char preset):
     a_(0)
 {
-    set(mutate(CharArray::create(size))->fill(preset));
+    auto s = CharArray::create(size);
+    mutate(s)->fill(preset);
+    set(s);
 }
 
 inline Ref<const CharArray>::Ref(const Ref<StringList> &b):

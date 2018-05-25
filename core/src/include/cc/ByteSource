@@ -37,7 +37,7 @@ public:
       * \return new object instance
       */
     inline static Ref<ByteSource> open(const CharArray *buffer, Endian endian = LittleEndian) {
-        return new ByteSource(0, const_cast<CharArray *>(buffer), endian);
+        return new ByteSource(nullptr, const_cast<CharArray *>(buffer), endian);
     }
 
     /** Read a single byte

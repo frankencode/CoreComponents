@@ -35,9 +35,13 @@ class WrappedChunk: public CharArray {
 public:
     WrappedChunk(const void *data, int size):
         CharArray((const char *)data, size, CharArray::doNothing)
-    {
-        decRefCount();
-    }
+    {}
+
+    ~WrappedChunk()
+    {}
+
+    static void operator delete(void*, std::size_t)
+    {}
 };
 
 void Stream::write(const void *data, int size)

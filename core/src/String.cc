@@ -180,10 +180,14 @@ void Array<char>::destroy()
     else delete[] data_;
 }
 
-String Array<char>::fill(char zero)
+void Array<char>::fill(char zero)
 {
     memset(data_, zero, size_);
-    return this;
+}
+
+void Array<char>::fill(char zero, int n)
+{
+    memset(data_, zero, n);
 }
 
 void Array<char>::truncate(int newSize)
