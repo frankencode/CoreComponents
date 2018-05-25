@@ -1,0 +1,213 @@
+/*
+ * Copyright (C) 2007-2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/exceptions>
+#include <cc/Stream>
+
+namespace cc {
+namespace entropy {
+
+class BitSink: public Object
+{
+public:
+    inline static Ref<BitSink> open(Stream *sink, CharArray *buffer, Endian endian = LittleEndian)
+    {
+        return new BitSink(sink, buffer, endian);
+    }
+
+    inline static Ref<BitSink> open(const CharArray *buffer, Endian endian = LittleEndian)
+    {
+        return new BitSink(nullptr, const_cast<CharArray *>(buffer), endian);
+    }
+
+    void writeBit(uint8_t x);
+    void writeUInt8(uint8_t x);
+    void writeUInt16(uint16_t x);
+    void writeUInt32(uint32_t x);
+    void writeUInt64(uint64_t x);
+
+    template<int digitSize = 4>
+    void writeUIntVlc(unsigned x);
+
+    template<int digitSize = 4>
+    void writeIntVlc(int x);
+
+    template<int digitSize = 4>
+    static int bitsPerUIntVlc(unsigned x);
+
+    template<int digitSize = 4>
+    static int bitsPerIntVlc(int x);
+
+    template<int bitSize = 4>
+    void writeUInt(unsigned x);
+
+    void writeUInt(int bitSize, unsigned x);
+
+    off_t currentOffset() const;
+
+    void flush();
+
+private:
+    BitSink(Stream *sink, CharArray *buffer, Endian endian):
+        sink_(sink),
+        buffer_(buffer),
+        endian_(endian),
+        i_(0),
+        iBit_(0),
+        nw_(0)
+    {
+        if (!buffer_) buffer_ = CharArray::allocate(0x1000);
+        mutate(buffer_)->fill(0);
+    }
+
+    ~BitSink()
+    {
+        if (sink_) flush();
+    }
+
+    Ref<Stream> sink_;
+    String buffer_;
+    int endian_;
+    int i_;    // byte offset within buf_
+    int iBit_;    // bit offset within buf_[i_]
+    off_t nw_;    // accumulated number of written bytes
+};
+
+void BitSink::flush()
+{
+    if (!sink_) throw BufferOverflow();
+
+    int h = i_ + (iBit_ > 0);
+    if (h > 0) {
+        sink_->write(buffer_->bytes(), h);
+        mutate(buffer_)->fill(0, h);
+        nw_ += h;
+        i_ = 0;
+        iBit_ = 0;
+    }
+}
+
+inline void BitSink::writeBit(uint8_t x)
+{
+    if (iBit_ == 8) {
+        iBit_ = 0;
+        ++i_;
+        if (i_ == buffer_->count()) flush();
+    }
+    mutate(buffer_)->byteAt(i_) |= (x << iBit_);
+    ++iBit_;
+}
+
+inline void BitSink::writeUInt8(uint8_t x)
+{
+    for (int i = 8; i > 0; --i) {
+        writeBit(x & 1);
+        x >>= 1;
+    }
+}
+
+inline void BitSink::writeUInt16(uint16_t x)
+{
+    if (endian_ == LittleEndian) {
+        writeUInt8((uint8_t)x);
+        writeUInt8((uint8_t)(x >> 8));
+    }
+    else {
+        writeUInt8((uint8_t)(x >> 8));
+        writeUInt8((uint8_t)x);
+    }
+}
+
+inline void BitSink::writeUInt32(uint32_t x)
+{
+    if (endian_ == LittleEndian) {
+        writeUInt8((uint8_t)x);
+        writeUInt8((uint8_t)(x >> 8));
+        writeUInt8((uint8_t)(x >> 16));
+        writeUInt8((uint8_t)(x >> 24));
+    }
+    else {
+        writeUInt8((uint8_t)(x >> 24));
+        writeUInt8((uint8_t)(x >> 16));
+        writeUInt8((uint8_t)(x >> 8));
+        writeUInt8((uint8_t)x);
+    }
+}
+
+inline void BitSink::writeUInt64(uint64_t x)
+{
+    if (endian_ == LittleEndian) {
+        for (int i = 0; i <= 7*8; i += 8)
+            writeUInt8((uint8_t)(x >> i));
+    }
+    else {
+        for (int i = 7*8; i >= 0; i -= 8)
+            writeUInt8((uint8_t)(x >> i));
+    }
+}
+
+template<int digitSize>
+inline void BitSink::writeUIntVlc(unsigned x)
+{
+    do {
+        for (int k = digitSize; k > 0; --k) {
+            writeBit(x & 1);
+            x >>= 1;
+        }
+        writeBit(x > 0);
+    } while (x > 0);
+}
+
+template<int digitSize>
+inline int BitSink::bitsPerUIntVlc(unsigned x)
+{
+    int i = (x == 0);
+    for (unsigned y = x; y > 0; y >>= digitSize) ++i;
+    return i * (digitSize + 1);
+}
+
+template<int digitSize>
+inline void BitSink::writeIntVlc(int x)
+{
+    writeBit(x < 0);
+    if (x < 0) x = -x;
+    writeUIntVlc<digitSize>(x);
+}
+
+template<int digitSize>
+inline int BitSink::bitsPerIntVlc(int x)
+{
+    if (x < 0) x = -x;
+    return bitsPerUIntVlc<digitSize>(x) + 1;
+}
+
+template<int bitSize>
+inline void BitSink::writeUInt(unsigned x)
+{
+    for (int i = bitSize; i > 0; --i) {
+        writeBit(x & 1);
+        x >>= 1;
+    }
+}
+
+inline void BitSink::writeUInt(int bitSize, unsigned x)
+{
+    for (int i = bitSize; i > 0; --i) {
+        writeBit(x & 1);
+        x >>= 1;
+    }
+}
+
+inline off_t BitSink::currentOffset() const
+{
+    return nw_ + i_ + (i_ + iBit_ > 0);
+}
+
+}} // namespace cc::entropy

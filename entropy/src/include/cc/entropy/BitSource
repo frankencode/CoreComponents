@@ -1,0 +1,205 @@
+/*
+ * Copyright (C) 2007-2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/exceptions>
+#include <cc/Stream>
+
+namespace cc {
+namespace entropy {
+
+class BitSource: public Object
+{
+public:
+    inline static Ref<BitSource> open(Stream *source, CharArray *buffer = 0, Endian endian = LittleEndian)
+    {
+        return new BitSource(source, buffer, endian);
+    }
+
+    inline static Ref<BitSource> open(const CharArray *buffer, Endian endian = LittleEndian)
+    {
+        return new BitSource(nullptr, const_cast<CharArray *>(buffer), endian);
+    }
+
+    uint8_t readBit();
+    uint8_t readUInt8();
+    uint16_t readUInt16();
+    uint32_t readUInt32();
+    uint64_t readUInt64();
+
+    template<int digitSize = 4>
+    unsigned readUIntVlc();
+
+    template<int digitSize = 4>
+    int readIntVlc();
+
+    template<int bitSize>
+    unsigned readUInt();
+
+    unsigned readUInt(int bitSize);
+
+    off_t currentOffset() const;
+
+private:
+    BitSource(Stream *source, CharArray *buffer, Endian endian):
+        source_(source),
+        buffer_(buffer),
+        endian_(endian),
+        fill_(0),
+        i_(0),
+        iBit_(8),
+        nr_(0)
+    {
+        if (!buffer_) buffer_ = CharArray::allocate(0x1000);
+    }
+
+    void fill();
+
+    Ref<Stream> source_;
+    String buffer_;
+    int endian_;
+    int fill_;
+    int i_;    // byte offset within buf_
+    int iBit_;    // bit offset in buf_[i]
+    off_t nr_;    // accumulated number of bytes read
+};
+
+inline void BitSource::fill()
+{
+    if (!source_) throw UnexpectedEndOfInputError();
+
+    fill_ = source_->read(mutate(buffer_));
+
+    if (fill_ == 0) throw UnexpectedEndOfInputError();
+
+    nr_ += fill_;
+    i_ = 0;
+    iBit_ = 0;
+}
+
+inline uint8_t BitSource::readBit()
+{
+    if (iBit_ == 8) {
+        iBit_ = 0;
+        ++i_;
+        if (i_ >= fill_) fill();
+    }
+    return (buffer_->byteAt(i_) >> (iBit_++)) & 1;
+}
+
+inline uint8_t BitSource::readUInt8()
+{
+    uint8_t h = 0;
+    for (int i = 0; i < 8; ++i)
+        h |= readBit() << i;
+    return h;
+}
+
+inline uint16_t BitSource::readUInt16()
+{
+    uint16_t h;
+
+    if (endian_ == LittleEndian) {
+        h = uint16_t(readUInt8());
+        h |= uint16_t(readUInt8()) << 8;
+    }
+    else {
+        h = uint16_t(readUInt8()) << 8;
+        h |= uint16_t(readUInt8());
+    }
+
+    return h;
+}
+
+inline uint32_t BitSource::readUInt32()
+{
+    uint32_t h;
+
+    if (endian_ == LittleEndian) {
+        h = uint32_t(readUInt8());
+        h |= uint32_t(readUInt8()) << 8;
+        h |= uint32_t(readUInt8()) << 16;
+        h |= uint32_t(readUInt8()) << 24;
+    }
+    else {
+        h = uint32_t(readUInt8()) << 24;
+        h |= uint32_t(readUInt8()) << 16;
+        h |= uint32_t(readUInt8()) << 8;
+        h |= uint32_t(readUInt8());
+    }
+
+    return h;
+}
+
+inline uint64_t BitSource::readUInt64()
+{
+    uint64_t h = 0;
+
+    if (endian_ == LittleEndian) {
+        for (int i = 0; i <= 7*8; i += 8)
+            h |= uint64_t(readUInt8()) << i;
+    }
+    else {
+        for (int i = 7*8; i >= 0; i -= 8)
+            h |= uint64_t(readUInt8()) << i;
+    }
+
+    return h;
+}
+
+template<int digitSize>
+inline unsigned BitSource::readUIntVlc()
+{
+    unsigned x = 0;
+
+    int i = 0;
+    do {
+        for (int k = digitSize; k > 0; --k) {
+            x |= unsigned(readBit()) << i;
+            ++i;
+        }
+    } while (readBit());
+
+    return x;
+}
+
+template<int digitSize>
+inline int BitSource::readIntVlc()
+{
+    int x;
+    if (readBit())
+        x = -int(readUInt<digitSize>());
+    else
+        x = readUInt<digitSize>();
+    return x;
+}
+
+template<int bitSize>
+inline unsigned BitSource::readUInt()
+{
+    unsigned x = 0;
+    for (int i = 0; i < bitSize; ++i)
+        x |= (readBit() << i);
+    return x;
+}
+
+inline unsigned BitSource::readUInt(int bitSize)
+{
+    unsigned x = 0;
+    for (int i = 0; i < bitSize; ++i)
+        x |= (readBit() << i);
+    return x;
+}
+
+inline off_t BitSource::currentOffset() const
+{
+    return nr_ - (/* unconsumed buffer bytes */ fill_ - i_ - (i_ + iBit_ > 0));
+}
+
+}} // namespace cc::entropy
