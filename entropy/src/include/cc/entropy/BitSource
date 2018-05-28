@@ -33,16 +33,21 @@ public:
     uint32_t readUInt32();
     uint64_t readUInt64();
 
-    template<int digitSize = 4>
+    template<int DigitSize = 4>
     unsigned readUIntVlc();
 
-    template<int digitSize = 4>
+    template<int DigitSize = 4>
     int readIntVlc();
 
-    template<int bitSize>
+    template<int wordSize>
     unsigned readUInt();
 
-    unsigned readUInt(int bitSize);
+    unsigned readUInt(int wordSize);
+
+    template<int wordSize>
+    int readInt();
+
+    int readInt(int wordSize);
 
     off_t currentOffset() const;
 
@@ -153,14 +158,14 @@ inline uint64_t BitSource::readUInt64()
     return h;
 }
 
-template<int digitSize>
+template<int DigitSize>
 inline unsigned BitSource::readUIntVlc()
 {
     unsigned x = 0;
 
     int i = 0;
     do {
-        for (int k = digitSize; k > 0; --k) {
+        for (int k = DigitSize; k > 0; --k) {
             x |= unsigned(readBit()) << i;
             ++i;
         }
@@ -169,32 +174,40 @@ inline unsigned BitSource::readUIntVlc()
     return x;
 }
 
-template<int digitSize>
+template<int DigitSize>
 inline int BitSource::readIntVlc()
 {
     int x;
     if (readBit())
-        x = -int(readUInt<digitSize>());
+        x = -int(readUInt<DigitSize>());
     else
-        x = readUInt<digitSize>();
+        x = readUInt<DigitSize>();
     return x;
 }
 
-template<int bitSize>
+template<int WordSize>
 inline unsigned BitSource::readUInt()
 {
+    return readUInt(WordSize);
+}
+
+inline unsigned BitSource::readUInt(int wordSize)
+{
     unsigned x = 0;
-    for (int i = 0; i < bitSize; ++i)
+    for (int i = 0; i < wordSize; ++i)
         x |= (readBit() << i);
     return x;
 }
 
-inline unsigned BitSource::readUInt(int bitSize)
+template<int WordSize>
+inline int BitSource::readInt()
 {
-    unsigned x = 0;
-    for (int i = 0; i < bitSize; ++i)
-        x |= (readBit() << i);
-    return x;
+    return (int)readUInt<WordSize>();
+}
+
+inline int BitSource::readInt(int wordSize)
+{
+    return (int)readUInt(wordSize);
 }
 
 inline off_t BitSource::currentOffset() const

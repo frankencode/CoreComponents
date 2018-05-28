@@ -33,22 +33,27 @@ public:
     void writeUInt32(uint32_t x);
     void writeUInt64(uint64_t x);
 
-    template<int digitSize = 4>
+    template<int DigitSize = 4>
     void writeUIntVlc(unsigned x);
 
-    template<int digitSize = 4>
+    template<int DigitSize = 4>
     void writeIntVlc(int x);
 
-    template<int digitSize = 4>
+    template<int DigitSize = 4>
     static int bitsPerUIntVlc(unsigned x);
 
-    template<int digitSize = 4>
+    template<int DigitSize = 4>
     static int bitsPerIntVlc(int x);
 
-    template<int bitSize = 4>
+    template<int wordSize>
     void writeUInt(unsigned x);
 
-    void writeUInt(int bitSize, unsigned x);
+    void writeUInt(int wordSize, unsigned x);
+
+    template<int wordSize>
+    void writeInt(int x);
+
+    void writeInt(int wordSize, int x);
 
     off_t currentOffset() const;
 
@@ -153,11 +158,11 @@ inline void BitSink::writeUInt64(uint64_t x)
     }
 }
 
-template<int digitSize>
+template<int DigitSize>
 inline void BitSink::writeUIntVlc(unsigned x)
 {
     do {
-        for (int k = digitSize; k > 0; --k) {
+        for (int k = DigitSize; k > 0; --k) {
             writeBit(x & 1);
             x >>= 1;
         }
@@ -165,44 +170,52 @@ inline void BitSink::writeUIntVlc(unsigned x)
     } while (x > 0);
 }
 
-template<int digitSize>
+template<int DigitSize>
 inline int BitSink::bitsPerUIntVlc(unsigned x)
 {
     int i = (x == 0);
-    for (unsigned y = x; y > 0; y >>= digitSize) ++i;
-    return i * (digitSize + 1);
+    for (unsigned y = x; y > 0; y >>= DigitSize) ++i;
+    return i * (DigitSize + 1);
 }
 
-template<int digitSize>
+template<int DigitSize>
 inline void BitSink::writeIntVlc(int x)
 {
     writeBit(x < 0);
     if (x < 0) x = -x;
-    writeUIntVlc<digitSize>(x);
+    writeUIntVlc<DigitSize>(x);
 }
 
-template<int digitSize>
+template<int DigitSize>
 inline int BitSink::bitsPerIntVlc(int x)
 {
     if (x < 0) x = -x;
-    return bitsPerUIntVlc<digitSize>(x) + 1;
+    return bitsPerUIntVlc<DigitSize>(x) + 1;
 }
 
-template<int bitSize>
+template<int WordSize>
 inline void BitSink::writeUInt(unsigned x)
 {
-    for (int i = bitSize; i > 0; --i) {
+    writeUInt(WordSize, x);
+}
+
+inline void BitSink::writeUInt(int wordSize, unsigned x)
+{
+    for (int i = wordSize; i > 0; --i) {
         writeBit(x & 1);
         x >>= 1;
     }
 }
 
-inline void BitSink::writeUInt(int bitSize, unsigned x)
+template<int WordSize>
+inline void BitSink::writeInt(int x)
 {
-    for (int i = bitSize; i > 0; --i) {
-        writeBit(x & 1);
-        x >>= 1;
-    }
+    writeUInt<WordSize>((unsigned)x);
+}
+
+inline void BitSink::writeInt(int wordSize, int x)
+{
+    writeUInt(wordSize, (unsigned)x);
 }
 
 inline off_t BitSink::currentOffset() const
