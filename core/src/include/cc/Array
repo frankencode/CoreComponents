@@ -31,6 +31,13 @@ public:
       * \return new object instance
       */
     inline static Ref<Array> create(int size) { return new Array(size); }
+        // TODO: make obsolete in favour of Array::allocate()
+
+    /** Create a new array
+      * \param size size of the array
+      * \return new object instance
+      */
+    inline static Ref<Array> allocate(int size) { return new Array(size); }
 
     /** Create a new array
       * \param size size of the array

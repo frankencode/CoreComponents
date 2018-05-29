@@ -434,7 +434,19 @@ public:
       * Sub-strings reference their parent and therefore increment the parent's reference count (\see Object::refCount()).
       * Sub-string selections can be cascaded to arbitrary depth.
       */
-    inline String select(int i0, int i1) const { return new CharArray(this, i0, i1); }
+    inline String select(int i0, int i1) const {
+        if (i1 == size_ && i0 == 0) return this;
+        return new CharArray(this, i0, i1);
+    }
+
+    /** Create a selection (reference to a sub-string)
+      * \param i1 end of selection (index behind the last selected character)
+      * \return the selected sub-string
+      */
+    inline String select(int i1) const {
+        if (i1 == size_) return this;
+        else return new CharArray(this, 0, i1);
+    }
 
     /// Pointer to parent string if this string is a sub-string selection (nullptr otherwise)
     inline const CharArray *parent() const { return parent_; }

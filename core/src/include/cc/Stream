@@ -21,15 +21,15 @@ class Format;
 class Stream: public Object
 {
 public:
-    /** Read N bytes
-      * \param data target buffer (N = data->count())
-      * \return number of bytes read (<= N)
+    /** Read available data
+      * \param data target buffer
+      * \return number of bytes read
       * \see CharArray::select()
       */
     virtual int read(CharArray *data);
 
-    /** Write N bytes
-      * \param data source buffer (N = data->count())
+    /** Write data
+      * \param data source buffer
       * \see CharArray::select()
       */
     virtual void write(const CharArray *data);
