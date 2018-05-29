@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/Array>
 #include <cc/Heap>
 #include <cc/Stack>
 #include <cc/entropy/BitSink>
@@ -16,42 +17,7 @@
 namespace cc {
 namespace entropy {
 
-/** \brief Code table entry
-  */
-class SymbolNode
-{
-public:
-    SymbolNode *parent;
-    SymbolNode *leftChild;
-    SymbolNode *rightChild;
-    int count;
-    int value;
-};
-
-/** \brief Comparable reference to a code table entry
-  */
-class SymbolRef
-{
-public:
-    SymbolRef():
-        symbol(nullptr)
-    {}
-
-    SymbolRef(SymbolNode *symbol):
-        symbol(symbol)
-    {}
-
-    SymbolNode *symbol;
-
-    inline bool operator<(const SymbolRef &b) const
-    {
-        return symbol->count < b.symbol->count;
-    }
-};
-
-/** \brief Block-wise two-pass Huffman codec
-  *
-  * The HuffmanCodec allows to encode any series of integers.
+/** \brief Huffman entropy encoding
   */
 class HuffmanCodec: public Object
 {
@@ -71,14 +37,6 @@ public:
     {
         return new HuffmanCodec(rawDiversity, rawDynamicRange);
     }
-
-    /** Free memory.
-      */
-    ~HuffmanCodec();
-
-    /** Returns the number bytes allocated on heap.
-      */
-    int memoryConsumption() const;
 
     /** Returns the number of bytes written on encoding in the worst case.
       * Allows to dimension the output buffer for encoding and the input buffer
@@ -110,33 +68,36 @@ public:
       */
     int decode(int *raw, int rawCapacity, BitSource *source);
 
-    /** Read symbols from an input buffer and write the encoded result
-      * to an output buffer.
-      *
-      * \param encoded output buffer
-      * \param encodedCapacity size of the output buffer in number of bytes
-      * \param raw input buffer
-      * \param rawFill number of symbols to be read from input buffer
-      * \param userFallback if not null returns raw transmission fallback indicator
-      * \return number of bytes written to the output buffer
-      */
-    // int encode(uint8_t *encoded, int encodedCapacity, int *raw, int rawFill, bool *userFallback = 0);
-
-    /** Read an encoded buffer and write the decoded result to an output buffer.
-      *
-      * \param raw output buffer
-      * \param rawCapacity size of the output buffer in number of symbols
-      * \param encoded input buffer
-      * \param encodedFill number of bytes to be read from input buffer
-      * \return number of symbols written to the output buffer
-      */
-    // int decode(int *raw, int rawCapacity, uint8_t *encoded, int encodedFill);
-
 private:
+    /** \brief Huffman tree node
+      */
+    struct Node
+    {
+        Node *parent_;
+        Node *leftChild_;
+        Node *rightChild_;
+        int value_;
+        int count_;
+    };
+
+    /** \brief Comparable reference to a huffman tree node
+      */
+    struct NodeRef
+    {
+        NodeRef(Node *node = nullptr): node_(node) {}
+
+        Node *node_;
+
+        inline bool operator<(const NodeRef &b) const
+        {
+            return node_->count_ < b.node_->count_;
+        }
+    };
+
     HuffmanCodec(int rawDiversity = 0x10000, int rawDynamicRange = 0x10000);
 
     void reset();
-    void addSymbol(int x, int count0);
+    void addSymbol(int value, int count0);
 
     void generateCodeTable();
     void debugCodeTable();
@@ -146,13 +107,12 @@ private:
     int rawDiversity_;
     int rawDynamicRange_;
 
-    SymbolNode *codeTable_;
-    SymbolNode *codeTableRoot_;
-    int codeTableFill_;
+    Ref< Array<Node> > nodes_;
+    Node *root_;
+    int fill_;
 
-    int codeMapSize_;
-    SymbolRef *codeMap_;
-    Ref< MaxHeap<SymbolRef> > heap_;
+    Ref< Array<NodeRef> > codeMap_;
+    Ref< MaxHeap<NodeRef> > heap_;
     Ref< Stack<uint8_t> > bitStack_;
 
     inline static int ilog2(int n)

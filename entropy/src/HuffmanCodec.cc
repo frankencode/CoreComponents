@@ -25,89 +25,59 @@ namespace entropy {
 HuffmanCodec::HuffmanCodec(int rawDiversity, int rawDynamicRange):
     rawDiversity_(rawDiversity),
     rawDynamicRange_(rawDynamicRange),
-    codeTable_(new SymbolNode[2 * rawDiversity]),
-    codeMap_(new SymbolRef[rawDynamicRange_]),
-    heap_(MaxHeap<SymbolRef>::create(2 * rawDiversity)),
+    nodes_(Array<Node>::create(2 * rawDiversity)),
+    codeMap_(Array<NodeRef>::create(rawDynamicRange_)),
+    heap_(MaxHeap<NodeRef>::create(2 * rawDiversity)),
     bitStack_(Stack<uint8_t>::create(rawDiversity))
-{
-    memoryConsumption();
-}
-
-HuffmanCodec::~HuffmanCodec()
-{
-    delete[] codeMap_; codeMap_ = 0;
-    delete[] codeTable_; codeTable_ = 0;
-}
-
-int HuffmanCodec::memoryConsumption() const
-{
-    int ct = sizeof(SymbolNode) * 2 * rawDiversity_;
-    int cm = sizeof(SymbolRef) * rawDynamicRange_;
-    int sh = sizeof(SymbolRef) * heap_->capacity();
-    int bs = rawDiversity_;
-
-#ifdef CC_ENTROPY_HUFFMANCODEC_PROFILING
-    CC_DEBUG <<
-        (
-            Format(
-                ""
-                "  size of code table = %%"
-                "  size of code map = %%"
-                "  size of sort heap = %%"
-                "  size of bit stack = %%"
-                "  overall heap utilization = %%"
-            )
-                << ct << cm << sh << bs
-                << (ct + cm + sh + bs)
-        )->join("\n");
-#endif
-
-    return ct + cm + sh + bs;
-}
+{}
 
 void HuffmanCodec::reset()
 {
-    codeTableFill_ = 0;
+    fill_ = 0;
     for (int i = 0; i < rawDynamicRange_; ++i)
-        codeMap_[i].symbol = 0;
+        codeMap_->at(i).node_ = 0;
 }
 
-inline void HuffmanCodec::addSymbol(int x, int count0)
+inline void HuffmanCodec::addSymbol(int value, int count0)
 {
-    codeTable_[codeTableFill_].parent = 0;
-    codeTable_[codeTableFill_].leftChild = 0;
-    codeTable_[codeTableFill_].rightChild = 0;
-    codeTable_[codeTableFill_].count = count0;
-    codeTable_[codeTableFill_].value = x;
-    codeMap_[x].symbol = codeTable_ + codeTableFill_;
-    ++codeTableFill_;
+    nodes_->at(fill_) = Node {
+        .parent_ = 0,
+        .leftChild_ = 0,
+        .rightChild_ = 0,
+        .value_ = value,
+        .count_ = count0
+    };
+    codeMap_->at(value).node_ = nodes_->data() + fill_;
+    ++fill_;
 }
 
 void HuffmanCodec::generateCodeTable()
 {
     heap_->deplete();
-    for (int i = 0; i < codeTableFill_; ++i)
-        heap_->push(SymbolRef(codeTable_ + i));
+    for (int i = 0; i < fill_; ++i)
+        heap_->push(NodeRef{ .node_ = nodes_->data() + i});
 
     while (heap_->count() > 1)
     {
-        SymbolRef leftChild = heap_->pop();
-        SymbolRef rightChild = heap_->pop();
-        leftChild.symbol->parent = codeTable_ + codeTableFill_;
-        rightChild.symbol->parent = codeTable_ + codeTableFill_;
-        codeTable_[codeTableFill_].parent = 0;
-        codeTable_[codeTableFill_].leftChild = leftChild.symbol;
-        codeTable_[codeTableFill_].rightChild = rightChild.symbol;
-        codeTable_[codeTableFill_].count = leftChild.symbol->count + rightChild.symbol->count;
-        codeTable_[codeTableFill_].value = -1;
-        heap_->push(SymbolRef(codeTable_ + codeTableFill_));
-        ++codeTableFill_;
+        NodeRef leftChild = heap_->pop();
+        NodeRef rightChild = heap_->pop();
+        leftChild.node_->parent_ = nodes_->data() + fill_;
+        rightChild.node_->parent_ = nodes_->data() + fill_;
+        nodes_->at(fill_) = Node {
+            .parent_ = 0,
+            .leftChild_ = leftChild.node_,
+            .rightChild_ = rightChild.node_,
+            .value_ = -1,
+            .count_ = leftChild.node_->count_ + rightChild.node_->count_
+        };
+        heap_->push(NodeRef{nodes_->data() + fill_});
+        ++fill_;
     }
 
     if (heap_->count() > 0)
-        codeTableRoot_ = heap_->pop().symbol;
+        root_ = heap_->pop().node_;
     else
-        codeTableRoot_ = 0;
+        root_ = nullptr;
 }
 
 void HuffmanCodec::writeRawFrame(BitSink *sink, int *raw, int rawFill, int rawMin, int rawMax)
@@ -160,16 +130,16 @@ void HuffmanCodec::encode(BitSink *sink, int *raw, int rawFill, bool *userFallba
     /** determine symbol frequencies
       */
     reset();
-    for (int i = 0; (i < rawFill) && (codeTableFill_ < rawDiversity_); ++i)
+    for (int i = 0; (i < rawFill) && (fill_ < rawDiversity_); ++i)
     {
         int x = raw[i] - rawMin;
-        if (!codeMap_[x].symbol) addSymbol(x, 0);
-        ++codeMap_[x].symbol->count;
+        if (!codeMap_->at(x).node_) addSymbol(x, 0);
+        ++codeMap_->at(x).node_->count_;
     }
 
     /** optional fallback to raw data transmission
       */
-    if (codeTableFill_ == rawDiversity_)
+    if (fill_ == rawDiversity_)
     {
         if (!userFallback)
             writeRawFrame(sink, raw, rawFill, rawMin, rawMax);
@@ -180,12 +150,12 @@ void HuffmanCodec::encode(BitSink *sink, int *raw, int rawFill, bool *userFallba
 
     /** generate code table
       */
-    int diversity = codeTableFill_;
+    int diversity = fill_;
     generateCodeTable();
 
 #ifdef CC_ENTROPY_HUFFMANCODEC_DEBUG_STATISTICS
     for (int i = 0; i < diversity; ++i)
-        CC_DEBUG << i << ": H(" << codeTable_[i].value << ") = " << codeTable_[i].count;
+        CC_DEBUG << i << ": H(" << nodes_->at(i).value << ") = " << nodes_->at(i).count;
 #endif
 
     /** determine output size
@@ -197,12 +167,12 @@ void HuffmanCodec::encode(BitSink *sink, int *raw, int rawFill, bool *userFallba
     tableSize += BitSink::bitsPerUIntVlc(diversity);
     for (int i = 0; i < diversity; ++i)
     {
-        tableSize += BitSink::bitsPerUIntVlc(codeTable_[i].value);
-        tableSize += BitSink::bitsPerUIntVlc(codeTable_[i].count);
-        SymbolNode *sym = codeTable_ + i;
+        tableSize += BitSink::bitsPerUIntVlc(nodes_->at(i).value_);
+        tableSize += BitSink::bitsPerUIntVlc(nodes_->at(i).count_);
         int len = 0;
-        while ((sym = sym->parent) != 0) ++len;
-        outSize += len * codeTable_[i].count;
+        Node *node = nodes_->data() + i;
+        while ((node = node->parent_) != 0) ++len;
+        outSize += len * nodes_->at(i).count_;
     }
 
     outSize += tableSize;
@@ -242,8 +212,8 @@ void HuffmanCodec::encode(BitSink *sink, int *raw, int rawFill, bool *userFallba
     sink->writeUIntVlc(diversity);
     for (int i = 0; i < diversity; ++i)
     {
-        sink->writeUIntVlc(codeTable_[i].value);
-        sink->writeUIntVlc(codeTable_[i].count);
+        sink->writeUIntVlc(nodes_->at(i).value_);
+        sink->writeUIntVlc(nodes_->at(i).count_);
     }
 
     /** encode symbols
@@ -252,13 +222,13 @@ void HuffmanCodec::encode(BitSink *sink, int *raw, int rawFill, bool *userFallba
     {
         int x = raw[i] - rawMin;
 
-        SymbolNode *sym = codeMap_[x].symbol;
+        Node *node = codeMap_->at(x).node_;
         bitStack_->deplete();
 
-        while (sym->parent) {
-            SymbolNode *parent = sym->parent;
-            bitStack_->push(parent->rightChild == sym);
-            sym = parent;
+        while (node->parent_) {
+            Node *parent = node->parent_;
+            bitStack_->push(parent->rightChild_ == node);
+            node = parent;
         }
 
         while (bitStack_->count() > 0)
@@ -306,10 +276,10 @@ int HuffmanCodec::decode(int *raw, int rawCapacity, BitSource *source)
       */
     for (int i = 0; i < rawFill; ++i)
     {
-        SymbolNode *sym = codeTableRoot_;
-        while (sym->leftChild)
-            sym = (source->readBit()) ?  sym->rightChild : sym->leftChild;
-        raw[i] = sym->value + rawMin;
+        Node *node = root_;
+        while (node->leftChild_)
+            node = (source->readBit()) ?  node->rightChild_ : node->leftChild_;
+        raw[i] = node->value_ + rawMin;
     }
 
     return rawFill;
@@ -327,20 +297,5 @@ int HuffmanCodec::encodedCapacity(int rawCapacity, int rawDynamicRange) const
     h += 32;    // max frame header size
     return h;
 }
-
-#if 0
-int HuffmanCodec::encode(uint8_t *encoded, int encodedCapacity, int *raw, int rawFill, bool *userFallback)
-{
-    Ref<BitSink> sink = BitSink::open(encoded, encodedCapacity);
-    encode(sink, raw, rawFill, userFallback);
-    return int(sink->numBytesWritten());
-}
-
-int HuffmanCodec::decode(int *raw, int rawCapacity, uint8_t *encoded, int encodedFill)
-{
-    Ref<BitSource> source = BitSource::open(encoded, encodedFill);
-    return decode(raw, rawCapacity, source);
-}
-#endif
 
 }} // namespace cc::entropy
