@@ -16,10 +16,11 @@ namespace entropy {
 HuffmanCodec::HuffmanCodec():
     buffer_(CharArray::allocate(4096)),
     nodes_(Array<Node>::create(512)),
-    codeMap_(Array<NodeRef>::create(256)),
-    heap_(MinHeap<NodeRef>::create(512)),
+    codeMap_(Array<NodeRef>::create(256 + 512)),
+    heap_(MinHeap<NodeRef>::create(codeMap_->data() + 256, 512)),
     bitStack_(Stack<uint8_t>::create(256))
-{}
+{
+}
 
 void HuffmanCodec::reset()
 {
@@ -31,10 +32,10 @@ void HuffmanCodec::reset()
 inline void HuffmanCodec::addSymbol(int value, int count0)
 {
     nodes_->at(nodesFill_) = Node {
-        .parent_ = 0,
-        .leftChild_ = 0,
-        .rightChild_ = 0,
-        .value_ = value,
+        .parent_ = 0xFFFF,
+        .leftChild_ = 0xFFFF,
+        .rightChild_ = 0xFFFF,
+        .value_ = int16_t(value),
         .count_ = count0
     };
     codeMap_->at(value).node_ = nodes_->data() + nodesFill_;
@@ -51,12 +52,12 @@ void HuffmanCodec::generateCodeTable()
     {
         NodeRef leftChild = heap_->pop();
         NodeRef rightChild = heap_->pop();
-        leftChild.node_->parent_ = nodes_->data() + nodesFill_;
-        rightChild.node_->parent_ = nodes_->data() + nodesFill_;
+        leftChild.node_->parent_ = nodesFill_;
+        rightChild.node_->parent_ = nodesFill_;
         nodes_->at(nodesFill_) = Node {
             .parent_ = 0,
-            .leftChild_ = leftChild.node_,
-            .rightChild_ = rightChild.node_,
+            .leftChild_ = uint16_t(leftChild.node_ - nodes_->data()),
+            .rightChild_ = uint16_t(rightChild.node_ - nodes_->data()),
             .value_ = -1,
             .count_ = leftChild.node_->count_ + rightChild.node_->count_
         };
@@ -65,9 +66,9 @@ void HuffmanCodec::generateCodeTable()
     }
 
     if (heap_->count() > 0)
-        root_ = heap_->pop().node_;
+        root_ = heap_->pop().node_ - nodes_->data();
     else
-        root_ = nullptr;
+        root_ = 0xFFFF;
 }
 
 int HuffmanCodec::encode(Stream *source, BitSink *sink)
@@ -85,7 +86,7 @@ int HuffmanCodec::encode(Stream *source, BitSink *sink)
 
     reset();
     for (int i = 0; i < bufferFill; ++i) {
-        uint8_t value = buffer_->byteAt(i);
+        int value = buffer_->byteAt(i);
         if (!codeMap_->at(value).node_) addSymbol(value, 1);
         else ++codeMap_->at(value).node_->count_;
     }
@@ -151,12 +152,12 @@ int HuffmanCodec::encode(Stream *source, BitSink *sink)
 
     for (int i = 0; i < bufferFill; ++i)
     {
-        Node *node = codeMap_->at(buffer_->byteAt(i)).node_;
+        uint16_t node = codeMap_->at(buffer_->byteAt(i)).node_ - nodes_->data();
 
         bitStack_->deplete();
-        while (node->parent_) {
-            Node *parent = node->parent_;
-            bitStack_->push(parent->rightChild_ == node);
+        while (node != root_) {
+            uint16_t parent = nodes_->at(node).parent_;
+            bitStack_->push(nodes_->at(parent).rightChild_ == node);
             node = parent;
         }
 
@@ -199,10 +200,10 @@ int HuffmanCodec::decode(BitSource *source, Stream *sink)
     /// decode Huffman encoded symbols
 
     for (int i = 0; i < bufferFill; ++i) {
-        Node *node = root_;
-        while (node->leftChild_)
-            node = (source->readBit()) ? node->rightChild_ : node->leftChild_;
-        mutate(buffer_)->at(i) = node->value_;
+        uint16_t node = root_;
+        while (nodes_->at(node).leftChild_ != 0xFFFF)
+            node = (source->readBit()) ? nodes_->at(node).rightChild_ : nodes_->at(node).leftChild_;
+        mutate(buffer_)->at(i) = nodes_->at(node).value_;
     }
 
     sink->write(buffer_->select(bufferFill));

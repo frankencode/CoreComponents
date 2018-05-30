@@ -64,10 +64,10 @@ private:
       */
     struct Node
     {
-        Node *parent_;
-        Node *leftChild_;
-        Node *rightChild_;
-        int value_;
+        uint16_t parent_;
+        uint16_t leftChild_;
+        uint16_t rightChild_;
+        int16_t value_;
         int count_;
     };
 
@@ -101,7 +101,7 @@ private:
 
     Ref< Array<Node> > nodes_;
     int nodesFill_;
-    Node *root_;
+    uint16_t root_;
 
     Ref< Array<NodeRef> > codeMap_;
     Ref< MinHeap<NodeRef> > heap_;
