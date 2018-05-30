@@ -17,14 +17,14 @@ namespace entropy {
 class BitSource: public Object
 {
 public:
-    inline static Ref<BitSource> open(Stream *source, CharArray *buffer = 0, Endian endian = LittleEndian)
+    inline static Ref<BitSource> open(Stream *source, CharArray *buffer = nullptr, Endian endian = LittleEndian)
     {
         return new BitSource(source, buffer, endian);
     }
 
     inline static Ref<BitSource> open(const CharArray *buffer, Endian endian = LittleEndian)
     {
-        return new BitSource(nullptr, const_cast<CharArray *>(buffer), endian);
+        return new BitSource(buffer, endian);
     }
 
     uint8_t readBit();
@@ -63,6 +63,15 @@ private:
     {
         if (!buffer_) buffer_ = CharArray::allocate(0x1000);
     }
+
+    BitSource(const CharArray *buffer, Endian endian):
+        buffer_(const_cast<CharArray *>(buffer)),
+        endian_(endian),
+        fill_(buffer->count()),
+        i_(0),
+        iBit_(0),
+        nr_(buffer->count())
+    {}
 
     void fill();
 

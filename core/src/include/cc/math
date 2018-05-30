@@ -70,4 +70,15 @@ X roundDownToNext(G g, X x) { return x - x % g; }
 template<class G, class X>
 X roundUpToNext(G g, X x) { return x - x % g + (x % g != 0 ? g : 0); }
 
+/** rounded up logarithm of n to base B
+  */
+template<int B>
+inline static int ilog(int n)
+{
+    int i = 0;
+    for (int h = 1; h <= n; h *= B)
+        ++i;
+    return i;
+}
+
 } // namespace cc

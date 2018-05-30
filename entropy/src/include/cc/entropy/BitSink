@@ -17,7 +17,7 @@ namespace entropy {
 class BitSink: public Object
 {
 public:
-    inline static Ref<BitSink> open(Stream *sink, CharArray *buffer, Endian endian = LittleEndian)
+    inline static Ref<BitSink> open(Stream *sink, CharArray *buffer = nullptr, Endian endian = LittleEndian)
     {
         return new BitSink(sink, buffer, endian);
     }
@@ -57,8 +57,6 @@ public:
 
     off_t currentOffset() const;
 
-    void flush();
-
 private:
     BitSink(Stream *sink, CharArray *buffer, Endian endian):
         sink_(sink),
@@ -74,8 +72,10 @@ private:
 
     ~BitSink()
     {
-        if (sink_) flush();
+        if (sink_) flush(i_ + (iBit_ > 0));
     }
+
+    void flush(int n);
 
     Ref<Stream> sink_;
     String buffer_;
@@ -85,15 +85,14 @@ private:
     off_t nw_;    // accumulated number of written bytes
 };
 
-void BitSink::flush()
+void BitSink::flush(int n)
 {
     if (!sink_) throw BufferOverflow();
 
-    int h = i_ + (iBit_ > 0);
-    if (h > 0) {
-        sink_->write(buffer_->bytes(), h);
-        mutate(buffer_)->fill(0, h);
-        nw_ += h;
+    if (n > 0) {
+        sink_->write(buffer_->bytes(), n);
+        mutate(buffer_)->fill(0, n);
+        nw_ += n;
         i_ = 0;
         iBit_ = 0;
     }
@@ -104,7 +103,7 @@ inline void BitSink::writeBit(uint8_t x)
     if (iBit_ == 8) {
         iBit_ = 0;
         ++i_;
-        if (i_ == buffer_->count()) flush();
+        if (i_ == buffer_->count()) flush(i_);
     }
     mutate(buffer_)->byteAt(i_) |= (x << iBit_);
     ++iBit_;

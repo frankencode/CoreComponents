@@ -34,7 +34,7 @@ private:
         list_(IntList::create())
     {}
 
-    void run()
+    void run() override
     {
         while (amount_ > 0) {
             int x = channel_->pop();
@@ -65,7 +65,7 @@ private:
         list_(IntList::create())
     {}
 
-    void run()
+    void run() override
     {
         while (amount_ > 0) {
             int x = random_->get();
@@ -85,7 +85,7 @@ private:
 
 class ConsumerProducer: public TestCase
 {
-    void run()
+    void run() override
     {
         Ref<MyChannel> channel = MyChannel::create();
         Ref<Producer> p = Producer::create(1, channel, 8);

@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/math>
 #include <cc/String>
 #include <cc/Array>
 #include <cc/Heap>
@@ -46,6 +47,18 @@ public:
       */
     int decode(BitSource *source, Stream *sink);
 
+    /** Huffman encode a string
+      * \param message the source to encode
+      * \return huffman encoded message
+      */
+    static String encode(const String &message);
+
+    /** Huffman decode a string
+      * \param message the source to decode
+      * \return huffman decoded message
+      */
+    static String decode(const String &message);
+
 private:
     /** \brief Huffman tree node
       */
@@ -68,7 +81,12 @@ private:
 
         inline bool operator<(const NodeRef &b) const
         {
-            return node_->count_ < b.node_->count_;
+            return
+                node_->count_ < b.node_->count_ ||
+                (
+                    node_->count_ == b.node_->count_ &&
+                    node_->value_ < b.node_->value_
+                );
         }
     };
 
@@ -88,15 +106,6 @@ private:
     Ref< Array<NodeRef> > codeMap_;
     Ref< MinHeap<NodeRef> > heap_;
     Ref< Stack<uint8_t> > bitStack_;
-
-    template<int B>
-    inline static int ilog(int n) // TODO: move to cc/math (new name for cc/rounding)
-    {
-        int i = 0;
-        for (int h = 1; h < n; h *= B)
-            ++i;
-        return i;
-    }
 };
 
 }} // namespace cc::entropy

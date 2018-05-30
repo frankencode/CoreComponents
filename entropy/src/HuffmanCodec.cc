@@ -6,17 +6,8 @@
  *
  */
 
-// #define CC_ENTROPY_HUFFMANCODEC_PROFILING
-// #define CC_ENTROPY_HUFFMANCODEC_DEBUG_STATISTICS
-
-#ifdef CC_HUFFMANCODEC_PROFILING
-#include <cc/debug>
-#else
-#ifdef FTL_HUFFMANCODEC_DEBUG_STATISTICS
-#include <cc/debug>
-#endif
-#endif
-
+#include <cc/ReplaySource>
+#include <cc/CaptureSink>
 #include <cc/entropy/HuffmanCodec>
 
 namespace cc {
@@ -122,19 +113,22 @@ int HuffmanCodec::encode(Stream *source, BitSink *sink)
             }
         }
 
+        int minValue = 0xFF;
         int maxValue = 0;
 
         for (int i = 0; i < nodesFill_; ++i) {
             Node &node = nodes_->at(i);
             if (node.value_ > maxValue) maxValue = node.value_;
+            if (node.value_ < minValue) minValue = node.value_;
             heap_->push(NodeRef{ .node_ = &node });
         }
 
-        int bitsPerSymbolValue = ilog<2>(maxValue);
+        int bitsPerSymbolValue = ilog<2>(maxValue-minValue);
         int bitsPerCountDelta = ilog<2>(maxCountDelta);
 
         sink->writeUInt<3>(bitsPerSymbolValue);
         sink->writeUInt<5>(bitsPerCountDelta);
+        sink->writeUInt<8>(minValue);
 
         {
             int previousCount = 0;
@@ -142,8 +136,8 @@ int HuffmanCodec::encode(Stream *source, BitSink *sink)
             for (int i = 0; i < nodesFill_; ++i) {
                 NodeRef entry = heap_->pop();
                 int countDelta = entry.node_->count_ - previousCount;
-                sink->writeUInt(bitsPerSymbolValue, entry.node_->value_);
-                sink->writeUInt(bitsPerSymbolValue, countDelta);
+                sink->writeUInt(bitsPerSymbolValue, entry.node_->value_ - minValue);
+                sink->writeUInt(bitsPerCountDelta, countDelta);
                 previousCount = entry.node_->count_;
             }
         }
@@ -187,11 +181,12 @@ int HuffmanCodec::decode(BitSource *source, Stream *sink)
     {
         int bitsPerSymbolValue = source->readUInt<3>();
         int bitsPerCountDelta = source->readUInt<5>();
+        int minValue = source->readUInt8();
 
         reset();
         int count = 0;
         for (int i = 0; i < symbolCount; ++i) {
-            int value = source->readUInt(bitsPerSymbolValue);
+            int value = source->readUInt(bitsPerSymbolValue) + minValue;
             count += source->readUInt(bitsPerCountDelta);
             addSymbol(value, count);
         }
@@ -213,6 +208,27 @@ int HuffmanCodec::decode(BitSource *source, Stream *sink)
     sink->write(buffer_->select(bufferFill));
 
     return bufferFill;
+}
+
+String HuffmanCodec::encode(const String &message)
+{
+    auto replaySource = ReplaySource::open(message);
+    auto captureSink = CaptureSink::open();
+    {
+        auto bitSink = BitSink::open(captureSink);
+        auto huffmanCodec = HuffmanCodec::create();
+        while (huffmanCodec->encode(replaySource, bitSink));
+    }
+    return captureSink->collect();
+}
+
+String HuffmanCodec::decode(const String &message)
+{
+    auto bitSource = BitSource::open(message);
+    auto captureSink = CaptureSink::open();
+    auto huffmanCodec = HuffmanCodec::create();
+    while (huffmanCodec->decode(bitSource, captureSink));
+    return captureSink->collect();
 }
 
 }} // namespace cc::entropy

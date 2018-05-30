@@ -8,7 +8,7 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/rounding>
+#include <cc/math>
 #include <cc/Random>
 #include <cc/MemoryStream>
 #include <cc/NullStream>
