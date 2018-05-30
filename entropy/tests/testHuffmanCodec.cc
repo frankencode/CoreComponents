@@ -8,6 +8,9 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/debug>
+#include <cc/RandomSource>
+#include <cc/CaptureSink>
+#include <cc/ReplaySource>
 #include <cc/entropy/HuffmanCodec>
 
 using namespace cc;
@@ -16,7 +19,6 @@ using namespace cc::testing;
 
 class OneBufferTest: public TestCase
 {
-public:
     void run() override
     {
         {
@@ -40,8 +42,52 @@ public:
     }
 };
 
+class NoiseTest: public TestCase
+{
+    void run() override
+    {
+        const off_t dataSize = 10000;
+        const int byteMin = 0x20;
+        const int byteMax = 0x3F;
+        const int seed = 0;
+
+        String message = RandomSource::open(seed, dataSize, byteMin, byteMax)->readAll();
+
+        String encodedMessage; {
+            auto capture = CaptureSink::open();
+            {
+                auto source = ReplaySource::open(message);
+                auto sink = BitSink::open(capture);
+                auto codec = HuffmanCodec::create();
+                while (codec->encode(source, sink));
+            }
+            encodedMessage = capture->collect();
+        }
+
+        ferr() << encodedMessage->select(80)->hexDump() << "..." << nl;
+
+        CC_INSPECT(dataSize);
+        CC_INSPECT(encodedMessage->count());
+        CC_INSPECT(double(encodedMessage->count()) / dataSize);
+
+        String decodedMessage; {
+            auto capture = CaptureSink::open();
+            {
+                auto replay = ReplaySource::open(encodedMessage);
+                auto source = BitSource::open(replay);
+                auto codec = HuffmanCodec::create();
+                while (codec->decode(source, capture));
+            }
+            decodedMessage = capture->collect();
+        }
+
+        CC_VERIFY(message == decodedMessage);
+    }
+};
+
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(OneBufferTest);
+    CC_TESTSUITE_ADD(NoiseTest);
     return TestSuite::instance()->run(argc, argv);
 }

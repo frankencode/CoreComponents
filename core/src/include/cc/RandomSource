@@ -22,14 +22,19 @@ class Random;
 class RandomSource: public Stream
 {
 public:
-    static Ref<RandomSource> open(int seed = -1) { return new RandomSource(seed); }
+    static Ref<RandomSource> open(int seed = -1, off_t eoi = -1, int byteMin = 0, int byteMax = 0xFF);
+
     virtual int read(CharArray *data) override;
 
 protected:
-    RandomSource(int seed);
+    RandomSource(int seed, off_t eoi, int byteMin, int byteMax);
 
 private:
     Ref<Random> random_;
+    int byteMin_;
+    int byteMax_;
+    off_t n_;
+    off_t eoi_;
 };
 
 } // namespace cc

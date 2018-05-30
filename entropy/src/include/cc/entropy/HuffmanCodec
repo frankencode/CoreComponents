@@ -33,29 +33,29 @@ public:
         return new HuffmanCodec();
     }
 
-    /** Huffman encode a block of symbols
+    /** Encode a data stream
       * \param source source to read input symbols from
-      * \param sink sink to write the Huffman encoded data to
+      * \param sink sink to write the encoded data to
       * \return number of input symbols read
       */
     int encode(Stream *source, BitSink *sink);
 
-    /** Huffman decode a block of symbols
-      * \param source source to read the Huffman encoded data from
+    /** Decode a block of symbols
+      * \param source source to read the encoded data from
       * \param sink sink to write the output symbols to
       * \return number of output symbols written
       */
     int decode(BitSource *source, Stream *sink);
 
-    /** Huffman encode a string
+    /** Encode a string
       * \param message the source to encode
-      * \return huffman encoded message
+      * \return encoded message
       */
     static String encode(const String &message);
 
-    /** Huffman decode a string
+    /** Decode a string
       * \param message the source to decode
-      * \return huffman decoded message
+      * \return decoded message
       */
     static String decode(const String &message);
 

@@ -217,8 +217,7 @@ String HuffmanCodec::encode(const String &message)
     auto captureSink = CaptureSink::open();
     {
         auto bitSink = BitSink::open(captureSink);
-        auto huffmanCodec = HuffmanCodec::create();
-        while (huffmanCodec->encode(replaySource, bitSink));
+        while (HuffmanCodec::create()->encode(replaySource, bitSink));
     }
     return captureSink->collect();
 }

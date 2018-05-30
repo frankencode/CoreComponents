@@ -11,14 +11,26 @@
 
 namespace cc {
 
-RandomSource::RandomSource(int seed):
-    random_(Random::open(seed))
+Ref<RandomSource> RandomSource::open(int seed, off_t eoi, int byteMin, int byteMax)
+{
+    return new RandomSource(seed, eoi, byteMin, byteMax);
+}
+
+RandomSource::RandomSource(int seed, off_t eoi, int byteMin, int byteMax):
+    random_(Random::open(seed)),
+    byteMin_(byteMin),
+    byteMax_(byteMax),
+    n_(0),
+    eoi_(eoi)
 {}
 
 int RandomSource::read(CharArray *data)
 {
-    for (int i = 0; i < data->count(); ++i)
-        data->at(i) = random_->get(0, 0xFF);
+    if (n_ == eoi_) return 0;
+    for (int i = 0; i < data->count(); ++i) {
+        data->at(i) = random_->get(byteMin_, byteMax_);
+        if (++n_ == eoi_) return i + 1;
+    }
     return data->count();
 }
 
