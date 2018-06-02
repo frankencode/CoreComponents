@@ -31,14 +31,14 @@ void PlatformManager::registerPlugin(PlatformPlugin *plugin)
     }
 }
 
-bool PlatformManager::getPlugin(String name, Ref<PlatformPlugin> *plugin) const
+bool PlatformManager::getPlugin(const String &name, PlatformPlugin **plugin) const
 {
     return plugins_->lookup(name, plugin);
 }
 
-Ref< Source< Ref<PlatformPlugin> > > PlatformManager::getAllPlugins() const
+Ref< Source<PlatformPlugin *> > PlatformManager::getAllPlugins() const
 {
-    return plugins_->getAllValues();
+    return plugins_->getAllValues<PlatformPlugin *>();
 }
 
 PlatformPlugin *PlatformManager::activePlugin() const

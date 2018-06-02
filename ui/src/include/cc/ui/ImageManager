@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Image>
+#include <cc/ui/ImagePlugin>
+
+namespace cc { template<typename> class Singleton; }
+namespace cc { template<typename, typename> class Map; }
+
+namespace cc {
+namespace ui {
+
+class ImageManager: public Object
+{
+public:
+    static ImageManager *instance();
+
+    bool getPlugin(const String &name, const ImagePlugin **plugin) const;
+    Ref< Source<const ImagePlugin *> > getAllPlugins() const;
+
+    Ref<Image> load(const String &uri, unsigned index = 0) const;
+
+private:
+    friend class Singleton<ImageManager>;
+    friend class ImagePlugin;
+
+    ImageManager();
+    void registerPlugin(ImagePlugin *plugin);
+
+    typedef Map< String, Ref<ImagePlugin> > Plugins;
+    Ref<Plugins> plugins_;
+};
+
+}} // namespace cc::ui

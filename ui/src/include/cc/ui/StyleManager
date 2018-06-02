@@ -22,7 +22,7 @@ public:
     static StyleManager *instance();
 
     bool getPlugin(String name, Ref<StylePlugin> *plugin) const;
-    Ref< Source< Ref<StylePlugin> > > getAllPlugins() const;
+    Ref< Source<StylePlugin *> > getAllPlugins() const;
 
     StylePlugin *activePlugin() const;
     void activatePlugin(StylePlugin *plugin);

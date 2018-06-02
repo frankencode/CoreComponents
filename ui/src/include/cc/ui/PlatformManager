@@ -21,8 +21,8 @@ class PlatformManager: public Object
 public:
     static PlatformManager *instance();
 
-    bool getPlugin(String name, Ref<PlatformPlugin> *plugin) const;
-    Ref< Source< Ref<PlatformPlugin> > > getAllPlugins() const;
+    bool getPlugin(const String &name, PlatformPlugin **plugin) const;
+    Ref< Source<PlatformPlugin *> > getAllPlugins() const;
 
     PlatformPlugin *activePlugin() const;
     void activatePlugin(PlatformPlugin *plugin);

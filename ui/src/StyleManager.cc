@@ -38,9 +38,9 @@ bool StyleManager::getPlugin(String name, Ref<StylePlugin> *plugin) const
     return plugins_->lookup(name, plugin);
 }
 
-Ref< Source< Ref<StylePlugin> > > StyleManager::getAllPlugins() const
+Ref< Source<StylePlugin *> > StyleManager::getAllPlugins() const
 {
-    return plugins_->getAllValues();
+    return plugins_->getAllValues<StylePlugin *>();
 }
 
 StylePlugin *StyleManager::activePlugin() const

@@ -35,6 +35,7 @@ public:
 
 protected:
     PlatformPlugin(String name, bool isPlatformDefault = false);
+    void init();
 
 private:
     String name_;
