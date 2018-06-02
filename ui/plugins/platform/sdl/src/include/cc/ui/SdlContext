@@ -28,7 +28,8 @@ private:
     ~SdlContext();
 
     SDL_Texture *sdlTexture_;
-    Size sdlTextureSize_ { 0 };
+    int sdlTextureWidth_ { 0 };
+    int sdlTextureHeight_ { 0 };
 };
 
 }} // namespace cc::ui

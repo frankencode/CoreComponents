@@ -222,8 +222,12 @@ Window *View::window() const
 
 Image *View::image()
 {
-    if (!image_ || image_->size() != Size{::ceil(size()[0]), ::ceil(size()[1])})
-        image_ = Image::create(size());
+    if (!image_ || (
+        image_->width()  != ::ceil(size()[0]) ||
+        image_->height() != ::ceil(size()[1])
+    ))
+        image_ = Image::create(::ceil(size()[0]), ::ceil(size()[1]));
+
     return image_;
 }
 

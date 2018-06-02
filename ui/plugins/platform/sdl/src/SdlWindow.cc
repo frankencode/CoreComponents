@@ -176,7 +176,14 @@ void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
     Image *image = Window::image(view);
     bool hasPixels = isPainted(view) && image->count() > 0;
 
-    if ((context->sdlTextureSize_ != image->size() || !hasPixels) && context->sdlTexture_) {
+    if (
+        (
+            !hasPixels || (
+                context->sdlTextureWidth_ != image->width() ||
+                context->sdlTextureHeight_ != image->height()
+            )
+        ) && context->sdlTexture_
+    ) {
         SDL_DestroyTexture(context->sdlTexture_);
         context->sdlTexture_ = 0;
     }
@@ -192,11 +199,12 @@ void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
             SDL_PIXELFORMAT_ARGB8888,
             #endif
             isStatic(view) ? SDL_TEXTUREACCESS_STATIC : SDL_TEXTUREACCESS_STREAMING,
-            image->size()[0],
-            image->size()[1]
+            image->width(),
+            image->height()
         );
         if (!context->sdlTexture_) CC_DEBUG_ERROR(SDL_GetError());
-        context->sdlTextureSize_ = image->size();
+        context->sdlTextureWidth_ = image->width();
+        context->sdlTextureHeight_ = image->height();
         SDL_SetTextureBlendMode(context->sdlTexture_, isOpaque(view) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
     }
 
@@ -222,12 +230,14 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
     SDL_Texture *sdlTexture = context->sdlTexture_;
     if (!sdlTexture) return;
 
-    Size textureSize = context->sdlTextureSize_;
-    if (view->scale() != 1) textureSize *= view->scale();
-
     SDL_Rect destRect;
-    destRect.w = textureSize[0];
-    destRect.h = textureSize[1];
+    destRect.w = context->sdlTextureWidth_;
+    destRect.h = context->sdlTextureHeight_;
+    if (view->scale() != 1) {
+        destRect.w *= view->scale();
+        destRect.h *= view->scale();
+    }
+
     if (view->parent()) {
         Point p = view->mapToGlobal(Point{0, 0});
         destRect.x = p[0];

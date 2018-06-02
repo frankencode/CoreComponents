@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -14,26 +14,60 @@
 namespace cc {
 namespace ui {
 
+/** \brief RGBA image
+  */
 class Image: public Surface
 {
-public:
-    static Ref<Image> create(Size size);
+    friend class Object;
 
-    inline Size size() const { return Size{ double(w_), double(h_) }; }
+public:
+    /** Create an invalid image
+      * \see isValid()
+      */
+    inline static Ref<Image> create()
+    {
+        return Object::create<Image>();
+    }
+
+    /** Allocate image of given size
+      * \param width number of pixels per image row
+      * \param height number of pixel rows per image
+      * \return new object instance
+      */
+    inline static Ref<Image> create(int width, int height)
+    {
+        return Object::create<Image>(width, height);
+    }
+
+    /** Return true if this image is valid (of non-null size)
+      */
+    inline bool isValid() const { return w_ > 0 && h_ > 0; }
+
+    /// Number of pixels per image row
     inline int width() const { return w_; }
+
+    /// Number of pixel rows per image
     inline int height() const { return h_; }
+
+    /// Total number of pixels per image
     inline int count() const { return data_->itemCount<Color>(); }
 
+    /** Check if raster position (x, y) is within range
+      */
     inline bool hasPixel(int x, int y) const {
         return
             0 <= x && x < w_ &&
             0 <= y && y < h_;
     }
 
+    /** Access pixel at raster position (x, y)
+      */
     inline Color &pixel(int x, int y) {
         return mutate(data_)->item<Color>(y * w_ + x);
     }
 
+    /** Access pixel at index \arg i
+      */
     inline Color &pixel(int i) {
         return mutate(data_)->item<Color>(i);
     }
@@ -54,15 +88,28 @@ public:
 private:
     friend class View;
 
-    Image(Size size);
+    Image()
+    {}
+
+    Image(int width, int height):
+        w_{width},
+        h_{height}
+    {
+        if (w_ <= 0) width = 1;
+        if (h_ <= 0) height = 1;
+    }
+
     ~Image();
+
+    void init();
 
     cairo_surface_t *cairoSurface() const override;
 
-    int w_, h_;
+    int w_ { 0 };
+    int h_ { 0 };
     String data_;
 
-    mutable cairo_surface_t *cairoSurface_;
+    mutable cairo_surface_t *cairoSurface_ { nullptr };
 };
 
 }} // namespace cc::ui

@@ -19,7 +19,7 @@ namespace cc {
 class UsageError: public Exception
 {
 public:
-    UsageError(String message = ""): message_(message) {}
+    UsageError(const String &message = ""): message_(message) {}
     ~UsageError() throw() {}
 
     virtual String message() const override { return message_; }
@@ -89,7 +89,7 @@ public:
 class DebugError: public Exception
 {
 public:
-    DebugError(String reason, const char *source, int line):
+    DebugError(const String &reason, const char *source, int line):
         reason_(reason),
         source_(source),
         line_(line)
@@ -129,7 +129,7 @@ protected:
 class SystemResourceError: public SystemError
 {
 public:
-    SystemResourceError(int errorCode, String resource, const char *source, int line):
+    SystemResourceError(int errorCode, const String &resource, const char *source, int line):
         SystemError(errorCode),
         resource_(resource),
         source_(source),
@@ -197,10 +197,10 @@ public:
     inline int offset() const { return offset_; }
     inline String resource() const { return resource_; }
 
-    void setResource(String resource) { resource_ = resource; }
+    void setResource(const String &resource) { resource_ = resource; }
 
 protected:
-    TextError(String text, int offset, String resource = "");
+    TextError(const String &text, int offset, const String &resource = "");
     ~TextError() throw() {}
 
     String text_;
@@ -214,7 +214,7 @@ protected:
 class SemanticError: public TextError
 {
 public:
-    SemanticError(String reason, String text = "", int offset = -1, String resource = ""):
+    SemanticError(const String &reason, const String &text = "", int offset = -1, const String &resource = ""):
         TextError(text, offset, resource),
         reason_(reason)
     {}
@@ -300,7 +300,7 @@ public:
 class CommandNotFound: public UsageError
 {
 public:
-    CommandNotFound(String command = ""):
+    CommandNotFound(const String &command = ""):
         command_(command)
     {}
     ~CommandNotFound() throw() {}

@@ -51,10 +51,10 @@ String SystemDebugError::message() const
     return Format() << systemError(errorCode_) << " (" << String(source_)->fileName() << ":" << line_ << ")";
 }
 
-TextError::TextError(String text, int offset, String resource)
-    : text_(text),
-      offset_(offset),
-      resource_(resource != "" ? resource : ResourceContext::instance()->top())
+TextError::TextError(const String &text, int offset, const String &resource):
+    text_(text),
+    offset_(offset),
+    resource_(resource != "" ? resource : ResourceContext::instance()->top())
 {}
 
 String SemanticError::message() const

@@ -40,11 +40,11 @@ Ref< Source<const ImagePlugin *> > ImageManager::getAllPlugins() const
 Ref<Image> ImageManager::load(const String &uri, unsigned index) const
 {
     int j = uri->find(':');
-    if (j == 0 || j == uri->count()) return Ref<Image>{}; // throw ImageLoadingError(Format("Mailformed URI (%%)") << uri);
+    if (j == 0 || j == uri->count()) return Image::create();
     String scheme = uri->select(j);
     String path = uri->select(j + 1, uri->count());
     const ImagePlugin *plugin = 0;
-    if (!getPlugin(scheme, &plugin)) return Ref<Image>{}; // throw ImageLoadingError(Format("No image plugin handling scheme '%%' found (%%)") << scheme << uri);
+    if (!getPlugin(scheme, &plugin)) return Image::create();
     return plugin->load(path, index);
 }
 

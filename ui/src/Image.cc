@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -14,22 +14,23 @@
 namespace cc {
 namespace ui {
 
-Ref<Image> Image::create(Size size)
-{
-    return new Image(size);
-}
-
-Image::Image(Size size):
-    w_(std::ceil(size[0])),
-    h_(std::ceil(size[1])),
-    data_(String::allocate(w_ * h_ * sizeof(Color))),
-    cairoSurface_(0)
-{}
-
 Image::~Image()
 {
     if (cairoSurface_)
         cairo_surface_destroy(cairoSurface_);
+}
+
+void Image::init()
+{
+    if (isValid())
+        data_ = String::allocate(w_ * h_ * sizeof(Color));
+}
+
+cairo_surface_t *Image::cairoSurface() const
+{
+    if (!cairoSurface_)
+        cairoSurface_ = cairo_image_surface_create_for_data(mutate(data_)->bytes(), CAIRO_FORMAT_ARGB32, w_, h_, pitch());
+    return cairoSurface_;
 }
 
 void Image::clear(Color c)
@@ -50,13 +51,6 @@ void Image::normalize()
 void Image::shadowBlur(int radius, Color shadowColor)
 {
     shadowBlurInsitu(this, radius, shadowColor);
-}
-
-cairo_surface_t *Image::cairoSurface() const
-{
-    if (!cairoSurface_)
-        cairoSurface_ = cairo_image_surface_create_for_data(mutate(data_)->bytes(), CAIRO_FORMAT_ARGB32, w_, h_, pitch());
-    return cairoSurface_;
 }
 
 }} // namespace cc::ui
