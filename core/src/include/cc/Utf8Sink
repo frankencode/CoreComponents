@@ -39,6 +39,7 @@ public:
 
     /** Write an %Unicode character
       * \param ch %Unicode character
+      * \throws utf8::EncodingError
       */
     void write(uchar_t ch);
 

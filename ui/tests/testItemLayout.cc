@@ -45,7 +45,7 @@ public:
         return new TestVisual(item, layout);
     }
 
-    void paint(Painter *) override {}
+    void paint(Painter &) override {}
 
 private:
 

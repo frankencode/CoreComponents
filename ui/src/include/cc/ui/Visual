@@ -18,7 +18,7 @@ class Visual: public Object
 {
 public:
     Property<Size> size;
-    virtual void paint(Painter *p) = 0;
+    virtual void paint(Painter &p) = 0;
 };
 
 }} // namespace cc::ui
