@@ -8,37 +8,37 @@
 
 #pragma once
 
-#include <cc/ui/Visual>
+#include <cc/ui/ItemVisual>
 
 namespace cc { template<class, class> class Pile; }
 
 namespace cc {
 namespace ui {
 
-class VisualLayout: public Object
+class ItemLayout: public Object
 {
 public:
-    static Ref<VisualLayout> create(Item *root, double maxWidth = 0);
+    static Ref<ItemLayout> create(Item *root, double maxWidth = 0);
 
     Item *root() const { return root_; }
     double maxWidth() const { return maxWidth_; }
 
     double extent() const { return visuals_->extent(); }
     int count() const { return visuals_->count(); }
-    Visual *at(int i) { return visuals_->at(i); }
+    ItemVisual *at(int i) { return visuals_->at(i); }
     double getPosAt(int i) { return visuals_->getPosAt(i); }
 
     Signal changed;
 
 private:
-    VisualLayout(Item *root, double maxWidth);
+    ItemLayout(Item *root, double maxWidth);
 
     int generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex = 0);
 
     Item *root_;
     double maxWidth_;
 
-    typedef Pile< Ref<Visual>, double > Visuals;
+    typedef Pile< Ref<ItemVisual>, double > Visuals;
     Ref<Visuals> visuals_;
 };
 

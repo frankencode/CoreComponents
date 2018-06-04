@@ -64,7 +64,7 @@ class NoiseTest: public TestCase
             encodedMessage = capture->collect();
         }
 
-        ferr() << encodedMessage->select(80)->hexDump() << "..." << nl;
+        ferr() << encodedMessage->head(80)->hexDump() << "..." << nl;
 
         CC_INSPECT(dataSize);
         CC_INSPECT(encodedMessage->count());

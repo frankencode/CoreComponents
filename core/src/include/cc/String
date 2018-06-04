@@ -435,7 +435,6 @@ public:
       * Sub-string selections can be cascaded to arbitrary depth.
       */
     inline String select(int i0, int i1) const {
-        if (i1 == size_ && i0 == 0) return this;
         return new CharArray(this, i0, i1);
     }
 
@@ -444,8 +443,7 @@ public:
       * \return the selected sub-string
       */
     inline String select(int i1) const {
-        if (i1 == size_) return this;
-        else return new CharArray(this, 0, i1);
+        return new CharArray(this, 0, i1);
     }
 
     /// Pointer to parent string if this string is a sub-string selection (nullptr otherwise)
@@ -472,11 +470,17 @@ public:
       */
     String paste(int i0, int i1, const String &text) const;
 
-    /// Copy \a n characters from the head of this string
-    inline String head(int n) const { return copy(0, n); }
+    /// Select \a n characters from the head of this string
+    inline String head(int n) const {
+        if (n == size_) return this;
+        return select(0, n);
+    }
 
-    /// Copy \a n characters from the tail of this string
-    inline String tail(int n) const { return copy(size_ - n, size_); }
+    /// Select \a n characters from the tail of this string
+    inline String tail(int n) const {
+        if (n == size_) return this;
+        return select(size_ - n, size_);
+    }
 
     /// Check if the first character of this string equals \a ch
     inline bool beginsWith(char ch) const {

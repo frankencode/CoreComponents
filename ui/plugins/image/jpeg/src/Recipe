@@ -1,0 +1,4 @@
+Plugin {
+    name: ccuijpegimageplugin
+    extend: cc/ui
+}

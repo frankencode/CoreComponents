@@ -17,7 +17,7 @@ namespace ui {
 class GlyphRun: public Object
 {
 public:
-    static Ref<GlyphRun> typeset(const String &text, const Font &font = Font(), const Point &origin = Point{});
+    static Ref<GlyphRun> typeset(const String &text, const Font &font = Font{}, const Point &origin = Point{});
 
     virtual String text() const = 0;
     virtual Font font() const = 0;

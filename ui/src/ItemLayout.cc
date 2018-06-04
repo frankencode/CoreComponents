@@ -8,17 +8,17 @@
 
 #include <cc/Pile>
 #include <cc/ui/Item>
-#include <cc/ui/VisualLayout>
+#include <cc/ui/ItemLayout>
 
 namespace cc {
 namespace ui {
 
-Ref<VisualLayout> VisualLayout::create(Item *root, double maxWidth)
+Ref<ItemLayout> ItemLayout::create(Item *root, double maxWidth)
 {
-    return new VisualLayout(root, maxWidth);
+    return new ItemLayout(root, maxWidth);
 }
 
-VisualLayout::VisualLayout(Item *root, double maxWidth):
+ItemLayout::ItemLayout(Item *root, double maxWidth):
     root_(root),
     maxWidth_(maxWidth),
     visuals_(Visuals::create())
@@ -45,12 +45,12 @@ VisualLayout::VisualLayout(Item *root, double maxWidth):
     });
 }
 
-int VisualLayout::generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex)
+int ItemLayout::generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex)
 {
     for (int i = itemIndex0; i < itemIndex1; ++i)
     {
         Item *child = item->at(i);
-        Ref<Visual> visual = child->createVisual(this);
+        Ref<ItemVisual> visual = child->createVisual(this);
         double extent = 0.;
         if (visual) {
             if (visual->size() == Size{})

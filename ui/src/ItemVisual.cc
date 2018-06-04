@@ -7,13 +7,13 @@
  */
 
 #include <cc/ui/Item>
-#include <cc/ui/VisualLayout>
-#include <cc/ui/Visual>
+#include <cc/ui/ItemLayout>
+#include <cc/ui/ItemVisual>
 
 namespace cc {
 namespace ui {
 
-Visual::Visual(Item *item, const VisualLayout *layout):
+ItemVisual::ItemVisual(Item *item, const ItemLayout *layout):
     item_(item),
     layout_(layout)
 {

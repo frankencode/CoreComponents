@@ -32,15 +32,15 @@ public:
     }
 
 private:
-    virtual Ref<Visual> createVisual(VisualLayout *layout) override;
+    virtual Ref<ItemVisual> createVisual(ItemLayout *layout) override;
 
     TestItem(String name): name_(name) {}
     String name_;
 };
 
-class TestVisual: public Visual {
+class TestVisual: public ItemVisual {
 public:
-    static Ref<TestVisual> create(TestItem *item, const VisualLayout *layout)
+    static Ref<TestVisual> create(TestItem *item, const ItemLayout *layout)
     {
         return new TestVisual(item, layout);
     }
@@ -48,16 +48,17 @@ public:
     void paint(Painter *) override {}
 
 private:
+
     const TestItem *testItem() const { return static_cast<TestItem *>(item()); }
 
     void update() override { size = Size{1., double(testItem()->toString()->count())}; }
 
-    TestVisual(TestItem *item, const VisualLayout *layout):
-        Visual(item, layout)
+    TestVisual(TestItem *item, const ItemLayout *layout):
+        ItemVisual(item, layout)
     {}
 };
 
-Ref<Visual> TestItem::createVisual(VisualLayout *layout)
+Ref<ItemVisual> TestItem::createVisual(ItemLayout *layout)
 {
     return TestVisual::create(this, layout);
 }
@@ -83,7 +84,7 @@ public:
         root->append(lib);
         root->append(TestItem::create("mnt"));
         root->append(TestItem::create("var"));
-        Ref<VisualLayout> layout = VisualLayout::create(root);
+        Ref<ItemLayout> layout = ItemLayout::create(root);
 
         auto printLayout = [&]{
             for (int j = 0; j < layout->count(); ++j)

@@ -11,7 +11,7 @@
 #include <cc/List>
 #include <cc/Pile>
 #include <cc/Signal>
-#include <cc/ui/VisualLayout>
+#include <cc/ui/ItemLayout>
 
 namespace cc {
 namespace ui {
@@ -66,13 +66,13 @@ public:
     Signal changed;
 
 protected:
-    friend class VisualLayout;
+    friend class ItemLayout;
 
     Item();
 
     int getLayoutIndex(int i) const;
 
-    virtual Ref<Visual> createVisual(VisualLayout *layout) { return Ref<Visual>{}; }
+    virtual Ref<ItemVisual> createVisual(ItemLayout *layout) { return Ref<ItemVisual>{}; }
 
 private:
     void updateExtents(int deltaCount);
@@ -80,8 +80,8 @@ private:
 
     Item *parent_;
 
-    typedef Pile< Ref<Item>, int > ItemLayout;
-    Ref<ItemLayout> children_;
+    typedef Pile< Ref<Item>, int > Children;
+    Ref<Children> children_;
 
     ItemDelta delta_;
 };

@@ -206,7 +206,7 @@ int HuffmanCodec::decode(BitSource *source, Stream *sink)
         mutate(buffer_)->at(i) = nodes_->at(node).value_;
     }
 
-    sink->write(buffer_->select(bufferFill));
+    sink->write(buffer_->head(bufferFill));
 
     return bufferFill;
 }

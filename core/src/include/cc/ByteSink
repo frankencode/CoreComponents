@@ -129,7 +129,7 @@ inline void ByteSink::flush()
 {
     if (!sink_) throw BufferOverflow();
 
-    sink_->write(buffer_->select(0, i_));
+    sink_->write(buffer_->head(i_));
     i0_ += i_;
     i_ = 0;
 }

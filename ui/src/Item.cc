@@ -13,7 +13,7 @@ namespace ui {
 
 Item::Item():
     parent_(nullptr),
-    children_(ItemLayout::create())
+    children_(Children::create())
 {}
 
 void Item::insertAt(int i, Item *item)

@@ -14,30 +14,11 @@
 namespace cc {
 namespace ui {
 
-class Item;
-class VisualLayout;
-
-class Visual: public Object, public IndexTracking
+class Visual: public Object
 {
 public:
-    Signal changed;
     Property<Size> size;
-
     virtual void paint(Painter *p) = 0;
-
-    Item *item() const { return item_; }
-    const VisualLayout *layout() const { return layout_; }
-
-protected:
-    friend class VisualLayout;
-
-    Visual(Item *item, const VisualLayout *layout);
-
-    virtual void update() = 0;
-
-private:
-    Item *item_;
-    const VisualLayout *layout_;
 };
 
 }} // namespace cc::ui

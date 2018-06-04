@@ -1,0 +1,4 @@
+Plugin {
+    name: ccuiwebpimageplugin
+    extend: cc/ui
+}
