@@ -1,4 +1,5 @@
 Plugin {
     name: ccuiindustrialplugin
     extend: cc/ui
+    bundle: fonts
 }

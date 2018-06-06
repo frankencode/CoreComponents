@@ -225,13 +225,17 @@ private:
   * \brief Character array
   * \ingroup strings
   * \see Array
+  * \TODO fix isZeroTerminated() for substrings and add CC_ASSERTS to all implicit const char* conversions
   */
 template<>
 class Array<char>: public Object
 {
 public:
-    /// Item type for iteration
+    /// Item type
     typedef char Item;
+
+    /// Index type
+    typedef int Index;
 
     /** Create an uninitialized non-zero-terminated character array
       * \param size number of characters

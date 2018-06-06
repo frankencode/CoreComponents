@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+
+namespace cc {
+namespace sfnt {
+
+class LookupTable: public Object
+{
+    friend class Object;
+
+public:
+    uint16_t lookupType() const { return lookupType_; }
+    uint16_t lookupFlags() const { return lookupFlags_; }
+
+protected:
+    LookupTable(const CharArray *data);
+    void init() override;
+
+    virtual void readSubTable(const CharArray *data) = 0;
+
+private:
+    Ref<CharArray> data_;
+    uint16_t lookupType_;
+    uint16_t lookupFlags_;
+};
+
+}} // namespace cc::sfnt

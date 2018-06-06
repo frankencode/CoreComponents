@@ -26,6 +26,9 @@ public:
     /// Item type
     typedef T Item;
 
+    /// Index type
+    typedef int Index;
+
     /** Create a new array
       * \param size size of the array
       * \return new object instance

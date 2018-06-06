@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <cc/Registration>
+#include <cc/Bundle>
 #include <cc/Dir>
 #include <cc/ui/types>
 #include <cc/ui/Application>
@@ -44,6 +45,8 @@ void IndustrialStylePlugin::activate()
     String notoPath2 = "/usr/share/fonts/opentype/noto";
     if (Dir::exists(notoPath2))
         FontManager::instance()->addPath(notoPath2);
+
+    FontManager::instance()->addPath(CC_BUNDLE_LOOKUP("fonts"));
 }
 
 Theme *IndustrialStylePlugin::dayTheme() const

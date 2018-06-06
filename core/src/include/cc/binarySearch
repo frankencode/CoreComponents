@@ -1,0 +1,63 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+template<
+    class SortedArray,
+    class Pattern = typename SortedArray::Item,
+    class Index = typename SortedArray::Index
+>
+bool binarySearch(
+    const SortedArray *array,
+    const Pattern &pattern,
+    Index firstIndex,
+    Index lastIndex,
+    Index *finalIndex = nullptr
+) {
+    if (firstIndex == lastIndex) {
+        if (finalIndex) *finalIndex = firstIndex;
+        return array->at(firstIndex) == pattern;
+    }
+
+    Index middleIndex = (firstIndex + lastIndex) / 2;
+
+    return (pattern < array->at(middleIndex)) ?
+        binarySearch(array, pattern, firstIndex, middleIndex, finalIndex) :
+        binarySearch(array, pattern, middleIndex, lastIndex, finalIndex);
+}
+
+/** \brief Binary search in a sorted array
+  * \param array the sorted array
+  * \param pattern pattern to search for
+  * \param finalIndex return the final index of the search
+  * \return true if a matching item was found, false otherwise
+  */
+template<
+    class SortedArray,
+    class Pattern = typename SortedArray::Item,
+    class Index = typename SortedArray::Index
+>
+bool binarySearch(
+    const SortedArray *array,
+    const Pattern &pattern,
+    Index *finalIndex = nullptr
+) {
+    if (array->count() == 0) return false;
+    return binarySearch(
+        array,
+        pattern,
+        0,
+        array->count() - 1,
+        finalIndex
+    );
+}
+
+} // namespace cc

@@ -19,6 +19,7 @@ typedef double float64_t;
 namespace cc {
 
 /** Byte order, also known as "Endianess"
+  * \TODO translate into a proper enum class
   */
 enum Endian {
     LittleEndian = 1, ///< Low order byte precedes the high order byte

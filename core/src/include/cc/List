@@ -27,6 +27,9 @@ public:
     /// Item type
     typedef T Item;
 
+    /// Index type
+    typedef int Index;
+
     /** Create a new empty list
       * \return new object instance
       */

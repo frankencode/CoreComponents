@@ -37,7 +37,7 @@ public:
     virtual void selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const = 0;
 
 protected:
-    static Font fixup(const Font & font);
+    static Font fixup(const Font &font);
 
     FontManager();
     ~FontManager();
