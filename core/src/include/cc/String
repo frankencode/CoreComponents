@@ -450,6 +450,14 @@ public:
         return new CharArray(this, 0, i1);
     }
 
+    /** Create a selection (reference to a sub-string)
+      * \param i0 begin of selection (index of first selected character)
+      * \return the selected sub-string
+      */
+    inline String selectFrom(int i0) const {
+        return new CharArray(this, i0, size_);
+    }
+
     /// Pointer to parent string if this string is a sub-string selection (nullptr otherwise)
     inline const CharArray *parent() const { return parent_; }
 

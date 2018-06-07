@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/CharArray>
+
+namespace cc {
+namespace sfnt {
+
+/** \brief Sorted list of glyph indices
+  */
+class GlyphIndexArray: public Object
+{
+public:
+    typedef int Item;
+    typedef unsigned Index;
+
+    static Ref<GlyphIndexArray> open(const CharArray *data);
+
+    inline unsigned at(int i) const { return endianGate(data_->item<uint16_t>(i), BigEndian); }
+    inline int count() const { return data_->count(); }
+
+    bool lookup(unsigned glyphIndex, int *coverageIndex = 0) const;
+
+private:
+    GlyphIndexArray(const CharArray *data);
+
+    Ref<const CharArray> data_;
+};
+
+}} // namespace cc::sfnt

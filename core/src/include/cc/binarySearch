@@ -29,9 +29,9 @@ bool binarySearch(
 
     Index middleIndex = (firstIndex + lastIndex) / 2;
 
-    return (pattern < array->at(middleIndex)) ?
-        binarySearch(array, pattern, firstIndex, middleIndex, finalIndex) :
-        binarySearch(array, pattern, middleIndex, lastIndex, finalIndex);
+    return (array->at(middleIndex) < pattern) ?
+        binarySearch(array, pattern, middleIndex, lastIndex, finalIndex) :
+        binarySearch(array, pattern, firstIndex, middleIndex, finalIndex);
 }
 
 /** \brief Binary search in a sorted array

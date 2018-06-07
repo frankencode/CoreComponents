@@ -1,4 +1,0 @@
-Package {
-    include: src
-    // [ src, tests ]
-}
