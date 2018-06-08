@@ -12,6 +12,8 @@
 #include <cc/SpinLock>
 #include <cc/ui/Font>
 #include <cc/ui/Theme>
+#include <cc/ui/icons>
+#include <cc/ui/IconVisual>
 
 namespace cc {
 namespace ui {
@@ -34,6 +36,8 @@ public:
 
     virtual Theme *dayTheme() const = 0;
     virtual Theme *nightTheme() const = 0;
+
+    virtual Ref<IconVisual> getIconVisual(Icon icon) const = 0;
 
 protected:
     friend class StyleManager;

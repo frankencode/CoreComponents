@@ -681,13 +681,13 @@ public:
       * \param ok return true if conversion was successful (optional)
       * \return numerical value
       */
-    template<class T>
+    template<class T, int base = 10>
     inline T toNumber(bool *ok = 0) const
     {
         bool h = false;
         if (!ok) ok = &h;
         T value = T();
-        *ok = (scanNumber(&value) == size_);
+        *ok = (scanNumber(&value, base) == size_);
         return value;
     }
 

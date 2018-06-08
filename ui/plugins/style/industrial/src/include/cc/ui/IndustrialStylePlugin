@@ -24,9 +24,12 @@ protected:
     Theme *dayTheme() const override;
     Theme *nightTheme() const override;
 
+    Ref<IconVisual> getIconVisual(Icon icon) const override;
+
 private:
     Ref<Theme> dayTheme_;
     Ref<Theme> nightTheme_;
+    Font iconFont_;
 };
 
 }} // namespace cc::ui

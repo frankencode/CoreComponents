@@ -15,15 +15,17 @@
 #include <cc/ui/FontManager>
 #include <cc/ui/MaterialLight>
 #include <cc/ui/MaterialDark>
+#include <cc/ui/GlyphVisual>
 #include <cc/ui/IndustrialStylePlugin>
 
 namespace cc {
 namespace ui {
 
 IndustrialStylePlugin::IndustrialStylePlugin():
-    StylePlugin("Industrial"),
-    dayTheme_(Object::create<MaterialLight>()),
-    nightTheme_(Object::create<MaterialDark>())
+    StylePlugin{"Industrial"},
+    dayTheme_{Object::create<MaterialLight>()},
+    nightTheme_{Object::create<MaterialDark>()},
+    iconFont_{"Icons", std::ceil(dp(24))}
 {}
 
 void IndustrialStylePlugin::activate()
@@ -46,7 +48,7 @@ void IndustrialStylePlugin::activate()
     if (Dir::exists(notoPath2))
         FontManager::instance()->addPath(notoPath2);
 
-    FontManager::instance()->addPath(CC_BUNDLE_LOOKUP("fonts"));
+    FontManager::instance()->addPath(CC_BUNDLE_LOOKUP("icons"));
 }
 
 Theme *IndustrialStylePlugin::dayTheme() const
@@ -57,6 +59,13 @@ Theme *IndustrialStylePlugin::dayTheme() const
 Theme *IndustrialStylePlugin::nightTheme() const
 {
     return nightTheme_;
+}
+
+Ref<IconVisual> IndustrialStylePlugin::getIconVisual(Icon icon) const
+{
+    auto visual = GlyphVisual::create(static_cast<uchar_t>(icon), iconFont_);
+    visual->ink->bind([=]{ return theme()->primaryTextColor(); });
+    return visual;
 }
 
 CC_REGISTRATION(IndustrialStylePlugin)

@@ -8,28 +8,27 @@
 
 #pragma once
 
-#include <cc/ui/Visual>
+#include <cc/ui/IconVisual>
 #include <cc/ui/Font>
 
 namespace cc {
 namespace ui {
 
-class GlyphVisual: public Visual
+class GlyphVisual: public IconVisual
 {
     friend class Object;
 
 public:
     Property<Font> font;
-    Property<Color> ink { Color::Black };
 
-    static Ref<GlyphVisual> create(uchar_t ch) {
-        return Object::create<GlyphVisual>(ch);
+    static Ref<GlyphVisual> create(uchar_t ch, const Font &font = Font{}) {
+        return Object::create<GlyphVisual>(ch, font);
     }
 
     void paint(Painter &p) override;
 
 private:
-    GlyphVisual(uchar_t ch);
+    GlyphVisual(uchar_t ch, const Font &initialFont);
 
     Property< Ref<GlyphRun> > glyphRun_;
     Property<Size> preferredSize_;

@@ -64,12 +64,11 @@ int main(int argc, char **argv)
     catch (HelpRequest &) {
         fout(
             "Usage: %% [FILE]...\n"
+            "Print information about font files.\n"
             "\n"
             "Options:\n"
             "  -family-info   print information about the font family (default)\n"
             "  -glyph-list    list all glyphs\n"
-            "\n"
-            "Print information about font files.\n"
         ) << toolName;
     }
     return 0;
