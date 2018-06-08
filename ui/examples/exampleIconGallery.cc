@@ -13,8 +13,12 @@ class MainView: public View
         size = Size{640, 480};
         inheritPaper();
 
-        // iconVisual_ = style()->getIconVisual(Icon::Videocam);
-        iconVisual_ = style()->getIconVisual(Icon::LibraryAdd);
+        iconVisual_ = style()->getIconVisual(Icon::Video);
+        // iconVisual_ = style()->getIconVisual(Icon::LibraryAdd);
+        // iconVisual_ = style()->getIconVisual(Icon::Folder);
+        // iconVisual_ = style()->getIconVisual(Icon::FolderOpen);
+        /*iconVisual_ = style()->getIconVisual(Icon::Alert);
+        iconVisual_->ink->bind([=]{ return theme()->alertColor(); });*/
     }
 
     void paint() override

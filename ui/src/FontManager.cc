@@ -69,7 +69,7 @@ bool FontManager::isFontFace(const String &path) const
 {
     String suffix = path->fileSuffix();
     mutate(suffix)->downcaseInsitu();
-    return suffix == "otf" || suffix == "ttf" || suffix == "ttc";
+    return suffix == "ttf" || suffix == "woff" || suffix == "otf" || suffix == "ttc";
 }
 
 void FontManager::addFontFace(const FontFace *fontFace)

@@ -16,19 +16,19 @@ String camelize(const String &name)
     return s->replace("_", "");
 }
 
-typedef Map<uchar_t, String> IconMap;
+typedef Map<String, uchar_t> IconMap;
 
 Ref<IconMap> parseFile(const String &path, int *maxNameLength)
 {
     auto lines = File::open(path)->map()->split("\n");
-    auto map = Map<uchar_t, String>::create();
+    auto map = IconMap::create();
     *maxNameLength = 0;
     for (String line: lines) {
         auto parts = line->split(" ");
         if (parts->count() < 2) continue;
         String name = camelize(parts->at(0));
         uchar_t ch = parts->at(1)->toNumber<uchar_t, 16>();
-        map->insert(ch, name);
+        map->insert(name, ch);
         if (*maxNameLength < name->count())
             *maxNameLength = name->count();
     }
@@ -43,12 +43,11 @@ void printEnum(const Arguments *arguments)
         auto map = parseFile(path, &maxNameLength);
 
         fout(
-            "enum class Icon: uchar_t\n"
-            "{\n"
+            "enum class Icon: uchar_t {\n"
         );
 
         for (int i = 0; i < map->count(); ++i)
-            fout() << "    " << left(map->valueAt(i), maxNameLength) << " = 0x" << hex(map->keyAt(i)) << (i != map->count() - 1 ? ",\n" : "\n");
+            fout() << "    " << left(map->keyAt(i), maxNameLength) << " = 0x" << hex(map->valueAt(i)) << (i != map->count() - 1 ? ",\n" : "\n");
 
         fout(
             "};\n"
@@ -70,7 +69,7 @@ void printStr(const Arguments *arguments)
         );
 
         for (int i = 0; i < map->count(); ++i)
-            fout() << "        case " << left(map->valueAt(i), maxNameLength) << ": return \"" << map->valueAt(i) << "\";\n";
+            fout() << "        case Icon::" << left(map->keyAt(i), maxNameLength) << ": return \"" << map->keyAt(i) << "\";\n";
 
         fout(
             "    }\n"
