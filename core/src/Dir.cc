@@ -63,20 +63,20 @@ String Dir::path() const { return path_; }
 
 bool Dir::read(String *name)
 {
-    struct dirent buf;
-    struct dirent *result;
     while (true) {
-        memclr(&buf, sizeof(buf));
-        int ret = ::readdir_r(dir_, &buf, &result);
-        if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
-        if (result) {
-            if (strcmp(buf.d_name, ".") == 0) continue;
-            if (strcmp(buf.d_name, "..") == 0) continue;
-            *name = buf.d_name;
+        errno = 0;
+        struct dirent *entry = readdir(dir_);
+        if (!entry && errno) CC_SYSTEM_DEBUG_ERROR(errno);
+        if (entry) {
+            if (strcmp(entry->d_name, ".") == 0) continue;
+            if (strcmp(entry->d_name, "..") == 0) continue;
+            *name = entry->d_name;
+            return true;
         }
         break;
     }
-    return result;
+
+    return false;
 }
 
 Ref<Stream> Dir::openFile(String path)
