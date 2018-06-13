@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug> // DEBUG
 #include <cc/stdio>
 #include <cc/Process>
 #include <cc/Crc32Sink>
@@ -276,9 +277,39 @@ void BuildPlan::checkDuplicateTargetNames()
     }
 }
 
+void BuildPlan::gatherAutoConfigureSystemPrerequisites(Set<String> *names)
+{
+    if (configureListComplete_) return;
+    configureListComplete_ = true;
+
+    if (systemPrerequisitesByName_) {
+        for (auto e: systemPrerequisitesByName_) {
+            if (e->value()) {
+                for (auto p: e->value()) {
+                    if (p->autoConfigure() && p->origName() != "")
+                        names->insert(p->origName());
+                }
+            }
+        }
+    }
+
+    if (prerequisites_) {
+        for (auto plan: prerequisites_)
+            plan->gatherAutoConfigureSystemPrerequisites(names);
+    }
+}
+
 int BuildPlan::run()
 {
     readPrerequisites();
+
+    if (recipe_->value("configure-list")) {
+        auto names = Set<String>::create();
+        gatherAutoConfigureSystemPrerequisites(names);
+        for (auto name: names)
+            fout() << name << nl;
+        return 0;
+    }
 
     Process::setEnv("SOURCE", projectPath_);
 

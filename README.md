@@ -30,8 +30,15 @@ Installation
 Prequisites:
  * gcc or compatible compiler (e.g.: gcc, clang/llvm, suncc)
  * POSIX compatible shell (e.g.: ksh, bash)
+ * pkg-config and gnureadline (optional)
 
-First download the latest stable version from github:
+Install required development packages:
+
+```
+sudo apt-get install g++ pkg-config libreadline-dev git curl
+```
+
+Download the latest stable version from github:
 ```
 mkdir -p ~/src
 cd ~/src
@@ -41,14 +48,14 @@ ln -s ../cc-0.14.0 cc
 
 Thereafter bootstrap the build system:
 ```
-mkdir -p ~/build/cc_debug
-cd ~/build/cc_debug
+mkdir -p ~/build/cc_release
+cd ~/build/cc_release
 ~/src/cc/bootstrap
 ```
 
 Finally, build the entire toolkit:
 ```
-./ccbuild -debug ~/src/cc
+./ccbuild -release -test ~/src/cc
 ```
 
 Optionally add the build directory to your environment:

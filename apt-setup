@@ -1,0 +1,37 @@
+#!/bin/bash
+
+if [ $# -ne 0 ]; then
+    echo "Usage: path/to/cc/apt-setup"
+    echo
+    echo "Install all build prerequisites."
+    exit 1
+fi
+
+if [ "$(command -v apt)" == "" ]; then
+    echo "Could not find the APT package manager."
+    echo "This tool works only on Debian style systems."
+    exit 2
+fi
+
+if [ "$CCBUILD" == "" ]; then
+    CCBUILD=$(command -v ccbuild)
+fi
+
+if [ "$CCBUILD" == "" ]; then
+    echo "Could not find 'ccbuild' executable."
+    echo "Make sure \$PATH or \$CCBUILD points to ccbuild."
+    exit 4
+fi
+
+if [ "$(command -v apt-file)" == "" ]; then
+    set -o verbose
+    sudo apt-get install apt-file
+    sudo apt-file update
+    set +o verbose
+fi
+
+echo "Collecting package names..."
+PACKAGES="$(for name in $($CCBUILD -configure-list ~/src/cc); do apt-file search -l pkgconfig/$name.pc; done)"
+
+echo "Installing packages..."
+sudo apt-get install $PACKAGES

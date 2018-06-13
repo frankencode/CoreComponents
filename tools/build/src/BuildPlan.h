@@ -142,6 +142,7 @@ private:
     void readRecipe(BuildPlan *parentPlan = 0);
     void readPredicate(const MetaObject *object);
     void checkDuplicateTargetNames();
+    void gatherAutoConfigureSystemPrerequisites(Set<String> *names);
 
     String findPrerequisite(String prerequisitePath) const;
     void readPrerequisites();
@@ -191,6 +192,7 @@ private:
     Ref<const BuildShell> shell_;
     Ref<Job> libraryLinkJob_;
 
+    bool configureListComplete_ { false };
     PreparationStage preparationStage_;
     ConfigureStage configureStage_;
     AnalyseStage analyseStage_;

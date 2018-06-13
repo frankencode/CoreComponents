@@ -1,11 +1,5 @@
 Application {
     name: ccnode
     use: [ core, syntax, glob, meta, net, http ]
-    Dependency {
-        name: GnuTLS
-        version-min: 3.3.5
-        version-configure: pkg-config --modversion gnutls
-        compile-flags-configure: pkg-config --cflags gnutls
-        link-flags-configure: pkg-config --libs gnutls
-    }
+    depends: gnutls >= 3.3.5
 }

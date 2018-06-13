@@ -102,6 +102,7 @@ protected:
         insert("release", false);
 
         insert("configure", false);
+        insert("configure-list", false);
         insert("prepare", false);
         insert("clean", false);
         insert("install", false);
