@@ -39,14 +39,21 @@ int NodeMaster::run(int argc, char **argv)
     if (nodeConfig()->daemon() && !Process::isDaemonized())
         Process::daemonize();
 
-    nodeMaster()->signalMaster_->start();
+    auto signalMaster = SignalMaster::start([=](int signal, bool *fin){
+        nodeMaster()->signals_->pushBack(signal);
+        *fin = (signal == SIGINT || signal == SIGTERM);
+    });
+
     nodeMaster()->start();
     nodeMaster()->wait();
+
+    signalMaster->wait();
+
     return nodeMaster()->exitCode_;
 }
 
 NodeMaster::NodeMaster():
-    signalMaster_(SignalMaster::create()),
+    signals_(Signals::create()),
     exitCode_(0)
 {}
 
@@ -66,8 +73,10 @@ void NodeMaster::run()
             runNode();
         }
         catch (Interrupt &ex) {
-            if (ex.signal() == SIGINT || ex.signal() == SIGTERM || ex.signal() == SIGHUP) break;
-            exitCode_ = ex.signal() + 128;
+            if (ex.signal() != SIGHUP) {
+                exitCode_ = ex.signal() + 128;
+                break;
+            }
         }
         #ifdef NDEBUG
         catch (Exception &ex) {
@@ -79,7 +88,7 @@ void NodeMaster::run()
     }
 }
 
-void NodeMaster::runNode() const
+void NodeMaster::runNode()
 {
     CCNODE_NOTICE() << "Starting (pid = " << Process::currentId() << ")" << nl;
 
@@ -169,13 +178,14 @@ void NodeMaster::runNode() const
 
         connectionManager->cycle();
 
-        while (signalMaster_->receivedSignals()->count() > 0) {
-            int signal = signalMaster_->receivedSignals()->popFront();
-            if (signal == SIGWINCH || signal == SIGPIPE) continue;
-            CCNODE_NOTICE() << "Received " << signalName(signal) << ", shutting down" << nl;
-            workerPool = 0;
-            CCNODE_NOTICE() << "Shutdown complete" << nl;
-            throw Interrupt(signal);
+        while (signals_->count() > 0) {
+            int signal = signals_->popFront();
+            if (signal == SIGINT || signal == SIGTERM || signal == SIGHUP) {
+                CCNODE_NOTICE() << "Received " << signalName(signal) << ", shutting down" << nl;
+                workerPool = 0;
+                CCNODE_NOTICE() << "Shutdown complete" << nl;
+                throw Interrupt(signal);
+            }
         }
     }
 }

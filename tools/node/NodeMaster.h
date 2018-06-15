@@ -9,11 +9,9 @@
 #pragma once
 
 #include <cc/Thread>
+#include <cc/Channel>
 
-namespace cc {
-    template<class> class Singleton;
-    class SignalMaster;
-}
+namespace cc { template<class> class Singleton; }
 
 namespace ccnode {
 
@@ -30,9 +28,10 @@ private:
     NodeMaster();
 
     virtual void run() final;
-    void runNode() const;
+    void runNode();
 
-    Ref<SignalMaster> signalMaster_;
+    typedef Channel<int> Signals;
+    Ref<Signals> signals_;
     int exitCode_;
 };
 

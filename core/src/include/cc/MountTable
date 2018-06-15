@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/iterators>
+#include <cc/String>
+
+namespace cc {
+
+/** \brief Read a filesystem mount table (fstab format)
+  */
+class MountTable: public Object
+{
+public:
+    /** Open a filesystem mount table
+      * \param path path to the filesystem table to read (defaults to the system's mtab, i.e. currently mounted filesystems)
+      */
+    static Ref<MountTable> open(const String &path = String{});
+
+    /** Filesystem table entry
+      */
+    class Entry: public Object
+    {
+        friend class Object;
+
+    public:
+        String device      () const { return parts_->at(0); } ///< device (paritition device node, etc.)
+        String mountPoint  () const { return parts_->at(1); } ///< path to the mounted root of the filesystem
+        String fsTypes     () const { return parts_->at(2); } ///< comma separated list of filesystem types
+        String mountOptions() const { return parts_->at(3); } ///< comma separated list of mount options (key or key=value format)
+
+    private:
+        Entry(const String &line);
+
+        Ref<const StringList> parts_;
+    };
+
+    /// number of table entries
+    int count() const { return lines_; }
+
+    /// check if table index \a i is valid
+    bool has(int i) const { return lines_->has(i); }
+
+    /// get table entry at index \a i
+    Ref<const Entry> at(int i) const { return Object::create<Entry>(lines_->at(i)); }
+
+    typedef cc::ConstIterator<MountTable> const_iterator;
+    typedef const_iterator iterator;
+
+    /** \name C++ iterators
+      * @{
+      */
+    iterator begin() { return iterator(this, 0); }
+    iterator end() { return iterator(this, count()); }
+    const_iterator begin() const { return const_iterator(this, 0); }
+    const_iterator end() const { return const_iterator(this, count()); }
+    /** @}
+      */
+
+private:
+    MountTable(const String &text);
+
+    Ref<StringList> lines_;
+};
+
+} // namespace cc

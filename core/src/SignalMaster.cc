@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -12,33 +12,26 @@
 
 namespace cc {
 
-Ref<SignalMaster> SignalMaster::create(SignalSet *listenSet, SignalSet *terminationSet)
+Ref<SignalMaster> SignalMaster::start(const SignalHandler &handler)
 {
-    return new SignalMaster(listenSet, terminationSet);
+    Ref<SignalMaster> master = new SignalMaster{handler};
+    master->Thread::start();
+    return master;
 }
 
-SignalMaster::SignalMaster(SignalSet *listenSet, SignalSet *terminationSet):
-    listenSet_(listenSet),
-    terminationSet_(terminationSet),
-    receivedSignals_(SignalChannel::create())
-{
-    if (!listenSet_) listenSet_ = SignalSet::createFull();
-    if (!terminationSet_) {
-        terminationSet_ = SignalSet::createEmpty();
-        terminationSet_->insert(SIGINT);
-        terminationSet_->insert(SIGTERM);
-    }
-}
+SignalMaster::SignalMaster(const SignalHandler &handler):
+    handler_(handler)
+{}
 
 void SignalMaster::run()
 {
-    int signal = 0;
-    while (true) {
-        int error = ::sigwait(listenSet_->rawSet(), &signal);
+    auto listenSet = SignalSet::createFull();
+
+    for (bool fin = false; !fin;) {
+        int signal = 0;
+        int error = ::sigwait(listenSet->rawSet(), &signal);
         if (error != 0) CC_SYSTEM_DEBUG_ERROR(error);
-        if (signal == SIGCHLD) continue;
-        receivedSignals_->pushBack(signal);
-        if (terminationSet_->contains(signal)) break;
+        handler_(signal, &fin);
     }
 }
 

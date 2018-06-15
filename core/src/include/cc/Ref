@@ -101,7 +101,7 @@ public:
         return a_;
     }
 
-    inline const T *operator->() const {
+    inline T *operator->() const {
         CC_ASSERT2(a_, "Null reference accessed");
         return a_;
     }

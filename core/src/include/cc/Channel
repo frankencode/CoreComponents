@@ -20,6 +20,7 @@ namespace cc {
   * \brief Inter-thread communication channel
   * \tparam T item type
   * \tparam QueueType type of queue data structure to use (e.g. PriorityQueue)
+  * \TODO provide a popBack() unidirectional iterator
   */
 template<class T, template<class> class QueueType = Queue>
 class Channel: public Object

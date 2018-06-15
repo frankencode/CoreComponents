@@ -15,8 +15,8 @@ namespace cc {
 namespace ui {
 
 GlyphVisual::GlyphVisual(uchar_t ch, const Font &initialFont):
-    s_{String::create(4)},
-    font{initialFont}
+    font{initialFont},
+    s_{String::create(4)}
 {
     auto sink = Utf8Sink::open(mutate(s_));
     sink->write(ch);

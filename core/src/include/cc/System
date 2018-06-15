@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -25,7 +25,7 @@ public:
     static double now(); ///< current system time (in seconds since start of Epoch starting at 1st Jan 1970 00:00:00)
 
     static String hostName(); ///< system host name
-    static void setHostName(String newName); ///< set system host name
+    static void setHostName(const String &newName); ///< set system host name
 };
 
 } // namespace cc
