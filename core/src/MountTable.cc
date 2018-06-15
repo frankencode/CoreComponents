@@ -28,21 +28,21 @@ Ref<MountTable> MountTable::open(const String &path)
 
         text = file->readAll(); // FIXME: file->map()
     }
-    return Object::create<MountTable>(text);
+    return new MountTable(text);
 }
 
 MountTable::MountTable(const String &text):
-    lines_{StringList::create()},
+    lines_{StringList::create()}
 {
     for (String line: text->split("\n")) {
-        line->simplifyInsitu();
+        mutate(line)->simplifyInsitu();
         if (line->count() == 0) continue;
         if (line->at(0) == '#') continue;
         lines_->append(line);
     }
 }
 
-Entry::Entry(const String &line):
+MountTable::Entry::Entry(const String &line):
     parts_(line->split(" "))
 {
     while (parts_->count() < 4) parts_->append(String{});

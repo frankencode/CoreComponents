@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+
+struct udev_device;
+
+namespace cc {
+namespace sys {
+
+/** \brief Storage device action
+  * \see StorageEvent
+  */
+enum class StorageAction {
+    Add,    ///< Device is connected to the system
+    Remove, ///< Device is disconnected from the system
+    Change, ///< Something about the device changed
+    Move,   ///< Device node was moved, renamed, or re-parented
+    Present ///< Device has been present when the StorageMonitor was started
+};
+
+/** \brief Notification send by the StorageMonitor
+  */
+class StorageEvent: public Object
+{
+    friend class Object;
+
+public:
+    StorageAction action() const { return action_; }
+
+    String sysPath  () const { return sysPath_;   }
+    String devNode  () const { return devNode_;   }
+    String serial   () const { return serial_;    }
+    String fsType   () const { return fsType_;    }
+    String fsVersion() const { return fsVersion_; }
+    String fsLabel  () const { return fsLabel_;   }
+
+    bool isUsbStorage() const { return isUsbStorage_; }
+
+    String vendor  () const { return vendor_;   }
+    String model   () const { return model_;    }
+    String vendorId() const { return vendorId_; }
+    String modelId () const { return modelId_;  }
+
+    String toString() const;
+
+private:
+    StorageEvent(struct udev_device *dev);
+
+    StorageAction action_ { StorageAction::Present };
+
+    String sysPath_;
+    String devNode_;
+    String serial_;
+    String fsType_;
+    String fsVersion_;
+    String fsLabel_;
+
+    bool isUsbStorage_;
+    String vendor_;
+    String model_;
+    String vendorId_;
+    String modelId_;
+};
+
+}} // namespace cc::sys

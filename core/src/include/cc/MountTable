@@ -38,11 +38,14 @@ public:
     private:
         Entry(const String &line);
 
-        Ref<const StringList> parts_;
+        Ref<StringList> parts_;
     };
 
+    typedef Ref<Entry> Item;
+    typedef int Index;
+
     /// number of table entries
-    int count() const { return lines_; }
+    int count() const { return lines_->count(); }
 
     /// check if table index \a i is valid
     bool has(int i) const { return lines_->has(i); }

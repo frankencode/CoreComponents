@@ -1,0 +1,5 @@
+Library {
+    name: ccsys
+    use: cc/core
+    depends: [ libudev, blkid ]
+}

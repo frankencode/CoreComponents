@@ -26,6 +26,17 @@ public:
 
     static String hostName(); ///< system host name
     static void setHostName(const String &newName); ///< set system host name
+
+    /** \brief Mount a file system
+      * \param source path to partition device file, etc.
+      * \param target directory to mount the filesystem under
+      * \param type filesystem type (e.g. ext4)
+      * \param options comma separated list of mount options
+      */
+    static void mount(const String &source, const String &target, const String &type, const String &options);
+
+    /// Unmount the filesystem mounted under \a target directory
+    static void unmount(const String &target);
 };
 
 } // namespace cc

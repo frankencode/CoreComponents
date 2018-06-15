@@ -1,0 +1,47 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Thread>
+#include <cc/Channel>
+#include <cc/sys/StorageEvent>
+
+namespace cc { class SystemStream; };
+
+namespace cc {
+namespace sys {
+
+/*! \class StorageMonitor StorageMonitor.h cc/sys/StorageMonitor
+  * \brief Listen for storage media events
+  *
+  * The StorageMonitor reports about storage devices being added or removed.
+  */
+class StorageMonitor: public Thread
+{
+public:
+    static Ref<StorageMonitor> start();
+
+    typedef Channel< Ref<const StorageEvent> > Events;
+    Events *events() const { return events_; }
+
+    void shutdown();
+
+private:
+    StorageMonitor();
+
+    void enumerate(struct udev *udev);
+    void run() override;
+
+    static void printDebug(struct udev_device *device);
+
+    Ref<Events> events_;
+    Ref<SystemStream> controlMaster_, controlSlave_;
+};
+
+}} // namespace cc::sys

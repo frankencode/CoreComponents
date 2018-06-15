@@ -15,6 +15,7 @@
 #include <sys/sysctl.h>
 #endif
 #include <sys/time.h>
+#include <sys/mount.h>
 #include <time.h>
 #include <cc/exceptions>
 #include <cc/System>
@@ -70,10 +71,30 @@ String System::hostName()
     return name;
 }
 
-void System::setHostName(String newName)
+void System::setHostName(const String &newName)
 {
     if (::sethostname(newName->chars(), newName->count()) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
+}
+
+void System::mount(const String &source, const String &target, const String &type, const String &options)
+{
+#ifdef __linux
+    if (::mount(source, target, type, 0, options->bytes()) == -1) // TODO: parse flags from options
+        CC_SYSTEM_DEBUG_ERROR(errno);
+#else
+    // TODO
+#endif
+}
+
+void System::unmount(const String &target)
+{
+#ifdef __linux
+    if (::umount2(target, MNT_DETACH) == -1)
+        CC_SYSTEM_DEBUG_ERROR(errno);
+#else
+    // TODO
+#endif
 }
 
 } // namespace cc
