@@ -117,11 +117,10 @@ class PtsEchoTest: public TestCase
 {
     void run()
     {
-        auto sub = SubProcess::open(
-            SubProcess::params()
-                ->setCommand(execPath + " echo")
-                ->setForwarding(SubProcess::ForwardByPts)
-        );
+        auto sub = SubProcess::stage()
+            ->setCommand(execPath + " echo")
+            ->setForwarding(SubProcess::ForwardByPts)
+            ->open();
         String message = "Hello, world!";
         sub->write(message);
         sub->write("\n");

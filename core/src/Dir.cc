@@ -22,7 +22,7 @@
 
 namespace cc {
 
-Ref<Dir> Dir::tryOpen(String path)
+Ref<Dir> Dir::tryOpen(const String &path)
 {
     DIR *dir = ::opendir(path);
     if (dir) return new Dir(path, dir);
@@ -79,23 +79,24 @@ bool Dir::read(String *name)
     return false;
 }
 
-Ref<Stream> Dir::openFile(String path)
+Ref<Stream> Dir::openFile(const String &path)
 {
-    if (path->isRelativePath()) path = path_->extendPath(path);
-    return File::open(path);
+    return File::open(
+        path->isRelativePath() ? path_->extendPath(path) : path
+    );
 }
 
-bool Dir::access(String path, int flags)
+bool Dir::access(const String &path, int flags)
 {
     return ::access(path, flags) && (FileStatus::read(path)->type() == FileType::Directory);
 }
 
-bool Dir::exists(String path)
+bool Dir::exists(const String &path)
 {
     return File::exists(path) && (FileStatus::read(path)->type() == FileType::Directory);
 }
 
-int Dir::count(String path)
+int Dir::count(const String &path)
 {
     Ref<Dir> dir = tryOpen(path);
     if (!dir) return 0;
@@ -107,31 +108,34 @@ int Dir::count(String path)
     return n;
 }
 
-void Dir::create(String path, int mode)
+void Dir::create(const String &path, int mode)
 {
     if (::mkdir(path, mode) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-void Dir::establish(String path, int mode)
+void Dir::establish(const String &path, int mode)
 {
     Ref<StringList> missingDirs = StringList::create();
-    while ((path != "") && (path != "/")) {
-        if (Dir::exists(path)) break;
-        missingDirs->pushFront(path);
-        path = path->reducePath();
+    for (
+        String p = path;
+        p->count() > 0 && p != "/";
+        p = p->reducePath()
+    ) {
+        if (Dir::exists(p)) break;
+        missingDirs->pushFront(p);
     }
     while (missingDirs->count() > 0)
         Dir::create(missingDirs->popFront(), mode);
 }
 
-void Dir::remove(String path)
+void Dir::remove(const String &path)
 {
     if (::rmdir(path) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-String Dir::createUnique(String path, int mode, char placeHolder)
+String Dir::createUnique(const String &path, int mode, char placeHolder)
 {
     Ref<Random> random = Random::open(Process::currentId());
     while (true) {
@@ -158,7 +162,7 @@ String Dir::createUnique(String path, int mode, char placeHolder)
     }
 }
 
-void Dir::deplete(String path)
+void Dir::deplete(const String &path)
 {
     Ref<DirWalker> walker = DirWalker::open(path);
     walker->setIgnoreHidden(false);

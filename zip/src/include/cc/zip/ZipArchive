@@ -27,7 +27,7 @@ public:
       * \param path file path of a ZIP archive
       * \return new object instance
       */
-    static Ref<ZipArchive> open(String path);
+    static Ref<ZipArchive> open(const String &path);
 
     /// Return the ZIP archive's file path
     String path() const;
@@ -42,10 +42,10 @@ public:
       * \param name name of the file to open
       * \return new content stream
       */
-    virtual Ref<Stream> openFile(String name) override;
+    virtual Ref<Stream> openFile(const String &name) override;
 
 private:
-    ZipArchive(String path);
+    ZipArchive(const String &path);
     ~ZipArchive();
 
     String path_;

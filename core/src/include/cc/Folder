@@ -20,7 +20,7 @@ public:
       * \param name name of the file to open
       * \return new content stream
       */
-    virtual Ref<Stream> openFile(String name) = 0;
+    virtual Ref<Stream> openFile(const String &name) = 0;
 };
 
 } // namespace cc

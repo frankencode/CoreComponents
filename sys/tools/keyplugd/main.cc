@@ -7,7 +7,9 @@
 using namespace cc;
 using namespace cc::sys;
 
-void runCommand(const String &command)
+enum class KeyAction { Attach, Detach };
+
+void runCommand(KeyAction action, const String &command)
 {
     if (command == "") return;
     CC_INSPECT(command);
@@ -16,7 +18,6 @@ void runCommand(const String &command)
 void runMonitor(const VariantMap *options)
 {
     auto serials = String(options->value("serial"))->split(",");
-    String auditPath = options->value("audit");
     String attachCommand = options->value("attach");
     String detachCommand = options->value("detach");
 
@@ -40,11 +41,11 @@ void runMonitor(const VariantMap *options)
             switch (event->action()) {
                 case StorageAction::Add:
                 case StorageAction::Present: {
-                    runCommand(attachCommand);
+                    runCommand(KeyAction::Attach, attachCommand);
                     break;
                 }
                 case StorageAction::Remove: {
-                    runCommand(detachCommand);
+                    runCommand(KeyAction::Detach, detachCommand);
                     break;
                 }
                 default:;
@@ -52,7 +53,7 @@ void runMonitor(const VariantMap *options)
         }
     }
 
-    runCommand(detachCommand);
+    runCommand(KeyAction::Detach, detachCommand);
 
     monitor->wait();
     signalMaster->wait();
@@ -65,7 +66,6 @@ int main(int argc, char **argv)
     try {
         auto options = VariantMap::create();
         options->insert("serial", "");
-        options->insert("audit", ".audit.log");
         options->insert("attach", "");
         options->insert("detach", "");
 
@@ -76,13 +76,12 @@ int main(int argc, char **argv)
     catch (HelpError &) {
         fout(
             "Usage: %% [OPTION]...\n"
-            "Monitor storage media events for dedicated removable storage devices (aka keys)\n"
+            "Auto mount manager for smart keys\n"
             "\n"
             "Options:\n"
             "  -serial  comma separated list of device serial numbers\n"
-            "  -audit   log file path (relative path: log is placed on the key)\n"
-            "  -attach  command to execute when a key is inserted\n"
-            "  -detach  command to execute when a key is removed\n"
+            "  -attach  command to execute when a smart key is inserted (CWD = mount point)\n"
+            "  -detach  command to execute when a smart key is removed\n"
         ) << toolName;
     }
 

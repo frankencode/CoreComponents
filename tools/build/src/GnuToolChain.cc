@@ -222,7 +222,7 @@ bool GnuToolChain::link(const BuildPlan *plan) const
 
 bool GnuToolChain::testInclude(const BuildPlan *plan, const StringList *headers) const
 {
-    String srcPath = File::createUnique("/tmp/XXXXXXXX.cc");
+    String srcPath = File::createUnique("/tmp/########.cc");
     UnlinkGuard srcUnlinkGuard(srcPath);
     UnlinkGuard objUnlinkGuard(srcPath->baseName() + ".o");
     {
@@ -244,17 +244,17 @@ bool GnuToolChain::testInclude(const BuildPlan *plan, const StringList *headers)
 
     Ref<SubProcess> sub;
     {
-        Ref<SubProcess::Params> params = SubProcess::Params::create();
-        params->setCommand(command);
-        Ref<SubProcess::Overloads> overloads = SubProcess::Overloads::create();
+        auto stage = SubProcess::stage();
+        stage->setCommand(command);
+        auto overloads = SubProcess::Overloads::create();
         {
             Ref<File> devNull = File::open("/dev/null", OpenMode::WriteOnly);
             overloads->insert(StandardOutputFd, devNull);
             if (!(plan->options() & BuildPlan::Verbose))
                 overloads->insert(StandardErrorFd, devNull);
         }
-        params->setOverloads(overloads);
-        sub = SubProcess::open(params);
+        stage->setOverloads(overloads);
+        sub = stage->open();
     }
 
     return sub->wait() == 0;

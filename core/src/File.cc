@@ -20,14 +20,14 @@
 
 namespace cc {
 
-Ref<File> File::open(String path, int openMode, int fileMode)
+Ref<File> File::open(const String &path, int openMode, int fileMode)
 {
     int fd = ::open(path, openMode, fileMode);
     if (fd == -1) CC_SYSTEM_ERROR(errno, path);
     return new File(path, openMode, fd);
 }
 
-Ref<File> File::tryOpen(String path, int openMode, int fileMode)
+Ref<File> File::tryOpen(const String &path, int openMode, int fileMode)
 {
     int fd = ::open(path, openMode, fileMode);
     if (fd != -1) return new File(path, openMode, fd);
@@ -43,7 +43,7 @@ Ref<File> File::openTemp(int openMode)
     return open(path, openMode);
 }
 
-File::File(String path, int openMode, int fd):
+File::File(const String &path, int openMode, int fd):
     SystemStream(fd),
     path_(path),
     openMode_(openMode)
@@ -167,49 +167,49 @@ void File::dataSync()
 #endif
 }
 
-bool File::access(String path, int flags)
+bool File::access(const String &path, int flags)
 {
     return ::access(path, flags) == 0;
 }
 
-void File::create(String path, int mode)
+void File::create(const String &path, int mode)
 {
     int fd = ::open(path, O_RDONLY|O_CREAT|O_EXCL, mode);
     if (fd == -1) CC_SYSTEM_RESOURCE_ERROR(errno, path);
     ::close(fd);
 }
 
-void File::chown(String path, uid_t ownerId, gid_t groupId)
+void File::chown(const String &path, uid_t ownerId, gid_t groupId)
 {
     if (::chown(path, ownerId, groupId) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-void File::rename(String path, String newPath)
+void File::rename(const String &path, const String &newPath)
 {
     if (::rename(path, newPath) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-void File::link(String path, String newPath)
+void File::link(const String &path, const String &newPath)
 {
     if (::link(path, newPath) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, newPath);
 }
 
-void File::unlink(String path)
+void File::unlink(const String &path)
 {
     if (::unlink(path) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-void File::symlink(String path, String newPath)
+void File::symlink(const String &path, const String &newPath)
 {
     if (::symlink(path, newPath) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-String File::readlink(String path)
+String File::readlink(const String &path)
 {
     String buf(128);
     while (true) {
@@ -226,7 +226,7 @@ String File::readlink(String path)
     return buf;
 }
 
-String File::resolve(String path)
+String File::resolve(const String &path)
 {
     String resolvedPath = path;
     while (FileStatus::readUnresolved(resolvedPath)->type() == FileType::Symlink) {
@@ -239,7 +239,7 @@ String File::resolve(String path)
     return resolvedPath;
 }
 
-String File::createUnique(String path, int mode, char placeHolder)
+String File::createUnique(const String &path, int mode, char placeHolder)
 {
     Ref<Random> random = Random::open(Process::currentId());
     while (true) {
@@ -268,7 +268,7 @@ String File::createUnique(String path, int mode, char placeHolder)
     }
 }
 
-void File::establish(String path, int fileMode, int dirMode)
+void File::establish(const String &path, int fileMode, int dirMode)
 {
     if (path->contains('/'))
         Dir::establish(path->reducePath(), dirMode);
@@ -276,7 +276,7 @@ void File::establish(String path, int fileMode, int dirMode)
         File::create(path, fileMode);
 }
 
-void File::clean(String path)
+void File::clean(const String &path)
 {
     try {
         Dir::deplete(path);
@@ -289,7 +289,7 @@ void File::clean(String path)
     Dir::remove(path);
 }
 
-String File::locate(String fileName, const StringList *dirs, int accessFlags)
+String File::locate(const String &fileName, const StringList *dirs, int accessFlags)
 {
     String path;
     for (int i = 0; i < dirs->count(); ++i) {
@@ -302,13 +302,13 @@ String File::locate(String fileName, const StringList *dirs, int accessFlags)
     return path;
 }
 
-String File::load(String path)
+String File::load(const String &path)
 {
     establish(path);
     return open(path)->readAll();
 }
 
-void File::save(String path, String text)
+void File::save(const String &path, const String &text)
 {
     establish(path);
     Ref<File> file = open(path, OpenMode::WriteOnly);

@@ -13,12 +13,12 @@
 namespace cc {
 namespace zip {
 
-Ref<ZipArchive> ZipArchive::open(String path)
+Ref<ZipArchive> ZipArchive::open(const String &path)
 {
     return new ZipArchive(path);
 }
 
-ZipArchive::ZipArchive(String path):
+ZipArchive::ZipArchive(const String &path):
     path_(path),
     index_(0)
 {
@@ -46,13 +46,13 @@ bool ZipArchive::read(String *name)
     return true;
 }
 
-Ref<Stream> ZipArchive::openFile(String name)
+Ref<Stream> ZipArchive::openFile(const String &name)
 {
-    name = name->canonicalPath();
-    Ref<ZipFile> stream = new ZipFile(name);
+    String filePath = name->canonicalPath();
+    Ref<ZipFile> stream = new ZipFile(filePath);
     stream->zipPath_ = path_;
     stream->archive_ = archive_;
-    stream->file_ = zip_fopen(archive_, name, 0);
+    stream->file_ = zip_fopen(archive_, filePath, 0);
     if (!stream->file_)
         throw ZipError(zip_get_error(archive_)->zip_err, path_);
     return stream;

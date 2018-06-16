@@ -31,6 +31,11 @@ Ref<MountTable> MountTable::open(const String &path)
     return new MountTable(text);
 }
 
+Ref<MountTable> MountTable::parse(const String &text)
+{
+    return new MountTable(text);
+}
+
 MountTable::MountTable(const String &text):
     lines_{StringList::create()}
 {

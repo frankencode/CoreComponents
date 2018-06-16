@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -22,22 +22,17 @@
 
 namespace cc {
 
-Ref<SubProcess::Params> SubProcess::params()
-{
-    return new Params;
-}
-
-Ref<SubProcess> SubProcess::open(Params *params)
+Ref<SubProcess> SubProcess::bootstrap(Staging *staging)
 {
     // ------------------------------------------------------------------------
     // locate executable and prepare argument list
     // ------------------------------------------------------------------------
 
     String execPath;
-    Ref<StringList> args = params->args_;
+    Ref<StringList> args = staging->args_;
 
-    if (params->command_ != "") {
-        String cmd = params->command_;
+    if (staging->command_ != "") {
+        String cmd = staging->command_;
         if (cmd->beginsWith(' ') || cmd->endsWith(' '))
             cmd = cmd->trim();
         if (!cmd->contains(' ')) execPath = cmd;
@@ -50,7 +45,7 @@ Ref<SubProcess> SubProcess::open(Params *params)
 
     if (execPath != "") {
         if (execPath->contains('/')) {
-            if (params->workDir_ != "" && execPath->isRelativePath()) execPath = execPath->absolutePathRelativeTo(Process::cwd());
+            if (staging->workDir_ != "" && execPath->isRelativePath()) execPath = execPath->absolutePathRelativeTo(Process::cwd());
             if (!File::access(execPath, Access::Execute)) throw CommandNotFound(execPath);
         }
         else {
@@ -70,12 +65,12 @@ Ref<SubProcess> SubProcess::open(Params *params)
     fd[Master] = 0;
     fd[Slave] = 0;
 
-    if (params->forwarding_ == SubProcess::ForwardBySocket)
+    if (staging->forwarding_ == SubProcess::ForwardBySocket)
     {
         if (::socketpair(AF_LOCAL, SOCK_STREAM, 0, fd) == -1)
             CC_SYSTEM_DEBUG_ERROR(errno);
     }
-    else if (params->forwarding_ == SubProcess::ForwardByPts)
+    else if (staging->forwarding_ == SubProcess::ForwardByPts)
     {
         fd[Master] = ::posix_openpt(O_RDWR|O_NOCTTY);
         if (fd[Master] == -1) CC_SYSTEM_DEBUG_ERROR(errno);
@@ -106,7 +101,7 @@ Ref<SubProcess> SubProcess::open(Params *params)
         }
         argv[argc] = 0;
 
-        EnvMap *envMap = params->envMap_;
+        EnvMap *envMap = staging->envMap_;
         if (envMap) {
             int n = envMap->count();
             envp = new char*[n + 1];
@@ -125,26 +120,26 @@ Ref<SubProcess> SubProcess::open(Params *params)
 
     if (ret == 0)
     {
-        if (params->type_ == SubProcess::GroupLeader)
+        if (staging->type_ == SubProcess::GroupLeader)
             ::setpgid(0, 0);
-        else if (params->type_ == SubProcess::SessionLeader)
+        else if (staging->type_ == SubProcess::SessionLeader)
             ::setsid();
 
-        if (params->forwarding_ == SubProcess::ForwardBySocket)
+        if (staging->forwarding_ == SubProcess::ForwardBySocket)
         {
             ::close(fd[Master]);
             ::dup2(fd[Slave], 0);
             ::dup2(fd[Slave], 1);
             ::dup2(fd[Slave], 2);
         }
-        else if (params->forwarding_ == SubProcess::ForwardByPts)
+        else if (staging->forwarding_ == SubProcess::ForwardByPts)
         {
             ::close(fd[Master]);
             ::dup2(fd[Slave], 0);
             ::dup2(fd[Slave], 1);
             ::dup2(fd[Slave], 2);
 
-            if (params->type_ == SubProcess::SessionLeader)
+            if (staging->type_ == SubProcess::SessionLeader)
                 ::ioctl(fd[Slave], TIOCSCTTY, 0);
 
             {
@@ -158,22 +153,22 @@ Ref<SubProcess> SubProcess::open(Params *params)
             }
         }
 
-        if (params->overloads_) {
-            Overloads *overloads = params->overloads_;
+        if (staging->overloads_) {
+            Overloads *overloads = staging->overloads_;
             for (int i = 0; i < overloads->count(); ++i)
                 ::dup2(overloads->valueAt(i)->fd(), overloads->keyAt(i));
         }
 
-        if (params->workDir_ != "") {
-            int ret = ::chdir(params->workDir_);
+        if (staging->workDir_ != "") {
+            int ret = ::chdir(staging->workDir_);
             if (ret != 0) ::exit(errno);
         }
 
-        if (params->userMask_ >= 0)
-            ::umask(params->userMask_);
+        if (staging->userMask_ >= 0)
+            ::umask(staging->userMask_);
 
-        if (params->signalMask_)
-            ::sigprocmask(SIG_SETMASK, params->signalMask_->rawSet(), 0);
+        if (staging->signalMask_)
+            ::sigprocmask(SIG_SETMASK, staging->signalMask_->rawSet(), 0);
         else
             ::sigprocmask(SIG_SETMASK, SignalSet::createEmpty()->rawSet(), 0);
 
@@ -182,7 +177,7 @@ Ref<SubProcess> SubProcess::open(Params *params)
             ::exit(errno);
         }
 
-        ::exit(params->worker_ ? params->worker_->run() : 0);
+        ::exit(staging->worker_ ? staging->worker_->run() : 0);
     }
 
     // ------------------------------------------------------------------------
@@ -200,11 +195,11 @@ Ref<SubProcess> SubProcess::open(Params *params)
         delete[] envp;
     }
 
-    Ref<SubProcess> child = new SubProcess(params, ret);
+    Ref<SubProcess> child = new SubProcess(staging, ret);
 
     if (
-        params->forwarding_ == SubProcess::ForwardBySocket ||
-        params->forwarding_ == SubProcess::ForwardByPts
+        staging->forwarding_ == SubProcess::ForwardBySocket ||
+        staging->forwarding_ == SubProcess::ForwardByPts
     ) {
         ::close(fd[Slave]);
         child->fd_ = fd[Master];
@@ -213,42 +208,40 @@ Ref<SubProcess> SubProcess::open(Params *params)
     return child;
 }
 
-Ref<SubProcess> SubProcess::open(String command, SystemStream *stdErr)
+Ref<SubProcess> SubProcess::open(const String &command, SystemStream *stdErr)
 {
-    Ref<Params> params = Params::create()->setCommand(command);
-    Ref<Overloads> overloads;
+    auto stage = SubProcess::stage();
+    stage->setCommand(command);
     if (stdErr) {
-        overloads = Overloads::create();
+        auto overloads = Overloads::create();
         overloads->establish(StandardErrorFd, stdErr);
-        params->setOverloads(overloads);
+        stage->setOverloads(overloads);
     }
-    return open(params);
+    return stage->open();
 }
 
 Ref<SubProcess> SubProcess::open(SubProcess::Worker *worker, SystemStream *stdErr)
 {
-    Ref<Params> params = Params::create()->setWorker(worker);
-    Ref<Overloads> overloads;
+    auto stage = SubProcess::stage();
+    stage->setWorker(worker);
     if (stdErr) {
-        overloads = Overloads::create();
+        auto overloads = Overloads::create();
         overloads->establish(StandardErrorFd, stdErr);
-        params->setOverloads(overloads);
+        stage->setOverloads(overloads);
     }
-    return open(params);
+    return stage->open();
 }
 
-Ref<SubProcess> SubProcess::execute(String command)
+Ref<SubProcess> SubProcess::start(const String &command)
 {
-    return
-        open (
-            Params::create()
-                ->setCommand(command)
-                ->setForwarding(NoForwarding)
-        );
+    return stage()
+        ->setCommand(command)
+        ->setForwarding(NoForwarding)
+        ->open();
 }
 
-SubProcess::SubProcess(Params *params, pid_t pid):
-    params_(params),
+SubProcess::SubProcess(Staging *staging, pid_t pid):
+    params_(staging),
     pid_(pid)
 {}
 

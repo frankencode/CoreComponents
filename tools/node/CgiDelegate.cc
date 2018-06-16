@@ -103,11 +103,10 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
         env->insert("SCRIPT_NAME", "/" + scriptPath->baseName());
         if (documentRoot != "") env->insert("DOCUMENT_ROOT", documentRoot);
 
-        sub = SubProcess::open(
-            SubProcess::params()
-                ->setArgs(args)
-                ->setEnvMap(env)
-        );
+        sub = SubProcess::stage()
+            ->setArgs(args)
+            ->setEnvMap(env)
+            ->open();
 
         cgiServer = CgiServerConnection::open(sub);
         if (errorLog()->level() >= DebugLogLevel)

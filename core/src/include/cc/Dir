@@ -26,13 +26,13 @@ public:
       * \param path directory file path
       * \return new object instance
       */
-    static Ref<Dir> open(String path) { return new Dir(path); }
+    static Ref<Dir> open(const String &path) { return new Dir(path); }
 
     /** Open an existing directory, if exists
       * \param path directory file path
       * \return new object instance or null if directory does not exists
       */
-    static Ref<Dir> tryOpen(String path);
+    static Ref<Dir> tryOpen(const String &path);
 
     /** Open a new tempory directory
       * \return new object instance
@@ -52,43 +52,43 @@ public:
       * \param path file path of the file to open
       * \return new content stream
       */
-    Ref<Stream> openFile(String path) override;
+    Ref<Stream> openFile(const String &path) override;
 
     /** Check access permissions
       * \param path directory file path
       * \param flags a combination of cc::Access
       * \return true if the calling process has needed credentials
       */
-    static bool access(String path, int flags);
+    static bool access(const String &path, int flags);
 
     /** Check if directory exists
       * \param path directory file path
       * \return true if a directory exists under given path
       */
-    static bool exists(String path);
+    static bool exists(const String &path);
 
     /** Count number of files in directory
       * \param path directory file path
       * \return 0 if there is no such directory, otherwise number of files
       */
-    static int count(String path);
+    static int count(const String &path);
 
     /** Create a new directory
       * \param path directory file path
       * \param mode a combination of cc::Mode
       */
-    static void create(String path, int mode = 0755);
+    static void create(const String &path, int mode = 0755);
 
     /** Establish a new directory path
       * \param path directory file path
       * \param mode a combination of cc::Mode
       */
-    static void establish(String path, int mode = 0755);
+    static void establish(const String &path, int mode = 0755);
 
     /** Remove directory
       * \param path directory file path
       */
-    static void remove(String path);
+    static void remove(const String &path);
 
     /** Create a uniquely named directory
       * \param path directory file path pattern
@@ -96,13 +96,13 @@ public:
       * \param placeHolder place holder character in path to replace with random characters
       * \return name of the newly created directory
       */
-    static String createUnique(String path, int mode = 0755, char placeHolder = 'X');
+    static String createUnique(const String &path, int mode = 0755, char placeHolder = '#');
 
     /** Cleanup directory contents recursively
       * \param path directory file path
       * \see File::clean()
       */
-    static void deplete(String path);
+    static void deplete(const String &path);
 
 private:
     Dir(String path, DIR *dir = 0);

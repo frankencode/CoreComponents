@@ -20,8 +20,15 @@ class MountTable: public Object
 public:
     /** Open a filesystem mount table
       * \param path path to the filesystem table to read (defaults to the system's mtab, i.e. currently mounted filesystems)
+      * \return new object instance
       */
     static Ref<MountTable> open(const String &path = String{});
+
+    /** Parse a mount table
+      * \param text mount table in fstab format
+      * \return new object instance
+      */
+    static Ref<MountTable> parse(const String &text);
 
     /** Filesystem table entry
       */
@@ -30,10 +37,12 @@ public:
         friend class Object;
 
     public:
-        String device      () const { return parts_->at(0); } ///< device (paritition device node, etc.)
-        String mountPoint  () const { return parts_->at(1); } ///< path to the mounted root of the filesystem
-        String fsTypes     () const { return parts_->at(2); } ///< comma separated list of filesystem types
-        String mountOptions() const { return parts_->at(3); } ///< comma separated list of mount options (key or key=value format)
+        String source () const { return parts_->at(0); } ///< device (paritition device node, etc.)
+        String target () const { return parts_->at(1); } ///< path to the mounted root of the filesystem
+        String type   () const { return parts_->at(2); } ///< comma separated list of filesystem types
+        String options() const { return parts_->at(3); } ///< comma separated list of mount options (key or key=value format)
+
+        String toString() const { return parts_->join(" "); }
 
     private:
         Entry(const String &line);
@@ -41,7 +50,7 @@ public:
         Ref<StringList> parts_;
     };
 
-    typedef Ref<Entry> Item;
+    typedef Ref<const Entry> Item;
     typedef int Index;
 
     /// number of table entries

@@ -35,12 +35,12 @@ public:
       * \param fileMode file permissions for new file, a combination of cc::FileMode
       * \return new object instance
       */
-    static Ref<File> open(String path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
+    static Ref<File> open(const String &path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
 
     /** Try to %open a file
       * \copydetails open()
       */
-    static Ref<File> tryOpen(String path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
+    static Ref<File> tryOpen(const String &path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
 
     /** Open a temporary file
       * \param flags file open flags, a combintation of cc::OpenMode
@@ -92,19 +92,19 @@ public:
       * \param flags a combination of cc::Access
       * \return true if accessible
       */
-    static bool access(String path, int flags);
+    static bool access(const String &path, int flags);
 
     /** Check if a file exists
       * \param path file path
       * \return true if file exists
       */
-    static bool exists(String path) { return (path != "") && access(path, Access::Exists); }
+    static bool exists(const String &path) { return (path != "") && access(path, Access::Exists); }
 
     /** Create a new file
       * \param path file path
       * \param mode file permissions for new file, a combination of cc::FileMode
       */
-    static void create(String path, int mode = 0644);
+    static void create(const String &path, int mode = 0644);
 
     /** Change ownership of the file
       * \param path file path
@@ -112,43 +112,43 @@ public:
       * \param groupId one of the new owner's group ids
       * \see User, Group
       */
-    static void chown(String path, uid_t ownerId, gid_t groupId);
+    static void chown(const String &path, uid_t ownerId, gid_t groupId);
 
     /** Rename file
       * \param path old file path
       * \param newPath new file path
       */
-    static void rename(String path, String newPath);
+    static void rename(const String &path, const String &newPath);
 
     /** Create a new directory entry for this file
       * \param path file path
       * \param newPath file path to new directory entry
       * \see FileStatus::numberOfHardLinks()
       */
-    static void link(String path, String newPath);
+    static void link(const String &path, const String &newPath);
 
     /** Delete a directory entry associated with a non-directory file
       * \param path file path
       * \see UnlinkGuard, Dir::remove()
       */
-    static void unlink(String path);
+    static void unlink(const String &path);
 
     /** Create a symbolic link special file
       * \param targetPath file path to link to
       * \param newPath file path of new symbolic link special file
       */
-    static void symlink(String targetPath, String newPath);
+    static void symlink(const String &targetPath, const String &newPath);
 
     /** Read a contents of a symbolic link special file
       * \param path file path
       * \return symbolic link target path
       */
-    static String readlink(String path);
+    static String readlink(const String &path);
 
     /** Fully resolve a symbolic link chain
       * \return final target path
       */
-    static String resolve(String path);
+    static String resolve(const String &path);
 
     /** Create a uniquely named file
       * \param path file path
@@ -157,20 +157,20 @@ public:
       * \return name of the newly created file
       * \see File::openTemp()
       */
-    static String createUnique(String path, int mode = 0644, char placeHolder = 'X');
+    static String createUnique(const String &path, int mode = 0644, char placeHolder = '#');
 
     /** Create a new file and all parent directories as needed
       * \param path file path of new file
       * \param fileMode file permissions for new file, a combination of cc::FileMode
       * \param dirMode directory permissions for the on-demand created parent directories
       */
-    static void establish(String path, int fileMode = 0644, int dirMode = 0755);
+    static void establish(const String &path, int fileMode = 0644, int dirMode = 0755);
 
     /** Cleanup files recursively
       * \param path path to directory or file
       * Cleans up the given path recursively deleting all files and directories in the process.
       */
-    static void clean(String path);
+    static void clean(const String &path);
 
     /** Search for a file in a list of directories
       * \param fileName name of the file (or relative path)
@@ -178,26 +178,26 @@ public:
       * \param accessFlags a combination of cc::Access
       * \return file path if found else empty string
       */
-    static String locate(String fileName, const StringList *dirs, int accessFlags = Access::Exists);
+    static String locate(const String &fileName, const StringList *dirs, int accessFlags = Access::Exists);
 
     /** Load contents of a file
       * \param path file path
       * \return contents of file
       */
-    static String load(String path);
+    static String load(const String &path);
 
     /** Replace contents of a file
       * \param path file path
       * \param text new file'a contents
       */
-    static void save(String path, String text);
+    static void save(const String &path, const String &text);
 
 private:
     friend class MappedByteArray;
 
     static int translateOpenFlags(int openMode);
 
-    File(String path, int openMode, int fd);
+    File(const String &path, int openMode, int fd);
 
     static void unmap(CharArray *s);
 

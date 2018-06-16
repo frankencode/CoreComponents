@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -54,11 +54,6 @@ public:
     class Staging: public Object
     {
     public:
-        /** Create a new sub-process creation parameter set
-          * \return new object instance
-          */
-        static Ref<Staging> create() { return new Params(); }
-
         /** Set the type of the new sub-process
           * \param type process hierarchy type
           * \return pointer to this object
@@ -69,7 +64,7 @@ public:
           * \param command path to executable and command line parameters
           * \return pointer to this object
           */
-        Staging *setCommand(String command) { command_ = command; return this; }
+        Staging *setCommand(const String &command) { command_ = command; return this; }
 
         /** Set I/O forwarding method
           * \param forwarding I/O forwarding method
@@ -100,7 +95,7 @@ public:
           * \param workDir initial working directory
           * \return pointer to this object
           */
-        Staging *setWorkDir(String workDir) { workDir_ = workDir; return this; }
+        Staging *setWorkDir(const String &workDir) { workDir_ = workDir; return this; }
 
         /** Set file creation mask
           * \param userMask new file creation mask
@@ -124,12 +119,12 @@ public:
         Staging *setWorker(Worker *worker) { worker_ = worker; return this; }
 
         /// Finalise staging, start new child process
-        inline Ref<SubProcess> start() { return SubProcess::open(this); }
+        inline Ref<SubProcess> start() { return SubProcess::bootstrap(this); }
 
-        /// Finalise staging, start new child process (with input/output forwarding enabled)
+        /// Finalise staging, start new child process with input/output forwarding
         inline Ref<SubProcess> open() {
             if (forwarding_ == NoForwarding) forwarding_ = ForwardBySocket;
-            return SubProcess::open(this);
+            return SubProcess::bootstrap(this);
         }
 
         /// Convenience function, equivalent to start()->wait()
@@ -156,43 +151,33 @@ public:
         Ref<Worker> worker_;
     };
 
-    typedef Staging Params;
-
+    /** \brief Stage a new sub-process
+      */
     static Ref<Staging> stage() {
         Ref<Staging> staging = new Staging;
         staging->forwarding_ = NoForwarding;
         return staging;
     }
 
-    /** \brief Shorthand for SubProcess::Params::create()
-      */
-    static Ref<Params> params();
-
-    /** \brief Spawn a new child process
-      * \param params Sub-process creation parameters
-      * \return new object instance
-      */
-    static Ref<SubProcess> open(Params *params);
-
-    /** \brief Convenience wrapper to SubProcess::open(Params *)
+    /** \brief Start sub-process with I/O forwarding (convenience wrapper)
       * \param command program path + arguments (e.g. "ls -l")
       * \param stdErr optional overload for standard error
       * \return new object instance
       */
-    static Ref<SubProcess> open(String command, SystemStream *stdErr = 0);
+    static Ref<SubProcess> open(const String &command, SystemStream *stdErr = 0);
 
-    /** \brief Convenience wrapper to SubProcess::open(Params *)
+    /** \brief Start sub-process with I/O forwarding (convenience wrapper)
       * \param worker child process worker
       * \param stdErr optional overload for standard error
       * \return new SubProcess instance
       */
     static Ref<SubProcess> open(SubProcess::Worker *worker, SystemStream *stdErr = 0);
 
-    /** \brief Convenience wrapper to SubProcess::open(Params *) without I/O forwarding
+    /** \brief Start sub-process without I/O forwarding (convenience wrapper)
       * \param command program path + arguments (e.g. "ls -l")
       * \return new object instance
       */
-    static Ref<SubProcess> execute(String command); // FIXME: slightly confusing; exec() normally waits
+    static Ref<SubProcess> start(const String &command);
 
     /// Sub-process process ID
     pid_t pid() const;
@@ -214,10 +199,18 @@ public:
     int wait(bool *signalled = 0);
 
 private:
-    SubProcess(Params *params, pid_t pid = 0);
+    friend class Staging;
+
+    /** \brief Spawn a new child process
+      * \param staging Sub-process creation parameters
+      * \return new object instance
+      */
+    static Ref<SubProcess> bootstrap(Staging *staging);
+
+    SubProcess(Staging *staging, pid_t pid = 0);
     ~SubProcess();
 
-    Ref<Params> params_;
+    Ref<Staging> params_;
     pid_t pid_;
 };
 
