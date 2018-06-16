@@ -22,6 +22,7 @@ public:
     ~MountGuard()
     {
         System::unmount(mountPath_);
+        Dir::remove(mountPath_);
     }
 
     String mountPath() const { return mountPath_; }
