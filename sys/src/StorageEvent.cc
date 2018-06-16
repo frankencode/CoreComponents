@@ -13,14 +13,28 @@
 namespace cc {
 namespace sys {
 
+String str(StorageAction action)
+{
+    switch (action) {
+        case StorageAction::Add:    return "StorageAction::Add";
+        case StorageAction::Remove: return "StorageAction::Remove";
+        case StorageAction::Change: return "StorageAction::Change";
+        case StorageAction::Move:   return "StorageAction::Move";
+        case StorageAction::Present:return "StorageAction::Present";
+    }
+    return String{};
+}
+
 StorageEvent::StorageEvent(struct udev_device *dev)
 {
     {
         const char *s = udev_device_get_action(dev);
-        if (strcmp("s", "add") == 0) action_ = StorageAction::Add;
-        else if (strcmp("s", "remove") == 0) action_ = StorageAction::Remove;
-        else if (strcmp("s", "change") == 0) action_ = StorageAction::Change;
-        else if (strcmp("s", "move") == 0) action_ = StorageAction::Move;
+        if (s) {
+            if (strcmp(s, "add") == 0) action_ = StorageAction::Add;
+            else if (strcmp(s, "remove") == 0) action_ = StorageAction::Remove;
+            else if (strcmp(s, "change") == 0) action_ = StorageAction::Change;
+            else if (strcmp(s, "move") == 0) action_ = StorageAction::Move;
+        }
     }
 
     sysPath_ = udev_device_get_syspath(dev);
@@ -58,7 +72,7 @@ String StorageEvent::toString() const
         << "StorageEvent {" << nl
         << "  action      : " << action_ << nl
         << "  sysPath     : " << sysPath_ << nl
-        << "  device      : " << devNode_ << nl
+        << "  devNode     : " << devNode_ << nl
         << "  serial      : " << serial_ << nl
         << "  fsType      : " << fsType_ << nl
         << "  fsVersion   : " << fsVersion_ << nl

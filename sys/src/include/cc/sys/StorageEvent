@@ -19,12 +19,14 @@ namespace sys {
   * \see StorageEvent
   */
 enum class StorageAction {
-    Add,    ///< Device is connected to the system
-    Remove, ///< Device is disconnected from the system
-    Change, ///< Something about the device changed
-    Move,   ///< Device node was moved, renamed, or re-parented
-    Present ///< Device has been present when the StorageMonitor was started
+    Add,     ///< Device is connected to the system
+    Remove,  ///< Device is disconnected from the system
+    Change,  ///< Something about the device changed
+    Move,    ///< Device node was moved, renamed, or re-parented
+    Present  ///< Device has been present when the StorageMonitor was started
 };
+
+String str(StorageAction action);
 
 /** \brief Notification send by the StorageMonitor
   */

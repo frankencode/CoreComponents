@@ -37,7 +37,7 @@ public:
     /** Open a new tempory directory
       * \return new object instance
       */
-    static Ref<Dir> openTemp();
+    static Ref<Dir> openTemp(); // FIXME: obsolete, because misleading
 
     /// Return the directory's file path
     String path() const;
@@ -97,6 +97,13 @@ public:
       * \return name of the newly created directory
       */
     static String createUnique(const String &path, int mode = 0755, char placeHolder = '#');
+
+    /** Create a temporary directory
+      * \param path directory file path pattern
+      * \param mode a combination of cc::Mode
+      * \return name of the newly created directory
+      */
+    static String createTemp(int mode = 0755);
 
     /** Cleanup directory contents recursively
       * \param path directory file path

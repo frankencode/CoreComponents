@@ -2,17 +2,67 @@
 #include <cc/debug>
 #include <cc/Arguments>
 #include <cc/SignalMaster>
+#include <cc/SubProcess>
+#include <cc/Process>
+#include <cc/Dir>
+#include <cc/System>
 #include <cc/sys/StorageMonitor>
 
 using namespace cc;
 using namespace cc::sys;
 
-enum class KeyAction { Attach, Detach };
+class MountGuard {
+public:
+    MountGuard(const String &devNode, const String &fsType, const String &mountOptions):
+        mountPath_(Dir::createTemp())
+    {
+        System::mount(devNode, mountPath_, fsType, mountOptions);
+    }
 
-void runCommand(KeyAction action, const String &command)
+    ~MountGuard()
+    {
+        System::unmount(mountPath_);
+    }
+
+    String mountPath() const { return mountPath_; }
+
+    const MountGuard *operator->() const { return this; }
+
+private:
+    String mountPath_;
+};
+
+void runAttachCommand(const String &shellCommand, const String &devNode, const String &fsType, const String &mountOptions)
 {
-    if (command == "") return;
-    CC_INSPECT(command);
+    if (shellCommand == "") return;
+
+    MountGuard guard(devNode, fsType, mountOptions);
+
+    SubProcess::stage()
+        ->setArgs(
+            StringList::create()
+                << Process::env("SHELL")
+                << "-c"
+                << shellCommand
+        )
+        ->setWorkDir(guard->mountPath())
+        ->start()
+        ->wait();
+}
+
+void runDetachCommand(const String &shellCommand)
+{
+    if (shellCommand == "") return;
+
+    SubProcess::stage()
+        ->setArgs(
+            StringList::create()
+                << Process::env("SHELL")
+                << "-c"
+                << shellCommand
+        )
+        ->start()
+        ->wait();
 }
 
 void runMonitor(const VariantMap *options)
@@ -20,6 +70,8 @@ void runMonitor(const VariantMap *options)
     auto serials = String(options->value("serial"))->split(",");
     String attachCommand = options->value("attach");
     String detachCommand = options->value("detach");
+    String mountOptions = options->value("options");
+    bool verbose = options->value("verbose");
 
     Thread::blockSignals(SignalSet::createFull());
 
@@ -36,16 +88,17 @@ void runMonitor(const VariantMap *options)
 
     for (Ref<const StorageEvent> event; monitor->events()->popFront(&event);)
     {
-        fout() << event << nl;
+        if (verbose) fout() << event << nl;
+
         if (serials->count() == 0 || serials->contains(event->serial())) {
             switch (event->action()) {
                 case StorageAction::Add:
                 case StorageAction::Present: {
-                    runCommand(KeyAction::Attach, attachCommand);
+                    runAttachCommand(attachCommand, event->devNode(), event->fsType(), mountOptions);
                     break;
                 }
                 case StorageAction::Remove: {
-                    runCommand(KeyAction::Detach, detachCommand);
+                    runDetachCommand(detachCommand);
                     break;
                 }
                 default:;
@@ -53,7 +106,7 @@ void runMonitor(const VariantMap *options)
         }
     }
 
-    runCommand(KeyAction::Detach, detachCommand);
+    runDetachCommand(detachCommand);
 
     monitor->wait();
     signalMaster->wait();
@@ -68,6 +121,8 @@ int main(int argc, char **argv)
         options->insert("serial", "");
         options->insert("attach", "");
         options->insert("detach", "");
+        options->insert("options", "");
+        options->insert("verbose", false);
 
         auto arguments = Arguments::parse(argc, argv, options);
 
@@ -79,9 +134,11 @@ int main(int argc, char **argv)
             "Auto mount manager for smart keys\n"
             "\n"
             "Options:\n"
-            "  -serial  comma separated list of device serial numbers\n"
-            "  -attach  command to execute when a smart key is inserted (CWD = mount point)\n"
-            "  -detach  command to execute when a smart key is removed\n"
+            "  -serial   comma separated list of device serial numbers\n"
+            "  -attach   command to execute when a smart key is inserted (CWD = mount point)\n"
+            "  -detach   command to execute when a smart key is removed\n"
+            "  -options  mount options\n"
+            "  -verbose  print more verbose information (storage events, etc.)\n"
         ) << toolName;
     }
 

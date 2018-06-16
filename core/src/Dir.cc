@@ -32,7 +32,7 @@ Ref<Dir> Dir::tryOpen(const String &path)
 Ref<Dir> Dir::openTemp()
 {
     String path = createUnique(
-        Format("/tmp/%%_XXXXXXXX")
+        Format("/tmp/%%_########")
             << Process::exePath()->fileName()
     );
     return open(path);
@@ -160,6 +160,15 @@ String Dir::createUnique(const String &path, int mode, char placeHolder)
             return candidate;
         }
     }
+}
+
+String Dir::createTemp(int mode)
+{
+    return createUnique(
+        Format("/tmp/%%_########")
+            << Process::exePath()->fileName(),
+        mode
+    );
 }
 
 void Dir::deplete(const String &path)

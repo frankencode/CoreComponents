@@ -240,6 +240,19 @@ Ref<SubProcess> SubProcess::start(const String &command)
         ->open();
 }
 
+int SubProcess::shellExecute(const String &shellCommand)
+{
+    return SubProcess::stage()
+        ->setArgs(
+            StringList::create()
+                << Process::env("SHELL")
+                << "-c"
+                << shellCommand
+        )
+        ->start()
+        ->wait();
+}
+
 SubProcess::SubProcess(Staging *staging, pid_t pid):
     params_(staging),
     pid_(pid)

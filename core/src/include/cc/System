@@ -33,7 +33,7 @@ public:
       * \param type filesystem type (e.g. ext4)
       * \param options comma separated list of mount options
       */
-    static void mount(const String &source, const String &target, const String &type, const String &options);
+    static void mount(const String &source, const String &target, const String &type, const String &options = "");
 
     /// Unmount the filesystem mounted under \a target directory
     static void unmount(const String &target);

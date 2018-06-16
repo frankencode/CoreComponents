@@ -18,7 +18,8 @@ BuildStageGuard::BuildStageGuard(BuildStage *stage):
     for (String command: stage_->preCommands()) {
         SubProcess::stage()
             ->setCommand(command)
-            ->execute();
+            ->start()
+            ->wait();
     }
 }
 
@@ -28,7 +29,8 @@ BuildStageGuard::~BuildStageGuard()
         for (String command: stage_->postCommands()) {
             SubProcess::stage()
                 ->setCommand(command)
-                ->execute();
+                ->start()
+                ->wait();
         }
     }
 }

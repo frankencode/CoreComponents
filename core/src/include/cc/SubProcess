@@ -127,9 +127,6 @@ public:
             return SubProcess::bootstrap(this);
         }
 
-        /// Convenience function, equivalent to start()->wait()
-        inline int execute() { return start()->wait(); }
-
     protected:
         friend class SubProcess;
 
@@ -178,6 +175,12 @@ public:
       * \return new object instance
       */
     static Ref<SubProcess> start(const String &command);
+
+    /** \brief Execute a shell command (convenience wrapper)
+      * \param shellCommand shell command to execute
+      * \return exit code
+      */
+    static int shellExecute(const String &shellCommand);
 
     /// Sub-process process ID
     pid_t pid() const;
