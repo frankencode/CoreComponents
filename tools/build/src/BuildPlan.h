@@ -111,9 +111,12 @@ public:
     inline String installPrefix() const { return installPrefix_; }
     inline String testArgs() const { return testArgs_; }
 
-    String sourcePath(String source) const;
-    String modulePath(String object) const;
-    String installPath(String relativeInstallPath) const;
+    String sourcePath(const String &source) const;
+    String modulePath(const String &object) const;
+    String installPath(const String &relativeInstallPath) const;
+
+    String pluginPath(const String &targetLibName) const;
+    String pluginReversePath() const;
 
     String previousLinkCommandPath() const;
 

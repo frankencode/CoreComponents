@@ -268,6 +268,7 @@ protected:
         ApplicationPrototype(className)
     {
         insert("extend", "");
+        insert("group", "");
     }
 };
 

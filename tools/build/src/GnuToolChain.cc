@@ -335,21 +335,19 @@ void GnuToolChain::createPluginSymlinks(const BuildPlan *plan, String targetLibN
 {
     cleanPluginSymlinks(plan, targetLibName, pluginLibName);
 
-    String pluginPath = targetLibName->extendPath("plugins");
+    String pluginPath = plan->pluginPath(targetLibName);
     plan->shell()->mkdir(pluginPath);
-    plan->shell()->symlink("../../" + pluginLibName, pluginPath->extendPath(pluginLibName));
+    plan->shell()->symlink(plan->pluginReversePath()->extendPath(pluginLibName), pluginPath->extendPath(pluginLibName));
 }
 
 void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, String targetLibName, String pluginLibName) const
 {
-    String pluginPath = targetLibName->extendPath("plugins");
-    plan->shell()->clean(pluginPath->extendPath(pluginLibName));
+    plan->shell()->clean(plan->pluginPath(targetLibName)->extendPath(pluginLibName));
 }
 
 void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, String targetLibName) const
 {
-    String pluginPath = targetLibName->extendPath("plugins");
-    plan->shell()->clean(pluginPath);
+    plan->shell()->clean(plan->pluginPath(targetLibName));
 }
 
 void GnuToolChain::createAliasSymlinks(const BuildPlan *plan, String appName) const

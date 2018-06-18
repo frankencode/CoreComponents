@@ -1,5 +1,6 @@
 Plugin {
     name: ccuiindustrialplugin
+    group: style
     extend: cc/ui
     bundle: icons
 }
