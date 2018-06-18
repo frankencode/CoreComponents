@@ -21,7 +21,7 @@ class MainView: public View
         Point center = size() / 2;
         const double step = 10;
         const double radius = std::min(size()[0], size()[1]) / 3;
-        for (double angle = 0; angle < 50; angle += step) {
+        for (double angle = 0; angle < 360; angle += step) {
             p->moveTo(center);
             p->arcNegative(center, radius, -degree(angle), -degree(angle + step));
             p->setSource(Color::fromHue(angle));
