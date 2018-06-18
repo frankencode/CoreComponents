@@ -30,8 +30,16 @@ if [ "$(command -v apt-file)" == "" ]; then
     set +o verbose
 fi
 
-echo "Collecting package names..."
-PACKAGES="$(for name in $($CCBUILD -configure-list ~/src/cc); do apt-file search -l pkgconfig/$name.pc; done)"
+PACKAGES=""
+CMD="$CCBUILD -configure-list $(dirname $0)"
+echo $CMD
+for name in $($CMD); do
+    CMD="apt-file search -l pkgconfig/$name.pc"
+    echo $CMD
+    P=$($CMD)
+    PACKAGES="$PACKAGES $P";
+done
 
-echo "Installing packages..."
-sudo apt-get install $PACKAGES
+CMD="sudo apt-get install $PACKAGES"
+echo $CMD
+$CMD
