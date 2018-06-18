@@ -394,20 +394,34 @@ String BuildPlan::description() const
     return recipe_->value("description");
 }
 
-String BuildPlan::sourcePath(String source) const
+String BuildPlan::sourcePath(const String &source) const
 {
     if (projectPath_ == ".") return source;
     return projectPath_->extendPath(source);
 }
 
-String BuildPlan::modulePath(String object) const
+String BuildPlan::modulePath(const String &object) const
 {
     return modulePath_->extendPath(object);
 }
 
-String BuildPlan::installPath(String relativeInstallPath) const
+String BuildPlan::installPath(const String &relativeInstallPath) const
 {
     return installRoot_->extendPath(installPrefix_)->extendPath(relativeInstallPath);
+}
+
+String BuildPlan::pluginPath(const String &targetLibName) const
+{
+    String path = targetLibName->extendPath("plugins");
+    String group = recipe_->value("group");
+    if (group != "") path = path->extendPath(group);
+    return path;
+}
+
+String BuildPlan::pluginReversePath() const
+{
+    String group = recipe_->value("group");
+    return group != "" ? "../../.." : "../..";
 }
 
 String BuildPlan::previousLinkCommandPath() const

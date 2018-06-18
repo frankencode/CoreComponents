@@ -11,6 +11,7 @@
 namespace cc {
 namespace ui {
 
-CC_PLUGIN_LOADER
+CC_PLUGIN_GROUP_LOADER(platform)
+CC_PLUGIN_GROUP_LOADER(style)
 
 }} // namespace cc::ui

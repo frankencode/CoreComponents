@@ -35,7 +35,7 @@ Prequisites:
 Install required development packages:
 
 ```
-sudo apt-get install g++ pkg-config libreadline-dev git curl
+sudo apt-get install g++ pkg-config git curl
 ```
 
 Download the latest stable version from github:

@@ -20,11 +20,11 @@ namespace cc {
 class PluginLoader: public Object
 {
 public:
-    PluginLoader(String libraryPath);
+    PluginLoader(const String &libraryPath, const String &group = "");
 };
 
 #define CC_PLUGIN_LOADER \
-const char *getLibraryPath() \
+inline const char *getLibraryPath() \
 { \
     Dl_info info; \
     dladdr((void *)getLibraryPath, &info); \
@@ -32,6 +32,17 @@ const char *getLibraryPath() \
 } \
 namespace { \
     PluginLoader pluginLoader(getLibraryPath()); \
+}
+
+#define CC_PLUGIN_GROUP_LOADER(group) \
+inline const char *group ## getLibraryPath() \
+{ \
+    Dl_info info; \
+    dladdr((void *)group ## getLibraryPath, &info); \
+    return info.dli_fname; \
+} \
+namespace { \
+    PluginLoader group ## pluginLoader(group ## getLibraryPath(), CC_XSTR(group)); \
 }
 
 } // namespace cc

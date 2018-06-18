@@ -1,10 +1,4 @@
 Library {
     name: cctar
     use: core
-    /*Dependency {
-        name: zlib
-        optional: true
-        link: z
-        compile-flags: -DCC_ZLIB
-    }*/
 }

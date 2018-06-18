@@ -276,7 +276,7 @@ inline int32_t operator+(ScanCode scanCode) { return static_cast<int32_t>(scanCo
 
 String str(ScanCode scanCode);
 
-#define CCUI_SCANCODE_TO_KEYCODE(scanCode) static_cast<KeyCode>(static_cast<int32_t>(scanCode) | (1 << 30))
+#define CCUI_SCANCODE_TO_KEYCODE(scanCode) static_cast<int32_t>(scanCode) | (1 << 30)
 
 enum class KeyCode: int32_t {
     Unknown                  = 0,
