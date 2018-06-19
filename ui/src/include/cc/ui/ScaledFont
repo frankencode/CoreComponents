@@ -23,7 +23,7 @@ public:
 
     virtual const FontMetrics *metrics() const = 0;
 
-    virtual String toString() const;
+    virtual String toString() const = 0;
 };
 
 }} // namespace cc::ui

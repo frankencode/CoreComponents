@@ -35,6 +35,8 @@ public:
     Stretch stretch() const override { return stretch_; }
     Pitch pitch() const override { return pitch_; }
 
+    String toString() const override { return String{}; }
+
 private:
     TestFontFace(
         String family,

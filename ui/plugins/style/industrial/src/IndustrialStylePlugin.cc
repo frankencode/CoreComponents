@@ -40,8 +40,23 @@ void IndustrialStylePlugin::activate()
     String notoPath = "/usr/share/fonts/truetype/noto";
     if (Dir::exists(notoPath)) {
         FontManager::instance()->addPath(notoPath);
-        defaultFont = Font("Noto Sans Display UI", sp(16));
-        defaultFixedFont = Font("Noto Mono", sp(16));
+        auto families = FontManager::instance()->getFontFamilies();
+        for (auto family: families) {
+            if (family->name() == "Noto Sans Display") {
+                defaultFont = Font("Noto Sans Display", sp(16));
+                break;
+            }
+            if (family->name() == "Noto Sans UI") {
+                defaultFont = Font("Noto Sans UI", sp(16));
+                break;
+            }
+        }
+        for (auto family: families) {
+            if (family->name() == "Noto Mono") {
+                defaultFixedFont = Font("Noto Mono", sp(16));
+                break;
+            }
+        }
     }
 
     String notoPath2 = "/usr/share/fonts/opentype/noto";
