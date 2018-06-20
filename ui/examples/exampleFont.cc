@@ -15,7 +15,7 @@ class MainView: public View
         size = Size{640, 480};
         inheritPaper();
 
-        ScrollView *scroll = ScrollView::create(this);
+        auto scroll = ScrollView::create(this);
         scroll->carrier()->organize<Column>();
 
         for (int size = 16; size <= 64; size += 8) {
@@ -30,7 +30,7 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    Application *app = Application::open(argc, argv);
+    auto app = Application::open(argc, argv);
     Window::open<MainView>("Hello, world!");
     return app->run();
 }

@@ -22,14 +22,17 @@ FontManager *FontManager::instance()
     return PlatformPlugin::instance()->fontManager();
 }
 
-void FontManager::addPath(const String &dirPath)
+void FontManager::addPath(const String &dirPath, const String &namePrefix)
 {
     Ref<DirWalker> walker = DirWalker::open(dirPath);
     String path;
     bool isDir = false;
     while (walker->read(&path, &isDir)) {
-        if (!isDir && isFontFace(path))
+        if (!isDir && isFontFace(path)) {
+            if (namePrefix != "" && !path->fileName()->beginsWith(namePrefix))
+                continue;
             addFontFace(openFontFace(path));
+        }
     }
 }
 

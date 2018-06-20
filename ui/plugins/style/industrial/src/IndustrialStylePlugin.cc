@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cc/Registration>
 #include <cc/Bundle>
+#include <cc/File>
 #include <cc/Dir>
 #include <cc/ui/types>
 #include <cc/ui/Application>
@@ -30,21 +31,37 @@ IndustrialStylePlugin::IndustrialStylePlugin():
 
 void IndustrialStylePlugin::activate()
 {
-    String dejavuPath = "/usr/share/fonts/truetype/dejavu";
-    if (Dir::exists(dejavuPath)) {
-        FontManager::instance()->addPath(dejavuPath);
+    if (File::exists("/usr/share/fonts/TTF/DejaVuSans.ttf")) {
+        // Arch
+        FontManager::instance()->addPath("/usr/share/fonts/TTF", "DejaVu");
         defaultFont = Font("DejaVu Sans", sp(16));
         defaultFixedFont = Font("DejaVu Sans Mono", sp(16));
     }
-
-    String notoPath = "/usr/share/fonts/truetype/noto";
-    if (Dir::exists(notoPath)) {
-        FontManager::instance()->addPath(notoPath);
-        defaultFont = Font("Noto Sans Display UI", sp(16));
-        defaultFixedFont = Font("Noto Mono", sp(16));
+    else {
+        // Debian
+        String dejavuPath = "/usr/share/fonts/truetype/dejavu";
+        if (Dir::exists(dejavuPath)) {
+            FontManager::instance()->addPath(dejavuPath);
+            defaultFont = Font("DejaVu Sans", sp(16));
+            defaultFixedFont = Font("DejaVu Sans Mono", sp(16));
+        }
     }
 
-    String notoPath2 = "/usr/share/fonts/opentype/noto";
+    const char *notoPaths[] = {
+        "/usr/share/fonts/noto", // Arch
+        "/usr/share/fonts/truetype/noto" // Debian
+    };
+
+    for (auto path: notoPaths) {
+        if (Dir::exists(path)) {
+            FontManager::instance()->addPath(path);
+            defaultFont = Font("Noto Sans", sp(16));
+                //  Display UI (sometimes broken;)
+            defaultFixedFont = Font("Noto Mono", sp(16));
+        }
+    }
+
+    String notoPath2 = "/usr/share/fonts/opentype/noto"; // CJK fonts (Debian)
     if (Dir::exists(notoPath2))
         FontManager::instance()->addPath(notoPath2);
 
