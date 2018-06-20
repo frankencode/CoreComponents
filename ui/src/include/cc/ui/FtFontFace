@@ -33,6 +33,8 @@ public:
 
     FT_Face ftFace() const { return face_; }
 
+    String toString() const;
+
 protected:
     FtFontFace(const String &path);
     ~FtFontFace();

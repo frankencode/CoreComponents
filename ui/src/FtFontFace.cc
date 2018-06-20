@@ -53,4 +53,17 @@ FtFontFace *FtFontFace::open()
     return this;
 }
 
+String FtFontFace::toString() const
+{
+    return Format()
+        << "FtFontFace {" << nl
+        << "  family:  " << family_ << nl
+        << "  weight:  " << weight_ << nl
+        << "  slant:   " << slant_ << nl
+        << "  stretch: " << stretch_ << nl
+        << "  pitch:   " << pitch_ << nl
+        << "  path:    " << path_ << nl
+        << "}";
+}
+
 }} // namespace cc::ui

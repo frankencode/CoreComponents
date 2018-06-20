@@ -21,6 +21,8 @@ public:
     virtual Slant slant() const = 0;
     virtual Stretch stretch() const = 0;
     virtual Pitch pitch() const = 0;
+
+    virtual String toString() const = 0;
 };
 
 }} // namespace cc::ui
