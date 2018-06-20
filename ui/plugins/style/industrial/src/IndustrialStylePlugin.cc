@@ -55,9 +55,28 @@ void IndustrialStylePlugin::activate()
     for (auto path: notoPaths) {
         if (Dir::exists(path)) {
             FontManager::instance()->addPath(path);
+            #if 0
+            auto families = FontManager::instance()->getFontFamilies();
+            for (auto family: families) {
+                if (family->name() == "Noto Sans Display") {
+                    defaultFont = Font("Noto Sans Display", sp(16));
+                    break;
+                }
+                if (family->name() == "Noto Sans UI") {
+                    defaultFont = Font("Noto Sans UI", sp(16));
+                    break;
+                }
+            }
+            for (auto family: families) {
+                if (family->name() == "Noto Mono") {
+                    defaultFixedFont = Font("Noto Mono", sp(16));
+                    break;
+                }
+            }
+            #endif
             defaultFont = Font("Noto Sans", sp(16));
-                //  Display UI (sometimes broken;)
             defaultFixedFont = Font("Noto Mono", sp(16));
+            break;
         }
     }
 
