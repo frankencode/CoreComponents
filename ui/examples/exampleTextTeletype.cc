@@ -28,7 +28,7 @@ class MainView: public View
                 Font(fontSize_) << Pitch::Fixed
             );
 
-        Ref<Random> random = Random::open(0);
+        auto random = Random::open(0);
         fgColors_ = Array<Color>::create(glyphRun_->text()->count());
         bgColors_ = Array<Color>::create(glyphRun_->text()->count());
         Color fg, bg;
@@ -83,7 +83,7 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    Application *app = Application::open(argc, argv);
+    auto app = Application::open(argc, argv);
     Window::open<MainView>("Hello, world!");
     return app->run();
 }

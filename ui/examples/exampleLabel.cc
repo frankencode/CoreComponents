@@ -1,4 +1,3 @@
-#include <cc/debug>
 #include <cc/System>
 #include <cc/Date>
 #include <cc/ui/Application>
@@ -23,7 +22,7 @@ class MainView: public View
             return dec(date->hour(), 2) + "∶" + dec(date->minutes(), 2) + "∶" + dec(date->seconds(), 2);
         };
 
-        Label *label = add<Label>(getClockText());
+        auto label = add<Label>(getClockText());
         label->font = Font { sp(40) };
         label->paper = 0xD0D0FF;
         label->ink = 0x000000;
@@ -50,7 +49,7 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    Application *app = Application::open(argc, argv);
+    auto app = Application::open(argc, argv);
     Window::open<MainView>("Hello, world!");
     return app->run();
 }

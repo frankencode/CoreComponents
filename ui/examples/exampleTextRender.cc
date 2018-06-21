@@ -20,16 +20,16 @@ class MainView: public View
         String pangram = "the quick brown fox jumps over the lazy dog";
         pangram = pangram->toUpper() + " / " + pangram;
 
-        for (const FontFamily *fontFamily: FontManager::instance()->getFontFamilies())
+        for (auto family: FontManager::instance()->getFontFamilies())
         {
-            String text = Format("%% (%%)") << pangram << fontFamily->name();
+            String text = Format("%% (%%)") << pangram << family->name();
 
-            // CC_INSPECT(fontFamily->name());
+            // CC_INSPECT(family->name());
 
-            if (fontFamily->name()->split(" ")->count() > 2) continue;
+            if (family->name()->split(" ")->count() > 2) continue;
                 // skip special regions fonts
 
-            Font font(fontFamily->name());
+            Font font(family->name());
             glyphRuns_ << GlyphRun::typeset(text, font);
 
             font << Weight::Bold;
@@ -59,10 +59,12 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    Application *app = Application::open(argc, argv);
-    String fontPath = "/usr/share/fonts/truetype/dejavu/";
-    if (argc > 1) fontPath = argv[1];
-    FontManager::instance()->addPath(fontPath);
-    Window::open(Object::create<MainView>(), fontPath);
+    auto app = Application::open(argc, argv);
+    String fontPath = "<default font>";
+    if (argc > 1) {
+        fontPath = argv[1];
+        FontManager::instance()->addPath(fontPath);
+    }
+    Window::open<MainView>(fontPath);
     return app->run();
 }

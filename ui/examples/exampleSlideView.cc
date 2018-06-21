@@ -1,4 +1,3 @@
-#include <cc/debug>
 #include <cc/ui/Application>
 #include <cc/ui/SlideView>
 #include <cc/ui/Transition>
@@ -26,7 +25,7 @@ class Slide2: public View
     Slide2(View *parent):
         View(parent)
     {
-        View *box = add<View>();
+        auto box = add<View>();
         box->paper = 0xD0D0FF;
         box->centerInParent();
 
@@ -74,7 +73,7 @@ class MainView: public SlideView
 
 int main(int argc, char **argv)
 {
-    Application *app = Application::open(argc, argv);
+    auto app = Application::open(argc, argv);
     Window::open<MainView>("Hello, world!", WindowMode::Accelerated);
     return app->run();
 }

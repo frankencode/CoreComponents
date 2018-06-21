@@ -80,9 +80,15 @@ void IndustrialStylePlugin::activate()
         }
     }
 
-    String notoPath2 = "/usr/share/fonts/opentype/noto"; // CJK fonts (Debian)
-    if (Dir::exists(notoPath2))
-        FontManager::instance()->addPath(notoPath2);
+    const char *notoCjkPaths[] = {
+        "/usr/share/fonts/noto-cjk", // Arch
+        "/usr/share/fonts/opentype/noto" // Debian
+    };
+
+    for (auto path: notoCjkPaths) {
+        if (Dir::exists(path))
+            FontManager::instance()->addPath(path);
+    }
 
     FontManager::instance()->addPath(CC_BUNDLE_LOOKUP("icons"));
 }

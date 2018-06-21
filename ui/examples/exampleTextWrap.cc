@@ -22,7 +22,7 @@ class MainView: public View
                 "ἄλλων διδάσκαλοι γεγόνασι, καὶ τὸ τῶν Ἑλλήνων ὄνομα πεποίηκε "
                 "μηκέτι τοῦ γένους ἀλλὰ τῆς διανοίας δοκεῖν εἶναι, καὶ μᾶλλον "
                 "Ἕλληνας καλεῖσθαι τοὺς τῆς παιδεύσεως τῆς ἡμετέρας ἢ τοὺς τῆς "
-                "κοινῆς φύσεως μετέχοντας. (Isocrates' speech)",
+                "κοινῆς φύσεως μετέχοντας. (Isocrates' speech)"
                 #endif
                 #if 0
                 "Молчи, скрывайся и таи "
@@ -42,12 +42,11 @@ class MainView: public View
                 "Таинственно-волшебных дум; "
                 "Их оглушит наружный шум, "
                 "Дневные разгонят лучи, - "
-                "Внимай их пенью - и молчи!.. ",
+                "Внимай их пенью - и молчи!.. "
                 #endif
                 #if 0
                 "古池や蛙飛び込む水の音ふるいけやかわずとびこむみずのおと (Bashō's old pond)",
                 #endif
-                "人之初，性本善。性相近，习相远。苟不教，性乃迁。教之道，贵以专。昔孟母，择邻处。子不学，断机杼，窦燕山，有义方，教五子，名俱扬。养不教，父之过。教不严，师之惰。 (Confucius)",
                 #if 0
                 "Es war einmal eine Königstochter, die ging hinaus in den Wald und setzte "
                 "sich an einen kühlen Brunnen. Sie hatte eine goldene Kugel, die war ihr "
@@ -55,8 +54,9 @@ class MainView: public View
                 "Luft und hatte ihre Lust daran. Einmal war die Kugel gar hoch geflogen, "
                 "sie hatte die Hand schon ausgestreckt und die Finger gekrümmt, um sie "
                 "wieder zufangen, da schlug sie neben vorbei auf die Erde, rollte und rollte "
-                "und geradezu in das Wasser hinein.",
+                "und geradezu in das Wasser hinein."
                 #endif
+                "人之初，性本善。性相近，习相远。苟不教，性乃迁。教之道，贵以专。昔孟母，择邻处。子不学，断机杼，窦燕山，有义方，教五子，名俱扬。养不教，父之过。教不严，师之惰。 (Confucius)",
                 Font("Noto Sans CJK JP", fontSize_)
             );
 
@@ -88,10 +88,12 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    Application *app = Application::open(argc, argv);
-    String fontPath = "/usr/share/fonts/opentype/noto";
-    if (argc > 1) fontPath = argv[1];
-    FontManager::instance()->addPath(fontPath);
+    auto app = Application::open(argc, argv);
+    String fontPath = "<default font>";
+    if (argc > 1) {
+        fontPath = argv[1];
+        FontManager::instance()->addPath(fontPath);
+    }
     Window::open<MainView>(fontPath);
     return app->run();
 }

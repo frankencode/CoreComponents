@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 #include <cc/stdio>
 #include <cc/System>
 #include <cc/str>
@@ -10,9 +10,9 @@ using namespace cc::ui;
 
 int main(int argc, char **argv)
 {
-    Application *app = Application::open(argc, argv);
+    auto app = Application::open(argc, argv);
 
-    Timer::startAt(::ceil(System::now()), 1, []{
+    Timer::startAt(std::ceil(System::now()), 1, []{
         fout() << fixed(System::now(), 6) << nl;
     });
 

@@ -1,5 +1,4 @@
 #include <cc/stdio>
-#include <cc/debug>
 #include <cc/CircularBuffer>
 #include <cc/Map>
 #include <cc/ui/DisplayManager>
@@ -107,11 +106,11 @@ int main(int argc, char **argv)
         ferr() << "No touch device found!" << nl;
         return 1;
     }
-    Application *app = Application::open(argc, argv);
+    auto app = Application::open(argc, argv);
     app->cursorVisible = false;
     app->screenSaverEnabled = true;
 
-    Window::open(Object::create<MainView>(), argv[0], WindowMode::Fullscreen);
+    Window::open<MainView>(argv[0], WindowMode::Fullscreen);
 
     return app->run();
 }

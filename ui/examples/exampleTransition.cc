@@ -40,7 +40,7 @@ class MainView: public Control
 
 int main(int argc, char **argv)
 {
-    Application *app = Application::open(argc, argv);
+    auto app = Application::open(argc, argv);
     Window::open<MainView>("Click me!", WindowMode::Accelerated);
     return app->run();
 }

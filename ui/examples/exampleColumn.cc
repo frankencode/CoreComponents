@@ -25,7 +25,7 @@ class MainView: public View
         size = Size{640, 480};
         paper = 0xFFFFFF;
 
-        View *box = add<View>();
+        auto box = add<View>();
         box->paper = 0xD0D0FF;
         box->centerInParent();
 
@@ -36,7 +36,7 @@ class MainView: public View
         box->add<Item>("• Item 3");
 
         {
-            View *subBox = box->add<View>();
+            auto subBox = box->add<View>();
             subBox->paper = 0xD0FFD0;
 
             subBox->organize<Column>()
@@ -53,7 +53,7 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    Application *app = Application::open(argc, argv);
+    auto app = Application::open(argc, argv);
     Window::open<MainView>("Hello, world!");
     return app->run();
 }

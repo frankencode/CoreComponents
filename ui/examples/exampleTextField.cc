@@ -1,4 +1,3 @@
-#include <cc/debug>
 #include <cc/ui/Application>
 #include <cc/ui/TextField>
 

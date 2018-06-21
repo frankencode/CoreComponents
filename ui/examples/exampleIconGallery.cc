@@ -35,8 +35,8 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    Application *app = Application::open(argc, argv);
-    Window *window = Window::open(Object::create<MainView>(), "Hello, world!");
+    auto app = Application::open(argc, argv);
+    auto window = Window::open<MainView>("Hello, world!");
     window->title->bind([=]{ return "Test window " + str(window->size()) + " at " + str(window->pos()); });
     return app->run();
 }
