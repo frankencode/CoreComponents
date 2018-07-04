@@ -11,10 +11,6 @@
 namespace cc {
 namespace ui {
 
-SdlContext::SdlContext():
-    sdlTexture_(0)
-{}
-
 SdlContext::~SdlContext()
 {
     if (sdlTexture_) SDL_DestroyTexture(sdlTexture_);

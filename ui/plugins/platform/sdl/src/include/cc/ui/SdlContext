@@ -24,10 +24,10 @@ public:
 private:
     friend class SdlWindow;
 
-    SdlContext();
+    SdlContext() {}
     ~SdlContext();
 
-    SDL_Texture *sdlTexture_;
+    SDL_Texture *sdlTexture_ { nullptr };
     int sdlTextureWidth_ { 0 };
     int sdlTextureHeight_ { 0 };
 };

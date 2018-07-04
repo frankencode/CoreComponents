@@ -54,14 +54,24 @@ Point Label::textPos() const
         };
 }
 
-Size Label::preferredSize() const
+Size Label::preferredSize(const String &text, const Font &font, Size margin)
+{
+    return preferredSize(TextRun::createHtml(text, font), margin);
+}
+
+Size Label::preferredSize(const TextRun *textRun, Size margin)
 {
     return
-        2 * margin() +
+        2 * margin +
         Size {
-            textRun()->size()[0],
-            textRun()->maxAscender() - textRun()->minDescender()
+            textRun->size()[0],
+            textRun->maxAscender() - textRun->minDescender()
         };
+}
+
+Size Label::preferredSize() const
+{
+    return preferredSize(textRun(), margin());
 }
 
 Size Label::minSize() const

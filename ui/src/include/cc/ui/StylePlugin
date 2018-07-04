@@ -30,7 +30,9 @@ public:
     Property<Font> defaultFont;
     Property<Font> defaultFixedFont;
 
-    virtual Size defaultMargin(double fontSize) const;
+    virtual double itemHeight1() const { return dp(48); }
+    virtual double itemHeight2() const { return dp(56); }
+    virtual double itemHeight3() const { return dp(64); }
 
     Property< Ref<const Theme> > theme;
 

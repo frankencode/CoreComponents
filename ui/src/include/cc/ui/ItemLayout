@@ -28,6 +28,10 @@ public:
     ItemVisual *at(int i) { return visuals_->at(i); }
     double getPosAt(int i) { return visuals_->getPosAt(i); }
 
+    void getView(double pos0, double pos1, int *index0, int *index1, double *itemPos0) const {
+        return visuals_->getView(pos0, pos1, index0, index1, itemPos0);
+    }
+
     Signal changed;
 
 private:

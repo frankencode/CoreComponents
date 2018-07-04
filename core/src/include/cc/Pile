@@ -69,7 +69,9 @@ public:
         tree_.getItemExtentAt(index, item, extent);
     }
 
-    void getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const { tree_.getView(pos0, pos1, index0, index1, itemPos0); }
+    void getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const {
+        tree_.getView(pos0, pos1, index0, index1, itemPos0);
+    }
 
     Extent getPosAt(int index) const {
         CC_ASSERT(has(index));

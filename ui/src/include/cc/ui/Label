@@ -28,6 +28,8 @@ public:
 
     Point textPos() const;
 
+    static Size preferredSize(const String &text, const Font &font = Font{}, Size margin = Size{});
+    static Size preferredSize(const TextRun *textRun, Size margin = Size{});
     Size preferredSize() const override;
     Size minSize() const override;
 

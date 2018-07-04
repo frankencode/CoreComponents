@@ -13,8 +13,74 @@
 namespace cc {
 namespace ui {
 
+/** color palette of Elementary OS
+  * \see Color(uint32_t)
+  */
+enum class Elementary: uint32_t
+{
+    Strawberry100 = 0xff8c82,
+    Strawberry300 = 0xed5353,
+    Strawberry500 = 0xc6262e,
+    Strawberry700 = 0xa10705,
+    Strawberry900 = 0x7a0000,
+
+    Orange100     = 0xffc27d,
+    Orange300     = 0xffa154,
+    Orange500     = 0xf37329,
+    Orange700     = 0xcc3b02,
+    Orange900     = 0xa62100,
+
+    Banana100     = 0xfff394,
+    Banana300     = 0xffe16b,
+    Banana500     = 0xf9c440,
+    Banana700     = 0xd48e15,
+    Banana900     = 0xad5f00,
+
+    Lime100       = 0xd1ff82,
+    Lime300       = 0x9bdb4d,
+    Lime500       = 0x68b723,
+    Lime700       = 0x3a9104,
+    Lime900       = 0x206b00,
+
+    Blueberry100  = 0x8cd5ff,
+    Blueberry300  = 0x64baff,
+    Blueberry500  = 0x3689e6,
+    Blueberry700  = 0x0d52bf,
+    Blueberry900  = 0x002e99,
+
+    Grape100      = 0xe4c6fa,
+    Grape300      = 0xcd9ef7,
+    Grape500      = 0xa56de2,
+    Grape700      = 0x7239b3,
+    Grape900      = 0x452981,
+
+    Cocoa100      = 0xa3907c,
+    Cocoa300      = 0x8a715e,
+    Cocoa500      = 0x715344,
+    Cocoa700      = 0x57392d,
+    Cocoa900      = 0x3d211b,
+
+    Silver100     = 0xfafafa,
+    Silver300     = 0xd4d4d4,
+    Silver500     = 0xabacae,
+    Silver700     = 0x7e8087,
+    Silver900     = 0x555761,
+
+    Slate100      = 0x95a3ab,
+    Slate300      = 0x667885,
+    Slate500      = 0x485a6c,
+    Slate700      = 0x273445,
+    Slate900      = 0x0e141f,
+
+    Black100      = 0x666666,
+    Black300      = 0x4d4d4d,
+    Black500      = 0x333333,
+    Black700      = 0x1a1a1a,
+    Black900      = 0x000000
+};
+
 /** the Material Design color palette
-  * \see Color::tone()
+  * \see Color(uint32_t)
   */
 enum class Material: uint32_t
 {
