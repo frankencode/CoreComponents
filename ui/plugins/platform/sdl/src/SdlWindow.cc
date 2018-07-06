@@ -165,8 +165,8 @@ void SdlWindow::renderCascade(SDL_Renderer *sdlRenderer, View *view)
 
     renderTexture(sdlRenderer, view);
 
-    for (int i = 0, n = view->childCount(); i < n; ++i)
-        renderCascade(sdlRenderer, view->childAt(i));
+    for (int i = 0, n = view->visibleChildCount(); i < n; ++i)
+        renderCascade(sdlRenderer, view->visibleChildAt(i));
 }
 
 void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)

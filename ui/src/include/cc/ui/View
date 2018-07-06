@@ -50,6 +50,9 @@ public:
     Property<int> childCount { 0 };
     View *childAt(int i) const { return children_->valueAt(i); }
 
+    int visibleChildCount() const { return visibleChildren_->count(); }
+    View *visibleChildAt(int i) const { return visibleChildren_->valueAt(i); }
+
     Point mapToGlobal(Point l) const;
     Point mapToLocal(Point g) const;
     bool containsLocal(Point l) const;
