@@ -20,7 +20,8 @@ View::View(View *parent):
     serial_(0),
     window_(0),
     parent_(0),
-    children_(Children::create())
+    children_(Children::create()),
+    visibleChildren_(Children::create())
 {
     if (parent)
     {
@@ -40,6 +41,16 @@ View::View(View *parent):
     scale->connect([=]{ update(UpdateReason::Moved); });
 
     visible->connect([=]{
+        if (!visible()) {
+            image_ = nullptr;
+            context_ = nullptr;
+            if (parent_)
+                parent_->visibleChildren_->remove(serial_);
+        }
+        else {
+            if (parent_)
+                parent_->visibleChildren_->insert(serial_, this);
+        }
         update(visible() ? UpdateReason::Shown : UpdateReason::Hidden);
     });
 }
@@ -78,7 +89,7 @@ bool View::containsGlobal(Point g) const
 
 View *View::getTopViewAt(Point g)
 {
-    for (auto pair: children_) {
+    for (auto pair: visibleChildren_) {
         View *child = pair->value();
         if (child->containsGlobal(g))
             return child->getTopViewAt(g);
@@ -236,6 +247,8 @@ void View::insertChild(View *child)
     child->parent_ = this;
     child->serial_ = nextSerial();
     children_->insert(child->serial_, child);
+    if (child->visible())
+        visibleChildren_->insert(child->serial_, child);
     childCount += 1;
 }
 
@@ -243,6 +256,8 @@ void View::removeChild(View *child)
 {
     Ref<View> hook = child;
     children_->remove(child->serial_);
+    if (child->visible())
+        visibleChildren_->remove(child->serial_);
     child->serial_ = 0;
     childCount -= 1;
     childDone(child);
@@ -282,11 +297,11 @@ bool View::feedFingerEvent(FingerEvent *event)
             return true;
     }
 
-    for (auto pair: children_)
+    for (auto pair: visibleChildren_)
     {
         View *child = pair->value();
 
-        if (child->visible() && child->containsGlobal(event->pos()))
+        if (child->containsGlobal(event->pos()))
         {
             if (child->feedFingerEvent(event))
                 return true;
@@ -328,11 +343,11 @@ bool View::feedMouseEvent(MouseEvent *event)
             return true;
     }
 
-    for (auto pair: children_)
+    for (auto pair: visibleChildren_)
     {
         View *child = pair->value();
 
-        if (child->visible() && child->containsGlobal(event->pos()))
+        if (child->containsGlobal(event->pos()))
         {
             if (child->feedMouseEvent(event))
                 return true;
@@ -350,11 +365,11 @@ bool View::feedWheelEvent(WheelEvent *event)
             return true;
     }
 
-    for (auto pair: children_)
+    for (auto pair: visibleChildren_)
     {
         View *child = pair->value();
 
-        if (child->visible() && child->containsGlobal(event->mousePos()))
+        if (child->containsGlobal(event->mousePos()))
         {
             if (child->feedWheelEvent(event))
                 return true;
@@ -375,13 +390,12 @@ bool View::feedKeyEvent(KeyEvent *event)
         if (onKeyReleased(event)) return true;
     }
 
-    for (auto pair: children_)
+    for (auto pair: visibleChildren_)
     {
         View *child = pair->value();
-        if (child->visible()) {
-            if (child->feedKeyEvent(event))
-                return true;
-        }
+
+        if (child->feedKeyEvent(event))
+            return true;
     }
 
     return false;
@@ -391,13 +405,12 @@ bool View::feedExposedEvent()
 {
     if (onExposed()) return true;
 
-    for (auto pair: children_)
+    for (auto pair: visibleChildren_)
     {
         View *child = pair->value();
-        if (child->visible()) {
-            if (child->feedExposedEvent())
-                return true;
-        }
+
+        if (child->feedExposedEvent())
+            return true;
     }
 
     return false;
@@ -415,8 +428,12 @@ uint64_t View::nextSerial() const
 
 void View::polish(Window *window)
 {
-    for (int i = 0; i < children_->count(); ++i)
-        children_->valueAt(i)->polish(window);
+    for (auto pair: visibleChildren_)
+    {
+        View *child = pair->value();
+
+        child->polish(window);
+    }
 
     picture();
 
