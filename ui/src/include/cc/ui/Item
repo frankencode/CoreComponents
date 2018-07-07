@@ -43,6 +43,8 @@ private:
     int insertedCount_;
 };
 
+class ItemView;
+
 class Item: public Object, public IndexTracking
 {
 public:
@@ -67,12 +69,13 @@ public:
 
 protected:
     friend class ItemLayout;
+    friend class ItemView;
 
     Item();
 
     int getLayoutIndex(int i) const;
 
-    virtual Ref<ItemVisual> createVisual(ItemLayout *layout) { return Ref<ItemVisual>{}; }
+    virtual Ref<ItemVisual> createVisual(ItemLayout *layout) { return Ref<ItemVisual>{}; } // FIXME: obsolete
 
 private:
     void updateExtents(int deltaCount);

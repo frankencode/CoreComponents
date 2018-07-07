@@ -85,7 +85,7 @@ public:
     static String cat(const String &a, const String &b);
 
     /// \copydoc Array<char>::join(const StringList *, const String &)
-    static String join(const StringList *parts, const String &sep = String());
+    static String join(const StringList *parts, const String &sep = String{});
 
     /// Construct an empty string
     Ref(): a_(0) {}
