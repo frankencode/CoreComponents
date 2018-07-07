@@ -19,8 +19,6 @@ class ItemView: public View
 {
     friend class Object;
 
-public:
-
 protected:
     virtual View *addDelegate(Item *item);
 
@@ -48,6 +46,7 @@ private:
     ItemView(View *parent, Item *root);
 
     int generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex = 0);
+    void updateView();
 
     Item *root_;
 
