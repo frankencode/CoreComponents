@@ -34,12 +34,17 @@ public:
 
 protected:
     ScrollView(View *parent = 0);
+    ~ScrollView();
+    void init();
 
-    void insertChild(View *child) override;
+    virtual View *addCarrier();
 
     bool onPointerPressed(const PointerEvent *event) override;
     bool onPointerReleased(const PointerEvent *event) override;
     bool onPointerMoved(const PointerEvent *event) override;
+
+private:
+    void insertChild(View *child) override;
 
     bool carrierInsideBoundary() const;
     Point carrierStep(Point p, double b = 0);

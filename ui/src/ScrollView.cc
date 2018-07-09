@@ -24,10 +24,16 @@ ScrollView::ScrollView(View *parent):
     carrier_(0),
     isDragged_(false),
     timer_(Timer::create(1./60))
-{
-    carrier_ = add<View>();
+{}
 
-    if (parent) size->bind([=]{ return parent->size(); });
+ScrollView::~ScrollView()
+{}
+
+void ScrollView::init()
+{
+    carrier_ = addCarrier();
+
+    if (parent()) size->bind([=]{ return parent()->size(); });
 
     size->connect([=]{
         carrier_->pos = carrierStep(carrier_->pos());
@@ -37,6 +43,11 @@ ScrollView::ScrollView(View *parent):
         if (timerMode_ == TimerMode::Flying) carrierFly();
         else if (timerMode_ == TimerMode::Bouncing) carrierBounce();
     });
+}
+
+View *ScrollView::addCarrier()
+{
+    return add<View>();
 }
 
 void ScrollView::insertChild(View *child)

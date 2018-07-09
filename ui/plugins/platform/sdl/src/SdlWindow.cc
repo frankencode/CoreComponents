@@ -172,7 +172,6 @@ void SdlWindow::renderCascade(SDL_Renderer *sdlRenderer, View *view)
 void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
 {
     SdlContext *context = sdlContext(view);
-
     Image *image = Window::image(view);
     bool hasPixels = isPainted(view) && image->count() > 0;
 

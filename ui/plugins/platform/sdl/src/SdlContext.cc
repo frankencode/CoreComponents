@@ -16,5 +16,4 @@ SdlContext::~SdlContext()
     if (sdlTexture_) SDL_DestroyTexture(sdlTexture_);
 }
 
-
 }} // namespace cc::ui

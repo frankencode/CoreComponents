@@ -42,16 +42,19 @@ View::View(View *parent):
 
     visible->connect([=]{
         if (!visible()) {
-            image_ = nullptr;
             context_ = nullptr;
+            image_ = nullptr;
             if (parent_)
                 parent_->visibleChildren_->remove(serial_);
+            update(UpdateReason::Hidden);
         }
         else {
             if (parent_)
                 parent_->visibleChildren_->insert(serial_, this);
+            clear();
+            paint();
+            update(UpdateReason::Changed);
         }
-        update(visible() ? UpdateReason::Shown : UpdateReason::Hidden);
     });
 }
 

@@ -12,8 +12,8 @@ namespace cc {
 namespace ui {
 
 Item::Item():
-    parent_(nullptr),
-    children_(Children::create())
+    parent_{nullptr},
+    children_{Children::create()}
 {}
 
 void Item::insertAt(int i, Item *item)

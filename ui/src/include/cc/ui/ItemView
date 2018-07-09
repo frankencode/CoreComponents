@@ -9,49 +9,21 @@
 #pragma once
 
 #include <cc/ui/Item>
-
-namespace cc { template<class, class> class Pile; }
+#include <cc/ui/ScrollView>
 
 namespace cc {
 namespace ui {
 
-class ItemView: public View
+class ItemView: public ScrollView
 {
     friend class Object;
 
 protected:
-    virtual View *addDelegate(Item *item);
+    ItemView(View *parent, Item *rootItem);
+    View *addCarrier() override;
 
 private:
-    class LayoutItem: public Object, public IndexTracking
-    {
-        friend class Object;
-
-    public:
-        Item *item() const { return item_; }
-        View *delegate() const { return delegate_; }
-
-    private:
-        LayoutItem(Item *item, View *delegate):
-            item_{item},
-            delegate_{delegate}
-        {}
-
-        Item *item_;
-        View *delegate_;
-    };
-
-    Property<double> layoutExtent;
-
-    ItemView(View *parent, Item *root);
-
-    int generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex = 0);
-    void updateView();
-
-    Item *root_;
-
-    typedef Pile< Ref<LayoutItem>, double > Layout;
-    Ref<Layout> layout_;
+    Item *rootItem_;
 };
 
 }} // namespace cc::ui

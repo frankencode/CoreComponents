@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Item>
+#include <cc/ui/View>
+
+namespace cc { template<class, class> class Pile; }
+
+namespace cc {
+namespace ui {
+
+class ItemCarrier: public View
+{
+    friend class Object;
+
+protected:
+    virtual View *addDelegate(Item *item);
+
+private:
+    class LayoutItem: public Object, public IndexTracking
+    {
+        friend class Object;
+
+    public:
+        Item *item() const { return item_; }
+        View *delegate() const { return delegate_; }
+
+    private:
+        LayoutItem(Item *item, View *delegate):
+            item_{item},
+            delegate_{delegate}
+        {}
+
+        Item *item_;
+        View *delegate_;
+    };
+
+    Property<double> layoutExtent;
+
+    ItemCarrier(View *parent, Item *root);
+
+    int generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex = 0);
+    void updateView();
+
+    Item *root_;
+
+    typedef Pile< Ref<LayoutItem>, double > Layout;
+    Ref<Layout> layout_;
+};
+
+}} // namespace cc::ui

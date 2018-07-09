@@ -11,7 +11,6 @@
 #include <cc/List>
 #include <cc/Pile>
 #include <cc/Signal>
-#include <cc/ui/ItemLayout>
 
 namespace cc {
 namespace ui {
@@ -43,10 +42,12 @@ private:
     int insertedCount_;
 };
 
-class ItemView;
+class ItemCarrier;
 
 class Item: public Object, public IndexTracking
 {
+    friend class Object;
+
 public:
     static Ref<Item> create() { return new Item; }
 
@@ -61,6 +62,13 @@ public:
     void removeAt(int i);
     void append(Item *item) { return insertAt(count(), item); }
 
+    template<class T, class... Args>
+    T *add(Args... args) {
+        auto item = Object::create<T>(args...);
+        append(item);
+        return item;
+    }
+
     void paste(int i0, int i1, const ItemList *items = 0);
 
     const ItemDelta *delta() const { return &delta_; }
@@ -68,14 +76,11 @@ public:
     Signal changed;
 
 protected:
-    friend class ItemLayout;
-    friend class ItemView;
+    friend class ItemCarrier;
 
     Item();
 
     int getLayoutIndex(int i) const;
-
-    virtual Ref<ItemVisual> createVisual(ItemLayout *layout) { return Ref<ItemVisual>{}; } // FIXME: obsolete
 
 private:
     void updateExtents(int deltaCount);

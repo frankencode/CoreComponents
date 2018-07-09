@@ -32,7 +32,7 @@ class MainView: public View
         scroll->carrier()->organize<Column>();
 
         for (int i = 0; i < 50; ++i)
-            scroll->add<Item>("Item " + str(i + 1));
+            scroll->carrier()->add<Item>("Item " + str(i + 1));
     }
 };
 
