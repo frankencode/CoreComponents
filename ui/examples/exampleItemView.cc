@@ -1,6 +1,4 @@
-#include <cc/debug>
 #include <cc/ui/ItemView>
-#include <cc/ui/ItemCarrier>
 
 using namespace cc;
 using namespace cc::ui;
@@ -22,7 +20,6 @@ class MainView: public View
             root->at(2)->add<Item>();
 
         add<ItemView>(root);
-        // add<ItemCarrier>(root);
     }
 };
 

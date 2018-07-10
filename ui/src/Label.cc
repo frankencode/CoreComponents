@@ -40,7 +40,7 @@ Label::Label(View *parent, const String &text_, const Font &font_):
 Label::~Label()
 {}
 
-Point Label::textPos() const
+Point Label::textPos(double relativeHeight) const
 {
     return
         center() -
@@ -50,7 +50,7 @@ Point Label::textPos() const
         } +
         Size {
             0,
-            textRun()->maxAscender()
+            textRun()->maxAscender() * (1 - relativeHeight)
         };
 }
 

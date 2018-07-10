@@ -20,10 +20,15 @@ class ItemView: public ScrollView
 
 protected:
     ItemView(View *parent, Item *rootItem);
-    View *addCarrier() override;
+
+    virtual View *addDelegate(View *parent, Item *item);
 
 private:
-    Item *rootItem_;
+    friend class ItemCarrier;
+
+    View *addCarrier() override;
+
+    Ref<Item> rootItem_;
 };
 
 }} // namespace cc::ui

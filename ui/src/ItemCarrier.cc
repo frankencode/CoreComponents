@@ -6,27 +6,26 @@
  *
  */
 
-#include <cc/debug>
 #include <cc/Pile>
-#include <cc/ui/Label>
+#include <cc/ui/ItemView>
 #include <cc/ui/ItemCarrier>
 
 namespace cc {
 namespace ui {
 
-ItemCarrier::ItemCarrier(View *parent, Item *root):
+ItemCarrier::ItemCarrier(View *parent, Item *rootItem):
     View{parent},
-    root_{root},
+    rootItem_{rootItem},
     layout_(Layout::create())
 {
-    generateLayout(root, 0, root->count());
+    generateLayout(rootItem_, 0, rootItem_->count());
     layoutExtent = layout_->extent();
 
-    root->changed->connect([=]{
-        const ItemDelta *delta = root->delta();
+    rootItem_->changed->connect([=]{
+        const ItemDelta *delta = rootItem_->delta();
         const IndexPath *indexPath = delta->indexPath();
 
-        Item *item = root;
+        Item *item = rootItem_;
         for (int k = 0; k < indexPath->count() - 1; ++k)
             item = item->at(indexPath->at(k));
 
@@ -45,28 +44,11 @@ ItemCarrier::ItemCarrier(View *parent, Item *root):
         updateView();
     });
 
-    size->bind([=]{ return Size{ parent->size()[0], layoutExtent() }; });
+    size->bind([=]{ return Size{ this->parent()->size()[0], layoutExtent() }; });
 
     updateView();
     pos->connect([=]{ updateView(); });
-    parent->size->connect([=]{ updateView(); });
-}
-
-View *ItemCarrier::addDelegate(Item *item)
-{
-    int depth = 0;
-    for (const Item *p = item->parent(); p; p = p->parent())
-        ++depth;
-
-    auto label = add<Label>(
-        Format("%%Item %%")
-            << String::create(4 * depth, ' ')
-            << item->getIndex() + 1
-    );
-
-    label->margin = dp(12);
-
-    return label;
+    this->parent()->size->connect([=]{ updateView(); });
 }
 
 int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex)
@@ -74,7 +56,7 @@ int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int 
     for (int i = itemIndex0; i < itemIndex1; ++i)
     {
         Item *child = item->at(i);
-        View *view = addDelegate(child);
+        View *view = static_cast<ItemView *>(parent())->addDelegate(this, child);
         Ref<LayoutItem> layoutItem = Object::create<LayoutItem>(child, view);
         double extent = 0.;
         if (view) {
@@ -85,7 +67,7 @@ int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int 
             });
         }
         layout_->insertAt(layoutIndex, layoutItem, extent);
-        view->pos = Point{ 0, layout_->getPosAt(layoutIndex) };
+        view->pos = Point{ view->pos()[0], layout_->getPosAt(layoutIndex) };
         ++layoutIndex;
         layoutIndex = generateLayout(child, 0, child->count(), layoutIndex);
     }
@@ -102,9 +84,6 @@ void ItemCarrier::updateView()
 
     double r1 = r0 + parent()->size()[1];
     if (r1 > size()[1]) r1 = size()[1];
-
-    // CC_INSPECT(r0);
-    // CC_INSPECT(r1);
 
     // iterate through all visible children and make them invisible if out of view
     //
@@ -130,17 +109,10 @@ void ItemCarrier::updateView()
         int i0 = 0, i1 = 0;
         double y = 0;
         layout_->getView(r0, r1, &i0, &i1, &y);
-        // CC_INSPECT(i0);
-        // CC_INSPECT(i1);
         for (int i = i0; i < i1; ++i) {
             View *delegate = layout_->at(i)->delegate();
-            delegate->pos = Point{ 0, y };
-            // CC_DEBUG << i << ":" << Point{ 0, layout_->getPosAt(i) };
-            // if (!delegate->visible()) {
-                // CC_DEBUG << i << ":" << Point{ 0, layout_->getPosAt(i) };
-                delegate->visible = true;
-            // }
-            // CC_INSPECT(delegate->visible());
+            delegate->pos = Point{ delegate->pos()[0], y };
+            delegate->visible = true;
             y += delegate->size()[1];
         }
     }

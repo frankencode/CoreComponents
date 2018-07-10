@@ -2500,7 +2500,9 @@ enum class Icon: uchar_t {
     YoutubeCreatorStudio                = 0xF846,
     YoutubeGaming                       = 0xF847,
     YoutubeTv                           = 0xF448,
-    ZipBox                              = 0xF5C4
+    ZipBox                              = 0xF5C4,
+    FirstIcon                           = AccessPoint,
+    LastIcon                            = ZipBox
 };
 
 String str(Icon icon);

@@ -49,7 +49,7 @@ class Item: public Object, public IndexTracking
     friend class Object;
 
 public:
-    static Ref<Item> create() { return new Item; }
+    static Ref<Item> create() { return Object::create<Item>(); }
 
     Item *parent() const { return parent_; }
 

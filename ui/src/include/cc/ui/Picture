@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+#include <cc/ui/Visual>
+
+namespace cc {
+namespace ui {
+
+class Picture: public View
+{
+    friend class Object;
+
+public:
+    Property< Ref<Visual> > visual;
+
+private:
+    Picture(View *parent, Visual *visual = nullptr);
+    void paint() override;
+};
+
+}} // namespace cc::ui

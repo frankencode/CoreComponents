@@ -21,7 +21,7 @@ Ref<ScrollView> ScrollView::create(View *parent)
 
 ScrollView::ScrollView(View *parent):
     View(parent),
-    carrier_(0),
+    carrier_(nullptr),
     isDragged_(false),
     timer_(Timer::create(1./60))
 {}

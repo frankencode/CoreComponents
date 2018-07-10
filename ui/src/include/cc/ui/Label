@@ -26,7 +26,11 @@ public:
     Property<Color> ink;
     Property<Size> margin;
 
-    Point textPos() const;
+    Point textPos(double relativeHeight = 0) const;
+    Point textCenterLeft() const { return textPos(0.5); }
+
+    void anchorBaselineStartTo(const AnchorPoint &l)  { pos->bind([=]{ return l() - textPos(); }); }
+    void anchorTextCenterLeftTo(const AnchorPoint &l) { pos->bind([=]{ return l() - textCenterLeft(); }); }
 
     static Size preferredSize(const String &text, const Font &font = Font{}, Size margin = Size{});
     static Size preferredSize(const TextRun *textRun, Size margin = Size{});

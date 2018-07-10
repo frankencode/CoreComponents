@@ -16,14 +16,12 @@ namespace cc { template<class, class> class Pile; }
 namespace cc {
 namespace ui {
 
+class ItemView;
+
 class ItemCarrier: public View
 {
     friend class Object;
 
-protected:
-    virtual View *addDelegate(Item *item);
-
-private:
     class LayoutItem: public Object, public IndexTracking
     {
         friend class Object;
@@ -44,12 +42,12 @@ private:
 
     Property<double> layoutExtent;
 
-    ItemCarrier(View *parent, Item *root);
+    ItemCarrier(View *parent, Item *rootItem);
 
     int generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex = 0);
     void updateView();
 
-    Item *root_;
+    Item *rootItem_;
 
     typedef Pile< Ref<LayoutItem>, double > Layout;
     Ref<Layout> layout_;

@@ -53,7 +53,7 @@ private:
     void carrierBounceStart();
     void carrierStop();
 
-    Ref<View> carrier_;
+    View *carrier_;
     bool isDragged_;
     Point dragStart_;
     Point carrierOrigin_;
