@@ -22,30 +22,46 @@ SingleLineItemDelegate::SingleLineItemDelegate(View *parent, const String &initi
 
 void SingleLineItemDelegate::init()
 {
-    size->bind([=]{
-        return Size{
-            parent()->size()[0],
-            icon() ? dp(56) : dp(48)
-        };
-    });
-
-    CC_INSPECT(size());
+    auto height = [=]{
+        return icon() ? dp(56) : dp(48);
+    };
 
     auto picture = add<Picture>(icon());
     picture->visual->bind([=]{ return icon(); });
     picture->pos->bind([=]{
         return Point{
             dp(16),
-            (size()[1] - picture->size()[1]) / 2
+            (height() - picture->size()[1]) / 2
         };
     });
 
     auto label = add<Label>(text());
     label->text->bind([=]{ return text(); });
     label->anchorTextCenterLeftTo([=]{
-        if (!icon()) return Point{ dp(16), size()[1] / 2 };
+        if (!icon()) return Point{ dp(16), height() / 2 };
         return picture->centerRight() + Step{ picture->size()[1] >= dp(32) ? dp(16) : dp(32), 0 };
     });
+
+    preferredSize_->bind([=]{
+        return Size{
+            label->right() + dp(16),
+            height()
+        };
+    });
+
+    size->bind([=]{
+        return preferredSize_();
+    });
+}
+
+Size SingleLineItemDelegate::preferredSize() const
+{
+    return preferredSize_();
+}
+
+Size SingleLineItemDelegate::minSize() const
+{
+    return preferredSize_();
 }
 
 }} // namespace cc::ui

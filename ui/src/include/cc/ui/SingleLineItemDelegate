@@ -22,7 +22,11 @@ public:
     Property< Ref<Visual> > icon;
     Property<String> text;
 
+    Size preferredSize() const override;
+    Size minSize() const override;
+
 private:
+    Property<Size> preferredSize_;
     SingleLineItemDelegate(View *parent, const String &text = String{}, Visual *icon = nullptr);
     void init();
 };

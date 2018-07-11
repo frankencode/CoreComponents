@@ -2507,4 +2507,6 @@ enum class Icon: uchar_t {
 
 String str(Icon icon);
 
+inline int operator+(const Icon &x) { return static_cast<int>(x); }
+
 }} // namespace cc::ui

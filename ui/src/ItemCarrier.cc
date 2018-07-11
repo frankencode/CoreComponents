@@ -44,11 +44,11 @@ ItemCarrier::ItemCarrier(View *parent, Item *rootItem):
         updateView();
     });
 
-    size->bind([=]{ return Size{ this->parent()->size()[0], layoutExtent() }; });
+    size->bind([=]{ return Size{ parent->size()[0], layoutExtent() }; });
 
     updateView();
     pos->connect([=]{ updateView(); });
-    this->parent()->size->connect([=]{ updateView(); });
+    parent->size->connect([=]{ updateView(); });
 }
 
 int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex)

@@ -41,6 +41,8 @@ View::View(View *parent):
     scale->connect([=]{ update(UpdateReason::Moved); });
 
     visible->connect([=]{
+        for (int i = 0, n = childCount(); i < n; ++i)
+            childAt(i)->visible = visible();
         if (!visible()) {
             context_ = nullptr;
             image_ = nullptr;
@@ -51,9 +53,11 @@ View::View(View *parent):
         else {
             if (parent_)
                 parent_->visibleChildren_->insert(serial_, this);
-            clear();
-            paint();
-            update(UpdateReason::Changed);
+            if (isPainted()) {
+                clear();
+                paint();
+                update(UpdateReason::Changed);
+            }
         }
     });
 }

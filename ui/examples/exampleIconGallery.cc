@@ -1,7 +1,5 @@
 #include <cc/debug>
 #include <cc/ui/Application>
-#include <cc/ui/View>
-#include <cc/ui/Label>
 #include <cc/ui/ItemView>
 #include <cc/ui/SingleLineItemDelegate>
 
@@ -27,10 +25,7 @@ class IconModel: public Item
 
     IconModel()
     {
-        /*Icon icons[] = { Icon::Video, Icon::Folder, Icon::FolderOpen, Icon::Alert };
-        for (Icon icon: icons)
-            add<IconItem>(icon);*/
-        for (int i = static_cast<int>(Icon::FirstIcon); i <= static_cast<int>(Icon::LastIcon); ++i)
+        for (int i = +Icon::FirstIcon; i <= +Icon::LastIcon; ++i)
             add<IconItem>(static_cast<Icon>(i));
     }
 };
@@ -45,9 +40,8 @@ class IconView: public ItemView
 
     View *addDelegate(View *parent, Item *item) override
     {
-        IconItem *iconItem = static_cast<IconItem *>(item);
-        return add<SingleLineItemDelegate>(str(iconItem->icon()), style()->getIconVisual(iconItem->icon()));
-        // return add<Label>(str(iconItem->icon()));
+        IconItem *iconItem = Object::cast<IconItem *>(item);
+        return parent->add<SingleLineItemDelegate>(str(iconItem->icon()), style()->getIconVisual(iconItem->icon()));
     }
 };
 
@@ -64,15 +58,6 @@ class MainView: public View
         auto iconView = add<IconView>(model);
 
         CC_INSPECT(iconView->carrier()->size());
-
-        #if 0
-        Icon icons[] = { Icon::Video, Icon::Folder, Icon::FolderOpen, Icon::Alert };
-
-        for (auto icon: icons)
-            add<SingleLineItemDelegate>(str(icon), style()->getIconVisual(icon));
-
-        organize<Column>();
-        #endif
     }
 };
 
