@@ -51,7 +51,7 @@ class MainView: public View
 
     MainView()
     {
-        size = Size{640, 480};
+        size = Size{1280, 800};
         inheritPaper();
 
         auto model = Object::create<IconModel>();
@@ -64,6 +64,10 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
-    Window::open<MainView>();
+    CC_INSPECT(argc == 2 && String(argv[1])->contains("fullscreen"));
+    if (argc == 2 && String(argv[1])->contains("fullscreen"))
+        Window::open<MainView>(WindowMode::Accelerated|WindowMode::Fullscreen);
+    else
+        Window::open<MainView>();
     return app->run();
 }

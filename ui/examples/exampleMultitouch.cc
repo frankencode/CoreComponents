@@ -102,7 +102,7 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    if (TouchDeviceManager::instance()->getTouchDeviceCount() > 0) {
+    if (TouchDeviceManager::instance()->getTouchDeviceCount() == 0) {
         ferr() << "No touch device found!" << nl;
         return 1;
     }

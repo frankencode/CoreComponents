@@ -1,13 +1,15 @@
 #! /bin/bash -x
 
 # TEST_APP=exampleMultitouch
-TEST_APP=exampleMouseEvent
-TEST_ARG=
+# TEST_APP=exampleMouseEvent
+TEST_APP=exampleIconGallery
+# TEST_APP=exampleItemView
+TEST_ARG="-fullscreen"
 TEST_ENV="DISPLAY=:0"
-TEST_STATION=debby-nine
+TEST_STATION=fusion
 TEST_OS=${TEST_STATION}
 TEST_USER=${USER}
-BUILD_TYPE=debug
+BUILD_TYPE=release
 CC_SOURCE=~/src/cc
 APP_SOURCE=${CC_SOURCE}
 BUILD_DIR=~/build-${TEST_STATION}-${BUILD_TYPE}

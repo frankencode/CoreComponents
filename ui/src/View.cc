@@ -277,31 +277,33 @@ void View::adoptChild(View *parent, View *child)
 
 bool View::feedFingerEvent(FingerEvent *event)
 {
-    PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
-
-    if (event->action() == PointerAction::Pressed)
     {
-        if (onPointerPressed(event) || onFingerPressed(event))
-            return true;
-    }
-    else if (event->action() == PointerAction::Released)
-    {
-        bool eaten = onPointerReleased(event) || onFingerReleased(event);
+        PointerEvent::PosGuard guard(&event->pos_, mapToLocal(window()->size() * event->pos()));
 
-        if (app()->pressedControl()) {
-            if (
-                app()->pressedControl()->onPointerClicked(event) ||
-                app()->pressedControl()->onFingerClicked(event)
-            )
-                eaten = true;
+        if (event->action() == PointerAction::Pressed)
+        {
+            if (onPointerPressed(event) || onFingerPressed(event))
+                return true;
         }
+        else if (event->action() == PointerAction::Released)
+        {
+            bool eaten = onPointerReleased(event) || onFingerReleased(event);
 
-        if (eaten) return true;
-    }
-    else if (event->action() == PointerAction::Moved)
-    {
-        if (onPointerMoved(event) || onFingerMoved(event))
-            return true;
+            if (app()->pressedControl()) {
+                if (
+                    app()->pressedControl()->onPointerClicked(event) ||
+                    app()->pressedControl()->onFingerClicked(event)
+                )
+                    eaten = true;
+            }
+
+            if (eaten) return true;
+        }
+        else if (event->action() == PointerAction::Moved)
+        {
+            if (onPointerMoved(event) || onFingerMoved(event))
+                return true;
+        }
     }
 
     for (auto pair: visibleChildren_)
@@ -320,34 +322,36 @@ bool View::feedFingerEvent(FingerEvent *event)
 
 bool View::feedMouseEvent(MouseEvent *event)
 {
-    PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
-
-    if (event->action() == PointerAction::Pressed)
     {
-        if (onPointerPressed(event) || onMousePressed(event))
-            return true;
-    }
-    else if (event->action() == PointerAction::Released)
-    {
-        bool eaten = onPointerReleased(event) || onMouseReleased(event);
+        PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
 
-        if (app()->pressedControl()) {
-            if (
-                app()->pressedControl()->onPointerClicked(event) ||
-                app()->pressedControl()->onMouseClicked(event)
-            )
-                eaten = true;
+        if (event->action() == PointerAction::Pressed)
+        {
+            if (onPointerPressed(event) || onMousePressed(event))
+                return true;
         }
+        else if (event->action() == PointerAction::Released)
+        {
+            bool eaten = onPointerReleased(event) || onMouseReleased(event);
 
-        if (eaten) return true;
-    }
-    else if (event->action() == PointerAction::Moved)
-    {
-        if (
-            (event->button() != MouseButton::None && onPointerMoved(event)) ||
-            onMouseMoved(event)
-        )
-            return true;
+            if (app()->pressedControl()) {
+                if (
+                    app()->pressedControl()->onPointerClicked(event) ||
+                    app()->pressedControl()->onMouseClicked(event)
+                )
+                    eaten = true;
+            }
+
+            if (eaten) return true;
+        }
+        else if (event->action() == PointerAction::Moved)
+        {
+            if (
+                (event->button() != MouseButton::None && onPointerMoved(event)) ||
+                onMouseMoved(event)
+            )
+                return true;
+        }
     }
 
     for (auto pair: visibleChildren_)

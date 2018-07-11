@@ -56,6 +56,12 @@ class MainView: public Control
         fout() << "Clicked at " << event->pos() << nl;
         return true;
     }
+
+    bool onPointerMoved(const PointerEvent *event) override
+    {
+        fout() << "Moved to " << event->pos() << nl;
+        return true;
+    }
 };
 
 int main(int argc, char **argv)

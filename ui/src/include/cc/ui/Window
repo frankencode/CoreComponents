@@ -57,11 +57,16 @@ class KeyEvent;
 class Window: public Object
 {
 public:
-    static Window *open(View *view, String title = String{}, WindowMode mode = WindowMode::Default);
+    static Window *open(View *view, const String &title = String{}, WindowMode mode = WindowMode::Default);
 
     template<class T>
-    static Window *open(String title = String{}, WindowMode mode = WindowMode::Default) {
+    static Window *open(const String &title = String{}, WindowMode mode = WindowMode::Default) {
         return open(Object::create<T>(), title, mode);
+    }
+
+    template<class T>
+    static Window *open(WindowMode mode) {
+        return open<T>("", mode);
     }
 
     View *view() const { return view_; }
@@ -76,7 +81,7 @@ protected:
     friend class View;
     friend class Control;
 
-    Window(View *view, String title);
+    Window(View *view, const String &title);
     ~Window();
 
     static Object *getContext(View *view);

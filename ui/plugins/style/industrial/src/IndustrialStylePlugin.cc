@@ -7,6 +7,7 @@
  */
 
 #include <cmath>
+#include <cc/debug>
 #include <cc/Registration>
 #include <cc/Bundle>
 #include <cc/File>
@@ -90,7 +91,11 @@ void IndustrialStylePlugin::activate()
             FontManager::instance()->addPath(path);
     }
 
-    FontManager::instance()->addPath(CC_BUNDLE_LOOKUP("icons"));
+    String iconsPath = CC_BUNDLE_LOOKUP("icons");
+    if (iconsPath != "")
+        FontManager::instance()->addPath(iconsPath);
+    else
+        CC_DEBUG << "Failed to locate icons directory";
 }
 
 Theme *IndustrialStylePlugin::dayTheme() const
