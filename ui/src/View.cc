@@ -148,7 +148,7 @@ bool View::isOpaque() const
 
 bool View::isPainted() const
 {
-    return paper()->isValid();
+    return paper()->isValid() && size()[0] > 0 && size()[1] > 0;
 }
 
 bool View::isStatic() const

@@ -151,7 +151,14 @@ protected:
     void adoptChild(View *parent, View *child);
 
 private:
-    Property<void> picture { [=]{ clear(); paint(); } };
+    Property<void> picture {
+        [=]{
+            if (isPainted()) {
+                clear();
+                paint();
+            }
+        }
+    };
 
     virtual bool feedFingerEvent(FingerEvent *event);
     virtual bool feedMouseEvent(MouseEvent *event);

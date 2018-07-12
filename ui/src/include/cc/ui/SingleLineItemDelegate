@@ -22,6 +22,8 @@ public:
     Property< Ref<Visual> > icon;
     Property<String> text;
 
+    bool isPainted() const override { return false; }
+
     Size preferredSize() const override;
     Size minSize() const override;
 

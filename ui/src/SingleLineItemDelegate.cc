@@ -23,15 +23,15 @@ SingleLineItemDelegate::SingleLineItemDelegate(View *parent, const String &initi
 void SingleLineItemDelegate::init()
 {
     auto height = [=]{
-        return icon() ? dp(56) : dp(48);
+        return std::ceil(icon() ? dp(56) : dp(48));
     };
 
     auto picture = add<Picture>(icon());
     picture->visual->bind([=]{ return icon(); });
     picture->pos->bind([=]{
         return Point{
-            dp(16),
-            (height() - picture->size()[1]) / 2
+            std::round(dp(16)),
+            std::round((height() - picture->size()[1]) / 2)
         };
     });
 
@@ -44,7 +44,7 @@ void SingleLineItemDelegate::init()
 
     preferredSize_->bind([=]{
         return Size{
-            label->right() + dp(16),
+            std::ceil(label->right() + dp(16)),
             height()
         };
     });

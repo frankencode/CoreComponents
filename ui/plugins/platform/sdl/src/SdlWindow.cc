@@ -8,7 +8,6 @@
 
 #include <cc/exceptions>
 #include <cc/stdio>
-#include <cc/debug> // DEBUG
 #include <cc/Queue>
 #include <cc/ui/Image>
 #include <cc/ui/View>
@@ -238,9 +237,12 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
     }
 
     if (view->parent()) {
-        Point p = view->mapToGlobal(Point{0, 0});
-        destRect.x = p[0];
-        destRect.y = p[1];
+        destRect.x = std::round(view->pos()[0]);
+        destRect.y = std::round(view->pos()[1]);
+        for (View *p = view->parent(); p; p = p->parent()) {
+            destRect.x += std::round(p->pos()[0]);
+            destRect.y += std::round(p->pos()[1]);
+        }
     }
     else {
         destRect.x = 0;
@@ -255,8 +257,8 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
     else {
         Point center = view->center();
         SDL_Point sdlCenter{
-            int(center[0]),
-            int(center[1])
+            int(std::round(center[0])),
+            int(std::round(center[1]))
         };
         SDL_BlendMode blendModeSaved;
         SDL_GetTextureBlendMode(sdlTexture, &blendModeSaved);

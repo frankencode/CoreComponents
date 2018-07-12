@@ -21,6 +21,8 @@ class Picture: public View
 public:
     Property< Ref<Visual> > visual;
 
+    bool isPainted() const;
+
 private:
     Picture(View *parent, Visual *visual = nullptr);
     void paint() override;

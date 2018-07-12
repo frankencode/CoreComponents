@@ -58,16 +58,18 @@ class MainView: public View
         /*auto scroll = add<ScrollView>();
 
         int j = 0;
-        for (int i = +Icon::FirstIcon; i <= +Icon::LastIcon && j < 100; ++i, ++j) {
+        for (int i = +Icon::FirstIcon; i <= +Icon::LastIcon && j < 20; ++i, ++j) {
             Icon icon = static_cast<Icon>(i);
             scroll->carrier()->add<SingleLineItemDelegate>(str(icon), style()->getIconVisual(icon));
         }
 
         scroll->carrier()->organize<Column>();*/
 
-        add<IconView>(
+        auto scroll = add<IconView>(
             Object::create<IconModel>()
         );
+
+        CC_INSPECT(scroll->carrier()->size());
     }
 };
 

@@ -23,6 +23,11 @@ Picture::Picture(View *parent, Visual *initialVisual):
     });
 }
 
+bool Picture::isPainted() const
+{
+    return visual();
+}
+
 void Picture::paint()
 {
     Painter p(this);
