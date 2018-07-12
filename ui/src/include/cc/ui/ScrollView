@@ -24,7 +24,7 @@ public:
 
     Property<double> minDragDistance { dp(6) };
     Property<double> maxFlyTime { 1.5 };
-    Property<double> maxSpeed { [=]{ return 2 * max(size()); } };
+    Property<double> maxSpeed { [=]{ return 3 * max(size()); } };
     Property<double> minHoldTime { 0.1 };
     Property<double> boundary { dp(60) };
     Property<double> maxBounceTime { 0.6 };

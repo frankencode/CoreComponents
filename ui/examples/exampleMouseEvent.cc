@@ -59,7 +59,7 @@ class MainView: public Control
 
     bool onPointerMoved(const PointerEvent *event) override
     {
-        fout() << "Moved to " << event->pos() << nl;
+        fout("Moved to %% (%%, %%)\n") << event->pos() << event->time() << System::now();
         return true;
     }
 };

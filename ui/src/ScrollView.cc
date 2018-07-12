@@ -70,7 +70,7 @@ bool ScrollView::onPointerPressed(const PointerEvent *event)
 bool ScrollView::onPointerReleased(const PointerEvent *event)
 {
     if (isDragged_) {
-        if (System::now() - lastDragTime_ > minHoldTime()) speed_ = Point{};
+        if (event->time() - lastDragTime_ > minHoldTime()) speed_ = Point{};
         isDragged_ = false;
     }
 
@@ -100,7 +100,7 @@ bool ScrollView::onPointerMoved(const PointerEvent *event)
     }
 
     if (isDragged_) {
-        double t = System::now();
+        double t = event->time();
         if (lastDragTime_ > 0)
             speed_ = (lastDragPos_ - event->pos()) / (t - lastDragTime_);
         lastDragTime_ = t;

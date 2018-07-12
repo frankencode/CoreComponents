@@ -1,6 +1,7 @@
 #include <cc/debug>
 #include <cc/ui/Application>
 #include <cc/ui/ItemView>
+#include <cc/ui/Column>
 #include <cc/ui/SingleLineItemDelegate>
 
 using namespace cc;
@@ -54,19 +55,29 @@ class MainView: public View
         size = Size{1280, 800};
         inheritPaper();
 
-        auto model = Object::create<IconModel>();
-        auto iconView = add<IconView>(model);
+        /*auto scroll = add<ScrollView>();
 
-        CC_INSPECT(iconView->carrier()->size());
+        int j = 0;
+        for (int i = +Icon::FirstIcon; i <= +Icon::LastIcon && j < 100; ++i, ++j) {
+            Icon icon = static_cast<Icon>(i);
+            scroll->carrier()->add<SingleLineItemDelegate>(str(icon), style()->getIconVisual(icon));
+        }
+
+        scroll->carrier()->organize<Column>();*/
+
+        add<IconView>(
+            Object::create<IconModel>()
+        );
     }
 };
 
 int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
-    CC_INSPECT(argc == 2 && String(argv[1])->contains("fullscreen"));
-    if (argc == 2 && String(argv[1])->contains("fullscreen"))
+    app->cursorVisible = false;
+    if (argc == 2 && String(argv[1])->contains("fullscreen")) {
         Window::open<MainView>(WindowMode::Accelerated|WindowMode::Fullscreen);
+    }
     else
         Window::open<MainView>();
     return app->run();
