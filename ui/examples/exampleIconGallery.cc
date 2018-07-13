@@ -58,7 +58,7 @@ class MainView: public View
         /*auto scroll = add<ScrollView>();
 
         int j = 0;
-        for (int i = +Icon::FirstIcon; i <= +Icon::LastIcon && j < 20; ++i, ++j) {
+        for (int i = +Icon::FirstIcon; i <= +Icon::LastIcon && j < 50; ++i, ++j) {
             Icon icon = static_cast<Icon>(i);
             scroll->carrier()->add<SingleLineItemDelegate>(str(icon), style()->getIconVisual(icon));
         }
@@ -76,9 +76,9 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
-    app->cursorVisible = false;
     if (argc == 2 && String(argv[1])->contains("fullscreen")) {
-        Window::open<MainView>(WindowMode::Accelerated|WindowMode::Fullscreen);
+        app->cursorVisible = false;
+        Window::open<MainView>(/*WindowMode::Accelerated|*/WindowMode::Fullscreen);
     }
     else
         Window::open<MainView>();

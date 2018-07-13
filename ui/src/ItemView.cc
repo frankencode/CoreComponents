@@ -23,6 +23,12 @@ View *ItemView::addCarrier()
     return add<ItemCarrier>(rootItem_);
 }
 
+void ItemView::preheat()
+{
+    if (cacheRatio() > 0)
+        static_cast<ItemCarrier *>(carrier())->updateView(true);
+}
+
 View *ItemView::addDelegate(View *parent, Item *item)
 {
     int depth = 0;

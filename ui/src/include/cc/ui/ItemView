@@ -18,6 +18,9 @@ class ItemView: public ScrollView
 {
     friend class Object;
 
+public:
+    Property<double> cacheRatio { 2 };
+
 protected:
     ItemView(View *parent, Item *rootItem);
 
@@ -27,6 +30,7 @@ private:
     friend class ItemCarrier;
 
     View *addCarrier() override;
+    void preheat() override;
 
     Ref<Item> rootItem_;
 };

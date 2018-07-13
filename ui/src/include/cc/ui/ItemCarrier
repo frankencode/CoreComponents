@@ -21,6 +21,7 @@ class ItemView;
 class ItemCarrier: public View
 {
     friend class Object;
+    friend class ItemView;
 
     class LayoutItem: public Object, public IndexTracking
     {
@@ -41,11 +42,12 @@ class ItemCarrier: public View
     };
 
     Property<double> layoutExtent;
+    Property<double> cacheMargin;
 
     ItemCarrier(View *parent, Item *rootItem);
 
     int generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex = 0);
-    void updateView();
+    void updateView(bool preheat);
 
     Item *rootItem_;
 

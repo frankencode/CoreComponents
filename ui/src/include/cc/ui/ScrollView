@@ -28,7 +28,8 @@ public:
     Property<double> minHoldTime { 0.1 };
     Property<double> boundary { dp(60) };
     Property<double> maxBounceTime { 0.6 };
-    // Property<Easing> bounceEasing { easing::outBounce };
+
+    Property<bool> isFlying { false };
 
     View *carrier() const { return carrier_; }
 
@@ -38,6 +39,7 @@ protected:
     void init();
 
     virtual View *addCarrier();
+    virtual void preheat();
 
     bool onPointerPressed(const PointerEvent *event) override;
     bool onPointerReleased(const PointerEvent *event) override;
@@ -48,10 +50,14 @@ private:
 
     bool carrierInsideBoundary() const;
     Point carrierStep(Point p, double b = 0);
-    void carrierFly();
-    void carrierBounce();
+
+    void carrierFlyStart();
     void carrierBounceStart();
     void carrierStop();
+
+    void carrierFly();
+    void carrierBounce();
+    void carrierStopped();
 
     View *carrier_;
     bool isDragged_;

@@ -20,6 +20,7 @@ ItemCarrier::ItemCarrier(View *parent, Item *rootItem):
 {
     generateLayout(rootItem_, 0, rootItem_->count());
     layoutExtent = layout_->extent();
+    cacheMargin->bind([=]{ return parent->size()[1] * static_cast<ItemView *>(parent)->cacheRatio(); });
 
     rootItem_->changed->connect([=]{
         const ItemDelta *delta = rootItem_->delta();
@@ -41,14 +42,14 @@ ItemCarrier::ItemCarrier(View *parent, Item *rootItem):
         generateLayout(item, itemIndex, itemIndex + delta->insertedCount(), layoutIndex);
         layoutExtent = layout_->extent();
 
-        updateView();
+        updateView(true);
     });
 
     size->bind([=]{ return Size{ parent->size()[0], layoutExtent() }; });
 
-    updateView();
-    pos->connect([=]{ updateView(); });
-    parent->size->connect([=]{ updateView(); });
+    updateView(true);
+    pos->connect([=]{ updateView(false); });
+    parent->size->connect([=]{ updateView(true); });
 }
 
 int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex)
@@ -75,15 +76,27 @@ int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int 
     return layoutIndex;
 }
 
-void ItemCarrier::updateView()
+void ItemCarrier::updateView(bool preheat)
 {
     // determine the visible range (r0, r1)
     //
-    double r0 = -pos()[1];
-    if (r0 < 0) r0 = 0;
+    const double r0 = [=]{
+        double h = -pos()[1];
+        if (h < 0) h = 0;
+        return h;
+    }();
 
-    double r1 = r0 + parent()->size()[1];
-    if (r1 > size()[1]) r1 = size()[1];
+    const double r1 = [=]{
+        double h = r0 + parent()->size()[1];
+        if (h > size()[1]) h = size()[1];
+        return h;
+    }();
+
+    // determine extended visible range (s0, s1)
+    //
+    const double m = cacheMargin();
+    const double s0 = r0 - m;
+    const double s1 = r1 + m;
 
     // iterate through all visible children and make them invisible if out of view
     //
@@ -93,9 +106,9 @@ void ItemCarrier::updateView()
         double d1 = delegate->pos()[1] + delegate->size()[1];
         if (
             d1 - d0 > 0 && (
-                (r0 <= d0 && d0 < r1) ||
-                (r0 < d1 && d1 <= r1) ||
-                (d0 < r0 && r1 < d1)
+                (s0 <= d0 && d0 < s1) ||
+                (s0 < d1 && d1 <= s1) ||
+                (d0 < s0 && s1 < d1)
             )
         )
             ++i;
@@ -103,12 +116,17 @@ void ItemCarrier::updateView()
             delegate->visible = false;
     }
 
-    // iterate the visible range (on the layout) and make all invisible delegates in range visible
+    // iterate over the visible range (on the layout) and make all invisible delegates in range visible
     //
     {
         int i0 = 0, i1 = 0;
         double y = 0;
-        layout_->getView(r0, r1, &i0, &i1, &y);
+
+        if (preheat)
+            layout_->getView(s0, s1, &i0, &i1, &y);
+        else
+            layout_->getView(r0, r1, &i0, &i1, &y);
+
         for (int i = i0; i < i1; ++i) {
             View *delegate = layout_->at(i)->delegate();
             delegate->pos = Point{ delegate->pos()[0], y };

@@ -50,6 +50,9 @@ View *ScrollView::addCarrier()
     return add<View>();
 }
 
+void ScrollView::preheat()
+{}
+
 void ScrollView::insertChild(View *child)
 {
     if (carrier_)
@@ -74,17 +77,11 @@ bool ScrollView::onPointerReleased(const PointerEvent *event)
         isDragged_ = false;
     }
 
-    if (carrierInsideBoundary()) {
+    if (carrierInsideBoundary())
         carrierBounceStart();
-    }
-    else if (speed_ != Step{}) {
-        timerMode_ = TimerMode::Flying;
-        timer_->start();
-        lastTime_ = timer_->startTime();
-        double v = abs(speed_);
-        if (v > maxSpeed()) speed_ *= maxSpeed() / v;
-        releaseSpeedMagnitude_ = abs(speed_);
-    }
+    else if (speed_ != Step{})
+        carrierFlyStart();
+
     return false;
 }
 
@@ -149,6 +146,30 @@ Point ScrollView::carrierStep(Point p, double b)
     return Point{ x, y };
 }
 
+void ScrollView::carrierFlyStart()
+{
+    timerMode_ = TimerMode::Flying;
+    timer_->start();
+    lastTime_ = timer_->startTime();
+    double v = abs(speed_);
+    if (v > maxSpeed()) speed_ *= maxSpeed() / v;
+    releaseSpeedMagnitude_ = abs(speed_);
+}
+
+void ScrollView::carrierBounceStart()
+{
+    timerMode_ = TimerMode::Bouncing;
+    timer_->start();
+    bounceStartPos_ = carrier_->pos();
+    bounceFinalPos_ = carrierStep(carrier_->pos());
+}
+
+void ScrollView::carrierStop()
+{
+    timer_->stop();
+    timerMode_ = TimerMode::Stopped;
+}
+
 void ScrollView::carrierFly()
 {
     double t = System::now();
@@ -170,6 +191,8 @@ void ScrollView::carrierFly()
         carrierStop();
         if (carrierInsideBoundary())
             carrierBounceStart();
+        else
+            carrierStopped();
     }
     else
         carrier_->pos = pb;
@@ -184,6 +207,7 @@ void ScrollView::carrierBounce()
     if (t >= t1) {
         carrier_->pos = bounceFinalPos_;
         carrierStop();
+        carrierStopped();
         return;
     }
 
@@ -191,18 +215,10 @@ void ScrollView::carrierBounce()
     carrier_->pos = (1 - s) * bounceStartPos_ + s * bounceFinalPos_;
 }
 
-void ScrollView::carrierBounceStart()
+void ScrollView::carrierStopped()
 {
-    timerMode_ = TimerMode::Bouncing;
-    timer_->start();
-    bounceStartPos_ = carrier_->pos();
-    bounceFinalPos_ = carrierStep(carrier_->pos());
-}
-
-void ScrollView::carrierStop()
-{
-    timer_->stop();
-    timerMode_ = TimerMode::Stopped;
+    preheat();
+    isFlying = false;
 }
 
 }} // namespace cc::ui
