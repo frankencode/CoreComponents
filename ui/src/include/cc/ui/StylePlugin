@@ -33,6 +33,7 @@ public:
     virtual double itemHeight1() const { return dp(48); }
     virtual double itemHeight2() const { return dp(56); }
     virtual double itemHeight3() const { return dp(64); }
+    virtual bool wheelInversion() const { return false; }
 
     Property< Ref<const Theme> > theme;
 

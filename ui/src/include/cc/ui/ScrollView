@@ -31,6 +31,7 @@ public:
 
     Property<double> wheelGranularity { 2 * std::ceil(style()->itemHeight2()) };
     Property<double> maxWheelTime { 0.1 };
+    Property<bool> wheelInversion { style()->wheelInversion() };
 
     View *carrier() const { return carrier_; }
 

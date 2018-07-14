@@ -180,6 +180,7 @@ void ScrollView::carrierWheelStart(Step wheelStep)
     wheelStartPos_ = carrier_->pos();
     if (!speedUp) wheelFinalPos_ = wheelStartPos_;
     int g = int(std::round(wheelGranularity()));
+    if (wheelInversion()) wheelStep = -wheelStep;
     if      (wheelStep[0] < 0) wheelFinalPos_[0] = roundUpToNext  (g, int(std::round(wheelFinalPos_[0])) + g);
     else if (wheelStep[0] > 0) wheelFinalPos_[0] = roundDownToNext(g, int(std::round(wheelFinalPos_[0])) - g);
     if      (wheelStep[1] < 0) wheelFinalPos_[1] = roundUpToNext  (g, int(std::round(wheelFinalPos_[1])) + g);
