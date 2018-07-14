@@ -261,7 +261,6 @@ void ScrollView::carrierWheel()
 void ScrollView::carrierStopped()
 {
     preheat();
-    isFlying = false;
 }
 
 }} // namespace cc::ui
