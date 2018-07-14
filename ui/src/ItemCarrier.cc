@@ -57,7 +57,10 @@ int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int 
     for (int i = itemIndex0; i < itemIndex1; ++i)
     {
         Item *child = item->at(i);
-        View *view = static_cast<ItemView *>(parent())->addDelegate(this, child);
+        ItemView *itemView = static_cast<ItemView *>(parent());
+        View *view = itemView->addDelegate(this, child);
+        if (itemView->wheelGranularity() == 0)
+            itemView->wheelGranularity = 2 * view->size()[1];
         Ref<LayoutItem> layoutItem = Object::create<LayoutItem>(child, view);
         double extent = 0.;
         if (view) {

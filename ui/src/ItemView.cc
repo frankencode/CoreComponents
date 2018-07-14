@@ -16,7 +16,9 @@ namespace ui {
 ItemView::ItemView(View *parent, Item *rootItem):
     ScrollView{parent},
     rootItem_{rootItem}
-{}
+{
+    wheelGranularity = 0;
+}
 
 View *ItemView::addCarrier()
 {

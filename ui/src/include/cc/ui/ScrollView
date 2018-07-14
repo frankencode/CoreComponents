@@ -29,6 +29,9 @@ public:
     Property<double> boundary { dp(60) };
     Property<double> maxBounceTime { 0.6 };
 
+    Property<double> wheelGranularity { 2 * std::ceil(style()->itemHeight2()) };
+    Property<double> maxWheelTime { 0.1 };
+
     Property<bool> isFlying { false };
 
     View *carrier() const { return carrier_; }
@@ -44,6 +47,7 @@ protected:
     bool onPointerPressed(const PointerEvent *event) override;
     bool onPointerReleased(const PointerEvent *event) override;
     bool onPointerMoved(const PointerEvent *event) override;
+    bool onWheelMoved(const WheelEvent *event) override;
 
 private:
     void insertChild(View *child) override;
@@ -53,10 +57,12 @@ private:
 
     void carrierFlyStart();
     void carrierBounceStart();
+    void carrierWheelStart(Step wheelStep);
     void carrierStop();
 
     void carrierFly();
     void carrierBounce();
+    void carrierWheel();
     void carrierStopped();
 
     View *carrier_;
@@ -69,7 +75,7 @@ private:
     double releaseSpeedMagnitude_;
     Step speed_;
 
-    enum class TimerMode { Stopped, Flying, Bouncing };
+    enum class TimerMode { Stopped, Flying, Bouncing, Wheeling };
     TimerMode timerMode_ { TimerMode::Stopped };
 
     Ref<Timer> timer_;
@@ -77,6 +83,9 @@ private:
 
     Point bounceStartPos_;
     Point bounceFinalPos_;
+
+    Point wheelStartPos_;
+    Point wheelFinalPos_;
 };
 
 }} // namespace cc::ui

@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/math>
 #include <cc/System>
 #include <cc/ui/easing>
 #include <cc/ui/Timer>
@@ -42,6 +43,7 @@ void ScrollView::init()
     timer_->triggered->connect([=]{
         if (timerMode_ == TimerMode::Flying) carrierFly();
         else if (timerMode_ == TimerMode::Bouncing) carrierBounce();
+        else if (timerMode_ == TimerMode::Wheeling) carrierWheel();
     });
 }
 
@@ -112,6 +114,12 @@ bool ScrollView::onPointerMoved(const PointerEvent *event)
     return true;
 }
 
+bool ScrollView::onWheelMoved(const WheelEvent *event)
+{
+    carrierWheelStart(event->wheelStep());
+    return true;
+}
+
 bool ScrollView::carrierInsideBoundary() const
 {
     double x = carrier_->pos()[0];
@@ -164,6 +172,21 @@ void ScrollView::carrierBounceStart()
     bounceFinalPos_ = carrierStep(carrier_->pos());
 }
 
+void ScrollView::carrierWheelStart(Step wheelStep)
+{
+    bool speedUp = (timerMode_ == TimerMode::Wheeling);
+    timerMode_ = TimerMode::Wheeling;
+    timer_->start();
+    wheelStartPos_ = carrier_->pos();
+    if (!speedUp) wheelFinalPos_ = wheelStartPos_;
+    int g = int(std::round(wheelGranularity()));
+    if      (wheelStep[0] < 0) wheelFinalPos_[0] = roundUpToNext  (g, int(std::round(wheelFinalPos_[0])) + g);
+    else if (wheelStep[0] > 0) wheelFinalPos_[0] = roundDownToNext(g, int(std::round(wheelFinalPos_[0])) - g);
+    if      (wheelStep[1] < 0) wheelFinalPos_[1] = roundUpToNext  (g, int(std::round(wheelFinalPos_[1])) + g);
+    else if (wheelStep[1] > 0) wheelFinalPos_[1] = roundDownToNext(g, int(std::round(wheelFinalPos_[1])) - g);
+    wheelFinalPos_ = carrierStep(wheelFinalPos_, boundary());
+}
+
 void ScrollView::carrierStop()
 {
     timer_->stop();
@@ -213,6 +236,26 @@ void ScrollView::carrierBounce()
 
     double s = easing::outBounce((t - t0) / (t1 - t0));
     carrier_->pos = (1 - s) * bounceStartPos_ + s * bounceFinalPos_;
+}
+
+void ScrollView::carrierWheel()
+{
+    const double t0 = timer_->startTime();
+    const double t1 = t0 + maxWheelTime();
+    const double t = System::now();
+
+    if (t >= t1) {
+        carrier_->pos = wheelFinalPos_;
+        carrierStop();
+        if (carrierInsideBoundary())
+            carrierBounceStart();
+        else
+            carrierStopped();
+        return;
+    }
+
+    double s = easing::inOutQuad((t - t0) / (t1 - t0));
+    carrier_->pos = (1 - s) * wheelStartPos_ + s * wheelFinalPos_;
 }
 
 void ScrollView::carrierStopped()
