@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug>
 #include <cc/Utf8Sink>
 #include <cc/ui/Painter>
 #include <cc/ui/GlyphRun>
@@ -23,7 +24,16 @@ GlyphVisual::GlyphVisual(uchar_t ch, const Font &initialFont):
     mutate(s_)->truncate(sink->byteSink()->currentOffset());
 
     glyphRun_->bind([=]{ return GlyphRun::typeset(s_, font()); });
-    preferredSize_->bind([=]{ return Size{ glyphRun_()->size()[0], glyphRun_()->maxAscender() }; });
+
+    preferredSize_->bind(
+        [=]{
+            return Size{
+                std::ceil(glyphRun_()->size()[0]),
+                std::ceil(glyphRun_()->maxAscender() - 2 * glyphRun_()->minDescender())
+            };
+        }
+    );
+
     size->bind([=]{ return preferredSize_(); });
 }
 
@@ -33,9 +43,9 @@ void GlyphVisual::paint(Painter &p)
     p->setSource(ink());
     p->showGlyphRun(
         size() / 2 +
-        Size{
-            -preferredSize_()[0] / 2,
-            +preferredSize_()[1] / 2
+        Step{
+            - glyphRun_()->size()[0] / 2,
+            + glyphRun_()->maxAscender() / 2
         },
         glyphRun_()
     );
