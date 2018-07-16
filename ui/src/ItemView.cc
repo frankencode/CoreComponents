@@ -89,8 +89,10 @@ bool ItemView::onPointerPressed(const PointerEvent *event)
         highlight->size = Size{ size()[0], layoutItem->delegate()->size()[1] };
         highlight->visible = true;
         currentDelegate_ = layoutItem->delegate();
-        delegatePaperSaved_ = currentDelegate_()->paper();
-        currentDelegate_()->paper = highlight->paper();
+        if (currentDelegate_()->paper() != highlight->paper()) {
+            delegatePaperSaved_ = currentDelegate_()->paper();
+            currentDelegate_()->paper = highlight->paper();
+        }
         currentRow_ = row;
     }
     else {
