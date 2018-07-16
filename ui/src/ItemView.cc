@@ -89,6 +89,7 @@ bool ItemView::onPointerPressed(const PointerEvent *event)
         highlight->size = layoutItem->delegate()->size();
         highlight->visible = true;
         currentDelegate_ = layoutItem->delegate();
+        currentDelegate_()->paper = highlight->paper();
         currentRow_ = row;
     }
     else {
@@ -102,9 +103,13 @@ bool ItemView::onPointerPressed(const PointerEvent *event)
 bool ItemView::onPointerReleased(const PointerEvent *event)
 {
     ScrollView::onPointerReleased(event);
+
     itemCarrier()->highlight_->visible = false;
+    if (currentDelegate_())
+        currentDelegate_()->paper = Color{};
     currentDelegate_ = nullptr;
     currentRow_ = -1;
+
     return true;
 }
 
@@ -118,8 +123,11 @@ bool ItemView::onPointerMoved(const PointerEvent *event)
 bool ItemView::onWheelMoved(const WheelEvent *event)
 {
     itemCarrier()->highlight_->visible = false;
+    if (currentDelegate_())
+        currentDelegate_()->paper = Color{};
     currentDelegate_ = nullptr;
     currentRow_ = -1;
+
     return ScrollView::onWheelMoved(event);
 }
 

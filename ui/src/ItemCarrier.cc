@@ -63,7 +63,6 @@ int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int 
         Item *child = item->at(i);
         ItemView *itemView = static_cast<ItemView *>(parent());
         View *delegate = itemView->addDelegate(this, child);
-        delegate->paper->bind([=]{ return (itemView->currentDelegate_() == delegate) ? highlight_->paper() : findBasePaper(); });
         if (itemView->wheelGranularity() == 0)
             itemView->wheelGranularity = 2 * delegate->size()[1];
         Ref<LayoutItem> layoutItem = Object::create<LayoutItem>(child, delegate);
