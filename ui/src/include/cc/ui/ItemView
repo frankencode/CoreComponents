@@ -49,12 +49,12 @@ private:
     bool onPointerClicked(const PointerEvent *event) override;
     bool onPointerPressed(const PointerEvent *event) override;
     bool onPointerReleased(const PointerEvent *event) override;
-    bool onPointerMoved(const PointerEvent *event) override;
     bool onWheelMoved(const WheelEvent *event) override;
 
     ItemCarrier *itemCarrier() const;
 
     Ref<Item> rootItem_;
+    Color delegatePaperSaved_;
 };
 
 }} // namespace cc::ui

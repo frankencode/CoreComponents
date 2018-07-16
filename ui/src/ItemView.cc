@@ -85,10 +85,11 @@ bool ItemView::onPointerPressed(const PointerEvent *event)
     Ref<ItemCarrier::LayoutItem> layoutItem;
     int row = 0;
     if (itemCarrier()->layout_->lookup(event->pos()[1] - carrier()->pos()[1], &layoutItem, &row)) {
-        highlight->pos = layoutItem->delegate()->pos();
-        highlight->size = layoutItem->delegate()->size();
+        highlight->pos = Point{ 0, layoutItem->delegate()->pos()[1] };
+        highlight->size = Size{ size()[0], layoutItem->delegate()->size()[1] };
         highlight->visible = true;
         currentDelegate_ = layoutItem->delegate();
+        delegatePaperSaved_ = currentDelegate_()->paper();
         currentDelegate_()->paper = highlight->paper();
         currentRow_ = row;
     }
@@ -106,25 +107,18 @@ bool ItemView::onPointerReleased(const PointerEvent *event)
 
     itemCarrier()->highlight_->visible = false;
     if (currentDelegate_())
-        currentDelegate_()->paper = Color{};
+        currentDelegate_()->paper = delegatePaperSaved_;
     currentDelegate_ = nullptr;
     currentRow_ = -1;
 
     return true;
 }
 
-bool ItemView::onPointerMoved(const PointerEvent *event)
-{
-    // itemCarrier()->highlight_->visible = false;
-    // currentRow_ = -1;
-    return ScrollView::onPointerMoved(event);
-}
-
 bool ItemView::onWheelMoved(const WheelEvent *event)
 {
     itemCarrier()->highlight_->visible = false;
     if (currentDelegate_())
-        currentDelegate_()->paper = Color{};
+        currentDelegate_()->paper = delegatePaperSaved_;
     currentDelegate_ = nullptr;
     currentRow_ = -1;
 
