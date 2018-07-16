@@ -39,7 +39,7 @@ public:
         tree_.updateAt(index, item, extent);
     }
 
-    void removeAt(int index, Item *item = 0) {
+    void removeAt(int index, Item *item = nullptr) {
         CC_ASSERT(has(index));
         tree_.removeAt(index, item);
     }
@@ -71,6 +71,10 @@ public:
 
     void getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const {
         tree_.getView(pos0, pos1, index0, index1, itemPos0);
+    }
+
+    bool lookup(Extent pos, Item *item = nullptr, int *index = nullptr, Extent *itemPos = nullptr) const {
+        return tree_.lookup(pos, item, index, itemPos);
     }
 
     Extent getPosAt(int index) const {

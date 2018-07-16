@@ -69,7 +69,12 @@ class MainView: public View
             Object::create<IconModel>()
         );
 
+        scroll->clicked->connect([=]{
+            CC_INSPECT(scroll->currentRow());
+        });
+
         CC_INSPECT(scroll->carrier()->size());
+        CC_INSPECT(scroll->rowCount());
     }
 };
 

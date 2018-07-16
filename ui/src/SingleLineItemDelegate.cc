@@ -50,7 +50,10 @@ void SingleLineItemDelegate::init()
     });
 
     size->bind([=]{
-        return preferredSize_();
+        return Size{
+            parent()->size()[0],
+            preferredSize_()[1]
+        };
     });
 }
 

@@ -20,15 +20,24 @@ ItemView::ItemView(View *parent, Item *rootItem):
     wheelGranularity = 0;
 }
 
-View *ItemView::addCarrier()
+int ItemView::currentRow() const
 {
-    return add<ItemCarrier>(rootItem_);
+    return currentRow_();
 }
 
-void ItemView::preheat()
+int ItemView::rowCount() const
 {
-    if (cacheRatio() > 0)
-        static_cast<ItemCarrier *>(carrier())->updateView(true);
+    return itemCarrier()->layout_->count();
+}
+
+Item *ItemView::currentItem() const
+{
+    return itemCarrier()->layout_->at(currentRow_())->item();
+}
+
+Item *ItemView::itemAt(int row) const
+{
+    return itemCarrier()->layout_->at(row)->item();
 }
 
 View *ItemView::addDelegate(View *parent, Item *item)
@@ -45,6 +54,78 @@ View *ItemView::addDelegate(View *parent, Item *item)
     label->margin = dp(12);
 
     return label;
+}
+
+View *ItemView::delegateAt(int row) const
+{
+    return itemCarrier()->layout_->at(row)->delegate();
+}
+
+View *ItemView::addCarrier()
+{
+    return add<ItemCarrier>(rootItem_);
+}
+
+void ItemView::preheat()
+{
+    if (cacheRatio() > 0)
+        itemCarrier()->updateView(true);
+}
+
+bool ItemView::onPointerClicked(const PointerEvent *event)
+{
+    if (0 <= currentRow_()) clicked();
+    currentRow_ = -1;
+    return true;
+}
+
+bool ItemView::onPointerPressed(const PointerEvent *event)
+{
+    View *highlight = itemCarrier()->highlight_;
+    Ref<ItemCarrier::LayoutItem> layoutItem;
+    int row = 0;
+    if (itemCarrier()->layout_->lookup(event->pos()[1] - carrier()->pos()[1], &layoutItem, &row)) {
+        highlight->pos = layoutItem->delegate()->pos();
+        highlight->size = layoutItem->delegate()->size();
+        highlight->visible = true;
+        currentDelegate_ = layoutItem->delegate();
+        currentRow_ = row;
+    }
+    else {
+        highlight->visible = false;
+        currentDelegate_ = nullptr;
+        currentRow_ = -1;
+    }
+    return ScrollView::onPointerPressed(event);
+}
+
+bool ItemView::onPointerReleased(const PointerEvent *event)
+{
+    ScrollView::onPointerReleased(event);
+    itemCarrier()->highlight_->visible = false;
+    currentDelegate_ = nullptr;
+    currentRow_ = -1;
+    return true;
+}
+
+bool ItemView::onPointerMoved(const PointerEvent *event)
+{
+    // itemCarrier()->highlight_->visible = false;
+    // currentRow_ = -1;
+    return ScrollView::onPointerMoved(event);
+}
+
+bool ItemView::onWheelMoved(const WheelEvent *event)
+{
+    itemCarrier()->highlight_->visible = false;
+    currentDelegate_ = nullptr;
+    currentRow_ = -1;
+    return ScrollView::onWheelMoved(event);
+}
+
+ItemCarrier *ItemView::itemCarrier() const
+{
+    return static_cast<ItemCarrier *>(carrier());
 }
 
 }} // namespace cc::ui

@@ -41,6 +41,8 @@ public:
 
     virtual Color inputFieldFillColor  () const = 0;
 
+    virtual Color itemHighlightColor   () const = 0;
+
     virtual double defaultFontSize     () const { return 16; }
     virtual double defaultFixedFontSize() const { return 16; }
     virtual double smallFontSize       () const { return 12; }

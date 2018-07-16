@@ -53,6 +53,8 @@ class ItemCarrier: public View
 
     typedef Pile< Ref<LayoutItem>, double > Layout;
     Ref<Layout> layout_;
+
+    View *highlight_;
 };
 
 }} // namespace cc::ui

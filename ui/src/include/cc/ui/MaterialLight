@@ -46,6 +46,7 @@ public:
     Color textSelectionPaper   () const override { return secondaryLightColor(); }
 
     Color inputFieldFillColor  () const override { return windowColor()->darker(5); }
+    Color itemHighlightColor   () const override { return windowColor()->darker(5); }
 
 private:
     MaterialLight() {}

@@ -43,6 +43,7 @@ protected:
     virtual View *addCarrier();
     virtual void preheat();
 
+    virtual bool onPointerClicked(const PointerEvent *event);
     bool onPointerPressed(const PointerEvent *event) override;
     bool onPointerReleased(const PointerEvent *event) override;
     bool onPointerMoved(const PointerEvent *event) override;
@@ -85,6 +86,8 @@ private:
 
     Point wheelStartPos_;
     Point wheelFinalPos_;
+
+    bool wasFlying_ { false };
 };
 
 }} // namespace cc::ui

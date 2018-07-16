@@ -129,16 +129,19 @@ void View::centerInParent()
     else pos = Point{};
 }
 
-void View::inheritPaper()
+Color View::findBasePaper() const
 {
     for (View *view = parent(); view; view = view->parent()) {
-        if (view->paper()) {
-            paper->bind([=]{ return view->paper(); });
-            return;
-        }
+        if (view->paper())
+            return view->paper();
     }
 
-    paper->bind([=]{ return style()->theme()->windowColor(); });
+    return style()->theme()->windowColor();
+}
+
+void View::inheritPaper()
+{
+    paper->bind([=]{ return findBasePaper(); });
 }
 
 bool View::isOpaque() const

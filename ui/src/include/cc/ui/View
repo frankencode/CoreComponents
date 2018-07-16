@@ -87,6 +87,7 @@ public:
     virtual Size minSize() const { return Size{}; }
     virtual Size maxSize() const { return Size{ std::numeric_limits<double>::max() }; }
 
+    Color findBasePaper() const;
     void inheritPaper();
 
     inline Organizer *organizer() const { return organizer_; }

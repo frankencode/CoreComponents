@@ -14,23 +14,45 @@
 namespace cc {
 namespace ui {
 
+class ItemCarrier;
+
 class ItemView: public ScrollView
 {
     friend class Object;
 
 public:
     Property<double> cacheRatio { 2 };
+    Signal clicked;
+
+    int currentRow() const;
+    int rowCount() const;
+
+    Item *currentItem() const;
+    Item *itemAt(int row) const;
 
 protected:
     ItemView(View *parent, Item *rootItem);
 
     virtual View *addDelegate(View *parent, Item *item);
 
+    View *delegateAt(int row) const;
+
 private:
     friend class ItemCarrier;
 
+    Property<int> currentRow_ { -1 };
+    Property<View *> currentDelegate_ { nullptr };
+
     View *addCarrier() override;
     void preheat() override;
+
+    bool onPointerClicked(const PointerEvent *event) override;
+    bool onPointerPressed(const PointerEvent *event) override;
+    bool onPointerReleased(const PointerEvent *event) override;
+    bool onPointerMoved(const PointerEvent *event) override;
+    bool onWheelMoved(const WheelEvent *event) override;
+
+    ItemCarrier *itemCarrier() const;
 
     Ref<Item> rootItem_;
 };

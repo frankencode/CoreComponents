@@ -63,13 +63,25 @@ void ScrollView::insertChild(View *child)
         View::insertChild(child);
 }
 
+bool ScrollView::onPointerClicked(const PointerEvent *event)
+{
+    return true;
+}
+
 bool ScrollView::onPointerPressed(const PointerEvent *event)
 {
     dragStart_ = event->pos();
     isDragged_ = false;
     speed_ = Point{};
-    if (timer_->isActive()) carrierStop();
-    return false;
+
+    if (timer_->isActive()) {
+        wasFlying_ = true;
+        carrierStop();
+    }
+    else
+        wasFlying_ = false;
+
+    return true;
 }
 
 bool ScrollView::onPointerReleased(const PointerEvent *event)
@@ -83,8 +95,10 @@ bool ScrollView::onPointerReleased(const PointerEvent *event)
         carrierBounceStart();
     else if (speed_ != Step{})
         carrierFlyStart();
+    else if (!wasFlying_)
+        onPointerClicked(event);
 
-    return false;
+    return true;
 }
 
 bool ScrollView::onPointerMoved(const PointerEvent *event)

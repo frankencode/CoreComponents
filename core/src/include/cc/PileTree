@@ -53,7 +53,7 @@ public:
 
     void insertAt(int index, const Item &item, Extent extent);
     void updateAt(int index, const Item &item, Extent extent);
-    void removeAt(int index, Item *item = 0);
+    void removeAt(int index, Item *item = nullptr);
 
     static int getIndexOf(void *handle) { return getIndexOf(reinterpret_cast<OrdinalNode *>(handle)); }
 
@@ -63,8 +63,9 @@ public:
     bool updateExtentAt(int index, Extent extent);
     Extent updateExtentAt(int index, const std::function<Extent(Extent)> &f);
 
-    void getItemExtentAt(int index, Item *item, Extent *extent = 0) const;
+    void getItemExtentAt(int index, Item *item, Extent *extent = nullptr) const;
     void getView(Extent pos0, Extent pos1, int *index0, int *index1, Extent *itemPos0) const;
+    bool lookup(Extent pos, Item *item = nullptr, int *index = nullptr, Extent *itemPos = nullptr) const;
     Extent getPosAt(int index) const;
 
     Item &at(int index);
@@ -174,6 +175,14 @@ void PileTree<Item, Extent>::getView(Extent pos0, Extent pos1, int *index0, int 
         find(pos1, index1, &item1Pos0);
         *index1 += (item1Pos0 < pos1);
     }
+}
+
+template<class Item, class Extent>
+bool PileTree<Item, Extent>::lookup(Extent pos, Item *item, int *index, Extent *itemPos) const
+{
+    Node *node = find(pos, index, itemPos);
+    if (item && node) *item = node->item_;
+    return node;
 }
 
 template<class Item, class Extent>

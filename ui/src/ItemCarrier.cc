@@ -18,6 +18,10 @@ ItemCarrier::ItemCarrier(View *parent, Item *rootItem):
     rootItem_{rootItem},
     layout_(Layout::create())
 {
+    highlight_ = add<View>();
+    highlight_->visible = false;
+    highlight_->paper->bind([=] { return theme()->itemHighlightColor(); });
+
     generateLayout(rootItem_, 0, rootItem_->count());
     layoutExtent = layout_->extent();
     cacheMargin->bind([=]{ return parent->size()[1] * static_cast<ItemView *>(parent)->cacheRatio(); });
@@ -58,20 +62,21 @@ int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int 
     {
         Item *child = item->at(i);
         ItemView *itemView = static_cast<ItemView *>(parent());
-        View *view = itemView->addDelegate(this, child);
+        View *delegate = itemView->addDelegate(this, child);
+        delegate->paper->bind([=]{ return (itemView->currentDelegate_() == delegate) ? highlight_->paper() : findBasePaper(); });
         if (itemView->wheelGranularity() == 0)
-            itemView->wheelGranularity = 2 * view->size()[1];
-        Ref<LayoutItem> layoutItem = Object::create<LayoutItem>(child, view);
+            itemView->wheelGranularity = 2 * delegate->size()[1];
+        Ref<LayoutItem> layoutItem = Object::create<LayoutItem>(child, delegate);
         double extent = 0.;
-        if (view) {
-            extent = view->size()[1];
-            view->size->connect([=]{
-                if (layout_->updateExtentAt(layoutItem->getIndex(), view->size()[1]))
+        if (delegate) {
+            extent = delegate->size()[1];
+            delegate->size->connect([=]{
+                if (layout_->updateExtentAt(layoutItem->getIndex(), delegate->size()[1]))
                     layoutExtent = layout_->extent();
             });
         }
         layout_->insertAt(layoutIndex, layoutItem, extent);
-        view->pos = Point{ view->pos()[0], layout_->getPosAt(layoutIndex) };
+        delegate->pos = Point{ delegate->pos()[0], layout_->getPosAt(layoutIndex) };
         ++layoutIndex;
         layoutIndex = generateLayout(child, 0, child->count(), layoutIndex);
     }
