@@ -74,7 +74,8 @@ void ItemView::preheat()
 
 bool ItemView::onPointerClicked(const PointerEvent *event)
 {
-    if (0 <= currentRow_()) clicked();
+    if (carrierAtRest() && 0 <= currentRow_()) clicked();
+    currentDelegate_ = nullptr;
     currentRow_ = -1;
     return true;
 }
@@ -110,8 +111,6 @@ bool ItemView::onPointerReleased(const PointerEvent *event)
     itemCarrier()->highlight_->visible = false;
     if (currentDelegate_())
         currentDelegate_()->paper = delegatePaperSaved_;
-    currentDelegate_ = nullptr;
-    currentRow_ = -1;
 
     return true;
 }

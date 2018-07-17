@@ -21,7 +21,7 @@ Ref<ScrollView> ScrollView::create(View *parent)
 }
 
 ScrollView::ScrollView(View *parent):
-    View(parent),
+    Control(parent),
     carrier_(nullptr),
     isDragged_(false),
     timer_(Timer::create(1./60))
@@ -63,11 +63,6 @@ void ScrollView::insertChild(View *child)
         View::insertChild(child);
 }
 
-bool ScrollView::onPointerClicked(const PointerEvent *event)
-{
-    return true;
-}
-
 bool ScrollView::onPointerPressed(const PointerEvent *event)
 {
     dragStart_ = event->pos();
@@ -91,12 +86,14 @@ bool ScrollView::onPointerReleased(const PointerEvent *event)
         isDragged_ = false;
     }
 
+    carrierAtRest_ = false;
+
     if (carrierInsideBoundary())
         carrierBounceStart();
     else if (speed_ != Step{})
         carrierFlyStart();
     else if (!wasFlying_)
-        onPointerClicked(event);
+        carrierAtRest_ = true;
 
     return true;
 }

@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include <cc/ui/View>
+#include <cc/ui/Control>
 
 namespace cc {
 namespace ui {
 
 class Timer;
 
-class ScrollView: public View
+class ScrollView: public Control
 {
     friend class Object;
 
@@ -43,7 +43,8 @@ protected:
     virtual View *addCarrier();
     virtual void preheat();
 
-    virtual bool onPointerClicked(const PointerEvent *event);
+    bool carrierAtRest() const { return carrierAtRest_; }
+
     bool onPointerPressed(const PointerEvent *event) override;
     bool onPointerReleased(const PointerEvent *event) override;
     bool onPointerMoved(const PointerEvent *event) override;
@@ -88,6 +89,7 @@ private:
     Point wheelFinalPos_;
 
     bool wasFlying_ { false };
+    bool carrierAtRest_ { true };
 };
 
 }} // namespace cc::ui

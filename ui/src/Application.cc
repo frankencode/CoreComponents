@@ -99,9 +99,11 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 
     if (event->action() == PointerAction::Pressed)
     {
-        Control *control = window->view()->getTopControlAt(event->pos());
-        if (control)
-            touchTargets_->establish(event->fingerId(), control);
+        Control *topControl = window->view()->getTopControlAt(event->pos());
+        if (topControl) {
+            touchTargets_->establish(event->fingerId(), topControl);
+            pressedControl = topControl;
+        }
     }
 
     Ref<View> touchTarget;
