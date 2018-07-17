@@ -374,6 +374,18 @@ void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)
                 window->onWindowMoved(Point{double(e->data1), double(e->data2)});
             break;
         }
+        case SDL_WINDOWEVENT_ENTER: {
+            SdlWindow *window = 0;
+            if (windows_->lookup(e->windowID, &window))
+                feedEnterEvent(window);
+            break;
+        }
+        case SDL_WINDOWEVENT_LEAVE: {
+            SdlWindow *window = 0;
+            if (windows_->lookup(e->windowID, &window))
+                feedLeaveEvent(window);
+            break;
+        }
     };
 }
 

@@ -189,7 +189,9 @@ bool View::onWheelMoved(const WheelEvent *event) { return false; }
 bool View::onKeyPressed(const KeyEvent *event) { return false; }
 bool View::onKeyReleased(const KeyEvent *event) { return false; }
 
-bool View::onExposed() { return false; }
+bool View::onWindowExposed() { return false; }
+bool View::onWindowEntered() { return false; }
+bool View::onWindowLeft() { return false; }
 
 void View::update(UpdateReason reason)
 {
@@ -417,13 +419,43 @@ bool View::feedKeyEvent(KeyEvent *event)
 
 bool View::feedExposedEvent()
 {
-    if (onExposed()) return true;
+    if (onWindowExposed()) return true;
 
     for (auto pair: visibleChildren_)
     {
         View *child = pair->value();
 
         if (child->feedExposedEvent())
+            return true;
+    }
+
+    return false;
+}
+
+bool View::feedEnterEvent()
+{
+    if (onWindowEntered()) return true;
+
+    for (auto pair: visibleChildren_)
+    {
+        View *child = pair->value();
+
+        if (child->feedLeaveEvent())
+            return true;
+    }
+
+    return false;
+}
+
+bool View::feedLeaveEvent()
+{
+    if (onWindowLeft()) return true;
+
+    for (auto pair: visibleChildren_)
+    {
+        View *child = pair->value();
+
+        if (child->feedLeaveEvent())
             return true;
     }
 

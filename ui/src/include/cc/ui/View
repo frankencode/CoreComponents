@@ -132,7 +132,9 @@ protected:
     virtual bool onKeyPressed(const KeyEvent *event);
     virtual bool onKeyReleased(const KeyEvent *event);
 
-    virtual bool onExposed();
+    virtual bool onWindowExposed();
+    virtual bool onWindowEntered();
+    virtual bool onWindowLeft();
 
     void update(UpdateReason reason = UpdateReason::Changed);
 
@@ -166,6 +168,8 @@ private:
     virtual bool feedWheelEvent(WheelEvent *event);
     virtual bool feedKeyEvent(KeyEvent *event);
     virtual bool feedExposedEvent();
+    virtual bool feedEnterEvent();
+    virtual bool feedLeaveEvent();
 
     void init();
     uint64_t nextSerial() const;

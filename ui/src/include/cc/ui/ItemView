@@ -50,6 +50,7 @@ private:
     bool onPointerPressed(const PointerEvent *event) override;
     bool onPointerReleased(const PointerEvent *event) override;
     bool onWheelMoved(const WheelEvent *event) override;
+    bool onWindowLeft() override;
 
     ItemCarrier *itemCarrier() const;
 

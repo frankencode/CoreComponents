@@ -81,6 +81,8 @@ protected:
     bool feedWheelEvent(Window *window, WheelEvent *event);
     bool feedKeyEvent(Window *window, KeyEvent *event);
     bool feedExposedEvent(Window *window);
+    bool feedEnterEvent(Window *window);
+    bool feedLeaveEvent(Window *window);
     bool feedTextEditingEvent(const String &text, int start, int length);
     bool feedTextInputEvent(const String &text);
 

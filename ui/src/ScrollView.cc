@@ -131,6 +131,14 @@ bool ScrollView::onWheelMoved(const WheelEvent *event)
     return true;
 }
 
+bool ScrollView::onWindowLeft()
+{
+    if (carrierInsideBoundary())
+        carrierBounceStart();
+
+    return false;
+}
+
 bool ScrollView::carrierInsideBoundary() const
 {
     double x = carrier_->pos()[0];

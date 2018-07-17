@@ -49,6 +49,7 @@ protected:
     bool onPointerReleased(const PointerEvent *event) override;
     bool onPointerMoved(const PointerEvent *event) override;
     bool onWheelMoved(const WheelEvent *event) override;
+    bool onWindowLeft() override;
 
 private:
     void insertChild(View *child) override;

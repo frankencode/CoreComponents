@@ -175,6 +175,16 @@ bool Application::feedExposedEvent(Window *window)
     return window->view()->feedExposedEvent();
 }
 
+bool Application::feedEnterEvent(Window *window)
+{
+    return window->view()->feedEnterEvent();
+}
+
+bool Application::feedLeaveEvent(Window *window)
+{
+    return window->view()->feedLeaveEvent();
+}
+
 bool Application::feedTextEditingEvent(const String &text, int start, int length)
 {
     if (focusControl()) {

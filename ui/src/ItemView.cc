@@ -126,6 +126,17 @@ bool ItemView::onWheelMoved(const WheelEvent *event)
     return ScrollView::onWheelMoved(event);
 }
 
+bool ItemView::onWindowLeft()
+{
+    itemCarrier()->highlight_->visible = false;
+    if (currentDelegate_())
+        currentDelegate_()->paper = delegatePaperSaved_;
+    currentDelegate_ = nullptr;
+    currentRow_ = -1;
+
+    return ScrollView::onWindowLeft();
+}
+
 ItemCarrier *ItemView::itemCarrier() const
 {
     return static_cast<ItemCarrier *>(carrier());
