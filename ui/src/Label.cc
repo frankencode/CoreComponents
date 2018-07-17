@@ -61,12 +61,13 @@ Size Label::preferredSize(const String &text, const Font &font, Size margin)
 
 Size Label::preferredSize(const TextRun *textRun, Size margin)
 {
-    return
+    Size size =
         2 * margin +
         Size {
             textRun->size()[0],
             textRun->maxAscender() - textRun->minDescender()
         };
+    return Size{ std::ceil(size[0]), std::ceil(size[1]) };
 }
 
 Size Label::preferredSize() const
