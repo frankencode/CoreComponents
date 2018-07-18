@@ -181,6 +181,9 @@ bool Application::feedWheelEvent(Window *window, WheelEvent *event)
 
 bool Application::feedKeyEvent(Window *window, KeyEvent *event)
 {
+    if (focusControl())
+        return focusControl()->feedKeyEvent(event);
+
     return window->view()->feedKeyEvent(event);
 }
 
