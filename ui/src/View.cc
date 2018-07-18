@@ -94,24 +94,27 @@ bool View::containsGlobal(Point g) const
     return containsLocal(mapToLocal(g));
 }
 
-View *View::getTopViewAt(Point g)
+Control *View::getControlAt(Point g)
 {
-    for (auto pair: visibleChildren_) {
-        View *child = pair->value();
-        if (child->containsGlobal(g))
-            return child->getTopViewAt(g);
+    for (View *view = this; view;) {
+        Control *control = Object::cast<Control *>(view);
+        if (control) {
+            while (control->delegate())
+                control = control->delegate();
+            return control;
+        }
+        View *candidate = nullptr;
+        for (auto pair: view->visibleChildren_) {
+            View *child = pair->value();
+            if (child->containsGlobal(g)) {
+                candidate = child;
+                break;
+            }
+        }
+        view = candidate;
     }
-    return this;
-}
 
-Control *View::getTopControlAt(Point g)
-{
-    View *view = getTopViewAt(g);
-    while (view && !Object::cast<Control *>(view)) view = view->parent();
-    if (!view) return nullptr;
-    Control *control = Object::cast<Control *>(view);
-    if (!control->delegate()) return control;
-    return control->delegate();
+    return nullptr;
 }
 
 bool View::isParentOfOrEqual(View *other) const
@@ -283,7 +286,7 @@ void View::adoptChild(View *parent, View *child)
 bool View::feedFingerEvent(FingerEvent *event)
 {
     {
-        PointerEvent::PosGuard guard(&event->pos_, mapToLocal(window()->size() * event->pos()));
+        PointerEvent::PosGuard guard(event, mapToLocal(window()->size() * event->pos()));
 
         if (event->action() == PointerAction::Pressed)
         {
@@ -328,7 +331,7 @@ bool View::feedFingerEvent(FingerEvent *event)
 bool View::feedMouseEvent(MouseEvent *event)
 {
     {
-        PointerEvent::PosGuard guard(&event->pos_, mapToLocal(event->pos()));
+        PointerEvent::PosGuard guard(event, mapToLocal(event->pos()));
 
         if (event->action() == PointerAction::Pressed)
         {

@@ -58,8 +58,7 @@ public:
     bool containsLocal(Point l) const;
     bool containsGlobal(Point g) const;
 
-    View *getTopViewAt(Point g);
-    Control *getTopControlAt(Point g);
+    Control *getControlAt(Point g);
     bool isParentOfOrEqual(View *other) const;
 
     double top   () const { return pos()[1]; }

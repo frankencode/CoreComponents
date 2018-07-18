@@ -25,12 +25,11 @@ public:
 
     virtual String toString() const = 0;
 
-protected:
     class PosGuard {
     public:
-        PosGuard(Point *pos, Point newPos):
-            pos_(pos),
-            origPos_(*pos)
+        PosGuard(PointerEvent *event, Point newPos):
+            pos_(&event->pos_),
+            origPos_(event->pos_)
         {
             *pos_ = newPos;
         }
@@ -43,7 +42,7 @@ protected:
         Point origPos_;
     };
 
-    friend class View;
+protected:
     friend class PosGuard;
 
     PointerEvent(
