@@ -55,6 +55,7 @@ public:
 
     Point mapToGlobal(Point l) const;
     Point mapToLocal(Point g) const;
+    Point mapToChild(View *child, Point l) const;
     bool containsLocal(Point l) const;
     bool containsGlobal(Point g) const;
 

@@ -82,6 +82,13 @@ Point View::mapToLocal(Point g) const
     return g;
 }
 
+Point View::mapToChild(View *child, Point l) const
+{
+    for (const View *view = child; view != this && view->parent(); view = view->parent())
+        l -= view->pos();
+    return l;
+}
+
 bool View::containsLocal(Point l) const
 {
     return
@@ -97,12 +104,6 @@ bool View::containsGlobal(Point g) const
 Control *View::getControlAt(Point g)
 {
     for (View *view = this; view;) {
-        Control *control = Object::cast<Control *>(view);
-        if (control) {
-            while (control->delegate())
-                control = control->delegate();
-            return control;
-        }
         View *candidate = nullptr;
         for (auto pair: view->visibleChildren_) {
             View *child = pair->value();
@@ -112,6 +113,12 @@ Control *View::getControlAt(Point g)
             }
         }
         view = candidate;
+        Control *control = Object::cast<Control *>(view);
+        if (control) {
+            while (control->delegate())
+                control = control->delegate();
+            return control;
+        }
     }
 
     return nullptr;

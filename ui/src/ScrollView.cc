@@ -63,6 +63,19 @@ void ScrollView::insertChild(View *child)
         View::insertChild(child);
 }
 
+bool ScrollView::onPointerClicked(const PointerEvent *event)
+{
+    if (!carrierAtRest_) return true;
+
+    Control *control = getControlAt(event->pos());
+    if (control) {
+        PointerEvent::PosGuard guard(const_cast<PointerEvent *>(event), mapToChild(control, event->pos()));
+        return control->onPointerClicked(event);
+    }
+
+    return true;
+}
+
 bool ScrollView::onPointerPressed(const PointerEvent *event)
 {
     dragStart_ = event->pos();
@@ -73,8 +86,17 @@ bool ScrollView::onPointerPressed(const PointerEvent *event)
         wasFlying_ = true;
         carrierStop();
     }
-    else
+    else {
         wasFlying_ = false;
+        if (app()->focusControl()) {
+            Control *control = getControlAt(event->pos());
+            if (control == app()->focusControl()) {
+                app()->pressedControl = control;
+                PointerEvent::PosGuard guard(const_cast<PointerEvent *>(event), mapToChild(control, event->pos()));
+                return control->onPointerPressed(event);
+            }
+        }
+    }
 
     return true;
 }

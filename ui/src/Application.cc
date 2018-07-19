@@ -97,8 +97,7 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
     cursorControl = nullptr;
     hoverControl = nullptr;
 
-    if (event->action() == PointerAction::Pressed)
-    {
+    if (event->action() == PointerAction::Pressed) {
         Point pos = window->size() * event->pos();
         Control *topControl = window->view()->getControlAt(pos);
         if (topControl) {
@@ -112,23 +111,22 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
             focusControl = nullptr;
     }
 
-    bool done = false;
     Ref<View> touchTarget;
-    if (touchTargets_->lookup(event->fingerId(), &touchTarget))
-    {
+    if (touchTargets_->lookup(event->fingerId(), &touchTarget)) {
         if (event->action() == PointerAction::Released)
             touchTargets_->remove(event->fingerId());
-
-        done = touchTarget->feedFingerEvent(event);
     }
 
-    if (pressedControl())
-    {
+    if (pressedControl()) {
+        bool eaten = pressedControl()->feedFingerEvent(event);
         if (event->action() == PointerAction::Released)
             pressedControl = nullptr;
+        if (eaten) return true;
     }
-
-    if (done) return true;
+    else if (touchTarget) {
+        if (touchTarget->feedFingerEvent(event))
+            return true;
+    }
 
     return window->view()->feedFingerEvent(event);
 }

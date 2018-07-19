@@ -45,6 +45,7 @@ protected:
 
     bool carrierAtRest() const { return carrierAtRest_; }
 
+    bool onPointerClicked(const PointerEvent *event) override;
     bool onPointerPressed(const PointerEvent *event) override;
     bool onPointerReleased(const PointerEvent *event) override;
     bool onPointerMoved(const PointerEvent *event) override;
