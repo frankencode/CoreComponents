@@ -127,6 +127,8 @@ void InputField::init()
     error->visible->bind([=]{ return errorText() != "" && focus(); });
     messageArea->visible->bind([=]{ return help->visible() || error->visible() || status->visible(); });
     #endif
+
+    Control::init();
 }
 
 Size InputField::preferredSize() const

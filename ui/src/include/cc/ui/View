@@ -106,6 +106,8 @@ protected:
     View(View *parent = 0);
     ~View();
 
+    void init();
+
     virtual bool isOpaque() const;
     virtual bool isPainted() const;
     virtual bool isStatic() const;
@@ -171,7 +173,6 @@ private:
     virtual bool feedEnterEvent();
     virtual bool feedLeaveEvent();
 
-    void init();
     uint64_t nextSerial() const;
 
     void polish(Window *window);

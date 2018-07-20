@@ -34,7 +34,7 @@ void Row::childReady(View *child)
 
             if (child->size()[1] > innerSize[1]) innerSize[1] = child->size()[1];
             innerSize[0] += child->padding() + child->size()[0];
-            if (view()->childCount() > 1) innerSize[0] += spacing();
+            if (view()->childCount() > 0) innerSize[0] += spacing();
 
             view()->size = innerSize + 2 * margin();
 

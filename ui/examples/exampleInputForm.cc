@@ -18,6 +18,10 @@ class MainView: public View
 
         auto carrier = add<ScrollView>()->carrier();
 
+        auto column = carrier->organize<Column>();
+        column->margin = dp(12);
+        column->spacing = dp(12);
+
         carrier->add<TextField>("First name");
         carrier->add<TextField>("Middle name");
         carrier->add<TextField>("Last name");
@@ -27,11 +31,6 @@ class MainView: public View
         carrier->add<TextField>("Street address");
         carrier->add<TextField>("Zip code");
         carrier->add<TextField>("Country");
-
-
-        auto column = carrier->organize<Column>();
-        column->margin = dp(12);
-        column->spacing = dp(12);
     }
 };
 

@@ -55,6 +55,8 @@ void SingleLineItemDelegate::init()
             preferredSize_()[1]
         };
     });
+
+    View::init();
 }
 
 Size SingleLineItemDelegate::preferredSize() const

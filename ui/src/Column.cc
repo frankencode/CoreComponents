@@ -36,7 +36,7 @@ void Column::childReady(View *child)
 
             if (child->size()[0] > innerSize[0]) innerSize[0] = child->size()[0];
             innerSize[1] += child->padding() + child->size()[1];
-            if (view()->childCount() > 1) innerSize[1] += spacing();
+            if (view()->childCount() > 0) innerSize[1] += spacing();
 
             view()->size = innerSize + Size{ indent(), 0 } + 2 * margin();
 
