@@ -138,6 +138,7 @@ void ItemCarrier::updateView(bool preheat)
             View *delegate = layout_->at(i)->delegate();
             delegate->pos = Point{ delegate->pos()[0], y };
             delegate->visible = true;
+            static_cast<ItemView *>(parent())->updateDelegateInView(delegate, i);
             y += delegate->size()[1];
         }
     }

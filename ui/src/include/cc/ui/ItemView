@@ -34,6 +34,7 @@ protected:
     ItemView(View *parent, Item *rootItem);
 
     virtual View *addDelegate(View *parent, Item *item);
+    virtual void updateDelegateInView(View *delegate, int layoutIndex) {}
 
     View *delegateAt(int row) const;
 

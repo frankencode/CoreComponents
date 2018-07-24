@@ -127,9 +127,6 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 
     Point pos = origin;
     Point pos0 = origin;
-    const double maxGlyphHeight =
-        std::ceil( ftFace->ascender * ftScaledFont->size() / ftFace->units_per_EM ) +
-        std::ceil( -ftFace->descender * ftScaledFont->size() / ftFace->units_per_EM );
 
     Step glyphAdvance;
 
@@ -202,6 +199,11 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 
     {
         Step step = pos - pos0;
+
+        const double maxGlyphHeight =
+            std::ceil( ftFace->ascender * ftScaledFont->size() / ftFace->units_per_EM ) +
+            std::ceil( -ftFace->descender * ftScaledFont->size() / ftFace->units_per_EM );
+
         Size size {
             std::abs(step[0]),
             std::abs(step[1]) + maxGlyphHeight
