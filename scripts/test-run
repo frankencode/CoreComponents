@@ -3,8 +3,12 @@
 # TEST_APP=exampleMultitouch
 # TEST_APP=exampleMouseEvent
 TEST_APP=exampleIconGallery
-# TEST_APP=exampleItemView
 TEST_ARG="-fullscreen"
+# TEST_APP=exampleItemView
+# TEST_APP=exampleTextField
+# TEST_APP=examplePasswordField
+# TEST_APP=exampleInputForm
+# TEST_ARG=""
 TEST_ENV="DISPLAY=:0"
 TEST_STATION=fusion
 TEST_OS=${TEST_STATION}

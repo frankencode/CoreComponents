@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/math>
+#include <cc/Range>
+#include <cc/ui/ItemView>
+
+namespace cc { template<class, class> class Pile; }
+
+namespace cc {
+namespace ui {
+
+class TextItem;
+
+class TextEdit: public ItemView
+{
+    friend class Object;
+
+public:
+    Property<Font> font;
+    Property<Color> ink;
+
+    Property<bool> showLineNumbers { false };
+    Property<Font> lineNumberFont;
+    Property<Color> lineNumberInk;
+    Property<Color> lineNumberPaper;
+
+    Property<Size> textMargin { Size{ std::ceil(dp(4)), 0 } };
+    Property<Size> lineNumberMargin { Size{ std::ceil(dp(8)), 0 } };
+
+    String copy() const { return copy(Range{0, count()}); }
+    String copy(Range range) const;
+    int count() const;
+
+    void cut(Range range);
+    Range paste(Range range, const String &text);
+
+private:
+    friend class TextLine;
+
+    Property<double> textWidth;
+    Property<double> textWidthSansMargin;
+    Property<double> lineNumberWidth;
+
+    Property<Point> textPos;
+    Property<Point> lineNumberPos;
+
+    Property<String> newLine { "\n" };
+
+    TextEdit(View *parent = 0);
+
+    static String filterNonPrintable(const String &text);
+    static Ref<StringList> splitIntoLines(const String &text);
+
+    View *addDelegate(View *parent, Item *item) override;
+    void updateDelegateInView(View *delegate, int layoutIndex) override;
+
+    Property<int> lineNumberDigitCount { [=] { return ilog<10>(lineCount()); } };
+    Property<int> lineCount { 0 };
+
+    typedef Pile<TextItem *, int> Lines;
+    Ref<Lines> lines_;
+};
+
+}} // namespace cc::ui

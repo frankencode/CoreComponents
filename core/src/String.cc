@@ -223,10 +223,11 @@ String Array<char>::copy(int i0, int i1) const
 
 String Array<char>::paste(int i0, int i1, const String &text) const
 {
+    if (i0 <= 0 && size_ <= i1) return text;
     Ref<StringList> parts = StringList::create();
-    parts->append(copy(0, i0));
+    if (i0 > 0) parts->append(copy(0, i0));
     parts->append(text);
-    parts->append(copy(i1, size_));
+    if (i1 < size_) parts->append(copy(i1, size_));
     return parts->join();
 }
 

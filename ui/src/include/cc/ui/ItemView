@@ -33,6 +33,8 @@ public:
 protected:
     ItemView(View *parent, Item *rootItem);
 
+    Item *rootItem() { return rootItem_; }
+
     virtual View *addDelegate(View *parent, Item *item);
     virtual void updateDelegateInView(View *delegate, int layoutIndex) {}
 

@@ -21,15 +21,15 @@ public:
     typedef ExtentType Extent;
 
     PileNode():
-        treeExtent_(0),
-        itemExtent_(0),
-        item_(Item())
+        treeExtent_{0},
+        itemExtent_{0},
+        item_{Item{}}
     {}
 
     PileNode(Extent extent, const Item &item):
-        treeExtent_(extent),
-        itemExtent_(extent),
-        item_(item)
+        treeExtent_{extent},
+        itemExtent_{extent},
+        item_{item}
     {
         activate(this);
     }

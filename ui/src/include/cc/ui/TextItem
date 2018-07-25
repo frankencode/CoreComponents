@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Item>
+
+namespace cc {
+namespace ui {
+
+class TextItem: public Item
+{
+    friend class Object;
+
+public:
+    Property<String> text;
+
+private:
+    TextItem(const String &initialText = String{}):
+        text{initialText}
+    {}
+};
+
+}} // namespace cc::ui

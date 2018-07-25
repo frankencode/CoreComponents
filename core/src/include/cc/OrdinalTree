@@ -35,8 +35,6 @@ public:
         IndexTracking *item = static_cast<IndexTracking *>(node->item_);
         if (item->node_ == nullptr)
             item->node_ = node;
-        else
-            CC_ASSERT2(item->node_ == node, "Index tracked item added to multiple containers");
     }
 
     template<class Node>
