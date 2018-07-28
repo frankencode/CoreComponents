@@ -39,7 +39,6 @@ public:
     String copy(Range range) const;
     int count() const;
 
-    void cut(Range range);
     Range paste(Range range, const String &text);
 
 private:
@@ -52,12 +51,11 @@ private:
     Property<Point> textPos;
     Property<Point> lineNumberPos;
 
-    Property<String> newLine { "\n" };
-
-    TextEdit(View *parent = 0);
-
     static String filterNonPrintable(const String &text);
     static Ref<StringList> splitIntoLines(const String &text);
+
+    TextEdit(View *parent = 0);
+    void cut(Range range);
 
     View *addDelegate(View *parent, Item *item) override;
     void updateDelegateInView(View *delegate, int layoutIndex) override;

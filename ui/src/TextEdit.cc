@@ -49,33 +49,6 @@ TextEdit::TextEdit(View *parent):
     lines_->insertAt(0, rootItem()->add<TextItem>(), 0);
 }
 
-String TextEdit::filterNonPrintable(const String &text)
-{
-    String filteredText(text->count(), '\0');
-    int j = 0;
-    for (int i = 0; i < text->count(); ++i) {
-        uint8_t ch = text->byteAt(i);
-        if (ch >= 0x20 || ch == '\n') {
-            mutate(filteredText)->byteAt(j) = ch;
-            ++j;
-        }
-    }
-    mutate(filteredText)->truncate(j);
-    return filteredText;
-}
-
-Ref<StringList> TextEdit::splitIntoLines(const String &text)
-{
-    Ref<StringList> chunks = StringList::create();
-    for (int i = 0; i < text->count();) {
-        int i0 = i;
-        i = text->find('\n', i);
-        i += (i < text->count());
-        chunks->append(text->copy(i0, i));
-    }
-    return chunks;
-}
-
 String TextEdit::copy(Range range) const
 {
     int lineIndex0 = 0;
@@ -101,32 +74,11 @@ int TextEdit::count() const
     return lines_->extent();
 }
 
-void TextEdit::cut(Range range)
-{
-    int lineIndex0 = 0;
-    int lineIndex1 = 0;
-    int currentByteOffset0 = 0;
-    lines_->getView(range->begin(), range->end(), &lineIndex0, &lineIndex1, &currentByteOffset0);
-
-    for (int lineIndex = lineIndex0; lineIndex < lineIndex1;)
-    {
-        TextItem *item = static_cast<TextItem *>(itemAt(lineIndex));
-        int currentByteOffset1 = currentByteOffset0 + item->text()->count() + newLine()->count();
-        if (range->i0() <= currentByteOffset0 && currentByteOffset1 <= range->i1() && lines_->count() > 1) {
-            lines_->removeAt(lineIndex);
-        }
-        else {
-            item->text = item->text()->copy(range->i0() - currentByteOffset0, range->i1() - currentByteOffset0);
-            lines_->updateExtentAt(lineIndex, item->text()->count());
-            ++lineIndex;
-        }
-        currentByteOffset0 = currentByteOffset1;
-    }
-}
-
 Range TextEdit::paste(Range range, const String &text)
 {
     cut(range);
+
+    if (text->count() == 0) return Range{ range->i0(), range->i0() };
 
     TextItem *line = nullptr;
     int lineIndex = 0;
@@ -158,6 +110,56 @@ Range TextEdit::paste(Range range, const String &text)
     }
 
     return Range{range->i0(), range->i0() + filteredText->count()};
+}
+
+String TextEdit::filterNonPrintable(const String &text)
+{
+    String filteredText(text->count(), '\0');
+    int j = 0;
+    for (int i = 0; i < text->count(); ++i) {
+        uint8_t ch = text->byteAt(i);
+        if (ch >= 0x20 || ch == '\n') {
+            mutate(filteredText)->byteAt(j) = ch;
+            ++j;
+        }
+    }
+    mutate(filteredText)->truncate(j);
+    return filteredText;
+}
+
+Ref<StringList> TextEdit::splitIntoLines(const String &text)
+{
+    Ref<StringList> chunks = StringList::create();
+    for (int i = 0; i < text->count();) {
+        int i0 = i;
+        i = text->find('\n', i);
+        i += (i < text->count());
+        chunks->append(text->copy(i0, i));
+    }
+    return chunks;
+}
+
+void TextEdit::cut(Range range)
+{
+    int lineIndex0 = 0;
+    int lineIndex1 = 0;
+    int currentByteOffset0 = 0;
+    lines_->getView(range->begin(), range->end(), &lineIndex0, &lineIndex1, &currentByteOffset0);
+
+    for (int lineIndex = lineIndex0; lineIndex < lineIndex1;)
+    {
+        TextItem *item = static_cast<TextItem *>(itemAt(lineIndex));
+        int currentByteOffset1 = currentByteOffset0 + item->text()->count();
+        if (range->i0() <= currentByteOffset0 && currentByteOffset1 <= range->i1() && lines_->count() > 1) {
+            lines_->removeAt(lineIndex);
+        }
+        else {
+            item->text = item->text()->copy(range->i0() - currentByteOffset0, range->i1() - currentByteOffset0);
+            lines_->updateExtentAt(lineIndex, item->text()->count());
+            ++lineIndex;
+        }
+        currentByteOffset0 = currentByteOffset1;
+    }
 }
 
 View *TextEdit::addDelegate(View *parent, Item *item)
