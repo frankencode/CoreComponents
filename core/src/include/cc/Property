@@ -267,4 +267,12 @@ protected:
     static void store(Property<T> &property, const T &newValue) { property->store(newValue); }
 };
 
+class OnScopeExit {
+public:
+    OnScopeExit (const std::function<void()> &f): f_{f} {}
+    ~OnScopeExit() { f_(); }
+private:
+    std::function<void()> f_;
+};
+
 } // namespace cc
