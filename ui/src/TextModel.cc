@@ -36,6 +36,11 @@ String TextModel::copy(Range range) const
     return parts->join();
 }
 
+Range TextModel::paste(Range range, const String &newChunk)
+{
+    return TextEditorWithHistory::paste(range, newChunk);
+}
+
 String TextModel::filterChunk(const String &newChunk) const
 {
     String filteredChunk(newChunk->count(), '\0');
@@ -89,7 +94,7 @@ void TextModel::cut(Range range)
             text_->removeAt(lineIndex);
         }
         else {
-            item->text = item->text()->copy(range->i0() - currentByteOffset0, range->i1() - currentByteOffset0);
+            item->text = item->text()->paste(range->i0() - currentByteOffset0, range->i1() - currentByteOffset0, "");
             text_->updateExtentAt(lineIndex, item->text()->count());
             ++lineIndex;
         }
@@ -111,6 +116,7 @@ void TextModel::pasteFragment(int targetOffset, const String &fragment)
     else if (!text_->lookup(targetOffset, &line, &lineIndex, &lineOffset))
         return;
 
+    targetOffset -= lineOffset;
     line->text = line->text()->paste(targetOffset, targetOffset, fragment);
     text_->updateExtentAt(lineIndex, line->text()->count());
 }

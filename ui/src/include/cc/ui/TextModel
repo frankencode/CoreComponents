@@ -26,6 +26,8 @@ public:
 
     String copy(Range range) const override;
 
+    Range paste(Range range, const String &newChunk);
+
 private:
     TextModel();
 

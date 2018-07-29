@@ -210,9 +210,9 @@ void Array<char>::writeXor(const CharArray *b)
 String Array<char>::copy(int i0, int i1) const
 {
     if (i0 < 0) i0 = 0;
-    if (i0 > size_) i0 = size_;
+    if (size_ < i0) i0 = size_;
     if (i1 < 0) i1 = 0;
-    if (i1 > size_) i1 = size_;
+    if (size_ < i1) i1 = size_;
     int newSize = i1 - i0;
     if (newSize <= 0) return create();
     char *newData = new char[newSize + 1];
@@ -223,7 +223,11 @@ String Array<char>::copy(int i0, int i1) const
 
 String Array<char>::paste(int i0, int i1, const String &text) const
 {
-    if (i0 <= 0 && size_ <= i1) return text;
+    if (i0 < 0) i0 = 0;
+    if (size_ < i0) i0 = size_;
+    if (i1 < 0) i1 = 0;
+    if (size_ < i1) i1 = size_;
+    if (i1 < i0) return text;
     Ref<StringList> parts = StringList::create();
     if (i0 > 0) parts->append(copy(0, i0));
     parts->append(text);
