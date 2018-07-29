@@ -26,6 +26,16 @@ String PasswordEditor::password() const
     return password_();
 }
 
+int PasswordEditor::charCount() const
+{
+    return text_()->count();
+}
+
+String PasswordEditor::copy(Range range) const
+{
+    return text_()->copy(range->i0(), range->i1());
+}
+
 Range PasswordEditor::paste(Range range, const String &newChunk)
 {
     if (!(0 <= range->i0() && range->i1() <= text_()->count()))

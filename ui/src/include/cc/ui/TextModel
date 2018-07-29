@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/TextEditorWithHistory>
+#include <cc/ui/TextItem>
+
+namespace cc { template<class, class> class Pile; }
+
+namespace cc {
+namespace ui {
+
+class TextModel: public Item, public TextEditorWithHistory
+{
+    friend class Object;
+
+public:
+    int charCount() const override { return charCount_(); }
+    int lineCount() const { return lineCount_(); }
+
+    String copy(Range range) const override;
+
+private:
+    TextModel();
+
+    String filterChunk(const String &newChunk) const override;
+    void pasteChunk(Range range, const String &newChunk) override;
+
+    void cut(Range range);
+    void pasteFragment(int targetOffset, const String &fragment);
+    void breakLine(int targetOffset);
+
+    Property<int> charCount_ { 0 };
+    Property<int> lineCount_ { 1 };
+
+    typedef Pile<TextItem *, int> Lines;
+    Ref<Lines> text_;
+};
+
+}} // namespace cc::ui

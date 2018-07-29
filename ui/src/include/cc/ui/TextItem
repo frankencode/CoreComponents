@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/Property>
 #include <cc/ui/Item>
 
 namespace cc {

@@ -12,12 +12,10 @@
 #include <cc/Range>
 #include <cc/ui/ItemView>
 
-namespace cc { template<class, class> class Pile; }
-
 namespace cc {
 namespace ui {
 
-class TextItem;
+class TextModel;
 
 class TextEdit: public ItemView
 {
@@ -35,12 +33,6 @@ public:
     Property<Size> textMargin { Size{ std::ceil(dp(4)), 0 } };
     Property<Size> lineNumberMargin { Size{ std::ceil(dp(8)), 0 } };
 
-    String copy() const { return copy(Range{0, count()}); }
-    String copy(Range range) const;
-    int count() const;
-
-    Range paste(Range range, const String &text);
-
 private:
     friend class TextLine;
 
@@ -51,20 +43,15 @@ private:
     Property<Point> textPos;
     Property<Point> lineNumberPos;
 
-    static String filterNonPrintable(const String &text);
-    static Ref<StringList> splitIntoLines(const String &text);
-
     TextEdit(View *parent = 0);
-    void cut(Range range);
 
     View *addDelegate(View *parent, Item *item) override;
     void updateDelegateInView(View *delegate, int layoutIndex) override;
 
     Property<int> lineNumberDigitCount { [=] { return ilog<10>(lineCount()); } };
-    Property<int> lineCount { 0 };
+    Property<int> lineCount { 0 }; // TODO: add logic to update this property
 
-    typedef Pile<TextItem *, int> Lines;
-    Ref<Lines> lines_;
+    Ref<TextModel> model_;
 };
 
 }} // namespace cc::ui

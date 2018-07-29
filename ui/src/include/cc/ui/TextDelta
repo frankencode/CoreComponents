@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Range>
+#include <cc/String>
+
+namespace cc {
+namespace ui {
+
+class TextDelta: public Object
+{
+    friend class Object;
+
+public:
+    int byteOffset() const { return byteOffset_; }
+    String oldChunk() const { return oldChunk_; }
+    String newChunk() const { return newChunk_; }
+
+    Range oldRange() const { return Range { byteOffset_, byteOffset_ + oldChunk_->count() }; }
+    Range newRange() const { return Range { byteOffset_, byteOffset_ + newChunk_->count() }; }
+
+private:
+    TextDelta(int byteOffset, const String &oldChunk, const String &newChunk):
+        byteOffset_{byteOffset},
+        oldChunk_{oldChunk},
+        newChunk_{newChunk}
+    {}
+
+    int byteOffset_;
+    String oldChunk_;
+    String newChunk_;
+};
+
+}} // namespace cc::ui

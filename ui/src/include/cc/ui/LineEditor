@@ -9,58 +9,29 @@
 #pragma once
 
 #include <cc/Property>
-#include <cc/ui/TextEditor>
+#include <cc/ui/TextEditorWithHistory>
 
 namespace cc {
 namespace ui {
 
-class LineEditor: public TextEditor
+class TextDelta;
+
+class LineEditor: public TextEditorWithHistory
 {
     friend class Object;
 
 public:
+    int charCount() const override;
+    String copy(Range range) const override;
     String text() const override;
-
-    Range paste(Range range, const String &newChunk) override;
-
-    bool canUndo() const override;
-    bool canRedo() const override;
-    Range undo() override;
-    Range redo() override;
 
 protected:
     LineEditor(const String &initialText = String{});
 
+    void pasteChunk(Range range, const String &newChunk) override;
+
 private:
     Property<String> text_;
-
-    class Delta: public Object
-    {
-        friend class Object;
-
-    public:
-        int byteOffset() const { return byteOffset_; }
-        String oldChunk() const { return oldChunk_; }
-        String newChunk() const { return newChunk_; }
-
-        Range oldRange() const { return Range { byteOffset_, byteOffset_ + oldChunk_->count() }; }
-        Range newRange() const { return Range { byteOffset_, byteOffset_ + newChunk_->count() }; }
-
-    private:
-        Delta(int byteOffset, const String &oldChunk, const String &newChunk):
-            byteOffset_{byteOffset},
-            oldChunk_{oldChunk},
-            newChunk_{newChunk}
-        {}
-
-        int byteOffset_;
-        String oldChunk_;
-        String newChunk_;
-    };
-
-    typedef List< Ref<const Delta> > History;
-    Ref<History> past_;
-    Ref<History> future_;
 };
 
 }} // namespace cc::ui

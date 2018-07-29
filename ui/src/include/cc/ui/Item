@@ -44,7 +44,7 @@ private:
 
 class ItemCarrier;
 
-class Item: public Object, public IndexTracking
+class Item: public virtual Object, public IndexTracking
 {
     friend class Object;
 
@@ -54,6 +54,7 @@ public:
     Item *parent() const { return parent_; }
 
     int count() const { return children_->count(); }
+    const Item *at(int i) const { return children_->at(i); }
     Item *at(int i) { return children_->at(i); }
 
     int totalCount() const { return children_->extent(); }
