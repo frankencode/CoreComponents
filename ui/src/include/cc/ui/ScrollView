@@ -43,6 +43,8 @@ protected:
     virtual View *addCarrier();
     virtual void preheat();
 
+    void resetCarrier();
+
     bool carrierAtRest() const { return carrierAtRest_; }
 
     bool onPointerClicked(const PointerEvent *event) override;

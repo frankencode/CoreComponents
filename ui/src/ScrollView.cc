@@ -55,6 +55,13 @@ View *ScrollView::addCarrier()
 void ScrollView::preheat()
 {}
 
+void ScrollView::resetCarrier()
+{
+    carrierStop();
+    removeChild(carrier_);
+    carrier_ = addCarrier();
+}
+
 void ScrollView::insertChild(View *child)
 {
     if (carrier_)

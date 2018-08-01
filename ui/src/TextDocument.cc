@@ -7,28 +7,53 @@
  */
 
 #include <cc/Pile>
-#include <cc/ui/TextModel>
+#include <cc/ui/TextItem>
+#include <cc/ui/TextDocument>
 
 namespace cc {
 namespace ui {
 
-TextModel::TextModel():
-    text_{Lines::create()}
+TextDocument::TextDocument()
 {
-    text_->insertAt(0, add<TextItem>(), 0);
+    load("");
 }
 
-String TextModel::copy(Range range) const
+void TextDocument::load(const String &text)
+{
+    lines_ = Lines::create();
+    rootItem_ = Item::create();
+
+    const int n = text->count();
+    for (int i = 0; i < n;) {
+        int i0 = i;
+        i = text->find('\n', i);
+        i += (i < n);
+        String fragment = text->copy(i0, i);
+        lines_->insertAt(
+            lines_->count(),
+            rootItem_->add<TextItem>(fragment),
+            fragment->count()
+        );
+    }
+
+    if (n == 0)
+        lines_->insertAt(0, rootItem_->add<TextItem>(), 0);
+
+    charCount_ = n;
+    lineCount_ = lines_->count();
+}
+
+String TextDocument::copy(Range range) const
 {
     int lineIndex0 = 0;
     int lineIndex1 = 0;
     int currentByteOffset0 = 0;
-    text_->getView(range->i0(), range->i1(), &lineIndex0, &lineIndex1, &currentByteOffset0);
+    lines_->getView(range->i0(), range->i1(), &lineIndex0, &lineIndex1, &currentByteOffset0);
 
     Ref<StringList> parts = StringList::create();
 
     for (int lineIndex = lineIndex0; lineIndex < lineIndex1; ++lineIndex) {
-        const TextItem *item = static_cast<const TextItem *>(at(lineIndex));
+        const TextItem *item = static_cast<const TextItem *>(rootItem_->at(lineIndex));
         parts << item->text()->copy(range->i0() - currentByteOffset0, range->i1() - currentByteOffset0);
         currentByteOffset0 += item->text()->count();
     }
@@ -36,12 +61,12 @@ String TextModel::copy(Range range) const
     return parts->join();
 }
 
-Range TextModel::paste(Range range, const String &newChunk)
+Range TextDocument::paste(Range range, const String &newChunk)
 {
     return TextEditorWithHistory::paste(range, newChunk);
 }
 
-String TextModel::filterChunk(const String &newChunk) const
+String TextDocument::filterChunk(const String &newChunk) const
 {
     String filteredChunk(newChunk->count(), '\0');
     int j = 0;
@@ -56,11 +81,11 @@ String TextModel::filterChunk(const String &newChunk) const
     return filteredChunk;
 }
 
-void TextModel::pasteChunk(Range range, const String &newChunk)
+void TextDocument::pasteChunk(Range range, const String &newChunk)
 {
     OnScopeExit updateCounts{[=]{
-        charCount_ = text_->extent();
-        lineCount_ = totalCount();
+        charCount_ = lines_->extent();
+        lineCount_ = rootItem_->totalCount();
     }};
 
     cut(range);
@@ -79,60 +104,61 @@ void TextModel::pasteChunk(Range range, const String &newChunk)
     }
 }
 
-void TextModel::cut(Range range)
+void TextDocument::cut(Range range)
 {
     int lineIndex0 = 0;
     int lineIndex1 = 0;
     int currentByteOffset0 = 0;
-    text_->getView(range->begin(), range->end(), &lineIndex0, &lineIndex1, &currentByteOffset0);
+    lines_->getView(range->begin(), range->end(), &lineIndex0, &lineIndex1, &currentByteOffset0);
 
     for (int lineIndex = lineIndex0; lineIndex < lineIndex1;)
     {
-        TextItem *item = static_cast<TextItem *>(at(lineIndex));
+        TextItem *item = static_cast<TextItem *>(rootItem_->at(lineIndex));
         int currentByteOffset1 = currentByteOffset0 + item->text()->count();
-        if (range->i0() <= currentByteOffset0 && currentByteOffset1 <= range->i1() && text_->count() > 1) {
-            text_->removeAt(lineIndex);
+        if (range->i0() <= currentByteOffset0 && currentByteOffset1 <= range->i1() && lines_->count() > 1) {
+            lines_->removeAt(lineIndex);
+            rootItem_->removeAt(lineIndex);
         }
         else {
             item->text = item->text()->paste(range->i0() - currentByteOffset0, range->i1() - currentByteOffset0, "");
-            text_->updateExtentAt(lineIndex, item->text()->count());
+            lines_->updateExtentAt(lineIndex, item->text()->count());
             ++lineIndex;
         }
         currentByteOffset0 = currentByteOffset1;
     }
 }
 
-void TextModel::pasteFragment(int targetOffset, const String &fragment)
+void TextDocument::pasteFragment(int targetOffset, const String &fragment)
 {
     TextItem *line = nullptr;
     int lineIndex = 0;
     int lineOffset = 0;
 
-    if (targetOffset == text_->extent()) {
-        lineIndex = text_->count() - 1;
-        line = text_->at(lineIndex);
-        lineOffset = text_->getPosAt(lineIndex);
+    if (targetOffset == lines_->extent()) {
+        lineIndex = lines_->count() - 1;
+        line = lines_->at(lineIndex);
+        lineOffset = lines_->getPosAt(lineIndex);
     }
-    else if (!text_->lookup(targetOffset, &line, &lineIndex, &lineOffset))
+    else if (!lines_->lookup(targetOffset, &line, &lineIndex, &lineOffset))
         return;
 
     targetOffset -= lineOffset;
     line->text = line->text()->paste(targetOffset, targetOffset, fragment);
-    text_->updateExtentAt(lineIndex, line->text()->count());
+    lines_->updateExtentAt(lineIndex, line->text()->count());
 }
 
-void TextModel::breakLine(int targetOffset)
+void TextDocument::breakLine(int targetOffset)
 {
     TextItem *line = nullptr;
     int lineIndex = 0;
     int lineOffset = 0;
 
-    if (targetOffset == text_->extent()) {
-        lineIndex = text_->count() - 1;
-        line = text_->at(lineIndex);
-        lineOffset = text_->getPosAt(lineIndex);
+    if (targetOffset == lines_->extent()) {
+        lineIndex = lines_->count() - 1;
+        line = lines_->at(lineIndex);
+        lineOffset = lines_->getPosAt(lineIndex);
     }
-    else if (!text_->lookup(targetOffset, &line, &lineIndex, &lineOffset))
+    else if (!lines_->lookup(targetOffset, &line, &lineIndex, &lineOffset))
         return;
 
     auto newLine = Object::create<TextItem>(
@@ -148,10 +174,10 @@ void TextModel::breakLine(int targetOffset)
         "\n"
     );
 
-    text_->updateExtentAt(lineIndex, line->text()->count());
+    lines_->updateExtentAt(lineIndex, line->text()->count());
     ++lineIndex;
-    insertAt(lineIndex, newLine);
-    text_->insertAt(lineIndex, newLine, newLine->text()->count());
+    lines_->insertAt(lineIndex, newLine, newLine->text()->count());
+    rootItem_->insertAt(lineIndex, newLine);
 }
 
 }} // namespace cc::ui

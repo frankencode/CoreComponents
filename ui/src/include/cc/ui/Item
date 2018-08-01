@@ -31,8 +31,8 @@ private:
     friend class Item;
 
     ItemDelta():
-        removedCount_(0),
-        insertedCount_(0)
+        removedCount_{0},
+        insertedCount_{0}
     {}
 
     ItemDelta *operator->() { return this; }

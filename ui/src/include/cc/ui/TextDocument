@@ -16,7 +16,9 @@ namespace cc { template<class, class> class Pile; }
 namespace cc {
 namespace ui {
 
-class TextModel: public Item, public TextEditorWithHistory
+class TextEdit;
+
+class TextDocument: public TextEditorWithHistory
 {
     friend class Object;
 
@@ -24,12 +26,17 @@ public:
     int charCount() const override { return charCount_(); }
     int lineCount() const { return lineCount_(); }
 
-    String copy(Range range) const override;
+    void load(const String &text);
 
+    String copy(Range range) const override;
     Range paste(Range range, const String &newChunk);
 
 private:
-    TextModel();
+    friend class TextEdit;
+
+    TextDocument();
+
+    Item *rootItem() const { return rootItem_; }
 
     String filterChunk(const String &newChunk) const override;
     void pasteChunk(Range range, const String &newChunk) override;
@@ -41,8 +48,10 @@ private:
     Property<int> charCount_ { 0 };
     Property<int> lineCount_ { 1 };
 
+    Ref<Item> rootItem_;
+
     typedef Pile<TextItem *, int> Lines;
-    Ref<Lines> text_;
+    Ref<Lines> lines_;
 };
 
 }} // namespace cc::ui

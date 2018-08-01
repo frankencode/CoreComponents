@@ -31,7 +31,10 @@ public:
     Item *itemAt(int row) const;
 
 protected:
-    ItemView(View *parent, Item *rootItem);
+    ItemView(View *parent, Item *rootItem = nullptr);
+
+    virtual Ref<Item> initItemModel();
+    void resetItemModel();
 
     Item *rootItem() { return rootItem_; }
 

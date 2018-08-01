@@ -15,7 +15,7 @@
 namespace cc {
 namespace ui {
 
-class TextModel;
+class TextDocument;
 
 class TextEdit: public ItemView
 {
@@ -45,13 +45,15 @@ private:
 
     TextEdit(View *parent = 0);
 
+    Ref<Item> initItemModel() override;
+
     View *addDelegate(View *parent, Item *item) override;
     void updateDelegateInView(View *delegate, int layoutIndex) override;
 
     Property<int> lineNumberDigitCount { [=] { return ilog<10>(lineCount()); } };
-    Property<int> lineCount { 0 }; // TODO: add logic to update this property
+    Property<int> lineCount { 1 };
 
-    Ref<TextModel> model_;
+    Ref<TextDocument> document_;
 };
 
 }} // namespace cc::ui

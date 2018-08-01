@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/ui/TextModel>
+#include <cc/ui/TextDocument>
 #include <cc/ui/TextRun>
 #include <cc/ui/TextLine>
 #include <cc/ui/TextEdit>
@@ -15,7 +15,7 @@ namespace cc {
 namespace ui {
 
 TextEdit::TextEdit(View *parent):
-    ItemView{parent, Object::create<TextModel>()}
+    ItemView{parent}
 {
     font->bind([=]{ return app()->defaultFont(); });
     ink->bind([=]{ return theme()->primaryTextColor(); });
@@ -44,6 +44,13 @@ TextEdit::TextEdit(View *parent):
     textPos->bind([=]{
         return textMargin() + Point{ 0, std::ceil(font()->getMetrics()->ascender()) };
     });
+}
+
+Ref<Item> TextEdit::initItemModel()
+{
+    document_ = Object::create<TextDocument>();
+    lineCount->bind([=]{ return document_->lineCount(); });
+    return document_->rootItem();
 }
 
 View *TextEdit::addDelegate(View *parent, Item *item)

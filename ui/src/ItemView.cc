@@ -20,6 +20,16 @@ ItemView::ItemView(View *parent, Item *rootItem):
     wheelGranularity = 0;
 }
 
+Ref<Item> ItemView::initItemModel()
+{
+    return Item::create();
+}
+
+void ItemView::resetItemModel()
+{
+    resetCarrier();
+}
+
 int ItemView::currentRow() const
 {
     return currentRow_();
@@ -63,6 +73,7 @@ View *ItemView::delegateAt(int row) const
 
 View *ItemView::addCarrier()
 {
+    if (!rootItem_) rootItem_ = initItemModel();
     return add<ItemCarrier>(rootItem_);
 }
 
