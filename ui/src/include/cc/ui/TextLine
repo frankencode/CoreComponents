@@ -27,6 +27,7 @@ public:
 private:
     Property< Ref<TextRun> > lineNumberRun;
     Property< Ref<TextRun> > textRun;
+    Property< Ref<TextRun> > wrappedTextRun;
 
     TextLine(View *parent, TextEdit *textEdit, TextItem *textItem);
 

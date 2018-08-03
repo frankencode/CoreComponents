@@ -26,17 +26,19 @@ TextLine::TextLine(View *parent, TextEdit *textEdit, TextItem *textItem):
     });
 
     textRun->bind([=]{
-        return
-            TextRun::create(textItem->text(), textEdit_->font())
-                ->wrap(textEdit_->textWidthSansMargin());
+        return TextRun::create(textItem->text(), textEdit_->font());
+    });
+
+    wrappedTextRun->bind([=]{
+        return textRun()->wrap(textEdit_->textWidthSansMargin());
     });
 
     size->bind([=]{
         const double h1 = lineNumberRun()->size()[1] + 2 * textEdit_->lineNumberMargin()[1];
-        const double h2 = textRun()->size()[1] + 2 * textEdit_->textMargin()[1];
+        const double h2 = wrappedTextRun()->size()[1] + 2 * textEdit_->textMargin()[1];
         return Size {
             lineNumberRun()->size()[0] + 2 * textEdit_->lineNumberMargin()[0] +
-            textRun()->size()[0] + 2 * textEdit_->textMargin()[0],
+            wrappedTextRun()->size()[0] + 2 * textEdit_->textMargin()[0],
             h1 < h2 ? h2 : h1
         };
     });
@@ -61,7 +63,7 @@ void TextLine::paint()
     }
 
     p->setSource(textEdit_->ink());
-    p->showTextRun(Point{x, 0} + textEdit_->textPos(), textRun());
+    p->showTextRun(Point{x, 0} + textEdit_->textPos(), wrappedTextRun());
 }
 
 }} // namespace cc::ui
