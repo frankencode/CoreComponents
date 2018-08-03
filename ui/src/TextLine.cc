@@ -14,25 +14,29 @@
 namespace cc {
 namespace ui {
 
-TextLine::TextLine(TextEdit *textView, TextItem *textItem):
-    textView_{textView},
+TextLine::TextLine(View *parent, TextEdit *textEdit, TextItem *textItem):
+    View{parent},
+    textEdit_{textEdit},
     textItem_{textItem}
 {
+    inheritPaper();
+
     lineNumberRun->bind([=]{
-        return TextRun::create(str(lineNumber()), textView_->lineNumberFont());
+        return TextRun::create(str(lineNumber()), textEdit_->lineNumberFont());
     });
 
     textRun->bind([=]{
         return
-            TextRun::create(textItem->text(), textView_->font())
-                ->wrap(textView_->textWidthSansMargin());
+            TextRun::create(textItem->text(), textEdit_->font())
+                ->wrap(textEdit_->textWidthSansMargin());
     });
 
     size->bind([=]{
-        const double h1 = lineNumberRun()->size()[1] + 2 * textView_->lineNumberMargin()[1];
-        const double h2 = textRun()->size()[1] + 2 * textView_->textMargin()[1];
+        const double h1 = lineNumberRun()->size()[1] + 2 * textEdit_->lineNumberMargin()[1];
+        const double h2 = textRun()->size()[1] + 2 * textEdit_->textMargin()[1];
         return Size {
-            textView_->size()[0],
+            lineNumberRun()->size()[0] + 2 * textEdit_->lineNumberMargin()[0] +
+            textRun()->size()[0] + 2 * textEdit_->textMargin()[0],
             h1 < h2 ? h2 : h1
         };
     });
@@ -43,28 +47,21 @@ void TextLine::paint()
     Painter p(this);
 
     double x = 0;
-    if (textView_->showLineNumbers()) {
-        x += textView_->lineNumberWidth();
+    if (textEdit_->showLineNumbers()) {
+        x += textEdit_->lineNumberWidth();
         p->rectangle(
             Point{0, 0},
             Size{x, size()[1]}
         );
-        p->setSource(textView_->lineNumberPaper());
+        p->setSource(textEdit_->lineNumberPaper());
         p->fill();
 
-        p->setSource(textView_->lineNumberInk());
-        p->showTextRun(textView_->lineNumberPos(), lineNumberRun());
+        p->setSource(textEdit_->lineNumberInk());
+        p->showTextRun(textEdit_->lineNumberPos(), lineNumberRun());
     }
 
-    p->rectangle(
-        Point{x, 0},
-        size() - Size{x, 0}
-    );
-    p->setSource(textView_->paper());
-    p->fill();
-
-    p->setSource(textView_->ink());
-    p->showTextRun(Point{x, 0} + textView_->textPos(), textRun());
+    p->setSource(textEdit_->ink());
+    p->showTextRun(Point{x, 0} + textEdit_->textPos(), textRun());
 }
 
 }} // namespace cc::ui

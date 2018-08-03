@@ -28,11 +28,11 @@ private:
     Property< Ref<TextRun> > lineNumberRun;
     Property< Ref<TextRun> > textRun;
 
-    TextLine(TextEdit *textView, TextItem *textItem);
+    TextLine(View *parent, TextEdit *textEdit, TextItem *textItem);
 
     void paint() override;
 
-    TextEdit *textView_;
+    TextEdit *textEdit_;
     TextItem *textItem_;
 };
 

@@ -13,22 +13,27 @@
 namespace cc {
 namespace ui {
 
-TextDocument::TextDocument()
+TextDocument::TextDocument(const String &initialText)
 {
-    load("");
+    load(initialText);
 }
 
 void TextDocument::load(const String &text)
 {
     lines_ = Lines::create();
-    rootItem_ = Item::create();
+    // rootItem_ = Item::create();
+    if (rootItem_)
+        rootItem_->paste(0, rootItem_->count());
+    else
+        rootItem_ = Item::create();
 
-    const int n = text->count();
+    String filteredText = filterChunk(text);
+    const int n = filteredText->count();
     for (int i = 0; i < n;) {
         int i0 = i;
-        i = text->find('\n', i);
+        i = filteredText->find('\n', i);
         i += (i < n);
-        String fragment = text->copy(i0, i);
+        String fragment = filteredText->copy(i0, i);
         lines_->insertAt(
             lines_->count(),
             rootItem_->add<TextItem>(fragment),
@@ -92,7 +97,7 @@ void TextDocument::pasteChunk(Range range, const String &newChunk)
 
     if (newChunk->count() == 0) return;
 
-    Ref<StringList> fragments = newChunk->split('\n');
+    Ref<StringList> fragments = filterChunk(newChunk)->split('\n');
     int targetOffset = range->i0();
     for (int fragmentIndex = 0; fragmentIndex < fragments->count(); ++fragmentIndex) {
         pasteFragment(targetOffset, fragments->at(fragmentIndex));

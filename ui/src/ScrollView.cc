@@ -21,11 +21,13 @@ Ref<ScrollView> ScrollView::create(View *parent)
 }
 
 ScrollView::ScrollView(View *parent):
-    Control(parent),
-    carrier_(nullptr),
-    isDragged_(false),
-    timer_(Timer::create(1./60))
-{}
+    Control{parent},
+    carrier_{nullptr},
+    isDragged_{false},
+    timer_{Timer::create(1./60)}
+{
+    if (parent) size->bind([=]{ return parent->size(); });
+}
 
 ScrollView::~ScrollView()
 {}
@@ -33,8 +35,6 @@ ScrollView::~ScrollView()
 void ScrollView::init()
 {
     carrier_ = addCarrier();
-
-    if (parent()) size->bind([=]{ return parent()->size(); });
 
     size->connect([=]{
         carrier_->pos = carrierStep(carrier_->pos());

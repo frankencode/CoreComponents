@@ -19,7 +19,7 @@ TextEdit::TextEdit(View *parent):
 {
     font->bind([=]{ return app()->defaultFont(); });
     ink->bind([=]{ return theme()->primaryTextColor(); });
-    paper->bind([=]{ return theme()->inputFieldFillColor(); });
+    paper->bind([=]{ return theme()->popupColor(); });
     textWidth->bind([=]{ return size()[0] - lineNumberWidth(); });
     textWidthSansMargin->bind([=]{
         double w = textWidth() - 2 * textMargin()[0];
@@ -46,6 +46,16 @@ TextEdit::TextEdit(View *parent):
     });
 }
 
+void TextEdit::setText(const String &text)
+{
+    document_->load(text);
+}
+
+String TextEdit::getText() const
+{
+    return document_->text();
+}
+
 Ref<Item> TextEdit::initItemModel()
 {
     document_ = Object::create<TextDocument>();
@@ -55,7 +65,7 @@ Ref<Item> TextEdit::initItemModel()
 
 View *TextEdit::addDelegate(View *parent, Item *item)
 {
-    return Object::create<TextLine>(this, static_cast<TextItem *>(item));
+    return Object::create<TextLine>(parent, this, static_cast<TextItem *>(item));
 }
 
 void TextEdit::updateDelegateInView(View *delegate, int layoutIndex)

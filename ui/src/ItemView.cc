@@ -120,7 +120,7 @@ bool ItemView::onPointerReleased(const PointerEvent *event)
     ScrollView::onPointerReleased(event);
 
     itemCarrier()->highlight_->visible = false;
-    if (currentDelegate_())
+    if (currentDelegate_() && delegatePaperSaved_->isValid())
         currentDelegate_()->paper = delegatePaperSaved_;
 
     return true;
@@ -129,7 +129,7 @@ bool ItemView::onPointerReleased(const PointerEvent *event)
 bool ItemView::onWheelMoved(const WheelEvent *event)
 {
     itemCarrier()->highlight_->visible = false;
-    if (currentDelegate_())
+    if (currentDelegate_() && delegatePaperSaved_->isValid())
         currentDelegate_()->paper = delegatePaperSaved_;
     currentDelegate_ = nullptr;
     currentRow_ = -1;
@@ -140,7 +140,7 @@ bool ItemView::onWheelMoved(const WheelEvent *event)
 bool ItemView::onWindowLeft()
 {
     itemCarrier()->highlight_->visible = false;
-    if (currentDelegate_())
+    if (currentDelegate_() && delegatePaperSaved_->isValid())
         currentDelegate_()->paper = delegatePaperSaved_;
     currentDelegate_ = nullptr;
     currentRow_ = -1;

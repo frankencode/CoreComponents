@@ -88,9 +88,9 @@ void Item::paste(int i0, int i1, const ItemList *items)
 
 int Item::getLayoutIndex(int i) const
 {
-    int layoutIndex = children_->getPosAt(i);
+    int layoutIndex = (children_->count() > 0) ? children_->getPosAt(i) : 0;
     for (const Item *parent = parent_, *child = this; parent; parent = parent->parent_) {
-        layoutIndex += 1 + parent->children_->getPosAt(child->getIndex());
+        layoutIndex += 1 + ((parent->children_->count() > 0) ? parent->children_->getPosAt(child->getIndex()) : 0);
         child = parent;
     }
     return layoutIndex;

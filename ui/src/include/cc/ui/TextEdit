@@ -33,6 +33,9 @@ public:
     Property<Size> textMargin { Size{ std::ceil(dp(4)), 0 } };
     Property<Size> lineNumberMargin { Size{ std::ceil(dp(8)), 0 } };
 
+    void setText(const String &text);
+    String getText() const;
+
 private:
     friend class TextLine;
 

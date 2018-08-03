@@ -103,7 +103,7 @@ protected:
     friend class Application;
     friend class Organizer;
 
-    View(View *parent = 0);
+    View(View *parent = nullptr);
     ~View();
 
     void init();
@@ -179,9 +179,9 @@ private:
 
     cairo_surface_t *cairoSurface() const override;
 
-    uint64_t serial_;
-    Window *window_;
-    View *parent_;
+    uint64_t serial_ { 0 };
+    Window *window_ { nullptr };
+    View *parent_ { nullptr };
 
     typedef Map<uint64_t, Ref<View> > Children;
     Ref<Children> children_;

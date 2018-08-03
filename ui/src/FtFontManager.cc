@@ -82,7 +82,7 @@ Ref<GlyphRun> FtFontManager::typeset(const String &text, const Font &font, const
 Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, const Point &origin) const
 {
     if (text->contains('\n'))
-        return ftTypeset(text->replace("\n", " ")->simplify(), font, origin);
+        return ftTypeset(text->replace("\n", ""), font, origin);
 
     const FtScaledFont *ftScaledFont = Object::cast<const FtScaledFont *>(font->getScaledFont());
 
@@ -112,7 +112,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
             return FT_LOAD_DEFAULT;
         }(ftScaledFont->font());
 
-    Ref<FtGlyphRun> ftGlyphRun = Object::create<FtGlyphRun>(text, font, origin);
+    auto ftGlyphRun = Object::create<FtGlyphRun>(text, font, origin);
 
     const int codePointsCount = Utf8Walker::countCodePoints(text);
 
@@ -135,6 +135,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
         uchar_t ch = 0;
         int byteCount = walker->offset();
         if (!walker->read(&ch)) break;
+
         byteCount = walker->offset() - byteCount;
 
         struct GlyphLoadingError {};

@@ -17,11 +17,8 @@ namespace cc {
 namespace ui {
 
 View::View(View *parent):
-    serial_(0),
-    window_(0),
-    parent_(0),
-    children_(Children::create()),
-    visibleChildren_(Children::create())
+    children_{Children::create()},
+    visibleChildren_{Children::create()}
 {
     if (parent)
     {
