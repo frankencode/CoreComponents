@@ -29,8 +29,7 @@ ZipArchive::ZipArchive(const String &path):
 
 ZipArchive::~ZipArchive()
 {
-    if (zip_close(archive_) == -1)
-        throw ZipError(zip_get_error(archive_)->zip_err, path_);
+    zip_close(archive_);
 }
 
 String ZipArchive::path() const { return path_; }
