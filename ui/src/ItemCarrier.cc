@@ -53,7 +53,7 @@ ItemCarrier::ItemCarrier(View *parent, Item *rootItem):
 
     updateView(true);
     pos->connect([=]{ updateView(false); });
-    parent->size->connect([=]{ updateView(true); });
+    size->connect([=]{ updateView(true); });
 }
 
 int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex)

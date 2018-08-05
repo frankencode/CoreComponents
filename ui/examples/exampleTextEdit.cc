@@ -18,6 +18,8 @@ class MainView: public View
 
         auto edit = add<TextEdit>();
         CC_INSPECT(edit->size());
+        // edit->font->bind([=] { return app()->defaultFixedFont(); }); // FIXME: Why does this not work?
+        edit->font = app()->defaultFixedFont();
         edit->setText(
             File::open(path)->map()
         );
