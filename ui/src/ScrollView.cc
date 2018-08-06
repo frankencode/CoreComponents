@@ -37,7 +37,7 @@ void ScrollView::init()
     carrier_ = addCarrier();
 
     size->connect([=]{
-        carrier_->pos = carrierStep(carrier_->pos());
+        positionCarrierOnResize();
     });
 
     timer_->triggered->connect([=]{
@@ -54,6 +54,11 @@ View *ScrollView::addCarrier()
 
 void ScrollView::preheat()
 {}
+
+void ScrollView::positionCarrierOnResize()
+{
+    carrier_->pos = carrierStep(carrier_->pos());
+}
 
 void ScrollView::resetCarrier()
 {

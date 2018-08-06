@@ -43,6 +43,8 @@ protected:
     virtual View *addCarrier();
     virtual void preheat();
 
+    virtual void positionCarrierOnResize();
+
     void resetCarrier();
 
     bool carrierAtRest() const { return carrierAtRest_; }
