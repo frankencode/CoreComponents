@@ -196,7 +196,13 @@ bool View::onWheelMoved(const WheelEvent *event) { return false; }
 bool View::onKeyPressed(const KeyEvent *event) { return false; }
 bool View::onKeyReleased(const KeyEvent *event) { return false; }
 
-bool View::onWindowExposed() { return false; }
+bool View::onWindowExposed()
+{
+    update(UpdateReason::Exposed);
+        // FIXME: double composition on startup?
+    return false;
+}
+
 bool View::onWindowEntered() { return false; }
 bool View::onWindowLeft() { return false; }
 
