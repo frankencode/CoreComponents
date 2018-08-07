@@ -22,7 +22,7 @@ TextLine::TextLine(View *parent, TextEdit *textEdit, TextItem *textItem):
     inheritPaper();
 
     lineNumberRun->bind([=]{
-        return TextRun::create(str(lineNumber()), textEdit_->lineNumberFont());
+        return TextRun::create(cc::right(str(lineNumber()), textEdit_->lineNumberDigitCount()), textEdit_->lineNumberFont());
     });
 
     textRun->bind([=]{
@@ -37,7 +37,7 @@ TextLine::TextLine(View *parent, TextEdit *textEdit, TextItem *textItem):
         const double h1 = lineNumberRun()->size()[1] + 2 * textEdit_->lineNumberMargin()[1];
         const double h2 = wrappedTextRun()->size()[1] + 2 * textEdit_->textMargin()[1];
         return Size {
-            lineNumberRun()->size()[0] + 2 * textEdit_->lineNumberMargin()[0] +
+            textEdit_->lineNumberWidth() +
             wrappedTextRun()->size()[0] + 2 * textEdit_->textMargin()[0],
             h1 < h2 ? h2 : h1
         };

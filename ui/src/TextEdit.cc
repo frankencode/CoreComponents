@@ -70,7 +70,7 @@ View *TextEdit::addDelegate(View *parent, Item *item)
 
 void TextEdit::updateDelegateInView(View *delegate, int layoutIndex)
 {
-    static_cast<TextLine *>(delegate)->lineNumber = layoutIndex;
+    static_cast<TextLine *>(delegate)->lineNumber = layoutIndex + 1;
 }
 
 }} // namespace cc::ui
