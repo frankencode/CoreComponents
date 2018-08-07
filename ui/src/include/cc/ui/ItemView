@@ -62,6 +62,7 @@ private:
 
     Ref<Item> rootItem_;
     Color delegatePaperSaved_;
+    bool hasSavedDelegatePaper_ { false };
 };
 
 }} // namespace cc::ui

@@ -103,6 +103,7 @@ bool ItemView::onPointerPressed(const PointerEvent *event)
         currentDelegate_ = layoutItem->delegate();
         if (currentDelegate_()->paper() != highlight->paper()) {
             delegatePaperSaved_ = currentDelegate_()->paper();
+            hasSavedDelegatePaper_ = true;
             currentDelegate_()->paper = highlight->paper();
         }
         currentRow_ = row;
@@ -120,8 +121,10 @@ bool ItemView::onPointerReleased(const PointerEvent *event)
     ScrollView::onPointerReleased(event);
 
     itemCarrier()->highlight_->visible = false;
-    if (currentDelegate_() && delegatePaperSaved_->isValid())
+    if (currentDelegate_() && hasSavedDelegatePaper_) {
         currentDelegate_()->paper = delegatePaperSaved_;
+        hasSavedDelegatePaper_ = false;
+    }
 
     return true;
 }
@@ -129,8 +132,10 @@ bool ItemView::onPointerReleased(const PointerEvent *event)
 bool ItemView::onWheelMoved(const WheelEvent *event)
 {
     itemCarrier()->highlight_->visible = false;
-    if (currentDelegate_() && delegatePaperSaved_->isValid())
+    if (currentDelegate_() && hasSavedDelegatePaper_) {
         currentDelegate_()->paper = delegatePaperSaved_;
+        hasSavedDelegatePaper_ = false;
+    }
     currentDelegate_ = nullptr;
     currentRow_ = -1;
 
@@ -140,8 +145,10 @@ bool ItemView::onWheelMoved(const WheelEvent *event)
 bool ItemView::onWindowLeft()
 {
     itemCarrier()->highlight_->visible = false;
-    if (currentDelegate_() && delegatePaperSaved_->isValid())
+    if (currentDelegate_() && hasSavedDelegatePaper_) {
         currentDelegate_()->paper = delegatePaperSaved_;
+        hasSavedDelegatePaper_ = false;
+    }
     currentDelegate_ = nullptr;
     currentRow_ = -1;
 
