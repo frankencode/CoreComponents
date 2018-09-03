@@ -23,7 +23,7 @@ TextLine::TextLine(View *parent, TextEdit *textEdit, TextItem *textItem):
     inheritPaper();
 
     lineNumberRun->bind([=]{
-        return TextRun::create(cc::right(str(lineNumber()), textEdit_->lineNumberDigitCount()), textEdit_->lineNumberFont());
+        return TextRun::create(str(lineNumber()), textEdit_->lineNumberFont());
     });
 
     textRun->bind([=]{

@@ -38,8 +38,8 @@ TextEdit::TextEdit(View *parent):
             );
     });
 
-    lineNumberPos->bind([=]{
-        return lineNumberMargin() + Point{ 0, std::ceil(lineNumberFont()->getMetrics()->ascender()) };
+    lineNumberAscender->bind([=]{
+        return lineNumberFont()->getMetrics()->ascender();
     });
     textPos->bind([=]{
         return textMargin() + Point{ 0, std::ceil(font()->getMetrics()->ascender()) };

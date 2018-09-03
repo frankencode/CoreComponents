@@ -47,7 +47,7 @@ private:
     Property<double> lineNumberWidth;
 
     Property<Point> textPos;
-    Property<Point> lineNumberPos;
+    Property<double> lineNumberAscender;
 
     TextEdit(View *parent = 0);
 

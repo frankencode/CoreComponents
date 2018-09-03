@@ -28,7 +28,13 @@ void TextLineHandle::paint()
     Painter p(this);
     if (textLine_->textEdit_->showLineNumbers()) {
         p->setSource(textLine_->textEdit_->lineNumberInk());
-        p->showTextRun(textLine_->textEdit_->lineNumberPos(), textLine_->lineNumberRun());
+        p->showTextRun(
+            Point{
+                (size()[0] - textLine_->lineNumberRun()->size()[0]) / 2,
+                (size()[1] / textLine_->wrappedTextRun()->lineCount() + textLine_->textEdit_->lineNumberAscender()) / 2
+            },
+            textLine_->lineNumberRun()
+        );
     }
 }
 
