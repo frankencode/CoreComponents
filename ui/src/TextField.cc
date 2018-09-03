@@ -13,7 +13,7 @@ namespace cc {
 namespace ui {
 
 TextField::TextField(View *parent, const String &labelText):
-    InputField(parent, labelText)
+    InputField{parent, labelText}
 {}
 
 InputControl *TextField::addInputControl()

@@ -9,6 +9,7 @@
 #include <cc/ui/TextRun>
 #include <cc/ui/TextItem>
 #include <cc/ui/TextEdit>
+#include <cc/ui/TextLineHandle>
 #include <cc/ui/TextLine>
 
 namespace cc {
@@ -42,28 +43,15 @@ TextLine::TextLine(View *parent, TextEdit *textEdit, TextItem *textItem):
             h1 < h2 ? h2 : h1
         };
     });
+
+    add<TextLineHandle>(this);
 }
 
 void TextLine::paint()
 {
     Painter p(this);
-
-    double x = 0;
-    if (textEdit_->showLineNumbers()) {
-        x += textEdit_->lineNumberWidth();
-        p->rectangle(
-            Point{0, 0},
-            Size{x, size()[1]}
-        );
-        p->setSource(textEdit_->lineNumberPaper());
-        p->fill();
-
-        p->setSource(textEdit_->lineNumberInk());
-        p->showTextRun(textEdit_->lineNumberPos(), lineNumberRun());
-    }
-
     p->setSource(textEdit_->ink());
-    p->showTextRun(Point{x, 0} + textEdit_->textPos(), wrappedTextRun());
+    p->showTextRun(Point{0, 0} + textEdit_->textPos(), wrappedTextRun());
 }
 
 }} // namespace cc::ui

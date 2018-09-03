@@ -14,10 +14,10 @@
 namespace cc {
 namespace ui {
 
-class TextEditor: public virtual Object
+class TextEditor: public Object
 {
 public:
-    virtual int charCount() const = 0;
+    virtual int byteCount() const = 0;
     virtual String copy(Range range) const = 0;
 
     virtual String text() const = 0;

@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc {
+namespace ui {
+
+class TextLine;
+class TextEdit;
+
+class TextLineHandle: public View
+{
+    friend class Object;
+
+private:
+    TextLineHandle(View *parent, TextLine *textLine);
+
+    void paint() override;
+
+    TextLine *textLine_;
+};
+
+}} // namespace cc::ui

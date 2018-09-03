@@ -22,6 +22,8 @@ class TextEdit: public ItemView
     friend class Object;
 
 public:
+    Property<bool> readonly { false };
+
     Property<Font> font;
     Property<Color> ink;
 
@@ -30,7 +32,7 @@ public:
     Property<Color> lineNumberInk;
     Property<Color> lineNumberPaper;
 
-    Property<Size> textMargin { Size{ std::ceil(dp(4)), 0 } };
+    Property<Size> textMargin       { Size{ std::ceil(dp(4)), 0 } };
     Property<Size> lineNumberMargin { Size{ std::ceil(dp(8)), 0 } };
 
     void setText(const String &text);
@@ -38,6 +40,7 @@ public:
 
 private:
     friend class TextLine;
+    friend class TextLineHandle;
 
     Property<double> textWidth;
     Property<double> textWidthSansMargin;

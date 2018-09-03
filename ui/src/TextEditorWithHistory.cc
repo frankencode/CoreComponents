@@ -18,12 +18,12 @@ TextEditorWithHistory::TextEditorWithHistory():
 
 String TextEditorWithHistory::text() const
 {
-    return copy(Range{0, charCount()});
+    return copy(Range{0, byteCount()});
 }
 
 Range TextEditorWithHistory::paste(Range range, const String &newChunk)
 {
-    if (!(0 <= range->i0() && range->i1() <= charCount())) return Range{};
+    if (!(0 <= range->i0() && range->i1() <= byteCount())) return Range{};
 
     String filteredChunk = filterChunk(newChunk);
 

@@ -37,7 +37,7 @@ class SingleLineTest: public TestCase
         CC_INSPECT(document->canUndo());
             // TODO: review history logic (separate test case)
 
-        document->paste(Range{0, document->charCount()}, "");
+        document->paste(Range{0, document->byteCount()}, "");
         CC_INSPECT(document->text());
         CC_VERIFY(document->text() == "");
     }

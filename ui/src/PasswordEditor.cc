@@ -26,7 +26,7 @@ String PasswordEditor::password() const
     return password_();
 }
 
-int PasswordEditor::charCount() const
+int PasswordEditor::byteCount() const
 {
     return text_()->count();
 }

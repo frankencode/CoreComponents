@@ -23,7 +23,7 @@ class TextDocument: public TextEditorWithHistory
     friend class Object;
 
 public:
-    int charCount() const override { return charCount_(); }
+    int byteCount() const override { return byteCount_(); }
     int lineCount() const { return lineCount_(); }
 
     void load(const String &text);
@@ -45,7 +45,7 @@ private:
     void pasteFragment(int targetOffset, const String &fragment);
     void breakLine(int targetOffset);
 
-    Property<int> charCount_ { 0 };
+    Property<int> byteCount_ { 0 };
     Property<int> lineCount_ { 1 };
 
     Ref<Item> rootItem_;

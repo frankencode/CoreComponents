@@ -44,7 +44,7 @@ void TextDocument::load(const String &text)
     if (n == 0)
         lines_->insertAt(0, rootItem_->add<TextItem>(), 0);
 
-    charCount_ = n;
+    byteCount_ = n;
     lineCount_ = lines_->count();
 }
 
@@ -89,7 +89,7 @@ String TextDocument::filterChunk(const String &newChunk) const
 void TextDocument::pasteChunk(Range range, const String &newChunk)
 {
     OnScopeExit updateCounts{[=]{
-        charCount_ = lines_->extent();
+        byteCount_ = lines_->extent();
         lineCount_ = rootItem_->totalCount();
     }};
 

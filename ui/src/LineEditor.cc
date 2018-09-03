@@ -21,7 +21,7 @@ String LineEditor::text() const
     return text_();
 }
 
-int LineEditor::charCount() const
+int LineEditor::byteCount() const
 {
     return text_()->count();
 }

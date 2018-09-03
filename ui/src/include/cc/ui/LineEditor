@@ -21,7 +21,7 @@ class LineEditor: public TextEditorWithHistory
     friend class Object;
 
 public:
-    int charCount() const override;
+    int byteCount() const override;
     String copy(Range range) const override;
     String text() const override;
 
