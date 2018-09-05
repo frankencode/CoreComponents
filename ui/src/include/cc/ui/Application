@@ -38,8 +38,6 @@ public:
     Property< Ref<Control> > hoverControl;
     Property< Ref<Control> > pressedControl;
     Property< Ref<Control> > focusControl;
-    Property< Ref<Control> > cursorControl; // FIXME: make private?
-    Property< Ref<const Cursor> > cursor; // FIXME: make private?
 
     virtual Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) = 0;
 
@@ -59,6 +57,9 @@ protected:
     friend class View;
 
     static bool fin_;
+
+    Property< Ref<Control> > cursorControl;
+    Property< Ref<const Cursor> > cursor;
 
     Property<Rect> textInputArea;
 
