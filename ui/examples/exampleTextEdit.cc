@@ -17,7 +17,7 @@ class MainView: public View
         inheritPaper();
 
         auto edit = add<TextEdit>();
-        edit->showLineNumbers = true;
+        // edit->showLineNumbers = true;
         CC_INSPECT(edit->size());
         // edit->font->bind([=] { return app()->defaultFixedFont(); }); // FIXME: Why does this not work?
         edit->font = app()->defaultFixedFont();

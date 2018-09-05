@@ -36,6 +36,32 @@ void TextLineHandle::paint()
             textLine_->lineNumberRun()
         );
     }
+    else {
+        Color c = paper();
+        c->mixIn(textLine_->textEdit_->lineNumberInk(), 70);
+        p->setSource(c);
+        const int n = textLine_->wrappedTextRun()->lineCount();
+        const int i = 0;
+        //for (int i = 0; i < n; ++i) {
+            p->circle(
+                Point{ size()[0] / 2, (i + 0.5) * size()[1] / n },
+                dp(3.5)
+            );
+            /*Point center{ size()[0] / 2, (i + 0.5) * size()[1] / n };
+            Size size{dp(4)};
+            p->rectangle(
+                center - size / 2,
+                size
+            );*/
+            p->fill();
+            p->setSource(paper());
+            p->circle(
+                Point{ size()[0] / 2, (i + 0.5) * size()[1] / n },
+                dp(2)
+            );
+            p->fill();
+        //}
+    }
 }
 
 }} // namespace cc::ui
