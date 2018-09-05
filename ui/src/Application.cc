@@ -118,6 +118,8 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
     }
 
     if (pressedControl()) {
+        Point pos = window->size() * event->pos();
+        pressedControl()->pointerPos = pressedControl()->mapToLocal(pos);
         bool eaten = pressedControl()->feedFingerEvent(event);
         if (event->action() == PointerAction::Released)
             pressedControl = nullptr;
@@ -134,6 +136,8 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 bool Application::feedMouseEvent(Window *window, MouseEvent *event)
 {
     Control *topControl = window->view()->getControlAt(event->pos());
+    if (topControl)
+        topControl->pointerPos = topControl->mapToLocal(event->pos());
 
     if (event->action() == PointerAction::Moved)
     {

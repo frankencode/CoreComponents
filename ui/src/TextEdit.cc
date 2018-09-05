@@ -44,6 +44,11 @@ TextEdit::TextEdit(View *parent):
     textPos->bind([=]{
         return textMargin() + Point{ 0, std::ceil(font()->getMetrics()->ascender()) };
     });
+
+    cursorShape->bind([=]{
+        return (!readonly() && pointerPos()[0] < textWidth()) ? CursorShape::IBeam : CursorShape::Hand;
+    });
+    cursor->bind([=]{ return Cursor::create(cursorShape()); });
 }
 
 void TextEdit::setText(const String &text)

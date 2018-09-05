@@ -49,6 +49,8 @@ private:
     Property<Point> textPos;
     Property<double> lineNumberAscender;
 
+    Property<CursorShape> cursorShape { CursorShape::IBeam };
+
     TextEdit(View *parent = 0);
 
     Ref<Item> initItemModel() override;

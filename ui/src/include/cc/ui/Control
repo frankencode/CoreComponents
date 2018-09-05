@@ -27,6 +27,8 @@ public:
     Property<bool> pressed; ///< the control is pressed by the user
     Property<bool> focus;   ///< this control holds text input focus
 
+    Property<Point> pointerPos; ///< position of the mouse pointer or touch contact
+
 protected:
     friend class View;
     friend class ScrollView;
