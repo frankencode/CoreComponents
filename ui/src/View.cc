@@ -98,26 +98,28 @@ bool View::containsGlobal(Point g) const
     return containsLocal(mapToLocal(g));
 }
 
-Control *View::getControlAt(Point g)
+View *View::getChildAt(Point l)
 {
-    for (View *view = this; view;) {
-        View *candidate = nullptr;
-        for (auto pair: view->visibleChildren_) {
-            View *child = pair->value();
-            if (child->containsGlobal(g)) {
-                candidate = child;
-                break;
+    for (auto pair: visibleChildren_) {
+        View *child = pair->value();
+        if (child->containsLocal(mapToChild(child, l))) return child;
+    }
+    return nullptr;
+}
+
+Control *View::getControlAt(Point l)
+{
+    for (auto pair: visibleChildren_) {
+        View *child = pair->value();
+        if (child->containsLocal(mapToChild(child, l))) {
+            Control *control = Object::cast<Control *>(child);
+            if (control) {
+                while (control->delegate())
+                    control = control->delegate();
+                return control;
             }
         }
-        view = candidate;
-        Control *control = Object::cast<Control *>(view);
-        if (control) {
-            while (control->delegate())
-                control = control->delegate();
-            return control;
-        }
     }
-
     return nullptr;
 }
 

@@ -100,13 +100,11 @@ bool ScrollView::onPointerPressed(const PointerEvent *event)
     }
     else {
         wasFlying_ = false;
-        if (app()->focusControl()) {
-            Control *control = getControlAt(event->pos());
-            if (control == app()->focusControl()) {
-                app()->pressedControl = control;
-                PointerEvent::PosGuard guard(const_cast<PointerEvent *>(event), mapToChild(control, event->pos()));
-                return control->onPointerPressed(event);
-            }
+        Control *control = carrier()->getControlAt(mapToChild(carrier(), event->pos()));
+        if (control) {
+            app()->pressedControl = control;
+            PointerEvent::PosGuard guard(const_cast<PointerEvent *>(event), mapToChild(control, event->pos()));
+            return control->onPointerPressed(event);
         }
     }
 

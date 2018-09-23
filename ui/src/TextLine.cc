@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug> // DEBUG
 #include <cc/ui/TextRun>
 #include <cc/ui/TextItem>
 #include <cc/ui/TextEdit>
@@ -16,7 +17,7 @@ namespace cc {
 namespace ui {
 
 TextLine::TextLine(View *parent, TextEdit *textEdit, TextItem *textItem):
-    View{parent},
+    Control{parent},
     textEdit_{textEdit},
     textItem_{textItem}
 {
@@ -47,11 +48,22 @@ TextLine::TextLine(View *parent, TextEdit *textEdit, TextItem *textItem):
     add<TextLineHandle>(this);
 }
 
+bool TextLine::containsLocal(Point l) const
+{
+    return 0 <= l[1] && l[1] < size()[1];
+}
+
+bool TextLine::onPointerPressed(const PointerEvent *event)
+{
+    CC_INSPECT(event->pos());
+    return true;
+}
+
 void TextLine::paint()
 {
     Painter p(this);
     p->setSource(textEdit_->ink());
-    p->showTextRun(Point{0, 0} + textEdit_->textPos(), wrappedTextRun());
+    p->showTextRun(textEdit_->textPos(), wrappedTextRun());
 }
 
 }} // namespace cc::ui

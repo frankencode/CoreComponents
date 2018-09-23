@@ -56,10 +56,11 @@ public:
     Point mapToGlobal(Point l) const;
     Point mapToLocal(Point g) const;
     Point mapToChild(View *child, Point l) const;
-    bool containsLocal(Point l) const;
+    virtual bool containsLocal(Point l) const;
     bool containsGlobal(Point g) const;
 
-    Control *getControlAt(Point g);
+    View *getChildAt(Point l);
+    Control *getControlAt(Point l);
     bool isParentOfOrEqual(View *other) const;
 
     double top   () const { return pos()[1]; }

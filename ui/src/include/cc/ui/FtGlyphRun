@@ -55,7 +55,7 @@ private:
     friend class FtFontManager;
     friend class FtTextRun;
 
-    FtGlyphRun(): lineCount_(1) {}
+    FtGlyphRun(): lineCount_{1} {}
     FtGlyphRun(const String &text, const Font &font, const Point &origin);
 
     Ref<FtGlyphRun> ftCopy() const;

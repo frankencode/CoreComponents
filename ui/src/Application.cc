@@ -99,7 +99,7 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 
     if (event->action() == PointerAction::Pressed) {
         Point pos = window->size() * event->pos();
-        Control *topControl = window->view()->getControlAt(pos);
+        Control *topControl = window->view()->getControlAt(window->view()->mapToLocal(pos));
         if (topControl) {
             touchTargets_->establish(event->fingerId(), topControl);
             pressedControl = topControl;
@@ -135,7 +135,7 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 
 bool Application::feedMouseEvent(Window *window, MouseEvent *event)
 {
-    Control *topControl = window->view()->getControlAt(event->pos());
+    Control *topControl = window->view()->getControlAt(window->view()->mapToLocal(event->pos()));
     if (topControl)
         topControl->pointerPos = topControl->mapToLocal(event->pos());
 

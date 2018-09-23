@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/ui/View>
+#include <cc/ui/Control>
 
 namespace cc {
 namespace ui {
@@ -18,7 +18,7 @@ class TextEdit;
 class TextRun;
 class TextLineHandle;
 
-class TextLine: public View
+class TextLine: public Control
 {
     friend class Object;
 
@@ -34,6 +34,8 @@ private:
 
     TextLine(View *parent, TextEdit *textEdit, TextItem *textItem);
 
+    bool containsLocal(Point l) const override;
+    bool onPointerPressed(const PointerEvent *event) override;
     void paint() override;
 
     TextEdit *textEdit_;
