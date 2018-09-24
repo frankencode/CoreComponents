@@ -56,8 +56,9 @@ public:
     Point mapToGlobal(Point l) const;
     Point mapToLocal(Point g) const;
     Point mapToChild(View *child, Point l) const;
-    virtual bool containsLocal(Point l) const;
-    bool containsGlobal(Point g) const;
+    virtual bool withinBounds(Point l) const;
+    bool containsLocal(Point l) const { return withinBounds(l); }
+    bool containsGlobal(Point g) const { return withinBounds(mapToLocal(g)); }
 
     View *getChildAt(Point l);
     Control *getControlAt(Point l);

@@ -174,4 +174,44 @@ Ref<TextCursor> TextRun::getNearestTextCursorAbove(const TextCursor *cursor) con
     return nearestCursor;
 }
 
+Ref<TextCursor> TextRun::getNearestLineStart(Point pointerPos) const
+{
+    Ref<TextCursor> candidate = getTextCursor();
+    Ref<TextCursor> nearestCursor = candidate->copy();
+    double nearestDistance = std::numeric_limits<double>::max();
+
+    do {
+        Point pos = 0.5 * (candidate->posA() + candidate->posB());
+        const double distance = absPow2(pos - pointerPos);
+
+        if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestCursor->assign(candidate);
+        }
+    } while (candidate->lineStep(1));
+
+    return nearestCursor;
+}
+
+Ref<TextCursor> TextRun::getNearestTextCursorInLine(Point pointerPos) const
+{
+    Ref<TextCursor> lineStart = getNearestLineStart(pointerPos);
+    Ref<TextCursor> nearestCursor = lineStart->copy();
+    Ref<TextCursor> candidate = lineStart->copy();
+    double nearestDistance = std::numeric_limits<double>::max();
+
+    while (candidate->posA()[1] == lineStart->posA()[1])
+    {
+        Point pos = 0.5 * (candidate->posA() + candidate->posB());
+        const double distance = absPow2(pos - pointerPos);
+        if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestCursor->assign(candidate);
+        }
+        if (!candidate->step(1)) break;
+    }
+
+    return nearestCursor;
+}
+
 }} // namespace cc::ui

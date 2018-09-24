@@ -34,7 +34,7 @@ private:
 
     TextLine(View *parent, TextEdit *textEdit, TextItem *textItem);
 
-    bool containsLocal(Point l) const override;
+    bool withinBounds(Point l) const override;
     bool onPointerPressed(const PointerEvent *event) override;
     void paint() override;
 

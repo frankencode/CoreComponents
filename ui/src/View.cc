@@ -86,16 +86,11 @@ Point View::mapToChild(View *child, Point l) const
     return l;
 }
 
-bool View::containsLocal(Point l) const
+bool View::withinBounds(Point l) const
 {
     return
         0 <= l[1] && l[1] < size()[1] &&
         0 <= l[0] && l[0] < size()[0];
-}
-
-bool View::containsGlobal(Point g) const
-{
-    return containsLocal(mapToLocal(g));
 }
 
 View *View::getChildAt(Point l)

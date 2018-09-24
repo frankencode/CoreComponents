@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/debug>
+#include <cc/debug> // DEBUG
 #include <cc/ui/FtFontManager>
 #include <cc/ui/FtTextCursor>
 #include <cc/ui/FtTextRun>
@@ -155,6 +155,7 @@ int FtTextRun::moveTextCursor(FtTextCursor *cursor, int steps) const
     if (steps > 0)
     {
         if (cursor->byteOffset() == byteCount()) return 0;
+        if (clusterIndex == glyphRuns_->at(runIndex)->cairoTextClusters_->count()) return 0;
 
         for (; steps > 0; --steps) {
             const FtGlyphRun *run = glyphRuns_->at(runIndex);
@@ -206,7 +207,7 @@ int FtTextRun::moveTextCursor(FtTextCursor *cursor, int steps) const
     const FtGlyphRun *run = glyphRuns_->at(runIndex);
     Ref<const FontMetrics> metrics = run->ftScaledFont()->metrics();
 
-    if (byteOffset < byteCount()) {
+    if (glyphIndex < run->cairoGlyphs_->count()) {
         const cairo_glyph_t *glyph = &run->cairoGlyphs_->at(glyphIndex);
         cursor->posA_ = Point { glyph->x, glyph->y - metrics->ascender()  };
         cursor->posB_ = Point { glyph->x, glyph->y - metrics->descender() };

@@ -49,6 +49,9 @@ public:
     virtual Ref<TextCursor> getNearestTextCursorBelow(const TextCursor *cursor) const;
     virtual Ref<TextCursor> getNearestTextCursorAbove(const TextCursor *cursor) const;
 
+    virtual Ref<TextCursor> getNearestLineStart(Point pointerPos) const;
+    virtual Ref<TextCursor> getNearestTextCursorInLine(Point pointerPos) const;
+
 private:
     String replaceEntities(const String &text);
 };

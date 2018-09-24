@@ -48,14 +48,18 @@ TextLine::TextLine(View *parent, TextEdit *textEdit, TextItem *textItem):
     add<TextLineHandle>(this);
 }
 
-bool TextLine::containsLocal(Point l) const
+bool TextLine::withinBounds(Point l) const
 {
-    return 0 <= l[1] && l[1] < size()[1];
+    return
+        0 <= l[1] && l[1] < size()[1] &&
+        0 <= l[0] && l[0] < parent()->size()[0];
 }
 
 bool TextLine::onPointerPressed(const PointerEvent *event)
 {
     CC_INSPECT(event->pos());
+    auto cursor = wrappedTextRun()->getNearestTextCursorInLine(event->pos() - textEdit_->textPos());
+    CC_INSPECT(cursor);
     return true;
 }
 
