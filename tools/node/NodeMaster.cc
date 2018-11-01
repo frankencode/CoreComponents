@@ -152,7 +152,7 @@ void NodeMaster::runNode()
 
     Ref<IoMonitor> ioMonitor = IoMonitor::create(listeningSockets->count());
     for (StreamSocket *socket: listeningSockets)
-        ioMonitor->addEvent(IoReadyAccept, socket);
+        ioMonitor->addEvent(IoReady::Accept, socket);
 
     CCNODE_DEBUG() << "Accepting connections" << nl;
 

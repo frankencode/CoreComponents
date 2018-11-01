@@ -31,7 +31,7 @@ HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, String se
         security_ = SecuritySettings::createDefault();
 
     StreamSocket::connect(&controlMaster_, &controlSlave_);
-    ioMonitor_->addEvent(IoReadyRead, controlSlave_);
+    ioMonitor_->addEvent(IoReady::Read, controlSlave_);
 }
 
 bool HttpClientSocket::isSecure() const
@@ -42,11 +42,11 @@ bool HttpClientSocket::isSecure() const
 bool HttpClientSocket::connect()
 {
     StreamSocket::connect(address());
-    const IoEvent *connectionEstablished = ioMonitor_->addEvent(IoReadyWrite, this);
+    const IoEvent *connectionEstablished = ioMonitor_->addEvent(IoReady::Write, this);
     if (ioMonitor_->waitFor(connectionEstablished)) mode_ |= Connected;
     ioMonitor_->removeEvent(connectionEstablished);
     if (mode_ & Connected) {
-        readyRead_ = ioMonitor_->addEvent(IoReadyRead, this);
+        readyRead_ = ioMonitor_->addEvent(IoReady::Read, this);
         initSession();
         handshake();
     }

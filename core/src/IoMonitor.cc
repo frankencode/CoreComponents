@@ -26,7 +26,7 @@ const IoEvent *IoMonitor::addEvent(IoReady type, IoTarget *target)
     events_->insert(event->index_, event);
     PollFd *p = &fds_->at(event->index_);
     p->fd = target->fd();
-    p->events = type;
+    p->events = static_cast<short>(type);
     return event;
 }
 

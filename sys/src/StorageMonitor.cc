@@ -80,8 +80,8 @@ void StorageMonitor::run()
         Ref<SystemStream> monitorStream = SystemStream::duplicate(udev_monitor_get_fd(mon));
 
         Ref<IoMonitor> ioMonitor = IoMonitor::create(2);
-        const IoEvent *shutdownEvent = ioMonitor->addEvent(IoReadyRead, controlSlave_);
-        const IoEvent *monitorEvent = ioMonitor->addEvent(IoReadyRead, monitorStream);
+        const IoEvent *shutdownEvent = ioMonitor->addEvent(IoReady::Read, controlSlave_);
+        const IoEvent *monitorEvent = ioMonitor->addEvent(IoReady::Read, monitorStream);
 
         enumerate(udev);
 

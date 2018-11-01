@@ -194,7 +194,7 @@ bool HttpServerSocket::waitInput()
 {
     double d = te_ - System::now();
     if (d <= 0) throw RequestTimeout();
-    return waitFor(IoReadyRead, d * 1000);
+    return waitFor(IoReady::Read, d * 1000);
 }
 
 void HttpServerSocket::ioException(Exception &ex) const

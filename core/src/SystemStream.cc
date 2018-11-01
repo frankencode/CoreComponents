@@ -128,9 +128,9 @@ void SystemStream::write(const Format &data)
     write(Format::toStringList(data));
 }
 
-bool SystemStream::waitFor(int events, int interval_ms)
+bool SystemStream::waitFor(IoReady ready, int interval_ms)
 {
-    return SystemIo::poll(fd_, events, interval_ms);
+    return SystemIo::poll(fd_, static_cast<short>(ready), interval_ms);
 }
 
 void SystemStream::shutdown(ShutdownType type)

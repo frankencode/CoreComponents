@@ -21,8 +21,8 @@ namespace cc {
 class IoEvent: public Object
 {
 public:
-    inline IoReady type() const { return type_; } ///< type of I/O event
-    inline IoReady ready() const { return ready_; } ///< tells if ready for reading or writing when the event occured
+    inline IoReady type() const { return type_; }       ///< type of I/O event
+    inline IoReady ready() const { return ready_; }     ///< tells if ready for reading or writing when the event occured
     inline IoTarget *target() const { return target_; } ///< I/O target
 
 private:
@@ -33,10 +33,10 @@ private:
     }
 
     IoEvent(int index, IoReady type, IoTarget *target):
-        index_(index),
-        type_(type),
-        ready_(IoReadyUndefined),
-        target_(target)
+        index_{index},
+        type_{type},
+        ready_{IoReady::Undefined},
+        target_{target}
     {}
 
     int index_;

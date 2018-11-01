@@ -74,6 +74,15 @@ public:
     }
 
     /** Wait for the channel to become not empty
+      */
+    void waitForNotEmpty()
+    {
+        Guard<Mutex> guard(mutex_);
+        while (queue_->count() == 0)
+            notEmpty_->wait(mutex_);
+    }
+
+    /** Wait for the channel to become not empty
       * \param timeout absolute timeout (e.g. System::now() + 10)
       * \return true if the channel contains at least one item before timeout
       */

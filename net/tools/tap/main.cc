@@ -59,8 +59,8 @@ int main(int argc, char **argv)
                 << "~~~~~" << nl;
 
             Ref<IoMonitor> monitor = IoMonitor::create(2);
-            monitor->addEvent(IoReadyRead, serverSocket);
-            monitor->addEvent(IoReadyRead, clientSocket);
+            monitor->addEvent(IoReady::Read, serverSocket);
+            monitor->addEvent(IoReady::Read, clientSocket);
 
             String data = String::allocate(0x10000);
             bool serverClosed = false;
