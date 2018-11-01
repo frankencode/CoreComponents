@@ -150,11 +150,11 @@ public:
 
 private:
     CircularBuffer(int size):
-        fill_(0),
-        size_(size),
-        head_(size_-1),
-        tail_(size_-1),
-        buf_(Array<T>::create(size_))
+        fill_{0},
+        size_{size},
+        head_{size_ - 1},
+        tail_{size_ - 1},
+        buf_{Array<T>::create(size_)}
     {}
 
     ~CircularBuffer()

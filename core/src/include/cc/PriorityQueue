@@ -21,7 +21,7 @@ template<class T>
 class PriorityQueue: public Object
 {
 public:
-    inline static Ref<PriorityQueue> create(int) { return new PriorityQueue; }
+    inline static Ref<PriorityQueue> create() { return new PriorityQueue; }
 
     inline void pushBack(const T &item, int priority = 0)
     {
@@ -48,8 +48,8 @@ public:
 
 private:
     PriorityQueue():
-        queueByPriority_(QueueByPriority::create()),
-        size_(0)
+        queueByPriority_{QueueByPriority::create()},
+        size_{0}
     {}
 
     inline Queue<T> *inputQueue(int priority)

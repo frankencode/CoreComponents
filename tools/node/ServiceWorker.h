@@ -9,8 +9,8 @@
 #pragma once
 
 #include <cc/Thread>
+#include <cc/PriorityChannel>
 #include <cc/Channel>
-#include <cc/PriorityQueue>
 #include <cc/Map>
 #include <cc/net/StreamSocket>
 #include "HttpServerConnection.h"
@@ -22,7 +22,7 @@ using namespace cc::net;
 
 class ServiceWorker;
 
-typedef Channel< Ref<HttpServerConnection>, PriorityQueue > PendingConnections;
+typedef PriorityChannel< Ref<HttpServerConnection> > PendingConnections;
 typedef Channel< Ref<ConnectionInfo> > ClosedConnections;
 
 class ServiceInstance;

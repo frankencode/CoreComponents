@@ -8,28 +8,29 @@
 
 #pragma once
 
-#include <cc/Queue>
+#include <cc/CircularBuffer>
 #include <cc/Mutex>
 #include <cc/Guard>
 #include <cc/WaitCondition>
 
 namespace cc {
 
-/** \class Channel cc/Channel
+/** \class CircularChannel cc/CircularChannel
   * \ingroup concurrency
   * \brief Inter-thread communication channel
   * \tparam T item type
   * \TODO provide a popBack() unidirectional iterator
   */
 template<class T>
-class Channel: public Object
+class CircularChannel: public Object
 {
 public:
     /** Create a new channel
+      * \param capacity capacity of the underlying circular buffer
       * \return new object instance
       */
-    static Ref<Channel> create() {
-        return new Channel{};
+    static Ref<CircularChannel> create(int capacity) {
+        return new CircularChannel{capacity};
     }
 
     /** Add a new item to the end of the queue
@@ -134,7 +135,7 @@ public:
       * \param other other channel to connect to
       * \return pointer to the newly shared connecting channel
       */
-    Channel *connect(Channel *other)
+    CircularChannel *connect(CircularChannel *other)
     {
         other->queue_ = queue_;
         other->notEmpty_ = notEmpty_;
@@ -143,14 +144,14 @@ public:
     }
 
 protected:
-    Channel():
-        queue_(Queue<T>::create()),
+    CircularChannel(int capacity):
+        queue_(CircularBuffer<T>::create(capacity)),
         mutex_(Mutex::create()),
         notEmpty_(WaitCondition::create())
     {}
 
 private:
-    Ref< Queue<T> > queue_;
+    Ref< CircularBuffer<T> > queue_;
     Ref<Mutex> mutex_;
     Ref<WaitCondition> notEmpty_;
 };

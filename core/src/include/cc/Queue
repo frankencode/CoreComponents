@@ -170,9 +170,9 @@ private:
     typedef QueueNode<T> Node;
 
     Queue():
-        head_(0),
-        tail_(0),
-        length_(0)
+        head_{nullptr},
+        tail_{nullptr},
+        length_{0}
     {}
 
     ~Queue()

@@ -7,14 +7,14 @@
  */
 
 #include <cc/Exception>
-#include <cc/CircularBuffer>
+#include <cc/CircularChannel>
 #include <cc/Channel>
 #include <cc/Thread>
 #include <cc/Transfer>
 
 namespace cc {
 
-typedef Channel<String, CircularBuffer> TransferBufferQueue;
+typedef CircularChannel<String> TransferBufferQueue;
 
 class TransferInputWorker: public Thread
 {
