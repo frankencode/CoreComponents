@@ -316,13 +316,13 @@ public:
     /// Cut this string down to \a newSize characters
     void truncate(int newSize);
 
-    /// Copy characters from this string to string \a b
+    /// Copy characters to this string from string \a b
     void write(const CharArray *b) {
         int n = (size_ < b->size_) ? size_ : b->size_;
         memcpy(data_, b->data_, n);
     }
 
-    /** Copy characters from this string to string \a b
+    /** Copy characters to this string from string \a b
       * \param b source to copy data from
       * \param i0 begin of destination range (index of first byte to write)
       * \param i1 end of destination range (index behind the last byte to write)
@@ -337,7 +337,7 @@ public:
         memcpy(data_ + i0, b->data_, n);
     }
 
-    /// Byte-vise xor over character array \a b
+    /// Byte-vise xor over this string with bytes from string \a b
     void writeXor(const CharArray *b);
 
     /// Length of this string (in number of characters)
@@ -805,7 +805,7 @@ public:
     String hexDump() const;
 
     /// Add a prefix to each line of the text
-    String indent(String prefix) const;
+    String indent(const String &prefix) const;
 
     /// Check if this string equals "/"
     bool isRootPath() const;

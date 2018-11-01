@@ -18,7 +18,7 @@ namespace cc {
 /** \class Thread cc/Thread
   * \ingroup concurrency
   * \brief %Thread creation, signalling, termination
-  * \see Channel, SubProcess
+  * \see Worker, Mutex, Channel, SubProcess
   */
 class Thread: public Object
 {

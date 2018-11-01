@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2018 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -74,6 +74,20 @@ public:
         while (queue_->count() == 0)
             notEmpty_->wait(mutex_);
         return queue_->popFront(item);
+    }
+
+    /** Wait for the channel to become not empty
+      * \param timeout absolute timeout (e.g. System::now() + 10)
+      * \return true if the channel contains at least one item before timeout
+      */
+    bool waitForNotEmptyUntil(double timeout)
+    {
+        Guard<Mutex> guard(mutex_);
+        while (queue_->count() == 0) {
+            if (!notEmpty_->waitUntil(timeout, mutex_))
+                return false;
+        }
+        return true;
     }
 
     /** Remove an item from the end of the queue before a certain timeout

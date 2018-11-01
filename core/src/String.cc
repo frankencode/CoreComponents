@@ -759,7 +759,7 @@ String Array<char>::hexDump() const
     return cc::hexDump(this);
 }
 
-String Array<char>::indent(String prefix) const
+String Array<char>::indent(const String &prefix) const
 {
     return prefix + trimTrailing()->split('\n')->join("\n" + prefix);
 }

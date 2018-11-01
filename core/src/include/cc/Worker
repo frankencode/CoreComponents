@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <functional>
+#include <cc/Object>
+
+namespace cc {
+
+class WorkerThread;
+
+/** \class Worker cc/Worker
+  * \ingroup concurrency
+  * \brief Convenience wrapper around Thread class
+  * \see Thread, Mutex, Channel, SubProcess
+  */
+class Worker: public Object
+{
+public:
+    /// Start function \a f in a new worker thread
+    static Ref<Worker> start(const std::function<void()> &f);
+
+private:
+    Worker(const std::function<void()> &f);
+    ~Worker();
+
+    Ref<WorkerThread> thread_;
+};
+
+} // namespace cc

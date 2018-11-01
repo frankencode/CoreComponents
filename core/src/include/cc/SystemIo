@@ -18,7 +18,7 @@ template<class> class Singleton;
 
 /** I/O event type
   */
-enum IoReady {
+enum IoReady { // TODO: make a proper C++11 enum class
     IoReadyUndefined = 0, ///< undefined
     IoReadyRead = POLLIN, ///< ready for reading
     IoReadyWrite = POLLOUT, ///< ready for writing

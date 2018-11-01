@@ -24,9 +24,9 @@ public:
 
     virtual String message() const = 0;
 
-    virtual const char* what() const throw();
+    const char* what() const throw() override;
 
-    inline Exception *operator->() { return this; }
+    inline const Exception *operator->() const { return this; }
 };
 
 inline String str(const Exception &ex) { return ex.message(); }

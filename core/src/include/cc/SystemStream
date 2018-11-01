@@ -83,7 +83,7 @@ public:
 
     /** Wait for a system I/O event
       * \param events combination of SystemIo::WaitEvent flags
-      * \param interval_ms the interval to wait at max (-1 for infinite)
+      * \param interval_ms the interval to wait at max (or infinite if < 0)
       * \return true if one of the indicated events occured, false on timeout
       */
     bool waitFor(int events, int interval_ms = -1);
