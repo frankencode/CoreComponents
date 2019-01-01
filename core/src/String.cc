@@ -740,6 +740,8 @@ String Array<char>::toUtf16(Endian endian) const
 
 String Array<char>::toHex() const
 {
+    if (size_ == 0) return String{};
+
     String s2 = CharArray::create(size_ * 2);
     int j = 0;
     for (int i = 0; i < size_; ++i) {
@@ -751,6 +753,7 @@ String Array<char>::toHex() const
         if ((0 <= d1) && (d1 < 10)) s2->data_[j++] = d1 + '0';
         else s2->data_[j++] = (d1 - 10) + 'a';
     }
+
     return s2;
 }
 

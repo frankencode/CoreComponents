@@ -47,7 +47,7 @@ static uint16_t crcTable[256] = { // ISO 3309
 
 void Crc16Sink::feed(const void *buf, int bufFill)
 {
-    const uint8_t *data = reinterpret_cast<const uint8_t*>(buf);
+    const uint8_t *data = static_cast<const uint8_t*>(buf);
     for (int i = 0; i < bufFill; ++i) {
         int k = (crc_ ^ data[i]) & 0xFF;
         crc_ = (crc_ >> 8) ^ crcTable[k];

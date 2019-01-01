@@ -49,7 +49,7 @@ static const uint32_t crcTable[] = {
 void Crc32Sink::feed(const void *buf, int bufFill)
 {
     for (int i = 0; i < bufFill; ++i)
-        crc_ = crcTable[(crc_ ^ reinterpret_cast<const uint8_t*>(buf)[i]) & 0xFF] ^ (crc_ >> 8);
+        crc_ = crcTable[(crc_ ^ static_cast<const uint8_t *>(buf)[i]) & 0xFF] ^ (crc_ >> 8);
 }
 
 void Crc32Sink::write(const CharArray *data)

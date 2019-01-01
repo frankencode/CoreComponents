@@ -64,7 +64,10 @@ Variant Variant::read(String s)
     if (s->beginsWith('"') && s->endsWith('"'))
         return Variant(s->copy(1, s->count() - 1));
 
-    if (s->contains('.') || s->contains('e') || s->contains('E')) {
+    if (
+        s->contains('.') ||
+        (!s->beginsWith("0x") && (s->contains('e') || s->contains('E')))
+    ) {
         double value = 0;
         if (s->scanNumber(&value) == s->count()) return Variant(value);
     }

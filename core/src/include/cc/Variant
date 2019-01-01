@@ -89,6 +89,9 @@ public:
 
         String toString() const;
 
+        /** TODO: allow to request more smart conversions explicitly and have proper range checking and exception handling at this point
+          */
+
     private:
         friend class Variant;
 

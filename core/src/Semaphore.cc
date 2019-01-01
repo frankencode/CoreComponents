@@ -91,4 +91,10 @@ bool Semaphore::acquireBefore(double timeout, int amount)
     return success;
 }
 
+int Semaphore::getCurrentValue() const
+{
+    Guard<Mutex> guard(mutex_);
+    return supply_;
+}
+
 } // namespace cc

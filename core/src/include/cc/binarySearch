@@ -8,56 +8,52 @@
 
 #pragma once
 
+#include <cc/assert>
+
 namespace cc {
 
-template<
-    class SortedArray,
-    class Pattern = typename SortedArray::Item,
-    class Index = typename SortedArray::Index
->
-bool binarySearch(
-    const SortedArray *array,
-    const Pattern &pattern,
-    Index firstIndex,
-    Index lastIndex,
-    Index *finalIndex = nullptr
-) {
-    if (firstIndex == lastIndex) {
-        if (finalIndex) *finalIndex = firstIndex;
-        return array->at(firstIndex) == pattern;
-    }
-
-    Index middleIndex = (firstIndex + lastIndex) / 2;
-
-    return (array->at(middleIndex) < pattern) ?
-        binarySearch(array, pattern, middleIndex, lastIndex, finalIndex) :
-        binarySearch(array, pattern, firstIndex, middleIndex, finalIndex);
-}
-
-/** \brief Binary search in a sorted array
-  * \param array the sorted array
+/** \brief Binary search in a sorted list of items
+  * \param items the sorted list of items
   * \param pattern pattern to search for
   * \param finalIndex return the final index of the search
   * \return true if a matching item was found, false otherwise
   */
 template<
     class SortedArray,
-    class Pattern = typename SortedArray::Item,
+    class Pattern = typename SortedItems::Item,
     class Index = typename SortedArray::Index
 >
 bool binarySearch(
-    const SortedArray *array,
+    const SortedItems *items,
     const Pattern &pattern,
     Index *finalIndex = nullptr
 ) {
-    if (array->count() == 0) return false;
-    return binarySearch(
-        array,
-        pattern,
-        0,
-        array->count() - 1,
-        finalIndex
-    );
+    CC_ASSERT(items->count() > 0);
+    CC_ASSERT(!(pattern < items->at(0) || items->at(items->count() - 1) < pattern));
+
+    Index firstIndex = 0;
+    Index lastIndex = items->count() - 1;
+    while (true) {
+        Index middleIndex = (firstIndex + lastIndex) / 2;
+        if (middleIndex == firstIndex) break;
+        if (items->at(middleIndex) < pattern)
+            firstIndex = middleIndex;
+        else
+            lastIndex = middleIndex;
+    }
+
+    if (item->at(firstIndex) == pattern) {
+        *finalIndex = firstIndex;
+        return true;
+    }
+
+    if (item->at(lastIndex) == pattern) {
+        *finalIndex = lastIndex;
+        return true;
+    }
+
+    *finalIndex = lastIndex;
+    return false;
 }
 
 } // namespace cc

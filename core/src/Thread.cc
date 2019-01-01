@@ -7,9 +7,10 @@
  */
 
 #include <sys/mman.h>
+#include <time.h>
+#include <math.h>
 #include <cc/strings>
 #include <cc/exceptions>
-#include <cc/WaitCondition>
 #include <cc/System>
 #include <cc/Thread>
 
@@ -76,12 +77,14 @@ Thread *Thread::start()
         if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
     }
 
-    /*{ // setting a custom stack became disfunctional with some glibc versions
+    #if 0
+    { // setting a custom stack became disfunctional with some glibc versions
         const int guardSize = System::pageSize();
         stack_ = allocateStack(stackSize_, guardSize);
         int ret = pthread_attr_setstack(&attr, stack_->bytes() + guardSize, stack_->count() - 2 * guardSize);
         if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
-    }*/
+    }
+    #endif
 
     int ret = pthread_create(&tid_, &attr, &bootstrap, static_cast<void *>(this));
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
@@ -111,16 +114,21 @@ bool Thread::stillAlive() const
 
 void Thread::sleep(double duration)
 {
-    sleepUntil(System::now() + duration);
+    struct timespec rqtp;
+    double sec = 0;
+    rqtp.tv_nsec = modf(duration, &sec) * 1e9;
+    rqtp.tv_sec = sec;
+    while (::nanosleep(&rqtp, &rqtp) == -1) {
+        if (errno != EINTR)
+            CC_SYSTEM_DEBUG_ERROR(errno);
+    }
 }
 
 void Thread::sleepUntil(double timeout)
 {
-    Ref<Mutex> mutex = Mutex::create();
-    Ref<WaitCondition> condition = WaitCondition::create();
-    mutex->acquire();
-    condition->waitUntil(timeout, mutex);
-    mutex->release();
+    double now = System::now();
+    if (timeout <= now) return;
+    sleep(now - timeout);
 }
 
 void Thread::blockSignals(SignalSet *set)

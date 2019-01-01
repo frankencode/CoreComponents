@@ -226,6 +226,7 @@ private:
   * \ingroup strings
   * \see Array
   * \TODO fix isZeroTerminated() for substrings and add CC_ASSERTS to all implicit const char* conversions
+  * \TODO move to CharArray header
   */
 template<>
 class Array<char>: public Object

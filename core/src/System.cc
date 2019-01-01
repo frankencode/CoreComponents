@@ -14,7 +14,6 @@
 #endif
 #include <sys/sysctl.h>
 #endif
-#include <sys/time.h>
 #include <sys/mount.h>
 #include <time.h>
 #include <cc/exceptions>
@@ -54,9 +53,9 @@ int System::pageSize()
 
 double System::now()
 {
-    struct timeval tv;
-    ::gettimeofday(&tv, 0);
-    return double(tv.tv_sec) + double(tv.tv_usec) / 1e6;
+    struct timespec ts;
+    ::clock_gettime(CLOCK_REALTIME, &ts);
+    return double(ts.tv_sec) + double(ts.tv_nsec) / 1e9;
 }
 
 String System::hostName()

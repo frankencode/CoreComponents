@@ -63,6 +63,10 @@ public:
       */
     bool acquireBefore(double timeout, int amount = 1);
 
+    /** Current supply of the limited resource
+      */
+    int getCurrentValue() const;
+
 private:
     Semaphore(int value);
 

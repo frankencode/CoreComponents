@@ -130,7 +130,7 @@ void SystemStream::write(const Format &data)
 
 bool SystemStream::waitFor(IoReady ready, int interval_ms)
 {
-    return SystemIo::poll(fd_, static_cast<short>(ready), interval_ms);
+    return SystemIo::poll(fd_, static_cast<int>(ready), interval_ms);
 }
 
 void SystemStream::shutdown(ShutdownType type)
