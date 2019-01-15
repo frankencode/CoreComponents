@@ -136,20 +136,31 @@ String fixed(float64_t x, int nf)
 
 String fixed(float64_t x, int ni, int nf)
 {
-    // FIXME: the following 3 compares are slightly inefficient
     if (x != x) return "nan";
     if (x == +1.0/0.0) return "inf";
     if (x == -1.0/0.0) return "-inf";
+
     double ip;
     double fp = modf(x, &ip);
+    if (fp < 0) fp = -fp;
+
+    {
+        double q = 1;
+        for (int i = 0; i < nf; ++i) q *= 10;
+        fp = round(q * fp);
+        if (fp >= q) {
+            if (ip < 0) --ip;
+            else ++ip;
+            fp -= q;
+        }
+    }
+
     String sip = inum(int64_t(ip));
     if (ni > sip->count()) sip = right(sip, ni);
     if (nf <= 0) return sip;
-    String s(sip->count() + 1 + nf, '.');
+
+    String s{sip->count() + 1 + nf, '.'};
     mutate(s)->write(sip);
-    if (fp < 0) fp = -fp;
-    for (int i = 0; i < nf; ++i) fp *= 10;
-    fp = round(fp);
     mutate(s)->write(right(inum(uint64_t(fp)), nf, '0'), sip->count() + 1, s->count());
     return s;
 }

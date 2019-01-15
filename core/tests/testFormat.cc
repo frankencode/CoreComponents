@@ -40,9 +40,13 @@ class FloatingPointLiterals: public TestCase
         fout() << fixed(1.23, 3) << nl;
         fout() << fixed(-10.01, 4) << nl;
         fout() << fixed(0.01, 2) << nl;
+        fout() << fixed(9.9999, 3, 3) << nl;
+        fout() << fixed(-9.9999, 3, 3) << nl;
         CC_VERIFY(fixed(1.23, 3) == "1.230");
         CC_VERIFY(fixed(-10.01, 4) == "-10.0100");
         CC_VERIFY(fixed(0.01, 2) == "0.01");
+        CC_VERIFY(fixed(9.9999, 3, 3) == " 10.000");
+        CC_VERIFY(fixed(-9.9999, 3, 3) == "-10.000");
     }
 };
 
