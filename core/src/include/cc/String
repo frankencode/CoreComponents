@@ -544,7 +544,7 @@ public:
       * \param i current search index
       * \return true if \a ch was found, false otherwise
       */
-    inline bool findNext(char ch, int *i = 0) const {
+    inline bool findNext(char ch, int *i = 0) const { // FIXME: obsolete
         int j = (i) ? *i : 0;
         while (j < size_) {
             if (data_[j] == ch) {
@@ -556,6 +556,9 @@ public:
         if (i) *i = j;
         return false;
     }
+
+    /// \copydoc findNext(char, int *)
+    inline bool search(char ch, int *i = 0) const { return findNext(ch, i); }
 
     /** Check if this string contains a certain character value
       * \param ch character value to search for
@@ -599,6 +602,7 @@ public:
         if (!s[0]) return true;
         return find(s) != size_;
     }
+
 
     /// \copydoc contains(const char *) const
     bool contains(const String &s) const;

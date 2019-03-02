@@ -34,10 +34,13 @@ public:
     static Ref<LineSource> open(Stream *stream, CharArray *buffer = 0);
 
     /// Input stream used to read lines from
-    inline Stream *stream() const { return stream_; }
+    Stream *stream() const { return stream_; }
 
     /// Input buffer used to cache input data
-    inline const CharArray *buffer() const { return buffer_; }
+    const CharArray *buffer() const { return buffer_; }
+
+    /// Current line start offset
+    int offset() const { return bufferOffset_ + i0_; }
 
     /** Read next line
       * \param line returns the next line (if not end of input)
@@ -62,7 +65,8 @@ private:
     Ref<Stream> stream_;
     String buffer_;
     bool eoi_;
-    int i_, n_;
+    int bufferOffset_;
+    int i0_, i_, n_;
 };
 
 } // namespace cc

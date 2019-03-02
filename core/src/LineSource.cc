@@ -19,10 +19,11 @@ Ref<LineSource> LineSource::open(Stream *stream, CharArray *buffer) {
 }
 
 LineSource::LineSource(Stream *stream, CharArray *buffer):
-    stream_(stream),
-    buffer_(buffer),
-    eoi_(false),
-    i_(0), n_(0)
+    stream_{stream},
+    buffer_{buffer},
+    eoi_{false},
+    bufferOffset_{0},
+    i0_{0}, i_{0}, n_{0}
 {
     if (!buffer_) buffer_ = String::allocate(0x1000);
 }
@@ -38,26 +39,27 @@ bool LineSource::read(String *line)
 
     while (true) {
         if (i_ < n_) {
-            int i0 = i_;
+            i0_ = i_;
             i_ = findEol(buffer_, n_, i_);
             if (i_ < n_) {
                 if (backlog) {
-                    backlog->append(buffer_->copy(i0, i_));
+                    backlog->append(buffer_->copy(i0_, i_));
                     *line = backlog->join();
                 }
                 else {
-                    *line = buffer_->copy(i0, i_);
+                    *line = buffer_->copy(i0_, i_);
                 }
                 i_ = skipEol(buffer_, n_, i_);
                 return true;
             }
             if (!backlog)
                 backlog = StringList::create();
-            backlog->append(buffer_->copy(i0, i_));
+            backlog->append(buffer_->copy(i0_, i_));
         }
 
         if (!stream_) break;
 
+        bufferOffset_ += n_;
         n_ = stream_->read(mutate(buffer_));
         if (n_ == 0) break;
         i_ = 0;

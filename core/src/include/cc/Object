@@ -60,7 +60,7 @@ public:
     template<class T, class... Args>
     inline static Ref<T> create(Args... args) {
         Ref<T> object = new T{args...};
-        object->init();
+        object->init(); // FIXME: rename to bootstrap()
         return object;
     }
 

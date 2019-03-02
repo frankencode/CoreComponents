@@ -1,0 +1,14 @@
+#pragma once
+
+#include <cc/Variant>
+
+namespace cc {
+namespace meta {
+
+class IniSyntax
+{
+public:
+    Variant parse(const CharArray* text);
+};
+
+}} // namespace cc::meta
