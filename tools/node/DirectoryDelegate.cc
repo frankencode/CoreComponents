@@ -38,7 +38,7 @@ void DirectoryDelegate::process(HttpRequest *request)
     String prefix = path->head(directoryInstance_->path()->count());
     if (path->head(directoryInstance_->path()->count()) != directoryInstance_->path()) throw Forbidden();
 
-    if ((!directoryInstance_->showHidden()) && path->baseName()->beginsWith('.')) throw NotFound();
+    if ((!directoryInstance_->showHidden()) && path->baseName()->startsWith('.')) throw NotFound();
 
     Ref<FileStatus> fileStatus = FileStatus::read(path);
 
@@ -133,7 +133,7 @@ void DirectoryDelegate::listDirectory(HttpRequest *request, String path)
     Ref<StringList> entries = StringList::create();
     for (String name; dir->read(&name);) {
         if (name == "." || name == "..") continue;
-        if ((!directoryInstance_->showHidden()) && name->beginsWith('.')) continue;
+        if ((!directoryInstance_->showHidden()) && name->startsWith('.')) continue;
         entries->append(name);
     }
     entries = entries->sort();

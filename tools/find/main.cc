@@ -16,10 +16,10 @@ using namespace cc;
 using namespace cc::syntax;
 using namespace cc::glob;
 
-class Match: public Object {
+class TextMatch: public Object {
 public:
-    inline static Ref<Match> create(int ln, int i0, int i1) {
-        return new Match(ln, i0, i1);
+    inline static Ref<TextMatch> create(int ln, int i0, int i1) {
+        return new TextMatch(ln, i0, i1);
     }
 
     inline int ln() const { return ln_; }
@@ -33,7 +33,7 @@ public:
     }
 
 private:
-    Match(int ln, int i0, int i1):
+    TextMatch(int ln, int i0, int i1):
         ln_(ln),
         i0_(i0),
         i1_(i1)
@@ -43,10 +43,10 @@ private:
     int i1_;
 };
 
-typedef List< Ref<Match> > Matches;
+typedef List< Ref<TextMatch> > Matches;
 
 Ref<Matches> findMatches(const CharArray *text, SyntaxDefinition *textPattern);
-void displayMatch(const CharArray *path, const CharArray *text, const Match *match);
+void displayMatch(const CharArray *path, const CharArray *text, const TextMatch *match);
 String replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement);
 
 int main(int argc, char **argv)
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
                         file->write(text);
                     }
                     for (int i = 0; i < matches->count(); ++i) {
-                        Match *match = matches->at(i);
+                        TextMatch *match = matches->at(i);
                         if (rangesOption)
                             fout("%%:%%:%%..%%\n") << path << match->ln() << match->i0() << match->i1();
                         else
@@ -214,7 +214,7 @@ Ref<Matches> findMatches(const CharArray *text, SyntaxDefinition *textPattern)
         }
         for (;i < i0; ++i)
             if (text->at(i) == '\n') ++ln;
-        matches->append(Match::create(ln, i0, i1));
+        matches->append(TextMatch::create(ln, i0, i1));
         for (;i < i1; ++i)
             if (text->at(i) == '\n') ++ln;
         if (i0 == i1) ++i;
@@ -222,7 +222,7 @@ Ref<Matches> findMatches(const CharArray *text, SyntaxDefinition *textPattern)
     return matches;
 }
 
-void displayMatch(const CharArray *path, const CharArray *text, const Match *match)
+void displayMatch(const CharArray *path, const CharArray *text, const TextMatch *match)
 {
     int ln = match->ln();
     int i0 = match->i0();
@@ -266,7 +266,7 @@ String replaceMatches(const CharArray *text, Matches *matches, const CharArray *
     int si = 0, sl = 0; // index and line shift
     int nr = replacement->count('\n');
     for (int i = 0; i < matches->count(); ++i) {
-        Match *match = matches->at(i);
+        TextMatch *match = matches->at(i);
         fragments->append(text->copy(fi0, match->i0()));
         fi0 = match->i1();
         int i0s = match->i0() + si;

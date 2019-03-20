@@ -172,14 +172,14 @@ typedef char32_t uchar_t;
 template<class Char>
 inline Char toLower(Char ch) {
     if (('A' <= ch) && (ch <= 'Z'))
-        ch = ch + ('a' - 'A');
+        ch += 'a' - 'A';
     return ch;
 }
 
 template<class Char>
 inline Char toUpper(Char ch) {
     if (('a' <= ch) && (ch <= 'z'))
-        ch = ch - ('a' - 'A');
+        ch -= 'a' - 'A';
     return ch;
 }
 
@@ -191,6 +191,17 @@ inline bool isLower(Char ch) {
 template<class Char>
 inline bool isUpper(Char ch) {
     return ('A' <= ch) && (ch <= 'Z');
+}
+
+template<class Char>
+inline bool equalsCaseInsensitive(Char a, Char b)
+{
+    if ('A' <= a && a <= 'Z') {
+        a += 'a' - 'A';
+        if ('A' <= b && b <= 'Z')
+            b += 'a' - 'A';
+    }
+    return a == b;
 }
 
 template<class Char>

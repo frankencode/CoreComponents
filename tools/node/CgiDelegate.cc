@@ -145,7 +145,7 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
         int fieldIndex = 0;
         if (cgiResponse->lookup("Location", &location, &fieldIndex)) {
             CCNODE_DEBUG() << "Redirect to \"" << location << "\"" << nl;
-            if (location->beginsWith("/")) {
+            if (location->startsWith("/")) {
                 cgiResponse->removeAt(fieldIndex);
                 String content = File::open(location)->map();
                 String contentType;

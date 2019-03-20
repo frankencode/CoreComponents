@@ -73,7 +73,7 @@ public:
 
     inline String projectPath() const { return projectPath_; }
     inline String systemSourcePath() const { return toolChain_->systemRoot()->extendPath("/usr/src"); }
-    inline bool isSystemSource() const { return projectPath_->beginsWith(systemSourcePath()); }
+    inline bool isSystemSource() const { return projectPath_->startsWith(systemSourcePath()); }
     inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
     inline String recipePath() const { return recipePath_; }
     inline String userPkgConfigPath() const { return projectPath_->extendPath(toolChain_->pkgConfigName(this)); }

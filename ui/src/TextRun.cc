@@ -60,7 +60,7 @@ void TextRun::appendHtml(const String &text, const Font &font)
         if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->font_);
         String tagName = text->select(i + 1, j);
         i = i0 = j + 1;
-        if (tagName->beginsWith('/')) {
+        if (tagName->startsWith('/')) {
             tagName = tagName->select(1, tagName->count());
             if (styleHead->tagName_ != tagName) break;
             styleHead = styleHead->parent_;

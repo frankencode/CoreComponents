@@ -148,7 +148,7 @@ void ServiceWorker::autoSecureForwardings()
             serviceInstance_->security()->hasCredentials()
         ) {
             String location = header->value("Location");
-            if (location->beginsWith("http:")) {
+            if (location->startsWith("http:")) {
                 try {
                     Ref<Uri> uri = Uri::parse(location);
                     if (serviceInstance_->host()->match(uri->host())) {

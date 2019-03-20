@@ -21,10 +21,10 @@ class LineSource: public Source<String>
 {
 public:
     /** Open a new line source feed from a memory buffer
-      * \param buffer input buffer
+      * \param text input buffer
       * \return new object instance
       */
-    static Ref<LineSource> open(const CharArray *buffer);
+    static Ref<LineSource> open(const String &text);
 
     /** Open a new line source feed from an input stream
       * \param stream input stream

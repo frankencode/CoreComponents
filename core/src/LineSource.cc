@@ -10,12 +10,12 @@
 
 namespace cc {
 
-Ref<LineSource> LineSource::open(const CharArray *buffer) {
-    return new LineSource(0, const_cast<CharArray *>(buffer));
+Ref<LineSource> LineSource::open(const String &text) {
+    return new LineSource{nullptr, mutate(text)};
 }
 
 Ref<LineSource> LineSource::open(Stream *stream, CharArray *buffer) {
-    return new LineSource(stream, buffer);
+    return new LineSource{stream, buffer};
 }
 
 LineSource::LineSource(Stream *stream, CharArray *buffer):
@@ -23,7 +23,7 @@ LineSource::LineSource(Stream *stream, CharArray *buffer):
     buffer_{buffer},
     eoi_{false},
     bufferOffset_{0},
-    i0_{0}, i_{0}, n_{0}
+    i0_{0}, i_{0}, n_{(buffer && !stream) ? buffer->count() : 0}
 {
     if (!buffer_) buffer_ = String::allocate(0x1000);
 }

@@ -245,37 +245,59 @@ int Array<char>::countCharsIn(const char *set) const
     return n;
 }
 
-bool Array<char>::beginsWith(const String &s) const
-{
-    return beginsWith(s->chars(), s->count());
-}
-
-bool Array<char>::beginsWith(const char *s, int n) const
+bool Array<char>::match(Match m, const char *s, int n) const
 {
     if (n < 0) n = strlen(s);
-    if (n > size_) return false;
+    if (size_ < n) return false;
 
-    for (int i = 0; i < n; ++i) {
-        if (chars_[i] != s[i])
+    if (+(m & Match::Head)) {
+        if (+(m & Match::Tail) && size_ != n)
             return false;
+
+        if (+(m & Match::Case)) {
+            for (int i = 0; i < n; ++i) {
+                if (chars_[i] != s[i])
+                    return false;
+            }
+        }
+        else {
+            for (int i = 0; i < n; ++i) {
+                if (!cc::equalsCaseInsensitive(chars_[i], s[i]))
+                    return false;
+            }
+        }
     }
-    return true;
-}
-
-bool Array<char>::endsWith(const String &s) const
-{
-    return endsWith(s->chars(), s->count());
-}
-
-bool Array<char>::endsWith(const char *s, int n) const
-{
-    if (n < 0) n = strlen(s);
-    if (n > size_) return false;
-
-    for (int i = size_ - n, j = 0; i < size_; ++i, ++j) {
-        if (chars_[i] != s[j])
-            return false;
+    else if (+(m & Match::Tail)) {
+        if (+(m & Match::Case)) {
+            for (int i = 0, i0 = size_ - n; i < n; ++i) {
+                if (chars_[i0 + i] != s[i])
+                    return false;
+            }
+        }
+        else {
+            for (int i = 0, i0 = size_ - n; i < n; ++i) {
+                if (!cc::equalsCaseInsensitive(chars_[i0 + i], s[i]))
+                    return false;
+            }
+        }
     }
+    else {
+        int i = 0;
+        if (+(m & Match::Case)) {
+            for (int j = 0; j < size_ && i < n; ++j) {
+                if (chars_[j] == s[i]) ++i;
+                else i = 0;
+            }
+        }
+        else {
+            for (int j = 0; j < size_ && i < n; ++j) {
+                if (cc::equalsCaseInsensitive(chars_[j], s[i])) ++i;
+                else i = 0;
+            }
+        }
+        return i == n;
+    }
+
     return true;
 }
 
@@ -864,7 +886,7 @@ String Array<char>::extendPath(const String &relativePath) const
 
     Ref<StringList> parts = StringList::create();
     if (String(this) != "/") parts << this;
-    if (!endsWith('/') || !relativePath->beginsWith('/')) parts << "/";
+    if (!endsWith('/') || !relativePath->startsWith('/')) parts << "/";
     parts << relativePath;
 
     return parts->join();

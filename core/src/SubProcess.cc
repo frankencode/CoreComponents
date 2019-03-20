@@ -33,7 +33,7 @@ Ref<SubProcess> SubProcess::bootstrap(Staging *staging)
 
     if (staging->command_ != "") {
         String cmd = staging->command_;
-        if (cmd->beginsWith(' ') || cmd->endsWith(' '))
+        if (cmd->startsWith(' ') || cmd->endsWith(' '))
             cmd = cmd->trim();
         if (!cmd->contains(' ')) execPath = cmd;
         if (!args) args = cmd->simplify()->split(' ');

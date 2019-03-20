@@ -161,7 +161,7 @@ String GnuToolChain::targetName(const BuildPlan *plan) const
 {
     String name = plan->name();
     if (plan->options() & BuildPlan::Library) {
-        if (!plan->name()->beginsWith("lib"))
+        if (!plan->name()->startsWith("lib"))
             name = "lib" + name;
     }
     return name;

@@ -29,7 +29,7 @@ void FontManager::addPath(const String &dirPath, const String &namePrefix)
     bool isDir = false;
     while (walker->read(&path, &isDir)) {
         if (!isDir && isFontFace(path)) {
-            if (namePrefix != "" && !path->fileName()->beginsWith(namePrefix))
+            if (namePrefix != "" && !path->fileName()->startsWith(namePrefix))
                 continue;
             addFontFace(openFontFace(path));
         }

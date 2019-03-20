@@ -61,12 +61,12 @@ const char *Variant::typeName(VariantType type, VariantType itemType)
 
 Variant Variant::read(String s)
 {
-    if (s->beginsWith('"') && s->endsWith('"'))
+    if (s->startsWith('"') && s->endsWith('"'))
         return Variant(s->copy(1, s->count() - 1));
 
     if (
         s->contains('.') ||
-        (!s->beginsWith("0x") && (s->contains('e') || s->contains('E')))
+        (!s->startsWith("0x") && (s->contains('e') || s->contains('E')))
     ) {
         double value = 0;
         if (s->scanNumber(&value) == s->count()) return Variant(value);
