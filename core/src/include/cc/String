@@ -55,6 +55,7 @@ MutantString mutate(String &&s);
 
 /// String matching mode flags
 enum class Match: uint32_t {
+    Find = 0,         ///< Match any sub-string of the string
     Head = 1,         ///< Match the start of the string
     Tail = 2,         ///< Match the end of the string
     Full = Head|Tail, ///< Match the entire string
