@@ -36,7 +36,7 @@ class ProgramStatus: public TestCase
         String path = TestSuite::instance()->execPath();
         Ref<FileStatus> status = FileStatus::read(path);
         fout("status->type() = %%\n") << oct(int(status->type()));
-        fout("status->mode() = %%\n") << oct(status->mode());
+        fout("status->mode() = %%\n") << oct(+status->mode());
         fout("status->size() = %%\n") << status->size();
         fout("status->ownerId() = %%\n") << status->ownerId();
         fout("status->groupId() = %%\n") << status->groupId();

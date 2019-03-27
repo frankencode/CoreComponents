@@ -45,7 +45,7 @@ void DirectoryDelegate::process(HttpRequest *request)
     if (scriptHandler_) {
         if (
             (!fileStatus->isValid()) ||
-            ((fileStatus->mode() & AnyExec) && (fileStatus->type() != FileType::Directory))
+            (+(fileStatus->mode() & FileMode::AnyExec) && (fileStatus->type() != FileType::Directory))
         ) {
             if (scriptHandler_->process(request, fileStatus, directoryInstance_->path()))
                 return;
@@ -165,8 +165,8 @@ void DirectoryDelegate::streamFile(String path)
     ssize_t size = -1;
     if (file->seekable()) {
         head = file->readSpan(64);
-        size = file->seek(0, SeekEnd);
-        file->seek(0, SeekBegin);
+        size = file->seek(0, Seek::End);
+        file->seek(0, Seek::Begin);
     }
     String mediaType = mediaTypeDatabase()->lookup(path, head);
     if (mediaType != "") response()->setHeader("Content-Type", mediaType);

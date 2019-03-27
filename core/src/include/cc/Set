@@ -28,19 +28,19 @@ public:
     /** Create a new set
       * \return new object instance
       */
-    inline static Ref<Set> create() { return new Set; }
+    static Ref<Set> create() { return new Set; }
 
     /** Create a shallow copy of another set
       * \param other another set
       * \return new object instance
       */
-    inline static Ref<Set> replicate(const Set *other) { return new Set(other); }
+    static Ref<Set> replicate(const Set *other) { return new Set(other); }
 
     /// Number of items
-    inline int count() const { return tree_.count(); }
+    int count() const { return tree_.count(); }
 
     /// Check if an index is valid
-    inline bool has(int index) const {
+    bool has(int index) const {
         return 0 <= index && index < count();
     }
 
@@ -48,7 +48,7 @@ public:
       * \param index set index
       * \return reference to the item
       */
-    inline const Item &at(int index) const {
+    const Item &at(int index) const {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node))
             CC_ASSERT(false);
@@ -57,17 +57,17 @@ public:
 
     /** Return the index of the first item greater or equal _a_
       */
-    inline int from(const Item &a) const { return tree_.first(a); }
+    int from(const Item &a) const { return tree_.first(a); }
 
     /** Return the index of the first item lower or equal _b_
       */
-    inline int to(const Item &b) const { return tree_.last(b); }
+    int to(const Item &b) const { return tree_.last(b); }
 
     /** Insert a new item if no item with the same value exists already.
       * If currentItem is non-null the item with the same value is returned.
       * \return true if the new item was inserted successfully
       */
-    inline bool insert(const Item &item, Item *currentItem = 0, int *index = 0)
+    bool insert(const Item &item, Item *currentItem = 0, int *index = 0)
     {
         bool found = false;
         bool below = true;
@@ -87,7 +87,7 @@ public:
       * \param index returns the index of the item that has been removed
       * \return true if the matching item was found and removed
       */
-    inline bool remove(const Item &item, int *index = 0)
+    bool remove(const Item &item, int *index = 0)
     {
         bool found;
         Node *k = tree_.find(item, &found, 0, index);
@@ -100,7 +100,7 @@ public:
       * \param index set index
       * \return true if the matching item was found and removed
       */
-    inline bool removeAt(int index) {
+    bool removeAt(int index) {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node)) return false;
         tree_.remove(node);
@@ -111,7 +111,7 @@ public:
       * \param item item value
       * \return true if the set contains the given item
       */
-    inline bool contains(const Item &item)
+    bool contains(const Item &item)
     {
         bool found = false;
         tree_.find(item, &found);
@@ -121,7 +121,7 @@ public:
     /** Add a new item to the set
       * \param item new item value
       */
-    inline void push(const Item &item)
+    void push(const Item &item)
     {
         bool found = false;
         bool below = true;
@@ -135,7 +135,7 @@ public:
     /** Remove first item from the set
       * \param item return the item's value
       */
-    inline void pop(Item *item)
+    void pop(Item *item)
     {
         CC_ASSERT(count() > 0);
         Node *k = tree_.min();
@@ -146,14 +146,14 @@ public:
     /** Remove first item from the set
       * \return the item's value
       */
-    inline Item pop() {
+    Item pop() {
         Item item;
         pop(&item);
         return item;
     }
 
     /// Reset this set to an empty set
-    inline void deplete() { tree_.clear(); }
+    void deplete() { tree_.clear(); }
 
     /** \name C++ iterators
       * @{
@@ -171,7 +171,7 @@ public:
       * @{
       */
     template<class OutputType = Item>
-    inline Ref< Source<OutputType> > getAll() const { return ContainerSource< Set, Pass<Item, OutputType> >::open(this); }
+    Ref< Source<OutputType> > getAll() const { return ContainerSource< Set, Pass<Item, OutputType> >::open(this); }
     /** @}
       */
 
@@ -181,10 +181,28 @@ private:
 
     Set() {}
     Set(const Set &b): tree_(b.tree_) {}
-    inline const Set &operator=(const Set &b) { tree_ = b.tree_; return *this; }
+    const Set &operator=(const Set &b) { tree_ = b.tree_; return *this; }
 
     Tree tree_;
     Item nullItem_;
 };
+
+template<class T>
+bool operator==(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) == 0; }
+
+template<class T>
+bool operator!=(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) != 0; }
+
+template<class T>
+bool operator<(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) < 0; }
+
+template<class T>
+bool operator>(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) > 0; }
+
+template<class T>
+bool operator<=(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) <= 0; }
+
+template<class T>
+bool operator>=(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) >= 0; }
 
 } // namespace cc

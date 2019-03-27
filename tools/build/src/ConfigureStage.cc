@@ -241,7 +241,7 @@ bool ConfigureStage::runConfigure(String name, String configure, String *output)
     String configureText;
     String binPath;
 
-    if (sourceStatus->mode() & AnyExec) {
+    if (+(sourceStatus->mode() & FileMode::AnyExec)) {
         binPath = configurePath;
     }
     else {

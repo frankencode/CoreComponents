@@ -35,25 +35,25 @@ public:
       * \param fileMode file permissions for new file, a combination of cc::FileMode
       * \return new object instance
       */
-    static Ref<File> open(const String &path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
+    static Ref<File> open(const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::UserRead|FileMode::UserWrite|FileMode::GroupRead|FileMode::OtherRead);
 
     /** Try to %open a file
       * \copydetails open()
       */
-    static Ref<File> tryOpen(const String &path, int openMode = OpenMode::ReadOnly, int fileMode = 0644);
+    static Ref<File> tryOpen(const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::UserRead|FileMode::UserWrite|FileMode::GroupRead|FileMode::OtherRead);
 
     /** Open a temporary file
       * \param flags file open flags, a combintation of cc::OpenMode
       * \return new object instance
       * \see UnlinkGuard, File::createUnique()
       */
-    static Ref<File> openTemp(int flags = ReadWrite);
+    static Ref<File> openTemp(OpenMode flags = OpenMode::ReadWrite);
 
     /// %File path this file was opened from
     String path() const;
 
     /// %File open mode this file was opened with
-    int openMode() const;
+    OpenMode openMode() const;
 
     /** Truncate or extend file
       * \param length new file length
@@ -65,7 +65,7 @@ public:
       * \param method from which point to apply the seek distance
       * \return new file offset
       */
-    off_t seek(off_t distance, SeekMethod method = SeekBegin);
+    off_t seek(off_t distance, Seek method = Seek::Begin);
 
     /// Query if this file is seekable (e.g. character devices aren't seekable)
     bool seekable() const { return isSeekable(); } // FIXME: obsolete
@@ -74,7 +74,7 @@ public:
     bool isSeekable() const;
 
     /// Current file offset
-    off_t fileOffset() { return seek(0, SeekBegin); }
+    off_t fileOffset() { return seek(0, Seek::Begin); }
 
     virtual off_t transferSpanTo(off_t count = -1, Stream *sink = 0, CharArray *buf = 0) override;
 
@@ -92,7 +92,7 @@ public:
       * \param flags a combination of cc::Access
       * \return true if accessible
       */
-    static bool access(const String &path, int flags);
+    static bool access(const String &path, Access flags); // TODO: rename to checkAccess
 
     /** Check if a file exists
       * \param path file path
@@ -178,7 +178,7 @@ public:
       * \param accessFlags a combination of cc::Access
       * \return file path if found else empty string
       */
-    static String locate(const String &fileName, const StringList *dirs, int accessFlags = Access::Exists);
+    static String locate(const String &fileName, const StringList *dirs, Access accessFlags = Access::Exists);
 
     /** Load contents of a file
       * \param path file path
@@ -197,12 +197,12 @@ private:
 
     static int translateOpenFlags(int openMode);
 
-    File(const String &path, int openMode, int fd);
+    File(const String &path, OpenMode openMode, int fd);
 
     static void unmap(CharArray *s);
 
     String path_;
-    int openMode_;
+    OpenMode openMode_;
 };
 
 } // namespace cc

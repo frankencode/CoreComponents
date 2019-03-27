@@ -61,7 +61,7 @@ void TarWriter::writeFile(String path, FileStatus *status)
     headerFields->append(pathField);
     headerFields->append(zero_);
 
-    headerFields->append(oct(status->mode(), 7));
+    headerFields->append(oct(+status->mode(), 7));
     headerFields->append(zero_);
     headerFields->append(oct(status->ownerId(), 7));
     headerFields->append(zero_);

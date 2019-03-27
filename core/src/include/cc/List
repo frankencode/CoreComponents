@@ -33,24 +33,24 @@ public:
     /** Create a new empty list
       * \return new object instance
       */
-    inline static Ref<List> create() { return new List; }
+    static Ref<List> create() { return new List; }
 
     /** Create a new list a populate it with n default items
       * \return new object instance
       */
-    inline static Ref<List> create(int n) { return new List(n); }
+    static Ref<List> create(int n) { return new List(n); }
 
     /** Create a shallow copy of another list
       * \param other another list
       * \return new object instance
       */
-    inline static Ref<List> copy(const List *other) { return new List(*other); }
+    static Ref<List> copy(const List *other) { return new List(*other); }
 
     /// Return the number of items stored in this list
-    inline int count() const { return tree_.count(); }
+    int count() const { return tree_.count(); }
 
     /// Check if an index is valid
-    inline bool has(int index) const {
+    bool has(int index) const {
         return 0 <= index && index < count();
     }
 
@@ -58,7 +58,7 @@ public:
       * \param index list index
       * \return reference to the item
       */
-    inline Item &at(int index) {
+    Item &at(int index) {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node))
             CC_ASSERT(false);
@@ -67,7 +67,7 @@ public:
 
     /** \copydoc at(int index)
       */
-    inline const Item &at(int index) const {
+    const Item &at(int index) const {
         Node *node = 0;
         if (!tree_.lookupByIndex(index, &node))
             CC_ASSERT(false);
@@ -78,7 +78,7 @@ public:
       * \param index list index
       * \param item new item value
       */
-    inline void insertAt(int index, const Item &item) {
+    void insertAt(int index, const Item &item) {
         tree_.insertAt(index, item);
     }
 
@@ -87,18 +87,18 @@ public:
       * \param item returns the item value
       * \return reference to this list
       */
-    inline void removeAt(int index, Item *item = 0) {
+    void removeAt(int index, Item *item = 0) {
         tree_.removeAt(index, item);
     }
 
     /// Reset this list to an empty list
-    inline void deplete() { tree_.clear(); }
+    void deplete() { tree_.clear(); }
 
     /** Remove an item from a certain position
       * \param index list index
       * \return item value
       */
-    inline Item pop(int index) {
+    Item pop(int index) {
         Item item;
         removeAt(index, &item);
         return item;
@@ -107,45 +107,45 @@ public:
     /** Append a new item to the end of the list
       * \param item new item value
       */
-    inline void push(const Item &item) { insertAt(count(), item); }
+    void push(const Item &item) { insertAt(count(), item); }
 
     /** Remove an item from the head of the list
       * \param item returns the item value
       */
-    inline void pop(Item *item) { removeAt(0, item); }
+    void pop(Item *item) { removeAt(0, item); }
 
     /** Remove an item from the head of the list
       * \return item value
       */
-    inline Item pop() { Item item; pop(&item); return item; }
+    Item pop() { Item item; pop(&item); return item; }
 
     /** \copydoc push(const Item &)
       */
-    inline void append(const Item &item) { insertAt(count(), item); }
+    void append(const Item &item) { insertAt(count(), item); }
 
     /** Append another list to this list
       * \param b another list
       */
-    inline void appendList(const List *b) { if (b) for (int i = 0; i < b->count(); ++i) append(b->at(i)); }
+    void appendList(const List *b) { if (b) for (int i = 0; i < b->count(); ++i) append(b->at(i)); }
 
     /** Insert a new item at head of the list
       */
-    inline void pushFront(const Item &item) { insertAt(0, item); }
+    void pushFront(const Item &item) { insertAt(0, item); }
 
     /** Append a new item to the end of the list
       * \param item new item value
       */
-    inline void pushBack(const Item &item) { insertAt(count(), item); }
+    void pushBack(const Item &item) { insertAt(count(), item); }
 
     /** Remove an item from the head of the list
       * \return item value
       */
-    inline Item popFront() { return pop(0); }
+    Item popFront() { return pop(0); }
 
     /** Remove an item from the end of the list
       * \return item value
       */
-    inline Item popBack() { return pop(count() - 1); }
+    Item popBack() { return pop(count() - 1); }
 
     /** Return a shallow copy of this list
       * \return new object instance
@@ -170,7 +170,7 @@ public:
       * \param item item value
       * \return true if item value appears in the list
       */
-    inline bool contains(const Item &item) const { return find(item) < count(); }
+    bool contains(const Item &item) const { return find(item) < count(); }
 
     /** Replace all appearances of an item value
       * \param oldItem old item value to search for
@@ -190,7 +190,7 @@ public:
       * \param sep the separator to insert between the items
       * \return the resulting item
       */
-    inline Item join(const Item &sep = Item()) const { return Item::join(this, sep); }
+    Item join(const Item &sep = Item()) const { return Item::join(this, sep); }
 
     template<class SortOrder>
     Ref<List> sort(bool unique = false) const
@@ -248,10 +248,10 @@ public:
     }
 
     /// \copydoc push(const Item &item)
-    inline void operator<<(const T& item) { push(item); }
+    void operator<<(const T& item) { push(item); }
 
     /// \copydoc pop()
-    inline void operator>>(T* item) { pop(item); }
+    void operator>>(T* item) { pop(item); }
 
     /** \name C++ iterators
       * @{
@@ -269,7 +269,7 @@ public:
       * @{
       */
     template<class OutputType = Item>
-    inline Ref< Source<OutputType> > getAll() const { return ContainerSource< List, Pass<Item, OutputType> >::open(this); }
+    Ref< Source<OutputType> > getAll() const { return ContainerSource< List, Pass<Item, OutputType> >::open(this); }
     /** @}
       */
 

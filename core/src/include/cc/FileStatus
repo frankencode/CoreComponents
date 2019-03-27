@@ -50,10 +50,10 @@ public:
     inline String path() const { return path_; }
 
     /// %File type
-    inline FileType type() const  { return FileType(st_mode & S_IFMT); }
+    inline FileType type() const  { return static_cast<FileType>(st_mode & S_IFMT); }
 
     /// %File access mask
-    inline int mode() const { return st_mode & (~S_IFMT); }
+    inline FileMode mode() const { return static_cast<FileMode>(st_mode & (~S_IFMT)); }
 
     /// %File size in number of bytes
     inline off_t size() const { return st_size; }

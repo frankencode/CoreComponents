@@ -20,21 +20,21 @@
 
 namespace cc {
 
-Ref<File> File::open(const String &path, int openMode, int fileMode)
+Ref<File> File::open(const String &path, OpenMode openMode, FileMode fileMode)
 {
-    int fd = ::open(path, openMode, fileMode);
+    int fd = ::open(path, static_cast<int>(openMode), static_cast<int>(fileMode));
     if (fd == -1) CC_SYSTEM_ERROR(errno, path);
     return new File(path, openMode, fd);
 }
 
-Ref<File> File::tryOpen(const String &path, int openMode, int fileMode)
+Ref<File> File::tryOpen(const String &path, OpenMode openMode, FileMode fileMode)
 {
-    int fd = ::open(path, openMode, fileMode);
+    int fd = ::open(path, static_cast<int>(openMode), static_cast<int>(fileMode));
     if (fd != -1) return new File(path, openMode, fd);
     return 0;
 }
 
-Ref<File> File::openTemp(int openMode)
+Ref<File> File::openTemp(OpenMode openMode)
 {
     String path = createUnique(
         Format("/tmp/%%_XXXXXXXX")
@@ -43,7 +43,7 @@ Ref<File> File::openTemp(int openMode)
     return open(path, openMode);
 }
 
-File::File(const String &path, int openMode, int fd):
+File::File(const String &path, OpenMode openMode, int fd):
     SystemStream(fd),
     path_(path),
     openMode_(openMode)
@@ -54,7 +54,7 @@ String File::path() const
     return path_;
 }
 
-int File::openMode() const
+OpenMode File::openMode() const
 {
     return openMode_;
 }
@@ -65,7 +65,7 @@ void File::truncate(off_t length)
         CC_SYSTEM_ERROR(errno, path_);
 }
 
-off_t File::seek(off_t distance, SeekMethod method)
+off_t File::seek(off_t distance, Seek method)
 {
     off_t ret = ::lseek(fd_, distance, int(method));
     if (ret == -1) CC_SYSTEM_ERROR(errno, path_);
@@ -108,7 +108,7 @@ String File::map() const
     if (fileSize >= size_t(intMax)) fileSize = intMax;
     int pageSize = System::pageSize();
     size_t mapSize = fileSize;
-    int protection = PROT_READ | (PROT_WRITE * (openMode_ & (O_WRONLY|O_RDWR)));
+    int protection = PROT_READ | (PROT_WRITE * (+openMode_ & (O_WRONLY|O_RDWR)));
     void *p = 0;
     if (fileSize % pageSize > 0) {
         mapSize += pageSize - fileSize % pageSize;
@@ -167,9 +167,9 @@ void File::dataSync()
 #endif
 }
 
-bool File::access(const String &path, int flags)
+bool File::access(const String &path, Access flags)
 {
-    return ::access(path, flags) == 0;
+    return ::access(path, +flags) == 0;
 }
 
 void File::create(const String &path, int mode)
@@ -289,7 +289,7 @@ void File::clean(const String &path)
     Dir::remove(path);
 }
 
-String File::locate(const String &fileName, const StringList *dirs, int accessFlags)
+String File::locate(const String &fileName, const StringList *dirs, Access accessFlags)
 {
     String path;
     for (int i = 0; i < dirs->count(); ++i) {

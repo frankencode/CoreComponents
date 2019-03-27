@@ -1,8 +1,18 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
 #pragma once
 
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <cc/bitmask>
+#include <cc/String>
 
 namespace cc {
 
@@ -14,15 +24,21 @@ enum StandardFd {
 };
 
 /// Access testing flags
-enum Access {
+enum class Access: int {
+    None    = 0,    ///< Test no permissions
     Read    = R_OK, ///< Test for read permission
     Write   = W_OK, ///< Test for write permission
     Execute = X_OK, ///< Test for execution permission
     Exists  = F_OK  ///< Test if a file (of any type) exists
 };
 
+CC_BITMASK(Access, int)
+
+String str(Access access);
+
 /// %File permission flags
-enum FileMode {
+enum class FileMode: int {
+    None       = 0, ///< Empty mode
     SetUserId  = S_ISUID, ///< %Set effective user to file owner on execution
     SetGroupId = S_ISGID, ///< %Set effective group to file owner on execution
     StickyBit  = S_ISVTX,  ///< Allow to read and write, but not delete files when applied to a directory
@@ -38,8 +54,12 @@ enum FileMode {
     AnyExec    = UserExec|GroupExec|OtherExec
 };
 
+CC_BITMASK(FileMode, int)
+
+String str(FileMode);
+
 /// %File type
-enum FileType {
+enum class FileType: int {
     Regular     = S_IFREG, ///< Regular file
     Directory   = S_IFDIR, ///< Directory
     CharDevice  = S_IFCHR, ///< Character device
@@ -49,8 +69,11 @@ enum FileType {
     Socket      = S_IFSOCK, ///< Named local socket
 };
 
+String str(FileType type);
+
 /// %File open flags
-enum OpenMode {
+enum class OpenMode: int {
+    None      = 0,        ///< Empty mode
     ReadOnly  = O_RDONLY, ///< Open for reading, only
     WriteOnly = O_WRONLY, ///< Open for writing, only
     ReadWrite = O_RDWR,   ///< Open for reading and writing
@@ -60,11 +83,17 @@ enum OpenMode {
     Virgin    = O_EXCL    ///< Fail to open if file exists already
 };
 
+CC_BITMASK(OpenMode, int)
+
+String str(OpenMode mode);
+
 /// Seek method
-enum SeekMethod {
-    SeekBegin   = SEEK_SET, ///< Seek from the beginning of the file
-    SeekCurrent = SEEK_CUR, ///< Seek relative to the current file offset
-    SeekEnd     = SEEK_END  ///< Seek relative to the end of file
+enum class Seek: int {
+    Begin   = SEEK_SET, ///< Seek from the beginning of the file
+    Current = SEEK_CUR, ///< Seek relative to the current file offset
+    End     = SEEK_END  ///< Seek relative to the end of file
 };
+
+String str(Seek method);
 
 } // namespace cc

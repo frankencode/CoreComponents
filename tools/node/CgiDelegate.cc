@@ -45,7 +45,7 @@ bool CgiDelegate::process(HttpRequest *request, FileStatus *status, String docum
 {
     String script;
 
-    if ((status->type() == FileType::Regular) && (status->mode() & AnyExec))
+    if ((status->type() == FileType::Regular) && +(status->mode() & FileMode::AnyExec))
         script = status->path();
     else
         script = cgiInstance_->script();

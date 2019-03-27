@@ -117,7 +117,7 @@ int main(int argc, char **argv)
                     if (!namePattern->match(path->fileName())->valid()) continue;
                 }
                 if (typePattern != "") {
-                    int type = FileStatus::read(path, false)->type();
+                    FileType type = FileStatus::read(path, false)->type();
                     bool shortMode = (typePattern->matchLength() == 1);
                     String typeString;
                     if (type == FileType::Regular)          typeString = shortMode ? "r" : "regular file";

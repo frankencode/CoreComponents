@@ -55,7 +55,7 @@ void ArWriter::writeFile(String path)
     headerFields->append(groupIdField);
 
     String modeField(8, ' ');
-    mutate(modeField)->write(oct(status->mode()));
+    mutate(modeField)->write(oct(+status->mode()));
     headerFields->append(modeField);
 
     String sizeField(10, ' ');
