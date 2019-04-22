@@ -41,12 +41,17 @@ Ref<Sha1Sink> Sha1Sink::open()
     return new Sha1Sink;
 }
 
+Ref<CryptoHashSink> Sha1Sink::copy() const
+{
+    return new Sha1Sink{this};
+}
+
 Sha1Sink::Sha1Sink():
-    h_(String::create(20)),
-    m_(String::create(64)),
-    w_(String::create(320)),
-    j_(0),
-    l_(0)
+    h_{String::create(20)},
+    m_{String::create(64)},
+    w_{String::create(320)},
+    j_{0},
+    l_{0}
 {
     mutate(h_)->wordAt(0) = 0x67452301;
     mutate(h_)->wordAt(1) = 0xEFCDAB89;
@@ -54,6 +59,14 @@ Sha1Sink::Sha1Sink():
     mutate(h_)->wordAt(3) = 0x10325476;
     mutate(h_)->wordAt(4) = 0xC3D2E1F0;
 }
+
+Sha1Sink::Sha1Sink(const Sha1Sink *other):
+    h_{other->h_->copy()},
+    m_{other->m_->copy()},
+    w_{other->w_->copy()},
+    j_{other->j_},
+    l_{other->l_}
+{}
 
 void Sha1Sink::write(const CharArray *data)
 {

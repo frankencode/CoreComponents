@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/HashSink>
+#include <cc/crypto/CryptoHashSink>
 
 namespace cc {
 namespace crypto {
@@ -16,7 +16,7 @@ namespace crypto {
 /** \class Md5Sink Md5Sink cc/crypto/Md5Sink
   * \brief Message Digest 5: a one-way hash function
   */
-class Md5Sink: public HashSink
+class Md5Sink: public CryptoHashSink
 {
 public:
     enum {
@@ -28,11 +28,15 @@ public:
       */
     static Ref<Md5Sink> open();
 
+    Ref<CryptoHashSink> copy() const override;
+
     void write(const CharArray *data) override;
     String finish() override;
 
 private:
     Md5Sink();
+    Md5Sink(const Md5Sink *other);
+
     void consume();
 
     String aux_;

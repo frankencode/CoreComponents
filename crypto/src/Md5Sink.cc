@@ -16,15 +16,28 @@ Ref<Md5Sink> Md5Sink::open()
     return new Md5Sink;
 }
 
+Ref<CryptoHashSink> Md5Sink::copy() const
+{
+    return new Md5Sink{this};
+}
+
 Md5Sink::Md5Sink():
-    aux_(String::create(0x4000 + 64)),
-    auxFill_(0),
-    bytesFeed_(0),
-    a_(0x67452301), b_(0xEFCDAB89),
-    c_(0x98BADCFE), d_(0x10325476)
+    aux_{String::create(0x4000 + 64)},
+    auxFill_{0},
+    bytesFeed_{0},
+    a_{0x67452301}, b_{0xEFCDAB89},
+    c_{0x98BADCFE}, d_{0x10325476}
 {
     CC_ASSERT((aux_->count() % 64) == 0);
 }
+
+Md5Sink::Md5Sink(const Md5Sink *other):
+    aux_{other->aux_->copy()},
+    auxFill_{other->auxFill_},
+    bytesFeed_{other->bytesFeed_},
+    a_{other->a_}, b_{other->b_},
+    c_{other->c_}, d_{other->d_}
+{}
 
 void Md5Sink::write(const CharArray *data)
 {
