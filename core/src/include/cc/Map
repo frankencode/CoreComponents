@@ -222,7 +222,7 @@ public:
     }
 
     /// Reset this map to an empty map
-    void deplete() { tree_.clear(); }
+    void deplete() { tree_.deplete(); }
 
     /// \copydoc push(const Item &item)
     void operator<<(const Item &item) { push(item); }

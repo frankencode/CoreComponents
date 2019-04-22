@@ -19,7 +19,7 @@ class IndexTrackingAccess;
 
 class IndexTracking {
 public:
-    IndexTracking(): node_(nullptr) {}
+    IndexTracking(): node_{nullptr} {}
 
     int getIndex() const;
 
@@ -58,8 +58,8 @@ class OrdinalNode
 {
 public:
     OrdinalNode():
-        weight_(1),
-        balance_(0)
+        weight_{1},
+        balance_{0}
     {}
 
     template<class Node>
@@ -140,7 +140,7 @@ protected:
     static Node *clone(Node *k);
 
     template<class Node>
-    inline void clear() { // FIXME: rename to deplete()
+    inline void deplete() {
         clear(static_cast<Node *>(root_));
         root_ = 0;
         cachedNode_ = 0;

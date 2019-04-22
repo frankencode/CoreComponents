@@ -38,13 +38,13 @@ public:
     /** Create a new list a populate it with n default items
       * \return new object instance
       */
-    static Ref<List> create(int n) { return new List(n); }
+    static Ref<List> create(int n) { return new List{n}; }
 
     /** Create a shallow copy of another list
       * \param other another list
       * \return new object instance
       */
-    static Ref<List> copy(const List *other) { return new List(*other); }
+    static Ref<List> copy(const List *other) { return new List{*other}; }
 
     /// Return the number of items stored in this list
     int count() const { return tree_.count(); }
@@ -92,7 +92,7 @@ public:
     }
 
     /// Reset this list to an empty list
-    void deplete() { tree_.clear(); }
+    void deplete() { tree_.deplete(); }
 
     /** Remove an item from a certain position
       * \param index list index
@@ -278,7 +278,7 @@ private:
     typedef typename Tree::Node Node;
 
     List() {}
-    List(int n): tree_(n) {}
+    List(int n): tree_{n} {}
 
     explicit List(const List &b): tree_(b.tree_) {}
     const List &operator=(const List &b);

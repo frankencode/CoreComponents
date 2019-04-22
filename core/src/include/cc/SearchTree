@@ -18,14 +18,14 @@ class SearchNode: public OrdinalNode
 public:
     typedef ItemType Item;
 
-    SearchNode(): item_(Item()) {}
-    SearchNode(const Item &item): item_(item) { activate(this); }
+    SearchNode(): item_{Item()} {}
+    SearchNode(const Item &item): item_{item} { activate(this); }
 
-    inline ~SearchNode() { deactivate(this); }
+    ~SearchNode() { deactivate(this); }
 
-    inline SearchNode *left() const { return left_ ? static_cast<SearchNode *>(left_) : nullptr; };
-    inline SearchNode *right() const { return right_ ? static_cast<SearchNode *>(right_) : nullptr; }
-    inline SearchNode *parent() const { return parent_ ? static_cast<SearchNode *>(parent_) : nullptr; }
+    SearchNode *left()   const { return left_   ? static_cast<SearchNode *>(left_)   : nullptr; }
+    SearchNode *right()  const { return right_  ? static_cast<SearchNode *>(right_)  : nullptr; }
+    SearchNode *parent() const { return parent_ ? static_cast<SearchNode *>(parent_) : nullptr; }
 
     Item item_;
 };
@@ -42,7 +42,7 @@ public:
     typedef typename NodeType::Item Item;
 
     SearchTree(int n = 0);
-    ~SearchTree() { clear(); }
+    ~SearchTree() { deplete(); }
 
     SearchTree(const SearchTree &b);
     const SearchTree &operator=(const SearchTree &b);
@@ -52,7 +52,7 @@ public:
     template<class Pattern>
     Node *find(const Pattern &pattern, bool *found = 0, bool *below = 0, int *index = 0) const;
 
-    inline void remove(Node *k) { delete static_cast<Node *>(unlink(k)); }
+    void remove(Node *k) { delete static_cast<Node *>(unlink(k)); }
 
     int findFirstAboveOrEqual(const Item &a) const;
     int findLastBelowOrEqual(const Item &b) const;
@@ -62,7 +62,7 @@ public:
 
     static int getIndexOf(void *handle) { return getIndexOf(reinterpret_cast<OrdinalNode *>(handle)); }
 
-    inline void clear() { return OrdinalTree::clear<Node>(); } // FIXME: rename to deplete()
+    void deplete() { return OrdinalTree::deplete<Node>(); }
 
 private:
 #ifndef NDEBUG
@@ -94,16 +94,16 @@ SearchTree<Node>::SearchTree(const SearchTree &b)
 template<class Node>
 const SearchTree<Node> &SearchTree<Node>::operator=(const SearchTree &b)
 {
-    clear();
+    deplete();
     if (b.root_)
         root_ = clone(static_cast<Node *>(b.root_));
     return *this;
 }
 
 template<class Node>
-bool SearchTree<Node>::lookupByIndex(int i, Node **node) const
+bool SearchTree<Node>::lookupByIndex(int index, Node **node) const
 {
-    OrdinalNode *k = getNodeAt(i);
+    OrdinalNode *k = getNodeAt(index);
     if (k && node) *node = static_cast<Node *>(k);
     return k;
 }
@@ -147,7 +147,7 @@ Node *SearchTree<Node>::find(const Pattern &pattern, bool *found, bool *below, i
 }
 
 template<class Node>
-inline int SearchTree<Node>::findFirstAboveOrEqual(const Item &a) const
+int SearchTree<Node>::findFirstAboveOrEqual(const Item &a) const
 {
     bool found = false, below = true;
     int index = 0;
@@ -158,7 +158,7 @@ inline int SearchTree<Node>::findFirstAboveOrEqual(const Item &a) const
 }
 
 template<class Node>
-inline int SearchTree<Node>::findLastBelowOrEqual(const Item &b) const
+int SearchTree<Node>::findLastBelowOrEqual(const Item &b) const
 {
     bool found = false, below = true;
     int index = 0;
