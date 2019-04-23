@@ -39,6 +39,11 @@ Md5Sink::Md5Sink(const Md5Sink *other):
     c_{other->c_}, d_{other->d_}
 {}
 
+int Md5Sink::blockSize() const
+{
+    return 64;
+}
+
 void Md5Sink::write(const CharArray *data)
 {
     const uint8_t *src = data->bytes();

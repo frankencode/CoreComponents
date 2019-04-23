@@ -68,6 +68,11 @@ Sha1Sink::Sha1Sink(const Sha1Sink *other):
     l_{other->l_}
 {}
 
+int Sha1Sink::blockSize() const
+{
+    return 64;
+}
+
 void Sha1Sink::write(const CharArray *data)
 {
     for (int i = 0; i < data->count(); ++i) {

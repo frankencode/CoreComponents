@@ -13,7 +13,7 @@
 namespace cc {
 namespace crypto {
 
-/** \class CryptoHashSink cc/CryptoHashSink
+/** \class CryptoHashSink cc/crypto/CryptoHashSink
   * \brief Cryptographic hash sum computing sink
   */
 class CryptoHashSink: public HashSink
@@ -23,6 +23,10 @@ public:
       * \return new object instance
       */
     virtual Ref<CryptoHashSink> copy() const = 0;
+
+    /** Block size of the hash sum in bytes
+      */
+    virtual int blockSize() const = 0;
 };
 
 }} // namespace cc::crypto

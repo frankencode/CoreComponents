@@ -1,0 +1,42 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/crypto/CryptoHashSink>
+
+namespace cc {
+namespace crypto {
+
+/** \class MessageAuthenticationSink cc/crypto/MessageAuthenticationSink
+  * \brief Message authentication sink (RFC 2104)
+  */
+class MessageAuthenticationSink: public CryptoHashSink
+{
+public:
+    static Ref<MessageAuthenticationSink> open(const CharArray *key, const CryptoHashSink *hashSink);
+
+    Ref<CryptoHashSink> copy() const override;
+
+    int blockSize() const override;
+
+    void write(const CharArray *data) override;
+
+    String finish() override;
+
+private:
+    static Ref<CryptoHashSink> prepareHashSink(const CryptoHashSink *hashSink, const CharArray *key, uint8_t blind);
+
+    MessageAuthenticationSink(const CharArray *key, const CryptoHashSink *hashSink);
+    MessageAuthenticationSink(const MessageAuthenticationSink *other);
+
+    Ref<CryptoHashSink> outerHashSink_;
+    Ref<CryptoHashSink> innerHashSink_;
+};
+
+}} // namespace cc::crypto

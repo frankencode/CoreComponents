@@ -30,6 +30,8 @@ public:
 
     Ref<CryptoHashSink> copy() const override;
 
+    int blockSize() const override;
+
     void write(const CharArray *data) override;
     String finish() override;
 
