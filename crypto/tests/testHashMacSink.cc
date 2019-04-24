@@ -20,6 +20,8 @@ class SimpleMd5MacTest: public TestCase
 {
     void run()
     {
+        auto md5Sink = Md5Sink::open();
+
         {
             String key = String::allocate(16);;
             for (int i = 0; i < key->count(); ++i)
@@ -27,7 +29,7 @@ class SimpleMd5MacTest: public TestCase
 
             String text = "Hi There";
 
-            auto macSink = HashMacSink::open(Md5Sink::open(), key);
+            auto macSink = HashMacSink::open(md5Sink, key);
             macSink->write(text);
             String mac = macSink->finish()->toHex();
 
@@ -38,7 +40,8 @@ class SimpleMd5MacTest: public TestCase
         {
             String key = "Jefe";
             String text = "what do ya want for nothing?";
-            auto macSink = HashMacSink::open(Md5Sink::open(), key);
+
+            auto macSink = HashMacSink::open(md5Sink, key);
             macSink->write(text);
             String mac = macSink->finish()->toHex();
 
