@@ -13,13 +13,13 @@
 namespace cc {
 namespace crypto {
 
-/** \class MessageAuthenticationSink cc/crypto/MessageAuthenticationSink
-  * \brief Message authentication sink (RFC 2104)
+/** \class HashMacSink cc/crypto/HashMacSink
+  * \brief HMAC Message authentication sink according to RFC 2104
   */
-class MessageAuthenticationSink: public CryptoHashSink
+class HashMacSink: public CryptoHashSink
 {
 public:
-    static Ref<MessageAuthenticationSink> open(const CharArray *key, const CryptoHashSink *hashSink);
+    static Ref<HashMacSink> open(const CryptoHashSink *hashSink, const CharArray *key);
 
     Ref<CryptoHashSink> copy() const override;
 
@@ -32,8 +32,8 @@ public:
 private:
     static Ref<CryptoHashSink> prepareHashSink(const CryptoHashSink *hashSink, const CharArray *key, uint8_t blind);
 
-    MessageAuthenticationSink(const CharArray *key, const CryptoHashSink *hashSink);
-    MessageAuthenticationSink(const MessageAuthenticationSink *other);
+    HashMacSink(const CryptoHashSink *hashSink, const CharArray *key);
+    HashMacSink(const HashMacSink *other);
 
     Ref<CryptoHashSink> outerHashSink_;
     Ref<CryptoHashSink> innerHashSink_;
