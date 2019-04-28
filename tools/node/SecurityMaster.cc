@@ -29,9 +29,9 @@ void SecurityMaster::start()
 }
 
 SecurityMaster::SecurityMaster():
-    refreshInterval_(nodeConfig()->security()->sessionResumptionKeyRefresh()),
-    mutex_(Mutex::create()),
-    shutdown_(Channel<bool>::create())
+    refreshInterval_{NodeConfig::instance()->security()->sessionResumptionKeyRefresh()},
+    mutex_{Mutex::create()},
+    shutdown_{Channel<bool>::create()}
 {
     if (refreshInterval_ > 0) {
         int ret = gnutls_session_ticket_key_generate(&key_);
@@ -70,7 +70,7 @@ void SecurityMaster::prepareSessionResumption(gnutls_session_t session)
 
 void SecurityMaster::run()
 {
-    errorLog()->open(nodeConfig()->errorLogConfig());
+    ErrorLog::instance()->open(NodeConfig::instance()->errorLogConfig());
 
     for (double t = System::now() + refreshInterval_; !shutdown_->popBefore(t); t += refreshInterval_)
     {

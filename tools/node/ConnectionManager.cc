@@ -20,11 +20,11 @@ Ref<ConnectionManager> ConnectionManager::create()
 }
 
 ConnectionManager::ConnectionManager():
-    closedConnections_(ClosedConnections::create()),
-    connectionCounts_(ConnectionCounts::create()),
-    visits_(Visits::create()),
-    serviceWindow_(nodeConfig()->serviceWindow()),
-    connectionLimit_(nodeConfig()->connectionLimit())
+    closedConnections_{ClosedConnections::create()},
+    connectionCounts_{ConnectionCounts::create()},
+    visits_{Visits::create()},
+    serviceWindow_{NodeConfig::instance()->serviceWindow()},
+    connectionLimit_{NodeConfig::instance()->connectionLimit()}
 {
     CCNODE_NOTICE()
         << "Service window of " << serviceWindow_ << "s will be used to prioritize connections" << nl;

@@ -59,17 +59,17 @@ void HttpServerSocket::initSession()
     CC_ASSERT(mode_ & Connected);
 
     t0_ = System::now();
-    te_ = t0_ + nodeConfig()->connectionTimeout();
+    te_ = t0_ + NodeConfig::instance()->connectionTimeout();
 
     if (!(mode_ & Secure)) return;
 
     CC_ASSERT(!(mode_ & Open));
 
     gnuTlsCheckSuccess(gnutls_init(&session_, GNUTLS_SERVER));
-    if (nodeConfig()->security()->hasCredentials())
-        gnuTlsCheckSuccess(gnutls_credentials_set(session_, GNUTLS_CRD_CERTIFICATE, nodeConfig()->security()->cred_));
-    if (nodeConfig()->security()->hasCiphers())
-        gnuTlsCheckSuccess(gnutls_priority_set(session_, nodeConfig()->security()->prio_));
+    if (NodeConfig::instance()->security()->hasCredentials())
+        gnuTlsCheckSuccess(gnutls_credentials_set(session_, GNUTLS_CRD_CERTIFICATE, NodeConfig::instance()->security()->cred_));
+    if (NodeConfig::instance()->security()->hasCiphers())
+        gnuTlsCheckSuccess(gnutls_priority_set(session_, NodeConfig::instance()->security()->prio_));
     else
         gnuTlsCheckSuccess(gnutls_set_default_priority(session_));
     gnutls_handshake_set_post_client_hello_function(session_, onClientHello);
@@ -100,9 +100,9 @@ public:
                 if (serverName_->count() > 0) {
                     if (serverName_->at(serverName_->count() - 1) == 0)
                         mutate(serverName_)->truncate(serverName_->count() - 1);
-                    if (errorLog()->infoStream() != NullStream::instance())
+                    if (ErrorLog::instance()->infoStream() != NullStream::instance())
                         CCNODE_INFO() << "TLS client hello: SNI=\"" << serverName_ << "\"" << nl;
-                    serviceInstance_ = nodeConfig()->selectService(serverName_);
+                    serviceInstance_ = NodeConfig::instance()->selectService(serverName_);
                     if (serviceInstance_) {
                         if (serviceInstance_->security()->hasCredentials())
                             HttpServerSocket::gnuTlsCheckSuccess(gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, serviceInstance_->security()->cred_), peerAddress_);
@@ -164,17 +164,17 @@ ServiceInstance *HttpServerSocket::handshake()
 
     mode_ |= Open;
 
-    if (errorLog()->infoStream() != NullStream::instance()) {
+    if (ErrorLog::instance()->infoStream() != NullStream::instance()) {
         double t1 = System::now();
         CCNODE_INFO() << "TLS handshake took " << int(1000 * (t1 - t0_)) << "ms" << nl;
     }
 
     ServiceInstance *serviceInstance = ClientHelloContext::instance()->serviceInstance();
     if (!serviceInstance) {
-        if (nodeConfig()->serviceInstances()->count() == 1)
-            serviceInstance = nodeConfig()->serviceInstances()->at(0);
+        if (NodeConfig::instance()->serviceInstances()->count() == 1)
+            serviceInstance = NodeConfig::instance()->serviceInstances()->at(0);
         if (ClientHelloContext::instance()->serverName() == "")
-            serviceInstance = nodeConfig()->selectService("");
+            serviceInstance = NodeConfig::instance()->selectService("");
     }
 
     return serviceInstance;

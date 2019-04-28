@@ -14,11 +14,11 @@
 namespace ccnode {
 
 SecurityConfig::SecurityConfig(MetaObject *config):
-    hasCredentials_(false),
-    hasCiphers_(false),
-    cred_(0),
-    prio_(0),
-    sessionResumptionKeyRefresh_(config->value("session-resumption-key-refresh"))
+    hasCredentials_{false},
+    hasCiphers_{false},
+    cred_{0},
+    prio_{0},
+    sessionResumptionKeyRefresh_{config->value("session-resumption-key-refresh")}
 {
     String certPath = config->value("certificate");
     String keyPath = config->value("private-key");

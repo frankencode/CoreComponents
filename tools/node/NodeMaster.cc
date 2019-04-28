@@ -33,10 +33,10 @@ int NodeMaster::run(int argc, char **argv)
 {
     Thread::blockSignals(SignalSet::createFull());
 
-    SystemLog::open(String(argv[0])->fileName(), 0, LOG_DAEMON);
-    nodeConfig()->load(argc, argv);
+    SystemLog::open(String{argv[0]}->fileName(), 0, LOG_DAEMON);
+    NodeConfig::instance()->load(argc, argv);
 
-    if (nodeConfig()->daemon() && !Process::isDaemonized())
+    if (NodeConfig::instance()->daemon() && !Process::isDaemonized())
         Process::daemonize();
 
     auto signalMaster = SignalMaster::start([=](int signal, bool *fin){
@@ -53,14 +53,14 @@ int NodeMaster::run(int argc, char **argv)
 }
 
 NodeMaster::NodeMaster():
-    signals_(Signals::create()),
-    exitCode_(0)
+    signals_{Signals::create()},
+    exitCode_{0}
 {}
 
 void NodeMaster::run()
 {
     try {
-        errorLog()->open(nodeConfig()->errorLogConfig());
+        ErrorLog::instance()->open(NodeConfig::instance()->errorLogConfig());
     }
     catch (Exception &ex) {
         CCNODE_ERROR() << ex.message() << nl;
@@ -92,16 +92,16 @@ void NodeMaster::runNode()
 {
     CCNODE_NOTICE() << "Starting (pid = " << Process::currentId() << ")" << nl;
 
-    if (nodeConfig()->directoryPath() != "") {
+    if (NodeConfig::instance()->directoryPath() != "") {
         ServiceDefinition *directoryService = serviceRegistry()->serviceByName("Directory");
         MetaObject *config = directoryService->configPrototype();
         config->establish("host", "*");
-        config->establish("path", nodeConfig()->directoryPath());
+        config->establish("path", NodeConfig::instance()->directoryPath());
         Ref<ServiceInstance> directoryInstance = directoryService->createInstance(config);
-        nodeConfig()->serviceInstances()->append(directoryInstance);
+        NodeConfig::instance()->serviceInstances()->append(directoryInstance);
     }
 
-    if (nodeConfig()->serviceInstances()->count() == 0)
+    if (NodeConfig::instance()->serviceInstances()->count() == 0)
     {
         CCNODE_WARNING() << "No service configured, falling back to Echo service" << nl;
 
@@ -109,20 +109,20 @@ void NodeMaster::runNode()
         MetaObject *config = echoService->configPrototype();
         config->establish("host", "*");
         Ref<ServiceInstance> echoInstance = echoService->createInstance(config);
-        nodeConfig()->serviceInstances()->append(echoInstance);
+        NodeConfig::instance()->serviceInstances()->append(echoInstance);
     }
 
     typedef List< Ref<StreamSocket> > ListeningSockets;
     Ref<ListeningSockets> listeningSockets = ListeningSockets::create();
 
-    for (SocketAddress *address: nodeConfig()->address()) {
+    for (SocketAddress *address: NodeConfig::instance()->address()) {
         CCNODE_NOTICE() << "Start listening at " << address << nl;
         listeningSockets->append(StreamSocket::listen(address));
     }
 
-    if (nodeConfig()->user() != "") {
-        String userName = nodeConfig()->user();
-        String groupName = nodeConfig()->group();
+    if (NodeConfig::instance()->user() != "") {
+        String userName = NodeConfig::instance()->user();
+        String groupName = NodeConfig::instance()->group();
         if (groupName == "") groupName = userName;
         Ref<User> user = User::lookup(userName);
         Ref<Group> group = Group::lookup(groupName);
@@ -139,10 +139,10 @@ void NodeMaster::runNode()
     Ref<PendingConnections> pendingConnections = PendingConnections::create();
     Ref<ClosedConnections> closedConnections = connectionManager->closedConnections();
 
-    CCNODE_NOTICE() << "Creating worker pool (concurrency = " << nodeConfig()->concurrency() << ")" << nl;
+    CCNODE_NOTICE() << "Creating worker pool (concurrency = " << NodeConfig::instance()->concurrency() << ")" << nl;
 
     typedef Array< Ref<ServiceWorker> > WorkerPool;
-    Ref<WorkerPool> workerPool = WorkerPool::create(nodeConfig()->concurrency());
+    Ref<WorkerPool> workerPool = WorkerPool::create(NodeConfig::instance()->concurrency());
     for (Ref<ServiceWorker> &worker: workerPool) {
         worker = ServiceWorker::create(pendingConnections, closedConnections);
         worker->start();

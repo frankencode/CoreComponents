@@ -25,12 +25,12 @@ using namespace cc::http;
 
 Ref<ServiceWorker> ServiceWorker::create(PendingConnections *pendingConnections, ClosedConnections *closedConnections)
 {
-    return new ServiceWorker(pendingConnections, closedConnections);
+    return new ServiceWorker{pendingConnections, closedConnections};
 }
 
 ServiceWorker::ServiceWorker(PendingConnections *pendingConnections, ClosedConnections *closedConnections):
-    pendingConnections_(pendingConnections),
-    closedConnections_(closedConnections)
+    pendingConnections_{pendingConnections},
+    closedConnections_{closedConnections}
 {}
 
 ServiceWorker::~ServiceWorker()
@@ -64,8 +64,8 @@ void ServiceWorker::logDelivery(HttpServerConnection *client, int statusCode, si
 
 void ServiceWorker::run()
 {
-    errorLog()->open(nodeConfig()->errorLogConfig());
-    accessLog()->open(nodeConfig()->accessLogConfig());
+    ErrorLog::instance()->open(NodeConfig::instance()->errorLogConfig());
+    accessLog()->open(NodeConfig::instance()->accessLogConfig());
 
     while (true) {
         try {
@@ -85,7 +85,7 @@ void ServiceWorker::run()
                     {
                         RefGuard<HttpResponseGenerator> guard(&response_);
                         response_ = HttpResponseGenerator::create(client_);
-                        response_->setNodeVersion(nodeConfig()->version());
+                        response_->setNodeVersion(NodeConfig::instance()->version());
 
                         serviceDelegate_->process(request);
                         response_->endTransmission();
@@ -144,7 +144,7 @@ void ServiceWorker::autoSecureForwardings()
     if (response()->statusCode() == 302) {
         HttpResponseGenerator::Header *header = response()->header();
         if (
-            nodeConfig()->security()->hasCredentials() ||
+            NodeConfig::instance()->security()->hasCredentials() ||
             serviceInstance_->security()->hasCredentials()
         ) {
             String location = header->value("Location");
@@ -154,7 +154,7 @@ void ServiceWorker::autoSecureForwardings()
                     if (serviceInstance_->host()->match(uri->host())) {
                         uri->setScheme("https");
                         if (uri->port() > 0)
-                            uri->setPort(nodeConfig()->securePort());
+                            uri->setPort(NodeConfig::instance()->securePort());
                         header->establish("Location", uri->toString());
                     }
                 }

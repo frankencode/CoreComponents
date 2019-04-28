@@ -15,6 +15,20 @@ namespace ccnode {
 using namespace cc;
 using namespace cc::meta;
 
+enum class LogLevel {
+    Silent  = 0,
+    Error   = 1,
+    Warning = 2,
+    Notice  = 3,
+    Info    = 4,
+    Debug   = 5,
+#ifdef NDEBUG
+    Default = Notice
+#else
+    Default = Debug
+#endif
+};
+
 class LogConfig: public Object
 {
 public:
@@ -22,19 +36,19 @@ public:
     static Ref<LogConfig> load(MetaObject *config);
 
     inline String path() const { return path_; }
-    inline int level() const { return level_; }
+    inline LogLevel level() const { return level_; }
     inline double retentionPeriod() const { return retentionPeriod_; }
     inline double rotationInterval() const { return rotationInterval_; }
 
 private:
+    static LogLevel decodeLogLevel(String levelName);
     LogConfig();
     LogConfig(MetaObject *config);
 
     String path_;
-    int level_;
+    LogLevel level_;
     double retentionPeriod_;
     double rotationInterval_;
 };
 
 } // namespace ccnode
-

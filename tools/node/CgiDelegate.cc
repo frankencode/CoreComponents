@@ -82,8 +82,8 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
             CCNODE_DEBUG() << "Forwarding request to server " << address << nl;
 
         cgiServer = CgiServerConnection::open(StreamSocket::connect(address));
-        if (errorLog()->level() >= DebugLogLevel)
-            cgiServer->setupTransferLog(errorLog()->debugStream(), address->toString());
+        if (ErrorLog::instance()->level() >= LogLevel::Debug)
+            cgiServer->setupTransferLog(ErrorLog::instance()->debugStream(), address->toString());
 
         String headerText = compileHeader(request, mutate(payload));
         cgiServer->stream()->write(
@@ -109,8 +109,8 @@ void CgiDelegate::process(HttpRequest *request, String script, String documentRo
             ->open();
 
         cgiServer = CgiServerConnection::open(sub);
-        if (errorLog()->level() >= DebugLogLevel)
-            cgiServer->setupTransferLog(errorLog()->debugStream(), scriptPath->baseName());
+        if (ErrorLog::instance()->level() >= LogLevel::Debug)
+            cgiServer->setupTransferLog(ErrorLog::instance()->debugStream(), scriptPath->baseName());
 
         if (payload->count() > 0)
             cgiServer->stream()->write(payload);
@@ -232,7 +232,7 @@ Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(HttpRequest *request, CharArray *p
     env->insert("GATEWAY_INTERFACE", "CGI/1.1");
     env->insert("SERVER_PROTOCOL", request->version());
     env->insert("SERVER_NAME", request->host());
-    env->insert("SERVER_SOFTWARE", nodeConfig()->version());
+    env->insert("SERVER_SOFTWARE", NodeConfig::instance()->version());
 
     {
         String h;
@@ -276,7 +276,7 @@ String CgiDelegate::compileHeader(HttpRequest *request, CharArray *payload) cons
         << "GATEWAY_INTERFACE" << "CGI/1.1"
         << "SERVER_PROTOCOL" << request->version()
         << "SERVER_NAME" << request->host()
-        << "SERVER_SOFTWARE" << nodeConfig()->version();
+        << "SERVER_SOFTWARE" << NodeConfig::instance()->version();
 
     {
         String h;

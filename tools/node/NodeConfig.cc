@@ -18,6 +18,11 @@
 
 namespace ccnode {
 
+NodeConfig *NodeConfig::instance()
+{
+    return Singleton<NodeConfig>::instance();
+}
+
 NodeConfig::NodeConfig()
 {}
 
@@ -81,7 +86,7 @@ void NodeConfig::load(int argc, char **argv)
     }
 
     securePort_ = 443;
-    for (SocketAddress *a: address_) {
+    for (const SocketAddress *a: address_) {
         if (a->port() % 80 != 0) {
             securePort_ = a->port();
             break;
@@ -110,7 +115,7 @@ void NodeConfig::load(int argc, char **argv)
     }
 }
 
-ServiceInstance *NodeConfig::selectService(String host, String uri) const
+ServiceInstance *NodeConfig::selectService(const String &host, const String &uri) const
 {
     ServiceInstance *serviceInstance = 0;
 
@@ -129,8 +134,5 @@ ServiceInstance *NodeConfig::selectService(String host, String uri) const
 
     return serviceInstance;
 }
-
-
-NodeConfig *nodeConfig() { return Singleton<NodeConfig>::instance(); }
 
 } // namespace ccnode

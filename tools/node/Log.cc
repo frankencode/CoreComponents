@@ -18,14 +18,14 @@
 namespace ccnode {
 
 Log::Log():
-    mutex_(Mutex::create()),
-    config_(LogConfig::loadDefault())
+    mutex_{Mutex::create()},
+    config_{LogConfig::loadDefault()}
 {}
 
 Log::~Log()
 {}
 
-void Log::open(LogConfig *config)
+void Log::open(const LogConfig *config)
 {
     config_ = config;
     open();
@@ -57,11 +57,11 @@ void Log::open()
         debugStream_   = stdErr();
     }
 
-    if (level() < ErrorLogLevel)   errorStream_   = NullStream::instance();
-    if (level() < WarningLogLevel) warningStream_ = NullStream::instance();
-    if (level() < NoticeLogLevel)  noticeStream_  = NullStream::instance();
-    if (level() < InfoLogLevel)    infoStream_    = NullStream::instance();
-    if (level() < DebugLogLevel)   debugStream_   = NullStream::instance();
+    if (level() < LogLevel::Error)   errorStream_   = NullStream::instance();
+    if (level() < LogLevel::Warning) warningStream_ = NullStream::instance();
+    if (level() < LogLevel::Notice)  noticeStream_  = NullStream::instance();
+    if (level() < LogLevel::Info)    infoStream_    = NullStream::instance();
+    if (level() < LogLevel::Debug)   debugStream_   = NullStream::instance();
 }
 
 Stream *Log::errorStream()   const { Guard<Mutex> guard(mutex_); return errorStream_; }

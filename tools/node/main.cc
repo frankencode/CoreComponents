@@ -14,7 +14,7 @@ using namespace ccnode;
 
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->fileName();
+    String toolName = String{argv[0]}->fileName();
     int exitCode = 0;
     try {
         exitCode = NodeMaster::run(argc, argv);

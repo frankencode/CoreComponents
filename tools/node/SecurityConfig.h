@@ -27,7 +27,7 @@ public:
 
     bool hasCredentials() const { return hasCredentials_; }
     bool hasCiphers() const { return hasCiphers_; }
-    double sessionResumptionKeyRefresh() { return sessionResumptionKeyRefresh_; }
+    double sessionResumptionKeyRefresh() const { return sessionResumptionKeyRefresh_; }
 
 private:
     friend class HttpServerSocket;

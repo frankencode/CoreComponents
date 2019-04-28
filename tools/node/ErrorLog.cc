@@ -3,6 +3,6 @@
 
 namespace ccnode {
 
-ErrorLog *errorLog() { return ThreadLocalSingleton<ErrorLog>::instance(); }
+ErrorLog *ErrorLog::instance() { return ThreadLocalSingleton<ErrorLog>::instance(); }
 
 } // namespace ccnode

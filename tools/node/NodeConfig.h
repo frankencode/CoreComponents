@@ -25,28 +25,30 @@ using namespace cc::net;
 class NodeConfig: public Object
 {
 public:
+    static NodeConfig *instance();
+
     void load(int argc, char **argv);
 
-    inline String directoryPath() const { return directoryPath_; }
+    String directoryPath() const { return directoryPath_; }
 
-    inline SocketAddressList *address() const { return address_; }
-    inline int securePort() const { return securePort_; }
-    inline String user() const { return user_; }
-    inline String group() const { return group_; }
-    inline String version() const { return version_; }
-    inline bool daemon() const { return daemon_; }
-    inline int concurrency() const { return concurrency_; }
-    inline int serviceWindow() const { return serviceWindow_; }
-    inline int connectionLimit() const { return connectionLimit_; }
-    inline double connectionTimeout() const { return connectionTimeout_; }
+    const SocketAddressList *address() const { return address_; }
+    int securePort() const { return securePort_; }
+    String user() const { return user_; }
+    String group() const { return group_; }
+    String version() const { return version_; }
+    bool daemon() const { return daemon_; }
+    int concurrency() const { return concurrency_; }
+    int serviceWindow() const { return serviceWindow_; }
+    int connectionLimit() const { return connectionLimit_; }
+    double connectionTimeout() const { return connectionTimeout_; }
 
-    inline SecurityConfig *security() const { return securityConfig_; }
-    inline LogConfig *errorLogConfig() const { return errorLogConfig_; }
-    inline LogConfig *accessLogConfig() const { return accessLogConfig_; }
+    const SecurityConfig *security() const { return securityConfig_; }
+    const LogConfig *errorLogConfig() const { return errorLogConfig_; }
+    const LogConfig *accessLogConfig() const { return accessLogConfig_; }
 
-    inline ServiceInstances *serviceInstances() const { return serviceInstances_; }
+    ServiceInstances *serviceInstances() const { return serviceInstances_; }
 
-    ServiceInstance *selectService(String host, String uri = "") const;
+    ServiceInstance *selectService(const String &host, const String &uri = "") const;
 
 private:
     friend class Singleton<NodeConfig>;
@@ -72,7 +74,5 @@ private:
 
     Ref<ServiceInstances> serviceInstances_;
 };
-
-NodeConfig *nodeConfig();
 
 } // namespace ccnode

@@ -20,16 +20,16 @@ using namespace cc::http;
 
 Ref<HttpServerConnection> HttpServerConnection::open(HttpServerSocket *socket)
 {
-    return new HttpServerConnection(socket);
+    return new HttpServerConnection{socket};
 }
 
 HttpServerConnection::HttpServerConnection(HttpServerSocket *socket):
-    HttpConnection(socket),
-    socket_(socket),
-    connectionInfo_(ConnectionInfo::create(socket->address()))
+    HttpConnection{socket},
+    socket_{socket},
+    connectionInfo_{ConnectionInfo::create(socket->address())}
 {
-    if (errorLog()->level() >= DebugLogLevel)
-        setupTransferLog(errorLog()->debugStream(), socket->address()->toString());
+    if (ErrorLog::instance()->level() >= LogLevel::Debug)
+        setupTransferLog(ErrorLog::instance()->debugStream(), socket->address()->toString());
 }
 
 ServiceInstance *HttpServerConnection::handshake()
@@ -46,7 +46,7 @@ ServiceInstance *HttpServerConnection::handshake()
         uri = request->uri();
         putBack(request);
 
-        serviceInstance = nodeConfig()->selectService(host, uri);
+        serviceInstance = NodeConfig::instance()->selectService(host, uri);
     }
 
     return serviceInstance;

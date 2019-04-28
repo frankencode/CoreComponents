@@ -19,17 +19,18 @@ namespace ccnode {
 
 class ErrorLog: public Log
 {
+public:
+    static ErrorLog *instance();
+
 private:
     friend class ThreadLocalSingleton<ErrorLog>;
 };
 
-ErrorLog *errorLog();
-
-inline Format error()   { return Format(errorLog()->errorStream()); }
-inline Format warning() { return Format(errorLog()->warningStream()); }
-inline Format notice()  { return Format(errorLog()->noticeStream()); }
-inline Format info()    { return Format(errorLog()->infoStream()); }
-inline Format debug()   { return Format(errorLog()->debugStream()); }
+inline Format error()   { return Format(ErrorLog::instance()->errorStream()); }
+inline Format warning() { return Format(ErrorLog::instance()->warningStream()); }
+inline Format notice()  { return Format(ErrorLog::instance()->noticeStream()); }
+inline Format info()    { return Format(ErrorLog::instance()->infoStream()); }
+inline Format debug()   { return Format(ErrorLog::instance()->debugStream()); }
 
 #define CCNODE_LOG(sink) \
     sink() << "(" << inum(uint64_t(Thread::self()->id()), 62) << ") " << String(__FILE__)->baseName() << ": "
