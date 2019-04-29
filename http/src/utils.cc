@@ -66,7 +66,7 @@ String formatDate(Date *date)
         << dec(date->hour(), 2) << ":" << dec(date->minutes(), 2) << ":" << dec(date->seconds(), 2) << " GMT";
 }
 
-Ref<Date> scanDate(String text, bool *ok)
+Ref<Date> scanDate(const String &text, bool *ok)
 {
     // e.g.: Tue, 10 Sep 2013 11:01:10 GMT
     Ref<StringList> parts = text->split(' ');

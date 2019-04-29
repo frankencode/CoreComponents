@@ -13,7 +13,7 @@
 namespace ccnode {
 
 ServiceDelegate::ServiceDelegate(ServiceWorker *worker):
-    worker_(worker)
+    worker_{worker}
 {}
 
 ServiceInstance *ServiceDelegate::serviceInstance() const

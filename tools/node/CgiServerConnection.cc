@@ -16,7 +16,7 @@ Ref<CgiServerConnection> CgiServerConnection::open(Stream *stream)
 }
 
 CgiServerConnection::CgiServerConnection(Stream *stream):
-    HttpConnection(stream)
+    HttpConnection{stream}
 {}
 
 Ref<HttpMessage> CgiServerConnection::readResponse()

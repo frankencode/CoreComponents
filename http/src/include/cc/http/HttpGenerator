@@ -24,12 +24,12 @@ class HttpConnection;
 class HttpGenerator: public Object
 {
 public:
-    void setHeader(String name, String value);
+    void setHeader(const String &name, const String &value);
     typedef Map<String, String> Header;
     void setHeader(Header *header);
     void beginTransmission(ssize_t contentLength = -1);
-    void write(String bytes);
-    Format chunk(String pattern);
+    void write(const String &bytes);
+    Format chunk(const String &pattern);
     Format chunk();
     void endTransmission();
 

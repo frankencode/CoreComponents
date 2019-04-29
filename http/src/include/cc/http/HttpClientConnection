@@ -20,7 +20,7 @@ class HttpClientConnection: public HttpConnection
 public:
     static Ref<HttpClientConnection> open(HttpClientSocket *socket);
 
-    inline const SocketAddress *address() const { return socket_->address(); }
+    const SocketAddress *address() const { return socket_->address(); }
 
     bool isSecure() const;
 
@@ -29,7 +29,7 @@ public:
 private:
     HttpClientConnection(HttpClientSocket *socket);
 
-    virtual void readFirstLine(LineSource *source, HttpMessage *message) override;
+    void readFirstLine(LineSource *source, HttpMessage *message) override;
 
     Ref<HttpClientSocket> socket_;
 };

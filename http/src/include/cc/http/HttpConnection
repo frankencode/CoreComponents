@@ -23,7 +23,7 @@ class HttpStream;
 class HttpConnection: public Object
 {
 public:
-    inline Stream *stream() const { return stream_; }
+    Stream *stream() const { return stream_; }
 
     void setupTransferLog(Stream *debugStream, String label);
 
@@ -31,7 +31,7 @@ public:
 
 protected:
     HttpConnection(Stream *stream);
-    virtual ~HttpConnection();
+    ~HttpConnection() override;
 
     void readMessage(HttpMessage *message);
     virtual void readFirstLine(LineSource *source, HttpMessage *message) {}

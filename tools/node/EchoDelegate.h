@@ -13,31 +13,12 @@ namespace ccnode {
 class EchoDelegate: public ServiceDelegate
 {
 public:
-    static Ref<EchoDelegate> create(ServiceWorker *worker) {
-        return new EchoDelegate(worker);
-    }
+    static Ref<EchoDelegate> create(ServiceWorker *worker);
 
-    virtual void process(HttpRequest *request)
-    {
-        {
-            Format echo = response()->chunk();
-            echo << request->method() << " " << request->uri() << " " << request->version() << "\r\n";
-            for (int i = 0; i < request->count(); ++i)
-                echo << request->keyAt(i) << ": " << request->valueAt(i) << "\r\n";
-            echo << "\r\n";
-        }
-        String buf = String::allocate(0x4000);
-        while (true) {
-            int n = request->payload()->read(mutate(buf));
-            if (n == 0) break;
-            response()->write(buf->select(0, n));
-        }
-    }
+    void process(HttpRequest *request) override;
 
 private:
-    EchoDelegate(ServiceWorker *worker):
-        ServiceDelegate(worker)
-    {}
+    EchoDelegate(ServiceWorker *worker);
 };
 
 } // namespace ccnode

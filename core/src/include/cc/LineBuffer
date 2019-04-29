@@ -17,9 +17,9 @@ namespace cc {
 class LineBuffer: public Stream
 {
 public:
-    static Ref<LineBuffer> open(Stream *stream = 0, String prefix = "");
+    static Ref<LineBuffer> open(Stream *stream = 0, const String &prefix = "");
 
-    inline Stream *stream() const { return stream_; }
+    Stream *stream() const { return stream_; }
     virtual String prefix() const;
 
     int read(CharArray *data) override;
@@ -29,7 +29,7 @@ public:
     int flush();
 
 protected:
-    LineBuffer(Stream *stream = 0, String prefix = "");
+    LineBuffer(Stream *stream = 0, const String &prefix = "");
 
     virtual void writeLine(const CharArray *data);
 

@@ -18,16 +18,16 @@ class DirectoryInstance;
 class DirectoryDelegate: public ServiceDelegate
 {
 public:
-    static Ref<DirectoryDelegate> create(ServiceWorker *worker, ScriptHandler *scriptHandler = 0);
+    static Ref<DirectoryDelegate> create(ServiceWorker *worker, ScriptHandler *scriptHandler = nullptr);
 
-    virtual void process(HttpRequest *request);
+    void process(HttpRequest *request) override;
 
 private:
-    DirectoryDelegate(ServiceWorker *worker, ScriptHandler *scriptHandler = 0);
+    DirectoryDelegate(ServiceWorker *worker, ScriptHandler *scriptHandler = nullptr);
 
-    void listDirectory(HttpRequest *request, String path);
-    void deliverFile(String path);
-    void streamFile(String path);
+    void listDirectory(HttpRequest *request, const String &path);
+    void deliverFile(const String &path);
+    void streamFile(const String &path);
 
     Ref<DirectoryInstance> directoryInstance_;
     Ref<ScriptHandler> scriptHandler_;

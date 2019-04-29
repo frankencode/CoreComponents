@@ -17,7 +17,7 @@ int HttpSocket::read(CharArray *data)
     if (data->count() == 0) return 0;
 
     if (!(mode_ & Secure)) {
-        if (!waitInput()) throw RequestTimeout();
+        if (!waitInput()) throw RequestTimeout{};
         return StreamSocket::read(data);
     }
 
@@ -57,8 +57,8 @@ void HttpSocket::write(const StringList *parts)
 }
 
 HttpSocket::HttpSocket(const SocketAddress *address, int mode):
-    StreamSocket(address),
-    mode_(mode)
+    StreamSocket{address},
+    mode_{mode}
 {}
 
 void HttpSocket::initTransport()
@@ -80,13 +80,13 @@ void HttpSocket::gnuTlsCheckError(int ret)
 
 bool HttpSocket::gnuTlsCheckSuccess(int ret, const SocketAddress *peerAddress)
 {
-    if (ret != GNUTLS_E_SUCCESS) throw TlsError(ret, peerAddress);
+    if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret, peerAddress};
     return true;
 }
 
 void HttpSocket::gnuTlsCheckError(int ret, const SocketAddress *peerAddress)
 {
-    if (ret < 0) throw TlsError(ret, peerAddress);
+    if (ret < 0) throw TlsError{ret, peerAddress};
 }
 
 ssize_t HttpSocket::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size)

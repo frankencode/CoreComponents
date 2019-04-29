@@ -19,9 +19,9 @@ namespace cc {
 namespace http {
 
 HttpConnection::HttpConnection(Stream *stream):
-    httpStream_(HttpStream::open(stream)),
-    stream_(httpStream_),
-    lineBuffer_(CharArray::allocate(0x1000))
+    httpStream_{HttpStream::open(stream)},
+    stream_{httpStream_},
+    lineBuffer_{CharArray::allocate(0x1000)}
 {}
 
 HttpConnection::~HttpConnection()

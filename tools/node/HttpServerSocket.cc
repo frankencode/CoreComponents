@@ -24,10 +24,10 @@ namespace ccnode {
 Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket)
 {
     Ref<HttpServerSocket> client =
-        new HttpServerSocket(
+        new HttpServerSocket{
             SocketAddress::create(listeningSocket->address()->family()),
             (listeningSocket->address()->port() % 80 == 0) ? 0 : Secure
-        );
+        };
     client->fd_ = StreamSocket::accept(listeningSocket, client->address_);
     client->connected_ = true;
     client->mode_ |= Connected | ((client->mode_ & Secure) ? 0 : Open);
@@ -36,7 +36,7 @@ Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket)
 }
 
 HttpServerSocket::HttpServerSocket(const SocketAddress *address, int mode):
-    HttpSocket(address, mode)
+    HttpSocket{address, mode}
 {}
 
 HttpServerSocket::~HttpServerSocket()

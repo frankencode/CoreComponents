@@ -20,15 +20,15 @@ public:
 
     String certPath() const { return certPath_; }
     String keyPath() const { return keyPath_; }
-    void setCredentials(String certPath, String keyPath);
+    void setCredentials(const String &certPath, const String &keyPath);
 
     String trustFilePath() const { return trustFilePath_; }
-    void setTrustFilePath(String trustFilePath);
+    void setTrustFilePath(const String &trustFilePath);
 
     void setSystemTrust();
 
     String ciphers() const { return ciphers_; }
-    void setCiphers(String ciphers);
+    void setCiphers(const String &ciphers);
 
     void establish(gnutls_session_t session);
 

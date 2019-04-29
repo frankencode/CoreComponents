@@ -16,17 +16,17 @@ namespace cc {
 namespace http {
 
 HttpGenerator::HttpGenerator(HttpConnection *peer):
-    peer_(peer),
-    header_(Header::create()),
-    headerWritten_(false),
-    contentLength_(-1),
-    bytesWritten_(0)
+    peer_{peer},
+    header_{Header::create()},
+    headerWritten_{false},
+    contentLength_{-1},
+    bytesWritten_{0}
 {}
 
 HttpGenerator::~HttpGenerator()
 {}
 
-void HttpGenerator::setHeader(String name, String value)
+void HttpGenerator::setHeader(const String &name, const String &value)
 {
     header_->establish(name, value);
 }
@@ -73,12 +73,12 @@ Stream *HttpGenerator::payload()
     return payload_;
 }
 
-void HttpGenerator::write(String bytes)
+void HttpGenerator::write(const String &bytes)
 {
     payload()->write(bytes);
 }
 
-Format HttpGenerator::chunk(String pattern)
+Format HttpGenerator::chunk(const String &pattern)
 {
     return Format(pattern, payload());
 }

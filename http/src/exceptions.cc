@@ -14,8 +14,8 @@ namespace cc {
 namespace http {
 
 TlsError::TlsError(int errorCode, const SocketAddress *peerAddress):
-    errorCode_(errorCode),
-    peerAddress_(peerAddress)
+    errorCode_{errorCode},
+    peerAddress_{peerAddress}
 {}
 
 String TlsError::message() const

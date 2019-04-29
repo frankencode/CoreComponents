@@ -13,8 +13,8 @@ namespace cc {
 namespace http {
 
 HttpClientConnection::HttpClientConnection(HttpClientSocket *socket):
-    HttpConnection(socket),
-    socket_(socket)
+    HttpConnection{socket},
+    socket_{socket}
 {}
 
 bool HttpClientConnection::isSecure() const

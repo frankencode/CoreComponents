@@ -13,14 +13,14 @@
 namespace cc {
 namespace http {
 
-Ref<TapBuffer> TapBuffer::open(Stream *stream, String prefix)
+Ref<TapBuffer> TapBuffer::open(Stream *stream, const String &prefix)
 {
-    return new TapBuffer(stream, prefix);
+    return new TapBuffer{stream, prefix};
 }
 
-TapBuffer::TapBuffer(Stream *stream, String prefix):
-    LineBuffer(stream),
-    prefix_(prefix)
+TapBuffer::TapBuffer(Stream *stream, const String &prefix):
+    LineBuffer{stream},
+    prefix_{prefix}
 {}
 
 String TapBuffer::prefix() const

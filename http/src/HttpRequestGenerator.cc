@@ -18,23 +18,23 @@ Ref<HttpRequestGenerator> HttpRequestGenerator::create(HttpConnection *server)
 }
 
 HttpRequestGenerator::HttpRequestGenerator(HttpConnection *server):
-    HttpGenerator(server),
-    method_("GET"),
-    path_("/"),
-    version_("HTTP/1.1")
+    HttpGenerator{server},
+    method_{"GET"},
+    path_{"/"},
+    version_{"HTTP/1.1"}
 {}
 
-void HttpRequestGenerator::setMethod(String method)
+void HttpRequestGenerator::setMethod(const String &method)
 {
     method_ = method;
 }
 
-void HttpRequestGenerator::setPath(String path)
+void HttpRequestGenerator::setPath(const String &path)
 {
     path_ = path;
 }
 
-void HttpRequestGenerator::setVersion(String version)
+void HttpRequestGenerator::setVersion(const String &version)
 {
     version_ = version;
 }

@@ -18,16 +18,16 @@ class HttpRequestGenerator: public HttpGenerator
 public:
     static Ref<HttpRequestGenerator> create(HttpConnection *server);
 
-    void setMethod(String method);
-    void setPath(String path);
-    void setVersion(String version);
-    void setUserAgent(String userAgent);
+    void setMethod(const String &method);
+    void setPath(const String &path);
+    void setVersion(const String &version);
+    void setUserAgent(const String &userAgent);
 
 private:
     HttpRequestGenerator(HttpConnection *server);
 
-    virtual void polishHeader() override;
-    virtual void writeFirstLine(Format &sink) override;
+    void polishHeader() override;
+    void writeFirstLine(Format &sink) override;
 
     String method_;
     String path_;

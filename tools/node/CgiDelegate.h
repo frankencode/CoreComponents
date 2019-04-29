@@ -20,9 +20,9 @@ class CgiDelegate: public ServiceDelegate
 public:
     static Ref<CgiDelegate> create(ServiceWorker *worker);
 
-    virtual void process(HttpRequest *request);
-    bool process(HttpRequest *request, FileStatus *status, String documentRoot = "");
-    void process(HttpRequest *request, String script, String documentRoot = "");
+    void process(HttpRequest *request) override;
+    bool process(HttpRequest *request, FileStatus *status, const String &documentRoot = "");
+    void process(HttpRequest *request, const String &script, const String &documentRoot = "");
 
 private:
     CgiDelegate(ServiceWorker *worker);
@@ -33,7 +33,7 @@ private:
     void logEnv(EnvMap *env);
     String compileHeader(HttpRequest *request, CharArray *payload) const;
     static String urlDecode(HttpRequest *request, CharArray *payload);
-    static String wrapHttp(String header);
+    static String wrapHttp(const String &header);
 
     Ref<CgiInstance> cgiInstance_;
     int nextPeer_;

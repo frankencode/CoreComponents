@@ -27,13 +27,13 @@ using namespace cc::http;
 
 Ref<CgiDelegate> CgiDelegate::create(ServiceWorker *worker)
 {
-    return new CgiDelegate(worker);
+    return new CgiDelegate{worker};
 }
 
 CgiDelegate::CgiDelegate(ServiceWorker *worker):
-    ServiceDelegate(worker),
-    cgiInstance_(worker->serviceInstance()),
-    nextPeer_(cgiInstance_->randomSeed())
+    ServiceDelegate{worker},
+    cgiInstance_{worker->serviceInstance()},
+    nextPeer_{cgiInstance_->randomSeed()}
 {}
 
 void CgiDelegate::process(HttpRequest *request)
@@ -41,7 +41,7 @@ void CgiDelegate::process(HttpRequest *request)
     process(request, cgiInstance_->script());
 }
 
-bool CgiDelegate::process(HttpRequest *request, FileStatus *status, String documentRoot)
+bool CgiDelegate::process(HttpRequest *request, FileStatus *status, const String &documentRoot)
 {
     String script;
 
@@ -54,7 +54,7 @@ bool CgiDelegate::process(HttpRequest *request, FileStatus *status, String docum
     return true;
 }
 
-void CgiDelegate::process(HttpRequest *request, String script, String documentRoot)
+void CgiDelegate::process(HttpRequest *request, const String &script, const String &documentRoot)
 {
     Ref<CgiServerConnection> cgiServer;
     Ref<SubProcess> sub;
@@ -316,7 +316,7 @@ String CgiDelegate::urlDecode(HttpRequest *request, CharArray *payload)
     return queryString;
 }
 
-String CgiDelegate::wrapHttp(String header)
+String CgiDelegate::wrapHttp(const String &header)
 {
     String h = header->toUpper();
     mutate(h)->replaceInsitu('-','_');

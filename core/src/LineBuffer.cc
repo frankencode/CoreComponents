@@ -10,15 +10,15 @@
 
 namespace cc {
 
-Ref<LineBuffer> LineBuffer::open(Stream *stream, String prefix)
+Ref<LineBuffer> LineBuffer::open(Stream *stream, const String &prefix)
 {
-    return new LineBuffer(stream, prefix);
+    return new LineBuffer{stream, prefix};
 }
 
-LineBuffer::LineBuffer(Stream *stream, String prefix):
-    stream_(stream),
-    prefix_(prefix),
-    backlog_(StringList::create())
+LineBuffer::LineBuffer(Stream *stream, const String &prefix):
+    stream_{stream},
+    prefix_{prefix},
+    backlog_{StringList::create()}
 {}
 
 void LineBuffer::writeLine(const CharArray *data)

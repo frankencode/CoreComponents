@@ -22,13 +22,13 @@ using namespace cc::http;
 
 Ref<DirectoryDelegate> DirectoryDelegate::create(ServiceWorker *worker, ScriptHandler *scriptHandler)
 {
-    return new DirectoryDelegate(worker, scriptHandler);
+    return new DirectoryDelegate{worker, scriptHandler};
 }
 
 DirectoryDelegate::DirectoryDelegate(ServiceWorker *worker, ScriptHandler *scriptHandler):
-    ServiceDelegate(worker),
-    directoryInstance_(worker->serviceInstance()),
-    scriptHandler_(scriptHandler)
+    ServiceDelegate{worker},
+    directoryInstance_{worker->serviceInstance()},
+    scriptHandler_{scriptHandler}
 {}
 
 void DirectoryDelegate::process(HttpRequest *request)
@@ -108,7 +108,7 @@ void DirectoryDelegate::process(HttpRequest *request)
     }
 }
 
-void DirectoryDelegate::listDirectory(HttpRequest *request, String path)
+void DirectoryDelegate::listDirectory(HttpRequest *request, const String &path)
 {
     Ref<Dir> dir = Dir::open(path);
 
@@ -138,17 +138,15 @@ void DirectoryDelegate::listDirectory(HttpRequest *request, String path)
     }
     entries = entries->sort();
 
-    for (int i = 0; i < entries->count(); ++i) {
-        String name = entries->at(i);
+    for (const String &name: entries)
         response()->chunk() << "<a class=\"file\" href=\"" << prefix << name << "\">" << name << "</a>\n";
-    }
 
     response()->chunk() <<
         "</body>\n"
         "</html>\n";
 }
 
-void DirectoryDelegate::deliverFile(String path)
+void DirectoryDelegate::deliverFile(const String &path)
 {
     String content = File::open(path)->map();
     String mediaType = mediaTypeDatabase()->lookup(path, content);
@@ -158,7 +156,7 @@ void DirectoryDelegate::deliverFile(String path)
     response()->endTransmission();
 }
 
-void DirectoryDelegate::streamFile(String path)
+void DirectoryDelegate::streamFile(const String &path)
 {
     Ref<File> file = File::open(path);
     String head;

@@ -16,15 +16,15 @@ namespace http {
 
 Ref<HttpStream> HttpStream::open(Stream *stream)
 {
-    return new HttpStream(stream);
+    return new HttpStream{stream};
 }
 
 HttpStream::HttpStream(Stream *stream):
-    stream_(stream),
-    payloadLeft_(-1),
-    nlCount_(0),
-    eoi_(false),
-    chunked_(false)
+    stream_{stream},
+    payloadLeft_{-1},
+    nlCount_{0},
+    eoi_{false},
+    chunked_{false}
 {}
 
 bool HttpStream::isPayloadConsumed() const
@@ -34,8 +34,8 @@ bool HttpStream::isPayloadConsumed() const
 
 void HttpStream::nextHeader()
 {
-    if (eoi_) throw CloseRequest();
-    if (payloadLeft_ > 0) throw CloseRequest();
+    if (eoi_) throw CloseRequest{};
+    if (payloadLeft_ > 0) throw CloseRequest{};
     payloadLeft_ = -1;
     nlCount_ = 0;
     nlMax_ = 2;
@@ -43,14 +43,14 @@ void HttpStream::nextHeader()
 
 void HttpStream::nextPayload(int64_t length)
 {
-    if (eoi_) throw CloseRequest();
+    if (eoi_) throw CloseRequest{};
     payloadLeft_ = length;
     chunked_ = false;
 }
 
 void HttpStream::nextLine()
 {
-    if (eoi_) throw CloseRequest();
+    if (eoi_) throw CloseRequest{};
     payloadLeft_ = -1;
     nlCount_ = 0;
     nlMax_ = 1;
@@ -68,7 +68,7 @@ void HttpStream::nextChunk()
         if ('0' <= ch && ch <= '9') payloadLeft_ += ch - '9';
         else if ('a' <= ch && ch <= 'f') payloadLeft_ += ch - 'a';
         else if ('A' <= ch && ch <= 'F') payloadLeft_ += ch - 'A';
-        else throw BadRequest();
+        else throw BadRequest{};
     }
     if (payloadLeft_ == 0) {
         chunked_ = false;
