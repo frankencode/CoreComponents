@@ -121,7 +121,7 @@ public:
     {
         peerAddress_ = peerAddress;
         serverName_ = "";
-        serviceInstance_ = 0;
+        serviceInstance_ = nullptr;
     }
 
     String serverName() const { return serverName_; }
@@ -193,7 +193,7 @@ void HttpServerSocket::upgradeToSecureTransport()
 bool HttpServerSocket::waitInput()
 {
     double d = te_ - System::now();
-    if (d <= 0) throw RequestTimeout();
+    if (d <= 0) throw RequestTimeout{};
     return waitFor(IoReady::Read, d * 1000);
 }
 

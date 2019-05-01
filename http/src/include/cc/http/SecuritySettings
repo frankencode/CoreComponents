@@ -30,11 +30,11 @@ public:
     String ciphers() const { return ciphers_; }
     void setCiphers(const String &ciphers);
 
-    void establish(gnutls_session_t session);
+    void establish(gnutls_session_t session) const;
 
 protected:
     SecuritySettings();
-    ~SecuritySettings();
+    ~SecuritySettings() override;
 
     String certPath_;
     String keyPath_;

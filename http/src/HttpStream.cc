@@ -95,7 +95,7 @@ int HttpStream::read(CharArray *data)
             n = data->count();
         }
         else {
-            pending_ = 0;
+            pending_ = nullptr;
             n = h;
         }
     }

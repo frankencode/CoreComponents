@@ -61,7 +61,7 @@ Ref<HttpRequest> HttpServerConnection::readRequest()
 {
     if (pendingRequest_) {
         Ref<HttpRequest> h = pendingRequest_;
-        pendingRequest_ = 0;
+        pendingRequest_ = nullptr;
         return h;
     }
     request_ = HttpRequest::create();
@@ -78,12 +78,12 @@ void HttpServerConnection::putBack(HttpRequest *request)
 void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *message)
 {
     String line;
-    if (!source->read(&line)) throw CloseRequest();
+    if (!source->read(&line)) throw CloseRequest{};
 
     HttpRequest *request = Object::cast<HttpRequest *>(message);
     request->line_ = line;
 
-    if (line->count(' ') != 2) throw BadRequest();
+    if (line->count(' ') != 2) throw BadRequest{};
 
     int i0 = 0, i1 = line->find(' ');
     request->method_ = line->copy(i0, i1);
@@ -96,7 +96,7 @@ void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *messag
     Ref<StringList> parts = request->version_->split('/');
     if (parts->count() >= 2) {
         mutate(parts->at(0))->upcaseInsitu();
-        if (parts->at(0) != "HTTP") throw UnsupportedVersion();
+        if (parts->at(0) != "HTTP") throw UnsupportedVersion{};
         parts = parts->at(1)->split('.');
         if (parts->count() >= 2) {
             request->majorVersion_ = parts->at(0)->toNumber<int>();
@@ -104,7 +104,7 @@ void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *messag
         }
     }
 
-    if (request->majorVersion_ > 1) throw UnsupportedVersion();
+    if (request->majorVersion_ > 1) throw UnsupportedVersion{};
 }
 
 void HttpServerConnection::onHeaderReceived(HttpMessage *message)
@@ -112,7 +112,7 @@ void HttpServerConnection::onHeaderReceived(HttpMessage *message)
     Ref<HttpRequest> request = message;
     request->host_ = request->value("Host");
     mutate(request->host_)->downcaseInsitu();
-    if (request->host_ == "") throw BadRequest();
+    if (request->host_ == "") throw BadRequest{};
 }
 
 } // namespace ccnode

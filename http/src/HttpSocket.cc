@@ -12,6 +12,11 @@
 namespace cc {
 namespace http {
 
+HttpSocket::HttpSocket(const SocketAddress *address, int mode):
+    StreamSocket{address},
+    mode_{mode}
+{}
+
 int HttpSocket::read(CharArray *data)
 {
     if (data->count() == 0) return 0;
@@ -55,11 +60,6 @@ void HttpSocket::write(const StringList *parts)
     else
         StreamSocket::write(parts);
 }
-
-HttpSocket::HttpSocket(const SocketAddress *address, int mode):
-    StreamSocket{address},
-    mode_{mode}
-{}
 
 void HttpSocket::initTransport()
 {

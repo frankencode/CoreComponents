@@ -20,8 +20,8 @@ class HttpConnection;
 class HttpMessage: public Map<String, String>
 {
 public:
-    inline static Ref<HttpMessage> create() { return new HttpMessage; }
-    inline Stream *payload() const { return payload_; }
+    static Ref<HttpMessage> create() { return new HttpMessage; }
+    Stream *payload() const { return payload_; }
 
 protected:
     friend class HttpConnection;

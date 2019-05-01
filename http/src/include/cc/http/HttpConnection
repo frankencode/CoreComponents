@@ -25,7 +25,7 @@ class HttpConnection: public Object
 public:
     Stream *stream() const { return stream_; }
 
-    void setupTransferLog(Stream *debugStream, String label);
+    void setupTransferLog(Stream *debugStream, const String &label);
 
     bool isPayloadConsumed() const;
 

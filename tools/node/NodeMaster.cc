@@ -162,13 +162,13 @@ void NodeMaster::runNode()
             try {
                 StreamSocket *listeningSocket = Object::cast<StreamSocket *>(event->target());
                 Ref<HttpServerSocket> clientSocket = HttpServerSocket::accept(listeningSocket);
-                Ref<HttpServerConnection> client = HttpServerConnection::open(clientSocket);
-                if (connectionManager->accept(client)) {
-                    CCNODE_DEBUG() << "Accepted connection from " << client->address() << " with priority " << client->priority() << nl;
-                    pendingConnections->pushBack(client, client->priority());
+                Ref<HttpServerConnection> clientConnection = HttpServerConnection::open(clientSocket);
+                if (connectionManager->accept(clientConnection)) {
+                    CCNODE_DEBUG() << "Accepted connection from " << clientConnection->address() << " with priority " << clientConnection->priority() << nl;
+                    pendingConnections->pushBack(clientConnection, clientConnection->priority());
                 }
                 else {
-                    CCNODE_DEBUG() << "Rejected connection from " << client->address() << nl;
+                    CCNODE_DEBUG() << "Rejected connection from " << clientConnection->address() << nl;
                 }
             }
             catch (Exception &ex) {
@@ -182,7 +182,7 @@ void NodeMaster::runNode()
             int signal = signals_->popFront();
             if (signal == SIGINT || signal == SIGTERM || signal == SIGHUP) {
                 CCNODE_NOTICE() << "Received " << signalName(signal) << ", shutting down" << nl;
-                workerPool = 0;
+                workerPool = nullptr;
                 CCNODE_NOTICE() << "Shutdown complete" << nl;
                 throw Interrupt(signal);
             }

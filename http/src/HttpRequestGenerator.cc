@@ -14,7 +14,7 @@ namespace http {
 
 Ref<HttpRequestGenerator> HttpRequestGenerator::create(HttpConnection *server)
 {
-    return new HttpRequestGenerator(server);
+    return new HttpRequestGenerator{server};
 }
 
 HttpRequestGenerator::HttpRequestGenerator(HttpConnection *server):

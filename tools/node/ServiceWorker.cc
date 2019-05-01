@@ -35,7 +35,7 @@ ServiceWorker::ServiceWorker(PendingConnections *pendingConnections, ClosedConne
 
 ServiceWorker::~ServiceWorker()
 {
-    pendingConnections_->push(Ref<HttpServerConnection>());
+    pendingConnections_->push(Ref<HttpServerConnection>{});
     Thread::wait();
 }
 
@@ -74,7 +74,7 @@ void ServiceWorker::run()
             int requestCount = 0;
             try {
                 serviceInstance_ = client_->handshake();
-                if (!serviceInstance_) throw BadRequest();
+                if (!serviceInstance_) throw BadRequest{};
 
                 serviceDelegate_ = serviceInstance_->createDelegate(this);
 
@@ -83,7 +83,7 @@ void ServiceWorker::run()
                     Ref<HttpRequest> request = client_->readRequest();
                     ++requestCount;
                     {
-                        RefGuard<HttpResponseGenerator> guard(&response_);
+                        RefGuard<HttpResponseGenerator> guard{&response_};
                         response_ = HttpResponseGenerator::create(client_);
                         response_->setNodeVersion(NodeConfig::instance()->version());
 
@@ -123,8 +123,8 @@ void ServiceWorker::run()
 
             closeConnection();
 
-            serviceDelegate_ = 0;
-            serviceInstance_ = 0;
+            serviceDelegate_ = nullptr;
+            serviceInstance_ = nullptr;
         }
         catch (ConnectionResetByPeer &)
         {}
@@ -171,7 +171,7 @@ void ServiceWorker::closeConnection()
         CCNODE_DEBUG() << "Closing connection to " << client_->address() << nl;
         Ref<ConnectionInfo> visit = client_->connectionInfo();
         visit->updateDepartureTime();
-        client_ = 0;
+        client_ = nullptr;
         closedConnections_->push(visit);
     }
 }

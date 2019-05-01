@@ -26,23 +26,23 @@ using namespace cc::net;
 class HttpClientSocket: public HttpSocket
 {
 public:
-    static Ref<HttpClientSocket> create(const SocketAddress *serverAddress, String serverName = "", SecuritySettings *security = 0);
+    static Ref<HttpClientSocket> create(const SocketAddress *serverAddress, const String &serverName = "", const SecuritySettings *security = nullptr);
 
     bool isSecure() const;
     bool connect();
     void shutdown();
 
 private:
-    HttpClientSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security);
+    HttpClientSocket(const SocketAddress *serverAddress, const String &serverName, const SecuritySettings *security);
 
     void initSession();
     void handshake();
 
-    virtual bool waitInput() override;
-    virtual void ioException(Exception &ex) const override;
+    bool waitInput() override;
+    void ioException(Exception &ex) const override;
 
     String serverName_;
-    Ref<SecuritySettings> security_;
+    Ref<const SecuritySettings> security_;
     Ref<StreamSocket> controlMaster_, controlSlave_;
     Ref<IoMonitor> ioMonitor_;
     const IoEvent *readyRead_;

@@ -86,7 +86,7 @@ void DirectoryDelegate::process(HttpRequest *request)
         if (indexPath != "") {
             if (!request->uri()->endsWith('/')) {
                 // NOTE: not all user agents (e.g. FireFox) support Content-Location correctly
-                // therefore a redirection is the only clean way to make the user agent us a proper full path
+                // therefore a redirection is the only clean way to make the user agent use a proper full path
                 // in subsequent requests
                 response()->setStatus(301);
                 response()->setHeader("Location", request->uri() + "/");

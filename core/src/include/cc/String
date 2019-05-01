@@ -95,10 +95,10 @@ public:
     static String join(const StringList *parts, const String &sep = String{});
 
     /// Construct an empty string
-    Ref(): a_(0) {}
+    Ref(): a_(nullptr) {}
 
     /// Construt a string from an intermediate expression
-    Ref(String &&b): a_(b.a_) { b.a_ = 0; }
+    Ref(String &&b): a_(b.a_) { b.a_ = nullptr; }
 
     /// Construct an alias of another string \a b
     Ref(const String &b);
@@ -107,7 +107,7 @@ public:
     Ref(const CharArray *b);
 
     /// \copydoc Ref(const String &)
-    Ref(CharArray *b): a_(0) { set(b); }
+    Ref(CharArray *b): a_(nullptr) { set(b); }
 
     /** Construct a copy of another C string
       * \param other pointer to C string to copy
@@ -133,7 +133,7 @@ public:
     Ref(const Format &b);
 
     /// \internal
-    ~Ref() { set(0); }
+    ~Ref() { set(nullptr); }
 
     /// Make this string an alias of \a b
     String &operator=(const String &b);
@@ -142,7 +142,7 @@ public:
     String &operator=(const char *b);
 
     /// Assign the value of an intermediate expression
-    String &operator=(String &&b) { set(0); a_ = b.a_; b.a_ = 0; return *this; }
+    String &operator=(String &&b) { set(nullptr); a_ = b.a_; b.a_ = nullptr; return *this; }
 
     /// Make this string an alias of \a b
     String &operator=(CharArray *b) { set(b); return *this; }
@@ -156,8 +156,11 @@ public:
     /// Concatenate the items of the formatting list \a b and assign the resulting string
     String &operator=(const Format &b) { set(String(b)); return *this; }
 
+    /// Assign an empty string (FIXME: obsolete)
+    String &operator=(const int &null) { CC_ASSERT(null == 0); (void)null; set(nullptr); return *this; }
+
     /// Assign an empty string
-    String &operator=(const int &null) { CC_ASSERT(null == 0); (void)null; set(0); return *this; }
+    String &operator=(std::nullptr_t) { set(nullptr); return *this; }
 
     /// Concatenate this string and character \a b and assign the resulting string
     String &operator+=(char b);

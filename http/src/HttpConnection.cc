@@ -27,7 +27,7 @@ HttpConnection::HttpConnection(Stream *stream):
 HttpConnection::~HttpConnection()
 {}
 
-void HttpConnection::setupTransferLog(Stream *debugStream, String label)
+void HttpConnection::setupTransferLog(Stream *debugStream, const String &label)
 {
     Ref<Stream> inputBuffer = TapBuffer::open(debugStream, label + " >> ");
     Ref<Stream> outputBuffer = TapBuffer::open(debugStream, label + " << ");
@@ -72,7 +72,7 @@ void HttpConnection::readMessage(HttpMessage *message)
                 multiValue = 0;
             }
             int i = line->find(':');
-            if (i == line->count()) throw BadRequest();
+            if (i == line->count()) throw BadRequest{};
             name = line->copy(0, i);
             value = line->copy(i + 1, line->count());
             mutate(name)->trimInsitu();
@@ -84,7 +84,7 @@ void HttpConnection::readMessage(HttpMessage *message)
             message->establish(name, multiValue->join());
     }
     catch (ReadLimitExceeded &) {
-        throw BadRequest();
+        throw BadRequest{};
     }
 
     onHeaderReceived(message);
@@ -98,7 +98,7 @@ void HttpConnection::readMessage(HttpMessage *message)
         if (message->lookup("Content-Length", &h)) {
             bool ok = true;
             length = h->toNumber<int64_t>(&ok);
-            if (!ok || length < 0) throw BadRequest();
+            if (!ok || length < 0) throw BadRequest{};
         }
         httpStream_->nextPayload(length);
     }

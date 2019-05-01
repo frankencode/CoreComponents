@@ -34,8 +34,8 @@ class ServiceWorker: public Thread
 public:
     static Ref<ServiceWorker> create(PendingConnections *pendingConnections, ClosedConnections *closedConnections);
 
-    inline ServiceInstance *serviceInstance() const { return serviceInstance_; }
-    inline HttpServerConnection *client() const { return client_; }
+    ServiceInstance *serviceInstance() const { return serviceInstance_; }
+    HttpServerConnection *client() const { return client_; }
 
     HttpResponseGenerator *response() const;
     void autoSecureForwardings();

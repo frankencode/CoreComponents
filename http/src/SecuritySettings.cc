@@ -67,7 +67,7 @@ void SecuritySettings::setCiphers(const String &ciphers)
     if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
 }
 
-void SecuritySettings::establish(gnutls_session_t session)
+void SecuritySettings::establish(gnutls_session_t session) const
 {
     int ret = gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, cred_);
     if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};

@@ -36,8 +36,8 @@ private:
     static int onClientHello(gnutls_session_t session);
     void initSession();
 
-    virtual bool waitInput() override;
-    virtual void ioException(Exception &ex) const override;
+    bool waitInput() override;
+    void ioException(Exception &ex) const override;
 
     double t0_;
     double te_;

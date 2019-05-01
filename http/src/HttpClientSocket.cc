@@ -15,17 +15,17 @@
 namespace cc {
 namespace http {
 
-Ref<HttpClientSocket> HttpClientSocket::create(const SocketAddress *serverAddress, String serverName, SecuritySettings *security)
+Ref<HttpClientSocket> HttpClientSocket::create(const SocketAddress *serverAddress, const String &serverName, const SecuritySettings *security)
 {
-    return new HttpClientSocket(serverAddress, serverName, security);
+    return new HttpClientSocket{serverAddress, serverName, security};
 }
 
-HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, String serverName, SecuritySettings *security):
-    HttpSocket(serverAddress, (serverAddress->port() % 80 == 0) ? 0 : Secure),
-    serverName_(serverName),
-    security_(security),
-    ioMonitor_(IoMonitor::create(2)),
-    readyRead_(0)
+HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, const String &serverName, const SecuritySettings *security):
+    HttpSocket{serverAddress, (serverAddress->port() % 80 == 0) ? 0 : Secure},
+    serverName_{serverName},
+    security_{security},
+    ioMonitor_{IoMonitor::create(2)},
+    readyRead_{0}
 {
     if ((mode_ & Secure) && !security_)
         security_ = SecuritySettings::createDefault();
@@ -55,7 +55,7 @@ bool HttpClientSocket::connect()
 
 void HttpClientSocket::shutdown()
 {
-    controlMaster_ = 0;
+    controlMaster_ = nullptr;
 }
 
 void HttpClientSocket::initSession()
