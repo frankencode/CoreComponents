@@ -13,6 +13,21 @@
 namespace cc {
 namespace http {
 
+ProtocolException::ProtocolException(int statusCode, const String &message):
+    statusCode_{statusCode},
+    message_{message}
+{}
+
+int ProtocolException::statusCode() const
+{
+    return statusCode_;
+}
+
+String ProtocolException::message() const
+{
+    return message_;
+}
+
 TlsError::TlsError(int errorCode, const SocketAddress *peerAddress):
     errorCode_{errorCode},
     peerAddress_{peerAddress}

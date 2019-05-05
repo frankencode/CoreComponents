@@ -13,20 +13,28 @@
 namespace cc {
 namespace net {
 
+NetworkError::NetworkError(int errorCode):
+    SystemError{errorCode}
+{}
+
 HostUnreachable::HostUnreachable():
-    NetworkError(EHOSTUNREACH)
+    NetworkError{EHOSTUNREACH}
 {}
 
 ConnectionRefused::ConnectionRefused():
-    NetworkError(ECONNREFUSED)
+    NetworkError{ECONNREFUSED}
 {}
 
 NetworkUnreachable::NetworkUnreachable():
-    NetworkError(ENETUNREACH)
+    NetworkError{ENETUNREACH}
 {}
 
 ConnectionTimeout::ConnectionTimeout():
-    NetworkError(ETIMEDOUT)
+    NetworkError{ETIMEDOUT}
+{}
+
+HostNameResolutionError::HostNameResolutionError(const String &message):
+    UsageError{message}
 {}
 
 }} // namespace cc::net

@@ -10,6 +10,7 @@
 #include <cc/exceptions>
 #include <cc/Arguments>
 #include <cc/IoMonitor>
+#include <cc/net/Uri>
 #include <cc/net/StreamSocket>
 
 using namespace cc;
@@ -38,8 +39,8 @@ int main(int argc, char **argv)
         const StringList *items = arguments->items();
         if (items->count() != 2) throw HelpError();
 
-        Ref<SocketAddress> proxyAddress = SocketAddress::read(items->at(0));
-        Ref<SocketAddress> origAddress  = SocketAddress::read(items->at(1));
+        Ref<SocketAddress> proxyAddress = SocketAddress::resolve(Uri::parse(items->at(0)));
+        Ref<SocketAddress> origAddress  = SocketAddress::resolve(Uri::parse(items->at(1)));
 
         Ref<StreamSocket> listenSocket = StreamSocket::listen(proxyAddress);
 

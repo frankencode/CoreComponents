@@ -7,6 +7,7 @@
  */
 
 #include <gnutls/gnutls.h>
+#include <cc/debug> // DEBUG
 #include <cc/assert>
 #include <cc/System>
 #include <cc/IoMonitor>
@@ -18,6 +19,13 @@ namespace http {
 Ref<HttpClientSocket> HttpClientSocket::create(const SocketAddress *serverAddress, const String &serverName, const SecuritySettings *security)
 {
     return new HttpClientSocket{serverAddress, serverName, security};
+}
+
+Ref<HttpClientSocket> HttpClientSocket::connect(const SocketAddress *serverAddress, const String &serverName, const SecuritySettings *security)
+{
+    auto socket = HttpClientSocket::create(serverAddress, serverName, security);
+    socket->connect();
+    return socket;
 }
 
 HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, const String &serverName, const SecuritySettings *security):
@@ -41,10 +49,15 @@ bool HttpClientSocket::isSecure() const
 
 bool HttpClientSocket::connect()
 {
-    StreamSocket::connect(address());
-    const IoEvent *connectionEstablished = ioMonitor_->addEvent(IoReady::Write, this);
-    if (ioMonitor_->waitFor(connectionEstablished)) mode_ |= Connected;
-    ioMonitor_->removeEvent(connectionEstablished);
+    StreamSocket::connect();
+    if (StreamSocket::isConnected()) {
+        mode_ |= Connected;
+    }
+    else {
+        const IoEvent *connectionEstablished = ioMonitor_->addEvent(IoReady::Write, this);
+        if (ioMonitor_->waitFor(connectionEstablished)) mode_ |= Connected;
+        ioMonitor_->removeEvent(connectionEstablished);
+    }
     if (mode_ & Connected) {
         readyRead_ = ioMonitor_->addEvent(IoReady::Read, this);
         initSession();
@@ -91,7 +104,7 @@ bool HttpClientSocket::waitInput()
 
 void HttpClientSocket::ioException(Exception &ex) const
 {
-    // TODO: need a HttpConnectionHandler
+    CC_INSPECT(ex);
 }
 
 }} // namespace cc::http

@@ -14,9 +14,7 @@
 #include <sys/socket.h> // connect
 #include <sys/un.h> // sockaddr_un
 
-#include <cc/exceptions>
-#include <cc/String>
-#include <cc/List>
+#include <cc/net/exceptions>
 
 namespace cc {
 
@@ -25,21 +23,10 @@ template<class> class Singleton;
 
 namespace net {
 
+class Uri;
 class SocketAddress;
 
 typedef List< Ref<SocketAddress> > SocketAddressList;
-
-class LocationSyntaxError: public UsageError
-{
-public:
-    LocationSyntaxError(String message): UsageError(message) {}
-};
-
-class HostNameResolutionError: public UsageError
-{
-public:
-    HostNameResolutionError(String message): UsageError(message) {}
-};
 
 /** \class SocketAddress cc/net/SocketAddress
   * \brief Socket address
@@ -50,9 +37,7 @@ public:
     /** Create an invalid socket address
       * \return new object instance
       */
-    inline static Ref<SocketAddress> create() {
-        return new SocketAddress;
-    }
+    static Ref<SocketAddress> create();
 
     /** Create a socket address by given protocol family and numerical address.
       * Use the wildcard "*" to address all interfaces of the local host system.
@@ -62,9 +47,7 @@ public:
       * \param port service port
       * \return new object instance
       */
-    inline static Ref<SocketAddress> create(int family, String address = String(), int port = 0) {
-        return new SocketAddress(family, address, port);
-    }
+    static Ref<SocketAddress> create(int family, const String &address = "", int port = 0);
 
     /** Create an IPv4 broadcast address
       * \return new object instance
@@ -74,28 +57,23 @@ public:
     /** Create a socket address from a low-level IPv4 socket address
       * \return new object instance
       */
-    inline static Ref<SocketAddress> create(struct sockaddr_in *addr) {
-        return new SocketAddress(addr);
-    }
+    static Ref<SocketAddress> create(struct sockaddr_in *addr);
 
     /** Create a socket address from a low-level IPv6 socket address
       * \return new object instance
       */
-    inline static Ref<SocketAddress> create(struct sockaddr_in6 *addr) {
-        return new SocketAddress(addr);
-    }
+    static Ref<SocketAddress> create(struct sockaddr_in6 *addr);
 
     /** Create a socket address from a low-level address resolution result
       * \return new object instance
       */
-    inline static Ref<SocketAddress> create(addrinfo *info) {
-        return new SocketAddress(info);
-    }
+    static Ref<SocketAddress> create(addrinfo *info);
 
-    /** Read a location string in form of an Uniform Resource Indentifier
+    /** Resolve a given URI
+      * \param uri URI
       * \return new object instance
       */
-    static Ref<SocketAddress> read(String location);
+    static Ref<SocketAddress> resolve(const Uri *uri);
 
     /** Create a copy of another socket address
       * \return new object instance
@@ -133,7 +111,7 @@ public:
       *   The host name can be a short name relative to the local domain.
       * The fully qualified domain name (aka canonical name) can be optionally retrieved.
       */
-    static Ref<SocketAddressList> resolve(String hostName, String serviceName = String(), int family = AF_UNSPEC, int socketType = 0, String *canonicalName = 0);
+    static Ref<SocketAddressList> resolve(const String &hostName, const String &serviceName = "", int family = AF_UNSPEC, int socketType = 0, String *canonicalName = 0);
 
     /** Lookup the host name of given address. Usually a reverse DNS
       * lookup will be issued, which may take several seconds.
@@ -156,7 +134,7 @@ public:
 
     /** Size of the address in bits
       */
-    inline int length() const { return 8 * addrLen(); }
+    int length() const { return 8 * addrLen(); }
 
     struct sockaddr *addr(); ///< Provide access to the underlying low-level address structure
     const struct sockaddr *addr() const; ///< Provide access to the underlying low-level address structure (read-only)
@@ -166,7 +144,7 @@ protected:
     friend class Singleton<SocketAddress>;
 
     SocketAddress();
-    SocketAddress(int family, String address, int port);
+    SocketAddress(int family, const String &address, int port);
     SocketAddress(struct sockaddr_in *addr);
     SocketAddress(struct sockaddr_in6 *addr);
     SocketAddress(addrinfo *info);

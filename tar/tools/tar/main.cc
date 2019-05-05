@@ -41,7 +41,7 @@ int main(int argc, char **argv)
             arguments->validate(prototype);
         }
 
-        Ref<VariantMap> options = arguments->options();
+        const VariantMap *options = arguments->options();
         Ref<const StringList> items = arguments->items();
 
         if (unpackMode)

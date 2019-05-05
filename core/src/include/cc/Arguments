@@ -28,7 +28,7 @@ public:
       * \exception HelpRequest command line contains a help option (-h or --help)
       * \exception VersionRequest command line contains a version option (-v or --version)
       */
-    static Ref<Arguments> parse(int argc, char **argv, VariantMap *options = 0);
+    static Ref<Arguments> parse(int argc, char **argv, VariantMap *options = nullptr);
 
     /** Check validity of command line arguments according to a prototype configuration
       * \param prototype prototype configuration
@@ -42,15 +42,15 @@ public:
     void override(VariantMap *config) const;
 
     /// Command line options (e.g.: x=1, -x or --x)
-    inline VariantMap *options() const { return options_; }
+    const VariantMap *options() const { return options_; }
 
     /// Command line item arguments
-    inline const StringList *items() const { return items_; }
+    const StringList *items() const { return items_; }
 
     /** Execution path
       * \see Process::exePath()
       */
-    inline String execPath() const { return execPath_; }
+    String execPath() const { return execPath_; }
 
 private:
     Arguments(int argc, char **argv, VariantMap *options);

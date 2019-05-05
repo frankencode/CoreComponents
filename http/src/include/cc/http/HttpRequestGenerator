@@ -21,7 +21,7 @@ public:
     void setMethod(const String &method);
     void setPath(const String &path);
     void setVersion(const String &version);
-    void setUserAgent(const String &userAgent);
+    void setHost(const String &host);
 
 private:
     HttpRequestGenerator(HttpConnection *server);

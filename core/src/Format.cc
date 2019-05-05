@@ -16,9 +16,9 @@ FormatSignal nl;
 FormatSignal flush;
 
 Format::Format(String pattern, Stream *stream):
-    stream_(stream),
-    isNull_(stream && NullStream::instance() ? stream == NullStream::instance() : false),
-    lastPosition_(0)
+    stream_{stream},
+    isNull_{stream && NullStream::instance() ? stream == NullStream::instance() : false},
+    lastPosition_{0}
 {
     if (isNull_) return;
     set(StringList::create());
@@ -37,16 +37,20 @@ Format::Format(String pattern, Stream *stream):
 }
 
 Format::Format(Stream *stream):
-    stream_(stream),
-    isNull_(stream && NullStream::instance() ? stream == NullStream::instance() : false),
-    lastPosition_(0)
+    stream_{stream},
+    isNull_{stream && NullStream::instance() ? stream == NullStream::instance() : false},
+    lastPosition_{0}
 {
     set(StringList::create());
 }
 
 Format::~Format()
 {
-    flush();
+    try {
+        flush();
+    }
+    catch (...)
+    {}
 }
 
 void Format::flush()
@@ -65,10 +69,10 @@ void Format::flush()
 }
 
 Format::Format(const Format &b):
-    Super(b.get()),
-    stream_(b.stream_),
-    isNull_(b.isNull_),
-    placeHolder_(b.placeHolder_)
+    Super{b.get()},
+    stream_{b.stream_},
+    isNull_{b.isNull_},
+    placeHolder_{b.placeHolder_}
 {}
 
 Format &Format::operator=(const Format &b)

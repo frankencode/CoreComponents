@@ -1,0 +1,5 @@
+Application {
+    name: ccget
+    alias: [ ccput, ccpost ]
+    use: [ core, net, http ]
+}

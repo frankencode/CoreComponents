@@ -65,9 +65,9 @@ void HttpStream::nextChunk()
         char ch = line->at(i);
         if (ch == '\r' || ch == '\n') continue;
         payloadLeft_ *= 16;
-        if ('0' <= ch && ch <= '9') payloadLeft_ += ch - '9';
-        else if ('a' <= ch && ch <= 'f') payloadLeft_ += ch - 'a';
-        else if ('A' <= ch && ch <= 'F') payloadLeft_ += ch - 'A';
+        if ('0' <= ch && ch <= '9') payloadLeft_ += ch - '0';
+        else if ('a' <= ch && ch <= 'f') payloadLeft_ += 10 + (ch - 'a');
+        else if ('A' <= ch && ch <= 'F') payloadLeft_ += 10 + (ch - 'A');
         else throw BadRequest{};
     }
     if (payloadLeft_ == 0) {
@@ -129,6 +129,9 @@ int HttpStream::read(CharArray *data)
         n = payloadLeft_;
         payloadLeft_ = 0;
         if (chunked_) nextChunk();
+    }
+    else {
+        payloadLeft_ -= n;
     }
 
     return n;

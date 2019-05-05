@@ -9,6 +9,7 @@
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
 #include <cc/System>
+#include <cc/net/Uri>
 #include <cc/net/SocketAddress>
 
 using namespace cc;
@@ -81,7 +82,7 @@ class ReadLocation: public TestCase
             << "::"
             << "[::]:8080";
         for (String s: samples) {
-            auto address = SocketAddress::read(s);
+            auto address = SocketAddress::resolve(Uri::parse(s));
             fout("\"%%\" == \"%%\"") << s << address << nl;
             CC_ASSERT(s == address->toString());
         }

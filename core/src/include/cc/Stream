@@ -40,10 +40,10 @@ public:
     virtual void write(const StringList *parts);
 
     /// Convenience wrapper
-    inline void write(const String &data) { write(static_cast<const CharArray *>(data)); }
+    void write(const String &data) { write(static_cast<const CharArray *>(data)); }
 
     /// Convenience wrapper
-    inline void write(const char *data) { write(String(data)); }
+    void write(const char *data) { write(String(data)); }
 
     /// Convenience wrapper
     void write(const Format &format);
@@ -61,13 +61,13 @@ public:
     virtual off_t transferSpanTo(off_t count, Stream *sink, CharArray *buffer = 0);
 
     /// Convenience wrapper for transferSpanTo(sink, -1, buffer)
-    inline off_t transferTo(Stream *sink, CharArray *buffer = 0) { return transferSpanTo(-1, sink, buffer); }
+    off_t transferTo(Stream *sink, CharArray *buffer = 0) { return transferSpanTo(-1, sink, buffer); }
 
     /// Convenience wrapper for transferSpanTo(0, count)
-    inline off_t skip(off_t count) { return transferSpanTo(count, 0); }
+    off_t skip(off_t count) { return transferSpanTo(count, 0); }
 
     /// Convenience wrapper for transferSpanTo(-1, 0)
-    inline void drain() { transferSpanTo(-1, 0); }
+    void drain() { transferSpanTo(-1, 0); }
 
     /** Read a span of bytes
       * \param data target buffer

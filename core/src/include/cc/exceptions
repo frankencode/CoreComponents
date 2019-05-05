@@ -22,7 +22,7 @@ public:
     UsageError(const String &message = ""): message_(message) {}
     ~UsageError() throw() {}
 
-    virtual String message() const override { return message_; }
+    String message() const override { return message_; }
 
 private:
     String message_;
@@ -36,7 +36,7 @@ class HelpRequest: public Exception
 public:
     ~HelpRequest() throw() {}
 
-    virtual String message() const override { return "No help, yet ..."; }
+    String message() const override { return "No help, yet ..."; }
 };
 
 typedef HelpRequest HelpError; // FIXME: obsolete
@@ -49,7 +49,7 @@ class VersionRequest: public Exception
 public:
     ~VersionRequest() throw() {}
 
-    virtual String message() const override { return "Application is not versioned, yet ..."; }
+    String message() const override { return "Application is not versioned, yet ..."; }
 };
 
 /** \class EncodingError cc/exceptions
@@ -69,7 +69,7 @@ class UnexpectedEndOfInputError: public Exception
 public:
     ~UnexpectedEndOfInputError() throw() {}
 
-    virtual String message() const override { return "Unexpected end of input"; }
+    String message() const override { return "Unexpected end of input"; }
 };
 
 /** \class BufferOverflow cc/exceptions
@@ -80,7 +80,7 @@ class BufferOverflow: public Exception
 public:
     ~BufferOverflow() throw() {}
 
-    virtual String message() const override { return "Buffer overflow"; }
+    String message() const override { return "Buffer overflow"; }
 };
 
 /** \class DebugError cc/exceptions
@@ -96,7 +96,7 @@ public:
     {}
     ~DebugError() throw() {}
 
-    virtual String message() const override;
+    String message() const override;
 
 private:
     String reason_;
@@ -115,9 +115,9 @@ public:
     SystemError(int errorCode): errorCode_(errorCode) {}
     ~SystemError() throw() {}
 
-    inline int errorCode() const { return errorCode_; }
+    int errorCode() const { return errorCode_; }
 
-    virtual String message() const override;
+    String message() const override;
 
 protected:
     int errorCode_;
@@ -137,11 +137,11 @@ public:
     {}
     ~SystemResourceError() throw() {}
 
-    inline String resource() const { return resource_; }
-    inline const char *source() const { return source_; }
-    inline int line() const { return line_; }
+    String resource() const { return resource_; }
+    const char *source() const { return source_; }
+    int line() const { return line_; }
 
-    virtual String message() const override;
+    String message() const override;
 
 private:
     String resource_;
@@ -162,10 +162,10 @@ public:
     {}
     ~SystemDebugError() throw() {}
 
-    inline const char *source() const { return source_; }
-    inline int line() const { return line_; }
+    const char *source() const { return source_; }
+    int line() const { return line_; }
 
-    virtual String message() const override;
+    String message() const override;
 
 private:
     const char *source_;
@@ -193,9 +193,9 @@ private:
 class TextError: public Exception
 {
 public:
-    inline String text() const { return text_; }
-    inline int offset() const { return offset_; }
-    inline String resource() const { return resource_; }
+    String text() const { return text_; }
+    int offset() const { return offset_; }
+    String resource() const { return resource_; }
 
     void setResource(const String &resource) { resource_ = resource; }
 
@@ -220,9 +220,9 @@ public:
     {}
     ~SemanticError() throw() {}
 
-    inline String reason() const { return reason_; }
+    String reason() const { return reason_; }
 
-    virtual String message() const override;
+    String message() const override;
 
 private:
     String reason_;
@@ -239,10 +239,10 @@ public:
     Interrupt(int signal);
     ~Interrupt() throw() {}
 
-    inline int signal() const { return signal_; }
+    int signal() const { return signal_; }
     String signalName() const;
 
-    virtual String message() const override;
+    String message() const override;
 
 private:
     int signal_;
@@ -255,7 +255,7 @@ class Timeout: public Exception
 {
 public:
     ~Timeout() throw() {}
-    virtual String message() const;
+    String message() const override;
 };
 
 /** \class ConnectionResetByPeer cc/exceptions
@@ -265,7 +265,7 @@ class ConnectionResetByPeer: public Exception
 {
 public:
     ~ConnectionResetByPeer() throw() {}
-    virtual String message() const override;
+    String message() const override;
 };
 
 /** \class TransferError cc/exceptions

@@ -7,6 +7,7 @@
  */
 
 #include <cc/Format>
+#include <cc/syntax/Token>
 #include <cc/net/SocketAddress>
 #include <cc/net/UriSyntax>
 #include <cc/net/Uri>
@@ -16,14 +17,24 @@ namespace net {
 
 using namespace cc::syntax;
 
+Ref<Uri> Uri::create()
+{
+    return new Uri;
+}
+
+Ref<Uri> Uri::parse(const String &text, Token *rootToken)
+{
+    return new Uri(text, rootToken);
+}
+
 Uri::Uri():
-    hostIsNumeric_(false),
-    port_(-1)
+    hostIsNumeric_{false},
+    port_{-1}
 {}
 
 Uri::Uri(const CharArray *text, Token *rootToken):
-    hostIsNumeric_(false),
-    port_(-1)
+    hostIsNumeric_{false},
+    port_{-1}
 {
     readUri(text, rootToken);
 }
@@ -72,6 +83,21 @@ void Uri::readUri(const CharArray *text, Token *rootToken)
     }
 }
 
+String Uri::requestHost() const
+{
+    return host_ + ":" + str(port_);
+}
+
+String Uri::requestPath() const
+{
+    if (query_ == "" && fragment_ == "") return path_;
+    auto parts = StringList::create();
+    parts << path_;
+    if (query_ != "") parts << "?" << query_;
+    if (fragment_ != "") parts << "#" << fragment_;
+    return parts;
+}
+
 String Uri::toString() const
 {
     Format text;
@@ -102,7 +128,7 @@ String Uri::toString() const
     return text;
 }
 
-String Uri::encode(String s)
+String Uri::encode(const String &s)
 {
     mutate(s)->downcaseInsitu();
 
@@ -130,7 +156,7 @@ String Uri::encode(String s)
     return l->join();
 }
 
-String Uri::decode(String s)
+String Uri::decode(const String &s)
 {
     int j = 0;
     for (int i = 0, n = s->count(); i < n; ++i, ++j) {

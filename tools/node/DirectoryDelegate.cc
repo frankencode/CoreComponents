@@ -38,7 +38,7 @@ void DirectoryDelegate::process(HttpRequest *request)
     String prefix = path->head(directoryInstance_->path()->count());
     if (path->head(directoryInstance_->path()->count()) != directoryInstance_->path()) throw Forbidden();
 
-    if ((!directoryInstance_->showHidden()) && path->baseName()->startsWith('.')) throw NotFound();
+    if ((!directoryInstance_->showHidden()) && path->baseName()->startsWith('.')) throw NotFound{};
 
     Ref<FileStatus> fileStatus = FileStatus::read(path);
 
@@ -52,7 +52,7 @@ void DirectoryDelegate::process(HttpRequest *request)
         }
     }
 
-    if (!fileStatus->isValid()) throw NotFound();
+    if (!fileStatus->isValid()) throw NotFound{};
 
     {
         String h;

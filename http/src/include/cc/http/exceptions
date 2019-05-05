@@ -21,13 +21,10 @@ class CloseRequest {};
 class ProtocolException: public Exception
 {
 public:
-    ProtocolException(int statusCode, String message):
-        statusCode_{statusCode},
-        message_{message}
-    {}
+    ProtocolException(int statusCode, const String &message);
 
-    int statusCode() const { return statusCode_; }
-    String message() const { return message_; }
+    int statusCode() const;
+    String message() const;
 
 private:
     int statusCode_;

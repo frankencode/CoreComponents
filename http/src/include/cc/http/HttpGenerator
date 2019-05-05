@@ -33,6 +33,8 @@ public:
     Format chunk();
     void endTransmission();
 
+    void transmit();
+
 protected:
     HttpGenerator(HttpConnection *peer);
     ~HttpGenerator();

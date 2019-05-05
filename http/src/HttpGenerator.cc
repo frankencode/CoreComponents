@@ -96,4 +96,10 @@ void HttpGenerator::endTransmission()
     }
 }
 
+void HttpGenerator::transmit()
+{
+    beginTransmission();
+    endTransmission();
+}
+
 }} // namespace cc::http

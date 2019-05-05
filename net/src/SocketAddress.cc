@@ -21,6 +21,16 @@
 namespace cc {
 namespace net {
 
+Ref<SocketAddress> SocketAddress::create()
+{
+    return new SocketAddress;
+}
+
+Ref<SocketAddress> SocketAddress::create(int family, const String &address, int port)
+{
+    return new SocketAddress{family, address, port};
+}
+
 Ref<SocketAddress> SocketAddress::createBroadcast(int port)
 {
     Ref<SocketAddress> address = new SocketAddress;
@@ -30,17 +40,24 @@ Ref<SocketAddress> SocketAddress::createBroadcast(int port)
     return address;
 }
 
-Ref<SocketAddress> SocketAddress::read(String location)
+Ref<SocketAddress> SocketAddress::create(struct sockaddr_in *addr)
+{
+    return new SocketAddress{addr};
+}
+
+Ref<SocketAddress> SocketAddress::SocketAddress::create(struct sockaddr_in6 *addr)
+{
+    return new SocketAddress{addr};
+}
+
+Ref<SocketAddress> SocketAddress::create(addrinfo *info)
+{
+    return new SocketAddress{info};
+}
+
+Ref<SocketAddress> SocketAddress::resolve(const Uri *uri)
 {
     Ref<SocketAddress> address;
-    Ref<Uri> uri;
-
-    try {
-        uri = Uri::parse(location);
-    }
-    catch (UriSyntaxError &ex) {
-        throw LocationSyntaxError(Format("Invalid address syntax: \"%%\"") << ex.text());
-    }
 
     if (uri->hostIsNumeric()) {
         address = SocketAddress::create(uri->family(), uri->host(), uri->port());
@@ -51,7 +68,7 @@ Ref<SocketAddress> SocketAddress::read(String location)
             address = addressList->at(0);
             address->setPort(uri->port());
         }
-        else throw HostNameResolutionError(Format("Failed to resolve host name \"%%\"") << uri->host());
+        else throw HostNameResolutionError{Format{"Failed to resolve host name \"%%\""} << uri->host()};
     }
 
     return address;
@@ -64,15 +81,15 @@ Ref<SocketAddress> SocketAddress::copy(const SocketAddress *other)
 }
 
 SocketAddress::SocketAddress():
-    socketType_(0),
-    protocol_(0)
+    socketType_{0},
+    protocol_{0}
 {
     addr_.sa_family = AF_UNSPEC;
 }
 
-SocketAddress::SocketAddress(int family, String address, int port):
-    socketType_(0),
-    protocol_(0)
+SocketAddress::SocketAddress(int family, const String &address, int port):
+    socketType_{0},
+    protocol_{0}
 {
     void *addr = 0;
 
@@ -121,16 +138,16 @@ SocketAddress::SocketAddress(int family, String address, int port):
 }
 
 SocketAddress::SocketAddress(struct sockaddr_in *addr):
-    inet4Address_(*addr)
+    inet4Address_{*addr}
 {}
 
 SocketAddress::SocketAddress(struct sockaddr_in6 *addr):
-    inet6Address_(*addr)
+    inet6Address_{*addr}
 {}
 
 SocketAddress::SocketAddress(addrinfo *info):
-    socketType_(info->ai_socktype),
-    protocol_(info->ai_protocol)
+    socketType_{info->ai_socktype},
+    protocol_{info->ai_protocol}
 {
     if (info->ai_family == AF_INET)
         inet4Address_ = *(sockaddr_in *)info->ai_addr;
@@ -141,8 +158,8 @@ SocketAddress::SocketAddress(addrinfo *info):
 }
 
 SocketAddress::SocketAddress(const SocketAddress *other):
-    socketType_(other->socketType_),
-    protocol_(other->protocol_)
+    socketType_{other->socketType_},
+    protocol_{other->protocol_}
 {
     ::memcpy(addr(), other->addr(), other->addrLen());
 }
@@ -221,14 +238,17 @@ String SocketAddress::toString() const
     return s;
 }
 
-int SocketAddress::scope() const {
+int SocketAddress::scope() const
+{
     return (addr_.sa_family == AF_INET6) ? inet6Address_.sin6_scope_id : 0;
 }
-void SocketAddress::setScope(int scope) {
+
+void SocketAddress::setScope(int scope)
+{
     if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
-Ref<SocketAddressList> SocketAddress::resolve(String hostName, String serviceName, int family, int socketType, String *canonicalName)
+Ref<SocketAddressList> SocketAddress::resolve(const String &hostName, const String &serviceName, int family, int socketType, String *canonicalName)
 {
     addrinfo hint;
     addrinfo *head = 0;
@@ -359,8 +379,15 @@ bool SocketAddress::equals(const SocketAddress *b) const
     return false;
 }
 
-struct sockaddr *SocketAddress::addr() { return &addr_; }
-const struct sockaddr *SocketAddress::addr() const { return &addr_; }
+struct sockaddr *SocketAddress::addr()
+{
+    return &addr_;
+}
+
+const struct sockaddr *SocketAddress::addr() const
+{
+    return &addr_;
+}
 
 int SocketAddress::addrLen() const
 {

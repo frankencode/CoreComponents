@@ -13,11 +13,13 @@
 namespace cc {
 namespace net {
 
+/** \class NetworkError cc/net/exceptions
+  * \brief Networking related system error
+  */
 class NetworkError: public SystemError
 {
 public:
-    NetworkError(int errorCode): SystemError(errorCode) {}
-    ~NetworkError() throw() {}
+    NetworkError(int errorCode);
 };
 
 /** \class HostUnreachable cc/net/exceptions
@@ -29,7 +31,6 @@ class HostUnreachable: public NetworkError
 {
 public:
     HostUnreachable();
-    ~HostUnreachable() throw() {}
 };
 
 /** \class ConnectionRefused cc/net/exceptions
@@ -39,7 +40,6 @@ class ConnectionRefused: public NetworkError
 {
 public:
     ConnectionRefused();
-    ~ConnectionRefused() throw() {}
 };
 
 /** \class NetworkUnreachable cc/net/exceptions
@@ -49,7 +49,6 @@ class NetworkUnreachable: public NetworkError
 {
 public:
     NetworkUnreachable();
-    ~NetworkUnreachable() throw() {}
 };
 
 /** \class ConnectionTimeoute cc/net/exceptions
@@ -61,7 +60,15 @@ class ConnectionTimeout: public NetworkError
 {
 public:
     ConnectionTimeout();
-    ~ConnectionTimeout() throw() {}
+};
+
+/** \class HostNameResolutionError cc/net/exceptions
+  * \brief Failed to resolve a host name
+  */
+class HostNameResolutionError: public UsageError
+{
+public:
+    HostNameResolutionError(const String &message);
 };
 
 }} // namespace cc::net

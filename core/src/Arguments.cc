@@ -13,12 +13,12 @@ namespace cc {
 
 Ref<Arguments> Arguments::parse(int argc, char **argv, VariantMap *options)
 {
-    return new Arguments(argc, argv, options);
+    return new Arguments{argc, argv, options};
 }
 
 Arguments::Arguments(int argc, char **argv, VariantMap *options):
-    options_(VariantMap::create()),
-    items_(StringList::create())
+    options_{VariantMap::create()},
+    items_{StringList::create()}
 {
     execPath_ = argv[0];
 
@@ -46,10 +46,10 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
     }
 
     if (options_->contains("h") || options_->contains("help") || options_->contains("?"))
-        throw HelpRequest();
+        throw HelpRequest{};
 
     if (options_->contains("v") || options_->contains("version"))
-        throw VersionRequest();
+        throw VersionRequest{};
 
     if (options) {
         validate(options);
@@ -66,7 +66,7 @@ void Arguments::validate(const VariantMap *prototype)
 
         Variant defaultValue;
         if (!prototype->lookup(name, &defaultValue))
-            throw UsageError(Format("No such option: \"%%\"") << name);
+            throw UsageError{Format("No such option: \"%%\"") << name};
         if (defaultValue == Variant()) continue;
         VariantType valueType = value->type();
         VariantType defaultType = defaultValue->type();
@@ -84,7 +84,7 @@ void Arguments::validate(const VariantMap *prototype)
             }
             else {
                 throw UsageError(
-                    Format("Option \"%%\" expects type %% (got %%: %%)")
+                    Format{"Option \"%%\" expects type %% (got %%: %%)"}
                         << name
                         << defaultValue->typeName()
                         << value->typeName()

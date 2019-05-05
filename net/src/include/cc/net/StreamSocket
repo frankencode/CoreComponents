@@ -27,8 +27,8 @@ public:
       */
     static Ref<StreamSocket> listen(const SocketAddress *localAddress, int backlog = 1024);
 
-    /** Connect to a remote host
-      * \param peerAddress address of remote host
+    /** Connect to a peer socket
+      * \param peerAddress address of peer socket
       * \return new object instance
       */
     static Ref<StreamSocket> connect(const SocketAddress *peerAddress);
@@ -43,6 +43,10 @@ public:
       * \return new object instance
       */
     Ref<StreamSocket> accept();
+
+    /** Wait until connection has been established
+      */
+    void waitConnected() const;
 
     /** Returns the local or remote address associated with this socket
       */
@@ -70,6 +74,8 @@ protected:
     }
 
     void connect();
+
+    bool isConnected() const { return connected_; }
 
     Ref<SocketAddress> address_;
     bool connected_;

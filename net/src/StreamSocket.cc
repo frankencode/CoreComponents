@@ -10,6 +10,7 @@
 #include <fcntl.h> // fcntl
 #include <errno.h> // errno
 #include <math.h> // modf
+#include <cc/debug> // DEBUG
 #include <cc/exceptions>
 #include <cc/Singleton>
 #include <cc/net/StreamSocket>
@@ -19,14 +20,14 @@ namespace net {
 
 Ref<StreamSocket> StreamSocket::listen(const SocketAddress *localAddress, int backlog)
 {
-    Ref<StreamSocket> socket = new StreamSocket(localAddress);
+    Ref<StreamSocket> socket = new StreamSocket{localAddress};
     socket->listen(backlog);
     return socket;
 }
 
 Ref<StreamSocket> StreamSocket::connect(const SocketAddress *peerAddress)
 {
-    Ref<StreamSocket> socket = new StreamSocket(peerAddress);
+    Ref<StreamSocket> socket = new StreamSocket{peerAddress};
     socket->connect();
     return socket;
 }

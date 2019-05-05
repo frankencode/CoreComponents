@@ -39,6 +39,11 @@ void HttpRequestGenerator::setVersion(const String &version)
     version_ = version;
 }
 
+void HttpRequestGenerator::setHost(const String &host)
+{
+    header_->establish("Host", host);
+}
+
 void HttpRequestGenerator::polishHeader()
 {
     header_->insert("Connection", "keep-alive");

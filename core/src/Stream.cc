@@ -34,7 +34,7 @@ void Stream::write(const Format &format)
 class WrappedChunk: public CharArray {
 public:
     WrappedChunk(const void *data, int size):
-        CharArray((const char *)data, size, CharArray::doNothing)
+        CharArray{(const char *)data, size, CharArray::doNothing}
     {}
 
     ~WrappedChunk()
@@ -90,9 +90,9 @@ int Stream::readSpan(CharArray *data)
 
 String Stream::readSpan(int count)
 {
-    if (count == 0) return String();
+    if (count == 0) return String{};
     if (count < 0) return readAll();
-    String s(count);
+    String s{count};
     readSpan(mutate(s));
     return s;
 }

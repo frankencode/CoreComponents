@@ -117,7 +117,7 @@ void NodeConfig::load(int argc, char **argv)
 
 ServiceInstance *NodeConfig::selectService(const String &host, const String &uri) const
 {
-    ServiceInstance *serviceInstance = 0;
+    ServiceInstance *serviceInstance = nullptr;
 
     for (ServiceInstance *candidate: serviceInstances_)
     {

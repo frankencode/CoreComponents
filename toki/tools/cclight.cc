@@ -37,7 +37,7 @@ int main(int argc, char **argv)
             arguments->validate(prototype);
         }
 
-        VariantMap *options = arguments->options();
+        const VariantMap *options = arguments->options();
         const StringList *items = arguments->items();
         bool verbose = options->value("verbose");
         bool cssOption = options->value("css");

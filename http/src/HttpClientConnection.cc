@@ -12,6 +12,11 @@
 namespace cc {
 namespace http {
 
+Ref<HttpClientConnection> HttpClientConnection::open(HttpClientSocket *socket)
+{
+    return new HttpClientConnection{socket};
+}
+
 HttpClientConnection::HttpClientConnection(HttpClientSocket *socket):
     HttpConnection{socket},
     socket_{socket}
@@ -32,23 +37,23 @@ Ref<HttpResponse> HttpClientConnection::readResponse()
 void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *message)
 {
     String line;
-    if (!source->read(&line)) throw CloseRequest();
+    if (!source->read(&line)) throw CloseRequest{};
 
     HttpResponse *response = Object::cast<HttpResponse *>(message);
 
-    Ref<StringList> parts = line->simplify()->split(' ');
+    Ref<StringList> parts = line->split(' ');
     if (parts->count() > 0) {
         response->version_ = parts->popFront();
         mutate(response->version_)->upcaseInsitu();
     }
 
-    if (response->version_ != "HTTP/1.1") throw UnsupportedVersion();
+    if (response->version_ != "HTTP/1.1") throw UnsupportedVersion{};
 
-    if (parts->count() > 1)
+    if (parts->count() > 0)
         response->statusCode_ = parts->popFront()->toNumber<int>();
 
-    if (parts->count() > 2)
-        response->reasonPhrase_ = parts->join();
+    if (parts->count() > 0)
+        response->reasonPhrase_ = parts->join(" ");
 }
 
 }} // namespace cc::http

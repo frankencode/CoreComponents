@@ -106,10 +106,10 @@ void ServiceWorker::run()
             catch (ProtocolException &ex) {
                 if (requestCount > 0 || ex.statusCode() == RequestTimeout::StatusCode) {
                     try {
-                        Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream()) << ex.statusCode() << " " << ex.message();
+                        Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream())
+                            << ex.statusCode()
+                            << ex.message();
                     }
-                    catch(Exception &)
-                    {}
                     catch(...)
                     {}
                     logDelivery(client_, ex.statusCode());
