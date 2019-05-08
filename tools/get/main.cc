@@ -19,11 +19,13 @@ int main(int argc, char **argv)
         auto items = arguments->items();
 
         for (auto item: items) {
+            auto security = SecuritySettings::createDefault();
             auto uri = Uri::parse(item);
-            if (uri->port() <= 0) uri->setPort(uri->scheme() == "https" ? 443 : 80);
+            if (uri->port() <= 0) uri->setPort(80);
             if (uri->path() == "") uri->setPath("/");
+            if (uri->scheme() == "http") security = nullptr;
             auto address = SocketAddress::resolve(uri);
-            auto socket = HttpClientSocket::connect(address, uri->host());
+            auto socket = HttpClientSocket::connect(address, uri->host(), security);
             auto connection = HttpClientConnection::open(socket);
             auto request = HttpRequestGenerator::create(connection);
             request->setMethod("GET");
