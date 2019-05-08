@@ -34,7 +34,7 @@ bool HttpStream::isPayloadConsumed() const
 
 void HttpStream::nextHeader()
 {
-    if (eoi_) throw CloseRequest{};
+    if (eoi_) return;
     if (payloadLeft_ > 0) throw CloseRequest{};
     payloadLeft_ = -1;
     nlCount_ = 0;
@@ -58,33 +58,36 @@ void HttpStream::nextLine()
 
 void HttpStream::nextChunk()
 {
-    nextLine();
-    String line = readAll();
-    payloadLeft_ = 0;
-    for (int i = 0; i < line->count(); ++i) {
-        char ch = line->at(i);
-        if (ch == '\r' || ch == '\n') continue;
-        payloadLeft_ *= 16;
-        if ('0' <= ch && ch <= '9') payloadLeft_ += ch - '0';
-        else if ('a' <= ch && ch <= 'f') payloadLeft_ += 10 + (ch - 'a');
-        else if ('A' <= ch && ch <= 'F') payloadLeft_ += 10 + (ch - 'A');
-        else throw BadRequest{};
+    if (chunked_) {
+        chunked_ = false;
+        nextLine();
+        readAll();
     }
+    bool ok = false;
+    nextLine();
+    payloadLeft_ = readAll()->trim()->toNumber<int, 16>(&ok);
+    chunked_ = true;
+    if (!ok) throw BadRequest{};
     if (payloadLeft_ == 0) {
         chunked_ = false;
         nextHeader();
         nlCount_ = 1;
         TransferLimiter::open(this, 0x10000)->drain();
     }
-    else {
-        chunked_ = true;
-    }
 }
 
 int HttpStream::read(CharArray *data)
 {
-    if (eoi_ || payloadLeft_ == 0)
-        return 0;
+    if (eoi_) return 0;
+
+    if (payloadLeft_ == 0) {
+        if (chunked_) {
+            nextChunk();
+            if (payloadLeft_ == 0)
+                return 0;
+        }
+        else return 0;
+    }
 
     int n = 0;
     if (pending_) {
@@ -104,8 +107,10 @@ int HttpStream::read(CharArray *data)
 
     if (n == 0) {
         eoi_ = true;
+        return 0;
     }
-    else if (payloadLeft_ == -1) {
+
+    if (payloadLeft_ == -1) {
         int i = 0;
         for (;i < n && nlCount_ < nlMax_; ++i) {
             if (data->at(i) == '\r')
@@ -128,7 +133,6 @@ int HttpStream::read(CharArray *data)
         pendingIndex_ = 0;
         n = payloadLeft_;
         payloadLeft_ = 0;
-        if (chunked_) nextChunk();
     }
     else {
         payloadLeft_ -= n;

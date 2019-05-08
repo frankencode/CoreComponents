@@ -47,7 +47,11 @@ void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *messag
         mutate(response->version_)->upcaseInsitu();
     }
 
-    if (response->version_ != "HTTP/1.1") throw UnsupportedVersion{};
+    if (
+        response->version_ != "HTTP/1.1" &&
+        response->version_ != "HTTP/1.0"
+    )
+        throw UnsupportedVersion{};
 
     if (parts->count() > 0)
         response->statusCode_ = parts->popFront()->toNumber<int>();

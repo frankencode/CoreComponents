@@ -24,7 +24,7 @@ Ref<Uri> Uri::create()
 
 Ref<Uri> Uri::parse(const String &text, Token *rootToken)
 {
-    return new Uri(text, rootToken);
+    return new Uri{text, rootToken};
 }
 
 Uri::Uri():

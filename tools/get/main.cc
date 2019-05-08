@@ -1,4 +1,3 @@
-#include <cc/debug> // DEBUG
 #include <cc/stdio>
 #include <cc/Arguments>
 #include <cc/net/Uri>
@@ -21,6 +20,8 @@ int main(int argc, char **argv)
 
         for (auto item: items) {
             auto uri = Uri::parse(item);
+            if (uri->port() <= 0) uri->setPort(uri->scheme() == "https" ? 443 : 80);
+            if (uri->path() == "") uri->setPath("/");
             auto address = SocketAddress::resolve(uri);
             auto socket = HttpClientSocket::connect(address, uri->host());
             auto connection = HttpClientConnection::open(socket);
