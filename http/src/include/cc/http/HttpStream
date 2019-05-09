@@ -10,6 +10,8 @@
 
 #include <cc/Stream>
 
+namespace cc { class TransferLimiter; }
+
 namespace cc {
 namespace http {
 
@@ -32,7 +34,12 @@ public:
 private:
     HttpStream(Stream *stream);
 
+    CharArray *buffer();
+    void discard();
+
     Ref<Stream> stream_;
+    Ref<TransferLimiter> drainage_;
+    String buffer_;
     String pending_;
     int pendingIndex_;
     int64_t payloadLeft_;

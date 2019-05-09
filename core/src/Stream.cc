@@ -101,7 +101,7 @@ String Stream::readAll(CharArray *buffer)
 {
     String data = buffer;
     if (!data) data = String::allocate(0x4000);
-    Ref<StringList> parts = StringList::create();
+    auto parts = StringList::create();
     while (true) {
         int n = read(mutate(data));
         if (n == 0) break;

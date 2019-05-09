@@ -65,15 +65,30 @@ void HttpStream::nextChunk()
     }
     bool ok = false;
     nextLine();
-    payloadLeft_ = readAll()->trim()->toNumber<int, 16>(&ok);
+    String line = readAll(buffer());
+    mutate(line)->trimInsitu();
+    payloadLeft_ = line->toNumber<int, 16>(&ok);
     chunked_ = true;
     if (!ok) throw BadRequest{};
     if (payloadLeft_ == 0) {
         chunked_ = false;
         nextHeader();
         nlCount_ = 1;
-        TransferLimiter::open(this, 0x10000)->drain();
+        discard();
     }
+}
+
+CharArray *HttpStream::buffer()
+{
+    if (!buffer_) buffer_ = String::allocate(0x1000);
+    return mutate(buffer_);
+}
+
+void HttpStream::discard()
+{
+    if (!drainage_) drainage_ = TransferLimiter::open(this, 0x10000);
+    else drainage_->reset();
+    drainage_->drain(buffer());
 }
 
 int HttpStream::read(CharArray *data)
