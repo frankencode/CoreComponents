@@ -34,7 +34,7 @@ HttpServerConnection::HttpServerConnection(HttpServerSocket *socket):
 
 ServiceInstance *HttpServerConnection::handshake()
 {
-    ServiceInstance *serviceInstance = 0;
+    ServiceInstance *serviceInstance = nullptr;
 
     if (socket_->isSecure()) {
         serviceInstance = socket_->handshake();

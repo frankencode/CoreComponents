@@ -25,7 +25,7 @@ class HttpServerConnection: public HttpConnection
 public:
     static Ref<HttpServerConnection> open(HttpServerSocket *socket);
 
-    inline const SocketAddress *address() const { return socket_->address(); }
+    const SocketAddress *address() const { return socket_->address(); }
 
     ServiceInstance *handshake();
     bool isSecure() const;
@@ -33,16 +33,16 @@ public:
     Ref<HttpRequest> readRequest();
     void putBack(HttpRequest *request);
 
-    inline HttpRequest *request() const { return request_; }
-    inline ConnectionInfo *connectionInfo() const { return connectionInfo_; }
-    inline int priority() const { return connectionInfo_->priority(); }
+    HttpRequest *request() const { return request_; }
+    ConnectionInfo *connectionInfo() const { return connectionInfo_; }
+    int priority() const { return connectionInfo_->priority(); }
 
 private:
     HttpServerConnection(HttpServerSocket *socket);
 
     Ref<HttpRequest> scanRequest();
-    virtual void readFirstLine(LineSource *source, HttpMessage *message) override;
-    virtual void onHeaderReceived(HttpMessage *message) override;
+    void readFirstLine(LineSource *source, HttpMessage *message) override;
+    void onHeaderReceived(HttpMessage *message) override;
 
     Ref<HttpServerSocket> socket_;
     Ref<HttpRequest> request_, pendingRequest_;

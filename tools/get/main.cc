@@ -11,7 +11,7 @@ using namespace cc::http;
 
 int main(int argc, char **argv)
 {
-    String toolName = String{argv[0]}->fileName();
+    auto toolName = String{argv[0]}->fileName();
 
     try {
         auto options = VariantMap::create();

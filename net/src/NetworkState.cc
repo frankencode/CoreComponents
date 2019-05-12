@@ -35,7 +35,7 @@ NetworkState::NetworkState(String interfaceName):
     interface_ = NetworkInterface::query(interfaceName_, AF_UNSPEC);
     if (!gateway_) {
         for (const SocketAddress *address: interface_->addressList()) {
-            if (address->family() != AF_INET) continue;
+            if (address->family() != ProtocolFamily::Internet6) continue;
             candidateAddress = address;
             break;
         }

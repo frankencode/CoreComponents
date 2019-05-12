@@ -18,7 +18,7 @@ namespace tar {
 
 Ref<TarWriter> TarWriter::open(Stream *sink)
 {
-    return new TarWriter(sink);
+    return new TarWriter{sink};
 }
 
 TarWriter::TarWriter(Stream *sink):
@@ -34,13 +34,13 @@ TarWriter::~TarWriter()
     sink_->write(String(1024, '\0'));
 }
 
-void TarWriter::writeFile(String path)
+void TarWriter::writeFile(const String &path)
 {
-    Ref<FileStatus> status = FileStatus::read(path, false);
+    Ref<FileStatus> status = FileStatus::readHead(path);
     writeFile(path, status);
 }
 
-void TarWriter::writeFile(String path, FileStatus *status)
+void TarWriter::writeFile(String path, const FileStatus *status)
 {
     Ref<StringList> headerFields = StringList::create();
 

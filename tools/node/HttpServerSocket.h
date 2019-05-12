@@ -17,23 +17,26 @@ using namespace cc;
 using namespace cc::net;
 
 class ClientHelloContext;
+class HttpServerConnection;
 
 class HttpServerSocket: public HttpSocket
 {
 public:
     static Ref<HttpServerSocket> accept(StreamSocket *listeningSocket);
-    ServiceInstance *handshake();
 
     bool isSecure() const { return mode_ & Secure; }
     void upgradeToSecureTransport();
 
 private:
     friend class ClientHelloContext;
+    friend class HttpServerConnection;
 
     HttpServerSocket(const SocketAddress *address, int mode);
     ~HttpServerSocket();
 
     static int onClientHello(gnutls_session_t session);
+    ServiceInstance *handshake();
+
     void initSession();
 
     bool waitInput() override;

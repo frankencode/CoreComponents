@@ -31,53 +31,52 @@ public:
     /** Create an invalid file status
       * \return new object instance
       */
-    inline static Ref<FileStatus> create() { return new FileStatus(""); }
+    static Ref<FileStatus> create();
 
     /** Read file status
       * \param path file or directory path
-      * \param resolve follow symlinks (true) or read status of the symlink file itself (false)
       * \return new object instance
       */
-    inline static Ref<FileStatus> read(String path, bool resolve = true) { return new FileStatus(path, resolve); }
+    static Ref<FileStatus> read(const String &path);
 
-    /** Read file status without resolving symlinks
+    /** Read file status (without following a symlink)
       * \param path file or directory path
       * \return new object instance
       */
-    inline static Ref<FileStatus> readUnresolved(String path) { return new FileStatus(path, false); }
+    static Ref<FileStatus> readHead(const String &path);
 
     /// %File or directory path
-    inline String path() const { return path_; }
+    String path() const { return path_; }
 
     /// %File type
-    inline FileType type() const  { return static_cast<FileType>(st_mode & S_IFMT); }
+    FileType type() const  { return static_cast<FileType>(st_mode & S_IFMT); }
 
     /// %File access mask
-    inline FileMode mode() const { return static_cast<FileMode>(st_mode & (~S_IFMT)); }
+    FileMode mode() const { return static_cast<FileMode>(st_mode & (~S_IFMT)); }
 
     /// %File size in number of bytes
-    inline off_t size() const { return st_size; }
+    off_t size() const { return st_size; }
 
     /// %File size in number of blocks
-    inline off_t sizeInBlocks() const { return st_blocks; }
+    off_t sizeInBlocks() const { return st_blocks; }
 
     /// Block size
-    inline off_t sizeOfBlock() const { return st_blksize; }
+    off_t sizeOfBlock() const { return st_blksize; }
 
     /// %File owner user ID
-    inline uid_t ownerId() const { return st_uid; }
+    uid_t ownerId() const { return st_uid; }
 
     /// %File owner group ID
-    inline gid_t groupId() const { return st_gid; }
+    gid_t groupId() const { return st_gid; }
 
     /// Time when file was last accessed
-    inline double lastAccess() const { return st_atime; }
+    double lastAccess() const { return st_atime; }
 
     /// Time when file was last modified
-    inline double lastModified() const { return st_mtime; }
+    double lastModified() const { return st_mtime; }
 
     /// Time when file meta information was last modified
-    inline double lastChanged() const { return st_ctime; }
+    double lastChanged() const { return st_ctime; }
 
     /** %Set the file times
       * \param lastAccess time when file was last accessed
@@ -86,28 +85,28 @@ public:
     void setTimes(double lastAccess, double lastModified);
 
     /// ID of devices containing the file
-    inline dev_t storageId() const { return st_dev; }
+    dev_t storageId() const { return st_dev; }
 
     /// Inode number
-    inline ino_t inodeNumber() const { return st_ino; }
+    ino_t inodeNumber() const { return st_ino; }
 
     /// Number of hard links (number of directory entries)
-    inline nlink_t numberOfHardLinks() const { return st_nlink; }
+    nlink_t numberOfHardLinks() const { return st_nlink; }
 
     /// Device ID (if device file)
-    inline dev_t deviceId() const { return st_rdev; }
+    dev_t deviceId() const { return st_rdev; }
 
     /// Returns true if file exists otherwise false
-    inline bool isValid() const { return isValid_; }
+    bool isValid() const { return isValid_; }
 
 private:
-    FileStatus(String path, bool resolve = true);
+    FileStatus(const String &path = "", bool follow = true);
 
     bool update();
 
     String path_;
     bool isValid_;
-    bool resolve_;
+    bool follow_;
 };
 
 } // namespace cc

@@ -22,6 +22,11 @@
 
 namespace cc {
 
+Ref<Dir> Dir::open(const String &path)
+{
+    return new Dir{path};
+}
+
 Ref<Dir> Dir::tryOpen(const String &path)
 {
     DIR *dir = ::opendir(path);
@@ -29,18 +34,9 @@ Ref<Dir> Dir::tryOpen(const String &path)
     return 0;
 }
 
-Ref<Dir> Dir::openTemp()
-{
-    String path = createUnique(
-        Format("/tmp/%%_########")
-            << Process::exePath()->fileName()
-    );
-    return open(path);
-}
-
-Dir::Dir(String path, DIR *dir):
-    path_(path),
-    dir_(dir)
+Dir::Dir(const String &path, DIR *dir):
+    path_{path},
+    dir_{dir}
 {
     if (!dir_) {
         dir_ = ::opendir(path_);
@@ -59,7 +55,10 @@ Dir::~Dir()
     #endif
 }
 
-String Dir::path() const { return path_; }
+String Dir::path() const
+{
+    return path_;
+}
 
 bool Dir::read(String *name)
 {

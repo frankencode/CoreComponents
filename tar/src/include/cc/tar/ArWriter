@@ -19,7 +19,7 @@ class ArWriter: public ArchiveWriter
 public:
     static Ref<ArWriter> open(Stream *sink);
 
-    void writeFile(String path);
+    void writeFile(const String &path) override;
 
 private:
     ArWriter(Stream *sink);
@@ -29,4 +29,3 @@ private:
 };
 
 }} // namespace cc::tar
-

@@ -22,7 +22,7 @@ class SecurityConfig: public Object
 {
 public:
     static Ref<SecurityConfig> load(MetaObject *config) {
-        return new SecurityConfig(config);
+        return new SecurityConfig{config};
     }
 
     bool hasCredentials() const { return hasCredentials_; }

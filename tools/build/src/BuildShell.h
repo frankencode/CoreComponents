@@ -21,30 +21,30 @@ class BuildPlan;
 class BuildShell: public Object
 {
 public:
-    static Ref<BuildShell> create(const BuildPlan *plan) { return new BuildShell(plan); }
+    static Ref<BuildShell> create(const BuildPlan *plan) { return new BuildShell{plan}; }
 
-    String beautify(String command) const;
-    bool run(String command) const;
+    String beautify(const String &command) const;
+    bool run(const String &command) const;
 
-    Ref<FileStatus> fileStatus(String path) const;
+    Ref<FileStatus> fileStatus(const String &path) const;
 
-    void mkdir(String path) const;
-    void rmdir(String path) const;
-    bool clean(String path) const;
-    void symlink(String path, String newPath) const;
+    void mkdir(const String &path) const;
+    void rmdir(const String &path) const;
+    bool clean(const String &path) const;
+    void symlink(const String &path, const String &newPath) const;
 
-    bool install(String sourcePath, String destPath) const;
-    bool unlink(String path) const;
+    bool install(const String &sourcePath, const String &destPath) const;
+    bool unlink(const String &path) const;
 
-    bool installAll(String sourcePrefix, String installPrefix) const;
-    bool unlinkAll(String sourcePrefix, String installPrefix) const;
+    bool installAll(const String &sourcePrefix, const String &installPrefix) const;
+    bool unlinkAll(const String &sourcePrefix, const String &installPrefix) const;
 
-    void cd(String path) const;
+    void cd(const String &path) const;
 
 private:
     BuildShell(const BuildPlan *plan);
 
-    inline const BuildPlan *plan() const { return plan_; }
+    const BuildPlan *plan() const { return plan_; }
 
     const BuildPlan *plan_;
 };

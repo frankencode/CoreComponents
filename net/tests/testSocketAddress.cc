@@ -16,29 +16,29 @@ using namespace cc;
 using namespace cc::testing;
 using namespace cc::net;
 
-String familyToString(int family)
+String familyToString(ProtocolFamily family)
 {
-    String s("UNKNOWN");
-    if (family == AF_INET) s = "INET";
-    else if (family == AF_INET6) s = "INET6";
-    else if (family == AF_UNSPEC) s = "UNSPEC";
+    String s{"UNKNOWN"};
+    if (+family == AF_INET) s = "INET";
+    else if (+family == AF_INET6) s = "INET6";
+    else if (+family == AF_UNSPEC) s = "UNSPEC";
     return s;
 }
 
-String socketTypeToString(int type)
+String socketTypeToString(SocketType type)
 {
-    String s("UNKNOWN");
-    if (type == SOCK_DGRAM) s = "DGRAM";
-    else if (type == SOCK_STREAM) s = "STREAM";
+    String s{"UNKNOWN"};
+    if (+type == SOCK_DGRAM) s = "DGRAM";
+    else if (+type == SOCK_STREAM) s = "STREAM";
     return s;
 }
 
-String protocolToString(int protocol)
+String protocolToString(InternetProtocol protocol)
 {
-    String s("UNKNOWN");
-    if (protocol == IPPROTO_TCP) s = "TCP";
-    else if (protocol == IPPROTO_UDP) s = "UDP";
-    else s = Format("<%%>") << protocol;
+    String s{"UNKNOWN"};
+    if (+protocol == IPPROTO_TCP) s = "TCP";
+    else if (+protocol == IPPROTO_UDP) s = "UDP";
+    else s = Format("<%%>") << +protocol;
     return s;
 }
 
@@ -51,7 +51,7 @@ class ResolveHostName: public TestCase
         fout("hostName = \"%%\"\n") << hostName;
 
         String canonicalName;
-        Ref<SocketAddressList> list = SocketAddress::resolve(hostName, "http", AF_UNSPEC, SOCK_STREAM, &canonicalName);
+        Ref<SocketAddressList> list = SocketAddress::resolve(hostName, "http", ProtocolFamily::Unspecified, SocketType::Stream, &canonicalName);
 
         fout("canonicalName = \"%%\"\n") << canonicalName;
 

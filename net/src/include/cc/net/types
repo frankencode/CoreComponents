@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <arpa/inet.h>
+
+namespace cc {
+namespace net {
+
+/** \brief Network protocol family
+  */
+enum class ProtocolFamily: int
+{
+    Unspecified = PF_UNSPEC, ///< Protocol family is not specified
+    Internet4   = PF_INET,   ///< IPv4
+    Internet6   = PF_INET6,  ///< IPv6
+    Local       = PF_LOCAL   ///< Unix Domain Protocols
+};
+
+/** Prefix plus operator: shorthand to convert ProtocolFamily to int
+  */
+inline int operator+(ProtocolFamily family) { return static_cast<int>(family); }
+
+/** \brief Socket type
+  */
+enum class SocketType: int
+{
+    Unspecified = 0,           ///< Socket type is not specified
+    Stream      = SOCK_STREAM, ///< Reliable sequential byte streams
+    Datagram    = SOCK_DGRAM   ///< Unrealiable message passing
+};
+
+/** Prefix plus operator: shorthand to convert SocketType to int
+  */
+inline int operator+(SocketType type) { return static_cast<int>(type); }
+
+/** \brief Internet protocol type
+  */
+enum class InternetProtocol: int
+{
+    Unspecified = 0,           ///< Internet protocol is not specified
+    Tcp         = IPPROTO_TCP, ///< Transport Control Protocol (TCP)
+    Udp         = IPPROTO_UDP  ///< User Datagram Protocol (UDP)
+};
+
+/** Prefix plus operator: shorthand to convert InternetProtocol to int
+  */
+inline int operator+(InternetProtocol protocol) { return static_cast<int>(protocol); }
+
+}} // namespace cc::net

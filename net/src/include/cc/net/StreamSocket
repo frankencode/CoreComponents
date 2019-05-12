@@ -69,7 +69,7 @@ protected:
     void listen(int backlog = 1024);
     int accept(SocketAddress *clientAddress);
 
-    inline static int accept(StreamSocket *listeningSocket, SocketAddress *clientAddress) {
+    static int accept(StreamSocket *listeningSocket, SocketAddress *clientAddress) {
         return listeningSocket->accept(clientAddress);
     }
 

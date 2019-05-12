@@ -20,12 +20,12 @@ class TarWriter: public ArchiveWriter
 public:
     static Ref<TarWriter> open(Stream *sink);
 
-    void writeFile(String path);
+    void writeFile(const String &path) override;
 
 private:
     TarWriter(Stream *sink);
     ~TarWriter();
-    void writeFile(String path, FileStatus *status);
+    void writeFile(String path, const FileStatus *status);
     void writePadding(off_t unpaddedSize);
 
     Ref<Stream> sink_;
@@ -35,12 +35,12 @@ private:
         FileId()
         {}
 
-        FileId(FileStatus *status)
-            : deviceId_(status->deviceId()),
-              inodeNumber_(status->inodeNumber())
+        FileId(const FileStatus *status):
+            deviceId_{status->deviceId()},
+            inodeNumber_{status->inodeNumber()}
         {}
 
-        inline bool operator<(const FileId &b) const {
+        bool operator<(const FileId &b) const {
             if (deviceId_ < b.deviceId_) return true;
             if (b.deviceId_ < deviceId_) return false;
             return inodeNumber_ < b.inodeNumber_;
@@ -60,4 +60,3 @@ private:
 };
 
 }} // namespace cc::tar
-

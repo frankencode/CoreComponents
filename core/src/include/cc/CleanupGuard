@@ -23,14 +23,12 @@ public:
       * \param path directory path
       * \return new object instance
       */
-    static Ref<CleanupGuard> create(String path) { return new CleanupGuard(path); }
+    static Ref<CleanupGuard> post(const String &path);
 
     /** \brief Low-level constructor
       * \param path file path
-      *
-      * The public constructor allows to post an CleanupGuard statically into a scope.
       */
-    CleanupGuard(String path);
+    CleanupGuard(const String &path);
 
     /** \brief Low-level destructor
       */

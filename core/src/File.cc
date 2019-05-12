@@ -229,7 +229,7 @@ String File::readlink(const String &path)
 String File::resolve(const String &path)
 {
     String resolvedPath = path;
-    while (FileStatus::readUnresolved(resolvedPath)->type() == FileType::Symlink) {
+    while (FileStatus::readHead(resolvedPath)->type() == FileType::Symlink) {
         String origPath = resolvedPath;
         resolvedPath = File::readlink(resolvedPath);
         if (resolvedPath == "") break;
@@ -278,15 +278,15 @@ void File::establish(const String &path, int fileMode, int dirMode)
 
 void File::clean(const String &path)
 {
-    try {
-        Dir::deplete(path);
-    }
-    catch (SystemError &) {
-        if (File::exists(path))
+    auto status = FileStatus::read(path);
+    if (status->isValid()) {
+        if (status->type() == FileType::Directory) {
+            Dir::deplete(path);
+            Dir::remove(path);
+        }
+        else
             File::unlink(path);
-        return;
     }
-    Dir::remove(path);
 }
 
 String File::locate(const String &fileName, const StringList *dirs, Access accessFlags)

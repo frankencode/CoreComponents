@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <arpa/inet.h>
 #include <cc/exceptions>
 #include <cc/String>
+#include <cc/net/types>
 
 namespace cc { namespace syntax { class Token; } };
 
@@ -59,10 +59,10 @@ public:
     /// Tell if the host name is a numeric address
     bool hostIsNumeric() const { return hostIsNumeric_; }
 
-    /// Address family of the numeric address (AF_INET or AF_INET6)
-    int family() const {
-        if (!hostIsNumeric_) return AF_UNSPEC;
-        return host_->contains(':') ? AF_INET6 : AF_INET;
+    /// Protocol family of the numeric address
+    ProtocolFamily family() const {
+        if (!hostIsNumeric_) return ProtocolFamily::Unspecified;
+        return host_->contains(':') ? ProtocolFamily::Internet6 : ProtocolFamily::Internet4;
     }
 
     /// Service port

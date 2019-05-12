@@ -18,9 +18,9 @@ using namespace cc;
 
 class CwdGuard {
 public:
-    CwdGuard(String dirPath, const BuildShell *shell):
-        shell_(shell),
-        cwdSaved_(Process::cwd())
+    CwdGuard(const String &dirPath, const BuildShell *shell):
+        shell_{shell},
+        cwdSaved_{Process::cwd()}
     {
         shell->cd(dirPath);
     }

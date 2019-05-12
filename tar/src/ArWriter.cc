@@ -15,19 +15,19 @@ namespace tar {
 
 Ref<ArWriter> ArWriter::open(Stream *sink)
 {
-    return new ArWriter(sink);
+    return new ArWriter{sink};
 }
 
-ArWriter::ArWriter(Stream *sink)
-    : sink_(sink),
-      firstTime_(true)
+ArWriter::ArWriter(Stream *sink):
+    sink_{sink},
+    firstTime_{true}
 {}
 
-void ArWriter::writeFile(String path)
+void ArWriter::writeFile(const String &path)
 {
     if (firstTime_) {
         firstTime_ = false;
-        sink_->write(String("!<arch>\n"));
+        sink_->write(String{"!<arch>\n"});
     }
 
     Ref<File> file = File::open(path);

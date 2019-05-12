@@ -26,18 +26,13 @@ public:
       * \param path directory file path
       * \return new object instance
       */
-    static Ref<Dir> open(const String &path) { return new Dir(path); }
+    static Ref<Dir> open(const String &path);
 
     /** Open an existing directory, if exists
       * \param path directory file path
       * \return new object instance or null if directory does not exists
       */
     static Ref<Dir> tryOpen(const String &path);
-
-    /** Open a new tempory directory
-      * \return new object instance
-      */
-    static Ref<Dir> openTemp(); // FIXME: obsolete, because misleading
 
     /// Return the directory's file path
     String path() const;
@@ -112,7 +107,7 @@ public:
     static void deplete(const String &path);
 
 private:
-    Dir(String path, DIR *dir = 0);
+    Dir(const String &path, DIR *dir = 0);
     ~Dir();
 
     String path_;

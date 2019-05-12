@@ -13,7 +13,7 @@ namespace net {
 
 Ref<DatagramSocket> DatagramSocket::open(const SocketAddress *address)
 {
-    return new DatagramSocket(address);
+    return new DatagramSocket{address};
 }
 
 void DatagramSocket::connect(Ref<DatagramSocket> *first, Ref<DatagramSocket> *second)
@@ -28,14 +28,14 @@ void DatagramSocket::connect(Ref<DatagramSocket> *first, Ref<DatagramSocket> *se
 }
 
 DatagramSocket::DatagramSocket(int fd):
-    SystemStream(fd),
-    addressFamily_(AF_LOCAL)
+    SystemStream{fd},
+    family_{ProtocolFamily::Local}
 {}
 
 DatagramSocket::DatagramSocket(const SocketAddress *address):
-    addressFamily_(address->family())
+    family_{address->family()}
 {
-    fd_ = ::socket(address->family(), SOCK_DGRAM, 0);
+    fd_ = ::socket(+address->family(), SOCK_DGRAM, 0);
     if (fd_ == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 
@@ -44,7 +44,7 @@ DatagramSocket::DatagramSocket(const SocketAddress *address):
         if (::setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1)
             CC_SYSTEM_DEBUG_ERROR(errno);
 
-        if (address->family() == AF_INET6) {
+        if (address->family() == ProtocolFamily::Internet6) {
             int on = 1;
             if (::setsockopt(fd_, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)) == -1)
                 CC_SYSTEM_DEBUG_ERROR(errno);
@@ -76,7 +76,7 @@ void DatagramSocket::setSendBufferSize(int newSize)
 
 int DatagramSocket::recvFrom(Ref<SocketAddress> *peerAddress, CharArray *buffer)
 {
-    *peerAddress = SocketAddress::create(addressFamily_);
+    *peerAddress = SocketAddress::create(family_);
     socklen_t len = (*peerAddress)->addrLen();
     int ret = -1;
     do ret = ::recvfrom(fd_, buffer->bytes(), buffer->count(), 0, (*peerAddress)->addr(), &len);

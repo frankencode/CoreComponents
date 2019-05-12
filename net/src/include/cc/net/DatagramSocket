@@ -73,7 +73,7 @@ public:
 protected:
     DatagramSocket(int fd = 0);
     DatagramSocket(const SocketAddress *localAddress);
-    int addressFamily_;
+    ProtocolFamily family_;
 };
 
 }} // namespace cc::net

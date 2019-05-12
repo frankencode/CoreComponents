@@ -38,7 +38,7 @@ void NodeConfig::load(int argc, char **argv)
 
     if (items->count() > 0) {
         if (items->count() > 1)
-            throw UsageError("Handling multiple input arguments at once is not supported");
+            throw UsageError{"Handling multiple input arguments at once is not supported"};
 
         String path = items->at(0);
         if (Dir::exists(path)) {
@@ -60,13 +60,13 @@ void NodeConfig::load(int argc, char **argv)
 
     String protocol = config->value("protocol-family");
 
-    int family = AF_UNSPEC;
-    if (protocol->toLower() == "ipv6") family = AF_INET6;
-    else if (protocol->toLower() == "ipv4") family = AF_INET;
+    ProtocolFamily family = ProtocolFamily::Unspecified;
+    if (protocol->toLower() == "ipv6") family = ProtocolFamily::Internet6;
+    else if (protocol->toLower() == "ipv4") family = ProtocolFamily::Internet4;
 
     address_ = SocketAddressList::create();
     if (address != "" && address != "*") {
-        Ref<SocketAddressList> l = SocketAddress::resolve(address, "http", family, SOCK_STREAM);
+        Ref<SocketAddressList> l = SocketAddress::resolve(address, "http", family, SocketType::Stream);
         for (SocketAddress *a: l) {
             for (int p: ports) {
                 a->setPort(p);
@@ -76,9 +76,9 @@ void NodeConfig::load(int argc, char **argv)
     }
     else {
         for (int p: ports) {
-            if (family == AF_UNSPEC) {
-                address_->append(SocketAddress::create(AF_INET, "*", p));
-                address_->append(SocketAddress::create(AF_INET6, "*", p));
+            if (family == ProtocolFamily::Unspecified) {
+                address_->append(SocketAddress::create(ProtocolFamily::Internet4, "*", p));
+                address_->append(SocketAddress::create(ProtocolFamily::Internet6, "*", p));
             }
             else
                 address_->append(SocketAddress::create(family, "*", p));

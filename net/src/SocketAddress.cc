@@ -26,7 +26,7 @@ Ref<SocketAddress> SocketAddress::create()
     return new SocketAddress;
 }
 
-Ref<SocketAddress> SocketAddress::create(int family, const String &address, int port)
+Ref<SocketAddress> SocketAddress::create(ProtocolFamily family, const String &address, int port)
 {
     return new SocketAddress{family, address, port};
 }
@@ -81,57 +81,64 @@ Ref<SocketAddress> SocketAddress::copy(const SocketAddress *other)
 }
 
 SocketAddress::SocketAddress():
-    socketType_{0},
-    protocol_{0}
+    socketType_{SocketType::Unspecified},
+    protocol_{InternetProtocol::Unspecified}
 {
     addr_.sa_family = AF_UNSPEC;
 }
 
-SocketAddress::SocketAddress(int family, const String &address, int port):
-    socketType_{0},
-    protocol_{0}
+SocketAddress::SocketAddress(ProtocolFamily family, const String &address, int port):
+    socketType_{SocketType::Unspecified},
+    protocol_{InternetProtocol::Unspecified}
 {
     void *addr = 0;
 
-    if (family == AF_INET) {
-        // inet4Address_.sin_len = sizeof(addr);
-        *(uint8_t *)&inet4Address_ = sizeof(inet4Address_); // uggly, but safe HACK, for BSD4.4
-        inet4Address_.sin_family = AF_INET;
-        inet4Address_.sin_port = htons(port);
-        inet4Address_.sin_addr.s_addr = htonl(INADDR_ANY);
-        addr = &inet4Address_.sin_addr;
-    }
-    else if (family == AF_INET6) {
-        #ifdef SIN6_LEN
-        inet6Address_.sin6_len = sizeof(inet6Address_);
-        #endif
-        inet6Address_.sin6_family = AF_INET6;
-        inet6Address_.sin6_port = htons(port);
-        inet6Address_.sin6_addr = in6addr_any;
-        addr = &inet6Address_.sin6_addr;
-    }
-    else if (family == AF_LOCAL) {
-        localAddress_.sun_family = AF_LOCAL;
-        if (unsigned(address->count()) + 1 > sizeof(localAddress_.sun_path))
-            CC_DEBUG_ERROR("Socket path exceeds maximum length");
-        if (address == "" || address == "*" || address == "::")
-            localAddress_.sun_path[0] = 0;
-        else
-            memcpy(localAddress_.sun_path, address->chars(), address->count() + 1);
-    }
-    else if (family == AF_UNSPEC) {
-        addr_.sa_family = AF_UNSPEC;
-    }
-    else
-        CC_DEBUG_ERROR("Unsupported address family");
-
-    if (family != AF_LOCAL) {
-        if (address != "" && address != "*" && address != "::") {
-            if (family == AF_UNSPEC) {
-                if (address->count(':') >= 2) family = AF_INET6;
-                else family = AF_INET;
+    switch (family) {
+        case ProtocolFamily::Internet4: {
+            // inet4Address_.sin_len = sizeof(addr);
+            *(uint8_t *)&inet4Address_ = sizeof(inet4Address_); // uggly, but safe HACK, for BSD4.4
+            inet4Address_.sin_family = AF_INET;
+            inet4Address_.sin_port = htons(port);
+            inet4Address_.sin_addr.s_addr = htonl(INADDR_ANY);
+            addr = &inet4Address_.sin_addr;
+            break;
+        }
+        case ProtocolFamily::Internet6: {
+            #ifdef SIN6_LEN
+            inet6Address_.sin6_len = sizeof(inet6Address_);
+            #endif
+            inet6Address_.sin6_family = AF_INET6;
+            inet6Address_.sin6_port = htons(port);
+            inet6Address_.sin6_addr = in6addr_any;
+            addr = &inet6Address_.sin6_addr;
+            break;
+        }
+        case ProtocolFamily::Local: {
+            localAddress_.sun_family = AF_LOCAL;
+            if (unsigned(address->count()) + 1 > sizeof(localAddress_.sun_path))
+                CC_DEBUG_ERROR("Socket path exceeds maximum length");
+            if (address == "" || address == "*" || address == "::") {
+                localAddress_.sun_path[0] = 0;
             }
-            if (inet_pton(family, address, addr) != 1)
+            else {
+                ::memcpy(localAddress_.sun_path, address->chars(), address->count());
+                localAddress_.sun_path[address->count()] = 0;
+            }
+            break;
+        }
+        case ProtocolFamily::Unspecified: {
+            addr_.sa_family = AF_UNSPEC;
+            break;
+        }
+    };
+
+    if (family != ProtocolFamily::Local) {
+        if (address != "" && address != "*" && address != "::") {
+            if (family == ProtocolFamily::Unspecified) {
+                if (address->count(':') >= 2) family = ProtocolFamily::Internet6;
+                else family = ProtocolFamily::Internet4;
+            }
+            if (inet_pton(+family, address, addr) != 1)
                 CC_DEBUG_ERROR("Invalid address string");
         }
     }
@@ -146,8 +153,8 @@ SocketAddress::SocketAddress(struct sockaddr_in6 *addr):
 {}
 
 SocketAddress::SocketAddress(addrinfo *info):
-    socketType_{info->ai_socktype},
-    protocol_{info->ai_protocol}
+    socketType_{static_cast<SocketType>(info->ai_socktype)},
+    protocol_{static_cast<InternetProtocol>(info->ai_protocol)}
 {
     if (info->ai_family == AF_INET)
         inet4Address_ = *(sockaddr_in *)info->ai_addr;
@@ -166,12 +173,12 @@ SocketAddress::SocketAddress(const SocketAddress *other):
 
 bool SocketAddress::isValid() const
 {
-    return family() != AF_UNSPEC;
+    return family() != ProtocolFamily::Unspecified;
 }
 
-int SocketAddress::family() const { return addr_.sa_family; }
-int SocketAddress::socketType() const { return socketType_; }
-int SocketAddress::protocol() const { return protocol_; }
+ProtocolFamily SocketAddress::family() const { return static_cast<ProtocolFamily>(addr_.sa_family); }
+SocketType SocketAddress::socketType() const { return socketType_; }
+InternetProtocol SocketAddress::protocol() const { return protocol_; }
 
 int SocketAddress::port() const
 {
@@ -181,8 +188,6 @@ int SocketAddress::port() const
         port = inet4Address_.sin_port;
     else if (addr_.sa_family == AF_INET6)
         port = inet6Address_.sin6_port;
-    else
-        CC_DEBUG_ERROR("Unsupported address family");
 
     return ntohs(port);
 }
@@ -229,11 +234,11 @@ String SocketAddress::networkAddress() const
 
 String SocketAddress::toString() const
 {
-    if (family() == AF_LOCAL || port() == 0 || port() == 0xFFFF) return networkAddress();
+    if (family() == ProtocolFamily::Local || port() == 0 || port() == 0xFFFF) return networkAddress();
     Format s;
-    if (family() == AF_INET)
+    if (family() == ProtocolFamily::Internet4)
         s << networkAddress() << ":" << port();
-    else if (family() == AF_INET6)
+    else if (family() == ProtocolFamily::Internet6)
         s << "[" << networkAddress() << "]:" << port();
     return s;
 }
@@ -248,7 +253,7 @@ void SocketAddress::setScope(int scope)
     if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
-Ref<SocketAddressList> SocketAddress::resolve(const String &hostName, const String &serviceName, int family, int socketType, String *canonicalName)
+Ref<SocketAddressList> SocketAddress::resolve(const String &hostName, const String &serviceName, ProtocolFamily family, SocketType socketType, String *canonicalName)
 {
     addrinfo hint;
     addrinfo *head = 0;
@@ -256,8 +261,8 @@ Ref<SocketAddressList> SocketAddress::resolve(const String &hostName, const Stri
     memclr(&hint, sizeof(hint));
     if ((hostName == "*") || (hostName == "")) hint.ai_flags |= AI_PASSIVE;
     hint.ai_flags |= (canonicalName && (hint.ai_flags & AI_PASSIVE) == 0) ? AI_CANONNAME : 0;
-    hint.ai_family = (hostName == "*") ? AF_INET : family;
-    hint.ai_socktype = socketType;
+    hint.ai_family = (hostName == "*") ? AF_INET : +family;
+    hint.ai_socktype = +socketType;
 
     int ret;
     {
@@ -301,7 +306,7 @@ String SocketAddress::lookupHostName(bool *failed) const
     char hostName[hostNameSize];
     char serviceName[serviceNameSize];
     int flags = NI_NAMEREQD;
-    if (socketType_ == SOCK_DGRAM) flags |= NI_DGRAM;
+    if (+socketType_ == SOCK_DGRAM) flags |= NI_DGRAM;
 
     int ret = getnameinfo(addr(), addrLen(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
 
@@ -316,7 +321,7 @@ String SocketAddress::lookupHostName(bool *failed) const
             *failed = false;
     }
 
-    return String(hostName);
+    return String{hostName};
 }
 
 String SocketAddress::lookupServiceName() const
@@ -326,7 +331,7 @@ String SocketAddress::lookupServiceName() const
     const int serviceNameSize = NI_MAXSERV;
     char hostName[hostNameSize];
     char serviceName[serviceNameSize];
-    int flags = (socketType_ == SOCK_DGRAM) ? NI_DGRAM : 0;
+    int flags = (+socketType_ == SOCK_DGRAM) ? NI_DGRAM : 0;
 
     hostName[0] = 0;
     serviceName[0] = 0;
@@ -345,10 +350,10 @@ String SocketAddress::lookupServiceName() const
 uint64_t SocketAddress::networkPrefix() const
 {
     uint64_t prefix = 0;
-    if (family() == AF_INET) {
+    if (family() == ProtocolFamily::Internet4) {
         prefix = endianGate(inet4Address_.sin_addr.s_addr);
     }
-    else if (family() == AF_INET6) {
+    else if (family() == ProtocolFamily::Internet6) {
         uint8_t const *a = inet6Address_.sin6_addr.s6_addr;
         for (int i = 0; i < 8; ++i) {
             prefix <<= 8;
@@ -362,17 +367,17 @@ bool SocketAddress::equals(const SocketAddress *b) const
 {
     if (family() != b->family()) return false;
 
-    if (family() == AF_INET) {
+    if (family() == ProtocolFamily::Internet4) {
         return inet4Address_.sin_addr.s_addr == b->inet4Address_.sin_addr.s_addr;
     }
-    else if (family() == AF_INET6) {
+    else if (family() == ProtocolFamily::Internet6) {
         uint8_t const *x = inet6Address_.sin6_addr.s6_addr;
         uint8_t const *y = b->inet6Address_.sin6_addr.s6_addr;
         for (int i = 0; i < 8; ++i) {
             if (x[i] != y[i]) return false;
         }
     }
-    else if (family() == AF_LOCAL) {
+    else if (family() == ProtocolFamily::Local) {
         return strcmp(localAddress_.sun_path, b->localAddress_.sun_path) == 0;
     }
 
@@ -392,11 +397,11 @@ const struct sockaddr *SocketAddress::addr() const
 int SocketAddress::addrLen() const
 {
     int len = 0;
-    if (family() == AF_INET)
+    if (family() == ProtocolFamily::Internet4)
         len = sizeof(sockaddr_in);
-    else if (family() == AF_INET6)
+    else if (family() == ProtocolFamily::Internet6)
         len = sizeof(sockaddr_in6);
-    else if (family() == AF_LOCAL)
+    else if (family() == ProtocolFamily::Local)
         len = sizeof(sockaddr_un);
     else {
         len = sizeof(sockaddr_in);

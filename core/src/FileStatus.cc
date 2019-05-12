@@ -15,9 +15,24 @@
 
 namespace cc {
 
-FileStatus::FileStatus(String path, bool resolve):
-    path_(path),
-    resolve_(resolve)
+Ref<FileStatus> FileStatus::create()
+{
+    return new FileStatus{};
+}
+
+Ref<FileStatus> FileStatus::read(const String &path)
+{
+    return new FileStatus{path, true};
+}
+
+Ref<FileStatus> FileStatus::readHead(const String &path)
+{
+    return new FileStatus{path, false};
+}
+
+FileStatus::FileStatus(const String &path, bool follow):
+    path_{path},
+    follow_{follow}
 {
     isValid_ = update();
 }
@@ -40,7 +55,7 @@ bool FileStatus::update()
     memclr(buf, sizeof(StructStat));
     if (path_ == "")
         return isValid_ = false;
-    int ret = resolve_ ? ::stat(path_, buf) : ::lstat(path_, buf);
+    int ret = follow_ ? ::stat(path_, buf) : ::lstat(path_, buf);
     if (ret == -1) {
         if ((errno == ENOENT) || (errno == ENOTDIR)) {
             isValid_ = false;

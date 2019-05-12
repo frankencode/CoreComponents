@@ -126,8 +126,8 @@ void NodeMaster::runNode()
         if (groupName == "") groupName = userName;
         Ref<User> user = User::lookup(userName);
         Ref<Group> group = Group::lookup(groupName);
-        if (!user->isValid()) throw UsageError("No such user: \"" + userName + "\"");
-        if (!group->isValid()) throw UsageError("No such group: \"" + groupName + "\"");
+        if (!user->isValid()) throw UsageError{"No such user: \"" + userName + "\""};
+        if (!group->isValid()) throw UsageError{"No such group: \"" + groupName + "\""};
         CCNODE_NOTICE() << "Dropping process persona to user:group " << userName << ":" << groupName << " (uid:gid = " << user->id() << ":" << group->id() << ")" << nl;
         Process::setPersona(user->id(), group->id());
     }
@@ -184,7 +184,7 @@ void NodeMaster::runNode()
                 CCNODE_NOTICE() << "Received " << signalName(signal) << ", shutting down" << nl;
                 workerPool = nullptr;
                 CCNODE_NOTICE() << "Shutdown complete" << nl;
-                throw Interrupt(signal);
+                throw Interrupt{signal};
             }
         }
     }

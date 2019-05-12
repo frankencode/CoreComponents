@@ -7,7 +7,6 @@
  */
 
 #include <gnutls/gnutls.h>
-#include <cc/debug> // DEBUG
 #include <cc/assert>
 #include <cc/System>
 #include <cc/IoMonitor>
@@ -104,7 +103,7 @@ bool HttpClientSocket::waitInput()
 
 void HttpClientSocket::ioException(Exception &ex) const
 {
-    CC_INSPECT(ex);
+    // FIXME: need a thread local singleton to propagate this exception
 }
 
 }} // namespace cc::http

@@ -21,7 +21,7 @@ namespace http {
 
 using namespace cc::net;
 
-/** \brief HTTP client-side socket with seemless TLS encryption
+/** \brief HTTP(S) client-side socket
   */
 class HttpClientSocket: public HttpSocket
 {

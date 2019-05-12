@@ -14,6 +14,7 @@
 #include <sys/socket.h> // connect
 #include <sys/un.h> // sockaddr_un
 
+#include <cc/net/types>
 #include <cc/net/exceptions>
 
 namespace cc {
@@ -42,12 +43,12 @@ public:
     /** Create a socket address by given protocol family and numerical address.
       * Use the wildcard "*" to address all interfaces of the local host system.
       *
-      * \param family protocol family (AF_UNSPEC, AF_INET, AF_INET6 or AF_LOCAL)
+      * \param family protocol family
       * \param address numerical host address, wildcard ("*") or file path
       * \param port service port
       * \return new object instance
       */
-    static Ref<SocketAddress> create(int family, const String &address = "", int port = 0);
+    static Ref<SocketAddress> create(ProtocolFamily family, const String &address = "", int port = 0);
 
     /** Create an IPv4 broadcast address
       * \return new object instance
@@ -88,9 +89,9 @@ public:
     /// Check if this address is a valid address
     bool isValid() const;
 
-    int family() const; ///< Socket address family
-    int socketType() const; ///< Socket type (if this address is a result of name resolution)
-    int protocol() const;  ///< Socket protocol (if this address is a result of name resolution)
+    ProtocolFamily family() const; ///< Network protocol family
+    SocketType socketType() const; ///< Socket type (if this address is a result of name resolution)
+    InternetProtocol protocol() const;  ///< Socket protocol (if this address is a result of name resolution)
     int port() const; ///< Service port
     void setPort(int port); ///< Change the service port
 
@@ -111,7 +112,13 @@ public:
       *   The host name can be a short name relative to the local domain.
       * The fully qualified domain name (aka canonical name) can be optionally retrieved.
       */
-    static Ref<SocketAddressList> resolve(const String &hostName, const String &serviceName = "", int family = AF_UNSPEC, int socketType = 0, String *canonicalName = 0);
+    static Ref<SocketAddressList> resolve(
+        const String &hostName,
+        const String &serviceName = "",
+        ProtocolFamily family = ProtocolFamily::Unspecified,
+        SocketType socketType = SocketType::Unspecified,
+        String *canonicalName = 0
+    );
 
     /** Lookup the host name of given address. Usually a reverse DNS
       * lookup will be issued, which may take several seconds.
@@ -144,7 +151,7 @@ protected:
     friend class Singleton<SocketAddress>;
 
     SocketAddress();
-    SocketAddress(int family, const String &address, int port);
+    SocketAddress(ProtocolFamily family, const String &address, int port);
     SocketAddress(struct sockaddr_in *addr);
     SocketAddress(struct sockaddr_in6 *addr);
     SocketAddress(addrinfo *info);
@@ -157,8 +164,8 @@ protected:
         struct sockaddr_un localAddress_;
     };
 
-    int socketType_;
-    int protocol_;
+    SocketType socketType_;
+    InternetProtocol protocol_;
 };
 
 }} // namespace cc::net

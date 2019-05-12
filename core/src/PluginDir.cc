@@ -51,7 +51,7 @@ PluginDir *PluginDir::open()
         if (name == "." || name == "..") continue;
         String path = path_->extendPath(name);
         try {
-            Ref<FileStatus> status = FileStatus::readUnresolved(path);
+            Ref<FileStatus> status = FileStatus::readHead(path);
             if (status->type() == FileType::Symlink) {
                 path = File::readlink(path);
                 if (path->isRelativePath())

@@ -54,8 +54,8 @@ Ref<StreamSocket> StreamSocket::accept()
 }
 
 StreamSocket::StreamSocket(int fd):
-    SystemStream(fd),
-    connected_(true)
+    SystemStream{fd},
+    connected_{true}
 {}
 
 StreamSocket::StreamSocket(const SocketAddress *address):
@@ -71,16 +71,16 @@ const SocketAddress *StreamSocket::address() const
 
 void StreamSocket::listen(int backlog)
 {
-    fd_ = ::socket(address_->family(), SOCK_STREAM, 0);
+    fd_ = ::socket(+address_->family(), SOCK_STREAM, 0);
     if (fd_ == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 
-    if (address_->port() != 0) {
+    if (+address_->family() != AF_LOCAL) {
         int on = 1;
         if (::setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1)
             CC_SYSTEM_DEBUG_ERROR(errno);
 
-        if (address_->family() == AF_INET6) {
+        if (+address_->family() == AF_INET6) {
             int on = 1;
             if (::setsockopt(fd_, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)) == -1)
                 CC_SYSTEM_DEBUG_ERROR(errno);
@@ -104,13 +104,13 @@ int StreamSocket::accept(SocketAddress *clientAddress)
 
 void StreamSocket::connect()
 {
-    fd_ = ::socket(address_->family(), SOCK_STREAM, 0);
+    fd_ = ::socket(+address_->family(), SOCK_STREAM, 0);
     if (fd_ == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 
     int flags = 0;
 
-    if (address_->family() != AF_LOCAL) {
+    if (+address_->family() != AF_LOCAL) {
         flags = ::fcntl(fd_, F_GETFL, 0);
         if (flags == -1)
             CC_SYSTEM_DEBUG_ERROR(errno);
@@ -129,7 +129,7 @@ void StreamSocket::connect()
 
     connected_ = (ret != -1);
 
-    if (address_->family() != AF_LOCAL) {
+    if (+address_->family() != AF_LOCAL) {
         if (::fcntl(fd_, F_SETFL, flags) == -1)
             CC_SYSTEM_DEBUG_ERROR(errno);
     }
