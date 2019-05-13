@@ -25,12 +25,12 @@ public:
         friend class DisplayMode;
 
         Instance():
-            refreshRate_(0)
+            refreshRate_{0}
         {}
 
         Instance(const Size & resolution, double refreshRate):
-            resolution_(resolution),
-            refreshRate_(refreshRate)
+            resolution_{resolution},
+            refreshRate_{refreshRate}
         {}
 
         Size resolution_;
@@ -40,7 +40,7 @@ public:
     DisplayMode() = default;
 
     DisplayMode(const Size &resolution, double refreshRate):
-        instance_(resolution, refreshRate)
+        instance_{resolution, refreshRate}
     {}
 
     const Instance *operator->() const { return &instance_; }

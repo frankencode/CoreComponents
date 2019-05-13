@@ -14,7 +14,7 @@ namespace ui {
 
 String KeyEvent::toString() const
 {
-    return Format()
+    return Format{}
         << "KeyEvent {" << nl
         << "  action: " << action_ << nl
         << "  time: " << time_ << nl

@@ -70,7 +70,7 @@ public:
 
         Instance();
         Instance(double size);
-        Instance(String family, double size);
+        Instance(const String &family, double size);
         Instance(const Instance &b);
         ~Instance();
 

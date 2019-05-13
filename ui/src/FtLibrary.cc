@@ -30,7 +30,7 @@ FT_Library FtLibrary::ftLibrary()
 }
 
 FtLibrary::FtLibrary():
-    memory_(&memoryRec_)
+    memory_{&memoryRec_}
 {
     memory_->user = 0;
     #if 0
@@ -39,12 +39,12 @@ FtLibrary::FtLibrary():
     memory_->realloc = FtLibrary::realloc;
     FT_Error error = FT_New_Library(memory_, &library_);
     if (error != 0)
-        CC_DEBUG_ERROR(Format("Failed to initialize the freetype library (error = %%)") << error);
+        CC_DEBUG_ERROR(Format{"Failed to initialize the freetype library (error = %%)"} << error);
     FT_Add_Default_Modules(library_); // FIXME: select needed modules specifically
     #endif
     FT_Error error = FT_Init_FreeType(&library_);
     if (error != 0)
-        CC_DEBUG_ERROR(Format("Failed to initialize the freetype library (error = %%)") << error);
+        CC_DEBUG_ERROR(Format{"Failed to initialize the freetype library (error = %%)"} << error);
 }
 
 FtLibrary::~FtLibrary()

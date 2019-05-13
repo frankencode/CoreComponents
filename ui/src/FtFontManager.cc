@@ -28,7 +28,7 @@ FtFontManager *FtFontManager::instance()
 }
 
 FtFontManager::FtFontManager():
-    fontCache_(FontCache::create())
+    fontCache_{FontCache::create()}
 {}
 
 Ref<FontFace> FtFontManager::openFontFace(const String &path)
@@ -248,7 +248,7 @@ void FtFontManager::selectFontRanges(const String &text, const Font &font, const
     Font targetFont = fixup(font);
     const FtFontFace *targetFontFace = Object::cast<const FtScaledFont *>(targetFont->getScaledFont())->ftFontFace();
 
-    for (Utf8Walker walker(text); walker;)
+    for (Utf8Walker walker{text}; walker;)
     {
         const int start = walker->offset();
 

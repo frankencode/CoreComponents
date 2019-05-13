@@ -35,11 +35,11 @@ public:
 private:
     friend class FontManager;
 
-    static Ref<FontFamily> create(String name, Pitch pitch) {
+    static Ref<FontFamily> create(const String &name, Pitch pitch) {
         return new FontFamily(name, pitch);
     }
 
-    FontFamily(String name, Pitch pitch);
+    FontFamily(const String &name, Pitch pitch);
     ~FontFamily();
 
     String name_;

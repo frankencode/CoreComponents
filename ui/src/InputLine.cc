@@ -12,7 +12,7 @@ namespace cc {
 namespace ui {
 
 InputLine::InputLine(View *parent, double maxThickness):
-    View(parent)
+    View{parent}
 {
     inheritPaper();
 
@@ -23,7 +23,7 @@ InputLine::InputLine(View *parent, double maxThickness):
 
 void InputLine::paint()
 {
-    Painter p(this);
+    Painter p{this};
     p->rectangle(Point{ 0, size()[1] - thickness() }, size());
     p->setSource(ink());
     p->fill();

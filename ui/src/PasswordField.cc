@@ -13,8 +13,8 @@ namespace cc {
 namespace ui {
 
 PasswordField::PasswordField(View *parent, const String &labelText, const String &bullet):
-    InputField(parent, labelText),
-    bullet_(bullet)
+    InputField{parent, labelText},
+    bullet_{bullet}
 {}
 
 String PasswordField::password() const

@@ -22,8 +22,8 @@ class PlatformPlugin: public Object
 public:
     static PlatformPlugin *instance();
 
-    inline String name() const { return name_; }
-    inline bool isPlatformDefault() const { return isPlatformDefault_; }
+    String name() const { return name_; }
+    bool isPlatformDefault() const { return isPlatformDefault_; }
 
     virtual Application *application() const = 0;
     virtual TimeMaster *timeMaster() const = 0;

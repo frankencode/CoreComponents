@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug> // DEBUG
 #include <cc/ui/FtFontManager>
 #include <cc/ui/FtTextCursor>
 #include <cc/ui/FtTextRun>
@@ -15,7 +14,7 @@ namespace cc {
 namespace ui {
 
 FtTextRun::FtTextRun():
-    glyphRuns_(FtGlyphRuns::create())
+    glyphRuns_{FtGlyphRuns::create()}
 {}
 
 Ref<TextRun> FtTextRun::copy() const

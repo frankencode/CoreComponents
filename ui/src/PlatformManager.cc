@@ -20,7 +20,7 @@ PlatformManager *PlatformManager::instance()
 }
 
 PlatformManager::PlatformManager():
-    plugins_(Plugins::create())
+    plugins_{Plugins::create()}
 {}
 
 void PlatformManager::registerPlugin(PlatformPlugin *plugin)

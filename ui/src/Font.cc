@@ -19,30 +19,30 @@ namespace ui {
 
 Font::Instance::Instance():
     size_{-1},
-    stretch_ { uint8_t(Stretch::Normal) },
-    decoration_ { uint8_t(Decoration::None) },
-    smoothing_ { uint8_t(FontSmoothing::Default) },
-    outlineHinting_ { uint8_t(OutlineHinting::Default) },
-    metricsHinting_ { uint8_t(MetricsHinting::Default) }
+    stretch_{uint8_t(Stretch::Normal)},
+    decoration_{uint8_t(Decoration::None)},
+    smoothing_{uint8_t(FontSmoothing::Default)},
+    outlineHinting_{uint8_t(OutlineHinting::Default)},
+    metricsHinting_{uint8_t(MetricsHinting::Default)}
 {}
 
 Font::Instance::Instance(double size):
     size_{float(size)},
-    stretch_ { uint8_t(Stretch::Normal) },
-    decoration_ { uint8_t(Decoration::None) },
-    smoothing_ { uint8_t(FontSmoothing::Default) },
-    outlineHinting_ { uint8_t(OutlineHinting::Default) },
-    metricsHinting_ { uint8_t(MetricsHinting::Default) }
+    stretch_{uint8_t(Stretch::Normal)},
+    decoration_{uint8_t(Decoration::None)},
+    smoothing_{uint8_t(FontSmoothing::Default)},
+    outlineHinting_{uint8_t(OutlineHinting::Default)},
+    metricsHinting_{uint8_t(MetricsHinting::Default)}
 {}
 
-Font::Instance::Instance(String family, double size):
+Font::Instance::Instance(const String &family, double size):
     family_{family},
     size_{float(size)},
-    stretch_ { uint8_t(Stretch::Normal) },
-    decoration_ { uint8_t(Decoration::None) },
-    smoothing_ { uint8_t(FontSmoothing::Default) },
-    outlineHinting_ { uint8_t(OutlineHinting::Default) },
-    metricsHinting_ { uint8_t(MetricsHinting::Default) }
+    stretch_{uint8_t(Stretch::Normal)},
+    decoration_{uint8_t(Decoration::None)},
+    smoothing_{uint8_t(FontSmoothing::Default)},
+    outlineHinting_{uint8_t(OutlineHinting::Default)},
+    metricsHinting_{uint8_t(MetricsHinting::Default)}
 {}
 
 Font::Instance::~Instance()
@@ -107,7 +107,7 @@ bool Font::differ(const Font &a, const Font &b)
 
 String str(const Font &font)
 {
-    return Format()
+    return Format{}
         << "Font {" << nl
         << "  family: " << font->family() << nl
         << "  size: " << font->size() << nl

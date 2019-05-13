@@ -14,7 +14,7 @@ namespace ui {
 
 String str(Key key)
 {
-    return Format()
+    return Format{}
         << "Key {" << nl
         << "  scanCode: " << key->scanCode() << nl
         << "  keyCode: " << key->keyCode() << nl

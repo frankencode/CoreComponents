@@ -13,14 +13,14 @@ namespace cc {
 namespace ui {
 
 FtGlyphRun::FtGlyphRun(const String &text, const Font &font, const Point &origin):
-    text_(text),
-    font_(font),
-    origin_(origin)
+    text_{text},
+    font_{font},
+    origin_{origin}
 {}
 
 Ref<FtGlyphRun> FtGlyphRun::ftCopy() const
 {
-    Ref<FtGlyphRun> glyphRun = new FtGlyphRun(text_, font_, origin_);
+    Ref<FtGlyphRun> glyphRun = new FtGlyphRun{text_, font_, origin_};
     glyphRun->advance_ = advance_;
     glyphRun->size_ = size_;
     glyphRun->maxAscender_ = maxAscender_;

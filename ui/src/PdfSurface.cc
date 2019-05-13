@@ -19,7 +19,7 @@ Ref<PdfSurface> PdfSurface::open(Stream *stream, Size sizePt)
 }
 
 PdfSurface::PdfSurface(Stream *stream, Size sizePt):
-    stream_(stream),
+    stream_{stream},
     cairoSurface_(
         cairo_pdf_surface_create_for_stream(cairoWrite, this, sizePt[0], sizePt[1])
     )

@@ -309,12 +309,12 @@ String str(ScanCode scanCode)
     static_assert(namesCount == 287, "");
 
     if (4 <= +scanCode && +scanCode < namesCount && names[+scanCode]) return names[+scanCode];
-    return Format("Unknown (%%)") << +scanCode;
+    return Format{"Unknown (%%)"} << +scanCode;
 }
 
 String str(KeyCode keyCode)
 {
-    if (0x20 <= +keyCode && +keyCode <= 0x7E) return Format("'%%'") << char(+keyCode);
+    if (0x20 <= +keyCode && +keyCode <= 0x7E) return Format{"'%%'"} << char(+keyCode);
     return "0x" + hex(+keyCode);
 }
 

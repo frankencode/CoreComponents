@@ -31,7 +31,7 @@ Application *Application::instance()
 }
 
 Application::Application():
-    touchTargets_(TouchTargets::create())
+    touchTargets_{TouchTargets::create()}
 {
     textInputArea->connect([=]{
         if (focusControl())

@@ -32,9 +32,9 @@ private:
         const Point &pos,
         const Step &step
     ):
-        PointerEvent(action, time, pos, step),
-        button_(button),
-        clickCount_(clickCount)
+        PointerEvent{action, time, pos, step},
+        button_{button},
+        clickCount_{clickCount}
     {}
 
     MouseButton button_;

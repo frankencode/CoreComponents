@@ -20,12 +20,12 @@ namespace ui {
 
 Ref<FtFontFace> FtFontFace::open(const String &path)
 {
-    return (new FtFontFace(path))->open();
+    return (new FtFontFace{path})->open();
 }
 
 FtFontFace::FtFontFace(const String &path):
-    ftLibrary_(FtLibrary::instance()),
-    path_(path)
+    ftLibrary_{FtLibrary::instance()},
+    path_{path}
 {}
 
 FtFontFace::~FtFontFace()
@@ -37,7 +37,7 @@ FtFontFace *FtFontFace::open()
 {
     FT_Error error = FT_New_Face(ftLibrary_->ftLibrary(), path_, 0, &face_);
     if (error != 0)
-        CC_DEBUG_ERROR(Format("Failed to load font face (path = \"%%\", index = %%)\n") << path_ << 0);
+        CC_DEBUG_ERROR(Format{"Failed to load font face (path = \"%%\", index = %%)\n"} << path_ << 0);
 
     family_ = face_->family_name;
 
@@ -55,7 +55,7 @@ FtFontFace *FtFontFace::open()
 
 String FtFontFace::toString() const
 {
-    return Format()
+    return Format{}
         << "FtFontFace {" << nl
         << "  family:  " << family_ << nl
         << "  weight:  " << weight_ << nl

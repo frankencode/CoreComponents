@@ -12,7 +12,7 @@ namespace cc {
 namespace ui {
 
 Control::Control(View *parent):
-    View(parent)
+    View{parent}
 {
     hover->bind([=]{ return isParentOfOrEqual(app()->hoverControl()); });
     pressed->bind([=]{ return isParentOfOrEqual(app()->pressedControl()); });

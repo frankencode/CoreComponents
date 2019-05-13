@@ -14,21 +14,21 @@ namespace cc {
 namespace ui {
 
 FtTextCursor::FtTextCursor(const FtTextRun *ftTextRun):
-    ftTextRun_(ftTextRun),
-    byteOffset_(0),
-    runIndex_(0),
-    clusterIndex_(0),
-    glyphIndex_(0)
+    ftTextRun_{ftTextRun},
+    byteOffset_{0},
+    runIndex_{0},
+    clusterIndex_{0},
+    glyphIndex_{0}
 {}
 
 FtTextCursor::FtTextCursor(const FtTextCursor *other):
-    ftTextRun_(other->ftTextRun_),
-    posA_(other->posA_),
-    posB_(other->posB_),
-    byteOffset_(other->byteOffset_),
-    runIndex_(other->runIndex_),
-    clusterIndex_(other->clusterIndex_),
-    glyphIndex_(other->glyphIndex_)
+    ftTextRun_{other->ftTextRun_},
+    posA_{other->posA_},
+    posB_{other->posB_},
+    byteOffset_{other->byteOffset_},
+    runIndex_{other->runIndex_},
+    clusterIndex_{other->clusterIndex_},
+    glyphIndex_{other->glyphIndex_}
 {}
 
 Point FtTextCursor::advance() const
@@ -100,7 +100,7 @@ void FtTextCursor::assign(const TextCursor *other)
 
 String FtTextCursor::toString() const
 {
-    return Format()
+    return Format{}
         << "FtTextCursor {" << nl
         << "  posA: " << posA_ << nl
         << "  posB: " << posB_ << nl

@@ -46,7 +46,7 @@ protected:
     friend class StyleManager;
     friend class Object;
 
-    StylePlugin(String name);
+    StylePlugin(const String &name);
 
     virtual void activate() = 0;
 

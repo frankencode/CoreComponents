@@ -13,7 +13,7 @@ namespace cc {
 namespace ui {
 
 Row::Row(View *view):
-    Organizer(view)
+    Organizer{view}
 {
     align->connect([=]{ updateLayout(); });
     margin->connect([=]{ updateLayout(); });

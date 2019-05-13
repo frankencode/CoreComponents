@@ -13,7 +13,7 @@ namespace cc {
 namespace ui {
 
 Organizer::Organizer(View *view):
-    view_(view)
+    view_{view}
 {
     if (view->organizer_) delete view->organizer_;
     view->organizer_ = this;

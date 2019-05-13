@@ -30,7 +30,7 @@ bool Picture::isPainted() const
 
 void Picture::paint()
 {
-    Painter p(this);
+    Painter p{this};
     visual()->paint(p);
 }
 

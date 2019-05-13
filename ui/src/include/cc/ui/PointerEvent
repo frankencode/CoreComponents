@@ -28,8 +28,8 @@ public:
     class PosGuard {
     public:
         PosGuard(PointerEvent *event, Point newPos):
-            pos_(&event->pos_),
-            origPos_(event->pos_)
+            pos_{&event->pos_},
+            origPos_{event->pos_}
         {
             *pos_ = newPos;
         }
@@ -51,10 +51,10 @@ protected:
         const Point &pos,
         const Step &step
     ):
-        action_(action),
-        time_(time),
-        pos_(pos),
-        step_(step)
+        action_{action},
+        time_{time},
+        pos_{pos},
+        step_{step}
     {}
 
     PointerAction action_;

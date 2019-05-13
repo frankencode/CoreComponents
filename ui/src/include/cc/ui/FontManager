@@ -23,7 +23,7 @@ class FontManager: public Object
 public:
     static FontManager *instance();
 
-    void addPath(const String &path, const String &namePrefix = String{});
+    void addPath(const String &path, const String &namePrefix = "");
 
     Ref< Source<const FontFamily *> > getFontFamilies() const;
     const FontFamily *selectFontFamily(const String &name) const;

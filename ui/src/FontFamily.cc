@@ -17,10 +17,10 @@ Ref< Source<const FontFace *> > FontFamily::getFontFaces() const
     return fontFaces_->getAll<const FontFace *>();
 }
 
-FontFamily::FontFamily(String name, Pitch pitch):
-    name_(name),
-    pitch_(pitch),
-    fontFaces_(FontFaces::create())
+FontFamily::FontFamily(const String &name, Pitch pitch):
+    name_{name},
+    pitch_{pitch},
+    fontFaces_{FontFaces::create()}
 {}
 
 FontFamily::~FontFamily()

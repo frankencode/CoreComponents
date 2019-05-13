@@ -37,12 +37,12 @@ private:
         KeyCode keyCode,
         KeyModifier modifiers
     ):
-        action_(action),
-        time_(time),
-        repeatCount_(repeatCount),
-        scanCode_(scanCode),
-        keyCode_(keyCode),
-        modifiers_(modifiers)
+        action_{action},
+        time_{time},
+        repeatCount_{repeatCount},
+        scanCode_{scanCode},
+        keyCode_{keyCode},
+        modifiers_{modifiers}
     {}
 
     KeyAction action_;

@@ -14,7 +14,7 @@ namespace ui {
 
 String TextCursor::toString() const
 {
-    return Format()
+    return Format{}
         << "TextCursor {" << nl
         << "  posA: " << posA() << nl
         << "  posB: " << posB() << nl

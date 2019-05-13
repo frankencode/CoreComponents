@@ -13,8 +13,8 @@ namespace cc {
 namespace ui {
 
 UpdateRequest::UpdateRequest(UpdateReason reason, View *view):
-    reason_(reason),
-    view_(view)
+    reason_{reason},
+    view_{view}
 {}
 
 bool UpdateRequest::equals(const UpdateRequest *other) const

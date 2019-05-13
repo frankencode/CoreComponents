@@ -21,8 +21,8 @@ StyleManager *StyleManager::instance()
 }
 
 StyleManager::StyleManager():
-    plugins_(Plugins::create()),
-    defaultStyleName_(Process::env("CCUI_STYLE", "Industrial"))
+    plugins_{Plugins::create()},
+    defaultStyleName_{Process::env("CCUI_STYLE", "Industrial")}
 {}
 
 void StyleManager::registerPlugin(StylePlugin *plugin)
@@ -33,7 +33,7 @@ void StyleManager::registerPlugin(StylePlugin *plugin)
     }
 }
 
-bool StyleManager::getPlugin(String name, Ref<StylePlugin> *plugin) const
+bool StyleManager::getPlugin(const String &name, Ref<StylePlugin> *plugin) const
 {
     return plugins_->lookup(name, plugin);
 }

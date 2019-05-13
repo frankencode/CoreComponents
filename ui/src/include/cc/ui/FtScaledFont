@@ -49,14 +49,14 @@ private:
 class FtFaceGuard {
 public:
     FtFaceGuard(const FtScaledFont *ftScaledFont):
-        ftScaledFont_(ftScaledFont),
-        ftFace_(cairo_ft_scaled_font_lock_face(ftScaledFont_->cairoScaledFont()))
+        ftScaledFont_{ftScaledFont},
+        ftFace_{cairo_ft_scaled_font_lock_face(ftScaledFont_->cairoScaledFont())}
     {}
     ~FtFaceGuard() {
         cairo_ft_scaled_font_unlock_face(ftScaledFont_->cairoScaledFont());
     }
-    inline const FtFaceGuard *operator->() const { return this; }
-    inline FT_Face ftFace() const { return ftFace_; }
+    const FtFaceGuard *operator->() const { return this; }
+    FT_Face ftFace() const { return ftFace_; }
 private:
     const FtScaledFont *ftScaledFont_;
     FT_Face ftFace_;

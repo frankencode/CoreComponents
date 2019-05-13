@@ -27,7 +27,7 @@ public:
     View *slideCarrier() const;
 
 protected:
-    SlideView(View *parent = 0);
+    SlideView(View *parent = nullptr);
 
     void insertChild(View *child) override;
 

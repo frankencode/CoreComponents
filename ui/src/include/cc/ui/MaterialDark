@@ -45,7 +45,7 @@ public:
     Color itemHighlightColor   () const override { return windowColor()->lighter(4); }
 
 private:
-    MaterialDark() {}
+    MaterialDark() = default;
 };
 
 }} // namespace cc::ui

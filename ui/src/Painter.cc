@@ -17,7 +17,7 @@ namespace cc {
 namespace ui {
 
 Painter::Instance::Instance(Surface *surface):
-    cr_(cairo_create(surface->cairoSurface()))
+    cr_{cairo_create(surface->cairoSurface())}
 {}
 
 Painter::Instance::~Instance()
@@ -479,7 +479,7 @@ void Painter::Instance::checkForError()
 }
 
 PainterError::PainterError(int errorStatus):
-    errorStatus_(errorStatus)
+    errorStatus_{errorStatus}
 {}
 
 String PainterError::message() const

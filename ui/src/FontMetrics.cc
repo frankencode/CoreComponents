@@ -14,7 +14,7 @@ namespace ui {
 
 String FontMetrics::toString() const
 {
-    return Format()
+    return Format{}
         << "FontMetrics {\n"
         << "  fontSize: " << fontSize() << nl
         << "  ascender: " << ascender() << nl

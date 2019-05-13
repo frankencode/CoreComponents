@@ -61,8 +61,8 @@ class Bezier
 public:
     class Instance {
     public:
-        inline Point p1() const { return p1_; }
-        inline Point p2() const { return p2_; }
+        Point p1() const { return p1_; }
+        Point p2() const { return p2_; }
 
         double getValue(double t) const;
         Point getPoint(double s) const;
@@ -71,7 +71,7 @@ public:
         friend class Bezier;
 
         Instance(const Point &p1, const Point &p2):
-            p1_(p1), p2_(p2)
+            p1_{p1}, p2_{p2}
         {}
 
         Point p1_;
@@ -79,14 +79,14 @@ public:
     };
 
     Bezier(const Point &p1, const Point &p2):
-        instance_(p1, p2)
+        instance_{p1, p2}
     {}
 
     Bezier(double x1, double y1, double x2, double y2):
-        instance_(Point{x1, y1}, Point{x2, y2})
+        instance_{Point{x1, y1}, Point{x2, y2}}
     {}
 
-    inline double operator()(double t) const
+    double operator()(double t) const
     {
         return instance_.getValue(t);
     }

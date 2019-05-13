@@ -27,7 +27,8 @@ private:
     friend class Object;
     friend class FtScaledFont;
 
-    FtFontMetrics() {}
+    FtFontMetrics() = default;
+    ~FtFontMetrics() = default;
 
     double fontSize_;
     FT_UShort unitsPerEm_;

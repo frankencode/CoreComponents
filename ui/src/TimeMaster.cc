@@ -19,7 +19,7 @@ TimeMaster *TimeMaster::instance()
 }
 
 TimeMaster::TimeMaster():
-    worker_(TimeWorker::create(this))
+    worker_{TimeWorker::create(this)}
 {
     worker_->start();
 }

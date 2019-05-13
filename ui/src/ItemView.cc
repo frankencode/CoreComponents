@@ -57,7 +57,7 @@ View *ItemView::addDelegate(View *parent, Item *item)
         ++depth;
 
     auto label = parent->add<Label>(
-        Format("Item %%") << item->getIndex() + 1
+        Format{"Item %%"} << item->getIndex() + 1
     );
 
     label->pos = Point{ depth * dp(16), 0 };

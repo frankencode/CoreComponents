@@ -14,8 +14,8 @@ namespace cc {
 namespace ui {
 
 Label::Label(View *parent, const String &text_, const Font &font_):
-    View(parent),
-    text(text_)
+    View{parent},
+    text{text_}
 {
     if (font_)
         font = font_;
@@ -82,7 +82,7 @@ Size Label::minSize() const
 
 void Label::paint()
 {
-    Painter p(this);
+    Painter p{this};
     if (ink()) p->setSource(ink());
     p->showTextRun(textPos(), textRun());
 }

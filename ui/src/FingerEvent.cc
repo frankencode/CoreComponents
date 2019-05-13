@@ -14,7 +14,7 @@ namespace ui {
 
 String FingerEvent::toString() const
 {
-    return Format()
+    return Format{}
         << "FingerEvent {" << nl
         << "  action: " << action_ << nl
         << "  time: " << time_ << nl

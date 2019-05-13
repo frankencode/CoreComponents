@@ -24,7 +24,7 @@ public:
 
 protected:
     InputControl(View *parent):
-        Control(parent)
+        Control{parent}
     {}
 };
 

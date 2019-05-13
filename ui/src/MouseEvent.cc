@@ -14,7 +14,7 @@ namespace ui {
 
 String MouseEvent::toString() const
 {
-    return Format()
+    return Format{}
         << "MouseEvent {" << nl
         << "  action: " << action_ << nl
         << "  time: " << time_ << nl

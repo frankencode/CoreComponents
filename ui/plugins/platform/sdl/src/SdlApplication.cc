@@ -30,8 +30,8 @@ SdlApplication *SdlApplication::instance()
 }
 
 SdlApplication::SdlApplication():
-    windows_(Windows::create()),
-    event_(new SDL_Event)
+    windows_{Windows::create()},
+    event_{new SDL_Event}
 {
     cursorVisible->connect([=]{
         if (cursorVisible())
@@ -61,7 +61,7 @@ void SdlApplication::init(int argc, char **argv)
     timerEvent_ = SDL_RegisterEvents(1);
 }
 
-Window *SdlApplication::openWindow(View *view, String title, WindowMode mode)
+Window *SdlApplication::openWindow(View *view, const String &title, WindowMode mode)
 {
     Ref<SdlWindow> window = SdlWindow::open(view, title, mode);
     windows_->insert(window->id_, window);

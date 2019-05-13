@@ -14,7 +14,7 @@ namespace cc {
 namespace ui {
 
 ImagePlugin::ImagePlugin(const String &name):
-    name_(name)
+    name_{name}
 {}
 
 void ImagePlugin::init()

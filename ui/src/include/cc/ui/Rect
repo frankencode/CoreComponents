@@ -21,18 +21,17 @@ class Rect
 public:
     class Instance {
     public:
-        inline Point pos() const { return pos_; }
-        inline Size size() const { return size_; }
+        Point pos() const { return pos_; }
+        Size size() const { return size_; }
 
     private:
         friend class Rect;
 
-        Instance()
-        {}
+        Instance() = default;
 
         Instance(const Point &pos, const Size &size):
-            pos_(pos),
-            size_(size)
+            pos_{pos},
+            size_{size}
         {}
 
         Point pos_;
@@ -42,10 +41,10 @@ public:
     Rect() {}
 
     Rect(const Point &pos, const Size &size):
-        instance_(pos, size)
+        instance_{pos, size}
     {}
 
-    inline const Instance *operator->() const { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
 
 private:
     Instance instance_;

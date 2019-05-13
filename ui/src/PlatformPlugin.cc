@@ -19,8 +19,8 @@ PlatformPlugin *PlatformPlugin::instance()
 }
 
 PlatformPlugin::PlatformPlugin(String name, bool isPlatformDefault):
-    name_(name),
-    isPlatformDefault_(true)
+    name_{name},
+    isPlatformDefault_{true}
 {}
 
 void PlatformPlugin::init()

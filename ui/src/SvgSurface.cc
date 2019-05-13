@@ -15,11 +15,11 @@ namespace ui {
 
 Ref<SvgSurface> SvgSurface::open(Stream *stream, Size sizePt)
 {
-    return new SvgSurface(stream, sizePt);
+    return new SvgSurface{stream, sizePt};
 }
 
 SvgSurface::SvgSurface(Stream *stream, Size sizePt):
-    stream_(stream),
+    stream_{stream},
     cairoSurface_(
         cairo_svg_surface_create_for_stream(cairoWrite, this, sizePt[0], sizePt[1])
     )

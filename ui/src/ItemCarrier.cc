@@ -16,7 +16,7 @@ namespace ui {
 ItemCarrier::ItemCarrier(View *parent, Item *rootItem):
     View{parent},
     rootItem_{rootItem},
-    layout_(Layout::create())
+    layout_{Layout::create()}
 {
     highlight_ = add<View>();
     highlight_->visible = false;

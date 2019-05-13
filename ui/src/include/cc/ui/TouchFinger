@@ -27,14 +27,14 @@ public:
         friend class TouchFinger;
 
         Instance():
-            id_(-1),
-            pressure_(0)
+            id_{-1},
+            pressure_{0}
         {}
 
         Instance(TouchFingerId id, const Point &pos, double pressure):
-            id_(id),
-            pos_(pos),
-            pressure_(pressure)
+            id_{id},
+            pos_{pos},
+            pressure_{pressure}
         {}
 
         TouchFingerId id_;
@@ -45,7 +45,7 @@ public:
     TouchFinger() = default;
 
     TouchFinger(TouchFingerId id, const Point &pos, double pressure):
-        instance_(id, pos, pressure)
+        instance_{id, pos, pressure}
     {}
 
     const Instance *operator->() const { return &instance_; }

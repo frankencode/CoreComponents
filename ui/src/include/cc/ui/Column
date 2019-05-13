@@ -27,8 +27,8 @@ protected:
     Column(View *view);
 
 private:
-    virtual void childReady(View *child) final;
-    virtual void childDone(View *child) final;
+    void childReady(View *child) final;
+    void childDone(View *child) final;
 
     void updateChildPos(View *child, Size innerSize, double y);
     void updateLayout();

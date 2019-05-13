@@ -62,7 +62,7 @@ Font FontManager::fixup(const Font &font)
 }
 
 FontManager::FontManager():
-    fontFamilies_(FontFamilies::create())
+    fontFamilies_{FontFamilies::create()}
 {}
 
 FontManager::~FontManager()

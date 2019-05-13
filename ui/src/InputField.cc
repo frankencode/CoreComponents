@@ -18,8 +18,8 @@ namespace cc {
 namespace ui {
 
 InputField::InputField(View *parent, const String &labelText_):
-    Control(parent),
-    labelText(labelText_)
+    Control{parent},
+    labelText{labelText_}
 {
     paper->bind([=]{
         return theme()->inputFieldFillColor();

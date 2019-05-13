@@ -13,7 +13,7 @@ namespace ui {
 
 Ref<CairoSink> CairoSink::open(Stream *stream)
 {
-    return new CairoSink(stream);
+    return new CairoSink{stream};
 }
 
 cairo_status_t CairoSink::cairoWrite(void *closure, const unsigned char *data, unsigned int length)
@@ -21,15 +21,14 @@ cairo_status_t CairoSink::cairoWrite(void *closure, const unsigned char *data, u
     try {
         reinterpret_cast<CairoSink *>(closure)->stream_->write(data, length);
     }
-    catch (...)
-    {
+    catch (...) {
         return CAIRO_STATUS_WRITE_ERROR;
     }
     return CAIRO_STATUS_SUCCESS;
 }
 
 CairoSink::CairoSink(Stream *stream):
-    stream_(stream)
+    stream_{stream}
 {}
 
 }} // namespace cc::ui

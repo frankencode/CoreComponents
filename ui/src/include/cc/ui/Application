@@ -39,7 +39,7 @@ public:
     Property< Ref<Control> > pressedControl;
     Property< Ref<Control> > focusControl;
 
-    virtual Window *openWindow(View *view, String title = String{}, WindowMode mode = WindowMode::Default) = 0;
+    virtual Window *openWindow(View *view, const String &title = "", WindowMode mode = WindowMode::Default) = 0;
 
     virtual Ref<Cursor> createCursor(CursorShape shape) = 0;
 

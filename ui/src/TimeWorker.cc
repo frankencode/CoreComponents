@@ -16,14 +16,14 @@ namespace ui {
 
 Ref<TimeWorker> TimeWorker::create(TimeMaster *master)
 {
-    return new TimeWorker(master);
+    return new TimeWorker{master};
 }
 
 TimeWorker::TimeWorker(TimeMaster *master):
-    master_(master),
-    startRequests_(StartRequests::create()),
-    timeouts_(Timeouts::create()),
-    ack_(Semaphore::create())
+    master_{master},
+    startRequests_{StartRequests::create()},
+    timeouts_{Timeouts::create()},
+    ack_{Semaphore::create()}
 {}
 
 void TimeWorker::startTimer(Timer *timer)

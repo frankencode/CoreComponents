@@ -18,7 +18,7 @@ Ref<SlideView> SlideView::create(View *parent)
 }
 
 SlideView::SlideView(View *parent):
-    View(parent)
+    View{parent}
 {
     if (parent) {
         pos->restrict([](Point &, Point){ return false; });

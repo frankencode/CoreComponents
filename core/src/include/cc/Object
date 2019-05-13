@@ -28,44 +28,44 @@ namespace cc {
 class Object
 {
 public:
-    Object(): refCount_(0) {}
+    Object(): refCount_{0} {}
 
     virtual ~Object() {
         assert(refCount_ == 0); // check if object is still in use (but don't throw an exception!)
     }
 
-    inline int refCount() const { return refCount_; }
+    int refCount() const { return refCount_; }
 
-    inline void incRefCount() const {
+    void incRefCount() const {
         __sync_add_and_fetch(&refCount_, 1);
     }
 
-    inline void decRefCount() const {
+    void decRefCount() const {
         if (__sync_sub_and_fetch(&refCount_, 1) == 0)
             delete this;
     }
 
     template<class U, class T>
-    inline static U cast(T p) {
+    static U cast(T p) {
         typedef typename CC_DEREF(T) V;
         typedef typename CC_DEREF(U) W;
         return CastHelper<V, W, ConversionFromTo<T, U>::Exists>::cast(p);
     }
 
     template<class U, class T>
-    inline static U cast(const Ref<T>& p) {
+    static U cast(const Ref<T>& p) {
         return Object::cast<U>(p.get());
     }
 
     template<class T, class... Args>
-    inline static Ref<T> create(Args... args) {
+    static Ref<T> create(Args... args) {
         Ref<T> object = new T{args...};
         object->init(); // FIXME: rename to bootstrap()
         return object;
     }
 
 protected:
-    inline void init() {}
+    void init() {}
 
 private:
     Object(const Object &);

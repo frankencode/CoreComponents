@@ -14,7 +14,7 @@ namespace ui {
 
 String WheelEvent::toString() const
 {
-    return Format()
+    return Format{}
         << "WheelEvent {" << nl
         << "  time: " << time_ << nl
         << "  wheelStep: " << wheelStep_ << nl

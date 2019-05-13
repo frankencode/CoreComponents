@@ -27,7 +27,7 @@ public:
     typedef std::function<Color(int)> GetColor; ///< get color for a given byte offset
 
     Painter(Surface *surface):
-        instance_(surface)
+        instance_{surface}
     {}
 
     class Instance {
@@ -139,7 +139,7 @@ private:
   */
 class PainterGuard {
 public:
-    PainterGuard(Painter *p): p_(p) { (*p_)->save(); }
+    PainterGuard(Painter *p): p_{p} { (*p_)->save(); }
     ~PainterGuard() { (*p_)->restore(); }
 private:
     Painter *p_;

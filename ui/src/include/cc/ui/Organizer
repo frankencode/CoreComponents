@@ -25,7 +25,7 @@ protected:
     virtual void childReady(View *child) = 0;
     virtual void childDone(View *child) = 0;
 
-    inline View *view() const { return view_; }
+    View *view() const { return view_; }
     void updateView();
 
 private:

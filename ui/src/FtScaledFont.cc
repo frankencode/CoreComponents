@@ -113,7 +113,7 @@ FtScaledFont::~FtScaledFont()
 
 String FtScaledFont::toString() const
 {
-    return Format()
+    return Format{}
         << "FtScaledFont {\n"
         << "  ftFontFace: " << ftFontFace_ << nl
         << "  size: " << size() << nl
