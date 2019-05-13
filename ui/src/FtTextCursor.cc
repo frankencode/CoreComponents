@@ -50,7 +50,7 @@ int FtTextCursor::step(int steps)
 int FtTextCursor::lineStep(int steps)
 {
     int stepsMoved = 0;
-    if (steps != 0) {
+    if (steps != 0 && isValid()) {
         Ref<FtTextCursor> movingCursor = this;
         for (; steps < 0; ++steps) {
             Ref<FtTextCursor> aboveCursor = ftTextRun_->getNearestTextCursorAbove(movingCursor);
