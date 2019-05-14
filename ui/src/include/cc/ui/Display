@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2018-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -26,6 +26,8 @@ public:
     Property<bool> isHandheld { [=]{ return diagonal() < 11; } };
 
     Property<DisplayMode> nativeMode;
+
+    String toString() const;
 
 protected:
     friend class Object;
