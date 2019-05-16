@@ -24,7 +24,6 @@ class MainView: public View
             File::open(path)->map()
         );
         // CC_INSPECT(edit->getText());
-        CC_INSPECT(edit->size());
         //CC_INSPECT(size());
     }
 };

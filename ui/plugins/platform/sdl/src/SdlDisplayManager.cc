@@ -45,9 +45,13 @@ SdlDisplayManager::SdlDisplayManager()
     }
 
     if (largestDisplay) {
-        displayDensityRatio_ = (1 + 0.666 * largestDisplay->isHandheld()) * avg(largestDisplay->dpi()) / 160;
+        double dpi = avg(largestDisplay->dpi());
+        displayDensityRatio_ = dpi / 160;
 
-        if (largestDisplay->dpi()[0] < 130) {
+        // limit the minimal text size to a minimum of recognizable pixels
+        if (displayDensityRatio_ < 0.9) displayDensityRatio_ = 0.9;
+
+        if (dpi < 200) {
             if (largestDisplay->size()[1] < largestDisplay->size()[0]) defaultFontSmoothing_ = FontSmoothing::RgbSubpixel;
             else defaultFontSmoothing_ = FontSmoothing::VrgbSubpixel;
         }
