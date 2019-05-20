@@ -17,14 +17,14 @@ namespace entropy {
 class BitSource: public Object
 {
 public:
-    inline static Ref<BitSource> open(Stream *source, CharArray *buffer = nullptr, Endian endian = LittleEndian)
+    static Ref<BitSource> open(Stream *source, CharArray *buffer = nullptr, Endian endian = Endian::Little)
     {
-        return new BitSource(source, buffer, endian);
+        return new BitSource{source, buffer, endian};
     }
 
-    inline static Ref<BitSource> open(const CharArray *buffer, Endian endian = LittleEndian)
+    static Ref<BitSource> open(const CharArray *buffer, Endian endian = Endian::Little)
     {
-        return new BitSource(buffer, endian);
+        return new BitSource{buffer, endian};
     }
 
     uint8_t readBit();
@@ -53,31 +53,31 @@ public:
 
 private:
     BitSource(Stream *source, CharArray *buffer, Endian endian):
-        source_(source),
-        buffer_(buffer),
-        endian_(endian),
-        fill_(0),
-        i_(0),
-        iBit_(8),
-        nr_(0)
+        source_{source},
+        buffer_{buffer},
+        endian_{endian},
+        fill_{0},
+        i_{0},
+        iBit_{8},
+        nr_{0}
     {
         if (!buffer_) buffer_ = CharArray::allocate(0x1000);
     }
 
     BitSource(const CharArray *buffer, Endian endian):
-        buffer_(const_cast<CharArray *>(buffer)),
-        endian_(endian),
-        fill_(buffer->count()),
-        i_(0),
-        iBit_(0),
-        nr_(buffer->count())
+        buffer_{const_cast<CharArray *>(buffer)},
+        endian_{endian},
+        fill_{buffer->count()},
+        i_{0},
+        iBit_{0},
+        nr_{buffer->count()}
     {}
 
     void fill();
 
     Ref<Stream> source_;
     String buffer_;
-    int endian_;
+    Endian endian_;
     int fill_;
     int i_;    // byte offset within buf_
     int iBit_;    // bit offset in buf_[i]
@@ -86,11 +86,11 @@ private:
 
 inline void BitSource::fill()
 {
-    if (!source_) throw UnexpectedEndOfInputError();
+    if (!source_) throw UnexpectedEndOfInputError{};
 
     fill_ = source_->read(mutate(buffer_));
 
-    if (fill_ == 0) throw UnexpectedEndOfInputError();
+    if (fill_ == 0) throw UnexpectedEndOfInputError{};
 
     nr_ += fill_;
     i_ = 0;
@@ -119,7 +119,7 @@ inline uint16_t BitSource::readUInt16()
 {
     uint16_t h;
 
-    if (endian_ == LittleEndian) {
+    if (endian_ == Endian::Little) {
         h = uint16_t(readUInt8());
         h |= uint16_t(readUInt8()) << 8;
     }
@@ -135,7 +135,7 @@ inline uint32_t BitSource::readUInt32()
 {
     uint32_t h;
 
-    if (endian_ == LittleEndian) {
+    if (endian_ == Endian::Little) {
         h = uint32_t(readUInt8());
         h |= uint32_t(readUInt8()) << 8;
         h |= uint32_t(readUInt8()) << 16;
@@ -155,7 +155,7 @@ inline uint64_t BitSource::readUInt64()
 {
     uint64_t h = 0;
 
-    if (endian_ == LittleEndian) {
+    if (endian_ == Endian::Little) {
         for (int i = 0; i <= 7*8; i += 8)
             h |= uint64_t(readUInt8()) << i;
     }

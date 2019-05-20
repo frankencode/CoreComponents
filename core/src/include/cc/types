@@ -21,19 +21,19 @@ namespace cc {
 /** Byte order, also known as "Endianess"
   * \TODO translate into a proper enum class
   */
-enum Endian {
-    LittleEndian = 1, ///< Low order byte precedes the high order byte
-    BigEndian = 0 ///< High order byte precedes the low order byte
+enum class Endian {
+    Little = 1, ///< Low order byte precedes the high order byte
+    Big    = 0 ///< High order byte precedes the low order byte
 };
 
 inline Endian localEndian() {
     const unsigned y = 1;
-    return Endian(*((uint8_t *)&y));
+    return static_cast<Endian>(*((uint8_t *)&y));
 }
 
 //! swap endianess, if local endian is unequal channel endian
 template<class UInt>
-inline UInt endianGate(UInt x, const int channelEndian = BigEndian)
+inline UInt endianGate(UInt x, const Endian channelEndian = Endian::Big)
 {
     if (localEndian() != channelEndian) {
         const int n = sizeof(x);

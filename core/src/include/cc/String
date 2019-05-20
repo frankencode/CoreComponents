@@ -98,7 +98,7 @@ public:
     Ref(): a_(nullptr) {}
 
     /// Construt a string from an intermediate expression
-    Ref(String &&b): a_(b.a_) { b.a_ = nullptr; }
+    Ref(String &&b): a_{b.a_} { b.a_ = nullptr; }
 
     /// Construct an alias of another string \a b
     Ref(const String &b);
@@ -588,7 +588,7 @@ public:
       * \param i current search index
       * \return true if \a ch was found, false otherwise
       */
-    bool findNext(char ch, int *i = 0) const { // FIXME: obsolete
+    bool findNext(char ch, int *i = nullptr) const { // FIXME: obsolete
         int j = (i) ? *i : 0;
         while (j < size_) {
             if (data_[j] == ch) {
@@ -602,7 +602,7 @@ public:
     }
 
     /// \copydoc findNext(char, int *)
-    bool search(char ch, int *i = 0) const { return findNext(ch, i); }
+    bool search(char ch, int *i = nullptr) const { return findNext(ch, i); }
 
     /** Check if this string contains a certain character value
       * \param ch character value to search for
@@ -731,7 +731,7 @@ public:
       * \return numerical value
       */
     template<class T, int base = -1>
-    T toNumber(bool *ok = 0) const
+    T toNumber(bool *ok = nullptr) const
     {
         bool h = false;
         if (!ok) ok = &h;
@@ -765,7 +765,7 @@ public:
       * \param leadingSpace set of characters to detect as leading whitespace
       * \param trailingSpace set of characters to detect as trailing whitespace
       */
-    String trim(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0) const
+    String trim(const char *leadingSpace = " \t\n\r", const char *trailingSpace = nullptr) const
     {
         return mutate(copy())->trimInsitu(leadingSpace, trailingSpace);
     }
@@ -781,7 +781,7 @@ public:
     String trimTrailing(const char *space = " \t\n\r") const { return mutate(copy())->trimInsitu("", space); }
 
     /// \copybrief trim(const char *, const char *) const
-    String trimInsitu(const char *leadingSpace = " \t\n\r", const char *trailingSpace = 0);
+    String trimInsitu(const char *leadingSpace = " \t\n\r", const char *trailingSpace = nullptr);
 
     /// Replace multi character whitespaces by single character whitespaces
     String simplify(const char *space = " \t\n\r") const { return mutate(copy())->simplifyInsitu(space); }
@@ -803,7 +803,7 @@ public:
       * \param pos position on line starting with 0 (in bytes)
       * \return true if offset is within valid range
       */
-    bool offsetToLinePos(int offset, int *line = 0, int *pos = 0) const;
+    bool offsetToLinePos(int offset, int *line = nullptr, int *pos = nullptr) const;
 
    /** %Map editor coordinates to a byte offset
      * \param line n-th line starting with 1
@@ -811,7 +811,7 @@ public:
      * \param offset byte offset
      * \return true if successful
      */
-    bool linePosToOffset(int line, int pos, int *offset = 0) const;
+    bool linePosToOffset(int line, int pos, int *offset = nullptr) const;
 
     /** Check if this string is UTF-8 encoded
       * \exception EncodingError this string is not UTF-8 encoded
@@ -963,7 +963,7 @@ protected:
     typedef void (*Destroy)(CharArray *array);
 
     Array();
-    Array(const char *data, int size = -1, Destroy destroy = 0);
+    Array(const char *data, int size = -1, Destroy destroy = nullptr);
     Array(const CharArray *parent, int i0, int i1);
     Array(const CharArray &b);
 
@@ -1107,32 +1107,32 @@ inline CharArray *MutantString::operator->() { return const_cast<CharArray *>(s_
 inline MutantString mutate(String &&s) { return std::move(s); }
 
 inline Ref<const CharArray>::Ref(const String &b):
-    a_(0)
+    a_{nullptr}
 {
     set(b.a_);
 }
 
 inline Ref<const CharArray>::Ref(const CharArray *b):
-    a_(0)
+    a_{nullptr}
 {
     set(CharArray::copy(b));
 }
 
 inline Ref<const CharArray>::Ref(const char *other, int size):
-    a_(0)
+    a_{nullptr}
 {
     set(CharArray::copy(other, size));
 }
 
 /*inline Ref<const CharArray>::Ref(char ch):
-    a_(0)
+    a_{nullptr}
 {
     set(CharArray::create(1));
     a_->at(0) = ch;
 }*/
 
 inline Ref<const CharArray>::Ref(int size, char preset):
-    a_(0)
+    a_{nullptr}
 {
     auto s = CharArray::create(size);
     mutate(s)->fill(preset);
@@ -1140,7 +1140,7 @@ inline Ref<const CharArray>::Ref(int size, char preset):
 }
 
 inline Ref<const CharArray>::Ref(const Ref<StringList> &b):
-    a_(0)
+    a_{nullptr}
 {
     if (b) set(CharArray::join(b));
 }
@@ -1199,13 +1199,13 @@ inline Ref<const CharArray>::operator const char *() { return get()->chars(); }
 
 inline Ref<StringList> operator+(const String &a, const String &b) { return StringList::create() << a << b; }
 inline Ref<StringList> operator+(Ref<StringList> &a, const String &b) { return a << b; }
-inline Ref<StringList> operator+(const String &a, const char *b) { return a + String(b); }
-inline Ref<StringList> operator+(const char *a, const String& b) { return String(a) + b; }
+inline Ref<StringList> operator+(const String &a, const char *b) { return a + String{b}; }
+inline Ref<StringList> operator+(const char *a, const String& b) { return String{a} + b; }
 
-inline String &Ref<const CharArray>::operator+=(char b) { String s(1); mutate(s)->at(0) = b; set(CharArray::cat(*this, s)); return *this; }
-inline String &Ref<const CharArray>::operator+=(const char *b) { set(CharArray::cat(*this, String(b))); return *this; }
+inline String &Ref<const CharArray>::operator+=(char b) { String s{1}; mutate(s)->at(0) = b; set(CharArray::cat(*this, s)); return *this; }
+inline String &Ref<const CharArray>::operator+=(const char *b) { set(CharArray::cat(*this, String{b})); return *this; }
 inline String &Ref<const CharArray>::operator+=(const String &b) { set(CharArray::cat(*this, b)); return *this; }
-inline String &Ref<const CharArray>::operator+=(const Ref<StringList> &b) { set(String(*this + b)); return *this; }
+inline String &Ref<const CharArray>::operator+=(const Ref<StringList> &b) { set(String{*this + b}); return *this; }
 
 inline const CharArray *Ref<const CharArray>::get() const
 {

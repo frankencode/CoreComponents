@@ -27,8 +27,8 @@ public:
       * \param endian endianess for writing multi-byte words
       * \return new object instance
       */
-    inline static Ref<ByteSink> open(Stream *sink, CharArray *buffer, Endian endian = LittleEndian) {
-        return new ByteSink(sink, buffer, endian);
+    static Ref<ByteSink> open(Stream *sink, CharArray *buffer, Endian endian = Endian::Little) {
+        return new ByteSink{sink, buffer, endian};
     }
 
     /** Open a new ByteSink
@@ -36,8 +36,8 @@ public:
       * \param endian endianess for writing multi-byte words
       * \return new object instance
       */
-    inline static Ref<ByteSink> open(Stream *sink, Endian endian = LittleEndian) {
-        return new ByteSink(sink, 0, endian);
+    static Ref<ByteSink> open(Stream *sink, Endian endian = Endian::Little) {
+        return new ByteSink{sink, nullptr, endian};
     }
 
     /** Open a new ByteSink
@@ -45,12 +45,12 @@ public:
       * \param endian endianess for writing multi-byte words
       * \return new object instance
       */
-    inline static Ref<ByteSink> open(CharArray *buffer, Endian endian = LittleEndian) {
-        return new ByteSink(0, buffer, endian);
+    static Ref<ByteSink> open(CharArray *buffer, Endian endian = Endian::Little) {
+        return new ByteSink{nullptr, buffer, endian};
     }
 
     /// write a single character
-    inline void write(char ch) { writeUInt8((uint8_t)ch); }
+    void write(char ch) { writeUInt8((uint8_t)ch); }
 
     /// write a string of bytes
     void write(String s);
@@ -68,47 +68,47 @@ public:
     void writeUInt64(uint64_t x);
 
     /// Write a signed byte
-    inline void writeInt8(int8_t x) { writeUInt8(union_cast<uint8_t>(x)); }
+    void writeInt8(int8_t x) { writeUInt8(union_cast<uint8_t>(x)); }
 
     /// Write a signed 2-byte word
-    inline void writeInt16(int16_t x) { writeUInt16(union_cast<uint16_t>(x)); }
+    void writeInt16(int16_t x) { writeUInt16(union_cast<uint16_t>(x)); }
 
     /// Write a signed 4-byte word
-    inline void writeInt32(int32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
+    void writeInt32(int32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
 
     /// Write a signed 8-byte word
-    inline void writeInt64(int64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
+    void writeInt64(int64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
 
     /// Write a simple precision floating point number
-    inline void writeFloat32(float32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
+    void writeFloat32(float32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
 
     /// Write a double precision floating point number
-    inline void writeFloat64(float64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
+    void writeFloat64(float64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
 
     /// Flush the output buffer and write cached bytes to the output sink
     void flush();
 
     /// The output sink
-    inline Stream *sink() const { return sink_; }
+    Stream *sink() const { return sink_; }
 
     /// The output buffer
-    inline const CharArray *buffer() const { return buffer_; }
+    const CharArray *buffer() const { return buffer_; }
 
     /// Current endianess for encoding multi-byte words
-    inline Endian endian() const { return endian_; }
+    Endian endian() const { return endian_; }
 
     /// Switch endianess
-    inline void setEndian(Endian endian) { endian_ = endian; }
+    void setEndian(Endian endian) { endian_ = endian; }
 
     /// Total number of bytes written
-    inline off_t currentOffset() const { return i0_ + i_; }
+    off_t currentOffset() const { return i0_ + i_; }
 
 private:
     ByteSink(Stream *sink, CharArray *buffer, Endian endian):
-        sink_(sink),
-        buffer_(buffer),
-        endian_(endian),
-        i0_(0), i_(0)
+        sink_{sink},
+        buffer_{buffer},
+        endian_{endian},
+        i0_{0}, i_{0}
     {
         if (!buffer_) buffer_ = String::allocate(0x1000);
     }
@@ -148,7 +148,7 @@ inline void ByteSink::writeUInt8(uint8_t x)
 
 inline void ByteSink::writeUInt16(uint16_t x)
 {
-    if (endian_ == LittleEndian)
+    if (endian_ == Endian::Little)
     {
         writeUInt8(uint8_t(x));
         writeUInt8(uint8_t(x >> 8));
@@ -162,7 +162,7 @@ inline void ByteSink::writeUInt16(uint16_t x)
 
 inline void ByteSink::writeUInt32(uint32_t x)
 {
-    if (endian_ == LittleEndian)
+    if (endian_ == Endian::Little)
     {
         writeUInt8(uint8_t(x));
         writeUInt8(uint8_t(x >> 8));
@@ -180,7 +180,7 @@ inline void ByteSink::writeUInt32(uint32_t x)
 
 inline void ByteSink::writeUInt64(uint64_t x)
 {
-    if (endian_ == LittleEndian) {
+    if (endian_ == Endian::Little) {
         for (int i = 0; i < int(sizeof(x)); ++i, x >>= 8)
             writeUInt8(uint8_t(x));
     }

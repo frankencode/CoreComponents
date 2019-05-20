@@ -47,7 +47,7 @@ void shadowBlurInsitu(Image *image, int radius, Color shadowColor)
         radius = 128;
 
     int channels[4];
-    if (localEndian() == LittleEndian) {
+    if (localEndian() == Endian::Little) {
         channels[0] = 3;
         channels[1] = 0;
         channels[2] = 1;

@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/types>
-#include <cc/strings>
 #include <cc/HashSink>
 
 namespace cc {
@@ -24,14 +23,14 @@ public:
 
     static uint16_t defaultSeed() { return ~uint16_t(0); }
 
-    static Ref<Crc16Sink> open(uint16_t seed = defaultSeed()) { return new Crc16Sink(seed); }
+    static Ref<Crc16Sink> open(uint16_t seed = defaultSeed()) { return new Crc16Sink{seed}; }
 
     Crc16Sink(uint16_t seed = defaultSeed()):
-        crc_(seed)
+        crc_{seed}
     {}
 
     void feed(const void *buf, int bufFill);
-    inline uint16_t sum() const { return crc_; }
+    uint16_t sum() const { return crc_; }
 
     void write(const CharArray *data) override;
     String finish() override;

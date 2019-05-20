@@ -31,8 +31,8 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    inline static Ref<Utf16Source> open(Stream *stream, CharArray *buffer = 0, Endian endian = BigEndian) {
-        return new Utf16Source(stream, buffer, endian);
+    static Ref<Utf16Source> open(Stream *stream, CharArray *buffer = 0, Endian endian = Endian::Big) {
+        return new Utf16Source{stream, buffer, endian};
     }
 
     /** Open a new UTF-16 decoding data source
@@ -40,47 +40,47 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    inline static Ref<Utf16Source> open(const CharArray *buffer, Endian endian = BigEndian) {
-        return new Utf16Source(buffer, endian);
+    static Ref<Utf16Source> open(const CharArray *buffer, Endian endian = Endian::Big) {
+        return new Utf16Source{buffer, endian};
     }
 
     /** Read the next %Unicode character
       * \param ch returns the %Unicode character read if any
       * \return true if not end of information, false otherwise
       */
-    inline bool read(uchar_t *ch)
+    bool read(uchar_t *ch)
     {
         bool more = byteSource_->hasMore();
         if (more) {
             uint16_t w = byteSource_->readUInt16();
             if (w == 0xFFFE && firstTime_) {
                 firstTime_ = false;
-                byteSource_->setEndian((byteSource_->endian() == BigEndian) ? LittleEndian : BigEndian);
+                byteSource_->setEndian((byteSource_->endian() == Endian::Big) ? Endian::Little : Endian::Big);
                 w = byteSource_->readUInt16();
             }
             *ch = w;
             if ((0xD800 <= *ch) && (*ch < 0xDC00)) {
                 uint16_t w = byteSource_->readUInt16();
-                if (!((0xDC00 <= w) && (w < 0xE000))) throw utf16::DecodeError();
+                if (!((0xDC00 <= w) && (w < 0xE000))) throw utf16::DecodeError{};
                 *ch = 0x10000 + (((*ch - 0xD800) << 10) | (w - 0xDC00));
             }
-            else if (0x10FFFF < *ch) throw utf16::DecodeError();
+            else if (0x10FFFF < *ch) throw utf16::DecodeError{};
         }
         return more;
     }
 
     /// Underlying byte source used for UTF-16 decoding
-    inline ByteSource *byteSource() const { return byteSource_; }
+    ByteSource *byteSource() const { return byteSource_; }
 
 private:
     Utf16Source(Stream *stream, CharArray *buffer, Endian endian):
-        byteSource_(ByteSource::open(stream, buffer, endian)),
-        firstTime_(true)
+        byteSource_{ByteSource::open(stream, buffer, endian)},
+        firstTime_{true}
     {}
 
     Utf16Source(const CharArray *buffer, Endian endian):
-        byteSource_(ByteSource::open(buffer, endian)),
-        firstTime_(true)
+        byteSource_{ByteSource::open(buffer, endian)},
+        firstTime_{true}
     {}
 
     Ref<ByteSource> byteSource_;

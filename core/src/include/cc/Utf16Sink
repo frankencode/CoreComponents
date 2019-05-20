@@ -26,8 +26,8 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    inline static Ref<Utf16Sink> open(Stream *stream, CharArray *buffer = 0, Endian endian = BigEndian) {
-        return new Utf16Sink(stream, buffer, endian);
+    static Ref<Utf16Sink> open(Stream *stream, CharArray *buffer = nullptr, Endian endian = Endian::Big) {
+        return new Utf16Sink{stream, buffer, endian};
     }
 
     /** Open a new UTF-16 encoding data sink
@@ -35,8 +35,8 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    inline static Ref<Utf16Sink> open(CharArray *buffer, Endian endian = BigEndian) {
-        return new Utf16Sink(0, buffer, endian);
+    static Ref<Utf16Sink> open(CharArray *buffer, Endian endian = Endian::Big) {
+        return new Utf16Sink{nullptr, buffer, endian};
     }
 
     /** Write the optional Byte-Order-Mark (BOM).
@@ -44,22 +44,22 @@ public:
       * It signifies the endianess used for UTF-16 encoding. The value of the BOM
       * is 0xFEFF.
       */
-    inline void writeByteOrderMark() {
+    void writeByteOrderMark() {
         byteSink_->writeUInt16(0xFEFF);
     }
 
     /** Write an %Unicode character
       * \param ch %Unicode character
       */
-    inline void write(uchar_t ch)
+    void write(uchar_t ch)
     {
         if (ch < 0x10000) {
-            if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw utf16::EncodeSurrogatePairError();
-            else if ((ch == 0xFEFF) || (ch == 0xFFFE)) throw utf16::EncodeByteOrderMarkError();
+            if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw utf16::EncodeSurrogatePairError{};
+            else if ((ch == 0xFEFF) || (ch == 0xFFFE)) throw utf16::EncodeByteOrderMarkError{};
             byteSink_->writeUInt16(ch);
         }
         else {
-            if (0x10FFFF < ch) throw utf16::EncodeLargeCodePointError();
+            if (0x10FFFF < ch) throw utf16::EncodeLargeCodePointError{};
             ch -= 0x10000;
             byteSink_->writeUInt16((ch >> 10) + 0xD800);
             byteSink_->writeUInt16((ch & 0x3FF) + 0xDC00);
@@ -67,11 +67,11 @@ public:
     }
 
     /// Underlying byte sink used for UTF-16 encoding
-    inline ByteSink *byteSink() const { return byteSink_; }
+    ByteSink *byteSink() const { return byteSink_; }
 
 private:
     Utf16Sink(Stream *stream, CharArray* buffer, Endian endian):
-        byteSink_(ByteSink::open(stream, buffer, endian))
+        byteSink_{ByteSink::open(stream, buffer, endian)}
     {}
 
     Ref<ByteSink> byteSink_;

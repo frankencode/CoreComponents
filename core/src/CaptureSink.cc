@@ -10,8 +10,13 @@
 
 namespace cc {
 
+Ref<CaptureSink> CaptureSink::open()
+{
+    return new CaptureSink;
+}
+
 CaptureSink::CaptureSink():
-    parts_(StringList::create())
+    parts_{StringList::create()}
 {}
 
 void CaptureSink::write(const CharArray *data)

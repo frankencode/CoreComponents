@@ -23,7 +23,7 @@ public:
     /** Open a new CaptureSink
       * \return new object instance
       */
-    static Ref<CaptureSink> open() { return new CaptureSink; }
+    static Ref<CaptureSink> open();
 
     void write(const CharArray *data) override;
 

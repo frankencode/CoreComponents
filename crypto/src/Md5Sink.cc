@@ -196,7 +196,7 @@ void Md5Sink::consume()
         // select 16 dwords x[0], x[1] ... x[15] and
         // ensure value of the dwords is independent from system endianess
         uint32_t *x = m + i * 16;
-        if (localEndian() == BigEndian) {
+        if (localEndian() == Endian::Big) {
             for (int j = 0; j < 16; ++j)
                 x[j] = swap32(x[j]);
         }
