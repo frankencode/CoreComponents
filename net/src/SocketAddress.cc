@@ -144,13 +144,15 @@ SocketAddress::SocketAddress(ProtocolFamily family, const String &address, int p
     }
 }
 
-SocketAddress::SocketAddress(struct sockaddr_in *addr):
-    inet4Address_{*addr}
-{}
+SocketAddress::SocketAddress(struct sockaddr_in *addr)
+{
+    inet4Address_ = *addr;
+}
 
-SocketAddress::SocketAddress(struct sockaddr_in6 *addr):
-    inet6Address_{*addr}
-{}
+SocketAddress::SocketAddress(struct sockaddr_in6 *addr)
+{
+    inet6Address_ = *addr;
+}
 
 SocketAddress::SocketAddress(addrinfo *info):
     socketType_{static_cast<SocketType>(info->ai_socktype)},
