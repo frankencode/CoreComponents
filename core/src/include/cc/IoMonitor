@@ -21,15 +21,15 @@ namespace cc {
 class IoEvent: public Object
 {
 public:
-    inline IoReady type() const { return type_; }       ///< type of I/O event
-    inline IoReady ready() const { return ready_; }     ///< tells if ready for reading or writing when the event occured
-    inline IoTarget *target() const { return target_; } ///< I/O target
+    IoReady type() const { return type_; }       ///< type of I/O event
+    IoReady ready() const { return ready_; }     ///< tells if ready for reading or writing when the event occured
+    IoTarget *target() const { return target_; } ///< I/O target
 
 private:
     friend class IoMonitor;
 
-    inline static Ref<IoEvent> create(int index, IoReady type, IoTarget *target) {
-        return new IoEvent(index, type, target);
+    static Ref<IoEvent> create(int index, IoReady type, IoTarget *target) {
+        return new IoEvent{index, type, target};
     }
 
     IoEvent(int index, IoReady type, IoTarget *target):

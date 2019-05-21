@@ -23,8 +23,8 @@ void DatagramSocket::connect(Ref<DatagramSocket> *first, Ref<DatagramSocket> *se
     fd[1] = 0;
     if (::socketpair(AF_LOCAL, SOCK_DGRAM, 0, fd) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
-    *first = new DatagramSocket(fd[0]);
-    *second = new DatagramSocket(fd[1]);
+    *first = new DatagramSocket{fd[0]};
+    *second = new DatagramSocket{fd[1]};
 }
 
 DatagramSocket::DatagramSocket(int fd):
@@ -82,7 +82,7 @@ int DatagramSocket::recvFrom(Ref<SocketAddress> *peerAddress, CharArray *buffer)
     do ret = ::recvfrom(fd_, buffer->bytes(), buffer->count(), 0, (*peerAddress)->addr(), &len);
     while (ret == -1 && errno == EINTR);
     if (ret == -1) {
-        if (errno == EHOSTUNREACH) throw HostUnreachable();
+        if (errno == EHOSTUNREACH) throw HostUnreachable{};
         CC_SYSTEM_DEBUG_ERROR(errno);
     }
     return ret;
@@ -94,7 +94,7 @@ int DatagramSocket::sendTo(const SocketAddress *peerAddress, const CharArray *me
     do ret = ::sendto(fd_, message->bytes(), message->count(), 0, peerAddress->addr(), peerAddress->addrLen());
     while (ret == -1 && errno == EINTR);
     if (ret == -1) {
-        if (errno == EHOSTUNREACH) throw HostUnreachable();
+        if (errno == EHOSTUNREACH) throw HostUnreachable{};
         CC_SYSTEM_DEBUG_ERROR(errno);
     }
     return ret;
