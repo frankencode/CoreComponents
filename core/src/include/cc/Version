@@ -52,7 +52,7 @@ public:
     /// Construct a version by parsing a variant \a v
     Version(const Variant &v);
 
-    inline static Version fromWord(uint32_t x)
+    static Version fromWord(uint32_t x)
     {
         return Version(x >> 24, (x >> 16) & 0xFF, x & 0xFFFF);
     }
@@ -61,18 +61,18 @@ public:
     {
     public:
          /// Check if this version is valid
-        inline bool isValid() const { return major_ > 0 || minor_ > 0; }
+        bool isValid() const { return major_ > 0 || minor_ > 0; }
 
         /// Return the major version
-        inline int major() const { return major_; }
+        int major() const { return major_; }
 
         /// Return the minor version
-        inline int minor() const { return minor_; }
+        int minor() const { return minor_; }
 
         /// Return the patch version
-        inline int patch() const { return patch_; }
+        int patch() const { return patch_; }
 
-        inline uint32_t toWord() const { return (uint32_t(major_) << 24) | (uint32_t(minor_) << 16) | uint32_t(patch_); }
+        uint32_t toWord() const { return (uint32_t(major_) << 24) | (uint32_t(minor_) << 16) | uint32_t(patch_); }
 
         /// Stringify this version
         String toString() const;
@@ -99,23 +99,23 @@ public:
         uint16_t patch_;
     };
 
-    inline const Instance *operator->() const { return &instance_; }
-    inline Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
+    Instance *operator->() { return &instance_; }
 
     /** Comparism operators
       * @{
       */
-    inline bool operator< (const Version &b) { return (*this)->toWord() <  b->toWord(); }
-    inline bool operator<=(const Version &b) { return (*this)->toWord() <= b->toWord(); }
-    inline bool operator> (const Version &b) { return (*this)->toWord() >  b->toWord(); }
-    inline bool operator>=(const Version &b) { return (*this)->toWord() >= b->toWord(); }
-    inline bool operator==(const Version &b) { return (*this)->toWord() == b->toWord(); }
-    inline bool operator!=(const Version &b) { return (*this)->toWord() != b->toWord(); }
+    bool operator< (const Version &b) { return (*this)->toWord() <  b->toWord(); }
+    bool operator<=(const Version &b) { return (*this)->toWord() <= b->toWord(); }
+    bool operator> (const Version &b) { return (*this)->toWord() >  b->toWord(); }
+    bool operator>=(const Version &b) { return (*this)->toWord() >= b->toWord(); }
+    bool operator==(const Version &b) { return (*this)->toWord() == b->toWord(); }
+    bool operator!=(const Version &b) { return (*this)->toWord() != b->toWord(); }
     /** @}
       */
 
     /// Conversion to string operator
-    inline operator String() const { return (*this)->toString(); }
+    operator String() const { return (*this)->toString(); }
 
 private:
     Instance instance_;

@@ -1,10 +1,11 @@
 Library {
     name: cccore
     Dependency {
-        configure: config/cxx11.cc
+        probe: probe/cxx11.cc
+        compile-flags: -std=c++11
         cascade: true
     }
     // compile-flags: [-DCC_MEM_ACCOUNTING ]
-    compile-flags: [ -DCC_MEM_DISABLE ]
+    compile-flags: [ -DCC_MEM_DISABLE, -std=c++11 ]
     link: dl
 }

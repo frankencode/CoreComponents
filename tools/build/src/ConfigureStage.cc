@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug> // DEBUG
 #include <cc/stdio>
 #include <cc/Dir>
 #include <cc/File>
@@ -23,7 +24,7 @@ bool ConfigureStage::run()
     if (complete_) return success_;
     complete_ = true;
 
-    BuildStageGuard guard(this);
+    BuildStageGuard guard{this};
 
     for (BuildPlan *prerequisite: plan()->prerequisites()) {
         if (!prerequisite->configureStage()->run()) {
@@ -96,8 +97,8 @@ bool ConfigureStage::run()
                     }
                     {
                         Variant value = object->value("version");
-                        if (value->type() == VariantType::String) version = Version(String(value));
-                        else if (value->type() == VariantType::Version) version = Version(value);
+                        if (value->type() == VariantType::String) version = Version{String{value}};
+                        else if (value->type() == VariantType::Version) version = Version{value};
                     }
                 }
             }
@@ -109,7 +110,8 @@ bool ConfigureStage::run()
                     prerequisite->customLinkFlags()->appendList(
                         configureShell(prerequisite->linkFlagsConfigure())->simplify()->split(' ')
                     );
-                    version = configureShell(prerequisite->versionConfigure());
+                    if (prerequisite->versionConfigure() != "") // FIXME, why needed?
+                        version = configureShell(prerequisite->versionConfigure());
                 }
                 catch (String &error) {
                     if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
@@ -130,11 +132,11 @@ bool ConfigureStage::run()
                 Version versionMax = prerequisite->versionMax();
                 if (versionMin->isValid()) {
                     if (version < versionMin)
-                        throw(String(Format() << "At least version " << versionMin << " is required (version " << version << " detected)"));
+                        throw(String{Format{} << "At least version " << versionMin << " is required (version " << version << " detected)"});
                 }
                 if (versionMax->isValid()) {
                     if (versionMax < version)
-                        throw(String(Format() << "At most version " << versionMax << " is supported (version " << version << " detected)"));
+                        throw(String{Format{} << "At most version " << versionMax << " is supported (version " << version << " detected)"});
                 }
             }
             catch (String &error) {
@@ -148,6 +150,11 @@ bool ConfigureStage::run()
                     continue;
                 else
                     return success_ = false;
+            }
+
+            if (prerequisite->probe() != "") {
+                if (!probeBuild(name, prerequisite->probe()))
+                    continue;
             }
 
             if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
@@ -185,7 +192,7 @@ bool ConfigureStage::run()
     return success_;
 }
 
-String ConfigureStage::configureShell(String shellCommand)
+String ConfigureStage::configureShell(const String &shellCommand)
 {
     return ConfigureShell::instance()->run(shellCommand);
 }
@@ -225,6 +232,48 @@ void ConfigureStage::makeUseOf(BuildPlan *other)
                 makeUseOf(prerequisite);
         }
     }
+}
+
+bool ConfigureStage::probeBuild(const String &name, const String &probe) const
+{
+    String probePath = plan()->projectPath()->extendPath(probe);
+    Ref<FileStatus> sourceStatus = FileStatus::read(probePath);
+
+    if (!sourceStatus->isValid()) {
+        ferr() << plan()->recipePath() << ": " << name << ":" << nl;
+        ferr() << "  " << probe << ": no such file" << nl;
+        return false;
+    }
+
+    if (!Dir::exists(plan()->configPath()))
+        Dir::create(plan()->configPath());
+
+    String baseName = probePath->baseName();
+    String binPath = plan()->configPath()->extendPath(baseName);
+
+    bool dirty = true;
+    Ref<FileStatus> binStatus = plan()->shell()->fileStatus(binPath);
+    if (binStatus->isValid()) {
+        if (binStatus->lastModified() > sourceStatus->lastModified())
+            dirty = false;
+    }
+
+    if (dirty) {
+        String command = toolChain()->configureCompileCommand(plan(), probePath, binPath);
+        Ref<SubProcess> sub = SubProcess::open(command);
+        String output = sub->readAll();
+        int exitCode = sub->wait();
+        if (exitCode != 0) {
+            if (plan()->options() & (BuildPlan::Verbose | BuildPlan::Configure)) {
+                ferr()
+                    << command << nl
+                    << output << nl;
+            }
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool ConfigureStage::runConfigure(String name, String configure, String *output) const

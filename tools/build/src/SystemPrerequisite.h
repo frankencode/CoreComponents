@@ -19,29 +19,30 @@ class BuildPlan;
 class SystemPrerequisite: public BuildParameters
 {
 public:
-    static Ref<SystemPrerequisite> create(String name);
+    static Ref<SystemPrerequisite> create(const String &name);
     static Ref<SystemPrerequisite> read(const MetaObject *object, BuildPlan *plan);
 
-    inline String name() const { return name_; }
-    inline String origName() const { return origName_; }
-    inline bool optional() const { return optional_; }
-    inline bool cascade() const { return cascade_; }
+    String name() const { return name_; }
+    String origName() const { return origName_; }
+    bool optional() const { return optional_; }
+    bool cascade() const { return cascade_; }
 
-    inline String compileFlagsConfigure() const { return compileFlagsConfigure_; }
-    inline String linkFlagsConfigure() const { return linkFlagsConfigure_; }
+    String compileFlagsConfigure() const { return compileFlagsConfigure_; }
+    String linkFlagsConfigure() const { return linkFlagsConfigure_; }
 
-    inline String versionConfigure() const { return versionConfigure_; }
-    inline Version versionMin() const { return versionMin_; }
-    inline void setVersionMin(Version newValue) { versionMin_ = newValue; }
-    inline Version versionMax() const { return versionMax_; }
-    inline void setVersionMax(Version newValue) { versionMax_ = newValue; }
+    String versionConfigure() const { return versionConfigure_; }
+    Version versionMin() const { return versionMin_; }
+    void setVersionMin(Version newValue) { versionMin_ = newValue; }
+    Version versionMax() const { return versionMax_; }
+    void setVersionMax(Version newValue) { versionMax_ = newValue; }
 
-    inline String configure() const { return configure_; }
+    String probe() const { return probe_; }
+    String configure() const { return configure_; }
 
-    inline bool autoConfigure() const { return autoConfigure_; }
+    bool autoConfigure() const { return autoConfigure_; }
 
 private:
-    SystemPrerequisite(String name);
+    SystemPrerequisite(const String &name);
     SystemPrerequisite(const MetaObject *object, BuildPlan *plan);
 
     String name_;
@@ -56,6 +57,7 @@ private:
     Version versionMin_;
     Version versionMax_;
 
+    String probe_;
     String configure_;
     bool autoConfigure_;
 };
