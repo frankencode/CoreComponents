@@ -214,4 +214,9 @@ bool Process::isDaemonized()
     return ::getsid(0) == ::getpgid(0) && ::isatty(0) != 1;
 }
 
+pid_t Process::makeSessionLeader()
+{
+    return ::setpgid(0, 0);
+}
+
 } // namespace cc

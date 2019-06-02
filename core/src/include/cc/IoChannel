@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+
+namespace cc {
+
+class IoChannel: public Object
+{
+public:
+    int masterFd() const { return masterFd_; }
+    int slaveFd() const { return slaveFd_; }
+
+protected:
+    IoChannel(): masterFd_{-1}, slaveFd_{-1} {}
+
+    int masterFd_;
+    int slaveFd_;
+};
+
+} // namespace cc

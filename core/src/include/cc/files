@@ -72,7 +72,7 @@ enum class FileType: int {
 String str(FileType type);
 
 /// %File open flags
-enum class OpenMode: int {
+enum class OpenMode: mode_t {
     None      = 0,        ///< Empty mode
     ReadOnly  = O_RDONLY, ///< Open for reading, only
     WriteOnly = O_WRONLY, ///< Open for writing, only
@@ -83,7 +83,7 @@ enum class OpenMode: int {
     Virgin    = O_EXCL    ///< Fail to open if file exists already
 };
 
-CC_BITMASK(OpenMode, int)
+CC_BITMASK(OpenMode, mode_t)
 
 String str(OpenMode mode);
 

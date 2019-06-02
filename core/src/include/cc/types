@@ -130,7 +130,7 @@ template<class T, class U, int ConversionPossible>
 class DynamicCastHelper {
 public:
     static_assert(ConversionPossible, "Impossible type conversion requested");
-    inline static U *cast(T *p) { return dynamic_cast<U*>(p); }
+    static U *cast(T *p) { return dynamic_cast<U*>(p); }
 };
 
 template<class T, class U, int ConversionExists = -1>
@@ -139,7 +139,7 @@ class CastHelper {};
 template<class T, class U>
 class CastHelper<T, U, 0> {
 public:
-    inline static U *cast(T *p) {
+    static U *cast(T *p) {
         return DynamicCastHelper<T, U, (ConversionFromTo<U*, T*>::Exists || ConversionFromTo<U*, const T*>::Exists) ? 1 : 0>::cast(p);
     }
 };
@@ -147,19 +147,19 @@ public:
 template<class T, class U>
 class CastHelper<T, U, 1> {
 public:
-    inline static U *cast(T *p) { return static_cast<U*>(p); }
+    static U *cast(T *p) { return static_cast<U*>(p); }
 };
 
 template<class T>
 class CastHelper<T, T, 1> {
 public:
-    inline static T *cast(T *p) { return p; }
+    static T *cast(T *p) { return p; }
 };
 
 template<class T>
 class CastHelper<const T, T, 1> {
 public:
-    inline static T *cast(T *p) { return p; }
+    static T *cast(T *p) { return p; }
 };
 
 #define CC_CAST_FROM_TO(T, U, p) CastHelper<T, U, ConversionFromTo<T*, U*>::Exists>::cast(p)
@@ -209,31 +209,31 @@ inline bool isSpace(Char ch) {
 template<class T>
 class Identity {
 public:
-    inline static T map(const T &x) { return x; }
+    static T map(const T &x) { return x; }
 };
 
 template<class T>
 class ToLower {
 public:
-    inline static T map(const T &x) { return cc::toLower(x); }
+    static T map(const T &x) { return cc::toLower(x); }
 };
 
 template<class T>
 class ToUpper {
 public:
-    inline static T map(const T &x) { return cc::toUpper(x); }
+    static T map(const T &x) { return cc::toUpper(x); }
 };
 
 template<class T>
 class ToAscii {
 public:
-    inline static char map(const T &x) { return char(x); }
+    static char map(const T &x) { return char(x); }
 };
 
 template<class T>
 class ToUnicode {
 public:
-    inline static uchar_t map(const T &x) { return uchar_t(x); }
+    static uchar_t map(const T &x) { return uchar_t(x); }
 };
 
 } // namespace cc

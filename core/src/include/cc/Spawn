@@ -1,0 +1,107 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <sys/types.h> // pid_t
+#include <spawn.h>
+#include <cc/files>
+#include <cc/exceptions>
+#include <cc/SignalSet>
+#include <cc/Process>
+#include <cc/IoChannel>
+
+namespace cc {
+
+class Spawn: public Object
+{
+public:
+    class Staging: public Object
+    {
+    public:
+        /** Set command line arguments
+          * \param args argument list, first entry is the executable name
+          * \return pointer to this object
+          */
+        Staging *setArgs(const StringList *args);
+
+        /** Set environment map
+          * \param envMap the environment map to use for the new sub-process (or zero pointer to inherit the parents environment map)
+          * \return pointer to this object
+          */
+        Staging *setEnvMap(const EnvMap *envMap);
+
+        Staging *setProcessGroup(pid_t groupId = 0);
+        Staging *setSignalMask(const SignalSet *mask);
+        Staging *setSignalDefault(const SignalSet *set);
+
+        Staging *setInputChannel(IoChannel *channel);
+        Staging *setOutputChannel(IoChannel *channel);
+        Staging *setErrorChannel(IoChannel *channel);
+
+        Staging *setInputFile(const String &path);
+        Staging *setOutputFile(const String &path);
+        Staging *setErrorFile(const String &path);
+
+        Staging *addOpenFile(int fd, const String &path, OpenMode openMode, FileMode fileMode = FileMode::UserRead|FileMode::UserWrite|FileMode::GroupRead|FileMode::OtherRead);
+
+        Ref<Spawn> start() const;
+
+    private:
+        friend class Spawn;
+
+        static void checkError(int ret);
+
+        Staging(const String &command);
+        ~Staging();
+
+        void enableSpawnFlag(short flag);
+
+        String command_;
+        String execPath_;
+        Ref<const StringList> args_;
+        Ref<const EnvMap> envMap_;
+
+        int spawnFlags_;
+        posix_spawnattr_t spawnAttributes_;
+        posix_spawn_file_actions_t fileActions_;
+
+        Ref<IoChannel> inputChannel_;
+        Ref<IoChannel> outputChannel_;
+        Ref<IoChannel> errorChannel_;
+    };
+
+    static Ref<Staging> stage(const String &command);
+
+    /// Sub-process process ID
+    pid_t pid() const;
+
+    /** \brief Send signal to the sub-process
+      * \param signal Signal number
+      */
+    void kill(int signal = SIGTERM);
+
+    /** \brief Kill the entire sub-process group
+      * \param signal Signal number
+      */
+    void killGroup(int signal = SIGTERM);
+
+    /** \brief Wait for sub-process termination
+      * \param signalled returns true if the sub-process termination was due to a signal
+      * \return exit status of sub-process or signal number if signalled
+      */
+    int wait(bool *signalled = nullptr);
+
+private:
+    friend class Staging;
+    static Ref<Spawn> bootstrap(const Staging *staging);
+    Spawn(pid_t pid);
+    pid_t pid_;
+};
+
+} // namespace cc

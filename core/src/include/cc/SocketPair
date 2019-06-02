@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/IoChannel>
+
+namespace cc {
+
+/** \brief Bi-directional I/O channel
+  * \see Spawn
+  */
+class SocketPair: public IoChannel
+{
+public:
+    static Ref<SocketPair> create();
+
+protected:
+    SocketPair();
+};
+
+} // namespace cc

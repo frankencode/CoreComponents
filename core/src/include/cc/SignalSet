@@ -22,11 +22,11 @@ class Thread;
 class SignalSet: public Object
 {
 public:
-    inline static Ref<SignalSet> createEmpty() {
-        return new SignalSet(Empty);
+    static Ref<SignalSet> createEmpty() {
+        return new SignalSet{Empty};
     }
-    inline static Ref<SignalSet> createFull() {
-        return new SignalSet(Full);
+    static Ref<SignalSet> createFull() {
+        return new SignalSet{Full};
     }
 
     void insert(int signal);
@@ -34,13 +34,15 @@ public:
 
     bool contains(int signal) const;
 
-    inline sigset_t *rawSet() { return &rawSet_; }
+    sigset_t *rawSet() { return &rawSet_; }
+
+    const sigset_t *rawSet() const { return &rawSet_; }
 
 private:
     friend class Thread;
     friend class Singleton<SignalSet>;
 
-    inline static Ref<SignalSet> create() {
+    static Ref<SignalSet> create() {
         return new SignalSet;
     }
 

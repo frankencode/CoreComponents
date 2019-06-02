@@ -79,6 +79,9 @@ public:
 
     /// Returns true if this process is daemonized
     static bool isDaemonized();
+
+    /// Make this process a leader of a new login session if the this process is not already a process group leader
+    static pid_t makeSessionLeader();
 };
 
 } // namespace cc

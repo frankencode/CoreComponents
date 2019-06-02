@@ -46,11 +46,11 @@ Ref<SubProcess> SubProcess::bootstrap(Staging *staging)
     if (execPath != "") {
         if (execPath->contains('/')) {
             if (staging->workDir_ != "" && execPath->isRelativePath()) execPath = execPath->absolutePathRelativeTo(Process::cwd());
-            if (!File::access(execPath, Access::Execute)) throw CommandNotFound(execPath);
+            if (!File::access(execPath, Access::Execute)) throw CommandNotFound{execPath};
         }
         else {
             String path = File::locate(execPath, Process::env("PATH")->split(':'), Access::Execute);
-            if (path == "") throw CommandNotFound(execPath);
+            if (path == "") throw CommandNotFound{execPath};
             execPath = path;
         }
     }
@@ -84,8 +84,8 @@ Ref<SubProcess> SubProcess::bootstrap(Staging *staging)
     // prepare argument list and environment map
     // ------------------------------------------------------------------------
 
-    char **argv = 0;
-    char **envp = 0;
+    char **argv = nullptr;
+    char **envp = nullptr;
 
     if (execPath != "")
     {
@@ -254,8 +254,8 @@ int SubProcess::shellExecute(const String &shellCommand)
 }
 
 SubProcess::SubProcess(Staging *staging, pid_t pid):
-    params_(staging),
-    pid_(pid)
+    params_{staging},
+    pid_{pid}
 {}
 
 SubProcess::~SubProcess()
@@ -269,7 +269,7 @@ void SubProcess::kill(int signal)
 {
     if (::kill(pid_, signal) == -1) {
         if (errno == EPERM)
-            throw PermissionError();
+            throw PermissionError{};
         else
             CC_SYSTEM_DEBUG_ERROR(errno);
     }
@@ -279,7 +279,7 @@ void SubProcess::killGroup(int signal)
 {
     if (::kill(pid_, signal) == -1) {
         if (errno == EPERM)
-            throw PermissionError();
+            throw PermissionError{};
         else
             CC_SYSTEM_DEBUG_ERROR(errno);
     }

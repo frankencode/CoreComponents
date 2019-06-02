@@ -119,10 +119,10 @@ public:
         Staging *setWorker(Worker *worker) { worker_ = worker; return this; }
 
         /// Finalise staging, start new child process
-        inline Ref<SubProcess> start() { return SubProcess::bootstrap(this); }
+        Ref<SubProcess> start() { return SubProcess::bootstrap(this); }
 
         /// Finalise staging, start new child process with input/output forwarding
-        inline Ref<SubProcess> open() {
+        Ref<SubProcess> open() {
             if (forwarding_ == NoForwarding) forwarding_ = ForwardBySocket;
             return SubProcess::bootstrap(this);
         }
@@ -131,9 +131,9 @@ public:
         friend class SubProcess;
 
         Staging():
-            type_(SubProcess::GroupLeader),
-            forwarding_(ForwardBySocket),
-            userMask_(-1)
+            type_{SubProcess::GroupLeader},
+            forwarding_{ForwardBySocket},
+            userMask_{-1}
         {}
 
         Type type_;
@@ -199,7 +199,7 @@ public:
       * \param signalled returns true if the sub-process termination was due to a signal
       * \return exit status of sub-process or signal number if signalled
       */
-    int wait(bool *signalled = 0);
+    int wait(bool *signalled = nullptr);
 
 private:
     friend class Staging;

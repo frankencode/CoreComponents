@@ -20,7 +20,7 @@
 namespace ccbuild {
 
 BuildShell::BuildShell(const BuildPlan *plan):
-    plan_(plan)
+    plan_{plan}
 {}
 
 String BuildShell::beautify(const String &command) const
