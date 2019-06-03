@@ -31,7 +31,7 @@ public:
         Staging *setArgs(const StringList *args);
 
         /** Set environment map
-          * \param envMap the environment map to use for the new sub-process (or zero pointer to inherit the parents environment map)
+          * \param envMap the environment map to use for the new child process (or zero pointer to inherit the parents environment map)
           * \return pointer to this object
           */
         Staging *setEnvMap(const EnvMap *envMap);
@@ -81,21 +81,22 @@ public:
     /// Sub-process process ID
     pid_t pid() const;
 
-    /** \brief Send signal to the sub-process
+    /** \brief Send signal to the child process
       * \param signal Signal number
       */
     void kill(int signal = SIGTERM);
 
-    /** \brief Kill the entire sub-process group
+    /** \brief Kill the entire child process group
       * \param signal Signal number
       */
     void killGroup(int signal = SIGTERM);
 
-    /** \brief Wait for sub-process termination
-      * \param signalled returns true if the sub-process termination was due to a signal
-      * \return exit status of sub-process or signal number if signalled
+    /** \brief Wait for child process termination
+      * \param signalled returns true if the child process termination was due to a signal
+      * \return exit status of child process or signal number if signalled
+      * \exception Signalled child process terminated due to receiving a signal
       */
-    int wait(bool *signalled = nullptr);
+    int wait();
 
 private:
     friend class Staging;

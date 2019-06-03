@@ -30,7 +30,7 @@ public:
       * \return new object instance
       */
     static Ref<SystemStream> create(int fd) {
-        return new SystemStream(fd);
+        return new SystemStream{fd};
     }
 
     /** Create a pair of connected local sockets
@@ -130,6 +130,9 @@ public:
       * \return can be a value returned by the request, otherwise 0
       */
     int ioctl(int request, void *arg);
+
+    /// Close this stream
+    void close();
 
 protected:
     SystemStream(int fd = -1);

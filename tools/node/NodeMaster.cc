@@ -72,7 +72,7 @@ void NodeMaster::run()
         try {
             runNode();
         }
-        catch (Interrupt &ex) {
+        catch (Signaled &ex) {
             if (ex.signal() != SIGHUP) {
                 exitCode_ = ex.signal() + 128;
                 break;
@@ -184,7 +184,7 @@ void NodeMaster::runNode()
                 CCNODE_NOTICE() << "Received " << signalName(signal) << ", shutting down" << nl;
                 workerPool = nullptr;
                 CCNODE_NOTICE() << "Shutdown complete" << nl;
-                throw Interrupt{signal};
+                throw Signaled{signal};
             }
         }
     }

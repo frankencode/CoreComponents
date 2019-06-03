@@ -12,16 +12,16 @@
 
 namespace cc {
 
-/** \brief Uni-directional I/O channel
+/** \brief Sub-process output pipe
   * \see Spawn
   */
-class Pipe: public IoChannel
+class OutputPipe: public IoChannel
 {
 public:
-    static Ref<Pipe> create();
+    static Ref<OutputPipe> create();
 
 private:
-    Pipe();
+    OutputPipe();
 };
 
 } // namepspace cc

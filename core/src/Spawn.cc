@@ -251,26 +251,19 @@ void Spawn::killGroup(int signal)
     }
 }
 
-int Spawn::wait(bool *signalled)
+int Spawn::wait()
 {
     int ret = 0;
 
     if (::waitpid(pid_, &ret, 0) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 
-    if (WIFEXITED(ret)) {
-        if (signalled) *signalled = false;
-        ret = WEXITSTATUS(ret);
-    }
-    else if (WIFSIGNALED(ret)) {
-        if (signalled) *signalled = true;
-        ret = WTERMSIG(ret);
-    }
-    else {
-        if (signalled) *signalled = false;
-    }
-
     pid_ = -1;
+
+    if (WIFEXITED(ret))
+        ret = WEXITSTATUS(ret);
+    else if (WIFSIGNALED(ret))
+        throw Signaled{WTERMSIG(ret)};
 
     return ret;
 }

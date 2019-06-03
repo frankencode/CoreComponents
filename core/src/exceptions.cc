@@ -99,18 +99,18 @@ String signalName(int signal)
 }
 
 
-Interrupt::Interrupt(int signal):
-    signal_(signal)
+Signaled::Signaled(int signal):
+    signal_{signal}
 {}
 
-String Interrupt::signalName() const
+String Signaled::signalName() const
 {
     return cc::signalName(signal_);
 }
 
-String Interrupt::message() const
+String Signaled::message() const
 {
-    return Format() << "Caught signal " << signalName();
+    return Format{} << "Caught signal " << signalName();
 }
 
 String Timeout::message() const
@@ -129,7 +129,7 @@ TransferError::TransferError(String details):
 
 String TransferError::message() const
 {
-    return String("Data transfer failed: ") + details_;
+    return String{"Data transfer failed: "} + details_;
 }
 
 String PermissionError::message() const

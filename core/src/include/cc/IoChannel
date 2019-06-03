@@ -8,18 +8,20 @@
 
 #pragma once
 
-#include <cc/Object>
+#include <cc/SystemStream>
 
 namespace cc {
 
 class IoChannel: public Object
 {
 public:
-    int masterFd() const { return masterFd_; }
-    int slaveFd() const { return slaveFd_; }
+    int masterFd() const;
+    int slaveFd() const;
+
+    Ref<SystemStream> open() const;
 
 protected:
-    IoChannel(): masterFd_{-1}, slaveFd_{-1} {}
+    IoChannel();
 
     int masterFd_;
     int slaveFd_;

@@ -230,14 +230,14 @@ private:
 
 String signalName(int signal);
 
-/** \class Interrupt cc/exceptions
+/** \class Signaled cc/exceptions
   * \brief Signal received
   */
-class Interrupt: public Exception
+class Signaled: public Exception
 {
 public:
-    Interrupt(int signal);
-    ~Interrupt() throw() {}
+    Signaled(int signal);
+    ~Signaled() throw() {}
 
     int signal() const { return signal_; }
     String signalName() const;

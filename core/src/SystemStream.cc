@@ -43,26 +43,18 @@ void SystemStream::connect(Ref<SystemStream> *first, Ref<SystemStream> *second)
     fd[1] = 0;
     if (::socketpair(AF_LOCAL, SOCK_STREAM, 0, fd) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
-    *first = new SystemStream(fd[0]);
-    *second = new SystemStream(fd[1]);
+    *first = new SystemStream{fd[0]};
+    *second = new SystemStream{fd[1]};
 }
 
 SystemStream::SystemStream(int fd):
-    fd_(fd),
-    scatterLimit_(1<<14)
+    fd_{fd},
+    scatterLimit_{1<<14}
 {}
 
 SystemStream::~SystemStream()
 {
-    if (fd_ >= 0) {
-        #ifndef NDEBUG
-        int ret =
-        #endif
-        ::close(fd_);
-        #ifndef NDEBUG
-        check(ret != -1);
-        #endif
-    }
+    if (fd_ >= 0) ::close(fd_);
 }
 
 int SystemStream::fd() const { return fd_; }
@@ -148,6 +140,12 @@ void SystemStream::duplicateTo(SystemStream *other)
 int SystemStream::ioctl(int request, void *arg)
 {
     return SystemIo::ioctl(fd_, request, arg);
+}
+
+void SystemStream::close()
+{
+    if (::close(fd_) == -1)
+        CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
 } // namespace cc

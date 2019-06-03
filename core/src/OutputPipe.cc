@@ -9,20 +9,18 @@
 #include <unistd.h> // pipe
 #include <errno.h>
 #include <cc/exceptions>
-#include <cc/Pipe>
+#include <cc/OutputPipe>
 
 namespace cc {
 
-Ref<Pipe> Pipe::create()
+Ref<OutputPipe> OutputPipe::create()
 {
-    return new Pipe;
+    return new OutputPipe;
 }
 
-Pipe::Pipe()
+OutputPipe::OutputPipe()
 {
-    int fd[2];
-    fd[0] = 0;
-    fd[1] = 0;
+    int fd[2] = { 0, 0 };
     if (::pipe(fd) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
     masterFd_ = fd[0];
