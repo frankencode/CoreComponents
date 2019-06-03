@@ -15,12 +15,11 @@ namespace cc {
 class IoChannel: public Object
 {
 public:
-    int masterFd() const;
-    int slaveFd() const;
-
     Ref<SystemStream> open() const;
 
 protected:
+    friend class Spawn;
+
     IoChannel();
 
     int masterFd_;

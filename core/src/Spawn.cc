@@ -21,8 +21,7 @@ namespace cc {
 }
 
 Spawn::Staging::Staging(const String &command):
-    command_{command},
-    spawnFlags_{0}
+    command_{command}
 {
     CC_SPAWN_CALL(posix_spawnattr_init(&spawnAttributes_));
     CC_SPAWN_CALL(posix_spawn_file_actions_init(&fileActions_));
@@ -82,9 +81,9 @@ Spawn::Staging *Spawn::Staging::setInputChannel(IoChannel *channel)
     inputChannel_ = channel;
 
     if (channel != outputChannel_ && channel != errorChannel_)
-        CC_SPAWN_CALL(posix_spawn_file_actions_addclose(&fileActions_, channel->masterFd()));
+        CC_SPAWN_CALL(posix_spawn_file_actions_addclose(&fileActions_, channel->masterFd_));
 
-    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd(), 0));
+    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd_, 0));
 
     return this;
 }
@@ -96,9 +95,9 @@ Spawn::Staging *Spawn::Staging::setOutputChannel(IoChannel *channel)
     outputChannel_ = channel;
 
     if (channel != inputChannel_ && channel != errorChannel_)
-        CC_SPAWN_CALL(posix_spawn_file_actions_addclose(&fileActions_, channel->masterFd()));
+        CC_SPAWN_CALL(posix_spawn_file_actions_addclose(&fileActions_, channel->masterFd_));
 
-    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd(), 1));
+    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd_, 1));
 
     return this;
 }
@@ -110,9 +109,9 @@ Spawn::Staging *Spawn::Staging::setErrorChannel(IoChannel *channel)
     errorChannel_ = channel;
 
     if (channel != inputChannel_ && channel != outputChannel_)
-        CC_SPAWN_CALL(posix_spawn_file_actions_addclose(&fileActions_, channel->masterFd()));
+        CC_SPAWN_CALL(posix_spawn_file_actions_addclose(&fileActions_, channel->masterFd_));
 
-    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd(), 2));
+    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd_, 2));
     return this;
 }
 

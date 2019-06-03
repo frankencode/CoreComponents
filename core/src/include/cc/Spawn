@@ -67,7 +67,7 @@ public:
         Ref<const StringList> args_;
         Ref<const EnvMap> envMap_;
 
-        int spawnFlags_;
+        int spawnFlags_ { 0 };
         posix_spawnattr_t spawnAttributes_;
         posix_spawn_file_actions_t fileActions_;
 
@@ -76,7 +76,7 @@ public:
         Ref<IoChannel> errorChannel_;
     };
 
-    static Ref<Staging> stage(const String &command);
+    static Ref<Staging> stage(const String &command = String{});
 
     /// Sub-process process ID
     pid_t pid() const;
@@ -92,8 +92,7 @@ public:
     void killGroup(int signal = SIGTERM);
 
     /** \brief Wait for child process termination
-      * \param signalled returns true if the child process termination was due to a signal
-      * \return exit status of child process or signal number if signalled
+      * \return exit status of child process
       * \exception Signalled child process terminated due to receiving a signal
       */
     int wait();

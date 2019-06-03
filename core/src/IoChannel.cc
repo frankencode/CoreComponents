@@ -16,16 +16,6 @@ IoChannel::IoChannel():
     slaveFd_{-1}
 {}
 
-int IoChannel::masterFd() const
-{
-    return masterFd_;
-}
-
-int IoChannel::slaveFd() const
-{
-    return slaveFd_;
-}
-
 Ref<SystemStream> IoChannel::open() const
 {
     ::close(slaveFd_);
