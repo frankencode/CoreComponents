@@ -8,19 +8,25 @@
 
 #pragma once
 
-#include <cc/IoChannel>
+#include <cc/InputPipe>
 
 namespace cc {
 
-/** \brief Sub-process output pipe
-  * \see Spawn
+class InputPipe;
+
+/** \brief Child process output pipe
+  * \see Spawn, InputPipe
   */
 class OutputPipe: public IoChannel
 {
 public:
     static Ref<OutputPipe> create();
 
+    Ref<InputPipe> connectInput() const;
+
 private:
+    friend class InputPipe;
+
     OutputPipe();
 };
 

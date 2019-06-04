@@ -18,6 +18,11 @@ Ref<OutputPipe> OutputPipe::create()
     return new OutputPipe;
 }
 
+Ref<InputPipe> OutputPipe::connectInput() const
+{
+    return new InputPipe{this};
+}
+
 OutputPipe::OutputPipe()
 {
     int fd[2] = { 0, 0 };

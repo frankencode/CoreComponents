@@ -31,8 +31,8 @@ class File: public SystemStream
 public:
     /** Open a file
       * \param path file path
-      * \param openMode file open flags, a combintation of cc::OpenMode
-      * \param fileMode file permissions for new file, a combination of cc::FileMode
+      * \param openMode file open flags
+      * \param fileMode file permissions for new file
       * \return new object instance
       */
     static Ref<File> open(const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::UserRead|FileMode::UserWrite|FileMode::GroupRead|FileMode::OtherRead);

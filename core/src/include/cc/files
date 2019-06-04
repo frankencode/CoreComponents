@@ -51,7 +51,8 @@ enum class FileMode: int {
     OtherRead  = 0004, ///< Readable by others
     OtherWrite = 0002, ///< Writable by others
     OtherExec  = 0001, ///< Executable by others
-    AnyExec    = UserExec|GroupExec|OtherExec
+    AnyExec    = UserExec|GroupExec|OtherExec,
+    Default    = UserRead|UserWrite|GroupRead|OtherRead
 };
 
 CC_BITMASK(FileMode, int)

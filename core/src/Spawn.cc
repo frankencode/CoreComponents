@@ -117,23 +117,23 @@ Spawn::Staging *Spawn::Staging::setErrorChannel(IoChannel *channel)
 
 Spawn::Staging *Spawn::Staging::setInputFile(const String &path)
 {
-    addOpenFile(0, path, OpenMode::ReadOnly);
+    addFileOpenAction(0, path, OpenMode::ReadOnly);
     return this;
 }
 
 Spawn::Staging *Spawn::Staging::setOutputFile(const String &path)
 {
-    addOpenFile(1, path, OpenMode::WriteOnly|OpenMode::Create|OpenMode::Truncate);
+    addFileOpenAction(1, path, OpenMode::WriteOnly|OpenMode::Create|OpenMode::Truncate);
     return this;
 }
 
 Spawn::Staging *Spawn::Staging::setErrorFile(const String &path)
 {
-    addOpenFile(2, path, OpenMode::WriteOnly|OpenMode::Create|OpenMode::Truncate);
+    addFileOpenAction(2, path, OpenMode::WriteOnly|OpenMode::Create|OpenMode::Truncate);
     return this;
 }
 
-Spawn::Staging *Spawn::Staging::addOpenFile(int fd, const String &path, OpenMode openMode, FileMode fileMode)
+Spawn::Staging *Spawn::Staging::addFileOpenAction(int fd, const String &path, OpenMode openMode, FileMode fileMode)
 {
     CC_SPAWN_CALL(posix_spawn_file_actions_addopen(&fileActions_, fd, path, static_cast<int>(openMode), static_cast<mode_t>(fileMode)));
     return this;
@@ -151,9 +151,7 @@ Ref<Spawn::Staging> Spawn::stage(const String &command)
 
 Ref<Spawn> Spawn::bootstrap(const Staging *staging)
 {
-    // ------------------------------------------------------------------------
-    // locate executable and prepare argument list
-    // ------------------------------------------------------------------------
+    /// locate executable and prepare argument list
 
     String execPath;
     Ref<const StringList> args = staging->args_;
@@ -181,9 +179,7 @@ Ref<Spawn> Spawn::bootstrap(const Staging *staging)
         }
     }
 
-    // ------------------------------------------------------------------------
-    // prepare argument list and environment map
-    // ------------------------------------------------------------------------
+    /// prepare argument list and environment map
 
     char **argv = nullptr;
     char **envp = nullptr;
@@ -210,9 +206,7 @@ Ref<Spawn> Spawn::bootstrap(const Staging *staging)
         }
     }
 
-    // ------------------------------------------------------------------------
-    // spawn new child process
-    // ------------------------------------------------------------------------
+    /// spawn new child process
 
     pid_t pid = -1;
     int ret = ::posix_spawn(&pid, execPath, &staging->fileActions_, &staging->spawnAttributes_, argv, envp);

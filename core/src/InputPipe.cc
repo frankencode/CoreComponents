@@ -9,6 +9,7 @@
 #include <unistd.h> // pipe
 #include <errno.h>
 #include <cc/exceptions>
+#include <cc/OutputPipe>
 #include <cc/InputPipe>
 
 namespace cc {
@@ -26,5 +27,12 @@ InputPipe::InputPipe()
     masterFd_ = fd[1];
     slaveFd_ = fd[0];
 }
+
+InputPipe::InputPipe(const OutputPipe *outputPipe)
+{
+    slaveFd_ = outputPipe->masterFd_;
+    masterFd_ = outputPipe->slaveFd_;
+}
+
 
 } // namespace cc

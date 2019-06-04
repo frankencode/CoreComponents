@@ -12,8 +12,10 @@
 
 namespace cc {
 
-/** \brief Sub-process input pipe
-  * \see Spawn
+class OutputPipe;
+
+/** \brief Child process input pipe
+  * \see Spawn, OutputPipe
   */
 class InputPipe: public IoChannel
 {
@@ -21,7 +23,10 @@ public:
     static Ref<InputPipe> create();
 
 private:
+    friend class OutputPipe;
+
     InputPipe();
+    InputPipe(const OutputPipe *outputPipe);
 };
 
 } // namepspace cc

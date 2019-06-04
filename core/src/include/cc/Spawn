@@ -18,44 +18,103 @@
 
 namespace cc {
 
+/** \class Spawn cc/Spawn
+  * \ingroup concurrency
+  * \brief Spawned child process
+  */
 class Spawn: public Object
 {
 public:
+    /** \brief Child process staging helper
+      */
     class Staging: public Object
     {
     public:
-        /** Set command line arguments
-          * \param args argument list, first entry is the executable name
+        /** \brief Set command line arguments
+          * \param args Argument list, first entry is the executable name
           * \return pointer to this object
           */
         Staging *setArgs(const StringList *args);
 
-        /** Set environment map
-          * \param envMap the environment map to use for the new child process (or zero pointer to inherit the parents environment map)
+        /** \brief Set environment map
+          * \param envMap The environment map to use for the new child process (or zero pointer to inherit the parents environment map)
           * \return pointer to this object
           */
         Staging *setEnvMap(const EnvMap *envMap);
 
+        /** \brief Set the process group
+          * \param groupId Group ID of the process group to join or 0 to make the new process lead a new group
+          * \return pointer to this object
+          */
         Staging *setProcessGroup(pid_t groupId = 0);
+
+        /** \brief Set the signal mask
+          * \param mask Initial signal mask for the new child process
+          * \return pointer to this object
+          */
         Staging *setSignalMask(const SignalSet *mask);
+
+        /** \brief Reset signal handling strategy to the default for specific signals
+          * \param set Set of signals to reset to default signal handling behavior
+          * \return pointer to this object
+          */
         Staging *setSignalDefault(const SignalSet *set);
 
+        /** \brief Set standard input channel
+          * \param channel IoChannel to use for standard input
+          * \return pointer to this object
+          * \see InputPipe, SocketPair
+          */
         Staging *setInputChannel(IoChannel *channel);
+
+        /** \brief Set standard output channel
+          * \param channel IoChannel to use for standard output
+          * \return pointer to this object
+          * \see OutputPipe, SocketPair
+          */
         Staging *setOutputChannel(IoChannel *channel);
+
+        /** \brief Set standard error channel
+          * \param channel IoChannel to use for standard error
+          * \return pointer to this object
+          * \see OutputPipe, SocketPair
+          */
         Staging *setErrorChannel(IoChannel *channel);
 
+        /** \brief Set standard input file
+          * \param path File path to the standard input file
+          * \return pointer to this object
+          */
         Staging *setInputFile(const String &path);
+
+        /** \brief Set standard output file
+          * \param path File path to the standard output file
+          * \return pointer to this object
+          */
         Staging *setOutputFile(const String &path);
+
+        /** \brief Set standard error file
+          * \param path File path to the standard error file
+          * \return pointer to this object
+          */
         Staging *setErrorFile(const String &path);
 
-        Staging *addOpenFile(int fd, const String &path, OpenMode openMode, FileMode fileMode = FileMode::UserRead|FileMode::UserWrite|FileMode::GroupRead|FileMode::OtherRead);
+        /** \brief Add file open action
+          * \param fd File descriptor to open to
+          * \param path File path to the file to open
+          * \param openMode File open flags
+          * \param fileMode File permissions for new file
+          * \return pointer to this object
+          */
+        Staging *addFileOpenAction(int fd, const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::Default);
 
+        /** \brief Spawn new child process
+          * \return new object instance
+          */
         Ref<Spawn> start() const;
 
     private:
         friend class Spawn;
-
-        static void checkError(int ret);
 
         Staging(const String &command);
         ~Staging();
@@ -76,9 +135,13 @@ public:
         Ref<IoChannel> errorChannel_;
     };
 
+    /** \brief Create a new parameter stage
+      * \param command Executable path plus command line arguments
+      * \return new object instance
+      */
     static Ref<Staging> stage(const String &command = String{});
 
-    /// Sub-process process ID
+    /// Process ID of child process
     pid_t pid() const;
 
     /** \brief Send signal to the child process
