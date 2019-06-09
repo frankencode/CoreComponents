@@ -51,8 +51,8 @@ enum class FileMode: int {
     OtherRead  = 0004, ///< Readable by others
     OtherWrite = 0002, ///< Writable by others
     OtherExec  = 0001, ///< Executable by others
-    AnyExec    = UserExec|GroupExec|OtherExec,
-    Default    = UserRead|UserWrite|GroupRead|OtherRead
+    AnyExec    = UserExec|GroupExec|OtherExec, ///< Executable by anyone
+    Default    = UserRead|UserWrite|GroupRead|OtherRead ///< Default permissions mask for regular files
 };
 
 CC_BITMASK(FileMode, int)
@@ -74,14 +74,14 @@ String str(FileType type);
 
 /// %File open flags
 enum class OpenMode: mode_t {
-    None      = 0,        ///< Empty mode
-    ReadOnly  = O_RDONLY, ///< Open for reading, only
-    WriteOnly = O_WRONLY, ///< Open for writing, only
-    ReadWrite = O_RDWR,   ///< Open for reading and writing
-    Append    = O_APPEND, ///< Append any write to the end of file
-    Create    = O_CREAT,  ///< Create file if not exists
-    Truncate  = O_TRUNC,  ///< Truncate file to size zero
-    Virgin    = O_EXCL    ///< Fail to open if file exists already
+    None           = 0,        ///< Empty mode
+    ReadOnly       = O_RDONLY, ///< Open for reading, only
+    WriteOnly      = O_WRONLY, ///< Open for writing, only
+    ReadWrite      = O_RDWR,   ///< Open for reading and writing
+    Append         = O_APPEND, ///< Append any write to the end of file
+    Create         = O_CREAT,  ///< Create file if not exists
+    Truncate       = O_TRUNC,  ///< Truncate file to size zero
+    Virgin         = O_EXCL    ///< Fail to open if file exists already
 };
 
 CC_BITMASK(OpenMode, mode_t)

@@ -20,12 +20,10 @@ Ref<SocketPair> SocketPair::create()
 
 SocketPair::SocketPair()
 {
-    int fd[2];
-    fd[0] = 0;
-    fd[1] = 0;
-    if (::socketpair(AF_LOCAL, SOCK_STREAM, 0, fd) == -1)
+    int fd[2] = { 0, 0 };
+    if (::socketpair(AF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC, 0, fd) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
-    masterFd_ = fd[0];
+    fd_ = fd[0];
     slaveFd_ = fd[1];
 }
 

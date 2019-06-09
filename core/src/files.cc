@@ -73,13 +73,13 @@ String str(OpenMode mode)
     String s;
     if (+mode) {
         auto l = StringList::create();
-        if (+(mode & OpenMode::ReadOnly))  l << "OpenMode::ReadOnly";
-        if (+(mode & OpenMode::WriteOnly)) l << "OpenMode::WriteOnly";
-        if (+(mode & OpenMode::ReadWrite)) l << "OpenMode::ReadWrite";
-        if (+(mode & OpenMode::Append))    l << "OpenMode::Append";
-        if (+(mode & OpenMode::Create))    l << "OpenMode::Create";
-        if (+(mode & OpenMode::Truncate))  l << "OpenMode::Truncate";
-        if (+(mode & OpenMode::Virgin))    l << "OpenMode::Virgin";
+        if (+(mode & OpenMode::ReadOnly))       l << "OpenMode::ReadOnly";
+        if (+(mode & OpenMode::WriteOnly))      l << "OpenMode::WriteOnly";
+        if (+(mode & OpenMode::ReadWrite))      l << "OpenMode::ReadWrite";
+        if (+(mode & OpenMode::Append))         l << "OpenMode::Append";
+        if (+(mode & OpenMode::Create))         l << "OpenMode::Create";
+        if (+(mode & OpenMode::Truncate))       l << "OpenMode::Truncate";
+        if (+(mode & OpenMode::Virgin))         l << "OpenMode::Virgin";
         s = l->join("|");
     }
     else {

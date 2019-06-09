@@ -6,7 +6,8 @@
  *
  */
 
-#include <unistd.h> // pipe
+#include <fcntl.h> // O_CLOEXEC
+#include <unistd.h> // pipe2
 #include <errno.h>
 #include <cc/exceptions>
 #include <cc/OutputPipe>
@@ -26,10 +27,15 @@ Ref<InputPipe> OutputPipe::connectInput() const
 OutputPipe::OutputPipe()
 {
     int fd[2] = { 0, 0 };
-    if (::pipe(fd) == -1)
+    if (::pipe2(fd, O_CLOEXEC) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
-    masterFd_ = fd[0];
+    fd_ = fd[0];
     slaveFd_ = fd[1];
+}
+
+void OutputPipe::onStart()
+{
+    ::close(slaveFd_);
 }
 
 } // namespace cc

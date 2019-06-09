@@ -27,6 +27,7 @@ private:
 
     InputPipe();
     InputPipe(const OutputPipe *outputPipe);
+    void onStart() override;
 };
 
 } // namepspace cc

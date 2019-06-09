@@ -22,14 +22,14 @@ namespace cc {
 
 Ref<File> File::open(const String &path, OpenMode openMode, FileMode fileMode)
 {
-    int fd = ::open(path, static_cast<int>(openMode), static_cast<mode_t>(fileMode));
+    int fd = ::open(path, static_cast<int>(openMode)|O_CLOEXEC, static_cast<mode_t>(fileMode));
     if (fd == -1) CC_SYSTEM_ERROR(errno, path);
     return new File(path, openMode, fd);
 }
 
 Ref<File> File::tryOpen(const String &path, OpenMode openMode, FileMode fileMode)
 {
-    int fd = ::open(path, static_cast<int>(openMode), static_cast<mode_t>(fileMode));
+    int fd = ::open(path, static_cast<int>(openMode)|O_CLOEXEC, static_cast<mode_t>(fileMode));
     if (fd != -1) return new File(path, openMode, fd);
     return 0;
 }

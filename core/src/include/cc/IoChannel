@@ -12,18 +12,23 @@
 
 namespace cc {
 
-class IoChannel: public Object
+/** \brief Input/output inter-process communication channel
+  * \ingroup concurrency
+  * \see Spawn
+  */
+class IoChannel: public SystemStream
 {
 public:
-    Ref<SystemStream> open() const;
+    int slaveFd() const { return slaveFd_; }
 
 protected:
+    int slaveFd_ { -1 };
+    virtual void onStart() {}
+
+private:
     friend class Spawn;
 
-    IoChannel();
-
-    int masterFd_;
-    int slaveFd_;
+    mutable Ref<IoChannel> next_;
 };
 
 } // namespace cc

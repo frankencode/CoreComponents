@@ -8,14 +8,14 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/Signal>
+#include <cc/Notifier>
 
 using namespace cc;
 using namespace cc::testing;
 
 int main(int argc, char **argv)
 {
-    Signal trainArrived;
+    Notifier trainArrived;
     trainArrived->connect([]{ fout() << "The train has arrived!" << nl; });
     trainArrived->connect([]{ fout() << "Caution!" << nl; });
     trainArrived->emit();

@@ -21,6 +21,7 @@ namespace cc {
 /** \class Spawn cc/Spawn
   * \ingroup concurrency
   * \brief Spawned child process
+  * \TODO introduce and make use of a cc::Signal enum (and rename Signal to Event)
   */
 class Spawn: public Object
 {
@@ -81,37 +82,42 @@ public:
           */
         Staging *setErrorChannel(IoChannel *channel);
 
-        /** \brief Set standard input file
-          * \param path File path to the standard input file
+        /** \brief Add an I/O channel
+          * \param channel IoChannel to attach
+          * \param targetFd target file descriptor in the child's file descriptor table
           * \return pointer to this object
           */
-        Staging *setInputFile(const String &path);
+        Staging *attachChannel(IoChannel *channel, int targetFd);
 
-        /** \brief Set standard output file
-          * \param path File path to the standard output file
-          * \return pointer to this object
+        /** \brief Set standard input
+          * \param stream SystemStream to use for standard input
+          * \return pointer to this objects
           */
-        Staging *setOutputFile(const String &path);
+        Staging *setInput(SystemStream *stream);
 
-        /** \brief Set standard error file
-          * \param path File path to the standard error file
-          * \return pointer to this object
+        /** \brief Set standard input
+          * \param stream SystemStream to use for standard output
+          * \return pointer to this objects
           */
-        Staging *setErrorFile(const String &path);
+        Staging *setOutput(SystemStream *stream);
 
-        /** \brief Add file open action
-          * \param fd File descriptor to open to
-          * \param path File path to the file to open
-          * \param openMode File open flags
-          * \param fileMode File permissions for new file
+        /** \brief Set standard input
+          * \param stream SystemStream to use for standard error
+          * \return pointer to this objects
+          */
+        Staging *setError(SystemStream *stream);
+
+        /** \brief Add an I/O stream
+          * \param stream SystemStream to attach
+          * \param targetFd target file descriptor in the child's file descriptor table
           * \return pointer to this object
           */
-        Staging *addFileOpenAction(int fd, const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::Default);
+        Staging *attach(SystemStream *stream, int targetFd);
 
         /** \brief Spawn new child process
           * \return new object instance
           */
-        Ref<Spawn> start() const;
+        Ref<Spawn> start();
 
     private:
         friend class Spawn;
@@ -129,10 +135,8 @@ public:
         int spawnFlags_ { 0 };
         posix_spawnattr_t spawnAttributes_;
         posix_spawn_file_actions_t fileActions_;
-
-        Ref<IoChannel> inputChannel_;
-        Ref<IoChannel> outputChannel_;
-        Ref<IoChannel> errorChannel_;
+        bool groupLead_ { false };
+        Ref<IoChannel> channelHead_;
     };
 
     /** \brief Create a new parameter stage
@@ -149,11 +153,6 @@ public:
       */
     void kill(int signal = SIGTERM);
 
-    /** \brief Kill the entire child process group
-      * \param signal Signal number
-      */
-    void killGroup(int signal = SIGTERM);
-
     /** \brief Wait for child process termination
       * \return exit status of child process
       * \exception Signalled child process terminated due to receiving a signal
@@ -163,8 +162,9 @@ public:
 private:
     friend class Staging;
     static Ref<Spawn> bootstrap(const Staging *staging);
-    Spawn(pid_t pid);
+    Spawn(pid_t pid, bool groupLead);
     pid_t pid_;
+    bool groupLead_ { false };
 };
 
 } // namespace cc

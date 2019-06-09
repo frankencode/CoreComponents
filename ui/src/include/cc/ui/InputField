@@ -30,8 +30,8 @@ public:
 
     Property<Type> type { Type::Filled };
 
-    Signal accepted;
-    Signal rejected;
+    Notifier accepted;
+    Notifier rejected;
 
     Size preferredSize() const override;
     Size minSize() const override;

@@ -19,8 +19,8 @@ public:
     virtual String text() const = 0;
     virtual Point textPos() const = 0;
 
-    Signal accepted;
-    Signal rejected;
+    Notifier accepted;
+    Notifier rejected;
 
 protected:
     InputControl(View *parent):

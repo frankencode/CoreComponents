@@ -21,7 +21,7 @@ void DatagramSocket::connect(Ref<DatagramSocket> *first, Ref<DatagramSocket> *se
     int fd[2];
     fd[0] = 0;
     fd[1] = 0;
-    if (::socketpair(AF_LOCAL, SOCK_DGRAM, 0, fd) == -1)
+    if (::socketpair(AF_LOCAL, SOCK_DGRAM|SOCK_CLOEXEC, 0, fd) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
     *first = new DatagramSocket{fd[0]};
     *second = new DatagramSocket{fd[1]};

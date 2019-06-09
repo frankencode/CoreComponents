@@ -25,7 +25,7 @@ class Alien: public Object
 public:
     typedef void (*DelFunc)(T *);
 
-    Alien(T *guest, DelFunc delFunc = 0):
+    Alien(T *guest, DelFunc delFunc = nullptr):
         guest_(guest),
         delFunc_(delFunc)
     {}

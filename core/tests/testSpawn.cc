@@ -37,12 +37,10 @@ class InputOutputPipeTest: public TestCase
             ->setInputChannel(inPipe)
             ->setOutputChannel(outPipe)
             ->start();
-        auto inStream = inPipe->open();
-        auto outStream = outPipe->open();
         String message = "Hello, echo!";
-        inStream->write(message);
-        inStream->close();
-        String reply = outStream->readAll();
+        inPipe->write(message);
+        inPipe->close();
+        String reply = outPipe->readAll();
         CC_INSPECT(message);
         CC_INSPECT(reply);
         CC_VERIFY(message == reply);
@@ -61,6 +59,7 @@ int main(int argc, char **argv)
         }
         if (String{argv[1]} == "echo") {
             stdIn()->transferTo(stdOut());
+            CC_DEBUG;
             return 11;
         }
     }

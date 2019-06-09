@@ -22,7 +22,7 @@ class ItemView: public ScrollView
 
 public:
     Property<double> cacheRatio { 2 };
-    Signal clicked;
+    Notifier clicked;
 
     int currentRow() const;
     int rowCount() const;

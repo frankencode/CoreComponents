@@ -57,6 +57,7 @@ Spawn::Staging *Spawn::Staging::setProcessGroup(pid_t groupId)
 {
     CC_SPAWN_CALL(posix_spawnattr_setpgroup(&spawnAttributes_, groupId));
     enableSpawnFlag(POSIX_SPAWN_SETPGROUP);
+    groupLead_ = (groupId == 0);
     return this;
 }
 
@@ -76,72 +77,62 @@ Spawn::Staging *Spawn::Staging::setSignalMask(const SignalSet *mask)
 
 Spawn::Staging *Spawn::Staging::setInputChannel(IoChannel *channel)
 {
-    if (inputChannel_) return this;
-
-    inputChannel_ = channel;
-
-    if (channel != outputChannel_ && channel != errorChannel_)
-        CC_SPAWN_CALL(posix_spawn_file_actions_addclose(&fileActions_, channel->masterFd_));
-
-    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd_, 0));
-
-    return this;
+    return attachChannel(channel, 0);
 }
 
 Spawn::Staging *Spawn::Staging::setOutputChannel(IoChannel *channel)
 {
-    if (outputChannel_) return this;
-
-    outputChannel_ = channel;
-
-    if (channel != inputChannel_ && channel != errorChannel_)
-        CC_SPAWN_CALL(posix_spawn_file_actions_addclose(&fileActions_, channel->masterFd_));
-
-    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd_, 1));
-
-    return this;
+    return attachChannel(channel, 1);
 }
 
 Spawn::Staging *Spawn::Staging::setErrorChannel(IoChannel *channel)
 {
-    if (errorChannel_) return this;
+    return attachChannel(channel, 2);
+}
 
-    errorChannel_ = channel;
-
-    if (channel != inputChannel_ && channel != outputChannel_)
-        CC_SPAWN_CALL(posix_spawn_file_actions_addclose(&fileActions_, channel->masterFd_));
-
-    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd_, 2));
+Spawn::Staging *Spawn::Staging::attachChannel(IoChannel *channel, int targetFd)
+{
+    if (!channel->next_) {
+        channel->next_ = channelHead_;
+        channelHead_ = channel;
+    }
+    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd(), targetFd));
     return this;
 }
 
-Spawn::Staging *Spawn::Staging::setInputFile(const String &path)
+Spawn::Staging *Spawn::Staging::setInput(SystemStream *stream)
 {
-    addFileOpenAction(0, path, OpenMode::ReadOnly);
+    return attach(stream, 0);
+}
+
+Spawn::Staging *Spawn::Staging::setOutput(SystemStream *stream)
+{
+    return attach(stream, 1);
+}
+
+Spawn::Staging *Spawn::Staging::setError(SystemStream *stream)
+{
+    return attach(stream, 2);
+}
+
+Spawn::Staging *Spawn::Staging::attach(SystemStream *stream, int targetFd)
+{
+    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, stream->fd(), targetFd));
     return this;
 }
 
-Spawn::Staging *Spawn::Staging::setOutputFile(const String &path)
+Ref<Spawn> Spawn::Staging::start()
 {
-    addFileOpenAction(1, path, OpenMode::WriteOnly|OpenMode::Create|OpenMode::Truncate);
-    return this;
-}
+    auto spawn = Spawn::bootstrap(this);
 
-Spawn::Staging *Spawn::Staging::setErrorFile(const String &path)
-{
-    addFileOpenAction(2, path, OpenMode::WriteOnly|OpenMode::Create|OpenMode::Truncate);
-    return this;
-}
+    while (channelHead_) {
+        channelHead_->onStart();
+        Ref<IoChannel> next = channelHead_->next_;
+        channelHead_->next_ = nullptr;
+        channelHead_ = next;
+    }
 
-Spawn::Staging *Spawn::Staging::addFileOpenAction(int fd, const String &path, OpenMode openMode, FileMode fileMode)
-{
-    CC_SPAWN_CALL(posix_spawn_file_actions_addopen(&fileActions_, fd, path, static_cast<int>(openMode), static_cast<mode_t>(fileMode)));
-    return this;
-}
-
-Ref<Spawn> Spawn::Staging::start() const
-{
-    return Spawn::bootstrap(this);
+    return spawn;
 }
 
 Ref<Spawn::Staging> Spawn::stage(const String &command)
@@ -212,11 +203,12 @@ Ref<Spawn> Spawn::bootstrap(const Staging *staging)
     int ret = ::posix_spawn(&pid, execPath, &staging->fileActions_, &staging->spawnAttributes_, argv, envp);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 
-    return new Spawn{pid};
+    return new Spawn{pid, staging->groupLead_};
 }
 
-Spawn::Spawn(pid_t pid):
-    pid_{pid}
+Spawn::Spawn(pid_t pid, bool groupLead):
+    pid_{pid},
+    groupLead_{groupLead}
 {}
 
 pid_t Spawn::pid() const
@@ -226,21 +218,9 @@ pid_t Spawn::pid() const
 
 void Spawn::kill(int signal)
 {
-    if (::kill(pid_, signal) == -1) {
-        if (errno == EPERM)
-            throw PermissionError{};
-        else
-            CC_SYSTEM_DEBUG_ERROR(errno);
-    }
-}
-
-void Spawn::killGroup(int signal)
-{
-    if (::kill(pid_, signal) == -1) {
-        if (errno == EPERM)
-            throw PermissionError{};
-        else
-            CC_SYSTEM_DEBUG_ERROR(errno);
+    if (::kill(groupLead_ ? -pid_ : pid_, signal) == -1) {
+        if (errno == EPERM) throw PermissionError{};
+        CC_SYSTEM_DEBUG_ERROR(errno);
     }
 }
 

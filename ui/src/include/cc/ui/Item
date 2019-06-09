@@ -10,7 +10,7 @@
 
 #include <cc/List>
 #include <cc/Pile>
-#include <cc/Signal>
+#include <cc/Notifier>
 
 namespace cc {
 namespace ui {
@@ -74,7 +74,7 @@ public:
 
     const ItemDelta *delta() const { return &delta_; }
 
-    Signal changed;
+    Notifier changed;
 
 protected:
     friend class ItemCarrier;

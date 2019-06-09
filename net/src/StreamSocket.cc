@@ -37,7 +37,7 @@ void StreamSocket::connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second)
     int fd[2];
     fd[0] = 0;
     fd[1] = 0;
-    if (::socketpair(AF_LOCAL, SOCK_STREAM, 0, fd) == -1)
+    if (::socketpair(AF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC, 0, fd) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
     *first = new StreamSocket(fd[0]);
     *second = new StreamSocket(fd[1]);

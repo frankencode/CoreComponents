@@ -73,10 +73,10 @@ public:
     virtual void write(const StringList *parts) override;
 
     /// Convenience wrapper
-    inline void write(const String &data) { write(static_cast<const CharArray *>(data)); }
+    void write(const String &data) { write(static_cast<const CharArray *>(data)); }
 
     /// Convenience wrapper
-    inline void write(const char *data) { write(String(data)); }
+    void write(const char *data) { write(String(data)); }
 
     /// Convenience wrapper
     void write(const Format &data);

@@ -35,12 +35,12 @@ public:
       * \param fileMode file permissions for new file
       * \return new object instance
       */
-    static Ref<File> open(const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::UserRead|FileMode::UserWrite|FileMode::GroupRead|FileMode::OtherRead);
+    static Ref<File> open(const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::Default);
 
     /** Try to %open a file
       * \copydetails open()
       */
-    static Ref<File> tryOpen(const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::UserRead|FileMode::UserWrite|FileMode::GroupRead|FileMode::OtherRead);
+    static Ref<File> tryOpen(const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::Default);
 
     /** Open a temporary file
       * \param flags file open flags, a combintation of cc::OpenMode
@@ -76,7 +76,7 @@ public:
     /// Current file offset
     off_t fileOffset() { return seek(0, Seek::Begin); }
 
-    virtual off_t transferSpanTo(off_t count = -1, Stream *sink = 0, CharArray *buf = 0) override;
+    virtual off_t transferSpanTo(off_t count = -1, Stream *sink = nullptr, CharArray *buf = nullptr) override;
 
     /// %Map the entire file into memory and return the file mapping as String
     String map() const;

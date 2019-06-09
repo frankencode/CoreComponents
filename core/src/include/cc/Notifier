@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -15,21 +15,21 @@ namespace cc {
 
 class PropertyBinding;
 
-class Signal
+class Notifier
 {
 public:
-    Signal() {}
+    Notifier() {}
 
     class Instance {
     public:
         Instance() {}
 
         template<class F>
-        inline void connect(const F &f) {
+        void connect(const F &f) {
             first_ = Node::create(f, first_);
         }
 
-        inline void emit() const {
+        void emit() const {
             for (Node *node = first_; node; node = node->next_)
                 node->f_();
         }
@@ -37,8 +37,8 @@ public:
     private:
         friend class PropertyBinding;
 
-        inline bool hasListeners() const { return first_; }
-        inline void disband() { first_ = 0; }
+        bool hasListeners() const { return first_; }
+        void disband() { first_ = 0; }
 
         class Node: public Object {
         public:
@@ -56,14 +56,14 @@ public:
         Ref<Node> first_;
     };
 
-    inline Instance *operator->() { return &instance_; }
-    inline const Instance *operator->() const { return &instance_; }
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
 
-    inline void operator()() const { instance_.emit(); }
+    void operator()() const { instance_.emit(); }
 
 private:
-    Signal(const Signal&);
-    Signal& operator=(const Signal&);
+    Notifier(const Notifier&);
+    Notifier& operator=(const Notifier&);
 
     Instance instance_;
 };

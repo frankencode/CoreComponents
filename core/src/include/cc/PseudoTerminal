@@ -11,7 +11,7 @@
 namespace cc {
 
 /** \brief Child process pseudo-terminal
-  * \see Spawn, SocketPair
+  * \see Spawn
   */
 class PseudoTerminal: public IoChannel
 {
@@ -20,6 +20,7 @@ public:
 
 private:
     PseudoTerminal();
+    void onStart() override;
 };
 
 } // namespace cc

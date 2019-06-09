@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -11,10 +11,10 @@
 
 namespace cc {
 
-thread_local PropertyBinding *PropertyBinding::activeInstance_ = 0;
+thread_local PropertyBinding *PropertyBinding::activeInstance_ = nullptr;
 
 PropertyBinding::PropertyBinding(bool dirty):
-    dirty_(dirty)
+    dirty_{dirty}
 {}
 
 void PropertyBinding::preAccess() const
@@ -88,7 +88,7 @@ void PropertyBinding::cascade()
 {
     class Activator {
     public:
-        Activator(PropertyBinding *instance): savedActiveInstance_(PropertyBinding::activeInstance_) {
+        Activator(PropertyBinding *instance): savedActiveInstance_{PropertyBinding::activeInstance_} {
             PropertyBinding::activeInstance_ = instance;
         }
         ~Activator() {

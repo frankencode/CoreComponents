@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,7 +10,7 @@
 
 #include <atomic>
 #include <memory>
-#include <cc/Signal>
+#include <cc/Notifier>
 
 namespace cc {
 namespace ui {
@@ -20,27 +20,10 @@ class TimeWorker;
 class Timer: public Object
 {
 public:
-    static void start(double interval, const std::function<void()> &handler) {
-        Ref<Timer> timer = Timer::create(interval);
-        timer->triggered->connect(handler);
-        timer->start();
-    }
-
-    static void startAt(double startTime, double interval, const std::function<void()> &handler) {
-        Ref<Timer> timer = Timer::create(interval);
-        timer->triggered->connect(handler);
-        timer->startAt(startTime);
-    }
-
-    static void startIn(double delayTime, const std::function<void()> &handler) {
-        Ref<Timer> timer = Timer::create();
-        timer->triggered->connect(handler);
-        timer->startIn(delayTime);
-    }
-
-    static Ref<Timer> create(double interval = 0) {
-        return new Timer(interval);
-    }
+    static void start(double interval, const std::function<void()> &handler);
+    static void startAt(double startTime, double interval, const std::function<void()> &handler);
+    static void startIn(double delayTime, const std::function<void()> &handler);
+    static Ref<Timer> create(double interval = 0);
 
     void start();
     void startAt(double startTime);
@@ -52,15 +35,13 @@ public:
     double startTime() const { return startTime_; }
     double interval() const { return interval_; }
 
-    Signal triggered;
+    Notifier triggered;
 
 private:
     friend class TimeWorker;
     friend class Application;
 
-    Timer(double interval):
-        interval_{interval}
-    {}
+    Timer(double interval);
 
     mutable std::atomic_bool isActive_ { false };
     double firstTime_ { 0 };

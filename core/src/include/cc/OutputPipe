@@ -28,6 +28,7 @@ private:
     friend class InputPipe;
 
     OutputPipe();
+    void onStart() override;
 };
 
 } // namepspace cc

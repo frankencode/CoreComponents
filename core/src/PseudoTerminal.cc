@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h> // open
+#include <unistd.h> // close
 #include <stdlib.h> // posix_openpt, grantpt, unlockpt, ptsname
 #include <cc/exceptions>
 #include <cc/PseudoTerminal>
@@ -22,12 +23,17 @@ Ref<PseudoTerminal> PseudoTerminal::create()
 
 PseudoTerminal::PseudoTerminal()
 {
-    masterFd_ = ::posix_openpt(O_RDWR|O_NOCTTY);
-    if (masterFd_ == -1) CC_SYSTEM_DEBUG_ERROR(errno);
-    if (::grantpt(masterFd_) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
-    if (::unlockpt(masterFd_) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
-    slaveFd_ = ::open(::ptsname(masterFd_), O_RDWR|O_NOCTTY);
+    fd_ = ::posix_openpt(O_RDWR|O_NOCTTY);
+    if (fd_ == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+    if (::grantpt(fd_) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+    if (::unlockpt(fd_) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+    slaveFd_ = ::open(::ptsname(fd_), O_RDWR|O_NOCTTY);
     if (slaveFd_ == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+}
+
+void PseudoTerminal::onStart()
+{
+    ::close(slaveFd_);
 }
 
 } // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2017-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -12,6 +12,36 @@
 
 namespace cc {
 namespace ui {
+
+void Timer::start(double interval, const std::function<void()> &handler)
+{
+    Ref<Timer> timer = Timer::create(interval);
+    timer->triggered->connect(handler);
+    timer->start();
+}
+
+void Timer::startAt(double startTime, double interval, const std::function<void()> &handler)
+{
+    Ref<Timer> timer = Timer::create(interval);
+    timer->triggered->connect(handler);
+    timer->startAt(startTime);
+}
+
+void Timer::startIn(double delayTime, const std::function<void()> &handler)
+{
+    Ref<Timer> timer = Timer::create();
+    timer->triggered->connect(handler);
+    timer->startIn(delayTime);
+}
+
+Ref<Timer> Timer::create(double interval)
+{
+    return new Timer{interval};
+}
+
+Timer::Timer(double interval):
+    interval_{interval}
+{}
 
 void Timer::start()
 {
