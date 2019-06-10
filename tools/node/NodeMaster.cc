@@ -39,9 +39,9 @@ int NodeMaster::run(int argc, char **argv)
     if (NodeConfig::instance()->daemon() && !Process::isDaemonized())
         Process::daemonize();
 
-    auto signalMaster = SignalMaster::start([=](int signal, bool *fin){
+    auto signalMaster = SignalMaster::start([=](Signal signal, bool *fin){
         nodeMaster()->signals_->pushBack(signal);
-        *fin = (signal == SIGINT || signal == SIGTERM);
+        *fin = (+signal == SIGINT || +signal == SIGTERM);
     });
 
     nodeMaster()->start();
@@ -73,8 +73,8 @@ void NodeMaster::run()
             runNode();
         }
         catch (Signaled &ex) {
-            if (ex.signal() != SIGHUP) {
-                exitCode_ = ex.signal() + 128;
+            if (+ex.signal() != SIGHUP) {
+                exitCode_ = +ex.signal() + 128;
                 break;
             }
         }
@@ -90,7 +90,7 @@ void NodeMaster::run()
 
 void NodeMaster::runNode()
 {
-    CCNODE_NOTICE() << "Starting (pid = " << Process::currentId() << ")" << nl;
+    CCNODE_NOTICE() << "Starting (pid = " << Process::id() << ")" << nl;
 
     if (NodeConfig::instance()->directoryPath() != "") {
         ServiceDefinition *directoryService = serviceRegistry()->serviceByName("Directory");
@@ -148,7 +148,7 @@ void NodeMaster::runNode()
         worker->start();
     }
 
-    CCNODE_NOTICE() << "Up and running (pid = " << Process::currentId() << ")" << nl;
+    CCNODE_NOTICE() << "Up and running (pid = " << Process::id() << ")" << nl;
 
     Ref<IoMonitor> ioMonitor = IoMonitor::create(listeningSockets->count());
     for (StreamSocket *socket: listeningSockets)
@@ -179,9 +179,9 @@ void NodeMaster::runNode()
         connectionManager->cycle();
 
         while (signals_->count() > 0) {
-            int signal = signals_->popFront();
-            if (signal == SIGINT || signal == SIGTERM || signal == SIGHUP) {
-                CCNODE_NOTICE() << "Received " << signalName(signal) << ", shutting down" << nl;
+            Signal signal = signals_->popFront();
+            if (+signal == SIGINT || +signal == SIGTERM || +signal == SIGHUP) {
+                CCNODE_NOTICE() << "Received " << signal << ", shutting down" << nl;
                 workerPool = nullptr;
                 CCNODE_NOTICE() << "Shutdown complete" << nl;
                 throw Signaled{signal};

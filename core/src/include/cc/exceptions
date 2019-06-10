@@ -228,26 +228,6 @@ private:
     String reason_;
 };
 
-String signalName(int signal);
-
-/** \class Signaled cc/exceptions
-  * \brief Signal received
-  */
-class Signaled: public Exception
-{
-public:
-    Signaled(int signal);
-    ~Signaled() throw() {}
-
-    int signal() const { return signal_; }
-    String signalName() const;
-
-    String message() const override;
-
-private:
-    int signal_;
-};
-
 /** \class Timeout cc/exceptions
   * \brief Operation timed out
   */

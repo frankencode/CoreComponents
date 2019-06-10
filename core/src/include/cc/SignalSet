@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <signal.h>
 #include <cc/Singleton>
+#include <cc/Signal>
 
 namespace cc {
 
@@ -22,17 +22,13 @@ class Thread;
 class SignalSet: public Object
 {
 public:
-    static Ref<SignalSet> createEmpty() {
-        return new SignalSet{Empty};
-    }
-    static Ref<SignalSet> createFull() {
-        return new SignalSet{Full};
-    }
+    static Ref<SignalSet> createEmpty();
+    static Ref<SignalSet> createFull();
 
-    void insert(int signal);
-    void remove(int signal);
+    void insert(Signal signal);
+    void remove(Signal signal);
 
-    bool contains(int signal) const;
+    bool contains(Signal signal) const;
 
     sigset_t *rawSet() { return &rawSet_; }
 
@@ -42,13 +38,11 @@ private:
     friend class Thread;
     friend class Singleton<SignalSet>;
 
-    static Ref<SignalSet> create() {
-        return new SignalSet;
-    }
+    static Ref<SignalSet> create();
 
-    enum { Empty, Full, Query };
+    enum class Preset { Empty, Full, Query };
 
-    SignalSet(int preset = Query);
+    SignalSet(Preset preset = Preset::Query);
     sigset_t rawSet_;
 };
 

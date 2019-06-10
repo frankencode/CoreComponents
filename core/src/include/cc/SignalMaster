@@ -21,7 +21,7 @@ namespace cc {
 class SignalMaster: public Thread
 {
 public:
-    typedef std::function<void(int,bool*)> SignalHandler;
+    typedef std::function<void(Signal, bool *)> SignalHandler;
 
     static Ref<SignalMaster> start(const SignalHandler &handler);
 

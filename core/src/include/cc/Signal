@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <signal.h>
+#include <cc/Exception>
+
+namespace cc {
+
+enum class Signal: int {
+    Abort                  = SIGABRT,
+    Alarm                  = SIGALRM,
+    Bus                    = SIGBUS,
+    Child                  = SIGCHLD,
+    Continue               = SIGCONT,
+    FloatingPointException = SIGFPE,
+    HangUp                 = SIGHUP,
+    Interrupt              = SIGINT,
+    Kill                   = SIGKILL,
+    Pipe                   = SIGPIPE,
+    Quit                   = SIGQUIT,
+    SegmentationViolation  = SIGSEGV,
+    Stop                   = SIGSTOP,
+    Terminate              = SIGTERM,
+    User1                  = SIGUSR1,
+    User2                  = SIGUSR2,
+    WindowSizeChanged      = SIGWINCH,
+    Undefined              = 0
+};
+
+inline int operator+(Signal signal) { return static_cast<int>(signal); }
+
+String str(Signal signal);
+
+/** \class Signaled cc/exceptions
+  * \brief Signal received
+  */
+class Signaled: public Exception
+{
+public:
+    Signaled(Signal signal);
+    ~Signaled() throw() {}
+
+    Signal signal() const { return signal_; }
+
+    String message() const override;
+
+private:
+    Signal signal_;
+};
+
+} // namespace cc

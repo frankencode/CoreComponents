@@ -20,7 +20,7 @@ Ref<SignalMaster> SignalMaster::start(const SignalHandler &handler)
 }
 
 SignalMaster::SignalMaster(const SignalHandler &handler):
-    handler_(handler)
+    handler_{handler}
 {}
 
 void SignalMaster::run()
@@ -31,7 +31,7 @@ void SignalMaster::run()
         int signal = 0;
         int error = ::sigwait(listenSet->rawSet(), &signal);
         if (error != 0) CC_SYSTEM_DEBUG_ERROR(error);
-        handler_(signal, &fin);
+        handler_(static_cast<Signal>(signal), &fin);
     }
 }
 

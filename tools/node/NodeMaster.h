@@ -30,7 +30,7 @@ private:
     virtual void run() final;
     void runNode();
 
-    typedef Channel<int> Signals;
+    typedef Channel<Signal> Signals;
     Ref<Signals> signals_;
     int exitCode_;
 };

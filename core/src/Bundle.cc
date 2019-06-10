@@ -31,7 +31,7 @@ String Bundle::exePrefix()
 }
 
 Bundle::Bundle():
-    overridePrefix_(Process::env("CC_BUNDLE_PREFIX_OVERRIDE")),
+    overridePrefix_(Process::getEnv("CC_BUNDLE_PREFIX_OVERRIDE")),
     exePrefix_(Process::exePath()->reducePath())
 {}
 

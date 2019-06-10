@@ -49,7 +49,7 @@ Ref<SubProcess> SubProcess::bootstrap(Staging *staging)
             if (!File::access(execPath, Access::Execute)) throw CommandNotFound{execPath};
         }
         else {
-            String path = File::locate(execPath, Process::env("PATH")->split(':'), Access::Execute);
+            String path = File::locate(execPath, Process::getEnv("PATH")->split(':'), Access::Execute);
             if (path == "") throw CommandNotFound{execPath};
             execPath = path;
         }
@@ -245,7 +245,7 @@ int SubProcess::shellExecute(const String &shellCommand)
     return SubProcess::stage()
         ->setArgs(
             StringList::create()
-                << Process::env("SHELL")
+                << Process::getEnv("SHELL")
                 << "-c"
                 << shellCommand
         )

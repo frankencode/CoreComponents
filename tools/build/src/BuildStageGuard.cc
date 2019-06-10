@@ -13,7 +13,7 @@
 namespace ccbuild {
 
 BuildStageGuard::BuildStageGuard(BuildStage *stage):
-    stage_(stage)
+    stage_{stage}
 {
     for (String command: stage_->preCommands()) {
         SubProcess::stage()

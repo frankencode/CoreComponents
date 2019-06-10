@@ -241,7 +241,7 @@ String File::resolve(const String &path)
 
 String File::createUnique(const String &path, int mode, char placeHolder)
 {
-    Ref<Random> random = Random::open(Process::currentId());
+    Ref<Random> random = Random::open(Process::id());
     while (true) {
         String candidate = path->copy();
         for (int i = 0, n = candidate->count(); i < n; ++i) {

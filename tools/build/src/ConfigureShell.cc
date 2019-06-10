@@ -34,7 +34,7 @@ String ConfigureShell::run(String shellCommand)
     Ref<SubProcess> sub = SubProcess::stage()
         ->setArgs(
             StringList::create()
-                << Process::env("SHELL")
+                << Process::getEnv("SHELL")
                 << "-c"
                 << shellCommand
         )

@@ -27,15 +27,15 @@ Ref<GnuToolChain> GnuToolChain::create(const BuildPlan *plan)
 
 GnuToolChain::GnuToolChain(const BuildPlan *plan):
     dependencySplitPattern_("{1..:[\\:\\\\\n\r ]}"),
-    rpathOverride_(Process::env("CCBUILD_RPATH_OVERRIDE"))
+    rpathOverride_(Process::getEnv("CCBUILD_RPATH_OVERRIDE"))
 {
     if (plan->compiler() != "") {
         ccPath_ = plan->compiler();
         cxxPath_ = plan->compiler();
     }
     else {
-        ccPath_ = Process::env("CC");
-        cxxPath_ = Process::env("CXX");
+        ccPath_ = Process::getEnv("CC");
+        cxxPath_ = Process::getEnv("CXX");
     }
 
     if (ccPath_ == "") ccPath_ = "gcc";

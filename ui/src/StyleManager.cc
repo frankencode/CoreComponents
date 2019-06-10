@@ -22,7 +22,7 @@ StyleManager *StyleManager::instance()
 
 StyleManager::StyleManager():
     plugins_{Plugins::create()},
-    defaultStyleName_{Process::env("CCUI_STYLE", "Industrial")}
+    defaultStyleName_{Process::getEnv("CCUI_STYLE", "Industrial")}
 {}
 
 void StyleManager::registerPlugin(StylePlugin *plugin)

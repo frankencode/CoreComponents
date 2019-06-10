@@ -9,7 +9,7 @@
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
 #include <cc/debug>
-#include <cc/Spawn>
+#include <cc/Process>
 #include <cc/InputPipe>
 #include <cc/OutputPipe>
 
@@ -22,25 +22,20 @@ class SimpleSpawnTest: public TestCase
 {
     void run() override
     {
-        int ret = Spawn::stage(execPath + " test")->start()->wait();
+        int ret = Process::stage(execPath + " test")->start()->wait();
         CC_VERIFY(ret == 7);
     }
 };
 
-class InputOutputPipeTest: public TestCase
+class SimpleEchoTest: public TestCase
 {
     void run() override
     {
-        auto inPipe = InputPipe::create();
-        auto outPipe = OutputPipe::create();
-        auto spawn = Spawn::stage(execPath + " echo")
-            ->setInputChannel(inPipe)
-            ->setOutputChannel(outPipe)
-            ->start();
+        auto spawn = Process::open(execPath + " echo");
         String message = "Hello, echo!";
-        inPipe->write(message);
-        inPipe->close();
-        String reply = outPipe->readAll();
+        spawn->input()->write(message);
+        spawn->input()->close();
+        String reply = spawn->output()->readAll();
         CC_INSPECT(message);
         CC_INSPECT(reply);
         CC_VERIFY(message == reply);
@@ -59,13 +54,12 @@ int main(int argc, char **argv)
         }
         if (String{argv[1]} == "echo") {
             stdIn()->transferTo(stdOut());
-            CC_DEBUG;
             return 11;
         }
     }
 
     CC_TESTSUITE_ADD(SimpleSpawnTest);
-    CC_TESTSUITE_ADD(InputOutputPipeTest);
+    CC_TESTSUITE_ADD(SimpleEchoTest);
 
     return TestSuite::instance()->run(argc, argv);
 }

@@ -42,7 +42,7 @@ void runAttachCommand(const String &shellCommand, const String &devNode, const S
     SubProcess::stage()
         ->setArgs(
             StringList::create()
-                << Process::env("SHELL")
+                << Process::getEnv("SHELL")
                 << "-c"
                 << shellCommand
         )
@@ -58,7 +58,7 @@ void runDetachCommand(const String &shellCommand)
     SubProcess::stage()
         ->setArgs(
             StringList::create()
-                << Process::env("SHELL")
+                << Process::getEnv("SHELL")
                 << "-c"
                 << shellCommand
         )
@@ -79,8 +79,8 @@ void runMonitor(const VariantMap *options)
     auto monitor = StorageMonitor::start();
 
     auto signalMaster = SignalMaster::start(
-        [=](int signal, bool *fin) {
-            if (signal == SIGINT || signal == SIGTERM || signal == SIGHUP) {
+        [=](Signal signal, bool *fin) {
+            if (+signal == SIGINT || +signal == SIGTERM || +signal == SIGHUP) {
                 monitor->shutdown();
                 *fin = true;
             }
