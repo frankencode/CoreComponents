@@ -7,7 +7,7 @@
  */
 
 #include <cc/stdio>
-#include <cc/SubProcess>
+#include <cc/Process>
 #include <cc/Mutex>
 #include "Job.h"
 
@@ -23,8 +23,8 @@ void Job::registerDerivative(Job *derivative)
 bool Job::run()
 {
     try {
-        Ref<SubProcess> sub = SubProcess::open(command_);
-        outputText_ = sub->readAll();
+        Ref<Process> sub = Process::open(command_);
+        outputText_ = sub->output()->readAll();
         status_ = sub->wait();
     }
     catch (Exception &ex) {

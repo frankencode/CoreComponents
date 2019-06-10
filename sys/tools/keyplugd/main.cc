@@ -2,7 +2,6 @@
 #include <cc/debug>
 #include <cc/Arguments>
 #include <cc/SignalMaster>
-#include <cc/SubProcess>
 #include <cc/Process>
 #include <cc/Dir>
 #include <cc/System>
@@ -14,8 +13,10 @@ using namespace cc::sys;
 class MountGuard {
 public:
     MountGuard(const String &devNode, const String &fsType, const String &mountOptions):
-        mountPath_(Dir::createTemp())
+        mountPath_{Dir::createTemp()},
+        cwdSaved_{Process::getCwd()}
     {
+        Process::cd(mountPath_);
         System::mount(devNode, mountPath_, fsType, mountOptions);
     }
 
@@ -23,6 +24,7 @@ public:
     {
         System::unmount(mountPath_);
         Dir::remove(mountPath_);
+        Process::cd(cwdSaved_);
     }
 
     String mountPath() const { return mountPath_; }
@@ -31,22 +33,22 @@ public:
 
 private:
     String mountPath_;
+    String cwdSaved_;
 };
 
 void runAttachCommand(const String &shellCommand, const String &devNode, const String &fsType, const String &mountOptions)
 {
     if (shellCommand == "") return;
 
-    MountGuard guard(devNode, fsType, mountOptions);
+    MountGuard guard{devNode, fsType, mountOptions};
 
-    SubProcess::stage()
+    Process::stage()
         ->setArgs(
             StringList::create()
                 << Process::getEnv("SHELL")
                 << "-c"
                 << shellCommand
         )
-        ->setWorkDir(guard->mountPath())
         ->start()
         ->wait();
 }
@@ -55,7 +57,7 @@ void runDetachCommand(const String &shellCommand)
 {
     if (shellCommand == "") return;
 
-    SubProcess::stage()
+    Process::stage()
         ->setArgs(
             StringList::create()
                 << Process::getEnv("SHELL")

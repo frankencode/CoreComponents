@@ -26,7 +26,7 @@ public:
 
     virtual String machine() const override { return machine_; }
     virtual String systemRoot() const override { return systemRoot_; }
-    virtual String compiler(String source = "") const override;
+    virtual String compiler(const String &source = "") const override;
     virtual String compiler(const BuildPlan *plan) const override;
     virtual String machineCommand() const override;
 
@@ -44,8 +44,6 @@ public:
     virtual String linkCommand(const BuildPlan *plan) const override;
     virtual Ref<Job> createLinkJob(const BuildPlan *plan) const override;
     virtual bool link(const BuildPlan *plan) const override;
-
-    virtual bool testInclude(const BuildPlan *plan, const StringList *headers) const override;
 
     virtual String configureCompileCommand(const BuildPlan *plan, String sourcePath, String binPath) const override;
 
@@ -77,8 +75,8 @@ protected:
     GnuToolChain(const BuildPlan *plan);
     virtual ~GnuToolChain();
 
-    static String queryMachine(String compiler);
-    static String machineCommand(String compiler);
+    static String queryMachine(const String &compiler);
+    static String machineCommand(const String &compiler);
 
     static String querySystemRoot(String compiler);
 

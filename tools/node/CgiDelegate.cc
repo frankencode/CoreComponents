@@ -9,7 +9,8 @@
 #include <cc/str>
 #include <cc/Format>
 #include <cc/File>
-#include <cc/SubProcess>
+#include <cc/Process>
+#include <cc/SocketPair>
 #include <cc/StreamTap>
 #include <cc/net/StreamSocket>
 #include <cc/http/exceptions>
@@ -57,7 +58,7 @@ bool CgiDelegate::process(HttpRequest *request, FileStatus *status, const String
 void CgiDelegate::process(HttpRequest *request, const String &script, const String &documentRoot)
 {
     Ref<CgiServerConnection> cgiServer;
-    Ref<SubProcess> sub;
+    Ref<Process> sub;
 
     String payload;
     {
@@ -103,19 +104,23 @@ void CgiDelegate::process(HttpRequest *request, const String &script, const Stri
         env->insert("SCRIPT_NAME", "/" + scriptPath->baseName());
         if (documentRoot != "") env->insert("DOCUMENT_ROOT", documentRoot);
 
-        sub = SubProcess::stage()
+        Ref<SocketPair> pair = SocketPair::create();
+        sub = Process::stage()
             ->setArgs(args)
             ->setEnvMap(env)
-            ->open();
+            ->setInputChannel(pair)
+            ->setOutputChannel(pair)
+            ->setErrorChannel(pair)
+            ->start();
 
-        cgiServer = CgiServerConnection::open(sub);
+        cgiServer = CgiServerConnection::open(pair);
         if (ErrorLog::instance()->level() >= LogLevel::Debug)
             cgiServer->setupTransferLog(ErrorLog::instance()->debugStream(), scriptPath->baseName());
 
         if (payload->count() > 0)
             cgiServer->stream()->write(payload);
 
-        sub->shutdown(SubProcess::WriteShutdown);
+        sub->input()->close();
     }
     else
         throw InternalServerError();

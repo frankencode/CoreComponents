@@ -21,9 +21,9 @@ class PathManipulation: public TestCase
         fout("argv[0] = \"%%\"\n") << execPath;
         fout("String(argv[0])->fileName() = \"%%\"\n") << execPath->fileName();
         fout("String(argv[0])->isAbsolutePath() = %%\n") << execPath->isAbsolutePath();
-        fout("String(argv[0])->absolutePathRelativeTo(\"%%\") = \"%%\"\n") << Process::cwd() << execPath->absolutePathRelativeTo(Process::cwd());
+        fout("String(argv[0])->absolutePathRelativeTo(\"%%\") = \"%%\"\n") << Process::getCwd() << execPath->absolutePathRelativeTo(Process::getCwd());
         {
-            String path = execPath->absolutePathRelativeTo(Process::cwd());
+            String path = execPath->absolutePathRelativeTo(Process::getCwd());
             while (path != "/") {
                 path = path->reducePath();
                 fout("path1->reduce() = \"%%\"\n") << path;

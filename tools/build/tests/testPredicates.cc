@@ -10,7 +10,7 @@
 #include <cc/debug>
 #include <cc/stdio>
 #include <cc/File>
-#include <cc/SubProcess>
+#include <cc/Process>
 
 using namespace cc;
 using namespace cc::testing;
@@ -75,13 +75,10 @@ class RecursivePredicatesTest: public TestCase
             "}\n"
         );
 
-        int ret = SubProcess::stage()
-            ->setCommand("./ccbuild jobs=1")
-            ->setWorkDir("TestApp")
-            ->start()
-            ->wait();
-
-        CC_VERIFY(ret == 0);
+        String cwdSaved = Process::getCwd();
+        Process::cd("TestApp");
+        CC_VERIFY(Process::execute(cwdSaved + "/ccbuild jobs=1") == 0);
+        Process::cd(cwdSaved);
         CC_VERIFY(File::exists("TestApp/testApp"));
     }
 };

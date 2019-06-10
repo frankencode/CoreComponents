@@ -8,7 +8,6 @@
 
 #include <cc/Format>
 #include <cc/Process>
-#include <cc/SubProcess>
 #include "ConfigureShell.h"
 
 namespace ccbuild {
@@ -31,7 +30,7 @@ String ConfigureShell::run(String shellCommand)
     if (lookup(shellCommand, &text))
         return text;
 
-    Ref<SubProcess> sub = SubProcess::stage()
+    Ref<Process> sub = Process::stage()
         ->setArgs(
             StringList::create()
                 << Process::getEnv("SHELL")
@@ -40,11 +39,11 @@ String ConfigureShell::run(String shellCommand)
         )
         ->open();
 
-    text = sub->readAll()->trim();
+    text = sub->output()->readAll()->trim();
     int status = sub->wait();
     if (status != 0) {
         throw String(
-            Format() << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")"
+            Format{} << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")"
         );
     }
 

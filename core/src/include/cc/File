@@ -24,7 +24,7 @@ class MappedByteArray;
 /** \class File cc/File
   * \ingroup file_system
   * \brief Handle files
-  * \see FileStatus, UnlinkGuard, Dir, SubProcess
+  * \see FileStatus, UnlinkGuard, Dir
   */
 class File: public SystemStream
 {

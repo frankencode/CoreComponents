@@ -10,7 +10,7 @@
 #include <cc/File>
 #include <cc/UnlinkGuard>
 #include <cc/Process>
-#include <cc/SubProcess>
+#include <cc/Process>
 #include <cc/Dir>
 #include <cc/glob/Pattern>
 #include "BuildPlan.h"
@@ -53,7 +53,7 @@ GnuToolChain::GnuToolChain(const BuildPlan *plan):
 GnuToolChain::~GnuToolChain()
 {}
 
-String GnuToolChain::compiler(String source) const
+String GnuToolChain::compiler(const String &source) const
 {
     return (
         source->endsWith(".cc")  ||
@@ -75,15 +75,15 @@ String GnuToolChain::compiler(const BuildPlan *plan) const
     return plan->containsCPlusPlus() ? cxxPath_ : ccPath_;
 }
 
-String GnuToolChain::queryMachine(String compiler)
+String GnuToolChain::queryMachine(const String &compiler)
 {
-    String machine = SubProcess::open(machineCommand(compiler), stdErr())->readAll();
+    String machine = Process::stage(machineCommand(compiler))->setError(stdErr())->open()->output()->readAll();
     mutate(machine)->trimInsitu();
     mutate(machine)->replaceInsitu("-pc-", "-"); // workaround for clang/bash
     return machine;
 }
 
-String GnuToolChain::machineCommand(String compiler)
+String GnuToolChain::machineCommand(const String &compiler)
 {
     return compiler + " -dumpmachine";
 }
@@ -95,7 +95,7 @@ String GnuToolChain::machineCommand() const
 
 String GnuToolChain::querySystemRoot(String compiler)
 {
-    String systemRoot = SubProcess::open(compiler + " -print-sysroot", stdErr())->readAll();
+    String systemRoot = Process::stage(compiler + " -print-sysroot")->setError(stdErr())->open()->output()->readAll();
     mutate(systemRoot)->trimInsitu();
     return systemRoot;
 }
@@ -218,46 +218,6 @@ bool GnuToolChain::link(const BuildPlan *plan) const
         return false;
 
     return createSymlinks(plan);
-}
-
-bool GnuToolChain::testInclude(const BuildPlan *plan, const StringList *headers) const
-{
-    String srcPath = File::createUnique("/tmp/########.cc");
-    UnlinkGuard srcUnlinkGuard(srcPath);
-    UnlinkGuard objUnlinkGuard(srcPath->baseName() + ".o");
-    {
-        Ref<File> src = File::open(srcPath, OpenMode::WriteOnly);
-        Format format;
-        for (int i = 0; i < headers->count(); ++i)
-            format << "#include <" << headers->at(i) << ">\n";
-        format << "int main() { return 0; }\n";
-        src->write(format->join());
-    }
-
-    Format args;
-    args << compiler();
-    appendCompileOptions(args, plan);
-    args << "-E" << srcPath;
-    String command = args->join(" ");
-    if (plan->options() & BuildPlan::Verbose)
-        fout() << "# " << command << nl;
-
-    Ref<SubProcess> sub;
-    {
-        auto stage = SubProcess::stage();
-        stage->setCommand(command);
-        auto overloads = SubProcess::Overloads::create();
-        {
-            Ref<File> devNull = File::open("/dev/null", OpenMode::WriteOnly);
-            overloads->insert(StandardOutputFd, devNull);
-            if (!(plan->options() & BuildPlan::Verbose))
-                overloads->insert(StandardErrorFd, devNull);
-        }
-        stage->setOverloads(overloads);
-        sub = stage->open();
-    }
-
-    return sub->wait() == 0;
 }
 
 String GnuToolChain::configureCompileCommand(const BuildPlan *plan, String sourcePath, String binPath) const
@@ -452,7 +412,7 @@ bool GnuToolChain::refreshLinkerCache(const BuildPlan *plan) const
     if (plan->installRoot() != "/") return true;
     String libInstallPath = plan->installPath("lib");
     if (isMultiArch_) libInstallPath = libInstallPath->extendPath(machine_);
-    if (!libInstallPath->isAbsolutePath()) libInstallPath = libInstallPath->absolutePathRelativeTo(Process::cwd());
+    if (!libInstallPath->isAbsolutePath()) libInstallPath = libInstallPath->absolutePathRelativeTo(Process::getCwd());
     Format attr;
     attr << "ldconfig";
     attr << libInstallPath;
@@ -520,10 +480,10 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
 
     if (libraryPaths->count() > 0) {
         for (int i = 0; i < libraryPaths->count(); ++i)
-            rpaths << "-rpath=" + libraryPaths->at(i)->absolutePathRelativeTo(Process::cwd());
+            rpaths << "-rpath=" + libraryPaths->at(i)->absolutePathRelativeTo(Process::getCwd());
     }
 
-    rpaths << "-rpath-link=" + Process::cwd();
+    rpaths << "-rpath-link=" + Process::getCwd();
     args << "-Wl,--enable-new-dtags," + rpaths->join(",");
 }
 

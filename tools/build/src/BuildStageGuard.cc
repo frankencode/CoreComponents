@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/SubProcess>
+#include <cc/Process>
 #include "BuildStage.h"
 #include "BuildStageGuard.h"
 
@@ -15,23 +15,15 @@ namespace ccbuild {
 BuildStageGuard::BuildStageGuard(BuildStage *stage):
     stage_{stage}
 {
-    for (String command: stage_->preCommands()) {
-        SubProcess::stage()
-            ->setCommand(command)
-            ->start()
-            ->wait();
-    }
+    for (const String &command: stage_->preCommands())
+        Process::execute(command);
 }
 
 BuildStageGuard::~BuildStageGuard()
 {
     if (stage_->success()) {
-        for (String command: stage_->postCommands()) {
-            SubProcess::stage()
-                ->setCommand(command)
-                ->start()
-                ->wait();
-        }
+        for (const String &command: stage_->postCommands())
+            Process::execute(command);
     }
 }
 

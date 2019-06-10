@@ -21,6 +21,7 @@ namespace cc {
 /** \class Process cc/Process
   * \ingroup concurrency
   * \brief Child process creation and current process state
+  * \TODO add support for setting the initial CWD of a child process once posix_spawn_file_actions_addchdir() becomes available
   */
 class Process: public Object
 {
@@ -162,6 +163,12 @@ public:
       */
     static Ref<Process> start(const String &command);
 
+    /** \brief Spawn a new child process and wait for its termintation
+      * \param command Executable path plus command line arguments
+      * \return exit status
+      */
+    static int execute(const String &command);
+
     /// %Process ID of child process
     pid_t pid() const;
 
@@ -171,8 +178,7 @@ public:
     void kill(Signal signal = Signal::Terminate);
 
     /** \brief Wait for child process termination
-      * \return exit status of child process
-      * \exception Signalled child process terminated due to receiving a signal
+      * \return exit status of child process (<0 if signaled, exit status = -signal number)
       */
     int wait();
 
@@ -191,7 +197,7 @@ public:
     static void cd(const String &path);
 
     /// Current working directory of this process
-    static String cwd();
+    static String getCwd();
 
     /// Actual pathname of the executed command
     static String exePath();
@@ -246,6 +252,7 @@ private:
     friend class Staging;
     static Ref<Process> bootstrap(const Staging *staging);
     Process(pid_t pid, const Staging *staging);
+    ~Process();
     pid_t pid_;
     bool groupLead_ { false };
     int exitStatus_ { 0 };

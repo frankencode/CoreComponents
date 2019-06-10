@@ -24,7 +24,7 @@ public:
     virtual String machine() const = 0;
     virtual String systemRoot() const = 0;
 
-    virtual String compiler(String source = "") const = 0;
+    virtual String compiler(const String &source = "") const = 0;
     virtual String compiler(const BuildPlan *plan) const = 0;
     virtual String machineCommand() const = 0;
     virtual String defaultOptimization(const BuildPlan *plan) const = 0;
@@ -41,8 +41,6 @@ public:
     virtual String linkCommand(const BuildPlan *plan) const = 0;
     virtual Ref<Job> createLinkJob(const BuildPlan *plan) const = 0;
     virtual bool link(const BuildPlan *plan) const = 0;
-
-    virtual bool testInclude(const BuildPlan *plan, const StringList *headers) const = 0;
 
     virtual String configureCompileCommand(const BuildPlan *plan, String sourcePath, String binPath) const = 0;
 

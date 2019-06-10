@@ -11,7 +11,7 @@
 #include <cc/Dir>
 #include <cc/File>
 #include <cc/FileStatus>
-#include <cc/SubProcess>
+#include <cc/Process>
 #include <cc/meta/yason>
 #include "BuildPlan.h"
 #include "ConfigureShell.h"
@@ -260,8 +260,8 @@ bool ConfigureStage::probeBuild(const String &name, const String &probe) const
 
     if (dirty) {
         String command = toolChain()->configureCompileCommand(plan(), probePath, binPath);
-        Ref<SubProcess> sub = SubProcess::open(command);
-        String output = sub->readAll();
+        Ref<Process> sub = Process::open(command);
+        String output = sub->output()->readAll();
         int exitCode = sub->wait();
         if (exitCode != 0) {
             if (plan()->options() & (BuildPlan::Verbose | BuildPlan::Configure)) {
@@ -309,8 +309,8 @@ bool ConfigureStage::runConfigure(String name, String configure, String *output)
 
         if (dirty) {
             String command = toolChain()->configureCompileCommand(plan(), configurePath, binPath);
-            Ref<SubProcess> sub = SubProcess::open(command);
-            String output = sub->readAll();
+            Ref<Process> sub = Process::open(command);
+            String output = sub->output()->readAll();
             int exitCode = sub->wait();
             if (exitCode != 0) {
                 if (plan()->options() & (BuildPlan::Verbose | BuildPlan::Configure)) {
@@ -323,8 +323,8 @@ bool ConfigureStage::runConfigure(String name, String configure, String *output)
         }
     }
 
-    Ref<SubProcess> sub = SubProcess::open(binPath);
-    *output = sub->readAll();
+    Ref<Process> sub = Process::open(binPath);
+    *output = sub->output()->readAll();
     return sub->wait() == 0;
 }
 

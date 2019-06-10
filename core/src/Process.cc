@@ -179,6 +179,11 @@ Ref<Process> Process::start(const String &command)
     return stage(command)->start();
 }
 
+int Process::execute(const String &command)
+{
+    return start(command)->wait();
+}
+
 Ref<Process> Process::bootstrap(const Staging *staging)
 {
     /// locate executable and prepare argument list
@@ -239,8 +244,14 @@ Ref<Process> Process::bootstrap(const Staging *staging)
     /// spawn new child process
 
     pid_t pid = -1;
-    int ret = ::posix_spawn(&pid, execPath, &staging->fileActions_, &staging->spawnAttributes_, argv, envp);
+    int ret = ::posix_spawn(&pid, execPath, &staging->fileActions_, &staging->spawnAttributes_, argv, envp ? envp : ::environ);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
+
+    if (envp) {
+        for (int i = 0; envp[i]; ++i)
+            cc::free(envp[i]);
+        delete[] envp;
+    }
 
     return new Process{pid, staging};
 }
@@ -251,6 +262,11 @@ Process::Process(pid_t pid, const Staging *staging):
 {
     for (int i = 0; i <= 2; ++i)
         standardStreams_[i] = staging->standardStreams_[i];
+}
+
+Process::~Process()
+{
+    wait();
 }
 
 pid_t Process::pid() const
@@ -277,7 +293,7 @@ int Process::wait()
     pid_ = -1;
 
     if (WIFSIGNALED(ret))
-        throw Signaled{static_cast<Signal>(WTERMSIG(ret))};
+        return exitStatus_ = -WTERMSIG(ret);
 
     return exitStatus_ = WEXITSTATUS(ret);
 }
@@ -303,7 +319,7 @@ void Process::cd(const String &path)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-String Process::cwd()
+String Process::getCwd()
 {
     int size = 0x1000;
     char *buf = (char *)cc::malloc(size);

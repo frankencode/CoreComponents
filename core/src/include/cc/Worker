@@ -18,7 +18,7 @@ class WorkerThread;
 /** \class Worker cc/Worker
   * \ingroup concurrency
   * \brief Convenience wrapper around Thread class
-  * \see Thread, Mutex, Channel, SubProcess
+  * \see Thread, Mutex, Channel, Process
   */
 class Worker: public Object
 {
