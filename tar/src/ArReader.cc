@@ -31,7 +31,7 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 {
     if (i_ == 0) {
         if (!testFormat(source_))
-            throw BrokenArchive(i_, "Expected ar file header");
+            throw BrokenArchive{i_, "Expected ar file header"};
         i_ = 8;
     }
 
@@ -44,7 +44,7 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
     if (source_->readSpan(data) < data->count()) return false;
 
     if (data->byteAt(58) != 0x60 || data->byteAt(59) != 0x0a)
-        throw BrokenArchive(i_ + 58, "Expected ar header magic (0x50, 0x0a)");
+        throw BrokenArchive{i_ + 58, "Expected ar header magic (0x50, 0x0a)"};
 
     data->scanString(&entry->path_,         " ",  0, 16);
     data->scanNumber(&entry->lastModified_,  10, 16, 28);

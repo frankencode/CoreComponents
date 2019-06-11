@@ -164,12 +164,12 @@ inline bool ByteSource::hasMore()
 inline uint8_t ByteSource::readUInt8()
 {
     if (i_ == n_) {
-        if (!source_) throw UnexpectedEndOfInputError();
+        if (!source_) throw UnexpectedEndOfInputError{};
 
         n_ = source_->read(mutate(buffer_));
         i_ = 0;
 
-        if (n_ == 0) throw UnexpectedEndOfInputError();
+        if (n_ == 0) throw UnexpectedEndOfInputError{};
     }
 
     return buffer_->at(i_++);

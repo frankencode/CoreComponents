@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 
         runMonitor(arguments->options());
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         fout(
             "Usage: %% [OPTION]...\n"
             "Auto mount manager for smart keys\n"

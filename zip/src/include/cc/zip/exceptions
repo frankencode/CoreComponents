@@ -23,12 +23,13 @@ public:
         errorCode_(errorCode),
         zipPath_(zipPath)
     {}
-    ~ZipError() throw() {}
 
     int errorCode() const { return errorCode_; }
     String zipPath() const { return zipPath_; }
 
-    virtual String message() const override;
+    String message() const override;
+
+    const ZipError *operator->() const { return this; }
 
 private:
     int errorCode_;

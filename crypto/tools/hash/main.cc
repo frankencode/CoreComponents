@@ -39,7 +39,7 @@ int main(int argc, char **argv)
             fout() << hashSink->finish()->toHex() << "\t" << path << nl;
         }
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         fout(
             "Usage: %% [FILE]...\n"
             "Computes %% sums of files.\n"

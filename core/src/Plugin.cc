@@ -30,14 +30,14 @@ Plugin::Plugin(String path):
 Plugin *Plugin::load()
 {
     handle_ = dlopen(path_, RTLD_LAZY|RTLD_LOCAL);
-    if (!handle_) throw PluginLoadError();
+    if (!handle_) throw PluginLoadError{};
     return this;
 }
 
 void Plugin::reload()
 {
     if (dlclose(handle_) != 0)
-        throw PluginLoadError();
+        throw PluginLoadError{};
     load();
 }
 

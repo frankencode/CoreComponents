@@ -53,7 +53,7 @@ String encode(const String &source)
 
 String decode(const String &source)
 {
-    if (source->count() % 4 != 0) throw base64::IllegalInputSize4Error();
+    if (source->count() % 4 != 0) throw base64::IllegalInputSize4Error{};
 
     const int m = source->count();
     int p = 0;
@@ -65,7 +65,7 @@ String decode(const String &source)
         }
     }
 
-    if (!((0 <= p) && (p <= 2))) throw base64::IllegalPaddingError();
+    if (!((0 <= p) && (p <= 2))) throw base64::IllegalPaddingError{};
 
     int n = 3 * (m / 4) - p;
     String sink(n);
@@ -81,7 +81,7 @@ String decode(const String &source)
             else if (ch == '+') ch = 62;
             else if (ch == '/') ch = 63;
             else if (ch == '=') ch = 0;
-            else throw base64::IllegalCharacterError();
+            else throw base64::IllegalCharacterError{};
             bits |= ch;
             bits <<= 6;
         }

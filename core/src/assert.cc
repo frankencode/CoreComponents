@@ -13,7 +13,7 @@ namespace cc {
 
 void throwDebugError(const char *reason, const char *source, int line)
 {
-    throw DebugError(reason, source, line);
+    throw DebugError{reason, source, line};
 }
 
 } // namespace cc

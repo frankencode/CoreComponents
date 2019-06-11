@@ -16,12 +16,12 @@ namespace cc {
 
 String DebugError::message() const
 {
-    return Format() << reason_ << " (" << String(source_)->fileName() << ":" << line_ << ")";
+    return Format{} << reason_ << " (" << String{source_}->fileName() << ":" << line_ << ")";
 }
 
 String systemError(int errorCode)
 {
-    String buf(1024);  // HACK, save bet
+    String buf{1023};  // HACK, save bet
     const char *unknown = "Unknown error";
     memcpy(mutate(buf)->chars(), unknown, strlen(unknown) + 1);
 #ifdef __USE_GNU
@@ -39,7 +39,7 @@ String SystemError::message() const
 
 String SystemResourceError::message() const
 {
-    return Format() << systemError(errorCode_) << ": \"" << resource_ << "\""
+    return Format{} << systemError(errorCode_) << ": \"" << resource_ << "\""
         #ifndef NDEBUG
         << " (" << String(source_)->fileName() << ":" << line_ << ")"
         #endif
@@ -52,9 +52,9 @@ String SystemDebugError::message() const
 }
 
 TextError::TextError(const String &text, int offset, const String &resource):
-    text_(text),
-    offset_(offset),
-    resource_(resource != "" ? resource : ResourceContext::instance()->top())
+    text_{text},
+    offset_{offset},
+    resource_{resource != "" ? resource : ResourceContext::instance()->top()}
 {}
 
 String SemanticError::message() const
@@ -80,8 +80,8 @@ String ConnectionResetByPeer::message() const
     return "Connection reset by peer";
 }
 
-TransferError::TransferError(String details):
-    details_(details)
+TransferError::TransferError(const String &details):
+    details_{details}
 {}
 
 String TransferError::message() const
@@ -96,7 +96,7 @@ String PermissionError::message() const
 
 String CommandNotFound::message() const
 {
-    return Format("Command not found: '%%'") << command_;
+    return Format{"Command not found: '%%'"} << command_;
 }
 
 } // namespace cc

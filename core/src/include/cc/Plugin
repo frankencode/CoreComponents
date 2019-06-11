@@ -15,9 +15,7 @@ namespace cc {
 class PluginLoadError: public Exception
 {
 public:
-    ~PluginLoadError() throw() {}
-
-    virtual String message() const override;
+    String message() const override;
 };
 
 class Plugin: public Object

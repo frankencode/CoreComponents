@@ -27,7 +27,7 @@ Ref<Theme> Theme::load(String path)
         }
     }
     if (themePath == "" || !Dir::exists(themePath))
-        throw UsageError(Format("Failed to locate theme \"%%\"") << path);
+        throw UsageError{Format{"Failed to locate theme \"%%\""} << path};
     return new Theme(themePath);
 }
 
@@ -45,7 +45,7 @@ Theme::Theme(String path):
         paletteByScope_->insert(palette->scope(), palette);
     }
     if (!paletteByScope_->lookup(Palette::defaultScope(), &defaultPalette_))
-        throw UsageError(Format("Palette \"default\" missing in theme \"%%\"") << path);
+        throw UsageError{Format{"Palette \"default\" missing in theme \"%%\""} << path};
 }
 
 Ref<StringList> themeList(String path)

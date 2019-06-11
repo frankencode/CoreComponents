@@ -83,7 +83,7 @@ int main(int argc, char **argv)
                 cctar::pack(path, archive, options->value("verbose"));
         }
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         if (unpackMode) {
             fout(
                 "Usage: %% [OPTION]... [FILE]...\n"
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
         return 1;
     }
     catch (Exception &ex) {
-        ferr() << toolName << ": " << ex.message() << nl;
+        ferr() << toolName << ": " << ex << nl;
         return 1;
     }
 

@@ -290,7 +290,7 @@ PatternSyntax::PatternSyntax()
 void PatternSyntax::compile(const CharArray *text, SyntaxDefinition *definition) const
 {
     Ref<SyntaxState> state = match(text);
-    if (!state->valid()) throw SyntaxError(text, state);
+    if (!state->valid()) throw SyntaxError{text, state};
     NODE entry;
     if (text->count() == 0) entry = definition->PASS();
     else entry = compileChoice(text, state->rootToken()->firstChild(), definition);

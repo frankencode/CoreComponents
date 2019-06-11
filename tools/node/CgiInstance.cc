@@ -31,7 +31,7 @@ CgiInstance::CgiInstance(MetaObject *config):
     delegateCount_{0}
 {
     /*if (script_ == "" && server_->count() == 0)
-        throw UsageError("CGI: Please provide a \"script\" or a \"server\"");*/
+        throw UsageError{"CGI: Please provide a \"script\" or a \"server\""};*/
 
     for (int i = 0; i < server_->count(); ++i) {
         try {
@@ -44,7 +44,7 @@ CgiInstance::CgiInstance(MetaObject *config):
                 CCNODE_NOTICE() << "Resolving host name of server \"" << uri->host() << "\"..." << nl;
                 Ref<SocketAddressList> list = SocketAddress::resolve(uri->host());
                 if (list->count() == 0)
-                    throw UsageError(Format("CGI: Failed to resolve host name of server \"%%\"") << uri->host());
+                    throw UsageError{Format{"CGI: Failed to resolve host name of server \"%%\""} << uri->host()};
                 address = list->at(0);
                 address->setPort(uri->port());
             }
@@ -52,7 +52,7 @@ CgiInstance::CgiInstance(MetaObject *config):
             CCNODE_NOTICE() << "  " << address << nl;
         }
         catch (SyntaxError &ex) {
-            throw UsageError(Format("CGI: Invalid address syntax \"%%\"") << server_->at(i));
+            throw UsageError{Format{"CGI: Invalid address syntax \"%%\""} << server_->at(i)};
         }
     }
 }

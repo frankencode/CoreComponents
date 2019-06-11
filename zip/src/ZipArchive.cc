@@ -24,7 +24,7 @@ ZipArchive::ZipArchive(const String &path):
 {
     int errorCode = 0;
     archive_ = zip_open(path, ZIP_RDONLY, &errorCode);
-    if (!archive_) throw ZipError(errorCode, path_);
+    if (!archive_) throw ZipError{errorCode, path_};
 }
 
 ZipArchive::~ZipArchive()
@@ -39,7 +39,7 @@ bool ZipArchive::read(String *name)
     const char *s = zip_get_name(archive_, index_++, 0);
     if (!s) {
         if (zip_get_error(archive_)->zip_err == ZIP_ER_INVAL) return false;
-        throw ZipError(zip_get_error(archive_)->zip_err, path_);
+        throw ZipError{zip_get_error(archive_)->zip_err, path_};
     }
     *name = s;
     return true;
@@ -53,7 +53,7 @@ Ref<Stream> ZipArchive::openFile(const String &name)
     stream->archive_ = archive_;
     stream->file_ = zip_fopen(archive_, filePath, 0);
     if (!stream->file_)
-        throw ZipError(zip_get_error(archive_)->zip_err, path_);
+        throw ZipError{zip_get_error(archive_)->zip_err, path_};
     return stream;
 }
 

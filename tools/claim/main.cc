@@ -157,7 +157,7 @@ int main(int argc, char **argv)
             }
         }
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         fout(
             "Usage: %% [OPTION]... [DIR]...\n"
             "Find and update copyright statements.\n"

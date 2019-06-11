@@ -74,14 +74,14 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 
         probesum = tarHeaderSum(data);
         if (checksum != probesum)
-            throw BrokenArchive(i_ - data->count(), Format("Checksum mismatch (%% != %%), path = \"%%\"") << oct(checksum, 6) << oct(probesum, 6) << entry->path());
+            throw BrokenArchive{i_ - data->count(), Format{"Checksum mismatch (%% != %%), path = \"%%\""} << oct(checksum, 6) << oct(probesum, 6) << entry->path()};
 
         if (gnuMagic) {
             while ((entry->type_ == 'K' || entry->type_ == 'L') /*&& entry->path_ == "././@LongLink"*/) {
                 data->scanNumber(&entry->size_, 8, 124, 136);
                 String longPath = source_->readSpan(entry->size_);
                 if (longPath->count() < entry->size_)
-                    throw BrokenArchive(i_, "Expected GNU @LongLink data");
+                    throw BrokenArchive{i_, "Expected GNU @LongLink data"};
                 i_ += entry->size_;
                 if (entry->size() % 512 != 0) {
                     i_ += source_->skip(512 - entry->size() % 512);
@@ -91,7 +91,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
                 if (entry->type_ == 'K') entry->linkPath_ = longPath;
                 else if (entry->type_ == 'L') entry->path_ = longPath;
                 if (source_->readSpan(data) < data->count())
-                    throw BrokenArchive(i_, "Expected GNU @LongLink header");
+                    throw BrokenArchive{i_, "Expected GNU @LongLink header"};
                 i_ += data->count();
                 entry->type_ = data->at(156);
                 readAgain = true;

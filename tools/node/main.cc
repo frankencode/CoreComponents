@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     try {
         exitCode = NodeMaster::run(argc, argv);
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         fout(
             "Usage: %% [OPTION]... [CONFIG]|[DIR]...\n"
             "Start a HTTP server on this machine.\n"

@@ -26,7 +26,7 @@ TransferLimiter::TransferLimiter(Stream *stream, size_t readLimit, size_t writeL
 int TransferLimiter::read(CharArray *data)
 {
     if (readLimit_ > 0 && totalRead_ >= readLimit_)
-        throw ReadLimitExceeded();
+        throw ReadLimitExceeded{};
     int n = stream_->read(data);
     totalRead_ += n;
     return n;
@@ -35,7 +35,7 @@ int TransferLimiter::read(CharArray *data)
 void TransferLimiter::write(const CharArray *data)
 {
     if (writeLimit_ > 0 && totalWritten_ + data->count() > writeLimit_)
-        throw WriteLimitExceeded();
+        throw WriteLimitExceeded{};
     write(data);
     totalWritten_ += data->count();
 }
@@ -45,7 +45,7 @@ void TransferLimiter::write(const StringList *parts)
     size_t h = 0;
     for (int i = 0, n = parts->count(); i < n; ++i)
         h += parts->at(i)->count();
-    if (totalWritten_ + h > writeLimit_) throw WriteLimitExceeded();
+    if (totalWritten_ + h > writeLimit_) throw WriteLimitExceeded{};
     write(parts);
     totalWritten_ += h;
 }

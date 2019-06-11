@@ -155,7 +155,7 @@ int main(int argc, char **argv)
             }
         }
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         fout(
             "Usage: %% [OPTION]... [DIR]...\n"
             "Find (and replace) recursively descending into each [DIR]\n"

@@ -127,7 +127,7 @@ private:
 
 inline void ByteSink::flush()
 {
-    if (!sink_) throw BufferOverflow();
+    if (!sink_) throw BufferOverflow{};
 
     sink_->write(buffer_->head(i_));
     i0_ += i_;

@@ -37,7 +37,7 @@ int main(int argc, char **argv)
         Ref<Arguments> arguments = Arguments::parse(argc, argv, VariantMap::create());
 
         const StringList *items = arguments->items();
-        if (items->count() != 2) throw HelpError{};
+        if (items->count() != 2) throw HelpRequest{};
 
         Ref<SocketAddress> proxyAddress = SocketAddress::resolve(Uri::parse(items->at(0)));
         Ref<SocketAddress> origAddress  = SocketAddress::resolve(Uri::parse(items->at(1)));
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
             << "See --help for usage information" << nl;
         return 1;
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         fout(
             "Usage: %% [OPTION]... <proxy-server:port> <orig-server:port>\n"
             "Tap into and dump TCP client/server communication\n"

@@ -36,7 +36,7 @@ void DirectoryDelegate::process(HttpRequest *request)
     String path = directoryInstance_->path() + "/" + request->uri();
     path = path->canonicalPath();
     String prefix = path->head(directoryInstance_->path()->count());
-    if (path->head(directoryInstance_->path()->count()) != directoryInstance_->path()) throw Forbidden();
+    if (path->head(directoryInstance_->path()->count()) != directoryInstance_->path()) throw Forbidden{};
 
     if ((!directoryInstance_->showHidden()) && path->baseName()->startsWith('.')) throw NotFound{};
 

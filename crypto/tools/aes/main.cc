@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
         bool viewMode = stdErr()->isatty() && !stdOut()->isatty();
         bool filterMode = items->count() == 0 && !stdIn()->isatty();
-        if (items->count() == 0 && stdIn()->isatty()) throw UsageError("No input data");
+        if (items->count() == 0 && stdIn()->isatty()) throw UsageError{"No input data"};
 
         if (encipher) {
             String password, retype;
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
                 {
                     Ref<ByteSource> header = ByteSource::open(cipherSource, mutate(String::allocate(1)));
                     String challenge = header->readSpan(16);
-                    if (crc32(challenge) != header->readUInt32()) throw UsageError("Invalid password or invalid file");
+                    if (crc32(challenge) != header->readUInt32()) throw UsageError{"Invalid password or invalid file"};
                     int nameLength = header->readInt32();
                     origName = header->readSpan(nameLength);
                     origSize = header->readUInt64();
@@ -157,10 +157,10 @@ int main(int argc, char **argv)
         }
     }
     catch (UsageError &ex) {
-        ferr() << ex.message() << nl;
+        ferr() << ex << nl;
         return 1;
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         if (encipher) {
             fout(
                 "Usage: %% [FILE] ...\n"

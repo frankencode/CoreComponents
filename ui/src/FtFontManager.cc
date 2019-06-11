@@ -144,7 +144,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 
         try {
             glyphIndex = FT_Get_Char_Index(ftFace, ch);
-            if (glyphIndex == 0) throw GlyphLoadingError();
+            if (glyphIndex == 0) throw GlyphLoadingError{};
 
             if (FT_HAS_KERNING(ftFace)) {
                 if (previousGlyphIndex != 0 && glyphIndex != 0 && ch > 0x20) {
@@ -154,7 +154,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
                 }
             }
 
-            if (FT_Load_Glyph(ftFace, glyphIndex, FT_LOAD_DEFAULT) != 0) throw GlyphLoadingError();
+            if (FT_Load_Glyph(ftFace, glyphIndex, FT_LOAD_DEFAULT) != 0) throw GlyphLoadingError{};
         }
         catch (GlyphLoadingError &) {
             glyphIndex = FT_Get_Char_Index(ftFace, 0xFFFD /* � */);

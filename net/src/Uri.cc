@@ -44,7 +44,7 @@ void Uri::readUri(const CharArray *text, Token *rootToken)
     Ref<Token> rootToken2;
     if (!rootToken) {
         rootToken2 = UriSyntax::instance()->match(text)->rootToken();
-        if (!rootToken2) throw UriSyntaxError(text);
+        if (!rootToken2) throw UriSyntaxError{text};
         rootToken = rootToken2;
     }
 

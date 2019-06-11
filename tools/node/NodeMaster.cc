@@ -63,7 +63,7 @@ void NodeMaster::run()
         ErrorLog::instance()->open(NodeConfig::instance()->errorLogConfig());
     }
     catch (Exception &ex) {
-        CCNODE_ERROR() << ex.message() << nl;
+        CCNODE_ERROR() << ex << nl;
         exitCode_ = 1;
         return;
     }

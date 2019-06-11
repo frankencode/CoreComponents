@@ -62,7 +62,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
 
     if (items->count() > 0) {
         if (items->count() > 1)
-            throw UsageError("Handling multiple source directories at once is not supported");
+            throw UsageError{"Handling multiple source directories at once is not supported"};
         projectPath_ = items->at(0);
     }
 
@@ -210,7 +210,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
                 if (!systemPrerequisitesByName_->lookup(p->name(), &l))
                     systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
                 else
-                    throw UsageError(Format("%%: Ambiguous system dependency '%%'") << recipePath_ << p->name());
+                    throw UsageError{Format{"%%: Ambiguous system dependency '%%'"} << recipePath_ << p->name()};
                 l->append(p);
             }
             else if (object->className() == "Predicate") {
@@ -268,12 +268,12 @@ void BuildPlan::checkDuplicateTargetNames()
     else if (options_ & Application)
         ok = buildMap()->registerApplication(name_, recipePath_, &otherRecipePath);
     if (!ok) {
-        throw UsageError(
-            Format("Duplicate target name '%%' in\n  %%\n  and\n  %%")
+        throw UsageError{
+            Format{"Duplicate target name '%%' in\n  %%\n  and\n  %%"}
             << name_
             << otherRecipePath
             << recipePath_
-        );
+        };
     }
 }
 
@@ -506,7 +506,7 @@ void BuildPlan::readPrerequisites()
     for (String prerequisitePath: prerequisitePaths) {
         String path = findPrerequisite(prerequisitePath);
         if (path == "")
-            throw UsageError(Format() << recipePath() << ": Failed to locate prerequisite '" << prerequisitePath << "'");
+            throw UsageError{Format{} << recipePath() << ": Failed to locate prerequisite '" << prerequisitePath << "'"};
         Ref<BuildPlan> plan = BuildPlan::create(path);
         plan->readPrerequisites();
         prerequisites_->append(plan);
@@ -515,10 +515,10 @@ void BuildPlan::readPrerequisites()
     if (options_ & Plugin) {
         String extensionTargetPath = recipe_->value("extend");
         if (extensionTargetPath == "")
-            throw UsageError(Format() << recipePath() << ": Please provide the path of a library to extend in Plugin.extend");
+            throw UsageError{Format{} << recipePath() << ": Please provide the path of a library to extend in Plugin.extend"};
         String path = findPrerequisite(extensionTargetPath);
         if (path == "")
-            throw UsageError(Format() << recipePath() << ": Failed to locate library '" << extensionTargetPath << "'");
+            throw UsageError{Format{} << recipePath() << ": Failed to locate library '" << extensionTargetPath << "'"};
         extensionTarget_ = BuildPlan::create(path);
         if (extensionTarget_->options_ & Package) {
             extensionTarget_->readPrerequisites();
@@ -528,7 +528,7 @@ void BuildPlan::readPrerequisites()
             }
         }
         if (!(extensionTarget_->options_ & Library))
-            throw UsageError(Format() << recipePath() << ": '" << extensionTargetPath << "' (Plugin.extend) does not point to a library");
+            throw UsageError{Format{} << recipePath() << ": '" << extensionTargetPath << "' (Plugin.extend) does not point to a library"};
         extensionTarget_->readPrerequisites();
         prerequisites_->appendList(extensionTarget_->prerequisites_);
         prerequisites_->append(extensionTarget_);

@@ -42,9 +42,9 @@ String ConfigureShell::run(String shellCommand)
     text = sub->output()->readAll()->trim();
     int status = sub->wait();
     if (status != 0) {
-        throw String(
+        throw String{
             Format{} << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")"
-        );
+        };
     }
 
     insert(shellCommand, text);

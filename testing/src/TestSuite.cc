@@ -61,10 +61,10 @@ bool TestSuite::init(int argc, char **argv)
             report_ = XmlTestReport::create(stdOut());
         else {
             ferr("Unsupported report type \"%%\"\n\n") << reportType;
-            throw HelpError();
+            throw HelpRequest{};
         }
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         fout(
             "Usage: TEST_CASE [OPTION]...\n"
             "Execute test suite and generate test report.\n"

@@ -77,7 +77,7 @@ void Palette::realize(const CharArray *text, Token *objectToken)
 
     Language *language = 0;
     if (!registry()->lookupLanguageByName(scopeName_, &language))
-        throw SemanticError(Format("Undefined language '%%'") << scopeName_);
+        throw SemanticError{Format{"Undefined language '%%'"} << scopeName_};
 
     const SyntaxDefinition *syntax = language->highlightingSyntax();
     scope_ = syntax->id();
@@ -90,7 +90,7 @@ void Palette::realize(const CharArray *text, Token *objectToken)
         catch (DebugError &ex) {
             Token *token = childToken(objectToken, i);
             token = valueToken(text, token, "name");
-            throw SemanticError(ex.message(), text, token->i1());
+            throw SemanticError{ex->message(), text, token->i1()};
         }
     }
 }

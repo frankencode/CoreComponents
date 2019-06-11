@@ -27,7 +27,7 @@ int main(int argc, char **argv)
             source->transferTo(hexDump);
         }
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         fout(
             "Usage: %% [FILE]...\n"
             "Hexdump files (or stdin if no file is presented).\n"

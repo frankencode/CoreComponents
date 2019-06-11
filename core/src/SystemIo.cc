@@ -86,8 +86,8 @@ int SystemIo::ioctl(int fd, int request, void *arg)
 void SystemIo::checkErrors(int ret)
 {
     if (ret == -1) {
-        if (errno == EWOULDBLOCK) throw Timeout();
-        if (errno == ECONNRESET || errno == EPIPE) throw ConnectionResetByPeer();
+        if (errno == EWOULDBLOCK) throw Timeout{};
+        if (errno == ECONNRESET || errno == EPIPE) throw ConnectionResetByPeer{};
         CC_SYSTEM_DEBUG_ERROR(errno);
     }
 }

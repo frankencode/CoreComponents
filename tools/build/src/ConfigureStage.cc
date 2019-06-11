@@ -132,11 +132,11 @@ bool ConfigureStage::run()
                 Version versionMax = prerequisite->versionMax();
                 if (versionMin->isValid()) {
                     if (version < versionMin)
-                        throw(String{Format{} << "At least version " << versionMin << " is required (version " << version << " detected)"});
+                        throw String{Format{} << "At least version " << versionMin << " is required (version " << version << " detected)"};
                 }
                 if (versionMax->isValid()) {
                     if (versionMax < version)
-                        throw(String{Format{} << "At most version " << versionMax << " is supported (version " << version << " detected)"});
+                        throw String{Format{} << "At most version " << versionMax << " is supported (version " << version << " detected)"};
                 }
             }
             catch (String &error) {

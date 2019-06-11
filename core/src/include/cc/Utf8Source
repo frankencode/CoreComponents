@@ -112,7 +112,7 @@ inline uchar_t Utf8Source::readMultiByte(uchar_t ch)
         }
     }
 
-    if (n < 0) throw utf8::DecodeError();
+    if (n < 0) throw utf8::DecodeError{};
 
     return ch;
 }

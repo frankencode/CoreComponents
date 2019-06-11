@@ -45,11 +45,12 @@ class Signaled: public Exception
 {
 public:
     Signaled(Signal signal);
-    ~Signaled() throw() {}
 
     Signal signal() const { return signal_; }
 
     String message() const override;
+
+    const Signaled *operator->() const { return this; }
 
 private:
     Signal signal_;

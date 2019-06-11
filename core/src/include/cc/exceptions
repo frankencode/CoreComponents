@@ -19,8 +19,7 @@ namespace cc {
 class UsageError: public Exception
 {
 public:
-    UsageError(const String &message = ""): message_(message) {}
-    ~UsageError() throw() {}
+    UsageError(const String &message = ""): message_{message} {}
 
     String message() const override { return message_; }
 
@@ -34,12 +33,8 @@ private:
 class HelpRequest: public Exception
 {
 public:
-    ~HelpRequest() throw() {}
-
     String message() const override { return "No help, yet ..."; }
 };
-
-typedef HelpRequest HelpError; // FIXME: obsolete
 
 /** \class VersionError cc/exceptions
   * \brief %User requested the application version
@@ -47,8 +42,6 @@ typedef HelpRequest HelpError; // FIXME: obsolete
 class VersionRequest: public Exception
 {
 public:
-    ~VersionRequest() throw() {}
-
     String message() const override { return "Application is not versioned, yet ..."; }
 };
 
@@ -56,10 +49,7 @@ public:
   * \brief Some encoded data is mailformed
   */
 class EncodingError: public Exception
-{
-public:
-    ~EncodingError() throw() {}
-};
+{};
 
 /** \class UnexpectedEndOfInputError cc/exceptions
   * \brief End of input reached although more data is needed
@@ -67,8 +57,6 @@ public:
 class UnexpectedEndOfInputError: public Exception
 {
 public:
-    ~UnexpectedEndOfInputError() throw() {}
-
     String message() const override { return "Unexpected end of input"; }
 };
 
@@ -78,8 +66,6 @@ public:
 class BufferOverflow: public Exception
 {
 public:
-    ~BufferOverflow() throw() {}
-
     String message() const override { return "Buffer overflow"; }
 };
 
@@ -90,13 +76,14 @@ class DebugError: public Exception
 {
 public:
     DebugError(const String &reason, const char *source, int line):
-        reason_(reason),
-        source_(source),
-        line_(line)
+        reason_{reason},
+        source_{source},
+        line_{line}
     {}
-    ~DebugError() throw() {}
 
     String message() const override;
+
+    const DebugError *operator->() const { return this; }
 
 private:
     String reason_;
@@ -112,12 +99,13 @@ String systemError(int errorCode);
 class SystemError: public Exception
 {
 public:
-    SystemError(int errorCode): errorCode_(errorCode) {}
-    ~SystemError() throw() {}
+    SystemError(int errorCode): errorCode_{errorCode} {}
 
     int errorCode() const { return errorCode_; }
 
     String message() const override;
+
+    const SystemError *operator->() const { return this; }
 
 protected:
     int errorCode_;
@@ -130,18 +118,19 @@ class SystemResourceError: public SystemError
 {
 public:
     SystemResourceError(int errorCode, const String &resource, const char *source, int line):
-        SystemError(errorCode),
-        resource_(resource),
-        source_(source),
-        line_(line)
+        SystemError{errorCode},
+        resource_{resource},
+        source_{source},
+        line_{line}
     {}
-    ~SystemResourceError() throw() {}
 
     String resource() const { return resource_; }
     const char *source() const { return source_; }
     int line() const { return line_; }
 
     String message() const override;
+
+    const SystemResourceError *operator->() const { return this; }
 
 private:
     String resource_;
@@ -156,16 +145,17 @@ class SystemDebugError: public SystemError
 {
 public:
     SystemDebugError(int errorCode, const char *source, int line):
-        SystemError(errorCode),
-        source_(source),
-        line_(line)
+        SystemError{errorCode},
+        source_{source},
+        line_{line}
     {}
-    ~SystemDebugError() throw() {}
 
     const char *source() const { return source_; }
     int line() const { return line_; }
 
     String message() const override;
+
+    const SystemDebugError *operator->() const { return this; }
 
 private:
     const char *source_;
@@ -199,9 +189,10 @@ public:
 
     void setResource(const String &resource) { resource_ = resource; }
 
+    const TextError *operator->() const { return this; }
+
 protected:
     TextError(const String &text, int offset, const String &resource = "");
-    ~TextError() throw() {}
 
     String text_;
     int offset_;
@@ -215,14 +206,15 @@ class SemanticError: public TextError
 {
 public:
     SemanticError(const String &reason, const String &text = "", int offset = -1, const String &resource = ""):
-        TextError(text, offset, resource),
-        reason_(reason)
+        TextError{text, offset, resource},
+        reason_{reason}
     {}
-    ~SemanticError() throw() {}
 
     String reason() const { return reason_; }
 
     String message() const override;
+
+    const SemanticError *operator->() const { return this; }
 
 private:
     String reason_;
@@ -234,7 +226,6 @@ private:
 class Timeout: public Exception
 {
 public:
-    ~Timeout() throw() {}
     String message() const override;
 };
 
@@ -244,7 +235,6 @@ public:
 class ConnectionResetByPeer: public Exception
 {
 public:
-    ~ConnectionResetByPeer() throw() {}
     String message() const override;
 };
 
@@ -255,10 +245,9 @@ public:
 class TransferError: public Exception
 {
 public:
-    TransferError(String details);
-    ~TransferError() throw() {}
+    TransferError(const String &details);
 
-    virtual String message() const override;
+    String message() const override;
 
 private:
     String details_;
@@ -270,8 +259,7 @@ private:
 class PermissionError: public UsageError
 {
 public:
-    ~PermissionError() throw() {}
-    virtual String message() const override;
+    String message() const override;
 };
 
 /** \class CommandNotFound cc/exceptions
@@ -281,13 +269,14 @@ class CommandNotFound: public UsageError
 {
 public:
     CommandNotFound(const String &command = ""):
-        command_(command)
+        command_{command}
     {}
-    ~CommandNotFound() throw() {}
 
     String command() const { return command_; }
 
-    virtual String message() const override;
+    String message() const override;
+
+    const CommandNotFound *operator->() const { return this; }
 
 private:
     String command_;

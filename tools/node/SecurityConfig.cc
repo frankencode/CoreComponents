@@ -30,7 +30,7 @@ SecurityConfig::SecurityConfig(MetaObject *config):
     int ret = gnutls_priority_init(&prio_, ciphers, NULL);
     if (ret != GNUTLS_E_SUCCESS) {
         CCNODE_ERROR() << gnutls_strerror(ret) << nl;
-        throw UsageError(gnutls_strerror(ret));
+        throw UsageError{gnutls_strerror(ret)};
     }
 
     if (certPath == "" || keyPath == "") return;
@@ -43,13 +43,13 @@ SecurityConfig::SecurityConfig(MetaObject *config):
     ret = gnutls_certificate_allocate_credentials(&cred_);
     if (ret != GNUTLS_E_SUCCESS) {
         CCNODE_ERROR() << gnutls_strerror(ret) << nl;
-        throw UsageError(gnutls_strerror(ret));
+        throw UsageError{gnutls_strerror(ret)};
     }
 
     ret = gnutls_certificate_set_x509_key_file(cred_, certPath, keyPath, GNUTLS_X509_FMT_PEM);
     if (ret != GNUTLS_E_SUCCESS) {
         CCNODE_ERROR() << gnutls_strerror(ret) << nl;
-        throw UsageError(gnutls_strerror(ret));
+        throw UsageError{gnutls_strerror(ret)};
     }
 
     // FIXME: requires gnutls >=3.4

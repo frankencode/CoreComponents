@@ -13,12 +13,9 @@
 namespace cc {
 namespace syntax {
 
-SyntaxError::SyntaxError(String text, SyntaxState *state, String resource):
-    TextError(text, state ? state->hintOffset() : -1, resource),
-    state_(state)
-{}
-
-SyntaxError::~SyntaxError() throw()
+SyntaxError::SyntaxError(const String &text, SyntaxState *state, const String &resource):
+    TextError{text, state ? state->hintOffset() : -1, resource},
+    state_{state}
 {}
 
 String SyntaxError::message() const

@@ -48,18 +48,13 @@ private:
 /** \brief General transfer limit exceeded exception
   */
 class TransferLimitExceeded: public Exception
-{
-public:
-    ~TransferLimitExceeded() throw() {}
-};
+{};
 
 /** \brief %Exception thrown when a read limit is exceeded
   */
 class ReadLimitExceeded: public TransferLimitExceeded
 {
 public:
-    ~ReadLimitExceeded() throw() {}
-
     String message() const override { return "Read transfer limit exceeded"; }
 };
 
@@ -68,8 +63,6 @@ public:
 class WriteLimitExceeded: public TransferLimitExceeded
 {
 public:
-    ~WriteLimitExceeded() throw() {}
-
     String message() const override { return "Write transfer limit exceeded"; }
 };
 

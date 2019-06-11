@@ -67,17 +67,17 @@ int main(int argc, char **argv)
         Language *defaultLanguage = 0;
         if (languageOption != "") {
             if (!registry()->lookupLanguageByName(languageOption, &defaultLanguage))
-                throw UsageError(Format("Language \"%%\" is not supported") << languageOption);
+                throw UsageError{Format{"Language \"%%\" is not supported"} << languageOption};
         }
 
         if (items->count() == 0) {
             Language *language = defaultLanguage;
             if (!language)
-                throw UsageError("Please specify language (use -language option)");
+                throw UsageError{"Please specify language (use -language option)"};
             String text = stdIn()->readAll();
             Ref<SyntaxState> state = language->highlightingSyntax()->match(text, 0);
             ferr() << language->highlightingSyntax()->name() << "," << state->i0() << "," << state->i1() << nl;
-            if (!state->valid()) throw SyntaxError(text, state, "<standard input>");
+            if (!state->valid()) throw SyntaxError{text, state, "<standard input>"};
             state->rootToken()->project(HtmlScreen::create(text, stdOut()));
         }
         else {
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
                 Language *language = defaultLanguage;
                 if (!language) {
                     if (!registry()->detectLanguage(path, text, &language))
-                        throw UsageError(Format("%%: Failed to detect language (use -language option)") << path);
+                        throw UsageError{Format{"%%: Failed to detect language (use -language option)"} << path};
                 }
                 Ref<SyntaxState> state;
                 while (true) {
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
             }
         }
     }
-    catch (HelpError &) {
+    catch (HelpRequest &) {
         fout(
             "Usage: %% [OPTION]... [FILE]...\n"
             "Generate syntactically colored HTML represenations of source code FILEs.\n"

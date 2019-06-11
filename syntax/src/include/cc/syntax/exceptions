@@ -20,12 +20,11 @@ class SyntaxState;
 class SyntaxError: public TextError
 {
 public:
-    SyntaxError(String text, SyntaxState *state = 0, String resource = "");
-    ~SyntaxError() throw();
+    SyntaxError(const String &text, SyntaxState *state = nullptr, const String &resource = "");
 
-    inline const SyntaxState *state() const { return state_; }
+    const SyntaxState *state() const { return state_; }
 
-    virtual String message() const;
+    String message() const override;
 
 private:
     Ref<SyntaxState> state_;

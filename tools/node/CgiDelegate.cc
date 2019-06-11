@@ -70,7 +70,7 @@ void CgiDelegate::process(HttpRequest *request, const String &script, const Stri
 
         if (payloadSize > 0) {
             if (payloadSize > cgiInstance_->requestPayloadLimit())
-                throw PayloadTooLarge();
+                throw PayloadTooLarge{};
             payload = request->payload()->readSpan(payloadSize);
         }
     }
@@ -123,7 +123,7 @@ void CgiDelegate::process(HttpRequest *request, const String &script, const Stri
         sub->input()->close();
     }
     else
-        throw InternalServerError();
+        throw InternalServerError{};
 
     Ref<HttpMessage> cgiResponse = cgiServer->readResponse();
 
@@ -139,7 +139,7 @@ void CgiDelegate::process(HttpRequest *request, const String &script, const Stri
                 reasonPhrase = statusField->copy(i + 1, statusField->count());
             if (statusCode == 0) {
                 CCNODE_ERROR() << "Mailformed Status field in CGI response: \"" << statusField << "\"" << nl;
-                throw InternalServerError();
+                throw InternalServerError{};
             }
             cgiResponse->removeAt(fieldIndex);
         }

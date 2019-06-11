@@ -20,13 +20,11 @@ namespace cc {
 class Exception: public std::exception
 {
 public:
-    ~Exception() throw() {}
-
     virtual String message() const = 0;
 
     const char* what() const throw() override;
 
-    inline const Exception *operator->() const { return this; }
+    const Exception *operator->() const { return this; }
 };
 
 inline String str(const Exception &ex) { return ex.message(); }

@@ -26,6 +26,8 @@ public:
     int statusCode() const;
     String message() const;
 
+    const ProtocolException *operator->() const { return this; }
+
 private:
     int statusCode_;
     String message_;
@@ -84,7 +86,7 @@ public:
 class TlsError: public Exception
 {
 public:
-    TlsError(int errorCode, const SocketAddress *peerAddress = 0);
+    TlsError(int errorCode, const SocketAddress *peerAddress = nullptr);
     String message() const;
 
 private:

@@ -26,11 +26,11 @@ String DependencyCache::cachePath(BuildPlan *plan)
 }
 
 DependencyCache::DependencyCache(BuildPlan *plan):
-    buildPlan_(plan),
-    cachePath_(cachePath(plan)),
-    cacheTime_(-1),
-    cache_(Cache::create()),
-    previousSources_(StringList::create())
+    buildPlan_{plan},
+    cachePath_{cachePath(plan)},
+    cacheTime_{-1},
+    cache_{Cache::create()},
+    previousSources_{StringList::create()}
 {
     File::establish(cachePath_);
     cacheTime_ = FileStatus::read(cachePath_)->lastModified();

@@ -475,7 +475,7 @@ void Painter::Instance::checkForError()
 {
     cairo_status_t status = cairo_status(cr_);
     if (status != CAIRO_STATUS_SUCCESS)
-        throw PainterError(int(status));
+        throw PainterError{int(status)};
 }
 
 PainterError::PainterError(int errorStatus):

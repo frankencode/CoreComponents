@@ -23,17 +23,17 @@ DirectoryInstance::DirectoryInstance(MetaObject *config):
     showHidden_(config->value("show-hidden"))
 {
     if (path_ == "")
-        throw UsageError("DirectoryInstance: Mandatory argument \"path\" is missing");
+        throw UsageError{"DirectoryInstance: Mandatory argument \"path\" is missing"};
     path_ = path_->canonicalPath();
     if (!File::exists(path_)) {
-        throw UsageError(
+        throw UsageError{
             Format("DirectoryInstance: Directory path \"%%\" does not exist") << path_
-        );
+        };
     }
     if (FileStatus::read(path_)->type() != FileType::Directory) {
-        throw UsageError(
+        throw UsageError{
             Format("DirectoryInstance: Path \"%%\" does not point to a directory") << path_
-        );
+        };
     }
 }
 

@@ -167,8 +167,8 @@ void Transfer::waitComplete()
 {
     inputWorker_->wait();
     outputWorker_->wait();
-    if (!inputWorker_->ok()) throw TransferError(inputWorker_->errorMessage());
-    if (!outputWorker_->ok()) throw TransferError(outputWorker_->errorMessage());
+    if (!inputWorker_->ok()) throw TransferError{inputWorker_->errorMessage()};
+    if (!outputWorker_->ok()) throw TransferError{outputWorker_->errorMessage()};
 }
 
 } // namespace cc

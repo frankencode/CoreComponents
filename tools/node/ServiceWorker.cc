@@ -129,7 +129,7 @@ void ServiceWorker::run()
         catch (ConnectionResetByPeer &)
         {}
         catch (Exception &ex) {
-            CCNODE_ERROR() << ex.message() << nl;
+            CCNODE_ERROR() << ex << nl;
         }
     }
 }

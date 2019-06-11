@@ -361,7 +361,7 @@ YasonSyntax::YasonSyntax(int options)
 Variant YasonSyntax::parse(const CharArray *text, const MetaProtocol *protocol) const
 {
     Ref<SyntaxState> state = match(text);
-    if (!state->valid()) throw SyntaxError(text, state);
+    if (!state->valid()) throw SyntaxError{text, state};
     Token *valueToken = state->rootToken()->firstChild();
     if (protocol) return readObject(text, valueToken, protocol);
     return readValue(text, valueToken);
@@ -370,7 +370,7 @@ Variant YasonSyntax::parse(const CharArray *text, const MetaProtocol *protocol) 
 Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, const MetaProtocol *protocol, MetaObject *prototype) const
 {
     if (token->rule() != object_)
-        throw SemanticError("Expected an object value", text, token->i0());
+        throw SemanticError{"Expected an object value", text, token->i0()};
 
     Token *objectToken = token;
     token = token->firstChild();
@@ -381,18 +381,18 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
 
     if (protocol) {
         if (!protocol->lookup(className, &prototype)) {
-            throw SemanticError(
-                Format("Object of class \"%%\" is not allowed here") << className,
+            throw SemanticError{
+                Format{"Object of class \"%%\" is not allowed here"} << className,
                 text, token->i1()
-            );
+            };
         }
     }
     else if (prototype) {
         if (className != prototype->className()) {
-            throw SemanticError(
-                Format("Expected an object of class \"%%\"") << prototype->className(),
+            throw SemanticError{
+                Format{"Expected an object of class \"%%\""} << prototype->className(),
                 text, token->i1()
-            );
+            };
         }
     }
 
@@ -415,10 +415,10 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
             if (prototype) {
                 if (prototype->count() > 0) {
                     if (!prototype->lookup(name, &defaultValue)) {
-                        throw SemanticError(
-                            Format("Member \"%%\" is not supported") << name,
+                        throw SemanticError{
+                            Format{"Member \"%%\" is not supported"} << name,
                             text, token->i1()
-                        );
+                        };
                     }
                     if (defaultValue->type() == VariantType::Object)
                         memberPrototype = Variant::cast<MetaObject *>(defaultValue);
@@ -436,10 +436,10 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
             Variant existingValue;
             if (object->lookup(name, &existingValue)) {
                 if (value != existingValue) {
-                    throw SemanticError(
-                        Format("Ambiguous value for member \"%%\"") << name,
+                    throw SemanticError{
+                        Format{"Ambiguous value for member \"%%\""} << name,
                         text, token->i1()
-                    );
+                    };
                 }
             }
             object->insert(name, value);
@@ -449,10 +449,10 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
             if (prototype) prototypeProtocol = prototype->protocol();
             if (prototypeProtocol) {
                 if (object->children()->count() >= prototypeProtocol->maxCount()) {
-                    throw SemanticError(
-                        Format("Maximum number of children (%%) exceeded") << prototypeProtocol->maxCount(),
+                    throw SemanticError{
+                        Format{"Maximum number of children (%%) exceeded"} << prototypeProtocol->maxCount(),
                         text, token->i0()
-                    );
+                    };
                 }
             }
             Ref<MetaObject> child = readObject(text, token, prototypeProtocol);
