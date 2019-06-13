@@ -21,7 +21,6 @@ namespace cc {
 /** \class Process cc/Process
   * \ingroup concurrency
   * \brief Child process creation and current process state
-  * \TODO add support for setting the initial CWD of a child process once posix_spawn_file_actions_addchdir() becomes available
   */
 class Process: public Object
 {
@@ -130,6 +129,12 @@ public:
           */
         Ref<Process> open();
 
+
+        /** \brief Spawn a new child process and wait for its termintation
+          * \return exit status
+          */
+        int execute();
+
     private:
         friend class Process;
 
@@ -175,8 +180,8 @@ public:
       */
     static int execute(const String &command);
 
-    /// %Process ID of child process
-    pid_t pid() const;
+    /// %Process ID of the child process
+    pid_t id() const;
 
     /** \brief Send signal to the child process
       * \param signal the signal to deliver
@@ -200,7 +205,7 @@ public:
     /** Change the current working directory of this process
       * \param path new directory path to enter
       */
-    static void cd(const String &path);
+    static void setWorkingDirectory(const String &path);
 
     /// Current working directory of this process
     static String getCwd();
@@ -208,31 +213,77 @@ public:
     /// Actual pathname of the executed command
     static String exePath();
 
-    static mode_t setUserMask(mode_t mask);
+    /** Set the file mode creation mask
+      * \param newMask the new file mode mask
+      * \param oldMask optionally return the old mask
+      */
+    static void setUserMask(FileMode newMask, FileMode *oldMask = nullptr);
 
-    static uid_t realUserId();
-    static gid_t realGroupId();
-    static uid_t effectiveUserId();
-    static gid_t effectiveGroupId();
+    /// Return the real user ID
+    static uid_t getRealUserId();
+
+    /// Return the real group ID
+    static gid_t getRealGroupId();
+
+    /// Return the effective user ID
+    static uid_t getEffectiveUserId();
+
+    /// Return the effective group ID
+    static gid_t getEffectiveGroupId();
+
+    /// Return true if this process runs as super-user
     static bool isSuperUser();
+
+    /// Set the user ID
     static void setUserId(uid_t uid);
+
+    /// Set the group ID
+    static void setGroupId(gid_t gid);
+
+    /// Set the effective user ID
     static void setEffectiveUserId(uid_t uid);
-    static void setPersona(uid_t uid, gid_t gid);
 
-    static String getEnv(const String &key);
-    static String getEnv(const String &key, const String &defaultValue);
-    static void setEnv(const String &key, const String &value);
-    static void unsetEnv(const String &key);
-    static char **&environ();
+    /// Set the effective group ID
+    static void setEffectiveGroupId(gid_t gid);
 
+    /** Read an environment variable
+      * \param name name of the environment variable
+      * \return value of the environment variable or "" if no value is set
+      */
+    static String getEnv(const String &name);
+
+    /** Read an environment variable
+      * \param name name of the environment variable
+      * \param defaultValue default value
+      * \return value of the environment variable or \a defaultValue if no value is set
+      */
+    static String getEnv(const String &name, const String &defaultValue);
+
+    /** Set an environment variable
+      * \param name name of the environment variable
+      * \param value value to set
+      */
+    static void setEnv(const String &name, const String &value);
+
+    /// Unset an environment variable
+    static void unsetEnv(const String &name);
+
+    /// Return the current environment of this process
     static Ref<EnvMap> getEnvMap();
 
-    static pid_t id();
-    static pid_t parentId();
+    /// Get the process ID of calling process
+    static pid_t getId();
 
+    /// Get the process ID of the parent process of the calling process
+    static pid_t getParentId();
+
+    /// Send a signal to a process
     static void kill(pid_t processId, Signal signal = Signal::Terminate);
-    static void killGroup(pid_t processGroupId, Signal signal);
 
+    /// Send a signal to a process group
+    static void killGroup(pid_t processGroupId, Signal signal = Signal::Terminate);
+
+    /// Raise a signal against the calling process
     static void raise(Signal signal);
 
     /** Returns the default signal mask of this process before any modifications
@@ -240,7 +291,7 @@ public:
       */
     static SignalSet *defaultSignalMask();
 
-    /** terminate this process
+    /** Terminate this process
       * \param exitCode exit code (0..255)
       */
     static void exit(int exitCode);
@@ -256,9 +307,14 @@ public:
 
 private:
     friend class Staging;
+
+    static char **&environ();
+
     static Ref<Process> bootstrap(const Staging *staging);
+
     Process(pid_t pid, const Staging *staging);
     ~Process();
+
     pid_t pid_;
     bool groupLead_ { false };
     int exitStatus_ { 0 };

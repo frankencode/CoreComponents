@@ -194,7 +194,7 @@ void BuildShell::cd(const String &path) const
 {
     fout("cd %%\n") << path;
     if (plan()->options() & BuildPlan::Simulate) return;
-    try { Process::cd(path); } catch (SystemError &) { /*FIXME*/ }
+    try { Process::setWorkingDirectory(path); } catch (SystemError &) { /*FIXME*/ }
 }
 
 } // namespace ccbuild

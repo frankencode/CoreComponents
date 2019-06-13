@@ -22,31 +22,31 @@ namespace cc {
 
 Ref<File> File::open(const String &path, OpenMode openMode, FileMode fileMode)
 {
-    int fd = ::open(path, static_cast<int>(openMode)|O_CLOEXEC, static_cast<mode_t>(fileMode));
+    int fd = ::open(path, +openMode|O_CLOEXEC, +fileMode);
     if (fd == -1) CC_SYSTEM_ERROR(errno, path);
-    return new File(path, openMode, fd);
+    return new File{path, openMode, fd};
 }
 
 Ref<File> File::tryOpen(const String &path, OpenMode openMode, FileMode fileMode)
 {
-    int fd = ::open(path, static_cast<int>(openMode)|O_CLOEXEC, static_cast<mode_t>(fileMode));
-    if (fd != -1) return new File(path, openMode, fd);
+    int fd = ::open(path, +openMode|O_CLOEXEC, +fileMode);
+    if (fd != -1) return new File{path, openMode, fd};
     return 0;
 }
 
 Ref<File> File::openTemp(OpenMode openMode)
 {
     String path = createUnique(
-        Format("/tmp/%%_XXXXXXXX")
+        Format{"/tmp/%%_XXXXXXXX"}
             << Process::exePath()->fileName()
     );
     return open(path, openMode);
 }
 
 File::File(const String &path, OpenMode openMode, int fd):
-    SystemStream(fd),
-    path_(path),
-    openMode_(openMode)
+    SystemStream{fd},
+    path_{path},
+    openMode_{openMode}
 {}
 
 String File::path() const
@@ -241,7 +241,7 @@ String File::resolve(const String &path)
 
 String File::createUnique(const String &path, int mode, char placeHolder)
 {
-    Ref<Random> random = Random::open(Process::id());
+    Ref<Random> random = Random::open(Process::getId());
     while (true) {
         String candidate = path->copy();
         for (int i = 0, n = candidate->count(); i < n; ++i) {

@@ -37,7 +37,7 @@ CC_BITMASK(Access, int)
 String str(Access access);
 
 /// %File permission flags
-enum class FileMode: int {
+enum class FileMode: mode_t {
     None       = 0, ///< Empty mode
     SetUserId  = S_ISUID, ///< %Set effective user to file owner on execution
     SetGroupId = S_ISGID, ///< %Set effective group to file owner on execution
@@ -55,7 +55,7 @@ enum class FileMode: int {
     Default    = UserRead|UserWrite|GroupRead|OtherRead ///< Default permissions mask for regular files
 };
 
-CC_BITMASK(FileMode, int)
+CC_BITMASK(FileMode, mode_t)
 
 String str(FileMode);
 
@@ -73,7 +73,7 @@ enum class FileType: int {
 String str(FileType type);
 
 /// %File open flags
-enum class OpenMode: mode_t {
+enum class OpenMode: int {
     None           = 0,        ///< Empty mode
     ReadOnly       = O_RDONLY, ///< Open for reading, only
     WriteOnly      = O_WRONLY, ///< Open for writing, only
@@ -84,7 +84,7 @@ enum class OpenMode: mode_t {
     Virgin         = O_EXCL    ///< Fail to open if file exists already
 };
 
-CC_BITMASK(OpenMode, mode_t)
+CC_BITMASK(OpenMode, int)
 
 String str(OpenMode mode);
 

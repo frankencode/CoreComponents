@@ -90,7 +90,7 @@ void NodeMaster::run()
 
 void NodeMaster::runNode()
 {
-    CCNODE_NOTICE() << "Starting (pid = " << Process::id() << ")" << nl;
+    CCNODE_NOTICE() << "Starting (pid = " << Process::getId() << ")" << nl;
 
     if (NodeConfig::instance()->directoryPath() != "") {
         ServiceDefinition *directoryService = serviceRegistry()->serviceByName("Directory");
@@ -129,7 +129,8 @@ void NodeMaster::runNode()
         if (!user->isValid()) throw UsageError{"No such user: \"" + userName + "\""};
         if (!group->isValid()) throw UsageError{"No such group: \"" + groupName + "\""};
         CCNODE_NOTICE() << "Dropping process persona to user:group " << userName << ":" << groupName << " (uid:gid = " << user->id() << ":" << group->id() << ")" << nl;
-        Process::setPersona(user->id(), group->id());
+        Process::setUserId(user->id());
+        Process::setGroupId(group->id());
     }
 
     CCNODE_NOTICE() << "Starting security master, if needed" << nl;
@@ -148,7 +149,7 @@ void NodeMaster::runNode()
         worker->start();
     }
 
-    CCNODE_NOTICE() << "Up and running (pid = " << Process::id() << ")" << nl;
+    CCNODE_NOTICE() << "Up and running (pid = " << Process::getId() << ")" << nl;
 
     Ref<IoMonitor> ioMonitor = IoMonitor::create(listeningSockets->count());
     for (StreamSocket *socket: listeningSockets)

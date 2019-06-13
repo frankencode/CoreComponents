@@ -13,10 +13,8 @@ using namespace cc::sys;
 class MountGuard {
 public:
     MountGuard(const String &devNode, const String &fsType, const String &mountOptions):
-        mountPath_{Dir::createTemp()},
-        cwdSaved_{Process::getCwd()}
+        mountPath_{Dir::createTemp()}
     {
-        Process::cd(mountPath_);
         System::mount(devNode, mountPath_, fsType, mountOptions);
     }
 
@@ -24,7 +22,6 @@ public:
     {
         System::unmount(mountPath_);
         Dir::remove(mountPath_);
-        Process::cd(cwdSaved_);
     }
 
     String mountPath() const { return mountPath_; }
@@ -33,7 +30,6 @@ public:
 
 private:
     String mountPath_;
-    String cwdSaved_;
 };
 
 void runAttachCommand(const String &shellCommand, const String &devNode, const String &fsType, const String &mountOptions)
@@ -49,8 +45,8 @@ void runAttachCommand(const String &shellCommand, const String &devNode, const S
                 << "-c"
                 << shellCommand
         )
-        ->start()
-        ->wait();
+        ->setWorkingDirectory(guard->mountPath())
+        ->execute();
 }
 
 void runDetachCommand(const String &shellCommand)

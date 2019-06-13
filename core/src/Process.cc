@@ -170,6 +170,11 @@ Ref<Process> Process::Staging::open()
     return start();
 }
 
+int Process::Staging::execute()
+{
+    return start()->wait();
+}
+
 Ref<Process::Staging> Process::stage(const String &command)
 {
     return new Staging{command};
@@ -187,7 +192,7 @@ Ref<Process> Process::start(const String &command)
 
 int Process::execute(const String &command)
 {
-    return start(command)->wait();
+    return stage(command)->execute();
 }
 
 Ref<Process> Process::bootstrap(const Staging *staging)
@@ -275,7 +280,7 @@ Process::~Process()
     wait();
 }
 
-pid_t Process::pid() const
+pid_t Process::id() const
 {
     return pid_;
 }
@@ -319,7 +324,7 @@ SystemStream *Process::error() const
     return standardStreams_[2];
 }
 
-void Process::cd(const String &path)
+void Process::setWorkingDirectory(const String &path)
 {
     if (::chdir(path) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
@@ -370,12 +375,16 @@ String Process::exePath()
     return path;
 }
 
-mode_t Process::setUserMask(mode_t mask) { return ::umask(mask); }
+void Process::setUserMask(FileMode newMask, FileMode *oldMask)
+{
+    auto h = ::umask(+newMask);
+    if (oldMask) *oldMask = static_cast<FileMode>(h);
+}
 
-uid_t Process::realUserId() { return ::getuid(); }
-gid_t Process::realGroupId() { return ::getgid(); }
-uid_t Process::effectiveUserId() { return ::geteuid(); }
-gid_t Process::effectiveGroupId() { return ::getegid(); }
+uid_t Process::getRealUserId() { return ::getuid(); }
+gid_t Process::getRealGroupId() { return ::getgid(); }
+uid_t Process::getEffectiveUserId() { return ::geteuid(); }
+gid_t Process::getEffectiveGroupId() { return ::getegid(); }
 
 bool Process::isSuperUser() { return (::geteuid() == 0) || (::getegid() == 0); }
 
@@ -384,40 +393,42 @@ void Process::setUserId(uid_t uid)
     if (::setuid(uid) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
+void Process::setGroupId(gid_t gid)
+{
+    if (::setgid(gid) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+}
+
 void Process::setEffectiveUserId(uid_t uid)
 {
     if (::seteuid(uid) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void Process::setPersona(uid_t uid, gid_t gid)
+void Process::setEffectiveGroupId(gid_t gid)
 {
-    if (::setgid(gid) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
-    if (::setuid(uid) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+    if (::setegid(gid) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
 String Process::getEnv(const String &key)
 {
-    return getenv(key);
+    return ::getenv(key);
 }
 
-String Process::getEnv(const String &key, const String &defaultValue)
+String Process::getEnv(const String &name, const String &defaultValue)
 {
-    String value = getenv(key);
+    String value = ::getenv(name);
     if (value == "") value = defaultValue;
     return value;
 }
 
-void Process::setEnv(const String &key, const String &value)
+void Process::setEnv(const String &name, const String &value)
 {
-    if (setenv(key, value, 1) == -1)
+    if (::setenv(name, value, 1) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void Process::unsetEnv(const String &key)
+void Process::unsetEnv(const String &name)
 {
-    errno = 0;
-    unsetenv(key);
-    if (errno != 0)
+    if (::unsetenv(name) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
@@ -447,8 +458,15 @@ char **&Process::environ()
     #endif
 }
 
-pid_t Process::id() { return getpid(); }
-pid_t Process::parentId() { return getppid(); }
+pid_t Process::getId()
+{
+    return ::getpid();
+}
+
+pid_t Process::getParentId()
+{
+    return ::getppid();
+}
 
 void Process::kill(pid_t processId, Signal signal)
 {
