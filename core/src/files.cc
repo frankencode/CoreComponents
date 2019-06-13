@@ -11,19 +11,19 @@
 
 namespace cc {
 
-String str(Access access)
+String str(FileAccess flags)
 {
     String s;
-    if (+access) {
+    if (+flags) {
         auto l = StringList::create();
-        if (+(access & Access::Read))    l << "Access::Read";
-        if (+(access & Access::Write))   l << "Access::Write";
-        if (+(access & Access::Execute)) l << "Access::Execute";
-        if (+(access & Access::Exists))  l << "Access::Exists";
+        if (+(flags & FileAccess::Read))    l << "FileAccess::Read";
+        if (+(flags & FileAccess::Write))   l << "FileAccess::Write";
+        if (+(flags & FileAccess::Execute)) l << "FileAccess::Execute";
+        if (+(flags & FileAccess::Exists))  l << "FileAccess::Exists";
         s = l->join("|");
     }
     else {
-        s = "Access::None";
+        s = "FileAccess::None";
     }
     return s;
 }
@@ -68,22 +68,22 @@ String str(FileType type)
     return s;
 }
 
-String str(OpenMode mode)
+String str(FileOpen mode)
 {
     String s;
     if (+mode) {
         auto l = StringList::create();
-        if (+(mode & OpenMode::ReadOnly))  l << "OpenMode::ReadOnly";
-        if (+(mode & OpenMode::WriteOnly)) l << "OpenMode::WriteOnly";
-        if (+(mode & OpenMode::ReadWrite)) l << "OpenMode::ReadWrite";
-        if (+(mode & OpenMode::Append))    l << "OpenMode::Append";
-        if (+(mode & OpenMode::Create))    l << "OpenMode::Create";
-        if (+(mode & OpenMode::Truncate))  l << "OpenMode::Truncate";
-        if (+(mode & OpenMode::Virgin))    l << "OpenMode::Virgin";
+        if (+(mode & FileOpen::ReadOnly))  l << "FileOpen::ReadOnly";
+        if (+(mode & FileOpen::WriteOnly)) l << "FileOpen::WriteOnly";
+        if (+(mode & FileOpen::ReadWrite)) l << "FileOpen::ReadWrite";
+        if (+(mode & FileOpen::Append))    l << "FileOpen::Append";
+        if (+(mode & FileOpen::Create))    l << "FileOpen::Create";
+        if (+(mode & FileOpen::Truncate))  l << "FileOpen::Truncate";
+        if (+(mode & FileOpen::Virgin))    l << "FileOpen::Virgin";
         s = l->join("|");
     }
     else {
-        s = "OpenMode::None";
+        s = "FileOpen::None";
     }
     return s;
 }

@@ -216,10 +216,10 @@ Ref<Process> Process::bootstrap(const Staging *staging)
 
     if (execPath != "") {
         if (execPath->contains('/')) {
-            if (!File::access(execPath, Access::Execute)) throw CommandNotFound{execPath};
+            if (!File::checkAccess(execPath, FileAccess::Execute)) throw CommandNotFound{execPath};
         }
         else {
-            String path = File::locate(execPath, Process::getEnv("PATH")->split(':'), Access::Execute);
+            String path = File::locate(execPath, Process::getEnv("PATH")->split(':'), FileAccess::Execute);
             if (path == "") throw CommandNotFound{execPath};
             execPath = path;
         }
@@ -517,4 +517,4 @@ pid_t Process::makeSessionLeader()
     return ::setpgid(0, 0);
 }
 
-} // namespace cc
+} // namesp

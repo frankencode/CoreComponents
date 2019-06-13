@@ -23,8 +23,8 @@ enum StandardFd {
     StandardErrorFd  = 2  ///< Standard error file descriptor
 };
 
-/// Access testing flags
-enum class Access: int {
+/// %File access testing flags
+enum class FileAccess: int {
     None    = 0,    ///< Test no permissions
     Read    = R_OK, ///< Test for read permission
     Write   = W_OK, ///< Test for write permission
@@ -32,9 +32,9 @@ enum class Access: int {
     Exists  = F_OK  ///< Test if a file (of any type) exists
 };
 
-CC_BITMASK(Access, int)
+CC_BITMASK(FileAccess, int)
 
-String str(Access access);
+String str(FileAccess flags);
 
 /// %File permission flags
 enum class FileMode: mode_t {
@@ -73,7 +73,7 @@ enum class FileType: int {
 String str(FileType type);
 
 /// %File open flags
-enum class OpenMode: int {
+enum class FileOpen: int {
     None           = 0,        ///< Empty mode
     ReadOnly       = O_RDONLY, ///< Open for reading, only
     WriteOnly      = O_WRONLY, ///< Open for writing, only
@@ -84,9 +84,9 @@ enum class OpenMode: int {
     Virgin         = O_EXCL    ///< Fail to open if file exists already
 };
 
-CC_BITMASK(OpenMode, int)
+CC_BITMASK(FileOpen, int)
 
-String str(OpenMode mode);
+String str(FileOpen mode);
 
 /// Seek method
 enum class Seek: int {

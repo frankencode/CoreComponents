@@ -69,7 +69,7 @@ int main(int argc, char **argv)
             if (sinkPath != "") {
                 try { File::unlink(sinkPath); } catch (SystemError &) {}
                 File::create(sinkPath);
-                sink = File::open(sinkPath, OpenMode::WriteOnly);
+                sink = File::open(sinkPath, FileOpen::WriteOnly);
             }
             else {
                 sink = stdOut();

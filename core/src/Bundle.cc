@@ -15,7 +15,7 @@ namespace cc {
 
 String Bundle::lookup(String relPath, const StringList *dirs)
 {
-    return File::locate(relPath, dirs, Access::Exists);
+    return File::locate(relPath, dirs, FileAccess::Exists);
 }
 
 String Bundle::prefix(const char *defaultPrefix)

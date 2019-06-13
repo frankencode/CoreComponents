@@ -22,10 +22,10 @@ class ProgramAccess: public TestCase
         String path = TestSuite::instance()->execPath();
         fout("path = \"%%\"\n") << path;
         fout("File::exists(\"%%\") = %%\n") << path << File::exists(path);
-        fout("File::access(\"%%\", Access::Read) = %%\n") << path << File::access(path, Access::Read);
-        fout("File::access(\"%%\", Access::Write) = %%\n") << path << File::access(path, Access::Write);
-        fout("File::access(\"%%\", Access::Execute) = %%\n") << path << File::access(path, Access::Execute);
-        CC_VERIFY(File::access(path, Access::Execute));
+        fout("File::checkAccess(\"%%\", FileAccess::Read) = %%\n") << path << File::checkAccess(path, FileAccess::Read);
+        fout("File::checkAccess(\"%%\", FileAccess::Write) = %%\n") << path << File::checkAccess(path, FileAccess::Write);
+        fout("File::checkAccess(\"%%\", FileAccess::Execute) = %%\n") << path << File::checkAccess(path, FileAccess::Execute);
+        CC_VERIFY(File::checkAccess(path, FileAccess::Execute));
     }
 };
 

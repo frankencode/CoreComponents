@@ -103,7 +103,7 @@ bool BuildShell::install(const String &sourcePath, const String &destPath) const
         if (destDirMissing) Dir::establish(destDirPath);
         Ref<File> source = File::open(sourcePath);
         Ref<FileStatus> sourceStatus = FileStatus::read(sourcePath);
-        Ref<File> sink = File::open(destPath, OpenMode::WriteOnly|OpenMode::Create|OpenMode::Truncate, sourceStatus->mode());
+        Ref<File> sink = File::open(destPath, FileOpen::WriteOnly|FileOpen::Create|FileOpen::Truncate, sourceStatus->mode());
         sink->write(source->map());
     }
     catch (SystemError &ex) {

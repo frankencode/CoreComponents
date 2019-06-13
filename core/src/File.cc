@@ -20,43 +20,38 @@
 
 namespace cc {
 
-Ref<File> File::open(const String &path, OpenMode openMode, FileMode fileMode)
+Ref<File> File::open(const String &path, FileOpen flags, FileMode mode)
 {
-    int fd = ::open(path, +openMode|O_CLOEXEC, +fileMode);
+    int fd = ::open(path, +flags|O_CLOEXEC, +mode);
     if (fd == -1) CC_SYSTEM_ERROR(errno, path);
-    return new File{path, openMode, fd};
+    return new File{path, flags, fd};
 }
 
-Ref<File> File::tryOpen(const String &path, OpenMode openMode, FileMode fileMode)
+Ref<File> File::tryOpen(const String &path, FileOpen flags, FileMode mode)
 {
-    int fd = ::open(path, +openMode|O_CLOEXEC, +fileMode);
-    if (fd != -1) return new File{path, openMode, fd};
-    return 0;
+    int fd = ::open(path, +flags|O_CLOEXEC, +mode);
+    if (fd != -1) return new File{path, flags, fd};
+    return nullptr;
 }
 
-Ref<File> File::openTemp(OpenMode openMode)
+Ref<File> File::openTemp(FileOpen flags)
 {
     String path = createUnique(
         Format{"/tmp/%%_XXXXXXXX"}
             << Process::exePath()->fileName()
     );
-    return open(path, openMode);
+    return open(path, flags);
 }
 
-File::File(const String &path, OpenMode openMode, int fd):
+File::File(const String &path, FileOpen openMode, int fd):
     SystemStream{fd},
     path_{path},
-    openMode_{openMode}
+    openFlags_{openMode}
 {}
 
 String File::path() const
 {
     return path_;
-}
-
-OpenMode File::openMode() const
-{
-    return openMode_;
 }
 
 void File::truncate(off_t length)
@@ -108,7 +103,7 @@ String File::map() const
     if (fileSize >= size_t(intMax)) fileSize = intMax;
     int pageSize = System::pageSize();
     size_t mapSize = fileSize;
-    int protection = PROT_READ | (PROT_WRITE * (+openMode_ & (O_WRONLY|O_RDWR)));
+    int protection = PROT_READ | (PROT_WRITE * (+openFlags_ & (O_WRONLY|O_RDWR)));
     void *p = 0;
     if (fileSize % pageSize > 0) {
         mapSize += pageSize - fileSize % pageSize;
@@ -167,7 +162,7 @@ void File::dataSync()
 #endif
 }
 
-bool File::access(const String &path, Access flags)
+bool File::checkAccess(const String &path, FileAccess flags)
 {
     return ::access(path, +flags) == 0;
 }
@@ -289,12 +284,12 @@ void File::clean(const String &path)
     }
 }
 
-String File::locate(const String &fileName, const StringList *dirs, Access accessFlags)
+String File::locate(const String &fileName, const StringList *dirs, FileAccess accessFlags)
 {
     String path;
     for (int i = 0; i < dirs->count(); ++i) {
         String candidate = Format() << dirs->at(i) << "/" << fileName;
-        if (access(candidate, accessFlags)) {
+        if (checkAccess(candidate, accessFlags)) {
             path = candidate;
             break;
         }
@@ -311,7 +306,7 @@ String File::load(const String &path)
 void File::save(const String &path, const String &text)
 {
     establish(path);
-    Ref<File> file = open(path, OpenMode::WriteOnly);
+    Ref<File> file = open(path, FileOpen::WriteOnly);
     file->truncate(0);
     file->write(text);
 }

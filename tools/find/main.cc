@@ -137,7 +137,7 @@ int main(int argc, char **argv)
                     Ref<Matches> matches = findMatches(text, textPattern);
 
                     if (replaceOption && matches->count() > 0) {
-                        Ref<File> file = File::open(path, OpenMode::ReadWrite);
+                        Ref<File> file = File::open(path, FileOpen::ReadWrite);
                         text = replaceMatches(text, matches, replacement);
                         file->truncate(0);
                         file->write(text);

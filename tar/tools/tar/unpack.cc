@@ -67,7 +67,7 @@ void unpack(ArchiveReader *archive, bool verbose)
                     File::chown(entry->path(), userId, groupId);
             }
             if (entry->size() > 0) {
-                Ref<File> file = File::open(entry->path(), OpenMode::WriteOnly);
+                Ref<File> file = File::open(entry->path(), FileOpen::WriteOnly);
                 archive->readData(entry, file);
             }
             Ref<FileStatus> status = FileStatus::read(entry->path());

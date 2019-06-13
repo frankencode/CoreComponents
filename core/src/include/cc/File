@@ -31,29 +31,26 @@ class File: public SystemStream
 public:
     /** Open a file
       * \param path file path
-      * \param openMode file open flags
-      * \param fileMode file permissions for new file
+      * \param flags file open flags
+      * \param mode file permissions for new file (optional)
       * \return new object instance
       */
-    static Ref<File> open(const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::Default);
+    static Ref<File> open(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default);
 
     /** Try to %open a file
       * \copydetails open()
       */
-    static Ref<File> tryOpen(const String &path, OpenMode openMode = OpenMode::ReadOnly, FileMode fileMode = FileMode::Default);
+    static Ref<File> tryOpen(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default);
 
     /** Open a temporary file
-      * \param flags file open flags, a combintation of cc::OpenMode
+      * \param flags file open flags
       * \return new object instance
       * \see UnlinkGuard, File::createUnique()
       */
-    static Ref<File> openTemp(OpenMode flags = OpenMode::ReadWrite);
+    static Ref<File> openTemp(FileOpen flags = FileOpen::ReadWrite);
 
     /// %File path this file was opened from
     String path() const;
-
-    /// %File open mode this file was opened with
-    OpenMode openMode() const;
 
     /** Truncate or extend file
       * \param length new file length
@@ -92,13 +89,13 @@ public:
       * \param flags a combination of cc::Access
       * \return true if accessible
       */
-    static bool access(const String &path, Access flags); // TODO: rename to checkAccess
+    static bool checkAccess(const String &path, FileAccess flags);
 
     /** Check if a file exists
       * \param path file path
       * \return true if file exists
       */
-    static bool exists(const String &path) { return (path != "") && access(path, Access::Exists); }
+    static bool exists(const String &path) { return (path != "") && checkAccess(path, FileAccess::Exists); }
 
     /** Create a new file
       * \param path file path
@@ -175,10 +172,10 @@ public:
     /** Search for a file in a list of directories
       * \param fileName name of the file (or relative path)
       * \param dirs list of directories
-      * \param accessFlags a combination of cc::Access
+      * \param accessFlags file access flags to check
       * \return file path if found else empty string
       */
-    static String locate(const String &fileName, const StringList *dirs, Access accessFlags = Access::Exists);
+    static String locate(const String &fileName, const StringList *dirs, FileAccess accessFlags = FileAccess::Exists);
 
     /** Load contents of a file
       * \param path file path
@@ -197,12 +194,12 @@ private:
 
     static int translateOpenFlags(int openMode);
 
-    File(const String &path, OpenMode openMode, int fd);
+    File(const String &path, FileOpen openMode, int fd);
 
     static void unmap(CharArray *s);
 
     String path_;
-    OpenMode openMode_;
+    FileOpen openFlags_;
 };
 
 } // namespace cc
