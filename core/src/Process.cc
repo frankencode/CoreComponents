@@ -89,6 +89,12 @@ Process::Staging *Process::Staging::setSignalMask(const SignalSet *mask)
     return this;
 }
 
+Process::Staging *Process::Staging::setWorkingDirectory(const String &path)
+{
+    CC_SPAWN_CALL(posix_spawn_file_actions_addchdir_np(&fileActions_, path));
+    return this;
+}
+
 Process::Staging *Process::Staging::setInputChannel(IoChannel *channel)
 {
     return attachChannel(channel, 0);

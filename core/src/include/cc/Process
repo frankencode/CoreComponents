@@ -61,6 +61,12 @@ public:
           */
         Staging *setSignalDefault(const SignalSet *set);
 
+        /** \brief Set initial working directory
+          * \param path directory path
+          * \return pointer to this object
+          */
+        Staging *setWorkingDirectory(const String &path);
+
         /** \brief Set standard input channel
           * \param channel IoChannel to use for standard input
           * \return pointer to this object
