@@ -96,13 +96,6 @@ private:
         buf_[i] = buf_[j];
         buf_[j] = h;
     }
-
-    inline int min(int i, int j, int k)
-    {
-        int h = Order::below(buf_[i], buf_[j]) ? i : j;
-        return Order::below(buf_[h], buf_[k]) ? h : k;
-    }
-
     void passUpLast()
     {
         if (fill_ == 1) return;

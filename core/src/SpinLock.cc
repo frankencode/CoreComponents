@@ -14,7 +14,7 @@ namespace cc {
 
 #ifndef NDEBUG
 SpinLock::SpinLock():
-    flag_(0)
+    flag_{0}
 {
     VALGRIND_HG_MUTEX_INIT_POST(&flag_, 0);
 }
@@ -49,7 +49,7 @@ void SpinLock::release()
 
 #ifdef NDEBUG
 SpinLock::SpinLock():
-    flag_(0)
+    flag_{0}
 {}
 
 SpinLock::~SpinLock()
