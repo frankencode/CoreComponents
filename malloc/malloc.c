@@ -75,15 +75,14 @@ void *malloc(size_t size)
                 bucket_release(bucket);
                 return data;
             }
-            else {
-                bucket->open = 0;
-                int dispose = bucket->object_count == 0;
-                prealloc_count = bucket->prealloc_count;
-                bucket_release(bucket);
-                if (dispose) {
-                    bucket_destroy(bucket);
-                    cache_push(&arena->cache, bucket, page_size);
-                }
+
+            bucket->open = 0;
+            int dispose = bucket->object_count == 0;
+            prealloc_count = bucket->prealloc_count;
+            bucket_release(bucket);
+            if (dispose) {
+                bucket_destroy(bucket);
+                cache_push(&arena->cache, bucket, page_size);
             }
         }
 
@@ -93,7 +92,7 @@ void *malloc(size_t size)
         }
         else {
             page_start = mmap(NULL, page_size * CC_MEM_PAGE_PREALLOC, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
-            assert(page_start != MAP_FAILED);
+            if (page_start == MAP_FAILED) exit(EXIT_FAILURE);
         }
 
         bucket = (bucket_t *)page_start;
@@ -109,7 +108,7 @@ void *malloc(size_t size)
 
     if (size <= page_size) {
         void *page_start = mmap(NULL, page_size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
-        assert(pageStart != MAP_FAILED);
+        if (page_start == MAP_FAILED) exit(EXIT_FAILURE);
         return page_start;
     }
 
@@ -118,7 +117,7 @@ void *malloc(size_t size)
     uint32_t page_count = (size + page_size - 1) >> page_shift;
 
     void *page_start = mmap(NULL, page_count << page_shift, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE/*|MAP_POPULATE*/, -1, 0);
-    assert(page_start != MAP_FAILED);
+    if (page_start == MAP_FAILED) exit(EXIT_FAILURE);
     *(uint32_t *)page_start = page_count;
 
     return (uint8_t *)page_start + sizeof(uint32_t);
