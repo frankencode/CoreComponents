@@ -11,6 +11,7 @@
 #include <sys/socket.h> // socketpair
 #include <errno.h>
 #include <string.h>
+#include <termios.h> // ECHO
 #include <unistd.h> // read, write, select, sysconf
 #include <fcntl.h> // fcntl
 #include <math.h> // modf
@@ -62,6 +63,24 @@ int SystemStream::fd() const { return fd_; }
 bool SystemStream::isatty() const
 {
     return ::isatty(fd_);
+}
+
+void SystemStream::echo(bool on)
+{
+    struct termios settings;
+
+    if (::tcgetattr(fd_, &settings) == -1)
+        CC_SYSTEM_DEBUG_ERROR(errno);
+
+    if (((settings.c_lflag & ECHO) != 0) == on) return;
+
+    if (on)
+        settings.c_lflag |= ECHO;
+    else
+        settings.c_lflag &= ~ECHO;
+
+    if (::tcsetattr(fd_, TCSAFLUSH, &settings) == -1)
+        CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
 int SystemStream::read(CharArray *data)

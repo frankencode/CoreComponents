@@ -68,6 +68,9 @@ public:
       */
     bool isatty() const;
 
+    /// Enabled/disable echo of character input if this is a terminal device
+    void echo(bool on);
+
     virtual int read(CharArray *data) override;
     virtual void write(const CharArray *data) override;
     virtual void write(const StringList *parts) override;

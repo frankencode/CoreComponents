@@ -17,7 +17,7 @@ using namespace cc;
 class Readline
 {
 public:
-    static String getPassword(String prompt);
+    static String getPassword(const String &prompt);
 };
 
 } // namespace ccaes

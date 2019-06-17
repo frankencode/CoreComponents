@@ -8,21 +8,23 @@
 
 #include <stdio.h>
 #include <readline/readline.h>
+#include <unistd.h>
 #include <cc/stdio>
+#include <termios.h>
 #include "Readline.h"
 
 namespace ccaes {
 
-static void password_redisplay()
-{}
-
-String Readline::getPassword(String prompt)
+String Readline::getPassword(const String &prompt)
 {
-    rl_voidfunc_t * old_redisplay = rl_redisplay_function;
-    rl_redisplay_function = password_redisplay;
-    fout() << prompt;
-    String text = readline("");
-    rl_redisplay_function = old_redisplay;
+    stdIn()->echo(false);
+
+    char *line = readline(prompt);
+    String text = line;
+    ::free((void *)line);
+
+    stdIn()->echo(true);
+
     return text;
 }
 
