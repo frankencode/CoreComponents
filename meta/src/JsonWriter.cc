@@ -12,14 +12,14 @@
 namespace cc {
 namespace meta {
 
-Ref<JsonWriter> JsonWriter::create(Stream *sink, String indent)
+Ref<JsonWriter> JsonWriter::create(Stream *sink, const String &indent)
 {
-    return new JsonWriter(sink, indent);
+    return new JsonWriter{sink, indent};
 }
 
-JsonWriter::JsonWriter(Stream *sink, String indent):
-    format_(sink),
-    indent_(indent)
+JsonWriter::JsonWriter(Stream *sink, const String &indent):
+    format_{sink},
+    indent_{indent}
 {}
 
 void JsonWriter::write(Variant value)
@@ -92,7 +92,7 @@ void JsonWriter::writeObject(Variant value, const StringList *names, int depth)
     format_ << "}";
 }
 
-void JsonWriter::writeMember(String memberName, Variant memberValue, bool isLast, int depth)
+void JsonWriter::writeMember(const String &memberName, Variant memberValue, bool isLast, int depth)
 {
     format_ << "\"" << memberName << "\": ";
     writeValue(memberValue, depth + 1);

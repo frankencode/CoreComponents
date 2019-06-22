@@ -26,7 +26,7 @@ public:
       * \param indent whitespace to use for each indentation step
       * \return new object instance
       */
-    static Ref<JsonWriter> create(Stream *sink, String indent = "  ");
+    static Ref<JsonWriter> create(Stream *sink, const String &indent = "  ");
 
     /** Convert a meta value into JSON notation
       * \param value meta-value
@@ -37,16 +37,16 @@ public:
       * \param object meta object
       * \param names select properties (and their order) to output
       */
-    void writeObject(MetaObject *object, const StringList *names = 0) {
+    void writeObject(MetaObject *object, const StringList *names = nullptr) {
         writeObject(Ref<MetaObject>(object), names, 0);
     }
 
 private:
-    JsonWriter(Stream *sink, String indent);
+    JsonWriter(Stream *sink, const String &indent);
     void writeValue(Variant value, int depth);
     void writeList(Variant value, int depth);
     void writeObject(Variant value, const StringList *names, int depth);
-    void writeMember(String memberName, Variant memberValue, bool isLast, int depth);
+    void writeMember(const String &memberName, Variant memberValue, bool isLast, int depth);
     void writeIndent(int depth);
 
     template<class T>
