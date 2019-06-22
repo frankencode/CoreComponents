@@ -252,6 +252,9 @@ int posix_memalign(void **ptr, size_t alignment, size_t size)
         return 0;
     }
 
+    if (alignment > page_size >> 1) // FIXME: prevent overstepping page boundaries (and thereby cause mismatches when freeing)
+        return EINVAL;
+
     uint8_t *ptr_byte = malloc(size + alignment);
     if (ptr_byte != NULL) {
         size_t r = (size_t)(ptr_byte - (uint8_t *)NULL) & (alignment - 1);
@@ -288,14 +291,8 @@ void *valloc(size_t size)
     arena_t *arena = arena_get();
     if (arena->options & CC_MEM_TRACE) trace_valloc(size);
 
-    const size_t page_size = arena->page_size;
-    if (size <= page_size) {
-        void *page_start = mmap(NULL, page_size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
-        if (page_start == MAP_FAILED) abort();
-        return page_start;
-    }
     void *ptr = NULL;
-    posix_memalign(&ptr, page_size, size);
+    posix_memalign(&ptr, arena->page_size, size);
     return ptr;
 }
 
@@ -304,5 +301,7 @@ void *pvalloc(size_t size)
     arena_t *arena = arena_get();
     if (arena->options & CC_MEM_TRACE) trace_pvalloc(size);
 
-    return valloc(round_up_pow2(size, arena->page_size));
+    void *ptr = NULL;
+    posix_memalign(&ptr, arena->page_size, round_up_pow2(size, arena->page_size));
+    return ptr;
 }
