@@ -108,13 +108,13 @@ static void cache_reduce(cache_t *cache, int fill_max, size_t page_size)
             size += page_size;
         }
         else {
-            if (munmap(chunk, size) == -1) exit(EXIT_FAILURE);
+            if (munmap(chunk, size) == -1) abort();
             chunk = chunk2;
             size = page_size;
         }
     }
     if (size > 0) {
-        if (munmap(chunk, size) == -1) exit(EXIT_FAILURE);
+        if (munmap(chunk, size) == -1) abort();
     }
 }
 

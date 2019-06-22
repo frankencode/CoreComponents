@@ -8,13 +8,34 @@
 
 #include "futex.c"
 
+#pragma pack(push,1)
+
+typedef enum {
+    bucket_type_closed = 0,
+    bucket_type_open   = 1,
+    bucket_type_pages  = 2
+} bucket_type_t;
+
 typedef struct {
-    uint32_t bytes_dirty;
-    uint32_t object_count;
-    uint16_t prealloc_count;
-    uint16_t open;
     uint32_t futex;
+    uint8_t type;
+    uint8_t checksum;
+    union {
+        struct {
+            uint16_t prealloc_count;
+            uint32_t bytes_dirty;
+            uint32_t object_count;
+        };
+        struct {
+            uint8_t dummy[2];
+            uint64_t page_count;
+        };
+    };
 } bucket_t;
+
+#pragma pack(pop)
+
+static_assert(sizeof(bucket_t) == 16, "The bucket header needs to be exactly 16 bytes");
 
 inline static void bucket_init(bucket_t *bucket)
 {
