@@ -49,32 +49,32 @@
 #define MAP_NORESERVE 0
 #endif
 
+#define CC_MEM_IS_POW2(x) (x > 0 && (x & (x - 1)) == 0)
+
+static_assert(CC_MEM_IS_POW2(CC_MEM_GRANULARITY), "CC_MEM_GRANULARITY needs to be a power of two");
+
 inline static size_t round_up_pow2(const size_t x, const size_t g)
 {
-    const size_t r = x & (g - 1);
-    return r > 0 ? x + g - r : x;
+    const size_t m = g - 1;
+    return (x + m) & ~m;
 }
 
 void *malloc(size_t size)
 {
     arena_t *arena = arena_get();
-
     if (arena->options & CC_MEM_TRACE) trace_malloc(size);
+
+    const size_t page_size = arena->page_size;
 
     if (size == 0) return NULL;
 
     bucket_t *bucket = arena->bucket;
-    const size_t page_size = arena->page_size;
 
-    assert(__builtin_popcount(CC_MEM_GRANULARITY) == 1);
-
-    size = round_up_pow2(size, CC_MEM_GRANULARITY);
-
-    const size_t bucket_header_size = round_up_pow2(sizeof(bucket_t), CC_MEM_GRANULARITY);
-
-    if (size <= page_size - bucket_header_size)
+    if (size < arena->half_page_size)
     {
-        int prealloc_count = 0;
+        size = round_up_pow2(size, CC_MEM_GRANULARITY);
+
+        unsigned prealloc_count = 0;
 
         if (bucket)
         {
@@ -88,10 +88,11 @@ void *malloc(size_t size)
                 return data;
             }
 
-            bucket->type = bucket_type_closed;
+            bucket->open = 0;
             int dispose = bucket->object_count == 0;
             prealloc_count = bucket->prealloc_count;
             bucket_release(bucket);
+
             if (dispose) {
                 bucket_destroy(bucket);
                 cache_push(&arena->cache, bucket, page_size);
@@ -103,7 +104,7 @@ void *malloc(size_t size)
             page_start = (uint8_t *)bucket + page_size;
         }
         else {
-            page_start = mmap(NULL, page_size * CC_MEM_PAGE_PREALLOC, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
+            page_start = mmap(NULL, arena->prealloc_size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
             if (page_start == MAP_FAILED) {
                 errno = ENOMEM;
                 return NULL;
@@ -112,9 +113,10 @@ void *malloc(size_t size)
         }
         --prealloc_count;
 
+        const size_t bucket_header_size = round_up_pow2(sizeof(bucket_t), CC_MEM_GRANULARITY);
         bucket = (bucket_t *)page_start;
         bucket_init(bucket);
-        bucket->type = bucket_type_open;
+        bucket->open = 1;
         bucket->prealloc_count = prealloc_count;
         bucket->bytes_dirty = bucket_header_size + size;
         bucket->object_count = 1;
@@ -123,27 +125,15 @@ void *malloc(size_t size)
         return (uint8_t *)page_start + bucket_header_size;
     }
 
-    if (size <= page_size) {
-        void *page_start = mmap(NULL, page_size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
-        if (page_start == MAP_FAILED) abort();
-        return page_start;
-    }
+    size = round_up_pow2(size, page_size) + page_size;
 
-    size += bucket_header_size;
-    const int page_shift = __builtin_ctz(page_size);
-    uint32_t page_count = (size + page_size - 1) >> page_shift;
-
-    void *page_start = mmap(NULL, page_count << page_shift, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE/*|MAP_POPULATE*/, -1, 0);
-    if (page_start == MAP_FAILED) {
+    void *head = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
+    if (head == MAP_FAILED) {
         errno = ENOMEM;
         return NULL;
     }
-    bucket = (bucket_t *)page_start;
-    bucket_init(bucket);
-    bucket->type = bucket_type_pages;
-    bucket->page_count = page_count;
-
-    return (uint8_t *)page_start + bucket_header_size;
+    *(size_t *)head = size;
+    return (uint8_t *)head + page_size;
 }
 
 void free(void *ptr)
@@ -156,29 +146,23 @@ void free(void *ptr)
     if (ptr == NULL) return;
 
     const size_t page_size = arena->page_size;
+    const size_t page_offset = (size_t)((uint8_t *)ptr - (uint8_t *)NULL) & (page_size - 1);
 
-    uint32_t offset = (uint32_t)(((uint8_t *)ptr - (uint8_t *)NULL) & (page_size - 1));
-
-    if (offset > 0) {
-        const void *page_start = (uint8_t *)ptr - offset;
+    if (page_offset > 0) {
+        void *page_start = (uint8_t *)ptr - page_offset;
         bucket_t *bucket = (bucket_t *)page_start;
         bucket_acquire(bucket);
-        if (bucket->type != bucket_type_pages) {
-            --bucket->object_count;
-            int dispose = bucket->object_count == 0 && bucket->type == bucket_type_closed;
-            bucket_release(bucket);
-            if (dispose) {
-                bucket_destroy(bucket);
-                cache_push(&arena->cache, bucket, page_size);
-            }
-        }
-        else {
-            bucket_release(bucket);
-            if (munmap((uint8_t *)ptr - offset, bucket->page_count * page_size) == -1) abort();
+        --bucket->object_count;
+        int dispose = bucket->object_count == 0 && bucket->open == 0;
+        bucket_release(bucket);
+        if (dispose) {
+            bucket_destroy(bucket);
+            cache_push(&arena->cache, bucket, page_size);
         }
     }
-    else if (offset == 0) {
-        if (munmap(ptr, page_size) == -1) abort();
+    else {
+        void *head = (uint8_t *)ptr - page_size;
+        if (munmap(head, *(size_t *)head) == -1) abort();
     }
 }
 
@@ -195,8 +179,7 @@ void *realloc(void *ptr, size_t size)
     arena_t *arena = arena_get();
     if (arena->options & CC_MEM_TRACE) trace_realloc(ptr, size);
 
-    if (ptr == NULL)
-        return malloc(size);
+    if (ptr == NULL) return malloc(size);
 
     if (size == 0) {
         if (ptr != NULL) free(ptr);
@@ -206,23 +189,24 @@ void *realloc(void *ptr, size_t size)
     if (size <= CC_MEM_GRANULARITY) return ptr;
 
     const size_t page_size = arena->page_size;
-    size_t init_size = page_size;
-    size_t offset = (size_t)((uint8_t *)ptr - (uint8_t *)NULL) & (page_size - 1);
-    if (offset != 0) {
-        const void *page_start = (uint8_t *)ptr - offset;
+    size_t copy_size = page_size;
+    size_t page_offset = (size_t)((uint8_t *)ptr - (uint8_t *)NULL) & (page_size - 1);
+
+    if (page_offset > 0) {
+        void *page_start = (uint8_t *)ptr - page_offset;
         bucket_t *bucket = (bucket_t *)page_start;
-        if (bucket->type != bucket_type_pages)
-            init_size = bucket->bytes_dirty - offset;
-        else
-            init_size = bucket->page_count * page_size;
+        const size_t size_estimate_1 = bucket->bytes_dirty - page_offset;
+        const size_t size_estimate_2 = bucket->bytes_dirty - (bucket->object_count << arena->granularity_shift);
+            // size_estimate_2 includes the minimum size of the bucket header
+        copy_size = (size_estimate_1 < size_estimate_2) ? size_estimate_1 : size_estimate_2;
     }
 
-    if (init_size > size) init_size = size;
+    if (copy_size > size) copy_size = size;
 
     void *new_ptr = malloc(size);
     if (new_ptr == NULL) return NULL;
 
-    memcpy(new_ptr, ptr, init_size);
+    memcpy(new_ptr, ptr, copy_size);
 
     free(ptr);
 
@@ -239,31 +223,47 @@ int posix_memalign(void **ptr, size_t alignment, size_t size)
         return 0;
     }
 
+    if (
+        !CC_MEM_IS_POW2(alignment) ||
+        (alignment & (sizeof(void *) - 1)) != 0
+    )
+        return EINVAL;
+
     if (alignment <= CC_MEM_GRANULARITY) {
         *ptr = malloc(size);
         return (*ptr != NULL) ? 0 : ENOMEM;
     }
 
+    if (alignment + size < arena->half_page_size) {
+        uint8_t *ptr_byte = malloc(alignment + size);
+        if (ptr_byte != NULL) {
+            size_t r = (size_t)(ptr_byte - (uint8_t *)NULL) & (alignment - 1);
+            if (r > 0) ptr_byte += alignment - r;
+            *ptr = ptr_byte;
+            return 0;
+        }
+    }
+
     const size_t page_size = arena->page_size;
-    if (alignment == page_size && size <= page_size) {
-        void *page_start = mmap(NULL, page_size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
-        if (page_start == MAP_FAILED) return ENOMEM;
-        *ptr = page_start;
-        return 0;
+    size += alignment + page_size;
+
+    void *head = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
+    if (head == MAP_FAILED) return ENOMEM;
+
+    while (
+        (
+            (((uint8_t *)head - (uint8_t *)NULL) + page_size)
+            & (alignment - 1)
+        ) != 0
+    ) {
+        if (munmap(head, page_size) == -1) abort();
+        head = (uint8_t *)head + page_size;
+        size -= page_size;
     }
 
-    if (alignment > page_size >> 1) // FIXME: prevent overstepping page boundaries (and thereby cause mismatches when freeing)
-        return EINVAL;
-
-    uint8_t *ptr_byte = malloc(size + alignment);
-    if (ptr_byte != NULL) {
-        size_t r = (size_t)(ptr_byte - (uint8_t *)NULL) & (alignment - 1);
-        if (r > 0) ptr_byte += alignment - r;
-        *ptr = ptr_byte;
-        return 0;
-    }
-
-    return ENOMEM;
+    *(size_t *)head = size;
+    *ptr = (uint8_t *)head + page_size;
+    return 0;
 }
 
 void *aligned_alloc(size_t alignment, size_t size)
@@ -291,9 +291,7 @@ void *valloc(size_t size)
     arena_t *arena = arena_get();
     if (arena->options & CC_MEM_TRACE) trace_valloc(size);
 
-    void *ptr = NULL;
-    posix_memalign(&ptr, arena->page_size, size);
-    return ptr;
+    return malloc(round_up_pow2(size, arena->page_size));
 }
 
 void *pvalloc(size_t size)
@@ -301,7 +299,5 @@ void *pvalloc(size_t size)
     arena_t *arena = arena_get();
     if (arena->options & CC_MEM_TRACE) trace_pvalloc(size);
 
-    void *ptr = NULL;
-    posix_memalign(&ptr, arena->page_size, round_up_pow2(size, arena->page_size));
-    return ptr;
+    return malloc(round_up_pow2(size, arena->page_size));
 }

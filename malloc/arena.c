@@ -17,6 +17,10 @@ typedef struct {
     bucket_t *bucket;
     cache_t cache;
     size_t page_size;
+    size_t half_page_size;
+    size_t prealloc_size;
+    unsigned page_shift;
+    unsigned granularity_shift;
     int options;
 } arena_t;
 
@@ -37,8 +41,14 @@ inline static arena_t *arena_get()
 {
     arena_t *arena = &thread_local_arena;
 
-    if (arena->page_size == 0) {
+    if (arena->page_size == 0)
+    {
         arena->page_size = sysconf(_SC_PAGE_SIZE);
+        arena->half_page_size = arena->page_size >> 1;
+        arena->prealloc_size = arena->page_size << __builtin_ctz(CC_MEM_PAGE_PREALLOC);
+        arena->page_shift = __builtin_ctz(arena->page_size);
+        arena->granularity_shift = __builtin_ctz(CC_MEM_GRANULARITY);
+
         if (getenv("CC_MEM_TRACE")) arena->options |= CC_MEM_TRACE;
         tss_t key;
         if (tss_create(&key, arena_cleanup) == thrd_error) abort();

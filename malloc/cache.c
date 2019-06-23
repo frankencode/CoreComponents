@@ -25,17 +25,17 @@ inline static void cache_xchg(void **buffer, int i, int j)
 
 inline static int cache_parent(int i)
 {
-    return (i - 1) / 2;
+    return (i - 1) >> 1;
 }
 
 inline static int cache_child_left(int i)
 {
-    return 2 * i + 1;
+    return (i << 1) + 1;
 }
 
 inline static int cache_child_right(int i)
 {
-    return 2 * i + 2;
+    return (i << 1) + 2;
 }
 
 inline static int cache_min(void **buffer, int i, int j, int k)

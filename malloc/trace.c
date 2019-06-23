@@ -194,8 +194,24 @@ CC_MEM_UNUSED static void *trace_inspect_ptr(const char *source, int line, const
     return ptr;
 }
 
+CC_MEM_UNUSED static void trace_debug(const char *source, int line, const char *text)
+{
+    char message[2 * CC_MEM_TRACE_BUF_SIZE];
+    char *eoi = message;
+    eoi = trace_text(source, eoi);
+    eoi = trace_text(":", eoi);
+    eoi = trace_size_dec(line, eoi);
+    eoi = trace_text(": ", eoi);
+    eoi = trace_text(text, eoi);
+    eoi = trace_text("\n", eoi);
+    trace_write(message, eoi);
+}
+
 #define CC_MEM_INSPECT_SIZE(size) \
     trace_inspect_size(__FILE__, __LINE__, #size, size)
 
 #define CC_MEM_INSPECT_PTR(ptr) \
     trace_inspect_ptr(__FILE__, __LINE__, #ptr, ptr)
+
+#define CC_MEM_DEBUG(text) \
+    trace_debug(__FILE__, __LINE__, text)
