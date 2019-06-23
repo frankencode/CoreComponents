@@ -73,14 +73,17 @@ void NodeMaster::run()
             runNode();
         }
         catch (Signaled &ex) {
-            if (+ex.signal() != SIGHUP) {
-                exitCode_ = +ex.signal() + 128;
+            if (+ex->signal() != SIGHUP) {
+                if (+ex->signal() == SIGINT || +ex->signal() == SIGTERM)
+                    exitCode_ = 0;
+                else
+                    exitCode_ = +ex->signal() + 128;
                 break;
             }
         }
         #ifdef NDEBUG
         catch (Exception &ex) {
-            CCNODE_ERROR() << ex.message() << nl;
+            CCNODE_ERROR() << ex << nl;
             exitCode_ = 1;
             break;
         }
