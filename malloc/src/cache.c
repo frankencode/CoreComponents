@@ -11,6 +11,8 @@ typedef struct {
     int fill;
 } cache_t;
 
+static thread_local cache_t thread_local_cache = { NULL, 0 };
+
 inline static int cache_is_full(const cache_t *cache)
 {
     return cache->fill == CC_MEM_PAGE_CACHE;

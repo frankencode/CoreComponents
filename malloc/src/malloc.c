@@ -11,11 +11,22 @@
 /// System memory granularity, e.g. XMMS movdqa requires 16
 #define CC_MEM_GRANULARITY (2 * sizeof(size_t) < __alignof__ (long double) ? __alignof__ (long double) : 2 * sizeof(size_t))
 
+/// Log2 of the system memory granularity
+#define CC_MEM_GRANULARITY_SHIFT (__builtin_ctz(CC_MEM_GRANULARITY))
+
 /// Number of pages to preallocate
 #define CC_MEM_PAGE_PREALLOC 16
 
 /// Number of freed pages to cache at maximum
 #define CC_MEM_PAGE_CACHE (2 * CC_MEM_PAGE_PREALLOC - 1)
+
+/// Size of a memory page on this system
+#define CC_MEM_PAGE_SIZE 4096
+
+/// Half the size of a memory page
+#define CC_MEM_PAGE_HALF_SIZE (CC_MEM_PAGE_SIZE / 2)
+
+#define CC_MEM_PREALLOC_SIZE (CC_MEM_PAGE_PREALLOC * CC_MEM_PAGE_SIZE)
 
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -34,8 +45,8 @@
 #define CC_MEM_UNUSED inline
 #endif
 
-#include "arena.c"
-#include "trace.c"
+#include "bucket.c"
+#include "cache.c"
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
@@ -61,26 +72,19 @@ inline static size_t round_up_pow2(const size_t x, const size_t g)
 
 void *malloc(size_t size)
 {
-    arena_t *arena = arena_get();
-    if (arena->options & CC_MEM_TRACE) trace_malloc(size);
+    bucket_t *bucket = thead_local_bucket;
 
-    const size_t page_size = arena->page_size;
-
-    if (size == 0) return NULL;
-
-    bucket_t *bucket = arena->bucket;
-
-    if (size < arena->half_page_size)
+    if (size < CC_MEM_PAGE_HALF_SIZE)
     {
         size = round_up_pow2(size, CC_MEM_GRANULARITY);
 
-        unsigned prealloc_count = 0;
+        uint32_t prealloc_count = 0;
 
         if (bucket)
         {
             bucket_acquire(bucket);
 
-            if (size <= page_size - bucket->bytes_dirty) {
+            if (size <= CC_MEM_PAGE_SIZE - bucket->bytes_dirty) {
                 void *data = (uint8_t *)bucket + bucket->bytes_dirty;
                 bucket->bytes_dirty += size;
                 ++bucket->object_count;
@@ -88,23 +92,22 @@ void *malloc(size_t size)
                 return data;
             }
 
-            bucket->open = 0;
-            int dispose = bucket->object_count == 0;
             prealloc_count = bucket->prealloc_count;
+            --bucket->object_count;
+            int dispose = !bucket->object_count;
             bucket_release(bucket);
-
             if (dispose) {
                 bucket_destroy(bucket);
-                cache_push(&arena->cache, bucket, page_size);
+                cache_push(&thread_local_cache, bucket, CC_MEM_PAGE_SIZE);
             }
         }
 
         void *page_start = NULL;
         if (prealloc_count > 0) {
-            page_start = (uint8_t *)bucket + page_size;
+            page_start = (uint8_t *)bucket + CC_MEM_PAGE_SIZE;
         }
         else {
-            page_start = mmap(NULL, arena->prealloc_size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
+            page_start = mmap(NULL, CC_MEM_PREALLOC_SIZE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
             if (page_start == MAP_FAILED) {
                 errno = ENOMEM;
                 return NULL;
@@ -116,16 +119,15 @@ void *malloc(size_t size)
         const size_t bucket_header_size = round_up_pow2(sizeof(bucket_t), CC_MEM_GRANULARITY);
         bucket = (bucket_t *)page_start;
         bucket_init(bucket);
-        bucket->open = 1;
         bucket->prealloc_count = prealloc_count;
         bucket->bytes_dirty = bucket_header_size + size;
-        bucket->object_count = 1;
-        arena->bucket = bucket;
+        bucket->object_count = 2;
+        thead_local_bucket = bucket;
 
         return (uint8_t *)page_start + bucket_header_size;
     }
 
-    size = round_up_pow2(size, page_size) + page_size;
+    size = round_up_pow2(size, CC_MEM_PAGE_SIZE) + CC_MEM_PAGE_SIZE;
 
     void *head = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
     if (head == MAP_FAILED) {
@@ -133,52 +135,39 @@ void *malloc(size_t size)
         return NULL;
     }
     *(size_t *)head = size;
-    return (uint8_t *)head + page_size;
+    return (uint8_t *)head + CC_MEM_PAGE_SIZE;
 }
 
 void free(void *ptr)
 {
-    arena_t *arena = &thread_local_arena;
-    if (!arena) return;
+    const size_t page_offset = (size_t)(((uint8_t *)ptr - (uint8_t *)NULL) & (CC_MEM_PAGE_SIZE - 1));
 
-    if (arena->options & CC_MEM_TRACE) trace_free(ptr);
-
-    if (ptr == NULL) return;
-
-    const size_t page_size = arena->page_size;
-    const size_t page_offset = (size_t)((uint8_t *)ptr - (uint8_t *)NULL) & (page_size - 1);
-
-    if (page_offset > 0) {
+    if (page_offset != 0) {
         void *page_start = (uint8_t *)ptr - page_offset;
         bucket_t *bucket = (bucket_t *)page_start;
         bucket_acquire(bucket);
         --bucket->object_count;
-        int dispose = bucket->object_count == 0 && bucket->open == 0;
+        const int dispose = !bucket->object_count;
         bucket_release(bucket);
         if (dispose) {
             bucket_destroy(bucket);
-            cache_push(&arena->cache, bucket, page_size);
+            cache_t *cache = &thread_local_cache;
+            if (cache) cache_push(cache, bucket, CC_MEM_PAGE_SIZE);
         }
     }
-    else {
-        void *head = (uint8_t *)ptr - page_size;
+    else if (ptr != NULL) {
+        void *head = (uint8_t *)ptr - CC_MEM_PAGE_SIZE;
         if (munmap(head, *(size_t *)head) == -1) abort();
     }
 }
 
 void *calloc(size_t number, size_t size)
 {
-    arena_t *arena = arena_get();
-    if (arena->options & CC_MEM_TRACE) trace_calloc(number, size);
-
     return malloc(number * size);
 }
 
 void *realloc(void *ptr, size_t size)
 {
-    arena_t *arena = arena_get();
-    if (arena->options & CC_MEM_TRACE) trace_realloc(ptr, size);
-
     if (ptr == NULL) return malloc(size);
 
     if (size == 0) {
@@ -188,15 +177,14 @@ void *realloc(void *ptr, size_t size)
 
     if (size <= CC_MEM_GRANULARITY) return ptr;
 
-    const size_t page_size = arena->page_size;
-    size_t copy_size = page_size;
-    size_t page_offset = (size_t)((uint8_t *)ptr - (uint8_t *)NULL) & (page_size - 1);
+    size_t copy_size = CC_MEM_PAGE_SIZE;
+    size_t page_offset = (size_t)((uint8_t *)ptr - (uint8_t *)NULL) & (CC_MEM_PAGE_SIZE - 1);
 
     if (page_offset > 0) {
         void *page_start = (uint8_t *)ptr - page_offset;
         bucket_t *bucket = (bucket_t *)page_start;
         const size_t size_estimate_1 = bucket->bytes_dirty - page_offset;
-        const size_t size_estimate_2 = bucket->bytes_dirty - (bucket->object_count << arena->granularity_shift);
+        const size_t size_estimate_2 = bucket->bytes_dirty - (bucket->object_count << CC_MEM_GRANULARITY_SHIFT);
             // size_estimate_2 includes the minimum size of the bucket header
         copy_size = (size_estimate_1 < size_estimate_2) ? size_estimate_1 : size_estimate_2;
     }
@@ -215,9 +203,6 @@ void *realloc(void *ptr, size_t size)
 
 int posix_memalign(void **ptr, size_t alignment, size_t size)
 {
-    arena_t *arena = arena_get();
-    if (arena->options & CC_MEM_TRACE) trace_posix_memalign(ptr, alignment, size);
-
     if (size == 0) {
         *ptr = NULL;
         return 0;
@@ -234,7 +219,7 @@ int posix_memalign(void **ptr, size_t alignment, size_t size)
         return (*ptr != NULL) ? 0 : ENOMEM;
     }
 
-    if (alignment + size < arena->half_page_size) {
+    if (alignment + size < CC_MEM_PAGE_HALF_SIZE) {
         uint8_t *ptr_byte = malloc(alignment + size);
         if (ptr_byte != NULL) {
             size_t r = (size_t)(ptr_byte - (uint8_t *)NULL) & (alignment - 1);
@@ -244,33 +229,29 @@ int posix_memalign(void **ptr, size_t alignment, size_t size)
         }
     }
 
-    const size_t page_size = arena->page_size;
-    size += alignment + page_size;
+    size += alignment + CC_MEM_PAGE_SIZE;
 
     void *head = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_NORESERVE|MAP_POPULATE, -1, 0);
     if (head == MAP_FAILED) return ENOMEM;
 
     while (
         (
-            (((uint8_t *)head - (uint8_t *)NULL) + page_size)
+            (((uint8_t *)head - (uint8_t *)NULL) + CC_MEM_PAGE_SIZE)
             & (alignment - 1)
         ) != 0
     ) {
-        if (munmap(head, page_size) == -1) abort();
-        head = (uint8_t *)head + page_size;
-        size -= page_size;
+        if (munmap(head, CC_MEM_PAGE_SIZE) == -1) abort();
+        head = (uint8_t *)head + CC_MEM_PAGE_SIZE;
+        size -= CC_MEM_PAGE_SIZE;
     }
 
     *(size_t *)head = size;
-    *ptr = (uint8_t *)head + page_size;
+    *ptr = (uint8_t *)head + CC_MEM_PAGE_SIZE;
     return 0;
 }
 
 void *aligned_alloc(size_t alignment, size_t size)
 {
-    arena_t *arena = arena_get();
-    if (arena->options & CC_MEM_TRACE) trace_aligned_alloc(alignment, size);
-
     void *ptr = NULL;
     posix_memalign(&ptr, alignment, size);
     return ptr;
@@ -278,9 +259,6 @@ void *aligned_alloc(size_t alignment, size_t size)
 
 void *memalign(size_t alignment, size_t size)
 {
-    arena_t *arena = arena_get();
-    if (arena->options & CC_MEM_TRACE) trace_memalign(alignment, size);
-
     void *ptr = NULL;
     posix_memalign(&ptr, alignment, size);
     return ptr;
@@ -288,16 +266,10 @@ void *memalign(size_t alignment, size_t size)
 
 void *valloc(size_t size)
 {
-    arena_t *arena = arena_get();
-    if (arena->options & CC_MEM_TRACE) trace_valloc(size);
-
-    return malloc(round_up_pow2(size, arena->page_size));
+    return malloc(round_up_pow2(size, CC_MEM_PAGE_SIZE));
 }
 
 void *pvalloc(size_t size)
 {
-    arena_t *arena = arena_get();
-    if (arena->options & CC_MEM_TRACE) trace_pvalloc(size);
-
-    return malloc(round_up_pow2(size, arena->page_size));
+    return malloc(round_up_pow2(size, CC_MEM_PAGE_SIZE));
 }

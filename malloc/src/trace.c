@@ -6,6 +6,7 @@
  *
  */
 
+#if 0
 #define CC_MEM_TRACE_BUF_SIZE 64
 
 static char *trace_text(const char *text, char *eoi)
@@ -215,3 +216,4 @@ CC_MEM_UNUSED static void trace_debug(const char *source, int line, const char *
 
 #define CC_MEM_DEBUG(text) \
     trace_debug(__FILE__, __LINE__, text)
+#endif

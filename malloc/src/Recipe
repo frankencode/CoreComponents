@@ -1,0 +1,4 @@
+Library {
+    name: ccmalloc
+    source: malloc.c
+}

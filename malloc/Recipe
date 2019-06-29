@@ -1,4 +1,3 @@
-Library {
-    name: ccmalloc
-    source: malloc.c
+Package {
+    include: [ src, tools ]
 }
