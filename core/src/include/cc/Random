@@ -29,21 +29,21 @@ public:
       * \param seed seed number
       * \return new object instance
       */
-    inline static Ref<Random> open(int seed = -1) {
+    static Ref<Random> open(int seed = -1) {
         return new Random(seed);
     }
 
     /// Minimum random number
-    inline int min() const { return 0; }
+    int min() const { return 0; }
 
     /// Maximum random number
-    inline int max() const { return m_ - 1; }
+    int max() const { return m_ - 1; }
 
     /// Number of random numbers until the series repeats itself
-    inline int period() const { return m_ - 1; }
+    int period() const { return m_ - 1; }
 
     /// Get another random number in the range min() to max()
-    inline int get() {
+    int get() {
         x_ = (16807 * x_) % m_; /* 7^5 == 16807 */
         return x_;
     }
@@ -53,7 +53,7 @@ public:
       * \param b maximum random number
       * \return next random number
       */
-    inline int get(int a, int b) {
+    int get(int a, int b) {
         CC_ASSERT(b <= m_ - 1);
         CC_ASSERT(a <= b);
         return (uint64_t(get()) * (b - a)) / (m_ - 1) + a;
@@ -62,7 +62,7 @@ public:
 private:
     Random(int seed);
 
-    enum { m_ = (1u << 31) - 1 };
+    enum { m_ = (1u << 31u) - 1 };
     unsigned x_;
 };
 
