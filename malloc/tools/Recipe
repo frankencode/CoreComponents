@@ -1,3 +1,0 @@
-Package {
-    include: [ bench, bench_libc ]
-}
