@@ -21,17 +21,17 @@ template<class T>
 class Property
 {
 public:
-    Property(): instance_(Instance::create()) {}
-    Property(const T &b): instance_(Instance::create(b)) {}
+    Property(): instance_{Instance::create()} {}
+    Property(const T &b): instance_{Instance::create(b)} {}
 
-    Property(const Property &b): Property(b->value()) {}
-    inline Property &operator=(const Property &b) { instance_->setValue(b->value()); return *this; }
+    Property(const Property &b): Property{b->value()} {}
+    Property &operator=(const Property &b) { instance_->setValue(b->value()); return *this; }
 
-    Property(Property &&b): instance_(std::move(b.instance_)) {}
-    inline Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
+    Property(Property &&b): instance_{std::move(b.instance_)} {}
+    Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
 
-    Property(const std::function<T()> &f): instance_(Instance::create()) { instance_->associate(f); }
-    inline Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
+    Property(const std::function<T()> &f): instance_{Instance::create()} { instance_->associate(f); }
+    Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
 
     ~Property() { instance_->disband(); }
 
@@ -80,11 +80,11 @@ public:
         template<class T2>
         friend Property<T2> alias(Property<T2> &p);
 
-        inline static Ref<Instance> create(const T &b = T{}) { return new Instance{b}; }
+        static Ref<Instance> create(const T &b = T{}) { return new Instance{b}; }
 
         Instance(const T &b):
-            PropertyBinding(false),
-            value_(b)
+            PropertyBinding{false},
+            value_{b}
         {}
 
         Property alias() { return Property(this, true); }
@@ -117,7 +117,7 @@ public:
             store(newValue);
         }
 
-        inline void store(const T &newValue)
+        void store(const T &newValue)
         {
             if (value_ != newValue) {
                 value_ = newValue;
@@ -137,32 +137,32 @@ public:
         std::function<bool(T&, T)> g_;
     };
 
-    inline Instance *operator->() { return instance_; }
-    inline const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return instance_; }
+    const Instance *operator->() const { return instance_; }
 
-    inline T operator()() const { return instance_->value(); }
+    T operator()() const { return instance_->value(); }
 
-    inline Property &operator=(const T &b) { instance_->setValue(b); return *this; }
-
-    template<class T2>
-    inline Property &operator=(const T2 &b) { instance_->setValue(T(b)); return *this; }
+    Property &operator=(const T &b) { instance_->setValue(b); return *this; }
 
     template<class T2>
-    inline Property &operator+=(const T2 &b) { instance_->setValue(instance_->value() + b); return *this; }
+    Property &operator=(const T2 &b) { instance_->setValue(T(b)); return *this; }
 
     template<class T2>
-    inline Property &operator-=(const T2 &b) { instance_->setValue(instance_->value() - b); return *this; }
+    Property &operator+=(const T2 &b) { instance_->setValue(instance_->value() + b); return *this; }
 
     template<class T2>
-    inline Property &operator*=(const T2 &b) { instance_->setValue(instance_->value() * b); return *this; }
+    Property &operator-=(const T2 &b) { instance_->setValue(instance_->value() - b); return *this; }
 
     template<class T2>
-    inline Property &operator/=(const T2 &b) { instance_->setValue(instance_->value() / b); return *this; }
+    Property &operator*=(const T2 &b) { instance_->setValue(instance_->value() * b); return *this; }
+
+    template<class T2>
+    Property &operator/=(const T2 &b) { instance_->setValue(instance_->value() / b); return *this; }
 
 private:
     friend class Instance;
 
-    Property(Instance *instance, bool): instance_(instance) {}
+    Property(Instance *instance, bool): instance_{instance} {}
 
     Ref<Instance> instance_;
 };
@@ -174,10 +174,10 @@ public:
     Property(): instance_(Instance::create()) {}
 
     Property(Property &&b): instance_(std::move(b.instance_)) {}
-    inline Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
+    Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
 
     Property(const std::function<void()> &f): instance_(Instance::create()) { instance_->associate(f); }
-    inline Property &operator=(const std::function<void()> &f) { instance_->bind(f); return *this; }
+    Property &operator=(const std::function<void()> &f) { instance_->bind(f); return *this; }
 
     ~Property() { instance_->disband(); }
 
@@ -214,7 +214,7 @@ public:
         template<class T2>
         friend Property<T2> alias(Property<T2> &p);
 
-        inline static Ref<Instance> create() { return new Instance{}; }
+        static Ref<Instance> create() { return new Instance{}; }
 
         Instance():
             PropertyBinding(true)
@@ -245,10 +245,10 @@ public:
         std::function<void()> s_;
     };
 
-    inline Instance *operator->() { return instance_; }
-    inline const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return instance_; }
+    const Instance *operator->() const { return instance_; }
 
-    inline void operator()() const { instance_->value(); }
+    void operator()() const { instance_->value(); }
 
 private:
     friend class Instance;

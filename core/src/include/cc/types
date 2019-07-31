@@ -129,7 +129,7 @@ public:
 template<class T, class U, int ConversionPossible>
 class DynamicCastHelper {
 public:
-    static_assert(ConversionPossible, "Impossible type conversion requested");
+    static_assert(ConversionPossible, "Impossible type conversion requested (or one of the types involved is not fully defined)");
     static U *cast(T *p) { return dynamic_cast<U*>(p); }
 };
 

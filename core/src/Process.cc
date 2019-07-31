@@ -20,7 +20,6 @@
 #include <cc/InputPipe>
 #include <cc/OutputPipe>
 #include <cc/Process>
-#include <cc/Process>
 
 #ifndef __MACH__
 extern "C" char **environ;
