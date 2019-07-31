@@ -23,7 +23,7 @@ Ref<SdlWindow> SdlWindow::open(View *view, const String &title, WindowMode mode)
 }
 
 SdlWindow::SdlWindow(View *view, const String &title):
-    Window(view, title)
+    Window{view, title}
 {}
 
 SdlWindow::~SdlWindow()
@@ -89,7 +89,12 @@ SdlWindow *SdlWindow::open(WindowMode mode)
         +(mode & WindowMode::Fullscreen) ||
         +(mode & WindowMode::FullscreenDesktop)
     )
-        sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_ACCELERATED | (+(mode & WindowMode::VSync) * SDL_RENDERER_PRESENTVSYNC));
+        sdlRenderer_ = SDL_CreateRenderer(
+            sdlWindow_,
+            -1,
+            ((+(mode & WindowMode::Accelerated)) ? SDL_RENDERER_ACCELERATED : 0) |
+            ((+(mode & WindowMode::VSync)) ? SDL_RENDERER_PRESENTVSYNC : 0)
+        );
     else
         sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_SOFTWARE);
 
@@ -158,16 +163,6 @@ void SdlWindow::renderFrame(Frame *frame)
     SDL_RenderPresent(sdlRenderer_);
 }
 
-void SdlWindow::renderCascade(SDL_Renderer *sdlRenderer, View *view)
-{
-    if (!view->visible()) return;
-
-    renderTexture(sdlRenderer, view);
-
-    for (int i = 0, n = view->visibleChildCount(); i < n; ++i)
-        renderCascade(sdlRenderer, view->visibleChildAt(i));
-}
-
 void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
 {
     SdlContext *context = sdlContext(view);
@@ -203,7 +198,8 @@ void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
         if (!context->sdlTexture_) CC_DEBUG_ERROR(SDL_GetError());
         context->sdlTextureWidth_ = image->width();
         context->sdlTextureHeight_ = image->height();
-        SDL_SetTextureBlendMode(context->sdlTexture_, isOpaque(view) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
+        // SDL_SetTextureBlendMode(context->sdlTexture_, isOpaque(view) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
+        SDL_SetTextureBlendMode(context->sdlTexture_, SDL_BLENDMODE_BLEND);
     }
 
     if (!isOpaque(view)) image->normalize();
@@ -222,26 +218,53 @@ void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
     }
 }
 
+void SdlWindow::renderCascade(SDL_Renderer *sdlRenderer, View *view)
+{
+    if (!view->visible()) return;
+
+    renderTexture(sdlRenderer, view);
+
+    for (int i = 0, n = view->visibleChildCount(); i < n; ++i)
+        renderCascade(sdlRenderer, view->visibleChildAt(i));
+}
+
 void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
 {
     SdlContext *context = sdlContext(view);
     SDL_Texture *sdlTexture = context->sdlTexture_;
     if (!sdlTexture) return;
 
-    SDL_Rect destRect;
+    SDL_FRect destRect;
     destRect.w = context->sdlTextureWidth_;
     destRect.h = context->sdlTextureHeight_;
     if (view->scale() != 1) {
         destRect.w *= view->scale();
         destRect.h *= view->scale();
     }
+    destRect.w = std::ceil(destRect.w);
+    destRect.h = std::ceil(destRect.h);
 
-    if (view->parent()) {
-        destRect.x = std::round(view->pos()[0]);
-        destRect.y = std::round(view->pos()[1]);
-        for (View *p = view->parent(); p; p = p->parent()) {
-            destRect.x += std::round(p->pos()[0]);
-            destRect.y += std::round(p->pos()[1]);
+    if (view->parent())
+    {
+        if (view->moving()) {
+            destRect.x = view->pos()[0];
+            destRect.y = view->pos()[1];
+        }
+        else {
+            destRect.x = std::round(view->pos()[0]);
+            destRect.y = std::round(view->pos()[1]);
+        }
+
+        for (View *ancestor = view->parent(); ancestor; ancestor = ancestor->parent())
+        {
+            if (ancestor->moving()) {
+                destRect.x += ancestor->pos()[0];
+                destRect.y += ancestor->pos()[1];
+            }
+            else {
+                destRect.x += std::round(ancestor->pos()[0]);
+                destRect.y += std::round(ancestor->pos()[1]);
+            }
         }
     }
     else {
@@ -252,22 +275,23 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
     double angle = view->angle();
     if (angle != 0) angle = std::fmod(angle, 360);
     if (angle == 0) {
-        SDL_RenderCopy(sdlRenderer, sdlTexture, 0, &destRect);
+        SDL_RenderCopyF(sdlRenderer, sdlTexture, nullptr, &destRect);
     }
     else {
         Point center = view->center();
-        SDL_Point sdlCenter{
-            int(std::round(center[0])),
-            int(std::round(center[1]))
-        };
+        SDL_FPoint sdlCenter{ float(center[0]), float(center[1]) };
+        #if 0
         SDL_BlendMode blendModeSaved;
         SDL_GetTextureBlendMode(sdlTexture, &blendModeSaved);
         if (blendModeSaved != SDL_BLENDMODE_BLEND)
             SDL_SetTextureBlendMode(sdlTexture, SDL_BLENDMODE_BLEND);
-                // FIXME: SDL_BLENDMODE_NONE cannot work with SDL_RenderCopyEx(), e.g. because of edge AA
-        SDL_RenderCopyEx(sdlRenderer, sdlTexture, 0, &destRect, view->angle(), &sdlCenter, SDL_FLIP_NONE);
+                // FIXME: SDL_BLENDMODE_NONE cannot work with SDL_RenderCopyExF(), e.g. because of edge AA
+        #endif
+        SDL_RenderCopyExF(sdlRenderer, sdlTexture, nullptr, &destRect, view->angle(), &sdlCenter, SDL_FLIP_NONE);
+        #if 0
         if (blendModeSaved != SDL_BLENDMODE_BLEND)
             SDL_SetTextureBlendMode(sdlTexture, blendModeSaved);
+        #endif
     }
 }
 

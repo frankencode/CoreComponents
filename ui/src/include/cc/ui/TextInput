@@ -34,7 +34,7 @@ public:
     Size maxSize() const override;
 
 protected:
-    TextInput(View *parent = 0, const String &initialText = "");
+    TextInput(View *parent = nullptr, const String &initialText = "");
     ~TextInput();
 
     void init();

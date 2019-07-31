@@ -26,6 +26,6 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
-    Window::open<MainView>();
+    Window::open<MainView>(WindowMode::Accelerated|WindowMode::VSync);
     return app->run();
 }

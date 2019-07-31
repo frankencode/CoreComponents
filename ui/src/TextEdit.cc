@@ -17,7 +17,7 @@ namespace ui {
 TextEdit::TextEdit(View *parent):
     ItemView{parent}
 {
-    font->bind([=]{ return app()->defaultFont(); });
+    font->bind([=]{ return app()->defaultFixedFont(); });
     ink->bind([=]{ return theme()->primaryTextColor(); });
     paper->bind([=]{ return theme()->popupColor(); });
     textWidth->bind([=]{ return size()[0] - lineNumberWidth(); });
@@ -27,7 +27,7 @@ TextEdit::TextEdit(View *parent):
         return std::ceil(w);
     });
 
-    lineNumberFont->bind([=]{ return app()->defaultFixedFont(); });
+    lineNumberFont->bind([=]{ return font(); });
     lineNumberInk->bind([=]{ return theme()->secondaryTextColor(); });
     lineNumberPaper->bind([=]{ return theme()->windowColor(); });
     lineNumberWidth->bind([=]{

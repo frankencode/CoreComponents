@@ -24,7 +24,7 @@ public:
 
     static Transition *setup(Property<T> &property, double duration, const Easing &easing = easing::linear)
     {
-        Ref<Transition> transition = new Transition(property, duration, easing);
+        Ref<Transition> transition = new Transition{property, duration, easing};
         Transition *self = transition;
         property->restrict([transition, self](T &newValue, T oldValue){
             if (self->isActive()) return false;
@@ -46,10 +46,10 @@ public:
 
 private:
     Transition(Property<T> &property, double duration, const Easing &easing):
-        alias_(alias(property)),
-        duration_(duration),
-        easing_(easing),
-        timer_(Timer::create(1./60.))
+        alias_{alias(property)},
+        duration_{duration},
+        easing_{easing},
+        timer_{Timer::create(1./60.)}
     {
         timer_->triggered->connect([this]{timeout();});
     }

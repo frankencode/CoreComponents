@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2018-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -20,23 +20,24 @@ class ScrollView: public Control
     friend class Object;
 
 public:
-    static Ref<ScrollView> create(View *parent = 0);
+    static Ref<ScrollView> create(View *parent = nullptr);
 
-    Property<double> minDragDistance { dp(6) };
     Property<double> maxFlyTime { 1.5 };
     Property<double> maxSpeed { [=]{ return 3 * max(size()); } };
     Property<double> minHoldTime { 0.1 };
     Property<double> boundary { dp(60) };
     Property<double> maxBounceTime { 0.6 };
+    Property<double> traverseTime { 0.5 };
 
-    Property<double> wheelGranularity { 2 * std::ceil(style()->itemHeight2()) };
+    Property<double> wheelGranularity { 3 * std::ceil(style()->itemHeight2()) };
     Property<double> maxWheelTime { 0.1 };
     Property<bool> wheelInversion { style()->wheelInversion() };
+    Property<bool> wheelBouncing { true };
 
     View *carrier() const { return carrier_; }
 
 protected:
-    ScrollView(View *parent = 0);
+    ScrollView(View *parent = nullptr);
     ~ScrollView();
     void init();
 
@@ -64,13 +65,18 @@ private:
 
     void carrierFlyStart();
     void carrierBounceStart();
-    void carrierWheelStart(Step wheelStep);
+    void carrierTraverseStart(Step distance);
     void carrierStop();
+    void timerStop();
 
     void carrierFly();
     void carrierBounce();
-    void carrierWheel();
+    void carrierTraverse();
     void carrierStopped();
+
+    void keepFocusControlInView();
+
+    Property<Control *> focusControl;
 
     View *carrier_;
     bool isDragged_;
@@ -82,17 +88,14 @@ private:
     double releaseSpeedMagnitude_;
     Step speed_;
 
-    enum class TimerMode { Stopped, Flying, Bouncing, Wheeling };
+    enum class TimerMode { Stopped, Flying, Bouncing, Traversing };
     TimerMode timerMode_ { TimerMode::Stopped };
 
     Ref<Timer> timer_;
     double lastTime_;
 
-    Point bounceStartPos_;
-    Point bounceFinalPos_;
-
-    Point wheelStartPos_;
-    Point wheelFinalPos_;
+    Point startPos_;
+    Point finalPos_;
 
     bool wasFlying_ { false };
     bool carrierAtRest_ { true };

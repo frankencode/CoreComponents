@@ -219,7 +219,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
     imeChunks = nullptr;
 
     if (
-        (+(event->modifiers() & KeyModifier::Control)) &&
+        +(event->modifiers() & KeyModifier::Control) &&
         event->keyCode() == KeyCode::Key_A
     ) {
         selection = Range { 0, text()->count() };
@@ -233,8 +233,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
         event->scanCode() == ScanCode::Key_Down ||
         event->scanCode() == ScanCode::Key_Home ||
         event->scanCode() == ScanCode::Key_End
-    )
-    {
+    ) {
         int o = textCursor()->byteOffset();
 
         textCursor()->step(
@@ -295,7 +294,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
         if (s) paste(s, String{});
     }
     else if (
-        (+(event->modifiers() & KeyModifier::Control)) &&
+        +(event->modifiers() & KeyModifier::Control) &&
         event->keyCode() == KeyCode::Key_X
     )
     {
@@ -307,12 +306,11 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
         }
     }
     else if (
-        (+(event->modifiers() & KeyModifier::Control)) && (
+        +(event->modifiers() & KeyModifier::Control) && (
             event->scanCode() == ScanCode::Key_Insert ||
             event->keyCode() == KeyCode::Key_C
         )
-    )
-    {
+    ) {
         if (selection()) {
             app()->setClipboardText(
                 text()->copy(selection()->i0(), selection()->i1())
@@ -321,7 +319,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
     }
     else if (
         event->scanCode() == ScanCode::Key_Insert || (
-            (+(event->modifiers() & KeyModifier::Control)) &&
+            +(event->modifiers() & KeyModifier::Control) &&
             event->keyCode() == KeyCode::Key_V
         )
     ) {
@@ -329,7 +327,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
         if (chunk) paste(chunk);
     }
     else if (
-        (+(event->modifiers() & KeyModifier::Control)) &&
+        +(event->modifiers() & KeyModifier::Control) &&
         event->scanCode() == ScanCode::Key_Y
     ) {
         Range range;
@@ -353,20 +351,8 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
     ) {
         shiftKey_ = true;
     }
-    else if (
-        event->scanCode() == ScanCode::Key_Return ||
-        event->scanCode() == ScanCode::Key_Return2
-    ) {
-        accepted();
-    }
-    else if (
-        event->scanCode() == ScanCode::Key_Escape
-    ) {
-        rejected();
-    }
 
-
-    return true;
+    return InputControl::onKeyPressed(event);
 }
 
 bool TextInput::onKeyReleased(const KeyEvent *event)

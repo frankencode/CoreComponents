@@ -46,6 +46,13 @@ SdlApplication::SdlApplication():
         else
             SDL_DisableScreenSaver();
     });
+
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+        // linear filtering causes artefacts with moving objects with OpenGL acceleration
+        // therefore we might force nearest-neighbor filtering, which looks quite OK at the higher framerate
+
+    // SDL_SetHint(SDL_HINT_RENDER_BATCHING, "0");
+    // SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
 }
 
 SdlApplication::~SdlApplication()
@@ -63,7 +70,7 @@ void SdlApplication::init(int argc, char **argv)
 
 Window *SdlApplication::openWindow(View *view, const String &title, WindowMode mode)
 {
-    Ref<SdlWindow> window = SdlWindow::open(view, title, mode);
+    auto window = SdlWindow::open(view, title, mode);
     windows_->insert(window->id_, window);
     return window;
 }
@@ -170,7 +177,7 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
         };
     }
 
-    Ref<FingerEvent> event =
+    auto event =
         Object::create<FingerEvent>(
             action,
             e->timestamp / 1000.,
@@ -199,7 +206,7 @@ void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
         if (e->state & SDL_BUTTON_X2MASK) button |= MouseButton::X2;
     }
 
-    Ref<MouseEvent> event =
+    auto event =
         Object::create<MouseEvent>(
             PointerAction::Moved,
             e->timestamp / 1000.,
@@ -235,7 +242,7 @@ void SdlApplication::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
         };
     }
 
-    Ref<MouseEvent> event =
+    auto event =
         Object::create<MouseEvent>(
             action,
             e->timestamp / 1000.,
@@ -257,7 +264,7 @@ void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
     int mx = 0, my = 0;
     SDL_GetMouseState(&mx, &my);
 
-    Ref<WheelEvent> event =
+    auto event =
         Object::create<WheelEvent>(
             e->timestamp / 1000.,
             Step  { double(e->x), double(e->y) },
@@ -273,7 +280,7 @@ void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
 
 void SdlApplication::handleKeyboardEvent(const SDL_KeyboardEvent *e)
 {
-    Ref<KeyEvent> event =
+    auto event =
         Object::create<KeyEvent>(
             (e->type == SDL_KEYDOWN) ? KeyAction::Pressed : KeyAction::Released,
             e->timestamp / 1000.,

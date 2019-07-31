@@ -94,6 +94,6 @@ int main(int argc, char **argv)
         fontPath = argv[1];
         FontManager::instance()->addPath(fontPath);
     }
-    Window::open<MainView>(fontPath);
+    Window::open<MainView>(fontPath, WindowMode::Accelerated|WindowMode::VSync);
     return app->run();
 }

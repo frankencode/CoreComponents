@@ -34,6 +34,8 @@ void InputField::init()
     input->pos = Point { dp(12), dp(24) };
     input->accepted->connect([=]{ accepted(); });
     input->rejected->connect([=]{ rejected(); });
+    input->gotoNext->connect([=]{ gotoNext(); });
+    input->gotoPrevious->connect([=]{ gotoPrevious(); });
     input_ = input;
 
     size->bind([=]{ return preferredSize(); });
@@ -157,7 +159,7 @@ void InputField::paint()
     const double h = size()[1];
     const double r = dp(6);
 
-    Painter p(this);
+    Painter p{this};
     p->moveTo(Point{0, h});
     p->lineTo(Point{0, r});
     p->arc(Point{r, r}, r, degree(180), degree(270));
@@ -166,6 +168,48 @@ void InputField::paint()
     p->lineTo(Point{w, h});
     p->setSource(paper());
     p->fill();
+}
+
+void InputField::gotoNext()
+{
+    View *p = parent();
+    if (!p) return;
+
+    bool findMyself = true;
+    for (int i = 0; i < p->childCount(); ++i) {
+        InputField *inputField = Object::cast<InputField *>(p->childAt(i));
+        if (inputField) {
+            if (findMyself) {
+                if (inputField == this)
+                    findMyself = false;
+            }
+            else {
+                Application::instance()->focusControl = inputField->input_;
+                break;
+            }
+        }
+    }
+}
+
+void InputField::gotoPrevious()
+{
+    View *p = parent();
+    if (!p) return;
+
+    bool findMyself = true;
+    for (int i = p->childCount() - 1; i >= 0; --i) {
+        InputField *inputField = Object::cast<InputField *>(p->childAt(i));
+        if (inputField) {
+            if (findMyself) {
+                if (inputField == this)
+                    findMyself = false;
+            }
+            else {
+                Application::instance()->focusControl = inputField->input_;
+                break;
+            }
+        }
+    }
 }
 
 }} // namespace cc::ui

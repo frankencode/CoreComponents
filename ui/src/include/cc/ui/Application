@@ -35,6 +35,9 @@ public:
     Property<Font> defaultFixedFont;
     Property<Font> smallFont;
 
+    Property<double> minMouseDragDistance { []{ return dp(6); } };
+    Property<double> minTouchDragDistance { []{ return dp(10); } };
+
     Property< Ref<Control> > hoverControl;
     Property< Ref<Control> > pressedControl;
     Property< Ref<Control> > focusControl;
@@ -48,6 +51,8 @@ public:
 
     FontSmoothing fontSmoothing() const;
     void setTextSmoothing(FontSmoothing newValue) { fontSmoothing_ = newValue; }
+
+    bool pointerIsDragged(const PointerEvent *event, Point dragStart) const;
 
     virtual int run() = 0;
 

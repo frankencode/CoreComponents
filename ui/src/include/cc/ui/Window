@@ -71,6 +71,8 @@ public:
 
     View *view() const { return view_; }
 
+    Control *getControlAt(Point pos) const;
+
     Property<bool> visible { true };
     Property<String> title;
     Property<Point> pos;

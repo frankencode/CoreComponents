@@ -35,6 +35,7 @@ class View: public Surface
 
 public:
     Property<bool> visible { true };
+    Property<bool> moving { false };
     Property<Color> paper;
 
     Property<Point> pos;
@@ -55,14 +56,16 @@ public:
 
     Point mapToGlobal(Point l) const;
     Point mapToLocal(Point g) const;
-    Point mapToChild(View *child, Point l) const;
+    Point mapToChild(const View *child, Point l) const;
+    Point mapToParent(const View *parent, Point l) const;
     virtual bool withinBounds(Point l) const;
     bool containsLocal(Point l) const { return withinBounds(l); }
     bool containsGlobal(Point g) const { return withinBounds(mapToLocal(g)); }
 
     View *getChildAt(Point l);
     Control *getControlAt(Point l);
-    bool isParentOfOrEqual(View *other) const;
+    bool isParentOf(const View *other) const;
+    bool isFullyVisibleIn(const View *other) const;
 
     double top   () const { return pos()[1]; }
     double left  () const { return pos()[0]; }

@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug> // DEBUG
 #include <cc/List>
 #include <cc/ui/StyleManager>
 #include <cc/ui/Window>
@@ -79,10 +80,17 @@ Point View::mapToLocal(Point g) const
     return g;
 }
 
-Point View::mapToChild(View *child, Point l) const
+Point View::mapToChild(const View *child, Point l) const
 {
     for (const View *view = child; view != this && view->parent(); view = view->parent())
         l -= view->pos();
+    return l;
+}
+
+Point View::mapToParent(const View *parent, Point l) const
+{
+    for (const View *view = this; view != parent; view = view->parent())
+        l += view->pos();
     return l;
 }
 
@@ -118,13 +126,24 @@ Control *View::getControlAt(Point l)
     return nullptr;
 }
 
-bool View::isParentOfOrEqual(View *other) const
+bool View::isParentOf(const View *other) const
 {
-    for (View *view = other; view; view = view->parent()) {
+    for (const View *view = other; view; view = view->parent()) {
         if (view == this)
             return true;
     }
     return false;
+}
+
+bool View::isFullyVisibleIn(const View *other) const
+{
+    if (!other) return false;
+    if (other == this) return true;
+    if (!other->isParentOf(this)) return false;
+
+    return
+        other->withinBounds(mapToParent(other, Point{})) &&
+        other->withinBounds(mapToParent(other, size() - Size{1, 1}));
 }
 
 void View::centerInParent()
@@ -160,7 +179,7 @@ bool View::isPainted() const
 
 bool View::isStatic() const
 {
-    return true;
+    return false; // FIXME
 }
 
 void View::clear(Color color)
@@ -256,10 +275,10 @@ Window *View::window() const
 Image *View::image()
 {
     if (!image_ || (
-        image_->width()  != ::ceil(size()[0]) ||
-        image_->height() != ::ceil(size()[1])
+        image_->width()  != std::ceil(size()[0]) ||
+        image_->height() != std::ceil(size()[1])
     ))
-        image_ = Image::create(::ceil(size()[0]), ::ceil(size()[1]));
+        image_ = Image::create(std::ceil(size()[0]), std::ceil(size()[1]));
 
     return image_;
 }
@@ -293,7 +312,7 @@ void View::adoptChild(View *parent, View *child)
 bool View::feedFingerEvent(FingerEvent *event)
 {
     {
-        PointerEvent::PosGuard guard(event, mapToLocal(window()->size() * event->pos()));
+        PointerEvent::PosGuard guard{event, mapToLocal(window()->size() * event->pos())};
 
         if (event->action() == PointerAction::Pressed)
         {
@@ -338,7 +357,7 @@ bool View::feedFingerEvent(FingerEvent *event)
 bool View::feedMouseEvent(MouseEvent *event)
 {
     {
-        PointerEvent::PosGuard guard(event, mapToLocal(event->pos()));
+        PointerEvent::PosGuard guard{event, mapToLocal(event->pos())};
 
         if (event->action() == PointerAction::Pressed)
         {

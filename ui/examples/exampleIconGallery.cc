@@ -52,7 +52,7 @@ class MainView: public View
 
     MainView()
     {
-        size = Size{1280, 800};
+        size = Size{1280, 1080};
         inheritPaper();
 
         /*auto scroll = add<ScrollView>();
@@ -82,10 +82,10 @@ int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
     if (argc == 2 && String(argv[1])->contains("fullscreen")) {
-        app->cursorVisible = false;
-        Window::open<MainView>(WindowMode::Accelerated|WindowMode::Fullscreen);
+        // app->cursorVisible = false;
+        Window::open<MainView>(/*WindowMode::Accelerated|*/WindowMode::Fullscreen|WindowMode::VSync);
     }
     else
-        Window::open<MainView>();
+        Window::open<MainView>(/*WindowMode::Accelerated|*/WindowMode::VSync);
     return app->run();
 }

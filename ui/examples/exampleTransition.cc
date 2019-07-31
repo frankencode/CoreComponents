@@ -41,6 +41,6 @@ class MainView: public Control
 int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
-    Window::open<MainView>("Click me!", WindowMode::Accelerated);
+    Window::open<MainView>("Click me!", WindowMode::Accelerated|WindowMode::VSync);
     return app->run();
 }

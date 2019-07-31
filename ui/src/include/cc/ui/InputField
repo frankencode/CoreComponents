@@ -23,12 +23,14 @@ public:
     Property<String> statusText;
     Property<String> errorText;
 
+    #if 0
     enum class Type {
         Filled,
         Outline
     };
 
     Property<Type> type { Type::Filled };
+    #endif
 
     Notifier accepted;
     Notifier rejected;
@@ -47,6 +49,9 @@ protected:
     void paint() override;
 
 private:
+    void gotoNext();
+    void gotoPrevious();
+
     InputControl *input_;
 };
 

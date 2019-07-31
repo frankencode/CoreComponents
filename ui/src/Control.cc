@@ -14,9 +14,9 @@ namespace ui {
 Control::Control(View *parent):
     View{parent}
 {
-    hover->bind([=]{ return isParentOfOrEqual(app()->hoverControl()); });
-    pressed->bind([=]{ return isParentOfOrEqual(app()->pressedControl()); });
-    focus->bind([=]{ return isParentOfOrEqual(app()->focusControl()); });
+    hover->bind([=]{ return isParentOf(app()->hoverControl()); });
+    pressed->bind([=]{ return isParentOf(app()->pressedControl()); });
+    focus->bind([=]{ return isParentOf(app()->focusControl()); });
 }
 
 bool Control::onPointerClicked(const PointerEvent *event)

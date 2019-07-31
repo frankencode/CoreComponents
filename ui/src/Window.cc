@@ -8,7 +8,7 @@
 
 #include <cc/Queue>
 #include <cc/ui/Application>
-#include <cc/ui/View>
+#include <cc/ui/Control>
 #include <cc/ui/Window>
 
 namespace cc {
@@ -31,6 +31,18 @@ Window::Window(View *view, const String &title):
 
 Window::~Window()
 {}
+
+Control *Window::getControlAt(Point pos) const
+{
+    if (view_) {
+        Control *control = view_->getControlAt(pos);
+        if (!control && view_->containsLocal(pos))
+            control = Object::cast<Control *>(view_);
+        return control;
+    }
+
+    return nullptr;
+}
 
 Object *Window::getContext(View *view)
 {

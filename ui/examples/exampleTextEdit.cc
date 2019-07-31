@@ -13,13 +13,15 @@ class MainView: public View
 
     MainView()
     {
-        size = Size { 640, 480 };
+        // size = Size { 640, 480 };
+        size = Size { 1920, 1080 };
         inheritPaper();
 
         auto edit = add<TextEdit>();
-        edit->showLineNumbers = true;
+        edit->showLineNumbers = false;
         // edit->font->bind([=] { return app()->defaultFixedFont(); }); // FIXME: Why does this not work?
-        edit->font = app()->defaultFixedFont();
+        // edit->font = Font{"DejaVu Sans Mono", 14};
+        // app()->defaultFixedFont();
         edit->setText(
             File::open(path)->map()
         );
@@ -33,6 +35,6 @@ int main(int argc, char **argv)
     Application::open(argc, argv);
     if (argc > 1) path = argv[1];
     else path = __FILE__;
-    Window::open<MainView>("Hello, world!", WindowMode::Accelerated);
+    Window::open<MainView>("Hello, world!", WindowMode::Accelerated|WindowMode::Fullscreen|WindowMode::VSync);
     return Application::instance()->run();
 }

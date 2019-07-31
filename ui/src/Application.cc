@@ -85,6 +85,12 @@ FontSmoothing Application::fontSmoothing() const
     return fontSmoothing_;
 }
 
+bool Application::pointerIsDragged(const PointerEvent *event, Point dragStart) const
+{
+    double minDragDistance = Object::cast<const MouseEvent *>(event) ? minMouseDragDistance() : minTouchDragDistance();
+    return absPow2(event->pos() - dragStart) >= minDragDistance * minDragDistance;
+}
+
 void Application::notifyTimer(Timer *t)
 {
     if (t->interval_ > 0)
@@ -99,7 +105,7 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 
     if (event->action() == PointerAction::Pressed) {
         Point pos = window->size() * event->pos();
-        Control *topControl = window->view()->getControlAt(window->view()->mapToLocal(pos));
+        Control *topControl = window->getControlAt(window->view()->mapToLocal(pos));
         if (topControl) {
             touchTargets_->establish(event->fingerId(), topControl);
             pressedControl = topControl;
@@ -135,7 +141,8 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
 
 bool Application::feedMouseEvent(Window *window, MouseEvent *event)
 {
-    Control *topControl = window->view()->getControlAt(window->view()->mapToLocal(event->pos()));
+    Control *topControl = window->getControlAt(window->view()->mapToLocal(event->pos()));
+
     if (topControl)
         topControl->pointerPos = topControl->mapToLocal(event->pos());
 

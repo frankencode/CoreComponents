@@ -36,9 +36,9 @@ void TextLineHandle::paint()
             textLine_->lineNumberRun()
         );
     }
-    else {
+    else if ((textLine_->lineNumber() - 1) % 5 == 0) {
         Color c = paper();
-        c->mixIn(textLine_->textEdit_->lineNumberInk(), 70);
+        c->mixIn(textLine_->textEdit_->lineNumberInk(), 15);
         p->setSource(c);
         const int n = textLine_->wrappedTextRun()->lineCount();
         const int i = 0;
@@ -54,12 +54,12 @@ void TextLineHandle::paint()
                 size
             );*/
             p->fill();
-            p->setSource(paper());
+            /*p->setSource(paper());
             p->circle(
                 Point{ size()[0] / 2, (i + 0.5) * size()[1] / n },
                 dp(2)
             );
-            p->fill();
+            p->fill();*/
         //}
     }
 }

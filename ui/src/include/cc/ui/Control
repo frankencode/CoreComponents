@@ -36,7 +36,7 @@ protected:
 
     Property< Ref<Control> > delegate;
 
-    Control(View *parent = 0);
+    Control(View *parent = nullptr);
 
     virtual bool onPointerClicked(const PointerEvent *event);
     virtual bool onMouseClicked(const MouseEvent *event);

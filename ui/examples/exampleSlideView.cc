@@ -74,6 +74,6 @@ class MainView: public SlideView
 int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
-    Window::open<MainView>("Hello, world!", WindowMode::Accelerated);
+    Window::open<MainView>("Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
     return app->run();
 }

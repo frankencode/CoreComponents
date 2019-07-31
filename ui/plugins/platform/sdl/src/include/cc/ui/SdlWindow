@@ -36,9 +36,9 @@ private:
 
     void renderFrame(Frame *frame) override;
 
-    static void renderCascade(SDL_Renderer *sdlRenderer, View *view);
     static void updateTexture(SDL_Renderer *sdlRenderer, View *view);
-    static void renderTexture(SDL_Renderer *sdlRenderer, View *view);
+    void renderCascade(SDL_Renderer *sdlRenderer, View *view);
+    void renderTexture(SDL_Renderer *sdlRenderer, View *view);
 
     static SdlContext *sdlContext(View *view);
 

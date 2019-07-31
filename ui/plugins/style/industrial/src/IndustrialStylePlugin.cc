@@ -35,16 +35,16 @@ void IndustrialStylePlugin::activate()
     if (File::exists("/usr/share/fonts/TTF/DejaVuSans.ttf")) {
         // Arch
         FontManager::instance()->addPath("/usr/share/fonts/TTF", "DejaVu");
-        defaultFont = Font("DejaVu Sans", sp(16));
-        defaultFixedFont = Font("DejaVu Sans Mono", sp(16));
+        defaultFont = Font{"DejaVu Sans", sp(16)};
+        defaultFixedFont = Font{"DejaVu Sans Mono", sp(16)};
     }
     else {
         // Debian
         String dejavuPath = "/usr/share/fonts/truetype/dejavu";
         if (Dir::exists(dejavuPath)) {
             FontManager::instance()->addPath(dejavuPath);
-            defaultFont = Font("DejaVu Sans", sp(16));
-            defaultFixedFont = Font("DejaVu Sans Mono", sp(16));
+            defaultFont = Font{"DejaVu Sans", sp(16)};
+            defaultFixedFont = Font{"DejaVu Sans Mono", sp(16)};
         }
     }
 
@@ -75,8 +75,8 @@ void IndustrialStylePlugin::activate()
                 }
             }
             #endif
-            defaultFont = Font("Noto Sans", sp(16));
-            defaultFixedFont = Font("Noto Mono", sp(16));
+            defaultFont = Font{"Noto Sans", sp(16)};
+            defaultFixedFont = Font{"Noto Mono", sp(16)};
             break;
         }
     }

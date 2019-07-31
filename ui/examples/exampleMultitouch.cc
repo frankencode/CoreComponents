@@ -110,7 +110,7 @@ int main(int argc, char **argv)
     app->cursorVisible = false;
     app->screenSaverEnabled = true;
 
-    Window::open<MainView>(argv[0], WindowMode::Fullscreen);
+    Window::open<MainView>(argv[0], WindowMode::Fullscreen|WindowMode::Accelerated|WindowMode::VSync);
 
     return app->run();
 }

@@ -1,15 +1,17 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2018-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
+#include <cc/debug> // DEBUG
 #include <cc/math>
 #include <cc/System>
 #include <cc/ui/easing>
 #include <cc/ui/Timer>
+#include <cc/ui/InputField>
 #include <cc/ui/ScrollView>
 
 namespace cc {
@@ -38,12 +40,21 @@ void ScrollView::init()
 
     size->connect([=]{
         positionCarrierOnResize();
+        keepFocusControlInView();
     });
 
     timer_->triggered->connect([=]{
         if (timerMode_ == TimerMode::Flying) carrierFly();
         else if (timerMode_ == TimerMode::Bouncing) carrierBounce();
-        else if (timerMode_ == TimerMode::Wheeling) carrierWheel();
+        else if (timerMode_ == TimerMode::Traversing) carrierTraverse();
+    });
+
+    focusControl->bind([]{
+        return Application::instance()->focusControl();
+    });
+
+    focusControl->connect([=]{
+        keepFocusControlInView();
     });
 }
 
@@ -62,7 +73,7 @@ void ScrollView::positionCarrierOnResize()
 
 void ScrollView::resetCarrier()
 {
-    carrierStop();
+    timerStop();
     removeChild(carrier_);
     carrier_ = addCarrier();
 }
@@ -81,7 +92,7 @@ bool ScrollView::onPointerClicked(const PointerEvent *event)
 
     Control *control = getControlAt(event->pos());
     if (control) {
-        PointerEvent::PosGuard guard(const_cast<PointerEvent *>(event), mapToChild(control, event->pos()));
+        PointerEvent::PosGuard guard{const_cast<PointerEvent *>(event), mapToChild(control, event->pos())};
         return control->onPointerClicked(event);
     }
 
@@ -96,14 +107,15 @@ bool ScrollView::onPointerPressed(const PointerEvent *event)
 
     if (timer_->isActive()) {
         wasFlying_ = true;
-        carrierStop();
+        timerStop();
+        carrier_->moving = false;
     }
     else {
         wasFlying_ = false;
         Control *control = carrier()->getControlAt(mapToChild(carrier(), event->pos()));
         if (control) {
             app()->pressedControl = control;
-            PointerEvent::PosGuard guard(const_cast<PointerEvent *>(event), mapToChild(control, event->pos()));
+            PointerEvent::PosGuard guard{const_cast<PointerEvent *>(event), mapToChild(control, event->pos())};
             return control->onPointerPressed(event);
         }
     }
@@ -132,13 +144,11 @@ bool ScrollView::onPointerReleased(const PointerEvent *event)
 
 bool ScrollView::onPointerMoved(const PointerEvent *event)
 {
-    if (
-        !isDragged_ &&
-        absPow2(event->pos() - dragStart_) >= minDragDistance() * minDragDistance()
-    ) {
+    if (!isDragged_ && Application::instance()->pointerIsDragged(event, dragStart_)) {
         isDragged_ = true;
         carrierOrigin_ = carrier_->pos();
         lastDragTime_ = 0;
+        Application::instance()->pressedControl = nullptr;
     }
 
     if (isDragged_) {
@@ -159,7 +169,20 @@ bool ScrollView::onPointerMoved(const PointerEvent *event)
 
 bool ScrollView::onWheelMoved(const WheelEvent *event)
 {
-    carrierWheelStart(event->wheelStep());
+    if (Application::instance()->focusControl())
+        Application::instance()->focusControl = nullptr;
+
+    if (timerMode_ == TimerMode::Bouncing || timerMode_ == TimerMode::Traversing)
+        carrierStop();
+
+    if (timerMode_ != TimerMode::Stopped)
+        return true;
+
+    carrier_->pos = carrierStep(carrier_->pos() + event->wheelStep() * wheelGranularity(), wheelBouncing() ? boundary() : 0);
+
+    if (carrierInsideBoundary())
+        carrierBounceStart();
+
     return true;
 }
 
@@ -213,36 +236,48 @@ void ScrollView::carrierFlyStart()
     double v = abs(speed_);
     if (v > maxSpeed()) speed_ *= maxSpeed() / v;
     releaseSpeedMagnitude_ = abs(speed_);
+    carrier_->moving = true;
 }
 
 void ScrollView::carrierBounceStart()
 {
     timerMode_ = TimerMode::Bouncing;
     timer_->start();
-    bounceStartPos_ = carrier_->pos();
-    bounceFinalPos_ = carrierStep(carrier_->pos());
+    startPos_ = carrier_->pos();
+    finalPos_ = carrierStep(carrier_->pos());
+    carrier_->moving = true;
 }
 
-void ScrollView::carrierWheelStart(Step wheelStep)
+void ScrollView::carrierTraverseStart(Step distance)
 {
-    bool speedUp = (timerMode_ == TimerMode::Wheeling);
-    timerMode_ = TimerMode::Wheeling;
+    timerMode_ = TimerMode::Traversing;
     timer_->start();
-    wheelStartPos_ = carrier_->pos();
-    if (!speedUp) wheelFinalPos_ = wheelStartPos_;
-    int g = int(std::round(wheelGranularity()));
-    if (wheelInversion()) wheelStep = -wheelStep;
-    if      (wheelStep[0] < 0) wheelFinalPos_[0] = roundUpToNext  (g, int(std::round(wheelFinalPos_[0])) + g);
-    else if (wheelStep[0] > 0) wheelFinalPos_[0] = roundDownToNext(g, int(std::round(wheelFinalPos_[0])) - g);
-    if      (wheelStep[1] < 0) wheelFinalPos_[1] = roundUpToNext  (g, int(std::round(wheelFinalPos_[1])) + g);
-    else if (wheelStep[1] > 0) wheelFinalPos_[1] = roundDownToNext(g, int(std::round(wheelFinalPos_[1])) - g);
-    wheelFinalPos_ = carrierStep(wheelFinalPos_, boundary());
+    startPos_ = carrier_->pos();
+    finalPos_ = carrierStep(carrier_->pos() + distance);
+    carrier_->moving = true;
 }
 
 void ScrollView::carrierStop()
 {
+    carrier_->moving = false;
+    carrier_->pos = finalPos_;
+    timerStop();
+    carrierStopped();
+}
+
+void ScrollView::timerStop()
+{
     timer_->stop();
     timerMode_ = TimerMode::Stopped;
+}
+
+static double fastAbs(Vector<double, 2> v)
+{
+    double a = 0;
+    if (v[0] == 0) a = std::abs(v[1]);
+    else if (v[1] == 0) a = std::abs(v[0]);
+    else a = cc::abs(v);
+    return a;
 }
 
 void ScrollView::carrierFly()
@@ -251,11 +286,7 @@ void ScrollView::carrierFly()
     double T = t - lastTime_;
     lastTime_ = t;
     Step d = -speed_ * T;
-    double va = 0; {
-        if (speed_[0] == 0) va = std::abs(speed_[1]);
-        else if (speed_[1] == 0) va = std::abs(speed_[0]);
-        else va = cc::abs(speed_);
-    }
+    double va = fastAbs(speed_);
     double vb = va - (T / maxFlyTime()) * releaseSpeedMagnitude_;
     if (vb <= 0) vb = 0;
     speed_ *= vb / va;
@@ -263,11 +294,14 @@ void ScrollView::carrierFly()
     Point pa = carrier_->pos();
     Point pb = carrierStep(carrier_->pos() + d, boundary());
     if (pa == pb || speed_ == Step{}) {
-        carrierStop();
-        if (carrierInsideBoundary())
+        timerStop();
+        if (carrierInsideBoundary()) {
             carrierBounceStart();
-        else
+        }
+        else {
+            carrier_->moving = false;
             carrierStopped();
+        }
     }
     else
         carrier_->pos = pb;
@@ -280,39 +314,65 @@ void ScrollView::carrierBounce()
     const double t = System::now();
 
     if (t >= t1) {
-        carrier_->pos = bounceFinalPos_;
         carrierStop();
-        carrierStopped();
         return;
     }
 
     double s = easing::outBounce((t - t0) / (t1 - t0));
-    carrier_->pos = (1 - s) * bounceStartPos_ + s * bounceFinalPos_;
+    carrier_->pos = (1 - s) * startPos_ + s * finalPos_;
 }
 
-void ScrollView::carrierWheel()
+void ScrollView::carrierTraverse()
 {
     const double t0 = timer_->startTime();
-    const double t1 = t0 + maxWheelTime();
+    const double t1 = t0 + traverseTime();
     const double t = System::now();
 
     if (t >= t1) {
-        carrier_->pos = wheelFinalPos_;
         carrierStop();
-        if (carrierInsideBoundary())
-            carrierBounceStart();
-        else
-            carrierStopped();
         return;
     }
 
-    double s = easing::inOutQuad((t - t0) / (t1 - t0));
-    carrier_->pos = (1 - s) * wheelStartPos_ + s * wheelFinalPos_;
+    double s = easing::inQuad((t - t0) / (t1 - t0));
+    carrier_->pos = (1 - s) * startPos_ + s * finalPos_;
 }
 
 void ScrollView::carrierStopped()
 {
     preheat();
+}
+
+void ScrollView::keepFocusControlInView()
+{
+    if (!carrier_) return;
+    if (!focusControl()) return;
+    if (!carrier_->isParentOf(focusControl())) return;
+    const InputField *inputField = nullptr;
+    for (const View *view = focusControl()->parent(); view && !inputField; view = view->parent())
+        inputField = Object::cast<const InputField *>(view);
+    if (inputField) {
+        if (inputField->isFullyVisibleIn(this)) return;
+        Point topLeft = inputField->mapToParent(this, Point{});
+        Point bottomRight = topLeft + inputField->size();
+        if (!withinBounds(topLeft)) {
+            Step step;
+            if (topLeft[0] < 0) step[0] = -topLeft[0];
+            if (topLeft[1] < 0) step[1] = -topLeft[1];
+            if (step != Step{}) {
+                carrierTraverseStart(step + Step{dp(10)});
+                return;
+            }
+        }
+        if (!withinBounds(bottomRight)) {
+            Step step;
+            if (bottomRight[0] > size()[0]) step[0] = size()[0] - bottomRight[0];
+            if (bottomRight[1] > size()[1]) step[1] = size()[1] - bottomRight[1];
+            if (step != Step{}) {
+                carrierTraverseStart(step - Step{dp(10)});
+                return;
+            }
+        }
+    }
 }
 
 }} // namespace cc::ui
