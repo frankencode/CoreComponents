@@ -51,12 +51,12 @@ bool ConfigureStage::run()
             if (prerequisite->autoConfigure()) {
                 try {
                     prerequisite->customCompileFlags()->appendList(
-                        configureShell(String("pkg-config --cflags ") + prerequisite->name())->simplify()->split(' ')
+                        configureShell(String{"pkg-config --cflags "} + prerequisite->name())->simplify()->split(' ')
                     );
                     prerequisite->customLinkFlags()->appendList(
-                        configureShell(String("pkg-config --libs ") + prerequisite->name())->simplify()->split(' ')
+                        configureShell(String{"pkg-config --libs "} + prerequisite->name())->simplify()->split(' ')
                     );
-                    version = configureShell(String("pkg-config --modversion ") + prerequisite->name());
+                    version = configureShell(String{"pkg-config --modversion "} + prerequisite->name());
                 }
                 catch (String &error) {
                     if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {

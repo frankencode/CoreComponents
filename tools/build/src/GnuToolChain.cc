@@ -26,8 +26,8 @@ Ref<GnuToolChain> GnuToolChain::create(const BuildPlan *plan)
 }
 
 GnuToolChain::GnuToolChain(const BuildPlan *plan):
-    dependencySplitPattern_("{1..:[\\:\\\\\n\r ]}"),
-    rpathOverride_(Process::getEnv("CCBUILD_RPATH_OVERRIDE"))
+    dependencySplitPattern_{"{1..:[\\:\\\\\n\r ]}"},
+    rpathOverride_{Process::getEnv("CCBUILD_RPATH_OVERRIDE")}
 {
     if (plan->compiler() != "") {
         ccPath_ = plan->compiler();
