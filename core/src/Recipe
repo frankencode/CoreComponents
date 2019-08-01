@@ -5,7 +5,5 @@ Library {
         compile-flags: -std=c++11
         cascade: true
     }
-    // compile-flags: [-DCC_MEM_ACCOUNTING ]
-    compile-flags: [ -DCC_MEM_DISABLE, -std=c++11 ]
     link: dl
 }
