@@ -153,8 +153,10 @@ bool ConfigureStage::run()
             }
 
             if (prerequisite->probe() != "") {
-                if (!probeBuild(name, prerequisite->probe()))
+                if (!probeBuild(name, prerequisite->probe())) {
+                    prerequisite->setCascade(false);
                     continue;
+                }
             }
 
             if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
@@ -264,7 +266,7 @@ bool ConfigureStage::probeBuild(const String &name, const String &probe) const
         String output = sub->output()->readAll();
         int exitCode = sub->wait();
         if (exitCode != 0) {
-            if (plan()->options() & (BuildPlan::Verbose | BuildPlan::Configure)) {
+            if (plan()->options() & (BuildPlan::Verbose /*| BuildPlan::Configure*/)) {
                 ferr()
                     << command << nl
                     << output << nl;

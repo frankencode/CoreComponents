@@ -26,6 +26,7 @@ public:
     String origName() const { return origName_; }
     bool optional() const { return optional_; }
     bool cascade() const { return cascade_; }
+    void setCascade(bool newValue) { cascade_ = newValue; }
 
     String compileFlagsConfigure() const { return compileFlagsConfigure_; }
     String linkFlagsConfigure() const { return linkFlagsConfigure_; }
