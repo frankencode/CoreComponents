@@ -75,7 +75,7 @@ public:
       * \param s text representation of the variant value
       * \return variant value
       */
-    static Variant read(String s);
+    static Variant read(const String &s);
 
     template<class T>
     inline static T cast(const Variant &value) { return VariantCast<T, CC_IS_POINTER(T)>::cast(value); }

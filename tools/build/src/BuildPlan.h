@@ -69,47 +69,47 @@ public:
 
     static Ref<BuildPlan> create(int argc, char **argv);
 
-    inline ToolChain *toolChain() const { return toolChain_; }
+    ToolChain *toolChain() const { return toolChain_; }
 
-    inline String projectPath() const { return projectPath_; }
-    inline String systemSourcePath() const { return toolChain_->systemRoot()->extendPath("/usr/src"); }
-    inline bool isSystemSource() const { return projectPath_->startsWith(systemSourcePath()); }
-    inline static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
-    inline String recipePath() const { return recipePath_; }
-    inline String userPkgConfigPath() const { return projectPath_->extendPath(toolChain_->pkgConfigName(this)); }
-    inline String scope() const { return scope_; }
-    inline String modulePath() const { return modulePath_; }
-    inline String configPath() const { return configPath_; }
-    inline MetaObject *recipe() const { return recipe_; }
+    String projectPath() const { return projectPath_; }
+    String systemSourcePath() const { return toolChain_->systemRoot()->extendPath("/usr/src"); }
+    bool isSystemSource() const { return projectPath_->startsWith(systemSourcePath()); }
+    static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
+    String recipePath() const { return recipePath_; }
+    String userPkgConfigPath() const { return projectPath_->extendPath(toolChain_->pkgConfigName(this)); }
+    String scope() const { return scope_; }
+    String modulePath() const { return modulePath_; }
+    String configPath() const { return configPath_; }
+    MetaObject *recipe() const { return recipe_; }
 
-    inline int options() const { return options_; }
-    inline int concurrency() const { return concurrency_; }
-    inline int testRunConcurrency() const { return testRunConcurrency_; }
+    int options() const { return options_; }
+    int concurrency() const { return concurrency_; }
+    int testRunConcurrency() const { return testRunConcurrency_; }
     bool goForBuild() const;
 
-    inline String name() const { return name_; }
+    String name() const { return name_; }
     String description() const;
-    inline StringList *alias() const { return alias_; }
-    inline Version version() const { return version_; }
+    StringList *alias() const { return alias_; }
+    Version version() const { return version_; }
 
-    inline StringList *sources() const { return sources_; }
-    inline StringList *bundle() const { return bundle_; }
-    inline ModuleList *modules() const { return modules_; }
-    inline void setModules(ModuleList *newList) { modules_ = newList; }
-    inline bool containsCPlusPlus() const { return containsCPlusPlus_; }
+    StringList *sources() const { return sources_; }
+    StringList *bundle() const { return bundle_; }
+    ModuleList *modules() const { return modules_; }
+    void setModules(ModuleList *newList) { modules_ = newList; }
+    bool containsCPlusPlus() const { return containsCPlusPlus_; }
 
-    inline PredicateList *predicates() const { return predicates_; }
-    inline BuildPlanList *prerequisites() const { return prerequisites_; }
-    inline SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
+    PredicateList *predicates() const { return predicates_; }
+    BuildPlanList *prerequisites() const { return prerequisites_; }
+    SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
 
-    inline BuildPlan *extensionTarget() const { return extensionTarget_; }
+    BuildPlan *extensionTarget() const { return extensionTarget_; }
 
     int run();
 
-    inline String sourcePrefix() const { return sourcePrefix_; }
-    inline String installRoot() const { return installRoot_; }
-    inline String installPrefix() const { return installPrefix_; }
-    inline String testArgs() const { return testArgs_; }
+    String sourcePrefix() const { return sourcePrefix_; }
+    String installRoot() const { return installRoot_; }
+    String installPrefix() const { return installPrefix_; }
+    String testArgs() const { return testArgs_; }
 
     String sourcePath(const String &source) const;
     String modulePath(const String &object) const;
@@ -122,27 +122,27 @@ public:
 
     Ref<StringList> globSources(StringList *pattern) const;
 
-    inline const BuildShell *shell() const { return shell_; }
-    inline void setLibraryLinkJob(Job *linkJob) { libraryLinkJob_ = linkJob; }
+    const BuildShell *shell() const { return shell_; }
+    void setLibraryLinkJob(Job *linkJob) { libraryLinkJob_ = linkJob; }
     void registerLinkDerivative(Job *linkJob);
 
-    inline ConfigureStage *configureStage() { return &configureStage_; }
-    inline PreparationStage *preparationStage() { return &preparationStage_; }
-    inline AnalyseStage *analyseStage() { return &analyseStage_; }
-    inline CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
-    inline TestRunStage *testRunStage() { return &testRunStage_; }
-    inline InstallStage *installStage() { return &installStage_; }
-    inline UninstallStage *uninstallStage() { return &uninstallStage_; }
-    inline CleanStage *cleanStage() { return &cleanStage_; }
+    ConfigureStage *configureStage() { return &configureStage_; }
+    PreparationStage *preparationStage() { return &preparationStage_; }
+    AnalyseStage *analyseStage() { return &analyseStage_; }
+    CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
+    TestRunStage *testRunStage() { return &testRunStage_; }
+    InstallStage *installStage() { return &installStage_; }
+    UninstallStage *uninstallStage() { return &uninstallStage_; }
+    CleanStage *cleanStage() { return &cleanStage_; }
 
 private:
     Ref<BuildPlan> create(String projectPath);
 
     BuildPlan();
     BuildPlan(int argc, char **argv);
-    BuildPlan(String projectPath, BuildPlan *parentPlan);
+    BuildPlan(const String &projectPath, BuildPlan *parentPlan);
 
-    void readRecipe(BuildPlan *parentPlan = 0);
+    void readRecipe(BuildPlan *parentPlan = nullptr);
     void readPredicate(const MetaObject *object);
     void checkDuplicateTargetNames();
     void gatherAutoConfigureSystemPrerequisites(Set<String> *names);

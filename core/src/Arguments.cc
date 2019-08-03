@@ -1,11 +1,12 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
+#include <cc/debug> // DEBUG
 #include <cc/Format>
 #include <cc/Arguments>
 
@@ -41,8 +42,14 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
             String valueText = parts->join("=");
             options_->establish(name, Variant::read(valueText));
         }
-        else
-            options_->establish(s, true);
+        else {
+            bool value = true;
+            if (s->startsWith("no-")) {
+                value = false;
+                s = s->copy(3, s->count());
+            }
+            options_->establish(s, value);
+        }
     }
 
     if (options_->contains("h") || options_->contains("help") || options_->contains("?"))
@@ -81,6 +88,9 @@ void Arguments::validate(const VariantMap *prototype)
             }
             else if (valueType != VariantType::Object && defaultType == VariantType::String) {
                 options_->establish(name, str(value));
+            }
+            else if (valueType== VariantType::String && +(defaultType & VariantType::String) && +(defaultType & VariantType::List)) {
+                options_->establish(name, StringList::create() << str(value));
             }
             else {
                 throw UsageError{

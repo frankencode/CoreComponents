@@ -59,10 +59,15 @@ const char *Variant::typeName(VariantType type, VariantType itemType)
     return "unknown";
 }
 
-Variant Variant::read(String s)
+Variant Variant::read(const String &s)
 {
     if (s->startsWith('"') && s->endsWith('"'))
-        return Variant(s->copy(1, s->count() - 1));
+        return Variant{s->copy(1, s->count() - 1)};
+
+    if (s->startsWith('[') && s->endsWith(']')) {
+        auto sl = s->copy(1, s->count() - 1)->split(',');
+        return Variant{sl};
+    }
 
     if (
         s->contains('.') ||
@@ -77,7 +82,7 @@ Variant Variant::read(String s)
     if (s == "true" || s == "on") return Variant(true);
     if (s == "false" || s == "off") return Variant(false);
 
-    return Variant(s);
+    return Variant{s};
 }
 
 const char *Variant::Instance::typeName() const
@@ -96,8 +101,11 @@ String Variant::Instance::toString() const
         case VariantType::Version  : return str(Version::fromWord(word_));
         case VariantType::String   : return Variant::cast<CharArray *>(ref().get());
         case VariantType::Object   : return str((void *)Variant::cast<Object *>(ref().get()));
-        default                    : return String{};
+        default                    :;
     };
+
+    if (+(type_ & VariantType::List) && +(itemType_ & VariantType::String))
+        return str(Variant::cast< Ref<StringList> >(ref().get()));
 
     return String{};
 }

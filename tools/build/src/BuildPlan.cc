@@ -7,6 +7,7 @@
  */
 
 #include <cc/debug> // DEBUG
+
 #include <cc/stdio>
 #include <cc/Process>
 #include <cc/Crc32Sink>
@@ -41,20 +42,20 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
 }
 
 #define CCBUILD_BUILDPLAN_COMPONENTS_INIT \
-    shell_(BuildShell::create(this)), \
-    preparationStage_(this), \
-    configureStage_(this), \
-    analyseStage_(this), \
-    compileLinkStage_(this), \
-    testRunStage_(this), \
-    installStage_(this), \
-    uninstallStage_(this), \
-    cleanStage_(this)
+    shell_{BuildShell::create(this)}, \
+    preparationStage_{this}, \
+    configureStage_{this}, \
+    analyseStage_{this}, \
+    compileLinkStage_{this}, \
+    testRunStage_{this}, \
+    installStage_{this}, \
+    uninstallStage_{this}, \
+    cleanStage_{this}
 
 BuildPlan::BuildPlan(int argc, char **argv):
-    projectPath_("."),
-    concurrency_(-1),
-    disabled_(false),
+    projectPath_{"."},
+    concurrency_{-1},
+    disabled_{false},
     CCBUILD_BUILDPLAN_COMPONENTS_INIT
 {
     Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -84,13 +85,13 @@ BuildPlan::BuildPlan(int argc, char **argv):
     scope_ = projectPath_;
 }
 
-BuildPlan::BuildPlan(String projectPath, BuildPlan *parentPlan):
-    toolChain_(parentPlan->toolChain_),
-    projectPath_(projectPath),
-    recipePath_(recipePath(projectPath)),
-    scope_(parentPlan->scope_),
-    concurrency_(parentPlan->concurrency_),
-    disabled_(false),
+BuildPlan::BuildPlan(const String &projectPath, BuildPlan *parentPlan):
+    toolChain_{parentPlan->toolChain_},
+    projectPath_{projectPath},
+    recipePath_{recipePath(projectPath)},
+    scope_{parentPlan->scope_},
+    concurrency_{parentPlan->concurrency_},
+    disabled_{false},
     CCBUILD_BUILDPLAN_COMPONENTS_INIT
 {
     ResourceGuard context(recipePath_);
@@ -247,6 +248,8 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     if (parentPlan) {
         optimize_ = parentPlan->optimize();
         linkStatic_ = parentPlan->linkStatic();
+        customCompileFlags_ = parentPlan->customCompileFlags();
+        customLinkFlags_ = parentPlan->customLinkFlags();
     }
 }
 
