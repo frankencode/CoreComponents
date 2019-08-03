@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug> // DEBUG
 #include <cc/stdio>
 #include <cc/Dir>
 #include <cc/File>
