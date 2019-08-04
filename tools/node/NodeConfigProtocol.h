@@ -17,18 +17,22 @@ namespace ccnode {
 using namespace cc;
 using namespace cc::meta;
 
+class NodeConfig;
+
 class NodeConfigProtocol: public MetaProtocol
 {
 public:
+    static NodeConfigProtocol *instance();
+
     void registerService(MetaObject *configPrototype);
 
 private:
     friend class Singleton<NodeConfigProtocol>;
+    friend class NodeConfig;
+
     NodeConfigProtocol();
     Ref<MetaProtocol> nodeProtocol_;
+    Ref<MetaObject> nodePrototype_;
 };
 
-NodeConfigProtocol *configProtocol();
-
 } // namespace ccnode
-

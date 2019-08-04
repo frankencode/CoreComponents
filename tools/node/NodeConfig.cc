@@ -31,7 +31,7 @@ void NodeConfig::load(int argc, char **argv)
     Ref<Arguments> arguments = Arguments::parse(argc, argv);
     const StringList *items = arguments->items();
 
-    MetaObject *nodePrototype = configProtocol()->lookup("Node");
+    MetaObject *nodePrototype = NodeConfigProtocol::instance()->nodePrototype_;
     arguments->validate(nodePrototype);
 
     Ref<MetaObject> config;
@@ -45,14 +45,31 @@ void NodeConfig::load(int argc, char **argv)
             directoryPath_ = path;
         }
         else {
-            ResourceGuard context(path);
-            config = yason::parse(File::open(path)->map(), configProtocol());
+            ResourceGuard context{path};
+            config = yason::parse(File::open(path)->map(), NodeConfigProtocol::instance());
         }
     }
 
     if (!config) config = nodePrototype->clone();
     arguments->override(config);
 
+    load(config);
+}
+
+void NodeConfig::load(const String &path)
+{
+    ResourceGuard context{path};
+
+    load(
+        yason::parse(
+            File::open(path)->map(),
+            NodeConfigProtocol::instance()
+        )
+    );
+}
+
+void NodeConfig::load(MetaObject *config)
+{
     String address = config->value("address");
 
     auto ports = List<int>::create();

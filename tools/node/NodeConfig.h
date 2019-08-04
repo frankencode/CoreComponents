@@ -28,6 +28,8 @@ public:
     static NodeConfig *instance();
 
     void load(int argc, char **argv);
+    void load(const String &path);
+    void load(MetaObject *config);
 
     String directoryPath() const { return directoryPath_; }
 

@@ -18,14 +18,14 @@ namespace ccnode {
 class NodePrototype: public MetaObject
 {
 public:
-    static Ref<NodePrototype> create(MetaProtocol *protocol = 0, String className = "Node")
+    static Ref<NodePrototype> create(MetaProtocol *protocol = nullptr, const String &className = "Node")
     {
-        return new NodePrototype(className, protocol);
+        return new NodePrototype{className, protocol};
     }
 
 protected:
-    NodePrototype(String className, MetaProtocol *protocol):
-        MetaObject(className, protocol)
+    NodePrototype(const String &className, MetaProtocol *protocol):
+        MetaObject{className, protocol}
     {
         bool superUser = Process::isSuperUser();
         establish("address", "*");
@@ -55,18 +55,21 @@ protected:
     }
 };
 
-NodeConfigProtocol::NodeConfigProtocol():
-    nodeProtocol_(MetaProtocol::create())
+NodeConfigProtocol *NodeConfigProtocol::instance()
 {
-    Ref<NodePrototype> nodePrototype = NodePrototype::create(nodeProtocol_);
-    define(nodePrototype);
+    return Singleton<NodeConfigProtocol>::instance();
+}
+
+NodeConfigProtocol::NodeConfigProtocol():
+    nodeProtocol_{MetaProtocol::create()},
+    nodePrototype_{NodePrototype::create(nodeProtocol_)}
+{
+    define(nodePrototype_);
 }
 
 void NodeConfigProtocol::registerService(MetaObject *configPrototype)
 {
     nodeProtocol_->define(configPrototype);
 }
-
-NodeConfigProtocol *configProtocol() { return Singleton<NodeConfigProtocol>::instance(); }
 
 } // namespace ccnode

@@ -13,13 +13,13 @@
 namespace ccnode {
 
 ServiceRegistry::ServiceRegistry():
-    serviceByName_(ServiceByName::create())
+    serviceByName_{ServiceByName::create()}
 {}
 
 void ServiceRegistry::registerService(ServiceDefinition *service)
 {
     serviceByName_->establish(service->configPrototype()->className(), service);
-    configProtocol()->registerService(service->configPrototype());
+    NodeConfigProtocol::instance()->registerService(service->configPrototype());
 }
 
 ServiceDefinition *ServiceRegistry::serviceByName(String name) const

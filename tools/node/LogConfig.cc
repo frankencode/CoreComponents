@@ -22,7 +22,7 @@ Ref<LogConfig> LogConfig::load(MetaObject *config)
     return new LogConfig{config};
 }
 
-LogLevel LogConfig::decodeLogLevel(String levelName)
+LogLevel LogConfig::decodeLogLevel(const String &levelName)
 {
     if (levelName == "debug")   return LogLevel::Debug;
     if (levelName == "info")    return LogLevel::Info;

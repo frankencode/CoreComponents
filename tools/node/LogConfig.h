@@ -35,13 +35,13 @@ public:
     static Ref<LogConfig> loadDefault();
     static Ref<LogConfig> load(MetaObject *config);
 
-    inline String path() const { return path_; }
-    inline LogLevel level() const { return level_; }
-    inline double retentionPeriod() const { return retentionPeriod_; }
-    inline double rotationInterval() const { return rotationInterval_; }
+    String path() const { return path_; }
+    LogLevel level() const { return level_; }
+    double retentionPeriod() const { return retentionPeriod_; }
+    double rotationInterval() const { return rotationInterval_; }
 
 private:
-    static LogLevel decodeLogLevel(String levelName);
+    static LogLevel decodeLogLevel(const String &levelName);
     LogConfig();
     LogConfig(MetaObject *config);
 
