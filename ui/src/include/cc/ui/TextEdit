@@ -51,7 +51,7 @@ private:
 
     Property<CursorShape> cursorShape { CursorShape::IBeam };
 
-    TextEdit(View *parent = 0);
+    TextEdit(View *parent = nullptr);
 
     Ref<Item> initItemModel() override;
 

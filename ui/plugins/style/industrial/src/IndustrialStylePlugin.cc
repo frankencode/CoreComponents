@@ -76,7 +76,7 @@ void IndustrialStylePlugin::activate()
             }
             #endif
             defaultFont = Font{"Noto Sans", sp(16)};
-            defaultFixedFont = Font{"Noto Mono", sp(16)};
+            // defaultFixedFont = Font{"Noto Mono", sp(16)};
             break;
         }
     }
