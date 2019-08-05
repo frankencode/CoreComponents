@@ -16,6 +16,11 @@ ServiceDelegate::ServiceDelegate(ServiceWorker *worker):
     worker_{worker}
 {}
 
+const NodeConfig *ServiceDelegate::nodeConfig() const
+{
+    return worker_->nodeConfig();
+}
+
 ServiceInstance *ServiceDelegate::serviceInstance() const
 {
     return worker_->serviceInstance();

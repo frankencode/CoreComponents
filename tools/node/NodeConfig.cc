@@ -9,7 +9,6 @@
 #include <cc/File>
 #include <cc/Dir>
 #include <cc/ResourceGuard>
-#include <cc/Singleton>
 #include <cc/Arguments>
 #include "NodeConfigProtocol.h"
 #include "ServiceRegistry.h"
@@ -18,15 +17,7 @@
 
 namespace ccnode {
 
-NodeConfig *NodeConfig::instance()
-{
-    return Singleton<NodeConfig>::instance();
-}
-
-NodeConfig::NodeConfig()
-{}
-
-void NodeConfig::load(int argc, char **argv)
+Ref<NodeConfig> NodeConfig::load(int argc, char **argv)
 {
     Ref<Arguments> arguments = Arguments::parse(argc, argv);
     const StringList *items = arguments->items();
@@ -35,6 +26,7 @@ void NodeConfig::load(int argc, char **argv)
     arguments->validate(nodePrototype);
 
     Ref<MetaObject> config;
+    String dirPath;
 
     if (items->count() > 0) {
         if (items->count() > 1)
@@ -42,7 +34,7 @@ void NodeConfig::load(int argc, char **argv)
 
         String path = items->at(0);
         if (Dir::exists(path)) {
-            directoryPath_ = path;
+            dirPath = path;
         }
         else {
             ResourceGuard context{path};
@@ -53,14 +45,14 @@ void NodeConfig::load(int argc, char **argv)
     if (!config) config = nodePrototype->clone();
     arguments->override(config);
 
-    load(config);
+    return new NodeConfig{config, dirPath};
 }
 
-void NodeConfig::load(const String &path)
+Ref<NodeConfig> NodeConfig::load(const String &path)
 {
     ResourceGuard context{path};
 
-    load(
+    return load(
         yason::parse(
             File::open(path)->map(),
             NodeConfigProtocol::instance()
@@ -68,7 +60,13 @@ void NodeConfig::load(const String &path)
     );
 }
 
-void NodeConfig::load(MetaObject *config)
+Ref<NodeConfig> NodeConfig::load(MetaObject *config)
+{
+    return new NodeConfig{config};
+}
+
+NodeConfig::NodeConfig(MetaObject *config, const String &dirPath):
+    directoryPath_{dirPath}
 {
     String address = config->value("address");
 
@@ -129,6 +127,21 @@ void NodeConfig::load(MetaObject *config)
             ServiceDefinition *service = serviceRegistry()->serviceByName(child->className());
             serviceInstances_->append(service->createInstance(child));
         }
+    }
+
+    if (directoryPath_ != "") {
+        ServiceDefinition *service = serviceRegistry()->serviceByName("Directory");
+        MetaObject *serviceConfig = service->configPrototype();
+        serviceConfig->establish("host", "*");
+        serviceConfig->establish("path", directoryPath_);
+        serviceInstances_->append(service->createInstance(serviceConfig));
+    }
+
+    if (serviceInstances_->count() == 0) {
+        ServiceDefinition *service = serviceRegistry()->serviceByName("Echo");
+        MetaObject *serviceConfig = service->configPrototype();
+        serviceConfig->establish("host", "*");
+        serviceInstances_->append(service->createInstance(serviceConfig));
     }
 }
 

@@ -18,11 +18,13 @@ using namespace cc::net;
 
 class ClientHelloContext;
 class HttpServerConnection;
+class NodeConfig;
+class SecurityCache;
 
 class HttpServerSocket: public HttpSocket
 {
 public:
-    static Ref<HttpServerSocket> accept(StreamSocket *listeningSocket);
+    static Ref<HttpServerSocket> accept(StreamSocket *listeningSocket, const NodeConfig *nodeConfig, SecurityCache *securityCache);
 
     bool isSecure() const { return mode_ & Secure; }
     void upgradeToSecureTransport();
@@ -31,8 +33,10 @@ private:
     friend class ClientHelloContext;
     friend class HttpServerConnection;
 
-    HttpServerSocket(const SocketAddress *address, int mode);
+    HttpServerSocket(const SocketAddress *address, int mode, const NodeConfig *nodeConfig, SecurityCache *securityCache);
     ~HttpServerSocket();
+
+    const NodeConfig *nodeConfig() const { return nodeConfig_; }
 
     static int onClientHello(gnutls_session_t session);
     ServiceInstance *handshake();
@@ -42,6 +46,8 @@ private:
     bool waitInput() override;
     void ioException(Exception &ex) const override;
 
+    const NodeConfig *nodeConfig_;
+    SecurityCache *securityCache_;
     double t0_;
     double te_;
 };

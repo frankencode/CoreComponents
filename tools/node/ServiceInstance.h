@@ -22,7 +22,6 @@ using namespace cc::glob;
 class ServiceDelegate;
 class ServiceWorker;
 class SecurityConfig;
-class SecurityMaster;
 
 class ServiceInstance: public Object
 {

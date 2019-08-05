@@ -237,7 +237,7 @@ Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(HttpRequest *request, CharArray *p
     env->insert("GATEWAY_INTERFACE", "CGI/1.1");
     env->insert("SERVER_PROTOCOL", request->version());
     env->insert("SERVER_NAME", request->host());
-    env->insert("SERVER_SOFTWARE", NodeConfig::instance()->version());
+    env->insert("SERVER_SOFTWARE", nodeConfig()->version());
 
     {
         String h;
@@ -281,7 +281,7 @@ String CgiDelegate::compileHeader(HttpRequest *request, CharArray *payload) cons
         << "GATEWAY_INTERFACE" << "CGI/1.1"
         << "SERVER_PROTOCOL" << request->version()
         << "SERVER_NAME" << request->host()
-        << "SERVER_SOFTWARE" << NodeConfig::instance()->version();
+        << "SERVER_SOFTWARE" << nodeConfig()->version();
 
     {
         String h;

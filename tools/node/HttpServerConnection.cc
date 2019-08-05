@@ -46,7 +46,7 @@ ServiceInstance *HttpServerConnection::handshake()
         uri = request->uri();
         putBack(request);
 
-        serviceInstance = NodeConfig::instance()->selectService(host, uri);
+        serviceInstance = socket_->nodeConfig()->selectService(host, uri);
     }
 
     return serviceInstance;

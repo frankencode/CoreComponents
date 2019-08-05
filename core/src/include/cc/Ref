@@ -66,13 +66,13 @@ template<class T>
 class Ref
 {
 public:
-    inline Ref(): a_(0) {}
-    inline Ref(Ref &&b): a_(b.a_) { b.a_ = 0; }
-    inline Ref(const Ref &b): a_(0) { set(b.a_); }
-    template<class T2> inline Ref(const Ref<T2> &b): a_(0) { set(cast<T>(b.a_)); }
+    inline Ref(): a_{nullptr} {}
+    inline Ref(Ref &&b): a_{b.a_} { b.a_ = nullptr; }
+    inline Ref(const Ref &b): a_{nullptr} { set(b.a_); }
+    template<class T2> inline Ref(const Ref<T2> &b): a_{nullptr} { set(cast<T>(b.a_)); }
 
-    inline Ref(T *b): a_(0) { set(b); }
-    template<class T2> inline Ref(T2 *b): a_(0) { set(cast<T>(b)); }
+    inline Ref(T *b): a_{nullptr} { set(b); }
+    template<class T2> inline Ref(T2 *b): a_{nullptr} { set(cast<T>(b)); }
 
     inline ~Ref() { set(nullptr); }
 

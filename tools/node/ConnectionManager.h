@@ -23,15 +23,15 @@ class HttpServerConnection;
 class ConnectionManager: public Object
 {
 public:
-    static Ref<ConnectionManager> create();
+    static Ref<ConnectionManager> create(const NodeConfig *nodeConfig);
 
-    inline ClosedConnections *closedConnections() const { return closedConnections_; }
+    ClosedConnections *closedConnections() const { return closedConnections_; }
 
     void cycle();
     bool accept(HttpServerConnection *client);
 
 private:
-    ConnectionManager();
+    ConnectionManager(const NodeConfig *nodeConfig);
 
     typedef Map<uint64_t, int> ConnectionCounts;
     typedef List< Ref<ConnectionInfo> > Visits;

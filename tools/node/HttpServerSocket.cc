@@ -16,17 +16,19 @@
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 #include "SecurityConfig.h"
-#include "SecurityMaster.h"
+#include "SecurityCache.h"
 #include "HttpServerSocket.h"
 
 namespace ccnode {
 
-Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket)
+Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket, const NodeConfig *nodeConfig, SecurityCache *securityCache)
 {
     Ref<HttpServerSocket> client =
         new HttpServerSocket{
             SocketAddress::create(listeningSocket->address()->family()),
-            (listeningSocket->address()->port() % 80 == 0) ? 0 : Secure
+            (listeningSocket->address()->port() % 80 == 0) ? 0 : Secure,
+            nodeConfig,
+            securityCache
         };
     client->fd_ = StreamSocket::accept(listeningSocket, client->address_);
     client->connected_ = true;
@@ -35,8 +37,10 @@ Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket)
     return client;
 }
 
-HttpServerSocket::HttpServerSocket(const SocketAddress *address, int mode):
-    HttpSocket{address, mode}
+HttpServerSocket::HttpServerSocket(const SocketAddress *address, int mode, const NodeConfig *nodeConfig, SecurityCache *securityCache):
+    HttpSocket{address, mode},
+    nodeConfig_{nodeConfig},
+    securityCache_{securityCache}
 {}
 
 HttpServerSocket::~HttpServerSocket()
@@ -54,34 +58,15 @@ HttpServerSocket::~HttpServerSocket()
     }
 }
 
-void HttpServerSocket::initSession()
-{
-    CC_ASSERT(mode_ & Connected);
-
-    t0_ = System::now();
-    te_ = t0_ + NodeConfig::instance()->connectionTimeout();
-
-    if (!(mode_ & Secure)) return;
-
-    CC_ASSERT(!(mode_ & Open));
-
-    gnuTlsCheckSuccess(gnutls_init(&session_, GNUTLS_SERVER));
-    if (NodeConfig::instance()->security()->hasCredentials())
-        gnuTlsCheckSuccess(gnutls_credentials_set(session_, GNUTLS_CRD_CERTIFICATE, NodeConfig::instance()->security()->cred_));
-    if (NodeConfig::instance()->security()->hasCiphers())
-        gnuTlsCheckSuccess(gnutls_priority_set(session_, NodeConfig::instance()->security()->prio_));
-    else
-        gnuTlsCheckSuccess(gnutls_set_default_priority(session_));
-    gnutls_handshake_set_post_client_hello_function(session_, onClientHello);
-    HttpSocket::initTransport();
-
-    SecurityMaster::instance()->prepareSessionResumption(session_);
-}
-
 class ClientHelloContext: public Object
 {
 public:
     static ClientHelloContext *instance() { return ThreadLocalSingleton<ClientHelloContext>::instance(); }
+
+    void init(const NodeConfig *nodeConfig)
+    {
+        nodeConfig_ = nodeConfig;
+    }
 
     void selectService(gnutls_session_t session)
     {
@@ -102,7 +87,7 @@ public:
                         mutate(serverName_)->truncate(serverName_->count() - 1);
                     if (ErrorLog::instance()->infoStream() != NullStream::instance())
                         CCNODE_INFO() << "TLS client hello: SNI=\"" << serverName_ << "\"" << nl;
-                    serviceInstance_ = NodeConfig::instance()->selectService(serverName_);
+                    serviceInstance_ = nodeConfig_->selectService(serverName_);
                     if (serviceInstance_) {
                         if (serviceInstance_->security()->hasCredentials())
                             HttpServerSocket::gnuTlsCheckSuccess(gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, serviceInstance_->security()->cred_), peerAddress_);
@@ -130,12 +115,38 @@ public:
 private:
     friend class ThreadLocalSingleton<ClientHelloContext>;
 
-    ClientHelloContext(): serviceInstance_(0) {}
+    ClientHelloContext() {}
 
     Ref<const SocketAddress> peerAddress_;
     String serverName_;
-    ServiceInstance *serviceInstance_;
+    const NodeConfig *nodeConfig_ { nullptr };
+    ServiceInstance *serviceInstance_ { nullptr };
 };
+
+void HttpServerSocket::initSession()
+{
+    CC_ASSERT(mode_ & Connected);
+
+    t0_ = System::now();
+    te_ = t0_ + nodeConfig()->connectionTimeout();
+
+    if (!(mode_ & Secure)) return;
+
+    CC_ASSERT(!(mode_ & Open));
+
+    gnuTlsCheckSuccess(gnutls_init(&session_, GNUTLS_SERVER));
+    if (nodeConfig()->security()->hasCredentials())
+        gnuTlsCheckSuccess(gnutls_credentials_set(session_, GNUTLS_CRD_CERTIFICATE, nodeConfig()->security()->cred_));
+    if (nodeConfig()->security()->hasCiphers())
+        gnuTlsCheckSuccess(gnutls_priority_set(session_, nodeConfig()->security()->prio_));
+    else
+        gnuTlsCheckSuccess(gnutls_set_default_priority(session_));
+    ClientHelloContext::instance()->init(nodeConfig());
+    gnutls_handshake_set_post_client_hello_function(session_, onClientHello);
+    HttpSocket::initTransport();
+
+    securityCache_->prepareSessionResumption(session_);
+}
 
 int HttpServerSocket::onClientHello(gnutls_session_t session)
 {
@@ -171,10 +182,10 @@ ServiceInstance *HttpServerSocket::handshake()
 
     ServiceInstance *serviceInstance = ClientHelloContext::instance()->serviceInstance();
     if (!serviceInstance) {
-        if (NodeConfig::instance()->serviceInstances()->count() == 1)
-            serviceInstance = NodeConfig::instance()->serviceInstances()->at(0);
+        if (nodeConfig()->serviceInstances()->count() == 1)
+            serviceInstance = nodeConfig()->serviceInstances()->at(0);
         if (ClientHelloContext::instance()->serverName() == "")
-            serviceInstance = NodeConfig::instance()->selectService("");
+            serviceInstance = nodeConfig()->selectService("");
     }
 
     return serviceInstance;

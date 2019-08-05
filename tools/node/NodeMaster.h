@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -11,11 +11,11 @@
 #include <cc/Thread>
 #include <cc/Channel>
 
-namespace cc { template<class> class Singleton; }
-
 namespace ccnode {
 
 using namespace cc;
+
+class NodeConfig;
 
 class NodeMaster: public Thread
 {
@@ -25,10 +25,13 @@ public:
 private:
     friend class Singleton<NodeMaster>;
 
-    NodeMaster();
+    NodeMaster(int argc, char **argv);
+    const NodeConfig *config() const { return config_; }
 
     virtual void run() final;
     void runNode();
+
+    Ref<const NodeConfig> config_;
 
     typedef Channel<Signal> Signals;
     Ref<Signals> signals_;

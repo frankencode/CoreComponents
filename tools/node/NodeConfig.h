@@ -15,8 +15,6 @@
 #include "SecurityConfig.h"
 #include "LogConfig.h"
 
-namespace cc { template<class> class Singleton; }
-
 namespace ccnode {
 
 using namespace cc;
@@ -25,11 +23,9 @@ using namespace cc::net;
 class NodeConfig: public Object
 {
 public:
-    static NodeConfig *instance();
-
-    void load(int argc, char **argv);
-    void load(const String &path);
-    void load(MetaObject *config);
+    static Ref<NodeConfig> load(int argc, char **argv);
+    static Ref<NodeConfig> load(const String &path);
+    static Ref<NodeConfig> load(MetaObject *config);
 
     String directoryPath() const { return directoryPath_; }
 
@@ -53,9 +49,7 @@ public:
     ServiceInstance *selectService(const String &host, const String &uri = "") const;
 
 private:
-    friend class Singleton<NodeConfig>;
-
-    NodeConfig();
+    NodeConfig(MetaObject *config, const String &dirPath = "");
 
     String directoryPath_;
 

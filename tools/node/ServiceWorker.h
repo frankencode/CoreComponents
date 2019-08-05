@@ -32,7 +32,9 @@ class HttpResponseGenerator;
 class ServiceWorker: public Thread
 {
 public:
-    static Ref<ServiceWorker> create(PendingConnections *pendingConnections, ClosedConnections *closedConnections);
+    static Ref<ServiceWorker> create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections);
+
+    const NodeConfig *nodeConfig() const { return nodeConfig_; }
 
     ServiceInstance *serviceInstance() const { return serviceInstance_; }
     HttpServerConnection *client() const { return client_; }
@@ -42,7 +44,7 @@ public:
     void closeConnection();
 
 private:
-    ServiceWorker(PendingConnections *pendingConnections, ClosedConnections *closedConnections);
+    ServiceWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections);
     ~ServiceWorker();
 
     static void logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "");
@@ -51,6 +53,7 @@ private:
     Ref<ServiceInstance> serviceInstance_;
     Ref<ServiceDelegate> serviceDelegate_;
 
+    const NodeConfig *nodeConfig_;
     Ref<PendingConnections> pendingConnections_;
     Ref<ClosedConnections> closedConnections_;
 

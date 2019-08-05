@@ -19,23 +19,24 @@ namespace ccnode {
 
 using namespace cc;
 
-class SecurityConfig;
+class NodeConfig;
 
-class SecurityMaster: public Thread
+class SecurityCache: public Thread
 {
 public:
-    static SecurityMaster *instance();
-    static void start();
+    static Ref<SecurityCache> start(const NodeConfig *nodeConfig);
     void prepareSessionResumption(gnutls_session_t session);
 
 private:
-    friend class Singleton<SecurityMaster>;
+    SecurityCache(const NodeConfig *nodeConfig);
+    ~SecurityCache();
 
-    SecurityMaster();
-    ~SecurityMaster();
+    const NodeConfig *nodeConfig() const;
+
     virtual void run();
     void deleteKey(gnutls_datum_t *key);
 
+    const NodeConfig *nodeConfig_;
     double refreshInterval_;
     Ref<Mutex> mutex_;
     Ref< Channel<bool> > shutdown_;

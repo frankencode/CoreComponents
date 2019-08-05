@@ -12,24 +12,22 @@
 #include <cc/Singleton>
 #include "ErrorLog.h"
 #include "NodeConfig.h"
-#include "SecurityMaster.h"
+#include "SecurityConfig.h"
+#include "SecurityCache.h"
 
 namespace ccnode {
 
-SecurityMaster *SecurityMaster::instance()
+Ref<SecurityCache> SecurityCache::start(const NodeConfig *nodeConfig)
 {
-    return Singleton<SecurityMaster>::instance();
+    Ref<SecurityCache> cache = new SecurityCache{nodeConfig};
+    if (cache->refreshInterval_ > 0)
+        cache->Thread::start();
+    return cache;
 }
 
-void SecurityMaster::start()
-{
-    SecurityMaster *instance = SecurityMaster::instance();
-    if (instance->refreshInterval_ > 0)
-        instance->Thread::start();
-}
-
-SecurityMaster::SecurityMaster():
-    refreshInterval_{NodeConfig::instance()->security()->sessionResumptionKeyRefresh()},
+SecurityCache::SecurityCache(const NodeConfig *nodeConfig):
+    nodeConfig_{nodeConfig},
+    refreshInterval_{nodeConfig->security()->sessionResumptionKeyRefresh()},
     mutex_{Mutex::create()},
     shutdown_{Channel<bool>::create()}
 {
@@ -46,20 +44,27 @@ SecurityMaster::SecurityMaster():
     }
 }
 
-SecurityMaster::~SecurityMaster()
+SecurityCache::~SecurityCache()
 {
-    shutdown_->push(true);
-    Thread::wait();
-    deleteKey(&key_);
+    if (refreshInterval_ > 0) {
+        shutdown_->push(true);
+        Thread::wait();
+        deleteKey(&key_);
+    }
 }
 
-void SecurityMaster::deleteKey(gnutls_datum_t *key)
+const NodeConfig *SecurityCache::nodeConfig() const
+{
+    return nodeConfig_;
+}
+
+void SecurityCache::deleteKey(gnutls_datum_t *key)
 {
     ::memset(key->data, 0, key->size);
     gnutls_free(key->data);
 }
 
-void SecurityMaster::prepareSessionResumption(gnutls_session_t session)
+void SecurityCache::prepareSessionResumption(gnutls_session_t session)
 {
     if (refreshInterval_ <= 0) return;
     Guard<Mutex> guard(mutex_);
@@ -68,13 +73,13 @@ void SecurityMaster::prepareSessionResumption(gnutls_session_t session)
         CCNODE_ERROR() << gnutls_strerror(ret) << nl;
 }
 
-void SecurityMaster::run()
+void SecurityCache::run()
 {
-    ErrorLog::instance()->open(NodeConfig::instance()->errorLogConfig());
+    ErrorLog::instance()->open(nodeConfig()->errorLogConfig());
 
     for (double t = System::now() + refreshInterval_; !shutdown_->popBefore(t); t += refreshInterval_)
     {
-        Guard<Mutex> guard(mutex_);
+        Guard<Mutex> guard{mutex_};
         deleteKey(&key_);
         int ret = gnutls_session_ticket_key_generate(&key_);
         if (ret != GNUTLS_E_SUCCESS)

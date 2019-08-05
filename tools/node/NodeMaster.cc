@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/Singleton>
 #include <cc/Process>
 #include <cc/User>
 #include <cc/Group>
@@ -20,39 +19,39 @@
 #include "ServiceRegistry.h"
 #include "ConnectionManager.h"
 #include "HttpServerSocket.h"
-#include "SecurityMaster.h"
+#include "SecurityCache.h"
 #include "NodeMaster.h"
 
 namespace ccnode {
 
 using namespace cc::http;
 
-NodeMaster* nodeMaster() { return Singleton<NodeMaster>::instance(); }
-
 int NodeMaster::run(int argc, char **argv)
 {
     Thread::blockSignals(SignalSet::createFull());
 
     SystemLog::open(String{argv[0]}->fileName(), 0, LOG_DAEMON);
-    NodeConfig::instance()->load(argc, argv);
 
-    if (NodeConfig::instance()->daemon() && !Process::isDaemonized())
+    Ref<NodeMaster> node = new NodeMaster{argc, argv};
+
+    if (node->config()->daemon() && !Process::isDaemonized())
         Process::daemonize();
 
     auto signalMaster = SignalMaster::start([=](Signal signal, bool *fin){
-        nodeMaster()->signals_->pushBack(signal);
+        node->signals_->pushBack(signal);
         *fin = (+signal == SIGINT || +signal == SIGTERM);
     });
 
-    nodeMaster()->start();
-    nodeMaster()->wait();
+    node->start();
+    node->wait();
 
     signalMaster->wait();
 
-    return nodeMaster()->exitCode_;
+    return node->exitCode_;
 }
 
-NodeMaster::NodeMaster():
+NodeMaster::NodeMaster(int argc, char **argv):
+    config_{NodeConfig::load(argc, argv)},
     signals_{Signals::create()},
     exitCode_{0}
 {}
@@ -60,7 +59,7 @@ NodeMaster::NodeMaster():
 void NodeMaster::run()
 {
     try {
-        ErrorLog::instance()->open(NodeConfig::instance()->errorLogConfig());
+        ErrorLog::instance()->open(config()->errorLogConfig());
     }
     catch (Exception &ex) {
         CCNODE_ERROR() << ex << nl;
@@ -95,37 +94,17 @@ void NodeMaster::runNode()
 {
     CCNODE_NOTICE() << "Starting (pid = " << Process::getId() << ")" << nl;
 
-    if (NodeConfig::instance()->directoryPath() != "") {
-        ServiceDefinition *directoryService = serviceRegistry()->serviceByName("Directory");
-        MetaObject *config = directoryService->configPrototype();
-        config->establish("host", "*");
-        config->establish("path", NodeConfig::instance()->directoryPath());
-        Ref<ServiceInstance> directoryInstance = directoryService->createInstance(config);
-        NodeConfig::instance()->serviceInstances()->append(directoryInstance);
-    }
-
-    if (NodeConfig::instance()->serviceInstances()->count() == 0)
-    {
-        CCNODE_WARNING() << "No service configured, falling back to Echo service" << nl;
-
-        ServiceDefinition *echoService = serviceRegistry()->serviceByName("Echo");
-        MetaObject *config = echoService->configPrototype();
-        config->establish("host", "*");
-        Ref<ServiceInstance> echoInstance = echoService->createInstance(config);
-        NodeConfig::instance()->serviceInstances()->append(echoInstance);
-    }
-
     typedef List< Ref<StreamSocket> > ListeningSockets;
     Ref<ListeningSockets> listeningSockets = ListeningSockets::create();
 
-    for (SocketAddress *address: NodeConfig::instance()->address()) {
+    for (SocketAddress *address: config()->address()) {
         CCNODE_NOTICE() << "Start listening at " << address << nl;
         listeningSockets->append(StreamSocket::listen(address));
     }
 
-    if (NodeConfig::instance()->user() != "") {
-        String userName = NodeConfig::instance()->user();
-        String groupName = NodeConfig::instance()->group();
+    if (config()->user() != "") {
+        String userName = config()->user();
+        String groupName = config()->group();
         if (groupName == "") groupName = userName;
         Ref<User> user = User::lookup(userName);
         Ref<Group> group = Group::lookup(groupName);
@@ -137,18 +116,18 @@ void NodeMaster::runNode()
     }
 
     CCNODE_NOTICE() << "Starting security master, if needed" << nl;
-    SecurityMaster::start();
+    Ref<SecurityCache> securityCache = SecurityCache::start(config());
 
-    Ref<ConnectionManager> connectionManager = ConnectionManager::create();
+    Ref<ConnectionManager> connectionManager = ConnectionManager::create(config());
     Ref<PendingConnections> pendingConnections = PendingConnections::create();
     Ref<ClosedConnections> closedConnections = connectionManager->closedConnections();
 
-    CCNODE_NOTICE() << "Creating worker pool (concurrency = " << NodeConfig::instance()->concurrency() << ")" << nl;
+    CCNODE_NOTICE() << "Creating worker pool (concurrency = " << config()->concurrency() << ")" << nl;
 
     typedef Array< Ref<ServiceWorker> > WorkerPool;
-    Ref<WorkerPool> workerPool = WorkerPool::create(NodeConfig::instance()->concurrency());
+    Ref<WorkerPool> workerPool = WorkerPool::create(config()->concurrency());
     for (Ref<ServiceWorker> &worker: workerPool) {
-        worker = ServiceWorker::create(pendingConnections, closedConnections);
+        worker = ServiceWorker::create(config(), pendingConnections, closedConnections);
         worker->start();
     }
 
@@ -165,7 +144,7 @@ void NodeMaster::runNode()
         for (const IoEvent *event: activity) {
             try {
                 StreamSocket *listeningSocket = Object::cast<StreamSocket *>(event->target());
-                Ref<HttpServerSocket> clientSocket = HttpServerSocket::accept(listeningSocket);
+                Ref<HttpServerSocket> clientSocket = HttpServerSocket::accept(listeningSocket, config(), securityCache);
                 Ref<HttpServerConnection> clientConnection = HttpServerConnection::open(clientSocket);
                 if (connectionManager->accept(clientConnection)) {
                     CCNODE_DEBUG() << "Accepted connection from " << clientConnection->address() << " with priority " << clientConnection->priority() << nl;

@@ -14,17 +14,17 @@
 
 namespace ccnode {
 
-Ref<ConnectionManager> ConnectionManager::create()
+Ref<ConnectionManager> ConnectionManager::create(const NodeConfig *nodeConfig)
 {
-    return new ConnectionManager;
+    return new ConnectionManager{nodeConfig};
 }
 
-ConnectionManager::ConnectionManager():
+ConnectionManager::ConnectionManager(const NodeConfig *nodeConfig):
     closedConnections_{ClosedConnections::create()},
     connectionCounts_{ConnectionCounts::create()},
     visits_{Visits::create()},
-    serviceWindow_{NodeConfig::instance()->serviceWindow()},
-    connectionLimit_{NodeConfig::instance()->connectionLimit()}
+    serviceWindow_{nodeConfig->serviceWindow()},
+    connectionLimit_{nodeConfig->connectionLimit()}
 {
     CCNODE_NOTICE()
         << "Service window of " << serviceWindow_ << "s will be used to prioritize connections" << nl;

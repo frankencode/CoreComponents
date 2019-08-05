@@ -14,6 +14,7 @@
 
 namespace ccnode {
 
+class NodeConfig;
 class ServiceWorker;
 class ServiceInstance;
 class HttpServerConnection;
@@ -25,6 +26,8 @@ public:
 
 protected:
     ServiceDelegate(ServiceWorker *worker);
+
+    const NodeConfig *nodeConfig() const;
 
     ServiceInstance *serviceInstance() const;
     HttpServerConnection *client() const;
