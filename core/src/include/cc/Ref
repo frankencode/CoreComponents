@@ -76,7 +76,7 @@ public:
 
     inline ~Ref() { set(nullptr); }
 
-    inline const Ref &operator=(Ref &&b) { set(nullptr); a_ = b.a_; b.a_ = 0; return *this; }
+    inline const Ref &operator=(Ref &&b) { set(nullptr); a_ = b.a_; b.a_ = nullptr; return *this; }
     inline const Ref &operator=(const Ref &b) { set(b.a_); return *this; }
     inline const Ref &operator=(T *b) { set(b); return *this; }
     inline operator T *() const { return a_; }

@@ -90,7 +90,15 @@ Process::Staging *Process::Staging::setSignalMask(const SignalSet *mask)
 
 Process::Staging *Process::Staging::setWorkingDirectory(const String &path)
 {
+    #ifdef __GLIBC__
+    #if __GLIBC_PREREQ(2, 29)
     CC_SPAWN_CALL(posix_spawn_file_actions_addchdir_np(&fileActions_, path));
+    #else
+    cwd_ = path;
+    #endif
+    #else
+    CC_SPAWN_CALL(posix_spawn_file_actions_addchdir_np(&fileActions_, path));
+    #endif
     return this;
 }
 
@@ -253,6 +261,25 @@ Ref<Process> Process::bootstrap(const Staging *staging)
 
     /// spawn new child process
 
+    #ifdef __GLIBC__
+    #if __GLIBC_PREREQ(2, 29)
+    #else
+    class CwdGuard {
+    public:
+        CwdGuard(const String &cwd):
+            cwdSaved_{cwd != "" ? Process::getWorkingDirectory() : String{}}
+        {
+            if (cwd != "") Process::setWorkingDirectory(cwd);
+        }
+        ~CwdGuard()
+        {
+            if (cwdSaved_ != "") Process::setWorkingDirectory(cwdSaved_);
+        }
+    };
+    CwdGuard guard(staging->cwd_);
+    #endif
+    #endif
+
     pid_t pid = -1;
     int ret = ::posix_spawn(&pid, execPath, &staging->fileActions_, &staging->spawnAttributes_, argv, envp ? envp : ::environ);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
@@ -329,7 +356,7 @@ void Process::setWorkingDirectory(const String &path)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-String Process::getCwd()
+String Process::getWorkingDirectory()
 {
     int size = 0x1000;
     char *buf = (char *)cc::malloc(size);

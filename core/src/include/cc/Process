@@ -154,6 +154,13 @@ public:
         bool groupLead_ { false };
         Ref<IoChannel> channelHead_;
         Ref<SystemStream> standardStreams_[3];
+
+        #ifdef __GLIBC__
+        #if __GLIBC_PREREQ(2, 29)
+        #else
+        String cwd_;
+        #endif
+        #endif
     };
 
     /** \brief Create a new parameter stage
@@ -208,7 +215,7 @@ public:
     static void setWorkingDirectory(const String &path);
 
     /// Current working directory of this process
-    static String getCwd();
+    static String getWorkingDirectory();
 
     /// Actual pathname of the executed command
     static String exePath();

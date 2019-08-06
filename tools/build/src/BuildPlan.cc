@@ -37,7 +37,7 @@ Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 Ref<BuildPlan> BuildPlan::create(String projectPath)
 {
     Ref<BuildPlan> plan;
-    if (buildMap()->lookupPlan(String(projectPath->absolutePathRelativeTo(Process::getCwd())), &plan)) return plan;
+    if (buildMap()->lookupPlan(String(projectPath->absolutePathRelativeTo(Process::getWorkingDirectory())), &plan)) return plan;
     return new BuildPlan(projectPath, this);
 }
 
@@ -67,7 +67,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
         projectPath_ = items->at(0);
     }
 
-    projectPath_ = projectPath_->absolutePathRelativeTo(Process::getCwd())->canonicalPath();
+    projectPath_ = projectPath_->absolutePathRelativeTo(Process::getWorkingDirectory())->canonicalPath();
     recipePath_ = recipePath(projectPath_);
 
     ResourceGuard context(recipePath_);
@@ -598,10 +598,10 @@ void BuildPlan::initModules()
     String suffix;
     {
         Format f;
-        String absoulteProjectPath = projectPath_->absolutePathRelativeTo(Process::getCwd());
+        String absoulteProjectPath = projectPath_->absolutePathRelativeTo(Process::getWorkingDirectory());
         {
             Format h;
-            String topLevel = sourcePrefix_->absolutePathRelativeTo(Process::getCwd());
+            String topLevel = sourcePrefix_->absolutePathRelativeTo(Process::getWorkingDirectory());
             for (
                 String path = absoulteProjectPath;
                 path != topLevel && path != "/" && path != toolChain_->systemRoot();

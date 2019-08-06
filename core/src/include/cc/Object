@@ -60,7 +60,7 @@ public:
     template<class T, class... Args>
     static Ref<T> create(Args... args) {
         Ref<T> object = new T{args...};
-        object->init(); // FIXME: rename to bootstrap()
+        object->init();
         return object;
     }
 
@@ -73,11 +73,5 @@ private:
 
     mutable volatile int refCount_;
 };
-
-template<class T, class... Args>
-inline Ref<T> fly(Args... args)
-{
-    return Object::create<T>(args...);
-}
 
 } // namespace cc

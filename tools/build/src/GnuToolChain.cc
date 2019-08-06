@@ -412,7 +412,7 @@ bool GnuToolChain::refreshLinkerCache(const BuildPlan *plan) const
     if (plan->installRoot() != "/") return true;
     String libInstallPath = plan->installPath("lib");
     if (isMultiArch_) libInstallPath = libInstallPath->extendPath(machine_);
-    if (!libInstallPath->isAbsolutePath()) libInstallPath = libInstallPath->absolutePathRelativeTo(Process::getCwd());
+    if (!libInstallPath->isAbsolutePath()) libInstallPath = libInstallPath->absolutePathRelativeTo(Process::getWorkingDirectory());
     Format attr;
     attr << "ldconfig";
     attr << libInstallPath;
@@ -444,8 +444,11 @@ void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) cons
     if (plan->name() != "")
         args << "-DCCBUILD_BUNDLE_VERSION=" + plan->version();
     if (plan->customCompileFlags()) {
-        for (int i = 0; i < plan->customCompileFlags()->count(); ++i)
-            args << plan->customCompileFlags()->at(i);
+        for (const String &flags: plan->customCompileFlags()) {
+            if (flags->contains("c++") && args->at(0) != cxxPath_) continue;
+                // FIXME: workaround hack to prevent passing "-std=c++11" to the C compiler
+            args << flags;
+        }
     }
     for (int i = 0; i < plan->includePaths()->count(); ++i)
         args << "-I" + plan->includePaths()->at(i);
@@ -486,10 +489,10 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
 
     if (libraryPaths->count() > 0) {
         for (int i = 0; i < libraryPaths->count(); ++i)
-            rpaths << "-rpath=" + libraryPaths->at(i)->absolutePathRelativeTo(Process::getCwd());
+            rpaths << "-rpath=" + libraryPaths->at(i)->absolutePathRelativeTo(Process::getWorkingDirectory());
     }
 
-    rpaths << "-rpath-link=" + Process::getCwd();
+    rpaths << "-rpath-link=" + Process::getWorkingDirectory();
     args << "-Wl,--enable-new-dtags," + rpaths->join(",");
 }
 

@@ -20,7 +20,7 @@ class CwdGuard {
 public:
     CwdGuard(const String &dirPath, const BuildShell *shell):
         shell_{shell},
-        cwdSaved_{Process::getCwd()}
+        cwdSaved_{Process::getWorkingDirectory()}
     {
         shell->cd(dirPath);
     }

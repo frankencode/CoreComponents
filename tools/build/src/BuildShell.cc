@@ -27,8 +27,8 @@ String BuildShell::beautify(const String &command) const
 {
     if (plan()->options() & BuildPlan::Bootstrap) {
         return command
-            ->replace(plan()->sourcePrefix(), String("$SOURCE"))
-            ->replace(Process::getCwd(), String("$PWD"))
+            ->replace(plan()->sourcePrefix(), String{"$SOURCE"})
+            ->replace(Process::getWorkingDirectory(), String{"$PWD"})
             ->replace("$ORIGIN", "'$ORIGIN'");
     }
     return command;

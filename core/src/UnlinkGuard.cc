@@ -16,7 +16,7 @@ UnlinkGuard::UnlinkGuard(String path):
     path_(path)
 {
     if (path_->isRelativePath())
-        path_ = path_->absolutePathRelativeTo(Process::getCwd());
+        path_ = path_->absolutePathRelativeTo(Process::getWorkingDirectory());
 }
 
 UnlinkGuard::~UnlinkGuard()
