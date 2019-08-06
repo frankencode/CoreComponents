@@ -275,8 +275,10 @@ Ref<Process> Process::bootstrap(const Staging *staging)
         {
             if (cwdSaved_ != "") Process::setWorkingDirectory(cwdSaved_);
         }
+    private:
+        String cwdSaved_;
     };
-    CwdGuard guard(staging->cwd_);
+    CwdGuard guard{staging->cwd_};
     #endif
     #endif
 
