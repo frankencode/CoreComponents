@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -38,24 +38,106 @@ bool ConfigureStage::run()
 
     bool firstLine = true;
 
-    for (int i = 0; i < plan()->systemPrerequisitesByName()->count(); ++i)
-    {
-        String name = plan()->systemPrerequisitesByName()->keyAt(i);
-        SystemPrerequisiteList *prerequisiteList = plan()->systemPrerequisitesByName()->valueAt(i);
-
-        for (SystemPrerequisite *prerequisite: prerequisiteList)
+    try {
+        for (int i = 0; i < plan()->systemPrerequisitesByName()->count(); ++i)
         {
-            Version version;
+            String name = plan()->systemPrerequisitesByName()->keyAt(i);
+            SystemPrerequisiteList *prerequisiteList = plan()->systemPrerequisitesByName()->valueAt(i);
 
-            if (prerequisite->autoConfigure()) {
+            for (SystemPrerequisite *prerequisite: prerequisiteList)
+            {
+                Version version;
+
+                if (prerequisite->autoConfigure()) {
+                    try {
+                        prerequisite->customCompileFlags()->appendList(
+                            configureShell(String{"pkg-config --cflags "} + prerequisite->name())->simplify()->split(' ')
+                        );
+                        prerequisite->customLinkFlags()->appendList(
+                            configureShell(String{"pkg-config --libs "} + prerequisite->name())->simplify()->split(' ')
+                        );
+                        version = configureShell(String{"pkg-config --modversion "} + prerequisite->name());
+                    }
+                    catch (String &error) {
+                        if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
+                            ferr()
+                                << plan()->recipePath() << ": " << name << ":" << nl
+                                << "  " << error << nl
+                                << nl;
+                        }
+                        if (prerequisite->optional())
+                            continue;
+                        else
+                            throw prerequisite;
+                    }
+                }
+                else if (prerequisite->configure() != "") {
+                    String configure = prerequisite->configure();
+                    String output;
+                    if (!runConfigure(name, configure, &output)) {
+                        if (plan()->options() & (BuildPlan::Verbose | BuildPlan::Configure)) {
+                            ferr() << output;
+                            ferr() << plan()->recipePath() << ": " << name << ":" << nl;
+                            ferr() << "  " << configure << " failed" << nl;
+                        }
+                        if (prerequisite->optional())
+                            continue;
+                        else
+                            throw prerequisite;
+                    }
+                    Ref<MetaObject> object = Variant::cast<MetaObject *>(yason::parse(output));
+                    if (object) {
+                        {
+                            Ref<StringList> flags = getFlags(object, "compile-flags");
+                            if (flags) prerequisite->customCompileFlags()->appendList(flags);
+                        }
+                        {
+                            Ref<StringList> flags = getFlags(object, "link-flags");
+                            if (flags) prerequisite->customLinkFlags()->appendList(flags);
+                        }
+                        {
+                            Variant value = object->value("version");
+                            if (value->type() == VariantType::String) version = Version{String{value}};
+                            else if (value->type() == VariantType::Version) version = Version{value};
+                        }
+                    }
+                }
+                else {
+                    try {
+                        prerequisite->customCompileFlags()->appendList(
+                            configureShell(prerequisite->compileFlagsConfigure())->simplify()->split(' ')
+                        );
+                        prerequisite->customLinkFlags()->appendList(
+                            configureShell(prerequisite->linkFlagsConfigure())->simplify()->split(' ')
+                        );
+                        if (prerequisite->versionConfigure() != "") // FIXME, why needed?
+                            version = configureShell(prerequisite->versionConfigure());
+                    }
+                    catch (String &error) {
+                        if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
+                            ferr()
+                                << plan()->recipePath() << ": " << name << ":" << nl
+                                << "  " << error << nl
+                                << nl;
+                        }
+                        if (prerequisite->optional())
+                            continue;
+                        else
+                            throw prerequisite;
+                    }
+                }
+
                 try {
-                    prerequisite->customCompileFlags()->appendList(
-                        configureShell(String{"pkg-config --cflags "} + prerequisite->name())->simplify()->split(' ')
-                    );
-                    prerequisite->customLinkFlags()->appendList(
-                        configureShell(String{"pkg-config --libs "} + prerequisite->name())->simplify()->split(' ')
-                    );
-                    version = configureShell(String{"pkg-config --modversion "} + prerequisite->name());
+                    Version versionMin = prerequisite->versionMin();
+                    Version versionMax = prerequisite->versionMax();
+                    if (versionMin->isValid()) {
+                        if (version < versionMin)
+                            throw String{Format{} << "At least version " << versionMin << " is required (version " << version << " detected)"};
+                    }
+                    if (versionMax->isValid()) {
+                        if (versionMax < version)
+                            throw String{Format{} << "At most version " << versionMax << " is supported (version " << version << " detected)"};
+                    }
                 }
                 catch (String &error) {
                     if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
@@ -67,124 +149,48 @@ bool ConfigureStage::run()
                     if (prerequisite->optional())
                         continue;
                     else
-                        return success_ = false;
+                        throw prerequisite;
                 }
-            }
-            else if (prerequisite->configure() != "") {
-                String configure = prerequisite->configure();
-                String output;
-                if (!runConfigure(name, configure, &output)) {
-                    if (plan()->options() & (BuildPlan::Verbose | BuildPlan::Configure)) {
-                        ferr() << output;
-                        ferr() << plan()->recipePath() << ": " << name << ":" << nl;
-                        ferr() << "  " << configure << " failed" << nl;
-                    }
-                    if (prerequisite->optional())
-                        continue;
-                    else
-                        return success_ = false;
-                }
-                Ref<MetaObject> object = Variant::cast<MetaObject *>(yason::parse(output));
-                if (object) {
-                    {
-                        Ref<StringList> flags = getFlags(object, "compile-flags");
-                        if (flags) prerequisite->customCompileFlags()->appendList(flags);
-                    }
-                    {
-                        Ref<StringList> flags = getFlags(object, "link-flags");
-                        if (flags) prerequisite->customLinkFlags()->appendList(flags);
-                    }
-                    {
-                        Variant value = object->value("version");
-                        if (value->type() == VariantType::String) version = Version{String{value}};
-                        else if (value->type() == VariantType::Version) version = Version{value};
-                    }
-                }
-            }
-            else {
-                try {
-                    prerequisite->customCompileFlags()->appendList(
-                        configureShell(prerequisite->compileFlagsConfigure())->simplify()->split(' ')
-                    );
-                    prerequisite->customLinkFlags()->appendList(
-                        configureShell(prerequisite->linkFlagsConfigure())->simplify()->split(' ')
-                    );
-                    if (prerequisite->versionConfigure() != "") // FIXME, why needed?
-                        version = configureShell(prerequisite->versionConfigure());
-                }
-                catch (String &error) {
-                    if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
-                        ferr()
-                            << plan()->recipePath() << ": " << name << ":" << nl
-                            << "  " << error << nl
-                            << nl;
-                    }
-                    if (prerequisite->optional())
-                        continue;
-                    else
-                        return success_ = false;
-                }
-            }
 
-            try {
-                Version versionMin = prerequisite->versionMin();
-                Version versionMax = prerequisite->versionMax();
-                if (versionMin->isValid()) {
-                    if (version < versionMin)
-                        throw String{Format{} << "At least version " << versionMin << " is required (version " << version << " detected)"};
+                if (prerequisite->probe() != "") {
+                    if (!probeBuild(name, prerequisite->probe())) {
+                        prerequisite->setCascade(false);
+                        continue;
+                    }
                 }
-                if (versionMax->isValid()) {
-                    if (versionMax < version)
-                        throw String{Format{} << "At most version " << versionMax << " is supported (version " << version << " detected)"};
-                }
-            }
-            catch (String &error) {
+
                 if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
-                    ferr()
-                        << plan()->recipePath() << ": " << name << ":" << nl
-                        << "  " << error << nl
-                        << nl;
-                }
-                if (prerequisite->optional())
-                    continue;
-                else
-                    return success_ = false;
-            }
-
-            if (prerequisite->probe() != "") {
-                if (!probeBuild(name, prerequisite->probe())) {
-                    prerequisite->setCascade(false);
-                    continue;
-                }
-            }
-
-            if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
-                if (
-                    prerequisite->customCompileFlags()->count() > 0 ||
-                    prerequisite->customLinkFlags()->count() > 0 ||
-                    version->isValid()
-                ) {
-                    if (firstLine) {
-                        firstLine = false;
-                        ferr() << plan()->recipePath() << ":" << nl;
+                    if (
+                        prerequisite->customCompileFlags()->count() > 0 ||
+                        prerequisite->customLinkFlags()->count() > 0 ||
+                        version->isValid()
+                    ) {
+                        if (firstLine) {
+                            firstLine = false;
+                            ferr() << plan()->recipePath() << ":" << nl;
+                        }
+                        String ns = prerequisite->origName();
+                        if (ns == "" && prerequisite->configure() != "") ns = prerequisite->configure()->baseName();
+                        if (ns != "") ns += ".";
+                        if (prerequisite->customCompileFlags()->count() > 0)
+                            ferr() << "  " << ns << "compile-flags: " << prerequisite->customCompileFlags()->join(" ") << nl;
+                        if (prerequisite->customLinkFlags()->count() > 0)
+                            ferr() << "  " << ns << "link-flags: " << prerequisite->customLinkFlags()->join(" ") << nl;
+                        if (version->isValid())
+                            ferr() << "  " << ns << "version: " << version << nl;
+                        ferr() << nl;
                     }
-                    String ns = prerequisite->origName();
-                    if (ns == "" && prerequisite->configure() != "") ns = prerequisite->configure()->baseName();
-                    if (ns != "") ns += ".";
-                    if (prerequisite->customCompileFlags()->count() > 0)
-                        ferr() << "  " << ns << "compile-flags: " << prerequisite->customCompileFlags()->join(" ") << nl;
-                    if (prerequisite->customLinkFlags()->count() > 0)
-                        ferr() << "  " << ns << "link-flags: " << prerequisite->customLinkFlags()->join(" ") << nl;
-                    if (version->isValid())
-                        ferr() << "  " << ns << "version: " << version << nl;
-                    ferr() << nl;
                 }
-            }
 
-            if (prerequisite->libraries()) plan()->libraries()->appendList(prerequisite->libraries());
-            plan()->customCompileFlags()->appendList(prerequisite->customCompileFlags());
-            plan()->customLinkFlags()->appendList(prerequisite->customLinkFlags());
+                if (prerequisite->libraries()) plan()->libraries()->appendList(prerequisite->libraries());
+                plan()->customCompileFlags()->appendList(prerequisite->customCompileFlags());
+                plan()->customLinkFlags()->appendList(prerequisite->customLinkFlags());
+            }
         }
+    }
+    catch (const SystemPrerequisite *)
+    {
+        success_ = false;
     }
 
     StringList::makeUnique(plan()->customCompileFlags());
