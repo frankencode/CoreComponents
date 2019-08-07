@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -64,10 +64,7 @@ public:
 
 protected:
     /// Low-level initializer
-    Thread():
-        stackSize_(1 << 16),
-        lastSignal_(0)
-    {}
+    Thread() {}
 
     /** %Set the stack size before starting thread execution
       * \param stackSize size of the program stack to allocate in bytes
@@ -78,14 +75,12 @@ protected:
     virtual void run();
 
 private:
-    static Ref<CharArray> allocateStack(int stackSize, int guardSize);
     static void *bootstrap(void *self);
     static thread_local Ref<Thread> self_;
 
-    int stackSize_;
-    Ref<CharArray> stack_;
+    int stackSize_ { 1 << 17 };
     pthread_t tid_;
-    int lastSignal_;
+    int lastSignal_ { 0 };
 };
 
 } // namespace cc
