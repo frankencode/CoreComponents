@@ -29,8 +29,8 @@ public:
     virtual String machineCommand() const = 0;
     virtual String defaultOptimization(const BuildPlan *plan) const = 0;
 
-    virtual String analyseCommand(const BuildPlan *plan, String source) const = 0;
-    virtual Ref<Job> createAnalyseJob(const BuildPlan *plan, String source) const = 0;
+    virtual String analyseCommand(const BuildPlan *plan, const String &source) const = 0;
+    virtual Ref<Job> createAnalyseJob(const BuildPlan *plan, const String &source) const = 0;
     virtual Ref<Module> finishAnalyseJob(const BuildPlan *plan, const Job *job) const = 0;
 
     virtual Ref<Job> createCompileJob(const BuildPlan *plan, const Module *module) const = 0;
@@ -42,7 +42,7 @@ public:
     virtual Ref<Job> createLinkJob(const BuildPlan *plan) const = 0;
     virtual bool link(const BuildPlan *plan) const = 0;
 
-    virtual String configureCompileCommand(const BuildPlan *plan, String sourcePath, String binPath) const = 0;
+    virtual String configureCompileCommand(const BuildPlan *plan, const String &sourcePath, const String &binPath) const = 0;
 
     virtual String installDirPath(const BuildPlan *plan) const = 0;
     virtual String includePrefix(const BuildPlan *plan) const = 0;
@@ -51,15 +51,15 @@ public:
 
     virtual bool createSymlinks(const BuildPlan *plan) const = 0;
 
-    virtual void createLibrarySymlinks(const BuildPlan *plan, String libName) const = 0;
-    virtual void cleanLibrarySymlinks(const BuildPlan *plan, String libName) const = 0;
+    virtual void createLibrarySymlinks(const BuildPlan *plan, const String &libName) const = 0;
+    virtual void cleanLibrarySymlinks(const BuildPlan *plan, const String &libName) const = 0;
 
-    virtual void createPluginSymlinks(const BuildPlan *plan, String targetLibName, String pluginLibName) const = 0;
-    virtual void cleanPluginSymlinks(const BuildPlan *plan, String targetLibName, String pluginLibName) const = 0;
-    virtual void cleanPluginSymlinks(const BuildPlan *plan, String targetLibName) const = 0;
+    virtual void createPluginSymlinks(const BuildPlan *plan, const String &targetLibName, const String &pluginLibName) const = 0;
+    virtual void cleanPluginSymlinks(const BuildPlan *plan, const String &targetLibName, const String &pluginLibName) const = 0;
+    virtual void cleanPluginSymlinks(const BuildPlan *plan, const String &targetLibName) const = 0;
 
-    virtual void createAliasSymlinks(const BuildPlan *plan, String appName) const = 0;
-    virtual void cleanAliasSymlinks(const BuildPlan *plan, String appName) const = 0;
+    virtual void createAliasSymlinks(const BuildPlan *plan, const String &appName) const = 0;
+    virtual void cleanAliasSymlinks(const BuildPlan *plan, const String &appName) const = 0;
 
     virtual String pkgConfigName(const BuildPlan *plan) const = 0;
     virtual String pkgConfigInstallDirPath(const BuildPlan *plan) const = 0;

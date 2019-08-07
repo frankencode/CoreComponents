@@ -25,7 +25,7 @@ echo "Update bootstrap file..."
 rm -rf /tmp/cc_bootstrap
 mkdir -p /tmp/cc_bootstrap
 pushd /tmp/cc_bootstrap
-ccbuild -bootstrap -jobs=1 -std=c++11 $SOURCE/tools/build > $SOURCE/tools/build/bootstrap
+ccbuild -bootstrap -jobs=1 -release -compile-flags=[-std=c++11] $SOURCE/tools/build > $SOURCE/tools/build/bootstrap
 chmod +x $SOURCE/tools/build/bootstrap
 popd
 

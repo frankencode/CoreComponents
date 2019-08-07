@@ -22,7 +22,7 @@ namespace ccbuild {
 
 Ref<GnuToolChain> GnuToolChain::create(const BuildPlan *plan)
 {
-    return new GnuToolChain(plan);
+    return new GnuToolChain{plan};
 }
 
 GnuToolChain::GnuToolChain(const BuildPlan *plan):
@@ -93,7 +93,7 @@ String GnuToolChain::machineCommand() const
     return machineCommand(compiler());
 }
 
-String GnuToolChain::querySystemRoot(String compiler)
+String GnuToolChain::querySystemRoot(const String &compiler)
 {
     String systemRoot = Process::stage(compiler + " -print-sysroot")->setError(stdErr())->open()->output()->readAll();
     mutate(systemRoot)->trimInsitu();
@@ -107,7 +107,7 @@ String GnuToolChain::defaultOptimization(const BuildPlan *plan) const
     else return "";
 }
 
-String GnuToolChain::analyseCommand(const BuildPlan *plan, String source) const
+String GnuToolChain::analyseCommand(const BuildPlan *plan, const String &source) const
 {
     Format args;
     args << compiler(source);
@@ -116,7 +116,7 @@ String GnuToolChain::analyseCommand(const BuildPlan *plan, String source) const
     return args->join(" ");
 }
 
-Ref<Job> GnuToolChain::createAnalyseJob(const BuildPlan *plan, String source) const
+Ref<Job> GnuToolChain::createAnalyseJob(const BuildPlan *plan, const String &source) const
 {
     return Job::create(analyseCommand(plan, source));
 }
@@ -220,7 +220,7 @@ bool GnuToolChain::link(const BuildPlan *plan) const
     return createSymlinks(plan);
 }
 
-String GnuToolChain::configureCompileCommand(const BuildPlan *plan, String sourcePath, String binPath) const
+String GnuToolChain::configureCompileCommand(const BuildPlan *plan, const String &sourcePath, const String &binPath) const
 {
     Format args;
     args << compiler(sourcePath);
@@ -275,7 +275,7 @@ bool GnuToolChain::createSymlinks(const BuildPlan *plan) const
     return true;
 }
 
-void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, String libName) const
+void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, const String &libName) const
 {
     cleanLibrarySymlinks(plan, libName);
 
@@ -284,14 +284,14 @@ void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, String libName) 
         plan->shell()->symlink(libName, parts->join("."));
 }
 
-void GnuToolChain::cleanLibrarySymlinks(const BuildPlan *plan, String libName) const
+void GnuToolChain::cleanLibrarySymlinks(const BuildPlan *plan, const String &libName) const
 {
     Ref<StringList> parts = libName->split('.');
     while (parts->popBack() != "so")
         plan->shell()->unlink(parts->join("."));
 }
 
-void GnuToolChain::createPluginSymlinks(const BuildPlan *plan, String targetLibName, String pluginLibName) const
+void GnuToolChain::createPluginSymlinks(const BuildPlan *plan, const String &targetLibName, const String &pluginLibName) const
 {
     cleanPluginSymlinks(plan, targetLibName, pluginLibName);
 
@@ -300,17 +300,17 @@ void GnuToolChain::createPluginSymlinks(const BuildPlan *plan, String targetLibN
     plan->shell()->symlink(plan->pluginReversePath()->extendPath(pluginLibName), pluginPath->extendPath(pluginLibName));
 }
 
-void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, String targetLibName, String pluginLibName) const
+void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, const String &targetLibName, const String &pluginLibName) const
 {
     plan->shell()->clean(plan->pluginPath(targetLibName)->extendPath(pluginLibName));
 }
 
-void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, String targetLibName) const
+void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, const String &targetLibName) const
 {
     plan->shell()->clean(plan->pluginPath(targetLibName));
 }
 
-void GnuToolChain::createAliasSymlinks(const BuildPlan *plan, String appName) const
+void GnuToolChain::createAliasSymlinks(const BuildPlan *plan, const String &appName) const
 {
     cleanAliasSymlinks(plan, appName);
 
@@ -318,7 +318,7 @@ void GnuToolChain::createAliasSymlinks(const BuildPlan *plan, String appName) co
         plan->shell()->symlink(appName, aliasName);
 }
 
-void GnuToolChain::cleanAliasSymlinks(const BuildPlan *plan, String appName) const
+void GnuToolChain::cleanAliasSymlinks(const BuildPlan *plan, const String &appName) const
 {
     for (String aliasName: plan->alias())
         plan->shell()->unlink(aliasName);

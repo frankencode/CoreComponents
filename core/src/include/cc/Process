@@ -63,6 +63,7 @@ public:
         /** \brief Set initial working directory
           * \param path directory path
           * \return pointer to this object
+          * \warning This method is not thread-safe on all platforms! This is especially true on glibc before v2.29.
           */
         Staging *setWorkingDirectory(const String &path);
 
