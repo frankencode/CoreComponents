@@ -86,7 +86,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 
     const FtScaledFont *ftScaledFont = Object::cast<const FtScaledFont *>(font->getScaledFont());
 
-    FtFaceGuard guard(ftScaledFont);
+    FtFaceGuard guard{ftScaledFont};
     FT_Face ftFace = guard->ftFace();
 
     FT_UInt32 glyphLoadingFlags =

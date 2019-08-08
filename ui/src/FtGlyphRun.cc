@@ -64,9 +64,9 @@ Ref<const GlyphRun> FtGlyphRun::wrap(double maxWidth, TextAlign textAlign, doubl
     int wrapClusterIndex = 0;
 
     if (lineHeight <= 0) {
-        FtFaceGuard guard(ftScaledFont());
+        FtFaceGuard guard{ftScaledFont()};
         FT_Face ftFace = guard->ftFace();
-        lineHeight = ftScaledFont()->size() * ftFace->height / ftFace->units_per_EM;
+        lineHeight = std::ceil(ftScaledFont()->size() * ftFace->height / ftFace->units_per_EM); // FIXME: rounding up for better pixel hinting
     }
     double trailingSpace = 0;
     double shiftX = 0;

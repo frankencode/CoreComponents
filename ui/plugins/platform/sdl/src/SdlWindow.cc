@@ -198,8 +198,8 @@ void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
         if (!context->sdlTexture_) CC_DEBUG_ERROR(SDL_GetError());
         context->sdlTextureWidth_ = image->width();
         context->sdlTextureHeight_ = image->height();
-        // SDL_SetTextureBlendMode(context->sdlTexture_, isOpaque(view) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
-        SDL_SetTextureBlendMode(context->sdlTexture_, SDL_BLENDMODE_BLEND);
+        SDL_SetTextureBlendMode(context->sdlTexture_, isOpaque(view) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
+        // SDL_SetTextureBlendMode(context->sdlTexture_, SDL_BLENDMODE_BLEND);
     }
 
     if (!isOpaque(view)) image->normalize();

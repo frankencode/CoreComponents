@@ -64,7 +64,7 @@ Ref<TextRun> FtTextRun::wrap(double maxWidth, double lineHeight, const TextWrapB
     if (advance_[0] <= maxWidth) return const_cast<FtTextRun *>(this);
 
     if (lineHeight <= 0)
-        lineHeight = maxLineHeight(glyphRuns_);
+        lineHeight = std::ceil(maxLineHeight(glyphRuns_)); // FIXME rounding up for better pixel hinting
 
     Ref<const FtGlyphRun> metaBlock = fold(glyphRuns_);
     metaBlock = metaBlock->wrap(maxWidth, textAlign_, lineHeight, wrapBehind);

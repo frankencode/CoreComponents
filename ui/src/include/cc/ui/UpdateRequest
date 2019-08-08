@@ -28,7 +28,7 @@ class UpdateRequest: public Object
 {
 public:
     static Ref<UpdateRequest> create(UpdateReason reason, View *view) {
-        return new UpdateRequest(reason, view);
+        return new UpdateRequest{reason, view};
     }
 
     UpdateReason reason() const { return reason_; }
