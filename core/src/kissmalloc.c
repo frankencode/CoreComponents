@@ -250,7 +250,7 @@ void *KISSMALLOC_NAME(malloc)(size_t size)
 
         if (bucket)
         {
-            if (size <= KISSMALLOC_PAGE_SIZE - bucket->bytes_dirty) {
+            if (size <= (size_t)KISSMALLOC_PAGE_SIZE - bucket->bytes_dirty) {
                 void *data = (uint8_t *)bucket + bucket->bytes_dirty;
                 bucket->bytes_dirty += size;
                 ++bucket->object_count; // this is atomic on all relevant processors!
@@ -386,7 +386,7 @@ int KISSMALLOC_NAME(posix_memalign)(void **ptr, size_t alignment, size_t size)
     }
 
     if (alignment + size < KISSMALLOC_PAGE_HALF_SIZE) {
-        uint8_t *ptr_byte = malloc(alignment + size);
+        uint8_t *ptr_byte = (uint8_t *)malloc(alignment + size);
         if (ptr_byte != NULL) {
             size_t r = (size_t)(ptr_byte - (uint8_t *)NULL) & (alignment - 1);
             if (r > 0) ptr_byte += alignment - r;
