@@ -248,8 +248,6 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     if (parentPlan) {
         optimize_ = parentPlan->optimize();
         linkStatic_ = parentPlan->linkStatic();
-        customCompileFlags_ = parentPlan->customCompileFlags();
-        customLinkFlags_ = parentPlan->customLinkFlags();
     }
 }
 

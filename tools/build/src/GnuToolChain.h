@@ -91,6 +91,9 @@ private:
     Pattern dependencySplitPattern_;
     String rpathOverride_;
     bool isMultiArch_;
+    String cFlags_;
+    String cxxFlags_;
+    String lFlags_;
 };
 
 } // namespace ccbuild

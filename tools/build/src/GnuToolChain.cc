@@ -48,6 +48,10 @@ GnuToolChain::GnuToolChain(const BuildPlan *plan):
     systemRoot_ = querySystemRoot(ccPath_);
 
     isMultiArch_ = Dir::exists(plan->installPath("lib")->extendPath(machine_));
+
+    cFlags_ = Process::getEnv("CFLAGS");
+    cxxFlags_ = Process::getEnv("CXXFLAGS");
+    lFlags_ = Process::getEnv("LFLAGS");
 }
 
 GnuToolChain::~GnuToolChain()
@@ -439,6 +443,8 @@ void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) cons
         else*/ args << "-fPIC";
     }
     args << "-Wall" << "-pthread" << "-pipe" << "-D_FILE_OFFSET_BITS=64";
+    if (cFlags_ != "" && args->at(0) == ccPath_) args << cFlags_;
+    if (cxxFlags_ != "" && args->at(0) == cxxPath_) args << cxxFlags_;
     if (plan->bundle()->count() > 0)
         args << "-DCCBUILD_BUNDLE_PREFIX=" + bundlePrefix(plan);
     if (plan->name() != "")
@@ -466,6 +472,8 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
 
     if (plan->options() & BuildPlan::Release)
         args << "-flto";
+
+    if (lFlags_ != "") args << lFlags_;
 
     StringList *libraryPaths = plan->libraryPaths();
     StringList *libraries = plan->libraries();
