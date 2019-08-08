@@ -110,7 +110,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
                     return FT_LOAD_TARGET_MONO;
             }
             return FT_LOAD_DEFAULT;
-        }(ftScaledFont->font());
+        }(ftScaledFont->font()) /*| FT_LOAD_FORCE_AUTOHINT*/;
 
     auto ftGlyphRun = Object::create<FtGlyphRun>(text, font, origin);
 
@@ -154,7 +154,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
                 }
             }
 
-            if (FT_Load_Glyph(ftFace, glyphIndex, FT_LOAD_DEFAULT) != 0) throw GlyphLoadingError{};
+            if (FT_Load_Glyph(ftFace, glyphIndex, glyphLoadingFlags) != 0) throw GlyphLoadingError{};
         }
         catch (GlyphLoadingError &) {
             glyphIndex = FT_Get_Char_Index(ftFace, 0xFFFD /* � */);

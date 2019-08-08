@@ -91,7 +91,7 @@ FtScaledFont::FtScaledFont(const FtFontFace *ftFontFace, const Font &font):
     {
         Ref<FtFontMetrics> metrics = Object::create<FtFontMetrics>();
 
-        FtFaceGuard guard(this);
+        FtFaceGuard guard{this};
         FT_Face ftFace = guard->ftFace();
         metrics->fontSize_ = font_->size();
         metrics->unitsPerEm_ = ftFace->units_per_EM;

@@ -223,7 +223,7 @@ double FtTextRun::maxLineHeight(const FtGlyphRuns *glyphRuns)
 {
     double max = 0;
     for (const FtGlyphRun *glyphRun: glyphRuns) {
-        FtFaceGuard guard(glyphRun->ftScaledFont());
+        FtFaceGuard guard{glyphRun->ftScaledFont()};
         FT_Face ftFace = guard->ftFace();
         double h = glyphRun->ftScaledFont()->size() * ftFace->height / ftFace->units_per_EM;
         if (max < h) max = h;

@@ -53,6 +53,7 @@ SdlApplication::SdlApplication():
 
     // SDL_SetHint(SDL_HINT_RENDER_BATCHING, "0");
     // SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
+    SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
 }
 
 SdlApplication::~SdlApplication()

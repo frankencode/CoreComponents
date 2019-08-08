@@ -14,6 +14,7 @@
 // #include <cc/Memory>
 #include <cc/Format>
 #include <cc/ThreadLocalSingleton>
+#include <freetype/ftlcdfil.h>
 #include <cc/ui/FtLibrary>
 
 namespace cc {
@@ -45,6 +46,8 @@ FtLibrary::FtLibrary():
     FT_Error error = FT_Init_FreeType(&library_);
     if (error != 0)
         CC_DEBUG_ERROR(Format{"Failed to initialize the freetype library (error = %%)"} << error);
+
+    // FT_Library_SetLcdFilter(library_, FT_LCD_FILTER_DEFAULT);
 }
 
 FtLibrary::~FtLibrary()
