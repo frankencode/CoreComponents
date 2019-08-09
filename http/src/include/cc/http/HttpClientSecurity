@@ -13,10 +13,10 @@
 namespace cc {
 namespace http {
 
-class SecuritySettings: public Object {
+class HttpClientSecurity: public Object {
 public:
-    static Ref<SecuritySettings> create();
-    static Ref<SecuritySettings> createDefault();
+    static Ref<HttpClientSecurity> create();
+    static Ref<HttpClientSecurity> createDefault();
 
     String certPath() const { return certPath_; }
     String keyPath() const { return keyPath_; }
@@ -33,8 +33,8 @@ public:
     void establish(gnutls_session_t session) const;
 
 protected:
-    SecuritySettings();
-    ~SecuritySettings() override;
+    HttpClientSecurity();
+    ~HttpClientSecurity() override;
 
     String certPath_;
     String keyPath_;

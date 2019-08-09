@@ -12,12 +12,12 @@
 
 namespace ccnode {
 
-Ref<ServicePrototype> ServicePrototype::create(String className, MetaProtocol *protocol)
+Ref<ServicePrototype> ServicePrototype::create(const String &className, MetaProtocol *protocol)
 {
-    return new ServicePrototype(className, protocol);
+    return new ServicePrototype{className, protocol};
 }
 
-ServicePrototype::ServicePrototype(String className, MetaProtocol *protocol):
+ServicePrototype::ServicePrototype(const String &className, MetaProtocol *protocol):
     MetaObject(className, protocol)
 {
     establish("request-limit", 100);

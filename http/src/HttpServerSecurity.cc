@@ -1,23 +1,27 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/exceptions>
-#include <cc/Format>
-#include "ErrorLog.h"
-#include "SecurityConfig.h"
+#include <cc/http/HttpServerSecurity>
+#include <cc/http/exceptions>
 
-namespace ccnode {
+namespace cc {
+namespace http {
 
-SecurityConfig::SecurityConfig(MetaObject *config):
+Ref<HttpServerSecurity> HttpServerSecurity::load(const MetaObject *config)
+{
+    return new HttpServerSecurity{config};
+}
+
+HttpServerSecurity::HttpServerSecurity(const MetaObject *config):
     hasCredentials_{false},
     hasCiphers_{false},
-    cred_{0},
-    prio_{0},
+    cred_{nullptr},
+    prio_{nullptr},
     sessionResumptionKeyRefresh_{config->value("session-resumption-key-refresh")}
 {
     String certPath = config->value("certificate");
@@ -28,10 +32,7 @@ SecurityConfig::SecurityConfig(MetaObject *config):
     else hasCiphers_ = true;
 
     int ret = gnutls_priority_init(&prio_, ciphers, NULL);
-    if (ret != GNUTLS_E_SUCCESS) {
-        CCNODE_ERROR() << gnutls_strerror(ret) << nl;
-        throw UsageError{gnutls_strerror(ret)};
-    }
+    if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret};
 
     if (certPath == "" || keyPath == "") return;
     hasCredentials_ = true;
@@ -41,29 +42,35 @@ SecurityConfig::SecurityConfig(MetaObject *config):
     // TODO: allow MetaObject to hold a locator map for its members (MetaContext!-)
 
     ret = gnutls_certificate_allocate_credentials(&cred_);
-    if (ret != GNUTLS_E_SUCCESS) {
-        CCNODE_ERROR() << gnutls_strerror(ret) << nl;
-        throw UsageError{gnutls_strerror(ret)};
-    }
+    if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret};
 
     ret = gnutls_certificate_set_x509_key_file(cred_, certPath, keyPath, GNUTLS_X509_FMT_PEM);
-    if (ret != GNUTLS_E_SUCCESS) {
-        CCNODE_ERROR() << gnutls_strerror(ret) << nl;
-        throw UsageError{gnutls_strerror(ret)};
-    }
+    if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret};
 
     // FIXME: requires gnutls >=3.4
     // logCertificateInfo();
 }
 
-SecurityConfig::~SecurityConfig()
+HttpServerSecurity::~HttpServerSecurity()
 {
     if (cred_) gnutls_certificate_free_credentials(cred_);
     if (prio_) gnutls_priority_deinit(prio_);
 }
 
+void HttpServerSecurity::establish(gnutls_session_t session, const SocketAddress *peerAddress) const
+{
+    if (hasCredentials()) {
+        int ret = gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, cred_);
+        if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret, peerAddress};
+    }
+    if (hasCiphers()) {
+        int ret = gnutls_priority_set(session, prio_);
+        if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret, peerAddress};
+    }
+}
+
 #if 0
-void SecurityConfig::logCertificateInfo()
+void HttpServerSecurity::logCertificateInfo()
 {
     gnutls_x509_crt_t *certs = 0;
     unsigned certsCount = 0;
@@ -76,12 +83,12 @@ void SecurityConfig::logCertificateInfo()
     gnutls_free(certs);
 }
 
-void SecurityConfig::logCertificateInfo(gnutls_x509_crt_t cert)
+void HttpServerSecurity::logCertificateInfo(gnutls_x509_crt_t cert)
 {
     CCNODE_INFO() << certificateName(cert) << nl;
 }
 
-String SecurityConfig::certificateName(gnutls_x509_crt_t cert)
+String HttpServerSecurity::certificateName(gnutls_x509_crt_t cert)
 {
     size_t size = 0;
     int ret = gnutls_x509_crt_get_dn(cert, 0, &size);
@@ -93,4 +100,4 @@ String SecurityConfig::certificateName(gnutls_x509_crt_t cert)
 }
 #endif
 
-} // namespace ccnode
+}} // namespace cc::http

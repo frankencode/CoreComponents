@@ -10,6 +10,7 @@
 
 #include <cc/List>
 #include <cc/glob/Pattern>
+#include <cc/http/HttpServerSecurity>
 #include "LogConfig.h"
 
 namespace cc { namespace meta { class MetaObject; } }
@@ -17,11 +18,13 @@ namespace cc { namespace meta { class MetaObject; } }
 namespace ccnode {
 
 using namespace cc;
-using namespace cc::glob;
 
 class ServiceDelegate;
 class ServiceWorker;
-class SecurityConfig;
+class MediaTypeDatabase;
+
+using cc::glob::Pattern;
+using cc::http::HttpServerSecurity;
 
 class ServiceInstance: public Object
 {
@@ -35,10 +38,11 @@ public:
     Pattern host() const { return host_; }
     Pattern uri() const { return uri_; }
 
-    SecurityConfig *security() const { return security_; }
+    const HttpServerSecurity *security() const { return security_; }
+    const MediaTypeDatabase *mediaTypeDatabase() const { return mediaTypeDatabase_; }
 
-    LogConfig *errorLogConfig() const { return errorLogConfig_; }
-    LogConfig *accessLogConfig() const { return accessLogConfig_; }
+    const LogConfig *errorLogConfig() const { return errorLogConfig_; }
+    const LogConfig *accessLogConfig() const { return accessLogConfig_; }
 
 protected:
     ServiceInstance(MetaObject *config);
@@ -51,9 +55,10 @@ protected:
     Pattern host_;
     Pattern uri_;
 
-    Ref<SecurityConfig> security_;
-    Ref<LogConfig> errorLogConfig_;
-    Ref<LogConfig> accessLogConfig_;
+    Ref<const HttpServerSecurity> security_;
+    Ref<const MediaTypeDatabase> mediaTypeDatabase_;
+    Ref<const LogConfig> errorLogConfig_;
+    Ref<const LogConfig> accessLogConfig_;
 };
 
 typedef List< Ref<ServiceInstance> > ServiceInstances;

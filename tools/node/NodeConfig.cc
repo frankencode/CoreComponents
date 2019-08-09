@@ -117,7 +117,7 @@ NodeConfig::NodeConfig(MetaObject *config, const String &dirPath):
     connectionLimit_ = config->value("connection-limit");
     connectionTimeout_ = config->value("connection-timeout");
 
-    securityConfig_ = SecurityConfig::load(Variant::cast<MetaObject *>(config->value("security")));
+    securityConfig_ = HttpServerSecurity::load(Variant::cast<MetaObject *>(config->value("security")));
     errorLogConfig_ = LogConfig::load(Variant::cast<MetaObject *>(config->value("error-log")));
     accessLogConfig_ = LogConfig::load(Variant::cast<MetaObject *>(config->value("access-log")));
 

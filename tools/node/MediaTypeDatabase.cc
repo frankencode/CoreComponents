@@ -11,14 +11,20 @@
 
 namespace ccnode {
 
+const MediaTypeDatabase *MediaTypeDatabase::instance()
+{
+    return Singleton<MediaTypeDatabase>::instance();
+}
+
 MediaTypeDatabase::MediaTypeDatabase():
-    mediaTypeByPathSuffix_(PrefixTree<char, String>::create()),
-    mediaTypeByContentPrefix_(PrefixTree<char, String>::create())
+    mediaTypeByPathSuffix_{PrefixTree<char, String>::create()},
+    mediaTypeByContentPrefix_{PrefixTree<char, String>::create()}
 {
     mediaTypeByPathSuffix_->insert("xhtml", "application/xhtml+xml");
     mediaTypeByPathSuffix_->insert("css", "text/css");
     mediaTypeByPathSuffix_->insert("js", "text/javascript");
     mediaTypeByPathSuffix_->insert("svg", "image/svg+xml");
+    mediaTypeByPathSuffix_->insert("webp", "image/webp");
     mediaTypeByContentPrefix_->insert("<!DOCTYPE html", "text/html");
     mediaTypeByContentPrefix_->insert("<html", "text/html");
     mediaTypeByContentPrefix_->insert("<?xml", "application/xml");
@@ -31,7 +37,7 @@ MediaTypeDatabase::MediaTypeDatabase():
     mediaTypeByContentPrefix_->insert("GIF89a", "image/gif");
 }
 
-String MediaTypeDatabase::lookup(String path, String content) const
+String MediaTypeDatabase::lookup(const String &path, const String &content) const
 {
     String value;
     if (path != "") {
@@ -44,7 +50,5 @@ String MediaTypeDatabase::lookup(String path, String content) const
     mediaTypeByContentPrefix_->lookup(content, &value, false);
     return value;
 }
-
-const MediaTypeDatabase *mediaTypeDatabase() { return Singleton<MediaTypeDatabase>::instance(); }
 
 } // namespace ccnode

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,32 +9,29 @@
 #pragma once
 
 #include <gnutls/gnutls.h>
+#include <cc/net/SocketAddress>
 #include <cc/meta/MetaObject>
 
-namespace ccnode {
+namespace cc {
+namespace http {
 
-using namespace cc;
-using namespace cc::meta;
+using cc::net::SocketAddress;
+using cc::meta::MetaObject;
 
-class HttpServerSocket;
-
-class SecurityConfig: public Object
+class HttpServerSecurity: public Object
 {
 public:
-    static Ref<SecurityConfig> load(MetaObject *config) {
-        return new SecurityConfig{config};
-    }
+    static Ref<HttpServerSecurity> load(const MetaObject *config);
 
     bool hasCredentials() const { return hasCredentials_; }
     bool hasCiphers() const { return hasCiphers_; }
     double sessionResumptionKeyRefresh() const { return sessionResumptionKeyRefresh_; }
 
-private:
-    friend class HttpServerSocket;
-    friend class ClientHelloContext;
+    void establish(gnutls_session_t session, const SocketAddress *peerAddress = nullptr) const;
 
-    SecurityConfig(MetaObject *config);
-    ~SecurityConfig();
+private:
+    HttpServerSecurity(const MetaObject *config);
+    ~HttpServerSecurity();
 
     #if 0
     void logCertificateInfo();
@@ -49,4 +46,4 @@ private:
     double sessionResumptionKeyRefresh_;
 };
 
-} // namespace ccnode
+}} // namespace cc::http

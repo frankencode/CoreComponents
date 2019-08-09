@@ -7,73 +7,73 @@
  */
 
 #include <cc/http/exceptions>
-#include <cc/http/SecuritySettings>
+#include <cc/http/HttpClientSecurity>
 
 namespace cc {
 namespace http {
 
-Ref<SecuritySettings> SecuritySettings::create()
+Ref<HttpClientSecurity> HttpClientSecurity::create()
 {
-    return new SecuritySettings;
+    return new HttpClientSecurity;
 }
 
-Ref<SecuritySettings> SecuritySettings::createDefault()
+Ref<HttpClientSecurity> HttpClientSecurity::createDefault()
 {
-    Ref<SecuritySettings> settings = new SecuritySettings;
+    Ref<HttpClientSecurity> settings = new HttpClientSecurity;
     settings->setSystemTrust();
     return settings;
 }
 
-SecuritySettings::SecuritySettings():
+HttpClientSecurity::HttpClientSecurity():
     cred_{nullptr},
     prio_{nullptr}
 {
     gnutls_certificate_allocate_credentials(&cred_);
 }
 
-SecuritySettings::~SecuritySettings()
+HttpClientSecurity::~HttpClientSecurity()
 {
     if (prio_) gnutls_priority_deinit(prio_);
     gnutls_certificate_free_credentials(cred_);
 }
 
-void SecuritySettings::setCredentials(const String &certPath, const String &keyPath)
+void HttpClientSecurity::setCredentials(const String &certPath, const String &keyPath)
 {
     certPath_ = certPath;
     keyPath_ = keyPath;
     int ret = gnutls_certificate_set_x509_key_file(cred_, certPath, keyPath, GNUTLS_X509_FMT_PEM);
-    if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
+    if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret};
 }
 
-void SecuritySettings::setTrustFilePath(const String &trustFilePath)
+void HttpClientSecurity::setTrustFilePath(const String &trustFilePath)
 {
     trustFilePath_ = trustFilePath;
     int ret = gnutls_certificate_set_x509_trust_file(cred_, trustFilePath_, GNUTLS_X509_FMT_PEM);
-    if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
+    if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret};
 }
 
-void SecuritySettings::setSystemTrust()
+void HttpClientSecurity::setSystemTrust()
 {
     if (trustFilePath_ != "") trustFilePath_ = "";
     int ret = gnutls_certificate_set_x509_system_trust(cred_);
-    if (ret < 0) throw TlsError{ret};
+    if (ret < 0) throw SecurityError{ret};
 }
 
-void SecuritySettings::setCiphers(const String &ciphers)
+void HttpClientSecurity::setCiphers(const String &ciphers)
 {
     ciphers_ = ciphers;
     if (prio_) gnutls_priority_deinit(prio_);
     int ret = gnutls_priority_init(&prio_, ciphers_, NULL);
-    if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
+    if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret};
 }
 
-void SecuritySettings::establish(gnutls_session_t session) const
+void HttpClientSecurity::establish(gnutls_session_t session) const
 {
     int ret = gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, cred_);
-    if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
+    if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret};
     if (prio_) ret = gnutls_priority_set(session, prio_);
     else ret = gnutls_set_default_priority(session);
-    if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
+    if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret};
 }
 
 }} // namespace cc::http

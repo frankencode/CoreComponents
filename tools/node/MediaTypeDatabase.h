@@ -21,7 +21,9 @@ using namespace cc;
 class MediaTypeDatabase: public Object
 {
 public:
-    String lookup(String path, String content) const;
+    static const MediaTypeDatabase *instance();
+
+    String lookup(const String &path, const String &content) const;
 
 private:
     friend class Singleton<MediaTypeDatabase>;
@@ -31,7 +33,4 @@ private:
     Ref< PrefixTree<char, String> > mediaTypeByContentPrefix_;
 };
 
-const MediaTypeDatabase *mediaTypeDatabase();
-
 } // namespace ccnode
-

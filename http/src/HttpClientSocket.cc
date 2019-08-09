@@ -15,19 +15,19 @@
 namespace cc {
 namespace http {
 
-Ref<HttpClientSocket> HttpClientSocket::create(const SocketAddress *serverAddress, const String &serverName, const SecuritySettings *security)
+Ref<HttpClientSocket> HttpClientSocket::create(const SocketAddress *serverAddress, const String &serverName, const HttpClientSecurity *security)
 {
     return new HttpClientSocket{serverAddress, serverName, security};
 }
 
-Ref<HttpClientSocket> HttpClientSocket::connect(const SocketAddress *serverAddress, const String &serverName, const SecuritySettings *security)
+Ref<HttpClientSocket> HttpClientSocket::connect(const SocketAddress *serverAddress, const String &serverName, const HttpClientSecurity *security)
 {
     auto socket = HttpClientSocket::create(serverAddress, serverName, security);
     socket->connect();
     return socket;
 }
 
-HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, const String &serverName, const SecuritySettings *security):
+HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, const String &serverName, const HttpClientSecurity *security):
     HttpSocket{serverAddress, (serverAddress->port() % 80 == 0) ? 0 : Secure},
     serverName_{serverName},
     security_{security},
@@ -35,7 +35,7 @@ HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, const Str
     readyRead_{0}
 {
     if ((mode_ & Secure) && !security_)
-        security_ = SecuritySettings::createDefault();
+        security_ = HttpClientSecurity::createDefault();
 
     StreamSocket::connect(&controlMaster_, &controlSlave_);
     ioMonitor_->addEvent(IoReady::Read, controlSlave_);

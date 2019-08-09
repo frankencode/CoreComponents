@@ -28,12 +28,12 @@ String ProtocolException::message() const
     return message_;
 }
 
-TlsError::TlsError(int errorCode, const SocketAddress *peerAddress):
+SecurityError::SecurityError(int errorCode, const SocketAddress *peerAddress):
     errorCode_{errorCode},
     peerAddress_{peerAddress}
 {}
 
-String TlsError::message() const
+String SecurityError::message() const
 {
     const char *s = gnutls_strerror(errorCode_);
     if (peerAddress_)

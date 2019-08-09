@@ -11,14 +11,15 @@
 #include <cc/Map>
 #include <cc/String>
 #include <cc/net/SocketAddress>
+#include <cc/http/HttpServerSecurity>
 #include "ServiceDefinition.h"
-#include "SecurityConfig.h"
 #include "LogConfig.h"
 
 namespace ccnode {
 
 using namespace cc;
 using namespace cc::net;
+using namespace cc::http;
 
 class NodeConfig: public Object
 {
@@ -40,7 +41,7 @@ public:
     int connectionLimit() const { return connectionLimit_; }
     double connectionTimeout() const { return connectionTimeout_; }
 
-    const SecurityConfig *security() const { return securityConfig_; }
+    const HttpServerSecurity *security() const { return securityConfig_; }
     const LogConfig *errorLogConfig() const { return errorLogConfig_; }
     const LogConfig *accessLogConfig() const { return accessLogConfig_; }
 
@@ -64,7 +65,7 @@ private:
     double connectionTimeout_;
     int securePort_;
 
-    Ref<SecurityConfig> securityConfig_;
+    Ref<HttpServerSecurity> securityConfig_;
     Ref<LogConfig> errorLogConfig_;
     Ref<LogConfig> accessLogConfig_;
 

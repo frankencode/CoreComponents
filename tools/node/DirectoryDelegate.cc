@@ -149,7 +149,7 @@ void DirectoryDelegate::listDirectory(HttpRequest *request, const String &path)
 void DirectoryDelegate::deliverFile(const String &path)
 {
     String content = File::open(path)->map();
-    String mediaType = mediaTypeDatabase()->lookup(path, content);
+    String mediaType = serviceInstance()->mediaTypeDatabase()->lookup(path, content);
     if (mediaType != "") response()->setHeader("Content-Type", mediaType);
     response()->beginTransmission(content->count());
     response()->write(content);
@@ -166,7 +166,7 @@ void DirectoryDelegate::streamFile(const String &path)
         size = file->seek(0, Seek::End);
         file->seek(0, Seek::Begin);
     }
-    String mediaType = mediaTypeDatabase()->lookup(path, head);
+    String mediaType = serviceInstance()->mediaTypeDatabase()->lookup(path, head);
     if (mediaType != "") response()->setHeader("Content-Type", mediaType);
     response()->beginTransmission(size);
     String buf = String::allocate(0x10000);

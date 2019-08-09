@@ -1,5 +1,5 @@
 Library {
     name: cchttp
-    use: [ core, net ]
+    use: [ core, net, meta ]
     depends: gnutls >= 3.3.5
 }

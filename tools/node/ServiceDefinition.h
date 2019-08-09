@@ -19,10 +19,10 @@ using namespace cc;
 class ServicePrototype: public MetaObject
 {
 public:
-    static Ref<ServicePrototype> create(String className, MetaProtocol *protocol = 0);
+    static Ref<ServicePrototype> create(const String &className, MetaProtocol *protocol = 0);
 
 protected:
-    ServicePrototype(String className, MetaProtocol *protocol);
+    ServicePrototype(const String &className, MetaProtocol *protocol);
 };
 
 class ServiceWorker;

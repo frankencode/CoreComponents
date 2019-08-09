@@ -80,13 +80,13 @@ void HttpSocket::gnuTlsCheckError(int ret)
 
 bool HttpSocket::gnuTlsCheckSuccess(int ret, const SocketAddress *peerAddress)
 {
-    if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret, peerAddress};
+    if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret, peerAddress};
     return true;
 }
 
 void HttpSocket::gnuTlsCheckError(int ret, const SocketAddress *peerAddress)
 {
-    if (ret < 0) throw TlsError{ret, peerAddress};
+    if (ret < 0) throw SecurityError{ret, peerAddress};
 }
 
 ssize_t HttpSocket::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size)

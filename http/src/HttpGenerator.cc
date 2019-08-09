@@ -9,7 +9,7 @@
 #include <cc/Format>
 #include <cc/TransferMeter>
 #include <cc/http/HttpConnection>
-#include <cc/http/ChunkedSink>
+#include <cc/http/HttpChunkedSink>
 #include <cc/http/HttpGenerator>
 
 namespace cc {
@@ -66,7 +66,7 @@ Stream *HttpGenerator::payload()
         if (!headerWritten_) writeHeader();
         Ref<Stream> stream = peer_->stream();
         if (contentLength_ < 0) {
-            stream = ChunkedSink::open(stream);
+            stream = HttpChunkedSink::open(stream);
         }
         payload_ = TransferMeter::open(stream);
     }

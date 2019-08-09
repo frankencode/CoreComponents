@@ -155,7 +155,7 @@ void CgiDelegate::process(HttpRequest *request, const String &script, const Stri
                 String content = File::open(location)->map();
                 String contentType;
                 if (!cgiResponse->lookup("Content-Type", &contentType)) {
-                    contentType = mediaTypeDatabase()->lookup(location, content);
+                    contentType = serviceInstance()->mediaTypeDatabase()->lookup(location, content);
                     cgiResponse->insert("Content-Type", contentType);
                 }
                 response()->setStatus(statusCode, reasonPhrase);

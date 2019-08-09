@@ -42,9 +42,9 @@ ServiceWorker::~ServiceWorker()
 
 void ServiceWorker::logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage)
 {
-    Stream *stream = accessLog()->noticeStream();
-    if (400 <= statusCode && statusCode <= 499) stream = accessLog()->debugStream();
-    else if (500 <= statusCode) stream = accessLog()->errorStream();
+    Stream *stream = AccessLog::instance()->noticeStream();
+    if (400 <= statusCode && statusCode <= 499) stream = AccessLog::instance()->debugStream();
+    else if (500 <= statusCode) stream = AccessLog::instance()->errorStream();
 
     HttpRequest *request = client->request();
     String requestHost = request ? request->host() : "";
@@ -52,7 +52,7 @@ void ServiceWorker::logDelivery(HttpServerConnection *client, int statusCode, si
     double requestTime = request ? request->time() : System::now();
     String userAgent   = request ? request->value("User-Agent") : statusMessage;
 
-    Format(stream)
+    Format{stream}
         << client->address()->networkAddress() << " "
         << Date::breakdown(requestTime)->toString() << " "
         << "\"" << requestHost << "\" "
@@ -66,7 +66,7 @@ void ServiceWorker::logDelivery(HttpServerConnection *client, int statusCode, si
 void ServiceWorker::run()
 {
     ErrorLog::instance()->open(nodeConfig()->errorLogConfig());
-    accessLog()->open(nodeConfig()->accessLogConfig());
+    AccessLog::instance()->open(nodeConfig()->accessLogConfig());
 
     while (true) {
         try {
@@ -80,7 +80,7 @@ void ServiceWorker::run()
                 serviceDelegate_ = serviceInstance_->createDelegate(this);
 
                 while (client_) {
-                    CCNODE_DEBUG() << "Reading request..." << nl;
+                    // CCNODE_DEBUG() << "Reading request..." << nl;
                     Ref<HttpRequest> request = client_->readRequest();
                     ++requestCount;
                     {
@@ -169,7 +169,7 @@ void ServiceWorker::autoSecureForwardings()
 void ServiceWorker::closeConnection()
 {
     if (client_) {
-        CCNODE_DEBUG() << "Closing connection to " << client_->address() << nl;
+        // CCNODE_DEBUG() << "Closing connection to " << client_->address() << nl;
         Ref<ConnectionInfo> visit = client_->connectionInfo();
         visit->updateDepartureTime();
         client_ = nullptr;

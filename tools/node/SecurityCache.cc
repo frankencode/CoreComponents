@@ -9,10 +9,8 @@
 #include <string.h>
 #include <cc/Guard>
 #include <cc/System>
-#include <cc/Singleton>
 #include "ErrorLog.h"
 #include "NodeConfig.h"
-#include "SecurityConfig.h"
 #include "SecurityCache.h"
 
 namespace ccnode {

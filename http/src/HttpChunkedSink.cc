@@ -7,31 +7,31 @@
  */
 
 #include <cc/Format>
-#include <cc/http/ChunkedSink>
+#include <cc/http/HttpChunkedSink>
 
 namespace cc {
 namespace http {
 
-Ref<ChunkedSink> ChunkedSink::open(Stream *stream)
+Ref<HttpChunkedSink> HttpChunkedSink::open(Stream *stream)
 {
-    return new ChunkedSink{stream};
+    return new HttpChunkedSink{stream};
 }
 
-ChunkedSink::ChunkedSink(Stream *stream):
+HttpChunkedSink::HttpChunkedSink(Stream *stream):
     stream_{stream}
 {}
 
-ChunkedSink::~ChunkedSink()
+HttpChunkedSink::~HttpChunkedSink()
 {
     Format{stream_} << 0 << "\r\n" << "\r\n";
 }
 
-void ChunkedSink::write(const CharArray *data)
+void HttpChunkedSink::write(const CharArray *data)
 {
     Format{stream_} << hex(data->count()) << "\r\n" << data << "\r\n";
 }
 
-void ChunkedSink::write(const StringList *parts)
+void HttpChunkedSink::write(const StringList *parts)
 {
     Format chunk{stream_};
     int total = 0;

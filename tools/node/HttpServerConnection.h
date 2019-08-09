@@ -18,7 +18,7 @@ namespace ccnode {
 
 using namespace cc::http;
 
-/** \brief server-side logical HTTP connection end
+/** \brief server-side end of a HTTP connection
   */
 class HttpServerConnection: public HttpConnection
 {

@@ -13,17 +13,17 @@
 namespace cc {
 namespace http {
 
-class ChunkedSink: public Stream
+class HttpChunkedSink: public Stream
 {
 public:
-    static Ref<ChunkedSink> open(Stream *stream);
+    static Ref<HttpChunkedSink> open(Stream *stream);
 
     void write(const CharArray *data) override;
     void write(const StringList *parts) override;
 
 private:
-    ChunkedSink(Stream *client);
-    ~ChunkedSink();
+    HttpChunkedSink(Stream *stream);
+    ~HttpChunkedSink();
 
     Ref<Stream> stream_;
 };

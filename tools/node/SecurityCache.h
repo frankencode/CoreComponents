@@ -13,8 +13,6 @@
 #include <cc/Mutex>
 #include <cc/Channel>
 
-namespace cc { template<class> class Singleton; }
-
 namespace ccnode {
 
 using namespace cc;

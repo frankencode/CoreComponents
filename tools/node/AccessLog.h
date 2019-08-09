@@ -16,11 +16,11 @@ namespace ccnode {
 
 class AccessLog: public Log
 {
+public:
+    static AccessLog *instance();
+
 private:
     friend class ThreadLocalSingleton<AccessLog>;
 };
 
-AccessLog *accessLog();
-
 } // namespace ccnode
-

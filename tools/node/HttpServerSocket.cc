@@ -13,9 +13,9 @@
 #include <cc/System>
 #include <cc/NullStream>
 #include <cc/http/exceptions>
+#include <cc/http/HttpServerSecurity>
 #include "ErrorLog.h"
 #include "NodeConfig.h"
-#include "SecurityConfig.h"
 #include "SecurityCache.h"
 #include "HttpServerSocket.h"
 
@@ -88,12 +88,8 @@ public:
                     if (ErrorLog::instance()->infoStream() != NullStream::instance())
                         CCNODE_INFO() << "TLS client hello: SNI=\"" << serverName_ << "\"" << nl;
                     serviceInstance_ = nodeConfig_->selectService(serverName_);
-                    if (serviceInstance_) {
-                        if (serviceInstance_->security()->hasCredentials())
-                            HttpServerSocket::gnuTlsCheckSuccess(gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, serviceInstance_->security()->cred_), peerAddress_);
-                        if (serviceInstance_->security()->hasCiphers())
-                            HttpServerSocket::gnuTlsCheckSuccess(gnutls_priority_set(session, serviceInstance_->security()->prio_), peerAddress_);
-                    }
+                    if (serviceInstance_)
+                        serviceInstance_->security()->establish(session, peerAddress_);
                 }
             }
         }
@@ -135,13 +131,13 @@ void HttpServerSocket::initSession()
     CC_ASSERT(!(mode_ & Open));
 
     gnuTlsCheckSuccess(gnutls_init(&session_, GNUTLS_SERVER));
-    if (nodeConfig()->security()->hasCredentials())
-        gnuTlsCheckSuccess(gnutls_credentials_set(session_, GNUTLS_CRD_CERTIFICATE, nodeConfig()->security()->cred_));
-    if (nodeConfig()->security()->hasCiphers())
-        gnuTlsCheckSuccess(gnutls_priority_set(session_, nodeConfig()->security()->prio_));
-    else
-        gnuTlsCheckSuccess(gnutls_set_default_priority(session_));
+
+    gnuTlsCheckSuccess(gnutls_set_default_priority(session_));
+
+    nodeConfig()->security()->establish(session_);
+
     ClientHelloContext::instance()->init(nodeConfig());
+
     gnutls_handshake_set_post_client_hello_function(session_, onClientHello);
     HttpSocket::initTransport();
 

@@ -18,7 +18,7 @@ Ref<ServiceInstance> DirectoryService::createInstance(MetaObject *config) const
 }
 
 DirectoryService::DirectoryService():
-    configPrototype_(ServicePrototype::create("Directory"))
+    configPrototype_{ServicePrototype::create("Directory")}
 {
     establish(configPrototype_);
 }

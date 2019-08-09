@@ -7,8 +7,8 @@
  */
 
 #include <cc/meta/MetaObject>
+#include "MediaTypeDatabase.h"
 #include "LogConfig.h"
-#include "SecurityConfig.h"
 #include "ServiceInstance.h"
 
 namespace ccnode {
@@ -19,7 +19,8 @@ ServiceInstance::ServiceInstance(MetaObject *config):
     requestPayloadLimit_{config->value("request-payload-limit")},
     host_{String{config->value("host")}},
     uri_{String{config->value("uri")}},
-    security_{SecurityConfig::load(Variant::cast<MetaObject *>(config->value("security")))}
+    security_{HttpServerSecurity::load(Variant::cast<MetaObject *>(config->value("security")))},
+    mediaTypeDatabase_{MediaTypeDatabase::instance()}
 {}
 
 ServiceInstance::~ServiceInstance()

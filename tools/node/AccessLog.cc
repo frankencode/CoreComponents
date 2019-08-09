@@ -3,6 +3,9 @@
 
 namespace ccnode {
 
-AccessLog *accessLog() { return ThreadLocalSingleton<AccessLog>::instance(); }
+AccessLog *AccessLog::instance()
+{
+    return ThreadLocalSingleton<AccessLog>::instance();
+}
 
 } // namespace ccnode

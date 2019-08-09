@@ -83,10 +83,10 @@ public:
     NotImplemented(): ProtocolException{501, "Not implemented"} {}
 };
 
-class TlsError: public Exception
+class SecurityError: public Exception
 {
 public:
-    TlsError(int errorCode, const SocketAddress *peerAddress = nullptr);
+    SecurityError(int errorCode, const SocketAddress *peerAddress = nullptr);
     String message() const;
 
 private:
