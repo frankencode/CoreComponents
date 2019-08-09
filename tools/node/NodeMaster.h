@@ -23,8 +23,6 @@ public:
     static int run(int argc, char **argv);
 
 private:
-    friend class Singleton<NodeMaster>;
-
     NodeMaster(int argc, char **argv);
     const NodeConfig *config() const { return config_; }
 

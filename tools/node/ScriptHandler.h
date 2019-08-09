@@ -16,7 +16,7 @@ namespace ccnode {
 class ScriptHandler: public Object
 {
 public:
-    virtual bool process(HttpRequest *request, FileStatus *status, String documentRoot = "") = 0;
+    virtual bool process(HttpRequest *request, FileStatus *status, const String &documentRoot = "") = 0;
 };
 
 } // namespace ccnode

@@ -44,7 +44,7 @@ public:
         static bool done = false;
         if (done) return;
         Ref<CgiDirectoryService> service = CgiDirectoryService::create();
-        serviceRegistry()->registerService(service);
+        ServiceRegistry::instance()->registerService(service);
         done = true;
     }
 };

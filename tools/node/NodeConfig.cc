@@ -124,13 +124,13 @@ NodeConfig::NodeConfig(MetaObject *config, const String &dirPath):
     serviceInstances_ = ServiceInstances::create();
     if (config->hasChildren()) {
         for (MetaObject *child: config->children()) {
-            ServiceDefinition *service = serviceRegistry()->serviceByName(child->className());
+            ServiceDefinition *service = ServiceRegistry::instance()->serviceByName(child->className());
             serviceInstances_->append(service->createInstance(child));
         }
     }
 
     if (directoryPath_ != "") {
-        ServiceDefinition *service = serviceRegistry()->serviceByName("Directory");
+        ServiceDefinition *service = ServiceRegistry::instance()->serviceByName("Directory");
         MetaObject *serviceConfig = service->configPrototype();
         serviceConfig->establish("host", "*");
         serviceConfig->establish("path", directoryPath_);
@@ -138,7 +138,7 @@ NodeConfig::NodeConfig(MetaObject *config, const String &dirPath):
     }
 
     if (serviceInstances_->count() == 0) {
-        ServiceDefinition *service = serviceRegistry()->serviceByName("Echo");
+        ServiceDefinition *service = ServiceRegistry::instance()->serviceByName("Echo");
         MetaObject *serviceConfig = service->configPrototype();
         serviceConfig->establish("host", "*");
         serviceInstances_->append(service->createInstance(serviceConfig));

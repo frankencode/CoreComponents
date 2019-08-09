@@ -37,7 +37,7 @@ public:
         static bool done = false;
         if (done) return;
         Ref<EchoService> echoService = EchoService::create();
-        serviceRegistry()->registerService(echoService);
+        ServiceRegistry::instance()->registerService(echoService);
         done = true;
     }
 };

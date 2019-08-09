@@ -20,7 +20,7 @@ class CgiScriptHandler: public ScriptHandler
 public:
     static Ref<CgiScriptHandler> create(ServiceWorker *worker);
 
-    bool process(HttpRequest *request, FileStatus *status, String documentRoot = "");
+    bool process(HttpRequest *request, FileStatus *status, const String &documentRoot = "");
 
 private:
     CgiScriptHandler(ServiceWorker *worker);

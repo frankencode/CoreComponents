@@ -11,8 +11,6 @@
 #include <cc/Thread>
 #include <cc/PriorityChannel>
 #include <cc/Channel>
-#include <cc/Map>
-#include <cc/net/StreamSocket>
 #include "HttpServerConnection.h"
 
 namespace ccnode {

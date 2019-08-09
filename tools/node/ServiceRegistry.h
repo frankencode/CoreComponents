@@ -18,8 +18,9 @@ namespace ccnode {
 class ServiceRegistry: public Object
 {
 public:
+    static ServiceRegistry *instance();
     void registerService(ServiceDefinition *service);
-    ServiceDefinition *serviceByName(String name) const;
+    ServiceDefinition *serviceByName(const String &name) const;
 
 private:
     friend class Singleton<ServiceRegistry>;
@@ -30,7 +31,4 @@ private:
     Ref<ServiceByName> serviceByName_;
 };
 
-ServiceRegistry *serviceRegistry();
-
 } // namespace ccnode
-

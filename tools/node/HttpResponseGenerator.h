@@ -22,17 +22,17 @@ class HttpResponseGenerator: public HttpGenerator
 public:
     static Ref<HttpResponseGenerator> create(HttpConnection *client);
 
-    void setStatus(int statusCode, String reasonPhrase = "");
-    void setNodeVersion(String nodeVersion);
+    void setStatus(int statusCode, const String &reasonPhrase = "");
+    void setNodeVersion(const String &nodeVersion);
 
 private:
     friend class ServiceWorker;
 
     HttpResponseGenerator(HttpConnection *client);
 
-    inline Header *header() const { return header_; }
-    inline int statusCode() const { return statusCode_; }
-    inline bool delivered() const { return headerWritten_; }
+    Header *header() const { return header_; }
+    bool delivered() const { return headerWritten_; }
+    int statusCode() const { return statusCode_; }
     size_t bytesWritten() const;
 
     virtual void polishHeader() override;

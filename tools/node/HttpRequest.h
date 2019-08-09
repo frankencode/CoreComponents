@@ -20,20 +20,21 @@ class HttpServerConnection;
 class HttpRequest: public HttpMessage
 {
 public:
-    inline String method() const { return method_; }
-    inline String uri() const { return uri_; }
-    inline String query() const { return uri_->select(uri_->find('?') + 1, uri_->count()); }
-    inline String version() const { return version_; }
-    inline int majorVersion() const { return majorVersion_; }
-    inline int minorVersion() const { return minorVersion_; }
-    inline String host() const { return host_; }
+    static Ref<HttpRequest> create() { return new HttpRequest; }
 
-    inline String line() const { return line_; }
-    inline double time() const { return time_; }
+    String method() const { return method_; }
+    String uri() const { return uri_; }
+    String query() const { return uri_->select(uri_->find('?') + 1, uri_->count()); }
+    String version() const { return version_; }
+    int majorVersion() const { return majorVersion_; }
+    int minorVersion() const { return minorVersion_; }
+    String host() const { return host_; }
+
+    String line() const { return line_; }
+    double time() const { return time_; }
 
 private:
     friend class HttpServerConnection;
-    inline static Ref<HttpRequest> create() { return new HttpRequest; }
     HttpRequest() {}
 
     String method_;

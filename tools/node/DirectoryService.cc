@@ -35,7 +35,7 @@ public:
         static bool done = false;
         if (done) return;
         Ref<DirectoryService> directoryService = DirectoryService::create();
-        serviceRegistry()->registerService(directoryService);
+        ServiceRegistry::instance()->registerService(directoryService);
         done = true;
     }
 };

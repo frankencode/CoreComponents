@@ -13,17 +13,17 @@ namespace ccnode {
 
 Ref<CgiScriptHandler> CgiScriptHandler::create(ServiceWorker *worker)
 {
-    return new CgiScriptHandler(worker);
+    return new CgiScriptHandler{worker};
 }
 
 CgiScriptHandler::CgiScriptHandler(ServiceWorker *worker):
-    delegate_(CgiDelegate::create(worker))
+    delegate_{CgiDelegate::create(worker)}
 {}
 
 CgiScriptHandler::~CgiScriptHandler()
 {}
 
-bool CgiScriptHandler::process(HttpRequest *request, FileStatus *status, String documentRoot)
+bool CgiScriptHandler::process(HttpRequest *request, FileStatus *status, const String &documentRoot)
 {
     return delegate_->process(request, status, documentRoot);
 }

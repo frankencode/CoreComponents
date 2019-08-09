@@ -18,13 +18,13 @@ class HttpClientConnection;
 class HttpResponse: public HttpMessage
 {
 public:
-    inline String version() const { return version_; }
-    inline int statusCode() const { return statusCode_; }
-    inline String reasonPhrase() const { return reasonPhrase_; }
+    String version() const { return version_; }
+    int statusCode() const { return statusCode_; }
+    String reasonPhrase() const { return reasonPhrase_; }
 
 private:
     friend class HttpClientConnection;
-    inline static Ref<HttpResponse> create() { return new HttpResponse; }
+    static Ref<HttpResponse> create() { return new HttpResponse; }
     HttpResponse() {}
 
     String version_;

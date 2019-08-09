@@ -12,6 +12,11 @@
 
 namespace ccnode {
 
+ServiceRegistry *ServiceRegistry::instance()
+{
+    return Singleton<ServiceRegistry>::instance();
+}
+
 ServiceRegistry::ServiceRegistry():
     serviceByName_{ServiceByName::create()}
 {}
@@ -22,11 +27,9 @@ void ServiceRegistry::registerService(ServiceDefinition *service)
     NodeConfigProtocol::instance()->registerService(service->configPrototype());
 }
 
-ServiceDefinition *ServiceRegistry::serviceByName(String name) const
+ServiceDefinition *ServiceRegistry::serviceByName(const String &name) const
 {
     return serviceByName_->value(name);
 }
-
-ServiceRegistry *serviceRegistry() { return Singleton<ServiceRegistry>::instance(); }
 
 } // namespace ccnode

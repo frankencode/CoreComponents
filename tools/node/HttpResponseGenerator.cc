@@ -20,23 +20,23 @@ using namespace cc::http;
 
 Ref<HttpResponseGenerator> HttpResponseGenerator::create(HttpConnection *client)
 {
-    return new HttpResponseGenerator(client);
+    return new HttpResponseGenerator{client};
 }
 
 HttpResponseGenerator::HttpResponseGenerator(HttpConnection *client):
-    HttpGenerator(client),
-    statusCode_(200),
-    reasonPhrase_("OK")
+    HttpGenerator{client},
+    statusCode_{200},
+    reasonPhrase_{"OK"}
 {}
 
-void HttpResponseGenerator::setStatus(int statusCode, String reasonPhrase)
+void HttpResponseGenerator::setStatus(int statusCode, const String &reasonPhrase)
 {
     statusCode_ = statusCode;
     reasonPhrase_ = reasonPhrase;
     if (reasonPhrase_ == "") reasonPhrase_ = reasonPhraseByStatusCode(statusCode_);
 }
 
-void HttpResponseGenerator::setNodeVersion(String nodeVersion)
+void HttpResponseGenerator::setNodeVersion(const String &nodeVersion)
 {
     nodeVersion_ = nodeVersion;
 }
