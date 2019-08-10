@@ -33,7 +33,7 @@ void Log::open(const LogConfig *config)
 
 void Log::open()
 {
-    Guard<Mutex> guard(mutex_);
+    Guard<Mutex> guard{mutex_};
 
     if (path() != "") {
         errorStream_   =
