@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,6 +8,8 @@
 
 #include <cc/stdio>
 #include <cc/exceptions>
+#include <cc/SignalMaster>
+#include <cc/Process>
 #include "NodeMaster.h"
 
 using namespace ccnode;
@@ -16,8 +18,28 @@ int main(int argc, char **argv)
 {
     String toolName = String{argv[0]}->fileName();
     int exitCode = 0;
+
     try {
-        exitCode = NodeMaster::run(argc, argv);
+        Thread::blockSignals(SignalSet::createFull());
+
+        auto config = NodeConfig::load(argc, argv);
+
+        if (config->daemon() && !Process::isDaemonized())
+            Process::daemonize();
+
+        auto node = NodeMaster::create(config);
+
+        auto signalMaster = SignalMaster::start([=](Signal signal, bool *fin){
+            node->signaled(signal);
+            *fin = (+signal == SIGINT || +signal == SIGTERM);
+        });
+
+        node->start();
+        node->wait();
+
+        signalMaster->wait();
+
+        exitCode = node->exitCode();
     }
     catch (HelpRequest &) {
         fout(
@@ -32,11 +54,6 @@ int main(int argc, char **argv)
             "  -daemon    start as a daemon\n"
         ) << toolName;
     }
-    // #ifdef NDEBUG
-    catch (Exception &ex) {
-        ferr() << ex.message() << nl;
-        exitCode = 7;
-    }
-    // #endif
+
     return exitCode;
 }

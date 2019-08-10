@@ -6,16 +6,15 @@
  *
  */
 
+#include <cc/Channel>
 #include <cc/Process>
 #include <cc/User>
 #include <cc/Group>
 #include <cc/IoMonitor>
-#include <cc/SignalMaster>
 #include <cc/http/exceptions>
 #include "ErrorLog.h"
 #include "AccessLog.h"
 #include "SystemLog.h"
-#include "NodeConfig.h"
 #include "ServiceRegistry.h"
 #include "ConnectionManager.h"
 #include "HttpServerSocket.h"
@@ -26,35 +25,28 @@ namespace ccnode {
 
 using namespace cc::http;
 
-int NodeMaster::run(int argc, char **argv)
+Ref<NodeMaster> NodeMaster::create(const NodeConfig *config)
 {
-    Thread::blockSignals(SignalSet::createFull());
-
-    SystemLog::open(String{argv[0]}->fileName(), 0, LOG_DAEMON);
-
-    Ref<NodeMaster> node = new NodeMaster{argc, argv};
-
-    if (node->config()->daemon() && !Process::isDaemonized())
-        Process::daemonize();
-
-    auto signalMaster = SignalMaster::start([=](Signal signal, bool *fin){
-        node->signals_->pushBack(signal);
-        *fin = (+signal == SIGINT || +signal == SIGTERM);
-    });
-
-    node->start();
-    node->wait();
-
-    signalMaster->wait();
-
-    return node->exitCode_;
+    return new NodeMaster{config};
 }
 
-NodeMaster::NodeMaster(int argc, char **argv):
-    config_{NodeConfig::load(argc, argv)},
+NodeMaster::NodeMaster(const NodeConfig *config):
+    config_{config},
     signals_{Signals::create()},
     exitCode_{0}
-{}
+{
+    SystemLog::open("ccnode" /*FIXME: allow to configure log name*/, 0, LOG_DAEMON);
+}
+
+void NodeMaster::signaled(Signal signal)
+{
+    signals_->pushBack(signal);
+}
+
+int NodeMaster::exitCode() const
+{
+    return exitCode_;
+}
 
 void NodeMaster::run()
 {
@@ -80,13 +72,11 @@ void NodeMaster::run()
                 break;
             }
         }
-        #ifdef NDEBUG
         catch (Exception &ex) {
             CCNODE_ERROR() << ex << nl;
             exitCode_ = 1;
             break;
         }
-        #endif
     }
 }
 

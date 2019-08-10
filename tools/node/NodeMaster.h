@@ -9,7 +9,9 @@
 #pragma once
 
 #include <cc/Thread>
-#include <cc/Channel>
+#include "NodeConfig.h"
+
+namespace cc { template<class> class Channel; }
 
 namespace ccnode {
 
@@ -20,10 +22,15 @@ class NodeConfig;
 class NodeMaster: public Thread
 {
 public:
-    static int run(int argc, char **argv);
+    static Ref<NodeMaster> create(const NodeConfig *config);
+
+    void signaled(Signal signal);
+
+    int exitCode() const;
 
 private:
-    NodeMaster(int argc, char **argv);
+    NodeMaster(const NodeConfig *config);
+
     const NodeConfig *config() const { return config_; }
 
     virtual void run() final;

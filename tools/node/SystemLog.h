@@ -20,16 +20,17 @@ using namespace cc;
 class SystemLog: public Object
 {
 public:
-    static void open(String identifier, int option, int facility);
+    static void open(const String &identifier, int option, int facility);
+    static SystemLog *instance();
 
-    inline Stream *emergencyStream() const { return emergencyStream_; }
-    inline Stream *alertStream()     const { return alertStream_; }
-    inline Stream *criticalStream()  const { return criticalStream_; }
-    inline Stream *errorStream()     const { return errorStream_; }
-    inline Stream *warningStream()   const { return warningStream_; }
-    inline Stream *noticeStream()    const { return noticeStream_; }
-    inline Stream *infoStream()      const { return infoStream_; }
-    inline Stream *debugStream()     const { return debugStream_; }
+    Stream *emergencyStream() const { return emergencyStream_; }
+    Stream *alertStream()     const { return alertStream_; }
+    Stream *criticalStream()  const { return criticalStream_; }
+    Stream *errorStream()     const { return errorStream_; }
+    Stream *warningStream()   const { return warningStream_; }
+    Stream *noticeStream()    const { return noticeStream_; }
+    Stream *infoStream()      const { return infoStream_; }
+    Stream *debugStream()     const { return debugStream_; }
 
 private:
     friend class ThreadLocalSingleton<SystemLog>;
@@ -45,7 +46,4 @@ private:
     Ref<Stream> debugStream_;
 };
 
-SystemLog *systemLog();
-
 } // namespace ccnode
-

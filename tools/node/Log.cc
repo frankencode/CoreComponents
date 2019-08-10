@@ -43,11 +43,11 @@ void Log::open()
         debugStream_   = File::open(path(), FileOpen::WriteOnly|FileOpen::Append|FileOpen::Create);
     }
     else if (Process::isDaemonized()) {
-        errorStream_   = systemLog()->errorStream();
-        warningStream_ = systemLog()->warningStream();
-        noticeStream_  = systemLog()->noticeStream();
-        infoStream_    = systemLog()->infoStream();
-        debugStream_   = systemLog()->debugStream();
+        errorStream_   = SystemLog::instance()->errorStream();
+        warningStream_ = SystemLog::instance()->warningStream();
+        noticeStream_  = SystemLog::instance()->noticeStream();
+        infoStream_    = SystemLog::instance()->infoStream();
+        debugStream_   = SystemLog::instance()->debugStream();
     }
     else {
         errorStream_   =
