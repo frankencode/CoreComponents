@@ -8,9 +8,7 @@
 
 #pragma once
 
-#include <cc/Date>
 #include <cc/Stream>
-#include <cc/Mutex>
 #include "LogConfig.h"
 
 namespace ccnode {
@@ -21,25 +19,23 @@ class Log: public Object
 {
 public:
     void open(const LogConfig *config);
-    void open();
 
     String path() const { return config_->path(); }
     LogLevel level() const { return config_->level(); }
     double retentionPeriod() const { return config_->retentionPeriod(); }
     double rotationInterval() const { return config_->rotationInterval(); }
 
-    Stream *errorStream() const;
-    Stream *warningStream() const;
-    Stream *noticeStream() const;
-    Stream *infoStream() const;
-    Stream *debugStream() const;
+    Stream *errorStream() const { return errorStream_; }
+    Stream *warningStream() const { return warningStream_; }
+    Stream *noticeStream() const { return noticeStream_; }
+    Stream *infoStream() const { return infoStream_; }
+    Stream *debugStream() const { return debugStream_; }
 
 protected:
     Log();
     ~Log();
 
 private:
-    Ref<Mutex> mutex_;
     Ref<const LogConfig> config_;
     Ref<Stream> errorStream_;
     Ref<Stream> warningStream_;

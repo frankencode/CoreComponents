@@ -7,6 +7,7 @@
  */
 
 #include <cc/exceptions>
+#include <cc/Date>
 #include "Log.h"
 #include "LogConfig.h"
 

@@ -112,6 +112,7 @@ NodeConfig::NodeConfig(MetaObject *config, const String &dirPath):
     group_ = config->value("group");
     version_ = config->value("version");
     daemon_ = config->value("daemon");
+    daemonName_ = config->value("daemon-name");
     concurrency_ = config->value("concurrency");
     serviceWindow_ = config->value("service-window");
     connectionLimit_ = config->value("connection-limit");

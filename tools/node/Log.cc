@@ -18,7 +18,6 @@
 namespace ccnode {
 
 Log::Log():
-    mutex_{Mutex::create()},
     config_{LogConfig::loadDefault()}
 {}
 
@@ -28,12 +27,6 @@ Log::~Log()
 void Log::open(const LogConfig *config)
 {
     config_ = config;
-    open();
-}
-
-void Log::open()
-{
-    Guard<Mutex> guard{mutex_};
 
     if (path() != "") {
         errorStream_   =
@@ -63,11 +56,5 @@ void Log::open()
     if (level() < LogLevel::Info)    infoStream_    = NullStream::instance();
     if (level() < LogLevel::Debug)   debugStream_   = NullStream::instance();
 }
-
-Stream *Log::errorStream()   const { Guard<Mutex> guard(mutex_); return errorStream_; }
-Stream *Log::warningStream() const { Guard<Mutex> guard(mutex_); return warningStream_; }
-Stream *Log::noticeStream()  const { Guard<Mutex> guard(mutex_); return noticeStream_; }
-Stream *Log::infoStream()    const { Guard<Mutex> guard(mutex_); return infoStream_; }
-Stream *Log::debugStream()   const { Guard<Mutex> guard(mutex_); return debugStream_; }
 
 } // namespace ccnode

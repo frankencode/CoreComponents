@@ -9,6 +9,7 @@
 #include <cc/Format>
 #include <cc/RefGuard>
 #include <cc/System>
+#include <cc/Date>
 #include <cc/net/Uri>
 #include <cc/http/exceptions>
 #include "ErrorLog.h"

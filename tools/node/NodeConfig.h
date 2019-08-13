@@ -35,6 +35,7 @@ public:
     String group() const { return group_; }
     String version() const { return version_; }
     bool daemon() const { return daemon_; }
+    String daemonName() const { return daemonName_; }
     int concurrency() const { return concurrency_; }
     int serviceWindow() const { return serviceWindow_; }
     int connectionLimit() const { return connectionLimit_; }
@@ -58,6 +59,7 @@ private:
     String group_;
     String version_;
     bool daemon_;
+    String daemonName_;
     int concurrency_;
     int serviceWindow_;
     int connectionLimit_;

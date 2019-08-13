@@ -8,7 +8,6 @@
 
 #include <cc/Singleton>
 #include <cc/Process>
-#include <cc/Bundle>
 #include "SecurityPrototype.h"
 #include "LogPrototype.h"
 #include "NodeConfigProtocol.h"
@@ -37,8 +36,9 @@ protected:
         establish("protocol-family", "");
         establish("user", "");
         establish("group", "");
-        establish("version", "ccnode" /*"/" CC_BUNDLE_VERSION*/);
+        establish("version", "ccnode");
         establish("daemon", false);
+        establish("daemon-name", "ccnode");
         establish("concurrency",
             #ifdef NDEBUG
             256

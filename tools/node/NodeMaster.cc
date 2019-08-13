@@ -35,7 +35,8 @@ NodeMaster::NodeMaster(const NodeConfig *config):
     signals_{Signals::create()},
     exitCode_{0}
 {
-    SystemLog::open("ccnode" /*FIXME: allow to configure log name*/, 0, LOG_DAEMON);
+    if (config->daemon())
+        SystemLog::open(config->daemonName(), 0, LOG_DAEMON);
 }
 
 void NodeMaster::signaled(Signal signal)
@@ -82,8 +83,6 @@ void NodeMaster::run()
 
 void NodeMaster::runNode()
 {
-    CCNODE_NOTICE() << "Starting (pid = " << Process::getId() << ")" << nl;
-
     typedef List< Ref<StreamSocket> > ListeningSockets;
     Ref<ListeningSockets> listeningSockets = ListeningSockets::create();
 
@@ -120,8 +119,6 @@ void NodeMaster::runNode()
         worker = ServiceWorker::create(config(), pendingConnections, closedConnections);
         worker->start();
     }
-
-    CCNODE_NOTICE() << "Up and running (pid = " << Process::getId() << ")" << nl;
 
     Ref<IoMonitor> ioMonitor = IoMonitor::create(listeningSockets->count());
     for (StreamSocket *socket: listeningSockets)
