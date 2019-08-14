@@ -19,8 +19,8 @@ public:
         return new DirectoryService;
     }
 
-    virtual ServicePrototype *configPrototype() const { return configPrototype_; }
-    virtual Ref<ServiceInstance> createInstance(MetaObject *config) const;
+    ServicePrototype *configPrototype() const override { return configPrototype_; }
+    Ref<ServiceInstance> createInstance(const MetaObject *config) const override;
 
     static void establish(ServicePrototype *configPrototype);
 

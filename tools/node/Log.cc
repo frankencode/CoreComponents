@@ -9,8 +9,6 @@
 #include <cc/Process>
 #include <cc/File>
 #include <cc/NullStream>
-#include <cc/Mutex>
-#include <cc/Guard>
 #include <cc/stdio>
 #include "SystemLog.h"
 #include "Log.h"

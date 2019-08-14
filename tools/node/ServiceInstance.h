@@ -45,7 +45,7 @@ public:
     const LogConfig *accessLogConfig() const { return accessLogConfig_; }
 
 protected:
-    ServiceInstance(MetaObject *config);
+    ServiceInstance(const MetaObject *config);
     ~ServiceInstance();
 
     String serviceName_;

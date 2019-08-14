@@ -12,13 +12,13 @@
 
 namespace ccnode {
 
-Ref<ServiceInstance> CgiService::createInstance(MetaObject *config) const
+Ref<ServiceInstance> CgiService::createInstance(const MetaObject *config) const
 {
     return CgiInstance::create(config);
 }
 
 CgiService::CgiService():
-    configPrototype_(ServicePrototype::create("CGI"))
+    configPrototype_{ServicePrototype::create("CGI")}
 {
     establish(configPrototype_);
 }
@@ -35,8 +35,7 @@ public:
     CgiServiceAnnouncer() {
         static bool done = false;
         if (done) return;
-        Ref<CgiService> service = CgiService::create();
-        ServiceRegistry::instance()->registerService(service);
+        ServiceRegistry::instance()->registerService<CgiService>();
         done = true;
     }
 };

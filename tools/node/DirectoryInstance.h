@@ -16,15 +16,16 @@ namespace ccnode {
 class DirectoryInstance: public virtual ServiceInstance
 {
 public:
-    static Ref<DirectoryInstance> create(MetaObject *config);
+    static Ref<DirectoryInstance> create(const MetaObject *config);
 
-    virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const;
+    Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const override;
 
-    inline String path() const { return path_; }
-    inline bool showHidden() const { return showHidden_; }
+    String path() const { return path_; }
+    bool showHidden() const { return showHidden_; }
 
 protected:
-    DirectoryInstance(MetaObject *config);
+    DirectoryInstance(const MetaObject *config);
+
     String path_;
     bool showHidden_;
 };

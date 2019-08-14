@@ -21,15 +21,16 @@ public:
         return new CgiDirectoryService;
     }
 
-    virtual ServicePrototype *configPrototype() const { return configPrototype_; }
+    ServicePrototype *configPrototype() const override { return configPrototype_; }
 
-    virtual Ref<ServiceInstance> createInstance(MetaObject *config) const {
+    Ref<ServiceInstance> createInstance(const MetaObject *config) const override
+    {
         return CgiDirectoryInstance::create(config);
     }
 
 private:
     CgiDirectoryService():
-        configPrototype_(ServicePrototype::create("CGI-Directory"))
+        configPrototype_{ServicePrototype::create("CGI-Directory")}
     {
         CgiService::establish(configPrototype_);
         DirectoryService::establish(configPrototype_);
@@ -43,8 +44,7 @@ public:
     CgiDirectoryServiceAnnouncer() {
         static bool done = false;
         if (done) return;
-        Ref<CgiDirectoryService> service = CgiDirectoryService::create();
-        ServiceRegistry::instance()->registerService(service);
+        ServiceRegistry::instance()->registerService<CgiDirectoryService>();
         done = true;
     }
 };

@@ -35,8 +35,8 @@ private:
     int statusCode() const { return statusCode_; }
     size_t bytesWritten() const;
 
-    virtual void polishHeader() override;
-    virtual void writeFirstLine(Format &sink) override;
+    void polishHeader() override;
+    void writeFirstLine(Format &sink) override;
 
     int statusCode_;
     String reasonPhrase_;

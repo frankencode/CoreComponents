@@ -46,7 +46,7 @@ private:
     ~ServiceWorker();
 
     static void logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "");
-    virtual void run();
+    void run() final;
 
     Ref<ServiceInstance> serviceInstance_;
     Ref<ServiceDelegate> serviceDelegate_;

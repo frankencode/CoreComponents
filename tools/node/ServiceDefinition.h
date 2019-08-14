@@ -19,7 +19,7 @@ using namespace cc;
 class ServicePrototype: public MetaObject
 {
 public:
-    static Ref<ServicePrototype> create(const String &className, MetaProtocol *protocol = 0);
+    static Ref<ServicePrototype> create(const String &className, MetaProtocol *protocol = nullptr);
 
 protected:
     ServicePrototype(const String &className, MetaProtocol *protocol);
@@ -31,7 +31,7 @@ class ServiceDefinition: public Object
 {
 public:
     virtual ServicePrototype *configPrototype() const = 0;
-    virtual Ref<ServiceInstance> createInstance(MetaObject *config) const = 0;
+    virtual Ref<ServiceInstance> createInstance(const MetaObject *config) const = 0;
 };
 
 } // namespace ccnode

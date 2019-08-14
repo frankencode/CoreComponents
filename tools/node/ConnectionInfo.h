@@ -25,13 +25,13 @@ class ConnectionInfo: public Object
 public:
     static Ref<ConnectionInfo> create(const SocketAddress *remoteAddress);
 
-    inline const SocketAddress *remoteAddress() const { return remoteAddress_; }
-    inline int priority() const { return priority_; }
-    inline void setPriority(int newPriority) { priority_ = newPriority; }
+    const SocketAddress *remoteAddress() const { return remoteAddress_; }
+    int priority() const { return priority_; }
+    void setPriority(int newPriority) { priority_ = newPriority; }
 
-    inline uint64_t originAddress() const { return originAddress_; }
-    inline double arrivalTime() const { return arrivalTime_; }
-    inline double departureTime() const { return departureTime_; }
+    uint64_t originAddress() const { return originAddress_; }
+    double arrivalTime() const { return arrivalTime_; }
+    double departureTime() const { return departureTime_; }
 
     void updateDepartureTime();
 

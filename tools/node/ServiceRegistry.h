@@ -19,7 +19,12 @@ class ServiceRegistry: public Object
 {
 public:
     static ServiceRegistry *instance();
+
+    template<class T>
+    void registerService() { registerService(T::create()); }
+
     void registerService(ServiceDefinition *service);
+
     ServiceDefinition *serviceByName(const String &name) const;
 
 private:

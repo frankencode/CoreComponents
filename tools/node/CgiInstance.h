@@ -19,9 +19,9 @@ using namespace cc::net;
 class CgiInstance: public virtual ServiceInstance
 {
 public:
-    static Ref<CgiInstance> create(MetaObject *config);
+    static Ref<CgiInstance> create(const MetaObject *config);
 
-    virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const;
+    Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const override;
 
     String script() const { return script_; }
     StringList *server() const { return server_; }
@@ -31,7 +31,7 @@ public:
     int randomSeed() { return delegateCount_++; }
 
 protected:
-    CgiInstance(MetaObject *config);
+    CgiInstance(const MetaObject *config);
 
     String script_;
     Ref<StringList> server_;

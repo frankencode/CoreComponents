@@ -12,7 +12,7 @@
 
 namespace ccnode {
 
-Ref<ServiceInstance> DirectoryService::createInstance(MetaObject *config) const
+Ref<ServiceInstance> DirectoryService::createInstance(const MetaObject *config) const
 {
     return DirectoryInstance::create(config);
 }
@@ -34,8 +34,7 @@ public:
     DirectoryAnnouncer() {
         static bool done = false;
         if (done) return;
-        Ref<DirectoryService> directoryService = DirectoryService::create();
-        ServiceRegistry::instance()->registerService(directoryService);
+        ServiceRegistry::instance()->registerService<DirectoryService>();
         done = true;
     }
 };

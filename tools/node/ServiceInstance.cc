@@ -13,7 +13,7 @@
 
 namespace ccnode {
 
-ServiceInstance::ServiceInstance(MetaObject *config):
+ServiceInstance::ServiceInstance(const MetaObject *config):
     serviceName_{config->className()},
     requestLimit_{config->value("request-limit")},
     requestPayloadLimit_{config->value("request-payload-limit")},

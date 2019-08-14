@@ -33,7 +33,7 @@ private:
 
     const NodeConfig *config() const { return config_; }
 
-    virtual void run() final;
+    void run() final;
     void runNode();
 
     Ref<const NodeConfig> config_;

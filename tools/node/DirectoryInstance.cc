@@ -12,15 +12,15 @@
 
 namespace ccnode {
 
-Ref<DirectoryInstance> DirectoryInstance::create(MetaObject *config)
+Ref<DirectoryInstance> DirectoryInstance::create(const MetaObject *config)
 {
     return new DirectoryInstance(config);
 }
 
-DirectoryInstance::DirectoryInstance(MetaObject *config):
-    ServiceInstance(config),
-    path_(config->value("path")),
-    showHidden_(config->value("show-hidden"))
+DirectoryInstance::DirectoryInstance(const MetaObject *config):
+    ServiceInstance{config},
+    path_{config->value("path")},
+    showHidden_{config->value("show-hidden")}
 {
     if (path_ == "")
         throw UsageError{"DirectoryInstance: Mandatory argument \"path\" is missing"};

@@ -17,12 +17,12 @@ namespace ccnode {
 
 using namespace cc::http;
 
-Ref<CgiInstance> CgiInstance::create(MetaObject *config)
+Ref<CgiInstance> CgiInstance::create(const MetaObject *config)
 {
     return new CgiInstance{config};
 }
 
-CgiInstance::CgiInstance(MetaObject *config):
+CgiInstance::CgiInstance(const MetaObject *config):
     ServiceInstance{config},
     script_{config->value("script")},
     server_{config->value("server")},

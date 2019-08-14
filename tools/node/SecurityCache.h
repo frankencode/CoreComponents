@@ -31,7 +31,7 @@ private:
 
     const NodeConfig *nodeConfig() const;
 
-    virtual void run();
+    void run() final;
     void deleteKey(gnutls_datum_t *key);
 
     const NodeConfig *nodeConfig_;

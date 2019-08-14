@@ -12,15 +12,15 @@
 
 namespace ccnode {
 
-Ref<CgiDirectoryInstance> CgiDirectoryInstance::create(MetaObject *config)
+Ref<CgiDirectoryInstance> CgiDirectoryInstance::create(const MetaObject *config)
 {
-    return new CgiDirectoryInstance(config);
+    return new CgiDirectoryInstance{config};
 }
 
-CgiDirectoryInstance::CgiDirectoryInstance(MetaObject *config):
-    ServiceInstance(config),
-    DirectoryInstance(config),
-    CgiInstance(config)
+CgiDirectoryInstance::CgiDirectoryInstance(const MetaObject *config):
+    ServiceInstance{config},
+    DirectoryInstance{config},
+    CgiInstance{config}
 {}
 
 Ref<ServiceDelegate> CgiDirectoryInstance::createDelegate(ServiceWorker *worker) const

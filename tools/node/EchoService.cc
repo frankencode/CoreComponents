@@ -19,12 +19,12 @@ public:
         return new EchoService;
     }
 
-    virtual ServicePrototype *configPrototype() const { return configPrototype_; }
-    virtual Ref<ServiceInstance> createInstance(MetaObject *config) const { return EchoInstance::create(config); }
+    ServicePrototype *configPrototype() const override { return configPrototype_; }
+    Ref<ServiceInstance> createInstance(const MetaObject *config) const override { return EchoInstance::create(config); }
 
 private:
     EchoService():
-        configPrototype_(ServicePrototype::create("Echo"))
+        configPrototype_{ServicePrototype::create("Echo")}
     {}
 
     Ref<ServicePrototype> configPrototype_;
@@ -36,8 +36,7 @@ public:
     {
         static bool done = false;
         if (done) return;
-        Ref<EchoService> echoService = EchoService::create();
-        ServiceRegistry::instance()->registerService(echoService);
+        ServiceRegistry::instance()->registerService<EchoService>();
         done = true;
     }
 };

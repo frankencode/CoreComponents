@@ -16,12 +16,12 @@ namespace ccnode {
 class CgiDirectoryInstance: public DirectoryInstance, public CgiInstance
 {
 public:
-    static Ref<CgiDirectoryInstance> create(MetaObject *config);
+    static Ref<CgiDirectoryInstance> create(const MetaObject *config);
 
-    virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const;
+    Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const override;
 
 private:
-    CgiDirectoryInstance(MetaObject *config);
+    CgiDirectoryInstance(const MetaObject *config);
 
     String script_;
     Ref<MetaObject> environment_;

@@ -13,17 +13,17 @@ namespace ccnode {
 class EchoInstance: public ServiceInstance
 {
 public:
-    static Ref<EchoInstance> create(MetaObject *config) {
-        return new EchoInstance(config);
+    static Ref<EchoInstance> create(const MetaObject *config) {
+        return new EchoInstance{config};
     }
 
-    virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const {
+    Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const override {
         return EchoDelegate::create(worker);
     }
 
 private:
-    EchoInstance(MetaObject *config)
-        : ServiceInstance(config)
+    EchoInstance(const MetaObject *config):
+        ServiceInstance{config}
     {}
 };
 
