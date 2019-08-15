@@ -6,10 +6,9 @@
  *
  */
 
-#include <cc/Process>
+#include <cc/stdio>
 #include <cc/File>
 #include <cc/NullStream>
-#include <cc/stdio>
 #include "SystemLog.h"
 #include "Log.h"
 
@@ -33,19 +32,19 @@ void Log::open(const LogConfig *config)
         infoStream_    =
         debugStream_   = File::open(path(), FileOpen::WriteOnly|FileOpen::Append|FileOpen::Create);
     }
-    else if (Process::isDaemonized()) {
-        errorStream_   = SystemLog::instance()->errorStream();
-        warningStream_ = SystemLog::instance()->warningStream();
-        noticeStream_  = SystemLog::instance()->noticeStream();
-        infoStream_    = SystemLog::instance()->infoStream();
-        debugStream_   = SystemLog::instance()->debugStream();
-    }
-    else {
+    else if (stdErr()->isatty()) {
         errorStream_   =
         warningStream_ =
         noticeStream_  =
         infoStream_    =
         debugStream_   = stdErr();
+    }
+    else {
+        errorStream_   = SystemLog::instance()->errorStream();
+        warningStream_ = SystemLog::instance()->warningStream();
+        noticeStream_  = SystemLog::instance()->noticeStream();
+        infoStream_    = SystemLog::instance()->infoStream();
+        debugStream_   = SystemLog::instance()->debugStream();
     }
 
     if (level() < LogLevel::Error)   errorStream_   = NullStream::instance();
