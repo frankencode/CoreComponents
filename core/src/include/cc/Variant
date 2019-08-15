@@ -195,20 +195,20 @@ public:
 
     ~Variant() { if (+((*this)->type_ & VariantType::Object))(*this)->killRef(); }
 
-    inline const Variant &operator=(bool value)          { (*this)->type_ = VariantType::Bool;    (*this)->int_ = value; return *this; }
-    inline const Variant &operator=(int value)           { (*this)->type_ = VariantType::Int;     (*this)->int_ = value; return *this; }
-    inline const Variant &operator=(float value)         { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
-    inline const Variant &operator=(double value)        { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
-    inline const Variant &operator=(Color value)         { (*this)->type_ = VariantType::Color;   (*this)->word_ = value->toWord(); return *this; }
-    inline const Variant &operator=(Version value)       { (*this)->type_ = VariantType::Version; (*this)->word_ = value->toWord(); return *this; }
+    const Variant &operator=(bool value)          { (*this)->type_ = VariantType::Bool;    (*this)->int_ = value; return *this; }
+    const Variant &operator=(int value)           { (*this)->type_ = VariantType::Int;     (*this)->int_ = value; return *this; }
+    const Variant &operator=(float value)         { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
+    const Variant &operator=(double value)        { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
+    const Variant &operator=(Color value)         { (*this)->type_ = VariantType::Color;   (*this)->word_ = value->toWord(); return *this; }
+    const Variant &operator=(Version value)       { (*this)->type_ = VariantType::Version; (*this)->word_ = value->toWord(); return *this; }
 
-    inline const Variant &operator=(const char *value)   { return (*this) = Variant(value); }
-    inline const Variant &operator=(const String &value) { return (*this) = Variant(value); }
+    const Variant &operator=(const char *value)   { return (*this) = Variant(value); }
+    const Variant &operator=(const String &value) { return (*this) = Variant(value); }
 
     template<class T>
-    inline const Variant &operator=(const Ref<T> &value) { return (*this) = Variant(value); }
+    const Variant &operator=(const Ref<T> &value) { return (*this) = Variant(value); }
 
-    inline const Variant &operator=(const Variant &b)
+    const Variant &operator=(const Variant &b)
     {
         if (+((*this)->type_ & VariantType::Object)) (*this)->killRef();
         (*this)->type_ = b->type_;
@@ -220,55 +220,55 @@ public:
         return *this;
     }
 
-    inline operator bool() const {
+    operator bool() const {
         if (!+(*this)->type_) return bool();
         CC_ASSERT2(+((*this)->type_ & VariantType::Int), illegalConversion);
         return (*this)->int_;
     }
-    inline operator int() const {
+    operator int() const {
         if (!+(*this)->type_) return int();
         CC_ASSERT2(+((*this)->type_ & VariantType::Int), illegalConversion);
         return (*this)->int_;
     }
-    inline operator float() const {
+    operator float() const {
         if (!+(*this)->type_) return float();
         if (+((*this)->type_ & VariantType::Int)) return (*this)->int_;
         CC_ASSERT2(+((*this)->type_ & VariantType::Float), illegalConversion);
         return (*this)->float_;
     }
-    inline operator Color() const {
+    operator Color() const {
         if (!+(*this)->type_) return Color();
         CC_ASSERT2(+((*this)->type_ & VariantType::Color), illegalConversion);
         return Color::fromWord((*this)->word_);
     }
-    inline operator Version() const {
+    operator Version() const {
         if (!+(*this)->type_) return Version();
         CC_ASSERT2(+((*this)->type_ & VariantType::Version), illegalConversion);
         return Version::fromWord((*this)->word_);
     }
-    inline operator String() const {
+    operator String() const {
         if (!+(*this)->type_) return String();
         CC_ASSERT2(+((*this)->type_ & VariantType::String), illegalConversion);
         return Variant::cast<CharArray *>(*this);
     }
 
     template<class T>
-    inline operator Ref<T>() const {
+    operator Ref<T>() const {
         if (!+(*this)->type_) return Ref<T>();
         CC_ASSERT2(+((*this)->type_ & VariantType::Object), illegalConversion);
         return Variant::cast<T *>(*this);
     }
 
-    inline const Instance *operator->() const { return &instance_; }
-    inline Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
+    Instance *operator->() { return &instance_; }
 
     bool operator==(const Variant &b) const;
     bool operator<(const Variant &b) const;
 
-    inline bool operator>(const Variant &b) const  { return b < *this; }
-    inline bool operator!=(const Variant &b) const { return !(*this == b); }
-    inline bool operator<=(const Variant &b) const { return (*this < b) || (*this == b); }
-    inline bool operator>=(const Variant &b) const { return (b < *this) || (*this == b); }
+    bool operator>(const Variant &b) const  { return b < *this; }
+    bool operator!=(const Variant &b) const { return !(*this == b); }
+    bool operator<=(const Variant &b) const { return (*this < b) || (*this == b); }
+    bool operator>=(const Variant &b) const { return (b < *this) || (*this == b); }
 
 private:
     static constexpr const char *illegalConversion = "Illegal Variant conversion";
@@ -279,7 +279,7 @@ private:
 template<class T>
 class VariantCast<T, true> {
 public:
-    inline static T cast(const Variant &value) {
+    static T cast(const Variant &value) {
         typedef typename CC_DEREF(T) U;
         return (+(value->type() & VariantType::Object)) ? Object::cast<U *>(value->ref().get()) : nullptr;
     }
@@ -288,7 +288,7 @@ public:
 template<class T>
 class VariantCast<T, false> {
 public:
-    inline static T cast(const Variant &value) {
+    static T cast(const Variant &value) {
         return T(value);
     }
 };
@@ -296,7 +296,7 @@ public:
 template<>
 class VariantCast<String, false> {
 public:
-    inline static String cast(const Variant &value) {
+    static String cast(const Variant &value) {
         return Variant::cast<CharArray *>(value);
     }
 };
@@ -304,7 +304,7 @@ public:
 template<>
 class VariantCast<Color, false> {
 public:
-    inline static Color cast(const Variant &value) {
+    static Color cast(const Variant &value) {
         return Color::fromWord(value->word_);
     }
 };
@@ -312,7 +312,7 @@ public:
 template<>
 class VariantCast<Version, false> {
 public:
-    inline static Version cast(const Variant &value) {
+    static Version cast(const Variant &value) {
         return Version::fromWord(value->word_);
     }
 };

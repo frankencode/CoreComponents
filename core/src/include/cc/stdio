@@ -23,7 +23,7 @@ SystemStream *stdErr(); ///< Standard error stream
 
 inline SystemStream *standardInput() { return stdIn(); } ///< Standard input stream
 inline SystemStream *standardOutput() { return stdOut(); } ///< Standard input stream
-inline SystemStream *standardError() { return stdErr(); } ///< Standard input stream
+inline SystemStream *standardError () { return stdErr(); } ///< Standard input stream
 
 /** \}
   */

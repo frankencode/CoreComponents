@@ -74,23 +74,24 @@ void Arguments::validate(const VariantMap *prototype)
         Variant defaultValue;
         if (!prototype->lookup(name, &defaultValue))
             throw UsageError{Format{"No such option: \"%%\""} << name};
-        if (defaultValue == Variant()) continue;
-        VariantType valueType = value->type();
-        VariantType defaultType = defaultValue->type();
-        if (valueType != defaultType) {
-            if (valueType == VariantType::Int && defaultType == VariantType::Bool) {
+        if (defaultValue == Variant{}) continue;
+        if (value->type() != defaultValue->type()) {
+            if (value->type() == VariantType::Int && defaultValue->type() == VariantType::Bool) {
                 int intValue = value;
                 if (intValue == 0 || intValue == 1)
                     options_->establish(name, intValue == 1);
             }
-            else if (valueType == VariantType::Int && defaultType == VariantType::Float) {
+            else if (value->type() == VariantType::Int && defaultValue->type() == VariantType::Float) {
                 options_->establish(name, float(int(value)));
             }
-            else if (valueType != VariantType::Object && defaultType == VariantType::String) {
+            else if (value->type() != VariantType::Object && defaultValue->type() == VariantType::String) {
                 options_->establish(name, str(value));
             }
-            else if (valueType== VariantType::String && +(defaultType & VariantType::String) && +(defaultType & VariantType::List)) {
+            else if (value->type() == VariantType::String && defaultValue->type() == VariantType::List && defaultValue->itemType() == VariantType::String) {
                 options_->establish(name, StringList::create() << str(value));
+            }
+            else if (value->type() == VariantType::Int && defaultValue->type() == VariantType::List && defaultValue->itemType() == VariantType::Int) {
+                options_->establish(name, List<int>::create() << int(value));
             }
             else {
                 throw UsageError{
