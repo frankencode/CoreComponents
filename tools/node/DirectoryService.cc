@@ -18,12 +18,12 @@ Ref<ServiceInstance> DirectoryService::createInstance(const MetaObject *config) 
 }
 
 DirectoryService::DirectoryService():
-    configPrototype_{ServicePrototype::create("Directory")}
+    configPrototype_{WebServicePrototype::create("Directory")}
 {
     establish(configPrototype_);
 }
 
-void DirectoryService::establish(ServicePrototype *configPrototype)
+void DirectoryService::establish(WebServicePrototype *configPrototype)
 {
     configPrototype->establish("path", "");
     configPrototype->establish("show-hidden", false);

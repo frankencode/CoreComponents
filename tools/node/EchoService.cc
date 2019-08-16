@@ -7,27 +7,27 @@
  */
 
 #include "ServiceRegistry.h"
-#include "ServiceDefinition.h"
+#include "WebService.h"
 #include "EchoInstance.h"
 
 namespace ccnode {
 
-class EchoService: public ServiceDefinition
+class EchoService: public WebService
 {
 public:
     static Ref<EchoService> create() {
         return new EchoService;
     }
 
-    ServicePrototype *configPrototype() const override { return configPrototype_; }
+    WebServicePrototype *configPrototype() const override { return configPrototype_; }
     Ref<ServiceInstance> createInstance(const MetaObject *config) const override { return EchoInstance::create(config); }
 
 private:
     EchoService():
-        configPrototype_{ServicePrototype::create("Echo")}
+        configPrototype_{WebServicePrototype::create("Echo")}
     {}
 
-    Ref<ServicePrototype> configPrototype_;
+    Ref<WebServicePrototype> configPrototype_;
 };
 
 class EchoAnnouncer {

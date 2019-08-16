@@ -16,9 +16,9 @@ namespace cc {
 namespace meta {
 
 MetaObject::MetaObject(const String &className, MetaProtocol *protocol):
-    className_(className),
-    protocol_(protocol),
-    children_(MetaObjectList::create())
+    className_{className},
+    protocol_{protocol},
+    children_{MetaObjectList::create()}
 {
     if (!protocol_) protocol_ = MetaProtocol::create();
 }

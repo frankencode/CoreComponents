@@ -21,13 +21,13 @@ ServiceRegistry::ServiceRegistry():
     serviceByName_{ServiceByName::create()}
 {}
 
-void ServiceRegistry::registerService(ServiceDefinition *service)
+void ServiceRegistry::registerService(WebService *service)
 {
     serviceByName_->establish(service->configPrototype()->className(), service);
     NodeConfigProtocol::instance()->registerService(service->configPrototype());
 }
 
-ServiceDefinition *ServiceRegistry::serviceByName(const String &name) const
+WebService *ServiceRegistry::serviceByName(const String &name) const
 {
     return serviceByName_->value(name);
 }

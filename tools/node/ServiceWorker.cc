@@ -15,7 +15,7 @@
 #include "ErrorLog.h"
 #include "AccessLog.h"
 #include "NodeConfig.h"
-#include "ServiceDefinition.h"
+#include "WebService.h"
 #include "ServiceDelegate.h"
 #include "HttpResponseGenerator.h"
 #include "ServiceWorker.h"

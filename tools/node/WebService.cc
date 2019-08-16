@@ -8,17 +8,17 @@
 
 #include "LogPrototype.h"
 #include "SecurityPrototype.h"
-#include "ServiceDefinition.h"
+#include "WebService.h"
 
 namespace ccnode {
 
-Ref<ServicePrototype> ServicePrototype::create(const String &className, MetaProtocol *protocol)
+Ref<WebServicePrototype> WebServicePrototype::create(const String &className, MetaProtocol *protocol)
 {
-    return new ServicePrototype{className, protocol};
+    return new WebServicePrototype{className, protocol};
 }
 
-ServicePrototype::ServicePrototype(const String &className, MetaProtocol *protocol):
-    MetaObject(className, protocol)
+WebServicePrototype::WebServicePrototype(const String &className, MetaProtocol *protocol):
+    MetaObject{className, protocol}
 {
     establish("request-limit", 100);
     establish("request-payload-limit", 0x10000);

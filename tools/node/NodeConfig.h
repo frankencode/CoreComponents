@@ -11,7 +11,7 @@
 #include <cc/String>
 #include <cc/net/SocketAddress>
 #include <cc/http/HttpServerSecurity>
-#include "ServiceDefinition.h"
+#include "WebService.h"
 #include "LogConfig.h"
 
 namespace ccnode {

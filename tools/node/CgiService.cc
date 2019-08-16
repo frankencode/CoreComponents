@@ -18,12 +18,12 @@ Ref<ServiceInstance> CgiService::createInstance(const MetaObject *config) const
 }
 
 CgiService::CgiService():
-    configPrototype_{ServicePrototype::create("CGI")}
+    configPrototype_{WebServicePrototype::create("CGI")}
 {
     establish(configPrototype_);
 }
 
-void CgiService::establish(ServicePrototype *configPrototype)
+void CgiService::establish(WebServicePrototype *configPrototype)
 {
     configPrototype->establish("script", "");
     configPrototype->establish("server", StringList::create());

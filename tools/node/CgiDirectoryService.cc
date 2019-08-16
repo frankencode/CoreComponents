@@ -7,21 +7,21 @@
  */
 
 #include "ServiceRegistry.h"
-#include "ServiceDefinition.h"
+#include "WebService.h"
 #include "DirectoryService.h"
 #include "CgiService.h"
 #include "CgiDirectoryInstance.h"
 
 namespace ccnode {
 
-class CgiDirectoryService: public ServiceDefinition
+class CgiDirectoryService: public WebService
 {
 public:
     static Ref<CgiDirectoryService> create() {
         return new CgiDirectoryService;
     }
 
-    ServicePrototype *configPrototype() const override { return configPrototype_; }
+    WebServicePrototype *configPrototype() const override { return configPrototype_; }
 
     Ref<ServiceInstance> createInstance(const MetaObject *config) const override
     {
@@ -30,13 +30,13 @@ public:
 
 private:
     CgiDirectoryService():
-        configPrototype_{ServicePrototype::create("CGI-Directory")}
+        configPrototype_{WebServicePrototype::create("CGI-Directory")}
     {
         CgiService::establish(configPrototype_);
         DirectoryService::establish(configPrototype_);
     }
 
-    Ref<ServicePrototype> configPrototype_;
+    Ref<WebServicePrototype> configPrototype_;
 };
 
 class CgiDirectoryServiceAnnouncer {

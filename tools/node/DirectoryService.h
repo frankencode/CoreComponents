@@ -8,26 +8,26 @@
 
 #pragma once
 
-#include "ServiceDefinition.h"
+#include "WebService.h"
 
 namespace ccnode {
 
-class DirectoryService: public ServiceDefinition
+class DirectoryService: public WebService
 {
 public:
     static Ref<DirectoryService> create() {
         return new DirectoryService;
     }
 
-    ServicePrototype *configPrototype() const override { return configPrototype_; }
+    WebServicePrototype *configPrototype() const override { return configPrototype_; }
     Ref<ServiceInstance> createInstance(const MetaObject *config) const override;
 
-    static void establish(ServicePrototype *configPrototype);
+    static void establish(WebServicePrototype *configPrototype);
 
 private:
     DirectoryService();
 
-    Ref<ServicePrototype> configPrototype_;
+    Ref<WebServicePrototype> configPrototype_;
 };
 
 } // namespace ccnode
