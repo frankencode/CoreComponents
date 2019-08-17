@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/http/HttpServerSecurity>
+#include "HttpServerSecurity.h"
 #include <cc/http/exceptions>
 
 namespace cc {

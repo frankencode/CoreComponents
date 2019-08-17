@@ -10,7 +10,7 @@
 
 #include <cc/String>
 #include <cc/net/SocketAddress>
-#include <cc/http/HttpServerSecurity>
+#include "HttpServerSecurity.h"
 #include "DeliveryService.h"
 #include "LogConfig.h"
 

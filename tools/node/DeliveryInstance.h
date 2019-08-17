@@ -10,7 +10,7 @@
 
 #include <cc/List>
 #include <cc/glob/Pattern>
-#include <cc/http/HttpServerSecurity>
+#include "HttpServerSecurity.h"
 #include "LogConfig.h"
 
 namespace cc { namespace meta { class MetaObject; } }

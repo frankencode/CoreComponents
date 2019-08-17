@@ -13,7 +13,7 @@
 #include <cc/System>
 #include <cc/NullStream>
 #include <cc/http/exceptions>
-#include <cc/http/HttpServerSecurity>
+#include "HttpServerSecurity.h"
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 #include "SecurityCache.h"
