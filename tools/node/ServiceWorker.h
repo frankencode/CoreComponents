@@ -34,7 +34,7 @@ public:
 
     const NodeConfig *nodeConfig() const { return nodeConfig_; }
 
-    ServiceInstance *serviceInstance() const { return serviceInstance_; }
+    const ServiceInstance *serviceInstance() const { return serviceInstance_; }
     HttpServerConnection *client() const { return client_; }
 
     HttpResponseGenerator *response() const;
@@ -48,7 +48,7 @@ private:
     static void logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "");
     void run() final;
 
-    Ref<ServiceInstance> serviceInstance_;
+    Ref<const ServiceInstance> serviceInstance_;
     Ref<ServiceDelegate> serviceDelegate_;
 
     const NodeConfig *nodeConfig_;

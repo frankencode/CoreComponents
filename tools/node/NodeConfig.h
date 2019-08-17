@@ -46,7 +46,7 @@ public:
 
     ServiceInstances *serviceInstances() const { return serviceInstances_; }
 
-    ServiceInstance *selectService(const String &host, const String &uri = "") const;
+    const ServiceInstance *selectService(const String &host, const String &uri = "") const;
 
 private:
     NodeConfig(const MetaObject *config);

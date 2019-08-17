@@ -61,7 +61,10 @@ HttpServerSocket::~HttpServerSocket()
 class ClientHelloContext: public Object
 {
 public:
-    static ClientHelloContext *instance() { return ThreadLocalSingleton<ClientHelloContext>::instance(); }
+    static ClientHelloContext *instance()
+    {
+        return ThreadLocalSingleton<ClientHelloContext>::instance();
+    }
 
     void init(const NodeConfig *nodeConfig)
     {
@@ -106,7 +109,7 @@ public:
     }
 
     String serverName() const { return serverName_; }
-    ServiceInstance *serviceInstance() const { return serviceInstance_; }
+    const ServiceInstance *serviceInstance() const { return serviceInstance_; }
 
 private:
     friend class ThreadLocalSingleton<ClientHelloContext>;
@@ -116,7 +119,7 @@ private:
     Ref<const SocketAddress> peerAddress_;
     String serverName_;
     const NodeConfig *nodeConfig_ { nullptr };
-    ServiceInstance *serviceInstance_ { nullptr };
+    const ServiceInstance *serviceInstance_ { nullptr };
 };
 
 void HttpServerSocket::initSession()
@@ -150,7 +153,7 @@ int HttpServerSocket::onClientHello(gnutls_session_t session)
     return 0;
 }
 
-ServiceInstance *HttpServerSocket::handshake()
+const ServiceInstance *HttpServerSocket::handshake()
 {
     CC_ASSERT(mode_ & Connected);
 
@@ -176,7 +179,7 @@ ServiceInstance *HttpServerSocket::handshake()
         CCNODE_INFO() << "TLS handshake took " << int(1000 * (t1 - t0_)) << "ms" << nl;
     }
 
-    ServiceInstance *serviceInstance = ClientHelloContext::instance()->serviceInstance();
+    const ServiceInstance *serviceInstance = ClientHelloContext::instance()->serviceInstance();
     if (!serviceInstance) {
         if (nodeConfig()->serviceInstances()->count() == 1)
             serviceInstance = nodeConfig()->serviceInstances()->at(0);

@@ -27,7 +27,7 @@ public:
 
     const SocketAddress *address() const { return socket_->address(); }
 
-    ServiceInstance *handshake();
+    const ServiceInstance *handshake();
     bool isSecure() const;
 
     Ref<HttpRequest> readRequest();

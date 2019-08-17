@@ -29,7 +29,7 @@ protected:
 
     const NodeConfig *nodeConfig() const;
 
-    ServiceInstance *serviceInstance() const;
+    const ServiceInstance *serviceInstance() const;
     HttpServerConnection *client() const;
 
     HttpResponseGenerator *response() const;

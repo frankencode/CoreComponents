@@ -152,11 +152,11 @@ NodeConfig::NodeConfig(const MetaObject *config)
     }
 }
 
-ServiceInstance *NodeConfig::selectService(const String &host, const String &uri) const
+const ServiceInstance *NodeConfig::selectService(const String &host, const String &uri) const
 {
-    ServiceInstance *serviceInstance = nullptr;
+    const ServiceInstance *serviceInstance = nullptr;
 
-    for (ServiceInstance *candidate: serviceInstances_)
+    for (const ServiceInstance *candidate: serviceInstances_)
     {
         if (
             candidate->host()->match(host)->valid() ||
@@ -167,6 +167,7 @@ ServiceInstance *NodeConfig::selectService(const String &host, const String &uri
         }
     }
 
+    // FIXME: wrong place for issueing this error message
     CCNODE_DEBUG() << "Service for host = \"" << host << "\", uri = \"" << uri << "\": " << (serviceInstance ? serviceInstance->serviceName() : str("Nothing matches")) << nl;
 
     return serviceInstance;

@@ -32,9 +32,9 @@ HttpServerConnection::HttpServerConnection(HttpServerSocket *socket):
         setupTransferLog(ErrorLog::instance()->debugStream(), socket->address()->toString());
 }
 
-ServiceInstance *HttpServerConnection::handshake()
+const ServiceInstance *HttpServerConnection::handshake()
 {
-    ServiceInstance *serviceInstance = nullptr;
+    const ServiceInstance *serviceInstance = nullptr;
 
     if (socket_->isSecure()) {
         serviceInstance = socket_->handshake();

@@ -35,7 +35,7 @@ private:
     static String urlDecode(HttpRequest *request, CharArray *payload);
     static String wrapHttp(const String &header);
 
-    Ref<CgiInstance> cgiInstance_;
+    Ref<const CgiInstance> cgiInstance_;
     int nextPeer_;
 };
 

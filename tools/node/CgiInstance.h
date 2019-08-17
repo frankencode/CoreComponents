@@ -27,8 +27,12 @@ public:
     StringList *server() const { return server_; }
     VariantMap *environment() const { return environment_; }
 
-    SocketAddressList *serverAddress() { return serverAddress_; }
-    int randomSeed() { return delegateCount_++; }
+    const SocketAddressList *serverAddress() const { return serverAddress_; }
+
+    int randomSeed() const {
+        static int counter = 0;
+        return counter++;
+    }
 
 protected:
     CgiInstance(const MetaObject *config);
@@ -38,7 +42,6 @@ protected:
     Ref<MetaObject> environment_;
 
     Ref<SocketAddressList> serverAddress_;
-    int delegateCount_;
 };
 
 } // namespace ccnode

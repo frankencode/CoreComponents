@@ -27,8 +27,7 @@ CgiInstance::CgiInstance(const MetaObject *config):
     script_{config->value("script")},
     server_{config->value("server")},
     environment_{config->value("environment")},
-    serverAddress_{SocketAddressList::create()},
-    delegateCount_{0}
+    serverAddress_{SocketAddressList::create()}
 {
     /*if (script_ == "" && server_->count() == 0)
         throw UsageError{"CGI: Please provide a \"script\" or a \"server\""};*/

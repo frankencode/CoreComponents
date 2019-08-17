@@ -29,7 +29,7 @@ private:
     void deliverFile(const String &path);
     void streamFile(const String &path);
 
-    Ref<DirectoryInstance> directoryInstance_;
+    Ref<const DirectoryInstance> directoryInstance_;
     Ref<ScriptHandler> scriptHandler_;
 };
 

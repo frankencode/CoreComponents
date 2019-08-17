@@ -39,7 +39,7 @@ private:
     const NodeConfig *nodeConfig() const { return nodeConfig_; }
 
     static int onClientHello(gnutls_session_t session);
-    ServiceInstance *handshake();
+    const ServiceInstance *handshake();
 
     void initSession();
 
