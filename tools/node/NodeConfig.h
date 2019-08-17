@@ -25,9 +25,8 @@ class NodeConfig: public Object
 public:
     static Ref<NodeConfig> load(int argc, char **argv);
     static Ref<NodeConfig> load(const String &path);
-    static Ref<NodeConfig> load(MetaObject *config);
-
-    String directoryPath() const { return directoryPath_; }
+    static Ref<NodeConfig> load(const MetaObject *config);
+    static Ref<NodeConfig> create();
 
     const SocketAddressList *address() const { return address_; }
     int securePort() const { return securePort_; }
@@ -50,9 +49,7 @@ public:
     ServiceInstance *selectService(const String &host, const String &uri = "") const;
 
 private:
-    NodeConfig(MetaObject *config, const String &dirPath = "");
-
-    String directoryPath_;
+    NodeConfig(const MetaObject *config);
 
     Ref<SocketAddressList> address_;
     String user_;

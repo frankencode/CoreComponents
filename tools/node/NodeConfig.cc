@@ -45,7 +45,24 @@ Ref<NodeConfig> NodeConfig::load(int argc, char **argv)
     if (!config) config = nodePrototype->clone();
     arguments->override(config);
 
-    return new NodeConfig{config, dirPath};
+    Ref<NodeConfig> nodeConfig = new NodeConfig{config};
+
+    if (dirPath != "") {
+        WebService *service = ServiceRegistry::instance()->serviceByName("Directory");
+        MetaObject *serviceConfig = service->configPrototype();
+        serviceConfig->establish("host", "*");
+        serviceConfig->establish("path", dirPath);
+        nodeConfig->serviceInstances()->append(service->createInstance(serviceConfig));
+    }
+
+    if (nodeConfig->serviceInstances()->count() == 0) {
+        WebService *service = ServiceRegistry::instance()->serviceByName("Echo");
+        MetaObject *serviceConfig = service->configPrototype();
+        serviceConfig->establish("host", "*");
+        nodeConfig->serviceInstances()->append(service->createInstance(serviceConfig));
+    }
+
+    return nodeConfig;
 }
 
 Ref<NodeConfig> NodeConfig::load(const String &path)
@@ -60,19 +77,23 @@ Ref<NodeConfig> NodeConfig::load(const String &path)
     );
 }
 
-Ref<NodeConfig> NodeConfig::load(MetaObject *config)
+Ref<NodeConfig> NodeConfig::load(const MetaObject *config)
 {
     return new NodeConfig{config};
 }
 
-NodeConfig::NodeConfig(MetaObject *config, const String &dirPath):
-    directoryPath_{dirPath}
+Ref<NodeConfig> NodeConfig::create()
+{
+    return NodeConfig::load(
+        NodeConfigProtocol::instance()->nodePrototype_
+    );
+}
+
+NodeConfig::NodeConfig(const MetaObject *config)
 {
     String address = config->value("address");
 
-    auto ports = List<int>::create();
-    for (int p: Variant::cast<List<int> *>(config->value("port"))) ports->append(p);
-
+    auto ports = Variant::cast<List<int> *>(config->value("port"));
     String protocol = config->value("protocol-family");
 
     ProtocolFamily family = ProtocolFamily::Unspecified;
@@ -128,21 +149,6 @@ NodeConfig::NodeConfig(MetaObject *config, const String &dirPath):
             WebService *service = ServiceRegistry::instance()->serviceByName(child->className());
             serviceInstances_->append(service->createInstance(child));
         }
-    }
-
-    if (directoryPath_ != "") {
-        WebService *service = ServiceRegistry::instance()->serviceByName("Directory");
-        MetaObject *serviceConfig = service->configPrototype();
-        serviceConfig->establish("host", "*");
-        serviceConfig->establish("path", directoryPath_);
-        serviceInstances_->append(service->createInstance(serviceConfig));
-    }
-
-    if (serviceInstances_->count() == 0) {
-        WebService *service = ServiceRegistry::instance()->serviceByName("Echo");
-        MetaObject *serviceConfig = service->configPrototype();
-        serviceConfig->establish("host", "*");
-        serviceInstances_->append(service->createInstance(serviceConfig));
     }
 }
 
