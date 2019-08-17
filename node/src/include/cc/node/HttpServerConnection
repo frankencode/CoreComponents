@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/http/HttpConnection>
+#include <cc/node/ConnectionInfo>
+#include <cc/node/HttpRequest>
+#include <cc/node/DeliveryInstance>
+#include <cc/node/HttpServerSocket>
+
+namespace cc {
+namespace node {
+
+using namespace http;
+
+/** \brief server-side end of a HTTP connection
+  */
+class HttpServerConnection: public HttpConnection
+{
+public:
+    static Ref<HttpServerConnection> open(HttpServerSocket *socket);
+
+    const SocketAddress *address() const { return socket_->address(); }
+
+    const DeliveryInstance *handshake();
+    bool isSecure() const;
+
+    Ref<HttpRequest> readRequest();
+    void putBack(HttpRequest *request);
+
+    HttpRequest *request() const { return request_; }
+    ConnectionInfo *connectionInfo() const { return connectionInfo_; }
+    int priority() const { return connectionInfo_->priority(); }
+
+private:
+    HttpServerConnection(HttpServerSocket *socket);
+
+    Ref<HttpRequest> scanRequest();
+    void readFirstLine(LineSource *source, HttpMessage *message) override;
+    void onHeaderReceived(HttpMessage *message) override;
+
+    Ref<HttpServerSocket> socket_;
+    Ref<HttpRequest> request_, pendingRequest_;
+    Ref<ConnectionInfo> connectionInfo_;
+};
+
+}} // namespace cc::node

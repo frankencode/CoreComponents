@@ -1,4 +1,4 @@
 Package {
     version: 1.0.0
-    include: [ core, testing, syntax, meta, glob, net, http, crypto, entropy, tar, zip, toki, sys, ui, tools ]
+    include: [ core, testing, syntax, meta, glob, net, http, node, crypto, entropy, tar, zip, toki, sys, ui, tools ]
 }

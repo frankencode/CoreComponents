@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/meta/yason>
+#include <cc/node/DeliveryDelegate>
+#include <cc/node/DeliveryInstance>
+
+namespace cc {
+namespace node {
+
+class DeliveryPrototype: public MetaObject
+{
+public:
+    static Ref<DeliveryPrototype> create(const String &className);
+
+protected:
+    DeliveryPrototype(const String &className);
+};
+
+class DeliveryService: public Object
+{
+public:
+    virtual DeliveryPrototype *configPrototype() const = 0; // FIXME: "const DeliveryPrototype"
+    virtual Ref<DeliveryInstance> createInstance(const MetaObject *config) const = 0;
+};
+
+}} // namespace cc::node

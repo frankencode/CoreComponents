@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/meta/MetaObject>
+
+namespace cc {
+namespace node {
+
+using cc::meta::MetaObject;
+
+class SecurityPrototype: public MetaObject
+{
+public:
+    static Ref<SecurityPrototype> create() {
+        return new SecurityPrototype;
+    }
+
+private:
+    SecurityPrototype():
+        MetaObject{"TLS"}
+    {
+        establish("certificate", "");
+        establish("private-key", "");
+        establish("ciphers", "");
+        establish("session-resumption-key-refresh", 3600.);
+    }
+};
+
+}} // namespace cc::node
