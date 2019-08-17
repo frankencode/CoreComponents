@@ -11,12 +11,12 @@
 
 namespace ccnode {
 
-Ref<CgiScriptHandler> CgiScriptHandler::create(ServiceWorker *worker)
+Ref<CgiScriptHandler> CgiScriptHandler::create(DeliveryWorker *worker)
 {
     return new CgiScriptHandler{worker};
 }
 
-CgiScriptHandler::CgiScriptHandler(ServiceWorker *worker):
+CgiScriptHandler::CgiScriptHandler(DeliveryWorker *worker):
     delegate_{CgiDelegate::create(worker)}
 {}
 

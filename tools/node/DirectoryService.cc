@@ -6,24 +6,24 @@
  *
  */
 
-#include "ServiceRegistry.h"
+#include "DeliveryRegistry.h"
 #include "DirectoryInstance.h"
 #include "DirectoryService.h"
 
 namespace ccnode {
 
-Ref<ServiceInstance> DirectoryService::createInstance(const MetaObject *config) const
+Ref<DeliveryInstance> DirectoryService::createInstance(const MetaObject *config) const
 {
     return DirectoryInstance::create(config);
 }
 
 DirectoryService::DirectoryService():
-    configPrototype_{WebServicePrototype::create("Directory")}
+    configPrototype_{DeliveryPrototype::create("Directory")}
 {
     establish(configPrototype_);
 }
 
-void DirectoryService::establish(WebServicePrototype *configPrototype)
+void DirectoryService::establish(DeliveryPrototype *configPrototype)
 {
     configPrototype->establish("path", "");
     configPrototype->establish("show-hidden", false);
@@ -34,7 +34,7 @@ public:
     DirectoryAnnouncer() {
         static bool done = false;
         if (done) return;
-        ServiceRegistry::instance()->registerService<DirectoryService>();
+        DeliveryRegistry::instance()->registerService<DirectoryService>();
         done = true;
     }
 };

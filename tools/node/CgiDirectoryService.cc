@@ -6,37 +6,37 @@
  *
  */
 
-#include "ServiceRegistry.h"
-#include "WebService.h"
+#include "DeliveryRegistry.h"
+#include "DeliveryService.h"
 #include "DirectoryService.h"
 #include "CgiService.h"
 #include "CgiDirectoryInstance.h"
 
 namespace ccnode {
 
-class CgiDirectoryService: public WebService
+class CgiDirectoryService: public DeliveryService
 {
 public:
     static Ref<CgiDirectoryService> create() {
         return new CgiDirectoryService;
     }
 
-    WebServicePrototype *configPrototype() const override { return configPrototype_; }
+    DeliveryPrototype *configPrototype() const override { return configPrototype_; }
 
-    Ref<ServiceInstance> createInstance(const MetaObject *config) const override
+    Ref<DeliveryInstance> createInstance(const MetaObject *config) const override
     {
         return CgiDirectoryInstance::create(config);
     }
 
 private:
     CgiDirectoryService():
-        configPrototype_{WebServicePrototype::create("CGI-Directory")}
+        configPrototype_{DeliveryPrototype::create("CGI-Directory")}
     {
         CgiService::establish(configPrototype_);
         DirectoryService::establish(configPrototype_);
     }
 
-    Ref<WebServicePrototype> configPrototype_;
+    Ref<DeliveryPrototype> configPrototype_;
 };
 
 class CgiDirectoryServiceAnnouncer {
@@ -44,7 +44,7 @@ public:
     CgiDirectoryServiceAnnouncer() {
         static bool done = false;
         if (done) return;
-        ServiceRegistry::instance()->registerService<CgiDirectoryService>();
+        DeliveryRegistry::instance()->registerService<CgiDirectoryService>();
         done = true;
     }
 };

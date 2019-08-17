@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/http/HttpSocket>
-#include "ServiceInstance.h"
+#include "DeliveryInstance.h"
 
 namespace ccnode {
 
@@ -39,7 +39,7 @@ private:
     const NodeConfig *nodeConfig() const { return nodeConfig_; }
 
     static int onClientHello(gnutls_session_t session);
-    const ServiceInstance *handshake();
+    const DeliveryInstance *handshake();
 
     void initSession();
 

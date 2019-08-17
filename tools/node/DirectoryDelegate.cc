@@ -10,7 +10,7 @@
 #include <cc/Dir>
 #include <cc/http/utils>
 #include <cc/http/exceptions>
-#include "ServiceWorker.h"
+#include "DeliveryWorker.h"
 #include "ErrorLog.h"
 #include "DirectoryInstance.h"
 #include "MediaTypeDatabase.h"
@@ -20,14 +20,14 @@ namespace ccnode {
 
 using namespace cc::http;
 
-Ref<DirectoryDelegate> DirectoryDelegate::create(ServiceWorker *worker, ScriptHandler *scriptHandler)
+Ref<DirectoryDelegate> DirectoryDelegate::create(DeliveryWorker *worker, ScriptHandler *scriptHandler)
 {
     return new DirectoryDelegate{worker, scriptHandler};
 }
 
-DirectoryDelegate::DirectoryDelegate(ServiceWorker *worker, ScriptHandler *scriptHandler):
-    ServiceDelegate{worker},
-    directoryInstance_{worker->serviceInstance()},
+DirectoryDelegate::DirectoryDelegate(DeliveryWorker *worker, ScriptHandler *scriptHandler):
+    DeliveryDelegate{worker},
+    directoryInstance_{worker->deliveryInstance()},
     scriptHandler_{scriptHandler}
 {}
 
@@ -149,7 +149,7 @@ void DirectoryDelegate::listDirectory(HttpRequest *request, const String &path)
 void DirectoryDelegate::deliverFile(const String &path)
 {
     String content = File::open(path)->map();
-    String mediaType = serviceInstance()->mediaTypeDatabase()->lookup(path, content);
+    String mediaType = deliveryInstance()->mediaTypeDatabase()->lookup(path, content);
     if (mediaType != "") response()->setHeader("Content-Type", mediaType);
     response()->beginTransmission(content->count());
     response()->write(content);
@@ -166,7 +166,7 @@ void DirectoryDelegate::streamFile(const String &path)
         size = file->seek(0, Seek::End);
         file->seek(0, Seek::Begin);
     }
-    String mediaType = serviceInstance()->mediaTypeDatabase()->lookup(path, head);
+    String mediaType = deliveryInstance()->mediaTypeDatabase()->lookup(path, head);
     if (mediaType != "") response()->setHeader("Content-Type", mediaType);
     response()->beginTransmission(size);
     String buf = String::allocate(0x10000);

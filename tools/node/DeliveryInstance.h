@@ -19,17 +19,17 @@ namespace ccnode {
 
 using namespace cc;
 
-class ServiceDelegate;
-class ServiceWorker;
+class DeliveryDelegate;
+class DeliveryWorker;
 class MediaTypeDatabase;
 
 using cc::glob::Pattern;
 using cc::http::HttpServerSecurity;
 
-class ServiceInstance: public Object
+class DeliveryInstance: public Object
 {
 public:
-    virtual Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const = 0;
+    virtual Ref<DeliveryDelegate> createDelegate(DeliveryWorker *worker) const = 0;
 
     String serviceName() const { return serviceName_; }
 
@@ -45,8 +45,8 @@ public:
     const LogConfig *accessLogConfig() const { return accessLogConfig_; }
 
 protected:
-    ServiceInstance(const MetaObject *config);
-    ~ServiceInstance();
+    DeliveryInstance(const MetaObject *config);
+    ~DeliveryInstance();
 
     String serviceName_;
 
@@ -61,6 +61,6 @@ protected:
     Ref<const LogConfig> accessLogConfig_;
 };
 
-typedef List< Ref<ServiceInstance> > ServiceInstances;
+typedef List< Ref<DeliveryInstance> > DeliveryInstances;
 
 } // namespace ccnode

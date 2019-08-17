@@ -9,11 +9,11 @@
 #include <cc/meta/MetaObject>
 #include "MediaTypeDatabase.h"
 #include "LogConfig.h"
-#include "ServiceInstance.h"
+#include "DeliveryInstance.h"
 
 namespace ccnode {
 
-ServiceInstance::ServiceInstance(const MetaObject *config):
+DeliveryInstance::DeliveryInstance(const MetaObject *config):
     serviceName_{config->className()},
     requestLimit_{config->value("request-limit")},
     requestPayloadLimit_{config->value("request-payload-limit")},
@@ -23,7 +23,7 @@ ServiceInstance::ServiceInstance(const MetaObject *config):
     mediaTypeDatabase_{MediaTypeDatabase::instance()}
 {}
 
-ServiceInstance::~ServiceInstance()
+DeliveryInstance::~DeliveryInstance()
 {}
 
 } // namespace ccnode

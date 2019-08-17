@@ -8,16 +8,16 @@
 
 #include "LogPrototype.h"
 #include "SecurityPrototype.h"
-#include "WebService.h"
+#include "DeliveryService.h"
 
 namespace ccnode {
 
-Ref<WebServicePrototype> WebServicePrototype::create(const String &className)
+Ref<DeliveryPrototype> DeliveryPrototype::create(const String &className)
 {
-    return new WebServicePrototype{className};
+    return new DeliveryPrototype{className};
 }
 
-WebServicePrototype::WebServicePrototype(const String &className):
+DeliveryPrototype::DeliveryPrototype(const String &className):
     MetaObject{className}
 {
     establish("request-limit", 100);

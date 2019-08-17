@@ -6,28 +6,28 @@
  *
  */
 
-#include "ServiceRegistry.h"
-#include "WebService.h"
+#include "DeliveryRegistry.h"
+#include "DeliveryService.h"
 #include "EchoInstance.h"
 
 namespace ccnode {
 
-class EchoService: public WebService
+class EchoService: public DeliveryService
 {
 public:
     static Ref<EchoService> create() {
         return new EchoService;
     }
 
-    WebServicePrototype *configPrototype() const override { return configPrototype_; }
-    Ref<ServiceInstance> createInstance(const MetaObject *config) const override { return EchoInstance::create(config); }
+    DeliveryPrototype *configPrototype() const override { return configPrototype_; }
+    Ref<DeliveryInstance> createInstance(const MetaObject *config) const override { return EchoInstance::create(config); }
 
 private:
     EchoService():
-        configPrototype_{WebServicePrototype::create("Echo")}
+        configPrototype_{DeliveryPrototype::create("Echo")}
     {}
 
-    Ref<WebServicePrototype> configPrototype_;
+    Ref<DeliveryPrototype> configPrototype_;
 };
 
 class EchoAnnouncer {
@@ -36,7 +36,7 @@ public:
     {
         static bool done = false;
         if (done) return;
-        ServiceRegistry::instance()->registerService<EchoService>();
+        DeliveryRegistry::instance()->registerService<EchoService>();
         done = true;
     }
 };

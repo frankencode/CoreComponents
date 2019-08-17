@@ -10,20 +10,20 @@
 
 namespace ccnode {
 
-class EchoInstance: public ServiceInstance
+class EchoInstance: public DeliveryInstance
 {
 public:
     static Ref<EchoInstance> create(const MetaObject *config) {
         return new EchoInstance{config};
     }
 
-    Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const override {
+    Ref<DeliveryDelegate> createDelegate(DeliveryWorker *worker) const override {
         return EchoDelegate::create(worker);
     }
 
 private:
     EchoInstance(const MetaObject *config):
-        ServiceInstance{config}
+        DeliveryInstance{config}
     {}
 };
 

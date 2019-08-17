@@ -15,7 +15,7 @@
 #include "ErrorLog.h"
 #include "AccessLog.h"
 #include "SystemLog.h"
-#include "ServiceRegistry.h"
+#include "DeliveryRegistry.h"
 #include "ConnectionManager.h"
 #include "HttpServerSocket.h"
 #include "SecurityCache.h"
@@ -113,10 +113,10 @@ void NodeMaster::runNode()
 
     CCNODE_NOTICE() << "Creating worker pool (concurrency = " << config()->concurrency() << ")" << nl;
 
-    typedef Array< Ref<ServiceWorker> > WorkerPool;
+    typedef Array< Ref<DeliveryWorker> > WorkerPool;
     Ref<WorkerPool> workerPool = WorkerPool::create(config()->concurrency());
-    for (Ref<ServiceWorker> &worker: workerPool) {
-        worker = ServiceWorker::create(config(), pendingConnections, closedConnections);
+    for (Ref<DeliveryWorker> &worker: workerPool) {
+        worker = DeliveryWorker::create(config(), pendingConnections, closedConnections);
         worker->start();
     }
 

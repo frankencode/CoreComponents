@@ -90,9 +90,9 @@ public:
                         mutate(serverName_)->truncate(serverName_->count() - 1);
                     if (ErrorLog::instance()->infoStream() != NullStream::instance())
                         CCNODE_INFO() << "TLS client hello: SNI=\"" << serverName_ << "\"" << nl;
-                    serviceInstance_ = nodeConfig_->selectService(serverName_);
-                    if (serviceInstance_)
-                        serviceInstance_->security()->establish(session, peerAddress_);
+                    deliveryInstance_ = nodeConfig_->selectService(serverName_);
+                    if (deliveryInstance_)
+                        deliveryInstance_->security()->establish(session, peerAddress_);
                 }
             }
         }
@@ -105,11 +105,11 @@ public:
     {
         peerAddress_ = peerAddress;
         serverName_ = "";
-        serviceInstance_ = nullptr;
+        deliveryInstance_ = nullptr;
     }
 
     String serverName() const { return serverName_; }
-    const ServiceInstance *serviceInstance() const { return serviceInstance_; }
+    const DeliveryInstance *deliveryInstance() const { return deliveryInstance_; }
 
 private:
     friend class ThreadLocalSingleton<ClientHelloContext>;
@@ -119,7 +119,7 @@ private:
     Ref<const SocketAddress> peerAddress_;
     String serverName_;
     const NodeConfig *nodeConfig_ { nullptr };
-    const ServiceInstance *serviceInstance_ { nullptr };
+    const DeliveryInstance *deliveryInstance_ { nullptr };
 };
 
 void HttpServerSocket::initSession()
@@ -153,7 +153,7 @@ int HttpServerSocket::onClientHello(gnutls_session_t session)
     return 0;
 }
 
-const ServiceInstance *HttpServerSocket::handshake()
+const DeliveryInstance *HttpServerSocket::handshake()
 {
     CC_ASSERT(mode_ & Connected);
 
@@ -179,15 +179,15 @@ const ServiceInstance *HttpServerSocket::handshake()
         CCNODE_INFO() << "TLS handshake took " << int(1000 * (t1 - t0_)) << "ms" << nl;
     }
 
-    const ServiceInstance *serviceInstance = ClientHelloContext::instance()->serviceInstance();
-    if (!serviceInstance) {
-        if (nodeConfig()->serviceInstances()->count() == 1)
-            serviceInstance = nodeConfig()->serviceInstances()->at(0);
+    const DeliveryInstance *deliveryInstance = ClientHelloContext::instance()->deliveryInstance();
+    if (!deliveryInstance) {
+        if (nodeConfig()->deliveryInstances()->count() == 1)
+            deliveryInstance = nodeConfig()->deliveryInstances()->at(0);
         if (ClientHelloContext::instance()->serverName() == "")
-            serviceInstance = nodeConfig()->selectService("");
+            deliveryInstance = nodeConfig()->selectService("");
     }
 
-    return serviceInstance;
+    return deliveryInstance;
 }
 
 void HttpServerSocket::upgradeToSecureTransport()

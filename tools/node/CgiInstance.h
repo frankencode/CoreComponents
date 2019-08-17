@@ -9,19 +9,19 @@
 #pragma once
 
 #include <cc/net/SocketAddress>
-#include "ServiceInstance.h"
+#include "DeliveryInstance.h"
 #include "CgiDelegate.h"
 
 namespace ccnode {
 
 using namespace cc::net;
 
-class CgiInstance: public virtual ServiceInstance
+class CgiInstance: public virtual DeliveryInstance
 {
 public:
     static Ref<CgiInstance> create(const MetaObject *config);
 
-    Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const override;
+    Ref<DeliveryDelegate> createDelegate(DeliveryWorker *worker) const override;
 
     String script() const { return script_; }
     StringList *server() const { return server_; }

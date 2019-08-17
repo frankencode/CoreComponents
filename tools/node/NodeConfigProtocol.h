@@ -18,14 +18,14 @@ using namespace cc;
 using namespace cc::meta;
 
 class NodeConfig;
-class ServiceRegistry;
+class DeliveryRegistry;
 
 class NodeConfigProtocol: public MetaProtocol
 {
 private:
     friend class Singleton<NodeConfigProtocol>;
     friend class NodeConfig;
-    friend class ServiceRegistry;
+    friend class DeliveryRegistry;
 
     static NodeConfigProtocol *instance();
     void registerService(MetaObject *configPrototype);

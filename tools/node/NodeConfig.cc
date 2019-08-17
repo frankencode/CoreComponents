@@ -11,7 +11,7 @@
 #include <cc/ResourceGuard>
 #include <cc/Arguments>
 #include "NodeConfigProtocol.h"
-#include "ServiceRegistry.h"
+#include "DeliveryRegistry.h"
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 
@@ -48,18 +48,18 @@ Ref<NodeConfig> NodeConfig::load(int argc, char **argv)
     Ref<NodeConfig> nodeConfig = new NodeConfig{config};
 
     if (dirPath != "") {
-        WebService *service = ServiceRegistry::instance()->serviceByName("Directory");
+        DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Directory");
         MetaObject *serviceConfig = service->configPrototype();
         serviceConfig->establish("host", "*");
         serviceConfig->establish("path", dirPath);
-        nodeConfig->serviceInstances()->append(service->createInstance(serviceConfig));
+        nodeConfig->deliveryInstances()->append(service->createInstance(serviceConfig));
     }
 
-    if (nodeConfig->serviceInstances()->count() == 0) {
-        WebService *service = ServiceRegistry::instance()->serviceByName("Echo");
+    if (nodeConfig->deliveryInstances()->count() == 0) {
+        DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Echo");
         MetaObject *serviceConfig = service->configPrototype();
         serviceConfig->establish("host", "*");
-        nodeConfig->serviceInstances()->append(service->createInstance(serviceConfig));
+        nodeConfig->deliveryInstances()->append(service->createInstance(serviceConfig));
     }
 
     return nodeConfig;
@@ -143,34 +143,34 @@ NodeConfig::NodeConfig(const MetaObject *config)
     errorLogConfig_ = LogConfig::load(Variant::cast<MetaObject *>(config->value("error-log")));
     accessLogConfig_ = LogConfig::load(Variant::cast<MetaObject *>(config->value("access-log")));
 
-    serviceInstances_ = ServiceInstances::create();
+    deliveryInstances_ = DeliveryInstances::create();
     if (config->hasChildren()) {
         for (MetaObject *child: config->children()) {
-            WebService *service = ServiceRegistry::instance()->serviceByName(child->className());
-            serviceInstances_->append(service->createInstance(child));
+            DeliveryService *service = DeliveryRegistry::instance()->serviceByName(child->className());
+            deliveryInstances_->append(service->createInstance(child));
         }
     }
 }
 
-const ServiceInstance *NodeConfig::selectService(const String &host, const String &uri) const
+const DeliveryInstance *NodeConfig::selectService(const String &host, const String &uri) const
 {
-    const ServiceInstance *serviceInstance = nullptr;
+    const DeliveryInstance *deliveryInstance = nullptr;
 
-    for (const ServiceInstance *candidate: serviceInstances_)
+    for (const DeliveryInstance *candidate: deliveryInstances_)
     {
         if (
             candidate->host()->match(host)->valid() ||
             (uri != "" && candidate->uri()->match(uri)->valid())
         ) {
-            serviceInstance = candidate;
+            deliveryInstance = candidate;
             break;
         }
     }
 
     // FIXME: wrong place for issueing this error message
-    CCNODE_DEBUG() << "Service for host = \"" << host << "\", uri = \"" << uri << "\": " << (serviceInstance ? serviceInstance->serviceName() : str("Nothing matches")) << nl;
+    CCNODE_DEBUG() << "Service for host = \"" << host << "\", uri = \"" << uri << "\": " << (deliveryInstance ? deliveryInstance->serviceName() : str("Nothing matches")) << nl;
 
-    return serviceInstance;
+    return deliveryInstance;
 }
 
 } // namespace ccnode

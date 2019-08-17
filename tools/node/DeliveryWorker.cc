@@ -15,33 +15,33 @@
 #include "ErrorLog.h"
 #include "AccessLog.h"
 #include "NodeConfig.h"
-#include "WebService.h"
-#include "ServiceDelegate.h"
+#include "DeliveryService.h"
+#include "DeliveryDelegate.h"
 #include "HttpResponseGenerator.h"
-#include "ServiceWorker.h"
+#include "DeliveryWorker.h"
 
 namespace ccnode {
 
 using namespace cc::http;
 
-Ref<ServiceWorker> ServiceWorker::create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections)
+Ref<DeliveryWorker> DeliveryWorker::create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections)
 {
-    return new ServiceWorker{nodeConfig, pendingConnections, closedConnections};
+    return new DeliveryWorker{nodeConfig, pendingConnections, closedConnections};
 }
 
-ServiceWorker::ServiceWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections):
+DeliveryWorker::DeliveryWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections):
     nodeConfig_{nodeConfig},
     pendingConnections_{pendingConnections},
     closedConnections_{closedConnections}
 {}
 
-ServiceWorker::~ServiceWorker()
+DeliveryWorker::~DeliveryWorker()
 {
     pendingConnections_->push(Ref<HttpServerConnection>{});
     Thread::wait();
 }
 
-void ServiceWorker::logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage)
+void DeliveryWorker::logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage)
 {
     Stream *stream = AccessLog::instance()->noticeStream();
     if (400 <= statusCode && statusCode <= 499) stream = AccessLog::instance()->debugStream();
@@ -64,7 +64,7 @@ void ServiceWorker::logDelivery(HttpServerConnection *client, int statusCode, si
         << nl;
 }
 
-void ServiceWorker::run()
+void DeliveryWorker::run()
 {
     ErrorLog::instance()->open(nodeConfig()->errorLogConfig());
     AccessLog::instance()->open(nodeConfig()->accessLogConfig());
@@ -75,10 +75,10 @@ void ServiceWorker::run()
 
             int requestCount = 0;
             try {
-                serviceInstance_ = client_->handshake();
-                if (!serviceInstance_) throw BadRequest{};
+                deliveryInstance_ = client_->handshake();
+                if (!deliveryInstance_) throw BadRequest{};
 
-                serviceDelegate_ = serviceInstance_->createDelegate(this);
+                deliveryDelegate_ = deliveryInstance_->createDelegate(this);
 
                 while (client_) {
                     // CCNODE_DEBUG() << "Reading request..." << nl;
@@ -89,7 +89,7 @@ void ServiceWorker::run()
                         response_ = HttpResponseGenerator::create(client_);
                         response_->setNodeVersion(nodeConfig()->version());
 
-                        serviceDelegate_->process(request);
+                        deliveryDelegate_->process(request);
                         response_->endTransmission();
                         if (response_->delivered()) {
                             logDelivery(client_, response_->statusCode(), response_->bytesWritten());
@@ -100,7 +100,7 @@ void ServiceWorker::run()
                     }
                     if (
                         request->value("Connection")->equalsCaseInsensitive("close") ||
-                        requestCount >= serviceInstance_->requestLimit() ||
+                        requestCount >= deliveryInstance_->requestLimit() ||
                         (request->majorVersion() == 1 && request->minorVersion() == 0)
                     ) break;
                 }
@@ -125,8 +125,8 @@ void ServiceWorker::run()
 
             closeConnection();
 
-            serviceDelegate_ = nullptr;
-            serviceInstance_ = nullptr;
+            deliveryDelegate_ = nullptr;
+            deliveryInstance_ = nullptr;
         }
         catch (ConnectionResetByPeer &)
         {}
@@ -136,24 +136,24 @@ void ServiceWorker::run()
     }
 }
 
-HttpResponseGenerator *ServiceWorker::response() const
+HttpResponseGenerator *DeliveryWorker::response() const
 {
     return response_;
 }
 
-void ServiceWorker::autoSecureForwardings()
+void DeliveryWorker::autoSecureForwardings()
 {
     if (response()->statusCode() == 302) {
         HttpResponseGenerator::Header *header = response()->header();
         if (
             nodeConfig()->security()->hasCredentials() ||
-            serviceInstance_->security()->hasCredentials()
+            deliveryInstance_->security()->hasCredentials()
         ) {
             String location = header->value("Location");
             if (location->startsWith("http:")) {
                 try {
                     Ref<Uri> uri = Uri::parse(location);
-                    if (serviceInstance_->host()->match(uri->host())) {
+                    if (deliveryInstance_->host()->match(uri->host())) {
                         uri->setScheme("https");
                         if (uri->port() > 0)
                             uri->setPort(nodeConfig()->securePort());
@@ -167,7 +167,7 @@ void ServiceWorker::autoSecureForwardings()
     }
 }
 
-void ServiceWorker::closeConnection()
+void DeliveryWorker::closeConnection()
 {
     if (client_) {
         // CCNODE_DEBUG() << "Closing connection to " << client_->address() << nl;

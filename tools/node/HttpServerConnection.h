@@ -11,7 +11,7 @@
 #include <cc/http/HttpConnection>
 #include "ConnectionInfo.h"
 #include "HttpRequest.h"
-#include "ServiceInstance.h"
+#include "DeliveryInstance.h"
 #include "HttpServerSocket.h"
 
 namespace ccnode {
@@ -27,7 +27,7 @@ public:
 
     const SocketAddress *address() const { return socket_->address(); }
 
-    const ServiceInstance *handshake();
+    const DeliveryInstance *handshake();
     bool isSecure() const;
 
     Ref<HttpRequest> readRequest();

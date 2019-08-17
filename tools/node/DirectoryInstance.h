@@ -8,17 +8,17 @@
 
 #pragma once
 
-#include "ServiceInstance.h"
+#include "DeliveryInstance.h"
 #include "DirectoryDelegate.h"
 
 namespace ccnode {
 
-class DirectoryInstance: public virtual ServiceInstance
+class DirectoryInstance: public virtual DeliveryInstance
 {
 public:
     static Ref<DirectoryInstance> create(const MetaObject *config);
 
-    Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const override;
+    Ref<DeliveryDelegate> createDelegate(DeliveryWorker *worker) const override;
 
     String path() const { return path_; }
     bool showHidden() const { return showHidden_; }

@@ -8,26 +8,26 @@
 
 #include <cc/Singleton>
 #include "NodeConfigProtocol.h"
-#include "ServiceRegistry.h"
+#include "DeliveryRegistry.h"
 
 namespace ccnode {
 
-ServiceRegistry *ServiceRegistry::instance()
+DeliveryRegistry *DeliveryRegistry::instance()
 {
-    return Singleton<ServiceRegistry>::instance();
+    return Singleton<DeliveryRegistry>::instance();
 }
 
-ServiceRegistry::ServiceRegistry():
+DeliveryRegistry::DeliveryRegistry():
     serviceByName_{ServiceByName::create()}
 {}
 
-void ServiceRegistry::registerService(WebService *service)
+void DeliveryRegistry::registerService(DeliveryService *service)
 {
     serviceByName_->establish(service->configPrototype()->className(), service);
     NodeConfigProtocol::instance()->registerService(service->configPrototype());
 }
 
-WebService *ServiceRegistry::serviceByName(const String &name) const
+DeliveryService *DeliveryRegistry::serviceByName(const String &name) const
 {
     return serviceByName_->value(name);
 }

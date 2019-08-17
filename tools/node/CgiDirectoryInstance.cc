@@ -18,12 +18,12 @@ Ref<CgiDirectoryInstance> CgiDirectoryInstance::create(const MetaObject *config)
 }
 
 CgiDirectoryInstance::CgiDirectoryInstance(const MetaObject *config):
-    ServiceInstance{config},
+    DeliveryInstance{config},
     DirectoryInstance{config},
     CgiInstance{config}
 {}
 
-Ref<ServiceDelegate> CgiDirectoryInstance::createDelegate(ServiceWorker *worker) const
+Ref<DeliveryDelegate> CgiDirectoryInstance::createDelegate(DeliveryWorker *worker) const
 {
     return DirectoryDelegate::create(worker, CgiScriptHandler::create(worker));
 }

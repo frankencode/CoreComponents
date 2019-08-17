@@ -9,30 +9,30 @@
 #pragma once
 
 #include <cc/Map>
-#include "WebService.h"
+#include "DeliveryService.h"
 
 namespace cc { template<class> class Singleton; }
 
 namespace ccnode {
 
-class ServiceRegistry: public Object
+class DeliveryRegistry: public Object
 {
 public:
-    static ServiceRegistry *instance();
+    static DeliveryRegistry *instance();
 
     template<class T>
     void registerService() { registerService(T::create()); }
 
-    void registerService(WebService *service);
+    void registerService(DeliveryService *service);
 
-    WebService *serviceByName(const String &name) const;
+    DeliveryService *serviceByName(const String &name) const;
 
 private:
-    friend class Singleton<ServiceRegistry>;
+    friend class Singleton<DeliveryRegistry>;
 
-    ServiceRegistry();
+    DeliveryRegistry();
 
-    typedef Map< String, Ref<WebService> > ServiceByName;
+    typedef Map< String, Ref<DeliveryService> > ServiceByName;
     Ref<ServiceByName> serviceByName_;
 };
 

@@ -18,7 +18,7 @@ Ref<DirectoryInstance> DirectoryInstance::create(const MetaObject *config)
 }
 
 DirectoryInstance::DirectoryInstance(const MetaObject *config):
-    ServiceInstance{config},
+    DeliveryInstance{config},
     path_{config->value("path")},
     showHidden_{config->value("show-hidden")}
 {
@@ -37,7 +37,7 @@ DirectoryInstance::DirectoryInstance(const MetaObject *config):
     }
 }
 
-Ref<ServiceDelegate> DirectoryInstance::createDelegate(ServiceWorker *worker) const
+Ref<DeliveryDelegate> DirectoryInstance::createDelegate(DeliveryWorker *worker) const
 {
     return DirectoryDelegate::create(worker);
 }

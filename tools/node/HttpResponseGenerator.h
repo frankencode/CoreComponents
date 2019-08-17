@@ -15,7 +15,7 @@ namespace ccnode {
 using namespace cc;
 using namespace cc::http;
 
-class ServiceWorker;
+class DeliveryWorker;
 
 class HttpResponseGenerator: public HttpGenerator
 {
@@ -26,7 +26,7 @@ public:
     void setNodeVersion(const String &nodeVersion);
 
 private:
-    friend class ServiceWorker;
+    friend class DeliveryWorker;
 
     HttpResponseGenerator(HttpConnection *client);
 

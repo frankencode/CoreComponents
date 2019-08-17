@@ -15,21 +15,21 @@
 namespace ccnode {
 
 class NodeConfig;
-class ServiceWorker;
-class ServiceInstance;
+class DeliveryWorker;
+class DeliveryInstance;
 class HttpServerConnection;
 
-class ServiceDelegate: public Object
+class DeliveryDelegate: public Object
 {
 public:
     virtual void process(HttpRequest *request) = 0;
 
 protected:
-    ServiceDelegate(ServiceWorker *worker);
+    DeliveryDelegate(DeliveryWorker *worker);
 
     const NodeConfig *nodeConfig() const;
 
-    const ServiceInstance *serviceInstance() const;
+    const DeliveryInstance *deliveryInstance() const;
     HttpServerConnection *client() const;
 
     HttpResponseGenerator *response() const;
@@ -37,7 +37,7 @@ protected:
     void autoSecureForwardings();
 
 private:
-    ServiceWorker *worker_;
+    DeliveryWorker *worker_;
 };
 
 } // namespace ccnode

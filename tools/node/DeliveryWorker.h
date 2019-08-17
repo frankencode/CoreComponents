@@ -18,23 +18,23 @@ namespace ccnode {
 using namespace cc;
 using namespace cc::net;
 
-class ServiceWorker;
+class DeliveryWorker;
 
 typedef PriorityChannel< Ref<HttpServerConnection> > PendingConnections;
 typedef Channel< Ref<ConnectionInfo> > ClosedConnections;
 
-class ServiceInstance;
-class ServiceDelegate;
+class DeliveryInstance;
+class DeliveryDelegate;
 class HttpResponseGenerator;
 
-class ServiceWorker: public Thread
+class DeliveryWorker: public Thread
 {
 public:
-    static Ref<ServiceWorker> create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections);
+    static Ref<DeliveryWorker> create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections);
 
     const NodeConfig *nodeConfig() const { return nodeConfig_; }
 
-    const ServiceInstance *serviceInstance() const { return serviceInstance_; }
+    const DeliveryInstance *deliveryInstance() const { return deliveryInstance_; }
     HttpServerConnection *client() const { return client_; }
 
     HttpResponseGenerator *response() const;
@@ -42,14 +42,14 @@ public:
     void closeConnection();
 
 private:
-    ServiceWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections);
-    ~ServiceWorker();
+    DeliveryWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections);
+    ~DeliveryWorker();
 
     static void logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "");
     void run() final;
 
-    Ref<const ServiceInstance> serviceInstance_;
-    Ref<ServiceDelegate> serviceDelegate_;
+    Ref<const DeliveryInstance> deliveryInstance_;
+    Ref<DeliveryDelegate> deliveryDelegate_;
 
     const NodeConfig *nodeConfig_;
     Ref<PendingConnections> pendingConnections_;

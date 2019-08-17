@@ -10,13 +10,13 @@
 
 namespace ccnode {
 
-Ref<EchoDelegate> EchoDelegate::create(ServiceWorker *worker)
+Ref<EchoDelegate> EchoDelegate::create(DeliveryWorker *worker)
 {
     return new EchoDelegate{worker};
 }
 
-EchoDelegate::EchoDelegate(ServiceWorker *worker):
-    ServiceDelegate{worker}
+EchoDelegate::EchoDelegate(DeliveryWorker *worker):
+    DeliveryDelegate{worker}
 {}
 
 void EchoDelegate::process(HttpRequest *request)

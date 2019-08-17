@@ -6,24 +6,24 @@
  *
  */
 
-#include "ServiceRegistry.h"
+#include "DeliveryRegistry.h"
 #include "CgiInstance.h"
 #include "CgiService.h"
 
 namespace ccnode {
 
-Ref<ServiceInstance> CgiService::createInstance(const MetaObject *config) const
+Ref<DeliveryInstance> CgiService::createInstance(const MetaObject *config) const
 {
     return CgiInstance::create(config);
 }
 
 CgiService::CgiService():
-    configPrototype_{WebServicePrototype::create("CGI")}
+    configPrototype_{DeliveryPrototype::create("CGI")}
 {
     establish(configPrototype_);
 }
 
-void CgiService::establish(WebServicePrototype *configPrototype)
+void CgiService::establish(DeliveryPrototype *configPrototype)
 {
     configPrototype->establish("script", "");
     configPrototype->establish("server", StringList::create());
@@ -35,7 +35,7 @@ public:
     CgiServiceAnnouncer() {
         static bool done = false;
         if (done) return;
-        ServiceRegistry::instance()->registerService<CgiService>();
+        DeliveryRegistry::instance()->registerService<CgiService>();
         done = true;
     }
 };

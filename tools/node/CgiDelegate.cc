@@ -18,7 +18,7 @@
 #include "ErrorLog.h"
 #include "NodeConfig.h"
 #include "MediaTypeDatabase.h"
-#include "ServiceWorker.h"
+#include "DeliveryWorker.h"
 #include "CgiServerConnection.h"
 #include "CgiInstance.h"
 
@@ -26,14 +26,14 @@ namespace ccnode {
 
 using namespace cc::http;
 
-Ref<CgiDelegate> CgiDelegate::create(ServiceWorker *worker)
+Ref<CgiDelegate> CgiDelegate::create(DeliveryWorker *worker)
 {
     return new CgiDelegate{worker};
 }
 
-CgiDelegate::CgiDelegate(ServiceWorker *worker):
-    ServiceDelegate{worker},
-    cgiInstance_{worker->serviceInstance()},
+CgiDelegate::CgiDelegate(DeliveryWorker *worker):
+    DeliveryDelegate{worker},
+    cgiInstance_{worker->deliveryInstance()},
     nextPeer_{cgiInstance_->randomSeed()}
 {}
 
@@ -155,7 +155,7 @@ void CgiDelegate::process(HttpRequest *request, const String &script, const Stri
                 String content = File::open(location)->map();
                 String contentType;
                 if (!cgiResponse->lookup("Content-Type", &contentType)) {
-                    contentType = serviceInstance()->mediaTypeDatabase()->lookup(location, content);
+                    contentType = deliveryInstance()->mediaTypeDatabase()->lookup(location, content);
                     cgiResponse->insert("Content-Type", contentType);
                 }
                 response()->setStatus(statusCode, reasonPhrase);
@@ -328,4 +328,4 @@ String CgiDelegate::wrapHttp(const String &header)
     return str("HTTP_") + h;
 }
 
-} // namespace ccnode
+} // namespace ccnod

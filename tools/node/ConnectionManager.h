@@ -11,7 +11,7 @@
 #include <cc/types>
 #include <cc/List>
 #include <cc/Map>
-#include "ServiceWorker.h"
+#include "DeliveryWorker.h"
 #include "ConnectionInfo.h"
 
 namespace ccnode {

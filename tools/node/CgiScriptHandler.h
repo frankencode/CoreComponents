@@ -13,17 +13,17 @@
 namespace ccnode {
 
 class CgiDelegate;
-class ServiceWorker;
+class DeliveryWorker;
 
 class CgiScriptHandler: public ScriptHandler
 {
 public:
-    static Ref<CgiScriptHandler> create(ServiceWorker *worker);
+    static Ref<CgiScriptHandler> create(DeliveryWorker *worker);
 
     bool process(HttpRequest *request, FileStatus *status, const String &documentRoot = "");
 
 private:
-    CgiScriptHandler(ServiceWorker *worker);
+    CgiScriptHandler(DeliveryWorker *worker);
     ~CgiScriptHandler();
 
     Ref<CgiDelegate> delegate_;

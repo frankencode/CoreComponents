@@ -18,7 +18,7 @@ class CgiDirectoryInstance: public DirectoryInstance, public CgiInstance
 public:
     static Ref<CgiDirectoryInstance> create(const MetaObject *config);
 
-    Ref<ServiceDelegate> createDelegate(ServiceWorker *worker) const override;
+    Ref<DeliveryDelegate> createDelegate(DeliveryWorker *worker) const override;
 
 private:
     CgiDirectoryInstance(const MetaObject *config);

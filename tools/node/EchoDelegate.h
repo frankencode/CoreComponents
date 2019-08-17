@@ -6,19 +6,19 @@
  *
  */
 
-#include "ServiceDelegate.h"
+#include "DeliveryDelegate.h"
 
 namespace ccnode {
 
-class EchoDelegate: public ServiceDelegate
+class EchoDelegate: public DeliveryDelegate
 {
 public:
-    static Ref<EchoDelegate> create(ServiceWorker *worker);
+    static Ref<EchoDelegate> create(DeliveryWorker *worker);
 
     void process(HttpRequest *request) override;
 
 private:
-    EchoDelegate(ServiceWorker *worker);
+    EchoDelegate(DeliveryWorker *worker);
 };
 
 } // namespace ccnode

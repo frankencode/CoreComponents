@@ -11,7 +11,7 @@
 #include <cc/String>
 #include <cc/net/SocketAddress>
 #include <cc/http/HttpServerSecurity>
-#include "WebService.h"
+#include "DeliveryService.h"
 #include "LogConfig.h"
 
 namespace ccnode {
@@ -44,9 +44,9 @@ public:
     const LogConfig *errorLogConfig() const { return errorLogConfig_; }
     const LogConfig *accessLogConfig() const { return accessLogConfig_; }
 
-    ServiceInstances *serviceInstances() const { return serviceInstances_; }
+    DeliveryInstances *deliveryInstances() const { return deliveryInstances_; }
 
-    const ServiceInstance *selectService(const String &host, const String &uri = "") const;
+    const DeliveryInstance *selectService(const String &host, const String &uri = "") const;
 
 private:
     NodeConfig(const MetaObject *config);
@@ -67,7 +67,7 @@ private:
     Ref<LogConfig> errorLogConfig_;
     Ref<LogConfig> accessLogConfig_;
 
-    Ref<ServiceInstances> serviceInstances_;
+    Ref<DeliveryInstances> deliveryInstances_;
 };
 
 } // namespace ccnode

@@ -23,7 +23,7 @@ Ref<CgiInstance> CgiInstance::create(const MetaObject *config)
 }
 
 CgiInstance::CgiInstance(const MetaObject *config):
-    ServiceInstance{config},
+    DeliveryInstance{config},
     script_{config->value("script")},
     server_{config->value("server")},
     environment_{config->value("environment")},
@@ -56,7 +56,7 @@ CgiInstance::CgiInstance(const MetaObject *config):
     }
 }
 
-Ref<ServiceDelegate> CgiInstance::createDelegate(ServiceWorker *worker) const
+Ref<DeliveryDelegate> CgiInstance::createDelegate(DeliveryWorker *worker) const
 {
     return CgiDelegate::create(worker);
 }

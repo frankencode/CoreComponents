@@ -9,23 +9,23 @@
 #pragma once
 
 #include <cc/FileStatus>
-#include "ServiceDelegate.h"
+#include "DeliveryDelegate.h"
 
 namespace ccnode {
 
 class CgiInstance;
 
-class CgiDelegate: public ServiceDelegate
+class CgiDelegate: public DeliveryDelegate
 {
 public:
-    static Ref<CgiDelegate> create(ServiceWorker *worker);
+    static Ref<CgiDelegate> create(DeliveryWorker *worker);
 
     void process(HttpRequest *request) override;
     bool process(HttpRequest *request, FileStatus *status, const String &documentRoot = "");
     void process(HttpRequest *request, const String &script, const String &documentRoot = "");
 
 private:
-    CgiDelegate(ServiceWorker *worker);
+    CgiDelegate(DeliveryWorker *worker);
 
     typedef Map<String, String> EnvMap;
 

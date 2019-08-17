@@ -32,12 +32,12 @@ HttpServerConnection::HttpServerConnection(HttpServerSocket *socket):
         setupTransferLog(ErrorLog::instance()->debugStream(), socket->address()->toString());
 }
 
-const ServiceInstance *HttpServerConnection::handshake()
+const DeliveryInstance *HttpServerConnection::handshake()
 {
-    const ServiceInstance *serviceInstance = nullptr;
+    const DeliveryInstance *deliveryInstance = nullptr;
 
     if (socket_->isSecure()) {
-        serviceInstance = socket_->handshake();
+        deliveryInstance = socket_->handshake();
     }
     else {
         String host, uri;
@@ -46,10 +46,10 @@ const ServiceInstance *HttpServerConnection::handshake()
         uri = request->uri();
         putBack(request);
 
-        serviceInstance = socket_->nodeConfig()->selectService(host, uri);
+        deliveryInstance = socket_->nodeConfig()->selectService(host, uri);
     }
 
-    return serviceInstance;
+    return deliveryInstance;
 }
 
 bool HttpServerConnection::isSecure() const
