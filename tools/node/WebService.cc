@@ -12,13 +12,13 @@
 
 namespace ccnode {
 
-Ref<WebServicePrototype> WebServicePrototype::create(const String &className, MetaProtocol *protocol)
+Ref<WebServicePrototype> WebServicePrototype::create(const String &className)
 {
-    return new WebServicePrototype{className, protocol};
+    return new WebServicePrototype{className};
 }
 
-WebServicePrototype::WebServicePrototype(const String &className, MetaProtocol *protocol):
-    MetaObject{className, protocol}
+WebServicePrototype::WebServicePrototype(const String &className):
+    MetaObject{className}
 {
     establish("request-limit", 100);
     establish("request-payload-limit", 0x10000);

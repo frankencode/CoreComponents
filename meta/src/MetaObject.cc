@@ -15,6 +15,11 @@
 namespace cc {
 namespace meta {
 
+Ref<MetaObject> MetaObject::create(const String &className)
+{
+    return new MetaObject{className};
+}
+
 MetaObject::MetaObject(const String &className, MetaProtocol *protocol):
     className_{className},
     protocol_{protocol},

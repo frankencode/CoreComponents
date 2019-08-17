@@ -19,10 +19,10 @@ using namespace cc;
 class WebServicePrototype: public MetaObject
 {
 public:
-    static Ref<WebServicePrototype> create(const String &className, MetaProtocol *protocol = nullptr);
+    static Ref<WebServicePrototype> create(const String &className);
 
 protected:
-    WebServicePrototype(const String &className, MetaProtocol *protocol);
+    WebServicePrototype(const String &className);
 };
 
 class WebService: public Object

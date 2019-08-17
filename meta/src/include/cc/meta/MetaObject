@@ -28,9 +28,7 @@ typedef List< Ref<MetaObject> > MetaObjectList;
 class MetaObject: public VariantMap
 {
 public:
-    static Ref<MetaObject> create(const String &className = "", MetaProtocol *protocol = nullptr) {
-        return new MetaObject{className, protocol};
-    }
+    static Ref<MetaObject> create(const String &className = "");
 
     String className() const { return className_; }
     Variant toVariant() const;
