@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/String>
-#include <cc/syntax/exceptions>
 #ifndef NDEBUG
 #include <cc/syntax/SyntaxDebugger>
 #endif
@@ -37,13 +36,13 @@ public:
     const Pattern &operator=(const String &text);
     const Pattern &operator=(const Variant &text);
 
-    inline operator String() const { return text_; }
+    operator String() const { return text_; }
 
 private:
     friend String str(const Pattern &pattern);
     String text_;
 };
 
-inline String str(const Pattern &pattern) { return pattern.text_; }
+String str(const Pattern &pattern);
 
 }} // namespace cc::glob

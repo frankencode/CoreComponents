@@ -8,6 +8,7 @@
 
 #include <cc/Singleton>
 #include <cc/Format>
+#include <cc/syntax/exceptions>
 #ifndef NDEBUG
 #include <cc/syntax/SyntaxDebugger>
 #endif

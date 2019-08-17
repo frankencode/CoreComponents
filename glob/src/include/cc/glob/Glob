@@ -27,7 +27,7 @@ public:
       * \param expression globbing expression to use for path matching
       * \return new object instance
       */
-    inline static Ref<Glob> open(String expression) { return new Glob(expression); }
+    static Ref<Glob> open(const String &expression);
 
     /** Get the next matched path
       * \param path returns the next path
@@ -36,9 +36,9 @@ public:
     bool read(String *path);
 
 private:
-    Glob(String expression);
-    Glob(String path, StringList *remainder);
-    void init(String path);
+    Glob(const String &expression);
+    Glob(const String &path, StringList *remainder);
+    void init(const String &path);
 
     Ref<Dir> dir_;
     Pattern pattern_;

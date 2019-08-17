@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/syntax/exceptions>
+#include <cc/exceptions>
 #include <cc/meta/MetaObject>
 
 namespace cc {

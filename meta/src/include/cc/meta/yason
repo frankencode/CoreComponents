@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/syntax/exceptions>
+#include <cc/exceptions>
 #include <cc/meta/MetaObject>
 #include <cc/meta/MetaProtocol>
 
@@ -21,7 +21,7 @@ namespace yason {
   * \param protocol message protocol
   * \return parsed value
   */
-Variant parse(const CharArray *text, const MetaProtocol *protocol = 0);
+Variant parse(const CharArray *text, const MetaProtocol *protocol = nullptr);
 
 /** Convenience function to stringify a variant value
   * \param value variant value

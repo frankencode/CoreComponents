@@ -50,7 +50,7 @@ CgiInstance::CgiInstance(const MetaObject *config):
             serverAddress_->append(address);
             CCNODE_NOTICE() << "  " << address << nl;
         }
-        catch (SyntaxError &ex) {
+        catch (TextError &ex) {
             throw UsageError{Format{"CGI: Invalid address syntax \"%%\""} << server_->at(i)};
         }
     }

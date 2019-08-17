@@ -7,6 +7,7 @@
  */
 
 #include <cc/CaptureSink>
+#include <cc/syntax/exceptions>
 #include <cc/meta/YasonSyntax>
 #include <cc/meta/JsonWriter>
 #include <cc/meta/json>

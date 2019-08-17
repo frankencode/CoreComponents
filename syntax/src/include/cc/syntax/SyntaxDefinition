@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/CharArray>
+#include <cc/syntax/exceptions>
 #include <cc/syntax/SyntaxNode>
 #include <cc/syntax/SyntaxDebugFactory>
 #include <cc/syntax/SyntaxState>

@@ -8,6 +8,7 @@
 
 #include <cc/Singleton>
 #include <cc/Format>
+#include <cc/syntax/exceptions>
 #include <cc/syntax/FloatSyntax>
 #include <cc/syntax/IntegerSyntax>
 #include <cc/meta/YasonSyntax>

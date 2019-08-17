@@ -185,7 +185,7 @@ int main(int argc, char **argv)
     catch (SystemResourceError &ex) {
         ferr() << toolName << ": " << ex << nl;
     }
-    catch (SyntaxError &ex) {
+    catch (TextError &ex) {
         ferr() << toolName << ": " << ex << nl;
     }
     #ifdef NDEBUG
