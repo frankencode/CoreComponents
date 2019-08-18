@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Stream>
+#include <cc/node/HttpMessage>
+
+namespace cc { class LineSource; }
+
+namespace cc {
+namespace node {
+
+class HttpStream;
+
+/** \brief logical HTTP connection end
+  */
+class HttpConnection: public Object
+{
+public:
+    Stream *stream() const { return stream_; }
+
+    void setupTransferLog(Stream *debugStream, const String &label);
+
+    bool isPayloadConsumed() const;
+
+protected:
+    HttpConnection(Stream *stream);
+    ~HttpConnection() override;
+
+    void readMessage(HttpMessage *message);
+    virtual void readFirstLine(LineSource *source, HttpMessage *message) {}
+    virtual void onHeaderReceived(HttpMessage *message) {}
+
+    Ref<HttpStream> httpStream_;
+    Ref<Stream> stream_;
+    String lineBuffer_;
+};
+
+}} // namespace cc::node

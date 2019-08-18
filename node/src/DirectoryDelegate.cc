@@ -11,15 +11,13 @@
 #include <cc/node/ErrorLog>
 #include <cc/node/DirectoryInstance>
 #include <cc/node/MediaTypeDatabase>
-#include <cc/http/utils>
-#include <cc/http/exceptions>
+#include <cc/node/utils>
+#include <cc/node/exceptions>
 #include <cc/File>
 #include <cc/Dir>
 
 namespace cc {
 namespace node {
-
-using namespace cc::http;
 
 Ref<DirectoryDelegate> DirectoryDelegate::create(DeliveryWorker *worker, ScriptHandler *scriptHandler)
 {

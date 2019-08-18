@@ -8,12 +8,10 @@
 
 #pragma once
 
-#include <cc/http/HttpConnection>
+#include <cc/node/HttpConnection>
 
 namespace cc {
 namespace node {
-
-using namespace cc::http;
 
 class CgiServerConnection: public HttpConnection
 {

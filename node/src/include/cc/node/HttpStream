@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Stream>
+
+namespace cc { class TransferLimiter; }
+
+namespace cc {
+namespace node {
+
+class HttpStream: public Stream
+{
+public:
+    static Ref<HttpStream> open(Stream *stream);
+
+    bool isPayloadConsumed() const;
+
+    void nextHeader();
+    void nextPayload(int64_t length);
+    void nextLine();
+    void nextChunk();
+
+    int read(CharArray *data) override;
+    void write(const CharArray *data) override;
+    void write(const StringList *parts) override;
+
+private:
+    HttpStream(Stream *stream);
+
+    CharArray *buffer();
+    void discard();
+
+    Ref<Stream> stream_;
+    Ref<TransferLimiter> drainage_;
+    String buffer_;
+    String pending_;
+    int pendingIndex_;
+    int64_t payloadLeft_;
+    int nlCount_, nlMax_;
+    bool eoi_;
+    bool chunked_;
+};
+
+}} // namespace cc::node

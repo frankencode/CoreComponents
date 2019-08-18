@@ -7,8 +7,8 @@
  */
 
 #include <cc/node/HttpResponseGenerator>
-#include <cc/http/utils>
-#include <cc/http/HttpConnection>
+#include <cc/node/utils>
+#include <cc/node/HttpConnection>
 #include <cc/Format>
 #include <cc/System>
 #include <cc/Date>
@@ -16,8 +16,6 @@
 
 namespace cc {
 namespace node {
-
-using namespace cc::http;
 
 Ref<HttpResponseGenerator> HttpResponseGenerator::create(HttpConnection *client)
 {

@@ -8,14 +8,13 @@
 
 #pragma once
 
-#include <cc/http/HttpSocket>
+#include <cc/node/HttpSocket>
 #include <cc/node/DeliveryInstance>
 
 namespace cc {
 namespace node {
 
 using cc::net::StreamSocket;
-using cc::http::HttpSocket;
 
 class ClientHelloContext;
 class HttpServerConnection;

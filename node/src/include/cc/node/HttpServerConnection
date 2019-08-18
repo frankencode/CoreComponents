@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/http/HttpConnection>
+#include <cc/node/HttpConnection>
 #include <cc/node/ConnectionInfo>
 #include <cc/node/HttpRequest>
 #include <cc/node/DeliveryInstance>
@@ -16,8 +16,6 @@
 
 namespace cc {
 namespace node {
-
-using namespace http;
 
 /** \brief server-side end of a HTTP connection
   */

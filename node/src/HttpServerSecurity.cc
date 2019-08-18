@@ -7,12 +7,10 @@
  */
 
 #include <cc/node/HttpServerSecurity>
-#include <cc/http/exceptions>
+#include <cc/node/exceptions>
 
 namespace cc {
 namespace node {
-
-using namespace cc::http;
 
 Ref<HttpServerSecurity> HttpServerSecurity::load(const MetaObject *config)
 {

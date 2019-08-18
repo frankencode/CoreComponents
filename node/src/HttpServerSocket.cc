@@ -11,7 +11,7 @@
 #include <cc/node/ErrorLog>
 #include <cc/node/NodeConfig>
 #include <cc/node/SecurityCache>
-#include <cc/http/exceptions>
+#include <cc/node/exceptions>
 #include <cc/assert>
 #include <cc/ThreadLocalSingleton>
 #include <cc/System>

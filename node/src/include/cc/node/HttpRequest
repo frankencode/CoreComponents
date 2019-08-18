@@ -8,12 +8,10 @@
 
 #pragma once
 
-#include <cc/http/HttpMessage>
+#include <cc/node/HttpMessage>
 
 namespace cc {
 namespace node {
-
-using cc::http::HttpMessage;
 
 class HttpServerConnection;
 

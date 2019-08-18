@@ -14,7 +14,7 @@
 #include <cc/node/ConnectionManager>
 #include <cc/node/HttpServerSocket>
 #include <cc/node/SecurityCache>
-#include <cc/http/exceptions>
+#include <cc/node/exceptions>
 #include <cc/Channel>
 #include <cc/Process>
 #include <cc/User>
@@ -23,8 +23,6 @@
 
 namespace cc {
 namespace node {
-
-using namespace cc::http;
 
 Ref<NodeMaster> NodeMaster::create(const NodeConfig *config)
 {

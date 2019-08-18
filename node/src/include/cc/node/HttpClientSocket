@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/node/HttpSocket>
+#include <cc/node/HttpClientSecurity>
+
+namespace cc {
+    class IoMonitor;
+    class IoEvent;
+}
+
+namespace cc {
+namespace node {
+
+using namespace cc::net;
+
+/** \brief HTTP(S) client-side socket
+  */
+class HttpClientSocket: public HttpSocket
+{
+public:
+    static Ref<HttpClientSocket> create(const SocketAddress *serverAddress, const String &serverName = "", const HttpClientSecurity *security = nullptr);
+    static Ref<HttpClientSocket> connect(const SocketAddress *serverAddress, const String &serverName = "", const HttpClientSecurity *security = nullptr);
+
+    bool isSecure() const;
+    bool connect();
+    void shutdown();
+
+private:
+    HttpClientSocket(const SocketAddress *serverAddress, const String &serverName, const HttpClientSecurity *security);
+
+    void initSession();
+    void handshake();
+
+    bool waitInput() override;
+    void ioException(Exception &ex) const override;
+
+    String serverName_;
+    Ref<const HttpClientSecurity> security_;
+    Ref<StreamSocket> controlMaster_, controlSlave_;
+    Ref<IoMonitor> ioMonitor_;
+    const IoEvent *readyRead_;
+};
+
+}} // namespace cc::node

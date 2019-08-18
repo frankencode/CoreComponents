@@ -1,4 +1,0 @@
-Application {
-    name: ccget
-    use: [ core, net, http ]
-}

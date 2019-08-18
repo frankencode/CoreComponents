@@ -1,0 +1,20 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Date>
+
+namespace cc {
+namespace node {
+
+const char *reasonPhraseByStatusCode(int statusCode);
+String formatDate(Date *date);
+Ref<Date> scanDate(const String &text, bool *ok = nullptr);
+
+}} // namespace cc::node

@@ -8,14 +8,12 @@
 
 #include <cc/node/CgiInstance>
 #include <cc/node/ErrorLog>
-#include <cc/http/exceptions>
+#include <cc/node/exceptions>
 #include <cc/net/Uri>
 #include <cc/net/SocketAddress>
 
 namespace cc {
 namespace node {
-
-using namespace cc::http;
 
 Ref<CgiInstance> CgiInstance::create(const MetaObject *config)
 {

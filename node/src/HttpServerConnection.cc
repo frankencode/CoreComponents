@@ -9,14 +9,12 @@
 #include <cc/node/HttpServerConnection>
 #include <cc/node/ErrorLog>
 #include <cc/node/NodeConfig>
-#include <cc/http/exceptions>
+#include <cc/node/exceptions>
 #include <cc/System>
 #include <cc/LineSource>
 
 namespace cc {
 namespace node {
-
-using namespace cc::http;
 
 Ref<HttpServerConnection> HttpServerConnection::open(HttpServerSocket *socket)
 {

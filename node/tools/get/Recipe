@@ -1,0 +1,4 @@
+Application {
+    name: ccget
+    use: [ core, net, cc/node ]
+}

@@ -13,7 +13,7 @@
 #include <cc/node/DeliveryService>
 #include <cc/node/DeliveryDelegate>
 #include <cc/node/HttpResponseGenerator>
-#include <cc/http/exceptions>
+#include <cc/node/exceptions>
 #include <cc/net/Uri>
 #include <cc/Format>
 #include <cc/RefGuard>
@@ -22,8 +22,6 @@
 
 namespace cc {
 namespace node {
-
-using namespace cc::http;
 
 Ref<DeliveryWorker> DeliveryWorker::create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections)
 {

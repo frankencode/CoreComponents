@@ -8,12 +8,10 @@
 
 #pragma once
 
-#include <cc/http/HttpGenerator>
+#include <cc/node/HttpGenerator>
 
 namespace cc {
 namespace node {
-
-using namespace cc::http;
 
 class DeliveryWorker;
 

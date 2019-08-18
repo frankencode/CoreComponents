@@ -13,8 +13,8 @@
 #include <cc/node/DeliveryWorker>
 #include <cc/node/CgiServerConnection>
 #include <cc/node/CgiInstance>
-#include <cc/http/exceptions>
-#include <cc/http/TapBuffer>
+#include <cc/node/exceptions>
+#include <cc/node/TapBuffer>
 #include <cc/net/StreamSocket>
 #include <cc/str>
 #include <cc/Format>
@@ -25,8 +25,6 @@
 
 namespace cc {
 namespace node {
-
-using namespace cc::http;
 
 Ref<CgiDelegate> CgiDelegate::create(DeliveryWorker *worker)
 {
