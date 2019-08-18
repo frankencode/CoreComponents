@@ -38,13 +38,13 @@ public:
     MetaProtocol *protocol() { return protocol_; }
     const MetaProtocol *protocol() const { return protocol_; }
 
-    inline bool hasChildren() const { return children_->count() > 0; }
+    bool hasChildren() const { return children_->count() > 0; }
     MetaObjectList *children() { return children_; }
     const MetaObjectList *children() const { return children_; }
 
-    Ref<MetaObject> clone();
+    Ref<MetaObject> clone() const;
 
-    virtual Ref<MetaObject> produce() {
+    virtual Ref<MetaObject> produce() const {
         return MetaObject::create(className());
     }
 

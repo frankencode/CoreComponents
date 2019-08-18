@@ -10,10 +10,9 @@
 #include <cc/node/NodeConfigProtocol>
 #include <cc/node/DeliveryRegistry>
 #include <cc/node/ErrorLog>
+#include <cc/meta/yason>
 #include <cc/File>
-#include <cc/Dir>
 #include <cc/ResourceGuard>
-#include <cc/Arguments>
 
 namespace cc {
 namespace node {
@@ -21,64 +20,9 @@ namespace node {
 using namespace cc::net;
 using namespace cc::meta;
 
-Ref<NodeConfig> NodeConfig::load(int argc, char **argv)
+Ref<MetaObject> NodeConfig::parse(const String &text)
 {
-    Ref<Arguments> arguments = Arguments::parse(argc, argv);
-    const StringList *items = arguments->items();
-
-    MetaObject *nodePrototype = NodeConfigProtocol::instance()->nodePrototype_;
-    arguments->validate(nodePrototype);
-
-    Ref<MetaObject> config;
-    String dirPath;
-
-    if (items->count() > 0) {
-        if (items->count() > 1)
-            throw UsageError{"Handling multiple input arguments at once is not supported"};
-
-        String path = items->at(0);
-        if (Dir::exists(path)) {
-            dirPath = path;
-        }
-        else {
-            ResourceGuard context{path};
-            config = yason::parse(File::open(path)->map(), NodeConfigProtocol::instance());
-        }
-    }
-
-    if (!config) config = nodePrototype->clone();
-    arguments->override(config);
-
-    Ref<NodeConfig> nodeConfig = new NodeConfig{config};
-
-    if (dirPath != "") {
-        DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Directory");
-        MetaObject *serviceConfig = service->configPrototype();
-        serviceConfig->establish("host", "*");
-        serviceConfig->establish("path", dirPath);
-        nodeConfig->deliveryInstances()->append(service->createInstance(serviceConfig));
-    }
-
-    if (nodeConfig->deliveryInstances()->count() == 0) {
-        DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Echo");
-        MetaObject *serviceConfig = service->configPrototype();
-        serviceConfig->establish("host", "*");
-        nodeConfig->deliveryInstances()->append(service->createInstance(serviceConfig));
-    }
-
-    return nodeConfig;
-}
-
-Ref<NodeConfig> NodeConfig::load(const String &path)
-{
-    ResourceGuard context{path};
-
-    return load(
-        yason::parse(
-            File::open(path)->map(),
-            NodeConfigProtocol::instance()
-        )
-    );
+    return yason::parse(text, NodeConfigProtocol::instance());
 }
 
 Ref<NodeConfig> NodeConfig::load(const MetaObject *config)
@@ -86,11 +30,20 @@ Ref<NodeConfig> NodeConfig::load(const MetaObject *config)
     return new NodeConfig{config};
 }
 
+const MetaObject *NodeConfig::prototype()
+{
+    return NodeConfigProtocol::instance()->nodePrototype();
+}
+
+Ref<NodeConfig> NodeConfig::load(const String &path)
+{
+    ResourceGuard context{path};
+    return load(parse(File::open(path)->map()));
+}
+
 Ref<NodeConfig> NodeConfig::create()
 {
-    return NodeConfig::load(
-        NodeConfigProtocol::instance()->nodePrototype_
-    );
+    return load(prototype());
 }
 
 NodeConfig::NodeConfig(const MetaObject *config)

@@ -23,12 +23,16 @@ class DeliveryRegistry;
 
 class NodeConfigProtocol: public MetaProtocol
 {
+public:
+    static NodeConfigProtocol *instance();
+
+    const MetaObject *nodePrototype() const { return nodePrototype_; }
+
 private:
     friend class Singleton<NodeConfigProtocol>;
-    friend class NodeConfig;
+    // friend class NodeConfig;
     friend class DeliveryRegistry;
 
-    static NodeConfigProtocol *instance();
     void registerService(MetaObject *configPrototype);
 
     NodeConfigProtocol();

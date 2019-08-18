@@ -12,7 +12,6 @@
 #include <cc/node/DeliveryService>
 #include <cc/node/LogConfig>
 #include <cc/net/SocketAddress>
-#include <cc/String>
 
 namespace cc {
 namespace node {
@@ -23,9 +22,11 @@ using cc::net::SocketAddressList;
 class NodeConfig: public Object
 {
 public:
-    static Ref<NodeConfig> load(int argc, char **argv);
-    static Ref<NodeConfig> load(const String &path);
+    static Ref<MetaObject> parse(const String &text);
     static Ref<NodeConfig> load(const MetaObject *config);
+    static const MetaObject *prototype();
+
+    static Ref<NodeConfig> load(const String &path);
     static Ref<NodeConfig> create();
 
     const SocketAddressList *address() const { return address_; }

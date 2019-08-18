@@ -1,4 +1,4 @@
-Application {
+Library {
     name: ccnode
     use: [ core, syntax, glob, meta, net, http ]
     depends: gnutls >= 3.3.5

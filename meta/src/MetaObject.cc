@@ -40,7 +40,7 @@ String MetaObject::toString() const
 
 bool MetaObject::hasProtocol() const { return protocol_->isDefined(); }
 
-Ref<MetaObject> MetaObject::clone()
+Ref<MetaObject> MetaObject::clone() const
 {
     Ref<MetaObject> object = produce();
     object->MetaObject::autocomplete(this);
