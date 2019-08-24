@@ -21,10 +21,10 @@ class Palette: public MetaObject
 {
 public:
     static Ref<Palette> create() { return new Palette; }
-    static Ref<Palette> load(String path);
+    static Ref<Palette> load(const String &path);
 
-    inline String scopeName() const { return scopeName_; }
-    inline int scope() const { return scope_; }
+    String scopeName() const { return scopeName_; }
+    int scope() const { return scope_; }
 
     static int defaultScope();
 
@@ -39,20 +39,20 @@ public:
         Undefined = -1
     };
 
-    inline bool lookupStyleByRule(int rule, Style **style) const { return styleByRule_->lookup(rule, style); }
-    inline Style *styleByRule(int rule) { return styleByRule_->value(rule); }
+    bool lookupStyleByRule(int rule, Style **style) const { return styleByRule_->lookup(rule, style); }
+    Style *styleByRule(int rule) { return styleByRule_->value(rule); }
 
-    inline int styleCount() const { return styleByRule_->count(); }
-    inline const Style *styleAt(int i) const { return styleByRule_->valueAt(i); }
+    int styleCount() const { return styleByRule_->count(); }
+    const Style *styleAt(int i) const { return styleByRule_->valueAt(i); }
 
 private:
     Palette();
 
-    static int defaultRuleByName(String name);
+    static int defaultRuleByName(const String &name);
 
-    virtual Ref<MetaObject> produce();
-    virtual void define();
-    virtual void realize(const CharArray *text, Token *objectToken);
+    Ref<MetaObject> produce() const override;
+    void define() override;
+    void realize(const CharArray *text, Token *objectToken) override;
 
     String scopeName_;
     int scope_;

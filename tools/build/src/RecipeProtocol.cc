@@ -163,7 +163,7 @@ public:
         return new PredicateMetaProtocol{prototype};
     }
 
-    virtual MetaObject *lookup(String className) const override;
+    virtual MetaObject *lookup(const String &className) const override;
 
 private:
     PredicateMetaProtocol(PredicatePrototype *prototype):
@@ -193,7 +193,7 @@ protected:
     }
 };
 
-MetaObject *PredicateMetaProtocol::lookup(String className) const
+MetaObject *PredicateMetaProtocol::lookup(const String &className) const
 {
     if (className == prototype_->className()) return prototype_;
     return MetaProtocol::lookup(className);

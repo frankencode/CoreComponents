@@ -20,20 +20,20 @@ using namespace cc::glob;
 class Language: public Object
 {
 public:
-    inline String displayName() const { return displayName_; }
-    inline String name() const { return name_; }
-    inline Pattern pathPattern() const { return pathPattern_; }
-    inline const SyntaxDefinition *highlightingSyntax() const { return highlightingSyntax_; }
-    inline const SyntaxDefinition *discoverySyntax() const { return discoverySyntax_; }
-    inline const SyntaxDefinition *foldingSyntax() const { return foldingSyntax_; }
+    String displayName() const { return displayName_; }
+    String name() const { return name_; }
+    Pattern pathPattern() const { return pathPattern_; }
+    const SyntaxDefinition *highlightingSyntax() const { return highlightingSyntax_; }
+    const SyntaxDefinition *discoverySyntax() const { return discoverySyntax_; }
+    const SyntaxDefinition *foldingSyntax() const { return foldingSyntax_; }
 
 protected:
     Language(
-        String displayName,
+        const String &displayName,
         Pattern pathPattern,
         const SyntaxDefinition *highlightingSyntax,
-        const SyntaxDefinition *discoverySyntax = 0,
-        const SyntaxDefinition *foldingSyntax = 0
+        const SyntaxDefinition *discoverySyntax = nullptr,
+        const SyntaxDefinition *foldingSyntax = nullptr
     );
 
 private:

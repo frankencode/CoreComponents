@@ -32,9 +32,9 @@ Ref<Theme> Theme::load(String path)
 }
 
 Theme::Theme(String path):
-    path_(path),
-    name_(path->fileName()),
-    paletteByScope_(PaletteByScope::create())
+    path_{path},
+    name_{path->fileName()},
+    paletteByScope_{PaletteByScope::create()}
 {
     Ref<Dir> dir = Dir::open(path);
     String name;

@@ -15,14 +15,13 @@
 namespace cc {
 namespace toki {
 
-Ref<Palette> Palette::load(String path)
+Ref<Palette> Palette::load(const String &path)
 {
-    Ref<Palette> palette = paletteLoader()->load(path);
-    return palette;
+    return paletteLoader()->load(path);
 }
 
 Palette::Palette():
-    styleByRule_(StyleByRule::create())
+    styleByRule_{StyleByRule::create()}
 {}
 
 int Palette::defaultScope()
@@ -30,7 +29,7 @@ int Palette::defaultScope()
     return SyntaxDefinition::scope("default");
 }
 
-int Palette::defaultRuleByName(String name)
+int Palette::defaultRuleByName(const String &name)
 {
     if (name == "Text") return Text;
     if (name == "CurrentLine") return CurrentLine;
@@ -42,7 +41,7 @@ int Palette::defaultRuleByName(String name)
     return Undefined;
 }
 
-Ref<MetaObject> Palette::produce()
+Ref<MetaObject> Palette::produce() const
 {
     return new Palette;
 }
@@ -65,17 +64,17 @@ void Palette::realize(const CharArray *text, Token *objectToken)
             if (style->rule_ == Undefined) {
                 Token *token = childToken(objectToken, i);
                 token = valueToken(text, token, "name");
-                throw SemanticError(
-                    Format("Undefined default style '%%'") << style->ruleName(),
+                throw SemanticError{
+                    Format{"Undefined default style '%%'"} << style->ruleName(),
                     text, token->i1()
-                );
+                };
             }
             styleByRule_->establish(style->rule_, style);
         }
         return;
     }
 
-    Language *language = 0;
+    Language *language = nullptr;
     if (!registry()->lookupLanguageByName(scopeName_, &language))
         throw SemanticError{Format{"Undefined language '%%'"} << scopeName_};
 

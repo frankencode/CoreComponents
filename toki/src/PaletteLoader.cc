@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/debug>
 #include <cc/Singleton>
 #include <cc/File>
 #include <cc/ResourceGuard>
@@ -15,16 +16,16 @@ namespace cc {
 namespace toki {
 
 PaletteLoader::PaletteLoader():
-    protocol_(MetaProtocol::create())
+    protocol_{MetaProtocol::create()}
 {
     protocol_->define<Palette>();
     protocol_->minCount(1);
     protocol_->maxCount(1);
 }
 
-Ref<Palette> PaletteLoader::load(String path) const
+Ref<Palette> PaletteLoader::load(const String &path) const
 {
-    ResourceGuard context(path);
+    ResourceGuard context{path};
     String text = File::open(path)->map();
     return yason::parse(text, protocol_);
 }

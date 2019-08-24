@@ -23,20 +23,20 @@ class Style: public MetaObject
 public:
     static Ref<Style> create() { return new Style; }
 
-    inline String ruleName() const { return ruleName_; }
-    inline int rule() const { return rule_; }
-    inline Color ink() const { return ink_; }
-    inline Color paper() const { return paper_; }
-    inline bool bold() const { return bold_; }
-    inline bool italic() const { return italic_; }
+    String ruleName() const { return ruleName_; }
+    int rule() const { return rule_; }
+    Color ink() const { return ink_; }
+    Color paper() const { return paper_; }
+    bool bold() const { return bold_; }
+    bool italic() const { return italic_; }
 
 private:
     friend class Palette;
 
     Style() {}
-    virtual Ref<MetaObject> produce();
-    virtual void define();
-    virtual void realize(const CharArray *text, Token *objectToken);
+    Ref<MetaObject> produce() const override;
+    void define() override;
+    void realize(const CharArray *text, Token *objectToken) override;
 
     String ruleName_;
     int rule_;
@@ -47,4 +47,3 @@ private:
 };
 
 }} // namespace cc::toki
-

@@ -19,7 +19,7 @@ namespace toki {
 class PaletteLoader: public Object
 {
 public:
-    Ref<Palette> load(String path) const;
+    Ref<Palette> load(const String &path) const;
 
 private:
     friend class Singleton<PaletteLoader>;
@@ -31,4 +31,3 @@ private:
 const PaletteLoader *paletteLoader();
 
 }} // namespace cc::toki
-

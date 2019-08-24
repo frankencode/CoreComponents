@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -19,7 +19,7 @@ namespace meta {
 class MetaProtocol: public Object
 {
 public:
-    inline static Ref<MetaProtocol> create() {
+    static Ref<MetaProtocol> create() {
         return new MetaProtocol;
     }
 
@@ -52,8 +52,8 @@ public:
         return prototype;
     }
 
-    virtual MetaObject *lookup(String className) const {
-        MetaObject *prototype = 0;
+    virtual MetaObject *lookup(const String &className) const {
+        MetaObject *prototype = nullptr;
         if (prototypes_) prototypes_->lookup(className, &prototype);
         return prototype;
     }
@@ -63,7 +63,7 @@ public:
     void minCount(int newCount) { minCount_ = newCount; }
     void maxCount(int newCount) { maxCount_ = newCount; }
 
-    inline bool lookup(const String &className, MetaObject **prototype) const {
+    bool lookup(const String &className, MetaObject **prototype) const {
         *prototype = lookup(className);
         return *prototype;
     }
@@ -72,12 +72,12 @@ protected:
     friend class YasonSyntax;
 
     MetaProtocol():
-        prototypes_(Prototypes::create()),
-        minCount_(0),
-        maxCount_(cc::intMax)
+        prototypes_{Prototypes::create()},
+        minCount_{0},
+        maxCount_{cc::intMax}
     {}
 
-    virtual Ref<MetaObject> produce(MetaObject *prototype) const {
+    virtual Ref<MetaObject> produce(const MetaObject *prototype) const {
         return prototype->produce();
     }
 

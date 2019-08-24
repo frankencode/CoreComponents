@@ -11,7 +11,7 @@
 namespace cc {
 namespace toki {
 
-Ref<MetaObject> Style::produce()
+Ref<MetaObject> Style::produce() const
 {
     return Style::create();
 }
@@ -20,8 +20,8 @@ void Style::define()
 {
     className("Style");
     insert("rule", "");
-    insert("ink", Color());
-    insert("paper", Color());
+    insert("ink", Color{});
+    insert("paper", Color{});
     insert("bold", false);
     insert("italic", false);
 }
