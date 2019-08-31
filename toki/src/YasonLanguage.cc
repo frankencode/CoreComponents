@@ -18,11 +18,11 @@ private:
     friend class Object;
 
     YasonLanguage():
-        Language(
+        Language{
             "Yason",
-            Pattern("(*.(yason|json))|Recipe"),
-            cc::toki::yasonSyntax()
-        )
+            Pattern{"(*.(yason|json))|Recipe"},
+            cc::toki::YasonSyntax::instance()
+        }
     {}
 };
 

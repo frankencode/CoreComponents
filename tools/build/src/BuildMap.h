@@ -26,6 +26,8 @@ class BuildPlan;
 class BuildMap: public Object
 {
 public:
+    static BuildMap *instance();
+
     void insertPlan(String path, BuildPlan *plan);
     bool lookupPlan(String path, Ref<BuildPlan> *plan) const;
     String commonPrefix() const;
@@ -45,7 +47,4 @@ private:
     Ref<RecipePathByTargetName> applications_;
 };
 
-BuildMap *buildMap();
-
 } // namespace ccbuild
-

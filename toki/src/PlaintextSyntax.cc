@@ -12,12 +12,10 @@
 namespace cc {
 namespace toki {
 
-class PlaintextSyntax: public SyntaxDefinition
+const PlaintextSyntax *PlaintextSyntax::instance()
 {
-protected:
-    friend class Singleton<PlaintextSyntax>;
-    PlaintextSyntax();
-};
+    return Singleton<PlaintextSyntax>::instance();
+}
 
 PlaintextSyntax::PlaintextSyntax()
 {
@@ -31,11 +29,6 @@ PlaintextSyntax::PlaintextSyntax()
 
     ENTRY("Plaintext");
     LINK();
-}
-
-const SyntaxDefinition *plaintextSyntax()
-{
-    return Singleton<PlaintextSyntax>::instance();
 }
 
 }} // namespace cc::toki

@@ -163,7 +163,7 @@ public:
         return new PredicateMetaProtocol{prototype};
     }
 
-    virtual MetaObject *lookup(const String &className) const override;
+    const MetaObject *lookup(const String &className) const override;
 
 private:
     PredicateMetaProtocol(PredicatePrototype *prototype):
@@ -193,7 +193,7 @@ protected:
     }
 };
 
-MetaObject *PredicateMetaProtocol::lookup(const String &className) const
+const MetaObject *PredicateMetaProtocol::lookup(const String &className) const
 {
     if (className == prototype_->className()) return prototype_;
     return MetaProtocol::lookup(className);
@@ -330,6 +330,9 @@ RecipeProtocol::RecipeProtocol()
     define<PackagePrototype>();
 }
 
-const RecipeProtocol *recipeProtocol() { return Singleton<RecipeProtocol>::instance(); }
+const RecipeProtocol *RecipeProtocol::instance()
+{
+    return Singleton<RecipeProtocol>::instance();
+}
 
 } // namespace ccbuild

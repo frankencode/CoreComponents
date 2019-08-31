@@ -23,8 +23,8 @@ class YasonSyntax: public SyntaxDefinition
 public:
     static const YasonSyntax *instance();
 
-    Variant parse(const CharArray *text, const MetaProtocol *protocol = 0) const;
-    Ref<MetaObject> readObject(const CharArray *text, Token *token, const MetaProtocol *protocol = 0, MetaObject *prototype = 0) const;
+    Variant parse(const CharArray *text, const MetaProtocol *protocol = nullptr) const;
+    Ref<MetaObject> readObject(const CharArray *text, Token *token, const MetaProtocol *protocol = nullptr, const MetaObject *prototype = nullptr) const;
 
     Token *nameToken(const CharArray *text, Token *objectToken, const String &memberName) const;
     Token *valueToken(const CharArray *text, Token *objectToken, const String &memberName) const;

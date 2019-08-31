@@ -18,11 +18,11 @@ private:
     friend class Object;
 
     PlaintextLanguage():
-        Language(
+        Language{
             "Plaintext",
-            Pattern("*.txt"),
-            plaintextSyntax()
-        )
+            Pattern{"*.txt"},
+            PlaintextSyntax::instance()
+        }
     {}
 };
 

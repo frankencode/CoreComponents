@@ -17,7 +17,7 @@ namespace toki {
 
 Ref<Palette> Palette::load(const String &path)
 {
-    return paletteLoader()->load(path);
+    return PaletteLoader::instance()->load(path);
 }
 
 Palette::Palette():
@@ -75,7 +75,7 @@ void Palette::realize(const CharArray *text, Token *objectToken)
     }
 
     Language *language = nullptr;
-    if (!registry()->lookupLanguageByName(scopeName_, &language))
+    if (!Registry::instance()->lookupLanguageByName(scopeName_, &language))
         throw SemanticError{Format{"Undefined language '%%'"} << scopeName_};
 
     const SyntaxDefinition *syntax = language->highlightingSyntax();

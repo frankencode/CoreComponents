@@ -13,17 +13,15 @@
 namespace cc {
 namespace toki {
 
-class CppDiscoverySyntax: public SyntaxDefinition
+const CppDiscoverySyntax *CppDiscoverySyntax::instance()
 {
-private:
-    friend class Singleton<CppDiscoverySyntax>;
-    CppDiscoverySyntax();
-};
+    return Singleton<CppDiscoverySyntax>::instance();
+}
 
 CppDiscoverySyntax::CppDiscoverySyntax()
 {
     SYNTAX("cpp_discovery");
-    IMPORT(cxxSyntax(), "cxx");
+    IMPORT(CxxSyntax::instance(), "cxx");
 
     DEFINE("Header",
         GLUE(
@@ -43,7 +41,5 @@ CppDiscoverySyntax::CppDiscoverySyntax()
     ENTRY("Header");
     LINK();
 }
-
-const SyntaxDefinition *cppDiscoverySyntax() { return Singleton<CppDiscoverySyntax>::instance(); }
 
 }} // namespace cc::toki

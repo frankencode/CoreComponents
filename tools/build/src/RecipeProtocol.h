@@ -19,12 +19,12 @@ using namespace cc::meta;
 
 class RecipeProtocol: public MetaProtocol
 {
+public:
+    static const RecipeProtocol *instance();
+
 protected:
     friend class Singleton<RecipeProtocol>;
     RecipeProtocol();
 };
 
-const RecipeProtocol *recipeProtocol();
-
 } // namespace ccbuild
-

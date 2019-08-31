@@ -19,6 +19,8 @@ namespace toki {
 class PaletteLoader: public Object
 {
 public:
+    static const PaletteLoader *instance();
+
     Ref<Palette> load(const String &path) const;
 
 private:
@@ -27,7 +29,5 @@ private:
 
     Ref<MetaProtocol> protocol_;
 };
-
-const PaletteLoader *paletteLoader();
 
 }} // namespace cc::toki

@@ -19,42 +19,43 @@ namespace meta {
 class MetaProtocol: public Object
 {
 public:
-    static Ref<MetaProtocol> create() {
+    static Ref<MetaProtocol> create()
+    {
         return new MetaProtocol;
     }
 
     bool isDefined() const { return prototypes_->count() > 0; }
 
     template<class Prototype>
-    Prototype *define(const String &className) {
-        Ref<Prototype> prototype = Prototype::create(className);
-        define(prototype);
-        return prototype;
+    void define(const String &className)
+    {
+        define(Prototype::create(className));
     }
 
     template<class Prototype>
-    Prototype *define() {
-        Ref<Prototype> prototype = Prototype::create();
-        define(prototype);
-        return prototype;
+    void define()
+    {
+        define(Prototype::create());
     }
 
-    MetaObject *define(MetaObject *prototype) {
+    void define(MetaObject *prototype)
+    {
         prototype->define();
         prototypes_->insert(prototype->className(), prototype);
-        return prototype;
     }
 
     template<class Prototype>
-    static Ref<MetaObject> createPrototype() {
+    static Ref<MetaObject> createPrototype()
+    {
         Ref<MetaObject> prototype = Prototype::create();
         prototype->define();
         return prototype;
     }
 
-    virtual MetaObject *lookup(const String &className) const {
-        MetaObject *prototype = nullptr;
-        if (prototypes_) prototypes_->lookup(className, &prototype);
+    virtual const MetaObject *lookup(const String &className) const
+    {
+        const MetaObject *prototype = nullptr;
+        prototypes_->lookup(className, &prototype);
         return prototype;
     }
 
@@ -63,7 +64,8 @@ public:
     void minCount(int newCount) { minCount_ = newCount; }
     void maxCount(int newCount) { maxCount_ = newCount; }
 
-    bool lookup(const String &className, MetaObject **prototype) const {
+    bool lookup(const String &className, const MetaObject **prototype) const
+    {
         *prototype = lookup(className);
         return *prototype;
     }
@@ -77,12 +79,13 @@ protected:
         maxCount_{cc::intMax}
     {}
 
-    virtual Ref<MetaObject> produce(const MetaObject *prototype) const {
+    virtual Ref<MetaObject> produce(const MetaObject *prototype) const
+    {
         return prototype->produce();
     }
 
 private:
-    typedef Map<String, Ref<MetaObject> > Prototypes;
+    typedef Map<String, Ref<const MetaObject> > Prototypes;
     Ref<Prototypes> prototypes_;
     int minCount_;
     int maxCount_;

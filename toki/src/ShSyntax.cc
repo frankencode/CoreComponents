@@ -12,12 +12,10 @@
 namespace cc {
 namespace toki {
 
-class ShSyntax: public SyntaxDefinition
+const ShSyntax *ShSyntax::instance()
 {
-protected:
-    friend class Singleton<ShSyntax>;
-    ShSyntax();
-};
+    return Singleton<ShSyntax>::instance();
+}
 
 ShSyntax::ShSyntax()
 {
@@ -47,7 +45,5 @@ ShSyntax::ShSyntax()
     ENTRY("Source");
     LINK();
 }
-
-const SyntaxDefinition *shSyntax() { return Singleton<ShSyntax>::instance(); }
 
 }} // namespace cc::toki

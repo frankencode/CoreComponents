@@ -19,12 +19,12 @@ private:
     friend class Object;
 
     CxxLanguage():
-        Language(
+        Language{
             "C++",
-            Pattern("*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"),
-            cxxSyntax(),
-            cppDiscoverySyntax()
-        )
+            Pattern{"*.((h|c){0..1:(pp|xx|++|h|c)}|(m|mm))"},
+            CxxSyntax::instance(),
+            CppDiscoverySyntax::instance()
+        }
     {}
 };
 

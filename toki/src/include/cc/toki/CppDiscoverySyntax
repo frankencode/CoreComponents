@@ -10,10 +10,19 @@
 
 #include <cc/syntax/SyntaxDefinition>
 
+namespace cc { template<class> class Singleton; }
+
 namespace cc {
 namespace toki {
 
-const SyntaxDefinition *cppDiscoverySyntax();
+class CppDiscoverySyntax: public SyntaxDefinition
+{
+public:
+    static const CppDiscoverySyntax *instance();
+
+private:
+    friend class Singleton<CppDiscoverySyntax>;
+    CppDiscoverySyntax();
+};
 
 }} // namespace cc::toki
-

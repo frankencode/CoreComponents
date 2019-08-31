@@ -15,6 +15,11 @@
 namespace cc {
 namespace toki {
 
+const PaletteLoader *PaletteLoader::instance()
+{
+    return Singleton<PaletteLoader>::instance();
+}
+
 PaletteLoader::PaletteLoader():
     protocol_{MetaProtocol::create()}
 {
@@ -29,7 +34,5 @@ Ref<Palette> PaletteLoader::load(const String &path) const
     String text = File::open(path)->map();
     return yason::parse(text, protocol_);
 }
-
-const PaletteLoader *paletteLoader() { return Singleton<PaletteLoader>::instance(); }
 
 }} // namespace cc::toki

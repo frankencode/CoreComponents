@@ -45,8 +45,8 @@ int main(int argc, char **argv)
         String languageOption = options->value("language");
 
         if (options->value("list-languages")) {
-            for (int i = 0; i < registry()->languageCount(); ++i) {
-                Language *language = registry()->languageAt(i);
+            for (int i = 0; i < Registry::instance()->languageCount(); ++i) {
+                const Language *language = Registry::instance()->languageAt(i);
                 fout() << language->name() << ": \"" << language->displayName() << "\"" << nl;
             }
             return 0;
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
         Language *defaultLanguage = 0;
         if (languageOption != "") {
-            if (!registry()->lookupLanguageByName(languageOption, &defaultLanguage))
+            if (!Registry::instance()->lookupLanguageByName(languageOption, &defaultLanguage))
                 throw UsageError{Format{"Language \"%%\" is not supported"} << languageOption};
         }
 
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
                 Language *language = defaultLanguage;
                 if (!language) {
-                    if (!registry()->detectLanguage(path, text, &language))
+                    if (!Registry::instance()->detectLanguage(path, text, &language))
                         throw UsageError{Format{"%%: Failed to detect language (use -language option)"} << path};
                 }
                 Ref<SyntaxState> state;
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
                     state = language->highlightingSyntax()->match(text);
                     if (!state->valid()) {
                         ferr() << SyntaxError(text, state, path) << nl;
-                        registry()->lookupLanguageByName("plaintext", &language);
+                        Registry::instance()->lookupLanguageByName("plaintext", &language);
                         continue;
                     }
                     break;

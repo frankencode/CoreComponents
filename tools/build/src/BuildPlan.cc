@@ -37,7 +37,7 @@ Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 Ref<BuildPlan> BuildPlan::create(String projectPath)
 {
     Ref<BuildPlan> plan;
-    if (buildMap()->lookupPlan(String(projectPath->absolutePathRelativeTo(Process::getWorkingDirectory())), &plan)) return plan;
+    if (BuildMap::instance()->lookupPlan(String(projectPath->absolutePathRelativeTo(Process::getWorkingDirectory())), &plan)) return plan;
     return new BuildPlan(projectPath, this);
 }
 
@@ -71,7 +71,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
     recipePath_ = recipePath(projectPath_);
 
     ResourceGuard context(recipePath_);
-    recipe_ = yason::parse(File::open(recipePath_)->map(), recipeProtocol());
+    recipe_ = yason::parse(File::open(recipePath_)->map(), RecipeProtocol::instance());
     arguments->validate(recipe_);
     arguments->override(recipe_);
 
@@ -81,7 +81,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
     toolChain_ = GnuToolChain::create(this);
     if (optimize_ == "") optimize_ = toolChain_->defaultOptimization(this);
 
-    buildMap()->insertPlan(projectPath_, this);
+    BuildMap::instance()->insertPlan(projectPath_, this);
     scope_ = projectPath_;
 }
 
@@ -95,9 +95,9 @@ BuildPlan::BuildPlan(const String &projectPath, BuildPlan *parentPlan):
     CCBUILD_BUILDPLAN_COMPONENTS_INIT
 {
     ResourceGuard context(recipePath_);
-    recipe_ = yason::parse(File::open(recipePath_)->map(), recipeProtocol());
+    recipe_ = yason::parse(File::open(recipePath_)->map(), RecipeProtocol::instance());
     readRecipe(parentPlan);
-    buildMap()->insertPlan(projectPath_, this);
+    BuildMap::instance()->insertPlan(projectPath_, this);
 }
 
 bool BuildPlan::goForBuild() const
@@ -265,9 +265,9 @@ void BuildPlan::checkDuplicateTargetNames()
     String otherRecipePath;
     bool ok = true;
     if (options_ & Library)
-        ok = buildMap()->registerLibrary(name_, recipePath_, &otherRecipePath);
+        ok = BuildMap::instance()->registerLibrary(name_, recipePath_, &otherRecipePath);
     else if (options_ & Application)
-        ok = buildMap()->registerApplication(name_, recipePath_, &otherRecipePath);
+        ok = BuildMap::instance()->registerApplication(name_, recipePath_, &otherRecipePath);
     if (!ok) {
         throw UsageError{
             Format{"Duplicate target name '%%' in\n  %%\n  and\n  %%"}
@@ -563,7 +563,7 @@ void BuildPlan::globSources()
     else
         sources_ = StringList::create();
 
-    sourcePrefix_ = buildMap()->commonPrefix();
+    sourcePrefix_ = BuildMap::instance()->commonPrefix();
     if (sourcePrefix_ == "") sourcePrefix_ = projectPath_;
     else sourcePrefix_ = sourcePrefix_->canonicalPath();
 

@@ -26,7 +26,7 @@ Language::Language(
     discoverySyntax_{discoverySyntax},
     foldingSyntax_{foldingSyntax}
 {
-    registry()->registerLanguage(this);
+    Registry::instance()->registerLanguage(this);
 }
 
 }} // namespace cc::toki

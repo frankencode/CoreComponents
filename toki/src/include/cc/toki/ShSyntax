@@ -10,12 +10,21 @@
 
 #include <cc/syntax/SyntaxDefinition>
 
+namespace cc { template<class> class Singleton; }
+
 namespace cc {
 namespace toki {
 
 using namespace cc::syntax;
 
-const SyntaxDefinition *shSyntax();
+class ShSyntax: public SyntaxDefinition
+{
+public:
+    static const ShSyntax *instance();
+
+protected:
+    friend class Singleton<ShSyntax>;
+    ShSyntax();
+};
 
 }} // namespace cc::toki
-

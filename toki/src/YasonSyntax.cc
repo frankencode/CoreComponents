@@ -12,16 +12,13 @@
 namespace cc {
 namespace toki {
 
-class YasonSyntax: public cc::meta::YasonSyntax
+const YasonSyntax *YasonSyntax::instance()
 {
-protected:
-    friend class cc::Singleton<YasonSyntax>;
+    return Singleton<YasonSyntax>::instance();
+}
 
-    YasonSyntax()
-        : cc::meta::YasonSyntax(GenerateComments|GenerateEscapedChars)
-    {}
-};
-
-cc::meta::YasonSyntax *yasonSyntax() { return cc::Singleton<cc::toki::YasonSyntax>::instance(); }
+YasonSyntax::YasonSyntax():
+    cc::meta::YasonSyntax{GenerateComments|GenerateEscapedChars}
+{}
 
 }} // namespace cc::toki

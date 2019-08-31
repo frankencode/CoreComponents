@@ -12,10 +12,15 @@
 
 namespace ccbuild {
 
+BuildMap *BuildMap::instance()
+{
+    return Singleton<BuildMap>::instance();
+}
+
 BuildMap::BuildMap():
-    buildPlanByPath_(BuildPlanByPath::create()),
-    libraries_(RecipePathByTargetName::create()),
-    applications_(RecipePathByTargetName::create())
+    buildPlanByPath_{BuildPlanByPath::create()},
+    libraries_{RecipePathByTargetName::create()},
+    applications_{RecipePathByTargetName::create()}
 {}
 
 void BuildMap::insertPlan(String path, BuildPlan *plan)
@@ -42,7 +47,5 @@ bool BuildMap::registerApplication(String name, String recipePath, String *exist
 {
     return applications_->insert(name, recipePath, existingRecipePath);
 }
-
-BuildMap *buildMap() { return Singleton<BuildMap>::instance(); }
 
 } // namespace ccbuild

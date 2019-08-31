@@ -14,20 +14,21 @@
 #include <cc/toki/Language>
 #include <cc/toki/Theme>
 
+namespace cc { template<class> class Singleton; }
+
 namespace cc {
-
-template<class> class Singleton;
-
 namespace toki {
 
 class Registry: public Object
 {
 public:
+    static Registry *instance();
+
     bool lookupLanguageByName(String name, Language **language) const;
     bool detectLanguage(String path, String text, Language **language) const;
 
-    inline int languageCount() const { return languageByName_->count(); }
-    inline Language *languageAt(int i) const { return languageByName_->valueAt(i); }
+    int languageCount() const { return languageByName_->count(); }
+    const Language *languageAt(int i) const { return languageByName_->valueAt(i); }
 
 private:
     friend class Singleton<Registry>;
@@ -41,7 +42,4 @@ private:
     Ref<LanguageByName> languageByName_;
 };
 
-Registry *registry();
-
 }} // namespace cc::toki
-

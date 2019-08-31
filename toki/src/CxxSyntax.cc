@@ -14,12 +14,10 @@
 namespace cc {
 namespace toki {
 
-class CxxSyntax: public SyntaxDefinition
+const CxxSyntax *CxxSyntax::instance()
 {
-protected:
-    friend class Singleton<CxxSyntax>;
-    CxxSyntax();
-};
+    return Singleton<CxxSyntax>::instance();
+}
 
 CxxSyntax::CxxSyntax()
 {
@@ -141,7 +139,8 @@ CxxSyntax::CxxSyntax()
                 "export template typename enum              "
                 "class union struct typedef friend operator "
                 "public private protected                   "
-                "virtual explicit inline throw              "
+                "virtual explicit override final            "
+                "inline throw                               "
                 "auto register static extern mutable        "
                 "new delete new[] delete[]                  "
                 "and and_eq asm bitand bitor                "
@@ -280,7 +279,5 @@ CxxSyntax::CxxSyntax()
     ENTRY("Code");
     LINK();
 }
-
-const SyntaxDefinition *cxxSyntax() { return Singleton<CxxSyntax>::instance(); }
 
 }} // namespace cc::toki

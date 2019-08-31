@@ -368,7 +368,7 @@ Variant YasonSyntax::parse(const CharArray *text, const MetaProtocol *protocol) 
     return readValue(text, valueToken);
 }
 
-Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, const MetaProtocol *protocol, MetaObject *prototype) const
+Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, const MetaProtocol *protocol, const MetaObject *prototype) const
 {
     if (token->rule() != object_)
         throw SemanticError{"Expected an object value", text, token->i0()};

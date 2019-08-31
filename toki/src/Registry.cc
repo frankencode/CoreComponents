@@ -12,8 +12,13 @@
 namespace cc {
 namespace toki {
 
-Registry::Registry()
-    : languageByName_(LanguageByName::create())
+Registry *Registry::instance()
+{
+    return Singleton<Registry>::instance();
+}
+
+Registry::Registry():
+    languageByName_{LanguageByName::create()}
 {}
 
 bool Registry::lookupLanguageByName(String name, Language **language) const
@@ -54,7 +59,5 @@ void Registry::registerLanguage(Language *language)
 {
     languageByName_->insert(language->name(), language);
 }
-
-Registry *registry() { return Singleton<Registry>::instance(); }
 
 }} // namespace cc::toki

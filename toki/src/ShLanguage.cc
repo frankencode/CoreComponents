@@ -19,12 +19,12 @@ private:
     friend class Object;
 
     ShLanguage():
-        Language(
+        Language{
             "Sh",
-            Pattern("*.sh"),
-            shSyntax(),
+            Pattern{"*.sh"},
+            ShSyntax::instance(),
             ScriptDiscoverySyntax::create("sh")
-        )
+        }
     {}
 };
 

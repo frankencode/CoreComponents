@@ -10,10 +10,20 @@
 
 #include <cc/meta/YasonSyntax>
 
+namespace cc { template<class> class Singleton; }
+
 namespace cc {
 namespace toki {
 
-cc::meta::YasonSyntax *yasonSyntax();
+class YasonSyntax: public cc::meta::YasonSyntax
+{
+public:
+    static const YasonSyntax *instance();
+
+protected:
+    friend class cc::Singleton<YasonSyntax>;
+
+    YasonSyntax();
+};
 
 }} // namespace cc::toki
-
