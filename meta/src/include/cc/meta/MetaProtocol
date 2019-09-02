@@ -38,16 +38,15 @@ public:
         define(Prototype::create());
     }
 
-    void define(MetaObject *prototype)
+    void define(const MetaObject *prototype)
     {
-        prototype->define();
         prototypes_->insert(prototype->className(), prototype);
     }
 
     template<class Prototype>
     static Ref<MetaObject> createPrototype()
     {
-        Ref<MetaObject> prototype = Prototype::create();
+        Ref<Prototype> prototype = Prototype::create();
         prototype->define();
         return prototype;
     }

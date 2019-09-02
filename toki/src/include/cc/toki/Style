@@ -21,7 +21,7 @@ class Palette;
 class Style: public MetaObject
 {
 public:
-    static Ref<Style> create() { return new Style; }
+    static Ref<Style> create();
 
     String ruleName() const { return ruleName_; }
     int rule() const { return rule_; }
@@ -33,9 +33,7 @@ public:
 private:
     friend class Palette;
 
-    Style() {}
-    Ref<MetaObject> produce() const override;
-    void define() override;
+    Style();
     void realize(const CharArray *text, Token *objectToken) override;
 
     String ruleName_;

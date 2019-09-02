@@ -165,7 +165,7 @@ CxxSyntax::CxxSyntax()
         GLUE(
             KEYWORD(
                 "const volatile                     "
-                "void                               "
+                "void nullptr                       "
                 "signed unsigned                    "
                 "long short                         "
                 "int bool float double              "

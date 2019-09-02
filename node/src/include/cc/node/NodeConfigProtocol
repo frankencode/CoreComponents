@@ -33,7 +33,7 @@ private:
     // friend class NodeConfig;
     friend class DeliveryRegistry;
 
-    void registerService(MetaObject *configPrototype);
+    void registerService(const MetaObject *configPrototype);
 
     NodeConfigProtocol();
     Ref<MetaProtocol> nodeProtocol_;

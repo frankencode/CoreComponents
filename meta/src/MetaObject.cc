@@ -20,13 +20,16 @@ Ref<MetaObject> MetaObject::create(const String &className)
     return new MetaObject{className};
 }
 
-MetaObject::MetaObject(const String &className, MetaProtocol *protocol):
+MetaObject::MetaObject(const String &className, const MetaProtocol *protocol):
     className_{className},
     protocol_{protocol},
     children_{MetaObjectList::create()}
 {
     if (!protocol_) protocol_ = MetaProtocol::create();
 }
+
+MetaObject::~MetaObject()
+{}
 
 Variant MetaObject::toVariant() const
 {

@@ -24,6 +24,7 @@ typedef List< Ref<MetaObject> > MetaObjectList;
 
 /** \class MetaObject cc/meta/MetaObject
   * \brief Duck-typed object
+  * \TODO slit into two separate classes MetaObject and MetaPrototype(based on MetaObject)
   */
 class MetaObject: public VariantMap
 {
@@ -35,7 +36,6 @@ public:
     String toString() const;
 
     bool hasProtocol() const;
-    MetaProtocol *protocol() { return protocol_; }
     const MetaProtocol *protocol() const { return protocol_; }
 
     bool hasChildren() const { return children_->count() > 0; }
@@ -55,10 +55,8 @@ public:
 protected:
     friend class MetaProtocol;
 
-    MetaObject(const String &className = "", MetaProtocol *protocol = nullptr);
-
-    void className(String newName) { className_ = newName; }
-    virtual void define() {}
+    MetaObject(const String &className = "", const MetaProtocol *protocol = nullptr);
+    ~MetaObject();
 
     static Token *nameToken(const CharArray *text, Token *objectToken, const String &memberName);
     static Token *valueToken(const CharArray *text, Token *objectToken, const String &memberName);
@@ -66,7 +64,7 @@ protected:
 
 private:
     String className_;
-    Ref<MetaProtocol> protocol_;
+    Ref<const MetaProtocol> protocol_;
     Ref<MetaObjectList> children_;
 };
 

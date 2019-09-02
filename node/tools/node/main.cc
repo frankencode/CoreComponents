@@ -53,7 +53,7 @@ Ref<NodeConfig> loadNodeConfig(int argc, char **argv)
 
     if (dirPath != "") {
         DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Directory");
-        MetaObject *serviceConfig = service->configPrototype();
+        Ref<MetaObject> serviceConfig = service->configPrototype()->clone();
         serviceConfig->establish("host", "*");
         serviceConfig->establish("path", dirPath);
         nodeConfig->deliveryInstances()->append(service->createInstance(serviceConfig));
@@ -61,7 +61,7 @@ Ref<NodeConfig> loadNodeConfig(int argc, char **argv)
 
     if (nodeConfig->deliveryInstances()->count() == 0) {
         DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Echo");
-        MetaObject *serviceConfig = service->configPrototype();
+        Ref<MetaObject> serviceConfig = service->configPrototype()->clone();
         serviceConfig->establish("host", "*");
         nodeConfig->deliveryInstances()->append(service->createInstance(serviceConfig));
     }

@@ -412,7 +412,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
             String name = readName(text, token);
 
             Variant defaultValue;
-            MetaObject *memberPrototype = 0;
+            const MetaObject *memberPrototype = nullptr;
             if (prototype) {
                 if (prototype->count() > 0) {
                     if (!prototype->lookup(name, &defaultValue)) {
@@ -422,7 +422,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
                         };
                     }
                     if (defaultValue->type() == VariantType::Object)
-                        memberPrototype = Variant::cast<MetaObject *>(defaultValue);
+                        memberPrototype = Variant::cast<const MetaObject *>(defaultValue);
                 }
             }
 
@@ -430,7 +430,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
 
             Variant value;
             if (memberPrototype)
-                value = readObject(text, token, 0, memberPrototype);
+                value = readObject(text, token, nullptr, memberPrototype);
             else
                 value = readValue(text, token, defaultValue->type(), defaultValue->itemType());
 
@@ -446,7 +446,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
             object->insert(name, value);
         }
         else {
-            const MetaProtocol *prototypeProtocol = 0;
+            const MetaProtocol *prototypeProtocol = nullptr;
             if (prototype) prototypeProtocol = prototype->protocol();
             if (prototypeProtocol) {
                 if (object->children()->count() >= prototypeProtocol->maxCount()) {

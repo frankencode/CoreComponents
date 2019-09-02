@@ -27,7 +27,7 @@ protected:
 class DeliveryService: public Object
 {
 public:
-    virtual DeliveryPrototype *configPrototype() const = 0; // FIXME: "const DeliveryPrototype"
+    virtual const DeliveryPrototype *configPrototype() const = 0;
     virtual Ref<DeliveryInstance> createInstance(const MetaObject *config) const = 0;
 };
 

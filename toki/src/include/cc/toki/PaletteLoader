@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -27,7 +27,7 @@ private:
     friend class Singleton<PaletteLoader>;
     PaletteLoader();
 
-    Ref<MetaProtocol> protocol_;
+    Ref<const MetaProtocol> protocol_;
 };
 
 }} // namespace cc::toki

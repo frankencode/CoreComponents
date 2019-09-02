@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/meta/MetaObject>
+
+namespace cc {
+namespace toki {
+
+class StylePrototype: public meta::MetaObject
+{
+public:
+    static Ref<StylePrototype> create();
+
+private:
+    StylePrototype();
+
+    Ref<MetaObject> produce() const override;
+};
+
+}} // namespace cc::toki

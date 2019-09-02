@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ResourceContext>
-#include <cc/Format>
+#include <cc/toki/Palette>
 #include <cc/toki/PaletteLoader>
 #include <cc/toki/Registry>
-#include <cc/toki/Palette>
+#include <cc/ResourceContext>
+#include <cc/Format>
 
 namespace cc {
 namespace toki {
@@ -44,13 +44,6 @@ int Palette::defaultRuleByName(const String &name)
 Ref<MetaObject> Palette::produce() const
 {
     return new Palette;
-}
-
-void Palette::define()
-{
-    className("Palette");
-    protocol()->minCount(1);
-    protocol()->define<Style>();
 }
 
 void Palette::realize(const CharArray *text, Token *objectToken)

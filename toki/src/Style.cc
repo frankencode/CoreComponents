@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -11,20 +11,13 @@
 namespace cc {
 namespace toki {
 
-Ref<MetaObject> Style::produce() const
+Ref<Style> Style::create()
 {
-    return Style::create();
+    return new Style;
 }
 
-void Style::define()
-{
-    className("Style");
-    insert("rule", "");
-    insert("ink", Color{});
-    insert("paper", Color{});
-    insert("bold", false);
-    insert("italic", false);
-}
+Style::Style()
+{}
 
 void Style::realize(const CharArray *text, Token *objectToken)
 {

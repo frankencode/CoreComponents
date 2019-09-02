@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/debug>
-#include <cc/Singleton>
-#include <cc/File>
-#include <cc/ResourceGuard>
 #include <cc/toki/PaletteLoader>
+#include <cc/toki/PalettePrototype>
+#include <cc/Singleton>
+#include <cc/ResourceGuard>
+#include <cc/File>
 
 namespace cc {
 namespace toki {
@@ -21,12 +21,14 @@ const PaletteLoader *PaletteLoader::instance()
 }
 
 PaletteLoader::PaletteLoader():
-    protocol_{MetaProtocol::create()}
-{
-    protocol_->define<Palette>();
-    protocol_->minCount(1);
-    protocol_->maxCount(1);
-}
+    protocol_{[]{
+        auto protocol = MetaProtocol::create();
+        protocol->define<PalettePrototype>();
+        protocol->minCount(1);
+        protocol->maxCount(1);
+        return protocol;
+    }()}
+{}
 
 Ref<Palette> PaletteLoader::load(const String &path) const
 {

@@ -68,7 +68,7 @@ NodeConfigProtocol::NodeConfigProtocol():
     define(nodePrototype_);
 }
 
-void NodeConfigProtocol::registerService(MetaObject *configPrototype)
+void NodeConfigProtocol::registerService(const MetaObject *configPrototype)
 {
     nodeProtocol_->define(configPrototype);
 }

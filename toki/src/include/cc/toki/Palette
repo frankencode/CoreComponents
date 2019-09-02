@@ -51,7 +51,6 @@ private:
     static int defaultRuleByName(const String &name);
 
     Ref<MetaObject> produce() const override;
-    void define() override;
     void realize(const CharArray *text, Token *objectToken) override;
 
     String scopeName_;
