@@ -11,7 +11,7 @@
 #include <cc/Range>
 #include <cc/Array>
 #include <cc/Map>
-#include <cc/syntax/Token>
+#include <cc/Token>
 
 namespace cc {
 namespace syntax {
@@ -29,7 +29,6 @@ class LazyChoiceNode;
 class GlueNode;
 
 class SyntaxDefinition;
-class TokenFactory;
 
 /** \brief Syntax match state
   * \see SyntaxDefinition, Pattern
@@ -37,19 +36,19 @@ class TokenFactory;
 class SyntaxState: public Object
 {
 public:
-    inline Token *rootToken() const { return rootToken_; }
-    inline bool valid() const { return rootToken_; } // FIXME: obsolete
-    inline bool isValid() const { return rootToken_; }
-    inline int i0() const { return rootToken_ ? rootToken_->i0() : 0; }
-    inline int i1() const { return rootToken_ ? rootToken_->i1() : -1; }
+    Token *rootToken() const { return rootToken_; }
+    bool valid() const { return rootToken_; } // FIXME: obsolete
+    bool isValid() const { return rootToken_; }
+    int i0() const { return rootToken_ ? rootToken_->i0() : 0; }
+    int i1() const { return rootToken_ ? rootToken_->i1() : -1; }
 
     bool flag(const char *name) const;
     Range capture(const char *name = "") const;
 
     bool lookupCapture(const char *name, Range *range) const;
 
-    inline const char *hint() const { return hint_; }
-    inline int hintOffset() const { return hintOffset_; }
+    const char *hint() const { return hint_; }
+    int hintOffset() const { return hintOffset_; }
 
 private:
     friend class DefinitionNode;
@@ -73,19 +72,19 @@ private:
 
     SyntaxState *stateByScope(const DefinitionNode *definition);
 
-    inline bool flag(const DefinitionNode *scope, int flagId) {
+    bool flag(const DefinitionNode *scope, int flagId) {
         return stateByScope(scope)->flags_->at(flagId);
     }
 
-    inline void setFlag(const DefinitionNode *scope, int flagId, bool value) {
+    void setFlag(const DefinitionNode *scope, int flagId, bool value) {
         stateByScope(scope)->flags_->at(flagId) = value;
     }
 
-    inline Range capture(const DefinitionNode *scope, int captureId) {
+    Range capture(const DefinitionNode *scope, int captureId) {
         return stateByScope(scope)->captures_->at(captureId);
     }
 
-    inline void setCapture(const DefinitionNode *scope, int captureId, Range capture) {
+    void setCapture(const DefinitionNode *scope, int captureId, Range capture) {
         stateByScope(scope)->captures_->at(captureId) = capture;
     }
 

@@ -9,19 +9,17 @@
 #pragma once
 
 #include <cc/Format>
-#include <cc/syntax/Token>
+#include <cc/Token>
 
 namespace cc {
 namespace toki {
-
-using namespace cc::syntax;
 
 class Theme;
 
 class HtmlScreen: public Object, public TokenScreen
 {
 public:
-    static Ref<HtmlScreen> create(String text, Format sink = Format()) { return new HtmlScreen(text, sink); }
+    static Ref<HtmlScreen> create(String text, Format sink = Format{}) { return new HtmlScreen{text, sink}; }
 
     virtual bool project(Token *token, int i0, int i1);
 
@@ -38,4 +36,3 @@ private:
 };
 
 }} // namespace cc::toki
-

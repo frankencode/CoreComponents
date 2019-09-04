@@ -1,15 +1,14 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/syntax/Token>
+#include <cc/Token>
 
 namespace cc {
-namespace syntax {
 
 bool Token::project(TokenScreen *screen)
 {
@@ -49,4 +48,4 @@ Token *Token::at(int i) const
     return token;
 }
 
-}} // namespace cc::syntax
+} // namespace cc

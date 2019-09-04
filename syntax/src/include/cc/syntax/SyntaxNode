@@ -10,8 +10,8 @@
 
 #include <cc/Tree>
 #include <cc/CharArray>
+#include <cc/Token>
 #include <cc/syntax/SyntaxState>
-#include <cc/syntax/Token>
 
 namespace cc {
 namespace syntax {
@@ -19,7 +19,7 @@ namespace syntax {
 class SyntaxNode: public Tree<SyntaxNode>
 {
 public:
-    inline static void rollBack(Token *parentToken, Token *lastChildSaved) {
+    static void rollBack(Token *parentToken, Token *lastChildSaved) {
         if (parentToken) {
             while (parentToken->lastChild() != lastChildSaved)
                 parentToken->lastChild()->unlink();
@@ -31,11 +31,11 @@ public:
     virtual SyntaxNode *succ(SyntaxNode *node) const { return nullptr; }
     virtual int matchLength() const { return -1; }
 
-    inline SyntaxNode *succ() const {
+    SyntaxNode *succ() const {
         return parent() ? parent()->succ(SyntaxNode::self()) : nullptr;
     }
 
-    inline SyntaxNode *self() const { return const_cast<SyntaxNode *>(this); }
+    SyntaxNode *self() const { return const_cast<SyntaxNode *>(this); }
 };
 
 typedef Ref<SyntaxNode> NODE;

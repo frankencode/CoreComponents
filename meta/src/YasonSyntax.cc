@@ -470,16 +470,16 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, Token *token, con
             if (prototypeProtocol->minCount() > 0) {
                 if (!object->hasChildren() || object->children()->count() < prototypeProtocol->minCount()) {
                     if (prototypeProtocol->prototypes_->count() == 1 && prototypeProtocol->minCount() == 1) {
-                        throw SemanticError(
-                            Format("Object of type %% needs at least one child of type %%") << object->className() << prototypeProtocol->prototypes_->at(0)->value()->className(),
+                        throw SemanticError{
+                            Format{"Object of type %% needs at least one child of type %%"} << object->className() << prototypeProtocol->prototypes_->at(0)->value()->className(),
                             text, objectToken->i0()
-                        );
+                        };
                     }
                     else {
-                        throw SemanticError(
-                            Format("Object of type %% needs at least %% children") << object->className() << prototypeProtocol->minCount(),
+                        throw SemanticError{
+                            Format{"Object of type %% needs at least %% children"} << object->className() << prototypeProtocol->minCount(),
                             text, objectToken->i0()
-                        );
+                        };
                     }
                 }
             }

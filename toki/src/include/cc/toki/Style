@@ -34,7 +34,7 @@ private:
     friend class Palette;
 
     Style();
-    void realize(const CharArray *text, Token *objectToken) override;
+    void realize() override;
 
     String ruleName_;
     int rule_;

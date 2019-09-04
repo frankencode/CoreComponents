@@ -41,11 +41,6 @@ int Palette::defaultRuleByName(const String &name)
     return Undefined;
 }
 
-Ref<MetaObject> Palette::produce() const
-{
-    return new Palette;
-}
-
 void Palette::realize(const CharArray *text, Token *objectToken)
 {
     scopeName_ = ResourceContext::instance()->top()->fileName();

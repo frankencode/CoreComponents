@@ -12,12 +12,10 @@
 #include <cc/String>
 #include <cc/net/types>
 
-namespace cc { namespace syntax { class Token; } };
+namespace cc { class Token; }
 
 namespace cc {
 namespace net {
-
-using syntax::Token;
 
 /** \class Uri cc/net/Uri
   * \brief Uniform Resource Indicator

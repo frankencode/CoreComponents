@@ -13,6 +13,8 @@
 
 namespace ccclaim {
 
+using namespace cc::syntax;
+
 class NoticeSyntax: public SyntaxDefinition
 {
 public:

@@ -9,13 +9,10 @@
 #pragma once
 
 #include <cc/Variant>
-
-namespace cc { namespace syntax { class Token; } }
+#include <cc/Token>
 
 namespace cc {
 namespace meta {
-
-using namespace cc::syntax;
 
 class MetaProtocol;
 
@@ -50,7 +47,8 @@ public:
 
     virtual void autocomplete(const MetaObject *prototype);
 
-    virtual void realize(const CharArray *text, Token *objectToken) {}
+    virtual void realize(const CharArray *text, Token *objectToken) { realize(); }
+    virtual void realize() {}
 
 protected:
     friend class MetaProtocol;

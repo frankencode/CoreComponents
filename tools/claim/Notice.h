@@ -18,7 +18,7 @@ using namespace cc;
 class Notice: public Object
 {
 public:
-    inline static Ref<Notice> create(CopyrightList *copyrights, String statement, Header *header = 0) {
+    inline static Ref<Notice> create(CopyrightList *copyrights, String statement, Header *header = nullptr) {
         return new Notice(copyrights, statement, header);
     }
 
@@ -27,7 +27,7 @@ public:
     inline Header *header() const { return header_; }
 
 private:
-    Notice(CopyrightList *copyrights, String statement, Header *header = 0)
+    Notice(CopyrightList *copyrights, String statement, Header *header = nullptr)
         : copyrights_(copyrights),
           statement_(statement->trim()),
           header_(header)
@@ -39,4 +39,3 @@ private:
 };
 
 } // namespace ccclaim
-

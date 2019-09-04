@@ -6,24 +6,24 @@
  *
  */
 
+#include <cc/syntax/SyntaxState>
 #include <cc/syntax/syntax>
 #include <cc/syntax/SyntaxDefinition>
-#include <cc/syntax/TokenFactory>
-#include <cc/syntax/SyntaxState>
+#include <cc/TokenFactory>
 
 namespace cc {
 namespace syntax {
 
 SyntaxState::SyntaxState(const DefinitionNode *definition, int numFlags, int numCaptures, TokenFactory *tokenFactory):
-    definition_(definition),
-    flags_(Flags::create(numFlags)),
-    captures_(Captures::create(numCaptures)),
-    tokenFactory_(tokenFactory),
-    hint_(0),
-    hintOffset_(-1),
-    finalize_(false)
+    definition_{definition},
+    flags_{Flags::create(numFlags)},
+    captures_{Captures::create(numCaptures)},
+    tokenFactory_{tokenFactory},
+    hint_{0},
+    hintOffset_{-1},
+    finalize_{false}
 {
-    if (!tokenFactory_) tokenFactory_ = new TokenFactory;
+    if (!tokenFactory_) tokenFactory_ = TokenFactory::create();
     for (int i = 0; i < flags_->count(); ++i) flags_->at(i) = false;
 }
 

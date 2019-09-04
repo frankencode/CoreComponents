@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/Format>
-#include <cc/syntax/Token>
+#include <cc/net/Uri>
 #include <cc/net/SocketAddress>
 #include <cc/net/UriSyntax>
-#include <cc/net/Uri>
+#include <cc/Format>
+#include <cc/Token>
 
 namespace cc {
 namespace net {

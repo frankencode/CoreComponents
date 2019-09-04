@@ -19,7 +19,7 @@ Ref<Style> Style::create()
 Style::Style()
 {}
 
-void Style::realize(const CharArray *text, Token *objectToken)
+void Style::realize()
 {
     ruleName_ = value("rule");
     ink_ = value("ink");

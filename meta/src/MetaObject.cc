@@ -7,7 +7,6 @@
  */
 
 #include <cc/Guard>
-#include <cc/syntax/Token>
 #include <cc/meta/YasonSyntax>
 #include <cc/meta/MetaProtocol>
 #include <cc/meta/MetaObject>
@@ -48,14 +47,14 @@ Ref<MetaObject> MetaObject::clone() const
     Ref<MetaObject> object = produce();
     object->MetaObject::autocomplete(this);
     if (hasChildren()) {
-        for (int i = 0; i < children_->count(); ++i) {
-            object->children_->append(children()->at(i)->clone());
+        for (const MetaObject *child: children()) {
+            object->children_->append(child->clone());
         }
     }
     return object;
 }
 
-void MetaObject::autocomplete(const MetaObject *prototype)
+void MetaObject::autocomplete(const MetaObject *prototype) // FIXME: add name suffix "By"
 {
     if (!prototype) return;
 

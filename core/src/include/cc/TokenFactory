@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Token>
+
+namespace cc {
+
+class TokenFactory: public Object
+{
+public:
+    static Ref<TokenFactory> create() { return new TokenFactory; }
+
+    virtual Token *produce(int scope, int rule, const char *scopeName, const char *ruleName) {
+        return new Token{scope, rule};
+    }
+
+protected:
+    TokenFactory() {}
+};
+
+} // namespace cc

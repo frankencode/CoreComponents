@@ -20,7 +20,7 @@ using namespace cc;
 class HeaderStyle: public Object
 {
 public:
-    inline String language() const { return language_; }
+    String language() const { return language_; }
 
     virtual Ref<Header> scan(String path) const = 0;
     virtual String str(Notice *notice) const = 0;
@@ -38,4 +38,3 @@ protected:
 typedef List< Ref<HeaderStyle> > HeaderStyleList;
 
 } // namespace ccclaim
-

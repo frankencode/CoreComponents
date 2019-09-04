@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,7 +9,8 @@
 #pragma once
 
 #include <cc/String>
-#include <cc/syntax/Token>
+#include <cc/Token>
+#include <cc/syntax/SyntaxDefinition>
 
 namespace ccclaim {
 
@@ -19,21 +20,21 @@ using namespace cc::syntax;
 class Header: public Object
 {
 public:
-    inline static Ref<Header> create(String path, Token *token, String text, String message) {
-        return new Header(path, token, text, message);
+    static Ref<Header> create(const String &path, Token *token, const String &text, const String &message) {
+        return new Header{path, token, text, message};
     }
 
-    inline String path() const { return path_; }
-    inline Token *token() const { return token_; }
-    inline String text() const { return text_; }
-    inline String message() const { return message_; }
+    String path() const { return path_; }
+    Token *token() const { return token_; } // FIXME: const Token *
+    String text() const { return text_; }
+    String message() const { return message_; }
 
 private:
-    Header(String path, Token *token, String text, String message)
-        : path_(path),
-          token_(token),
-          text_(text),
-          message_(message)
+    Header(const String &path, Token *token, const String &text, const String &message):
+        path_{path},
+        token_{token},
+        text_{text},
+        message_{message}
     {}
 
     String path_;
@@ -43,4 +44,3 @@ private:
 };
 
 } // namespace ccclaim
-
