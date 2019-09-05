@@ -10,6 +10,7 @@
 
 #include <cc/syntax/SyntaxDefinition>
 #include <cc/meta/yason>
+#include <cc/meta/MetaToken>
 
 namespace cc { template<class> class Singleton; }
 
@@ -24,11 +25,11 @@ public:
     static const YasonSyntax *instance();
 
     Variant parse(const CharArray *text, const MetaProtocol *protocol = nullptr) const;
-    Ref<MetaObject> readObject(const CharArray *text, Token *token, const MetaProtocol *protocol = nullptr, const MetaObject *prototype = nullptr) const;
+    Ref<MetaObject> readObject(const CharArray *text, const Token *token, const MetaProtocol *protocol = nullptr, const MetaObject *prototype = nullptr) const;
 
-    Token *nameToken(const CharArray *text, Token *objectToken, const String &memberName) const;
-    Token *valueToken(const CharArray *text, Token *objectToken, const String &memberName) const;
-    Token *childToken(Token *objectToken, int childIndex) const;
+    const Token *getMemberNameToken(const CharArray *text, const Token *objectToken, const String &memberName) const;
+    const Token *getMemberValueToken(const CharArray *text, const Token *objectToken, const String &memberName) const;
+    const Token *getChildToken(const Token *objectToken, int childIndex) const;
 
 protected:
     friend class Singleton<YasonSyntax>;
@@ -39,13 +40,13 @@ protected:
     };
     YasonSyntax(int options = 0);
 
-    String readName(const CharArray *text, Token *token) const;
-    Variant readValue(const CharArray *text, Token *token, VariantType expectedType = VariantType::Undefined, VariantType expectedItemType = VariantType::Undefined) const;
-    Variant readList(const CharArray *text, Token *token, VariantType expectedItemType = VariantType::Undefined) const;
-    String readText(const CharArray *text, Token *token) const;
+    String readName(const CharArray *text, const Token *token) const;
+    Variant readValue(const CharArray *text, const Token *token, VariantType expectedType = VariantType::Undefined, VariantType expectedItemType = VariantType::Undefined) const;
+    Variant readList(const CharArray *text, const Token *token, VariantType expectedItemType = VariantType::Undefined) const;
+    String readText(const CharArray *text, const Token *token) const;
 
     template<class T>
-    Ref< List<T> > parseTypedList(const CharArray *text, Token *token, VariantType expectedItemType) const;
+    Ref< List<T> > parseTypedList(const CharArray *text, const Token *token, VariantType expectedItemType) const;
 
     int item_;
     int line_;
@@ -67,11 +68,11 @@ protected:
 };
 
 template<class T>
-Ref< List<T> > YasonSyntax::parseTypedList(const CharArray *text, Token *token, VariantType expectedItemType) const
+Ref< List<T> > YasonSyntax::parseTypedList(const CharArray *text, const Token *token, VariantType expectedItemType) const
 {
     Ref< List<T> > list = List<T>::create(token->countChildren());
     int i = 0;
-    for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
+    for (const Token *child = token->firstChild(); child; child = child->nextSibling()) {
         list->at(i) = readValue(text, child, expectedItemType);
         ++i;
     }

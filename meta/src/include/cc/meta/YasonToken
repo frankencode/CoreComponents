@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/meta/MetaToken>
+#include <cc/meta/YasonSyntax>
+
+namespace cc {
+namespace meta {
+
+class YasonTokenFactory;
+
+class YasonToken: public MetaToken
+{
+public:
+    const MetaToken *getMemberNameToken(const CharArray *text, const String &memberName) const override
+    {
+        return static_cast<const MetaToken *>(YasonSyntax::instance()->getMemberNameToken(text, this, memberName));
+    }
+
+    const MetaToken *getMemberValueToken(const CharArray *text, const String &memberName) const override
+    {
+        return static_cast<const MetaToken *>(YasonSyntax::instance()->getMemberValueToken(text, this, memberName));
+    }
+
+    const MetaToken *getChildToken(int childIndex) const override
+    {
+        return static_cast<const MetaToken *>(YasonSyntax::instance()->getChildToken(this, childIndex));
+    }
+
+private:
+    friend class YasonTokenFactory;
+
+    YasonToken(int scope, int rule):
+        MetaToken{scope, rule}
+    {}
+};
+
+}} // namespace cc::meta

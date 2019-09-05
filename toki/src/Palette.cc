@@ -41,7 +41,7 @@ int Palette::defaultRuleByName(const String &name)
     return Undefined;
 }
 
-void Palette::realize(const CharArray *text, Token *objectToken)
+void Palette::realize(const CharArray *text, const MetaToken *objectToken)
 {
     scopeName_ = ResourceContext::instance()->top()->fileName();
     if (scopeName_ == "default") {
@@ -50,8 +50,8 @@ void Palette::realize(const CharArray *text, Token *objectToken)
             Style *style = Object::cast<Style *>(children()->at(i));
             style->rule_ = defaultRuleByName(style->ruleName());
             if (style->rule_ == Undefined) {
-                Token *token = childToken(objectToken, i);
-                token = valueToken(text, token, "name");
+                const MetaToken *token = objectToken->getChildToken(i);
+                token = token->getMemberValueToken(text, "name");
                 throw SemanticError{
                     Format{"Undefined default style '%%'"} << style->ruleName(),
                     text, token->i1()
@@ -75,8 +75,8 @@ void Palette::realize(const CharArray *text, Token *objectToken)
             styleByRule_->insert(style->rule_, style);
         }
         catch (DebugError &ex) {
-            Token *token = childToken(objectToken, i);
-            token = valueToken(text, token, "name");
+            const MetaToken *token = objectToken->getChildToken(i);
+            token = token->getMemberValueToken(text, "name");
             throw SemanticError{ex->message(), text, token->i1()};
         }
     }

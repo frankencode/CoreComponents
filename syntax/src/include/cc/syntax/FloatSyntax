@@ -23,7 +23,7 @@ class FloatSyntax: public SyntaxDefinition
 public:
     static const FloatSyntax *instance();
 
-    void read(float64_t *value, const CharArray *text, Token *token) const;
+    void read(float64_t *value, const CharArray *text, const Token *token) const;
     Ref<Token> read(float64_t *value, const CharArray *text, int i = -1) const;
 
     inline int literal() const { return literal_; }

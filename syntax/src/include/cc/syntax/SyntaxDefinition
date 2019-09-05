@@ -25,13 +25,13 @@ class DefinitionNode;
 class SyntaxDefinition: public Object
 {
 public:
-    inline static Ref<SyntaxDefinition> create(SyntaxDebugFactory *debugFactory = 0) {
-        return new SyntaxDefinition(debugFactory);
+    static Ref<SyntaxDefinition> create(SyntaxDebugFactory *debugFactory = nullptr) {
+        return new SyntaxDefinition{debugFactory};
     }
 
     ~SyntaxDefinition();
 
-    static int scope(const char *name = 0);
+    static int scope(const char *name = nullptr);
 
     int id() const;
     const char *name() const;
@@ -42,14 +42,14 @@ public:
     int ruleByName(const char *name) const;
     int keywordByName(const char *name) const;
 
-    Ref<SyntaxState> find(String text, int i = 0, TokenFactory *tokenFactory = 0) const;
-    Ref<SyntaxState> match(String text, int i = -1, TokenFactory *tokenFactory = 0) const;
+    Ref<SyntaxState> find(String text, int i = 0, TokenFactory *tokenFactory = nullptr) const;
+    Ref<SyntaxState> match(String text, int i = -1, TokenFactory *tokenFactory = nullptr) const;
     Ref<StringList> split(String text) const;
 
     int matchLength() const;
 
     void SYNTAX(const char *name);
-    void IMPORT(const SyntaxDefinition *definition, const char *name = 0);
+    void IMPORT(const SyntaxDefinition *definition, const char *name = nullptr);
     void OPTION(const char *name, bool value);
 
     NODE CHAR(char ch);
@@ -144,34 +144,34 @@ public:
     void DEFINE_VOID(const char *ruleName, NODE entry);
     int DEFINE_OPTIONAL(const char *ruleName, bool generate, NODE entry);
 
-    inline void DEFINE(const char *ruleName, int *ruleId, NODE entry) {
+    void DEFINE(const char *ruleName, int *ruleId, NODE entry) {
         *ruleId = DEFINE(ruleName, entry);
     }
-    inline void DEFINE_OPTIONAL(const char *ruleName, int *ruleId, bool generate, NODE entry) {
+    void DEFINE_OPTIONAL(const char *ruleName, int *ruleId, bool generate, NODE entry) {
         *ruleId = DEFINE_OPTIONAL(ruleName, generate, entry);
     }
 
     void ENTRY(const char *ruleName);
     NODE REF(const char *ruleName);
     NODE INLINE(const char *ruleName);
-    NODE INVOKE(const char *ruleName, NODE converage = 0);
-    NODE PREVIOUS(const char *ruleName, const char *keyword = 0);
-    NODE CONTEXT(const char *ruleName, NODE inContext = 0, NODE outOfContext = 0);
+    NODE INVOKE(const char *ruleName, NODE converage = nullptr);
+    NODE PREVIOUS(const char *ruleName, const char *keyword = nullptr);
+    NODE CONTEXT(const char *ruleName, NODE inContext = nullptr, NODE outOfContext = nullptr);
 
     typedef int (*CallBack) (Object *self, const CharArray *text, int i, Token *parentToken, SyntaxState *state);
 
-    NODE CALL(CallBack callBack, Object *self = 0);
+    NODE CALL(CallBack callBack, Object *self = nullptr);
     NODE ERROR();
 
     void LINK();
 
     NODE SET(const char *name, bool value);
-    NODE IF(const char *name, NODE trueBranch, NODE falseBranch = 0);
+    NODE IF(const char *name, NODE trueBranch, NODE falseBranch = nullptr);
     NODE CAPTURE(const char *name, NODE coverage);
     NODE REPLAY(const char *name);
 
 protected:
-    SyntaxDefinition(SyntaxDebugFactory *debugFactory = 0);
+    SyntaxDefinition(SyntaxDebugFactory *debugFactory = nullptr);
 
 private:
     SyntaxDefinition(const SyntaxDefinition &);

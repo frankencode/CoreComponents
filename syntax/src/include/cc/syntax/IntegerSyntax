@@ -23,7 +23,7 @@ class IntegerSyntax: public SyntaxDefinition
 public:
     static const IntegerSyntax *instance();
 
-    void read(uint64_t *value, int *sign, const CharArray *text, Token *token) const;
+    void read(uint64_t *value, int *sign, const CharArray *text, const Token *token) const;
     Ref<Token> read(uint64_t *value, int *sign, const CharArray *text, int i = -1) const;
 
 protected:

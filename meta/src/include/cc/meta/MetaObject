@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Variant>
-#include <cc/Token>
+#include <cc/meta/MetaToken>
 
 namespace cc {
 namespace meta {
@@ -45,9 +45,9 @@ public:
         return MetaObject::create(className());
     }
 
-    virtual void autocomplete(const MetaObject *prototype);
+    virtual void autocompleteBy(const MetaObject *prototype);
 
-    virtual void realize(const CharArray *text, Token *objectToken) { realize(); }
+    virtual void realize(const CharArray *text, const MetaToken *objectToken) { realize(); }
     virtual void realize() {}
 
 protected:
@@ -55,10 +55,6 @@ protected:
 
     MetaObject(const String &className = "", const MetaProtocol *protocol = nullptr);
     ~MetaObject();
-
-    static Token *nameToken(const CharArray *text, Token *objectToken, const String &memberName);
-    static Token *valueToken(const CharArray *text, Token *objectToken, const String &memberName);
-    static Token *childToken(Token *objectToken, int childIndex);
 
 private:
     String className_;

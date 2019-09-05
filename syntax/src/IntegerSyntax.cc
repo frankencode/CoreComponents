@@ -78,7 +78,7 @@ IntegerSyntax::IntegerSyntax()
     LINK();
 }
 
-void IntegerSyntax::read(uint64_t *value, int *sign, const CharArray *text, Token *token) const
+void IntegerSyntax::read(uint64_t *value, int *sign, const CharArray *text, const Token *token) const
 {
     *sign = 1;
     *value = 0;

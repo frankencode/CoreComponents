@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/meta/YasonToken>
+#include <cc/TokenFactory>
+
+namespace cc {
+namespace meta {
+
+class YasonTokenFactory: public TokenFactory
+{
+public:
+    static Ref<YasonTokenFactory> create()
+    {
+        return new YasonTokenFactory;
+    }
+
+    Token *produce(int scope, int rule, const char *scopeName, const char *ruleName) override
+    {
+        return new YasonToken{scope, rule};
+    }
+
+private:
+    YasonTokenFactory()
+    {}
+};
+
+}} // namespace cc::meta

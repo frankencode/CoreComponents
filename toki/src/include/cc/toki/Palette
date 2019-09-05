@@ -50,7 +50,7 @@ private:
 
     static int defaultRuleByName(const String &name);
 
-    void realize(const CharArray *text, Token *objectToken) override;
+    void realize(const CharArray *text, const MetaToken *objectToken) override;
 
     String scopeName_;
     int scope_;

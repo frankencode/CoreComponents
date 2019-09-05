@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/Guard>
-#include <cc/meta/YasonSyntax>
-#include <cc/meta/MetaProtocol>
 #include <cc/meta/MetaObject>
+#include <cc/meta/MetaProtocol>
+#include <cc/meta/yason>
+#include <cc/Guard>
 
 namespace cc {
 namespace meta {
@@ -45,7 +45,7 @@ bool MetaObject::hasProtocol() const { return protocol_->isDefined(); }
 Ref<MetaObject> MetaObject::clone() const
 {
     Ref<MetaObject> object = produce();
-    object->MetaObject::autocomplete(this);
+    object->MetaObject::autocompleteBy(this);
     if (hasChildren()) {
         for (const MetaObject *child: children()) {
             object->children_->append(child->clone());
@@ -54,7 +54,7 @@ Ref<MetaObject> MetaObject::clone() const
     return object;
 }
 
-void MetaObject::autocomplete(const MetaObject *prototype) // FIXME: add name suffix "By"
+void MetaObject::autocompleteBy(const MetaObject *prototype)
 {
     if (!prototype) return;
 
@@ -65,21 +65,6 @@ void MetaObject::autocomplete(const MetaObject *prototype) // FIXME: add name su
                 insert(name, prototype->valueAt(i));
         }
     }
-}
-
-Token *MetaObject::nameToken(const CharArray *text, Token *objectToken, const String &memberName)
-{
-    return YasonSyntax::instance()->nameToken(text, objectToken, memberName);
-}
-
-Token *MetaObject::valueToken(const CharArray *text, Token *objectToken, const String &memberName)
-{
-    return YasonSyntax::instance()->valueToken(text, objectToken, memberName);
-}
-
-Token *MetaObject::childToken(Token *objectToken, int childIndex)
-{
-    return YasonSyntax::instance()->childToken(objectToken, childIndex);
 }
 
 }} // namespace cc::meta

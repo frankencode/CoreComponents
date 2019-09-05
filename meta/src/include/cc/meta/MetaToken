@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Token>
+
+namespace cc {
+namespace meta {
+
+class MetaToken: public Token
+{
+public:
+    virtual const MetaToken *getMemberNameToken(const CharArray *text, const String &memberName) const = 0;
+    virtual const MetaToken *getMemberValueToken(const CharArray *text, const String &memberName) const = 0;
+    virtual const MetaToken *getChildToken(int childIndex) const = 0;
+
+protected:
+    MetaToken(int scope, int rule):
+        Token{scope, rule}
+    {}
+};
+
+}} // namespace cc::meta

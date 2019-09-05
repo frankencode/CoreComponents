@@ -74,7 +74,7 @@ FloatSyntax::FloatSyntax()
     LINK();
 }
 
-void FloatSyntax::read(float64_t *value, const CharArray *text, Token *token) const
+void FloatSyntax::read(float64_t *value, const CharArray *text, const Token *token) const
 {
     token = token->firstChild();
 
