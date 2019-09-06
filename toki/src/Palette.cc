@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -41,20 +41,18 @@ int Palette::defaultRuleByName(const String &name)
     return Undefined;
 }
 
-void Palette::realize(const CharArray *text, const MetaToken *objectToken)
+void Palette::realize()
 {
     scopeName_ = ResourceContext::instance()->top()->fileName();
     if (scopeName_ == "default") {
         scope_ = SyntaxDefinition::scope(scopeName_);
-        for (int i = 0; i < children()->count(); ++i) {
-            Style *style = Object::cast<Style *>(children()->at(i));
+        for (MetaObject *child: children()) {
+            Style *style = static_cast<Style *>(child);
             style->rule_ = defaultRuleByName(style->ruleName());
             if (style->rule_ == Undefined) {
-                const MetaToken *token = objectToken->getChildToken(i);
-                token = token->getMemberValueToken(text, "name");
-                throw SemanticError{
-                    Format{"Undefined default style '%%'"} << style->ruleName(),
-                    text, token->i1()
+                throw MetaError{
+                    Format{"Undefined rule '%%'"} << style->ruleName(),
+                    style, "rule"
                 };
             }
             styleByRule_->establish(style->rule_, style);
@@ -68,17 +66,18 @@ void Palette::realize(const CharArray *text, const MetaToken *objectToken)
 
     const SyntaxDefinition *syntax = language->highlightingSyntax();
     scope_ = syntax->id();
-    for (int i = 0; i < children()->count(); ++i) {
-        Style *style = Object::cast<Style *>(children()->at(i));
+    for (MetaObject *child: children()) {
+        Style *style = static_cast<Style *>(child);
         try {
             style->rule_ = syntax->ruleByName(style->ruleName());
-            styleByRule_->insert(style->rule_, style);
         }
         catch (DebugError &ex) {
-            const MetaToken *token = objectToken->getChildToken(i);
-            token = token->getMemberValueToken(text, "name");
-            throw SemanticError{ex->message(), text, token->i1()};
+            throw MetaError{
+                Format{"Undefined rule '%%'"} << style->ruleName(),
+                style, "rule"
+            };
         }
+        styleByRule_->insert(style->rule_, style);
     }
 }
 

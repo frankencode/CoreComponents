@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -40,31 +40,36 @@ String MetaObject::toString() const
     return yason::stringify(toVariant());
 }
 
-bool MetaObject::hasProtocol() const { return protocol_->isDefined(); }
+bool MetaObject::hasProtocol() const
+{
+    return protocol_->isDefined();
+}
 
 Ref<MetaObject> MetaObject::clone() const
 {
     Ref<MetaObject> object = produce();
-    object->MetaObject::autocompleteBy(this);
+    autocomplete(object);
     if (hasChildren()) {
         for (const MetaObject *child: children()) {
             object->children_->append(child->clone());
         }
     }
+    object->realize();
     return object;
 }
 
-void MetaObject::autocompleteBy(const MetaObject *prototype)
+void MetaObject::autocomplete(MetaObject *target) const
 {
-    if (!prototype) return;
-
-    if (prototype->count() != count()) {
-        for (int i = 0; i < prototype->count(); ++i) {
-            String name = prototype->keyAt(i);
-            if (count() <= i || keyAt(i) != name)
-                insert(name, prototype->valueAt(i));
+    if (count() != target->count()) {
+        for (int i = 0; i < count(); ++i) {
+            String name = keyAt(i);
+            if (target->count() <= i || target->keyAt(i) != name)
+                target->insert(name, valueAt(i));
         }
     }
 }
+
+void MetaObject::realize()
+{}
 
 }} // namespace cc::meta

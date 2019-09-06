@@ -41,10 +41,10 @@ public:
         return i;
     }
 
-    inline int matchLength() const { return 1; }
+    int matchLength() const { return 1; }
 
-    inline char ch() const { return ch_; }
-    inline bool invert() const { return invert_; }
+    char ch() const { return ch_; }
+    bool invert() const { return invert_; }
 
 private:
     char ch_;
@@ -72,10 +72,10 @@ public:
         return i;
     }
 
-    inline int matchLength() const { return 1; }
+    int matchLength() const { return 1; }
 
-    inline char ch() const { return ch_; }
-    inline bool invert() const { return invert_; }
+    char ch() const { return ch_; }
+    bool invert() const { return invert_; }
 
 private:
     char ch_;
@@ -104,10 +104,10 @@ public:
         return i;
     }
 
-    inline int matchLength() const { return 1; }
+    int matchLength() const { return 1; }
 
-    inline char ch() const { return ch_; }
-    inline bool invert() const { return invert_; }
+    char ch() const { return ch_; }
+    bool invert() const { return invert_; }
 
 private:
     char ch_;
@@ -145,11 +145,11 @@ public:
         return i;
     }
 
-    inline int matchLength() const { return 1; }
+    int matchLength() const { return 1; }
 
-    inline char a() const { return a_; }
-    inline char b() const { return b_; }
-    inline int invert() const { return invert_; }
+    char a() const { return a_; }
+    char b() const { return b_; }
+    int invert() const { return invert_; }
 
 private:
     char a_, b_;
@@ -182,10 +182,10 @@ public:
         return i;
     }
 
-    inline int matchLength() const { return 1; }
+    int matchLength() const { return 1; }
 
-    inline const CharArray &s() const { return *s_; }
-    inline int invert() const { return invert_; }
+    const CharArray &s() const { return *s_; }
+    int invert() const { return invert_; }
 
 private:
     String s_;
@@ -222,9 +222,9 @@ public:
         return i;
     }
 
-    inline int matchLength() const { return s_->count(); }
+    int matchLength() const { return s_->count(); }
 
-    inline const CharArray &s() const { return *s_; }
+    const CharArray &s() const { return *s_; }
 
 private:
     String s_;
@@ -260,7 +260,7 @@ public:
         return i;
     }
 
-    inline KeywordMap *map() const { return map_; }
+    KeywordMap *map() const { return map_; }
 
 private:
     Ref<KeywordMap> map_;
@@ -303,7 +303,7 @@ public:
         return i;
     }
 
-    inline int matchLength() const {
+    int matchLength() const {
         if (minRepeat_ == maxRepeat_) {
             int n = entry()->matchLength();
             if (n > 0) return minRepeat_ * n;
@@ -311,9 +311,9 @@ public:
         return -1;
     }
 
-    inline int minRepeat() const { return minRepeat_; }
-    inline int maxRepeat() const { return maxRepeat_; }
-    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
+    int minRepeat() const { return minRepeat_; }
+    int maxRepeat() const { return maxRepeat_; }
+    SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
 private:
     int minRepeat_;
@@ -362,10 +362,10 @@ public:
         return -1;
     }
 
-    inline int matchLength() const { return -1; }
+    int matchLength() const { return -1; }
 
-    inline int minRepeat() const { return minRepeat_; }
-    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
+    int minRepeat() const { return minRepeat_; }
+    SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
 private:
     int minRepeat_;
@@ -433,7 +433,7 @@ public:
         return i;
     }
 
-    inline int matchLength() const {
+    int matchLength() const {
         if (minRepeat_ == maxRepeat_) {
             int n = entry()->matchLength();
             if (n > 0) return minRepeat_ * n;
@@ -441,9 +441,9 @@ public:
         return -1;
     }
 
-    inline int minRepeat() const { return minRepeat_; }
-    inline int maxRepeat() const { return maxRepeat_; }
-    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
+    int minRepeat() const { return minRepeat_; }
+    int maxRepeat() const { return maxRepeat_; }
+    SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
 private:
     int minRepeat_;
@@ -502,9 +502,9 @@ public:
         return i;
     }
 
-    inline SyntaxNode *filter() const { return SyntaxNode::firstChild(); }
-    inline char blank() const { return blank_; }
-    inline SyntaxNode *entry() const { return SyntaxNode::lastChild(); }
+    SyntaxNode *filter() const { return SyntaxNode::firstChild(); }
+    char blank() const { return blank_; }
+    SyntaxNode *entry() const { return SyntaxNode::lastChild(); }
 
 private:
     char blank_;
@@ -538,11 +538,11 @@ public:
         return h;
     }
 
-    inline int matchLength() const { return 0; }
+    int matchLength() const { return 0; }
 
-    inline int minLength() const { return minLength_; }
-    inline int maxLength() const { return maxLength_; }
-    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
+    int minLength() const { return minLength_; }
+    int maxLength() const { return maxLength_; }
+    SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
 private:
     int minLength_;
@@ -556,7 +556,7 @@ public:
     {
         return (i == 0) ? i : -1;
     }
-    inline int matchLength() const { return 0; }
+    int matchLength() const { return 0; }
 };
 
 class EoiNode: public SyntaxNode
@@ -567,7 +567,7 @@ public:
         bool eoi = (!text->has(i)) && ((i == 0) || (text->has(i - 1)));
         return eoi ? i : -1;
     }
-    inline int matchLength() const { return 0; }
+    int matchLength() const { return 0; }
 };
 
 class PassNode: public SyntaxNode
@@ -582,9 +582,9 @@ public:
         return invert_ ? -1 : i;
     }
 
-    inline int matchLength() const { return 0; }
+    int matchLength() const { return 0; }
 
-    inline int invert() const { return invert_; }
+    int invert() const { return invert_; }
 
 private:
     int invert_;
@@ -622,9 +622,9 @@ public:
         return i;
     }
 
-    inline int matchLength() const { return 0; }
+    int matchLength() const { return 0; }
 
-    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
+    SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 };
 
 class AheadNode: public SyntaxNode
@@ -653,10 +653,10 @@ public:
         return i;
     }
 
-    inline int matchLength() const { return 0; }
+    int matchLength() const { return 0; }
 
-    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
-    inline int invert() const { return invert_; }
+    SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
+    int invert() const { return invert_; }
 
 private:
     int invert_;
@@ -693,11 +693,11 @@ public:
         return i;
     }
 
-    inline int matchLength() const { return 0; }
+    int matchLength() const { return 0; }
 
-    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
-    inline int invert() const { return invert_; }
-    inline int size() const { return length_; }
+    SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
+    int invert() const { return invert_; }
+    int size() const { return length_; }
 
 private:
     int invert_;
@@ -748,8 +748,8 @@ public:
         return len;
     }
 
-    inline SyntaxNode *firstChoice() const { return SyntaxNode::firstChild(); }
-    inline SyntaxNode *lastChoice() const { return SyntaxNode::lastChild(); }
+    SyntaxNode *firstChoice() const { return SyntaxNode::firstChild(); }
+    SyntaxNode *lastChoice() const { return SyntaxNode::lastChild(); }
 };
 
 class LazyChoiceNode: public ChoiceNode
@@ -862,11 +862,11 @@ public:
         return h;
     }
 
-    inline int matchLength() const { return 0; }
+    int matchLength() const { return 0; }
 
-    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
-    inline const char *message() const { return message_; }
-    inline bool strict() const { return strict_; }
+    SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
+    const char *message() const { return message_; }
+    bool strict() const { return strict_; }
 
 private:
     const char *message_;
@@ -888,7 +888,7 @@ public:
         return callBack_(self_, text, i, parentToken, state);
     }
 
-    inline CallBack callBack() const { return callBack_; }
+    CallBack callBack() const { return callBack_; }
 
 private:
     CallBack callBack_;
@@ -910,9 +910,9 @@ public:
         return i;
     }
 
-    inline DefinitionNode *scope() const { return scope_; }
-    inline int flagId() const { return flagId_; }
-    inline bool value() const { return value_; }
+    DefinitionNode *scope() const { return scope_; }
+    int flagId() const { return flagId_; }
+    bool value() const { return value_; }
 
 private:
     DefinitionNode *scope_;
@@ -938,10 +938,10 @@ public:
             falseBranch()->matchNext(text, i, parentToken, state);
     }
 
-    inline DefinitionNode *scope() const { return scope_; }
-    inline int flagId() const { return flagId_; }
-    inline SyntaxNode *trueBranch() const { return SyntaxNode::firstChild(); }
-    inline SyntaxNode *falseBranch() const { return SyntaxNode::lastChild(); }
+    DefinitionNode *scope() const { return scope_; }
+    int flagId() const { return flagId_; }
+    SyntaxNode *trueBranch() const { return SyntaxNode::firstChild(); }
+    SyntaxNode *falseBranch() const { return SyntaxNode::lastChild(); }
 
 private:
     DefinitionNode *scope_;
@@ -979,9 +979,9 @@ public:
         return SyntaxNode::parent() ? SyntaxNode::parent()->succ(SyntaxNode::self()) : nullptr;
     }
 
-    inline DefinitionNode *scope() const { return scope_; }
-    inline int captureId() const { return captureId_; }
-    inline SyntaxNode *coverage() const { return SyntaxNode::firstChild(); }
+    DefinitionNode *scope() const { return scope_; }
+    int captureId() const { return captureId_; }
+    SyntaxNode *coverage() const { return SyntaxNode::firstChild(); }
 
 private:
     DefinitionNode *scope_;
@@ -1005,8 +1005,8 @@ public:
         return i;
     }
 
-    inline DefinitionNode *scope() const { return scope_; }
-    inline int captureId() const { return captureId_; }
+    DefinitionNode *scope() const { return scope_; }
+    int captureId() const { return captureId_; }
 
 private:
     DefinitionNode *scope_;
@@ -1032,7 +1032,7 @@ public:
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override;
 
-    inline int matchLength() const { return entry()->matchLength(); }
+    int matchLength() const { return entry()->matchLength(); }
 
     int numberOfRefs() {
         if (numberOfRefs_ == -1) {
@@ -1043,14 +1043,14 @@ public:
         return numberOfRefs_;
     }
 
-    inline DefinitionNode *scope() const { return scope_; }
-    inline const char *name() const { return name_; }
-    inline int id() const { return id_; }
-    inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
-    inline bool generate() const { return generate_; }
+    DefinitionNode *scope() const { return scope_; }
+    const char *name() const { return name_; }
+    int id() const { return id_; }
+    SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
+    bool generate() const { return generate_; }
 
-    inline bool used() const { return used_; }
-    inline void markUsed() { used_ = true; }
+    bool used() const { return used_; }
+    void markUsed() { used_ = true; }
 
 protected:
     DefinitionNode *scope_;
@@ -1074,10 +1074,10 @@ public:
         rule_(rule)
     {}
 
-    inline const char *ruleName() const { return ruleName_; }
-    inline RuleNode *rule() const { return rule_; }
+    const char *ruleName() const { return ruleName_; }
+    RuleNode *rule() const { return rule_; }
 
-    inline int matchLength() const { return rule_->matchLength(); }
+    int matchLength() const { return rule_->matchLength(); }
 
 protected:
     friend class DefinitionNode;
@@ -1108,7 +1108,7 @@ public:
             rule_->entry()->matchNext(text, i, parentToken, state);
     }
 
-    inline bool generate() const { return generate_; }
+    bool generate() const { return generate_; }
 
 private:
     bool generate_;
@@ -1125,7 +1125,7 @@ public:
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override;
 
-    inline SyntaxNode *coverage() const { return SyntaxNode::firstChild(); }
+    SyntaxNode *coverage() const { return SyntaxNode::firstChild(); }
 
 private:
     static void shiftTree(Token *root, int delta);
@@ -1154,7 +1154,7 @@ public:
         return h;
     }
 
-    inline const char *keywordName() const { return keywordName_; }
+    const char *keywordName() const { return keywordName_; }
 
 protected:
     friend class DefinitionNode;
@@ -1196,8 +1196,8 @@ public:
         return h;
     }
 
-    inline SyntaxNode *inContext() const { return SyntaxNode::firstChild(); }
-    inline SyntaxNode *outOfContext() const { return SyntaxNode::lastChild(); }
+    SyntaxNode *inContext() const { return SyntaxNode::firstChild(); }
+    SyntaxNode *outOfContext() const { return SyntaxNode::lastChild(); }
 };
 
 class SyntaxDebugFactory;
@@ -1224,21 +1224,21 @@ public:
             debugFactory_->definition_ = this;
     }
 
-    inline static int scope(const char *name = 0) { return crc32(name); }
+    static int scope(const char *name = 0) { return crc32(name); }
 
-    inline SyntaxDebugFactory *debugFactory() const { return debugFactory_; }
+    SyntaxDebugFactory *debugFactory() const { return debugFactory_; }
 
-    inline int id() const { return id_; }
-    inline const char *name() const { return name_; }
+    int id() const { return id_; }
+    const char *name() const { return name_; }
 
     //-- stateless definition interface
 
-    inline void SYNTAX(const char *name) {
+    void SYNTAX(const char *name) {
         id_ = crc32(name);
         name_ = name;
     }
 
-    inline void IMPORT(const DefinitionNode *definition, const char *name = 0) {
+    void IMPORT(const DefinitionNode *definition, const char *name = 0) {
         if (!name) name = definition->name();
         if (!name)
             CC_DEBUG_ERROR("Cannot import anonymous syntax definition");
@@ -1248,94 +1248,94 @@ public:
     typedef Ref<SyntaxNode> NODE;
     typedef Ref<RuleNode> RULE;
 
-    inline void OPTION(const char *name, bool value) {
+    void OPTION(const char *name, bool value) {
         if (strcasecmp(name, "caseSensitive") == 0)
             caseSensitive_ = value;
         else
             CC_DEBUG_ERROR(Format("Unknown option '%%'") << name);
     }
 
-    inline NODE CHAR(char ch) { return debug(new CharNode(ch, 0), "Char"); }
-    inline NODE OTHER(char ch) { return debug(new CharNode(ch, 1), "Char"); }
-    inline NODE GREATER(char ch) { return debug(new GreaterNode(ch, 0), "Greater"); }
-    inline NODE BELOW(char ch) { return debug(new GreaterNode(ch, 1), "Greater"); }
-    inline NODE GREATER_OR_EQUAL(char ch) { return debug(new GreaterOrEqualNode(ch, 0), "GreaterOrEqual"); }
-    inline NODE BELOW_OR_EQUAL(char ch) { return debug(new GreaterOrEqualNode(ch, 1), "GreaterOrEqual"); }
-    inline NODE ANY() { return debug(new AnyNode(), "Any"); }
+    NODE CHAR(char ch) { return debug(new CharNode(ch, 0), "Char"); }
+    NODE OTHER(char ch) { return debug(new CharNode(ch, 1), "Char"); }
+    NODE GREATER(char ch) { return debug(new GreaterNode(ch, 0), "Greater"); }
+    NODE BELOW(char ch) { return debug(new GreaterNode(ch, 1), "Greater"); }
+    NODE GREATER_OR_EQUAL(char ch) { return debug(new GreaterOrEqualNode(ch, 0), "GreaterOrEqual"); }
+    NODE BELOW_OR_EQUAL(char ch) { return debug(new GreaterOrEqualNode(ch, 1), "GreaterOrEqual"); }
+    NODE ANY() { return debug(new AnyNode(), "Any"); }
 
-    inline NODE RANGE(char a, char b) { return debug(new RangeMinMaxNode(a, b, 0), "RangeMinMax"); }
-    inline NODE RANGE(const char *s) { return debug(new RangeExplicitNode(s, 0), "RangeExplicit"); }
-    inline NODE EXCEPT(char a, char b) { return debug(new RangeMinMaxNode(a, b, 1), "RangeMinMax"); }
-    inline NODE EXCEPT(const char *s) { return debug(new RangeExplicitNode(s, 1), "RangeExplicit"); }
+    NODE RANGE(char a, char b) { return debug(new RangeMinMaxNode(a, b, 0), "RangeMinMax"); }
+    NODE RANGE(const char *s) { return debug(new RangeExplicitNode(s, 0), "RangeExplicit"); }
+    NODE EXCEPT(char a, char b) { return debug(new RangeMinMaxNode(a, b, 1), "RangeMinMax"); }
+    NODE EXCEPT(const char *s) { return debug(new RangeExplicitNode(s, 1), "RangeExplicit"); }
 
-    inline NODE STRING(const char *s) { return debug(new StringNode(s, caseSensitive_), "String"); }
+    NODE STRING(const char *s) { return debug(new StringNode(s, caseSensitive_), "String"); }
     NODE KEYWORD(const char *keywords);
 
-    inline NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new RepeatNode(minRepeat, maxRepeat, entry), "Repeat"); }
-    inline NODE REPEAT(int minRepeat, NODE entry) { return REPEAT(minRepeat, intMax, entry); }
-    inline NODE REPEAT(NODE entry) { return REPEAT(0, intMax, entry); }
+    NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new RepeatNode(minRepeat, maxRepeat, entry), "Repeat"); }
+    NODE REPEAT(int minRepeat, NODE entry) { return REPEAT(minRepeat, intMax, entry); }
+    NODE REPEAT(NODE entry) { return REPEAT(0, intMax, entry); }
 
-    inline NODE LAZY_REPEAT(int minRepeat, NODE entry) { return debug(new LazyRepeatNode(minRepeat, entry), "LazyRepeat"); }
-    inline NODE LAZY_REPEAT(NODE entry) { return LAZY_REPEAT(0, entry); }
+    NODE LAZY_REPEAT(int minRepeat, NODE entry) { return debug(new LazyRepeatNode(minRepeat, entry), "LazyRepeat"); }
+    NODE LAZY_REPEAT(NODE entry) { return LAZY_REPEAT(0, entry); }
 
-    inline NODE GREEDY_REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new GreedyRepeatNode(minRepeat, maxRepeat, entry), "GreedyRepeat"); }
-    inline NODE GREEDY_REPEAT(int minRepeat, NODE entry) { return GREEDY_REPEAT(minRepeat, intMax, entry); }
-    inline NODE GREEDY_REPEAT(NODE entry) { return GREEDY_REPEAT(0, intMax, entry); }
+    NODE GREEDY_REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new GreedyRepeatNode(minRepeat, maxRepeat, entry), "GreedyRepeat"); }
+    NODE GREEDY_REPEAT(int minRepeat, NODE entry) { return GREEDY_REPEAT(minRepeat, intMax, entry); }
+    NODE GREEDY_REPEAT(NODE entry) { return GREEDY_REPEAT(0, intMax, entry); }
 
-    inline NODE FILTER(NODE filter, char blank, NODE entry) { return debug(new FilterNode(filter, blank, entry), "Filter"); }
+    NODE FILTER(NODE filter, char blank, NODE entry) { return debug(new FilterNode(filter, blank, entry), "Filter"); }
 
-    inline NODE LENGTH(int minLength, int maxLength, NODE entry) { return debug(new LengthNode(minLength, maxLength, entry), "Length"); }
-    inline NODE LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }
-    inline NODE BOI() { return debug(new BoiNode(), "Boi"); }
-    inline NODE EOI() { return debug(new EoiNode(), "Eoi"); }
-    inline NODE PASS() { return debug(new PassNode(0), "Pass"); }
-    inline NODE FAIL() { return debug(new PassNode(1), "Pass"); }
-    inline NODE FIND(NODE entry) { return debug(new FindNode(entry), "Find"); }
-    inline NODE AHEAD(NODE entry) { return debug(new AheadNode(entry, 0), "Ahead"); }
-    inline NODE NOT(NODE entry) { return debug(new AheadNode(entry, 1), "Ahead"); }
-    inline NODE BEHIND(NODE entry) { return debug(new BehindNode(entry, 0), "Behind"); }
-    inline NODE NOT_BEHIND(NODE entry) { return debug(new BehindNode(entry, 1), "Behind"); }
+    NODE LENGTH(int minLength, int maxLength, NODE entry) { return debug(new LengthNode(minLength, maxLength, entry), "Length"); }
+    NODE LENGTH(int minLength, NODE entry) { return LENGTH(minLength, intMax, entry); }
+    NODE BOI() { return debug(new BoiNode(), "Boi"); }
+    NODE EOI() { return debug(new EoiNode(), "Eoi"); }
+    NODE PASS() { return debug(new PassNode(0), "Pass"); }
+    NODE FAIL() { return debug(new PassNode(1), "Pass"); }
+    NODE FIND(NODE entry) { return debug(new FindNode(entry), "Find"); }
+    NODE AHEAD(NODE entry) { return debug(new AheadNode(entry, 0), "Ahead"); }
+    NODE NOT(NODE entry) { return debug(new AheadNode(entry, 1), "Ahead"); }
+    NODE BEHIND(NODE entry) { return debug(new BehindNode(entry, 0), "Behind"); }
+    NODE NOT_BEHIND(NODE entry) { return debug(new BehindNode(entry, 1), "Behind"); }
 
-    inline NODE CHOICE() { return debug(new ChoiceNode, "Choice"); }
-    inline NODE GLUE() { return debug(new GlueNode, "Glue"); }
+    NODE CHOICE() { return debug(new ChoiceNode, "Choice"); }
+    NODE GLUE() { return debug(new GlueNode, "Glue"); }
 
     #include "SyntaxSugar"
 
-    inline NODE HINT(const char *text, NODE entry) {
+    NODE HINT(const char *text, NODE entry) {
         return debug(new HintNode(text, entry, false), "Hint");
     }
-    inline NODE EXPECT(const char *text, NODE entry) {
+    NODE EXPECT(const char *text, NODE entry) {
         return debug(new HintNode(text, entry, true), "Hint");
     }
 
-    inline int DEFINE(const char *ruleName, NODE entry, bool generate = true) {
+    int DEFINE(const char *ruleName, NODE entry, bool generate = true) {
         Ref<RuleNode> ruleNode = new RuleNode(this, ruleName, ruleCount_++, entry, generate);
         addRule(ruleNode);
         return ruleNode->id();
     }
-    inline void ENTRY(const char *ruleName) {
+    void ENTRY(const char *ruleName) {
         LinkNode::ruleName_ = ruleName;
     }
 
-    inline NODE REF(const char *ruleName) {
+    NODE REF(const char *ruleName) {
         Ref<RefNode> link = new RefNode(ruleName);
         link->unresolvedNext_ = unresolvedLinkHead_;
         unresolvedLinkHead_ = link;
         return debug(link, "Ref");
     }
-    inline NODE INLINE(const char *ruleName) {
+    NODE INLINE(const char *ruleName) {
         Ref<RefNode> link = new RefNode(ruleName, false);
         link->unresolvedNext_ = unresolvedLinkHead_;
         unresolvedLinkHead_ = link;
         return debug(link, "Ref");
     }
-    inline NODE INVOKE(const char *ruleName, NODE coverage = 0) {
+    NODE INVOKE(const char *ruleName, NODE coverage = 0) {
         Ref<RefNode> link = new InvokeNode(ruleName, coverage);
         link->unresolvedNext_ = unresolvedLinkHead_;
         unresolvedLinkHead_ = link;
         return debug(link, "Invoke");
     }
-    inline NODE PREVIOUS(const char *ruleName, const char *keyword = 0) {
+    NODE PREVIOUS(const char *ruleName, const char *keyword = 0) {
         Ref<PreviousNode> link = new PreviousNode(ruleName, keyword);
         link->unresolvedNext_ = unresolvedLinkHead_;
         unresolvedLinkHead_ = link;
@@ -1345,7 +1345,7 @@ public:
         }
         return debug(link, "Previous");
     }
-    inline NODE CONTEXT(const char *ruleName, NODE inContext = 0, NODE outOfContext = 0) {
+    NODE CONTEXT(const char *ruleName, NODE inContext = 0, NODE outOfContext = 0) {
         if (!inContext) inContext = PASS();
         if (!outOfContext) outOfContext = FAIL();
         Ref<ContextNode> link = new ContextNode(ruleName, inContext, outOfContext);
@@ -1356,11 +1356,11 @@ public:
 
     typedef int (*CallBack) (Object *self, const CharArray *text, int i, Token *parentToken, SyntaxState *state);
 
-    inline NODE CALL(CallBack callBack, Object *self = 0) {
+    NODE CALL(CallBack callBack, Object *self = 0) {
         if (!self) self = this;
         return debug(new CallNode(callBack, self), "Call");
     }
-    inline NODE ERROR() {
+    NODE ERROR() {
         return debug(new CallNode(errorCallBack, this), "Call");
     }
 
@@ -1368,24 +1368,24 @@ public:
 
     //-- stateful definition interface
 
-    inline NODE SET(const char *name, bool value) {
+    NODE SET(const char *name, bool value) {
         return debug(new SetNode(this, touchFlag(name), value), "Set");
     }
-    inline NODE IF(const char *name, NODE trueBranch, NODE falseBranch = 0) {
+    NODE IF(const char *name, NODE trueBranch, NODE falseBranch = 0) {
         if (!trueBranch) trueBranch = PASS();
         if (!falseBranch) falseBranch = PASS();
         return debug(new IfNode(this, touchFlag(name), trueBranch, falseBranch), "If");
     }
-    inline NODE CAPTURE(const char *name, NODE coverage) {
+    NODE CAPTURE(const char *name, NODE coverage) {
         return debug(new CaptureNode(this, touchCapture(name), coverage), "Capture");
     }
-    inline NODE REPLAY(const char *name) {
+    NODE REPLAY(const char *name) {
         return debug(new ReplayNode(this, touchCapture(name)), "Replay");
     }
 
     //-- execution interface
 
-    inline SyntaxState *createState(TokenFactory *tokenFactory = 0) const {
+    SyntaxState *createState(TokenFactory *tokenFactory = 0) const {
         return new SyntaxState(this, flagCount_, captureCount_, tokenFactory);
     }
 
@@ -1394,34 +1394,34 @@ public:
 
     const DefinitionNode *resolveScope(const char *&name) const;
 
-    inline const DefinitionNode *scopeByName(const char *name) const
+    const DefinitionNode *scopeByName(const char *name) const
     {
         Ref<const DefinitionNode> definition;
         const DefinitionNode *scope = resolveScope(name);
         if (!scope->scopeByName_->lookup(name, &definition))
-            CC_DEBUG_ERROR(Format("Undefined scope '%%'") << name);
+            CC_DEBUG_ERROR(Format{"Undefined scope '%%'"} << name);
         return definition;
     }
 
-    inline RuleNode *ruleByName(const char *name) const
+    RuleNode *ruleByName(const char *name) const
     {
         const DefinitionNode *scope = resolveScope(name);
         Ref<RuleNode> node;
         CC_ASSERT(scope);
         if (!scope->ruleByName_->lookup(name, &node))
-            CC_DEBUG_ERROR(Format("Undefined rule '%%'") << name);
+            CC_DEBUG_ERROR(Format{"Undefined rule '%%'"} << name);
         return node;
     }
 
-    inline int keywordByName(const char *name) const
+    int keywordByName(const char *name) const
     {
         int tokenType = -1;
         if (!keywordByName_->lookup(name, &tokenType))
-            CC_DEBUG_ERROR(Format("Undefined keyword '%%'") <<  name);
+            CC_DEBUG_ERROR(Format{"Undefined keyword '%%'"} <<  name);
         return tokenType;
     }
 
-    inline int flagIdByName(const char *name) const
+    int flagIdByName(const char *name) const
     {
         int flagId = -1;
         if (!flagIdByName_->lookup(name, &flagId))
@@ -1429,7 +1429,7 @@ public:
         return flagId;
     }
 
-    inline int captureIdByName(const char *name) const
+    int captureIdByName(const char *name) const
     {
         int captureId = -1;
         if (!captureIdByName_->lookup(name, &captureId))
@@ -1437,13 +1437,13 @@ public:
         return captureId;
     }
 
-    inline bool lookupCaptureIdByName(const char *name, int *captureId) const {
+    bool lookupCaptureIdByName(const char *name, int *captureId) const {
         return captureIdByName_->lookup(name, captureId);
     }
 
     virtual int syntaxError(const CharArray *text, int index, SyntaxState *state) const;
 
-    inline SyntaxNode *debug(SyntaxNode *newNode, const char *nodeType) {
+    SyntaxNode *debug(SyntaxNode *newNode, const char *nodeType) {
         return debugFactory_ ? debugFactory_->produce(newNode, nodeType) : newNode;
     }
 
@@ -1476,7 +1476,7 @@ private:
     Ref<PreviousNode> unresolvedKeywordHead_;
     Ref<DefinitionNode> unresolvedNext_;
 
-    inline int touchFlag(const char *name)
+    int touchFlag(const char *name)
     {
         int id = -1;
         if (!flagIdByName_->lookup(name, &id))
@@ -1484,7 +1484,7 @@ private:
         return id;
     }
 
-    inline int touchCapture(const char *name)
+    int touchCapture(const char *name)
     {
         int id = -1;
         if (!captureIdByName_->lookup(name, &id))

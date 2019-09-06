@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,7 +10,6 @@
 
 #include <cc/syntax/SyntaxDefinition>
 #include <cc/meta/yason>
-#include <cc/meta/MetaToken>
 
 namespace cc { template<class> class Singleton; }
 
@@ -27,12 +26,12 @@ public:
     Variant parse(const CharArray *text, const MetaProtocol *protocol = nullptr) const;
     Ref<MetaObject> readObject(const CharArray *text, const Token *token, const MetaProtocol *protocol = nullptr, const MetaObject *prototype = nullptr) const;
 
+protected:
+    friend class Singleton<YasonSyntax>;
+
     const Token *getMemberNameToken(const CharArray *text, const Token *objectToken, const String &memberName) const;
     const Token *getMemberValueToken(const CharArray *text, const Token *objectToken, const String &memberName) const;
     const Token *getChildToken(const Token *objectToken, int childIndex) const;
-
-protected:
-    friend class Singleton<YasonSyntax>;
 
     enum Options {
         GenerateComments     = 1,

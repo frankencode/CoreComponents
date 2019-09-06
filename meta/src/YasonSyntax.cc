@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,7 +7,6 @@
  */
 
 #include <cc/meta/YasonSyntax>
-#include <cc/meta/YasonTokenFactory>
 #include <cc/syntax/exceptions>
 #include <cc/syntax/FloatSyntax>
 #include <cc/syntax/IntegerSyntax>
@@ -362,9 +361,9 @@ YasonSyntax::YasonSyntax(int options)
 
 Variant YasonSyntax::parse(const CharArray *text, const MetaProtocol *protocol) const
 {
-    Ref<SyntaxState> state = match(text, 0, YasonTokenFactory::create());
+    Ref<SyntaxState> state = match(text);
     if (!state->valid()) throw SyntaxError{text, state};
-    Token *valueToken = state->rootToken()->firstChild();
+    const Token *valueToken = state->rootToken()->firstChild();
     if (protocol) return readObject(text, valueToken, protocol);
     return readValue(text, valueToken);
 }
@@ -463,9 +462,10 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
         token = token->nextSibling();
     }
 
-    object->autocompleteBy(prototype);
 
     if (prototype) {
+        prototype->autocomplete(object);
+
         const MetaProtocol *prototypeProtocol = prototype->protocol();
         if (prototypeProtocol) {
             if (prototypeProtocol->minCount() > 0) {
@@ -487,7 +487,32 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
         }
     }
 
-    object->realize(text, static_cast<const MetaToken *>(objectToken));
+    try {
+        object->realize();
+    }
+    catch (MetaError &error) {
+        const Token *errorToken = objectToken;
+        if (error->offendingObject() != object) {
+            for (int i = 0; i < object->children()->count(); ++i) {
+                if (object->children()->at(i) == error->offendingObject()) {
+                    errorToken = getChildToken(objectToken, i);
+                    break;
+                }
+            }
+        }
+
+        if (errorToken) {
+            if (error->memberName() != "")
+                errorToken = getMemberValueToken(text, errorToken, error->memberName());
+        }
+        else
+            errorToken = objectToken;
+
+        throw SemanticError{
+            error->message(),
+            text, errorToken->i1()
+        };
+    }
 
     return object;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -50,7 +50,7 @@ private:
 
     static int defaultRuleByName(const String &name);
 
-    void realize(const CharArray *text, const MetaToken *objectToken) override;
+    void realize() override;
 
     String scopeName_;
     int scope_;

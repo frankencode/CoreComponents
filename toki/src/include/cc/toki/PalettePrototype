@@ -11,6 +11,8 @@
 namespace cc {
 namespace toki {
 
+class Palette;
+
 class PalettePrototype: public meta::MetaObject
 {
 public:
