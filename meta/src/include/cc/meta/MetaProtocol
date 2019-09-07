@@ -38,7 +38,6 @@ public:
     template<class Prototype>
     static Ref<MetaPrototype> createPrototype()
     {
-        static_assert(std::is_base_of<MetaPrototype, Prototype>::value, "");
         Ref<Prototype> prototype = Prototype::create();
         prototype->define();
         return prototype;
