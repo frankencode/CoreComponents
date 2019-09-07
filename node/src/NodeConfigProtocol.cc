@@ -15,7 +15,7 @@
 namespace cc {
 namespace node {
 
-class NodePrototype: public MetaObject
+class NodePrototype: public MetaPrototype
 {
 public:
     static Ref<NodePrototype> create(MetaProtocol *protocol = nullptr, const String &className = "Node")
@@ -25,7 +25,7 @@ public:
 
 protected:
     NodePrototype(const String &className, MetaProtocol *protocol):
-        MetaObject{className, protocol}
+        MetaPrototype{className, protocol}
     {
         bool superUser = Process::isSuperUser();
         establish("address", "*");
@@ -56,7 +56,7 @@ protected:
     }
 };
 
-NodeConfigProtocol *NodeConfigProtocol::instance()
+NodeConfigProtocol *NodeConfigProtocol::instance() // FIXME: return const NodeConfigProtocol *
 {
     return Singleton<NodeConfigProtocol>::instance();
 }
@@ -68,7 +68,7 @@ NodeConfigProtocol::NodeConfigProtocol():
     define(nodePrototype_);
 }
 
-void NodeConfigProtocol::registerService(const MetaObject *configPrototype)
+void NodeConfigProtocol::registerService(const MetaPrototype *configPrototype)
 {
     nodeProtocol_->define(configPrototype);
 }

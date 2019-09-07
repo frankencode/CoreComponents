@@ -19,7 +19,7 @@ Ref<PalettePrototype> PalettePrototype::create()
 }
 
 PalettePrototype::PalettePrototype():
-    MetaObject{
+    MetaPrototype{
         "Palette",
         [](){
             auto protocol = MetaProtocol::create();

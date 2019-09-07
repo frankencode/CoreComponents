@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/meta/MetaObject>
+
+namespace cc {
+namespace meta {
+
+class MetaProtocol;
+
+/** \class MetaPrototype cc/meta/MetaPrototype
+  * \brief Defining members and providing default values
+  * \see MetaProtocol
+  */
+class MetaPrototype: public MetaObject
+{
+public:
+    static Ref<MetaPrototype> create(const String &className, const MetaProtocol *protocol = nullptr);
+
+    const MetaProtocol *protocol() const { return protocol_; }
+
+protected:
+    MetaPrototype(const String &className, const MetaProtocol *protocol = nullptr);
+
+private:
+    Ref<const MetaProtocol> protocol_;
+};
+
+}} // namespace cc::meta

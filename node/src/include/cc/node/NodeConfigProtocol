@@ -15,7 +15,7 @@ namespace cc { template<class> class Singleton; }
 namespace cc {
 namespace node {
 
-using cc::meta::MetaObject;
+using cc::meta::MetaPrototype;
 using cc::meta::MetaProtocol;
 
 class NodeConfig;
@@ -26,18 +26,18 @@ class NodeConfigProtocol: public MetaProtocol
 public:
     static NodeConfigProtocol *instance();
 
-    const MetaObject *nodePrototype() const { return nodePrototype_; }
+    const MetaPrototype *nodePrototype() const { return nodePrototype_; }
 
 private:
     friend class Singleton<NodeConfigProtocol>;
     // friend class NodeConfig;
     friend class DeliveryRegistry;
 
-    void registerService(const MetaObject *configPrototype);
+    void registerService(const MetaPrototype *configPrototype);
 
     NodeConfigProtocol();
     Ref<MetaProtocol> nodeProtocol_;
-    Ref<MetaObject> nodePrototype_;
+    Ref<MetaPrototype> nodePrototype_;
 };
 
 }} // namespace cc::node

@@ -368,7 +368,7 @@ Variant YasonSyntax::parse(const CharArray *text, const MetaProtocol *protocol) 
     return readValue(text, valueToken);
 }
 
-Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *token, const MetaProtocol *protocol, const MetaObject *prototype) const
+Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *token, const MetaProtocol *protocol, const MetaPrototype *prototype) const
 {
     if (token->rule() != object_)
         throw SemanticError{"Expected an object value", text, token->i0()};
@@ -412,7 +412,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
             String name = readName(text, token);
 
             Variant defaultValue;
-            const MetaObject *memberPrototype = nullptr;
+            const MetaPrototype *memberPrototype = nullptr;
             if (prototype) {
                 if (prototype->count() > 0) {
                     if (!prototype->lookup(name, &defaultValue)) {
@@ -422,7 +422,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
                         };
                     }
                     if (defaultValue->type() == VariantType::Object)
-                        memberPrototype = Variant::cast<const MetaObject *>(defaultValue);
+                        memberPrototype = Variant::cast<const MetaPrototype *>(defaultValue);
                 }
             }
 

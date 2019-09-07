@@ -19,7 +19,7 @@ Ref<DeliveryPrototype> DeliveryPrototype::create(const String &className)
 }
 
 DeliveryPrototype::DeliveryPrototype(const String &className):
-    MetaObject{className}
+    MetaPrototype{className}
 {
     establish("request-limit", 100);
     establish("request-payload-limit", 0x10000);

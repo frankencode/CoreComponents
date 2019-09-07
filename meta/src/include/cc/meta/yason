@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/exceptions>
-#include <cc/meta/MetaObject>
 #include <cc/meta/MetaProtocol>
 
 namespace cc {

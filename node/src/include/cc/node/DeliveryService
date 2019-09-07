@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include <cc/meta/yason>
+#include <cc/meta/yason> // FIXME: to generic
 #include <cc/node/DeliveryDelegate>
 #include <cc/node/DeliveryInstance>
 
 namespace cc {
 namespace node {
 
-class DeliveryPrototype: public MetaObject
+class DeliveryPrototype: public meta::MetaPrototype
 {
 public:
     static Ref<DeliveryPrototype> create(const String &className);

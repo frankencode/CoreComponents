@@ -24,7 +24,7 @@ public:
     static const YasonSyntax *instance();
 
     Variant parse(const CharArray *text, const MetaProtocol *protocol = nullptr) const;
-    Ref<MetaObject> readObject(const CharArray *text, const Token *token, const MetaProtocol *protocol = nullptr, const MetaObject *prototype = nullptr) const;
+    Ref<MetaObject> readObject(const CharArray *text, const Token *token, const MetaProtocol *protocol = nullptr, const MetaPrototype *prototype = nullptr) const;
 
 protected:
     friend class Singleton<YasonSyntax>;

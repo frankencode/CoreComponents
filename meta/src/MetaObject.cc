@@ -7,7 +7,6 @@
  */
 
 #include <cc/meta/MetaObject>
-#include <cc/meta/MetaProtocol>
 #include <cc/meta/yason>
 #include <cc/Guard>
 
@@ -19,20 +18,17 @@ Ref<MetaObject> MetaObject::create(const String &className)
     return new MetaObject{className};
 }
 
-MetaObject::MetaObject(const String &className, const MetaProtocol *protocol):
+MetaObject::MetaObject(const String &className):
     className_{className},
-    protocol_{protocol},
     children_{MetaObjectList::create()}
-{
-    if (!protocol_) protocol_ = MetaProtocol::create();
-}
+{}
 
 MetaObject::~MetaObject()
 {}
 
 Variant MetaObject::toVariant() const
 {
-    return Ref<MetaObject>(const_cast<MetaObject *>(this));
+    return Ref<MetaObject>{const_cast<MetaObject *>(this)};
 }
 
 String MetaObject::toString() const
@@ -40,20 +36,10 @@ String MetaObject::toString() const
     return yason::stringify(toVariant());
 }
 
-bool MetaObject::hasProtocol() const
-{
-    return protocol_->isDefined();
-}
-
 Ref<MetaObject> MetaObject::clone() const
 {
-    Ref<MetaObject> object = produce();
+    auto object = produce();
     autocomplete(object);
-    if (hasChildren()) {
-        for (const MetaObject *child: children()) {
-            object->children_->append(child->clone());
-        }
-    }
     object->realize();
     return object;
 }
@@ -67,6 +53,9 @@ void MetaObject::autocomplete(MetaObject *target) const
                 target->insert(name, valueAt(i));
         }
     }
+
+    for (const MetaObject *child: children())
+        target->children_->append(child->clone());
 }
 
 void MetaObject::realize()

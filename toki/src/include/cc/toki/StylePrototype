@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/meta/MetaObject>
+#include <cc/meta/MetaPrototype>
 
 namespace cc {
 namespace toki {
 
-class StylePrototype: public meta::MetaObject
+class StylePrototype: public meta::MetaPrototype
 {
 public:
     static Ref<StylePrototype> create();

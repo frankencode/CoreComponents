@@ -14,14 +14,11 @@
 namespace cc {
 namespace meta {
 
-class MetaProtocol;
-
 class MetaObject;
 typedef List< Ref<MetaObject> > MetaObjectList;
 
 /** \class MetaObject cc/meta/MetaObject
   * \brief Duck-typed object
-  * \TODO split into two separate classes MetaObject and MetaPrototype(based on MetaObject)
   */
 class MetaObject: public VariantMap
 {
@@ -31,9 +28,6 @@ public:
     String className() const { return className_; }
     Variant toVariant() const;
     String toString() const;
-
-    bool hasProtocol() const;
-    const MetaProtocol *protocol() const { return protocol_; }
 
     bool hasChildren() const { return children_->count() > 0; }
     MetaObjectList *children() { return children_; }
@@ -52,12 +46,11 @@ public:
 protected:
     friend class MetaProtocol;
 
-    MetaObject(const String &className = "", const MetaProtocol *protocol = nullptr);
+    MetaObject(const String &className = "");
     ~MetaObject();
 
 private:
     String className_;
-    Ref<const MetaProtocol> protocol_;
     Ref<MetaObjectList> children_;
 };
 

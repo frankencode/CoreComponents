@@ -18,7 +18,7 @@ Ref<StylePrototype> StylePrototype::create()
 }
 
 StylePrototype::StylePrototype():
-    MetaObject{"Style"}
+    MetaPrototype{"Style"}
 {
     insert("rule", "");
     insert("ink", Color{});

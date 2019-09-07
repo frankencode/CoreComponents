@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -11,7 +11,7 @@
 
 namespace ccbuild {
 
-class BuildParametersPrototype: public MetaObject
+class BuildParametersPrototype: public MetaPrototype
 {
 public:
     static Ref<BuildParametersPrototype> create(const String &className) {
@@ -19,8 +19,8 @@ public:
     }
 
 protected:
-    BuildParametersPrototype(const String &className, MetaProtocol *protocol = nullptr):
-        MetaObject{className, protocol}
+    BuildParametersPrototype(const String &className, const MetaProtocol *protocol = nullptr):
+        MetaPrototype{className, protocol}
     {
         insert("compiler", "");
         insert("optimize", "");
@@ -59,7 +59,7 @@ protected:
     {}
 };
 
-class UserStop: public MetaObject
+class UserStop: public MetaPrototype
 {
 public:
     static Ref<UserStop> create(const String &className) {
@@ -68,7 +68,7 @@ public:
 
 protected:
     UserStop(const String &className):
-        MetaObject{className}
+        MetaPrototype{className}
     {
         insert("execute", "");
     }
@@ -130,7 +130,7 @@ protected:
 class SystemPrerequisitePrototype: public SpecificBuildParametersPrototype
 {
 public:
-    static Ref<MetaObject> create() {
+    static Ref<SystemPrerequisitePrototype> create() {
         return new SystemPrerequisitePrototype{"Dependency"};
     }
 
@@ -163,7 +163,7 @@ public:
         return new PredicateMetaProtocol{prototype};
     }
 
-    const MetaObject *lookup(const String &className) const override;
+    const MetaPrototype *lookup(const String &className) const override;
 
 private:
     PredicateMetaProtocol(PredicatePrototype *prototype):
@@ -173,16 +173,16 @@ private:
     PredicatePrototype *prototype_;
 };
 
-class PredicatePrototype: public MetaObject
+class PredicatePrototype: public MetaPrototype
 {
 public:
-    static Ref<MetaObject> create() {
+    static Ref<PredicatePrototype> create() {
         return new PredicatePrototype{"Predicate"};
     }
 
 protected:
     PredicatePrototype(const String &className):
-        MetaObject{className, PredicateMetaProtocol::create(this)}
+        MetaPrototype{className, PredicateMetaProtocol::create(this)}
     {
         insert("source", StringList::create());
         insert("target", "");
@@ -193,7 +193,7 @@ protected:
     }
 };
 
-const MetaObject *PredicateMetaProtocol::lookup(const String &className) const
+const MetaPrototype *PredicateMetaProtocol::lookup(const String &className) const
 {
     if (className == prototype_->className()) return prototype_;
     return MetaProtocol::lookup(className);
@@ -202,7 +202,7 @@ const MetaObject *PredicateMetaProtocol::lookup(const String &className) const
 class ApplicationPrototype: public BuildOptionsPrototype
 {
 public:
-    static Ref<MetaObject> create() {
+    static Ref<ApplicationPrototype> create() {
         return new ApplicationPrototype{"Application"};
     }
 
@@ -231,7 +231,7 @@ protected:
 class TestPrototype: public ApplicationPrototype
 {
 public:
-    static Ref<MetaObject> create() {
+    static Ref<TestPrototype> create() {
         return new TestPrototype{"Test"};
     }
 
@@ -247,7 +247,7 @@ protected:
 class LibraryPrototype: public ApplicationPrototype
 {
 public:
-    static Ref<MetaObject> create() {
+    static Ref<LibraryPrototype> create() {
         return new LibraryPrototype{"Library"};
     }
 
@@ -260,7 +260,7 @@ protected:
 class PluginPrototype: public ApplicationPrototype
 {
 public:
-    static Ref<MetaObject> create(const String &className = "Plugin") {
+    static Ref<PluginPrototype> create(const String &className = "Plugin") {
         return new PluginPrototype{className};
     }
 
@@ -276,7 +276,7 @@ protected:
 class ToolsPrototype: public ApplicationPrototype
 {
 public:
-    static Ref<MetaObject> create(const String &className = "Tools") {
+    static Ref<ToolsPrototype> create(const String &className = "Tools") {
         return new ToolsPrototype{className};
     }
 
@@ -291,7 +291,7 @@ protected:
 class TestsPrototype: public TestPrototype
 {
 public:
-    static Ref<MetaObject> create(const String &className = "Tests") {
+    static Ref<TestsPrototype> create(const String &className = "Tests") {
         return new TestsPrototype{className};
     }
 
@@ -306,7 +306,7 @@ protected:
 class PackagePrototype: public BuildOptionsPrototype
 {
 public:
-    static Ref<MetaObject> create(const String &className = "Package") {
+    static Ref<PackagePrototype> create(const String &className = "Package") {
         return new PackagePrototype{className};
     }
 
