@@ -11,12 +11,13 @@
 namespace cc {
 namespace meta {
 
-Ref<MetaProtocol> MetaProtocol::create()
+Ref<MetaProtocol> MetaProtocol::create(const MetaProtocol *parent)
 {
-    return new MetaProtocol;
+    return new MetaProtocol{parent};
 }
 
-MetaProtocol::MetaProtocol():
+MetaProtocol::MetaProtocol(const MetaProtocol *parent):
+    parent_{parent},
     prototypes_{Prototypes::create()},
     minCount_{0},
     maxCount_{cc::intMax}
@@ -30,7 +31,10 @@ void MetaProtocol::define(const MetaPrototype *prototype)
 const MetaPrototype *MetaProtocol::lookup(const String &className) const
 {
     const MetaPrototype *prototype = nullptr;
-    prototypes_->lookup(className, &prototype);
+    if (!prototypes_->lookup(className, &prototype)) {
+        if (parent_)
+            parent_->lookup(className, &prototype);
+    }
     return prototype;
 }
 

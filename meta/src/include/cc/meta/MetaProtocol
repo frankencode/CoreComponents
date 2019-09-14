@@ -19,7 +19,7 @@ namespace meta {
 class MetaProtocol: public Object
 {
 public:
-    static Ref<MetaProtocol> create();
+    static Ref<MetaProtocol> create(const MetaProtocol *parent = nullptr);
 
     template<class Prototype>
     void define(const String &className)
@@ -55,13 +55,16 @@ public:
 protected:
     friend class YasonSyntax;
 
-    MetaProtocol();
+    MetaProtocol(const MetaProtocol *parent = nullptr);
 
     virtual Ref<MetaObject> produce(const MetaPrototype *prototype) const;
 
 private:
+    Ref<const MetaProtocol> parent_;
+
     typedef Map<String, Ref<const MetaPrototype> > Prototypes;
     Ref<Prototypes> prototypes_;
+
     int minCount_;
     int maxCount_;
 };

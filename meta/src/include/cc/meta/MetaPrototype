@@ -28,6 +28,7 @@ public:
 
 protected:
     MetaPrototype(const String &className, const MetaProtocol *protocol = nullptr);
+    ~MetaPrototype();
 
 private:
     Ref<const MetaProtocol> protocol_;

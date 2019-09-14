@@ -24,4 +24,7 @@ MetaPrototype::MetaPrototype(const String &className, const MetaProtocol *protoc
     if (!protocol_) protocol_ = MetaProtocol::create();
 }
 
+MetaPrototype::~MetaPrototype()
+{}
+
 }} // namespace cc::meta
