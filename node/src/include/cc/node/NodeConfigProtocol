@@ -30,7 +30,6 @@ public:
 
 private:
     friend class Singleton<NodeConfigProtocol>;
-    // friend class NodeConfig;
     friend class DeliveryRegistry;
 
     void registerService(const MetaPrototype *configPrototype);

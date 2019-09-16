@@ -56,7 +56,7 @@ protected:
     }
 };
 
-NodeConfigProtocol *NodeConfigProtocol::instance() // FIXME: return const NodeConfigProtocol *
+NodeConfigProtocol *NodeConfigProtocol::instance()
 {
     return Singleton<NodeConfigProtocol>::instance();
 }

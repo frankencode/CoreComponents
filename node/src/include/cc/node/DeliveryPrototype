@@ -6,19 +6,18 @@
  *
  */
 
-#pragma once
-
 #include <cc/meta/MetaPrototype>
 
 namespace cc {
 namespace node {
 
-using meta::MetaPrototype;
-
-class LoggingPrototype: public MetaPrototype
+class DeliveryPrototype: public meta::MetaPrototype
 {
+public:
+    static Ref<DeliveryPrototype> create(const String &className);
+
 protected:
-    LoggingPrototype(const String &name);
+    DeliveryPrototype(const String &className);
 };
 
 }} // namespace cc::node

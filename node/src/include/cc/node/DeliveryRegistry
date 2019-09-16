@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <cc/Map>
 #include <cc/node/DeliveryService>
 
+namespace cc { template<class, class> class Map; }
 namespace cc { template<class> class Singleton; }
 
 namespace cc {

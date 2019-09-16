@@ -23,7 +23,7 @@ const PaletteLoader *PaletteLoader::instance()
 PaletteLoader::PaletteLoader():
     protocol_{[]{
         auto protocol = MetaProtocol::create();
-        protocol->define<PalettePrototype>();
+        protocol->define(PalettePrototype::create());
         protocol->minCount(1);
         protocol->maxCount(1);
         return protocol;

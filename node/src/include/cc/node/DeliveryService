@@ -8,21 +8,15 @@
 
 #pragma once
 
-#include <cc/meta/yason> // FIXME: to generic
+#include <cc/meta/MetaObject>
+#include <cc/node/DeliveryPrototype>
 #include <cc/node/DeliveryDelegate>
 #include <cc/node/DeliveryInstance>
 
 namespace cc {
 namespace node {
 
-class DeliveryPrototype: public meta::MetaPrototype
-{
-public:
-    static Ref<DeliveryPrototype> create(const String &className);
-
-protected:
-    DeliveryPrototype(const String &className);
-};
+using meta::MetaObject;
 
 class DeliveryService: public Object
 {

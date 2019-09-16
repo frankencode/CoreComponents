@@ -50,7 +50,7 @@ protected:
             "MacOSX", "Solaris", "Mach", "HPUX"
         };
         for (int i = 0, n = sizeof(paramClasses) / sizeof(paramClasses[0]); i < n; ++i)
-            protocol->define<BuildParametersPrototype>(paramClasses[i]);
+            protocol->define(BuildParametersPrototype::create(paramClasses[i]));
         return protocol;
     }
 
@@ -87,7 +87,7 @@ protected:
             "PreUninstall", "PostUninstall",
         };
         for (int i = 0, n = sizeof(stopClasses) / sizeof(stopClasses[0]); i < n; ++i)
-            protocol->define<UserStop>(stopClasses[i]);
+            protocol->define(UserStop::create(stopClasses[i]));
         return protocol;
     }
 
@@ -210,8 +210,8 @@ protected:
     static Ref<MetaProtocol> createProtocol(MetaProtocol *protocol) {
         Ref<MetaProtocol> newProtocol;
         if (!protocol) protocol = newProtocol = MetaProtocol::create();
-        protocol->define<SystemPrerequisitePrototype>();
-        protocol->define<PredicatePrototype>();
+        protocol->define(SystemPrerequisitePrototype::create());
+        protocol->define(PredicatePrototype::create());
         return protocol;
     }
 
@@ -321,13 +321,13 @@ protected:
 
 RecipeProtocol::RecipeProtocol()
 {
-    define<ApplicationPrototype>();
-    define<TestPrototype>();
-    define<LibraryPrototype>();
-    define<PluginPrototype>();
-    define<ToolsPrototype>();
-    define<TestsPrototype>();
-    define<PackagePrototype>();
+    define(ApplicationPrototype::create());
+    define(TestPrototype::create());
+    define(LibraryPrototype::create());
+    define(PluginPrototype::create());
+    define(ToolsPrototype::create());
+    define(TestsPrototype::create());
+    define(PackagePrototype::create());
 }
 
 const RecipeProtocol *RecipeProtocol::instance()

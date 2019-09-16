@@ -7,9 +7,9 @@
  */
 
 #include <cc/node/DeliveryRegistry>
-
 #include <cc/node/NodeConfigProtocol>
 #include <cc/Singleton>
+#include <cc/Map>
 
 namespace cc {
 namespace node {

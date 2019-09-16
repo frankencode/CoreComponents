@@ -12,7 +12,7 @@ namespace cc {
 namespace node {
 
 LoggingPrototype::LoggingPrototype(const String &name):
-    MetaObject{name}
+    MetaPrototype{name}
 {
     establish("type", "");
     establish("level", "");

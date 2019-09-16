@@ -1,0 +1,42 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/node/LoggingService>
+#include <cc/meta/MetaProtocol>
+
+namespace cc { template<class, class> class Map; }
+namespace cc { template<class> class Singleton; }
+
+namespace cc {
+namespace node {
+
+using meta::MetaProtocol;
+
+class LoggingRegistry: public Object
+{
+public:
+    static LoggingRegistry *instance();
+
+    void registerService(LoggingService *service);
+
+    MetaProtocol *loggingProtocol() const;
+
+private:
+    friend class Singleton<LoggingRegistry>;
+
+    LoggingRegistry();
+
+    typedef Map<String, Ref<LoggingService> > ServiceByName;
+    Ref<ServiceByName> serviceByName_;
+
+    Ref<MetaProtocol> loggingProtocol_;
+};
+
+}} // namespace cc::node

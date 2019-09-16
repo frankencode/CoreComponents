@@ -18,12 +18,7 @@ class LoggingInstance: public Object
 {
 public:
     virtual void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "") = 0;
-
-    virtual void logError(const String &message) = 0;
-    virtual void logWarning(const String &message) = 0;
-    virtual void logNotice(const String &message) = 0;
-    virtual void logInfo(const String &message) = 0;
-    virtual void logDebug(const String &message) = 0;
+    virtual void logStatus(const String &message, LoggingLevel level = LoggingLevel::Default) = 0;
 };
 
 }} // namespace cc::node

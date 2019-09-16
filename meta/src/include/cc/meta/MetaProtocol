@@ -21,18 +21,6 @@ class MetaProtocol: public Object
 public:
     static Ref<MetaProtocol> create(const MetaProtocol *parent = nullptr);
 
-    template<class Prototype>
-    void define(const String &className)
-    {
-        define(Prototype::create(className));
-    }
-
-    template<class Prototype>
-    void define()
-    {
-        define(static_cast<const MetaPrototype *>(Prototype::create()));
-    }
-
     void define(const MetaPrototype *prototype);
 
     template<class Prototype>

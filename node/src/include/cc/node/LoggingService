@@ -8,13 +8,21 @@
 
 #pragma once
 
+#include <cc/node/LoggingPrototype>
+#include <cc/node/LoggingInstance>
+#include <cc/meta/MetaPrototype>
+
 namespace cc {
 namespace node {
+
+using meta::MetaObject;
+using meta::MetaPrototype;
 
 class LoggingService: public Object
 {
 public:
-    virtual Ref<LoggingInstance> createInstance() const = 0;
+    virtual const LoggingPrototype *configPrototype() const = 0;
+    virtual Ref<LoggingInstance> createInstance(const MetaObject *config) const = 0;
 };
 
 }} // namespace cc::node
