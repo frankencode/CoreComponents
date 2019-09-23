@@ -20,7 +20,7 @@ EchoDelegate::EchoDelegate(DeliveryWorker *worker):
     DeliveryDelegate{worker}
 {}
 
-void EchoDelegate::process(HttpRequest *request)
+void EchoDelegate::process(const HttpRequest *request)
 {
     {
         Format echo = response()->chunk();

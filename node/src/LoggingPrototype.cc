@@ -11,8 +11,13 @@
 namespace cc {
 namespace node {
 
-LoggingPrototype::LoggingPrototype(const String &name):
-    MetaPrototype{name}
+Ref<LoggingPrototype> LoggingPrototype::create(const String &className)
+{
+    return new LoggingPrototype{className};
+}
+
+LoggingPrototype::LoggingPrototype(const String &className):
+    MetaPrototype{className}
 {
     establish("type", "");
     establish("level", "");

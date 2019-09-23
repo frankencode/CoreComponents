@@ -19,7 +19,7 @@ Ref<LogConfig> LogConfig::loadDefault()
     return new LogConfig;
 }
 
-Ref<LogConfig> LogConfig::load(MetaObject *config)
+Ref<LogConfig> LogConfig::load(const MetaObject *config)
 {
     return new LogConfig{config};
 }
@@ -43,7 +43,7 @@ LogConfig::LogConfig():
     rotationInterval_{days(1)}
 {}
 
-LogConfig::LogConfig(MetaObject *config):
+LogConfig::LogConfig(const MetaObject *config):
     path_{config->value("path")},
     level_{decodeLogLevel(config->value("level", ""))},
     retentionPeriod_{config->value("retention")},

@@ -29,6 +29,11 @@ void LoggingRegistry::registerService(LoggingService *service)
     loggingProtocol_->define(service->configPrototype());
 }
 
+LoggingService *LoggingRegistry::serviceByName(const String &name) const
+{
+    return serviceByName_->value(name);
+}
+
 MetaProtocol *LoggingRegistry::loggingProtocol() const
 {
     return loggingProtocol_;

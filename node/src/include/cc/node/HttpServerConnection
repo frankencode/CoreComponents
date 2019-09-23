@@ -11,11 +11,12 @@
 #include <cc/node/HttpConnection>
 #include <cc/node/ConnectionInfo>
 #include <cc/node/HttpRequest>
-#include <cc/node/DeliveryInstance>
 #include <cc/node/HttpServerSocket>
 
 namespace cc {
 namespace node {
+
+class DeliveryInstance;
 
 /** \brief server-side end of a HTTP connection
   */

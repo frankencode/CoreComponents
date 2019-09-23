@@ -30,7 +30,7 @@ DirectoryDelegate::DirectoryDelegate(DeliveryWorker *worker, ScriptHandler *scri
     scriptHandler_{scriptHandler}
 {}
 
-void DirectoryDelegate::process(HttpRequest *request)
+void DirectoryDelegate::process(const HttpRequest *request)
 {
     String path = directoryInstance_->path() + "/" + request->uri();
     path = path->canonicalPath();
@@ -107,7 +107,7 @@ void DirectoryDelegate::process(HttpRequest *request)
     }
 }
 
-void DirectoryDelegate::listDirectory(HttpRequest *request, const String &path)
+void DirectoryDelegate::listDirectory(const HttpRequest *request, const String &path)
 {
     Ref<Dir> dir = Dir::open(path);
 

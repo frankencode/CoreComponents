@@ -24,7 +24,7 @@ CgiScriptHandler::CgiScriptHandler(DeliveryWorker *worker):
 CgiScriptHandler::~CgiScriptHandler()
 {}
 
-bool CgiScriptHandler::process(HttpRequest *request, FileStatus *status, const String &documentRoot)
+bool CgiScriptHandler::process(const HttpRequest *request, const FileStatus *status, const String &documentRoot)
 {
     return delegate_->process(request, status, documentRoot);
 }

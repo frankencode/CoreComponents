@@ -10,15 +10,30 @@
 
 #include <cc/node/logging>
 #include <cc/node/HttpServerConnection>
+#include <cc/meta/MetaObject>
 
 namespace cc {
 namespace node {
 
+using cc::meta::MetaObject;
+
 class LoggingInstance: public Object
 {
 public:
-    virtual void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "") = 0;
-    virtual void logStatus(const String &message, LoggingLevel level = LoggingLevel::Default) = 0;
+    virtual void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "") const = 0;
+    virtual void logStatus(const String &message, LoggingLevel level = LoggingLevel::Default) const = 0;
+
+    LoggingType loggingType() const;
+    LoggingLevel verbosity() const;
+
+protected:
+    LoggingInstance(const MetaObject *config);
+
+private:
+    LoggingType loggingType_;
+    LoggingLevel verbosity_;
 };
+
+typedef List< Ref<const LoggingInstance> > LoggingInstances;
 
 }} // namespace cc::node

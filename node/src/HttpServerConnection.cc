@@ -7,6 +7,7 @@
  */
 
 #include <cc/node/HttpServerConnection>
+#include <cc/node/DeliveryInstance>
 #include <cc/node/ErrorLog>
 #include <cc/node/NodeConfig>
 #include <cc/node/exceptions>

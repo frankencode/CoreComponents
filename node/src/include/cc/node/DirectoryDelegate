@@ -21,12 +21,12 @@ class DirectoryDelegate: public DeliveryDelegate
 public:
     static Ref<DirectoryDelegate> create(DeliveryWorker *worker, ScriptHandler *scriptHandler = nullptr);
 
-    void process(HttpRequest *request) override;
+    void process(const HttpRequest *request) override;
 
 private:
     DirectoryDelegate(DeliveryWorker *worker, ScriptHandler *scriptHandler = nullptr);
 
-    void listDirectory(HttpRequest *request, const String &path);
+    void listDirectory(const HttpRequest *request, const String &path);
     void deliverFile(const String &path);
     void streamFile(const String &path);
 

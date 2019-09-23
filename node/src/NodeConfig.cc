@@ -96,16 +96,14 @@ NodeConfig::NodeConfig(const MetaObject *config)
     connectionLimit_ = config->value("connection-limit");
     connectionTimeout_ = config->value("connection-timeout");
 
-    securityConfig_ = HttpServerSecurity::load(Variant::cast<MetaObject *>(config->value("security")));
-    errorLogConfig_ = LogConfig::load(Variant::cast<MetaObject *>(config->value("error-log")));
-    accessLogConfig_ = LogConfig::load(Variant::cast<MetaObject *>(config->value("access-log")));
+    securityConfig_ = HttpServerSecurity::load(Variant::cast<const MetaObject *>(config->value("security")));
+    errorLogConfig_ = LogConfig::load(Variant::cast<const MetaObject *>(config->value("error-log")));
+    accessLogConfig_ = LogConfig::load(Variant::cast<const MetaObject *>(config->value("access-log")));
 
     deliveryInstances_ = DeliveryInstances::create();
-    if (config->hasChildren()) {
-        for (MetaObject *child: config->children()) {
-            DeliveryService *service = DeliveryRegistry::instance()->serviceByName(child->className());
-            deliveryInstances_->append(service->createInstance(child));
-        }
+    for (const MetaObject *child: config->children()) {
+        const DeliveryService *service = DeliveryRegistry::instance()->serviceByName(child->className());
+        deliveryInstances_->append(service->createInstance(child));
     }
 }
 

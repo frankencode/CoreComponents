@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/node/HttpSocket>
-#include <cc/node/DeliveryInstance>
 
 namespace cc {
 namespace node {
@@ -18,6 +17,7 @@ using cc::net::StreamSocket;
 
 class ClientHelloContext;
 class HttpServerConnection;
+class DeliveryInstance;
 class NodeConfig;
 class SecurityCache;
 

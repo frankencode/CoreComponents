@@ -8,6 +8,7 @@
 
 #include <cc/node/HttpServerSocket>
 #include <cc/node/HttpServerSecurity>
+#include <cc/node/DeliveryInstance>
 #include <cc/node/ErrorLog>
 #include <cc/node/NodeConfig>
 #include <cc/node/SecurityCache>

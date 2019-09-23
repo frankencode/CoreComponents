@@ -16,7 +16,7 @@ class EchoDelegate: public DeliveryDelegate
 public:
     static Ref<EchoDelegate> create(DeliveryWorker *worker);
 
-    void process(HttpRequest *request) override;
+    void process(const HttpRequest *request) override;
 
 private:
     EchoDelegate(DeliveryWorker *worker);

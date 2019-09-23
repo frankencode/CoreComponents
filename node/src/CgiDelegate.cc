@@ -37,12 +37,12 @@ CgiDelegate::CgiDelegate(DeliveryWorker *worker):
     nextPeer_{cgiInstance_->randomSeed()}
 {}
 
-void CgiDelegate::process(HttpRequest *request)
+void CgiDelegate::process(const HttpRequest *request)
 {
     process(request, cgiInstance_->script());
 }
 
-bool CgiDelegate::process(HttpRequest *request, FileStatus *status, const String &documentRoot)
+bool CgiDelegate::process(const HttpRequest *request, const FileStatus *status, const String &documentRoot)
 {
     String script;
 
@@ -55,7 +55,7 @@ bool CgiDelegate::process(HttpRequest *request, FileStatus *status, const String
     return true;
 }
 
-void CgiDelegate::process(HttpRequest *request, const String &script, const String &documentRoot)
+void CgiDelegate::process(const HttpRequest *request, const String &script, const String &documentRoot)
 {
     Ref<CgiServerConnection> cgiServer;
     Ref<Process> sub;
@@ -223,7 +223,7 @@ void CgiDelegate::process(HttpRequest *request, const String &script, const Stri
     }
 }
 
-Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(HttpRequest *request, CharArray *payload) const
+Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(const HttpRequest *request, CharArray *payload) const
 {
     String queryString = urlDecode(request, payload);
 
@@ -265,7 +265,7 @@ void CgiDelegate::logEnv(EnvMap *env)
         CCNODE_DEBUG() << "environ[" << i << "] = \"" << env->keyAt(i) << "\": \"" << env->valueAt(i) << "\"" << nl;
 }
 
-String CgiDelegate::compileHeader(HttpRequest *request, CharArray *payload) const
+String CgiDelegate::compileHeader(const HttpRequest *request, CharArray *payload) const
 {
     String queryString = urlDecode(request, payload);
 
@@ -307,14 +307,16 @@ String CgiDelegate::compileHeader(HttpRequest *request, CharArray *payload) cons
     return String::join(header, String::create(1, '\0'));
 }
 
-String CgiDelegate::urlDecode(HttpRequest *request, CharArray *payload)
+String CgiDelegate::urlDecode(const HttpRequest *request, CharArray *payload)
 {
     String queryString = request->query();
     if (request->method() == "POST") {
         if (request->value("Content-Type") == "application/x-www-form-urlencoded") {
             queryString = payload->copy(); // FIXME: not strict enough
+            #if 0 // FIXME: needed?
             request->remove("Content-Type"); // FIXME: use removeAt or place contentType() into HttpRequest
             request->establish("Content-Length", "0");
+            #endif
             payload->truncate(0);
         }
     }

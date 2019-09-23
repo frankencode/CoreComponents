@@ -33,7 +33,7 @@ class LogConfig: public Object
 {
 public:
     static Ref<LogConfig> loadDefault();
-    static Ref<LogConfig> load(MetaObject *config); // FIXME: "const MetaObject"
+    static Ref<LogConfig> load(const MetaObject *config);
 
     String path() const { return path_; }
     LogLevel level() const { return level_; }
@@ -43,7 +43,7 @@ public:
 private:
     static LogLevel decodeLogLevel(const String &levelName);
     LogConfig();
-    LogConfig(MetaObject *config);
+    LogConfig(const MetaObject *config);
 
     String path_;
     LogLevel level_;

@@ -7,7 +7,7 @@
  */
 
 #include <cc/node/DeliveryPrototype>
-#include <cc/node/LogPrototype>
+#include <cc/node/LogPrototype> // FIXME: OBSOLETE
 #include <cc/node/SecurityPrototype>
 
 namespace cc {
@@ -18,16 +18,16 @@ Ref<DeliveryPrototype> DeliveryPrototype::create(const String &className)
     return new DeliveryPrototype{className};
 }
 
-DeliveryPrototype::DeliveryPrototype(const String &className):
-    MetaPrototype{className}
+DeliveryPrototype::DeliveryPrototype(const String &className, const DeliveryProtocol *protocol):
+    MetaPrototype{className, protocol}
 {
     establish("request-limit", 100);
     establish("request-payload-limit", 0x10000);
     establish("host", "");
     establish("uri", "");
-    establish("security", SecurityPrototype::create());
-    establish("error-log", LogPrototype::create());
-    establish("access-log", LogPrototype::create());
+    establish("security", SecurityPrototype::create()); // FIXME: make child node
+    establish("error-log", LogPrototype::create());  // FIXME: OBSOLETE
+    establish("access-log", LogPrototype::create());  // FIXME: OBSOLETE
 }
 
 }} // namespace cc::node

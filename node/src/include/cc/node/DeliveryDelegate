@@ -23,7 +23,7 @@ class HttpServerConnection;
 class DeliveryDelegate: public Object
 {
 public:
-    virtual void process(HttpRequest *request) = 0; // FIXME: "const HttpRequest"
+    virtual void process(const HttpRequest *request) = 0;
 
 protected:
     DeliveryDelegate(DeliveryWorker *worker);

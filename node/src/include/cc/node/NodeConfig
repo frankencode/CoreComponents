@@ -64,9 +64,9 @@ private:
     double connectionTimeout_;
     int securePort_;
 
-    Ref<HttpServerSecurity> securityConfig_;
-    Ref<LogConfig> errorLogConfig_;
-    Ref<LogConfig> accessLogConfig_;
+    Ref<const HttpServerSecurity> securityConfig_;
+    Ref<const LogConfig> errorLogConfig_;
+    Ref<const LogConfig> accessLogConfig_;
 
     Ref<DeliveryInstances> deliveryInstances_;
 };

@@ -21,7 +21,7 @@ class CgiScriptHandler: public ScriptHandler
 public:
     static Ref<CgiScriptHandler> create(DeliveryWorker *worker);
 
-    bool process(HttpRequest *request, FileStatus *status, const String &documentRoot = "");
+    bool process(const HttpRequest *request, const FileStatus *status, const String &documentRoot = "");
 
 private:
     CgiScriptHandler(DeliveryWorker *worker);
