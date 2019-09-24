@@ -17,6 +17,10 @@ Ref<ForegroundLoggingInstance> ForegroundLoggingInstance::create(const MetaObjec
     return new ForegroundLoggingInstance{config};
 }
 
+ForegroundLoggingInstance::ForegroundLoggingInstance(const MetaObject *config):
+    LoggingInstance{config}
+{}
+
 void ForegroundLoggingInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage) const
 {
     (statusCode < 400 ? stdOut() : stdErr())->write(
@@ -29,9 +33,5 @@ void ForegroundLoggingInstance::logStatus(const String &message, LoggingLevel le
     if (verbosity() >= level)
         stdErr()->write(message);
 }
-
-ForegroundLoggingInstance::ForegroundLoggingInstance(const MetaObject *config):
-    LoggingInstance{config}
-{}
 
 }} // namespace cc::node

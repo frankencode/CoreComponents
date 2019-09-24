@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/node/LoggingService>
+
+namespace cc {
+namespace node {
+
+class SystemLoggingService: public LoggingService
+{
+public:
+    static void open(const String &daemonName = "ccnode");
+
+    static Ref<SystemLoggingService> create();
+
+    const LoggingPrototype *configPrototype() const override;
+    Ref<LoggingInstance> createInstance(const MetaObject *config) const override;
+
+private:
+    SystemLoggingService();
+
+    Ref<LoggingPrototype> prototype_;
+};
+
+}} // namespace cc::node
