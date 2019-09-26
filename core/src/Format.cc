@@ -15,7 +15,7 @@ namespace cc {
 FormatSignal nl;
 FormatSignal flush;
 
-Format::Format(String pattern, Stream *stream):
+Format::Format(const String &pattern, Stream *stream):
     stream_{stream},
     isNull_{stream && NullStream::instance() ? stream == NullStream::instance() : false},
     lastPosition_{0}

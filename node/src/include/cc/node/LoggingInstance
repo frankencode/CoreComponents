@@ -9,11 +9,13 @@
 #pragma once
 
 #include <cc/node/logging>
-#include <cc/node/HttpServerConnection>
 #include <cc/meta/MetaObject>
+#include <cc/Stream>
 
 namespace cc {
 namespace node {
+
+class HttpServerConnection;
 
 using cc::meta::MetaObject;
 
@@ -26,12 +28,24 @@ public:
     LoggingType loggingType() const;
     LoggingLevel verbosity() const;
 
+    Stream *errorStream() const { return errorStream_; }
+    Stream *warningStream() const { return warningStream_; }
+    Stream *noticeStream() const { return noticeStream_; }
+    Stream *infoStream() const { return infoStream_; }
+    Stream *debugStream() const { return debugStream_; }
+
 protected:
     LoggingInstance(const MetaObject *config);
 
 private:
     LoggingType loggingType_;
     LoggingLevel verbosity_;
+
+    Ref<Stream> errorStream_;
+    Ref<Stream> warningStream_;
+    Ref<Stream> noticeStream_;
+    Ref<Stream> infoStream_;
+    Ref<Stream> debugStream_;
 };
 
 typedef List< Ref<const LoggingInstance> > LoggingInstances;

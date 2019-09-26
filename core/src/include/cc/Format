@@ -39,7 +39,7 @@ public:
       * \param pattern formatting pattern containing injection placeholders ("%%")
       * \param stream output stream to write the resulting text to (optional)
       */
-    Format(String pattern, Stream *stream = nullptr);
+    Format(const String &pattern, Stream *stream = nullptr);
 
     /** Construct a new string formatting helper
       * \param stream output stream to write the resulting text to (optional)

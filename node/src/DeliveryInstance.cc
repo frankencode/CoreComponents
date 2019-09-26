@@ -41,14 +41,21 @@ DeliveryInstance::~DeliveryInstance()
 
 void DeliveryInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage) const
 {
-    for (const LoggingInstance *loggingInstance: loggingInstances_)
-        loggingInstance->logDelivery(client, statusCode, bytesWritten, statusMessage);
+    for (const LoggingInstance *loggingInstance: loggingInstances_) {
+        if (+(loggingInstance->loggingType() & LoggingType::Delivery))
+            loggingInstance->logDelivery(client, statusCode, bytesWritten, statusMessage);
+    }
 }
 
 void DeliveryInstance::logStatus(const String &message, LoggingLevel level) const
 {
-    for (const LoggingInstance *loggingInstance: loggingInstances_)
-        loggingInstance->logStatus(message, level);
+    for (const LoggingInstance *loggingInstance: loggingInstances_) {
+        if (
+            +(loggingInstance->loggingType() & LoggingType::Status) &&
+            loggingInstance->verbosity() >= level
+        )
+            loggingInstance->logStatus(message, level);
+    }
 }
 
 }} // namespace cc::node

@@ -10,6 +10,7 @@
 
 #include <cc/node/HttpRequest>
 #include <cc/node/HttpResponseGenerator>
+#include <cc/node/logging>
 #include <cc/Format>
 
 namespace cc {
@@ -36,6 +37,14 @@ protected:
     HttpResponseGenerator *response() const;
 
     void autoSecureForwardings();
+
+    #if 0
+    Stream *errorStream() const;
+    Stream *warningStream() const;
+    Stream *noticeStream() const;
+    Stream *infoStream() const;
+    Stream *debugStream() const;
+    #endif
 
 private:
     DeliveryWorker *worker_;

@@ -9,6 +9,8 @@
 #include <cc/node/SystemLoggingService>
 #include <cc/node/SystemLoggingInstance>
 #include <cc/node/LoggingRegistry>
+#include <cc/node/SystemLogStream>
+#include <cc/NullStream>
 #include <syslog.h>
 
 namespace cc {

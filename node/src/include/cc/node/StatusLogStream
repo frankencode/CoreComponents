@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/node/logging>
+#include <cc/Stream>
+
+namespace cc {
+namespace node {
+
+class LoggingInstance;
+
+class StatusLogStream: public Stream
+{
+public:
+    static Ref<StatusLogStream> open(LoggingInstance *sink, LoggingLevel level);
+
+    void write(const CharArray *data) override;
+    void write(const StringList *parts) override;
+
+private:
+    StatusLogStream(LoggingInstance *sink, LoggingLevel level);
+    Ref<LoggingInstance> sink_;
+    LoggingLevel level_;
+};
+
+}} // namespace cc::node

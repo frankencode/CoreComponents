@@ -40,14 +40,13 @@ void SystemLoggingInstance::logDelivery(const HttpServerConnection *client, int 
     syslog(
         LOG_NOTICE,
         "%s",
-        formatDeliveryLogMessage(client, statusCode, bytesWritten, statusMessage)
+        formatDeliveryLogMessage(client, statusCode, bytesWritten, statusMessage)->chars()
     );
 }
 
 void SystemLoggingInstance::logStatus(const String &message, LoggingLevel level) const
 {
-    if (verbosity() >= level)
-        syslog(getSyslogPriority(level), "%s", message->chars());
+    syslog(getSyslogPriority(level), "%s", message->chars());
 }
 
 }} // namespace cc::node

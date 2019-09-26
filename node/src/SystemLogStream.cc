@@ -13,7 +13,7 @@ namespace node {
 
 Ref<SystemLogStream> SystemLogStream::open(int priority)
 {
-    return new SystemLogStream(priority);
+    return new SystemLogStream{priority};
 }
 
 SystemLogStream::SystemLogStream(int priority):
