@@ -16,26 +16,30 @@ namespace cc {
 namespace node {
 
 class HttpServerConnection;
+class DispatchLoggingInstance;
+class StatusLogStream;
 
 using cc::meta::MetaObject;
 
 class LoggingInstance: public Object
 {
 public:
-    virtual void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "") const = 0;
-    virtual void logStatus(const String &message, LoggingLevel level = LoggingLevel::Default) const = 0;
-
-    LoggingType loggingType() const;
-    LoggingLevel verbosity() const;
-
     Stream *errorStream() const { return errorStream_; }
     Stream *warningStream() const { return warningStream_; }
     Stream *noticeStream() const { return noticeStream_; }
     Stream *infoStream() const { return infoStream_; }
     Stream *debugStream() const { return debugStream_; }
 
+    virtual void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "") const = 0;
+    virtual void logStatus(const String &message, LoggingLevel level = LoggingLevel::Default) const = 0;
+
 protected:
+    friend class StatusLogStream;
+
     LoggingInstance(const MetaObject *config);
+
+    LoggingType loggingType() const;
+    LoggingLevel verbosity() const;
 
 private:
     LoggingType loggingType_;

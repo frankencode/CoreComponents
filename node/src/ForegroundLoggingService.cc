@@ -19,7 +19,7 @@ Ref<ForegroundLoggingService> ForegroundLoggingService::create()
 }
 
 ForegroundLoggingService::ForegroundLoggingService():
-    prototype_{LoggingPrototype::create("Foreground-Log")}
+    prototype_{LoggingPrototype::create("ForegroundLog")}
 {}
 
 const LoggingPrototype *ForegroundLoggingService::configPrototype() const

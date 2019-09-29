@@ -8,7 +8,6 @@
 
 #include <cc/node/ForegroundLoggingInstance>
 #include <cc/stdio>
-#include <cc/NullStream>
 
 namespace cc {
 namespace node {
@@ -31,7 +30,7 @@ void ForegroundLoggingInstance::logDelivery(const HttpServerConnection *client, 
 
 void ForegroundLoggingInstance::logStatus(const String &message, LoggingLevel level) const
 {
-    stdErr()->write(message);
+    if (verbosity() >= level) stdErr()->write(message);
 }
 
 }} // namespace cc::node

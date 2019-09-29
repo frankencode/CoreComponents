@@ -46,7 +46,7 @@ void SystemLoggingInstance::logDelivery(const HttpServerConnection *client, int 
 
 void SystemLoggingInstance::logStatus(const String &message, LoggingLevel level) const
 {
-    syslog(getSyslogPriority(level), "%s", message->chars());
+    if (verbosity() >= level) syslog(getSyslogPriority(level), "%s", message->chars());
 }
 
 }} // namespace cc::node

@@ -12,7 +12,6 @@
 #include <cc/meta/MetaObject>
 #include <cc/glob/Pattern>
 #include <cc/node/HttpServerSecurity>
-#include <cc/node/LoggingInstance>
 
 namespace cc {
 namespace node {
@@ -39,9 +38,6 @@ public:
     const HttpServerSecurity *security() const { return security_; }
     const MediaTypeDatabase *mediaTypeDatabase() const { return mediaTypeDatabase_; }
 
-    void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "") const;
-    void logStatus(const String &message, LoggingLevel level = LoggingLevel::Default) const;
-
 protected:
     DeliveryInstance(const MetaObject *config);
     ~DeliveryInstance();
@@ -55,7 +51,6 @@ protected:
 
     Ref<const HttpServerSecurity> security_;
     Ref<const MediaTypeDatabase> mediaTypeDatabase_;
-    Ref<LoggingInstances> loggingInstances_;
 };
 
 typedef List< Ref<DeliveryInstance> > DeliveryInstances;

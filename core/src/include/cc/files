@@ -74,14 +74,14 @@ String str(FileType type);
 
 /// %File open flags
 enum class FileOpen: int {
-    None           = 0,        ///< Empty mode
-    ReadOnly       = O_RDONLY, ///< Open for reading, only
-    WriteOnly      = O_WRONLY, ///< Open for writing, only
-    ReadWrite      = O_RDWR,   ///< Open for reading and writing
-    Append         = O_APPEND, ///< Append any write to the end of file
-    Create         = O_CREAT,  ///< Create file if not exists
-    Truncate       = O_TRUNC,  ///< Truncate file to size zero
-    Virgin         = O_EXCL    ///< Fail to open if file exists already
+    None      = 0,        ///< Empty mode
+    ReadOnly  = O_RDONLY, ///< Open for reading, only
+    WriteOnly = O_WRONLY, ///< Open for writing, only
+    ReadWrite = O_RDWR,   ///< Open for reading and writing
+    Append    = O_APPEND, ///< Append any write to the end of file
+    Create    = O_CREAT,  ///< Create file if not exists
+    Truncate  = O_TRUNC,  ///< Truncate file to size zero
+    Virgin    = O_EXCL    ///< Fail to open if file exists already
 };
 
 CC_BITMASK(FileOpen, int)
