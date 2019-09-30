@@ -413,6 +413,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
 
             Variant defaultValue;
             const MetaPrototype *memberPrototype = nullptr;
+            const MetaProtocol *memberProtocol = nullptr;
             if (prototype) {
                 if (prototype->count() > 0) {
                     if (!prototype->lookup(name, &defaultValue)) {
@@ -421,16 +422,19 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
                             text, token->i1()
                         };
                     }
-                    if (defaultValue->type() == VariantType::Object)
+                    if (defaultValue->type() == VariantType::Object) {
                         memberPrototype = Variant::cast<const MetaPrototype *>(defaultValue);
+                        if (!memberPrototype)
+                            memberProtocol = Variant::cast<const MetaProtocol *>(defaultValue);
+                    }
                 }
             }
 
             token = token->nextSibling();
 
             Variant value;
-            if (memberPrototype)
-                value = readObject(text, token, nullptr, memberPrototype);
+            if (memberPrototype || memberProtocol)
+                value = readObject(text, token, memberProtocol, memberPrototype);
             else
                 value = readValue(text, token, defaultValue->type(), defaultValue->itemType());
 
