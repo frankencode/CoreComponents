@@ -33,7 +33,7 @@ void FileLoggingInstance::logDelivery(const HttpServerConnection *client, int st
     );
 }
 
-void FileLoggingInstance::logStatus(const String &message, LoggingLevel level) const
+void FileLoggingInstance::logMessage(const String &message, LoggingLevel level) const
 {
     if (verbosity() >= level) sink_->write(message);
 }

@@ -33,10 +33,12 @@ void DispatchLoggingInstance::logDelivery(const HttpServerConnection *client, in
         target->logDelivery(client, statusCode, bytesWritten, statusMessage);
 }
 
-void DispatchLoggingInstance::logStatus(const String &message, LoggingLevel level) const
+void DispatchLoggingInstance::logMessage(const String &message, LoggingLevel level) const
 {
-    for (const LoggingInstance *target: loggingInstances_)
-        target->logStatus(message, level);
+    if (verbosity() >= level) {
+        for (const LoggingInstance *target: loggingInstances_)
+            target->logMessage(message, level);
+    }
 }
 
 }} // namespace cc::node

@@ -44,7 +44,7 @@ void SystemLoggingInstance::logDelivery(const HttpServerConnection *client, int 
     );
 }
 
-void SystemLoggingInstance::logStatus(const String &message, LoggingLevel level) const
+void SystemLoggingInstance::logMessage(const String &message, LoggingLevel level) const
 {
     if (verbosity() >= level) syslog(getSyslogPriority(level), "%s", message->chars());
 }

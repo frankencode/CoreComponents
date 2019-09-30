@@ -28,7 +28,7 @@ void ForegroundLoggingInstance::logDelivery(const HttpServerConnection *client, 
     );
 }
 
-void ForegroundLoggingInstance::logStatus(const String &message, LoggingLevel level) const
+void ForegroundLoggingInstance::logMessage(const String &message, LoggingLevel level) const
 {
     if (verbosity() >= level) stdErr()->write(message);
 }

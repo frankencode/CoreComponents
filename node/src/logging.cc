@@ -15,13 +15,6 @@
 namespace cc {
 namespace node {
 
-LoggingType readLoggingType(const String &s)
-{
-    if (s->equalsCaseInsensitive("delivery")) return LoggingType::Delivery;
-    else if (s->equalsCaseInsensitive("status")) return LoggingType::Status;
-    return LoggingType::Combined;
-}
-
 LoggingLevel readLoggingLevel(const String &s)
 {
     if (s->equalsCaseInsensitive("silent")) return LoggingLevel::Silent;

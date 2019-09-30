@@ -17,7 +17,7 @@ public:
     static Ref<DispatchLoggingInstance> create(const MetaObject *config);
 
     void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "") const override;
-    void logStatus(const String &message, LoggingLevel level = LoggingLevel::Default) const override;
+    void logMessage(const String &message, LoggingLevel level = LoggingLevel::Default) const override;
 
 private:
     DispatchLoggingInstance(const MetaObject *config);

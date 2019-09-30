@@ -31,18 +31,16 @@ public:
     Stream *debugStream() const { return debugStream_; }
 
     virtual void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "") const = 0;
-    virtual void logStatus(const String &message, LoggingLevel level = LoggingLevel::Default) const = 0;
+    virtual void logMessage(const String &message, LoggingLevel level = LoggingLevel::Default) const = 0;
 
 protected:
     friend class StatusLogStream;
 
     LoggingInstance(const MetaObject *config);
 
-    LoggingType loggingType() const;
     LoggingLevel verbosity() const;
 
 private:
-    LoggingType loggingType_;
     LoggingLevel verbosity_;
 
     Ref<Stream> errorStream_;

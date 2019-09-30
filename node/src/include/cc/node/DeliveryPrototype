@@ -7,18 +7,21 @@
  */
 
 #include <cc/meta/MetaPrototype>
-#include <cc/node/DeliveryProtocol>
+#include <cc/meta/MetaProtocol>
 
 namespace cc {
 namespace node {
 
-class DeliveryPrototype: public meta::MetaPrototype
+using meta::MetaPrototype;
+using meta::MetaProtocol;
+
+class DeliveryPrototype: public MetaPrototype
 {
 public:
     static Ref<DeliveryPrototype> create(const String &className);
 
 protected:
-    DeliveryPrototype(const String &className, const DeliveryProtocol *protocol = DeliveryProtocol::defaultInstance());
+    DeliveryPrototype(const String &className, const MetaProtocol *protocol = nullptr);
 };
 
 }} // namespace cc::node

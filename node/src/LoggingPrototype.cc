@@ -19,8 +19,7 @@ Ref<LoggingPrototype> LoggingPrototype::create(const String &className, const Me
 LoggingPrototype::LoggingPrototype(const String &className, const MetaProtocol *protocol):
     MetaPrototype{className, protocol}
 {
-    establish("type", "");
-    establish("level", "");
+    establish("verbosity", "");
 }
 
 }} // namespace cc::node

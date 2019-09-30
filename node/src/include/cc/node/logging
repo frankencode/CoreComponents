@@ -9,18 +9,9 @@
 #pragma once
 
 #include <cc/String>
-#include <cc/bitmask>
 
 namespace cc {
 namespace node {
-
-enum class LoggingType: int {
-    Delivery = 1,
-    Status   = 2,
-    Combined = Delivery|Status
-};
-
-CC_BITMASK(LoggingType, int)
 
 enum class LoggingLevel {
     Silent  = 0,
@@ -35,8 +26,6 @@ enum class LoggingLevel {
     Default = Debug
 #endif
 };
-
-LoggingType readLoggingType(const String &s);
 
 LoggingLevel readLoggingLevel(const String &s);
 

@@ -25,12 +25,12 @@ StatusLogStream::StatusLogStream(LoggingInstance *sink, LoggingLevel level):
 void StatusLogStream::write(const CharArray *data)
 {
     if (data->endsWith('\n'))
-        sink_->logStatus(data, level_);
+        sink_->logMessage(data, level_);
 }
 
 void StatusLogStream::write(const StringList *parts)
 {
-    sink_->logStatus(parts->join(), level_);
+    write(parts->join());
 }
 
 }} // namespace cc::node
