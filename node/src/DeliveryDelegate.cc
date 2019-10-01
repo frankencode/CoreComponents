@@ -28,6 +28,11 @@ const DeliveryInstance *DeliveryDelegate::deliveryInstance() const
     return worker_->deliveryInstance();
 }
 
+const LoggingInstance *DeliveryDelegate::errorLoggingInstance() const
+{
+    return worker_->deliveryInstance()->errorLoggingInstance();
+}
+
 HttpServerConnection *DeliveryDelegate::client() const
 {
     return worker_->client();

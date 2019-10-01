@@ -24,6 +24,10 @@ using cc::meta::MetaObject;
 class LoggingInstance: public Object
 {
 public:
+    static Ref<LoggingInstance> load(const MetaObject *config);
+
+    LoggingLevel verbosity() const;
+
     Stream *errorStream() const { return errorStream_; }
     Stream *warningStream() const { return warningStream_; }
     Stream *noticeStream() const { return noticeStream_; }
@@ -37,8 +41,6 @@ protected:
     friend class StatusLogStream;
 
     LoggingInstance(const MetaObject *config);
-
-    LoggingLevel verbosity() const;
 
 private:
     LoggingLevel verbosity_;

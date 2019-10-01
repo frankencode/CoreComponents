@@ -9,10 +9,10 @@
 #include <cc/node/HttpServerSocket>
 #include <cc/node/HttpServerSecurity>
 #include <cc/node/DeliveryInstance>
-#include <cc/node/ErrorLog>
 #include <cc/node/NodeConfig>
 #include <cc/node/SecurityCache>
 #include <cc/node/exceptions>
+#include <cc/node/debug>
 #include <cc/assert>
 #include <cc/ThreadLocalSingleton>
 #include <cc/System>
@@ -60,6 +60,11 @@ HttpServerSocket::~HttpServerSocket()
     }
 }
 
+const LoggingInstance *HttpServerSocket::errorLoggingInstance() const
+{
+    return nodeConfig_->errorLoggingInstance();
+}
+
 class ClientHelloContext: public Object
 {
 public:
@@ -90,7 +95,7 @@ public:
                 if (serverName_->count() > 0) {
                     if (serverName_->at(serverName_->count() - 1) == 0)
                         mutate(serverName_)->truncate(serverName_->count() - 1);
-                    if (ErrorLog::instance()->infoStream() != NullStream::instance())
+                    if (errorLoggingInstance()->infoStream() != NullStream::instance())
                         CCNODE_INFO() << "TLS client hello: SNI=\"" << serverName_ << "\"" << nl;
                     deliveryInstance_ = nodeConfig_->selectService(serverName_);
                     if (deliveryInstance_)
@@ -117,6 +122,8 @@ private:
     friend class ThreadLocalSingleton<ClientHelloContext>;
 
     ClientHelloContext() {}
+
+    const LoggingInstance *errorLoggingInstance() const { return nodeConfig_->errorLoggingInstance(); }
 
     Ref<const SocketAddress> peerAddress_;
     String serverName_;
@@ -176,7 +183,7 @@ const DeliveryInstance *HttpServerSocket::handshake()
 
     mode_ |= Open;
 
-    if (ErrorLog::instance()->infoStream() != NullStream::instance()) {
+    if (errorLoggingInstance()->infoStream() != NullStream::instance()) {
         double t1 = System::now();
         CCNODE_INFO() << "TLS handshake took " << int(1000 * (t1 - t0_)) << "ms" << nl;
     }

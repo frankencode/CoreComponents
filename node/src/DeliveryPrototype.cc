@@ -7,7 +7,7 @@
  */
 
 #include <cc/node/DeliveryPrototype>
-#include <cc/node/LogPrototype> // FIXME: OBSOLETE
+#include <cc/node/LoggingRegistry>
 #include <cc/node/SecurityPrototype>
 
 namespace cc {
@@ -26,8 +26,8 @@ DeliveryPrototype::DeliveryPrototype(const String &className, const MetaProtocol
     establish("host", "");
     establish("uri", "");
     establish("security", SecurityPrototype::create());
-    establish("error-log", LogPrototype::create());  // FIXME: OBSOLETE
-    establish("access-log", LogPrototype::create());  // FIXME: OBSOLETE
+    establish("error-log", LoggingRegistry::instance()->loggingProtocol());
+    establish("access-log", LoggingRegistry::instance()->loggingProtocol());
 }
 
 }} // namespace cc::node

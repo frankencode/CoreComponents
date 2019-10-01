@@ -7,8 +7,8 @@
  */
 
 #include <cc/node/SecurityCache>
-#include <cc/node/ErrorLog>
 #include <cc/node/NodeConfig>
+#include <cc/node/debug>
 #include <cc/Guard>
 #include <cc/System>
 #include <string.h>
@@ -57,6 +57,11 @@ const NodeConfig *SecurityCache::nodeConfig() const
     return nodeConfig_;
 }
 
+const LoggingInstance *SecurityCache::errorLoggingInstance() const
+{
+    return nodeConfig_->errorLoggingInstance();
+}
+
 void SecurityCache::deleteKey(gnutls_datum_t *key)
 {
     ::memset(key->data, 0, key->size);
@@ -74,8 +79,6 @@ void SecurityCache::prepareSessionResumption(gnutls_session_t session)
 
 void SecurityCache::run()
 {
-    ErrorLog::instance()->open(nodeConfig()->errorLogConfig());
-
     for (double t = System::now() + refreshInterval_; !shutdown_->popBefore(t); t += refreshInterval_)
     {
         Guard<Mutex> guard{mutex_};

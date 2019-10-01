@@ -7,13 +7,13 @@
  */
 
 #include <cc/node/CgiDelegate>
-#include <cc/node/ErrorLog>
 #include <cc/node/NodeConfig>
 #include <cc/node/MediaTypeDatabase>
 #include <cc/node/DeliveryWorker>
 #include <cc/node/CgiServerConnection>
 #include <cc/node/CgiInstance>
 #include <cc/node/exceptions>
+#include <cc/node/debug>
 #include <cc/node/TapBuffer>
 #include <cc/net/StreamSocket>
 #include <cc/str>
@@ -83,8 +83,8 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
             CCNODE_DEBUG() << "Forwarding request to server " << address << nl;
 
         cgiServer = CgiServerConnection::open(StreamSocket::connect(address));
-        if (ErrorLog::instance()->level() >= LogLevel::Debug)
-            cgiServer->setupTransferLog(ErrorLog::instance()->debugStream(), address->toString());
+        if (errorLoggingInstance()->verbosity() >= LoggingLevel::Debug)
+            cgiServer->setupTransferLog(errorLoggingInstance()->debugStream(), address->toString());
 
         String headerText = compileHeader(request, mutate(payload));
         cgiServer->stream()->write(
@@ -114,8 +114,8 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
             ->start();
 
         cgiServer = CgiServerConnection::open(pair);
-        if (ErrorLog::instance()->level() >= LogLevel::Debug)
-            cgiServer->setupTransferLog(ErrorLog::instance()->debugStream(), scriptPath->baseName());
+        if (errorLoggingInstance()->verbosity() >= LoggingLevel::Debug)
+            cgiServer->setupTransferLog(errorLoggingInstance()->debugStream(), scriptPath->baseName());
 
         if (payload->count() > 0)
             cgiServer->stream()->write(payload);

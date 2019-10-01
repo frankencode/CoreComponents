@@ -8,7 +8,7 @@
 
 #include <cc/node/NodeConfigProtocol>
 #include <cc/node/SecurityPrototype>
-#include <cc/node/LogPrototype>
+#include <cc/node/LoggingRegistry>
 #include <cc/Singleton>
 #include <cc/Process>
 
@@ -51,8 +51,8 @@ protected:
         establish("connection-limit", 32);
         establish("connection-timeout", 10.);
         establish("security", SecurityPrototype::create());
-        establish("error-log", LogPrototype::create());
-        establish("access-log", LogPrototype::create());
+        establish("error-log", LoggingRegistry::instance()->loggingProtocol());
+        establish("access-log", LoggingRegistry::instance()->loggingProtocol());
     }
 };
 

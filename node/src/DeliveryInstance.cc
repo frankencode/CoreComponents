@@ -21,6 +21,11 @@ DeliveryInstance::DeliveryInstance(const MetaObject *config):
     uri_{String{config->value("uri")}},
     security_{HttpServerSecurity::load(Variant::cast<const MetaObject *>(config->value("security")))},
     mediaTypeDatabase_{MediaTypeDatabase::instance()}
+    #if 0
+    TODO...
+    errorLoggingInstance_{},
+    accessLoggingInstance_{}
+    #endif
 {}
 
 DeliveryInstance::~DeliveryInstance()

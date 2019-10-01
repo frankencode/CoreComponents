@@ -8,10 +8,11 @@
 
 #pragma once
 
+#include <cc/node/HttpServerConnection>
+#include <cc/node/LoggingInstance>
 #include <cc/Thread>
 #include <cc/PriorityChannel>
 #include <cc/Channel>
-#include <cc/node/HttpServerConnection>
 
 namespace cc {
 namespace node {
@@ -42,7 +43,9 @@ private:
     DeliveryWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections);
     ~DeliveryWorker();
 
-    static void logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "");
+    const LoggingInstance *errorLoggingInstance() const;
+    const LoggingInstance *accessLoggingInstance() const;
+
     void run() final;
 
     Ref<const DeliveryInstance> deliveryInstance_;

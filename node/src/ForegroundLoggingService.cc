@@ -13,13 +13,18 @@
 namespace cc {
 namespace node {
 
+const char *ForegroundLoggingService::name()
+{
+    return "Foreground-Log";
+}
+
 Ref<ForegroundLoggingService> ForegroundLoggingService::create()
 {
     return new ForegroundLoggingService;
 }
 
 ForegroundLoggingService::ForegroundLoggingService():
-    prototype_{LoggingPrototype::create("ForegroundLog")}
+    prototype_{LoggingPrototype::create(name())}
 {}
 
 const LoggingPrototype *ForegroundLoggingService::configPrototype() const

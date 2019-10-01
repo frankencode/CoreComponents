@@ -16,6 +16,7 @@ namespace node {
 class SystemLoggingService: public LoggingService
 {
 public:
+    static const char *name();
     static void open(const String &daemonName = "ccnode");
 
     static Ref<SystemLoggingService> create();

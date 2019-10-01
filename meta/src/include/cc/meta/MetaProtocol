@@ -40,6 +40,9 @@ public:
 
     bool lookup(const String &className, const MetaPrototype **prototype) const;
 
+    const MetaObject *defaultObject() const { return defaultObject_; }
+    void setDefaultObject(const MetaObject *object) { defaultObject_ = object; }
+
 protected:
     friend class YasonSyntax;
 
@@ -55,6 +58,8 @@ private:
 
     int minCount_;
     int maxCount_;
+
+    Ref<const MetaObject> defaultObject_;
 };
 
 }} // namespace cc::meta

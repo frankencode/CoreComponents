@@ -8,8 +8,8 @@
 
 #include <cc/node/ConnectionManager>
 #include <cc/node/NodeConfig>
-#include <cc/node/ErrorLog>
 #include <cc/node/HttpServerConnection>
+#include <cc/node/debug>
 #include <cc/System>
 
 namespace cc {
@@ -21,6 +21,7 @@ Ref<ConnectionManager> ConnectionManager::create(const NodeConfig *nodeConfig)
 }
 
 ConnectionManager::ConnectionManager(const NodeConfig *nodeConfig):
+    nodeConfig_{nodeConfig},
     closedConnections_{ClosedConnections::create()},
     connectionCounts_{ConnectionCounts::create()},
     visits_{Visits::create()},
@@ -34,6 +35,11 @@ ConnectionManager::ConnectionManager(const NodeConfig *nodeConfig):
         CCNODE_NOTICE()
             << "No more than " << connectionLimit_ << " simultaneous connections are allowed for each peer" << nl;
     }
+}
+
+const LoggingInstance *ConnectionManager::errorLoggingInstance() const
+{
+    return nodeConfig_->errorLoggingInstance();
 }
 
 void ConnectionManager::cycle()

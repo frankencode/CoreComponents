@@ -7,8 +7,8 @@
  */
 
 #include <cc/node/CgiInstance>
-#include <cc/node/ErrorLog>
 #include <cc/node/exceptions>
+#include <cc/node/debug>
 #include <cc/net/Uri>
 #include <cc/net/SocketAddress>
 

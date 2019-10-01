@@ -16,6 +16,11 @@
 namespace cc {
 namespace node {
 
+const char *SystemLoggingService::name()
+{
+    return "System-Log";
+}
+
 void SystemLoggingService::open(const String &daemonName)
 {
     ::openlog(daemonName, 0, LOG_DAEMON);
@@ -27,7 +32,7 @@ Ref<SystemLoggingService> SystemLoggingService::create()
 }
 
 SystemLoggingService::SystemLoggingService():
-    prototype_{LoggingPrototype::create("System-Log")}
+    prototype_{LoggingPrototype::create(name())}
 {}
 
 const LoggingPrototype *SystemLoggingService::configPrototype() const

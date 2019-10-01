@@ -8,7 +8,6 @@
 
 #include <cc/node/HttpServerConnection>
 #include <cc/node/DeliveryInstance>
-#include <cc/node/ErrorLog>
 #include <cc/node/NodeConfig>
 #include <cc/node/exceptions>
 #include <cc/System>
@@ -27,8 +26,8 @@ HttpServerConnection::HttpServerConnection(HttpServerSocket *socket):
     socket_{socket},
     connectionInfo_{ConnectionInfo::create(socket->address())}
 {
-    if (ErrorLog::instance()->level() >= LogLevel::Debug)
-        setupTransferLog(ErrorLog::instance()->debugStream(), socket->address()->toString());
+    if (socket->errorLoggingInstance()->verbosity() >= LoggingLevel::Debug)
+        setupTransferLog(socket->errorLoggingInstance()->debugStream(), socket->address()->toString());
 }
 
 const DeliveryInstance *HttpServerConnection::handshake()

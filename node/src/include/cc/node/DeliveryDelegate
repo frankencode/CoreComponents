@@ -20,6 +20,7 @@ class NodeConfig;
 class DeliveryWorker;
 class DeliveryInstance;
 class HttpServerConnection;
+class LoggingInstance;
 
 class DeliveryDelegate: public Object
 {
@@ -30,10 +31,10 @@ protected:
     DeliveryDelegate(DeliveryWorker *worker);
 
     const NodeConfig *nodeConfig() const;
-
     const DeliveryInstance *deliveryInstance() const;
-    HttpServerConnection *client() const;
+    const LoggingInstance *errorLoggingInstance() const;
 
+    HttpServerConnection *client() const;
     HttpResponseGenerator *response() const;
 
     void autoSecureForwardings();

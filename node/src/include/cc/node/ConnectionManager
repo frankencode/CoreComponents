@@ -8,11 +8,11 @@
 
 #pragma once
 
+#include <cc/node/DeliveryWorker>
+#include <cc/node/ConnectionInfo>
 #include <cc/types>
 #include <cc/List>
 #include <cc/Map>
-#include <cc/node/DeliveryWorker>
-#include <cc/node/ConnectionInfo>
 
 namespace cc {
 namespace node {
@@ -32,9 +32,12 @@ public:
 private:
     ConnectionManager(const NodeConfig *nodeConfig);
 
+    const LoggingInstance *errorLoggingInstance() const;
+
     typedef Map<uint64_t, int> ConnectionCounts;
     typedef List< Ref<ConnectionInfo> > Visits;
 
+    Ref<const NodeConfig> nodeConfig_;
     Ref<ClosedConnections> closedConnections_;
     Ref<ConnectionCounts> connectionCounts_;
     Ref<Visits> visits_;

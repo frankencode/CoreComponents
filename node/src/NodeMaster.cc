@@ -7,14 +7,13 @@
  */
 
 #include <cc/node/NodeMaster>
-#include <cc/node/ErrorLog>
-#include <cc/node/AccessLog>
-#include <cc/node/SystemLog>
+#include <cc/node/SystemLoggingService>
 #include <cc/node/DeliveryRegistry>
 #include <cc/node/ConnectionManager>
 #include <cc/node/HttpServerSocket>
 #include <cc/node/SecurityCache>
 #include <cc/node/exceptions>
+#include <cc/node/debug>
 #include <cc/Channel>
 #include <cc/Process>
 #include <cc/User>
@@ -35,7 +34,7 @@ NodeMaster::NodeMaster(const NodeConfig *config):
     exitCode_{0}
 {
     if (config->daemon())
-        SystemLog::open(config->daemonName(), 0, LOG_DAEMON);
+        SystemLoggingService::open(config->daemonName());
 }
 
 void NodeMaster::signaled(Signal signal)
@@ -50,15 +49,6 @@ int NodeMaster::exitCode() const
 
 void NodeMaster::run()
 {
-    try {
-        ErrorLog::instance()->open(config()->errorLogConfig());
-    }
-    catch (Exception &ex) {
-        CCNODE_ERROR() << ex << nl;
-        exitCode_ = 1;
-        return;
-    }
-
     while (true) {
         try {
             runNode();

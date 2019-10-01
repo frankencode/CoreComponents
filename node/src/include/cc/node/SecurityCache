@@ -8,10 +8,11 @@
 
 #pragma once
 
-#include <gnutls/gnutls.h>
+#include <cc/node/LoggingInstance>
 #include <cc/Thread>
 #include <cc/Mutex>
 #include <cc/Channel>
+#include <gnutls/gnutls.h>
 
 namespace cc {
 namespace node {
@@ -29,6 +30,7 @@ private:
     ~SecurityCache();
 
     const NodeConfig *nodeConfig() const;
+    const LoggingInstance *errorLoggingInstance() const;
 
     void run() final;
     void deleteKey(gnutls_datum_t *key);

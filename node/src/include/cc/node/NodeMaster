@@ -30,6 +30,8 @@ private:
 
     const NodeConfig *config() const { return config_; }
 
+    const LoggingInstance *errorLoggingInstance() const { return config_->errorLoggingInstance(); }
+
     void run() final;
     void runNode();
 

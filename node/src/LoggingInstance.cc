@@ -7,11 +7,17 @@
  */
 
 #include <cc/node/LoggingInstance>
+#include <cc/node/LoggingRegistry>
 #include <cc/node/StatusLogStream>
 #include <cc/NullStream>
 
 namespace cc {
 namespace node {
+
+Ref<LoggingInstance> LoggingInstance::load(const MetaObject *config)
+{
+    return LoggingRegistry::instance()->serviceByName(config->className())->createInstance(config);
+}
 
 LoggingInstance::LoggingInstance(const MetaObject *config):
     verbosity_{readLoggingLevel(config->value("verbosity"))},

@@ -16,6 +16,7 @@ namespace node {
 class ForegroundLoggingService: public LoggingService
 {
 public:
+    static const char *name();
     static Ref<ForegroundLoggingService> create();
 
     const LoggingPrototype *configPrototype() const override;

@@ -10,7 +10,7 @@
 
 #include <cc/node/HttpServerSecurity>
 #include <cc/node/DeliveryService>
-#include <cc/node/LogConfig>
+#include <cc/node/LoggingInstance>
 #include <cc/net/SocketAddress>
 
 namespace cc {
@@ -42,8 +42,9 @@ public:
     double connectionTimeout() const { return connectionTimeout_; }
 
     const HttpServerSecurity *security() const { return securityConfig_; }
-    const LogConfig *errorLogConfig() const { return errorLogConfig_; }
-    const LogConfig *accessLogConfig() const { return accessLogConfig_; }
+
+    const LoggingInstance *errorLoggingInstance() const { return errorLoggingInstance_; }
+    const LoggingInstance *accessLoggingInstance() const { return accessLoggingInstance_; }
 
     DeliveryInstances *deliveryInstances() const { return deliveryInstances_; }
 
@@ -65,8 +66,9 @@ private:
     int securePort_;
 
     Ref<const HttpServerSecurity> securityConfig_;
-    Ref<const LogConfig> errorLogConfig_;
-    Ref<const LogConfig> accessLogConfig_;
+
+    Ref<const LoggingInstance> errorLoggingInstance_;
+    Ref<const LoggingInstance> accessLoggingInstance_;
 
     Ref<DeliveryInstances> deliveryInstances_;
 };

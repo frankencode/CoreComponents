@@ -7,13 +7,12 @@
  */
 
 #include <cc/node/DeliveryWorker>
-#include <cc/node/ErrorLog>
-#include <cc/node/AccessLog>
 #include <cc/node/NodeConfig>
 #include <cc/node/DeliveryService>
 #include <cc/node/DeliveryDelegate>
 #include <cc/node/HttpResponseGenerator>
 #include <cc/node/exceptions>
+#include <cc/node/debug>
 #include <cc/net/Uri>
 #include <cc/Format>
 #include <cc/RefGuard>
@@ -40,34 +39,18 @@ DeliveryWorker::~DeliveryWorker()
     Thread::wait();
 }
 
-void DeliveryWorker::logDelivery(HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage)
+const LoggingInstance *DeliveryWorker::errorLoggingInstance() const
 {
-    Stream *stream = AccessLog::instance()->noticeStream();
-    if (400 <= statusCode && statusCode <= 499) stream = AccessLog::instance()->debugStream();
-    else if (500 <= statusCode) stream = AccessLog::instance()->errorStream();
+    return deliveryInstance_ ? deliveryInstance_->errorLoggingInstance() : nodeConfig_->errorLoggingInstance();
+}
 
-    HttpRequest *request = client->request();
-    String requestHost = request ? request->host() : "";
-    String requestLine = request ? request->line() : "";
-    double requestTime = request ? request->time() : System::now();
-    String userAgent   = request ? request->value("User-Agent") : statusMessage;
-
-    Format{stream}
-        << client->address()->networkAddress() << " "
-        << Date::breakdown(requestTime)->toString() << " "
-        << "\"" << requestHost << "\" "
-        << "\"" << requestLine << "\" "
-        << statusCode << " " << bytesWritten << " "
-        << "\"" << userAgent << "\" "
-        << client->priority()
-        << nl;
+const LoggingInstance *DeliveryWorker::accessLoggingInstance() const
+{
+    return deliveryInstance_ ? deliveryInstance_->accessLoggingInstance() : nodeConfig_->accessLoggingInstance();
 }
 
 void DeliveryWorker::run()
 {
-    ErrorLog::instance()->open(nodeConfig()->errorLogConfig());
-    AccessLog::instance()->open(nodeConfig()->accessLogConfig());
-
     while (true) {
         try {
             if (!pendingConnections_->popFront(&client_)) break;
@@ -91,7 +74,7 @@ void DeliveryWorker::run()
                         deliveryDelegate_->process(request);
                         response_->endTransmission();
                         if (response_->delivered()) {
-                            logDelivery(client_, response_->statusCode(), response_->bytesWritten());
+                            accessLoggingInstance()->logDelivery(client_, response_->statusCode(), response_->bytesWritten());
                             if (!client_->isPayloadConsumed())
                                 break;
                         }
@@ -113,7 +96,7 @@ void DeliveryWorker::run()
                     }
                     catch(...)
                     {}
-                    logDelivery(client_, ex.statusCode());
+                    accessLoggingInstance()->logDelivery(client_, ex.statusCode());
                 }
             }
             catch (Exception &ex) {

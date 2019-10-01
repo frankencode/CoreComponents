@@ -9,7 +9,10 @@
 #include <cc/node/NodeConfig>
 #include <cc/node/NodeConfigProtocol>
 #include <cc/node/DeliveryRegistry>
-#include <cc/node/ErrorLog>
+#include <cc/node/SystemLoggingService>
+#include <cc/node/ForegroundLoggingService>
+#include <cc/node/LoggingRegistry>
+#include <cc/node/debug>
 #include <cc/meta/yason>
 #include <cc/File>
 #include <cc/ResourceGuard>
@@ -97,13 +100,26 @@ NodeConfig::NodeConfig(const MetaObject *config)
     connectionTimeout_ = config->value("connection-timeout");
 
     securityConfig_ = HttpServerSecurity::load(Variant::cast<const MetaObject *>(config->value("security")));
-    errorLogConfig_ = LogConfig::load(Variant::cast<const MetaObject *>(config->value("error-log")));
-    accessLogConfig_ = LogConfig::load(Variant::cast<const MetaObject *>(config->value("access-log")));
+
+    auto loadLoggingInstance = [=](Variant value) {
+        const MetaObject *config = Variant::cast<const MetaObject *>(value);
+        if (!config) {
+            if (daemon_) config = LoggingRegistry::instance()->serviceByName(SystemLoggingService::name())->configPrototype();
+            else config = LoggingRegistry::instance()->serviceByName(ForegroundLoggingService::name())->configPrototype();
+        }
+        return LoggingInstance::load(config);
+    };
+
+    errorLoggingInstance_ = loadLoggingInstance(config->value("error-log"));
+    accessLoggingInstance_ = loadLoggingInstance(config->value("access-log"));
 
     deliveryInstances_ = DeliveryInstances::create();
     for (const MetaObject *child: config->children()) {
         const DeliveryService *service = DeliveryRegistry::instance()->serviceByName(child->className());
-        deliveryInstances_->append(service->createInstance(child));
+        Ref<DeliveryInstance> instance = service->createInstance(child);
+        if (!instance->errorLoggingInstance_) instance->errorLoggingInstance_ = errorLoggingInstance_;
+        if (!instance->accessLoggingInstance_) instance->accessLoggingInstance_ = accessLoggingInstance_;
+        deliveryInstances_->append(instance);
     }
 }
 

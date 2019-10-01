@@ -19,6 +19,7 @@ class ClientHelloContext;
 class HttpServerConnection;
 class DeliveryInstance;
 class NodeConfig;
+class LoggingInstance;
 class SecurityCache;
 
 class HttpServerSocket: public HttpSocket
@@ -37,6 +38,7 @@ private:
     ~HttpServerSocket();
 
     const NodeConfig *nodeConfig() const { return nodeConfig_; }
+    const LoggingInstance *errorLoggingInstance() const;
 
     static int onClientHello(gnutls_session_t session);
     const DeliveryInstance *handshake();

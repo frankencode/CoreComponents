@@ -8,7 +8,6 @@
 
 #include <cc/node/DirectoryDelegate>
 #include <cc/node/DeliveryWorker>
-#include <cc/node/ErrorLog>
 #include <cc/node/DirectoryInstance>
 #include <cc/node/MediaTypeDatabase>
 #include <cc/node/utils>
