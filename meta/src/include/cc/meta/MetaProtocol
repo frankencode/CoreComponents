@@ -35,8 +35,8 @@ public:
 
     int minCount() const { return minCount_; }
     int maxCount() const { return maxCount_; }
-    void minCount(int newCount) { minCount_ = newCount; }
-    void maxCount(int newCount) { maxCount_ = newCount; }
+    void setMinCount(int newCount) { minCount_ = newCount; }
+    void setMaxCount(int newCount) { maxCount_ = newCount; }
 
     bool lookup(const String &className, const MetaPrototype **prototype) const;
 

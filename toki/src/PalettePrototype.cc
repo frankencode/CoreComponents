@@ -24,7 +24,7 @@ PalettePrototype::PalettePrototype():
         [](){
             auto protocol = MetaProtocol::create();
             protocol->define(StylePrototype::create());
-            protocol->minCount(1);
+            protocol->setMinCount(1);
             return protocol;
         }()
     }

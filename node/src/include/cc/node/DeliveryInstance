@@ -53,6 +53,6 @@ protected:
     Ref<const MediaTypeDatabase> mediaTypeDatabase_;
 };
 
-typedef List< Ref<DeliveryInstance> > DeliveryInstances;
+typedef List< Ref<const DeliveryInstance> > DeliveryInstances;
 
 }} // namespace cc::node

@@ -24,8 +24,8 @@ PaletteLoader::PaletteLoader():
     protocol_{[]{
         auto protocol = MetaProtocol::create();
         protocol->define(PalettePrototype::create());
-        protocol->minCount(1);
-        protocol->maxCount(1);
+        protocol->setMinCount(1);
+        protocol->setMaxCount(1);
         return protocol;
     }()}
 {}
