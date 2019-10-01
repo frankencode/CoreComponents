@@ -25,7 +25,7 @@ public:
     static SubClass *instance()
     {
         SpinLock &mutex = localStatic<SpinLock, SubClass>();
-        Guard<SpinLock> guard(&mutex);
+        Guard<SpinLock> guard{&mutex};
         Ref<SubClass> &instance_ = localStatic< Ref<SubClass>, CoreSingleton<SubClass> >();
         if (!instance_)
             instance_ = Singleton<SubClass>::create();
@@ -38,7 +38,7 @@ class CoreSingletonWrapper: public Object
 {
 public:
     CoreSingletonWrapper():
-        instance_(CoreSingleton<SubClass>::instance())
+        instance_{CoreSingleton<SubClass>::instance()}
     {}
     Ref<SubClass> instance_;
 };
