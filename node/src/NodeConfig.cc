@@ -9,6 +9,9 @@
 #include <cc/node/NodeConfig>
 #include <cc/node/NodeConfigProtocol>
 #include <cc/node/DeliveryRegistry>
+#include <cc/node/DirectoryService>
+#include <cc/node/EchoService>
+#include <cc/node/DeliveryInstance>
 #include <cc/node/SystemLoggingService>
 #include <cc/node/ForegroundLoggingService>
 #include <cc/node/LoggingRegistry>
@@ -116,11 +119,33 @@ NodeConfig::NodeConfig(const MetaObject *config)
     deliveryInstances_ = DeliveryInstances::create();
     for (const MetaObject *child: config->children()) {
         const DeliveryService *service = DeliveryRegistry::instance()->serviceByName(child->className());
-        Ref<DeliveryInstance> instance = service->createInstance(child);
-        if (!instance->errorLoggingInstance_) instance->errorLoggingInstance_ = errorLoggingInstance_;
-        if (!instance->accessLoggingInstance_) instance->accessLoggingInstance_ = accessLoggingInstance_;
-        deliveryInstances_->append(instance);
+        deliveryInstances_->append(createDeliveryInstance(service, child));
     }
+}
+
+Ref<DeliveryInstance> NodeConfig::createDeliveryInstance(const DeliveryService *service, const MetaObject *config) const
+{
+    Ref<DeliveryInstance> instance = service->createInstance(config);
+    if (!instance->errorLoggingInstance_) instance->errorLoggingInstance_ = errorLoggingInstance_;
+    if (!instance->accessLoggingInstance_) instance->accessLoggingInstance_ = accessLoggingInstance_;
+    return instance;
+}
+
+void NodeConfig::addDirectoryInstance(const String &path)
+{
+    const DeliveryService *service = DeliveryRegistry::instance()->serviceByName(DirectoryService::name());
+    Ref<MetaObject> config = service->configPrototype()->clone();
+    config->establish("host", "*");
+    config->establish("path", path);
+    deliveryInstances_->append(createDeliveryInstance(service, config));
+}
+
+void NodeConfig::addEchoInstance()
+{
+    const DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Echo");
+    Ref<MetaObject> config = service->configPrototype()->clone();
+    config->establish("host", "*");
+    deliveryInstances_->append(createDeliveryInstance(service, config));
 }
 
 const DeliveryInstance *NodeConfig::selectService(const String &host, const String &uri) const

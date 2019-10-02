@@ -13,6 +13,11 @@
 namespace cc {
 namespace node {
 
+const char *DirectoryService::name()
+{
+    return "Directory";
+}
+
 Ref<DirectoryService> DirectoryService::create()
 {
     return new DirectoryService;
@@ -24,7 +29,7 @@ Ref<DeliveryInstance> DirectoryService::createInstance(const MetaObject *config)
 }
 
 DirectoryService::DirectoryService():
-    configPrototype_{DeliveryPrototype::create("Directory")}
+    configPrototype_{DeliveryPrototype::create(name())}
 {
     establish(configPrototype_);
 }

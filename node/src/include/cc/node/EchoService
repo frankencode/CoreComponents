@@ -13,21 +13,20 @@
 namespace cc {
 namespace node {
 
-class DirectoryService: public DeliveryService
+class EchoService: public DeliveryService
 {
 public:
     static const char *name();
-    static Ref<DirectoryService> create();
+    static Ref<EchoService> create();
 
-    DeliveryPrototype *configPrototype() const override { return configPrototype_; }
+    DeliveryPrototype *configPrototype() const override;
     Ref<DeliveryInstance> createInstance(const MetaObject *config) const override;
 
-    static void establish(DeliveryPrototype *configPrototype);
-
 private:
-    DirectoryService();
+    EchoService();
 
     Ref<DeliveryPrototype> configPrototype_;
 };
+
 
 }} // namespace cc::node

@@ -39,14 +39,6 @@ protected:
 
     void autoSecureForwardings();
 
-    #if 0
-    Stream *errorStream() const;
-    Stream *warningStream() const;
-    Stream *noticeStream() const;
-    Stream *infoStream() const;
-    Stream *debugStream() const;
-    #endif
-
 private:
     DeliveryWorker *worker_;
 };

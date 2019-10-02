@@ -48,31 +48,4 @@ void DeliveryDelegate::autoSecureForwardings()
     worker_->autoSecureForwardings();
 }
 
-#if 0
-Stream *DeliveryDelegate::errorStream() const
-{
-    return worker_->deliveryInstance()->loggingInstance()->errorStream();
-}
-
-Stream *DeliveryDelegate::warningStream() const
-{
-    return worker_->deliveryInstance()->loggingInstance()->warningStream();
-}
-
-Stream *DeliveryDelegate::noticeStream() const
-{
-    return worker_->deliveryInstance()->loggingInstance()->noticeStream();
-}
-
-Stream *DeliveryDelegate::infoStream() const
-{
-    return worker_->deliveryInstance()->loggingInstance()->infoStream();
-}
-
-Stream *DeliveryDelegate::debugStream() const
-{
-    return worker_->deliveryInstance()->loggingInstance()->debugStream();
-}
-#endif
-
 }} // namespace cc::node

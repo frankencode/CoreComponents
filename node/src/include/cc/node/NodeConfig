@@ -19,6 +19,8 @@ namespace node {
 using cc::net::SocketAddress;
 using cc::net::SocketAddressList;
 
+class DeliveryInstance;
+
 class NodeConfig: public Object
 {
 public:
@@ -28,6 +30,9 @@ public:
 
     static Ref<NodeConfig> load(const String &path);
     static Ref<NodeConfig> create();
+
+    void addDirectoryInstance(const String &path);
+    void addEchoInstance();
 
     const SocketAddressList *address() const { return address_; }
     int securePort() const { return securePort_; }
@@ -52,6 +57,8 @@ public:
 
 private:
     NodeConfig(const MetaObject *config);
+
+    Ref<DeliveryInstance> createDeliveryInstance(const DeliveryService *service, const MetaObject *config) const;
 
     Ref<SocketAddressList> address_;
     String user_;

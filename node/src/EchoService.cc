@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/node/EchoService>
 #include <cc/node/DeliveryRegistry>
 #include <cc/node/DeliveryService>
 #include <cc/node/EchoInstance>
@@ -13,23 +14,29 @@
 namespace cc {
 namespace node {
 
-class EchoService: public DeliveryService
+const char *EchoService::name()
 {
-public:
-    static Ref<EchoService> create() {
-        return new EchoService;
-    }
+    return "Echo";
+}
 
-    DeliveryPrototype *configPrototype() const override { return configPrototype_; }
-    Ref<DeliveryInstance> createInstance(const MetaObject *config) const override { return EchoInstance::create(config); }
+Ref<EchoService> EchoService::create()
+{
+    return new EchoService;
+}
 
-private:
-    EchoService():
-        configPrototype_{DeliveryPrototype::create("Echo")}
-    {}
+DeliveryPrototype *EchoService::configPrototype() const
+{
+    return configPrototype_;
+}
 
-    Ref<DeliveryPrototype> configPrototype_;
-};
+Ref<DeliveryInstance> EchoService::createInstance(const MetaObject *config) const
+{
+    return EchoInstance::create(config);
+}
+
+EchoService::EchoService():
+    configPrototype_{DeliveryPrototype::create(name())}
+{}
 
 class EchoAnnouncer {
 public:
