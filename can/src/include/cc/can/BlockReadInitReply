@@ -1,0 +1,83 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/BlockReply>
+
+namespace cc {
+namespace can {
+
+class BlockReadInitReply
+{
+public:
+    static Ref<CanFrame> createFrame(int serverId, Selector selector, const String &data);
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                BlockReply{frame_}->isValid() &&
+                BlockReply{frame_}->specifier() == BlockReply::Specifier::BlockReadInit &&
+                frame_->payloadCount() >= 4;
+        }
+
+        int serverId() const {
+            return ServiceReply{frame_}->serverId();
+        }
+
+        bool crcSupport() const {
+            return frame_->payloadAt(0) & 4U;
+        }
+
+        Selector::Index index() const {
+            return frame_->word<Selector::Index>(1, 3);
+        }
+
+        Selector::SubIndex subIndex() const {
+            return frame_->payloadAt(3);
+        }
+
+        Selector selector() const {
+            return Selector{index(), subIndex()};
+        }
+
+        uint32_t totalDataCount() const {
+            return hasIndicatedSize() ? frame_->word<uint32_t>(4, 8) : 0;
+        }
+
+        String toString() const;
+
+    private:
+        friend class BlockReadInitReply;
+
+        bool hasIndicatedSize() const {
+            return frame_->payloadAt(0) & 2U;
+        }
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    BlockReadInitReply(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    const Instance instance_;
+};
+
+}} // namespace cc::can

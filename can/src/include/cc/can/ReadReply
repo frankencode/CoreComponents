@@ -1,0 +1,101 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/ServiceReply>
+
+namespace cc {
+namespace can {
+
+class ReadReply
+{
+public:
+    static Ref<CanFrame> createFrame(int serverId, Selector selector, const String &data);
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                ServiceReply{frame_}->isValid() &&
+                ServiceReply{frame_}->specifier() == ServiceReply::Specifier::Read &&
+                frame_->payloadCount() >= 4;
+        }
+
+        int serverId() const { return ServiceReply{frame_}->serverId(); }
+
+        Selector::Index index() const {
+            return frame_->word<Selector::Index>(1, 3);
+        }
+
+        Selector::SubIndex subIndex() const {
+            return frame_->payloadAt(3);
+        }
+
+        Selector selector() const {
+            return Selector{index(), subIndex()};
+        }
+
+        bool hasExpeditedData() const {
+            return frame_->payloadAt(0) & 2U;
+        }
+
+        int expeditedDataCount() const {
+            return
+                (hasExpeditedData() && hasIndicatedSize()) ?
+                (4 - ((frame_->payloadAt(0) & 0xCU) >> 2)) :
+                0;
+        }
+
+        String expeditedData() const {
+            return frame_->copy(4, 4 + expeditedDataCount());
+        }
+
+        uint32_t expeditedWord() const {
+            return frame_->word<uint32_t>(4, 8);
+        }
+
+        bool hasTotalDataCount() const {
+            return !hasExpeditedData() && hasIndicatedSize();
+        }
+
+        uint32_t totalDataCount() const
+        {
+            if (hasExpeditedData()) return expeditedDataCount();
+            if (hasIndicatedSize()) return expeditedWord();
+            return 0;
+        }
+
+        String toString() const;
+
+    private:
+        friend class ReadReply;
+
+        bool hasIndicatedSize() const { return frame_->payloadAt(0) & 1U; }
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    ReadReply(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    Instance instance_;
+};
+
+}} // namespace cc::can

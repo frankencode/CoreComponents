@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/CanMedia>
+#include <cc/can/Emission>
+#include <cc/can/SafetyEmission>
+
+namespace cc { template<class> class Set; };
+namespace cc { class Worker; }
+namespace cc { class Mutex; }
+namespace cc { class Semaphore; }
+
+namespace cc {
+namespace can {
+
+class PeriodicEmitter: public Object
+{
+public:
+    static Ref<PeriodicEmitter> create(CanMedia *media);
+
+    void start();
+    void shutdown();
+
+private:
+    friend class Emission;
+
+    PeriodicEmitter(CanMedia *media);
+    ~PeriodicEmitter();
+
+    void init();
+    void registerEmission(Emission *emission);
+
+    void run();
+
+    Ref<CanMedia> media_;
+
+    typedef Set< Ref<Emission> > Emissions;
+    Ref<Emissions> emissions_;
+    Ref<Mutex> mutex_;
+
+    Ref<Worker> worker_;
+    Ref<Semaphore> start_;
+    Ref<Semaphore> shutdown_;
+};
+
+}} // namespace cc::can

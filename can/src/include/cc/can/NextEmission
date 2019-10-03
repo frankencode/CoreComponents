@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/Emission>
+
+namespace cc {
+namespace can {
+
+class NextEmission
+{
+public:
+    class Instance {
+    public:
+        double time() const { return time_; }
+        Emission *emission() const { return emission_; }
+
+    private:
+        friend class NextEmission;
+
+        Instance():
+            time_{0}
+        {}
+
+        Instance(double time, Emission *emission):
+            time_{time},
+            emission_{emission}
+        {}
+
+        double time_;
+        Ref<Emission> emission_;
+    };
+
+    NextEmission()
+    {}
+
+    NextEmission(double time, Emission *emission):
+        instance_{time, emission}
+    {}
+
+    inline const Instance *operator->() const { return &instance_; }
+
+    inline bool operator<(const NextEmission &other) const {
+        return
+            (self()->time_ < other->time_) || (
+                self()->time_ == other->time_ &&
+                self()->emission_->canId() < other->emission_->canId()
+            );
+    }
+
+private:
+    inline const Instance *self() const { return &instance_; }
+    Instance instance_;
+};
+
+}} // namespace cc::can

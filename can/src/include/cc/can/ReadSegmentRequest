@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/ServiceRequest>
+
+namespace cc {
+namespace can {
+
+class ReadSegmentRequest
+{
+public:
+    static Ref<CanFrame> createFrame(int serverId, bool toggle);
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                ServiceRequest{frame_}->isValid() &&
+                ServiceRequest{frame_}->specifier() == ServiceRequest::Specifier::ReadSegment;
+        }
+
+        int serverId() const {
+            return ServiceRequest{frame_}->serverId();
+        }
+
+        bool toggle() const {
+            return frame_->payloadAt(0) & 0x10;
+        }
+
+        String toString() const;
+
+    private:
+        friend class ReadSegmentRequest;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    ReadSegmentRequest(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    const Instance instance_;
+};
+
+}} // namespace cc::can

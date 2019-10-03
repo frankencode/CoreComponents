@@ -1,0 +1,4 @@
+Application {
+    name: safetylisten
+    use: [ core, can ]
+}

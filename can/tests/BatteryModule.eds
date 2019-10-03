@@ -1,0 +1,440 @@
+[FileInfo]
+FileName=battery_module.eds
+FileVersion=0
+FileRevision=1
+EDSVersion=4.0
+Description=Standard CiA 418 battery module
+CreationTime=11:41PM
+CreationDate=03-13-2019
+CreatedBy=Frank Mertens
+ModificationTime=11:56PM
+ModificationDate=03-19-2019
+ModifiedBy=Frank Mertens
+
+[DeviceInfo]
+VendorName=Cyblogic
+VendorNumber=0xFEDCBA98
+ProductName=Magic Power Pack
+ProductNumber=1
+RevisionNumber=0
+OrderCode=MPP12357.1
+BaudRate_10=0
+BaudRate_20=0
+BaudRate_50=1
+BaudRate_125=1
+BaudRate_250=1
+BaudRate_500=1
+BaudRate_800=1
+BaudRate_1000=1
+SimpleBootUpMaster=0
+SimpleBootUpSlave=1
+Granularity=0
+DynamicChannelsSupported=0
+GroupMessaging=0
+NrOfRXPDO=1
+NrOfTXPDO=1
+LSS_Supported=0
+
+[DummyUsage]
+Dummy0001=0
+Dummy0002=1
+Dummy0003=1
+Dummy0004=1
+Dummy0005=1
+Dummy0006=1
+Dummy0007=1
+
+[MandatoryObjects]
+SupportedObjects=15
+1=0x1000
+2=0x1001
+3=0x1018
+4=0x1400
+5=0x1600
+6=0x1800
+7=0x1A00
+8=0x6000
+9=0x6001
+10=0x6010
+11=0x6020
+12=0x6060
+13=0x6070
+14=0x6080
+15=0x6081
+
+[1000]
+ParameterName=device type
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x1A2
+PDOMapping=0
+
+[1001]
+ParameterName=error register
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=0
+PDOMapping=0
+
+[1018]
+ParameterName=identity object
+ObjectType=0x9
+SubNumber=5
+
+[1018sub0]
+ParameterName=number of entries
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=4
+PDOMapping=0
+
+[1018sub1]
+ParameterName=vendor ID
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0xFEDCBA98
+PDOMapping=0
+
+[1018sub2]
+ParameterName=product Code
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[1018sub3]
+ParameterName=revision number
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[1018sub4]
+ParameterName=serial number
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[1400]
+ParameterName=RPDO 1 communication parameters
+ObjectType=0x9
+SubNumber=4
+
+[1400sub0]
+ParameterName=number of elements
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=3
+PDOMapping=0
+
+[1400sub1]
+ParameterName=COB-ID
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=$NODEID+0x200
+PDOMapping=0
+
+[1400sub2]
+ParameterName=transmission type
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=0xFF
+PDOMapping=0
+
+[1400sub5]
+ParameterName=event timer
+ObjectType=0x7
+DataType=0x0006
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+
+[1600]
+ParameterName=RPDO 1 mapping list
+ObjectType=0x9
+SubNumber=2
+
+[1600sub0]
+ParameterName=number of mapped objects
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=1
+PDOMapping=0
+
+[1600sub1]
+ParameterName=object 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x60010008
+PDOMapping=0
+
+[1800]
+ParameterName=TPDO 1 communication parameters
+ObjectType=0x9
+SubNumber=5
+
+[1800sub0]
+ParameterName=largest sub-index supported
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=5
+PDOMapping=0
+
+[1800sub1]
+ParameterName=COB-ID
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=$NODEID+0x80000180
+PDOMapping=0
+
+[1800sub2]
+ParameterName=transmission type
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=255
+PDOMapping=0
+
+[1800sub3]
+ParameterName=inhibit time
+ObjectType=0x7
+DataType=0x0006
+AccessType=rw
+DefaultValue=0
+PDOMapping=0
+
+[1800sub5]
+ParameterName=event timer
+ObjectType=0x7
+DataType=0x0006
+AccessType=rw
+DefaultValue=200
+PDOMapping=0
+
+[1A00]
+ParameterName=TPDO 1 mapping paramter
+ObjectType=0x9
+SubNumber=3
+
+[1A00sub0]
+ParameterName=number of objects
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=2
+PDOMapping=0
+
+[1A00sub1]
+ParameterName=object 1
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x60100010
+PDOMapping=0
+
+[1A00sub2]
+ParameterName=object 2
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+DefaultValue=0x60000008
+PDOMapping=0
+
+[6000]
+ParameterName=battery status
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+PDOMapping=0
+
+[6001]
+ParameterName=charger status
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+PDOMapping=0
+
+[6010]
+ParameterName=temperature
+ObjectType=0x7
+DataType=0x0003
+AccessType=ro
+LowLimit=-320
+HighLimit=680
+PDOMapping=0
+
+[6020]
+ParameterName=battery parameters
+ObjectType=0x9
+SubNumber=5
+
+[6020sub0]
+ParameterName=number of elements
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+DefaultValue=4
+LowLimit=1
+HighLimit=4
+PDOMapping=0
+
+[6020sub1]
+ParameterName=battery type
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+PDOMapping=0
+
+[6020sub2]
+ParameterName=Ah capacity
+ObjectType=0x7
+DataType=0x0006
+AccessType=ro
+PDOMapping=0
+
+[6020sub3]
+ParameterName=maximum charge current
+ObjectType=0x7
+DataType=0x0006
+AccessType=ro
+PDOMapping=0
+
+[6020sub4]
+ParameterName=number of cells
+ObjectType=0x7
+DataType=0x0006
+AccessType=ro
+PDOMapping=0
+
+[6060]
+ParameterName=battery voltage
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[6070]
+ParameterName=charge current requested
+ObjectType=0x7
+DataType=0x0006
+AccessType=ro
+PDOMapping=0
+
+[6080]
+ParameterName=charger state of charge
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=0xFF
+PDOMapping=0
+
+[6081]
+ParameterName=battery state of charge
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+PDOMapping=0
+
+[OptionalObjects]
+SupportedObjects=2
+1=0x6030
+2=0x6031
+
+[6030]
+ParameterName=battery serial number
+ObjectType=0x8
+SubNumber=4
+
+[6030sub0]
+ParameterName=number of elements
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+LowLimit=1
+HighLimit=3
+PDOMapping=0
+
+[6030sub1]
+ParameterName=packed ASCII characters 1 to 4
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[6030sub2]
+ParameterName=packed ASCII characters 5 to 8
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[6030sub3]
+ParameterName=packed ASCII characters 9 to 10
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[6031]
+ParameterName=battery ID
+ObjectType=0x8
+SubNumber=6
+
+[6031sub0]
+ParameterName=number of elements
+ObjectType=0x7
+DataType=0x0005
+AccessType=ro
+LowLimit=1
+HighLimit=5
+PDOMapping=0
+
+[6031sub1]
+ParameterName=packed ASCII characters 1 to 4
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[6031sub2]
+ParameterName=packed ASCII characters 5 to 8
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[6031sub3]
+ParameterName=packed ASCII characters 9 to 12
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[6031sub4]
+ParameterName=packed ASCII characters 13 to 16
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[6031sub5]
+ParameterName=Packed ASCII Characters 17 to 20
+ObjectType=0x7
+DataType=0x0007
+AccessType=ro
+PDOMapping=0
+
+[ManufacturerObjects]
+SupportedObjects=0

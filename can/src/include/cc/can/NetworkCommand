@@ -1,0 +1,67 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/CanFrame>
+
+namespace cc {
+namespace can {
+
+/** \brief Node state transition request
+  */
+class NetworkCommand
+{
+public:
+    /** \brief Command specifier
+      */
+    enum class Specifier: uint8_t {
+        Start  = 1,   ///< Request slave node(s) to enter Operational state
+        Stop   = 2,   ///< Request slave node(s) to enter Stopped state
+        Halt   = 128, ///< Request slave node(s) to return to Pre-Operational state
+        Reboot = 129, ///< Request slave node(s) to return to Power-On Reset state (cold reset)
+        Reset  = 130  ///< Request slave node(s) to return to Initialization state (warm reset)
+    };
+
+    static Ref<CanFrame> createFrame(Specifier commandSpecifier, int targetId = 0);
+
+    class Instance {
+    public:
+        bool isValid() const { return frame_->canId() == 0 && frame_->payloadCount() == 2; }
+
+        Specifier specifier() const { return static_cast<Specifier>(frame_->payloadAt(0)); }
+        int targetId() const { return frame_->payloadAt(1); }
+
+        String toString() const;
+
+    private:
+        friend class NetworkCommand;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    NetworkCommand(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    const Instance instance_;
+};
+
+String str(NetworkCommand::Specifier commandSpecifier);
+
+}} // namespace cc::can

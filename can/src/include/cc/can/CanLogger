@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/CanMedia>
+
+namespace cc { class Worker; }
+
+namespace cc {
+namespace can {
+
+class CanLogger: public Object
+{
+public:
+    static Ref<CanLogger> create(CanMedia *media);
+
+private:
+    CanLogger(CanMedia *media);
+    void bootstrap();
+
+    Ref<CanMedia> media_;
+    Ref<Worker> worker_;
+};
+
+}} // namespace cc::can

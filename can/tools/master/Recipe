@@ -1,0 +1,4 @@
+Application {
+    name: cccanmaster
+    use: [ core, can ]
+}

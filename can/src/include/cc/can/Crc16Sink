@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/types>
+#include <cc/strings>
+#include <cc/HashSink>
+
+namespace cc {
+namespace can {
+
+/** \class Crc16 cc/Crc16
+  * \brief CRC-16 check sum generator
+  */
+class Crc16Sink: public HashSink
+{
+public:
+    enum { Size = 2 };
+
+    static uint16_t defaultSeed() { return 0; }
+
+    static Ref<Crc16Sink> open(uint16_t seed = defaultSeed()) { return new Crc16Sink(seed); }
+
+    Crc16Sink(uint16_t seed = defaultSeed()):
+        crc_(seed)
+    {}
+
+    void feed(const void *buf, int bufFill);
+    uint16_t sum() const { return crc_; }
+
+    void write(const CharArray *data) override;
+    String finish() override;
+
+private:
+    uint16_t crc_;
+};
+
+inline uint16_t crc16(const void *buf, int bufSize) {
+    Crc16Sink crc;
+    if (buf) crc.feed(buf, bufSize);
+    return crc.sum();
+}
+
+inline uint16_t crc16(const char *s) {
+    Crc16Sink crc;
+    if (s) crc.feed(s, strlen(s));
+    return crc.sum();
+}
+
+inline uint16_t crc16(const String &s) {
+    Crc16Sink crc;
+    if (s) crc.feed(s->bytes(), s->count());
+    return crc.sum();
+}
+
+}} // namespace cc::can

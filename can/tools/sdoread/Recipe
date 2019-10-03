@@ -1,0 +1,4 @@
+Application {
+    name: sdoread
+    use: [ core, can ]
+}

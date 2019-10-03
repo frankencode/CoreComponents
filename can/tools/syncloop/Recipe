@@ -1,0 +1,4 @@
+Application {
+    name: cccansyncloop
+    use: [ core, can ]
+}

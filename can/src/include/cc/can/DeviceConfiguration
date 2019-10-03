@@ -1,0 +1,78 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/DeviceDescription>
+
+namespace cc {
+namespace can {
+
+class DeviceConfiguration: public DeviceDescription
+{
+public:
+    static Ref<DeviceConfiguration> create();
+    static Ref<DeviceConfiguration> parse(const String &text);
+
+    class Comissioning;
+
+    Comissioning *comissioning() const { return comissioning_; }
+
+    String toString() const;
+    bool equals(const DeviceConfiguration *other) const;
+
+    class Comissioning: public Section
+    {
+    public:
+        uint8_t nodeId() const { return nodeId_; }
+        void setNodeId(uint8_t nodeId) { nodeId_ = nodeId; }
+
+        String nodeName() const { return nodeName_; }
+        void setNodeName(const String &nodeName) { nodeName_ = nodeName; }
+
+        uint32_t baudRate() const { return baudRate_; }
+        void setBaudRate(uint32_t newValue) { baudRate_ = newValue; }
+
+        uint32_t networkNumber() const { return networkNumber_; }
+        void setNetworkNumber(uint32_t newValue) { networkNumber_ = newValue; }
+
+        String networkName() const { return networkName_; }
+        void setNetworkName(const String &newValue) { networkName_ = newValue; }
+
+        bool manager() const { return manager_; }
+        void setManager(bool on) { manager_ = on; }
+
+        uint32_t serialNumber() const { return serialNumber_; }
+        void setSerialNumber(uint32_t newValue) { serialNumber_ = newValue; }
+
+        String toString() const;
+        bool equals(const Comissioning *other) const;
+
+    private:
+        friend class DeviceConfiguration;
+
+        Comissioning();
+        void establish(const String &key, const String &value) override;
+
+        uint8_t nodeId_ { 0 };
+        String nodeName_;
+        uint32_t baudRate_ { 0 };
+        uint32_t networkNumber_ { 0 };
+        String networkName_;
+        bool manager_ { false };
+        uint32_t serialNumber_ { 0 };
+    };
+
+private:
+    DeviceConfiguration();
+    void enterSection(const String &sectionName) override;
+
+    Ref<Comissioning> comissioning_;
+};
+
+}} // namespace cc::can

@@ -1,0 +1,102 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/exceptions>
+#include <cc/can/NetworkCommand>
+#include <cc/can/Emergency>
+#include <cc/can/CanMedia>
+#include <cc/can/DictionaryKey>
+
+namespace cc { class Worker; }
+
+namespace cc {
+namespace can {
+
+class CanFeed;
+class EventMonitor;
+class HeartBeatGenerator;
+
+class CanNode: public Object
+{
+public:
+    int nodeId() const { return nodeId_; }
+
+protected:
+    CanNode(CanMedia *media, int nodeId, int timeout = -1);
+    ~CanNode();
+
+    void init();
+
+    virtual void initSettings();
+    virtual void initEventHandlers();
+
+    NodeState nodeState() const;
+
+    EventMonitor *monitor();
+
+    CanMedia *media() const { return media_; }
+    int timeout() const { return timeout_; }
+
+    virtual bool autoStart() const { return false; }
+    virtual void nodeStart();
+    virtual void nodeStop();
+    virtual void nodeHalt();
+    virtual void nodeReboot();
+    virtual void nodeReset();
+
+    virtual String readServiceData(Selector::Key key) const;
+    virtual void writeServiceData(Selector::Key key, const String &data);
+
+    virtual bool expeditedTransferIsEnabled() const { return true; }
+
+    ErrorRegister errorRegister() const;
+    void setErrorRegister(ErrorRegister flags);
+
+    void issueEmergency(Emergency::Type emergencyType, uint64_t deviceError = 0);
+
+private:
+    void setNodeState(NodeState newNodeState);
+
+    void run();
+
+    void handleNodeCommand(NetworkCommand::Specifier type);
+
+    void handleWriteRequest(const CanFrame *head);
+    void handleWriteSegmentRequest(const CanFrame *tail);
+
+    void handleReadRequest(const CanFrame *head);
+    void handleReadSegmentRequest(const CanFrame *tail);
+
+    void handleBlockWriteRequest(const CanFrame *head);
+    void handleBlockReadRequest(const CanFrame *head);
+
+    Ref<CanFrame> getNextRequest();
+    void canAbort(Selector selector, Abort::Reason reason);
+
+    Ref<CanMedia> media_;
+    int nodeId_;
+    int timeout_;
+
+    Ref<Worker> worker_;
+
+    Ref<const CanFrame> writeHead_;
+    Ref<const CanFrame> readHead_;
+
+    String buffer_;
+    int fill_;
+    int offset_;
+
+    Ref<CanFeed> eventFeed_;
+    Ref<EventMonitor> monitor_;
+    Ref<HeartBeatGenerator> heartBeatGenerator_;
+    ErrorRegister errorRegister_ { ErrorRegister::None };
+};
+
+}} // namespace cc::can

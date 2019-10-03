@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/ServiceRequest>
+
+namespace cc {
+namespace can {
+
+class BlockRequest
+{
+public:
+    enum class Specifier: uint8_t {
+        BlockWriteStreamInit = 0x60,
+        BlockWriteInit       = 0x62,
+        BlockWriteEnd        = 0x61,
+        BlockReadInit        = 0x50,
+        BlockReadEnd         = 0x51,
+        BlockReadAck         = 0x52,
+        BlockReadStart       = 0x53
+    };
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                ServiceRequest{frame_}->isValid() && (
+                    ServiceRequest{frame_}->specifier() == ServiceRequest::Specifier::BlockRead ||
+                    ServiceRequest{frame_}->specifier() == ServiceRequest::Specifier::BlockWrite
+                );
+        }
+
+        Specifier specifier() const {
+            return
+                static_cast<Specifier>(
+                    ((frame_->payloadAt(0) & 0xE0U) >> 1) |
+                    (frame_->payloadAt(0) & 3U)
+                );
+        }
+
+        String toString() const;
+
+    private:
+        friend class BlockRequest;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    BlockRequest(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    Instance instance_;
+};
+
+}} // namespace cc::can

@@ -1,0 +1,4 @@
+Application {
+    name: cccandump
+    use: [ core, can ]
+}

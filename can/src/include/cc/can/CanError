@@ -1,0 +1,85 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <linux/can/error.h>
+#include <cc/can/CanFrame>
+
+namespace cc {
+namespace can {
+
+class CanError {
+public:
+    enum class Type: uint32_t {
+        TransmissionTimeout = CAN_ERR_TX_TIMEOUT,
+        LostArbitration     = CAN_ERR_LOSTARB,
+        ControllerError     = CAN_ERR_CRTL,
+        ProtocolViolation   = CAN_ERR_PROT,
+        TranceiverStatus    = CAN_ERR_TRX,
+        BussOff             = CAN_ERR_BUSOFF,
+        BusError            = CAN_ERR_BUSERROR,
+        ControllerRestarted = CAN_ERR_RESTARTED,
+        None                = 0
+    };
+
+    enum class Status: uint32_t {
+        RxOverflow  = CAN_ERR_CRTL_RX_OVERFLOW,
+        TxOverflow  = CAN_ERR_CRTL_TX_OVERFLOW,
+        RxWarning   = CAN_ERR_CRTL_RX_WARNING,
+        TxWarning   = CAN_ERR_CRTL_TX_WARNING,
+        RxPassive   = CAN_ERR_CRTL_RX_PASSIVE,
+        TxPassive   = CAN_ERR_CRTL_TX_PASSIVE,
+        ErrorActive = CAN_ERR_CRTL_ACTIVE,
+        None = 0
+    };
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                (frame_->can_id & CAN_ERR_FLAG) &&
+                frame_->payloadCount() == 8;
+        }
+
+        Type type() const { return static_cast<Type>(frame_->can_id & CAN_ERR_MASK); }
+        uint8_t bitPos() const { return frame_->payloadAt(0); }
+        Status status() const { return static_cast<Status>(frame_->payloadAt(1)); }
+
+        String toString() const;
+
+    private:
+        friend class CanError;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    CanError(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    const Instance instance_;
+};
+
+CC_BITMASK(CanError::Type, uint32_t)
+CC_BITMASK(CanError::Status, uint32_t)
+
+String str(CanError::Type flags);
+String str(CanError::Status flags);
+
+}} // namespace cc::can

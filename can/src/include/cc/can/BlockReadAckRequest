@@ -1,0 +1,67 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/BlockRequest>
+
+namespace cc {
+namespace can {
+
+class BlockReadAckRequest
+{
+public:
+    static Ref<CanFrame> createFrame(int serverId, int sequenceNumber, int newBlockSize);
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                BlockRequest{frame_}->isValid() &&
+                BlockRequest{frame_}->specifier() == BlockRequest::Specifier::BlockReadAck &&
+                frame_->payloadCount() >= 3;
+        }
+
+        int serverId() const {
+            return ServiceRequest{frame_}->serverId();
+        }
+
+        int sequenceNumber() const {
+            return frame_->payloadAt(1);
+        }
+
+        int newBlockSize() const {
+            return frame_->payloadAt(2);
+        }
+
+        String toString() const;
+
+    private:
+        friend class BlockReadAckRequest;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    BlockReadAckRequest(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    Instance instance_;
+};
+
+}} // namespace cc::can

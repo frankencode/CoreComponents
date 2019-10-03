@@ -1,0 +1,121 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/types>
+#include <cc/can/CanMedia>
+
+namespace cc { template<class> class Channel; }
+namespace cc { class Worker; }
+
+namespace cc {
+namespace can {
+
+class HeartBeatGenerator: public Object
+{
+public:
+    static Ref<HeartBeatGenerator> create(int nodeId, CanMedia *media);
+
+    uint16_t interval() const;
+    void setInterval(uint16_t newInterval);
+
+    NodeState nodeState() const;
+    void setNodeState(NodeState newNodeState);
+
+private:
+    class Command: public Object {
+    public:
+        enum class Type {
+            SetInterval,
+            SetNodeState,
+            Beat
+        };
+
+        Type type() const { return type_; }
+
+    protected:
+        Command(Type type):
+            type_{type}
+        {}
+
+    private:
+        Type type_;
+    };
+
+    class SetInterval: public Command {
+    public:
+        static Ref<SetInterval> create(uint16_t newInterval) {
+            return new SetInterval{newInterval};
+        }
+
+        uint16_t newInterval() const { return newInterval_; }
+
+    private:
+        SetInterval(uint16_t newInterval):
+            Command{Type::SetInterval},
+            newInterval_{newInterval}
+        {}
+
+        uint16_t newInterval_;
+    };
+
+    class SetNodeState: public Command {
+    public:
+        static Ref<SetNodeState> create(NodeState newNodeState) {
+            return new SetNodeState{newNodeState};
+        }
+
+        NodeState newNodeState() const { return newNodeState_; }
+
+    private:
+        SetNodeState(NodeState newNodeState):
+            Command{Type::SetNodeState},
+            newNodeState_{newNodeState}
+        {}
+
+        NodeState newNodeState_;
+    };
+
+    class Beat: public Command {
+    public:
+        static Ref<Beat> create() { return new Beat; }
+
+    private:
+        Beat():
+            Command{Type::Beat}
+        {}
+    };
+
+    HeartBeatGenerator(int nodeId, CanMedia *media);
+    ~HeartBeatGenerator();
+
+    void bootstrap();
+
+    bool getNextCommand(Ref<Command> *command);
+    void beat();
+    void establishNewNodeState(NodeState newNodeState);
+    void run();
+
+    int nodeId_;
+    Ref<CanMedia> media_;
+
+    typedef Channel< Ref<Command> > CommandChannel;
+    Ref<CommandChannel> commandChannel_;
+
+    Ref<Command> beat_;
+    Ref<Worker> worker_;
+
+    double interval_ { 0 };
+    NodeState nodeState_ { NodeState::Undefined };
+
+    uint16_t requestedInterval_ { 0 };
+    NodeState requestedNodeState_ { NodeState::Undefined };
+};
+
+}} // namespace cc::can

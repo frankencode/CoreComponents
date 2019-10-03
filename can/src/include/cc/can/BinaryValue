@@ -1,0 +1,91 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+
+namespace cc {
+namespace can {
+
+template<class T>
+class BinaryValue
+{};
+
+template<>
+class BinaryValue<uint8_t>
+{
+public:
+    static String make(uint8_t x) {
+        String s = String::allocate(1);
+        write(&s, x);
+        return s;
+    }
+
+    static uint8_t read(const String &s, const uint8_t defaultValue = 0) {
+        if (s->count() < 1) return defaultValue;
+        return s->byteAt(0);
+    }
+
+    static void write(String *s, uint16_t x) {
+        mutate(*s)->byteAt(0) = x;
+    }
+};
+
+template<>
+class BinaryValue<uint16_t>
+{
+public:
+    static String make(uint16_t x) {
+        String s = String::allocate(2);
+        write(&s, x);
+        return s;
+    }
+
+    static uint16_t read(const String &s, const uint16_t defaultValue = 0) {
+        if (s->count() < 2) return defaultValue;
+        return
+            static_cast<uint16_t>(s->byteAt(0)) |
+            (static_cast<uint16_t>(s->byteAt(1)) << 8U);
+    }
+
+    static void write(String *s, uint16_t x) {
+        mutate(*s)->byteAt(0) = static_cast<uint8_t>(x);
+        mutate(*s)->byteAt(1) = static_cast<uint8_t>(x >> 8U);
+    }
+};
+
+template<>
+class BinaryValue<uint32_t>
+{
+public:
+    static String make(uint32_t x) {
+        String s = String::allocate(4);
+        write(&s, x);
+        return s;
+    }
+
+    static uint32_t read(const String &s, const uint32_t defaultValue = 0) {
+        if (s->count() < 4) return defaultValue;
+        uint32_t value = 0;
+        for (int i = 3; i >= 0; --i) {
+            value <<= 8U;
+            value |= static_cast<uint32_t>(s->byteAt(i));
+        }
+        return value;
+    }
+
+    static void write(String *s, uint32_t x) {
+        for (int i = 0; i < 4; ++i) {
+            mutate(*s)->byteAt(i) = static_cast<uint8_t>(x);
+            x >>= 8U;
+        }
+    }
+};
+
+}} // namespace cc::can

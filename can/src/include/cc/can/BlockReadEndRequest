@@ -1,0 +1,57 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/BlockRequest>
+
+namespace cc {
+namespace can {
+
+class BlockReadEndRequest {
+public:
+    static Ref<CanFrame> createFrame(int serverId);
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                BlockRequest{frame_}->isValid() &&
+                BlockRequest{frame_}->specifier() == BlockRequest::Specifier::BlockReadEnd;
+        }
+
+        int serverId() const {
+            return ServiceRequest{frame_}->serverId();
+        }
+
+        String toString() const;
+
+    private:
+        friend class BlockReadEndRequest;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    BlockReadEndRequest(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    Instance instance_;
+};
+
+}} // namespace cc::can

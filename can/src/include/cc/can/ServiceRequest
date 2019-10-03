@@ -1,0 +1,71 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/CanFrame>
+#include <cc/can/types>
+
+namespace cc {
+namespace can {
+
+/** \brief SDO request
+  */
+class ServiceRequest
+{
+public:
+    /** \brief Client Command Specifier (CCS)
+      */
+    enum class Specifier: uint8_t {
+        WriteSegment = 0,
+        Write        = 1,
+        Read         = 2,
+        ReadSegment  = 3,
+        Abort        = 4,
+        BlockRead    = 5,
+        BlockWrite   = 6
+    };
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                0x601 <= frame_->canId() && frame_->canId() <= 0x67F &&
+                frame_->payloadCount() > 0;
+        }
+
+        int serverId() const { return frame_->canId() - 0x600; }
+
+        Specifier specifier() const { return static_cast<Specifier>((frame_->payloadAt(0) & 0xE0U) >> 5U); }
+
+        String toString() const;
+
+    protected:
+        friend class ServiceRequest;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    ServiceRequest(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    const Instance instance_;
+};
+
+}} // namespace cc::can

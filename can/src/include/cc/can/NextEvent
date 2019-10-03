@@ -1,0 +1,64 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/Event>
+
+namespace cc {
+namespace can {
+
+class NextEvent {
+public:
+    class Instance {
+    public:
+        double timeout() const { return timeout_; }
+        void setTimeout(double newValue) { timeout_ = newValue; }
+
+        Event *event() const { return event_; }
+
+    private:
+        friend class NextEvent;
+        Instance():
+            timeout_{-1}
+        {}
+
+        Instance(double timeout, Event *event):
+            timeout_{timeout},
+            event_{event}
+        {}
+
+        double timeout_;
+        Ref<Event> event_;
+    };
+
+    NextEvent()
+    {}
+
+    NextEvent(double timeout, Event *event):
+        instance_{timeout, event}
+    {}
+
+    inline const Instance *operator->() const { return &instance_; }
+    inline Instance *operator->() { return &instance_; }
+
+    inline bool operator<(const NextEvent &other) const {
+        return
+            (self()->timeout_ < other->timeout_) || (
+                self()->timeout_ == other->timeout_ &&
+                self()->event_->canId() < other->event_->canId()
+            );
+    }
+
+private:
+    inline const Instance *self() const { return &instance_; }
+
+    Instance instance_;
+};
+
+}} // namespace cc::can

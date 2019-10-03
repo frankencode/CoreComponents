@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/BlockReply>
+
+namespace cc {
+namespace can {
+
+class BlockWriteEndReply
+{
+public:
+    static Ref<CanFrame> createFrame(int serverId);
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                BlockReply{frame_}->isValid() &&
+                BlockReply{frame_}->specifier() == BlockReply::Specifier::BlockWriteEnd;
+        }
+
+        int serverId() const {
+            return ServiceReply{frame_}->serverId();
+        }
+
+        String toString() const;
+
+    private:
+        friend class BlockWriteEndReply;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    BlockWriteEndReply(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    Instance instance_;
+};
+
+}} // namespace cc::can

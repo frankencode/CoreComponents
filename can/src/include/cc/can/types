@@ -1,0 +1,129 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bitmask>
+#include <cc/str>
+#include <cc/can/Selector>
+
+namespace cc {
+namespace can {
+
+/** \brief Operational state of a node
+  */
+enum class NodeState: uint8_t {
+    BootUp         = 0,   ///< Slave just went into pre-operational after boot-up
+    Stopped        = 4,   ///< Slave is stopped and not sending process data
+    Operational    = 5,   ///< Slave is operational and may send process data
+    PreOperational = 127, ///< Slave is ready to be started
+    Undefined      = 255
+};
+
+String str(NodeState status);
+
+/** \brief SDO transfer mode
+  */
+enum class TransferMode {
+    Segmented,
+    Expedited,
+    Block
+};
+
+String str(TransferMode mode);
+
+enum class ErrorRegister: uint8_t {
+    None          = 0,
+    Generic       = 1,
+    Current       = 2,
+    Voltage       = 4,
+    Temperature   = 8,
+    Communication = 16,
+    DeviceProfile = 32,
+    Reserved      = 64,
+    Custom        = 128
+};
+
+CC_BITMASK(ErrorRegister, uint8_t)
+
+String str(ErrorRegister flags);
+
+enum class SafetyError {
+    DataValidation,
+    RefreshTimeout,
+    ValidationTimeout
+};
+
+String str(SafetyError error);
+
+enum class DataType: uint16_t {
+    Undefined            = 0x0000U,
+    Boolean              = 0x0001U,
+    Integer8             = 0x0002U,
+    Integer16            = 0x0003U,
+    Integer32            = 0x0004U,
+    Unsigned8            = 0x0005U,
+    Unsigned16           = 0x0006U,
+    Unsigned32           = 0x0007U,
+    Real32               = 0x0008U,
+    VisibleString        = 0x0009U,
+    OctetString          = 0x000AU,
+    UnicodeString        = 0x000BU,
+    TimeOfDay            = 0x000CU,
+    TimeDifference       = 0x000DU,
+    Domain               = 0x000FU,
+    Integer24            = 0x0010U,
+    Real64               = 0x0011U,
+    Unsigned40           = 0x0018U,
+    Unsigned48           = 0x0019U,
+    Unsigned56           = 0x001AU,
+    Unsigned64           = 0x001BU,
+    ProcessDataParameter = 0x0020U,
+    ProcessDataMapping   = 0x0021U,
+    DictionaryParameter  = 0x0022U,
+    Identity             = 0x0023U
+};
+
+String str(DataType type);
+
+enum class ObjectCode: uint8_t {
+    Null      = 0,
+    Domain    = 2,
+    DefType   = 5,
+    DefStruct = 6,
+    Var       = 7,
+    Array     = 8,
+    Record    = 9
+};
+
+String str(ObjectCode code);
+
+enum class AccessType {
+    Undefined     = 0,
+    ReadOnly      = 1,
+    WriteOnly     = 2,
+    ReadWrite     = 3,
+    ProcessInput  = 4,
+    ProcessOutput = 5
+};
+
+String str(AccessType access);
+
+enum class ObjectFlags: uint32_t {
+    None             = 0,
+    IgnoreOnNodeInit = 1,
+    IgnoreOnNodeScan = 2
+};
+
+CC_BITMASK(ObjectFlags, uint32_t)
+
+String str(ObjectFlags flags);
+
+String hexLine(const String &data);
+
+}} // namespace cc::can

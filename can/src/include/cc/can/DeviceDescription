@@ -1,0 +1,399 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/IniSyntax>
+#include <cc/can/types>
+
+namespace cc { template<class> class Set; }
+namespace cc { template<class, class> class Map; }
+namespace cc { class Date; }
+
+namespace cc {
+namespace can {
+
+class DeviceDescription: public Object, protected IniSyntax
+{
+public:
+    static Ref<DeviceDescription> create();
+    static Ref<DeviceDescription> parse(const String &text);
+
+    class FileInfo;
+    class DeviceInfo;
+    class DummyUsage;
+    class Comments;
+    class DictionarySection;
+
+    FileInfo *fileInfo() const { return fileInfo_; }
+    DeviceInfo *deviceInfo() const { return deviceInfo_; }
+    DummyUsage *dummyUsage() const { return dummyUsage_; }
+    Comments *comments() const { return comments_; }
+    DictionarySection *mandatoryObjects() const { return mandatoryObjects_; }
+    DictionarySection *optionalObjects() const { return optionalObjects_; }
+    DictionarySection *manufacturerObjects() const { return manufacturerObjects_; }
+
+    String toString() const;
+    bool equals(const DeviceDescription *other) const;
+
+    class Section: public Object {
+    protected:
+        friend class DeviceDescription;
+
+        Section(const char *sectionName): sectionName_{sectionName} {}
+
+        String sectionName() const { return sectionName_; }
+
+        virtual void enterSection(const String &sectionName) {};
+        virtual void establish(const String &key, const String &value) = 0;
+
+    private:
+        String sectionName_;
+    };
+
+    class FileInfo: public Section {
+    public:
+        String fileName() const { return fileName_; }
+        void setFileName(const String &newValue) { fileName_ = newValue; }
+
+        uint8_t fileVersion() const { return fileVersion_; }
+        void setFileVersion(uint8_t newValue) { fileVersion_ = newValue; }
+
+        uint8_t fileRevision() const { return fileRevision_; }
+        void setFileRevision(uint8_t newValue) { fileRevision_ = newValue; }
+
+        String fileFormatVersion() const { return fileFormatVersion_; }
+        void setFileFormatVersion(const String &newValue) { fileFormatVersion_ = newValue; }
+
+        String description() const { return description_; }
+        void setDescription(const String &newValue) { description_ = newValue; }
+
+        String creationDate() const { return creationDate_; }
+        String creationDayTime() const { return creationDayTime_; }
+
+        double creationTime() const;
+        void setCreationTime(double time);
+
+        String changedDate() const { return changedDate_; }
+        String changedDayTime() const { return changedDayTime_; }
+
+        double changedTime() const;
+        void setChangedTime(double time);
+
+        String createdBy() const { return createdBy_; }
+        void setCreatedBy(const String &newValue) { createdBy_ = newValue; }
+
+        String changedBy() const { return changedBy_; }
+        void setChangedBy(const String &newValue) { changedBy_ = newValue; }
+
+        String toString() const;
+
+        bool equals(const FileInfo *other) const;
+
+    private:
+        friend class DeviceDescription;
+
+        static double makeTime(const String &calendarDate, const String &dayTime);
+        static String makeCalendarDate(const Date *date);
+        static String makeDayTime(const Date *date);
+
+        FileInfo();
+        void establish(const String &key, const String &value) override;
+
+        String fileName_;
+        uint8_t fileVersion_ { 0 };
+        uint8_t fileRevision_ { 0 };
+        String fileFormatVersion_ { "4.0" };
+        String description_;
+        String creationDate_;
+        String creationDayTime_;
+        String changedDate_;
+        String changedDayTime_;
+        String createdBy_;
+        String changedBy_;
+    };
+
+    class DeviceInfo: public Section {
+    public:
+        String vendorName() const { return vendorName_; }
+        void setVendorName(const String &newValue) { vendorName_ = newValue; }
+
+        uint32_t vendorNumber() const { return vendorNumber_; }
+        void setVendorNumber(uint32_t newValue) { vendorNumber_ = newValue; }
+
+        String productName() const { return productName_; }
+        void setProductName(const String &newValue) { productName_ = newValue; }
+
+        uint32_t productNumber() const { return productNumber_; }
+        void setProductNumber(uint32_t newValue) { productNumber_ = newValue; }
+
+        uint32_t revisionNumber() const { return revisionNumber_; }
+        void setRevisionNumber(uint32_t newValue) { revisionNumber_ = newValue; }
+
+        String orderCode() const { return orderCode_; }
+        void setOrderCode(const String &newValue) { orderCode_ = newValue; }
+
+        bool supportsBaudRate(uint32_t baudRate) const;
+        int supportedBaudRateCount() const;
+        uint32_t supportedBaudRateAt(int i) const;
+
+        void insertSupportedBaudRate(uint32_t baudRate);
+        void removeSupportedBaudRate(uint32_t baudRate);
+
+        bool simpleBootUpMaster() const { return simpleBootUpMaster_; }
+        void setSimpleBootUpMaster(bool on) { simpleBootUpMaster_ = on; }
+
+        bool simpleBootUpSlave() const { return simpleBootUpSlave_; }
+        void setSimpleBootUpSlave(bool on) { simpleBootUpSlave_ = on; }
+
+        uint8_t granularity() const { return granularity_; }
+        void setGranularity(uint8_t newValue) { granularity_ = newValue; }
+
+        bool dynamicChannels() const { return dynamicChannels_; }
+        void setDynamicChannels(bool on) { dynamicChannels_ = on; }
+
+        bool groupMessaging() const { return groupMessaging_; }
+        void setGroupMessaging(bool on) { groupMessaging_ = on; }
+
+        uint16_t slotCount() const { return slotCount_; }
+        void setTriggerCount(uint16_t newValue) { slotCount_ = newValue; }
+
+        uint16_t signalCount() const { return signalCount_; }
+        void setEmissionCount(uint16_t newValue) { signalCount_ = newValue; }
+
+        bool layerSpecificiationServices() const { return layerSpecificationServices_; }
+        void setLayerSpecificationServices(bool on) { layerSpecificationServices_ = on; }
+
+        String toString() const;
+
+        bool equals(const DeviceInfo *other) const;
+
+    private:
+        friend class DeviceDescription;
+
+        DeviceInfo();
+
+        void establish(const String &key, const String &value) override;
+
+        String vendorName_;
+        uint32_t vendorNumber_ { 0 };
+        String productName_;
+        uint32_t productNumber_ { 0 };
+        uint32_t revisionNumber_ { 0 };
+        String orderCode_;
+        Ref< Set<uint32_t> > supportedBaudRates_;
+        bool simpleBootUpMaster_ { false };
+        bool simpleBootUpSlave_ { false };
+        uint8_t granularity_ { 8 };
+        bool dynamicChannels_ { false };
+        bool groupMessaging_ { false };
+        uint16_t slotCount_ { 0 };
+        uint16_t signalCount_ { 0 };
+        bool layerSpecificationServices_ { false };
+    };
+
+    class DummyUsage: public Section {
+    public:
+        bool dummyEnabled(uint16_t index) const;
+        int dummyCount() const;
+        uint16_t dummyAt(int i) const;
+
+        void enableDummy(uint16_t index) const;
+        void disableDummy(uint16_t index) const;
+
+        String toString() const;
+
+        bool equals(const DummyUsage *other) const;
+
+    private:
+        friend class DeviceDescription;
+
+        DummyUsage();
+        void establish(const String &key, const String &value) override;
+
+        Ref< Set<uint16_t> > dummies_;
+    };
+
+    class Comments: public Section {
+    public:
+        int lineCount() const { return lines_->count(); }
+
+        String text() const;
+        void setText(const String &text);
+
+        String toString() const;
+        bool equals(const Comments *other) const;
+
+    private:
+        friend class DeviceDescription;
+
+        Comments();
+        void establish(const String &key, const String &value) override;
+
+        Ref<StringList> lines_;
+    };
+
+    class EntryInfo;
+
+    class DictionarySection: public Section
+    {
+    public:
+        int entryCount() const;
+        const EntryInfo *entryAt(int i) const;
+
+        bool insertEntry(EntryInfo *entry);
+        void removeEntry(EntryInfo *entry);
+
+        String toString() const;
+
+        bool equals(const DictionarySection *other) const;
+
+    private:
+        friend class DeviceDescription;
+
+        DictionarySection(const String &name);
+
+        void enterSection(const String &sectionName) override;
+        void establish(const String &key, const String &value) override;
+
+        typedef Map< uint16_t, Ref<EntryInfo> > Entries;
+        Ref<Entries> entries_;
+
+        EntryInfo *currentEntry_ { nullptr };
+    };
+
+    class EntryInfo: public Object {
+    public:
+        static Ref<EntryInfo> create(uint16_t index, uint8_t subIndex = 0);
+
+        String parameterName() const { return parameterName_; }
+        void setParameterName(const String &newValue) { parameterName_ = newValue; }
+
+        int index() const { return index_; }
+        int subIndex() const { return subIndex_; }
+
+        DataType dataType() const { return dataType_; }
+        void setDataType(DataType newValue) { dataType_ = newValue; }
+
+        ObjectCode objectCode() const { return objectCode_; }
+        void setObjectCode(ObjectCode newValue) { objectCode_ = newValue; }
+
+        template<class T> T lowLimit() const { return lowLimit_->toNumber<T>(); }
+        template<class T> void setLowLimit(T newValue) { lowLimit_ = str(newValue); }
+
+        template<class T> T highLimit() const { return highLimit_->toNumber<T>(); }
+        template<class T> void setHighLimit(T newValue) { highLimit_ = str(newValue); }
+
+        template<class T> T defaultValue() const { return defaultValue_->toNumber<T>(); }
+        template<class T> void setDefaultValue(T newValue) { defaultValue_ = str(newValue); }
+
+        String defaultValue() const { return defaultValue_; }
+        void setDefaultValue(const String &newValue) { defaultValue_ = newValue; }
+
+        AccessType accessType() const;
+        void setAccessType(AccessType newValue);
+
+        ObjectFlags objectFlags() const { return objectFlags_; }
+        void setObjectFlags(ObjectFlags newValue) { objectFlags_ = newValue; }
+
+        bool mappable() const { return mappable_; }
+        void setMappable(bool on) { mappable_ = on; }
+
+        String parameterValue() const { return parameterValue_; }
+        void setParameterValue(const String &newValue) { parameterValue_ = newValue; }
+
+        String uploadPath() const { return uploadPath_; }
+        void setUploadPath(const String &newValue) { uploadPath_ = newValue; }
+
+        String downloadPath() const{ return downloadPath_; }
+        void setDownloadPath(const String &newValue) { downloadPath_ = newValue; }
+
+        String denotation() const { return denotation_; }
+        void setDenotation(const String &newValue) { denotation_ = newValue; }
+
+        bool insertSubEntry(EntryInfo *entry);
+        void removeSubEntry(EntryInfo *entry);
+
+        String toString() const;
+
+        bool equals(const EntryInfo *other) const;
+
+    private:
+        friend class DictionarySection;
+
+        EntryInfo(uint16_t index, uint8_t subIndex);
+
+        void enterSection(const String &sectionName);
+        void establish(const String &key, const String &value);
+
+        String parameterName_;
+        DataType dataType_ { DataType::Undefined };
+        ObjectCode objectCode_ { ObjectCode::Null };
+        String lowLimit_;
+        String highLimit_;
+        String defaultValue_;
+        String accessType_;
+        ObjectFlags objectFlags_ { ObjectFlags::None };
+        bool mappable_ { false };
+        String parameterValue_;
+        String uploadPath_;
+        String downloadPath_;
+        String denotation_;
+
+        uint16_t index_ { 0 };
+        uint8_t subIndex_ { 0 };
+
+        typedef Map< uint16_t, Ref<EntryInfo> > SubEntries;
+        Ref<SubEntries> subEntries_;
+
+        EntryInfo *currentSubEntry_ { nullptr };
+    };
+
+    class MandatoryObjects: public DictionarySection {
+    private:
+        friend class DeviceDescription;
+
+        MandatoryObjects();
+    };
+
+    class OptionalObjects: public DictionarySection {
+    private:
+        friend class DeviceDescription;
+
+        OptionalObjects();
+    };
+
+    class ManufacturerObjects: public DictionarySection {
+    private:
+        friend class DeviceDescription;
+
+        ManufacturerObjects();
+    };
+
+protected:
+    DeviceDescription();
+    void enterSection(const String &sectionName) override;
+
+    void setCurrentSection(Section *section) { currentSection_ = section; }
+
+private:
+    void establish(const String &key, const String &value) override;
+    void handleError(int offset, const String &line) override;
+
+    Ref<FileInfo> fileInfo_;
+    Ref<DeviceInfo> deviceInfo_;
+    Ref<DummyUsage> dummyUsage_;
+    Ref<Comments> comments_;
+    Ref<DictionarySection> mandatoryObjects_;
+    Ref<DictionarySection> optionalObjects_;
+    Ref<DictionarySection> manufacturerObjects_;
+
+    Section *currentSection_;
+};
+
+}} // namespace cc::can

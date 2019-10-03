@@ -1,0 +1,129 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/CanFrame>
+#include <cc/can/types>
+
+namespace cc {
+namespace can {
+
+class Emergency
+{
+public:
+    /** \brief Emergency error codes
+      */
+    enum class Type: uint16_t {
+        None                = 0x0000, ///< No error or error reset
+        Generic             = 0x1000, ///< Generic error
+        Current             = 0x2000, ///< Current error
+        InputCurrent        = 0x2100, ///< Current error: device input side
+        InsideCurrent       = 0x2200, ///< Current error: inside the device
+        OutputCurrent       = 0x2300, ///< Current error: device output side
+        Voltage             = 0x3000, ///< Voltage error
+        InputVoltage        = 0x3100, ///< Mains voltage error
+        InsideVoltage       = 0x3200, ///< Voltage error: inside the device
+        OutputVoltage       = 0x3300, ///< Voltage error: device output side
+        Temperature         = 0x4000, ///< Temperature out-of-range
+        AmbientTemperature  = 0x4100, ///< Ambient temperature out of range
+        DeviceTemperature   = 0x4200, ///< Device temperature out of range
+        Hardware            = 0x5000, ///< Hardware failure
+        Software            = 0x6000, ///< Software failure
+        InternalSoftware    = 0x6100, ///< Internal software failure
+        UserSoftware        = 0x6200, ///< User software failure (e.g. PLC code)
+        DataSet             = 0x6300, ///< Data set invalid
+        AdditionalModules   = 0x7000, ///< Add-on module(s) failure
+        Monitoring          = 0x8000, ///< Monitoring error
+        Communication       = 0x8100, ///< Data communication error
+        CanOverrun          = 0x8110, ///< CAN buffer overflow (object(s) lost)
+        CanPassiveMode      = 0x8120, ///< CAN interface switched to error passive mode (interference?)
+        CanKeepAlive        = 0x8130, ///< Life guarding or heart beat error
+        CanBusOff           = 0x8140, ///< Device recovered from bus-off
+        CanIdCollision      = 0x8150, ///< CAN ID collision
+        ProtocolError       = 0x8200, ///< Protocol error
+        ProcessDataLength   = 0x8210, ///< Failed to process PDO: invalid number of data bytes
+        ProcessDataOverhang = 0x8220, ///< Failed to process PDO: to many data bytes
+        NoSuchObject        = 0x8230, ///< Failed to process DAM MPDO: destination object not available
+        SyncOverhang        = 0x8240, ///< Invalid SYNC: number of data bytes greater than zero
+        ProcessDataTimeout  = 0x8250, ///< RPDO timed out
+        External            = 0x9000, ///< External error
+        AdditionalFunctions = 0xF000, ///< Add-on function failed
+        DeviceSpecific      = 0xFF00, ///< Device specific error
+        CanKeepAliveForNode = 0x8F00  ///< Node guarding or heart beat error monitoring a specific node being monitored
+    };
+
+    static Ref<CanFrame> createFrame(int nodeId, Type type, ErrorRegister errorRegister, uint64_t deviceError = 0, int monitoredNodeId = 0);
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                0x81 <= frame_->canId() && frame_->canId() <= 0xFF &&
+                frame_->payloadCount() == 8;
+        }
+
+        int nodeId() const {
+            return frame_->canId() - 0x80;
+        }
+
+        uint16_t errorCode() const {
+            return (uint16_t(frame_->payloadAt(1)) << 8) | uint16_t(frame_->payloadAt(0));
+        }
+
+        Type type() const {
+            uint16_t value = errorCode();
+            if (0x8F01 <= value && value <= 0x8F7F) return Type::CanKeepAliveForNode;
+            return static_cast<Type>(value);
+        }
+
+        ErrorRegister errorRegister() const {
+            return static_cast<ErrorRegister>(frame_->payloadAt(2));
+        }
+
+        uint64_t deviceError() const {
+            uint64_t value = 0;
+            for (int i = 7; i >= 3; --i) {
+                value |= frame_->payloadAt(i);
+                value <<= 8;
+            }
+            return value;
+        }
+
+        int monitoredNodeId() const {
+            return (type() == Type::CanKeepAliveForNode) ? errorCode() - 0x8F00 : 0;
+        }
+
+        String toString() const;
+
+    private:
+        friend class Emergency;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    Emergency(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    const Instance instance_;
+};
+
+String str(Emergency::Type emergencyType);
+
+}} // namespace cc::can

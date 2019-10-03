@@ -1,0 +1,117 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <linux/can.h> // can_frame
+#include <cc/String>
+
+namespace cc {
+namespace can {
+
+typedef struct can_frame StructCanFrame;
+
+class CanFrame: public StructCanFrame, public Object
+{
+public:
+    inline static Ref<CanFrame> create() { return new CanFrame; }
+
+    inline Ref<CanFrame> copy() const { return new CanFrame{this}; }
+
+    CanFrame &operator=(const CanFrame &other);
+
+    bool equals(const CanFrame *other) const;
+
+    inline canid_t canId() const { return can_id & CAN_EFF_MASK; }
+    inline void setCanId(canid_t newValue) { can_id = newValue; }
+
+    inline int payloadCount() const { return can_dlc; }
+    inline void setPayloadCount(int newValue) {
+        CC_ASSERT(0 <= newValue && newValue <= CAN_MAX_DLEN);
+        can_dlc = newValue;
+    }
+
+    inline uint8_t payloadAt(int i) const {
+        CC_ASSERT(0 <= i && i < can_dlc && i < CAN_MAX_DLEN);
+        return data[i];
+    }
+    inline uint8_t &payloadAt(int i) {
+        CC_ASSERT(0 <= i && i < can_dlc && i < CAN_MAX_DLEN);
+        return data[i];
+    }
+
+    String payload() const;
+    void setPayload(const String &data);
+
+    void setValueUInt32(uint32_t value);
+    void updateInverse(CanFrame *invFrame) const;
+
+    String copy(int i0, int i1) const;
+
+    template<class Word>
+    Word word(int i0, int i1) const
+    {
+        if (i1 > payloadCount()) i1 = payloadCount();
+        if (i0 < 0) i0 = 0;
+
+        Word value = 0U;
+        for (int i = i1 - 1; i >= i0; --i) {
+            value <<= 8U;
+            value |= payloadAt(i);
+        }
+
+        return value;
+    }
+
+    template<class Word>
+    void setWord(int i0, int i1, Word value)
+    {
+        if (i1 > payloadCount()) i1 = payloadCount();
+        if (i0 < 0) i0 = 0;
+
+        for (int i = i0; i < i1; ++i) {
+            payloadAt(i) = value;
+            value >>= 8U;
+        }
+    }
+
+    inline bool isRemoteTransmissionRequest() const { return can_id & CAN_RTR_FLAG; }
+    inline bool isError() const { return can_id & CAN_ERR_FLAG; }
+    inline bool isExtended() const { return can_id & CAN_EFF_FLAG; }
+
+    inline void setRemoteTransmissionRequest(bool on) {
+        if (on) can_id |= CAN_RTR_FLAG;
+        else    can_id &= ~CAN_RTR_FLAG;
+    }
+
+    String toString() const;
+
+protected:
+    CanFrame();
+    CanFrame(const CanFrame *other);
+
+    inline bool hasSizeIndicator() const {
+        return payloadAt(0) & 1;
+    }
+
+    inline void setHasSizeIndicator(bool on) {
+        payloadAt(0) &= ~1;
+        payloadAt(0) |= on;
+    }
+
+    inline int sizeIndicator() const {
+        return 4U - ((payloadAt(0) & 0xC) >> 2);
+    }
+
+    inline void setSizeIndicator(int byteCount) {
+        payloadAt(0) &= ~0xC;
+        payloadAt(0) |= ((4 - byteCount) << 2) & 0xC;
+    }
+};
+
+}} // namespace cc::can

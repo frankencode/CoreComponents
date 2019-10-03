@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/Selector>
+
+namespace cc {
+namespace can {
+
+class DictionaryKey {
+public:
+    static const Selector::Key DeviceType            { 0x100000U };
+    static const Selector::Key ErrorRegister         { 0x100100U };
+    static const Selector::Key ProducerHeartBeatTime { 0x101700U };
+
+    class DeviceIdentity {
+    public:
+        static const Selector::Key NumberOfEntries { 0x101800U };
+        static const Selector::Key VendorId        { 0x101801U };
+        static const Selector::Key ProductCode     { 0x101802U };
+        static const Selector::Key RevisionNumber  { 0x101803U };
+    };
+};
+
+}} // namespace cc::can

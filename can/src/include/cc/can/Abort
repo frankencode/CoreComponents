@@ -1,0 +1,89 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/CanFrame>
+#include <cc/can/types>
+
+namespace cc {
+namespace can {
+
+class Abort {
+public:
+    /** \brief SDO abort error codes
+      */
+    enum class Reason: uint32_t {
+        None                         = 0x00000000U, ///< No error
+        ToggleBitInvalid             = 0x05030000U, ///< Toggle bit not alternated
+        ServiceDataTimeout           = 0x05040000U, ///< SDO protocol timed out
+        SpecifierInvalid             = 0x05040001U, ///< Client/server command specifier not valid or unknown
+        BlockSizeInvalid             = 0x05040002U, ///< Invalid block size (block mode only)
+        SequenceNumberInvalid        = 0x05040003U, ///< Invalid sequence number (block mode only)
+        CrcError                     = 0x05040004U, ///< CRC error (block mode only), TODO: rename to ChecksumError
+        OutOfMemory                  = 0x05040005U, ///< Out of memory
+        AccessDenied                 = 0x06010000U, ///< Unsupported access to an object
+        ReadAccessDenied             = 0x06010001U, ///< Attempt to read a write-only object
+        WriteAccessDenied            = 0x06010002U, ///< Attempt to write a read-only object
+        SelectorInvalid              = 0x06020000U, ///< Object does not exist in the object dictionary
+        ProcessDataMappingFailed     = 0x06040041U, ///< Object cannot be mapped to the PDO
+        ProcessDataMappingOverflow   = 0x06040042U, ///< The number and length of the objects to be mapped would exceed PDO length
+        CompatibilityError           = 0x06040043U, ///< General parameter incompatibility
+        InternalCompatibilityError   = 0x06040047U, ///< General internal incompatibility in the device
+        HardwareAccessFailed         = 0x06060000U, ///< Access failed due to an hardware error
+        DataTypeLengthMismatch       = 0x06070010U, ///< Data type does not match, length of service parameter does not match
+        DataTypeLengthExceeded       = 0x06070012U, ///< Data type does not match, length of service parameter too high
+        DataTypeLengthUndercut       = 0x06070013U, ///< Data type does not match, length of service parameter too low
+        SubIndexInvalid              = 0x06090011U, ///< Sub-index does not exist
+        ValueOutOfBounds             = 0x06090030U, ///< Invalid value for parameter (SDO write only)
+        MaxValueExeeded              = 0x06090031U, ///< Value of parameter too high (SDO write only)
+        MinValueUndercut             = 0x06090032U, ///< Value of parameter written too low (SDO write only)
+        MinMaxBoundsError            = 0x06090036U, ///< Maximum value is less than minimum value
+        RessourceUnavailable         = 0x060A0023U, ///< Resource not available: SDO connection
+        GeneralError                 = 0x08000000U, ///< General error
+        DataTransferError            = 0x08000020U, ///< Data cannot be transferred or stored to the application
+        DataTransferLocalError       = 0x08000021U, ///< Data cannot be transferred or stored to the application because of local control
+        DataTransferDeviceError      = 0x08000022U, ///< Data cannot be transferred or stored to the application because of the present device state
+        ObjectDictionaryUnavailable  = 0x08000023U, ///< Object dictionary dynamic generation failed or no object dictionary present
+        DataUnavailable              = 0x08000024U  ///< No data available
+    };
+
+protected:
+    static Ref<CanFrame> createFrame(int canId, uint8_t cs, Selector selector, Abort::Reason reason);
+
+    class Instance {
+    public:
+        Selector::Index index() const {
+            return frame_->word<Selector::Index>(1, 3);
+        }
+
+        Selector::SubIndex subIndex() const {
+            return frame_->payloadAt(3);
+        }
+
+        Selector selector() const {
+            return Selector{index(), subIndex()};
+        }
+
+        Reason reason() const {
+            return static_cast<Reason>(frame_->word<uint32_t>(4, 8));
+        }
+
+    protected:
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+};
+
+String str(Abort::Reason reason);
+
+}} // namespace cc::can

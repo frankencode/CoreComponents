@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/CanFrame>
+
+namespace cc {
+namespace can {
+
+class SaeMessage
+{
+public:
+    class Instance {
+    public:
+        bool isValid() const { return frame_->isExtended() && frame_->payloadCount() > 0; }
+
+        uint32_t parameterGroupNumber() const
+        {
+            uint32_t pf = messageFormat();
+            uint32_t ge = (pf >= 0xF0) ? formatSpecific() : 0;
+            return (dataPage() << 16U) | (pf << 8U) | ge;
+        }
+
+        uint32_t dataPage() const { return (frame_->canId() >> 24U) & 3U; }
+        uint32_t messageFormat() const { return (frame_->canId() >> 16U) & 0xFFU; }
+        uint32_t formatSpecific() const { return (frame_->canId() >> 8U) & 0xFFU; }
+        uint32_t sourceAddress() const { return frame_->canId() & 0xFFU; }
+
+        String toString() const;
+
+    private:
+        friend class SaeMessage;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    SaeMessage(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    const Instance instance_;
+};
+
+}} // namespace cc::can

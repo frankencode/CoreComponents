@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/exceptions>
+#include <cc/can/types>
+#include <cc/can/Abort>
+
+namespace cc {
+namespace can {
+
+/** \brief CAN error
+  */
+class CanException: public Exception
+{};
+
+/** \brief SDO data transfer was aborted
+  */
+class CanAbort: public CanException
+{
+public:
+    CanAbort(Abort::Reason reason): reason_{reason} {}
+
+    Abort::Reason reason() const { return reason_; }
+    String message() const override;
+
+    const CanAbort *operator->() const { return this; }
+
+private:
+    Abort::Reason reason_;
+};
+
+/** \brief SDO data transfer was aborted from this node
+  */
+class CanLocalAbort: public CanAbort
+{
+public:
+    CanLocalAbort(Abort::Reason reason): CanAbort{reason} {}
+};
+
+/** \brief SDO data transfer was aborted from the peer node
+  */
+class CanPeerAbort: public CanAbort
+{
+public:
+    CanPeerAbort(Abort::Reason reason): CanAbort{reason} {}
+};
+
+/** \brief Reading a CAN frame timed-out
+  */
+class CanTimeout: public CanException
+{
+public:
+    String message() const override;
+};
+
+/** \brief CAN connection was disconnected
+  */
+class CanDisconnect: public CanException
+{
+public:
+    String message() const override;
+};
+
+/** \brief Unexpected CAN frame encountered
+  */
+class CanUnexpected: public CanException
+{
+public:
+    String message() const override;
+};
+
+}} // namespace cc::can

@@ -1,0 +1,75 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/ServiceReply>
+
+namespace cc {
+namespace can {
+
+class BlockReadSegmentReply
+{
+public:
+    static Ref<CanFrame> createFrame(int serverId, const String &data, int offset, int sequenceNumber);
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                ServiceReply{frame_}->isValid() &&
+                frame_->payloadCount() == 8 &&
+                sequenceNumber() != 0;
+        }
+
+        int serverId() const {
+            return ServiceReply{frame_}->serverId();
+        }
+
+        bool isLast() const {
+            return frame_->payloadAt(0) & 0x80;
+        }
+
+        int sequenceNumber() const {
+            return frame_->payloadAt(0) & 0x7F;
+        }
+
+        uint8_t segmentDataAt(int i) const {
+            return frame_->payloadAt(1 + i);
+        }
+
+        String segmentData() const {
+            return frame_->copy(1, 8);
+        }
+
+        String toString() const;
+
+    private:
+        friend class BlockReadSegmentReply;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    BlockReadSegmentReply(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    Instance instance_;
+};
+
+}} // namespace cc::can

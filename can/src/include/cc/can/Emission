@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Guard>
+#include <cc/can/CanFrame>
+
+namespace cc { class Mutex; }
+
+namespace cc {
+namespace can {
+
+class PeriodicEmitter;
+class CanMedia;
+class SafetyEmission;
+
+class Emission: public Object
+{
+public:
+    static Ref<Emission> create(PeriodicEmitter *emitter, int canId, double interval, const String &initialData);
+
+    int canId() const { return frame_->canId(); }
+    double interval() const { return interval_; }
+    const CanFrame *frame() const { return frame_; } // TODO, FIXME: should not be public
+
+    virtual void updateData(const String &data);
+
+protected:
+    friend class Guard<Emission>;
+    friend class SafetyEmission;
+    friend class PeriodicEmitter;
+
+    Emission(int canId, double interval);
+    ~Emission();
+
+    void init(PeriodicEmitter *emitter, const String &initialData);
+
+    virtual void generate(CanMedia *media);
+
+private:
+    void acquire();
+    void release();
+
+    int canId_;
+    double interval_;
+    Ref<CanFrame> frame_;
+    Ref<Mutex> mutex_;
+};
+
+}} // namespace cc::can

@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/CanNode>
+
+namespace cc {
+namespace can {
+
+/** \brief Minimal CANopen node for testing
+  */
+class EchoNode: public CanNode
+{
+public:
+    static Ref<EchoNode> create(CanMedia *media, int nodeId, int timeout = -1);
+
+    EchoNode(CanMedia *media, int nodeId, int timeout);
+
+    String readServiceData(Selector::Key key) const override;
+    void writeServiceData(Selector::Key key, const String &data) override;
+
+private:
+    typedef Map<Selector, String> Settings;
+    Ref<Settings> settings_;
+};
+
+}} // namespace cc::can

@@ -1,0 +1,82 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/ServiceReply>
+
+namespace cc {
+namespace can {
+
+class ReadSegmentReply
+{
+public:
+    static Ref<CanFrame> createFrame(int serverId, const String &data, int fill, int offset);
+
+    class Instance {
+    public:
+        bool isValid() const {
+            return
+                ServiceReply{frame_}->isValid() &&
+                ServiceReply{frame_}->specifier() == ServiceReply::Specifier::ReadSegment;
+        }
+
+        int serverId() const {
+            return ServiceReply{frame_}->serverId();
+        }
+
+        int dataCount() const {
+            return 7 - ((frame_->payloadAt(0) & 0xE) >> 1);
+        }
+
+        uint8_t dataAt(int i) const {
+            CC_ASSERT(0 <= i && i < dataCount());
+            return frame_->payloadAt(1 + i);
+        }
+
+        String data() const {
+            String s = String::allocate(dataCount());
+            for (int i = 0; i < s->count(); ++i)
+                mutate(s)->byteAt(i) = dataAt(i);
+            return s;
+        }
+
+        bool toggle() const {
+            return frame_->payloadAt(0) & 0x10;
+        }
+
+        bool isLast() const {
+            return frame_->payloadAt(0) & 1;
+        }
+
+        String toString() const;
+
+    private:
+        friend class ReadSegmentReply;
+
+        Instance(const CanFrame *frame):
+            frame_{frame}
+        {}
+
+        const CanFrame *frame_;
+    };
+
+    ReadSegmentReply(const CanFrame *frame):
+        instance_{frame}
+    {}
+
+    explicit operator bool() const { return instance_.isValid(); }
+    const Instance *operator->() const { return &instance_; }
+
+    operator String() const { return instance_.toString(); }
+
+private:
+    const Instance instance_;
+};
+
+}} // namespace cc::can

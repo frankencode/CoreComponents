@@ -1,0 +1,4 @@
+Application {
+    name: ccsrdotest
+    use: [ core, can ]
+}

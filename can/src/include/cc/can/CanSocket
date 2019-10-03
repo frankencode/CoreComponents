@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/can/CanMedia>
+
+namespace cc { class SystemStream; }
+
+namespace cc {
+namespace can {
+
+class CanSocket: public CanMedia
+{
+public:
+    static Ref<CanSocket> open(const String &interface);
+
+    inline String interface() const { return interface_; }
+
+    void enableLoopback(bool on);
+    void enableErrorFrames(bool on);
+
+    bool waitFrame(int timeout = -1) override;
+    bool readFrame(CanFrame *frame) override;
+    void writeFrame(const CanFrame *frame) override;
+
+protected:
+    CanSocket(const String &interface);
+    ~CanSocket();
+
+    static int lookupInterfaceIndex(int fd, const String &interface);
+
+private:
+    Ref<SystemStream> socket_;
+    String interface_;
+};
+
+}} // namespace cc::can

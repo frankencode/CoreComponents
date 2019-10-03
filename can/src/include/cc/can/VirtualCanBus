@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/can/CanMedia>
+
+namespace cc { template<class> class Set; }
+namespace cc { class Mutex; }
+
+namespace cc {
+namespace can {
+
+class VirtualCanMedia;
+
+class VirtualCanBus: public Object
+{
+public:
+    static Ref<VirtualCanBus> create();
+
+    Ref<CanMedia> connect();
+    void shutdown();
+
+protected:
+    VirtualCanBus();
+
+private:
+    friend class VirtualCanMedia;
+
+    void broadcast(const VirtualCanMedia *source, const CanFrame *frame);
+
+    typedef Set< Ref<VirtualCanMedia> > Connections;
+    Ref<Connections> connections_;
+
+    Ref<Mutex> mutex_;
+};
+
+}} // namespace cc::can
