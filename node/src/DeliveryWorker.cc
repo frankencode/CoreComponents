@@ -16,8 +16,6 @@
 #include <cc/net/Uri>
 #include <cc/Format>
 #include <cc/RefGuard>
-#include <cc/System>
-#include <cc/Date>
 
 namespace cc {
 namespace node {

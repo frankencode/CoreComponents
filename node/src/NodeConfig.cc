@@ -142,7 +142,7 @@ void NodeConfig::addDirectoryInstance(const String &path)
 
 void NodeConfig::addEchoInstance()
 {
-    const DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Echo");
+    const DeliveryService *service = DeliveryRegistry::instance()->serviceByName(EchoService::name());
     Ref<MetaObject> config = service->configPrototype()->clone();
     config->establish("host", "*");
     deliveryInstances_->append(createDeliveryInstance(service, config));

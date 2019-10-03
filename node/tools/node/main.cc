@@ -91,7 +91,7 @@ int main(int argc, char **argv)
             "Options:\n"
             "  -address   host name or network address to listen on\n"
             "  -port      port to listen on (default 8080)\n"
-            "  -protocol  protocol: IPv4 or IPv6 (default both)\n"
+            "  -protocol  IPv4 or IPv6 (default both)\n"
             "  -user      switch to user after opening listening socket\n"
             "  -daemon    start as a daemon\n"
         ) << toolName;
