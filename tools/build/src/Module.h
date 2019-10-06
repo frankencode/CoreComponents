@@ -17,28 +17,28 @@ using namespace cc;
 class Module: public Object
 {
 public:
-    inline static Ref<Module> create(String analyseCommand, String modulePath, StringList *dependencyPaths, bool dirty) {
-        return new Module(analyseCommand, modulePath, dependencyPaths, dirty);
+    static Ref<Module> create(const String &analyseCommand, const String &modulePath, const StringList *dependencyPaths, bool dirty) {
+        return new Module{analyseCommand, modulePath, dependencyPaths, dirty};
     }
 
-    inline String analyseCommand() const { return analyseCommand_; }
-    inline String modulePath() const { return modulePath_; }
-    inline String sourcePath() const { return dependencyPaths_->at(0); }
-    inline String toolName() const { return sourcePath()->baseName(); }
-    inline StringList *dependencyPaths() const { return dependencyPaths_; }
-    inline bool dirty() const { return dirty_; }
+    String analyseCommand() const { return analyseCommand_; }
+    String modulePath() const { return modulePath_; }
+    String sourcePath() const { return dependencyPaths_->at(0); }
+    String toolName() const { return sourcePath()->baseName(); }
+    const StringList *dependencyPaths() const { return dependencyPaths_; }
+    bool dirty() const { return dirty_; }
 
 private:
-    Module(String analyseCommand, String modulePath, StringList *dependencyPaths, bool dirty):
-        analyseCommand_(analyseCommand),
-        modulePath_(modulePath),
-        dependencyPaths_(dependencyPaths),
-        dirty_(dirty)
+    Module(const String &analyseCommand, const String &modulePath, const StringList *dependencyPaths, bool dirty):
+        analyseCommand_{analyseCommand},
+        modulePath_{modulePath},
+        dependencyPaths_{dependencyPaths},
+        dirty_{dirty}
     {}
 
     String analyseCommand_;
     String modulePath_;
-    Ref<StringList> dependencyPaths_;
+    Ref<const StringList> dependencyPaths_;
     bool dirty_;
 };
 

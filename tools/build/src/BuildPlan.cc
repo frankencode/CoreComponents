@@ -31,14 +31,14 @@ namespace ccbuild {
 
 Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
 {
-    return new BuildPlan(argc, argv);
+    return new BuildPlan{argc, argv};
 }
 
 Ref<BuildPlan> BuildPlan::create(String projectPath)
 {
     Ref<BuildPlan> plan;
     if (BuildMap::instance()->lookupPlan(String(projectPath->absolutePathRelativeTo(Process::getWorkingDirectory())), &plan)) return plan;
-    return new BuildPlan(projectPath, this);
+    return new BuildPlan{projectPath, this};
 }
 
 #define CCBUILD_BUILDPLAN_COMPONENTS_INIT \

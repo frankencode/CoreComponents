@@ -22,14 +22,14 @@ class JobScheduler;
 class Job: public Object
 {
 public:
-    inline static Ref<Job> create(String command) {
-        return new Job(command);
+    static Ref<Job> create(const String &command) {
+        return new Job{command};
     }
 
-    inline String command() const { return command_; }
+    String command() const { return command_; }
 
-    inline int status() const { return status_; }
-    inline String outputText() const { return outputText_; }
+    int status() const { return status_; }
+    String outputText() const { return outputText_; }
 
     void registerDerivative(Job *derivative);
 
@@ -40,10 +40,10 @@ protected:
     friend class JobServer;
     friend class JobScheduler;
 
-    Job(String command):
-        command_(command),
-        status_(-1),
-        countDown_(0)
+    Job(const String &command):
+        command_{command},
+        status_{-1},
+        countDown_{0}
     {}
 
 private:
