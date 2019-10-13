@@ -8,18 +8,13 @@
 
 #pragma once
 
-#ifdef KISSMALLOC_OVERLOAD_LIBC
-#ifdef KISSMALLOC_NAME_PREFIX
-#undef KISSMALLOC_NAME_PREFIX
-#endif
-#else
-#define KISSMALLOC_NAME_PREFIX kiss
-#endif
+/// Uncomment the following line to enable overloading of the standard libc memory allocation functions
+// #define KISSMALLOC_OVERLOAD_LIBC
 
-#ifdef KISSMALLOC_NAME_PREFIX
-#define KISSMALLOC_NAME(function) KISSMALLOC_NAME_PREFIX ## function
-#else
+#ifdef KISSMALLOC_OVERLOAD_LIBC
 #define KISSMALLOC_NAME(function) function
+#else
+#define KISSMALLOC_NAME(function) kiss ## function
 #endif
 
 #include <sys/types.h>

@@ -12,9 +12,6 @@
 /// KISSMALLOC CONFIGURATION
 ////////////////////////////////////////////////////////////////////////////////
 
-/// System memory granularity, e.g. XMMS movdqa requires 16
-#define KISSMALLOC_GRANULARITY (2 * sizeof(size_t) < __alignof__ (long double) ? __alignof__ (long double) : 2 * sizeof(size_t))
-
 /// Number of pages to preallocate
 #define KISSMALLOC_PAGE_PREALLOC 64
 
@@ -27,6 +24,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// INTERNALS...
 ////////////////////////////////////////////////////////////////////////////////
+
+/// System memory granularity, e.g. XMMS movdqa requires 16
+#define KISSMALLOC_GRANULARITY (2 * sizeof(size_t) < __alignof__ (long double) ? __alignof__ (long double) : 2 * sizeof(size_t))
 
 #define KISSMALLOC_GRANULARITY_SHIFT (__builtin_ctz(KISSMALLOC_GRANULARITY))
 #define KISSMALLOC_PAGE_HALF_SIZE (KISSMALLOC_PAGE_SIZE >> 1)
@@ -250,7 +250,8 @@ void *KISSMALLOC_NAME(malloc)(size_t size)
 
         if (bucket)
         {
-            if (size <= (size_t)KISSMALLOC_PAGE_SIZE - bucket->bytes_dirty) {
+            const size_t bytes_free = (size_t)KISSMALLOC_PAGE_SIZE - bucket->bytes_dirty;
+            if (size <= bytes_free && 0 < bytes_free) {
                 void *data = (uint8_t *)bucket + bucket->bytes_dirty;
                 bucket->bytes_dirty += size;
                 ++bucket->object_count; // this is atomic on all relevant processors!
@@ -329,15 +330,15 @@ void KISSMALLOC_NAME(free)(void *ptr)
 
 void *KISSMALLOC_NAME(calloc)(size_t number, size_t size)
 {
-    return malloc(number * size);
+    return KISSMALLOC_NAME(malloc)(number * size);
 }
 
 void *KISSMALLOC_NAME(realloc)(void *ptr, size_t size)
 {
-    if (ptr == NULL) return malloc(size);
+    if (ptr == NULL) return KISSMALLOC_NAME(malloc)(size);
 
     if (size == 0) {
-        if (ptr != NULL) free(ptr);
+        if (ptr != NULL) KISSMALLOC_NAME(free)(ptr);
         return NULL;
     }
 
@@ -357,12 +358,12 @@ void *KISSMALLOC_NAME(realloc)(void *ptr, size_t size)
 
     if (copy_size > size) copy_size = size;
 
-    void *new_ptr = malloc(size);
+    void *new_ptr = KISSMALLOC_NAME(malloc)(size);
     if (new_ptr == NULL) return NULL;
 
     memcpy(new_ptr, ptr, copy_size);
 
-    free(ptr);
+    KISSMALLOC_NAME(free)(ptr);
 
     return new_ptr;
 }
@@ -381,12 +382,12 @@ int KISSMALLOC_NAME(posix_memalign)(void **ptr, size_t alignment, size_t size)
         return EINVAL;
 
     if (alignment <= KISSMALLOC_GRANULARITY) {
-        *ptr = malloc(size);
+        *ptr = KISSMALLOC_NAME(malloc)(size);
         return (*ptr != NULL) ? 0 : ENOMEM;
     }
 
     if (alignment + size < KISSMALLOC_PAGE_HALF_SIZE) {
-        uint8_t *ptr_byte = (uint8_t *)malloc(alignment + size);
+        uint8_t *ptr_byte = (void *)KISSMALLOC_NAME(malloc)(alignment + size);
         if (ptr_byte != NULL) {
             size_t r = (size_t)(ptr_byte - (uint8_t *)NULL) & (alignment - 1);
             if (r > 0) ptr_byte += alignment - r;
@@ -419,23 +420,23 @@ int KISSMALLOC_NAME(posix_memalign)(void **ptr, size_t alignment, size_t size)
 void *KISSMALLOC_NAME(aligned_alloc)(size_t alignment, size_t size)
 {
     void *ptr = NULL;
-    posix_memalign(&ptr, alignment, size);
+    KISSMALLOC_NAME(posix_memalign)(&ptr, alignment, size);
     return ptr;
 }
 
 void *KISSMALLOC_NAME(memalign)(size_t alignment, size_t size)
 {
     void *ptr = NULL;
-    posix_memalign(&ptr, alignment, size);
+    KISSMALLOC_NAME(posix_memalign)(&ptr, alignment, size);
     return ptr;
 }
 
 void *KISSMALLOC_NAME(valloc)(size_t size)
 {
-    return malloc(round_up_pow2(size, KISSMALLOC_PAGE_SIZE));
+    return KISSMALLOC_NAME(malloc)(round_up_pow2(size, KISSMALLOC_PAGE_SIZE));
 }
 
 void *KISSMALLOC_NAME(pvalloc)(size_t size)
 {
-    return malloc(round_up_pow2(size, KISSMALLOC_PAGE_SIZE));
+    return KISSMALLOC_NAME(malloc)(round_up_pow2(size, KISSMALLOC_PAGE_SIZE));
 }

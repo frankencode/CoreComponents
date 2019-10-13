@@ -1,3 +1,11 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see kissmalloc/LICENSE).
+ *
+ */
+
 #include "kissmalloc.h"
 
 #include <new>
@@ -24,7 +32,7 @@ void *operator new(std::size_t size)
     #ifndef KISSMALLOC_VALGRIND
     void *data = KISSMALLOC_NAME(malloc)(size);
     #else
-    #ifndef KISSMALLOC_NAME_PREFIX
+    #ifdef KISSMALLOC_OVERLOAD_LIBC
     void *data = malloc(size);
     #else
     void *data = (void *)((char *)KISSMALLOC_NAME(malloc)(size + 2 * KISSMALLOC_REDZONE_SIZE) + KISSMALLOC_REDZONE_SIZE);
@@ -40,7 +48,7 @@ void *operator new[](std::size_t size)
     #ifndef KISSMALLOC_VALGRIND
     void *data = KISSMALLOC_NAME(malloc)(size);
     #else
-    #ifndef KISSMALLOC_NAME_PREFIX
+    #ifdef KISSMALLOC_OVERLOAD_LIBC
     void *data = malloc(size);
     #else
     void *data = (void *)((char *)KISSMALLOC_NAME(malloc)(size + 2 * KISSMALLOC_REDZONE_SIZE) + KISSMALLOC_REDZONE_SIZE);
@@ -56,7 +64,7 @@ void operator delete(void *data) noexcept
     #ifndef KISSMALLOC_VALGRIND
     KISSMALLOC_NAME(free)(data);
     #else
-    #ifndef KISSMALLOC_NAME_PREFIX
+    #ifdef KISSMALLOC_OVERLOAD_LIBC
     free(data);
     #else
     KISSMALLOC_NAME(free)((void *)((char *)data - KISSMALLOC_REDZONE_SIZE));
@@ -70,7 +78,7 @@ void operator delete[](void *data) noexcept
     #ifndef KISSMALLOC_VALGRIND
     KISSMALLOC_NAME(free)(data);
     #else
-    #ifndef KISSMALLOC_NAME_PREFIX
+    #ifdef KISSMALLOC_OVERLOAD_LIBC
     free(data);
     #else
     KISSMALLOC_NAME(free)((void *)((char *)data - KISSMALLOC_REDZONE_SIZE));
@@ -84,7 +92,7 @@ void *operator new(std::size_t size, const std::nothrow_t &) noexcept
     #ifndef KISSMALLOC_VALGRIND
     void *data = KISSMALLOC_NAME(malloc)(size);
     #else
-    #ifndef KISSMALLOC_NAME_PREFIX
+    #ifdef KISSMALLOC_OVERLOAD_LIBC
     void *data = malloc(size);
     #else
     void *data = (void *)((char *)KISSMALLOC_NAME(malloc)(size + 2 * KISSMALLOC_REDZONE_SIZE) + KISSMALLOC_REDZONE_SIZE);
@@ -99,7 +107,7 @@ void *operator new[](std::size_t size, const std::nothrow_t &) noexcept
     #ifndef KISSMALLOC_VALGRIND
     void *data = KISSMALLOC_NAME(malloc)(size);
     #else
-    #ifndef KISSMALLOC_NAME_PREFIX
+    #ifdef KISSMALLOC_OVERLOAD_LIBC
     void *data = malloc(size);
     #else
     void *data = (void *)((char *)KISSMALLOC_NAME(malloc)(size + 2 * KISSMALLOC_REDZONE_SIZE) + KISSMALLOC_REDZONE_SIZE);
@@ -114,7 +122,7 @@ void operator delete(void *data, const std::nothrow_t &) noexcept
     #ifndef KISSMALLOC_VALGRIND
     KISSMALLOC_NAME(free)(data);
     #else
-    #ifndef KISSMALLOC_NAME_PREFIX
+    #ifdef KISSMALLOC_OVERLOAD_LIBC
     free(data);
     #else
     KISSMALLOC_NAME(free)((void *)((char *)data - KISSMALLOC_REDZONE_SIZE));
@@ -128,7 +136,7 @@ void operator delete[](void *data, const std::nothrow_t &) noexcept
     #ifndef KISSMALLOC_VALGRIND
     KISSMALLOC_NAME(free)(data);
     #else
-    #ifndef KISSMALLOC_NAME_PREFIX
+    #ifdef KISSMALLOC_OVERLOAD_LIBC
     free(data);
     #else
     KISSMALLOC_NAME(free)((void *)((char *)data - KISSMALLOC_REDZONE_SIZE));
