@@ -49,7 +49,7 @@ void *operator new(std::size_t size) KISSMALLOC_EXCEPT
     VALGRIND_MALLOCLIKE_BLOCK(data, size, KISSMALLOC_REDZONE_SIZE, /*is_zeroed=*/true);
     #endif
     #endif
-    if (!data) KISSMALLOC_THROW;
+    if (size && !data) KISSMALLOC_THROW;
     return data;
 }
 
@@ -65,7 +65,7 @@ void *operator new[](std::size_t size) KISSMALLOC_EXCEPT
     VALGRIND_MALLOCLIKE_BLOCK(data, size, KISSMALLOC_REDZONE_SIZE, /*is_zeroed=*/true);
     #endif
     #endif
-    if (!data) KISSMALLOC_THROW;
+    if (size && !data) KISSMALLOC_THROW;
     return data;
 }
 
