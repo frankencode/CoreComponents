@@ -21,12 +21,12 @@
 /// Size of a memory page on the target system
 #define KISSMALLOC_PAGE_SIZE 4096
 
+/// System memory granularity, e.g. XMMS movdqa requires 16
+#define KISSMALLOC_GRANULARITY 16
+
 ////////////////////////////////////////////////////////////////////////////////
 /// INTERNALS...
 ////////////////////////////////////////////////////////////////////////////////
-
-/// System memory granularity, e.g. XMMS movdqa requires 16
-#define KISSMALLOC_GRANULARITY (2 * sizeof(size_t) < __alignof__ (long double) ? __alignof__ (long double) : 2 * sizeof(size_t))
 
 #define KISSMALLOC_GRANULARITY_SHIFT (__builtin_ctz(KISSMALLOC_GRANULARITY))
 #define KISSMALLOC_PAGE_HALF_SIZE (KISSMALLOC_PAGE_SIZE >> 1)
