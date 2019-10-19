@@ -202,7 +202,7 @@ typedef struct {
 
 #pragma pack(pop)
 
-static_assert(sizeof(bucket_t) == 16, "The bucket header needs to be exactly 16 bytes");
+static_assert(sizeof(bucket_t) <= KISSMALLOC_GRANULARITY, "The bucket_t header must not exceed KISSMALLOC_GRANULARITY"");
 
 static pthread_once_t bucket_init_control = PTHREAD_ONCE_INIT;
 static pthread_key_t bucket_key;
