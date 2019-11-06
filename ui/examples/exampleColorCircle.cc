@@ -17,7 +17,7 @@ class MainView: public View
 
     void paint() override
     {
-        Painter p(this);
+        Painter p{this};
         Point center = size() / 2;
         const double step = 10;
         const double radius = std::min(size()[0], size()[1]) / 3;
