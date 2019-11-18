@@ -34,22 +34,28 @@
 
 /// Number of pages to preallocate
 #ifndef KISSMALLOC_PAGE_PREALLOC
-#define KISSMALLOC_PAGE_PREALLOC 256
+#define KISSMALLOC_PAGE_PREALLOC (sizeof(long) == 4 ? 64 : 256)
 #endif
 
 /// Number of freed pages to cache at maximum (should be N * KISSMALLOC_PAGE_PREALLOC - 1)
 #ifndef KISSMALLOC_PAGE_CACHE
-#define KISSMALLOC_PAGE_CACHE 511
+#define KISSMALLOC_PAGE_CACHE (2 * KISSMALLOC_PAGE_PREALLOC - 1)
 #endif
 
 /// System memory granularity, e.g. XMMS movdqa requires 16
 #ifndef KISSMALLOC_GRANULARITY
-#define KISSMALLOC_GRANULARITY 16 // TODO: autodetect
+#define KISSMALLOC_GRANULARITY (2 * sizeof(size_t) > __alignof__(long double) ? 2 * sizeof(size_t) : __alignof__(long double))
 #endif
 
-/// Page size (0 for autodetect)
+/// Page size (0 for autodetect, but beware of performance penalty)
 #ifndef KISSMALLOC_PAGE_SIZE
 #define KISSMALLOC_PAGE_SIZE 0
+#endif
+
+/// Output size distribution histograms at exit (debug option)
+#if 0
+#define KISSMALLOC_HISTOGRAM
+#define KISSMALLOC_HISTOGRAM_SIZE 256
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,6 +85,9 @@
 #define KISSMALLOC_IS_POW2(x) (x > 0 && (x & (x - 1)) == 0)
 
 static_assert(KISSMALLOC_IS_POW2(KISSMALLOC_GRANULARITY), "KISSMALLOC_GRANULARITY needs to be a power of two");
+
+#define KISSMALLOC_LIKELY(x) __builtin_expect((x),1)
+#define KISSMALLOC_UNLIKELY(x) __builtin_expect((x),0)
 
 #pragma pack(push,1)
 
@@ -230,7 +239,7 @@ inline static size_t cache_size_get()
 
 static struct cache_t *cache_create()
 {
-    struct cache_t *cache = (struct cache_t *)mmap(NULL, cache_size_get(), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE|MAP_POPULATE, -1, 0);
+    struct cache_t *cache = (struct cache_t *)mmap(NULL, cache_size_get(), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
     if (cache == MAP_FAILED) abort();
     return cache;
 }
@@ -241,7 +250,7 @@ static void cache_cleanup(struct cache_t *cache)
     if (munmap(cache, cache_size_get()) == -1) abort();
 }
 
-static void cache_push(struct cache_t *cache, struct bucket_t *page)
+static void cache_push(struct cache_t *cache, struct bucket_t *page, size_t page_size)
 {
     if (cache->fill == KISSMALLOC_PAGE_CACHE)
         cache_reduce(cache, KISSMALLOC_PAGE_CACHE >> 1);
@@ -251,8 +260,11 @@ static void cache_push(struct cache_t *cache, struct bucket_t *page)
     cache_bubble_up(cache);
 }
 
-static pthread_once_t bucket_key_init_control = PTHREAD_ONCE_INIT;
+static pthread_once_t library_init_control = PTHREAD_ONCE_INIT;
 static pthread_key_t bucket_key = -1;
+static pthread_key_t source_key = -1;
+
+static size_t usage_total = 0;
 
 static void bucket_cleanup(void *arg)
 {
@@ -275,15 +287,22 @@ static void bucket_cleanup(void *arg)
     }
 }
 
-static void bucket_key_init()
+static void library_init()
 {
     if (pthread_key_create(&bucket_key, bucket_cleanup) != 0) abort();
+    if (pthread_key_create(&source_key, NULL) != 0) abort();
 }
 
-static struct bucket_t *bucket_create_initial()
+inline static void usage_add(size_t delta)
 {
-    const size_t page_size = page_size_get();
+    uint8_t *source = (uint8_t *)pthread_getspecific(source_key);
+    source += delta;
+    pthread_setspecific(source_key, source);
+    __sync_add_and_fetch(&usage_total, delta);
+}
 
+static struct bucket_t *bucket_create_initial(const size_t page_size)
+{
     void *page_start = mmap(NULL, KISSMALLOC_PAGE_PREALLOC * page_size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
     if (page_start == MAP_FAILED) abort();
 
@@ -296,8 +315,10 @@ static struct bucket_t *bucket_create_initial()
     bucket->object_count = 1;
     bucket->cache = cache;
 
-    pthread_once(&bucket_key_init_control, bucket_key_init);
+    pthread_once(&library_init_control, library_init);
     pthread_setspecific(bucket_key, bucket);
+
+    usage_add(page_size);
 
     return bucket;
 }
@@ -307,8 +328,10 @@ static void *bucket_advance(struct bucket_t *bucket, const size_t page_size, con
     uint32_t prealloc_count = bucket->cache->prealloc_count;
     struct cache_t *cache = bucket->cache;
 
-    if (!__sync_sub_and_fetch(&bucket->object_count, 1))
-        cache_push(bucket->cache, bucket);
+    if (!__sync_sub_and_fetch(&bucket->object_count, 1)) {
+        cache_push(bucket->cache, bucket, page_size);
+        usage_add(-page_size);
+    }
 
     void *page_start = NULL;
     if (prealloc_count > 0) {
@@ -321,6 +344,7 @@ static void *bucket_advance(struct bucket_t *bucket, const size_t page_size, con
             errno = ENOMEM;
             return NULL;
         }
+
         prealloc_count = KISSMALLOC_PAGE_PREALLOC - 1;
     }
 
@@ -335,28 +359,146 @@ static void *bucket_advance(struct bucket_t *bucket, const size_t page_size, con
 
     pthread_setspecific(bucket_key, bucket);
 
+    usage_add(page_size);
+
     return (uint8_t *)page_start + bucket_header_size;
 }
 
-inline static struct bucket_t *bucket_get_mine()
+inline static struct bucket_t *bucket_get_mine(const size_t page_size)
 {
-    // pthread_once(&bucket_key_init_control, bucket_key_init);
     struct bucket_t *bucket = (struct bucket_t *)pthread_getspecific(bucket_key);
-    if (bucket == NULL) bucket = bucket_create_initial();
+    if (bucket == NULL) bucket = bucket_create_initial(page_size);
     return bucket;
 }
 
+#ifdef KISSMALLOC_HISTOGRAM
+
+#include <sched.h>
+
+static uint64_t *histogram = (uint64_t *)NULL;
+static char histogram_lock = 0;
+
+static char *histogram_trace_text(const char *text, char *eoi)
+{
+    while (*text) {
+        *eoi = *text;
+        ++eoi;
+        ++text;
+    }
+    return eoi;
+}
+
+static char *histogram_trace_value(uint64_t value, char *eoi)
+{
+    char buf[256];
+    int fill = 0;
+    while (value > 0) {
+        buf[fill] = '0' + (char)(value % 10);
+        value /= 10;
+        ++fill;
+    }
+    if (fill == 0) {
+        buf[0] = '0';
+        fill = 1;
+    }
+    for (int i = fill - 1; i >= 0; --i) {
+        *eoi = buf[i];
+        ++eoi;
+    }
+    return eoi;
+}
+
+static void histogram_write_line(const char *text)
+{
+    char buffer[256];
+    char *cursor = buffer;
+    cursor = histogram_trace_text(text, cursor);
+    cursor = histogram_trace_text("\n", cursor);
+    write(1, buffer, cursor - buffer);
+}
+
+inline static size_t histogram_size_get()
+{
+    return round_up_pow2(KISSMALLOC_HISTOGRAM_SIZE * sizeof(uint64_t), page_size_get());
+}
+
+static void histogram_cleanup()
+{
+    histogram_write_line("# size\tcount");
+
+    char line[256];
+
+    for (int i = 0; i < KISSMALLOC_HISTOGRAM_SIZE; ++i) {
+        char *cursor = line;
+        cursor = histogram_trace_value(i * KISSMALLOC_GRANULARITY, cursor);
+        cursor = histogram_trace_text("\t", cursor);
+        cursor = histogram_trace_value(histogram[i], cursor);
+        cursor = histogram_trace_text("\n", cursor);
+        write(1, line, cursor - line);
+    }
+
+    if (munmap((void *)histogram, histogram_size_get()) == -1) abort();
+}
+
+static uint64_t *histogram_allocate()
+{
+    void *page_start = mmap(NULL, histogram_size_get(), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+    if (page_start == MAP_FAILED) abort();
+
+    atexit(histogram_cleanup);
+
+    return (uint64_t *)page_start;
+}
+
+static uint64_t *histogram_get()
+{
+    if (!histogram) {
+        while (!__sync_bool_compare_and_swap(&histogram_lock, 0, 1)) sched_yield();
+        if (!histogram) histogram = histogram_allocate();
+        histogram_lock = 0;
+    }
+    return histogram;
+}
+
+inline static void histogram_sample(size_t item_size)
+{
+    const size_t item_size_rounded = round_up_pow2(item_size, KISSMALLOC_GRANULARITY);
+    int class_index = item_size_rounded >> KISSMALLOC_GRANULARITY_SHIFT;
+    if (class_index < KISSMALLOC_HISTOGRAM_SIZE) __sync_add_and_fetch(&histogram_get()[class_index], 1);
+}
+
+#endif // KISSMALLOC_HISTOGRAM
+
 void *KISSMALLOC_NAME(malloc)(size_t size)
 {
+    #ifdef KISSMALLOC_HISTOGRAM
+    histogram_sample(size);
+    #endif
+
     const size_t page_size = page_size_get();
 
-    if (size < page_size >> 1)
+    if (KISSMALLOC_LIKELY(size < page_size >> 1))
     {
-        if (size == 0) return NULL;
+        if (KISSMALLOC_UNLIKELY(size == 0)) return NULL;
 
         size = round_up_pow2(size, KISSMALLOC_GRANULARITY);
 
-        struct bucket_t *bucket = bucket_get_mine();
+        struct bucket_t *bucket = bucket_get_mine(page_size);
+
+        if (KISSMALLOC_LIKELY(size <= bucket->bytes_free)) {
+            void *data = (uint8_t *)bucket + page_size - bucket->bytes_free;
+            bucket->bytes_free -= size;
+            ++bucket->object_count;
+            return data;
+        }
+
+        return bucket_advance(bucket, page_size, size);
+    }
+    else if (size <= page_size - KISSMALLOC_GRANULARITY)
+    {
+        size = round_up_pow2(size, KISSMALLOC_GRANULARITY);
+
+        struct bucket_t *bucket = bucket_get_mine(page_size);
 
         if (size <= bucket->bytes_free) {
             void *data = (uint8_t *)bucket + page_size - bucket->bytes_free;
@@ -371,11 +513,14 @@ void *KISSMALLOC_NAME(malloc)(size_t size)
     size = round_up_pow2(size, page_size) + page_size;
 
     void *head = mmap(NULL, size, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
-    if (head == MAP_FAILED) {
+    if (KISSMALLOC_UNLIKELY(head == MAP_FAILED)) {
         errno = ENOMEM;
         return NULL;
     }
     *(size_t *)head = size;
+
+    usage_add(size);
+
     return (uint8_t *)head + page_size;
 }
 
@@ -384,15 +529,19 @@ void KISSMALLOC_NAME(free)(void *ptr)
     const size_t page_size = page_size_get();
     const size_t page_offset = (size_t)(((uint8_t *)ptr - (uint8_t *)NULL) & (page_size - 1));
 
-    if (page_offset != 0) {
+    if (KISSMALLOC_LIKELY(page_offset != 0)) {
         void *page_start = (uint8_t *)ptr - page_offset;
         struct bucket_t *bucket = (struct bucket_t *)page_start;
-        if (!__sync_sub_and_fetch(&bucket->object_count, 1))
-            cache_push(bucket_get_mine()->cache, bucket);
+        if (KISSMALLOC_UNLIKELY(!__sync_sub_and_fetch(&bucket->object_count, 1))) {
+            cache_push(bucket_get_mine(page_size)->cache, bucket, page_size);
+            usage_add(-page_size);
+        }
     }
     else if (ptr != NULL) {
         void *head = (uint8_t *)ptr - page_size;
-        if (munmap(head, *(size_t *)head) == -1) abort();
+        size_t size = *(size_t *)head;
+        if (munmap(head, size) == -1) abort();
+        usage_add(-size);
     }
 }
 
@@ -510,6 +659,22 @@ void *KISSMALLOC_NAME(valloc)(size_t size)
 void *KISSMALLOC_NAME(pvalloc)(size_t size)
 {
     return KISSMALLOC_NAME(malloc)(round_up_pow2(size, page_size_get()));
+}
+
+/** Number of bytes allocated minus number of bytes freed by the calling thread
+  */
+ssize_t KISSMALLOC_NAME(memsource)()
+{
+    const size_t page_size = page_size_get();
+    const ssize_t offset = (bucket_get_mine(page_size)->object_count == 1) ? -(ssize_t)page_size : 0;
+    return (uint8_t *)pthread_getspecific(source_key) - (uint8_t *)NULL + offset;
+}
+
+/** Number of bytes allocated minus number of bytes freed
+  */
+size_t KISSMALLOC_NAME(memusage)()
+{
+    return __sync_add_and_fetch(&usage_total, 0);
 }
 
 #include <new>
