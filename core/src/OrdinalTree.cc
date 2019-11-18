@@ -73,7 +73,7 @@ OrdinalNode *AvlBalance::rebalance(OrdinalTree *tree, OrdinalNode *k1)
 
 int AvlBalance::height(OrdinalNode *k)
 {
-    if (k == 0) return 0;
+    if (k == nullptr) return 0;
     int h1 = height(k->left_);
     int h2 = height(k->right_);
     return (h1 < h2 ? h2 : h1) + 1;
@@ -99,14 +99,14 @@ void OrdinalTree::attach(OrdinalNode *kp, OrdinalNode *k, bool left)
         else
             kp->right_ = k;
         k->parent_ = kp;
-        k->left_ = 0;
-        k->right_ = 0;
+        k->left_ = nullptr;
+        k->right_ = nullptr;
     }
     else {
         root_ = k;
-        k->parent_ = 0;
-        k->left_ = 0;
-        k->right_ = 0;
+        k->parent_ = nullptr;
+        k->left_ = nullptr;
+        k->right_ = nullptr;
     }
     changed(kp, k, left, true);
 }
@@ -118,16 +118,16 @@ OrdinalNode *OrdinalTree::detach(OrdinalNode *k)
     OrdinalNode *kp = k->parent_;
     bool left = false;
     if (kp) {
-        OrdinalNode *kc = (k->left_ != 0) ? k->left_ : k->right_;
+        OrdinalNode *kc = (k->left_ != nullptr) ? k->left_ : k->right_;
         left = (kp->left_ == k);
         if (left)
             kp->left_ = kc;
         else
             kp->right_ = kc;
-        if (kc != 0) kc->parent_ = kp;
+        if (kc != nullptr) kc->parent_ = kp;
     }
     else {
-        root_ = 0;
+        root_ = nullptr;
     }
     changed(kp, k, left, false);
     return k;
@@ -289,7 +289,7 @@ void OrdinalTree::populate(OrdinalNode **v, int n)
         {
             if (i < n) {
                 OrdinalNode *k = v[i];
-                OrdinalNode *kp = 0;
+                OrdinalNode *kp = nullptr;
                 if (i > 0) kp = v[(i - 1) >> 1];
                 k->parent_ = kp;
                 if (kp) {
@@ -298,8 +298,8 @@ void OrdinalTree::populate(OrdinalNode **v, int n)
                     else
                         kp->right_ = k;
                 }
-                k->left_ = 0;
-                k->right_ = 0;
+                k->left_ = nullptr;
+                k->right_ = nullptr;
             }
             else {
                 AvlBalance::restore(this, v[(i - 1) >> 1], i & 1, false);
@@ -394,7 +394,7 @@ void OrdinalTree::attachAfter(OrdinalNode *ka, OrdinalNode *kn)
 void OrdinalTree::attachAt(int i, OrdinalNode *kn)
 {
     if (i == weight()) {
-        OrdinalNode *kp = 0;
+        OrdinalNode *kp = nullptr;
         if (cachedNode_) {
             if (cachedIndex_ == i)
                 kp = cachedNode_;
@@ -438,7 +438,7 @@ void OrdinalTree::changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool atta
 
     AvlBalance::restore(this, kp, left, attached);
 
-    cachedNode_ = 0;
+    cachedNode_ = nullptr;
 }
 
 void OrdinalTree::rotated(OrdinalNode *k1, bool /*left*/)

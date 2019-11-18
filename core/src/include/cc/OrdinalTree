@@ -133,7 +133,7 @@ protected:
     void attachAt(int i, OrdinalNode *kn);
     OrdinalNode *unlinkAt(int i);
 
-    OrdinalTree(): root_(0), cachedNode_(0) {}
+    OrdinalTree(): root_{nullptr}, cachedNode_{nullptr} {}
     void populate(OrdinalNode **v, int n);
 
     template<class Node>
@@ -142,8 +142,8 @@ protected:
     template<class Node>
     inline void deplete() {
         clear(static_cast<Node *>(root_));
-        root_ = 0;
-        cachedNode_ = 0;
+        root_ = nullptr;
+        cachedNode_ = nullptr;
     }
 
     virtual void changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached);
@@ -195,20 +195,20 @@ Node *OrdinalTree::clone(Node *k)
 {
     if (!k) return 0;
     Node *kn = new Node(*k);
-    if (!k->parent_) kn->parent_ = 0;
+    if (!k->parent_) kn->parent_ = nullptr;
     if (k->left_) {
         kn->left_ = clone(k->left());
         kn->left_->parent_ = kn;
     }
     else {
-        kn->left_ = 0;
+        kn->left_ = nullptr;
     }
     if (k->right_) {
         kn->right_ = clone(k->right());
         kn->right_->parent_ = kn;
     }
     else {
-        kn->right_ = 0;
+        kn->right_ = nullptr;
     }
     return kn;
 }
