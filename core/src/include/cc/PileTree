@@ -36,10 +36,6 @@ public:
 
     inline ~PileNode() { deactivate(this); }
 
-    inline PileNode *left() const { return left_ ? static_cast<PileNode *>(left_) : nullptr; };
-    inline PileNode *right() const { return right_ ? static_cast<PileNode *>(right_) : nullptr; }
-    inline PileNode *parent() const { return parent_ ? static_cast<PileNode *>(parent_): nullptr; }
-
     Extent treeExtent_;
     Extent itemExtent_;
     Item item_;
@@ -73,9 +69,16 @@ public:
 
 private:
     inline static int treeExtent(Node *k) { return (k) ? k->treeExtent_ : 0; }
-    inline static void establishTreeExtent(Node *k) { k->treeExtent_ = treeExtent(k->left()) + treeExtent(k->right()) + k->itemExtent_; }
 
-    Node *find(Extent x, int *index = 0, Extent *x0 = 0) const;
+    inline static void establishTreeExtent(Node *k)
+    {
+        k->treeExtent_ =
+            treeExtent(static_cast<Node *>(k->left_)) +
+            treeExtent(static_cast<Node *>(k->right_)) +
+            k->itemExtent_;
+    }
+
+    Node *find(Extent x, int *index = nullptr, Extent *x0 = nullptr) const;
 
     void changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached) override;
     void rotated(OrdinalNode *k1, bool left) override;
@@ -128,7 +131,7 @@ bool PileTree<Item, Extent>::updateExtentAt(int index, Extent extent)
     if (extent == k->itemExtent_) return false;
     Extent delta = extent - k->itemExtent_;
     k->itemExtent_ = extent;
-    for (; k; k = k->parent())
+    for (; k; k = static_cast<Node *>(k->parent_))
         k->treeExtent_ += delta;
     return true;
 }
@@ -141,7 +144,7 @@ Extent PileTree<Item, Extent>::updateExtentAt(int index, const std::function<Ext
     if (extent == k->itemExtent_) return extent;
     Extent delta = extent - k->itemExtent_;
     k->itemExtent_ = extent;
-    for (; k; k = k->parent())
+    for (; k; k = static_cast<Node *>(k->parent_))
         k->treeExtent_ += delta;
     return extent;
 }

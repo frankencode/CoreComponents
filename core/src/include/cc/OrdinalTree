@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -11,6 +11,7 @@
 #include <cc/assert>
 #include <cc/ExclusiveAccess>
 #include <cc/Ref>
+#include <cc/AvlTree>
 
 namespace cc {
 
@@ -84,6 +85,11 @@ public:
         >::deactivate(node);
     }
 
+    inline void takeOver(const OrdinalNode *other)
+    {
+        *this = *other;
+    }
+
     OrdinalNode *left_;
     OrdinalNode *right_;
     OrdinalNode *parent_;
@@ -91,36 +97,13 @@ public:
     int balance_;
 };
 
-class OrdinalTree;
-
-class AvlBalance
-{
-protected:
-    static void restore(OrdinalTree *tree, OrdinalNode *kp, bool left, bool attached);
-
-private:
-    static OrdinalNode *rebalance(OrdinalTree *tree, OrdinalNode *k1);
-
-public:
-#ifndef NDEBUG
-    static int height(OrdinalNode *k);
-    static bool testBalance(OrdinalNode *k);
-#endif
-};
-
 #ifndef NDEBUG
 class OrdinalTreeTester;
 #endif
 
-class OrdinalTree: public AvlBalance
+class OrdinalTree: public AvlTree<OrdinalNode>
 {
 public:
-    inline OrdinalNode *min() const { return min(root_); }
-    inline OrdinalNode *max() const { return max(root_); }
-
-    void attach(OrdinalNode *kp, OrdinalNode *kn, bool left);
-    OrdinalNode *unlink(OrdinalNode *k);
-
     inline int count() const { return weight(); }
 
     static int getIndexOf(OrdinalNode *k);
@@ -133,23 +116,18 @@ protected:
     void attachAt(int i, OrdinalNode *kn);
     OrdinalNode *unlinkAt(int i);
 
-    OrdinalTree(): root_{nullptr}, cachedNode_{nullptr} {}
+    OrdinalTree(): cachedNode_{nullptr} {}
     void populate(OrdinalNode **v, int n);
 
-    template<class Node>
-    static Node *clone(Node *k);
-
-    template<class Node>
+    template<class UserNode>
     inline void deplete() {
-        clear(static_cast<Node *>(root_));
+        depleteTree<UserNode>(static_cast<UserNode *>(root_));
         root_ = nullptr;
         cachedNode_ = nullptr;
     }
 
-    virtual void changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached);
-    virtual void rotated(OrdinalNode *k1, bool /*left*/);
-
-    OrdinalNode *root_;
+    void changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached) override;
+    void rotated(OrdinalNode *k1, bool /*left*/) override;
 
 private:
     friend class AvlBalance;
@@ -159,25 +137,9 @@ private:
 
     void attachBefore(OrdinalNode *kb, OrdinalNode *kn);
 
-    OrdinalNode *detach(OrdinalNode *k);
-    void replace(OrdinalNode *ki, OrdinalNode *kl);
-
-    void rotate(OrdinalNode *k1, bool left);
-
     inline static void establishWeight(OrdinalNode *k) { k->weight_ = weight(k->left_) + weight(k->right_) + 1; }
 
-    static OrdinalNode *min(OrdinalNode *k);
-    static OrdinalNode *max(OrdinalNode *k);
-
-    static OrdinalNode *pred(OrdinalNode *k);
-    static OrdinalNode *succ(OrdinalNode *k);
-
-    template<class Node>
-    static void clear(Node *k);
-
-    static bool testStructure(OrdinalNode *k);
     static bool testWeight(OrdinalNode *k);
-    static bool testIteration(OrdinalNode *k);
 
     mutable ExclusiveSection cacheExclusive_;
     mutable OrdinalNode *cachedNode_;
@@ -188,38 +150,6 @@ inline int IndexTracking::getIndex() const
 {
     if (!node_) return -1;
     return OrdinalTree::getIndexOf(node_);
-}
-
-template<class Node>
-Node *OrdinalTree::clone(Node *k)
-{
-    if (!k) return 0;
-    Node *kn = new Node(*k);
-    if (!k->parent_) kn->parent_ = nullptr;
-    if (k->left_) {
-        kn->left_ = clone(k->left());
-        kn->left_->parent_ = kn;
-    }
-    else {
-        kn->left_ = nullptr;
-    }
-    if (k->right_) {
-        kn->right_ = clone(k->right());
-        kn->right_->parent_ = kn;
-    }
-    else {
-        kn->right_ = nullptr;
-    }
-    return kn;
-}
-
-template<class Node>
-void OrdinalTree::clear(Node *k)
-{
-    if (!k) return;
-    clear(k->left());
-    clear(k->right());
-    delete k;
 }
 
 #ifndef NDEBUG

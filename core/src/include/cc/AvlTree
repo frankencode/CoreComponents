@@ -1,0 +1,118 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/BinaryTree>
+
+namespace cc {
+
+template<class Node>
+class AvlTree: public BinaryTree<Node>
+{
+protected:
+    void restoreBalance(Node *kp, bool left, bool attached);
+
+private:
+    Node *rebalance(Node *k1);
+
+public:
+#ifndef NDEBUG
+    static int height(const Node *k);
+    static bool testBalance(const Node *k);
+#endif
+};
+
+template<class Node>
+void AvlTree<Node>::restoreBalance(Node *kp, bool left, bool attached)
+{
+    if (!kp) return;
+
+    int delta = 2 * left - 1;
+    Node *k = kp;
+    while (true) {
+        k->balance_ += attached ? delta : -delta;
+        if ((k->balance_ == 2) || (k->balance_ == -2))
+            k = rebalance(k);
+        if ( (attached ? (k->balance_ == 0) : (k->balance_ != 0)) ||
+             (!k->parent_) )
+            break;
+        delta = 2 * (k->parent_->left_ == k) - 1;
+        k = k->parent_;
+    }
+}
+
+template<class Node>
+Node *AvlTree<Node>::rebalance(Node *k1)
+{
+    if (k1->balance_ == 2)
+    {
+        Node *k2 = k1->left_;
+
+        if (k2->balance_ == -1) {
+            // -- case Ia->III
+            Node *k3 = k2->right_;
+            k1->balance_ = -(k3->balance_ == 1);
+            k2->balance_ = (k3->balance_ == -1);
+            k3->balance_ = 0;
+            this->rotate(k2, true);
+            this->rotate(k1, false);
+        }
+        else {
+            // -- case Ib, Ic
+            k1->balance_ = (k2->balance_ <= 0);
+            k2->balance_ = k2->balance_ - 1;
+            this->rotate(k1, false);
+        }
+    }
+    else {
+        Node *k2 = k1->right_;
+
+        if (k2->balance_ == 1) {
+            // -- case IIc->IV
+            Node *k3 = k2->left_;
+            k1->balance_ = (k3->balance_ == -1);
+            k2->balance_ = -(k3->balance_ == 1);
+            k3->balance_ = 0;
+            this->rotate(k2, false);
+            this->rotate(k1, true);
+        }
+        else {
+            // -- case IIa, IIb
+            k1->balance_ = -(k2->balance_ >= 0);
+            k2->balance_ = k2->balance_ + 1;
+            this->rotate(k1, true);
+        }
+    }
+
+    return k1->parent_;
+}
+
+#ifndef NDEBUG
+
+template<class Node>
+int AvlTree<Node>::height(const Node *k)
+{
+    if (k == nullptr) return 0;
+    int h1 = height(k->left_);
+    int h2 = height(k->right_);
+    return (h1 < h2 ? h2 : h1) + 1;
+}
+
+template<class Node>
+bool AvlTree<Node>::testBalance(const Node *k)
+{
+    if (!k) return true;
+    if (!((k->balance_ == -1) || (k->balance_ == 0) || (k->balance_ == 1))) return false;
+    if ((height(k->left_) - height(k->right_)) != k->balance_) return false;
+    return testBalance(k->left_) && testBalance(k->right_);
+}
+
+#endif // ndef NDEBUG
+
+} // namespace cc

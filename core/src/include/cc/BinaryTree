@@ -1,0 +1,344 @@
+/*
+ * Copyright (C) 2007-2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** Binary tree template
+  * \tparam Node node type.
+  */
+template<class Node>
+class BinaryTree
+{
+public:
+    void attach(Node *kp, Node *kn, bool left);
+    Node *unlink(Node *k);
+
+    Node *min() const { return min(root_); }
+    Node *max() const { return max(root_); }
+
+    template<class UserNode>
+    static UserNode *clone(const UserNode *k);
+
+    template<class UserNode>
+    static void depleteTree(UserNode *k);
+
+protected:
+    Node *detach(Node *k);
+    void replace(Node *ki, Node *kl);
+
+    void rotate(Node *k1, bool left);
+
+    static Node *pred(Node *k);
+    static Node *succ(Node *k);
+
+    static Node *min(Node *k);
+    static Node *max(Node *k);
+
+    /** Invoked whenever a node has been attached or detached from the tree
+      * \param kp parent node
+      * \param kc child node that has been attached or detached
+      * \param left true if kc is the left child of kp
+      * \param attached true if kc has been attached, false if kc has been detached
+      */
+    virtual void changed(Node *kp, Node *kc, bool left, bool attached) = 0;
+
+    /** Invoked whenever a node has been rotated
+      * \param k1 node that has been rotated
+      * \param left rotation direction
+      */
+    virtual void rotated(Node *k1, bool left) = 0;
+
+#ifndef NDEBUG
+    static bool testStructure(const Node *k);
+    static bool testIteration(Node *k);
+#endif
+
+    Node *root_ { nullptr };
+};
+
+/** Attach the new leaf node \a k under parent node \a kp as the left or right child.
+  */
+template<class Node>
+void BinaryTree<Node>::attach(Node *kp, Node *k, bool left)
+{
+    if (kp) {
+        if (left)
+            kp->left_ = k;
+        else
+            kp->right_ = k;
+
+        k->parent_ = kp;
+        k->left_ = nullptr;
+        k->right_ = nullptr;
+    }
+    else {
+        root_ = k;
+        k->parent_ = nullptr;
+        k->left_ = nullptr;
+        k->right_ = nullptr;
+    }
+
+    changed(kp, k, left, true);
+}
+
+/** Detach the leaf or list node \a k from the tree.
+  */
+template<class Node>
+Node *BinaryTree<Node>::detach(Node *k)
+{
+    Node *kp = k->parent_;
+    bool left = false;
+
+    if (kp) {
+        Node *kc = (k->left_ != nullptr) ? k->left_ : k->right_;
+        left = (kp->left_ == k);
+
+        if (left)
+            kp->left_ = kc;
+        else
+            kp->right_ = kc;
+
+        if (kc != nullptr) kc->parent_ = kp;
+    }
+    else {
+        root_ = nullptr;
+    }
+
+    changed(kp, k, left, false);
+
+    return k;
+}
+
+/** Put the leaf node \a kl into the place of inner node \a ki.
+  */
+template<class Node>
+void BinaryTree<Node>::replace(Node *ki, Node *kl)
+{
+    // establish links from to kl to the neighbors of ki
+    // (this is meant to take over things like weight and balance, but not the user data stored in ki)
+    kl->takeOver(ki);
+
+    // establish links from neighbors to kl
+    Node *kp = ki->parent_;
+    if (kp) {
+        if (kp->left_ == ki)
+            kp->left_ = kl;
+        else
+            kp->right_ = kl;
+    }
+    else {
+        root_ = kl;
+    }
+
+    if (ki->left_)
+        ki->left_->parent_ = kl;
+
+    if (ki->right_)
+        ki->right_->parent_ = kl;
+}
+
+/** Remove the node \a k from the tree.
+  */
+template<class Node>
+Node *BinaryTree<Node>::unlink(Node *k)
+{
+    if (!k->left_ && !k->right_)
+        detach(k);
+    else if (!k->left_)
+        replace(k, detach(min(k->right_)));
+    else if (!k->right_)
+        replace(k, detach(max(k->left_)));
+    else if (k->left_->weight_ < k->right_->weight_)
+        replace(k, detach(min(k->right_)));
+    else
+        replace(k, detach(max(k->left_)));
+
+    return k;
+}
+
+template<class Node>
+template<class UserNode>
+UserNode *BinaryTree<Node>::clone(const UserNode *k)
+{
+    if (!k) return nullptr;
+
+    UserNode *kn = new UserNode{*k};
+    if (!k->parent_) kn->parent_ = nullptr;
+
+    if (k->left_) {
+        kn->left_ = clone<UserNode>(static_cast<UserNode *>(k->left_));
+        kn->left_->parent_ = kn;
+    }
+    else {
+        kn->left_ = nullptr;
+    }
+
+    if (k->right_) {
+        kn->right_ = clone<UserNode>(static_cast<UserNode *>(k->right_));
+        kn->right_->parent_ = kn;
+    }
+    else {
+        kn->right_ = nullptr;
+    }
+
+    return kn;
+}
+
+template<class Node>
+template<class UserNode>
+void BinaryTree<Node>::depleteTree(UserNode *k)
+{
+    if (!k) return;
+    depleteTree<UserNode>(static_cast<UserNode *>(k->left_));
+    depleteTree<UserNode>(static_cast<UserNode *>(k->right_));
+    delete k;
+}
+
+/** Perform an equivalent tree transformation.
+  *
+  * Rotate left:
+  *
+  *    k1      =>      k2
+  *   /  \            /  \
+  *  a    k2         k1   c
+  *      /  \       /  \
+  *     b    c     a    b
+  *
+  * Rotate right:
+  *
+  *      k1    =>    k2
+  *     /  \        /  \
+  *    k2   c      a    k1
+  *   /  \             /  \
+  *  a    b           b    c
+  */
+template<class Node>
+void BinaryTree<Node>::rotate(Node *k1, bool left)
+{
+    Node *k2 = left ? k1->right_ : k1->left_;
+
+    if (k1->parent_) {
+        if (k1->parent_->left_ == k1)
+            k1->parent_->left_ = k2;
+        else
+            k1->parent_->right_ = k2;
+    }
+    else {
+        root_ = k2;
+    }
+
+    k2->parent_ = k1->parent_;
+    k1->parent_ = k2;
+
+    if (left) {
+        k1->right_ = k2->left_;
+        if (k2->left_)
+            k2->left_->parent_ = k1;
+        k2->left_ = k1;
+    }
+    else {
+        k1->left_ = k2->right_;
+        if (k2->right_)
+            k2->right_->parent_ = k1;
+        k2->right_ = k1;
+    }
+
+    rotated(k1, left);
+}
+
+template<class Node>
+Node *BinaryTree<Node>::pred(Node *k)
+{
+    if (k->left_) return max(k->left_);
+
+    Node *kp = k->parent_;
+    while (kp) {
+        if (k == kp->right_) break;
+        k = kp;
+        kp = kp->parent_;
+    }
+
+    return kp;
+}
+
+template<class Node>
+Node *BinaryTree<Node>::succ(Node *k)
+{
+    if (k->right_) return min(k->right_);
+
+    Node *kp = k->parent_;
+    while (kp) {
+        if (k == kp->left_) break;
+        k = kp;
+        kp = kp->parent_;
+    }
+
+    return kp;
+}
+
+template<class Node>
+Node *BinaryTree<Node>::min(Node *k)
+{
+    Node *k2 = k;
+    while (k) {
+        k2 = k;
+        k = k->left_;
+    }
+    return k2;
+}
+
+template<class Node>
+Node *BinaryTree<Node>::max(Node *k)
+{
+    Node *k2 = k;
+    while (k) {
+        k2 = k;
+        k = k->right_;
+    }
+    return k2;
+}
+
+#ifndef NDEBUG
+
+template<class Node>
+bool BinaryTree<Node>::testStructure(const Node *k)
+{
+    if (!k) return true;
+    if (k->parent_) {
+        if (!((k == k->parent_->left_) || (k == k->parent_->right_)))
+            return false;
+    }
+    return testStructure(k->left_) && testStructure(k->right_);
+}
+
+template<class Node>
+bool BinaryTree<Node>::testIteration(Node *k)
+{
+    if (k == 0) return true;
+    {
+        Node *k2 = succ(k);
+        if (k2) {
+            if (k != pred(k2))
+                return false;
+        }
+    }
+    {
+        Node *k2 = pred(k);
+        if (k2) {
+            if (k != succ(k2))
+                return false;
+        }
+    }
+    return testIteration(k->left_) && testIteration(k->right_);
+}
+
+#endif
+
+} // namespace cc

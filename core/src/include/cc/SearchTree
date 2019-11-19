@@ -23,10 +23,6 @@ public:
 
     ~SearchNode() { deactivate(this); }
 
-    SearchNode *left()   const { return left_   ? static_cast<SearchNode *>(left_)   : nullptr; }
-    SearchNode *right()  const { return right_  ? static_cast<SearchNode *>(right_)  : nullptr; }
-    SearchNode *parent() const { return parent_ ? static_cast<SearchNode *>(parent_) : nullptr; }
-
     Item item_;
 };
 
@@ -47,10 +43,10 @@ public:
     SearchTree(const SearchTree &b);
     const SearchTree &operator=(const SearchTree &b);
 
-    bool lookupByIndex(int index, Node **node = 0) const;
+    bool lookupByIndex(int index, Node **node = nullptr) const;
 
     template<class Pattern>
-    Node *find(const Pattern &pattern, bool *found = 0, bool *below = 0, int *index = 0) const;
+    Node *find(const Pattern &pattern, bool *found = nullptr, bool *below = nullptr, int *index = nullptr) const;
 
     void remove(Node *k) { delete static_cast<Node *>(unlink(k)); }
 
@@ -88,7 +84,7 @@ template<class Node>
 SearchTree<Node>::SearchTree(const SearchTree &b)
 {
     if (b.root_)
-        root_ = clone(static_cast<Node *>(b.root_));
+        root_ = clone<Node>(static_cast<Node *>(b.root_));
 }
 
 template<class Node>
@@ -96,7 +92,7 @@ const SearchTree<Node> &SearchTree<Node>::operator=(const SearchTree &b)
 {
     deplete();
     if (b.root_)
-        root_ = clone(static_cast<Node *>(b.root_));
+        root_ = clone<Node>(static_cast<Node *>(b.root_));
     return *this;
 }
 
@@ -112,7 +108,7 @@ template<class Node>
 template<class Pattern>
 Node *SearchTree<Node>::find(const Pattern &pattern, bool *found, bool *below, int *index) const
 {
-    Node *k2 = 0;
+    Node *k2 = nullptr;
     if (found) *found = false;
     int j = -1;
     if (root_) {
@@ -126,7 +122,7 @@ Node *SearchTree<Node>::find(const Pattern &pattern, bool *found, bool *below, i
                     if (below) *below = true;
                     break;
                 }
-                k = k->left();
+                k = static_cast<Node *>(k->left_);
             }
             else if (k->item_ < pattern) {
                 if (!k->right_) {
@@ -134,7 +130,7 @@ Node *SearchTree<Node>::find(const Pattern &pattern, bool *found, bool *below, i
                     break;
                 }
                 j0 = j + 1;
-                k = k->right();
+                k = static_cast<Node *>(k->right_);
             }
             else { // item == k->data()
                 if (found) *found = true;
@@ -191,14 +187,14 @@ bool SearchTree<Node>::testOrder(Node *k)
 {
     if (!k) return true;
     if (k->left_) {
-        if (!(k->left()->item_ < k->item_))
+        if (!(static_cast<Node *>(k->left_)->item_ < k->item_))
             return false;
     }
     if (k->right_) {
-        if (!(k->item_ < k->right()->item_))
+        if (!(k->item_ < static_cast<Node *>(k->right_)->item_))
             return false;
     }
-    return testOrder(k->left()) && testOrder(k->right());
+    return testOrder(static_cast<Node *>(k->left_)) && testOrder(static_cast<Node *>(k->right_));
 }
 
 class SearchTreeTester: public OrdinalTreeTester

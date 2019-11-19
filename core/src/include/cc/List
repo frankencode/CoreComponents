@@ -280,7 +280,7 @@ private:
     List() {}
     List(int n): tree_{n} {}
 
-    explicit List(const List &b): tree_(b.tree_) {}
+    explicit List(const List &b): tree_{b.tree_} {}
     const List &operator=(const List &b);
 
     template<class Heap>
