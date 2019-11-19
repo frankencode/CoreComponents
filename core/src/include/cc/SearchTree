@@ -84,7 +84,7 @@ template<class Node>
 SearchTree<Node>::SearchTree(const SearchTree &b)
 {
     if (b.root_)
-        root_ = clone<Node>(static_cast<Node *>(b.root_));
+        root_ = cloneTree<Node>(static_cast<Node *>(b.root_));
 }
 
 template<class Node>
@@ -92,7 +92,7 @@ const SearchTree<Node> &SearchTree<Node>::operator=(const SearchTree &b)
 {
     deplete();
     if (b.root_)
-        root_ = clone<Node>(static_cast<Node *>(b.root_));
+        root_ = cloneTree<Node>(static_cast<Node *>(b.root_));
     return *this;
 }
 

@@ -24,7 +24,7 @@ public:
     Node *max() const { return max(root_); }
 
     template<class UserNode>
-    static UserNode *clone(const UserNode *k);
+    static UserNode *cloneTree(const UserNode *k);
 
     template<class UserNode>
     static void depleteTree(UserNode *k);
@@ -165,7 +165,7 @@ Node *BinaryTree<Node>::unlink(Node *k)
 
 template<class Node>
 template<class UserNode>
-UserNode *BinaryTree<Node>::clone(const UserNode *k)
+UserNode *BinaryTree<Node>::cloneTree(const UserNode *k)
 {
     if (!k) return nullptr;
 
@@ -173,7 +173,7 @@ UserNode *BinaryTree<Node>::clone(const UserNode *k)
     if (!k->parent_) kn->parent_ = nullptr;
 
     if (k->left_) {
-        kn->left_ = clone<UserNode>(static_cast<UserNode *>(k->left_));
+        kn->left_ = cloneTree<UserNode>(static_cast<UserNode *>(k->left_));
         kn->left_->parent_ = kn;
     }
     else {
@@ -181,7 +181,7 @@ UserNode *BinaryTree<Node>::clone(const UserNode *k)
     }
 
     if (k->right_) {
-        kn->right_ = clone<UserNode>(static_cast<UserNode *>(k->right_));
+        kn->right_ = cloneTree<UserNode>(static_cast<UserNode *>(k->right_));
         kn->right_->parent_ = kn;
     }
     else {
