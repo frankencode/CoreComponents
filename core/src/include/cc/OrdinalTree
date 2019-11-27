@@ -59,8 +59,8 @@ class OrdinalNode
 {
 public:
     OrdinalNode():
-        weight_{1},
-        balance_{0}
+        balance_{0},
+        weight_{1}
     {}
 
     template<class Node>
@@ -93,8 +93,8 @@ public:
     OrdinalNode *left_;
     OrdinalNode *right_;
     OrdinalNode *parent_;
-    int weight_;
     int balance_;
+    int weight_;
 };
 
 #ifndef NDEBUG

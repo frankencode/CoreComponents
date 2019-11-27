@@ -94,10 +94,10 @@ template<class Node>
 Node *BinaryTree<Node>::detach(Node *k)
 {
     Node *kp = k->parent_;
+    Node *kc = k->left_ ? k->left_ : k->right_;
     bool left = false;
 
     if (kp) {
-        Node *kc = (k->left_ != nullptr) ? k->left_ : k->right_;
         left = (kp->left_ == k);
 
         if (left)
@@ -105,10 +105,12 @@ Node *BinaryTree<Node>::detach(Node *k)
         else
             kp->right_ = kc;
 
-        if (kc != nullptr) kc->parent_ = kp;
+        if (kc) kc->parent_ = kp;
     }
     else {
-        root_ = nullptr;
+        root_ = kc;
+
+        if (kc) kc->parent_ = nullptr;
     }
 
     changed(kp, k, left, false);
@@ -149,12 +151,8 @@ void BinaryTree<Node>::replace(Node *ki, Node *kl)
 template<class Node>
 Node *BinaryTree<Node>::unlink(Node *k)
 {
-    if (!k->left_ && !k->right_)
+    if (!k->left_ || !k->right_)
         detach(k);
-    else if (!k->left_)
-        replace(k, detach(min(k->right_)));
-    else if (!k->right_)
-        replace(k, detach(max(k->left_)));
     else if (k->left_->weight_ < k->right_->weight_)
         replace(k, detach(min(k->right_)));
     else
