@@ -1,0 +1,399 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Local>
+#include <cc/BucketMap>
+#include <cc/debug> // DEBUG
+#include <cc/Format> // DEBUG
+
+namespace cc {
+namespace index {
+
+struct Branch;
+
+struct Node
+{
+    static constexpr unsigned Capacity = 16;
+
+    Branch *parent_ { nullptr };
+    unsigned fill_ { 0 };
+    unsigned isBranch_ : 1;
+    unsigned isIdeal_ : 1;
+};
+
+struct Head
+{
+    int64_t weight_;
+    Node *node_;
+};
+
+class Branch: public Node
+{
+public:
+    Branch();
+
+    Local<Head> &at(unsigned nodeIndex) { assert(nodeIndex < fill_); return head_[nodeIndex]; }
+    const Local<Head> &at(unsigned nodeIndex) const { assert(nodeIndex < fill_); return head_[nodeIndex]; }
+
+    void push(unsigned nodeIndex, const Head *head);
+    void pop(unsigned nodeIndex);
+
+    int64_t weightAt(unsigned nodeIndex) const { return at(nodeIndex)->weight_; }
+
+    void copyToPred(Branch *pred);
+
+private:
+    Local<Head> head_[Node::Capacity];
+};
+
+template<class Item>
+class Leaf: public Node
+{
+public:
+    Leaf() {
+        isBranch_ = 0;
+        isIdeal_ = 1;
+    }
+
+    Item &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+    const Item &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+
+    void push(unsigned nodeIndex, const Item &item) { slot_[map_->pushEntry(nodeIndex, fill_)] = item; }
+    void pop(unsigned nodeIndex) { map_->popEntry(nodeIndex, fill_); }
+
+    int64_t weightAt(unsigned nodeIndex) const { return 1; }
+
+    void copyToPred(Leaf *pred) const;
+
+private:
+    Local<BucketMap<Node::Capacity>> map_;
+    Item slot_[Node::Capacity];
+};
+
+template<class Item>
+void Leaf<Item>::copyToPred(Leaf *pred) const
+{
+    for (unsigned i = 0; i < fill_; ++i)
+        pred->push(pred->fill_, at(i));
+}
+
+class Tree;
+
+class Path
+{
+public:
+    Path();
+    Path(const Tree *tree, int64_t index, bool insertion = false);
+
+    explicit operator bool() const { return node_; }
+    Node *node() const { return node_; }
+    Branch *branch() const { assert(node_ && node_->isBranch_); return static_cast<Branch *>(node_); }
+    template<class Item> Leaf<Item> *leaf() const { assert(node_ && !node_->isBranch_); return static_cast<Leaf<Item> *>(node_); }
+
+    unsigned depth() const { return depth_; }
+    void grow() { ++depth_; origin_ <<= 4; }
+
+    unsigned nodeIndex() const { return nodeIndex_; }
+    void setNodeIndex(unsigned newValue) { nodeIndex_ = newValue; }
+
+    template<class Item> Item &item(Item &fallback) const { return (*this) ? leaf<Item>()->at(nodeIndex_) : fallback; }
+
+    bool hasPred() const { return origin_ != 0; }
+    Path getPred() const { Local<Path> path{*this}; path->stepPred(); return path; }
+    Path getSucc() const { Local<Path> path{*this}; path->stepSucc(); return path; }
+
+    bool hasParent() const { return depth_ > 0; }
+    Path getParent() const { Local<Path> path{*this}; path->stepUp(); return path; }
+
+    void stepDown(unsigned egress);
+    void stepUp();
+    bool stepPred();
+    bool stepSucc();
+
+    bool iterateForward();
+    bool iterateBackward();
+
+    unsigned getOrigin() const;
+    void setOrigin(unsigned newValue);
+
+    unsigned getOriginAtDepth(unsigned depth) const;
+    void setOriginAtDepth(unsigned depth, unsigned newValue);
+
+    String toString() const // DEBUG
+    {
+        return Format{} << "Path { depth: " << depth_ << ", getOrigin(): " << ((depth_ > 0) ? getOrigin() : 0u) << ", origin: 0x" << hex(origin_, 16) << ", nodeIndex: " << nodeIndex_ << ", node: " << (void *)node_ << ", fill: " << (node_ ? node_->fill_ : 0u) << ", parent: " << (void *)(node_ ? node_->parent_ : nullptr) << " }";
+    }
+
+private:
+    static constexpr unsigned MaxDepth = 16;
+
+    uint64_t origin_;
+    Node *node_;
+    unsigned depth_;
+    unsigned nodeIndex_;
+};
+
+class Tree
+{
+public:
+    template<class Item>
+    void deplete() {
+        if (root_->node_) {
+            deplete<Item>(root_->node_);
+            *this = Tree{};
+        }
+    }
+
+    template<class Item>
+    void push(int64_t index, const Item &item);
+
+    template<class Item>
+    void pop(int64_t index);
+
+    int64_t count() const { return root_->weight_; }
+
+    String dotify() const;
+
+private:
+    friend class Path;
+
+    unsigned commonDepth(const Path *first, const Path *second);
+
+    template<class Node>
+    void dissipateForward(const Path *pred, const Path *dest);
+
+    template<class Node>
+    void dissipateBackward(const Path *dest, const Path *succ);
+
+    template<class Node>
+    void dissipateToPred(Path *dest, Path *pred);
+
+    template<class Node>
+    void dissipateToSucc(Path *dest, Path *succ);
+
+    template<class Item>
+    void deplete(Node *node);
+
+    void updateWeights(const Path *path, int64_t delta, unsigned minDepth);
+
+    void updateWeights(const Path *path, int64_t delta)
+    {
+        updateWeights(path, delta, 0);
+        root_->weight_ += delta;
+    }
+
+    void shiftWeights(const Path *from, const Path *to, int64_t delta)
+    {
+        unsigned minDepth = commonDepth(from, to);
+        updateWeights(from, -delta, minDepth);
+        updateWeights(to  ,  delta, minDepth);
+    }
+
+    template<class Node>
+    void dissipate(Path *dest);
+
+    void joinSucc(Path *path, Node *newNode);
+
+    template<class Node>
+    void relieve(const Path *dest);
+
+    template<class Node>
+    void collapseSucc(const Path *dest, const Path *succ);
+
+    void reduce();
+
+    void dotifyNode(Format &format, const Head *head, unsigned origin = 0u) const;
+
+    Local<Head> root_ {
+        .weight_ = 0,
+        .node_ = nullptr
+    };
+
+    unsigned height_ { 0 };
+};
+
+template<class Node>
+void Tree::dissipateForward(const Path *pred, const Path *dest)
+{
+    Node *a = static_cast<Node *>(pred->node());
+    Node *b = static_cast<Node *>(dest->node());
+
+    assert(b->fill_ < Node::Capacity);
+    assert(a->fill_ > 0);
+
+    int64_t delta = a->weightAt(a->fill_ - 1);
+
+    b->push(0, a->at(a->fill_ - 1));
+    a->pop(a->fill_ - 1);
+
+    shiftWeights(pred, dest, delta);
+}
+
+template<class Node>
+void Tree::dissipateBackward(const Path *dest, const Path *succ)
+{
+    Node *a = static_cast<Node *>(dest->node());
+    Node *b = static_cast<Node *>(succ->node());
+
+    assert(a->fill_ < Node::Capacity);
+    assert(b->fill_ > 0);
+
+    int64_t delta = b->weightAt(0);
+
+    a->push(a->fill_, b->at(0));
+    b->pop(0);
+
+    shiftWeights(succ, dest, delta);
+}
+
+template<class Node>
+void Tree::dissipateToPred(Path *dest, Path *pred)
+{
+    if (dest->nodeIndex() > 0) {
+        dissipateBackward<Node>(pred, dest);
+        dest->setNodeIndex(dest->nodeIndex() - 1);
+    }
+    else {
+        *dest = *pred;
+        dest->setNodeIndex(dest->node()->fill_);
+    }
+}
+
+template<class Node>
+void Tree::dissipateToSucc(Path *dest, Path *succ)
+{
+    if (dest->nodeIndex() < dest->node()->fill_) {
+        dissipateForward<Node>(dest, succ);
+    }
+    else {
+        *dest = *succ;
+        dest->setNodeIndex(0);
+    }
+}
+
+template<class Item>
+void Tree::deplete(Node *node)
+{
+    if (node->isBranch_) {
+        Branch *branch = static_cast<Branch *>(node);
+        for (unsigned i = 0; i < branch->fill_; ++i)
+            deplete<Item>(branch->at(i)->node_);
+        delete branch;
+    }
+    else {
+        delete static_cast<Leaf<Item> *>(node);
+    }
+}
+
+template<class Item>
+void Tree::push(int64_t index, const Item &item)
+{
+    Local<Path> path{this, index, true};
+
+    if (path) {
+        dissipate<Leaf<Item>>(&path);
+        static_cast<Leaf<Item> *>(path->node())->push(path->nodeIndex(), item);
+        updateWeights(path, 1);
+    }
+    else if (index == 0) {
+        assert(!root_->node_);
+        Leaf<Item> *leaf = new Leaf<Item>;
+        leaf->push(0, item);
+        root_->node_ = leaf;
+        root_->weight_ = 1;
+    }
+}
+
+template<class Node>
+void Tree::dissipate(Path *dest)
+{
+    do {
+        if (dest->node()->fill_ < Node::Capacity) break;
+
+        const bool isIdeal = root_->node_->isIdeal_;
+
+        if (!isIdeal && dest->hasPred() && !dest->node()->isBranch_) {
+            Local<Path> pred = dest->getPred();
+            if (pred->node()->fill_ < Node::Capacity) {
+                dissipateToPred<Node>(dest, &pred);
+                break;
+            }
+        }
+
+        Local<Path> succ;
+        if (!isIdeal) succ = dest->getSucc();
+
+        if (!succ || succ->node()->fill_ == Node::Capacity) {
+            joinSucc(dest, new Node);
+            succ = dest->getSucc();
+        }
+
+        dissipateToSucc<Node>(dest, &succ);
+    }
+    while (false);
+}
+
+template<class Item>
+void Tree::pop(int64_t index)
+{
+    if (count() > 1) {
+        Local<Path> path{this, index};
+        path->leaf<Item>()->pop(path->nodeIndex());
+        updateWeights(path, -1);
+        relieve<Leaf<Item>>(path);
+        reduce();
+    }
+    else
+        deplete<Item>();
+}
+
+template<class Node>
+void Tree::relieve(const Path *dest)
+{
+    const unsigned minFill = Node::Capacity >> 1;
+
+    if (dest->node()->fill_ < minFill) {
+        do {
+            Local<Path> succ = dest->getSucc();
+            if (succ) {
+                if (succ->node()->fill_ > minFill) {
+                    dissipateBackward<Node>(dest, succ);
+                    break;
+                }
+            }
+
+            Local<Path> pred = dest->getPred();
+            if (pred) {
+                if (pred->node()->fill_ > minFill) {
+                    dissipateForward<Node>(pred, dest);
+                    break;
+                }
+            }
+
+            if (succ) collapseSucc<Node>(dest, succ);
+            else if (pred) collapseSucc<Node>(pred, dest);
+        }
+        while (false);
+    }
+}
+
+template<class Node>
+void Tree::collapseSucc(const Path *dest, const Path *succ)
+{
+    unsigned succOrigin = succ->getOrigin();
+    shiftWeights(succ, dest, succ->node()->parent_->at(succOrigin)->weight_);
+    static_cast<Node *>(succ->node())->copyToPred(static_cast<Node *>(dest->node()));
+    Local<Path> parent = succ->getParent();
+    parent->branch()->pop(succOrigin);
+    delete static_cast<Node *>(succ->node());
+    relieve<Branch>(parent);
+}
+
+}} // namespace cc::index

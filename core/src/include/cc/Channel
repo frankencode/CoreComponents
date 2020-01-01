@@ -128,16 +128,16 @@ public:
     }
 
     /// \copydoc pushBack()
-    inline void push(const T &item) { return pushBack(item); }
+    void push(const T &item) { return pushBack(item); }
 
     /// \copydoc popFront()
-    inline T pop(T *item = 0) { return popFront(item); }
+    T pop(T *item = 0) { return popFront(item); }
 
     /// \copydoc popFrontBefore()
-    inline bool popBefore(double timeout, T *item = 0) { return popFrontBefore(timeout, item); }
+    bool popBefore(double timeout, T *item = 0) { return popFrontBefore(timeout, item); }
 
     /// Return number of queued items
-    inline int count() const { Guard<Mutex> guard(mutex_); return queue_->count(); }
+    int count() const { Guard<Mutex> guard(mutex_); return queue_->count(); }
 
     /** Connect with another channel
       * \param other other channel to connect to

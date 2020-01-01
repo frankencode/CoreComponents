@@ -33,34 +33,34 @@ public:
       * \param size size of the array
       * \return new object instance
       */
-    inline static Ref<Array> create(int size) { return new Array(size); }
+    static Ref<Array> create(int size) { return new Array(size); }
         // TODO: make obsolete in favour of Array::allocate()
 
     /** Create a new array
       * \param size size of the array
       * \return new object instance
       */
-    inline static Ref<Array> allocate(int size) { return new Array(size); }
+    static Ref<Array> allocate(int size) { return new Array(size); }
 
     /** Create a new array
       * \param size size of the array
       * \param zero preset item value
       * \return new object instance
       */
-    inline static Ref<Array> create(int size, T zero) { return new Array(size, zero); }
+    static Ref<Array> create(int size, T zero) { return new Array(size, zero); }
 
     /** Create a deep copy of a memory vector
       * \param data pointer to a memory vector of type T
       * \param size size of the memory vector
       * \return new object instance
       */
-    inline static Ref<Array> copy(const T *data, int size) { return new Array(data, size); }
+    static Ref<Array> copy(const T *data, int size) { return new Array(data, size); }
 
     /** Create a deep copy of an array
       * \param other the other array
       * \return new object instance
       */
-    inline static Ref<Array> copy(const Array *other) { return other->copy(); }
+    static Ref<Array> copy(const Array *other) { return other->copy(); }
 
     /** Write contents
       * \param b source to copy
@@ -74,7 +74,7 @@ public:
     /** %Set all items to a default value
       * \param zero default value
       */
-    inline void fill(const T &zero)
+    void fill(const T &zero)
     {
         for (int i = 0, n = size_; i < n; ++i)
             data_[i] = zero;
@@ -83,7 +83,7 @@ public:
     /** Shrink in size
       * \param newSize new size
       */
-    inline void truncate(int newSize)
+    void truncate(int newSize)
     {
         if (newSize <= 0)
             reset();
@@ -92,13 +92,13 @@ public:
     }
 
     /// Number of items
-    inline int count() const { return size_; }
+    int count() const { return size_; }
 
     /** Check if index is within range
       * \param i item index
       * \return true if i is a valid index
       */
-    inline bool has(int i) const {
+    bool has(int i) const {
         return (0 <= i) && (i < size_);
     }
 
@@ -106,7 +106,7 @@ public:
       * \param i byte index
       * \return low-level reference
       */
-    inline const T &at(int i) const {
+    const T &at(int i) const {
         CC_ASSERT(has(i));
         return data_[i];
     }
@@ -115,32 +115,32 @@ public:
       * \param i byte index
       * \return low-level reference
       */
-    inline T &at(int i) {
+    T &at(int i) {
         CC_ASSERT(has(i));
         return data_[i];
     }
 
     /// Return byte pointer to the internal memory vector (readonly)
-    inline const T *data() const { return data_; }
+    const T *data() const { return data_; }
 
     /// Return byte pointer to the internal memory vector
-    inline T *data() { return data_; }
+    T *data() { return data_; }
 
     /// Cast to low-level C array (readonly)
-    inline operator const T*() const { return data_; }
+    operator const T*() const { return data_; }
 
     /// Cast to low-level C array
-    inline operator T*() { return data_; }
+    operator T*() { return data_; }
 
     /// Create a deep copy of this string
-    inline Ref<Array> copy() const { return copy(0, size_); }
+    Ref<Array> copy() const { return copy(0, size_); }
 
     /** Copy a range
       * \param i0 begin of range (index of first selected item)
       * \param i1 end of range (index behind the last selected item)
       * \return copied range
       */
-    inline Ref<Array> copy(int i0, int i1) const {
+    Ref<Array> copy(int i0, int i1) const {
         if (i0 < 0) i0 = 0;
         if (i0 > size_) i0 = size_;
         if (i1 < 0) i1 = 0;
@@ -153,38 +153,38 @@ public:
       * \param i1 end of range (index behind the last selected byte)
       * \return true if range is valid
       */
-    inline bool canSelect(int i0, int i1) const { return i0 <= i1 && 0 <= i0 && i1 <= size_; }
+    bool canSelect(int i0, int i1) const { return i0 <= i1 && 0 <= i0 && i1 <= size_; }
 
     /** Create a selection (reference to a range of this array)
       * \param i0 begin of range (index of first selected byte)
       * \param i1 end of range (index behind the last selected byte)
       * \return the selection
       */
-    inline Ref<Array> select(int i0, int i1) const { return new Array(this, i0, i1); }
+    Ref<Array> select(int i0, int i1) const { return new Array(this, i0, i1); }
 
     /** Return the underlying unselected array
       * \return original string
       */
-    inline Array *unselect() const { return parent_; }
+    Array *unselect() const { return parent_; }
 
     /** Copy the head of this array
       * \param n size of the head
       * \return copied array
       */
-    inline Ref<Array> head(int n) const { return copy(0, n); }
+    Ref<Array> head(int n) const { return copy(0, n); }
 
     /** Copy the tail of this string
       * \param n size of the tail
       * \return copied array
       */
-    inline Ref<Array> tail(int n) const { return copy(size_ - n, size_); }
+    Ref<Array> tail(int n) const { return copy(size_ - n, size_); }
 
     /** Search for an item value
       * \param item item value to search for
       * \param index start position for the search
       * \return position the item value was found in or count() if item value could not be found
       */
-    inline int find(const T &item, int index = 0) const {
+    int find(const T &item, int index = 0) const {
         while (index < size_)
             if (data_[index++] == item) return index - 1;
         return size_;
@@ -194,14 +194,14 @@ public:
       * \param item item value
       * \return true if item value appears in the array
       */
-    inline bool contains(const T &item) const { return find(item) < size_; }
+    bool contains(const T &item) const { return find(item) < size_; }
 
     /** Replace all appearances of an item value
       * \param oldItem old item value to search for
       * \param newItem new item value to put in place
       * \return pointer to this array
       */
-    inline Array *replaceInsitu(const T &oldItem, const T &newItem) {
+    Array *replaceInsitu(const T &oldItem, const T &newItem) {
         for (int i = 0; i < size_; ++i) {
             if (data_[i] == oldItem)
                 data_[i] = newItem;
@@ -214,7 +214,7 @@ public:
       * \param i start search from this index
       * \return index of first occurence of pattern or count() if not found
       */
-    inline int find(const Array *pattern, int i) const { return find(i, pattern->data(), pattern->count()); }
+    int find(const Array *pattern, int i) const { return find(i, pattern->data(), pattern->count()); }
 
     /** Find a pattern
       * \param pattern pattern to search for
@@ -222,7 +222,7 @@ public:
       * \param i start search from this index
       * \return index of first occurence of pattern or count() if not found
       */
-    inline int find(const T *pattern, int patternSize, int i) const {
+    int find(const T *pattern, int patternSize, int i) const {
         if (patternSize == 0) return size_;
         for (int j = i, k = 0; j < size_;) {
             if (data_[j++] == pattern[k]) {
@@ -237,10 +237,10 @@ public:
 
 
     /// Check if this array contains a certain pattern
-    inline bool contains(Array *pattern) { return contains(pattern->data(), pattern->count()); }
+    bool contains(Array *pattern) { return contains(pattern->data(), pattern->count()); }
 
     /// Check if this array contains a certain pattern
-    inline bool contains(const T *pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
+    bool contains(const T *pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
 
     /** \name C++ iterators
       * @{
@@ -252,6 +252,8 @@ public:
       */
 
 private:
+    friend class Local<Array>;
+
     Array(int size = 0):
         size_(0),
         data_(0)
@@ -311,7 +313,7 @@ private:
         if (size_ > 0 && !parent_) delete[] data_;
     }
 
-    inline void reset(int newSize = 0)
+    void reset(int newSize = 0)
     {
         if (size_ != newSize) {
             if (size_ > 0) delete[] data_;

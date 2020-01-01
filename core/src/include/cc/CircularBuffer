@@ -28,33 +28,33 @@ public:
       * \param capacity max number of items storable in the circular buffer
       * \return new object instance
       */
-    inline static Ref<CircularBuffer> create(int capacity)
+    static Ref<CircularBuffer> create(int capacity)
     {
         return new CircularBuffer(capacity);
     }
 
     /// Maximum number of items storable in the circular buffer
-    inline int capacity() const { return size_; }
+    int capacity() const { return size_; }
 
     /// Current number of items stored in the circular buffer
-    inline int count() const { return fill_; }
+    int count() const { return fill_; }
 
     /** Check if index is within range
       * \param i item index
       * \return true if i is a valid index
       */
-    inline bool has(int i) const { return (0 <= i) && (i < fill_); }
+    bool has(int i) const { return (0 <= i) && (i < fill_); }
 
     /** Access item at index i (readonly)
       * \param i item index
       * \return low-level reference
       */
-    inline T at(int i) const { return front(i); }
+    T at(int i) const { return front(i); }
 
     /** Insert a new item at the end of the circular buffer
       * \param item item value
       */
-    inline void pushBack(const T& item, int = 0)
+    void pushBack(const T& item, int = 0)
     {
         if (fill_ == size_) popFront();
         ++head_;
@@ -66,7 +66,7 @@ public:
     /** Add a new item to the head of the queue
       * \param item item value
       */
-    inline void pushFront(const T& item, int = 0)
+    void pushFront(const T& item, int = 0)
     {
         if (fill_ == size_) popBack();
         buf_->at(tail_) = item;
@@ -79,7 +79,7 @@ public:
       * \param item optionally return the item value
       * \return item value
       */
-    inline T popFront(T* item)
+    T popFront(T* item)
     {
         CC_ASSERT(fill_ > 0);
         ++tail_;
@@ -92,7 +92,7 @@ public:
       * \param item optionally return the item value
       * \return item value
       */
-    inline T popBack(T* item)
+    T popBack(T* item)
     {
         CC_ASSERT(fill_ > 0);
         *item = buf_->at(head_);
@@ -105,24 +105,24 @@ public:
     /** Remove the last item from the queue
       * \return item value
       */
-    inline T popBack() { T item; return popBack(&item); }
+    T popBack() { T item; return popBack(&item); }
 
     /** Remove the first item from the queue
       * \return item value
       */
-    inline T popFront() { T item; return popFront(&item); }
+    T popFront() { T item; return popFront(&item); }
 
     /// \copydoc pushBack(const T &, int)
-    inline void push(const T &item) { pushBack(item); }
+    void push(const T &item) { pushBack(item); }
 
     /// \copydoc popFront(T *)
-    inline T pop(T* item) { return popFront(item); }
+    T pop(T* item) { return popFront(item); }
 
     /// \copydoc popFront()
-    inline T pop() { return popFront(); }
+    T pop() { return popFront(); }
 
     /// Return the an item from the front
-    inline T back(int i = 0) const
+    T back(int i = 0) const
     {
         CC_ASSERT((0 <= i) && (i < fill_));
         i = -i;
@@ -132,7 +132,7 @@ public:
     }
 
     /// Return the an item from the end
-    inline T front(int i = 0) const
+    T front(int i = 0) const
     {
         CC_ASSERT((0 <= i) && (i < fill_));
         i += tail_ + 1;
@@ -141,7 +141,7 @@ public:
     }
 
     /// Reset the circular buffer to an empty state
-    inline void deplete()
+    void deplete()
     {
         fill_ = 0;
         head_ = size_ - 1;
@@ -149,12 +149,14 @@ public:
     }
 
 private:
+    friend class Local<CircularBuffer>;
+
     CircularBuffer(int size):
         fill_{0},
         size_{size},
         head_{size_ - 1},
         tail_{size_ - 1},
-        buf_{Array<T>::create(size_)}
+        buf_{size}
     {}
 
     ~CircularBuffer()
@@ -164,7 +166,7 @@ private:
     int size_;
     int head_;
     int tail_;
-    Ref< Array<T> > buf_;
+    Local< Array<T> > buf_;
 };
 
 } // namespace cc

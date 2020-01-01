@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -23,19 +23,19 @@ public:
     static constexpr int Count = N;
 
     Vector() {}
-    Vector(std::initializer_list<T> l): instance_(l) {}
-    Vector(const Vector &b): instance_(b.instance_) {}
+    Vector(std::initializer_list<T> l): instance_{l} {}
+    Vector(const Vector &b): instance_{b.instance_} {}
     Vector(T b): Vector{b} {}
 
     class Instance {
     public:
         typedef T Item;
 
-        inline bool has(int i) const { return 0 <= i && i < N; }
-        inline T &at(int i) { CC_ASSERT(has(i)); return v_[i]; }
-        inline T at(int i) const { CC_ASSERT(has(i)); return v_[i]; }
+        bool has(int i) const { return 0 <= i && i < N; }
+        T &at(int i) { CC_ASSERT(has(i)); return v_[i]; }
+        T at(int i) const { CC_ASSERT(has(i)); return v_[i]; }
 
-        inline static constexpr int count() { return N; }
+        static constexpr int count() { return N; }
 
     private:
         friend class Vector;
@@ -51,63 +51,63 @@ public:
         T v_[N];
     };
 
-    inline const Instance *operator->() const { return &instance_; }
-    inline Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
+    Instance *operator->() { return &instance_; }
 
-    inline T &operator[](int i) { return instance_.at(i); }
-    inline T operator[](int i) const { return instance_.at(i); }
+    T &operator[](int i) { return instance_.at(i); }
+    T operator[](int i) const { return instance_.at(i); }
 
-    inline operator const T *() const { return &instance_.v_; }
-    inline operator T *() { return &instance_.v_; }
+    operator const T *() const { return &instance_.v_; }
+    operator T *() { return &instance_.v_; }
 
-    inline bool operator==(const Vector &b) const {
+    bool operator==(const Vector &b) const {
         for (int i = 0; i < N; ++i)
             if (instance_.v_[i] != b.instance_.v_[i]) return false;
         return true;
     }
-    inline bool operator!=(const Vector &b) const {
+    bool operator!=(const Vector &b) const {
         for (int i = 0; i < N; ++i)
             if (instance_.v_[i] != b.instance_.v_[i]) return true;
         return false;
     }
 
-    inline Vector operator-() const {
+    Vector operator-() const {
         Vector a(*this);
         for (int i = 0; i < N; ++i) a.instance_.v_[i] = -instance_.v_[i];
         return a;
     }
 
-    inline Vector &operator+=(const Vector &b) {
+    Vector &operator+=(const Vector &b) {
         for (int i = 0; i < N; ++i) instance_.v_[i] += b.instance_.v_[i];
         return *this;
     }
-    inline Vector &operator-=(const Vector &b) {
+    Vector &operator-=(const Vector &b) {
         for (int i = 0; i < N; ++i) instance_.v_[i] -= b.instance_.v_[i];
         return *this;
     }
-    inline Vector &operator*=(const Vector &b) {
+    Vector &operator*=(const Vector &b) {
         for (int i = 0; i < N; ++i) instance_.v_[i] *= b.instance_.v_[i];
         return *this;
     }
-    inline Vector &operator/=(const Vector &b) {
+    Vector &operator/=(const Vector &b) {
         for (int i = 0; i < N; ++i) instance_.v_[i] /= b.instance_.v_[i];
         return *this;
     }
-    inline Vector &operator*=(T b) {
+    Vector &operator*=(T b) {
         for (int i = 0; i < N; ++i) instance_.v_[i] *= b;
         return *this;
     }
-    inline Vector &operator/=(T b) {
+    Vector &operator/=(T b) {
         for (int i = 0; i < N; ++i) instance_.v_[i] /= b;
         return *this;
     }
 
-    inline Vector operator+(const Vector &b) const { return Vector(*this) += b; }
-    inline Vector operator-(const Vector &b) const { return Vector(*this) -= b; }
-    inline Vector operator*(const Vector &b) const { return Vector(*this) *= b; }
-    inline Vector operator/(const Vector &b) const { return Vector(*this) /= b; }
-    inline Vector operator*(T b) const { return Vector(*this) *= b; }
-    inline Vector operator/(T b) const { return Vector(*this) /= b; }
+    Vector operator+(const Vector &b) const { return Vector(*this) += b; }
+    Vector operator-(const Vector &b) const { return Vector(*this) -= b; }
+    Vector operator*(const Vector &b) const { return Vector(*this) *= b; }
+    Vector operator/(const Vector &b) const { return Vector(*this) /= b; }
+    Vector operator*(T b) const { return Vector(*this) *= b; }
+    Vector operator/(T b) const { return Vector(*this) /= b; }
 
     /** \name C++ iterators
       * @{

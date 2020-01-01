@@ -10,6 +10,7 @@
 
 #include <type_traits>
 #include <cc/types>
+#include <cc/Local>
 
 namespace cc {
 

@@ -14,6 +14,7 @@
 
 #include <cc/String>
 #include <cc/Variant>
+#include <cc/Local>
 
 namespace cc {
 
@@ -189,6 +190,10 @@ inline String str(const Ref<T> &x) { return x->toString(); }
 /// Convert an object to string
 template<class T>
 inline String str(const T *x) { return x ? x->toString() : String("null"); }
+
+/// Convert an object to string
+template<class T>
+inline String str(const Local<T> &x) { return x->toString(); }
 
 /// Convenience wrapper to dec()
 inline String str(unsigned char x) { return dec(x); }

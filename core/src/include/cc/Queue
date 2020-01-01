@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -40,7 +40,7 @@ public:
     /** Create a new queue
       * \return new object instance
       */
-    inline static Ref<Queue> create(int = 0) {
+    static Ref<Queue> create(int = 0) {
         return new Queue;
     }
 
@@ -121,7 +121,7 @@ public:
     /** Remove the last item from the queue
       * \return item value
       */
-    inline T popBack() {
+    T popBack() {
         T item;
         return popBack(&item);
     }
@@ -129,30 +129,30 @@ public:
     /** Remove the first item from the queue
       * \return item value
       */
-    inline T popFront() {
+    T popFront() {
         T item;
         return popFront(&item);
     }
 
     /// \copydoc pushBack()
-    inline void push(const T &item, int = 0) { pushBack(item); }
+    void push(const T &item, int = 0) { pushBack(item); }
 
     /// \copydoc popFront(T *)
-    inline T pop(T *item) { return popFront(item); }
+    T pop(T *item) { return popFront(item); }
 
     /// \copydoc popFront()
-    inline T pop() { return popFront(); }
+    T pop() { return popFront(); }
 
     /// Return number of queued items
-    inline int count() const { return length_; }
+    int count() const { return length_; }
 
     /// Return the first item in the queue
-    inline T front() const { return head_->item_; }
+    T front() const { return head_->item_; }
 
     /// Return the last item in the queue
-    inline T back() const { return tail_->item_; }
+    T back() const { return tail_->item_; }
 
-    /// Reset the stack to an empty state
+    /// Reset to an empty state
     void deplete()
     {
         Node *node = head_;
@@ -161,8 +161,8 @@ public:
             delete node;
             node = next;
         }
-        head_ = 0;
-        tail_ = 0;
+        head_ = nullptr;
+        tail_ = nullptr;
         length_ = 0;
     }
 

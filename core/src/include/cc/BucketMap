@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <stdint.h>
+#include <assert.h>
+
+namespace cc {
+
+/** \brief Bitmap based allocation scheme
+  * \class BucketMap cc/BucketMap
+  */
+template<unsigned Capacity>
+class BucketMap {};
+
+template<>
+class BucketMap<16>
+{
+public:
+    static constexpr unsigned Capacity = 16;
+
+    unsigned mapToSlot(unsigned bucketIndex, unsigned fill) const;
+
+    unsigned pushEntry(unsigned bucketIndex, unsigned &fill);
+    void popEntry(unsigned bucketIndex, unsigned &fill);
+
+private:
+    uint64_t map_ { UINT64_C(0x0123456789ABCDEF) };
+};
+
+inline unsigned BucketMap<16>::mapToSlot(unsigned bucketIndex, unsigned fill) const
+{
+    assert(0 <= bucketIndex && bucketIndex < fill);
+
+    return (map_ >> (bucketIndex << 2u)) & 0xFu;
+}
+
+inline unsigned BucketMap<16>::pushEntry(unsigned bucketIndex, unsigned &fill)
+{
+    assert(fill < BucketMap::Capacity);
+    assert(bucketIndex <= fill);
+
+    const uint64_t slotIndex = map_ >> 60u;
+
+    const unsigned bucketShift = bucketIndex << 2u;
+    const uint64_t highMask = (~UINT64_C(0)) << bucketShift;
+    const uint64_t lowMask  = ~highMask;
+
+    map_ = ((map_ & highMask) << 4u) | (map_ & lowMask) | (slotIndex << bucketShift);
+
+    ++fill;
+    return slotIndex;
+}
+
+inline void BucketMap<16>::popEntry(unsigned bucketIndex, unsigned &fill)
+{
+    assert(fill > 0);
+    assert(bucketIndex < fill);
+
+    const uint64_t slotIndex = mapToSlot(bucketIndex, fill);
+
+    const unsigned bucketShift = bucketIndex << 2u;
+    const uint64_t highMask = (~UINT64_C(0)) << bucketShift;
+    const uint64_t lowMask  = ~highMask;
+
+    map_ = (slotIndex << 60u) | ((map_ >> 4u) & highMask) | (map_ & lowMask);
+
+    --fill;
+}
+
+} // namespace cc

@@ -30,7 +30,7 @@ public:
       * \return new object instance
       */
     static Ref<Random> open(int seed = -1) {
-        return new Random(seed);
+        return new Random{seed};
     }
 
     /// Minimum random number
@@ -60,7 +60,9 @@ public:
     }
 
 private:
-    Random(int seed);
+    friend class Local<Random>;
+
+    Random(int seed = -1);
 
     enum { m_ = (1u << 31u) - 1 };
     unsigned x_;

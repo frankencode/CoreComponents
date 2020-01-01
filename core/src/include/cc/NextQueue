@@ -1,0 +1,184 @@
+/*
+ * Copyright (C) 2019-2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/BucketMap>
+
+namespace cc {
+
+template<class T>
+class NextQueue: public Object
+{
+public:
+    typedef T Item;
+
+    static Ref<NextQueue> create() { return new NextQueue; }
+
+    void pushBack (const T &item);
+    void pushFront(const T &item);
+
+    const T &popBack (T *item);
+    const T &popFront(T *item);
+
+    T popBack () { T item; popBack(&item) ; return item; }
+    T popFront() { T item; popFront(&item); return item; }
+
+    /// Return number of items
+    int64_t count() const { return count_; }
+
+    /// Return the first item
+    Item front() const { return head_->at(0); }
+
+    /// Return the last item
+    Item back() const { return tail_->at(tail_->count() - 1); }
+
+    /// Reset to an empty state
+    void deplete();
+
+private:
+    friend class Local<NextQueue>;
+
+    class Node {
+    public:
+        static constexpr unsigned Capacity = 16;
+
+        Node():
+            pred_{nullptr},
+            succ_{nullptr},
+            fill_{0}
+        {}
+
+        Node(Node *pred, Node *succ):
+            pred_{pred},
+            succ_{succ},
+            fill_{0}
+        {
+            if (pred) pred->succ_ = this;
+            if (succ) succ->pred_ = this;
+        }
+
+        ~Node()
+        {
+            if (pred_) pred_->succ_ = succ_;
+            if (succ_) succ_->pred_ = pred_;
+        }
+
+        Item &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+        const Item &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+
+        void push(unsigned nodeIndex, const Item &item) { slot_[map_->pushEntry(nodeIndex, fill_)] = item; }
+        void pop(unsigned nodeIndex) { map_->popEntry(nodeIndex, fill_); }
+
+        void pushBack(const Item &item) { push(fill_, item); }
+        void popBack(Item *item) { *item = at(fill_ - 1); pop(fill_ - 1); }
+
+        void pushFront(const Item &item) { push(0, item); }
+        void popFront(Item *item) { *item = at(0); pop(0); }
+
+        bool isFull() const { return fill_ == Capacity; }
+        bool isEmpty() const { return fill_ == 0; }
+
+        Node *pred_;
+        Node *succ_;
+        unsigned fill_;
+        Local< BucketMap<Capacity> > map_;
+        Item slot_[Capacity];
+    };
+
+    NextQueue() = default;
+
+    ~NextQueue()
+    {
+        deplete();
+    }
+
+    Node *head_ { nullptr };
+    Node *tail_ { nullptr };
+    int64_t count_ { 0 };
+};
+
+template<class T>
+void NextQueue<T>::pushBack(const T &item)
+{
+    if (tail_) {
+        if (tail_->isFull())
+            tail_ = new Node{tail_, nullptr};
+    }
+    else {
+        head_ = tail_ = new Node;
+    }
+
+    tail_->pushBack(item);
+
+    ++count_;
+}
+
+template<class T>
+void NextQueue<T>::pushFront(const T &item)
+{
+    if (head_) {
+        if (head_->isFull())
+            head_ = new Node{nullptr, head_};
+    }
+    else {
+        head_ = tail_ = new Node;
+    }
+
+    head_->pushFront(item);
+
+    ++count_;
+}
+
+template<class T>
+const T &NextQueue<T>::popBack(T *item)
+{
+    assert(tail_ && !tail_->isEmpty());
+
+    tail_->popBack(item);
+
+    if (tail_->isEmpty()) {
+        Node *oldTail = tail_;
+        tail_ = tail_->pred_;
+        if (head_ == oldTail) head_ = nullptr;
+        delete oldTail;
+    }
+
+    --count_;
+    return *item;
+}
+
+template<class T>
+const T &NextQueue<T>::popFront(T *item)
+{
+    assert(head_ && !head_->isEmpty());
+
+    head_->popFront(item);
+
+    if (head_->isEmpty()) {
+        Node *oldHead = head_;
+        head_ = head_->succ_;
+        if (tail_ == oldHead) tail_ = nullptr;
+        delete oldHead;
+    }
+
+    --count_;
+    return *item;
+}
+
+template<class T>
+void NextQueue<T>::deplete()
+{
+    for (Node *node = head_; node;) {
+        Node *oldNode = node;
+        node = node->succ_;
+        delete oldNode;
+    }
+}
+
+} // namespace cc

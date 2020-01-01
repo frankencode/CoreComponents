@@ -13,6 +13,7 @@
 #include <cc/SearchTree>
 #include <cc/Heap>
 #include <cc/Set>
+#include <cc/Local>
 
 namespace cc {
 
@@ -274,6 +275,8 @@ public:
       */
 
 private:
+    friend class Local<List>;
+
     typedef SearchTree< SearchNode<Item> > Tree;
     typedef typename Tree::Node Node;
 
