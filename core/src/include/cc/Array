@@ -33,28 +33,27 @@ public:
       * \param size size of the array
       * \return new object instance
       */
-    static Ref<Array> create(int size) { return new Array(size); }
-        // TODO: make obsolete in favour of Array::allocate()
+    static Ref<Array> create(int size) { return new Array{size}; }
 
     /** Create a new array
       * \param size size of the array
       * \return new object instance
       */
-    static Ref<Array> allocate(int size) { return new Array(size); }
+    static Ref<Array> allocate(int size) { return new Array{size}; }
 
     /** Create a new array
       * \param size size of the array
       * \param zero preset item value
       * \return new object instance
       */
-    static Ref<Array> create(int size, T zero) { return new Array(size, zero); }
+    static Ref<Array> create(int size, T zero) { return new Array{size, zero}; }
 
     /** Create a deep copy of a memory vector
       * \param data pointer to a memory vector of type T
       * \param size size of the memory vector
       * \return new object instance
       */
-    static Ref<Array> copy(const T *data, int size) { return new Array(data, size); }
+    static Ref<Array> copy(const T *data, int size) { return new Array{data, size}; }
 
     /** Create a deep copy of an array
       * \param other the other array
@@ -255,8 +254,8 @@ private:
     friend class Local<Array>;
 
     Array(int size = 0):
-        size_(0),
-        data_(0)
+        size_{0},
+        data_{nullptr}
     {
         if (size > 0) {
             size_ = size;
@@ -265,8 +264,8 @@ private:
     }
 
     Array(int size, T zero):
-        size_(0),
-        data_(0)
+        size_{0},
+        data_{nullptr}
     {
         if (size > 0) {
             size_ = size;
@@ -276,8 +275,8 @@ private:
     }
 
     Array(const T *data, int size):
-        size_(0),
-        data_(0)
+        size_{0},
+        data_{nullptr}
     {
         if (size > 0) {
             size_ = size;
@@ -287,8 +286,8 @@ private:
     }
 
     Array(const Array &b):
-        size_(0),
-        data_(0)
+        size_{0},
+        data_{nullptr}
     {
         if (b.size_ > 0) {
             size_ = b.size_;
@@ -298,7 +297,7 @@ private:
     }
 
     Array(const Array *parent, int i0, int i1):
-        parent_(const_cast<Array *>(parent))
+        parent_{const_cast<Array *>(parent)}
     {
         if (i0 < 0) i0 = 0;
         else if (i0 > parent->size_) i0 = parent_->size_;
@@ -323,7 +322,7 @@ private:
             }
             else {
                 size_ = 0;
-                data_ = 0;
+                data_ = nullptr;
             }
         }
     }

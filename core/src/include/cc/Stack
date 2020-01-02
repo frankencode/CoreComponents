@@ -27,39 +27,39 @@ public:
       * \param capacity maximum number of items storable in the stack
       * \return new object instance
       */
-    inline static Ref<Stack> create(int capacity) {
-        return new Stack(capacity);
+    static Ref<Stack> create(int capacity) {
+        return new Stack{capacity};
     }
 
     /// Maximum number of items storable in the stack
-    inline int capacity() const { return size_; }
+    int capacity() const { return size_; }
 
     /// Current number of items stored in the stack
-    inline int count() const { return fill_; }
+    int count() const { return fill_; }
 
     /** Check if index is within range
       * \param i item index
       * \return true if i is a valid index
       */
-    inline bool has(int i) const { return (0 <= i) && (i < fill_); }
+    bool has(int i) const { return (0 <= i) && (i < fill_); }
 
     /** Access item at index i (readonly)
       * \param i item index
       * \return low-level reference
       */
-    inline const T &at(int i) const { return bottom(i); }
+    const T &at(int i) const { return bottom(i); }
 
 
     /** Access item at index i
       * \param i item index
       * \return low-level reference
       */
-    inline T &at(int i) { return bottom(i); }
+    T &at(int i) { return bottom(i); }
 
     /** Put a new item onto the stack
       * \param item item value
       */
-    inline void push(const T &item) {
+    void push(const T &item) {
         CC_ASSERT(fill_ < size_);
         buffer_[fill_++] = item;
     }
@@ -67,7 +67,7 @@ public:
     /** Remove an item from the top of the stack
       * \param item return item value
       */
-    inline void pop(T *item) {
+    void pop(T *item) {
         CC_ASSERT(fill_ > 0);
         *item = buffer_[--fill_];
     }
@@ -75,7 +75,7 @@ public:
     /** Remove an item from the top of the stack
       * \return item value
       */
-    inline T pop() {
+    T pop() {
         T item;
         pop(&item);
         return item;
@@ -84,20 +84,20 @@ public:
     /** Remove n items from the top of the stack
       * \return low-level reference
       */
-    inline Stack &popMore(int n) {
+    Stack &popMore(int n) {
         CC_ASSERT(fill_ >= n);
         fill_ -= n;
         return *this;
     }
 
     /// Reset the stack to an empty state
-    inline void deplete() { fill_ = 0; }
+    void deplete() { fill_ = 0; }
 
     /** Access the top of the stack (readonly)
       * \param i item index
       * \return low-level reference
       */
-    inline const T &top(int i = 0) const {
+    const T &top(int i = 0) const {
         CC_ASSERT(i < fill_);
         return buffer_[fill_-i-1];
     }
@@ -106,7 +106,7 @@ public:
       * \param i item index
       * \return low-level reference
       */
-    inline T &top(int i = 0) {
+    T &top(int i = 0) {
         CC_ASSERT(i < fill_);
         return buffer_[fill_-i-1];
     }
@@ -115,7 +115,7 @@ public:
       * \param i item index
       * \return low-level reference
       */
-    inline const T &bottom(int i = 0) const {
+    const T &bottom(int i = 0) const {
         CC_ASSERT(i < fill_);
         return buffer_[i];
     }
@@ -124,16 +124,16 @@ public:
       * \param i item index
       * \return low-level reference
       */
-    inline T &bottom(int i = 0) {
+    T &bottom(int i = 0) {
         CC_ASSERT(i < fill_);
         return buffer_[i];
     }
 
 private:
     Stack(int size):
-        fill_(0),
-        size_(size),
-        buffer_(new T[size])
+        fill_{0},
+        size_{size},
+        buffer_{new T[size]}
     {}
 
     ~Stack()
