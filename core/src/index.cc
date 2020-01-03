@@ -51,6 +51,13 @@ Path::Path():
     node_{nullptr}
 {}
 
+Path::Path(const Tree *tree):
+    origin_{0},
+    node_{tree->root_->node_},
+    depth_{0},
+    nodeIndex_{0}
+{}
+
 Path::Path(const Tree *tree, int64_t index, bool insertion):
     origin_{0},
     node_{tree->root_->node_},
@@ -95,6 +102,28 @@ Path::Path(const Tree *tree, int64_t index, bool insertion):
     }
 
     assert(!node_->isBranch_);
+}
+
+void Path::stepDown(unsigned egress)
+{
+    assert(egress < Node::Capacity);
+    assert(depth_ < MaxDepth);
+    assert(node_->isBranch_);
+
+    node_ = static_cast<Branch *>(node_)->at(egress)->node_;
+    origin_ |= (uint64_t(egress) << (depth_ << 2));
+    nodeIndex_ = 0;
+    ++depth_;
+}
+
+void Path::stepUp()
+{
+    assert(depth_ > 0);
+
+    node_ = node_->parent_;
+    nodeIndex_ = getOrigin();
+    --depth_;
+    origin_ &= ~(UINT64_C(0xF) << (depth_ << 2));
 }
 
 bool Path::stepPred()
@@ -167,28 +196,6 @@ bool Path::stepSucc()
     }
     node_ = succ;
     return succ;
-}
-
-void Path::stepDown(unsigned egress)
-{
-    assert(egress < Node::Capacity);
-    assert(depth_ < MaxDepth);
-    assert(node_->isBranch_);
-
-    node_ = static_cast<Branch *>(node_)->at(egress)->node_;
-    origin_ |= (uint64_t(egress) << (depth_ << 2));
-    nodeIndex_ = 0;
-    ++depth_;
-}
-
-void Path::stepUp()
-{
-    assert(depth_ > 0);
-
-    node_ = node_->parent_;
-    nodeIndex_ = getOrigin();
-    --depth_;
-    origin_ &= ~(UINT64_C(0xF) << (depth_ << 2));
 }
 
 bool Path::iterateForward()

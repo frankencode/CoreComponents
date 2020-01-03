@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <iterator>
+#include <limits>
 #include <cc/Local>
 #include <cc/BucketMap>
 #include <cc/debug> // DEBUG
@@ -90,6 +92,7 @@ class Path
 {
 public:
     Path();
+    Path(const Tree *tree);
     Path(const Tree *tree, int64_t index, bool insertion = false);
 
     explicit operator bool() const { return node_; }
@@ -103,7 +106,7 @@ public:
     unsigned nodeIndex() const { return nodeIndex_; }
     void setNodeIndex(unsigned newValue) { nodeIndex_ = newValue; }
 
-    template<class Item> Item &item(Item &fallback) const { return (*this) ? leaf<Item>()->at(nodeIndex_) : fallback; }
+    template<class Item> Item &item() const { return leaf<Item>()->at(nodeIndex_); }
 
     bool hasPred() const { return origin_ != 0; }
     Path getPred() const { Local<Path> path{*this}; path->stepPred(); return path; }
@@ -114,6 +117,7 @@ public:
 
     void stepDown(unsigned egress);
     void stepUp();
+
     bool stepPred();
     bool stepSucc();
 
@@ -144,12 +148,22 @@ class Tree
 {
 public:
     template<class Item>
-    void deplete() {
-        if (root_->node_) {
-            deplete<Item>(root_->node_);
-            *this = Tree{};
-        }
+    Item &at(int64_t index)
+    {
+        return (height_ == 0) ?
+            static_cast<Leaf<Item> *>(root_->node_)->at(index) :
+            Local<index::Path>{this, index}->item<Item>();
     }
+
+    template<class Item>
+    Item &at(int64_t index) const
+    {
+        return (height_ == 0) ?
+            static_cast<Leaf<Item> *>(root_->node_)->at(index) :
+            Local<index::Path>{this, index}->item<Item>();
+    }
+
+    int64_t count() const { return root_->weight_; }
 
     template<class Item>
     void push(int64_t index, const Item &item);
@@ -157,7 +171,16 @@ public:
     template<class Item>
     void pop(int64_t index);
 
-    int64_t count() const { return root_->weight_; }
+    template<class Item>
+    void deplete()
+    {
+        if (root_->node_) {
+            deplete<Item>(root_->node_);
+            *this = Tree{};
+        }
+    }
+
+    uint64_t revision() const { return revision_; }
 
     String dotify() const;
 
@@ -177,6 +200,9 @@ private:
 
     template<class Node>
     void dissipateToSucc(Path *dest, Path *succ);
+
+    template<class Item>
+    void pushInitial(const Item &item);
 
     template<class Item>
     void deplete(Node *node);
@@ -199,6 +225,9 @@ private:
     template<class Node>
     void dissipate(Path *dest);
 
+    template<class Node>
+    void dissipateMax(Path *dest);
+
     void joinSucc(Path *path, Node *newNode);
 
     template<class Node>
@@ -211,12 +240,13 @@ private:
 
     void dotifyNode(Format &format, const Head *head, unsigned origin = 0u) const;
 
+    unsigned height_ { 0 };
+    uint64_t revision_ { 0 };
+
     Local<Head> root_ {
         .weight_ = 0,
         .node_ = nullptr
     };
-
-    unsigned height_ { 0 };
 };
 
 template<class Node>
@@ -279,20 +309,6 @@ void Tree::dissipateToSucc(Path *dest, Path *succ)
 }
 
 template<class Item>
-void Tree::deplete(Node *node)
-{
-    if (node->isBranch_) {
-        Branch *branch = static_cast<Branch *>(node);
-        for (unsigned i = 0; i < branch->fill_; ++i)
-            deplete<Item>(branch->at(i)->node_);
-        delete branch;
-    }
-    else {
-        delete static_cast<Leaf<Item> *>(node);
-    }
-}
-
-template<class Item>
 void Tree::push(int64_t index, const Item &item)
 {
     Local<Path> path{this, index, true};
@@ -309,6 +325,8 @@ void Tree::push(int64_t index, const Item &item)
         root_->node_ = leaf;
         root_->weight_ = 1;
     }
+
+    ++revision_;
 }
 
 template<class Node>
@@ -352,6 +370,8 @@ void Tree::pop(int64_t index)
     }
     else
         deplete<Item>();
+
+    ++revision_;
 }
 
 template<class Node>
@@ -395,5 +415,85 @@ void Tree::collapseSucc(const Path *dest, const Path *succ)
     delete static_cast<Node *>(succ->node());
     relieve<Branch>(parent);
 }
+
+template<class Item>
+void Tree::deplete(Node *node)
+{
+    if (node->isBranch_) {
+        Branch *branch = static_cast<Branch *>(node);
+        for (unsigned i = 0; i < branch->fill_; ++i)
+            deplete<Item>(branch->at(i)->node_);
+        delete branch;
+    }
+    else {
+        delete static_cast<Leaf<Item> *>(node);
+    }
+}
+
+template<class Item>
+class ConstIterator:
+    public std::iterator<
+        /*iterator_category*/ std::bidirectional_iterator_tag,
+        /*value_type*/        Item,
+        /*difference_type*/   int64_t,
+        /*pointer*/           void,
+        /*reference*/         Item
+    >
+{
+public:
+    ConstIterator():
+        index_{std::numeric_limits<int64_t>::max()}
+    {}
+
+    ConstIterator(const Tree *tree, int64_t index):
+        tree_{tree},
+        index_{index},
+        path_{tree, index},
+        revision_{tree_->revision()}
+    {}
+
+    Item operator*() const { return path_->item<Item>(); }
+
+    ConstIterator &operator++()
+    {
+        if (revision_ != tree_->revision()) {
+            revision_ = tree_->revision();
+            path_ = Path{tree_, index_};
+        }
+
+        if (!path_->iterateForward())
+            index_ = std::numeric_limits<int64_t>::max();
+
+        return *this;
+    }
+
+    ConstIterator &operator--()
+    {
+        if (revision_ != tree_->revision()) {
+            revision_ = tree_->revision();
+            path_ = Path{tree_, index_};
+        }
+
+        if (path_->iterateBackward())
+            --index_;
+
+        return *this;
+    }
+
+    ConstIterator operator+(int64_t delta) { return ConstIterator{tree_, index_ + delta}; }
+    ConstIterator operator-(int64_t delta) { return ConstIterator{tree_, index_ - delta}; }
+
+    int64_t operator-(const ConstIterator &b) const { return index_ - b.index_; }
+    bool operator<(const ConstIterator &b) const { return index_ < b.index_; }
+
+    bool operator==(const ConstIterator &b) const { return index_ == b.index_; }
+    bool operator!=(const ConstIterator &b) const { return index_ != b.index_; }
+
+private:
+    const Tree *tree_;
+    int64_t index_;
+    Local<Path> path_;
+    uint64_t revision_;
+};
 
 }} // namespace cc::index

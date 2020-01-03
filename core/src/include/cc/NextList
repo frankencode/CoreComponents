@@ -10,6 +10,7 @@
 
 #include <cc/Object>
 #include <cc/index>
+#include <cc/iterators>
 
 namespace cc {
 
@@ -26,13 +27,13 @@ public:
     Item &at(Index index)
     {
         assert(0 <= index && index < count());
-        return Local<index::Path>{tree_, index}->item<Item>(dummy_);
+        return tree_->at<Item>(index);
     }
 
     const Item &at(Index index) const
     {
         assert(0 <= index && index < count());
-        return Local<index::Path>{tree_, index}->item<Item>(dummy_);
+        return tree_->at<Item>(index);
     }
 
     void push(Index index, const Item &item)
@@ -49,7 +50,17 @@ public:
 
     void deplete() { tree_->deplete<Item>(); }
 
-    const index::Tree *tree() const { return tree_; }
+    /** \name C++ iterators
+      * @{
+      */
+    typedef index::ConstIterator<Item> const_iterator;
+    typedef index::ConstIterator<Item> iterator;
+    iterator begin() { return index::ConstIterator<Item>{&tree_, 0}; }
+    iterator end() { return index::ConstIterator<Item>{}; }
+    const_iterator begin() const { return index::ConstIterator<Item>{tree_, 0}; }
+    const_iterator end() const { return index::ConstIterator<Item>{}; }
+    /** @}
+      */
 
 private:
     friend class Local<NextList>;
@@ -60,10 +71,6 @@ private:
     NextList(const NextList &) = delete;
 
     Local<index::Tree> tree_;
-    static Item dummy_;
 };
-
-template<class Item>
-Item NextList<Item>::dummy_;
 
 } // namespace cc

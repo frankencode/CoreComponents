@@ -26,7 +26,7 @@ public:
     const T &popBack (T *item);
     const T &popFront(T *item);
 
-    T popBack () { T item; popBack(&item) ; return item; }
+    T popBack () { T item; popBack (&item); return item; }
     T popFront() { T item; popFront(&item); return item; }
 
     /// Return number of items

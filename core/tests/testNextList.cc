@@ -126,6 +126,46 @@ class PushPopRandomTest: public TestCase
 int main(int argc, char **argv)
 {
     #if 0
+    const int n = 1000000;
+    {
+        const int m = 100000;
+        uint32_t x[m];
+        for (int i = 1; i < m; ++i) x[i] = (x[i - 1] + 1) % 50;
+        CC_INSPECT(x[m - 1]);
+    }
+    {
+        std::list<int> list;
+        for (int i = 0; i < n; ++i) list.push_back(i);
+        auto ts = ::clock();
+        int h = 0;
+        for (int x: list) h += x;
+        CC_INSPECT(h);
+        ts = ::clock() - ts;
+        CC_INSPECT(ts);
+    }
+    {
+        Local<NextList<int>> list;
+        for (int i = 0; i < n; ++i) list->push(i, i);
+        auto tx = ::clock();
+        int h = 0;
+        for (int x: list) h += x;
+        CC_INSPECT(h);
+        tx = ::clock() - tx;
+        CC_INSPECT(tx);
+    }
+    {
+        Local<List<int>> list;
+        for (int i = 0; i < n; ++i) list->append(i);
+        auto tl = ::clock();
+        int h = 0;
+        for (int x: list) h += x;
+        CC_INSPECT(h);
+        tl = ::clock() - tl;
+        CC_INSPECT(tl);
+    }
+    return 0;
+    #endif
+    #if 0
     const int n = 65535;
     Local<NextList<int>> list;
     for (int i = 0; i < n; ++i)
@@ -138,8 +178,9 @@ int main(int argc, char **argv)
     #if 0
     {
         const int h = 10000;
-        const int n = 256;
+        const int n = 1024;
 
+        #if 0
         for (int k = 0; k < h; ++k)
         {
             Local<List<int>> list;
@@ -154,7 +195,9 @@ int main(int argc, char **argv)
             tl = ::clock() - tl;
             CC_INSPECT(tl);
         }
+        #endif
 
+        #if 1
         for (int k = 0; k < h; ++k)
         {
             std::list<int> list;
@@ -169,7 +212,9 @@ int main(int argc, char **argv)
             ts = ::clock() - ts;
             CC_INSPECT(ts);
         }
+        #endif
 
+        #if 1
         for (int k = 0; k < h; ++k)
         {
             Local<NextList<int>> list;
@@ -184,6 +229,7 @@ int main(int argc, char **argv)
             tx = ::clock() - tx;
             CC_INSPECT(tx);
         }
+        #endif
     }
 
     return 0;
