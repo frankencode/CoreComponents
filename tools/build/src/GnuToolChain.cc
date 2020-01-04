@@ -427,11 +427,11 @@ bool GnuToolChain::refreshLinkerCache(const BuildPlan *plan) const
 void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) const
 {
     if (plan->options() & BuildPlan::Debug) args << "-g";
-    if (plan->options() & BuildPlan::Release) {
-        args << "-DNDEBUG";
-        // args << "-flto";
+    if (plan->options() & BuildPlan::Release) args << "-DNDEBUG";
+    if (plan->optimize() != "") {
+        args << "-O" + plan->optimize();
+        if (plan->optimize() == "3") args << "-flto";
     }
-    if (plan->optimize() != "") args << "-O" + plan->optimize();
     if (plan->linkStatic()) args << "-static";
     if (!(
         plan->customCompileFlags()->contains("-fPIC") ||
@@ -470,8 +470,10 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
     //if (plan->options() & BuildPlan::Plugin)
     //    args << "-Wl,--no-as-needed";
 
-    //if (plan->options() & BuildPlan::Release)
-    //    args << "-flto";
+    if (plan->optimize() != "") {
+        args << "-O" + plan->optimize();
+        if (plan->optimize() == "3") args << "-flto";
+    }
 
     if (lFlags_ != "") args << lFlags_;
 
