@@ -30,7 +30,7 @@ int main(int argc, char **argv)
             "  -release         release mode (NDEBUG defined)\n"
             "  -static          build static libraries\n"
             "  -verbose         verbose output\n"
-            "  -optimize        optimization level / strategy (0, 1, 2, 3, s, g)\n"
+            "  -optimize        optimization level / strategy (0, 1, 2, 3, 4, s, g)\n"
             "  -root            file system root for installation (default: \"/\")\n"
             "  -prefix          installation prefix (default: '/usr/local')\n"
             "  -configure       configure the dependencies and show results\n"

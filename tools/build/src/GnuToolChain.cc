@@ -107,7 +107,7 @@ String GnuToolChain::querySystemRoot(const String &compiler)
 String GnuToolChain::defaultOptimization(const BuildPlan *plan) const
 {
     /*if ((plan->options() & BuildPlan::Debug) && (plan->options() & BuildPlan::Release)) return "g";*/
-    if (plan->options() & BuildPlan::Release) return "2";
+    if (plan->options() & BuildPlan::Release) return "3";
     else return "";
 }
 
@@ -429,8 +429,10 @@ void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) cons
     if (plan->options() & BuildPlan::Debug) args << "-g";
     if (plan->options() & BuildPlan::Release) args << "-DNDEBUG";
     if (plan->optimize() != "") {
-        args << "-O" + plan->optimize();
-        if (plan->optimize() == "3") args << "-flto";
+        if (plan->optimize() == "4")
+            args << "-O3" << "-flto";
+        else
+            args << "-O" + plan->optimize();
     }
     if (plan->linkStatic()) args << "-static";
     if (!(
@@ -471,8 +473,10 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
     //    args << "-Wl,--no-as-needed";
 
     if (plan->optimize() != "") {
-        args << "-O" + plan->optimize();
-        if (plan->optimize() == "3") args << "-flto";
+        if (plan->optimize() == "4")
+            args << "-O3" << "-flto";
+        else
+            args << "-O" + plan->optimize();
     }
 
     if (lFlags_ != "") args << lFlags_;
