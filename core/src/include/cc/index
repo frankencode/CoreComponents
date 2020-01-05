@@ -8,8 +8,10 @@
 
 #pragma once
 
+#include <string.h>
 #include <iterator>
 #include <limits>
+#include <type_traits>
 #include <cc/Local>
 #include <cc/BucketMap>
 #include <cc/debug> // DEBUG
@@ -23,6 +25,8 @@ struct Branch;
 struct Node
 {
     static constexpr unsigned Capacity = 16;
+
+    Node() { isIdeal_ = 1; }
 
     Branch *parent_ { nullptr };
     unsigned fill_ { 0 };
@@ -39,7 +43,7 @@ struct Head
 class Branch: public Node
 {
 public:
-    Branch();
+    Branch() { isBranch_ = 1; }
 
     Local<Head> &at(unsigned nodeIndex) { assert(nodeIndex < fill_); return head_[nodeIndex]; }
     const Local<Head> &at(unsigned nodeIndex) const { assert(nodeIndex < fill_); return head_[nodeIndex]; }
@@ -55,24 +59,21 @@ private:
     Local<Head> head_[Node::Capacity];
 };
 
-template<class Item>
-class Leaf: public Node
+template<class Item, bool Trivial>
+class LeafData: public Node
 {
 public:
-    Leaf() {
-        isBranch_ = 0;
-        isIdeal_ = 1;
-    }
-
     Item &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
     const Item &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
 
     void push(unsigned nodeIndex, const Item &item) { slot_[map_->pushEntry(nodeIndex, fill_)] = item; }
     void pop(unsigned nodeIndex) { map_->popEntry(nodeIndex, fill_); }
 
-    int64_t weightAt(unsigned nodeIndex) const { return 1; }
-
-    void copyToPred(Leaf *pred) const;
+    void copyToPred(LeafData *pred) const
+    {
+        for (unsigned i = 0; i < fill_; ++i)
+            pred->push(pred->fill_, at(i));
+    }
 
 private:
     Local<BucketMap<Node::Capacity>> map_;
@@ -80,20 +81,116 @@ private:
 };
 
 template<class Item>
-void Leaf<Item>::copyToPred(Leaf *pred) const
+class LeafData<Item, true>: public Node
 {
-    for (unsigned i = 0; i < fill_; ++i)
-        pred->push(pred->fill_, at(i));
-}
+public:
+    Item &at(unsigned nodeIndex)
+    {
+        assert(nodeIndex < fill_);
+        return slot_[nodeIndex];
+    }
 
-class Tree;
+    const Item &at(unsigned nodeIndex) const
+    {
+        assert(nodeIndex < fill_);
+        return slot_[nodeIndex];
+    }
+
+    void push(unsigned nodeIndex, const Item &item)
+    {
+        assert(fill_ < Node::Capacity);
+        assert(nodeIndex <= fill_);
+
+        if (nodeIndex < fill_)
+            ::memmove(&slot_[nodeIndex + 1], &slot_[nodeIndex], (fill_ - nodeIndex) * sizeof(Item));
+
+        slot_[nodeIndex] = item;
+        ++fill_;
+    }
+
+    void pop(unsigned nodeIndex)
+    {
+        assert(fill_ > 0);
+        assert(nodeIndex < fill_);
+
+        --fill_;
+        if (nodeIndex < fill_) {
+            ::memmove(&slot_[nodeIndex], &slot_[nodeIndex + 1], (fill_ - nodeIndex) * sizeof(Item));
+        }
+    }
+
+    void copyToPred(LeafData *pred) const
+    {
+        assert(pred->fill_ + fill_ <= Node::Capacity);
+
+        ::memcpy(&pred->slot_[pred->fill_], &slot_[0], fill_ * sizeof(Item));
+        pred->fill_ += fill_;
+    }
+
+private:
+    Item slot_[Node::Capacity];
+};
+
+template<class Item>
+class Leaf: public LeafData<Item, std::is_trivially_copyable<Item>::value && sizeof(Item) <= 2 * sizeof(void*)>
+{
+public:
+    using Node::isBranch_;
+
+    Leaf() { isBranch_ = 0; }
+
+    int64_t weightAt(unsigned nodeIndex) const { return 1; }
+};
+
+class TreeData
+{
+protected:
+    friend class Path;
+
+    unsigned height_ { 0 };
+    uint64_t revision_ { 0 };
+
+    Local<Head> root_ {
+        .weight_ = 0,
+        .node_ = nullptr
+    };
+};
 
 class Path
 {
 public:
-    Path();
-    Path(const Tree *tree);
-    Path(const Tree *tree, int64_t index, bool insertion = false);
+    inline Path():
+        node_{nullptr}
+    {}
+
+    inline Path(const TreeData *tree):
+        origin_{0},
+        node_{tree->root_->node_},
+        depth_{0},
+        nodeIndex_{0}
+    {}
+
+    inline Path(const TreeData *tree, int64_t index, bool insertion = false):
+        origin_{0},
+        node_{tree->root_->node_},
+        depth_{0},
+        nodeIndex_{0}
+    {
+        if (!node_) return;
+
+        if (index + !insertion >= tree->root_->weight_) {
+            while (node_->isBranch_) stepDown(node_->fill_ - 1);
+            nodeIndex_ = node_->fill_ - !insertion;
+        }
+        else if (index <= 0) {
+            while (node_->isBranch_) stepDown(0);
+        }
+        else {
+            init(tree, index);
+        }
+
+        assert(!node_->isBranch_);
+    }
 
     explicit operator bool() const { return node_; }
     Node *node() const { return node_; }
@@ -115,8 +212,27 @@ public:
     bool hasParent() const { return depth_ > 0; }
     Path getParent() const { Local<Path> path{*this}; path->stepUp(); return path; }
 
-    void stepDown(unsigned egress);
-    void stepUp();
+    inline void stepDown(unsigned egress)
+    {
+        assert(egress < Node::Capacity);
+        assert(depth_ < MaxDepth);
+        assert(node_->isBranch_);
+
+        node_ = static_cast<Branch *>(node_)->at(egress)->node_;
+        origin_ |= (uint64_t(egress) << (depth_ << 2));
+        nodeIndex_ = 0;
+        ++depth_;
+    }
+
+    inline void stepUp()
+    {
+        assert(depth_ > 0);
+
+        node_ = node_->parent_;
+        nodeIndex_ = getOrigin();
+        --depth_;
+        origin_ &= ~(UINT64_C(0xF) << (depth_ << 2));
+    }
 
     bool stepPred();
     bool stepSucc();
@@ -138,17 +254,19 @@ public:
 private:
     static constexpr unsigned MaxDepth = 16;
 
+    void init(const TreeData *tree, int64_t index);
+
     uint64_t origin_;
     Node *node_;
     unsigned depth_;
     unsigned nodeIndex_;
 };
 
-class Tree
+class Tree: public TreeData
 {
 public:
     template<class Item>
-    Item &at(int64_t index)
+    inline Item &at(int64_t index)
     {
         return (height_ == 0) ?
             static_cast<Leaf<Item> *>(root_->node_)->at(index) :
@@ -156,7 +274,7 @@ public:
     }
 
     template<class Item>
-    Item &at(int64_t index) const
+    inline Item &at(int64_t index) const
     {
         return (height_ == 0) ?
             static_cast<Leaf<Item> *>(root_->node_)->at(index) :
@@ -185,8 +303,6 @@ public:
     String dotify() const;
 
 private:
-    friend class Path;
-
     unsigned commonDepth(const Path *first, const Path *second);
 
     template<class Node>
@@ -240,13 +356,6 @@ private:
 
     void dotifyNode(Format &format, const Head *head, unsigned origin = 0u) const;
 
-    unsigned height_ { 0 };
-    uint64_t revision_ { 0 };
-
-    Local<Head> root_ {
-        .weight_ = 0,
-        .node_ = nullptr
-    };
 };
 
 template<class Node>
@@ -311,20 +420,32 @@ void Tree::dissipateToSucc(Path *dest, Path *succ)
 template<class Item>
 void Tree::push(int64_t index, const Item &item)
 {
-    Local<Path> path{this, index, true};
+    do {
+        if (height_ == 0) {
+            Node *node = root_->node_;
+            if (node) {
+                if (node->fill_ < Node::Capacity) {
+                    static_cast<Leaf<Item> *>(node)->push(index, item);
+                    ++root_->weight_;
+                    break;
+                }
+            }
+            else {
+                Leaf<Item> *leaf = new Leaf<Item>;
+                leaf->push(0, item);
+                root_->node_ = leaf;
+                root_->weight_ = 1;
+                break;
+            }
+        }
 
-    if (path) {
+        Local<Path> path{this, index, true};
+        assert(path);
         dissipate<Leaf<Item>>(&path);
         static_cast<Leaf<Item> *>(path->node())->push(path->nodeIndex(), item);
         updateWeights(path, 1);
     }
-    else if (index == 0) {
-        assert(!root_->node_);
-        Leaf<Item> *leaf = new Leaf<Item>;
-        leaf->push(0, item);
-        root_->node_ = leaf;
-        root_->weight_ = 1;
-    }
+    while (false);
 
     ++revision_;
 }
@@ -361,7 +482,16 @@ void Tree::dissipate(Path *dest)
 template<class Item>
 void Tree::pop(int64_t index)
 {
-    if (count() > 1) {
+    if (height_ == 0) {
+        Node *node = root_->node_;
+        if (count() > 1) {
+            static_cast<Leaf<Item> *>(node)->pop(index);
+            --root_->weight_;
+        }
+        else
+            deplete<Item>();
+    }
+    else if (count() > 1) {
         Local<Path> path{this, index};
         path->leaf<Item>()->pop(path->nodeIndex());
         updateWeights(path, -1);
