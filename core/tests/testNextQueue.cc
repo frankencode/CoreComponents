@@ -34,6 +34,38 @@ int main(int argc, char **argv)
     #if 0
     for (int k = 0; k < h; ++k)
     {
+        std::list<int> list;
+        for (int i = 0; i < n; ++i)
+            list.push_back(i);
+    }
+    {
+        std::list<int> list;
+        auto ts = ::clock();
+        for (int i = 0; i < n; ++i)
+            list.push_back(i);
+        ts = ::clock() - ts;
+        CC_INSPECT(ts);
+    }
+    #endif
+    #if 1
+    for (int k = 0; k < h; ++k)
+    {
+        std::deque<int> list;
+        for (int i = 0; i < n; ++i)
+            list.push_back(i);
+    }
+    {
+        std::deque<int> list;
+        auto ts = ::clock();
+        for (int i = 0; i < n; ++i)
+            list.push_back(i);
+        ts = ::clock() - ts;
+        CC_INSPECT(ts);
+    }
+    #endif
+    #if 1
+    for (int k = 0; k < h; ++k)
+    {
         Local<NextQueue<int>> queue;
         for (int i = 0; i < n; ++i)
             queue->pushBack(i);
@@ -45,38 +77,6 @@ int main(int argc, char **argv)
             queue->pushBack(i);
         tq = ::clock() - tq;
         CC_INSPECT(tq);
-    }
-    #endif
-    #if 0
-    for (int k = 0; k < h; ++k)
-    {
-        std::list<int> list;
-        for (int i = 0; i < n; ++i)
-            list.push_back(i);
-    }
-    {
-        std::list<int> list;
-        auto ts = ::clock();
-        for (int i = 0; i < n; ++i)
-            list.push_back(i);
-        ts = ::clock() - ts;
-        CC_INSPECT(ts);
-    }
-    #endif
-    #if 0
-    for (int k = 0; k < h; ++k)
-    {
-        std::deque<int> list;
-        for (int i = 0; i < n; ++i)
-            list.push_back(i);
-    }
-    {
-        std::deque<int> list;
-        auto ts = ::clock();
-        for (int i = 0; i < n; ++i)
-            list.push_back(i);
-        ts = ::clock() - ts;
-        CC_INSPECT(ts);
     }
     #endif
     #if 0

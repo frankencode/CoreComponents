@@ -19,7 +19,7 @@ void print(const NextList<int> *list)
     ferr() << "(" << f->join(", ") << ")" << nl;
 }
 
-class PushBackPopBackTest: public TestCase
+class PushBackPopBackTest: public TestCase, public ListTesting<int>
 {
     void run() override
     {
@@ -31,6 +31,7 @@ class PushBackPopBackTest: public TestCase
                 CC_VERIFY(list->at(k) == k);
         }
         CC_VERIFY(list->count() == n);
+        File::open("tree_push_back.dot", FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate)->write(tree(list)->dotify());
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == k);
@@ -40,7 +41,7 @@ class PushBackPopBackTest: public TestCase
     }
 };
 
-class PushFrontPopFrontTest: public TestCase
+class PushFrontPopFrontTest: public TestCase, public ListTesting<int>
 {
     void run() override
     {
@@ -52,6 +53,7 @@ class PushFrontPopFrontTest: public TestCase
                 CC_VERIFY(list->at(k) == i - k);
         }
         CC_VERIFY(list->count() == n);
+        File::open("tree_push_front.dot", FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate)->write(tree(list)->dotify());
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == n - i - 1 - k);
@@ -61,7 +63,7 @@ class PushFrontPopFrontTest: public TestCase
     }
 };
 
-class PushFrontPopBackTest: public TestCase
+class PushFrontPopBackTest: public TestCase, public ListTesting<int>
 {
     void run() override
     {
@@ -73,6 +75,7 @@ class PushFrontPopBackTest: public TestCase
                 CC_VERIFY(list->at(k) == i - k);
         }
         CC_VERIFY(list->count() == n);
+        // File::open("tree_push_front.dot", FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate)->write(tree(list)->dotify());
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == n - 1 - k);
@@ -82,18 +85,20 @@ class PushFrontPopBackTest: public TestCase
     }
 };
 
-class PushBackPopFrontTest: public TestCase
+class PushBackPopFrontTest: public TestCase, public ListTesting<int>
 {
     void run() override
     {
         const int n = 1024;
         Local<NextList<int>> list;
+        auto t = ::clock();
         for (int i = 0; i < n; ++i) {
             list->push(list->count(), i);
-            for (int k = 0; k <= i; ++k)
-                CC_VERIFY(list->at(k) == k);
         }
+        t = ::clock() - t;
+        CC_INSPECT(t);
         CC_VERIFY(list->count() == n);
+        // File::open("tree_push_back.dot", FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate)->write(tree(list)->dotify());
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == k + i);
@@ -103,18 +108,22 @@ class PushBackPopFrontTest: public TestCase
     }
 };
 
-class PushPopRandomTest: public TestCase
+class PushPopRandomTest: public TestCase, public ListTesting<int>
 {
     void run() override
     {
         const int n = 1024;
         Local<NextList<int>> list;
         Local<Random> random{0};
+        auto t = ::clock();
         for (int i = 0; i < n; ++i) {
             auto r = random->get(0, i + 1);
             list->push(r, i);
         }
+        t = ::clock() - t;
+        CC_INSPECT(t);
         CC_VERIFY(list->count() == n);
+        File::open("tree_random.dot", FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate)->write(tree(list)->dotify());
         for (int i = 0; i < n; ++i) {
             auto r = random->get(0, list->count() - 1);
             list->pop(r);
@@ -125,7 +134,7 @@ class PushPopRandomTest: public TestCase
 
 int main(int argc, char **argv)
 {
-    #if 0
+    #if 0 // def NDEBUG
     const int n = 100000;
     const int w = 10;
     {
@@ -182,7 +191,7 @@ int main(int argc, char **argv)
     return 0;
     #endif
 
-    #if 0
+    #if 0 // def NDEBUG
     {
         const int h = 100000;
         const int n = 256;
@@ -220,7 +229,7 @@ int main(int argc, char **argv)
         }
         #endif
 
-        #if 0
+        #if 1
         for (int k = 0; k < h; ++k)
         {
             Local<List<int>> list;
@@ -242,7 +251,7 @@ int main(int argc, char **argv)
     return 0;
     #endif
 
-    #if 1
+    #if 1 // ndef NDEBUG
     CC_TESTSUITE_ADD(PushBackPopBackTest);
     CC_TESTSUITE_ADD(PushFrontPopFrontTest);
     CC_TESTSUITE_ADD(PushFrontPopBackTest);

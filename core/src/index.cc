@@ -51,22 +51,14 @@ void Path::init(const TreeData *tree, int64_t index)
 
     while (node_->isBranch_) {
         Branch *branch = static_cast<Branch *>(node_);
-        if (branch->isIdeal_) {
-            unsigned i = (index - offset0) >> (height << 2);
-            stepDown(i);
-            offset0 += i << (height << 2);
-            --height;
-        }
-        else {
-            for (unsigned i = 0; i < branch->fill_; ++i) {
-                int64_t offset1 = offset0 + branch->at(i)->weight_;
-                if (index < offset1) {
-                    stepDown(i);
-                    --height;
-                    break;
-                }
-                offset0 = offset1;
+        for (unsigned i = 0; i < branch->fill_; ++i) {
+            int64_t offset1 = offset0 + branch->at(i)->weight_;
+            if (index < offset1) {
+                stepDown(i);
+                --height;
+                break;
             }
+            offset0 = offset1;
         }
     }
 
@@ -202,14 +194,7 @@ void Tree::updateWeights(const Path *path, int64_t delta, unsigned minDepth)
         Branch *parent = node->parent_;
         assert(parent);
         unsigned origin = path->getOriginAtDepth(i);
-        const int64_t newWeight = (parent->at(origin)->weight_ += delta);
-        if (delta < 0) {
-            if (origin + 1 < parent->fill_) parent->isIdeal_ = 0;
-        }
-        else {
-            const int64_t idealWeight = UINT64_C(1) << ((height_ - i + 1) << 2);
-            if (newWeight == idealWeight && !node->isIdeal_) node->isIdeal_ = 1;
-        }
+        parent->at(origin)->weight_ += delta;
         node = parent;
     }
 }
@@ -230,7 +215,6 @@ void Tree::joinSucc(Path *path, Node *newNode)
     else {
         assert(path->node() == root_->node_);
         Branch *branch = new Branch;
-        branch->isIdeal_ = root_->node_->isIdeal_;
         branch->push(0, root_);
         branch->push(1, Local<Head>{.weight_ = 0, .node_ = newNode});
         root_ = Head{.weight_ = root_->weight_, .node_ = branch};
@@ -276,7 +260,7 @@ void Tree::dotifyNode(Format &format, const Head *head, unsigned origin) const
     if (node->isBranch_) {
         format
             << "branch_" << (void *)node << " [\n"
-            << "label = \"<f0>origin: " << origin << "|<f1>weight: " << head->weight_ << "|<f2>fill: " << node->fill_ << "|<f3>isIdeal: " << (node->isIdeal_ == 1) << "\"\n"
+            << "label = \"<f0>origin: " << origin << "|<f1>weight: " << head->weight_ << "|<f2>fill: " << node->fill_ << "\"\n"
             << "shape = \"record\"\n"
             << "];\n";
 

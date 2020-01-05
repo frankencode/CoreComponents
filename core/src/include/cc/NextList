@@ -15,6 +15,9 @@
 namespace cc {
 
 template<class Item>
+class ListTesting;
+
+template<class Item>
 class NextList: public Object
 {
 public:
@@ -63,6 +66,7 @@ public:
       */
 
 private:
+    friend class ListTesting<Item>;
     friend class Local<NextList>;
 
     NextList() {}
@@ -71,6 +75,13 @@ private:
     NextList(const NextList &) = delete;
 
     Local<index::Tree> tree_;
+};
+
+template<class Item>
+class ListTesting
+{
+public:
+    static const index::Tree *tree(const NextList<Item> *list) { return list->tree_; }
 };
 
 } // namespace cc

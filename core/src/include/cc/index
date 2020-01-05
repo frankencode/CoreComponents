@@ -26,12 +26,13 @@ struct Node
 {
     static constexpr unsigned Capacity = 16;
 
-    Node() { isIdeal_ = 1; }
+    Node(bool isBranch = false):
+        isBranch_{isBranch}
+    {}
 
     Branch *parent_ { nullptr };
     unsigned fill_ { 0 };
-    unsigned isBranch_ : 1;
-    unsigned isIdeal_ : 1;
+    bool isBranch_;
 };
 
 struct Head
@@ -43,7 +44,7 @@ struct Head
 class Branch: public Node
 {
 public:
-    Branch() { isBranch_ = 1; }
+    Branch(): Node{true} {}
 
     Local<Head> &at(unsigned nodeIndex) { assert(nodeIndex < fill_); return head_[nodeIndex]; }
     const Local<Head> &at(unsigned nodeIndex) const { assert(nodeIndex < fill_); return head_[nodeIndex]; }
@@ -159,18 +160,18 @@ protected:
 class Path
 {
 public:
-    inline Path():
+    Path():
         node_{nullptr}
     {}
 
-    inline Path(const TreeData *tree):
+    Path(const TreeData *tree):
         origin_{0},
         node_{tree->root_->node_},
         depth_{0},
         nodeIndex_{0}
     {}
 
-    inline Path(const TreeData *tree, int64_t index, bool insertion = false):
+    Path(const TreeData *tree, int64_t index, bool insertion = false):
         origin_{0},
         node_{tree->root_->node_},
         depth_{0},
@@ -212,7 +213,7 @@ public:
     bool hasParent() const { return depth_ > 0; }
     Path getParent() const { Local<Path> path{*this}; path->stepUp(); return path; }
 
-    inline void stepDown(unsigned egress)
+    void stepDown(unsigned egress)
     {
         assert(egress < Node::Capacity);
         assert(depth_ < MaxDepth);
@@ -224,7 +225,7 @@ public:
         ++depth_;
     }
 
-    inline void stepUp()
+    void stepUp()
     {
         assert(depth_ > 0);
 
@@ -266,7 +267,7 @@ class Tree: public TreeData
 {
 public:
     template<class Item>
-    inline Item &at(int64_t index)
+    Item &at(int64_t index)
     {
         return (height_ == 0) ?
             static_cast<Leaf<Item> *>(root_->node_)->at(index) :
@@ -274,7 +275,7 @@ public:
     }
 
     template<class Item>
-    inline Item &at(int64_t index) const
+    Item &at(int64_t index) const
     {
         return (height_ == 0) ?
             static_cast<Leaf<Item> *>(root_->node_)->at(index) :
@@ -456,18 +457,18 @@ void Tree::dissipate(Path *dest)
     do {
         if (dest->node()->fill_ < Node::Capacity) break;
 
-        const bool isIdeal = root_->node_->isIdeal_;
+        Local<Path> succ = dest->getSucc();
 
-        if (!isIdeal && dest->hasPred() && !dest->node()->isBranch_) {
-            Local<Path> pred = dest->getPred();
-            if (pred->node()->fill_ < Node::Capacity) {
-                dissipateToPred<Node>(dest, &pred);
-                break;
+        if (!dest->node()->isBranch_) {
+            if (succ && dest->hasPred()) {
+                    // TODO: optimize with dest->hasSucc()
+                Local<Path> pred = dest->getPred();
+                if (pred->node()->fill_ < Node::Capacity) {
+                    dissipateToPred<Node>(dest, &pred);
+                    break;
+                }
             }
         }
-
-        Local<Path> succ;
-        if (!isIdeal) succ = dest->getSucc();
 
         if (!succ || succ->node()->fill_ == Node::Capacity) {
             joinSucc(dest, new Node);
@@ -563,7 +564,7 @@ void Tree::deplete(Node *node)
 template<class Item>
 class ConstIterator:
     public std::iterator<
-        /*iterator_category*/ std::bidirectional_iterator_tag,
+        /*iterator_category*/ std::forward_iterator_tag /*bidirectional_iterator_tag*/,
         /*value_type*/        Item,
         /*difference_type*/   int64_t,
         /*pointer*/           void,
@@ -582,7 +583,7 @@ public:
         revision_{tree_->revision()}
     {}
 
-    Item operator*() const { return path_->item<Item>(); }
+    const Item &operator*() const { return path_->item<Item>(); }
 
     ConstIterator &operator++()
     {
@@ -597,7 +598,7 @@ public:
         return *this;
     }
 
-    ConstIterator &operator--()
+    /*ConstIterator &operator--()
     {
         if (revision_ != tree_->revision()) {
             revision_ = tree_->revision();
@@ -608,7 +609,7 @@ public:
             --index_;
 
         return *this;
-    }
+    }*/
 
     ConstIterator operator+(int64_t delta) { return ConstIterator{tree_, index_ + delta}; }
     ConstIterator operator-(int64_t delta) { return ConstIterator{tree_, index_ - delta}; }
