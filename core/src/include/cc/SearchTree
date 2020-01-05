@@ -167,7 +167,7 @@ int SearchTree<Node>::findLastBelowOrEqual(const Item &b) const
 template<class Node>
 void *SearchTree<Node>::insertAt(int index, const Item &item)
 {
-    Node *kn = new Node(item);
+    Node *kn = new Node{item};
     attachAt(index, kn);
     return kn;
 }

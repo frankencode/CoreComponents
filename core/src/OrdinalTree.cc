@@ -68,7 +68,7 @@ OrdinalNode *OrdinalTree::getNodeAt(int i) const
 {
     CC_ASSERT((0 <= i) && (i < weight()));
 
-    ExclusiveAccess cacheAccess(&cacheExclusive_);
+    ExclusiveAccess cacheAccess{&cacheExclusive_};
     if (cacheAccess) {
         if (cachedNode_) {
             const int d = i - cachedIndex_;
