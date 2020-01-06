@@ -47,7 +47,7 @@ int main(int argc, char **argv)
         CC_INSPECT(ts);
     }
     #endif
-    #if 1
+    #if 0
     for (int k = 0; k < h; ++k)
     {
         std::deque<int> list;
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
         CC_INSPECT(ts);
     }
     #endif
-    #if 1
+    #if 0
     for (int k = 0; k < h; ++k)
     {
         Local<NextQueue<int>> queue;

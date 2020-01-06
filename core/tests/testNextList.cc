@@ -141,7 +141,7 @@ int main(int argc, char **argv)
     return 0;
     #endif
 
-    #if 1 // def NDEBUG
+    #if 0 // def NDEBUG
     const int n = 256;
     const int w = 1000;
     {
