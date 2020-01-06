@@ -204,6 +204,8 @@ void Tree::joinSucc(Path *path, Node *newNode)
     assert(path);
     assert(newNode->fill_ == 0);
 
+    path->node()->succ_ = newNode;
+
     if (path->hasParent()) {
         Local<Path> parent = path->getParent();
         parent->setNodeIndex(parent->nodeIndex() + 1);

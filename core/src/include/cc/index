@@ -31,6 +31,7 @@ struct Node
     {}
 
     Branch *parent_ { nullptr };
+    Node *succ_ { nullptr };
     unsigned fill_ { 0 };
     bool isBranch_;
 };
@@ -149,7 +150,9 @@ protected:
     friend class Path;
 
     unsigned height_ { 0 };
+    #ifndef NDEBUG
     uint64_t revision_ { 0 };
+    #endif
 
     Local<Head> root_ {
         .weight_ = 0,
@@ -208,6 +211,8 @@ public:
 
     bool hasPred() const { return origin_ != 0; }
     Path getPred() const { Local<Path> path{*this}; path->stepPred(); return path; }
+
+    bool hasSucc() const { return node_ && node_->succ_; }
     Path getSucc() const { Local<Path> path{*this}; path->stepSucc(); return path; }
 
     bool hasParent() const { return depth_ > 0; }
@@ -299,7 +304,9 @@ public:
         }
     }
 
+    #ifndef NDEBUG
     uint64_t revision() const { return revision_; }
+    #endif
 
     String dotify() const;
 
@@ -448,7 +455,9 @@ void Tree::push(int64_t index, const Item &item)
     }
     while (false);
 
+    #ifndef NDEBUG
     ++revision_;
+    #endif
 }
 
 template<class Node>
@@ -457,11 +466,8 @@ void Tree::dissipate(Path *dest)
     do {
         if (dest->node()->fill_ < Node::Capacity) break;
 
-        Local<Path> succ = dest->getSucc();
-
         if (!dest->node()->isBranch_) {
-            if (succ && dest->hasPred()) {
-                    // TODO: optimize with dest->hasSucc()
+            if (dest->hasSucc() && dest->hasPred()) {
                 Local<Path> pred = dest->getPred();
                 if (pred->node()->fill_ < Node::Capacity) {
                     dissipateToPred<Node>(dest, &pred);
@@ -469,6 +475,8 @@ void Tree::dissipate(Path *dest)
                 }
             }
         }
+
+        Local<Path> succ = dest->getSucc();
 
         if (!succ || succ->node()->fill_ == Node::Capacity) {
             joinSucc(dest, new Node);
@@ -502,7 +510,9 @@ void Tree::pop(int64_t index)
     else
         deplete<Item>();
 
+    #ifndef NDEBUG
     ++revision_;
+    #endif
 }
 
 template<class Node>
@@ -543,6 +553,7 @@ void Tree::collapseSucc(const Path *dest, const Path *succ)
     static_cast<Node *>(succ->node())->copyToPred(static_cast<Node *>(dest->node()));
     Local<Path> parent = succ->getParent();
     parent->branch()->pop(succOrigin);
+    dest->node()->succ_ = succ->node()->succ_;
     delete static_cast<Node *>(succ->node());
     relieve<Branch>(parent);
 }
@@ -561,10 +572,10 @@ void Tree::deplete(Node *node)
     }
 }
 
-template<class Item>
-class ConstIterator:
+template<class Item, class Tree, class Node>
+class TreeIterator:
     public std::iterator<
-        /*iterator_category*/ std::forward_iterator_tag /*bidirectional_iterator_tag*/,
+        /*iterator_category*/ std::forward_iterator_tag,
         /*value_type*/        Item,
         /*difference_type*/   int64_t,
         /*pointer*/           void,
@@ -572,59 +583,96 @@ class ConstIterator:
     >
 {
 public:
-    ConstIterator():
+    TreeIterator():
         index_{std::numeric_limits<int64_t>::max()}
     {}
 
-    ConstIterator(const Tree *tree, int64_t index):
+    TreeIterator(Tree *tree, int64_t index):
         tree_{tree},
-        index_{index},
-        path_{tree, index},
-        revision_{tree_->revision()}
-    {}
-
-    const Item &operator*() const { return path_->item<Item>(); }
-
-    ConstIterator &operator++()
+        index_{index}
+        #ifndef NDEBUG
+        , revision_{tree_->revision()}
+        #endif
     {
-        if (revision_ != tree_->revision()) {
-            revision_ = tree_->revision();
-            path_ = Path{tree_, index_};
-        }
+        traverse();
+    }
 
-        if (!path_->iterateForward())
-            index_ = std::numeric_limits<int64_t>::max();
+    Item &operator*() {
+        assert(node_); // cannot deference an exhausted iterator
+        return static_cast<Leaf<Item> *>(node_)->at(nodeIndex_);
+    }
+
+    Item *operator->() const { return &**this; }
+
+    TreeIterator &operator++()
+    {
+        assert(index_ != std::numeric_limits<int64_t>::max()); // cannot increment an exhausted iterator
+        assert(revision_ == tree_->revision()); // cannot modify container while iterating it
+        ++index_;
+        ++nodeIndex_;
+        if (nodeIndex_ == node_->fill_) {
+            nodeIndex_ = 0;
+            node_ = node_->succ_;
+            if (!node_)
+                index_ = std::numeric_limits<int64_t>::max();
+        }
 
         return *this;
     }
 
-    /*ConstIterator &operator--()
-    {
-        if (revision_ != tree_->revision()) {
-            revision_ = tree_->revision();
-            path_ = Path{tree_, index_};
-        }
+    TreeIterator operator+(int64_t delta) { return TreeIterator{tree_, index_ + delta}; }
+    TreeIterator operator-(int64_t delta) { return TreeIterator{tree_, index_ - delta}; }
 
-        if (path_->iterateBackward())
-            --index_;
+    int64_t operator-(const TreeIterator &b) const { return index_ - b.index_; }
+    bool operator<(const TreeIterator &b) const { return index_ < b.index_; }
 
-        return *this;
-    }*/
-
-    ConstIterator operator+(int64_t delta) { return ConstIterator{tree_, index_ + delta}; }
-    ConstIterator operator-(int64_t delta) { return ConstIterator{tree_, index_ - delta}; }
-
-    int64_t operator-(const ConstIterator &b) const { return index_ - b.index_; }
-    bool operator<(const ConstIterator &b) const { return index_ < b.index_; }
-
-    bool operator==(const ConstIterator &b) const { return index_ == b.index_; }
-    bool operator!=(const ConstIterator &b) const { return index_ != b.index_; }
+    bool operator==(const TreeIterator &b) const { return index_ == b.index_; }
+    bool operator!=(const TreeIterator &b) const { return index_ != b.index_; }
 
 private:
+    void traverse()
+    {
+        Local<Path> path{tree_, index_};
+        node_ = path->node();
+        nodeIndex_ = path->nodeIndex();
+        if (!node_)
+            index_ = std::numeric_limits<int64_t>::max();
+        #ifndef NDEBUG
+        revision_ = tree_->revision();
+        #endif
+    }
+
     const Tree *tree_;
     int64_t index_;
-    Local<Path> path_;
+    Node *node_;
+    unsigned nodeIndex_;
+    #ifndef NDEBUG
     uint64_t revision_;
+    #endif
+};
+
+template<class Item>
+class ConstIterator: public TreeIterator<const Item, const Tree, const Node>
+{
+public:
+    ConstIterator()
+    {}
+
+    ConstIterator(const Tree *tree, int64_t index):
+        TreeIterator<const Item, const Tree, const Node>{tree, index}
+    {}
+};
+
+template<class Item>
+class Iterator: public TreeIterator<Item, Tree, Node>
+{
+public:
+    Iterator()
+    {}
+
+    Iterator(Tree *tree, int64_t index):
+        TreeIterator<Item, Tree, Node>{tree, index}
+    {}
 };
 
 }} // namespace cc::index

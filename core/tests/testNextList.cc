@@ -134,26 +134,21 @@ class PushPopRandomTest: public TestCase, public ListTesting<int>
 
 int main(int argc, char **argv)
 {
-    #if 0 // def NDEBUG
-    const int n = 100000;
-    const int w = 10;
+    #if 0
+    Local<NextList<int>> list;
+    for (int i = 0; i < 32; ++i) list->push(i, i);
+    for (auto x: list) CC_INSPECT(x);
+    return 0;
+    #endif
+
+    #if 1 // def NDEBUG
+    const int n = 256;
+    const int w = 1000;
     {
         const int m = 1000000;
         uint32_t x[m];
         for (int i = 1; i < m; ++i) x[i] = (x[i - 1] + 1) % 50;
         CC_INSPECT(x[m - 1]);
-    }
-    {
-        std::list<int> list;
-        for (int i = 0; i < n; ++i) list.push_back(i);
-        auto ts = ::clock();
-        int h = 0;
-        for (int i = 0; i < w; ++i) {
-            for (int x: list) h += x;
-        }
-        ts = ::clock() - ts;
-        CC_INSPECT(h);
-        CC_INSPECT(ts);
     }
     {
         Local<NextList<int>> list;
@@ -166,6 +161,18 @@ int main(int argc, char **argv)
         tx = ::clock() - tx;
         CC_INSPECT(h);
         CC_INSPECT(tx);
+    }
+    {
+        std::list<int> list;
+        for (int i = 0; i < n; ++i) list.push_back(i);
+        auto ts = ::clock();
+        int h = 0;
+        for (int i = 0; i < w; ++i) {
+            for (int x: list) h += x;
+        }
+        ts = ::clock() - ts;
+        CC_INSPECT(h);
+        CC_INSPECT(ts);
     }
     {
         Local<List<int>> list;
@@ -199,22 +206,6 @@ int main(int argc, char **argv)
         #if 1
         for (int k = 0; k < h; ++k)
         {
-            Local<NextList<int>> list;
-            for (int i = 0; i < n; ++i)
-                list->push(i, i);
-        }
-        {
-            Local<NextList<int>> list;
-            auto tx = ::clock();
-            for (int i = 0; i < n; ++i)
-                list->push(i, i);
-            tx = ::clock() - tx;
-            CC_INSPECT(tx);
-        }
-        #endif
-        #if 1
-        for (int k = 0; k < h; ++k)
-        {
             std::list<int> list;
             for (int i = 0; i < n; ++i)
                 list.push_back(i);
@@ -226,6 +217,23 @@ int main(int argc, char **argv)
                 list.push_back(i);
             ts = ::clock() - ts;
             CC_INSPECT(ts);
+        }
+        #endif
+
+        #if 1
+        for (int k = 0; k < h; ++k)
+        {
+            Local<NextList<int>> list;
+            for (int i = 0; i < n; ++i)
+                list->push(i, i);
+        }
+        {
+            Local<NextList<int>> list;
+            auto tx = ::clock();
+            for (int i = 0; i < n; ++i)
+                list->push(i, i);
+            tx = ::clock() - tx;
+            CC_INSPECT(tx);
         }
         #endif
 
