@@ -44,27 +44,6 @@ void Branch::copyToPred(Branch *pred)
     pred->fill_ += fill_;
 }
 
-void Path::init(const TreeData *tree, int64_t index)
-{
-    unsigned height = tree->height_;
-    int64_t offset0 = 0;
-
-    while (node_->isBranch_) {
-        Branch *branch = static_cast<Branch *>(node_);
-        for (unsigned i = 0; i < branch->fill_; ++i) {
-            int64_t offset1 = offset0 + branch->at(i)->weight_;
-            if (index < offset1) {
-                stepDown(i);
-                --height;
-                break;
-            }
-            offset0 = offset1;
-        }
-    }
-
-    nodeIndex_ = index - offset0;
-}
-
 bool Path::stepPred()
 {
     Node *pred = nullptr;
