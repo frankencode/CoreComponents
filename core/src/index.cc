@@ -116,28 +116,6 @@ bool Path::stepSucc()
     return succ;
 }
 
-bool Path::iterateForward()
-{
-    if (node_) {
-        if (nodeIndex_ + 1 < node_->fill_)
-            ++nodeIndex_;
-        else if (stepSucc())
-            nodeIndex_ = 0;
-    }
-    return node_;
-}
-
-bool Path::iterateBackward()
-{
-    if (node_) {
-        if (nodeIndex_ > 0)
-            --nodeIndex_;
-        else if (stepPred())
-            nodeIndex_ = node_->fill_ - 1;
-    }
-    return node_;
-}
-
 unsigned Path::getOrigin() const
 {
     return getOriginAtDepth(depth_);

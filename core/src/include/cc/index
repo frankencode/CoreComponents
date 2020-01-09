@@ -265,9 +265,6 @@ public:
     bool stepPred();
     bool stepSucc();
 
-    bool iterateForward();
-    bool iterateBackward();
-
     unsigned getOrigin() const;
     void setOrigin(unsigned newValue);
 
