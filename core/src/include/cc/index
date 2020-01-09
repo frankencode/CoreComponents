@@ -172,51 +172,47 @@ public:
     {}
 
     Path(const TreeData *tree):
-        origin_{0},
         node_{tree->root_->node_},
-        depth_{0},
-        nodeIndex_{0}
-    {}
+        depth_{0}
+    {
+        egress_[0] = 0; // silence gcc
+    }
 
     Path(const TreeData *tree, int64_t index, bool insertion = false)
     {
         if (tree->height_ == 0) {
-            origin_ = 0;
             node_ = tree->root_->node_;
             depth_ = 0;
-            nodeIndex_ = index;
+            egress_[0] = index;
         }
         else {
             if (index + !insertion >= tree->root_->weight_) {
-                uint64_t origin = 0;
                 unsigned depth = 0;
                 Node *node = tree->root_->node_;
                 while (node->isBranch_) {
                     const unsigned egress = node->fill_ - 1;
                     node = static_cast<Branch *>(node)->at(egress)->node_;
-                    origin |= (uint64_t(egress) << (depth << 2));
+                    egress_[depth] = egress;
                     ++depth;
                 }
-                origin_ = origin;
                 node_ = node;
                 depth_ = depth;
-                nodeIndex_ = node->fill_ - !insertion;
+                egress_[depth] = node->fill_ - !insertion;
             }
             else if (index <= 0) {
                 unsigned depth = 0;
                 Node *node = tree->root_->node_;
                 while (node->isBranch_) {
                     node = static_cast<Branch *>(node)->at(0)->node_;
+                    egress_[depth] = 0;
                     ++depth;
                 }
-                origin_ = 0;
                 node_ = node;
                 depth_ = depth;
-                nodeIndex_ = 0;
+                egress_[depth] = 0;
             }
             else {
                 int64_t offset0 = 0;
-                uint64_t origin = 0;
                 unsigned depth = 0;
                 Node *node = tree->root_->node_;
                 while (node->isBranch_) {
@@ -225,17 +221,16 @@ public:
                         int64_t offset1 = offset0 + branch->at(i)->weight_;
                         if (index < offset1) {
                             node = branch->at(i)->node_;
-                            origin |= (uint64_t(i) << (depth << 2));
+                            egress_[depth] = i;
                             ++depth;
                             break;
                         }
                         offset0 = offset1;
                     }
                 }
-                origin_ = origin;
                 node_ = node;
                 depth_ = depth;
-                nodeIndex_ = index - offset0;
+                egress_[depth] = index - offset0;
             }
         }
     }
@@ -246,14 +241,25 @@ public:
     template<class Item> Leaf<Item> *leaf() const { assert(node_ && !node_->isBranch_); return static_cast<Leaf<Item> *>(node_); }
 
     unsigned depth() const { return depth_; }
-    void grow() { ++depth_; origin_ <<= 4; }
+    void grow() { ++depth_; ::memmove(egress_ + 1, egress_, depth_); egress_[0] = 0; }
 
-    unsigned nodeIndex() const { return nodeIndex_; }
-    void setNodeIndex(unsigned newValue) { nodeIndex_ = newValue; }
+    unsigned nodeIndex() const { return egress_[depth_]; }
+    void setNodeIndex(unsigned newValue) { egress_[depth_] = newValue; }
 
-    template<class Item> Item &item() const { return leaf<Item>()->at(nodeIndex_); }
+    template<class Item> Item &item() const { return leaf<Item>()->at(egress_[depth_]); }
 
-    bool hasPred() const { return origin_ != 0; }
+    bool hasPred() const
+    {
+        bool yes = false;
+        for (unsigned i = 0; i < depth_; ++i) {
+            if (egress_[i] != 0) {
+                yes = true;
+                break;
+            }
+        }
+        return yes;
+    }
+
     Path getPred() const { Local<Path> path{*this}; path->stepPred(); return path; }
 
     bool hasSucc() const { return node_ && node_->succ_; }
@@ -265,36 +271,121 @@ public:
     bool stepPred();
     bool stepSucc();
 
-    unsigned getOrigin() const;
-    void setOrigin(unsigned newValue);
+    unsigned getOrigin() const { assert(depth_ > 0); return egress_[depth_ - 1]; }
+    void setOrigin(unsigned newValue) { assert(depth_ > 0); egress_[depth_ - 1] = newValue; }
 
-    unsigned getOriginAtDepth(unsigned depth) const;
-    void setOriginAtDepth(unsigned depth, unsigned newValue);
+    unsigned getOriginAtDepth(unsigned depth) const { assert(depth > 0); return egress_[depth - 1]; }
+    void setOriginAtDepth(unsigned depth, unsigned newValue) { assert(depth > 0); egress_[depth - 1] = newValue; }
 
     String toString() const // DEBUG
     {
-        return Format{} << "Path { depth: " << depth_ << ", getOrigin(): " << ((depth_ > 0) ? getOrigin() : 0u) << ", origin: 0x" << hex(origin_, 16) << ", nodeIndex: " << nodeIndex_ << ", node: " << (void *)node_ << ", fill: " << (node_ ? node_->fill_ : 0u) << ", parent: " << (void *)(node_ ? node_->parent_ : nullptr) << " }";
+        return Format{} << "Path { depth: " << depth_ << ", getOrigin(): " << ((depth_ > 0) ? getOrigin() : 0u) << ", origin: 0x" << hex(getOrigin(), 16) << ", nodeIndex: " << nodeIndex() << ", node: " << (void *)node_ << ", fill: " << (node_ ? node_->fill_ : 0u) << ", parent: " << (void *)(node_ ? node_->parent_ : nullptr) << " }";
     }
 
-private:
-    static constexpr unsigned MaxDepth = 16;
-
-    void init(const TreeData *tree, int64_t index);
-
+protected:
     void stepUp()
     {
         assert(depth_ > 0);
-
         node_ = node_->parent_;
-        nodeIndex_ = getOrigin();
         --depth_;
-        origin_ &= ~(UINT64_C(0xF) << (depth_ << 2));
     }
 
-    uint64_t origin_;
+    uint8_t egress_[16];
     Node *node_;
     unsigned depth_;
-    unsigned nodeIndex_;
+};
+
+class SearchPath: public Path
+{
+public:
+    SearchPath(const TreeData *tree):
+        Path{tree}
+    {
+        range_[0][0] = 0;
+        range_[0][1] = tree->root_->weight_;
+    }
+
+    explicit operator bool() const { return node_ && !node_->isBranch_; }
+
+    template<class Item>
+    const Item &item() const {
+        assert(bool(*this));
+        return static_cast<const Leaf<Item> *>(node_)->at(egress_[depth_]);
+    }
+
+    void stepTo(int64_t index)
+    {
+        assert(range_[0][0] <= index && index < range_[0][1]);
+
+        Node *node = node_;
+        unsigned depth = depth_;
+        for (; depth > 0; --depth) {
+            if (range_[depth][0] <= index && index < range_[depth][1])
+                break;
+            node = node->parent_;
+        }
+
+        int64_t offset0 = range_[depth][0];
+        while (node->isBranch_) {
+            const Branch *branch = static_cast<const Branch *>(node);
+            for (unsigned i = 0; i < branch->fill_; ++i) {
+                const int64_t offset1 = offset0 + branch->at(i)->weight_;
+                if (index < offset1) {
+                    node = branch->at(i)->node_;
+                    egress_[depth] = i;
+                    ++depth;
+                    range_[depth][0] = offset0;
+                    range_[depth][1] = offset1;
+                    break;
+                }
+                offset0 = offset1;
+            }
+        }
+
+        depth_ = depth;
+        node_ = node;
+        egress_[depth] = index - offset0;
+    }
+
+    int64_t currentIndex() const
+    {
+        assert(bool(*this));
+        return range_[depth_][0] + egress_[depth_];
+    }
+
+    int64_t count() const { return range_[0][1]; }
+
+private:
+    int64_t range_[16][2];
+};
+
+template<class T>
+class SearchArray
+{
+public:
+    typedef T Item;
+    typedef int64_t Index;
+
+    const Item &at(Index index) const
+    {
+        if (path_->currentIndex() != index) path_->stepTo(index);
+        return path_->item<Item>();
+    }
+
+    const Path *pathTo(Index index) const
+    {
+        if (path_->currentIndex() != index) path_->stepTo(index);
+        return path_;
+    }
+
+    Index count() const { return path_->count(); }
+
+private:
+    friend class Local<SearchArray>;
+    SearchArray(const TreeData *tree):
+        path_{tree}
+    {}
+    mutable Local<SearchPath> path_;
 };
 
 class Tree: public TreeData
@@ -322,7 +413,13 @@ public:
     void push(int64_t index, const Item &item);
 
     template<class Item>
+    void push(Path *path, const Item &item);
+
+    template<class Item>
     void pop(int64_t index);
+
+    template<class Item>
+    void pop(const Path *path);
 
     template<class Item>
     void deplete()
@@ -463,6 +560,9 @@ void Tree::push(int64_t index, const Item &item)
                 if (node->fill_ < Node::Capacity) {
                     static_cast<Leaf<Item> *>(node)->push(index, item);
                     ++root_->weight_;
+                    #ifndef NDEBUG
+                    ++revision_;
+                    #endif
                     break;
                 }
             }
@@ -471,18 +571,26 @@ void Tree::push(int64_t index, const Item &item)
                 leaf->push(0, item);
                 root_->node_ = leaf;
                 root_->weight_ = 1;
+                #ifndef NDEBUG
+                ++revision_;
+                #endif
                 break;
             }
         }
 
         Local<Path> path{this, index, true};
-        assert(path);
-        dissipate<Leaf<Item>>(&path);
-        static_cast<Leaf<Item> *>(path->node())->push(path->nodeIndex(), item);
-        updateWeights(path, 1);
+        push(&path, item);
     }
     while (false);
+}
 
+template<class Item>
+void Tree::push(Path *path, const Item &item)
+{
+    assert(*path);
+    dissipate<Leaf<Item>>(path);
+    static_cast<Leaf<Item> *>(path->node())->push(path->nodeIndex(), item);
+    updateWeights(path, 1);
     #ifndef NDEBUG
     ++revision_;
     #endif
@@ -528,8 +636,21 @@ void Tree::pop(int64_t index)
         else
             deplete<Item>();
     }
-    else if (count() > 1) {
+    else {
         Local<Path> path{this, index};
+        pop<Item>(path);
+    }
+
+    #ifndef NDEBUG
+    ++revision_;
+    #endif
+}
+
+template<class Item>
+void Tree::pop(const Path *path)
+{
+    if (count() > 1) {
+        assert(*path);
         path->leaf<Item>()->pop(path->nodeIndex());
         updateWeights(path, -1);
         relieve<Leaf<Item>>(path);
@@ -537,10 +658,6 @@ void Tree::pop(int64_t index)
     }
     else
         deplete<Item>();
-
-    #ifndef NDEBUG
-    ++revision_;
-    #endif
 }
 
 template<class Node>
@@ -679,98 +796,5 @@ using ConstIterator = TreeIterator<const Item, const Tree, const Node>;
 
 template<class Item>
 using Iterator = TreeIterator<Item, Tree, Node>;
-
-class SearchPath
-{
-public:
-    SearchPath(const TreeData *tree):
-        node_{tree->root_->node_},
-        depth_{0}
-    {
-        range_[0][0] = 0;
-        range_[0][1] = tree->root_->weight_;
-    }
-
-    explicit operator bool() const { return node_ && !node_->isBranch_; }
-
-    template<class Item>
-    const Item &item() const {
-        assert(bool(*this));
-        return static_cast<const Leaf<Item> *>(node_)->at(egress_[depth_]);
-    }
-
-    void stepTo(int64_t index)
-    {
-        assert(range_[0][0] <= index && index < range_[0][1]);
-
-        const Node *node = node_;
-        unsigned depth = depth_;
-        for (; depth > 0; --depth) {
-            if (range_[depth][0] <= index && index < range_[depth][1])
-                break;
-            node = node->parent_;
-        }
-
-        int64_t offset0 = range_[depth][0];
-        while (node->isBranch_) {
-            const Branch *branch = static_cast<const Branch *>(node);
-            for (unsigned i = 0; i < branch->fill_; ++i) {
-                const int64_t offset1 = offset0 + branch->at(i)->weight_;
-                if (index < offset1) {
-                    node = branch->at(i)->node_;
-                    egress_[depth] = i;
-                    ++depth;
-                    range_[depth][0] = offset0;
-                    range_[depth][1] = offset1;
-                    break;
-                }
-                offset0 = offset1;
-            }
-        }
-
-        depth_ = depth;
-        node_ = node;
-        egress_[depth] = index - offset0;
-    }
-
-    int64_t currentIndex() const
-    {
-        assert(bool(*this));
-        return range_[depth_][0] + egress_[depth_];
-    }
-
-    int64_t count() const { return range_[0][1]; }
-
-private:
-    const Node *node_;
-    uint8_t egress_[16];
-    int64_t range_[16][2];
-    unsigned depth_;
-};
-
-template<class T>
-class SearchArray
-{
-public:
-    typedef T Item;
-    typedef int64_t Index;
-
-    const Item &at(Index index) const
-    {
-        if (path_->currentIndex() != index) {
-            path_->stepTo(index);
-        }
-        return path_->item<Item>();
-    }
-
-    Index count() const { return path_->count(); }
-
-private:
-    friend class Local<SearchArray>;
-    SearchArray(const TreeData *tree):
-        path_{tree}
-    {}
-    mutable Local<SearchPath> path_;
-};
 
 }} // namespace cc::index

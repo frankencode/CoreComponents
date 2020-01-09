@@ -116,34 +116,6 @@ bool Path::stepSucc()
     return succ;
 }
 
-unsigned Path::getOrigin() const
-{
-    return getOriginAtDepth(depth_);
-}
-
-void Path::setOrigin(unsigned newValue)
-{
-    setOriginAtDepth(depth_, newValue);
-}
-
-unsigned Path::getOriginAtDepth(unsigned depth) const
-{
-    assert(depth > 0);
-
-    return (origin_ >> ((depth - 1) << 2)) & 0xFu;
-}
-
-void Path::setOriginAtDepth(unsigned depth, unsigned newValue)
-{
-    assert(depth > 0);
-    assert(newValue <= 0xFu);
-
-    unsigned depthShift = (depth - 1) << 2;
-
-    origin_ &= ~(UINT64_C(0xF) << depthShift);
-    origin_ |= uint64_t(newValue) << depthShift;
-}
-
 void Tree::updateWeights(const Path *path, int64_t delta, unsigned minDepth)
 {
     Node *node = path->node();
