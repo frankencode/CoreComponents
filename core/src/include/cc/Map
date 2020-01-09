@@ -156,7 +156,7 @@ public:
       * 'value' is not set and the function returns false.
       */
     template<class Value2>
-    bool lookup(const Key &key, Value2 *value = 0, int *index = 0) const
+    bool lookup(const Key &key, Value2 *value = nullptr, int *index = nullptr) const
     {
         bool found = false;
         Node *k = tree_.find(Item(key), &found, 0, index);

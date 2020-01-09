@@ -123,6 +123,18 @@ public:
         return *this;
     }
 
+    template<class Index>
+    inline auto operator[](Index i) const {
+        CC_ASSERT2(a_, "Null reference accessed");
+        return (*a_)[i];
+    }
+
+    template<class Index>
+    inline auto operator[](Index i) {
+        CC_ASSERT2(a_, "Null reference accessed");
+        return (*a_)[i];
+    }
+
 protected:
     template<class T2> friend class Ref;
     friend class Object;

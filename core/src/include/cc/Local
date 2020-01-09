@@ -34,6 +34,12 @@ public:
 
     T *operator&() { return &instance_; }
 
+    template<class Index>
+    auto operator[](Index i) const { return instance_[i]; }
+
+    template<class Index>
+    auto operator[](Index i) { return instance_[i]; }
+
 private:
     T instance_;
 };

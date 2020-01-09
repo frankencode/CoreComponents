@@ -95,7 +95,7 @@ public:
     static String join(const StringList *parts, const String &sep = String{});
 
     /// Construct an empty string
-    Ref(): a_(nullptr) {}
+    Ref(): a_{nullptr} {}
 
     /// Construt a string from an intermediate expression
     Ref(String &&b): a_{b.a_} { b.a_ = nullptr; }
@@ -107,7 +107,7 @@ public:
     Ref(const CharArray *b);
 
     /// \copydoc Ref(const String &)
-    Ref(CharArray *b): a_(nullptr) { set(b); }
+    Ref(CharArray *b): a_{nullptr} { set(b); }
 
     /** Construct a copy of another C string
       * \param other pointer to C string to copy
@@ -197,6 +197,9 @@ public:
 
     /// Access the underlying character array (read-only)
     const CharArray *operator->() const { return get(); }
+
+    /// Access character at index \a i
+    const char &operator[](int i) const;
 
 private:
     friend class MutantString;
@@ -1124,13 +1127,6 @@ inline Ref<const CharArray>::Ref(const char *other, int size):
     set(CharArray::copy(other, size));
 }
 
-/*inline Ref<const CharArray>::Ref(char ch):
-    a_{nullptr}
-{
-    set(CharArray::create(1));
-    a_->at(0) = ch;
-}*/
-
 inline Ref<const CharArray>::Ref(int size, char preset):
     a_{nullptr}
 {
@@ -1190,6 +1186,11 @@ inline String &Ref<const CharArray>::operator=(const char *b)
 {
     set(CharArray::copy(b));
     return *this;
+}
+
+inline const char &Ref<const CharArray>::operator[](int i) const
+{
+    return get()->at(i);
 }
 
 inline Ref<const CharArray>::operator bool() { return a_ && a_->count() > 0; }
