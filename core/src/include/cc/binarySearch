@@ -19,9 +19,9 @@ namespace cc {
   * \return true if a matching item was found, false otherwise
   */
 template<
-    class SortedArray,
+    class SortedItems,
     class Pattern = typename SortedItems::Item,
-    class Index = typename SortedArray::Index
+    class Index = typename SortedItems::Index
 >
 bool binarySearch(
     const SortedItems *items,
@@ -42,12 +42,12 @@ bool binarySearch(
             lastIndex = middleIndex;
     }
 
-    if (item->at(firstIndex) == pattern) {
+    if (items->at(firstIndex) == pattern) {
         *finalIndex = firstIndex;
         return true;
     }
 
-    if (item->at(lastIndex) == pattern) {
+    if (items->at(lastIndex) == pattern) {
         *finalIndex = lastIndex;
         return true;
     }
