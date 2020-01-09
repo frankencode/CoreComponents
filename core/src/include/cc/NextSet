@@ -1,0 +1,126 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/index>
+#include <cc/binarySearch>
+
+namespace cc {
+
+template<class T>
+class NextSet: public Object
+{
+public:
+    typedef int64_t Index;
+    typedef T Item;
+
+    static Ref<NextSet> create() { return new NextSet; }
+
+    Index count() const { return tree_->count(); }
+
+    const Item &at(Index index) const
+    {
+        assert(0 <= index && index < count());
+        return tree_->at<Item>(index);
+    }
+
+    template<class Pattern>
+    bool lookup(const Pattern &pattern, Index *finalIndex = nullptr)
+    {
+        const Index n = count();
+        bool found = false;
+        Index h;
+        if (!finalIndex) finalIndex = &h;
+        if (n > 16) {
+            if (pattern <= at(0)) {
+                *finalIndex = 0;
+            }
+            else if (at(n - 1) < pattern) {
+                *finalIndex = n;
+            }
+            else {
+                Local<index::SearchArray<Item>> array{tree_};
+                found = binarySearch<index::SearchArray<Item>>(array, pattern, finalIndex);
+            }
+        }
+        else if (n > 4) {
+            if (pattern <= at(0)) {
+                *finalIndex = 0;
+            }
+            else if (at(n - 1) < pattern) {
+                *finalIndex = n;
+            }
+            else {
+                found = binarySearch<NextSet>(this, pattern, finalIndex);
+            }
+        }
+        else {
+            Index i = 0;
+            for (; i < n; ++i) {
+                if (at(i) < pattern);
+                else {
+                    *finalIndex = i;
+                    found = (at(i) == pattern);
+                    break;
+                }
+            }
+            if (i == n) *finalIndex = n;
+        }
+        return found;
+    }
+
+    bool insert(const Item &item, Index *index = nullptr)
+    {
+        Index h;
+        if (!index) index = &h;
+        bool success = false;
+        if (!lookup(item, index)) {
+            tree_->push<Item>(*index, item);
+            success = true;
+        }
+        return success;
+    }
+
+    template<class Pattern>
+    bool remove(const Pattern &pattern)
+    {
+        Index index;
+        bool success = false;
+        if (lookup(pattern, &index)) {
+            tree_->pop<Item>(index);
+            success = true;
+        }
+        return success;
+    }
+
+    void deplete() { tree_->deplete<Item>(); }
+
+    /** \name C++ iterators
+      * @{
+      */
+    typedef index::Iterator<Item> iterator;
+    iterator begin() { return index::Iterator<Item>{&tree_, 0}; }
+    iterator end() { return index::Iterator<Item>{}; }
+
+    typedef index::ConstIterator<Item> const_iterator;
+    const_iterator begin() const { return index::ConstIterator<Item>{tree_, 0}; }
+    const_iterator end() const { return index::ConstIterator<Item>{}; }
+    /** @}
+      */
+
+private:
+    friend class Local<NextSet>;
+
+    NextSet() = default;
+    ~NextSet() { tree_->deplete<Item>(); }
+
+    Local<index::Tree> tree_;
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Frank Mertens.
+ * Copyright (C) 2019-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -14,14 +14,15 @@
 
 namespace cc {
 
-template<class Item>
+template<class T>
 class ListTesting;
 
-template<class Item>
+template<class T>
 class NextList: public Object
 {
 public:
     typedef int64_t Index;
+    typedef T Item;
 
     static Ref<NextList> create() { return new NextList; }
 
@@ -67,10 +68,10 @@ public:
       */
 
 private:
-    friend class ListTesting<Item>;
     friend class Local<NextList>;
+    friend class ListTesting<Item>;
 
-    NextList() {}
+    NextList() = default;
     ~NextList() { tree_->deplete<Item>(); }
 
     NextList(const NextList &) = delete;
@@ -78,11 +79,11 @@ private:
     Local<index::Tree> tree_;
 };
 
-template<class Item>
+template<class T>
 class ListTesting
 {
-public:
-    static const index::Tree *tree(const NextList<Item> *list) { return list->tree_; }
+protected:
+    static const index::Tree *tree(const NextList<T> *list) { return list->tree_; }
 };
 
 } // namespace cc

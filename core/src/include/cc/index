@@ -686,7 +686,7 @@ using Iterator = TreeIterator<Item, Tree, Node>;
 class SearchPath
 {
 public:
-    SearchPath(TreeData *tree):
+    SearchPath(const TreeData *tree):
         traceDepth_{0}
     {
         trace_[0] = tree->root_->node_;
@@ -697,9 +697,9 @@ public:
     explicit operator bool() const { return trace_[traceDepth_] && !trace_[traceDepth_]->isBranch_; }
 
     template<class Item>
-    Item &item() const {
+    const Item &item() const {
         assert(bool(*this));
-        return static_cast<Leaf<Item> *>(trace_[traceDepth_])->at(egress_[traceDepth_]);
+        return static_cast<const Leaf<Item> *>(trace_[traceDepth_])->at(egress_[traceDepth_]);
     }
 
     void stepTo(int64_t index)
@@ -712,12 +712,12 @@ public:
                 break;
         }
 
-        Node *node = trace_[depth];
+        const Node *node = trace_[depth];
         int64_t offset0 = range_[depth][0];
         while (node->isBranch_) {
-            Branch *branch = static_cast<Branch *>(node);
+            const Branch *branch = static_cast<const Branch *>(node);
             for (unsigned i = 0; i < branch->fill_; ++i) {
-                int64_t offset1 = offset0 + branch->at(i)->weight_;
+                const int64_t offset1 = offset0 + branch->at(i)->weight_;
                 if (index < offset1) {
                     node = branch->at(i)->node_;
                     egress_[depth] = i;
@@ -735,11 +735,44 @@ public:
         traceDepth_ = depth;
     }
 
+    int64_t currentIndex() const
+    {
+        assert(bool(*this));
+        return range_[traceDepth_][0] + egress_[traceDepth_];
+    }
+
+    int64_t count() const { return range_[0][1]; }
+
 private:
     unsigned traceDepth_;
-    Node *trace_[16];
+    const Node *trace_[16];
     int64_t range_[16][2];
     uint8_t egress_[16];
+};
+
+template<class T>
+class SearchArray
+{
+public:
+    typedef T Item;
+    typedef int64_t Index;
+
+    const Item &at(Index index) const
+    {
+        if (path_->currentIndex() != index) {
+            path_->stepTo(index);
+        }
+        return path_->item<Item>();
+    }
+
+    Index count() const { return path_->count(); }
+
+private:
+    friend class Local<SearchArray>;
+    SearchArray(const TreeData *tree):
+        path_{tree}
+    {}
+    mutable Local<SearchPath> path_;
 };
 
 }} // namespace cc::index
