@@ -38,7 +38,7 @@ public:
         Index h;
         if (!finalIndex) finalIndex = &h;
         if (n > 16) {
-            if (pattern <= at(0)) {
+            if (pattern < at(0)) {
                 *finalIndex = 0;
             }
             else if (at(n - 1) < pattern) {
@@ -50,7 +50,7 @@ public:
             }
         }
         else if (n > 4) {
-            if (pattern <= at(0)) {
+            if (pattern < at(0)) {
                 *finalIndex = 0;
             }
             else if (at(n - 1) < pattern) {
@@ -66,7 +66,7 @@ public:
                 if (at(i) < pattern);
                 else {
                     *finalIndex = i;
-                    found = (at(i) == pattern);
+                    found = !(pattern < at(i));
                     break;
                 }
             }
@@ -75,23 +75,23 @@ public:
         return found;
     }
 
-    bool insert(const Item &item, Index *index = nullptr)
+    bool insert(const Item &item, Index *destIndex = nullptr)
     {
-        Index h;
-        if (!index) index = &h;
         bool success = false;
-        if (!lookup(item, index)) {
-            tree_->push<Item>(*index, item);
+        Index index;
+        if (!lookup(item, &index)) {
+            tree_->push<Item>(index, item);
             success = true;
         }
+        if (destIndex) *destIndex = index;
         return success;
     }
 
     template<class Pattern>
     bool remove(const Pattern &pattern)
     {
-        Index index;
         bool success = false;
+        Index index;
         if (lookup(pattern, &index)) {
             tree_->pop<Item>(index);
             success = true;

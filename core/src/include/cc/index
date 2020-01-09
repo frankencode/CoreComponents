@@ -687,32 +687,33 @@ class SearchPath
 {
 public:
     SearchPath(const TreeData *tree):
-        traceDepth_{0}
+        node_{tree->root_->node_},
+        depth_{0}
     {
-        trace_[0] = tree->root_->node_;
         range_[0][0] = 0;
         range_[0][1] = tree->root_->weight_;
     }
 
-    explicit operator bool() const { return trace_[traceDepth_] && !trace_[traceDepth_]->isBranch_; }
+    explicit operator bool() const { return node_ && !node_->isBranch_; }
 
     template<class Item>
     const Item &item() const {
         assert(bool(*this));
-        return static_cast<const Leaf<Item> *>(trace_[traceDepth_])->at(egress_[traceDepth_]);
+        return static_cast<const Leaf<Item> *>(node_)->at(egress_[depth_]);
     }
 
     void stepTo(int64_t index)
     {
         assert(range_[0][0] <= index && index < range_[0][1]);
 
-        unsigned depth = traceDepth_;
+        const Node *node = node_;
+        unsigned depth = depth_;
         for (; depth > 0; --depth) {
             if (range_[depth][0] <= index && index < range_[depth][1])
                 break;
+            node = node->parent_;
         }
 
-        const Node *node = trace_[depth];
         int64_t offset0 = range_[depth][0];
         while (node->isBranch_) {
             const Branch *branch = static_cast<const Branch *>(node);
@@ -722,7 +723,6 @@ public:
                     node = branch->at(i)->node_;
                     egress_[depth] = i;
                     ++depth;
-                    trace_[depth] = node;
                     range_[depth][0] = offset0;
                     range_[depth][1] = offset1;
                     break;
@@ -731,23 +731,24 @@ public:
             }
         }
 
+        depth_ = depth;
+        node_ = node;
         egress_[depth] = index - offset0;
-        traceDepth_ = depth;
     }
 
     int64_t currentIndex() const
     {
         assert(bool(*this));
-        return range_[traceDepth_][0] + egress_[traceDepth_];
+        return range_[depth_][0] + egress_[depth_];
     }
 
     int64_t count() const { return range_[0][1]; }
 
 private:
-    unsigned traceDepth_;
-    const Node *trace_[16];
-    int64_t range_[16][2];
+    const Node *node_;
     uint8_t egress_[16];
+    int64_t range_[16][2];
+    unsigned depth_;
 };
 
 template<class T>
