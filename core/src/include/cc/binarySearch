@@ -42,12 +42,12 @@ bool binarySearch(
             lastIndex = middleIndex;
     }
 
-    if (items->at(firstIndex) == pattern) {
+    if (!(items->at(firstIndex) < pattern)) {
         *finalIndex = firstIndex;
         return true;
     }
 
-    if (items->at(lastIndex) == pattern) {
+    if (!(pattern < items->at(lastIndex))) {
         *finalIndex = lastIndex;
         return true;
     }
