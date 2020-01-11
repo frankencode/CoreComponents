@@ -133,6 +133,7 @@ void Tree::joinSucc(Path *path, Node *newNode)
     assert(path);
     assert(newNode->fill_ == 0);
 
+    newNode->succ_ = path->node()->succ_;
     path->node()->succ_ = newNode;
 
     if (path->hasParent()) {
@@ -191,7 +192,7 @@ void Tree::dotifyNode(Format &format, const Head *head, unsigned origin) const
     if (node->isBranch_) {
         format
             << "branch_" << (void *)node << " [\n"
-            << "label = \"<f0>origin: " << origin << "|<f1>weight: " << head->weight_ << "|<f2>fill: " << node->fill_ << "\"\n"
+            << "label = \"<f0>origin: " << origin << "|<f1>weight: " << head->weight_ << "|<f2>fill: " << node->fill_ << "|<f3>succ: " << (void *)node->succ_ << "\"\n"
             << "shape = \"record\"\n"
             << "];\n";
 
@@ -207,9 +208,12 @@ void Tree::dotifyNode(Format &format, const Head *head, unsigned origin) const
     else {
         format
             << "node_" << (void *)node << " [\n"
-            << "label = \"<f0>origin: " << origin << "|<f1>weight: " << head->weight_ << "|<f2>fill: " << node->fill_ << "\"\n"
+            << "label = \"<f0>origin: " << origin << "|<f1>weight: " << head->weight_ << "|<f2>fill: " << node->fill_ << "|<f3>succ: " << (void *)node->succ_ << "\"\n"
             << "shape = \"record\"\n"
             << "];\n";
+
+        if (node->succ_)
+            format << "node_" << (void *)node << ":f3 -> node_" << (void *)node->succ_ << ";" << nl;
     }
 }
 
