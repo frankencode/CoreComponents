@@ -176,6 +176,8 @@ public:
       */
 
 private:
+    friend class Local<Set>;
+
     typedef SearchTree< SearchNode<Item> > Tree;
     typedef typename Tree::Node Node;
 

@@ -31,15 +31,20 @@ public:
     }
 
     template<class Pattern>
-    bool lookup(const Pattern &pattern, Index *finalIndex = nullptr)
+    bool lookup(const Pattern &pattern, Index *finalIndex = nullptr) const
     {
         return lookupPath(pattern, finalIndex);
+    }
+
+    bool contains(const Item &item) const
+    {
+        return lookup(item);
     }
 
     bool insert(const Item &item, Index *destIndex = nullptr)
     {
         bool success = false;
-        Index index;
+        Index index = 0;
         Local<index::Path> path;
         if (!lookupPath(item, &index, &path)) {
             if (path) tree_->push<Item>(&path, item);
@@ -79,6 +84,7 @@ public:
     /** @}
       */
 
+    const index::Tree *tree() const { return tree_; }
 private:
     friend class Local<NextSet>;
 
@@ -86,18 +92,18 @@ private:
     ~NextSet() { tree_->deplete<Item>(); }
 
     template<class Pattern>
-    bool lookupPath(const Pattern &pattern, Index *finalIndex = nullptr, index::Path *finalPath = nullptr)
+    bool lookupPath(const Pattern &pattern, Index *finalIndex = nullptr, index::Path *finalPath = nullptr) const
     {
         const Index n = count();
         bool found = false;
         Index h;
         if (!finalIndex) finalIndex = &h;
         if (n > 32) {
-            if (pattern < at(0)) {
-                *finalIndex = 0;
-            }
-            else if (at(n - 1) < pattern) {
+            if (at(n - 1) < pattern) {
                 *finalIndex = n;
+            }
+            else if (pattern < at(0)) {
+                *finalIndex = 0;
             }
             else {
                 Local<index::SearchArray<Item>> array{tree_};
@@ -106,11 +112,11 @@ private:
             }
         }
         else if (n > 4) {
-            if (pattern < at(0)) {
-                *finalIndex = 0;
-            }
-            else if (at(n - 1) < pattern) {
+            if (at(n - 1) < pattern) {
                 *finalIndex = n;
+            }
+            else if (pattern < at(0)) {
+                *finalIndex = 0;
             }
             else {
                 found = binarySearch<NextSet>(this, pattern, finalIndex);

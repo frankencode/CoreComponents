@@ -34,7 +34,7 @@ bool binarySearch(
     Index firstIndex = 0;
     Index lastIndex = items->count() - 1;
     while (true) {
-        Index middleIndex = (firstIndex + lastIndex) / 2;
+        Index middleIndex = (firstIndex + lastIndex) >> 1;
         if (middleIndex == firstIndex) break;
         if (items->at(middleIndex) < pattern)
             firstIndex = middleIndex;

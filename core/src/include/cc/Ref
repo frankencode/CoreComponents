@@ -81,6 +81,8 @@ public:
     inline const Ref &operator=(const Ref &b) { set(b.a_); return *this; }
     inline const Ref &operator=(T *b) { set(b); return *this; }
     inline operator T *() const { return a_; }
+    // inline operator const T *() const { return a_; }
+    inline explicit operator bool() const { return a_; }
 
     template<class T2> inline const Ref &operator=(T2 *b) { set(cast<T>(b)); return *this; }
     template<class T2> inline const Ref &operator=(const Ref<T2> &b) { set(cast<T>(b.get())); return *this; }

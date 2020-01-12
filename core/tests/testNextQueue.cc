@@ -28,10 +28,10 @@ int main(int argc, char **argv)
 
     // CC_INSPECT(sizeof(NextQueue<int>::Node));
 
+    #if 0
     const int h = 1000;
     const int n = 100000;
 
-    #if 0
     for (int k = 0; k < h; ++k)
     {
         std::list<int> list;

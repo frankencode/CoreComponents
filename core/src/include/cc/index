@@ -86,6 +86,8 @@ template<class Item>
 class LeafData<Item, true>: public Node
 {
 public:
+    LeafData() = default;
+
     Item &at(unsigned nodeIndex)
     {
         assert(nodeIndex < fill_);
@@ -326,31 +328,28 @@ public:
         }
 
         int64_t offset0 = range_[depth][0];
-        while (node->isBranch_) {
-            const Branch *branch = static_cast<const Branch *>(node);
-            for (unsigned i = 0; i < branch->fill_; ++i) {
-                const int64_t offset1 = offset0 + branch->at(i)->weight_;
-                if (index < offset1) {
-                    node = branch->at(i)->node_;
-                    egress_[depth] = i;
-                    ++depth;
-                    range_[depth][0] = offset0;
-                    range_[depth][1] = offset1;
-                    break;
+        if (node->isBranch_) {
+            do {
+                const Branch *branch = static_cast<const Branch *>(node);
+                for (unsigned i = 0; i < branch->fill_; ++i) {
+                    const int64_t offset1 = offset0 + branch->at(i)->weight_;
+                    if (index < offset1) {
+                        node = branch->at(i)->node_;
+                        egress_[depth] = i;
+                        ++depth;
+                        range_[depth][0] = offset0;
+                        range_[depth][1] = offset1;
+                        break;
+                    }
+                    offset0 = offset1;
                 }
-                offset0 = offset1;
             }
+            while (node->isBranch_);
+
+            depth_ = depth;
+            node_ = node;
         }
-
-        depth_ = depth;
-        node_ = node;
         egress_[depth] = index - offset0;
-    }
-
-    int64_t currentIndex() const
-    {
-        assert(bool(*this));
-        return range_[depth_][0] + egress_[depth_];
     }
 
     int64_t count() const { return range_[0][1]; }
@@ -368,13 +367,13 @@ public:
 
     const Item &at(Index index) const
     {
-        if (path_->currentIndex() != index) path_->stepTo(index);
+        path_->stepTo(index);
         return path_->item<Item>();
     }
 
     const Path *pathTo(Index index) const
     {
-        if (path_->currentIndex() != index) path_->stepTo(index);
+        path_->stepTo(index);
         return path_;
     }
 
@@ -792,7 +791,7 @@ private:
 };
 
 template<class Item>
-using ConstIterator = TreeIterator<const Item, const Tree, const Node>;
+using ConstIterator = TreeIterator<const Item, const Tree, Node>;
 
 template<class Item>
 using Iterator = TreeIterator<Item, Tree, Node>;

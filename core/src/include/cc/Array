@@ -241,12 +241,27 @@ public:
     /// Check if this array contains a certain pattern
     bool contains(const T *pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
 
+    /// Reverse the order of the items
+    void reverseInsitu()
+    {
+        for (int i = 0, j = count() - 1; i < j; ++i, --j)
+        {
+            T h = at(i);
+            at(i) = at(j);
+            at(j) = h;
+        }
+    }
+
     /** \name C++ iterators
       * @{
       */
-    typedef Iterator<Array> iterator;
-    iterator begin() { return iterator(this, 0); }
-    iterator end() { return iterator(this, count()); }
+    typedef cc::Iterator<Array> iterator;
+    iterator begin() { return iterator{this, 0}; }
+    iterator end() { return iterator{this, count()}; }
+
+    typedef cc::ConstIterator<Array> const_iterator;
+    const_iterator begin() const { return const_iterator{this, 0}; }
+    const_iterator end() const { return const_iterator{this, count()}; }
     /** @}
       */
 
