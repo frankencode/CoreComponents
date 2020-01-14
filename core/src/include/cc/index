@@ -20,6 +20,8 @@
 namespace cc {
 namespace index {
 
+typedef int64_t Weight;
+
 struct Branch;
 
 struct Node
@@ -38,7 +40,7 @@ struct Node
 
 struct Head
 {
-    int64_t weight_;
+    Weight weight_;
     Node *node_;
 };
 
@@ -47,24 +49,34 @@ class Branch: public Node
 public:
     Branch(): Node{true} {}
 
-    Local<Head> &at(unsigned nodeIndex) { assert(nodeIndex < fill_); return head_[nodeIndex]; }
-    const Local<Head> &at(unsigned nodeIndex) const { assert(nodeIndex < fill_); return head_[nodeIndex]; }
+    Local<Head> at(unsigned nodeIndex) const {
+        assert(nodeIndex < fill_);
+        return Local<Head>{
+            .weight_ = weight_[nodeIndex],
+            .node_ = node_[nodeIndex]
+        };
+    }
 
-    void push(unsigned nodeIndex, const Head *head);
+    void push(unsigned nodeIndex, const Local<Head> &head);
     void pop(unsigned nodeIndex);
 
-    int64_t weightAt(unsigned nodeIndex) const { return at(nodeIndex)->weight_; }
+    Node *nodeAt(unsigned nodeIndex) const { assert(nodeIndex < fill_); return node_[nodeIndex]; }
+    Weight weightAt(unsigned nodeIndex) const { assert(nodeIndex < fill_); return weight_[nodeIndex]; }
+    Weight& weightAt(unsigned nodeIndex) { assert(nodeIndex < fill_); return weight_[nodeIndex]; }
 
     void copyToPred(Branch *pred);
 
 private:
-    Local<Head> head_[Node::Capacity];
+    Weight weight_[Node::Capacity];
+    Node *node_[Node::Capacity];
 };
 
 template<class Item, bool Trivial>
 class LeafData: public Node
 {
 public:
+    LeafData() = default;
+
     Item &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
     const Item &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
 
@@ -136,14 +148,14 @@ private:
 };
 
 template<class Item>
-class Leaf: public LeafData<Item, std::is_trivially_copyable<Item>::value && sizeof(Item) <= 2 * sizeof(void*)>
+class Leaf: public LeafData<Item, std::is_trivially_copyable<Item>::value && sizeof(Item) <= 2 * sizeof(void *)>
 {
 public:
     using Node::isBranch_;
 
     Leaf() { isBranch_ = 0; }
 
-    int64_t weightAt(unsigned nodeIndex) const { return 1; }
+    Weight weightAt(unsigned nodeIndex) const { return 1; }
 };
 
 class Path;
@@ -160,10 +172,8 @@ protected:
     uint64_t revision_ { 0 };
     #endif
 
-    Local<Head> root_ {
-        .weight_ = 0,
-        .node_ = nullptr
-    };
+    Weight rootWeight_ { 0 };
+    Node *rootNode_ { nullptr };
 };
 
 class Path
@@ -174,26 +184,26 @@ public:
     {}
 
     Path(const TreeData *tree):
-        node_{tree->root_->node_},
+        node_{tree->rootNode_},
         depth_{0}
     {
         egress_[0] = 0; // silence gcc
     }
 
-    Path(const TreeData *tree, int64_t index, bool insertion = false)
+    Path(const TreeData *tree, Weight index, bool insertion = false)
     {
         if (tree->height_ == 0) {
-            node_ = tree->root_->node_;
+            node_ = tree->rootNode_;
             depth_ = 0;
             egress_[0] = index;
         }
         else {
-            if (index + !insertion >= tree->root_->weight_) {
+            if (index + !insertion >= tree->rootWeight_) {
                 unsigned depth = 0;
-                Node *node = tree->root_->node_;
+                Node *node = tree->rootNode_;
                 while (node->isBranch_) {
                     const unsigned egress = node->fill_ - 1;
-                    node = static_cast<Branch *>(node)->at(egress)->node_;
+                    node = static_cast<Branch *>(node)->nodeAt(egress);
                     egress_[depth] = egress;
                     ++depth;
                 }
@@ -203,9 +213,9 @@ public:
             }
             else if (index <= 0) {
                 unsigned depth = 0;
-                Node *node = tree->root_->node_;
+                Node *node = tree->rootNode_;
                 while (node->isBranch_) {
-                    node = static_cast<Branch *>(node)->at(0)->node_;
+                    node = static_cast<Branch *>(node)->nodeAt(0);
                     egress_[depth] = 0;
                     ++depth;
                 }
@@ -214,21 +224,48 @@ public:
                 egress_[depth] = 0;
             }
             else {
-                int64_t offset0 = 0;
+                Weight offset0 = 0;
                 unsigned depth = 0;
-                Node *node = tree->root_->node_;
+                Node *node = tree->rootNode_;
                 while (node->isBranch_) {
                     Branch *branch = static_cast<Branch *>(node);
+                    #if 0
+                    int64_t sums[Node::Capacity];
+                    {
+                        int64_t sum = offset0;
+                        for (unsigned i = 0; i < branch->fill_; ++i) {
+                            sum += branch->weightAt(i);
+                            sums[i] = sum;
+                        }
+                    }
+                    unsigned i = 0;
+                    {
+                        unsigned j = branch->fill_ - 1;
+                        while (true) {
+                            unsigned m = (i + j) >> 1;
+                            if (m == i) break;
+                            if (sums[m] < index + 1) i = m;
+                            else j = m;
+                        }
+                        if (sums[i] <= index) i = j;
+                    }
+                    node = branch->nodeAt(i);
+                    egress_[depth] = i;
+                    ++depth;
+                    if (i > 0) offset0 = sums[i - 1];
+                    #endif
+                    #if 1
                     for (unsigned i = 0; i < branch->fill_; ++i) {
-                        int64_t offset1 = offset0 + branch->at(i)->weight_;
+                        const Weight offset1 = offset0 + branch->weightAt(i);
                         if (index < offset1) {
-                            node = branch->at(i)->node_;
+                            node = branch->nodeAt(i);
                             egress_[depth] = i;
                             ++depth;
                             break;
                         }
                         offset0 = offset1;
                     }
+                    #endif
                 }
                 node_ = node;
                 depth_ = depth;
@@ -292,7 +329,7 @@ protected:
         --depth_;
     }
 
-    uint8_t egress_[16];
+    char egress_[16];
     Node *node_;
     unsigned depth_;
 };
@@ -304,7 +341,7 @@ public:
         Path{tree}
     {
         range_[0][0] = 0;
-        range_[0][1] = tree->root_->weight_;
+        range_[0][1] = tree->rootWeight_;
     }
 
     explicit operator bool() const { return node_ && !node_->isBranch_; }
@@ -315,7 +352,7 @@ public:
         return static_cast<const Leaf<Item> *>(node_)->at(egress_[depth_]);
     }
 
-    void stepTo(int64_t index)
+    void stepTo(Weight index)
     {
         assert(range_[0][0] <= index && index < range_[0][1]);
 
@@ -327,14 +364,14 @@ public:
             node = node->parent_;
         }
 
-        int64_t offset0 = range_[depth][0];
+        Weight offset0 = range_[depth][0];
         if (node->isBranch_) {
             do {
                 const Branch *branch = static_cast<const Branch *>(node);
                 for (unsigned i = 0; i < branch->fill_; ++i) {
-                    const int64_t offset1 = offset0 + branch->at(i)->weight_;
+                    const Weight offset1 = offset0 + branch->weightAt(i);
                     if (index < offset1) {
-                        node = branch->at(i)->node_;
+                        node = branch->nodeAt(i);
                         egress_[depth] = i;
                         ++depth;
                         range_[depth][0] = offset0;
@@ -352,10 +389,10 @@ public:
         egress_[depth] = index - offset0;
     }
 
-    int64_t count() const { return range_[0][1]; }
+    Weight count() const { return range_[0][1]; }
 
 private:
-    int64_t range_[16][2];
+    Weight range_[16][2];
 };
 
 template<class T>
@@ -363,7 +400,7 @@ class SearchArray
 {
 public:
     typedef T Item;
-    typedef int64_t Index;
+    typedef Weight Index;
 
     const Item &at(Index index) const
     {
@@ -391,31 +428,58 @@ class Tree: public TreeData
 {
 public:
     template<class Item>
-    Item &at(int64_t index)
+    Item &at(Weight index)
     {
+        return getItemAt<Item>(index);
+        #if 0
         return (height_ == 0) ?
-            static_cast<Leaf<Item> *>(root_->node_)->at(index) :
+            static_cast<Leaf<Item> *>(rootNode_)->at(index) :
             Local<index::Path>{this, index}->item<Item>();
+        #endif
     }
 
     template<class Item>
-    Item &at(int64_t index) const
+    const Item &at(Weight index) const
     {
+        return getItemAt<Item>(index);
+        #if 0
         return (height_ == 0) ?
-            static_cast<Leaf<Item> *>(root_->node_)->at(index) :
+            static_cast<Leaf<Item> *>(rootNode_)->at(index) :
             Local<index::Path>{this, index}->item<Item>();
+        #endif
     }
 
-    int64_t count() const { return root_->weight_; }
+    template<class Item>
+    Item &getItemAt(Weight index) const // FIXME: make a non-template method delivering leaf and offset (and make private)
+    {
+        assert(0 <= index && index < rootWeight_);
+
+        Node *node = rootNode_;
+        Weight offset0 = 0;
+        while (node->isBranch_) {
+            const Branch *branch = static_cast<const Branch *>(node);
+            for (unsigned i = 0; i < branch->fill_; ++i) {
+                Weight offset1 = offset0 + branch->weightAt(i);
+                if (index < offset1) {
+                    node = branch->nodeAt(i);
+                    break;
+                }
+                offset0 = offset1;
+            }
+        }
+        return static_cast<Leaf<Item> *>(node)->at(index - offset0);
+    }
+
+    Weight count() const { return rootWeight_; }
 
     template<class Item>
-    void push(int64_t index, const Item &item);
+    void push(Weight index, const Item &item);
 
     template<class Item>
     void push(Path *path, const Item &item);
 
     template<class Item>
-    void pop(int64_t index);
+    void pop(Weight index);
 
     template<class Item>
     void pop(const Path *path);
@@ -423,8 +487,8 @@ public:
     template<class Item>
     void deplete()
     {
-        if (root_->node_) {
-            deplete<Item>(root_->node_);
+        if (rootNode_) {
+            deplete<Item>(rootNode_);
             *this = Tree{};
         }
     }
@@ -456,15 +520,15 @@ private:
     template<class Item>
     void deplete(Node *node);
 
-    void updateWeights(const Path *path, int64_t delta, unsigned minDepth);
+    void updateWeights(const Path *path, Weight delta, unsigned minDepth);
 
-    void updateWeights(const Path *path, int64_t delta)
+    void updateWeights(const Path *path, Weight delta)
     {
         updateWeights(path, delta, 0);
-        root_->weight_ += delta;
+        rootWeight_ += delta;
     }
 
-    void shiftWeights(const Path *from, const Path *to, int64_t delta)
+    void shiftWeights(const Path *from, const Path *to, Weight delta)
     {
         unsigned minDepth = commonDepth(from, to);
         updateWeights(from, -delta, minDepth);
@@ -487,7 +551,7 @@ private:
 
     void reduce();
 
-    void dotifyNode(Format &format, const Head *head, unsigned origin = 0u) const;
+    void dotifyNode(Format &format, const Node *node, Weight weight, unsigned origin = 0u) const;
 };
 
 template<class Node>
@@ -499,7 +563,7 @@ void Tree::dissipateForward(const Path *pred, const Path *dest)
     assert(b->fill_ < Node::Capacity);
     assert(a->fill_ > 0);
 
-    int64_t delta = a->weightAt(a->fill_ - 1);
+    Weight delta = a->weightAt(a->fill_ - 1);
 
     b->push(0, a->at(a->fill_ - 1));
     a->pop(a->fill_ - 1);
@@ -516,7 +580,7 @@ void Tree::dissipateBackward(const Path *dest, const Path *succ)
     assert(a->fill_ < Node::Capacity);
     assert(b->fill_ > 0);
 
-    int64_t delta = b->weightAt(0);
+    Weight delta = b->weightAt(0);
 
     a->push(a->fill_, b->at(0));
     b->pop(0);
@@ -550,15 +614,15 @@ void Tree::dissipateToSucc(Path *dest, Path *succ)
 }
 
 template<class Item>
-void Tree::push(int64_t index, const Item &item)
+void Tree::push(Weight index, const Item &item)
 {
     do {
         if (height_ == 0) {
-            Node *node = root_->node_;
+            Node *node = rootNode_;
             if (node) {
                 if (node->fill_ < Node::Capacity) {
                     static_cast<Leaf<Item> *>(node)->push(index, item);
-                    ++root_->weight_;
+                    ++rootWeight_;
                     #ifndef NDEBUG
                     ++revision_;
                     #endif
@@ -568,8 +632,8 @@ void Tree::push(int64_t index, const Item &item)
             else {
                 Leaf<Item> *leaf = new Leaf<Item>;
                 leaf->push(0, item);
-                root_->node_ = leaf;
-                root_->weight_ = 1;
+                rootNode_ = leaf;
+                rootWeight_ = 1;
                 #ifndef NDEBUG
                 ++revision_;
                 #endif
@@ -624,13 +688,13 @@ void Tree::dissipate(Path *dest)
 }
 
 template<class Item>
-void Tree::pop(int64_t index)
+void Tree::pop(Weight index)
 {
     if (height_ == 0) {
-        Node *node = root_->node_;
+        Node *node = rootNode_;
         if (count() > 1) {
             static_cast<Leaf<Item> *>(node)->pop(index);
-            --root_->weight_;
+            --rootWeight_;
         }
         else
             deplete<Item>();
@@ -699,7 +763,7 @@ template<class Node>
 void Tree::collapseSucc(const Path *dest, const Path *succ)
 {
     unsigned succOrigin = succ->getOrigin();
-    shiftWeights(succ, dest, succ->node()->parent_->at(succOrigin)->weight_);
+    shiftWeights(succ, dest, succ->node()->parent_->weightAt(succOrigin));
     static_cast<Node *>(succ->node())->copyToPred(static_cast<Node *>(dest->node()));
     Local<Path> parent = succ->getParent();
     parent->branch()->pop(succOrigin);
@@ -714,7 +778,7 @@ void Tree::deplete(Node *node)
     if (node->isBranch_) {
         Branch *branch = static_cast<Branch *>(node);
         for (unsigned i = 0; i < branch->fill_; ++i)
-            deplete<Item>(branch->at(i)->node_);
+            deplete<Item>(branch->nodeAt(i));
         delete branch;
     }
     else {
@@ -727,17 +791,17 @@ class TreeIterator:
     public std::iterator<
         /*iterator_category*/ std::forward_iterator_tag,
         /*value_type*/        Item,
-        /*difference_type*/   int64_t,
+        /*difference_type*/   Weight,
         /*pointer*/           void,
         /*reference*/         Item
     >
 {
 public:
     TreeIterator():
-        index_{std::numeric_limits<int64_t>::max()}
+        index_{std::numeric_limits<Weight>::max()}
     {}
 
-    TreeIterator(Tree *tree, int64_t index):
+    TreeIterator(Tree *tree, Weight index):
         #ifndef NDEBUG
         tree_{tree},
         revision_{tree_->revision()},
@@ -748,7 +812,7 @@ public:
         node_ = path->node();
         nodeIndex_ = path->nodeIndex();
         if (!node_)
-            index_ = std::numeric_limits<int64_t>::max();
+            index_ = std::numeric_limits<Weight>::max();
     }
 
     Item &operator*() {
@@ -760,7 +824,7 @@ public:
 
     TreeIterator &operator++()
     {
-        assert(index_ != std::numeric_limits<int64_t>::max()); // cannot increment an exhausted iterator
+        assert(index_ != std::numeric_limits<Weight>::max()); // cannot increment an exhausted iterator
         assert(revision_ == tree_->revision()); // cannot modify container while iterating it
         ++index_;
         ++nodeIndex_;
@@ -768,13 +832,13 @@ public:
             nodeIndex_ = 0;
             node_ = node_->succ_;
             if (!node_)
-                index_ = std::numeric_limits<int64_t>::max();
+                index_ = std::numeric_limits<Weight>::max();
         }
 
         return *this;
     }
 
-    int64_t operator-(const TreeIterator &b) const { return index_ - b.index_; }
+    Weight operator-(const TreeIterator &b) const { return index_ - b.index_; }
     bool operator<(const TreeIterator &b) const { return index_ < b.index_; }
 
     bool operator==(const TreeIterator &b) const { return index_ == b.index_; }
@@ -785,7 +849,7 @@ private:
     const Tree *tree_;
     uint64_t revision_;
     #endif
-    int64_t index_;
+    Weight index_;
     Node *node_;
     unsigned nodeIndex_;
 };

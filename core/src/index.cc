@@ -11,7 +11,7 @@
 namespace cc {
 namespace index {
 
-void Branch::push(unsigned nodeIndex, const Head *head)
+void Branch::push(unsigned nodeIndex, const Local<Head> &head)
 {
     assert(fill_ < Capacity);
     assert(nodeIndex <= fill_);
@@ -19,9 +19,11 @@ void Branch::push(unsigned nodeIndex, const Head *head)
     head->node_->parent_ = this;
 
     if (nodeIndex < fill_) {
-        ::memmove(&head_[nodeIndex + 1], &head_[nodeIndex], (fill_ - nodeIndex) * sizeof(Local<Head>));
+        ::memmove(&weight_[nodeIndex + 1], &weight_[nodeIndex], (fill_ - nodeIndex) * sizeof(Weight));
+        ::memmove(&node_[nodeIndex + 1], &node_[nodeIndex], (fill_ - nodeIndex) * sizeof(Node *));
     }
-    head_[nodeIndex] = *head;
+    weight_[nodeIndex] = head->weight_;
+    node_[nodeIndex] = head->node_;
     ++fill_;
 }
 
@@ -32,15 +34,17 @@ void Branch::pop(unsigned nodeIndex)
 
     --fill_;
     if (nodeIndex < fill_) {
-        ::memmove(&head_[nodeIndex], &head_[nodeIndex + 1], (fill_ - nodeIndex) * sizeof(Local<Head>));
+        ::memmove(&weight_[nodeIndex], &weight_[nodeIndex + 1], (fill_ - nodeIndex) * sizeof(Weight));
+        ::memmove(&node_[nodeIndex], &node_[nodeIndex + 1], (fill_ - nodeIndex) * sizeof(Node *));
     }
 }
 
 void Branch::copyToPred(Branch *pred)
 {
     assert(pred->fill_ + fill_ <= Node::Capacity);
-    ::memcpy(&pred->head_[pred->fill_], &head_[0], fill_ * sizeof(Local<Head>));
-    for (unsigned i = 0; i < fill_; ++i) pred->head_[pred->fill_ + i]->node_->parent_ = pred;
+    ::memcpy(&pred->weight_[pred->fill_], &weight_[0], fill_ * sizeof(Weight));
+    ::memcpy(&pred->node_[pred->fill_], &node_[0], fill_ * sizeof(Node *));
+    for (unsigned i = 0; i < fill_; ++i) pred->node_[pred->fill_ + i]->parent_ = pred;
     pred->fill_ += fill_;
 }
 
@@ -52,7 +56,7 @@ bool Path::stepPred()
         unsigned origin = getOrigin();
         if (origin > 0) {
             --origin;
-            pred = node_->parent_->at(origin)->node_;
+            pred = node_->parent_->nodeAt(origin);
             setOrigin(origin);
         }
         else if (depth_ > 1) {
@@ -63,11 +67,11 @@ bool Path::stepPred()
                 --otherDepth;
                 origin = getOriginAtDepth(otherDepth);
                 if (origin > 0) {
-                    otherNode = otherNode->parent_->at(origin - 1)->node_;
+                    otherNode = otherNode->parent_->nodeAt(origin - 1);
                     setOriginAtDepth(otherDepth, origin - 1);
                     for (; otherDepth < depth_; ++otherDepth) {
                         setOriginAtDepth(otherDepth + 1, otherNode->fill_ - 1);
-                        otherNode = static_cast<Branch *>(otherNode)->at(otherNode->fill_ - 1)->node_;
+                        otherNode = static_cast<Branch *>(otherNode)->nodeAt(otherNode->fill_ - 1);
                     }
                     pred = otherNode;
                     break;
@@ -88,7 +92,7 @@ bool Path::stepSucc()
         unsigned origin = getOrigin();
         if (origin + 1 < node_->parent_->fill_) {
             ++origin;
-            succ = node_->parent_->at(origin)->node_;
+            succ = node_->parent_->nodeAt(origin);
             setOrigin(origin);
         }
         else if (depth_ > 1) {
@@ -99,11 +103,11 @@ bool Path::stepSucc()
                 --otherDepth;
                 origin = getOriginAtDepth(otherDepth);
                 if (origin + 1 < otherNode->parent_->fill_) {
-                    otherNode = otherNode->parent_->at(origin + 1)->node_;
+                    otherNode = otherNode->parent_->nodeAt(origin + 1);
                     setOriginAtDepth(otherDepth, origin + 1);
                     for (; otherDepth < depth_; ++otherDepth) {
                         setOriginAtDepth(otherDepth + 1, 0);
-                        otherNode = static_cast<Branch *>(otherNode)->at(0)->node_;
+                        otherNode = static_cast<Branch *>(otherNode)->nodeAt(0);
                     }
                     succ = otherNode;
                     break;
@@ -116,14 +120,14 @@ bool Path::stepSucc()
     return succ;
 }
 
-void Tree::updateWeights(const Path *path, int64_t delta, unsigned minDepth)
+void Tree::updateWeights(const Path *path, Weight delta, unsigned minDepth)
 {
     Node *node = path->node();
     for (unsigned i = path->depth(); i > minDepth; --i) {
         Branch *parent = node->parent_;
         assert(parent);
         unsigned origin = path->getOriginAtDepth(i);
-        parent->at(origin)->weight_ += delta;
+        parent->weightAt(origin) += delta;
         node = parent;
     }
 }
@@ -145,11 +149,11 @@ void Tree::joinSucc(Path *path, Node *newNode)
         parent->branch()->push(parent->nodeIndex(), Local<Head>{.weight_ = 0, .node_ = newNode});
     }
     else {
-        assert(path->node() == root_->node_);
+        assert(path->node() == rootNode_);
         Branch *branch = new Branch;
-        branch->push(0, root_);
+        branch->push(0, Local<Head>{.weight_ = rootWeight_, .node_ = rootNode_});
         branch->push(1, Local<Head>{.weight_ = 0, .node_ = newNode});
-        root_ = Head{.weight_ = root_->weight_, .node_ = branch};
+        rootNode_ = branch;
         ++height_;
         path->grow();
     }
@@ -165,9 +169,9 @@ unsigned Tree::commonDepth(const Path *first, const Path *second)
 
 void Tree::reduce()
 {
-    while (root_->node_ && root_->node_->isBranch_ && root_->node_->fill_ == 1) {
-        Branch *branch = static_cast<Branch *>(root_->node_);
-        root_->node_ = branch->at(0)->node_;
+    while (rootNode_ && rootNode_->isBranch_ && rootNode_->fill_ == 1) {
+        Branch *branch = static_cast<Branch *>(rootNode_);
+        rootNode_ = branch->nodeAt(0);
         delete branch;
         --height_;
     }
@@ -181,34 +185,33 @@ String Tree::dotify() const
         << "graph [\n"
         << "rankdir = \"LR\"\n"
         << "]\n";
-    dotifyNode(format, root_);
+    dotifyNode(format, rootNode_, rootWeight_);
     format << "}\n";
     return format;
 }
 
-void Tree::dotifyNode(Format &format, const Head *head, unsigned origin) const
+void Tree::dotifyNode(Format &format, const Node *node, Weight weight, unsigned origin) const
 {
-    const Node *node = head->node_;
     if (node->isBranch_) {
         format
             << "branch_" << (void *)node << " [\n"
-            << "label = \"<f0>origin: " << origin << "|<f1>weight: " << head->weight_ << "|<f2>fill: " << node->fill_ << "|<f3>succ: " << (void *)node->succ_ << "\"\n"
+            << "label = \"<f0>origin: " << origin << "|<f1>weight: " << weight << "|<f2>fill: " << node->fill_ << "|<f3>succ: " << (void *)node->succ_ << "\"\n"
             << "shape = \"record\"\n"
             << "];\n";
 
         const Branch *branch = static_cast<const Branch *>(node);
         for (unsigned i = 0; i < branch->fill_; ++i) {
-            dotifyNode(format, branch->at(i), i);
+            dotifyNode(format, branch->nodeAt(i), branch->weightAt(i), i);
         }
         for (unsigned i = 0; i < branch->fill_; ++i) {
-            Node *child = branch->at(i)->node_;
+            Node *child = branch->nodeAt(i);
             format << "branch_" << (void *)node << " -> " << (child->isBranch_ ? "branch_" : "node_") << (void *)child << ":f0;" << nl;
         }
     }
     else {
         format
             << "node_" << (void *)node << " [\n"
-            << "label = \"<f0>origin: " << origin << "|<f1>weight: " << head->weight_ << "|<f2>fill: " << node->fill_ << "|<f3>succ: " << (void *)node->succ_ << "\"\n"
+            << "label = \"<f0>origin: " << origin << "|<f1>weight: " << weight << "|<f2>fill: " << node->fill_ << "|<f3>succ: " << (void *)node->succ_ << "\"\n"
             << "shape = \"record\"\n"
             << "];\n";
 

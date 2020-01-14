@@ -34,6 +34,7 @@ class InsertionRemovalTest: public TestCase
 {
 protected:
     virtual void scramble(Array<int> *test) = 0;
+    virtual void dotify(const NextSet<int> *set) {}
 
 private:
     void run() override
@@ -53,6 +54,7 @@ private:
         for (auto x: test) set->insert(x);
         t = ::clock() - t;
         CC_INSPECT(t);
+        dotify(set);
 
         CC_VERIFY(set->count() == test->count());
 
@@ -72,6 +74,11 @@ class AscendingInsertionRemovalTest: public InsertionRemovalTest
 {
     void scramble(Array<int> *) override
     {}
+
+    void dotify(const NextSet<int> *set)
+    {
+        File::open("set_asc_ins.dot", FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate)->write(set->tree()->dotify());
+    }
 };
 
 class DescendingInsertionRemovalTest: public InsertionRemovalTest
@@ -88,20 +95,28 @@ class RandomInsertionRemovalTest: public InsertionRemovalTest
     {
         Local<Random>{0}->scramble(test);
     }
+
+    void dotify(const NextSet<int> *set)
+    {
+        File::open("set_rnd_ins.dot", FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate)->write(set->tree()->dotify());
+    }
 };
 
 int main(int argc, char **argv)
 {
-    #if 1
+    #if 0 // def NDEBUG
     // CPU warmup
     {
+        auto tw = ::clock();
         const int m = 1000000;
         uint32_t x[m];
         for (int i = 1; i < m; ++i) x[i] = (x[i - 1] + 1) % 50;
+        tw = ::clock() - tw;
+        CC_INSPECT(tw);
         CC_INSPECT(x[m - 1]);
     }
 
-    const int n = 1000;
+    const int n = 1000000;
     const int m = 10;
 
     Local<Array<int>> test{n};
