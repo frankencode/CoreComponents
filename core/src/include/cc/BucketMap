@@ -26,9 +26,10 @@ public:
     static constexpr unsigned Capacity = 16;
 
     unsigned mapToSlot(unsigned bucketIndex, unsigned fill) const;
+    unsigned mapToBucket(unsigned slotIndex, unsigned fill) const;
 
-    unsigned pushEntry(unsigned bucketIndex, unsigned &fill);
-    void popEntry(unsigned bucketIndex, unsigned &fill);
+    unsigned pushEntry(unsigned bucketIndex, unsigned *fill);
+    void popEntry(unsigned bucketIndex, unsigned *fill);
 
 private:
     uint64_t map_ { UINT64_C(0x0123456789ABCDEF) };
@@ -36,15 +37,24 @@ private:
 
 inline unsigned BucketMap<16>::mapToSlot(unsigned bucketIndex, unsigned fill) const
 {
-    assert(0 <= bucketIndex && bucketIndex < fill);
+    assert(bucketIndex < fill);
 
     return (map_ >> (bucketIndex << 2u)) & 0xFu;
 }
 
-inline unsigned BucketMap<16>::pushEntry(unsigned bucketIndex, unsigned &fill)
+inline unsigned BucketMap<16>::mapToBucket(unsigned slotIndex, unsigned fill) const
 {
-    assert(fill < BucketMap::Capacity);
-    assert(bucketIndex <= fill);
+    unsigned bucketIndex = 0;
+    for (; bucketIndex < fill; ++bucketIndex) {
+        if (mapToSlot(bucketIndex, fill) == slotIndex) break;
+    }
+    return bucketIndex;
+}
+
+inline unsigned BucketMap<16>::pushEntry(unsigned bucketIndex, unsigned *fill)
+{
+    assert(*fill < BucketMap::Capacity);
+    assert(bucketIndex <= *fill);
 
     const uint64_t slotIndex = map_ >> 60u;
 
@@ -54,16 +64,16 @@ inline unsigned BucketMap<16>::pushEntry(unsigned bucketIndex, unsigned &fill)
 
     map_ = ((map_ & highMask) << 4u) | (map_ & lowMask) | (slotIndex << bucketShift);
 
-    ++fill;
+    ++*fill;
     return slotIndex;
 }
 
-inline void BucketMap<16>::popEntry(unsigned bucketIndex, unsigned &fill)
+inline void BucketMap<16>::popEntry(unsigned bucketIndex, unsigned *fill)
 {
-    assert(fill > 0);
-    assert(bucketIndex < fill);
+    assert(*fill > 0);
+    assert(bucketIndex < *fill);
 
-    const uint64_t slotIndex = mapToSlot(bucketIndex, fill);
+    const uint64_t slotIndex = mapToSlot(bucketIndex, *fill);
 
     const unsigned bucketShift = bucketIndex << 2u;
     const uint64_t highMask = (~UINT64_C(0)) << bucketShift;
@@ -71,7 +81,7 @@ inline void BucketMap<16>::popEntry(unsigned bucketIndex, unsigned &fill)
 
     map_ = (slotIndex << 60u) | ((map_ >> 4u) & highMask) | (map_ & lowMask);
 
-    --fill;
+    --*fill;
 }
 
 } // namespace cc

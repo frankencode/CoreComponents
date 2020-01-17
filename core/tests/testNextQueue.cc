@@ -28,10 +28,10 @@ int main(int argc, char **argv)
 
     // CC_INSPECT(sizeof(NextQueue<int>::Node));
 
-    #if 0
     const int h = 1000;
     const int n = 100000;
 
+    #if 0
     for (int k = 0; k < h; ++k)
     {
         std::list<int> list;
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
         CC_INSPECT(ts);
     }
     #endif
-    #if 0
+    #if 1
     for (int k = 0; k < h; ++k)
     {
         std::deque<int> list;
@@ -64,6 +64,22 @@ int main(int argc, char **argv)
     }
     #endif
     #if 0
+    for (int k = 0; k < h; ++k)
+    {
+        std::queue<int> list;
+        for (int i = 0; i < n; ++i)
+            list.push(i);
+    }
+    {
+        std::queue<int> list;
+        auto ts = ::clock();
+        for (int i = 0; i < n; ++i)
+            list.push(i);
+        ts = ::clock() - ts;
+        CC_INSPECT(ts);
+    }
+    #endif
+    #if 1
     for (int k = 0; k < h; ++k)
     {
         Local<NextQueue<int>> queue;
@@ -77,22 +93,6 @@ int main(int argc, char **argv)
             queue->pushBack(i);
         tq = ::clock() - tq;
         CC_INSPECT(tq);
-    }
-    #endif
-    #if 0
-    for (int k = 0; k < h; ++k)
-    {
-        std::queue<int> list;
-        for (int i = 0; i < n; ++i)
-            list.push(i);
-    }
-    {
-        std::queue<int> list;
-        auto ts = ::clock();
-        for (int i = 0; i < n; ++i)
-            list.push(i);
-        ts = ::clock() - ts;
-        CC_INSPECT(ts);
     }
     #endif
 

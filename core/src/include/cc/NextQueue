@@ -72,8 +72,8 @@ private:
         Item &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
         const Item &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
 
-        void push(unsigned nodeIndex, const Item &item) { slot_[map_->pushEntry(nodeIndex, fill_)] = item; }
-        void pop(unsigned nodeIndex) { map_->popEntry(nodeIndex, fill_); }
+        void push(unsigned nodeIndex, const Item &item) { slot_[map_->pushEntry(nodeIndex, &fill_)] = item; }
+        void pop(unsigned nodeIndex) { map_->popEntry(nodeIndex, &fill_); }
 
         void pushBack(const Item &item) { push(fill_, item); }
         void popBack(Item *item) { *item = at(fill_ - 1); pop(fill_ - 1); }

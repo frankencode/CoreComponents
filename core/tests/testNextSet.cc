@@ -104,7 +104,7 @@ class RandomInsertionRemovalTest: public InsertionRemovalTest
 
 int main(int argc, char **argv)
 {
-    #if 0 // def NDEBUG
+    #if 1 // def NDEBUG
     // CPU warmup
     {
         auto tw = ::clock();
@@ -116,8 +116,8 @@ int main(int argc, char **argv)
         CC_INSPECT(x[m - 1]);
     }
 
-    const int n = 1000000;
-    const int m = 10;
+    const int n = 1000;
+    const int m = 1000;
 
     Local<Array<int>> test{n};
     for (int i = 0; i < n; ++i)

@@ -16,7 +16,7 @@ template<class T>
 class Local
 {
 public:
-    Local() {}
+    Local() = default;
 
     template<class... Args>
     Local(Args... args):

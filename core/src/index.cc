@@ -87,7 +87,7 @@ bool Path::stepPred()
 bool Path::stepSucc()
 {
     Node *succ = nullptr;
-    if (depth_ > 0) {
+    if (depth_ > 0 && hasSucc()) {
         assert(node_);
         unsigned origin = getOrigin();
         if (origin + 1 < node_->parent_->fill_) {

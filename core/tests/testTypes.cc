@@ -70,6 +70,7 @@ class TestSizes: public TestCase
         fout("sizeof(void *) = %%\n") << sizeof(void *);
         fout("sizeof(int) = %%\n") << sizeof(int);
         fout("sizeof(long) = %%\n") << sizeof(long);
+        fout("sizeof(long long) = %%\n") << sizeof(long long);
         fout("sizeof(uint8_t) = %%\n") << sizeof(uint8_t);
         fout("sizeof(uint16_t) = %%\n") << sizeof(uint16_t);
         fout("sizeof(uint32_t) = %%\n") << sizeof(uint32_t);
