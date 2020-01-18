@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bucket>
+#include <cc/String>
+
+namespace cc { class Format; }
+
+namespace cc {
+namespace bucket {
+
+class Internals
+{
+public:
+    template<class Container>
+    static const Tree *tree(const Container *container) { return container->tree_; }
+
+    template<class Container>
+    static String dotify(const Container *container) { return dotifyTree(tree(container)); }
+
+private:
+    static String dotifyTree(const Tree *tree);
+    static void dotifyNode(Format &format, const Head *head, unsigned origin = 0);
+};
+
+}} // namespace cc::bucket

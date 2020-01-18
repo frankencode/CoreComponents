@@ -81,7 +81,8 @@ enum class FileOpen: int {
     Append    = O_APPEND, ///< Append any write to the end of file
     Create    = O_CREAT,  ///< Create file if not exists
     Truncate  = O_TRUNC,  ///< Truncate file to size zero
-    Virgin    = O_EXCL    ///< Fail to open if file exists already
+    Virgin    = O_EXCL,   ///< Fail to open if file exists already
+    WriteOver = FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate ///< Convenience shorthand for 'FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate'
 };
 
 CC_BITMASK(FileOpen, int)

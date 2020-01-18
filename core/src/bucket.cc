@@ -11,9 +11,9 @@
 namespace cc {
 namespace bucket {
 
-Node *Tree::stepDownTo(Weight index, unsigned *egress, bool insertion) const
+Node *Tree::stepDownTo(Weight index, unsigned *egress) const
 {
-    assert(0 <= index && index < root_.weight_ + insertion);
+    assert(0 <= index && index <= root_.weight_);
 
     Node *node = root_.node_;
 
@@ -27,12 +27,11 @@ Node *Tree::stepDownTo(Weight index, unsigned *egress, bool insertion) const
         *egress = 0;
     }
     #endif
-    else if (isDense_) {
+    else if (isDense_ && Capacity == 16) {
         *egress = index & 0xFu;
-        index >>= 4;
-        Weight steps = 0;
-        for (; index > 0; index >>= 4) steps = (steps << 4) | (index & 0xFu);
-        for (; steps > 0; steps >>= 4) node = static_cast<const Branch *>(node)->at(steps & 0xFu).node_;
+        for (unsigned h = height_; h > 0; --h) {
+            node = static_cast<const Branch *>(node)->at((index >> (h << 2)) & 0xFu).node_;
+        }
     }
     else {
         Weight offset0 = 0;
@@ -72,15 +71,7 @@ void Tree::joinSucc(Node *node, Node *newNode)
         branch->push(0, root_);
         branch->push(1, Head{.weight_ = 0, .node_ = newNode});
         root_.node_ = branch;
-    }
-}
-
-void Tree::reduce()
-{
-    while (root_.node_ && root_.node_->isBranch_ && root_.node_->fill_ == 1) {
-        Branch *branch = static_cast<Branch *>(root_.node_);
-        root_.node_ = branch->at(0).node_;
-        delete branch;
+        ++height_;
     }
 }
 
@@ -101,6 +92,16 @@ void Tree::updateWeights(Node *node, int64_t delta)
         node = node->parent_;
     }
     root_.weight_ += delta;
+}
+
+void Tree::reduce()
+{
+    while (root_.node_ && root_.node_->isBranch_ && root_.node_->fill_ == 1) {
+        Branch *branch = static_cast<Branch *>(root_.node_);
+        root_.node_ = branch->at(0).node_;
+        delete branch;
+        --height_;
+    }
 }
 
 }} // namespace cc::bucket

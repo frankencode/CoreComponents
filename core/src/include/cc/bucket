@@ -6,6 +6,8 @@
  *
  */
 
+#pragma once
+
 #include <assert.h>
 #include <iterator>
 #include <limits>
@@ -21,28 +23,32 @@ typedef int64_t Weight;
 
 class Branch;
 class Tree;
+class Internals;
 
 class Node: protected BucketMap<Capacity>
 {
 public:
     void pop(unsigned nodeIndex) { popEntry(nodeIndex, &fill_); }
+    unsigned fill() const { return fill_; }
+    Node *succ() const { return succ_; }
 
 protected:
     friend class Branch;
     friend class Tree;
+    friend class Internals;
 
     Node(bool isBranch):
         isBranch_{isBranch}
     {}
 
     bool isBranch_;
-    unsigned fill_ { 0 }; // TODO: optimize size
-    unsigned slotIndex_ { 0 }; // TODO: optimize size
+    unsigned fill_ { 0 };
+    unsigned slotIndex_ { 0 };
     Branch *parent_ { nullptr };
     Node *succ_ { nullptr };
 };
 
-class Head { // FIXME: change order: node_ berfore weight_
+class Head {
 public:
     Weight weight_;
     Node *node_;
@@ -97,7 +103,13 @@ public:
     template<class Item>
     Item &at(Weight index) {
         unsigned egress;
-        return static_cast<Leaf<Item>*>(stepDownTo(index, &egress))->at(egress);
+        return static_cast<Leaf<Item> *>(stepDownTo(index, &egress))->at(egress);
+    }
+
+    template<class Item>
+    const Item &at(Weight index) const {
+        unsigned egress;
+        return static_cast<const Leaf<Item> *>(stepDownTo(index, &egress))->at(egress);
     }
 
     Weight count() const { return root_.weight_; }
@@ -117,8 +129,25 @@ public:
         }
     }
 
+    Node *getMinNode() const
+    {
+        Node *node = root_.node_;
+        if (node) {
+            while (node->isBranch_) {
+                node = static_cast<const Branch *>(node)->at(0).node_;
+            }
+        }
+        return node;
+    }
+
+    #ifndef NDEBUG
+    uint64_t revision() const { return revision_; }
+    #endif
+
+    const Head *root() const { return &root_; }
+
 private:
-    Node *stepDownTo(Weight index, unsigned *egress, bool insertion = false) const;
+    Node *stepDownTo(Weight index, unsigned *egress) const;
 
     template<class Item>
     void deplete(Node *node);
@@ -140,19 +169,20 @@ private:
     template<class Node>
     void collapseSucc(Node *node, Node *succ);
 
-    void reduce();
-
-    int64_t &weight(Node *child) {
+    static int64_t &weight(Node *child) {
         assert(child->parent_);
         return child->parent_->weightOf(child);
     }
 
-    void shiftWeights(Node *from, Node *to, int64_t delta);
+    static void shiftWeights(Node *from, Node *to, int64_t delta);
     void updateWeights(Node *node, int64_t delta);
+
+    void reduce();
 
     Head root_ { .weight_ = 0, .node_ = nullptr };
     Node *lastLeaf_ { nullptr };
     bool isDense_ { true };
+    unsigned height_ { 0 };
     #ifndef NDEBUG
     uint64_t revision_ { 0 };
     #endif
@@ -163,23 +193,24 @@ void Tree::push(Weight index, const Item &item)
 {
     Node *node = root_.node_;
     if (node) {
-        if (!node->isBranch_) {
+        if (!node->isBranch_ && node->fill_ < Capacity) {
             static_cast<Leaf<Item> *>(node)->push(index, item);
             ++root_.weight_;
         }
         else {
             unsigned egress = 0;
-            node = stepDownTo(index, &egress, /*insertion=*/true);
+            node = stepDownTo(index, &egress);
             Leaf<Item> *leaf = static_cast<Leaf<Item> *>(node);
             dissipate(leaf, egress);
             leaf->push(egress, item);
+            updateWeights(leaf, 1);
         }
     }
     else {
         Leaf<Item> *leaf = new Leaf<Item>;
         leaf->push(0, item);
-        root_.node_ = leaf;
         root_.weight_ = 1;
+        root_.node_ = leaf;
         lastLeaf_ = leaf;
     }
     #ifndef NDEBUG
@@ -192,7 +223,7 @@ void Tree::pop(Weight index)
 {
     if (root_.weight_ > 1) {
         unsigned egress;
-        Leaf<Item> *leaf = static_cast<Leaf<Item *>>(stepDownTo(index, &egress));
+        Leaf<Item> *leaf = static_cast<Leaf<Item> *>(stepDownTo(index, &egress));
         leaf->pop(egress);
         updateWeights(leaf, -1);
         if (leaf != lastLeaf_) isDense_ = false;
@@ -244,7 +275,7 @@ void Tree::dissipate(Node *&node, unsigned &nodeIndex)
 template<class Node>
 void Tree::relieve(Node *node, bool recursive)
 {
-    Node *succ = node->succ;
+    Node *succ = static_cast<Node *>(node->succ_);
     if (node->fill_ < MinFill) {
         if (succ) {
             if (succ->fill_ > MinFill)
@@ -252,9 +283,12 @@ void Tree::relieve(Node *node, bool recursive)
             else
                 collapseSucc(node, succ);
         }
+        else if (node->fill_ == 0) {
+
+        }
     }
     else if (!recursive && succ) {
-        relieve(node->succ, true);
+        relieve(succ, true);
     }
 }
 
@@ -276,7 +310,7 @@ void Tree::dissipateBackward(Node *to, Node *from)
     assert(from->fill_ > 0);
     assert(to->fill_ < Capacity);
 
-    Weight delta = from->weightAt(from->fill_ - 1);
+    Weight delta = from->weightAt(0);
     to->push(to->fill_, from->at(0));
     from->pop(0);
     shiftWeights(from, to, delta);
@@ -287,9 +321,8 @@ void Tree::collapseSucc(Node *node, Node *succ)
 {
     assert(node->fill_ + succ->fill_ <= Capacity);
 
-    while (succ->fill_ > 0) {
-        node->push(node->fill_, succ->at(0));
-        succ->pop(0);
+    for (unsigned i = 0; i < succ->fill_; ++i) {
+        node->push(node->fill_, succ->at(i));
     }
     shiftWeights(succ, node, weight(succ));
     Branch *parent = succ->parent_;
@@ -320,11 +353,9 @@ public:
         tree_{tree},
         revision_{tree_->revision()},
         #endif
-        node_{nullptr},
+        node_{static_cast<Leaf<Item> *>(tree->getMinNode())},
         egress_{0}
-    {
-        node_ = tree->stepDownTo(index, &egress_);
-    }
+    {}
 
     Item &operator*() {
         assert(node_); // cannot deference an exhausted iterator
@@ -339,15 +370,15 @@ public:
         assert(revision_ == tree_->revision()); // cannot modify container while iterating it
 
         ++egress_;
-        if (egress_ == node_->fill_) {
+        if (egress_ == node_->fill()) {
             egress_ = 0;
-            node_ = node_->succ_;
+            node_ = static_cast<Leaf<Item> *>(node_->succ());
         }
         return *this;
     }
 
-    bool operator==(const TreeIterator &b) const { return node_ == b.node_ && egress_ == b.egress_; }
-    bool operator!=(const TreeIterator &b) const { return node_ != b.node_ || egress_ != b.egress_; }
+    bool operator==(const TreeIterator &b) const { return egress_ == b.egress_ && node_ == b.node_; }
+    bool operator!=(const TreeIterator &b) const { return egress_ != b.egress_ || node_ != b.node_; }
 
 private:
     #ifndef NDEBUG

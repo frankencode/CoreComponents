@@ -1,0 +1,78 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/bucket>
+
+namespace cc {
+
+template<class T>
+class BucketList: public Object
+{
+public:
+    typedef int64_t Index;
+    typedef T Item;
+
+    static Ref<BucketList> create() { return new BucketList; }
+
+    Index count() const { return tree_->count(); }
+
+    Item &at(Index index)
+    {
+        assert(0 <= index && index < count());
+        return tree_->at<Item>(index);
+    }
+
+    const Item &at(Index index) const
+    {
+        assert(0 <= index && index < count());
+        return tree_->at<Item>(index);
+    }
+
+    void push(Index index, const Item &item)
+    {
+        assert(0 <= index && index <= count());
+        tree_->push<Item>(index, item);
+    }
+
+    void pop(Index index)
+    {
+        assert(0 <= index && index < count());
+        tree_->pop<Item>(index);
+    }
+
+    void deplete() { tree_->deplete<Item>(); }
+
+    /** \name C++ iterators
+      * @{
+      */
+    typedef bucket::Iterator<Item> iterator;
+    iterator begin() { return bucket::Iterator<Item>{&tree_, 0}; }
+    iterator end() { return bucket::Iterator<Item>{}; }
+
+    typedef bucket::ConstIterator<Item> const_iterator;
+    const_iterator begin() const { return bucket::ConstIterator<Item>{tree_, 0}; }
+    const_iterator end() const { return bucket::ConstIterator<Item>{}; }
+    /** @}
+      */
+
+private:
+    friend class Local<BucketList>;
+    friend class bucket::Internals;
+
+    BucketList() = default;
+    ~BucketList() { tree_->deplete<Item>(); }
+
+    BucketList(const BucketList &) = delete;
+
+    Local<bucket::Tree> tree_;
+};
+
+} // namespace cc
