@@ -113,7 +113,7 @@ class RandomInsertionRemovalTest: public InsertionRemovalTest
 
 int main(int argc, char **argv)
 {
-    #if 1 // def NDEBUG
+    #if 0 // def NDEBUG
     // CPU warmup
     /*{
         auto tw = ::clock();
@@ -242,7 +242,7 @@ int main(int argc, char **argv)
     return 0;
     #endif
 
-    #if 0
+    #if 1
     CC_TESTSUITE_ADD(AscendingInsertionRemovalTest);
     CC_TESTSUITE_ADD(DescendingInsertionRemovalTest);
     CC_TESTSUITE_ADD(RandomInsertionRemovalTest);

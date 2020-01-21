@@ -12,6 +12,7 @@
 #include <iterator>
 #include <limits>
 #include <cc/BucketMap>
+#include <cc/debug>
 
 namespace cc {
 namespace bucket {
@@ -334,15 +335,15 @@ void Tree::dissipate(Node *&node, unsigned &egress)
     {
         Node *succ = static_cast<Node *>(node->succ_);
 
-        if (!succ || succ->fill_ == Capacity) {
+        if (!succ || succ->fill_ >= HalfCapacity) {
             succ = new Node;
             // if (Node::IsLeaf) ++leafCount_;
             joinSucc(node, succ);
         }
 
         if (egress < Capacity) {
-            dissipateForward(node, succ);
-            #if 0
+            // dissipateForward(node, succ);
+            #if 1
             distributeForward(node, succ);
             if (egress > HalfCapacity) {
                 node = succ;
@@ -415,6 +416,8 @@ void Tree::distributeForward(Node *from, Node *to)
     }
 
     shiftWeights(from, to, delta);
+
+    isDense_ = false;
 }
 
 template<class Node>

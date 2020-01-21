@@ -36,7 +36,7 @@ class PushBackPopBackTest: public TestCase
                 CC_VERIFY(list->at(k) == k);
         }
         CC_VERIFY(list->count() == n);
-        File::open("tree_push_front.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(&list));
+        File::open("tree_push_back.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(&list));
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == k);
