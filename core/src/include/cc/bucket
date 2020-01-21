@@ -77,9 +77,9 @@ public:
 
     int64_t weightAt(unsigned egress) const { return at(egress).weight_; }
 
-    int64_t &weightOf(Node *child) { return slots_[child->slotIndex_].weight_; }
+    int64_t &weightOf(const Node *child) { return slots_[child->slotIndex_].weight_; }
 
-    unsigned indexOf(Node *child) { return mapToBucket(child->slotIndex_, fill_); }
+    unsigned indexOf(const Node *child) { return mapToBucket(child->slotIndex_, fill_); }
 
     static constexpr bool IsLeaf = false;
 
@@ -95,6 +95,7 @@ public:
 
     Item &at(unsigned egress) { return slots_[mapToSlot(egress, fill_)]; }
     const Item &at(unsigned egress) const { return slots_[mapToSlot(egress, fill_)]; }
+    unsigned count() const { return fill_; }
 
     void push(unsigned egress, const Item &item) { slots_[pushEntry(egress, &fill_)] = item; }
 
@@ -175,7 +176,6 @@ public:
 
     Weight idealCount() const
     {
-        //return (1 << ((height_ + 1) << 2));
         return (root_.node_) ? (root_.node_->fill_ << (height_ << 2)) : 0;
     }
 
@@ -208,6 +208,36 @@ public:
         if (node->fill_ <= i) i = node->fill_ - 1;
         realIndex += i;
         return realIndex;
+    }
+
+    Weight idealLeafCount() const
+    {
+        return (height_ > 0) ? root_.node_->fill_ << ((height_ - 1) << 2) : 1;
+    }
+
+    const Node *idealLeafAt(Weight idealIndex) const
+    {
+        const Node *node = root_.node_;
+        for (unsigned h = height_; h > 0; --h) {
+            unsigned i = (idealIndex >> ((h - 1) << 2)) & 0xFu;
+            if (node->fill_ <= i) i = node->fill_ - 1;
+            node = static_cast<const Branch *>(node)->at(i).node_;
+        }
+        return node;
+    }
+
+    static Weight nodeOffset(const Node *node)
+    {
+        Weight offset = 0;
+        while (node && node->parent_) {
+            Branch *parent = node->parent_;
+            unsigned n = parent->indexOf(node);
+            for (unsigned i = 0; i < n; ++i) {
+                offset += parent->at(i).weight_;
+            }
+            node = parent;
+        }
+        return offset;
     }
 
 private:
@@ -341,15 +371,13 @@ void Tree::dissipate(Node *&node, unsigned &egress)
             joinSucc(node, succ);
         }
 
-        if (egress < Capacity) {
-            // dissipateForward(node, succ);
-            #if 1
+        if (egress < Capacity)
+        {
             distributeForward(node, succ);
             if (egress > HalfCapacity) {
                 node = succ;
                 egress -= HalfCapacity;
             }
-            #endif
         }
         else {
             node = succ;
@@ -372,9 +400,6 @@ void Tree::relieve(Node *node, bool recursive)
         else if (node->fill_ == 0) {
             unlink(node);
         }
-    }
-    else if (!recursive && succ) {
-        relieve(succ, true);
     }
 }
 
@@ -510,6 +535,52 @@ public:
 private:
     const Tree *tree_;
     Weight idealCount_;
+};
+
+template<class Item>
+class SearchNode
+{
+public:
+    SearchNode(const Leaf<Item> *leaf):
+        leaf_{leaf}
+    {}
+
+    const Leaf<Item> *leaf_;
+};
+
+template<class Item, class Pattern>
+inline bool operator<(const SearchNode<Item> &searchNode, const Pattern &pattern)
+{
+    const Leaf<Item> *leaf = searchNode.leaf_;
+    return leaf->at(leaf->fill() - 1) < pattern;
+}
+
+template<class Pattern, class Item>
+inline bool operator<(const Pattern &pattern, const SearchNode<Item> &searchNode)
+{
+    const Leaf<Item> *leaf = searchNode.leaf_;
+    return pattern < leaf->at(0);
+}
+
+template<class Item>
+class SearchShim
+{
+public:
+    SearchShim(const Tree *tree):
+        tree_{tree},
+        idealLeafCount_{tree->idealLeafCount()}
+    {}
+
+    SearchNode<Item> at(Weight index) const
+    {
+        return static_cast<const Leaf<Item> *>(tree_->idealLeafAt(index));
+    }
+
+    Weight count() const { return idealLeafCount_; }
+
+private:
+    const Tree *tree_;
+    Weight idealLeafCount_;
 };
 
 }} // namespace cc::bucket

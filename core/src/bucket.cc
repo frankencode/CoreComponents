@@ -21,12 +21,10 @@ Node *Tree::stepDownTo(Weight index, unsigned *egress) const
         node = lastLeaf_;
         *egress = (node) ? node->fill_ - (index < root_.weight_) : 0;
     }
-    #if 0
     else if (index <= 0) {
         while (node->isBranch_) node = static_cast<const Branch *>(node)->at(0).node_;
         *egress = 0;
     }
-    #endif
     else if (isDense_ && Capacity == 16) {
         *egress = index & 0xFu;
         for (unsigned h = height_; h > 0; --h) {
@@ -34,21 +32,20 @@ Node *Tree::stepDownTo(Weight index, unsigned *egress) const
         }
     }
     else {
-        Weight offset0 = 0;
         while (node->isBranch_) {
             const Branch *branch = static_cast<const Branch *>(node);
             const unsigned n = branch->fill_;
             for (unsigned i = 0; i < n; ++i) {
                 const Head *head = &branch->at(i);
-                Weight offset1 = offset0 + head->weight_;
-                if (index < offset1) {
+                index -= head->weight_;
+                if (index < 0) {
                     node = head->node_;
+                    index += head->weight_;
                     break;
                 }
-                offset0 = offset1;
             }
         }
-        *egress = index - offset0;
+        *egress = index;
     }
 
     return node;

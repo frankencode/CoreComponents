@@ -29,43 +29,22 @@ bool binarySearch(
     const Pattern &pattern,
     Index *finalIndex
 ) {
-    assert(items->count() > 0);
-    #if 0 // ndef NDEBUG
-    if (pattern < items->at(0)) {
-        CC_INSPECT(items->count());
-        CC_INSPECT(items->at(0));
-        CC_INSPECT(pattern);
-    }
-    if (items->at(items->count() - 1) < pattern) {
-        CC_INSPECT(items->count());
-        CC_INSPECT(items->at(items->count() - 1));
-        CC_INSPECT(pattern);
-    }
-    #endif
-    assert(!(pattern < items->at(0) || items->at(items->count() - 1) < pattern));
-
-    Index firstIndex = 0;
-    Index lastIndex = items->count() - 1;
-    while (true) {
-        Index middleIndex = (firstIndex + lastIndex) >> 1;
-        if (middleIndex == firstIndex) break;
-        if (items->at(middleIndex) < pattern)
-            firstIndex = middleIndex;
-        else
-            lastIndex = middleIndex;
+    Index l = 0;
+    Index r = items->count() - 1;
+    while (l <= r) {
+        Index m = (l + r) >> 1;
+        auto candidate = items->at(m);
+        if (candidate < pattern)
+            l = m + 1;
+        else if (pattern < candidate)
+            r = m - 1;
+        else {
+            *finalIndex = m;
+            return true;
+        }
     }
 
-    if (!(items->at(firstIndex) < pattern)) {
-        *finalIndex = firstIndex;
-        return true;
-    }
-
-    if (!(pattern < items->at(lastIndex))) {
-        *finalIndex = lastIndex;
-        return true;
-    }
-
-    *finalIndex = lastIndex;
+    *finalIndex = l;
     return false;
 }
 

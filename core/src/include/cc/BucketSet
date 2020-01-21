@@ -33,40 +33,38 @@ public:
     template<class Pattern>
     bool lookup(const Pattern &pattern, Index *finalIndex = nullptr) const
     {
-        const Index n = count();
-        bool found = false;
+        auto root = tree_->root()->node_;
+        const Index n = tree_->root()->weight_;
         Index i = 0;
-        if (n > 32) {
-            if (at(n - 1) < pattern) {
-                i = n;
-            }
-            else if (pattern < at(0)) {
-                i = 0;
-            }
-            else {
-                bucket::IdealShim<Item> shim{tree_};
-                Index j = 0;
-                found = binarySearch(&shim, pattern, &j);
-                i = tree_->idealToReal(j);
-            }
-        }
-        else if (n > 4) {
-            if (at(n - 1) < pattern) {
-                i = n;
-            }
-            else if (pattern < at(0)) {
-                i = 0;
+        bool found = false;
+        if (root) {
+            if (root->fill() == 1) {
+                auto leaf = static_cast<const bucket::Leaf<Item> *>(root);
+                found = binarySearch(leaf, pattern, &i);
             }
             else {
-                found = binarySearch<BucketSet>(this, pattern, &i);
-            }
-        }
-        else {
-            for (; i < n; ++i) {
-                if (at(i) < pattern);
+                if (at(n - 1) < pattern) {
+                    i = n;
+                }
                 else {
-                    found = !(pattern < at(i));
-                    break;
+                    #if 1
+                    bucket::SearchShim<Item> shim{tree_};
+                    bucket::Weight j = 0;
+                    bool bucketFound = binarySearch(&shim, pattern, &j);
+                    const bucket::Leaf<Item> *leaf = static_cast<const bucket::Leaf<Item> *>(tree_->idealLeafAt(j));
+                    i = bucket::Tree::nodeOffset(leaf);
+                    if (bucketFound) {
+                        unsigned j = 0;
+                        found = binarySearch(leaf, pattern, &j);
+                        i += j;
+                    }
+                    #endif
+                    #if 0
+                    bucket::IdealShim<Item> shim{tree_};
+                    Index j = 0;
+                    found = binarySearch(&shim, pattern, &j);
+                    i = tree_->idealToReal(j);
+                    #endif
                 }
             }
         }

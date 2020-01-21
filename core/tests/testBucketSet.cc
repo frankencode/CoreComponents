@@ -114,20 +114,53 @@ class RandomInsertionRemovalTest: public InsertionRemovalTest
 int main(int argc, char **argv)
 {
     #if 0 // def NDEBUG
-    // CPU warmup
-    /*{
-        auto tw = ::clock();
-        const int m = 100000000;
-        volatile uint32_t *x = new uint32_t[m];
-        for (int i = 1; i < m; ++i) x[i] = (x[i - 1] + 1) % 50;
-        tw = ::clock() - tw;
-        CC_INSPECT(tw);
-        CC_INSPECT(x[m - 1]);
-        delete[] x;
+    const int n = 129;
+    // const int m = 1000;
+
+    Local<Array<int>> test{n};
+    for (int i = 0; i < n; ++i)
+        test->at(i) = i;
+
+    Local<Random>{0}->scramble(&test);
+    // test->reverseInsitu();
+
+    CC_INSPECT(sum(test));
+
+    Local<BucketSet<int>> set;
+    for (auto x: test) set->insert(x);
+
+    File::open("set_rnd_ins.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(&set));
+
+    CC_INSPECT(sum(set));
+
+    auto tree = bucket::Internals::tree(&set);
+    CC_INSPECT(tree->idealLeafCount());
+
+    for (int i = 0; i < tree->idealLeafCount(); ++i) {
+        const bucket::Leaf<int> *leaf = static_cast<const bucket::Leaf<int> *>(tree->idealLeafAt(i));
+        int j = bucket::Tree::nodeOffset(leaf);
+        fout() << i << ", " << j << ": " << leaf->at(0) << "..." << leaf->at(leaf->fill() - 1) << " (#" << leaf->fill() << ")" << nl;
+    }
+
+    bucket::SearchShim<int> shim{tree};
+    for (int i = 0; i < n; ++i) {
+        bucket::Weight j = 0;
+        bool found = binarySearch(&shim, i, &j);
+        fout() << i << " => " << j << " (" << found << ")" << nl;
+    }
+
+    /*for (int i = 0; i < tree->idealCount(); ++i)
+    {
+        int j = tree->idealToReal(i);
+        fout() << i << ", " << j << ": " << tree->idealAt<int>(i) << nl;
     }*/
 
-    const int n = 1000;
-    // const int m = 1000;
+    return 0;
+    #endif
+
+    #if 0
+    const int n = 1000;  // number of items
+    const int m = 1000;  // repetition
 
     Local<Array<int>> test{n};
     for (int i = 0; i < n; ++i)
@@ -140,28 +173,6 @@ int main(int argc, char **argv)
 
     #if 0
     {
-        Local<BucketSet<int>> set;
-        for (auto x: test) set->insert(x);
-
-        File::open("set_rnd_ins.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(&set));
-
-        CC_INSPECT(sum(set));
-
-        auto tree = bucket::Internals::tree(&set);
-        CC_INSPECT(tree->idealCount());
-
-        for (int i = 0; i < tree->idealCount(); ++i)
-        {
-            int j = tree->idealToReal(i);
-            fout() << i << ", " << j << ": " << tree->idealAt<int>(i) << nl;
-        }
-    }
-
-    return 0;
-    #endif
-
-    #if 0
-    {
         auto tl = ::clock();
         for (int j = 0; j < m; ++j) {
             Local<Set<int>> set;
@@ -171,73 +182,41 @@ int main(int argc, char **argv)
         CC_INSPECT(tl);
     }
     #endif
-    uint64_t tx1, ts1, tx2, ts2;
+    uint64_t txm = 0; // std::numeric_limits<uint64_t>::max();
+    uint64_t tsm = 0; // std::numeric_limits<uint64_t>::max();
 
-    {
-        tx1 = __rdtsc();
-        //{
-            Local<BucketSet<int>> set;
-            for (auto x: test) set->insert(x);
-        //}
-        tx1 = __rdtsc() - tx1;
-        CC_INSPECT(set->count());
-        CC_INSPECT(tx1);
+    for (int i = 0; i < m; ++i) {
+        {
+            uint64_t ts = __rdtsc();
+            //{
+                std::set<int> set;
+                for (auto x: test) set.insert(x);
+            //}
+            ts = __rdtsc() - ts;
+            // CC_INSPECT(set.size());
+            // CC_INSPECT(ts);
 
-        #if 0
-        for (int i = n - 1; i >= 0; --i) {
-            set->remove(test[i]);
-            // print(set);
+            tsm += ts;
         }
-        #endif
-    }
+        {
+            uint64_t tx = __rdtsc();
+            //{
+                Local<BucketSet<int>> set;
+                for (auto x: test) set->insert(x);
+            //}
+            tx = __rdtsc() - tx;
+            // CC_INSPECT(set->count());
+            // CC_INSPECT(tx);
 
-    {
-        ts1 = __rdtsc();
-        //{
-            std::set<int> set;
-            for (auto x: test) set.insert(x);
-        //}
-        ts1 = __rdtsc() - ts1;
-        CC_INSPECT(set.size());
-        CC_INSPECT(ts1);
-    }
-
-   {
-        tx2 = __rdtsc();
-        //{
-            Local<BucketSet<int>> set;
-            for (auto x: test) set->insert(x);
-        //}
-        tx2 = __rdtsc() - tx2;
-        CC_INSPECT(set->count());
-        CC_INSPECT(tx2);
-
-        #if 0
-        for (int i = n - 1; i >= 0; --i) {
-            set->remove(test[i]);
-            // print(set);
+            txm += tx;
         }
-        #endif
     }
 
-    {
-        ts2 = __rdtsc();
-        //{
-            std::set<int> set;
-            for (auto x: test) set.insert(x);
-        //}
-        ts2 = __rdtsc() - ts2;
-        CC_INSPECT(set.size());
-        CC_INSPECT(ts2);
-    }
+    tsm /= m;
+    txm /= m;
 
-    /*auto ts = ts1 + ts2;
-    auto tx = tx1 + tx2;*/
-    auto ts = ts1 < ts2 ? ts1 : ts2;
-    auto tx = tx1 < tx2 ? tx1 : tx2;
-
-    CC_INSPECT(double(ts)/double(tx));
-    CC_INSPECT(double(tx)/double(ts));
+    CC_INSPECT(double(tsm)/double(txm));
+    CC_INSPECT(double(txm)/double(tsm));
 
     return 0;
     #endif
