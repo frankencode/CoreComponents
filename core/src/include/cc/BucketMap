@@ -44,11 +44,24 @@ inline unsigned BucketMap<16>::mapToSlot(unsigned bucketIndex, unsigned fill) co
 
 inline unsigned BucketMap<16>::mapToBucket(unsigned slotIndex, unsigned fill) const
 {
+    #if 0
     unsigned bucketIndex = 0;
     for (; bucketIndex < fill; ++bucketIndex) {
         if (mapToSlot(bucketIndex, fill) == slotIndex) break;
     }
     return bucketIndex;
+    #endif
+    #if 0
+    unsigned bucketIndex = fill - 1;
+    while (mapToSlot(bucketIndex, fill) != slotIndex) --bucketIndex;
+    return bucketIndex;
+    #endif
+    #if 1
+    unsigned i = 0;
+    const uint64_t k = slotIndex;
+    for (uint64_t m = map_; (m & 0xFu) != k; m >>= 4) ++i;
+    return i;
+    #endif
 }
 
 inline unsigned BucketMap<16>::pushEntry(unsigned bucketIndex, unsigned *fill)

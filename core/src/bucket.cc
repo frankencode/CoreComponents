@@ -56,10 +56,20 @@ Node *Tree::stepDownTo(Weight index, unsigned *egress) const
 
 void Tree::joinSucc(Node *node, Node *newNode)
 {
-    newNode->succ_ = node->succ_;
-    if (!node->isBranch_ && !node->succ_) lastLeaf_ = newNode;
-    else isDense_ = false;
+    Node *oldSucc = node->succ_;
+
+    if (oldSucc) {
+        newNode->succ_ = oldSucc;
+        oldSucc->pred_ = newNode;
+        isDense_ = false;
+    }
+    else if (!newNode->isBranch_) {
+        lastLeaf_ = newNode;
+    }
+
+    newNode->pred_ = node;
     node->succ_ = newNode;
+
     Branch *parent = node->parent_;
     if (parent) {
         unsigned newNodeIndex = node->parent_->indexOf(node) + 1;
@@ -73,6 +83,22 @@ void Tree::joinSucc(Node *node, Node *newNode)
         root_.node_ = branch;
         ++height_;
     }
+}
+
+void Tree::unlink(Node *node)
+{
+    Node *succ = node->succ_;
+    Node *pred = node->pred_;
+    if (pred) pred->succ_ = succ;
+    if (succ) succ->pred_ = pred;
+    else if (!node->isBranch_) lastLeaf_ = pred;
+
+    Branch *parent = node->parent_;
+    parent->pop(parent->indexOf(node));
+    // if (!node->isBranch_) --leafCount_;
+    delete node;
+
+    relieve(parent);
 }
 
 void Tree::shiftWeights(Node *from, Node *to, int64_t delta)

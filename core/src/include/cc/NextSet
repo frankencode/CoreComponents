@@ -85,6 +85,7 @@ public:
       */
 
     const index::Tree *tree() const { return tree_; }
+
 private:
     friend class Local<NextSet>;
 

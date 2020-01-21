@@ -8,7 +8,8 @@
 
 #pragma once
 
-#include <cc/assert>
+#include <assert.h>
+#include <cc/debug>
 
 namespace cc {
 
@@ -26,10 +27,22 @@ template<
 bool binarySearch(
     const SortedItems *items,
     const Pattern &pattern,
-    Index *finalIndex = nullptr
+    Index *finalIndex
 ) {
-    CC_ASSERT(items->count() > 0);
-    CC_ASSERT(!(pattern < items->at(0) || items->at(items->count() - 1) < pattern));
+    assert(items->count() > 0);
+    #if 0 // ndef NDEBUG
+    if (pattern < items->at(0)) {
+        CC_INSPECT(items->count());
+        CC_INSPECT(items->at(0));
+        CC_INSPECT(pattern);
+    }
+    if (items->at(items->count() - 1) < pattern) {
+        CC_INSPECT(items->count());
+        CC_INSPECT(items->at(items->count() - 1));
+        CC_INSPECT(pattern);
+    }
+    #endif
+    assert(!(pattern < items->at(0) || items->at(items->count() - 1) < pattern));
 
     Index firstIndex = 0;
     Index lastIndex = items->count() - 1;

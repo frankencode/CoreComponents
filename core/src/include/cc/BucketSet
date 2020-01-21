@@ -1,0 +1,133 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bucket>
+#include <cc/binarySearch>
+
+namespace cc {
+
+template<class T>
+class BucketSet: public Object
+{
+public:
+    typedef int64_t Index;
+    typedef T Item;
+
+    static Ref<BucketSet> create() { return new BucketSet; }
+
+    Index count() const { return tree_->count(); }
+
+    const Item &at(Index index) const
+    {
+        assert(0 <= index && index < count());
+        return tree_->at<Item>(index);
+    }
+
+    template<class Pattern>
+    bool lookup(const Pattern &pattern, Index *finalIndex = nullptr) const
+    {
+        const Index n = count();
+        bool found = false;
+        Index i = 0;
+        if (n > 32) {
+            if (at(n - 1) < pattern) {
+                i = n;
+            }
+            else if (pattern < at(0)) {
+                i = 0;
+            }
+            else {
+                bucket::IdealShim<Item> shim{tree_};
+                Index j = 0;
+                found = binarySearch(&shim, pattern, &j);
+                i = tree_->idealToReal(j);
+            }
+        }
+        else if (n > 4) {
+            if (at(n - 1) < pattern) {
+                i = n;
+            }
+            else if (pattern < at(0)) {
+                i = 0;
+            }
+            else {
+                found = binarySearch<BucketSet>(this, pattern, &i);
+            }
+        }
+        else {
+            for (; i < n; ++i) {
+                if (at(i) < pattern);
+                else {
+                    found = !(pattern < at(i));
+                    break;
+                }
+            }
+        }
+        if (finalIndex) *finalIndex = i;
+        return found;
+    }
+
+    bool contains(const Item &item) const
+    {
+        return lookup(item);
+    }
+
+    bool insert(const Item &item, Index *index = nullptr)
+    {
+        bool success = false;
+        Index finalIndex = 0;
+        if (!lookup(item, &finalIndex)) {
+            tree_->push<Item>(finalIndex, item);
+            success = true;
+        }
+        if (index) *index = finalIndex;
+        return success;
+    }
+
+    template<class Pattern>
+    bool remove(const Pattern &pattern)
+    {
+        bool success = false;
+        Index index;
+        if (lookup(pattern, &index)) {
+            tree_->pop<Item>(index);
+            success = true;
+        }
+        return success;
+    }
+
+    /** \name iterators
+      * @{
+      */
+    typedef bucket::Iterator<Item> iterator;
+    iterator begin() { return bucket::Iterator<Item>{&tree_, 0}; }
+    iterator end() { return bucket::Iterator<Item>{}; }
+    // iterator from(Index index);
+
+    typedef bucket::ConstIterator<Item> const_iterator;
+    const_iterator begin() const { return bucket::ConstIterator<Item>{tree_, 0}; }
+    const_iterator end() const { return bucket::ConstIterator<Item>{}; }
+    // const_iterator from(Index index) const;
+    /** @}
+      */
+
+    void deplete() { tree_->deplete<Item>(); }
+
+private:
+    friend class bucket::Internals;
+    friend class Local<BucketSet>;
+
+    BucketSet() = default;
+    ~BucketSet() { tree_->deplete<Item>(); }
+
+    Local<bucket::Tree> tree_;
+};
+
+} // namespace cc
