@@ -30,11 +30,10 @@ class Internals;
 class Node: protected BucketMap<Capacity>
 {
 public:
+    bool isBranch() const { return isBranch_; }
     unsigned fill() const { return fill_; }
     Node *succ() const { return succ_; }
     Node *pred() const { return pred_; }
-
-    void pop(unsigned egress) { popEntry(egress, &fill_); }
 
 protected:
     friend class Branch;
@@ -75,13 +74,26 @@ public:
         head.node_->parent_ = this;
     }
 
-    int64_t weightAt(unsigned egress) const { return at(egress).weight_; }
+    void pop(unsigned egress) { popEntry(egress, &fill_); }
 
-    int64_t &weightOf(const Node *child) { return slots_[child->slotIndex_].weight_; }
+    Weight weightAt(unsigned egress) const { return at(egress).weight_; }
 
-    unsigned indexOf(const Node *child) { return mapToBucket(child->slotIndex_, fill_); }
+    Weight &weightOf(const Node *child) { return slots_[child->slotIndex_].weight_; }
+
+    unsigned indexOf(const Node *child) const { return mapToBucket(child->slotIndex_, fill_); }
 
     static constexpr bool IsLeaf = false;
+
+    Weight distributeForwardTo(Branch *other)
+    {
+        Weight delta = 0;
+        for (unsigned i = 0; i < HalfCapacity; ++i) {
+            delta += weightAt(HalfCapacity);
+            other->push(i, at(HalfCapacity));
+            pop(HalfCapacity);
+        }
+        return delta;
+    }
 
 private:
     Head slots_[Capacity];
@@ -99,9 +111,22 @@ public:
 
     void push(unsigned egress, const Item &item) { slots_[pushEntry(egress, &fill_)] = item; }
 
+    void pop(unsigned egress) { popEntry(egress, &fill_); }
+
     int64_t weightAt(unsigned egress) const { return 1; }
 
     static constexpr bool IsLeaf = true;
+
+    Weight distributeForwardTo(Leaf *other)
+    {
+        Weight delta = 0;
+        for (unsigned i = 0; i < HalfCapacity; ++i) {
+            delta += weightAt(HalfCapacity);
+            other->push(i, at(HalfCapacity));
+            pop(HalfCapacity);
+        }
+        return delta;
+    }
 
 private:
     Item slots_[Capacity];
@@ -126,6 +151,9 @@ public:
 
     template<class Item>
     void push(Weight index, const Item &item);
+
+    template<class Item>
+    void push(Node *node, unsigned egress, const Item &item);
 
     template<class Item>
     void pop(Weight index);
@@ -174,41 +202,11 @@ public:
 
     const Head *root() const { return &root_; }
 
-    Weight idealCount() const
-    {
-        return (root_.node_) ? (root_.node_->fill_ << (height_ << 2)) : 0;
-    }
+    template<class Item>
+    const Leaf<Item> *lastLeaf() const { return static_cast<const Leaf<Item> *>(lastLeaf_); }
 
     template<class Item>
-    const Item &idealAt(Weight idealIndex) const
-    {
-        const Node *node = root_.node_;
-        for (unsigned h = height_; h > 0; --h) {
-            unsigned i = (idealIndex >> (h << 2)) & 0xFu;
-            if (node->fill_ <= i) i = node->fill_ - 1;
-            node = static_cast<const Branch *>(node)->at(i).node_;
-        }
-        unsigned i = idealIndex & 0xFu;
-        if (node->fill_ <= i) i = node->fill_ - 1;
-        return static_cast<const Leaf<Item> *>(node)->at(i);
-    }
-
-    Weight idealToReal(Weight idealIndex) const
-    {
-        Weight realIndex = 0;
-        const Node *node = root_.node_;
-        for (unsigned h = height_; h > 0; --h) {
-            unsigned i = (idealIndex >> (h << 2)) & 0xFu;
-            if (node->fill_ <= i) i = node->fill_ - 1;
-            const Branch *branch = static_cast<const Branch *>(node);
-            for (unsigned j = 0; j < i; ++j) realIndex += branch->at(j).weight_;
-            node = branch->at(i).node_;
-        }
-        unsigned i = idealIndex & 0xFu;
-        if (node->fill_ <= i) i = node->fill_ - 1;
-        realIndex += i;
-        return realIndex;
-    }
+    Leaf<Item> *lastLeaf() { return static_cast<Leaf<Item> *>(lastLeaf_); }
 
     Weight idealLeafCount() const
     {
@@ -230,7 +228,7 @@ public:
     {
         Weight offset = 0;
         while (node && node->parent_) {
-            Branch *parent = node->parent_;
+            const Branch *parent = node->parent_;
             unsigned n = parent->indexOf(node);
             for (unsigned i = 0; i < n; ++i) {
                 offset += parent->at(i).weight_;
@@ -268,7 +266,7 @@ private:
 
     void unlink(Node *node);
 
-    static int64_t &weight(Node *child) {
+    static Weight &weight(Node *child) {
         assert(child->parent_);
         return child->parent_->weightOf(child);
     }
@@ -300,10 +298,7 @@ void Tree::push(Weight index, const Item &item)
         else {
             unsigned egress = 0;
             node = stepDownTo(index, &egress);
-            Leaf<Item> *leaf = static_cast<Leaf<Item> *>(node);
-            dissipate(leaf, egress);
-            leaf->push(egress, item);
-            updateWeights(leaf, 1);
+            push(node, egress, item);
         }
     }
     else {
@@ -317,6 +312,15 @@ void Tree::push(Weight index, const Item &item)
     #ifndef NDEBUG
     ++revision_;
     #endif
+}
+
+template<class Item>
+void Tree::push(Node *node, unsigned egress, const Item &item)
+{
+    Leaf<Item> *leaf = static_cast<Leaf<Item> *>(node);
+    dissipate(leaf, egress);
+    leaf->push(egress, item);
+    updateWeights(leaf, 1);
 }
 
 template<class Item>
@@ -433,13 +437,7 @@ void Tree::distributeForward(Node *from, Node *to)
     assert(from->fill_ == Capacity);
     assert(to->fill_ <= HalfCapacity);
 
-    Weight delta = 0;
-    for (unsigned i = 0; i < HalfCapacity; ++i) {
-        delta += from->weightAt(HalfCapacity);
-        to->push(i, from->at(HalfCapacity));
-        from->pop(HalfCapacity);
-    }
-
+    Weight delta = from->distributeForwardTo(to);
     shiftWeights(from, to, delta);
 
     isDense_ = false;
@@ -519,23 +517,6 @@ using ConstIterator = TreeIterator<const Item, const Tree>;
 
 template<class Item>
 using Iterator = TreeIterator<Item, Tree>;
-
-template<class Item>
-class IdealShim
-{
-public:
-    IdealShim(const Tree *tree):
-        tree_{tree},
-        idealCount_{tree->idealCount()}
-    {}
-
-    const Item &at(Weight index) const { return tree_->idealAt<Item>(index); }
-    Weight count() const { return idealCount_; }
-
-private:
-    const Tree *tree_;
-    Weight idealCount_;
-};
 
 template<class Item>
 class SearchNode

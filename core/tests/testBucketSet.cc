@@ -9,6 +9,7 @@
 #include <cc/Set>
 #include <time.h>
 #include <set>
+#include <set>
 #ifdef _MSC_VER
 #include <intrin.h>
 #else
@@ -159,14 +160,18 @@ int main(int argc, char **argv)
     #endif
 
     #if 0
-    const int n = 1000;  // number of items
+    const int n = 200;  // number of items
     const int m = 1000;  // repetition
 
     Local<Array<int>> test{n};
     for (int i = 0; i < n; ++i)
         test->at(i) = i;
 
+    //auto test_2 = test->select(n/2, n);
+    //Local<Random>{0}->scramble<Array<int>>(test_2);
+
     Local<Random>{0}->scramble(&test);
+
     // test->reverseInsitu();
 
     CC_INSPECT(sum(test));
@@ -190,6 +195,7 @@ int main(int argc, char **argv)
             uint64_t ts = __rdtsc();
             //{
                 std::set<int> set;
+                // std::multiset<int> set;
                 for (auto x: test) set.insert(x);
             //}
             ts = __rdtsc() - ts;

@@ -51,15 +51,19 @@ inline unsigned BucketMap<16>::mapToBucket(unsigned slotIndex, unsigned fill) co
     }
     return bucketIndex;
     #endif
+    #if 1
+    unsigned i = 0;
+    for (uint64_t m = map_; (m & 0xFu) ^ slotIndex; m >>= 4) ++i;
+    return i;
+    #endif
     #if 0
     unsigned bucketIndex = fill - 1;
     while (mapToSlot(bucketIndex, fill) != slotIndex) --bucketIndex;
     return bucketIndex;
     #endif
-    #if 1
-    unsigned i = 0;
-    const uint64_t k = slotIndex;
-    for (uint64_t m = map_; (m & 0xFu) != k; m >>= 4) ++i;
+    #if 0
+    unsigned i = fill - 1;
+    for (unsigned s = (fill - 1) << 2; ((map_ >> s) & 0xFu) ^ slotIndex; s -= 4) --i;
     return i;
     #endif
 }

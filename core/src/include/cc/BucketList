@@ -17,7 +17,7 @@ template<class T>
 class BucketList: public Object
 {
 public:
-    typedef int64_t Index;
+    typedef bucket::Weight Index;
     typedef T Item;
 
     static Ref<BucketList> create() { return new BucketList; }

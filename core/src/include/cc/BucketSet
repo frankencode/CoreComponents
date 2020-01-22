@@ -17,7 +17,7 @@ template<class T>
 class BucketSet: public Object
 {
 public:
-    typedef int64_t Index;
+    typedef bucket::Weight Index;
     typedef T Item;
 
     static Ref<BucketSet> create() { return new BucketSet; }
@@ -32,39 +32,36 @@ public:
 
     template<class Pattern>
     bool lookup(const Pattern &pattern, Index *finalIndex = nullptr) const
+        /** TODO: split up into two stages: a) return (node, egress), b) return finalIndex
+          */
     {
         auto root = tree_->root()->node_;
-        const Index n = tree_->root()->weight_;
         Index i = 0;
         bool found = false;
         if (root) {
-            if (root->fill() == 1) {
+            if (!root->isBranch()) {
                 auto leaf = static_cast<const bucket::Leaf<Item> *>(root);
                 found = binarySearch(leaf, pattern, &i);
             }
             else {
-                if (at(n - 1) < pattern) {
-                    i = n;
+                const bucket::Leaf<Item> *leaf = nullptr;
+                if (tree_->lastLeaf<Item>()->at(tree_->lastLeaf<Item>()->fill() - 1) < pattern) {
+                    leaf = tree_->lastLeaf<Item>();
+                    i = tree_->root()->weight_;
+                    // *egress = Capacity - leaf->fill();
                 }
                 else {
-                    #if 1
                     bucket::SearchShim<Item> shim{tree_};
                     bucket::Weight j = 0;
-                    bool bucketFound = binarySearch(&shim, pattern, &j);
-                    const bucket::Leaf<Item> *leaf = static_cast<const bucket::Leaf<Item> *>(tree_->idealLeafAt(j));
-                    i = bucket::Tree::nodeOffset(leaf);
-                    if (bucketFound) {
-                        unsigned j = 0;
-                        found = binarySearch(leaf, pattern, &j);
-                        i += j;
+                    bool lookInside = binarySearch(&shim, pattern, &j);
+                    leaf = static_cast<const bucket::Leaf<Item> *>(tree_->idealLeafAt(j));
+                    unsigned k = 0;
+                    if (lookInside) {
+                        found = binarySearch(leaf, pattern, &k);
+                        i = k;
                     }
-                    #endif
-                    #if 0
-                    bucket::IdealShim<Item> shim{tree_};
-                    Index j = 0;
-                    found = binarySearch(&shim, pattern, &j);
-                    i = tree_->idealToReal(j);
-                    #endif
+                    i += bucket::Tree::nodeOffset(leaf);
+                    // *egress = k;
                 }
             }
         }
@@ -103,16 +100,15 @@ public:
 
     /** \name iterators
       * @{
+      * \TODO range query/iteration
       */
     typedef bucket::Iterator<Item> iterator;
     iterator begin() { return bucket::Iterator<Item>{&tree_, 0}; }
     iterator end() { return bucket::Iterator<Item>{}; }
-    // iterator from(Index index);
 
     typedef bucket::ConstIterator<Item> const_iterator;
     const_iterator begin() const { return bucket::ConstIterator<Item>{tree_, 0}; }
     const_iterator end() const { return bucket::ConstIterator<Item>{}; }
-    // const_iterator from(Index index) const;
     /** @}
       */
 
