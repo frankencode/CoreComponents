@@ -37,18 +37,18 @@ public:
 
     bool contains(const Item &item) const
     {
-        return lookup(item);
+        return tree_->lookup<Item>(item);
     }
 
     bool insert(const Item &item, Index *index = nullptr)
     {
         bool success = false;
-        Index finalIndex = 0;
-        if (!lookup(item, &finalIndex)) {
-            tree_->push<Item>(finalIndex, item);
+        bucket::Node *target = nullptr;
+        unsigned egress = 0;
+        if (!tree_->lookup<Item>(item, index, &target, &egress)) {
+            tree_->push<Item>(target, egress, item);
             success = true;
         }
-        if (index) *index = finalIndex;
         return success;
     }
 

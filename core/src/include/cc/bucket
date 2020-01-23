@@ -154,7 +154,7 @@ public:
     void push(Weight index, const Item &item);
 
     template<class Item>
-    void push(Node *node, unsigned egress, const Item &item);
+    void push(Node *target, unsigned egress, const Item &item);
 
     template<class Item>
     void pop(Weight index);
@@ -187,7 +187,7 @@ public:
     }
 
     template<class Item, class Pattern>
-    bool lookup(const Pattern &pattern, Weight *finalIndex = nullptr, Leaf<Item> **target = nullptr, unsigned *egress = nullptr) const;
+    bool lookup(const Pattern &pattern, Weight *finalIndex = nullptr, Node **target = nullptr, unsigned *egress = nullptr) const;
 
     Weight idealLeafCount() const
     {
@@ -287,17 +287,19 @@ private:
 template<class Item>
 void Tree::push(Weight index, const Item &item)
 {
-    Node *node = root_.node_;
-    if (node) {
-        if (!node->isBranch_ && node->fill_ < Capacity) {
-            static_cast<Leaf<Item> *>(node)->push(index, item);
-            ++root_.weight_;
-        }
-        else {
-            unsigned egress = 0;
-            node = stepDownTo(index, &egress);
-            push(node, egress, item);
-        }
+    unsigned egress = 0;
+    Node *node = stepDownTo(index, &egress);
+    push(node, egress, item);
+}
+
+template<class Item>
+void Tree::push(Node *target, unsigned egress, const Item &item)
+{
+    if (target) {
+        Leaf<Item> *leaf = static_cast<Leaf<Item> *>(target);
+        dissipate(leaf, egress);
+        leaf->push(egress, item);
+        updateWeights(leaf, 1);
     }
     else {
         Leaf<Item> *leaf = new Leaf<Item>;
@@ -310,15 +312,6 @@ void Tree::push(Weight index, const Item &item)
     #ifndef NDEBUG
     ++revision_;
     #endif
-}
-
-template<class Item>
-void Tree::push(Node *node, unsigned egress, const Item &item)
-{
-    Leaf<Item> *leaf = static_cast<Leaf<Item> *>(node);
-    dissipate(leaf, egress);
-    leaf->push(egress, item);
-    updateWeights(leaf, 1);
 }
 
 template<class Item>
@@ -500,7 +493,7 @@ private:
 };
 
 template<class Item, class Pattern>
-bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Leaf<Item> **target, unsigned *egress) const
+bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Node **target, unsigned *egress) const
 {
     bool found = false;
     Node *root = root_.node_;
@@ -518,7 +511,7 @@ bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Leaf<Item> **targe
             if (leaf->at(leaf->fill_ - 1) < pattern) {
                 if (finalIndex) *finalIndex = root_.weight_;
                 if (target) *target = leaf;
-                if (egress) *egress = Capacity - leaf->fill_;
+                if (egress) *egress = leaf->fill_;
             }
             else {
                 SearchShim<Item> shim{this};

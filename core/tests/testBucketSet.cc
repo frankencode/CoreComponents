@@ -159,7 +159,7 @@ int main(int argc, char **argv)
     return 0;
     #endif
 
-    #if 0
+    #ifdef NDEBUG
     const int n = 1000;  // number of items
     const int m = 1000;  // repetition
 
@@ -227,7 +227,7 @@ int main(int argc, char **argv)
     return 0;
     #endif
 
-    #if 1
+    #ifndef NDEBUG
     CC_TESTSUITE_ADD(AscendingInsertionRemovalTest);
     CC_TESTSUITE_ADD(DescendingInsertionRemovalTest);
     CC_TESTSUITE_ADD(RandomInsertionRemovalTest);
