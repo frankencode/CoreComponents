@@ -85,17 +85,6 @@ public:
 
     static constexpr bool IsLeaf = false;
 
-    Weight distributeForwardTo(Branch *other)
-    {
-        Weight delta = 0;
-        for (unsigned i = 0; i < HalfCapacity; ++i) {
-            delta += weightAt(HalfCapacity);
-            other->push(i, at(HalfCapacity));
-            pop(HalfCapacity);
-        }
-        return delta;
-    }
-
 private:
     Head slots_[Capacity];
 };
@@ -117,17 +106,6 @@ public:
     int64_t weightAt(unsigned egress) const { return 1; }
 
     static constexpr bool IsLeaf = true;
-
-    Weight distributeForwardTo(Leaf *other)
-    {
-        Weight delta = 0;
-        for (unsigned i = 0; i < HalfCapacity; ++i) {
-            delta += weightAt(HalfCapacity);
-            other->push(i, at(HalfCapacity));
-            pop(HalfCapacity);
-        }
-        return delta;
-    }
 
 private:
     Item slots_[Capacity];
@@ -428,7 +406,13 @@ void Tree::distributeForward(Node *from, Node *to)
     assert(from->fill_ == Capacity);
     assert(to->fill_ <= HalfCapacity);
 
-    Weight delta = from->distributeForwardTo(to);
+    Weight delta = 0;
+    for (unsigned i = 0; i < HalfCapacity; ++i) {
+        delta += from->weightAt(HalfCapacity);
+        to->push(i, from->at(HalfCapacity));
+        from->pop(HalfCapacity);
+    }
+
     shiftWeights(from, to, delta);
 
     isDense_ = false;
@@ -529,11 +513,6 @@ bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Node **target, uns
                 if (egress) *egress = k;
             }
         }
-    }
-    else {
-        if (finalIndex) *finalIndex = 0;
-        if (target) *target = nullptr;
-        if (egress) *egress = 0;
     }
     return found;
 }

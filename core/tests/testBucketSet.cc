@@ -160,6 +160,10 @@ int main(int argc, char **argv)
     #endif
 
     #ifdef NDEBUG
+    CC_INSPECT(sizeof(bucket::Node));
+    CC_INSPECT(sizeof(bucket::Branch));
+    CC_INSPECT(sizeof(bucket::Leaf<int>));
+
     const int n = 1000;  // number of items
     const int m = 1000;  // repetition
 
