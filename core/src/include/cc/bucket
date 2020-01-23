@@ -12,6 +12,7 @@
 #include <iterator>
 #include <limits>
 #include <cc/BucketMap>
+#include <cc/binarySearch>
 #include <cc/debug>
 
 namespace cc {
@@ -185,6 +186,25 @@ public:
         *this = Tree{};
     }
 
+    template<class Item, class Pattern>
+    bool lookup(const Pattern &pattern, Weight *finalIndex = nullptr, Leaf<Item> **target = nullptr, unsigned *egress = nullptr) const;
+
+    Weight idealLeafCount() const
+    {
+        return (height_ > 0) ? root_.node_->fill_ << ((height_ - 1) << 2) : 1;
+    }
+
+    Node *idealLeafAt(Weight idealIndex) const
+    {
+        Node *node = root_.node_;
+        for (unsigned h = height_; h > 0; --h) {
+            unsigned i = (idealIndex >> ((h - 1) << 2)) & 0xFu;
+            if (node->fill_ <= i) i = node->fill_ - 1;
+            node = static_cast<const Branch *>(node)->at(i).node_;
+        }
+        return node;
+    }
+
     Node *getMinNode() const
     {
         Node *node = root_.node_;
@@ -196,47 +216,11 @@ public:
         return node;
     }
 
+    const Head *root() const { return &root_; }
+
     #ifndef NDEBUG
     uint64_t revision() const { return revision_; }
     #endif
-
-    const Head *root() const { return &root_; }
-
-    template<class Item>
-    const Leaf<Item> *lastLeaf() const { return static_cast<const Leaf<Item> *>(lastLeaf_); }
-
-    template<class Item>
-    Leaf<Item> *lastLeaf() { return static_cast<Leaf<Item> *>(lastLeaf_); }
-
-    Weight idealLeafCount() const
-    {
-        return (height_ > 0) ? root_.node_->fill_ << ((height_ - 1) << 2) : 1;
-    }
-
-    const Node *idealLeafAt(Weight idealIndex) const
-    {
-        const Node *node = root_.node_;
-        for (unsigned h = height_; h > 0; --h) {
-            unsigned i = (idealIndex >> ((h - 1) << 2)) & 0xFu;
-            if (node->fill_ <= i) i = node->fill_ - 1;
-            node = static_cast<const Branch *>(node)->at(i).node_;
-        }
-        return node;
-    }
-
-    static Weight nodeOffset(const Node *node)
-    {
-        Weight offset = 0;
-        while (node && node->parent_) {
-            const Branch *parent = node->parent_;
-            unsigned n = parent->indexOf(node);
-            for (unsigned i = 0; i < n; ++i) {
-                offset += parent->at(i).weight_;
-            }
-            node = parent;
-        }
-        return offset;
-    }
 
 private:
     Node *stepDownTo(Weight index, unsigned *egress) const;
@@ -275,6 +259,20 @@ private:
     void updateWeights(Node *node, int64_t delta);
 
     void reduce();
+
+    static Weight nodeOffset(const Node *node)
+    {
+        Weight offset = 0;
+        while (node && node->parent_) {
+            const Branch *parent = node->parent_;
+            unsigned n = parent->indexOf(node);
+            for (unsigned i = 0; i < n; ++i) {
+                offset += parent->at(i).weight_;
+            }
+            node = parent;
+        }
+        return offset;
+    }
 
     Head root_ { .weight_ = 0, .node_ = nullptr };
     Node *lastLeaf_ { nullptr };
@@ -455,6 +453,98 @@ void Tree::collapseSucc(Node *node, Node *succ)
     unlink(succ);
 }
 
+template<class Item>
+class SearchNode
+{
+public:
+    SearchNode(const Leaf<Item> *leaf):
+        leaf_{leaf}
+    {}
+
+    const Leaf<Item> *leaf_;
+};
+
+template<class Item, class Pattern>
+inline bool operator<(const SearchNode<Item> &searchNode, const Pattern &pattern)
+{
+    const Leaf<Item> *leaf = searchNode.leaf_;
+    return leaf->at(leaf->fill() - 1) < pattern;
+}
+
+template<class Pattern, class Item>
+inline bool operator<(const Pattern &pattern, const SearchNode<Item> &searchNode)
+{
+    const Leaf<Item> *leaf = searchNode.leaf_;
+    return pattern < leaf->at(0);
+}
+
+template<class Item>
+class SearchShim
+{
+public:
+    SearchShim(const Tree *tree):
+        tree_{tree},
+        idealLeafCount_{tree->idealLeafCount()}
+    {}
+
+    SearchNode<Item> at(Weight index) const
+    {
+        return static_cast<const Leaf<Item> *>(tree_->idealLeafAt(index));
+    }
+
+    Weight count() const { return idealLeafCount_; }
+
+private:
+    const Tree *tree_;
+    Weight idealLeafCount_;
+};
+
+template<class Item, class Pattern>
+bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Leaf<Item> **target, unsigned *egress) const
+{
+    bool found = false;
+    Node *root = root_.node_;
+    if (root) {
+        if (!root->isBranch()) {
+            Leaf<Item> *leaf = static_cast<Leaf<Item> *>(root);
+            Weight i = 0;
+            found = binarySearch(leaf, pattern, &i);
+            if (finalIndex) *finalIndex = i;
+            if (target) *target = leaf;
+            if (egress) *egress = i;
+        }
+        else {
+            Leaf<Item> *leaf = static_cast<Leaf<Item> *>(lastLeaf_);
+            if (leaf->at(leaf->fill_ - 1) < pattern) {
+                if (finalIndex) *finalIndex = root_.weight_;
+                if (target) *target = leaf;
+                if (egress) *egress = Capacity - leaf->fill_;
+            }
+            else {
+                SearchShim<Item> shim{this};
+                Weight i = 0, j = 0;
+                bool lookInside = binarySearch(&shim, pattern, &j);
+                leaf = static_cast<Leaf<Item> *>(idealLeafAt(j));
+                unsigned k = 0;
+                if (lookInside) {
+                    found = binarySearch(leaf, pattern, &k);
+                    i = k;
+                }
+                i += nodeOffset(leaf);
+                if (finalIndex) *finalIndex = i;
+                if (target) *target = leaf;
+                if (egress) *egress = k;
+            }
+        }
+    }
+    else {
+        if (finalIndex) *finalIndex = 0;
+        if (target) *target = nullptr;
+        if (egress) *egress = 0;
+    }
+    return found;
+}
+
 template<class Item, class Tree>
 class TreeIterator:
     public std::iterator<
@@ -517,51 +607,5 @@ using ConstIterator = TreeIterator<const Item, const Tree>;
 
 template<class Item>
 using Iterator = TreeIterator<Item, Tree>;
-
-template<class Item>
-class SearchNode
-{
-public:
-    SearchNode(const Leaf<Item> *leaf):
-        leaf_{leaf}
-    {}
-
-    const Leaf<Item> *leaf_;
-};
-
-template<class Item, class Pattern>
-inline bool operator<(const SearchNode<Item> &searchNode, const Pattern &pattern)
-{
-    const Leaf<Item> *leaf = searchNode.leaf_;
-    return leaf->at(leaf->fill() - 1) < pattern;
-}
-
-template<class Pattern, class Item>
-inline bool operator<(const Pattern &pattern, const SearchNode<Item> &searchNode)
-{
-    const Leaf<Item> *leaf = searchNode.leaf_;
-    return pattern < leaf->at(0);
-}
-
-template<class Item>
-class SearchShim
-{
-public:
-    SearchShim(const Tree *tree):
-        tree_{tree},
-        idealLeafCount_{tree->idealLeafCount()}
-    {}
-
-    SearchNode<Item> at(Weight index) const
-    {
-        return static_cast<const Leaf<Item> *>(tree_->idealLeafAt(index));
-    }
-
-    Weight count() const { return idealLeafCount_; }
-
-private:
-    const Tree *tree_;
-    Weight idealLeafCount_;
-};
 
 }} // namespace cc::bucket

@@ -160,7 +160,7 @@ int main(int argc, char **argv)
     #endif
 
     #if 0
-    const int n = 200;  // number of items
+    const int n = 1000;  // number of items
     const int m = 1000;  // repetition
 
     Local<Array<int>> test{n};

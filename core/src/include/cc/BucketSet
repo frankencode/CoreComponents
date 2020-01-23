@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/bucket>
-#include <cc/binarySearch>
 
 namespace cc {
 
@@ -32,41 +31,8 @@ public:
 
     template<class Pattern>
     bool lookup(const Pattern &pattern, Index *finalIndex = nullptr) const
-        /** TODO: split up into two stages: a) return (node, egress), b) return finalIndex
-          */
     {
-        auto root = tree_->root()->node_;
-        Index i = 0;
-        bool found = false;
-        if (root) {
-            if (!root->isBranch()) {
-                auto leaf = static_cast<const bucket::Leaf<Item> *>(root);
-                found = binarySearch(leaf, pattern, &i);
-            }
-            else {
-                const bucket::Leaf<Item> *leaf = nullptr;
-                if (tree_->lastLeaf<Item>()->at(tree_->lastLeaf<Item>()->fill() - 1) < pattern) {
-                    leaf = tree_->lastLeaf<Item>();
-                    i = tree_->root()->weight_;
-                    // *egress = Capacity - leaf->fill();
-                }
-                else {
-                    bucket::SearchShim<Item> shim{tree_};
-                    bucket::Weight j = 0;
-                    bool lookInside = binarySearch(&shim, pattern, &j);
-                    leaf = static_cast<const bucket::Leaf<Item> *>(tree_->idealLeafAt(j));
-                    unsigned k = 0;
-                    if (lookInside) {
-                        found = binarySearch(leaf, pattern, &k);
-                        i = k;
-                    }
-                    i += bucket::Tree::nodeOffset(leaf);
-                    // *egress = k;
-                }
-            }
-        }
-        if (finalIndex) *finalIndex = i;
-        return found;
+        return tree_->lookup<Item>(pattern, finalIndex);
     }
 
     bool contains(const Item &item) const

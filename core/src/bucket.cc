@@ -119,11 +119,14 @@ void Tree::updateWeights(Node *node, int64_t delta)
 
 void Tree::reduce()
 {
-    while (root_.node_ && root_.node_->isBranch_ && root_.node_->fill_ == 1) {
-        Branch *branch = static_cast<Branch *>(root_.node_);
-        root_.node_ = branch->at(0).node_;
-        delete branch;
-        --height_;
+    if (root_.node_) {
+        while (root_.node_->isBranch_ && root_.node_->fill_ == 1) {
+            Branch *branch = static_cast<Branch *>(root_.node_);
+            root_.node_ = branch->at(0).node_;
+            delete branch;
+            --height_;
+        }
+        root_.node_->parent_ = nullptr;
     }
 }
 
