@@ -48,6 +48,28 @@ public:
         tree_->pop<Item>(index);
     }
 
+    void pushBack(const Item &item)
+    {
+        tree_->pushBack(item);
+    }
+
+    void popBack()
+    {
+        assert(count() > 0);
+        pop(count());
+    }
+
+    void pushFront(const Item &item)
+    {
+        push(0, item);
+    }
+
+    void popFront()
+    {
+        assert(count() > 0);
+        pop(0);
+    }
+
     void deplete() { tree_->deplete<Item>(); }
 
     /** \name C++ iterators
@@ -62,6 +84,18 @@ public:
     const_iterator end() const { return bucket::ConstIterator<Item>{}; }
     /** @}
       */
+
+    /// \copydoc push(const Item &item)
+    void operator<<(const T& item) { pushBack(item); }
+
+    /// \copydoc pop()
+    // void operator>>(T* item) { popFront(item); } // TODO
+
+    Item &first() { assert(count() > 0); return tree_->first<Item>(); }
+    const Item &first() const { assert(count() > 0); return tree_->first<Item>(); }
+
+    Item &last() { assert(count() > 0); return tree_->last<Item>(); }
+    const Item &last() const { assert(count() > 0); return tree_->last<Item>(); }
 
 private:
     friend class Local<BucketList>;

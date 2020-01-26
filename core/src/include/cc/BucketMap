@@ -18,7 +18,14 @@ namespace cc {
   * \TODO rename to ShiftMap
   */
 template<unsigned Capacity>
-class BucketMap {};
+class BucketMap
+{
+public:
+
+
+private:
+    uint8_t map_[Capacity];
+};
 
 template<>
 class BucketMap<16>
@@ -35,6 +42,12 @@ public:
 private:
     uint64_t map_ { UINT64_C(0x0123456789ABCDEF) };
 };
+
+#if 0
+template<>
+class BucketMap<8>: public BucketMap<16>
+{};
+#endif
 
 inline unsigned BucketMap<16>::mapToSlot(unsigned bucketIndex, unsigned fill) const
 {

@@ -24,23 +24,12 @@ static constexpr unsigned MinFill = HalfCapacity;
 
 typedef int64_t Weight;
 
-class Branch;
-class Tree;
 class Internals;
+class Branch;
 
 class Node: protected BucketMap<Capacity>
 {
 public:
-    bool isBranch() const { return isBranch_; }
-    unsigned fill() const { return fill_; }
-    Node *succ() const { return succ_; }
-    Node *pred() const { return pred_; }
-
-protected:
-    friend class Branch;
-    friend class Tree;
-    friend class Internals;
-
     Node(bool isBranch):
         isBranch_{isBranch}
     {}
@@ -83,7 +72,7 @@ public:
 
     unsigned indexOf(const Node *child) const { return mapToBucket(child->slotIndex_, fill_); }
 
-    static constexpr bool IsLeaf = false;
+    // static constexpr bool IsLeaf = false;
 
 private:
     Head slots_[Capacity];
@@ -103,9 +92,9 @@ public:
 
     void pop(unsigned egress) { popEntry(egress, &fill_); }
 
-    int64_t weightAt(unsigned egress) const { return 1; }
+    static int64_t weightAt(unsigned egress) { return 1; }
 
-    static constexpr bool IsLeaf = true;
+    // static constexpr bool IsLeaf = true;
 
 private:
     Item slots_[Capacity];
@@ -132,6 +121,9 @@ public:
     void push(Weight index, const Item &item);
 
     template<class Item>
+    void pushBack(const Item &item);
+
+    template<class Item>
     void push(Node *target, unsigned egress, const Item &item);
 
     template<class Item>
@@ -140,28 +132,25 @@ public:
     template<class Item>
     void deplete()
     {
-        if (root_.node_) deplete<Item>(root_.node_);
-        #if 0
-        if (lastLeaf_) {
-            Node *leaf = lastLeaf_;
+        if (root_.node_) {
+            Node *leaf = getMinNode();
             Branch *parent = leaf->parent_;
             while (leaf) {
-                Node *pred = leaf->pred_;
+                Node *succ = leaf->succ_;
                 delete static_cast<Leaf<Item> *>(leaf);
-                leaf = pred;
+                leaf = succ;
             }
             while (parent) {
                 Node *branch = parent;
                 parent = parent->parent_;
                 while (branch) {
-                    Node *pred = branch->pred_;
+                    Node *succ = branch->succ_;
                     delete branch;
-                    branch = pred;
+                    branch = succ;
                 }
             }
+            *this = Tree{};
         }
-        #endif
-        *this = Tree{};
     }
 
     template<class Item, class Pattern>
@@ -183,12 +172,49 @@ public:
         return node;
     }
 
+    template<class Item>
+    const Item &first() const
+    {
+        Node *firstLeaf = getMinNode();
+        return static_cast<const Leaf<Item> *>(firstLeaf)->at(0);
+    }
+
+    template<class Item>
+    Item &first()
+    {
+        Node *firstLeaf = getMinNode();
+        return static_cast<Leaf<Item> *>(firstLeaf)->at(0);
+    }
+
+    template<class Item>
+    const Item &last() const
+    {
+        return static_cast<const Leaf<Item> *>(lastLeaf_)->at(lastLeaf_->fill_ - 1);
+    }
+
+    template<class Item>
+    Item &last()
+    {
+        return static_cast<Leaf<Item> *>(lastLeaf_)->at(lastLeaf_->fill_ - 1);
+    }
+
     Node *getMinNode() const
     {
         Node *node = root_.node_;
         if (node) {
             while (node->isBranch_) {
                 node = static_cast<const Branch *>(node)->at(0).node_;
+            }
+        }
+        return node;
+    }
+
+    Node *getMaxNode() const
+    {
+        Node *node = root_.node_;
+        if (node) {
+            while (node->isBranch_) {
+                node = static_cast<const Branch *>(node)->at(node->fill_ - 1).node_;
             }
         }
         return node;
@@ -201,10 +227,9 @@ public:
     #endif
 
 private:
-    Node *stepDownTo(Weight index, unsigned *egress) const;
+    friend class SearchPath;
 
-    template<class Item>
-    void deplete(Node *node);
+    Node *stepDownTo(Weight index, unsigned *egress) const;
 
     template<class Node>
     void dissipate(Node *&node, unsigned &egress);
@@ -254,6 +279,7 @@ private:
 
     Head root_ { .weight_ = 0, .node_ = nullptr };
     Node *lastLeaf_ { nullptr };
+    // Node *firstLeaf_ { nullptr };
     bool isDense_ { true };
     unsigned height_ { 0 };
     // uint64_t leafCount_ { 0 };
@@ -271,6 +297,12 @@ void Tree::push(Weight index, const Item &item)
 }
 
 template<class Item>
+void Tree::pushBack(const Item &item)
+{
+    push(lastLeaf_, lastLeaf_ ? lastLeaf_->fill_ - 1 : 0, item);
+}
+
+template<class Item>
 void Tree::push(Node *target, unsigned egress, const Item &item)
 {
     if (target) {
@@ -285,6 +317,7 @@ void Tree::push(Node *target, unsigned egress, const Item &item)
         root_.weight_ = 1;
         root_.node_ = leaf;
         lastLeaf_ = leaf;
+        // firstLeaf_ = leaf;
         // leafCount_ = 1;
     }
     #ifndef NDEBUG
@@ -300,7 +333,7 @@ void Tree::pop(Weight index)
         Leaf<Item> *leaf = static_cast<Leaf<Item> *>(stepDownTo(index, &egress));
         leaf->pop(egress);
         updateWeights(leaf, -1);
-        if (leaf != lastLeaf_) isDense_ = false;
+        if (leaf->succ_) isDense_ = false;
         relieve(leaf);
         reduce();
     }
@@ -311,23 +344,6 @@ void Tree::pop(Weight index)
         lastLeaf_ = nullptr;
         // leafCount_ = 0;
         isDense_ = true;
-    }
-}
-
-template<class Item>
-void Tree::deplete(Node *node)
-{
-    if (node->isBranch_) {
-        Branch *branch = static_cast<Branch *>(node);
-        unsigned i = branch->fill_;
-        while (i > 0) {
-            --i;
-            deplete<Item>(branch->at(i).node_);
-        }
-        delete branch;
-    }
-    else {
-        delete static_cast<Leaf<Item> *>(node);
     }
 }
 
@@ -430,6 +446,40 @@ void Tree::collapseSucc(Node *node, Node *succ)
     unlink(succ);
 }
 
+class SearchPath
+{
+public:
+    SearchPath(const Tree *tree):
+        node_{tree->getMinNode()},
+        idealIndex_{0},
+        height_{0}
+    {}
+
+    Node *stepTo(Weight newIdealIndex)
+    {
+        if (idealIndex_ != newIdealIndex) {
+            for (uint64_t m = idealIndex_ ^ newIdealIndex; m != 0; m >>= 4) {
+                node_ = node_->parent_;
+                ++height_;
+            }
+            for (unsigned h = height_; h > 0; --h) {
+                unsigned i = (newIdealIndex >> ((h - 1) << 2)) & 0xFu;
+                if (node_->fill_ <= i) i = node_->fill_ - 1;
+                node_ = static_cast<const Branch *>(node_)->at(i).node_;
+                --height_;
+            }
+            idealIndex_ = newIdealIndex;
+        }
+        return node_;
+    }
+
+private:
+    Node *node_;
+    Weight idealIndex_;
+    unsigned height_;
+    unsigned depth_;
+};
+
 template<class Item>
 class SearchNode
 {
@@ -445,7 +495,7 @@ template<class Item, class Pattern>
 inline bool operator<(const SearchNode<Item> &searchNode, const Pattern &pattern)
 {
     const Leaf<Item> *leaf = searchNode.leaf_;
-    return leaf->at(leaf->fill() - 1) < pattern;
+    return leaf->at(leaf->fill_ - 1) < pattern;
 }
 
 template<class Pattern, class Item>
@@ -455,6 +505,7 @@ inline bool operator<(const Pattern &pattern, const SearchNode<Item> &searchNode
     return pattern < leaf->at(0);
 }
 
+#if 1
 template<class Item>
 class SearchShim
 {
@@ -475,6 +526,30 @@ private:
     const Tree *tree_;
     Weight idealLeafCount_;
 };
+#endif
+
+#if 0
+template<class Item>
+class SearchShim
+{
+public:
+    SearchShim(const Tree *tree):
+        searchPath_{tree},
+        idealLeafCount_{tree->idealLeafCount()}
+    {}
+
+    SearchNode<Item> at(Weight index) const
+    {
+        return static_cast<Leaf<Item>*>(searchPath_.stepTo(index));
+    }
+
+    Weight count() const { return idealLeafCount_; }
+
+private:
+    mutable SearchPath searchPath_;
+    Weight idealLeafCount_;
+};
+#endif
 
 template<class Item, class Pattern>
 bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Node **target, unsigned *egress) const
@@ -482,7 +557,7 @@ bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Node **target, uns
     bool found = false;
     Node *root = root_.node_;
     if (root) {
-        if (!root->isBranch()) {
+        if (!root->isBranch_) {
             Leaf<Item> *leaf = static_cast<Leaf<Item> *>(root);
             Weight i = 0;
             found = binarySearch(leaf, pattern, &i);
@@ -555,9 +630,9 @@ public:
         assert(revision_ == tree_->revision()); // cannot modify container while iterating it
 
         ++egress_;
-        if (egress_ == node_->fill()) {
+        if (egress_ == node_->fill_) {
             egress_ = 0;
-            node_ = static_cast<Leaf<Item> *>(node_->succ());
+            node_ = static_cast<Leaf<Item> *>(node_->succ_);
         }
         return *this;
     }

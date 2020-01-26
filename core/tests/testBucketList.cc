@@ -139,11 +139,35 @@ class PushPopRandomTest: public TestCase
 
 int main(int argc, char **argv)
 {
-    #if 0 // def NDEBUG
+    #if 0
+    auto primes = BucketList<unsigned>::create();
+    const unsigned b = std::numeric_limits<unsigned>::max();
+    unsigned x = 2, y = x;
+    while (x <= b) {
+        bool isPrime = true;
+        for (auto p: primes) {
+            if (x % p == 0) {
+                isPrime = false;
+                break;
+            }
+        }
+        if (isPrime) {
+            primes->pushBack(x);
+            fout() << primes->count() << ": " << x << ", " << x - y << nl;
+            y = x;
+        }
+        ++x;
+    }
+    return 0;
+    #endif
+
+    #ifdef NDEBUG
     {
         const int n = 256;
         const int h = 1000;
 
+        uint64_t tx, ts;
+
         #if 1
         for (int k = 0; k < h; ++k)
         {
@@ -153,11 +177,11 @@ int main(int argc, char **argv)
         }
         {
             Local<BucketList<int>> list;
-            auto tx = ::clock();
+            tx = ::clock();
             for (int i = 0; i < n; ++i)
                 list->push(i, i);
             tx = ::clock() - tx;
-            CC_INSPECT(tx);
+            // CC_INSPECT(tx);
         }
         #endif
 
@@ -170,13 +194,16 @@ int main(int argc, char **argv)
         }
         {
             std::list<int> list;
-            auto ts = ::clock();
+            ts = ::clock();
             for (int i = 0; i < n; ++i)
                 list.push_back(i);
             ts = ::clock() - ts;
-            CC_INSPECT(ts);
+            // CC_INSPECT(ts);
         }
         #endif
+
+        CC_INSPECT(double(ts)/tx);
+        CC_INSPECT(double(tx)/ts);
 
     }
     return 0;
@@ -239,7 +266,7 @@ int main(int argc, char **argv)
     }
     return 0;
     #endif
-    #if 1
+    #ifndef NDEBUG
     CC_TESTSUITE_ADD(PushBackPopBackTest);
     CC_TESTSUITE_ADD(PushFrontPopFrontTest);
     CC_TESTSUITE_ADD(PushFrontPopBackTest);

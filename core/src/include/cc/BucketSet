@@ -78,6 +78,9 @@ public:
     /** @}
       */
 
+    const Item &first() const { return tree_->first<Item>(); }
+    const Item &last() const { return tree_->last<Item>(); }
+
     void deplete() { tree_->deplete<Item>(); }
 
 private:

@@ -84,14 +84,18 @@ void Tree::joinSucc(Node *node, Node *newNode)
 
 void Tree::unlink(Node *node)
 {
+    Branch *parent = node->parent_;
+    parent->pop(parent->indexOf(node));
+
     Node *succ = node->succ_;
     Node *pred = node->pred_;
     if (pred) pred->succ_ = succ;
     if (succ) succ->pred_ = pred;
-    else if (!node->isBranch_) lastLeaf_ = pred;
+    else if (!node->isBranch_) {
+        lastLeaf_ = pred;
+        // lastLeaf_ = getMaxNode(); // FIXME
+    }
 
-    Branch *parent = node->parent_;
-    parent->pop(parent->indexOf(node));
     // if (!node->isBranch_) --leafCount_;
     delete node;
 

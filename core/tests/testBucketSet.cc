@@ -21,9 +21,10 @@ using namespace cc::testing;
 
 void print(const BucketSet<int> *set)
 {
-    Format f;
-    for (int x: set) f << x;
-    ferr() << "(" << f->join(", ") << ")" << nl;
+    Format f{stdOut()};
+    f << "(";
+    for (auto &x: set)
+        f << x << (&x == &set->last() ? ")\n" : ", ");
 }
 
 int sum(const Array<int> *items)
@@ -160,14 +161,22 @@ int main(int argc, char **argv)
     #endif
 
     #ifdef NDEBUG
+    #if 1
+    CC_INSPECT(sizeof(BucketSet<int>));
     CC_INSPECT(sizeof(bucket::Node));
     CC_INSPECT(sizeof(bucket::Branch));
     CC_INSPECT(sizeof(bucket::Leaf<int>));
+    CC_INSPECT(sizeof(BucketSet<int>)/16.);
+    CC_INSPECT(sizeof(bucket::Node)/16.);
+    CC_INSPECT(sizeof(bucket::Branch)/16.);
+    CC_INSPECT(sizeof(bucket::Leaf<int>)/16.);
+    #endif
 
     const int n = 1000;  // number of items
     const int m = 1000;  // repetition
 
-    Local<Array<int>> test{n};
+    typedef int Item;
+    Local<Array<Item>> test{n};
     for (int i = 0; i < n; ++i)
         test->at(i) = i;
 
@@ -178,7 +187,7 @@ int main(int argc, char **argv)
 
     // test->reverseInsitu();
 
-    CC_INSPECT(sum(test));
+    // CC_INSPECT(sum(test));
 
     #if 0
     {
@@ -193,17 +202,18 @@ int main(int argc, char **argv)
     #endif
     uint64_t txm = 0; // std::numeric_limits<uint64_t>::max();
     uint64_t tsm = 0; // std::numeric_limits<uint64_t>::max();
+    int64_t dummy = 0;
 
     for (int i = 0; i < m; ++i) {
         {
             uint64_t ts = __rdtsc();
             //{
-                std::set<int> set;
+                std::set<Item> set;
                 // std::multiset<int> set;
                 for (auto x: test) set.insert(x);
             //}
             ts = __rdtsc() - ts;
-            // CC_INSPECT(set.size());
+            dummy += set.size();
             // CC_INSPECT(ts);
 
             tsm += ts;
@@ -211,16 +221,18 @@ int main(int argc, char **argv)
         {
             uint64_t tx = __rdtsc();
             //{
-                Local<BucketSet<int>> set;
+                Local<BucketSet<Item>> set;
                 for (auto x: test) set->insert(x);
             //}
             tx = __rdtsc() - tx;
-            // CC_INSPECT(set->count());
+            dummy += set->count();
             // CC_INSPECT(tx);
 
             txm += tx;
         }
     }
+
+    CC_INSPECT(dummy);
 
     tsm /= m;
     txm /= m;

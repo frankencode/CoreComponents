@@ -43,9 +43,25 @@ bool binarySearch(
             return true;
         }
     }
-
     *finalIndex = l;
     return false;
+
+    #if 0 // find left most or number of elements smaller than pattern (rank)
+    Index l = 0;
+    Index r = items->count();
+    while (l < r) {
+        Index m = (l + r) >> 1;
+        if (items->at(m) < pattern) l = m + 1;
+        else r = m;
+    }
+
+    *finalIndex = l;
+    if (l < items->count()) {
+        auto candidate = items->at(l);
+        return !(pattern < candidate);
+    }
+    return false;
+    #endif
 }
 
 } // namespace cc
