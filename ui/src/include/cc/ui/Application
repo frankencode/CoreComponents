@@ -12,7 +12,7 @@
 #include <cc/ui/Font>
 #include <cc/ui/Cursor>
 
-namespace cc { template<class> class Set; }
+// namespace cc { template<class> class Set; }
 
 namespace cc {
 namespace ui {
