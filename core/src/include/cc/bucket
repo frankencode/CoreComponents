@@ -129,6 +129,13 @@ public:
     template<class Item>
     void pop(Weight index);
 
+    template<class Item, class Other>
+    void populate(const Other *other)
+    {
+        for (const Item &x: *other)
+            pushBack<Item>(x);
+    }
+
     template<class Item>
     void deplete()
     {
@@ -154,7 +161,13 @@ public:
     }
 
     template<class Item, class Pattern>
-    bool lookup(const Pattern &pattern, Weight *finalIndex = nullptr, Node **target = nullptr, unsigned *egress = nullptr) const;
+    bool lookup(const Pattern &pattern, Weight *finalIndex = nullptr, Leaf<Item> **target = nullptr, unsigned *egress = nullptr) const;
+
+    template<class Item, class Pattern>
+    bool lookupFirst(const Pattern &pattern, Weight *finalIndex = nullptr, Leaf<Item> **target = nullptr, unsigned *egress = nullptr) const;
+
+    template<class Item, class Pattern>
+    bool lookupLast(const Pattern &pattern, Weight *finalIndex = nullptr, Leaf<Item> **target = nullptr, unsigned *egress = nullptr) const;
 
     Weight idealLeafCount() const
     {
@@ -227,8 +240,6 @@ public:
     #endif
 
 private:
-    friend class SearchPath;
-
     Node *stepDownTo(Weight index, unsigned *egress) const;
 
     template<class Node>
@@ -446,40 +457,6 @@ void Tree::collapseSucc(Node *node, Node *succ)
     unlink(succ);
 }
 
-class SearchPath
-{
-public:
-    SearchPath(const Tree *tree):
-        node_{tree->getMinNode()},
-        idealIndex_{0},
-        height_{0}
-    {}
-
-    Node *stepTo(Weight newIdealIndex)
-    {
-        if (idealIndex_ != newIdealIndex) {
-            for (uint64_t m = idealIndex_ ^ newIdealIndex; m != 0; m >>= 4) {
-                node_ = node_->parent_;
-                ++height_;
-            }
-            for (unsigned h = height_; h > 0; --h) {
-                unsigned i = (newIdealIndex >> ((h - 1) << 2)) & 0xFu;
-                if (node_->fill_ <= i) i = node_->fill_ - 1;
-                node_ = static_cast<const Branch *>(node_)->at(i).node_;
-                --height_;
-            }
-            idealIndex_ = newIdealIndex;
-        }
-        return node_;
-    }
-
-private:
-    Node *node_;
-    Weight idealIndex_;
-    unsigned height_;
-    unsigned depth_;
-};
-
 template<class Item>
 class SearchNode
 {
@@ -505,7 +482,6 @@ inline bool operator<(const Pattern &pattern, const SearchNode<Item> &searchNode
     return pattern < leaf->at(0);
 }
 
-#if 1
 template<class Item>
 class SearchShim
 {
@@ -526,33 +502,9 @@ private:
     const Tree *tree_;
     Weight idealLeafCount_;
 };
-#endif
-
-#if 0
-template<class Item>
-class SearchShim
-{
-public:
-    SearchShim(const Tree *tree):
-        searchPath_{tree},
-        idealLeafCount_{tree->idealLeafCount()}
-    {}
-
-    SearchNode<Item> at(Weight index) const
-    {
-        return static_cast<Leaf<Item>*>(searchPath_.stepTo(index));
-    }
-
-    Weight count() const { return idealLeafCount_; }
-
-private:
-    mutable SearchPath searchPath_;
-    Weight idealLeafCount_;
-};
-#endif
 
 template<class Item, class Pattern>
-bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Node **target, unsigned *egress) const
+bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Leaf<Item> **target, unsigned *egress) const
 {
     bool found = false;
     Node *root = root_.node_;
@@ -592,10 +544,66 @@ bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Node **target, uns
     return found;
 }
 
+template<class Item, class Pattern>
+bool Tree::lookupFirst(const Pattern &pattern, Weight *finalIndex, Leaf<Item> **target, unsigned *egress) const
+{
+    Weight i = 0;
+    Leaf<Item> *leaf = nullptr;
+    unsigned k = 0;
+    bool found = lookup(pattern, &i, &leaf, &k);
+    if (found) {
+        while (i > 0) {
+            Leaf<Item> *other = leaf;
+            unsigned l = k;
+            if (l > 0) --l;
+            else {
+                other = static_cast<Leaf<Item> *>(other->pred_);
+                l = other->fill_ - 1;
+            }
+            if (other->at(l) < pattern) break;
+            leaf = other;
+            k = l;
+            --i;
+        }
+    }
+    if (finalIndex) *finalIndex = i;
+    if (target) *target = leaf;
+    if (egress) *egress = k;
+    return found;
+}
+
+template<class Item, class Pattern>
+bool Tree::lookupLast(const Pattern &pattern, Weight *finalIndex, Leaf<Item> **target, unsigned *egress) const
+{
+    Weight i = 0;
+    Leaf<Item> *leaf = nullptr;
+    unsigned k = 0;
+    bool found = lookup(pattern, &i, &leaf, &k);
+    if (found) {
+        while (i < count() - 1) {
+            Leaf<Item> *other = leaf;
+            unsigned l = k;
+            if (l < leaf->fill_ - 1) ++l;
+            else {
+                other = static_cast<Leaf<Item> *>(other->succ_);
+                l = 0;
+            }
+            if (pattern < other->at(l)) break;
+            leaf = other;
+            k = l;
+            ++i;
+        }
+    }
+    if (finalIndex) *finalIndex = i;
+    if (target) *target = leaf;
+    if (egress) *egress = k;
+    return found;
+}
+
 template<class Item, class Tree>
 class TreeIterator:
     public std::iterator<
-        /*iterator_category*/ std::forward_iterator_tag,
+        /*iterator_category*/ std::bidirectional_iterator_tag,
         /*value_type*/        Item,
         /*difference_type*/   Weight,
         /*pointer*/           void,
@@ -608,18 +616,29 @@ public:
         egress_{0}
     {}
 
-    TreeIterator(Tree *tree, Weight index):
+    TreeIterator(Tree *tree):
         #ifndef NDEBUG
         tree_{tree},
         revision_{tree_->revision()},
         #endif
+        index_{0},
         node_{static_cast<Leaf<Item> *>(tree->getMinNode())},
         egress_{0}
     {}
 
+    TreeIterator(Tree *tree, Weight index, Leaf<Item> *node, unsigned egress):
+        #ifndef NDEBUG
+        tree_{tree},
+        revision_{tree_->revision()},
+        #endif
+        index_{index},
+        node_{node},
+        egress_{egress}
+    {}
+
     Item &operator*() {
-        assert(node_); // cannot deference an exhausted iterator
-        return static_cast<Leaf<Item> *>(node_)->at(egress_);
+        assert(node_); // cannot dereference an exhausted iterator
+        return node_->at(egress_);
     }
 
     Item *operator->() const { return &**this; }
@@ -629,22 +648,50 @@ public:
         assert(node_); // cannot increment an exhausted iterator
         assert(revision_ == tree_->revision()); // cannot modify container while iterating it
 
+        ++index_;
         ++egress_;
         if (egress_ == node_->fill_) {
             egress_ = 0;
             node_ = static_cast<Leaf<Item> *>(node_->succ_);
         }
+
         return *this;
     }
 
+    TreeIterator &operator--()
+    {
+        assert(node_); // cannot decrement an exhausted iterator
+        assert(revision_ = tree_->revision()); // cannot modify container while iterating it
+
+        --index_;
+        if (egress_ == 0) {
+            node_ = static_cast<Leaf<Item> *>(node_->pred_);
+            egress_ = node_ ? node_->fill_ - 1 : 0;
+        }
+        else
+            --egress_;
+
+        return *this;
+    }
+
+    Weight operator-(const TreeIterator &b) const { return index_ - b.index_; }
+
+    Weight operator+() const { return index_; }
+
     bool operator==(const TreeIterator &b) const { return egress_ == b.egress_ && node_ == b.node_; }
     bool operator!=(const TreeIterator &b) const { return egress_ != b.egress_ || node_ != b.node_; }
+
+    bool operator<(const TreeIterator &b) const { return index_ < b.index_; }
+    bool operator>(const TreeIterator &b) const { return index_ > b.index_; }
+    bool operator<=(const TreeIterator &b) const { return index_ <= b.index_; }
+    bool operator>=(const TreeIterator &b) const { return index_ >= b.index_; }
 
 private:
     #ifndef NDEBUG
     const Tree *tree_;
     uint64_t revision_;
     #endif
+    Weight index_;
     Leaf<Item> *node_;
     unsigned egress_;
 };

@@ -34,7 +34,7 @@ public:
       * \param other another set
       * \return new object instance
       */
-    static Ref<Set> replicate(const Set *other) { return new Set(other); }
+    static Ref<Set> replicate(const Set *other) { return new Set{other}; }
 
     /// Number of items
     int count() const { return tree_.count(); }
@@ -67,7 +67,7 @@ public:
       * If currentItem is non-null the item with the same value is returned.
       * \return true if the new item was inserted successfully
       */
-    bool insert(const Item &item, Item *currentItem = 0, int *index = 0)
+    bool insert(const Item &item, Item *currentItem = nullptr, int *index = nullptr)
     {
         bool found = false;
         bool below = true;
@@ -77,7 +77,7 @@ public:
                 *currentItem = k->item_;
             return false;
         }
-        Node *kn = new Node(item);
+        Node *kn = new Node{item};
         tree_.attach(k, kn, below);
         return true;
     }
@@ -87,7 +87,7 @@ public:
       * \param index returns the index of the item that has been removed
       * \return true if the matching item was found and removed
       */
-    bool remove(const Item &item, int *index = 0)
+    bool remove(const Item &item, int *index = nullptr)
     {
         bool found;
         Node *k = tree_.find(item, &found, 0, index);
@@ -101,7 +101,7 @@ public:
       * \return true if the matching item was found and removed
       */
     bool removeAt(int index) {
-        Node *node = 0;
+        Node *node = nullptr;
         if (!tree_.lookupByIndex(index, &node)) return false;
         tree_.remove(node);
         return true;
@@ -160,10 +160,10 @@ public:
       */
     typedef ConstIterator<Set> iterator;
     typedef ConstIterator<Set> const_iterator;
-    iterator begin() { return const_iterator(this, 0); }
-    iterator end() { return const_iterator(this, count()); }
-    const_iterator begin() const { return const_iterator(this, 0); }
-    const_iterator end() const { return const_iterator(this, count()); }
+    iterator begin() { return iterator{this, 0}; }
+    iterator end() { return iterator{this, count()}; }
+    const_iterator begin() const { return const_iterator{this, 0}; }
+    const_iterator end() const { return const_iterator{this, count()}; }
     /** @}
       */
 
@@ -182,7 +182,7 @@ private:
     typedef typename Tree::Node Node;
 
     Set() {}
-    Set(const Set &b): tree_(b.tree_) {}
+    Set(const Set &b): tree_{b.tree_} {}
     const Set &operator=(const Set &b) { tree_ = b.tree_; return *this; }
 
     Tree tree_;

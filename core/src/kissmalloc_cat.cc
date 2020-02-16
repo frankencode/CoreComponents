@@ -44,10 +44,12 @@
 
 /// System memory granularity, e.g. XMMS movdqa requires 16
 #ifndef KISSMALLOC_GRANULARITY
-#define KISSMALLOC_GRANULARITY (2 * sizeof(size_t) > __alignof__(long double) ? 2 * sizeof(size_t) : __alignof__(long double))
+#define KISSMALLOC_GRANULARITY 16
+    // FIXME:
+    // (2 * sizeof(size_t) > __alignof__(long double) ? 2 * sizeof(size_t) : __alignof__(long double))
 #endif
 
-/// Page size (0 for autodetect, but beware of performance penalty)
+/// Page size (0 for autodetect, but beware performance penalty)
 #ifndef KISSMALLOC_PAGE_SIZE
 #define KISSMALLOC_PAGE_SIZE 0
 #endif

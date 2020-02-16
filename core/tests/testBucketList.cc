@@ -161,7 +161,7 @@ int main(int argc, char **argv)
     return 0;
     #endif
 
-    #ifdef NDEBUG
+    #if 0
     {
         const int n = 256;
         const int h = 1000;
@@ -208,10 +208,11 @@ int main(int argc, char **argv)
     }
     return 0;
     #endif
-    #if 0 // def NDEBUG
+    #ifdef NDEBUG
     {
-        const int n = 256;
+        const int n = 100000;
         const int w = 1000;
+        uint64_t tx, ts;
         {
             const int m = 1000000;
             uint32_t x[m];
@@ -221,7 +222,7 @@ int main(int argc, char **argv)
         {
             Local<BucketList<int>> list;
             for (int i = 0; i < n; ++i) list->push(i, i);
-            auto tx = ::clock();
+            tx = ::clock();
             int h = 0;
             for (int i = 0; i < w; ++i) {
                 for (int x: list) h += x;
@@ -233,7 +234,7 @@ int main(int argc, char **argv)
         {
             std::list<int> list;
             for (int i = 0; i < n; ++i) list.push_back(i);
-            auto ts = ::clock();
+            ts = ::clock();
             int h = 0;
             for (int i = 0; i < w; ++i) {
                 for (int x: list) h += x;
@@ -242,6 +243,9 @@ int main(int argc, char **argv)
             CC_INSPECT(h);
             CC_INSPECT(ts);
         }
+
+        CC_INSPECT(double(ts)/tx);
+        CC_INSPECT(double(tx)/ts);
     }
     return 0;
     #endif

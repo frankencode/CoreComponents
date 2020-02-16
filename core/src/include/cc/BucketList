@@ -76,11 +76,11 @@ public:
       * @{
       */
     typedef bucket::Iterator<Item> iterator;
-    iterator begin() { return bucket::Iterator<Item>{&tree_, 0}; }
+    iterator begin() { return bucket::Iterator<Item>{&tree_}; }
     iterator end() { return bucket::Iterator<Item>{}; }
 
     typedef bucket::ConstIterator<Item> const_iterator;
-    const_iterator begin() const { return bucket::ConstIterator<Item>{tree_, 0}; }
+    const_iterator begin() const { return bucket::ConstIterator<Item>{tree_}; }
     const_iterator end() const { return bucket::ConstIterator<Item>{}; }
     /** @}
       */

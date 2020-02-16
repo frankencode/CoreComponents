@@ -21,7 +21,13 @@ public:
 
     static Ref<BucketSet> create() { return new BucketSet; }
 
+    static Ref<BucketSet> replicate(const BucketSet *other) { return new BucketSet{other}; }
+
     Index count() const { return tree_->count(); }
+
+    bool has(Index index) const {
+        return 0 <= index && index < count();
+    }
 
     const Item &at(Index index) const
     {
@@ -43,7 +49,7 @@ public:
     bool insert(const Item &item, Index *index = nullptr)
     {
         bool success = false;
-        bucket::Node *target = nullptr;
+        bucket::Leaf<Item> *target = nullptr;
         unsigned egress = 0;
         if (!tree_->lookup<Item>(item, index, &target, &egress)) {
             tree_->push<Item>(target, egress, item);
@@ -66,15 +72,31 @@ public:
 
     /** \name iterators
       * @{
-      * \TODO range query/iteration
       */
-    typedef bucket::Iterator<Item> iterator;
-    iterator begin() { return bucket::Iterator<Item>{&tree_, 0}; }
-    iterator end() { return bucket::Iterator<Item>{}; }
-
     typedef bucket::ConstIterator<Item> const_iterator;
-    const_iterator begin() const { return bucket::ConstIterator<Item>{tree_, 0}; }
+
+    const_iterator begin() { return bucket::ConstIterator<Item>{tree_}; }
+    const_iterator end() { return bucket::ConstIterator<Item>{}; }
+    const_iterator begin() const { return bucket::ConstIterator<Item>{tree_}; }
     const_iterator end() const { return bucket::ConstIterator<Item>{}; }
+
+    template<class Pattern>
+    const_iterator first(const Pattern &pattern) {
+        Index index = 0;
+        bucket::Leaf<Item> node = nullptr;
+        unsigned egress = 0;
+        tree_->lookupFirst(pattern, &index, &node, &egress);
+        return bucket::ConstIterator<Item>{tree_, index, node, egress};
+    }
+
+    template<class Pattern>
+    const_iterator last(const Pattern &pattern) {
+        Index index = 0;
+        bucket::Leaf<Item> node = nullptr;
+        unsigned egress = 0;
+        tree_->lookupLast(pattern, &index, &node, &egress);
+        return bucket::ConstIterator<Item>{tree_, index, node, egress};
+    }
     /** @}
       */
 
@@ -88,6 +110,12 @@ private:
     friend class Local<BucketSet>;
 
     BucketSet() = default;
+
+    BucketSet(const BucketSet *other)
+    {
+        tree_->populate<Item>(other);
+    }
+
     ~BucketSet() { tree_->deplete<Item>(); }
 
     Local<bucket::Tree> tree_;
