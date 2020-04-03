@@ -435,15 +435,8 @@ void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) cons
             args << "-O" + plan->optimize();
     }
     if (plan->linkStatic()) args << "-static";
-    if (!(
-        plan->customCompileFlags()->contains("-fPIC") ||
-        plan->customCompileFlags()->contains("-fPIE") ||
-        plan->customCompileFlags()->contains("-fpie") ||
-        plan->customCompileFlags()->contains("-fpic")
-    )) {
-        /*if (plan->options() & BuildPlan::Library) args << "-fPIC";
-        else*/ args << "-fPIC";
-    }
+    else appendRelocationMode(args, plan);
+
     args << "-Wall" << "-pthread" << "-pipe" << "-D_FILE_OFFSET_BITS=64";
     if (cFlags_ != "" && args->at(0) == ccPath_) args << cFlags_;
     if (cxxFlags_ != "" && args->at(0) == cxxPath_) args << cxxFlags_;
@@ -464,10 +457,11 @@ void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) cons
 
 void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
 {
-    if (plan->customLinkFlags()) {
-        for (int i = 0; i < plan->customLinkFlags()->count(); ++i)
-            args << plan->customLinkFlags()->at(i);
-    }
+    for (int i = 0; i < plan->customLinkFlags()->count(); ++i)
+        args << plan->customLinkFlags()->at(i);
+
+    appendRelocationMode(args, plan);
+    if (!(plan->options() & BuildPlan::Library)) args << "-pie";
 
     //if (plan->options() & BuildPlan::Plugin)
     //    args << "-Wl,--no-as-needed";
@@ -508,6 +502,19 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
 
     rpaths << "-rpath-link=" + Process::getWorkingDirectory();
     args << "-Wl,--enable-new-dtags," + rpaths->join(",");
+}
+
+void GnuToolChain::appendRelocationMode(Format args, const BuildPlan *plan)
+{
+    if (!(
+        plan->customCompileFlags()->contains("-fPIC") ||
+        plan->customCompileFlags()->contains("-fPIE") ||
+        plan->customCompileFlags()->contains("-fpie") ||
+        plan->customCompileFlags()->contains("-fpic")
+    )) {
+        if (plan->options() & BuildPlan::Library) args << "-fPIC";
+        else args << "-fPIE";
+    }
 }
 
 } // namespace ccbuild

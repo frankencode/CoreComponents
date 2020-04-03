@@ -83,6 +83,8 @@ protected:
     void appendCompileOptions(Format args, const BuildPlan *plan) const;
     void appendLinkOptions(Format args, const BuildPlan *plan) const;
 
+    static void appendRelocationMode(Format args, const BuildPlan *plan);
+
 private:
     String ccPath_;
     String cxxPath_;
