@@ -26,6 +26,8 @@ protected:
         insert("optimize", "");
         insert("static", false);
 
+        insert("include-paths", Ref<StringList>{});
+        insert("library-paths", Ref<StringList>{});
         insert("link", Ref<StringList>{});
 
         insert("compile-flags", Ref<StringList>{});

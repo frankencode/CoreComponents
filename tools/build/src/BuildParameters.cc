@@ -26,6 +26,10 @@ void BuildParameters::read(const MetaObject *object, BuildPlan *plan)
     if (!libraryPaths_) libraryPaths_ = StringList::create();
     if (!libraries_) libraries_ = StringList::create();
 
+    for (String &path: includePaths_) {
+        if (path->isRelativePath()) path = path->absolutePathRelativeTo(plan->projectPath());
+    }
+
     customCompileFlags_ = Variant::cast<StringList *>(object->value("compile-flags"));
     customLinkFlags_ = Variant::cast<StringList *>(object->value("link-flags"));
     if (!customCompileFlags_) customCompileFlags_ = StringList::create();
