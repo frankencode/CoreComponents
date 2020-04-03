@@ -171,12 +171,12 @@ template<>
 class Property<void>
 {
 public:
-    Property(): instance_(Instance::create()) {}
+    Property(): instance_{Instance::create()} {}
 
-    Property(Property &&b): instance_(std::move(b.instance_)) {}
+    Property(Property &&b): instance_{std::move(b.instance_)} {}
     Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
 
-    Property(const std::function<void()> &f): instance_(Instance::create()) { instance_->associate(f); }
+    Property(const std::function<void()> &f): instance_{Instance::create()} { instance_->associate(f); }
     Property &operator=(const std::function<void()> &f) { instance_->bind(f); return *this; }
 
     ~Property() { instance_->disband(); }
@@ -217,7 +217,7 @@ public:
         static Ref<Instance> create() { return new Instance{}; }
 
         Instance():
-            PropertyBinding(true)
+            PropertyBinding{true}
         {}
 
         void value() const
@@ -253,7 +253,7 @@ public:
 private:
     friend class Instance;
 
-    Property(Instance *instance, bool): instance_(instance) {}
+    Property(Instance *instance, bool): instance_{instance} {}
 
     Ref<Instance> instance_;
 };
