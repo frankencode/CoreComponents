@@ -7,12 +7,10 @@
  */
 
 #include <cc/String>
-#include <cc/Variant>
-#include <cc/BucketList>
+#include <cc/List>
 
 namespace cc {
 
-template class BucketList<String>;
-template class BucketList<Variant>;
+template class List<String>;
 
 } // namespace cc

@@ -328,7 +328,7 @@ void Tree::push(Weight index, const Item &item)
 template<class Item>
 void Tree::pushBack(const Item &item)
 {
-    push(lastLeaf_, lastLeaf_ ? lastLeaf_->fill_ - 1 : 0, item);
+    push(lastLeaf_, lastLeaf_ ? lastLeaf_->fill_ : 0, item);
 }
 
 template<class Item>
@@ -647,9 +647,9 @@ public:
         egress_{0}
     {}
 
-    TreeIterator(Tree *tree):
-        #ifndef NDEBUG
+    explicit TreeIterator(const Tree *tree):
         tree_{tree},
+        #ifndef NDEBUG
         revision_{tree_->revision()},
         #endif
         index_{0},
@@ -657,9 +657,9 @@ public:
         egress_{0}
     {}
 
-    TreeIterator(Tree *tree, Weight index):
-        #ifndef NDEBUG
+    TreeIterator(const Tree *tree, Weight index):
         tree_{tree},
+        #ifndef NDEBUG
         revision_{tree_->revision()},
         #endif
         index_{index},
@@ -670,9 +670,9 @@ public:
             node_ = static_cast< Leaf<Item> *>(tree->stepDownTo(index, &egress_));
     }
 
-    TreeIterator(Tree *tree, Weight index, Leaf<Item> *node, unsigned egress):
-        #ifndef NDEBUG
+    TreeIterator(const Tree *tree, Weight index, Leaf<Item> *node, unsigned egress):
         tree_{tree},
+        #ifndef NDEBUG
         revision_{tree_->revision()},
         #endif
         index_{index},
@@ -704,8 +704,12 @@ public:
 
     TreeIterator &operator--()
     {
-        assert(node_); // cannot decrement an exhausted iterator
         assert(revision_ == tree_->revision()); // cannot modify container while iterating it
+
+        if (!node_) {
+            assert(index_ > 0); // cannot decrement an exhausted iterator
+            return *this = TreeIterator{tree_, index_ - 1};
+        }
 
         --index_;
         if (egress_ == 0) {
@@ -717,6 +721,9 @@ public:
 
         return *this;
     }
+
+    TreeIterator operator+(int delta) { return TreeIterator{tree_, index_ + delta}; }
+    TreeIterator operator-(int delta) { return TreeIterator{tree_, index_ - delta}; }
 
     Weight operator-(const TreeIterator &b) const { return index_ - b.index_; }
 
@@ -730,13 +737,13 @@ public:
     bool operator<=(const TreeIterator &b) const { return index_ <= b.index_; }
     bool operator>=(const TreeIterator &b) const { return index_ >= b.index_; }
 
-    operator bool() const { return node_; }
+    explicit operator bool() const { return node_; }
 
 private:
     friend class bucket::Tree;
 
-    #ifndef NDEBUG
     const Tree *tree_;
+    #ifndef NDEBUG
     uint64_t revision_;
     #endif
     Weight index_;

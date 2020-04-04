@@ -2,13 +2,12 @@
 #include <cc/stdio>
 #include <cc/debug>
 #include <cc/Random>
-#include <cc/BucketSet>
+#include <cc/Set>
 #include <cc/bucket_internals>
 #include <cc/File>
 #include <cc/Array>
 #include <cc/Set>
 #include <time.h>
-#include <set>
 #include <set>
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -19,7 +18,7 @@
 using namespace cc;
 using namespace cc::testing;
 
-void print(const BucketSet<int> *set)
+void print(const Set<int> *set)
 {
     Format f{stdOut()};
     f << "(";
@@ -34,7 +33,7 @@ int sum(const Array<int> *items)
     return sum;
 }
 
-int sum(const BucketSet<int> *items)
+int sum(const Set<int> *items)
 {
     int sum = 0;
     for (int x: items) sum += x;
@@ -45,7 +44,7 @@ class InsertionRemovalTest: public TestCase
 {
 protected:
     virtual void scramble(Array<int> *test) = 0;
-    virtual void dotify(const BucketSet<int> *set) {}
+    virtual void dotify(const Set<int> *set) {}
 
 private:
     void run() override
@@ -60,7 +59,7 @@ private:
 
         scramble(&test);
 
-        Local<BucketSet<int>> set;
+        Local<Set<int>> set;
         auto t = ::clock();
         for (auto x: test) set->insert(x);
         t = ::clock() - t;
@@ -86,7 +85,7 @@ class AscendingInsertionRemovalTest: public InsertionRemovalTest
     void scramble(Array<int> *) override
     {}
 
-    void dotify(const BucketSet<int> *set)
+    void dotify(const Set<int> *set)
     {
         File::open("set_asc_ins.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(set));
     }
@@ -107,7 +106,7 @@ class RandomInsertionRemovalTest: public InsertionRemovalTest
         Local<Random>{0}->scramble(test);
     }
 
-    void dotify(const BucketSet<int> *set)
+    void dotify(const Set<int> *set)
     {
         File::open("set_rnd_ins.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(set));
     }
@@ -128,7 +127,7 @@ int main(int argc, char **argv)
 
     CC_INSPECT(sum(test));
 
-    Local<BucketSet<int>> set;
+    Local<Set<int>> set;
     for (auto x: test) set->insert(x);
 
     File::open("set_rnd_ins.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(&set));
@@ -162,11 +161,11 @@ int main(int argc, char **argv)
 
     #ifdef NDEBUG
     #if 1
-    CC_INSPECT(sizeof(BucketSet<int>));
+    CC_INSPECT(sizeof(Set<int>));
     CC_INSPECT(sizeof(bucket::Node));
     CC_INSPECT(sizeof(bucket::Branch));
     CC_INSPECT(sizeof(bucket::Leaf<int>));
-    CC_INSPECT(sizeof(BucketSet<int>)/16.);
+    CC_INSPECT(sizeof(Set<int>)/16.);
     CC_INSPECT(sizeof(bucket::Node)/16.);
     CC_INSPECT(sizeof(bucket::Branch)/16.);
     CC_INSPECT(sizeof(bucket::Leaf<int>)/16.);
@@ -221,7 +220,7 @@ int main(int argc, char **argv)
         {
             uint64_t tx = __rdtsc();
             //{
-                Local<BucketSet<Item>> set;
+                Local<Set<Item>> set;
                 for (auto x: test) set->insert(x);
             //}
             tx = __rdtsc() - tx;

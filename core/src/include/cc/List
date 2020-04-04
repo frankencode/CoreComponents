@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,170 +8,160 @@
 
 #pragma once
 
+#include <cc/bucket>
 #include <cc/containers>
 #include <cc/Source>
-#include <cc/SearchTree>
 #include <cc/Heap>
 #include <cc/Set>
-#include <cc/Local>
 
 namespace cc {
 
-/** \class List cc/List
-  * \ingroup container
-  * \brief %List data container
-  */
 template<class T>
 class List: public Object
 {
 public:
-    /// Item type
+    typedef bucket::Weight Index;
     typedef T Item;
 
-    /// Index type
-    typedef int Index;
-
-    /** Create a new empty list
-      * \return new object instance
-      */
     static Ref<List> create() { return new List; }
 
-    /** Create a new list a populate it with n default items
-      * \return new object instance
-      */
-    static Ref<List> allocate(int n) { return new List{n}; }
+    static Ref<List> allocate(Index count)
+    {
+        // TODO: improve performance
 
-    /** Create a shallow copy of another list
-      * \param other another list
-      * \return new object instance
-      */
-    static Ref<List> copy(const List *other) { return new List{*other}; }
+        auto list = new List;
+        for (; count > 0; --count) list->pushBack(Item{});
+        return list;
+    }
 
-    /// Return the number of items stored in this list
-    int count() const { return tree_.count(); }
+
+    static Ref<List> copy(const List *other)
+    {
+        // TODO: improve performance
+
+        auto list = new List;
+        for (const Item &item: other) list->pushBack(item);
+        return list;
+    }
+
+    Index count() const { return tree_->count(); }
 
     /// Check if an index is valid
     bool has(int index) const {
         return 0 <= index && index < count();
     }
 
-    /** Return a reference to an item
-      * \param index list index
-      * \return reference to the item
-      */
-    Item &at(int index) {
-        Node *node = 0;
-        if (!tree_.lookupByIndex(index, &node))
-            CC_ASSERT(false);
-        return node->item_;
+    Item &at(Index index)
+    {
+        assert(0 <= index && index < count());
+        return tree_->at<Item>(index);
     }
 
-    /** \copydoc at(int index)
-      */
-    const Item &at(int index) const {
-        Node *node = 0;
-        if (!tree_.lookupByIndex(index, &node))
-            CC_ASSERT(false);
-        return node->item_;
+    const Item &at(Index index) const
+    {
+        assert(0 <= index && index < count());
+        return tree_->at<Item>(index);
     }
 
-    /** Insert a new item at a certain position
-      * \param index list index
-      * \param item new item value
-      */
-    void insertAt(int index, const Item &item) {
-        tree_.insertAt(index, item);
+    void push(Index index, const Item &item)
+    {
+        assert(0 <= index && index <= count());
+        tree_->push<Item>(index, item);
     }
 
-    /** Remove an item from a certain position
-      * \param index list index
-      * \param item returns the item value
-      * \return reference to this list
-      */
-    void removeAt(int index, Item *item = 0) {
-        tree_.removeAt(index, item);
+    void pop(Index index)
+    {
+        assert(0 <= index && index < count());
+        tree_->pop<Item>(index);
     }
 
-    /// Reset this list to an empty list
-    void deplete() { tree_.deplete(); }
-
-    /** Remove an item from a certain position
-      * \param index list index
-      * \return item value
-      */
-    Item pop(int index) {
-        Item item;
-        removeAt(index, &item);
-        return item;
+    void pushBack(const Item &item)
+    {
+        tree_->pushBack(item);
     }
 
-    /** Append a new item to the end of the list
-      * \param item new item value
-      */
-    void push(const Item &item) { insertAt(count(), item); }
+    void popBack()
+    {
+        assert(count() > 0);
+        pop(count() - 1);
+    }
 
-    /** Remove an item from the head of the list
-      * \param item returns the item value
-      */
-    void pop(Item *item) { removeAt(0, item); }
+    void pushFront(const Item &item)
+    {
+        push(0, item);
+    }
 
-    /** Remove an item from the head of the list
-      * \return item value
-      */
-    Item pop() { Item item; pop(&item); return item; }
+    void popFront()
+    {
+        assert(count() > 0);
+        pop(0);
+    }
 
-    /** \copydoc push(const Item &)
-      */
-    void append(const Item &item) { insertAt(count(), item); }
+    void append(const Item &item)
+    {
+        tree_->pushBack(item);
+    }
 
-    /** Append another list to this list
+    /** Append a copy of another list to this list
       * \param b another list
       */
-    void appendList(const List *b) { if (b) for (int i = 0; i < b->count(); ++i) append(b->at(i)); }
+    void appendList(const List *other)
+    {
+        if (other) {
+            // TODO: improve performance
 
-    /** Insert a new item at head of the list
-      */
-    void pushFront(const Item &item) { insertAt(0, item); }
+            for (const Item &item: other)
+                tree_->pushBack(item);
+        }
+    }
 
-    /** Append a new item to the end of the list
-      * \param item new item value
-      */
-    void pushBack(const Item &item) { insertAt(count(), item); }
+    template<class Iterator>
+    void pushAndStep(Iterator &target, const Item &item)
+    {
+        tree_->pushAndStep(target, item);
+    }
 
-    /** Remove an item from the head of the list
-      * \return item value
-      */
-    Item popFront() { return pop(0); }
+    template<class Iterator>
+    void popAndStep(Iterator &target)
+    {
+        tree_->popAndStep(target);
+    }
 
-    /** Remove an item from the end of the list
-      * \return item value
-      */
-    Item popBack() { return pop(count() - 1); }
-
-    /** Return a shallow copy of this list
+    /** Return a copy of this list
       * \return new object instance
       */
     Ref<List> copy() const { return List::copy(this); }
 
-    /** Search for an item value
-      * \param item item value to search for
+    /** Search for an item
+      * \param item item to search for
       * \param index start position for the search
-      * \return position the item value was found in or count() if item value could not be found
+      * \return first position the item was found in or count() if the item couldn't be found
       */
-    int find(const Item &item, int index = 0) const
+    int find(const Item &item, Index index = 0) const
     {
-        while (index < count()) {
-            if (at(index) == item) break;
-            ++index;
+        auto it = beginAt(index);
+        for (; it; ++it) {
+            if (*it == item) break;
         }
-        return index;
+        return +it;
     }
 
-    /** Check if the list contains a certain item value
-      * \param item item value
-      * \return true if item value appears in the list
+    /** Test if the list contains a certain item
+      * \param item item to test for
+      * \return true if the item appears in the list
       */
-    bool contains(const Item &item) const { return find(item) < count(); }
+    bool contains(const Item &item) const
+    {
+        return find(item) < count();
+    }
+
+    void deplete() { tree_->deplete<Item>(); }
+
+    Item &front() { assert(count() > 0); return tree_->first<Item>(); }
+    const Item &front() const { assert(count() > 0); return tree_->first<Item>(); }
+
+    Item &back() { assert(count() > 0); return tree_->last<Item>(); }
+    const Item &back() const { assert(count() > 0); return tree_->last<Item>(); }
 
     /** Replace all appearances of an item value
       * \param oldItem old item value to search for
@@ -180,9 +170,9 @@ public:
       */
     List *replaceInsitu(const Item &oldItem, const Item &newItem)
     {
-        for (int i = 0; i < count(); ++i) {
-            if (at(i) == oldItem)
-                at(i) = newItem;
+        for (Item &item: this) {
+            if (item == oldItem)
+                item = newItem;
         }
         return this;
     }
@@ -191,7 +181,7 @@ public:
       * \param sep the separator to insert between the items
       * \return the resulting item
       */
-    Item join(const Item &sep = Item()) const { return Item::join(this, sep); }
+    Item join(const Item &sep = Item{}) const { return Item::join(this, sep); }
 
     template<class SortOrder>
     Ref<List> sort(bool unique = false) const
@@ -218,21 +208,23 @@ public:
       */
     Ref<List> reverse() const
     {
+        // TODO: improve performance
+
         Ref<List> result = List::allocate(count());
         for (int i = 0, n = count(); i < n; ++i)
             result->at(i) = at(n - i - 1);
         return result;
     }
 
-    /** Remove redundant entries from the list
-      * \param list list to eliminate doubles from
+    /** Remove duplicate entries from the list
+      * \param list list to eliminate duplicates from
       */
     static void makeUnique(List *list)
     {
-        Ref< Set<T> > set = Set<T>::create();
-        for (int i = 0; i < list->count();) {
-            if (set->insert(list->at(i))) ++i;
-            else list->removeAt(i);
+        auto set = Set<Item>::create();
+        for (auto it = list->begin(); it;) {
+            if (set->insert(*it)) ++it;
+            else list->popAndStep(it);
         }
     }
 
@@ -240,30 +232,42 @@ public:
       * \tparam T2 the target item type
       * \return new list instance
       */
-    template<class T2>
-    Ref< List<T2> > toList() const {
-        Ref< List<T2 > > result = List<T2>::allocate(count());
-        for (int i = 0; i < count(); ++i)
-            result->at(i) = at(i);
-        return result;
+    template<class Item2>
+    Ref< List<Item2> > toList() const {
+        auto other = List<Item2>::create();
+        for (auto &item: this) {
+            Item item2;
+            item2 = item;
+            other->append(item2);
+        }
+        return other;
     }
 
     /// \copydoc push(const Item &item)
-    void operator<<(const T& item) { push(item); }
+    void operator<<(const Item& item) { pushBack(item); }
 
     /// \copydoc pop()
-    void operator>>(T* item) { pop(item); }
+    void operator>>(Item* item) { *item = front(); popFront(); }
 
-    /** \name C++ iterators
+    /** \name Iterators
       * @{
       */
-    typedef cc::Iterator<List> iterator;
-    iterator begin() { return iterator{this, 0}; }
-    iterator end() { return iterator{this, count()}; }
+    typedef bucket::Iterator<Item> Iterator;
+    Iterator begin() { return Iterator{&tree_}; }
+    Iterator end() { return Iterator{&tree_, tree_->count()}; }
 
-    typedef cc::ConstIterator<List> const_iterator;
-    const_iterator begin() const { return const_iterator{this, 0}; }
-    const_iterator end() const { return const_iterator{this, count()}; }
+    typedef bucket::ConstIterator<Item> ConstIterator;
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+    /** @}
+      */
+
+    /** \internal
+      * @{
+      */
+    typedef Iterator iterator;
+    typedef ConstIterator const_iterator;
     /** @}
       */
 
@@ -277,24 +281,20 @@ public:
 
 private:
     friend class Local<List>;
+    friend class bucket::Internals;
 
-    typedef SearchTree< SearchNode<Item> > Tree;
-    typedef typename Tree::Node Node;
+    List() = default;
+    ~List() { tree_->deplete<Item>(); }
 
-    List() {}
-    List(int n): tree_{n} {}
-
-    explicit List(const List &b): tree_{b.tree_} {}
-    const List &operator=(const List &b);
+    List(const List &) = delete;
 
     template<class Heap>
     Ref<List> sortWithHeap(Ref<Heap> heap, bool unique = false) const
     {
-        for (int i = 0; i < count(); ++i)
-            heap->push(at(i));
-        Ref<List> result;
+        for (const Item &item: this) heap->push(item);
+
+        Ref<List> result = List::create();
         if (unique) {
-            result = List::create();
             Item prev, item;
             heap->pop(&prev);
             result->append(prev);
@@ -307,15 +307,14 @@ private:
             }
         }
         else {
-            result = List::allocate(count());
-            for (int i = 0, n = result->count(); i < n; ++i)
-                result->at(i) = heap->pop();
+            while (!heap->isEmpty())
+                result->append(heap->pop());
         }
+
         return result;
     }
 
-    Tree tree_;
-    mutable Item nullItem_;
+    Local<bucket::Tree> tree_;
 };
 
 template<class T>

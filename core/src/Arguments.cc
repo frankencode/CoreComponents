@@ -38,7 +38,8 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
         Variant value = true;
         if (isKeyValueOption) {
             Ref<StringList> parts = s->split('=');
-            String name = parts->pop(0);
+            String name = parts->front();
+            parts->popFront();
             String valueText = parts->join("=");
             options_->establish(name, Variant::read(valueText));
         }

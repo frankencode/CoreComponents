@@ -93,9 +93,9 @@ public:
     typedef bucket::ConstIterator<Item> ConstIterator;
 
     Iterator begin() { return ConstIterator{tree_}; }
-    Iterator end() { return ConstIterator{}; }
+    Iterator end() { return ConstIterator{tree_, tree_->count()}; }
     ConstIterator begin() const { return ConstIterator{tree_}; }
-    ConstIterator end() const { return ConstIterator{}; }
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
 
     template<class Pattern>
     ConstIterator first(const Pattern &pattern) const {

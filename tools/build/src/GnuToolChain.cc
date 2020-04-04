@@ -128,7 +128,8 @@ Ref<Job> GnuToolChain::createAnalyseJob(const BuildPlan *plan, const String &sou
 Ref<Module> GnuToolChain::finishAnalyseJob(const BuildPlan *plan, const Job *job) const
 {
     Ref<StringList> parts = dependencySplitPattern_->split(job->outputText());
-    String modulePath = parts->pop(0);
+    String modulePath = parts->front();
+    parts->popFront();
     if (plan->options() & BuildPlan::Tools)
         modulePath = modulePath->baseName();
     else
@@ -284,15 +285,19 @@ void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, const String &li
     cleanLibrarySymlinks(plan, libName);
 
     Ref<StringList> parts = libName->split('.');
-    while (parts->popBack() != "so")
+    while (parts->back() != "so") {
+        parts->popBack();
         plan->shell()->symlink(libName, parts->join("."));
+    }
 }
 
 void GnuToolChain::cleanLibrarySymlinks(const BuildPlan *plan, const String &libName) const
 {
     Ref<StringList> parts = libName->split('.');
-    while (parts->popBack() != "so")
+    while (parts->back() != "so") {
+        parts->popBack();
         plan->shell()->unlink(parts->join("."));
+    }
 }
 
 void GnuToolChain::createPluginSymlinks(const BuildPlan *plan, const String &targetLibName, const String &pluginLibName) const

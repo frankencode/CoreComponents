@@ -18,6 +18,8 @@ namespace container {
 template<class C>
 bool compare(const C &a, const C &b)
 {
+    // TODO: make it utilize iterators for speed
+
     typedef typename C::Item T;
     int n = a.count() > b.count() ? a.count() : b.count();
     for (int i = 0; i < n; ++i) {

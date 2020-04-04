@@ -15,6 +15,7 @@ using namespace cc::testing;
 
 class PathManipulation: public TestCase
 {
+public:
     void run()
     {
         String execPath = TestSuite::instance()->execPath();

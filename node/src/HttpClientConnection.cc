@@ -43,7 +43,8 @@ void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *messag
 
     Ref<StringList> parts = line->split(' ');
     if (parts->count() > 0) {
-        response->version_ = parts->popFront();
+        response->version_ = parts->front();
+        parts->popFront();
         mutate(response->version_)->upcaseInsitu();
     }
 
@@ -53,8 +54,10 @@ void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *messag
     )
         throw UnsupportedVersion{};
 
-    if (parts->count() > 0)
-        response->statusCode_ = parts->popFront()->toNumber<int>();
+    if (parts->count() > 0) {
+        response->statusCode_ = parts->front()->toNumber<int>();
+        parts->popFront();
+    }
 
     if (parts->count() > 0)
         response->reasonPhrase_ = parts->join(" ");

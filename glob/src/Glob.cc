@@ -39,7 +39,8 @@ Glob::Glob(const String &path, StringList *remainder):
 void Glob::init(const String &path)
 {
     dir_ = Dir::open(path);
-    pattern_ = remainder_->pop(0);
+    pattern_ = remainder_->front();
+    remainder_->popFront();
 }
 
 bool Glob::read(String *path)

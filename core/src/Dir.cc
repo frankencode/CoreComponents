@@ -124,8 +124,10 @@ void Dir::establish(const String &path, int mode)
         if (Dir::exists(p)) break;
         missingDirs->pushFront(p);
     }
-    while (missingDirs->count() > 0)
-        Dir::create(missingDirs->popFront(), mode);
+    while (missingDirs->count() > 0) {
+        Dir::create(missingDirs->front(), mode);
+        missingDirs->popFront();
+    }
 }
 
 void Dir::remove(const String &path)

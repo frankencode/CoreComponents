@@ -57,7 +57,8 @@ void ConnectionManager::cycle()
         {
             if (visits_->at(0)->departureTime() >= t1) break;
 
-            Ref<ConnectionInfo> visit = visits_->pop(0);
+            Ref<ConnectionInfo> visit = visits_->front();
+            visits_->popFront();
             uint64_t origin = visit->remoteAddress()->networkPrefix();
             int count = 0;
             int index = 0;

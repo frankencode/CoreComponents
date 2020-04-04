@@ -608,7 +608,7 @@ String Array<char>::normalize(bool nameCase) const
     for (int i = 0; i < parts->count(); ++i) {
         String s = parts->at(i);
         if (s->count() == 0) {
-            parts->removeAt(i);
+            parts->pop(i);
         }
         else {
             if (nameCase) {
@@ -870,7 +870,8 @@ String Array<char>::reducePath() const
 {
     Ref<StringList> parts = split("/");
     while (parts->count() > 0) {
-        String component = parts->popBack();
+        String component = parts->back();
+        parts->popBack();
         if (component != "") break;
     }
     String resultPath = parts->join("/");

@@ -54,7 +54,8 @@ bool TextEditorWithHistory::canRedo() const
 Range TextEditorWithHistory::undo()
 {
     if (!canUndo()) return Range{};
-    auto delta = past_->popBack();
+    auto delta = past_->back();
+    past_->popBack();
     future_->pushFront(delta);
     Range newRange = delta->newRange();
     pasteChunk(newRange, delta->oldChunk());
@@ -64,7 +65,8 @@ Range TextEditorWithHistory::undo()
 Range TextEditorWithHistory::redo()
 {
     if (!canRedo()) return Range{};
-    auto delta = future_->popFront();
+    auto delta = future_->front();
+    future_->popFront();
     past_->pushBack(delta);
     Range oldRange = delta->oldRange();
     pasteChunk(oldRange, delta->newChunk());

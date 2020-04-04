@@ -27,7 +27,7 @@ class TestAlgorithms: public TestCase
         std::sort(fruits->begin(), fruits->end());
         print(fruits);
         {
-            List<String>::const_iterator i = std::find(fruits->begin(), fruits->end(), "pear");
+            auto i = std::find(fruits->begin(), fruits->end(), "pear");
             fout() << "Index of " << *i << " is " << i - fruits->begin() << nl;
             CC_VERIFY(*i == "pear");
             CC_VERIFY(i - fruits->begin() == 5);
