@@ -10,6 +10,7 @@
 
 #include <cc/Object>
 #include <cc/bucket>
+#include <cc/Set>
 
 namespace cc {
 
@@ -21,6 +22,25 @@ public:
     typedef T Item;
 
     static Ref<BucketList> create() { return new BucketList; }
+
+    static Ref<BucketList> allocate(Index count)
+    {
+        // TODO: improve performance
+
+        auto list = new BucketList;
+        for (; count > 0; --count) list->pushBack(Item{});
+        return list;
+    }
+
+
+    static Ref<BucketList> copy(const BucketList *other)
+    {
+        // TODO: improve performance
+
+        auto list = new BucketList;
+        for (const Item &item: other) list->pushBack(item);
+        return list;
+    }
 
     Index count() const { return tree_->count(); }
 
@@ -70,32 +90,144 @@ public:
         pop(0);
     }
 
+    void append(const Item &item)
+    {
+        tree_->pushBack(item);
+    }
+
+    /** Append a copy of another list to this list
+      * \param b another list
+      */
+    void appendList(const BucketList *other)
+    {
+        if (other) {
+            // TODO: improve performance
+
+            for (const Item &item: other)
+                tree_->pushBack(item);
+        }
+    }
+
+    template<class Iterator>
+    void pushAndStep(Iterator &target, const Item &item)
+    {
+        tree_->pushAndStep(target, item);
+    }
+
+    template<class Iterator>
+    void popAndStep(Iterator &target)
+    {
+        tree_->popAndStep(target);
+    }
+
+    /** Return a copy of this list
+      * \return new object instance
+      */
+    Ref<BucketList> copy() const { return BucketList::copy(this); }
+
+    /** Search for an item
+      * \param item item to search for
+      * \param index start position for the search
+      * \return first position the item was found in or count() if the item couldn't be found
+      */
+    int find(const Item &item, Index index = 0) const
+    {
+        auto it = beginAt(index);
+        for (; it; ++it) {
+            if (*it == item) break;
+        }
+        return +it;
+    }
+
+    /** Test if the list contains a certain item
+      * \param item item to test for
+      * \return true if the item appears in the list
+      */
+    bool contains(const Item &item) const
+    {
+        return find(item) < count();
+    }
+
     void deplete() { tree_->deplete<Item>(); }
-
-    /** \name C++ iterators
-      * @{
-      */
-    typedef bucket::Iterator<Item> iterator;
-    iterator begin() { return bucket::Iterator<Item>{&tree_}; }
-    iterator end() { return bucket::Iterator<Item>{}; }
-
-    typedef bucket::ConstIterator<Item> const_iterator;
-    const_iterator begin() const { return bucket::ConstIterator<Item>{tree_}; }
-    const_iterator end() const { return bucket::ConstIterator<Item>{}; }
-    /** @}
-      */
-
-    /// \copydoc push(const Item &item)
-    void operator<<(const T& item) { pushBack(item); }
-
-    /// \copydoc pop()
-    // void operator>>(T* item) { popFront(item); } // TODO
 
     Item &first() { assert(count() > 0); return tree_->first<Item>(); }
     const Item &first() const { assert(count() > 0); return tree_->first<Item>(); }
 
     Item &last() { assert(count() > 0); return tree_->last<Item>(); }
     const Item &last() const { assert(count() > 0); return tree_->last<Item>(); }
+
+    /** Create a reversed copy of this list
+      * \return reversed list
+      */
+    Ref<BucketList> reverse() const
+    {
+        // TODO: improve performance
+
+        Ref<BucketList> result = BucketList::allocate(count());
+        for (int i = 0, n = count(); i < n; ++i)
+            result->at(i) = at(n - i - 1);
+        return result;
+    }
+
+    /** Remove duplicate entries from the list
+      * \param list list to eliminate duplicates from
+      */
+    static void makeUnique(BucketList *list)
+    {
+        auto set = Set<Item>::create();
+        for (auto it = list->begin(); it;) {
+            if (set->insert(*it)) ++it;
+            else list->popAndStep(it);
+        }
+    }
+
+    /** Convert to a list of different item type
+      * \tparam T2 the target item type
+      * \return new list instance
+      */
+    template<class Item2>
+    Ref< BucketList<Item2> > toList() const {
+        auto other = BucketList<Item2>::create();
+        for (const Item &item: this)
+            other->append(item);
+        return other;
+    }
+
+    /// \copydoc push(const Item &item)
+    void operator<<(const Item& item) { pushBack(item); }
+
+    /// \copydoc pop()
+    void operator>>(Item* item) { *item = first(); popFront(); }
+
+    /** \name Iterators
+      * @{
+      */
+    typedef bucket::Iterator<Item> Iterator;
+    Iterator begin() { return Iterator{&tree_}; }
+    Iterator end() { return Iterator{}; }
+
+    typedef bucket::ConstIterator<Item> ConstIterator;
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+    ConstIterator end() const { return ConstIterator{}; }
+    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+    /** @}
+      */
+
+    /** \internal
+      * @{
+      */
+    typedef Iterator iterator;
+    typedef ConstIterator const_iterator;
+    /** @}
+      */
+
+    /** \name Source adapters
+      * @{
+      */
+    template<class OutputType = Item>
+    Ref< Source<OutputType> > getAll() const { return ContainerSource< BucketList, Pass<Item, OutputType> >::open(this); }
+    /** @}
+      */
 
 private:
     friend class Local<BucketList>;

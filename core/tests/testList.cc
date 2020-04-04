@@ -92,7 +92,7 @@ class Cloning: public TestCase
 class Preallocation: public TestCase
 {
     void run() {
-        Ref<IntList> a = IntList::create(11);
+        Ref<IntList> a = IntList::allocate(11);
         print(a);
         CC_VERIFY(a->count() == 11);
     }

@@ -20,9 +20,9 @@ FtTextRun::FtTextRun():
 Ref<TextRun> FtTextRun::copy() const
 {
     Ref<FtTextRun> textRun = new FtTextRun;
-    textRun->glyphRuns_ = FtGlyphRuns::create(glyphRuns_->count());
-    for (int i = 0, n = glyphRuns_->count(); i < n; ++i)
-        textRun->glyphRuns_->at(i) = glyphRuns_->at(i)->ftCopy();
+    textRun->glyphRuns_ = FtGlyphRuns::create();
+    for (const FtGlyphRun *glyphRun: glyphRuns_)
+        textRun->glyphRuns_->append(glyphRun->ftCopy());
     textRun->advance_ = advance_;
     textRun->firstLineHeight_ = firstLineHeight_;
     textRun->size_ = size_;
@@ -238,7 +238,7 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
     Ref<FtGlyphRun> metaBlock = Object::create<FtGlyphRun>();
 
     {
-        Ref<StringList> parts = StringList::create(glyphRuns->count());
+        Ref<StringList> parts = StringList::allocate(glyphRuns->count());
         for (int i = 0; i < glyphRuns->count(); ++i)
             parts->at(i) = glyphRuns->at(i)->text();
         metaBlock->text_ = parts->join();
@@ -301,7 +301,7 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
     textRun->byteCount_ = metaBlock->text_->count();
     textRun->lineCount_ = metaBlock->lineCount_;
 
-    textRun->glyphRuns_ = FtGlyphRuns::create(glyphRuns->count());
+    textRun->glyphRuns_ = FtGlyphRuns::allocate(glyphRuns->count());
     int j = 0;
     int k = 0;
     for (int i = 0; i < glyphRuns->count(); ++i) {

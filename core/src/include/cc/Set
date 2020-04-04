@@ -86,34 +86,42 @@ public:
         return success;
     }
 
-    /** \name iterators
+    /** \name Iterators
       * @{
       */
-    typedef bucket::ConstIterator<Item> iterator;
-    typedef bucket::ConstIterator<Item> const_iterator;
+    typedef bucket::ConstIterator<Item> Iterator;
+    typedef bucket::ConstIterator<Item> ConstIterator;
 
-    iterator begin() { return bucket::ConstIterator<Item>{tree_}; }
-    iterator end() { return bucket::ConstIterator<Item>{}; }
-    const_iterator begin() const { return bucket::ConstIterator<Item>{tree_}; }
-    const_iterator end() const { return bucket::ConstIterator<Item>{}; }
+    Iterator begin() { return ConstIterator{tree_}; }
+    Iterator end() { return ConstIterator{}; }
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+    ConstIterator end() const { return ConstIterator{}; }
 
     template<class Pattern>
-    const_iterator first(const Pattern &pattern) const {
+    ConstIterator first(const Pattern &pattern) const {
         Index index = 0;
         bucket::Leaf<Item> node = nullptr;
         unsigned egress = 0;
         tree_->lookupFirst(pattern, &index, &node, &egress);
-        return bucket::ConstIterator<Item>{tree_, index, node, egress};
+        return ConstIterator{tree_, index, node, egress};
     }
 
     template<class Pattern>
-    const_iterator last(const Pattern &pattern) const {
+    ConstIterator last(const Pattern &pattern) const {
         Index index = 0;
         bucket::Leaf<Item> node = nullptr;
         unsigned egress = 0;
         tree_->lookupLast(pattern, &index, &node, &egress);
-        return bucket::ConstIterator<Item>{tree_, index, node, egress};
+        return ConstIterator{tree_, index, node, egress};
     }
+    /** @}
+      */
+
+    /** \internal
+      * @{
+      */
+    typedef Iterator iterator;
+    typedef ConstIterator const_iterator;
     /** @}
       */
 

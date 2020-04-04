@@ -39,7 +39,7 @@ public:
     /** Create a new list a populate it with n default items
       * \return new object instance
       */
-    static Ref<List> create(int n) { return new List{n}; }
+    static Ref<List> allocate(int n) { return new List{n}; }
 
     /** Create a shallow copy of another list
       * \param other another list
@@ -218,7 +218,7 @@ public:
       */
     Ref<List> reverse() const
     {
-        Ref<List> result = List::create(count());
+        Ref<List> result = List::allocate(count());
         for (int i = 0, n = count(); i < n; ++i)
             result->at(i) = at(n - i - 1);
         return result;
@@ -242,7 +242,7 @@ public:
       */
     template<class T2>
     Ref< List<T2> > toList() const {
-        Ref< List<T2 > > result = List<T2>::create(count());
+        Ref< List<T2 > > result = List<T2>::allocate(count());
         for (int i = 0; i < count(); ++i)
             result->at(i) = at(i);
         return result;
@@ -307,7 +307,7 @@ private:
             }
         }
         else {
-            result = List::create(count());
+            result = List::allocate(count());
             for (int i = 0, n = result->count(); i < n; ++i)
                 result->at(i) = heap->pop();
         }

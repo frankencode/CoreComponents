@@ -42,7 +42,7 @@ Range PasswordEditor::paste(Range range, const String &newChunk)
         return Range{};
 
     String mask =
-        StringList::create(
+        StringList::allocate(
             Utf8Walker::countCodePoints(newChunk) + 1
         )->join(bullet_);
 
