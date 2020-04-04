@@ -9,7 +9,6 @@
 #pragma once
 
 #include <assert.h>
-#include <cc/debug>
 
 namespace cc {
 

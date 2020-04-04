@@ -13,7 +13,6 @@
 #include <limits>
 #include <cc/BucketMap>
 #include <cc/binarySearch>
-#include <cc/debug>
 
 namespace cc {
 namespace bucket {
@@ -128,6 +127,9 @@ public:
 
     template<class Item>
     void pop(Weight index);
+
+    template<class Item>
+    void pop(Node *target, unsigned egress);
 
     template<class Item, class Other>
     void populate(const Other *other)
@@ -339,9 +341,16 @@ void Tree::push(Node *target, unsigned egress, const Item &item)
 template<class Item>
 void Tree::pop(Weight index)
 {
+    unsigned egress = 0;
+    Leaf<Item> *target = static_cast<Leaf<Item> *>(stepDownTo(index, &egress));
+    pop<Item>(target, egress);
+}
+
+template<class Item>
+void Tree::pop(Node *target, unsigned egress)
+{
     if (root_.weight_ > 1) {
-        unsigned egress;
-        Leaf<Item> *leaf = static_cast<Leaf<Item> *>(stepDownTo(index, &egress));
+        Leaf<Item> *leaf = static_cast<Leaf<Item> *>(target);
         leaf->pop(egress);
         updateWeights(leaf, -1);
         if (leaf->succ_) isDense_ = false;
@@ -356,6 +365,10 @@ void Tree::pop(Weight index)
         // leafCount_ = 0;
         isDense_ = true;
     }
+
+    #ifndef NDEBUG
+    ++revision_;
+    #endif
 }
 
 template<class Node>

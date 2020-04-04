@@ -1,0 +1,198 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/containers>
+#include <cc/SearchTree>
+#include <cc/Source>
+
+namespace cc {
+
+/** \class Set cc/Set
+  * \ingroup container
+  * \brief %Set data countainer
+  */
+template<class T>
+class Set: public Object
+{
+public:
+    /// Item type
+    typedef T Item;
+
+    /** Create a new set
+      * \return new object instance
+      */
+    static Ref<Set> create() { return new Set; }
+
+    /// Number of items
+    int count() const { return tree_.count(); }
+
+    /// Check if an index is valid
+    bool has(int index) const {
+        return 0 <= index && index < count();
+    }
+
+    /** Return a reference to an item
+      * \param index set index
+      * \return reference to the item
+      */
+    const Item &at(int index) const {
+        Node *node = 0;
+        if (!tree_.lookupByIndex(index, &node))
+            CC_ASSERT(false);
+        return node->item_;
+    }
+
+    /** Insert a new item if no item with the same value exists already.
+      * If currentItem is non-null the item with the same value is returned.
+      * \return true if the new item was inserted successfully
+      */
+    bool insert(const Item &item/*, Item *currentItem = nullptr, int *index = nullptr*/)
+    {
+        bool found = false;
+        bool below = true;
+        Node *k = tree_.find(item, &found, &below/*, index*/);
+        if (found) {
+            /*if (currentItem)
+                *currentItem = k->item_;*/
+            return false;
+        }
+        Node *kn = new Node{item};
+        tree_.attach(k, kn, below);
+        return true;
+    }
+
+    /** Remove an item from the set
+      * \param item item value
+      * \param index returns the index of the item that has been removed
+      * \return true if the matching item was found and removed
+      */
+    bool remove(const Item &item/*, int *index = nullptr*/)
+    {
+        bool found;
+        Node *k = tree_.find(item, &found, 0/*, index*/);
+        if (found)
+            tree_.remove(k);
+        return found;
+    }
+
+    /** Remove an item at a given index
+      * \param index set index
+      * \return true if the matching item was found and removed
+      */
+    bool removeAt(int index) {
+        Node *node = nullptr;
+        if (!tree_.lookupByIndex(index, &node)) return false;
+        tree_.remove(node);
+        return true;
+    }
+
+    /** Check if the set contains a given item
+      * \param item item value
+      * \return true if the set contains the given item
+      */
+    bool contains(const Item &item)
+    {
+        bool found = false;
+        tree_.find(item, &found);
+        return found;
+    }
+
+    #if 0
+    /** Add a new item to the set
+      * \param item new item value
+      */
+    void push(const Item &item)
+    {
+        bool found = false;
+        bool below = true;
+        Node *k = tree_.find(item, &found, &below);
+        if (found)
+            k->item_ = item;
+        else
+            tree_.attach(k, new Node(item), below);
+    }
+
+    /** Remove first item from the set
+      * \param item return the item's value
+      */
+    void pop(Item *item)
+    {
+        CC_ASSERT(count() > 0);
+        Node *k = tree_.min();
+        *item = k->item_;
+        tree_.remove(k);
+    }
+
+    /** Remove first item from the set
+      * \return the item's value
+      */
+    Item pop() {
+        Item item;
+        pop(&item);
+        return item;
+    }
+    #endif
+
+    /// Reset this set to an empty set
+    void deplete() { tree_.deplete(); }
+
+    /** \name C++ iterators
+      * @{
+      */
+    typedef ConstIterator<Set> iterator;
+    typedef ConstIterator<Set> const_iterator;
+    iterator begin() { return iterator{this, 0}; }
+    iterator end() { return iterator{this, count()}; }
+    const_iterator begin() const { return const_iterator{this, 0}; }
+    const_iterator end() const { return const_iterator{this, count()}; }
+    /** @}
+      */
+
+    /** \name Source adapter
+      * @{
+      */
+    /*template<class OutputType = Item>
+    Ref< Source<OutputType> > getAll() const { return ContainerSource< Set, Pass<Item, OutputType> >::open(this); }*/
+    /** @}
+      */
+
+private:
+    friend class Local<Set>;
+
+    typedef SearchTree< SearchNode<Item> > Tree;
+    typedef typename Tree::Node Node;
+
+    Set() {}
+    Set(const Set &b): tree_{b.tree_} {}
+    const Set &operator=(const Set &b) { tree_ = b.tree_; return *this; }
+
+    Tree tree_;
+    Item nullItem_;
+};
+
+template<class T>
+bool operator==(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) == 0; }
+
+template<class T>
+bool operator!=(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) != 0; }
+
+template<class T>
+bool operator<(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) < 0; }
+
+template<class T>
+bool operator>(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) > 0; }
+
+template<class T>
+bool operator<=(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) <= 0; }
+
+template<class T>
+bool operator>=(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) >= 0; }
+
+} // namespace cc

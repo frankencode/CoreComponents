@@ -10,7 +10,6 @@
 
 #include <cc/strings>
 #include <cc/containers>
-#include <cc/String>
 
 namespace cc {
 

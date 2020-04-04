@@ -10,6 +10,7 @@
 
 #include <cc/containers>
 #include <cc/strings>
+#include <cc/Array>
 #include <cc/List>
 
 /// translate a macro expression into a C string
