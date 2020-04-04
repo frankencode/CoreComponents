@@ -125,6 +125,7 @@ public:
         return *this;
     }
 
+#if 0 // __cplusplus >= 201402L // since C++14
     template<class Index>
     inline auto operator[](Index i) const {
         CC_ASSERT2(a_, "Null reference accessed");
@@ -136,6 +137,7 @@ public:
         CC_ASSERT2(a_, "Null reference accessed");
         return (*a_)[i];
     }
+#endif
 
 protected:
     template<class T2> friend class Ref;
