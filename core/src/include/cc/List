@@ -16,15 +16,28 @@
 
 namespace cc {
 
+/** \class List cc/List
+  * \ingroup container
+  * \brief %List data container
+  */
 template<class T>
 class List: public Object
 {
 public:
+    /// Index type
     typedef bucket::Weight Index;
+
+    /// Item type
     typedef T Item;
 
+    /** Create a new empty list
+      * \return new object instance
+      */
     static Ref<List> create() { return new List; }
 
+    /** Create a new list and populate it with \a count default items
+      * \return new object instance
+      */
     static Ref<List> allocate(Index count)
     {
         // TODO: improve performance
@@ -34,7 +47,10 @@ public:
         return list;
     }
 
-
+    /** Create a copy of a list
+      * \param other the list to copy
+      * \return new object instance
+      */
     static Ref<List> copy(const List *other)
     {
         // TODO: improve performance
@@ -44,6 +60,7 @@ public:
         return list;
     }
 
+    /// Return the number of items stored in this list
     Index count() const { return tree_->count(); }
 
     /// Check if an index is valid
@@ -51,35 +68,52 @@ public:
         return 0 <= index && index < count();
     }
 
+    /** Return a reference to an item
+      * \param index list index
+      * \return reference to the item
+      */
     Item &at(Index index)
     {
         assert(0 <= index && index < count());
         return tree_->at<Item>(index);
     }
 
+    /** \copydoc at(int index)
+      */
     const Item &at(Index index) const
     {
         assert(0 <= index && index < count());
         return tree_->at<Item>(index);
     }
 
+    /** Insert new item at given index
+      * \param index list index
+      * \param item new item value
+      */
     void push(Index index, const Item &item)
     {
         assert(0 <= index && index <= count());
         tree_->push<Item>(index, item);
     }
 
+    /** Remove item at given index
+      * \param index list index
+      */
     void pop(Index index)
     {
         assert(0 <= index && index < count());
         tree_->pop<Item>(index);
     }
 
+    /** Append item at the end of the list
+      */
     void pushBack(const Item &item)
     {
         tree_->pushBack(item);
     }
 
+    /** Remove the last from end of the list
+      */
     void popBack()
     {
         assert(count() > 0);
