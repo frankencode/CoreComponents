@@ -41,6 +41,7 @@ public:
     String version() const { return version_; }
     bool daemon() const { return daemon_; }
     String daemonName() const { return daemonName_; }
+    String pidPath() const { return pidPath_; }
     int concurrency() const { return concurrency_; }
     int serviceWindow() const { return serviceWindow_; }
     int connectionLimit() const { return connectionLimit_; }
@@ -66,6 +67,7 @@ private:
     String version_;
     bool daemon_;
     String daemonName_;
+    String pidPath_;
     int concurrency_;
     int serviceWindow_;
     int connectionLimit_;

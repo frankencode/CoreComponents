@@ -94,6 +94,7 @@ int main(int argc, char **argv)
             "  -protocol  IPv4 or IPv6 (default both)\n"
             "  -user      switch to user after opening listening socket\n"
             "  -daemon    start as a daemon\n"
+            "  -pid-file  write PID in given file\n"
         ) << toolName;
     }
 
