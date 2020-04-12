@@ -34,12 +34,13 @@ protected:
             (List<int>::create() << 80 << 443) :
             (List<int>::create() << 8080 << 4443)
         );
-        establish("protocol-family", "");
+        establish("protocol", "");
         establish("user", "");
         establish("group", "");
         establish("version", "ccnode");
         establish("daemon", false);
         establish("daemon-name", "ccnode");
+        establish("pid-file", "");
         establish("concurrency",
             #ifdef NDEBUG
             256

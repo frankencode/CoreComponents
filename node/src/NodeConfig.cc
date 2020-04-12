@@ -57,7 +57,7 @@ NodeConfig::NodeConfig(const MetaObject *config)
     String address = config->value("address");
 
     auto ports = Variant::cast<List<int> *>(config->value("port"));
-    String protocol = config->value("protocol-family");
+    String protocol = config->value("protocol");
 
     ProtocolFamily family = ProtocolFamily::Unspecified;
     if (protocol->toLower() == "ipv6") family = ProtocolFamily::Internet6;
@@ -97,6 +97,7 @@ NodeConfig::NodeConfig(const MetaObject *config)
     version_ = config->value("version");
     daemon_ = config->value("daemon");
     daemonName_ = config->value("daemon-name");
+    pidPath_ = config->value("pid-file");
     concurrency_ = config->value("concurrency");
     serviceWindow_ = config->value("service-window");
     connectionLimit_ = config->value("connection-limit");

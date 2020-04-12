@@ -16,6 +16,7 @@
 #include <cc/node/debug>
 #include <cc/Channel>
 #include <cc/Process>
+#include <cc/File>
 #include <cc/User>
 #include <cc/Group>
 #include <cc/IoMonitor>
@@ -35,6 +36,12 @@ NodeMaster::NodeMaster(const NodeConfig *config):
 {
     if (config->daemon())
         SystemLoggingService::open(config->daemonName());
+
+    if (config->pidPath() != "" || config->daemon()) {
+        String path = config->pidPath();
+        if (path == "") path = "/var/run/" + config->daemonName() + ".pid";
+        File::save(path, str(Process::getId()) + "\n" );
+    }
 }
 
 void NodeMaster::signaled(Signal signal)
