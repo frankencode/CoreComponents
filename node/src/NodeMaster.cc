@@ -81,16 +81,11 @@ void NodeMaster::runNode()
     }
 
     if (config()->user() != "") {
-        String userName = config()->user();
-        String groupName = config()->group();
-        if (groupName == "") groupName = userName;
+	String userName = config()->user();
         Ref<User> user = User::lookup(userName);
-        Ref<Group> group = Group::lookup(groupName);
         if (!user->isValid()) throw UsageError{"No such user: \"" + userName + "\""};
-        if (!group->isValid()) throw UsageError{"No such group: \"" + groupName + "\""};
-        CCNODE_NOTICE() << "Dropping process persona to user:group " << userName << ":" << groupName << " (uid:gid = " << user->id() << ":" << group->id() << ")" << nl;
+       	CCNODE_NOTICE() << "Dropping to user " << userName << " (uid = " << user->id() << ")" << nl;
         Process::setUserId(user->id());
-        Process::setGroupId(group->id());
     }
 
     CCNODE_NOTICE() << "Starting security master, if needed" << nl;
