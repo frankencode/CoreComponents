@@ -95,7 +95,7 @@ public:
                 if (serverName_->count() > 0) {
                     if (serverName_->at(serverName_->count() - 1) == 0)
                         mutate(serverName_)->truncate(serverName_->count() - 1);
-                    if (errorLoggingInstance()->infoStream() != NullStream::instance())
+                    if (errorLoggingInstance() && errorLoggingInstance()->infoStream() != NullStream::instance())
                         CCNODE_INFO() << "TLS client hello: SNI=\"" << serverName_ << "\"" << nl;
                     deliveryInstance_ = nodeConfig_->selectService(serverName_);
                     if (deliveryInstance_)
@@ -183,7 +183,7 @@ const DeliveryInstance *HttpServerSocket::handshake()
 
     mode_ |= Open;
 
-    if (errorLoggingInstance()->infoStream() != NullStream::instance()) {
+    if (errorLoggingInstance() && errorLoggingInstance()->infoStream() != NullStream::instance()) {
         double t1 = System::now();
         CCNODE_INFO() << "TLS handshake took " << int(1000 * (t1 - t0_)) << "ms" << nl;
     }
