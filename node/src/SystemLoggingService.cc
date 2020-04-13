@@ -18,7 +18,7 @@ namespace node {
 
 const char *SystemLoggingService::name()
 {
-    return "System-Log";
+    return "SystemLog";
 }
 
 void SystemLoggingService::open(const String &daemonName)
