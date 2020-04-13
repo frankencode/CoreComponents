@@ -107,7 +107,7 @@ NodeConfig::NodeConfig(const MetaObject *config)
 
     auto loadLoggingInstance = [=](Variant value) {
         const MetaObject *config = Variant::cast<const MetaObject *>(value);
-        if (!config) {
+        if (!config || config->className() == "") {
             if (daemon_) config = LoggingRegistry::instance()->serviceByName(SystemLoggingService::name())->configPrototype();
             else config = LoggingRegistry::instance()->serviceByName(ForegroundLoggingService::name())->configPrototype();
         }
