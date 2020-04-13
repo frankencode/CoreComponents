@@ -15,7 +15,7 @@ namespace node {
 
 const char *ForegroundLoggingService::name()
 {
-    return "Foreground-Log";
+    return "ForegroundLog";
 }
 
 Ref<ForegroundLoggingService> ForegroundLoggingService::create()
