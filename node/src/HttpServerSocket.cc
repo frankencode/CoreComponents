@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2019 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -73,11 +73,6 @@ public:
         return ThreadLocalSingleton<ClientHelloContext>::instance();
     }
 
-    void init(const NodeConfig *nodeConfig)
-    {
-        nodeConfig_ = nodeConfig;
-    }
-
     void selectService(gnutls_session_t session)
     {
         try {
@@ -95,7 +90,7 @@ public:
                 if (serverName_->count() > 0) {
                     if (serverName_->at(serverName_->count() - 1) == 0)
                         mutate(serverName_)->truncate(serverName_->count() - 1);
-                    if (errorLoggingInstance() && errorLoggingInstance()->infoStream() != NullStream::instance())
+                    if (errorLoggingInstance()->infoStream() != NullStream::instance())
                         CCNODE_INFO() << "TLS client hello: SNI=\"" << serverName_ << "\"" << nl;
                     deliveryInstance_ = nodeConfig_->selectService(serverName_);
                     if (deliveryInstance_)
@@ -108,11 +103,12 @@ public:
         }
     }
 
-    void reset(const SocketAddress *peerAddress)
+    void init(const SocketAddress *peerAddress, const NodeConfig *nodeConfig)
     {
         peerAddress_ = peerAddress;
         serverName_ = "";
         deliveryInstance_ = nullptr;
+        nodeConfig_ = nodeConfig;
     }
 
     String serverName() const { return serverName_; }
@@ -148,8 +144,6 @@ void HttpServerSocket::initSession()
 
     nodeConfig()->security()->establish(session_);
 
-    ClientHelloContext::instance()->init(nodeConfig());
-
     gnutls_handshake_set_post_client_hello_function(session_, onClientHello);
     HttpSocket::initTransport();
 
@@ -170,7 +164,7 @@ const DeliveryInstance *HttpServerSocket::handshake()
 
     CC_ASSERT(!(mode_ & Open));
 
-    ClientHelloContext::instance()->reset(address());
+    ClientHelloContext::instance()->init(address(), nodeConfig());
 
     while (true) {
         int ret = gnutls_handshake(session_);
@@ -183,7 +177,7 @@ const DeliveryInstance *HttpServerSocket::handshake()
 
     mode_ |= Open;
 
-    if (errorLoggingInstance() && errorLoggingInstance()->infoStream() != NullStream::instance()) {
+    if (errorLoggingInstance()->infoStream() != NullStream::instance()) {
         double t1 = System::now();
         CCNODE_INFO() << "TLS handshake took " << int(1000 * (t1 - t0_)) << "ms" << nl;
     }

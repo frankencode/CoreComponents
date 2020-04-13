@@ -117,15 +117,6 @@ NodeConfig::NodeConfig(const MetaObject *config)
     errorLoggingInstance_ = loadLoggingInstance(config->value("error-log"));
     accessLoggingInstance_ = loadLoggingInstance(config->value("access-log"));
 
-    // FIXME: begin...
-    auto createDefaultLoggingInstance = [=]() {
-        auto loggingService = LoggingRegistry::instance()->serviceByName(daemon_ ? SystemLoggingService::name() : ForegroundLoggingService::name());
-        return loggingService->createInstance(loggingService->configPrototype());
-    };
-    if (!errorLoggingInstance_) errorLoggingInstance_ = createDefaultLoggingInstance();
-    if (!accessLoggingInstance_) accessLoggingInstance_ = createDefaultLoggingInstance();
-    // FIXME: end...
-
     deliveryInstances_ = DeliveryInstances::create();
     for (const MetaObject *child: config->children()) {
         const DeliveryService *service = DeliveryRegistry::instance()->serviceByName(child->className());
