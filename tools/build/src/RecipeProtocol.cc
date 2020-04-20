@@ -120,6 +120,7 @@ protected:
 
         insert("simulate", false);
         insert("blindfold", false);
+        insert("concatenate", false);
         insert("bootstrap", false);
 
         insert("query", "");

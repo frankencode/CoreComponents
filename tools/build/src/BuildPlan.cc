@@ -6,8 +6,6 @@
  *
  */
 
-#include <cc/debug> // DEBUG
-
 #include <cc/stdio>
 #include <cc/Process>
 #include <cc/Crc32Sink>
@@ -46,6 +44,7 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
     preparationStage_{this}, \
     configureStage_{this}, \
     analyseStage_{this}, \
+    concatenationStage_{this}, \
     compileLinkStage_{this}, \
     testRunStage_{this}, \
     installStage_{this}, \
@@ -132,6 +131,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     if (recipe_->value("release"))     options_ |= Release;
     if (recipe_->value("simulate"))    options_ |= Simulate;
     if (recipe_->value("blindfold"))   options_ |= Blindfold;
+    if (recipe_->value("concatenate")) options_ |= Blindfold;
     if (recipe_->value("bootstrap"))   options_ |= Bootstrap | Simulate | Blindfold;
     if (recipe_->value("test"))        options_ |= BuildTests;
     if (recipe_->value("test-run"))    options_ |= BuildTests;
@@ -177,12 +177,12 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
             if (item->contains(">=")) {
                 Ref<StringList> parts = item->split(">=");
                 name = parts->at(0)->trim();
-                if (parts->has(1)) versionMin = Version(parts->at(1)->trim());
+                if (parts->has(1)) versionMin = Version{parts->at(1)->trim()};
             }
             else if (item->contains("<=")) {
                 Ref<StringList> parts = item->split("<=");
                 name = parts->at(0)->trim();
-                if (parts->has(1)) versionMax = Version(parts->at(1)->trim());
+                if (parts->has(1)) versionMax = Version{parts->at(1)->trim()};
             }
             else {
                 name = item;
@@ -367,6 +367,8 @@ int BuildPlan::run()
 
     if (options_ & Clean) return !cleanStage()->run();
     if (recipe_->value("uninstall")) return !uninstallStage()->run();
+
+    if (recipe_->value("concatenate")) return concatenationStage()->run();
 
     if (!compileLinkStage()->run()) return 1;
 

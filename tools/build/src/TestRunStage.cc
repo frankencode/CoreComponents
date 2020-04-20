@@ -15,7 +15,7 @@
 namespace ccbuild {
 
 TestRunStage::TestRunStage(BuildPlan *plan):
-    BuildStage(plan)
+    BuildStage{plan}
 {}
 
 bool TestRunStage::run()

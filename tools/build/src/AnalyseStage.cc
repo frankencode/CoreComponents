@@ -24,7 +24,7 @@ bool AnalyseStage::run()
     if ( (plan()->options() & BuildPlan::Test) &&
          !(plan()->options() & BuildPlan::BuildTests) ) return success_ = true;
 
-    BuildStageGuard guard(this);
+    BuildStageGuard guard{this};
 
     for (BuildPlan *prerequisite: plan()->prerequisites()) {
         if (!prerequisite->analyseStage()->run())

@@ -16,16 +16,15 @@ using namespace cc;
 
 class BuildPlan;
 class BuildShell;
-class ConfigureShell;
 class ToolChain;
 class JobScheduler;
 
 class BuildStage
 {
 public:
-    inline bool complete() const { return complete_; }
-    inline bool success() const { return success_; }
-    inline int status() const { return status_; }
+    bool complete() const { return complete_; }
+    bool success() const { return success_; }
+    int status() const { return status_; }
 
     StringList *preCommands() const { return preCommands_; }
     StringList *postCommands() const { return postCommands_; }
@@ -33,7 +32,7 @@ public:
 protected:
     BuildStage(BuildPlan *plan);
 
-    inline BuildPlan *plan() const { return plan_; }
+    BuildPlan *plan() const { return plan_; }
     const BuildShell *shell() const;
     ToolChain *toolChain() const;
     Ref<JobScheduler> createScheduler() const;

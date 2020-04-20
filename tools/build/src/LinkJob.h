@@ -17,7 +17,7 @@ class BuildPlan;
 class LinkJob: public Job
 {
 public:
-    static Ref<LinkJob> create(const BuildPlan *plan) { return new LinkJob(plan); }
+    static Ref<LinkJob> create(const BuildPlan *plan) { return new LinkJob{plan}; }
 
     virtual bool run() override;
     virtual bool finish() override;
@@ -25,7 +25,7 @@ public:
 private:
     LinkJob(const BuildPlan *plan);
 
-    inline const BuildPlan *plan() const { return plan_; }
+    const BuildPlan *plan() const { return plan_; }
 
     const BuildPlan *plan_;
 };

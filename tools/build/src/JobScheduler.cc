@@ -18,14 +18,14 @@ Ref<JobScheduler> JobScheduler::create(int concurrency)
 }
 
 JobScheduler::JobScheduler(int concurrency):
-    concurrency_((concurrency > 0) ? concurrency : System::concurrency()),
-    requestChannel_(JobChannel::create()),
-    replyChannel_(JobChannel::create()),
-    derivatives_(Derivatives::create()),
-    started_(false),
-    status_(0),
-    totalCount_(0),
-    finishCount_(0)
+    concurrency_{(concurrency > 0) ? concurrency : System::concurrency()},
+    requestChannel_{JobChannel::create()},
+    replyChannel_{JobChannel::create()},
+    derivatives_{Derivatives::create()},
+    started_{false},
+    status_{0},
+    totalCount_{0},
+    finishCount_{0}
 {}
 
 void JobScheduler::start()

@@ -15,7 +15,7 @@ namespace ccbuild {
 class InstallStage: public BuildStage
 {
 public:
-    InstallStage(BuildPlan *plan): BuildStage(plan), linkerCacheDirty_(false) {}
+    InstallStage(BuildPlan *plan): BuildStage{plan}, linkerCacheDirty_{false} {}
 
     bool run();
     bool installTool(Module *module);

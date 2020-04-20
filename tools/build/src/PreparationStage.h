@@ -15,7 +15,7 @@ namespace ccbuild {
 class PreparationStage: public BuildStage
 {
 public:
-    PreparationStage(BuildPlan *plan): BuildStage(plan) {}
+    PreparationStage(BuildPlan *plan): BuildStage{plan} {}
     bool run();
 
 private:
@@ -23,4 +23,3 @@ private:
 };
 
 } // namespace ccbuild
-

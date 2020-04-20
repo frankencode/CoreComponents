@@ -29,7 +29,7 @@ bool PreparationStage::run()
 
     if (outOfScope()) return success_ = true;
 
-    BuildStageGuard guard(this);
+    BuildStageGuard guard{this};
 
     for (BuildPlan *prerequisite: plan()->prerequisites()) {
         if (!prerequisite->preparationStage()->run())

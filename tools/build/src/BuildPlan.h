@@ -20,6 +20,7 @@
 #include "PreparationStage.h"
 #include "ConfigureStage.h"
 #include "AnalyseStage.h"
+#include "ConcatenationStage.h"
 #include "CompileLinkStage.h"
 #include "TestRunStage.h"
 #include "InstallStage.h"
@@ -129,6 +130,7 @@ public:
     ConfigureStage *configureStage() { return &configureStage_; }
     PreparationStage *preparationStage() { return &preparationStage_; }
     AnalyseStage *analyseStage() { return &analyseStage_; }
+    ConcatenationStage *concatenationStage() { return &concatenationStage_; }
     CompileLinkStage *compileLinkStage() { return &compileLinkStage_; }
     TestRunStage *testRunStage() { return &testRunStage_; }
     InstallStage *installStage() { return &installStage_; }
@@ -199,6 +201,7 @@ private:
     PreparationStage preparationStage_;
     ConfigureStage configureStage_;
     AnalyseStage analyseStage_;
+    ConcatenationStage concatenationStage_;
     CompileLinkStage compileLinkStage_;
     TestRunStage testRunStage_;
     InstallStage installStage_;

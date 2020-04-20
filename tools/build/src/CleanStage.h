@@ -15,9 +15,8 @@ namespace ccbuild {
 class CleanStage: public BuildStage
 {
 public:
-    CleanStage(BuildPlan *plan): BuildStage(plan) {}
+    CleanStage(BuildPlan *plan): BuildStage{plan} {}
     bool run();
 };
 
 } // namespace ccbuild
-

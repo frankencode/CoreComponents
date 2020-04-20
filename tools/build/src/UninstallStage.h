@@ -15,7 +15,7 @@ namespace ccbuild {
 class UninstallStage: public BuildStage
 {
 public:
-    UninstallStage(BuildPlan *plan): BuildStage(plan) {}
+    UninstallStage(BuildPlan *plan): BuildStage{plan} {}
     bool run();
     bool uninstallTool(Module *module);
     bool uninstallApplicationOrLibrary();

@@ -13,8 +13,8 @@
 namespace ccbuild {
 
 LinkJob::LinkJob(const BuildPlan *plan):
-    Job(plan->toolChain()->linkCommand(plan)),
-    plan_(plan)
+    Job{plan->toolChain()->linkCommand(plan)},
+    plan_{plan}
 {}
 
 bool LinkJob::run()

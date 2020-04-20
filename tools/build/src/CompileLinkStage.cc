@@ -18,7 +18,7 @@ namespace ccbuild {
 
 bool CompileLinkStage::run()
 {
-    BuildStageGuard guard(this);
+    BuildStageGuard guard{this};
 
     Ref<JobScheduler> scheduler = createScheduler();
     scheduleJobs(scheduler);
