@@ -144,8 +144,7 @@ Ref<Job> GnuToolChain::createCompileJob(const BuildPlan *plan, const Module *mod
     args << "-c" << "-o" << module->modulePath();
     appendCompileOptions(args, plan);
     args << module->sourcePath();
-    String command = args->join(" ");
-    return Job::create(command);
+    return Job::create(args->join(" "));
 }
 
 Ref<Job> GnuToolChain::createCompileLinkJob(const BuildPlan *plan, const Module *module) const
@@ -158,8 +157,17 @@ Ref<Job> GnuToolChain::createCompileLinkJob(const BuildPlan *plan, const Module 
     args << "-pthread";
     args << module->sourcePath();
     appendLinkOptions(args, plan);
-    String command = args->join(" ");
-    return Job::create(command);
+    return Job::create(args->join(" "));
+}
+
+Ref<Job> GnuToolChain::createPreprocessJob(const BuildPlan *plan, const Module *module) const
+{
+    Format args;
+    args << compiler(module->sourcePath());
+    args << "-E" << "-nostdinc";
+    appendCompileOptions(args, plan);
+    args << module->sourcePath();
+    return Job::create(args->join(" "));
 }
 
 String GnuToolChain::targetName(const BuildPlan *plan) const

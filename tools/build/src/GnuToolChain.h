@@ -38,6 +38,7 @@ public:
 
     virtual Ref<Job> createCompileJob(const BuildPlan *plan, const Module *module) const override;
     virtual Ref<Job> createCompileLinkJob(const BuildPlan *plan, const Module *module) const override;
+    virtual Ref<Job> createPreprocessJob(const BuildPlan *plan, const Module *module) const override;
 
     virtual String targetName(const BuildPlan *plan) const override; // FIXME: does not need to be public
     virtual String linkName(const BuildPlan *plan) const override;

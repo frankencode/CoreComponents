@@ -14,7 +14,7 @@ namespace ccbuild {
 
 Ref<JobScheduler> JobScheduler::create(int concurrency)
 {
-    return new JobScheduler(concurrency);
+    return new JobScheduler{concurrency};
 }
 
 JobScheduler::JobScheduler(int concurrency):

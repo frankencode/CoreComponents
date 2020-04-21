@@ -35,6 +35,7 @@ public:
 
     virtual Ref<Job> createCompileJob(const BuildPlan *plan, const Module *module) const = 0;
     virtual Ref<Job> createCompileLinkJob(const BuildPlan *plan, const Module *module) const = 0;
+    virtual Ref<Job> createPreprocessJob(const BuildPlan *plan, const Module *module) const = 0;
 
     virtual String targetName(const BuildPlan *plan) const = 0;
     virtual String linkName(const BuildPlan *plan) const = 0;

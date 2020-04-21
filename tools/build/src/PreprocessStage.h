@@ -12,11 +12,14 @@
 
 namespace ccbuild {
 
-class ConcatenationStage: public BuildStage
+class PreprocessStage: public BuildStage
 {
 public:
-    ConcatenationStage(BuildPlan *plan): BuildStage{plan} {}
+    PreprocessStage(BuildPlan *plan): BuildStage{plan} {}
     bool run();
+
+private:
+    void scheduleJobs(JobScheduler *scheduler);
 };
 
 } // namespace ccbuild

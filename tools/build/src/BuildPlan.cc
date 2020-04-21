@@ -44,7 +44,7 @@ Ref<BuildPlan> BuildPlan::create(String projectPath)
     preparationStage_{this}, \
     configureStage_{this}, \
     analyseStage_{this}, \
-    concatenationStage_{this}, \
+    preprocessStage_{this}, \
     compileLinkStage_{this}, \
     testRunStage_{this}, \
     installStage_{this}, \
@@ -365,10 +365,10 @@ int BuildPlan::run()
 
     if (!analyseStage()->run()) return 1;
 
+    if (recipe_->value("preprocess")) return preprocessStage()->run();
+
     if (options_ & Clean) return !cleanStage()->run();
     if (recipe_->value("uninstall")) return !uninstallStage()->run();
-
-    if (recipe_->value("concatenate")) return concatenationStage()->run();
 
     if (!compileLinkStage()->run()) return 1;
 
