@@ -10,7 +10,7 @@
 
 #include <cc/containers>
 #include <cc/Source>
-#include <cc/PileTree>
+#include <cc/ui/PileTree>
 
 namespace cc {
 

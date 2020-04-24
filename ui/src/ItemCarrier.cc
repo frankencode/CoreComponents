@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Pile>
+#include <cc/ui/Pile>
 #include <cc/ui/ItemView>
 #include <cc/ui/ItemCarrier>
 

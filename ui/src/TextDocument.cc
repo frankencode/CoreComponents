@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Pile>
+#include <cc/ui/Pile>
 #include <cc/ui/TextItem>
 #include <cc/ui/TextDocument>
 

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/List>
-#include <cc/Pile>
+#include <cc/ui/Pile>
 #include <cc/Notifier>
 
 namespace cc {

@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/OrdinalTree>
+#include <cc/ui/OrdinalTree>
 
 namespace cc {
 

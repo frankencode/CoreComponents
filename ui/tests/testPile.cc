@@ -10,7 +10,7 @@
 #include <cc/stdio>
 #include <cc/debug>
 #include <cc/Random>
-#include <cc/Pile>
+#include <cc/ui/Pile>
 
 using namespace cc;
 using namespace cc::testing;
