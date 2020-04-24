@@ -164,7 +164,7 @@ Ref<Job> GnuToolChain::createPreprocessJob(const BuildPlan *plan, const Module *
 {
     Format args;
     args << compiler(module->sourcePath());
-    args << "-E" << "-nostdinc";
+    args << "-E";
     appendCompileOptions(args, plan);
     args << module->sourcePath();
     return Job::create(args->join(" "));

@@ -13,7 +13,7 @@
 
 namespace ccbuild {
 
-void BuildParameters::read(const MetaObject *object, BuildPlan *plan)
+void BuildParameters::read(const MetaObject *object, const BuildPlan *plan)
 {
     compiler_ = object->value("compiler");
     optimize_ = object->value("optimize");
@@ -27,7 +27,8 @@ void BuildParameters::read(const MetaObject *object, BuildPlan *plan)
     if (!libraries_) libraries_ = StringList::create();
 
     for (String &path: includePaths_) {
-        if (path->isRelativePath()) path = path->absolutePathRelativeTo(plan->projectPath());
+        if (path->isRelativePath())
+            path = path->absolutePathRelativeTo(plan->projectPath());
     }
 
     customCompileFlags_ = Variant::cast<StringList *>(object->value("compile-flags"));

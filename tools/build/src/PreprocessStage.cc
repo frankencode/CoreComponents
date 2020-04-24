@@ -25,6 +25,7 @@ bool PreprocessStage::run()
             fout() << job->outputText();
         }
         else {
+            ferr() << job->command() << nl;
             ferr() << job->outputText();
             status_ = job->status();
             return success_ = false;

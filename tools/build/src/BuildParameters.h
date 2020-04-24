@@ -21,21 +21,21 @@ class BuildPlan;
 class BuildParameters: public Object
 {
 public:
-    inline static Ref<BuildParameters> create() { return new BuildParameters; }
-    void read(const MetaObject *object, BuildPlan *plan = 0);
+    static Ref<BuildParameters> create() { return new BuildParameters; }
+    void read(const MetaObject *object, const BuildPlan *plan = nullptr);
     void readSpecific(const MetaObject *object);
     void readSpecific(BuildParameters *specific);
 
-    inline String compiler() const { return compiler_; }
-    inline String optimize() const { return optimize_; }
-    inline bool linkStatic() const { return linkStatic_; }
+    String compiler() const { return compiler_; }
+    String optimize() const { return optimize_; }
+    bool linkStatic() const { return linkStatic_; }
 
-    inline StringList *includePaths() const { return includePaths_; }
-    inline StringList *libraryPaths() const { return libraryPaths_; }
-    inline StringList *libraries() const { return libraries_; }
+    StringList *includePaths() const { return includePaths_; }
+    StringList *libraryPaths() const { return libraryPaths_; }
+    StringList *libraries() const { return libraries_; }
 
-    inline StringList *customCompileFlags() const { return customCompileFlags_; }
-    inline StringList *customLinkFlags() const { return customLinkFlags_; }
+    StringList *customCompileFlags() const { return customCompileFlags_; }
+    StringList *customLinkFlags() const { return customLinkFlags_; }
 
 protected:
     BuildParameters() {}

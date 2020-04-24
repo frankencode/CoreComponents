@@ -106,6 +106,7 @@ protected:
         insert("configure", false);
         insert("configure-list", false);
         insert("prepare", false);
+        insert("preprocess", false);
         insert("clean", false);
         insert("install", false);
         insert("uninstall", false);
@@ -120,7 +121,6 @@ protected:
 
         insert("simulate", false);
         insert("blindfold", false);
-        insert("concatenate", false);
         insert("bootstrap", false);
 
         insert("query", "");
