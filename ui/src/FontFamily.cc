@@ -7,6 +7,7 @@
  */
 
 #include <cc/List>
+#include <cc/IterationSource>
 #include <cc/ui/FontFamily>
 
 namespace cc {
@@ -14,7 +15,7 @@ namespace ui {
 
 Ref< Source<const FontFace *> > FontFamily::getFontFaces() const
 {
-    return fontFaces_->getAll<const FontFace *>();
+    return IterationSource<FontFaces, const FontFace *>::open(fontFaces_);
 }
 
 FontFamily::FontFamily(const String &name, Pitch pitch):

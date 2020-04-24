@@ -41,10 +41,7 @@ Range PasswordEditor::paste(Range range, const String &newChunk)
     if (!(0 <= range->i0() && range->i1() <= text_()->count()))
         return Range{};
 
-    String mask =
-        StringList::allocate(
-            Utf8Walker::countCodePoints(newChunk) + 1
-        )->join(bullet_);
+    String mask = String::multiply(bullet_, Utf8Walker::countCodePoints(newChunk));
 
     text_ = text_()->paste(range->i0(), range->i1(), mask);
 

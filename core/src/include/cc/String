@@ -24,6 +24,7 @@ class Array;
 
 /** Convenience alias
   * \ingroup strings
+  * \ingroup container
   * \see Array<char>
   */
 typedef Array<char> CharArray;
@@ -94,6 +95,9 @@ public:
 
     /// \copydoc Array<char>::join(const StringList *, const String &)
     static String join(const StringList *parts, const String &sep = String{});
+
+    /// Create a string containing \a n copies of \a b
+    static String multiply(const String &b, int n);
 
     /// Construct an empty string
     Ref(): a_{nullptr} {}
@@ -651,7 +655,6 @@ public:
         return find(s) != size_;
     }
 
-
     /// \copydoc contains(const char *) const
     bool contains(const String &s) const;
 
@@ -945,16 +948,26 @@ public:
     /// \copybrief equalsCaseInsensitive(const String &) const
     bool equalsCaseInsensitive(const char *b) const;
 
-    /** \name C++ iterators
+    /** \name Iterators
       * @{
       */
-    typedef Iterator<CharArray> iterator;
-    typedef ConstIterator<CharArray> const_iterator;
-    iterator begin() { return iterator(this, 0); }
-    iterator end() { return iterator(this, count()); }
-    const_iterator begin() const { return const_iterator(this, 0); }
-    const_iterator end() const { return const_iterator(this, count()); }
+    typedef ArrayIterator<CharArray> Iterator;
+    typedef ConstArrayIterator<CharArray> ConstIterator;
+
+    Iterator begin() { return Iterator{this, 0}; }
+    Iterator end() { return Iterator{this, count()}; }
+
+    ConstIterator begin() const { return ConstIterator{this, 0}; }
+    ConstIterator end() const { return ConstIterator{this, count()}; }
     /** @} */
+
+    /** \internal
+      * @{
+      */
+    typedef Iterator iterator;
+    typedef ConstIterator const_iterator;
+    /** @}
+      */
 
 protected:
     friend class Ref<const CharArray>;
@@ -1175,6 +1188,13 @@ inline String Ref<const CharArray>::cat(const String &a, const String &b)
 inline String Ref<const CharArray>::join(const StringList *parts, const String &sep)
 {
     return CharArray::join(parts, sep);
+}
+
+inline String Ref<const CharArray>::multiply(const String &b, int n)
+{
+    auto s = CharArray::allocate(n * b->count());
+    for (int i = 0, m = s->count(); i < m; i += n) mutate(s)->write(b, i, i + n);
+    return s;
 }
 
 inline String &Ref<const CharArray>::operator=(const String &b)

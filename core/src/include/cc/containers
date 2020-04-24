@@ -16,10 +16,8 @@ namespace cc {
 namespace container {
 
 template<class C>
-bool compare(const C &a, const C &b)
+bool arrayCompare(const C &a, const C &b)
 {
-    // TODO: make it utilize iterators for speed (and improve iterator interfaces of Map, Array, etc.)
-
     typedef typename C::Item T;
     int n = a.count() > b.count() ? a.count() : b.count();
     for (int i = 0; i < n; ++i) {
@@ -28,6 +26,26 @@ bool compare(const C &a, const C &b)
         if (x < y) return -1;
         if (y < x) return 1;
     }
+    return 0;
+}
+
+template<class C>
+bool iteratorCompare(const C &a, const C &b)
+{
+    typedef typename C::Item T;
+
+    auto i = a.begin();
+    auto j = b.begin();
+
+    while (i || j) {
+        T x = i ? *i : T{};
+        T y = j ? *j : T{};
+        if (x < y) return -1;
+        if (y < x) return 1;
+        ++i;
+        ++j;
+    }
+
     return 0;
 }
 

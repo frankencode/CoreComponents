@@ -109,15 +109,25 @@ public:
     Vector operator*(T b) const { return Vector(*this) *= b; }
     Vector operator/(T b) const { return Vector(*this) /= b; }
 
-    /** \name C++ iterators
+    /** \name Iterators
       * @{
       */
-    typedef ConstIterator<Instance> const_iterator;
-    typedef Iterator<Instance> iterator;
-    iterator begin() { return iterator(&instance_, 0); }
-    iterator end() { return iterator(&instance_, N); }
-    const_iterator begin() const { return const_iterator(&instance_, 0); }
-    const_iterator end() const { return const_iterator(&instance_, N); }
+    typedef ConstArrayIterator<Instance> ConstIterator;
+    typedef ArrayIterator<Instance> Iterator;
+
+    Iterator begin() { return Iterator{&instance_, 0}; }
+    Iterator end() { return Iterator{&instance_, N}; }
+
+    ConstIterator begin() const { return ConstIterator{&instance_, 0}; }
+    ConstIterator end() const { return ConstIterator{&instance_, N}; }
+    /** @}
+      */
+
+    /** \internal
+      * @{
+      */
+    typedef Iterator iterator;
+    typedef ConstIterator const_iterator;
     /** @}
       */
 

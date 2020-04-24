@@ -238,9 +238,10 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
     Ref<FtGlyphRun> metaBlock = Object::create<FtGlyphRun>();
 
     {
-        Ref<StringList> parts = StringList::allocate(glyphRuns->count());
-        for (int i = 0; i < glyphRuns->count(); ++i)
-            parts->at(i) = glyphRuns->at(i)->text();
+        auto parts = StringList::create();
+        for (const FtGlyphRun *glyphRun: glyphRuns) {
+            parts->append(glyphRun->text());
+        }
         metaBlock->text_ = parts->join();
     }
 
@@ -301,11 +302,11 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
     textRun->byteCount_ = metaBlock->text_->count();
     textRun->lineCount_ = metaBlock->lineCount_;
 
-    textRun->glyphRuns_ = FtGlyphRuns::allocate(glyphRuns->count());
+    textRun->glyphRuns_ = FtGlyphRuns::create();
     int j = 0;
     int k = 0;
-    for (int i = 0; i < glyphRuns->count(); ++i) {
-        const FtGlyphRun *glyphRun = glyphRuns->at(i);
+    for (const FtGlyphRun *glyphRun: glyphRuns)
+    {
         Ref<FtGlyphRun> newGlyphRun = Object::create<FtGlyphRun>(glyphRun->text_, glyphRun->font_, glyphRun->origin_);
         {
             int n = glyphRun->cairoGlyphs_->count();
@@ -325,7 +326,8 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
         }
         else
             newGlyphRun->advance_ = metaBlock->advance_;
-        textRun->glyphRuns_->at(i) = newGlyphRun;
+
+        textRun->glyphRuns_->append(newGlyphRun);
     }
 
     return textRun;

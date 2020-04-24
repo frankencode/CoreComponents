@@ -14,7 +14,7 @@
 namespace cc {
 
 template<class Container>
-class ConstIterator:
+class ConstArrayIterator:
     public std::iterator<
         /*iterator_category*/ std::bidirectional_iterator_tag,
         /*value_type*/        typename Container::Item,
@@ -24,20 +24,20 @@ class ConstIterator:
     >
 {
 public:
-    ConstIterator(const Container *c, int i):
+    ConstArrayIterator(const Container *c, int i):
         c_{c},
         i_{i}
     {}
 
     typename Container::Item operator*() const { return c_->at(i_); }
-    ConstIterator &operator++() { ++i_; return *this; }
-    ConstIterator &operator--() { --i_; return *this; }
-    ConstIterator operator+(int delta) { return ConstIterator{c_, i_ + delta}; }
-    ConstIterator operator-(int delta) { return ConstIterator{c_, i_ - delta}; }
-    int operator-(const ConstIterator &b) const { return i_ - b.i_; }
-    int operator<(const ConstIterator &b) const { return i_ < b.i_; }
-    bool operator==(const ConstIterator &b) const { return i_ == b.i_; }
-    bool operator!=(const ConstIterator &b) const { return i_ != b.i_; }
+    ConstArrayIterator &operator++() { ++i_; return *this; }
+    ConstArrayIterator &operator--() { --i_; return *this; }
+    ConstArrayIterator operator+(int delta) { return ConstArrayIterator{c_, i_ + delta}; }
+    ConstArrayIterator operator-(int delta) { return ConstArrayIterator{c_, i_ - delta}; }
+    int operator-(const ConstArrayIterator &b) const { return i_ - b.i_; }
+    int operator<(const ConstArrayIterator &b) const { return i_ < b.i_; }
+    bool operator==(const ConstArrayIterator &b) const { return i_ == b.i_; }
+    bool operator!=(const ConstArrayIterator &b) const { return i_ != b.i_; }
 
 private:
     const Container *c_;
@@ -45,7 +45,7 @@ private:
 };
 
 template<class Container>
-class Iterator:
+class ArrayIterator:
     public std::iterator<
         /*iterator_category*/ std::bidirectional_iterator_tag,
         /*value_type*/        typename Container::Item,
@@ -55,23 +55,23 @@ class Iterator:
     >
 {
 public:
-    Iterator(Container *c, int i):
+    ArrayIterator(Container *c, int i):
         c_{c},
         i_{i}
     {}
 
     typename Container::Item &operator*() const { return c_->at(i_); }
     typename Container::Item *operator->() const { return &c_->at(i_); }
-    Iterator &operator++() { ++i_; return *this; }
-    Iterator &operator--() { --i_; return *this; }
-    Iterator operator+(int delta) { return Iterator{c_, i_ + delta}; }
-    Iterator operator-(int delta) { return Iterator{c_, i_ - delta}; }
-    int operator-(const Iterator &b) const { return i_ - b.i_; }
-    int operator<(const Iterator &b) const { return i_ < b.i_; }
-    bool operator==(const Iterator &b) const { return i_ == b.i_; }
-    bool operator!=(const Iterator &b) const { return i_ != b.i_; }
+    ArrayIterator &operator++() { ++i_; return *this; }
+    ArrayIterator &operator--() { --i_; return *this; }
+    ArrayIterator operator+(int delta) { return ArrayIterator{c_, i_ + delta}; }
+    ArrayIterator operator-(int delta) { return ArrayIterator{c_, i_ - delta}; }
+    int operator-(const ArrayIterator &b) const { return i_ - b.i_; }
+    int operator<(const ArrayIterator &b) const { return i_ < b.i_; }
+    bool operator==(const ArrayIterator &b) const { return i_ == b.i_; }
+    bool operator!=(const ArrayIterator &b) const { return i_ != b.i_; }
 
-    operator ConstIterator<Container>() const { return ConstIterator<Container>{c_, i_}; }
+    operator ConstArrayIterator<Container>() const { return ConstArrayIterator<Container>{c_, i_}; }
 
 private:
     Container *c_;

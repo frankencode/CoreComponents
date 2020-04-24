@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/Source>
 #include <cc/ui/StylePlugin>
 
 namespace cc { template<typename> class Singleton; }

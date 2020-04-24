@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/Source>
 #include <cc/ui/Image>
 #include <cc/ui/ImagePlugin>
 

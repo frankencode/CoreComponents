@@ -91,15 +91,6 @@ class Cloning: public TestCase
     }
 };
 
-class Preallocation: public TestCase
-{
-    void run() {
-        Ref<IntList> a = IntList::allocate(11);
-        print(a);
-        CC_VERIFY(a->count() == 11);
-    }
-};
-
 class SyntaxSugar: public TestCase
 {
     void printList(const IntList *l) {
@@ -114,43 +105,13 @@ class SyntaxSugar: public TestCase
     }
 };
 
-#if 0
-class IndexTrackingTest: public TestCase
-{
-    class TestItem: public Object, public IndexTracking
-    {
-    public:
-        static Ref<TestItem> create(int value) { return new TestItem(value); }
-        int value() const { return value_; }
-    private:
-        TestItem(int value): value_(value) {}
-        int value_;
-    };
-
-    void run() {
-        typedef List< Ref<TestItem> > TestList;
-        Ref<TestList> list = TestList::create();
-        Ref<TestItem> item = TestItem::create(0);
-        list << item;
-        for (int i = 1; i <= 10; ++i) {
-            if (i % 2) list->pushBack(TestItem::create(i));
-            else list->pushFront(TestItem::create(i));
-            fout() << "item->getIndex() = " << item->getIndex() << nl;
-            CC_VERIFY(item->getIndex() == i/2);
-        }
-    }
-};
-#endif
-
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(InsertionIteration);
     CC_TESTSUITE_ADD(InsertionRemoval);
     CC_TESTSUITE_ADD(Sorting);
     CC_TESTSUITE_ADD(Cloning);
-    CC_TESTSUITE_ADD(Preallocation);
     CC_TESTSUITE_ADD(SyntaxSugar);
-    // CC_TESTSUITE_ADD(IndexTrackingTest);
 
     return TestSuite::instance()->run(argc, argv);
 }

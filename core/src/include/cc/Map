@@ -173,6 +173,7 @@ public:
 
     Iterator begin() { return ConstIterator{tree_}; }
     Iterator end() { return ConstIterator{tree_, tree_->count()}; }
+
     ConstIterator begin() const { return ConstIterator{tree_}; }
     ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
 
@@ -231,21 +232,21 @@ private:
 };
 
 template<class K, class V>
-bool operator==(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) == 0; }
+bool operator==(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) == 0; }
 
 template<class K, class V>
-bool operator!=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) != 0; }
 
 template<class K, class V>
-bool operator<(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) < 0; }
+bool operator<(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) < 0; }
 
 template<class K, class V>
-bool operator>(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) > 0; }
+bool operator>(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) > 0; }
 
 template<class K, class V>
-bool operator<=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) <= 0; }
 
 template<class K, class V>
-bool operator>=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) >= 0; }
 
 } // namespace cc

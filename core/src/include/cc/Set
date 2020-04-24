@@ -91,6 +91,7 @@ public:
 
     Iterator begin() { return ConstIterator{tree_}; }
     Iterator end() { return ConstIterator{tree_, tree_->count()}; }
+
     ConstIterator begin() const { return ConstIterator{tree_}; }
     ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
 
@@ -148,21 +149,21 @@ private:
 };
 
 template<class T>
-bool operator==(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) == 0; }
+bool operator==(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) == 0; }
 
 template<class T>
-bool operator!=(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) != 0; }
 
 template<class T>
-bool operator<(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) < 0; }
+bool operator<(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) < 0; }
 
 template<class T>
-bool operator>(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) > 0; }
+bool operator>(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) > 0; }
 
 template<class T>
-bool operator<=(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) <= 0; }
 
 template<class T>
-bool operator>=(const Set<T> &a, const Set<T> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) >= 0; }
 
 } // namespace cc

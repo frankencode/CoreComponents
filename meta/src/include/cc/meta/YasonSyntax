@@ -69,11 +69,9 @@ protected:
 template<class T>
 Ref< List<T> > YasonSyntax::parseTypedList(const CharArray *text, const Token *token, VariantType expectedItemType) const
 {
-    Ref< List<T> > list = List<T>::allocate(token->countChildren());
-    int i = 0;
+    auto list = List<T>::create();
     for (const Token *child = token->firstChild(); child; child = child->nextSibling()) {
-        list->at(i) = readValue(text, child, expectedItemType);
-        ++i;
+        list->append(readValue(text, child, expectedItemType));
     }
     return list;
 }

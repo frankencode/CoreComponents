@@ -251,16 +251,25 @@ public:
         }
     }
 
-    /** \name C++ iterators
+    /** \name Iterators
       * @{
       */
-    typedef cc::Iterator<Array> iterator;
-    iterator begin() { return iterator{this, 0}; }
-    iterator end() { return iterator{this, count()}; }
+    typedef ArrayIterator<Array> Iterator;
+    typedef ConstArrayIterator<Array> ConstIterator;
 
-    typedef cc::ConstIterator<Array> const_iterator;
-    const_iterator begin() const { return const_iterator{this, 0}; }
-    const_iterator end() const { return const_iterator{this, count()}; }
+    Iterator begin() { return Iterator{this, 0}; }
+    Iterator end() { return Iterator{this, count()}; }
+
+    ConstIterator begin() const { return ConstIterator{this, 0}; }
+    ConstIterator end() const { return ConstIterator{this, count()}; }
+    /** @}
+      */
+
+    /** \internal
+      * @{
+      */
+    typedef Iterator iterator;
+    typedef ConstIterator const_iterator;
     /** @}
       */
 
@@ -348,21 +357,21 @@ private:
 };
 
 template<class T>
-bool operator==(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) == 0; }
+bool operator==(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) == 0; }
 
 template<class T>
-bool operator!=(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) != 0; }
 
 template<class T>
-bool operator<(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) < 0; }
+bool operator<(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) < 0; }
 
 template<class T>
-bool operator>(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) > 0; }
+bool operator>(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) > 0; }
 
 template<class T>
-bool operator<=(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) <= 0; }
 
 template<class T>
-bool operator>=(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) >= 0; }
 
 } // namespace cc

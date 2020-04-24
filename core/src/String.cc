@@ -20,13 +20,13 @@
 namespace cc {
 
 Ref<const CharArray>::Ref(const Variant &b):
-    a_(0)
+    a_{nullptr}
 {
     set(Variant::cast<String>(b));
 }
 
 Ref<const CharArray>::Ref(const Format &b):
-    a_(0)
+    a_{nullptr}
 {
     set(b->join());
 }
@@ -39,33 +39,33 @@ public:
 private:
     friend class Array<char>;
     Chunk(char *data, int size):
-        CharArray(data, size)
+        CharArray{data, size}
     {}
 };
 
 String Array<char>::allocate(int size)
 {
-    if (size <= 0) return new CharArray();
+    if (size <= 0) return new CharArray;
     return new Chunk(new char[size], size);
 }
 
 String Array<char>::create(int size)
 {
-    if (size <= 0) return new CharArray();
+    if (size <= 0) return new CharArray;
     char *data = new char[size + 1];
     data[size] = 0;
-    return new CharArray(data, size);
+    return new CharArray{data, size};
 }
 
 String Array<char>::copy(const char *data, int size)
 {
-    if (!data) return new CharArray();
+    if (!data) return new CharArray;
     if (size < 0) size = strlen(data);
-    if (size <= 0) return new CharArray();
+    if (size <= 0) return new CharArray;
     char *newData = new char[size + 1];
     newData[size] = 0;
     memcpy(newData, data, size);
-    return new CharArray(newData, size);
+    return new CharArray{newData, size};
 }
 
 String Array<char>::join(const StringList *parts, const char *sep, int sepSize)
@@ -73,7 +73,7 @@ String Array<char>::join(const StringList *parts, const char *sep, int sepSize)
     if (!parts) return String();
 
     if (parts->count() == 0)
-        return String();
+        return String{};
 
     if (sepSize < 0) sepSize = strlen(sep);
     int size = 0;
@@ -102,7 +102,7 @@ String Array<char>::join(const StringList *parts, const String &sep)
 
 String Array<char>::cat(const String &a, const String &b)
 {
-    String c(a->count() + b->count());
+    String c{a->count() + b->count()};
     memcpy(c->data_, a->data_, a->size_);
     memcpy(c->data_ + a->size_, b->data_, b->size_);
     return c;
@@ -110,14 +110,14 @@ String Array<char>::cat(const String &a, const String &b)
 
 const CharArray *Array<char>::empty()
 {
-    static thread_local String empty_(new CharArray());
+    static thread_local String empty_{new CharArray};
     return empty_;
 }
 
 Array<char>::Array():
-    size_(0),
-    data_(new char[1]),
-    destroy_(0)
+    size_{0},
+    data_{new char[1]},
+    destroy_{nullptr}
 {
     data_[0] = 0;
 }
@@ -141,8 +141,8 @@ Array<char>::Array(const char *data, int size, Destroy destroy)
 }
 
 Array<char>::Array(const CharArray *parent, int i0, int i1):
-    destroy_(doNothing),
-    parent_(const_cast<CharArray *>(parent))
+    destroy_{doNothing},
+    parent_{const_cast<CharArray *>(parent)}
 {
     if (i0 < 0) i0 = 0;
     else if (i0 > parent->size_) i0 = parent_->size_;
@@ -153,9 +153,9 @@ Array<char>::Array(const CharArray *parent, int i0, int i1):
 }
 
 Array<char>::Array(const CharArray &b):
-    size_(0),
-    data_(const_cast<char *>("")),
-    destroy_(doNothing)
+    size_{0},
+    data_{const_cast<char *>("")},
+    destroy_{doNothing}
 {
     if (b.size_ > 0) {
         size_ = b.size_;

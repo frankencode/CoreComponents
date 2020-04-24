@@ -10,7 +10,6 @@
 
 #include <cc/bucket>
 #include <cc/containers>
-#include <cc/Source>
 #include <cc/Heap>
 #include <cc/Set>
 
@@ -34,18 +33,6 @@ public:
       * \return new object instance
       */
     static Ref<List> create() { return new List; }
-
-    /** Create a new list and populate it with \a count default items
-      * \return new object instance
-      */
-    static Ref<List> allocate(Index count)
-    {
-        // TODO: improve performance
-
-        auto list = new List;
-        for (; count > 0; --count) list->pushBack(Item{});
-        return list;
-    }
 
     /** Create a copy of a list
       * \param other the list to copy
@@ -302,12 +289,14 @@ public:
       * @{
       */
     typedef bucket::Iterator<Item> Iterator;
+    typedef bucket::ConstIterator<Item> ConstIterator;
+
     Iterator begin() { return Iterator{&tree_}; }
     Iterator end() { return Iterator{&tree_, tree_->count()}; }
 
-    typedef bucket::ConstIterator<Item> ConstIterator;
     ConstIterator begin() const { return ConstIterator{tree_}; }
     ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+
     ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
     /** @}
       */
@@ -320,17 +309,17 @@ public:
     /** @}
       */
 
-    /** \name Source adapters
-      * @{
-      */
-    template<class OutputType = Item>
-    Ref< Source<OutputType> > getAll() const { return ContainerSource< List, Pass<Item, OutputType> >::open(this); }
-    /** @}
-      */
-
 private:
     friend class Local<List>;
     friend class bucket::Internals;
+
+    // TODO: obsolete
+    static Ref<List> allocate(Index count)
+    {
+        auto list = new List;
+        for (; count > 0; --count) list->pushBack(Item{});
+        return list;
+    }
 
     List() = default;
     ~List() { tree_->deplete<Item>(); }
@@ -367,21 +356,21 @@ private:
 };
 
 template<class T>
-bool operator==(const List<T> &a, const List<T> &b) { return container::compare(a, b) == 0; }
+bool operator==(const List<T> &a, const List<T> &b) { return container::iteratorCompare(a, b) == 0; }
 
 template<class T>
-bool operator!=(const List<T> &a, const List<T> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const List<T> &a, const List<T> &b) { return container::iteratorCompare(a, b) != 0; }
 
 template<class T>
-bool operator<(const List<T> &a, const List<T> &b) { return container::compare(a, b) < 0; }
+bool operator<(const List<T> &a, const List<T> &b) { return container::iteratorCompare(a, b) < 0; }
 
 template<class T>
-bool operator>(const List<T> &a, const List<T> &b) { return container::compare(a, b) > 0; }
+bool operator>(const List<T> &a, const List<T> &b) { return container::iteratorCompare(a, b) > 0; }
 
 template<class T>
-bool operator<=(const List<T> &a, const List<T> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const List<T> &a, const List<T> &b) { return container::iteratorCompare(a, b) <= 0; }
 
 template<class T>
-bool operator>=(const List<T> &a, const List<T> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const List<T> &a, const List<T> &b) { return container::iteratorCompare(a, b) >= 0; }
 
 } // namespace cc

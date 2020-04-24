@@ -62,16 +62,24 @@ public:
     /// get table entry at index \a i
     Ref<const Entry> at(int i) const { return Object::create<Entry>(lines_->at(i)); }
 
-    typedef cc::ConstIterator<MountTable> const_iterator;
-    typedef const_iterator iterator;
-
-    /** \name C++ iterators
+    /** \name Iterators
       * @{
       */
-    iterator begin() { return iterator(this, 0); }
-    iterator end() { return iterator(this, count()); }
-    const_iterator begin() const { return const_iterator(this, 0); }
-    const_iterator end() const { return const_iterator(this, count()); }
+    typedef ConstArrayIterator<MountTable> ConstIterator;
+    typedef ConstIterator Iterator;
+
+    Iterator begin() { return Iterator{this, 0}; }
+    Iterator end() { return Iterator{this, count()}; }
+    ConstIterator begin() const { return ConstIterator{this, 0}; }
+    ConstIterator end() const { return ConstIterator{this, count()}; }
+    /** @}
+      */
+
+    /** \internal
+      * @{
+      */
+    typedef Iterator iterator;
+    typedef ConstIterator const_iterator;
     /** @}
       */
 

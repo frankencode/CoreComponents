@@ -1,0 +1,42 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Source>
+
+namespace cc {
+
+template<class Container, class OutputItem>
+class IterationSource: public Source<OutputItem>
+{
+public:
+    static Ref<IterationSource> open(const Container *container)
+    {
+        return new IterationSource{container};
+    }
+
+    bool read(OutputItem *item) override
+    {
+        bool more = iterator_;
+        if (more) *item = *iterator_;
+        ++iterator_;
+        return more;
+    }
+
+private:
+    IterationSource(const Container *container):
+        container_{container},
+        iterator_{container->begin()}
+    {}
+
+    Ref<const Container> container_;
+    typename Container::ConstIterator iterator_;
+};
+
+} // namespace cc

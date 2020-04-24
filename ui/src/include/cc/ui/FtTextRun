@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/IterationSource>
 #include <cc/ui/TextRun>
 #include <cc/ui/FtGlyphRun>
 
@@ -40,7 +41,10 @@ public:
 
     Ref<TextRun> wrap(double maxWidth, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const override;
 
-    Ref< Source<const GlyphRun *> > getAllGlyphRuns() const override { return glyphRuns_->getAll<const GlyphRun *>(); }
+    Ref< Source<const GlyphRun *> > getAllGlyphRuns() const override
+    {
+        return IterationSource<FtGlyphRuns, const GlyphRun *>::open(glyphRuns_);
+    }
 
     Ref<TextCursor> getTextCursor(int byteOffset = 0) const override;
 
