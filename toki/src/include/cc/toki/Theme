@@ -25,7 +25,7 @@ public:
     }
 
     inline int paletteCount() const { return paletteByScope_->count(); }
-    inline const Palette *paletteAt(int i) const { return paletteByScope_->valueAt(i); }
+    inline const Palette *paletteAt(int i) const { return paletteByScope_->at(i)->value(); }
 
     inline const Palette *defaultPalette() const { return defaultPalette_; }
 
@@ -43,4 +43,3 @@ private:
 Ref<StringList> themeList(String path = "");
 
 }} // namespace cc::toki
-

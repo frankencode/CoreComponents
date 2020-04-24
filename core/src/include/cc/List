@@ -24,11 +24,11 @@ template<class T>
 class List: public Object
 {
 public:
-    /// Index type
-    typedef bucket::Weight Index;
-
     /// Item type
     typedef T Item;
+
+    /// Index type
+    typedef bucket::Weight Index;
 
     /** Create a new empty list
       * \return new object instance

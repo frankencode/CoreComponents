@@ -35,8 +35,8 @@ void HttpGenerator::setHeader(Header *header)
 {
     Ref<Header> headerSaved = header_;
     header_ = header;
-    for (int i = 0; i < headerSaved->count(); ++i)
-        header_->insert(headerSaved->keyAt(i), headerSaved->valueAt(i));
+    for (const Header::Item &item: headerSaved)
+        header_->insert(item->key(), item->value());
 }
 
 void HttpGenerator::writeHeader()
@@ -45,8 +45,8 @@ void HttpGenerator::writeHeader()
 
     Format sink(peer_->stream());
     writeFirstLine(sink);
-    for (int i = 0; i < header_->count(); ++i)
-        sink << header_->keyAt(i) << ":" << header_->valueAt(i) << "\r\n";
+    for (const Header::Item &item: header_)
+        sink << item->key() << ":" << item->value() << "\r\n";
     sink << "\r\n";
 
     headerWritten_ = true;

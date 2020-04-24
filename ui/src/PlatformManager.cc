@@ -9,6 +9,7 @@
 #include <cc/assert>
 #include <cc/Singleton>
 #include <cc/Map>
+#include <cc/MapValueSource>
 #include <cc/ui/PlatformManager>
 
 namespace cc {
@@ -38,14 +39,14 @@ bool PlatformManager::getPlugin(const String &name, PlatformPlugin **plugin) con
 
 Ref< Source<PlatformPlugin *> > PlatformManager::getAllPlugins() const
 {
-    return plugins_->getAllValues<PlatformPlugin *>();
+    return MapValueSource<Plugins, PlatformPlugin *>::open(plugins_);
 }
 
 PlatformPlugin *PlatformManager::activePlugin() const
 {
     if (activePlugin_) return activePlugin_;
     CC_ASSERT2(plugins_->count() > 0, "No platform plugins available!");
-    return plugins_->valueAt(0);
+    return plugins_->at(0)->value();
 }
 
 void PlatformManager::activatePlugin(PlatformPlugin *plugin)

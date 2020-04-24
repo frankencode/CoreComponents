@@ -47,7 +47,7 @@ void printEnum(const Arguments *arguments)
         );
 
         for (int i = 0; i < map->count(); ++i)
-            fout() << "    " << left(map->keyAt(i), maxNameLength) << " = 0x" << hex(map->valueAt(i)) << (i != map->count() - 1 ? ",\n" : "\n");
+            fout() << "    " << left(map->at(i)->key(), maxNameLength) << " = 0x" << hex(map->at(i)->value()) << (i != map->count() - 1 ? ",\n" : "\n");
 
         fout(
             "};\n"
@@ -69,7 +69,7 @@ void printStr(const Arguments *arguments)
         );
 
         for (int i = 0; i < map->count(); ++i)
-            fout() << "        case Icon::" << left(map->keyAt(i), maxNameLength) << ": return \"" << map->keyAt(i) << "\";\n";
+            fout() << "        case Icon::" << left(map->at(i)->key(), maxNameLength) << ": return \"" << map->at(i)->key() << "\";\n";
 
         fout(
             "    }\n"

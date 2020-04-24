@@ -43,7 +43,7 @@ public:
     Style *styleByRule(int rule) { return styleByRule_->value(rule); }
 
     int styleCount() const { return styleByRule_->count(); }
-    const Style *styleAt(int i) const { return styleByRule_->valueAt(i); }
+    const Style *styleAt(int i) const { return styleByRule_->at(i)->value(); }
 
 private:
     Palette();

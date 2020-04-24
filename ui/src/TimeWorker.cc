@@ -49,7 +49,7 @@ void TimeWorker::run()
         Ref<Timeout> request;
 
         if (timeouts_->count() > 0) {
-            Ref<Timeout> timeout = timeouts_->valueAt(0);
+            Ref<Timeout> timeout = timeouts_->at(0)->value();
 
             if (!startRequests_->popBackBefore(timeout->nextTime_, &request))
             {

@@ -28,7 +28,7 @@ public:
     bool detectLanguage(String path, String text, Language **language) const;
 
     int languageCount() const { return languageByName_->count(); }
-    const Language *languageAt(int i) const { return languageByName_->valueAt(i); }
+    const Language *languageAt(int i) const { return languageByName_->at(i)->value(); }
 
 private:
     friend class Singleton<Registry>;

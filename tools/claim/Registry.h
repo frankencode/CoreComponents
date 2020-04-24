@@ -21,7 +21,7 @@ class Registry: public Object
 {
 public:
     inline int headerStyleCount() const { return headerStyleByLanguage_->count(); }
-    HeaderStyle *headerStyleAt(int i) const { return headerStyleByLanguage_->valueAt(i); }
+    HeaderStyle *headerStyleAt(int i) const { return headerStyleByLanguage_->at(i)->value(); }
 
     const HeaderStyle *headerStyleByLanguage(String language) const;
     bool detectHeaderStyle(String path, String text, HeaderStyle **style) const;
@@ -41,4 +41,3 @@ private:
 Registry *registry();
 
 } // namespace ccclaim
-

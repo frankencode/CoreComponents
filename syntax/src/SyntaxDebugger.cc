@@ -696,7 +696,7 @@ void SyntaxDebugger::printDefinition(bool omitUnusedRules)
     }
 
     for (int i = 0; i < ruleById->count(); ++i) {
-        RuleNode *rule = ruleById->valueAt(i);
+        RuleNode *rule = ruleById->at(i)->value();
         if (omitUnusedRules && !rule->used()) continue;
         fout("DEFINE(\"%%\",\n") << rule->name();
         if (rule->entry()) {

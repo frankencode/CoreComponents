@@ -254,7 +254,7 @@ Ref<Process> Process::bootstrap(const Staging *staging)
             int n = envMap->count();
             envp = new char*[n + 1];
             for (int i = 0; i < n; ++i)
-                envp[i] = cc::strcat(envMap->keyAt(i)->chars(), "=", envMap->valueAt(i)->chars());
+                envp[i] = cc::strcat(envMap->at(i)->key()->chars(), "=", envMap->at(i)->value()->chars());
             envp[n] = 0;
         }
     }

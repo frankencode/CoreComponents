@@ -48,9 +48,9 @@ void MetaObject::autocomplete(MetaObject *target) const
 {
     if (count() != target->count()) {
         for (int i = 0; i < count(); ++i) {
-            String name = keyAt(i);
-            if (target->count() <= i || target->keyAt(i) != name) {
-                Variant value = valueAt(i);
+            String name = at(i)->key();
+            if (target->count() <= i || target->at(i)->key() != name) {
+                Variant value = at(i)->value();
                 const MetaProtocol *protocol = Variant::cast<const MetaProtocol *>(value);
                 if (protocol) value = protocol->defaultObject();
                 target->insert(name, value);

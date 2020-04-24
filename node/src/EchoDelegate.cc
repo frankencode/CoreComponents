@@ -26,7 +26,7 @@ void EchoDelegate::process(const HttpRequest *request)
         Format echo = response()->chunk();
         echo << request->method() << " " << request->uri() << " " << request->version() << "\r\n";
         for (int i = 0; i < request->count(); ++i)
-            echo << request->keyAt(i) << ": " << request->valueAt(i) << "\r\n";
+            echo << request->at(i)->key() << ": " << request->at(i)->value() << "\r\n";
         echo << "\r\n";
     }
     String buf = String::allocate(0x4000);

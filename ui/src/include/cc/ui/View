@@ -49,10 +49,10 @@ public:
     inline View *parent() const { return parent_; }
 
     Property<int> childCount { 0 };
-    View *childAt(int i) const { return children_->valueAt(i); }
+    View *childAt(int i) const { return children_->at(i)->value(); }
 
     int visibleChildCount() const { return visibleChildren_->count(); }
-    View *visibleChildAt(int i) const { return visibleChildren_->valueAt(i); }
+    View *visibleChildAt(int i) const { return visibleChildren_->at(i)->value(); }
 
     Point mapToGlobal(Point l) const;
     Point mapToLocal(Point g) const;

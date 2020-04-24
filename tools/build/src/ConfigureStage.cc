@@ -41,8 +41,8 @@ bool ConfigureStage::run()
     try {
         for (int i = 0; i < plan()->systemPrerequisitesByName()->count(); ++i)
         {
-            String name = plan()->systemPrerequisitesByName()->keyAt(i);
-            SystemPrerequisiteList *prerequisiteList = plan()->systemPrerequisitesByName()->valueAt(i);
+            String name = plan()->systemPrerequisitesByName()->at(i)->key();
+            SystemPrerequisiteList *prerequisiteList = plan()->systemPrerequisitesByName()->at(i)->value();
 
             for (SystemPrerequisite *prerequisite: prerequisiteList)
             {
@@ -221,7 +221,7 @@ void ConfigureStage::makeUseOf(BuildPlan *other)
         if (other->systemPrerequisitesByName()) {
             for (int i = 0; i < other->systemPrerequisitesByName()->count(); ++i)
             {
-                SystemPrerequisiteList *prerequisiteList = other->systemPrerequisitesByName()->valueAt(i);
+                SystemPrerequisiteList *prerequisiteList = other->systemPrerequisitesByName()->at(i)->value();
 
                 for (SystemPrerequisite *prerequisite: prerequisiteList)
                 {

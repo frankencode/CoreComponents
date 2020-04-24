@@ -61,7 +61,7 @@ void ConnectionManager::cycle()
             visits_->popFront();
             uint64_t origin = visit->remoteAddress()->networkPrefix();
             int count = 0;
-            int index = 0;
+            ConnectionCounts::Index index = 0;
             if (!connectionCounts_->lookup(origin, &count, &index)) continue;
 
             if (count == 1) connectionCounts_->removeAt(index);
@@ -74,7 +74,7 @@ bool ConnectionManager::accept(HttpServerConnection *client)
 {
     uint64_t origin = client->address()->networkPrefix();
     int count = 0;
-    int index = 0;
+    ConnectionCounts::Index index = 0;
     if (!connectionCounts_->insert(origin, 1, &count, &index)) {
         if (connectionLimit_ > 0) {
             if (count >= connectionLimit_)

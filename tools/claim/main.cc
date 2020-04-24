@@ -69,13 +69,13 @@ int main(int argc, char **argv)
                 CoverageByDigest *coverageByDigest = report->coverageByDigest();
                 StatementByDigest *statementByDigest = report->statementByDigest();
                 for (int i = 0; i < coverageByDigest->count(); ++i) {
-                    Coverage *coverage = coverageByDigest->valueAt(i);
-                    String digest = coverageByDigest->keyAt(i);
+                    Coverage *coverage = coverageByDigest->at(i)->value();
+                    String digest = coverageByDigest->at(i)->key();
                     String statement = statementByDigest->value(digest);
                     fout() << "Statement (" << i + 1 << "):" << nl;
                     fout() << "\"\"\"" << statement << "\"\"\"" << nl;
                     for (int j = 0; j < coverage->count(); ++j)
-                        fout() << "  " << coverage->keyAt(j) << nl;
+                        fout() << "  " << coverage->at(j)->key() << nl;
                     fout() << nl;
                 }
             }
@@ -88,13 +88,13 @@ int main(int argc, char **argv)
             else if (focus == "holder") {
                 CoverageByHolder *coverageByHolder = report->coverageByHolder();
                 for (int i = 0; i < coverageByHolder->count(); ++i) {
-                    Coverage *coverage = coverageByHolder->valueAt(i);
-                    String holder = coverageByHolder->keyAt(i);
+                    Coverage *coverage = coverageByHolder->at(i)->value();
+                    String holder = coverageByHolder->at(i)->key();
                     fout() << "Copyright " << holder << ":" << nl;
                     for (int j = 0; j < coverage->count(); ++j) {
-                        Notice *notice = coverage->valueAt(j);
+                        Notice *notice = coverage->at(j)->value();
                         Format line(stdOut());
-                        line << coverage->keyAt(j) << " (";
+                        line << coverage->at(j)->key() << " (";
                         CopyrightList *copyrights = notice->copyrights();
                         for (int k = 0; k < copyrights->count(); ++k) {
                             Copyright *copyright = copyrights->at(k);
@@ -117,8 +117,8 @@ int main(int argc, char **argv)
             Coverage *coverage = report->coverageByHolder()->value(holder);
             if (!coverage) return 0;
             for (int i = 0; i < coverage->count(); ++i) {
-                String path = coverage->keyAt(i);
-                Notice *notice = coverage->valueAt(i);
+                String path = coverage->at(i)->key();
+                Notice *notice = coverage->at(i)->value();
                 CopyrightList *copyrights = notice->copyrights();
                 for (int j = 0; j < copyrights->count(); ++j)
                     if (copyrights->at(j)->holder() != holder) continue;

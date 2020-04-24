@@ -20,9 +20,6 @@ namespace cc {
 template<unsigned Capacity>
 class BucketMap
 {
-public:
-
-
 private:
     uint8_t map_[Capacity];
 };

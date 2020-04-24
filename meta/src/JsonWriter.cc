@@ -80,7 +80,7 @@ void JsonWriter::writeObject(Variant value, const StringList *names, int depth)
     writeIndent(depth + 1);
     if (!names) {
         for (int i = 0; i < object->count(); ++i)
-            writeMember(object->keyAt(i), object->valueAt(i), i == object->count() - 1, depth);
+            writeMember(object->at(i)->key(), object->at(i)->value(), i == object->count() - 1, depth);
     }
     else {
         int i = 0;

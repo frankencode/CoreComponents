@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,146 +8,132 @@
 
 #pragma once
 
+#include <cc/bucket>
 #include <cc/containers>
-#include <cc/Source>
-#include <cc/SearchTree>
+#include <cc/Pair>
 
 namespace cc {
-
-template<class, class> class KeyValuePair;
-template<class, class> class MapIterator;
-
-#ifndef NDEBUG
-class MapTester;
-#endif
 
 /** \class Map cc/Map
   * \ingroup container
   * \brief %Map data container
   * \see Set, List
   */
-template<class Key, class Value = Key>
+template<class K, class V = K>
 class Map: public Object
 {
 public:
+    // Key type
+    typedef K Key;
+
+    // Value type
+    typedef V Value;
+
     /// Item type
-    typedef KeyValuePair<Key, Value> Item;
+    typedef Pair<Key, Value> Item;
+
+    /// Index type
+    typedef bucket::Weight Index;
 
     /** Create a new map
       * \return new object instance
       */
-    static Ref<Map> create() { return new Map(); }
+    static Ref<Map> create() { return new Map; }
 
-    /** Create a shallow copy of another map
-      * \param other another map
-      * \return new object instance
-      */
-    static Ref<Map> replicate(const Map *other) { return new Map(*other); }
-
-    /// Number of key-value pairs stored in this map
-    int count() const { return tree_.count(); }
+    /// Number of items
+    Index count() const { return tree_->count(); }
 
     /// Check if an index is valid
-    bool has(int index) const {
+    bool has(Index index) const {
         return 0 <= index && index < count();
     }
 
     /** Return a reference to an item
-      * \param index map index
+      * \param index set index
       * \return reference to the item
       */
-    const Item &at(int index) const {
-        Node *node = 0;
-        if (!tree_.lookupByIndex(index, &node))
-            CC_ASSERT(false);
-        return node->item_;
-    }
-
-    /** Return a reference to a key at a certain index
-      * \param index map index
-      * \return reference to the key
-      */
-    Key keyAt(int index) const { return at(index)->key(); }
-
-    /** Return a reference to a value at a certain index (readonly)
-      * \param index map index
-      * \return reference to the value
-      */
-    Value valueAt(int index) const { return at(index)->value(); }
-
-    /** Modify value at given \a index
-      * \param index map index
-      * \param newValue new value to establish
-      * \see establish()
-      */
-    void setValueAt(int index, const Value &newValue) {
-        Node *node = 0;
-        if (!tree_.lookupByIndex(index, &node))
-            CC_ASSERT(false);
-        node->item_->setValue(newValue);
-    }
-
-    /** Return the index of the first item greater or equal _a_
-      */
-    int from(const Key &a) const { return tree_.findFirstAboveOrEqual(a); }
-
-    /** Return the index of the first item lower or equal _b_
-      */
-    int to(const Key &b) const { return tree_.findLastBelowOrEqual(b); }
-
-    /** Insert a key-value mapping if no key-value mapping with the same key exists already.
-      * If currentValue is non-null the current value the giving key maps to is returned.
-      * \return true if a new key-value mapping was inserted successfully
-      */
-    bool insert(const Key &key, const Value &value, Value *currentValue = 0, int *index = 0)
+    const Item &at(Index index) const
     {
-        bool found = false;
-        bool below = true;
-        Item e(key, value);
-        Node *k = tree_.find(e, &found, &below, index);
-        if (found) {
-            if (currentValue)
-                *currentValue = k->item_->value();
-            return false;
-        }
-        Node *kn = new Node(e);
-        tree_.attach(k, kn, below);
-        return true;
+        assert(0 <= index && index < count());
+        return tree_->at<Item>(index);
     }
 
-    /** Remove a key-value mapping
-      * \param key item key
-      * \param index return index the key-value mapping occupied
-      * \return true if a matching key-value pair was found and removed
-      */
-    bool remove(const Key &key, int *index = 0)
+    /// Check if the map contains \a key
+    bool contains(const Key &key) const
     {
-        bool found;
-        Node *k = tree_.find(Item(key), &found, 0, index);
-        if (found)
-            tree_.remove(k);
+        return tree_->lookup<Item>(Item{key});
+    }
+
+    /** Insert a new key-value pair if the map doesn't contain the key already
+      * \param key search key
+      * \param value new value
+      * \param currentValue returns the current value if the map contains the given key already
+      * \param currentIndex returns the index of the key if the map contains the given key already
+      * \return true if the new key-value pair was inserted successfully
+      */
+    bool insert(const Key &key, const Value &value, Value *currentValue = nullptr, Index *currentIndex = nullptr)
+    {
+        bucket::Leaf<Item> *target = nullptr;
+        unsigned egress = 0;
+        Item item{key, value};
+        bool found = tree_->lookup<Item>(item, currentIndex, &target, &egress);
+        if (!found) tree_->push<Item>(target, egress, item);
+        else if (currentValue) *currentValue = target->at(egress)->value();
+        return !found;
+    }
+
+    /** Remove the given \a key from the map
+      * \return true if a matching key was found and removed
+      */
+    bool remove(const Key &key)
+    {
+        bucket::Leaf<Item> *target = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup<Item>(Item{key}, nullptr, &target, &egress);
+        if (found) tree_->pop<Item>(target, egress);
         return found;
     }
 
-    /** Remove a key-value mapping at a given index
-      * \param index map index
-      * \return true if a matching key-value pair was found and removed
+    /** Insert a new or overwrite a existing key-value mapping
+      * \param key search key
+      * \param value new value
       */
-    bool removeAt(int index) {
-        Node *node = 0;
-        if (!tree_.lookupByIndex(index, &node)) return false;
-        tree_.remove(node);
-        return true;
+    void establish(const Key &key, const Value &value)
+    {
+        bucket::Leaf<Item> *target = nullptr;
+        unsigned egress = 0;
+        Item item{key, value};
+        bool found = tree_->lookup<Item>(item, nullptr, &target, &egress);
+        if (found) target->at(egress) = item;
+        else tree_->push<Item>(target, egress, item);
     }
 
-    /** Insert or overwrite a key-value mapping.
-      * \param key item key
-      * \param value item value
+    /** Retrieve value of associated with a given \a key
+      * \param key search key
+      * \param fallback fallback value
+      * \return retieved value if key was found, fallback value otherwise
       */
-    void establish(const Key &key, const Value &value) {
-        int index = 0;
-        if (!insert(key, value, 0, &index))
-            setValueAt(index, value);
+    Value value(const Key &key, const Value &fallback = Value{}) const
+    {
+        bucket::Leaf<Item> *target = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup(Item{key}, nullptr, &target, &egress);
+        return found ? target->at(egress)->value() : fallback;
+    }
+
+    /** Modify value of an existing key-value mapping
+      * \param key search key
+      * \param value new value
+      * \return true if key is was found, false otherwise
+      */
+    bool setValue(const Key &key, const Value &value)
+    {
+        bucket::Leaf<Pair<Key, Value>> *target = nullptr;
+        unsigned egress = 0;
+        Item item{key, value};
+        bool found = tree_->lookup(item, nullptr, &target, &egress);
+        if (found) target->at(egress) = item;
+        return found;
     }
 
     /** Lookup key-value pair by given key.
@@ -155,247 +141,111 @@ public:
       * function returns with true. If a matching key-value pair could not be found
       * 'value' is not set and the function returns false.
       */
-    template<class Value2>
-    bool lookup(const Key &key, Value2 *value = nullptr, int *index = nullptr) const
+    template<class ReturnValue>
+    bool lookup(const Key &key, ReturnValue *value = nullptr, Index *index = nullptr) const
     {
-        bool found = false;
-        Node *k = tree_.find(Item(key), &found, 0, index);
-        if (found && (value))
-            *value = k->item_->value();
+        bucket::Leaf<Item> *target = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup(Item{key}, index, &target, &egress);
+        if (found) *value = target->at(egress)->value();
         return found;
     }
 
-    /** Retrieve value of an existing key-value mapping.
-      */
-    Value value(const Key &key, const Value &fallback = Value()) const
+    /// Remove item at given \a index
+    void removeAt(Index index)
     {
-        Value value = fallback;
-        lookup(key, &value);
-        return value;
+        assert(0 <= index && index < count());
+        tree_->pop<Item>(index);
     }
 
-    /** Modify value of an existing key-value mapping.
-      * \param key item key
-      * \param newValue new value to set
-      * \return true if key is valid (i.e. has been inserted before), otherwise false
-      */
-    bool setValue(const Key &key, const Value &newValue)
+    /// Modify value of the key-value mapping at given \a index
+    void setValueAt(Index index, const Value &value)
     {
-        int index = 0;
-        bool found = lookup(key, (Value *)0, &index);
-        if (found) setValueAt(index, newValue);
-        return found;
+        assert(0 <= index && index < count());
+        tree_->at<Item>(index)->setValue(value);
     }
-
-    /** Check if the map contains a given key
-      * \param key item key
-      * \return true if the map contains the given key
-      */
-    bool contains(const Key &key) const { return lookup<Value>(key); }
-
-    /** Establish a new key-value mapping
-      * \param item new key-value pair to establish
-      */
-    void push(const Item &item)
-    {
-        establish(item->key(), item->value());
-    }
-
-    /** Remove first key-value mapping
-      * \param item return key-value pair
-      */
-    void pop(Item *item)
-    {
-        CC_ASSERT(count() > 0);
-        Node *k = static_cast<Node *>(tree_.min());
-        *item = k->item_;
-        tree_.remove(k);
-    }
-
-    /** Remove first key-value mapping
-      * \return key-value pair
-      */
-    Item pop() {
-        Item item;
-        pop(&item);
-        return item;
-    }
-
-    /// Reset this map to an empty map
-    void deplete() { tree_.deplete(); }
-
-    /// \copydoc push(const Item &item)
-    void operator<<(const Item &item) { push(item); }
-
-    /** \name Source adapters
-      * @{
-      */
-    template<class OutputType = Item>
-    Ref< Source<OutputType> > getAll() const { return ContainerSource< Map, Pass<Item, OutputType> >::open(this); }
-
-    template<class OutputType = Item>
-    Ref< Source<OutputType> > getFromTo(const Key &a, const Key &b) { return ContainerSource< Map, Pass<Item, OutputType> >::open(this, from(a), to(b)); }
-
-    template<class OutputType = Key>
-    Ref< Source<OutputType> > getAllKeys() const { return ContainerSource<Map, GetKey<OutputType> >::open(this); }
-
-    template<class OutputType = Value>
-    Ref< Source<OutputType> > getAllValues() const { return ContainerSource<Map, GetValue<OutputType> >::open(this); }
-    /** @}
-      */
 
     /** \name Iterators
       * @{
       */
-    typedef MapIterator<Key, Value> iterator;
-    typedef MapIterator<Key, Value> const_iterator;
-    iterator begin();
-    iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
+    typedef bucket::ConstIterator<Item> Iterator;
+    typedef bucket::ConstIterator<Item> ConstIterator;
+
+    Iterator begin() { return ConstIterator{tree_}; }
+    Iterator end() { return ConstIterator{tree_, tree_->count()}; }
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+
+    ConstIterator first(const Key &key) const
+    {
+        Index index = 0;
+        bucket::Leaf<Item> *node = nullptr;
+        unsigned egress = 0;
+        tree_->lookupFirst(Item{key}, &index, &node, &egress);
+        return ConstIterator(tree_, index, node, egress);
+    }
+
+    ConstIterator last(const Key &key) const
+    {
+        Index index = 0;
+        bucket::Leaf<Item> *node = nullptr;
+        unsigned egress = 0;
+        tree_->lookupLast(Item{key}, &index, &node, &egress);
+        return ConstIterator(tree_, index, node, egress);
+    }
     /** @}
       */
 
+    /** \internal
+      * @{
+      */
+    typedef Iterator iterator;
+    typedef ConstIterator const_iterator;
+    /** @}
+      */
+
+    /// Return the smallest item
+    const Item &first() const { return tree_->first<Item>(); }
+
+    /// Return the biggest item
+    const Item &last() const { return tree_->last<Item>(); }
+
+    /// Reset to an empty map
+    void deplete() { tree_->deplete<Item>(); }
+
 protected:
-#ifndef NDEBUG
-    friend class MapTester;
-#endif
+    friend class bucket::Internals;
+    friend class Local<Map>;
 
-    template<class O = Key>
-    class GetKey {
-    public:
-        typedef O OutputType;
-        static OutputType get(const Item &item) { return item->key(); }
-    };
+    Map() = default;
 
-    template<class O = Value>
-    class GetValue {
-    public:
-        typedef O OutputType;
-        static OutputType get(const Item &item) { return item->value(); }
-    };
-
-    typedef SearchTree< SearchNode<Item> > Tree;
-    typedef typename Tree::Node Node;
-
-    Map() {}
-    explicit Map(const Map &b): tree_(b.tree_) {}
-
-    const Map &operator=(const Map &b);
-
-    Tree tree_;
-    mutable Item nullItem_;
-};
-
-/** \brief Key value pair
-  * \see Map
-  */
-template<class Key, class Value>
-class KeyValuePair
-{
-public:
-    KeyValuePair()
-    {}
-
-    KeyValuePair(const Key &key):
-        instance_(key)
-    {}
-
-    KeyValuePair(const Key &key, const Value &value):
-        instance_(key, value)
-    {}
-
-    bool operator< (const KeyValuePair &b) const { return instance_.key_ <  b.instance_.key_; }
-    bool operator> (const KeyValuePair &b) const { return instance_.key_ >  b.instance_.key_; }
-    bool operator==(const KeyValuePair &b) const { return instance_.key_ ==  b.instance_.key_; }
-    bool operator!=(const KeyValuePair &b) const { return instance_.key_ !=  b.instance_.key_; }
-    bool operator<=(const KeyValuePair &b) const { return instance_.key_ <=  b.instance_.key_; }
-    bool operator>=(const KeyValuePair &b) const { return instance_.key_ >=  b.instance_.key_; }
-
-    class Instance {
-    public:
-        Key key() const { return key_; }
-        Value value() const { return value_; }
-        void setValue(const Value &value) { value_ = value; }
-
-    private:
-        friend class KeyValuePair;
-        Instance()
-        {}
-        Instance(const Key &key):
-            key_(key), value_(Value{})
-        {}
-        Instance(const Key &key, const Value& value):
-            key_(key), value_(value)
-        {}
-        Key key_;
-        Value value_;
-    };
-
-    Instance *operator->() { return &instance_; }
-    const Instance *operator->() const { return &instance_; }
-
-private:
-    Instance instance_;
-};
-
-template<class Key, class Value>
-class MapIterator {
-public:
-    MapIterator(const Map<Key, Value> *m, int i):
-        m_(m),
-        i_(i)
-    {}
-
-    const KeyValuePair<Key, Value> &operator*() { return m_->at(i_); }
-    MapIterator &operator++() { ++i_; return *this; }
-
-    bool operator!=(const MapIterator &b) { return i_ != b.i_; }
-
-private:
-    const Map<Key, Value> *m_;
-    int i_;
-};
-
-template<class Key, class Value>
-typename Map<Key, Value>::iterator Map<Key, Value>::begin() { return iterator(this, 0); }
-
-template<class Key, class Value>
-typename Map<Key, Value>::iterator Map<Key, Value>::end() { return iterator(this, count()); }
-
-template<class Key, class Value>
-typename Map<Key, Value>::const_iterator Map<Key, Value>::begin() const { return const_iterator(this, 0); }
-
-template<class Key, class Value>
-typename Map<Key, Value>::const_iterator Map<Key, Value>::end() const { return const_iterator(this, count()); }
-
-template<class Key, class Value>
-bool operator==(const Map<Key, Value> &a, const Map<Key, Value> &b) { return container::compare(a, b) == 0; }
-
-template<class Key, class Value>
-bool operator!=(const Map<Key, Value> &a, const Map<Key, Value> &b) { return container::compare(a, b) != 0; }
-
-template<class Key, class Value>
-bool operator<(const Map<Key, Value> &a, const Map<Key, Value> &b) { return container::compare(a, b) < 0; }
-
-template<class Key, class Value>
-bool operator>(const Map<Key, Value> &a, const Map<Key, Value> &b) { return container::compare(a, b) > 0; }
-
-template<class Key, class Value>
-bool operator<=(const Map<Key, Value> &a, const Map<Key, Value> &b) { return container::compare(a, b) <= 0; }
-
-template<class Key, class Value>
-bool operator>=(const Map<Key, Value> &a, const Map<Key, Value> &b) { return container::compare(a, b) >= 0; }
-
-#ifndef NDEBUG
-class MapTester: public SearchTreeTester
-{
-public:
-    template<class Map>
-    static bool test(const Map *map) {
-        return SearchTreeTester::test(&map->tree_);
+    Map(const Map *other)
+    {
+        tree_->populate<Item>(other);
     }
+
+    ~Map() { tree_->deplete<Item>(); }
+
+private:
+    Local<bucket::Tree> tree_;
 };
-#endif
+
+template<class K, class V>
+bool operator==(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) == 0; }
+
+template<class K, class V>
+bool operator!=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) != 0; }
+
+template<class K, class V>
+bool operator<(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) < 0; }
+
+template<class K, class V>
+bool operator>(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) > 0; }
+
+template<class K, class V>
+bool operator<=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) <= 0; }
+
+template<class K, class V>
+bool operator>=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(a, b) >= 0; }
 
 } // namespace cc

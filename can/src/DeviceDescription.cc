@@ -419,7 +419,7 @@ int DeviceDescription::DictionarySection::entryCount() const
 
 const DeviceDescription::EntryInfo *DeviceDescription::DictionarySection::entryAt(int i) const
 {
-    return entries_->valueAt(i);
+    return entries_->at(i)->value();
 }
 
 bool DeviceDescription::DictionarySection::insertEntry(EntryInfo *entry)
@@ -459,9 +459,9 @@ String DeviceDescription::DictionarySection::toString() const
     f << "[" << sectionName() << "]" << nl
       << "SupportedObjects=" << entries_->count() << nl;
     for (int i = 0; i < entries_->count(); ++i)
-        f << (i + 1) << "=0x" << hex(entries_->keyAt(i), 4) << nl;
+        f << (i + 1) << "=0x" << hex(entries_->at(i)->key(), 4) << nl;
     for (int i = 0; i < entries_->count(); ++i)
-        f << nl << entries_->valueAt(i)->toString();
+        f << nl << entries_->at(i)->value()->toString();
     return f;
 }
 
@@ -469,7 +469,7 @@ bool DeviceDescription::DictionarySection::equals(const DictionarySection *other
 {
     if (entries_->count() != other->entries_->count()) return false;
     for (int i = 0; i < entries_->count(); ++i) {
-        if (!entries_->valueAt(i)->equals(other->entries_->valueAt(i)))
+        if (!entries_->at(i)->value()->equals(other->entries_->at(i)->value()))
             return false;
     }
     return true;
@@ -586,7 +586,7 @@ String DeviceDescription::EntryInfo::toString() const
         f << "SubNumber=" << subEntries_->count() << nl;
 
         for (int i = 0; i < subEntries_->count(); ++i) {
-            const EntryInfo *sub = subEntries_->valueAt(i);
+            const EntryInfo *sub = subEntries_->at(i)->value();
             f << nl
               << "[" << hex(sub->index_, 4) << "sub" << hex(sub->subIndex_) << "]" << nl
               << "ParameterName=" << sub->parameterName_ << nl
@@ -642,7 +642,7 @@ bool DeviceDescription::EntryInfo::equals(const EntryInfo *other) const
         [=](){
             if (subEntries_->count() != other->subEntries_->count()) return false;
             for (int i = 0; i < subEntries_->count(); ++i) {
-                if (!subEntries_->valueAt(i)->equals(other->subEntries_->valueAt(i)))
+                if (!subEntries_->at(i)->value()->equals(other->subEntries_->at(i)->value()))
                     return false;
             }
             return true;

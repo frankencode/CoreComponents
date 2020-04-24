@@ -8,6 +8,7 @@
 
 #include <cc/stdio>
 #include <cc/Map>
+#include <cc/MapValueSource>
 #include <cc/Dir>
 #include <cc/FileStatus>
 #include <cc/File>
@@ -36,7 +37,7 @@ String PluginDir::path() const
 
 Ref< Source<const Plugin *> > PluginDir::getLoadedPlugins() const
 {
-    return loadedPlugins_->getAllValues<const Plugin *>();
+    return MapValueSource<PluginByName, const Plugin *>::open(loadedPlugins_);
 }
 
 void PluginDir::onLoadError(String pluginPath, String errorMessage)

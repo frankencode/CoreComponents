@@ -84,7 +84,7 @@ bool IoMonitor::waitFor(const IoEvent *event, int timeout_ms, const IoEvent **ot
 
     if (n > 0) {
         for (int i = 0; i < events_->count(); ++i) {
-            const IoEvent *candidate = events_->valueAt(i);
+            const IoEvent *candidate = events_->at(i)->value();
             if (candidate == event) {
                 if (fds_->at(i).revents != 0) return true;
                 if (!other) return false;

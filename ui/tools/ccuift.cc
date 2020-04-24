@@ -99,8 +99,8 @@ void printIconEnum(const Arguments *arguments)
         fout("enum class Icon: uchar_t {\n");
         for (int i = 0; i < map->count(); ++i) {
             fout("    %% = 0x%%%%\n")
-                << left(map->keyAt(i), maxKeyLength)
-                << hex(map->valueAt(i))
+                << left(map->at(i)->key(), maxKeyLength)
+                << hex(map->at(i)->value())
                 << (i < map->count() - 1 ? "," : "");
         }
         fout("};\n");
@@ -122,7 +122,7 @@ void printIconStr(const Arguments *arguments)
         );
 
         for (int i = 0; i < map->count(); ++i)
-            fout("        case Icon::%%: return \"%%\";\n") << left(map->keyAt(i), maxKeyLength) << map->keyAt(i);
+            fout("        case Icon::%%: return \"%%\";\n") << left(map->at(i)->key(), maxKeyLength) << map->at(i)->key();
 
         fout(
             "    }\n"

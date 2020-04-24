@@ -131,7 +131,7 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
     String reasonPhrase;
     {
         String statusField;
-        int fieldIndex = 0;
+        HttpMessage::Index fieldIndex = 0;
         if (cgiResponse->lookup("Status", &statusField, &fieldIndex)) {
             int i = statusField->find(' ');
             statusCode = statusField->select(0, i)->toNumber<int>();
@@ -147,7 +147,7 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
 
     {
         String location;
-        int fieldIndex = 0;
+        HttpMessage::Index fieldIndex = 0;
         if (cgiResponse->lookup("Location", &location, &fieldIndex)) {
             CCNODE_DEBUG() << "Redirect to \"" << location << "\"" << nl;
             if (location->startsWith("/")) {
@@ -160,7 +160,7 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
                 }
                 response()->setStatus(statusCode, reasonPhrase);
                 for (int i = 0; i < cgiResponse->count(); ++i)
-                    response()->setHeader(cgiResponse->keyAt(i), cgiResponse->valueAt(i));
+                    response()->setHeader(cgiResponse->at(i)->key(), cgiResponse->at(i)->value());
                 response()->beginTransmission(content->count());
                 response()->write(content);
                 response()->endTransmission();
@@ -182,7 +182,7 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
     ssize_t contentLength = -1;
     {
         String value;
-        int i = 0;
+        HttpMessage::Index i = 0;
         if (cgiResponse->lookup("Content-Length", &value, &i)) {
             contentLength = value->toNumber<size_t>();
             cgiResponse->remove("Content-Length");
@@ -251,7 +251,7 @@ Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(const HttpRequest *request, CharAr
     }
 
     for (int i = 0; i < request->count(); ++i)
-        env->insert(wrapHttp(request->keyAt(i)), request->valueAt(i));
+        env->insert(wrapHttp(request->at(i)->key()), request->at(i)->value());
 
     for (auto pair: cgiInstance_->environment())
         env->insert(pair->key(), pair->value());
@@ -262,7 +262,7 @@ Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(const HttpRequest *request, CharAr
 void CgiDelegate::logEnv(EnvMap *env)
 {
     for (int i = 0; i < env->count(); ++i)
-        CCNODE_DEBUG() << "environ[" << i << "] = \"" << env->keyAt(i) << "\": \"" << env->valueAt(i) << "\"" << nl;
+        CCNODE_DEBUG() << "environ[" << i << "] = \"" << env->at(i)->key() << "\": \"" << env->at(i)->value() << "\"" << nl;
 }
 
 String CgiDelegate::compileHeader(const HttpRequest *request, CharArray *payload) const
@@ -295,12 +295,12 @@ String CgiDelegate::compileHeader(const HttpRequest *request, CharArray *payload
             << "HTTPS" << "on";
     }
 
-    for (int i = 0; i < request->count(); ++i)
-        header << wrapHttp(request->keyAt(i)) << request->valueAt(i);
+    for (const auto &item: request)
+        header << wrapHttp(item->key()) << item->value();
 
     Ref<VariantMap> userEnv = cgiInstance_->environment();
-    for (int i = 0; i < userEnv->count(); ++i)
-        header << userEnv->keyAt(i) << userEnv->valueAt(i);
+    for (const auto &item: userEnv)
+        header << item->key() << item->value();
 
     header << "";
 

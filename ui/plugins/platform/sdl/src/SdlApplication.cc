@@ -162,7 +162,7 @@ int SdlApplication::run()
         };
 
         for (int i = 0; i < windows_->count(); ++i)
-            windows_->valueAt(i)->commitFrame();
+            windows_->at(i)->value()->commitFrame();
     }
 
     return 0;

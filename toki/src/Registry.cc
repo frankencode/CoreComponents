@@ -32,7 +32,7 @@ bool Registry::detectLanguage(String path, String text, Language **language) con
     Ref<Candidates> candidates = Candidates::create();
 
     for (int i = 0; i < languageByName_->count(); ++i) {
-        Language *candidate = languageByName_->valueAt(i);
+        Language *candidate = languageByName_->at(i)->value();
         if (candidate->pathPattern()->match(path)->valid())
             candidates->append(candidate);
     }

@@ -670,13 +670,13 @@ public:
             node_ = static_cast< Leaf<Item> *>(tree->stepDownTo(index, &egress_));
     }
 
-    TreeIterator(const Tree *tree, Weight index, Leaf<Item> *node, unsigned egress):
+    TreeIterator(const Tree *tree, Weight index, Node *node, unsigned egress):
         tree_{tree},
         #ifndef NDEBUG
         revision_{tree_->revision()},
         #endif
         index_{index},
-        node_{node},
+        node_{static_cast< Leaf<Item> *>(node)},
         egress_{egress}
     {}
 
@@ -750,6 +750,9 @@ private:
     Leaf<Item> *node_;
     unsigned egress_;
 };
+
+template<class T>
+Weight indexOf(const T &x) { return +x; }
 
 template<class Item>
 using ConstIterator = TreeIterator<const Item, const Tree>;

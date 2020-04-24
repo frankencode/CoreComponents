@@ -101,8 +101,8 @@ void YasonWriter::writeObject(Variant value, int depth)
     format_ << "{\n";
     writeIndent(depth + 1); // FIXME: having an "IndentStream" would be nice
     for (int i = 0; i < object->count(); ++i) {
-        String memberName = object->keyAt(i);
-        Variant memberValue = object->valueAt(i);
+        String memberName = object->at(i)->key();
+        Variant memberValue = object->at(i)->value();
         if (isIdentifier(memberName))
             format_ << memberName << ": ";
         else

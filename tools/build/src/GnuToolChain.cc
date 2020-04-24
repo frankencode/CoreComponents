@@ -395,7 +395,7 @@ String GnuToolChain::pkgConfig(const BuildPlan *plan) const
     if (plan->systemPrerequisitesByName()) {
         bool gotPkgConfigPrerequisites = false;
         for (int i = 0; i < plan->systemPrerequisitesByName()->count(); ++i) {
-            const SystemPrerequisiteList *prerequisiteList = plan->systemPrerequisitesByName()->valueAt(i);
+            const SystemPrerequisiteList *prerequisiteList = plan->systemPrerequisitesByName()->at(i)->value();
             for (const SystemPrerequisite *prerequisite: prerequisiteList) {
                 if (prerequisite->autoConfigure()) {
                     if (!gotPkgConfigPrerequisites) {

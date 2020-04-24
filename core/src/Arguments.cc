@@ -69,8 +69,8 @@ void Arguments::validate(const VariantMap *prototype)
 {
     for (int i = 0; i < options_->count(); ++i)
     {
-        String name = options_->keyAt(i);
-        Variant value = options_->valueAt(i);
+        String name = options_->at(i)->key();
+        Variant value = options_->at(i)->value();
 
         Variant defaultValue;
         if (!prototype->lookup(name, &defaultValue))
@@ -111,8 +111,8 @@ void Arguments::override(VariantMap *config) const
 {
     for (int i = 0; i < options_->count(); ++i)
     {
-        String name = options_->keyAt(i);
-        Variant value = options_->valueAt(i);
+        String name = options_->at(i)->key();
+        Variant value = options_->at(i)->value();
         config->establish(name, value);
     }
 }

@@ -498,7 +498,7 @@ void View::init()
 
 uint64_t View::nextSerial() const
 {
-    return (children_->count() > 0) ? children_->keyAt(children_->count() - 1) + 1 : 1;
+    return (children_->count() > 0) ? children_->at(children_->count() - 1)->key() + 1 : 1;
 }
 
 void View::polish(Window *window)

@@ -72,7 +72,7 @@ void EventMonitor::run()
     auto timeLine = MinHeap<NextEvent>::create(events_->count());
     {
         for (int i = 0; i < events_->count(); ++i) {
-            Event *event = events_->valueAt(i);
+            Event *event = events_->at(i)->value();
             if (event->autoStart()) {
                 timeLine->push(
                     NextEvent{

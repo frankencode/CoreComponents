@@ -1,0 +1,68 @@
+/*
+ * Copyright (C) 2007-2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc
+{
+
+/** \class Pair cc/Pair
+  * \ingroup container
+  * \brief Key value pair
+  * \see Map
+  */
+template<class Key, class Value>
+class Pair
+{
+public:
+    Pair()
+    {}
+
+    Pair(const Key &key):
+        instance_{key}
+    {}
+
+    Pair(const Key &key, const Value &value):
+        instance_{key, value}
+    {}
+
+    bool operator< (const Pair &b) const { return instance_.key_ <  b.instance_.key_; }
+    bool operator> (const Pair &b) const { return instance_.key_ >  b.instance_.key_; }
+    bool operator==(const Pair &b) const { return instance_.key_ ==  b.instance_.key_; }
+    bool operator!=(const Pair &b) const { return instance_.key_ !=  b.instance_.key_; }
+    bool operator<=(const Pair &b) const { return instance_.key_ <=  b.instance_.key_; }
+    bool operator>=(const Pair &b) const { return instance_.key_ >=  b.instance_.key_; }
+
+    class Instance {
+    public:
+        Key key() const { return key_; }
+        Value value() const { return value_; }
+        void setValue(const Value &value) { value_ = value; }
+
+    private:
+        friend class Pair;
+        Instance()
+        {}
+        Instance(const Key &key):
+            key_{key}, value_{Value{}}
+        {}
+        Instance(const Key &key, const Value &value):
+            key_{key}, value_{value}
+        {}
+        Key key_;
+        Value value_;
+    };
+
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
+
+private:
+    Instance instance_;
+};
+
+} // namespace cc

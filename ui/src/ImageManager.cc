@@ -8,6 +8,7 @@
 
 #include <cc/Singleton>
 #include <cc/Map>
+#include <cc/MapValueSource>
 #include <cc/ui/ImageManager>
 
 namespace cc {
@@ -34,7 +35,7 @@ bool ImageManager::getPlugin(const String &name, const ImagePlugin **plugin) con
 
 Ref< Source<const ImagePlugin *> > ImageManager::getAllPlugins() const
 {
-    return plugins_->getAllValues<const ImagePlugin *>();
+    return MapValueSource<Plugins, const ImagePlugin *>::open(plugins_);
 }
 
 Ref<Image> ImageManager::load(const String &uri, unsigned index) const

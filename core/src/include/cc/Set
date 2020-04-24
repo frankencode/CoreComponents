@@ -17,11 +17,11 @@ template<class T>
 class Set: public Object
 {
 public:
-    /// Index type
-    typedef bucket::Weight Index;
-
     /// Item type
     typedef T Item;
+
+    /// Index type
+    typedef bucket::Weight Index;
 
     /** Create a new set
       * \return new object instance
@@ -36,54 +36,51 @@ public:
         return 0 <= index && index < count();
     }
 
-    /** Return a reference to an item
-      * \param index set index
-      * \return reference to the item
-      */
+    /// Return a reference to the item at \a index
     const Item &at(Index index) const
     {
         assert(0 <= index && index < count());
         return tree_->at<Item>(index);
     }
 
-    /** Check if the set contains a given item
-      * \param item item value
-      * \return true if the set contains the given item
-      */
+    /// Check if the set contains \a item
     bool contains(const Item &item) const
     {
         return tree_->lookup<Item>(item);
     }
 
-    /** Insert a new item if no item with the same value exists already.
+    /** Insert a new item if no item with the same value exists already
+      * \param item item value
       * \return true if the new item was inserted successfully
       */
-    bool insert(const Item &item)
+    bool insert(const Item &item, Item *currentItem = nullptr, Index *index = nullptr)
     {
-        bool success = false;
         bucket::Leaf<Item> *target = nullptr;
         unsigned egress = 0;
-        if (!tree_->lookup<Item>(item, nullptr, &target, &egress)) {
-            tree_->push<Item>(target, egress, item);
-            success = true;
-        }
-        return success;
+        bool found = tree_->lookup<Item>(item, index, &target, &egress);
+        if (!found) tree_->push<Item>(target, egress, item);
+        else if (currentItem) *currentItem = target->at(egress);
+        return !found;
     }
 
-    /** Remove an item from the set
+    /** Remove the given \a item from the set
       * \param item item value
-      * \return true if the matching item was found and removed
+      * \return true if a matching item was found and removed
       */
     bool remove(const Item &item)
     {
-        bool success = false;
         bucket::Leaf<Item> *target = nullptr;
         unsigned egress = 0;
-        if (tree_->lookup<Item>(item, nullptr, &target, &egress)) {
-            tree_->pop<Item>(target, egress);  // FIXME: performance
-            success = true;
-        }
-        return success;
+        bool found = tree_->lookup<Item>(item, nullptr, &target, &egress);
+        if (found) tree_->pop<Item>(target, egress);
+        return found;
+    }
+
+    /// Remove item at given \a index
+    void removeAt(Index index)
+    {
+        assert(0 <= index && index < count());
+        tree_->pop<Item>(index);
     }
 
     /** \name Iterators
@@ -97,21 +94,21 @@ public:
     ConstIterator begin() const { return ConstIterator{tree_}; }
     ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
 
-    template<class Pattern>
-    ConstIterator first(const Pattern &pattern) const {
+    ConstIterator first(const Item &item) const
+    {
         Index index = 0;
-        bucket::Leaf<Item> node = nullptr;
+        bucket::Leaf<Item> *node = nullptr;
         unsigned egress = 0;
-        tree_->lookupFirst(pattern, &index, &node, &egress);
+        tree_->lookupFirst(item, &index, &node, &egress);
         return ConstIterator{tree_, index, node, egress};
     }
 
-    template<class Pattern>
-    ConstIterator last(const Pattern &pattern) const {
+    ConstIterator last(const Item &item) const
+    {
         Index index = 0;
-        bucket::Leaf<Item> node = nullptr;
+        bucket::Leaf<Item> *node = nullptr;
         unsigned egress = 0;
-        tree_->lookupLast(pattern, &index, &node, &egress);
+        tree_->lookupLast(item, &index, &node, &egress);
         return ConstIterator{tree_, index, node, egress};
     }
     /** @}
@@ -131,7 +128,7 @@ public:
     /// Return the biggest item
     const Item &last() const { return tree_->last<Item>(); }
 
-    /// Reset this set to an empty set
+    /// Reset to an empty set
     void deplete() { tree_->deplete<Item>(); }
 
 private:
@@ -146,12 +143,6 @@ private:
     }
 
     ~Set() { tree_->deplete<Item>(); }
-
-    template<class Pattern>
-    bool lookup(const Pattern &pattern, Index *finalIndex = nullptr) const
-    {
-        return tree_->lookup<Item>(pattern, finalIndex);
-    }
 
     Local<bucket::Tree> tree_;
 };
