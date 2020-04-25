@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -12,6 +12,10 @@
 #include <cc/strings>
 #include <cc/Array>
 #include <cc/List>
+
+#ifdef QT_CORE_LIB
+#include <QString>
+#endif
 
 /// translate a macro expression into a C string
 #define CC_XSTR(x) CC_STR(x)
@@ -205,6 +209,19 @@ public:
 
     /// Access character at index \a i
     const char &operator[](int i) const;
+
+    #ifdef QT_CORE_LIB
+    /** \internal
+      * @{
+      */
+    Ref(const QByteArray &b): Ref{b.constData(), b.size()} {}
+    Ref(const QString &b): Ref{b.toUtf8()} {}
+
+    operator QByteArray() const { return QByteArray{get()->chars(), get->count()}; }
+    operator QString() const { return QString::fromUtf8(get()->chars(), get()->count()); }
+    /** @}
+      */
+    #endif // QT_CORE_LIB
 
 private:
     friend class MutantString;
