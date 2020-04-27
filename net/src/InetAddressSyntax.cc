@@ -20,7 +20,7 @@ const InetAddressSyntax *InetAddressSyntax::instance()
 }
 
 InetAddressSyntax::InetAddressSyntax(SyntaxDebugFactory *debugFactory):
-    SyntaxDefinition(debugFactory)
+    SyntaxDefinition{debugFactory}
 {
     DEFINE("DecimalOctet",
         REPEAT(0, 3, RANGE('0', '9'))

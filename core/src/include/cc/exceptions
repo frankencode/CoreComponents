@@ -69,6 +69,27 @@ public:
     String message() const override { return "Buffer overflow"; }
 };
 
+/** \class Error cc/exceptions
+  * \brief Generic application error
+  */
+class Error: public Exception
+{
+public:
+    Error(const String &message, int exitCode):
+        message_{message},
+        exitCode_{exitCode}
+    {}
+
+    String message() const override { return message_; }
+    int exitCode() const { return exitCode_; }
+
+    const Error *operator->() const { return this; }
+
+private:
+    String message_;
+    int exitCode_;
+};
+
 /** \class DebugError cc/exceptions
   * \brief Debugging hint on internal system malfunction
   */

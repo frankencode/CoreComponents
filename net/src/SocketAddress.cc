@@ -31,6 +31,15 @@ Ref<SocketAddress> SocketAddress::create(ProtocolFamily family, const String &ad
     return new SocketAddress{family, address, port};
 }
 
+Ref<SocketAddress> SocketAddress::parse(const String &address)
+{
+    ProtocolFamily family = ProtocolFamily::Unspecified;
+    if (address->count(':') > 1 || address == "::") family = ProtocolFamily::Internet6;
+    else if (address->count('.') > 0 || address == "*") family = ProtocolFamily::Internet4;
+    else if (address->count() > 0) family = ProtocolFamily::Local;
+    return new SocketAddress{family, address};
+}
+
 Ref<SocketAddress> SocketAddress::createBroadcast(int port)
 {
     Ref<SocketAddress> address = new SocketAddress;
@@ -63,15 +72,68 @@ Ref<SocketAddress> SocketAddress::resolve(const Uri *uri)
         address = SocketAddress::create(uri->family(), uri->host(), uri->port());
     }
     else {
-        Ref<SocketAddressList> addressList = SocketAddress::resolve(uri->host());
+        Ref<SocketAddressList> addressList = SocketAddress::queryConnectionInfo(uri->host());
         if (addressList->count() > 0) {
             address = addressList->at(0);
             address->setPort(uri->port());
         }
-        else throw HostNameResolutionError{Format{"Failed to resolve host name \"%%\""} << uri->host()};
+        else throw HostNameResolutionError{uri->host()};
     }
 
     return address;
+}
+
+Ref<SocketAddress> SocketAddress::resolve(const String &host)
+{
+    Ref<SocketAddressList> addressList = SocketAddress::queryConnectionInfo(host);
+    if (addressList->count() == 0) throw HostNameResolutionError{host};
+    return addressList->at(0);
+}
+
+Ref<SocketAddressList> SocketAddress::queryConnectionInfo(const String &hostName, const String &serviceName, ProtocolFamily family, SocketType socketType, String *canonicalName)
+{
+    addrinfo hint;
+    addrinfo *head = 0;
+
+    memclr(&hint, sizeof(hint));
+    if ((hostName == "*") || (hostName == "")) hint.ai_flags |= AI_PASSIVE;
+    hint.ai_flags |= (canonicalName && (hint.ai_flags & AI_PASSIVE) == 0) ? AI_CANONNAME : 0;
+    hint.ai_family = (hostName == "*") ? AF_INET : +family;
+    hint.ai_socktype = +socketType;
+
+    int ret;
+    {
+        const char *n = 0;
+        const char *s = 0;
+        if ((hint.ai_flags & AI_PASSIVE) == 0) n = hostName;
+        if (serviceName != "") s = serviceName;
+        ret = getaddrinfo(n, s, &hint, &head);
+    }
+
+    if (ret != 0 && ret != EAI_NONAME)
+        CC_DEBUG_ERROR(gai_strerror(ret));
+
+    Ref<SocketAddressList> list = SocketAddressList::create();
+
+    if (canonicalName) {
+        if (head) {
+            if (head->ai_canonname)
+                *canonicalName = head->ai_canonname;
+        }
+    }
+
+    addrinfo *next = head;
+
+    while (next) {
+        if ((next->ai_family == AF_INET) || (next->ai_family == AF_INET6))
+            list->append(new SocketAddress{next});
+        next = next->ai_next;
+    }
+
+    if (head)
+        freeaddrinfo(head);
+
+    return list;
 }
 
 Ref<SocketAddress> SocketAddress::copy(const SocketAddress *other)
@@ -139,7 +201,7 @@ SocketAddress::SocketAddress(ProtocolFamily family, const String &address, int p
                 else family = ProtocolFamily::Internet4;
             }
             if (inet_pton(+family, address, addr) != 1)
-                CC_DEBUG_ERROR("Invalid address string");
+                throw InvalidAddressSyntax{address};
         }
     }
 }
@@ -253,52 +315,6 @@ int SocketAddress::scope() const
 void SocketAddress::setScope(int scope)
 {
     if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
-}
-
-Ref<SocketAddressList> SocketAddress::resolve(const String &hostName, const String &serviceName, ProtocolFamily family, SocketType socketType, String *canonicalName)
-{
-    addrinfo hint;
-    addrinfo *head = 0;
-
-    memclr(&hint, sizeof(hint));
-    if ((hostName == "*") || (hostName == "")) hint.ai_flags |= AI_PASSIVE;
-    hint.ai_flags |= (canonicalName && (hint.ai_flags & AI_PASSIVE) == 0) ? AI_CANONNAME : 0;
-    hint.ai_family = (hostName == "*") ? AF_INET : +family;
-    hint.ai_socktype = +socketType;
-
-    int ret;
-    {
-        const char *n = 0;
-        const char *s = 0;
-        if ((hint.ai_flags & AI_PASSIVE) == 0) n = hostName;
-        if (serviceName != "") s = serviceName;
-        ret = getaddrinfo(n, s, &hint, &head);
-    }
-
-    if (ret != 0 && ret != EAI_NONAME)
-        CC_DEBUG_ERROR(gai_strerror(ret));
-
-    Ref<SocketAddressList> list = SocketAddressList::create();
-
-    if (canonicalName) {
-        if (head) {
-            if (head->ai_canonname)
-                *canonicalName = head->ai_canonname;
-        }
-    }
-
-    addrinfo *next = head;
-
-    while (next) {
-        if ((next->ai_family == AF_INET) || (next->ai_family == AF_INET6))
-            list->append(new SocketAddress(next));
-        next = next->ai_next;
-    }
-
-    if (head)
-        freeaddrinfo(head);
-
-    return list;
 }
 
 String SocketAddress::lookupHostName(bool *failed) const

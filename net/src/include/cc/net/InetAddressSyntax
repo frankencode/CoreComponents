@@ -24,14 +24,14 @@ class InetAddressSyntax: public syntax::SyntaxDefinition
 public:
     static const InetAddressSyntax *instance();
 
-    inline int inet4Address() const { return inet4Address_; }
-    inline int inet6Address() const { return inet6Address_; }
-    inline int inetAddress() const { return inetAddress_; }
+    int inet4Address() const { return inet4Address_; }
+    int inet6Address() const { return inet6Address_; }
+    int inetAddress() const { return inetAddress_; }
 
 protected:
     friend class Singleton<InetAddressSyntax>;
 
-    InetAddressSyntax(syntax::SyntaxDebugFactory *debugFactory = 0);
+    InetAddressSyntax(syntax::SyntaxDebugFactory *debugFactory = nullptr);
 
     int inet4Address_;
     int inet6Address_;

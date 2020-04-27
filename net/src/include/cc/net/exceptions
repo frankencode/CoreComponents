@@ -65,10 +65,29 @@ public:
 /** \class HostNameResolutionError cc/net/exceptions
   * \brief Failed to resolve a host name
   */
-class HostNameResolutionError: public UsageError
+class HostNameResolutionError: public Exception
 {
 public:
-    HostNameResolutionError(const String &message);
+    HostNameResolutionError(const String &hostName);
+    String hostName() const;
+    String message() const override;
+
+private:
+    String hostName_;
+};
+
+/** \class InvalidAddressSyntax cc/net/exceptions
+  * \brief Failed to parse textual representation of a network address
+  */
+class InvalidAddressSyntax: public Exception
+{
+public:
+    InvalidAddressSyntax(const String &address);
+    String address() const;
+    String message() const override;
+
+private:
+    String address_;
 };
 
 }} // namespace cc::net

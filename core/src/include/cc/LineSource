@@ -31,7 +31,7 @@ public:
       * \param buffer input buffer (optional)
       * \return new object instance
       */
-    static Ref<LineSource> open(Stream *stream, CharArray *buffer = 0);
+    static Ref<LineSource> open(Stream *stream, CharArray *buffer = nullptr);
 
     /// Input stream used to read lines from
     Stream *stream() const { return stream_; }

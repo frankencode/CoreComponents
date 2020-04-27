@@ -21,7 +21,7 @@ const UriSyntax *UriSyntax::instance()
 }
 
 UriSyntax::UriSyntax(SyntaxDebugFactory *debugFactory):
-    SyntaxDefinition(debugFactory)
+    SyntaxDefinition{debugFactory}
 {
     SYNTAX("uri");
     IMPORT(InetAddressSyntax::instance(), "inet");

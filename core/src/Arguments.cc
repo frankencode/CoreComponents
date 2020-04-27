@@ -62,6 +62,7 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
     if (options) {
         validate(options);
         override(options);
+        options_ = options;
     }
 }
 

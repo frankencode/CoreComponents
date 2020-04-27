@@ -39,7 +39,7 @@ CgiInstance::CgiInstance(const MetaObject *config):
             }
             else {
                 CCNODE_NOTICE() << "Resolving host name of server \"" << uri->host() << "\"..." << nl;
-                Ref<SocketAddressList> list = SocketAddress::resolve(uri->host());
+                Ref<SocketAddressList> list = SocketAddress::queryConnectionInfo(uri->host());
                 if (list->count() == 0)
                     throw UsageError{Format{"CGI: Failed to resolve host name of server \"%%\""} << uri->host()};
                 address = list->at(0);

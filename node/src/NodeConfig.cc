@@ -65,7 +65,7 @@ NodeConfig::NodeConfig(const MetaObject *config)
 
     address_ = SocketAddressList::create();
     if (address != "" && address != "*") {
-        Ref<SocketAddressList> l = SocketAddress::resolve(address, "http", family, SocketType::Stream);
+        Ref<SocketAddressList> l = SocketAddress::queryConnectionInfo(address, "http", family, SocketType::Stream);
         for (SocketAddress *a: l) {
             for (int p: ports) {
                 a->setPort(p);

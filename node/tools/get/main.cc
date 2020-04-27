@@ -14,8 +14,7 @@ int main(int argc, char **argv)
     auto toolName = String{argv[0]}->fileName();
 
     try {
-        auto options = VariantMap::create();
-        auto arguments = Arguments::parse(argc, argv, options);
+        auto arguments = Arguments::parse(argc, argv, VariantMap::create());
         auto items = arguments->items();
 
         for (auto item: items) {
