@@ -15,8 +15,8 @@ namespace cc
 
 /** \class MapKeySource cc/MapKeySource
   * \ingroup container
-  * \brief Source adapter for the keys stored in a Map
-  * \see Map
+  * \brief %Source adapter for the keys stored in a %Map
+  * \see Source, Map
   */
 template<class Map, class Item = typename Map::Key>
 class MapKeySource: public Source<Item>

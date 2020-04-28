@@ -128,9 +128,10 @@ public:
     template<class Iterator>
     void pushAndStep(Iterator &iterator, const typename Iterator::value_type &item)
     {
-        assert(bool(iterator)); // cannot insert an item using an invalid iterator
+        if (count() == 0) pushBack(item);
+        else assert(bool(iterator)); // cannot insert an item using an invalid iterator
         push<typename Iterator::ValueType>(iterator.index_, item);
-        iterator = Iterator{this, iterator.index_ + 1};
+        iterator = Iterator{this, iterator.index_};
     }
 
     template<class Item>

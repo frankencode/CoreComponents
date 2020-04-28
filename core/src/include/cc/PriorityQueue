@@ -14,37 +14,38 @@
 namespace cc {
 
 /** \class PriorityQueue cc/PriorityQueue
-  * \brief Priority based multi-queue
+  * \ingroup container
+  * \brief Priority based queue data container
   * \see Queue, Channel
   */
 template<class T>
 class PriorityQueue: public Object
 {
 public:
-    inline static Ref<PriorityQueue> create() { return new PriorityQueue; }
+    static Ref<PriorityQueue> create() { return new PriorityQueue; }
 
-    inline void pushBack(const T &item, int priority = 0)
+    void pushBack(const T &item, int priority = 0)
     {
         inputQueue(priority)->pushBack(item);
     }
 
-    inline T popFront(T *item)
+    T popFront(T *item)
     {
         CC_ASSERT(size_ > 0);
         return outputQueue()->popFront(item);
     }
 
-    inline T popFront() {
+    T popFront() {
         T item;
         return popFront(&item);
     }
 
-    inline void push(const T &item, int priority) { pushBack(item, priority); }
-    inline T pop(T *item) { return popFront(item); }
-    inline T pop() { return popFront(); }
+    void push(const T &item, int priority) { pushBack(item, priority); }
+    T pop(T *item) { return popFront(item); }
+    T pop() { return popFront(); }
 
-    inline int count() const { return size_; }
-    inline T front() { return readQueue()->front(); }
+    int count() const { return size_; }
+    T front() { return readQueue()->front(); }
 
 private:
     PriorityQueue():
@@ -52,7 +53,7 @@ private:
         size_{0}
     {}
 
-    inline Queue<T> *inputQueue(int priority)
+    Queue<T> *inputQueue(int priority)
     {
         ++size_;
         Queue<T> *queue = queueByPriority_->value(priority);
@@ -64,7 +65,7 @@ private:
         return queue;
     }
 
-    inline Ref< Queue<T> > outputQueue()
+    Ref< Queue<T> > outputQueue()
     {
         --size_;
         typename QueueByPriority::Item pair = queueByPriority_->at(queueByPriority_->count() - 1);
@@ -72,7 +73,7 @@ private:
         return pair->value();
     }
 
-    inline Queue<T> *readQueue() const
+    Queue<T> *readQueue() const
     {
         return queueByPriority_->valueAt(queueByPriority_->count() - 1);
     }

@@ -608,7 +608,7 @@ String Array<char>::normalize(bool nameCase) const
     for (int i = 0; i < parts->count(); ++i) {
         String s = parts->at(i);
         if (s->count() == 0) {
-            parts->pop(i);
+            parts->removeAt(i);
         }
         else {
             if (nameCase) {
@@ -856,7 +856,7 @@ String Array<char>::baseName() const
     String name = fileName();
     if (!name->contains('.')) return name;
     Ref<StringList> parts = name->split(".");
-    parts->pop(parts->count() - 1);
+    parts->removeAt(parts->count() - 1);
     return parts->join(".");
 }
 

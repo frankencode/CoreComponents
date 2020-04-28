@@ -60,7 +60,7 @@ void Format::flush()
         if (placeHolder_ && lastInsert_ != "") {
             while (placeHolder_->count() > 0) {
                 int j = placeHolder_->pop();
-                get()->push(j, lastInsert_);
+                get()->insertAt(j, lastInsert_);
             }
         }
         stream_->write(get());
@@ -95,7 +95,7 @@ Format &Format::operator<<(const String &s)
         }
         else j = ++lastPosition_;
     }
-    get()->push(j, s);
+    get()->insertAt(j, s);
     lastInsert_ = s;
     return *this;
 }

@@ -75,7 +75,11 @@ public:
 class Error: public Exception
 {
 public:
-    Error(const String &message, int exitCode):
+    Error(int exitCode):
+        exitCode_{exitCode}
+    {}
+
+    Error(const String &message, int exitCode = 1):
         message_{message},
         exitCode_{exitCode}
     {}

@@ -31,7 +31,7 @@ class PushBackPopBackTest: public TestCase
         const int n = 1024;
         Local<List<int>> list;
         for (int i = 0; i < n; ++i) {
-            list->push(list->count(), i);
+            list->insertAt(list->count(), i);
             for (int k = 0; k <= i; ++k)
                 CC_VERIFY(list->at(k) == k);
         }
@@ -40,7 +40,7 @@ class PushBackPopBackTest: public TestCase
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == k);
-            list->pop(list->count() - 1);
+            list->removeAt(list->count() - 1);
         }
         CC_VERIFY(list->count() == 0);
     }
@@ -53,7 +53,7 @@ class PushFrontPopFrontTest: public TestCase
         const int n = 1024;
         Local<List<int>> list;
         for (int i = 0; i < n; ++i) {
-            list->push(0, i);
+            list->insertAt(0, i);
             for (int k = 0; k <= i; ++k)
                 CC_VERIFY(list->at(k) == i - k);
         }
@@ -62,7 +62,7 @@ class PushFrontPopFrontTest: public TestCase
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == n - i - 1 - k);
-            list->pop(0);
+            list->removeAt(0);
         }
         CC_VERIFY(list->count() == 0);
     }
@@ -75,7 +75,7 @@ class PushFrontPopBackTest: public TestCase
         const int n = 1024;
         Local<List<int>> list;
         for (int i = 0; i < n; ++i) {
-            list->push(0, i);
+            list->insertAt(0, i);
             for (int k = 0; k <= i; ++k)
                 CC_VERIFY(list->at(k) == i - k);
         }
@@ -84,7 +84,7 @@ class PushFrontPopBackTest: public TestCase
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == n - 1 - k);
-            list->pop(list->count() - 1);
+            list->removeAt(list->count() - 1);
         }
         CC_VERIFY(list->count() == 0);
     }
@@ -98,7 +98,7 @@ class PushBackPopFrontTest: public TestCase
         Local<List<int>> list;
         auto t = ::clock();
         for (int i = 0; i < n; ++i) {
-            list->push(list->count(), i);
+            list->insertAt(list->count(), i);
         }
         t = ::clock() - t;
         CC_INSPECT(t);
@@ -107,7 +107,7 @@ class PushBackPopFrontTest: public TestCase
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == k + i);
-            list->pop(0);
+            list->removeAt(0);
         }
         CC_VERIFY(list->count() == 0);
     }
@@ -123,7 +123,7 @@ class PushPopRandomTest: public TestCase
         auto t = ::clock();
         for (int i = 0; i < n; ++i) {
             auto r = random->get(0, i + 1);
-            list->push(r, i);
+            list->insertAt(r, i);
         }
         t = ::clock() - t;
         CC_INSPECT(t);
@@ -131,7 +131,7 @@ class PushPopRandomTest: public TestCase
         File::open("tree_random.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(&list));
         for (int i = 0; i < n; ++i) {
             auto r = random->get(0, list->count() - 1);
-            list->pop(r);
+            list->removeAt(r);
         }
         CC_VERIFY(list->count() == 0);
     }

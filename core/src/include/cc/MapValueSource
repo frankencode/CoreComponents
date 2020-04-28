@@ -13,10 +13,10 @@
 namespace cc
 {
 
-/** \class MapKeySource cc/MapKeySource
+/** \class MapValueSource cc/MapValueSource
   * \ingroup container
-  * \brief Source adapter for the values stored in a Map
-  * \see Map
+  * \brief %Source adapter for the values stored in a %Map
+  * \see Source, Map
   */
 template<class Map, class Item = typename Map::Value>
 class MapValueSource: public Source<Item>

@@ -24,13 +24,13 @@ String HeaderStyle::trimHeader(String text, const char *space)
         lines->at(i) = lines->at(i)->trim(space);
     while (lines->count() > 0) {
         if (lines->at(0)->count() == 0)
-            lines->pop(0);
+            lines->removeAt(0);
         else
             break;
     }
     while (lines->count() > 0) {
         if (lines->at(lines->count() - 1)->count() == 0)
-            lines->pop(lines->count() - 1);
+            lines->removeAt(lines->count() - 1);
         else
             break;
     }

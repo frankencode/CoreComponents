@@ -18,6 +18,10 @@ namespace cc {
 /** \class List cc/List
   * \ingroup container
   * \brief %List data container
+  * \tparam T item type
+  *
+  * The List class provides a very efficient data structure for small and medium-sized lists.
+  * For larger lists it provides good memory density while still scaling logarithmically for all basic operations.
   */
 template<class T>
 class List: public Object
@@ -27,14 +31,14 @@ public:
     typedef T Item;
 
     /// Index type
-    typedef bucket::Weight Index;
+    typedef int64_t Index;
 
-    /** Create a new empty list
+    /** Create an empty list
       * \return new object instance
       */
     static Ref<List> create() { return new List; }
 
-    /** Create a copy of a list
+    /** Create a copy of another list
       * \param other the list to copy
       * \return new object instance
       */
@@ -46,6 +50,11 @@ public:
         for (const Item &item: other) list->pushBack(item);
         return list;
     }
+
+    /** Make a copy of this list
+      * \return new object instance
+      */
+    Ref<List> copy() const { return List::copy(this); }
 
     /// Return the number of items stored in this list
     Index count() const { return tree_->count(); }
@@ -65,7 +74,7 @@ public:
         return tree_->at<Item>(index);
     }
 
-    /** \copydoc at(int index)
+    /** \copydoc at(Index index)
       */
     const Item &at(Index index) const
     {
@@ -77,7 +86,7 @@ public:
       * \param index list index
       * \param item new item value
       */
-    void push(Index index, const Item &item)
+    void insertAt(Index index, const Item &item)
     {
         assert(0 <= index && index <= count());
         tree_->push<Item>(index, item);
@@ -86,52 +95,28 @@ public:
     /** Remove item at given index
       * \param index list index
       */
-    void pop(Index index)
+    void removeAt(Index index)
     {
         assert(0 <= index && index < count());
         tree_->pop<Item>(index);
     }
 
-    /** Append item at the end of the list
-      */
-    void pushBack(const Item &item)
-    {
-        tree_->pushBack(item);
-    }
-
-    /** Remove the last from end of the list
-      */
-    void popBack()
-    {
-        assert(count() > 0);
-        pop(count() - 1);
-    }
-
-    /** Insert a new item at the beginning of the list
-      * \param item new item
-      */
-    void pushFront(const Item &item)
-    {
-        push(0, item);
-    }
-
-    /** Remove the first item from the beginning of the list
-      */
-    void popFront()
-    {
-        assert(count() > 0);
-        pop(0);
-    }
-
-    /** \copydoc pushBack(const Item &item)
+    /** Append \a item to the end of the list
       */
     void append(const Item &item)
     {
         tree_->pushBack(item);
     }
 
+    /** Prepend \a item to the front of the list
+      */
+    void prepend(const Item &item)
+    {
+        insertAt(0, item);
+    }
+
     /** Append a copy of another list to this list
-      * \param b another list
+      * \param other another list
       */
     void appendList(const List *other)
     {
@@ -139,30 +124,37 @@ public:
             // TODO: improve performance
 
             for (const Item &item: other)
-                tree_->pushBack(item);
+                append(item);
         }
     }
 
-    /** Insert \a item at given \a iterator position
+    /** Prepend a copy of another list to this list
+      * \param other another list
       */
-    template<class Iterator>
-    void pushAndStep(Iterator &iterator, const Item &item)
+    void prependList(const List *other)
     {
-        tree_->pushAndStep(iterator, item);
+        if (other) {
+            // TODO: improve performance
+
+            Index i = 0;
+            for (const Item &item: other) {
+                insertAt(i, item);
+                ++i;
+            }
+        }
     }
 
-    /** Remove \a item from given \a iterator position
-      */
-    template<class Iterator>
-    void popAndStep(Iterator &target)
-    {
-        tree_->popAndStep(target);
-    }
+    /// Directly access first item
+    Item &first() { assert(count() > 0); return tree_->first<Item>(); }
 
-    /** Return a copy of this list
-      * \return new object instance
-      */
-    Ref<List> copy() const { return List::copy(this); }
+    /// Directly access first item of a constant list
+    const Item &first() const { assert(count() > 0); return tree_->first<Item>(); }
+
+    /// Directly access last item
+    Item &last() { assert(count() > 0); return tree_->last<Item>(); }
+
+    /// Directly access last item of a constant list
+    const Item &last() const { assert(count() > 0); return tree_->last<Item>(); }
 
     /** Search for an item
       * \param item item to search for
@@ -187,13 +179,8 @@ public:
         return find(item) < count();
     }
 
+    /// Remove all items from the list
     void deplete() { tree_->deplete<Item>(); }
-
-    Item &front() { assert(count() > 0); return tree_->first<Item>(); }
-    const Item &front() const { assert(count() > 0); return tree_->first<Item>(); }
-
-    Item &back() { assert(count() > 0); return tree_->last<Item>(); }
-    const Item &back() const { assert(count() > 0); return tree_->last<Item>(); }
 
     /** Replace all appearances of an item value
       * \param oldItem old item value to search for
@@ -260,7 +247,7 @@ public:
         auto set = Set<Item>::create();
         for (auto it = list->begin(); it;) {
             if (set->insert(*it)) ++it;
-            else list->popAndStep(it);
+            else list->removeAt(it);
         }
     }
 
@@ -279,33 +266,100 @@ public:
         return other;
     }
 
-    /// \copydoc push(const Item &item)
+    /** \name Syntax sugar
+      */
+    ///@{
+    /** Append \a item to the list */
     void operator<<(const Item& item) { pushBack(item); }
+    /** Remove and return first item */
+    void operator>>(Item& item) { if (count() > 0) { item = front(); popFront(); } }
+    ///@}
 
-    /// \copydoc pop()
-    void operator>>(Item* item) { *item = front(); popFront(); }
+    /** \name Queuelike
+      * @{
+      */
+
+    /** Append item at the end of the list */
+    void pushBack(const Item &item)
+    {
+        tree_->pushBack(item);
+    }
+
+    /** Remove the last from end of the list */
+    void popBack()
+    {
+        assert(count() > 0);
+        removeAt(count() - 1);
+    }
+
+    /** Insert a new item at the beginning of the list */
+    void pushFront(const Item &item)
+    {
+        insertAt(0, item);
+    }
+
+    /** Remove the first item from the beginning of the list */
+    void popFront()
+    {
+        assert(count() > 0);
+        removeAt(0);
+    }
+
+    /** Directly access item at the front */
+    Item &front() { assert(count() > 0); return tree_->first<Item>(); }
+
+    /** Directly access item at the front */
+    const Item &front() const { assert(count() > 0); return tree_->first<Item>(); }
+
+    /** Directly access item at the back */
+    Item &back() { assert(count() > 0); return tree_->last<Item>(); }
+
+    /** Directly access item at the back */
+    const Item &back() const { assert(count() > 0); return tree_->last<Item>(); }
+
+    /** @}
+      */
 
     /** \name Iterators
       * @{
       */
-    typedef bucket::Iterator<Item> Iterator;
-    typedef bucket::ConstIterator<Item> ConstIterator;
+    typedef bucket::Iterator<Item> Iterator; ///< Bidirectional iterator
+    typedef bucket::ConstIterator<Item> ConstIterator; ///< Constant bidirectional iterator
 
+    /** Iterator to the beginning (on first item) */
     Iterator begin() { return Iterator{&tree_}; }
+    /** Iterator to the end (behind last item) */
     Iterator end() { return Iterator{&tree_, tree_->count()}; }
+    /** Iterator pointing to the item at \a index */
+    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
 
+    /** Constant iterator to the beginning (on first item) */
     ConstIterator begin() const { return ConstIterator{tree_}; }
+    /** Constant iterator to the end (behind last item) */
     ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
-
+    /** Constant Iterator pointing to the item at \a index */
     ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+
+    /** Insert \a item at given \a iterator position */
+    void insertAt(Iterator &iterator, const Item &item)
+    {
+        tree_->pushAndStep(iterator, item);
+    }
+
+    /** Remove \a item from given \a iterator position */
+    void removeAt(Iterator &target)
+    {
+        tree_->popAndStep(target);
+    }
     /** @}
       */
 
     /** \internal
+      * \name STL iterators
       * @{
       */
-    typedef Iterator iterator;
-    typedef ConstIterator const_iterator;
+    typedef Iterator iterator; ///< Bidirectional iterator
+    typedef ConstIterator const_iterator; ///< Constant bidirectional iterator
     /** @}
       */
 

@@ -173,26 +173,30 @@ public:
 
     Iterator begin() { return ConstIterator{tree_}; }
     Iterator end() { return ConstIterator{tree_, tree_->count()}; }
+    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
 
     ConstIterator begin() const { return ConstIterator{tree_}; }
     ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
 
-    ConstIterator first(const Key &key) const
+    ConstIterator begin(const Key &key) const
     {
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
         unsigned egress = 0;
         tree_->lookupFirst(Item{key}, &index, &node, &egress);
-        return ConstIterator(tree_, index, node, egress);
+        return ConstIterator{tree_, index, node, egress};
     }
 
-    ConstIterator last(const Key &key) const
+    ConstIterator end(const Key &key) const
     {
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
         unsigned egress = 0;
         tree_->lookupLast(Item{key}, &index, &node, &egress);
-        return ConstIterator(tree_, index, node, egress);
+        ConstIterator iterator{tree_, index, node, egress};
+        if (iterator) ++iterator;
+        return iterator;
     }
     /** @}
       */

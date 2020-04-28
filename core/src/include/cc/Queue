@@ -17,9 +17,9 @@ class QueueNode
 {
 public:
     QueueNode(const T &item):
-        item_(item),
-        next_(0),
-        prev_(0)
+        item_{item},
+        next_{nullptr},
+        prev_{nullptr}
     {}
     T item_;
     QueueNode *next_;
@@ -28,7 +28,7 @@ public:
 
 /** \class Queue cc/Queue
   * \ingroup container
-  * \brief Waiting queue data container
+  * \brief %Queue data container
   */
 template<class T>
 class Queue: public Object
@@ -49,7 +49,7 @@ public:
       */
     void pushBack(const T &item, int = 0)
     {
-        Node *node = new Node(item);
+        Node *node = new Node{item};
         if (tail_) {
             tail_->next_ = node;
             node->prev_ = tail_;
@@ -67,7 +67,7 @@ public:
       */
     void pushFront(const T &item, int = 0)
     {
-        Node *node = new Node(item);
+        Node *node = new Node{item};
         if (head_) {
             head_->prev_ = node;
             node->next_ = head_;

@@ -22,7 +22,7 @@ Glob::Glob(const String &expression):
     remainder_{expression->split('/')}
 {
     if (expression->head(1) == "/") {
-        remainder_->pop(0);
+        remainder_->removeAt(0);
         init("/");
     }
     else {
