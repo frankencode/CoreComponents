@@ -6,76 +6,103 @@
  *
  */
 
-#include <cc/debug> // DEBUG
+#include <cc/net/StreamSocket>
 #include <cc/stdio>
+#include <cc/LineSource>
 #include <cc/exceptions>
 #include <cc/Arguments>
-#include <cc/LineSource>
-#include <cc/net/StreamSocket>
 
 using namespace cc;
 using namespace cc::net;
 
+String whoisQuery(const SocketAddress *serverAddress, const String &clientRequest, const String &queryKey = "")
+{
+    auto server = StreamSocket::connect(serverAddress);
+    server->write(clientRequest + "\r\n");
+
+    String result;
+
+    if (queryKey != "") {
+        for (const String &line: LineSource::open(server)) {
+            if (line->count() > 0 && !line->startsWith('%')) {
+                auto parts = line->split(":");
+                if (parts->count() == 2) {
+                    auto key = parts->at(0);
+                    auto value = parts->at(1)->trim();
+                    if (key == queryKey) {
+                        result = value;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    else {
+        server->transferTo(stdOut());
+    }
+
+    return result;
+}
+
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->fileName();
+    String toolName = String{argv[0]}->fileName();
+
+    int exitStatus = 0;
 
     try {
         auto arguments = Arguments::parse(argc, argv, VariantMap::create());
 
         auto ianaAddress = SocketAddress::resolve("whois.iana.org");
         ianaAddress->setPort(43);
-        CC_INSPECT(ianaAddress);
-        for (const String &address: arguments->items()) {
-            SocketAddress::parse(address);
-            fout() << address << nl;
-            String registry;
-            {
-                auto iana = StreamSocket::connect(ianaAddress);
-                iana->write(address + "\r\n");
-                for (const String &line: LineSource::open(iana)) {
-                    ferr() << line << nl;
-                    if (line->count() > 0 && !line->startsWith('%')) {
-                        auto parts = line->split(":");
-                        if (parts->count() == 2) {
-                            auto key = parts->at(0);
-                            auto value = parts->at(1)->trim();
-                            if (key == "whois") registry = value;
-                        }
-                    }
-                }
-            }
-            CC_INSPECT(registry);
 
-            if (registry == "") {
-                throw Error{
-                    Format{"Failed to obtain name of regional internet registry for \"%%\""} << address,
-                    2
-                };
+        for (const String &item: arguments->items())
+        {
+            bool addressQuery = false;
+            try {
+                SocketAddress::parse(item);
+                addressQuery = true;
             }
+            catch (...) {}
 
-            auto rirAddress = SocketAddress::resolve(registry);
-            rirAddress->setPort(43);
-            CC_INSPECT(rirAddress);
-            {
-                auto rir = StreamSocket::connect(rirAddress);
-                rir->write(address + "\r\n");
-                fout() << rir->readAll();
+            if (addressQuery) {
+                String registry = whoisQuery(ianaAddress, item, "whois");
+                if (registry == "") throw Error{2};
+                auto registryAddress = SocketAddress::resolve(registry);
+                registryAddress->setPort(43);
+                whoisQuery(registryAddress, item);
+            }
+            else {
+                auto parts = item->split('.');
+                String topLevelDomain = parts->at(parts->count() - 1);
+                String domain = parts->at(parts->count() - 2) + "." + topLevelDomain;
+                String registry = whoisQuery(ianaAddress, topLevelDomain, "whois");
+                if (registry == "") throw Error{3};
+                auto registryAddress = SocketAddress::resolve(registry);
+                registryAddress->setPort(43);
+                whoisQuery(registryAddress, domain);
             }
         }
     }
-    catch (Error &error) {
-        ferr() << error->message() << nl;
-        return error->exitCode();
+    catch (Error &error)
+    {
+        exitStatus = error->exitCode();
     }
-    catch (HelpRequest &) {
+    catch (HelpRequest &)
+    {
         fout(
-            "Usage: %% [OPTION]... [address]...\n"
-            "Query information about internet addresses (IPv4 or IPv6)\n"
+            "Usage: %% [OPTION]... [ADDRESS|DOMAIN]...\n"
+            "Query WHOIS information for internet addresses and domain names\n"
             "\n"
         ) << toolName;
-        return 1;
+
+        exitStatus = 1;
+    }
+    catch (Exception &ex)
+    {
+        ferr() << ex << nl;
+        exitStatus = 4;
     }
 
-    return 0;
+    return exitStatus;
 }
