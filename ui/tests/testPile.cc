@@ -13,6 +13,7 @@
 #include <cc/ui/Pile>
 
 using namespace cc;
+using namespace cc::ui;
 using namespace cc::testing;
 
 class SimplePileTest: public TestCase

@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/node/CgiDelegate>
 #include <cc/node/CgiInstance>
 #include <cc/node/exceptions>
 #include <cc/node/debug>

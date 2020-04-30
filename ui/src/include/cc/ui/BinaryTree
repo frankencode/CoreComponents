@@ -9,6 +9,7 @@
 #pragma once
 
 namespace cc {
+namespace ui {
 
 /** Binary tree template
   * \tparam Node node type.
@@ -339,4 +340,4 @@ bool BinaryTree<Node>::testIteration(Node *k)
 
 #endif
 
-} // namespace cc
+}} // namespace cc::ui

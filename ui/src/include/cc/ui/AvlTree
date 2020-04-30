@@ -8,9 +8,10 @@
 
 #pragma once
 
-#include <cc/BinaryTree>
+#include <cc/ui/BinaryTree>
 
 namespace cc {
+namespace ui {
 
 template<class Node>
 class AvlTree: public BinaryTree<Node>
@@ -115,4 +116,4 @@ bool AvlTree<Node>::testBalance(const Node *k)
 
 #endif // ndef NDEBUG
 
-} // namespace cc
+}} // namespace cc::ui

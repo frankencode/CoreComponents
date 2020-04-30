@@ -32,6 +32,11 @@ Ref<StreamSocket> StreamSocket::connect(const SocketAddress *peerAddress)
     return socket;
 }
 
+Ref<StreamSocket> StreamSocket::connect(const String &hostName, int port)
+{
+    return connect(SocketAddress::resolve(hostName, port));
+}
+
 void StreamSocket::connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second)
 {
     int fd[2];
@@ -45,9 +50,9 @@ void StreamSocket::connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second)
 
 Ref<StreamSocket> StreamSocket::accept()
 {
-    Ref<StreamSocket> client = new StreamSocket(
+    Ref<StreamSocket> client = new StreamSocket{
         SocketAddress::create(address_->family())
-    );
+    };
     client->fd_ = accept(client->address_);
     client->connected_ = true;
     return client;

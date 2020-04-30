@@ -83,17 +83,19 @@ Ref<SocketAddress> SocketAddress::resolve(const Uri *uri)
     return address;
 }
 
-Ref<SocketAddress> SocketAddress::resolve(const String &host)
+Ref<SocketAddress> SocketAddress::resolve(const String &hostName, int port)
 {
-    Ref<SocketAddressList> addressList = SocketAddress::queryConnectionInfo(host);
-    if (addressList->count() == 0) throw HostNameResolutionError{host};
-    return addressList->at(0);
+    Ref<SocketAddressList> addressList = SocketAddress::queryConnectionInfo(hostName);
+    if (addressList->count() == 0) throw HostNameResolutionError{hostName};
+    SocketAddress *address = addressList->at(0);
+    if (port) address->setPort(port);
+    return address;
 }
 
 Ref<SocketAddressList> SocketAddress::queryConnectionInfo(const String &hostName, const String &serviceName, ProtocolFamily family, SocketType socketType, String *canonicalName)
 {
     addrinfo hint;
-    addrinfo *head = 0;
+    addrinfo *head = nullptr;
 
     memclr(&hint, sizeof(hint));
     if ((hostName == "*") || (hostName == "")) hint.ai_flags |= AI_PASSIVE;
@@ -103,8 +105,8 @@ Ref<SocketAddressList> SocketAddress::queryConnectionInfo(const String &hostName
 
     int ret;
     {
-        const char *n = 0;
-        const char *s = 0;
+        const char *n = nullptr;
+        const char *s = nullptr;
         if ((hint.ai_flags & AI_PASSIVE) == 0) n = hostName;
         if (serviceName != "") s = serviceName;
         ret = getaddrinfo(n, s, &hint, &head);

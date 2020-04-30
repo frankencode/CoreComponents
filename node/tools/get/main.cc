@@ -21,7 +21,7 @@ int main(int argc, char **argv)
             auto parts = StringList::create();
             for (int i = 1; i < argc; ++i)
                 parts->append(argv[i]);
-            commandLine = parts->join();
+            commandLine = parts->join("%20");
             commandLine = commandLine->replace(" ", "%20");
         }
 

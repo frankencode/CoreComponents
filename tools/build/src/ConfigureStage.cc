@@ -235,7 +235,7 @@ void ConfigureStage::makeUseOf(BuildPlan *other)
     }
     else if (other->options() & BuildPlan::Package) {
         for (BuildPlan *prerequisite: other->prerequisites()) {
-            if (!(prerequisite->options() & BuildPlan::Plugin))
+            if (!(prerequisite->options() & BuildPlan::Plugin) || plan()->options() & BuildPlan::Plugin)
                 makeUseOf(prerequisite);
         }
     }

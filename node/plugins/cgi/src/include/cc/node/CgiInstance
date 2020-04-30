@@ -10,7 +10,6 @@
 
 #include <cc/net/SocketAddress>
 #include <cc/node/DeliveryInstance>
-#include <cc/node/CgiDelegate>
 
 namespace cc {
 namespace node {

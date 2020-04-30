@@ -9,6 +9,7 @@
 #include <cc/ui/OrdinalTree>
 
 namespace cc {
+namespace ui {
 
 int OrdinalTree::getIndexOf(OrdinalNode *k)
 {
@@ -201,4 +202,4 @@ bool OrdinalTree::testWeight(OrdinalNode *k)
 
 #endif // ndef NDEBUG
 
-} // namespace cc
+}} // namespace cc::ui

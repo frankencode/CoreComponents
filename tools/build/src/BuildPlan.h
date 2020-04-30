@@ -149,7 +149,7 @@ private:
     void checkDuplicateTargetNames();
     void gatherAutoConfigureSystemPrerequisites(Set<String> *names);
 
-    String findPrerequisite(String prerequisitePath) const;
+    String findPrerequisite(const String &prerequisitePath) const;
     void readPrerequisites();
     void findVersion();
 

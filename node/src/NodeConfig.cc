@@ -9,8 +9,6 @@
 #include <cc/node/NodeConfig>
 #include <cc/node/NodeConfigProtocol>
 #include <cc/node/DeliveryRegistry>
-#include <cc/node/DirectoryService>
-#include <cc/node/EchoService>
 #include <cc/node/DeliveryInstance>
 #include <cc/node/SystemLoggingService>
 #include <cc/node/ForegroundLoggingService>
@@ -134,7 +132,7 @@ Ref<DeliveryInstance> NodeConfig::createDeliveryInstance(const DeliveryService *
 
 void NodeConfig::addDirectoryInstance(const String &path)
 {
-    const DeliveryService *service = DeliveryRegistry::instance()->serviceByName(DirectoryService::name());
+    const DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Directory");
     Ref<MetaObject> config = service->configPrototype()->clone();
     config->establish("host", "*");
     config->establish("path", path);
@@ -143,7 +141,7 @@ void NodeConfig::addDirectoryInstance(const String &path)
 
 void NodeConfig::addEchoInstance()
 {
-    const DeliveryService *service = DeliveryRegistry::instance()->serviceByName(EchoService::name());
+    const DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Echo");
     Ref<MetaObject> config = service->configPrototype()->clone();
     config->establish("host", "*");
     deliveryInstances_->append(createDeliveryInstance(service, config));

@@ -11,9 +11,10 @@
 #include <cc/assert>
 #include <cc/ExclusiveAccess>
 #include <cc/Ref>
-#include <cc/AvlTree>
+#include <cc/ui/AvlTree>
 
 namespace cc {
+namespace ui {
 
 class OrdinalNode;
 class IndexTrackingAccess;
@@ -172,4 +173,4 @@ protected:
 
 #endif
 
-} // namespace cc
+}} // namespace cc::ui

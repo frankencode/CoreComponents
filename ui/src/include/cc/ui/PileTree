@@ -12,6 +12,7 @@
 #include <cc/ui/OrdinalTree>
 
 namespace cc {
+namespace ui {
 
 template<class ItemType, class ExtentType>
 class PileNode: public OrdinalNode
@@ -276,4 +277,4 @@ void PileTree<Item, Extent>::rotated(OrdinalNode *k1, bool left)
     OrdinalTree::rotated(k1, left);
 }
 
-} // namespace cc
+}} // namespace cc::ui

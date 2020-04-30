@@ -33,6 +33,14 @@ public:
       */
     static Ref<StreamSocket> connect(const SocketAddress *peerAddress);
 
+    /** Connect to a peer socket
+      * \param hostName host name of server
+      * \param port port number
+      * \return new object instance
+      * \exception HostNameResolutionError
+      */
+    static Ref<StreamSocket> connect(const String &hostName, int port);
+
     /** Create a pair of connected local sockets
       * \param first return the first socket
       * \param second return the second socket

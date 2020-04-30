@@ -1,0 +1,5 @@
+Plugin {
+    name: ccnodedirectoryplugin
+    group: delivery
+    extend: cc/node
+}

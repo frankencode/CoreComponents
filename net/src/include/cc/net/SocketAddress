@@ -80,14 +80,17 @@ public:
     /** Resolve internet address of an URI
       * \param uri Uniform Resource Indicator (URI)
       * \return new object instance
+      * \exception HostNameResolutionError
       */
     static Ref<SocketAddress> resolve(const Uri *uri);
 
     /** Resolve internet address of a host
-      * \param host host or domain name to resolve
+      * \param hostName host or domain name to resolve
+      * \param port port number to set
       * \return new object instance
+      * \exception HostNameResolutionError
       */
-    static Ref<SocketAddress> resolve(const String &host);
+    static Ref<SocketAddress> resolve(const String &hostName, int port = 0);
 
     /** Query the complete connection information for given host name, service name and
       * protocol family. The call blocks until the local resolver has resolved the

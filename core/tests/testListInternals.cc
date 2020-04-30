@@ -221,7 +221,7 @@ int main(int argc, char **argv)
         }
         {
             Local<List<int>> list;
-            for (int i = 0; i < n; ++i) list->push(i, i);
+            for (int i = 0; i < n; ++i) list->insertAt(i, i);
             tx = ::clock();
             int h = 0;
             for (int i = 0; i < w; ++i) {

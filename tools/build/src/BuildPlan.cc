@@ -470,11 +470,11 @@ void BuildPlan::registerLinkDerivative(Job *linkJob)
     }
 }
 
-String BuildPlan::findPrerequisite(String prerequisitePath) const
+String BuildPlan::findPrerequisite(const String &prerequisitePath) const
 {
     if (prerequisitePath->isAbsolutePath()) {
         if (File::exists(recipePath(prerequisitePath))) return prerequisitePath;
-        return String();
+        return String{};
     }
     {
         String candidatePath = systemSourcePath()->extendPath(prerequisitePath);
@@ -488,7 +488,7 @@ String BuildPlan::findPrerequisite(String prerequisitePath) const
             return candidatePath;
         }
     }
-    return String();
+    return String{};
 }
 
 void BuildPlan::readPrerequisites()
@@ -506,7 +506,7 @@ void BuildPlan::readPrerequisites()
         if (packageItems->count() > 0) prerequisitePaths = packageItems;
     }
 
-    for (String prerequisitePath: prerequisitePaths) {
+    for (const String &prerequisitePath: prerequisitePaths) {
         String path = findPrerequisite(prerequisitePath);
         if (path == "")
             throw UsageError{Format{} << recipePath() << ": Failed to locate prerequisite '" << prerequisitePath << "'"};

@@ -1,0 +1,5 @@
+Plugin {
+    name: ccnodeechoplugin
+    group: delivery
+    extend: cc/node
+}

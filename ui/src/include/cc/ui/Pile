@@ -13,6 +13,7 @@
 #include <cc/ui/PileTree>
 
 namespace cc {
+namespace ui {
 
 template<class Item, class Extent>
 class PileStop;
@@ -200,4 +201,4 @@ private:
     Extent x_;
 };
 
-} // namespace cc
+}} // namespace cc::ui
