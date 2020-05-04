@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/DispatchLoggingService>
-#include <cc/node/DispatchLoggingInstance>
-#include <cc/node/LoggingRegistry>
+#include <cc/http/DispatchLoggingService>
+#include <cc/http/DispatchLoggingInstance>
+#include <cc/http/LoggingRegistry>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<DispatchLoggingService> DispatchLoggingService::create()
 {
@@ -44,4 +44,4 @@ public:
 
 namespace { DispatchLoggingServiceAnnouncer announcer; }
 
-}} // namespace cc::node
+}} // namespace cc::http

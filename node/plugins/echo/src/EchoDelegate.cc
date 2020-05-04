@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/node/EchoDelegate>
+#include <cc/http/EchoDelegate>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<EchoDelegate> EchoDelegate::create(DeliveryWorker *worker)
 {
@@ -37,4 +37,4 @@ void EchoDelegate::process(const HttpRequest *request)
     }
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/node/NodeMaster>
-#include <cc/node/SystemLoggingService>
-#include <cc/node/DeliveryRegistry>
-#include <cc/node/ConnectionManager>
-#include <cc/node/HttpServerSocket>
-#include <cc/node/SecurityCache>
-#include <cc/node/exceptions>
-#include <cc/node/debug>
+#include <cc/http/NodeMaster>
+#include <cc/http/SystemLoggingService>
+#include <cc/http/DeliveryRegistry>
+#include <cc/http/ConnectionManager>
+#include <cc/http/HttpServerSocket>
+#include <cc/http/SecurityCache>
+#include <cc/http/exceptions>
+#include <cc/http/debug>
 #include <cc/Channel>
 #include <cc/Process>
 #include <cc/File>
@@ -22,7 +22,7 @@
 #include <cc/IoMonitor>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<NodeMaster> NodeMaster::create(const NodeConfig *config)
 {
@@ -151,4 +151,4 @@ void NodeMaster::runNode()
     }
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

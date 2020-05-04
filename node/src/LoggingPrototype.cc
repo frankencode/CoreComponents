@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/node/LoggingPrototype>
+#include <cc/http/LoggingPrototype>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<LoggingPrototype> LoggingPrototype::create(const String &className, const MetaProtocol *protocol)
 {
@@ -22,4 +22,4 @@ LoggingPrototype::LoggingPrototype(const String &className, const MetaProtocol *
     establish("verbosity", "");
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

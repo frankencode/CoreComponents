@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/node/ForegroundLoggingInstance>
+#include <cc/http/ForegroundLoggingInstance>
 #include <cc/stdio>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<ForegroundLoggingInstance> ForegroundLoggingInstance::create(const MetaObject *config)
 {
@@ -33,4 +33,4 @@ void ForegroundLoggingInstance::logMessage(const String &message, LoggingLevel l
     if (verbosity() >= level) stdErr()->write(message);
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

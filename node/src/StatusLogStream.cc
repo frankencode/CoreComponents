@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/node/StatusLogStream>
-#include <cc/node/LoggingInstance>
+#include <cc/http/StatusLogStream>
+#include <cc/http/LoggingInstance>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<StatusLogStream> StatusLogStream::open(LoggingInstance *sink, LoggingLevel level)
 {
@@ -33,4 +33,4 @@ void StatusLogStream::write(const StringList *parts)
     write(parts->join());
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

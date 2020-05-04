@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/node/EchoDelegate>
-#include <cc/node/EchoInstance>
+#include <cc/http/EchoDelegate>
+#include <cc/http/EchoInstance>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<EchoInstance> EchoInstance::create(const MetaObject *config)
 {
@@ -26,4 +26,4 @@ EchoInstance::EchoInstance(const MetaObject *config):
     DeliveryInstance{config}
 {}
 
-}} // namespace cc::node
+}} // namespace cc::http

@@ -8,10 +8,10 @@
 
 #include <cc/Date>
 #include <cc/Format>
-#include <cc/node/utils>
+#include <cc/http/utils>
 
 namespace cc {
-namespace node {
+namespace http {
 
 const char *reasonPhraseByStatusCode(int statusCode)
 {
@@ -125,4 +125,4 @@ Ref<Date> scanDate(const String &text, bool *ok)
     return Date::compose(year, month, day, hour, minutes, seconds);
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

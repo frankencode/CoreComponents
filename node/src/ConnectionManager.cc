@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/node/ConnectionManager>
-#include <cc/node/NodeConfig>
-#include <cc/node/HttpServerConnection>
-#include <cc/node/debug>
+#include <cc/http/ConnectionManager>
+#include <cc/http/NodeConfig>
+#include <cc/http/HttpServerConnection>
+#include <cc/http/debug>
 #include <cc/System>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<ConnectionManager> ConnectionManager::create(const NodeConfig *nodeConfig)
 {
@@ -86,4 +86,4 @@ bool ConnectionManager::accept(HttpServerConnection *client)
     return true;
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

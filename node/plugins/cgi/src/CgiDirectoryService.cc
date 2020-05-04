@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/node/DeliveryRegistry>
-#include <cc/node/DeliveryService>
-#include <cc/node/DirectoryService>
-#include <cc/node/CgiService>
-#include <cc/node/CgiDirectoryInstance>
+#include <cc/http/DeliveryRegistry>
+#include <cc/http/DeliveryService>
+#include <cc/http/DirectoryService>
+#include <cc/http/CgiService>
+#include <cc/http/CgiDirectoryInstance>
 
 namespace cc {
-namespace node {
+namespace http {
 
 class CgiDirectoryService: public DeliveryService
 {
@@ -52,4 +52,4 @@ public:
 
 namespace { CgiDirectoryServiceAnnouncer announcer; }
 
-}} // namespace cc::node
+}} // namespace cc::http

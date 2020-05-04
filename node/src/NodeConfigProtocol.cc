@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/node/NodeConfigProtocol>
-#include <cc/node/SecurityPrototype>
-#include <cc/node/LoggingRegistry>
+#include <cc/http/NodeConfigProtocol>
+#include <cc/http/SecurityPrototype>
+#include <cc/http/LoggingRegistry>
 #include <cc/Singleton>
 #include <cc/Process>
 
 namespace cc {
-namespace node {
+namespace http {
 
 class NodePrototype: public MetaPrototype
 {
@@ -74,4 +74,4 @@ void NodeConfigProtocol::registerService(const MetaPrototype *configPrototype)
     nodeProtocol_->define(configPrototype);
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

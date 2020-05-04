@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/node/ConnectionInfo>
+#include <cc/http/ConnectionInfo>
 #include <cc/System>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<ConnectionInfo> ConnectionInfo::create(const SocketAddress *remoteAddress)
 {
@@ -30,4 +30,4 @@ void ConnectionInfo::updateDepartureTime()
     departureTime_ = System::now();
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

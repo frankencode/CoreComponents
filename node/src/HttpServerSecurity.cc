@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/node/HttpServerSecurity>
-#include <cc/node/exceptions>
+#include <cc/http/HttpServerSecurity>
+#include <cc/http/exceptions>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<HttpServerSecurity> HttpServerSecurity::load(const MetaObject *config)
 {
@@ -38,7 +38,7 @@ HttpServerSecurity::HttpServerSecurity(const MetaObject *config):
     hasCredentials_ = true;
 
     // FIXME: error handling if certificate or private-key is empty
-    // FIXME: allow session-resumption-key-refresh only at node level
+    // FIXME: allow session-resumption-key-refresh only at http level
     // TODO: allow MetaObject to hold a locator map for its members (MetaContext!-)
 
     ret = gnutls_certificate_allocate_credentials(&cred_);
@@ -100,4 +100,4 @@ String HttpServerSecurity::certificateName(gnutls_x509_crt_t cert)
 }
 #endif
 
-}} // namespace cc::node
+}} // namespace cc::http

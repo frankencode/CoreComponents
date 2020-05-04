@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/node/LoggingInstance>
-#include <cc/node/LoggingRegistry>
-#include <cc/node/StatusLogStream>
+#include <cc/http/LoggingInstance>
+#include <cc/http/LoggingRegistry>
+#include <cc/http/StatusLogStream>
 #include <cc/NullStream>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<LoggingInstance> LoggingInstance::load(const MetaObject *config)
 {
@@ -39,4 +39,4 @@ LoggingLevel LoggingInstance::verbosity() const
     return verbosity_;
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

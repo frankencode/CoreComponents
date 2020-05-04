@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/node/DeliveryDelegate>
-#include <cc/node/DeliveryInstance>
-#include <cc/node/HttpResponseGenerator>
-#include <cc/node/DeliveryWorker>
+#include <cc/http/DeliveryDelegate>
+#include <cc/http/DeliveryInstance>
+#include <cc/http/HttpResponseGenerator>
+#include <cc/http/DeliveryWorker>
 
 namespace cc {
-namespace node {
+namespace http {
 
 DeliveryDelegate::DeliveryDelegate(DeliveryWorker *worker):
     worker_{worker}
@@ -48,4 +48,4 @@ void DeliveryDelegate::autoSecureForwardings()
     worker_->autoSecureForwardings();
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

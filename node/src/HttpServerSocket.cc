@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/node/HttpServerSocket>
-#include <cc/node/HttpServerSecurity>
-#include <cc/node/DeliveryInstance>
-#include <cc/node/NodeConfig>
-#include <cc/node/SecurityCache>
-#include <cc/node/exceptions>
-#include <cc/node/debug>
+#include <cc/http/HttpServerSocket>
+#include <cc/http/HttpServerSecurity>
+#include <cc/http/DeliveryInstance>
+#include <cc/http/NodeConfig>
+#include <cc/http/SecurityCache>
+#include <cc/http/exceptions>
+#include <cc/http/debug>
 #include <cc/assert>
 #include <cc/ThreadLocalSingleton>
 #include <cc/System>
@@ -21,7 +21,7 @@
 #include <unistd.h>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket, const NodeConfig *nodeConfig, SecurityCache *securityCache)
 {
@@ -215,4 +215,4 @@ void HttpServerSocket::ioException(Exception &ex) const
     CCNODE_ERROR() << "!" << ex << nl;
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

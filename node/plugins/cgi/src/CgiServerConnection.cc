@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/node/CgiServerConnection>
+#include <cc/http/CgiServerConnection>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<CgiServerConnection> CgiServerConnection::open(Stream *stream)
 {
@@ -27,4 +27,4 @@ Ref<HttpMessage> CgiServerConnection::readResponse()
     return response;
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

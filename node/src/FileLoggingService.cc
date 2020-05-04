@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/FileLoggingService>
-#include <cc/node/FileLoggingInstance>
-#include <cc/node/LoggingRegistry>
+#include <cc/http/FileLoggingService>
+#include <cc/http/FileLoggingInstance>
+#include <cc/http/LoggingRegistry>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<FileLoggingService> FileLoggingService::create()
 {
@@ -50,4 +50,4 @@ public:
 
 namespace { FileLoggingServiceAnnouncer announcer; }
 
-}} // namespace cc::node
+}} // namespace cc::http

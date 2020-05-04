@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/node/CgiScriptHandler>
-#include <cc/node/CgiDelegate>
+#include <cc/http/CgiScriptHandler>
+#include <cc/http/CgiDelegate>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<CgiScriptHandler> CgiScriptHandler::create(DeliveryWorker *worker)
 {
@@ -29,4 +29,4 @@ bool CgiScriptHandler::process(const HttpRequest *request, const FileStatus *sta
     return delegate_->process(request, status, documentRoot);
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

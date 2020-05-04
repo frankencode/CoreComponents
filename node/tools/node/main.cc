@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/node/NodeConfigProtocol>
-#include <cc/node/DeliveryRegistry>
-#include <cc/node/NodeMaster>
+#include <cc/http/NodeConfigProtocol>
+#include <cc/http/DeliveryRegistry>
+#include <cc/http/NodeMaster>
 #include <cc/exceptions>
 #include <cc/stdio>
 #include <cc/SignalMaster>
@@ -20,7 +20,7 @@
 
 using namespace cc;
 using namespace cc::meta;
-using namespace cc::node;
+using namespace cc::http;
 
 Ref<NodeConfig> loadNodeConfig(int argc, char **argv)
 {

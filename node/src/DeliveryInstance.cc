@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/DeliveryInstance>
-#include <cc/node/MediaTypeDatabase>
+#include <cc/http/DeliveryInstance>
+#include <cc/http/MediaTypeDatabase>
 #include <cc/stdio>
 
 namespace cc {
-namespace node {
+namespace http {
 
 DeliveryInstance::DeliveryInstance(const MetaObject *config):
     serviceName_{config->className()},
@@ -31,4 +31,4 @@ DeliveryInstance::DeliveryInstance(const MetaObject *config):
 DeliveryInstance::~DeliveryInstance()
 {}
 
-}} // namespace cc::node
+}} // namespace cc::http

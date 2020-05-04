@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/node/MediaTypeDatabase>
+#include <cc/http/MediaTypeDatabase>
 #include <cc/Singleton>
 
 namespace cc {
-namespace node {
+namespace http {
 
 const MediaTypeDatabase *MediaTypeDatabase::instance()
 {
@@ -52,4 +52,4 @@ String MediaTypeDatabase::lookup(const String &path, const String &content) cons
     return value;
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/node/HttpServerConnection>
-#include <cc/node/DeliveryInstance>
-#include <cc/node/NodeConfig>
-#include <cc/node/exceptions>
+#include <cc/http/HttpServerConnection>
+#include <cc/http/DeliveryInstance>
+#include <cc/http/NodeConfig>
+#include <cc/http/exceptions>
 #include <cc/System>
 #include <cc/LineSource>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<HttpServerConnection> HttpServerConnection::open(HttpServerSocket *socket)
 {
@@ -113,4 +113,4 @@ void HttpServerConnection::onHeaderReceived(HttpMessage *message)
     if (request->host_ == "") throw BadRequest{};
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

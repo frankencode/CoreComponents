@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/node/logging>
-#include <cc/node/HttpServerConnection>
+#include <cc/http/logging>
+#include <cc/http/HttpServerConnection>
 #include <cc/System>
 #include <cc/Date>
 #include <cc/Format>
 
 namespace cc {
-namespace node {
+namespace http {
 
 LoggingLevel readLoggingLevel(const String &s)
 {
@@ -45,4 +45,4 @@ String formatDeliveryLogMessage(const HttpServerConnection *client, int statusCo
         << nl;
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

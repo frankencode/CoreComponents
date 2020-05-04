@@ -6,19 +6,19 @@
  *
  */
 
-#include <cc/node/DeliveryWorker>
-#include <cc/node/NodeConfig>
-#include <cc/node/DeliveryService>
-#include <cc/node/DeliveryDelegate>
-#include <cc/node/HttpResponseGenerator>
-#include <cc/node/exceptions>
-#include <cc/node/debug>
+#include <cc/http/DeliveryWorker>
+#include <cc/http/NodeConfig>
+#include <cc/http/DeliveryService>
+#include <cc/http/DeliveryDelegate>
+#include <cc/http/HttpResponseGenerator>
+#include <cc/http/exceptions>
+#include <cc/http/debug>
 #include <cc/net/Uri>
 #include <cc/Format>
 #include <cc/RefGuard>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<DeliveryWorker> DeliveryWorker::create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections)
 {
@@ -158,4 +158,4 @@ void DeliveryWorker::closeConnection()
     }
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

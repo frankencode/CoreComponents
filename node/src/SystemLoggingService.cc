@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/node/SystemLoggingService>
-#include <cc/node/SystemLoggingInstance>
-#include <cc/node/LoggingRegistry>
-#include <cc/node/SystemLogStream>
+#include <cc/http/SystemLoggingService>
+#include <cc/http/SystemLoggingInstance>
+#include <cc/http/LoggingRegistry>
+#include <cc/http/SystemLogStream>
 #include <cc/NullStream>
 #include <syslog.h>
 
 namespace cc {
-namespace node {
+namespace http {
 
 const char *SystemLoggingService::name()
 {
@@ -57,4 +57,4 @@ public:
 
 namespace { SystemLoggingServiceAnnouncer announcer; }
 
-}} // namespace cc::node
+}} // namespace cc::http

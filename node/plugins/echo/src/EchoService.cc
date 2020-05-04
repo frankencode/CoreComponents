@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/node/EchoService>
-#include <cc/node/DeliveryRegistry>
-#include <cc/node/DeliveryService>
-#include <cc/node/EchoInstance>
+#include <cc/http/EchoService>
+#include <cc/http/DeliveryRegistry>
+#include <cc/http/DeliveryService>
+#include <cc/http/EchoInstance>
 
 namespace cc {
-namespace node {
+namespace http {
 
 const char *EchoService::name()
 {
@@ -51,4 +51,4 @@ public:
 
 namespace { EchoAnnouncer announcer; }
 
-}} // namespace cc::node
+}} // namespace cc::http

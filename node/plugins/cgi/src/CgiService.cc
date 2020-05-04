@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/CgiService>
-#include <cc/node/DeliveryRegistry>
-#include <cc/node/CgiInstance>
+#include <cc/http/CgiService>
+#include <cc/http/DeliveryRegistry>
+#include <cc/http/CgiInstance>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<CgiService> CgiService::create()
 {
@@ -48,4 +48,4 @@ public:
 
 namespace { CgiServiceAnnouncer announcer; }
 
-}} // namespace cc::node
+}} // namespace cc::http

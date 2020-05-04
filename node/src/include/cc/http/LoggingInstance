@@ -1,0 +1,57 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/http/logging>
+#include <cc/meta/MetaObject>
+#include <cc/Stream>
+
+namespace cc {
+namespace http {
+
+class HttpServerConnection;
+class DispatchLoggingInstance;
+class StatusLogStream;
+
+using cc::meta::MetaObject;
+
+class LoggingInstance: public Object
+{
+public:
+    static Ref<LoggingInstance> load(const MetaObject *config);
+
+    LoggingLevel verbosity() const;
+
+    Stream *errorStream() const { return errorStream_; }
+    Stream *warningStream() const { return warningStream_; }
+    Stream *noticeStream() const { return noticeStream_; }
+    Stream *infoStream() const { return infoStream_; }
+    Stream *debugStream() const { return debugStream_; }
+
+    virtual void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "") const = 0;
+    virtual void logMessage(const String &message, LoggingLevel level = LoggingLevel::Default) const = 0;
+
+protected:
+    friend class StatusLogStream;
+
+    LoggingInstance(const MetaObject *config);
+
+private:
+    LoggingLevel verbosity_;
+
+    Ref<Stream> errorStream_;
+    Ref<Stream> warningStream_;
+    Ref<Stream> noticeStream_;
+    Ref<Stream> infoStream_;
+    Ref<Stream> debugStream_;
+};
+
+typedef List< Ref<const LoggingInstance> > LoggingInstances;
+
+}} // namespace cc::http

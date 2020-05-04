@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/node/CgiDelegate>
-#include <cc/node/NodeConfig>
-#include <cc/node/MediaTypeDatabase>
-#include <cc/node/DeliveryWorker>
-#include <cc/node/CgiServerConnection>
-#include <cc/node/CgiInstance>
-#include <cc/node/exceptions>
-#include <cc/node/debug>
-#include <cc/node/TapBuffer>
+#include <cc/http/CgiDelegate>
+#include <cc/http/NodeConfig>
+#include <cc/http/MediaTypeDatabase>
+#include <cc/http/DeliveryWorker>
+#include <cc/http/CgiServerConnection>
+#include <cc/http/CgiInstance>
+#include <cc/http/exceptions>
+#include <cc/http/debug>
+#include <cc/http/TapBuffer>
 #include <cc/net/StreamSocket>
 #include <cc/str>
 #include <cc/Format>
@@ -24,7 +24,7 @@
 #include <cc/StreamTap>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<CgiDelegate> CgiDelegate::create(DeliveryWorker *worker)
 {
@@ -330,4 +330,4 @@ String CgiDelegate::wrapHttp(const String &header)
     return str("HTTP_") + h;
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

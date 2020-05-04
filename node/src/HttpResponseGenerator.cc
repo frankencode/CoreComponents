@@ -6,16 +6,16 @@
  *
  */
 
-#include <cc/node/HttpResponseGenerator>
-#include <cc/node/utils>
-#include <cc/node/HttpConnection>
+#include <cc/http/HttpResponseGenerator>
+#include <cc/http/utils>
+#include <cc/http/HttpConnection>
 #include <cc/Format>
 #include <cc/System>
 #include <cc/Date>
 #include <cc/TransferMeter>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<HttpResponseGenerator> HttpResponseGenerator::create(HttpConnection *client)
 {
@@ -68,4 +68,4 @@ void HttpResponseGenerator::writeFirstLine(Format &sink)
     sink << "HTTP/1.1 " << statusCode_ << " " << reasonPhrase_ << "\r\n";
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

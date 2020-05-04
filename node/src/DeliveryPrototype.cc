@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/DeliveryPrototype>
-#include <cc/node/LoggingRegistry>
-#include <cc/node/SecurityPrototype>
+#include <cc/http/DeliveryPrototype>
+#include <cc/http/LoggingRegistry>
+#include <cc/http/SecurityPrototype>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<DeliveryPrototype> DeliveryPrototype::create(const String &className)
 {
@@ -30,4 +30,4 @@ DeliveryPrototype::DeliveryPrototype(const String &className, const MetaProtocol
     establish("access-log", LoggingRegistry::instance()->loggingProtocol());
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/DirectoryInstance>
+#include <cc/http/DirectoryInstance>
 #include <cc/File>
 #include <cc/exceptions>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<DirectoryInstance> DirectoryInstance::create(const MetaObject *config)
 {
@@ -43,4 +43,4 @@ Ref<DeliveryDelegate> DirectoryInstance::createDelegate(DeliveryWorker *worker) 
     return DirectoryDelegate::create(worker);
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

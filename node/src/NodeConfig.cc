@@ -6,20 +6,20 @@
  *
  */
 
-#include <cc/node/NodeConfig>
-#include <cc/node/NodeConfigProtocol>
-#include <cc/node/DeliveryRegistry>
-#include <cc/node/DeliveryInstance>
-#include <cc/node/SystemLoggingService>
-#include <cc/node/ForegroundLoggingService>
-#include <cc/node/LoggingRegistry>
-#include <cc/node/debug>
+#include <cc/http/NodeConfig>
+#include <cc/http/NodeConfigProtocol>
+#include <cc/http/DeliveryRegistry>
+#include <cc/http/DeliveryInstance>
+#include <cc/http/SystemLoggingService>
+#include <cc/http/ForegroundLoggingService>
+#include <cc/http/LoggingRegistry>
+#include <cc/http/debug>
 #include <cc/meta/yason>
 #include <cc/File>
 #include <cc/ResourceGuard>
 
 namespace cc {
-namespace node {
+namespace http {
 
 using namespace cc::net;
 using namespace cc::meta;
@@ -168,4 +168,4 @@ const DeliveryInstance *NodeConfig::selectService(const String &host, const Stri
     return deliveryInstance;
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

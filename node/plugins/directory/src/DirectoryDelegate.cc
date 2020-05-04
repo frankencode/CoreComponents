@@ -6,17 +6,17 @@
  *
  */
 
-#include <cc/node/DirectoryDelegate>
-#include <cc/node/DeliveryWorker>
-#include <cc/node/DirectoryInstance>
-#include <cc/node/MediaTypeDatabase>
-#include <cc/node/utils>
-#include <cc/node/exceptions>
+#include <cc/http/DirectoryDelegate>
+#include <cc/http/DeliveryWorker>
+#include <cc/http/DirectoryInstance>
+#include <cc/http/MediaTypeDatabase>
+#include <cc/http/utils>
+#include <cc/http/exceptions>
 #include <cc/File>
 #include <cc/Dir>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<DirectoryDelegate> DirectoryDelegate::create(DeliveryWorker *worker, ScriptHandler *scriptHandler)
 {
@@ -176,4 +176,4 @@ void DirectoryDelegate::streamFile(const String &path)
     response()->endTransmission();
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

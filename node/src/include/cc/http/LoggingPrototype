@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2019 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/meta/MetaPrototype>
+
+namespace cc {
+namespace http {
+
+using meta::MetaPrototype;
+using meta::MetaProtocol;
+
+class LoggingPrototype: public MetaPrototype
+{
+public:
+    static Ref<LoggingPrototype> create(const String &className, const MetaProtocol *protocol = nullptr);
+
+protected:
+    LoggingPrototype(const String &className, const MetaProtocol *protocol = nullptr);
+};
+
+}} // namespace cc::http

@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/node/SystemLoggingInstance>
+#include <cc/http/SystemLoggingInstance>
 #include <syslog.h>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<SystemLoggingInstance> SystemLoggingInstance::create(const MetaObject *config)
 {
@@ -49,4 +49,4 @@ void SystemLoggingInstance::logMessage(const String &message, LoggingLevel level
     if (verbosity() >= level) syslog(getSyslogPriority(level), "%s", message->chars());
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

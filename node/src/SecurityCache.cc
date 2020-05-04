@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/node/SecurityCache>
-#include <cc/node/NodeConfig>
-#include <cc/node/debug>
+#include <cc/http/SecurityCache>
+#include <cc/http/NodeConfig>
+#include <cc/http/debug>
 #include <cc/Guard>
 #include <cc/System>
 #include <string.h>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<SecurityCache> SecurityCache::start(const NodeConfig *nodeConfig)
 {
@@ -91,4 +91,4 @@ void SecurityCache::run()
     }
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

@@ -1,5 +1,6 @@
 Plugin {
     name: ccnodedirectoryplugin
     group: delivery
+    use: cc/http
     extend: cc/node
 }

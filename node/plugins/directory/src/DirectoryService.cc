@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/DirectoryService>
-#include <cc/node/DeliveryRegistry>
-#include <cc/node/DirectoryInstance>
+#include <cc/http/DirectoryService>
+#include <cc/http/DeliveryRegistry>
+#include <cc/http/DirectoryInstance>
 
 namespace cc {
-namespace node {
+namespace http {
 
 const char *DirectoryService::name()
 {
@@ -52,4 +52,4 @@ public:
 
 namespace { DirectoryAnnouncer announcer; }
 
-}} // namespace cc::node
+}} // namespace cc::http

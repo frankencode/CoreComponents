@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/node/DeliveryRegistry>
-#include <cc/node/NodeConfigProtocol>
+#include <cc/http/DeliveryRegistry>
+#include <cc/http/NodeConfigProtocol>
 #include <cc/Singleton>
 #include <cc/Map>
 
 namespace cc {
-namespace node {
+namespace http {
 
 DeliveryRegistry *DeliveryRegistry::instance()
 {
@@ -34,4 +34,4 @@ DeliveryService *DeliveryRegistry::serviceByName(const String &name) const
     return serviceByName_->value(name);
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

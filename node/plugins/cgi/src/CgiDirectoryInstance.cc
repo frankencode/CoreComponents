@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/CgiDirectoryInstance>
-#include <cc/node/CgiScriptHandler>
-#include <cc/node/DirectoryDelegate>
+#include <cc/http/CgiDirectoryInstance>
+#include <cc/http/CgiScriptHandler>
+#include <cc/http/DirectoryDelegate>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<CgiDirectoryInstance> CgiDirectoryInstance::create(const MetaObject *config)
 {
@@ -29,4 +29,4 @@ Ref<DeliveryDelegate> CgiDirectoryInstance::createDelegate(DeliveryWorker *worke
     return DirectoryDelegate::create(worker, CgiScriptHandler::create(worker));
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

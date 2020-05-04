@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/FileLoggingInstance>
+#include <cc/http/FileLoggingInstance>
 #include <cc/File>
 #include <cc/NullStream>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<FileLoggingInstance> FileLoggingInstance::create(const MetaObject *config)
 {
@@ -38,4 +38,4 @@ void FileLoggingInstance::logMessage(const String &message, LoggingLevel level) 
     if (verbosity() >= level) sink_->write(message);
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

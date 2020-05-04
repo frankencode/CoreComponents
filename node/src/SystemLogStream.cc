@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/node/SystemLogStream>
+#include <cc/http/SystemLogStream>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<SystemLogStream> SystemLogStream::open(int priority)
 {
@@ -30,4 +30,4 @@ void SystemLogStream::write(const StringList *parts)
     write(parts->join());
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

@@ -1,6 +1,6 @@
 Plugin {
     name: ccnodecgiplugin
     group: delivery
-    use: plugins/directory
+    use: [ cc/http, plugins/directory ]
     extend: cc/node
 }

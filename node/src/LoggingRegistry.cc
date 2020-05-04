@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/LoggingRegistry>
+#include <cc/http/LoggingRegistry>
 #include <cc/Singleton>
 #include <cc/Map>
 
 namespace cc {
-namespace node {
+namespace http {
 
 LoggingRegistry *LoggingRegistry::instance()
 {
@@ -39,4 +39,4 @@ MetaProtocol *LoggingRegistry::loggingProtocol() const
     return loggingProtocol_;
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

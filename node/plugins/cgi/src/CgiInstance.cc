@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/node/CgiDelegate>
-#include <cc/node/CgiInstance>
-#include <cc/node/exceptions>
-#include <cc/node/debug>
+#include <cc/http/CgiDelegate>
+#include <cc/http/CgiInstance>
+#include <cc/http/exceptions>
+#include <cc/http/debug>
 #include <cc/net/Uri>
 #include <cc/net/SocketAddress>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<CgiInstance> CgiInstance::create(const MetaObject *config)
 {
@@ -60,4 +60,4 @@ Ref<DeliveryDelegate> CgiInstance::createDelegate(DeliveryWorker *worker) const
     return CgiDelegate::create(worker);
 }
 
-}} // namespace cc::node
+}} // namespace cc::http

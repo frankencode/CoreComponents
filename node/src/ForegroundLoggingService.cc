@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/node/ForegroundLoggingService>
-#include <cc/node/ForegroundLoggingInstance>
-#include <cc/node/LoggingRegistry>
+#include <cc/http/ForegroundLoggingService>
+#include <cc/http/ForegroundLoggingInstance>
+#include <cc/http/LoggingRegistry>
 
 namespace cc {
-namespace node {
+namespace http {
 
 const char *ForegroundLoggingService::name()
 {
@@ -49,4 +49,4 @@ public:
 
 namespace { ForegroundLoggingServiceAnnouncer announcer; }
 
-}} // namespace cc::node
+}} // namespace cc::http

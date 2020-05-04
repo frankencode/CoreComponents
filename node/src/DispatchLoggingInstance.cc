@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/node/DispatchLoggingInstance>
-#include <cc/node/LoggingRegistry>
+#include <cc/http/DispatchLoggingInstance>
+#include <cc/http/LoggingRegistry>
 
 namespace cc {
-namespace node {
+namespace http {
 
 Ref<DispatchLoggingInstance> DispatchLoggingInstance::create(const MetaObject *config)
 {
@@ -41,4 +41,4 @@ void DispatchLoggingInstance::logMessage(const String &message, LoggingLevel lev
     }
 }
 
-}} // namespace cc::node
+}} // namespace cc::http
