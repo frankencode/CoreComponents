@@ -68,16 +68,21 @@ Ref<SocketAddress> SocketAddress::resolve(const Uri *uri)
 {
     Ref<SocketAddress> address;
 
-    if (uri->hostIsNumeric()) {
-        address = SocketAddress::create(uri->family(), uri->host(), uri->port());
+    if (uri->scheme() == "local") {
+        address = SocketAddress::create(ProtocolFamily::Local, uri->requestPath());
     }
     else {
-        Ref<SocketAddressList> addressList = SocketAddress::queryConnectionInfo(uri->host());
-        if (addressList->count() > 0) {
-            address = addressList->at(0);
-            address->setPort(uri->port());
+        if (uri->hostIsNumeric()) {
+            address = SocketAddress::create(uri->family(), uri->host(), uri->port());
         }
-        else throw HostNameResolutionError{uri->host()};
+        else {
+            Ref<SocketAddressList> addressList = SocketAddress::queryConnectionInfo(uri->host());
+            if (addressList->count() > 0) {
+                address = addressList->at(0);
+                address->setPort(uri->port());
+            }
+            else throw HostNameResolutionError{uri->host()};
+        }
     }
 
     return address;

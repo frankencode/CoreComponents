@@ -50,7 +50,8 @@ Ref<NodeConfig> NodeConfig::create()
     return load(prototype());
 }
 
-NodeConfig::NodeConfig(const MetaObject *config)
+NodeConfig::NodeConfig(const MetaObject *config):
+    securePort_{0}
 {
     String address = config->value("address");
 
@@ -60,33 +61,39 @@ NodeConfig::NodeConfig(const MetaObject *config)
     ProtocolFamily family = ProtocolFamily::Unspecified;
     if (protocol->toLower() == "ipv6") family = ProtocolFamily::Internet6;
     else if (protocol->toLower() == "ipv4") family = ProtocolFamily::Internet4;
+    else if (protocol->toLower() == "local" || address->contains('/')) family = ProtocolFamily::Local;
 
     address_ = SocketAddressList::create();
-    if (address != "" && address != "*") {
-        Ref<SocketAddressList> l = SocketAddress::queryConnectionInfo(address, "http", family, SocketType::Stream);
-        for (SocketAddress *a: l) {
-            for (int p: ports) {
-                a->setPort(p);
-                address_->append(a);
-            }
-        }
+    if (family == ProtocolFamily::Local) {
+        address_->append(SocketAddress::create(ProtocolFamily::Local, address));
     }
     else {
-        for (int p: ports) {
-            if (family == ProtocolFamily::Unspecified) {
-                address_->append(SocketAddress::create(ProtocolFamily::Internet4, "*", p));
-                address_->append(SocketAddress::create(ProtocolFamily::Internet6, "*", p));
+        if (address != "" && address != "*") {
+            Ref<SocketAddressList> l = SocketAddress::queryConnectionInfo(address, "http", family, SocketType::Stream);
+            for (SocketAddress *a: l) {
+                for (int p: ports) {
+                    a->setPort(p);
+                    address_->append(a);
+                }
             }
-            else
-                address_->append(SocketAddress::create(family, "*", p));
         }
-    }
+        else {
+            for (int p: ports) {
+                if (family == ProtocolFamily::Unspecified) {
+                    address_->append(SocketAddress::create(ProtocolFamily::Internet4, "*", p));
+                    address_->append(SocketAddress::create(ProtocolFamily::Internet6, "*", p));
+                }
+                else
+                    address_->append(SocketAddress::create(family, "*", p));
+            }
+        }
 
-    securePort_ = 443;
-    for (const SocketAddress *a: address_) {
-        if (a->port() % 80 != 0) {
-            securePort_ = a->port();
-            break;
+        securePort_ = 443;
+        for (const SocketAddress *a: address_) {
+            if (a->port() % 80 != 0) {
+                securePort_ = a->port();
+                break;
+            }
         }
     }
 
