@@ -525,8 +525,9 @@ void GnuToolChain::appendRelocationMode(Format args, const BuildPlan *plan)
         plan->customCompileFlags()->contains("-fpie") ||
         plan->customCompileFlags()->contains("-fpic")
     )) {
-        if (plan->options() & BuildPlan::Library) args << "-fPIC";
-        else args << "-fPIE";
+        /*if (plan->options() & BuildPlan::Library) args << "-fPIC";
+        else args << "-fPIE";*/
+        args << "-fPIC";
     }
 }
 
