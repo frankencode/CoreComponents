@@ -6,7 +6,7 @@
  *
  */
 
-#include <unistd.h> // close, select
+#include <unistd.h> // close, select, unlink
 #include <fcntl.h> // fcntl
 #include <errno.h> // errno
 #include <math.h> // modf
@@ -64,8 +64,8 @@ StreamSocket::StreamSocket(int fd):
 {}
 
 StreamSocket::StreamSocket(const SocketAddress *address):
-    address_(address->copy()),
-    connected_(false)
+    address_{address->copy()},
+    connected_{false}
 {}
 
 const SocketAddress *StreamSocket::address() const
@@ -90,6 +90,9 @@ void StreamSocket::listen(int backlog)
             if (::setsockopt(fd_, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)) == -1)
                 CC_SYSTEM_DEBUG_ERROR(errno);
         }
+    }
+    else {
+        ::unlink(address_->toString());
     }
 
     if (::bind(fd_, address_->addr(), address_->addrLen()) == -1)
