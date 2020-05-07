@@ -1,0 +1,122 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \brief Find a matching item
+  */
+class BinarySearch {
+public:
+    /** \brief Search in a sorted list of items
+      * \param items the sorted list of items
+      * \param pattern pattern to search for
+      * \param finalIndex return the final index of the search
+      * \return true if a matching item was found, false otherwise
+      */
+    template<
+        class SortedItems,
+        class Pattern = typename SortedItems::Item,
+        class Index = typename SortedItems::Index
+    >
+    static bool find(
+        const SortedItems *items,
+        const Pattern &pattern,
+        Index *finalIndex
+    ) {
+        Index l = 0;
+        Index r = items->count() - 1;
+        while (l <= r) {
+            Index m = (l + r) >> 1;
+            const auto &candidate = items->at(m);
+            if (candidate < pattern)
+                l = m + 1;
+            else if (pattern < candidate)
+                r = m - 1;
+            else {
+                *finalIndex = m;
+                return true;
+            }
+        }
+        *finalIndex = l;
+        return false;
+    }
+};
+
+/** \brief Find the left most matching item (or the rank of the pattern)
+  */
+class BinarySearchLeftMost
+{
+public:
+    /** \brief Search in a sorted list of items
+      * \param items the sorted list of items
+      * \param pattern pattern to search for
+      * \param finalIndex return the final index of the search
+      * \return true if a matching item was found, false otherwise
+      */
+    template<
+        class SortedItems,
+        class Pattern = typename SortedItems::Item,
+        class Index = typename SortedItems::Index
+    >
+    static bool find(
+        const SortedItems *items,
+        const Pattern &pattern,
+        Index *finalIndex
+    ) {
+        Index l = 0;
+        Index r = items->count();
+        while (l < r) {
+            Index m = (l + r) >> 1;
+            if (items->at(m) < pattern)
+                l = m + 1;
+            else
+                r = m;
+        }
+        return l;
+    }
+};
+
+/** \brief Find the right most matching item
+  */
+class BinarySearchRightMost
+{
+public:
+    /** \brief Search in a sorted list of items
+      * \param items the sorted list of items
+      * \param pattern pattern to search for
+      * \param finalIndex return the final index of the search
+      * \return true if a matching item was found, false otherwise
+      */
+    template<
+        class SortedItems,
+        class Pattern = typename SortedItems::Item,
+        class Index = typename SortedItems::Index
+    >
+    static bool find(
+        const SortedItems *items,
+        const Pattern &pattern,
+        Index *finalIndex
+    ) {
+        Index l = 0;
+        Index r = items->count();
+        while (l < r) {
+            Index m = (l + r) >> 1;
+            const auto &candidate = items->at(m);
+            if (pattern < candidate)
+                r = m;
+            else
+                l = m + 1;
+        }
+        *finalIndex = r - (0 < r);
+        return false;
+    }
+};
+
+} // namespace cc

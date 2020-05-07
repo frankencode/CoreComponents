@@ -30,7 +30,7 @@ public:
     bool read(Item *item) override
     {
         if (!iterator_) return false;
-        *item = (*iterator_)->value();
+        *item = iterator_->value();
         ++iterator_;
         return true;
     }

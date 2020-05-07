@@ -168,36 +168,53 @@ public:
     /** \name Iterators
       * @{
       */
-    typedef bucket::ConstIterator<Item> Iterator;
-    typedef bucket::ConstIterator<Item> ConstIterator;
+    class ConstIteratorAccess {
+    public:
+        typedef const Item &DerefAccess;
+        typedef ConstIteratorAccess MemberAccess;
 
-    Iterator begin() { return ConstIterator{tree_}; }
-    Iterator end() { return ConstIterator{tree_, tree_->count()}; }
-    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
+        ConstIteratorAccess(const Item &item): item_{&item} {}
+
+        Key key() const { return (*item_)->key(); }
+        Value value() const { return (*item_)->value(); }
+
+        const ConstIteratorAccess *operator->() const { return this; }
+
+    private:
+        const Item *item_;
+    };
+
+    class IteratorAccess {
+    public:
+        typedef const Item &DerefAccess;
+        typedef IteratorAccess MemberAccess;
+
+        IteratorAccess(Item &item): item_{&item} {}
+
+        Key key() const { return (*item_)->key(); }
+        Value value() const { return (*item_)->value(); }
+        void setValue(const Value &newValue) const { (*item_)->setValue(newValue); }
+
+        const IteratorAccess *operator->() const { return this; }
+
+    private:
+        Item *item_;
+    };
+
+    typedef bucket::ConstIterator<Item, ConstIteratorAccess> ConstIterator;
+    typedef bucket::Iterator<Item, IteratorAccess> Iterator;
 
     ConstIterator begin() const { return ConstIterator{tree_}; }
     ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
     ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+    ConstIterator begin(const Key &key) const { return getBegin<ConstIterator>(key); }
+    ConstIterator end(const Key &key) const { return getEnd<ConstIterator>(key); }
 
-    ConstIterator begin(const Key &key) const
-    {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
-        unsigned egress = 0;
-        tree_->lookupFirst(Item{key}, &index, &node, &egress);
-        return ConstIterator{tree_, index, node, egress};
-    }
-
-    ConstIterator end(const Key &key) const
-    {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
-        unsigned egress = 0;
-        tree_->lookupLast(Item{key}, &index, &node, &egress);
-        ConstIterator iterator{tree_, index, node, egress};
-        if (iterator) ++iterator;
-        return iterator;
-    }
+    Iterator begin() { return Iterator{tree_}; }
+    Iterator end() { return Iterator{tree_, tree_->count()}; }
+    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
+    Iterator begin(const Key &key) { return getBegin<Iterator>(key); }
+    Iterator end(const Key &key) { return getEnd<Iterator>(key); }
     /** @}
       */
 
@@ -208,6 +225,12 @@ public:
     typedef ConstIterator const_iterator;
     /** @}
       */
+
+    /** Remove \a item at given \a target position */
+    void removeAt(Iterator &target)
+    {
+        tree_->popAndStep(target);
+    }
 
     /// Return the smallest item
     const Item &first() const { return tree_->first<Item>(); }
@@ -232,6 +255,28 @@ protected:
     ~Map() { tree_->deplete<Item>(); }
 
 private:
+    template<class I>
+    I getBegin(const Key &key) const
+    {
+        Index index = 0;
+        bucket::Leaf<Item> *node = nullptr;
+        unsigned egress = 0;
+        tree_->lookup<Item, BinarySearchLeftMost>(Item{key}, &index, &node, &egress);
+        return I{tree_, index, node, egress};
+    }
+
+    template<class I>
+    I getEnd(const Key &key) const
+    {
+        Index index = 0;
+        bucket::Leaf<Item> *node = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup<Item, BinarySearchRightMost>(Item{key}, &index, &node, &egress);
+        I target{tree_, index, node, egress};
+        if (found) ++target;
+        return target;
+    }
+
     Local<bucket::Tree> tree_;
 };
 

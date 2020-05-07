@@ -346,7 +346,7 @@ public:
         tree_->pushAndStep(iterator, item);
     }
 
-    /** Remove \a item from given \a iterator position */
+    /** Remove \a item from given \a target position */
     void removeAt(Iterator &target)
     {
         tree_->popAndStep(target);

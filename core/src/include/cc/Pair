@@ -8,8 +8,7 @@
 
 #pragma once
 
-namespace cc
-{
+namespace cc {
 
 /** \class Pair cc/Pair
   * \ingroup container
@@ -42,7 +41,7 @@ public:
     public:
         Key key() const { return key_; }
         Value value() const { return value_; }
-        void setValue(const Value &value) { value_ = value; }
+        void setValue(const Value &newValue) { value_ = newValue; }
 
     private:
         friend class Pair;
