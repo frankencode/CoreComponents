@@ -28,7 +28,7 @@ class Array;
 
 /** Convenience alias
   * \ingroup strings
-  * \ingroup container
+  * \ingroup container_static
   * \see Array<char>
   */
 typedef Array<char> CharArray;

@@ -139,7 +139,7 @@ private:
 };
 
 /** \class Heap cc/Heap
-  * \ingroup container
+  * \ingroup container_static
   * \brief %Heap data container
   */
 template<class T>

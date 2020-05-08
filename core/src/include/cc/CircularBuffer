@@ -14,7 +14,7 @@
 namespace cc {
 
 /** \class CircularBuffer cc/CircularBuffer
-  * \ingroup container
+  * \ingroup container_static
   * \brief Circular buffer data container
   */
 template<class T>

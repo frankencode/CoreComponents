@@ -14,7 +14,7 @@
 namespace cc {
 
 /** \class PriorityQueue cc/PriorityQueue
-  * \ingroup container
+  * \ingroup container_dynamic
   * \brief Priority based queue data container
   * \see Queue, Channel
   */
@@ -22,29 +22,51 @@ template<class T>
 class PriorityQueue: public Object
 {
 public:
+    /** Create a new queue
+      * \return new object instance
+      */
     static Ref<PriorityQueue> create() { return new PriorityQueue; }
 
+    /** Add a new item to the end of the queue
+      * \param item item value
+      * \param priority priority of item
+      */
     void pushBack(const T &item, int priority = 0)
     {
         inputQueue(priority)->pushBack(item);
     }
 
+    /** Remove an item from the head of the queue
+      * \param item optionally returns the item value
+      * \return item value
+      */
     T popFront(T *item)
     {
         CC_ASSERT(size_ > 0);
         return outputQueue()->popFront(item);
     }
 
+    /** Remove the first item from the queue
+      * \return item value
+      */
     T popFront() {
         T item;
         return popFront(&item);
     }
 
+    /// \copydoc pushBack()
     void push(const T &item, int priority) { pushBack(item, priority); }
+
+    /// \copydoc popFront(T *)
     T pop(T *item) { return popFront(item); }
+
+    /// \copydoc popFront()
     T pop() { return popFront(); }
 
+    /// Return the number of queued items
     int count() const { return size_; }
+
+    /// Return the first item in the queue
     T front() { return readQueue()->front(); }
 
 private:

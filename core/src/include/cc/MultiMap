@@ -1,0 +1,210 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bucket>
+#include <cc/containers>
+#include <cc/Pair>
+
+namespace cc {
+
+/** \class MultiMap cc/MultiMap
+  * \ingroup container_dynamic
+  * \brief Multi-map data container
+  * \see Pair, Map, KeySource, ValueSource
+  */
+template<class K, class V = K>
+class MultiMap: public Object
+{
+public:
+    typedef K Key; ///< Key type
+    typedef V Value; ///< Value type
+    typedef Pair<Key, Value> Item; ///< Item type
+    typedef bucket::Weight Index; ///< Index type
+
+    typedef bucket::Iterator<Item> Iterator; ///< Bidirectional iterator
+    typedef bucket::ConstIterator<Item> ConstIterator; ///< Constant bidirectional iterator
+
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< \internal
+
+    /** Create a new relation
+      * \return new object instance
+      */
+    static Ref<MultiMap> create() { return new MultiMap; }
+
+    /// Number of items
+    Index count() const { return tree_->count(); }
+
+    /// Check if an index is valid
+    bool has(Index index) const {
+        return 0 <= index && index < count();
+    }
+
+    /** Return a reference to an item
+      * \param index set index
+      * \return reference to the item
+      */
+    const Item &at(Index index) const
+    {
+        assert(0 <= index && index < count());
+        return tree_->at<Item>(index);
+    }
+
+    /// Iterator to the beginning (on first item)
+    Iterator begin() { return Iterator{&tree_}; }
+
+    /// Iterator pointing to the item at \a index
+    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
+
+    /// Iterator to the end (behind last item)
+    Iterator end() { return Iterator{&tree_, tree_->count()}; }
+
+    /// Constant iterator to the beginning (on first item)
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+
+    /// Constant Iterator pointing to the item at \a index
+    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+
+    /// Constant iterator to the end (behind last item)
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+
+    /// Check if the relation contains \a key
+    bool contains(const Key &key) const
+    {
+        return tree_->lookup<Item>(Item{key});
+    }
+
+    /** Lookup key-value pair by given key
+      * \tparam Search search strategy (FindFirst, FindLeftMost, FindRightMost)
+      * \param key key to search for
+      * \param target returns an iterator to a key-value if found
+      * \return true if a matching key-value pair was found
+      */
+    template<class Search = FindLeftMost>
+    bool lookup(const Key &key, ConstIterator *target) const
+    {
+        Index index = 0;
+        bucket::Leaf<Item> *node = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup<Item, Search>(Item{key}, &index, &node, &egress);
+        if (target) *target = ConstIterator{tree_, index, node, egress};
+        return found;
+    }
+
+    /** Lookup key-value pair by given key
+      * \tparam Search search strategy (FindFirst, FindLeftMost, FindRightMost)
+      * \param key key to search for
+      * \param target returns an iterator to a key-value if found
+      * \return true if a matching key-value pair was found
+      */
+    template<class Search = FindLeftMost>
+    bool lookup(const Key &key, Iterator *target)
+    {
+        Index index = 0;
+        bucket::Leaf<Item> *node = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup<Item, Search>(Item{key}, &index, &node, &egress);
+        if (target) *target = Iterator{tree_, index, node, egress};
+        return found;
+    }
+
+    /** Insert a new key-value pair
+      * \param key search key
+      * \param value new value
+      */
+    void insert(const Key &key, const Value &value)
+    {
+        bucket::Leaf<Item> *target = nullptr;
+        unsigned egress = 0;
+        Item item{key, value};
+        bool found = tree_->lookup<Item, FindRightMost>(item, nullptr, &target, &egress);
+        tree_->push<Item>(target, egress + found, item);
+    }
+
+    /** Remove all key-value pairs matching a search key
+      * \param key search key
+      * \return number of items removed
+      */
+    Index remove(const Key &key)
+    {
+        Index removalCount = 0;
+        Iterator target;
+        lookup(key, &target);
+        while (target && target->key() == key) {
+            remove(target);
+            ++removalCount;
+        }
+        return removalCount;
+    }
+
+    /** Remove \a item at given \a target position */
+    void remove(Iterator &target)
+    {
+        tree_->popAndStep(target);
+    }
+
+    /// Remove item at given \a index
+    void removeAt(Index index)
+    {
+        assert(0 <= index && index < count());
+        tree_->pop<Item>(index);
+    }
+
+    /// Modify value of the key-value mapping at \a index
+    void setValueAt(Index index, const Value &value)
+    {
+        assert(0 <= index && index < count());
+        tree_->at<Item>(index)->setValue(value);
+    }
+
+    /// Return the smallest item
+    const Item &first() const { return tree_->first<Item>(); }
+
+    /// Return the biggest item
+    const Item &last() const { return tree_->last<Item>(); }
+
+    /// Reset to an empty relation
+    void deplete() { tree_->deplete<Item>(); }
+
+protected:
+    friend class bucket::Internals;
+    friend class Local<MultiMap>;
+
+    MultiMap() = default;
+
+    MultiMap(const MultiMap *other)
+    {
+        tree_->populate<Item>(other);
+    }
+
+    ~MultiMap() { tree_->deplete<Item>(); }
+
+    Local<bucket::Tree> tree_;
+};
+
+template<class K, class V>
+bool operator==(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) == 0; }
+
+template<class K, class V>
+bool operator!=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) != 0; }
+
+template<class K, class V>
+bool operator<(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) < 0; }
+
+template<class K, class V>
+bool operator>(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) > 0; }
+
+template<class K, class V>
+bool operator<=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) <= 0; }
+
+template<class K, class V>
+bool operator>=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) >= 0; }
+
+} // namespace cc

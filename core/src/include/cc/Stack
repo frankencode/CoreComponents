@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class Stack cc/Stack
-  * \ingroup container
+  * \ingroup container_static
   * \brief %Stack data container
   */
 template<class T>

@@ -8,12 +8,16 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
+#include <cc/Variant>
 #include <cc/System>
 #include <cc/Map>
 #include <cc/Random>
 
 using namespace cc;
 using namespace cc::testing;
+
+namespace cc { template class Map<String, String>; }
+namespace cc { template class Map<String, Variant>; }
 
 int fib(int n)
 {

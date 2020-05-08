@@ -14,7 +14,7 @@
 namespace cc {
 
 /** \class Array cc/Array
-  * \ingroup container
+  * \ingroup container_static
   * \brief Typeded memory vector
   * \see List, CharArray
   */

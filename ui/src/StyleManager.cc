@@ -9,7 +9,7 @@
 #include <cc/assert>
 #include <cc/Singleton>
 #include <cc/Map>
-#include <cc/MapValueSource>
+#include <cc/ValueSource>
 #include <cc/Process>
 #include <cc/ui/StyleManager>
 
@@ -41,7 +41,7 @@ bool StyleManager::getPlugin(const String &name, Ref<StylePlugin> *plugin) const
 
 Ref< Source<StylePlugin *> > StyleManager::getAllPlugins() const
 {
-    return MapValueSource<Plugins, StylePlugin *>::open(plugins_);
+    return ValueSource<Plugins, StylePlugin *>::open(plugins_);
 }
 
 StylePlugin *StyleManager::activePlugin() const

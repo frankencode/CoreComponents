@@ -27,7 +27,7 @@ public:
 };
 
 /** \class Queue cc/Queue
-  * \ingroup container
+  * \ingroup container_dynamic
   * \brief %Queue data container
   */
 template<class T>
@@ -100,7 +100,7 @@ public:
     }
 
     /** Remove an item from the head of the queue
-      * \param item optionally return the item value
+      * \param item optionally returns the item value
       * \return item value
       */
     T popFront(T *item)
@@ -143,7 +143,7 @@ public:
     /// \copydoc popFront()
     T pop() { return popFront(); }
 
-    /// Return number of queued items
+    /// Return the number of queued items
     int count() const { return length_; }
 
     /// Return the first item in the queue

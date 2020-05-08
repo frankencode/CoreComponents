@@ -18,8 +18,18 @@
   * Binary data streams
   */
 
-/** \defgroup container Data structures
-  * Static and dynamic data structures for in-memory data modelling
+/** \defgroup container Data containers
+  * Data structures for in-memory data modelling
+  */
+
+/** \defgroup container_static Static containers
+  * \ingroup container
+  * Preallocated, fixed sized data structures
+  */
+
+/** \defgroup container_dynamic Dynamic containers
+  * \ingroup container
+  * Dynamically sized data structures
   */
 
 /** \defgroup file_system File system

@@ -14,7 +14,7 @@
 namespace cc {
 
 /** \class Set cc/Set
-  * \ingroup container
+  * \ingroup container_dynamic
   * \brief %Set data container
   * \see Map, List
   */
@@ -22,11 +22,14 @@ template<class T>
 class Set: public Object
 {
 public:
-    /// Item type
-    typedef T Item;
+    typedef T Item; ///< Item type
+    typedef bucket::Weight Index; ///< Index type
 
-    /// Index type
-    typedef bucket::Weight Index;
+    typedef bucket::Iterator<Item> Iterator; ///< Bidirectional iterator
+    typedef bucket::ConstIterator<Item> ConstIterator; ///< Constant bidirectional iterator
+
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< \internal
 
     /** Create a new set
       * \return new object instance
@@ -48,10 +51,58 @@ public:
         return tree_->at<Item>(index);
     }
 
+    /// Iterator to the beginning (on first item)
+    Iterator begin() { return Iterator{&tree_}; }
+
+    /// Iterator pointing to the item at \a index
+    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
+
+    /// Iterator to the end (behind last item)
+    Iterator end() { return Iterator{&tree_, tree_->count()}; }
+
+    /// Constant iterator to the beginning (on first item)
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+
+    /// Constant Iterator pointing to the item at \a index
+    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+
+    /// Constant iterator to the end (behind last item)
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+
     /// Check if the set contains \a item
     bool contains(const Item &item) const
     {
-        return tree_->lookup<Item, BinarySearch>(item);
+        return tree_->lookup<Item>(item);
+    }
+
+    /** Lookup \a item
+      * \param item item to search for
+      * \param target returns an iterator to the item if found
+      * \return true if a matching item was found
+      */
+    bool lookup(const Item &item, ConstIterator *target) const
+    {
+        Index index = 0;
+        bucket::Leaf<Item> *node = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup<Item>(item, &index, &node, &egress);
+        if (target) *target = ConstIterator{tree_, index, node, egress};
+        return found;
+    }
+
+    /** Lookup \a item
+      * \param item item to search for
+      * \param target returns an iterator to the item if found
+      * \return true if a matching item was found
+      */
+    bool lookup(const Item &item, Iterator *target)
+    {
+        Index index = 0;
+        bucket::Leaf<Item> *node = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup<Item>(item, &index, &node, &egress);
+        if (target) *target = Iterator{tree_, index, node, egress};
+        return found;
     }
 
     /** Insert a new item if no item with the same value exists already
@@ -88,52 +139,8 @@ public:
         tree_->pop<Item>(index);
     }
 
-    /** \name Iterators
-      * @{
-      */
-    typedef bucket::ConstIterator<Item> Iterator;
-    typedef bucket::ConstIterator<Item> ConstIterator;
-
-    Iterator begin() { return ConstIterator{tree_}; }
-    Iterator end() { return ConstIterator{tree_, tree_->count()}; }
-    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
-
-    ConstIterator begin() const { return ConstIterator{tree_}; }
-    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
-    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
-
-    ConstIterator begin(const Item &item) const
-    {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
-        unsigned egress = 0;
-        tree_->lookup<Item, BinarySearchLeftMost>(item, &index, &node, &egress);
-        return ConstIterator{tree_, index, node, egress};
-    }
-
-    ConstIterator end(const Item &item) const
-    {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
-        unsigned egress = 0;
-        bool found = tree_->lookup<Item, BinarySearchRightMost>(item, &index, &node, &egress);
-        ConstIterator target{tree_, index, node, egress};
-        if (found) ++target;
-        return target;
-    }
-    /** @}
-      */
-
-    /** \internal
-      * @{
-      */
-    typedef Iterator iterator;
-    typedef ConstIterator const_iterator;
-    /** @}
-      */
-
     /** Remove \a item at given \a target position */
-    void removeAt(Iterator &target)
+    void remove(Iterator &target)
     {
         tree_->popAndStep(target);
     }

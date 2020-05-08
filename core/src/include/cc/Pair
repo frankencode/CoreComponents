@@ -8,17 +8,20 @@
 
 #pragma once
 
+#include <cc/bucket>
+
 namespace cc {
 
 /** \class Pair cc/Pair
-  * \ingroup container
   * \brief Key value pair
-  * \see Map
   */
-template<class Key, class Value>
+template<class K, class V>
 class Pair
 {
 public:
+    typedef K Key;
+    typedef V Value;
+
     Pair()
     {}
 
@@ -62,6 +65,49 @@ public:
 
 private:
     Instance instance_;
+};
+
+template<class K, class V>
+class IteratorAccess< const Pair<K, V> > {
+public:
+    typedef K Key;
+    typedef V Value;
+    typedef Pair<K, V> Item;
+
+    typedef const Item &DerefAccess;
+    typedef IteratorAccess MemberAccess;
+
+    IteratorAccess(const Item &item): item_{&item} {}
+
+    Key key() const { return (*item_)->key(); }
+    Value value() const { return (*item_)->value(); }
+
+    const IteratorAccess *operator->() const { return this; }
+
+private:
+    const Item *item_;
+};
+
+template<class K, class V>
+class IteratorAccess< Pair<K, V> > {
+public:
+    typedef K Key;
+    typedef V Value;
+    typedef Pair<K, V> Item;
+
+    typedef const Item &DerefAccess;
+    typedef IteratorAccess MemberAccess;
+
+    IteratorAccess(Item &item): item_{&item} {}
+
+    Key key() const { return (*item_)->key(); }
+    Value value() const { return (*item_)->value(); }
+    void setValue(const Value &newValue) const { (*item_)->setValue(newValue); }
+
+    const IteratorAccess *operator->() const { return this; }
+
+private:
+    Item *item_;
 };
 
 } // namespace cc

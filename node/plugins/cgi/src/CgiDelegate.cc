@@ -130,9 +130,9 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
     int statusCode = -1;
     String reasonPhrase;
     {
-        String statusField;
-        HttpMessage::Index fieldIndex = 0;
-        if (cgiResponse->lookup("Status", &statusField, &fieldIndex)) {
+        HttpMessage::Iterator target;
+        if (cgiResponse->lookup("Status", &target)) {
+            String statusField = target->value();
             int i = statusField->find(' ');
             statusCode = statusField->select(0, i)->toNumber<int>();
             if (i < statusField->count())
@@ -141,17 +141,17 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
                 CCNODE_ERROR() << "Mailformed Status field in CGI response: \"" << statusField << "\"" << nl;
                 throw InternalServerError{};
             }
-            cgiResponse->removeAt(fieldIndex);
+            cgiResponse->remove(target);
         }
     }
 
     {
-        String location;
-        HttpMessage::Index fieldIndex = 0;
-        if (cgiResponse->lookup("Location", &location, &fieldIndex)) {
+        HttpMessage::Iterator target;
+        if (cgiResponse->lookup("Location", &target)) {
+            String location = target->value();
             CCNODE_DEBUG() << "Redirect to \"" << location << "\"" << nl;
             if (location->startsWith("/")) {
-                cgiResponse->removeAt(fieldIndex);
+                cgiResponse->remove(target);
                 String content = File::open(location)->map();
                 String contentType;
                 if (!cgiResponse->lookup("Content-Type", &contentType)) {
@@ -181,11 +181,10 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
     response()->setStatus(statusCode, reasonPhrase);
     ssize_t contentLength = -1;
     {
-        String value;
-        HttpMessage::Index i = 0;
-        if (cgiResponse->lookup("Content-Length", &value, &i)) {
-            contentLength = value->toNumber<size_t>();
-            cgiResponse->remove("Content-Length");
+        HttpMessage::Iterator target;
+        if (cgiResponse->lookup("Content-Length", &target)) {
+            contentLength = target->value()->toNumber<size_t>();
+            cgiResponse->remove(target);
         }
     }
     response()->setHeader(cgiResponse);

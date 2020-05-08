@@ -12,7 +12,7 @@ namespace cc {
 
 /** \brief Find a matching item
   */
-class BinarySearch {
+class FindFirst {
 public:
     /** \brief Search in a sorted list of items
       * \param items the sorted list of items
@@ -51,7 +51,7 @@ public:
 
 /** \brief Find the left most matching item (or the rank of the pattern)
   */
-class BinarySearchLeftMost
+class FindLeftMost
 {
 public:
     /** \brief Search in a sorted list of items
@@ -85,7 +85,7 @@ public:
 
 /** \brief Find the right most matching item
   */
-class BinarySearchRightMost
+class FindRightMost
 {
 public:
     /** \brief Search in a sorted list of items

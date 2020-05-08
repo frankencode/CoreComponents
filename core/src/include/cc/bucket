@@ -15,6 +15,18 @@
 #include <cc/BinarySearch>
 
 namespace cc {
+
+template<class Item>
+class IteratorAccess
+{
+public:
+    typedef Item &DerefAccess;
+    typedef Item *MemberAccess;
+};
+
+} // namespace cc
+
+namespace cc {
 namespace bucket {
 
 static constexpr unsigned Capacity = 16;
@@ -179,7 +191,7 @@ public:
         }
     }
 
-    template<class Item, class Search = BinarySearch, class Pattern = Item>
+    template<class Item, class Search = FindFirst, class Pattern = Item>
     bool lookup(const Pattern &pattern, Weight *finalIndex = nullptr, Leaf<Item> **target = nullptr, unsigned *egress = nullptr) const;
 
     Weight idealLeafCount() const
@@ -567,14 +579,6 @@ bool Tree::lookup(const Pattern &pattern, Weight *finalIndex, Leaf<Item> **targe
     }
     return found;
 }
-
-template<class Item>
-class IteratorAccess
-{
-public:
-    typedef Item &DerefAccess;
-    typedef Item *MemberAccess;
-};
 
 template<class Item, class Tree, class Access>
 class TreeIterator:

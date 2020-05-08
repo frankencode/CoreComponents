@@ -9,7 +9,7 @@
 #include <cc/assert>
 #include <cc/Singleton>
 #include <cc/Map>
-#include <cc/MapValueSource>
+#include <cc/ValueSource>
 #include <cc/ui/PlatformManager>
 
 namespace cc {
@@ -39,7 +39,7 @@ bool PlatformManager::getPlugin(const String &name, PlatformPlugin **plugin) con
 
 Ref< Source<PlatformPlugin *> > PlatformManager::getAllPlugins() const
 {
-    return MapValueSource<Plugins, PlatformPlugin *>::open(plugins_);
+    return ValueSource<Plugins, PlatformPlugin *>::open(plugins_);
 }
 
 PlatformPlugin *PlatformManager::activePlugin() const

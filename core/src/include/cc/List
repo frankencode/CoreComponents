@@ -16,7 +16,7 @@
 namespace cc {
 
 /** \class List cc/List
-  * \ingroup container
+  * \ingroup container_dynamic
   * \brief %List data container
   * \tparam T item type
   *
@@ -27,11 +27,14 @@ template<class T>
 class List: public Object
 {
 public:
-    /// Item type
-    typedef T Item;
+    typedef T Item; ///< Item type
+    typedef int64_t Index; ///< Index type
 
-    /// Index type
-    typedef int64_t Index;
+    typedef bucket::Iterator<Item> Iterator; ///< Bidirectional iterator
+    typedef bucket::ConstIterator<Item> ConstIterator; ///< Constant bidirectional iterator
+
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< \internal
 
     /** Create an empty list
       * \return new object instance
@@ -82,6 +85,24 @@ public:
         return tree_->at<Item>(index);
     }
 
+    /// Iterator to the beginning (on first item)
+    Iterator begin() { return Iterator{&tree_}; }
+
+    /// Iterator pointing to the item at \a index
+    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
+
+    /// Iterator to the end (behind last item)
+    Iterator end() { return Iterator{&tree_, tree_->count()}; }
+
+    /// Constant iterator to the beginning (on first item)
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+
+    /// Constant Iterator pointing to the item at \a index
+    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+
+    /// Constant iterator to the end (behind last item)
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+
     /** Insert new item at given index
       * \param index list index
       * \param item new item value
@@ -126,6 +147,18 @@ public:
             for (const Item &item: other)
                 append(item);
         }
+    }
+
+    /** Insert \a item at given \a target position */
+    void insert(Iterator &target, const Item &item)
+    {
+        tree_->pushAndStep(target, item);
+    }
+
+    /** Remove \a item from given \a target position */
+    void remove(Iterator &target)
+    {
+        tree_->popAndStep(target);
     }
 
     /** Prepend a copy of another list to this list
@@ -245,9 +278,9 @@ public:
     static void makeUnique(List *list)
     {
         auto set = Set<Item>::create();
-        for (auto it = list->begin(); it;) {
-            if (set->insert(*it)) ++it;
-            else list->removeAt(it);
+        for (auto target = list->begin(); target;) {
+            if (set->insert(*target)) ++target;
+            else list->remove(target);
         }
     }
 
@@ -317,49 +350,6 @@ public:
     /** Directly access item at the back */
     const Item &back() const { assert(count() > 0); return tree_->last<Item>(); }
 
-    /** @}
-      */
-
-    /** \name Iterators
-      * @{
-      */
-    typedef bucket::Iterator<Item> Iterator; ///< Bidirectional iterator
-    typedef bucket::ConstIterator<Item> ConstIterator; ///< Constant bidirectional iterator
-
-    /** Iterator to the beginning (on first item) */
-    Iterator begin() { return Iterator{&tree_}; }
-    /** Iterator to the end (behind last item) */
-    Iterator end() { return Iterator{&tree_, tree_->count()}; }
-    /** Iterator pointing to the item at \a index */
-    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
-
-    /** Constant iterator to the beginning (on first item) */
-    ConstIterator begin() const { return ConstIterator{tree_}; }
-    /** Constant iterator to the end (behind last item) */
-    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
-    /** Constant Iterator pointing to the item at \a index */
-    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
-
-    /** Insert \a item at given \a iterator position */
-    void insertAt(Iterator &iterator, const Item &item)
-    {
-        tree_->pushAndStep(iterator, item);
-    }
-
-    /** Remove \a item from given \a target position */
-    void removeAt(Iterator &target)
-    {
-        tree_->popAndStep(target);
-    }
-    /** @}
-      */
-
-    /** \internal
-      * \name STL iterators
-      * @{
-      */
-    typedef Iterator iterator; ///< Bidirectional iterator
-    typedef ConstIterator const_iterator; ///< Constant bidirectional iterator
     /** @}
       */
 

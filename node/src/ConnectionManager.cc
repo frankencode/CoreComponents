@@ -60,12 +60,11 @@ void ConnectionManager::cycle()
             Ref<ConnectionInfo> visit = visits_->front();
             visits_->popFront();
             uint64_t origin = visit->remoteAddress()->networkPrefix();
-            int count = 0;
-            ConnectionCounts::Index index = 0;
-            if (!connectionCounts_->lookup(origin, &count, &index)) continue;
+            ConnectionCounts::Iterator target;
+            if (!connectionCounts_->lookup(origin, &target)) continue;
 
-            if (count == 1) connectionCounts_->removeAt(index);
-            else connectionCounts_->setValueAt(index, count - 1);
+            if (target->value() == 1) connectionCounts_->remove(target);
+            else target->setValue(target->value() - 1);
         }
     }
 }

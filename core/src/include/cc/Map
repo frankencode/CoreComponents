@@ -15,25 +15,24 @@
 namespace cc {
 
 /** \class Map cc/Map
-  * \ingroup container
+  * \ingroup container_dynamic
   * \brief %Map data container
-  * \see Set, List
+  * \see Pair, MultiMap, KeySource, ValueSource
   */
 template<class K, class V = K>
 class Map: public Object
 {
 public:
-    // Key type
-    typedef K Key;
+    typedef K Key; ///< Key type
+    typedef V Value; ///< Value type
+    typedef Pair<Key, Value> Item; ///< Item type
+    typedef bucket::Weight Index; ///< Index type
 
-    // Value type
-    typedef V Value;
+    typedef bucket::Iterator<Item> Iterator; ///< Bidirectional iterator
+    typedef bucket::ConstIterator<Item> ConstIterator; ///< Constant bidirectional iterator
 
-    /// Item type
-    typedef Pair<Key, Value> Item;
-
-    /// Index type
-    typedef bucket::Weight Index;
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< \internal
 
     /** Create a new map
       * \return new object instance
@@ -58,10 +57,73 @@ public:
         return tree_->at<Item>(index);
     }
 
+    /// Iterator to the beginning (on first item)
+    Iterator begin() { return Iterator{&tree_}; }
+
+    /// Iterator pointing to the item at \a index
+    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
+
+    /// Iterator to the end (behind last item)
+    Iterator end() { return Iterator{&tree_, tree_->count()}; }
+
+    /// Constant iterator to the beginning (on first item)
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+
+    /// Constant Iterator pointing to the item at \a index
+    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+
+    /// Constant iterator to the end (behind last item)
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+
     /// Check if the map contains \a key
     bool contains(const Key &key) const
     {
         return tree_->lookup<Item>(Item{key});
+    }
+
+    /** Lookup key-value pair by given key
+      * If a matching key-value pair is found the value is returned in 'value' and the
+      * function returns with true. If a matching key could not be found 'value' is not set
+      * and the function returns false.
+      */
+    template<class ReturnValue>
+    bool lookup(const Key &key, ReturnValue *value) const
+    {
+        bucket::Leaf<Item> *target = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup(Item{key}, nullptr, &target, &egress);
+        if (found) *value = target->at(egress)->value();
+        return found;
+    }
+
+    /**Lookup key-value pair by given key
+      * \param key key to search for
+      * \param target returns an iterator to the key-value if found
+      * \return true if a matching key-value pair was found
+      */
+    bool lookup(const Key &key, ConstIterator *target) const
+    {
+        Index index = 0;
+        bucket::Leaf<Item> *node = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup<Item>(Item{key}, &index, &node, &egress);
+        if (target) *target = ConstIterator{tree_, index, node, egress};
+        return found;
+    }
+
+    /** Lookup key-value pair by given key.
+      * \param key key to search for
+      * \param target returns an iterator to the key-value if found
+      * \return true if a matching key-value pair was found
+      */
+    bool lookup(const Key &key, Iterator *target)
+    {
+        Index index = 0;
+        bucket::Leaf<Item> *node = nullptr;
+        unsigned egress = 0;
+        bool found = tree_->lookup<Item>(Item{key}, &index, &node, &egress);
+        if (target) *target = Iterator{tree_, index, node, egress};
+        return found;
     }
 
     /** Insert a new key-value pair if the map doesn't contain the key already
@@ -94,7 +156,7 @@ public:
         return found;
     }
 
-    /** Insert a new or overwrite a existing key-value mapping
+    /** Insert a new or overwrite an existing key-value mapping
       * \param key search key
       * \param value new value
       */
@@ -136,21 +198,6 @@ public:
         return found;
     }
 
-    /** Lookup key-value pair by given key.
-      * If a matching key-value pair is found the value is returned in 'value' and the
-      * function returns with true. If a matching key-value pair could not be found
-      * 'value' is not set and the function returns false.
-      */
-    template<class ReturnValue>
-    bool lookup(const Key &key, ReturnValue *value = nullptr, Index *index = nullptr) const
-    {
-        bucket::Leaf<Item> *target = nullptr;
-        unsigned egress = 0;
-        bool found = tree_->lookup(Item{key}, index, &target, &egress);
-        if (found) *value = target->at(egress)->value();
-        return found;
-    }
-
     /// Remove item at given \a index
     void removeAt(Index index)
     {
@@ -165,69 +212,8 @@ public:
         tree_->at<Item>(index)->setValue(value);
     }
 
-    /** \name Iterators
-      * @{
-      */
-    class ConstIteratorAccess {
-    public:
-        typedef const Item &DerefAccess;
-        typedef ConstIteratorAccess MemberAccess;
-
-        ConstIteratorAccess(const Item &item): item_{&item} {}
-
-        Key key() const { return (*item_)->key(); }
-        Value value() const { return (*item_)->value(); }
-
-        const ConstIteratorAccess *operator->() const { return this; }
-
-    private:
-        const Item *item_;
-    };
-
-    class IteratorAccess {
-    public:
-        typedef const Item &DerefAccess;
-        typedef IteratorAccess MemberAccess;
-
-        IteratorAccess(Item &item): item_{&item} {}
-
-        Key key() const { return (*item_)->key(); }
-        Value value() const { return (*item_)->value(); }
-        void setValue(const Value &newValue) const { (*item_)->setValue(newValue); }
-
-        const IteratorAccess *operator->() const { return this; }
-
-    private:
-        Item *item_;
-    };
-
-    typedef bucket::ConstIterator<Item, ConstIteratorAccess> ConstIterator;
-    typedef bucket::Iterator<Item, IteratorAccess> Iterator;
-
-    ConstIterator begin() const { return ConstIterator{tree_}; }
-    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
-    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
-    ConstIterator begin(const Key &key) const { return getBegin<ConstIterator>(key); }
-    ConstIterator end(const Key &key) const { return getEnd<ConstIterator>(key); }
-
-    Iterator begin() { return Iterator{tree_}; }
-    Iterator end() { return Iterator{tree_, tree_->count()}; }
-    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
-    Iterator begin(const Key &key) { return getBegin<Iterator>(key); }
-    Iterator end(const Key &key) { return getEnd<Iterator>(key); }
-    /** @}
-      */
-
-    /** \internal
-      * @{
-      */
-    typedef Iterator iterator;
-    typedef ConstIterator const_iterator;
-    /** @}
-      */
-
     /** Remove \a item at given \a target position */
-    void removeAt(Iterator &target)
+    void remove(Iterator &target)
     {
         tree_->popAndStep(target);
     }
@@ -255,28 +241,6 @@ protected:
     ~Map() { tree_->deplete<Item>(); }
 
 private:
-    template<class I>
-    I getBegin(const Key &key) const
-    {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
-        unsigned egress = 0;
-        tree_->lookup<Item, BinarySearchLeftMost>(Item{key}, &index, &node, &egress);
-        return I{tree_, index, node, egress};
-    }
-
-    template<class I>
-    I getEnd(const Key &key) const
-    {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
-        unsigned egress = 0;
-        bool found = tree_->lookup<Item, BinarySearchRightMost>(Item{key}, &index, &node, &egress);
-        I target{tree_, index, node, egress};
-        if (found) ++target;
-        return target;
-    }
-
     Local<bucket::Tree> tree_;
 };
 
