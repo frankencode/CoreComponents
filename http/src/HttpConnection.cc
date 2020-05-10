@@ -71,8 +71,8 @@ void HttpConnection::readMessage(HttpMessage *message)
                 message->establish(name, multiValue->join());
                 multiValue = 0;
             }
-            int i = line->find(':');
-            if (i == line->count()) throw BadRequest{};
+            int i = 0;
+            if (!line->find(':', &i)) throw BadRequest{};
             name = line->copy(0, i);
             value = line->copy(i + 1, line->count());
             mutate(name)->trimInsitu();

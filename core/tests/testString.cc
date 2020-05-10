@@ -94,7 +94,7 @@ class FindSplitReplace: public TestCase
         {
             String s = "bin/testPath";
             // fout("s = \"%%\"\n") << s;
-            fout("s->find(\"/\") = %%\n") << s->find("/");
+            fout("s->scan(\"/\") = %%\n") << s->scan("/");
             Ref<StringList> parts = s->split("/");
             fout("s.split(\"/\") = [\n");
             for (int i = 0; i < parts->count(); ++i)

@@ -16,7 +16,7 @@ namespace cc {
 /** \class Set cc/Set
   * \ingroup container_dynamic
   * \brief %Set data container
-  * \see Map, List
+  * \see MultiSet, Map
   */
 template<class T>
 class Set: public Object
@@ -80,7 +80,7 @@ public:
       * \param target returns an iterator to the item if found
       * \return true if a matching item was found
       */
-    bool lookup(const Item &item, ConstIterator *target) const
+    bool find(const Item &item, ConstIterator *target) const
     {
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
@@ -95,7 +95,7 @@ public:
       * \param target returns an iterator to the item if found
       * \return true if a matching item was found
       */
-    bool lookup(const Item &item, Iterator *target)
+    bool find(const Item &item, Iterator *target)
     {
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
@@ -132,6 +132,12 @@ public:
         return found;
     }
 
+    /** Remove \a item at given \a target position */
+    void remove(Iterator &target)
+    {
+        tree_->popAndStep(target);
+    }
+
     /// Remove item at given \a index
     void removeAt(Index index)
     {
@@ -139,16 +145,10 @@ public:
         tree_->pop<Item>(index);
     }
 
-    /** Remove \a item at given \a target position */
-    void remove(Iterator &target)
-    {
-        tree_->popAndStep(target);
-    }
-
-    /// Return the smallest item
+    /// Return the first item
     const Item &first() const { return tree_->first<Item>(); }
 
-    /// Return the biggest item
+    /// Return the last item
     const Item &last() const { return tree_->last<Item>(); }
 
     /// Reset to an empty set

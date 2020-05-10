@@ -88,9 +88,9 @@ void StorageMonitor::run()
         while (true)
         {
             Ref<IoActivity> activity = ioMonitor->wait();
-            if (activity->contains(shutdownEvent)) break;
+            if (activity->find(shutdownEvent)) break;
 
-            if (activity->contains(monitorEvent))
+            if (activity->find(monitorEvent))
             {
                 struct udev_device *dev = udev_monitor_receive_device(mon);
                 if (!dev) continue;

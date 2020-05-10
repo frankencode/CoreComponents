@@ -40,7 +40,7 @@ Ref< Source<const ImagePlugin *> > ImageManager::getAllPlugins() const
 
 Ref<Image> ImageManager::load(const String &uri, unsigned index) const
 {
-    int j = uri->find(':');
+    int j = uri->scan(':');
     if (j == 0) return Image::create();
     String scheme = uri->select(j);
     String path;

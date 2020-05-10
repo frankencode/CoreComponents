@@ -75,7 +75,7 @@ Report::Report(const StringList *dirPaths, Pattern works, int worksMinLines):
                     String text = File::open(path)->map();
                     int i = -1, n = 1;
                     for (; n < worksMinLines; ++n) {
-                        i = text->find('\n', i + 1);
+                        i = text->scan('\n', i + 1);
                         if (i == text->count()) break;
                     }
                     omit = (n < worksMinLines);

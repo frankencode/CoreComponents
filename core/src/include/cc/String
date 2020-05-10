@@ -238,8 +238,8 @@ private:
 
 class MutantString {
 public:
-    MutantString(String &&s): s_(s) {}
-    MutantString(const String &s): s_(s) {}
+    MutantString(String &&s): s_{s} {}
+    MutantString(const String &s): s_{s} {}
     operator char *();
     operator CharArray *();
     CharArray *operator->();
@@ -599,7 +599,7 @@ public:
       * \param i start search from this index
       * \return index of first occurence of character ch or count() if not found
       */
-    int find(char ch, int i = 0) const { // FIXME: obsolete
+    int scan(char ch, int i = 0) const {
         if (i < 0) i = 0;
         while (i < size_) {
             if (data_[i] == ch) break;
@@ -613,7 +613,8 @@ public:
       * \param i current search index
       * \return true if \a ch was found, false otherwise
       */
-    bool findNext(char ch, int *i = nullptr) const { // FIXME: obsolete
+    bool find(char ch, int *i = nullptr) const
+    {
         int j = (i) ? *i : 0;
         while (j < size_) {
             if (data_[j] == ch) {
@@ -626,14 +627,11 @@ public:
         return false;
     }
 
-    /// \copydoc findNext(char, int *)
-    bool search(char ch, int *i = nullptr) const { return findNext(ch, i); }
-
     /** Check if this string contains a certain character value
       * \param ch character value to search for
       * \return true if this string contains character ch
       */
-    bool contains(char ch) const { return find(ch) < size_; }
+    bool contains(char ch) const { return find(ch); }
 
     /** Count the number of occurrences of a certain character value
       * \param ch character value to search for
@@ -657,10 +655,10 @@ public:
       * \param i start search from this index
       * \return index of first occurence of s or count() if not found
       */
-    int find(const char *s, int i = 0) const;
+    int scan(const char *s, int i = 0) const;
 
-    /// \copydoc find(const char *, int) const
-    int find(const String &s, int i = 0) const;
+    /// \copydoc scan(const char *, int) const
+    int scan(const String &s, int i = 0) const;
 
     /** Check if this string contains a certain sub-string
       * \param s sub-string to search for
@@ -669,7 +667,7 @@ public:
     bool contains(const char *s) const
     {
         if (!s[0]) return true;
-        return find(s) != size_;
+        return scan(s) != size_;
     }
 
     /// \copydoc contains(const char *) const

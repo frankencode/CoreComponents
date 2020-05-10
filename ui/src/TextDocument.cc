@@ -31,7 +31,7 @@ void TextDocument::load(const String &text)
     const int n = filteredText->count();
     for (int i = 0; i < n;) {
         int i0 = i;
-        i = filteredText->find('\n', i);
+        i = filteredText->scan('\n', i);
         i += (i < n);
         String fragment = filteredText->copy(i0, i);
         lines_->insertAt(

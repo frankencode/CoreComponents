@@ -191,7 +191,7 @@ public:
         }
     }
 
-    template<class Item, class Search = FindFirst, class Pattern = Item>
+    template<class Item, class Search = FindAny, class Pattern = Item>
     bool lookup(const Pattern &pattern, Weight *finalIndex = nullptr, Leaf<Item> **target = nullptr, unsigned *egress = nullptr) const;
 
     Weight idealLeafCount() const
@@ -653,10 +653,12 @@ public:
         assert(node_); // cannot increment an exhausted iterator
         assert(revision_ == tree_->revision()); // cannot modify container while iterating it
 
+        #if 0
         if (!node_) {
             assert(index_ == -1); // cannot decrement an exhausted iterator
             return *this = TreeIterator{tree_, 0};
         }
+        #endif
 
         ++index_;
         ++egress_;

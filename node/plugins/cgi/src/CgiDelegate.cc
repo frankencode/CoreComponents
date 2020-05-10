@@ -131,9 +131,9 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
     String reasonPhrase;
     {
         HttpMessage::Iterator target;
-        if (cgiResponse->lookup("Status", &target)) {
+        if (cgiResponse->find("Status", &target)) {
             String statusField = target->value();
-            int i = statusField->find(' ');
+            int i = statusField->scan(' ');
             statusCode = statusField->select(0, i)->toNumber<int>();
             if (i < statusField->count())
                 reasonPhrase = statusField->copy(i + 1, statusField->count());
@@ -147,7 +147,7 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
 
     {
         HttpMessage::Iterator target;
-        if (cgiResponse->lookup("Location", &target)) {
+        if (cgiResponse->find("Location", &target)) {
             String location = target->value();
             CCNODE_DEBUG() << "Redirect to \"" << location << "\"" << nl;
             if (location->startsWith("/")) {
@@ -182,7 +182,7 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
     ssize_t contentLength = -1;
     {
         HttpMessage::Iterator target;
-        if (cgiResponse->lookup("Content-Length", &target)) {
+        if (cgiResponse->find("Content-Length", &target)) {
             contentLength = target->value()->toNumber<size_t>();
             cgiResponse->remove(target);
         }

@@ -24,7 +24,7 @@ Format::Format(const String &pattern, Stream *stream):
     set(StringList::create());
     int i0 = 0, n = 0;
     while (true) {
-        int i1 = pattern->find("%%", i0);
+        int i1 = pattern->scan("%%", i0);
         if (i0 < i1)
             get()->append(pattern->copy(i0, i1));
         if (i1 == pattern->count()) break;

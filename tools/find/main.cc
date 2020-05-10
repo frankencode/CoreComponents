@@ -234,7 +234,7 @@ void displayMatch(const CharArray *path, const CharArray *text, const TextMatch 
 
     fout("%%:") << path;
     if (i0 == i1) {
-        fout("%%: %%\n") << ln << text->copy(j0, text->find("\n", i0));
+        fout("%%: %%\n") << ln << text->copy(j0, text->scan("\n", i0));
         return;
     }
 

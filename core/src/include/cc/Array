@@ -45,14 +45,14 @@ public:
       * \param zero preset item value
       * \return new object instance
       */
-    static Ref<Array> create(int size, T zero) { return new Array{size, zero}; }
+    static Ref<Array> create(int size, Item zero) { return new Array{size, zero}; }
 
     /** Create a deep copy of a memory vector
-      * \param data pointer to a memory vector of type T
+      * \param data pointer to a memory vector of type Item
       * \param size size of the memory vector
       * \return new object instance
       */
-    static Ref<Array> copy(const T *data, int size) { return new Array{data, size}; }
+    static Ref<Array> copy(const Item *data, int size) { return new Array{data, size}; }
 
     /** Create a deep copy of an array
       * \param other the other array
@@ -66,13 +66,13 @@ public:
     void write(const Array *b)
     {
         const int size = size_ < b->size_ ? b->size_ : size_;
-        memcpy(data_, b->data_, size * sizeof(T));
+        memcpy(data_, b->data_, size * sizeof(Item));
     }
 
     /** %Set all items to a default value
       * \param zero default value
       */
-    void fill(const T &zero)
+    void fill(const Item &zero)
     {
         for (int i = 0, n = size_; i < n; ++i)
             data_[i] = zero;
@@ -104,7 +104,7 @@ public:
       * \param i byte index
       * \return low-level reference
       */
-    const T &at(int i) const {
+    const Item &at(int i) const {
         CC_ASSERT(has(i));
         return data_[i];
     }
@@ -113,22 +113,22 @@ public:
       * \param i byte index
       * \return low-level reference
       */
-    T &at(int i) {
+    Item &at(int i) {
         CC_ASSERT(has(i));
         return data_[i];
     }
 
     /// Return byte pointer to the internal memory vector (readonly)
-    const T *data() const { return data_; }
+    const Item *data() const { return data_; }
 
     /// Return byte pointer to the internal memory vector
-    T *data() { return data_; }
+    Item *data() { return data_; }
 
     /// Cast to low-level C array (readonly)
-    operator const T*() const { return data_; }
+    operator const Item*() const { return data_; }
 
     /// Cast to low-level C array
-    operator T*() { return data_; }
+    operator Item*() { return data_; }
 
     /// Create a deep copy of this string
     Ref<Array> copy() const { return copy(0, size_); }
@@ -143,7 +143,7 @@ public:
         if (i0 > size_) i0 = size_;
         if (i1 < 0) i1 = 0;
         if (i1 > size_) i1 = size_;
-        return (i0 < i1) ? new Array(data_ + i0, i1 - i0) : new Array();
+        return (i0 < i1) ? new Array{data_ + i0, i1 - i0} : new Array{};
     }
 
     /** Check if a range is valid
@@ -171,35 +171,35 @@ public:
       */
     Ref<Array> head(int n) const { return copy(0, n); }
 
-    /** Copy the tail of this string
+    /** Copy the tail of this array
       * \param n size of the tail
       * \return copied array
       */
     Ref<Array> tail(int n) const { return copy(size_ - n, size_); }
 
-    /** Search for an item value
-      * \param item item value to search for
-      * \param index start position for the search
-      * \return position the item value was found in or count() if item value could not be found
+    /** Search for an item
+      * \param item item to search for
+      * \param index pass start position and return final position
+      * \return true if item was found
       */
-    int find(const T &item, int index = 0) const {
-        while (index < size_)
-            if (data_[index++] == item) return index - 1;
-        return size_;
+    bool find(const Item &item, int *index = nullptr) const
+    {
+        int i = index ? *index : 0;
+        while (i < size_) {
+            if (data_[i] == item)
+                break;
+            ++i;
+        }
+        if (index) *index = i;
+        return i < size_;
     }
-
-    /** Check if the array contains a certain item value
-      * \param item item value
-      * \return true if item value appears in the array
-      */
-    bool contains(const T &item) const { return find(item) < size_; }
 
     /** Replace all appearances of an item value
       * \param oldItem old item value to search for
       * \param newItem new item value to put in place
       * \return pointer to this array
       */
-    Array *replaceInsitu(const T &oldItem, const T &newItem) {
+    Array *replaceInsitu(const Item &oldItem, const Item &newItem) {
         for (int i = 0; i < size_; ++i) {
             if (data_[i] == oldItem)
                 data_[i] = newItem;
@@ -207,45 +207,12 @@ public:
         return this;
     }
 
-    /** Find a pattern
-      * \param pattern pattern to search for
-      * \param i start search from this index
-      * \return index of first occurence of pattern or count() if not found
-      */
-    int find(const Array *pattern, int i) const { return find(i, pattern->data(), pattern->count()); }
-
-    /** Find a pattern
-      * \param pattern pattern to search for
-      * \param patternSize size of the pattern
-      * \param i start search from this index
-      * \return index of first occurence of pattern or count() if not found
-      */
-    int find(const T *pattern, int patternSize, int i) const {
-        if (patternSize == 0) return size_;
-        for (int j = i, k = 0; j < size_;) {
-            if (data_[j++] == pattern[k]) {
-                ++k;
-                if (k == patternSize)
-                    return j - k;
-                k = 0;
-            }
-        }
-        return size_;
-    }
-
-
-    /// Check if this array contains a certain pattern
-    bool contains(Array *pattern) { return contains(pattern->data(), pattern->count()); }
-
-    /// Check if this array contains a certain pattern
-    bool contains(const T *pattern, int patternSize) { return find(0, pattern, patternSize) != size_; }
-
     /// Reverse the order of the items
     void reverseInsitu()
     {
         for (int i = 0, j = count() - 1; i < j; ++i, --j)
         {
-            T h = at(i);
+            Item h = at(i);
             at(i) = at(j);
             at(j) = h;
         }
@@ -282,29 +249,29 @@ private:
     {
         if (size > 0) {
             size_ = size;
-            data_ = new T[size];
+            data_ = new Item[size];
         }
     }
 
-    Array(int size, T zero):
+    Array(int size, Item zero):
         size_{0},
         data_{nullptr}
     {
         if (size > 0) {
             size_ = size;
-            data_ = new T[size];
-            memclr(data_, size * sizeof(T), zero);
+            data_ = new Item[size];
+            memclr(data_, size * sizeof(Item), zero);
         }
     }
 
-    Array(const T *data, int size):
+    Array(const Item *data, int size):
         size_{0},
         data_{nullptr}
     {
         if (size > 0) {
             size_ = size;
-            data_ = new T[size];
-            memcpy(data_, data, size * sizeof(T));
+            data_ = new Item[size];
+            memcpy(data_, data, size * sizeof(Item));
         }
     }
 
@@ -314,8 +281,8 @@ private:
     {
         if (b.size_ > 0) {
             size_ = b.size_;
-            data_ = new T[b.size_];
-            memcpy(data_, b.data_, b.size_ * sizeof(T));
+            data_ = new Item[b.size_];
+            memcpy(data_, b.data_, b.size_ * sizeof(Item));
         }
     }
 
@@ -341,7 +308,7 @@ private:
             if (size_ > 0) delete[] data_;
             if (newSize > 0) {
                 size_ = newSize;
-                data_ = new T[newSize];
+                data_ = new Item[newSize];
             }
             else {
                 size_ = 0;
@@ -351,7 +318,7 @@ private:
     }
 
     int size_;
-    T *data_;
+    Item *data_;
 
     Ref<Array> parent_;
 };

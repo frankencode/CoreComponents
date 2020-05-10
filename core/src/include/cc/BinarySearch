@@ -12,7 +12,7 @@ namespace cc {
 
 /** \brief Find a matching item
   */
-class FindFirst {
+class FindAny {
 public:
     /** \brief Search in a sorted list of items
       * \param items the sorted list of items
@@ -49,9 +49,9 @@ public:
     }
 };
 
-/** \brief Find the left most matching item (or the rank of the pattern)
+/** \brief Find left most item wich equals pattern
   */
-class FindLeftMost
+class FindFirst
 {
 public:
     /** \brief Search in a sorted list of items
@@ -79,13 +79,14 @@ public:
             else
                 r = m;
         }
-        return l;
+        *finalIndex = l;
+        return l < items->count() && !(items->at(l) < pattern || pattern < items->at(l));
     }
 };
 
-/** \brief Find the right most matching item
+/** \brief Find right-most item which equals pattern
   */
-class FindRightMost
+class FindLast
 {
 public:
     /** \brief Search in a sorted list of items
@@ -106,16 +107,17 @@ public:
     ) {
         Index l = 0;
         Index r = items->count();
+        bool found = false;
         while (l < r) {
             Index m = (l + r) >> 1;
-            const auto &candidate = items->at(m);
-            if (pattern < candidate)
+            if (pattern < items->at(m))
                 r = m;
             else
                 l = m + 1;
         }
-        *finalIndex = r - (0 < r);
-        return false;
+        found = (0 < l) && !(items->at(l - 1) < pattern || pattern < items->at(l - 1));
+        *finalIndex = l - found;
+        return found;
     }
 };
 

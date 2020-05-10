@@ -54,9 +54,9 @@ void TextRun::appendHtml(const String &text, const Font &font)
     Ref<const StyleNode> styleHead = new StyleNode(font);
     int i = 0;
     int i0 = 0;
-    while (text->findNext('<', &i)) {
+    while (text->find('<', &i)) {
         int j = i + 1;
-        if (!text->findNext('>', &j)) break;
+        if (!text->find('>', &j)) break;
         if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->font_);
         String tagName = text->select(i + 1, j);
         i = i0 = j + 1;

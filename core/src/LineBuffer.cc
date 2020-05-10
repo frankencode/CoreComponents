@@ -42,8 +42,7 @@ void LineBuffer::write(const CharArray *data)
     if (n == 0) return;
     while (i < n) {
         int i0 = i;
-        i = data->find('\n', i);
-        if (i < n) {
+        if (data->find('\n', &i)) {
             ++i;
             backlog_->pushBack(data->copy(i0, i));
             i0 = i;

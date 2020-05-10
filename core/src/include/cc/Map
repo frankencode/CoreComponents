@@ -17,7 +17,7 @@ namespace cc {
 /** \class Map cc/Map
   * \ingroup container_dynamic
   * \brief %Map data container
-  * \see Pair, MultiMap, KeySource, ValueSource
+  * \see MultiMap, Set, Pair, KeySource, ValueSource
   */
 template<class K, class V = K>
 class Map: public Object
@@ -101,7 +101,7 @@ public:
       * \param target returns an iterator to the key-value if found
       * \return true if a matching key-value pair was found
       */
-    bool lookup(const Key &key, ConstIterator *target) const
+    bool find(const Key &key, ConstIterator *target) const
     {
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
@@ -116,7 +116,7 @@ public:
       * \param target returns an iterator to the key-value if found
       * \return true if a matching key-value pair was found
       */
-    bool lookup(const Key &key, Iterator *target)
+    bool find(const Key &key, Iterator *target)
     {
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
@@ -198,6 +198,12 @@ public:
         return found;
     }
 
+    /// Remove \a item at given \a target position
+    void remove(Iterator &target)
+    {
+        tree_->popAndStep(target);
+    }
+
     /// Remove item at given \a index
     void removeAt(Index index)
     {
@@ -212,16 +218,10 @@ public:
         tree_->at<Item>(index)->setValue(value);
     }
 
-    /** Remove \a item at given \a target position */
-    void remove(Iterator &target)
-    {
-        tree_->popAndStep(target);
-    }
-
-    /// Return the smallest item
+    /// Return the first item
     const Item &first() const { return tree_->first<Item>(); }
 
-    /// Return the biggest item
+    /// Return the last item
     const Item &last() const { return tree_->last<Item>(); }
 
     /// Reset to an empty map

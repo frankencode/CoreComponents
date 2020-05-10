@@ -301,7 +301,7 @@ bool Array<char>::match(Match m, const char *s, int n) const
     return true;
 }
 
-int Array<char>::find(const char *s, int i) const
+int Array<char>::scan(const char *s, int i) const
 {
     if (!has(i)) return size_;
     if (!s[0]) return size_;
@@ -318,9 +318,9 @@ int Array<char>::find(const char *s, int i) const
     return size_;
 }
 
-int Array<char>::find(const String &s, int i) const
+int Array<char>::scan(const String &s, int i) const
 {
-    return find(s->chars(), i);
+    return scan(s->chars(), i);
 }
 
 bool Array<char>::contains(const String &s) const
@@ -330,9 +330,10 @@ bool Array<char>::contains(const String &s) const
 
 Ref<StringList> Array<char>::split(char sep) const
 {
-    Ref<StringList> parts = StringList::create();
+    auto parts = StringList::create();
     for (int i = 0; i < size_;) {
-        int j = find(sep, i);
+        int j = i;
+        find(sep, &j);
         parts->append(copy(i, j));
         i = j + 1;
         if (i == size_) {
@@ -349,7 +350,7 @@ Ref<StringList> Array<char>::split(const char *sep) const
     int i0 = 0;
     int sepLength = strlen(sep);
     while (i0 < size_) {
-        int i1 = find(sep, i0);
+        int i1 = scan(sep, i0);
         if (i1 == size_) break;
         parts->append(copy(i0, i1));
         i0 = i1 + sepLength;
@@ -357,7 +358,7 @@ Ref<StringList> Array<char>::split(const char *sep) const
     if (i0 < size_)
         parts->append(copy(i0, size_));
     else
-        parts->append(String());
+        parts->append(String{});
     return parts;
 }
 

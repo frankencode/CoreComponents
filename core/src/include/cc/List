@@ -191,10 +191,23 @@ public:
 
     /** Search for an item
       * \param item item to search for
+      * \param index start and final position
+      * \return true if item was found
+      */
+    bool find(const Item &item, Index *index = nullptr)
+    {
+        int i = index ? *index : 0;
+        i = scan(item, i);
+        if (index) *index = i;
+        return i < count();
+    }
+
+    /** Search for an item
+      * \param item item to search for
       * \param index start position for the search
       * \return first position the item was found in or count() if the item couldn't be found
       */
-    int find(const Item &item, Index index = 0) const
+    int scan(const Item &item, Index index = 0) const
     {
         auto it = beginAt(index);
         for (; it; ++it) {
@@ -209,7 +222,7 @@ public:
       */
     bool contains(const Item &item) const
     {
-        return find(item) < count();
+        return scan(item) < count();
     }
 
     /// Remove all items from the list
@@ -313,30 +326,16 @@ public:
       */
 
     /** Append item at the end of the list */
-    void pushBack(const Item &item)
-    {
-        tree_->pushBack(item);
-    }
+    void pushBack(const Item &item) { tree_->pushBack(item); }
 
     /** Remove the last from end of the list */
-    void popBack()
-    {
-        assert(count() > 0);
-        removeAt(count() - 1);
-    }
+    void popBack() { removeAt(count() - 1); }
 
     /** Insert a new item at the beginning of the list */
-    void pushFront(const Item &item)
-    {
-        insertAt(0, item);
-    }
+    void pushFront(const Item &item) { insertAt(0, item); }
 
     /** Remove the first item from the beginning of the list */
-    void popFront()
-    {
-        assert(count() > 0);
-        removeAt(0);
-    }
+    void popFront() { removeAt(0); }
 
     /** Directly access item at the front */
     Item &front() { assert(count() > 0); return tree_->first<Item>(); }

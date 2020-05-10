@@ -241,7 +241,7 @@ void DeviceDescription::DeviceInfo::establish(const String &key, const String &v
     else if (key->match("RevisionNumber")) revisionNumber_ = value->toNumber<uint32_t>();
     else if (key->match("OrderCode")) orderCode_ = value;
     else if (key->match(Match::Head, "BaudRate")) {
-        int i = key->find('_');
+        int i = key->scan('_');
         if (i < key->count()) {
             bool ok = false;
             uint32_t baudRate = key->select(i + 1, key->count())->toNumber<uint32_t>(&ok) * 1000U;

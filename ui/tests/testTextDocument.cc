@@ -57,7 +57,7 @@ class MultiLineTest: public TestCase
         );
         CC_INSPECT(document->text());
         {
-            int j = document->text()->find("main()");
+            int j = document->text()->scan("main()");
             CC_INSPECT(j);
             document->paste(Range{j+5}, "int argc, char **argv");
         }
@@ -70,7 +70,7 @@ class MultiLineTest: public TestCase
             "}\n"
         );
         {
-            int j = document->text()->find("Be damned!");
+            int j = document->text()->scan("Be damned!");
             CC_INSPECT(j);
             Range r = document->paste(Range{j, j + 10}, "argc = %d\\n");
             document->paste(Range{r->i1() + 1}, ", argc");

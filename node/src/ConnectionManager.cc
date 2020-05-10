@@ -61,7 +61,7 @@ void ConnectionManager::cycle()
             visits_->popFront();
             uint64_t origin = visit->remoteAddress()->networkPrefix();
             ConnectionCounts::Iterator target;
-            if (!connectionCounts_->lookup(origin, &target)) continue;
+            if (!connectionCounts_->find(origin, &target)) continue;
 
             if (target->value() == 1) connectionCounts_->remove(target);
             else target->setValue(target->value() - 1);

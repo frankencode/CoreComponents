@@ -37,7 +37,7 @@ void printGlyphLists(const Arguments *arguments)
             String glyphName;
             if (FT_HAS_GLYPH_NAMES(ftFace)) {
                 if (FT_Get_Glyph_Name(ftFace, glyphIndex, mutate(buffer)->bytes(), buffer->count()) == 0)
-                    glyphName = buffer->copy(0, buffer->find('\0'));
+                    glyphName = buffer->copy(0, buffer->scan('\0'));
             }
             fout() << glyphIndex << " (\\u" << hex(ch) << ", " << "'" << (ch < 0x80 ? char(ch) : ' ') << "'): \"" << glyphName << "\"" << nl;
             ch = FT_Get_Next_Char(ftFace, ch, &glyphIndex);
@@ -76,7 +76,7 @@ Ref<GlyphMap> parseFile(const String &path, int *maxKeyLength)
     while (glyphIndex != 0) {
         String glyphName;
         if (FT_Get_Glyph_Name(ftFace, glyphIndex, mutate(buffer)->bytes(), buffer->count()) == 0)
-            glyphName = buffer->copy(0, buffer->find('\0'));
+            glyphName = buffer->copy(0, buffer->scan('\0'));
         // fout() << glyphIndex << " (\\u" << hex(ch) << ", " << "'" << (ch < 0x80 ? char(ch) : ' ') << "'): \"" << glyphName << "\"" << nl;
         glyphName = camelize(glyphName);
         map->insert(glyphName, ch);

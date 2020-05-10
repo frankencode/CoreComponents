@@ -83,9 +83,9 @@ void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *messag
 
     if (line->count(' ') != 2) throw BadRequest{};
 
-    int i0 = 0, i1 = line->find(' ');
+    int i0 = 0, i1 = line->scan(' ');
     request->method_ = line->copy(i0, i1);
-    i0 = i1 + 1; i1 = line->find(' ', i0);
+    i0 = i1 + 1; i1 = line->scan(' ', i0);
     request->uri_ = line->copy(i0, i1);
     request->version_ = line->copy(i1 + 1, line->count());
     request->majorVersion_ = 1;

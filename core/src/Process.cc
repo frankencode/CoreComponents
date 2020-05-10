@@ -467,7 +467,7 @@ Ref<EnvMap> Process::getEnvMap()
     for (int i = 0; env[i]; ++i) {
         String s{env[i]};
         int j = 0;
-        if (s->search('=', &j)) {
+        if (s->find('=', &j)) {
             String value = s->copy(j + 1, s->count());
             mutate(s)->truncate(j);
             map->insert(s, value);

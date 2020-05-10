@@ -22,7 +22,7 @@ void IniSyntax::parse(const String &text)
         }
         else {
             int i = 0;
-            if (line->search('=', &i)) {
+            if (line->find('=', &i)) {
                 String key = line->copy(0, i);
                 String value = line->copy(i + 1, line->count());
                 mutate(key)->trimInsitu("", " \t");

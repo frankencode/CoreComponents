@@ -22,7 +22,7 @@ public:
 
     String method() const { return method_; }
     String uri() const { return uri_; }
-    String query() const { return uri_->select(uri_->find('?') + 1, uri_->count()); }
+    String query() const { return uri_->select(uri_->scan('?') + 1, uri_->count()); }
     String version() const { return version_; }
     int majorVersion() const { return majorVersion_; }
     int minorVersion() const { return minorVersion_; }
