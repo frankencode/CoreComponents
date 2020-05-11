@@ -54,7 +54,7 @@ public:
 
     /** \copydoc Queue::popBack(T *)
       */
-    T popBack(T *item = 0)
+    T popBack(T *item = nullptr)
     {
         Guard<Mutex> guard(mutex_);
         while (queue_->count() == 0)
@@ -64,7 +64,7 @@ public:
 
     /** \copydoc Queue::popFront(T *)
       */
-    T popFront(T *item = 0)
+    T popFront(T *item = nullptr)
     {
         Guard<Mutex> guard(mutex_);
         while (queue_->count() == 0)
@@ -131,17 +131,17 @@ public:
     void push(const T &item) { return pushBack(item); }
 
     /// \copydoc popFront()
-    T pop(T *item = 0) { return popFront(item); }
+    T pop(T *item = nullptr) { return popFront(item); }
 
     /// \copydoc popFrontBefore()
-    bool popBefore(double timeout, T *item = 0) { return popFrontBefore(timeout, item); }
+    bool popBefore(double timeout, T *item = nullptr) { return popFrontBefore(timeout, item); }
 
     /// Return number of queued items
     int count() const { Guard<Mutex> guard(mutex_); return queue_->count(); }
 
     /** Connect with another channel
       * \param other other channel to connect to
-      * \return pointer to the newly shared connecting channel
+      * \return pointer to the new connecting shared channel
       */
     Channel *connect(Channel *other)
     {
@@ -153,9 +153,9 @@ public:
 
 protected:
     Channel():
-        queue_(Queue<T>::create()),
-        mutex_(Mutex::create()),
-        notEmpty_(WaitCondition::create())
+        queue_{Queue<T>::create()},
+        mutex_{Mutex::create()},
+        notEmpty_{WaitCondition::create()}
     {}
 
 private:

@@ -34,6 +34,8 @@ private:
     friend class ClientHelloContext;
     friend class HttpServerConnection;
 
+    static int initialMode(StreamSocket *socket, const NodeConfig *config);
+
     HttpServerSocket(const SocketAddress *address, int mode, const NodeConfig *nodeConfig, SecurityCache *securityCache);
     ~HttpServerSocket();
 

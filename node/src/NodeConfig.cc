@@ -56,12 +56,16 @@ NodeConfig::NodeConfig(const MetaObject *config):
     String address = config->value("address");
 
     auto ports = Variant::cast<List<int> *>(config->value("port"));
-    String protocol = config->value("protocol");
 
     ProtocolFamily family = ProtocolFamily::Unspecified;
-    if (protocol->toLower() == "ipv6") family = ProtocolFamily::Internet6;
-    else if (protocol->toLower() == "ipv4") family = ProtocolFamily::Internet4;
-    else if (protocol->toLower() == "local" || address->contains('/')) family = ProtocolFamily::Local;
+    {
+        String s = String{config->value("family")}->toLower();
+        if (s->toLower() == "ipv6") family = ProtocolFamily::Internet6;
+        else if (s->toLower() == "ipv4") family = ProtocolFamily::Internet4;
+        else if (s->toLower() == "local" || address->contains('/')) family = ProtocolFamily::Local;
+    }
+
+    forceSecureTransport_ = config->value("tls");
 
     address_ = SocketAddressList::create();
     if (family == ProtocolFamily::Local) {

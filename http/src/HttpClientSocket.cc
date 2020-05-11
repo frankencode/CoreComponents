@@ -28,7 +28,7 @@ Ref<HttpClientSocket> HttpClientSocket::connect(const SocketAddress *serverAddre
 }
 
 HttpClientSocket::HttpClientSocket(const SocketAddress *serverAddress, const String &serverName, const HttpClientSecurity *security):
-    HttpSocket{serverAddress, (serverAddress->port() % 80 == 0) ? 0 : Secure},
+    HttpSocket{serverAddress, (serverAddress->port() % 80 == 0 || !security) ? 0 : Secure},
     serverName_{serverName},
     security_{security},
     ioMonitor_{IoMonitor::create(2)},

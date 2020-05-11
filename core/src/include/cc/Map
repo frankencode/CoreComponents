@@ -96,7 +96,7 @@ public:
         return found;
     }
 
-    /**Lookup key-value pair by given key
+    /** Lookup key-value pair by given key
       * \param key key to search for
       * \param target returns an iterator to the key-value if found
       * \return true if a matching key-value pair was found

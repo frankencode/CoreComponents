@@ -34,7 +34,8 @@ protected:
             (List<int>::create() << 80 << 443) :
             (List<int>::create() << 8080 << 4443)
         );
-        establish("protocol", "");
+        establish("family", "");
+        establish("tls", false);
         establish("user", "");
         establish("group", "");
         establish("version", "ccnode");

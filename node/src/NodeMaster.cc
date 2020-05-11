@@ -24,6 +24,11 @@
 namespace cc {
 namespace http {
 
+Ref<NodeMaster> NodeMaster::create(const String &config)
+{
+    return new NodeMaster{NodeConfig::load(NodeConfig::parse(config))};
+}
+
 Ref<NodeMaster> NodeMaster::create(const NodeConfig *config)
 {
     return new NodeMaster{config};
@@ -31,6 +36,7 @@ Ref<NodeMaster> NodeMaster::create(const NodeConfig *config)
 
 NodeMaster::NodeMaster(const NodeConfig *config):
     config_{config},
+    startedChannel_{StartedChannel::create()},
     signals_{Signals::create()},
     exitCode_{0}
 {
@@ -44,7 +50,12 @@ NodeMaster::NodeMaster(const NodeConfig *config):
     }
 }
 
-void NodeMaster::signaled(Signal signal)
+Ref<const SocketAddress> NodeMaster::waitStarted()
+{
+    return startedChannel_->pop();
+}
+
+void NodeMaster::sendSignal(Signal signal)
 {
     signals_->pushBack(signal);
 }
@@ -83,15 +94,16 @@ void NodeMaster::runNode()
     Ref<ListeningSockets> listeningSockets = ListeningSockets::create();
 
     for (SocketAddress *address: config()->address()) {
-        CCNODE_NOTICE() << "Start listening at " << address << nl;
-        listeningSockets->append(StreamSocket::listen(address));
+        auto socket = StreamSocket::listen(address);
+        CCNODE_NOTICE() << "Start listening at " << socket->address() << nl;
+        listeningSockets->append(socket);
     }
 
     if (config()->user() != "") {
-	String userName = config()->user();
+        String userName = config()->user();
         Ref<User> user = User::lookup(userName);
         if (!user->isValid()) throw UsageError{"No such user: \"" + userName + "\""};
-       	CCNODE_NOTICE() << "Dropping to user " << userName << " (uid = " << user->id() << ")" << nl;
+        CCNODE_NOTICE() << "Dropping to user " << userName << " (uid = " << user->id() << ")" << nl;
         Process::setUserId(user->id());
     }
 
@@ -116,6 +128,9 @@ void NodeMaster::runNode()
         ioMonitor->addEvent(IoReady::Accept, socket);
 
     CCNODE_DEBUG() << "Accepting connections" << nl;
+
+    for (StreamSocket *socket: listeningSockets)
+        startedChannel_->push(socket->address());
 
     while (true) {
         Ref<IoActivity> activity = ioMonitor->wait(1000);

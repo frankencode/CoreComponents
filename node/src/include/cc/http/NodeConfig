@@ -35,7 +35,10 @@ public:
     void addEchoInstance();
 
     const SocketAddressList *address() const { return address_; }
+
+    bool forceSecureTransport() const { return forceSecureTransport_; }
     int securePort() const { return securePort_; }
+
     String user() const { return user_; }
     String group() const { return group_; }
     String version() const { return version_; }
@@ -62,6 +65,8 @@ private:
     Ref<DeliveryInstance> createDeliveryInstance(const DeliveryService *service, const MetaObject *config) const;
 
     Ref<SocketAddressList> address_;
+    bool forceSecureTransport_;
+    int securePort_;
     String user_;
     String group_;
     String version_;
@@ -72,7 +77,6 @@ private:
     int serviceWindow_;
     int connectionLimit_;
     double connectionTimeout_;
-    int securePort_;
 
     Ref<const HttpServerSecurity> securityConfig_;
 

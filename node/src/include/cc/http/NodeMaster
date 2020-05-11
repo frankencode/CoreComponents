@@ -16,12 +16,17 @@ namespace cc { template<class> class Channel; }
 namespace cc {
 namespace http {
 
+typedef Channel< Ref<const SocketAddress> > StartedChannel;
+
 class NodeMaster: public Thread
 {
 public:
+    static Ref<NodeMaster> create(const String &config);
     static Ref<NodeMaster> create(const NodeConfig *config);
 
-    void signaled(Signal signal);
+    Ref<const SocketAddress> waitStarted();
+
+    void sendSignal(Signal signal);
 
     int exitCode() const;
 
@@ -36,6 +41,8 @@ private:
     void runNode();
 
     Ref<const NodeConfig> config_;
+
+    Ref<StartedChannel> startedChannel_;
 
     typedef Channel<Signal> Signals;
     Ref<Signals> signals_;

@@ -44,8 +44,8 @@ void StreamSocket::connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second)
     fd[1] = 0;
     if (::socketpair(AF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC, 0, fd) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
-    *first = new StreamSocket(fd[0]);
-    *second = new StreamSocket(fd[1]);
+    *first = new StreamSocket{fd[0]};
+    *second = new StreamSocket{fd[1]};
 }
 
 Ref<StreamSocket> StreamSocket::accept()
@@ -97,6 +97,12 @@ void StreamSocket::listen(int backlog)
 
     if (::bind(fd_, address_->addr(), address_->addrLen()) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
+
+    if (+address_->family() != AF_LOCAL && address_->port() == 0) {
+        socklen_t len = address_->addrLen();
+        if (::getsockname(fd_, address_->addr(), &len) == -1)
+            CC_SYSTEM_DEBUG_ERROR(errno);
+    }
 
     if (::listen(fd_, backlog) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);

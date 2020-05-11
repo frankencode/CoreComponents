@@ -28,7 +28,7 @@ Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket, co
     Ref<HttpServerSocket> client =
         new HttpServerSocket{
             SocketAddress::create(listeningSocket->address()->family()),
-            (listeningSocket->address()->port() % 80 == 0) ? 0 : Secure,
+            initialMode(listeningSocket, nodeConfig),
             nodeConfig,
             securityCache
         };
@@ -37,6 +37,14 @@ Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket, co
     client->mode_ |= Connected | ((client->mode_ & Secure) ? 0 : Open);
     client->initSession();
     return client;
+}
+
+int HttpServerSocket::initialMode(StreamSocket *socket, const NodeConfig *config)
+{
+    return Secure * (
+        config->forceSecureTransport() ||
+        (socket->address()->port() % 80 != 0 && socket->address()->port() < 1024)
+    );
 }
 
 HttpServerSocket::HttpServerSocket(const SocketAddress *address, int mode, const NodeConfig *nodeConfig, SecurityCache *securityCache):

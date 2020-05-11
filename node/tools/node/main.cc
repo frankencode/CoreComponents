@@ -72,7 +72,7 @@ int main(int argc, char **argv)
         auto node = NodeMaster::create(config);
 
         auto signalMaster = SignalMaster::start([=](Signal signal, bool *fin){
-            node->signaled(signal);
+            node->sendSignal(signal);
             *fin = (+signal == SIGINT || +signal == SIGTERM);
         });
 
@@ -90,8 +90,9 @@ int main(int argc, char **argv)
             "\n"
             "Options:\n"
             "  -address   host name or network address to listen on\n"
-            "  -port      port to listen on (default 8080)\n"
-            "  -protocol  IPv4 or IPv6 (default both)\n"
+            "  -port      port to listen on (default: 8080)\n"
+            "  -family    IPv4 or IPv6 (default: both)\n"
+            "  -tls       use transport layer security\n"
             "  -user      switch to user after opening listening socket\n"
             "  -daemon    start as a daemon\n"
             "  -pid-file  write PID in given file\n"

@@ -23,7 +23,7 @@ public:
     /** Create a new wait condition
       * \return new object instance
       */
-    inline static Ref<WaitCondition> create() { return new WaitCondition; }
+    static Ref<WaitCondition> create() { return new WaitCondition; }
 
     /** Wait for a certain condition
       * \param mutex mutex protecting the condition state
