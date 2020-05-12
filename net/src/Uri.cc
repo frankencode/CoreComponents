@@ -190,7 +190,7 @@ String Uri::decode(const String &s)
 
 String UriSyntaxError::message() const
 {
-    return Format("Invalid URI syntax: \"%%\"") << text_;
+    return Format{"Invalid URI syntax: \"%%\""} << text_;
 }
 
 }} // namespace cc::net

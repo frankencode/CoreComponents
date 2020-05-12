@@ -20,6 +20,7 @@ namespace cc {
   * \brief Inter-thread communication channel
   * \tparam T item type
   * \TODO provide a popBack() unidirectional iterator
+  * \TODO provide wait(), send() convenience methods
   */
 template<class T>
 class Channel: public Object

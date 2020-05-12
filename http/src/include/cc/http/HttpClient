@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/http/HttpClientSecurity>
+#include <cc/http/HttpResponse>
+
+namespace cc {
+namespace http {
+
+class HttpClientSocket;
+
+class HttpClient: public Object
+{
+public:
+    static Ref<HttpClient> create(const HttpClientSecurity *security = nullptr);
+
+    // Ref<HttpResponse> query(const Uri &uri, const String &payload = String{});
+
+private:
+    Ref<HttpClientSocket> socket_;
+    Ref<HttpClientConnection> connection_;
+};
+
+}} // namespace cc::http
