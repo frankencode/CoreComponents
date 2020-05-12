@@ -39,8 +39,8 @@ int main(int argc, char **argv)
         const StringList *items = arguments->items();
         if (items->count() != 2) throw HelpRequest{};
 
-        Ref<SocketAddress> proxyAddress = SocketAddress::resolve(Uri::parse(items->at(0)));
-        Ref<SocketAddress> origAddress  = SocketAddress::resolve(Uri::parse(items->at(1)));
+        auto proxyAddress = SocketAddress::resolveUri(items->at(0));
+        auto origAddress  = SocketAddress::resolveUri(items->at(1));
 
         Ref<StreamSocket> listenSocket = StreamSocket::listen(proxyAddress);
 

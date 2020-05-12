@@ -24,6 +24,7 @@ public:
     // Ref<HttpResponse> query(const Uri &uri, const String &payload = String{});
 
 private:
+    HttpClient(const HttpClientSecurity *security);
     Ref<HttpClientSocket> socket_;
     Ref<HttpClientConnection> connection_;
 };

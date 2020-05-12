@@ -34,7 +34,7 @@ CgiInstance::CgiInstance(const MetaObject *config):
     for (int i = 0; i < server_->count(); ++i) {
         try {
             Ref<SocketAddress> address;
-            Ref<Uri> uri = Uri::parse(server_->at(i));
+            Uri uri{server_->at(i)};
             if (uri->hostIsNumeric()) {
                 address = SocketAddress::create(ProtocolFamily::Unspecified, uri->host(), uri->port());
             }

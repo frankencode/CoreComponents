@@ -26,11 +26,11 @@ int main(int argc, char **argv)
         }
 
         auto security = HttpClientSecurity::createDefault();
-        auto uri = Uri::parse(commandLine);
+        Uri uri{commandLine};
         if (uri->port() <= 0) uri->setPort(uri->scheme() == "https" ? 443 : 80);
         if (uri->path() == "") uri->setPath("/");
         if (uri->scheme() == "http" || uri->scheme() == "local") security = nullptr;
-        auto address = SocketAddress::resolve(uri);
+        auto address = SocketAddress::resolveUri(uri);
         auto socket = HttpClientSocket::connect(address, uri->host(), security);
         auto connection = HttpClientConnection::open(socket);
         auto request = HttpRequestGenerator::create(connection);

@@ -16,6 +16,7 @@
 
 #include <cc/net/types>
 #include <cc/net/exceptions>
+#include <cc/net/Uri>
 
 namespace cc {
 
@@ -24,7 +25,6 @@ template<class> class Singleton;
 
 namespace net {
 
-class Uri;
 class SocketAddress;
 
 typedef List< Ref<SocketAddress> > SocketAddressList;
@@ -78,11 +78,11 @@ public:
     static Ref<SocketAddress> create(addrinfo *info);
 
     /** Resolve internet address of an URI
-      * \param uri Uniform Resource Indicator (URI)
+      * \param uri target URI
       * \return new object instance
       * \exception HostNameResolutionError
       */
-    static Ref<SocketAddress> resolve(const Uri *uri);
+    static Ref<SocketAddress> resolveUri(const Uri &uri);
 
     /** Resolve internet address of a host
       * \param hostName host or domain name to resolve
@@ -90,7 +90,7 @@ public:
       * \return new object instance
       * \exception HostNameResolutionError
       */
-    static Ref<SocketAddress> resolve(const String &hostName, int port = 0);
+    static Ref<SocketAddress> resolveHost(const String &hostName, int port = 0);
 
     /** Query the complete connection information for given host name, service name and
       * protocol family. The call blocks until the local resolver has resolved the

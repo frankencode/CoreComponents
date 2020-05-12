@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -23,95 +23,108 @@ namespace net {
 class Uri: public Object
 {
 public:
+    class Instance: public Object {
+    public:
+        /// URI scheme (e.g. http, file)
+        String scheme() const { return scheme_; }
+
+        /// %Set the URI scheme
+        void setScheme(const String &value) { scheme_ = value; }
+
+        /// User and password information (e.g. "oscar:123456")
+        String userInfo() const { return userInfo_; }
+
+        /// %Set the user information
+        void setUserInfo(const String &value) { userInfo_ = value; }
+
+        /// Registered host name or numeric address (IPv4 or IPv6)
+        String host() const { return host_; }
+
+        /// %Set the host name
+        void setHost(const String &value) { host_ = value; }
+
+        /// Tell if the host name is a numeric address
+        bool hostIsNumeric() const { return hostIsNumeric_; }
+
+        /// Protocol family of the numeric address
+        ProtocolFamily family() const {
+            if (!hostIsNumeric_) return ProtocolFamily::Unspecified;
+            return host_->contains(':') ? ProtocolFamily::Internet6 : ProtocolFamily::Internet4;
+        }
+
+        /// Service port
+        int port() const { return port_; }
+
+        /// %Set the service port
+        void setPort(int value) { port_ = value; }
+
+        /// Path component of the URI
+        String path() const { return path_; }
+
+        /// %Set the path component of the URI
+        void setPath(const String &value) { path_ = value; }
+
+        /// Query component of the URI
+        String query() const { return query_; }
+
+        /// %Set the query component of the URI
+        void setQuery(const String &value) { query_ = value; }
+
+        /// Fragment component of the URI
+        String fragment() const { return fragment_; }
+
+        /// %Set fragment component of the URI
+        void setFragment(const String &value) { fragment_ = value; }
+
+        /// Return the host name with port number
+        String requestHost() const;
+
+        /// Return the path with query and fragment component
+        String requestPath() const;
+
+        /// Convert this URI to a string
+        String toString() const;
+
+    private:
+        friend class Uri;
+
+        static String encode(const String &s);
+        static String decode(const String &s);
+
+        Instance() = default;
+        Instance(const String &text, Token *rootToken = nullptr);
+
+        String scheme_;
+        String userInfo_;
+        String host_;
+        bool hostIsNumeric_ { false };
+        int port_ { -1 };
+        String path_;
+        String query_;
+        String fragment_;
+    };
+
     /** Create a new URI
       * \return new object instance
       */
-    static Ref<Uri> create();
+    Uri():
+        instance_{new Instance}
+    {}
 
-    /** Parse an URI
+    /** Create a new URI
       * \param text URI string
-      * \param rootToken root of the URI token tree (optional)
-      * \return new object intance
+      * \param rootToken root of the URI token tree
       * \exception UriSyntaxError
       */
-    static Ref<Uri> parse(const String &text, Token *rootToken = nullptr);
+    Uri(const String &text, Token *rootToken = nullptr):
+        instance_{new Instance{text, nullptr}}
+    {}
 
-    /// URI scheme (e.g. http, file)
-    String scheme() const { return scheme_; }
-
-    /// %Set the URI scheme
-    void setScheme(const String &value) { scheme_ = value; }
-
-    /// User and password information (e.g. "oscar:123456")
-    String userInfo() const { return userInfo_; }
-
-    /// %Set the user information
-    void setUserInfo(const String &value) { userInfo_ = value; }
-
-    /// Registered host name or numeric address (IPv4 or IPv6)
-    String host() const { return host_; }
-
-    /// %Set the host name
-    void setHost(const String &value) { host_ = value; }
-
-    /// Tell if the host name is a numeric address
-    bool hostIsNumeric() const { return hostIsNumeric_; }
-
-    /// Protocol family of the numeric address
-    ProtocolFamily family() const {
-        if (!hostIsNumeric_) return ProtocolFamily::Unspecified;
-        return host_->contains(':') ? ProtocolFamily::Internet6 : ProtocolFamily::Internet4;
-    }
-
-    /// Service port
-    int port() const { return port_; }
-
-    /// %Set the service port
-    void setPort(int value) { port_ = value; }
-
-    /// Path component of the URI
-    String path() const { return path_; }
-
-    /// %Set the path component of the URI
-    void setPath(const String &value) { path_ = value; }
-
-    /// Query component of the URI
-    String query() const { return query_; }
-
-    /// %Set the query component of the URI
-    void setQuery(const String &value) { query_ = value; }
-
-    /// Fragment component of the URI
-    String fragment() const { return fragment_; }
-
-    /// %Set fragment component of the URI
-    void setFragment(const String &value) { fragment_ = value; }
-
-    /// Return the host name with port number
-    String requestHost() const;
-
-    /// Return the path with query and fragment component
-    String requestPath() const;
-
-    /// Convert this URI to a string
-    String toString() const;
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return instance_; }
 
 private:
-    Uri();
-    Uri(const CharArray *text, Token *rootToken = nullptr);
-
-    void readUri(const CharArray *text, Token *rootToken = nullptr);
-    static String encode(const String &s);
-    static String decode(const String &s);
-
-    String scheme_;
-    String userInfo_;
-    String host_;
-    bool hostIsNumeric_;
-    int port_;
-    String path_;
-    String query_;
-    String fragment_;
+    Ref<Instance> instance_;
 };
 
 /** \class UriSyntaxError cc/net/Uri

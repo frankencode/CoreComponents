@@ -34,7 +34,7 @@ Ref<StreamSocket> StreamSocket::connect(const SocketAddress *peerAddress)
 
 Ref<StreamSocket> StreamSocket::connect(const String &hostName, int port)
 {
-    return connect(SocketAddress::resolve(hostName, port));
+    return connect(SocketAddress::resolveHost(hostName, port));
 }
 
 void StreamSocket::connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second)

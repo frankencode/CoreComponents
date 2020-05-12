@@ -64,7 +64,7 @@ Ref<SocketAddress> SocketAddress::create(addrinfo *info)
     return new SocketAddress{info};
 }
 
-Ref<SocketAddress> SocketAddress::resolve(const Uri *uri)
+Ref<SocketAddress> SocketAddress::resolveUri(const Uri &uri)
 {
     Ref<SocketAddress> address;
 
@@ -88,7 +88,7 @@ Ref<SocketAddress> SocketAddress::resolve(const Uri *uri)
     return address;
 }
 
-Ref<SocketAddress> SocketAddress::resolve(const String &hostName, int port)
+Ref<SocketAddress> SocketAddress::resolveHost(const String &hostName, int port)
 {
     Ref<SocketAddressList> addressList = SocketAddress::queryConnectionInfo(hostName);
     if (addressList->count() == 0) throw HostNameResolutionError{hostName};

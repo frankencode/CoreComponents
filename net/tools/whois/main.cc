@@ -53,8 +53,7 @@ int main(int argc, char **argv)
     try {
         auto arguments = Arguments::parse(argc, argv, VariantMap::create());
 
-        auto ianaAddress = SocketAddress::resolve("whois.iana.org");
-        ianaAddress->setPort(43);
+        auto ianaAddress = SocketAddress::resolveHost("whois.iana.org", 43);
 
         for (const String &item: arguments->items())
         {
@@ -68,8 +67,7 @@ int main(int argc, char **argv)
             if (addressQuery) {
                 String registry = whoisQuery(ianaAddress, item, "whois");
                 if (registry == "") throw Error{2};
-                auto registryAddress = SocketAddress::resolve(registry);
-                registryAddress->setPort(43);
+                auto registryAddress = SocketAddress::resolveHost(registry, 43);
                 whoisQuery(registryAddress, item);
             }
             else {
@@ -78,8 +76,7 @@ int main(int argc, char **argv)
                 String domain = parts->at(parts->count() - 2) + "." + topLevelDomain;
                 String registry = whoisQuery(ianaAddress, topLevelDomain, "whois");
                 if (registry == "") throw Error{3};
-                auto registryAddress = SocketAddress::resolve(registry);
-                registryAddress->setPort(43);
+                auto registryAddress = SocketAddress::resolveHost(registry, 43);
                 whoisQuery(registryAddress, domain);
             }
         }

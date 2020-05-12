@@ -132,7 +132,7 @@ void DeliveryWorker::autoSecureForwardings()
             String location = header->value("Location");
             if (location->startsWith("http:")) {
                 try {
-                    Ref<Uri> uri = Uri::parse(location);
+                    Uri uri{location};
                     if (deliveryInstance_->host()->match(uri->host())) {
                         uri->setScheme("https");
                         if (uri->port() > 0)

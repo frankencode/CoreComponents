@@ -17,7 +17,7 @@ using namespace cc::net;
 class BreakDownUri: public TestCase
 {
     void run() {
-        Ref<Uri> uri = Uri::parse("http://john@example.com:8000/%7ejohn/123.php?say=hello#part1");
+        Uri uri{"http://john@example.com:8000/%7ejohn/123.php?say=hello#part1"};
         fout("uri->scheme() = \"%%\"\n") << uri->scheme();
         fout("uri->userInfo() = \"%%\"\n") << uri->userInfo();
         fout("uri->host() = \"%%\"\n") << uri->host();
@@ -39,7 +39,7 @@ class BreakDownUri: public TestCase
 class BreakDownSimpleUri: public TestCase
 {
     void run() {
-        Ref<Uri> uri = Uri::parse("localhost:8080");
+        Uri uri{"localhost:8080"};
         fout("uri->host() = \"%%\"\n") << uri->host();
         fout("uri->port() = %%\n") << uri->port();
         CC_VERIFY(uri->host() == "localhost");
@@ -51,7 +51,7 @@ class BreakDownSimpleUri: public TestCase
 class HostIsNumeric: public TestCase
 {
     void run() {
-        Ref<Uri> uri = Uri::parse("127.0.0.1:80");
+        Uri uri{"127.0.0.1:80"};
         fout("uri->host() = \"%%\"\n") << uri->host();
         fout("uri->port() = %%\n") << uri->port();
         CC_VERIFY(uri->host() == "127.0.0.1");
@@ -63,7 +63,7 @@ class HostIsNumeric: public TestCase
 class Inet6Address: public TestCase
 {
     void run() {
-        Ref<Uri> uri = Uri::parse("[::1]:80");
+        Uri uri{"[::1]:80"};
         fout("uri->host() = \"%%\"\n") << uri->host();
         fout("uri->port() = %%\n") << uri->port();
         CC_VERIFY(uri->host() == "::1");

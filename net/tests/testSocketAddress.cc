@@ -44,7 +44,7 @@ String protocolToString(InternetProtocol protocol)
 
 class ResolveHostName: public TestCase
 {
-    void run()
+    void run() override
     {
         String hostName = System::hostName();
 
@@ -74,16 +74,17 @@ class ResolveHostName: public TestCase
 
 class ReadLocation: public TestCase
 {
-    void run()
+public:
+    void run() override
     {
         auto samples = StringList::create()
             << "192.168.0.1"
-            << "128.0.0.1:8080"
+            << "127.0.0.1:8080"
             << "::"
             << "[::]:8080";
         for (String s: samples) {
-            auto address = SocketAddress::resolve(Uri::parse(s));
-            fout("\"%%\" == \"%%\"") << s << address << nl;
+            auto address = SocketAddress::resolveUri(s);
+            fout("\"%%\" == \"%%\"\n") << s << address;
             CC_ASSERT(s == address->toString());
         }
     }

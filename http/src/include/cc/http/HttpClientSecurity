@@ -9,6 +9,7 @@
 #pragma once
 
 #include <gnutls/gnutls.h>
+#include <cc/String>
 
 namespace cc {
 namespace http {

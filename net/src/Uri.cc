@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -17,29 +17,7 @@ namespace net {
 
 using namespace cc::syntax;
 
-Ref<Uri> Uri::create()
-{
-    return new Uri;
-}
-
-Ref<Uri> Uri::parse(const String &text, Token *rootToken)
-{
-    return new Uri{text, rootToken};
-}
-
-Uri::Uri():
-    hostIsNumeric_{false},
-    port_{-1}
-{}
-
-Uri::Uri(const CharArray *text, Token *rootToken):
-    hostIsNumeric_{false},
-    port_{-1}
-{
-    readUri(text, rootToken);
-}
-
-void Uri::readUri(const CharArray *text, Token *rootToken)
+Uri::Instance::Instance(const String &text, Token *rootToken)
 {
     Ref<Token> rootToken2;
     if (!rootToken) {
@@ -83,12 +61,12 @@ void Uri::readUri(const CharArray *text, Token *rootToken)
     }
 }
 
-String Uri::requestHost() const
+String Uri::Instance::requestHost() const
 {
     return host_ + ":" + str(port_);
 }
 
-String Uri::requestPath() const
+String Uri::Instance::requestPath() const
 {
     if (query_ == "" && fragment_ == "") return path_;
     auto parts = StringList::create();
@@ -98,7 +76,7 @@ String Uri::requestPath() const
     return parts;
 }
 
-String Uri::toString() const
+String Uri::Instance::toString() const
 {
     Format text;
     if (scheme_ != "") {
@@ -128,7 +106,7 @@ String Uri::toString() const
     return text;
 }
 
-String Uri::encode(const String &s)
+String Uri::Instance::encode(const String &s)
 {
     mutate(s)->downcaseInsitu();
 
@@ -156,7 +134,7 @@ String Uri::encode(const String &s)
     return l->join();
 }
 
-String Uri::decode(const String &s)
+String Uri::Instance::decode(const String &s)
 {
     int j = 0;
     for (int i = 0, n = s->count(); i < n; ++i, ++j) {
