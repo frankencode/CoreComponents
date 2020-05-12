@@ -20,13 +20,13 @@ public:
 
     virtual bool captureOutput() const;
 
-    virtual void beginTestSuite(TestSuite *testSuite);
-    virtual void beginTestCase(TestCase *testCase);
-    virtual void verify(TestCase *testCase, bool condition, String message, String codePath, int codeLine);
-    virtual void error(TestCase *testCase, String type, String message);
-    virtual void endTestCase(TestCase *testCase, String outText = "", String errText = "");
-    virtual void skipTestCase(TestCase *testCase);
-    virtual void endTestSuite(TestSuite *testSuite);
+    virtual void beginTestSuite(TestSuite *testSuite) override;
+    virtual void beginTestCase(TestCase *testCase) override;
+    virtual void verify(TestCase *testCase, bool condition, String message, String codePath, int codeLine) override;
+    virtual void error(TestCase *testCase, String type, String message) override;
+    virtual void endTestCase(TestCase *testCase, String outText = "", String errText = "") override;
+    virtual void skipTestCase(TestCase *testCase) override;
+    virtual void endTestSuite(TestSuite *testSuite) override;
 
 protected:
     XmlTestReport(Stream *stream);

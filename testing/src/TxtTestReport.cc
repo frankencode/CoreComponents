@@ -37,9 +37,10 @@ void TxtTestReport::beginTestCase(TestCase *testCase)
 
 void TxtTestReport::verify(TestCase *testCase, bool condition, String message, String codePath, int codeLine)
 {
-    if (!condition)
+    if (!condition) {
         fout("FAILED: %%:%%: CC_VERIFY(%%)\n")
-        << codePath->fileName() << codeLine << message;
+            << codePath->fileName() << codeLine << message;
+    }
 }
 
 void TxtTestReport::error(TestCase *testCase, String type, String message)

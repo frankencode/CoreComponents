@@ -29,10 +29,10 @@ TestSuite *TestSuite::instance()
 }
 
 TestSuite::TestSuite():
-    testCases_(TestCases::create()),
-    testCaseFailureCount_(0),
-    testCaseSkipCount_(0),
-    totalFailureCount_(0)
+    testCases_{TestCases::create()},
+    testCaseFailureCount_{0},
+    testCaseSkipCount_{0},
+    totalFailureCount_{0}
 {}
 
 TestSuite::~TestSuite()
@@ -92,6 +92,8 @@ int TestSuite::run(int argc, char **argv)
 {
     if (!init(argc, argv)) return 1;
 
+    bool interactive = stdOut()->isatty();
+
     report_->beginTestSuite(this);
 
     for (int i = 0; i < testCases_->count(); ++i)
@@ -115,30 +117,36 @@ int TestSuite::run(int argc, char **argv)
             errSaved = SystemStream::duplicate(stdErr());
             outFile = File::openTemp();
             errFile = File::openTemp();
-            UnlinkGuard outGuard(outFile->path());
-            UnlinkGuard errGuard(errFile->path());
+            UnlinkGuard outGuard{outFile->path()};
+            UnlinkGuard errGuard{errFile->path()};
             outFile->duplicateTo(stdOut());
             errFile->duplicateTo(stdErr());
         }
 
-        try {
+        if (interactive) {
             currentTestCase_ = testCase;
             testCase->run();
         }
-        catch (Exception &ex) {
-            String typeName = typeid(ex).name();
-            {
-                int status = 0;
-                char *buf = abi::__cxa_demangle(typeName, 0, 0, &status);
-                if (status == 0) typeName = buf;
-                ::free(buf);
+        else {
+            try {
+                currentTestCase_ = testCase;
+                testCase->run();
             }
-            testCase->caughtException_ = true;
-            report_->error(testCase, typeName, ex.message());
-        }
-        catch (...) {
-            testCase->caughtException_ = true;
-            report_->error(testCase, "", "");
+            catch (Exception &ex) {
+                String typeName = typeid(ex).name();
+                {
+                    int status = 0;
+                    char *buf = abi::__cxa_demangle(typeName, 0, 0, &status);
+                    if (status == 0) typeName = buf;
+                    ::free(buf);
+                }
+                testCase->caughtException_ = true;
+                report_->error(testCase, typeName, ex.message());
+            }
+            catch (...) {
+                testCase->caughtException_ = true;
+                report_->error(testCase, "", "");
+            }
         }
 
         String outText, errText;

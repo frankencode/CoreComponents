@@ -19,12 +19,12 @@ class TestSuite;
 class TestCase: public Object
 {
 public:
-    inline String name() const { return name_; }
-    inline bool skip() const { return skip_; }
-    inline int assertionCount() const { return assertionCount_; }
-    inline int failureCount() const { return failureCount_; }
-    inline bool caughtException() const { return caughtException_; }
-    inline bool passed() const { return failureCount_ == 0 && !caughtException_; }
+    String name() const { return name_; }
+    bool skip() const { return skip_; }
+    int assertionCount() const { return assertionCount_; }
+    int failureCount() const { return failureCount_; }
+    bool caughtException() const { return caughtException_; }
+    bool passed() const { return failureCount_ == 0 && !caughtException_; }
 
 protected:
     friend class TestSuite;
@@ -39,10 +39,10 @@ protected:
     }
 
     TestCase():
-        skip_(false),
-        assertionCount_(0),
-        failureCount_(0),
-        caughtException_(false)
+        skip_{false},
+        assertionCount_{0},
+        failureCount_{0},
+        caughtException_{false}
     {}
 
     virtual void run() = 0;
@@ -56,4 +56,3 @@ private:
 };
 
 }} // namespace cc::testing
-

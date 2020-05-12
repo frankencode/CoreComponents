@@ -23,16 +23,16 @@ class TestSuite: public Object
 public:
     static TestSuite *instance();
 
-    inline String name() const { return name_; }
-    inline String execPath() const { return execPath_; }
+    String name() const { return name_; }
+    String execPath() const { return execPath_; }
 
-    inline int testCaseCount() const { return testCases_->count(); }
-    inline int testCaseFailureCount() const { return testCaseFailureCount_; }
-    inline int testCaseSkipCount() const { return testCaseSkipCount_; }
-    inline int totalFailureCount() const { return totalFailureCount_; }
+    int testCaseCount() const { return testCases_->count(); }
+    int testCaseFailureCount() const { return testCaseFailureCount_; }
+    int testCaseSkipCount() const { return testCaseSkipCount_; }
+    int totalFailureCount() const { return totalFailureCount_; }
 
     template<class T>
-    inline void add(String name, bool skip = false) { testCases_->append(TestCase::create<T>(name, skip)); }
+    void add(String name, bool skip = false) { testCases_->append(TestCase::create<T>(name, skip)); }
 
     bool verify(bool condition, String description, String conditionText, String codePath, int codeLine);
 

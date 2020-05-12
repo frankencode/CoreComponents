@@ -16,21 +16,20 @@ namespace testing {
 class TxtTestReport: public TestReport
 {
 public:
-    inline static Ref<TxtTestReport> create() { return new TxtTestReport; }
+    static Ref<TxtTestReport> create() { return new TxtTestReport; }
 
-    virtual bool captureOutput() const;
+    bool captureOutput() const override;
 
-    virtual void beginTestSuite(TestSuite *testSuite);
-    virtual void beginTestCase(TestCase *testCase);
-    virtual void verify(TestCase *testCase, bool condition, String message, String codePath, int codeLine);
-    virtual void error(TestCase *testCase, String type, String message);
-    virtual void endTestCase(TestCase *testCase, String outText = "", String errText = "");
-    virtual void skipTestCase(TestCase *testCase);
-    virtual void endTestSuite(TestSuite *testSuite);
+    void beginTestSuite(TestSuite *testSuite) override;
+    void beginTestCase(TestCase *testCase) override;
+    void verify(TestCase *testCase, bool condition, String message, String codePath, int codeLine) override;
+    void error(TestCase *testCase, String type, String message) override;
+    void endTestCase(TestCase *testCase, String outText = "", String errText = "") override;
+    void skipTestCase(TestCase *testCase) override;
+    void endTestSuite(TestSuite *testSuite) override;
 
 protected:
     TxtTestReport();
 };
 
 }} // namespace cc::testing
-
