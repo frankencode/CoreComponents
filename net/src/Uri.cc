@@ -119,7 +119,7 @@ String Uri::Instance::encode(const String &s)
             if (ch == *r) {
                 if (j < i)
                     l->append(s->copy(j, i));
-                String pct("%XX");
+                String pct{"%XX"};
                 mutate(pct)->at(1) = ch >> 4;
                 mutate(pct)->at(2) = ch & 0xF;
                 l->append(pct);

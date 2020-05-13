@@ -12,16 +12,16 @@
 namespace cc {
 namespace net {
 
-Ref<NetworkState> NetworkState::query(String interfaceName)
+Ref<NetworkState> NetworkState::query(const String &interfaceName)
 {
-    return new NetworkState(interfaceName);
+    return new NetworkState{interfaceName};
 }
 
-NetworkState::NetworkState(String interfaceName):
-    interfaceName_(interfaceName),
-    networkMask_(0)
+NetworkState::NetworkState(const String &interfaceName):
+    interfaceName_{interfaceName},
+    networkMask_{0}
 {
-    const SocketAddress *candidateAddress = 0;
+    const SocketAddress *candidateAddress = nullptr;
 
     Ref<RouteInfoList> routingTable = RouteInfo::queryTable();
     for (const RouteInfo *entry: routingTable) {

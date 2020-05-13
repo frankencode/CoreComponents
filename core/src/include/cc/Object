@@ -65,13 +65,25 @@ public:
     }
 
 protected:
+    Object(const Object &) = default;
     void init() {}
 
 private:
-    Object(const Object &);
     const Object &operator=(const Object &);
 
     mutable volatile int refCount_;
+};
+
+class Cow {
+public:
+    template <class T>
+    static T *get(Ref<T> &instance)
+    {
+        if (instance->refCount() == 1)
+            return instance;
+        instance = instance->copy();
+        return instance;
+    }
 };
 
 } // namespace cc

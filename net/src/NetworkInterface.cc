@@ -228,12 +228,12 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
 }
 
 NetworkInterface::NetworkInterface():
-    index_(-1),
-    type_(0),
-    flags_(0),
-    hardwareAddress_(0),
-    mtu_(0),
-    addressList_(SocketAddressList::create())
+    index_{-1},
+    type_{0},
+    flags_{0},
+    hardwareAddress_{0},
+    mtu_{0},
+    addressList_{SocketAddressList::create()}
 {}
 
 Ref<NetworkInterface> NetworkInterface::getLink(NetworkInterfaceList *list, int index)

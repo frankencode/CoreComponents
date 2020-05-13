@@ -21,7 +21,7 @@ namespace net {
 class DatagramSocket: public SystemStream
 {
 public:
-    /** Create a new datagram socket to communicate with one or more peers
+    /** Create a new datagram socket
       * \param address local address to bind to the socket
       */
     static Ref<DatagramSocket> open(const SocketAddress *address);
@@ -57,7 +57,7 @@ public:
     virtual int recvFrom(Ref<SocketAddress> *peerAddress, CharArray *buffer);
 
     /** Send a datagram
-      * \param peerAddress destination host address
+      * \param peerAddress destination address
       * \param message the message to send
       * \return number of bytes send
       * \exception HostUnreachable an ICMP error from an earlier sendTo() has been received

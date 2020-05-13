@@ -93,7 +93,7 @@ public:
     /// Message transfer unit (MTU)
     uint32_t mtu() const { return mtu_; }
 
-    /// Snapshot of the networking addresses associated to the interface
+    /// Networking addresses currently associated to the interface
     const SocketAddressList *addressList() const { return addressList_; }
 
 private:

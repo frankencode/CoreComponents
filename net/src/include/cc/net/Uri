@@ -86,6 +86,7 @@ public:
         String toString() const;
 
     private:
+        friend class cc::Cow;
         friend class Uri;
 
         static String encode(const String &s);
@@ -93,6 +94,8 @@ public:
 
         Instance() = default;
         Instance(const String &text, Token *rootToken = nullptr);
+
+        Instance *copy() const { return new Instance{*this}; }
 
         String scheme_;
         String userInfo_;
@@ -121,7 +124,7 @@ public:
     {}
 
     const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return instance_; }
+    Instance *operator->() { return Cow::get(instance_); }
 
 private:
     Ref<Instance> instance_;

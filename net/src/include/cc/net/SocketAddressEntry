@@ -42,19 +42,19 @@ public:
 private:
     friend class NetworkInterface;
 
-    inline static Ref<SocketAddressEntry> create() {
+    static Ref<SocketAddressEntry> create() {
         return new SocketAddressEntry;
     }
-    inline static Ref<SocketAddressEntry> create(struct sockaddr_in *addr, int networkMask = 0) {
-        return new SocketAddressEntry(addr, networkMask);
+    static Ref<SocketAddressEntry> create(struct sockaddr_in *addr, int networkMask = 0) {
+        return new SocketAddressEntry{addr, networkMask};
     }
-    inline static Ref<SocketAddressEntry> create(struct sockaddr_in6 *addr) {
-        return new SocketAddressEntry(addr);
+    static Ref<SocketAddressEntry> create(struct sockaddr_in6 *addr) {
+        return new SocketAddressEntry{addr};
     }
 
     SocketAddressEntry(): networkMask_(0) {}
-    SocketAddressEntry(struct sockaddr_in *addr, int networkMask = 0): SocketAddress(addr), networkMask_(networkMask) {}
-    SocketAddressEntry(struct sockaddr_in6 *addr): SocketAddress(addr), networkMask_(0) {}
+    SocketAddressEntry(struct sockaddr_in *addr, int networkMask = 0): SocketAddress{addr}, networkMask_{networkMask} {}
+    SocketAddressEntry(struct sockaddr_in6 *addr): SocketAddress{addr}, networkMask_{0} {}
 
     int networkMask_;
     Ref<const SocketAddress> localAddress_;
