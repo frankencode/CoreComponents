@@ -48,7 +48,7 @@ NetworkState::NetworkState(const String &interfaceName):
         }
     }
 
-    const SocketAddressEntry *entry = Object::cast<const SocketAddressEntry *>(candidateAddress);
+    const AddressInfo *entry = Object::cast<const AddressInfo *>(candidateAddress);
     if (entry) networkMask_ = entry->networkMask();
     address_ = candidateAddress->copy();
 }

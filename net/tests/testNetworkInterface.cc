@@ -41,27 +41,27 @@ class QueryNetworkInterfaces: public TestCase
                 for (int k = 0; k < addressList->count(); ++k) {
                     const SocketAddress *address = addressList->at(k);
                     fout() << "  Addr:   " << address;
-                    const SocketAddressEntry *entry = Object::cast<const SocketAddressEntry *>(address);
-                    if (entry) {
+                    const AddressInfo *info = address->info();
+                    if (info) {
                         bool comma = false;
                         bool delim = true;
-                        if (entry->networkMask() > 0)
-                            fout() << "/" << entry->networkMask();
-                        if (entry->localAddress()) {
+                        if (info->networkMask() > 0)
+                            fout() << "/" << info->networkMask();
+                        if (info->localAddress()) {
                             if (delim) { fout() << " --"; delim = false; }
-                            fout() << " Local: " << entry->localAddress();
+                            fout() << " Local: " << info->localAddress();
                             comma = true;
                         }
-                        if (entry->broadcastAddress()) {
+                        if (info->broadcastAddress()) {
                             if (delim) { fout() << " --"; delim = false; }
                             if (comma) fout() << ",";
-                            fout() << " Bcast: " << entry->broadcastAddress();
+                            fout() << " Bcast: " << info->broadcastAddress();
                             comma = true;
                         }
-                        if (entry->anycastAddress()) {
+                        if (info->anycastAddress()) {
                             if (delim) { fout() << " --"; delim = false; }
                             if (comma) fout() << ",";
-                            fout() << " Acast: " << entry->anycastAddress();
+                            fout() << " Acast: " << info->anycastAddress();
                         }
                     }
                     fout() << nl;

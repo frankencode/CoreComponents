@@ -15,14 +15,14 @@ namespace net {
 
 class NetworkInterface;
 
-/** \class SocketAddressEntry cc/net/SocketAddressEntry
+/** \class AddressInfo cc/net/AddressInfo
   * \brief IPv4 address information associated with a network interface
   */
-class SocketAddressEntry: public SocketAddress
+class AddressInfo: public SocketAddress
 {
 public:
     /// network address associated with this interface
-    const SocketAddress *address() const { return const_cast<SocketAddressEntry *>(this); }
+    const SocketAddress *address() const { return this; }
 
     /// size of the subnet mask
     int networkMask() const { return networkMask_; }
@@ -42,19 +42,19 @@ public:
 private:
     friend class NetworkInterface;
 
-    static Ref<SocketAddressEntry> create() {
-        return new SocketAddressEntry;
+    static Ref<AddressInfo> create() {
+        return new AddressInfo;
     }
-    static Ref<SocketAddressEntry> create(struct sockaddr_in *addr, int networkMask = 0) {
-        return new SocketAddressEntry{addr, networkMask};
+    static Ref<AddressInfo> create(struct sockaddr_in *addr, int networkMask = 0) {
+        return new AddressInfo{addr, networkMask};
     }
-    static Ref<SocketAddressEntry> create(struct sockaddr_in6 *addr) {
-        return new SocketAddressEntry{addr};
+    static Ref<AddressInfo> create(struct sockaddr_in6 *addr) {
+        return new AddressInfo{addr};
     }
 
-    SocketAddressEntry(): networkMask_(0) {}
-    SocketAddressEntry(struct sockaddr_in *addr, int networkMask = 0): SocketAddress{addr}, networkMask_{networkMask} {}
-    SocketAddressEntry(struct sockaddr_in6 *addr): SocketAddress{addr}, networkMask_{0} {}
+    AddressInfo(): networkMask_{0} {}
+    AddressInfo(struct sockaddr_in *addr, int networkMask = 0): SocketAddress{addr}, networkMask_{networkMask} {}
+    AddressInfo(struct sockaddr_in6 *addr): SocketAddress{addr}, networkMask_{0} {}
 
     int networkMask_;
     Ref<const SocketAddress> localAddress_;

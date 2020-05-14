@@ -16,6 +16,7 @@
 #include <cc/exceptions>
 #include <cc/SystemStream>
 #include <cc/net/Uri>
+#include <cc/net/AddressInfo>
 #include <cc/net/SocketAddress>
 
 namespace cc {
@@ -434,6 +435,11 @@ int SocketAddress::addrLen() const
         if (len < int(sizeof(sockaddr_un))) len = sizeof(sockaddr_un);
     }
     return len;
+}
+
+const AddressInfo *SocketAddress::info() const
+{
+    return dynamic_cast<const AddressInfo *>(this);
 }
 
 }} // namespace cc::net

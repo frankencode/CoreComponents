@@ -25,6 +25,7 @@ template<class> class Singleton;
 
 namespace net {
 
+class AddressInfo;
 class SocketAddress;
 
 typedef List< Ref<SocketAddress> > SocketAddressList;
@@ -139,7 +140,7 @@ public:
     /** Lookup the host name of given address. Usually a reverse DNS
       * lookup will be issued, which may take several seconds.
       */
-    String lookupHostName(bool *failed = 0) const;
+    String lookupHostName(bool *failed = nullptr) const;
 
     /** Lookup the service name. In most setups the service name will be looked up
       * in a local file (/etc/services) and therefore the call returns immediately.
@@ -162,6 +163,9 @@ public:
     struct sockaddr *addr(); ///< Provide access to the underlying low-level address structure
     const struct sockaddr *addr() const; ///< Provide access to the underlying low-level address structure (read-only)
     int addrLen() const; ///< Size of the underlying low-level address structure in bytes
+
+    /// Additional information for assigned IPv4 addresses (returns nullptr if not available)
+    const AddressInfo *info() const;
 
 protected:
     friend class Singleton<SocketAddress>;
