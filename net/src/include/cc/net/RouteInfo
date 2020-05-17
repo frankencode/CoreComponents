@@ -29,43 +29,43 @@ public:
     static Ref<RouteInfoList> queryTable();
 
     /// Size of the source address in bits
-    inline int sourceMask() const { return sourceMask_; }
+    int sourceMask() const { return sourceMask_; }
 
     /// Size of the destination address in bits
-    inline int destinationMask() const { return destinationMask_; }
+    int destinationMask() const { return destinationMask_; }
 
     /// %Source network address
-    inline SocketAddress *source() const { return source_; } // FIXME: should never be zero
+    SocketAddress source() const { return source_; }
 
     /// Destination network address
-    inline SocketAddress *destination() const { return destination_; } // FIXME: should never be zero
+    SocketAddress destination() const { return destination_; }
 
     /// Address of gateway to reach destination
-    inline SocketAddress *gateway() const { return gateway_; } // FIXME: should never be zero
+    SocketAddress gateway() const { return gateway_; }
 
     /// Name of the network interface the packet arrives on the system
-    inline String inputInterface() const { return inputInterface_; }
+    String inputInterface() const { return inputInterface_; }
 
     /// Name of the network interface the packet leaves leaves the system
-    inline String outputInterface() const { return outputInterface_; }
+    String outputInterface() const { return outputInterface_; }
 
     /// Cost to take the route
-    inline int metric() const { return metric_; }
+    int metric() const { return metric_; }
 
     /// Priority of the route
-    inline int priority() const { return priority_; }
+    int priority() const { return priority_; }
 
     // String toString() const; // TODO
 
 private:
-    inline static Ref<RouteInfo> create() { return new RouteInfo; }
+    static Ref<RouteInfo> create() { return new RouteInfo; }
     RouteInfo() {}
 
     int sourceMask_;
     int destinationMask_;
-    Ref<SocketAddress> source_;
-    Ref<SocketAddress> destination_;
-    Ref<SocketAddress> gateway_;
+    SocketAddress source_;
+    SocketAddress destination_;
+    SocketAddress gateway_;
     String inputInterface_;
     String outputInterface_;
     int metric_;

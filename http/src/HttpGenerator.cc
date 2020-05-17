@@ -73,9 +73,9 @@ Stream *HttpGenerator::payload()
     return payload_;
 }
 
-void HttpGenerator::write(const String &bytes)
+void HttpGenerator::write(const String &data)
 {
-    payload()->write(bytes);
+    if (data->count() > 0) payload()->write(data);
 }
 
 Format HttpGenerator::chunk(const String &pattern)

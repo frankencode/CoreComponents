@@ -107,7 +107,7 @@ public:
     static void deplete(const String &path);
 
 private:
-    Dir(const String &path, DIR *dir = 0);
+    Dir(const String &path, DIR *dir = nullptr);
     ~Dir();
 
     String path_;

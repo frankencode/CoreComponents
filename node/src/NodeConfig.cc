@@ -69,12 +69,12 @@ NodeConfig::NodeConfig(const MetaObject *config):
 
     address_ = SocketAddressList::create();
     if (family == ProtocolFamily::Local) {
-        address_->append(SocketAddress::create(ProtocolFamily::Local, address));
+        address_->append(SocketAddress{ProtocolFamily::Local, address});
     }
     else {
         if (address != "" && address != "*") {
             Ref<SocketAddressList> l = SocketAddress::queryConnectionInfo(address, "http", family, SocketType::Stream);
-            for (SocketAddress *a: l) {
+            for (SocketAddress &a: l) {
                 for (int p: ports) {
                     a->setPort(p);
                     address_->append(a);
@@ -84,16 +84,16 @@ NodeConfig::NodeConfig(const MetaObject *config):
         else {
             for (int p: ports) {
                 if (family == ProtocolFamily::Unspecified) {
-                    address_->append(SocketAddress::create(ProtocolFamily::Internet4, "*", p));
-                    address_->append(SocketAddress::create(ProtocolFamily::Internet6, "*", p));
+                    address_->append(SocketAddress{ProtocolFamily::Internet4, "*", p});
+                    address_->append(SocketAddress{ProtocolFamily::Internet6, "*", p});
                 }
                 else
-                    address_->append(SocketAddress::create(family, "*", p));
+                    address_->append(SocketAddress{family, "*", p});
             }
         }
 
         securePort_ = 443;
-        for (const SocketAddress *a: address_) {
+        for (const SocketAddress &a: address_) {
             if (a->port() % 80 != 0) {
                 securePort_ = a->port();
                 break;

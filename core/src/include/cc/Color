@@ -47,7 +47,7 @@ public:
 
     /** \copydoc Color(const String &s)
       */
-    Color(const char *s)
+    explicit Color(const char *s)
     {
         bool ok = false;
         *this = parse(s, &ok);
@@ -58,7 +58,7 @@ public:
       * \param s color specification to parse
       * %Color literals can be either SVG color names (e.g. 'AliceBlue') or literal RGB tuples (\#RRGGBB, \#RRGGBBAA, \#RGB, \#RGBA).
       */
-    Color(const String &s)
+    explicit Color(const String &s)
     {
         bool ok = false;
         *this = parse(s, &ok);
@@ -83,7 +83,7 @@ public:
     /** Construct a color from a palette value \a v
       */
     template<class PaletteValue>
-    Color(PaletteValue v):
+    explicit Color(PaletteValue v):
         Color{static_cast<uint32_t>(v)}
     {}
 
@@ -94,12 +94,12 @@ public:
 
     /** Construct a color from a 32-bit word \a w
       */
-    inline static Color fromWord(uint32_t w) { Color c; c->w_ = w; return c; }
+    static Color fromWord(uint32_t w) { Color c; c->w_ = w; return c; }
 
     /** Return the full color with hue \a h
       * \param h hue in range [0, 360]
       */
-    inline static Color fromHue(double h) { return fromHsv(h, 1., 1.); }
+    static Color fromHue(double h) { return fromHsv(h, 1., 1.); }
 
     /** Construct color from a HSV
       * \param h hue in range [0, 360]
@@ -117,7 +117,7 @@ public:
 
     /** Alpha-blend color \a a over color \a b and return result
       */
-    inline static Color blend(Color a, Color b)
+    static Color blend(Color a, Color b)
     {
         b->applyOver(a);
         return b;
@@ -128,7 +128,7 @@ public:
         /** Check if color \c is valid
           * A color is considered invalid, if alpha is zero and red, green or blue is non-zero.
           */
-        inline bool isValid() const {
+        bool isValid() const {
             return !(
                 alpha() == 0 && (
                     red()   != 0 ||
@@ -140,17 +140,17 @@ public:
 
         /** Convenience function to check if \a c is a fully opaque color
           */
-        inline bool isOpaque() const {
+        bool isOpaque() const {
             return alpha() == 0xFF;
         }
 
         /** Getters for individual color components
           * @{
           */
-        inline uint32_t alpha() const { return component<AlphaShift>(); }
-        inline uint32_t red  () const { return component<RedShift  >(); }
-        inline uint32_t green() const { return component<GreenShift>(); }
-        inline uint32_t blue () const { return component<BlueShift >(); }
+        uint32_t alpha() const { return component<AlphaShift>(); }
+        uint32_t red  () const { return component<RedShift  >(); }
+        uint32_t green() const { return component<GreenShift>(); }
+        uint32_t blue () const { return component<BlueShift >(); }
         /** @}
           */
 
@@ -164,7 +164,7 @@ public:
 
         /** Return a lighter version of this color
           */
-        inline Color lighter(int percent) const {
+        Color lighter(int percent) const {
             Color c = Color::fromWord(w_);
             c->mixIn(Color::White, percent);
             return c;
@@ -172,7 +172,7 @@ public:
 
         /** Return a darker version of this color
           */
-        inline Color darker(int percent) const {
+        Color darker(int percent) const {
             Color c = Color::fromWord(w_);
             c->mixIn(Color::Black, percent);
             return c;
@@ -180,7 +180,7 @@ public:
 
         /** Translate this color from non-premultiplied to the premultiplied representation
           */
-        inline Color premultiplied() const
+        Color premultiplied() const
         {
             Color c = Color::fromWord(w_);
             c->premultiply();
@@ -189,7 +189,7 @@ public:
 
         /** Translate this color from premultiplied to non-premultiplied representation
           */
-        inline Color normalized() const
+        Color normalized() const
         {
             Color c = Color::fromWord(w_);
             c->normalize();
@@ -198,7 +198,7 @@ public:
 
         /** \copydoc premultiplied()
           */
-        inline void premultiply()
+        void premultiply()
         {
             uint32_t h = w_;
             uint16_t a = component<AlphaShift, uint16_t>(h);
@@ -216,7 +216,7 @@ public:
 
         /** \copydoc normalized()
           */
-        inline void normalize()
+        void normalize()
         {
             uint32_t h = w_;
             uint16_t a = component<AlphaShift, uint16_t>(h);
@@ -233,7 +233,7 @@ public:
         }
 
         /// convert to a 32-bit word
-        inline uint32_t toWord() const { return w_; }
+        uint32_t toWord() const { return w_; }
 
         /// Stringify this color
         String toString() const;
@@ -261,13 +261,13 @@ public:
         };
 
         template<int Shift, class T = uint32_t>
-        inline T component() const { return component<Shift, T>(w_); }
+        T component() const { return component<Shift, T>(w_); }
 
         template<int Shift, class T = uint32_t>
-        inline static T component(uint32_t w) { return (w >> Shift) & 0xFF; }
+        static T component(uint32_t w) { return (w >> Shift) & 0xFF; }
 
         template<class T>
-        inline static uint32_t compose(T r, T g, T b, T a = 0xFF) {
+        static uint32_t compose(T r, T g, T b, T a = 0xFF) {
             return
                 (uint32_t(a) << AlphaShift) |
                 (uint32_t(r) << RedShift  ) |
@@ -280,7 +280,7 @@ public:
 
     /** Create a color tone from this color with \a percent opacity
       */
-    inline Color operator()(int percent) const
+    Color operator()(int percent) const
     {
         return Color{
             (*this)->red(),
@@ -293,15 +293,15 @@ public:
     /** Comparism operators
       * @{
       */
-    inline bool operator==(const Color &b) const { return (*this)->w_ == b->w_; }
-    inline bool operator!=(const Color &b) const { return (*this)->w_ != b->w_; }
+    bool operator==(const Color &b) const { return (*this)->w_ == b->w_; }
+    bool operator!=(const Color &b) const { return (*this)->w_ != b->w_; }
     /** @}
       */
 
-    inline const Instance *operator->() const { return &instance_; }
-    inline Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
+    Instance *operator->() { return &instance_; }
 
-    inline explicit operator bool() const { return (*this)->isValid(); }
+    explicit operator bool() const { return (*this)->isValid(); }
 
 private:
     friend class Variant;
@@ -310,6 +310,6 @@ private:
 };
 
 /// Stringify color \a c
-inline String str(Color c) { return c->toString(); }
+inline String str(const Color &c) { return c->toString(); }
 
 } // namespace cc

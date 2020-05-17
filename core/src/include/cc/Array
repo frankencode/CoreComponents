@@ -158,7 +158,7 @@ public:
       * \param i1 end of range (index behind the last selected byte)
       * \return the selection
       */
-    Ref<Array> select(int i0, int i1) const { return new Array(this, i0, i1); }
+    Ref<Array> select(int i0, int i1) const { return new Array{this, i0, i1}; }
 
     /** Return the underlying unselected array
       * \return original string

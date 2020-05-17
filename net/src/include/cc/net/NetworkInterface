@@ -12,7 +12,6 @@
 #include <sys/socket.h>
 #include <net/if.h> // IFF_UP, etc.
 #include <cc/net/SocketAddress>
-#include <cc/net/AddressInfo>
 
 namespace cc {
 namespace net {
@@ -101,8 +100,8 @@ private:
 
     #ifdef __linux
     friend class RouteInfo;
-    static Ref<NetworkInterface> getLink(NetworkInterfaceList *list = 0, int index = -1);
-    inline static Ref<NetworkInterface> getLink(int index) { return getLink(0, index); }
+    static Ref<NetworkInterface> getLink(NetworkInterfaceList *list = nullptr, int index = -1);
+    static Ref<NetworkInterface> getLink(int index) { return getLink(nullptr, index); }
     static Ref<NetworkInterfaceList> queryAllIoctl(int family);
     #endif
 

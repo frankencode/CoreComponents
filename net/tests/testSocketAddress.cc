@@ -55,10 +55,9 @@ class ResolveHostName: public TestCase
 
         fout("canonicalName = \"%%\"\n") << canonicalName;
 
-        for (int i = 0; i < list->count(); ++i)
+        for (const SocketAddress &address: list)
         {
-            SocketAddress *address = list->at(i);
-            bool failed;
+            bool failed = false;
 
             fout("%% : %% : %% : %% : %% : %% : %%\n")
                 << familyToString(address->family())

@@ -27,7 +27,7 @@ public:
     bool hasCiphers() const { return hasCiphers_; }
     double sessionResumptionKeyRefresh() const { return sessionResumptionKeyRefresh_; }
 
-    void establish(gnutls_session_t session, const SocketAddress *peerAddress = nullptr) const;
+    void establish(gnutls_session_t session, const SocketAddress &peerAddress = SocketAddress{}) const;
 
 private:
     HttpServerSecurity(const MetaObject *config);

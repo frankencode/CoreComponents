@@ -23,7 +23,7 @@ using namespace cc::syntax;
   * \brief Regular expression pattern
   * \see SyntaxDefinition
   */
-class Pattern: public Ref<SyntaxDefinition>
+class Pattern: public Ref<const SyntaxDefinition>
 {
 public:
     Pattern();

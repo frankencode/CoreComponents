@@ -20,7 +20,7 @@ namespace net {
 /** \class Uri cc/net/Uri
   * \brief Uniform Resource Indentifier
   */
-class Uri: public Object
+class Uri
 {
 public:
     class Instance: public Object {
@@ -120,7 +120,7 @@ public:
       * \exception UriSyntaxError
       */
     Uri(const String &text, Token *rootToken = nullptr):
-        instance_{new Instance{text, nullptr}}
+        instance_{new Instance{text, rootToken}}
     {}
 
     const Instance *operator->() const { return instance_; }

@@ -12,7 +12,7 @@
 namespace cc {
 namespace http {
 
-HttpSocket::HttpSocket(const SocketAddress *address, int mode):
+HttpSocket::HttpSocket(const SocketAddress &address, int mode):
     StreamSocket{address},
     mode_{mode}
 {}
@@ -78,13 +78,13 @@ void HttpSocket::gnuTlsCheckError(int ret)
     gnuTlsCheckError(ret, address());
 }
 
-bool HttpSocket::gnuTlsCheckSuccess(int ret, const SocketAddress *peerAddress)
+bool HttpSocket::gnuTlsCheckSuccess(int ret, const SocketAddress &peerAddress)
 {
     if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret, peerAddress};
     return true;
 }
 
-void HttpSocket::gnuTlsCheckError(int ret, const SocketAddress *peerAddress)
+void HttpSocket::gnuTlsCheckError(int ret, const SocketAddress &peerAddress)
 {
     if (ret < 0) throw SecurityError{ret, peerAddress};
 }

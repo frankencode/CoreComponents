@@ -24,7 +24,7 @@ public:
     /** Create a new datagram socket
       * \param address local address to bind to the socket
       */
-    static Ref<DatagramSocket> open(const SocketAddress *address);
+    static Ref<DatagramSocket> open(const SocketAddress &address);
 
     /** Create a pair of connected local datagram sockets
       * \param first return the first socket
@@ -34,7 +34,7 @@ public:
 
     /** Enabled/disable sending broadcasts on this socket
       * \param on if true enable broadcasting
-      * \see SocketAddress::createBroadcast()
+      * \see SocketAddress(int)
       */
     void allowBroadcasting(bool on);
 
@@ -54,7 +54,7 @@ public:
       * \return number of bytes received
       * \exception HostUnreachable an ICMP error from an earlier sendTo() has been received
       */
-    virtual int recvFrom(Ref<SocketAddress> *peerAddress, CharArray *buffer);
+    virtual int recvFrom(SocketAddress *peerAddress, CharArray *buffer);
 
     /** Send a datagram
       * \param peerAddress destination address
@@ -63,16 +63,16 @@ public:
       * \exception HostUnreachable an ICMP error from an earlier sendTo() has been received
       * \see CharArray::select()
       */
-    virtual int sendTo(const SocketAddress *peerAddress, const CharArray *message);
+    virtual int sendTo(const SocketAddress &peerAddress, const CharArray *message);
 
     /** Restrict communication to a single source
       * \param peerAddress unicast or multicast address to receive datagrams from
       */
-    void connect(const SocketAddress *peerAddress);
+    void connect(const SocketAddress &peerAddress);
 
 protected:
     DatagramSocket(int fd = 0);
-    DatagramSocket(const SocketAddress *localAddress);
+    DatagramSocket(const SocketAddress &localAddress);
     ProtocolFamily family_;
 };
 

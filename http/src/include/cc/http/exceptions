@@ -86,12 +86,12 @@ public:
 class SecurityError: public Exception
 {
 public:
-    SecurityError(int errorCode, const SocketAddress *peerAddress = nullptr);
+    SecurityError(int errorCode, const SocketAddress &peerAddress = SocketAddress{});
     String message() const;
 
 private:
     int errorCode_;
-    Ref<const SocketAddress> peerAddress_;
+    SocketAddress peerAddress_;
 };
 
 }} // namespace cc::http

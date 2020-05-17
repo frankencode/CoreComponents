@@ -26,14 +26,14 @@ const Pattern &Pattern::operator=(const String &text)
 {
     if (text_ != text || !get()) {
         text_ = text;
-        set(
+        auto definition =
             SyntaxDefinition::create(
                 #ifndef NDEBUG
                 SyntaxDebugger::create()
                 #endif
-            )
-        );
-        PatternSyntax::instance()->compile(text_, *this);
+            );
+        PatternSyntax::instance()->compile(text_, definition);
+        set(definition);
     }
     return *this;
 }

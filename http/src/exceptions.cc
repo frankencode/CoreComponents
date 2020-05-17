@@ -28,7 +28,7 @@ String ProtocolException::message() const
     return message_;
 }
 
-SecurityError::SecurityError(int errorCode, const SocketAddress *peerAddress):
+SecurityError::SecurityError(int errorCode, const SocketAddress &peerAddress):
     errorCode_{errorCode},
     peerAddress_{peerAddress}
 {}

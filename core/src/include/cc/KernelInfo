@@ -12,7 +12,7 @@
 
 namespace cc {
 
-class KernelInfoData;
+template<class> class Singleton;
 
 /** \class KernelInfo cc/KernelInfo
   * \ingroup sysinfo
@@ -22,20 +22,22 @@ class KernelInfoData;
 class KernelInfo: public Object
 {
 public:
-    /** Query kernel information
-      * \return new object instance
-      */
-    static Ref<KernelInfo> query();
+    static const KernelInfo *instance();
 
-    String name() const; ///< operating system name
-    String release() const; ///< release version
-    String version() const; ///< detailed build information
-    String machine() const; ///< system architecture
+    String name() const { return name_; } ///< operating system name
+    String release() const { return release_; } ///< release version
+    String version() const { return version_; } ///< detailed build information
+    String machine() const { return machine_; } ///< system architecture
 
 private:
+    friend class Singleton<KernelInfo>;
+
     KernelInfo();
 
-    Ref<KernelInfoData> data_;
+    String name_;
+    String release_;
+    String version_;
+    String machine_;
 };
 
 } // namespace cc

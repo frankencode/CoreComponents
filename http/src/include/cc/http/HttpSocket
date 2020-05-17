@@ -33,7 +33,7 @@ protected:
         Open      = 4
     };
 
-    HttpSocket(const SocketAddress *address, int mode);
+    HttpSocket(const SocketAddress &address, int mode);
 
     virtual bool waitInput() = 0;
     virtual void ioException(Exception &ex) const = 0;
@@ -42,8 +42,8 @@ protected:
 
     bool gnuTlsCheckSuccess(int ret);
     void gnuTlsCheckError(int ret);
-    static bool gnuTlsCheckSuccess(int ret, const SocketAddress *peerAddress);
-    static void gnuTlsCheckError(int ret, const SocketAddress *peerAddress);
+    static bool gnuTlsCheckSuccess(int ret, const SocketAddress &peerAddress);
+    static void gnuTlsCheckError(int ret, const SocketAddress &peerAddress);
 
     static ssize_t gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size);
     static ssize_t gnuTlsPushVec(gnutls_transport_ptr_t ctx, const giovec_t *iov, int iovcnt);

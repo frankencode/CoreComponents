@@ -18,14 +18,14 @@
 namespace cc {
 namespace net {
 
-Ref<StreamSocket> StreamSocket::listen(const SocketAddress *localAddress, int backlog)
+Ref<StreamSocket> StreamSocket::listen(const SocketAddress &localAddress, int backlog)
 {
     Ref<StreamSocket> socket = new StreamSocket{localAddress};
     socket->listen(backlog);
     return socket;
 }
 
-Ref<StreamSocket> StreamSocket::connect(const SocketAddress *peerAddress)
+Ref<StreamSocket> StreamSocket::connect(const SocketAddress &peerAddress)
 {
     Ref<StreamSocket> socket = new StreamSocket{peerAddress};
     socket->connect();
@@ -50,10 +50,8 @@ void StreamSocket::connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second)
 
 Ref<StreamSocket> StreamSocket::accept()
 {
-    Ref<StreamSocket> client = new StreamSocket{
-        SocketAddress::create(address_->family())
-    };
-    client->fd_ = accept(client->address_);
+    Ref<StreamSocket> client = new StreamSocket{SocketAddress{address_->family()}};
+    client->fd_ = accept(&client->address_);
     client->connected_ = true;
     return client;
 }
@@ -63,14 +61,13 @@ StreamSocket::StreamSocket(int fd):
     connected_{true}
 {}
 
-StreamSocket::StreamSocket(const SocketAddress *address):
-    address_{address->copy()},
+StreamSocket::StreamSocket(const SocketAddress &address):
+    address_{address},
     connected_{false}
 {}
 
-const SocketAddress *StreamSocket::address() const
+SocketAddress StreamSocket::address() const
 {
-    if (!address_) return Singleton<SocketAddress>::instance();
     return address_;
 }
 
@@ -110,8 +107,8 @@ void StreamSocket::listen(int backlog)
 
 int StreamSocket::accept(SocketAddress *clientAddress)
 {
-    socklen_t len = clientAddress->addrLen();
-    int fdc = ::accept(fd_, clientAddress->addr(), &len);
+    socklen_t len = (*clientAddress)->addrLen();
+    int fdc = ::accept(fd_, (*clientAddress)->addr(), &len);
     if (fdc < 0) CC_SYSTEM_DEBUG_ERROR(errno);
     return fdc;
 }

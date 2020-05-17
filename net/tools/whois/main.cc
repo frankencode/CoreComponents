@@ -15,7 +15,7 @@
 using namespace cc;
 using namespace cc::net;
 
-String whoisQuery(const SocketAddress *serverAddress, const String &clientRequest, const String &queryKey = "")
+String whoisQuery(const SocketAddress &serverAddress, const String &clientRequest, const String &queryKey = "")
 {
     auto server = StreamSocket::connect(serverAddress);
     server->write(clientRequest + "\r\n");
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
         {
             bool addressQuery = false;
             try {
-                SocketAddress::parse(item);
+                SocketAddress{item};
                 addressQuery = true;
             }
             catch (...) {}

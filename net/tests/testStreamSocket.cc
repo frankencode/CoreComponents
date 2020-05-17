@@ -31,7 +31,7 @@ public:
         CleanupGuard cleanup{dirPath};
 
         String path = dirPath->extendPath("echo");
-        auto address = SocketAddress::create(ProtocolFamily::Local, path);
+        auto address = SocketAddress{ProtocolFamily::Local, path};
         CC_INSPECT(address);
 
         {

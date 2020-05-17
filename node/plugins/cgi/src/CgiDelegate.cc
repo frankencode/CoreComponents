@@ -78,7 +78,7 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
     if (cgiInstance_->serverAddress()->count() > 0)
     {
         int nextIndex = (nextPeer_++) % cgiInstance_->serverAddress()->count();
-        Ref<SocketAddress> address = cgiInstance_->serverAddress()->at(nextIndex);
+        SocketAddress address = cgiInstance_->serverAddress()->at(nextIndex);
         if (cgiInstance_->serverAddress()->count() > 1)
             CCNODE_DEBUG() << "Forwarding request to server " << address << nl;
 

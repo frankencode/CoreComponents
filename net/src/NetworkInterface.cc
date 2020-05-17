@@ -143,7 +143,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                     struct rtattr *attr = (struct rtattr *)IFA_RTA(data);
                     int attrFill = NLMSG_PAYLOAD(msg, sizeof(struct ifaddrmsg));
 
-                    Ref<SocketAddress> label;
+                    SocketAddress label;
                     Ref<NetworkInterface> interface = 0;
 
                     for (int i = 0; i < list->count(); ++i) {
@@ -170,7 +170,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                              (attrType == IFA_ANYCAST)
                            )
                         {
-                            Ref<SocketAddress> address;
+                            SocketAddress address;
                             struct sockaddr_in addr4;
                             struct sockaddr_in6 addr6;
                             if (data->ifa_family == AF_INET) {
@@ -180,7 +180,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                                 addr4.sin_family = AF_INET;
                                 addr4.sin_addr = *(struct in_addr *)RTA_DATA(attr);
                                 if (attrType != IFA_ADDRESS)
-                                    address = SocketAddress::create(&addr4);
+                                    address = SocketAddress{&addr4};
                             }
                             else if (data->ifa_family == AF_INET6) {
                                 memclr(&addr6, sizeof(addr6));
@@ -191,23 +191,23 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                                 addr6.sin6_addr = *(struct in6_addr *)RTA_DATA(attr);
                                 addr6.sin6_scope_id = data->ifa_scope;
                                 if (attrType != IFA_ADDRESS)
-                                    address = SocketAddress::create(&addr6);
+                                    address = SocketAddress{&addr6};
                             }
                             if (attrType == IFA_ADDRESS) {
                                 if (data->ifa_family == AF_INET)
-                                    label = AddressInfo::create(&addr4, data->ifa_prefixlen);
+                                    label = SocketAddress{new SocketAddressDetails{&addr4, data->ifa_prefixlen}};
                                 else if (data->ifa_family == AF_INET6)
-                                    label = SocketAddress::create(&addr6);
+                                    label = SocketAddress{&addr6};
                                 interface->addressList_->append(label);
                             }
                             if ((label) && (data->ifa_family == AF_INET)) {
-                                AddressInfo *info = Object::cast<AddressInfo *>(label);
+                                SocketAddressDetails *details = Object::cast<SocketAddressDetails *>(label.instance_);
                                 if (attrType == IFA_LOCAL)
-                                    info->localAddress_ = address;
+                                    details->localAddress_ = address;
                                 else if (attrType == IFA_BROADCAST)
-                                    info->broadcastAddress_ = address;
+                                    details->broadcastAddress_ = address;
                                 else if (attrType == IFA_ANYCAST)
-                                    info->anycastAddress_ = address;
+                                    details->anycastAddress_ = address;
                             }
                         }
                     }
@@ -431,27 +431,27 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
                     struct sockaddr_in *addr4 = (struct sockaddr_in *)addr;
                     struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *)addr;
 
-                    Ref<SocketAddress> label;
+                    SocketAddress label;
 
                     if (addr->sa_family == AF_INET)
-                        label = AddressInfo::create(addr4);
+                        label = SocketAddress{new SocketAddressDetails{addr4}};
                     else if (addr->sa_family == AF_INET6)
-                        label = SocketAddress::create(addr6);
+                        label = SocketAddress{addr6};
                     interface->addressList_->append(label);
 
                     if ((label) && (addr->sa_family == AF_INET)) {
-                        AddressInfo *info = Object::cast<AddressInfo *>(label);
+                        SocketAddressDetails *details = Object::cast<SocketAddressDetails *>(label.instance_);
                         if (interface->flags_ & IFF_BROADCAST) {
                             struct ifreq ifr2 = *ifr;
                             if (::ioctl(fd, SIOCGIFBRDADDR, &ifr2) == -1)
                                 CC_SYSTEM_DEBUG_ERROR(errno);
-                            info->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)&ifr2.ifr_broadaddr);
+                            details->broadcastAddress_ = SocketAddress{(struct sockaddr_in *)&ifr2.ifr_broadaddr};
                         }
                         if (interface->flags_ & IFF_POINTOPOINT) {
                             struct ifreq ifr2 = *ifr;
                             if (::ioctl(fd, SIOCGIFDSTADDR, &ifr2) == -1)
                                 CC_SYSTEM_DEBUG_ERROR(errno);
-                            info->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)&ifr2.ifr_dstaddr);
+                            details->broadcastAddress_ = SocketAddress{(struct sockaddr_in *)&ifr2.ifr_dstaddr};
                         }
                     }
                 }
@@ -539,17 +539,17 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
             CC_ASSERT(list->count() > 0);
             NetworkInterface *interface = list->at(list->count() - 1);
             // CC_ASSERT(interface->index_ == msga->ifam_index); // HACK, OpenBSD can fullfill
-            Ref<SocketAddress> label;
+            SocketAddress label;
             for (int i = 0; i < RTAX_MAX; ++i) {
                 if (msga->ifam_addrs & (1 << i)) {
                     struct sockaddr *addr = (struct sockaddr *) attr;
-                    Ref<SocketAddress> address;
+                    SocketAddress address;
                     int len = SA_RLEN(addr);
                     if (i == RTAX_IFA) {
                         if (addr->sa_family == AF_INET)
-                            label = AddressInfo::create((struct sockaddr_in *)addr);
+                            label = SocketAddress{new SocketAddressDetails{(struct sockaddr_in *)addr}};
                         else if (addr->sa_family == AF_INET6)
-                            label = SocketAddress::create((struct sockaddr_in6 *)addr);
+                            label = SocketAddress{(struct sockaddr_in6 *)addr};
                         interface->addressList_->append(label);
 
                         if (addr->sa_family == AF_INET) {
@@ -564,7 +564,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                             }
                             else if (i == RTAX_BRD) {
                                 if (addr->sa_family == AF_INET)
-                                    info->broadcastAddress_ = SocketAddress::create((struct sockaddr_in *)addr);
+                                    info->broadcastAddress_ = SocketAddress{(struct sockaddr_in *)addr};
                             }
                         }
                     }

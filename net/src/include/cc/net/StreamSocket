@@ -25,13 +25,13 @@ public:
       * \param backlog number of connections to queue when the process is busy
       * \return new object instance
       */
-    static Ref<StreamSocket> listen(const SocketAddress *localAddress, int backlog = 1024);
+    static Ref<StreamSocket> listen(const SocketAddress &localAddress, int backlog = 1024);
 
     /** Connect to a peer socket
       * \param peerAddress address of peer socket
       * \return new object instance
       */
-    static Ref<StreamSocket> connect(const SocketAddress *peerAddress);
+    static Ref<StreamSocket> connect(const SocketAddress &peerAddress);
 
     /** Connect to a peer socket
       * \param hostName host name of server
@@ -58,7 +58,7 @@ public:
 
     /** Returns the local or remote address associated with this socket
       */
-    const SocketAddress *address() const;
+    SocketAddress address() const;
 
     /** %Set the timeout of accumulating incoming data
       * \param interval timeout in seconds
@@ -72,7 +72,7 @@ public:
 
 protected:
     StreamSocket(int fd);
-    StreamSocket(const SocketAddress *address);
+    StreamSocket(const SocketAddress &address);
 
     void listen(int backlog = 1024);
     int accept(SocketAddress *clientAddress);
@@ -85,7 +85,7 @@ protected:
 
     bool isConnected() const { return connected_; }
 
-    Ref<SocketAddress> address_;
+    SocketAddress address_;
     bool connected_;
 };
 

@@ -13,7 +13,7 @@ using namespace cc;
 
 int main(int argc, char **argv)
 {
-    auto info = KernelInfo::query();
+    auto info = KernelInfo::instance();
     fout()
         << "name: " << info->name() << nl
         << "release: " << info->release() << nl

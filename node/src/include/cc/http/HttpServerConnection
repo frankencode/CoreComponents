@@ -25,7 +25,7 @@ class HttpServerConnection: public HttpConnection
 public:
     static Ref<HttpServerConnection> open(HttpServerSocket *socket);
 
-    const SocketAddress *address() const { return socket_->address(); }
+    SocketAddress address() const { return socket_->address(); }
 
     const DeliveryInstance *handshake();
     bool isSecure() const;

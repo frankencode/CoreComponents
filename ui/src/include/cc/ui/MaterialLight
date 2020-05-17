@@ -18,17 +18,17 @@ class MaterialLight: public Theme
     friend class Object;
 
 public:
-    Color primaryColor         () const override { return Material::Blue500; }
+    Color primaryColor         () const override { return Color{ Material::Blue500 }; }
     Color primaryDarkColor     () const          { return 0x0069c0; }
     Color primaryLightColor    () const          { return 0x6ec6ff; }
-    Color secondaryColor       () const override { return Material::Lime500; }
+    Color secondaryColor       () const override { return Color{ Material::Lime500 }; }
     Color secondaryDarkColor   () const          { return 0x99aa00; }
     Color secondaryLightColor  () const          { return 0xffff6e; }
-    Color alertColor           () const override { return Material::RedA400; }
+    Color alertColor           () const override { return Color{ Material::RedA400 }; }
 
-    Color statusBarColor       () const override { return Material::Grey300; }
-    Color appBarColor          () const override { return Material::Grey100; }
-    Color windowColor          () const override { return Material::Grey50; }
+    Color statusBarColor       () const override { return Color{ Material::Grey300 }; }
+    Color appBarColor          () const override { return Color{ Material::Grey100 }; }
+    Color windowColor          () const override { return Color{ Material::Grey50 }; }
     Color popupColor           () const override { return Color::White; }
 
     Color titleTextColor       () const override { return Color::White; }

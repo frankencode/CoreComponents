@@ -47,6 +47,13 @@ void HttpRequestGenerator::setHost(const String &host)
 void HttpRequestGenerator::polishHeader()
 {
     header_->insert("Connection", "keep-alive");
+    if (contentLength_ > 0) {
+        header_->remove("Transfer-Encoding");
+        header_->establish("Content-Length", str(contentLength_));
+    }
+    else if (contentLength_ < 0) {
+        header_->establish("Transfer-Encoding", "chunked");
+    }
 }
 
 void HttpRequestGenerator::writeFirstLine(Format &sink)

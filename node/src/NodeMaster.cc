@@ -50,7 +50,7 @@ NodeMaster::NodeMaster(const NodeConfig *config):
     }
 }
 
-Ref<const SocketAddress> NodeMaster::waitStarted()
+SocketAddress NodeMaster::waitStarted()
 {
     return startedChannel_->pop();
 }
@@ -93,7 +93,7 @@ void NodeMaster::runNode()
     typedef List< Ref<StreamSocket> > ListeningSockets;
     Ref<ListeningSockets> listeningSockets = ListeningSockets::create();
 
-    for (SocketAddress *address: config()->address()) {
+    for (const SocketAddress &address: config()->address()) {
         auto socket = StreamSocket::listen(address);
         CCNODE_NOTICE() << "Start listening at " << socket->address() << nl;
         listeningSockets->append(socket);

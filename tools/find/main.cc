@@ -45,7 +45,7 @@ private:
 
 typedef List< Ref<TextMatch> > Matches;
 
-Ref<Matches> findMatches(const CharArray *text, SyntaxDefinition *textPattern);
+Ref<Matches> findMatches(const CharArray *text, const SyntaxDefinition *textPattern);
 void displayMatch(const CharArray *path, const CharArray *text, const TextMatch *match);
 String replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement);
 
@@ -198,7 +198,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-Ref<Matches> findMatches(const CharArray *text, SyntaxDefinition *textPattern)
+Ref<Matches> findMatches(const CharArray *text, const SyntaxDefinition *textPattern)
 {
     Ref<Matches> matches = Matches::create();
     int ln = 1;

@@ -28,7 +28,7 @@ public:
     typedef Map<String, String> Header;
     void setHeader(Header *header);
     void beginTransmission(ssize_t contentLength = -1);
-    void write(const String &bytes);
+    void write(const String &data);
     Format chunk(const String &pattern);
     Format chunk();
     void endTransmission();

@@ -125,7 +125,7 @@ Ref<RouteInfoList> RouteInfo::queryTable()
                         attrType == RTA_SRC ||
                         attrType == RTA_GATEWAY
                     ) {
-                        Ref<SocketAddress> address;
+                        SocketAddress address;
                         struct sockaddr_in addr4;
                         struct sockaddr_in6 addr6;
                         if (data->rtm_family == AF_INET) {
@@ -134,7 +134,7 @@ Ref<RouteInfoList> RouteInfo::queryTable()
                             *(uint8_t *)&addr4 = sizeof(addr4); // uggly, but safe HACK, for BSD4.4
                             addr4.sin_family = AF_INET;
                             addr4.sin_addr = *(struct in_addr *)RTA_DATA(attr);
-                            address = SocketAddress::create(&addr4);
+                            address = SocketAddress{&addr4};
                         }
                         else if (data->rtm_family == AF_INET6) {
                             memclr(&addr6, sizeof(addr6));
@@ -144,7 +144,7 @@ Ref<RouteInfoList> RouteInfo::queryTable()
                             addr6.sin6_family = AF_INET6;
                             addr6.sin6_addr = *(struct in6_addr *)RTA_DATA(attr);
                             // addr6.sin6_scope_id = data->rtm_scope;
-                            address = SocketAddress::create(&addr6);
+                            address = SocketAddress{&addr6};
                         }
                         if (attrType == RTA_DST)
                             info->destination_ = address;

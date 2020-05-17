@@ -85,7 +85,7 @@ public:
       * \param other return I/O %event, if a different I/O %event than specified in \a event occured
       * \return true if the given I/O event occured before timeout, false if timed out or a different I/O event occured
       */
-    bool waitFor(const IoEvent *event, int timeout_ms = -1, const IoEvent **other = 0);
+    bool waitFor(const IoEvent *event, int timeout_ms = -1, const IoEvent **other = nullptr);
 
 private:
     typedef struct pollfd PollFd;

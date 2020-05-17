@@ -21,7 +21,7 @@ NetworkState::NetworkState(const String &interfaceName):
     interfaceName_{interfaceName},
     networkMask_{0}
 {
-    const SocketAddress *candidateAddress = nullptr;
+    SocketAddress candidate;
 
     Ref<RouteInfoList> routingTable = RouteInfo::queryTable();
     for (const RouteInfo *entry: routingTable) {
@@ -34,23 +34,22 @@ NetworkState::NetworkState(const String &interfaceName):
 
     interface_ = NetworkInterface::query(interfaceName_, AF_UNSPEC);
     if (!gateway_) {
-        for (const SocketAddress *address: interface_->addressList()) {
+        for (const SocketAddress &address: interface_->addressList()) {
             if (address->family() != ProtocolFamily::Internet6) continue;
-            candidateAddress = address;
+            candidate = address;
             break;
         }
     }
-    if (!candidateAddress) {
-        for (const SocketAddress *address: interface_->addressList()) {
+    if (!candidate) {
+        for (const SocketAddress &address: interface_->addressList()) {
             if (gateway_ && address->family() != gateway_->family()) continue;
-            candidateAddress = address;
+            candidate = address;
             break;
         }
     }
 
-    const AddressInfo *entry = Object::cast<const AddressInfo *>(candidateAddress);
-    if (entry) networkMask_ = entry->networkMask();
-    address_ = candidateAddress->copy();
+    if (candidate->details()) networkMask_ = candidate->details()->networkMask();
+    address_ = candidate;
 }
 
 }} // namespace cc::net

@@ -18,14 +18,14 @@ class MaterialDark: public Theme
     friend class Object;
 
 public:
-    Color primaryColor         () const override { return Material::Purple500; }
-    Color secondaryColor       () const override { return Material::Cyan500; }
-    Color alertColor           () const override { return Material::RedA400; }
+    Color primaryColor         () const override { return Color{ Material::Purple500 }; }
+    Color secondaryColor       () const override { return Color{ Material::Cyan500 }; }
+    Color alertColor           () const override { return Color{ Material::RedA400 }; }
 
-    Color statusBarColor       () const override { return Material::Black; }
-    Color appBarColor          () const override { return Material::Grey900; }
-    Color windowColor          () const override { return Color { 0x303030 }; }
-    Color popupColor           () const override { return Material::Grey800; }
+    Color statusBarColor       () const override { return Color{ Material::Black }; }
+    Color appBarColor          () const override { return Color{ Material::Grey900 }; }
+    Color windowColor          () const override { return Color{ 0x303030 }; }
+    Color popupColor           () const override { return Color{ Material::Grey800 }; }
 
     Color titleTextColor       () const override { return Color::White; }
     Color focusTextColor       () const override { return primaryColor(); }

@@ -36,7 +36,7 @@ private:
 
     static int initialMode(StreamSocket *socket, const NodeConfig *config);
 
-    HttpServerSocket(const SocketAddress *address, int mode, const NodeConfig *nodeConfig, SecurityCache *securityCache);
+    HttpServerSocket(const SocketAddress &address, int mode, const NodeConfig *nodeConfig, SecurityCache *securityCache);
     ~HttpServerSocket();
 
     const NodeConfig *nodeConfig() const { return nodeConfig_; }

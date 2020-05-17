@@ -8,24 +8,36 @@
 
 #pragma once
 
+#include <cc/Map>
+#include <cc/net/Uri>
 #include <cc/http/HttpClientSecurity>
 #include <cc/http/HttpResponse>
 
 namespace cc {
 namespace http {
 
-class HttpClientSocket;
+class HttpClientConnection;
+
+using cc::net::Uri;
 
 class HttpClient: public Object
 {
 public:
-    static Ref<HttpClient> create(const HttpClientSecurity *security = nullptr);
+    static Ref<HttpClient> connect(const Uri &uri, const HttpClientSecurity *security = nullptr);
 
-    // Ref<HttpResponse> query(const Uri &uri, const String &payload = String{});
+    virtual String userAgent() const;
+
+    Ref<HttpResponse> query(const String &method, const String &path, const String &payload = String{});
+    Ref<HttpResponse> get(const String &path);
+    Ref<HttpResponse> head(const String &path);
+    Ref<HttpResponse> put(const String &path, const String &payload);
+    Ref<HttpResponse> post(const String &path, const String &payload);
+
+    // Ref<HttpResponse> postForm(const String &path, const Map<String> *inputs); // TODO
 
 private:
-    HttpClient(const HttpClientSecurity *security);
-    Ref<HttpClientSocket> socket_;
+    HttpClient(const Uri &uri, const HttpClientSecurity *security);
+    String host_;
     Ref<HttpClientConnection> connection_;
 };
 

@@ -27,12 +27,12 @@ Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket, co
 {
     Ref<HttpServerSocket> client =
         new HttpServerSocket{
-            SocketAddress::create(listeningSocket->address()->family()),
+            SocketAddress{listeningSocket->address()->family()},
             initialMode(listeningSocket, nodeConfig),
             nodeConfig,
             securityCache
         };
-    client->fd_ = StreamSocket::accept(listeningSocket, client->address_);
+    client->fd_ = StreamSocket::accept(listeningSocket, &client->address_);
     client->connected_ = true;
     client->mode_ |= Connected | ((client->mode_ & Secure) ? 0 : Open);
     client->initSession();
@@ -47,7 +47,7 @@ int HttpServerSocket::initialMode(StreamSocket *socket, const NodeConfig *config
     );
 }
 
-HttpServerSocket::HttpServerSocket(const SocketAddress *address, int mode, const NodeConfig *nodeConfig, SecurityCache *securityCache):
+HttpServerSocket::HttpServerSocket(const SocketAddress &address, int mode, const NodeConfig *nodeConfig, SecurityCache *securityCache):
     HttpSocket{address, mode},
     nodeConfig_{nodeConfig},
     securityCache_{securityCache}
@@ -111,7 +111,7 @@ public:
         }
     }
 
-    void init(const SocketAddress *peerAddress, const NodeConfig *nodeConfig)
+    void init(const SocketAddress &peerAddress, const NodeConfig *nodeConfig)
     {
         peerAddress_ = peerAddress;
         serverName_ = "";
@@ -129,7 +129,7 @@ private:
 
     const LoggingInstance *errorLoggingInstance() const { return nodeConfig_->errorLoggingInstance(); }
 
-    Ref<const SocketAddress> peerAddress_;
+    SocketAddress peerAddress_;
     String serverName_;
     const NodeConfig *nodeConfig_ { nullptr };
     const DeliveryInstance *deliveryInstance_ { nullptr };

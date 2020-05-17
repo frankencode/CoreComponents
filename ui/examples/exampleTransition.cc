@@ -25,7 +25,7 @@ class MainView: public Control
         Painter p(this);
 
         p->translate(center());
-        p->setSource(Material::Blue500);
+        p->setSource(Color{Material::Blue500});
         p->rectangle(-Point{50, 50}, Size{100, 100});
         p->fill();
     }

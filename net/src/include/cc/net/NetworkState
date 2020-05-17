@@ -34,10 +34,10 @@ public:
     int networkMask() const { return networkMask_; }
 
     /// configured address
-    const SocketAddress *address() const { return address_; }
+    SocketAddress address() const { return address_; }
 
     /// configured gateway
-    const SocketAddress *gateway() const { return gateway_; }
+    SocketAddress gateway() const { return gateway_; }
 
 private:
     NetworkState(const String &interface);
@@ -45,8 +45,8 @@ private:
     String interfaceName_;
     Ref<NetworkInterface> interface_;
     int networkMask_;
-    Ref<SocketAddress> address_;
-    Ref<SocketAddress> gateway_;
+    SocketAddress address_;
+    SocketAddress gateway_;
 };
 
 }} // namespace cc::net

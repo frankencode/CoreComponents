@@ -39,29 +39,29 @@ class QueryNetworkInterfaces: public TestCase
             const SocketAddressList *addressList = interface->addressList();
             if (addressList) {
                 for (int k = 0; k < addressList->count(); ++k) {
-                    const SocketAddress *address = addressList->at(k);
+                    const SocketAddress &address = addressList->at(k);
                     fout() << "  Addr:   " << address;
-                    const AddressInfo *info = address->info();
-                    if (info) {
+                    const SocketAddressDetails *details = address->details();
+                    if (details) {
                         bool comma = false;
                         bool delim = true;
-                        if (info->networkMask() > 0)
-                            fout() << "/" << info->networkMask();
-                        if (info->localAddress()) {
+                        if (details->networkMask() > 0)
+                            fout() << "/" << details->networkMask();
+                        if (details->localAddress()) {
                             if (delim) { fout() << " --"; delim = false; }
-                            fout() << " Local: " << info->localAddress();
+                            fout() << " Local: " << details->localAddress();
                             comma = true;
                         }
-                        if (info->broadcastAddress()) {
+                        if (details->broadcastAddress()) {
                             if (delim) { fout() << " --"; delim = false; }
                             if (comma) fout() << ",";
-                            fout() << " Bcast: " << info->broadcastAddress();
+                            fout() << " Bcast: " << details->broadcastAddress();
                             comma = true;
                         }
-                        if (info->anycastAddress()) {
+                        if (details->anycastAddress()) {
                             if (delim) { fout() << " --"; delim = false; }
                             if (comma) fout() << ",";
-                            fout() << " Acast: " << info->anycastAddress();
+                            fout() << " Acast: " << details->anycastAddress();
                         }
                     }
                     fout() << nl;

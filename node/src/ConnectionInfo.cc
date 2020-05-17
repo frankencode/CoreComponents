@@ -12,12 +12,12 @@
 namespace cc {
 namespace http {
 
-Ref<ConnectionInfo> ConnectionInfo::create(const SocketAddress *remoteAddress)
+Ref<ConnectionInfo> ConnectionInfo::create(const SocketAddress &remoteAddress)
 {
     return new ConnectionInfo{remoteAddress};
 }
 
-ConnectionInfo::ConnectionInfo(const SocketAddress *remoteAddress):
+ConnectionInfo::ConnectionInfo(const SocketAddress &remoteAddress):
     remoteAddress_{remoteAddress},
     priority_{0},
     originAddress_{remoteAddress->networkPrefix()},

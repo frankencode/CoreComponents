@@ -57,7 +57,7 @@ HttpServerSecurity::~HttpServerSecurity()
     if (prio_) gnutls_priority_deinit(prio_);
 }
 
-void HttpServerSecurity::establish(gnutls_session_t session, const SocketAddress *peerAddress) const
+void HttpServerSecurity::establish(gnutls_session_t session, const SocketAddress &peerAddress) const
 {
     if (hasCredentials()) {
         int ret = gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, cred_);

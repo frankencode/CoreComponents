@@ -8,45 +8,26 @@
 
 #include <sys/utsname.h>
 #include <cc/exceptions>
+#include <cc/Singleton>
 #include <cc/KernelInfo>
 
 namespace cc {
 
-class KernelInfoData: public Object, public utsname {
-public:
-    inline static Ref<KernelInfoData> create() { return new KernelInfoData; }
-};
-
-Ref<KernelInfo> KernelInfo::query()
+const KernelInfo *KernelInfo::instance()
 {
-    return new KernelInfo;
+    return Singleton<KernelInfo>::instance();
 }
 
-KernelInfo::KernelInfo():
-    data_(KernelInfoData::create())
+KernelInfo::KernelInfo()
 {
-    if (::uname(data_) == -1)
+    struct utsname *data = new utsname;
+    if (::uname(data) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
-}
-
-String KernelInfo::name() const
-{
-    return data_->sysname;
-}
-
-String KernelInfo::release() const
-{
-    return data_->release;
-}
-
-String KernelInfo::version() const
-{
-    return data_->version;
-}
-
-String KernelInfo::machine() const
-{
-    return data_->machine;
+    name_ = data->sysname;
+    release_ = data->release;
+    version_ = data->version;
+    machine_ = data->machine;
+    delete data;
 }
 
 } // namespace cc

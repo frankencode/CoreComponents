@@ -18,9 +18,9 @@ using cc::net::SocketAddress;
 class ConnectionInfo: public Object
 {
 public:
-    static Ref<ConnectionInfo> create(const SocketAddress *remoteAddress);
+    static Ref<ConnectionInfo> create(const SocketAddress &remoteAddress);
 
-    const SocketAddress *remoteAddress() const { return remoteAddress_; }
+    SocketAddress remoteAddress() const { return remoteAddress_; }
     int priority() const { return priority_; }
     void setPriority(int newPriority) { priority_ = newPriority; }
 
@@ -31,9 +31,9 @@ public:
     void updateDepartureTime();
 
 private:
-    ConnectionInfo(const SocketAddress *remoteAddress);
+    ConnectionInfo(const SocketAddress &remoteAddress);
 
-    Ref<const SocketAddress> remoteAddress_;
+    SocketAddress remoteAddress_;
     int priority_;
     uint64_t originAddress_;
     double arrivalTime_;

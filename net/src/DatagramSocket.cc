@@ -11,7 +11,7 @@
 namespace cc {
 namespace net {
 
-Ref<DatagramSocket> DatagramSocket::open(const SocketAddress *address)
+Ref<DatagramSocket> DatagramSocket::open(const SocketAddress &address)
 {
     return new DatagramSocket{address};
 }
@@ -32,7 +32,7 @@ DatagramSocket::DatagramSocket(int fd):
     family_{ProtocolFamily::Local}
 {}
 
-DatagramSocket::DatagramSocket(const SocketAddress *address):
+DatagramSocket::DatagramSocket(const SocketAddress &address):
     family_{address->family()}
 {
     fd_ = ::socket(+address->family(), SOCK_DGRAM, 0);
@@ -74,9 +74,9 @@ void DatagramSocket::setSendBufferSize(int newSize)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-int DatagramSocket::recvFrom(Ref<SocketAddress> *peerAddress, CharArray *buffer)
+int DatagramSocket::recvFrom(SocketAddress *peerAddress, CharArray *buffer)
 {
-    *peerAddress = SocketAddress::create(family_);
+    *peerAddress = SocketAddress{family_}; // FIXME: performance: setFamily() should suffice
     socklen_t len = (*peerAddress)->addrLen();
     int ret = -1;
     do ret = ::recvfrom(fd_, buffer->bytes(), buffer->count(), 0, (*peerAddress)->addr(), &len);
@@ -88,7 +88,7 @@ int DatagramSocket::recvFrom(Ref<SocketAddress> *peerAddress, CharArray *buffer)
     return ret;
 }
 
-int DatagramSocket::sendTo(const SocketAddress *peerAddress, const CharArray *message)
+int DatagramSocket::sendTo(const SocketAddress &peerAddress, const CharArray *message)
 {
     int ret = -1;
     do ret = ::sendto(fd_, message->bytes(), message->count(), 0, peerAddress->addr(), peerAddress->addrLen());
@@ -100,7 +100,7 @@ int DatagramSocket::sendTo(const SocketAddress *peerAddress, const CharArray *me
     return ret;
 }
 
-void DatagramSocket::connect(const SocketAddress *peerAddress)
+void DatagramSocket::connect(const SocketAddress &peerAddress)
 {
     int ret = -1;
     do ret = ::connect(fd_, peerAddress->addr(), peerAddress->addrLen());

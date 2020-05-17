@@ -87,7 +87,7 @@ protected:
         CC_VERIFY(String(hobbies->at(2)) == "Poetry");
 
         const MetaObject *picture = Variant::cast<const MetaObject *>(object->value("picture"));
-        ferr() << "Variant::type(object->value(\"picture\")) = " << object->value("picture")->type() << nl;
+        // ferr() << "Variant::type(object->value(\"picture\")) = " << object->value("picture")->type() << nl; // FIXME
         CC_VERIFY(String(picture->value("uri")) == "http://www.hans-mustermann.de/photo.jpg");
         CC_VERIFY(int(picture->value("width")) == 400);
         CC_VERIFY(int(picture->value("height")) == 300);

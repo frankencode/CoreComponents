@@ -37,10 +37,12 @@ int main(int argc, char **argv)
         request->setMethod("GET");
         request->setHost(uri->requestHost());
         request->setPath(uri->requestPath());
-        {
-            auto kernelInfo = KernelInfo::query();
-            request->setHeader("User-Agent", Format{"ccnode 1.0 (%%; %%)"} << kernelInfo->name() << kernelInfo->machine());
-        }
+        request->setHeader(
+            "User-Agent",
+            Format{"ccget 1.0 (%%; %%)"}
+                << KernelInfo::instance()->name()
+                << KernelInfo::instance()->machine()
+        );
         request->transmit();
         auto response = connection->readResponse();
         if (response->statusCode() == 200) {

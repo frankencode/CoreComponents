@@ -22,7 +22,7 @@ public:
     static Ref<NodeMaster> create(const String &config);
     static Ref<NodeMaster> create(const NodeConfig *config);
 
-    Ref<const SocketAddress> waitStarted();
+    SocketAddress waitStarted();
 
     void sendSignal(Signal signal);
 
@@ -40,7 +40,7 @@ private:
 
     Ref<const NodeConfig> config_;
 
-    typedef Channel< Ref<const SocketAddress> > StartedChannel;
+    typedef Channel<SocketAddress> StartedChannel;
     Ref<StartedChannel> startedChannel_;
 
     typedef Channel<Signal> Signals;
