@@ -38,6 +38,7 @@ String HttpClient::userAgent() const
         Format{"ccget 1.0 (%%; %%)"}
             << KernelInfo::instance()->name()
             << KernelInfo::instance()->machine();
+
     return s;
 }
 
@@ -52,7 +53,8 @@ Ref<HttpResponse> HttpClient::query(const String &method, const String &path, co
         if (h != "") request->setHeader("User-Agent", h);
     }
     request->beginTransmission(payload->count());
-    request->write(payload);
+    if (payload->count() > 0)
+        request->write(payload);
     request->endTransmission();
     return connection_->readResponse();
 }
@@ -76,7 +78,5 @@ Ref<HttpResponse> HttpClient::post(const String &path, const String &payload)
 {
     return query("POST", path, payload);
 }
-
-// Ref<HttpResponse> HttpClient::postForm(const String &path, const Map<String> *inputs) { return query("POST", path, urlEncode(inputs)); }
 
 }} // namespace cc::http

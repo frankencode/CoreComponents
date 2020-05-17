@@ -43,7 +43,7 @@ void HttpGenerator::writeHeader()
 {
     polishHeader();
 
-    Format sink(peer_->stream());
+    Format sink{peer_->stream()};
     writeFirstLine(sink);
     for (const Header::Item &item: header_)
         sink << item->key() << ":" << item->value() << "\r\n";
@@ -75,17 +75,17 @@ Stream *HttpGenerator::payload()
 
 void HttpGenerator::write(const String &data)
 {
-    if (data->count() > 0) payload()->write(data);
+    payload()->write(data);
 }
 
 Format HttpGenerator::chunk(const String &pattern)
 {
-    return Format(pattern, payload());
+    return Format{pattern, payload()};
 }
 
 Format HttpGenerator::chunk()
 {
-    return Format(payload());
+    return Format{payload()};
 }
 
 void HttpGenerator::endTransmission()
@@ -98,7 +98,7 @@ void HttpGenerator::endTransmission()
 
 void HttpGenerator::transmit()
 {
-    beginTransmission();
+    beginTransmission(0);
     endTransmission();
 }
 

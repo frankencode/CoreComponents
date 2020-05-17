@@ -28,11 +28,14 @@ public:
     virtual String userAgent() const;
 
     Ref<HttpResponse> query(const String &method, const String &path, const String &payload = String{});
+    // Ref<HttpResponse> query(const String &method, const String &path, Stream *source);
+
     Ref<HttpResponse> get(const String &path);
     Ref<HttpResponse> head(const String &path);
     Ref<HttpResponse> put(const String &path, const String &payload);
     Ref<HttpResponse> post(const String &path, const String &payload);
 
+    // Ref<HttpResponse> put(const String &path, const Stream *source);
     // Ref<HttpResponse> postForm(const String &path, const Map<String> *inputs); // TODO
 
 private:
