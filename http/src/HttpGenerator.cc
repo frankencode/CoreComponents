@@ -31,6 +31,27 @@ void HttpGenerator::setHeader(const String &name, const String &value)
     header_->establish(name, value);
 }
 
+void HttpGenerator::transmit()
+{
+    beginTransmission(0);
+    endTransmission();
+}
+
+void HttpGenerator::transmit(const String &payload)
+{
+    beginTransmission(payload->count());
+    if (payload->count() > 0)
+        write(payload);
+    endTransmission();
+}
+
+void HttpGenerator::transmit(Stream *source)
+{
+    beginTransmission(-1);
+    source->transferTo(payload());
+    endTransmission();
+}
+
 void HttpGenerator::setHeader(Header *header)
 {
     Ref<Header> headerSaved = header_;
@@ -94,12 +115,6 @@ void HttpGenerator::endTransmission()
         bytesWritten_ = payload_->totalWritten();
         payload_ = 0;
     }
-}
-
-void HttpGenerator::transmit()
-{
-    beginTransmission(0);
-    endTransmission();
 }
 
 }} // namespace cc::http

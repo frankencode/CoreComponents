@@ -16,14 +16,34 @@
 namespace cc {
 namespace http {
 
-Ref<HttpResponse> HttpClient::query(const String &method, const Uri &uri, const String &payload)
+Ref<HttpResponse> HttpClient::query(const String &method, const Uri &uri, const Generate &generate)
 {
-    return HttpClient::connect(uri)->query(method, uri->path(), payload);
+    return HttpClient::connect(uri)->query(method, uri->path(), generate);
 }
 
-Ref<HttpResponse> HttpClient::query(const String &method, const Uri &uri, Stream *source)
+Ref<HttpResponse> HttpClient::get(const Uri &uri)
 {
-    return HttpClient::connect(uri)->query(method, uri->path(), source);
+    return HttpClient::connect(uri)->get(uri->path());
+}
+
+Ref<HttpResponse> HttpClient::head(const Uri &uri)
+{
+    return HttpClient::connect(uri)->head(uri->path());
+}
+
+Ref<HttpResponse> HttpClient::put(const Uri &uri, Stream *source)
+{
+    return HttpClient::connect(uri)->put(uri->path(), source);
+}
+
+Ref<HttpResponse> HttpClient::post(const Uri &uri, Stream *source)
+{
+    return HttpClient::connect(uri)->post(uri->path(), source);
+}
+
+Ref<HttpResponse> HttpClient::postForm(const Uri &uri, const Map<String> *form)
+{
+    return HttpClient::connect(uri)->postForm(uri->path(), form);
 }
 
 Ref<HttpClient> HttpClient::connect(const Uri &uri, const HttpClientSecurity *security)
@@ -61,13 +81,13 @@ Ref<HttpRequestGenerator> HttpClient::createRequest(const String &method, const 
     return request;
 }
 
-Ref<HttpResponse> HttpClient::query(const String &method, const String &path, const std::function<void(HttpRequestGenerator *)> &sendPayload)
+Ref<HttpResponse> HttpClient::query(const String &method, const String &path, const Generate &generate)
 {
     Ref<HttpResponse> response;
     for (int i = 0; retry(i); ++i) {
         try {
             auto request = createRequest(method, path);
-            sendPayload(request);
+            generate(request);
             response = connection_->readResponse();
             if (response->statusCode() != RequestTimeout::StatusCode) break;
         }
@@ -77,29 +97,39 @@ Ref<HttpResponse> HttpClient::query(const String &method, const String &path, co
         {}
         connect();
     }
-    if (response->statusCode() >= 400) throw HttpError{response->statusCode()};
     return response;
 }
 
-Ref<HttpResponse> HttpClient::query(const String &method, const String &path, const String &payload)
+Ref<HttpResponse> HttpClient::get(const String &path)
 {
-    return query(method, path,
-        [=](HttpRequestGenerator *request) {
-            request->beginTransmission(payload->count());
-            if (payload->count() > 0)
-                request->write(payload);
-            request->endTransmission();
-        }
+    return query("GET", path);
+}
+
+Ref<HttpResponse> HttpClient::head(const String &path)
+{
+    return query("HEAD", path);
+}
+
+Ref<HttpResponse> HttpClient::put(const String &path, Stream *source)
+{
+    return query("PUT", path,
+        [=](HttpGenerator *request) { request->transmit(source); }
     );
 }
 
-Ref<HttpResponse> HttpClient::query(const String &method, const String &path, Stream *source)
+Ref<HttpResponse> HttpClient::post(const String &path, Stream *source)
 {
-    return query(method, path,
-        [=](HttpRequestGenerator *request) {
-            request->beginTransmission(source ? -1 : 0);
-            if (source) source->transferTo(request->payload());
-            request->endTransmission();
+    return query("POST", path,
+        [=](HttpGenerator *request) { request->transmit(source); }
+    );
+}
+
+Ref<HttpResponse> HttpClient::postForm(const String &path, const Map<String> *form)
+{
+    return query("POST", path,
+        [=](HttpGenerator *request) {
+            request->setHeader("Content-Type", "application/x-www-form-urlencoded");
+            request->transmit(Uri::encodeForm(form));
         }
     );
 }
@@ -112,6 +142,16 @@ String HttpClient::userAgent() const
             << KernelInfo::instance()->machine();
 
     return s;
+}
+
+bool HttpClient::retry(int i)
+{
+    return i < 3;
+}
+
+void HttpClient::defaultGenerate(HttpGenerator *request)
+{
+    request->transmit();
 }
 
 }} // namespace cc::http

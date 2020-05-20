@@ -25,16 +25,20 @@ class HttpGenerator: public Object
 {
 public:
     void setHeader(const String &name, const String &value);
+
+    void transmit();
+    void transmit(const String &payload);
+    void transmit(Stream *source);
+
     typedef Map<String, String> Header;
     void setHeader(Header *header);
+
     void beginTransmission(ssize_t contentLength = -1);
     Stream *payload();
     void write(const String &data);
     Format chunk(const String &pattern);
     Format chunk();
     void endTransmission();
-
-    void transmit();
 
 protected:
     HttpGenerator(HttpConnection *peer);
