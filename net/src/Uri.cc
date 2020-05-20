@@ -31,31 +31,31 @@ Uri::Instance::Instance(const String &text, Token *rootToken)
 
     while (token) {
         if (token->rule() == UriSyntax::instance()->scheme()) {
-            scheme_ = decode(text->copy(token->i0(), token->i1()));
+            scheme_ = Uri::decode(text->copy(token->i0(), token->i1()));
             mutate(scheme_)->downcaseInsitu();
         }
         else if (token->rule() == UriSyntax::instance()->authority()) {
             Token *child = token->firstChild();
             while (child) {
                 if (child->rule() == UriSyntax::instance()->userInfo())
-                    userInfo_ = decode(text->copy(child->i0(), child->i1()));
+                    userInfo_ = Uri::decode(text->copy(child->i0(), child->i1()));
                 else if (child->rule() == UriSyntax::instance()->host()) {
                     hostIsNumeric_ = child->hasChildren();
-                    host_ = decode(text->copy(child->i0(), child->i1()));
+                    host_ = Uri::decode(text->copy(child->i0(), child->i1()));
                 }
                 else if (child->rule() == UriSyntax::instance()->port())
-                    port_ = decode(text->copy(child->i0(), child->i1()))->toNumber<int>();
+                    port_ = Uri::decode(text->copy(child->i0(), child->i1()))->toNumber<int>();
                 child = child->nextSibling();
             }
         }
         else if (token->rule() == UriSyntax::instance()->path()) {
-            path_ = decode(text->copy(token->i0(), token->i1()));
+            path_ = Uri::decode(text->copy(token->i0(), token->i1()));
         }
         else if (token->rule() == UriSyntax::instance()->query()) {
-            query_ = decode(text->copy(token->i0(), token->i1()));
+            query_ = Uri::decode(text->copy(token->i0(), token->i1()));
         }
         else if (token->rule() == UriSyntax::instance()->fragment()) {
-            fragment_ = decode(text->copy(token->i0(), token->i1()));
+            fragment_ = Uri::decode(text->copy(token->i0(), token->i1()));
         }
         token = token->nextSibling();
     }
@@ -80,16 +80,16 @@ String Uri::Instance::toString() const
 {
     Format text;
     if (scheme_ != "") {
-        text << encode(scheme_);
+        text << Uri::encode(scheme_);
         text << ":";
     }
     if (host_ != "") {
         text << "//";
         if (userInfo_ != "")
-            text << encode(userInfo_);
+            text << Uri::encode(userInfo_);
         if (host_ != "") {
             text << "@";
-            text << encode(host_);
+            text << Uri::encode(host_);
         }
         if (port_ != -1)
             text << ":" << port_;
@@ -97,16 +97,16 @@ String Uri::Instance::toString() const
     text << path_;
     if (query_ != "") {
         text << "?";
-        text << encode(query_);
+        text << Uri::encode(query_);
     }
     if (fragment_ != "") {
         text << "#";
-        text << encode(fragment_);
+        text << Uri::encode(fragment_);
     }
     return text;
 }
 
-String Uri::Instance::encode(const String &s)
+String Uri::encode(const String &s)
 {
     mutate(s)->downcaseInsitu();
 
@@ -134,7 +134,7 @@ String Uri::Instance::encode(const String &s)
     return l->join();
 }
 
-String Uri::Instance::decode(const String &s)
+String Uri::decode(const String &s)
 {
     int j = 0;
     for (int i = 0, n = s->count(); i < n; ++i, ++j) {
@@ -164,6 +164,32 @@ String Uri::Instance::decode(const String &s)
     }
     mutate(s)->truncate(j);
     return s;
+}
+
+String Uri::encodeForm(const Map<String> *form)
+{
+    auto parts = StringList::create();
+    for (auto item: form) {
+        parts->append(
+            Format{"%%=%%"}
+                << Uri::encode(item->key())
+                << Uri::encode(item->value())
+        );
+    }
+    return parts->join("&");
+}
+
+Ref<Map<String> > Uri::decodeForm(const String &payload)
+{
+    auto form = Map<String>::create();
+    auto parts = payload->split("&");
+    for (auto part: parts) {
+        int j = part->scan('&');
+        String key = Uri::decode(part->copy(0, j));
+        String value = Uri::decode(part->copy(j + 1, part->count()));
+        form->insert(key, value);
+    }
+    return form;
 }
 
 String UriSyntaxError::message() const

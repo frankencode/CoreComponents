@@ -18,69 +18,71 @@ using namespace cc::net;
 
 class CloseRequest {};
 
-class ProtocolException: public Exception
+/** \brief HTTP request could not be successfully processed
+  */
+class HttpError: public Exception
 {
 public:
-    ProtocolException(int statusCode, const String &message);
+    HttpError(int statusCode, const String &message = "");
 
     int statusCode() const;
     String message() const;
 
-    const ProtocolException *operator->() const { return this; }
+    const HttpError *operator->() const { return this; }
 
 private:
     int statusCode_;
     String message_;
 };
 
-class BadRequest: public ProtocolException
+class BadRequest: public HttpError
 {
 public:
-    BadRequest(): ProtocolException{400, "Bad Request"} {}
+    BadRequest(): HttpError{400, "Bad Request"} {}
 };
 
-class Forbidden: public ProtocolException
+class Forbidden: public HttpError
 {
 public:
-    Forbidden(): ProtocolException{403, "Forbidden"} {}
+    Forbidden(): HttpError{403, "Forbidden"} {}
 };
 
-class NotFound: public ProtocolException
+class NotFound: public HttpError
 {
 public:
-    NotFound(): ProtocolException{404, "Not Found"} {}
+    NotFound(): HttpError{404, "Not Found"} {}
 };
 
-class RequestTimeout: public ProtocolException
+class RequestTimeout: public HttpError
 {
 public:
     enum { StatusCode = 408 };
-    RequestTimeout(): ProtocolException{StatusCode, "Request Timeout"} {}
+    RequestTimeout(): HttpError{StatusCode, "Request Timeout"} {}
 };
 
-class PayloadTooLarge: public ProtocolException
+class PayloadTooLarge: public HttpError
 {
 public:
     enum { StatusCode = 413 };
-    PayloadTooLarge(): ProtocolException{StatusCode, "Payload Too Large"} {}
+    PayloadTooLarge(): HttpError{StatusCode, "Payload Too Large"} {}
 };
 
-class InternalServerError: public ProtocolException
+class InternalServerError: public HttpError
 {
 public:
-    InternalServerError(): ProtocolException{500, "Internal Server Error"} {}
+    InternalServerError(): HttpError{500, "Internal Server Error"} {}
 };
 
-class UnsupportedVersion: public ProtocolException
+class UnsupportedVersion: public HttpError
 {
 public:
-    UnsupportedVersion(): ProtocolException{505, "HTTP Version not supported"} {}
+    UnsupportedVersion(): HttpError{505, "HTTP Version not supported"} {}
 };
 
-class NotImplemented: public ProtocolException
+class NotImplemented: public HttpError
 {
 public:
-    NotImplemented(): ProtocolException{501, "Not implemented"} {}
+    NotImplemented(): HttpError{501, "Not implemented"} {}
 };
 
 class SecurityError: public Exception

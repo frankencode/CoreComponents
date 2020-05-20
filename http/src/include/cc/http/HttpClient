@@ -8,7 +8,9 @@
 
 #pragma once
 
+#include <functional>
 #include <cc/Map>
+#include <cc/net/SocketAddress>
 #include <cc/net/Uri>
 #include <cc/http/HttpClientSecurity>
 #include <cc/http/HttpResponse>
@@ -17,30 +19,38 @@ namespace cc {
 namespace http {
 
 class HttpClientConnection;
+class HttpRequestGenerator;
 
+using cc::net::SocketAddress;
 using cc::net::Uri;
 
+/** \class HttpClient cc/http/HttpClient
+  * \brief HTTP(S) client
+  */
 class HttpClient: public Object
 {
 public:
+    static Ref<HttpResponse> query(const String &method, const Uri &uri, const String &payload = String{});
+    static Ref<HttpResponse> query(const String &method, const Uri &uri, Stream *source);
+
     static Ref<HttpClient> connect(const Uri &uri, const HttpClientSecurity *security = nullptr);
 
-    virtual String userAgent() const;
-
     Ref<HttpResponse> query(const String &method, const String &path, const String &payload = String{});
-    // Ref<HttpResponse> query(const String &method, const String &path, Stream *source);
+    Ref<HttpResponse> query(const String &method, const String &path, Stream *source);
 
-    Ref<HttpResponse> get(const String &path);
-    Ref<HttpResponse> head(const String &path);
-    Ref<HttpResponse> put(const String &path, const String &payload);
-    Ref<HttpResponse> post(const String &path, const String &payload);
-
-    // Ref<HttpResponse> put(const String &path, const Stream *source);
-    // Ref<HttpResponse> postForm(const String &path, const Map<String> *inputs); // TODO
+protected:
+    virtual String userAgent() const;
+    virtual bool retry(int i) { return i < 3; }
 
 private:
     HttpClient(const Uri &uri, const HttpClientSecurity *security);
+    void connect();
+    Ref<HttpResponse> query(const String &method, const String &path, const std::function<void(HttpRequestGenerator *)> &sendPayload);
+    Ref<HttpRequestGenerator> createRequest(const String &method, const String &path);
+
+    SocketAddress address_;
     String host_;
+    Ref<const HttpClientSecurity> security_;
     Ref<HttpClientConnection> connection_;
 };
 

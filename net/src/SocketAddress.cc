@@ -16,19 +16,9 @@
 #include <cc/strings>
 #include <cc/Format>
 #include <cc/exceptions>
-#include <cc/ThreadLocalSingleton>
 
 namespace cc {
 namespace net {
-
-ProtocolFamily SocketAddress::guessFamily(const String &address)
-{
-    ProtocolFamily family = ProtocolFamily::Unspecified;
-    if (address->count(':') > 1 || address == "::") family = ProtocolFamily::Internet6;
-    else if (address->count('.') > 0 || address == "*") family = ProtocolFamily::Internet4;
-    else if (address->count() > 0) family = ProtocolFamily::Local;
-    return family;
-}
 
 SocketAddress::Instance::Instance()
 {
@@ -328,8 +318,23 @@ bool SocketAddress::Instance::equals(const SocketAddress::Instance *other) const
     return false;
 }
 
+ProtocolFamily SocketAddress::guessFamily(const String &address)
+{
+    ProtocolFamily family = ProtocolFamily::Unspecified;
+    if (address->count(':') > 1 || address == "::") family = ProtocolFamily::Internet6;
+    else if (address->count('.') > 0 || address == "*") family = ProtocolFamily::Internet4;
+    else if (address->count() > 0) family = ProtocolFamily::Local;
+    return family;
+}
+
+SocketAddress::Instance *SocketAddress::instance()
+{
+    thread_local Ref<Instance> instance_ { new Instance };
+    return instance_;
+}
+
 SocketAddress::SocketAddress():
-    instance_{ThreadLocalSingleton<Instance>::instance()}
+    instance_{SocketAddress::instance()}
 {}
 
 SocketAddress SocketAddress::resolveUri(const Uri &uri)

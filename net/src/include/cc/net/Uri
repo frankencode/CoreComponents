@@ -10,6 +10,7 @@
 
 #include <cc/exceptions>
 #include <cc/String>
+#include <cc/Map>
 #include <cc/net/types>
 
 namespace cc { class Token; }
@@ -89,9 +90,6 @@ public:
         friend class cc::Cow;
         friend class Uri;
 
-        static String encode(const String &s);
-        static String decode(const String &s);
-
         Instance() = default;
         Instance(const String &text, Token *rootToken = nullptr);
 
@@ -106,6 +104,12 @@ public:
         String query_;
         String fragment_;
     };
+
+    static String encode(const String &s);
+    static String decode(const String &s);
+
+    static String encodeForm(const Map<String> *form);
+    static Ref<Map<String> > decodeForm(const String &payload);
 
     /** Create a new URI
       * \return new object instance

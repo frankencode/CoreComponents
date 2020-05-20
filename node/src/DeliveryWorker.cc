@@ -85,10 +85,10 @@ void DeliveryWorker::run()
                     ) break;
                 }
             }
-            catch (ProtocolException &ex) {
+            catch (HttpError &ex) {
                 if (requestCount > 0 || ex.statusCode() == RequestTimeout::StatusCode) {
                     try {
-                        Format("HTTP/1.1 %% %%\r\n\r\n", client_->stream())
+                        Format{"HTTP/1.1 %% %%\r\n\r\n", client_->stream()}
                             << ex.statusCode()
                             << ex.message();
                     }

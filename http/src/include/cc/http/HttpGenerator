@@ -28,6 +28,7 @@ public:
     typedef Map<String, String> Header;
     void setHeader(Header *header);
     void beginTransmission(ssize_t contentLength = -1);
+    Stream *payload();
     void write(const String &data);
     Format chunk(const String &pattern);
     Format chunk();
@@ -43,7 +44,6 @@ protected:
     virtual void writeFirstLine(Format &sink) = 0;
 
     void writeHeader();
-    Stream *payload();
 
     Ref<HttpConnection> peer_;
     Ref<Header> header_;

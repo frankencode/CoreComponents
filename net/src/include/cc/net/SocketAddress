@@ -19,8 +19,6 @@
 #include <cc/net/exceptions>
 #include <cc/net/Uri>
 
-namespace cc { template<class> class ThreadLocalSingleton; }
-
 namespace cc {
 namespace net {
 
@@ -80,7 +78,6 @@ public:
 
     private:
         friend class cc::Cow;
-        friend class cc::ThreadLocalSingleton<Instance>;
         friend class SocketAddress;
         friend class SocketAddressDetails;
 
@@ -189,6 +186,8 @@ private:
     friend class RouteInfo;
 
     static ProtocolFamily guessFamily(const String &address);
+
+    static Instance *instance();
 
     explicit SocketAddress(struct sockaddr_in *addr):
         instance_{new Instance{addr}}

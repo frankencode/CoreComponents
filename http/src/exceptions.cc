@@ -13,17 +13,17 @@
 namespace cc {
 namespace http {
 
-ProtocolException::ProtocolException(int statusCode, const String &message):
+HttpError::HttpError(int statusCode, const String &message):
     statusCode_{statusCode},
     message_{message}
 {}
 
-int ProtocolException::statusCode() const
+int HttpError::statusCode() const
 {
     return statusCode_;
 }
 
-String ProtocolException::message() const
+String HttpError::message() const
 {
     return message_;
 }
