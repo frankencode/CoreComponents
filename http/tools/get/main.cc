@@ -1,9 +1,5 @@
-#include <cc/http/HttpClientSocket>
-#include <cc/http/HttpClientConnection>
-#include <cc/http/HttpRequestGenerator>
-#include <cc/net/Uri>
+#include <cc/http/HttpClient>
 #include <cc/stdio>
-#include <cc/KernelInfo>
 
 using namespace cc;
 using namespace cc::net;
@@ -12,6 +8,7 @@ using namespace cc::http;
 int main(int argc, char **argv)
 {
     auto toolName = String{argv[0]}->fileName();
+    int exitStatus = 0;
 
     try {
         if (argc < 2) throw HelpRequest{};
@@ -25,32 +22,12 @@ int main(int argc, char **argv)
             commandLine = commandLine->replace(" ", "%20");
         }
 
-        auto security = HttpClientSecurity::createDefault();
-        Uri uri{commandLine};
-        if (uri->port() <= 0) uri->setPort(uri->scheme() == "https" ? 443 : 80);
-        if (uri->path() == "") uri->setPath("/");
-        if (uri->scheme() == "http" || uri->scheme() == "local") security = nullptr;
-        auto address = SocketAddress::resolveUri(uri);
-        auto socket = HttpClientSocket::connect(address, uri->host(), security);
-        auto connection = HttpClientConnection::open(socket);
-        auto request = HttpRequestGenerator::create(connection);
-        request->setMethod("GET");
-        request->setHost(uri->requestHost());
-        request->setPath(uri->requestPath());
-        request->setHeader(
-            "User-Agent",
-            Format{"ccget 1.0 (%%; %%)"}
-                << KernelInfo::instance()->name()
-                << KernelInfo::instance()->machine()
-        );
-        request->transmit();
-        auto response = connection->readResponse();
-        if (response->statusCode() == 200) {
-            response->payload()->transferTo(stdOut());
-        }
-        else {
-            ferr() << response->version() << " " << response->statusCode() << " " << response->reasonPhrase() << nl;
-        }
+        auto response = HttpClient::get(commandLine);
+
+        if (response->statusCode() >= 300) exitStatus = response->statusCode() / 100;
+
+        ferr() << response->version() << " " << response->statusCode() << " " << response->reasonPhrase() << nl;
+        response->payload()->transferTo(stdOut());
     }
     catch (HelpRequest &) {
         fout(
@@ -60,5 +37,5 @@ int main(int argc, char **argv)
         ) << toolName;
     }
 
-    return 0;
+    return exitStatus;
 }

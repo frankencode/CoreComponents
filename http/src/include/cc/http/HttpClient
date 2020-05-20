@@ -33,30 +33,24 @@ class HttpClient: public Object
 public:
     typedef std::function<void(HttpGenerator *)> Generate;
 
-    static Ref<HttpResponse> query(const String &method, const Uri &uri, const Generate &generate = &defaultGenerate);
-
     static Ref<HttpResponse> get(const Uri &uri);
     static Ref<HttpResponse> head(const Uri &uri);
+    static Ref<HttpResponse> put(const Uri &uri, const String &payload);
     static Ref<HttpResponse> put(const Uri &uri, Stream *source);
+    static Ref<HttpResponse> post(const Uri &uri, const String &payload);
     static Ref<HttpResponse> post(const Uri &uri, Stream *source);
     static Ref<HttpResponse> postForm(const Uri &uri, const Map<String> *form);
 
     static Ref<HttpClient> connect(const Uri &uri, const HttpClientSecurity *security = nullptr);
 
-    Ref<HttpResponse> query(const String &method, const String &path, const Generate &generate = &defaultGenerate);
-
-    Ref<HttpResponse> get(const String &path);
-    Ref<HttpResponse> head(const String &path);
-    Ref<HttpResponse> put(const String &path, Stream *source);
-    Ref<HttpResponse> post(const String &path, Stream *source);
-    Ref<HttpResponse> postForm(const String &path, const Map<String> *form);
+    Ref<HttpResponse> schedule(const String &method, const String &path, const Generate &generate = &generateDefault);
 
 protected:
     virtual String userAgent() const;
     virtual bool retry(int i);
 
 private:
-    static void defaultGenerate(HttpGenerator *request);
+    static void generateDefault(HttpGenerator *request);
 
     HttpClient(const Uri &uri, const HttpClientSecurity *security);
     void connect();
