@@ -16,47 +16,52 @@
 namespace cc {
 namespace http {
 
+/*Ref<HttpResponse> HttpClient::query(const Uri &uri, const String &method, const Generate &generate)
+{
+    return HttpClient::connect(uri)->query(method, uri->requestPath(), generate);
+}*/
+
 Ref<HttpResponse> HttpClient::get(const Uri &uri)
 {
-    return HttpClient::connect(uri)->schedule("GET", uri->path());
+    return HttpClient::connect(uri)->query("GET", uri->requestPath());
 }
 
 Ref<HttpResponse> HttpClient::head(const Uri &uri)
 {
-    return HttpClient::connect(uri)->schedule("HEAD", uri->path());
+    return HttpClient::connect(uri)->query("HEAD", uri->requestPath());
 }
 
 Ref<HttpResponse> HttpClient::put(const Uri &uri, const String &payload)
 {
-    return HttpClient::connect(uri)->schedule("PUT", uri->path(),
+    return HttpClient::connect(uri)->query("PUT", uri->requestPath(),
         [=](HttpGenerator *request) { request->transmit(payload); }
     );
 }
 
 Ref<HttpResponse> HttpClient::put(const Uri &uri, Stream *source)
 {
-    return HttpClient::connect(uri)->schedule("PUT", uri->path(),
+    return HttpClient::connect(uri)->query("PUT", uri->requestPath(),
         [=](HttpGenerator *request) { request->transmit(source); }
     );
 }
 
 Ref<HttpResponse> HttpClient::post(const Uri &uri, const String &payload)
 {
-    return HttpClient::connect(uri)->schedule("POST", uri->path(),
+    return HttpClient::connect(uri)->query("POST", uri->requestPath(),
         [=](HttpGenerator *request) { request->transmit(payload); }
     );
 }
 
 Ref<HttpResponse> HttpClient::post(const Uri &uri, Stream *source)
 {
-    return HttpClient::connect(uri)->schedule("POST", uri->path(),
+    return HttpClient::connect(uri)->query("POST", uri->requestPath(),
         [=](HttpGenerator *request) { request->transmit(source); }
     );
 }
 
 Ref<HttpResponse> HttpClient::postForm(const Uri &uri, const Map<String> *form)
 {
-    return HttpClient::connect(uri)->schedule("POST", uri->path(),
+    return HttpClient::connect(uri)->query("POST", uri->requestPath(),
         [=](HttpGenerator *request) {
             request->setHeader("Content-Type", "application/x-www-form-urlencoded");
             request->transmit(Uri::encodeForm(form));
@@ -99,13 +104,12 @@ Ref<HttpRequestGenerator> HttpClient::createRequest(const String &method, const 
     return request;
 }
 
-Ref<HttpResponse> HttpClient::schedule(const String &method, const String &path, const Generate &generate)
+Ref<HttpResponse> HttpClient::query(const String &method, const String &path, const Generate &generate)
 {
     Ref<HttpResponse> response;
     for (int i = 0; retry(i); ++i) {
         try {
-            auto request = createRequest(method, path);
-            generate(request);
+            generate(createRequest(method, path));
             response = connection_->readResponse();
             if (response->statusCode() != RequestTimeout::StatusCode) break;
         }
@@ -116,6 +120,16 @@ Ref<HttpResponse> HttpClient::schedule(const String &method, const String &path,
         connect();
     }
     return response;
+}
+
+void HttpClient::pipeline(const String &method, const String &path, const Generate &generate)
+{
+    generate(createRequest(method, path));
+}
+
+Ref<HttpResponse> HttpClient::readResponse()
+{
+    return connection_->readResponse();
 }
 
 String HttpClient::userAgent() const

@@ -13,16 +13,15 @@ int main(int argc, char **argv)
     try {
         if (argc < 2) throw HelpRequest{};
 
-        String commandLine;
+        String uri;
         {
             auto parts = StringList::create();
             for (int i = 1; i < argc; ++i)
                 parts->append(argv[i]);
-            commandLine = parts->join("%20");
-            commandLine = commandLine->replace(" ", "%20");
+            uri = parts->join("%20");
         }
 
-        auto response = HttpClient::get(commandLine);
+        auto response = HttpClient::get(uri);
 
         if (response->statusCode() >= 300) exitStatus = response->statusCode() / 100;
 

@@ -9,9 +9,8 @@
 #pragma once
 
 #include <functional>
-#include <cc/Map>
-#include <cc/net/SocketAddress>
 #include <cc/net/Uri>
+#include <cc/net/SocketAddress>
 #include <cc/http/HttpClientSecurity>
 #include <cc/http/HttpResponse>
 #include <cc/http/HttpGenerator>
@@ -31,8 +30,6 @@ using cc::net::Uri;
 class HttpClient: public Object
 {
 public:
-    typedef std::function<void(HttpGenerator *)> Generate;
-
     static Ref<HttpResponse> get(const Uri &uri);
     static Ref<HttpResponse> head(const Uri &uri);
     static Ref<HttpResponse> put(const Uri &uri, const String &payload);
@@ -43,7 +40,11 @@ public:
 
     static Ref<HttpClient> connect(const Uri &uri, const HttpClientSecurity *security = nullptr);
 
-    Ref<HttpResponse> schedule(const String &method, const String &path, const Generate &generate = &generateDefault);
+    typedef std::function<void(HttpGenerator *)> Generate;
+    Ref<HttpResponse> query(const String &method, const String &path, const Generate &generate = &generateDefault);
+
+    void pipeline(const String &method, const String &path, const Generate &generate = &generateDefault);
+    Ref<HttpResponse> readResponse();
 
 protected:
     virtual String userAgent() const;
