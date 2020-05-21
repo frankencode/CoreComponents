@@ -6,14 +6,16 @@
  *
  */
 
-#include <unistd.h> // close, select, unlink
-#include <fcntl.h> // fcntl
-#include <errno.h> // errno
-#include <math.h> // modf
-#include <cc/debug> // DEBUG
+#include <cc/net/StreamSocket>
 #include <cc/exceptions>
 #include <cc/Singleton>
-#include <cc/net/StreamSocket>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h> // close, select, unlink
+#include <fcntl.h> // fcntl
+#include <poll.h> // poll
+#include <errno.h> // errno
+#include <math.h> // modf
 
 namespace cc {
 namespace net {
@@ -82,6 +84,11 @@ void StreamSocket::listen(int backlog)
         if (::setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1)
             CC_SYSTEM_DEBUG_ERROR(errno);
 
+        #ifdef TCP_FASTOPEN
+        if (::setsockopt(sfd, SOL_TCP, TCP_FASTOPEN, &backlog, sizeof(backlog)))
+            CC_SYSTEM_DEBUG_ERROR(errno);
+        #endif
+
         if (+address_->family() == AF_INET6) {
             int on = 1;
             if (::setsockopt(fd_, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)) == -1)
@@ -111,6 +118,35 @@ int StreamSocket::accept(SocketAddress *clientAddress)
     int fdc = ::accept(fd_, (*clientAddress)->addr(), &len);
     if (fdc < 0) CC_SYSTEM_DEBUG_ERROR(errno);
     return fdc;
+}
+
+bool StreamSocket::waitForReady(int timeout_ms)
+{
+    if (connected_) return true;
+
+    struct pollfd fds;
+    fds.fd = fd_;
+    fds.events = POLLIN|POLLOUT;
+
+    if (timeout_ms < 0) timeout_ms = -1;
+    int ret = -1;
+    do ret = ::poll(&fds, 1, timeout_ms);
+    while (ret == -1 && errno == EINTR);
+
+    if (ret == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+    CC_ASSERT(ret == 0 || ret == 1);
+
+    if (ret == 1) {
+        int error = 0;
+        socklen_t len = sizeof(error);
+        if (::getsockopt(fd_, SOL_SOCKET, SO_ERROR, &error, &len) == -1)
+             CC_SYSTEM_DEBUG_ERROR(errno);
+        if (error != 0)
+            throw NetworkError{error};
+        connected_ = true;
+    }
+
+    return connected_;
 }
 
 void StreamSocket::connect()

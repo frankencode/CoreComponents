@@ -16,11 +16,6 @@
 namespace cc {
 namespace http {
 
-/*Ref<HttpResponse> HttpClient::query(const Uri &uri, const String &method, const Generate &generate)
-{
-    return HttpClient::connect(uri)->query(method, uri->requestPath(), generate);
-}*/
-
 Ref<HttpResponse> HttpClient::get(const Uri &uri)
 {
     return HttpClient::connect(uri)->query("GET", uri->requestPath());

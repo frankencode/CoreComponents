@@ -31,14 +31,12 @@ HttpClientSocket::HttpClientSocket(const SocketAddress &serverAddress, const Str
     HttpSocket{serverAddress, (serverAddress->port() % 80 == 0 || !security) ? 0 : Secure},
     serverName_{serverName},
     security_{security},
-    ioMonitor_{IoMonitor::create(2)},
     readyRead_{0}
 {
     if ((mode_ & Secure) && !security_)
         security_ = HttpClientSecurity::createDefault();
 
     StreamSocket::connect(&controlMaster_, &controlSlave_);
-    ioMonitor_->addEvent(IoReady::Read, controlSlave_);
 }
 
 bool HttpClientSocket::isSecure() const
@@ -46,23 +44,12 @@ bool HttpClientSocket::isSecure() const
     return mode_ & Secure;
 }
 
-bool HttpClientSocket::connect()
+void HttpClientSocket::connect()
 {
     StreamSocket::connect();
-    if (StreamSocket::isConnected()) {
-        mode_ |= Connected;
-    }
-    else {
-        const IoEvent *connectionEstablished = ioMonitor_->addEvent(IoReady::Write, this);
-        if (ioMonitor_->waitFor(connectionEstablished)) mode_ |= Connected;
-        ioMonitor_->removeEvent(connectionEstablished);
-    }
-    if (mode_ & Connected) {
-        readyRead_ = ioMonitor_->addEvent(IoReady::Read, this);
-        initSession();
-        handshake();
-    }
-    return mode_ & Connected;
+    initSession();
+    StreamSocket::waitForReady();
+    handshake();
 }
 
 void HttpClientSocket::shutdown()
@@ -98,7 +85,7 @@ void HttpClientSocket::handshake()
 
 bool HttpClientSocket::waitInput()
 {
-    return ioMonitor_->waitFor(readyRead_);
+    return waitFor(IoReady::Read);
 }
 
 void HttpClientSocket::ioException(Exception &ex) const

@@ -17,7 +17,7 @@
 namespace cc {
 
 SystemIo::SystemIo():
-    iovMax_(::sysconf(_SC_IOV_MAX))
+    iovMax_{::sysconf(_SC_IOV_MAX)}
 {}
 
 bool SystemIo::poll(int fd, int events, int timeout_ms)

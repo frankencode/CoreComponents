@@ -15,8 +15,8 @@ namespace cc {
 Ref<IoMonitor> IoMonitor::create(int maxCount) { return new IoMonitor(maxCount); }
 
 IoMonitor::IoMonitor(int maxCount):
-    fds_(Fds::create(maxCount)),
-    events_(Events::create())
+    fds_{Fds::create(maxCount)},
+    events_{Events::create()}
 {}
 
 const IoEvent *IoMonitor::addEvent(IoReady type, IoTarget *target)
@@ -47,7 +47,7 @@ void IoMonitor::removeEvent(const IoEvent *event)
 
 Ref<IoActivity> IoMonitor::wait(int timeout_ms)
 {
-    PollFd *fds = 0;
+    PollFd *fds = nullptr;
     if (events_->count() > 0) fds = fds_->data();
     int n = -1;
     do n = ::poll(fds, events_->count(), timeout_ms < 0 ? -1 : timeout_ms);

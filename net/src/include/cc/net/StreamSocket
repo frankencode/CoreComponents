@@ -27,17 +27,19 @@ public:
       */
     static Ref<StreamSocket> listen(const SocketAddress &localAddress, int backlog = 1024);
 
-    /** Connect to a peer socket
+    /** Initiate connection to a peer socket
       * \param peerAddress address of peer socket
       * \return new object instance
+      * \see waitForReady()
       */
     static Ref<StreamSocket> connect(const SocketAddress &peerAddress);
 
-    /** Connect to a peer socket
+    /** Initiate connection to a peer socket
       * \param hostName host name of server
       * \param port port number
       * \return new object instance
       * \exception HostNameResolutionError
+      * \see waitForReady()
       */
     static Ref<StreamSocket> connect(const String &hostName, int port);
 
@@ -52,9 +54,12 @@ public:
       */
     Ref<StreamSocket> accept();
 
-    /** Wait until connection has been established
+    /** Wait until the connection has been fully established
+      * \param interval_ms the interval to wait at max (or infinite if < 0)
+      * \return true if the connection has been established before timeout, false otherwise
+      * \exception NetworkError
       */
-    void waitConnected() const;
+    bool waitForReady(int timeout_ms = -1);
 
     /** Returns the local or remote address associated with this socket
       */

@@ -30,7 +30,7 @@ public:
     static Ref<HttpClientSocket> connect(const SocketAddress &serverAddress, const String &serverName = "", const HttpClientSecurity *security = nullptr);
 
     bool isSecure() const;
-    bool connect();
+    void connect();
     void shutdown();
 
 private:
@@ -45,7 +45,6 @@ private:
     String serverName_;
     Ref<const HttpClientSecurity> security_;
     Ref<StreamSocket> controlMaster_, controlSlave_;
-    Ref<IoMonitor> ioMonitor_;
     const IoEvent *readyRead_;
 };
 

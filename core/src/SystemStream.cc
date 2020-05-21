@@ -6,6 +6,13 @@
  *
  */
 
+#include <cc/SystemStream>
+#ifndef NDEBUG
+#include <cc/check>
+#endif
+#include <cc/exceptions>
+#include <cc/SystemIo>
+#include <cc/Format>
 #include <sys/types.h>
 #include <sys/uio.h> // readv
 #include <sys/socket.h> // socketpair
@@ -15,13 +22,6 @@
 #include <unistd.h> // read, write, select, sysconf
 #include <fcntl.h> // fcntl
 #include <math.h> // modf
-#ifndef NDEBUG
-#include <cc/check>
-#endif
-#include <cc/exceptions>
-#include <cc/SystemIo>
-#include <cc/Format>
-#include <cc/SystemStream>
 
 namespace cc {
 
