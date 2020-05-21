@@ -57,15 +57,13 @@ class ResolveHostName: public TestCase
 
         for (const SocketAddress &address: list)
         {
-            bool failed = false;
-
             fout("%% : %% : %% : %% : %% : %% : %%\n")
                 << familyToString(address->family())
                 << address->toString()
                 << address->port()
                 << socketTypeToString(address->socketType())
                 << protocolToString(address->protocol())
-                << address->lookupHostName(&failed)
+                << address->lookupHostName()
                 << address->lookupServiceName();
         }
     }

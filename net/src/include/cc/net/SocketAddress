@@ -53,9 +53,8 @@ public:
 
         /** Lookup the host name of given address. Usually a reverse DNS
           * lookup will be issued, which may take several seconds.
-          * \FIXME: remove failed argument and throw proper exceptions
           */
-        String lookupHostName(bool *failed = nullptr) const;
+        String lookupHostName() const;
 
         /** Lookup the service name. In most setups the service name will be looked up
           * in a local file (/etc/services) and therefore the call returns immediately.

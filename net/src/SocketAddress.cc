@@ -202,7 +202,7 @@ void SocketAddress::Instance::setScope(int scope)
     if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
-String SocketAddress::Instance::lookupHostName(bool *failed) const
+String SocketAddress::Instance::lookupHostName() const
 {
     const int hostNameSize = NI_MAXHOST;
     const int serviceNameSize = NI_MAXSERV;
@@ -212,17 +212,7 @@ String SocketAddress::Instance::lookupHostName(bool *failed) const
     if (+socketType_ == SOCK_DGRAM) flags |= NI_DGRAM;
 
     int ret = getnameinfo(addr(), addrLen(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
-
-    if (ret != 0) {
-        if (!failed)
-            CC_DEBUG_ERROR(gai_strerror(ret));
-        *failed = true;
-        hostName[0] = 0;
-    }
-    else {
-        if (failed)
-            *failed = false;
-    }
+    if (ret != 0) CC_DEBUG_ERROR(gai_strerror(ret));
 
     return String{hostName};
 }
