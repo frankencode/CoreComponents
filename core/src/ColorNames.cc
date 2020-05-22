@@ -175,16 +175,16 @@ const ColorNames *ColorNames::instance()
 }
 
 ColorNames::ColorNames():
-    colorByName_(ColorByName::create())
+    colorByName_{ColorByName::create()}
 {
     for (int i = 0; i < svgPaletteSize; ++i) {
         colorByName_->insert(
             svgPalette[i].name,
-            Color(
+            Color{
                 svgPalette[i].rgb[0],
                 svgPalette[i].rgb[1],
                 svgPalette[i].rgb[2]
-            )
+            }
         );
     }
 }

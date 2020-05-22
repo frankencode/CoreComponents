@@ -120,14 +120,14 @@ public:
         template<class T>
         Instance(const Ref<T> &value): type_{VariantType::Object} { initRef(value.get()); }
 
-        Instance(const Ref< List<int> > &value)    : type_(VariantType::List), itemType_(VariantType::Int)     { initRef(value); }
-        Instance(const Ref< List<bool> > &value)   : type_(VariantType::List), itemType_(VariantType::Bool)    { initRef(value); }
-        Instance(const Ref< List<float> > &value)  : type_(VariantType::List), itemType_(VariantType::Float)   { initRef(value); }
-        Instance(const Ref< List<Color> > &value)  : type_(VariantType::List), itemType_(VariantType::Color)   { initRef(value); }
-        Instance(const Ref< List<Version> > &value): type_(VariantType::List), itemType_(VariantType::Version) { initRef(value); }
-        Instance(const Ref<StringList> &value)     : type_(VariantType::List), itemType_(VariantType::String)  { initRef(value); }
-        Instance(const Ref<VariantList> &value)    : type_(VariantType::List), itemType_(VariantType::Any)     { initRef(value); }
-        Instance(const Ref<VariantMap> &value)     : type_(VariantType::List), itemType_(VariantType::Any)     { initRef(value); }
+        Instance(const Ref< List<int> > &value)    : type_{VariantType::List}, itemType_{VariantType::Int}     { initRef(value); }
+        Instance(const Ref< List<bool> > &value)   : type_{VariantType::List}, itemType_{VariantType::Bool}    { initRef(value); }
+        Instance(const Ref< List<float> > &value)  : type_{VariantType::List}, itemType_{VariantType::Float}   { initRef(value); }
+        Instance(const Ref< List<Color> > &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
+        Instance(const Ref< List<Version> > &value): type_{VariantType::List}, itemType_{VariantType::Version} { initRef(value); }
+        Instance(const Ref<StringList> &value)     : type_{VariantType::List}, itemType_{VariantType::String}  { initRef(value); }
+        Instance(const Ref<VariantList> &value)    : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
+        Instance(const Ref<VariantMap> &value)     : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
 
         inline void initRef(Object *object = 0) {
             new(dummy_)Ref<Object>(object);

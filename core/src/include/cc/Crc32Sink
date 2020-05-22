@@ -24,10 +24,10 @@ public:
 
     static uint32_t defaultSeed() { return ~uint32_t(0); }
 
-    static Ref<Crc32Sink> open(uint32_t seed = defaultSeed()) { return new Crc32Sink(seed); }
+    static Ref<Crc32Sink> open(uint32_t seed = defaultSeed()) { return new Crc32Sink{seed}; }
 
     Crc32Sink(uint32_t seed = defaultSeed()):
-        crc_(seed)
+        crc_{seed}
     {}
 
     void feed(const void *buf, int bufFill);
