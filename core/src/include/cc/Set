@@ -13,6 +13,9 @@
 
 namespace cc {
 
+template<class T>
+class set;
+
 /** \class Set cc/Set
   * \ingroup container_dynamic
   * \brief %Set data container
@@ -35,6 +38,25 @@ public:
       * \return new object instance
       */
     static Ref<Set> create() { return new Set; }
+
+    /** Create a copy of another list
+      * \param other the list to copy
+      * \return new object instance
+      */
+    static Ref<Set> copy(const Set *other)
+    {
+        // TODO: improve performance
+
+        auto set = new Set;
+        for (const Item &item: *other)
+            set->tree_->pushBack(item);
+        return set;
+    }
+
+    /** Make a copy of this list
+      * \return new object instance
+      */
+    Ref<Set> copy() const { return Set::copy(this); }
 
     /// Number of items
     Index count() const { return tree_->count(); }
@@ -154,9 +176,20 @@ public:
     /// Reset to an empty set
     void deplete() { tree_->deplete<Item>(); }
 
+    /** \name Syntax sugar
+      */
+    ///@{
+    /** Insert \a item to the set */
+    void operator<<(const Item& item) { insert(item); }
+
+    /** Remove and return first item */
+    void operator>>(Item& item) { if (count() > 0) { item = first(); removeAt(0); } }
+    ///@}
+
 private:
     friend class bucket::Internals;
     friend class Local<Set>;
+    friend class set<T>;
 
     Set() = default;
 
@@ -171,21 +204,21 @@ private:
 };
 
 template<class T>
-bool operator==(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) == 0; }
+bool operator==(const Set<T> &a, const Set<T> &b) { return container::compare(&a, &b) == 0; }
 
 template<class T>
-bool operator!=(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) != 0; }
+bool operator!=(const Set<T> &a, const Set<T> &b) { return container::compare(&a, &b) != 0; }
 
 template<class T>
-bool operator<(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) < 0; }
+bool operator<(const Set<T> &a, const Set<T> &b) { return container::compare(&a, &b) < 0; }
 
 template<class T>
-bool operator>(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) > 0; }
+bool operator>(const Set<T> &a, const Set<T> &b) { return container::compare(&a, &b) > 0; }
 
 template<class T>
-bool operator<=(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) <= 0; }
+bool operator<=(const Set<T> &a, const Set<T> &b) { return container::compare(&a, &b) <= 0; }
 
 template<class T>
-bool operator>=(const Set<T> &a, const Set<T> &b) { return container::iteratorCompare(a, b) >= 0; }
+bool operator>=(const Set<T> &a, const Set<T> &b) { return container::compare(&a, &b) >= 0; }
 
 } // namespace cc

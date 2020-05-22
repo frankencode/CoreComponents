@@ -34,7 +34,7 @@ public:
     static void write(int fd, const void *buf, size_t count);
     static void writev(int fd, const struct iovec *iov, int iovcnt);
 
-    inline int iovMax() const { return iovMax_; }
+    long iovMax() const { return iovMax_; }
 
     static int ioctl(int fd, int request, void *arg);
 
@@ -47,7 +47,7 @@ protected:
 
     static SystemIo *instance();
 
-    int iovMax_;
+    long iovMax_;
 };
 
 } // namespace cc

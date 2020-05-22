@@ -1,0 +1,114 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <initializer_list>
+#include <cc/Set>
+#include <cc/Format>
+
+namespace cc {
+
+template<class T>
+class set {
+public:
+    typedef Set<T> Instance;
+    typedef typename Instance::Item Item;
+    typedef typename Instance::Index index;
+    typedef typename Instance::Item value_type;
+    typedef typename Instance::iterator iterator;
+    typedef typename Instance::const_iterator const_iterator;
+
+    set():
+        instance_{new Instance}
+    {}
+
+    set(std::initializer_list<T> b):
+        instance_{new Instance}
+    {
+        for (auto &x: b) *instance_ << x;
+    }
+
+    set(const set &b) = default;
+
+    set(set &&b):
+        instance_{std::move(b.instance_)}
+    {}
+
+    set &operator=(const set &b) = default;
+
+    set &operator=(set &&b) {
+        instance_ = std::move(b.instance_);
+        return *this;
+    }
+
+    explicit set(Instance *b):
+        instance_{b}
+    {}
+
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return Cow::get(instance_); }
+
+    operator const Instance *() const { return instance_; }
+
+    const T &operator[](index i) const { return instance_->at(i); }
+
+    set &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
+    set &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
+
+private:
+    Ref<Instance> instance_;
+};
+
+template<class T>
+typename set<T>::index count(const set<T> &a) { return a->count(); }
+
+template<class T>
+typename set<T>::const_iterator begin(const set<T> &a) { return a->begin(); }
+
+template<class T>
+typename set<T>::const_iterator end(const set<T> &a) { return a->end(); }
+
+template<class T>
+typename set<T>::iterator begin(set<T> &a) { return a->begin(); }
+
+template<class T>
+typename set<T>::iterator end(set<T> &a) { return a->end(); }
+
+template<class T>
+bool operator==(const set<T> &a, const set<T> &b) { return container::compare(a, b) == 0; }
+
+template<class T>
+bool operator!=(const set<T> &a, const set<T> &b) { return container::compare(a, b) != 0; }
+
+template<class T>
+bool operator<(const set<T> &a, const set<T> &b) { return container::compare(a, b) < 0; }
+
+template<class T>
+bool operator>(const set<T> &a, const set<T> &b) { return container::compare(a, b) > 0; }
+
+template<class T>
+bool operator<=(const set<T> &a, const set<T> &b) { return container::compare(a, b) <= 0; }
+
+template<class T>
+bool operator>=(const set<T> &a, const set<T> &b) { return container::compare(a, b) >= 0; }
+
+template<class T>
+Set<T> *mutate(set<T> &a) { return a; }
+
+template<class T>
+String str(const set<T> &a)
+{
+    Format f;
+    f << "[ ";
+    for (auto &x: a)
+        f << x << (&x == &a->last() ? " ]" : ", ");
+    return f;
+}
+
+} // namespace cc

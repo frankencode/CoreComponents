@@ -592,6 +592,7 @@ class TreeIterator:
 {
 public:
     typedef Item ValueType;
+    typedef Item value_type;
 
     TreeIterator():
         node_{nullptr},

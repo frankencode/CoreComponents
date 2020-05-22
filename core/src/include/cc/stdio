@@ -32,11 +32,39 @@ inline SystemStream *standardError () { return stdErr(); } ///< Standard input s
   * \{
   */
 
-/// Helper method to format a standard output text
-Format fout(String pattern = "");
+/** \brief Generate formatted text on the standard output stream
+  */
+class fout: public Format
+{
+public:
+    fout():
+        Format{stdOut()}
+    {}
 
-/// Helper method to format a standard error text
-Format ferr(String pattern = "");
+    fout(const String &pattern):
+        Format{pattern, stdOut()}
+    {}
+
+    template<class T>
+    fout &operator<<(const T &x) { static_cast<Format &>(*this) << x; return *this; }
+};
+
+/** \brief Generate formatted text on the standard error stream
+  */
+class ferr: public Format
+{
+public:
+    ferr():
+        Format{stdErr()}
+    {}
+
+    ferr(const String &pattern):
+        Format{pattern, stdErr()}
+    {}
+
+    template<class T>
+    ferr &operator<<(const T &x) { static_cast<Format &>(*this) << x; return *this; }
+};
 
 /** \}
   */

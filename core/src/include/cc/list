@@ -1,0 +1,115 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <initializer_list>
+#include <cc/List>
+#include <cc/Format>
+
+namespace cc {
+
+template<class T>
+class list {
+public:
+    typedef List<T> Instance;
+    typedef typename Instance::Item Item;
+    typedef typename Instance::Index index;
+    typedef typename Instance::Item value_type;
+    typedef typename Instance::iterator iterator;
+    typedef typename Instance::const_iterator const_iterator;
+
+    list():
+        instance_{new Instance}
+    {}
+
+    list(std::initializer_list<T> b):
+        instance_{new Instance}
+    {
+        for (auto &x: b) *instance_ << x;
+    }
+
+    list(const list &b) = default;
+
+    list(list &&b):
+        instance_{std::move(b.instance_)}
+    {}
+
+    list &operator=(const list &b) = default;
+
+    list &operator=(list &&b) {
+        instance_ = std::move(b.instance_);
+        return *this;
+    }
+
+    explicit list(Instance *b):
+        instance_{b}
+    {}
+
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return Cow::get(instance_); }
+
+    operator const Instance *() const { return instance_; }
+
+    T &operator[](index i) { return Cow::get(instance_)->at(i); }
+    const T &operator[](index i) const { return instance_->at(i); }
+
+    list &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
+    list &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
+
+private:
+    Ref<Instance> instance_;
+};
+
+template<class T>
+typename list<T>::index count(const list<T> &a) { return a->count(); }
+
+template<class T>
+typename list<T>::const_iterator begin(const list<T> &a) { return a->begin(); }
+
+template<class T>
+typename list<T>::const_iterator end(const list<T> &a) { return a->end(); }
+
+template<class T>
+typename list<T>::iterator begin(list<T> &a) { return a->begin(); }
+
+template<class T>
+typename list<T>::iterator end(list<T> &a) { return a->end(); }
+
+template<class T>
+bool operator==(const list<T> &a, const list<T> &b) { return container::compare(a, b) == 0; }
+
+template<class T>
+bool operator!=(const list<T> &a, const list<T> &b) { return container::compare(a, b) != 0; }
+
+template<class T>
+bool operator<(const list<T> &a, const list<T> &b) { return container::compare(a, b) < 0; }
+
+template<class T>
+bool operator>(const list<T> &a, const list<T> &b) { return container::compare(a, b) > 0; }
+
+template<class T>
+bool operator<=(const list<T> &a, const list<T> &b) { return container::compare(a, b) <= 0; }
+
+template<class T>
+bool operator>=(const list<T> &a, const list<T> &b) { return container::compare(a, b) >= 0; }
+
+template<class T>
+List<T> *mutate(list<T> &a) { return a; }
+
+template<class T>
+String str(const list<T> &a)
+{
+    Format f;
+    f << "[ ";
+    for (auto &x: a)
+        f << x << (&x == &a->last() ? " ]" : ", ");
+    return f;
+}
+
+} // namespace cc

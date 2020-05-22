@@ -16,13 +16,13 @@ namespace cc {
 namespace container {
 
 template<class C>
-bool arrayCompare(const C &a, const C &b)
+int arrayCompare(const C &a, const C &b)
 {
     typedef typename C::Item T;
     int n = a.count() > b.count() ? a.count() : b.count();
     for (int i = 0; i < n; ++i) {
-        T x = (i < a.count()) ? a.at(i) : T();
-        T y = (i < b.count()) ? b.at(i) : T();
+        T x = (i < a.count()) ? a.at(i) : T{};
+        T y = (i < b.count()) ? b.at(i) : T{};
         if (x < y) return -1;
         if (y < x) return 1;
     }
@@ -30,7 +30,7 @@ bool arrayCompare(const C &a, const C &b)
 }
 
 template<class C>
-bool iteratorCompare(const C &a, const C &b)
+int iteratorCompare(const C &a, const C &b)
 {
     typedef typename C::Item T;
 
@@ -47,6 +47,39 @@ bool iteratorCompare(const C &a, const C &b)
     }
 
     return 0;
+}
+
+template<class I, class J>
+int iterate_compare(I i, J j)
+{
+    typedef typename I::value_type X;
+    typedef typename J::value_type Y;
+
+    X x0{};
+    Y y0{};
+
+    while (i || j) {
+        const X &x = i ? *i : x0;
+        const Y &y = j ? *j : y0;
+        if (x < y) return -1;
+        if (y < x) return 1;
+        ++i;
+        ++j;
+    }
+
+    return 0;
+}
+
+template<class C>
+int compare(const C *a, const C *b)
+{
+    return iterate_compare(a->begin(), b->begin());
+}
+
+template<class C>
+int compare(const C &a, const C &b)
+{
+    return iterate_compare(a->begin(), b->begin());
 }
 
 } // namespace container

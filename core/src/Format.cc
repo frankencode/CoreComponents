@@ -41,6 +41,7 @@ Format::Format(Stream *stream):
     isNull_{stream && NullStream::instance() ? stream == NullStream::instance() : false},
     lastPosition_{0}
 {
+    if (isNull_) return;
     set(StringList::create());
 }
 
