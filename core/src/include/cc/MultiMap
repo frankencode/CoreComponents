@@ -14,6 +14,9 @@
 
 namespace cc {
 
+template<class K, class V>
+class multimap;
+
 /** \class MultiMap cc/MultiMap
   * \ingroup container_dynamic
   * \brief Multi-map data container
@@ -184,9 +187,20 @@ public:
     /// Reset to an empty relation
     void deplete() { tree_->deplete<Item>(); }
 
+    /** \name Syntax sugar
+      */
+    ///@{
+    /** Insert \a item to the set */
+    void operator<<(const Item& item) { insert(item->key(), item->value()); }
+
+    /** Remove and return first item */
+    void operator>>(Item& item) { if (count() > 0) { item = first(); removeAt(0); } }
+    ///@}
+
 protected:
     friend class bucket::Internals;
     friend class Local<MultiMap>;
+    friend class multimap<K, V>;
 
     MultiMap() = default;
 
