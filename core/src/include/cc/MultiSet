@@ -13,6 +13,9 @@
 
 namespace cc {
 
+template<class T>
+class multiset;
+
 /** \class MultiSet cc/MultiSet
   * \ingroup container_dynamic
   * \brief %Multi-set data container
@@ -169,9 +172,20 @@ public:
     /// Reset to an empty set
     void deplete() { tree_->deplete<Item>(); }
 
+    /** \name Syntax sugar
+      */
+    ///@{
+    /** Insert \a item to the set */
+    void operator<<(const Item& item) { insert(item); }
+
+    /** Remove and return first item */
+    void operator>>(Item& item) { if (count() > 0) { item = first(); removeAt(0); } }
+    ///@}
+
 private:
     friend class bucket::Internals;
     friend class Local<MultiSet>;
+    friend class multiset<T>;
 
     MultiSet() = default;
 
