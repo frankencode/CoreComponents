@@ -14,6 +14,9 @@
 
 namespace cc {
 
+template<class K, class V>
+class map;
+
 /** \class Map cc/Map
   * \ingroup container_dynamic
   * \brief %Map data container
@@ -39,6 +42,17 @@ public:
       */
     static Ref<Map> create() { return new Map; }
 
+    /** Create a copy of another map
+      * \param other the list to copy
+      * \return new object instance
+      */
+    static Ref<Map> copy(const Map *other) { return new Map{other}; }
+
+    /** Make a copy of this map
+      * \return new object instance
+      */
+    Ref<Map> copy() const { return Map::copy(this); }
+
     /// Number of items
     Index count() const { return tree_->count(); }
 
@@ -47,10 +61,7 @@ public:
         return 0 <= index && index < count();
     }
 
-    /** Return a reference to an item
-      * \param index set index
-      * \return reference to the item
-      */
+    /// Return a reference to the item at \a index
     const Item &at(Index index) const
     {
         assert(0 <= index && index < count());
@@ -227,9 +238,20 @@ public:
     /// Reset to an empty map
     void deplete() { tree_->deplete<Item>(); }
 
+    /** \name Syntax sugar
+      */
+    ///@{
+    /** Insert \a item to the set */
+    void operator<<(const Item& item) { insert(item->key(), item->value()); }
+
+    /** Remove and return first item */
+    void operator>>(Item& item) { if (count() > 0) { item = first(); removeAt(0); } }
+    ///@}
+
 protected:
     friend class bucket::Internals;
     friend class Local<Map>;
+    friend class map<K, V>;
 
     Map() = default;
 
@@ -245,21 +267,21 @@ private:
 };
 
 template<class K, class V>
-bool operator==(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) == 0; }
+bool operator==(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) == 0; }
 
 template<class K, class V>
-bool operator!=(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) != 0; }
+bool operator!=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) != 0; }
 
 template<class K, class V>
-bool operator<(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) < 0; }
+bool operator<(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) < 0; }
 
 template<class K, class V>
-bool operator>(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) > 0; }
+bool operator>(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) > 0; }
 
 template<class K, class V>
-bool operator<=(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) <= 0; }
+bool operator<=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) <= 0; }
 
 template<class K, class V>
-bool operator>=(const Map<K, V> &a, const Map<K, V> &b) { return container::iteratorCompare(a, b) >= 0; }
+bool operator>=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) >= 0; }
 
 } // namespace cc

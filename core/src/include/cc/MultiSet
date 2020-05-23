@@ -36,6 +36,17 @@ public:
       */
     static Ref<MultiSet> create() { return new MultiSet; }
 
+    /** Create a copy of another set
+      * \param other the list to copy
+      * \return new object instance
+      */
+    static Ref<MultiSet> copy(const MultiSet *other) { return new MultiSet{other}; }
+
+    /** Make a copy of this set
+      * \return new object instance
+      */
+    Ref<MultiSet> copy() const { return MultiSet::copy(this); }
+
     /// Number of items
     Index count() const { return tree_->count(); }
 
@@ -175,21 +186,21 @@ private:
 };
 
 template<class T>
-bool operator==(const MultiSet<T> &a, const MultiSet<T> &b) { return container::iteratorCompare(a, b) == 0; }
+bool operator==(const MultiSet<T> &a, const MultiSet<T> &b) { return container::compare(&a, &b) == 0; }
 
 template<class T>
-bool operator!=(const MultiSet<T> &a, const MultiSet<T> &b) { return container::iteratorCompare(a, b) != 0; }
+bool operator!=(const MultiSet<T> &a, const MultiSet<T> &b) { return container::compare(&a, &b) != 0; }
 
 template<class T>
-bool operator<(const MultiSet<T> &a, const MultiSet<T> &b) { return container::iteratorCompare(a, b) < 0; }
+bool operator<(const MultiSet<T> &a, const MultiSet<T> &b) { return container::compare(&a, &b) < 0; }
 
 template<class T>
-bool operator>(const MultiSet<T> &a, const MultiSet<T> &b) { return container::iteratorCompare(a, b) > 0; }
+bool operator>(const MultiSet<T> &a, const MultiSet<T> &b) { return container::compare(&a, &b) > 0; }
 
 template<class T>
-bool operator<=(const MultiSet<T> &a, const MultiSet<T> &b) { return container::iteratorCompare(a, b) <= 0; }
+bool operator<=(const MultiSet<T> &a, const MultiSet<T> &b) { return container::compare(&a, &b) <= 0; }
 
 template<class T>
-bool operator>=(const MultiSet<T> &a, const MultiSet<T> &b) { return container::iteratorCompare(a, b) >= 0; }
+bool operator>=(const MultiSet<T> &a, const MultiSet<T> &b) { return container::compare(&a, &b) >= 0; }
 
 } // namespace cc

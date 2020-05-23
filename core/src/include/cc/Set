@@ -39,21 +39,13 @@ public:
       */
     static Ref<Set> create() { return new Set; }
 
-    /** Create a copy of another list
+    /** Create a copy of another set
       * \param other the list to copy
       * \return new object instance
       */
-    static Ref<Set> copy(const Set *other)
-    {
-        // TODO: improve performance
+    static Ref<Set> copy(const Set *other) { return new Set{other}; }
 
-        auto set = new Set;
-        for (const Item &item: *other)
-            set->tree_->pushBack(item);
-        return set;
-    }
-
-    /** Make a copy of this list
+    /** Make a copy of this set
       * \return new object instance
       */
     Ref<Set> copy() const { return Set::copy(this); }

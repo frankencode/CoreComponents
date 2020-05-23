@@ -49,14 +49,7 @@ public:
       * \param other the list to copy
       * \return new object instance
       */
-    static Ref<List> copy(const List *other)
-    {
-        // TODO: improve performance
-
-        auto list = new List;
-        for (const Item &item: other) list->pushBack(item);
-        return list;
-    }
+    static Ref<List> copy(const List *other) { return new List{other}; }
 
     /** Make a copy of this list
       * \return new object instance
@@ -378,7 +371,10 @@ private:
     List() = default;
     ~List() { tree_->deplete<Item>(); }
 
-    List(const List &) = delete;
+    List(const List *other)
+    {
+        tree_->populate<Item>(other);
+    }
 
     template<class Heap>
     Ref<List> sortWithHeap(Ref<Heap> heap, bool unique = false) const

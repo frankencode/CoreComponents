@@ -39,6 +39,17 @@ public:
       */
     static Ref<MultiMap> create() { return new MultiMap; }
 
+    /** Create a copy of another map
+      * \param other the list to copy
+      * \return new object instance
+      */
+    static Ref<MultiMap> copy(const MultiMap *other) { return new MultiMap{other}; }
+
+    /** Make a copy of this map
+      * \return new object instance
+      */
+    Ref<MultiMap> copy() const { return MultiMap::copy(this); }
+
     /// Number of items
     Index count() const { return tree_->count(); }
 
@@ -190,21 +201,21 @@ protected:
 };
 
 template<class K, class V>
-bool operator==(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) == 0; }
+bool operator==(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) == 0; }
 
 template<class K, class V>
-bool operator!=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) != 0; }
+bool operator!=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) != 0; }
 
 template<class K, class V>
-bool operator<(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) < 0; }
+bool operator<(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) < 0; }
 
 template<class K, class V>
-bool operator>(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) > 0; }
+bool operator>(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) > 0; }
 
 template<class K, class V>
-bool operator<=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) <= 0; }
+bool operator<=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) <= 0; }
 
 template<class K, class V>
-bool operator>=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::iteratorCompare(a, b) >= 0; }
+bool operator>=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) >= 0; }
 
 } // namespace cc

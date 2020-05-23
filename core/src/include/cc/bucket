@@ -163,6 +163,7 @@ public:
     template<class Item, class Other>
     void populate(const Other *other)
     {
+        // TODO: improve performance
         for (const Item &x: *other)
             pushBack<Item>(x);
     }
