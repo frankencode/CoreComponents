@@ -73,10 +73,10 @@ public:
 };
 
 ShHeaderStyle::ShHeaderStyle():
-    HeaderStyle("sh")
+    HeaderStyle{"sh"}
 {}
 
-Ref<Header> ShHeaderStyle::scan(String path) const
+Ref<Header> ShHeaderStyle::scan(const String &path) const
 {
     String text = File::open(path)->map();
     Ref<Token> rootToken = Singleton<ShHeaderSyntax>::instance()->match(text, 0)->rootToken();
@@ -86,7 +86,7 @@ Ref<Header> ShHeaderStyle::scan(String path) const
     return Header::create(path, token, text, message);
 }
 
-String ShHeaderStyle::str(Notice *notice) const
+String ShHeaderStyle::str(const Notice *notice) const
 {
     Format format;
     format << "##\n";
@@ -108,7 +108,7 @@ String ShHeaderStyle::str(Notice *notice) const
     return format;
 }
 
-int ShHeaderStyle::magicCount(String text) const
+int ShHeaderStyle::magicCount(const String &text) const
 {
     Ref<Token> token = Singleton<ShMagicSyntax>::instance()->match(text, 0)->rootToken();
     if (!token) return 0;

@@ -78,7 +78,7 @@ bool TestSuite::init(int argc, char **argv)
     return true;
 }
 
-bool TestSuite::verify(bool condition, String description, String conditionText, String codePath, int codeLine)
+bool TestSuite::verify(bool condition, const String &description, const String &conditionText, const String &codePath, int codeLine)
 {
     if (!condition) {
         ++totalFailureCount_;

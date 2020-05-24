@@ -93,7 +93,7 @@ String fnum(float64_t x, int precision, int base, int screen)
             for (int h = eba; h != 0; h /= base) ++ne;
         }
 
-        text = String(wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne), ' ');
+        text = String{wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne), ' '};
 
         if (s == 1)
             mutate(text)->at(i++) = '-';
@@ -174,7 +174,7 @@ String dec(const Variant &x, int n)
 
 String str(uchar_t ch)
 {
-    String s(4);
+    String s{4};
     Ref<Utf8Sink> sink = Utf8Sink::open(mutate(s));
     sink->write(ch);
     mutate(s)->truncate(sink->byteSink()->currentOffset());
@@ -192,13 +192,13 @@ String str(void *x)
 String left(const String &s, int w, char blank)
 {
     if (s->count() > w) return s;
-    else return s + String(w - s->count(), blank);
+    else return s + String{w - s->count(), blank};
 }
 
 String right(const String &s, int w, char blank)
 {
     if (s->count() > w) return s;
-    else return String(w - s->count(), blank) + s;
+    else return String{w - s->count(), blank} + s;
 }
 
 } // namespace cc

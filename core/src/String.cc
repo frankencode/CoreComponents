@@ -70,7 +70,7 @@ String Array<char>::copy(const char *data, int size)
 
 String Array<char>::join(const StringList *parts, const char *sep, int sepSize)
 {
-    if (!parts) return String();
+    if (!parts) return String{};
 
     if (parts->count() == 0)
         return String{};
@@ -80,7 +80,7 @@ String Array<char>::join(const StringList *parts, const char *sep, int sepSize)
     for (int i = 0; i < parts->count(); ++i)
         size += parts->at(i)->count();
     size += (parts->count() - 1) * sepSize;
-    String result(size);
+    String result{size};
     char *p = result->data_;
     for (int i = 0; i < parts->count(); ++i) {
         const CharArray *part = parts->at(i);
@@ -517,7 +517,7 @@ String Array<char>::unescapeInsitu()
                         x += 0x10000;
                         hs = 0;
                     }
-                    if (!ec) ec = String(4);
+                    if (!ec) ec = String{4};
                     Ref<Utf8Sink> sink = Utf8Sink::open(mutate(ec));
                     sink->write(x);
                     int el = utf8::encodedSize(x);
@@ -703,7 +703,7 @@ String Array<char>::fromUtf16(const CharArray *utf16, Endian endian)
         Ref<Utf16Source> source = Utf16Source::open(utf16, endian);
         for (uchar_t ch; source->read(&ch);)
             n += utf8::encodedSize(ch);
-        out = String(n);
+        out = String{n};
     }
 
     Ref<Utf16Source> source = Utf16Source::open(utf16, endian);
@@ -749,7 +749,7 @@ String Array<char>::toUtf16(Endian endian) const
         int n = 0;
         for (int i = 0; i < chars->count(); ++i)
             n += utf16::encodedSize(chars->at(i));
-        out = String(n + 2);
+        out = String{n + 2};
         mutate(out)->at(n) = 0;
         mutate(out)->at(n + 1) = 0;
     }
@@ -887,7 +887,7 @@ String Array<char>::extendPath(const String &relativePath) const
     if (relativePath->count() == 0) return copy();
 
     Ref<StringList> parts = StringList::create();
-    if (String(this) != "/") parts << this;
+    if (String{this} != "/") parts << this;
     if (!endsWith('/') || !relativePath->startsWith('/')) parts << "/";
     parts << relativePath;
 

@@ -22,19 +22,18 @@ public:
       * \param path file path
       * \return new object instance
       */
-    static Ref<UnlinkGuard> create(String path) { return new UnlinkGuard(path); }
+    static Ref<UnlinkGuard> create(const String &path) { return new UnlinkGuard{path}; }
 
     /** \brief Low-level constructor
       * \param path file path
       */
-    UnlinkGuard(String path);
+    UnlinkGuard(const String &path);
 
     /** \brief Low-level destructor
       */
     ~UnlinkGuard();
 
 private:
-
     String path_;
 };
 

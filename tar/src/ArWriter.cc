@@ -73,7 +73,7 @@ void ArWriter::writeFile(const String &path)
     file->transferSpanTo(contentSize, sink_);
 
     if (contentSize % 2 != 0)
-        sink_->write(String("\0", 1));
+        sink_->write(String{"\0", 1});
 }
 
 }} // namespace cc::tar

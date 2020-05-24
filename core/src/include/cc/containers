@@ -55,8 +55,8 @@ int iterate_compare(I i, J j)
     typedef typename I::value_type X;
     typedef typename J::value_type Y;
 
-    X x0{};
-    Y y0{};
+    X x0 = X();
+    Y y0 = Y();
 
     while (i || j) {
         const X &x = i ? *i : x0;

@@ -20,12 +20,11 @@ public:
 
     virtual void beginTestSuite(TestSuite *testSuite) = 0;
     virtual void beginTestCase(TestCase *testCase) = 0;
-    virtual void verify(TestCase *testCase, bool condition, String message, String codePath, int codeLine) = 0;
-    virtual void error(TestCase *testCase, String type, String message) = 0;
-    virtual void endTestCase(TestCase *testCase, String outText = "", String errText = "") = 0;
+    virtual void verify(TestCase *testCase, bool condition, const String &message, const String &codePath, int codeLine) = 0;
+    virtual void error(TestCase *testCase, const String &type, const String &message) = 0;
+    virtual void endTestCase(TestCase *testCase, const String &outText = "", const String &errText = "") = 0;
     virtual void skipTestCase(TestCase *testCase) = 0;
     virtual void endTestSuite(TestSuite *testSuite) = 0;
 };
 
 }} // namespace cc::testing
-

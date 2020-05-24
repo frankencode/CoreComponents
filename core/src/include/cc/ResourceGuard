@@ -19,7 +19,7 @@ namespace cc {
 class ResourceGuard
 {
 public:
-    ResourceGuard(String resource);
+    ResourceGuard(const String &resource);
     ~ResourceGuard();
 };
 

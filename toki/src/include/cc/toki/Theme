@@ -16,21 +16,21 @@ namespace toki {
 class Theme: public Object
 {
 public:
-    static Ref<Theme> load(String path);
-    inline String path() const { return path_; }
-    inline String name() const { return name_; }
+    static Ref<Theme> load(const String &path);
+    String path() const { return path_; }
+    String name() const { return name_; }
 
-    inline bool lookupPaletteByScope(int scope, Palette **palette) const {
+    bool lookupPaletteByScope(int scope, Palette **palette) const {
         return paletteByScope_->lookup(scope, palette);
     }
 
-    inline int paletteCount() const { return paletteByScope_->count(); }
-    inline const Palette *paletteAt(int i) const { return paletteByScope_->at(i)->value(); }
+    int paletteCount() const { return paletteByScope_->count(); }
+    const Palette *paletteAt(int i) const { return paletteByScope_->at(i)->value(); }
 
-    inline const Palette *defaultPalette() const { return defaultPalette_; }
+    const Palette *defaultPalette() const { return defaultPalette_; }
 
 private:
-    Theme(String path);
+    Theme(const String &path);
 
     String path_;
     String name_;
@@ -40,6 +40,6 @@ private:
     Ref<Palette> defaultPalette_;
 };
 
-Ref<StringList> themeList(String path = "");
+Ref<StringList> themeList(const String &path = "");
 
 }} // namespace cc::toki

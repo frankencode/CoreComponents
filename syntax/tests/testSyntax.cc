@@ -76,7 +76,7 @@ public:
         LINK();
     }
 
-    double eval(String text)
+    double eval(const String &text)
     {
         Ref<Token> rootToken = match(text)->rootToken();
         double value = cc::nan();

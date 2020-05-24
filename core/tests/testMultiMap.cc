@@ -14,7 +14,7 @@
 using namespace cc;
 using namespace cc::testing;
 
-namespace cc { template class MultiMap<String, String>; }
+namespace cc { template class MultiMap<String>; }
 
 class InsertionIteration: public TestCase
 {

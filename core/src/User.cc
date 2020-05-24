@@ -17,7 +17,7 @@ User::User(uid_t id)
     int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
     if (bufSize == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 
-    String buf(bufSize);
+    String buf{bufSize};
     struct passwd space;
     struct passwd *entry = 0;
     int ret = ::getpwuid_r(id, &space, mutate(buf)->chars(), buf->count(), &entry);
@@ -25,11 +25,11 @@ User::User(uid_t id)
     load(entry);
 }
 
-User::User(String name)
+User::User(const String &name)
 {
     int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
     if (bufSize == -1) CC_SYSTEM_DEBUG_ERROR(errno);
-    String buf(bufSize);
+    String buf{bufSize};
     struct passwd space;
     struct passwd *entry = 0;
     int ret = ::getpwnam_r(name, &space, mutate(buf)->chars(), buf->count(), &entry);

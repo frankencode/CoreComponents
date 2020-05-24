@@ -21,12 +21,12 @@ Registry::Registry():
     languageByName_{LanguageByName::create()}
 {}
 
-bool Registry::lookupLanguageByName(String name, Language **language) const
+bool Registry::lookupLanguageByName(const String &name, Language **language) const
 {
     return languageByName_->lookup(name, language);
 }
 
-bool Registry::detectLanguage(String path, String text, Language **language) const
+bool Registry::detectLanguage(const String &path, const String &text, Language **language) const
 {
     typedef List<Language *> Candidates;
     Ref<Candidates> candidates = Candidates::create();

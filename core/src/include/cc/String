@@ -305,7 +305,7 @@ public:
       * \param other the original character array
       * \return new object instance
       */
-    static String copy(const CharArray *other) { return other ? other->copy() : String(); }
+    static String copy(const CharArray *other) { return other ? other->copy() : String{}; }
 
     /** Join a list of strings
       * \param parts the individual items to join together

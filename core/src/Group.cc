@@ -15,7 +15,7 @@ namespace cc {
 
 Group::Group(gid_t id)
 {
-    int bufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
+    int bufSize = ::sysconf(_SC_GETGR_R_SIZE_MAX);
     if (bufSize == -1) CC_SYSTEM_DEBUG_ERROR(errno);
     String buf = CharArray::allocate(bufSize);
     struct group space;
@@ -26,9 +26,9 @@ Group::Group(gid_t id)
     load(entry);
 }
 
-Group::Group(String name)
+Group::Group(const String &name)
 {
-    int bufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
+    int bufSize = ::sysconf(_SC_GETGR_R_SIZE_MAX);
     if (bufSize == -1) CC_SYSTEM_DEBUG_ERROR(errno);
     String buf = CharArray::allocate(bufSize);
     struct group space;
@@ -39,7 +39,7 @@ Group::Group(String name)
     load(entry);
 }
 
-bool Group::checkMembership(User *user) const
+bool Group::checkMembership(const User *user) const
 {
     return user->groupId() == id_ || otherMembers_->contains(user->name());
 }

@@ -21,13 +21,13 @@ class ConfigureShell: public Object
 public:
     static ConfigureShell *instance();
     void setVerbose(bool on) { verbose_ = on; }
-    String run(String shellCommand);
+    String run(const String &shellCommand);
 
 private:
     friend class Singleton<ConfigureShell>;
 
-    bool lookup(String command, String *output) const;
-    void insert(String command, String output);
+    bool lookup(const String &command, String *output) const;
+    void insert(const String &command, const String &output);
 
     ConfigureShell();
 

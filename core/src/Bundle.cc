@@ -13,7 +13,7 @@
 
 namespace cc {
 
-String Bundle::lookup(String relPath, const StringList *dirs)
+String Bundle::lookup(const String &relPath, const StringList *dirs)
 {
     return File::locate(relPath, dirs, FileAccess::Exists);
 }
@@ -31,8 +31,8 @@ String Bundle::exePrefix()
 }
 
 Bundle::Bundle():
-    overridePrefix_(Process::getEnv("CC_BUNDLE_PREFIX_OVERRIDE")),
-    exePrefix_(Process::exePath()->reducePath())
+    overridePrefix_{Process::getEnv("CC_BUNDLE_PREFIX_OVERRIDE")},
+    exePrefix_{Process::exePath()->reducePath()}
 {}
 
 } // namespace cc

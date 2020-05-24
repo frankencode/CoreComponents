@@ -204,8 +204,8 @@ String str(CursorShape shape);
 typedef Vector<double, 2> Step;
 typedef Vector<double, 2> Scale;
 
-typedef std::function<bool(String /*text*/, int /*byteOffset*/, int /*byteCount*/)> TextWrapBehind;
-bool textWrapBehindDefault(String text, int byteOffset, int byteCount);
+typedef std::function<bool(const String &/*text*/, int /*byteOffset*/, int /*byteCount*/)> TextWrapBehind;
+bool textWrapBehindDefault(const String &text, int byteOffset, int byteCount);
 
 typedef int64_t TouchDeviceId;
 typedef int64_t TouchFingerId;

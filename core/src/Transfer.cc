@@ -29,7 +29,7 @@ public:
 
     off_t totalRead() const { Guard<Mutex> guard(mutex_); return totalRead_; }
 
-    void stop() { freeQueue_->pushFront(String()); }
+    void stop() { freeQueue_->pushFront(String{}); }
 
 private:
     TransferInputWorker(TransferBufferQueue *freeQueue, TransferBufferQueue *writeQueue, Stream *source):
@@ -54,7 +54,7 @@ private:
                 }
                 writeQueue_->pushBack(buffer->select(0, n));
             }
-            writeQueue_->pushBack(String());
+            writeQueue_->pushBack(String{});
         }
         catch (Exception &ex) {
             errorMessage_ = ex.message();
@@ -87,7 +87,7 @@ public:
 
     off_t totalWritten() const { Guard<Mutex> guard(mutex_); return totalWritten_; }
 
-    void stop() { writeQueue_->pushFront(String()); }
+    void stop() { writeQueue_->pushFront(String{}); }
 
 private:
     TransferOutputWorker(TransferBufferQueue *writeQueue, TransferBufferQueue *freeQueue, Stream *sink):

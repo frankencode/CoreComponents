@@ -23,7 +23,7 @@ using namespace cc;
 using namespace cc::crypto;
 using namespace ccaes;
 
-String normalizePassword(String password)
+String normalizePassword(const String &password)
 {
     String s = String::create(16);
     mutate(s)->fill(' ');
@@ -33,7 +33,7 @@ String normalizePassword(String password)
 
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->fileName();
+    String toolName = String{argv[0]}->fileName();
     bool encipher = !toolName->contains("un");
 
     try {

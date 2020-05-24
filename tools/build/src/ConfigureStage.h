@@ -22,9 +22,9 @@ public:
     void makeUseOf(BuildPlan *other);
 
     bool probeBuild(const String &name, const String &probe) const;
-    bool runConfigure(String name, String configure, String *output) const;
+    bool runConfigure(const String &name, const String &configure, String *output) const;
 
-    static Ref<StringList> getFlags(const MetaObject *object, String propertyName);
+    static Ref<StringList> getFlags(const MetaObject *object, const String &propertyName);
 };
 
 } // namespace ccbuild

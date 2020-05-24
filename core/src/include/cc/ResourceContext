@@ -24,7 +24,7 @@ class ResourceContext: public Object
 public:
     static ResourceContext *instance();
 
-    void push(String resource);
+    void push(const String &resource);
     String pop();
 
     String top() const;

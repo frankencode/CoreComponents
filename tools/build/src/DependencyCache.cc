@@ -127,12 +127,12 @@ StringList *DependencyCache::previousSources() const
     return previousSources_;
 }
 
-bool DependencyCache::lookup(String source, Ref<Module> *module)
+bool DependencyCache::lookup(const String &source, Ref<Module> *module)
 {
     return cache_->lookup(source, module);
 }
 
-void DependencyCache::insert(String source, Module *module)
+void DependencyCache::insert(const String &source, Module *module)
 {
     cache_->insert(source, module);
 }

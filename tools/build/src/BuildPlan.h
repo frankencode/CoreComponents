@@ -75,7 +75,7 @@ public:
     String projectPath() const { return projectPath_; }
     String systemSourcePath() const { return toolChain_->systemRoot()->extendPath("/usr/src"); }
     bool isSystemSource() const { return projectPath_->startsWith(systemSourcePath()); }
-    static String recipePath(String projectPath) { return projectPath + "/Recipe"; }
+    static String recipePath(const String &projectPath) { return projectPath + "/Recipe"; }
     String recipePath() const { return recipePath_; }
     String userPkgConfigPath() const { return projectPath_->extendPath(toolChain_->pkgConfigName(this)); }
     String scope() const { return scope_; }
@@ -138,7 +138,7 @@ public:
     CleanStage *cleanStage() { return &cleanStage_; }
 
 private:
-    Ref<BuildPlan> create(String projectPath);
+    Ref<BuildPlan> create(const String &projectPath);
 
     BuildPlan();
     BuildPlan(int argc, char **argv);

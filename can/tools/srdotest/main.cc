@@ -102,7 +102,7 @@ void runTest(const VariantMap *options)
 
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->fileName();
+    String toolName = String{argv[0]}->fileName();
 
     try {
         auto arguments = Arguments::parse(argc, argv);

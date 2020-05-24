@@ -17,14 +17,14 @@
 
 namespace cc {
 
-Ref<PluginDir> PluginDir::open(String path)
+Ref<PluginDir> PluginDir::open(const String &path)
 {
     return (new PluginDir(path))->open();
 }
 
-PluginDir::PluginDir(String path):
-    path_(path),
-    loadedPlugins_(PluginByName::create())
+PluginDir::PluginDir(const String &path):
+    path_{path},
+    loadedPlugins_{PluginByName::create()}
 {}
 
 PluginDir::~PluginDir()
@@ -40,7 +40,7 @@ Ref< Source<const Plugin *> > PluginDir::getLoadedPlugins() const
     return ValueSource<PluginByName, const Plugin *>::open(loadedPlugins_);
 }
 
-void PluginDir::onLoadError(String pluginPath, String errorMessage)
+void PluginDir::onLoadError(const String &pluginPath, const String &errorMessage)
 {
     ferr() << "Failed to load plugin " << pluginPath << ": " << errorMessage << nl;
 }

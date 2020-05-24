@@ -16,15 +16,15 @@ String PluginLoadError::message() const
     return dlerror();
 }
 
-Ref<Plugin> Plugin::load(String path)
+Ref<Plugin> Plugin::load(const String &path)
 {
     return (new Plugin(path))->load();
 }
 
-Plugin::Plugin(String path):
-    path_(path),
-    name_(path->baseName()),
-    handle_(0)
+Plugin::Plugin(const String &path):
+    path_{path},
+    name_{path->baseName()},
+    handle_{0}
 {}
 
 Plugin *Plugin::load()

@@ -28,12 +28,12 @@ class BuildMap: public Object
 public:
     static BuildMap *instance();
 
-    void insertPlan(String path, BuildPlan *plan);
-    bool lookupPlan(String path, Ref<BuildPlan> *plan) const;
+    void insertPlan(const String &path, BuildPlan *plan);
+    bool lookupPlan(const String &path, Ref<BuildPlan> *plan) const;
     String commonPrefix() const;
 
-    bool registerLibrary(String name, String recipePath, String *exitingRecipePath);
-    bool registerApplication(String name, String recipePath, String *existingRecipePath);
+    bool registerLibrary(const String &name, const String &recipePath, String *exitingRecipePath);
+    bool registerApplication(const String &name, const String &recipePath, String *existingRecipePath);
 
 private:
     friend class Singleton<BuildMap>;

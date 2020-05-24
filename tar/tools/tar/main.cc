@@ -23,7 +23,7 @@ using namespace cc::tar;
 
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->fileName();
+    String toolName = String{argv[0]}->fileName();
     bool tarMode = toolName->contains("tar");
     bool unpackMode = toolName->contains("un");
     try {

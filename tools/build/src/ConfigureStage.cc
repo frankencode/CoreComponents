@@ -283,7 +283,7 @@ bool ConfigureStage::probeBuild(const String &name, const String &probe) const
     return true;
 }
 
-bool ConfigureStage::runConfigure(String name, String configure, String *output) const
+bool ConfigureStage::runConfigure(const String &name, const String &configure, String *output) const
 {
     String configurePath = plan()->projectPath()->extendPath(configure);
 
@@ -335,7 +335,7 @@ bool ConfigureStage::runConfigure(String name, String configure, String *output)
     return sub->wait() == 0;
 }
 
-Ref<StringList> ConfigureStage::getFlags(const MetaObject *object, String propertyName)
+Ref<StringList> ConfigureStage::getFlags(const MetaObject *object, const String &propertyName)
 {
     Variant value;
     if (object->lookup(propertyName, &value)) {
@@ -344,7 +344,7 @@ Ref<StringList> ConfigureStage::getFlags(const MetaObject *object, String proper
         else if (value->type() == VariantType::List && value->itemType() == VariantType::String)
             return Variant::cast<StringList *>(value);
     }
-    return Ref<StringList>();
+    return Ref<StringList>{};
 }
 
 } // namespace ccbuild

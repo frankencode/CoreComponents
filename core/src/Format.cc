@@ -104,7 +104,7 @@ Format &Format::operator<<(const String &s)
 Format &Format::operator<<(const FormatSignal &s)
 {
     if (isNull_) return *this;
-    if (&s == &cc::nl) operator<<(String("\n"));
+    if (&s == &cc::nl) operator<<(String{"\n"});
     else if (&s == &cc::flush) Format::flush();
     return *this;
 }

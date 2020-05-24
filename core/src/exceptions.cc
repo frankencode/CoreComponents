@@ -41,14 +41,14 @@ String SystemResourceError::message() const
 {
     return Format{} << systemError(errorCode_) << ": \"" << resource_ << "\""
         #ifndef NDEBUG
-        << " (" << String(source_)->fileName() << ":" << line_ << ")"
+        << " (" << String{source_}->fileName() << ":" << line_ << ")"
         #endif
         ;
 }
 
 String SystemDebugError::message() const
 {
-    return Format() << systemError(errorCode_) << " (" << String(source_)->fileName() << ":" << line_ << ")";
+    return Format() << systemError(errorCode_) << " (" << String{source_}->fileName() << ":" << line_ << ")";
 }
 
 TextError::TextError(const String &text, int offset, const String &resource):

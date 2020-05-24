@@ -12,26 +12,26 @@
 
 namespace cc {
 
-Ref<DirWalker> DirWalker::open(String path)
+Ref<DirWalker> DirWalker::open(const String &path)
 {
-    return new DirWalker(path);
+    return new DirWalker{path};
 }
 
-Ref<DirWalker> DirWalker::tryOpen(String path)
+Ref<DirWalker> DirWalker::tryOpen(const String &path)
 {
     Ref<Dir> dir = Dir::tryOpen(path);
     Ref<DirWalker> walker;
-    if (dir) walker = new DirWalker(path, dir);
+    if (dir) walker = new DirWalker{path, dir};
     return walker;
 }
 
-DirWalker::DirWalker(String path, Dir *dir):
-    maxDepth_(-1),
-    ignoreHidden_(false),
-    followSymlink_(false),
-    deleteOrder_(false),
-    depth_(0),
-    dir_(dir)
+DirWalker::DirWalker(const String &path, Dir *dir):
+    maxDepth_{-1},
+    ignoreHidden_{false},
+    followSymlink_{false},
+    deleteOrder_{false},
+    depth_{0},
+    dir_{dir}
 {
     if (!dir_) dir_ = Dir::open(path);
 }

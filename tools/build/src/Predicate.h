@@ -18,16 +18,16 @@ using namespace cc;
 class Predicate: public MetaObject
 {
 public:
-    inline static Ref<Predicate> read(const MetaObject *object) {
+    static Ref<Predicate> read(const MetaObject *object) {
         return new Predicate(object);
     }
 
-    inline StringList *source() const { return source_; }
-    inline String target() const { return target_; }
-    inline String create() const { return create_; }
-    inline String update() const { return update_; }
-    inline String remove() const { return remove_; }
-    inline String clean() const { return clean_; }
+    StringList *source() const { return source_; }
+    String target() const { return target_; }
+    String create() const { return create_; }
+    String update() const { return update_; }
+    String remove() const { return remove_; }
+    String clean() const { return clean_; }
 
 private:
     Predicate(const MetaObject *object):

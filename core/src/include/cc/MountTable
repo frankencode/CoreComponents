@@ -22,7 +22,7 @@ public:
       * \param path path to the filesystem table to read (defaults to the system's mtab, i.e. currently mounted filesystems)
       * \return new object instance
       */
-    static Ref<MountTable> open(const String &path = String{});
+    static Ref<MountTable> open(const String &path = "");
 
     /** Parse a mount table
       * \param text mount table in fstab format

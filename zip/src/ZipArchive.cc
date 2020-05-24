@@ -15,12 +15,12 @@ namespace zip {
 
 Ref<ZipArchive> ZipArchive::open(const String &path)
 {
-    return new ZipArchive(path);
+    return new ZipArchive{path};
 }
 
 ZipArchive::ZipArchive(const String &path):
-    path_(path),
-    index_(0)
+    path_{path},
+    index_{0}
 {
     int errorCode = 0;
     archive_ = zip_open(path, ZIP_RDONLY, &errorCode);

@@ -23,8 +23,8 @@ public:
     inline int headerStyleCount() const { return headerStyleByLanguage_->count(); }
     HeaderStyle *headerStyleAt(int i) const { return headerStyleByLanguage_->at(i)->value(); }
 
-    const HeaderStyle *headerStyleByLanguage(String language) const;
-    bool detectHeaderStyle(String path, String text, HeaderStyle **style) const;
+    const HeaderStyle *headerStyleByLanguage(const String &language) const;
+    bool detectHeaderStyle(const String &path, const String &text, HeaderStyle **style) const;
 
 private:
     friend class Singleton<Registry>;

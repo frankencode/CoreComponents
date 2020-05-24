@@ -26,32 +26,32 @@ public:
       * \param id system user ID
       * \return new object instance
       */
-    inline static Ref<User> lookup(uid_t id) {
-        return new User(id);
+    static Ref<User> lookup(uid_t id) {
+        return new User{id};
     }
 
     /** Lookup user information by user name
       * \param name login name
       * \return new object instance
       */
-    inline static Ref<User> lookup(String name) {
-        return new User(name);
+    static Ref<User> lookup(const String &name) {
+        return new User{name};
     }
 
     /// True if queried user exists on the system
-    inline bool isValid() const { return isValid_; }
+    bool isValid() const { return isValid_; }
 
-    inline uid_t id() const { return id_; } ///< user ID
-    inline gid_t groupId() const { return groupId_; } ///< primary group ID
-    inline String name() const { return loginName_; } ///< login name
-    inline String loginName() const { return loginName_; } ///< login name
-    inline String fullName() const { return fullName_; } ///< real name
-    inline String home() const { return home_; } ///< home directory path
-    inline String shell() const { return shell_; } ///< login shell of the user
+    uid_t id() const { return id_; } ///< user ID
+    gid_t groupId() const { return groupId_; } ///< primary group ID
+    String name() const { return loginName_; } ///< login name
+    String loginName() const { return loginName_; } ///< login name
+    String fullName() const { return fullName_; } ///< real name
+    String home() const { return home_; } ///< home directory path
+    String shell() const { return shell_; } ///< login shell of the user
 
 private:
     User(uid_t id);
-    User(String name);
+    User(const String &name);
 
     void load(struct passwd *entry);
     bool isValid_;

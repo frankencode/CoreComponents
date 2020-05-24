@@ -18,19 +18,19 @@ using namespace cc;
 class Notice: public Object
 {
 public:
-    inline static Ref<Notice> create(CopyrightList *copyrights, String statement, Header *header = nullptr) {
-        return new Notice(copyrights, statement, header);
+    static Ref<Notice> create(CopyrightList *copyrights, const String &statement, Header *header = nullptr) {
+        return new Notice{copyrights, statement, header};
     }
 
-    inline CopyrightList *copyrights() const { return copyrights_; }
-    inline String statement() const { return statement_; }
-    inline Header *header() const { return header_; }
+    CopyrightList *copyrights() const { return copyrights_; }
+    String statement() const { return statement_; }
+    Header *header() const { return header_; }
 
 private:
-    Notice(CopyrightList *copyrights, String statement, Header *header = nullptr)
-        : copyrights_(copyrights),
-          statement_(statement->trim()),
-          header_(header)
+    Notice(CopyrightList *copyrights, const String &statement, Header *header = nullptr):
+        copyrights_{copyrights},
+        statement_{statement->trim()},
+        header_{header}
     {}
 
     Ref<CopyrightList> copyrights_;

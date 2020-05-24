@@ -24,8 +24,8 @@ class Registry: public Object
 public:
     static Registry *instance();
 
-    bool lookupLanguageByName(String name, Language **language) const;
-    bool detectLanguage(String path, String text, Language **language) const;
+    bool lookupLanguageByName(const String &name, Language **language) const;
+    bool detectLanguage(const String &path, const String &text, Language **language) const;
 
     int languageCount() const { return languageByName_->count(); }
     const Language *languageAt(int i) const { return languageByName_->at(i)->value(); }

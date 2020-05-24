@@ -32,10 +32,10 @@ Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
     return new BuildPlan{argc, argv};
 }
 
-Ref<BuildPlan> BuildPlan::create(String projectPath)
+Ref<BuildPlan> BuildPlan::create(const String &projectPath)
 {
     Ref<BuildPlan> plan;
-    if (BuildMap::instance()->lookupPlan(String(projectPath->absolutePathRelativeTo(Process::getWorkingDirectory())), &plan)) return plan;
+    if (BuildMap::instance()->lookupPlan(projectPath->absolutePathRelativeTo(Process::getWorkingDirectory()), &plan)) return plan;
     return new BuildPlan{projectPath, this};
 }
 

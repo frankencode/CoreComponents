@@ -17,7 +17,7 @@ using namespace cc::testing;
 
 class ArgumentPassing: public TestCase
 {
-    inline void byValue(String s) {
+    void byValue(String s) {
         CC_INSPECT(s->refCount());
     }
 
@@ -31,7 +31,7 @@ class ArgumentPassing: public TestCase
 
     void run() override
     {
-        String a("123");
+        String a{"123"};
         byValue(a);
         byConstValue(a);
         byConstRef(a);
@@ -44,7 +44,7 @@ class ConstructionComparism: public TestCase
 {
     void run() override
     {
-        String a = "Test!", b("1, 2, 3, ...");
+        String a = "Test!", b{"1, 2, 3, ..."};
         fout() << a << " " << b << nl;
         CC_VERIFY(a == "Test!");
         CC_VERIFY(a != "1, 2, 3, ...");
@@ -71,7 +71,7 @@ class CountCopySplitJoin: public TestCase
         fout("]\n");
         CC_VERIFY(parts->join("a") == s);
 
-        CC_VERIFY(String()->split("\n")->count() == 1);
+        CC_VERIFY(String{}->split("\n")->count() == 1);
     }
 };
 

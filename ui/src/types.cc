@@ -207,7 +207,7 @@ String str(CursorShape shape)
     return String{};
 }
 
-bool textWrapBehindDefault(String text, int byteOffset, int byteCount)
+bool textWrapBehindDefault(const String &text, int byteOffset, int byteCount)
 {
     uint8_t ch = text->byteAt(byteOffset + byteCount - 1);
     uint8_t ch2 = text->has(byteOffset + byteCount) ? text->byteAt(byteOffset + byteCount) : 0;

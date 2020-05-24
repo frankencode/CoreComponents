@@ -6,18 +6,18 @@
  *
  */
 
-#include "Registry.h"
 #include "HeaderStyle.h"
+#include "Registry.h"
 
 namespace ccclaim {
 
-HeaderStyle::HeaderStyle(String language)
-    : language_(language)
+HeaderStyle::HeaderStyle(const String &language):
+    language_{language}
 {
     registry()->registerHeaderStyle(this);
 }
 
-String HeaderStyle::trimHeader(String text, const char *space)
+String HeaderStyle::trimHeader(const String &text, const char *space)
 {
     Ref<StringList> lines = text->split('\n');
     for (int i = 0; i < lines->count(); ++i)

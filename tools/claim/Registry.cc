@@ -6,26 +6,27 @@
  *
  */
 
+#include "Registry.h"
 #include <cc/Singleton>
 #include <cc/toki/Registry>
-#include "Registry.h"
 
 namespace ccclaim {
 
 Registry::Registry():
-      headerStyleByLanguage_(HeaderStyleByLanguage::create())
+      headerStyleByLanguage_{HeaderStyleByLanguage::create()}
 {}
 
-const HeaderStyle *Registry::headerStyleByLanguage(String language) const
+const HeaderStyle *Registry::headerStyleByLanguage(const String &language) const
 {
     return headerStyleByLanguage_->value(language);
 }
 
-bool Registry::detectHeaderStyle(String path, String text, HeaderStyle **style) const
+bool Registry::detectHeaderStyle(const String &path, const String &text, HeaderStyle **style) const
 {
-    toki::Language *language = 0;
-    if (path->fileSuffix() == "qml") path = path->replace(".qml", ".cpp"); // workaround HACK
-    if (toki::Registry::instance()->detectLanguage(path, text, &language)) {
+    toki::Language *language = nullptr;
+    String actualPath = path;
+    if (actualPath->fileSuffix() == "qml") actualPath = actualPath->replace(".qml", ".cpp"); // workaround HACK
+    if (toki::Registry::instance()->detectLanguage(actualPath, text, &language)) {
         Ref<HeaderStyle> value;
         if (headerStyleByLanguage_->lookup(language->name(), &value)) {
             *style = value;

@@ -247,7 +247,7 @@ public:
         return Version::fromWord((*this)->word_);
     }
     operator String() const {
-        if (!+(*this)->type_) return String();
+        if (!+(*this)->type_) return String{};
         CC_ASSERT2(+((*this)->type_ & VariantType::String), illegalConversion);
         return Variant::cast<CharArray *>(*this);
     }

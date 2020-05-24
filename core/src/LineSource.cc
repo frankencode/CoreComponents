@@ -31,7 +31,7 @@ LineSource::LineSource(Stream *stream, CharArray *buffer):
 bool LineSource::read(String *line)
 {
     if (eoi_) {
-        *line = String();
+        *line = String{};
         return false;
     }
 
@@ -70,7 +70,7 @@ bool LineSource::read(String *line)
         *line = backlog->join();
         return true;
     }
-    *line = String();
+    *line = String{};
     return false;
 }
 
@@ -83,7 +83,7 @@ String LineSource::readLine()
 
 String LineSource::pendingData() const
 {
-    if (eoi_) return String();
+    if (eoi_) return String{};
     return buffer_->copy(i_, n_);
 }
 

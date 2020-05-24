@@ -18,11 +18,11 @@ ConfigureShell *ConfigureShell::instance()
 }
 
 ConfigureShell::ConfigureShell():
-    verbose_(false),
-    cache_(Cache::create())
+    verbose_{false},
+    cache_{Cache::create()}
 {}
 
-String ConfigureShell::run(String shellCommand)
+String ConfigureShell::run(const String &shellCommand)
 {
     if (shellCommand == "") return "";
 
@@ -52,12 +52,12 @@ String ConfigureShell::run(String shellCommand)
     return text;
 }
 
-bool ConfigureShell::lookup(String command, String *output) const
+bool ConfigureShell::lookup(const String &command, String *output) const
 {
     return cache_->lookup(command, output);
 }
 
-void ConfigureShell::insert(String command, String output)
+void ConfigureShell::insert(const String &command, const String &output)
 {
     cache_->insert(command, output);
 }

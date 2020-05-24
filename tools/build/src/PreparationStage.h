@@ -19,7 +19,7 @@ public:
     bool run();
 
 private:
-    static String expand(String command, String sourcePath, String targetPath);
+    static String expand(const String &command, const String &sourcePath, const String &targetPath);
 };
 
 } // namespace ccbuild

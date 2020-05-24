@@ -21,7 +21,7 @@ public:
 class Plugin: public Object
 {
 public:
-    static Ref<Plugin> load(String path);
+    static Ref<Plugin> load(const String &path);
 
     String name() const { return name_; }
     String path() const { return path_; }
@@ -30,7 +30,7 @@ public:
     void close();
 
 private:
-    Plugin(String path);
+    Plugin(const String &path);
 
     Plugin *load();
 

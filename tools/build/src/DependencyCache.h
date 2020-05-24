@@ -32,8 +32,8 @@ public:
 
     StringList *previousSources() const;
 
-    bool lookup(String source, Ref<Module> *module);
-    void insert(String source, Module *module);
+    bool lookup(const String &source, Ref<Module> *module);
+    void insert(const String &source, Module *module);
 
 private:
     DependencyCache(BuildPlan *plan);
@@ -48,4 +48,3 @@ private:
 };
 
 } // namespace ccbuild
-

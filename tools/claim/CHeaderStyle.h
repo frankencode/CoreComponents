@@ -17,8 +17,8 @@ using namespace cc;
 class CHeaderStyle: public HeaderStyle
 {
 public:
-    virtual Ref<Header> scan(String path) const;
-    virtual String str(Notice *notice) const;
+    Ref<Header> scan(const String &path) const override;
+    String str(const Notice *notice) const override;
 
 private:
     friend class Object;

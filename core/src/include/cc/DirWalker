@@ -27,37 +27,37 @@ public:
       * \param path directory path
       * \return new object instance
       */
-    static Ref<DirWalker> open(String path);
+    static Ref<DirWalker> open(const String &path);
 
     /** Open a directory for recursive tree traversal, if it exists
       * \param path directory path
       * \return new object instance
       */
-    static Ref<DirWalker> tryOpen(String path);
+    static Ref<DirWalker> tryOpen(const String &path);
 
     /// Maximum recursive tree traversal depth (or -1 if none)
-    inline int maxDepth() const { return maxDepth_; }
+    int maxDepth() const { return maxDepth_; }
 
     /// \copydoc maxDepth()
-    inline void setMaxDepth(int depth) { maxDepth_ = depth; }
+    void setMaxDepth(int depth) { maxDepth_ = depth; }
 
     /// Overstep hidden files and directories during recursive tree traversal (defaults to false)
-    inline bool ignoreHidden() const { return ignoreHidden_; }
+    bool ignoreHidden() const { return ignoreHidden_; }
 
     /// \copydoc ignoreHidden()
-    inline void setIgnoreHidden(bool on) { ignoreHidden_ = on; }
+    void setIgnoreHidden(bool on) { ignoreHidden_ = on; }
 
     /// Follow symbolic links during recursive tree traversal (defaults to false)
-    inline bool followSymlink() const { return followSymlink_; }
+    bool followSymlink() const { return followSymlink_; }
 
     /// \copydoc followSymlink()
-    inline void setFollowSymlink(bool on) { followSymlink_ = on; }
+    void setFollowSymlink(bool on) { followSymlink_ = on; }
 
     /// Child-first recursive tree traversal order (defaults to false)
-    inline bool deleteOrder() const { return deleteOrder_; }
+    bool deleteOrder() const { return deleteOrder_; }
 
     /// \copydoc deleteOrder()
-    inline void setDeleteOrder(bool on) { deleteOrder_ = on; }
+    void setDeleteOrder(bool on) { deleteOrder_ = on; }
 
     /** Read next file or directory path
       * \param path return the file or directory path
@@ -70,10 +70,11 @@ public:
       * \param path return the file or directory path
       * \return true if not end of information
       */
-    bool read(String *path) { return read(path, 0); }
+    bool read(String *path) { return read(path, nullptr); }
 
 private:
-    DirWalker(String path, Dir *dir = 0);
+    DirWalker(const String &path, Dir *dir = nullptr);
+
     int maxDepth_;
     bool ignoreHidden_;
     bool followSymlink_;

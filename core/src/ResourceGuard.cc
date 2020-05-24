@@ -11,7 +11,7 @@
 
 namespace cc {
 
-ResourceGuard::ResourceGuard(String resource)
+ResourceGuard::ResourceGuard(const String &resource)
 {
     ResourceContext::instance()->push(resource);
 }

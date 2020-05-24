@@ -6,11 +6,11 @@
  *
  */
 
+#include "CHeaderStyle.h"
 #include <cc/Singleton>
 #include <cc/File>
 #include <cc/Format>
 #include <cc/syntax/SyntaxDefinition>
-#include "CHeaderStyle.h"
 
 namespace ccclaim {
 
@@ -41,10 +41,10 @@ public:
 };
 
 CHeaderStyle::CHeaderStyle():
-    HeaderStyle("cxx")
+    HeaderStyle{"cxx"}
 {}
 
-Ref<Header> CHeaderStyle::scan(String path) const
+Ref<Header> CHeaderStyle::scan(const String &path) const
 {
     String text = File::open(path)->map();
     Ref<Token> rootToken = Singleton<CHeaderSyntax>::instance()->match(text, 0)->rootToken();
@@ -54,7 +54,7 @@ Ref<Header> CHeaderStyle::scan(String path) const
     return Header::create(path, rootToken, text, message);
 }
 
-String CHeaderStyle::str(Notice *notice) const
+String CHeaderStyle::str(const Notice *notice) const
 {
     Format format;
     format << "/*\n";

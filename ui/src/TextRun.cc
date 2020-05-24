@@ -41,17 +41,17 @@ void TextRun::append(const TextRun *textRun)
 void TextRun::appendHtml(const String &text, const Font &font)
 {
     struct StyleNode: public Object {
-        StyleNode(const Font &font, String tagName = String{}, const StyleNode *parent = nullptr):
-            tagName_(tagName),
-            font_(font),
-            parent_(parent)
+        StyleNode(const Font &font, const String &tagName = String{}, const StyleNode *parent = nullptr):
+            tagName_{tagName},
+            font_{font},
+            parent_{parent}
         {}
         String tagName_;
         Font font_;
         Ref<const StyleNode> parent_;
     };
 
-    Ref<const StyleNode> styleHead = new StyleNode(font);
+    Ref<const StyleNode> styleHead = new StyleNode{font};
     int i = 0;
     int i0 = 0;
     while (text->find('<', &i)) {

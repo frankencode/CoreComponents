@@ -18,19 +18,19 @@ using namespace cc;
 class Copyright: public Object
 {
 public:
-    inline static Ref<Copyright> create(String holder, int yearStart, int yearEnd) {
-        return new Copyright(holder, yearStart, yearEnd);
+    static Ref<Copyright> create(const String &holder, int yearStart, int yearEnd) {
+        return new Copyright{holder, yearStart, yearEnd};
     }
 
-    inline String holder() const { return holder_; }
-    inline int yearStart() const { return yearStart_; }
-    inline int yearEnd() const { return yearEnd_; }
+    String holder() const { return holder_; }
+    int yearStart() const { return yearStart_; }
+    int yearEnd() const { return yearEnd_; }
 
 private:
-    Copyright(String holder, int yearStart, int yearEnd)
-        : holder_(holder),
-          yearStart_(yearStart),
-          yearEnd_(yearEnd)
+    Copyright(const String &holder, int yearStart, int yearEnd):
+        holder_{holder},
+        yearStart_{yearStart},
+        yearEnd_{yearEnd}
     {}
 
     String holder_;
@@ -41,4 +41,3 @@ private:
 typedef List< Ref<Copyright> > CopyrightList;
 
 } // namespace ccclaim
-

@@ -13,6 +13,8 @@
 
 namespace cc {
 
+class Cow;
+
 /** \class Object cc/Object
   * \ingroup mman
   * \brief Reference counting and secure destruction
@@ -65,6 +67,8 @@ public:
     }
 
 protected:
+    friend class Cow;
+
     Object(const Object &) = default;
     void init() {}
 
@@ -79,7 +83,7 @@ public:
     template <class T>
     static T *get(Ref<T> &instance)
     {
-        if (instance->refCount() == 1)
+        if (instance->refCount_ <= 1)
             return instance;
         instance = instance->copy();
         return instance;

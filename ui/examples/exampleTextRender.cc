@@ -22,7 +22,7 @@ class MainView: public View
 
         for (auto family: FontManager::instance()->getFontFamilies())
         {
-            String text = Format("%% (%%)") << pangram << family->name();
+            String text = Format{"%% (%%)"} << pangram << family->name();
 
             // CC_INSPECT(family->name());
 

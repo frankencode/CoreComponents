@@ -18,7 +18,7 @@ using namespace cc::can;
 
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->fileName();
+    String toolName = String{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);

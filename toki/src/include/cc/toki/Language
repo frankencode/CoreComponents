@@ -30,7 +30,7 @@ public:
 protected:
     Language(
         const String &displayName,
-        Pattern pathPattern,
+        const Pattern &pathPattern,
         const SyntaxDefinition *highlightingSyntax,
         const SyntaxDefinition *discoverySyntax = nullptr,
         const SyntaxDefinition *foldingSyntax = nullptr

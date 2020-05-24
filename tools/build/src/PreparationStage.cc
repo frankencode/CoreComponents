@@ -188,7 +188,7 @@ bool PreparationStage::run()
     return success_ = true;
 }
 
-String PreparationStage::expand(String command, String sourcePath, String targetPath)
+String PreparationStage::expand(const String &command, const String &sourcePath, const String &targetPath)
 {
     return command
         ->replace("$<", sourcePath)

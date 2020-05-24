@@ -11,14 +11,14 @@
 namespace cc {
 namespace meta {
 
-Ref<YasonWriter> YasonWriter::create(Stream *sink, String indent)
+Ref<YasonWriter> YasonWriter::create(Stream *sink, const String &indent)
 {
-    return new YasonWriter(sink, indent);
+    return new YasonWriter{sink, indent};
 }
 
-YasonWriter::YasonWriter(Stream *sink, String indent):
-    format_(sink),
-    indent_(indent)
+YasonWriter::YasonWriter(Stream *sink, const String &indent):
+    format_{sink},
+    indent_{indent}
 {}
 
 void YasonWriter::write(Variant value)
@@ -67,10 +67,9 @@ void YasonWriter::writeList(Variant value, int depth)
         writeTypedList<Variant>(value, depth);
 }
 
-bool YasonWriter::isIdentifier(String name) const
+bool YasonWriter::isIdentifier(const String &name) const
 {
-    for (int i = 0, n = name->count(); i < n; ++i) {
-        char ch = name->at(i);
+    for (char ch: name) {
         if (!(
             (('a' <= ch) && (ch <= 'z')) ||
             (('A' <= ch) && (ch <= 'Z')) ||

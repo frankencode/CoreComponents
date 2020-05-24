@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
         Pattern textPattern = String(options->value("text"))->unescape();
         if (String(options->value("word")) != "")
-            textPattern = String(Format() << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
+            textPattern = String(Format{} << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
 
         bool rangesOption = options->value("ranges");
         bool replaceOption = false;

@@ -206,17 +206,17 @@ void File::symlink(const String &path, const String &newPath)
 
 String File::readlink(const String &path)
 {
-    String buf(128);
+    String buf{128};
     while (true) {
         ssize_t numBytes = ::readlink(path, mutate(buf)->chars(), buf->count());
         if (numBytes == -1)
-            return String();
+            return String{};
         if (numBytes <= buf->count()) {
             if (numBytes < buf->count())
-                buf = String(buf->chars(), numBytes);
+                buf = String{buf->chars(), int(numBytes)};
             break;
         }
-        buf = String(numBytes);
+        buf = String{int(numBytes)};
     }
     return buf;
 }
@@ -288,7 +288,7 @@ String File::locate(const String &fileName, const StringList *dirs, FileAccess a
 {
     String path;
     for (int i = 0; i < dirs->count(); ++i) {
-        String candidate = Format() << dirs->at(i) << "/" << fileName;
+        String candidate = Format{} << dirs->at(i) << "/" << fileName;
         if (checkAccess(candidate, accessFlags)) {
             path = candidate;
             break;

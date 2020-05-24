@@ -13,9 +13,9 @@
 namespace cc {
 namespace toki {
 
-HtmlScreen::HtmlScreen(String text, Format sink):
-    text_(text),
-    sink_(sink)
+HtmlScreen::HtmlScreen(const String &text, const Format &sink):
+    text_{text},
+    sink_{sink}
 {
     writeLineNumbers();
     sink_ << "<div class=\"sourceCodeCell\">\n";

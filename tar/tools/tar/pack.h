@@ -14,6 +14,6 @@ namespace cctar {
 using namespace cc;
 using namespace cc::tar;
 
-void pack(String path, ArchiveWriter *archive, bool verbose);
+void pack(const String &path, ArchiveWriter *archive, bool verbose);
 
 } // namespace cctar

@@ -24,7 +24,7 @@ String encode(const String &source)
     int i = 0;
 
     const int m = 4 * (n / 3 + (n % 3 != 0));
-    String sink(m);
+    String sink{m};
     int l = 0;
 
     while (i < n) {
@@ -68,7 +68,7 @@ String decode(const String &source)
     if (!((0 <= p) && (p <= 2))) throw base64::IllegalPaddingError{};
 
     int n = 3 * (m / 4) - p;
-    String sink(n);
+    String sink{n};
     int i = 0;
 
     for (int l = 0; l < m;) {

@@ -12,7 +12,7 @@
 
 namespace cctar {
 
-void pack(String path, ArchiveWriter *archive, bool verbose)
+void pack(const String &path, ArchiveWriter *archive, bool verbose)
 {
     if (verbose) ferr() << path << nl;
     archive->writeFile(path);

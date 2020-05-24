@@ -34,7 +34,7 @@ public:
     virtual TouchDeviceManager *touchDeviceManager() const = 0;
 
 protected:
-    PlatformPlugin(String name, bool isPlatformDefault = false);
+    PlatformPlugin(const String &name, bool isPlatformDefault = false);
     void init();
 
 private:

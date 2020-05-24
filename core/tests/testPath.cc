@@ -37,8 +37,8 @@ public:
                 fout("path2->reduce() = \"%%\"\n") << path;
             }
         }
-        fout() << "String(\"/\")->expandPath(\"/usr\") = \"" << String("/")->extendPath("/usr") << "\"" << nl;
-        CC_VERIFY(String("/")->extendPath("/usr") == "/usr");
+        fout() << "String{\"/\"}->expandPath(\"/usr\") = \"" << String{"/"}->extendPath("/usr") << "\"" << nl;
+        CC_VERIFY(String{"/"}->extendPath("/usr") == "/usr");
     }
 };
 

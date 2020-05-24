@@ -22,14 +22,14 @@ class HeaderStyle: public Object
 public:
     String language() const { return language_; }
 
-    virtual Ref<Header> scan(String path) const = 0;
-    virtual String str(Notice *notice) const = 0;
-    virtual int magicCount(String text) const { return 0; }
+    virtual Ref<Header> scan(const String &path) const = 0;
+    virtual String str(const Notice *notice) const = 0;
+    virtual int magicCount(const String &text) const { return 0; }
 
 protected:
-    static String trimHeader(String text, const char *space);
+    static String trimHeader(const String &text, const char *space);
 
-    HeaderStyle(String language);
+    HeaderStyle(const String &language);
 
     Ref<HeaderStyle> headerStyle_;
     String language_;

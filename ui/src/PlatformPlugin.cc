@@ -18,7 +18,7 @@ PlatformPlugin *PlatformPlugin::instance()
     return PlatformManager::instance()->activePlugin();
 }
 
-PlatformPlugin::PlatformPlugin(String name, bool isPlatformDefault):
+PlatformPlugin::PlatformPlugin(const String &name, bool isPlatformDefault):
     name_{name},
     isPlatformDefault_{true}
 {}

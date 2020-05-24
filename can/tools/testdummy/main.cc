@@ -111,7 +111,7 @@ private:
 
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->baseName();
+    String toolName = String{argv[0]}->baseName();
 
     try {
         auto arguments = Arguments::parse(argc, argv);

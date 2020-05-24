@@ -12,7 +12,7 @@
 
 using namespace cc;
 
-String reverse(String v)
+String reverse(const String &v)
 {
     String w = String::allocate(v->count());
     for (int i = 0, n = v->count(); i < n; ++i)

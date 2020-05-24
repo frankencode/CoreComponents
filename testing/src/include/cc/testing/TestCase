@@ -30,7 +30,7 @@ protected:
     friend class TestSuite;
 
     template<class T>
-    static Ref<TestCase> create(String name, bool skip)
+    static Ref<TestCase> create(const String &name, bool skip)
     {
         Ref<T> t = new T;
         t->name_ = name;

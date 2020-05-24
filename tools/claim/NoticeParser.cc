@@ -6,10 +6,10 @@
  *
  */
 
+#include "NoticeParser.h"
 #include <cc/Singleton>
 #include <cc/syntax/SyntaxDefinition>
 #include <cc/stdio>
-#include "NoticeParser.h"
 
 namespace ccclaim {
 
@@ -21,7 +21,7 @@ public:
     NoticeSyntax();
 
     Ref<Notice> readNotice(Header *header) const;
-    Ref<Copyright> readCopyright(Token *token, String message) const;
+    Ref<Copyright> readCopyright(Token *token, const String &message) const;
 
 private:
     int word_;
@@ -162,7 +162,7 @@ Ref<Notice> NoticeSyntax::readNotice(Header *header) const
     return Notice::create(copyrights, statement, header);
 }
 
-Ref<Copyright> NoticeSyntax::readCopyright(Token *token, String message) const
+Ref<Copyright> NoticeSyntax::readCopyright(Token *token, const String &message) const
 {
     CC_ASSERT(token->rule() == copyright_);
     token = token->firstChild();

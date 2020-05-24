@@ -88,7 +88,7 @@ public:
     };
 
     Font(double size = -1): instance_{size} {}
-    Font(String family, double size = -1): instance_{family, size} {}
+    Font(const String &family, double size = -1): instance_{family, size} {}
 
     Font &operator<<(Slant slant) {
         (*this)->setSlant(slant);
