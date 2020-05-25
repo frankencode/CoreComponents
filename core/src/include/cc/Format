@@ -15,7 +15,7 @@
 namespace cc {
 
 class Stream;
-template<class T> class Queue;
+template<class> class Queue;
 
 /** \addtogroup formatted_io
   * \{
@@ -67,7 +67,7 @@ public:
       * \param x anything which can be converted to a string via str(x)
       */
     template<class T>
-    inline Format &operator<<(const T &x) {
+    Format &operator<<(const T &x) {
         if (isNull_) return *this;
         return *this << str(x);
     }

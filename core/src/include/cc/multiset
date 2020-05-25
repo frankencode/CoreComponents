@@ -14,13 +14,17 @@
 
 namespace cc {
 
+/** \class multiset cc/multiset
+  * \ingroup container_highlevel
+  * \brief %Multi-set data container
+  * \see set, multimap
+  */
 template<class T>
 class multiset {
 public:
     typedef MultiSet<T> Instance;
-    typedef typename Instance::Item Item;
-    typedef typename Instance::Index index;
     typedef typename Instance::Item value_type;
+    typedef typename Instance::Index size_type;
     typedef typename Instance::iterator iterator;
     typedef typename Instance::const_iterator const_iterator;
 
@@ -47,7 +51,7 @@ public:
         return *this;
     }
 
-    explicit multiset(Instance *b):
+    multiset(Instance *b):
         instance_{b}
     {}
 
@@ -55,8 +59,9 @@ public:
     Instance *operator->() { return Cow::get(instance_); }
 
     operator const Instance *() const { return instance_; }
+    operator Instance *() { return Cow::get(instance_); }
 
-    const T &operator[](index i) const { return instance_->at(i); }
+    const T &operator[](size_type i) const { return instance_->at(i); }
 
     multiset &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
     multiset &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
@@ -66,7 +71,7 @@ private:
 };
 
 template<class T>
-typename multiset<T>::index count(const multiset<T> &a) { return a->count(); }
+typename multiset<T>::size_type count(const multiset<T> &a) { return a->count(); }
 
 template<class T>
 typename multiset<T>::const_iterator begin(const multiset<T> &a) { return a->begin(); }
@@ -97,9 +102,6 @@ bool operator<=(const multiset<T> &a, const multiset<T> &b) { return container::
 
 template<class T>
 bool operator>=(const multiset<T> &a, const multiset<T> &b) { return container::compare(a, b) >= 0; }
-
-template<class T>
-MultiSet<T> *mutate(multiset<T> &a) { return a; }
 
 template<class T>
 String str(const multiset<T> &a)

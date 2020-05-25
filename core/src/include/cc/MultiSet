@@ -17,7 +17,7 @@ template<class T>
 class multiset;
 
 /** \class MultiSet cc/MultiSet
-  * \ingroup container_dynamic
+  * \ingroup container_lowlevel
   * \brief %Multi-set data container
   * \see Set, MultiMap
   */

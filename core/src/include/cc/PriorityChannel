@@ -19,7 +19,7 @@ namespace cc {
   * \ingroup concurrency
   * \brief Inter-thread communication channel
   * \tparam T item type
-  * \TODO provide a popBack() unidirectional iterator
+  * \todo provide a popBack() unidirectional iterator
   */
 template<class T>
 class PriorityChannel: public Object

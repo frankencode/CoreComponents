@@ -14,13 +14,17 @@
 
 namespace cc {
 
+/** \class list cc/list
+  * \ingroup container_highlevel
+  * \brief %List data container
+  * \tparam T item type
+  */
 template<class T>
 class list {
 public:
     typedef List<T> Instance;
-    typedef typename Instance::Item Item;
-    typedef typename Instance::Index index;
     typedef typename Instance::Item value_type;
+    typedef typename Instance::Index size_type;
     typedef typename Instance::iterator iterator;
     typedef typename Instance::const_iterator const_iterator;
 
@@ -47,7 +51,7 @@ public:
         return *this;
     }
 
-    explicit list(Instance *b):
+    list(Instance *b):
         instance_{b}
     {}
 
@@ -55,9 +59,10 @@ public:
     Instance *operator->() { return Cow::get(instance_); }
 
     operator const Instance *() const { return instance_; }
+    operator Instance *() { return Cow::get(instance_); }
 
-    T &operator[](index i) { return Cow::get(instance_)->at(i); }
-    const T &operator[](index i) const { return instance_->at(i); }
+    T &operator[](size_type i) { return Cow::get(instance_)->at(i); }
+    const T &operator[](size_type i) const { return instance_->at(i); }
 
     list &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
     list &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
@@ -67,7 +72,7 @@ private:
 };
 
 template<class T>
-typename list<T>::index count(const list<T> &a) { return a->count(); }
+typename list<T>::size_type count(const list<T> &a) { return a->count(); }
 
 template<class T>
 typename list<T>::const_iterator begin(const list<T> &a) { return a->begin(); }
@@ -98,9 +103,6 @@ bool operator<=(const list<T> &a, const list<T> &b) { return container::compare(
 
 template<class T>
 bool operator>=(const list<T> &a, const list<T> &b) { return container::compare(a, b) >= 0; }
-
-template<class T>
-List<T> *mutate(list<T> &a) { return a; }
 
 template<class T>
 String str(const list<T> &a)

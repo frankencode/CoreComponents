@@ -13,15 +13,22 @@
 
 namespace cc {
 
+template<class T>
+class priority_queue;
+
 /** \class PriorityQueue cc/PriorityQueue
   * \ingroup container_dynamic
   * \brief Priority based queue data container
+  * \tparam T item type
   * \see Queue, Channel
   */
 template<class T>
 class PriorityQueue: public Object
 {
 public:
+    typedef T Item;
+    typedef int64_t size_type;
+
     /** Create a new queue
       * \return new object instance
       */
@@ -40,7 +47,7 @@ public:
       * \param item optionally returns the item value
       * \return item value
       */
-    T popFront(T *item)
+    const T &popFront(T *item)
     {
         CC_ASSERT(size_ > 0);
         return outputQueue()->popFront(item);
@@ -58,7 +65,7 @@ public:
     void push(const T &item, int priority) { pushBack(item, priority); }
 
     /// \copydoc popFront(T *)
-    T pop(T *item) { return popFront(item); }
+    const T &pop(T *item) { return popFront(item); }
 
     /// \copydoc popFront()
     T pop() { return popFront(); }
@@ -69,7 +76,18 @@ public:
     /// Return the first item in the queue
     T front() { return readQueue()->front(); }
 
+    /** \name Syntax sugar
+      */
+    ///@{
+    /// Append an item to the end
+    void operator<<(const Item& item) { pushBack(item); }
+    /// Remove an item from the front
+    void operator>>(Item& item) { if (count() > 0) { popFront(&item); } }
+    ///@}
+
 private:
+    friend class priority_queue<T>;
+
     PriorityQueue():
         queueByPriority_{QueueByPriority::create()},
         size_{0}

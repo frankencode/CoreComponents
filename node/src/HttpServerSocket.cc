@@ -89,7 +89,7 @@ public:
             int ret = gnutls_server_name_get(session, NULL, &size, &type, 0);
             if (type == GNUTLS_NAME_DNS) {
                 CC_ASSERT(ret == GNUTLS_E_SHORT_MEMORY_BUFFER);
-                serverName_ = String{size};
+                serverName_ = String{int(size)};
                 ret = gnutls_server_name_get(session, mutate(serverName_)->bytes(), &size, &type, 0);
                 if (ret != GNUTLS_E_SUCCESS) {
                     CCNODE_ERROR() << peerAddress_ << ": " << gnutls_strerror(ret) << nl;

@@ -14,8 +14,10 @@
 namespace cc {
 
 /** \class CircularBuffer cc/CircularBuffer
-  * \ingroup container_static
+  * \ingroup container_lowlevel
   * \brief Circular buffer data container
+  * \tparam T item type
+  * \see Queue, CircularChannel
   */
 template<class T>
 class CircularBuffer: public Object
@@ -30,7 +32,7 @@ public:
       */
     static Ref<CircularBuffer> create(int capacity)
     {
-        return new CircularBuffer(capacity);
+        return new CircularBuffer{capacity};
     }
 
     /// Maximum number of items storable in the circular buffer

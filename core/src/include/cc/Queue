@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2019-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,181 +8,234 @@
 
 #pragma once
 
-#include <cc/containers>
+#include <cc/Object>
+#include <cc/BucketMap>
 
 namespace cc {
 
 template<class T>
-class QueueNode
-{
-public:
-    QueueNode(const T &item):
-        item_{item},
-        next_{nullptr},
-        prev_{nullptr}
-    {}
-    T item_;
-    QueueNode *next_;
-    QueueNode *prev_;
-};
+class queue;
 
 /** \class Queue cc/Queue
-  * \ingroup container_dynamic
+  * \ingroup container_lowlevel
   * \brief %Queue data container
+  * \tparam T item type
+  * \see PriorityQueue, Channel
+  * \inherit Object
   */
 template<class T>
 class Queue: public Object
 {
 public:
-    /// Item type
     typedef T Item;
+    typedef int64_t size_type;
 
     /** Create a new queue
       * \return new object instance
       */
-    static Ref<Queue> create(int = 0) {
-        return new Queue;
-    }
+    static Ref<Queue> create() { return new Queue; }
 
-    /** Add a new item to the end of the queue
+    /** Add a new item to the end
       * \param item item value
       */
-    void pushBack(const T &item, int = 0)
-    {
-        Node *node = new Node{item};
-        if (tail_) {
-            tail_->next_ = node;
-            node->prev_ = tail_;
-            tail_ = node;
-        }
-        else {
-            head_ = node;
-            tail_ = node;
-        }
-        ++length_;
-    }
+    void pushBack(const T &item);
 
-    /** Add a new item to the head of the queue
+    /** Add a new item to the front
       * \param item item value
       */
-    void pushFront(const T &item, int = 0)
-    {
-        Node *node = new Node{item};
-        if (head_) {
-            head_->prev_ = node;
-            node->next_ = head_;
-            head_ = node;
-        }
-        else {
-            head_ = node;
-            tail_ = node;
-        }
-        ++length_;
-    }
+    void pushFront(const T &item);
 
-    /** Remove an item from the end of the queue
-      * \param item optionally return the item value
+    /** Remove an item from the end
+      * \param item returns the item value
+      * \return reference to \a item
+      */
+    const T &popBack (T *item);
+
+    /** Remove an item from the front
+      * \param item returns the item value
+      * \return reference to \a item
+      */
+    const T &popFront(T *item);
+
+    /** Remove the last item
       * \return item value
       */
-    T popBack(T *item)
-    {
-        CC_ASSERT(length_ > 0);
-        T h;
-        if (!item) item = &h;
-        Node *node = tail_;
-        *item = node->item_;
-        tail_ = node->prev_;
-        if (!tail_) head_ = 0;
-        else tail_->next_ = 0;
-        delete node;
-        --length_;
-        return *item;
-    }
+    T popBack () { T item; popBack (&item); return item; }
 
-    /** Remove an item from the head of the queue
-      * \param item optionally returns the item value
+    /** Remove the first item
       * \return item value
       */
-    T popFront(T *item)
-    {
-        CC_ASSERT(length_ > 0);
-        T h;
-        if (!item) item = &h;
-        Node *node = head_;
-        *item = node->item_;
-        head_ = node->next_;
-        if (!head_) tail_ = 0;
-        else head_->prev_ = 0;
-        delete node;
-        --length_;
-        return *item;
-    }
-
-    /** Remove the last item from the queue
-      * \return item value
-      */
-    T popBack() {
-        T item;
-        return popBack(&item);
-    }
-
-    /** Remove the first item from the queue
-      * \return item value
-      */
-    T popFront() {
-        T item;
-        return popFront(&item);
-    }
+    T popFront() { T item; popFront(&item); return item; }
 
     /// \copydoc pushBack()
-    void push(const T &item, int = 0) { pushBack(item); }
+    void push(const T &item) { pushBack(item); }
 
     /// \copydoc popFront(T *)
-    T pop(T *item) { return popFront(item); }
+    const T &pop(T *item) { return popFront(item); }
 
     /// \copydoc popFront()
     T pop() { return popFront(); }
 
-    /// Return the number of queued items
-    int count() const { return length_; }
+    /// Return number of items
+    size_type count() const { return count_; }
 
-    /// Return the first item in the queue
-    T front() const { return head_->item_; }
+    /// Return the first item
+    Item front() const { return head_->at(0); }
 
-    /// Return the last item in the queue
-    T back() const { return tail_->item_; }
+    /// Return the last item
+    Item back() const { return tail_->at(tail_->fill_ - 1); }
 
     /// Reset to an empty state
-    void deplete()
-    {
-        Node *node = head_;
-        while (node) {
-            Node *next = node->next_;
-            delete node;
-            node = next;
-        }
-        head_ = nullptr;
-        tail_ = nullptr;
-        length_ = 0;
-    }
+    void deplete();
+
+    /** \name Syntax sugar
+      */
+    ///@{
+    /// Append an item to the end
+    void operator<<(const Item& item) { pushBack(item); }
+    /// Remove an item from the front
+    void operator>>(Item& item) { if (count() > 0) { popFront(&item); } }
+    ///@}
 
 private:
-    typedef QueueNode<T> Node;
+    friend class Local<Queue>;
+    friend class queue<T>;
 
-    Queue():
-        head_{nullptr},
-        tail_{nullptr},
-        length_{0}
-    {}
+    class Node {
+    public:
+        static constexpr unsigned Capacity = 16;
+
+        Node():
+            pred_{nullptr},
+            succ_{nullptr},
+            fill_{0}
+        {}
+
+        Node(Node *pred, Node *succ):
+            pred_{pred},
+            succ_{succ},
+            fill_{0}
+        {
+            if (pred) pred->succ_ = this;
+            if (succ) succ->pred_ = this;
+        }
+
+        ~Node()
+        {
+            if (pred_) pred_->succ_ = succ_;
+            if (succ_) succ_->pred_ = pred_;
+        }
+
+        Item &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+        const Item &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+
+        void push(unsigned nodeIndex, const Item &item) { slot_[map_->pushEntry(nodeIndex, &fill_)] = item; }
+        void pop(unsigned nodeIndex) { map_->popEntry(nodeIndex, &fill_); }
+
+        void pushBack(const Item &item) { push(fill_, item); }
+        void popBack(Item *item) { *item = at(fill_ - 1); pop(fill_ - 1); }
+
+        void pushFront(const Item &item) { push(0, item); }
+        void popFront(Item *item) { *item = at(0); pop(0); }
+
+        bool isFull() const { return fill_ == Capacity; }
+        bool isEmpty() const { return fill_ == 0; }
+
+        Node *pred_;
+        Node *succ_;
+        unsigned fill_;
+        Local< BucketMap<Capacity> > map_;
+        Item slot_[Capacity];
+    };
+
+    Queue() = default;
 
     ~Queue()
     {
         deplete();
     }
 
-    Node *head_;
-    Node *tail_;
-    int length_;
+    Node *head_ { nullptr };
+    Node *tail_ { nullptr };
+    int64_t count_ { 0 };
 };
+
+template<class T>
+void Queue<T>::pushBack(const T &item)
+{
+    if (tail_) {
+        if (tail_->isFull())
+            tail_ = new Node{tail_, nullptr};
+    }
+    else {
+        head_ = tail_ = new Node;
+    }
+
+    tail_->pushBack(item);
+
+    ++count_;
+}
+
+template<class T>
+void Queue<T>::pushFront(const T &item)
+{
+    if (head_) {
+        if (head_->isFull())
+            head_ = new Node{nullptr, head_};
+    }
+    else {
+        head_ = tail_ = new Node;
+    }
+
+    head_->pushFront(item);
+
+    ++count_;
+}
+
+template<class T>
+const T &Queue<T>::popBack(T *item)
+{
+    assert(tail_ && !tail_->isEmpty());
+
+    tail_->popBack(item);
+
+    if (tail_->isEmpty()) {
+        Node *oldTail = tail_;
+        tail_ = tail_->pred_;
+        if (head_ == oldTail) head_ = nullptr;
+        delete oldTail;
+    }
+
+    --count_;
+    return *item;
+}
+
+template<class T>
+const T &Queue<T>::popFront(T *item)
+{
+    assert(head_ && !head_->isEmpty());
+
+    head_->popFront(item);
+
+    if (head_->isEmpty()) {
+        Node *oldHead = head_;
+        head_ = head_->succ_;
+        if (tail_ == oldHead) tail_ = nullptr;
+        delete oldHead;
+    }
+
+    --count_;
+    return *item;
+}
+
+template<class T>
+void Queue<T>::deplete()
+{
+    for (Node *node = head_; node;) {
+        Node *oldNode = node;
+        node = node->succ_;
+        delete oldNode;
+    }
+}
 
 } // namespace cc

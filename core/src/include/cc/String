@@ -28,7 +28,7 @@ class Array;
 
 /** Convenience alias
   * \ingroup strings
-  * \ingroup container_static
+  * \ingroup container_lowlevel
   * \see Array<char>
   */
 typedef Array<char> CharArray;
@@ -252,8 +252,8 @@ private:
   * \brief Character array
   * \ingroup strings
   * \see Array
-  * \TODO fix isZeroTerminated() for substrings and add CC_ASSERTS to all implicit const char* conversions
-  * \TODO move to CharArray header
+  * \todo fix isZeroTerminated() for substrings and add CC_ASSERTS to all implicit const char* conversions
+  * \todo move to CharArray header
   */
 template<>
 class Array<char>: public Object

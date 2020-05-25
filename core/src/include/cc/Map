@@ -14,20 +14,22 @@
 
 namespace cc {
 
-template<class K, class V>
+template<class K, class T>
 class map;
 
 /** \class Map cc/Map
-  * \ingroup container_dynamic
+  * \ingroup container_lowlevel
   * \brief %Map data container
+  * \tparam K key type
+  * \tparam T mapped type
   * \see MultiMap, Set, Pair, KeySource, ValueSource
   */
-template<class K, class V = K>
+template<class K, class T = K>
 class Map: public Object
 {
 public:
     typedef K Key; ///< Key type
-    typedef V Value; ///< Value type
+    typedef T Value; ///< Value type
     typedef Pair<Key, Value> Item; ///< Item type
     typedef bucket::Weight Index; ///< Index type
 
@@ -251,7 +253,7 @@ public:
 protected:
     friend class bucket::Internals;
     friend class Local<Map>;
-    friend class map<K, V>;
+    friend class map<K, T>;
 
     Map() = default;
 
@@ -266,22 +268,22 @@ private:
     Local<bucket::Tree> tree_;
 };
 
-template<class K, class V>
-bool operator==(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) == 0; }
+template<class K, class T>
+bool operator==(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(&a, &b) == 0; }
 
-template<class K, class V>
-bool operator!=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) != 0; }
+template<class K, class T>
+bool operator!=(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(&a, &b) != 0; }
 
-template<class K, class V>
-bool operator<(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) < 0; }
+template<class K, class T>
+bool operator<(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(&a, &b) < 0; }
 
-template<class K, class V>
-bool operator>(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) > 0; }
+template<class K, class T>
+bool operator>(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(&a, &b) > 0; }
 
-template<class K, class V>
-bool operator<=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) <= 0; }
+template<class K, class T>
+bool operator<=(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(&a, &b) <= 0; }
 
-template<class K, class V>
-bool operator>=(const Map<K, V> &a, const Map<K, V> &b) { return container::compare(&a, &b) >= 0; }
+template<class K, class T>
+bool operator>=(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(&a, &b) >= 0; }
 
 } // namespace cc

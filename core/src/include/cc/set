@@ -14,13 +14,17 @@
 
 namespace cc {
 
+/** \class set cc/set
+  * \ingroup container_highlevel
+  * \brief %Set data container
+  * \see multiset, map
+  */
 template<class T>
 class set {
 public:
     typedef Set<T> Instance;
-    typedef typename Instance::Item Item;
-    typedef typename Instance::Index index;
     typedef typename Instance::Item value_type;
+    typedef typename Instance::Index size_type;
     typedef typename Instance::iterator iterator;
     typedef typename Instance::const_iterator const_iterator;
 
@@ -47,7 +51,7 @@ public:
         return *this;
     }
 
-    explicit set(Instance *b):
+    set(Instance *b):
         instance_{b}
     {}
 
@@ -55,8 +59,9 @@ public:
     Instance *operator->() { return Cow::get(instance_); }
 
     operator const Instance *() const { return instance_; }
+    operator Instance *() { return Cow::get(instance_); }
 
-    const T &operator[](index i) const { return instance_->at(i); }
+    const T &operator[](size_type i) const { return instance_->at(i); }
 
     set &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
     set &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
@@ -66,7 +71,7 @@ private:
 };
 
 template<class T>
-typename set<T>::index count(const set<T> &a) { return a->count(); }
+typename set<T>::size_type count(const set<T> &a) { return a->count(); }
 
 template<class T>
 typename set<T>::const_iterator begin(const set<T> &a) { return a->begin(); }
@@ -97,9 +102,6 @@ bool operator<=(const set<T> &a, const set<T> &b) { return container::compare(a,
 
 template<class T>
 bool operator>=(const set<T> &a, const set<T> &b) { return container::compare(a, b) >= 0; }
-
-template<class T>
-Set<T> *mutate(set<T> &a) { return a; }
 
 template<class T>
 String str(const set<T> &a)

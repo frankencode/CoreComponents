@@ -14,20 +14,22 @@
 
 namespace cc {
 
-template<class K, class V>
+template<class K, class T>
 class multimap;
 
 /** \class MultiMap cc/MultiMap
-  * \ingroup container_dynamic
+  * \ingroup container_lowlevel
   * \brief Multi-map data container
+  * \tparam K key type
+  * \tparam T mapped type
   * \see Map, MultiSet, Pair, KeySource, ValueSource
   */
-template<class K, class V = K>
+template<class K, class T = K>
 class MultiMap: public Object
 {
 public:
     typedef K Key; ///< Key type
-    typedef V Value; ///< Value type
+    typedef T Value; ///< Value type
     typedef Pair<Key, Value> Item; ///< Item type
     typedef bucket::Weight Index; ///< Index type
 
@@ -200,7 +202,7 @@ public:
 protected:
     friend class bucket::Internals;
     friend class Local<MultiMap>;
-    friend class multimap<K, V>;
+    friend class multimap<K, T>;
 
     MultiMap() = default;
 
@@ -214,22 +216,22 @@ protected:
     Local<bucket::Tree> tree_;
 };
 
-template<class K, class V>
-bool operator==(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) == 0; }
+template<class K, class T>
+bool operator==(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) == 0; }
 
-template<class K, class V>
-bool operator!=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) != 0; }
+template<class K, class T>
+bool operator!=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) != 0; }
 
-template<class K, class V>
-bool operator<(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) < 0; }
+template<class K, class T>
+bool operator<(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) < 0; }
 
-template<class K, class V>
-bool operator>(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) > 0; }
+template<class K, class T>
+bool operator>(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) > 0; }
 
-template<class K, class V>
-bool operator<=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) <= 0; }
+template<class K, class T>
+bool operator<=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) <= 0; }
 
-template<class K, class V>
-bool operator>=(const MultiMap<K, V> &a, const MultiMap<K, V> &b) { return container::compare(&a, &b) >= 0; }
+template<class K, class T>
+bool operator>=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) >= 0; }
 
 } // namespace cc

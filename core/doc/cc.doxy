@@ -19,17 +19,17 @@
   */
 
 /** \defgroup container Data containers
-  * Data structures for in-memory data modelling
+  * Data structures for in-memory data structures
   */
 
-/** \defgroup container_static Static containers
+/** \defgroup container_highlevel High-level container
   * \ingroup container
-  * Preallocated, fixed sized data structures
+  * High-level container types
   */
 
-/** \defgroup container_dynamic Dynamic containers
+/** \defgroup container_lowlevel Low-level container
   * \ingroup container
-  * Dynamically sized data structures
+  * Low-level data structures
   */
 
 /** \defgroup file_system File system

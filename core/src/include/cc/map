@@ -14,13 +14,21 @@
 
 namespace cc {
 
-template<class K, class V = K>
+/** \class map cc/map
+  * \ingroup container_highlevel
+  * \brief %Map data container
+  * \tparam K key type
+  * \tparam T mapped type
+  * \see multimap, set
+  */
+template<class K, class T = K>
 class map {
 public:
-    typedef Map<K, V> Instance;
-    typedef typename Instance::Item Item;
-    typedef typename Instance::Index index;
+    typedef Map<K, T> Instance;
+    typedef K key_type;
+    typedef T mapped_type;
     typedef typename Instance::Item value_type;
+    typedef typename Instance::Index size_type;
     typedef typename Instance::iterator iterator;
     typedef typename Instance::const_iterator const_iterator;
 
@@ -28,7 +36,7 @@ public:
         instance_{new Instance}
     {}
 
-    map(std::initializer_list<Pair<K, V>> b):
+    map(std::initializer_list<Pair<K, T>> b):
         instance_{new Instance}
     {
         for (auto &x: b) *instance_ << x;
@@ -47,7 +55,7 @@ public:
         return *this;
     }
 
-    explicit map(Instance *b):
+    map(Instance *b):
         instance_{b}
     {}
 
@@ -55,60 +63,58 @@ public:
     const Instance *operator->() const { return instance_; }
 
     operator const Instance *() const { return instance_; }
+    operator Instance *() { return Cow::get(instance_); }
 
-    const Pair<K, V> &operator[](index i) const { return instance_->at(i); }
+    const Pair<K, T> &operator[](size_type i) const { return instance_->at(i); }
 
-    map &operator<<(const Pair<K, V>& x) { *Cow::get(instance_) << x; return *this; }
-    map &operator>>(Pair<K, V>& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
+    map &operator<<(const Pair<K, T>& x) { *Cow::get(instance_) << x; return *this; }
+    map &operator>>(Pair<K, T>& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
 
 private:
     Ref<Instance> instance_;
 };
 
-template<class K, class V>
-typename map<K, V>::index count(const map<K, V> &a) { return a->count(); }
+template<class K, class T>
+typename map<K, T>::size_type count(const map<K, T> &a) { return a->count(); }
 
-template<class K, class V>
-typename map<K, V>::const_iterator begin(const map<K, V> &a) { return a->begin(); }
+template<class K, class T>
+typename map<K, T>::const_iterator begin(const map<K, T> &a) { return a->begin(); }
 
-template<class K, class V>
-typename map<K, V>::const_iterator end(const map<K, V> &a) { return a->end(); }
+template<class K, class T>
+typename map<K, T>::const_iterator end(const map<K, T> &a) { return a->end(); }
 
-template<class K, class V>
-typename map<K, V>::iterator begin(map<K, V> &a) { return a->begin(); }
+template<class K, class T>
+typename map<K, T>::iterator begin(map<K, T> &a) { return a->begin(); }
 
-template<class K, class V>
-typename map<K, V>::iterator end(map<K, V> &a) { return a->end(); }
+template<class K, class T>
+typename map<K, T>::iterator end(map<K, T> &a) { return a->end(); }
 
-template<class K, class V>
-bool operator==(const map<K, V> &a, const map<K, V> &b) { return container::compare(a, b) == 0; }
+template<class K, class T>
+bool operator==(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) == 0; }
 
-template<class K, class V>
-bool operator!=(const map<K, V> &a, const map<K, V> &b) { return container::compare(a, b) != 0; }
+template<class K, class T>
+bool operator!=(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) != 0; }
 
-template<class K, class V>
-bool operator<(const map<K, V> &a, const map<K, V> &b) { return container::compare(a, b) < 0; }
+template<class K, class T>
+bool operator<(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) < 0; }
 
-template<class K, class V>
-bool operator>(const map<K, V> &a, const map<K, V> &b) { return container::compare(a, b) > 0; }
+template<class K, class T>
+bool operator>(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) > 0; }
 
-template<class K, class V>
-bool operator<=(const map<K, V> &a, const map<K, V> &b) { return container::compare(a, b) <= 0; }
+template<class K, class T>
+bool operator<=(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) <= 0; }
 
-template<class K, class V>
-bool operator>=(const map<K, V> &a, const map<K, V> &b) { return container::compare(a, b) >= 0; }
+template<class K, class T>
+bool operator>=(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) >= 0; }
 
-template<class K, class V>
-Map<K, V> *mutate(map<K, V> &a) { return a; }
-
-template<class K, class V>
-String str(const Pair<K, V> &a)
+template<class K, class T>
+String str(const Pair<K, T> &a)
 {
     return Format{} << "(" << a->key() << ": " << a->value() << ")";
 }
 
-template<class K, class V>
-String str(const map<K, V> &a)
+template<class K, class T>
+String str(const map<K, T> &a)
 {
     Format f;
     f << "[ ";

@@ -19,7 +19,7 @@ template<class T>
 class list;
 
 /** \class List cc/List
-  * \ingroup container_dynamic
+  * \ingroup container_lowlevel
   * \brief %List data container
   * \tparam T item type
   *

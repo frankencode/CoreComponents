@@ -23,8 +23,10 @@ int main(int argc, char *argv[])
     fout("b = %%") << b << nl;
 
     list<int> c = { 1, 2, 4, 6 };
+
     a = c;
     for (int &x: c) ++x;
+
     CC_INSPECT(a);
     CC_INSPECT(c);
     CC_INSPECT(a == c);
