@@ -24,14 +24,14 @@ class DeliveryInstance;
 class NodeConfig: public Object
 {
 public:
-    static Ref<MetaObject> parse(const String &text);
+    static Ref<MetaObject> parse(const string &text);
     static Ref<NodeConfig> load(const MetaObject *config);
     static const MetaObject *prototype();
 
-    static Ref<NodeConfig> load(const String &path);
+    static Ref<NodeConfig> load(const string &path);
     static Ref<NodeConfig> create();
 
-    void addDirectoryInstance(const String &path);
+    void addDirectoryInstance(const string &path);
     void addEchoInstance();
 
     const SocketAddressList *address() const { return address_; }
@@ -39,12 +39,12 @@ public:
     bool forceSecureTransport() const { return forceSecureTransport_; }
     int securePort() const { return securePort_; }
 
-    String user() const { return user_; }
-    String group() const { return group_; }
-    String version() const { return version_; }
+    string user() const { return user_; }
+    string group() const { return group_; }
+    string version() const { return version_; }
     bool daemon() const { return daemon_; }
-    String daemonName() const { return daemonName_; }
-    String pidPath() const { return pidPath_; }
+    string daemonName() const { return daemonName_; }
+    string pidPath() const { return pidPath_; }
     int concurrency() const { return concurrency_; }
     int serviceWindow() const { return serviceWindow_; }
     int connectionLimit() const { return connectionLimit_; }
@@ -57,7 +57,7 @@ public:
 
     DeliveryInstances *deliveryInstances() const { return deliveryInstances_; }
 
-    const DeliveryInstance *selectService(const String &host, const String &uri = "") const;
+    const DeliveryInstance *selectService(const string &host, const string &uri = "") const;
 
 private:
     NodeConfig(const MetaObject *config);
@@ -67,12 +67,12 @@ private:
     Ref<SocketAddressList> address_;
     bool forceSecureTransport_;
     int securePort_;
-    String user_;
-    String group_;
-    String version_;
+    string user_;
+    string group_;
+    string version_;
     bool daemon_;
-    String daemonName_;
-    String pidPath_;
+    string daemonName_;
+    string pidPath_;
     int concurrency_;
     int serviceWindow_;
     int connectionLimit_;

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Source>
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -20,20 +20,20 @@ class Dir;
   * \brief Recursive directory tree traversal
   * \see Dir
   */
-class DirWalker: public Source<String>
+class DirWalker: public Source<string>
 {
 public:
     /** Open a directory for recursive tree traversal
       * \param path directory path
       * \return new object instance
       */
-    static Ref<DirWalker> open(const String &path);
+    static Ref<DirWalker> open(const string &path);
 
     /** Open a directory for recursive tree traversal, if it exists
       * \param path directory path
       * \return new object instance
       */
-    static Ref<DirWalker> tryOpen(const String &path);
+    static Ref<DirWalker> tryOpen(const string &path);
 
     /// Maximum recursive tree traversal depth (or -1 if none)
     int maxDepth() const { return maxDepth_; }
@@ -64,16 +64,16 @@ public:
       * \param isDir true if the return path points to a directory
       * \return true if not end of information
       */
-    bool read(String *path, bool *isDir);
+    bool read(string *path, bool *isDir);
 
     /** Read next file or directory path
       * \param path return the file or directory path
       * \return true if not end of information
       */
-    bool read(String *path) { return read(path, nullptr); }
+    bool read(string *path) { return read(path, nullptr); }
 
 private:
-    DirWalker(const String &path, Dir *dir = nullptr);
+    DirWalker(const string &path, Dir *dir = nullptr);
 
     int maxDepth_;
     bool ignoreHidden_;

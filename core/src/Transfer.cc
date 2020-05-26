@@ -14,7 +14,7 @@
 
 namespace cc {
 
-typedef CircularChannel<String> TransferBufferQueue;
+typedef CircularChannel<string> TransferBufferQueue;
 
 class TransferInputWorker: public Thread
 {
@@ -25,11 +25,11 @@ public:
     }
 
     bool ok() const { return ok_; }
-    String errorMessage() const { return errorMessage_; }
+    string errorMessage() const { return errorMessage_; }
 
     off_t totalRead() const { Guard<Mutex> guard(mutex_); return totalRead_; }
 
-    void stop() { freeQueue_->pushFront(String{}); }
+    void stop() { freeQueue_->pushFront(string{}); }
 
 private:
     TransferInputWorker(TransferBufferQueue *freeQueue, TransferBufferQueue *writeQueue, Stream *source):
@@ -44,7 +44,7 @@ private:
     virtual void run() override
     {
         try {
-            String buffer;
+            string buffer;
             while (freeQueue_->popFront(&buffer)) {
                 int n = source_->read(mutate(buffer));
                 if (n == 0) break;
@@ -54,7 +54,7 @@ private:
                 }
                 writeQueue_->pushBack(buffer->select(0, n));
             }
-            writeQueue_->pushBack(String{});
+            writeQueue_->pushBack(string{});
         }
         catch (Exception &ex) {
             errorMessage_ = ex.message();
@@ -71,7 +71,7 @@ private:
     Ref<Mutex> mutex_;
     off_t totalRead_;
     bool ok_;
-    String errorMessage_;
+    string errorMessage_;
 };
 
 class TransferOutputWorker: public Thread
@@ -83,11 +83,11 @@ public:
     }
 
     bool ok() const { return ok_; }
-    String errorMessage() const { return errorMessage_; }
+    string errorMessage() const { return errorMessage_; }
 
     off_t totalWritten() const { Guard<Mutex> guard(mutex_); return totalWritten_; }
 
-    void stop() { writeQueue_->pushFront(String{}); }
+    void stop() { writeQueue_->pushFront(string{}); }
 
 private:
     TransferOutputWorker(TransferBufferQueue *writeQueue, TransferBufferQueue *freeQueue, Stream *sink):
@@ -102,7 +102,7 @@ private:
     virtual void run() override
     {
         try {
-            String buffer;
+            string buffer;
             while (writeQueue_->popFront(&buffer)) {
                 sink_->write(buffer);
                 {
@@ -127,7 +127,7 @@ private:
     Ref<Mutex> mutex_;
     off_t totalWritten_;
     bool ok_;
-    String errorMessage_;
+    string errorMessage_;
 };
 
 Ref<Transfer> Transfer::start(Stream *source, Stream *sink, int bufferSize, int bufferCount)

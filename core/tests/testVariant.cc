@@ -20,7 +20,7 @@ class Comparisms: public TestCase
         Variant x = 1;
         Variant y = "2.";
         Variant z = true;
-        Variant a = String{"abc"};
+        Variant a = string{"abc"};
 
         CC_VERIFY(!(x < y));
         CC_VERIFY(!(x == y));

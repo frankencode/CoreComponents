@@ -21,9 +21,9 @@ Ref<TarReader> TarReader::open(Stream *source)
 
 bool TarReader::testFormat(Stream *source)
 {
-    String data = String::create(512);
+    string data = string::create(512);
     if (source->readSpan(mutate(data)) < data->count()) return false;
-    String magic;
+    string magic;
     data->scanString(&magic, "", 257, 263);
     return magic == "ustar " || magic == "ustar";
 }
@@ -35,7 +35,7 @@ TarReader::TarReader(Stream *source)
 
 bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 {
-    if (!data_) data_ = String::create(512);
+    if (!data_) data_ = string::create(512);
     *nextEntry = ArchiveEntry::create();
 
     CharArray *data = mutate(data_);
@@ -61,7 +61,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
     while (readAgain) {
         readAgain = false;
 
-        String magic;
+        string magic;
         data->scanString(&magic, "", 257, 263);
         ustarMagic = (magic == "ustar");
         gnuMagic   = (magic == "ustar ");
@@ -79,7 +79,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
         if (gnuMagic) {
             while ((entry->type_ == 'K' || entry->type_ == 'L') /*&& entry->path_ == "././@LongLink"*/) {
                 data->scanNumber(&entry->size_, 8, 124, 136);
-                String longPath = source_->readSpan(entry->size_);
+                string longPath = source_->readSpan(entry->size_);
                 if (longPath->count() < entry->size_)
                     throw BrokenArchive{i_, "Expected GNU @LongLink data"};
                 i_ += entry->size_;
@@ -100,7 +100,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
     }
 
     if (ustarMagic || gnuMagic) {
-        String prefix;
+        string prefix;
         data->scanString(&entry->userName_,  "", 265, 297);
         data->scanString(&entry->groupName_, "", 297, 329);
         if (!gnuMagic) {

@@ -11,7 +11,7 @@
 #include <limits>
 #include <cc/bitmask>
 #include <cc/Property>
-#include <cc/String>
+#include <cc/string>
 #include <cc/Color>
 #include <cc/ui/Rect>
 
@@ -32,7 +32,7 @@ enum class FontSmoothing: uint8_t {
     VbgrSubpixel = 6
 };
 
-String str(FontSmoothing smoothing);
+string str(FontSmoothing smoothing);
 
 /** glyph outline hinting strategy
   */
@@ -44,7 +44,7 @@ enum class OutlineHinting: uint8_t {
     Full    = 4,
 };
 
-String str(OutlineHinting outlineHinting);
+string str(OutlineHinting outlineHinting);
 
 /** return hinted font metrics
   * \see Font::getMetrics()
@@ -55,7 +55,7 @@ enum class MetricsHinting: uint8_t {
     On      = 2
 };
 
-String str(MetricsHinting metricsHinting);
+string str(MetricsHinting metricsHinting);
 
 /** font slant
   */
@@ -65,7 +65,7 @@ enum class Slant: uint8_t {
     Oblique = Italic
 };
 
-String str(Slant slant);
+string str(Slant slant);
 
 /** visual thickness of a font
   */
@@ -81,7 +81,7 @@ enum class Weight: uint8_t {
     Black      = 9
 };
 
-String str(Weight weight);
+string str(Weight weight);
 
 /** font width to height ratio
   */
@@ -97,7 +97,7 @@ enum class Stretch: uint8_t {
     UltraExpanded  = 9
 };
 
-String str(Stretch stretch);
+string str(Stretch stretch);
 
 /** font pitch
   */
@@ -106,7 +106,7 @@ enum class Pitch: uint8_t {
     Variable ///< variable-width font
 };
 
-String str(Pitch pitch);
+string str(Pitch pitch);
 
 /** text alignment
   */
@@ -117,7 +117,7 @@ enum class TextAlign: uint8_t {
     Justify ///< align justify
 };
 
-String str(TextAlign align);
+string str(TextAlign align);
 
 /** text decoration
   */
@@ -129,7 +129,7 @@ enum class Decoration: uint8_t {
 
 CC_BITMASK(Decoration, uint8_t)
 
-String str(Decoration decoration);
+string str(Decoration decoration);
 
 /** alignment within a Column
   */
@@ -140,7 +140,7 @@ enum class ColumnAlign {
     Center ///< align center
 };
 
-String str(ColumnAlign align);
+string str(ColumnAlign align);
 
 /** alignment within a Row
   */
@@ -150,7 +150,7 @@ enum class RowAlign {
     Center  ///< align center
 };
 
-String str(RowAlign align);
+string str(RowAlign align);
 
 /** mouse button flags
   */
@@ -165,7 +165,7 @@ enum class MouseButton: unsigned int {
 
 CC_BITMASK(MouseButton, unsigned int);
 
-String str(MouseButton mask);
+string str(MouseButton mask);
 
 /** event type of touch, mouse or pen input
   */
@@ -175,14 +175,14 @@ enum class PointerAction {
     Released
 };
 
-String str(PointerAction action);
+string str(PointerAction action);
 
 enum class KeyAction {
     Pressed,
     Released
 };
 
-String str(KeyAction action);
+string str(KeyAction action);
 
 enum class CursorShape {
     Arrow,
@@ -199,13 +199,13 @@ enum class CursorShape {
     Hand
 };
 
-String str(CursorShape shape);
+string str(CursorShape shape);
 
 typedef Vector<double, 2> Step;
 typedef Vector<double, 2> Scale;
 
-typedef std::function<bool(const String &/*text*/, int /*byteOffset*/, int /*byteCount*/)> TextWrapBehind;
-bool textWrapBehindDefault(const String &text, int byteOffset, int byteCount);
+typedef std::function<bool(const string &/*text*/, int /*byteOffset*/, int /*byteCount*/)> TextWrapBehind;
+bool textWrapBehindDefault(const string &text, int byteOffset, int byteCount);
 
 typedef int64_t TouchDeviceId;
 typedef int64_t TouchFingerId;

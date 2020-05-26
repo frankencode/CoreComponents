@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/iterators>
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -22,13 +22,13 @@ public:
       * \param path path to the filesystem table to read (defaults to the system's mtab, i.e. currently mounted filesystems)
       * \return new object instance
       */
-    static Ref<MountTable> open(const String &path = "");
+    static Ref<MountTable> open(const string &path = "");
 
     /** Parse a mount table
       * \param text mount table in fstab format
       * \return new object instance
       */
-    static Ref<MountTable> parse(const String &text);
+    static Ref<MountTable> parse(const string &text);
 
     /** Filesystem table entry
       */
@@ -37,15 +37,15 @@ public:
         friend class Object;
 
     public:
-        String source () const { return parts_->at(0); } ///< device (paritition device node, etc.)
-        String target () const { return parts_->at(1); } ///< path to the mounted root of the filesystem
-        String type   () const { return parts_->at(2); } ///< comma separated list of filesystem types
-        String options() const { return parts_->at(3); } ///< comma separated list of mount options (key or key=value format)
+        string source () const { return parts_->at(0); } ///< device (paritition device node, etc.)
+        string target () const { return parts_->at(1); } ///< path to the mounted root of the filesystem
+        string type   () const { return parts_->at(2); } ///< comma separated list of filesystem types
+        string options() const { return parts_->at(3); } ///< comma separated list of mount options (key or key=value format)
 
-        String toString() const { return parts_->join(" "); }
+        string toString() const { return parts_->join(" "); }
 
     private:
-        Entry(const String &line);
+        Entry(const string &line);
 
         Ref<StringList> parts_;
     };
@@ -84,7 +84,7 @@ public:
       */
 
 private:
-    MountTable(const String &text);
+    MountTable(const string &text);
 
     Ref<StringList> lines_;
 };

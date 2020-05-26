@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     CC_INSPECT(a < b);
     CC_INSPECT(b < a);
 
-    set<String> c = { "A", "B", "C" };
+    set<string> c = { "A", "B", "C" };
 
     CC_INSPECT(c);
 

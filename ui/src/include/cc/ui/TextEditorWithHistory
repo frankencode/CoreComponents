@@ -18,10 +18,10 @@ class TextEditorWithHistory: public TextEditor
 {
 public:
     virtual int byteCount() const = 0;
-    virtual String copy(Range range) const = 0;
+    virtual string copy(Range range) const = 0;
 
-    String text() const override;
-    Range paste(Range range, const String &newChunk) override;
+    string text() const override;
+    Range paste(Range range, const string &newChunk) override;
 
     bool canUndo() const override;
     bool canRedo() const override;;
@@ -31,8 +31,8 @@ public:
 protected:
     TextEditorWithHistory();
 
-    virtual String filterChunk(const String &newChunk) const;
-    virtual void pasteChunk(Range range, const String &newChunk) = 0;
+    virtual string filterChunk(const string &newChunk) const;
+    virtual void pasteChunk(Range range, const string &newChunk) = 0;
 
     typedef List< Ref<const TextDelta> > History;
     Ref<History> past_;

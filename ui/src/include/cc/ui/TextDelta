@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Range>
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 namespace ui {
@@ -20,22 +20,22 @@ class TextDelta: public Object
 
 public:
     int byteOffset() const { return byteOffset_; }
-    String oldChunk() const { return oldChunk_; }
-    String newChunk() const { return newChunk_; }
+    string oldChunk() const { return oldChunk_; }
+    string newChunk() const { return newChunk_; }
 
     Range oldRange() const { return Range { byteOffset_, byteOffset_ + oldChunk_->count() }; }
     Range newRange() const { return Range { byteOffset_, byteOffset_ + newChunk_->count() }; }
 
 private:
-    TextDelta(int byteOffset, const String &oldChunk, const String &newChunk):
+    TextDelta(int byteOffset, const string &oldChunk, const string &newChunk):
         byteOffset_{byteOffset},
         oldChunk_{oldChunk},
         newChunk_{newChunk}
     {}
 
     int byteOffset_;
-    String oldChunk_;
-    String newChunk_;
+    string oldChunk_;
+    string newChunk_;
 };
 
 }} // namespace cc::ui

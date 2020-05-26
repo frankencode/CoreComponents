@@ -58,13 +58,13 @@ void TestRunStage::scheduleJobs(JobScheduler *scheduler)
 
     if (plan()->options() & BuildPlan::Tools) {
         for (Module *module: plan()->modules()) {
-            String command = "./" + module->toolName();
+            string command = "./" + module->toolName();
             if (plan()->testArgs() != "") command += " " + plan()->testArgs();
             scheduler->schedule(Job::create(command));
         }
     }
     else {
-        String command = toolChain()->linkName(plan());
+        string command = toolChain()->linkName(plan());
         if (plan()->testArgs() != "") command += " " + plan()->testArgs();
         scheduler->schedule(Job::create(command));
     }

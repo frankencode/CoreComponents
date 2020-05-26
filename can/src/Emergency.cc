@@ -27,9 +27,9 @@ Ref<CanFrame> Emergency::createFrame(int nodeId, Emergency::Type type, ErrorRegi
     return frame;
 }
 
-String Emergency::Instance::toString() const
+string Emergency::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "Emergency {" << nl
@@ -40,9 +40,9 @@ String Emergency::Instance::toString() const
         << "}";
 }
 
-String str(Emergency::Type emergencyType)
+string str(Emergency::Type emergencyType)
 {
-    String s;
+    string s;
 
     switch (emergencyType) {
         case Emergency::Type::None               : s = "Emergency::Type::None"; break;

@@ -13,7 +13,7 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockReadEndReply::createFrame(int serverId, const String &data, bool crcSupport)
+Ref<CanFrame> BlockReadEndReply::createFrame(int serverId, const string &data, bool crcSupport)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
@@ -32,9 +32,9 @@ Ref<CanFrame> BlockReadEndReply::createFrame(int serverId, const String &data, b
     return frame;
 }
 
-String BlockReadEndReply::Instance::toString() const
+string BlockReadEndReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "BlockReadEndReply {" << nl

@@ -35,7 +35,7 @@ private:
     BlockCascade(BlockCipher *cipher, const CharArray *iv);
 
     Ref<BlockCipher> cipher_;
-    String s_;
+    string s_;
 };
 
 }} // namespace cc::crypto

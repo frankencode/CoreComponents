@@ -13,14 +13,14 @@
 
 namespace cc {
 
-class Folder: public Source<String>
+class Folder: public Source<string>
 {
 public:
     /** Open a file from this folder
       * \param name name of the file to open
       * \return new content stream
       */
-    virtual Ref<Stream> openFile(const String &name) = 0;
+    virtual Ref<Stream> openFile(const string &name) = 0;
 };
 
 } // namespace cc

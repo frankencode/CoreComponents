@@ -188,7 +188,7 @@ public:
     int invert() const { return invert_; }
 
 private:
-    String s_;
+    string s_;
     int invert_;
 };
 
@@ -227,7 +227,7 @@ public:
     const CharArray &s() const { return *s_; }
 
 private:
-    String s_;
+    string s_;
     bool caseSensitive_;
 };
 
@@ -462,7 +462,7 @@ public:
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
-        String filteredText = text;
+        string filteredText = text;
 
         Token *lastChildSaved = parentToken->lastChild();
 
@@ -472,7 +472,7 @@ public:
         rollBack(parentToken, lastChildSaved);
 
         if (h != -1) {
-            String filteredText = text->copy();
+            string filteredText = text->copy();
             for (Token *token = filterToken; token; token = token->nextSibling())
                 mutate(filteredText->select(token->i0(), token->i1()))->fill(blank_);
 
@@ -1268,7 +1268,7 @@ public:
     NODE EXCEPT(char a, char b) { return debug(new RangeMinMaxNode(a, b, 1), "RangeMinMax"); }
     NODE EXCEPT(const char *s) { return debug(new RangeExplicitNode(s, 1), "RangeExplicit"); }
 
-    NODE STRING(const char *s) { return debug(new StringNode(s, caseSensitive_), "String"); }
+    NODE STRING(const char *s) { return debug(new StringNode(s, caseSensitive_), "string"); }
     NODE KEYWORD(const char *keywords);
 
     NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new RepeatNode(minRepeat, maxRepeat, entry), "Repeat"); }

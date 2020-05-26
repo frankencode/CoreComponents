@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -24,8 +24,8 @@ public:
     static int pageSize(); ///< memory page size (in bytes)
     static double now(); ///< current system time (in seconds since start of Epoch starting at 1st Jan 1970 00:00:00)
 
-    static String hostName(); ///< system host name
-    static void setHostName(const String &newName); ///< set system host name
+    static string hostName(); ///< system host name
+    static void setHostName(const string &newName); ///< set system host name
 
     /** \brief Mount a file system
       * \param source path to partition device file, etc.
@@ -33,10 +33,10 @@ public:
       * \param type filesystem type (e.g. ext4)
       * \param options comma separated list of mount options
       */
-    static void mount(const String &source, const String &target, const String &type, const String &options = "");
+    static void mount(const string &source, const string &target, const string &type, const string &options = "");
 
     /// Unmount the filesystem mounted under \a target directory
-    static void unmount(const String &target);
+    static void unmount(const string &target);
 };
 
 } // namespace cc

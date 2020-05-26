@@ -17,7 +17,7 @@ namespace http {
 class ScriptHandler: public Object
 {
 public:
-    virtual bool process(const HttpRequest *request, const FileStatus *status, const String &documentRoot = "") = 0;
+    virtual bool process(const HttpRequest *request, const FileStatus *status, const string &documentRoot = "") = 0;
 };
 
 }} // namespace cc::http

@@ -13,7 +13,7 @@
 namespace cc {
 namespace ui {
 
-Label::Label(View *parent, const String &text_, const Font &font_):
+Label::Label(View *parent, const string &text_, const Font &font_):
     View{parent},
     text{text_}
 {
@@ -54,7 +54,7 @@ Point Label::textPos(double relativeHeight) const
         };
 }
 
-Size Label::preferredSize(const String &text, const Font &font, Size margin)
+Size Label::preferredSize(const string &text, const Font &font, Size margin)
 {
     return preferredSize(TextRun::createHtml(text, font), margin);
 }

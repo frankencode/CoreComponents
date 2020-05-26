@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 #include <cc/Range>
 
 namespace cc {
@@ -18,10 +18,10 @@ class TextEditor: public Object
 {
 public:
     virtual int byteCount() const = 0;
-    virtual String copy(Range range) const = 0;
+    virtual string copy(Range range) const = 0;
 
-    virtual String text() const = 0;
-    virtual Range paste(Range range, const String &newChunk) = 0;
+    virtual string text() const = 0;
+    virtual Range paste(Range range, const string &newChunk) = 0;
 
     virtual bool canUndo() const = 0;
     virtual bool canRedo() const = 0;

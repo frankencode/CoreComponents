@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <cc/files>
-#include <cc/String>
+#include <cc/string>
 #include <cc/SystemStream>
 
 namespace cc {
@@ -37,16 +37,16 @@ public:
       * \param path file or directory path
       * \return new object instance
       */
-    static Ref<FileStatus> read(const String &path);
+    static Ref<FileStatus> read(const string &path);
 
     /** Read file status (without following a symlink)
       * \param path file or directory path
       * \return new object instance
       */
-    static Ref<FileStatus> readHead(const String &path);
+    static Ref<FileStatus> readHead(const string &path);
 
     /// %File or directory path
-    String path() const { return path_; }
+    string path() const { return path_; }
 
     /// %File type
     FileType type() const { return static_cast<FileType>(st_mode & S_IFMT); }
@@ -100,11 +100,11 @@ public:
     bool isValid() const { return isValid_; }
 
 private:
-    FileStatus(const String &path = "", bool follow = true);
+    FileStatus(const string &path = "", bool follow = true);
 
     bool update();
 
-    String path_;
+    string path_;
     bool isValid_;
     bool follow_;
 };

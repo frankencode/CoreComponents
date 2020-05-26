@@ -18,11 +18,11 @@
 using namespace cc;
 using namespace cc::can;
 
-void safetyListen(String interface, int canId, int invCanId, double cycleTime, double validationTime, double duration);
+void safetyListen(string interface, int canId, int invCanId, double cycleTime, double validationTime, double duration);
 
 int main(int argc, char **argv)
 {
-    String toolName = String{argv[0]}->fileName();
+    string toolName = string{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
         if (arguments->items()->count() > 0) throw HelpRequest{};
 
-        String interface = options->value("interface");
+        string interface = options->value("interface");
         int canId = options->value("can-id");
         int invCanId = options->value("inv-can-id");
         double cycleTime = double(options->value("cycle-time"));
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void safetyListen(String interface, int canId, int invCanId, double cycleTime, double validationTime, double duration)
+void safetyListen(string interface, int canId, int invCanId, double cycleTime, double validationTime, double duration)
 {
     auto can = CanSocket::open(interface);
 
@@ -122,19 +122,19 @@ void safetyListen(String interface, int canId, int invCanId, double cycleTime, d
 
         lastTimes->establish(frame->canId(), t);
 
-        String annotation = "SRDO";
+        string annotation = "SRDO";
 
         try {
             if (int(frame->canId()) == invCanId) {
                 if (dt > cycleTime) {
-                    throw String{Format{"ERROR, SCT EXCEEDED (dt = %%)"} << fixed(dt, 3, 3)};
+                    throw string{Format{"ERROR, SCT EXCEEDED (dt = %%)"} << fixed(dt, 3, 3)};
                 }
                 else {
                     double ts = 0;
                     double dtv = 0;
                     if (lastTimes->lookup(canId, &ts)) {
                         dtv = t - ts;
-                        if (dtv > validationTime) throw String{Format{"ERROR, SRVT EXCEEDED (dtv = %%)"} << dtv};
+                        if (dtv > validationTime) throw string{Format{"ERROR, SRVT EXCEEDED (dtv = %%)"} << dtv};
                         if (dtv < dtvMin) dtvMin = dtv;
                         if (dtv > dtvMax) dtvMax = dtv;
                         dtvAvg += dtv;
@@ -151,7 +151,7 @@ void safetyListen(String interface, int canId, int invCanId, double cycleTime, d
                 }
             }
         }
-        catch (String &error) {
+        catch (string &error) {
             annotation = error;
             ++errorCount;
         }

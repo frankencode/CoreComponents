@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace ccaes {
 
@@ -17,7 +17,7 @@ using namespace cc;
 class Readline
 {
 public:
-    static String getPassword(const String &prompt);
+    static string getPassword(const string &prompt);
 };
 
 } // namespace ccaes

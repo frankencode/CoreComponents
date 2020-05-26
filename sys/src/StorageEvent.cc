@@ -13,7 +13,7 @@
 namespace cc {
 namespace sys {
 
-String str(StorageAction action)
+string str(StorageAction action)
 {
     switch (action) {
         case StorageAction::Add:    return "StorageAction::Add";
@@ -22,7 +22,7 @@ String str(StorageAction action)
         case StorageAction::Move:   return "StorageAction::Move";
         case StorageAction::Present:return "StorageAction::Present";
     }
-    return String{};
+    return string{};
 }
 
 StorageEvent::StorageEvent(struct udev_device *dev)
@@ -66,7 +66,7 @@ StorageEvent::StorageEvent(struct udev_device *dev)
     }
 }
 
-String StorageEvent::toString() const
+string StorageEvent::toString() const
 {
     return Format()
         << "StorageEvent {" << nl

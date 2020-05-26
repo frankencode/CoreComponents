@@ -57,9 +57,9 @@ void Crc32Sink::write(const CharArray *data)
     feed(data->bytes(), data->count());
 }
 
-String Crc32Sink::finish()
+string Crc32Sink::finish()
 {
-    String sum = String::create(Size);
+    string sum = string::create(Size);
     mutate(sum)->at(0) = (crc_ >> 24) & 0xFF;
     mutate(sum)->at(1) = (crc_ >> 16) & 0xFF;
     mutate(sum)->at(2) = (crc_ >> 8) & 0xFF;

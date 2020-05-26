@@ -44,16 +44,16 @@ bool UninstallStage::run()
 
 bool UninstallStage::uninstallTool(Module *module)
 {
-    String product = module->toolName();
+    string product = module->toolName();
     return shell()->unlink(toolChain()->installDirPath(plan())->extendPath(product));
 }
 
 bool UninstallStage::uninstallApplicationOrLibrary()
 {
     int options = plan()->options();
-    String product = toolChain()->linkName(plan());
-    String installDirPath = toolChain()->installDirPath(plan());
-    String installFilePath = installDirPath->extendPath(product);
+    string product = toolChain()->linkName(plan());
+    string installDirPath = toolChain()->installDirPath(plan());
+    string installFilePath = installDirPath->extendPath(product);
 
     if (!shell()->unlink(installFilePath)) return false;
 
@@ -73,8 +73,8 @@ bool UninstallStage::uninstallApplicationOrLibrary()
             toolChain()->libIncludePrefix(plan())
         );
 
-        String pcName = toolChain()->pkgConfigName(plan());
-        String pcInstallPath = toolChain()->pkgConfigInstallDirPath(plan())->extendPath(pcName);
+        string pcName = toolChain()->pkgConfigName(plan());
+        string pcInstallPath = toolChain()->pkgConfigInstallDirPath(plan())->extendPath(pcName);
         plan()->shell()->unlink(pcInstallPath);
     }
 

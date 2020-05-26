@@ -107,7 +107,7 @@ private:
 
     int w_ { 0 };
     int h_ { 0 };
-    String data_;
+    string data_;
 
     mutable cairo_surface_t *cairoSurface_ { nullptr };
 };

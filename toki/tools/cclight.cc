@@ -17,14 +17,14 @@
 using namespace cc;
 using namespace cc::toki;
 
-String cssPath(const String &themeName)
+string cssPath(const string &themeName)
 {
     return themeName + ".css";
 }
 
 int main(int argc, char **argv)
 {
-    String toolName = String{argv[0]}->fileName();
+    string toolName = string{argv[0]}->fileName();
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
         {
@@ -41,8 +41,8 @@ int main(int argc, char **argv)
         const StringList *items = arguments->items();
         bool verbose = options->value("verbose");
         bool cssOption = options->value("css");
-        String themeOption = options->value("theme");
-        String languageOption = options->value("language");
+        string themeOption = options->value("theme");
+        string languageOption = options->value("language");
 
         if (options->value("list-languages")) {
             for (int i = 0; i < Registry::instance()->languageCount(); ++i) {
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
             Language *language = defaultLanguage;
             if (!language)
                 throw UsageError{"Please specify language (use -language option)"};
-            String text = stdIn()->readAll();
+            string text = stdIn()->readAll();
             Ref<SyntaxState> state = language->highlightingSyntax()->match(text, 0);
             ferr() << language->highlightingSyntax()->name() << "," << state->i0() << "," << state->i1() << nl;
             if (!state->valid()) throw SyntaxError{text, state, "<standard input>"};
@@ -82,8 +82,8 @@ int main(int argc, char **argv)
         }
         else {
             for (int i = 0; i < items->count(); ++i) {
-                String path = items->at(i);
-                String text = File::open(path)->map();
+                string path = items->at(i);
+                string text = File::open(path)->map();
 
                 Language *language = defaultLanguage;
                 if (!language) {
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
                 }
 
                 if (themeOption == "") themeOption = "ClassicWhite";
-                String htmlPath = path->fileName()->replace(".", "_") + ".html";
+                string htmlPath = path->fileName()->replace(".", "_") + ".html";
                 if (verbose) fout() << htmlPath << nl;
                 Ref<File> htmlFile = File::open(htmlPath, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly);
                 Format sink(htmlFile);

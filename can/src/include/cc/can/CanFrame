@@ -9,7 +9,7 @@
 #pragma once
 
 #include <linux/can.h> // can_frame
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 namespace can {
@@ -45,13 +45,13 @@ public:
         return data[i];
     }
 
-    String payload() const;
-    void setPayload(const String &data);
+    string payload() const;
+    void setPayload(const string &data);
 
     void setValueUInt32(uint32_t value);
     void updateInverse(CanFrame *invFrame) const;
 
-    String copy(int i0, int i1) const;
+    string copy(int i0, int i1) const;
 
     template<class Word>
     Word word(int i0, int i1) const
@@ -89,7 +89,7 @@ public:
         else    can_id &= ~CAN_RTR_FLAG;
     }
 
-    String toString() const;
+    string toString() const;
 
 protected:
     CanFrame();

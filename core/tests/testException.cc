@@ -34,7 +34,7 @@ class FileExceptions: public TestCase
     void run()
     {
         try {
-            String path = "testabc.123";
+            string path = "testabc.123";
             if (!File::tryOpen(path)) CC_SYSTEM_DEBUG_ERROR(errno);
             CC_VERIFY(false);
         }

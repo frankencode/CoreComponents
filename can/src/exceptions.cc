@@ -12,9 +12,9 @@
 namespace cc {
 namespace can {
 
-String CanAbort::message() const { return Format{"CAN abort (%%)"} << reason() ; }
-String CanTimeout::message() const { return "CAN timeout"; }
-String CanDisconnect::message() const { return "CAN disconnect"; }
-String CanUnexpected::message() const { return "CAN unexpected"; }
+string CanAbort::message() const { return Format{"CAN abort (%%)"} << reason() ; }
+string CanTimeout::message() const { return "CAN timeout"; }
+string CanDisconnect::message() const { return "CAN disconnect"; }
+string CanUnexpected::message() const { return "CAN unexpected"; }
 
 }} // namespace cc::can

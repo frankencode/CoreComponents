@@ -43,10 +43,10 @@ bool PreparationStage::run()
         Ref<JobScheduler> scheduler;
 
         if (predicate->source()->count() == 0) {
-            String targetPath = plan()->sourcePath(predicate->target()->replace("%", ""));
+            string targetPath = plan()->sourcePath(predicate->target()->replace("%", ""));
             if (plan()->options() & BuildPlan::Clean) {
                 if (predicate->clean() != "") {
-                    String command = expand(predicate->clean(), "", targetPath);
+                    string command = expand(predicate->clean(), "", targetPath);
                     if (plan()->options() & BuildPlan::Simulate) {
                         fout() << shell()->beautify(command) << nl;
                     }
@@ -62,7 +62,7 @@ bool PreparationStage::run()
             }
             if (predicate->create() != "") {
                 if (!shell()->fileStatus(targetPath)->isValid()) {
-                    String command = expand(predicate->create(), "", targetPath);
+                    string command = expand(predicate->create(), "", targetPath);
                     if (plan()->options() & BuildPlan::Simulate) {
                         fout() << shell()->beautify(command) << nl;
                     }
@@ -77,15 +77,15 @@ bool PreparationStage::run()
             }
         }
 
-        for (String sourceText: predicate->source()) {
-            String sourceExpression =
+        for (string sourceText: predicate->source()) {
+            string sourceExpression =
                 plan()->sourcePath(
                     sourceText->replace("%", "(?@*)")
                 );
             Pattern sourcePattern = sourceExpression;
             Ref<Glob> glob = Glob::open(sourceExpression);
-            for (String sourcePath; glob->read(&sourcePath);) {
-                String name;
+            for (string sourcePath; glob->read(&sourcePath);) {
+                string name;
                 if (sourceText->contains('%')) {
                     Ref<SyntaxState> state = sourcePattern->match(sourcePath);
                     name = sourcePath->copyRange(state->capture());
@@ -93,12 +93,12 @@ bool PreparationStage::run()
                 else {
                     name = sourcePath->baseName();
                 }
-                String targetPath =
+                string targetPath =
                     plan()->sourcePath(
                         predicate->target()->replace("%", name)
                     );
                 if (plan()->options() & BuildPlan::Clean) {
-                    String command = expand(predicate->clean(), sourcePath, targetPath);
+                    string command = expand(predicate->clean(), sourcePath, targetPath);
                     if (plan()->options() & BuildPlan::Simulate) {
                         fout() << shell()->beautify(command) << nl;
                     }
@@ -115,7 +115,7 @@ bool PreparationStage::run()
                     (plan()->options() & BuildPlan::Blindfold) ||
                     shell()->fileStatus(targetPath)->lastModified() < shell()->fileStatus(sourcePath)->lastModified()
                 ) {
-                    String command = expand(predicate->update(), sourcePath, targetPath);
+                    string command = expand(predicate->update(), sourcePath, targetPath);
                     if (plan()->options() & BuildPlan::Simulate) {
                         fout() << shell()->beautify(command) << nl;
                     }
@@ -131,14 +131,14 @@ bool PreparationStage::run()
         }
 
         if (predicate->remove() != "") {
-            String targetExpression =
+            string targetExpression =
                 plan()->sourcePath(
                     predicate->target()->replace("%", "(?@*)")
                 );
             Pattern targetPattern = targetExpression;
             Ref<Glob> glob = Glob::open(targetExpression);
-            for (String targetPath; glob->read(&targetPath);) {
-                String name;
+            for (string targetPath; glob->read(&targetPath);) {
+                string name;
                 if (predicate->target()->contains('%')) {
                     Ref<SyntaxState> state = targetPattern->match(targetPath);
                     name = targetPath->copyRange(state->capture());
@@ -147,8 +147,8 @@ bool PreparationStage::run()
                     name = targetPath->baseName();
                 }
                 bool sourceFound = false;
-                for (String sourceText: predicate->source()) {
-                    String sourcePath =
+                for (string sourceText: predicate->source()) {
+                    string sourcePath =
                         plan()->sourcePath(
                             sourceText->replace("%", name)
                         );
@@ -158,7 +158,7 @@ bool PreparationStage::run()
                     }
                 }
                 if (!sourceFound) {
-                    String command = expand(predicate->remove(), "", targetPath);
+                    string command = expand(predicate->remove(), "", targetPath);
                     if (plan()->options() & BuildPlan::Simulate) {
                         fout() << shell()->beautify(command) << nl;
                     }
@@ -188,7 +188,7 @@ bool PreparationStage::run()
     return success_ = true;
 }
 
-String PreparationStage::expand(const String &command, const String &sourcePath, const String &targetPath)
+string PreparationStage::expand(const string &command, const string &sourcePath, const string &targetPath)
 {
     return command
         ->replace("$<", sourcePath)

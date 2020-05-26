@@ -16,7 +16,7 @@
 using namespace cc;
 using namespace cc::net;
 
-void dump(const String &prefix, const CharArray *data)
+void dump(const string &prefix, const CharArray *data)
 {
     Ref<StringList> parts = data->split('\n');
     for (int i = 0; i < parts->count(); ++i) {
@@ -31,7 +31,7 @@ void dump(const String &prefix, const CharArray *data)
 
 int main(int argc, char **argv)
 {
-    String toolName = String{argv[0]}->fileName();
+    string toolName = string{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv, VariantMap::create());
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
             monitor->addEvent(IoReady::Read, serverSocket);
             monitor->addEvent(IoReady::Read, clientSocket);
 
-            String data = String::allocate(0x10000);
+            string data = string::allocate(0x10000);
             bool serverClosed = false;
             bool clientClosed = false;
             while (!(serverClosed || clientClosed)) {
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
                             ferr() << "[srv] DONE" << nl;
                             continue;
                         }
-                        String range = data->select(0, n);
+                        string range = data->select(0, n);
                         clientSocket->write(range);
                         dump("(cli)", range);
                     }
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
                             ferr() << "[cli] DONE" << nl;
                             continue;
                         }
-                        String range = data->select(0, n);
+                        string range = data->select(0, n);
                         serverSocket->write(range);
                         dump("(srv)", range);
                     }

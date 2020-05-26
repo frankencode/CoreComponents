@@ -10,12 +10,12 @@
 
 #include <string.h>
 #include <cc/assert>
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 namespace syntax {
 
-class StringTrap: public Object // FIXME: can easily be replaced by Queue<String>
+class StringTrap: public Object // FIXME: can easily be replaced by Queue<string>
 {
 public:
     static Ref<StringTrap> create() {
@@ -45,8 +45,8 @@ private:
 
     class Node: public Object {
     public:
-        Node(const char *s, int len): s_{String::copy(s, len)} {}
-        String s_;
+        Node(const char *s, int len): s_{string::copy(s, len)} {}
+        string s_;
         Ref<Node> next_;
     };
     mutable Ref<Node> head_;

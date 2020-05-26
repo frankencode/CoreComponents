@@ -11,12 +11,12 @@
 
 namespace cc {
 
-Ref<CleanupGuard> CleanupGuard::post(const String &path)
+Ref<CleanupGuard> CleanupGuard::post(const string &path)
 {
     return new CleanupGuard{path};
 }
 
-CleanupGuard::CleanupGuard(const String &path):
+CleanupGuard::CleanupGuard(const string &path):
     path_{path}
 {}
 

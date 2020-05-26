@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/bucket>
-#include <cc/String>
+#include <cc/string>
 
 namespace cc { class Format; }
 
@@ -23,10 +23,10 @@ public:
     static const Tree *tree(const Container *container) { return container->tree_; }
 
     template<class Container>
-    static String dotify(const Container *container) { return dotifyTree(tree(container)); }
+    static string dotify(const Container *container) { return dotifyTree(tree(container)); }
 
 private:
-    static String dotifyTree(const Tree *tree);
+    static string dotifyTree(const Tree *tree);
     static void dotifyNode(Format &format, const Head *head, unsigned origin = 0);
 };
 

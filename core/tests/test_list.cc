@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
     a[0] = -1;
 
     for (int i = 0; i < 10; ++i)
-        fout("a[%%] = %%") << i << a[i] << nl;
+        fout{"a[%%] = %%"} << i << a[i] << nl;
 
-    fout() << nl;
-    fout("b = %%") << b << nl;
+    fout{} << nl;
+    fout{"b = %%"} << b << nl;
 
     list<int> c = { 1, 2, 4, 6 };
 

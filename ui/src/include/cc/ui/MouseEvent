@@ -19,7 +19,7 @@ public:
     MouseButton button() const { return button_; }
     int clickCount() const { return clickCount_; }
 
-    String toString() const override;
+    string toString() const override;
 
 private:
     friend class Object;

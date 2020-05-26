@@ -6,18 +6,19 @@
  *
  */
 
+#include <cc/ui/FtFontManager>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include <cairo/cairo.h>
 #include <cairo/cairo-ft.h>
 #include <cmath>
-#include <cc/Utf8Walker>
 #include <cc/ThreadLocalSingleton>
+#include <cc/unicode>
 #include <cc/ui/FtGlyphRun>
 #include <cc/ui/FtTextRun>
 #include <cc/ui/FtScaledFont>
-#include <cc/ui/FtFontManager>
 
 namespace cc {
 namespace ui {
@@ -31,7 +32,7 @@ FtFontManager::FtFontManager():
     fontCache_{FontCache::create()}
 {}
 
-Ref<FontFace> FtFontManager::openFontFace(const String &path)
+Ref<FontFace> FtFontManager::openFontFace(const string &path)
 {
     return FtFontFace::open(path);
 }
@@ -74,12 +75,12 @@ Ref<const ScaledFont> FtFontManager::selectFont(const Font &font) const
     return scaledFont;
 }
 
-Ref<GlyphRun> FtFontManager::typeset(const String &text, const Font &font, const Point &origin) const
+Ref<GlyphRun> FtFontManager::typeset(const string &text, const Font &font, const Point &origin) const
 {
     return ftTypeset(text, font, origin);
 }
 
-Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, const Point &origin) const
+Ref<FtGlyphRun> FtFontManager::ftTypeset(const string &text, const Font &font, const Point &origin) const
 {
     if (text->contains('\n'))
         return ftTypeset(text->replace("\n", ""), font, origin);
@@ -114,7 +115,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 
     auto ftGlyphRun = Object::create<FtGlyphRun>(text, font, origin);
 
-    const int codePointsCount = Utf8Walker::countCodePoints(text);
+    const int codePointsCount = count(unicode{text});
 
     auto cairoGlyphs = FtGlyphRun::CairoGlyphs::create(codePointsCount);
     auto cairoTextClusters = FtGlyphRun::CairoTextClusters::create(codePointsCount);
@@ -122,7 +123,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
     int cairoGlyphsCount = 0;
     int cairoTextClustersCount = 0;
 
-    Utf8Walker walker(text);
+    auto walker = unicode{text}->begin();
     FT_UInt previousGlyphIndex = 0;
 
     Point pos = origin;
@@ -133,10 +134,11 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
     for (;; ++cairoGlyphsCount)
     {
         uchar_t ch = 0;
-        int byteCount = walker->offset();
-        if (!walker->read(&ch)) break;
-
-        byteCount = walker->offset() - byteCount;
+        int byteCount = +walker;
+        if (!walker) break;
+        ch = *walker;
+        ++walker;
+        byteCount = +walker - byteCount;
 
         struct GlyphLoadingError {};
 
@@ -230,7 +232,7 @@ Ref<TextRun> FtFontManager::createTextRun() const
     return FtTextRun::create();
 }
 
-void FtFontManager::selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const
+void FtFontManager::selectFontRanges(const string &text, const Font &font, const ReturnFontRange &fontRange) const
 {
     bool allAscii = true;
     for (int i = 0, n = text->count(); i < n; ++i) {
@@ -248,19 +250,19 @@ void FtFontManager::selectFontRanges(const String &text, const Font &font, const
     Font targetFont = fixup(font);
     const FtFontFace *targetFontFace = Object::cast<const FtScaledFont *>(targetFont->getScaledFont())->ftFontFace();
 
-    for (Utf8Walker walker{text}; walker;)
+    for (auto walker = unicode{text}->begin(); walker;)
     {
-        const int start = walker->offset();
+        const int start = +walker;
 
         uchar_t ch = 0;
         while (walker) {
-            ch = walker->getChar();
+            ch = *walker;
             if (FT_Get_Char_Index(targetFontFace->ftFace(), ch) == 0) break;
             ++walker;
         }
 
-        if (start < walker->offset())
-            fontRange(targetFont, start, walker->offset());
+        if (start < +walker)
+            fontRange(targetFont, start, +walker);
 
         if (!walker) break;
 
@@ -283,13 +285,13 @@ void FtFontManager::selectFontRanges(const String &text, const Font &font, const
                 );
 
             if (FT_Get_Char_Index(fallbackFontFace->ftFace(), ch) == 0) continue;
-            const int start = walker->offset();
+            const int start = +walker;
             ++walker;
 
             searchExhausted = false;
 
             while (walker) {
-                ch = walker->getChar();
+                ch = *walker;
                 if (
                     FT_Get_Char_Index(targetFontFace->ftFace(), ch) != 0 ||
                     FT_Get_Char_Index(fallbackFontFace->ftFace(), ch) == 0
@@ -302,14 +304,14 @@ void FtFontManager::selectFontRanges(const String &text, const Font &font, const
             fallbackFont->setWeight (fallbackFontFace->weight());
             fallbackFont->setSlant  (fallbackFontFace->slant());
             fallbackFont->setStretch(fallbackFontFace->stretch());
-            fontRange(fallbackFont, start, walker->offset());
+            fontRange(fallbackFont, start, +walker);
             break;
         }
 
         if (searchExhausted) {
-            const int start = walker->offset();
+            const int start = +walker;
             ++walker;
-            fontRange(targetFont, start, walker->offset());
+            fontRange(targetFont, start, +walker);
         }
     }
 }

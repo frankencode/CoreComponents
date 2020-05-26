@@ -33,7 +33,7 @@ public:
     int blockSize() const override;
 
     void write(const CharArray *data) override;
-    String finish() override;
+    string finish() override;
 
 private:
     Md5Sink();
@@ -41,12 +41,12 @@ private:
 
     void consume();
 
-    String aux_;
+    string aux_;
     int auxFill_;
     uint64_t bytesFeed_;
     uint32_t a_, b_, c_, d_;
 };
 
-String md5(const CharArray *data);
+string md5(const CharArray *data);
 
 }} // namespace cc::crypto

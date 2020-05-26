@@ -28,11 +28,11 @@ public:
 
 private:
     friend class ZipArchive;
-    ZipFile(const String &path): path_{path} {}
-    String zipPath_;
+    ZipFile(const string &path): path_{path} {}
+    string zipPath_;
     zip_t *archive_;
     zip_file_t *file_;
-    String path_;
+    string path_;
 };
 
 }} // namespace cc::zip

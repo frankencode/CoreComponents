@@ -37,8 +37,8 @@ class Md5Examples: public TestCase
             << "57edf4a22be3c955ac49da2e2107b67a";
 
         for (int i = 0; i < tests->count(); ++i) {
-            String requiredSum = results->at(i);
-            String sum = md5(tests->at(i))->toHex();
+            string requiredSum = results->at(i);
+            string sum = md5(tests->at(i))->toHex();
             fout("MD5 of \"%%\":") << tests->at(i) << nl;
             fout() << "  " << requiredSum << " (required)" << nl;
             fout() << "  " << sum << " (delivered)" << nl;

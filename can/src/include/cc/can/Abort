@@ -84,6 +84,6 @@ protected:
 
 };
 
-String str(Abort::Reason reason);
+string str(Abort::Reason reason);
 
 }} // namespace cc::can

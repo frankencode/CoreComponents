@@ -12,7 +12,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cc/bitmask>
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -34,7 +34,7 @@ enum class FileAccess: int {
 
 CC_BITMASK(FileAccess, int)
 
-String str(FileAccess flags);
+string str(FileAccess flags);
 
 /// %File permission flags
 enum class FileMode: mode_t {
@@ -57,7 +57,7 @@ enum class FileMode: mode_t {
 
 CC_BITMASK(FileMode, mode_t)
 
-String str(FileMode);
+string str(FileMode);
 
 /// %File type
 enum class FileType: int {
@@ -70,7 +70,7 @@ enum class FileType: int {
     Socket      = S_IFSOCK, ///< Named local socket
 };
 
-String str(FileType type);
+string str(FileType type);
 
 /// %File open flags
 enum class FileOpen: int {
@@ -87,7 +87,7 @@ enum class FileOpen: int {
 
 CC_BITMASK(FileOpen, int)
 
-String str(FileOpen mode);
+string str(FileOpen mode);
 
 /// Seek method
 enum class Seek: int {
@@ -96,6 +96,6 @@ enum class Seek: int {
     End     = SEEK_END  ///< Seek relative to the end of file
 };
 
-String str(Seek method);
+string str(Seek method);
 
 } // namespace cc

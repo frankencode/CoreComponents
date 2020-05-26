@@ -30,17 +30,17 @@ SyntaxNode *SyntaxDefinition::debug(SyntaxNode *newNode, const char *nodeType) {
 int SyntaxDefinition::ruleByName(const char *name) const { return def_->ruleByName(name)->id(); }
 int SyntaxDefinition::keywordByName(const char *name) const { return def_->keywordByName(name); }
 
-Ref<SyntaxState> SyntaxDefinition::find(const String &text, int i, TokenFactory *tokenFactory) const
+Ref<SyntaxState> SyntaxDefinition::find(const string &text, int i, TokenFactory *tokenFactory) const
 {
     return def_->find(text, i, tokenFactory);
 }
 
-Ref<SyntaxState> SyntaxDefinition::match(const String &text, int i, TokenFactory *tokenFactory) const
+Ref<SyntaxState> SyntaxDefinition::match(const string &text, int i, TokenFactory *tokenFactory) const
 {
     return def_->match(text, i, tokenFactory);
 }
 
-Ref<StringList> SyntaxDefinition::split(const String &text) const
+Ref<StringList> SyntaxDefinition::split(const string &text) const
 {
     Ref<StringList> parts = StringList::create();
     for (int i = 0; i < text->count();) {

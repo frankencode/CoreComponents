@@ -31,7 +31,7 @@ bool CleanStage::run()
 
     if (!shell()->clean(plan()->modulePath())) return success_ = false;
 
-    String product = toolChain()->linkName(plan());
+    string product = toolChain()->linkName(plan());
 
     if ((plan()->options() & BuildPlan::Application) || (plan()->options() & BuildPlan::Library))
         shell()->unlink(product);

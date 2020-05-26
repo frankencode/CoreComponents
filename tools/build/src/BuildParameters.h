@@ -26,8 +26,8 @@ public:
     void readSpecific(const MetaObject *object);
     void readSpecific(BuildParameters *specific);
 
-    String compiler() const { return compiler_; }
-    String optimize() const { return optimize_; }
+    string compiler() const { return compiler_; }
+    string optimize() const { return optimize_; }
     bool linkStatic() const { return linkStatic_; }
 
     StringList *includePaths() const { return includePaths_; }
@@ -40,8 +40,8 @@ public:
 protected:
     BuildParameters() {}
 
-    String compiler_;
-    String optimize_;
+    string compiler_;
+    string optimize_;
     bool linkStatic_;
 
     Ref<StringList> includePaths_;

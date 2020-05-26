@@ -108,13 +108,13 @@ template<class K, class T>
 bool operator>=(const multimap<K, T> &a, const multimap<K, T> &b) { return container::compare(a, b) >= 0; }
 
 template<class K, class T>
-String str(const Pair<K, T> &a)
+string str(const Pair<K, T> &a)
 {
     return Format{} << "(" << a->key() << ": " << a->value() << ")";
 }
 
 template<class K, class T>
-String str(const multimap<K, T> &a)
+string str(const multimap<K, T> &a)
 {
     Format f;
     f << "[ ";

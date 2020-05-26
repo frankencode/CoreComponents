@@ -9,7 +9,7 @@
 #pragma once
 
 #include <stdint.h>
-#include <cc/String>
+#include <cc/string>
 
 #ifdef major
 #undef major
@@ -41,11 +41,11 @@ public:
 
     /// Construct a version from a C-string \a s
     Version(const char* s):
-        instance_{String{s}}
+        instance_{string{s}}
     {}
 
     /// Construct a version by parsing a string \a s
-    Version(const String &s):
+    Version(const string &s):
         instance_{s}
     {}
 
@@ -75,7 +75,7 @@ public:
         uint32_t toWord() const { return (uint32_t(major_) << 24) | (uint32_t(minor_) << 16) | uint32_t(patch_); }
 
         /// Stringify this version
-        String toString() const;
+        string toString() const;
 
     private:
         friend class Version;
@@ -92,7 +92,7 @@ public:
             patch_{uint16_t(patch)}
         {}
 
-        Instance(const String &s);
+        Instance(const string &s);
 
         uint8_t major_;
         uint8_t minor_;
@@ -115,13 +115,13 @@ public:
       */
 
     /// Conversion to string operator
-    operator String() const { return (*this)->toString(); }
+    operator string() const { return (*this)->toString(); }
 
 private:
     Instance instance_;
 };
 
 /// Stringify a software version tuple \a v
-inline String str(Version v) { return v->toString(); }
+inline string str(Version v) { return v->toString(); }
 
 } // namespace cc

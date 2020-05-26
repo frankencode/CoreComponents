@@ -17,7 +17,7 @@ Ref<DeviceConfiguration> DeviceConfiguration::create()
     return new DeviceConfiguration;
 }
 
-Ref<DeviceConfiguration> DeviceConfiguration::parse(const String &text)
+Ref<DeviceConfiguration> DeviceConfiguration::parse(const string &text)
 {
     Ref<DeviceConfiguration> config = new DeviceConfiguration;
     config->IniSyntax::parse(text);
@@ -28,7 +28,7 @@ DeviceConfiguration::DeviceConfiguration():
     comissioning_{new Comissioning}
 {}
 
-String DeviceConfiguration::toString() const
+string DeviceConfiguration::toString() const
 {
     return Format()
         << DeviceDescription::toString() << nl
@@ -42,7 +42,7 @@ bool DeviceConfiguration::equals(const DeviceConfiguration *other) const
         DeviceDescription::equals(other);
 }
 
-void DeviceConfiguration::enterSection(const String &sectionName)
+void DeviceConfiguration::enterSection(const string &sectionName)
 {
     if (sectionName->match(comissioning_->sectionName())) setCurrentSection(comissioning_);
     else DeviceDescription::enterSection(sectionName);
@@ -52,7 +52,7 @@ DeviceConfiguration::Comissioning::Comissioning():
     Section{"DeviceComissioning"}
 {}
 
-void DeviceConfiguration::Comissioning::establish(const String &key, const String &value)
+void DeviceConfiguration::Comissioning::establish(const string &key, const string &value)
 {
     if (key->match("NodeID")) nodeId_ = value->toNumber<uint8_t>();
     else if (key->match("NodeName")) nodeName_ = value;
@@ -63,7 +63,7 @@ void DeviceConfiguration::Comissioning::establish(const String &key, const Strin
     else if (key->match("LSS_SerialNumber")) serialNumber_ = value->toNumber<uint32_t>();
 }
 
-String DeviceConfiguration::Comissioning::toString() const
+string DeviceConfiguration::Comissioning::toString() const
 {
     Format f;
     f << "[" << sectionName() << "]" << nl;

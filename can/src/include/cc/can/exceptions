@@ -28,7 +28,7 @@ public:
     CanAbort(Abort::Reason reason): reason_{reason} {}
 
     Abort::Reason reason() const { return reason_; }
-    String message() const override;
+    string message() const override;
 
     const CanAbort *operator->() const { return this; }
 
@@ -57,7 +57,7 @@ public:
 class CanTimeout: public CanException
 {
 public:
-    String message() const override;
+    string message() const override;
 };
 
 /** \brief CAN connection was disconnected
@@ -65,7 +65,7 @@ public:
 class CanDisconnect: public CanException
 {
 public:
-    String message() const override;
+    string message() const override;
 };
 
 /** \brief Unexpected CAN frame encountered
@@ -73,7 +73,7 @@ public:
 class CanUnexpected: public CanException
 {
 public:
-    String message() const override;
+    string message() const override;
 };
 
 }} // namespace cc::can

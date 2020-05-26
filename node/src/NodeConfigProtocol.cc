@@ -18,13 +18,13 @@ namespace http {
 class NodePrototype: public MetaPrototype
 {
 public:
-    static Ref<NodePrototype> create(MetaProtocol *protocol = nullptr, const String &className = "Node")
+    static Ref<NodePrototype> create(MetaProtocol *protocol = nullptr, const string &className = "Node")
     {
         return new NodePrototype{className, protocol};
     }
 
 protected:
-    NodePrototype(const String &className, MetaProtocol *protocol):
+    NodePrototype(const string &className, MetaProtocol *protocol):
         MetaPrototype{className, protocol}
     {
         bool superUser = Process::isSuperUser();

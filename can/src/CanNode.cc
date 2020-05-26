@@ -48,7 +48,7 @@ CanNode::CanNode(CanMedia *media, int nodeId, int timeout):
     media_{media},
     nodeId_{nodeId},
     timeout_{timeout},
-    buffer_{String::allocate(65536)},
+    buffer_{string::allocate(65536)},
     fill_{0},
     heartBeatGenerator_{HeartBeatGenerator::create(nodeId_, media_)}
 {}
@@ -121,9 +121,9 @@ void CanNode::nodeReset()
     // TODO...
 }
 
-String CanNode::readServiceData(Selector::Key key) const
+string CanNode::readServiceData(Selector::Key key) const
 {
-    String data;
+    string data;
 
     switch (key) {
         case DictionaryKey::ErrorRegister: {
@@ -146,7 +146,7 @@ String CanNode::readServiceData(Selector::Key key) const
     return data;
 }
 
-void CanNode::writeServiceData(Selector::Key key, const String &data)
+void CanNode::writeServiceData(Selector::Key key, const string &data)
 {
     switch (key) {
         case DictionaryKey::ErrorRegister: {
@@ -374,7 +374,7 @@ void CanNode::handleWriteSegmentRequest(const CanFrame *tail)
         }
 
         if (WriteSegmentRequest{tail}->isLast()) {
-            String data = buffer_->copy(0, fill_);
+            string data = buffer_->copy(0, fill_);
             writeServiceData(+WriteRequest{writeHead_}->selector(), data);
             writeHead_ = nullptr;
         }
@@ -393,7 +393,7 @@ void CanNode::handleReadRequest(const CanFrame *head)
     Selector selector = ReadRequest{head}->selector();
 
     try {
-        String data = readServiceData(+selector);
+        string data = readServiceData(+selector);
 
         auto frame = ReadReply::createFrame(nodeId_, selector, data);
 
@@ -511,7 +511,7 @@ void CanNode::handleBlockWriteRequest(const CanFrame *head)
             throw CanAbort{Abort::Reason::GeneralError};
 
         fill_ -= 7 - BlockWriteEndRequest{frame}->lastSegmentDataCount();
-        String data = buffer_->copy(0, fill_);
+        string data = buffer_->copy(0, fill_);
         if (crcSupport) {
             uint16_t checkSum = crc16(data);
             if (checkSum != BlockWriteEndRequest{frame}->crc())
@@ -536,7 +536,7 @@ void CanNode::handleBlockReadRequest(const CanFrame *head)
     Selector selector = BlockReadInitRequest{head}->selector();
 
     try {
-        String data = readServiceData(+selector);
+        string data = readServiceData(+selector);
 
         if (data->count() < BlockReadInitRequest{head}->switchThreshold()) {
             handleReadRequest(

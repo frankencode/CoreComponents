@@ -19,12 +19,12 @@
 namespace cc {
 namespace can {
 
-Ref<CanSocket> CanSocket::open(const String &interface)
+Ref<CanSocket> CanSocket::open(const string &interface)
 {
     return new CanSocket(interface);
 }
 
-CanSocket::CanSocket(const String &interface):
+CanSocket::CanSocket(const string &interface):
     interface_{interface}
 {
     int fd = ::socket(PF_CAN, SOCK_RAW, CAN_RAW);
@@ -43,7 +43,7 @@ CanSocket::CanSocket(const String &interface):
 CanSocket::~CanSocket()
 {}
 
-int CanSocket::lookupInterfaceIndex(int fd, const String &interface)
+int CanSocket::lookupInterfaceIndex(int fd, const string &interface)
 {
     struct ifreq ifr;
     strncpy(ifr.ifr_name, interface, sizeof(ifr.ifr_name));

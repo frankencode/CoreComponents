@@ -17,11 +17,11 @@
 namespace cc {
 namespace can {
 
-String ServiceReply::Instance::toString() const
+string ServiceReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
-    String s;
+    string s;
     switch (specifier()) {
         case Specifier::Read        : s = ReadReply{frame_}; break;
         case Specifier::Write       : s = WriteReply{frame_}; break;

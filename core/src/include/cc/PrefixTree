@@ -12,7 +12,7 @@
 #include <cc/strings>
 #include <cc/Tree>
 #include <cc/Array>
-#include <cc/String>
+#include <cc/string>
 #include <cc/PrefixTreeWalker>
 
 namespace cc {

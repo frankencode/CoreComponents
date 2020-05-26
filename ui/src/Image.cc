@@ -23,7 +23,7 @@ Image::~Image()
 void Image::init()
 {
     if (isValid())
-        data_ = String::allocate(w_ * h_ * sizeof(Color));
+        data_ = string::allocate(w_ * h_ * sizeof(Color));
 }
 
 cairo_surface_t *Image::cairoSurface() const

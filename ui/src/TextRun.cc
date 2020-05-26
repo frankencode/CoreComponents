@@ -18,14 +18,14 @@ Ref<TextRun> TextRun::create()
     return FontManager::instance()->createTextRun();
 }
 
-Ref<TextRun> TextRun::create(const String &text, const Font &font)
+Ref<TextRun> TextRun::create(const string &text, const Font &font)
 {
     Ref<TextRun> textRun = TextRun::create();
     textRun->append(text, font);
     return textRun;
 }
 
-Ref<TextRun> TextRun::createHtml(const String &text, const Font &font)
+Ref<TextRun> TextRun::createHtml(const string &text, const Font &font)
 {
     Ref<TextRun> textRun = TextRun::create();
     textRun->appendHtml(text, font);
@@ -38,15 +38,15 @@ void TextRun::append(const TextRun *textRun)
         append(glyphRun->text(), glyphRun->font());
 }
 
-void TextRun::appendHtml(const String &text, const Font &font)
+void TextRun::appendHtml(const string &text, const Font &font)
 {
     struct StyleNode: public Object {
-        StyleNode(const Font &font, const String &tagName = String{}, const StyleNode *parent = nullptr):
+        StyleNode(const Font &font, const string &tagName = string{}, const StyleNode *parent = nullptr):
             tagName_{tagName},
             font_{font},
             parent_{parent}
         {}
-        String tagName_;
+        string tagName_;
         Font font_;
         Ref<const StyleNode> parent_;
     };
@@ -58,7 +58,7 @@ void TextRun::appendHtml(const String &text, const Font &font)
         int j = i + 1;
         if (!text->find('>', &j)) break;
         if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->font_);
-        String tagName = text->select(i + 1, j);
+        string tagName = text->select(i + 1, j);
         i = i0 = j + 1;
         if (tagName->startsWith('/')) {
             tagName = tagName->select(1, tagName->count());
@@ -90,7 +90,7 @@ void TextRun::appendHtml(const String &text, const Font &font)
     if (i0 < i) append(replaceEntities(text->copy(i0, i)), styleHead->font_);
 }
 
-String TextRun::replaceEntities(const String &text)
+string TextRun::replaceEntities(const string &text)
 {
     if (text->contains('&')) {
         mutate(text)->replaceInsitu("&gt;", ">");

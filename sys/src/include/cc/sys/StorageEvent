@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 struct udev_device;
 
@@ -26,7 +26,7 @@ enum class StorageAction {
     Present  ///< Device has been present when the StorageMonitor was started
 };
 
-String str(StorageAction action);
+string str(StorageAction action);
 
 /** \brief Notification send by the StorageMonitor
   */
@@ -37,39 +37,39 @@ class StorageEvent: public Object
 public:
     StorageAction action() const { return action_; }
 
-    String sysPath  () const { return sysPath_;   }
-    String devNode  () const { return devNode_;   }
-    String serial   () const { return serial_;    }
-    String fsType   () const { return fsType_;    }
-    String fsVersion() const { return fsVersion_; }
-    String fsLabel  () const { return fsLabel_;   }
+    string sysPath  () const { return sysPath_;   }
+    string devNode  () const { return devNode_;   }
+    string serial   () const { return serial_;    }
+    string fsType   () const { return fsType_;    }
+    string fsVersion() const { return fsVersion_; }
+    string fsLabel  () const { return fsLabel_;   }
 
     bool isUsbStorage() const { return isUsbStorage_; }
 
-    String vendor  () const { return vendor_;   }
-    String model   () const { return model_;    }
-    String vendorId() const { return vendorId_; }
-    String modelId () const { return modelId_;  }
+    string vendor  () const { return vendor_;   }
+    string model   () const { return model_;    }
+    string vendorId() const { return vendorId_; }
+    string modelId () const { return modelId_;  }
 
-    String toString() const;
+    string toString() const;
 
 private:
     StorageEvent(struct udev_device *dev);
 
     StorageAction action_ { StorageAction::Present };
 
-    String sysPath_;
-    String devNode_;
-    String serial_;
-    String fsType_;
-    String fsVersion_;
-    String fsLabel_;
+    string sysPath_;
+    string devNode_;
+    string serial_;
+    string fsType_;
+    string fsVersion_;
+    string fsLabel_;
 
     bool isUsbStorage_;
-    String vendor_;
-    String model_;
-    String vendorId_;
-    String modelId_;
+    string vendor_;
+    string model_;
+    string vendorId_;
+    string modelId_;
 };
 
 }} // namespace cc::sys

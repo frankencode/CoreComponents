@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 #include <cc/Channel>
 #include <cc/Queue>
 
@@ -22,14 +22,14 @@ class JobScheduler;
 class Job: public Object
 {
 public:
-    static Ref<Job> create(const String &command) {
+    static Ref<Job> create(const string &command) {
         return new Job{command};
     }
 
-    String command() const { return command_; }
+    string command() const { return command_; }
 
     int status() const { return status_; }
-    String outputText() const { return outputText_; }
+    string outputText() const { return outputText_; }
 
     void registerDerivative(Job *derivative);
 
@@ -40,17 +40,17 @@ protected:
     friend class JobServer;
     friend class JobScheduler;
 
-    Job(const String &command):
+    Job(const string &command):
         command_{command},
         status_{-1},
         countDown_{0}
     {}
 
 private:
-    String command_;
+    string command_;
 
     int status_;
-    String outputText_;
+    string outputText_;
 
     int countDown_;
 

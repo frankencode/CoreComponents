@@ -12,7 +12,7 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockReadInitReply::createFrame(int serverId, Selector selector, const String &data)
+Ref<CanFrame> BlockReadInitReply::createFrame(int serverId, Selector selector, const string &data)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
 
@@ -32,9 +32,9 @@ Ref<CanFrame> BlockReadInitReply::createFrame(int serverId, Selector selector, c
     return frame;
 }
 
-String BlockReadInitReply::Instance::toString() const
+string BlockReadInitReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "BlockReadInitReply {" << nl

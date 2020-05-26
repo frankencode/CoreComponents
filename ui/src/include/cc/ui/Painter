@@ -130,7 +130,7 @@ class PainterError: public Exception
 {
 public:
     PainterError(int errorStatus);
-    String message() const override;
+    string message() const override;
 private:
     int errorStatus_;
 };

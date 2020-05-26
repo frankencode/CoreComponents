@@ -22,11 +22,11 @@ ConfigureShell::ConfigureShell():
     cache_{Cache::create()}
 {}
 
-String ConfigureShell::run(const String &shellCommand)
+string ConfigureShell::run(const string &shellCommand)
 {
     if (shellCommand == "") return "";
 
-    String text;
+    string text;
     if (lookup(shellCommand, &text))
         return text;
 
@@ -42,7 +42,7 @@ String ConfigureShell::run(const String &shellCommand)
     text = sub->output()->readAll()->trim();
     int status = sub->wait();
     if (status != 0) {
-        throw String{
+        throw string{
             Format{} << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")"
         };
     }
@@ -52,12 +52,12 @@ String ConfigureShell::run(const String &shellCommand)
     return text;
 }
 
-bool ConfigureShell::lookup(const String &command, String *output) const
+bool ConfigureShell::lookup(const string &command, string *output) const
 {
     return cache_->lookup(command, output);
 }
 
-void ConfigureShell::insert(const String &command, const String &output)
+void ConfigureShell::insert(const string &command, const string &output)
 {
     cache_->insert(command, output);
 }

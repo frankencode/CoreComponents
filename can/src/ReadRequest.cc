@@ -28,9 +28,9 @@ Ref<CanFrame> ReadRequest::createFrame(int serverId, Selector selector)
     return frame;
 }
 
-String ReadRequest::Instance::toString() const
+string ReadRequest::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "ReadRequest {" << nl

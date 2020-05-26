@@ -13,12 +13,12 @@
 namespace cc {
 namespace syntax {
 
-SyntaxError::SyntaxError(const String &text, SyntaxState *state, const String &resource):
+SyntaxError::SyntaxError(const string &text, SyntaxState *state, const string &resource):
     TextError{text, state ? state->hintOffset() : -1, resource},
     state_{state}
 {}
 
-String SyntaxError::message() const
+string SyntaxError::message() const
 {
     Format format;
     const char *error = "Syntax error";

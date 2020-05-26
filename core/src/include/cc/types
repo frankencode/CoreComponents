@@ -12,50 +12,12 @@
 #include <stdint.h> // (u)int8_t .. (u)int64_t
 #include <cc/assert>
 #include <cc/bitmask>
+#include <cc/ByteOrder>
 
 typedef float float32_t;
 typedef double float64_t;
 
 namespace cc {
-
-/** Byte order, also known as "Endianess"
-  * \todo translate into a proper enum class
-  */
-enum class Endian {
-    Little = 1, ///< Low order byte precedes the high order byte
-    Big    = 0 ///< High order byte precedes the low order byte
-};
-
-inline Endian localEndian() {
-    const unsigned y = 1;
-    return static_cast<Endian>(*((uint8_t *)&y));
-}
-
-//! swap endianess, if local endian is unequal channel endian
-template<class UInt>
-inline UInt endianGate(UInt x, const Endian channelEndian = Endian::Big)
-{
-    if (localEndian() != channelEndian) {
-        const int n = sizeof(x);
-        UInt z = 0;
-        for (int i = 0; i < n; ++i) {
-            z <<= 8;
-            z |= (x >> (i * 8)) & 0xFF;
-        }
-        x = z;
-    }
-    return x;
-}
-
-template<class B, class A>
-inline B union_cast(A a)
-{
-    union Bimorph { A a; B b; };
-    CC_ASSERT(sizeof(A) == sizeof(B));
-    Bimorph morph;
-    morph.a = a;
-    return morph.b;
-}
 
 inline float64_t nan() { return union_cast<float64_t>(uint64_t(0xFFF8) << 48); }
 inline float64_t inf() { return union_cast<float64_t>(uint64_t(0x7FF) << 52); }

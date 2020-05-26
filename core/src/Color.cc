@@ -240,7 +240,7 @@ void Color::Instance::mixIn(Color b, int percent)
     w_ = compose(v_a[0], v_a[1], v_a[2], v_a[3]);
 }
 
-String Color::Instance::toString() const
+string Color::Instance::toString() const
 {
     return Format()
         << "#"

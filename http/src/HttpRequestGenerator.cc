@@ -24,22 +24,22 @@ HttpRequestGenerator::HttpRequestGenerator(HttpConnection *server):
     version_{"HTTP/1.1"}
 {}
 
-void HttpRequestGenerator::setMethod(const String &method)
+void HttpRequestGenerator::setMethod(const string &method)
 {
     method_ = method;
 }
 
-void HttpRequestGenerator::setPath(const String &path)
+void HttpRequestGenerator::setPath(const string &path)
 {
     path_ = path;
 }
 
-void HttpRequestGenerator::setVersion(const String &version)
+void HttpRequestGenerator::setVersion(const string &version)
 {
     version_ = version;
 }
 
-void HttpRequestGenerator::setHost(const String &host)
+void HttpRequestGenerator::setHost(const string &host)
 {
     header_->establish("Host", host);
 }

@@ -17,7 +17,7 @@ namespace net {
 
 using namespace cc::syntax;
 
-Uri::Instance::Instance(const String &text, Token *rootToken)
+Uri::Instance::Instance(const string &text, Token *rootToken)
 {
     Ref<Token> rootToken2;
     if (!rootToken) {
@@ -61,12 +61,12 @@ Uri::Instance::Instance(const String &text, Token *rootToken)
     }
 }
 
-String Uri::Instance::requestHost() const
+string Uri::Instance::requestHost() const
 {
     return host_ + ":" + str(port_);
 }
 
-String Uri::Instance::requestPath() const
+string Uri::Instance::requestPath() const
 {
     if (query_ == "" && fragment_ == "") return path_;
     auto parts = StringList::create();
@@ -76,7 +76,7 @@ String Uri::Instance::requestPath() const
     return parts;
 }
 
-String Uri::Instance::toString() const
+string Uri::Instance::toString() const
 {
     Format text;
     if (scheme_ != "") {
@@ -106,7 +106,7 @@ String Uri::Instance::toString() const
     return text;
 }
 
-String Uri::encode(const String &s)
+string Uri::encode(const string &s)
 {
     mutate(s)->downcaseInsitu();
 
@@ -119,7 +119,7 @@ String Uri::encode(const String &s)
             if (ch == *r) {
                 if (j < i)
                     l->append(s->copy(j, i));
-                String pct{"%XX"};
+                string pct{"%XX"};
                 mutate(pct)->at(1) = ch >> 4;
                 mutate(pct)->at(2) = ch & 0xF;
                 l->append(pct);
@@ -134,7 +134,7 @@ String Uri::encode(const String &s)
     return l->join();
 }
 
-String Uri::decode(const String &s)
+string Uri::decode(const string &s)
 {
     int j = 0;
     for (int i = 0, n = s->count(); i < n; ++i, ++j) {
@@ -166,7 +166,7 @@ String Uri::decode(const String &s)
     return s;
 }
 
-String Uri::encodeForm(const Map<String> *form)
+string Uri::encodeForm(const Map<string> *form)
 {
     auto parts = StringList::create();
     for (auto item: form) {
@@ -179,20 +179,20 @@ String Uri::encodeForm(const Map<String> *form)
     return parts->join("&");
 }
 
-Ref<Map<String> > Uri::decodeForm(const String &payload)
+Ref<Map<string> > Uri::decodeForm(const string &payload)
 {
-    auto form = Map<String>::create();
+    auto form = Map<string>::create();
     auto parts = payload->split("&");
     for (auto part: parts) {
         int j = part->scan('&');
-        String key = Uri::decode(part->copy(0, j));
-        String value = Uri::decode(part->copy(j + 1, part->count()));
+        string key = Uri::decode(part->copy(0, j));
+        string value = Uri::decode(part->copy(j + 1, part->count()));
         form->insert(key, value);
     }
     return form;
 }
 
-String UriSyntaxError::message() const
+string UriSyntaxError::message() const
 {
     return Format{"Invalid URI syntax: \"%%\""} << text_;
 }

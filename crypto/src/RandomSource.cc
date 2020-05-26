@@ -22,8 +22,8 @@ Ref<RandomSource> RandomSource::open(const CharArray *salt)
 
 RandomSource::RandomSource(const CharArray *salt)
 {
-    String key = String::allocate(16);
-    String iv = String::allocate(AesCipher::BlockSize);
+    string key = string::allocate(16);
+    string iv = string::allocate(AesCipher::BlockSize);
 
     if (salt) {
         mutate(key)->write(salt);

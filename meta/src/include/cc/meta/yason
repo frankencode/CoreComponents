@@ -26,6 +26,6 @@ Variant parse(const CharArray *text, const MetaProtocol *protocol = nullptr);
   * \param value variant value
   * \return YASON message
   */
-String stringify(Variant value);
+string stringify(Variant value);
 
 }}} // namespace cc::meta::yason

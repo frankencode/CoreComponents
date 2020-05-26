@@ -45,8 +45,8 @@ public:
         int port() const; ///< Service port
         void setPort(int port); ///< Change the service port
 
-        String networkAddress() const; ///< Convert the network address to a string (sans port number)
-        String toString() const; ///< Convert the full address to a string (with port number)
+        string networkAddress() const; ///< Convert the network address to a string (sans port number)
+        string toString() const; ///< Convert the full address to a string (with port number)
 
         int scope() const; ///< IPv6 scope of this address
         void setScope(int scope); ///< Change the IPv6 scope
@@ -54,12 +54,12 @@ public:
         /** Lookup the host name of given address. Usually a reverse DNS
           * lookup will be issued, which may take several seconds.
           */
-        String lookupHostName() const;
+        string lookupHostName() const;
 
         /** Lookup the service name. In most setups the service name will be looked up
           * in a local file (/etc/services) and therefore the call returns immediately.
           */
-        String lookupServiceName() const;
+        string lookupServiceName() const;
 
         /** Returns the network prefix of an IPv6 address (the first 64 bits).
           * For IPv4 addresses the entire address is returned.
@@ -81,7 +81,7 @@ public:
         friend class SocketAddressDetails;
 
         Instance();
-        Instance(ProtocolFamily family, const String &address = "", int port = 0);
+        Instance(ProtocolFamily family, const string &address = "", int port = 0);
         Instance(int port);
         Instance(struct sockaddr_in *addr);
         Instance(struct sockaddr_in6 *addr);
@@ -116,7 +116,7 @@ public:
       * \return new object instance
       * \exception HostNameResolutionError
       */
-    static SocketAddress resolveHost(const String &hostName, int port = 0);
+    static SocketAddress resolveHost(const string &hostName, int port = 0);
 
     /** Query the complete connection information for given host name, service name and
       * protocol family. The call blocks until the local resolver has resolved the
@@ -131,11 +131,11 @@ public:
       * \exception HostNameResolutionError
       */
     static Ref<SocketAddressList> queryConnectionInfo(
-        const String &hostName,
-        const String &serviceName = "",
+        const string &hostName,
+        const string &serviceName = "",
         ProtocolFamily family = ProtocolFamily::Unspecified,
         SocketType socketType = SocketType::Unspecified,
-        String *canonicalName = nullptr
+        string *canonicalName = nullptr
     );
 
     /// Create an invalid socket address
@@ -145,7 +145,7 @@ public:
       * \param address numerical host address, wildcard ("*", "::") or file path
       * \exception InvalidAddressSyntax
       */
-    SocketAddress(const String &address):
+    SocketAddress(const string &address):
         instance_{new Instance{guessFamily(address), address}}
     {}
 
@@ -155,7 +155,7 @@ public:
       * \param port service port
       * \exception InvalidAddressSyntax
       */
-    explicit SocketAddress(ProtocolFamily family, const String &address = "", int port = 0):
+    explicit SocketAddress(ProtocolFamily family, const string &address = "", int port = 0):
         instance_{new Instance{family, address, port}}
     {}
 
@@ -174,7 +174,7 @@ public:
     explicit operator bool() const { return instance_->isValid(); }
 
     /// Convert to string
-    operator String() const { return instance_->toString(); }
+    operator string() const { return instance_->toString(); }
 
     /// Compare for equality
     bool operator==(const SocketAddress &other) const { return instance_->equals(other.instance_); }
@@ -184,7 +184,7 @@ private:
     friend class NetworkInterface;
     friend class RouteInfo;
 
-    static ProtocolFamily guessFamily(const String &address);
+    static ProtocolFamily guessFamily(const string &address);
 
     static Instance *instance();
 

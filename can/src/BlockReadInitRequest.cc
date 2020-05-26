@@ -34,9 +34,9 @@ Ref<CanFrame> BlockReadInitRequest::createFrame(int serverId, Selector selector,
     return frame;
 }
 
-String BlockReadInitRequest::Instance::toString() const
+string BlockReadInitRequest::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "BlockReadInitRequest {" << nl

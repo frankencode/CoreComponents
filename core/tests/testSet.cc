@@ -13,7 +13,7 @@
 using namespace cc;
 using namespace cc::testing;
 
-namespace cc { template class Set<String>; }
+namespace cc { template class Set<string>; }
 
 int main(int argc, char **argv)
 {

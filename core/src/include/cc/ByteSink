@@ -53,7 +53,7 @@ public:
     void write(char ch) { writeUInt8((uint8_t)ch); }
 
     /// write a string of bytes
-    void write(const String &s);
+    void write(const string &s);
 
     /// Write a single byte
     void writeUInt8(uint8_t x);
@@ -110,7 +110,7 @@ private:
         endian_{endian},
         i0_{0}, i_{0}
     {
-        if (!buffer_) buffer_ = String::allocate(0x1000);
+        if (!buffer_) buffer_ = string::allocate(0x1000);
     }
 
     ~ByteSink()
@@ -119,7 +119,7 @@ private:
     }
 
     Ref<Stream> sink_;
-    String buffer_;
+    string buffer_;
     Endian endian_;
     off_t i0_;
     int i_;
@@ -134,7 +134,7 @@ inline void ByteSink::flush()
     i_ = 0;
 }
 
-inline void ByteSink::write(const String &s)
+inline void ByteSink::write(const string &s)
 {
     for (int i = 0, n = s->count(); i < n; ++i)
         write(s->at(i));

@@ -26,27 +26,27 @@ public:
     int nodeId() const { return nodeId_; }
     int timeout() const { return timeout_; }
 
-    String read(int peerId, Selector selector);
-    void write(int peerId, Selector selector, const String &data, int switchThreshold = 84);
+    string read(int peerId, Selector selector);
+    void write(int peerId, Selector selector, const string &data, int switchThreshold = 84);
 
-    String blockRead(int peerId, Selector selector, int blockSize = 127, int switchThreshold = 84);
-    void blockWrite(int peerId, Selector selector, const String &data);
+    string blockRead(int peerId, Selector selector, int blockSize = 127, int switchThreshold = 84);
+    void blockWrite(int peerId, Selector selector, const string &data);
 
 protected:
     CanClient(CanMedia *media, int nodeId, int timeout = -1);
 
-    String segmentedReadTransfer(int peerId, Selector selector);
+    string segmentedReadTransfer(int peerId, Selector selector);
 
-    void expeditedWrite(int peerId, Selector selector, const String &data);
-    void segmentedWrite(int peerId, Selector selector, const String &data);
+    void expeditedWrite(int peerId, Selector selector, const string &data);
+    void segmentedWrite(int peerId, Selector selector, const string &data);
 
-    void blockReadInitiate(int peerId, Selector selector, int blockSize, int switchThreshold, bool *crcSupport, std::function<String()> *fallback);
-    String blockReadTransfer(int peerId, Selector selector, int blockSize);
-    void blockReadEnd(int peerId, Selector selector, String *data, bool crcSupport);
+    void blockReadInitiate(int peerId, Selector selector, int blockSize, int switchThreshold, bool *crcSupport, std::function<string()> *fallback);
+    string blockReadTransfer(int peerId, Selector selector, int blockSize);
+    void blockReadEnd(int peerId, Selector selector, string *data, bool crcSupport);
 
-    void blockWriteInitiate(int peerId, Selector selector, const String &data, int *blockSize, bool *crcSupport);
-    void blockWriteTransfer(int peerId, Selector selector, const String &data, int *blockSize, int *offset);
-    void blockWriteEnd(int peerId, Selector selector, const String &data, bool crcSupport);
+    void blockWriteInitiate(int peerId, Selector selector, const string &data, int *blockSize, bool *crcSupport);
+    void blockWriteTransfer(int peerId, Selector selector, const string &data, int *blockSize, int *offset);
+    void blockWriteEnd(int peerId, Selector selector, const string &data, bool crcSupport);
 
 private:
     Ref<CanFrame> getNextReply(int peerId, Selector selector);

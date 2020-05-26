@@ -4,7 +4,7 @@ namespace cc {
 
 const char* Exception::what() const throw()
 {
-    thread_local static String m = message();
+    thread_local static string m = message();
     return m;
 }
 

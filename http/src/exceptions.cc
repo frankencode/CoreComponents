@@ -13,7 +13,7 @@
 namespace cc {
 namespace http {
 
-HttpError::HttpError(int statusCode, const String &message):
+HttpError::HttpError(int statusCode, const string &message):
     statusCode_{statusCode},
     message_{message}
 {}
@@ -23,7 +23,7 @@ int HttpError::statusCode() const
     return statusCode_;
 }
 
-String HttpError::message() const
+string HttpError::message() const
 {
     return message_;
 }
@@ -33,7 +33,7 @@ SecurityError::SecurityError(int errorCode, const SocketAddress &peerAddress):
     peerAddress_{peerAddress}
 {}
 
-String SecurityError::message() const
+string SecurityError::message() const
 {
     const char *s = gnutls_strerror(errorCode_);
     if (peerAddress_)

@@ -29,7 +29,7 @@ void EchoDelegate::process(const HttpRequest *request)
             echo << request->at(i)->key() << ": " << request->at(i)->value() << "\r\n";
         echo << "\r\n";
     }
-    String buf = String::allocate(0x4000);
+    string buf = string::allocate(0x4000);
     while (true) {
         int n = request->payload()->read(mutate(buf));
         if (n == 0) break;

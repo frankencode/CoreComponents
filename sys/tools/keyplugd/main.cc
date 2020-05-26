@@ -12,7 +12,7 @@ using namespace cc::sys;
 
 class MountGuard {
 public:
-    MountGuard(const String &devNode, const String &fsType, const String &mountOptions):
+    MountGuard(const string &devNode, const string &fsType, const string &mountOptions):
         mountPath_{Dir::createTemp()}
     {
         System::mount(devNode, mountPath_, fsType, mountOptions);
@@ -24,15 +24,15 @@ public:
         Dir::remove(mountPath_);
     }
 
-    String mountPath() const { return mountPath_; }
+    string mountPath() const { return mountPath_; }
 
     const MountGuard *operator->() const { return this; }
 
 private:
-    String mountPath_;
+    string mountPath_;
 };
 
-void runAttachCommand(const String &shellCommand, const String &devNode, const String &fsType, const String &mountOptions)
+void runAttachCommand(const string &shellCommand, const string &devNode, const string &fsType, const string &mountOptions)
 {
     if (shellCommand == "") return;
 
@@ -49,7 +49,7 @@ void runAttachCommand(const String &shellCommand, const String &devNode, const S
         ->execute();
 }
 
-void runDetachCommand(const String &shellCommand)
+void runDetachCommand(const string &shellCommand)
 {
     if (shellCommand == "") return;
 
@@ -66,10 +66,10 @@ void runDetachCommand(const String &shellCommand)
 
 void runMonitor(const VariantMap *options)
 {
-    auto serials = String(options->value("serial"))->split(",");
-    String attachCommand = options->value("attach");
-    String detachCommand = options->value("detach");
-    String mountOptions = options->value("options");
+    auto serials = string(options->value("serial"))->split(",");
+    string attachCommand = options->value("attach");
+    string detachCommand = options->value("detach");
+    string mountOptions = options->value("options");
     bool verbose = options->value("verbose");
 
     Thread::blockSignals(SignalSet::createFull());
@@ -113,7 +113,7 @@ void runMonitor(const VariantMap *options)
 
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->fileName();
+    string toolName = string(argv[0])->fileName();
 
     try {
         auto options = VariantMap::create();

@@ -72,15 +72,15 @@ public:
 
     ToolChain *toolChain() const { return toolChain_; }
 
-    String projectPath() const { return projectPath_; }
-    String systemSourcePath() const { return toolChain_->systemRoot()->extendPath("/usr/src"); }
+    string projectPath() const { return projectPath_; }
+    string systemSourcePath() const { return toolChain_->systemRoot()->extendPath("/usr/src"); }
     bool isSystemSource() const { return projectPath_->startsWith(systemSourcePath()); }
-    static String recipePath(const String &projectPath) { return projectPath + "/Recipe"; }
-    String recipePath() const { return recipePath_; }
-    String userPkgConfigPath() const { return projectPath_->extendPath(toolChain_->pkgConfigName(this)); }
-    String scope() const { return scope_; }
-    String modulePath() const { return modulePath_; }
-    String configPath() const { return configPath_; }
+    static string recipePath(const string &projectPath) { return projectPath + "/Recipe"; }
+    string recipePath() const { return recipePath_; }
+    string userPkgConfigPath() const { return projectPath_->extendPath(toolChain_->pkgConfigName(this)); }
+    string scope() const { return scope_; }
+    string modulePath() const { return modulePath_; }
+    string configPath() const { return configPath_; }
     MetaObject *recipe() const { return recipe_; }
 
     int options() const { return options_; }
@@ -88,8 +88,8 @@ public:
     int testRunConcurrency() const { return testRunConcurrency_; }
     bool goForBuild() const;
 
-    String name() const { return name_; }
-    String description() const;
+    string name() const { return name_; }
+    string description() const;
     StringList *alias() const { return alias_; }
     Version version() const { return version_; }
 
@@ -107,19 +107,19 @@ public:
 
     int run();
 
-    String sourcePrefix() const { return sourcePrefix_; }
-    String installRoot() const { return installRoot_; }
-    String installPrefix() const { return installPrefix_; }
-    String testArgs() const { return testArgs_; }
+    string sourcePrefix() const { return sourcePrefix_; }
+    string installRoot() const { return installRoot_; }
+    string installPrefix() const { return installPrefix_; }
+    string testArgs() const { return testArgs_; }
 
-    String sourcePath(const String &source) const;
-    String modulePath(const String &object) const;
-    String installPath(const String &relativeInstallPath) const;
+    string sourcePath(const string &source) const;
+    string modulePath(const string &object) const;
+    string installPath(const string &relativeInstallPath) const;
 
-    String pluginPath(const String &targetLibName) const;
-    String pluginReversePath() const;
+    string pluginPath(const string &targetLibName) const;
+    string pluginReversePath() const;
 
-    String previousLinkCommandPath() const;
+    string previousLinkCommandPath() const;
 
     Ref<StringList> globSources(StringList *pattern) const;
 
@@ -138,18 +138,18 @@ public:
     CleanStage *cleanStage() { return &cleanStage_; }
 
 private:
-    Ref<BuildPlan> create(const String &projectPath);
+    Ref<BuildPlan> create(const string &projectPath);
 
     BuildPlan();
     BuildPlan(int argc, char **argv);
-    BuildPlan(const String &projectPath, BuildPlan *parentPlan);
+    BuildPlan(const string &projectPath, BuildPlan *parentPlan);
 
     void readRecipe(BuildPlan *parentPlan = nullptr);
     void readPredicate(const MetaObject *object);
     void checkDuplicateTargetNames();
-    void gatherAutoConfigureSystemPrerequisites(Set<String> *names);
+    void gatherAutoConfigureSystemPrerequisites(Set<string> *names);
 
-    String findPrerequisite(const String &prerequisitePath) const;
+    string findPrerequisite(const string &prerequisitePath) const;
     void readPrerequisites();
     void findVersion();
 
@@ -161,11 +161,11 @@ private:
 
     Ref<ToolChain> toolChain_;
 
-    String projectPath_;
-    String recipePath_;
-    String scope_;
-    String modulePath_;
-    String configPath_;
+    string projectPath_;
+    string recipePath_;
+    string scope_;
+    string modulePath_;
+    string configPath_;
     Ref<MetaObject> recipe_;
 
     int options_;
@@ -173,7 +173,7 @@ private:
     int testRunConcurrency_;
     bool disabled_;
 
-    String name_;
+    string name_;
     Ref<StringList> alias_;
     Version version_;
 
@@ -189,10 +189,10 @@ private:
 
     Ref<BuildParameters> usage_;
 
-    String sourcePrefix_;
-    String installRoot_;
-    String installPrefix_;
-    String testArgs_;
+    string sourcePrefix_;
+    string installRoot_;
+    string installPrefix_;
+    string testArgs_;
 
     Ref<const BuildShell> shell_;
     Ref<Job> libraryLinkJob_;

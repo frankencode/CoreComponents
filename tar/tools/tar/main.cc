@@ -23,7 +23,7 @@ using namespace cc::tar;
 
 int main(int argc, char **argv)
 {
-    String toolName = String{argv[0]}->fileName();
+    string toolName = string{argv[0]}->fileName();
     bool tarMode = toolName->contains("tar");
     bool unpackMode = toolName->contains("un");
     try {
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
         {
             if (items->count() == 0) items = StringList::create() << "";
 
-            for (String path: items)
+            for (string path: items)
             {
                 Ref<Stream> source;
                 if (path != "") source = File::open(path);
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
         }
         else {
             Ref<Stream> sink;
-            String sinkPath = options->value("output");
+            string sinkPath = options->value("output");
             if (sinkPath != "") {
                 try { File::unlink(sinkPath); } catch (SystemError &) {}
                 File::create(sinkPath);
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
             if (tarMode) archive = TarWriter::open(sink);
             else archive = ArWriter::open(sink);
 
-            for (String path: items)
+            for (string path: items)
                 cctar::pack(path, archive, options->value("verbose"));
         }
     }

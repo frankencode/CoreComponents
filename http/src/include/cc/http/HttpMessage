@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 #include <cc/Map>
 #include <cc/Stream>
 
@@ -17,7 +17,7 @@ namespace http {
 
 class HttpConnection;
 
-class HttpMessage: public Map<String, String>
+class HttpMessage: public Map<string, string>
 {
 public:
     static Ref<HttpMessage> create() { return new HttpMessage; }

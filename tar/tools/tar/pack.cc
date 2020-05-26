@@ -12,7 +12,7 @@
 
 namespace cctar {
 
-void pack(const String &path, ArchiveWriter *archive, bool verbose)
+void pack(const string &path, ArchiveWriter *archive, bool verbose)
 {
     if (verbose) ferr() << path << nl;
     archive->writeFile(path);
@@ -21,7 +21,7 @@ void pack(const String &path, ArchiveWriter *archive, bool verbose)
     if (!walker) return;
 
     walker->setFollowSymlink(true);
-    String sourcePath;
+    string sourcePath;
     while (walker->read(&sourcePath)) {
         if (verbose) ferr() << sourcePath << nl;
         archive->writeFile(sourcePath);

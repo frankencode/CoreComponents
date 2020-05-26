@@ -25,7 +25,7 @@ SocketAddress::Instance::Instance()
     addr_.sa_family = AF_UNSPEC;
 }
 
-SocketAddress::Instance::Instance(ProtocolFamily family, const String &address, int port)
+SocketAddress::Instance::Instance(ProtocolFamily family, const string &address, int port)
 {
     void *addr = 0;
 
@@ -152,9 +152,9 @@ void SocketAddress::Instance::setPort(int port)
         CC_DEBUG_ERROR("Unsupported address family");
 }
 
-String SocketAddress::Instance::networkAddress() const
+string SocketAddress::Instance::networkAddress() const
 {
-    String s;
+    string s;
     if (addr_.sa_family == AF_LOCAL) {
         s = localAddress_.sun_path;
     }
@@ -181,7 +181,7 @@ String SocketAddress::Instance::networkAddress() const
     return s;
 }
 
-String SocketAddress::Instance::toString() const
+string SocketAddress::Instance::toString() const
 {
     if (family() == ProtocolFamily::Local || port() == 0 || port() == 0xFFFF) return networkAddress();
     Format s;
@@ -202,7 +202,7 @@ void SocketAddress::Instance::setScope(int scope)
     if (addr_.sa_family == AF_INET6) inet6Address_.sin6_scope_id = scope;
 }
 
-String SocketAddress::Instance::lookupHostName() const
+string SocketAddress::Instance::lookupHostName() const
 {
     const int hostNameSize = NI_MAXHOST;
     const int serviceNameSize = NI_MAXSERV;
@@ -214,10 +214,10 @@ String SocketAddress::Instance::lookupHostName() const
     int ret = getnameinfo(addr(), addrLen(), hostName, hostNameSize, serviceName, serviceNameSize, flags);
     if (ret != 0) CC_DEBUG_ERROR(gai_strerror(ret));
 
-    return String{hostName};
+    return string{hostName};
 }
 
-String SocketAddress::Instance::lookupServiceName() const
+string SocketAddress::Instance::lookupServiceName() const
 {
     const int hostNameSize = NI_MAXHOST;
     const int serviceNameSize = NI_MAXSERV;
@@ -236,7 +236,7 @@ String SocketAddress::Instance::lookupServiceName() const
         CC_DEBUG_ERROR(gai_strerror(ret));
     }
 
-    return String{serviceName};
+    return string{serviceName};
 }
 
 uint64_t SocketAddress::Instance::networkPrefix() const
@@ -308,7 +308,7 @@ bool SocketAddress::Instance::equals(const SocketAddress::Instance *other) const
     return false;
 }
 
-ProtocolFamily SocketAddress::guessFamily(const String &address)
+ProtocolFamily SocketAddress::guessFamily(const string &address)
 {
     ProtocolFamily family = ProtocolFamily::Unspecified;
     if (address->count(':') > 1 || address == "::") family = ProtocolFamily::Internet6;
@@ -351,7 +351,7 @@ SocketAddress SocketAddress::resolveUri(const Uri &uri)
     return address;
 }
 
-SocketAddress SocketAddress::resolveHost(const String &hostName, int port)
+SocketAddress SocketAddress::resolveHost(const string &hostName, int port)
 {
     auto addressList = SocketAddress::queryConnectionInfo(hostName);
     if (addressList->count() == 0) throw HostNameResolutionError{hostName};
@@ -360,7 +360,7 @@ SocketAddress SocketAddress::resolveHost(const String &hostName, int port)
     return address;
 }
 
-Ref<SocketAddressList> SocketAddress::queryConnectionInfo(const String &hostName, const String &serviceName, ProtocolFamily family, SocketType socketType, String *canonicalName)
+Ref<SocketAddressList> SocketAddress::queryConnectionInfo(const string &hostName, const string &serviceName, ProtocolFamily family, SocketType socketType, string *canonicalName)
 {
     addrinfo hint;
     addrinfo *head = nullptr;

@@ -17,7 +17,7 @@ class YasonSerializationTest: public ObjectSerializationTest
         Ref<MetaObject> object = yason::parse(testMessage());
         testData(object);
 
-        String reproduction = yason::stringify(object);
+        string reproduction = yason::stringify(object);
         fout() << reproduction;
         Ref<MetaObject> object2 = yason::parse(reproduction);
         testData(object2);

@@ -28,14 +28,14 @@ HttpResponseGenerator::HttpResponseGenerator(HttpConnection *client):
     reasonPhrase_{"OK"}
 {}
 
-void HttpResponseGenerator::setStatus(int statusCode, const String &reasonPhrase)
+void HttpResponseGenerator::setStatus(int statusCode, const string &reasonPhrase)
 {
     statusCode_ = statusCode;
     reasonPhrase_ = reasonPhrase;
     if (reasonPhrase_ == "") reasonPhrase_ = reasonPhraseByStatusCode(statusCode_);
 }
 
-void HttpResponseGenerator::setNodeVersion(const String &nodeVersion)
+void HttpResponseGenerator::setNodeVersion(const string &nodeVersion)
 {
     nodeVersion_ = nodeVersion;
 }
@@ -47,7 +47,7 @@ size_t HttpResponseGenerator::bytesWritten() const
 
 void HttpResponseGenerator::polishHeader()
 {
-    String now = formatDate(Date::breakdown(System::now()));
+    string now = formatDate(Date::breakdown(System::now()));
     if (nodeVersion_ != "") header_->insert("Server", nodeVersion_);
     header_->insert("Date", now);
 

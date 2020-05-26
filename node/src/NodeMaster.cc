@@ -24,7 +24,7 @@
 namespace cc {
 namespace http {
 
-Ref<NodeMaster> NodeMaster::create(const String &config)
+Ref<NodeMaster> NodeMaster::create(const string &config)
 {
     return new NodeMaster{NodeConfig::load(NodeConfig::parse(config))};
 }
@@ -44,7 +44,7 @@ NodeMaster::NodeMaster(const NodeConfig *config):
         SystemLoggingService::open(config->daemonName());
 
     if (config->pidPath() != "" || config->daemon()) {
-        String path = config->pidPath();
+        string path = config->pidPath();
         if (path == "") path = "/var/run/" + config->daemonName() + ".pid";
         File::save(path, str(Process::getId()) + "\n" );
     }
@@ -100,7 +100,7 @@ void NodeMaster::runNode()
     }
 
     if (config()->user() != "") {
-        String userName = config()->user();
+        string userName = config()->user();
         Ref<User> user = User::lookup(userName);
         if (!user->isValid()) throw UsageError{"No such user: \"" + userName + "\""};
         CCNODE_NOTICE() << "Dropping to user " << userName << " (uid = " << user->id() << ")" << nl;

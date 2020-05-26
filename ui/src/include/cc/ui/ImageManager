@@ -23,10 +23,10 @@ class ImageManager: public Object
 public:
     static ImageManager *instance();
 
-    bool getPlugin(const String &name, const ImagePlugin **plugin) const;
+    bool getPlugin(const string &name, const ImagePlugin **plugin) const;
     Ref< Source<const ImagePlugin *> > getAllPlugins() const;
 
-    Ref<Image> load(const String &uri, unsigned index = 0) const;
+    Ref<Image> load(const string &uri, unsigned index = 0) const;
 
 private:
     friend class Singleton<ImageManager>;
@@ -35,7 +35,7 @@ private:
     ImageManager();
     void registerPlugin(ImagePlugin *plugin);
 
-    typedef Map< String, Ref<ImagePlugin> > Plugins;
+    typedef Map< string, Ref<ImagePlugin> > Plugins;
     Ref<Plugins> plugins_;
 };
 

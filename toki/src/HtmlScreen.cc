@@ -13,7 +13,7 @@
 namespace cc {
 namespace toki {
 
-HtmlScreen::HtmlScreen(const String &text, const Format &sink):
+HtmlScreen::HtmlScreen(const string &text, const Format &sink):
     text_{text},
     sink_{sink}
 {
@@ -42,7 +42,7 @@ void HtmlScreen::writeLineNumbers()
 
 bool HtmlScreen::project(Token *token, int i0, int i1)
 {
-    String s = text_->copy(i0, i1);
+    string s = text_->copy(i0, i1);
     if (s->contains('<')) s = s->replace("<", "&lt;");
     if (s->contains('>')) s = s->replace(">", "&gt;");
     if (s->contains('\t')) s = s->replace("\t", "    ");

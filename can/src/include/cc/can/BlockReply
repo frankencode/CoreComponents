@@ -42,7 +42,7 @@ public:
                 );
         }
 
-        String toString() const;
+        string toString() const;
 
     private:
         friend class BlockReply;
@@ -61,7 +61,7 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator String() const { return instance_.toString(); }
+    operator string() const { return instance_.toString(); }
 
 private:
     Instance instance_;

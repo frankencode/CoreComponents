@@ -26,7 +26,7 @@ HttpGenerator::HttpGenerator(HttpConnection *peer):
 HttpGenerator::~HttpGenerator()
 {}
 
-void HttpGenerator::setHeader(const String &name, const String &value)
+void HttpGenerator::setHeader(const string &name, const string &value)
 {
     header_->establish(name, value);
 }
@@ -37,7 +37,7 @@ void HttpGenerator::transmit()
     endTransmission();
 }
 
-void HttpGenerator::transmit(const String &payload)
+void HttpGenerator::transmit(const string &payload)
 {
     beginTransmission(payload->count());
     if (payload->count() > 0)
@@ -94,12 +94,12 @@ Stream *HttpGenerator::payload()
     return payload_;
 }
 
-void HttpGenerator::write(const String &data)
+void HttpGenerator::write(const string &data)
 {
     payload()->write(data);
 }
 
-Format HttpGenerator::chunk(const String &pattern)
+Format HttpGenerator::chunk(const string &pattern)
 {
     return Format{pattern, payload()};
 }

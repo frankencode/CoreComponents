@@ -104,7 +104,7 @@ template<class T>
 bool operator>=(const multiset<T> &a, const multiset<T> &b) { return container::compare(a, b) >= 0; }
 
 template<class T>
-String str(const multiset<T> &a)
+string str(const multiset<T> &a)
 {
     Format f;
     f << "[ ";

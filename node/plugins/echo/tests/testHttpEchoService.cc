@@ -44,7 +44,7 @@ class SimpleEchoTest: public TestCase
         request->transmit();
         auto response = connection->readResponse();
         CC_VERIFY(response->statusCode() == 200);
-        String text = response->payload()->readAll();
+        string text = response->payload()->readAll();
         fout() << text;
         CC_VERIFY(text->contains("localhost"));
         CC_VERIFY(text->startsWith("GET"));

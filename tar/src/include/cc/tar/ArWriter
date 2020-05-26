@@ -19,7 +19,7 @@ class ArWriter: public ArchiveWriter
 public:
     static Ref<ArWriter> open(Stream *sink);
 
-    void writeFile(const String &path) override;
+    void writeFile(const string &path) override;
 
 private:
     ArWriter(Stream *sink);

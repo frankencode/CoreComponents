@@ -33,7 +33,7 @@ private:
     Property< Ref<GlyphRun> > glyphRun_;
     Property<Size> preferredSize_;
 
-    String s_;
+    string s_;
 };
 
 }} // namespace cc::ui

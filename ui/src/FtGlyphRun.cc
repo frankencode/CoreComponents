@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-FtGlyphRun::FtGlyphRun(const String &text, const Font &font, const Point &origin):
+FtGlyphRun::FtGlyphRun(const string &text, const Font &font, const Point &origin):
     text_{text},
     font_{font},
     origin_{origin}

@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-String WheelEvent::toString() const
+string WheelEvent::toString() const
 {
     return Format{}
         << "WheelEvent {" << nl

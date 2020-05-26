@@ -16,7 +16,7 @@ namespace can {
 class BlockReadEndReply
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, const String &data, bool crcSupport = true);
+    static Ref<CanFrame> createFrame(int serverId, const string &data, bool crcSupport = true);
 
     class Instance {
     public:
@@ -39,7 +39,7 @@ public:
             return frame_->word<uint16_t>(1, 3);
         }
 
-        String toString() const;
+        string toString() const;
 
     private:
         friend class BlockReadEndReply;
@@ -58,7 +58,7 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator String() const { return instance_.toString(); }
+    operator string() const { return instance_.toString(); }
 
 private:
     Instance instance_;

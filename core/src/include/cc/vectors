@@ -74,7 +74,7 @@ typename V::Item max(const V &v)
 }
 
 template<class V>
-String str(const V &v)
+string str(const V &v)
 {
     Format f;
     f << "( ";
@@ -84,13 +84,13 @@ String str(const V &v)
 }
 
 template<class V>
-String fixed(const V &v, int nf)
+string fixed(const V &v, int nf)
 {
     return fixed(v, 0, nf);
 }
 
 template<class V>
-String fixed(const V &v, int ni, int nf)
+string fixed(const V &v, int ni, int nf)
 {
     Format f;
     f << "( ";

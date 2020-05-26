@@ -13,7 +13,7 @@
 namespace cc {
 namespace ui {
 
-ImagePlugin::ImagePlugin(const String &name):
+ImagePlugin::ImagePlugin(const string &name):
     name_{name}
 {}
 

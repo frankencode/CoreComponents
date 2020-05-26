@@ -30,9 +30,9 @@ Ref<CanFrame> BlockReadAckRequest::createFrame(int serverId, int sequenceNumber,
     return frame;
 }
 
-String BlockReadAckRequest::Instance::toString() const
+string BlockReadAckRequest::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "BlockReadAckRequest {" << nl

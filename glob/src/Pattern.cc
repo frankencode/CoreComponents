@@ -12,17 +12,17 @@
 namespace cc {
 namespace glob {
 
-Pattern::Pattern() { *this = String{}; }
-Pattern::Pattern(const char *text) { *this = String{text}; }
-Pattern::Pattern(const String &text) { *this = text; }
-Pattern::Pattern(const Variant &text) { *this = String(text); }
+Pattern::Pattern() { *this = string{}; }
+Pattern::Pattern(const char *text) { *this = string{text}; }
+Pattern::Pattern(const string &text) { *this = text; }
+Pattern::Pattern(const Variant &text) { *this = string(text); }
 
 const Pattern &Pattern::operator=(const char *text)
 {
-    return *this = String{text};
+    return *this = string{text};
 }
 
-const Pattern &Pattern::operator=(const String &text)
+const Pattern &Pattern::operator=(const string &text)
 {
     if (text_ != text || !get()) {
         text_ = text;
@@ -40,10 +40,10 @@ const Pattern &Pattern::operator=(const String &text)
 
 const Pattern &Pattern::operator=(const Variant &text)
 {
-    return *this = String{text};
+    return *this = string{text};
 }
 
-String str(const Pattern &pattern)
+string str(const Pattern &pattern)
 {
     return pattern.text_;
 }

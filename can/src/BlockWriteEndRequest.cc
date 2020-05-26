@@ -14,7 +14,7 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockWriteEndRequest::createFrame(int serverId, const String &data, bool crcSupport)
+Ref<CanFrame> BlockWriteEndRequest::createFrame(int serverId, const string &data, bool crcSupport)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
@@ -33,9 +33,9 @@ Ref<CanFrame> BlockWriteEndRequest::createFrame(int serverId, const String &data
     return frame;
 }
 
-String BlockWriteEndRequest::Instance::toString() const
+string BlockWriteEndRequest::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "BlockWriteEndRequest {" << nl

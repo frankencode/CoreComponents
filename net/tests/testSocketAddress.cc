@@ -16,26 +16,26 @@ using namespace cc;
 using namespace cc::testing;
 using namespace cc::net;
 
-String familyToString(ProtocolFamily family)
+string familyToString(ProtocolFamily family)
 {
-    String s{"UNKNOWN"};
+    string s{"UNKNOWN"};
     if (+family == AF_INET) s = "INET";
     else if (+family == AF_INET6) s = "INET6";
     else if (+family == AF_UNSPEC) s = "UNSPEC";
     return s;
 }
 
-String socketTypeToString(SocketType type)
+string socketTypeToString(SocketType type)
 {
-    String s{"UNKNOWN"};
+    string s{"UNKNOWN"};
     if (+type == SOCK_DGRAM) s = "DGRAM";
     else if (+type == SOCK_STREAM) s = "STREAM";
     return s;
 }
 
-String protocolToString(InternetProtocol protocol)
+string protocolToString(InternetProtocol protocol)
 {
-    String s{"UNKNOWN"};
+    string s{"UNKNOWN"};
     if (+protocol == IPPROTO_TCP) s = "TCP";
     else if (+protocol == IPPROTO_UDP) s = "UDP";
     else s = Format{"<%%>"} << +protocol;
@@ -46,11 +46,11 @@ class ResolveHostName: public TestCase
 {
     void run() override
     {
-        String hostName = System::hostName();
+        string hostName = System::hostName();
 
         fout("hostName = \"%%\"\n") << hostName;
 
-        String canonicalName;
+        string canonicalName;
         Ref<SocketAddressList> list = SocketAddress::queryConnectionInfo(hostName, "http", ProtocolFamily::Unspecified, SocketType::Stream, &canonicalName);
 
         fout("canonicalName = \"%%\"\n") << canonicalName;
@@ -79,7 +79,7 @@ public:
             << "127.0.0.1:8080"
             << "::"
             << "[::]:8080";
-        for (String s: samples) {
+        for (string s: samples) {
             auto address = SocketAddress::resolveUri(s);
             fout("\"%%\" == \"%%\"\n") << s << address;
             CC_ASSERT(s == address->toString());

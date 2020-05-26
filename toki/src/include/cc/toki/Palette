@@ -21,9 +21,9 @@ class Palette: public MetaObject
 {
 public:
     static Ref<Palette> create() { return new Palette; }
-    static Ref<Palette> load(const String &path);
+    static Ref<Palette> load(const string &path);
 
-    String scopeName() const { return scopeName_; }
+    string scopeName() const { return scopeName_; }
     int scope() const { return scope_; }
 
     static int defaultScope();
@@ -48,11 +48,11 @@ public:
 private:
     Palette();
 
-    static int defaultRuleByName(const String &name);
+    static int defaultRuleByName(const string &name);
 
     void realize() override;
 
-    String scopeName_;
+    string scopeName_;
     int scope_;
 
     typedef Map<int, Ref<Style> > StyleByRule;

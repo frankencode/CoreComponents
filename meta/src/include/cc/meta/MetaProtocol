@@ -31,14 +31,14 @@ public:
         return prototype;
     }
 
-    virtual const MetaPrototype *lookup(const String &className) const;
+    virtual const MetaPrototype *lookup(const string &className) const;
 
     int minCount() const { return minCount_; }
     int maxCount() const { return maxCount_; }
     void setMinCount(int newCount) { minCount_ = newCount; }
     void setMaxCount(int newCount) { maxCount_ = newCount; }
 
-    bool lookup(const String &className, const MetaPrototype **prototype) const;
+    bool lookup(const string &className, const MetaPrototype **prototype) const;
 
     const MetaObject *defaultObject() const { return defaultObject_; }
     void setDefaultObject(const MetaObject *object) { defaultObject_ = object; }
@@ -53,7 +53,7 @@ protected:
 private:
     Ref<const MetaProtocol> parent_;
 
-    typedef Map<String, Ref<const MetaPrototype> > Prototypes;
+    typedef Map<string, Ref<const MetaPrototype> > Prototypes;
     Ref<Prototypes> prototypes_;
 
     int minCount_;

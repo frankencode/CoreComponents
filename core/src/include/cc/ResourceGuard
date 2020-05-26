@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -19,7 +19,7 @@ namespace cc {
 class ResourceGuard
 {
 public:
-    ResourceGuard(const String &resource);
+    ResourceGuard(const string &resource);
     ~ResourceGuard();
 };
 

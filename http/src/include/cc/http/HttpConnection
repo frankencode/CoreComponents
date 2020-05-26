@@ -25,7 +25,7 @@ class HttpConnection: public Object
 public:
     Stream *stream() const { return stream_; }
 
-    void setupTransferLog(Stream *debugStream, const String &label);
+    void setupTransferLog(Stream *debugStream, const string &label);
 
     bool isPayloadConsumed() const;
 
@@ -39,7 +39,7 @@ protected:
 
     Ref<HttpStream> httpStream_;
     Ref<Stream> stream_;
-    String lineBuffer_;
+    string lineBuffer_;
 };
 
 }} // namespace cc::http

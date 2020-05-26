@@ -24,7 +24,7 @@ public:
 private:
     CgiDirectoryInstance(const MetaObject *config);
 
-    String script_;
+    string script_;
     Ref<MetaObject> environment_;
 };
 

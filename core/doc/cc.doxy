@@ -6,7 +6,7 @@
   * Object life time, reference counting and garbage collection
   */
 
-/** \defgroup strings String processing
+/** \defgroup strings string processing
   * Zero-terminated strings, raw memory, number literals and file paths
   */
 

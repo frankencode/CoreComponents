@@ -14,9 +14,9 @@ using namespace cc::testing;
 class BlockTransferTest: public TestCase
 {
 protected:
-    void readWriteTest(const String &inData, int switchThreshold = 0)
+    void readWriteTest(const string &inData, int switchThreshold = 0)
     {
-        String outData;
+        string outData;
         {
             const int serverId = 1;
             const int clientId = 2;
@@ -50,7 +50,7 @@ class FullBlockTransferTest: public BlockTransferTest
 {
     void run() override
     {
-        auto data = String::allocate(0x700);
+        auto data = string::allocate(0x700);
         {
             auto random = Random::open();
             for (int i = 0; i < data->count(); ++i)

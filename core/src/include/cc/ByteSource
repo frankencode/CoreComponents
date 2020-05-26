@@ -62,7 +62,7 @@ public:
       * \param n number of bytes to read
       * \return bytes read
       */
-    String readSpan(int n);
+    string readSpan(int n);
 
     /// Return true if more bytes can be read
     bool hasMore();
@@ -124,7 +124,7 @@ private:
     }
 
     Ref<Stream> source_;
-    String buffer_;
+    string buffer_;
     Endian endian_;
     off_t i0_;
     int i_, n_;
@@ -144,9 +144,9 @@ inline void ByteSource::read(CharArray *span)
         span->at(i) = readUInt8();
 }
 
-inline String ByteSource::readSpan(int n)
+inline string ByteSource::readSpan(int n)
 {
-    String bytes = String::create(n);
+    string bytes = string::create(n);
     read(mutate(bytes));
     return bytes;
 }

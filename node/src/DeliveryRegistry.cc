@@ -29,7 +29,7 @@ void DeliveryRegistry::registerService(DeliveryService *service)
     NodeConfigProtocol::instance()->registerService(service->configPrototype());
 }
 
-DeliveryService *DeliveryRegistry::serviceByName(const String &name) const
+DeliveryService *DeliveryRegistry::serviceByName(const string &name) const
 {
     return serviceByName_->value(name);
 }

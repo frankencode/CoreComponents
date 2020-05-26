@@ -58,11 +58,11 @@ double System::now()
     return double(ts.tv_sec) + double(ts.tv_nsec) / 1e9;
 }
 
-String System::hostName()
+string System::hostName()
 {
     const int bufSize = 1024;
     char buf[bufSize + 1];
-    String name;
+    string name;
     if (::gethostname(buf, bufSize) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
     buf[bufSize] = 0;
@@ -70,13 +70,13 @@ String System::hostName()
     return name;
 }
 
-void System::setHostName(const String &newName)
+void System::setHostName(const string &newName)
 {
     if (::sethostname(newName->chars(), newName->count()) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void System::mount(const String &source, const String &target, const String &type, const String &options)
+void System::mount(const string &source, const string &target, const string &type, const string &options)
 {
 #ifdef __linux
     if (::mount(source, target, type, 0, options->bytes()) == -1) // TODO: parse flags from options
@@ -86,7 +86,7 @@ void System::mount(const String &source, const String &target, const String &typ
 #endif
 }
 
-void System::unmount(const String &target)
+void System::unmount(const string &target)
 {
 #ifdef __linux
     if (::umount2(target, MNT_DETACH) == -1)

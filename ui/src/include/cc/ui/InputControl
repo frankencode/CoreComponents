@@ -16,7 +16,7 @@ namespace ui {
 class InputControl: public Control
 {
 public:
-    virtual String text() const = 0;
+    virtual string text() const = 0;
     virtual Point textPos() const = 0;
 
     Notifier accepted;

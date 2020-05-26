@@ -19,19 +19,19 @@ class Theme;
 class HtmlScreen: public Object, public TokenScreen
 {
 public:
-    static Ref<HtmlScreen> create(const String &text, const Format &sink = Format{}) { return new HtmlScreen{text, sink}; }
+    static Ref<HtmlScreen> create(const string &text, const Format &sink = Format{}) { return new HtmlScreen{text, sink}; }
 
     virtual bool project(Token *token, int i0, int i1);
 
     static void writeCss(Theme *theme, Stream *sink = nullptr);
 
 private:
-    HtmlScreen(const String &text, const Format &sink);
+    HtmlScreen(const string &text, const Format &sink);
     ~HtmlScreen();
 
     void writeLineNumbers();
 
-    String text_;
+    string text_;
     Format sink_;
 };
 

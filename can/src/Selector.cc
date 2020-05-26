@@ -13,7 +13,7 @@
 namespace cc {
 namespace can {
 
-String str(Selector selector)
+string str(Selector selector)
 {
     return
         Format("%%:%%")

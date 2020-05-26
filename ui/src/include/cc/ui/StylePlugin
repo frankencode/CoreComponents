@@ -25,7 +25,7 @@ class StylePlugin: public Object
 public:
     static StylePlugin *instance();
 
-    inline String name() const { return name_; }
+    inline string name() const { return name_; }
 
     Property<Font> defaultFont;
     Property<Font> defaultFixedFont;
@@ -46,14 +46,14 @@ protected:
     friend class StyleManager;
     friend class Object;
 
-    StylePlugin(const String &name);
+    StylePlugin(const string &name);
 
     virtual void activate() = 0;
 
 private:
     void init();
 
-    String name_;
+    string name_;
 };
 
 }} // namespace cc::ui

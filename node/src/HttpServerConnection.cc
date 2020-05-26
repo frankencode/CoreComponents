@@ -38,7 +38,7 @@ const DeliveryInstance *HttpServerConnection::handshake()
         deliveryInstance = socket_->handshake();
     }
     else {
-        String host, uri;
+        string host, uri;
         Ref<HttpRequest> request = readRequest();
         host = request->host();
         uri = request->uri();
@@ -75,7 +75,7 @@ void HttpServerConnection::putBack(HttpRequest *request)
 
 void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *message)
 {
-    String line;
+    string line;
     if (!source->read(&line)) throw CloseRequest{};
 
     HttpRequest *request = Object::cast<HttpRequest *>(message);

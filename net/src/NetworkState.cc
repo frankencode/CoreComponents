@@ -12,12 +12,12 @@
 namespace cc {
 namespace net {
 
-Ref<NetworkState> NetworkState::query(const String &interfaceName)
+Ref<NetworkState> NetworkState::query(const string &interfaceName)
 {
     return new NetworkState{interfaceName};
 }
 
-NetworkState::NetworkState(const String &interfaceName):
+NetworkState::NetworkState(const string &interfaceName):
     interfaceName_{interfaceName},
     networkMask_{0}
 {

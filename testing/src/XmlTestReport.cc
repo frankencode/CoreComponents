@@ -32,18 +32,18 @@ void XmlTestReport::beginTestCase(TestCase *testCase)
     Format{"<testcase name=\"%%\">\n", stream_} << testCase->name();
 }
 
-void XmlTestReport::verify(TestCase *testCase, bool condition, const String &message, const String &codePath, int codeLine)
+void XmlTestReport::verify(TestCase *testCase, bool condition, const string &message, const string &codePath, int codeLine)
 {
     if (!condition)
         Format{"<failure message=\"%%\">%%:%%</failure>\n", stream_} << message << codePath << codeLine;
 }
 
-void XmlTestReport::error(TestCase *testCase, const String &type, const String &message)
+void XmlTestReport::error(TestCase *testCase, const string &type, const string &message)
 {
     Format{"<error type=\"%%\" message=\"%%\"></error>\n", stream_} << type << message;
 }
 
-void XmlTestReport::endTestCase(TestCase *testCase, const String &outText, const String &errText)
+void XmlTestReport::endTestCase(TestCase *testCase, const string &outText, const string &errText)
 {
     if (testCase->skip()) {
         Format{"<skipped/>\n", stream_};
@@ -72,9 +72,9 @@ void XmlTestReport::endTestSuite(TestSuite *testSuite)
     Format{"</testsuite>\n", stream_};
 }
 
-String XmlTestReport::xmlEscape(const String &text)
+string XmlTestReport::xmlEscape(const string &text)
 {
-    String h = text;
+    string h = text;
     if (h->contains('<')) h = h->replace("<", "&lt;");
     if (h->contains('>')) h = h->replace(">", "&gt;");
     if (h->contains('&')) h = h->replace("?", "&amp;");

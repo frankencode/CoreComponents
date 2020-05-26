@@ -12,9 +12,9 @@
 namespace cc {
 namespace can {
 
-String SaeMessage::Instance::toString() const
+string SaeMessage::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "SaeMessage {" << nl

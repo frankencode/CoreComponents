@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/String>
+#include <cc/string>
 #include <cc/tar/ArchiveWriter>
 
 namespace cctar {
@@ -14,6 +14,6 @@ namespace cctar {
 using namespace cc;
 using namespace cc::tar;
 
-void pack(const String &path, ArchiveWriter *archive, bool verbose);
+void pack(const string &path, ArchiveWriter *archive, bool verbose);
 
 } // namespace cctar

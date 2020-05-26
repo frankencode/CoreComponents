@@ -23,7 +23,7 @@ public:
 
     Ref<DeliveryDelegate> createDelegate(DeliveryWorker *worker) const override;
 
-    String script() const { return script_; }
+    string script() const { return script_; }
     StringList *server() const { return server_; }
     VariantMap *environment() const { return environment_; }
 
@@ -37,7 +37,7 @@ public:
 protected:
     CgiInstance(const MetaObject *config);
 
-    String script_;
+    string script_;
     Ref<StringList> server_;
     Ref<MetaObject> environment_;
 

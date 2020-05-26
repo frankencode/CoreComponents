@@ -26,10 +26,10 @@ class FloatingPointLiterals: public TestCase
         for (int i = 0, n = sizeof(test) / sizeof(test[0]); i < n; ++i) {
             double x = test[i];
             bool ok = true;
-            fout() << x << " => " << String(Format{} << x)->toNumber<float64_t>(&ok) << " (" << ok << ")" << nl;
-            fout() << (String(Format{} << x)->toNumber<float64_t>() - x) << nl;
+            fout() << x << " => " << string(Format{} << x)->toNumber<float64_t>(&ok) << " (" << ok << ")" << nl;
+            fout() << (string(Format{} << x)->toNumber<float64_t>() - x) << nl;
             uint64_t a = union_cast<float64_t>(x);
-            uint64_t b = union_cast<float64_t>(String(Format{} << x)->toNumber<float64_t>());
+            uint64_t b = union_cast<float64_t>(string(Format{} << x)->toNumber<float64_t>());
             fout() << "0x" << hex(a) << nl;
             fout() << "0x" << hex(b) << nl;
             fout() << oct(1, 3) << nl;
@@ -55,7 +55,7 @@ class PrintingVariants: public TestCase
     void run()
     {
         Variant a = 1, b = true, c = "abc", d = 3.2;
-        String s = Format{} << a << ", " << b << ", " << c << ", " << dec(d);
+        string s = Format{} << a << ", " << b << ", " << c << ", " << dec(d);
         fout() << s << nl;
         CC_VERIFY(s == "1, true, abc, 3.2");
     }
@@ -66,10 +66,10 @@ class IntegerLiterals: public TestCase
     void run()
     {
         fout("%% = 0x%% = 0%% = 0b%%\n") << 123 << hex(123) << oct(123) << bin(123);
-        CC_VERIFY(String(dec(123))->toNumber<int>() == 123);
-        CC_VERIFY(String("0x" + hex(123))->toNumber<int>() == 123);
-        CC_VERIFY(String("0" + oct(123))->toNumber<int>() == 123);
-        CC_VERIFY(String("0b" + bin(123))->toNumber<int>() == 123);
+        CC_VERIFY(string(dec(123))->toNumber<int>() == 123);
+        CC_VERIFY(string("0x" + hex(123))->toNumber<int>() == 123);
+        CC_VERIFY(string("0" + oct(123))->toNumber<int>() == 123);
+        CC_VERIFY(string("0b" + bin(123))->toNumber<int>() == 123);
     }
 };
 

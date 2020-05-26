@@ -4,9 +4,9 @@
 namespace cc {
 namespace can {
 
-String AbortRequest::Instance::toString() const
+string AbortRequest::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "AbortRequest {" << nl

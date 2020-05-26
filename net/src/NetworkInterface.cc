@@ -39,7 +39,7 @@ Ref<NetworkInterface> NetworkInterface::create()
     return new NetworkInterface;
 }
 
-Ref<NetworkInterface> NetworkInterface::query(const String &name, int family)
+Ref<NetworkInterface> NetworkInterface::query(const string &name, int family)
 {
     Ref<NetworkInterfaceList> list = queryAll(family);
     for (auto interface: list) {
@@ -329,7 +329,7 @@ Ref<NetworkInterface> NetworkInterface::getLink(NetworkInterfaceList *list, int 
 
                         if ((attrType == IFLA_ADDRESS) || (attrType == IFLA_BROADCAST)) {
                             if (attrType == IFLA_ADDRESS)
-                                interface->hardwareAddress_ = String::copy((const char *)RTA_DATA(attr), attrLen);
+                                interface->hardwareAddress_ = string::copy((const char *)RTA_DATA(attr), attrLen);
                             //else if (attrType == IFLA_BROADCAST)
                             //  interface->broadcastAddress_ = h;
                         }
@@ -366,12 +366,12 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
     if (fd == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 
     Ref<LineSource> source = LineSource::open(File::open("/proc/net/dev"));
-    for (String line; source->read(&line);) {
+    for (string line; source->read(&line);) {
         if (line->contains(':')) {
             Ref<NetworkInterface> interface = NetworkInterface::create();
             list->append(interface);
             Ref<StringList> parts = line->split(":");
-            String name = parts->at(0)->trim();
+            string name = parts->at(0)->trim();
             interface->name_ = name;
 
             {
@@ -383,7 +383,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
                 if (::ioctl(fd, SIOCGIFHWADDR, &ifr) == -1)
                     CC_SYSTEM_DEBUG_ERROR(errno);
 
-                interface->hardwareAddress_ = String::copy((const char *)ifr.ifr_hwaddr.sa_data, 6); // quick HACK, 6 is just a safe bet
+                interface->hardwareAddress_ = string::copy((const char *)ifr.ifr_hwaddr.sa_data, 6); // quick HACK, 6 is just a safe bet
 
                 if (::ioctl(fd, SIOCGIFFLAGS, &ifr) == -1)
                     CC_SYSTEM_DEBUG_ERROR(errno);
@@ -527,9 +527,9 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                 if (addr->sdl_family == AF_LINK) { // paranoid check
                     interface->type_ = addr->sdl_type;
                     if (addr->sdl_nlen > 0)
-                        interface->name_ = String{addr->sdl_data, addr->sdl_nlen};
+                        interface->name_ = string{addr->sdl_data, addr->sdl_nlen};
                     if (addr->sdl_alen > 0)
-                        interface->hardwareAddress_ = String::copy(addr->sdl_data, addr->sdl_nlen);
+                        interface->hardwareAddress_ = string::copy(addr->sdl_data, addr->sdl_nlen);
                 }
             }
         }

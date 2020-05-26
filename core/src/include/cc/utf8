@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,63 +8,91 @@
 
 #pragma once
 
-#include <cc/exceptions>
+#include <string.h>
+#include <cc/string>
+#include <cc/utf8_iterator>
 
 namespace cc {
 
-namespace utf8
-{
-
-inline int encodedSize(uchar_t ch)
-{
-    int n = 0;
-    if (ch < 0x80)         n = 1; // ASCII range: 0xxxxxxx
-    else if (ch < 0x800)   n = 2; // two-byte codes: 110yyyxx | 10xxxxx
-    else if (ch < 0x10000) n = 3; // three-byte codes: 1110yyyy | 10yyyyxx | 10xxxxxx
-    else if (ch < 0x11000) n = 4; // four-byte codes: 11110zzz | 10zzyyyy | 10yyyyxx | 10xxxxxx
-    return n;
-}
-
-class EncodeSurrogatePairError: public EncodingError
-{
+/** \brief Read %Unicode code points from an UTF-8 encoded string
+  */
+class utf8 {
 public:
-    ~EncodeSurrogatePairError() throw() {}
+    typedef utf8_iterator const_iterator;
+    typedef utf8_iterator iterator;
 
-    virtual String message() const {
-        return "UTF-8 error: encoding surrogate pairs is not allowed (0xD800..0xDFFF)";
+    /** Return encoded size of code point \a ch
+      */
+    static int encoded_size(char32_t ch)
+    {
+        int n = 0;
+        if (ch < 0x80)         n = 1; // ASCII codes : 0xxxxxxx
+        else if (ch < 0x800)   n = 2; // 2-byte codes: 110yyyxx | 10xxxxx
+        else if (ch < 0x10000) n = 3; // 3-byte codes: 1110yyyy | 10yyyyxx | 10xxxxxx
+        else if (ch < 0x11000) n = 4; // 4-byte codes: 11110zzz | 10zzyyyy | 10yyyyxx | 10xxxxxx
+        return n;
     }
+
+    class Instance {
+    public:
+        Instance(const char *s):
+            s_{s},
+            n_{::strlen(s)}
+        {}
+
+        Instance(const char *s, size_t n):
+            s_{s},
+            n_{n}
+        {}
+
+        Instance(const string &s):
+            s_{s},
+            n_{static_cast<size_t>(s->count())}
+        {}
+
+        const_iterator begin() const { return utf8_iterator{s_, s_ + n_, s_      }; }
+        const_iterator end  () const { return utf8_iterator{s_, s_ + n_, s_ + n_ }; }
+
+        iterator begin() { return utf8_iterator{s_, s_ + n_, s_      }; }
+        iterator end  () { return utf8_iterator{s_, s_ + n_, s_ + n_ }; }
+
+        /// Count number of code points
+        size_t count() const {
+            size_t n = 0;
+            for (auto it = begin(); it; ++it) ++n;
+            return n;
+        }
+
+    private:
+        const char *s_;
+        size_t n_;
+    };
+
+    utf8(const char *s):
+        instance_{s}
+    {}
+
+    utf8(const char *s, size_t n):
+        instance_{s, n}
+    {}
+
+    utf8(const string &s):
+        instance_{s}
+    {}
+
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
+
+private:
+    Instance instance_;
 };
 
-class EncodeNonCharacterError: public EncodingError
-{
-public:
-    ~EncodeNonCharacterError() throw() {}
+/// Count number of code points
+inline size_t count(const utf8 &u) { return u->count(); }
 
-    virtual String message() const {
-        return "UTF-8 error: encoding non-characters is not allowed (0xFDD0..0xFFFE, 0x*FFF(E|F))";
-    }
-};
-
-class EncodeLargeCodePointError: public EncodingError
-{
-public:
-    ~EncodeLargeCodePointError() throw() {}
-
-    virtual String message() const {
-        return "UTF-8 error: code point to large (>= 0x110000)";
-    }
-};
-
-class DecodeError: public EncodingError
-{
-public:
-    ~DecodeError() throw() {}
-
-    virtual String message() const {
-        return "UTF-8 error: failed to decode input bytes";
-    }
-};
-
-} // namespace utf8
+inline utf8::const_iterator begin(const utf8 &u) { return u->begin(); }
+inline utf8::const_iterator end(const utf8 &u) { return u->end(); }
+inline utf8::iterator begin(utf8 &u) { return u->begin(); }
+inline utf8::iterator end(utf8 &u) { return u->end(); }
 
 } // namespace cc

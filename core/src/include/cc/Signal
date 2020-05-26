@@ -36,7 +36,7 @@ enum class Signal: int {
 
 inline int operator+(Signal signal) { return static_cast<int>(signal); }
 
-String str(Signal signal);
+string str(Signal signal);
 
 /** \class Signaled cc/exceptions
   * \brief Signal received
@@ -48,7 +48,7 @@ public:
 
     Signal signal() const { return signal_; }
 
-    String message() const override;
+    string message() const override;
 
     const Signaled *operator->() const { return this; }
 

@@ -16,9 +16,9 @@ namespace toki {
 class Theme: public Object
 {
 public:
-    static Ref<Theme> load(const String &path);
-    String path() const { return path_; }
-    String name() const { return name_; }
+    static Ref<Theme> load(const string &path);
+    string path() const { return path_; }
+    string name() const { return name_; }
 
     bool lookupPaletteByScope(int scope, Palette **palette) const {
         return paletteByScope_->lookup(scope, palette);
@@ -30,16 +30,16 @@ public:
     const Palette *defaultPalette() const { return defaultPalette_; }
 
 private:
-    Theme(const String &path);
+    Theme(const string &path);
 
-    String path_;
-    String name_;
+    string path_;
+    string name_;
 
     typedef Map<int, Ref<Palette> > PaletteByScope;
     Ref<PaletteByScope> paletteByScope_;
     Ref<Palette> defaultPalette_;
 };
 
-Ref<StringList> themeList(const String &path = "");
+Ref<StringList> themeList(const string &path = "");
 
 }} // namespace cc::toki

@@ -16,7 +16,7 @@ namespace can {
 class WriteRequest
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, Selector selector, const String &data = String{});
+    static Ref<CanFrame> createFrame(int serverId, Selector selector, const string &data = string{});
 
     class Instance {
     public:
@@ -54,7 +54,7 @@ public:
                 0;
         }
 
-        String expeditedData() const {
+        string expeditedData() const {
             return frame_->copy(4, 4 + expeditedDataCount());
         }
 
@@ -73,7 +73,7 @@ public:
             return 0;
         }
 
-        String toString() const;
+        string toString() const;
 
     private:
         friend class WriteRequest;
@@ -94,7 +94,7 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator String() const { return instance_.toString(); }
+    operator string() const { return instance_.toString(); }
 
 private:
     const Instance instance_;

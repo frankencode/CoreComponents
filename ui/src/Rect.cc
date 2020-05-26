@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-String str(const Rect &rect)
+string str(const Rect &rect)
 {
     return Format{}
         << "Rect {\n"
@@ -21,7 +21,7 @@ String str(const Rect &rect)
         << "}";
 }
 
-String fixed(const Rect &rect, int ni, int nf)
+string fixed(const Rect &rect, int ni, int nf)
 {
     return Format{}
         << "Rect {\n"
@@ -30,7 +30,7 @@ String fixed(const Rect &rect, int ni, int nf)
         << "}";
 }
 
-String fixed(const Rect &rect, int nf)
+string fixed(const Rect &rect, int nf)
 {
     return fixed(rect, 0, nf);
 }

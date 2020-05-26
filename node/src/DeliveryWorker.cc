@@ -129,7 +129,7 @@ void DeliveryWorker::autoSecureForwardings()
             nodeConfig()->security()->hasCredentials() ||
             deliveryInstance_->security()->hasCredentials()
         ) {
-            String location = header->value("Location");
+            string location = header->value("Location");
             if (location->startsWith("http:")) {
                 try {
                     Uri uri{location};

@@ -17,12 +17,12 @@
 namespace cc {
 namespace ui {
 
-Ref<SdlWindow> SdlWindow::open(View *view, const String &title, WindowMode mode)
+Ref<SdlWindow> SdlWindow::open(View *view, const string &title, WindowMode mode)
 {
     return (new SdlWindow(view, title))->open(mode);
 }
 
-SdlWindow::SdlWindow(View *view, const String &title):
+SdlWindow::SdlWindow(View *view, const string &title):
     Window{view, title}
 {}
 

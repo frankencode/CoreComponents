@@ -6,22 +6,22 @@
  *
  */
 
-#include <cc/Utf8Walker>
 #include <cc/ui/PasswordEditor>
+#include <cc/unicode>
 
 namespace cc {
 namespace ui {
 
-PasswordEditor::PasswordEditor(const String &bullet):
+PasswordEditor::PasswordEditor(const string &bullet):
     bullet_{bullet}
 {}
 
-String PasswordEditor::text() const
+string PasswordEditor::text() const
 {
     return text_();
 }
 
-String PasswordEditor::password() const
+string PasswordEditor::password() const
 {
     return password_();
 }
@@ -31,28 +31,28 @@ int PasswordEditor::byteCount() const
     return text_()->count();
 }
 
-String PasswordEditor::copy(Range range) const
+string PasswordEditor::copy(Range range) const
 {
     return text_()->copy(range->i0(), range->i1());
 }
 
-Range PasswordEditor::paste(Range range, const String &newChunk)
+Range PasswordEditor::paste(Range range, const string &newChunk)
 {
     if (!(0 <= range->i0() && range->i1() <= text_()->count()))
         return Range{};
 
-    String mask = String::multiply(bullet_, Utf8Walker::countCodePoints(newChunk));
+    string mask = string::multiply(bullet_, count(unicode{newChunk}));
 
     text_ = text_()->paste(range->i0(), range->i1(), mask);
 
     int m0 = range->i0() / bullet_->count();
     int m1 = range->i1() / bullet_->count();
 
-    Utf8Walker walker(password());
+    auto walker = unicode{newChunk}->begin();
     for (int i = 0; i < m0; ++i) ++walker;
-    int p0 = walker->offset();
+    int p0 = +walker;
     for (int i = m0; i < m1; ++i) ++walker;
-    int p1 = walker->offset();
+    int p1 = +walker;
 
     password_ = password_()->paste(p0, p1, newChunk);
 

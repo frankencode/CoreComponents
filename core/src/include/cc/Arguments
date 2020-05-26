@@ -50,14 +50,14 @@ public:
     /** Execution path
       * \see Process::exePath()
       */
-    String execPath() const { return execPath_; }
+    string execPath() const { return execPath_; }
 
 private:
     Arguments(int argc, char **argv, VariantMap *options);
 
     Ref<VariantMap> options_;
     Ref<StringList> items_;
-    String execPath_;
+    string execPath_;
 };
 
 } // namespace cc

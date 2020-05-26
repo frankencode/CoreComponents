@@ -17,7 +17,7 @@
 namespace cc {
 namespace ui {
 
-InputField::InputField(View *parent, const String &labelText_):
+InputField::InputField(View *parent, const string &labelText_):
     Control{parent},
     labelText{labelText_}
 {

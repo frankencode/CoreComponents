@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
     for (int i = 1; i < argc; ++i) {
         Ref<ZipArchive> archive = ZipArchive::open(argv[i]);
-        for (String path; archive->read(&path);)
+        for (string path; archive->read(&path);)
             fout() << path << nl;
     }
     return 0;

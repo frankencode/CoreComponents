@@ -30,7 +30,7 @@ SafetyEventHandler::SafetyEventHandler(
     onError_{onError}
 {}
 
-void SafetyEventHandler::onReceived(CanMedia *media, const String &data)
+void SafetyEventHandler::onReceived(CanMedia *media, const string &data)
 {
     onReceived_(data);
 }

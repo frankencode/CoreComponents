@@ -16,7 +16,7 @@ Version::Version(const Variant &v)
     *this = Variant::cast<Version>(v);
 }
 
-Version::Instance::Instance(const String &s)
+Version::Instance::Instance(const string &s)
 {
     Ref<StringList> parts = s->trim("v")->split('.');
     if (parts->has(0)) major_ = parts->at(0)->toNumber<int>();
@@ -24,7 +24,7 @@ Version::Instance::Instance(const String &s)
     if (parts->has(2)) patch_ = parts->at(2)->toNumber<int>();
 }
 
-String Version::Instance::toString() const
+string Version::Instance::toString() const
 {
     return Format("%%.%%.%%") << major_ << minor_ << patch_;
 }

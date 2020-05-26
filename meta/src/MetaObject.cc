@@ -13,12 +13,12 @@
 namespace cc {
 namespace meta {
 
-Ref<MetaObject> MetaObject::create(const String &className)
+Ref<MetaObject> MetaObject::create(const string &className)
 {
     return new MetaObject{className};
 }
 
-MetaObject::MetaObject(const String &className):
+MetaObject::MetaObject(const string &className):
     className_{className},
     children_{MetaObjectList::create()}
 {}
@@ -31,7 +31,7 @@ Variant MetaObject::toVariant() const
     return Ref<MetaObject>{const_cast<MetaObject *>(this)};
 }
 
-String MetaObject::toString() const
+string MetaObject::toString() const
 {
     return yason::stringify(toVariant());
 }
@@ -48,7 +48,7 @@ void MetaObject::autocomplete(MetaObject *target) const
 {
     if (count() != target->count()) {
         for (int i = 0; i < count(); ++i) {
-            String name = at(i)->key();
+            string name = at(i)->key();
             if (target->count() <= i || target->at(i)->key() != name) {
                 Variant value = at(i)->value();
                 const MetaProtocol *protocol = Variant::cast<const MetaProtocol *>(value);

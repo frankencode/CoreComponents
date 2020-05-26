@@ -26,9 +26,9 @@ Ref<CanFrame> BlockWriteEndReply::createFrame(int serverId)
     return frame;
 }
 
-String BlockWriteEndReply::Instance::toString() const
+string BlockWriteEndReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "BlockWriteEndReply{" << nl

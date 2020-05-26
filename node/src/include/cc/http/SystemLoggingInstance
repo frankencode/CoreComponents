@@ -18,8 +18,8 @@ class SystemLoggingInstance: public LoggingInstance
 public:
     static Ref<SystemLoggingInstance> create(const MetaObject *config);
 
-    void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const String &statusMessage = "") const override;
-    void logMessage(const String &message, LoggingLevel level = LoggingLevel::Default) const override;
+    void logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten = 0, const string &statusMessage = "") const override;
+    void logMessage(const string &message, LoggingLevel level = LoggingLevel::Default) const override;
 
 private:
     SystemLoggingInstance(const MetaObject *config);

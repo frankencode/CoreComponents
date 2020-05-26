@@ -12,12 +12,12 @@
 namespace cc {
 namespace ui {
 
-PasswordField::PasswordField(View *parent, const String &labelText, const String &bullet):
+PasswordField::PasswordField(View *parent, const string &labelText, const string &bullet):
     InputField{parent, labelText},
     bullet_{bullet}
 {}
 
-String PasswordField::password() const
+string PasswordField::password() const
 {
     return passwordInput_->password();
 }

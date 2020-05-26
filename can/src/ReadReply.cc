@@ -12,7 +12,7 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> ReadReply::createFrame(int serverId, Selector selector, const String &data)
+Ref<CanFrame> ReadReply::createFrame(int serverId, Selector selector, const string &data)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
@@ -44,9 +44,9 @@ Ref<CanFrame> ReadReply::createFrame(int serverId, Selector selector, const Stri
     return frame;
 }
 
-String ReadReply::Instance::toString() const
+string ReadReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     Format f;
     f << "ReadReply {" << nl

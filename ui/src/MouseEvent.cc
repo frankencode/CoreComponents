@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-String MouseEvent::toString() const
+string MouseEvent::toString() const
 {
     return Format{}
         << "MouseEvent {" << nl

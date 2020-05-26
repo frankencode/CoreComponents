@@ -11,12 +11,12 @@
 namespace cc {
 namespace http {
 
-Ref<LoggingPrototype> LoggingPrototype::create(const String &className, const MetaProtocol *protocol)
+Ref<LoggingPrototype> LoggingPrototype::create(const string &className, const MetaProtocol *protocol)
 {
     return new LoggingPrototype{className, protocol};
 }
 
-LoggingPrototype::LoggingPrototype(const String &className, const MetaProtocol *protocol):
+LoggingPrototype::LoggingPrototype(const string &className, const MetaProtocol *protocol):
     MetaPrototype{className, protocol}
 {
     establish("verbosity", "");

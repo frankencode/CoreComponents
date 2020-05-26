@@ -19,7 +19,7 @@ using namespace ccclaim;
 
 int main(int argc, char **argv)
 {
-    String toolName = String{argv[0]}->fileName();
+    string toolName = string{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -49,12 +49,12 @@ int main(int argc, char **argv)
         bool insertOption = options->value("insert");
         if (!(stripOption || insertOption)) reportOption = true;
 
-        String focus = options->value("focus");
-        String holder = options->value("holder");
+        string focus = options->value("focus");
+        string holder = options->value("holder");
         int yearStart = options->value("year-start");
         int yearEnd = options->value("year-end");
-        String statement = options->value("statement");
-        String statementPath = options->value("statement-file");
+        string statement = options->value("statement");
+        string statementPath = options->value("statement-file");
         Pattern works = options->value("works");
         int worksMinLines = options->value("works-min-lines");
 
@@ -70,8 +70,8 @@ int main(int argc, char **argv)
                 StatementByDigest *statementByDigest = report->statementByDigest();
                 for (int i = 0; i < coverageByDigest->count(); ++i) {
                     Coverage *coverage = coverageByDigest->at(i)->value();
-                    String digest = coverageByDigest->at(i)->key();
-                    String statement = statementByDigest->value(digest);
+                    string digest = coverageByDigest->at(i)->key();
+                    string statement = statementByDigest->value(digest);
                     fout() << "Statement (" << i + 1 << "):" << nl;
                     fout() << "\"\"\"" << statement << "\"\"\"" << nl;
                     for (int j = 0; j < coverage->count(); ++j)
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
                 CoverageByHolder *coverageByHolder = report->coverageByHolder();
                 for (int i = 0; i < coverageByHolder->count(); ++i) {
                     Coverage *coverage = coverageByHolder->at(i)->value();
-                    String holder = coverageByHolder->at(i)->key();
+                    string holder = coverageByHolder->at(i)->key();
                     fout() << "Copyright " << holder << ":" << nl;
                     for (int j = 0; j < coverage->count(); ++j) {
                         Notice *notice = coverage->at(j)->value();
@@ -117,15 +117,15 @@ int main(int argc, char **argv)
             Coverage *coverage = report->coverageByHolder()->value(holder);
             if (!coverage) return 0;
             for (int i = 0; i < coverage->count(); ++i) {
-                String path = coverage->at(i)->key();
+                string path = coverage->at(i)->key();
                 Notice *notice = coverage->at(i)->value();
                 CopyrightList *copyrights = notice->copyrights();
                 for (int j = 0; j < copyrights->count(); ++j)
                     if (copyrights->at(j)->holder() != holder) continue;
                 Token *token = notice->header()->token();
                 Ref<File> file = File::open(path, FileOpen::ReadWrite);
-                String text = file->map();
-                String newText = Format() << text->copy(0, token->i0()) << text->copy(token->i1(), text->count());
+                string text = file->map();
+                string newText = Format() << text->copy(0, token->i0()) << text->copy(token->i1(), text->count());
                 file->seek(0);
                 file->truncate(0);
                 file->write(newText);
@@ -138,13 +138,13 @@ int main(int argc, char **argv)
             copyrights->append(Copyright::create(holder, yearStart, yearEnd));
             Ref<Notice> notice = Notice::create(copyrights, statement);
             for (int i = 0; i < exposure->count(); ++i) {
-                String path = exposure->at(i);
+                string path = exposure->at(i);
                 Ref<File> file = File::open(path, FileOpen::ReadWrite);
-                String text = file->map();
+                string text = file->map();
                 HeaderStyle *style = 0;
                 if (registry()->detectHeaderStyle(path, text, &style)) {
                     int magicCount = style->magicCount(text);
-                    String magic;
+                    string magic;
                     if (magicCount > 0) {
                         magic = text->copy(0, magicCount);
                         text = text->copy(magicCount, text->count());

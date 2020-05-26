@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -20,7 +20,7 @@ namespace cc {
 class PluginLoader: public Object
 {
 public:
-    PluginLoader(const String &libraryPath, const String &group = "");
+    PluginLoader(const string &libraryPath, const string &group = "");
 };
 
 #define CC_PLUGIN_LOADER \

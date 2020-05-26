@@ -20,11 +20,11 @@ class SyntaxState;
 class SyntaxError: public TextError
 {
 public:
-    SyntaxError(const String &text, SyntaxState *state = nullptr, const String &resource = "");
+    SyntaxError(const string &text, SyntaxState *state = nullptr, const string &resource = "");
 
     const SyntaxState *state() const { return state_; }
 
-    String message() const override;
+    string message() const override;
 
 private:
     Ref<SyntaxState> state_;

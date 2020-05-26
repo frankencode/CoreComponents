@@ -15,13 +15,13 @@
 namespace cc {
 namespace toki {
 
-Ref<Theme> Theme::load(const String &path)
+Ref<Theme> Theme::load(const string &path)
 {
-    String themePath = path;
+    string themePath = path;
     if (themePath->isRelativePath()) {
         if (!Dir::exists(themePath)) {
             if (!themePath->contains('/'))
-                themePath = String{"themes/"} + themePath;
+                themePath = string{"themes/"} + themePath;
             if (!Dir::exists(themePath))
                 themePath = CC_BUNDLE_LOOKUP(themePath);
         }
@@ -31,13 +31,13 @@ Ref<Theme> Theme::load(const String &path)
     return new Theme{themePath};
 }
 
-Theme::Theme(const String &path):
+Theme::Theme(const string &path):
     path_{path},
     name_{path->fileName()},
     paletteByScope_{PaletteByScope::create()}
 {
     Ref<Dir> dir = Dir::open(path);
-    String name;
+    string name;
     while (dir->read(&name)) {
         if (name == "." || name == "..") continue;
         if (!(name->count() > 0 && ('a' <= name->at(0) && name->at(0) <= 'z'))) continue;
@@ -48,17 +48,17 @@ Theme::Theme(const String &path):
         throw UsageError{Format{"Palette \"default\" missing in theme \"%%\""} << path};
 }
 
-Ref<StringList> themeList(const String &path)
+Ref<StringList> themeList(const string &path)
 {
     auto list = StringList::create();
-    String searchPath = path;
+    string searchPath = path;
     if (searchPath == "") {
         searchPath = CC_BUNDLE_LOOKUP("themes");
         list->appendList(themeList("themes"));
     }
     if (searchPath != "" && Dir::exists(searchPath)) {
         auto dir = Dir::open(searchPath);
-        for (String name; dir->read(&name);) {
+        for (string name; dir->read(&name);) {
             if (name == "." || name == "..") continue;
             list->append(path + "/" + name);
         }

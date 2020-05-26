@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -88,6 +88,6 @@ private:
     Instance instance_;
 };
 
-String str(Range range);
+string str(Range range);
 
 } // namespace cc

@@ -22,9 +22,9 @@ public:
 
     virtual void beginTestSuite(TestSuite *testSuite) override;
     virtual void beginTestCase(TestCase *testCase) override;
-    virtual void verify(TestCase *testCase, bool condition, const String &message, const String &codePath, int codeLine) override;
-    virtual void error(TestCase *testCase, const String &type, const String &message) override;
-    virtual void endTestCase(TestCase *testCase, const String &outText = "", const String &errText = "") override;
+    virtual void verify(TestCase *testCase, bool condition, const string &message, const string &codePath, int codeLine) override;
+    virtual void error(TestCase *testCase, const string &type, const string &message) override;
+    virtual void endTestCase(TestCase *testCase, const string &outText = "", const string &errText = "") override;
     virtual void skipTestCase(TestCase *testCase) override;
     virtual void endTestSuite(TestSuite *testSuite) override;
 
@@ -32,7 +32,7 @@ protected:
     XmlTestReport(Stream *stream);
 
 private:
-    static String xmlEscape(const String &text);
+    static string xmlEscape(const string &text);
 
     Ref<Stream> stream_;
 };

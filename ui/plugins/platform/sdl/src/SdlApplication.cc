@@ -69,7 +69,7 @@ void SdlApplication::init(int argc, char **argv)
     timerEvent_ = SDL_RegisterEvents(1);
 }
 
-Window *SdlApplication::openWindow(View *view, const String &title, WindowMode mode)
+Window *SdlApplication::openWindow(View *view, const string &title, WindowMode mode)
 {
     auto window = SdlWindow::open(view, title, mode);
     windows_->insert(window->id_, window);
@@ -91,13 +91,13 @@ void SdlApplication::unsetCursor()
     SDL_SetCursor(SDL_GetDefaultCursor());
 }
 
-String SdlApplication::getClipboardText() const
+string SdlApplication::getClipboardText() const
 {
-    if (!SDL_HasClipboardText()) return String{};
+    if (!SDL_HasClipboardText()) return string{};
     return SDL_GetClipboardText();
 }
 
-void SdlApplication::setClipboardText(const String &text)
+void SdlApplication::setClipboardText(const string &text)
 {
     /*int ret =*/ SDL_SetClipboardText(text);
     // TODO: error handling?
@@ -307,7 +307,7 @@ void SdlApplication::handleTextInputEvent(const SDL_TextInputEvent *e)
     feedTextInputEvent(e->text);
 }
 
-String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
+string SdlApplication::windowEventToString(const SDL_WindowEvent *e)
 {
     switch (e->event) {
         case SDL_WINDOWEVENT_SHOWN: return "SDL_WINDOWEVENT_SHOWN";
@@ -329,7 +329,7 @@ String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
         case SDL_WINDOWEVENT_HIT_TEST: return "SDL_WINDOWEVENT_HIT_TEST";
         #endif
     };
-    return String{};
+    return string{};
 }
 
 void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)

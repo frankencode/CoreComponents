@@ -16,7 +16,7 @@ int main()
 {
     Ref<StringList> list = StringList::create();
     Ref<LineSource> source = LineSource::open(stdIn());
-    for (String item; source->read(&item);)
+    for (string item; source->read(&item);)
         list->append(item);
 
     list = list->sort();

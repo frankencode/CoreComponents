@@ -24,7 +24,7 @@ namespace http {
 using namespace cc::net;
 using namespace cc::meta;
 
-Ref<MetaObject> NodeConfig::parse(const String &text)
+Ref<MetaObject> NodeConfig::parse(const string &text)
 {
     return yason::parse(text, NodeConfigProtocol::instance());
 }
@@ -39,7 +39,7 @@ const MetaObject *NodeConfig::prototype()
     return NodeConfigProtocol::instance()->nodePrototype();
 }
 
-Ref<NodeConfig> NodeConfig::load(const String &path)
+Ref<NodeConfig> NodeConfig::load(const string &path)
 {
     ResourceGuard context{path};
     return load(parse(File::open(path)->map()));
@@ -53,13 +53,13 @@ Ref<NodeConfig> NodeConfig::create()
 NodeConfig::NodeConfig(const MetaObject *config):
     securePort_{0}
 {
-    String address = config->value("address");
+    string address = config->value("address");
 
     auto ports = Variant::cast<List<int> *>(config->value("port"));
 
     ProtocolFamily family = ProtocolFamily::Unspecified;
     {
-        String s = String{config->value("family")}->toLower();
+        string s = string{config->value("family")}->toLower();
         if (s->toLower() == "ipv6") family = ProtocolFamily::Internet6;
         else if (s->toLower() == "ipv4") family = ProtocolFamily::Internet4;
         else if (s->toLower() == "local" || address->contains('/')) family = ProtocolFamily::Local;
@@ -141,7 +141,7 @@ Ref<DeliveryInstance> NodeConfig::createDeliveryInstance(const DeliveryService *
     return instance;
 }
 
-void NodeConfig::addDirectoryInstance(const String &path)
+void NodeConfig::addDirectoryInstance(const string &path)
 {
     const DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Directory");
     Ref<MetaObject> config = service->configPrototype()->clone();
@@ -158,7 +158,7 @@ void NodeConfig::addEchoInstance()
     deliveryInstances_->append(createDeliveryInstance(service, config));
 }
 
-const DeliveryInstance *NodeConfig::selectService(const String &host, const String &uri) const
+const DeliveryInstance *NodeConfig::selectService(const string &host, const string &uri) const
 {
     const DeliveryInstance *deliveryInstance = nullptr;
 

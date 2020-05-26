@@ -11,7 +11,7 @@ using namespace cc::ui;
 
 void printFamilyInfo(const Arguments *arguments)
 {
-    for (String path: arguments->items()) {
+    for (string path: arguments->items()) {
         Ref<FtFontFace> face = FtFontFace::open(path);
         fout()
             << path << ":" << nl
@@ -26,15 +26,15 @@ void printFamilyInfo(const Arguments *arguments)
 
 void printGlyphLists(const Arguments *arguments)
 {
-    for (String path: arguments->items()) {
+    for (string path: arguments->items()) {
         Ref<FtFontFace> face = FtFontFace::open(path);
         FT_Face ftFace = face->ftFace();
 
         FT_UInt glyphIndex = 0;
         FT_ULong ch = FT_Get_First_Char(ftFace, &glyphIndex);
-        String buffer = String::allocate(256);
+        string buffer = string::allocate(256);
         while (glyphIndex != 0) {
-            String glyphName;
+            string glyphName;
             if (FT_HAS_GLYPH_NAMES(ftFace)) {
                 if (FT_Get_Glyph_Name(ftFace, glyphIndex, mutate(buffer)->bytes(), buffer->count()) == 0)
                     glyphName = buffer->copy(0, buffer->scan('\0'));
@@ -45,9 +45,9 @@ void printGlyphLists(const Arguments *arguments)
     }
 }
 
-String camelize(const String &name)
+string camelize(const string &name)
 {
-    String s = name;
+    string s = name;
     if (s->count() == 0) return s;
     mutate(s)->at(0) = toUpper(s->at(0));
     for (int i = 1; i < s->count() - 1; ++i) {
@@ -57,9 +57,9 @@ String camelize(const String &name)
     return s->replace("_", "")->replace("-", "");
 }
 
-typedef Map<String, uchar_t> GlyphMap;
+typedef Map<string, uchar_t> GlyphMap;
 
-Ref<GlyphMap> parseFile(const String &path, int *maxKeyLength)
+Ref<GlyphMap> parseFile(const string &path, int *maxKeyLength)
 {
     Ref<FtFontFace> face = FtFontFace::open(path);
     FT_Face ftFace = face->ftFace();
@@ -72,9 +72,9 @@ Ref<GlyphMap> parseFile(const String &path, int *maxKeyLength)
 
     FT_UInt glyphIndex = 0;
     FT_ULong ch = FT_Get_First_Char(ftFace, &glyphIndex);
-    String buffer = String::allocate(256);
+    string buffer = string::allocate(256);
     while (glyphIndex != 0) {
-        String glyphName;
+        string glyphName;
         if (FT_Get_Glyph_Name(ftFace, glyphIndex, mutate(buffer)->bytes(), buffer->count()) == 0)
             glyphName = buffer->copy(0, buffer->scan('\0'));
         // fout() << glyphIndex << " (\\u" << hex(ch) << ", " << "'" << (ch < 0x80 ? char(ch) : ' ') << "'): \"" << glyphName << "\"" << nl;
@@ -90,7 +90,7 @@ Ref<GlyphMap> parseFile(const String &path, int *maxKeyLength)
 
 void printIconEnum(const Arguments *arguments)
 {
-    for (String path: arguments->items())
+    for (string path: arguments->items())
     {
         int maxKeyLength = 0;
         auto map = parseFile(path, &maxKeyLength);
@@ -109,14 +109,14 @@ void printIconEnum(const Arguments *arguments)
 
 void printIconStr(const Arguments *arguments)
 {
-    for (String path: arguments->items())
+    for (string path: arguments->items())
     {
         int maxKeyLength = 0;
         auto map = parseFile(path, &maxKeyLength);
         if (!map) continue;
 
         fout(
-            "String str(Icon icon)\n"
+            "string str(Icon icon)\n"
             "{\n"
             "    switch(icon) {\n"
         );
@@ -127,7 +127,7 @@ void printIconStr(const Arguments *arguments)
         fout(
             "    }\n"
             "\n"
-            "    return String{};\n"
+            "    return string{};\n"
             "}\n"
         );
     }
@@ -135,7 +135,7 @@ void printIconStr(const Arguments *arguments)
 
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->baseName();
+    string toolName = string(argv[0])->baseName();
     try {
         Ref<VariantMap> options = VariantMap::create();
         options->insert("family-info", false);

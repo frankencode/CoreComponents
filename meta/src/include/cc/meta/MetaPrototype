@@ -22,12 +22,12 @@ class MetaProtocol;
 class MetaPrototype: public MetaObject
 {
 public:
-    static Ref<MetaPrototype> create(const String &className, const MetaProtocol *protocol = nullptr);
+    static Ref<MetaPrototype> create(const string &className, const MetaProtocol *protocol = nullptr);
 
     const MetaProtocol *protocol() const { return protocol_; }
 
 protected:
-    MetaPrototype(const String &className, const MetaProtocol *protocol = nullptr);
+    MetaPrototype(const string &className, const MetaProtocol *protocol = nullptr);
     ~MetaPrototype();
 
 private:

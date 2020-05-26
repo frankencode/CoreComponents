@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -45,7 +45,7 @@ public:
         instance_{w | (w < 0x1000000u ? 0xFF000000u : 0u)}
     {}
 
-    /** \copydoc Color(const String &s)
+    /** \copydoc Color(const string &s)
       */
     explicit Color(const char *s)
     {
@@ -58,7 +58,7 @@ public:
       * \param s color specification to parse
       * %Color literals can be either SVG color names (e.g. 'AliceBlue') or literal RGB tuples (\#RRGGBB, \#RRGGBBAA, \#RGB, \#RGBA).
       */
-    explicit Color(const String &s)
+    explicit Color(const string &s)
     {
         bool ok = false;
         *this = parse(s, &ok);
@@ -236,7 +236,7 @@ public:
         uint32_t toWord() const { return w_; }
 
         /// Stringify this color
-        String toString() const;
+        string toString() const;
 
     private:
         friend class Color;
@@ -310,6 +310,6 @@ private:
 };
 
 /// Stringify color \a c
-inline String str(const Color &c) { return c->toString(); }
+inline string str(const Color &c) { return c->toString(); }
 
 } // namespace cc

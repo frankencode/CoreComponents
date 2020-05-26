@@ -25,7 +25,7 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
 
     for (int i = 1; i < argc; ++i)
     {
-        String s = argv[i];
+        string s = argv[i];
         bool isKeyValueOption = s->contains('=');
         bool isFlag = s->startsWith('-') && s->count() >= 2 && (s->at(1) < '0' || '9' < s->at(1)) && s->at(1) != '.';
         if (!isFlag && !isKeyValueOption) {
@@ -38,9 +38,9 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
         Variant value = true;
         if (isKeyValueOption) {
             Ref<StringList> parts = s->split('=');
-            String name = parts->front();
+            string name = parts->front();
             parts->popFront();
-            String valueText = parts->join("=");
+            string valueText = parts->join("=");
             options_->establish(name, Variant::read(valueText));
         }
         else {
@@ -70,7 +70,7 @@ void Arguments::validate(const VariantMap *prototype)
 {
     for (int i = 0; i < options_->count(); ++i)
     {
-        String name = options_->at(i)->key();
+        string name = options_->at(i)->key();
         Variant value = options_->at(i)->value();
 
         Variant defaultValue;
@@ -112,7 +112,7 @@ void Arguments::override(VariantMap *config) const
 {
     for (int i = 0; i < options_->count(); ++i)
     {
-        String name = options_->at(i)->key();
+        string name = options_->at(i)->key();
         Variant value = options_->at(i)->value();
         config->establish(name, value);
     }

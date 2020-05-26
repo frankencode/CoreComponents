@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 namespace tar {
@@ -16,7 +16,7 @@ namespace tar {
 class ArchiveWriter: public Object
 {
 public:
-    virtual void writeFile(const String &path) = 0;
+    virtual void writeFile(const string &path) = 0;
 };
 
 }} // namespace cc::tar

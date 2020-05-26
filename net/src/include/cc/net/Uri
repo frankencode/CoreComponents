@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/exceptions>
-#include <cc/String>
+#include <cc/string>
 #include <cc/Map>
 #include <cc/net/types>
 
@@ -27,22 +27,22 @@ public:
     class Instance: public Object {
     public:
         /// URI scheme (e.g. http, file)
-        String scheme() const { return scheme_; }
+        string scheme() const { return scheme_; }
 
         /// %Set the URI scheme
-        void setScheme(const String &value) { scheme_ = value; }
+        void setScheme(const string &value) { scheme_ = value; }
 
         /// User and password information (e.g. "oscar:123456")
-        String userInfo() const { return userInfo_; }
+        string userInfo() const { return userInfo_; }
 
         /// %Set the user information
-        void setUserInfo(const String &value) { userInfo_ = value; }
+        void setUserInfo(const string &value) { userInfo_ = value; }
 
         /// Registered host name or numeric address (IPv4 or IPv6)
-        String host() const { return host_; }
+        string host() const { return host_; }
 
         /// %Set the host name
-        void setHost(const String &value) { host_ = value; }
+        void setHost(const string &value) { host_ = value; }
 
         /// Tell if the host name is a numeric address
         bool hostIsNumeric() const { return hostIsNumeric_; }
@@ -60,56 +60,56 @@ public:
         void setPort(int value) { port_ = value; }
 
         /// Path component of the URI
-        String path() const { return path_; }
+        string path() const { return path_; }
 
         /// %Set the path component of the URI
-        void setPath(const String &value) { path_ = value; }
+        void setPath(const string &value) { path_ = value; }
 
         /// Query component of the URI
-        String query() const { return query_; }
+        string query() const { return query_; }
 
         /// %Set the query component of the URI
-        void setQuery(const String &value) { query_ = value; }
+        void setQuery(const string &value) { query_ = value; }
 
         /// Fragment component of the URI
-        String fragment() const { return fragment_; }
+        string fragment() const { return fragment_; }
 
         /// %Set fragment component of the URI
-        void setFragment(const String &value) { fragment_ = value; }
+        void setFragment(const string &value) { fragment_ = value; }
 
         /// Return the host name with port number
-        String requestHost() const;
+        string requestHost() const;
 
         /// Return the path with query and fragment component
-        String requestPath() const;
+        string requestPath() const;
 
         /// Convert this URI to a string
-        String toString() const;
+        string toString() const;
 
     private:
         friend class cc::Cow;
         friend class Uri;
 
         Instance() = default;
-        Instance(const String &text, Token *rootToken = nullptr);
+        Instance(const string &text, Token *rootToken = nullptr);
 
         Instance *copy() const { return new Instance{*this}; }
 
-        String scheme_;
-        String userInfo_;
-        String host_;
+        string scheme_;
+        string userInfo_;
+        string host_;
         bool hostIsNumeric_ { false };
         int port_ { -1 };
-        String path_;
-        String query_;
-        String fragment_;
+        string path_;
+        string query_;
+        string fragment_;
     };
 
-    static String encode(const String &s);
-    static String decode(const String &s);
+    static string encode(const string &s);
+    static string decode(const string &s);
 
-    static String encodeForm(const Map<String> *form);
-    static Ref<Map<String> > decodeForm(const String &payload);
+    static string encodeForm(const Map<string> *form);
+    static Ref<Map<string> > decodeForm(const string &payload);
 
     /** Create a new URI
       * \return new object instance
@@ -123,7 +123,7 @@ public:
       * \param rootToken root of the URI token tree
       * \exception UriSyntaxError
       */
-    Uri(const String &text, Token *rootToken = nullptr):
+    Uri(const string &text, Token *rootToken = nullptr):
         instance_{new Instance{text, rootToken}}
     {}
 
@@ -143,15 +143,15 @@ public:
     /** Low-level constructor
       * \param text \copydoc text()
       */
-    UriSyntaxError(const String &text): text_{text} {}
+    UriSyntaxError(const string &text): text_{text} {}
 
     /// the text that failed to parse as an URI
-    String text() const { return text_; }
+    string text() const { return text_; }
 
-    String message() const override;
+    string message() const override;
 
 private:
-    String text_;
+    string text_;
 };
 
 }} // namespace cc::net

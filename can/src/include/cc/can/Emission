@@ -23,13 +23,13 @@ class SafetyEmission;
 class Emission: public Object
 {
 public:
-    static Ref<Emission> create(PeriodicEmitter *emitter, int canId, double interval, const String &initialData);
+    static Ref<Emission> create(PeriodicEmitter *emitter, int canId, double interval, const string &initialData);
 
     int canId() const { return frame_->canId(); }
     double interval() const { return interval_; }
     const CanFrame *frame() const { return frame_; } // TODO, FIXME: should not be public
 
-    virtual void updateData(const String &data);
+    virtual void updateData(const string &data);
 
 protected:
     friend class Guard<Emission>;
@@ -39,7 +39,7 @@ protected:
     Emission(int canId, double interval);
     ~Emission();
 
-    void init(PeriodicEmitter *emitter, const String &initialData);
+    void init(PeriodicEmitter *emitter, const string &initialData);
 
     virtual void generate(CanMedia *media);
 

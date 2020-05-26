@@ -12,7 +12,7 @@
 #include <cc/bitmask>
 #include <cc/Color>
 #include <cc/Version>
-#include <cc/String>
+#include <cc/string>
 #include <cc/Map>
 
 namespace cc {
@@ -20,7 +20,7 @@ namespace cc {
 class Variant;
 
 typedef List<Variant> VariantList;
-typedef Map<String, Variant> VariantMap;
+typedef Map<string, Variant> VariantMap;
 
 /** \internal
   * \brief Variant cast policy
@@ -75,7 +75,7 @@ public:
       * \param s text representation of the variant value
       * \return variant value
       */
-    static Variant read(const String &s);
+    static Variant read(const string &s);
 
     template<class T>
     inline static T cast(const Variant &value) { return VariantCast<T, CC_IS_POINTER(T)>::cast(value); }
@@ -87,7 +87,7 @@ public:
         inline VariantType itemType() const { return itemType_; }
         const char *typeName() const;
 
-        String toString() const;
+        string toString() const;
 
         /** TODO: allow to request more smart conversions explicitly and have proper range checking and exception handling at this point
           */
@@ -98,7 +98,7 @@ public:
         template<class, bool>
         friend class VariantCast;
 
-        friend String str(const Variant &x);
+        friend string str(const Variant &x);
         friend int type(const Variant &value);
         friend int itemType(const Variant &value);
 
@@ -114,8 +114,8 @@ public:
         Instance(Color value)  : type_{VariantType::Color},   word_{value->toWord()} {}
         Instance(Version value): type_{VariantType::Version}, word_{value->toWord()} {}
 
-        Instance(const char *value)  : type_{VariantType::String} { initRef(mutate(String(value))); }
-        Instance(const String &value): type_{VariantType::String} { initRef(mutate(value)); }
+        Instance(const char *value)  : type_{VariantType::String} { initRef(mutate(string(value))); }
+        Instance(const string &value): type_{VariantType::String} { initRef(mutate(value)); }
 
         template<class T>
         Instance(const Ref<T> &value): type_{VariantType::Object} { initRef(value.get()); }
@@ -165,7 +165,7 @@ public:
     Variant(Version value): instance_{value} {}
 
     Variant(const char *value)  : instance_{value} {}
-    Variant(const String &value): instance_{value} {}
+    Variant(const string &value): instance_{value} {}
 
     template<class T>
     Variant(const Ref<T> &value): instance_{value} {}
@@ -203,7 +203,7 @@ public:
     const Variant &operator=(Version value)       { (*this)->type_ = VariantType::Version; (*this)->word_ = value->toWord(); return *this; }
 
     const Variant &operator=(const char *value)   { return (*this) = Variant(value); }
-    const Variant &operator=(const String &value) { return (*this) = Variant(value); }
+    const Variant &operator=(const string &value) { return (*this) = Variant(value); }
 
     template<class T>
     const Variant &operator=(const Ref<T> &value) { return (*this) = Variant(value); }
@@ -246,8 +246,8 @@ public:
         CC_ASSERT2(+((*this)->type_ & VariantType::Version), illegalConversion);
         return Version::fromWord((*this)->word_);
     }
-    operator String() const {
-        if (!+(*this)->type_) return String{};
+    operator string() const {
+        if (!+(*this)->type_) return string{};
         CC_ASSERT2(+((*this)->type_ & VariantType::String), illegalConversion);
         return Variant::cast<CharArray *>(*this);
     }
@@ -294,9 +294,9 @@ public:
 };
 
 template<>
-class VariantCast<String, false> {
+class VariantCast<string, false> {
 public:
-    static String cast(const Variant &value) {
+    static string cast(const Variant &value) {
         return Variant::cast<CharArray *>(value);
     }
 };
@@ -317,6 +317,6 @@ public:
     }
 };
 
-inline String str(const Variant &x) { return x->toString(); }
+inline string str(const Variant &x) { return x->toString(); }
 
 } // namespace cc

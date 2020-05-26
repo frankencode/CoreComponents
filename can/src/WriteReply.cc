@@ -27,9 +27,9 @@ Ref<CanFrame> WriteReply::createFrame(int serverId, Selector selector)
     return frame;
 }
 
-String WriteReply::Instance::toString() const
+string WriteReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "WriteReply {" << nl

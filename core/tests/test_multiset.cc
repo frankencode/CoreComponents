@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     CC_INSPECT(a < b);
     CC_INSPECT(b < a);
 
-    multiset<String> c = { "A", "A", "B", "C" };
+    multiset<string> c = { "A", "A", "B", "C" };
     CC_INSPECT(c);
 
     return 0;

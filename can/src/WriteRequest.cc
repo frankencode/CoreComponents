@@ -12,7 +12,7 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> WriteRequest::createFrame(int serverId, Selector selector, const String &data)
+Ref<CanFrame> WriteRequest::createFrame(int serverId, Selector selector, const string &data)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
 
@@ -40,9 +40,9 @@ Ref<CanFrame> WriteRequest::createFrame(int serverId, Selector selector, const S
     return frame;
 }
 
-String WriteRequest::Instance::toString() const
+string WriteRequest::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     Format f;
     f << "WriteRequest {" << nl

@@ -12,11 +12,11 @@
 namespace cc {
 namespace ui {
 
-LineEditor::LineEditor(const String &initialText):
+LineEditor::LineEditor(const string &initialText):
     text_{initialText}
 {}
 
-String LineEditor::text() const
+string LineEditor::text() const
 {
     return text_();
 }
@@ -26,12 +26,12 @@ int LineEditor::byteCount() const
     return text_()->count();
 }
 
-String LineEditor::copy(Range range) const
+string LineEditor::copy(Range range) const
 {
     return text_()->copy(range->i0(), range->i1());
 }
 
-void LineEditor::pasteChunk(Range range, const String &newChunk)
+void LineEditor::pasteChunk(Range range, const string &newChunk)
 {
     text_ = text_()->paste(range->i0(), range->i1(), newChunk);
 }

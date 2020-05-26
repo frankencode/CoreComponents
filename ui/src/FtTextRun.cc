@@ -33,11 +33,11 @@ Ref<TextRun> FtTextRun::copy() const
     return textRun;
 }
 
-void FtTextRun::append(const String &text, const Font &font)
+void FtTextRun::append(const string &text, const Font &font)
 {
     FtFontManager::instance()->selectFontRanges(text, font,
         [=](const Font &font, int i0, int i1) {
-            String chunk = (i0 == 0 && i1 == text->count()) ? text : text->copy(i0, i1);
+            string chunk = (i0 == 0 && i1 == text->count()) ? text : text->copy(i0, i1);
 
             Ref<const FtGlyphRun> run = FtFontManager::instance()->ftTypeset(chunk, font, advance_);
             glyphRuns_->append(run);

@@ -11,17 +11,17 @@
 
 namespace cc {
 
-String PluginLoadError::message() const
+string PluginLoadError::message() const
 {
     return dlerror();
 }
 
-Ref<Plugin> Plugin::load(const String &path)
+Ref<Plugin> Plugin::load(const string &path)
 {
     return (new Plugin(path))->load();
 }
 
-Plugin::Plugin(const String &path):
+Plugin::Plugin(const string &path):
     path_{path},
     name_{path->baseName()},
     handle_{0}

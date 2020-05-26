@@ -34,30 +34,30 @@ ConnectionTimeout::ConnectionTimeout():
     NetworkError{ETIMEDOUT}
 {}
 
-HostNameResolutionError::HostNameResolutionError(const String &hostName):
+HostNameResolutionError::HostNameResolutionError(const string &hostName):
     hostName_{hostName}
 {}
 
-String HostNameResolutionError::hostName() const
+string HostNameResolutionError::hostName() const
 {
     return hostName_;
 }
 
-String HostNameResolutionError::message() const
+string HostNameResolutionError::message() const
 {
     return Format{"Failed to resolve host name \"%%\""} << hostName_;
 }
 
-InvalidAddressSyntax::InvalidAddressSyntax(const String &address):
+InvalidAddressSyntax::InvalidAddressSyntax(const string &address):
     address_{address}
 {}
 
-String InvalidAddressSyntax::address() const
+string InvalidAddressSyntax::address() const
 {
     return address_;
 }
 
-String InvalidAddressSyntax::message() const
+string InvalidAddressSyntax::message() const
 {
     return Format{"Failed to parse network address \"%%\""} << address_;
 }

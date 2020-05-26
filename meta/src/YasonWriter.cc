@@ -11,12 +11,12 @@
 namespace cc {
 namespace meta {
 
-Ref<YasonWriter> YasonWriter::create(Stream *sink, const String &indent)
+Ref<YasonWriter> YasonWriter::create(Stream *sink, const string &indent)
 {
     return new YasonWriter{sink, indent};
 }
 
-YasonWriter::YasonWriter(Stream *sink, const String &indent):
+YasonWriter::YasonWriter(Stream *sink, const string &indent):
     format_{sink},
     indent_{indent}
 {}
@@ -39,7 +39,7 @@ void YasonWriter::writeValue(Variant value, int depth)
         format_ << value;
     }
     else if (value->type() == VariantType::String) {
-        String s = value;
+        string s = value;
         if (s->contains("\""))
             s = s->replace("\"", "\\\"");
         s = s->escape();
@@ -62,12 +62,12 @@ void YasonWriter::writeList(Variant value, int depth)
     else if (value->itemType() == VariantType::Float)
         writeTypedList<float>(value, depth);
     else if (value->itemType() == VariantType::String)
-        writeTypedList<String>(value, depth);
+        writeTypedList<string>(value, depth);
     else
         writeTypedList<Variant>(value, depth);
 }
 
-bool YasonWriter::isIdentifier(const String &name) const
+bool YasonWriter::isIdentifier(const string &name) const
 {
     for (char ch: name) {
         if (!(
@@ -100,7 +100,7 @@ void YasonWriter::writeObject(Variant value, int depth)
     format_ << "{\n";
     writeIndent(depth + 1); // FIXME: having an "IndentStream" would be nice
     for (int i = 0; i < object->count(); ++i) {
-        String memberName = object->at(i)->key();
+        string memberName = object->at(i)->key();
         Variant memberValue = object->at(i)->value();
         if (isIdentifier(memberName))
             format_ << memberName << ": ";

@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-String FontMetrics::toString() const
+string FontMetrics::toString() const
 {
     return Format{}
         << "FontMetrics {\n"

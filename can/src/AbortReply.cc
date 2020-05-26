@@ -19,9 +19,9 @@ Ref<CanFrame> AbortReply::createFrame(int serverId, Selector selector, Abort::Re
     return Abort::createFrame(0x580 + serverId, static_cast<uint8_t>(ServiceReply::Specifier::Abort), selector, reason);
 }
 
-String AbortReply::Instance::toString() const
+string AbortReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "AbortReply {" << nl

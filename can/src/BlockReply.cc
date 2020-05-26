@@ -16,11 +16,11 @@
 namespace cc {
 namespace can {
 
-String BlockReply::Instance::toString() const
+string BlockReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
-    String s;
+    string s;
     switch (specifier()) {
         case Specifier::BlockWriteInit     : s = BlockWriteInitReply{frame_}; break;
         case Specifier::BlockWriteEnd      : s = BlockWriteEndReply{frame_}; break;

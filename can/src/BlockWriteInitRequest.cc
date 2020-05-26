@@ -12,7 +12,7 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockWriteInitRequest::createFrame(int serverId, Selector selector, const String &data)
+Ref<CanFrame> BlockWriteInitRequest::createFrame(int serverId, Selector selector, const string &data)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
@@ -35,9 +35,9 @@ Ref<CanFrame> BlockWriteInitRequest::createFrame(int serverId, Selector selector
     return frame;
 }
 
-String BlockWriteInitRequest::Instance::toString() const
+string BlockWriteInitRequest::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "BlockWriteInitRequest {" << nl

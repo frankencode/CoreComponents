@@ -5,7 +5,7 @@
 using namespace cc;
 using namespace cc::ui;
 
-String path;
+string path;
 
 class MainView: public View
 {

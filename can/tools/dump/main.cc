@@ -18,7 +18,7 @@ using namespace cc::can;
 
 int main(int argc, char **argv)
 {
-    String interface = "can0";
+    string interface = "can0";
     if (argc >= 2) interface = argv[1];
     auto media = CanSocket::open(interface);
     media->enableErrorFrames(true);

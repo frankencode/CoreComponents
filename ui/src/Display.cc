@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-String Display::toString() const
+string Display::toString() const
 {
     return Format{}
         << "Display {" << nl

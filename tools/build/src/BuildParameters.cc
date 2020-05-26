@@ -26,7 +26,7 @@ void BuildParameters::read(const MetaObject *object, const BuildPlan *plan)
     if (!libraryPaths_) libraryPaths_ = StringList::create();
     if (!libraries_) libraries_ = StringList::create();
 
-    for (String &path: includePaths_) {
+    for (string &path: includePaths_) {
         if (path->isRelativePath())
             path = path->absolutePathRelativeTo(plan->projectPath());
     }

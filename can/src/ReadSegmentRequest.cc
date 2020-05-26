@@ -26,9 +26,9 @@ Ref<CanFrame> ReadSegmentRequest::createFrame(int serverId, bool toggle)
     return frame;
 }
 
-String ReadSegmentRequest::Instance::toString() const
+string ReadSegmentRequest::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "ReadSegmentRequest {" << nl

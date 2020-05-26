@@ -15,7 +15,7 @@
 namespace cc {
 namespace http {
 
-LoggingLevel readLoggingLevel(const String &s)
+LoggingLevel readLoggingLevel(const string &s)
 {
     if (s->equalsCaseInsensitive("silent")) return LoggingLevel::Silent;
     else if (s->equalsCaseInsensitive("error")) return LoggingLevel::Error;
@@ -26,13 +26,13 @@ LoggingLevel readLoggingLevel(const String &s)
     return LoggingLevel::Default;
 }
 
-String formatDeliveryLogMessage(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage)
+string formatDeliveryLogMessage(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const string &statusMessage)
 {
     const HttpRequest *request = client->request();
-    String requestHost = request ? request->host() : "";
-    String requestLine = request ? request->line() : "";
+    string requestHost = request ? request->host() : "";
+    string requestLine = request ? request->line() : "";
     double requestTime = request ? request->time() : System::now();
-    String userAgent   = request ? request->value("User-Agent") : statusMessage;
+    string userAgent   = request ? request->value("User-Agent") : statusMessage;
 
     return Format{}
         << client->address()->networkAddress() << " "

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc { class FileStatus; }
 
@@ -23,23 +23,23 @@ class BuildShell: public Object
 public:
     static Ref<BuildShell> create(const BuildPlan *plan) { return new BuildShell{plan}; }
 
-    String beautify(const String &command) const;
-    bool run(const String &command) const;
+    string beautify(const string &command) const;
+    bool run(const string &command) const;
 
-    Ref<FileStatus> fileStatus(const String &path) const;
+    Ref<FileStatus> fileStatus(const string &path) const;
 
-    void mkdir(const String &path) const;
-    void rmdir(const String &path) const;
-    bool clean(const String &path) const;
-    void symlink(const String &path, const String &newPath) const;
+    void mkdir(const string &path) const;
+    void rmdir(const string &path) const;
+    bool clean(const string &path) const;
+    void symlink(const string &path, const string &newPath) const;
 
-    bool install(const String &sourcePath, const String &destPath) const;
-    bool unlink(const String &path) const;
+    bool install(const string &sourcePath, const string &destPath) const;
+    bool unlink(const string &path) const;
 
-    bool installAll(const String &sourcePrefix, const String &installPrefix) const;
-    bool unlinkAll(const String &sourcePrefix, const String &installPrefix) const;
+    bool installAll(const string &sourcePrefix, const string &installPrefix) const;
+    bool unlinkAll(const string &sourcePrefix, const string &installPrefix) const;
 
-    void cd(const String &path) const;
+    void cd(const string &path) const;
 
 private:
     BuildShell(const BuildPlan *plan);

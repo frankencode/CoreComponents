@@ -79,7 +79,7 @@ class ConstrainingTest: public TestCase
 
 class VoidScheduleTest: public TestCase
 {
-    Property<String> surface { "?" };
+    Property<string> surface { "?" };
     Property<void> paint;
 
     void run() override

@@ -21,7 +21,7 @@ Variant parse(const CharArray *text)
     return YasonSyntax::instance()->parse(text);
 }
 
-String stringify(Variant value)
+string stringify(Variant value)
 {
     Ref<CaptureSink> sink = CaptureSink::open();
     JsonWriter::create(sink)->write(value);

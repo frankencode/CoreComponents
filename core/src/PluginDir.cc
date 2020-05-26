@@ -17,12 +17,12 @@
 
 namespace cc {
 
-Ref<PluginDir> PluginDir::open(const String &path)
+Ref<PluginDir> PluginDir::open(const string &path)
 {
     return (new PluginDir(path))->open();
 }
 
-PluginDir::PluginDir(const String &path):
+PluginDir::PluginDir(const string &path):
     path_{path},
     loadedPlugins_{PluginByName::create()}
 {}
@@ -30,7 +30,7 @@ PluginDir::PluginDir(const String &path):
 PluginDir::~PluginDir()
 {}
 
-String PluginDir::path() const
+string PluginDir::path() const
 {
     return path_;
 }
@@ -40,7 +40,7 @@ Ref< Source<const Plugin *> > PluginDir::getLoadedPlugins() const
     return ValueSource<PluginByName, const Plugin *>::open(loadedPlugins_);
 }
 
-void PluginDir::onLoadError(const String &pluginPath, const String &errorMessage)
+void PluginDir::onLoadError(const string &pluginPath, const string &errorMessage)
 {
     ferr() << "Failed to load plugin " << pluginPath << ": " << errorMessage << nl;
 }
@@ -48,9 +48,9 @@ void PluginDir::onLoadError(const String &pluginPath, const String &errorMessage
 PluginDir *PluginDir::open()
 {
     Ref<Dir> dir = Dir::open(path_);
-    for (String name; dir->read(&name);) {
+    for (string name; dir->read(&name);) {
         if (name == "." || name == "..") continue;
-        String path = path_->extendPath(name);
+        string path = path_->extendPath(name);
         try {
             Ref<FileStatus> status = FileStatus::readHead(path);
             if (status->type() == FileType::Symlink) {

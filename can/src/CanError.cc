@@ -12,7 +12,7 @@
 namespace cc {
 namespace can {
 
-String str(CanError::Type flags)
+string str(CanError::Type flags)
 {
     if (flags == CanError::Type::None) return "CanError::Type::None";
 
@@ -30,7 +30,7 @@ String str(CanError::Type flags)
     return parts->join("|");
 }
 
-String str(CanError::Status flags)
+string str(CanError::Status flags)
 {
     if (flags == CanError::Status::None) return "CanError::Status::None";
 
@@ -47,7 +47,7 @@ String str(CanError::Status flags)
     return parts->join("|");
 }
 
-String CanError::Instance::toString() const
+string CanError::Instance::toString() const
 {
     Format f;
     f << "CanError {\n";

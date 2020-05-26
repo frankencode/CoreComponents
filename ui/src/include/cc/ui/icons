@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 namespace ui {
@@ -2505,7 +2505,7 @@ enum class Icon: uchar_t {
     LastIcon                            = ZipBox
 };
 
-String str(Icon icon);
+string str(Icon icon);
 
 inline int operator+(const Icon &x) { return static_cast<int>(x); }
 

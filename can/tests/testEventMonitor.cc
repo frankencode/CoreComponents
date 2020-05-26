@@ -21,7 +21,7 @@ class SimpleEventProcessing: public TestCase
         auto monitor = EventMonitor::create(bus->connect());
         double t0 = System::now();
         EventHandler::create(monitor, 0x181, 0.1,
-            [=](const String &data){
+            [=](const string &data){
                 fout() << fixed(System::now() - t0, 3) << " -- " << data->toHex()->breakUp(2)->join(".") << nl;
             },
             [=](){
@@ -48,7 +48,7 @@ class ComplexEventProcessing: public TestCase
         auto monitor = EventMonitor::create(bus->connect());
         double t0 = System::now();
         EventHandler::create(monitor, 0x181, 0.1,
-            [=](const String &data){
+            [=](const string &data){
                 fout() << fixed(System::now() - t0, 4) << " -- (181) " << data->toHex()->breakUp(2)->join(".") << nl;
             },
             [=](){
@@ -56,7 +56,7 @@ class ComplexEventProcessing: public TestCase
             }
         );
         EventHandler::create(monitor, 0x191, 0.1,
-            [=](const String &data){
+            [=](const string &data){
                 fout() << fixed(System::now() - t0, 4) << " -- (191) " << data->toHex()->breakUp(2)->join(".") << nl;
             },
             [=](){
@@ -85,7 +85,7 @@ class SimpleSafetyEventProcessing: public TestCase
         auto monitor = EventMonitor::create(bus->connect());
         double t0 = System::now();
         SafetyEventHandler::create(monitor, 0x101, 0x102, 0.09, 0.05,
-            [=](const String &data){
+            [=](const string &data){
                 fout() << fixed(System::now() - t0, 4) << " -- (101) " << data->toHex()->breakUp(2)->join(".") << nl;
             },
             [=](SafetyError error){
@@ -112,7 +112,7 @@ class ComplexSafetyEventProcessing: public TestCase
         auto monitor = EventMonitor::create(bus->connect());
         double t0 = System::now();
         SafetyEventHandler::create(monitor, 0x101, 0x102, 0.1, 0.05,
-            [=](const String &data){
+            [=](const string &data){
                 fout() << fixed(System::now() - t0, 4) << " -- (101) " << data->toHex()->breakUp(2)->join(".") << nl;
             },
             [=](SafetyError error) {
@@ -120,7 +120,7 @@ class ComplexSafetyEventProcessing: public TestCase
             }
         );
         SafetyEventHandler::create(monitor, 0x103, 0x104, 0.2, 0.1,
-            [=](const String &data){
+            [=](const string &data){
                 fout() << fixed(System::now() - t0, 4) << " -- (103) " << data->toHex()->breakUp(2)->join(".") << nl;
             },
             [=](SafetyError error) {

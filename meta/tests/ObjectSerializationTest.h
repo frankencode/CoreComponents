@@ -16,7 +16,7 @@ using namespace cc::testing;
 class ObjectSerializationTest: public TestCase
 {
 protected:
-    static String testMessage() {
+    static string testMessage() {
         return
             "Person {\n"
             "  version: 1.0.0\n"
@@ -75,20 +75,20 @@ protected:
         }
         else {
             CC_VERIFY(object->value("version")->type() == VariantType::String);
-            CC_VERIFY(String(object->value("version")) == "1.0.0");
+            CC_VERIFY(string(object->value("version")) == "1.0.0");
         }
         // CC_INSPECT(object->value("hobbies"));
-        CC_VERIFY(String(object->value("name")) == "Hans Mustermann");
+        CC_VERIFY(string(object->value("name")) == "Hans Mustermann");
         CC_VERIFY(int(object->value("age")) == 17);
 
         const VariantList *hobbies = Variant::cast<const VariantList *>(object->value("hobbies"));
-        CC_VERIFY(String(hobbies->at(0)) == "Sky Diving");
-        CC_VERIFY(String(hobbies->at(1)) == "Mountain Biking");
-        CC_VERIFY(String(hobbies->at(2)) == "Poetry");
+        CC_VERIFY(string(hobbies->at(0)) == "Sky Diving");
+        CC_VERIFY(string(hobbies->at(1)) == "Mountain Biking");
+        CC_VERIFY(string(hobbies->at(2)) == "Poetry");
 
         const MetaObject *picture = Variant::cast<const MetaObject *>(object->value("picture"));
         // ferr() << "Variant::type(object->value(\"picture\")) = " << object->value("picture")->type() << nl; // FIXME
-        CC_VERIFY(String(picture->value("uri")) == "http://www.hans-mustermann.de/photo.jpg");
+        CC_VERIFY(string(picture->value("uri")) == "http://www.hans-mustermann.de/photo.jpg");
         CC_VERIFY(int(picture->value("width")) == 400);
         CC_VERIFY(int(picture->value("height")) == 300);
 
@@ -103,15 +103,15 @@ protected:
 
         CC_VERIFY(object->value("Is a super hero?"));
         CC_VERIFY(
-            String(object->value("motto")) ==
-            String(
+            string(object->value("motto")) ==
+            string(
                 "What I cannot create,\n"
                 "I do not understand."
             )
         );
         CC_VERIFY(
-            String(object->value("smiley")) ==
-            String(
+            string(object->value("smiley")) ==
+            string(
                 "******\n"
                 "* ** *\n"
                 "******\n"
@@ -121,9 +121,9 @@ protected:
         );
         if (fromYason) {
             CC_VERIFY(object->children()->count() == 2);
-            CC_VERIFY(String(object->children()->at(0)->className()) == "Person");
-            CC_VERIFY(String(object->children()->at(0)->value("name")) == "Jane");
-            CC_VERIFY(String(object->children()->at(1)->value("name")) == "John");
+            CC_VERIFY(string(object->children()->at(0)->className()) == "Person");
+            CC_VERIFY(string(object->children()->at(0)->value("name")) == "Jane");
+            CC_VERIFY(string(object->children()->at(1)->value("name")) == "John");
         }
         else {
             CC_VERIFY(object->children()->count() == 0);

@@ -28,7 +28,7 @@ void MetaProtocol::define(const MetaPrototype *prototype)
     prototypes_->insert(prototype->className(), prototype);
 }
 
-const MetaPrototype *MetaProtocol::lookup(const String &className) const
+const MetaPrototype *MetaProtocol::lookup(const string &className) const
 {
     const MetaPrototype *prototype = nullptr;
     if (!prototypes_->lookup(className, &prototype)) {
@@ -38,7 +38,7 @@ const MetaPrototype *MetaProtocol::lookup(const String &className) const
     return prototype;
 }
 
-bool MetaProtocol::lookup(const String &className, const MetaPrototype **prototype) const
+bool MetaProtocol::lookup(const string &className, const MetaPrototype **prototype) const
 {
     *prototype = lookup(className);
     return *prototype;

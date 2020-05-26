@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/math>
-#include <cc/String>
+#include <cc/string>
 #include <cc/Array>
 #include <cc/Heap>
 #include <cc/Stack>
@@ -51,13 +51,13 @@ public:
       * \param message the source to encode
       * \return encoded message
       */
-    static String encode(const String &message);
+    static string encode(const string &message);
 
     /** Decode a string
       * \param message the source to decode
       * \return decoded message
       */
-    static String decode(const String &message);
+    static string decode(const string &message);
 
 private:
     /** \brief Huffman tree node
@@ -97,7 +97,7 @@ private:
 
     void generateCodeTable();
 
-    String buffer_;
+    string buffer_;
 
     Ref< Array<Node> > nodes_;
     int nodesFill_;

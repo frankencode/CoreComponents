@@ -58,7 +58,7 @@ const char *reasonPhraseByStatusCode(int statusCode)
     return phrase;
 }
 
-String formatDate(Date *date)
+string formatDate(Date *date)
 {
     return Format()
         << date->dayName() << ", "
@@ -66,7 +66,7 @@ String formatDate(Date *date)
         << dec(date->hour(), 2) << ":" << dec(date->minutes(), 2) << ":" << dec(date->seconds(), 2) << " GMT";
 }
 
-Ref<Date> scanDate(const String &text, bool *ok)
+Ref<Date> scanDate(const string &text, bool *ok)
 {
     // e.g.: Tue, 10 Sep 2013 11:01:10 GMT
     Ref<StringList> parts = text->split(' ');
@@ -74,7 +74,7 @@ Ref<Date> scanDate(const String &text, bool *ok)
     if (parts->count() != 6) return 0;
     int day = 0;
     {
-        String s = parts->at(1);
+        string s = parts->at(1);
         for (int i = 0; i < s->count(); ++i) {
             char ch = s->at(i);
             day *= 10;
@@ -86,7 +86,7 @@ Ref<Date> scanDate(const String &text, bool *ok)
     int month = 0;
     {
         const char *names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-        String s = parts->at(2);
+        string s = parts->at(2);
         for (; month < 12; ++month) {
             if (s == names[month]) break;
         }
@@ -95,7 +95,7 @@ Ref<Date> scanDate(const String &text, bool *ok)
     }
     int year = 0;
     {
-        String s = parts->at(3);
+        string s = parts->at(3);
         for (int i = 0; i < s->count(); ++i) {
             char ch = s->at(i);
             year *= 10;
@@ -105,7 +105,7 @@ Ref<Date> scanDate(const String &text, bool *ok)
     }
     int hour = 0, minutes = 0, seconds = 0;
     {
-        String s = parts->at(4);
+        string s = parts->at(4);
         int *p = &hour;
         for (int i = 0; i < s->count(); ++i) {
             char ch = s->at(i);

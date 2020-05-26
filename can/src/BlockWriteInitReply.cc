@@ -33,9 +33,9 @@ Ref<CanFrame> BlockWriteInitReply::createFrame(int serverId, Selector selector, 
     return frame;
 }
 
-String BlockWriteInitReply::Instance::toString() const
+string BlockWriteInitReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "BlockWriteInitReply {" << nl

@@ -17,7 +17,7 @@ class JsonSerializationTest: public ObjectSerializationTest
         Ref<MetaObject> object = json::parse(testMessage());
         testData(object, true);
 
-        String reproduction = json::stringify(object);
+        string reproduction = json::stringify(object);
         fout() << reproduction;
         Ref<MetaObject> object2 = json::parse(reproduction);
         testData(object2, false);

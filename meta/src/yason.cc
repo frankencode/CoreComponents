@@ -20,7 +20,7 @@ Variant parse(const CharArray *text, const MetaProtocol *protocol)
     return YasonSyntax::instance()->parse(text, protocol);
 }
 
-String stringify(Variant value)
+string stringify(Variant value)
 {
     Ref<CaptureSink> sink = CaptureSink::open();
     YasonWriter::create(sink)->write(value);

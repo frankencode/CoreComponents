@@ -44,17 +44,17 @@ CHeaderStyle::CHeaderStyle():
     HeaderStyle{"cxx"}
 {}
 
-Ref<Header> CHeaderStyle::scan(const String &path) const
+Ref<Header> CHeaderStyle::scan(const string &path) const
 {
-    String text = File::open(path)->map();
+    string text = File::open(path)->map();
     Ref<Token> rootToken = Singleton<CHeaderSyntax>::instance()->match(text, 0)->rootToken();
     if (!rootToken) return Ref<Header>();
     Token *token = rootToken->firstChild();
-    String message = trimHeader(text->copy(token->i0() + 2, token->i1() - 2), " \t\r*");
+    string message = trimHeader(text->copy(token->i0() + 2, token->i1() - 2), " \t\r*");
     return Header::create(path, rootToken, text, message);
 }
 
-String CHeaderStyle::str(const Notice *notice) const
+string CHeaderStyle::str(const Notice *notice) const
 {
     Format format;
     format << "/*\n";

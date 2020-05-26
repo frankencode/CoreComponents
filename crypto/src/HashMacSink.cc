@@ -18,7 +18,7 @@ Ref<HashMacSink> HashMacSink::open(const CryptoHashSink *hashSink, const CharArr
 
 Ref<CryptoHashSink> HashMacSink::prepareHashSink(const CryptoHashSink *hashSink, const CharArray *key, uint8_t blind)
 {
-    auto preparedKey = String::allocate(hashSink->blockSize());
+    auto preparedKey = string::allocate(hashSink->blockSize());
     mutate(preparedKey)->fill(0);
     mutate(preparedKey)->write(key);
     for (int i = 0; i < preparedKey->count(); ++i)
@@ -54,7 +54,7 @@ void HashMacSink::write(const CharArray *data)
     innerHashSink_->write(data);
 }
 
-String HashMacSink::finish()
+string HashMacSink::finish()
 {
     outerHashSink_->write(innerHashSink_->finish());
     return outerHashSink_->finish();

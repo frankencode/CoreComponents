@@ -22,9 +22,9 @@ public:
 
     void beginTestSuite(TestSuite *testSuite) override;
     void beginTestCase(TestCase *testCase) override;
-    void verify(TestCase *testCase, bool condition, const String &message, const String &codePath, int codeLine) override;
-    void error(TestCase *testCase, const String &type, const String &message) override;
-    void endTestCase(TestCase *testCase, const String &outText = "", const String &errText = "") override;
+    void verify(TestCase *testCase, bool condition, const string &message, const string &codePath, int codeLine) override;
+    void error(TestCase *testCase, const string &type, const string &message) override;
+    void endTestCase(TestCase *testCase, const string &outText = "", const string &errText = "") override;
     void skipTestCase(TestCase *testCase) override;
     void endTestSuite(TestSuite *testSuite) override;
 

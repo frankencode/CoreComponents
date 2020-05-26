@@ -12,7 +12,7 @@
 namespace cc {
 namespace can {
 
-Ref<SafetyEmission> SafetyEmission::create(PeriodicEmitter *emitter, int canId, int invCanId, double interval, const String &initialData)
+Ref<SafetyEmission> SafetyEmission::create(PeriodicEmitter *emitter, int canId, int invCanId, double interval, const string &initialData)
 {
     Ref<SafetyEmission> emission = new SafetyEmission{canId, invCanId, interval};
     emission->init(emitter, initialData);
@@ -26,7 +26,7 @@ SafetyEmission::SafetyEmission(int canId, int invCanId, double interval):
     invFrame_->setCanId(invCanId);
 }
 
-void SafetyEmission::updateData(const String &data)
+void SafetyEmission::updateData(const string &data)
 {
     Guard<Emission> guard(this);
 

@@ -482,7 +482,7 @@ PainterError::PainterError(int errorStatus):
     errorStatus_{errorStatus}
 {}
 
-String PainterError::message() const
+string PainterError::message() const
 {
     return cairo_status_to_string(cairo_status_t(errorStatus_));
 }

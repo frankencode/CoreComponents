@@ -33,7 +33,7 @@ Ref<JobScheduler> BuildStage::createScheduler() const
 bool BuildStage::outOfScope() const
 {
     if (plan()->options() & (BuildPlan::Application|BuildPlan::Tools)) {
-        String prefix = plan()->projectPath()->copy(0, plan()->scope()->count());
+        string prefix = plan()->projectPath()->copy(0, plan()->scope()->count());
         if (prefix != plan()->scope()) return true;
     }
     return false;

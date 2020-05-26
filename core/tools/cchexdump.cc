@@ -8,7 +8,7 @@ using namespace cc;
 
 int main(int argc, char **argv)
 {
-    String toolName = String{argv[0]}->fileName();
+    string toolName = string{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -17,7 +17,7 @@ int main(int argc, char **argv)
         Ref<const StringList> items = arguments->items();
         if (items->count() == 0) items = StringList::create() << "";
 
-        for (String path: items)
+        for (string path: items)
         {
             Ref<Stream> source;
             if (path == "") source = stdIn();

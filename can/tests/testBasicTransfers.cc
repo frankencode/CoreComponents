@@ -13,9 +13,9 @@ using namespace cc::testing;
 class BasicTransferTest: public TestCase
 {
 protected:
-    void readWriteTest(const String &inData)
+    void readWriteTest(const string &inData)
     {
-        String outData;
+        string outData;
         {
             const int serverId = 1;
             const int clientId = 2;

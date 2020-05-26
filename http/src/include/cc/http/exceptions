@@ -23,16 +23,16 @@ class CloseRequest {};
 class HttpError: public Exception
 {
 public:
-    HttpError(int statusCode, const String &message = "");
+    HttpError(int statusCode, const string &message = "");
 
     int statusCode() const;
-    String message() const;
+    string message() const;
 
     const HttpError *operator->() const { return this; }
 
 private:
     int statusCode_;
-    String message_;
+    string message_;
 };
 
 class BadRequest: public HttpError
@@ -89,7 +89,7 @@ class SecurityError: public Exception
 {
 public:
     SecurityError(int errorCode, const SocketAddress &peerAddress = SocketAddress{});
-    String message() const;
+    string message() const;
 
 private:
     int errorCode_;

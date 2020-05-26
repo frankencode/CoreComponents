@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/ByteSource>
-#include <cc/utf16>
 
 namespace cc {
 
@@ -19,8 +18,8 @@ namespace cc {
   *
   * A Byte-Order-Mark (BOM) at the start of the stream automatically sets
   * endianess. The decoder is designed to be as strict as possible. It checks
-  * if the input streams delivers full 16-bit words and it requires high
-  * surrogates to be followed by low surrogates.
+  * if the input streams delivers full 16-bit words and it requires a high
+  * surrogate to be followed by a low surrogate.
   */
 class Utf16Source: public Object
 {
@@ -31,7 +30,8 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    static Ref<Utf16Source> open(Stream *stream, CharArray *buffer = 0, Endian endian = Endian::Big) {
+    static Ref<Utf16Source> open(Stream *stream, CharArray *buffer = 0, Endian endian = Endian::Big)
+    {
         return new Utf16Source{stream, buffer, endian};
     }
 
@@ -40,7 +40,8 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    static Ref<Utf16Source> open(const CharArray *buffer, Endian endian = Endian::Big) {
+    static Ref<Utf16Source> open(const CharArray *buffer, Endian endian = Endian::Big)
+    {
         return new Utf16Source{buffer, endian};
     }
 
@@ -48,31 +49,17 @@ public:
       * \param ch returns the %Unicode character read if any
       * \return true if not end of information, false otherwise
       */
-    bool read(uchar_t *ch)
-    {
-        bool more = byteSource_->hasMore();
-        if (more) {
-            uint16_t w = byteSource_->readUInt16();
-            if (w == 0xFFFE && firstTime_) {
-                firstTime_ = false;
-                byteSource_->setEndian((byteSource_->endian() == Endian::Big) ? Endian::Little : Endian::Big);
-                w = byteSource_->readUInt16();
-            }
-            *ch = w;
-            if ((0xD800 <= *ch) && (*ch < 0xDC00)) {
-                uint16_t w = byteSource_->readUInt16();
-                if (!((0xDC00 <= w) && (w < 0xE000))) throw utf16::DecodeError{};
-                *ch = 0x10000 + (((*ch - 0xD800) << 10) | (w - 0xDC00));
-            }
-            else if (0x10FFFF < *ch) throw utf16::DecodeError{};
-        }
-        return more;
-    }
+    bool read(uchar_t *ch);
 
-    /// Underlying byte source used for UTF-16 decoding
+    /// Underlying byte source
     ByteSource *byteSource() const { return byteSource_; }
 
 private:
+    class DecodingError: public UnicodeError {
+    public:
+        string message() const override ;
+    };
+
     Utf16Source(Stream *stream, CharArray *buffer, Endian endian):
         byteSource_{ByteSource::open(stream, buffer, endian)},
         firstTime_{true}

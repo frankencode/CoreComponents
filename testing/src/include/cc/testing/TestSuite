@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 #include <cc/testing/TestCase>
 
 namespace cc { template<class> class Singleton; }
@@ -23,8 +23,8 @@ class TestSuite: public Object
 public:
     static TestSuite *instance();
 
-    String name() const { return name_; }
-    String execPath() const { return execPath_; }
+    string name() const { return name_; }
+    string execPath() const { return execPath_; }
 
     int testCaseCount() const { return testCases_->count(); }
     int testCaseFailureCount() const { return testCaseFailureCount_; }
@@ -32,9 +32,9 @@ public:
     int totalFailureCount() const { return totalFailureCount_; }
 
     template<class T>
-    void add(const String &name, bool skip = false) { testCases_->append(TestCase::create<T>(name, skip)); }
+    void add(const string &name, bool skip = false) { testCases_->append(TestCase::create<T>(name, skip)); }
 
-    bool verify(bool condition, const String &description, const String &conditionText, const String &codePath, int codeLine);
+    bool verify(bool condition, const string &description, const string &conditionText, const string &codePath, int codeLine);
 
     int run(int argc, char **argv);
 
@@ -47,8 +47,8 @@ protected:
 private:
     bool init(int argc, char **argv);
 
-    String name_;
-    String execPath_;
+    string name_;
+    string execPath_;
     Ref<TestReport> report_;
 
     typedef List< Ref<TestCase> > TestCases;

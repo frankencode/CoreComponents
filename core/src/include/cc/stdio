@@ -41,7 +41,7 @@ public:
         Format{stdOut()}
     {}
 
-    fout(const String &pattern):
+    fout(const string &pattern):
         Format{pattern, stdOut()}
     {}
 
@@ -58,7 +58,7 @@ public:
         Format{stdErr()}
     {}
 
-    ferr(const String &pattern):
+    ferr(const string &pattern):
         Format{pattern, stdErr()}
     {}
 

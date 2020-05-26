@@ -25,7 +25,7 @@ enum class NodeState: uint8_t {
     Undefined      = 255
 };
 
-String str(NodeState status);
+string str(NodeState status);
 
 /** \brief SDO transfer mode
   */
@@ -35,7 +35,7 @@ enum class TransferMode {
     Block
 };
 
-String str(TransferMode mode);
+string str(TransferMode mode);
 
 enum class ErrorRegister: uint8_t {
     None          = 0,
@@ -51,7 +51,7 @@ enum class ErrorRegister: uint8_t {
 
 CC_BITMASK(ErrorRegister, uint8_t)
 
-String str(ErrorRegister flags);
+string str(ErrorRegister flags);
 
 enum class SafetyError {
     DataValidation,
@@ -59,7 +59,7 @@ enum class SafetyError {
     ValidationTimeout
 };
 
-String str(SafetyError error);
+string str(SafetyError error);
 
 enum class DataType: uint16_t {
     Undefined            = 0x0000U,
@@ -89,7 +89,7 @@ enum class DataType: uint16_t {
     Identity             = 0x0023U
 };
 
-String str(DataType type);
+string str(DataType type);
 
 enum class ObjectCode: uint8_t {
     Null      = 0,
@@ -101,7 +101,7 @@ enum class ObjectCode: uint8_t {
     Record    = 9
 };
 
-String str(ObjectCode code);
+string str(ObjectCode code);
 
 enum class AccessType {
     Undefined     = 0,
@@ -112,7 +112,7 @@ enum class AccessType {
     ProcessOutput = 5
 };
 
-String str(AccessType access);
+string str(AccessType access);
 
 enum class ObjectFlags: uint32_t {
     None             = 0,
@@ -122,8 +122,8 @@ enum class ObjectFlags: uint32_t {
 
 CC_BITMASK(ObjectFlags, uint32_t)
 
-String str(ObjectFlags flags);
+string str(ObjectFlags flags);
 
-String hexLine(const String &data);
+string hexLine(const string &data);
 
 }} // namespace cc::can

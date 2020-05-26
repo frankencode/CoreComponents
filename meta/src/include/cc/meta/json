@@ -25,6 +25,6 @@ Variant parse(const CharArray *text);
   * \param value variant value
   * \return JSON message
   */
-String stringify(Variant value);
+string stringify(Variant value);
 
 }}} // namespace cc::meta::json

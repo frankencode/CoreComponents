@@ -18,18 +18,18 @@ class HttpClientConnection;
 class HttpResponse: public HttpMessage
 {
 public:
-    String version() const { return version_; }
+    string version() const { return version_; }
     int statusCode() const { return statusCode_; }
-    String reasonPhrase() const { return reasonPhrase_; }
+    string reasonPhrase() const { return reasonPhrase_; }
 
 private:
     friend class HttpClientConnection;
     static Ref<HttpResponse> create() { return new HttpResponse; }
     HttpResponse() {}
 
-    String version_;
+    string version_;
     int statusCode_;
-    String reasonPhrase_;
+    string reasonPhrase_;
 };
 
 }} // namespace cc::http

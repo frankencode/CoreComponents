@@ -22,16 +22,16 @@ class LineEditor: public TextEditorWithHistory
 
 public:
     int byteCount() const override;
-    String copy(Range range) const override;
-    String text() const override;
+    string copy(Range range) const override;
+    string text() const override;
 
 protected:
-    LineEditor(const String &initialText = String{});
+    LineEditor(const string &initialText = string{});
 
-    void pasteChunk(Range range, const String &newChunk) override;
+    void pasteChunk(Range range, const string &newChunk) override;
 
 private:
-    Property<String> text_;
+    Property<string> text_;
 };
 
 }} // namespace cc::ui

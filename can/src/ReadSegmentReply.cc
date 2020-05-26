@@ -12,7 +12,7 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> ReadSegmentReply::createFrame(int serverId, const String &data, int fill, int offset)
+Ref<CanFrame> ReadSegmentReply::createFrame(int serverId, const string &data, int fill, int offset)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(offset < fill);
@@ -33,9 +33,9 @@ Ref<CanFrame> ReadSegmentReply::createFrame(int serverId, const String &data, in
     return frame;
 }
 
-String ReadSegmentReply::Instance::toString() const
+string ReadSegmentReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "ReadSegmentReply {" << nl

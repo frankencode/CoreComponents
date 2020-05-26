@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -32,7 +32,7 @@ inline double days(double n) { return n * SecondsPerDay; } ///< translate days t
 
 /** \class Date cc/Date
   * \ingroup misc
-  * \brief Gregorian calendar dates
+  * \brief Broken-down calendar dates
   */
 class Date: public Object
 {
@@ -51,7 +51,7 @@ public:
       * \see System::now()
       */
     static Ref<Date> breakdown(double time, int offset = 0) {
-        return new Date(time, offset);
+        return new Date{time, offset};
     }
 
     /** Compose a precise calendar date from its components
@@ -65,13 +65,13 @@ public:
       * \return new object instance
       */
     static Ref<Date> compose(int year, int month, int day, int hour = 0, int minutes = 0, int seconds = 0, int offset = 0) {
-        return new Date(year, month, day, hour, minutes, seconds, offset);
+        return new Date{year, month, day, hour, minutes, seconds, offset};
     }
 
     /** Create a copy of another date object
       * \return new object instance
       */
-    static Ref<Date> copy(const Date *other) { return new Date(*other); }
+    static Ref<Date> copy(const Date *other) { return new Date{*other}; }
 
     /// false for Date::create(), true otherwise
     bool isValid() const { return time_ != cc::nan();}
@@ -87,10 +87,10 @@ public:
     int offset() const { return offset_; } ///< timezone offset in hours
 
     double time() const; ///< seconds since 1st Jan 1970 00:00:00
-    String toString() const; ///< convert this date object into a string representation
+    string toString() const; ///< convert this date object into a string representation
 
-    String monthName() const; ///< name of the month ("Jan", "Feb", ..., "Dec")
-    String dayName() const; ///< name of the weekday ("Sun", "Mon", ..., "Sat")
+    string monthName() const; ///< name of the month ("Jan", "Feb", ..., "Dec")
+    string dayName() const; ///< name of the weekday ("Sun", "Mon", ..., "Sat")
 
 private:
     Date();

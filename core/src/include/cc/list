@@ -105,7 +105,7 @@ template<class T>
 bool operator>=(const list<T> &a, const list<T> &b) { return container::compare(a, b) >= 0; }
 
 template<class T>
-String str(const list<T> &a)
+string str(const list<T> &a)
 {
     Format f;
     f << "[ ";

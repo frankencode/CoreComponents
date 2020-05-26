@@ -20,7 +20,7 @@ class TextField: public InputField
     friend class Object;
 
 protected:
-    TextField(View *parent, const String &labelText);
+    TextField(View *parent, const string &labelText);
 
     InputControl *addInputControl() override;
 };

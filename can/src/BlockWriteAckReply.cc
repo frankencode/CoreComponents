@@ -30,9 +30,9 @@ Ref<CanFrame> BlockWriteAckReply::createFrame(int serverId, int sequenceNumber, 
     return frame;
 }
 
-String BlockWriteAckReply::Instance::toString() const
+string BlockWriteAckReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "BlockWriteAckReply {" << nl

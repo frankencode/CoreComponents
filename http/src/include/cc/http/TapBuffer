@@ -16,16 +16,16 @@ namespace http {
 class TapBuffer: public LineBuffer
 {
 public:
-    static Ref<TapBuffer> open(Stream *stream, const String &prefix);
+    static Ref<TapBuffer> open(Stream *stream, const string &prefix);
 
-    String prefix() const override;
+    string prefix() const override;
 
     void write(const CharArray *buf);
 
 private:
-    TapBuffer(Stream *stream, const String &prefix);
+    TapBuffer(Stream *stream, const string &prefix);
 
-    String prefix_;
+    string prefix_;
 };
 
 }} // namespace cc::http

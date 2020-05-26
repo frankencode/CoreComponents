@@ -11,9 +11,9 @@
 
 namespace cc {
 
-String str(FileAccess flags)
+string str(FileAccess flags)
 {
-    String s;
+    string s;
     if (+flags) {
         auto l = StringList::create();
         if (+(flags & FileAccess::Read))    l << "FileAccess::Read";
@@ -28,9 +28,9 @@ String str(FileAccess flags)
     return s;
 }
 
-String str(FileMode mode)
+string str(FileMode mode)
 {
-    String s;
+    string s;
     if (+mode) {
         auto l = StringList::create();
         if (+(mode & FileMode::SetUserId))  l << "FileMode::SetUserId";
@@ -53,9 +53,9 @@ String str(FileMode mode)
     return s;
 }
 
-String str(FileType type)
+string str(FileType type)
 {
-    String s;
+    string s;
     switch (type) {
         case FileType::Regular    : s = "FileType::Regular"; break;
         case FileType::Directory  : s = "FileType::Directory"; break;
@@ -68,9 +68,9 @@ String str(FileType type)
     return s;
 }
 
-String str(FileOpen mode)
+string str(FileOpen mode)
 {
-    String s;
+    string s;
     if (+mode) {
         auto l = StringList::create();
         if (+(mode & FileOpen::ReadOnly))  l << "FileOpen::ReadOnly";
@@ -88,9 +88,9 @@ String str(FileOpen mode)
     return s;
 }
 
-String str(Seek method)
+string str(Seek method)
 {
-    String s;
+    string s;
     switch (method) {
         case Seek::Begin  : s = "Seek::Begin"; break;
         case Seek::Current: s = "Seek::Current"; break;

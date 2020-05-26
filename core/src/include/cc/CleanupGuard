@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -23,19 +23,19 @@ public:
       * \param path directory path
       * \return new object instance
       */
-    static Ref<CleanupGuard> post(const String &path);
+    static Ref<CleanupGuard> post(const string &path);
 
     /** \brief Low-level constructor
       * \param path file path
       */
-    CleanupGuard(const String &path);
+    CleanupGuard(const string &path);
 
     /** \brief Low-level destructor
       */
     ~CleanupGuard();
 
 private:
-    String path_;
+    string path_;
 };
 
 } // namespace cc

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 #include <cc/Map>
 #include <cc/Stream>
 
@@ -24,19 +24,19 @@ class HttpConnection;
 class HttpGenerator: public Object
 {
 public:
-    void setHeader(const String &name, const String &value);
+    void setHeader(const string &name, const string &value);
 
     void transmit();
-    void transmit(const String &payload);
+    void transmit(const string &payload);
     void transmit(Stream *source);
 
-    typedef Map<String, String> Header;
+    typedef Map<string, string> Header;
     void setHeader(Header *header);
 
     void beginTransmission(ssize_t contentLength = -1);
     Stream *payload();
-    void write(const String &data);
-    Format chunk(const String &pattern);
+    void write(const string &data);
+    Format chunk(const string &pattern);
     Format chunk();
     void endTransmission();
 

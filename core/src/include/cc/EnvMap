@@ -9,10 +9,10 @@
 #pragma once
 
 #include <cc/Map>
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
-typedef Map<String, String> EnvMap;
+typedef Map<string, string> EnvMap;
 
 } // namespace cc

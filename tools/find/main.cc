@@ -47,11 +47,11 @@ typedef List< Ref<TextMatch> > Matches;
 
 Ref<Matches> findMatches(const CharArray *text, const SyntaxDefinition *textPattern);
 void displayMatch(const CharArray *path, const CharArray *text, const TextMatch *match);
-String replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement);
+string replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement);
 
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->fileName();
+    string toolName = string(argv[0])->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -79,16 +79,16 @@ int main(int argc, char **argv)
         int maxDepth = options->value("depth");
         bool ignoreHidden = !options->value("hidden");
 
-        Pattern textPattern = String(options->value("text"))->unescape();
-        if (String(options->value("word")) != "")
-            textPattern = String(Format{} << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
+        Pattern textPattern = string(options->value("text"))->unescape();
+        if (string(options->value("word")) != "")
+            textPattern = string(Format{} << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
 
         bool rangesOption = options->value("ranges");
         bool replaceOption = false;
-        String replacement;
+        string replacement;
         if (arguments->options()->lookup("replace", &replacement))
             replaceOption = true;
-        if (String(options->value("paste")) != "") {
+        if (string(options->value("paste")) != "") {
             // if (replaceOption == true) // FIXME: multiple conflicting replacement options
             replaceOption = true;
             replacement = File::open(options->value("paste"))->map();
@@ -101,14 +101,14 @@ int main(int argc, char **argv)
 
         if (items->count() == 0) items = StringList::create() << ".";
 
-        for (String dirPath: items)
+        for (string dirPath: items)
         {
             dirPath = dirPath->canonicalPath();
             Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
             dirWalker->setMaxDepth(maxDepth);
             dirWalker->setIgnoreHidden(ignoreHidden);
 
-            for (String path; dirWalker->read(&path);)
+            for (string path; dirWalker->read(&path);)
             {
                 if (pathPattern != "") {
                     if (!pathPattern->match(path)->valid()) continue;
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
                 if (typePattern != "") {
                     FileType type = FileStatus::readHead(path)->type();
                     bool shortMode = (typePattern->matchLength() == 1);
-                    String typeString;
+                    string typeString;
                     if (type == FileType::Regular)          typeString = shortMode ? "r" : "regular file";
                     else if (type == FileType::Directory)   typeString = shortMode ? "d" : "directory";
                     else if (type == FileType::Symlink)     typeString = shortMode ? "l" : "symlink";
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
                     if (FileStatus::read(path)->type() != FileType::Regular)
                         continue;
 
-                    String text = File::open(path)->map();
+                    string text = File::open(path)->map();
                     Ref<Matches> matches = findMatches(text, textPattern);
 
                     if (replaceOption && matches->count() > 0) {
@@ -259,7 +259,7 @@ void displayMatch(const CharArray *path, const CharArray *text, const TextMatch 
     }
 }
 
-String replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement)
+string replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement)
 {
     Ref<StringList> fragments = StringList::create();
     int fi0 = 0; // begin of fragment

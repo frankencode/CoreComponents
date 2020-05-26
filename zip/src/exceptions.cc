@@ -14,7 +14,7 @@
 namespace cc {
 namespace zip {
 
-String ZipError::message() const
+string ZipError::message() const
 {
     switch (errorCode_) {
         case ZIP_ER_EXISTS: return Format("The file %% exists and ZIP_EXCL is set (ZIP_ER_EXISTS)") << zipPath_;

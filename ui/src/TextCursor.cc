@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-String TextCursor::toString() const
+string TextCursor::toString() const
 {
     return Format{}
         << "TextCursor {" << nl

@@ -12,7 +12,7 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> WriteSegmentRequest::createFrame(int serverId, const String &data, int offset)
+Ref<CanFrame> WriteSegmentRequest::createFrame(int serverId, const string &data, int offset)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(offset < data->count());
@@ -32,9 +32,9 @@ Ref<CanFrame> WriteSegmentRequest::createFrame(int serverId, const String &data,
     return frame;
 }
 
-String WriteSegmentRequest::Instance::toString() const
+string WriteSegmentRequest::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "WriteSegmentRequest {" << nl

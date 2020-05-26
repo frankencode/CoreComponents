@@ -33,7 +33,7 @@ namespace cc {
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret); \
 }
 
-Process::Staging::Staging(const String &command):
+Process::Staging::Staging(const string &command):
     command_{command}
 {
     CC_SPAWN_CALL(posix_spawnattr_init(&spawnAttributes_));
@@ -88,7 +88,7 @@ Process::Staging *Process::Staging::setSignalMask(const SignalSet *mask)
     return this;
 }
 
-Process::Staging *Process::Staging::setWorkingDirectory(const String &path)
+Process::Staging *Process::Staging::setWorkingDirectory(const string &path)
 {
     #ifdef __GLIBC__
     #if __GLIBC_PREREQ(2, 29)
@@ -182,22 +182,22 @@ int Process::Staging::execute()
     return start()->wait();
 }
 
-Ref<Process::Staging> Process::stage(const String &command)
+Ref<Process::Staging> Process::stage(const string &command)
 {
     return new Staging{command};
 }
 
-Ref<Process> Process::open(const String &command)
+Ref<Process> Process::open(const string &command)
 {
     return stage(command)->open();
 }
 
-Ref<Process> Process::start(const String &command)
+Ref<Process> Process::start(const string &command)
 {
     return stage(command)->start();
 }
 
-int Process::execute(const String &command)
+int Process::execute(const string &command)
 {
     return stage(command)->execute();
 }
@@ -206,11 +206,11 @@ Ref<Process> Process::bootstrap(const Staging *staging)
 {
     /// locate executable and prepare argument list
 
-    String execPath;
+    string execPath;
     Ref<const StringList> args = staging->args_;
 
     if (staging->command_ != "") {
-        String cmd = staging->command_;
+        string cmd = staging->command_;
         if (cmd->startsWith(' ') || cmd->endsWith(' '))
             cmd = cmd->trim();
         if (!cmd->contains(' ')) execPath = cmd;
@@ -226,7 +226,7 @@ Ref<Process> Process::bootstrap(const Staging *staging)
             if (!File::checkAccess(execPath, FileAccess::Execute)) throw CommandNotFound{execPath};
         }
         else {
-            String path = File::locate(execPath, Process::getEnv("PATH")->split(':'), FileAccess::Execute);
+            string path = File::locate(execPath, Process::getEnv("PATH")->split(':'), FileAccess::Execute);
             if (path == "") throw CommandNotFound{execPath};
             execPath = path;
         }
@@ -266,8 +266,8 @@ Ref<Process> Process::bootstrap(const Staging *staging)
     #else
     class CwdGuard {
     public:
-        CwdGuard(const String &cwd):
-            cwdSaved_{cwd != "" ? Process::getWorkingDirectory() : String{}}
+        CwdGuard(const string &cwd):
+            cwdSaved_{cwd != "" ? Process::getWorkingDirectory() : string{}}
         {
             if (cwd != "") Process::setWorkingDirectory(cwd);
         }
@@ -276,7 +276,7 @@ Ref<Process> Process::bootstrap(const Staging *staging)
             if (cwdSaved_ != "") Process::setWorkingDirectory(cwdSaved_);
         }
     private:
-        String cwdSaved_;
+        string cwdSaved_;
     };
     CwdGuard guard{staging->cwd_};
     #endif
@@ -352,13 +352,13 @@ SystemStream *Process::error() const
     return standardStreams_[2];
 }
 
-void Process::setWorkingDirectory(const String &path)
+void Process::setWorkingDirectory(const string &path)
 {
     if (::chdir(path) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-String Process::getWorkingDirectory()
+string Process::getWorkingDirectory()
 {
     int size = 0x1000;
     char *buf = (char *)cc::malloc(size);
@@ -374,14 +374,14 @@ String Process::getWorkingDirectory()
         else
             CC_SYSTEM_DEBUG_ERROR(errno);
     }
-    String path{ret};
+    string path{ret};
     cc::free(buf);
     return path;
 }
 
-String Process::exePath()
+string Process::exePath()
 {
-    String path;
+    string path;
     #ifdef __linux
     path = File::readlink("/proc/self/exe");
     #elif __OpenBSD__
@@ -436,25 +436,25 @@ void Process::setEffectiveGroupId(gid_t gid)
     if (::setegid(gid) == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-String Process::getEnv(const String &key)
+string Process::getEnv(const string &key)
 {
     return ::getenv(key);
 }
 
-String Process::getEnv(const String &name, const String &defaultValue)
+string Process::getEnv(const string &name, const string &defaultValue)
 {
-    String value = ::getenv(name);
+    string value = ::getenv(name);
     if (value == "") value = defaultValue;
     return value;
 }
 
-void Process::setEnv(const String &name, const String &value)
+void Process::setEnv(const string &name, const string &value)
 {
     if (::setenv(name, value, 1) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void Process::unsetEnv(const String &name)
+void Process::unsetEnv(const string &name)
 {
     if (::unsetenv(name) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
@@ -465,10 +465,10 @@ Ref<EnvMap> Process::getEnvMap()
     char **env = environ();
     auto map = EnvMap::create();
     for (int i = 0; env[i]; ++i) {
-        String s{env[i]};
+        string s{env[i]};
         int j = 0;
         if (s->find('=', &j)) {
-            String value = s->copy(j + 1, s->count());
+            string value = s->copy(j + 1, s->count());
             mutate(s)->truncate(j);
             map->insert(s, value);
         }

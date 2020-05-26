@@ -16,7 +16,7 @@ namespace can {
 class BlockWriteSegmentRequest
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, const String &data, int offset, int sequenceNumber);
+    static Ref<CanFrame> createFrame(int serverId, const string &data, int offset, int sequenceNumber);
 
     class Instance {
     public:
@@ -43,11 +43,11 @@ public:
             return frame_->payloadAt(1 + i);
         }
 
-        String segmentData() const {
+        string segmentData() const {
             return frame_->copy(1, 8);
         }
 
-        String toString() const;
+        string toString() const;
 
     private:
         friend class BlockWriteSegmentRequest;
@@ -66,7 +66,7 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator String() const { return instance_.toString(); }
+    operator string() const { return instance_.toString(); }
 
 private:
     const Instance instance_;

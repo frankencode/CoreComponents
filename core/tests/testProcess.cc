@@ -16,7 +16,7 @@
 using namespace cc;
 using namespace cc::testing;
 
-static String execPath;
+static string execPath;
 
 class SimpleSpawnTest: public TestCase
 {
@@ -32,10 +32,10 @@ class SimpleEchoTest: public TestCase
     void run() override
     {
         auto spawn = Process::open(execPath + " echo");
-        String message = "Hello, echo!";
+        string message = "Hello, echo!";
         spawn->input()->write(message);
         spawn->input()->close();
-        String reply = spawn->output()->readAll();
+        string reply = spawn->output()->readAll();
         CC_INSPECT(message);
         CC_INSPECT(reply);
         CC_VERIFY(message == reply);
@@ -48,11 +48,11 @@ int main(int argc, char **argv)
 {
     execPath = argv[0];
     if (argc == 2) {
-        if (String{argv[1]} == "test") {
+        if (string{argv[1]} == "test") {
             fout() << "Hello, echo!" << nl;
             return 7;
         }
-        if (String{argv[1]} == "echo") {
+        if (string{argv[1]} == "echo") {
             stdIn()->transferTo(stdOut());
             return 11;
         }

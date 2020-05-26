@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Object>
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 namespace testing {
@@ -19,7 +19,7 @@ class TestSuite;
 class TestCase: public Object
 {
 public:
-    String name() const { return name_; }
+    string name() const { return name_; }
     bool skip() const { return skip_; }
     int assertionCount() const { return assertionCount_; }
     int failureCount() const { return failureCount_; }
@@ -30,7 +30,7 @@ protected:
     friend class TestSuite;
 
     template<class T>
-    static Ref<TestCase> create(const String &name, bool skip)
+    static Ref<TestCase> create(const string &name, bool skip)
     {
         Ref<T> t = new T;
         t->name_ = name;
@@ -48,7 +48,7 @@ protected:
     virtual void run() = 0;
 
 private:
-    String name_;
+    string name_;
     bool skip_;
     int assertionCount_;
     int failureCount_;

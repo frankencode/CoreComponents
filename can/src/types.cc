@@ -12,9 +12,9 @@
 namespace cc {
 namespace can {
 
-String str(NodeState state)
+string str(NodeState state)
 {
-    String s;
+    string s;
 
     switch (state) {
         case NodeState::BootUp        : s = "NodeState::BootUp"; break;
@@ -27,9 +27,9 @@ String str(NodeState state)
     return s;
 }
 
-String str(TransferMode mode)
+string str(TransferMode mode)
 {
-    String s;
+    string s;
 
     switch (mode) {
         case TransferMode::Segmented: s = "TransferMode::Segmented"; break;
@@ -40,7 +40,7 @@ String str(TransferMode mode)
     return s;
 }
 
-String str(ErrorRegister flags)
+string str(ErrorRegister flags)
 {
     if (flags == ErrorRegister::None) return "ErrorRegister::None";
 
@@ -58,9 +58,9 @@ String str(ErrorRegister flags)
     return parts->join("|");
 }
 
-String str(SafetyError error)
+string str(SafetyError error)
 {
-    String s;
+    string s;
 
     switch (error) {
         case SafetyError::DataValidation   : s = "SafetyError::DataValidation"; break;
@@ -71,9 +71,9 @@ String str(SafetyError error)
     return s;
 }
 
-String str(DataType type)
+string str(DataType type)
 {
-    String s;
+    string s;
 
     switch (type) {
         case DataType::Boolean             : s = "DataType::Boolean"; break;
@@ -106,9 +106,9 @@ String str(DataType type)
     return s;
 }
 
-String str(ObjectCode code)
+string str(ObjectCode code)
 {
-    String s;
+    string s;
 
     switch (code) {
         case ObjectCode::Null     : s = "ObjectCode::Null"; break;
@@ -123,9 +123,9 @@ String str(ObjectCode code)
     return s;
 }
 
-String str(AccessType access)
+string str(AccessType access)
 {
-    String s;
+    string s;
 
     switch (access) {
         case AccessType::Undefined    : s = "AccessType::Undefined"; break;
@@ -139,7 +139,7 @@ String str(AccessType access)
     return s;
 }
 
-String str(ObjectFlags flags)
+string str(ObjectFlags flags)
 {
     if (flags == ObjectFlags::None) return "ObjectFlags::None";
 
@@ -151,9 +151,9 @@ String str(ObjectFlags flags)
 
 }
 
-String hexLine(const String &data)
+string hexLine(const string &data)
 {
-    String visual = data->copy();
+    string visual = data->copy();
     for (int i = 0; i < visual->count(); ++i) {
         if (visual->byteAt(i) < 0x20 || 0x7E < visual->byteAt(i))
             mutate(visual)->at(i) = '.';

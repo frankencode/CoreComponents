@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 #include <cc/Variant>
 #include <cc/str>
 
@@ -39,7 +39,7 @@ public:
       * \param pattern formatting pattern containing injection placeholders ("%%")
       * \param stream output stream to write the resulting text to (optional)
       */
-    Format(const String &pattern, Stream *stream = nullptr);
+    Format(const string &pattern, Stream *stream = nullptr);
 
     /** Construct a new string formatting helper
       * \param stream output stream to write the resulting text to (optional)
@@ -56,7 +56,7 @@ public:
     Format &operator=(const Format &b);
 
     /// Append or inject a string to the output text
-    Format &operator<<(const String &s);
+    Format &operator<<(const string &s);
 
     /** %Process a special formatting signal
       * \param s formatting signal (nl or flush)
@@ -82,7 +82,7 @@ private:
     Ref<Stream> stream_;
     bool isNull_;
     Ref< Queue<int> > placeHolder_;
-    String lastInsert_;
+    string lastInsert_;
     int lastPosition_;
 };
 

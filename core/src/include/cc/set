@@ -104,7 +104,7 @@ template<class T>
 bool operator>=(const set<T> &a, const set<T> &b) { return container::compare(a, b) >= 0; }
 
 template<class T>
-String str(const set<T> &a)
+string str(const set<T> &a)
 {
     Format f;
     f << "[ ";

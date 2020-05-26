@@ -12,12 +12,12 @@
 namespace cc {
 namespace meta {
 
-Ref<JsonWriter> JsonWriter::create(Stream *sink, const String &indent)
+Ref<JsonWriter> JsonWriter::create(Stream *sink, const string &indent)
 {
     return new JsonWriter{sink, indent};
 }
 
-JsonWriter::JsonWriter(Stream *sink, const String &indent):
+JsonWriter::JsonWriter(Stream *sink, const string &indent):
     format_{sink},
     indent_{indent}
 {}
@@ -38,7 +38,7 @@ void JsonWriter::writeValue(Variant value, int depth)
         format_ << value;
     }
     else if (value->type() == VariantType::String) {
-        String s = value;
+        string s = value;
         if (s->contains("\""))
             s = s->replace("\"", "\\\"");
         s = s->escape();
@@ -64,7 +64,7 @@ void JsonWriter::writeList(Variant value, int depth)
     else if (value->itemType() == VariantType::Float)
         writeTypedList<float>(value, depth);
     else if (value->itemType() == VariantType::String)
-        writeTypedList<String>(value, depth);
+        writeTypedList<string>(value, depth);
     else
         writeTypedList<Variant>(value, depth);
 }
@@ -84,7 +84,7 @@ void JsonWriter::writeObject(Variant value, const StringList *names, int depth)
     }
     else {
         int i = 0;
-        for (String name: names) {
+        for (string name: names) {
             writeMember(name, object->value(name), i == names->count() - 1, depth);
             ++i;
         }
@@ -92,7 +92,7 @@ void JsonWriter::writeObject(Variant value, const StringList *names, int depth)
     format_ << "}";
 }
 
-void JsonWriter::writeMember(const String &memberName, Variant memberValue, bool isLast, int depth)
+void JsonWriter::writeMember(const string &memberName, Variant memberValue, bool isLast, int depth)
 {
     format_ << "\"" << memberName << "\": ";
     writeValue(memberValue, depth + 1);

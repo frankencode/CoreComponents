@@ -23,7 +23,7 @@ Ref<DeviceDescription> DeviceDescription::create()
     return new DeviceDescription;
 }
 
-Ref<DeviceDescription> DeviceDescription::parse(const String &text)
+Ref<DeviceDescription> DeviceDescription::parse(const string &text)
 {
     Ref<DeviceDescription> d = new DeviceDescription;
     d->IniSyntax::parse(text);
@@ -41,7 +41,7 @@ DeviceDescription::DeviceDescription():
     currentSection_{nullptr}
 {}
 
-String DeviceDescription::toString() const
+string DeviceDescription::toString() const
 {
     auto parts = StringList::create();
     parts
@@ -69,7 +69,7 @@ bool DeviceDescription::equals(const DeviceDescription *other) const
         manufacturerObjects_->equals(other->manufacturerObjects_);
 }
 
-void DeviceDescription::enterSection(const String &sectionName)
+void DeviceDescription::enterSection(const string &sectionName)
 {
     if (sectionName->match(fileInfo_->sectionName()))
         currentSection_ = fileInfo_;
@@ -91,12 +91,12 @@ void DeviceDescription::enterSection(const String &sectionName)
         currentSection_ = nullptr;
 }
 
-void DeviceDescription::establish(const String &key, const String &value)
+void DeviceDescription::establish(const string &key, const string &value)
 {
     if (currentSection_) currentSection_->establish(key, value);
 }
 
-void DeviceDescription::handleError(int offset, const String &line)
+void DeviceDescription::handleError(int offset, const string &line)
 {}
 
 DeviceDescription::FileInfo::FileInfo():
@@ -127,17 +127,17 @@ void DeviceDescription::FileInfo::setChangedTime(double time)
     changedDayTime_ = makeDayTime(date);
 }
 
-String DeviceDescription::FileInfo::makeCalendarDate(const Date *date)
+string DeviceDescription::FileInfo::makeCalendarDate(const Date *date)
 {
     return dec(date->month(), 2) + "-" + dec(date->day(), 2) + "-" + dec(date->day(), 2);
 }
 
-String DeviceDescription::FileInfo::makeDayTime(const Date *date)
+string DeviceDescription::FileInfo::makeDayTime(const Date *date)
 {
     return dec(date->hour() > 12 ? date->hour() - 12 : date->hour(), 2) + ":" + dec(date->minutes(), 2) + (date->hour() > 12 ? "PM" : "AM");
 }
 
-double DeviceDescription::FileInfo::makeTime(const String &calendarDate, const String &dayTime)
+double DeviceDescription::FileInfo::makeTime(const string &calendarDate, const string &dayTime)
 {
     int month  = 1;
     int day    = 1;
@@ -153,7 +153,7 @@ double DeviceDescription::FileInfo::makeTime(const String &calendarDate, const S
         }
     }
     {
-        String s = dayTime;
+        string s = dayTime;
         bool am = s->match(Match::Tail, "AM");
         bool pm = s->match(Match::Tail, "PM");
         if (am | pm) s = s->copy(0, s->count() - 2);
@@ -167,7 +167,7 @@ double DeviceDescription::FileInfo::makeTime(const String &calendarDate, const S
     return Date::compose(year, month, day, hour, minute)->time();
 }
 
-void DeviceDescription::FileInfo::establish(const String &key, const String &value)
+void DeviceDescription::FileInfo::establish(const string &key, const string &value)
 {
     if (key->match("FileName")) fileName_ = value;
     else if (key->match("FileVersion")) fileVersion_ = value->toNumber<uint8_t>();
@@ -182,7 +182,7 @@ void DeviceDescription::FileInfo::establish(const String &key, const String &val
     else if (key->match("ModifiedBy")) changedBy_ = value;
 }
 
-String DeviceDescription::FileInfo::toString() const
+string DeviceDescription::FileInfo::toString() const
 {
     return Format()
         << "[" << sectionName() << "]" << nl
@@ -232,7 +232,7 @@ void DeviceDescription::DeviceInfo::removeSupportedBaudRate(uint32_t baudRate)
     supportedBaudRates_->remove(baudRate);
 }
 
-void DeviceDescription::DeviceInfo::establish(const String &key, const String &value)
+void DeviceDescription::DeviceInfo::establish(const string &key, const string &value)
 {
     if (key->match("VendorName")) vendorName_ = value;
     else if (key->match("VendorNumber")) vendorNumber_ = value->toNumber<uint32_t>();
@@ -258,7 +258,7 @@ void DeviceDescription::DeviceInfo::establish(const String &key, const String &v
     else if (key->match("LSS_Supported")) layerSpecificationServices_ = value->toNumber<int>();
 }
 
-String DeviceDescription::DeviceInfo::toString() const
+string DeviceDescription::DeviceInfo::toString() const
 {
     Format f;
 
@@ -339,17 +339,17 @@ void DeviceDescription::DummyUsage::disableDummy(uint16_t index) const
     dummies_->remove(index);
 }
 
-void DeviceDescription::DummyUsage::establish(const String &key, const String &value)
+void DeviceDescription::DummyUsage::establish(const string &key, const string &value)
 {
     if (key->match(Match::Head, "Dummy")) {
-        String s = key->copy(5, key->count());
+        string s = key->copy(5, key->count());
         uint16_t index = s->toNumber<uint16_t, 16>();
         bool enabled = value->toNumber<int>();
         if (enabled) dummies_->insert(index);
     }
 }
 
-String DeviceDescription::DummyUsage::toString() const
+string DeviceDescription::DummyUsage::toString() const
 {
     Format f;
     f << "[" << sectionName() << "]" << nl;
@@ -374,25 +374,25 @@ DeviceDescription::Comments::Comments():
     lines_{StringList::create()}
 {}
 
-void DeviceDescription::Comments::establish(const String &key, const String &value)
+void DeviceDescription::Comments::establish(const string &key, const string &value)
 {
     if (key->match("Lines"));
     else if (key->match(Match::Head, "Line")) lines_->append(value);
 }
 
-String DeviceDescription::Comments::text() const
+string DeviceDescription::Comments::text() const
 {
     return lines_->join("\n");
 }
 
-void DeviceDescription::Comments::setText(const String &text)
+void DeviceDescription::Comments::setText(const string &text)
 {
     lines_ = StringList::create();
-    for (const String &line: LineSource::open(text))
+    for (const string &line: LineSource::open(text))
         lines_->append(line);
 }
 
-String DeviceDescription::Comments::toString() const
+string DeviceDescription::Comments::toString() const
 {
     Format f;
     f << "[" << sectionName() << "]" << nl;
@@ -407,7 +407,7 @@ bool DeviceDescription::Comments::equals(const Comments *other) const
     return *lines_ == *other->lines_;
 }
 
-DeviceDescription::DictionarySection::DictionarySection(const String &name):
+DeviceDescription::DictionarySection::DictionarySection(const string &name):
     Section{name},
     entries_{Entries::create()}
 {}
@@ -432,7 +432,7 @@ void DeviceDescription::DictionarySection::removeEntry(EntryInfo *entry)
     entries_->remove(entry->index());
 }
 
-void DeviceDescription::DictionarySection::enterSection(const String &sectionName)
+void DeviceDescription::DictionarySection::enterSection(const string &sectionName)
 {
     if (sectionName->match(Match::Find, "sub")) {
         if (currentEntry_) currentEntry_->enterSection(sectionName);
@@ -448,12 +448,12 @@ void DeviceDescription::DictionarySection::enterSection(const String &sectionNam
     }
 }
 
-void DeviceDescription::DictionarySection::establish(const String &key, const String &value)
+void DeviceDescription::DictionarySection::establish(const string &key, const string &value)
 {
     if (currentEntry_) currentEntry_->establish(key, value);
 }
 
-String DeviceDescription::DictionarySection::toString() const
+string DeviceDescription::DictionarySection::toString() const
 {
     Format f;
     f << "[" << sectionName() << "]" << nl
@@ -522,7 +522,7 @@ void DeviceDescription::EntryInfo::removeSubEntry(EntryInfo *entry)
         subEntries_->remove(entry->subIndex());
 }
 
-void DeviceDescription::EntryInfo::enterSection(const String &sectionName)
+void DeviceDescription::EntryInfo::enterSection(const string &sectionName)
 {
     auto parts = sectionName->toLower()->split("sub");
     if (parts->count() == 2) {
@@ -539,7 +539,7 @@ void DeviceDescription::EntryInfo::enterSection(const String &sectionName)
     }
 }
 
-void DeviceDescription::EntryInfo::establish(const String &key, const String &value)
+void DeviceDescription::EntryInfo::establish(const string &key, const string &value)
 {
     if (currentSubEntry_) {
         currentSubEntry_->establish(key, value);
@@ -562,7 +562,7 @@ void DeviceDescription::EntryInfo::establish(const String &key, const String &va
     }
 }
 
-String DeviceDescription::EntryInfo::toString() const
+string DeviceDescription::EntryInfo::toString() const
 {
     Format f;
     f << "[" << hex(index_, 4) << "]" << nl
@@ -611,7 +611,7 @@ String DeviceDescription::EntryInfo::toString() const
 
 bool DeviceDescription::EntryInfo::equals(const EntryInfo *other) const
 {
-    auto stringValueEquals = [](const String &a, const String &b) -> bool {
+    auto stringValueEquals = [](const string &a, const string &b) -> bool {
         if (a == b) return true;
         bool okA = false, okB = false;
         if (a->contains('.') || b->contains('.')) {

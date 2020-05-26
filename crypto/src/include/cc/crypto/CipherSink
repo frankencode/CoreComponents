@@ -37,8 +37,8 @@ private:
     Ref<BlockCipher> cipher_;
     Ref<Stream> sink_;
     Ref<Stream> pad_;
-    String block_;
-    String pending_;
+    string block_;
+    string pending_;
 };
 
 }} // namespace cc::crypto

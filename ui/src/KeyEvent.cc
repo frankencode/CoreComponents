@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-String KeyEvent::toString() const
+string KeyEvent::toString() const
 {
     return Format{}
         << "KeyEvent {" << nl

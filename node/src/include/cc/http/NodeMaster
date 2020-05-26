@@ -19,7 +19,7 @@ namespace http {
 class NodeMaster: public Thread
 {
 public:
-    static Ref<NodeMaster> create(const String &config);
+    static Ref<NodeMaster> create(const string &config);
     static Ref<NodeMaster> create(const NodeConfig *config);
 
     SocketAddress waitStarted();

@@ -109,9 +109,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler *scheduler)
         Ref<FileStatus> productStatus = shell()->fileStatus(toolChain()->linkName(plan()));
         if (!productStatus->isValid()) dirty = true;
         else {
-            String previousLinkCommandPath = plan()->previousLinkCommandPath();
-            String previousLinkCommand = File::load(previousLinkCommandPath);
-            String newLinkCommand = linkJob->command();
+            string previousLinkCommandPath = plan()->previousLinkCommandPath();
+            string previousLinkCommand = File::load(previousLinkCommandPath);
+            string newLinkCommand = linkJob->command();
 
             if (newLinkCommand != previousLinkCommand) dirty = true;
             else {

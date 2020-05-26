@@ -17,7 +17,7 @@ using namespace cc::can;
 
 int main(int argc, char **argv)
 {
-    String toolName = String{argv[0]}->fileName();
+    string toolName = string{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
             arguments->override(options);
         }
 
-        String interface = options->value("interface");
+        string interface = options->value("interface");
         int clientId     = options->value("my-id");
         int serverId     = options->value("peer-id");
         int index        = options->value("index");
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 
         auto media = CanSocket::open(interface);
         auto client = CanClient::create(media, clientId, timeout);
-        String data = client->read(serverId, selector);
+        string data = client->read(serverId, selector);
         fout() << data->hexDump() << nl;
     }
     catch (HelpRequest &) {

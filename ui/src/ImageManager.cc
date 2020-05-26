@@ -28,7 +28,7 @@ void ImageManager::registerPlugin(ImagePlugin *plugin)
     plugins_->establish(plugin->name(), plugin);
 }
 
-bool ImageManager::getPlugin(const String &name, const ImagePlugin **plugin) const
+bool ImageManager::getPlugin(const string &name, const ImagePlugin **plugin) const
 {
     return plugins_->lookup(name, plugin);
 }
@@ -38,12 +38,12 @@ Ref< Source<const ImagePlugin *> > ImageManager::getAllPlugins() const
     return ValueSource<Plugins, const ImagePlugin *>::open(plugins_);
 }
 
-Ref<Image> ImageManager::load(const String &uri, unsigned index) const
+Ref<Image> ImageManager::load(const string &uri, unsigned index) const
 {
     int j = uri->scan(':');
     if (j == 0) return Image::create();
-    String scheme = uri->select(j);
-    String path;
+    string scheme = uri->select(j);
+    string path;
     if (j < uri->count()) path = uri->select(j + 1, uri->count());
     const ImagePlugin *plugin = 0;
     if (!getPlugin(scheme, &plugin)) return Image::create();

@@ -11,12 +11,12 @@
 
 namespace cc {
 
-Ref<MountTable> MountTable::open(const String &path)
+Ref<MountTable> MountTable::open(const string &path)
 {
-    String text;
+    string text;
     {
         Ref<File> file;
-        if (path == String{}) {
+        if (path == string{}) {
             #ifdef __linux
             file = File::tryOpen("/proc/self/mounts");
             if (!file)
@@ -31,15 +31,15 @@ Ref<MountTable> MountTable::open(const String &path)
     return new MountTable(text);
 }
 
-Ref<MountTable> MountTable::parse(const String &text)
+Ref<MountTable> MountTable::parse(const string &text)
 {
     return new MountTable(text);
 }
 
-MountTable::MountTable(const String &text):
+MountTable::MountTable(const string &text):
     lines_{StringList::create()}
 {
-    for (String line: text->split("\n")) {
+    for (string line: text->split("\n")) {
         mutate(line)->simplifyInsitu();
         if (line->count() == 0) continue;
         if (line->at(0) == '#') continue;
@@ -47,10 +47,10 @@ MountTable::MountTable(const String &text):
     }
 }
 
-MountTable::Entry::Entry(const String &line):
+MountTable::Entry::Entry(const string &line):
     parts_(line->split(" "))
 {
-    while (parts_->count() < 4) parts_->append(String{});
+    while (parts_->count() < 4) parts_->append(string{});
 }
 
 } // namespace cc

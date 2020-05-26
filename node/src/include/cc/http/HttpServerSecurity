@@ -36,7 +36,7 @@ private:
     #if 0
     void logCertificateInfo();
     void logCertificateInfo(gnutls_x509_crt_t cert);
-    String certificateDn(gnutls_x509_crt_t cert);
+    string certificateDn(gnutls_x509_crt_t cert);
     #endif
 
     bool hasCredentials_;

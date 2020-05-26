@@ -11,9 +11,9 @@
 
 namespace cc {
 
-String str(Signal signal)
+string str(Signal signal)
 {
-    String s;
+    string s;
     switch (signal) {
         case Signal::Abort                 : s = "Signal::Abort"; break;
         case Signal::Alarm                 : s = "Signal::Alarm"; break;
@@ -42,7 +42,7 @@ Signaled::Signaled(Signal signal):
     signal_{signal}
 {}
 
-String Signaled::message() const
+string Signaled::message() const
 {
     return Format{} << "Caught signal " << signal_;
 }

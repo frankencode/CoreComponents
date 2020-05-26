@@ -43,7 +43,7 @@ public:
 
         Specifier specifier() const { return static_cast<Specifier>((frame_->payloadAt(0) & 0xE0U) >> 5U); }
 
-        String toString() const;
+        string toString() const;
 
     protected:
         friend class ServiceRequest;
@@ -62,7 +62,7 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator String() const { return instance_.toString(); }
+    operator string() const { return instance_.toString(); }
 
 private:
     const Instance instance_;

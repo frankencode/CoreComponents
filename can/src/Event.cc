@@ -32,13 +32,13 @@ void Event::init(EventMonitor *monitor)
     monitor->registerEvent(this);
 }
 
-void Event::onReceived(CanMedia *media, const String &data)
+void Event::onReceived(CanMedia *media, const string &data)
 {}
 
 void Event::onIdle(CanMedia *media)
 {}
 
-void Event::feed(CanMedia *media, const String &data)
+void Event::feed(CanMedia *media, const string &data)
 {
     onReceived(media, data);
 }

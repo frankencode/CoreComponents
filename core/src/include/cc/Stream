@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -40,10 +40,10 @@ public:
     virtual void write(const StringList *parts);
 
     /// Convenience wrapper
-    void write(const String &data) { write(static_cast<const CharArray *>(data)); }
+    void write(const string &data) { write(static_cast<const CharArray *>(data)); }
 
     /// Convenience wrapper
-    void write(const char *data) { write(String{data}); }
+    void write(const char *data) { write(string{data}); }
 
     /// Convenience wrapper
     void write(const Format &format);
@@ -77,15 +77,15 @@ public:
 
     /** Read a fixed number of bytes (N)
       * \param count number of bytes to read (N)
-      * \return String of exactly N bytes (padded with zeros if no more data could be read)
+      * \return string of exactly N bytes (padded with zeros if no more data could be read)
       */
-    String readSpan(int count);
+    string readSpan(int count);
 
     /** Read the entire stream
       * \param buffer auxiliary transfer buffer
       * \return all byte read from the stream
       */
-    String readAll(CharArray *buffer = nullptr);
+    string readAll(CharArray *buffer = nullptr);
 
 protected:
     virtual ~Stream() {}

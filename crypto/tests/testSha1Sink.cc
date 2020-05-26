@@ -36,8 +36,8 @@ public:
         for (int i = 0; i < tests->count(); ++i) {
             Ref<Sha1Sink> hashSink = Sha1Sink::open();
             for (int j = 0; j < repeatCount[i]; ++j) hashSink->write(tests->at(i));
-            String requiredSum = results->at(i)->replace(" ", "")->toLower();
-            String sum = hashSink->finish()->toHex();
+            string requiredSum = results->at(i)->replace(" ", "")->toLower();
+            string sum = hashSink->finish()->toHex();
             fout("SHA-1 of \"%%\" repeated %% time(s):") << tests->at(i) << repeatCount[i] << nl;
             fout() << "  " << requiredSum << " (required)" << nl;
             fout() << "  " << sum << " (delivered)" << nl;

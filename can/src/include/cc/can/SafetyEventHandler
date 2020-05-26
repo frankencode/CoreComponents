@@ -17,7 +17,7 @@ namespace can {
 class SafetyEventHandler: public SafetyEvent
 {
 public:
-    typedef std::function<void(const String &)> OnReceived;
+    typedef std::function<void(const string &)> OnReceived;
     typedef std::function<void(SafetyError error)> OnError;
 
     static Ref<SafetyEventHandler> create(
@@ -35,7 +35,7 @@ private:
         OnReceived onReceived, OnError onError
     );
 
-    void onReceived(CanMedia *media, const String &data) override;
+    void onReceived(CanMedia *media, const string &data) override;
     void onError(CanMedia *media, SafetyError error) override;
 
     OnReceived onReceived_;

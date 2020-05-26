@@ -211,7 +211,7 @@ bool Application::feedLeaveEvent(Window *window)
     return window->view()->feedLeaveEvent();
 }
 
-bool Application::feedTextEditingEvent(const String &text, int start, int length)
+bool Application::feedTextEditingEvent(const string &text, int start, int length)
 {
     if (focusControl()) {
         focusControl()->onTextEdited(text, start, length);
@@ -221,7 +221,7 @@ bool Application::feedTextEditingEvent(const String &text, int start, int length
     return false;
 }
 
-bool Application::feedTextInputEvent(const String &text)
+bool Application::feedTextInputEvent(const string &text)
 {
     if (focusControl()) {
         focusControl()->onTextInput(text);

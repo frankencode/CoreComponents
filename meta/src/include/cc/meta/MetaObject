@@ -23,11 +23,11 @@ typedef List< Ref<MetaObject> > MetaObjectList;
 class MetaObject: public VariantMap
 {
 public:
-    static Ref<MetaObject> create(const String &className = "");
+    static Ref<MetaObject> create(const string &className = "");
 
-    String className() const { return className_; }
+    string className() const { return className_; }
     Variant toVariant() const;
-    String toString() const;
+    string toString() const;
 
     bool hasChildren() const { return children_->count() > 0; }
     MetaObjectList *children() { return children_; }
@@ -46,11 +46,11 @@ public:
 protected:
     friend class MetaProtocol;
 
-    MetaObject(const String &className = "");
+    MetaObject(const string &className = "");
     ~MetaObject();
 
 private:
-    String className_;
+    string className_;
     Ref<MetaObjectList> children_;
 };
 

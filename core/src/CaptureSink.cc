@@ -24,7 +24,7 @@ void CaptureSink::write(const CharArray *data)
     parts_->append(data);
 }
 
-String CaptureSink::collect() const
+string CaptureSink::collect() const
 {
     return parts_->join();
 }

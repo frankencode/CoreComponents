@@ -7,7 +7,7 @@ using namespace cc::zip;
 int main(int argc, char **argv)
 {
     if (argc != 3) {
-        fout() << "Usage: " << String{argv[0]}->baseName() << " <ZIP ARCHIVE> <file name>" << nl;
+        fout() << "Usage: " << string{argv[0]}->baseName() << " <ZIP ARCHIVE> <file name>" << nl;
         return 1;
     }
 

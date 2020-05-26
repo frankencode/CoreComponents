@@ -11,13 +11,13 @@
 
 namespace ccclaim {
 
-HeaderStyle::HeaderStyle(const String &language):
+HeaderStyle::HeaderStyle(const string &language):
     language_{language}
 {
     registry()->registerHeaderStyle(this);
 }
 
-String HeaderStyle::trimHeader(const String &text, const char *space)
+string HeaderStyle::trimHeader(const string &text, const char *space)
 {
     Ref<StringList> lines = text->split('\n');
     for (int i = 0; i < lines->count(); ++i)

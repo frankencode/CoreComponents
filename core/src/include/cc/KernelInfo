@@ -24,20 +24,20 @@ class KernelInfo: public Object
 public:
     static const KernelInfo *instance();
 
-    String name() const { return name_; } ///< operating system name
-    String release() const { return release_; } ///< release version
-    String version() const { return version_; } ///< detailed build information
-    String machine() const { return machine_; } ///< system architecture
+    string name() const { return name_; } ///< operating system name
+    string release() const { return release_; } ///< release version
+    string version() const { return version_; } ///< detailed build information
+    string machine() const { return machine_; } ///< system architecture
 
 private:
     friend class Singleton<KernelInfo>;
 
     KernelInfo();
 
-    String name_;
-    String release_;
-    String version_;
-    String machine_;
+    string name_;
+    string release_;
+    string version_;
+    string machine_;
 };
 
 } // namespace cc

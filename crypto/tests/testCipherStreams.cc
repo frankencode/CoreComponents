@@ -23,15 +23,15 @@ using namespace cc::crypto;
 class TestSmth: public TestCase
 {
 protected:
-    static String testCycle(BlockCipher *cipher, CharArray *text)
+    static string testCycle(BlockCipher *cipher, CharArray *text)
     {
-        String buffer = CharArray::allocate(roundUpToNext(cipher->blockSize(), text->count()));
+        string buffer = CharArray::allocate(roundUpToNext(cipher->blockSize(), text->count()));
         {
             Ref<Stream> stream = MemoryStream::open(mutate(buffer));
             Ref<CipherSink> sink = CipherSink::open(cipher, stream, NullStream::instance());
             sink->write(text);
         }
-        String text2 = String::create(text->count());
+        string text2 = string::create(text->count());
         {
             Ref<Stream> stream = MemoryStream::open(mutate(buffer));
             Ref<CipherSource> source = CipherSource::open(cipher, stream);
@@ -46,12 +46,12 @@ class TestBlockBoundary: public TestSmth
 {
     void run()
     {
-        String key = "\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c";
+        string key = "\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c";
         Ref<BlockCipher> cipher = AesCipher::create(key);
-        String text = "0123456789,0123456789,0123456789";
+        string text = "0123456789,0123456789,0123456789";
         for (int n = 1; n <= text->count(); ++n) {
-            String text1 = text->copy(0, n);
-            String text2 = testCycle(cipher, mutate(text1));
+            string text1 = text->copy(0, n);
+            string text2 = testCycle(cipher, mutate(text1));
             fout() << text1 << " >> " << text2 << nl;
             CC_VERIFY(text1 == text2);
         }
@@ -62,19 +62,19 @@ class TestBufferBoundary: public TestSmth
 {
     void run()
     {
-        String key = "\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c";
+        string key = "\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c";
         Ref<BlockCipher> cipher = AesCipher::create(key);
-        String text = String::create(0x1001);
+        string text = string::create(0x1001);
         Ref<Random> random = Random::open();
         for (int i = 0; i < text->count(); ++i) mutate(text)->byteAt(i) = random->get() & 0xFF;
         {
-            String text1 = text->copy(0, text->count() - 1);
-            String text2 = testCycle(cipher, mutate(text1));
+            string text1 = text->copy(0, text->count() - 1);
+            string text2 = testCycle(cipher, mutate(text1));
             CC_VERIFY(text1 == text2);
         }
         {
-            String text1 = text;
-            String text2 = testCycle(cipher, mutate(text1));
+            string text1 = text;
+            string text2 = testCycle(cipher, mutate(text1));
             CC_VERIFY(text1 == text2);
         }
     }

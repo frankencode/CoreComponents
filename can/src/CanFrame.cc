@@ -41,16 +41,16 @@ bool CanFrame::equals(const CanFrame *other) const
     return true;
 }
 
-String CanFrame::payload() const
+string CanFrame::payload() const
 {
-    if (payloadCount() == 0) return String{};
-    String data = String::allocate(payloadCount());
+    if (payloadCount() == 0) return string{};
+    string data = string::allocate(payloadCount());
     for (int i = 0; i < data->count(); ++i)
         mutate(data)->byteAt(i) = payloadAt(i);
     return data;
 }
 
-void CanFrame::setPayload(const String &data)
+void CanFrame::setPayload(const string &data)
 {
     setPayloadCount(data->count());
     for (int i = 0; i < data->count(); ++i)
@@ -73,18 +73,18 @@ void CanFrame::updateInverse(CanFrame *invFrame) const
         invFrame->payloadAt(i) = ~payloadAt(i);
 }
 
-String CanFrame::copy(int i0, int i1) const
+string CanFrame::copy(int i0, int i1) const
 {
     if (i1 > payloadCount()) i1 = payloadCount();
     if (i0 < 0) i0 = 0;
     if (i1 < i0) i0 = i1;
-    String data = String::allocate(i1 - i0);
+    string data = string::allocate(i1 - i0);
     for (int i = i0; i < i1; ++i)
         mutate(data)->byteAt(i - i0) = payloadAt(i);
     return data;
 }
 
-String CanFrame::toString() const
+string CanFrame::toString() const
 {
     Format f;
     f << hex(canId(), 3) << " [" << payloadCount() << "]";

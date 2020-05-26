@@ -18,10 +18,10 @@ class HttpRequestGenerator: public HttpGenerator
 public:
     static Ref<HttpRequestGenerator> create(HttpConnection *server);
 
-    void setMethod(const String &method);
-    void setPath(const String &path);
-    void setVersion(const String &version);
-    void setHost(const String &host);
+    void setMethod(const string &method);
+    void setPath(const string &path);
+    void setVersion(const string &version);
+    void setHost(const string &host);
 
 private:
     HttpRequestGenerator(HttpConnection *server);
@@ -29,9 +29,9 @@ private:
     void polishHeader() override;
     void writeFirstLine(Format &sink) override;
 
-    String method_;
-    String path_;
-    String version_;
+    string method_;
+    string path_;
+    string version_;
 };
 
 }} // namespace cc::http

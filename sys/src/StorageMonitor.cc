@@ -59,7 +59,7 @@ void StorageMonitor::enumerate(struct udev *udev)
 
     udev_list_entry_foreach(entry, devices)
     {
-        String sysPath = udev_list_entry_get_name(entry);
+        string sysPath = udev_list_entry_get_name(entry);
         struct udev_device *dev = udev_device_new_from_syspath(udev, sysPath);
 
         events_->pushBack(Object::create<StorageEvent>(dev));

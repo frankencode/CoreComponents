@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 #include <cc/can/CanMedia>
 
 namespace cc { class SystemStream; }
@@ -19,9 +19,9 @@ namespace can {
 class CanSocket: public CanMedia
 {
 public:
-    static Ref<CanSocket> open(const String &interface);
+    static Ref<CanSocket> open(const string &interface);
 
-    inline String interface() const { return interface_; }
+    inline string interface() const { return interface_; }
 
     void enableLoopback(bool on);
     void enableErrorFrames(bool on);
@@ -31,14 +31,14 @@ public:
     void writeFrame(const CanFrame *frame) override;
 
 protected:
-    CanSocket(const String &interface);
+    CanSocket(const string &interface);
     ~CanSocket();
 
-    static int lookupInterfaceIndex(int fd, const String &interface);
+    static int lookupInterfaceIndex(int fd, const string &interface);
 
 private:
     Ref<SystemStream> socket_;
-    String interface_;
+    string interface_;
 };
 
 }} // namespace cc::can

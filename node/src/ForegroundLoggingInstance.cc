@@ -21,14 +21,14 @@ ForegroundLoggingInstance::ForegroundLoggingInstance(const MetaObject *config):
     LoggingInstance{config}
 {}
 
-void ForegroundLoggingInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage) const
+void ForegroundLoggingInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const string &statusMessage) const
 {
     stdOut()->write(
         formatDeliveryLogMessage(client, statusCode, bytesWritten, statusMessage)
     );
 }
 
-void ForegroundLoggingInstance::logMessage(const String &message, LoggingLevel level) const
+void ForegroundLoggingInstance::logMessage(const string &message, LoggingLevel level) const
 {
     if (verbosity() >= level) stdErr()->write(message);
 }

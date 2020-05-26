@@ -98,7 +98,7 @@ void FtTextCursor::assign(const TextCursor *other)
     }
 }
 
-String FtTextCursor::toString() const
+string FtTextCursor::toString() const
 {
     return Format{}
         << "FtTextCursor {" << nl

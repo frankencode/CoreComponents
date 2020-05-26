@@ -14,14 +14,14 @@
 
 namespace cc {
 
-String DebugError::message() const
+string DebugError::message() const
 {
-    return Format{} << reason_ << " (" << String{source_}->fileName() << ":" << line_ << ")";
+    return Format{} << reason_ << " (" << string{source_}->fileName() << ":" << line_ << ")";
 }
 
-String systemError(int errorCode)
+string systemError(int errorCode)
 {
-    String buf{1023};  // HACK, save bet
+    string buf{1023};  // HACK, save bet
     const char *unknown = "Unknown error";
     memcpy(mutate(buf)->chars(), unknown, strlen(unknown) + 1);
 #ifdef __USE_GNU
@@ -32,32 +32,32 @@ String systemError(int errorCode)
 #endif
 }
 
-String SystemError::message() const
+string SystemError::message() const
 {
     return systemError(errorCode_);
 }
 
-String SystemResourceError::message() const
+string SystemResourceError::message() const
 {
     return Format{} << systemError(errorCode_) << ": \"" << resource_ << "\""
         #ifndef NDEBUG
-        << " (" << String{source_}->fileName() << ":" << line_ << ")"
+        << " (" << string{source_}->fileName() << ":" << line_ << ")"
         #endif
         ;
 }
 
-String SystemDebugError::message() const
+string SystemDebugError::message() const
 {
-    return Format() << systemError(errorCode_) << " (" << String{source_}->fileName() << ":" << line_ << ")";
+    return Format() << systemError(errorCode_) << " (" << string{source_}->fileName() << ":" << line_ << ")";
 }
 
-TextError::TextError(const String &text, int offset, const String &resource):
+TextError::TextError(const string &text, int offset, const string &resource):
     text_{text},
     offset_{offset},
     resource_{resource != "" ? resource : ResourceContext::instance()->top()}
 {}
 
-String SemanticError::message() const
+string SemanticError::message() const
 {
     Format format;
     if (offset_ >= 0) {
@@ -70,31 +70,31 @@ String SemanticError::message() const
     return format;
 }
 
-String Timeout::message() const
+string Timeout::message() const
 {
     return "Operation timed out";
 }
 
-String ConnectionResetByPeer::message() const
+string ConnectionResetByPeer::message() const
 {
     return "Connection reset by peer";
 }
 
-TransferError::TransferError(const String &details):
+TransferError::TransferError(const string &details):
     details_{details}
 {}
 
-String TransferError::message() const
+string TransferError::message() const
 {
-    return String{"Data transfer failed: "} + details_;
+    return string{"Data transfer failed: "} + details_;
 }
 
-String PermissionError::message() const
+string PermissionError::message() const
 {
     return "Insufficient permission to perform operation";
 }
 
-String CommandNotFound::message() const
+string CommandNotFound::message() const
 {
     return Format{"Command not found: '%%'"} << command_;
 }

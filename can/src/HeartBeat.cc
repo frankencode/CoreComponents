@@ -22,9 +22,9 @@ Ref<CanFrame> HeartBeat::createFrame(int sourceId, NodeState nodeState)
     return frame;
 }
 
-String HeartBeat::Instance::toString() const
+string HeartBeat::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "HeartBeat {" << nl

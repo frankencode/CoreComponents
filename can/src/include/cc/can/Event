@@ -35,10 +35,10 @@ protected:
     virtual bool autoStart() const { return true; }
     virtual double initialInterval() const { return idleInterval_; }
 
-    virtual void onReceived(CanMedia *media, const String &data);
+    virtual void onReceived(CanMedia *media, const string &data);
     virtual void onIdle(CanMedia *media);
 
-    virtual void feed(CanMedia *media, const String &data);
+    virtual void feed(CanMedia *media, const string &data);
     virtual void timeAdvance(NextEvent *next, double now);
 
 private:

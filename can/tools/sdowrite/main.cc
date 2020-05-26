@@ -18,7 +18,7 @@ using namespace cc::can;
 
 int main(int argc, char **argv)
 {
-    String toolName = String{argv[0]}->fileName();
+    string toolName = string{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -39,13 +39,13 @@ int main(int argc, char **argv)
             arguments->override(options);
         }
 
-        String interface   = options->value("interface");
+        string interface   = options->value("interface");
         int clientId       = options->value("my-id");
         int serverId       = options->value("peer-id");
         int index          = options->value("index");
         int subIndex       = options->value("sub-index");
-        String hexValue    = options->value("hex-value");
-        String stringValue = options->value("string-value");
+        string hexValue    = options->value("hex-value");
+        string stringValue = options->value("string-value");
         int intValue       = options->value("int-value");
         int timeout        = options->value("timeout");
         bool debug         = options->value("debug");
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
             static_cast<Selector::SubIndex>(subIndex)
         };
 
-        String newData;
+        string newData;
 
         if (hexValue->count() > 0)
         {
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
             };
 
             auto hexPairs = hexValue->split(".");
-            newData = String::allocate(hexPairs->count());
+            newData = string::allocate(hexPairs->count());
             if (debug)
                 CC_INSPECT(hexPairs->count());
             for (int i = 0; i < hexPairs->count(); ++i) {
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
             newData = stringValue;
         }
         else {
-            newData = String::allocate(4);
+            newData = string::allocate(4);
             ByteSink::open(mutate(newData))->writeInt32(intValue);
         }
 

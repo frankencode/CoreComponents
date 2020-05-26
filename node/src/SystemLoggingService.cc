@@ -21,7 +21,7 @@ const char *SystemLoggingService::name()
     return "SystemLog";
 }
 
-void SystemLoggingService::open(const String &daemonName)
+void SystemLoggingService::open(const string &daemonName)
 {
     ::openlog(daemonName, 0, LOG_DAEMON);
 }

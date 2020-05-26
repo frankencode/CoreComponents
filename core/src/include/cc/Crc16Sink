@@ -33,7 +33,7 @@ public:
     uint16_t sum() const { return crc_; }
 
     void write(const CharArray *data) override;
-    String finish() override;
+    string finish() override;
 
 private:
     uint16_t crc_;
@@ -51,7 +51,7 @@ inline uint16_t crc16(const char *s) {
     return crc.sum();
 }
 
-inline uint16_t crc16(const String &s) {
+inline uint16_t crc16(const string &s) {
     Crc16Sink crc;
     crc.feed(s->bytes(), s->count());
     return crc.sum();

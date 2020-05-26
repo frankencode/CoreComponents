@@ -37,7 +37,7 @@ HttpClientSecurity::~HttpClientSecurity()
     gnutls_certificate_free_credentials(cred_);
 }
 
-void HttpClientSecurity::setCredentials(const String &certPath, const String &keyPath)
+void HttpClientSecurity::setCredentials(const string &certPath, const string &keyPath)
 {
     certPath_ = certPath;
     keyPath_ = keyPath;
@@ -45,7 +45,7 @@ void HttpClientSecurity::setCredentials(const String &certPath, const String &ke
     if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret};
 }
 
-void HttpClientSecurity::setTrustFilePath(const String &trustFilePath)
+void HttpClientSecurity::setTrustFilePath(const string &trustFilePath)
 {
     trustFilePath_ = trustFilePath;
     int ret = gnutls_certificate_set_x509_trust_file(cred_, trustFilePath_, GNUTLS_X509_FMT_PEM);
@@ -59,7 +59,7 @@ void HttpClientSecurity::setSystemTrust()
     if (ret < 0) throw SecurityError{ret};
 }
 
-void HttpClientSecurity::setCiphers(const String &ciphers)
+void HttpClientSecurity::setCiphers(const string &ciphers)
 {
     ciphers_ = ciphers;
     if (prio_) gnutls_priority_deinit(prio_);

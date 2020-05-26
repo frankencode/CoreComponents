@@ -21,7 +21,7 @@ class PlatformManager: public Object
 public:
     static PlatformManager *instance();
 
-    bool getPlugin(const String &name, PlatformPlugin **plugin) const;
+    bool getPlugin(const string &name, PlatformPlugin **plugin) const;
     Ref< Source<PlatformPlugin *> > getAllPlugins() const;
 
     PlatformPlugin *activePlugin() const;
@@ -35,7 +35,7 @@ private:
 
     void registerPlugin(PlatformPlugin *plugin);
 
-    typedef Map< String, Ref<PlatformPlugin> > Plugins;
+    typedef Map< string, Ref<PlatformPlugin> > Plugins;
     Ref<Plugins> plugins_;
 
     Ref<PlatformPlugin> activePlugin_;

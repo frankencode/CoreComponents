@@ -44,7 +44,7 @@ void HashMeter::write(const StringList *parts)
     if (stream_) stream_->write(parts);
 }
 
-String HashMeter::finish()
+string HashMeter::finish()
 {
     return hashSink_->finish();
 }

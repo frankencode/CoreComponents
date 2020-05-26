@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace ccbuild {
 
@@ -17,27 +17,27 @@ using namespace cc;
 class Module: public Object
 {
 public:
-    static Ref<Module> create(const String &analyseCommand, const String &modulePath, const StringList *dependencyPaths, bool dirty) {
+    static Ref<Module> create(const string &analyseCommand, const string &modulePath, const StringList *dependencyPaths, bool dirty) {
         return new Module{analyseCommand, modulePath, dependencyPaths, dirty};
     }
 
-    String analyseCommand() const { return analyseCommand_; }
-    String modulePath() const { return modulePath_; }
-    String sourcePath() const { return dependencyPaths_->at(0); }
-    String toolName() const { return sourcePath()->baseName(); }
+    string analyseCommand() const { return analyseCommand_; }
+    string modulePath() const { return modulePath_; }
+    string sourcePath() const { return dependencyPaths_->at(0); }
+    string toolName() const { return sourcePath()->baseName(); }
     const StringList *dependencyPaths() const { return dependencyPaths_; }
     bool dirty() const { return dirty_; }
 
 private:
-    Module(const String &analyseCommand, const String &modulePath, const StringList *dependencyPaths, bool dirty):
+    Module(const string &analyseCommand, const string &modulePath, const StringList *dependencyPaths, bool dirty):
         analyseCommand_{analyseCommand},
         modulePath_{modulePath},
         dependencyPaths_{dependencyPaths},
         dirty_{dirty}
     {}
 
-    String analyseCommand_;
-    String modulePath_;
+    string analyseCommand_;
+    string modulePath_;
     Ref<const StringList> dependencyPaths_;
     bool dirty_;
 };

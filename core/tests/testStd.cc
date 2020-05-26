@@ -15,7 +15,7 @@ using namespace cc::testing;
 
 class TestAlgorithms: public TestCase
 {
-    void print(const List<String> *l) {
+    void print(const List<string> *l) {
         for (auto x: l)
             fout() << "\"" << x << "\" ";
         fout() << nl;
@@ -23,7 +23,7 @@ class TestAlgorithms: public TestCase
 
     void run()
     {
-        auto fruits = List<String>::create() << "melon" << "banana" << "pear" << "melon" << "apple" << "peach";
+        auto fruits = List<string>::create() << "melon" << "banana" << "pear" << "melon" << "apple" << "peach";
         std::sort(fruits->begin(), fruits->end());
         print(fruits);
         {

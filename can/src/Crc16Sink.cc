@@ -60,9 +60,9 @@ void Crc16Sink::write(const CharArray *data)
     feed(data->bytes(), data->count());
 }
 
-String Crc16Sink::finish()
+string Crc16Sink::finish()
 {
-    auto sum = String::allocate(Size);
+    auto sum = string::allocate(Size);
     mutate(sum)->at(0) = (crc_ >> 8) & 0xFFU;
     mutate(sum)->at(1) = crc_ & 0xFFU;
     return sum;

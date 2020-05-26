@@ -23,27 +23,27 @@ BuildMap::BuildMap():
     applications_{RecipePathByTargetName::create()}
 {}
 
-void BuildMap::insertPlan(const String &path, BuildPlan *plan)
+void BuildMap::insertPlan(const string &path, BuildPlan *plan)
 {
     buildPlanByPath_->insert(path, plan);
 }
 
-bool BuildMap::lookupPlan(const String &path, Ref<BuildPlan> *plan) const
+bool BuildMap::lookupPlan(const string &path, Ref<BuildPlan> *plan) const
 {
     return buildPlanByPath_->lookup(path, plan);
 }
 
-String BuildMap::commonPrefix() const
+string BuildMap::commonPrefix() const
 {
     return buildPlanByPath_->commonPrefix('/');
 }
 
-bool BuildMap::registerLibrary(const String &name, const String &recipePath, String *existingRecipePath)
+bool BuildMap::registerLibrary(const string &name, const string &recipePath, string *existingRecipePath)
 {
     return libraries_->insert(name, recipePath, existingRecipePath);
 }
 
-bool BuildMap::registerApplication(const String &name, const String &recipePath, String *existingRecipePath)
+bool BuildMap::registerApplication(const string &name, const string &recipePath, string *existingRecipePath)
 {
     return applications_->insert(name, recipePath, existingRecipePath);
 }

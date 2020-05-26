@@ -12,7 +12,7 @@
 
 namespace cc {
 
-UnlinkGuard::UnlinkGuard(const String &path):
+UnlinkGuard::UnlinkGuard(const string &path):
     path_{path}
 {
     if (path_->isRelativePath())

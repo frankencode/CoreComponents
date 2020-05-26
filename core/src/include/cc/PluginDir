@@ -18,22 +18,22 @@ template<typename, typename> class Map;
 class PluginDir: public Object
 {
 public:
-    static Ref<PluginDir> open(const String &path);
+    static Ref<PluginDir> open(const string &path);
 
-    String path() const;
+    string path() const;
     Ref< Source<const Plugin *> > getLoadedPlugins() const;
 
 protected:
     virtual void onLoaded(Plugin *plugin) {}
-    virtual void onLoadError(const String &pluginPath, const String &errorMessage);
+    virtual void onLoadError(const string &pluginPath, const string &errorMessage);
 
 private:
-    PluginDir(const String &path);
+    PluginDir(const string &path);
     ~PluginDir();
     PluginDir *open();
 
-    String path_;
-    typedef Map<String, Ref<Plugin> > PluginByName;
+    string path_;
+    typedef Map<string, Ref<Plugin> > PluginByName;
     Ref<PluginByName> loadedPlugins_;
 };
 

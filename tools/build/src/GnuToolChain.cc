@@ -57,7 +57,7 @@ GnuToolChain::GnuToolChain(const BuildPlan *plan):
 GnuToolChain::~GnuToolChain()
 {}
 
-String GnuToolChain::compiler(const String &source) const
+string GnuToolChain::compiler(const string &source) const
 {
     return (
         source->endsWith(".cc")  ||
@@ -74,44 +74,44 @@ String GnuToolChain::compiler(const String &source) const
     ccPath_;
 }
 
-String GnuToolChain::compiler(const BuildPlan *plan) const
+string GnuToolChain::compiler(const BuildPlan *plan) const
 {
     return plan->containsCPlusPlus() ? cxxPath_ : ccPath_;
 }
 
-String GnuToolChain::queryMachine(const String &compiler)
+string GnuToolChain::queryMachine(const string &compiler)
 {
-    String machine = Process::stage(machineCommand(compiler))->setError(stdErr())->open()->output()->readAll();
+    string machine = Process::stage(machineCommand(compiler))->setError(stdErr())->open()->output()->readAll();
     mutate(machine)->trimInsitu();
     mutate(machine)->replaceInsitu("-pc-", "-"); // workaround for clang/bash
     return machine;
 }
 
-String GnuToolChain::machineCommand(const String &compiler)
+string GnuToolChain::machineCommand(const string &compiler)
 {
     return compiler + " -dumpmachine";
 }
 
-String GnuToolChain::machineCommand() const
+string GnuToolChain::machineCommand() const
 {
     return machineCommand(compiler());
 }
 
-String GnuToolChain::querySystemRoot(const String &compiler)
+string GnuToolChain::querySystemRoot(const string &compiler)
 {
-    String systemRoot = Process::stage(compiler + " -print-sysroot")->setError(stdErr())->open()->output()->readAll();
+    string systemRoot = Process::stage(compiler + " -print-sysroot")->setError(stdErr())->open()->output()->readAll();
     mutate(systemRoot)->trimInsitu();
     return systemRoot;
 }
 
-String GnuToolChain::defaultOptimization(const BuildPlan *plan) const
+string GnuToolChain::defaultOptimization(const BuildPlan *plan) const
 {
     /*if ((plan->options() & BuildPlan::Debug) && (plan->options() & BuildPlan::Release)) return "g";*/
     if (plan->options() & BuildPlan::Release) return "3";
     else return "";
 }
 
-String GnuToolChain::analyseCommand(const BuildPlan *plan, const String &source) const
+string GnuToolChain::analyseCommand(const BuildPlan *plan, const string &source) const
 {
     Format args;
     args << compiler(source);
@@ -120,7 +120,7 @@ String GnuToolChain::analyseCommand(const BuildPlan *plan, const String &source)
     return args->join(" ");
 }
 
-Ref<Job> GnuToolChain::createAnalyseJob(const BuildPlan *plan, const String &source) const
+Ref<Job> GnuToolChain::createAnalyseJob(const BuildPlan *plan, const string &source) const
 {
     return Job::create(analyseCommand(plan, source));
 }
@@ -128,7 +128,7 @@ Ref<Job> GnuToolChain::createAnalyseJob(const BuildPlan *plan, const String &sou
 Ref<Module> GnuToolChain::finishAnalyseJob(const BuildPlan *plan, const Job *job) const
 {
     Ref<StringList> parts = dependencySplitPattern_->split(job->outputText());
-    String modulePath = parts->front();
+    string modulePath = parts->front();
     parts->popFront();
     if (plan->options() & BuildPlan::Tools)
         modulePath = modulePath->baseName();
@@ -170,9 +170,9 @@ Ref<Job> GnuToolChain::createPreprocessJob(const BuildPlan *plan, const Module *
     return Job::create(args->join(" "));
 }
 
-String GnuToolChain::targetName(const BuildPlan *plan) const
+string GnuToolChain::targetName(const BuildPlan *plan) const
 {
-    String name = plan->name();
+    string name = plan->name();
     if (plan->options() & BuildPlan::Library) {
         if (!plan->name()->startsWith("lib"))
             name = "lib" + name;
@@ -180,17 +180,17 @@ String GnuToolChain::targetName(const BuildPlan *plan) const
     return name;
 }
 
-String GnuToolChain::linkName(const BuildPlan *plan) const
+string GnuToolChain::linkName(const BuildPlan *plan) const
 {
-    String name = targetName(plan);
+    string name = targetName(plan);
     if (plan->options() & BuildPlan::Library)
         name = name + ".so." + plan->version();
     return name;
 }
 
-String GnuToolChain::linkCommand(const BuildPlan *plan) const
+string GnuToolChain::linkCommand(const BuildPlan *plan) const
 {
-    String name = plan->name();
+    string name = plan->name();
     Version version = plan->version();
     int options = plan->options();
     ModuleList *modules = plan->modules();
@@ -233,7 +233,7 @@ bool GnuToolChain::link(const BuildPlan *plan) const
     return createSymlinks(plan);
 }
 
-String GnuToolChain::configureCompileCommand(const BuildPlan *plan, const String &sourcePath, const String &binPath) const
+string GnuToolChain::configureCompileCommand(const BuildPlan *plan, const string &sourcePath, const string &binPath) const
 {
     Format args;
     args << compiler(sourcePath);
@@ -245,9 +245,9 @@ String GnuToolChain::configureCompileCommand(const BuildPlan *plan, const String
     return args->join(" ");
 }
 
-String GnuToolChain::installDirPath(const BuildPlan *plan) const
+string GnuToolChain::installDirPath(const BuildPlan *plan) const
 {
-    String relativePath;
+    string relativePath;
     if (plan->options() & BuildPlan::Library) {
         relativePath = "lib";
         if (isMultiArch_)
@@ -259,17 +259,17 @@ String GnuToolChain::installDirPath(const BuildPlan *plan) const
     return plan->installPath(relativePath);
 }
 
-String GnuToolChain::includePrefix(const BuildPlan *plan) const
+string GnuToolChain::includePrefix(const BuildPlan *plan) const
 {
     return plan->installPath("include");
 }
 
-String GnuToolChain::libIncludePrefix(const BuildPlan *plan) const
+string GnuToolChain::libIncludePrefix(const BuildPlan *plan) const
 {
     return installDirPath(plan)->extendPath(linkName(plan))->extendPath("include");
 }
 
-String GnuToolChain::bundlePrefix(const BuildPlan *plan) const
+string GnuToolChain::bundlePrefix(const BuildPlan *plan) const
 {
     return plan->installPrefix()->extendPath("share")->extendPath(targetName(plan));
 }
@@ -288,7 +288,7 @@ bool GnuToolChain::createSymlinks(const BuildPlan *plan) const
     return true;
 }
 
-void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, const String &libName) const
+void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, const string &libName) const
 {
     cleanLibrarySymlinks(plan, libName);
 
@@ -299,7 +299,7 @@ void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, const String &li
     }
 }
 
-void GnuToolChain::cleanLibrarySymlinks(const BuildPlan *plan, const String &libName) const
+void GnuToolChain::cleanLibrarySymlinks(const BuildPlan *plan, const string &libName) const
 {
     Ref<StringList> parts = libName->split('.');
     while (parts->back() != "so") {
@@ -308,50 +308,50 @@ void GnuToolChain::cleanLibrarySymlinks(const BuildPlan *plan, const String &lib
     }
 }
 
-void GnuToolChain::createPluginSymlinks(const BuildPlan *plan, const String &targetLibName, const String &pluginLibName) const
+void GnuToolChain::createPluginSymlinks(const BuildPlan *plan, const string &targetLibName, const string &pluginLibName) const
 {
     cleanPluginSymlinks(plan, targetLibName, pluginLibName);
 
-    String pluginPath = plan->pluginPath(targetLibName);
+    string pluginPath = plan->pluginPath(targetLibName);
     plan->shell()->mkdir(pluginPath);
     plan->shell()->symlink(plan->pluginReversePath()->extendPath(pluginLibName), pluginPath->extendPath(pluginLibName));
 }
 
-void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, const String &targetLibName, const String &pluginLibName) const
+void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, const string &targetLibName, const string &pluginLibName) const
 {
     plan->shell()->clean(plan->pluginPath(targetLibName)->extendPath(pluginLibName));
 }
 
-void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, const String &targetLibName) const
+void GnuToolChain::cleanPluginSymlinks(const BuildPlan *plan, const string &targetLibName) const
 {
     plan->shell()->clean(plan->pluginPath(targetLibName));
 }
 
-void GnuToolChain::createAliasSymlinks(const BuildPlan *plan, const String &appName) const
+void GnuToolChain::createAliasSymlinks(const BuildPlan *plan, const string &appName) const
 {
     cleanAliasSymlinks(plan, appName);
 
-    for (String aliasName: plan->alias())
+    for (string aliasName: plan->alias())
         plan->shell()->symlink(appName, aliasName);
 }
 
-void GnuToolChain::cleanAliasSymlinks(const BuildPlan *plan, const String &appName) const
+void GnuToolChain::cleanAliasSymlinks(const BuildPlan *plan, const string &appName) const
 {
-    for (String aliasName: plan->alias())
+    for (string aliasName: plan->alias())
         plan->shell()->unlink(aliasName);
 }
 
-String GnuToolChain::pkgConfigName(const BuildPlan *plan) const
+string GnuToolChain::pkgConfigName(const BuildPlan *plan) const
 {
     return targetName(plan) + ".pc";
 }
 
-String GnuToolChain::pkgConfigInstallDirPath(const BuildPlan *plan) const
+string GnuToolChain::pkgConfigInstallDirPath(const BuildPlan *plan) const
 {
     return installDirPath(plan)->extendPath("pkgconfig");
 }
 
-String GnuToolChain::pkgConfig(const BuildPlan *plan) const
+string GnuToolChain::pkgConfig(const BuildPlan *plan) const
 {
     if (!(plan->options() & BuildPlan::Library)) return "";
 
@@ -427,13 +427,13 @@ void GnuToolChain::generatePkgConfig(const BuildPlan *plan) const
 bool GnuToolChain::refreshLinkerCache(const BuildPlan *plan) const
 {
     if (plan->installRoot() != "/") return true;
-    String libInstallPath = plan->installPath("lib");
+    string libInstallPath = plan->installPath("lib");
     if (isMultiArch_) libInstallPath = libInstallPath->extendPath(machine_);
     if (!libInstallPath->isAbsolutePath()) libInstallPath = libInstallPath->absolutePathRelativeTo(Process::getWorkingDirectory());
     Format attr;
     attr << "ldconfig";
     attr << libInstallPath;
-    String command = attr->join(" ");
+    string command = attr->join(" ");
     return plan->shell()->run(command);
 }
 
@@ -458,7 +458,7 @@ void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) cons
     if (plan->name() != "")
         args << "-DCCBUILD_BUNDLE_VERSION=" + plan->version();
     if (plan->customCompileFlags()) {
-        for (const String &flags: plan->customCompileFlags()) {
+        for (const string &flags: plan->customCompileFlags()) {
             if (flags->contains("c++") && args->at(0) != cxxPath_) continue;
                 // FIXME: workaround hack to prevent passing "-std=c++11" to the C compiler
             args << flags;

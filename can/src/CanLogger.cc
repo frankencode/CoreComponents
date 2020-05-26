@@ -64,7 +64,7 @@ void CanLogger::bootstrap()
             Format f;
             f << fixed(t, 3, 3) << " " << fixed(dt, 3, 3) << " -- " << frame << nl;
 
-            String info;
+            string info;
 
             if (ServiceReply{frame})
             {

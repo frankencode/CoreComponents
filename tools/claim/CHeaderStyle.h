@@ -17,8 +17,8 @@ using namespace cc;
 class CHeaderStyle: public HeaderStyle
 {
 public:
-    Ref<Header> scan(const String &path) const override;
-    String str(const Notice *notice) const override;
+    Ref<Header> scan(const string &path) const override;
+    string str(const Notice *notice) const override;
 
 private:
     friend class Object;

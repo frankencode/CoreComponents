@@ -59,7 +59,7 @@ const char *Variant::typeName(VariantType type, VariantType itemType)
     return "unknown";
 }
 
-Variant Variant::read(const String &s)
+Variant Variant::read(const string &s)
 {
     if (s->startsWith('"') && s->endsWith('"'))
         return Variant{s->copy(1, s->count() - 1)};
@@ -90,10 +90,10 @@ const char *Variant::Instance::typeName() const
     return Variant::typeName(type_, itemType_);
 }
 
-String Variant::Instance::toString() const
+string Variant::Instance::toString() const
 {
     switch (type_) {
-        case VariantType::Undefined: return String{};
+        case VariantType::Undefined: return string{};
         case VariantType::Bool     : return str(int_ != 0);
         case VariantType::Int      : return str(int_);
         case VariantType::Float    : return str(float_);
@@ -107,7 +107,7 @@ String Variant::Instance::toString() const
     if (+(type_ & VariantType::List) && +(itemType_ & VariantType::String))
         return str(Variant::cast< Ref<StringList> >(ref().get()));
 
-    return String{};
+    return string{};
 }
 
 bool Variant::operator==(const Variant &b) const

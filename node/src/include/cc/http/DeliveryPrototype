@@ -18,10 +18,10 @@ using meta::MetaProtocol;
 class DeliveryPrototype: public MetaPrototype
 {
 public:
-    static Ref<DeliveryPrototype> create(const String &className);
+    static Ref<DeliveryPrototype> create(const string &className);
 
 protected:
-    DeliveryPrototype(const String &className, const MetaProtocol *protocol = nullptr);
+    DeliveryPrototype(const string &className, const MetaProtocol *protocol = nullptr);
 };
 
 }} // namespace cc::http

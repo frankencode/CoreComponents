@@ -16,8 +16,8 @@ void DebugToken::printTo(Stream *stream, CharArray *text, int depth, int default
 {
     if (defaultScope == -1) defaultScope = scope();
 
-    String indent(depth * 2, ' ');
-    String subIndent((depth + 1) * 2, ' ');
+    string indent(depth * 2, ' ');
+    string subIndent((depth + 1) * 2, ' ');
 
     {
         Format format(stream);

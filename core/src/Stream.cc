@@ -55,9 +55,9 @@ off_t Stream::transferSpanTo(off_t count, Stream *sink, CharArray *buffer)
     if (count == 0) return 0;
 
     off_t total = 0;
-    String h;
+    string h;
     if (!buffer) {
-        h = String::allocate((0 < count && count < 0x4000) ? count : 0x4000);
+        h = string::allocate((0 < count && count < 0x4000) ? count : 0x4000);
         buffer = mutate(h);
     }
 
@@ -88,19 +88,19 @@ int Stream::readSpan(CharArray *data)
     return m;
 }
 
-String Stream::readSpan(int count)
+string Stream::readSpan(int count)
 {
-    if (count == 0) return String{};
+    if (count == 0) return string{};
     if (count < 0) return readAll();
-    String s{count};
+    string s{count};
     readSpan(mutate(s));
     return s;
 }
 
-String Stream::readAll(CharArray *buffer)
+string Stream::readAll(CharArray *buffer)
 {
-    String data = buffer;
-    if (!data) data = String::allocate(0x4000);
+    string data = buffer;
+    if (!data) data = string::allocate(0x4000);
     auto parts = StringList::create();
     while (true) {
         int n = read(mutate(data));

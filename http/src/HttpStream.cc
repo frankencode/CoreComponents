@@ -65,7 +65,7 @@ void HttpStream::nextChunk()
     }
     bool ok = false;
     nextLine();
-    String line = readAll(buffer());
+    string line = readAll(buffer());
     mutate(line)->trimInsitu();
     payloadLeft_ = line->toNumber<int, 16>(&ok);
     chunked_ = true;
@@ -80,7 +80,7 @@ void HttpStream::nextChunk()
 
 CharArray *HttpStream::buffer()
 {
-    if (!buffer_) buffer_ = String::allocate(0x1000);
+    if (!buffer_) buffer_ = string::allocate(0x1000);
     return mutate(buffer_);
 }
 

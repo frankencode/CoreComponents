@@ -16,7 +16,7 @@ namespace cc {
 namespace http {
 
 #define CCNODE_LOG(sink) \
-    sink << "(" << inum(uint64_t(Thread::self()->id()), 62) << ") " << String{__FILE__}->baseName() << ": "
+    sink << "(" << inum(uint64_t(Thread::self()->id()), 62) << ") " << string{__FILE__}->baseName() << ": "
 
 #define CCNODE_ERROR()   CCNODE_LOG(Format{errorLoggingInstance()->errorStream()  })
 #define CCNODE_WARNING() CCNODE_LOG(Format{errorLoggingInstance()->warningStream()})

@@ -26,22 +26,22 @@ public:
 
     Ref<const ScaledFont> selectFont(const Font &font) const override;
 
-    Ref<GlyphRun> typeset(const String &text, const Font &font, const Point &origin = Point{}) const override;
-    Ref<FtGlyphRun> ftTypeset(const String &text, const Font &font, const Point &origin = Point{}) const;
+    Ref<GlyphRun> typeset(const string &text, const Font &font, const Point &origin = Point{}) const override;
+    Ref<FtGlyphRun> ftTypeset(const string &text, const Font &font, const Point &origin = Point{}) const;
 
     Ref<TextRun> createTextRun() const override;
 
-    void selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const override;
+    void selectFontRanges(const string &text, const Font &font, const ReturnFontRange &fontRange) const override;
 
 private:
     friend class ThreadLocalSingleton<FtFontManager>;
 
     FtFontManager();
 
-    Ref<FontFace> openFontFace(const String &path) override;
+    Ref<FontFace> openFontFace(const string &path) override;
 
     typedef CircularBuffer< Ref<const FtScaledFont> > RecentFonts;
-    typedef Map< String, Ref<RecentFonts> > FontCache;
+    typedef Map< string, Ref<RecentFonts> > FontCache;
 
     mutable Ref<FontCache> fontCache_;
 };

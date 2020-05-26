@@ -30,7 +30,7 @@ public:
     /** Collect all data written to this sink
       * \return Captured output
       */
-    String collect() const;
+    string collect() const;
 
 private:
     CaptureSink();

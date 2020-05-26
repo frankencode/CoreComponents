@@ -23,9 +23,9 @@ Ref<CanFrame> NetworkCommand::createFrame(NetworkCommand::Specifier commandSpeci
     return frame;
 }
 
-String NetworkCommand::Instance::toString() const
+string NetworkCommand::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     Format f;
     f << "NetworkCommand {" << nl
@@ -36,9 +36,9 @@ String NetworkCommand::Instance::toString() const
     return f;
 }
 
-String str(NetworkCommand::Specifier commandSpecifier)
+string str(NetworkCommand::Specifier commandSpecifier)
 {
-    String s;
+    string s;
 
     switch (commandSpecifier) {
         case NetworkCommand::Specifier::Start : s = "NetworkCommand::Specifier::Start"; break;

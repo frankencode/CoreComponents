@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/ByteSink>
-#include <cc/utf16>
 
 namespace cc {
 
@@ -26,7 +25,8 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    static Ref<Utf16Sink> open(Stream *stream, CharArray *buffer = nullptr, Endian endian = Endian::Big) {
+    static Ref<Utf16Sink> open(Stream *stream, CharArray *buffer = nullptr, Endian endian = Endian::Big)
+    {
         return new Utf16Sink{stream, buffer, endian};
     }
 
@@ -35,7 +35,8 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    static Ref<Utf16Sink> open(CharArray *buffer, Endian endian = Endian::Big) {
+    static Ref<Utf16Sink> open(CharArray *buffer, Endian endian = Endian::Big)
+    {
         return new Utf16Sink{nullptr, buffer, endian};
     }
 
@@ -54,25 +55,40 @@ public:
     void write(uchar_t ch)
     {
         if (ch < 0x10000) {
-            if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw utf16::EncodeSurrogatePairError{};
-            else if ((ch == 0xFEFF) || (ch == 0xFFFE)) throw utf16::EncodeByteOrderMarkError{};
+            if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw SurrogatePairEncodingError{};
+            else if ((ch == 0xFEFF) || (ch == 0xFFFE)) throw ByteOrderMarkEncodingError{};
             byteSink_->writeUInt16(ch);
         }
         else {
-            if (0x10FFFF < ch) throw utf16::EncodeLargeCodePointError{};
+            if (0x10FFFF < ch) throw LargeCodePointEncodingError{};
             ch -= 0x10000;
             byteSink_->writeUInt16((ch >> 10) + 0xD800);
             byteSink_->writeUInt16((ch & 0x3FF) + 0xDC00);
         }
     }
 
-    /// Underlying byte sink used for UTF-16 encoding
+    /// Underlying byte sink
     ByteSink *byteSink() const { return byteSink_; }
 
 private:
     Utf16Sink(Stream *stream, CharArray* buffer, Endian endian):
         byteSink_{ByteSink::open(stream, buffer, endian)}
     {}
+
+    class SurrogatePairEncodingError: public UnicodeError {
+    public:
+        string message() const override;
+    };
+
+    class ByteOrderMarkEncodingError: public UnicodeError {
+    public:
+        string message() const override;
+    };
+
+    class LargeCodePointEncodingError: public UnicodeError {
+    public:
+        string message() const override;
+    };
 
     Ref<ByteSink> byteSink_;
 };

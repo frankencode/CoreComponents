@@ -126,7 +126,7 @@ YasonSyntax::YasonSyntax(int options)
         )
     );
 
-    DEFINE("String", &string_,
+    DEFINE("string", &string_,
         GLUE(
             CHAR('"'),
             REPEAT(
@@ -148,11 +148,11 @@ YasonSyntax::YasonSyntax(int options)
     DEFINE("Text", &text_,
         CHOICE(
             GLUE(
-                REF("String"),
+                REF("string"),
                 REPEAT(
                     GLUE(
                         INLINE("Noise"),
-                        REF("String")
+                        REF("string")
                     )
                 )
             ),
@@ -238,7 +238,7 @@ YasonSyntax::YasonSyntax(int options)
                 NOT(RANGE('0', '9')),
                 INLINE("Identifier")
             ),
-            INLINE("String")
+            INLINE("string")
         )
     );
 
@@ -376,7 +376,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
     const Token *objectToken = token;
     token = token->firstChild();
 
-    String className;
+    string className;
     if (token && token->rule() == className_)
         className = text->copyRange(token);
 
@@ -409,7 +409,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
 
     while (token) {
         if (token->rule() == name_) {
-            String name = readName(text, token);
+            string name = readName(text, token);
 
             Variant defaultValue;
             const MetaPrototype *memberPrototype = nullptr;
@@ -521,7 +521,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
     return object;
 }
 
-const Token *YasonSyntax::getMemberNameToken(const CharArray *text, const Token *objectToken, const String &memberName) const
+const Token *YasonSyntax::getMemberNameToken(const CharArray *text, const Token *objectToken, const string &memberName) const
 {
     for (const Token *token = objectToken->firstChild(); token; token = token->nextSibling()) {
         if (token->rule() == name_) {
@@ -532,7 +532,7 @@ const Token *YasonSyntax::getMemberNameToken(const CharArray *text, const Token 
     return objectToken;
 }
 
-const Token *YasonSyntax::getMemberValueToken(const CharArray *text, const Token *objectToken, const String &memberName) const
+const Token *YasonSyntax::getMemberValueToken(const CharArray *text, const Token *objectToken, const string &memberName) const
 {
     const Token *token = getMemberNameToken(text, objectToken, memberName);
     if (token != objectToken) return token->nextSibling();
@@ -550,7 +550,7 @@ const Token *YasonSyntax::getChildToken(const Token *objectToken, int childIndex
     return nullptr;
 }
 
-String YasonSyntax::readName(const CharArray *text, const Token *token) const
+string YasonSyntax::readName(const CharArray *text, const Token *token) const
 {
     bool stripQuotation = (text->at(token->i0()) == '"');
     return text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
@@ -597,7 +597,7 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
              expectedType == VariantType::Color ||
              expectedItemType == VariantType::Color )
         {
-            value = Color(String(text->copyRange(token)));
+            value = Color(string(text->copyRange(token)));
         }
         else
             typeError = true;
@@ -610,7 +610,7 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
              expectedItemType == VariantType::Version ||
              expectedItemType == VariantType::String )
         {
-            String chunk = text->copyRange(token);
+            string chunk = text->copyRange(token);
             if ( expectedType == VariantType::String ||
                  expectedItemType == VariantType::String )
                 value = chunk;
@@ -631,7 +631,7 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
         else if ( expectedType == VariantType::Color ||
                   expectedItemType == VariantType::Color )
         {
-            String s = readText(text, token);
+            string s = readText(text, token);
             bool ok = false;
             value = Color::parse(s, &ok);
             if (!ok) typeError = true;
@@ -690,7 +690,7 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
             value = list;
         }
         else if (expectedItemType == VariantType::String) {
-            Ref< List<String> > list = List<String>::create();
+            Ref< List<string> > list = List<string>::create();
             list->append(value);
             value = list;
         }
@@ -714,17 +714,17 @@ Variant YasonSyntax::readList(const CharArray *text, const Token *token, Variant
     else if (expectedItemType == VariantType::Float)
         list = parseTypedList<float>(text, token, expectedItemType);
     else if (expectedItemType == VariantType::String)
-        list = parseTypedList<String>(text, token, expectedItemType);
+        list = parseTypedList<string>(text, token, expectedItemType);
     else
         list = parseTypedList<Variant>(text, token, expectedItemType);
     return list;
 }
 
-String YasonSyntax::readText(const CharArray *text, const Token *token) const
+string YasonSyntax::readText(const CharArray *text, const Token *token) const
 {
     token = token->firstChild();
 
-    String s;
+    string s;
 
     if (token->rule() != string_) {
         s = text->copyRange(token);

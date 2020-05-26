@@ -32,7 +32,7 @@ void PlatformManager::registerPlugin(PlatformPlugin *plugin)
     }
 }
 
-bool PlatformManager::getPlugin(const String &name, PlatformPlugin **plugin) const
+bool PlatformManager::getPlugin(const string &name, PlatformPlugin **plugin) const
 {
     return plugins_->lookup(name, plugin);
 }

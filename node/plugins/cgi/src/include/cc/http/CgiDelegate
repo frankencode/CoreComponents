@@ -22,19 +22,19 @@ public:
     static Ref<CgiDelegate> create(DeliveryWorker *worker);
 
     void process(const HttpRequest *request) override;
-    bool process(const HttpRequest *request, const FileStatus *status, const String &documentRoot = "");
-    void process(const HttpRequest *request, const String &script, const String &documentRoot = "");
+    bool process(const HttpRequest *request, const FileStatus *status, const string &documentRoot = "");
+    void process(const HttpRequest *request, const string &script, const string &documentRoot = "");
 
 private:
     CgiDelegate(DeliveryWorker *worker);
 
-    typedef Map<String, String> EnvMap;
+    typedef Map<string, string> EnvMap;
 
     Ref<EnvMap> makeEnv(const HttpRequest *request, CharArray *payload) const;
     void logEnv(EnvMap *env);
-    String compileHeader(const HttpRequest *request, CharArray *payload) const;
-    static String urlDecode(const HttpRequest *request, CharArray *payload);
-    static String wrapHttp(const String &header);
+    string compileHeader(const HttpRequest *request, CharArray *payload) const;
+    static string urlDecode(const HttpRequest *request, CharArray *payload);
+    static string wrapHttp(const string &header);
 
     Ref<const CgiInstance> cgiInstance_;
     int nextPeer_;

@@ -27,7 +27,7 @@ public:
 
     Property<DisplayMode> nativeMode;
 
-    String toString() const;
+    string toString() const;
 
 protected:
     friend class Object;

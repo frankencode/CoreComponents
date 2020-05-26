@@ -7,13 +7,13 @@ using namespace cc::http;
 
 int main(int argc, char **argv)
 {
-    auto toolName = String{argv[0]}->fileName();
+    auto toolName = string{argv[0]}->fileName();
     int exitStatus = 0;
 
     try {
         if (argc < 2) throw HelpRequest{};
 
-        String uri;
+        string uri;
         {
             auto parts = StringList::create();
             for (int i = 1; i < argc; ++i)

@@ -21,19 +21,19 @@ Ref<FileLoggingInstance> FileLoggingInstance::create(const MetaObject *config)
 FileLoggingInstance::FileLoggingInstance(const MetaObject *config):
     LoggingInstance{config}
 {
-    String path = config->value("path");
+    string path = config->value("path");
     if (path == "") sink_ = NullStream::instance();
     else sink_ = File::open(path, FileOpen::WriteOnly|FileOpen::Append|FileOpen::Create);
 }
 
-void FileLoggingInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage) const
+void FileLoggingInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const string &statusMessage) const
 {
     sink_->write(
         formatDeliveryLogMessage(client, statusCode, bytesWritten, statusMessage)
     );
 }
 
-void FileLoggingInstance::logMessage(const String &message, LoggingLevel level) const
+void FileLoggingInstance::logMessage(const string &message, LoggingLevel level) const
 {
     if (verbosity() >= level) sink_->write(message);
 }

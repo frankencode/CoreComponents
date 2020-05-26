@@ -16,11 +16,11 @@
 using namespace cc;
 using namespace cc::can;
 
-void safetyCounter(String interface, int canId, int invCanId, double refreshTime);
+void safetyCounter(string interface, int canId, int invCanId, double refreshTime);
 
 int main(int argc, char **argv)
 {
-    String toolName = String{argv[0]}->fileName();
+    string toolName = string{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
         if (arguments->items()->count() > 0) throw HelpRequest{};
 
-        String interface = options->value("interface");
+        string interface = options->value("interface");
         int canId = options->value("can-id");
         int invCanId = options->value("inv-can-id");
         double refreshTime = options->value("refresh-time");
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void safetyCounter(String interface, int canId, int invCanId, double refreshTime)
+void safetyCounter(string interface, int canId, int invCanId, double refreshTime)
 {
     auto can = CanSocket::open(interface);
 

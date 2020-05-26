@@ -15,27 +15,27 @@ namespace cc {
 class PluginLoadError: public Exception
 {
 public:
-    String message() const override;
+    string message() const override;
 };
 
 class Plugin: public Object
 {
 public:
-    static Ref<Plugin> load(const String &path);
+    static Ref<Plugin> load(const string &path);
 
-    String name() const { return name_; }
-    String path() const { return path_; }
+    string name() const { return name_; }
+    string path() const { return path_; }
 
     void reload();
     void close();
 
 private:
-    Plugin(const String &path);
+    Plugin(const string &path);
 
     Plugin *load();
 
-    String path_;
-    String name_;
+    string path_;
+    string name_;
     void *handle_;
 };
 

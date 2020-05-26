@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 namespace ui {
@@ -18,16 +18,16 @@ class Image;
 class ImagePlugin: public Object
 {
 public:
-    String name() const { return name_; }
+    string name() const { return name_; }
 
-    virtual Ref<Image> load(const String &path, unsigned index = 0) const = 0;
+    virtual Ref<Image> load(const string &path, unsigned index = 0) const = 0;
 
 protected:
-    ImagePlugin(const String &name);
+    ImagePlugin(const string &name);
 
     void init();
 
-    String name_;
+    string name_;
 };
 
 }} // namespace cc::ui

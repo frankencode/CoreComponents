@@ -26,9 +26,9 @@ Ref<CanFrame> BlockReadStartRequest::createFrame(int serverId)
     return frame;
 }
 
-String BlockReadStartRequest::Instance::toString() const
+string BlockReadStartRequest::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "BlockReadStartRequest {" << nl

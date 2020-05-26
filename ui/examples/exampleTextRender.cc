@@ -17,12 +17,12 @@ class MainView: public View
 
         glyphRuns_ = List< Ref<const GlyphRun> >::create();
 
-        String pangram = "the quick brown fox jumps over the lazy dog";
+        string pangram = "the quick brown fox jumps over the lazy dog";
         pangram = pangram->toUpper() + " / " + pangram;
 
         for (auto family: FontManager::instance()->getFontFamilies())
         {
-            String text = Format{"%% (%%)"} << pangram << family->name();
+            string text = Format{"%% (%%)"} << pangram << family->name();
 
             // CC_INSPECT(family->name());
 
@@ -60,7 +60,7 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
-    String fontPath = "<default font>";
+    string fontPath = "<default font>";
     if (argc > 1) {
         fontPath = argv[1];
         FontManager::instance()->addPath(fontPath);

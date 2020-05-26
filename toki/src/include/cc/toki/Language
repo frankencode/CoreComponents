@@ -20,8 +20,8 @@ using namespace cc::glob;
 class Language: public Object
 {
 public:
-    String displayName() const { return displayName_; }
-    String name() const { return name_; }
+    string displayName() const { return displayName_; }
+    string name() const { return name_; }
     Pattern pathPattern() const { return pathPattern_; }
     const SyntaxDefinition *highlightingSyntax() const { return highlightingSyntax_; }
     const SyntaxDefinition *discoverySyntax() const { return discoverySyntax_; }
@@ -29,7 +29,7 @@ public:
 
 protected:
     Language(
-        const String &displayName,
+        const string &displayName,
         const Pattern &pathPattern,
         const SyntaxDefinition *highlightingSyntax,
         const SyntaxDefinition *discoverySyntax = nullptr,
@@ -39,8 +39,8 @@ protected:
 private:
     Language();
 
-    String displayName_;
-    String name_;
+    string displayName_;
+    string name_;
     Pattern pathPattern_;
     Ref<const SyntaxDefinition> highlightingSyntax_;
     Ref<const SyntaxDefinition> discoverySyntax_;

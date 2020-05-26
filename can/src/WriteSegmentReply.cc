@@ -26,9 +26,9 @@ Ref<CanFrame> WriteSegmentReply::createFrame(int serverId, int offset)
     return frame;
 }
 
-String WriteSegmentReply::Instance::toString() const
+string WriteSegmentReply::Instance::toString() const
 {
-    if (!isValid()) return String{};
+    if (!isValid()) return string{};
 
     return Format{}
         << "WriteSegmentReply {" << nl

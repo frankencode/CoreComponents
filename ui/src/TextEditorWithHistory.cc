@@ -16,16 +16,16 @@ TextEditorWithHistory::TextEditorWithHistory():
     future_{History::create()}
 {}
 
-String TextEditorWithHistory::text() const
+string TextEditorWithHistory::text() const
 {
     return copy(Range{0, byteCount()});
 }
 
-Range TextEditorWithHistory::paste(Range range, const String &newChunk)
+Range TextEditorWithHistory::paste(Range range, const string &newChunk)
 {
     if (!(0 <= range->i0() && range->i1() <= byteCount())) return Range{};
 
-    String filteredChunk = filterChunk(newChunk);
+    string filteredChunk = filterChunk(newChunk);
 
     future_->deplete();
     auto delta =
@@ -73,7 +73,7 @@ Range TextEditorWithHistory::redo()
     return delta->newRange();
 }
 
-String TextEditorWithHistory::filterChunk(const String &newChunk) const
+string TextEditorWithHistory::filterChunk(const string &newChunk) const
 {
     return newChunk;
 }

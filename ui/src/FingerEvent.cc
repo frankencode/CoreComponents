@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-String FingerEvent::toString() const
+string FingerEvent::toString() const
 {
     return Format{}
         << "FingerEvent {" << nl

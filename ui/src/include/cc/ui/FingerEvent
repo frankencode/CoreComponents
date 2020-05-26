@@ -20,7 +20,7 @@ public:
     TouchFingerId fingerId() const { return fingerId_; }
     double pressure() const { return pressure_; }
 
-    String toString() const override;
+    string toString() const override;
 
 private:
     friend class Object;

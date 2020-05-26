@@ -13,7 +13,7 @@
 namespace cc {
 namespace ui {
 
-String str(ScanCode scanCode)
+string str(ScanCode scanCode)
 {
     const char* names[] = {
         nullptr,                    // 0
@@ -312,13 +312,13 @@ String str(ScanCode scanCode)
     return Format{"Unknown (%%)"} << +scanCode;
 }
 
-String str(KeyCode keyCode)
+string str(KeyCode keyCode)
 {
     if (0x20 <= +keyCode && +keyCode <= 0x7E) return Format{"'%%'"} << char(+keyCode);
     return "0x" + hex(+keyCode);
 }
 
-String str(KeyModifier modifiers)
+string str(KeyModifier modifiers)
 {
     if (modifiers == KeyModifier::None) return "None";
 

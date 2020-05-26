@@ -13,12 +13,12 @@
 namespace cc {
 namespace glob {
 
-Ref<Glob> Glob::open(const String &expression)
+Ref<Glob> Glob::open(const string &expression)
 {
     return new Glob{expression};
 }
 
-Glob::Glob(const String &expression):
+Glob::Glob(const string &expression):
     remainder_{expression->split('/')}
 {
     if (expression->head(1) == "/") {
@@ -30,32 +30,32 @@ Glob::Glob(const String &expression):
     }
 }
 
-Glob::Glob(const String &path, StringList *remainder):
+Glob::Glob(const string &path, StringList *remainder):
     remainder_(remainder->copy())
 {
     init(path);
 }
 
-void Glob::init(const String &path)
+void Glob::init(const string &path)
 {
     dir_ = Dir::open(path);
     pattern_ = remainder_->front();
     remainder_->popFront();
 }
 
-bool Glob::read(String *path)
+bool Glob::read(string *path)
 {
     if (child_) {
         if (child_->read(path))
             return true;
         child_ = 0;
     }
-    String name;
+    string name;
     while (dir_->read(&name)) {
         if (name == ".") continue;
         if ((name == "..") && (pattern_ != "..")) continue;
         if (pattern_->match(name)->valid()) {
-            String node = dir_->path()->extendPath(name);
+            string node = dir_->path()->extendPath(name);
             if (remainder_->count() == 0) {
                 *path = node;
                 return true;

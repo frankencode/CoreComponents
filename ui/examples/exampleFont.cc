@@ -19,7 +19,7 @@ class MainView: public View
         scroll->carrier()->organize<Column>();
 
         for (int size = 16; size <= 64; size += 8) {
-            String text = "A small brown fox... (" + str(size) + ")";
+            string text = "A small brown fox... (" + str(size) + ")";
             scroll->add<Label>(text, Font(size));
             scroll->add<Label>(text, Font(size) << Slant::Italic);
             scroll->add<Label>(text, Font(size) << Weight::Bold);

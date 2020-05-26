@@ -27,7 +27,7 @@ private:
     ArReader(Stream *source);
 
     Ref<Stream> source_;
-    String data_;
+    string data_;
     off_t i_;
 };
 

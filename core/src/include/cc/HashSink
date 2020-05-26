@@ -19,7 +19,7 @@ class HashSink: public Stream
 {
 public:
     /// Finish hash sum computation and return the result
-    virtual String finish() = 0;
+    virtual string finish() = 0;
 };
 
 } // namespace cc

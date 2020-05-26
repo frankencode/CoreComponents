@@ -20,7 +20,7 @@ class SingleLineItemDelegate: public View
 
 public:
     Property< Ref<Visual> > icon;
-    Property<String> text;
+    Property<string> text;
 
     bool isPainted() const override { return false; }
 
@@ -29,7 +29,7 @@ public:
 
 private:
     Property<Size> preferredSize_;
-    SingleLineItemDelegate(View *parent, const String &text = String{}, Visual *icon = nullptr);
+    SingleLineItemDelegate(View *parent, const string &text = string{}, Visual *icon = nullptr);
     void init();
 };
 

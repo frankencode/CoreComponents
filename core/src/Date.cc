@@ -6,16 +6,16 @@
  *
  */
 
-#include <stdint.h>
-#include <cc/Format>
 #include <cc/Date>
+#include <cc/Format>
+#include <stdint.h>
 
 namespace cc {
 
 /* Every 4th year is a leap year excluding every last year in the
  * 100 year cycle (century) but not the last year in a 400 year cycle.
  */
-inline bool leapYear(int y)
+bool leapYear(int y)
 {
     return (y % 4 == 0) && ((y % 100 != 0) || (y % 400 == 0));
 }
@@ -39,12 +39,12 @@ static int leaps(int x, int y)
   * Interestingly the length of the year is measured in days, which is a duration
   * depending on Earth's angular velocity.
   */
-inline int daysInYear(int y)
+int daysInYear(int y)
 {
     return 31 * 7 + 30 * 4 + 28 + leapYear(y);
 }
 
-inline int daysInMonth(int i, int y)
+int daysInMonth(int i, int y)
 {
     const int days[] = {
         31/*Jan*/, 28/*Feb*/, 31/*Mar*/, 30/*Apr*/, 31/*May*/, 30/*Jun*/,
@@ -54,26 +54,26 @@ inline int daysInMonth(int i, int y)
 }
 
 Date::Date():
-    offset_(0),
-    time_(cc::nan())
+    offset_{0},
+    time_{cc::nan()}
 {}
 
 Date::Date(const Date &b):
-    year_(b.year_),
-    month_(b.month_),
-    day_(b.day_),
-    weekDay_(b.weekDay_),
-    yearDay_(b.yearDay_),
-    hour_(b.hour_),
-    minutes_(b.minutes_),
-    seconds_(b.seconds_),
-    offset_(b.offset_),
-    time_(b.time_)
+    year_{b.year_},
+    month_{b.month_},
+    day_{b.day_},
+    weekDay_{b.weekDay_},
+    yearDay_{b.yearDay_},
+    hour_{b.hour_},
+    minutes_{b.minutes_},
+    seconds_{b.seconds_},
+    offset_{b.offset_},
+    time_{b.time_}
 {}
 
 Date::Date(double time, int offset):
-    offset_(offset),
-    time_(time)
+    offset_{offset},
+    time_{time}
 {
     const int C1   = 365;
     const int C4   =  4 * C1 + 1;
@@ -129,13 +129,13 @@ Date::Date(double time, int offset):
 }
 
 Date::Date(int year, int month, int day, int hour, int minutes, int seconds, int offset):
-    year_(year),
-    month_(month),
-    day_(day),
-    hour_(hour),
-    minutes_(minutes),
-    seconds_(seconds),
-    offset_(offset)
+    year_{year},
+    month_{month},
+    day_{day},
+    hour_{hour},
+    minutes_{minutes},
+    seconds_{seconds},
+    offset_{offset}
 {
     if (year < 1) year = 1;
     if (month > 12) month = 12;
@@ -175,24 +175,24 @@ double Date::time() const
     return time_;
 }
 
-String Date::toString() const
+string Date::toString() const
 {
-    //! \todo fully enable ms resolution (ss.fraction in String output)
+    //! \todo fully enable ms resolution (ss.fraction in string output)
     //! \todo local time Formatting
 
-    String tz = "Z";
+    string tz = "Z";
     int offset = offset_ / 60;
     if (offset > 0)
-        tz = Format() << "+" << dec(offset / 60, 2) << dec(offset % 60, 2);
+        tz = Format{} << "+" << dec(offset / 60, 2) << dec(offset % 60, 2);
     else if (offset < 0)
-        tz = Format() << "-" << dec((-offset) / 60, 2) << dec((-offset) % 60, 2);
+        tz = Format{} << "-" << dec((-offset) / 60, 2) << dec((-offset) % 60, 2);
 
-    return Format()
+    return Format{}
         << dec(year_, 4) << "-" << dec(month_, 2) << "-" << dec(day_, 2)
         << "T" << dec(hour_, 2) << dec(minutes_, 2) << dec(seconds_, 2) << tz;
 }
 
-String Date::monthName() const
+string Date::monthName() const
 {
     const char *names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
     int i = month_ - 1;
@@ -201,7 +201,7 @@ String Date::monthName() const
     return names[i];
 }
 
-String Date::dayName() const
+string Date::dayName() const
 {
     const char *names[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
     int i = weekDay_;

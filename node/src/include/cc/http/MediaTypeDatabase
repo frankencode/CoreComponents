@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/string>
 #include <cc/PrefixTree>
 #include <cc/Map>
 
@@ -22,14 +22,14 @@ class MediaTypeDatabase: public Object
 public:
     static const MediaTypeDatabase *instance();
 
-    String lookup(const String &path, const String &content) const;
+    string lookup(const string &path, const string &content) const;
 
 private:
     friend class Singleton<MediaTypeDatabase>;
     MediaTypeDatabase();
 
-    Ref< PrefixTree<char, String> > mediaTypeByPathSuffix_;
-    Ref< PrefixTree<char, String> > mediaTypeByContentPrefix_;
+    Ref< PrefixTree<char, string> > mediaTypeByPathSuffix_;
+    Ref< PrefixTree<char, string> > mediaTypeByContentPrefix_;
 };
 
 }} // namespace cc::http

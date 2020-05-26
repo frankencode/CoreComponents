@@ -24,8 +24,8 @@ class Font
 public:
     class Instance {
     public:
-        String family() const { return family_; }
-        void setFamily(const String &newValue) { family_ = newValue; }
+        string family() const { return family_; }
+        void setFamily(const string &newValue) { family_ = newValue; }
 
         double size() const { return size_; }
         void setSize(double newValue) { size_ = newValue; }
@@ -70,11 +70,11 @@ public:
 
         Instance();
         Instance(double size);
-        Instance(const String &family, double size);
+        Instance(const string &family, double size);
         Instance(const Instance &b);
         ~Instance();
 
-        String family_;
+        string family_;
         float size_;
         Slant slant_ { Slant::Normal };
         Weight weight_ { Weight::Normal };
@@ -88,7 +88,7 @@ public:
     };
 
     Font(double size = -1): instance_{size} {}
-    Font(const String &family, double size = -1): instance_{family, size} {}
+    Font(const string &family, double size = -1): instance_{family, size} {}
 
     Font &operator<<(Slant slant) {
         (*this)->setSlant(slant);
@@ -147,6 +147,6 @@ inline Font operator+(const Font &a, const Font &b) {
     return Font(a->family(), a->size() + b->size());
 }
 
-String str(const Font &font);
+string str(const Font &font);
 
 }} // namespace cc::ui

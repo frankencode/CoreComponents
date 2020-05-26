@@ -39,7 +39,7 @@ public:
             return frame_->payloadAt(2);
         }
 
-        String toString() const;
+        string toString() const;
 
     private:
         friend class BlockWriteAckReply;
@@ -58,7 +58,7 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator String() const { return instance_.toString(); }
+    operator string() const { return instance_.toString(); }
 
 private:
     const Instance instance_;

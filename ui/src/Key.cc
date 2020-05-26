@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-String str(Key key)
+string str(Key key)
 {
     return Format{}
         << "Key {" << nl

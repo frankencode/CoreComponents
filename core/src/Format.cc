@@ -15,7 +15,7 @@ namespace cc {
 FormatSignal nl;
 FormatSignal flush;
 
-Format::Format(const String &pattern, Stream *stream):
+Format::Format(const string &pattern, Stream *stream):
     stream_{stream},
     isNull_{stream && NullStream::instance() ? stream == NullStream::instance() : false},
     lastPosition_{0}
@@ -85,7 +85,7 @@ Format &Format::operator=(const Format &b)
     return *this;
 }
 
-Format &Format::operator<<(const String &s)
+Format &Format::operator<<(const string &s)
 {
     if (isNull_) return *this;
     int j = get()->count();
@@ -104,7 +104,7 @@ Format &Format::operator<<(const String &s)
 Format &Format::operator<<(const FormatSignal &s)
 {
     if (isNull_) return *this;
-    if (&s == &cc::nl) operator<<(String{"\n"});
+    if (&s == &cc::nl) operator<<(string{"\n"});
     else if (&s == &cc::flush) Format::flush();
     return *this;
 }

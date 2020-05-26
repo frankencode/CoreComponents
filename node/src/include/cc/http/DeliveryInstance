@@ -30,7 +30,7 @@ class DeliveryInstance: public Object
 public:
     virtual Ref<DeliveryDelegate> createDelegate(DeliveryWorker *worker) const = 0;
 
-    String serviceName() const { return serviceName_; }
+    string serviceName() const { return serviceName_; }
 
     int requestLimit() const { return requestLimit_; }
     int requestPayloadLimit() const { return requestPayloadLimit_; }
@@ -49,7 +49,7 @@ protected:
     DeliveryInstance(const MetaObject *config);
     ~DeliveryInstance();
 
-    String serviceName_;
+    string serviceName_;
 
     int requestLimit_;
     int requestPayloadLimit_;

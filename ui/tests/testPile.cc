@@ -20,7 +20,7 @@ class SimplePileTest: public TestCase
 {
     void run() override
     {
-        typedef Pile<String, int> TestPile;
+        typedef Pile<string, int> TestPile;
         Ref<TestPile> layout = TestPile::create();
         layout->append("Item 1", 2);
         layout->append("Item 2", 3);
@@ -30,7 +30,7 @@ class SimplePileTest: public TestCase
         CC_VERIFY(layout->count() == 5);
         {
             for (int i = 0; i < layout->count(); ++i) {
-                String item;
+                string item;
                 int extent = 0;
                 int pos = layout->getPosAt(i);
                 layout->getItemExtentAt(i, &item, &extent);
@@ -44,7 +44,7 @@ class SimplePileTest: public TestCase
             layout->getView(3, 10, &i0, &i1, &pos);
             CC_ASSERT(i0 == 1 && i1 == 4);
             for (int i = i0; i < i1; ++i) {
-                String item;
+                string item;
                 int extent = 0;
                 layout->getItemExtentAt(i, &item, &extent);
                 fout() << item << " (" << extent << "): " << pos << ".." << pos + extent - 1 << nl;

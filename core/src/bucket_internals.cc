@@ -12,7 +12,7 @@
 namespace cc {
 namespace bucket {
 
-String Internals::dotifyTree(const Tree *tree)
+string Internals::dotifyTree(const Tree *tree)
 {
     Format format;
     format

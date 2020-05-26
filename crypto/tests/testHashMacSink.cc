@@ -24,27 +24,27 @@ class SimpleMd5MacTest: public TestCase
         auto md5Sink = Md5Sink::open();
 
         {
-            String key = String::allocate(16);;
+            string key = string::allocate(16);;
             for (int i = 0; i < key->count(); ++i)
                 mutate(key)->byteAt(i) = 0x0B;
 
-            String text = "Hi There";
+            string text = "Hi There";
 
             auto macSink = HashMacSink::open(md5Sink, key);
             macSink->write(text);
-            String mac = macSink->finish()->toHex();
+            string mac = macSink->finish()->toHex();
 
             fout() << "HMAC-MD5_0 = 0x" << mac << nl;
 
             CC_VERIFY(mac == "9294727a3638bb1c13f48ef8158bfc9d");
         }
         {
-            String key = "Jefe";
-            String text = "what do ya want for nothing?";
+            string key = "Jefe";
+            string text = "what do ya want for nothing?";
 
             auto macSink = HashMacSink::open(md5Sink, key);
             macSink->write(text);
-            String mac = macSink->finish()->toHex();
+            string mac = macSink->finish()->toHex();
 
             fout() << "HMAC-MD5_1 = 0x" << mac << nl;
 
@@ -60,27 +60,27 @@ class SimpleSha1MacTest: public TestCase
         auto sha1Sink = Sha1Sink::open();
 
         {
-            String key = String::allocate(20);;
+            string key = string::allocate(20);;
             for (int i = 0; i < key->count(); ++i)
                 mutate(key)->byteAt(i) = 0x0B;
 
-            String text = "Hi There";
+            string text = "Hi There";
 
             auto macSink = HashMacSink::open(sha1Sink, key);
             macSink->write(text);
-            String mac = macSink->finish()->toHex();
+            string mac = macSink->finish()->toHex();
 
             fout() << "HMAC-SHA1_0 = 0x" << mac << nl;
 
             CC_VERIFY(mac == "b617318655057264e28bc0b6fb378c8ef146be00");
         }
         {
-            String key = "Jefe";
-            String text = "what do ya want for nothing?";
+            string key = "Jefe";
+            string text = "what do ya want for nothing?";
 
             auto macSink = HashMacSink::open(sha1Sink, key);
             macSink->write(text);
-            String mac = macSink->finish()->toHex();
+            string mac = macSink->finish()->toHex();
 
             fout() << "HMAC-SHA1_1 = 0x" << mac << nl;
 

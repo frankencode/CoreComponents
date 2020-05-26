@@ -10,7 +10,7 @@
 
 #include <sys/types.h>
 #include <grp.h>
-#include <cc/String>
+#include <cc/string>
 
 namespace cc {
 
@@ -36,7 +36,7 @@ public:
       * \param name system group name
       * \return new object instance
       */
-    static Ref<Group> lookup(const String &name) {
+    static Ref<Group> lookup(const string &name) {
         return new Group{name};
     }
 
@@ -44,7 +44,7 @@ public:
     bool isValid() const { return isValid_; }
 
     gid_t id() const { return id_; } ///< system group ID
-    String name() const { return name_; } ///< group name
+    string name() const { return name_; } ///< group name
 
     /// Return list of user logins, which are in this group, but for which this is not their primary group
     StringList *otherMembers() const { return otherMembers_; }
@@ -57,12 +57,12 @@ public:
 
 private:
     Group(gid_t id);
-    Group(const String &name);
+    Group(const string &name);
 
     void load(struct group *entry);
     bool isValid_;
     gid_t id_;
-    String name_;
+    string name_;
     Ref<StringList> otherMembers_;
 };
 

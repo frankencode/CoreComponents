@@ -16,13 +16,13 @@ namespace ui {
 class FontFace: public Object
 {
 public:
-    virtual String family() const = 0;
+    virtual string family() const = 0;
     virtual Weight weight() const = 0;
     virtual Slant slant() const = 0;
     virtual Stretch stretch() const = 0;
     virtual Pitch pitch() const = 0;
 
-    virtual String toString() const = 0;
+    virtual string toString() const = 0;
 };
 
 }} // namespace cc::ui

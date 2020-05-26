@@ -21,7 +21,7 @@ CipherSink::CipherSink(BlockCipher *cipher, Stream *sink, Stream *pad):
     cipher_(cipher),
     sink_(sink),
     pad_(pad),
-    block_(String::allocate(cipher->blockSize()))
+    block_(string::allocate(cipher->blockSize()))
 {
     if (!pad_) pad_ = NullStream::instance();
 }
@@ -34,10 +34,10 @@ CipherSink::~CipherSink()
 
 void CipherSink::write(const CharArray *data)
 {
-    String feed;
+    string feed;
 
     if (pending_) {
-        feed = String::cat(pending_, data);
+        feed = string::cat(pending_, data);
         data = feed;
         pending_ = 0;
     }

@@ -18,7 +18,7 @@ Ref< Source<const FontFace *> > FontFamily::getFontFaces() const
     return IterationSource<FontFaces, const FontFace *>::open(fontFaces_);
 }
 
-FontFamily::FontFamily(const String &name, Pitch pitch):
+FontFamily::FontFamily(const string &name, Pitch pitch):
     name_{name},
     pitch_{pitch},
     fontFaces_{FontFaces::create()}

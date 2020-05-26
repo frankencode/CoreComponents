@@ -31,9 +31,9 @@ DirectoryDelegate::DirectoryDelegate(DeliveryWorker *worker, ScriptHandler *scri
 
 void DirectoryDelegate::process(const HttpRequest *request)
 {
-    String path = directoryInstance_->path() + "/" + request->uri();
+    string path = directoryInstance_->path() + "/" + request->uri();
     path = path->canonicalPath();
-    String prefix = path->head(directoryInstance_->path()->count());
+    string prefix = path->head(directoryInstance_->path()->count());
     if (path->head(directoryInstance_->path()->count()) != directoryInstance_->path()) throw Forbidden{};
 
     if ((!directoryInstance_->showHidden()) && path->baseName()->startsWith('.')) throw NotFound{};
@@ -53,7 +53,7 @@ void DirectoryDelegate::process(const HttpRequest *request)
     if (!fileStatus->isValid()) throw NotFound{};
 
     {
-        String h;
+        string h;
         if (request->lookup("If-Modified-Since", &h)) {
             Ref<Date> cacheDate = scanDate(h);
             if (cacheDate) {
@@ -70,11 +70,11 @@ void DirectoryDelegate::process(const HttpRequest *request)
     response()->setHeader("Last-Modified", formatDate(Date::breakdown(fileStatus->lastModified())));
 
     if (fileStatus->type() == FileType::Directory) {
-        String indexPath, indexName;
+        string indexPath, indexName;
         const char *candidateNames[] = { "index.html", "index.htm" };
         for (int i = 0, n = sizeof(candidateNames) / sizeof(candidateNames[0]); i < n; ++i) {
-            String candidateName = candidateNames[i];
-            String candidatePath = path->extendPath(candidateName);
+            string candidateName = candidateNames[i];
+            string candidatePath = path->extendPath(candidateName);
             if (File::exists(candidatePath)) {
                 indexPath = candidatePath;
                 indexName = candidateName;
@@ -106,7 +106,7 @@ void DirectoryDelegate::process(const HttpRequest *request)
     }
 }
 
-void DirectoryDelegate::listDirectory(const HttpRequest *request, const String &path)
+void DirectoryDelegate::listDirectory(const HttpRequest *request, const string &path)
 {
     Ref<Dir> dir = Dir::open(path);
 
@@ -122,21 +122,21 @@ void DirectoryDelegate::listDirectory(const HttpRequest *request, const String &
         "</head>\n"
         "<body>\n";
 
-    String prefix = request->uri()->canonicalPath();
+    string prefix = request->uri()->canonicalPath();
     if (prefix->count() > 0) {
         if (prefix->at(prefix->count() - 1) != '/')
             prefix += "/";
     }
 
     Ref<StringList> entries = StringList::create();
-    for (String name; dir->read(&name);) {
+    for (string name; dir->read(&name);) {
         if (name == "." || name == "..") continue;
         if ((!directoryInstance_->showHidden()) && name->startsWith('.')) continue;
         entries->append(name);
     }
     entries = entries->sort();
 
-    for (const String &name: entries)
+    for (const string &name: entries)
         response()->chunk() << "<a class=\"file\" href=\"" << prefix << name << "\">" << name << "</a>\n";
 
     response()->chunk() <<
@@ -144,30 +144,30 @@ void DirectoryDelegate::listDirectory(const HttpRequest *request, const String &
         "</html>\n";
 }
 
-void DirectoryDelegate::deliverFile(const String &path)
+void DirectoryDelegate::deliverFile(const string &path)
 {
-    String content = File::open(path)->map();
-    String mediaType = deliveryInstance()->mediaTypeDatabase()->lookup(path, content);
+    string content = File::open(path)->map();
+    string mediaType = deliveryInstance()->mediaTypeDatabase()->lookup(path, content);
     if (mediaType != "") response()->setHeader("Content-Type", mediaType);
     response()->beginTransmission(content->count());
     response()->write(content);
     response()->endTransmission();
 }
 
-void DirectoryDelegate::streamFile(const String &path)
+void DirectoryDelegate::streamFile(const string &path)
 {
     Ref<File> file = File::open(path);
-    String head;
+    string head;
     ssize_t size = -1;
     if (file->seekable()) {
         head = file->readSpan(64);
         size = file->seek(0, Seek::End);
         file->seek(0, Seek::Begin);
     }
-    String mediaType = deliveryInstance()->mediaTypeDatabase()->lookup(path, head);
+    string mediaType = deliveryInstance()->mediaTypeDatabase()->lookup(path, head);
     if (mediaType != "") response()->setHeader("Content-Type", mediaType);
     response()->beginTransmission(size);
-    String buf = String::allocate(0x10000);
+    string buf = string::allocate(0x10000);
     while (true) {
         int n = file->read(mutate(buf));
         if (n == 0) break;

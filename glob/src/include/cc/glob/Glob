@@ -20,25 +20,25 @@ namespace glob {
   * \brief Collect file names matching a globbing pattern
   * \see DirWalker
   */
-class Glob: public Source<String>
+class Glob: public Source<string>
 {
 public:
     /** Create a new globbing source
       * \param expression globbing expression to use for path matching
       * \return new object instance
       */
-    static Ref<Glob> open(const String &expression);
+    static Ref<Glob> open(const string &expression);
 
     /** Get the next matched path
       * \param path returns the next path
       * \return true if another mathing path could be read
       */
-    bool read(String *path);
+    bool read(string *path);
 
 private:
-    Glob(const String &expression);
-    Glob(const String &path, StringList *remainder);
-    void init(const String &path);
+    Glob(const string &expression);
+    Glob(const string &path, StringList *remainder);
+    void init(const string &path);
 
     Ref<Dir> dir_;
     Pattern pattern_;

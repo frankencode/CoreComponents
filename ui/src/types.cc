@@ -6,17 +6,18 @@
  *
  */
 
+#include <cc/ui/types>
+
 #include <math.h>
 #include <cc/str>
-#include <cc/Utf8Walker>
+#include <cc/unicode>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/Application>
-#include <cc/ui/types>
 
 namespace cc {
 namespace ui {
 
-String str(FontSmoothing smoothing)
+string str(FontSmoothing smoothing)
 {
     switch (smoothing) {
         case FontSmoothing::Default     : return "FontSmoothing::Default";
@@ -28,10 +29,10 @@ String str(FontSmoothing smoothing)
         case FontSmoothing::VbgrSubpixel: return "FontSmoothing::VbgrSubpixel";
     }
 
-    return String{};
+    return string{};
 }
 
-String str(OutlineHinting outlineHinting)
+string str(OutlineHinting outlineHinting)
 {
     switch (outlineHinting) {
         case OutlineHinting::Default: return "OutlineHinting::Default";
@@ -41,10 +42,10 @@ String str(OutlineHinting outlineHinting)
         case OutlineHinting::Full   : return "OutlineHinting::Full";
     }
 
-    return String {};
+    return string {};
 }
 
-String str(MetricsHinting metricsHinting)
+string str(MetricsHinting metricsHinting)
 {
     switch (metricsHinting) {
         case MetricsHinting::Default: return "MetricsHinting::Default";
@@ -52,10 +53,10 @@ String str(MetricsHinting metricsHinting)
         case MetricsHinting::Off    : return "MetricsHinting::Off";
     }
 
-    return String{};
+    return string{};
 };
 
-String str(Slant slant)
+string str(Slant slant)
 {
     switch (slant) {
         case Slant::Normal : return "Slant::Normal";
@@ -63,10 +64,10 @@ String str(Slant slant)
         // case Slant::Oblique: return "Oblique";
     }
 
-    return String{};
+    return string{};
 }
 
-String str(Weight weight)
+string str(Weight weight)
 {
     switch (weight) {
         case Weight::Thin      : return "Weight::Thin";
@@ -80,10 +81,10 @@ String str(Weight weight)
         case Weight::Black     : return "Weight::Black";
     }
 
-    return String{};
+    return string{};
 }
 
-String str(Stretch stretch)
+string str(Stretch stretch)
 {
     switch (stretch) {
         case Stretch::UltraCondensed: return "Stretch::UltraCondensed";
@@ -97,20 +98,20 @@ String str(Stretch stretch)
         case Stretch::UltraExpanded : return "Stretch::UltraExpanded";
     }
 
-    return String{};
+    return string{};
 }
 
-String str(Pitch pitch)
+string str(Pitch pitch)
 {
     switch (pitch) {
         case Pitch::Fixed:    return "Pitch::Fixed";
         case Pitch::Variable: return "Pitch::Variable";
     }
 
-    return String{};
+    return string{};
 }
 
-String str(TextAlign align)
+string str(TextAlign align)
 {
     switch (align) {
         case TextAlign::Left:    return "TextAlign::Left";
@@ -119,10 +120,10 @@ String str(TextAlign align)
         case TextAlign::Justify: return "TextAlign::Justify";
     }
 
-    return String{};
+    return string{};
 }
 
-String str(Decoration decoration)
+string str(Decoration decoration)
 {
     if (decoration == Decoration::None) return "Decoration::None";
     Ref<StringList> parts = StringList::create();
@@ -131,7 +132,7 @@ String str(Decoration decoration)
     return parts->join("|");
 }
 
-String str(ColumnAlign align)
+string str(ColumnAlign align)
 {
     switch (align) {
         case ColumnAlign::Auto:   return "ColumnAlign::Auto";
@@ -140,10 +141,10 @@ String str(ColumnAlign align)
         case ColumnAlign::Center: return "ColumnAlign::Center";
     }
 
-    return String{};
+    return string{};
 }
 
-String str(RowAlign align)
+string str(RowAlign align)
 {
     switch (align) {
         case RowAlign::Top:    return "RowAlign::Top";
@@ -151,10 +152,10 @@ String str(RowAlign align)
         case RowAlign::Center: return "RowAlign::Center";
     }
 
-    return String{};
+    return string{};
 }
 
-String str(MouseButton mask)
+string str(MouseButton mask)
 {
     Ref<StringList> parts = StringList::create();
     if (+(mask & MouseButton::Left))  parts << "MouseButton::Left";
@@ -166,7 +167,7 @@ String str(MouseButton mask)
     return parts->join("|");
 }
 
-String str(PointerAction action)
+string str(PointerAction action)
 {
     switch (action) {
         case PointerAction::Moved   : return "PointerAction::Moved";
@@ -174,20 +175,20 @@ String str(PointerAction action)
         case PointerAction::Released: return "PointerAction::Released";
     };
 
-    return String{};
+    return string{};
 }
 
-String str(KeyAction action)
+string str(KeyAction action)
 {
     switch (action) {
         case KeyAction::Pressed : return "KeyAction::Pressed";
         case KeyAction::Released: return "KeyAction::Released";
     };
 
-    return String{};
+    return string{};
 }
 
-String str(CursorShape shape)
+string str(CursorShape shape)
 {
     switch (shape) {
         case CursorShape::Arrow                   : return "CursorShape::Arrow";
@@ -204,10 +205,10 @@ String str(CursorShape shape)
         case CursorShape::Hand                    : return "CursorShape::Hand";
     };
 
-    return String{};
+    return string{};
 }
 
-bool textWrapBehindDefault(const String &text, int byteOffset, int byteCount)
+bool textWrapBehindDefault(const string &text, int byteOffset, int byteCount)
 {
     uint8_t ch = text->byteAt(byteOffset + byteCount - 1);
     uint8_t ch2 = text->has(byteOffset + byteCount) ? text->byteAt(byteOffset + byteCount) : 0;
@@ -226,7 +227,7 @@ bool textWrapBehindDefault(const String &text, int byteOffset, int byteCount)
 
 
     if (!canWrap && byteCount > 1) {
-        uchar_t ch = Utf8Walker(text->chars() + byteOffset)->getChar();
+        uchar_t ch = *unicode{text->chars() + byteOffset, text->count() - byteOffset}->begin();
 
         canWrap =
             ((0x4E00 <= ch && ch <= 0x9FEA) || (0xF900 <= ch && ch <= 0xFAFF) /* CJK Unified */) ||

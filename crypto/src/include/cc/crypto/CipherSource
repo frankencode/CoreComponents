@@ -34,9 +34,9 @@ private:
 
     Ref<BlockCipher> cipher_;
     Ref<Stream> source_;
-    String block_;
-    String buffer_; // decoding buffer
-    String pending_; // undecoded pending bytes
+    string block_;
+    string buffer_; // decoding buffer
+    string pending_; // undecoded pending bytes
     int j_, m_; // consumption index and fill mark
 };
 

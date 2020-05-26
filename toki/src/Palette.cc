@@ -15,7 +15,7 @@
 namespace cc {
 namespace toki {
 
-Ref<Palette> Palette::load(const String &path)
+Ref<Palette> Palette::load(const string &path)
 {
     return PaletteLoader::instance()->load(path);
 }
@@ -29,7 +29,7 @@ int Palette::defaultScope()
     return SyntaxDefinition::scope("default");
 }
 
-int Palette::defaultRuleByName(const String &name)
+int Palette::defaultRuleByName(const string &name)
 {
     if (name == "Text") return Text;
     if (name == "CurrentLine") return CurrentLine;
