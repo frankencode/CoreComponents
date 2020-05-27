@@ -11,7 +11,7 @@
 #include <cc/syntax/FloatSyntax>
 #include <cc/syntax/IntegerSyntax>
 #include <cc/Singleton>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace meta {
@@ -383,7 +383,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
     if (protocol) {
         if (!protocol->lookup(className, &prototype)) {
             throw SemanticError{
-                Format{"Object of class \"%%\" is not allowed here"} << className,
+                format{"Object of class \"%%\" is not allowed here"} << className,
                 text, token->i1()
             };
         }
@@ -391,7 +391,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
     else if (prototype) {
         if (className != prototype->className()) {
             throw SemanticError{
-                Format{"Expected an object of class \"%%\""} << prototype->className(),
+                format{"Expected an object of class \"%%\""} << prototype->className(),
                 text, token->i1()
             };
         }
@@ -418,7 +418,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
                 if (prototype->count() > 0) {
                     if (!prototype->lookup(name, &defaultValue)) {
                         throw SemanticError{
-                            Format{"Member \"%%\" is not supported"} << name,
+                            format{"Member \"%%\" is not supported"} << name,
                             text, token->i1()
                         };
                     }
@@ -442,7 +442,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
             if (object->lookup(name, &existingValue)) {
                 if (value != existingValue) {
                     throw SemanticError{
-                        Format{"Ambiguous value for member \"%%\""} << name,
+                        format{"Ambiguous value for member \"%%\""} << name,
                         text, token->i1()
                     };
                 }
@@ -455,7 +455,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
             if (prototypeProtocol) {
                 if (object->children()->count() >= prototypeProtocol->maxCount()) {
                     throw SemanticError{
-                        Format{"Maximum number of children (%%) exceeded"} << prototypeProtocol->maxCount(),
+                        format{"Maximum number of children (%%) exceeded"} << prototypeProtocol->maxCount(),
                         text, token->i0()
                     };
                 }
@@ -476,13 +476,13 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
                 if (!object->hasChildren() || object->children()->count() < prototypeProtocol->minCount()) {
                     if (prototypeProtocol->prototypes_->count() == 1 && prototypeProtocol->minCount() == 1) {
                         throw SemanticError{
-                            Format{"Object of type %% needs at least one child of type %%"} << object->className() << prototypeProtocol->prototypes_->at(0)->value()->className(),
+                            format{"Object of type %% needs at least one child of type %%"} << object->className() << prototypeProtocol->prototypes_->at(0)->value()->className(),
                             text, objectToken->i0()
                         };
                     }
                     else {
                         throw SemanticError{
-                            Format{"Object of type %% needs at least %% children"} << object->className() << prototypeProtocol->minCount(),
+                            format{"Object of type %% needs at least %% children"} << object->className() << prototypeProtocol->minCount(),
                             text, objectToken->i0()
                         };
                     }
@@ -668,7 +668,7 @@ variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
 
     if (typeError) {
         throw SemanticError(
-            Format("Expected a value of type %%") << variant::typeName(expectedType, expectedItemType),
+            format("Expected a value of type %%") << variant::typeName(expectedType, expectedItemType),
             text, token->i0()
         );
     }

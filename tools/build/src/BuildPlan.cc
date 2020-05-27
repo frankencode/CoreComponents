@@ -211,7 +211,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
                 if (!systemPrerequisitesByName_->lookup(p->name(), &l))
                     systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
                 else
-                    throw UsageError{Format{"%%: Ambiguous system dependency '%%'"} << recipePath_ << p->name()};
+                    throw UsageError{format{"%%: Ambiguous system dependency '%%'"} << recipePath_ << p->name()};
                 l->append(p);
             }
             else if (object->className() == "Predicate") {
@@ -270,7 +270,7 @@ void BuildPlan::checkDuplicateTargetNames()
         ok = BuildMap::instance()->registerApplication(name_, recipePath_, &otherRecipePath);
     if (!ok) {
         throw UsageError{
-            Format{"Duplicate target name '%%' in\n  %%\n  and\n  %%"}
+            format{"Duplicate target name '%%' in\n  %%\n  and\n  %%"}
             << name_
             << otherRecipePath
             << recipePath_
@@ -509,7 +509,7 @@ void BuildPlan::readPrerequisites()
     for (const string &prerequisitePath: prerequisitePaths) {
         string path = findPrerequisite(prerequisitePath);
         if (path == "")
-            throw UsageError{Format{} << recipePath() << ": Failed to locate prerequisite '" << prerequisitePath << "'"};
+            throw UsageError{format{} << recipePath() << ": Failed to locate prerequisite '" << prerequisitePath << "'"};
         Ref<BuildPlan> plan = BuildPlan::create(path);
         plan->readPrerequisites();
         prerequisites_->append(plan);
@@ -518,10 +518,10 @@ void BuildPlan::readPrerequisites()
     if (options_ & Plugin) {
         string extensionTargetPath = recipe_->value("extend");
         if (extensionTargetPath == "")
-            throw UsageError{Format{} << recipePath() << ": Please provide the path of a library to extend in Plugin.extend"};
+            throw UsageError{format{} << recipePath() << ": Please provide the path of a library to extend in Plugin.extend"};
         string path = findPrerequisite(extensionTargetPath);
         if (path == "")
-            throw UsageError{Format{} << recipePath() << ": Failed to locate library '" << extensionTargetPath << "'"};
+            throw UsageError{format{} << recipePath() << ": Failed to locate library '" << extensionTargetPath << "'"};
         extensionTarget_ = BuildPlan::create(path);
         if (extensionTarget_->options_ & Package) {
             extensionTarget_->readPrerequisites();
@@ -531,7 +531,7 @@ void BuildPlan::readPrerequisites()
             }
         }
         if (!(extensionTarget_->options_ & Library))
-            throw UsageError{Format{} << recipePath() << ": '" << extensionTargetPath << "' (Plugin.extend) does not point to a library"};
+            throw UsageError{format{} << recipePath() << ": '" << extensionTargetPath << "' (Plugin.extend) does not point to a library"};
         extensionTarget_->readPrerequisites();
         prerequisites_->appendList(extensionTarget_->prerequisites_);
         prerequisites_->append(extensionTarget_);
@@ -597,10 +597,10 @@ void BuildPlan::initModules()
 
     string suffix;
     {
-        Format f;
+        format f;
         string absoulteProjectPath = projectPath_->absolutePathRelativeTo(Process::getWorkingDirectory());
         {
-            Format h;
+            format h;
             string topLevel = sourcePrefix_->absolutePathRelativeTo(Process::getWorkingDirectory());
             for (
                 string path = absoulteProjectPath;

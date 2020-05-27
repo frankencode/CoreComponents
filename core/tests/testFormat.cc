@@ -26,10 +26,10 @@ class FloatingPointLiterals: public TestCase
         for (int i = 0, n = sizeof(test) / sizeof(test[0]); i < n; ++i) {
             double x = test[i];
             bool ok = true;
-            fout() << x << " => " << string(Format{} << x)->toNumber<float64_t>(&ok) << " (" << ok << ")" << nl;
-            fout() << (string(Format{} << x)->toNumber<float64_t>() - x) << nl;
+            fout() << x << " => " << string(format{} << x)->toNumber<float64_t>(&ok) << " (" << ok << ")" << nl;
+            fout() << (string(format{} << x)->toNumber<float64_t>() - x) << nl;
             uint64_t a = union_cast<float64_t>(x);
-            uint64_t b = union_cast<float64_t>(string(Format{} << x)->toNumber<float64_t>());
+            uint64_t b = union_cast<float64_t>(string(format{} << x)->toNumber<float64_t>());
             fout() << "0x" << hex(a) << nl;
             fout() << "0x" << hex(b) << nl;
             fout() << oct(1, 3) << nl;
@@ -55,7 +55,7 @@ class PrintingVariants: public TestCase
     void run()
     {
         variant a = 1, b = true, c = "abc", d = 3.2;
-        string s = Format{} << a << ", " << b << ", " << c << ", " << dec(d);
+        string s = format{} << a << ", " << b << ", " << c << ", " << dec(d);
         fout() << s << nl;
         CC_VERIFY(s == "1, true, abc, 3.2");
     }

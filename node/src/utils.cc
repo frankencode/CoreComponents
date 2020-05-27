@@ -7,7 +7,7 @@
  */
 
 #include <cc/Date>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/http/utils>
 
 namespace cc {
@@ -60,7 +60,7 @@ const char *reasonPhraseByStatusCode(int statusCode)
 
 string formatDate(Date *date)
 {
-    return Format()
+    return format{}
         << date->dayName() << ", "
         << dec(date->day(), 2) << " " << date->monthName() << " " << date->year() << " "
         << dec(date->hour(), 2) << ":" << dec(date->minutes(), 2) << ":" << dec(date->seconds(), 2) << " GMT";

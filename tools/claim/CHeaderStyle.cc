@@ -9,7 +9,7 @@
 #include "CHeaderStyle.h"
 #include <cc/Singleton>
 #include <cc/File>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/syntax/SyntaxDefinition>
 
 namespace ccclaim {
@@ -56,7 +56,7 @@ Ref<Header> CHeaderStyle::scan(const string &path) const
 
 string CHeaderStyle::str(const Notice *notice) const
 {
-    Format format;
+    format format;
     format << "/*\n";
     CopyrightList *copyrights = notice->copyrights();
     for (int i = 0; i < copyrights->count(); ++i) {

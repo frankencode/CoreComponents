@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockReadSegmentReply>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -37,7 +37,7 @@ string BlockReadSegmentReply::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "BlockReadSegmentReply {" << nl
         << "  serverId      : " << serverId() << nl
         << "  sequenceNumber: " << sequenceNumber() << nl

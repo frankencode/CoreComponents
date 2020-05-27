@@ -17,7 +17,7 @@
 #include <cc/http/TapBuffer>
 #include <cc/net/StreamSocket>
 #include <cc/str>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/File>
 #include <cc/Process>
 #include <cc/SocketPair>
@@ -88,7 +88,7 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
 
         string headerText = compileHeader(request, mutate(payload));
         cgiServer->stream()->write(
-            Format()
+            format{}
                 << headerText->count() << ":"
                 << headerText << "," << payload
         );
@@ -268,7 +268,7 @@ string CgiDelegate::compileHeader(const HttpRequest *request, CharArray *payload
 {
     string queryString = urlDecode(request, payload);
 
-    Format header;
+    format header;
     header
         << "CONTENT_LENGTH" << payload->count()
         << "SCGI" << "1"

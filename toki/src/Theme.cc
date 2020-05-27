@@ -8,7 +8,7 @@
 
 #include <cc/Bundle>
 #include <cc/Dir>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/exceptions>
 #include <cc/toki/Theme>
 
@@ -27,7 +27,7 @@ Ref<Theme> Theme::load(const string &path)
         }
     }
     if (themePath == "" || !Dir::exists(themePath))
-        throw UsageError{Format{"Failed to locate theme \"%%\""} << path};
+        throw UsageError{format{"Failed to locate theme \"%%\""} << path};
     return new Theme{themePath};
 }
 
@@ -45,7 +45,7 @@ Theme::Theme(const string &path):
         paletteByScope_->insert(palette->scope(), palette);
     }
     if (!paletteByScope_->lookup(Palette::defaultScope(), &defaultPalette_))
-        throw UsageError{Format{"Palette \"default\" missing in theme \"%%\""} << path};
+        throw UsageError{format{"Palette \"default\" missing in theme \"%%\""} << path};
 }
 
 Ref<StringList> themeList(const string &path)

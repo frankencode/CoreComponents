@@ -107,7 +107,7 @@ bool Font::differ(const Font &a, const Font &b)
 
 string str(const Font &font)
 {
-    return Format{}
+    return format{}
         << "Font {" << nl
         << "  family: " << font->family() << nl
         << "  size: " << font->size() << nl

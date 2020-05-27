@@ -11,7 +11,7 @@
 #include <cc/bucket>
 #include <cc/string>
 
-namespace cc { class Format; }
+namespace cc { class format; }
 
 namespace cc {
 namespace bucket {
@@ -27,7 +27,7 @@ public:
 
 private:
     static string dotifyTree(const Tree *tree);
-    static void dotifyNode(Format &format, const Head *head, unsigned origin = 0);
+    static void dotifyNode(format &format, const Head *head, unsigned origin = 0);
 };
 
 }} // namespace cc::bucket

@@ -8,7 +8,7 @@
 
 #include <cc/can/DeviceDescription>
 #include <cc/LineSource>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/str>
 #include <cc/Set>
 #include <cc/Map>
@@ -184,7 +184,7 @@ void DeviceDescription::FileInfo::establish(const string &key, const string &val
 
 string DeviceDescription::FileInfo::toString() const
 {
-    return Format()
+    return format{}
         << "[" << sectionName() << "]" << nl
         << "FileName=" << fileName_ << nl
         << "FileVersion=" << fileVersion_ << nl
@@ -260,7 +260,7 @@ void DeviceDescription::DeviceInfo::establish(const string &key, const string &v
 
 string DeviceDescription::DeviceInfo::toString() const
 {
-    Format f;
+    format f;
 
     f << "[" << sectionName() << "]" << nl
       << "VendorName=" << vendorName_ << nl
@@ -351,7 +351,7 @@ void DeviceDescription::DummyUsage::establish(const string &key, const string &v
 
 string DeviceDescription::DummyUsage::toString() const
 {
-    Format f;
+    format f;
     f << "[" << sectionName() << "]" << nl;
     uint16_t typeIndex = 1;
     for (int i = 0; i < dummies_->count(); ++i) {
@@ -394,7 +394,7 @@ void DeviceDescription::Comments::setText(const string &text)
 
 string DeviceDescription::Comments::toString() const
 {
-    Format f;
+    format f;
     f << "[" << sectionName() << "]" << nl;
     f << "Lines=" << lines_->count() << nl;
     for (int i = 0; i < lines_->count(); ++i)
@@ -455,7 +455,7 @@ void DeviceDescription::DictionarySection::establish(const string &key, const st
 
 string DeviceDescription::DictionarySection::toString() const
 {
-    Format f;
+    format f;
     f << "[" << sectionName() << "]" << nl
       << "SupportedObjects=" << entries_->count() << nl;
     for (int i = 0; i < entries_->count(); ++i)
@@ -564,7 +564,7 @@ void DeviceDescription::EntryInfo::establish(const string &key, const string &va
 
 string DeviceDescription::EntryInfo::toString() const
 {
-    Format f;
+    format f;
     f << "[" << hex(index_, 4) << "]" << nl
       << "ParameterName=" << parameterName_ << nl
       << "ObjectType=0x" << hex(static_cast<uint8_t>(objectCode_)) << nl;

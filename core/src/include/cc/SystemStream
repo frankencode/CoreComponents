@@ -82,7 +82,7 @@ public:
     void write(const char *data) { write(string{data}); }
 
     /// Convenience wrapper
-    void write(const Format &data);
+    void write(const format &data);
 
     /// Convenience wrapper
     void write(const Ref<StringList> &data) { write(static_cast<const StringList *>(data)); }
@@ -111,7 +111,7 @@ public:
 
     /** %Set the I/O scatter limit
       *
-      * Scatter writes via write(const StringList *) and write(const Format &) will be merge into a single block
+      * Scatter writes via write(const StringList *) and write(const format &) will be merge into a single block
       * if the total size of the scatter list is below the scatter limit.
       */
     void setScatterLimit(int newLimit) { scatterLimit_ = newLimit; }

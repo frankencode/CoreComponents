@@ -13,7 +13,7 @@
 #include <cc/Utf8Sink>
 #include <cc/Utf16Source>
 #include <cc/Utf16Sink>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/HexDump>
 #include <cc/string>
 
@@ -25,7 +25,7 @@ Ref<const CharArray>::Ref(const variant &b):
     set(variant::cast<string>(b));
 }
 
-Ref<const CharArray>::Ref(const Format &b):
+Ref<const CharArray>::Ref(const format &b):
     a_{nullptr}
 {
     set(b->join());

@@ -7,7 +7,7 @@
  */
 
 #include <cc/net/exceptions>
-#include <cc/Format>
+#include <cc/format>
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -45,7 +45,7 @@ string HostNameResolutionError::hostName() const
 
 string HostNameResolutionError::message() const
 {
-    return Format{"Failed to resolve host name \"%%\""} << hostName_;
+    return format{"Failed to resolve host name \"%%\""} << hostName_;
 }
 
 InvalidAddressSyntax::InvalidAddressSyntax(const string &address):
@@ -59,7 +59,7 @@ string InvalidAddressSyntax::address() const
 
 string InvalidAddressSyntax::message() const
 {
-    return Format{"Failed to parse network address \"%%\""} << address_;
+    return format{"Failed to parse network address \"%%\""} << address_;
 }
 
 }} // namespace cc::net

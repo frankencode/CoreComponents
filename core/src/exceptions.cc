@@ -8,7 +8,7 @@
 
 #include <string.h> // strerror_r
 #include <signal.h>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ResourceContext>
 #include <cc/exceptions>
 
@@ -16,7 +16,7 @@ namespace cc {
 
 string DebugError::message() const
 {
-    return Format{} << reason_ << " (" << string{source_}->fileName() << ":" << line_ << ")";
+    return format{} << reason_ << " (" << string{source_}->fileName() << ":" << line_ << ")";
 }
 
 string systemError(int errorCode)
@@ -39,7 +39,7 @@ string SystemError::message() const
 
 string SystemResourceError::message() const
 {
-    return Format{} << systemError(errorCode_) << ": \"" << resource_ << "\""
+    return format{} << systemError(errorCode_) << ": \"" << resource_ << "\""
         #ifndef NDEBUG
         << " (" << string{source_}->fileName() << ":" << line_ << ")"
         #endif
@@ -48,7 +48,7 @@ string SystemResourceError::message() const
 
 string SystemDebugError::message() const
 {
-    return Format() << systemError(errorCode_) << " (" << string{source_}->fileName() << ":" << line_ << ")";
+    return format() << systemError(errorCode_) << " (" << string{source_}->fileName() << ":" << line_ << ")";
 }
 
 TextError::TextError(const string &text, int offset, const string &resource):
@@ -59,7 +59,7 @@ TextError::TextError(const string &text, int offset, const string &resource):
 
 string SemanticError::message() const
 {
-    Format format;
+    format format;
     if (offset_ >= 0) {
         int line = 0, pos = 0;
         text_->offsetToLinePos(offset_, &line, &pos);
@@ -96,7 +96,7 @@ string PermissionError::message() const
 
 string CommandNotFound::message() const
 {
-    return Format{"Command not found: '%%'"} << command_;
+    return format{"Command not found: '%%'"} << command_;
 }
 
 } // namespace cc

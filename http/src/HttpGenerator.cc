@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/TransferMeter>
 #include <cc/http/HttpConnection>
 #include <cc/http/HttpChunkedSink>
@@ -64,7 +64,7 @@ void HttpGenerator::writeHeader()
 {
     polishHeader();
 
-    Format sink{peer_->stream()};
+    format sink{peer_->stream()};
     writeFirstLine(sink);
     for (const auto &item: header_)
         sink << item->key() << ":" << item->value() << "\r\n";
@@ -99,14 +99,14 @@ void HttpGenerator::write(const string &data)
     payload()->write(data);
 }
 
-Format HttpGenerator::chunk(const string &pattern)
+format HttpGenerator::chunk(const string &pattern)
 {
-    return Format{pattern, payload()};
+    return format{pattern, payload()};
 }
 
-Format HttpGenerator::chunk()
+format HttpGenerator::chunk()
 {
-    return Format{payload()};
+    return format{payload()};
 }
 
 void HttpGenerator::endTransmission()

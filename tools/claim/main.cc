@@ -93,7 +93,7 @@ int main(int argc, char **argv)
                     fout() << "Copyright " << holder << ":" << nl;
                     for (int j = 0; j < coverage->count(); ++j) {
                         Notice *notice = coverage->at(j)->value();
-                        Format line(stdOut());
+                        format line{stdOut()};
                         line << coverage->at(j)->key() << " (";
                         CopyrightList *copyrights = notice->copyrights();
                         for (int k = 0; k < copyrights->count(); ++k) {
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
                 Token *token = notice->header()->token();
                 Ref<File> file = File::open(path, FileOpen::ReadWrite);
                 string text = file->map();
-                string newText = Format() << text->copy(0, token->i0()) << text->copy(token->i1(), text->count());
+                string newText = format{} << text->copy(0, token->i0()) << text->copy(token->i1(), text->count());
                 file->seek(0);
                 file->truncate(0);
                 file->write(newText);

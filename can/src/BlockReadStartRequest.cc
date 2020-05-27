@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockReadStartRequest>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -30,7 +30,7 @@ string BlockReadStartRequest::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "BlockReadStartRequest {" << nl
         << "  serverId: " << serverId() << nl
         << "}";

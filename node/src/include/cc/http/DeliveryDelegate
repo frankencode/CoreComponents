@@ -11,7 +11,7 @@
 #include <cc/http/HttpRequest>
 #include <cc/http/HttpResponseGenerator>
 #include <cc/http/logging>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace http {

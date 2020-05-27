@@ -127,14 +127,14 @@ void safetyListen(string interface, int canId, int invCanId, double cycleTime, d
         try {
             if (int(frame->canId()) == invCanId) {
                 if (dt > cycleTime) {
-                    throw string{Format{"ERROR, SCT EXCEEDED (dt = %%)"} << fixed(dt, 3, 3)};
+                    throw string{format{"ERROR, SCT EXCEEDED (dt = %%)"} << fixed(dt, 3, 3)};
                 }
                 else {
                     double ts = 0;
                     double dtv = 0;
                     if (lastTimes->lookup(canId, &ts)) {
                         dtv = t - ts;
-                        if (dtv > validationTime) throw string{Format{"ERROR, SRVT EXCEEDED (dtv = %%)"} << dtv};
+                        if (dtv > validationTime) throw string{format{"ERROR, SRVT EXCEEDED (dtv = %%)"} << dtv};
                         if (dtv < dtvMin) dtvMin = dtv;
                         if (dtv > dtvMax) dtvMax = dtv;
                         dtvAvg += dtv;

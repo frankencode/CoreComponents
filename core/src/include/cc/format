@@ -21,7 +21,7 @@ template<class> class Queue;
   * \{
   */
 
-/** \class FormatSignal cc/Format
+/** \class FormatSignal cc/format
   * \brief Type for formatting signals
   */
 class FormatSignal {};
@@ -29,50 +29,50 @@ class FormatSignal {};
 extern FormatSignal nl; ///< The newline formatting signal causes a newline but no output flushing.
 extern FormatSignal flush; ///< The flush formatting signal causes the aggregated text to be flushed and written to the associated output stream (if any).
 
-/** \class Format cc/Format
+/** \class format cc/format
   * \brief Text formatting helper
   */
-class Format: public Ref<StringList>
+class format: public Ref<StringList>
 {
 public:
     /** Construct a new string formatting helper
       * \param pattern formatting pattern containing injection placeholders ("%%")
       * \param stream output stream to write the resulting text to (optional)
       */
-    Format(const string &pattern, Stream *stream = nullptr);
+    format(const string &pattern, Stream *stream = nullptr);
 
     /** Construct a new string formatting helper
       * \param stream output stream to write the resulting text to (optional)
       */
-    Format(Stream *stream = nullptr);
+    format(Stream *stream = nullptr);
 
     /// Low-level destructor
-    ~Format();
+    ~format();
 
     /// Copy-constructor
-    Format(const Format &b);
+    format(const format &b);
 
     /// Assignment operator
-    Format &operator=(const Format &b);
+    format &operator=(const format &b);
 
     /// Append or inject a string to the output text
-    Format &operator<<(const string &s);
+    format &operator<<(const string &s);
 
     /** %Process a special formatting signal
       * \param s formatting signal (nl or flush)
       */
-    Format &operator<<(const FormatSignal &s);
+    format &operator<<(const FormatSignal &s);
 
     /** Append or inject an element x to the output text
       * \param x anything which can be converted to a string via str(x)
       */
     template<class T>
-    Format &operator<<(const T &x) {
+    format &operator<<(const T &x) {
         if (isNull_) return *this;
         return *this << str(x);
     }
 
-    static const StringList *toStringList(const Format &format) { return format.get(); }
+    static const StringList *toStringList(const format &f) { return f.get(); }
 
 private:
     typedef Ref<StringList> Super;
@@ -86,7 +86,7 @@ private:
     int lastPosition_;
 };
 
-/** \class NullFormat cc/Format
+/** \class NullFormat cc/format
   * \brief Zero storage formatting output sink
   */
 class NullFormat {

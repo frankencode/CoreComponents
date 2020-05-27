@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/http/HttpRequestGenerator>
 
 namespace cc {
@@ -56,7 +56,7 @@ void HttpRequestGenerator::polishHeader()
     }
 }
 
-void HttpRequestGenerator::writeFirstLine(Format &sink)
+void HttpRequestGenerator::writeFirstLine(format &sink)
 {
     sink << method_ << " " << path_ << " " << version_ << "\r\n";
 }

@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/Process>
 #include "ConfigureShell.h"
 
@@ -43,7 +43,7 @@ string ConfigureShell::run(const string &shellCommand)
     int status = sub->wait();
     if (status != 0) {
         throw string{
-            Format{} << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")"
+            format{} << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")"
         };
     }
 

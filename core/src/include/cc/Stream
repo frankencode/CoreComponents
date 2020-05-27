@@ -12,7 +12,7 @@
 
 namespace cc {
 
-class Format;
+class format;
 
 /** \class Stream cc/Stream
   * \ingroup binary_io
@@ -46,7 +46,7 @@ public:
     void write(const char *data) { write(string{data}); }
 
     /// Convenience wrapper
-    void write(const Format &format);
+    void write(const format &data);
 
     /// Convenience wrapper
     void write(const void *data, int size);

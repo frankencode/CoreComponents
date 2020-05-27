@@ -67,7 +67,7 @@ int main(int argc, char **argv)
         Language *defaultLanguage = 0;
         if (languageOption != "") {
             if (!Registry::instance()->lookupLanguageByName(languageOption, &defaultLanguage))
-                throw UsageError{Format{"Language \"%%\" is not supported"} << languageOption};
+                throw UsageError{format{"Language \"%%\" is not supported"} << languageOption};
         }
 
         if (items->count() == 0) {
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
                 Language *language = defaultLanguage;
                 if (!language) {
                     if (!Registry::instance()->detectLanguage(path, text, &language))
-                        throw UsageError{Format{"%%: Failed to detect language (use -language option)"} << path};
+                        throw UsageError{format{"%%: Failed to detect language (use -language option)"} << path};
                 }
                 Ref<SyntaxState> state;
                 while (true) {
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
                 string htmlPath = path->fileName()->replace(".", "_") + ".html";
                 if (verbose) fout() << htmlPath << nl;
                 Ref<File> htmlFile = File::open(htmlPath, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly);
-                Format sink(htmlFile);
+                format sink{htmlFile};
                 sink <<
                     "<!DOCTYPE HTML>\n"
                     "<html>\n"

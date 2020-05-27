@@ -61,7 +61,7 @@ void CanLogger::bootstrap()
                 dt = t - tl;
             lastTimes->establish(frame->canId(), t);
 
-            Format f;
+            format f;
             f << fixed(t, 3, 3) << " " << fixed(dt, 3, 3) << " -- " << frame << nl;
 
             string info;

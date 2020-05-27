@@ -11,7 +11,7 @@
 #include <cc/http/HttpClientConnection>
 #include <cc/http/HttpRequestGenerator>
 #include <cc/KernelInfo>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace http {
@@ -130,7 +130,7 @@ Ref<HttpResponse> HttpClient::readResponse()
 string HttpClient::userAgent() const
 {
     static string s =
-        Format{"cchttp 1.0 (%%; %%)"}
+        format{"cchttp 1.0 (%%; %%)"}
             << KernelInfo::instance()->name()
             << KernelInfo::instance()->machine();
 

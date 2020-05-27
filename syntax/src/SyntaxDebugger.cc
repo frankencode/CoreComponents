@@ -67,7 +67,7 @@ static void printStringAttr(const CharArray &s) {
 void SyntaxDebugNode::printNext(string indent)
 {
     fout() << indent << declType() << "(";
-    printAttributes(Format() << indent << debugger_->indent_);
+    printAttributes(format{} << indent << debugger_->indent_);
     fout() << ")";
 }
 
@@ -87,7 +87,7 @@ string SyntaxDebugNode::superIndent(string indent) const {
 }
 
 string SyntaxDebugNode::subIndent(string indent) const {
-    return Format() << indent << SyntaxDebugNode::debugger_->indent_;
+    return format{} << indent << SyntaxDebugNode::debugger_->indent_;
 }
 
 class CharDebugNode: public SyntaxDebugNode {

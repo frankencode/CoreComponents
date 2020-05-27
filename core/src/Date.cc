@@ -7,7 +7,7 @@
  */
 
 #include <cc/Date>
-#include <cc/Format>
+#include <cc/format>
 #include <stdint.h>
 
 namespace cc {
@@ -183,11 +183,11 @@ string Date::toString() const
     string tz = "Z";
     int offset = offset_ / 60;
     if (offset > 0)
-        tz = Format{} << "+" << dec(offset / 60, 2) << dec(offset % 60, 2);
+        tz = format{} << "+" << dec(offset / 60, 2) << dec(offset % 60, 2);
     else if (offset < 0)
-        tz = Format{} << "-" << dec((-offset) / 60, 2) << dec((-offset) % 60, 2);
+        tz = format{} << "-" << dec((-offset) / 60, 2) << dec((-offset) % 60, 2);
 
-    return Format{}
+    return format{}
         << dec(year_, 4) << "-" << dec(month_, 2) << "-" << dec(day_, 2)
         << "T" << dec(hour_, 2) << dec(minutes_, 2) << dec(seconds_, 2) << tz;
 }

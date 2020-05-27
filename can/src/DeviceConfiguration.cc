@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/DeviceConfiguration>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -30,7 +30,7 @@ DeviceConfiguration::DeviceConfiguration():
 
 string DeviceConfiguration::toString() const
 {
-    return Format()
+    return format{}
         << DeviceDescription::toString() << nl
         << comissioning_->toString();
 }
@@ -65,7 +65,7 @@ void DeviceConfiguration::Comissioning::establish(const string &key, const strin
 
 string DeviceConfiguration::Comissioning::toString() const
 {
-    Format f;
+    format f;
     f << "[" << sectionName() << "]" << nl;
     f << "NodeID=" << nodeId_ << nl;
     if (nodeName_ != "") f << "NodeName=" << nodeName_ << nl;

@@ -10,7 +10,7 @@
 #include <cc/http/HttpServerConnection>
 #include <cc/System>
 #include <cc/Date>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace http {
@@ -34,7 +34,7 @@ string formatDeliveryLogMessage(const HttpServerConnection *client, int statusCo
     double requestTime = request ? request->time() : System::now();
     string userAgent   = request ? request->value("User-Agent") : statusMessage;
 
-    return Format{}
+    return format{}
         << client->address()->networkAddress() << " "
         << Date::breakdown(requestTime)->toString() << " "
         << "\"" << requestHost << "\" "

@@ -7,7 +7,7 @@
  */
 
 #include <gnutls/gnutls.h>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/http/exceptions>
 
 namespace cc {
@@ -37,7 +37,7 @@ string SecurityError::message() const
 {
     const char *s = gnutls_strerror(errorCode_);
     if (peerAddress_)
-        return Format() << peerAddress_ << ": " << s;
+        return format{} << peerAddress_ << ": " << s;
     return s;
 }
 

@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/File>
 #include <cc/FileStatus>
 #include <cc/meta/yason>
@@ -96,7 +96,7 @@ DependencyCache::DependencyCache(BuildPlan *plan):
 
 DependencyCache::~DependencyCache()
 {
-    Format text;
+    format text;
     string indent(4, ' ');
     text << "DependencyCache {\n";
     for (int i = 0; i < cache_->count(); ++i) {

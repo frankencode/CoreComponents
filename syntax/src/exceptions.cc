@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/syntax/SyntaxState>
 #include <cc/syntax/exceptions>
 
@@ -20,7 +20,7 @@ SyntaxError::SyntaxError(const string &text, SyntaxState *state, const string &r
 
 string SyntaxError::message() const
 {
-    Format format;
+    format format;
     const char *error = "Syntax error";
     if (state_) if (state_->hint()) {
         int line = 0, pos = 0;

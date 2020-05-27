@@ -8,7 +8,7 @@
 
 #include <cc/can/BlockWriteEndRequest>
 #include <cc/can/Crc16Sink>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/str>
 
 namespace cc {
@@ -37,7 +37,7 @@ string BlockWriteEndRequest::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "BlockWriteEndRequest {" << nl
         << "  serverId            : " << serverId() << nl
         << "  lastSegmentDataCount: " << lastSegmentDataCount() << nl

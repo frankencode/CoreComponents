@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/types>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -159,7 +159,7 @@ string hexLine(const string &data)
             mutate(visual)->at(i) = '.';
     }
 
-    return Format{}
+    return format{}
         << data->toHex()->breakUp(2)->join(".")
         << "    "
         << "|" << visual << "|";

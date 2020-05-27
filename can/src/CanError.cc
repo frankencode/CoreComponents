@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/CanError>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -49,7 +49,7 @@ string str(CanError::Status flags)
 
 string CanError::Instance::toString() const
 {
-    Format f;
+    format f;
     f << "CanError {\n";
     f << "  type: " << type() << nl;
     if (+(type() & Type::LostArbitration)) f << "  bitPos: " << bitPos() << nl;

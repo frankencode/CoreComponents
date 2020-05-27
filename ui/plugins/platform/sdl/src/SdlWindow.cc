@@ -212,7 +212,7 @@ void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
         void *dstData = 0;
         int pitch = 0;
         if (SDL_LockTexture(context->sdlTexture_, 0, &dstData, &pitch) != 0) CC_DEBUG_ERROR(SDL_GetError());
-        if (pitch != image->pitch()) CC_DEBUG_ERROR(Format("Failed to upload texture: pitch mismatch (%% != %%)") << image->pitch() << pitch);
+        if (pitch != image->pitch()) CC_DEBUG_ERROR(format{"Failed to upload texture: pitch mismatch (%% != %%)"} << image->pitch() << pitch);
         ::memcpy(dstData, image->data()->bytes(), image->data()->count());
         SDL_UnlockTexture(context->sdlTexture_);
     }

@@ -7,7 +7,7 @@
  */
 
 #include <cc/types>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/Stream>
 
 namespace cc {
@@ -26,9 +26,9 @@ void Stream::write(const StringList *parts)
         write(parts->at(i));
 }
 
-void Stream::write(const Format &format)
+void Stream::write(const format &data)
 {
-    write(Format::toStringList(format));
+    write(format::toStringList(data));
 }
 
 class WrappedChunk: public CharArray {

@@ -10,7 +10,7 @@
 
 #include <initializer_list>
 #include <cc/Map>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 
@@ -111,13 +111,13 @@ bool operator>=(const map<K, T> &a, const map<K, T> &b) { return container::comp
 template<class K, class T>
 string str(const pair<K, T> &a)
 {
-    return Format{} << "(" << a->key() << ": " << a->value() << ")";
+    return format{} << "(" << a->key() << ": " << a->value() << ")";
 }
 
 template<class K, class T>
 string str(const map<K, T> &a)
 {
-    Format f;
+    format f;
     f << "[ ";
     for (auto &x: a)
         f << x << (&x == &a->last() ? " ]" : ", ");

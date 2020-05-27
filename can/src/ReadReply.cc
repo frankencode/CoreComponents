@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/ReadReply>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -48,7 +48,7 @@ string ReadReply::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    Format f;
+    format f;
     f << "ReadReply {" << nl
       << "  serverId: " << serverId() << nl
       << "  selector: " << selector() << nl;

@@ -9,7 +9,7 @@
 #include <cc/stdio>
 #include <cc/File>
 #include <cc/exceptions>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/Arguments>
 #include <cc/tar/TarReader>
 #include <cc/tar/ArReader>

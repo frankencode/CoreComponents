@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ui/FtTextRun>
 #include <cc/ui/FtTextCursor>
 
@@ -100,7 +100,7 @@ void FtTextCursor::assign(const TextCursor *other)
 
 string FtTextCursor::toString() const
 {
-    return Format{}
+    return format{}
         << "FtTextCursor {" << nl
         << "  posA: " << posA_ << nl
         << "  posB: " << posB_ << nl

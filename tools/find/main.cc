@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
         Pattern textPattern = string(options->value("text"))->unescape();
         if (string(options->value("word")) != "")
-            textPattern = string(Format{} << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
+            textPattern = string(format{} << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
 
         bool rangesOption = options->value("ranges");
         bool replaceOption = false;
@@ -244,7 +244,7 @@ void displayMatch(const CharArray *path, const CharArray *text, const TextMatch 
     for (int j1 = j0; j0 < i1; j0 = j1) {
         for (;j1 < text->count(); ++j1)
             if (text->at(j1) == '\n') break;
-        Format line;
+        format line;
         line << ln << ": ";
         int k0 = j0, k1 = j1;
         if (j0 <= i0 && i0 < j1) k0 = i0;

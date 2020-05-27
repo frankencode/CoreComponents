@@ -7,7 +7,7 @@
  */
 
 #include <cc/File>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/tar/TarCommon>
 #include <cc/tar/TarReader>
 
@@ -74,7 +74,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 
         probesum = tarHeaderSum(data);
         if (checksum != probesum)
-            throw BrokenArchive{i_ - data->count(), Format{"Checksum mismatch (%% != %%), path = \"%%\""} << oct(checksum, 6) << oct(probesum, 6) << entry->path()};
+            throw BrokenArchive{i_ - data->count(), format{"Checksum mismatch (%% != %%), path = \"%%\""} << oct(checksum, 6) << oct(probesum, 6) << entry->path()};
 
         if (gnuMagic) {
             while ((entry->type_ == 'K' || entry->type_ == 'L') /*&& entry->path_ == "././@LongLink"*/) {

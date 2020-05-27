@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ui/Display>
 
 namespace cc {
@@ -14,7 +14,7 @@ namespace ui {
 
 string Display::toString() const
 {
-    return Format{}
+    return format{}
         << "Display {" << nl
         << "  pos       : " << size() << nl
         << "  size      : " << pos() << nl

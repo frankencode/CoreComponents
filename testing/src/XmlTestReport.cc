@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/Stream>
 #include <cc/testing/XmlTestReport>
 
@@ -24,42 +24,42 @@ bool XmlTestReport::captureOutput() const
 
 void XmlTestReport::beginTestSuite(TestSuite *testSuite)
 {
-    Format{"<testsuite name=\"%%\" tests=\"%%\">\n", stream_} << testSuite->name() << testSuite->testCaseCount();
+    format{"<testsuite name=\"%%\" tests=\"%%\">\n", stream_} << testSuite->name() << testSuite->testCaseCount();
 }
 
 void XmlTestReport::beginTestCase(TestCase *testCase)
 {
-    Format{"<testcase name=\"%%\">\n", stream_} << testCase->name();
+    format{"<testcase name=\"%%\">\n", stream_} << testCase->name();
 }
 
 void XmlTestReport::verify(TestCase *testCase, bool condition, const string &message, const string &codePath, int codeLine)
 {
     if (!condition)
-        Format{"<failure message=\"%%\">%%:%%</failure>\n", stream_} << message << codePath << codeLine;
+        format{"<failure message=\"%%\">%%:%%</failure>\n", stream_} << message << codePath << codeLine;
 }
 
 void XmlTestReport::error(TestCase *testCase, const string &type, const string &message)
 {
-    Format{"<error type=\"%%\" message=\"%%\"></error>\n", stream_} << type << message;
+    format{"<error type=\"%%\" message=\"%%\"></error>\n", stream_} << type << message;
 }
 
 void XmlTestReport::endTestCase(TestCase *testCase, const string &outText, const string &errText)
 {
     if (testCase->skip()) {
-        Format{"<skipped/>\n", stream_};
+        format{"<skipped/>\n", stream_};
     }
     else {
-        Format{stream_}
+        format{stream_}
             << "<system-out>" << xmlEscape(outText) << "</system-out>\n"
             << "<system-err>" << xmlEscape(errText) << "</system-err>\n";
     }
-    Format{stream_}
+    format{stream_}
         << "</testcase>\n";
 }
 
 void XmlTestReport::skipTestCase(TestCase *testCase)
 {
-    Format{
+    format{
         "<testcase name=\"%%\">\n"
         "<skipped/>\n"
         "</testcase>\n",
@@ -69,7 +69,7 @@ void XmlTestReport::skipTestCase(TestCase *testCase)
 
 void XmlTestReport::endTestSuite(TestSuite *testSuite)
 {
-    Format{"</testsuite>\n", stream_};
+    format{"</testsuite>\n", stream_};
 }
 
 string XmlTestReport::xmlEscape(const string &text)

@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ui/WheelEvent>
 
 namespace cc {
@@ -14,7 +14,7 @@ namespace ui {
 
 string WheelEvent::toString() const
 {
-    return Format{}
+    return format{}
         << "WheelEvent {" << nl
         << "  time: " << time_ << nl
         << "  wheelStep: " << wheelStep_ << nl

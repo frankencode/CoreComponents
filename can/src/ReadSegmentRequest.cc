@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/ReadSegmentRequest>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -30,7 +30,7 @@ string ReadSegmentRequest::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "ReadSegmentRequest {" << nl
         << "  serverId: " << serverId() << nl
         << "  toggle  : " << toggle() << nl

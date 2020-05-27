@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ui/MouseEvent>
 
 namespace cc {
@@ -14,7 +14,7 @@ namespace ui {
 
 string MouseEvent::toString() const
 {
-    return Format{}
+    return format{}
         << "MouseEvent {" << nl
         << "  action: " << action_ << nl
         << "  time: " << time_ << nl

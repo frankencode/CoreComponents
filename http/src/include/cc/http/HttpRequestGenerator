@@ -27,7 +27,7 @@ private:
     HttpRequestGenerator(HttpConnection *server);
 
     void polishHeader() override;
-    void writeFirstLine(Format &sink) override;
+    void writeFirstLine(format &sink) override;
 
     string method_;
     string path_;

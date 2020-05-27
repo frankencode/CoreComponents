@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/meta/MetaObject>
 
 namespace cc {
@@ -52,7 +52,7 @@ private:
     template<class T>
     void writeTypedList(variant value, int depth);
 
-    Format format_;
+    format format_;
     string indent_;
 };
 

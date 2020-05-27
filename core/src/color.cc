@@ -8,7 +8,7 @@
 
 #include <cmath>
 #include <cc/ColorNames>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/variant>
 #include <cc/colors>
 #include <cc/color>
@@ -242,7 +242,7 @@ void color::Instance::mixIn(color b, int percent)
 
 string color::Instance::toString() const
 {
-    return Format{}
+    return format{}
         << "#"
         << hex(red(), 2)
         << hex(green(), 2)

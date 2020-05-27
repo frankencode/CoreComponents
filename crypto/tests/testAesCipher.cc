@@ -75,7 +75,7 @@ class AesExamples: public TestCase
     {
         fout() << name << ":" << nl;
         for (int r = 0; r < 4; ++r) {
-            Format ln;
+            format ln;
             for (int c = 0; c < 4; ++c)
                 ln << hex(s->byteAt(4 * c + r), 2);
             fout() << "  " << ln->join(" ") << nl;

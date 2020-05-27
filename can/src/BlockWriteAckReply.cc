@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockWriteAckReply>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -34,7 +34,7 @@ string BlockWriteAckReply::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "BlockWriteAckReply {" << nl
         << "  serverId      : " << serverId() << nl
         << "  sequenceNumber: " << sequenceNumber() << nl

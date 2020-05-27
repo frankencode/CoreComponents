@@ -7,14 +7,14 @@
  */
 
 #include <cc/bucket_internals>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace bucket {
 
 string Internals::dotifyTree(const Tree *tree)
 {
-    Format format;
+    format format;
     format
         << "digraph g {\n"
         << "graph [\n"
@@ -25,7 +25,7 @@ string Internals::dotifyTree(const Tree *tree)
     return format;
 }
 
-void Internals::dotifyNode(Format &format, const Head *head, unsigned origin)
+void Internals::dotifyNode(format &format, const Head *head, unsigned origin)
 {
     Weight weight = head->weight_;
     const Node *node = head->node_;

@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockWriteSegmentRequest>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -38,7 +38,7 @@ string BlockWriteSegmentRequest::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "BlockWriteSegmentRequest {" << nl
         << "  serverId      : " << serverId() << nl
         << "  sequenceNumber: " << sequenceNumber() << nl

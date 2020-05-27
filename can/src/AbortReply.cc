@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/AbortReply>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -23,7 +23,7 @@ string AbortReply::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "AbortReply {" << nl
         << "  serverId: " << serverId() << nl
         << "  selector: " << selector() << nl

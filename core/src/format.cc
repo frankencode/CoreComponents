@@ -8,14 +8,14 @@
 
 #include <cc/Queue>
 #include <cc/NullStream>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 
 FormatSignal nl;
 FormatSignal flush;
 
-Format::Format(const string &pattern, Stream *stream):
+format::format(const string &pattern, Stream *stream):
     stream_{stream},
     isNull_{stream && NullStream::instance() ? stream == NullStream::instance() : false},
     lastPosition_{0}
@@ -36,7 +36,7 @@ Format::Format(const string &pattern, Stream *stream):
     }
 }
 
-Format::Format(Stream *stream):
+format::format(Stream *stream):
     stream_{stream},
     isNull_{stream && NullStream::instance() ? stream == NullStream::instance() : false},
     lastPosition_{0}
@@ -45,7 +45,7 @@ Format::Format(Stream *stream):
     set(StringList::create());
 }
 
-Format::~Format()
+format::~format()
 {
     try {
         flush();
@@ -54,7 +54,7 @@ Format::~Format()
     {}
 }
 
-void Format::flush()
+void format::flush()
 {
     if (isNull_) return;
     if (stream_ && get()->count() > 0) {
@@ -69,14 +69,14 @@ void Format::flush()
     }
 }
 
-Format::Format(const Format &b):
+format::format(const format &b):
     Super{b.get()},
     stream_{b.stream_},
     isNull_{b.isNull_},
     placeHolder_{b.placeHolder_}
 {}
 
-Format &Format::operator=(const Format &b)
+format &format::operator=(const format &b)
 {
     set(b.get());
     stream_ = b.stream_;
@@ -85,7 +85,7 @@ Format &Format::operator=(const Format &b)
     return *this;
 }
 
-Format &Format::operator<<(const string &s)
+format &format::operator<<(const string &s)
 {
     if (isNull_) return *this;
     int j = get()->count();
@@ -101,11 +101,11 @@ Format &Format::operator<<(const string &s)
     return *this;
 }
 
-Format &Format::operator<<(const FormatSignal &s)
+format &format::operator<<(const FormatSignal &s)
 {
     if (isNull_) return *this;
     if (&s == &cc::nl) operator<<(string{"\n"});
-    else if (&s == &cc::flush) Format::flush();
+    else if (&s == &cc::flush) format::flush();
     return *this;
 }
 

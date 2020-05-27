@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ui/Rect>
 
 namespace cc {
@@ -14,7 +14,7 @@ namespace ui {
 
 string str(const Rect &rect)
 {
-    return Format{}
+    return format{}
         << "Rect {\n"
         << "  pos: " << rect->pos() << nl
         << "  size: " << rect->size() << nl
@@ -23,7 +23,7 @@ string str(const Rect &rect)
 
 string fixed(const Rect &rect, int ni, int nf)
 {
-    return Format{}
+    return format{}
         << "Rect {\n"
         << "  pos: " << fixed(rect->pos(), ni, nf) << nl
         << "  size: " << fixed(rect->size(), ni, nf) << nl

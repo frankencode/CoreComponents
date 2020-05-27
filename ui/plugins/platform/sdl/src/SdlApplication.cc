@@ -9,7 +9,7 @@
 #include <cc/debug>
 #include <cc/exceptions>
 #include <cc/Singleton>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ui/SdlWindow>
 #include <cc/ui/SdlCursor>
 #include <cc/ui/Timer>
@@ -312,10 +312,10 @@ string SdlApplication::windowEventToString(const SDL_WindowEvent *e)
     switch (e->event) {
         case SDL_WINDOWEVENT_SHOWN: return "SDL_WINDOWEVENT_SHOWN";
         case SDL_WINDOWEVENT_HIDDEN: return "SDL_WINDOWEVENT_HIDDEN";
-        case SDL_WINDOWEVENT_EXPOSED: return  Format("SDL_WINDOWEVENT_EXPOSED (%% %%)") << e->data1 << e->data2;
-        case SDL_WINDOWEVENT_MOVED: return Format("SDL_WINDOWEVENT_MOVED (%% %%)") << e->data1 << e->data2;
-        case SDL_WINDOWEVENT_RESIZED: return Format("SDL_WINDOWEVENT_RESIZED (%% %%)") << e->data1 << e->data2;
-        case SDL_WINDOWEVENT_SIZE_CHANGED: return Format("SDL_WINDOWEVENT_SIZE_CHANGED (%% %%)") << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_EXPOSED: return  format{"SDL_WINDOWEVENT_EXPOSED (%% %%)"} << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_MOVED: return format{"SDL_WINDOWEVENT_MOVED (%% %%)"} << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_RESIZED: return format{"SDL_WINDOWEVENT_RESIZED (%% %%)"} << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_SIZE_CHANGED: return format{"SDL_WINDOWEVENT_SIZE_CHANGED (%% %%)"} << e->data1 << e->data2;
         case SDL_WINDOWEVENT_MINIMIZED: return "SDL_WINDOWEVENT_MINIMIZED";
         case SDL_WINDOWEVENT_MAXIMIZED: return "SDL_WINDOWEVENT_MAXIMIZED";
         case SDL_WINDOWEVENT_RESTORED: return "SDL_WINDOWEVENT_RESTORED";

@@ -8,7 +8,7 @@
 
 #include <cc/Singleton>
 #include <cc/File>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/syntax/SyntaxDefinition>
 #include "ShHeaderStyle.h"
 
@@ -88,7 +88,7 @@ Ref<Header> ShHeaderStyle::scan(const string &path) const
 
 string ShHeaderStyle::str(const Notice *notice) const
 {
-    Format format;
+    format format;
     format << "##\n";
     CopyrightList *copyrights = notice->copyrights();
     for (int i = 0; i < copyrights->count(); ++i) {

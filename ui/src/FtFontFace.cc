@@ -11,7 +11,7 @@
 #include FT_GLYPH_H
 #include FT_TRUETYPE_TABLES_H
 #include <cc/exceptions>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ui/FtLibrary>
 #include <cc/ui/FtFontFace>
 
@@ -37,7 +37,7 @@ FtFontFace *FtFontFace::open()
 {
     FT_Error error = FT_New_Face(ftLibrary_->ftLibrary(), path_, 0, &face_);
     if (error != 0)
-        CC_DEBUG_ERROR(Format{"Failed to load font face (path = \"%%\", index = %%)\n"} << path_ << 0);
+        CC_DEBUG_ERROR(format{"Failed to load font face (path = \"%%\", index = %%)\n"} << path_ << 0);
 
     family_ = face_->family_name;
 
@@ -55,7 +55,7 @@ FtFontFace *FtFontFace::open()
 
 string FtFontFace::toString() const
 {
-    return Format{}
+    return format{}
         << "FtFontFace {" << nl
         << "  family:  " << family_ << nl
         << "  weight:  " << weight_ << nl

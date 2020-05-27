@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/Version>
 
 namespace cc {
@@ -26,7 +26,7 @@ Version::Instance::Instance(const string &s)
 
 string Version::Instance::toString() const
 {
-    return Format("%%.%%.%%") << major_ << minor_ << patch_;
+    return format{"%%.%%.%%"} << major_ << minor_ << patch_;
 }
 
 } // namespace cc

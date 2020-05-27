@@ -36,8 +36,8 @@ public:
     void beginTransmission(ssize_t contentLength = -1);
     Stream *payload();
     void write(const string &data);
-    Format chunk(const string &pattern);
-    Format chunk();
+    format chunk(const string &pattern);
+    format chunk();
     void endTransmission();
 
 protected:
@@ -45,7 +45,7 @@ protected:
     ~HttpGenerator();
 
     virtual void polishHeader() = 0;
-    virtual void writeFirstLine(Format &sink) = 0;
+    virtual void writeFirstLine(format &sink) = 0;
 
     void writeHeader();
 

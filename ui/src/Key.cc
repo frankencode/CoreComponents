@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ui/Key>
 
 namespace cc {
@@ -14,7 +14,7 @@ namespace ui {
 
 string str(Key key)
 {
-    return Format{}
+    return format{}
         << "Key {" << nl
         << "  scanCode: " << key->scanCode() << nl
         << "  keyCode: " << key->keyCode() << nl

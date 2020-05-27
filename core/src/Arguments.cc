@@ -7,7 +7,7 @@
  */
 
 #include <cc/debug> // DEBUG
-#include <cc/Format>
+#include <cc/format>
 #include <cc/Arguments>
 
 namespace cc {
@@ -75,7 +75,7 @@ void Arguments::validate(const VariantMap *prototype)
 
         variant defaultValue;
         if (!prototype->lookup(name, &defaultValue))
-            throw UsageError{Format{"No such option: \"%%\""} << name};
+            throw UsageError{format{"No such option: \"%%\""} << name};
         if (defaultValue == variant{}) continue;
         if (value->type() != defaultValue->type()) {
             if (value->type() == VariantType::Int && defaultValue->type() == VariantType::Bool) {
@@ -97,7 +97,7 @@ void Arguments::validate(const VariantMap *prototype)
             }
             else {
                 throw UsageError{
-                    Format{"Option \"%%\" expects type %% (got %%: %%)"}
+                    format{"Option \"%%\" expects type %% (got %%: %%)"}
                         << name
                         << defaultValue->typeName()
                         << value->typeName()

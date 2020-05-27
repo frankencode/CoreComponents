@@ -10,7 +10,7 @@
 
 #include <initializer_list>
 #include <cc/List>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 
@@ -107,7 +107,7 @@ bool operator>=(const list<T> &a, const list<T> &b) { return container::compare(
 template<class T>
 string str(const list<T> &a)
 {
-    Format f;
+    format f;
     f << "[ ";
     for (auto &x: a)
         f << x << (&x == &a->last() ? " ]" : ", ");

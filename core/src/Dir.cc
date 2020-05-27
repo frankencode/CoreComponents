@@ -15,7 +15,7 @@
 #include <cc/File>
 #include <cc/FileStatus>
 #include <cc/Random>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/Process>
 #include <cc/DirWalker>
 #include <cc/Dir>
@@ -166,7 +166,7 @@ string Dir::createUnique(const string &path, int mode, char placeHolder)
 string Dir::createTemp(int mode)
 {
     return createUnique(
-        Format("/tmp/%%_########")
+        format{"/tmp/%%_########"}
             << Process::exePath()->fileName(),
         mode
     );

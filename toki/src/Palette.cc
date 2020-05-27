@@ -10,7 +10,7 @@
 #include <cc/toki/PaletteLoader>
 #include <cc/toki/Registry>
 #include <cc/ResourceContext>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace toki {
@@ -51,7 +51,7 @@ void Palette::realize()
             style->rule_ = defaultRuleByName(style->ruleName());
             if (style->rule_ == Undefined) {
                 throw MetaError{
-                    Format{"Undefined rule '%%'"} << style->ruleName(),
+                    format{"Undefined rule '%%'"} << style->ruleName(),
                     style, "rule"
                 };
             }
@@ -62,7 +62,7 @@ void Palette::realize()
 
     Language *language = nullptr;
     if (!Registry::instance()->lookupLanguageByName(scopeName_, &language))
-        throw SemanticError{Format{"Undefined language '%%'"} << scopeName_};
+        throw SemanticError{format{"Undefined language '%%'"} << scopeName_};
 
     const SyntaxDefinition *syntax = language->highlightingSyntax();
     scope_ = syntax->id();
@@ -73,7 +73,7 @@ void Palette::realize()
         }
         catch (DebugError &ex) {
             throw MetaError{
-                Format{"Undefined rule '%%'"} << style->ruleName(),
+                format{"Undefined rule '%%'"} << style->ruleName(),
                 style, "rule"
             };
         }

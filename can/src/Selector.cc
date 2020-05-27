@@ -8,7 +8,7 @@
 
 #include <cc/can/Selector>
 #include <cc/str>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -16,7 +16,7 @@ namespace can {
 string str(Selector selector)
 {
     return
-        Format("%%:%%")
+        format{"%%:%%"}
             << hex(selector->index(), 4)
             << hex(selector->subIndex(), 2);
 }

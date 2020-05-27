@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ui/TextCursor>
 
 namespace cc {
@@ -14,7 +14,7 @@ namespace ui {
 
 string TextCursor::toString() const
 {
-    return Format{}
+    return format{}
         << "TextCursor {" << nl
         << "  posA: " << posA() << nl
         << "  posB: " << posB() << nl

@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/NetworkCommand>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -27,7 +27,7 @@ string NetworkCommand::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    Format f;
+    format f;
     f << "NetworkCommand {" << nl
       << "  specifier: " << specifier() << nl;
     if (targetId() != 0)

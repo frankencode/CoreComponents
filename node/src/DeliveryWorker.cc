@@ -14,7 +14,7 @@
 #include <cc/http/exceptions>
 #include <cc/http/debug>
 #include <cc/net/Uri>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/RefGuard>
 
 namespace cc {
@@ -88,7 +88,7 @@ void DeliveryWorker::run()
             catch (HttpError &ex) {
                 if (requestCount > 0 || ex.statusCode() == RequestTimeout::StatusCode) {
                     try {
-                        Format{"HTTP/1.1 %% %%\r\n\r\n", client_->stream()}
+                        format{"HTTP/1.1 %% %%\r\n\r\n", client_->stream()}
                             << ex.statusCode()
                             << ex.message();
                     }

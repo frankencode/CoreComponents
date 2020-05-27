@@ -145,7 +145,7 @@ const DefinitionNode *DefinitionNode::resolveScope(const char *&name) const
         if (k == 2) {
             Ref<const DefinitionNode> childScope;
             if (!scope->scopeByName_->lookup(p0, p - p0 - k, &childScope))
-                CC_DEBUG_ERROR(Format("Undefined scope '%%'") << name);
+                CC_DEBUG_ERROR(format{"Undefined scope '%%'"} << name);
             scope = childScope;
             p0 = p;
             k = 0;

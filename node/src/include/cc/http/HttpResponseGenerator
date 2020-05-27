@@ -34,7 +34,7 @@ private:
     size_t bytesWritten() const;
 
     void polishHeader() override;
-    void writeFirstLine(Format &sink) override;
+    void writeFirstLine(format &sink) override;
 
     int statusCode_;
     string reasonPhrase_;

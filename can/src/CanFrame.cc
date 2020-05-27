@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/CanFrame>
-#include <cc/Format>
+#include <cc/format>
 #include <string.h>
 
 namespace cc {
@@ -86,7 +86,7 @@ string CanFrame::copy(int i0, int i1) const
 
 string CanFrame::toString() const
 {
-    Format f;
+    format f;
     f << hex(canId(), 3) << " [" << payloadCount() << "]";
     if (payloadCount() > 0) f << " ";
     for (int i = 0; i < payloadCount(); ++i) {

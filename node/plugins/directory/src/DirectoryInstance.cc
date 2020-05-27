@@ -28,12 +28,12 @@ DirectoryInstance::DirectoryInstance(const MetaObject *config):
     path_ = path_->canonicalPath();
     if (!File::exists(path_)) {
         throw UsageError{
-            Format("DirectoryInstance: Directory path \"%%\" does not exist") << path_
+            format{"DirectoryInstance: Directory path \"%%\" does not exist"} << path_
         };
     }
     if (FileStatus::read(path_)->type() != FileType::Directory) {
         throw UsageError{
-            Format("DirectoryInstance: Path \"%%\" does not point to a directory") << path_
+            format{"DirectoryInstance: Path \"%%\" does not point to a directory"} << path_
         };
     }
 }

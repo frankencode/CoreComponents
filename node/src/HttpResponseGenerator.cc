@@ -9,7 +9,7 @@
 #include <cc/http/HttpResponseGenerator>
 #include <cc/http/utils>
 #include <cc/http/HttpConnection>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/System>
 #include <cc/Date>
 #include <cc/TransferMeter>
@@ -63,7 +63,7 @@ void HttpResponseGenerator::polishHeader()
     }
 }
 
-void HttpResponseGenerator::writeFirstLine(Format &sink)
+void HttpResponseGenerator::writeFirstLine(format &sink)
 {
     sink << "HTTP/1.1 " << statusCode_ << " " << reasonPhrase_ << "\r\n";
 }

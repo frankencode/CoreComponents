@@ -14,7 +14,7 @@
 #include <netdb.h> // getaddrinfo, freeaddrinfo, getnameinfo
 #include <errno.h>
 #include <cc/strings>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/exceptions>
 
 namespace cc {
@@ -184,7 +184,7 @@ string SocketAddress::Instance::networkAddress() const
 string SocketAddress::Instance::toString() const
 {
     if (family() == ProtocolFamily::Local || port() == 0 || port() == 0xFFFF) return networkAddress();
-    Format s;
+    format s;
     if (family() == ProtocolFamily::Internet4)
         s << networkAddress() << ":" << port();
     else if (family() == ProtocolFamily::Internet6)

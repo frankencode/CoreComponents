@@ -13,7 +13,7 @@
 namespace cc {
 namespace toki {
 
-HtmlScreen::HtmlScreen(const string &text, const Format &sink):
+HtmlScreen::HtmlScreen(const string &text, const format &sink):
     text_{text},
     sink_{sink}
 {
@@ -57,7 +57,7 @@ bool HtmlScreen::project(Token *token, int i0, int i1)
 
 void HtmlScreen::writeCss(Theme *theme, Stream *sink)
 {
-    Format format(sink);
+    format format{sink};
     int defaultScope = Palette::defaultScope();
     for (int i = 0; i < theme->paletteCount(); ++i) {
         const Palette *palette = theme->paletteAt(i);

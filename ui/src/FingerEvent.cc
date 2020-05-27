@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/ui/FingerEvent>
 
 namespace cc {
@@ -14,7 +14,7 @@ namespace ui {
 
 string FingerEvent::toString() const
 {
-    return Format{}
+    return format{}
         << "FingerEvent {" << nl
         << "  action: " << action_ << nl
         << "  time: " << time_ << nl

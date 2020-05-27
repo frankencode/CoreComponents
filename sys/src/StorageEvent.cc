@@ -7,7 +7,7 @@
  */
 
 #include <libudev.h>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/sys/StorageEvent>
 
 namespace cc {
@@ -68,7 +68,7 @@ StorageEvent::StorageEvent(struct udev_device *dev)
 
 string StorageEvent::toString() const
 {
-    return Format()
+    return format{}
         << "StorageEvent {" << nl
         << "  action      : " << action_ << nl
         << "  sysPath     : " << sysPath_ << nl

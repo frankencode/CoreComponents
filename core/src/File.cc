@@ -12,7 +12,7 @@
 #include <stdio.h> // rename
 #include <cc/exceptions>
 #include <cc/Random>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/Process>
 #include <cc/Dir>
 #include <cc/System>
@@ -37,7 +37,7 @@ Ref<File> File::tryOpen(const string &path, FileOpen flags, FileMode mode)
 Ref<File> File::openTemp(FileOpen flags)
 {
     string path = createUnique(
-        Format{"/tmp/%%_XXXXXXXX"}
+        format{"/tmp/%%_XXXXXXXX"}
             << Process::exePath()->fileName()
     );
     return open(path, flags);
@@ -288,7 +288,7 @@ string File::locate(const string &fileName, const StringList *dirs, FileAccess a
 {
     string path;
     for (int i = 0; i < dirs->count(); ++i) {
-        string candidate = Format{} << dirs->at(i) << "/" << fileName;
+        string candidate = format{} << dirs->at(i) << "/" << fileName;
         if (checkAccess(candidate, accessFlags)) {
             path = candidate;
             break;

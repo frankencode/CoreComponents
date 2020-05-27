@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockWriteInitRequest>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -39,7 +39,7 @@ string BlockWriteInitRequest::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "BlockWriteInitRequest {" << nl
         << "  serverId      : " << serverId() << nl
         << "  selector      : " << selector() << nl

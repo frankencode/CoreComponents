@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Format>
+#include <cc/format>
 #include <cc/glob/Pattern>
 #include "ToolChain.h"
 
@@ -81,10 +81,10 @@ protected:
 
     static string querySystemRoot(const string &compiler);
 
-    void appendCompileOptions(Format args, const BuildPlan *plan) const;
-    void appendLinkOptions(Format args, const BuildPlan *plan) const;
+    void appendCompileOptions(format args, const BuildPlan *plan) const;
+    void appendLinkOptions(format args, const BuildPlan *plan) const;
 
-    static void appendRelocationMode(Format args, const BuildPlan *plan);
+    static void appendRelocationMode(format args, const BuildPlan *plan);
 
 private:
     string ccPath_;

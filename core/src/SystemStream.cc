@@ -12,7 +12,7 @@
 #endif
 #include <cc/exceptions>
 #include <cc/SystemIo>
-#include <cc/Format>
+#include <cc/format>
 #include <sys/types.h>
 #include <sys/uio.h> // readv
 #include <sys/socket.h> // socketpair
@@ -134,9 +134,9 @@ void SystemStream::write(const StringList *parts)
     SystemIo::writev(fd_, iov, n);
 }
 
-void SystemStream::write(const Format &data)
+void SystemStream::write(const format &data)
 {
-    write(Format::toStringList(data));
+    write(format::toStringList(data));
 }
 
 bool SystemStream::waitFor(IoReady ready, int interval_ms)

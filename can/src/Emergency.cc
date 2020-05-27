@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/Emergency>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -31,7 +31,7 @@ string Emergency::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "Emergency {" << nl
         << "  nodeId       : " << nodeId() << nl
         << "  type         : " << type() << nl
@@ -82,7 +82,7 @@ string str(Emergency::Type emergencyType)
         case Emergency::Type::DeviceSpecific     : s = "Emergency::Type::DeviceSpecific"; break;
         case Emergency::Type::CanKeepAliveForNode: s = "Emergency::Type::CanKeepAliveForNode"; break;
         default: {
-            s = Format("Emergency::Type::Custom(%%)") << static_cast<uint16_t>(emergencyType);
+            s = format{"Emergency::Type::Custom(%%)"} << static_cast<uint16_t>(emergencyType);
             break;
         }
     };

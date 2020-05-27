@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockReadInitRequest>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -38,7 +38,7 @@ string BlockReadInitRequest::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "BlockReadInitRequest {" << nl
         << "  serverId       : " << serverId() << nl
         << "  selector       : " << selector() << nl

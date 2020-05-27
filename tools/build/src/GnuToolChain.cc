@@ -113,7 +113,7 @@ string GnuToolChain::defaultOptimization(const BuildPlan *plan) const
 
 string GnuToolChain::analyseCommand(const BuildPlan *plan, const string &source) const
 {
-    Format args;
+    format args;
     args << compiler(source);
     appendCompileOptions(args, plan);
     args << "-MM" << source;
@@ -139,7 +139,7 @@ Ref<Module> GnuToolChain::finishAnalyseJob(const BuildPlan *plan, const Job *job
 
 Ref<Job> GnuToolChain::createCompileJob(const BuildPlan *plan, const Module *module) const
 {
-    Format args;
+    format args;
     args << compiler(module->sourcePath());
     args << "-c" << "-o" << module->modulePath();
     appendCompileOptions(args, plan);
@@ -149,7 +149,7 @@ Ref<Job> GnuToolChain::createCompileJob(const BuildPlan *plan, const Module *mod
 
 Ref<Job> GnuToolChain::createCompileLinkJob(const BuildPlan *plan, const Module *module) const
 {
-    Format args;
+    format args;
     args << compiler(module->sourcePath());
     args << "-o" << module->toolName();
     appendCompileOptions(args, plan);
@@ -162,7 +162,7 @@ Ref<Job> GnuToolChain::createCompileLinkJob(const BuildPlan *plan, const Module 
 
 Ref<Job> GnuToolChain::createPreprocessJob(const BuildPlan *plan, const Module *module) const
 {
-    Format args;
+    format args;
     args << compiler(module->sourcePath());
     args << "-E";
     appendCompileOptions(args, plan);
@@ -195,7 +195,7 @@ string GnuToolChain::linkCommand(const BuildPlan *plan) const
     int options = plan->options();
     ModuleList *modules = plan->modules();
 
-    Format args;
+    format args;
 
     args << compiler(plan);
     args << "-o" << linkName(plan);
@@ -206,7 +206,7 @@ string GnuToolChain::linkCommand(const BuildPlan *plan) const
 
     if (options & BuildPlan::Library) {
         args << (
-            Format() << "-Wl,-soname,lib" << name << ".so." << version->major()
+            format{} << "-Wl,-soname,lib" << name << ".so." << version->major()
         )->join();
     }
 
@@ -235,7 +235,7 @@ bool GnuToolChain::link(const BuildPlan *plan) const
 
 string GnuToolChain::configureCompileCommand(const BuildPlan *plan, const string &sourcePath, const string &binPath) const
 {
-    Format args;
+    format args;
     args << compiler(sourcePath);
     args << "-o" << binPath;
     // appendCompileOptions(args, plan);
@@ -356,7 +356,7 @@ string GnuToolChain::pkgConfig(const BuildPlan *plan) const
     if (!(plan->options() & BuildPlan::Library)) return "";
 
     bool hasLibInclude = Dir::exists(plan->projectPath()->extendPath("libinclude"));
-    Format f;
+    format f;
     f << "prefix=" << plan->installPrefix() << nl;
     f << "exec_prefix=${prefix}" << nl;
     f << "libdir=" << installDirPath(plan) << nl;
@@ -430,14 +430,14 @@ bool GnuToolChain::refreshLinkerCache(const BuildPlan *plan) const
     string libInstallPath = plan->installPath("lib");
     if (isMultiArch_) libInstallPath = libInstallPath->extendPath(machine_);
     if (!libInstallPath->isAbsolutePath()) libInstallPath = libInstallPath->absolutePathRelativeTo(Process::getWorkingDirectory());
-    Format attr;
+    format attr;
     attr << "ldconfig";
     attr << libInstallPath;
     string command = attr->join(" ");
     return plan->shell()->run(command);
 }
 
-void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) const
+void GnuToolChain::appendCompileOptions(format args, const BuildPlan *plan) const
 {
     if (plan->options() & BuildPlan::Debug) args << "-g";
     if (plan->options() & BuildPlan::Release) args << "-DNDEBUG";
@@ -468,7 +468,7 @@ void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) cons
         args << "-I" + plan->includePaths()->at(i);
 }
 
-void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
+void GnuToolChain::appendLinkOptions(format args, const BuildPlan *plan) const
 {
     for (int i = 0; i < plan->customLinkFlags()->count(); ++i)
         args << plan->customLinkFlags()->at(i);
@@ -517,7 +517,7 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
     args << "-Wl,--enable-new-dtags," + rpaths->join(",");
 }
 
-void GnuToolChain::appendRelocationMode(Format args, const BuildPlan *plan)
+void GnuToolChain::appendRelocationMode(format args, const BuildPlan *plan)
 {
     if (!(
         plan->customCompileFlags()->contains("-fPIC") ||

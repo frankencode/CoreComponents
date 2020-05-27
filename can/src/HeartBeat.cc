@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/HeartBeat>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -26,7 +26,7 @@ string HeartBeat::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "HeartBeat {" << nl
         << "  sourceId : " << sourceId() << nl
         << "  nodeState: " << nodeState() << nl

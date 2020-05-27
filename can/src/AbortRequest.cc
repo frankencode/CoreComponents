@@ -1,4 +1,4 @@
-#include <cc/Format>
+#include <cc/format>
 #include <cc/can/AbortRequest>
 
 namespace cc {
@@ -8,7 +8,7 @@ string AbortRequest::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "AbortRequest {" << nl
         << "  serverId: " << serverId() << nl
         << "  selector: " << selector() << nl

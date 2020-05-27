@@ -34,7 +34,7 @@ class Array;
 typedef Array<char> CharArray;
 
 class variant;
-class Format;
+class format;
 
 /** Spezialised Ref<T> for character arrays
   * \ingroup strings
@@ -139,7 +139,7 @@ public:
     Ref(const variant &b);
 
     /// \copydoc Ref(const Ref<StringList> &)
-    Ref(const Format &b);
+    Ref(const format &b);
 
     /// \internal
     ~Ref() { set(nullptr); }
@@ -163,7 +163,7 @@ public:
     string &operator=(const Ref<StringList> &b) { set(string(b)); return *this; }
 
     /// Concatenate the items of the formatting list \a b and assign the resulting string
-    string &operator=(const Format &b) { set(string(b)); return *this; }
+    string &operator=(const format &b) { set(string(b)); return *this; }
 
     /// Assign an empty string (FIXME: obsolete)
     string &operator=(const int &null) { CC_ASSERT(null == 0); (void)null; set(nullptr); return *this; }

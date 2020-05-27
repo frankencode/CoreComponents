@@ -11,7 +11,7 @@
 #include <cc/Crc32Sink>
 #include <cc/PrefixTree>
 #include <cc/exceptions>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/syntax/SyntaxNode>
 #include <cc/syntax/SyntaxDebugFactory>
 
@@ -1252,7 +1252,7 @@ public:
         if (strcasecmp(name, "caseSensitive") == 0)
             caseSensitive_ = value;
         else
-            CC_DEBUG_ERROR(Format("Unknown option '%%'") << name);
+            CC_DEBUG_ERROR(format{"Unknown option '%%'"} << name);
     }
 
     NODE CHAR(char ch) { return debug(new CharNode(ch, 0), "Char"); }
@@ -1399,7 +1399,7 @@ public:
         Ref<const DefinitionNode> definition;
         const DefinitionNode *scope = resolveScope(name);
         if (!scope->scopeByName_->lookup(name, &definition))
-            CC_DEBUG_ERROR(Format{"Undefined scope '%%'"} << name);
+            CC_DEBUG_ERROR(format{"Undefined scope '%%'"} << name);
         return definition;
     }
 
@@ -1409,7 +1409,7 @@ public:
         Ref<RuleNode> node;
         CC_ASSERT(scope);
         if (!scope->ruleByName_->lookup(name, &node))
-            CC_DEBUG_ERROR(Format{"Undefined rule '%%'"} << name);
+            CC_DEBUG_ERROR(format{"Undefined rule '%%'"} << name);
         return node;
     }
 
@@ -1417,7 +1417,7 @@ public:
     {
         int tokenType = -1;
         if (!keywordByName_->lookup(name, &tokenType))
-            CC_DEBUG_ERROR(Format{"Undefined keyword '%%'"} <<  name);
+            CC_DEBUG_ERROR(format{"Undefined keyword '%%'"} <<  name);
         return tokenType;
     }
 
@@ -1425,7 +1425,7 @@ public:
     {
         int flagId = -1;
         if (!flagIdByName_->lookup(name, &flagId))
-            CC_DEBUG_ERROR(Format("Undefined state flag '%%'") << name);
+            CC_DEBUG_ERROR(format{"Undefined state flag '%%'"} << name);
         return flagId;
     }
 
@@ -1433,7 +1433,7 @@ public:
     {
         int captureId = -1;
         if (!captureIdByName_->lookup(name, &captureId))
-            CC_DEBUG_ERROR(Format("Undefined capture '%%'") << name);
+            CC_DEBUG_ERROR(format{"Undefined capture '%%'"} << name);
         return captureId;
     }
 
@@ -1469,7 +1469,7 @@ private:
     void addRule(RuleNode *rule)
     {
         if (!ruleByName_->insert(rule->name(), rule))
-            CC_DEBUG_ERROR(Format("Redefinition of rule '%%'") << rule->name());
+            CC_DEBUG_ERROR(format{"Redefinition of rule '%%'"} << rule->name());
     }
 
     Ref<LinkNode> unresolvedLinkHead_;

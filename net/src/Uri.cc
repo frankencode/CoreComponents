@@ -9,7 +9,7 @@
 #include <cc/net/Uri>
 #include <cc/net/SocketAddress>
 #include <cc/net/UriSyntax>
-#include <cc/Format>
+#include <cc/format>
 #include <cc/Token>
 
 namespace cc {
@@ -78,7 +78,7 @@ string Uri::Instance::requestPath() const
 
 string Uri::Instance::toString() const
 {
-    Format text;
+    format text;
     if (scheme_ != "") {
         text << Uri::encode(scheme_);
         text << ":";
@@ -171,7 +171,7 @@ string Uri::encodeForm(const Map<string> *form)
     auto parts = StringList::create();
     for (auto item: form) {
         parts->append(
-            Format{"%%=%%"}
+            format{"%%=%%"}
                 << Uri::encode(item->key())
                 << Uri::encode(item->value())
         );
@@ -194,7 +194,7 @@ Ref<Map<string> > Uri::decodeForm(const string &payload)
 
 string UriSyntaxError::message() const
 {
-    return Format{"Invalid URI syntax: \"%%\""} << text_;
+    return format{"Invalid URI syntax: \"%%\""} << text_;
 }
 
 }} // namespace cc::net

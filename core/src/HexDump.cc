@@ -41,7 +41,7 @@ void HexDump::writeByte(uint8_t ch)
 
 void HexDump::flush()
 {
-    Format f(sink_);
+    format f(sink_);
     f << hex(offset_, 8) << "  ";
     for (int j = 0; j < buffer_->count(); ++j) {
         if (j < i_) {

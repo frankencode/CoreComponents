@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/SaeMessage>
-#include <cc/Format>
+#include <cc/format>
 
 namespace cc {
 namespace can {
@@ -16,7 +16,7 @@ string SaeMessage::Instance::toString() const
 {
     if (!isValid()) return string{};
 
-    return Format{}
+    return format{}
         << "SaeMessage {" << nl
         << "  parameterGroupNumber: " << parameterGroupNumber() << nl
         << "  sourceAddress       : " << sourceAddress() << nl
