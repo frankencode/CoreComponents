@@ -23,8 +23,8 @@ template<class T>
 class multiset {
 public:
     typedef MultiSet<T> Instance;
-    typedef typename Instance::Item value_type;
-    typedef typename Instance::Index size_type;
+    typedef typename Instance::value_type value_type;
+    typedef typename Instance::size_type size_type;
     typedef typename Instance::iterator iterator;
     typedef typename Instance::const_iterator const_iterator;
 

@@ -36,7 +36,7 @@ private:
     {}
 
     Ref<const Container> container_;
-    typename Container::ConstIterator iterator_;
+    typename Container::const_iterator iterator_;
 };
 
 } // namespace cc

@@ -83,8 +83,8 @@ public:
     class Instance
     {
     public:
-        inline VariantType type() const { return type_; }
-        inline VariantType itemType() const { return itemType_; }
+        VariantType type() const { return type_; }
+        VariantType itemType() const { return itemType_; }
         const char *typeName() const;
 
         string toString() const;
@@ -129,19 +129,19 @@ public:
         Instance(const Ref<VariantList> &value)    : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
         Instance(const Ref<VariantMap> &value)     : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
 
-        inline void initRef(Object *object = 0) {
+        void initRef(Object *object = nullptr) {
             new(dummy_)Ref<Object>(object);
         }
 
-        inline void killRef() {
+        void killRef() {
             ref().~Ref<Object>();
         }
 
-        inline void setRef(Object *object) const {
+        void setRef(Object *object) const {
             ref() = object;
         }
 
-        inline Ref<Object> &ref() const {
+        Ref<Object> &ref() const {
             return *union_cast< Ref<Object> *>(dummy_);
         }
 

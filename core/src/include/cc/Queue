@@ -27,7 +27,7 @@ template<class T>
 class Queue: public Object
 {
 public:
-    typedef T Item;
+    typedef T value_type;
     typedef int64_t size_type;
 
     /** Create a new queue
@@ -80,10 +80,10 @@ public:
     size_type count() const { return count_; }
 
     /// Return the first item
-    Item front() const { return head_->at(0); }
+    T front() const { return head_->at(0); }
 
     /// Return the last item
-    Item back() const { return tail_->at(tail_->fill_ - 1); }
+    T back() const { return tail_->at(tail_->fill_ - 1); }
 
     /// Reset to an empty state
     void deplete();
@@ -92,9 +92,9 @@ public:
       */
     ///@{
     /// Append an item to the end
-    void operator<<(const Item& item) { pushBack(item); }
+    void operator<<(const T& item) { pushBack(item); }
     /// Remove an item from the front
-    void operator>>(Item& item) { if (count() > 0) { popFront(&item); } }
+    void operator>>(T& item) { if (count() > 0) { popFront(&item); } }
     ///@}
 
 private:
@@ -126,17 +126,17 @@ private:
             if (succ_) succ_->pred_ = pred_;
         }
 
-        Item &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
-        const Item &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+        T &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+        const T &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
 
-        void push(unsigned nodeIndex, const Item &item) { slot_[map_->pushEntry(nodeIndex, &fill_)] = item; }
+        void push(unsigned nodeIndex, const T &item) { slot_[map_->pushEntry(nodeIndex, &fill_)] = item; }
         void pop(unsigned nodeIndex) { map_->popEntry(nodeIndex, &fill_); }
 
-        void pushBack(const Item &item) { push(fill_, item); }
-        void popBack(Item *item) { *item = at(fill_ - 1); pop(fill_ - 1); }
+        void pushBack(const T &item) { push(fill_, item); }
+        void popBack(T *item) { *item = at(fill_ - 1); pop(fill_ - 1); }
 
-        void pushFront(const Item &item) { push(0, item); }
-        void popFront(Item *item) { *item = at(0); pop(0); }
+        void pushFront(const T &item) { push(0, item); }
+        void popFront(T *item) { *item = at(0); pop(0); }
 
         bool isFull() const { return fill_ == Capacity; }
         bool isEmpty() const { return fill_ == 0; }
@@ -145,7 +145,7 @@ private:
         Node *succ_;
         unsigned fill_;
         Local< BucketMap<Capacity> > map_;
-        Item slot_[Capacity];
+        T slot_[Capacity];
     };
 
     Queue() = default;

@@ -26,8 +26,8 @@ public:
     typedef void (*DelFunc)(T *);
 
     Alien(T *guest, DelFunc delFunc = nullptr):
-        guest_(guest),
-        delFunc_(delFunc)
+        guest_{guest},
+        delFunc_{delFunc}
     {}
 
     ~Alien()

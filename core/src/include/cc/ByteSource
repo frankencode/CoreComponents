@@ -27,7 +27,7 @@ public:
       * \param endian endianess for reading multi-byte words
       * \return new object instance
       */
-    static Ref<ByteSource> open(Stream *source, CharArray *buffer = nullptr, Endian endian = Endian::Little) {
+    static Ref<ByteSource> open(Stream *source, CharArray *buffer = nullptr, ByteOrder endian = ByteOrder::LittleEndian) {
         return new ByteSource{source, buffer, endian};
     }
 
@@ -36,7 +36,7 @@ public:
       * \param endian endianess for reading multi-byte words
       * \return new object instance
       */
-    static Ref<ByteSource> open(const CharArray *buffer, Endian endian = Endian::Little) {
+    static Ref<ByteSource> open(const CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian) {
         return new ByteSource{nullptr, const_cast<CharArray *>(buffer), endian};
     }
 
@@ -104,16 +104,16 @@ public:
     const CharArray *buffer() const { return buffer_; }
 
     /// Current endianess for decoding multi-byte words
-    Endian endian() const { return endian_; }
+    ByteOrder endian() const { return endian_; }
 
     /// Switch endianess
-    void setEndian(Endian endian) { endian_ = endian; }
+    void setEndian(ByteOrder endian) { endian_ = endian; }
 
     /// Total number of bytes read
     off_t currentOffset() const { return i0_ + i_; }
 
 private:
-    ByteSource(Stream *source, CharArray *buffer, Endian endian):
+    ByteSource(Stream *source, CharArray *buffer, ByteOrder endian):
         source_{source},
         buffer_{buffer},
         endian_{endian},
@@ -125,7 +125,7 @@ private:
 
     Ref<Stream> source_;
     string buffer_;
-    Endian endian_;
+    ByteOrder endian_;
     off_t i0_;
     int i_, n_;
 };
@@ -178,12 +178,12 @@ inline uint8_t ByteSource::readUInt8()
 inline uint16_t ByteSource::readUInt16()
 {
     uint16_t h;
-    if (endian_ == Endian::Little)
+    if (endian_ == ByteOrder::LittleEndian)
     {
         h  = uint16_t(readUInt8());
         h |= uint16_t(readUInt8()) << 8;
     }
-    else // if (endian_ == Endian::Big)
+    else // if (endian_ == ByteOrder::BigEndian)
     {
         h  = uint16_t(readUInt8()) << 8;
         h |= uint16_t(readUInt8());
@@ -194,14 +194,14 @@ inline uint16_t ByteSource::readUInt16()
 inline uint32_t ByteSource::readUInt32()
 {
     uint32_t h;
-    if (endian_ == Endian::Little)
+    if (endian_ == ByteOrder::LittleEndian)
     {
         h  = uint32_t(readUInt8());
         h |= uint32_t(readUInt8()) << 8;
         h |= uint32_t(readUInt8()) << 16;
         h |= uint32_t(readUInt8()) << 24;
     }
-    else // if (endian_ == Endian::Big)
+    else // if (endian_ == ByteOrder::BigEndian)
     {
         h  = uint32_t(readUInt8()) << 24;
         h |= uint32_t(readUInt8()) << 16;
@@ -214,12 +214,12 @@ inline uint32_t ByteSource::readUInt32()
 inline uint64_t ByteSource::readUInt64()
 {
     uint64_t h = 0;
-    if (endian_ == Endian::Little)
+    if (endian_ == ByteOrder::LittleEndian)
     {
         for (int i = 0; i <= 7*8; i += 8)
             h |= uint64_t(readUInt8()) << i;
     }
-    else // if (endian_ == Endian::Big)
+    else // if (endian_ == ByteOrder::BigEndian)
     {
         for (int i = 7*8; i >= 0; i -= 8)
             h |= uint64_t(readUInt8()) << i;

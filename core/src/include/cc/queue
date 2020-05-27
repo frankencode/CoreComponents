@@ -23,7 +23,7 @@ template<class T>
 class queue {
 public:
     typedef Queue<T> Instance;
-    typedef typename Instance::Item value_type;
+    typedef typename Instance::value_type value_type;
     typedef typename Instance::size_type size_type;
 
     queue():

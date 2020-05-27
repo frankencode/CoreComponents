@@ -34,7 +34,7 @@ class utf16_iterator:
     public std::iterator<
         /*iterator_category*/ std::bidirectional_iterator_tag,
         /*value_type*/        char32_t,
-        /*difference_type*/   ssize_t,
+        /*difference_type*/   ptrdiff_t,
         /*pointer*/           void,
         /*reference*/         char32_t
     >
@@ -44,10 +44,10 @@ public:
         s_{nullptr},
         e_{nullptr},
         p_{nullptr},
-        endian_{Endian::Big}
+        endian_{ByteOrder::BigEndian}
     {}
 
-    utf16_iterator(const uint16_t *start, const uint16_t *end, const uint16_t *pos, Endian endian = localEndian()):
+    utf16_iterator(const uint16_t *start, const uint16_t *end, const uint16_t *pos, ByteOrder endian = localEndian()):
         s_{start},
         e_{end},
         p_{pos},
@@ -112,7 +112,7 @@ public:
 
     /** assignment addition: iterate in forward direction a given distance \a d
       */
-    utf16_iterator &operator+=(ssize_t d) {
+    utf16_iterator &operator+=(ptrdiff_t d) {
         while (d > 0) { ++(*this); --d; }
         while (d < 0) { --(*this); ++d; }
         return *this;
@@ -120,7 +120,7 @@ public:
 
     /** assignment substraction: iterate in backward direction a given distance \a d
       */
-    utf16_iterator &operator-=(ssize_t d) {
+    utf16_iterator &operator-=(ptrdiff_t d) {
         while (d > 0) { --(*this); --d; }
         while (d < 0) { ++(*this); ++d; }
         return *this;
@@ -128,23 +128,23 @@ public:
 
     /** addition: get iterator in forward direction at distance \a d
       */
-    utf16_iterator operator+(ssize_t d) const {
+    utf16_iterator operator+(ptrdiff_t d) const {
         utf16_iterator it = *this;
         return it += d;
     }
 
     /** substraction: get iterator in backward direction at distance \a d
       */
-    utf16_iterator operator-(ssize_t d) const {
+    utf16_iterator operator-(ptrdiff_t d) const {
         utf16_iterator it = *this;
         return it -= d;
     }
 
     /** difference: compute distance in number of characters
       */
-    ssize_t operator-(const utf16_iterator &b) const
+    ptrdiff_t operator-(const utf16_iterator &b) const
     {
-        ssize_t n = 0;
+        ptrdiff_t n = 0;
         if (s_ == b.s_) {
             if (p_ <= b.p_) {
                 utf16_iterator w{*this};
@@ -197,7 +197,7 @@ private:
     const uint16_t *s_;
     const uint16_t *e_;
     const uint16_t *p_;
-    Endian endian_;
+    ByteOrder endian_;
 };
 
 } // namespace cc

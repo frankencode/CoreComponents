@@ -23,7 +23,7 @@ public:
 
     /** Return encoded size of code point \a ch
       */
-    static int encoded_size(char32_t ch)
+    static int encoded_size(uchar_t ch)
     {
         return 2 * (1 + (0xFFFF < ch));
     }

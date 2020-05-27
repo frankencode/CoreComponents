@@ -27,8 +27,8 @@ public:
     typedef MultiMap<K, T> Instance;
     typedef K key_type;
     typedef T mapped_type;
-    typedef typename Instance::Item value_type;
-    typedef typename Instance::Index size_type;
+    typedef typename Instance::value_type value_type;
+    typedef typename Instance::size_type size_type;
     typedef typename Instance::iterator iterator;
     typedef typename Instance::const_iterator const_iterator;
 
@@ -36,7 +36,7 @@ public:
         instance_{new Instance}
     {}
 
-    multimap(std::initializer_list<Pair<K, T>> b):
+    multimap(std::initializer_list<pair<K, T>> b):
         instance_{new Instance}
     {
         for (auto &x: b) *instance_ << x;
@@ -65,10 +65,10 @@ public:
     operator const Instance *() const { return instance_; }
     operator Instance *() { return Cow::get(instance_); }
 
-    const Pair<K, T> &operator[](size_type i) const { return instance_->at(i); }
+    const pair<K, T> &operator[](size_type i) const { return instance_->at(i); }
 
-    multimap &operator<<(const Pair<K, T>& x) { *Cow::get(instance_) << x; return *this; }
-    multimap &operator>>(Pair<K, T>& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
+    multimap &operator<<(const pair<K, T>& x) { *Cow::get(instance_) << x; return *this; }
+    multimap &operator>>(pair<K, T>& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
 
 private:
     Ref<Instance> instance_;
@@ -108,7 +108,7 @@ template<class K, class T>
 bool operator>=(const multimap<K, T> &a, const multimap<K, T> &b) { return container::compare(a, b) >= 0; }
 
 template<class K, class T>
-string str(const Pair<K, T> &a)
+string str(const pair<K, T> &a)
 {
     return Format{} << "(" << a->key() << ": " << a->value() << ")";
 }

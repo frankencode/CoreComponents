@@ -27,7 +27,7 @@ public:
       * \param endian endianess for writing multi-byte words
       * \return new object instance
       */
-    static Ref<ByteSink> open(Stream *sink, CharArray *buffer, Endian endian = Endian::Little) {
+    static Ref<ByteSink> open(Stream *sink, CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian) {
         return new ByteSink{sink, buffer, endian};
     }
 
@@ -36,7 +36,7 @@ public:
       * \param endian endianess for writing multi-byte words
       * \return new object instance
       */
-    static Ref<ByteSink> open(Stream *sink, Endian endian = Endian::Little) {
+    static Ref<ByteSink> open(Stream *sink, ByteOrder endian = ByteOrder::LittleEndian) {
         return new ByteSink{sink, nullptr, endian};
     }
 
@@ -45,7 +45,7 @@ public:
       * \param endian endianess for writing multi-byte words
       * \return new object instance
       */
-    static Ref<ByteSink> open(CharArray *buffer, Endian endian = Endian::Little) {
+    static Ref<ByteSink> open(CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian) {
         return new ByteSink{nullptr, buffer, endian};
     }
 
@@ -95,16 +95,16 @@ public:
     const CharArray *buffer() const { return buffer_; }
 
     /// Current endianess for encoding multi-byte words
-    Endian endian() const { return endian_; }
+    ByteOrder endian() const { return endian_; }
 
     /// Switch endianess
-    void setEndian(Endian endian) { endian_ = endian; }
+    void setEndian(ByteOrder endian) { endian_ = endian; }
 
     /// Total number of bytes written
     off_t currentOffset() const { return i0_ + i_; }
 
 private:
-    ByteSink(Stream *sink, CharArray *buffer, Endian endian):
+    ByteSink(Stream *sink, CharArray *buffer, ByteOrder endian):
         sink_{sink},
         buffer_{buffer},
         endian_{endian},
@@ -120,7 +120,7 @@ private:
 
     Ref<Stream> sink_;
     string buffer_;
-    Endian endian_;
+    ByteOrder endian_;
     off_t i0_;
     int i_;
 };
@@ -148,7 +148,7 @@ inline void ByteSink::writeUInt8(uint8_t x)
 
 inline void ByteSink::writeUInt16(uint16_t x)
 {
-    if (endian_ == Endian::Little)
+    if (endian_ == ByteOrder::LittleEndian)
     {
         writeUInt8(uint8_t(x));
         writeUInt8(uint8_t(x >> 8));
@@ -162,7 +162,7 @@ inline void ByteSink::writeUInt16(uint16_t x)
 
 inline void ByteSink::writeUInt32(uint32_t x)
 {
-    if (endian_ == Endian::Little)
+    if (endian_ == ByteOrder::LittleEndian)
     {
         writeUInt8(uint8_t(x));
         writeUInt8(uint8_t(x >> 8));
@@ -180,7 +180,7 @@ inline void ByteSink::writeUInt32(uint32_t x)
 
 inline void ByteSink::writeUInt64(uint64_t x)
 {
-    if (endian_ == Endian::Little) {
+    if (endian_ == ByteOrder::LittleEndian) {
         for (int i = 0; i < int(sizeof(x)); ++i, x >>= 8)
             writeUInt8(uint8_t(x));
     }

@@ -23,7 +23,7 @@ template<class T>
 class priority_queue {
 public:
     typedef PriorityQueue<T> Instance;
-    typedef typename Instance::Item value_type;
+    typedef typename Instance::value_type value_type;
     typedef typename Instance::size_type size_type;
 
     priority_queue():

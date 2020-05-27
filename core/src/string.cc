@@ -689,11 +689,11 @@ bool Array<char>::linePosToOffset(int line, int pos, int *offset) const
 
 void Array<char>::checkUtf8() const
 {
-    Ref<Utf8Source> source = Utf8Source::open(const_cast<CharArray *>(this));
+    auto source = Utf8Source::open(this);
     for (uchar_t ch = 0; source->read(&ch););
 }
 
-string Array<char>::fromUtf16(const CharArray *utf16, Endian endian)
+string Array<char>::fromUtf16(const CharArray *utf16, ByteOrder endian)
 {
     if (utf16->count() == 0) return CharArray::create();
 
@@ -739,7 +739,7 @@ bool Array<char>::toUtf16(void *buf, int *size)
     return (j <= n);
 }
 
-string Array<char>::toUtf16(Endian endian) const
+string Array<char>::toUtf16(ByteOrder endian) const
 {
     string out;
     {

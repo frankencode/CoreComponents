@@ -23,7 +23,7 @@ public:
 
     /** Return encoded size of code point \a ch
       */
-    static int encoded_size(char32_t ch)
+    static int encoded_size(uchar_t ch)
     {
         int n = 0;
         if (ch < 0x80)         n = 1; // ASCII codes : 0xxxxxxx

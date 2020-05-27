@@ -60,7 +60,7 @@ void ConnectionManager::cycle()
             Ref<ConnectionInfo> visit = visits_->front();
             visits_->popFront();
             uint64_t origin = visit->remoteAddress()->networkPrefix();
-            ConnectionCounts::Iterator target;
+            ConnectionCounts::iterator target;
             if (!connectionCounts_->find(origin, &target)) continue;
 
             if (target->value() == 1) connectionCounts_->remove(target);
@@ -73,13 +73,13 @@ bool ConnectionManager::accept(HttpServerConnection *client)
 {
     uint64_t origin = client->address()->networkPrefix();
     int count = 0;
-    ConnectionCounts::Index index = 0;
+    ConnectionCounts::size_type index = 0;
     if (!connectionCounts_->insert(origin, 1, &count, &index)) {
         if (connectionLimit_ > 0) {
             if (count >= connectionLimit_)
                 return false;
         }
-        connectionCounts_->setValueAt(index, count + 1);
+        connectionCounts_->setValueAt(index, count + 1); // \todo fix performance
     }
     client->connectionInfo()->setPriority(count < 8 ? 0 : -count);
     return true;

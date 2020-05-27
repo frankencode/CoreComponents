@@ -96,10 +96,10 @@ class FindSplitReplace: public TestCase
             string s = "bin/testPath";
             // fout("s = \"%%\"\n") << s;
             fout("s->scan(\"/\") = %%\n") << s->scan("/");
-            Ref<StringList> parts = s->split("/");
+            auto parts = s->split("/");
             fout("s.split(\"/\") = [\n");
-            for (int i = 0; i < parts->count(); ++i)
-                fout("  \"%%\"\n") << parts->at(i);
+            for (auto part: parts)
+                fout("  \"%%\"\n") << part;
             fout("]\n");
         }
         {

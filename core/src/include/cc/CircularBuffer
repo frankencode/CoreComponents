@@ -56,7 +56,7 @@ public:
     /** Insert a new item at the end of the circular buffer
       * \param item item value
       */
-    void pushBack(const T& item, int = 0)
+    void pushBack(const T& item)
     {
         if (fill_ == size_) popFront();
         ++head_;
@@ -68,7 +68,7 @@ public:
     /** Add a new item to the head of the queue
       * \param item item value
       */
-    void pushFront(const T& item, int = 0)
+    void pushFront(const T& item)
     {
         if (fill_ == size_) popBack();
         buf_->at(tail_) = item;

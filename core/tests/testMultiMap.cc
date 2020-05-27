@@ -43,7 +43,7 @@ class InsertionIteration: public TestCase
 
         for (int x = a; x < b; ++x) {
             fout("%% => ") << x;
-            MultiMap<int>::ConstIterator t;
+            MultiMap<int>::const_iterator t;
             if (map->find<FindFirst>(x, &t)) {
                 int y2 = 0; int i = 0;
                 while (t && t->key() == x) {
@@ -60,7 +60,7 @@ class InsertionIteration: public TestCase
 
         for (int x = a; x < b; ++x) {
             fout("%% => ") << x;
-            MultiMap<int>::ConstIterator t;
+            MultiMap<int>::const_iterator t;
             if (map->find<FindLast>(x, &t)) {
                 int y2 = 0; int i = 0;
                 while (t && t->key() == x) {

@@ -10,7 +10,7 @@
 
 #include <cc/bucket>
 #include <cc/containers>
-#include <cc/Pair>
+#include <cc/pair>
 
 namespace cc {
 
@@ -22,22 +22,19 @@ class multimap;
   * \brief Multi-map data container
   * \tparam K key type
   * \tparam T mapped type
-  * \see Map, MultiSet, Pair, KeySource, ValueSource
+  * \see Map, MultiSet, pair, KeySource, ValueSource
   */
 template<class K, class T = K>
 class MultiMap: public Object
 {
 public:
-    typedef K Key; ///< Key type
-    typedef T Value; ///< Value type
-    typedef Pair<Key, Value> Item; ///< Item type
-    typedef bucket::Weight Index; ///< Index type
+    typedef K key_type; ///< key type
+    typedef T mapped_type; ///< value type
+    typedef pair<K, T> value_type; ///< item type
+    typedef bucket::Weight size_type; ///< index type
 
-    typedef bucket::Iterator<Item> Iterator; ///< Bidirectional iterator
-    typedef bucket::ConstIterator<Item> ConstIterator; ///< Constant bidirectional iterator
-
-    typedef Iterator iterator; ///< \internal
-    typedef ConstIterator const_iterator; ///< \internal
+    typedef bucket::Iterator<value_type> iterator; ///< iterator type
+    typedef bucket::ConstIterator<value_type> const_iterator; ///< constant iterator type
 
     /** Create a new relation
       * \return new object instance
@@ -56,10 +53,10 @@ public:
     Ref<MultiMap> copy() const { return MultiMap::copy(this); }
 
     /// Number of items
-    Index count() const { return tree_->count(); }
+    size_type count() const { return tree_->count(); }
 
     /// Check if an index is valid
-    bool has(Index index) const {
+    bool has(size_type index) const {
         return 0 <= index && index < count();
     }
 
@@ -67,34 +64,34 @@ public:
       * \param index set index
       * \return reference to the item
       */
-    const Item &at(Index index) const
+    const value_type &at(size_type index) const
     {
         assert(0 <= index && index < count());
-        return tree_->at<Item>(index);
+        return tree_->at<value_type>(index);
     }
 
     /// Iterator to the beginning (on first item)
-    Iterator begin() { return Iterator{&tree_}; }
+    iterator begin() { return iterator{&tree_}; }
 
     /// Iterator pointing to the item at \a index
-    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
+    iterator beginAt(size_type index) { return iterator{tree_, index}; }
 
     /// Iterator to the end (behind last item)
-    Iterator end() { return Iterator{&tree_, tree_->count()}; }
+    iterator end() { return iterator{&tree_, tree_->count()}; }
 
     /// Constant iterator to the beginning (on first item)
-    ConstIterator begin() const { return ConstIterator{tree_}; }
+    const_iterator begin() const { return const_iterator{tree_}; }
 
     /// Constant Iterator pointing to the item at \a index
-    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+    const_iterator beginAt(size_type index) const { return const_iterator{tree_, index}; }
 
     /// Constant iterator to the end (behind last item)
-    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+    const_iterator end() const { return const_iterator{tree_, tree_->count()}; }
 
     /// Check if the relation contains \a key
-    bool contains(const Key &key) const
+    bool contains(const key_type &key) const
     {
-        return tree_->lookup<Item>(Item{key});
+        return tree_->lookup<value_type>(value_type{key});
     }
 
     /** Lookup key-value pair by given key
@@ -104,13 +101,13 @@ public:
       * \return true if a matching key-value pair was found
       */
     template<class Search = FindFirst>
-    bool find(const Key &key, ConstIterator *target) const
+    bool find(const key_type &key, const_iterator *target) const
     {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
+        size_type index = 0;
+        bucket::Leaf<value_type> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item, Search>(Item{key}, &index, &node, &egress);
-        if (target) *target = ConstIterator{tree_, index, node, egress};
+        bool found = tree_->lookup<value_type, Search>(value_type{key}, &index, &node, &egress);
+        if (target) *target = const_iterator{tree_, index, node, egress};
         return found;
     }
 
@@ -121,13 +118,13 @@ public:
       * \return true if a matching key-value pair was found
       */
     template<class Search = FindFirst>
-    bool find(const Key &key, Iterator *target)
+    bool find(const key_type &key, iterator *target)
     {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
+        size_type index = 0;
+        bucket::Leaf<value_type> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item, Search>(Item{key}, &index, &node, &egress);
-        if (target) *target = Iterator{tree_, index, node, egress};
+        bool found = tree_->lookup<value_type, Search>(value_type{key}, &index, &node, &egress);
+        if (target) *target = iterator{tree_, index, node, egress};
         return found;
     }
 
@@ -135,23 +132,23 @@ public:
       * \param key search key
       * \param value new value
       */
-    void insert(const Key &key, const Value &value)
+    void insert(const key_type &key, const mapped_type &value)
     {
-        bucket::Leaf<Item> *target = nullptr;
+        bucket::Leaf<value_type> *target = nullptr;
         unsigned egress = 0;
-        Item item{key, value};
-        bool found = tree_->lookup<Item, FindLast>(item, nullptr, &target, &egress);
-        tree_->push<Item>(target, egress + found, item);
+        value_type item{key, value};
+        bool found = tree_->lookup<value_type, FindLast>(item, nullptr, &target, &egress);
+        tree_->push<value_type>(target, egress + found, item);
     }
 
     /** Remove all key-value pairs matching a search key
       * \param key search key
       * \return number of items removed
       */
-    Index remove(const Key &key)
+    size_type remove(const key_type &key)
     {
-        Index removalCount = 0;
-        Iterator target;
+        size_type removalCount = 0;
+        iterator target;
         find(key, &target);
         while (target && target->key() == key) {
             remove(target);
@@ -161,42 +158,42 @@ public:
     }
 
     /** Remove \a item at given \a target position */
-    void remove(Iterator &target)
+    void remove(iterator &target)
     {
         tree_->popAndStep(target);
     }
 
     /// Remove item at given \a index
-    void removeAt(Index index)
+    void removeAt(size_type index)
     {
         assert(0 <= index && index < count());
-        tree_->pop<Item>(index);
+        tree_->pop<value_type>(index);
     }
 
     /// Modify value of the key-value mapping at \a index
-    void setValueAt(Index index, const Value &value)
+    void setValueAt(size_type index, const mapped_type &value)
     {
         assert(0 <= index && index < count());
-        tree_->at<Item>(index)->setValue(value);
+        tree_->at<value_type>(index)->setValue(value);
     }
 
     /// Return the first item
-    const Item &first() const { return tree_->first<Item>(); }
+    const value_type &first() const { return tree_->first<value_type>(); }
 
     /// Return the last item
-    const Item &last() const { return tree_->last<Item>(); }
+    const value_type &last() const { return tree_->last<value_type>(); }
 
     /// Reset to an empty relation
-    void deplete() { tree_->deplete<Item>(); }
+    void deplete() { tree_->deplete<value_type>(); }
 
     /** \name Syntax sugar
       */
     ///@{
     /** Insert \a item to the set */
-    void operator<<(const Item& item) { insert(item->key(), item->value()); }
+    void operator<<(const value_type& item) { insert(item->key(), item->value()); }
 
     /** Remove and return first item */
-    void operator>>(Item& item) { if (count() > 0) { item = first(); removeAt(0); } }
+    void operator>>(value_type& item) { if (count() > 0) { item = first(); removeAt(0); } }
     ///@}
 
 protected:
@@ -208,10 +205,10 @@ protected:
 
     MultiMap(const MultiMap *other)
     {
-        tree_->populate<Item>(other);
+        tree_->populate<value_type>(other);
     }
 
-    ~MultiMap() { tree_->deplete<Item>(); }
+    ~MultiMap() { tree_->deplete<value_type>(); }
 
     Local<bucket::Tree> tree_;
 };

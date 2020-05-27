@@ -17,7 +17,7 @@ bool Utf16Source::read(uchar_t *ch)
         uint16_t w = byteSource_->readUInt16();
         if (w == 0xFFFE && firstTime_) {
             firstTime_ = false;
-            byteSource_->setEndian((byteSource_->endian() == Endian::Big) ? Endian::Little : Endian::Big);
+            byteSource_->setEndian((byteSource_->endian() == ByteOrder::BigEndian) ? ByteOrder::LittleEndian : ByteOrder::BigEndian);
             w = byteSource_->readUInt16();
         }
         *ch = w;

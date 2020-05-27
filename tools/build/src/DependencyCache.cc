@@ -46,7 +46,7 @@ DependencyCache::DependencyCache(BuildPlan *plan):
 
     for (int i = 0; i < dependencyCache->count(); ++i)
     {
-        MetaObject::Item item = dependencyCache->at(i);
+        MetaObject::value_type item = dependencyCache->at(i);
 
         previousSources_->append(item->key());
 
@@ -100,7 +100,7 @@ DependencyCache::~DependencyCache()
     string indent(4, ' ');
     text << "DependencyCache {\n";
     for (int i = 0; i < cache_->count(); ++i) {
-        Cache::Item item = cache_->at(i);
+        Cache::value_type item = cache_->at(i);
         string sourcePath = item->key();
         Module *module = item->value();
         text

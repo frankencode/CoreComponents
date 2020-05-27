@@ -35,7 +35,7 @@ public:
       * \return new object instance
       */
     static Ref<Utf8Sink> open(CharArray* buffer) {
-        return new Utf8Sink(0, buffer);
+        return new Utf8Sink{nullptr, buffer};
     }
 
     /** Write an %Unicode character

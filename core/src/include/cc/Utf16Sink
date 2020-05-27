@@ -25,7 +25,7 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    static Ref<Utf16Sink> open(Stream *stream, CharArray *buffer = nullptr, Endian endian = Endian::Big)
+    static Ref<Utf16Sink> open(Stream *stream, CharArray *buffer = nullptr, ByteOrder endian = ByteOrder::BigEndian)
     {
         return new Utf16Sink{stream, buffer, endian};
     }
@@ -35,7 +35,7 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    static Ref<Utf16Sink> open(CharArray *buffer, Endian endian = Endian::Big)
+    static Ref<Utf16Sink> open(CharArray *buffer, ByteOrder endian = ByteOrder::BigEndian)
     {
         return new Utf16Sink{nullptr, buffer, endian};
     }
@@ -71,7 +71,7 @@ public:
     ByteSink *byteSink() const { return byteSink_; }
 
 private:
-    Utf16Sink(Stream *stream, CharArray* buffer, Endian endian):
+    Utf16Sink(Stream *stream, CharArray* buffer, ByteOrder endian):
         byteSink_{ByteSink::open(stream, buffer, endian)}
     {}
 

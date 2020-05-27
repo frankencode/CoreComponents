@@ -851,7 +851,7 @@ public:
       * \param endian endianess of the UTF-16 encoded string
       * \return UTF-8 encoded string
       */
-    static string fromUtf16(const CharArray *utf16, Endian endian = localEndian());
+    static string fromUtf16(const CharArray *utf16, ByteOrder endian = localEndian());
 
    /** Convert to a UTF-16 encoded string (local endian).
      * \param buf destination buffer
@@ -869,7 +869,7 @@ public:
       * \param endian endianess of the UTF-16 encoded string
       * \return UTF-16 encoded string
       */
-    string toUtf16(Endian endian = localEndian()) const;
+    string toUtf16(ByteOrder endian = localEndian()) const;
 
     /** Convert to a series of hexadecimal characters
       * \see hexDump
@@ -1016,7 +1016,7 @@ private:
 
     int size_;
     union {
-        char *data_;
+        char *data_; // \todo that should be void *
         char *chars_;
         uint8_t *bytes_;
         uint16_t *halfs_;

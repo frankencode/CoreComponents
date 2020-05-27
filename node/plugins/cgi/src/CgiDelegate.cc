@@ -130,7 +130,7 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
     int statusCode = -1;
     string reasonPhrase;
     {
-        HttpMessage::Iterator target;
+        HttpMessage::iterator target;
         if (cgiResponse->find("Status", &target)) {
             string statusField = target->value();
             int i = statusField->scan(' ');
@@ -146,7 +146,7 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
     }
 
     {
-        HttpMessage::Iterator target;
+        HttpMessage::iterator target;
         if (cgiResponse->find("Location", &target)) {
             string location = target->value();
             CCNODE_DEBUG() << "Redirect to \"" << location << "\"" << nl;
@@ -181,7 +181,7 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
     response()->setStatus(statusCode, reasonPhrase);
     ssize_t contentLength = -1;
     {
-        HttpMessage::Iterator target;
+        HttpMessage::iterator target;
         if (cgiResponse->find("Content-Length", &target)) {
             contentLength = target->value()->toNumber<size_t>();
             cgiResponse->remove(target);

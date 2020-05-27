@@ -10,7 +10,7 @@
 
 #include <cc/bucket>
 #include <cc/containers>
-#include <cc/Pair>
+#include <cc/pair>
 
 namespace cc {
 
@@ -22,22 +22,19 @@ class map;
   * \brief %Map data container
   * \tparam K key type
   * \tparam T mapped type
-  * \see MultiMap, Set, Pair, KeySource, ValueSource
+  * \see MultiMap, Set, pair, KeySource, ValueSource
   */
 template<class K, class T = K>
 class Map: public Object
 {
 public:
-    typedef K Key; ///< Key type
-    typedef T Value; ///< Value type
-    typedef Pair<Key, Value> Item; ///< Item type
-    typedef bucket::Weight Index; ///< Index type
+    typedef pair<K, T> value_type; ///< item type
+    typedef bucket::Weight size_type; ///< undex type
+    typedef K key_type; ///< key type
+    typedef T mapped_type; ///< mapped type
 
-    typedef bucket::Iterator<Item> Iterator; ///< Bidirectional iterator
-    typedef bucket::ConstIterator<Item> ConstIterator; ///< Constant bidirectional iterator
-
-    typedef Iterator iterator; ///< \internal
-    typedef ConstIterator const_iterator; ///< \internal
+    typedef bucket::Iterator<value_type> iterator; ///< iterator type
+    typedef bucket::ConstIterator<value_type> const_iterator; ///< constant iterator type
 
     /** Create a new map
       * \return new object instance
@@ -56,42 +53,42 @@ public:
     Ref<Map> copy() const { return Map::copy(this); }
 
     /// Number of items
-    Index count() const { return tree_->count(); }
+    size_type count() const { return tree_->count(); }
 
     /// Check if an index is valid
-    bool has(Index index) const {
+    bool has(size_type index) const {
         return 0 <= index && index < count();
     }
 
     /// Return a reference to the item at \a index
-    const Item &at(Index index) const
+    const value_type &at(size_type index) const
     {
         assert(0 <= index && index < count());
-        return tree_->at<Item>(index);
+        return tree_->at<value_type>(index);
     }
 
     /// Iterator to the beginning (on first item)
-    Iterator begin() { return Iterator{&tree_}; }
+    iterator begin() { return iterator{&tree_}; }
 
     /// Iterator pointing to the item at \a index
-    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
+    iterator beginAt(size_type index) { return iterator{tree_, index}; }
 
     /// Iterator to the end (behind last item)
-    Iterator end() { return Iterator{&tree_, tree_->count()}; }
+    iterator end() { return iterator{&tree_, tree_->count()}; }
 
     /// Constant iterator to the beginning (on first item)
-    ConstIterator begin() const { return ConstIterator{tree_}; }
+    const_iterator begin() const { return const_iterator{tree_}; }
 
     /// Constant Iterator pointing to the item at \a index
-    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+    const_iterator beginAt(size_type index) const { return const_iterator{tree_, index}; }
 
     /// Constant iterator to the end (behind last item)
-    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+    const_iterator end() const { return const_iterator{tree_, tree_->count()}; }
 
     /// Check if the map contains \a key
-    bool contains(const Key &key) const
+    bool contains(const key_type &key) const
     {
-        return tree_->lookup<Item>(Item{key});
+        return tree_->lookup<value_type>(value_type{key});
     }
 
     /** Lookup key-value pair by given key
@@ -100,42 +97,42 @@ public:
       * and the function returns false.
       */
     template<class ReturnValue>
-    bool lookup(const Key &key, ReturnValue *value) const
+    bool lookup(const key_type &key, ReturnValue *value) const
     {
-        bucket::Leaf<Item> *target = nullptr;
+        bucket::Leaf<value_type> *target = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup(Item{key}, nullptr, &target, &egress);
+        bool found = tree_->lookup(value_type{key}, nullptr, &target, &egress);
         if (found) *value = target->at(egress)->value();
         return found;
     }
 
-    /** Lookup key-value pair by given key
+    /** Find key-value pair by given key
       * \param key key to search for
       * \param target returns an iterator to the key-value if found
       * \return true if a matching key-value pair was found
       */
-    bool find(const Key &key, ConstIterator *target) const
+    bool find(const key_type &key, const_iterator *target) const
     {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
+        size_type index = 0;
+        bucket::Leaf<value_type> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item>(Item{key}, &index, &node, &egress);
-        if (target) *target = ConstIterator{tree_, index, node, egress};
+        bool found = tree_->lookup<value_type>(value_type{key}, &index, &node, &egress);
+        if (target) *target = const_iterator{tree_, index, node, egress};
         return found;
     }
 
-    /** Lookup key-value pair by given key.
+    /** Find key-value pair by given key
       * \param key key to search for
       * \param target returns an iterator to the key-value if found
       * \return true if a matching key-value pair was found
       */
-    bool find(const Key &key, Iterator *target)
+    bool find(const key_type &key, iterator *target)
     {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
+        size_type index = 0;
+        bucket::Leaf<value_type> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item>(Item{key}, &index, &node, &egress);
-        if (target) *target = Iterator{tree_, index, node, egress};
+        bool found = tree_->lookup<value_type>(value_type{key}, &index, &node, &egress);
+        if (target) *target = iterator{tree_, index, node, egress};
         return found;
     }
 
@@ -146,13 +143,13 @@ public:
       * \param currentIndex returns the index of the key if the map contains the given key already
       * \return true if the new key-value pair was inserted successfully
       */
-    bool insert(const Key &key, const Value &value, Value *currentValue = nullptr, Index *currentIndex = nullptr)
+    bool insert(const key_type &key, const mapped_type &value, mapped_type *currentValue = nullptr, size_type *currentIndex = nullptr)
     {
-        bucket::Leaf<Item> *target = nullptr;
+        bucket::Leaf<value_type> *target = nullptr;
         unsigned egress = 0;
-        Item item{key, value};
-        bool found = tree_->lookup<Item>(item, currentIndex, &target, &egress);
-        if (!found) tree_->push<Item>(target, egress, item);
+        value_type item{key, value};
+        bool found = tree_->lookup<value_type>(item, currentIndex, &target, &egress);
+        if (!found) tree_->push<value_type>(target, egress, item);
         else if (currentValue) *currentValue = target->at(egress)->value();
         return !found;
     }
@@ -160,12 +157,12 @@ public:
     /** Remove the given \a key from the map
       * \return true if a matching key was found and removed
       */
-    bool remove(const Key &key)
+    bool remove(const key_type &key)
     {
-        bucket::Leaf<Item> *target = nullptr;
+        bucket::Leaf<value_type> *target = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item>(Item{key}, nullptr, &target, &egress);
-        if (found) tree_->pop<Item>(target, egress);
+        bool found = tree_->lookup<value_type>(value_type{key}, nullptr, &target, &egress);
+        if (found) tree_->pop<value_type>(target, egress);
         return found;
     }
 
@@ -173,14 +170,14 @@ public:
       * \param key search key
       * \param value new value
       */
-    void establish(const Key &key, const Value &value)
+    void establish(const key_type &key, const mapped_type &value)
     {
-        bucket::Leaf<Item> *target = nullptr;
+        bucket::Leaf<value_type> *target = nullptr;
         unsigned egress = 0;
-        Item item{key, value};
-        bool found = tree_->lookup<Item>(item, nullptr, &target, &egress);
+        value_type item{key, value};
+        bool found = tree_->lookup<value_type>(item, nullptr, &target, &egress);
         if (found) target->at(egress) = item;
-        else tree_->push<Item>(target, egress, item);
+        else tree_->push<value_type>(target, egress, item);
     }
 
     /** Retrieve value of associated with a given \a key
@@ -188,11 +185,11 @@ public:
       * \param fallback fallback value
       * \return retieved value if key was found, fallback value otherwise
       */
-    Value value(const Key &key, const Value &fallback = Value{}) const
+    mapped_type value(const key_type &key, const mapped_type &fallback = mapped_type{}) const
     {
-        bucket::Leaf<Item> *target = nullptr;
+        bucket::Leaf<value_type> *target = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup(Item{key}, nullptr, &target, &egress);
+        bool found = tree_->lookup(value_type{key}, nullptr, &target, &egress);
         return found ? target->at(egress)->value() : fallback;
     }
 
@@ -201,53 +198,53 @@ public:
       * \param value new value
       * \return true if key is was found, false otherwise
       */
-    bool setValue(const Key &key, const Value &value)
+    bool setValue(const key_type &key, const mapped_type &value)
     {
-        bucket::Leaf<Pair<Key, Value>> *target = nullptr;
+        bucket::Leaf<value_type> *target = nullptr;
         unsigned egress = 0;
-        Item item{key, value};
+        value_type item{key, value};
         bool found = tree_->lookup(item, nullptr, &target, &egress);
         if (found) target->at(egress) = item;
         return found;
     }
 
     /// Remove \a item at given \a target position
-    void remove(Iterator &target)
+    void remove(iterator &target)
     {
         tree_->popAndStep(target);
     }
 
     /// Remove item at given \a index
-    void removeAt(Index index)
+    void removeAt(size_type index)
     {
         assert(0 <= index && index < count());
-        tree_->pop<Item>(index);
+        tree_->pop<value_type>(index);
     }
 
     /// Modify value of the key-value mapping at given \a index
-    void setValueAt(Index index, const Value &value)
+    void setValueAt(size_type index, const mapped_type &value)
     {
         assert(0 <= index && index < count());
-        tree_->at<Item>(index)->setValue(value);
+        tree_->at<value_type>(index)->setValue(value);
     }
 
     /// Return the first item
-    const Item &first() const { return tree_->first<Item>(); }
+    const value_type &first() const { return tree_->first<value_type>(); }
 
     /// Return the last item
-    const Item &last() const { return tree_->last<Item>(); }
+    const value_type &last() const { return tree_->last<value_type>(); }
 
     /// Reset to an empty map
-    void deplete() { tree_->deplete<Item>(); }
+    void deplete() { tree_->deplete<value_type>(); }
 
     /** \name Syntax sugar
       */
     ///@{
     /** Insert \a item to the set */
-    void operator<<(const Item& item) { insert(item->key(), item->value()); }
+    void operator<<(const value_type& item) { insert(item->key(), item->value()); }
 
     /** Remove and return first item */
-    void operator>>(Item& item) { if (count() > 0) { item = first(); removeAt(0); } }
+    void operator>>(value_type& item) { if (count() > 0) { item = first(); removeAt(0); } }
     ///@}
 
 protected:
@@ -259,10 +256,10 @@ protected:
 
     Map(const Map *other)
     {
-        tree_->populate<Item>(other);
+        tree_->populate<value_type>(other);
     }
 
-    ~Map() { tree_->deplete<Item>(); }
+    ~Map() { tree_->deplete<value_type>(); }
 
 private:
     Local<bucket::Tree> tree_;

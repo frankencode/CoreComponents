@@ -56,7 +56,7 @@ void HttpGenerator::setHeader(Header *header)
 {
     Ref<Header> headerSaved = header_;
     header_ = header;
-    for (const Header::Item &item: headerSaved)
+    for (const auto &item: headerSaved)
         header_->insert(item->key(), item->value());
 }
 
@@ -66,7 +66,7 @@ void HttpGenerator::writeHeader()
 
     Format sink{peer_->stream()};
     writeFirstLine(sink);
-    for (const Header::Item &item: header_)
+    for (const auto &item: header_)
         sink << item->key() << ":" << item->value() << "\r\n";
     sink << "\r\n";
 

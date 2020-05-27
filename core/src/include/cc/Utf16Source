@@ -30,7 +30,7 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    static Ref<Utf16Source> open(Stream *stream, CharArray *buffer = 0, Endian endian = Endian::Big)
+    static Ref<Utf16Source> open(Stream *stream, CharArray *buffer = 0, ByteOrder endian = ByteOrder::BigEndian)
     {
         return new Utf16Source{stream, buffer, endian};
     }
@@ -40,7 +40,7 @@ public:
       * \param endian endianess of the 16 bit words transmitted
       * \return new object instance
       */
-    static Ref<Utf16Source> open(const CharArray *buffer, Endian endian = Endian::Big)
+    static Ref<Utf16Source> open(const CharArray *buffer, ByteOrder endian = ByteOrder::BigEndian)
     {
         return new Utf16Source{buffer, endian};
     }
@@ -60,12 +60,12 @@ private:
         string message() const override ;
     };
 
-    Utf16Source(Stream *stream, CharArray *buffer, Endian endian):
+    Utf16Source(Stream *stream, CharArray *buffer, ByteOrder endian):
         byteSource_{ByteSource::open(stream, buffer, endian)},
         firstTime_{true}
     {}
 
-    Utf16Source(const CharArray *buffer, Endian endian):
+    Utf16Source(const CharArray *buffer, ByteOrder endian):
         byteSource_{ByteSource::open(buffer, endian)},
         firstTime_{true}
     {}

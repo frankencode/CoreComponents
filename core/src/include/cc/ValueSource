@@ -36,7 +36,7 @@ public:
 
 protected:
     ValueSource(const Container *container): iterator_{container->begin()} {}
-    typename Container::ConstIterator iterator_;
+    typename Container::const_iterator iterator_;
 };
 
 } // namespace cc

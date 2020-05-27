@@ -26,7 +26,7 @@ template<class T>
 class PriorityQueue: public Object
 {
 public:
-    typedef T Item;
+    typedef T value_type;
     typedef int64_t size_type;
 
     /** Create a new queue
@@ -80,9 +80,9 @@ public:
       */
     ///@{
     /// Append an item to the end
-    void operator<<(const Item& item) { pushBack(item); }
+    void operator<<(const T& item) { pushBack(item); }
     /// Remove an item from the front
-    void operator>>(Item& item) { if (count() > 0) { popFront(&item); } }
+    void operator>>(T& item) { if (count() > 0) { popFront(&item); } }
     ///@}
 
 private:
@@ -108,7 +108,7 @@ private:
     Ref< Queue<T> > outputQueue()
     {
         --size_;
-        typename QueueByPriority::Item pair = queueByPriority_->at(queueByPriority_->count() - 1);
+        typename QueueByPriority::value_type pair = queueByPriority_->at(queueByPriority_->count() - 1);
         if (pair->value()->count() == 1) queueByPriority_->remove(pair->key());
         return pair->value();
     }

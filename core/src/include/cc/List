@@ -30,15 +30,10 @@ template<class T>
 class List: public Object
 {
 public:
-    typedef T Item; ///< Item type
-    typedef int64_t Index; ///< Index type
-
-    typedef bucket::Iterator<Item> Iterator; ///< Bidirectional iterator
-    typedef bucket::ConstIterator<Item> ConstIterator; ///< Constant bidirectional iterator
-
-    typedef Iterator iterator; ///< \internal
-    typedef ConstIterator const_iterator; ///< \internal
-    typedef T value_type; ///< \internal
+    typedef T value_type; ///< item type
+    typedef int64_t size_type; ///< index type
+    typedef bucket::Iterator<T> iterator; ///< iterator type
+    typedef bucket::ConstIterator<T> const_iterator; ///< constant iterator type
 
     /** Create an empty list
       * \return new object instance
@@ -57,7 +52,7 @@ public:
     Ref<List> copy() const { return List::copy(this); }
 
     /// Return the number of items stored in this list
-    Index count() const { return tree_->count(); }
+    size_type count() const { return tree_->count(); }
 
     /// Check if an index is valid
     bool has(int index) const {
@@ -68,67 +63,67 @@ public:
       * \param index list index
       * \return reference to the item
       */
-    Item &at(Index index)
+    T &at(size_type index)
     {
         assert(0 <= index && index < count());
-        return tree_->at<Item>(index);
+        return tree_->at<T>(index);
     }
 
     /** \copydoc at(Index index)
       */
-    const Item &at(Index index) const
+    const T &at(size_type index) const
     {
         assert(0 <= index && index < count());
-        return tree_->at<Item>(index);
+        return tree_->at<T>(index);
     }
 
-    /// Iterator to the beginning (on first item)
-    Iterator begin() { return Iterator{&tree_}; }
+    /// Iterator pointing to the beginning (on first item)
+    iterator begin() { return iterator{&tree_}; }
 
     /// Iterator pointing to the item at \a index
-    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
+    iterator beginAt(size_type index) { return iterator{tree_, index}; }
 
     /// Iterator to the end (behind last item)
-    Iterator end() { return Iterator{&tree_, tree_->count()}; }
+    iterator end() { return iterator{&tree_, tree_->count()}; }
 
     /// Constant iterator to the beginning (on first item)
-    ConstIterator begin() const { return ConstIterator{tree_}; }
+    const_iterator begin() const { return const_iterator{tree_}; }
 
     /// Constant Iterator pointing to the item at \a index
-    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
+    const_iterator beginAt(size_type index) const { return const_iterator{tree_, index}; }
 
     /// Constant iterator to the end (behind last item)
-    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+    const_iterator end() const { return const_iterator{tree_, tree_->count()}; }
 
     /** Insert new item at given index
       * \param index list index
       * \param item new item value
       */
-    void insertAt(Index index, const Item &item)
+    void insertAt(size_type index, const T &item)
     {
         assert(0 <= index && index <= count());
-        tree_->push<Item>(index, item);
+        tree_->push<T>(index, item);
     }
 
     /** Remove item at given index
       * \param index list index
       */
-    void removeAt(Index index)
+    void removeAt(size_type index)
     {
         assert(0 <= index && index < count());
-        tree_->pop<Item>(index);
+        tree_->pop<T>(index);
     }
 
     /** Append \a item to the end of the list
       */
-    void append(const Item &item)
+    void append(const T &item)
     {
         tree_->pushBack(item);
     }
 
     /** Prepend \a item to the front of the list
       */
-    void prepend(const Item &item)
+    void prepend(const T &item)
     {
         insertAt(0, item);
     }
@@ -141,19 +136,19 @@ public:
         if (other) {
             // TODO: improve performance
 
-            for (const Item &item: other)
+            for (const T &item: other)
                 append(item);
         }
     }
 
     /** Insert \a item at given \a target position */
-    void insert(Iterator &target, const Item &item)
+    void insert(iterator &target, const T &item)
     {
         tree_->pushAndStep(target, item);
     }
 
     /** Remove \a item from given \a target position */
-    void remove(Iterator &target)
+    void remove(iterator &target)
     {
         tree_->popAndStep(target);
     }
@@ -166,8 +161,8 @@ public:
         if (other) {
             // TODO: improve performance
 
-            Index i = 0;
-            for (const Item &item: other) {
+            size_type i = 0;
+            for (const T &item: other) {
                 insertAt(i, item);
                 ++i;
             }
@@ -175,29 +170,29 @@ public:
     }
 
     /// Directly access first item
-    Item &first() { assert(count() > 0); return tree_->first<Item>(); }
+    T &first() { assert(count() > 0); return tree_->first<T>(); }
 
     /// Directly access first item of a constant list
-    const Item &first() const { assert(count() > 0); return tree_->first<Item>(); }
+    const T &first() const { assert(count() > 0); return tree_->first<T>(); }
 
     /// Directly access last item
-    Item &last() { assert(count() > 0); return tree_->last<Item>(); }
+    T &last() { assert(count() > 0); return tree_->last<T>(); }
 
     /// Directly access last item of a constant list
-    const Item &last() const { assert(count() > 0); return tree_->last<Item>(); }
+    const T &last() const { assert(count() > 0); return tree_->last<T>(); }
 
     /// Check if \a x points to first item
-    bool first(const Item *x) const { return &first() == x; }
+    bool first(const T *x) const { return &first() == x; }
 
     /// Check if \a x points to last item
-    bool last(const Item *x) const { return &last() == x; }
+    bool last(const T *x) const { return &last() == x; }
 
     /** Search for an item
       * \param item item to search for
       * \param index start and final position
       * \return true if item was found
       */
-    bool find(const Item &item, Index *index = nullptr)
+    bool find(const T &item, size_type *index = nullptr)
     {
         int i = index ? *index : 0;
         i = scan(item, i);
@@ -210,7 +205,7 @@ public:
       * \param index start position for the search
       * \return first position the item was found in or count() if the item couldn't be found
       */
-    int scan(const Item &item, Index index = 0) const
+    int scan(const T &item, size_type index = 0) const
     {
         auto it = beginAt(index);
         for (; it; ++it) {
@@ -223,22 +218,22 @@ public:
       * \param item item to test for
       * \return true if the item appears in the list
       */
-    bool contains(const Item &item) const
+    bool contains(const T &item) const
     {
         return scan(item) < count();
     }
 
     /// Remove all items from the list
-    void deplete() { tree_->deplete<Item>(); }
+    void deplete() { tree_->deplete<T>(); }
 
     /** Replace all appearances of an item value
       * \param oldItem old item value to search for
       * \param newItem new item value to put in place
       * \return pointer to this list
       */
-    List *replaceInsitu(const Item &oldItem, const Item &newItem)
+    List *replaceInsitu(const T &oldItem, const T &newItem)
     {
-        for (Item &item: this) {
+        for (T &item: this) {
             if (item == oldItem)
                 item = newItem;
         }
@@ -249,7 +244,7 @@ public:
       * \param sep the separator to insert between the items
       * \return the resulting item
       */
-    Item join(const Item &sep = Item{}) const { return Item::join(this, sep); }
+    T join(const T &sep = T{}) const { return T::join(this, sep); }
 
     /** Sort list
       * \param unique eliminate duplicates
@@ -259,7 +254,7 @@ public:
     Ref<List> sort(bool unique = false) const
     {
         if (count() == 0) return List::create();
-        auto heap = GenericHeap<Item, SortOrder>::create(count());
+        auto heap = GenericHeap<T, SortOrder>::create(count());
         return sortWithHeap(heap, unique);
     }
 
@@ -271,7 +266,7 @@ public:
     Ref<List> sort(SortOrder order = Ascending, bool unique = false) const
     {
         if (count() == 0) return List::create();
-        auto heap = Heap<Item>::create(count(), order);
+        auto heap = Heap<T>::create(count(), order);
         return sortWithHeap(heap, unique);
     }
 
@@ -282,7 +277,7 @@ public:
     {
         // TODO: improve performance
 
-        Ref<List> result = List::allocate(count());
+        auto result = List::allocate(count());
         for (int i = 0, n = count(); i < n; ++i)
             result->at(i) = at(n - i - 1);
         return result;
@@ -293,7 +288,7 @@ public:
       */
     static void makeUnique(List *list)
     {
-        auto set = Set<Item>::create();
+        auto set = Set<T>::create();
         for (auto target = list->begin(); target;) {
             if (set->insert(*target)) ++target;
             else list->remove(target);
@@ -304,11 +299,11 @@ public:
       * \tparam T2 the target item type
       * \return new list instance
       */
-    template<class Item2>
-    Ref< List<Item2> > toList() const {
-        auto other = List<Item2>::create();
+    template<class T2>
+    Ref< List<T2> > toList() const {
+        auto other = List<T2>::create();
         for (auto &item: this) {
-            Item item2;
+            T2 item2;
             item2 = item;
             other->append(item2);
         }
@@ -319,9 +314,9 @@ public:
       */
     ///@{
     /** Append \a item to the list */
-    void operator<<(const Item& item) { pushBack(item); }
+    void operator<<(const T& item) { pushBack(item); }
     /** Remove and return first item */
-    void operator>>(Item& item) { if (count() > 0) { item = front(); popFront(); } }
+    void operator>>(T& item) { if (count() > 0) { item = front(); popFront(); } }
     ///@}
 
     /** \name Queuelike
@@ -329,28 +324,28 @@ public:
       */
 
     /** Append item at the end of the list */
-    void pushBack(const Item &item) { tree_->pushBack(item); }
+    void pushBack(const T &item) { tree_->pushBack(item); }
 
     /** Remove the last from end of the list */
     void popBack() { removeAt(count() - 1); }
 
     /** Insert a new item at the beginning of the list */
-    void pushFront(const Item &item) { insertAt(0, item); }
+    void pushFront(const T &item) { insertAt(0, item); }
 
     /** Remove the first item from the beginning of the list */
     void popFront() { removeAt(0); }
 
     /** Directly access item at the front */
-    Item &front() { assert(count() > 0); return tree_->first<Item>(); }
+    T &front() { assert(count() > 0); return tree_->first<T>(); }
 
     /** Directly access item at the front */
-    const Item &front() const { assert(count() > 0); return tree_->first<Item>(); }
+    const T &front() const { assert(count() > 0); return tree_->first<T>(); }
 
     /** Directly access item at the back */
-    Item &back() { assert(count() > 0); return tree_->last<Item>(); }
+    T &back() { assert(count() > 0); return tree_->last<T>(); }
 
     /** Directly access item at the back */
-    const Item &back() const { assert(count() > 0); return tree_->last<Item>(); }
+    const T &back() const { assert(count() > 0); return tree_->last<T>(); }
 
     /** @}
       */
@@ -361,29 +356,29 @@ private:
     friend class list<T>;
 
     // TODO: obsolete
-    static Ref<List> allocate(Index count)
+    static Ref<List> allocate(size_type count)
     {
         auto list = new List;
-        for (; count > 0; --count) list->pushBack(Item{});
+        for (; count > 0; --count) list->pushBack(T{});
         return list;
     }
 
     List() = default;
-    ~List() { tree_->deplete<Item>(); }
+    ~List() { tree_->deplete<T>(); }
 
     List(const List *other)
     {
-        tree_->populate<Item>(other);
+        tree_->populate<T>(other);
     }
 
     template<class Heap>
     Ref<List> sortWithHeap(Ref<Heap> heap, bool unique = false) const
     {
-        for (const Item &item: this) heap->push(item);
+        for (const T &item: this) heap->push(item);
 
         Ref<List> result = List::create();
         if (unique) {
-            Item prev, item;
+            T prev, item;
             heap->pop(&prev);
             result->append(prev);
             while (!heap->isEmpty()) {
