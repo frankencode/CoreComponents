@@ -165,10 +165,10 @@ string fixed(float64_t x, int ni, int nf)
     return s;
 }
 
-string dec(const Variant &x, int n)
+string dec(const variant &x, int n)
 {
     return (x->type() == VariantType::Float) ?
-        dec(Variant::Float(x), n > 0 ? n : 7) :
+        dec(variant::Float(x), n > 0 ? n : 7) :
         dec(int(x), n);
 }
 

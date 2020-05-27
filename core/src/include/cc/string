@@ -33,7 +33,7 @@ class Array;
   */
 typedef Array<char> CharArray;
 
-class Variant;
+class variant;
 class Format;
 
 /** Spezialised Ref<T> for character arrays
@@ -136,7 +136,7 @@ public:
     Ref(const Ref<StringList> &b);
 
     /// Contruct a string as an alias to the string stored in \a b
-    Ref(const Variant &b);
+    Ref(const variant &b);
 
     /// \copydoc Ref(const Ref<StringList> &)
     Ref(const Format &b);
@@ -157,7 +157,7 @@ public:
     string &operator=(CharArray *b) { set(b); return *this; }
 
     /// Make this string an lias of the string stored in \a b
-    string &operator=(const Variant &b) { set(string(b)); return *this; }
+    string &operator=(const variant &b) { set(string(b)); return *this; }
 
     /// Concatenate the items of list \a b and assign the resulting string
     string &operator=(const Ref<StringList> &b) { set(string(b)); return *this; }
@@ -225,7 +225,7 @@ public:
 
 private:
     friend class MutantString;
-    friend class Variant;
+    friend class variant;
     template<class T2> friend class Ref;
 
     friend CharArray *mutate(const string &s);

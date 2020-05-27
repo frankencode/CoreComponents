@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/string>
-#include <cc/Variant>
+#include <cc/variant>
 #include <cc/str>
 
 namespace cc {

@@ -31,7 +31,7 @@ public:
     /** Convert a meta value into JSON notation
       * \param value meta-value
       */
-    void write(Variant value);
+    void write(variant value);
 
     /** Convert a meta object into JSON notation
       * \param object meta object
@@ -43,14 +43,14 @@ public:
 
 private:
     JsonWriter(Stream *sink, const string &indent);
-    void writeValue(Variant value, int depth);
-    void writeList(Variant value, int depth);
-    void writeObject(Variant value, const StringList *names, int depth);
-    void writeMember(const string &memberName, Variant memberValue, bool isLast, int depth);
+    void writeValue(variant value, int depth);
+    void writeList(variant value, int depth);
+    void writeObject(variant value, const StringList *names, int depth);
+    void writeMember(const string &memberName, variant memberValue, bool isLast, int depth);
     void writeIndent(int depth);
 
     template<class T>
-    void writeTypedList(Variant value, int depth);
+    void writeTypedList(variant value, int depth);
 
     Format format_;
     string indent_;

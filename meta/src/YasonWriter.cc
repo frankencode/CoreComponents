@@ -21,13 +21,13 @@ YasonWriter::YasonWriter(Stream *sink, const string &indent):
     indent_{indent}
 {}
 
-void YasonWriter::write(Variant value)
+void YasonWriter::write(variant value)
 {
     writeValue(value, 0);
     format_ << nl;
 }
 
-void YasonWriter::writeValue(Variant value, int depth)
+void YasonWriter::writeValue(variant value, int depth)
 {
     if (
         value->type() == VariantType::Int ||
@@ -53,7 +53,7 @@ void YasonWriter::writeValue(Variant value, int depth)
     }
 }
 
-void YasonWriter::writeList(Variant value, int depth)
+void YasonWriter::writeList(variant value, int depth)
 {
     if (value->itemType() == VariantType::Int)
         writeTypedList<int>(value, depth);
@@ -64,7 +64,7 @@ void YasonWriter::writeList(Variant value, int depth)
     else if (value->itemType() == VariantType::String)
         writeTypedList<string>(value, depth);
     else
-        writeTypedList<Variant>(value, depth);
+        writeTypedList<variant>(value, depth);
 }
 
 bool YasonWriter::isIdentifier(const string &name) const
@@ -82,9 +82,9 @@ bool YasonWriter::isIdentifier(const string &name) const
     return true;
 }
 
-void YasonWriter::writeObject(Variant value, int depth)
+void YasonWriter::writeObject(variant value, int depth)
 {
-    const MetaObject *object = Variant::cast<const MetaObject *>(value);
+    const MetaObject *object = variant::cast<const MetaObject *>(value);
     if (!object) {
         format_ << "null";
         return;
@@ -101,7 +101,7 @@ void YasonWriter::writeObject(Variant value, int depth)
     writeIndent(depth + 1); // FIXME: having an "IndentStream" would be nice
     for (int i = 0; i < object->count(); ++i) {
         string memberName = object->at(i)->key();
-        Variant memberValue = object->at(i)->value();
+        variant memberValue = object->at(i)->value();
         if (isIdentifier(memberName))
             format_ << memberName << ": ";
         else
@@ -131,9 +131,9 @@ void YasonWriter::writeIndent(int depth)
 }
 
 template<class T>
-void YasonWriter::writeTypedList(Variant value, int depth)
+void YasonWriter::writeTypedList(variant value, int depth)
 {
-    List<T> *list = Variant::cast<List<T> *>(value);
+    List<T> *list = variant::cast<List<T> *>(value);
     if (list->count() == 0) {
         format_ << "[]";
         return;

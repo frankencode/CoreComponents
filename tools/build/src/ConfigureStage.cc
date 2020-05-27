@@ -85,7 +85,7 @@ bool ConfigureStage::run()
                         else
                             throw prerequisite;
                     }
-                    Ref<MetaObject> object = Variant::cast<MetaObject *>(yason::parse(output));
+                    Ref<MetaObject> object = variant::cast<MetaObject *>(yason::parse(output));
                     if (object) {
                         {
                             Ref<StringList> flags = getFlags(object, "compile-flags");
@@ -96,7 +96,7 @@ bool ConfigureStage::run()
                             if (flags) prerequisite->customLinkFlags()->appendList(flags);
                         }
                         {
-                            Variant value = object->value("version");
+                            variant value = object->value("version");
                             if (value->type() == VariantType::String) version = Version{string{value}};
                             else if (value->type() == VariantType::Version) version = Version{value};
                         }
@@ -337,12 +337,12 @@ bool ConfigureStage::runConfigure(const string &name, const string &configure, s
 
 Ref<StringList> ConfigureStage::getFlags(const MetaObject *object, const string &propertyName)
 {
-    Variant value;
+    variant value;
     if (object->lookup(propertyName, &value)) {
         if (value->type() == VariantType::String)
             return string(value)->split(" ");
         else if (value->type() == VariantType::List && value->itemType() == VariantType::String)
-            return Variant::cast<StringList *>(value);
+            return variant::cast<StringList *>(value);
     }
     return Ref<StringList>{};
 }

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Variant>
+#include <cc/variant>
 #include <cc/exceptions>
 
 namespace cc {

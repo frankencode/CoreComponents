@@ -9,7 +9,7 @@
 #include <cmath>
 #include <cc/ColorNames>
 #include <cc/Format>
-#include <cc/Variant>
+#include <cc/variant>
 #include <cc/colors>
 #include <cc/Color>
 
@@ -22,9 +22,9 @@ const Color Color::Red         { 0xFF, 0x00, 0x00 };
 const Color Color::Green       { 0x00, 0xFF, 0x00 };
 const Color Color::Blue        { 0x00, 0x00, 0xFF };
 
-Color::Color(const Variant &v)
+Color::Color(const variant &v)
 {
-    *this = Variant::cast<Color>(v);
+    *this = variant::cast<Color>(v);
 }
 
 Color Color::parse(const char *s, bool *ok)

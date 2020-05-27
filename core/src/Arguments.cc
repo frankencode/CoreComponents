@@ -35,13 +35,13 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
 
         if (isFlag) mutate(s)->trimInsitu("-");
 
-        Variant value = true;
+        variant value = true;
         if (isKeyValueOption) {
             Ref<StringList> parts = s->split('=');
             string name = parts->front();
             parts->popFront();
             string valueText = parts->join("=");
-            options_->establish(name, Variant::read(valueText));
+            options_->establish(name, variant::read(valueText));
         }
         else {
             bool value = true;
@@ -71,12 +71,12 @@ void Arguments::validate(const VariantMap *prototype)
     for (int i = 0; i < options_->count(); ++i)
     {
         string name = options_->at(i)->key();
-        Variant value = options_->at(i)->value();
+        variant value = options_->at(i)->value();
 
-        Variant defaultValue;
+        variant defaultValue;
         if (!prototype->lookup(name, &defaultValue))
             throw UsageError{Format{"No such option: \"%%\""} << name};
-        if (defaultValue == Variant{}) continue;
+        if (defaultValue == variant{}) continue;
         if (value->type() != defaultValue->type()) {
             if (value->type() == VariantType::Int && defaultValue->type() == VariantType::Bool) {
                 int intValue = value;
@@ -113,7 +113,7 @@ void Arguments::override(VariantMap *config) const
     for (int i = 0; i < options_->count(); ++i)
     {
         string name = options_->at(i)->key();
-        Variant value = options_->at(i)->value();
+        variant value = options_->at(i)->value();
         config->establish(name, value);
     }
 }

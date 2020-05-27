@@ -19,10 +19,10 @@
 
 namespace cc {
 
-Ref<const CharArray>::Ref(const Variant &b):
+Ref<const CharArray>::Ref(const variant &b):
     a_{nullptr}
 {
-    set(Variant::cast<string>(b));
+    set(variant::cast<string>(b));
 }
 
 Ref<const CharArray>::Ref(const Format &b):

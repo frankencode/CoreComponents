@@ -15,12 +15,12 @@ namespace cc {
 namespace meta {
 namespace yason {
 
-Variant parse(const CharArray *text, const MetaProtocol *protocol)
+variant parse(const CharArray *text, const MetaProtocol *protocol)
 {
     return YasonSyntax::instance()->parse(text, protocol);
 }
 
-string stringify(Variant value)
+string stringify(variant value)
 {
     Ref<CaptureSink> sink = CaptureSink::open();
     YasonWriter::create(sink)->write(value);

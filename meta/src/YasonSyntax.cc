@@ -359,7 +359,7 @@ YasonSyntax::YasonSyntax(int options)
     LINK();
 }
 
-Variant YasonSyntax::parse(const CharArray *text, const MetaProtocol *protocol) const
+variant YasonSyntax::parse(const CharArray *text, const MetaProtocol *protocol) const
 {
     Ref<SyntaxState> state = match(text);
     if (!state->valid()) throw SyntaxError{text, state};
@@ -411,7 +411,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
         if (token->rule() == name_) {
             string name = readName(text, token);
 
-            Variant defaultValue;
+            variant defaultValue;
             const MetaPrototype *memberPrototype = nullptr;
             const MetaProtocol *memberProtocol = nullptr;
             if (prototype) {
@@ -423,22 +423,22 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
                         };
                     }
                     if (defaultValue->type() == VariantType::Object) {
-                        memberPrototype = Variant::cast<const MetaPrototype *>(defaultValue);
+                        memberPrototype = variant::cast<const MetaPrototype *>(defaultValue);
                         if (!memberPrototype)
-                            memberProtocol = Variant::cast<const MetaProtocol *>(defaultValue);
+                            memberProtocol = variant::cast<const MetaProtocol *>(defaultValue);
                     }
                 }
             }
 
             token = token->nextSibling();
 
-            Variant value;
+            variant value;
             if (memberPrototype || memberProtocol)
                 value = readObject(text, token, memberProtocol, memberPrototype);
             else
                 value = readValue(text, token, defaultValue->type(), defaultValue->itemType());
 
-            Variant existingValue;
+            variant existingValue;
             if (object->lookup(name, &existingValue)) {
                 if (value != existingValue) {
                     throw SemanticError{
@@ -556,9 +556,9 @@ string YasonSyntax::readName(const CharArray *text, const Token *token) const
     return text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
 }
 
-Variant YasonSyntax::readValue(const CharArray *text, const Token *token, VariantType expectedType, VariantType expectedItemType) const
+variant YasonSyntax::readValue(const CharArray *text, const Token *token, VariantType expectedType, VariantType expectedItemType) const
 {
-    Variant value;
+    variant value;
     bool typeError = false;
 
     if (token->rule() == float_)
@@ -586,7 +586,7 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
             IntegerSyntax::instance()->read(&x, &s, text, token);
             value = int(x) * s;
             if (expectedType == VariantType::Float)
-                value = Variant::Float(value);
+                value = variant::Float(value);
         }
         else
             typeError = true;
@@ -668,7 +668,7 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
 
     if (typeError) {
         throw SemanticError(
-            Format("Expected a value of type %%") << Variant::typeName(expectedType, expectedItemType),
+            Format("Expected a value of type %%") << variant::typeName(expectedType, expectedItemType),
             text, token->i0()
         );
     }
@@ -704,9 +704,9 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
     return value;
 }
 
-Variant YasonSyntax::readList(const CharArray *text, const Token *token, VariantType expectedItemType) const
+variant YasonSyntax::readList(const CharArray *text, const Token *token, VariantType expectedItemType) const
 {
-    Variant list;
+    variant list;
     if (expectedItemType == VariantType::Int)
         list = parseTypedList<int>(text, token, expectedItemType);
     else if (expectedItemType == VariantType::Bool)
@@ -716,7 +716,7 @@ Variant YasonSyntax::readList(const CharArray *text, const Token *token, Variant
     else if (expectedItemType == VariantType::String)
         list = parseTypedList<string>(text, token, expectedItemType);
     else
-        list = parseTypedList<Variant>(text, token, expectedItemType);
+        list = parseTypedList<variant>(text, token, expectedItemType);
     return list;
 }
 

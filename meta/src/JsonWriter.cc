@@ -22,13 +22,13 @@ JsonWriter::JsonWriter(Stream *sink, const string &indent):
     indent_{indent}
 {}
 
-void JsonWriter::write(Variant value)
+void JsonWriter::write(variant value)
 {
     writeValue(value, 0);
     format_ << nl;
 }
 
-void JsonWriter::writeValue(Variant value, int depth)
+void JsonWriter::writeValue(variant value, int depth)
 {
     if (
         value->type() == VariantType::Int  ||
@@ -55,7 +55,7 @@ void JsonWriter::writeValue(Variant value, int depth)
     }
 }
 
-void JsonWriter::writeList(Variant value, int depth)
+void JsonWriter::writeList(variant value, int depth)
 {
     if (value->itemType() == VariantType::Int)
         writeTypedList<int>(value, depth);
@@ -66,12 +66,12 @@ void JsonWriter::writeList(Variant value, int depth)
     else if (value->itemType() == VariantType::String)
         writeTypedList<string>(value, depth);
     else
-        writeTypedList<Variant>(value, depth);
+        writeTypedList<variant>(value, depth);
 }
 
-void JsonWriter::writeObject(Variant value, const StringList *names, int depth)
+void JsonWriter::writeObject(variant value, const StringList *names, int depth)
 {
-    Ref<MetaObject> object = Variant::cast<MetaObject *>(value);
+    Ref<MetaObject> object = variant::cast<MetaObject *>(value);
     if (object->count() == 0) {
         format_ << "{}";
         return;
@@ -92,7 +92,7 @@ void JsonWriter::writeObject(Variant value, const StringList *names, int depth)
     format_ << "}";
 }
 
-void JsonWriter::writeMember(const string &memberName, Variant memberValue, bool isLast, int depth)
+void JsonWriter::writeMember(const string &memberName, variant memberValue, bool isLast, int depth)
 {
     format_ << "\"" << memberName << "\": ";
     writeValue(memberValue, depth + 1);
@@ -112,9 +112,9 @@ void JsonWriter::writeIndent(int depth)
 }
 
 template<class T>
-void JsonWriter::writeTypedList(Variant value, int depth)
+void JsonWriter::writeTypedList(variant value, int depth)
 {
-    List<T> *list = Variant::cast< List<T> *>(value);
+    List<T> *list = variant::cast< List<T> *>(value);
     if (list->count() == 0) {
         format_ << "[]";
         return;

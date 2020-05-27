@@ -15,7 +15,7 @@ namespace glob {
 Pattern::Pattern() { *this = string{}; }
 Pattern::Pattern(const char *text) { *this = string{text}; }
 Pattern::Pattern(const string &text) { *this = text; }
-Pattern::Pattern(const Variant &text) { *this = string(text); }
+Pattern::Pattern(const variant &text) { *this = string(text); }
 
 const Pattern &Pattern::operator=(const char *text)
 {
@@ -38,7 +38,7 @@ const Pattern &Pattern::operator=(const string &text)
     return *this;
 }
 
-const Pattern &Pattern::operator=(const Variant &text)
+const Pattern &Pattern::operator=(const variant &text)
 {
     return *this = string{text};
 }

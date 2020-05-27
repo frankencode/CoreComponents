@@ -54,7 +54,7 @@ class PrintingVariants: public TestCase
 {
     void run()
     {
-        Variant a = 1, b = true, c = "abc", d = 3.2;
+        variant a = 1, b = true, c = "abc", d = 3.2;
         string s = Format{} << a << ", " << b << ", " << c << ", " << dec(d);
         fout() << s << nl;
         CC_VERIFY(s == "1, true, abc, 3.2");

@@ -26,7 +26,7 @@ MetaObject::MetaObject(const string &className):
 MetaObject::~MetaObject()
 {}
 
-Variant MetaObject::toVariant() const
+variant MetaObject::toVariant() const
 {
     return Ref<MetaObject>{const_cast<MetaObject *>(this)};
 }
@@ -50,8 +50,8 @@ void MetaObject::autocomplete(MetaObject *target) const
         for (int i = 0; i < count(); ++i) {
             string name = at(i)->key();
             if (target->count() <= i || target->at(i)->key() != name) {
-                Variant value = at(i)->value();
-                const MetaProtocol *protocol = Variant::cast<const MetaProtocol *>(value);
+                variant value = at(i)->value();
+                const MetaProtocol *protocol = variant::cast<const MetaProtocol *>(value);
                 if (protocol) value = protocol->defaultObject();
                 target->insert(name, value);
             }

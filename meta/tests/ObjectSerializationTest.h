@@ -81,22 +81,22 @@ protected:
         CC_VERIFY(string(object->value("name")) == "Hans Mustermann");
         CC_VERIFY(int(object->value("age")) == 17);
 
-        const VariantList *hobbies = Variant::cast<const VariantList *>(object->value("hobbies"));
+        const VariantList *hobbies = variant::cast<const VariantList *>(object->value("hobbies"));
         CC_VERIFY(string(hobbies->at(0)) == "Sky Diving");
         CC_VERIFY(string(hobbies->at(1)) == "Mountain Biking");
         CC_VERIFY(string(hobbies->at(2)) == "Poetry");
 
-        const MetaObject *picture = Variant::cast<const MetaObject *>(object->value("picture"));
-        // ferr() << "Variant::type(object->value(\"picture\")) = " << object->value("picture")->type() << nl; // FIXME
+        const MetaObject *picture = variant::cast<const MetaObject *>(object->value("picture"));
+        // ferr() << "variant::type(object->value(\"picture\")) = " << object->value("picture")->type() << nl; // FIXME
         CC_VERIFY(string(picture->value("uri")) == "http://www.hans-mustermann.de/photo.jpg");
         CC_VERIFY(int(picture->value("width")) == 400);
         CC_VERIFY(int(picture->value("height")) == 300);
 
-        const MetaObject *home = Variant::cast<const MetaObject *>(object->value("home"));
+        const MetaObject *home = variant::cast<const MetaObject *>(object->value("home"));
         CC_VERIFY(float(home->value("latitude")) == float(12.34));
         CC_VERIFY(float(home->value("longitude")) == float(123.4));
 
-        const VariantList *numbers = Variant::cast<const VariantList *>(object->value("favouriteNumbers"));
+        const VariantList *numbers = variant::cast<const VariantList *>(object->value("favouriteNumbers"));
         CC_VERIFY(int(numbers->at(0)) == 2);
         CC_VERIFY(int(numbers->at(1)) == 5);
         CC_VERIFY(int(numbers->at(2)) == 7);

@@ -52,10 +52,10 @@ DependencyCache::DependencyCache(BuildPlan *plan):
 
         if (!plan->sources()->contains(item->key())) continue;
 
-        MetaObject *yason = Variant::cast<MetaObject *>(item->value());
+        MetaObject *yason = variant::cast<MetaObject *>(item->value());
         string command = yason->value("analyseCommand");
         string modulePath = yason->value("modulePath");
-        Ref<StringList> dependencyPaths = Variant::cast<const VariantList *>(yason->value("dependencyPaths"))->toList<string>();
+        Ref<StringList> dependencyPaths = variant::cast<const VariantList *>(yason->value("dependencyPaths"))->toList<string>();
         string sourcePath = dependencyPaths->at(0);
 
         bool dirty = false;

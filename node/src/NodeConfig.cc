@@ -55,7 +55,7 @@ NodeConfig::NodeConfig(const MetaObject *config):
 {
     string address = config->value("address");
 
-    auto ports = Variant::cast<List<int> *>(config->value("port"));
+    auto ports = variant::cast<List<int> *>(config->value("port"));
 
     ProtocolFamily family = ProtocolFamily::Unspecified;
     {
@@ -112,10 +112,10 @@ NodeConfig::NodeConfig(const MetaObject *config):
     connectionLimit_ = config->value("connection-limit");
     connectionTimeout_ = config->value("connection-timeout");
 
-    securityConfig_ = HttpServerSecurity::load(Variant::cast<const MetaObject *>(config->value("security")));
+    securityConfig_ = HttpServerSecurity::load(variant::cast<const MetaObject *>(config->value("security")));
 
-    auto loadLoggingInstance = [=](Variant value) {
-        const MetaObject *config = Variant::cast<const MetaObject *>(value);
+    auto loadLoggingInstance = [=](variant value) {
+        const MetaObject *config = variant::cast<const MetaObject *>(value);
         if (!config) {
             if (daemon_) config = LoggingRegistry::instance()->serviceByName(SystemLoggingService::name())->configPrototype();
             else config = LoggingRegistry::instance()->serviceByName(ForegroundLoggingService::name())->configPrototype();

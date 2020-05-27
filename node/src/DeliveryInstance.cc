@@ -19,7 +19,7 @@ DeliveryInstance::DeliveryInstance(const MetaObject *config):
     requestPayloadLimit_{config->value("request-payload-limit")},
     host_{string{config->value("host")}},
     uri_{string{config->value("uri")}},
-    security_{HttpServerSecurity::load(Variant::cast<const MetaObject *>(config->value("security")))},
+    security_{HttpServerSecurity::load(variant::cast<const MetaObject *>(config->value("security")))},
     mediaTypeDatabase_{MediaTypeDatabase::instance()}
     #if 0
     TODO...

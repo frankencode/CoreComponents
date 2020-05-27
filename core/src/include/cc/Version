@@ -21,7 +21,7 @@
 
 namespace cc {
 
-class Variant;
+class variant;
 
 /** \class Version cc/Version
   * \ingroup misc
@@ -50,7 +50,7 @@ public:
     {}
 
     /// Construct a version by parsing a variant \a v
-    Version(const Variant &v);
+    Version(const variant &v);
 
     static Version fromWord(uint32_t x)
     {

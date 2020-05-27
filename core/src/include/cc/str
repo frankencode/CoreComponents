@@ -13,7 +13,7 @@
   */
 
 #include <cc/string>
-#include <cc/Variant>
+#include <cc/variant>
 #include <cc/Local>
 
 namespace cc {
@@ -151,7 +151,7 @@ inline string dec(float64_t x, int precision = 17) { return fnum(x, precision, 1
   * \param n maximum number of digits
   * \return string representation of x
   */
-string dec(const Variant &x, int n = -1);
+string dec(const variant &x, int n = -1);
 
 /// Convenience wrapper
 inline string str(const string &s) { return s; }

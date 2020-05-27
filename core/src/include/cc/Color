@@ -12,7 +12,7 @@
 
 namespace cc {
 
-class Variant;
+class variant;
 
 /** \class Color cc/Color
   * \ingroup misc
@@ -65,9 +65,9 @@ public:
         if (!ok) *this = Color{};
     }
 
-    /** Construct a color from a color value stored in a Variant \a v
+    /** Construct a color from a color value stored in a variant \a v
       */
-    Color(const Variant &v);
+    Color(const variant &v);
 
     /** Compose a color from its components
       * \param r red component (0..0xFF)
@@ -304,7 +304,7 @@ public:
     explicit operator bool() const { return (*this)->isValid(); }
 
 private:
-    friend class Variant;
+    friend class variant;
 
     Instance instance_;
 };

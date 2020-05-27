@@ -11,9 +11,9 @@
 
 namespace cc {
 
-Version::Version(const Variant &v)
+Version::Version(const variant &v)
 {
-    *this = Variant::cast<Version>(v);
+    *this = variant::cast<Version>(v);
 }
 
 Version::Instance::Instance(const string &s)

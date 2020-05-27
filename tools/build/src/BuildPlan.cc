@@ -169,7 +169,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
             includePaths_->append(defaultIncludePath);
     }
 
-    const StringList *dependsList = Variant::cast<const StringList *>(recipe_->value("depends"));
+    const StringList *dependsList = variant::cast<const StringList *>(recipe_->value("depends"));
     if (dependsList) {
         for (string item: dependsList) {
             string name;
@@ -338,7 +338,7 @@ int BuildPlan::run()
 
     configureStage()->run();
     if (string(recipe_->value("query")) != "") {
-        queryVariables(Variant::cast<string>(recipe_->value("query"))->split(','));
+        queryVariables(variant::cast<string>(recipe_->value("query"))->split(','));
         return 0;
     }
     else if (recipe_->value("query-all")) {
@@ -499,10 +499,10 @@ void BuildPlan::readPrerequisites()
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
-    Ref<const StringList> prerequisitePaths = Variant::cast<const StringList *>(recipe_->value("use"));
+    Ref<const StringList> prerequisitePaths = variant::cast<const StringList *>(recipe_->value("use"));
 
     if (options_ & Package) {
-        const StringList *packageItems = Variant::cast<const StringList *>(recipe_->value("include"));
+        const StringList *packageItems = variant::cast<const StringList *>(recipe_->value("include"));
         if (packageItems->count() > 0) prerequisitePaths = packageItems;
     }
 
@@ -561,7 +561,7 @@ void BuildPlan::globSources()
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
     if (recipe_->contains("source"))
-        sources_ = globSources(Variant::cast<StringList *>(recipe_->value("source")));
+        sources_ = globSources(variant::cast<StringList *>(recipe_->value("source")));
     else
         sources_ = StringList::create();
 
@@ -579,7 +579,7 @@ void BuildPlan::globSources()
     }
 
     if (recipe_->contains("bundle"))
-        bundle_ = globSources(Variant::cast<StringList *>(recipe_->value("bundle")));
+        bundle_ = globSources(variant::cast<StringList *>(recipe_->value("bundle")));
     else
         bundle_ = StringList::create();
 

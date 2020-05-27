@@ -19,12 +19,12 @@ namespace json {
   * \param text JSON message
   * \return parsed value
   */
-Variant parse(const CharArray *text);
+variant parse(const CharArray *text);
 
 /** Convenience function to stringify a variant value
   * \param value variant value
   * \return JSON message
   */
-string stringify(Variant value);
+string stringify(variant value);
 
 }}} // namespace cc::meta::json
