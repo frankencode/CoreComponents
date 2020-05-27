@@ -16,19 +16,19 @@ class TouchPoint: public View
     friend class Object;
 
 public:
-    Property<Color> fgColor;
+    Property<color> fgColor;
 
 protected:
     TouchPoint(View *parent):
-        View(parent)
+        View{parent}
     {
-        paper = Color::Transparent;
+        paper = color::transparent;
         size = Size{100, 100};
     }
 
     void paint() override
     {
-        Painter p(this);
+        Painter p{this};
         p->setSource(fgColor());
         p->circle(size() / 2, size()[0]/2 - 1);
         p->fill();
@@ -47,7 +47,7 @@ class MainView: public View
         size = DisplayManager::instance()->getDisplay(0)->nativeMode()->resolution();
         paper = 0xFFFFFF;
 
-        Color fgColors[] = {
+        color fgColors[] = {
             { 0xFF, 0x00, 0x00, 0xFF },
             { 0x00, 0xFF, 0x00, 0xFF },
             { 0x00, 0x00, 0xFF, 0xFF },

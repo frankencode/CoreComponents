@@ -152,7 +152,7 @@ void View::centerInParent()
     else pos = Point{};
 }
 
-Color View::findBasePaper() const
+color View::findBasePaper() const
 {
     for (View *view = parent(); view; view = view->parent()) {
         if (view->paper())
@@ -182,9 +182,9 @@ bool View::isStatic() const
     return false; // FIXME
 }
 
-void View::clear(Color color)
+void View::clear(color c)
 {
-    image()->clear(color->premultiplied());
+    image()->clear(c->premultiplied());
 }
 
 void View::clear()

@@ -12,7 +12,7 @@
 #include <cc/bitmask>
 #include <cc/Property>
 #include <cc/string>
-#include <cc/Color>
+#include <cc/color>
 #include <cc/ui/Rect>
 
 namespace cc {

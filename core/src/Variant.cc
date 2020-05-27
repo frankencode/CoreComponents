@@ -97,7 +97,7 @@ string variant::Instance::toString() const
         case VariantType::Bool     : return str(int_ != 0);
         case VariantType::Int      : return str(int_);
         case VariantType::Float    : return str(float_);
-        case VariantType::Color    : return str(Color::fromWord(word_));
+        case VariantType::Color    : return str(color::fromWord(word_));
         case VariantType::Version  : return str(Version::fromWord(word_));
         case VariantType::String   : return variant::cast<CharArray *>(ref().get());
         case VariantType::Object   : return str((void *)variant::cast<Object *>(ref().get()));

@@ -29,18 +29,18 @@ class MainView: public View
             );
 
         auto random = Random::open(0);
-        fgColors_ = Array<Color>::create(glyphRun_->text()->count());
-        bgColors_ = Array<Color>::create(glyphRun_->text()->count());
-        Color fg, bg;
+        fgColors_ = Array<color>::create(glyphRun_->text()->count());
+        bgColors_ = Array<color>::create(glyphRun_->text()->count());
+        color fg, bg;
         for (int i = 0; i < glyphRun_->text()->count(); ++i) {
             if (!fg->isValid()) {
                 int angle = random->get(0, 360);
-                fg = Color::fromHue(angle);
-                bg = Color::fromHue((angle + 180) % 360);
+                fg = color::fromHue(angle);
+                bg = color::fromHue((angle + 180) % 360);
             }
             fgColors_->at(i) = fg;
             bgColors_->at(i) = bg;
-            if (glyphRun_->text()->at(i) == ' ') fg = Color{};
+            if (glyphRun_->text()->at(i) == ' ') fg = color{};
         }
 
         auto updateTextWrap = [=]{
@@ -64,19 +64,19 @@ class MainView: public View
             Point{margins_, margins_ + fontSize_}, wrappedGlyphRun_,
             [=](int i) {
                 if (fgColors_->has(i)) return fgColors_->at(i);
-                return Color{};
+                return color{};
             },
             [=](int i) {
                 if (bgColors_->has(i)) return bgColors_->at(i);
-                return Color{};
+                return color{};
             }
         );
     }
 
     const double margins_ = 30;
     const double fontSize_ = 20;
-    Ref< Array<Color> > fgColors_;
-    Ref< Array<Color> > bgColors_;
+    Ref< Array<color> > fgColors_;
+    Ref< Array<color> > bgColors_;
     Ref<const GlyphRun> glyphRun_;
     Ref<const GlyphRun> wrappedGlyphRun_;
 };

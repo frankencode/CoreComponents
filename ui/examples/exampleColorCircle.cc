@@ -24,7 +24,7 @@ class MainView: public View
         for (double angle = 0; angle < 360; angle += step) {
             p->moveTo(center);
             p->arcNegative(center, radius, -degree(angle), -degree(angle + step));
-            p->setSource(Color::fromHue(angle));
+            p->setSource(color::fromHue(angle));
             p->fill();
         }
     }

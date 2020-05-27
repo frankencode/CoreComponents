@@ -16,7 +16,7 @@ namespace ui {
 class IconVisual: public Visual
 {
 public:
-    Property<Color> ink { Color::Black };
+    Property<color> ink { color::black };
 };
 
 }} // namespace cc::ui

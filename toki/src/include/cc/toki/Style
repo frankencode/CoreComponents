@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Color>
+#include <cc/color>
 #include <cc/meta/yason>
 
 namespace cc {
@@ -25,8 +25,8 @@ public:
 
     string ruleName() const { return ruleName_; }
     int rule() const { return rule_; }
-    Color ink() const { return ink_; }
-    Color paper() const { return paper_; }
+    color ink() const { return ink_; }
+    color paper() const { return paper_; }
     bool bold() const { return bold_; }
     bool italic() const { return italic_; }
 
@@ -38,8 +38,8 @@ private:
 
     string ruleName_;
     int rule_;
-    Color ink_;
-    Color paper_;
+    color ink_;
+    color paper_;
     bool bold_;
     bool italic_;
 };

@@ -77,7 +77,7 @@ class ColorLiterals: public TestCase
 {
     void run()
     {
-        Color c { 0x8080FF };
+        color c { 0x8080FF };
         fout() << c << nl;
         CC_VERIFY(str(c) == "#8080FFFF");
     }

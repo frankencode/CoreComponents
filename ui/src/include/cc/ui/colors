@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include <cc/Color>
+#include <cc/color>
 
 namespace cc {
 namespace ui {
 
 /** color palette of Elementary OS
-  * \see Color(uint32_t)
+  * \see color(uint32_t)
   */
 enum class Elementary: uint32_t
 {
@@ -80,7 +80,7 @@ enum class Elementary: uint32_t
 };
 
 /** the Material Design color palette
-  * \see Color(uint32_t)
+  * \see color(uint32_t)
   */
 enum class Material: uint32_t
 {
@@ -362,7 +362,7 @@ enum class Material: uint32_t
 };
 
 /** CSS color palette
-  * \see Color::tone()
+  * \see color::tone()
   */
 enum class Web: uint32_t
 {

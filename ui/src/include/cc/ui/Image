@@ -50,7 +50,7 @@ public:
     int height() const { return h_; }
 
     /// Total number of pixels per image
-    int count() const { return data_->itemCount<Color>(); }
+    int count() const { return data_->itemCount<color>(); }
 
     /** Check if raster position (x, y) is within range
       */
@@ -62,28 +62,28 @@ public:
 
     /** Access pixel at raster position (x, y)
       */
-    Color &pixel(int x, int y) {
-        return mutate(data_)->item<Color>(y * w_ + x);
+    color &pixel(int x, int y) {
+        return mutate(data_)->item<color>(y * w_ + x);
     }
 
     /** Access pixel at index \arg i
       */
-    Color &pixel(int i) {
-        return mutate(data_)->item<Color>(i);
+    color &pixel(int i) {
+        return mutate(data_)->item<color>(i);
     }
 
     /** Clear the entire image with color \a c
       */
-    void clear(Color c);
+    void clear(color c);
 
     /** Convert the entire image from pre-multiplied alpha to non-premultiplied alpha
       */
     void normalize();
 
-    void shadowBlur(int radius, Color shadowColor);
+    void shadowBlur(int radius, color shadowColor);
 
     const CharArray *data() const { return data_; }
-    int pitch() const { return w_ * sizeof(Color); }
+    int pitch() const { return w_ * sizeof(color); }
 
 private:
     friend class View;

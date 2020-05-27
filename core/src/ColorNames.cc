@@ -180,7 +180,7 @@ ColorNames::ColorNames():
     for (int i = 0; i < svgPaletteSize; ++i) {
         colorByName_->insert(
             svgPalette[i].name,
-            Color{
+            color{
                 svgPalette[i].rgb[0],
                 svgPalette[i].rgb[1],
                 svgPalette[i].rgb[2]
@@ -189,9 +189,9 @@ ColorNames::ColorNames():
     }
 }
 
-bool ColorNames::lookup(const char *name, Color *color) const
+bool ColorNames::lookup(const char *name, color *value) const
 {
-    return colorByName_->lookup(name, color, /*caseSensitive =*/false);
+    return colorByName_->lookup(name, value, /*caseSensitive =*/false);
 }
 
 } // namespace cc

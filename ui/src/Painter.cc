@@ -112,7 +112,7 @@ void Painter::Instance::circle(Point center, double radius)
     cairo_arc(cr_, center[0], center[1], radius, 0, 2 * M_PI);
 }
 
-void Painter::Instance::setSource(Color color)
+void Painter::Instance::setSource(color color)
 {
     if (color->isOpaque()) {
         cairo_set_source_rgb(
@@ -147,7 +147,7 @@ void Painter::Instance::fillPreserve()
 
 void Painter::Instance::fillGlyphRunBackground(const FtGlyphRun *ftGlyphRun)
 {
-    Color color = ftGlyphRun->font()->paper();
+    color color = ftGlyphRun->font()->paper();
     if (!color->isValid()) return;
 
     setSource(color);
@@ -310,7 +310,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         int byteOffset = 0;
         int glyphOffset = 0;
 
-        Color bgColor0 = paper(0);
+        color bgColor0 = paper(0);
         const cairo_glyph_t *glyph0 = &ftGlyphRun->cairoGlyphs()->at(0);
 
         for (int clusterIndex = 0, clusterCount = ftGlyphRun->cairoTextClusters()->count(); clusterIndex < clusterCount + 1; ++clusterIndex)
@@ -318,7 +318,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
             const cairo_text_cluster_t *cluster = 0;
             if (clusterIndex < clusterCount) cluster = &ftGlyphRun->cairoTextClusters()->at(clusterIndex);
 
-            Color bgColor;
+            color bgColor;
             const cairo_glyph_t *glyph = 0;
 
             bgColor = paper(byteOffset);
@@ -355,7 +355,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         int byteOffset = 0;
         int glyphOffset = 0;
 
-        Color fgColor0 = ink(0);
+        color fgColor0 = ink(0);
 
         int byteOffset0 = 0;
         int glyphOffset0 = 0;
@@ -369,7 +369,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
             glyphOffset += cluster->num_glyphs;
             ++clusterIndex;
 
-            Color fgColor = ink(byteOffset);
+            color fgColor = ink(byteOffset);
 
             if (fgColor0 != fgColor || clusterIndex == clusterCount)
             {

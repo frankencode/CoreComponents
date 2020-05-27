@@ -9,7 +9,7 @@
 #include <cmath>
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/Color>
+#include <cc/color>
 
 using namespace cc;
 using namespace cc::testing;
@@ -17,11 +17,11 @@ using namespace cc::testing;
 class GrayShadesOnPaper: public TestCase
 {
     void run() {
-        Color b = Color(0xFF, 0xFF, 0xFF);
+        color b = color{0xFF, 0xFF, 0xFF};
         for (int i = 0; i <= 0xFF; ++i) {
-            Color a = Color(0x00, 0x00, 0x00, i);
-            Color c = Color::blend(a, b);
-            Color d = Color(0xFF - i, 0xFF - i, 0xFF - i);
+            color a = color{0x00, 0x00, 0x00, i};
+            color c = color::blend(a, b);
+            color d = color{0xFF - i, 0xFF - i, 0xFF - i};
             if (c != d) fout("%%, %%\n") << c << d;
             CC_VERIFY(c == d);
         }
@@ -32,11 +32,11 @@ class GrayShadesOnGlass: public TestCase
 {
     void run()
     {
-        Color b = Color(0xFF, 0xFF, 0xFF, 0x80);
+        color b = color{0xFF, 0xFF, 0xFF, 0x80};
         for (int i = 0; i <= 0xFF; ++i) {
-            Color a = Color(0x00, 0x00, 0x00, i);
-            Color c = Color::blend(a, b);
-            Color d = GrayShadesOnGlass::blend(a, b);
+            color a = color{0x00, 0x00, 0x00, i};
+            color c = color::blend(a, b);
+            color d = GrayShadesOnGlass::blend(a, b);
             if (c != d) fout("%% over %% => %% (%%)\n") << a << b << c << d;
             CC_VERIFY(differLess(c, d, 1, 1));
         }
@@ -44,7 +44,7 @@ class GrayShadesOnGlass: public TestCase
 
     inline static int delta(int a, int b) { return a < b ? b - a : a - b; }
 
-    static bool differLess(Color a, Color b, int maxColorDelta, int maxOpacityDelta)
+    static bool differLess(color a, color b, int maxColorDelta, int maxOpacityDelta)
     {
         return
             delta(a->red(),   b->red()  ) <= maxColorDelta &&
@@ -64,7 +64,7 @@ class GrayShadesOnGlass: public TestCase
         return alpha + (1 - alpha) * beta;
     }
 
-    static Color blend(Color a, Color b) {
+    static color blend(color a, color b) {
         double a_r   = a->red()   / 255.;
         double a_g   = a->green() / 255.;
         double a_b   = a->blue()  / 255.;
@@ -73,12 +73,12 @@ class GrayShadesOnGlass: public TestCase
         double b_g   = b->green() / 255.;
         double b_b   = b->blue()  / 255.;
         double beta  = b->alpha() / 255.;
-        return Color(
+        return color{
             ::round(blendComponent(alpha, a_r, beta, b_r) * 255),
             ::round(blendComponent(alpha, a_g, beta, b_g) * 255),
             ::round(blendComponent(alpha, a_b, beta, b_b) * 255),
             ::round(blendAlpha(alpha, beta) * 255)
-        );
+        };
     }
 };
 
@@ -86,46 +86,46 @@ class NormalizationTest: public TestCase
 {
     void run() {
         {
-            Color c { 0x80, 0x80, 0x80, 0x80 }; // 50% white premultiplied
+            color c { 0x80, 0x80, 0x80, 0x80 }; // 50% white premultiplied
             c->normalize();
             fout() << c << nl;
-            CC_VERIFY(c == Color(0xFF, 0xFF, 0xFF, 0x80));
+            CC_VERIFY((c == color{0xFF, 0xFF, 0xFF, 0x80}));
         }
         {
-            Color c { 0x40, 0x00, 0x00, 0x40 }; // 25% red premultiplied
+            color c { 0x40, 0x00, 0x00, 0x40 }; // 25% red premultiplied
             c->normalize();
             fout() << c << nl;
-            CC_VERIFY(c == Color(0xFF, 0x00, 0x00, 0x40));
+            CC_VERIFY((c == color{0xFF, 0x00, 0x00, 0x40}));
         }
         {
-            Color c { 0x00, 0x00, 0x10, 0x20 }; // 12.5% half-blue premultiplied
+            color c { 0x00, 0x00, 0x10, 0x20 }; // 12.5% half-blue premultiplied
             c->normalize();
             fout() << c << nl;
-            CC_VERIFY(
-                c == Color(0x00, 0x00, 0x7F, 0x20) ||
-                c == Color(0x00, 0x00, 0x80, 0x20)
-            );
+            CC_VERIFY((
+                c == color{0x00, 0x00, 0x7F, 0x20} ||
+                c == color{0x00, 0x00, 0x80, 0x20}
+            ));
         }
         {
-            Color c { 0x00, 0x01, 0x00, 0x01 }; // 1/255-th green premultiplied
+            color c { 0x00, 0x01, 0x00, 0x01 }; // 1/255-th green premultiplied
             c->normalize();
             fout() << c << nl;
-            CC_VERIFY(c == Color(0x00, 0xFF, 0x00, 0x01));
+            CC_VERIFY((c == color{0x00, 0xFF, 0x00, 0x01}));
         }
         {
-            Color c { 0x00, 0x00, 0x00, 0x00 }; // transparent
+            color c { 0x00, 0x00, 0x00, 0x00 }; // transparent
             c->normalize();
             fout() << c << nl;
-            CC_VERIFY(c == Color(0x00, 0x00, 0x00, 0x00));
+            CC_VERIFY((c == color{0x00, 0x00, 0x00, 0x00}));
         }
         {
-            Color c { 0x00, 0x00, 0xFF, 0xFF }; // opaque blue
+            color c { 0x00, 0x00, 0xFF, 0xFF }; // opaque blue
             c->normalize();
             fout() << c << nl;
-            CC_VERIFY(c == Color(0x00, 0x00, 0xFF, 0xFF));
+            CC_VERIFY((c == color{0x00, 0x00, 0xFF, 0xFF}));
         }
         {
-            Color c { 0x9C, 0x27, 0xB0, 0xDD }; // purple 87%
+            color c { 0x9C, 0x27, 0xB0, 0xDD }; // purple 87%
             fout() << c->premultiplied()->normalized() << nl;
         }
     }

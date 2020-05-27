@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Color>
+#include <cc/color>
 
 namespace cc {
 
@@ -25,14 +25,14 @@ class ColorNames: public Object
 public:
     static const ColorNames *instance();
 
-    bool lookup(const char *name, Color *color) const;
+    bool lookup(const char *name, color *value) const;
 
 private:
     friend class Singleton<ColorNames>;
 
     ColorNames();
 
-    typedef PrefixTree<char, Color> ColorByName;
+    typedef PrefixTree<char, color> ColorByName;
     Ref<ColorByName> colorByName_;
 };
 

@@ -37,7 +37,7 @@ void TextLineHandle::paint()
         );
     }
     else if ((textLine_->lineNumber() - 1) % 5 == 0) {
-        Color c = paper();
+        color c = paper();
         c->mixIn(textLine_->textEdit_->lineNumberInk(), 15);
         p->setSource(c);
         const int n = textLine_->wrappedTextRun()->lineCount();

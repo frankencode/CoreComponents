@@ -24,7 +24,7 @@ class TextRun;
 class Painter
 {
 public:
-    typedef std::function<Color(int)> GetColor; ///< get color for a given byte offset
+    typedef std::function<color(int)> GetColor; ///< get color for a given byte offset
 
     Painter(Surface *surface):
         instance_{surface}
@@ -63,7 +63,7 @@ public:
         /** Drawing
           * @{
           */
-        void setSource(Color color);
+        void setSource(color color);
         void fill();
         void fillPreserve();
         /** @}

@@ -21,8 +21,8 @@ StylePrototype::StylePrototype():
     MetaPrototype{"Style"}
 {
     insert("rule", "");
-    insert("ink", Color{});
-    insert("paper", Color{});
+    insert("ink", color{});
+    insert("paper", color{});
     insert("bold", false);
     insert("italic", false);
 }

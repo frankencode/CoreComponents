@@ -23,7 +23,7 @@ class Label: public View
 public:
     Property<string> text;
     Property<Font> font;
-    Property<Color> ink;
+    Property<color> ink;
     Property<Size> margin;
 
     Point textPos(double relativeHeight = 0) const;

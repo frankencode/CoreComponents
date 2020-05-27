@@ -29,15 +29,15 @@ class MainView: public View
 
         p->translate(center());
 
-        p->setSource(Color{"#FF000080"});
+        p->setSource(color{"#FF000080"});
         p->circle(-Point{30, 0}, 60);
         p->fill();
 
-        p->setSource(Color{"#00FF0080"});
+        p->setSource(color{"#00FF0080"});
         p->circle(Point{0, 0}, 60);
         p->fill();
 
-        p->setSource(Color{"#0000FF80"});
+        p->setSource(color{"#0000FF80"});
         p->circle(Point{30, 0}, 60);
         p->fill();
     }

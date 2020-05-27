@@ -403,11 +403,11 @@ void TextInput::paint()
         int s1 = selection()->i1();
         p->showTextRun(
             textPos(), textRun(),
-            [=](int byteOffset) -> Color {
-                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionInk() : Color{};
+            [=](int byteOffset) -> color {
+                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionInk() : color{};
             },
-            [=](int byteOffset) -> Color {
-                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionPaper() : Color{};
+            [=](int byteOffset) -> color {
+                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionPaper() : color{};
             }
         );
     }

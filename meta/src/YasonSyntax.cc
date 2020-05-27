@@ -597,7 +597,7 @@ variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
              expectedType == VariantType::Color ||
              expectedItemType == VariantType::Color )
         {
-            value = Color(string(text->copyRange(token)));
+            value = color(string(text->copyRange(token)));
         }
         else
             typeError = true;
@@ -633,7 +633,7 @@ variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
         {
             string s = readText(text, token);
             bool ok = false;
-            value = Color::parse(s, &ok);
+            value = color::parse(s, &ok);
             if (!ok) typeError = true;
         }
         else

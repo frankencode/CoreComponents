@@ -25,12 +25,12 @@ public:
     Property<bool> readonly { false };
 
     Property<Font> font;
-    Property<Color> ink;
+    Property<color> ink;
 
     Property<bool> showLineNumbers { false };
     Property<Font> lineNumberFont;
-    Property<Color> lineNumberInk;
-    Property<Color> lineNumberPaper;
+    Property<color> lineNumberInk;
+    Property<color> lineNumberPaper;
 
     Property<Size> textMargin       { Size{ std::ceil(dp(4)), 0 } };
     Property<Size> lineNumberMargin { Size{ std::ceil(dp(8)), 0 } };

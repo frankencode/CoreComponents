@@ -64,8 +64,8 @@ void HtmlScreen::writeCss(Theme *theme, Stream *sink)
         for (int j = 0; j < palette->styleCount(); ++j) {
             const Style *style = palette->styleAt(j);
             format << ".toki_" << hex(unsigned(palette->scope())) << "_" << hex(unsigned(style->rule())) << " { ";
-            if (style->ink() != Color()) format << "color: " << style->ink() << "; ";
-            if (style->paper() != Color()) format << "background-color: " << style->paper() << "; ";
+            if (style->ink() != color{}) format << "color: " << style->ink() << "; ";
+            if (style->paper() != color{}) format << "background-color: " << style->paper() << "; ";
             if (style->bold()) format << "font-weight: bold; ";
             if (style->italic()) format << "font-style: italic; ";
             if (palette->scope() == defaultScope) {

@@ -10,7 +10,7 @@
 
 #include <new>
 #include <cc/bitmask>
-#include <cc/Color>
+#include <cc/color>
 #include <cc/Version>
 #include <cc/string>
 #include <cc/Map>
@@ -111,7 +111,7 @@ public:
         Instance(bool value)   : type_{VariantType::Bool},    int_{value}            {}
         Instance(float value)  : type_{VariantType::Float},   float_{value}          {}
         Instance(double value) : type_{VariantType::Float},   float_{float(value)}   {}
-        Instance(Color value)  : type_{VariantType::Color},   word_{value->toWord()} {}
+        Instance(color value)  : type_{VariantType::Color},   word_{value->toWord()} {}
         Instance(Version value): type_{VariantType::Version}, word_{value->toWord()} {}
 
         Instance(const char *value)  : type_{VariantType::String} { initRef(mutate(string(value))); }
@@ -123,7 +123,7 @@ public:
         Instance(const Ref< List<int> > &value)    : type_{VariantType::List}, itemType_{VariantType::Int}     { initRef(value); }
         Instance(const Ref< List<bool> > &value)   : type_{VariantType::List}, itemType_{VariantType::Bool}    { initRef(value); }
         Instance(const Ref< List<float> > &value)  : type_{VariantType::List}, itemType_{VariantType::Float}   { initRef(value); }
-        Instance(const Ref< List<Color> > &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
+        Instance(const Ref< List<color> > &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
         Instance(const Ref< List<Version> > &value): type_{VariantType::List}, itemType_{VariantType::Version} { initRef(value); }
         Instance(const Ref<StringList> &value)     : type_{VariantType::List}, itemType_{VariantType::String}  { initRef(value); }
         Instance(const Ref<VariantList> &value)    : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
@@ -161,7 +161,7 @@ public:
     variant(bool value)   : instance_{value} {}
     variant(float value)  : instance_{value} {}
     variant(double value) : instance_{value} {}
-    variant(Color value)  : instance_{value} {}
+    variant(color value)  : instance_{value} {}
     variant(Version value): instance_{value} {}
 
     variant(const char *value)  : instance_{value} {}
@@ -179,7 +179,7 @@ public:
     variant(const Ref< List<int> > &value)    : instance_{value} {}
     variant(const Ref< List<bool> > &value)   : instance_{value} {}
     variant(const Ref< List<float> > &value)  : instance_{value} {}
-    variant(const Ref< List<Color> > &value)  : instance_{value} {}
+    variant(const Ref< List<color> > &value)  : instance_{value} {}
     variant(const Ref< List<Version> > &value): instance_{value} {}
     variant(const Ref<StringList> &value)     : instance_{value} {}
     variant(const Ref<VariantList> &value)    : instance_{value} {}
@@ -199,7 +199,7 @@ public:
     const variant &operator=(int value)           { (*this)->type_ = VariantType::Int;     (*this)->int_ = value; return *this; }
     const variant &operator=(float value)         { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
     const variant &operator=(double value)        { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
-    const variant &operator=(Color value)         { (*this)->type_ = VariantType::Color;   (*this)->word_ = value->toWord(); return *this; }
+    const variant &operator=(color value)         { (*this)->type_ = VariantType::Color;   (*this)->word_ = value->toWord(); return *this; }
     const variant &operator=(Version value)       { (*this)->type_ = VariantType::Version; (*this)->word_ = value->toWord(); return *this; }
 
     const variant &operator=(const char *value)   { return (*this) = variant(value); }
@@ -236,10 +236,10 @@ public:
         CC_ASSERT2(+((*this)->type_ & VariantType::Float), illegalConversion);
         return (*this)->float_;
     }
-    operator Color() const {
-        if (!+(*this)->type_) return Color();
+    operator color() const {
+        if (!+(*this)->type_) return color{};
         CC_ASSERT2(+((*this)->type_ & VariantType::Color), illegalConversion);
-        return Color::fromWord((*this)->word_);
+        return color::fromWord((*this)->word_);
     }
     operator Version() const {
         if (!+(*this)->type_) return Version();
@@ -302,10 +302,10 @@ public:
 };
 
 template<>
-class VariantCast<Color, false> {
+class VariantCast<color, false> {
 public:
-    static Color cast(const variant &value) {
-        return Color::fromWord(value->word_);
+    static color cast(const variant &value) {
+        return color::fromWord(value->word_);
     }
 };
 

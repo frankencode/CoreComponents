@@ -36,7 +36,7 @@ class View: public Surface
 public:
     Property<bool> visible { true };
     Property<bool> moving { false };
-    Property<Color> paper;
+    Property<color> paper;
 
     Property<Point> pos;
     Property<Size> size;
@@ -92,7 +92,7 @@ public:
     virtual Size minSize() const { return Size{}; }
     virtual Size maxSize() const { return Size{ std::numeric_limits<double>::max() }; }
 
-    Color findBasePaper() const;
+    color findBasePaper() const;
     void inheritPaper();
 
     inline Organizer *organizer() const { return organizer_; }
@@ -117,7 +117,7 @@ protected:
     virtual bool isPainted() const;
     virtual bool isStatic() const;
 
-    void clear(Color color);
+    void clear(color color);
 
     virtual void clear();
     virtual void paint();
