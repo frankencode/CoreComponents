@@ -23,7 +23,7 @@ Image::~Image()
 void Image::init()
 {
     if (isValid())
-        data_ = string::allocate(w_ * h_ * sizeof(color));
+        data_ = String::allocate(w_ * h_ * sizeof(Color));
 }
 
 cairo_surface_t *Image::cairoSurface() const
@@ -33,22 +33,22 @@ cairo_surface_t *Image::cairoSurface() const
     return cairoSurface_;
 }
 
-void Image::clear(color c)
+void Image::clear(Color c)
 {
-    const int n = data_->itemCount<color>();
+    const int n = data_->itemCount<Color>();
     for (int i = 0; i < n; ++i)
-        mutate(data_)->item<color>(i) = c;
+        mutate(data_)->item<Color>(i) = c;
 }
 
 void Image::normalize()
 {
-    const int n = data_->itemCount<color>();
-    color *p = &mutate(data_)->item<color>(0);
+    const int n = data_->itemCount<Color>();
+    Color *p = &mutate(data_)->item<Color>(0);
     for (int i = 0; i < n; ++i)
         p[i]->normalize();
 }
 
-void Image::shadowBlur(int radius, color shadowColor)
+void Image::shadowBlur(int radius, Color shadowColor)
 {
     shadowBlurInsitu(this, radius, shadowColor);
 }

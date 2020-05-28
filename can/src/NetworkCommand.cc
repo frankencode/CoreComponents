@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/NetworkCommand>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -23,11 +23,11 @@ Ref<CanFrame> NetworkCommand::createFrame(NetworkCommand::Specifier commandSpeci
     return frame;
 }
 
-string NetworkCommand::Instance::toString() const
+String NetworkCommand::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    format f;
+    Format f;
     f << "NetworkCommand {" << nl
       << "  specifier: " << specifier() << nl;
     if (targetId() != 0)
@@ -36,9 +36,9 @@ string NetworkCommand::Instance::toString() const
     return f;
 }
 
-string str(NetworkCommand::Specifier commandSpecifier)
+String str(NetworkCommand::Specifier commandSpecifier)
 {
-    string s;
+    String s;
 
     switch (commandSpecifier) {
         case NetworkCommand::Specifier::Start : s = "NetworkCommand::Specifier::Start"; break;

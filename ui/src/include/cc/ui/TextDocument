@@ -26,23 +26,23 @@ public:
     int byteCount() const override { return byteCount_(); }
     int lineCount() const { return lineCount_(); }
 
-    void load(const string &text);
+    void load(const String &text);
 
-    string copy(Range range) const override;
-    Range paste(Range range, const string &newChunk);
+    String copy(Range range) const override;
+    Range paste(Range range, const String &newChunk);
 
 private:
     friend class TextEdit;
 
-    TextDocument(const string &initialText = "");
+    TextDocument(const String &initialText = "");
 
     Item *rootItem() const { return rootItem_; }
 
-    string filterChunk(const string &newChunk) const override;
-    void pasteChunk(Range range, const string &newChunk) override;
+    String filterChunk(const String &newChunk) const override;
+    void pasteChunk(Range range, const String &newChunk) override;
 
     void cut(Range range);
-    void pasteFragment(int targetOffset, const string &fragment);
+    void pasteFragment(int targetOffset, const String &fragment);
     void breakLine(int targetOffset);
 
     Property<int> byteCount_ { 0 };

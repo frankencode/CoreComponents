@@ -42,9 +42,9 @@ public:
     int ruleByName(const char *name) const;
     int keywordByName(const char *name) const;
 
-    Ref<SyntaxState> find(const string &text, int i = 0, TokenFactory *tokenFactory = nullptr) const;
-    Ref<SyntaxState> match(const string &text, int i = -1, TokenFactory *tokenFactory = nullptr) const;
-    Ref<StringList> split(const string &text) const;
+    Ref<SyntaxState> find(const String &text, int i = 0, TokenFactory *tokenFactory = nullptr) const;
+    Ref<SyntaxState> match(const String &text, int i = -1, TokenFactory *tokenFactory = nullptr) const;
+    Ref<StringList> split(const String &text) const;
 
     int matchLength() const;
 

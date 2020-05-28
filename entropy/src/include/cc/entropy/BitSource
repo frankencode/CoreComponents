@@ -76,7 +76,7 @@ private:
     void fill();
 
     Ref<Stream> source_;
-    string buffer_;
+    String buffer_;
     ByteOrder endian_;
     int fill_;
     int i_;    // byte offset within buf_

@@ -9,7 +9,7 @@
 #include <cc/net/Uri>
 #include <cc/net/SocketAddress>
 #include <cc/net/UriSyntax>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Token>
 
 namespace cc {
@@ -17,7 +17,7 @@ namespace net {
 
 using namespace cc::syntax;
 
-Uri::Instance::Instance(const string &text, Token *rootToken)
+Uri::Instance::Instance(const String &text, Token *rootToken)
 {
     Ref<Token> rootToken2;
     if (!rootToken) {
@@ -61,12 +61,12 @@ Uri::Instance::Instance(const string &text, Token *rootToken)
     }
 }
 
-string Uri::Instance::requestHost() const
+String Uri::Instance::requestHost() const
 {
     return host_ + ":" + str(port_);
 }
 
-string Uri::Instance::requestPath() const
+String Uri::Instance::requestPath() const
 {
     if (query_ == "" && fragment_ == "") return path_;
     auto parts = StringList::create();
@@ -76,9 +76,9 @@ string Uri::Instance::requestPath() const
     return parts;
 }
 
-string Uri::Instance::toString() const
+String Uri::Instance::toString() const
 {
-    format text;
+    Format text;
     if (scheme_ != "") {
         text << Uri::encode(scheme_);
         text << ":";
@@ -106,7 +106,7 @@ string Uri::Instance::toString() const
     return text;
 }
 
-string Uri::encode(const string &s)
+String Uri::encode(const String &s)
 {
     mutate(s)->downcaseInsitu();
 
@@ -119,7 +119,7 @@ string Uri::encode(const string &s)
             if (ch == *r) {
                 if (j < i)
                     l->append(s->copy(j, i));
-                string pct{"%XX"};
+                String pct{"%XX"};
                 mutate(pct)->at(1) = ch >> 4;
                 mutate(pct)->at(2) = ch & 0xF;
                 l->append(pct);
@@ -134,7 +134,7 @@ string Uri::encode(const string &s)
     return l->join();
 }
 
-string Uri::decode(const string &s)
+String Uri::decode(const String &s)
 {
     int j = 0;
     for (int i = 0, n = s->count(); i < n; ++i, ++j) {
@@ -166,12 +166,12 @@ string Uri::decode(const string &s)
     return s;
 }
 
-string Uri::encodeForm(const Map<string> *form)
+String Uri::encodeForm(const Map<String> *form)
 {
     auto parts = StringList::create();
     for (auto item: form) {
         parts->append(
-            format{"%%=%%"}
+            Format{"%%=%%"}
                 << Uri::encode(item->key())
                 << Uri::encode(item->value())
         );
@@ -179,22 +179,22 @@ string Uri::encodeForm(const Map<string> *form)
     return parts->join("&");
 }
 
-Ref<Map<string> > Uri::decodeForm(const string &payload)
+Ref<Map<String> > Uri::decodeForm(const String &payload)
 {
-    auto form = Map<string>::create();
+    auto form = Map<String>::create();
     auto parts = payload->split("&");
     for (auto part: parts) {
         int j = part->scan('&');
-        string key = Uri::decode(part->copy(0, j));
-        string value = Uri::decode(part->copy(j + 1, part->count()));
+        String key = Uri::decode(part->copy(0, j));
+        String value = Uri::decode(part->copy(j + 1, part->count()));
         form->insert(key, value);
     }
     return form;
 }
 
-string UriSyntaxError::message() const
+String UriSyntaxError::message() const
 {
-    return format{"Invalid URI syntax: \"%%\""} << text_;
+    return Format{"Invalid URI syntax: \"%%\""} << text_;
 }
 
 }} // namespace cc::net

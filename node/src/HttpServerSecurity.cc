@@ -24,9 +24,9 @@ HttpServerSecurity::HttpServerSecurity(const MetaObject *config):
     prio_{nullptr},
     sessionResumptionKeyRefresh_{config->value("session-resumption-key-refresh")}
 {
-    string certPath = config->value("certificate");
-    string keyPath = config->value("private-key");
-    string ciphers = config->value("ciphers");
+    String certPath = config->value("certificate");
+    String keyPath = config->value("private-key");
+    String ciphers = config->value("ciphers");
 
     if (ciphers == "") ciphers = "PERFORMANCE:%SERVER_PRECEDENCE";
     else hasCiphers_ = true;
@@ -88,12 +88,12 @@ void HttpServerSecurity::logCertificateInfo(gnutls_x509_crt_t cert)
     CCNODE_INFO() << certificateName(cert) << nl;
 }
 
-string HttpServerSecurity::certificateName(gnutls_x509_crt_t cert)
+String HttpServerSecurity::certificateName(gnutls_x509_crt_t cert)
 {
     size_t size = 0;
     int ret = gnutls_x509_crt_get_dn(cert, 0, &size);
     if (ret != GNUTLS_E_SHORT_MEMORY_BUFFER) return;
-    string buf(size);
+    String buf(size);
     ret = gnutls_x509_crt_get_dn(cert, buf, &size);
     if (ret != GNUTLS_E_SUCCESS) return;
     return buf;

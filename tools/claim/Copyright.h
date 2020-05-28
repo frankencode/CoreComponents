@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 #include <cc/List>
 
 namespace ccclaim {
@@ -18,22 +18,22 @@ using namespace cc;
 class Copyright: public Object
 {
 public:
-    static Ref<Copyright> create(const string &holder, int yearStart, int yearEnd) {
+    static Ref<Copyright> create(const String &holder, int yearStart, int yearEnd) {
         return new Copyright{holder, yearStart, yearEnd};
     }
 
-    string holder() const { return holder_; }
+    String holder() const { return holder_; }
     int yearStart() const { return yearStart_; }
     int yearEnd() const { return yearEnd_; }
 
 private:
-    Copyright(const string &holder, int yearStart, int yearEnd):
+    Copyright(const String &holder, int yearStart, int yearEnd):
         holder_{holder},
         yearStart_{yearStart},
         yearEnd_{yearEnd}
     {}
 
-    string holder_;
+    String holder_;
     int yearStart_;
     int yearEnd_;
 };

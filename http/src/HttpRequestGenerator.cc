@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/http/HttpRequestGenerator>
 
 namespace cc {
@@ -24,22 +24,22 @@ HttpRequestGenerator::HttpRequestGenerator(HttpConnection *server):
     version_{"HTTP/1.1"}
 {}
 
-void HttpRequestGenerator::setMethod(const string &method)
+void HttpRequestGenerator::setMethod(const String &method)
 {
     method_ = method;
 }
 
-void HttpRequestGenerator::setPath(const string &path)
+void HttpRequestGenerator::setPath(const String &path)
 {
     path_ = path;
 }
 
-void HttpRequestGenerator::setVersion(const string &version)
+void HttpRequestGenerator::setVersion(const String &version)
 {
     version_ = version;
 }
 
-void HttpRequestGenerator::setHost(const string &host)
+void HttpRequestGenerator::setHost(const String &host)
 {
     header_->establish("Host", host);
 }
@@ -56,7 +56,7 @@ void HttpRequestGenerator::polishHeader()
     }
 }
 
-void HttpRequestGenerator::writeFirstLine(format &sink)
+void HttpRequestGenerator::writeFirstLine(Format &sink)
 {
     sink << method_ << " " << path_ << " " << version_ << "\r\n";
 }

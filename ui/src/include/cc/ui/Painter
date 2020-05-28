@@ -24,7 +24,7 @@ class TextRun;
 class Painter
 {
 public:
-    typedef std::function<color(int)> GetColor; ///< get color for a given byte offset
+    typedef std::function<Color(int)> GetColor; ///< get Color for a given byte offset
 
     Painter(Surface *surface):
         instance_{surface}
@@ -63,7 +63,7 @@ public:
         /** Drawing
           * @{
           */
-        void setSource(color color);
+        void setSource(Color Color);
         void fill();
         void fillPreserve();
         /** @}
@@ -130,7 +130,7 @@ class PainterError: public Exception
 {
 public:
     PainterError(int errorStatus);
-    string message() const override;
+    String message() const override;
 private:
     int errorStatus_;
 };

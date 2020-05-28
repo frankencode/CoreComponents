@@ -13,7 +13,7 @@
 namespace cc {
 namespace toki {
 
-HtmlScreen::HtmlScreen(const string &text, const format &sink):
+HtmlScreen::HtmlScreen(const String &text, const Format &sink):
     text_{text},
     sink_{sink}
 {
@@ -42,7 +42,7 @@ void HtmlScreen::writeLineNumbers()
 
 bool HtmlScreen::project(Token *token, int i0, int i1)
 {
-    string s = text_->copy(i0, i1);
+    String s = text_->copy(i0, i1);
     if (s->contains('<')) s = s->replace("<", "&lt;");
     if (s->contains('>')) s = s->replace(">", "&gt;");
     if (s->contains('\t')) s = s->replace("\t", "    ");
@@ -57,26 +57,26 @@ bool HtmlScreen::project(Token *token, int i0, int i1)
 
 void HtmlScreen::writeCss(Theme *theme, Stream *sink)
 {
-    format format{sink};
+    Format Format{sink};
     int defaultScope = Palette::defaultScope();
     for (int i = 0; i < theme->paletteCount(); ++i) {
         const Palette *palette = theme->paletteAt(i);
         for (int j = 0; j < palette->styleCount(); ++j) {
             const Style *style = palette->styleAt(j);
-            format << ".toki_" << hex(unsigned(palette->scope())) << "_" << hex(unsigned(style->rule())) << " { ";
-            if (style->ink() != color{}) format << "color: " << style->ink() << "; ";
-            if (style->paper() != color{}) format << "background-color: " << style->paper() << "; ";
-            if (style->bold()) format << "font-weight: bold; ";
-            if (style->italic()) format << "font-style: italic; ";
+            Format << ".toki_" << hex(unsigned(palette->scope())) << "_" << hex(unsigned(style->rule())) << " { ";
+            if (style->ink() != Color{}) Format << "color: " << style->ink() << "; ";
+            if (style->paper() != Color{}) Format << "background-color: " << style->paper() << "; ";
+            if (style->bold()) Format << "font-weight: bold; ";
+            if (style->italic()) Format << "font-style: italic; ";
             if (palette->scope() == defaultScope) {
-                if (style->rule() == Palette::Text) format << "margin: 0; padding: 0; margin-left: 0.3em; padding-top: 0.2em; padding-bottom: 0.2em; ";
-                if (style->rule() == Palette::LineNumber) format << "margin: 0; padding: 0; padding-top: 0.2em; padding-bottom: 0.2em; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; cursor: default; ";
+                if (style->rule() == Palette::Text) Format << "margin: 0; padding: 0; margin-left: 0.3em; padding-top: 0.2em; padding-bottom: 0.2em; ";
+                if (style->rule() == Palette::LineNumber) Format << "margin: 0; padding: 0; padding-top: 0.2em; padding-bottom: 0.2em; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; cursor: default; ";
             }
-            format << "} /* " << palette->scopeName() << "::" << style->ruleName() << " */\n";
+            Format << "} /* " << palette->scopeName() << "::" << style->ruleName() << " */\n";
         }
     }
-    format << ".lineNumbersCell { display: table-cell; margin: 0; padding: 0; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; cursor: default; }\n";
-    format << ".sourceCodeCell { display: table-cell; margin: 0; padding: 0; }\n";
+    Format << ".lineNumbersCell { display: table-cell; margin: 0; padding: 0; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; cursor: default; }\n";
+    Format << ".sourceCodeCell { display: table-cell; margin: 0; padding: 0; }\n";
 }
 
 }} // namespace cc::toki

@@ -8,12 +8,12 @@
 
 #include <cc/can/BlockReadEndReply>
 #include <cc/can/Crc16Sink>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockReadEndReply::createFrame(int serverId, const string &data, bool crcSupport)
+Ref<CanFrame> BlockReadEndReply::createFrame(int serverId, const String &data, bool crcSupport)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
@@ -32,11 +32,11 @@ Ref<CanFrame> BlockReadEndReply::createFrame(int serverId, const string &data, b
     return frame;
 }
 
-string BlockReadEndReply::Instance::toString() const
+String BlockReadEndReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockReadEndReply {" << nl
         << "  serverId            : " << serverId() << nl
         << "  crc                 : 0x" << hex(crc(), 4) << nl

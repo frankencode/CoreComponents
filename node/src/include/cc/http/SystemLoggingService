@@ -17,7 +17,7 @@ class SystemLoggingService: public LoggingService
 {
 public:
     static const char *name();
-    static void open(const string &daemonName = "ccnode");
+    static void open(const String &daemonName = "ccnode");
 
     static Ref<SystemLoggingService> create();
 

@@ -8,7 +8,7 @@
 
 #include <cc/Singleton>
 #include <cc/File>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/syntax/SyntaxDefinition>
 #include "ShHeaderStyle.h"
 
@@ -76,39 +76,39 @@ ShHeaderStyle::ShHeaderStyle():
     HeaderStyle{"sh"}
 {}
 
-Ref<Header> ShHeaderStyle::scan(const string &path) const
+Ref<Header> ShHeaderStyle::scan(const String &path) const
 {
-    string text = File::open(path)->map();
+    String text = File::open(path)->map();
     Ref<Token> rootToken = Singleton<ShHeaderSyntax>::instance()->match(text, 0)->rootToken();
     if (!rootToken) return Ref<Header>();
     Token *token = rootToken->firstChild();
-    string message = trimHeader(text->copy(token->i0(), token->i1()), " \t\r#");
+    String message = trimHeader(text->copy(token->i0(), token->i1()), " \t\r#");
     return Header::create(path, token, text, message);
 }
 
-string ShHeaderStyle::str(const Notice *notice) const
+String ShHeaderStyle::str(const Notice *notice) const
 {
-    format format;
-    format << "##\n";
+    Format f;
+    f << "##\n";
     CopyrightList *copyrights = notice->copyrights();
     for (int i = 0; i < copyrights->count(); ++i) {
         Copyright *c = copyrights->at(i);
-        format << " # Copyright (C) ";
-        if (c->yearStart() == c->yearEnd()) format << c->yearStart();
-        else format << c->yearStart() << "-" << c->yearEnd();
-        format << " " << c->holder() << ".\n";
+        f << " # Copyright (C) ";
+        if (c->yearStart() == c->yearEnd()) f << c->yearStart();
+        else f << c->yearStart() << "-" << c->yearEnd();
+        f << " " << c->holder() << ".\n";
     }
-    format <<
+    f <<
         " #\n"
         " # " << notice->statement()->replace("\n", "\n # ") << "\n";
-    format <<
+    f <<
         " #\n"
         " ##\n"
         "\n";
-    return format;
+    return f;
 }
 
-int ShHeaderStyle::magicCount(const string &text) const
+int ShHeaderStyle::magicCount(const String &text) const
 {
     Ref<Token> token = Singleton<ShMagicSyntax>::instance()->match(text, 0)->rootToken();
     if (!token) return 0;

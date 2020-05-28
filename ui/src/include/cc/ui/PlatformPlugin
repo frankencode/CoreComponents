@@ -22,7 +22,7 @@ class PlatformPlugin: public Object
 public:
     static PlatformPlugin *instance();
 
-    string name() const { return name_; }
+    String name() const { return name_; }
     bool isPlatformDefault() const { return isPlatformDefault_; }
 
     virtual Application *application() const = 0;
@@ -34,11 +34,11 @@ public:
     virtual TouchDeviceManager *touchDeviceManager() const = 0;
 
 protected:
-    PlatformPlugin(const string &name, bool isPlatformDefault = false);
+    PlatformPlugin(const String &name, bool isPlatformDefault = false);
     void init();
 
 private:
-    string name_;
+    String name_;
     bool isPlatformDefault_;
 };
 

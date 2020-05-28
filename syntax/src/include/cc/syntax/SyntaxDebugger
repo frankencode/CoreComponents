@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 #include <cc/Map>
 #include <cc/syntax/syntax>
 
@@ -30,9 +30,9 @@ public:
     }
 
     virtual const char *declType() const = 0;
-    virtual void printAttributes(string indent) {}
+    virtual void printAttributes(String indent) {}
 
-    virtual void printNext(string indent = "");
+    virtual void printNext(String indent = "");
 
     inline SyntaxNode *entry() const { return SyntaxNode::firstChild(); }
 
@@ -43,10 +43,10 @@ protected:
         appendChild(newNode);
     }
 
-    void printBranch(SyntaxNode *node, string indent);
+    void printBranch(SyntaxNode *node, String indent);
 
-    string superIndent(string indent) const;
-    string subIndent(string indent) const;
+    String superIndent(String indent) const;
+    String subIndent(String indent) const;
 
     SyntaxDebugger *debugger_;
 };
@@ -54,7 +54,7 @@ protected:
 class SyntaxDebugger: public SyntaxDebugFactory
 {
 public:
-    inline static Ref<SyntaxDebugger> create(string indent = "\t") {
+    inline static Ref<SyntaxDebugger> create(String indent = "\t") {
         return new SyntaxDebugger(indent);
     }
 
@@ -62,7 +62,7 @@ public:
     void printDefinition(bool omitUnusedRules = false);
 
     typedef DefinitionNode::StateIdByName StateIdByName;
-    typedef Map<int, string> StateNameById;
+    typedef Map<int, String> StateNameById;
 
     Ref<StateNameById> newReverseMap(StateIdByName *stateIdByName);
     StateNameById *flagNameById();
@@ -72,7 +72,7 @@ private:
     friend class DefinitionNode;
     friend class SyntaxDebugNode;
 
-    SyntaxDebugger(string indent);
+    SyntaxDebugger(String indent);
 
     static void determineRulesInUse(RuleNode *rule);
 
@@ -97,7 +97,7 @@ private:
     typedef PrefixTree< char, Ref<NodeFactory> > FactoryByNodeType;
     Ref<FactoryByNodeType> factoryByNodeType_;
 
-    string indent_;
+    String indent_;
 
     Ref<StateNameById> flagNameById_;
     Ref<StateNameById> captureNameById_;

@@ -21,7 +21,7 @@ class PaletteLoader: public Object
 public:
     static const PaletteLoader *instance();
 
-    Ref<Palette> load(const string &path) const;
+    Ref<Palette> load(const String &path) const;
 
 private:
     friend class Singleton<PaletteLoader>;

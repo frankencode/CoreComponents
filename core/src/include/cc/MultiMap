@@ -10,7 +10,7 @@
 
 #include <cc/bucket>
 #include <cc/containers>
-#include <cc/pair>
+#include <cc/Pair>
 
 namespace cc {
 
@@ -22,7 +22,7 @@ class multimap;
   * \brief Multi-map data container
   * \tparam K key type
   * \tparam T mapped type
-  * \see Map, MultiSet, pair, KeySource, ValueSource
+  * \see Map, MultiSet, Pair, KeySource, ValueSource
   */
 template<class K, class T = K>
 class MultiMap: public Object
@@ -30,7 +30,7 @@ class MultiMap: public Object
 public:
     typedef K key_type; ///< key type
     typedef T mapped_type; ///< value type
-    typedef pair<K, T> value_type; ///< item type
+    typedef Pair<K, T> value_type; ///< item type
     typedef bucket::Weight size_type; ///< index type
 
     typedef bucket::Iterator<value_type> iterator; ///< iterator type

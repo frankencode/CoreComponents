@@ -57,10 +57,10 @@ class KeyEvent;
 class Window: public Object
 {
 public:
-    static Window *open(View *view, const string &title = string{}, WindowMode mode = WindowMode::Default);
+    static Window *open(View *view, const String &title = String{}, WindowMode mode = WindowMode::Default);
 
     template<class T>
-    static Window *open(const string &title = string{}, WindowMode mode = WindowMode::Default) {
+    static Window *open(const String &title = String{}, WindowMode mode = WindowMode::Default) {
         return open(Object::create<T>(), title, mode);
     }
 
@@ -74,7 +74,7 @@ public:
     Control *getControlAt(Point pos) const;
 
     Property<bool> visible { true };
-    Property<string> title;
+    Property<String> title;
     Property<Point> pos;
     Property<Size> size;
 
@@ -83,7 +83,7 @@ protected:
     friend class View;
     friend class Control;
 
-    Window(View *view, const string &title);
+    Window(View *view, const String &title);
     ~Window();
 
     static Object *getContext(View *view);

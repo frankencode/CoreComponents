@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/string>
-#include <cc/variant>
+#include <cc/String>
+#include <cc/Variant>
 #include <cc/str>
 
 namespace cc {
@@ -21,7 +21,7 @@ template<class> class Queue;
   * \{
   */
 
-/** \class FormatSignal cc/format
+/** \class FormatSignal cc/Format
   * \brief Type for formatting signals
   */
 class FormatSignal {};
@@ -29,50 +29,50 @@ class FormatSignal {};
 extern FormatSignal nl; ///< The newline formatting signal causes a newline but no output flushing.
 extern FormatSignal flush; ///< The flush formatting signal causes the aggregated text to be flushed and written to the associated output stream (if any).
 
-/** \class format cc/format
+/** \class Format cc/Format
   * \brief Text formatting helper
   */
-class format: public Ref<StringList>
+class Format: public Ref<StringList>
 {
 public:
-    /** Construct a new string formatting helper
+    /** Construct a new String formatting helper
       * \param pattern formatting pattern containing injection placeholders ("%%")
       * \param stream output stream to write the resulting text to (optional)
       */
-    format(const string &pattern, Stream *stream = nullptr);
+    Format(const String &pattern, Stream *stream = nullptr);
 
-    /** Construct a new string formatting helper
+    /** Construct a new String formatting helper
       * \param stream output stream to write the resulting text to (optional)
       */
-    format(Stream *stream = nullptr);
+    Format(Stream *stream = nullptr);
 
     /// Low-level destructor
-    ~format();
+    ~Format();
 
     /// Copy-constructor
-    format(const format &b);
+    Format(const Format &b);
 
     /// Assignment operator
-    format &operator=(const format &b);
+    Format &operator=(const Format &b);
 
-    /// Append or inject a string to the output text
-    format &operator<<(const string &s);
+    /// Append or inject a String to the output text
+    Format &operator<<(const String &s);
 
     /** %Process a special formatting signal
       * \param s formatting signal (nl or flush)
       */
-    format &operator<<(const FormatSignal &s);
+    Format &operator<<(const FormatSignal &s);
 
     /** Append or inject an element x to the output text
-      * \param x anything which can be converted to a string via str(x)
+      * \param x anything which can be converted to a String via str(x)
       */
     template<class T>
-    format &operator<<(const T &x) {
+    Format &operator<<(const T &x) {
         if (isNull_) return *this;
         return *this << str(x);
     }
 
-    static const StringList *toStringList(const format &f) { return f.get(); }
+    static const StringList *toStringList(const Format &f) { return f.get(); }
 
 private:
     typedef Ref<StringList> Super;
@@ -82,11 +82,11 @@ private:
     Ref<Stream> stream_;
     bool isNull_;
     Ref< Queue<int> > placeHolder_;
-    string lastInsert_;
+    String lastInsert_;
     int lastPosition_;
 };
 
-/** \class NullFormat cc/format
+/** \class NullFormat cc/Format
   * \brief Zero storage formatting output sink
   */
 class NullFormat {

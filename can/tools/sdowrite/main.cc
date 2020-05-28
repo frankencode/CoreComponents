@@ -18,7 +18,7 @@ using namespace cc::can;
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
             options->insert("index", 0x1000);
             options->insert("sub-index", 0);
             options->insert("hex-value", "");
-            options->insert("string-value", "");
+            options->insert("String-value", "");
             options->insert("int-value", 0);
             options->insert("timeout", -1);
             options->insert("debug", false);
@@ -39,13 +39,13 @@ int main(int argc, char **argv)
             arguments->override(options);
         }
 
-        string interface   = options->value("interface");
+        String interface   = options->value("interface");
         int clientId       = options->value("my-id");
         int serverId       = options->value("peer-id");
         int index          = options->value("index");
         int subIndex       = options->value("sub-index");
-        string hexValue    = options->value("hex-value");
-        string stringValue = options->value("string-value");
+        String hexValue    = options->value("hex-value");
+        String stringValue = options->value("String-value");
         int intValue       = options->value("int-value");
         int timeout        = options->value("timeout");
         bool debug         = options->value("debug");
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
             static_cast<Selector::SubIndex>(subIndex)
         };
 
-        string newData;
+        String newData;
 
         if (hexValue->count() > 0)
         {
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
             };
 
             auto hexPairs = hexValue->split(".");
-            newData = string::allocate(hexPairs->count());
+            newData = String::allocate(hexPairs->count());
             if (debug)
                 CC_INSPECT(hexPairs->count());
             for (int i = 0; i < hexPairs->count(); ++i) {
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
             newData = stringValue;
         }
         else {
-            newData = string::allocate(4);
+            newData = String::allocate(4);
             ByteSink::open(mutate(newData))->writeInt32(intValue);
         }
 
@@ -102,13 +102,13 @@ int main(int argc, char **argv)
             "Write an entry into a node's CANopen dictionary\n"
             "\n"
             "Options:\n"
-            "  -interface=<string>     CAN interface to use (\"can0\" by default)\n"
+            "  -interface=<String>     CAN interface to use (\"can0\" by default)\n"
             "  -my-id=<number>         node ID of the client\n"
             "  -peer-id=<number>       node ID of the server\n"
             "  -index=<number>         object dictionary index (0x1000 by default)\n"
             "  -sub-index=<number>     object dictionary sub-index (0x00 by default)\n"
-            "  -hex-value=<string>     new value to write (hex coded, e.g. '\"02.20.AB\"')\n"
-            "  -string-value=<string>  new value to write (hex coded, e.g. \'save\')\n"
+            "  -hex-value=<String>     new value to write (hex coded, e.g. '\"02.20.AB\"')\n"
+            "  -String-value=<String>  new value to write (hex coded, e.g. \'save\')\n"
             "  -int-value=<number>     new value to write (hex coded, e.g. -2)\n"
             "  -timeout=<number>       timeout in milliseconds (indefinite by default)\n"
             "  -debug                  debug output\n"

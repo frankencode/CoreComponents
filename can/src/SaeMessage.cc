@@ -7,16 +7,16 @@
  */
 
 #include <cc/can/SaeMessage>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-string SaeMessage::Instance::toString() const
+String SaeMessage::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "SaeMessage {" << nl
         << "  parameterGroupNumber: " << parameterGroupNumber() << nl
         << "  sourceAddress       : " << sourceAddress() << nl

@@ -16,12 +16,12 @@ namespace cc {
 namespace meta {
 namespace json {
 
-variant parse(const CharArray *text)
+Variant parse(const CharArray *text)
 {
     return YasonSyntax::instance()->parse(text);
 }
 
-string stringify(variant value)
+String stringify(Variant value)
 {
     Ref<CaptureSink> sink = CaptureSink::open();
     JsonWriter::create(sink)->write(value);

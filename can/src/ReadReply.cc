@@ -7,12 +7,12 @@
  */
 
 #include <cc/can/ReadReply>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-Ref<CanFrame> ReadReply::createFrame(int serverId, Selector selector, const string &data)
+Ref<CanFrame> ReadReply::createFrame(int serverId, Selector selector, const String &data)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
@@ -44,11 +44,11 @@ Ref<CanFrame> ReadReply::createFrame(int serverId, Selector selector, const stri
     return frame;
 }
 
-string ReadReply::Instance::toString() const
+String ReadReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    format f;
+    Format f;
     f << "ReadReply {" << nl
       << "  serverId: " << serverId() << nl
       << "  selector: " << selector() << nl;

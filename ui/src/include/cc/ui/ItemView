@@ -61,7 +61,7 @@ private:
     ItemCarrier *itemCarrier() const;
 
     Ref<Item> rootItem_;
-    color delegatePaperSaved_;
+    Color delegatePaperSaved_;
     bool hasSavedDelegatePaper_ { false };
 };
 

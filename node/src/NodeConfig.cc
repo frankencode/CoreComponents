@@ -24,7 +24,7 @@ namespace http {
 using namespace cc::net;
 using namespace cc::meta;
 
-Ref<MetaObject> NodeConfig::parse(const string &text)
+Ref<MetaObject> NodeConfig::parse(const String &text)
 {
     return yason::parse(text, NodeConfigProtocol::instance());
 }
@@ -39,7 +39,7 @@ const MetaObject *NodeConfig::prototype()
     return NodeConfigProtocol::instance()->nodePrototype();
 }
 
-Ref<NodeConfig> NodeConfig::load(const string &path)
+Ref<NodeConfig> NodeConfig::load(const String &path)
 {
     ResourceGuard context{path};
     return load(parse(File::open(path)->map()));
@@ -53,13 +53,13 @@ Ref<NodeConfig> NodeConfig::create()
 NodeConfig::NodeConfig(const MetaObject *config):
     securePort_{0}
 {
-    string address = config->value("address");
+    String address = config->value("address");
 
-    auto ports = variant::cast<List<int> *>(config->value("port"));
+    auto ports = Variant::cast<List<int> *>(config->value("port"));
 
     ProtocolFamily family = ProtocolFamily::Unspecified;
     {
-        string s = string{config->value("family")}->toLower();
+        String s = String{config->value("family")}->toLower();
         if (s->toLower() == "ipv6") family = ProtocolFamily::Internet6;
         else if (s->toLower() == "ipv4") family = ProtocolFamily::Internet4;
         else if (s->toLower() == "local" || address->contains('/')) family = ProtocolFamily::Local;
@@ -112,10 +112,10 @@ NodeConfig::NodeConfig(const MetaObject *config):
     connectionLimit_ = config->value("connection-limit");
     connectionTimeout_ = config->value("connection-timeout");
 
-    securityConfig_ = HttpServerSecurity::load(variant::cast<const MetaObject *>(config->value("security")));
+    securityConfig_ = HttpServerSecurity::load(Variant::cast<const MetaObject *>(config->value("security")));
 
-    auto loadLoggingInstance = [=](variant value) {
-        const MetaObject *config = variant::cast<const MetaObject *>(value);
+    auto loadLoggingInstance = [=](Variant value) {
+        const MetaObject *config = Variant::cast<const MetaObject *>(value);
         if (!config) {
             if (daemon_) config = LoggingRegistry::instance()->serviceByName(SystemLoggingService::name())->configPrototype();
             else config = LoggingRegistry::instance()->serviceByName(ForegroundLoggingService::name())->configPrototype();
@@ -141,7 +141,7 @@ Ref<DeliveryInstance> NodeConfig::createDeliveryInstance(const DeliveryService *
     return instance;
 }
 
-void NodeConfig::addDirectoryInstance(const string &path)
+void NodeConfig::addDirectoryInstance(const String &path)
 {
     const DeliveryService *service = DeliveryRegistry::instance()->serviceByName("Directory");
     Ref<MetaObject> config = service->configPrototype()->clone();
@@ -158,7 +158,7 @@ void NodeConfig::addEchoInstance()
     deliveryInstances_->append(createDeliveryInstance(service, config));
 }
 
-const DeliveryInstance *NodeConfig::selectService(const string &host, const string &uri) const
+const DeliveryInstance *NodeConfig::selectService(const String &host, const String &uri) const
 {
     const DeliveryInstance *deliveryInstance = nullptr;
 

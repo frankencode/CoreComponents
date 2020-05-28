@@ -11,23 +11,23 @@
 namespace cc {
 namespace meta {
 
-Ref<YasonWriter> YasonWriter::create(Stream *sink, const string &indent)
+Ref<YasonWriter> YasonWriter::create(Stream *sink, const String &indent)
 {
     return new YasonWriter{sink, indent};
 }
 
-YasonWriter::YasonWriter(Stream *sink, const string &indent):
+YasonWriter::YasonWriter(Stream *sink, const String &indent):
     format_{sink},
     indent_{indent}
 {}
 
-void YasonWriter::write(variant value)
+void YasonWriter::write(Variant value)
 {
     writeValue(value, 0);
     format_ << nl;
 }
 
-void YasonWriter::writeValue(variant value, int depth)
+void YasonWriter::writeValue(Variant value, int depth)
 {
     if (
         value->type() == VariantType::Int ||
@@ -39,7 +39,7 @@ void YasonWriter::writeValue(variant value, int depth)
         format_ << value;
     }
     else if (value->type() == VariantType::String) {
-        string s = value;
+        String s = value;
         if (s->contains("\""))
             s = s->replace("\"", "\\\"");
         s = s->escape();
@@ -53,7 +53,7 @@ void YasonWriter::writeValue(variant value, int depth)
     }
 }
 
-void YasonWriter::writeList(variant value, int depth)
+void YasonWriter::writeList(Variant value, int depth)
 {
     if (value->itemType() == VariantType::Int)
         writeTypedList<int>(value, depth);
@@ -62,12 +62,12 @@ void YasonWriter::writeList(variant value, int depth)
     else if (value->itemType() == VariantType::Float)
         writeTypedList<float>(value, depth);
     else if (value->itemType() == VariantType::String)
-        writeTypedList<string>(value, depth);
+        writeTypedList<String>(value, depth);
     else
-        writeTypedList<variant>(value, depth);
+        writeTypedList<Variant>(value, depth);
 }
 
-bool YasonWriter::isIdentifier(const string &name) const
+bool YasonWriter::isIdentifier(const String &name) const
 {
     for (char ch: name) {
         if (!(
@@ -82,9 +82,9 @@ bool YasonWriter::isIdentifier(const string &name) const
     return true;
 }
 
-void YasonWriter::writeObject(variant value, int depth)
+void YasonWriter::writeObject(Variant value, int depth)
 {
-    const MetaObject *object = variant::cast<const MetaObject *>(value);
+    const MetaObject *object = Variant::cast<const MetaObject *>(value);
     if (!object) {
         format_ << "null";
         return;
@@ -100,8 +100,8 @@ void YasonWriter::writeObject(variant value, int depth)
     format_ << "{\n";
     writeIndent(depth + 1); // FIXME: having an "IndentStream" would be nice
     for (int i = 0; i < object->count(); ++i) {
-        string memberName = object->at(i)->key();
-        variant memberValue = object->at(i)->value();
+        String memberName = object->at(i)->key();
+        Variant memberValue = object->at(i)->value();
         if (isIdentifier(memberName))
             format_ << memberName << ": ";
         else
@@ -131,9 +131,9 @@ void YasonWriter::writeIndent(int depth)
 }
 
 template<class T>
-void YasonWriter::writeTypedList(variant value, int depth)
+void YasonWriter::writeTypedList(Variant value, int depth)
 {
-    List<T> *list = variant::cast<List<T> *>(value);
+    List<T> *list = Variant::cast<List<T> *>(value);
     if (list->count() == 0) {
         format_ << "[]";
         return;

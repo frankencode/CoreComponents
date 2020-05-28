@@ -9,7 +9,7 @@
 #pragma once
 
 #include <exception>
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 
@@ -20,13 +20,13 @@ namespace cc {
 class Exception: public std::exception
 {
 public:
-    virtual string message() const = 0;
+    virtual String message() const = 0;
 
     const char* what() const throw() override;
 
     const Exception *operator->() const { return this; }
 };
 
-inline string str(const Exception &ex) { return ex.message(); }
+inline String str(const Exception &ex) { return ex.message(); }
 
 } // namespace cc

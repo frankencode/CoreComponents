@@ -18,7 +18,7 @@ class TestFontFace: public FontFace
 {
 public:
     static Ref<TestFontFace> create(
-        string family,
+        String family,
         Weight weight = Weight::Normal,
         Slant slant = Slant::Normal,
         Stretch stretch = Stretch::Normal,
@@ -29,17 +29,17 @@ public:
         );
     }
 
-    string family() const override { return family_; }
+    String family() const override { return family_; }
     Weight weight() const override { return weight_; }
     Slant slant() const override { return slant_; }
     Stretch stretch() const override { return stretch_; }
     Pitch pitch() const override { return pitch_; }
 
-    string toString() const override { return string{}; }
+    String toString() const override { return String{}; }
 
 private:
     TestFontFace(
-        string family,
+        String family,
         Weight weight,
         Slant slant,
         Stretch stretch,
@@ -52,7 +52,7 @@ private:
         pitch_(pitch)
     {}
 
-    string family_;
+    String family_;
     Weight weight_;
     Slant slant_;
     Stretch stretch_;
@@ -72,7 +72,7 @@ public:
         return Ref<const ScaledFont>{};
     }
 
-    Ref<GlyphRun> typeset(const string &text, const Font &font, const Point &origin) const override
+    Ref<GlyphRun> typeset(const String &text, const Font &font, const Point &origin) const override
     {
         return Ref<GlyphRun>{};
     }
@@ -82,13 +82,13 @@ public:
         return Ref<TextRun>{};
     }
 
-    void selectFontRanges(const string &text, const Font &font, const ReturnFontRange &fontRange) const override
+    void selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const override
     {
         fontRange(font, 0, text->count());
     }
 
 private:
-    Ref<FontFace> openFontFace(const string &) override { return nullptr; }
+    Ref<FontFace> openFontFace(const String &) override { return nullptr; }
 
     TestFontManager()
     {
@@ -124,7 +124,7 @@ class TestFaceLookup: public TestCase
 {
     static const FontFace *selectFontFace(
         FontManager *manager,
-        string searchPattern,
+        String searchPattern,
         Weight searchWeight = Weight::Normal,
         Slant searchSlant = Slant::Normal,
         Stretch searchStretch = Stretch::Normal

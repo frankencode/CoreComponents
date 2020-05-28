@@ -76,7 +76,7 @@ public:
         LINK();
     }
 
-    double eval(const string &text)
+    double eval(const String &text)
     {
         Ref<Token> rootToken = match(text)->rootToken();
         double value = cc::nan();
@@ -165,7 +165,7 @@ private:
     int product_;
     int sum_;
 
-    string text_;
+    String text_;
 };
 
 class Calculator: public TestCase

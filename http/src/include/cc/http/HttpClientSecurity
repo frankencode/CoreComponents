@@ -9,7 +9,7 @@
 #pragma once
 
 #include <gnutls/gnutls.h>
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 namespace http {
@@ -19,17 +19,17 @@ public:
     static Ref<HttpClientSecurity> create();
     static Ref<HttpClientSecurity> createDefault();
 
-    string certPath() const { return certPath_; }
-    string keyPath() const { return keyPath_; }
-    void setCredentials(const string &certPath, const string &keyPath);
+    String certPath() const { return certPath_; }
+    String keyPath() const { return keyPath_; }
+    void setCredentials(const String &certPath, const String &keyPath);
 
-    string trustFilePath() const { return trustFilePath_; }
-    void setTrustFilePath(const string &trustFilePath);
+    String trustFilePath() const { return trustFilePath_; }
+    void setTrustFilePath(const String &trustFilePath);
 
     void setSystemTrust();
 
-    string ciphers() const { return ciphers_; }
-    void setCiphers(const string &ciphers);
+    String ciphers() const { return ciphers_; }
+    void setCiphers(const String &ciphers);
 
     void establish(gnutls_session_t session) const;
 
@@ -37,10 +37,10 @@ protected:
     HttpClientSecurity();
     ~HttpClientSecurity() override;
 
-    string certPath_;
-    string keyPath_;
-    string trustFilePath_;
-    string ciphers_;
+    String certPath_;
+    String keyPath_;
+    String trustFilePath_;
+    String ciphers_;
 
     gnutls_certificate_credentials_t cred_;
     gnutls_priority_t prio_;

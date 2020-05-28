@@ -35,7 +35,7 @@ Font::Instance::Instance(double size):
     metricsHinting_{uint8_t(MetricsHinting::Default)}
 {}
 
-Font::Instance::Instance(const string &family, double size):
+Font::Instance::Instance(const String &family, double size):
     family_{family},
     size_{float(size)},
     stretch_{uint8_t(Stretch::Normal)},
@@ -105,9 +105,9 @@ bool Font::differ(const Font &a, const Font &b)
         a->paper_          != b->paper_;
 }
 
-string str(const Font &font)
+String str(const Font &font)
 {
-    return format{}
+    return Format{}
         << "Font {" << nl
         << "  family: " << font->family() << nl
         << "  size: " << font->size() << nl

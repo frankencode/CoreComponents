@@ -47,11 +47,11 @@ typedef List< Ref<TextMatch> > Matches;
 
 Ref<Matches> findMatches(const CharArray *text, const SyntaxDefinition *textPattern);
 void displayMatch(const CharArray *path, const CharArray *text, const TextMatch *match);
-string replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement);
+String replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement);
 
 int main(int argc, char **argv)
 {
-    string toolName = string(argv[0])->fileName();
+    String toolName = String(argv[0])->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -79,16 +79,16 @@ int main(int argc, char **argv)
         int maxDepth = options->value("depth");
         bool ignoreHidden = !options->value("hidden");
 
-        Pattern textPattern = string(options->value("text"))->unescape();
-        if (string(options->value("word")) != "")
-            textPattern = string(format{} << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
+        Pattern textPattern = String(options->value("text"))->unescape();
+        if (String(options->value("word")) != "")
+            textPattern = String(Format{} << "(?<!:[a..z]|[A..Z]|[0..9]|_)" << options->value("word") << "(?>!:[a..z]|[A..Z]|[0..9]|_)");
 
         bool rangesOption = options->value("ranges");
         bool replaceOption = false;
-        string replacement;
+        String replacement;
         if (arguments->options()->lookup("replace", &replacement))
             replaceOption = true;
-        if (string(options->value("paste")) != "") {
+        if (String(options->value("paste")) != "") {
             // if (replaceOption == true) // FIXME: multiple conflicting replacement options
             replaceOption = true;
             replacement = File::open(options->value("paste"))->map();
@@ -101,14 +101,14 @@ int main(int argc, char **argv)
 
         if (items->count() == 0) items = StringList::create() << ".";
 
-        for (string dirPath: items)
+        for (String dirPath: items)
         {
             dirPath = dirPath->canonicalPath();
             Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
             dirWalker->setMaxDepth(maxDepth);
             dirWalker->setIgnoreHidden(ignoreHidden);
 
-            for (string path; dirWalker->read(&path);)
+            for (String path; dirWalker->read(&path);)
             {
                 if (pathPattern != "") {
                     if (!pathPattern->match(path)->valid()) continue;
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
                 if (typePattern != "") {
                     FileType type = FileStatus::readHead(path)->type();
                     bool shortMode = (typePattern->matchLength() == 1);
-                    string typeString;
+                    String typeString;
                     if (type == FileType::Regular)          typeString = shortMode ? "r" : "regular file";
                     else if (type == FileType::Directory)   typeString = shortMode ? "d" : "directory";
                     else if (type == FileType::Symlink)     typeString = shortMode ? "l" : "symlink";
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
                     if (FileStatus::read(path)->type() != FileType::Regular)
                         continue;
 
-                    string text = File::open(path)->map();
+                    String text = File::open(path)->map();
                     Ref<Matches> matches = findMatches(text, textPattern);
 
                     if (replaceOption && matches->count() > 0) {
@@ -178,7 +178,7 @@ int main(int argc, char **argv)
             "  -ranges   show line and byte range for each match\n"
             "  -replace  replace matches by given text\n"
             "  -paste    paste replacement from file\n"
-            "  -erase    replace matches by empty string\n"
+            "  -erase    replace matches by empty String\n"
         ) << toolName;
         return 1;
     }
@@ -244,7 +244,7 @@ void displayMatch(const CharArray *path, const CharArray *text, const TextMatch 
     for (int j1 = j0; j0 < i1; j0 = j1) {
         for (;j1 < text->count(); ++j1)
             if (text->at(j1) == '\n') break;
-        format line;
+        Format line;
         line << ln << ": ";
         int k0 = j0, k1 = j1;
         if (j0 <= i0 && i0 < j1) k0 = i0;
@@ -259,7 +259,7 @@ void displayMatch(const CharArray *path, const CharArray *text, const TextMatch 
     }
 }
 
-string replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement)
+String replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement)
 {
     Ref<StringList> fragments = StringList::create();
     int fi0 = 0; // begin of fragment

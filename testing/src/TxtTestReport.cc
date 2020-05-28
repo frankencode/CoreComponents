@@ -35,7 +35,7 @@ void TxtTestReport::beginTestCase(TestCase *testCase)
     fout("...........................................................\n");
 }
 
-void TxtTestReport::verify(TestCase *testCase, bool condition, const string &message, const string &codePath, int codeLine)
+void TxtTestReport::verify(TestCase *testCase, bool condition, const String &message, const String &codePath, int codeLine)
 {
     if (!condition) {
         fout("FAILED: %%:%%: CC_VERIFY(%%)\n")
@@ -43,12 +43,12 @@ void TxtTestReport::verify(TestCase *testCase, bool condition, const string &mes
     }
 }
 
-void TxtTestReport::error(TestCase *testCase, const string &type, const string &message)
+void TxtTestReport::error(TestCase *testCase, const String &type, const String &message)
 {
     fout("CAUGHT EXCEPTION %%: %%\n") << type << message;
 }
 
-void TxtTestReport::endTestCase(TestCase *testCase, const string &outText, const string &errText)
+void TxtTestReport::endTestCase(TestCase *testCase, const String &outText, const String &errText)
 {
     fout("...........................................................\n");
     fout("%%\n\n") << (testCase->passed() ? "PASSED" : "FAILED");

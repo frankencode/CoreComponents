@@ -8,20 +8,20 @@
 
 #include <string.h> // strerror_r
 #include <signal.h>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ResourceContext>
 #include <cc/exceptions>
 
 namespace cc {
 
-string DebugError::message() const
+String DebugError::message() const
 {
-    return format{} << reason_ << " (" << string{source_}->fileName() << ":" << line_ << ")";
+    return Format{} << reason_ << " (" << String{source_}->fileName() << ":" << line_ << ")";
 }
 
-string systemError(int errorCode)
+String systemError(int errorCode)
 {
-    string buf{1023};  // HACK, save bet
+    String buf{1023};  // HACK, save bet
     const char *unknown = "Unknown error";
     memcpy(mutate(buf)->chars(), unknown, strlen(unknown) + 1);
 #ifdef __USE_GNU
@@ -32,71 +32,71 @@ string systemError(int errorCode)
 #endif
 }
 
-string SystemError::message() const
+String SystemError::message() const
 {
     return systemError(errorCode_);
 }
 
-string SystemResourceError::message() const
+String SystemResourceError::message() const
 {
-    return format{} << systemError(errorCode_) << ": \"" << resource_ << "\""
+    return Format{} << systemError(errorCode_) << ": \"" << resource_ << "\""
         #ifndef NDEBUG
-        << " (" << string{source_}->fileName() << ":" << line_ << ")"
+        << " (" << String{source_}->fileName() << ":" << line_ << ")"
         #endif
         ;
 }
 
-string SystemDebugError::message() const
+String SystemDebugError::message() const
 {
-    return format() << systemError(errorCode_) << " (" << string{source_}->fileName() << ":" << line_ << ")";
+    return Format() << systemError(errorCode_) << " (" << String{source_}->fileName() << ":" << line_ << ")";
 }
 
-TextError::TextError(const string &text, int offset, const string &resource):
+TextError::TextError(const String &text, int offset, const String &resource):
     text_{text},
     offset_{offset},
     resource_{resource != "" ? resource : ResourceContext::instance()->top()}
 {}
 
-string SemanticError::message() const
+String SemanticError::message() const
 {
-    format format;
+    Format Format;
     if (offset_ >= 0) {
         int line = 0, pos = 0;
         text_->offsetToLinePos(offset_, &line, &pos);
-        if (resource_ != "") format << resource_ << ":";
-        format << line << ":" << pos << ": ";
+        if (resource_ != "") Format << resource_ << ":";
+        Format << line << ":" << pos << ": ";
     }
-    format << reason_;
-    return format;
+    Format << reason_;
+    return Format;
 }
 
-string Timeout::message() const
+String Timeout::message() const
 {
     return "Operation timed out";
 }
 
-string ConnectionResetByPeer::message() const
+String ConnectionResetByPeer::message() const
 {
     return "Connection reset by peer";
 }
 
-TransferError::TransferError(const string &details):
+TransferError::TransferError(const String &details):
     details_{details}
 {}
 
-string TransferError::message() const
+String TransferError::message() const
 {
-    return string{"Data transfer failed: "} + details_;
+    return String{"Data transfer failed: "} + details_;
 }
 
-string PermissionError::message() const
+String PermissionError::message() const
 {
     return "Insufficient permission to perform operation";
 }
 
-string CommandNotFound::message() const
+String CommandNotFound::message() const
 {
-    return format{"Command not found: '%%'"} << command_;
+    return Format{"Command not found: '%%'"} << command_;
 }
 
 } // namespace cc

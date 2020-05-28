@@ -21,11 +21,11 @@ class FtLibrary;
 class FtFontFace: public FontFace
 {
 public:
-    static Ref<FtFontFace> open(const string &path);
+    static Ref<FtFontFace> open(const String &path);
 
-    string path() const { return path_; }
+    String path() const { return path_; }
 
-    string family() const { return family_; }
+    String family() const { return family_; }
     Weight weight() const { return weight_; }
     Slant slant() const { return slant_; }
     Stretch stretch() const { return stretch_; }
@@ -33,20 +33,20 @@ public:
 
     FT_Face ftFace() const { return face_; }
 
-    string toString() const;
+    String toString() const;
 
 protected:
-    FtFontFace(const string &path);
+    FtFontFace(const String &path);
     ~FtFontFace();
 
     FtFontFace *open();
 
     Ref<FtLibrary> ftLibrary_;
 
-    string path_;
+    String path_;
     FT_Face face_;
 
-    string family_;
+    String family_;
     Weight weight_;
     Slant slant_;
     Stretch stretch_;

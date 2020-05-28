@@ -20,7 +20,7 @@ using namespace cc::crypto;
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
         arguments->validate(VariantMap::create());
@@ -28,7 +28,7 @@ int main(int argc, char **argv)
         Ref<const StringList> items = arguments->items();
         if (items->count() == 0) items = StringList::create() << "";
 
-        for (string path: items) {
+        for (String path: items) {
             Ref<HashSink> hashSink;
             if (toolName->contains("sha1")) hashSink = Sha1Sink::open();
             else hashSink = Md5Sink::open();

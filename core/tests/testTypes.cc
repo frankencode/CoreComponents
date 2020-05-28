@@ -85,9 +85,9 @@ class TestSizes: public TestCase
         // fout("sizeof(mtx_t) = %%\n") << sizeof(mtx_t);
         fout("sizeof(BucketHeader) = %%\n") << sizeof(BucketHeader);
         fout("sizeof(Ref<Object>) = %%\n") << sizeof(Ref<Object>);
-        fout("sizeof(string) = %%\n") << sizeof(string);
-        fout("sizeof(format) = %%\n") << sizeof(format);
-        fout("sizeof(variant) = %%\n") << sizeof(variant);
+        fout("sizeof(String) = %%\n") << sizeof(String);
+        fout("sizeof(Format) = %%\n") << sizeof(Format);
+        fout("sizeof(Variant) = %%\n") << sizeof(Variant);
 
         fout("sizeof(time_t) = %%\n") << sizeof(time_t);
         fout("sizeof(size_t) = %%\n") << sizeof(size_t);

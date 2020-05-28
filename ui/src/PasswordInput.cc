@@ -12,14 +12,14 @@
 namespace cc {
 namespace ui {
 
-PasswordInput::PasswordInput(View *parent, const string &bullet):
+PasswordInput::PasswordInput(View *parent, const String &bullet):
     TextInput{parent},
     passwordEditor_{Object::create<PasswordEditor>(bullet)}
 {
     font->bind([=]{ return app()->defaultFixedFont(); });
 }
 
-string PasswordInput::password() const
+String PasswordInput::password() const
 {
     return passwordEditor_->password();
 }

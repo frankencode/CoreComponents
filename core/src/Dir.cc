@@ -15,26 +15,26 @@
 #include <cc/File>
 #include <cc/FileStatus>
 #include <cc/Random>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Process>
 #include <cc/DirWalker>
 #include <cc/Dir>
 
 namespace cc {
 
-Ref<Dir> Dir::open(const string &path)
+Ref<Dir> Dir::open(const String &path)
 {
     return new Dir{path};
 }
 
-Ref<Dir> Dir::tryOpen(const string &path)
+Ref<Dir> Dir::tryOpen(const String &path)
 {
     DIR *dir = ::opendir(path);
     if (dir) return new Dir(path, dir);
     return 0;
 }
 
-Dir::Dir(const string &path, DIR *dir):
+Dir::Dir(const String &path, DIR *dir):
     path_{path},
     dir_{dir}
 {
@@ -55,12 +55,12 @@ Dir::~Dir()
     #endif
 }
 
-string Dir::path() const
+String Dir::path() const
 {
     return path_;
 }
 
-bool Dir::read(string *name)
+bool Dir::read(String *name)
 {
     while (true) {
         errno = 0;
@@ -78,46 +78,46 @@ bool Dir::read(string *name)
     return false;
 }
 
-Ref<Stream> Dir::openFile(const string &path)
+Ref<Stream> Dir::openFile(const String &path)
 {
     return File::open(
         path->isRelativePath() ? path_->extendPath(path) : path
     );
 }
 
-bool Dir::access(const string &path, int flags)
+bool Dir::access(const String &path, int flags)
 {
     return ::access(path, flags) && (FileStatus::read(path)->type() == FileType::Directory);
 }
 
-bool Dir::exists(const string &path)
+bool Dir::exists(const String &path)
 {
     return File::exists(path) && (FileStatus::read(path)->type() == FileType::Directory);
 }
 
-int Dir::count(const string &path)
+int Dir::count(const String &path)
 {
     Ref<Dir> dir = tryOpen(path);
     if (!dir) return 0;
     int n = 0;
-    for (string name; dir->read(&name);) {
+    for (String name; dir->read(&name);) {
         if (name != "." && name != "..")
             ++n;
     }
     return n;
 }
 
-void Dir::create(const string &path, int mode)
+void Dir::create(const String &path, int mode)
 {
     if (::mkdir(path, mode) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-void Dir::establish(const string &path, int mode)
+void Dir::establish(const String &path, int mode)
 {
     Ref<StringList> missingDirs = StringList::create();
     for (
-        string p = path;
+        String p = path;
         p->count() > 0 && p != "/";
         p = p->reducePath()
     ) {
@@ -130,17 +130,17 @@ void Dir::establish(const string &path, int mode)
     }
 }
 
-void Dir::remove(const string &path)
+void Dir::remove(const String &path)
 {
     if (::rmdir(path) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-string Dir::createUnique(const string &path, int mode, char placeHolder)
+String Dir::createUnique(const String &path, int mode, char placeHolder)
 {
     Ref<Random> random = Random::open(Process::getId());
     while (true) {
-        string candidate = path->copy();
+        String candidate = path->copy();
         for (int i = 0, n = candidate->count(); i < n; ++i) {
             if (candidate->at(i) == placeHolder) {
                 char r = random->get(0, 61);
@@ -163,23 +163,23 @@ string Dir::createUnique(const string &path, int mode, char placeHolder)
     }
 }
 
-string Dir::createTemp(int mode)
+String Dir::createTemp(int mode)
 {
     return createUnique(
-        format{"/tmp/%%_########"}
+        Format{"/tmp/%%_########"}
             << Process::exePath()->fileName(),
         mode
     );
 }
 
-void Dir::deplete(const string &path)
+void Dir::deplete(const String &path)
 {
     Ref<DirWalker> walker = DirWalker::open(path);
     walker->setIgnoreHidden(false);
     walker->setFollowSymlink(false);
     walker->setDeleteOrder(true);
 
-    string childPath;
+    String childPath;
     bool isDir = false;
     while (walker->read(&childPath, &isDir)) {
         if (isDir) Dir::remove(childPath);

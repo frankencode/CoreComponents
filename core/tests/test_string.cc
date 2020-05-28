@@ -9,7 +9,7 @@
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
 #include <cc/debug>
-#include <cc/string>
+#include <cc/String>
 #include <cc/unicode>
 
 using namespace cc;
@@ -17,21 +17,21 @@ using namespace cc::testing;
 
 class ArgumentPassing: public TestCase
 {
-    void byValue(string s) {
+    void byValue(String s) {
         CC_INSPECT(s->refCount());
     }
 
-    void byConstValue(const string s) {
+    void byConstValue(const String s) {
         CC_INSPECT(s->refCount());
     }
 
-    void byConstRef(const string &s) {
+    void byConstRef(const String &s) {
         CC_INSPECT(s->refCount());
     }
 
     void run() override
     {
-        string a{"123"};
+        String a{"123"};
         byValue(a);
         byConstValue(a);
         byConstRef(a);
@@ -44,7 +44,7 @@ class ConstructionComparism: public TestCase
 {
     void run() override
     {
-        string a = "Test!", b{"1, 2, 3, ..."};
+        String a = "Test!", b{"1, 2, 3, ..."};
         fout() << a << " " << b << nl;
         CC_VERIFY(a == "Test!");
         CC_VERIFY(a != "1, 2, 3, ...");
@@ -55,7 +55,7 @@ class CountCopySplitJoin: public TestCase
 {
     void run() override
     {
-        string s = "Übertragung";
+        String s = "Übertragung";
         CC_VERIFY(s != "123" && s == "Übertragung");
         CC_VERIFY("X" < s);
 
@@ -71,7 +71,7 @@ class CountCopySplitJoin: public TestCase
         fout("]\n");
         CC_VERIFY(parts->join("a") == s);
 
-        CC_VERIFY(string{}->split("\n")->count() == 1);
+        CC_VERIFY(String{}->split("\n")->count() == 1);
     }
 };
 
@@ -79,9 +79,9 @@ class UnicodeEscapes: public TestCase
 {
     void run() override
     {
-        string s = "\\u041F\\u0440\\u0438\\u0432\\u0435\\u0442!, \\ud834\\udd22";
+        String s = "\\u041F\\u0440\\u0438\\u0432\\u0435\\u0442!, \\ud834\\udd22";
         fout("s = \"%%\"\n") << s;
-        string se = s->unescape();
+        String se = s->unescape();
         fout("se = \"%%\"\n") << se;
         for (auto ch: unicode{se})
             fout() << ch << nl;
@@ -93,7 +93,7 @@ class FindSplitReplace: public TestCase
     void run() override
     {
         {
-            string s = "bin/testPath";
+            String s = "bin/testPath";
             // fout("s = \"%%\"\n") << s;
             fout("s->scan(\"/\") = %%\n") << s->scan("/");
             auto parts = s->split("/");
@@ -103,7 +103,7 @@ class FindSplitReplace: public TestCase
             fout("]\n");
         }
         {
-            string s = "..Привет, Привет!";
+            String s = "..Привет, Привет!";
             mutate(s)->replaceInsitu("Привет", "Hallo");
             fout("s = \"%%\"\n") << s;
         }
@@ -115,15 +115,15 @@ class SyntaxSugar: public TestCase
     void run() override
     {
         {
-            string s = "123";
+            String s = "123";
             for (auto ch: s) fout() << ch << nl;
         }
         {
-            string s = "Привет!";
+            String s = "Привет!";
             for (auto ch: unicode{s}) fout() << ch << nl;
         }
         {
-            string s = "ABC";
+            String s = "ABC";
             CC_INSPECT(s);
             for (char &ch: mutate(s)) ch = toLower(ch);
             CC_INSPECT(s);

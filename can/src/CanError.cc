@@ -7,12 +7,12 @@
  */
 
 #include <cc/can/CanError>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-string str(CanError::Type flags)
+String str(CanError::Type flags)
 {
     if (flags == CanError::Type::None) return "CanError::Type::None";
 
@@ -30,7 +30,7 @@ string str(CanError::Type flags)
     return parts->join("|");
 }
 
-string str(CanError::Status flags)
+String str(CanError::Status flags)
 {
     if (flags == CanError::Status::None) return "CanError::Status::None";
 
@@ -47,9 +47,9 @@ string str(CanError::Status flags)
     return parts->join("|");
 }
 
-string CanError::Instance::toString() const
+String CanError::Instance::toString() const
 {
-    format f;
+    Format f;
     f << "CanError {\n";
     f << "  type: " << type() << nl;
     if (+(type() & Type::LostArbitration)) f << "  bitPos: " << bitPos() << nl;

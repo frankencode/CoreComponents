@@ -19,7 +19,7 @@ class InputLine: public View
 
 public:
     Property<double> thickness { dp(1) };
-    Property<color> ink { color { 0x000000 } };
+    Property<Color> ink { Color { 0x000000 } };
 
 protected:
     InputLine(View *parent, double maxThickness = dp(1));

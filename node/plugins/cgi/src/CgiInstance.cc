@@ -42,7 +42,7 @@ CgiInstance::CgiInstance(const MetaObject *config):
                 CCNODE_NOTICE() << "Resolving host name of server \"" << uri->host() << "\"..." << nl;
                 Ref<SocketAddressList> list = SocketAddress::queryConnectionInfo(uri->host());
                 if (list->count() == 0)
-                    throw UsageError{format{"CGI: Failed to resolve host name of server \"%%\""} << uri->host()};
+                    throw UsageError{Format{"CGI: Failed to resolve host name of server \"%%\""} << uri->host()};
                 address = list->at(0);
                 address->setPort(uri->port());
             }
@@ -50,7 +50,7 @@ CgiInstance::CgiInstance(const MetaObject *config):
             CCNODE_NOTICE() << "  " << address << nl;
         }
         catch (TextError &ex) {
-            throw UsageError{format{"CGI: Invalid address syntax \"%%\""} << server_->at(i)};
+            throw UsageError{Format{"CGI: Invalid address syntax \"%%\""} << server_->at(i)};
         }
     }
 }

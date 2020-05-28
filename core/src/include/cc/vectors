@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cmath>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/str>
 
 namespace cc {
@@ -74,9 +74,9 @@ typename V::Item max(const V &v)
 }
 
 template<class V>
-string str(const V &v)
+String str(const V &v)
 {
-    format f;
+    Format f;
     f << "( ";
     for (auto x: v) f << x << " ";
     f << ")";
@@ -84,15 +84,15 @@ string str(const V &v)
 }
 
 template<class V>
-string fixed(const V &v, int nf)
+String fixed(const V &v, int nf)
 {
     return fixed(v, 0, nf);
 }
 
 template<class V>
-string fixed(const V &v, int ni, int nf)
+String fixed(const V &v, int ni, int nf)
 {
-    format f;
+    Format f;
     f << "( ";
     for (auto x: v) f << fixed(x, ni, nf) << " ";
     f << ")";

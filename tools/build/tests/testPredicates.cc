@@ -83,7 +83,7 @@ class RecursivePredicatesTest: public TestCase
         );
 
         /*
-        string cwdSaved = Process::getCwd();
+        String cwdSaved = Process::getCwd();
         Process::setWorkingDirectory("TestApp");
         CC_VERIFY(Process::execute(cwdSaved + "/ccbuild jobs=1") == 0);
         Process::setWorkingDirectory(cwdSaved);

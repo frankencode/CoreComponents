@@ -420,7 +420,7 @@ typedef
    _HG_CLIENTREQ_UNIMP("ANNOTATE_CONDVAR_LOCK_WAIT")
 
 /* Report that wait on the condition variable at CV has succeeded.
-   variant w/o lock. */
+   Variant w/o lock. */
 #define ANNOTATE_CONDVAR_WAIT(cv) \
    _HG_CLIENTREQ_UNIMP("ANNOTATE_CONDVAR_WAIT")
 

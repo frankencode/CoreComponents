@@ -37,12 +37,12 @@ private:
         settings_{Settings::create()}
     {}
 
-    string readServiceData(Selector::Key key) const override
+    String readServiceData(Selector::Key key) const override
     {
         return settings_->value(key);
     }
 
-    void writeServiceData(Selector::Key key, const string &data) override
+    void writeServiceData(Selector::Key key, const String &data) override
     {
         settings_->establish(key, data);
         try {
@@ -65,7 +65,7 @@ private:
         writeServiceData(DictionaryKey::ProducerHeartBeatTime, BinaryValue<uint16_t>::make(1000U));
     }
 
-    static void logMessage(int cobId, const string &message)
+    static void logMessage(int cobId, const String &message)
     {
         static double t0 = -1;
         static double tl = -1;
@@ -87,7 +87,7 @@ private:
             const int recvId = nodeBase + 4 * i;
             const int sendId = recvId + 2;
             SafetyEventHandler::create(monitor(), recvId, recvId + 1, 1.5, 0.1,
-                [=](const string &data) {
+                [=](const String &data) {
                     auto frame = CanFrame::create();
                     frame->setCanId(sendId);
                     frame->setPayload(data);
@@ -105,13 +105,13 @@ private:
         }
     }
 
-    typedef Map<Selector::Key, string> Settings;
+    typedef Map<Selector::Key, String> Settings;
     Ref<Settings> settings_;
 };
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->baseName();
+    String toolName = String{argv[0]}->baseName();
 
     try {
         auto arguments = Arguments::parse(argc, argv);
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
             arguments->override(options);
         }
 
-        string interface = options->value("interface");
+        String interface = options->value("interface");
         int nodeId = options->value("node-id");
 
         auto socket = CanSocket::open(interface);

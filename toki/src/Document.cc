@@ -12,7 +12,7 @@
 namespace cc {
 namespace toki {
 
-Ref<Document> Document::load(const string &path)
+Ref<Document> Document::load(const String &path)
 {
     return Document::create(File::open(path)->map(), path);
 }
@@ -22,7 +22,7 @@ void Document::save()
     File::save(path_, text_);
 }
 
-Document::Document(const string &text, const string &path):
+Document::Document(const String &text, const String &path):
     path_{path},
     text_{text},
     spans_{Spans::create()}

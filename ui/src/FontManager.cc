@@ -23,10 +23,10 @@ FontManager *FontManager::instance()
     return PlatformPlugin::instance()->fontManager();
 }
 
-void FontManager::addPath(const string &dirPath, const string &namePrefix)
+void FontManager::addPath(const String &dirPath, const String &namePrefix)
 {
     Ref<DirWalker> walker = DirWalker::open(dirPath);
-    string path;
+    String path;
     bool isDir = false;
     while (walker->read(&path, &isDir)) {
         if (!isDir && isFontFace(path)) {
@@ -42,9 +42,9 @@ Ref< Source<const FontFamily *> > FontManager::getFontFamilies() const
     return ValueSource<FontFamilies, const FontFamily *>::open(fontFamilies_);
 }
 
-const FontFamily *FontManager::selectFontFamily(const string &family) const
+const FontFamily *FontManager::selectFontFamily(const String &family) const
 {
-    string key = family->normalize();
+    String key = family->normalize();
     Ref<FontFamily> fontFamily;
     if (fontFamilies_->lookup(key, &fontFamily))
         return fontFamily;
@@ -69,9 +69,9 @@ FontManager::FontManager():
 FontManager::~FontManager()
 {}
 
-bool FontManager::isFontFace(const string &path) const
+bool FontManager::isFontFace(const String &path) const
 {
-    string suffix = path->fileSuffix();
+    String suffix = path->fileSuffix();
     mutate(suffix)->downcaseInsitu();
     return suffix == "ttf" || suffix == "woff" || suffix == "otf" || suffix == "ttc";
 }
@@ -79,7 +79,7 @@ bool FontManager::isFontFace(const string &path) const
 void FontManager::addFontFace(const FontFace *fontFace)
 {
     Ref<FontFamily> fontFamily;
-    string key = fontFace->family()->normalize();
+    String key = fontFace->family()->normalize();
     if (!fontFamilies_->lookup(key, &fontFamily)) {
         fontFamily = FontFamily::create(fontFace->family(), fontFace->pitch());
         fontFamilies_->insert(key, fontFamily);
@@ -87,7 +87,7 @@ void FontManager::addFontFace(const FontFace *fontFace)
     fontFamily->fontFaces_->append(fontFace);
 }
 
-const FontFamily *FontManager::selectNearestFontFamily(const string &name) const
+const FontFamily *FontManager::selectNearestFontFamily(const String &name) const
 {
     Ref<StringList> searchPattern = familySearchPattern(name);
 
@@ -97,12 +97,12 @@ const FontFamily *FontManager::selectNearestFontFamily(const string &name) const
     for (const FontFamily *candidate: getFontFamilies()) {
         Ref<StringList> candidatePattern = familySearchPattern(candidate->name());
         int matchRank = 0;
-        for (string component: searchPattern) {
+        for (String component: searchPattern) {
             if (candidatePattern->contains(component)) {
                 matchRank += 2;
             }
             else {
-                for (string candidateComponent: candidatePattern) {
+                for (String candidateComponent: candidatePattern) {
                     if (candidateComponent->contains(component)) {
                         ++matchRank;
                         break;
@@ -123,11 +123,11 @@ const FontFamily *FontManager::selectNearestFontFamily(const string &name) const
     return bestMatch;
 }
 
-Ref<StringList> FontManager::familySearchPattern(const string &name)
+Ref<StringList> FontManager::familySearchPattern(const String &name)
 {
     Ref<StringList> searchPattern = StringList::create();
-    for (string component: name->toLower()->split(' ')) {
-        if (component != string{}) searchPattern->append(component);
+    for (String component: name->toLower()->split(' ')) {
+        if (component != String{}) searchPattern->append(component);
     }
     return searchPattern;
 }

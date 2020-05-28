@@ -14,12 +14,12 @@ namespace ccbuild {
 class BuildParametersPrototype: public MetaPrototype
 {
 public:
-    static Ref<BuildParametersPrototype> create(const string &className) {
+    static Ref<BuildParametersPrototype> create(const String &className) {
         return new BuildParametersPrototype{className};
     }
 
 protected:
-    BuildParametersPrototype(const string &className, const MetaProtocol *protocol = nullptr):
+    BuildParametersPrototype(const String &className, const MetaProtocol *protocol = nullptr):
         MetaPrototype{className, protocol}
     {
         insert("compiler", "");
@@ -38,7 +38,7 @@ protected:
 class SpecificBuildParametersPrototype: public BuildParametersPrototype
 {
 public:
-    static Ref<SpecificBuildParametersPrototype> create(const string &className) {
+    static Ref<SpecificBuildParametersPrototype> create(const String &className) {
         return new SpecificBuildParametersPrototype{className};
     }
 
@@ -56,7 +56,7 @@ protected:
         return protocol;
     }
 
-    SpecificBuildParametersPrototype(const string &className, MetaProtocol *protocol = nullptr):
+    SpecificBuildParametersPrototype(const String &className, MetaProtocol *protocol = nullptr):
         BuildParametersPrototype{className, createProtocol(protocol)}
     {}
 };
@@ -64,12 +64,12 @@ protected:
 class UserStop: public MetaPrototype
 {
 public:
-    static Ref<UserStop> create(const string &className) {
+    static Ref<UserStop> create(const String &className) {
         return new UserStop{className};
     }
 
 protected:
-    UserStop(const string &className):
+    UserStop(const String &className):
         MetaPrototype{className}
     {
         insert("execute", "");
@@ -93,7 +93,7 @@ protected:
         return protocol;
     }
 
-    BuildOptionsPrototype(const string &className, MetaProtocol *protocol = nullptr):
+    BuildOptionsPrototype(const String &className, MetaProtocol *protocol = nullptr):
         SpecificBuildParametersPrototype{className, createProtocol(protocol)}
     {
         insert("use", StringList::create());
@@ -138,7 +138,7 @@ public:
     }
 
 protected:
-    SystemPrerequisitePrototype(const string &className):
+    SystemPrerequisitePrototype(const String &className):
         SpecificBuildParametersPrototype{className}
     {
         insert("name", "");
@@ -166,7 +166,7 @@ public:
         return new PredicateMetaProtocol{prototype};
     }
 
-    const MetaPrototype *lookup(const string &className) const override;
+    const MetaPrototype *lookup(const String &className) const override;
 
 private:
     PredicateMetaProtocol(PredicatePrototype *prototype):
@@ -184,7 +184,7 @@ public:
     }
 
 protected:
-    PredicatePrototype(const string &className):
+    PredicatePrototype(const String &className):
         MetaPrototype{className, PredicateMetaProtocol::create(this)}
     {
         insert("source", StringList::create());
@@ -196,7 +196,7 @@ protected:
     }
 };
 
-const MetaPrototype *PredicateMetaProtocol::lookup(const string &className) const
+const MetaPrototype *PredicateMetaProtocol::lookup(const String &className) const
 {
     if (className == prototype_->className()) return prototype_;
     return MetaProtocol::lookup(className);
@@ -218,7 +218,7 @@ protected:
         return protocol;
     }
 
-    ApplicationPrototype(const string &className, MetaProtocol *protocol = nullptr):
+    ApplicationPrototype(const String &className, MetaProtocol *protocol = nullptr):
         BuildOptionsPrototype{className, createProtocol(protocol)}
     {
         insert("name", "");
@@ -239,7 +239,7 @@ public:
     }
 
 protected:
-    TestPrototype(const string &className):
+    TestPrototype(const String &className):
         ApplicationPrototype{className}
     {
         remove("prefix");
@@ -255,7 +255,7 @@ public:
     }
 
 protected:
-    LibraryPrototype(const string &className):
+    LibraryPrototype(const String &className):
         ApplicationPrototype{className}
     {}
 };
@@ -263,12 +263,12 @@ protected:
 class PluginPrototype: public ApplicationPrototype
 {
 public:
-    static Ref<PluginPrototype> create(const string &className = "Plugin") {
+    static Ref<PluginPrototype> create(const String &className = "Plugin") {
         return new PluginPrototype{className};
     }
 
 protected:
-    PluginPrototype(const string &className):
+    PluginPrototype(const String &className):
         ApplicationPrototype{className}
     {
         insert("extend", "");
@@ -279,12 +279,12 @@ protected:
 class ToolsPrototype: public ApplicationPrototype
 {
 public:
-    static Ref<ToolsPrototype> create(const string &className = "Tools") {
+    static Ref<ToolsPrototype> create(const String &className = "Tools") {
         return new ToolsPrototype{className};
     }
 
 protected:
-    ToolsPrototype(const string &className):
+    ToolsPrototype(const String &className):
         ApplicationPrototype{className}
     {
         remove("name");
@@ -294,12 +294,12 @@ protected:
 class TestsPrototype: public TestPrototype
 {
 public:
-    static Ref<TestsPrototype> create(const string &className = "Tests") {
+    static Ref<TestsPrototype> create(const String &className = "Tests") {
         return new TestsPrototype{className};
     }
 
 protected:
-    TestsPrototype(const string &className):
+    TestsPrototype(const String &className):
         TestPrototype{className}
     {
         remove("name");
@@ -309,12 +309,12 @@ protected:
 class PackagePrototype: public BuildOptionsPrototype
 {
 public:
-    static Ref<PackagePrototype> create(const string &className = "Package") {
+    static Ref<PackagePrototype> create(const String &className = "Package") {
         return new PackagePrototype{className};
     }
 
 protected:
-    PackagePrototype(const string &className):
+    PackagePrototype(const String &className):
         BuildOptionsPrototype{className}
     {
         insert("version", Version{});

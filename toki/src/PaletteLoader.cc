@@ -30,10 +30,10 @@ PaletteLoader::PaletteLoader():
     }()}
 {}
 
-Ref<Palette> PaletteLoader::load(const string &path) const
+Ref<Palette> PaletteLoader::load(const String &path) const
 {
     ResourceGuard context{path};
-    string text = File::open(path)->map();
+    String text = File::open(path)->map();
     return yason::parse(text, protocol_);
 }
 

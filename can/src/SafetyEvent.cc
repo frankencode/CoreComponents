@@ -36,14 +36,14 @@ bool SafetyEvent::isPrimaryEvent() const
     return primaryEvent_ == nullptr;
 }
 
-void SafetyEvent::feed(CanMedia *media, const string &data)
+void SafetyEvent::feed(CanMedia *media, const String &data)
 {
     if (isPrimaryEvent()) {
         lastData_ = data;
         hasLastData_ = true;
     }
     else if (primaryEvent_->hasLastData_) {
-        string primaryData = primaryEvent_->lastData_;
+        String primaryData = primaryEvent_->lastData_;
         if (primaryData->count() != data->count()) {
             primaryEvent_->onError(media, SafetyError::DataValidation);
             return;

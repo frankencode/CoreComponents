@@ -22,7 +22,7 @@ Ref<CryptoHashSink> Md5Sink::copy() const
 }
 
 Md5Sink::Md5Sink():
-    aux_{string::create(0x4000 + 64)},
+    aux_{String::create(0x4000 + 64)},
     auxFill_{0},
     bytesFeed_{0},
     a_{0x67452301}, b_{0xEFCDAB89},
@@ -63,7 +63,7 @@ void Md5Sink::write(const CharArray *data)
     }
 }
 
-string Md5Sink::finish()
+String Md5Sink::finish()
 {
     /** manually feed the padding and message size
       */
@@ -77,7 +77,7 @@ string Md5Sink::finish()
 
     /** serialize the message digest
       */
-    string h = string::create(Md5Sink::Size);
+    String h = String::create(Md5Sink::Size);
     int k = 0;
     for (int i = 0; i < 4; ++i) mutate(h)->at(k++) = a_ >> (8 * i);
     for (int i = 0; i < 4; ++i) mutate(h)->at(k++) = b_ >> (8 * i);
@@ -234,7 +234,7 @@ void Md5Sink::consume()
     auxFill_ = 0;
 }
 
-string md5(const CharArray *data)
+String md5(const CharArray *data)
 {
     Ref<Md5Sink> h = Md5Sink::open();
     h->write(data);

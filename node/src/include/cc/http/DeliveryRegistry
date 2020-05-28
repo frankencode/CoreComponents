@@ -26,14 +26,14 @@ public:
 
     void registerService(DeliveryService *service);
 
-    DeliveryService *serviceByName(const string &name) const;
+    DeliveryService *serviceByName(const String &name) const;
 
 private:
     friend class Singleton<DeliveryRegistry>;
 
     DeliveryRegistry();
 
-    typedef Map< string, Ref<DeliveryService> > ServiceByName;
+    typedef Map< String, Ref<DeliveryService> > ServiceByName;
     Ref<ServiceByName> serviceByName_;
 };
 

@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 #include <cc/bitmask>
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 namespace ui {
@@ -274,7 +274,7 @@ enum class ScanCode: int32_t {
 
 inline int32_t operator+(ScanCode scanCode) { return static_cast<int32_t>(scanCode); }
 
-string str(ScanCode scanCode);
+String str(ScanCode scanCode);
 
 #define CCUI_SCANCODE_TO_KEYCODE(scanCode) static_cast<int32_t>(scanCode) | (1 << 30)
 
@@ -525,7 +525,7 @@ inline int32_t operator+(KeyCode keyCode) { return static_cast<int32_t>(keyCode)
 inline bool operator==(KeyCode keyCode, char ch) { return +keyCode == ch; }
 inline bool operator!=(KeyCode keyCode, char ch) { return +keyCode != ch; }
 
-string str(KeyCode keyCode);
+String str(KeyCode keyCode);
 
 enum class KeyModifier: int32_t
 {
@@ -549,6 +549,6 @@ enum class KeyModifier: int32_t
 
 CC_BITMASK(KeyModifier, int32_t);
 
-string str(KeyModifier modifiers);
+String str(KeyModifier modifiers);
 
 }} // namespace cc::ui

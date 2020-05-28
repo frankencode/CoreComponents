@@ -27,7 +27,7 @@ void list(ArchiveReader *archive)
 void status(ArchiveReader *archive)
 {
     for (Ref<ArchiveEntry> entry; archive->readHeader(&entry); archive->skipData(entry)) {
-        format status = fout();
+        Format status = fout();
         status << oct(entry->mode()) << "\t";
         if (entry->userName() != "") status << entry->userName() << "\t";
         else status << entry->userId() << "\t";

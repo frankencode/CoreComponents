@@ -7,13 +7,13 @@
  */
 
 #include <libudev.h>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/sys/StorageEvent>
 
 namespace cc {
 namespace sys {
 
-string str(StorageAction action)
+String str(StorageAction action)
 {
     switch (action) {
         case StorageAction::Add:    return "StorageAction::Add";
@@ -22,7 +22,7 @@ string str(StorageAction action)
         case StorageAction::Move:   return "StorageAction::Move";
         case StorageAction::Present:return "StorageAction::Present";
     }
-    return string{};
+    return String{};
 }
 
 StorageEvent::StorageEvent(struct udev_device *dev)
@@ -66,9 +66,9 @@ StorageEvent::StorageEvent(struct udev_device *dev)
     }
 }
 
-string StorageEvent::toString() const
+String StorageEvent::toString() const
 {
-    return format{}
+    return Format{}
         << "StorageEvent {" << nl
         << "  action      : " << action_ << nl
         << "  sysPath     : " << sysPath_ << nl

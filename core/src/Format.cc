@@ -8,14 +8,14 @@
 
 #include <cc/Queue>
 #include <cc/NullStream>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 
 FormatSignal nl;
 FormatSignal flush;
 
-format::format(const string &pattern, Stream *stream):
+Format::Format(const String &pattern, Stream *stream):
     stream_{stream},
     isNull_{stream && NullStream::instance() ? stream == NullStream::instance() : false},
     lastPosition_{0}
@@ -36,7 +36,7 @@ format::format(const string &pattern, Stream *stream):
     }
 }
 
-format::format(Stream *stream):
+Format::Format(Stream *stream):
     stream_{stream},
     isNull_{stream && NullStream::instance() ? stream == NullStream::instance() : false},
     lastPosition_{0}
@@ -45,7 +45,7 @@ format::format(Stream *stream):
     set(StringList::create());
 }
 
-format::~format()
+Format::~Format()
 {
     try {
         flush();
@@ -54,7 +54,7 @@ format::~format()
     {}
 }
 
-void format::flush()
+void Format::flush()
 {
     if (isNull_) return;
     if (stream_ && get()->count() > 0) {
@@ -69,14 +69,14 @@ void format::flush()
     }
 }
 
-format::format(const format &b):
+Format::Format(const Format &b):
     Super{b.get()},
     stream_{b.stream_},
     isNull_{b.isNull_},
     placeHolder_{b.placeHolder_}
 {}
 
-format &format::operator=(const format &b)
+Format &Format::operator=(const Format &b)
 {
     set(b.get());
     stream_ = b.stream_;
@@ -85,7 +85,7 @@ format &format::operator=(const format &b)
     return *this;
 }
 
-format &format::operator<<(const string &s)
+Format &Format::operator<<(const String &s)
 {
     if (isNull_) return *this;
     int j = get()->count();
@@ -101,11 +101,11 @@ format &format::operator<<(const string &s)
     return *this;
 }
 
-format &format::operator<<(const FormatSignal &s)
+Format &Format::operator<<(const FormatSignal &s)
 {
     if (isNull_) return *this;
-    if (&s == &cc::nl) operator<<(string{"\n"});
-    else if (&s == &cc::flush) format::flush();
+    if (&s == &cc::nl) operator<<(String{"\n"});
+    else if (&s == &cc::flush) Format::flush();
     return *this;
 }
 

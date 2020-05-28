@@ -23,7 +23,7 @@
   * ~~~~~~~~~~~~~
   */
 #define CC_DEBUG \
-  cc::ferr("%%\n") << string{__FILE__}->fileName() << ":" << __LINE__ << ": "
+  cc::ferr("%%\n") << String{__FILE__}->fileName() << ":" << __LINE__ << ": "
 
 /** Generate a debug message for an \a expression
   *

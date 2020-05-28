@@ -11,7 +11,7 @@
 namespace cc {
 namespace ui {
 
-string str(Icon icon)
+String str(Icon icon)
 {
     switch(icon) {
         case Icon::AccessPoint                        : return "AccessPoint";
@@ -2501,7 +2501,7 @@ string str(Icon icon)
         case Icon::ZipBox                             : return "ZipBox";
     }
 
-    return string{};
+    return String{};
 };
 
 }} // namespace cc::ui

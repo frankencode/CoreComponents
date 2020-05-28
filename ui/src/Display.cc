@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ui/Display>
 
 namespace cc {
 namespace ui {
 
-string Display::toString() const
+String Display::toString() const
 {
-    return format{}
+    return Format{}
         << "Display {" << nl
         << "  pos       : " << size() << nl
         << "  size      : " << pos() << nl

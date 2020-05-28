@@ -10,17 +10,17 @@
 
 namespace cc {
 
-string Utf8Sink::SurrogatePairEncodingError::message() const
+String Utf8Sink::SurrogatePairEncodingError::message() const
 {
     return "UTF-8 error: encoding of surrogate pairs is not allowed (0xD800..0xDFFF)";
 }
 
-string Utf8Sink::NonCharacterEncodingError::message() const
+String Utf8Sink::NonCharacterEncodingError::message() const
 {
     return "UTF-8 error: encoding of non-characters is not allowed (0xFDD0..0xFFFE, 0x*FFF(E|F))";
 }
 
-string Utf8Sink::LargeCodePointEncodingError::message() const
+String Utf8Sink::LargeCodePointEncodingError::message() const
 {
     return "UTF-8 error: code point to large (>= 0x110000)";
 }

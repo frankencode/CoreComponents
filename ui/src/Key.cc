@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ui/Key>
 
 namespace cc {
 namespace ui {
 
-string str(Key key)
+String str(Key key)
 {
-    return format{}
+    return Format{}
         << "Key {" << nl
         << "  scanCode: " << key->scanCode() << nl
         << "  keyCode: " << key->keyCode() << nl

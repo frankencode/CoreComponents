@@ -18,17 +18,17 @@ class MetaObject;
 class MetaError: public UsageError
 {
 public:
-    MetaError(const string &message, const MetaObject *offendingObject = nullptr, const string &memberName = "");
+    MetaError(const String &message, const MetaObject *offendingObject = nullptr, const String &memberName = "");
 
     const MetaObject *offendingObject() const;
-    string memberName() const;
+    String memberName() const;
 
     const MetaError *operator->() const;
 
 private:
-    string reason_;
+    String reason_;
     const MetaObject *offendingObject_;
-    string memberName_;
+    String memberName_;
 };
 
 }} // namespace cc::meta

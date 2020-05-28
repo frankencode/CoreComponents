@@ -32,7 +32,7 @@ FtFontManager::FtFontManager():
     fontCache_{FontCache::create()}
 {}
 
-Ref<FontFace> FtFontManager::openFontFace(const string &path)
+Ref<FontFace> FtFontManager::openFontFace(const String &path)
 {
     return FtFontFace::open(path);
 }
@@ -75,12 +75,12 @@ Ref<const ScaledFont> FtFontManager::selectFont(const Font &font) const
     return scaledFont;
 }
 
-Ref<GlyphRun> FtFontManager::typeset(const string &text, const Font &font, const Point &origin) const
+Ref<GlyphRun> FtFontManager::typeset(const String &text, const Font &font, const Point &origin) const
 {
     return ftTypeset(text, font, origin);
 }
 
-Ref<FtGlyphRun> FtFontManager::ftTypeset(const string &text, const Font &font, const Point &origin) const
+Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, const Point &origin) const
 {
     if (text->contains('\n'))
         return ftTypeset(text->replace("\n", ""), font, origin);
@@ -232,7 +232,7 @@ Ref<TextRun> FtFontManager::createTextRun() const
     return FtTextRun::create();
 }
 
-void FtFontManager::selectFontRanges(const string &text, const Font &font, const ReturnFontRange &fontRange) const
+void FtFontManager::selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const
 {
     bool allAscii = true;
     for (int i = 0, n = text->count(); i < n; ++i) {

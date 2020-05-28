@@ -19,7 +19,7 @@ void runTest(const VariantMap *options)
 {
     bool transmit = options->value("transmit");
     bool receive  = options->value("receive");
-    string interface = options->value("interface");
+    String interface = options->value("interface");
     canid_t cobId = int(options->value("cob-id"));
     canid_t invCobId = int(options->value("cob-id-inv"));
     double refreshTime = options->value("refresh-time");
@@ -102,7 +102,7 @@ void runTest(const VariantMap *options)
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
 
     try {
         auto arguments = Arguments::parse(argc, argv);

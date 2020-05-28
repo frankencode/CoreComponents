@@ -12,12 +12,12 @@
 
 namespace cc {
 
-Ref<DirWalker> DirWalker::open(const string &path)
+Ref<DirWalker> DirWalker::open(const String &path)
 {
     return new DirWalker{path};
 }
 
-Ref<DirWalker> DirWalker::tryOpen(const string &path)
+Ref<DirWalker> DirWalker::tryOpen(const String &path)
 {
     Ref<Dir> dir = Dir::tryOpen(path);
     Ref<DirWalker> walker;
@@ -25,7 +25,7 @@ Ref<DirWalker> DirWalker::tryOpen(const string &path)
     return walker;
 }
 
-DirWalker::DirWalker(const string &path, Dir *dir):
+DirWalker::DirWalker(const String &path, Dir *dir):
     maxDepth_{-1},
     ignoreHidden_{false},
     followSymlink_{false},
@@ -36,7 +36,7 @@ DirWalker::DirWalker(const string &path, Dir *dir):
     if (!dir_) dir_ = Dir::open(path);
 }
 
-bool DirWalker::read(string *path, bool *isDir)
+bool DirWalker::read(String *path, bool *isDir)
 {
     if (child_) {
         if (child_->read(path, isDir))
@@ -49,11 +49,11 @@ bool DirWalker::read(string *path, bool *isDir)
         }
         child_ = 0;
     }
-    string name;
+    String name;
     while (dir_->read(&name)) {
         if (name == "") continue;
         if (ignoreHidden_) if (name->at(0) == '.') continue;
-        string h = dir_->path()->extendPath(name);
+        String h = dir_->path()->extendPath(name);
         child_ = tryOpen(h);
         bool d = child_;
         if (child_) {

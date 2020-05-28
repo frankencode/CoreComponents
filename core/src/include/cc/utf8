@@ -9,12 +9,12 @@
 #pragma once
 
 #include <string.h>
-#include <cc/string>
+#include <cc/String>
 #include <cc/utf8_iterator>
 
 namespace cc {
 
-/** \brief Read %Unicode code points from an UTF-8 encoded string
+/** \brief Read %Unicode code points from an UTF-8 encoded String
   */
 class utf8 {
 public:
@@ -45,7 +45,7 @@ public:
             n_{n}
         {}
 
-        Instance(const string &s):
+        Instance(const String &s):
             s_{s},
             n_{static_cast<size_t>(s->count())}
         {}
@@ -76,7 +76,7 @@ public:
         instance_{s, n}
     {}
 
-    utf8(const string &s):
+    utf8(const String &s):
         instance_{s}
     {}
 

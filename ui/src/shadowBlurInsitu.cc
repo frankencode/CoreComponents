@@ -39,7 +39,7 @@ static constexpr int BlurSumShift = 15;
 // As noted in the SVG filter specification, running box blur 3x
 // approximates a real gaussian blur nicely.
 
-void shadowBlurInsitu(Image *image, int radius, color shadowColor)
+void shadowBlurInsitu(Image *image, int radius, Color shadowColor)
 {
     // See comments in http://webkit.org/b/40793, it seems sensible
     // to follow Skia's limit of 128 pixels for the blur radius.
@@ -127,8 +127,8 @@ void shadowBlurInsitu(Image *image, int radius, color shadowColor)
 
     if (sa == 0xFF) {
         for (int i = 0, n = image->count(); i < n; ++i) {
-            color &pixel = image->pixel(i);
-            pixel = color {
+            Color &pixel = image->pixel(i);
+            pixel = Color {
                 sr, sg, sb,
                 pixel->alpha()
             };
@@ -136,8 +136,8 @@ void shadowBlurInsitu(Image *image, int radius, color shadowColor)
     }
     else {
         for (int i = 0, n = image->count(); i < n; ++i) {
-            color &pixel = image->pixel(i);
-            pixel = color {
+            Color &pixel = image->pixel(i);
+            pixel = Color {
                 sr, sg, sb,
                 uint32_t(uint16_t(pixel->alpha()) * sa) / 255
            };

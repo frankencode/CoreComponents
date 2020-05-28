@@ -11,19 +11,19 @@
 #include FT_GLYPH_H
 #include FT_TRUETYPE_TABLES_H
 #include <cc/exceptions>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ui/FtLibrary>
 #include <cc/ui/FtFontFace>
 
 namespace cc {
 namespace ui {
 
-Ref<FtFontFace> FtFontFace::open(const string &path)
+Ref<FtFontFace> FtFontFace::open(const String &path)
 {
     return (new FtFontFace{path})->open();
 }
 
-FtFontFace::FtFontFace(const string &path):
+FtFontFace::FtFontFace(const String &path):
     ftLibrary_{FtLibrary::instance()},
     path_{path}
 {}
@@ -37,7 +37,7 @@ FtFontFace *FtFontFace::open()
 {
     FT_Error error = FT_New_Face(ftLibrary_->ftLibrary(), path_, 0, &face_);
     if (error != 0)
-        CC_DEBUG_ERROR(format{"Failed to load font face (path = \"%%\", index = %%)\n"} << path_ << 0);
+        CC_DEBUG_ERROR(Format{"Failed to load font face (path = \"%%\", index = %%)\n"} << path_ << 0);
 
     family_ = face_->family_name;
 
@@ -53,9 +53,9 @@ FtFontFace *FtFontFace::open()
     return this;
 }
 
-string FtFontFace::toString() const
+String FtFontFace::toString() const
 {
-    return format{}
+    return Format{}
         << "FtFontFace {" << nl
         << "  family:  " << family_ << nl
         << "  weight:  " << weight_ << nl

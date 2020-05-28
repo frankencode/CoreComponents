@@ -17,7 +17,7 @@ class ComplexParseTest: public TestCase
 {
     void run() override
     {
-        string text =
+        String text =
             "sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0\n"
             "proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0\n"
             "udev /dev devtmpfs rw,nosuid,relatime,size=8152032k,nr_inodes=2038008,mode=755 0 0\n"

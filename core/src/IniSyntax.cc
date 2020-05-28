@@ -4,11 +4,11 @@
 
 namespace cc {
 
-void IniSyntax::parse(const string &text)
+void IniSyntax::parse(const String &text)
 {
     auto source = LineSource::open(text);
 
-    for (string line; source->read(&line);) {
+    for (String line; source->read(&line);) {
         mutate(line)->trimInsitu(" \t", " \t");
         if (line->count() == 0) {
             // ignore empty line
@@ -23,8 +23,8 @@ void IniSyntax::parse(const string &text)
         else {
             int i = 0;
             if (line->find('=', &i)) {
-                string key = line->copy(0, i);
-                string value = line->copy(i + 1, line->count());
+                String key = line->copy(0, i);
+                String value = line->copy(i + 1, line->count());
                 mutate(key)->trimInsitu("", " \t");
                 mutate(value)->trimInsitu(" \t", "");
                 establish(key, value);

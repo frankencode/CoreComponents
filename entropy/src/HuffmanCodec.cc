@@ -211,7 +211,7 @@ int HuffmanCodec::decode(BitSource *source, Stream *sink)
     return bufferFill;
 }
 
-string HuffmanCodec::encode(const string &message)
+String HuffmanCodec::encode(const String &message)
 {
     auto replaySource = ReplaySource::open(message);
     auto captureSink = CaptureSink::open();
@@ -222,7 +222,7 @@ string HuffmanCodec::encode(const string &message)
     return captureSink->collect();
 }
 
-string HuffmanCodec::decode(const string &message)
+String HuffmanCodec::decode(const String &message)
 {
     auto bitSource = BitSource::open(message);
     auto captureSink = CaptureSink::open();

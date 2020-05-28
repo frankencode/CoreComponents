@@ -23,11 +23,11 @@ public:
     }
 
     StringList *source() const { return source_; }
-    string target() const { return target_; }
-    string create() const { return create_; }
-    string update() const { return update_; }
-    string remove() const { return remove_; }
-    string clean() const { return clean_; }
+    String target() const { return target_; }
+    String create() const { return create_; }
+    String update() const { return update_; }
+    String remove() const { return remove_; }
+    String clean() const { return clean_; }
 
 private:
     Predicate(const MetaObject *object):
@@ -40,11 +40,11 @@ private:
     {}
 
     Ref<StringList> source_;
-    string target_;
-    string create_;
-    string update_;
-    string remove_;
-    string clean_;
+    String target_;
+    String create_;
+    String update_;
+    String remove_;
+    String clean_;
 };
 
 typedef List< Ref<Predicate> > PredicateList;

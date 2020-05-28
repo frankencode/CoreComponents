@@ -24,12 +24,12 @@ EchoNode::EchoNode(CanMedia *media, int nodeId, int timeout):
     settings_{Settings::create()}
 {}
 
-string EchoNode::readServiceData(Selector::Key key) const
+String EchoNode::readServiceData(Selector::Key key) const
 {
     return settings_->value(key);
 }
 
-void EchoNode::writeServiceData(Selector::Key key, const string &data)
+void EchoNode::writeServiceData(Selector::Key key, const String &data)
 {
     settings_->establish(key, data);
 }

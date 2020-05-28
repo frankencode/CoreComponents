@@ -34,7 +34,7 @@ void StyleManager::registerPlugin(StylePlugin *plugin)
     }
 }
 
-bool StyleManager::getPlugin(const string &name, Ref<StylePlugin> *plugin) const
+bool StyleManager::getPlugin(const String &name, Ref<StylePlugin> *plugin) const
 {
     return plugins_->lookup(name, plugin);
 }

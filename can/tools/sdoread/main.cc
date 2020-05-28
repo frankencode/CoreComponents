@@ -17,7 +17,7 @@ using namespace cc::can;
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
             arguments->override(options);
         }
 
-        string interface = options->value("interface");
+        String interface = options->value("interface");
         int clientId     = options->value("my-id");
         int serverId     = options->value("peer-id");
         int index        = options->value("index");
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 
         auto media = CanSocket::open(interface);
         auto client = CanClient::create(media, clientId, timeout);
-        string data = client->read(serverId, selector);
+        String data = client->read(serverId, selector);
         fout() << data->hexDump() << nl;
     }
     catch (HelpRequest &) {
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
             "Read an entry from a CANopen node's dictionary\n"
             "\n"
             "Options:\n"
-            "  -interface=<string>  CAN interface to use (\"can0\" by default)\n"
+            "  -interface=<String>  CAN interface to use (\"can0\" by default)\n"
             "  -my-id=<number>      node ID of the client\n"
             "  -peer-id=<number>    node ID of the server\n"
             "  -index=<number>      object dictionary index (0x1000 by default)\n"

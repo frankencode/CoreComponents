@@ -17,7 +17,7 @@ namespace ui {
 
 GlyphVisual::GlyphVisual(uchar_t ch, const Font &initialFont):
     font{initialFont},
-    s_{string::create(4)}
+    s_{String::create(4)}
 {
     auto sink = Utf8Sink::open(mutate(s_));
     sink->write(ch);

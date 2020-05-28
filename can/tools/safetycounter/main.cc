@@ -16,11 +16,11 @@
 using namespace cc;
 using namespace cc::can;
 
-void safetyCounter(string interface, int canId, int invCanId, double refreshTime);
+void safetyCounter(String interface, int canId, int invCanId, double refreshTime);
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 
         if (arguments->items()->count() > 0) throw HelpRequest{};
 
-        string interface = options->value("interface");
+        String interface = options->value("interface");
         int canId = options->value("can-id");
         int invCanId = options->value("inv-can-id");
         double refreshTime = options->value("refresh-time");
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
             "Emit a counter value using SRDOs.\n"
             "\n"
             "Options:\n"
-            "  -interface=<string>        CAN interface to listen on (\"can0\" by default)\n"
+            "  -interface=<String>        CAN interface to listen on (\"can0\" by default)\n"
             "  -can-id=<number>           CAN ID of the SRDO\n"
             "  -inv-can-id=<number>       CAN ID of the inverse SRDO (defaults to CAN ID + 1)\n"
             "  -refresh-time=<number[s]>  refresh time\n"
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void safetyCounter(string interface, int canId, int invCanId, double refreshTime)
+void safetyCounter(String interface, int canId, int invCanId, double refreshTime)
 {
     auto can = CanSocket::open(interface);
 

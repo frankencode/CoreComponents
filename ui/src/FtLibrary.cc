@@ -12,7 +12,7 @@
 
 #include <cc/exceptions>
 // #include <cc/Memory>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ThreadLocalSingleton>
 #include <freetype/ftlcdfil.h>
 #include <cc/ui/FtLibrary>
@@ -40,12 +40,12 @@ FtLibrary::FtLibrary():
     memory_->realloc = FtLibrary::realloc;
     FT_Error error = FT_New_Library(memory_, &library_);
     if (error != 0)
-        CC_DEBUG_ERROR(format{"Failed to initialize the freetype library (error = %%)"} << error);
+        CC_DEBUG_ERROR(Format{"Failed to initialize the freetype library (error = %%)"} << error);
     FT_Add_Default_Modules(library_); // FIXME: select needed modules specifically
     #endif
     FT_Error error = FT_Init_FreeType(&library_);
     if (error != 0)
-        CC_DEBUG_ERROR(format{"Failed to initialize the freetype library (error = %%)"} << error);
+        CC_DEBUG_ERROR(Format{"Failed to initialize the freetype library (error = %%)"} << error);
 
     // FT_Library_SetLcdFilter(library_, FT_LCD_FILTER_DEFAULT);
 }

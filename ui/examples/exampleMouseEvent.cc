@@ -26,15 +26,15 @@ class MainView: public Control
 
         p->translate(size()/2);
 
-        p->setSource(color{0xFF0000}(50));
+        p->setSource(Color{0xFF0000}(50));
         p->circle(-Point{30, 0}, 60);
         p->fill();
 
-        p->setSource(color{0x00FF00}(50));
+        p->setSource(Color{0x00FF00}(50));
         p->circle(Point{0, 0}, 60);
         p->fill();
 
-        p->setSource(color{0x0000FF}(50));
+        p->setSource(Color{0x0000FF}(50));
         p->circle(Point{30, 0}, 60);
         p->fill();
     }

@@ -7,7 +7,7 @@
  */
 
 #include <cc/debug> // DEBUG
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Arguments>
 
 namespace cc {
@@ -25,7 +25,7 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
 
     for (int i = 1; i < argc; ++i)
     {
-        string s = argv[i];
+        String s = argv[i];
         bool isKeyValueOption = s->contains('=');
         bool isFlag = s->startsWith('-') && s->count() >= 2 && (s->at(1) < '0' || '9' < s->at(1)) && s->at(1) != '.';
         if (!isFlag && !isKeyValueOption) {
@@ -35,13 +35,13 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
 
         if (isFlag) mutate(s)->trimInsitu("-");
 
-        variant value = true;
+        Variant value = true;
         if (isKeyValueOption) {
             Ref<StringList> parts = s->split('=');
-            string name = parts->front();
+            String name = parts->front();
             parts->popFront();
-            string valueText = parts->join("=");
-            options_->establish(name, variant::read(valueText));
+            String valueText = parts->join("=");
+            options_->establish(name, Variant::read(valueText));
         }
         else {
             bool value = true;
@@ -70,13 +70,13 @@ void Arguments::validate(const VariantMap *prototype)
 {
     for (int i = 0; i < options_->count(); ++i)
     {
-        string name = options_->at(i)->key();
-        variant value = options_->at(i)->value();
+        String name = options_->at(i)->key();
+        Variant value = options_->at(i)->value();
 
-        variant defaultValue;
+        Variant defaultValue;
         if (!prototype->lookup(name, &defaultValue))
-            throw UsageError{format{"No such option: \"%%\""} << name};
-        if (defaultValue == variant{}) continue;
+            throw UsageError{Format{"No such option: \"%%\""} << name};
+        if (defaultValue == Variant{}) continue;
         if (value->type() != defaultValue->type()) {
             if (value->type() == VariantType::Int && defaultValue->type() == VariantType::Bool) {
                 int intValue = value;
@@ -97,7 +97,7 @@ void Arguments::validate(const VariantMap *prototype)
             }
             else {
                 throw UsageError{
-                    format{"Option \"%%\" expects type %% (got %%: %%)"}
+                    Format{"Option \"%%\" expects type %% (got %%: %%)"}
                         << name
                         << defaultValue->typeName()
                         << value->typeName()
@@ -112,8 +112,8 @@ void Arguments::override(VariantMap *config) const
 {
     for (int i = 0; i < options_->count(); ++i)
     {
-        string name = options_->at(i)->key();
-        variant value = options_->at(i)->value();
+        String name = options_->at(i)->key();
+        Variant value = options_->at(i)->value();
         config->establish(name, value);
     }
 }

@@ -21,7 +21,7 @@ public:
     NoticeSyntax();
 
     Ref<Notice> readNotice(Header *header) const;
-    Ref<Copyright> readCopyright(Token *token, const string &message) const;
+    Ref<Copyright> readCopyright(Token *token, const String &message) const;
 
 private:
     int word_;
@@ -145,7 +145,7 @@ NoticeSyntax::NoticeSyntax()
 
 Ref<Notice> NoticeSyntax::readNotice(Header *header) const
 {
-    string message = header->message();
+    String message = header->message();
     Ref<Token> rootToken = match(message)->rootToken();
     if (!rootToken) return Ref<Notice>();
     Token *token = rootToken->firstChild();
@@ -158,11 +158,11 @@ Ref<Notice> NoticeSyntax::readNotice(Header *header) const
         token = token->nextSibling();
     }
     CC_ASSERT(token->rule() == statement_);
-    string statement = message->copyRange(token);
+    String statement = message->copyRange(token);
     return Notice::create(copyrights, statement, header);
 }
 
-Ref<Copyright> NoticeSyntax::readCopyright(Token *token, const string &message) const
+Ref<Copyright> NoticeSyntax::readCopyright(Token *token, const String &message) const
 {
     CC_ASSERT(token->rule() == copyright_);
     token = token->firstChild();
@@ -185,7 +185,7 @@ Ref<Copyright> NoticeSyntax::readCopyright(Token *token, const string &message) 
         parts->append(message->copyRange(token));
         token = token->nextSibling();
     }
-    string holder = parts->join(" ");
+    String holder = parts->join(" ");
     return Copyright::create(holder, yearStart, yearEnd);
 }
 

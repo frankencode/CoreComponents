@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/Emergency>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -27,11 +27,11 @@ Ref<CanFrame> Emergency::createFrame(int nodeId, Emergency::Type type, ErrorRegi
     return frame;
 }
 
-string Emergency::Instance::toString() const
+String Emergency::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "Emergency {" << nl
         << "  nodeId       : " << nodeId() << nl
         << "  type         : " << type() << nl
@@ -40,9 +40,9 @@ string Emergency::Instance::toString() const
         << "}";
 }
 
-string str(Emergency::Type emergencyType)
+String str(Emergency::Type emergencyType)
 {
-    string s;
+    String s;
 
     switch (emergencyType) {
         case Emergency::Type::None               : s = "Emergency::Type::None"; break;
@@ -82,7 +82,7 @@ string str(Emergency::Type emergencyType)
         case Emergency::Type::DeviceSpecific     : s = "Emergency::Type::DeviceSpecific"; break;
         case Emergency::Type::CanKeepAliveForNode: s = "Emergency::Type::CanKeepAliveForNode"; break;
         default: {
-            s = format{"Emergency::Type::Custom(%%)"} << static_cast<uint16_t>(emergencyType);
+            s = Format{"Emergency::Type::Custom(%%)"} << static_cast<uint16_t>(emergencyType);
             break;
         }
     };

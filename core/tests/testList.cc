@@ -14,7 +14,7 @@
 using namespace cc;
 using namespace cc::testing;
 
-namespace cc { template class List<string>; }
+namespace cc { template class List<String>; }
 
 template<class T>
 void print(Ref< List<T> > list) {

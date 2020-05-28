@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockReadAckRequest>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -30,11 +30,11 @@ Ref<CanFrame> BlockReadAckRequest::createFrame(int serverId, int sequenceNumber,
     return frame;
 }
 
-string BlockReadAckRequest::Instance::toString() const
+String BlockReadAckRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockReadAckRequest {" << nl
         << "  serverId      : " << serverId() << nl
         << "  sequenceNumber: " << sequenceNumber() << nl

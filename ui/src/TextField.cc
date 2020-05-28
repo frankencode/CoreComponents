@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-TextField::TextField(View *parent, const string &labelText):
+TextField::TextField(View *parent, const String &labelText):
     InputField{parent, labelText}
 {}
 

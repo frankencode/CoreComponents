@@ -18,8 +18,8 @@ const MediaTypeDatabase *MediaTypeDatabase::instance()
 }
 
 MediaTypeDatabase::MediaTypeDatabase():
-    mediaTypeByPathSuffix_{PrefixTree<char, string>::create()},
-    mediaTypeByContentPrefix_{PrefixTree<char, string>::create()}
+    mediaTypeByPathSuffix_{PrefixTree<char, String>::create()},
+    mediaTypeByContentPrefix_{PrefixTree<char, String>::create()}
 {
     mediaTypeByPathSuffix_->insert("xhtml", "application/xhtml+xml");
     mediaTypeByPathSuffix_->insert("css", "text/css");
@@ -38,11 +38,11 @@ MediaTypeDatabase::MediaTypeDatabase():
     mediaTypeByContentPrefix_->insert("GIF89a", "image/gif");
 }
 
-string MediaTypeDatabase::lookup(const string &path, const string &content) const
+String MediaTypeDatabase::lookup(const String &path, const String &content) const
 {
-    string value;
+    String value;
     if (path != "") {
-        string suffix = path->fileSuffix();
+        String suffix = path->fileSuffix();
         if (suffix != "") {
             if (mediaTypeByPathSuffix_->lookup(suffix, &value, false))
                 return value;

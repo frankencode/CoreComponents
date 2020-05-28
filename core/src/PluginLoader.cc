@@ -11,11 +11,11 @@
 
 namespace cc {
 
-PluginLoader::PluginLoader(const string &libraryPath, const string &group)
+PluginLoader::PluginLoader(const String &libraryPath, const String &group)
 {
-    string libraryName = libraryPath->fileName()->split('.')->at(0);
-    string libraryInstallPath = libraryPath->reducePath();
-    string pluginPath = libraryPath->reducePath()->extendPath(libraryName)->extendPath("plugins");
+    String libraryName = libraryPath->fileName()->split('.')->at(0);
+    String libraryInstallPath = libraryPath->reducePath();
+    String pluginPath = libraryPath->reducePath()->extendPath(libraryName)->extendPath("plugins");
     if (group != "") pluginPath = pluginPath->extendPath(group);
     PluginDir::open(pluginPath);
 }

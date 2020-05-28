@@ -12,9 +12,9 @@
 
 using namespace cc;
 
-string reverse(const string &v)
+String reverse(const String &v)
 {
-    string w = string::allocate(v->count());
+    String w = String::allocate(v->count());
     for (int i = 0, n = v->count(); i < n; ++i)
         mutate(w)->at(i) = v->at(n - i - 1);
     return w;

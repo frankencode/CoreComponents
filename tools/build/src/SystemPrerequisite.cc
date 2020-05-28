@@ -11,7 +11,7 @@
 
 namespace ccbuild {
 
-Ref<SystemPrerequisite> SystemPrerequisite::create(const string &name)
+Ref<SystemPrerequisite> SystemPrerequisite::create(const String &name)
 {
     return new SystemPrerequisite{name};
 }
@@ -21,7 +21,7 @@ Ref<SystemPrerequisite> SystemPrerequisite::read(const MetaObject *object, Build
     return new SystemPrerequisite{object, plan};
 }
 
-SystemPrerequisite::SystemPrerequisite(const string &name):
+SystemPrerequisite::SystemPrerequisite(const String &name):
     name_{name},
     origName_{name},
     optional_{false},

@@ -55,7 +55,7 @@ class TransferLimitExceeded: public Exception
 class ReadLimitExceeded: public TransferLimitExceeded
 {
 public:
-    string message() const override { return "Read transfer limit exceeded"; }
+    String message() const override { return "Read transfer limit exceeded"; }
 };
 
 /** \brief %Exception thrown when a write limit is exceeded
@@ -63,7 +63,7 @@ public:
 class WriteLimitExceeded: public TransferLimitExceeded
 {
 public:
-    string message() const override { return "Write transfer limit exceeded"; }
+    String message() const override { return "Write transfer limit exceeded"; }
 };
 
 } // namespace cc

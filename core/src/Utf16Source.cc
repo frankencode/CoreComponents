@@ -31,7 +31,7 @@ bool Utf16Source::read(uchar_t *ch)
     return more;
 }
 
-string Utf16Source::DecodingError::message() const
+String Utf16Source::DecodingError::message() const
 {
     return "UTF-16 error: failed to decode input bytes";
 }

@@ -16,16 +16,16 @@ namespace tar {
 
 class BrokenArchive {
 public:
-    BrokenArchive(off_t offset, const string &reason):
+    BrokenArchive(off_t offset, const String &reason):
         offset_{offset}, reason_{reason}
     {}
 
     off_t offset() const { return offset_; }
-    string reason() const { return reason_; }
+    String reason() const { return reason_; }
 
 private:
     off_t offset_;
-    string reason_;
+    String reason_;
 };
 
 class UnsupportedArchiveFormat {};

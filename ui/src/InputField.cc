@@ -17,13 +17,13 @@
 namespace cc {
 namespace ui {
 
-InputField::InputField(View *parent, const string &labelText_):
+InputField::InputField(View *parent, const String &labelText_):
     Control{parent},
     labelText{labelText_}
 {
     paper->bind([=]{
         return theme()->inputFieldFillColor();
-            // FIXME: should be a function on background color
+            // FIXME: should be a function on background Color
             // FIXME: make depend on input field type
     });
 }

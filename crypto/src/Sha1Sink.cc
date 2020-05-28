@@ -47,9 +47,9 @@ Ref<CryptoHashSink> Sha1Sink::copy() const
 }
 
 Sha1Sink::Sha1Sink():
-    h_{string::create(20)},
-    m_{string::create(64)},
-    w_{string::create(320)},
+    h_{String::create(20)},
+    m_{String::create(64)},
+    w_{String::create(320)},
     j_{0},
     l_{0}
 {
@@ -83,7 +83,7 @@ void Sha1Sink::write(const CharArray *data)
     l_ += uint64_t(data->count()) * 8;
 }
 
-string Sha1Sink::finish()
+String Sha1Sink::finish()
 {
     mutate(m_)->byteAt(j_++) = 0x80;
     if (j_ == 64) consume();
@@ -144,7 +144,7 @@ void Sha1Sink::consume()
     h[4] += e;
 }
 
-string sha1(const CharArray *data)
+String sha1(const CharArray *data)
 {
     Ref<Sha1Sink> h = Sha1Sink::open();
     h->write(data);

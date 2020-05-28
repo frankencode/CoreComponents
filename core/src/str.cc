@@ -13,7 +13,7 @@
 
 namespace cc {
 
-string fnum(float64_t x, int precision, int base, int screen)
+String fnum(float64_t x, int precision, int base, int screen)
 {
     Ref< Stack<int> > digits = Stack<int>::create(2 * screen < 128 ? 128 : 2 * screen /*save bet*/);
 
@@ -22,7 +22,7 @@ string fnum(float64_t x, int precision, int base, int screen)
     int e = int((xi << 1) >> 53); // exponent
     int s = int(xi >> 63); // sign
 
-    string text;
+    String text;
     int i = 0;
 
     if ((e == 0x7FF) && (f != 0)) // NaN
@@ -93,7 +93,7 @@ string fnum(float64_t x, int precision, int base, int screen)
             for (int h = eba; h != 0; h /= base) ++ne;
         }
 
-        text = string{wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne), ' '};
+        text = String{wi + int(wf != 0) + wf + int(ne != 0) * (1 + int(eba < 0) + ne), ' '};
 
         if (s == 1)
             mutate(text)->at(i++) = '-';
@@ -129,12 +129,12 @@ string fnum(float64_t x, int precision, int base, int screen)
     return text;
 }
 
-string fixed(float64_t x, int nf)
+String fixed(float64_t x, int nf)
 {
     return fixed(x, 0, nf);
 }
 
-string fixed(float64_t x, int ni, int nf)
+String fixed(float64_t x, int ni, int nf)
 {
     if (x != x) return "nan";
     if (x == +1.0/0.0) return "inf";
@@ -155,33 +155,33 @@ string fixed(float64_t x, int ni, int nf)
         }
     }
 
-    string sip = inum(int64_t(ip));
+    String sip = inum(int64_t(ip));
     if (ni > sip->count()) sip = right(sip, ni);
     if (nf <= 0) return sip;
 
-    string s{sip->count() + 1 + nf, '.'};
+    String s{sip->count() + 1 + nf, '.'};
     mutate(s)->write(sip);
     mutate(s)->write(right(inum(uint64_t(fp)), nf, '0'), sip->count() + 1, s->count());
     return s;
 }
 
-string dec(const variant &x, int n)
+String dec(const Variant &x, int n)
 {
     return (x->type() == VariantType::Float) ?
-        dec(variant::Float(x), n > 0 ? n : 7) :
+        dec(Variant::Float(x), n > 0 ? n : 7) :
         dec(int(x), n);
 }
 
-string str(uchar_t ch)
+String str(uchar_t ch)
 {
-    string s{4};
+    String s{4};
     Ref<Utf8Sink> sink = Utf8Sink::open(mutate(s));
     sink->write(ch);
     mutate(s)->truncate(sink->byteSink()->currentOffset());
     return s;
 }
 
-string str(void *x)
+String str(void *x)
 {
     if (sizeof(void *) == sizeof(uint64_t))
         return dec(union_cast<uint64_t>(x));
@@ -189,16 +189,16 @@ string str(void *x)
     return dec(union_cast<uint32_t>(x));
 }
 
-string left(const string &s, int w, char blank)
+String left(const String &s, int w, char blank)
 {
     if (s->count() > w) return s;
-    else return s + string{w - s->count(), blank};
+    else return s + String{w - s->count(), blank};
 }
 
-string right(const string &s, int w, char blank)
+String right(const String &s, int w, char blank)
 {
     if (s->count() > w) return s;
-    else return string{w - s->count(), blank} + s;
+    else return String{w - s->count(), blank} + s;
 }
 
 } // namespace cc

@@ -23,13 +23,13 @@ EchoDelegate::EchoDelegate(DeliveryWorker *worker):
 void EchoDelegate::process(const HttpRequest *request)
 {
     {
-        format echo = response()->chunk();
+        Format echo = response()->chunk();
         echo << request->method() << " " << request->uri() << " " << request->version() << "\r\n";
         for (int i = 0; i < request->count(); ++i)
             echo << request->at(i)->key() << ": " << request->at(i)->value() << "\r\n";
         echo << "\r\n";
     }
-    string buf = string::allocate(0x4000);
+    String buf = String::allocate(0x4000);
     while (true) {
         int n = request->payload()->read(mutate(buf));
         if (n == 0) break;

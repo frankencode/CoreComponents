@@ -69,6 +69,6 @@ private:
     Instance instance_;
 };
 
-string str(Key key);
+String str(Key key);
 
 }} // namespace cc::ui

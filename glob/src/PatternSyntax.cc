@@ -7,7 +7,7 @@
  */
 
 #include <cc/Singleton>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/syntax/exceptions>
 #ifndef NDEBUG
 #include <cc/syntax/SyntaxDebugger>
@@ -62,7 +62,7 @@ PatternSyntax::PatternSyntax()
         );
 
     string_ =
-        DEFINE("string",
+        DEFINE("String",
             REPEAT(2,
                 REF("Char")
             )
@@ -161,7 +161,7 @@ PatternSyntax::PatternSyntax()
             REPEAT(
                 CHOICE(
                     REF("Repeat"),
-                    REF("string"),
+                    REF("String"),
                     REF("Char"),
                     REF("Any"),
                     REF("Gap"),
@@ -355,7 +355,7 @@ NODE PatternSyntax::compileBehind(const CharArray *text, Token *token, SyntaxDef
 
 NODE PatternSyntax::compileCapture(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
-    string name;
+    String name;
     if (token->firstChild() != token->lastChild())
         name = text->copyRange(token->firstChild());
     return definition->CAPTURE(name, compileChoice(text, token->lastChild(), definition));
@@ -363,23 +363,23 @@ NODE PatternSyntax::compileCapture(const CharArray *text, Token *token, SyntaxDe
 
 NODE PatternSyntax::compileReference(const CharArray *text, Token *token, SyntaxDefinition *definition) const
 {
-    string name = text->copyRange(token->firstChild());
+    String name = text->copyRange(token->firstChild());
     return definition->REPLAY(name);
 }
 
 char PatternSyntax::readChar(const CharArray *text, Token *token) const
 {
     if (token->i1() - token->i0() > 1) {
-        string h = text->copyRange(token);
+        String h = text->copyRange(token);
         mutate(h)->unescapeInsitu();
         return h->at(0);
     }
     return text->at(token->i0());
 }
 
-string PatternSyntax::readString(const CharArray *text, Token *token) const
+String PatternSyntax::readString(const CharArray *text, Token *token) const
 {
-    string s{token->countChildren()};
+    String s{token->countChildren()};
     int i = 0;
     for (Token *child = token->firstChild(); child; child = child->nextSibling())
         mutate(s)->at(i++) = readChar(text, child);
@@ -412,7 +412,7 @@ NODE PatternSyntax::compileRangeExplicit(const CharArray *text, Token *token, Sy
     Token *child = token->firstChild();
     bool invert = (text->at(token->i0() + 1) == '^');
     int n = token->countChildren();
-    string s{n};
+    String s{n};
     for (int i = 0; i < n; ++i) {
         mutate(s)->at(i) = readChar(text, child);
         child = child->nextSibling();

@@ -7,13 +7,13 @@
  */
 
 #include <gnutls/gnutls.h>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/http/exceptions>
 
 namespace cc {
 namespace http {
 
-HttpError::HttpError(int statusCode, const string &message):
+HttpError::HttpError(int statusCode, const String &message):
     statusCode_{statusCode},
     message_{message}
 {}
@@ -23,7 +23,7 @@ int HttpError::statusCode() const
     return statusCode_;
 }
 
-string HttpError::message() const
+String HttpError::message() const
 {
     return message_;
 }
@@ -33,11 +33,11 @@ SecurityError::SecurityError(int errorCode, const SocketAddress &peerAddress):
     peerAddress_{peerAddress}
 {}
 
-string SecurityError::message() const
+String SecurityError::message() const
 {
     const char *s = gnutls_strerror(errorCode_);
     if (peerAddress_)
-        return format{} << peerAddress_ << ": " << s;
+        return Format{} << peerAddress_ << ": " << s;
     return s;
 }
 

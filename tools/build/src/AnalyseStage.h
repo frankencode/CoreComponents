@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 #include "BuildStage.h"
 
 namespace ccbuild {

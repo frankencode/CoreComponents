@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/syntax/DebugToken>
 
 namespace cc {
@@ -16,20 +16,20 @@ void DebugToken::printTo(Stream *stream, CharArray *text, int depth, int default
 {
     if (defaultScope == -1) defaultScope = scope();
 
-    string indent(depth * 2, ' ');
-    string subIndent((depth + 1) * 2, ' ');
+    String indent{depth * 2, ' '};
+    String subIndent{(depth + 1) * 2, ' '};
 
     {
-        format format(stream);
-        format << indent;
-        if (scope() != defaultScope) format << scopeName() << "::";
-        format << ruleName() << "=" << "\"" << text->copyRange(this)->escape() << "\" (" << i0() << ":" << i1() - i0() << ")" << nl;
+        Format f{stream};
+        f << indent;
+        if (scope() != defaultScope) f << scopeName() << "::";
+        f << ruleName() << "=" << "\"" << text->copyRange(this)->escape() << "\" (" << i0() << ":" << i1() - i0() << ")" << nl;
     }
 
     for (Token *token = firstChild(); token; token = token->nextSibling())
         Object::cast<DebugToken *>(token)->printTo(stream, text, depth + 1, defaultScope);
 
-    // format(stream) << indent << "]" << nl;
+    // Format{stream} << indent << "]" << nl;
 }
 
 }} // namespace cc::syntax

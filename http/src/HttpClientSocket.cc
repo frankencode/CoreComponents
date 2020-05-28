@@ -15,19 +15,19 @@
 namespace cc {
 namespace http {
 
-Ref<HttpClientSocket> HttpClientSocket::create(const SocketAddress &serverAddress, const string &serverName, const HttpClientSecurity *security)
+Ref<HttpClientSocket> HttpClientSocket::create(const SocketAddress &serverAddress, const String &serverName, const HttpClientSecurity *security)
 {
     return new HttpClientSocket{serverAddress, serverName, security};
 }
 
-Ref<HttpClientSocket> HttpClientSocket::connect(const SocketAddress &serverAddress, const string &serverName, const HttpClientSecurity *security)
+Ref<HttpClientSocket> HttpClientSocket::connect(const SocketAddress &serverAddress, const String &serverName, const HttpClientSecurity *security)
 {
     auto socket = HttpClientSocket::create(serverAddress, serverName, security);
     socket->connect();
     return socket;
 }
 
-HttpClientSocket::HttpClientSocket(const SocketAddress &serverAddress, const string &serverName, const HttpClientSecurity *security):
+HttpClientSocket::HttpClientSocket(const SocketAddress &serverAddress, const String &serverName, const HttpClientSecurity *security):
     HttpSocket{serverAddress, (serverAddress->port() % 80 == 0 || !security) ? 0 : Secure},
     serverName_{serverName},
     security_{security},

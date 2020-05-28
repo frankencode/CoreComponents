@@ -60,8 +60,8 @@ inline bool operator!=(const Rect &a, const Rect &b)
     return a->pos() != b->pos() || a->size() != b->size();
 }
 
-string str(const Rect &rect);
-string fixed(const Rect &rect, int ni, int nf);
-string fixed(const Rect &rect, int nf);
+String str(const Rect &rect);
+String fixed(const Rect &rect, int ni, int nf);
+String fixed(const Rect &rect, int nf);
 
 }} // namespace cc::ui

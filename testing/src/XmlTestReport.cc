@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Stream>
 #include <cc/testing/XmlTestReport>
 
@@ -24,42 +24,42 @@ bool XmlTestReport::captureOutput() const
 
 void XmlTestReport::beginTestSuite(TestSuite *testSuite)
 {
-    format{"<testsuite name=\"%%\" tests=\"%%\">\n", stream_} << testSuite->name() << testSuite->testCaseCount();
+    Format{"<testsuite name=\"%%\" tests=\"%%\">\n", stream_} << testSuite->name() << testSuite->testCaseCount();
 }
 
 void XmlTestReport::beginTestCase(TestCase *testCase)
 {
-    format{"<testcase name=\"%%\">\n", stream_} << testCase->name();
+    Format{"<testcase name=\"%%\">\n", stream_} << testCase->name();
 }
 
-void XmlTestReport::verify(TestCase *testCase, bool condition, const string &message, const string &codePath, int codeLine)
+void XmlTestReport::verify(TestCase *testCase, bool condition, const String &message, const String &codePath, int codeLine)
 {
     if (!condition)
-        format{"<failure message=\"%%\">%%:%%</failure>\n", stream_} << message << codePath << codeLine;
+        Format{"<failure message=\"%%\">%%:%%</failure>\n", stream_} << message << codePath << codeLine;
 }
 
-void XmlTestReport::error(TestCase *testCase, const string &type, const string &message)
+void XmlTestReport::error(TestCase *testCase, const String &type, const String &message)
 {
-    format{"<error type=\"%%\" message=\"%%\"></error>\n", stream_} << type << message;
+    Format{"<error type=\"%%\" message=\"%%\"></error>\n", stream_} << type << message;
 }
 
-void XmlTestReport::endTestCase(TestCase *testCase, const string &outText, const string &errText)
+void XmlTestReport::endTestCase(TestCase *testCase, const String &outText, const String &errText)
 {
     if (testCase->skip()) {
-        format{"<skipped/>\n", stream_};
+        Format{"<skipped/>\n", stream_};
     }
     else {
-        format{stream_}
+        Format{stream_}
             << "<system-out>" << xmlEscape(outText) << "</system-out>\n"
             << "<system-err>" << xmlEscape(errText) << "</system-err>\n";
     }
-    format{stream_}
+    Format{stream_}
         << "</testcase>\n";
 }
 
 void XmlTestReport::skipTestCase(TestCase *testCase)
 {
-    format{
+    Format{
         "<testcase name=\"%%\">\n"
         "<skipped/>\n"
         "</testcase>\n",
@@ -69,12 +69,12 @@ void XmlTestReport::skipTestCase(TestCase *testCase)
 
 void XmlTestReport::endTestSuite(TestSuite *testSuite)
 {
-    format{"</testsuite>\n", stream_};
+    Format{"</testsuite>\n", stream_};
 }
 
-string XmlTestReport::xmlEscape(const string &text)
+String XmlTestReport::xmlEscape(const String &text)
 {
-    string h = text;
+    String h = text;
     if (h->contains('<')) h = h->replace("<", "&lt;");
     if (h->contains('>')) h = h->replace(">", "&gt;");
     if (h->contains('&')) h = h->replace("?", "&amp;");

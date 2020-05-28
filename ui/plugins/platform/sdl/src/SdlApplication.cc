@@ -9,7 +9,7 @@
 #include <cc/debug>
 #include <cc/exceptions>
 #include <cc/Singleton>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ui/SdlWindow>
 #include <cc/ui/SdlCursor>
 #include <cc/ui/Timer>
@@ -69,7 +69,7 @@ void SdlApplication::init(int argc, char **argv)
     timerEvent_ = SDL_RegisterEvents(1);
 }
 
-Window *SdlApplication::openWindow(View *view, const string &title, WindowMode mode)
+Window *SdlApplication::openWindow(View *view, const String &title, WindowMode mode)
 {
     auto window = SdlWindow::open(view, title, mode);
     windows_->insert(window->id_, window);
@@ -91,13 +91,13 @@ void SdlApplication::unsetCursor()
     SDL_SetCursor(SDL_GetDefaultCursor());
 }
 
-string SdlApplication::getClipboardText() const
+String SdlApplication::getClipboardText() const
 {
-    if (!SDL_HasClipboardText()) return string{};
+    if (!SDL_HasClipboardText()) return String{};
     return SDL_GetClipboardText();
 }
 
-void SdlApplication::setClipboardText(const string &text)
+void SdlApplication::setClipboardText(const String &text)
 {
     /*int ret =*/ SDL_SetClipboardText(text);
     // TODO: error handling?
@@ -307,15 +307,15 @@ void SdlApplication::handleTextInputEvent(const SDL_TextInputEvent *e)
     feedTextInputEvent(e->text);
 }
 
-string SdlApplication::windowEventToString(const SDL_WindowEvent *e)
+String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
 {
     switch (e->event) {
         case SDL_WINDOWEVENT_SHOWN: return "SDL_WINDOWEVENT_SHOWN";
         case SDL_WINDOWEVENT_HIDDEN: return "SDL_WINDOWEVENT_HIDDEN";
-        case SDL_WINDOWEVENT_EXPOSED: return  format{"SDL_WINDOWEVENT_EXPOSED (%% %%)"} << e->data1 << e->data2;
-        case SDL_WINDOWEVENT_MOVED: return format{"SDL_WINDOWEVENT_MOVED (%% %%)"} << e->data1 << e->data2;
-        case SDL_WINDOWEVENT_RESIZED: return format{"SDL_WINDOWEVENT_RESIZED (%% %%)"} << e->data1 << e->data2;
-        case SDL_WINDOWEVENT_SIZE_CHANGED: return format{"SDL_WINDOWEVENT_SIZE_CHANGED (%% %%)"} << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_EXPOSED: return  Format{"SDL_WINDOWEVENT_EXPOSED (%% %%)"} << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_MOVED: return Format{"SDL_WINDOWEVENT_MOVED (%% %%)"} << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_RESIZED: return Format{"SDL_WINDOWEVENT_RESIZED (%% %%)"} << e->data1 << e->data2;
+        case SDL_WINDOWEVENT_SIZE_CHANGED: return Format{"SDL_WINDOWEVENT_SIZE_CHANGED (%% %%)"} << e->data1 << e->data2;
         case SDL_WINDOWEVENT_MINIMIZED: return "SDL_WINDOWEVENT_MINIMIZED";
         case SDL_WINDOWEVENT_MAXIMIZED: return "SDL_WINDOWEVENT_MAXIMIZED";
         case SDL_WINDOWEVENT_RESTORED: return "SDL_WINDOWEVENT_RESTORED";
@@ -329,7 +329,7 @@ string SdlApplication::windowEventToString(const SDL_WindowEvent *e)
         case SDL_WINDOWEVENT_HIT_TEST: return "SDL_WINDOWEVENT_HIT_TEST";
         #endif
     };
-    return string{};
+    return String{};
 }
 
 void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)

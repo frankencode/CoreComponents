@@ -6,31 +6,31 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ui/Rect>
 
 namespace cc {
 namespace ui {
 
-string str(const Rect &rect)
+String str(const Rect &rect)
 {
-    return format{}
+    return Format{}
         << "Rect {\n"
         << "  pos: " << rect->pos() << nl
         << "  size: " << rect->size() << nl
         << "}";
 }
 
-string fixed(const Rect &rect, int ni, int nf)
+String fixed(const Rect &rect, int ni, int nf)
 {
-    return format{}
+    return Format{}
         << "Rect {\n"
         << "  pos: " << fixed(rect->pos(), ni, nf) << nl
         << "  size: " << fixed(rect->size(), ni, nf) << nl
         << "}";
 }
 
-string fixed(const Rect &rect, int nf)
+String fixed(const Rect &rect, int nf)
 {
     return fixed(rect, 0, nf);
 }

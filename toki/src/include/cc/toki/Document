@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 #include <cc/toki/Style>
 
 namespace cc {
@@ -50,21 +50,21 @@ private:
 class Document: public Object
 {
 public:
-    static Ref<Document> load(const string &path);
+    static Ref<Document> load(const String &path);
 
-    static Ref<Document> create(const string &text, const string &path = "") {
+    static Ref<Document> create(const String &text, const String &path = "") {
         return new Document{text, path};
     }
 
-    string text() const { return text_; }
-    string path() const { return path_; }
+    String text() const { return text_; }
+    String path() const { return path_; }
     void save();
 
 protected:
-    Document(const string &text, const string &path);
+    Document(const String &text, const String &path);
 
-    string path_;
-    string text_;
+    String path_;
+    String text_;
     typedef List<Span> Spans;
     Ref<Spans> spans_;
 };

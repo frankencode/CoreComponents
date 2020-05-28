@@ -17,7 +17,7 @@ namespace can {
 class EventHandler: public Event
 {
 public:
-    typedef std::function<void(const string &)> OnReceived;
+    typedef std::function<void(const String &)> OnReceived;
     typedef std::function<void()> OnIdle;
 
     static Ref<EventHandler> create(
@@ -33,7 +33,7 @@ private:
         const OnIdle &onIdle
     );
 
-    void onReceived(CanMedia *media, const string &data) final;
+    void onReceived(CanMedia *media, const String &data) final;
     void onIdle(CanMedia *media) final;
 
     OnReceived onReceived_;

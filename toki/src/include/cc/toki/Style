@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/color>
+#include <cc/Color>
 #include <cc/meta/yason>
 
 namespace cc {
@@ -23,10 +23,10 @@ class Style: public MetaObject
 public:
     static Ref<Style> create();
 
-    string ruleName() const { return ruleName_; }
+    String ruleName() const { return ruleName_; }
     int rule() const { return rule_; }
-    color ink() const { return ink_; }
-    color paper() const { return paper_; }
+    Color ink() const { return ink_; }
+    Color paper() const { return paper_; }
     bool bold() const { return bold_; }
     bool italic() const { return italic_; }
 
@@ -36,10 +36,10 @@ private:
     Style();
     void realize() override;
 
-    string ruleName_;
+    String ruleName_;
     int rule_;
-    color ink_;
-    color paper_;
+    Color ink_;
+    Color paper_;
     bool bold_;
     bool italic_;
 };

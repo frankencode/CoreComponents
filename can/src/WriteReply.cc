@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/WriteReply>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -27,11 +27,11 @@ Ref<CanFrame> WriteReply::createFrame(int serverId, Selector selector)
     return frame;
 }
 
-string WriteReply::Instance::toString() const
+String WriteReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "WriteReply {" << nl
         << "  serverId: " << serverId() << nl
         << "  selector: " << selector() << nl

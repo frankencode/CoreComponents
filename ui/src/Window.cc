@@ -14,12 +14,12 @@
 namespace cc {
 namespace ui {
 
-Window *Window::open(View *view, const string &title, WindowMode mode)
+Window *Window::open(View *view, const String &title, WindowMode mode)
 {
     return Application::instance()->openWindow(view, title, mode);
 }
 
-Window::Window(View *view, const string &title):
+Window::Window(View *view, const String &title):
     title{title},
     size{alias(view->size)},
     view_{view},

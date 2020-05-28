@@ -26,10 +26,10 @@ class FloatingPointLiterals: public TestCase
         for (int i = 0, n = sizeof(test) / sizeof(test[0]); i < n; ++i) {
             double x = test[i];
             bool ok = true;
-            fout() << x << " => " << string(format{} << x)->toNumber<float64_t>(&ok) << " (" << ok << ")" << nl;
-            fout() << (string(format{} << x)->toNumber<float64_t>() - x) << nl;
+            fout() << x << " => " << String(Format{} << x)->toNumber<float64_t>(&ok) << " (" << ok << ")" << nl;
+            fout() << (String(Format{} << x)->toNumber<float64_t>() - x) << nl;
             uint64_t a = union_cast<float64_t>(x);
-            uint64_t b = union_cast<float64_t>(string(format{} << x)->toNumber<float64_t>());
+            uint64_t b = union_cast<float64_t>(String(Format{} << x)->toNumber<float64_t>());
             fout() << "0x" << hex(a) << nl;
             fout() << "0x" << hex(b) << nl;
             fout() << oct(1, 3) << nl;
@@ -54,8 +54,8 @@ class PrintingVariants: public TestCase
 {
     void run()
     {
-        variant a = 1, b = true, c = "abc", d = 3.2;
-        string s = format{} << a << ", " << b << ", " << c << ", " << dec(d);
+        Variant a = 1, b = true, c = "abc", d = 3.2;
+        String s = Format{} << a << ", " << b << ", " << c << ", " << dec(d);
         fout() << s << nl;
         CC_VERIFY(s == "1, true, abc, 3.2");
     }
@@ -66,10 +66,10 @@ class IntegerLiterals: public TestCase
     void run()
     {
         fout("%% = 0x%% = 0%% = 0b%%\n") << 123 << hex(123) << oct(123) << bin(123);
-        CC_VERIFY(string(dec(123))->toNumber<int>() == 123);
-        CC_VERIFY(string("0x" + hex(123))->toNumber<int>() == 123);
-        CC_VERIFY(string("0" + oct(123))->toNumber<int>() == 123);
-        CC_VERIFY(string("0b" + bin(123))->toNumber<int>() == 123);
+        CC_VERIFY(String(dec(123))->toNumber<int>() == 123);
+        CC_VERIFY(String("0x" + hex(123))->toNumber<int>() == 123);
+        CC_VERIFY(String("0" + oct(123))->toNumber<int>() == 123);
+        CC_VERIFY(String("0b" + bin(123))->toNumber<int>() == 123);
     }
 };
 
@@ -77,7 +77,7 @@ class ColorLiterals: public TestCase
 {
     void run()
     {
-        color c { 0x8080FF };
+        Color c { 0x8080FF };
         fout() << c << nl;
         CC_VERIFY(str(c) == "#8080FFFF");
     }

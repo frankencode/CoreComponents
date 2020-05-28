@@ -23,7 +23,7 @@ class FtTextRun;
 class FtGlyphRun: public GlyphRun
 {
 public:
-    string text() const override { return text_; }
+    String text() const override { return text_; }
     Font font() const override { return font_; }
 
     Point origin() const override { return origin_; }
@@ -56,7 +56,7 @@ private:
     friend class FtTextRun;
 
     FtGlyphRun(): lineCount_{1} {}
-    FtGlyphRun(const string &text, const Font &font, const Point &origin);
+    FtGlyphRun(const String &text, const Font &font, const Point &origin);
 
     Ref<FtGlyphRun> ftCopy() const;
 
@@ -75,7 +75,7 @@ private:
 
     static void lineShift(FtGlyphRun *ftGlyphRun, double shiftX);
 
-    string text_;
+    String text_;
     Font font_;
 
     Point origin_;

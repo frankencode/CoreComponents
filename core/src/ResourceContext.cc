@@ -18,23 +18,23 @@ ResourceContext *ResourceContext::instance()
 }
 
 ResourceContext::ResourceContext():
-    queue_{Queue<string>::create()}
+    queue_{Queue<String>::create()}
 {}
 
-void ResourceContext::push(const string &resource)
+void ResourceContext::push(const String &resource)
 {
     queue_->pushBack(resource);
 }
 
-string ResourceContext::pop()
+String ResourceContext::pop()
 {
-    if (queue_->count() == 0) return string{};
+    if (queue_->count() == 0) return String{};
     return queue_->popBack();
 }
 
-string ResourceContext::top() const
+String ResourceContext::top() const
 {
-    return queue_->count() > 0 ? queue_->back() : string{};
+    return queue_->count() > 0 ? queue_->back() : String{};
 }
 
 } // namespace cc

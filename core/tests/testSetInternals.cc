@@ -20,7 +20,7 @@ using namespace cc::testing;
 
 void print(const Set<int> *set)
 {
-    format f{stdOut()};
+    Format f{stdOut()};
     f << "(";
     for (auto &x: set)
         f << x << (&x == &set->last() ? ")\n" : ", ");

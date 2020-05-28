@@ -14,7 +14,7 @@
 namespace cc {
 namespace ui {
 
-SingleLineItemDelegate::SingleLineItemDelegate(View *parent, const string &initialText, Visual *initialIcon):
+SingleLineItemDelegate::SingleLineItemDelegate(View *parent, const String &initialText, Visual *initialIcon):
     View{parent},
     icon{initialIcon},
     text{initialText}

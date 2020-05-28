@@ -81,7 +81,7 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
-    if (argc == 2 && string(argv[1])->contains("fullscreen")) {
+    if (argc == 2 && String{argv[1]}->contains("fullscreen")) {
         // app->cursorVisible = false;
         Window::open<MainView>(/*WindowMode::Accelerated|*/WindowMode::Fullscreen|WindowMode::VSync);
     }

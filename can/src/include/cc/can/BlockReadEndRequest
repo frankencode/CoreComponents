@@ -29,7 +29,7 @@ public:
             return ServiceRequest{frame_}->serverId();
         }
 
-        string toString() const;
+        String toString() const;
 
     private:
         friend class BlockReadEndRequest;
@@ -48,7 +48,7 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator string() const { return instance_.toString(); }
+    operator String() const { return instance_.toString(); }
 
 private:
     Instance instance_;

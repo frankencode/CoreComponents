@@ -99,7 +99,7 @@ public:
             return (type() == Type::CanKeepAliveForNode) ? errorCode() - 0x8F00 : 0;
         }
 
-        string toString() const;
+        String toString() const;
 
     private:
         friend class Emergency;
@@ -118,12 +118,12 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator string() const { return instance_.toString(); }
+    operator String() const { return instance_.toString(); }
 
 private:
     const Instance instance_;
 };
 
-string str(Emergency::Type emergencyType);
+String str(Emergency::Type emergencyType);
 
 }} // namespace cc::can

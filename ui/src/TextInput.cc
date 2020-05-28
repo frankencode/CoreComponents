@@ -14,7 +14,7 @@
 namespace cc {
 namespace ui {
 
-TextInput::TextInput(View *parent, const string &initialText):
+TextInput::TextInput(View *parent, const String &initialText):
     InputControl{parent}
 {}
 
@@ -31,7 +31,7 @@ void TextInput::init()
     unwrappedTextRun->bind([=]{
         auto run = TextRun::create();
         if (imeChunks()) {
-            for (const string &chunk: imeChunks()) {
+            for (const String &chunk: imeChunks()) {
                 if (chunk->count() > 0)
                     run->append(chunk, font());
             }
@@ -99,7 +99,7 @@ Ref<TextEditor> TextInput::createEditor()
     return Object::create<LineEditor>();
 }
 
-string TextInput::text() const
+String TextInput::text() const
 {
     return editor_->text();
 }
@@ -198,7 +198,7 @@ Rect TextInput::textInputArea() const
     };
 }
 
-void TextInput::onTextEdited(const string &chunk, int start, int length)
+void TextInput::onTextEdited(const String &chunk, int start, int length)
 {
     imeChunks =
         StringList::create()
@@ -207,7 +207,7 @@ void TextInput::onTextEdited(const string &chunk, int start, int length)
             << text()->copy(textCursor()->byteOffset(), text()->count());
 }
 
-void TextInput::onTextInput(const string &chunk)
+void TextInput::onTextInput(const String &chunk)
 {
     Range s = selection();
     if (!s) s = Range { textCursor()->byteOffset() };
@@ -281,7 +281,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
             if (textCursor()->step(-1))
                 s = Range { textCursor()->byteOffset(), i1 };
         }
-        if (s) paste(s, string{});
+        if (s) paste(s, String{});
     }
     else if (event->scanCode() == ScanCode::Key_Delete)
     {
@@ -291,7 +291,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
             if (textCursor()->step(1))
             s = Range { i0, textCursor()->byteOffset() };
         }
-        if (s) paste(s, string{});
+        if (s) paste(s, String{});
     }
     else if (
         +(event->modifiers() & KeyModifier::Control) &&
@@ -302,7 +302,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
             app()->setClipboardText(
                 text()->copy(selection()->i0(), selection()->i1())
             );
-            paste(selection(), string{});
+            paste(selection(), String{});
         }
     }
     else if (
@@ -323,7 +323,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
             event->keyCode() == KeyCode::Key_V
         )
     ) {
-        string chunk = app()->getClipboardText();
+        String chunk = app()->getClipboardText();
         if (chunk) paste(chunk);
     }
     else if (
@@ -366,14 +366,14 @@ bool TextInput::onKeyReleased(const KeyEvent *event)
     return true;
 }
 
-void TextInput::paste(const string &chunk)
+void TextInput::paste(const String &chunk)
 {
     Range s = selection();
     if (!s) s = Range { textCursor()->byteOffset() };
     paste(s, chunk);
 }
 
-void TextInput::paste(Range range, const string &chunk)
+void TextInput::paste(Range range, const String &chunk)
 {
     if (! (0 <= range->i0() && range->i1() <= text()->count()) )
         return;
@@ -382,7 +382,7 @@ void TextInput::paste(Range range, const string &chunk)
     textCursor = nullptr;
     imeChunks = nullptr;
 
-    string filteredChunk = chunk;
+    String filteredChunk = chunk;
     mutate(filteredChunk)->replaceInsitu("\n", " ");
 
     Range newRange = editor_->paste(range, filteredChunk);
@@ -403,11 +403,11 @@ void TextInput::paint()
         int s1 = selection()->i1();
         p->showTextRun(
             textPos(), textRun(),
-            [=](int byteOffset) -> color {
-                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionInk() : color{};
+            [=](int byteOffset) -> Color {
+                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionInk() : Color{};
             },
-            [=](int byteOffset) -> color {
-                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionPaper() : color{};
+            [=](int byteOffset) -> Color {
+                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionPaper() : Color{};
             }
         );
     }

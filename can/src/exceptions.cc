@@ -7,14 +7,14 @@
  */
 
 #include <cc/can/exceptions>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-string CanAbort::message() const { return format{"CAN abort (%%)"} << reason() ; }
-string CanTimeout::message() const { return "CAN timeout"; }
-string CanDisconnect::message() const { return "CAN disconnect"; }
-string CanUnexpected::message() const { return "CAN unexpected"; }
+String CanAbort::message() const { return Format{"CAN abort (%%)"} << reason() ; }
+String CanTimeout::message() const { return "CAN timeout"; }
+String CanDisconnect::message() const { return "CAN disconnect"; }
+String CanUnexpected::message() const { return "CAN unexpected"; }
 
 }} // namespace cc::can

@@ -18,7 +18,7 @@ using namespace cc;
 
 class CwdGuard {
 public:
-    CwdGuard(const string &dirPath, const BuildShell *shell):
+    CwdGuard(const String &dirPath, const BuildShell *shell):
         shell_{shell},
         cwdSaved_{Process::getWorkingDirectory()}
     {
@@ -27,7 +27,7 @@ public:
     ~CwdGuard() { shell_->cd(cwdSaved_); }
 private:
     Ref<const BuildShell> shell_;
-    string cwdSaved_;
+    String cwdSaved_;
 };
 
 } // namespace ccbuild

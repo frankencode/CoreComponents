@@ -32,7 +32,7 @@ Ref<BuildPlan> BuildPlan::create(int argc, char **argv)
     return new BuildPlan{argc, argv};
 }
 
-Ref<BuildPlan> BuildPlan::create(const string &projectPath)
+Ref<BuildPlan> BuildPlan::create(const String &projectPath)
 {
     Ref<BuildPlan> plan;
     if (BuildMap::instance()->lookupPlan(projectPath->absolutePathRelativeTo(Process::getWorkingDirectory()), &plan)) return plan;
@@ -84,7 +84,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
     scope_ = projectPath_;
 }
 
-BuildPlan::BuildPlan(const string &projectPath, BuildPlan *parentPlan):
+BuildPlan::BuildPlan(const String &projectPath, BuildPlan *parentPlan):
     toolChain_{parentPlan->toolChain_},
     projectPath_{projectPath},
     recipePath_{recipePath(projectPath)},
@@ -163,16 +163,16 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
 
     BuildParameters::read(recipe_, this);
 
-    string defaultIncludePath = projectPath_->extendPath("include");
+    String defaultIncludePath = projectPath_->extendPath("include");
     if (Dir::exists(defaultIncludePath)) {
         if (!includePaths_->contains(defaultIncludePath))
             includePaths_->append(defaultIncludePath);
     }
 
-    const StringList *dependsList = variant::cast<const StringList *>(recipe_->value("depends"));
+    const StringList *dependsList = Variant::cast<const StringList *>(recipe_->value("depends"));
     if (dependsList) {
-        for (string item: dependsList) {
-            string name;
+        for (String item: dependsList) {
+            String name;
             Version versionMin, versionMax;
             if (item->contains(">=")) {
                 Ref<StringList> parts = item->split(">=");
@@ -211,7 +211,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
                 if (!systemPrerequisitesByName_->lookup(p->name(), &l))
                     systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
                 else
-                    throw UsageError{format{"%%: Ambiguous system dependency '%%'"} << recipePath_ << p->name()};
+                    throw UsageError{Format{"%%: Ambiguous system dependency '%%'"} << recipePath_ << p->name()};
                 l->append(p);
             }
             else if (object->className() == "Predicate") {
@@ -219,28 +219,28 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
                 readPredicate(object);
             }
             else if (object->className() == "PreBuild") {
-                compileLinkStage_.preCommands()->append(string(object->value("execute")));
+                compileLinkStage_.preCommands()->append(String(object->value("execute")));
             }
             else if (object->className() == "PostBuild") {
-                compileLinkStage_.postCommands()->append(string(object->value("execute")));
+                compileLinkStage_.postCommands()->append(String(object->value("execute")));
             }
             else if (object->className() == "PreClean") {
-                cleanStage_.preCommands()->append(string(object->value("execute")));
+                cleanStage_.preCommands()->append(String(object->value("execute")));
             }
             else if (object->className() == "PostClean") {
-                cleanStage_.postCommands()->append(string(object->value("execute")));
+                cleanStage_.postCommands()->append(String(object->value("execute")));
             }
             else if (object->className() == "PreInstall") {
-                installStage_.preCommands()->append(string(object->value("execute")));
+                installStage_.preCommands()->append(String(object->value("execute")));
             }
             else if (object->className() == "PostInstall") {
-                installStage_.postCommands()->append(string(object->value("execute")));
+                installStage_.postCommands()->append(String(object->value("execute")));
             }
             else if (object->className() == "PreUninstall") {
-                uninstallStage_.preCommands()->append(string(object->value("execute")));
+                uninstallStage_.preCommands()->append(String(object->value("execute")));
             }
             else if (object->className() == "PostUninstall") {
-                uninstallStage_.postCommands()->append(string(object->value("execute")));
+                uninstallStage_.postCommands()->append(String(object->value("execute")));
             }
         }
     }
@@ -262,7 +262,7 @@ void BuildPlan::checkDuplicateTargetNames()
 {
     if (name_ == "") return;
 
-    string otherRecipePath;
+    String otherRecipePath;
     bool ok = true;
     if (options_ & Library)
         ok = BuildMap::instance()->registerLibrary(name_, recipePath_, &otherRecipePath);
@@ -270,7 +270,7 @@ void BuildPlan::checkDuplicateTargetNames()
         ok = BuildMap::instance()->registerApplication(name_, recipePath_, &otherRecipePath);
     if (!ok) {
         throw UsageError{
-            format{"Duplicate target name '%%' in\n  %%\n  and\n  %%"}
+            Format{"Duplicate target name '%%' in\n  %%\n  and\n  %%"}
             << name_
             << otherRecipePath
             << recipePath_
@@ -278,7 +278,7 @@ void BuildPlan::checkDuplicateTargetNames()
     }
 }
 
-void BuildPlan::gatherAutoConfigureSystemPrerequisites(Set<string> *names)
+void BuildPlan::gatherAutoConfigureSystemPrerequisites(Set<String> *names)
 {
     if (configureListComplete_) return;
     configureListComplete_ = true;
@@ -305,7 +305,7 @@ int BuildPlan::run()
     readPrerequisites();
 
     if (recipe_->value("configure-list")) {
-        auto names = Set<string>::create();
+        auto names = Set<String>::create();
         gatherAutoConfigureSystemPrerequisites(names);
         for (auto name: names)
             fout() << name << nl;
@@ -327,7 +327,7 @@ int BuildPlan::run()
         if (recipe_->value("prepare")) return 0;
     }
 
-    string defaultIncludePath = projectPath_->extendPath("include");
+    String defaultIncludePath = projectPath_->extendPath("include");
     if (Dir::exists(defaultIncludePath)) {
         if (!includePaths_->contains(defaultIncludePath))
             includePaths_->append(defaultIncludePath);
@@ -337,8 +337,8 @@ int BuildPlan::run()
     initModules();
 
     configureStage()->run();
-    if (string(recipe_->value("query")) != "") {
-        queryVariables(variant::cast<string>(recipe_->value("query"))->split(','));
+    if (String(recipe_->value("query")) != "") {
+        queryVariables(Variant::cast<String>(recipe_->value("query"))->split(','));
         return 0;
     }
     else if (recipe_->value("query-all")) {
@@ -392,42 +392,42 @@ int BuildPlan::run()
     return 0;
 }
 
-string BuildPlan::description() const
+String BuildPlan::description() const
 {
     return recipe_->value("description");
 }
 
-string BuildPlan::sourcePath(const string &source) const
+String BuildPlan::sourcePath(const String &source) const
 {
     if (projectPath_ == ".") return source;
     return projectPath_->extendPath(source);
 }
 
-string BuildPlan::modulePath(const string &object) const
+String BuildPlan::modulePath(const String &object) const
 {
     return modulePath_->extendPath(object);
 }
 
-string BuildPlan::installPath(const string &relativeInstallPath) const
+String BuildPlan::installPath(const String &relativeInstallPath) const
 {
     return installRoot_->extendPath(installPrefix_)->extendPath(relativeInstallPath);
 }
 
-string BuildPlan::pluginPath(const string &targetLibName) const
+String BuildPlan::pluginPath(const String &targetLibName) const
 {
-    string path = targetLibName->extendPath("plugins");
-    string group = recipe_->value("group");
+    String path = targetLibName->extendPath("plugins");
+    String group = recipe_->value("group");
     if (group != "") path = path->extendPath(group);
     return path;
 }
 
-string BuildPlan::pluginReversePath() const
+String BuildPlan::pluginReversePath() const
 {
-    string group = recipe_->value("group");
+    String group = recipe_->value("group");
     return group != "" ? "../../.." : "../..";
 }
 
-string BuildPlan::previousLinkCommandPath() const
+String BuildPlan::previousLinkCommandPath() const
 {
     return modulePath("LinkComannd");
 }
@@ -437,11 +437,11 @@ Ref<StringList> BuildPlan::globSources(StringList *pattern) const
     Ref<StringList> sources = StringList::create();
     for (int i = 0; i < pattern->count(); ++i) {
         Ref<Glob> glob = Glob::open(sourcePath(pattern->at(i)));
-        for (string path; glob->read(&path);) {
+        for (String path; glob->read(&path);) {
             Ref<DirWalker> walker = DirWalker::tryOpen(path);
             if (walker) {
                 bool isDir = false;
-                for (string path; walker->read(&path, &isDir);) {
+                for (String path; walker->read(&path, &isDir);) {
                     if (!isDir) sources->append(path);
                 }
             }
@@ -470,25 +470,25 @@ void BuildPlan::registerLinkDerivative(Job *linkJob)
     }
 }
 
-string BuildPlan::findPrerequisite(const string &prerequisitePath) const
+String BuildPlan::findPrerequisite(const String &prerequisitePath) const
 {
     if (prerequisitePath->isAbsolutePath()) {
         if (File::exists(recipePath(prerequisitePath))) return prerequisitePath;
-        return string{};
+        return String{};
     }
     {
-        string candidatePath = systemSourcePath()->extendPath(prerequisitePath);
+        String candidatePath = systemSourcePath()->extendPath(prerequisitePath);
         if (File::exists(recipePath(candidatePath))) return candidatePath;
     }
-    for (string path = projectPath_; path != "/"; path = path->reducePath()) {
-        string candidatePath = path->extendPath(prerequisitePath);
+    for (String path = projectPath_; path != "/"; path = path->reducePath()) {
+        String candidatePath = path->extendPath(prerequisitePath);
         if (File::exists(recipePath(candidatePath))) {
             candidatePath = candidatePath->canonicalPath();
             if (candidatePath == projectPath_) continue;
             return candidatePath;
         }
     }
-    return string{};
+    return String{};
 }
 
 void BuildPlan::readPrerequisites()
@@ -499,29 +499,29 @@ void BuildPlan::readPrerequisites()
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
-    Ref<const StringList> prerequisitePaths = variant::cast<const StringList *>(recipe_->value("use"));
+    Ref<const StringList> prerequisitePaths = Variant::cast<const StringList *>(recipe_->value("use"));
 
     if (options_ & Package) {
-        const StringList *packageItems = variant::cast<const StringList *>(recipe_->value("include"));
+        const StringList *packageItems = Variant::cast<const StringList *>(recipe_->value("include"));
         if (packageItems->count() > 0) prerequisitePaths = packageItems;
     }
 
-    for (const string &prerequisitePath: prerequisitePaths) {
-        string path = findPrerequisite(prerequisitePath);
+    for (const String &prerequisitePath: prerequisitePaths) {
+        String path = findPrerequisite(prerequisitePath);
         if (path == "")
-            throw UsageError{format{} << recipePath() << ": Failed to locate prerequisite '" << prerequisitePath << "'"};
+            throw UsageError{Format{} << recipePath() << ": Failed to locate prerequisite '" << prerequisitePath << "'"};
         Ref<BuildPlan> plan = BuildPlan::create(path);
         plan->readPrerequisites();
         prerequisites_->append(plan);
     }
 
     if (options_ & Plugin) {
-        string extensionTargetPath = recipe_->value("extend");
+        String extensionTargetPath = recipe_->value("extend");
         if (extensionTargetPath == "")
-            throw UsageError{format{} << recipePath() << ": Please provide the path of a library to extend in Plugin.extend"};
-        string path = findPrerequisite(extensionTargetPath);
+            throw UsageError{Format{} << recipePath() << ": Please provide the path of a library to extend in Plugin.extend"};
+        String path = findPrerequisite(extensionTargetPath);
         if (path == "")
-            throw UsageError{format{} << recipePath() << ": Failed to locate library '" << extensionTargetPath << "'"};
+            throw UsageError{Format{} << recipePath() << ": Failed to locate library '" << extensionTargetPath << "'"};
         extensionTarget_ = BuildPlan::create(path);
         if (extensionTarget_->options_ & Package) {
             extensionTarget_->readPrerequisites();
@@ -531,7 +531,7 @@ void BuildPlan::readPrerequisites()
             }
         }
         if (!(extensionTarget_->options_ & Library))
-            throw UsageError{format{} << recipePath() << ": '" << extensionTargetPath << "' (Plugin.extend) does not point to a library"};
+            throw UsageError{Format{} << recipePath() << ": '" << extensionTargetPath << "' (Plugin.extend) does not point to a library"};
         extensionTarget_->readPrerequisites();
         prerequisites_->appendList(extensionTarget_->prerequisites_);
         prerequisites_->append(extensionTarget_);
@@ -543,7 +543,7 @@ void BuildPlan::readPrerequisites()
 void BuildPlan::findVersion()
 {
     if (!version_->isValid()) {
-        string path = findPrerequisite("..");
+        String path = findPrerequisite("..");
         if (path != "") {
             Ref<BuildPlan> plan = BuildPlan::create(path);
             if (!plan->version_->isValid()) plan->findVersion();
@@ -561,7 +561,7 @@ void BuildPlan::globSources()
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
     if (recipe_->contains("source"))
-        sources_ = globSources(variant::cast<StringList *>(recipe_->value("source")));
+        sources_ = globSources(Variant::cast<StringList *>(recipe_->value("source")));
     else
         sources_ = StringList::create();
 
@@ -570,8 +570,8 @@ void BuildPlan::globSources()
     else sourcePrefix_ = sourcePrefix_->canonicalPath();
 
     containsCPlusPlus_ = false;
-    for (string source: sources_) {
-        string suffix = source->fileSuffix();
+    for (String source: sources_) {
+        String suffix = source->fileSuffix();
         if (suffix == "cc" || suffix == "cpp" || suffix == "cxx" || suffix == "mm") {
             containsCPlusPlus_ = true;
             break;
@@ -579,7 +579,7 @@ void BuildPlan::globSources()
     }
 
     if (recipe_->contains("bundle"))
-        bundle_ = globSources(variant::cast<StringList *>(recipe_->value("bundle")));
+        bundle_ = globSources(Variant::cast<StringList *>(recipe_->value("bundle")));
     else
         bundle_ = StringList::create();
 
@@ -595,15 +595,15 @@ void BuildPlan::initModules()
 
     modules_ = ModuleList::create();
 
-    string suffix;
+    String suffix;
     {
-        format f;
-        string absoulteProjectPath = projectPath_->absolutePathRelativeTo(Process::getWorkingDirectory());
+        Format f;
+        String absoulteProjectPath = projectPath_->absolutePathRelativeTo(Process::getWorkingDirectory());
         {
-            format h;
-            string topLevel = sourcePrefix_->absolutePathRelativeTo(Process::getWorkingDirectory());
+            Format h;
+            String topLevel = sourcePrefix_->absolutePathRelativeTo(Process::getWorkingDirectory());
             for (
-                string path = absoulteProjectPath;
+                String path = absoulteProjectPath;
                 path != topLevel && path != "/" && path != toolChain_->systemRoot();
                 path = path->reducePath()
             )

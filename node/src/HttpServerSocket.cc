@@ -89,7 +89,7 @@ public:
             int ret = gnutls_server_name_get(session, NULL, &size, &type, 0);
             if (type == GNUTLS_NAME_DNS) {
                 CC_ASSERT(ret == GNUTLS_E_SHORT_MEMORY_BUFFER);
-                serverName_ = string{int(size)};
+                serverName_ = String{int(size)};
                 ret = gnutls_server_name_get(session, mutate(serverName_)->bytes(), &size, &type, 0);
                 if (ret != GNUTLS_E_SUCCESS) {
                     CCNODE_ERROR() << peerAddress_ << ": " << gnutls_strerror(ret) << nl;
@@ -119,7 +119,7 @@ public:
         nodeConfig_ = nodeConfig;
     }
 
-    string serverName() const { return serverName_; }
+    String serverName() const { return serverName_; }
     const DeliveryInstance *deliveryInstance() const { return deliveryInstance_; }
 
 private:
@@ -130,7 +130,7 @@ private:
     const LoggingInstance *errorLoggingInstance() const { return nodeConfig_->errorLoggingInstance(); }
 
     SocketAddress peerAddress_;
-    string serverName_;
+    String serverName_;
     const NodeConfig *nodeConfig_ { nullptr };
     const DeliveryInstance *deliveryInstance_ { nullptr };
 };

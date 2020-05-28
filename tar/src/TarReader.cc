@@ -7,7 +7,7 @@
  */
 
 #include <cc/File>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/tar/TarCommon>
 #include <cc/tar/TarReader>
 
@@ -21,21 +21,21 @@ Ref<TarReader> TarReader::open(Stream *source)
 
 bool TarReader::testFormat(Stream *source)
 {
-    string data = string::create(512);
+    String data = String::create(512);
     if (source->readSpan(mutate(data)) < data->count()) return false;
-    string magic;
+    String magic;
     data->scanString(&magic, "", 257, 263);
     return magic == "ustar " || magic == "ustar";
 }
 
-TarReader::TarReader(Stream *source)
-    : source_(source),
-      i_(0)
+TarReader::TarReader(Stream *source):
+    source_{source},
+    i_{0}
 {}
 
 bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 {
-    if (!data_) data_ = string::create(512);
+    if (!data_) data_ = String::create(512);
     *nextEntry = ArchiveEntry::create();
 
     CharArray *data = mutate(data_);
@@ -61,7 +61,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
     while (readAgain) {
         readAgain = false;
 
-        string magic;
+        String magic;
         data->scanString(&magic, "", 257, 263);
         ustarMagic = (magic == "ustar");
         gnuMagic   = (magic == "ustar ");
@@ -74,12 +74,12 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
 
         probesum = tarHeaderSum(data);
         if (checksum != probesum)
-            throw BrokenArchive{i_ - data->count(), format{"Checksum mismatch (%% != %%), path = \"%%\""} << oct(checksum, 6) << oct(probesum, 6) << entry->path()};
+            throw BrokenArchive{i_ - data->count(), Format{"Checksum mismatch (%% != %%), path = \"%%\""} << oct(checksum, 6) << oct(probesum, 6) << entry->path()};
 
         if (gnuMagic) {
             while ((entry->type_ == 'K' || entry->type_ == 'L') /*&& entry->path_ == "././@LongLink"*/) {
                 data->scanNumber(&entry->size_, 8, 124, 136);
-                string longPath = source_->readSpan(entry->size_);
+                String longPath = source_->readSpan(entry->size_);
                 if (longPath->count() < entry->size_)
                     throw BrokenArchive{i_, "Expected GNU @LongLink data"};
                 i_ += entry->size_;
@@ -100,7 +100,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
     }
 
     if (ustarMagic || gnuMagic) {
-        string prefix;
+        String prefix;
         data->scanString(&entry->userName_,  "", 265, 297);
         data->scanString(&entry->groupName_, "", 297, 329);
         if (!gnuMagic) {

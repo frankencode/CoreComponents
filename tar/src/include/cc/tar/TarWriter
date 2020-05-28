@@ -20,12 +20,12 @@ class TarWriter: public ArchiveWriter
 public:
     static Ref<TarWriter> open(Stream *sink);
 
-    void writeFile(const string &path) override;
+    void writeFile(const String &path) override;
 
 private:
     TarWriter(Stream *sink);
     ~TarWriter();
-    void writeFile(const string &path, const FileStatus *status);
+    void writeFile(const String &path, const FileStatus *status);
     void writePadding(off_t unpaddedSize);
 
     Ref<Stream> sink_;
@@ -51,9 +51,9 @@ private:
         ino_t inodeNumber_;
     };
 
-    typedef Map<FileId, string> HardLinks;
+    typedef Map<FileId, String> HardLinks;
 
-    string zero_;
+    String zero_;
     Ref<HardLinks> hardLinks_;
     Ref<FileStatus> longPathStatus_;
     Ref<FileStatus> longLinkStatus_;

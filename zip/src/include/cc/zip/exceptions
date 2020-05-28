@@ -19,21 +19,21 @@ namespace zip {
 class ZipError: public Exception
 {
 public:
-    ZipError(int errorCode, string zipPath):
+    ZipError(int errorCode, String zipPath):
         errorCode_(errorCode),
         zipPath_(zipPath)
     {}
 
     int errorCode() const { return errorCode_; }
-    string zipPath() const { return zipPath_; }
+    String zipPath() const { return zipPath_; }
 
-    string message() const override;
+    String message() const override;
 
     const ZipError *operator->() const { return this; }
 
 private:
     int errorCode_;
-    string zipPath_;
+    String zipPath_;
 };
 
 }} // namespace cc::zip

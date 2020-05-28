@@ -19,10 +19,10 @@ using meta::MetaProtocol;
 class LoggingPrototype: public MetaPrototype
 {
 public:
-    static Ref<LoggingPrototype> create(const string &className, const MetaProtocol *protocol = nullptr);
+    static Ref<LoggingPrototype> create(const String &className, const MetaProtocol *protocol = nullptr);
 
 protected:
-    LoggingPrototype(const string &className, const MetaProtocol *protocol = nullptr);
+    LoggingPrototype(const String &className, const MetaProtocol *protocol = nullptr);
 };
 
 }} // namespace cc::http

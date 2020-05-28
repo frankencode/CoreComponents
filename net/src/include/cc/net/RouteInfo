@@ -44,10 +44,10 @@ public:
     SocketAddress gateway() const { return gateway_; }
 
     /// Name of the network interface the packet arrives on the system
-    string inputInterface() const { return inputInterface_; }
+    String inputInterface() const { return inputInterface_; }
 
     /// Name of the network interface the packet leaves leaves the system
-    string outputInterface() const { return outputInterface_; }
+    String outputInterface() const { return outputInterface_; }
 
     /// Cost to take the route
     int metric() const { return metric_; }
@@ -55,7 +55,7 @@ public:
     /// Priority of the route
     int priority() const { return priority_; }
 
-    // string toString() const; // TODO
+    // String toString() const; // TODO
 
 private:
     static Ref<RouteInfo> create() { return new RouteInfo; }
@@ -66,8 +66,8 @@ private:
     SocketAddress source_;
     SocketAddress destination_;
     SocketAddress gateway_;
-    string inputInterface_;
-    string outputInterface_;
+    String inputInterface_;
+    String outputInterface_;
     int metric_;
     int priority_;
 };

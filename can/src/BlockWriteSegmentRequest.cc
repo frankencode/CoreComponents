@@ -7,12 +7,12 @@
  */
 
 #include <cc/can/BlockWriteSegmentRequest>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockWriteSegmentRequest::createFrame(int serverId, const string &data, int offset, int sequenceNumber)
+Ref<CanFrame> BlockWriteSegmentRequest::createFrame(int serverId, const String &data, int offset, int sequenceNumber)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
@@ -34,11 +34,11 @@ Ref<CanFrame> BlockWriteSegmentRequest::createFrame(int serverId, const string &
     return frame;
 }
 
-string BlockWriteSegmentRequest::Instance::toString() const
+String BlockWriteSegmentRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockWriteSegmentRequest {" << nl
         << "  serverId      : " << serverId() << nl
         << "  sequenceNumber: " << sequenceNumber() << nl

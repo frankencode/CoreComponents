@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/http/HttpChunkedSink>
 
 namespace cc {
@@ -23,17 +23,17 @@ HttpChunkedSink::HttpChunkedSink(Stream *stream):
 
 HttpChunkedSink::~HttpChunkedSink()
 {
-    format{stream_} << 0 << "\r\n" << "\r\n";
+    Format{stream_} << 0 << "\r\n" << "\r\n";
 }
 
 void HttpChunkedSink::write(const CharArray *data)
 {
-    format{stream_} << hex(data->count()) << "\r\n" << data << "\r\n";
+    Format{stream_} << hex(data->count()) << "\r\n" << data << "\r\n";
 }
 
 void HttpChunkedSink::write(const StringList *parts)
 {
-    format chunk{stream_};
+    Format chunk{stream_};
     int total = 0;
     for (int i = 0; i < parts->count(); ++i)
         total += parts->at(i)->count();

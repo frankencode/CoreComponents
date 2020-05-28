@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/WriteSegmentReply>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -26,11 +26,11 @@ Ref<CanFrame> WriteSegmentReply::createFrame(int serverId, int offset)
     return frame;
 }
 
-string WriteSegmentReply::Instance::toString() const
+String WriteSegmentReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "WriteSegmentReply {" << nl
         << "  serverId: " << serverId() << nl
         << "  toggle  : " << toggle() << nl

@@ -54,7 +54,7 @@ bool TestSuite::init(int argc, char **argv)
         arguments->validate(options);
         arguments->override(options);
 
-        string reportType = options->value("report");
+        String reportType = options->value("report");
         if (reportType == "txt")
             report_ = TxtTestReport::create();
         else if (reportType == "xml")
@@ -78,7 +78,7 @@ bool TestSuite::init(int argc, char **argv)
     return true;
 }
 
-bool TestSuite::verify(bool condition, const string &description, const string &conditionText, const string &codePath, int codeLine)
+bool TestSuite::verify(bool condition, const String &description, const String &conditionText, const String &codePath, int codeLine)
 {
     if (!condition) {
         ++totalFailureCount_;
@@ -133,7 +133,7 @@ int TestSuite::run(int argc, char **argv)
                 testCase->run();
             }
             catch (Exception &ex) {
-                string typeName = typeid(ex).name();
+                String typeName = typeid(ex).name();
                 {
                     int status = 0;
                     char *buf = abi::__cxa_demangle(typeName, 0, 0, &status);
@@ -149,7 +149,7 @@ int TestSuite::run(int argc, char **argv)
             }
         }
 
-        string outText, errText;
+        String outText, errText;
         if (report_->captureOutput()) {
             outSaved->duplicateTo(stdOut());
             errSaved->duplicateTo(stdErr());

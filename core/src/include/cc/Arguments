@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/variant>
+#include <cc/Variant>
 #include <cc/exceptions>
 
 namespace cc {
@@ -50,14 +50,14 @@ public:
     /** Execution path
       * \see Process::exePath()
       */
-    string execPath() const { return execPath_; }
+    String execPath() const { return execPath_; }
 
 private:
     Arguments(int argc, char **argv, VariantMap *options);
 
     Ref<VariantMap> options_;
     Ref<StringList> items_;
-    string execPath_;
+    String execPath_;
 };
 
 } // namespace cc

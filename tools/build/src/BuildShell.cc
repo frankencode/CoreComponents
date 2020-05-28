@@ -23,31 +23,31 @@ BuildShell::BuildShell(const BuildPlan *plan):
     plan_{plan}
 {}
 
-string BuildShell::beautify(const string &command) const
+String BuildShell::beautify(const String &command) const
 {
     if (plan()->options() & BuildPlan::Bootstrap) {
         return command
-            ->replace(plan()->sourcePrefix(), string{"$SOURCE"})
-            ->replace(Process::getWorkingDirectory(), string{"$PWD"})
+            ->replace(plan()->sourcePrefix(), String{"$SOURCE"})
+            ->replace(Process::getWorkingDirectory(), String{"$PWD"})
             ->replace("$ORIGIN", "'$ORIGIN'");
     }
     return command;
 }
 
-bool BuildShell::run(const string &command) const
+bool BuildShell::run(const String &command) const
 {
     fout() << beautify(command) << nl;
     if (plan()->options() & BuildPlan::Simulate) return true;
     return Process::execute(command) == 0;
 }
 
-Ref<FileStatus> BuildShell::fileStatus(const string &path) const
+Ref<FileStatus> BuildShell::fileStatus(const String &path) const
 {
     if (plan()->options() & BuildPlan::Blindfold) return FileStatus::create();
     return FileStatus::readHead(path);
 }
 
-void BuildShell::mkdir(const string &path) const
+void BuildShell::mkdir(const String &path) const
 {
     if (!fileStatus(path)->isValid())
         fout("mkdir -p %%\n") << path;
@@ -55,7 +55,7 @@ void BuildShell::mkdir(const string &path) const
     Dir::establish(path);
 }
 
-void BuildShell::rmdir(const string &path) const
+void BuildShell::rmdir(const String &path) const
 {
     bool exists = fileStatus(path)->isValid();
     if (exists) fout("rmdir %%\n") << path;
@@ -63,7 +63,7 @@ void BuildShell::rmdir(const string &path) const
     if (exists) try { Dir::remove(path); } catch (SystemError &) { /*FIXME, directory might not be empty */ }
 }
 
-bool BuildShell::clean(const string &path) const
+bool BuildShell::clean(const String &path) const
 {
     fout("rm -rf %%\n") << path;
     if (plan()->options() & BuildPlan::Simulate) return true;
@@ -81,7 +81,7 @@ bool BuildShell::clean(const string &path) const
     return true;
 }
 
-void BuildShell::symlink(const string &path, const string &newPath) const
+void BuildShell::symlink(const String &path, const String &newPath) const
 {
     fout("ln -sf %% %%\n") << path << newPath;
     if (plan()->options() & BuildPlan::Simulate) return;
@@ -89,9 +89,9 @@ void BuildShell::symlink(const string &path, const string &newPath) const
     File::symlink(path, newPath);
 }
 
-bool BuildShell::install(const string &sourcePath, const string &destPath) const
+bool BuildShell::install(const String &sourcePath, const String &destPath) const
 {
-    string destDirPath = destPath->reducePath();
+    String destDirPath = destPath->reducePath();
     bool destDirMissing = destDirPath != "" && !fileStatus(destDirPath)->isValid();
     if (destDirMissing) fout("install -d %%\n") << destDirPath;
 
@@ -114,7 +114,7 @@ bool BuildShell::install(const string &sourcePath, const string &destPath) const
     return true;
 }
 
-bool BuildShell::unlink(const string &path) const
+bool BuildShell::unlink(const String &path) const
 {
     if ((plan()->options() & BuildPlan::Blindfold) || fileStatus(path)->isValid()) {
         if (plan()->options() & BuildPlan::Simulate) {
@@ -133,13 +133,13 @@ bool BuildShell::unlink(const string &path) const
     return true;
 }
 
-bool BuildShell::installAll(const string &sourcePrefix, const string &installPrefix) const
+bool BuildShell::installAll(const String &sourcePrefix, const String &installPrefix) const
 {
     Ref<DirWalker> walker = DirWalker::tryOpen(sourcePrefix);
     if (!walker) return true;
 
     try {
-        string sourcePath;
+        String sourcePath;
         bool isDir = false;
         while (walker->read(&sourcePath, &isDir)) {
             if (isDir) continue;
@@ -162,13 +162,13 @@ bool BuildShell::installAll(const string &sourcePrefix, const string &installPre
     return true;
 }
 
-bool BuildShell::unlinkAll(const string &sourcePrefix, const string &installPrefix) const
+bool BuildShell::unlinkAll(const String &sourcePrefix, const String &installPrefix) const
 {
     Ref<DirWalker> walker = DirWalker::tryOpen(sourcePrefix);
     if (!walker) return true;
 
     try {
-        string sourcePath;
+        String sourcePath;
         bool isDir = false;
         while (walker->read(&sourcePath, &isDir)) {
             if (isDir) continue;
@@ -190,7 +190,7 @@ bool BuildShell::unlinkAll(const string &sourcePrefix, const string &installPref
     return true;
 }
 
-void BuildShell::cd(const string &path) const
+void BuildShell::cd(const String &path) const
 {
     fout("cd %%\n") << path;
     if (plan()->options() & BuildPlan::Simulate) return;

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Thread>
 #include <cc/str>
 
@@ -16,14 +16,14 @@ namespace cc {
 namespace http {
 
 #define CCNODE_LOG(sink) \
-    sink << "(" << inum(uint64_t(Thread::self()->id()), 62) << ") " << string{__FILE__}->baseName() << ": "
+    sink << "(" << inum(uint64_t(Thread::self()->id()), 62) << ") " << String{__FILE__}->baseName() << ": "
 
-#define CCNODE_ERROR()   CCNODE_LOG(format{errorLoggingInstance()->errorStream()  })
-#define CCNODE_WARNING() CCNODE_LOG(format{errorLoggingInstance()->warningStream()})
-#define CCNODE_NOTICE()  CCNODE_LOG(format{errorLoggingInstance()->noticeStream() })
-#define CCNODE_INFO()    CCNODE_LOG(format{errorLoggingInstance()->infoStream()   })
+#define CCNODE_ERROR()   CCNODE_LOG(Format{errorLoggingInstance()->errorStream()  })
+#define CCNODE_WARNING() CCNODE_LOG(Format{errorLoggingInstance()->warningStream()})
+#define CCNODE_NOTICE()  CCNODE_LOG(Format{errorLoggingInstance()->noticeStream() })
+#define CCNODE_INFO()    CCNODE_LOG(Format{errorLoggingInstance()->infoStream()   })
 #ifndef NDEBUG
-#define CCNODE_DEBUG()   CCNODE_LOG(format{errorLoggingInstance()->debugStream()  })
+#define CCNODE_DEBUG()   CCNODE_LOG(Format{errorLoggingInstance()->debugStream()  })
 #else
 #define CCNODE_DEBUG()   NullFormat()
 #endif

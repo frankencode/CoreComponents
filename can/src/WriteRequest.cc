@@ -7,12 +7,12 @@
  */
 
 #include <cc/can/WriteRequest>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-Ref<CanFrame> WriteRequest::createFrame(int serverId, Selector selector, const string &data)
+Ref<CanFrame> WriteRequest::createFrame(int serverId, Selector selector, const String &data)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
 
@@ -40,11 +40,11 @@ Ref<CanFrame> WriteRequest::createFrame(int serverId, Selector selector, const s
     return frame;
 }
 
-string WriteRequest::Instance::toString() const
+String WriteRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    format f;
+    Format f;
     f << "WriteRequest {" << nl
       << "  serverId: " << serverId() << nl
       << "  selector: " << selector() << nl;

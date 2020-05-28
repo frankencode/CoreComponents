@@ -7,7 +7,7 @@
  */
 
 #include <cc/Date>
-#include <cc/format>
+#include <cc/Format>
 #include <stdint.h>
 
 namespace cc {
@@ -175,24 +175,24 @@ double Date::time() const
     return time_;
 }
 
-string Date::toString() const
+String Date::toString() const
 {
-    //! \todo fully enable ms resolution (ss.fraction in string output)
+    //! \todo fully enable ms resolution (ss.fraction in String output)
     //! \todo local time Formatting
 
-    string tz = "Z";
+    String tz = "Z";
     int offset = offset_ / 60;
     if (offset > 0)
-        tz = format{} << "+" << dec(offset / 60, 2) << dec(offset % 60, 2);
+        tz = Format{} << "+" << dec(offset / 60, 2) << dec(offset % 60, 2);
     else if (offset < 0)
-        tz = format{} << "-" << dec((-offset) / 60, 2) << dec((-offset) % 60, 2);
+        tz = Format{} << "-" << dec((-offset) / 60, 2) << dec((-offset) % 60, 2);
 
-    return format{}
+    return Format{}
         << dec(year_, 4) << "-" << dec(month_, 2) << "-" << dec(day_, 2)
         << "T" << dec(hour_, 2) << dec(minutes_, 2) << dec(seconds_, 2) << tz;
 }
 
-string Date::monthName() const
+String Date::monthName() const
 {
     const char *names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
     int i = month_ - 1;
@@ -201,7 +201,7 @@ string Date::monthName() const
     return names[i];
 }
 
-string Date::dayName() const
+String Date::dayName() const
 {
     const char *names[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
     int i = weekDay_;

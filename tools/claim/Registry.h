@@ -23,8 +23,8 @@ public:
     inline int headerStyleCount() const { return headerStyleByLanguage_->count(); }
     HeaderStyle *headerStyleAt(int i) const { return headerStyleByLanguage_->at(i)->value(); }
 
-    const HeaderStyle *headerStyleByLanguage(const string &language) const;
-    bool detectHeaderStyle(const string &path, const string &text, HeaderStyle **style) const;
+    const HeaderStyle *headerStyleByLanguage(const String &language) const;
+    bool detectHeaderStyle(const String &path, const String &text, HeaderStyle **style) const;
 
 private:
     friend class Singleton<Registry>;
@@ -34,7 +34,7 @@ private:
 
     void registerHeaderStyle(HeaderStyle *style);
 
-    typedef Map< string, Ref<HeaderStyle> > HeaderStyleByLanguage;
+    typedef Map< String, Ref<HeaderStyle> > HeaderStyleByLanguage;
     Ref<HeaderStyleByLanguage> headerStyleByLanguage_;
 };
 

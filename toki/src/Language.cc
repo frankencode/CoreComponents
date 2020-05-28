@@ -13,7 +13,7 @@ namespace cc {
 namespace toki {
 
 Language::Language(
-    const string &displayName,
+    const String &displayName,
     const Pattern &pathPattern,
     const SyntaxDefinition *highlightingSyntax,
     const SyntaxDefinition *discoverySyntax,

@@ -29,7 +29,7 @@ public:
     virtual Ref<TextCursor> copy() const = 0;
     virtual void assign(const TextCursor *other) = 0;
 
-    string toString() const;
+    String toString() const;
 };
 
 }} // namespace cc::ui

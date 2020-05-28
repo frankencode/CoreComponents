@@ -14,7 +14,7 @@
 #include <cc/http/exceptions>
 #include <cc/http/debug>
 #include <cc/net/Uri>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/RefGuard>
 
 namespace cc {
@@ -88,7 +88,7 @@ void DeliveryWorker::run()
             catch (HttpError &ex) {
                 if (requestCount > 0 || ex.statusCode() == RequestTimeout::StatusCode) {
                     try {
-                        format{"HTTP/1.1 %% %%\r\n\r\n", client_->stream()}
+                        Format{"HTTP/1.1 %% %%\r\n\r\n", client_->stream()}
                             << ex.statusCode()
                             << ex.message();
                     }
@@ -129,7 +129,7 @@ void DeliveryWorker::autoSecureForwardings()
             nodeConfig()->security()->hasCredentials() ||
             deliveryInstance_->security()->hasCredentials()
         ) {
-            string location = header->value("Location");
+            String location = header->value("Location");
             if (location->startsWith("http:")) {
                 try {
                     Uri uri{location};

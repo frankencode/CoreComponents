@@ -6,32 +6,32 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/syntax/SyntaxState>
 #include <cc/syntax/exceptions>
 
 namespace cc {
 namespace syntax {
 
-SyntaxError::SyntaxError(const string &text, SyntaxState *state, const string &resource):
+SyntaxError::SyntaxError(const String &text, SyntaxState *state, const String &resource):
     TextError{text, state ? state->hintOffset() : -1, resource},
     state_{state}
 {}
 
-string SyntaxError::message() const
+String SyntaxError::message() const
 {
-    format format;
+    Format f;
     const char *error = "Syntax error";
     if (state_) if (state_->hint()) {
         int line = 0, pos = 0;
         text_->offsetToLinePos(state_->hintOffset(), &line, &pos);
-        if (resource_ != "") format << resource_ << ":";
-        if (!text_->contains('\n') && text_->trim()->count() > 0) format << "\'" << text_ << "\':";
-        format << line << ":" << pos << ": ";
+        if (resource_ != "") f << resource_ << ":";
+        if (!text_->contains('\n') && text_->trim()->count() > 0) f << "\'" << text_ << "\':";
+        f << line << ":" << pos << ": ";
     }
-    format << error;
-    if (state_) if (state_->hint()) format << ": " << state_->hint();
-    return format;
+    f << error;
+    if (state_) if (state_->hint()) f << ": " << state_->hint();
+    return f;
 }
 
 }} // namespace cc

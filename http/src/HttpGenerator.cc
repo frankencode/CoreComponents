@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/TransferMeter>
 #include <cc/http/HttpConnection>
 #include <cc/http/HttpChunkedSink>
@@ -26,7 +26,7 @@ HttpGenerator::HttpGenerator(HttpConnection *peer):
 HttpGenerator::~HttpGenerator()
 {}
 
-void HttpGenerator::setHeader(const string &name, const string &value)
+void HttpGenerator::setHeader(const String &name, const String &value)
 {
     header_->establish(name, value);
 }
@@ -37,7 +37,7 @@ void HttpGenerator::transmit()
     endTransmission();
 }
 
-void HttpGenerator::transmit(const string &payload)
+void HttpGenerator::transmit(const String &payload)
 {
     beginTransmission(payload->count());
     if (payload->count() > 0)
@@ -64,7 +64,7 @@ void HttpGenerator::writeHeader()
 {
     polishHeader();
 
-    format sink{peer_->stream()};
+    Format sink{peer_->stream()};
     writeFirstLine(sink);
     for (const auto &item: header_)
         sink << item->key() << ":" << item->value() << "\r\n";
@@ -94,19 +94,19 @@ Stream *HttpGenerator::payload()
     return payload_;
 }
 
-void HttpGenerator::write(const string &data)
+void HttpGenerator::write(const String &data)
 {
     payload()->write(data);
 }
 
-format HttpGenerator::chunk(const string &pattern)
+Format HttpGenerator::chunk(const String &pattern)
 {
-    return format{pattern, payload()};
+    return Format{pattern, payload()};
 }
 
-format HttpGenerator::chunk()
+Format HttpGenerator::chunk()
 {
-    return format{payload()};
+    return Format{payload()};
 }
 
 void HttpGenerator::endTransmission()

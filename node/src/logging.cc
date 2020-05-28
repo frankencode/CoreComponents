@@ -10,12 +10,12 @@
 #include <cc/http/HttpServerConnection>
 #include <cc/System>
 #include <cc/Date>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace http {
 
-LoggingLevel readLoggingLevel(const string &s)
+LoggingLevel readLoggingLevel(const String &s)
 {
     if (s->equalsCaseInsensitive("silent")) return LoggingLevel::Silent;
     else if (s->equalsCaseInsensitive("error")) return LoggingLevel::Error;
@@ -26,15 +26,15 @@ LoggingLevel readLoggingLevel(const string &s)
     return LoggingLevel::Default;
 }
 
-string formatDeliveryLogMessage(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const string &statusMessage)
+String formatDeliveryLogMessage(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage)
 {
     const HttpRequest *request = client->request();
-    string requestHost = request ? request->host() : "";
-    string requestLine = request ? request->line() : "";
+    String requestHost = request ? request->host() : "";
+    String requestLine = request ? request->line() : "";
     double requestTime = request ? request->time() : System::now();
-    string userAgent   = request ? request->value("User-Agent") : statusMessage;
+    String userAgent   = request ? request->value("User-Agent") : statusMessage;
 
-    return format{}
+    return Format{}
         << client->address()->networkAddress() << " "
         << Date::breakdown(requestTime)->toString() << " "
         << "\"" << requestHost << "\" "

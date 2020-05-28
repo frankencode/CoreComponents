@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 
@@ -87,10 +87,10 @@ public:
     int offset() const { return offset_; } ///< timezone offset in hours
 
     double time() const; ///< seconds since 1st Jan 1970 00:00:00
-    string toString() const; ///< convert this date object into a string representation
+    String toString() const; ///< convert this date object into a String representation
 
-    string monthName() const; ///< name of the month ("Jan", "Feb", ..., "Dec")
-    string dayName() const; ///< name of the weekday ("Sun", "Mon", ..., "Sat")
+    String monthName() const; ///< name of the month ("Jan", "Feb", ..., "Dec")
+    String dayName() const; ///< name of the weekday ("Sun", "Mon", ..., "Sat")
 
 private:
     Date();

@@ -15,12 +15,12 @@
 
 namespace ccaes {
 
-string Readline::getPassword(const string &prompt)
+String Readline::getPassword(const String &prompt)
 {
     stdIn()->echo(false);
 
     char *line = readline(prompt);
-    string text = line;
+    String text = line;
     ::free((void *)line);
 
     stdIn()->echo(true);

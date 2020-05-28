@@ -37,7 +37,7 @@ public:
         Specifier specifier() const { return static_cast<Specifier>(frame_->payloadAt(0)); }
         int targetId() const { return frame_->payloadAt(1); }
 
-        string toString() const;
+        String toString() const;
 
     private:
         friend class NetworkCommand;
@@ -56,12 +56,12 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator string() const { return instance_.toString(); }
+    operator String() const { return instance_.toString(); }
 
 private:
     const Instance instance_;
 };
 
-string str(NetworkCommand::Specifier commandSpecifier);
+String str(NetworkCommand::Specifier commandSpecifier);
 
 }} // namespace cc::can

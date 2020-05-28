@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 #include <cc/Map>
 
 namespace cc { class File; }
@@ -27,21 +27,21 @@ public:
     static Ref<DependencyCache> create(BuildPlan *plan);
     ~DependencyCache();
 
-    static string cachePath(BuildPlan *plan);
+    static String cachePath(BuildPlan *plan);
     double cacheTime() const { return cacheTime_; }
 
     StringList *previousSources() const;
 
-    bool lookup(const string &source, Ref<Module> *module);
-    void insert(const string &source, Module *module);
+    bool lookup(const String &source, Ref<Module> *module);
+    void insert(const String &source, Module *module);
 
 private:
     DependencyCache(BuildPlan *plan);
 
     Ref<BuildPlan> buildPlan_;
-    string cachePath_;
+    String cachePath_;
     double cacheTime_;
-    typedef Map< string, Ref<Module> > Cache;
+    typedef Map< String, Ref<Module> > Cache;
     Ref<Cache> cache_;
 
     Ref<StringList> previousSources_;

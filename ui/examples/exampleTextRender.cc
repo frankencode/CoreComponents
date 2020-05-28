@@ -13,16 +13,16 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        paper = color::white;
+        paper = Color::white;
 
         glyphRuns_ = List< Ref<const GlyphRun> >::create();
 
-        string pangram = "the quick brown fox jumps over the lazy dog";
+        String pangram = "the quick brown fox jumps over the lazy dog";
         pangram = pangram->toUpper() + " / " + pangram;
 
         for (auto family: FontManager::instance()->getFontFamilies())
         {
-            string text = format{"%% (%%)"} << pangram << family->name();
+            String text = Format{"%% (%%)"} << pangram << family->name();
 
             // CC_INSPECT(family->name());
 
@@ -43,7 +43,7 @@ class MainView: public View
     void paint() override
     {
         Painter p{this};
-        p->setSource(color::black);
+        p->setSource(Color::black);
         int i = 0;
         for (const GlyphRun *glyphRun: glyphRuns_) {
             p->showGlyphRun(
@@ -60,7 +60,7 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
-    string fontPath = "<default font>";
+    String fontPath = "<default font>";
     if (argc > 1) {
         fontPath = argv[1];
         FontManager::instance()->addPath(fontPath);

@@ -10,7 +10,7 @@
 
 #include <sys/types.h>
 #include <pwd.h>
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 
@@ -34,7 +34,7 @@ public:
       * \param name login name
       * \return new object instance
       */
-    static Ref<User> lookup(const string &name) {
+    static Ref<User> lookup(const String &name) {
         return new User{name};
     }
 
@@ -43,24 +43,24 @@ public:
 
     uid_t id() const { return id_; } ///< user ID
     gid_t groupId() const { return groupId_; } ///< primary group ID
-    string name() const { return loginName_; } ///< login name
-    string loginName() const { return loginName_; } ///< login name
-    string fullName() const { return fullName_; } ///< real name
-    string home() const { return home_; } ///< home directory path
-    string shell() const { return shell_; } ///< login shell of the user
+    String name() const { return loginName_; } ///< login name
+    String loginName() const { return loginName_; } ///< login name
+    String fullName() const { return fullName_; } ///< real name
+    String home() const { return home_; } ///< home directory path
+    String shell() const { return shell_; } ///< login shell of the user
 
 private:
     User(uid_t id);
-    User(const string &name);
+    User(const String &name);
 
     void load(struct passwd *entry);
     bool isValid_;
     uid_t id_;
     gid_t groupId_;
-    string loginName_;
-    string fullName_;
-    string home_;
-    string shell_;
+    String loginName_;
+    String fullName_;
+    String home_;
+    String shell_;
 };
 
 } // namespace cc

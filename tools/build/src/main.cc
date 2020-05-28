@@ -15,7 +15,7 @@ using namespace ccbuild;
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
     int exitCode = 0;
     try {
         exitCode = BuildPlan::create(argc, argv)->run();

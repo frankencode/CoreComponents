@@ -22,10 +22,10 @@ public:
     /** Query the current network configuration state
       * \return new object instance
       */
-    static Ref<NetworkState> query(const string &interfaceName = "");
+    static Ref<NetworkState> query(const String &interfaceName = "");
 
     /// name of the network interface
-    string interfaceName() const { return interfaceName_; }
+    String interfaceName() const { return interfaceName_; }
 
     /// network interface
     const NetworkInterface *interface() const { return interface_; }
@@ -40,9 +40,9 @@ public:
     SocketAddress gateway() const { return gateway_; }
 
 private:
-    NetworkState(const string &interface);
+    NetworkState(const String &interface);
 
-    string interfaceName_;
+    String interfaceName_;
     Ref<NetworkInterface> interface_;
     int networkMask_;
     SocketAddress address_;

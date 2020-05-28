@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 namespace http {
@@ -27,10 +27,10 @@ enum class LoggingLevel {
 #endif
 };
 
-LoggingLevel readLoggingLevel(const string &s);
+LoggingLevel readLoggingLevel(const String &s);
 
 class HttpServerConnection;
 
-string formatDeliveryLogMessage(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const string &statusMessage);
+String formatDeliveryLogMessage(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage);
 
 }} // namespace cc::http

@@ -58,7 +58,7 @@ char32_t Utf8Source::readMultiByte(char32_t ch)
     return ch;
 }
 
-string Utf8Source::DecodingError::message() const
+String Utf8Source::DecodingError::message() const
 {
     return "UTF-8 error: failed to decode input bytes";
 }

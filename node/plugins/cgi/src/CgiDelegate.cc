@@ -17,7 +17,7 @@
 #include <cc/http/TapBuffer>
 #include <cc/net/StreamSocket>
 #include <cc/str>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/File>
 #include <cc/Process>
 #include <cc/SocketPair>
@@ -42,9 +42,9 @@ void CgiDelegate::process(const HttpRequest *request)
     process(request, cgiInstance_->script());
 }
 
-bool CgiDelegate::process(const HttpRequest *request, const FileStatus *status, const string &documentRoot)
+bool CgiDelegate::process(const HttpRequest *request, const FileStatus *status, const String &documentRoot)
 {
-    string script;
+    String script;
 
     if ((status->type() == FileType::Regular) && +(status->mode() & FileMode::AnyExec))
         script = status->path();
@@ -55,15 +55,15 @@ bool CgiDelegate::process(const HttpRequest *request, const FileStatus *status, 
     return true;
 }
 
-void CgiDelegate::process(const HttpRequest *request, const string &script, const string &documentRoot)
+void CgiDelegate::process(const HttpRequest *request, const String &script, const String &documentRoot)
 {
     Ref<CgiServerConnection> cgiServer;
     Ref<Process> sub;
 
-    string payload;
+    String payload;
     {
         int payloadSize = 0; {
-            string h;
+            String h;
             if (request->lookup("Content-Length", &h))
                 payloadSize = h->toNumber<int>();
         }
@@ -86,9 +86,9 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
         if (errorLoggingInstance()->verbosity() >= LoggingLevel::Debug)
             cgiServer->setupTransferLog(errorLoggingInstance()->debugStream(), address->toString());
 
-        string headerText = compileHeader(request, mutate(payload));
+        String headerText = compileHeader(request, mutate(payload));
         cgiServer->stream()->write(
-            format{}
+            Format{}
                 << headerText->count() << ":"
                 << headerText << "," << payload
         );
@@ -96,7 +96,7 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
     else if (script != "")
     {
         Ref<StringList> args = script->split(' ');
-        string scriptPath = args->at(0);
+        String scriptPath = args->at(0);
         if (!scriptPath->isAbsolutePath()) scriptPath = documentRoot->extendPath(scriptPath);
         args->at(0) = scriptPath;
 
@@ -128,11 +128,11 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
     Ref<HttpMessage> cgiResponse = cgiServer->readResponse();
 
     int statusCode = -1;
-    string reasonPhrase;
+    String reasonPhrase;
     {
         HttpMessage::iterator target;
         if (cgiResponse->find("Status", &target)) {
-            string statusField = target->value();
+            String statusField = target->value();
             int i = statusField->scan(' ');
             statusCode = statusField->select(0, i)->toNumber<int>();
             if (i < statusField->count())
@@ -148,12 +148,12 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
     {
         HttpMessage::iterator target;
         if (cgiResponse->find("Location", &target)) {
-            string location = target->value();
+            String location = target->value();
             CCNODE_DEBUG() << "Redirect to \"" << location << "\"" << nl;
             if (location->startsWith("/")) {
                 cgiResponse->remove(target);
-                string content = File::open(location)->map();
-                string contentType;
+                String content = File::open(location)->map();
+                String contentType;
                 if (!cgiResponse->lookup("Content-Type", &contentType)) {
                     contentType = deliveryInstance()->mediaTypeDatabase()->lookup(location, content);
                     cgiResponse->insert("Content-Type", contentType);
@@ -192,7 +192,7 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
 
     if (request->majorVersion() == 1 && request->minorVersion() == 0)
     {
-        string content = cgiResponse->payload()->readSpan(contentLength);
+        String content = cgiResponse->payload()->readSpan(contentLength);
         response()->beginTransmission(content->count());
         response()->write(content);
         response()->endTransmission();
@@ -201,7 +201,7 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
         response()->beginTransmission();
         ssize_t totalTransferred = 0;
         {
-            string buffer = string::allocate(0x10000);
+            String buffer = String::allocate(0x10000);
             while (true) {
                 int n = cgiResponse->payload()->read(mutate(buffer));
                 if (n == 0) break;
@@ -224,7 +224,7 @@ void CgiDelegate::process(const HttpRequest *request, const string &script, cons
 
 Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(const HttpRequest *request, CharArray *payload) const
 {
-    string queryString = urlDecode(request, payload);
+    String queryString = urlDecode(request, payload);
 
     Ref<EnvMap> env = EnvMap::create();
     env->insert("CONTENT_LENGTH", str(payload->count()));
@@ -239,7 +239,7 @@ Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(const HttpRequest *request, CharAr
     env->insert("SERVER_SOFTWARE", nodeConfig()->version());
 
     {
-        string h;
+        String h;
         if (request->lookup("Content-Type", &h))
             env->insert("CONTENT_TYPE", h);
     }
@@ -264,11 +264,11 @@ void CgiDelegate::logEnv(EnvMap *env)
         CCNODE_DEBUG() << "environ[" << i << "] = \"" << env->at(i)->key() << "\": \"" << env->at(i)->value() << "\"" << nl;
 }
 
-string CgiDelegate::compileHeader(const HttpRequest *request, CharArray *payload) const
+String CgiDelegate::compileHeader(const HttpRequest *request, CharArray *payload) const
 {
-    string queryString = urlDecode(request, payload);
+    String queryString = urlDecode(request, payload);
 
-    format header;
+    Format header;
     header
         << "CONTENT_LENGTH" << payload->count()
         << "SCGI" << "1"
@@ -283,7 +283,7 @@ string CgiDelegate::compileHeader(const HttpRequest *request, CharArray *payload
         << "SERVER_SOFTWARE" << nodeConfig()->version();
 
     {
-        string h;
+        String h;
         if (request->lookup("Content-Type", &h))
             header << "CONTENT_TYPE" << h;
     }
@@ -303,12 +303,12 @@ string CgiDelegate::compileHeader(const HttpRequest *request, CharArray *payload
 
     header << "";
 
-    return string::join(header, string::create(1, '\0'));
+    return String::join(header, String::create(1, '\0'));
 }
 
-string CgiDelegate::urlDecode(const HttpRequest *request, CharArray *payload)
+String CgiDelegate::urlDecode(const HttpRequest *request, CharArray *payload)
 {
-    string queryString = request->query();
+    String queryString = request->query();
     if (request->method() == "POST") {
         if (request->value("Content-Type") == "application/x-www-form-urlencoded") {
             queryString = payload->copy(); // FIXME: not strict enough
@@ -322,9 +322,9 @@ string CgiDelegate::urlDecode(const HttpRequest *request, CharArray *payload)
     return queryString;
 }
 
-string CgiDelegate::wrapHttp(const string &header)
+String CgiDelegate::wrapHttp(const String &header)
 {
-    string h = header->toUpper();
+    String h = header->toUpper();
     mutate(h)->replaceInsitu('-','_');
     return str("HTTP_") + h;
 }

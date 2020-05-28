@@ -14,7 +14,7 @@ using namespace cc::net;
 
 int main(int argc, char **argv)
 {
-    string interfaceName = "";
+    String interfaceName = "";
     if (argc > 1) interfaceName = argv[1];
 
     Ref<NetworkState> state = NetworkState::query(interfaceName);

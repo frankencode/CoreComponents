@@ -15,7 +15,7 @@ namespace cc {
 HexDump::HexDump(Stream *sink):
     sink_(sink),
     offset_(0),
-    buffer_{string::allocate(16)},
+    buffer_{String::allocate(16)},
     i_(0)
 {
     if (!sink_) sink_ = stdOut();
@@ -41,7 +41,7 @@ void HexDump::writeByte(uint8_t ch)
 
 void HexDump::flush()
 {
-    format f(sink_);
+    Format f(sink_);
     f << hex(offset_, 8) << "  ";
     for (int j = 0; j < buffer_->count(); ++j) {
         if (j < i_) {
@@ -57,7 +57,7 @@ void HexDump::flush()
     i_ = 0;
 }
 
-string hexDump(const CharArray *data)
+String hexDump(const CharArray *data)
 {
     Ref<CaptureSink> capture = CaptureSink::open();
     HexDump::open(capture)->write(data);

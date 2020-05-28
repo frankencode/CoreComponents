@@ -6,17 +6,17 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Version>
 
 namespace cc {
 
-Version::Version(const variant &v)
+Version::Version(const Variant &v)
 {
-    *this = variant::cast<Version>(v);
+    *this = Variant::cast<Version>(v);
 }
 
-Version::Instance::Instance(const string &s)
+Version::Instance::Instance(const String &s)
 {
     Ref<StringList> parts = s->trim("v")->split('.');
     if (parts->has(0)) major_ = parts->at(0)->toNumber<int>();
@@ -24,9 +24,9 @@ Version::Instance::Instance(const string &s)
     if (parts->has(2)) patch_ = parts->at(2)->toNumber<int>();
 }
 
-string Version::Instance::toString() const
+String Version::Instance::toString() const
 {
-    return format{"%%.%%.%%"} << major_ << minor_ << patch_;
+    return Format{"%%.%%.%%"} << major_ << minor_ << patch_;
 }
 
 } // namespace cc

@@ -33,7 +33,7 @@ EventHandler::EventHandler(
     onIdle_{onIdle}
 {}
 
-void EventHandler::onReceived(CanMedia *media, const string &data)
+void EventHandler::onReceived(CanMedia *media, const String &data)
 {
     onReceived_(data);
 }

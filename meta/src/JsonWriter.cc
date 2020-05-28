@@ -12,23 +12,23 @@
 namespace cc {
 namespace meta {
 
-Ref<JsonWriter> JsonWriter::create(Stream *sink, const string &indent)
+Ref<JsonWriter> JsonWriter::create(Stream *sink, const String &indent)
 {
     return new JsonWriter{sink, indent};
 }
 
-JsonWriter::JsonWriter(Stream *sink, const string &indent):
+JsonWriter::JsonWriter(Stream *sink, const String &indent):
     format_{sink},
     indent_{indent}
 {}
 
-void JsonWriter::write(variant value)
+void JsonWriter::write(Variant value)
 {
     writeValue(value, 0);
     format_ << nl;
 }
 
-void JsonWriter::writeValue(variant value, int depth)
+void JsonWriter::writeValue(Variant value, int depth)
 {
     if (
         value->type() == VariantType::Int  ||
@@ -38,7 +38,7 @@ void JsonWriter::writeValue(variant value, int depth)
         format_ << value;
     }
     else if (value->type() == VariantType::String) {
-        string s = value;
+        String s = value;
         if (s->contains("\""))
             s = s->replace("\"", "\\\"");
         s = s->escape();
@@ -55,7 +55,7 @@ void JsonWriter::writeValue(variant value, int depth)
     }
 }
 
-void JsonWriter::writeList(variant value, int depth)
+void JsonWriter::writeList(Variant value, int depth)
 {
     if (value->itemType() == VariantType::Int)
         writeTypedList<int>(value, depth);
@@ -64,14 +64,14 @@ void JsonWriter::writeList(variant value, int depth)
     else if (value->itemType() == VariantType::Float)
         writeTypedList<float>(value, depth);
     else if (value->itemType() == VariantType::String)
-        writeTypedList<string>(value, depth);
+        writeTypedList<String>(value, depth);
     else
-        writeTypedList<variant>(value, depth);
+        writeTypedList<Variant>(value, depth);
 }
 
-void JsonWriter::writeObject(variant value, const StringList *names, int depth)
+void JsonWriter::writeObject(Variant value, const StringList *names, int depth)
 {
-    Ref<MetaObject> object = variant::cast<MetaObject *>(value);
+    Ref<MetaObject> object = Variant::cast<MetaObject *>(value);
     if (object->count() == 0) {
         format_ << "{}";
         return;
@@ -84,7 +84,7 @@ void JsonWriter::writeObject(variant value, const StringList *names, int depth)
     }
     else {
         int i = 0;
-        for (string name: names) {
+        for (String name: names) {
             writeMember(name, object->value(name), i == names->count() - 1, depth);
             ++i;
         }
@@ -92,7 +92,7 @@ void JsonWriter::writeObject(variant value, const StringList *names, int depth)
     format_ << "}";
 }
 
-void JsonWriter::writeMember(const string &memberName, variant memberValue, bool isLast, int depth)
+void JsonWriter::writeMember(const String &memberName, Variant memberValue, bool isLast, int depth)
 {
     format_ << "\"" << memberName << "\": ";
     writeValue(memberValue, depth + 1);
@@ -112,9 +112,9 @@ void JsonWriter::writeIndent(int depth)
 }
 
 template<class T>
-void JsonWriter::writeTypedList(variant value, int depth)
+void JsonWriter::writeTypedList(Variant value, int depth)
 {
-    List<T> *list = variant::cast< List<T> *>(value);
+    List<T> *list = Variant::cast< List<T> *>(value);
     if (list->count() == 0) {
         format_ << "[]";
         return;

@@ -41,7 +41,7 @@ bool AnalyseStage::run()
     previousSources_ = dependencyCache->previousSources();
     cacheTime_ = dependencyCache->cacheTime();
 
-    for (string source: plan()->sources()) {
+    for (String source: plan()->sources()) {
         Ref<Module> module;
         if (dependencyCache->lookup(source, &module)) {
             plan()->modules()->append(module);

@@ -10,17 +10,17 @@
 
 namespace cc {
 
-string Utf16Sink::SurrogatePairEncodingError::message() const
+String Utf16Sink::SurrogatePairEncodingError::message() const
 {
     return "UTF-16 error: encoding surrogate pairs is not allowed (0xD800..0xDFFF)";
 }
 
-string Utf16Sink::ByteOrderMarkEncodingError::message() const
+String Utf16Sink::ByteOrderMarkEncodingError::message() const
 {
     return "UTF-16 error: encoding the Byte Order Mark is not allowed (0xFEFF, 0xFFFE)";
 }
 
-string Utf16Sink::LargeCodePointEncodingError::message() const
+String Utf16Sink::LargeCodePointEncodingError::message() const
 {
     return "UTF-16 error: code point to large (>= 0x110000)";
 }

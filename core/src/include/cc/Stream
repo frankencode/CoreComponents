@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 
-class format;
+class Format;
 
 /** \class Stream cc/Stream
   * \ingroup binary_io
@@ -40,13 +40,13 @@ public:
     virtual void write(const StringList *parts);
 
     /// Convenience wrapper
-    void write(const string &data) { write(static_cast<const CharArray *>(data)); }
+    void write(const String &data) { write(static_cast<const CharArray *>(data)); }
 
     /// Convenience wrapper
-    void write(const char *data) { write(string{data}); }
+    void write(const char *data) { write(String{data}); }
 
     /// Convenience wrapper
-    void write(const format &data);
+    void write(const Format &data);
 
     /// Convenience wrapper
     void write(const void *data, int size);
@@ -77,15 +77,15 @@ public:
 
     /** Read a fixed number of bytes (N)
       * \param count number of bytes to read (N)
-      * \return string of exactly N bytes (padded with zeros if no more data could be read)
+      * \return String of exactly N bytes (padded with zeros if no more data could be read)
       */
-    string readSpan(int count);
+    String readSpan(int count);
 
     /** Read the entire stream
       * \param buffer auxiliary transfer buffer
       * \return all byte read from the stream
       */
-    string readAll(CharArray *buffer = nullptr);
+    String readAll(CharArray *buffer = nullptr);
 
 protected:
     virtual ~Stream() {}

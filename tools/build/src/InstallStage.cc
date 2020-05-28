@@ -48,16 +48,16 @@ bool InstallStage::run()
 
 bool InstallStage::installTool(Module *module)
 {
-    string product = module->toolName();
+    String product = module->toolName();
     return shell()->install(product, toolChain()->installDirPath(plan())->extendPath(product));
 }
 
 bool InstallStage::installApplicationOrLibrary()
 {
     int options = plan()->options();
-    string product = toolChain()->linkName(plan());
-    string installDirPath = toolChain()->installDirPath(plan());
-    string installFilePath = installDirPath->extendPath(product);
+    String product = toolChain()->linkName(plan());
+    String installDirPath = toolChain()->installDirPath(plan());
+    String installFilePath = installDirPath->extendPath(product);
 
     if (!shell()->install(product, installFilePath)) return false;
 
@@ -93,8 +93,8 @@ bool InstallStage::installApplicationOrLibrary()
         )
             return false;
 
-        string pcName = toolChain()->pkgConfigName(plan());
-        string pcInstallPath = toolChain()->pkgConfigInstallDirPath(plan())->extendPath(pcName);
+        String pcName = toolChain()->pkgConfigName(plan());
+        String pcInstallPath = toolChain()->pkgConfigInstallDirPath(plan())->extendPath(pcName);
         if (File::exists(plan()->userPkgConfigPath())) {
             if (!shell()->install(plan()->userPkgConfigPath(), pcInstallPath))
                 return false;
@@ -106,8 +106,8 @@ bool InstallStage::installApplicationOrLibrary()
         }
     }
 
-    for (string bundlePath: plan()->bundle()) {
-        string relativePath = bundlePath->copy(plan()->projectPath()->count() + 1, bundlePath->count());
+    for (String bundlePath: plan()->bundle()) {
+        String relativePath = bundlePath->copy(plan()->projectPath()->count() + 1, bundlePath->count());
         shell()->install(
             bundlePath,
             plan()->installRoot()->extendPath(toolChain()->bundlePrefix(plan())->extendPath(relativePath))

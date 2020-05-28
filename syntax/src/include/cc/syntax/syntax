@@ -11,7 +11,7 @@
 #include <cc/Crc32Sink>
 #include <cc/PrefixTree>
 #include <cc/exceptions>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/syntax/SyntaxNode>
 #include <cc/syntax/SyntaxDebugFactory>
 
@@ -188,7 +188,7 @@ public:
     int invert() const { return invert_; }
 
 private:
-    string s_;
+    String s_;
     int invert_;
 };
 
@@ -227,7 +227,7 @@ public:
     const CharArray &s() const { return *s_; }
 
 private:
-    string s_;
+    String s_;
     bool caseSensitive_;
 };
 
@@ -462,7 +462,7 @@ public:
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
     {
-        string filteredText = text;
+        String filteredText = text;
 
         Token *lastChildSaved = parentToken->lastChild();
 
@@ -472,7 +472,7 @@ public:
         rollBack(parentToken, lastChildSaved);
 
         if (h != -1) {
-            string filteredText = text->copy();
+            String filteredText = text->copy();
             for (Token *token = filterToken; token; token = token->nextSibling())
                 mutate(filteredText->select(token->i0(), token->i1()))->fill(blank_);
 
@@ -1252,7 +1252,7 @@ public:
         if (strcasecmp(name, "caseSensitive") == 0)
             caseSensitive_ = value;
         else
-            CC_DEBUG_ERROR(format{"Unknown option '%%'"} << name);
+            CC_DEBUG_ERROR(Format{"Unknown option '%%'"} << name);
     }
 
     NODE CHAR(char ch) { return debug(new CharNode(ch, 0), "Char"); }
@@ -1268,7 +1268,7 @@ public:
     NODE EXCEPT(char a, char b) { return debug(new RangeMinMaxNode(a, b, 1), "RangeMinMax"); }
     NODE EXCEPT(const char *s) { return debug(new RangeExplicitNode(s, 1), "RangeExplicit"); }
 
-    NODE STRING(const char *s) { return debug(new StringNode(s, caseSensitive_), "string"); }
+    NODE STRING(const char *s) { return debug(new StringNode(s, caseSensitive_), "String"); }
     NODE KEYWORD(const char *keywords);
 
     NODE REPEAT(int minRepeat, int maxRepeat, NODE entry) { return debug(new RepeatNode(minRepeat, maxRepeat, entry), "Repeat"); }
@@ -1399,7 +1399,7 @@ public:
         Ref<const DefinitionNode> definition;
         const DefinitionNode *scope = resolveScope(name);
         if (!scope->scopeByName_->lookup(name, &definition))
-            CC_DEBUG_ERROR(format{"Undefined scope '%%'"} << name);
+            CC_DEBUG_ERROR(Format{"Undefined scope '%%'"} << name);
         return definition;
     }
 
@@ -1409,7 +1409,7 @@ public:
         Ref<RuleNode> node;
         CC_ASSERT(scope);
         if (!scope->ruleByName_->lookup(name, &node))
-            CC_DEBUG_ERROR(format{"Undefined rule '%%'"} << name);
+            CC_DEBUG_ERROR(Format{"Undefined rule '%%'"} << name);
         return node;
     }
 
@@ -1417,7 +1417,7 @@ public:
     {
         int tokenType = -1;
         if (!keywordByName_->lookup(name, &tokenType))
-            CC_DEBUG_ERROR(format{"Undefined keyword '%%'"} <<  name);
+            CC_DEBUG_ERROR(Format{"Undefined keyword '%%'"} <<  name);
         return tokenType;
     }
 
@@ -1425,7 +1425,7 @@ public:
     {
         int flagId = -1;
         if (!flagIdByName_->lookup(name, &flagId))
-            CC_DEBUG_ERROR(format{"Undefined state flag '%%'"} << name);
+            CC_DEBUG_ERROR(Format{"Undefined state flag '%%'"} << name);
         return flagId;
     }
 
@@ -1433,7 +1433,7 @@ public:
     {
         int captureId = -1;
         if (!captureIdByName_->lookup(name, &captureId))
-            CC_DEBUG_ERROR(format{"Undefined capture '%%'"} << name);
+            CC_DEBUG_ERROR(Format{"Undefined capture '%%'"} << name);
         return captureId;
     }
 
@@ -1469,7 +1469,7 @@ private:
     void addRule(RuleNode *rule)
     {
         if (!ruleByName_->insert(rule->name(), rule))
-            CC_DEBUG_ERROR(format{"Redefinition of rule '%%'"} << rule->name());
+            CC_DEBUG_ERROR(Format{"Redefinition of rule '%%'"} << rule->name());
     }
 
     Ref<LinkNode> unresolvedLinkHead_;

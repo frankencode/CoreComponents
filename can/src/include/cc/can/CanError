@@ -51,7 +51,7 @@ public:
         uint8_t bitPos() const { return frame_->payloadAt(0); }
         Status status() const { return static_cast<Status>(frame_->payloadAt(1)); }
 
-        string toString() const;
+        String toString() const;
 
     private:
         friend class CanError;
@@ -70,7 +70,7 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator string() const { return instance_.toString(); }
+    operator String() const { return instance_.toString(); }
 
 private:
     const Instance instance_;
@@ -79,7 +79,7 @@ private:
 CC_BITMASK(CanError::Type, uint32_t)
 CC_BITMASK(CanError::Status, uint32_t)
 
-string str(CanError::Type flags);
-string str(CanError::Status flags);
+String str(CanError::Type flags);
+String str(CanError::Status flags);
 
 }} // namespace cc::can

@@ -16,7 +16,7 @@ using namespace cc::testing;
 class ObjectSerializationTest: public TestCase
 {
 protected:
-    static string testMessage() {
+    static String testMessage() {
         return
             "Person {\n"
             "  version: 1.0.0\n"
@@ -75,43 +75,43 @@ protected:
         }
         else {
             CC_VERIFY(object->value("version")->type() == VariantType::String);
-            CC_VERIFY(string(object->value("version")) == "1.0.0");
+            CC_VERIFY(String(object->value("version")) == "1.0.0");
         }
         // CC_INSPECT(object->value("hobbies"));
-        CC_VERIFY(string(object->value("name")) == "Hans Mustermann");
+        CC_VERIFY(String(object->value("name")) == "Hans Mustermann");
         CC_VERIFY(int(object->value("age")) == 17);
 
-        const VariantList *hobbies = variant::cast<const VariantList *>(object->value("hobbies"));
-        CC_VERIFY(string(hobbies->at(0)) == "Sky Diving");
-        CC_VERIFY(string(hobbies->at(1)) == "Mountain Biking");
-        CC_VERIFY(string(hobbies->at(2)) == "Poetry");
+        const VariantList *hobbies = Variant::cast<const VariantList *>(object->value("hobbies"));
+        CC_VERIFY(String(hobbies->at(0)) == "Sky Diving");
+        CC_VERIFY(String(hobbies->at(1)) == "Mountain Biking");
+        CC_VERIFY(String(hobbies->at(2)) == "Poetry");
 
-        const MetaObject *picture = variant::cast<const MetaObject *>(object->value("picture"));
-        // ferr() << "variant::type(object->value(\"picture\")) = " << object->value("picture")->type() << nl; // FIXME
-        CC_VERIFY(string(picture->value("uri")) == "http://www.hans-mustermann.de/photo.jpg");
+        const MetaObject *picture = Variant::cast<const MetaObject *>(object->value("picture"));
+        // ferr() << "Variant::type(object->value(\"picture\")) = " << object->value("picture")->type() << nl; // FIXME
+        CC_VERIFY(String(picture->value("uri")) == "http://www.hans-mustermann.de/photo.jpg");
         CC_VERIFY(int(picture->value("width")) == 400);
         CC_VERIFY(int(picture->value("height")) == 300);
 
-        const MetaObject *home = variant::cast<const MetaObject *>(object->value("home"));
+        const MetaObject *home = Variant::cast<const MetaObject *>(object->value("home"));
         CC_VERIFY(float(home->value("latitude")) == float(12.34));
         CC_VERIFY(float(home->value("longitude")) == float(123.4));
 
-        const VariantList *numbers = variant::cast<const VariantList *>(object->value("favouriteNumbers"));
+        const VariantList *numbers = Variant::cast<const VariantList *>(object->value("favouriteNumbers"));
         CC_VERIFY(int(numbers->at(0)) == 2);
         CC_VERIFY(int(numbers->at(1)) == 5);
         CC_VERIFY(int(numbers->at(2)) == 7);
 
         CC_VERIFY(object->value("Is a super hero?"));
         CC_VERIFY(
-            string(object->value("motto")) ==
-            string(
+            String(object->value("motto")) ==
+            String(
                 "What I cannot create,\n"
                 "I do not understand."
             )
         );
         CC_VERIFY(
-            string(object->value("smiley")) ==
-            string(
+            String(object->value("smiley")) ==
+            String(
                 "******\n"
                 "* ** *\n"
                 "******\n"
@@ -121,9 +121,9 @@ protected:
         );
         if (fromYason) {
             CC_VERIFY(object->children()->count() == 2);
-            CC_VERIFY(string(object->children()->at(0)->className()) == "Person");
-            CC_VERIFY(string(object->children()->at(0)->value("name")) == "Jane");
-            CC_VERIFY(string(object->children()->at(1)->value("name")) == "John");
+            CC_VERIFY(String(object->children()->at(0)->className()) == "Person");
+            CC_VERIFY(String(object->children()->at(0)->value("name")) == "Jane");
+            CC_VERIFY(String(object->children()->at(1)->value("name")) == "John");
         }
         else {
             CC_VERIFY(object->children()->count() == 0);

@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/CanFrame>
-#include <cc/format>
+#include <cc/Format>
 #include <string.h>
 
 namespace cc {
@@ -41,16 +41,16 @@ bool CanFrame::equals(const CanFrame *other) const
     return true;
 }
 
-string CanFrame::payload() const
+String CanFrame::payload() const
 {
-    if (payloadCount() == 0) return string{};
-    string data = string::allocate(payloadCount());
+    if (payloadCount() == 0) return String{};
+    String data = String::allocate(payloadCount());
     for (int i = 0; i < data->count(); ++i)
         mutate(data)->byteAt(i) = payloadAt(i);
     return data;
 }
 
-void CanFrame::setPayload(const string &data)
+void CanFrame::setPayload(const String &data)
 {
     setPayloadCount(data->count());
     for (int i = 0; i < data->count(); ++i)
@@ -73,20 +73,20 @@ void CanFrame::updateInverse(CanFrame *invFrame) const
         invFrame->payloadAt(i) = ~payloadAt(i);
 }
 
-string CanFrame::copy(int i0, int i1) const
+String CanFrame::copy(int i0, int i1) const
 {
     if (i1 > payloadCount()) i1 = payloadCount();
     if (i0 < 0) i0 = 0;
     if (i1 < i0) i0 = i1;
-    string data = string::allocate(i1 - i0);
+    String data = String::allocate(i1 - i0);
     for (int i = i0; i < i1; ++i)
         mutate(data)->byteAt(i - i0) = payloadAt(i);
     return data;
 }
 
-string CanFrame::toString() const
+String CanFrame::toString() const
 {
-    format f;
+    Format f;
     f << hex(canId(), 3) << " [" << payloadCount() << "]";
     if (payloadCount() > 0) f << " ";
     for (int i = 0; i < payloadCount(); ++i) {

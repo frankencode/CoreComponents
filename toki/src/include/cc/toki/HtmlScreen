@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Token>
 
 namespace cc {
@@ -19,20 +19,20 @@ class Theme;
 class HtmlScreen: public Object, public TokenScreen
 {
 public:
-    static Ref<HtmlScreen> create(const string &text, const format &sink = format{}) { return new HtmlScreen{text, sink}; }
+    static Ref<HtmlScreen> create(const String &text, const Format &sink = Format{}) { return new HtmlScreen{text, sink}; }
 
     virtual bool project(Token *token, int i0, int i1);
 
     static void writeCss(Theme *theme, Stream *sink = nullptr);
 
 private:
-    HtmlScreen(const string &text, const format &sink);
+    HtmlScreen(const String &text, const Format &sink);
     ~HtmlScreen();
 
     void writeLineNumbers();
 
-    string text_;
-    format sink_;
+    String text_;
+    Format sink_;
 };
 
 }} // namespace cc::toki

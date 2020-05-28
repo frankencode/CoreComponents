@@ -17,10 +17,10 @@ namespace cc {
 class LineBuffer: public Stream
 {
 public:
-    static Ref<LineBuffer> open(Stream *stream = nullptr, const string &prefix = "");
+    static Ref<LineBuffer> open(Stream *stream = nullptr, const String &prefix = "");
 
     Stream *stream() const { return stream_; }
-    virtual string prefix() const;
+    virtual String prefix() const;
 
     int read(CharArray *data) override;
     void write(const CharArray *data) override;
@@ -29,13 +29,13 @@ public:
     int flush();
 
 protected:
-    LineBuffer(Stream *stream = nullptr, const string &prefix = "");
+    LineBuffer(Stream *stream = nullptr, const String &prefix = "");
 
     virtual void writeLine(const CharArray *data);
 
 private:
     Ref<Stream> stream_;
-    string prefix_;
+    String prefix_;
     Ref<StringList> backlog_;
 };
 

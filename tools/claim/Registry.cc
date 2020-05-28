@@ -16,15 +16,15 @@ Registry::Registry():
       headerStyleByLanguage_{HeaderStyleByLanguage::create()}
 {}
 
-const HeaderStyle *Registry::headerStyleByLanguage(const string &language) const
+const HeaderStyle *Registry::headerStyleByLanguage(const String &language) const
 {
     return headerStyleByLanguage_->value(language);
 }
 
-bool Registry::detectHeaderStyle(const string &path, const string &text, HeaderStyle **style) const
+bool Registry::detectHeaderStyle(const String &path, const String &text, HeaderStyle **style) const
 {
     toki::Language *language = nullptr;
-    string actualPath = path;
+    String actualPath = path;
     if (actualPath->fileSuffix() == "qml") actualPath = actualPath->replace(".qml", ".cpp"); // workaround HACK
     if (toki::Registry::instance()->detectLanguage(actualPath, text, &language)) {
         Ref<HeaderStyle> value;

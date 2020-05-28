@@ -13,7 +13,7 @@ namespace cc {
 namespace net {
 namespace base64 {
 
-string encode(const string &source)
+String encode(const String &source)
 {
     const char *alphabet =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -24,7 +24,7 @@ string encode(const string &source)
     int i = 0;
 
     const int m = 4 * (n / 3 + (n % 3 != 0));
-    string sink{m};
+    String sink{m};
     int l = 0;
 
     while (i < n) {
@@ -51,7 +51,7 @@ string encode(const string &source)
     return sink;
 }
 
-string decode(const string &source)
+String decode(const String &source)
 {
     if (source->count() % 4 != 0) throw base64::IllegalInputSize4Error{};
 
@@ -68,7 +68,7 @@ string decode(const string &source)
     if (!((0 <= p) && (p <= 2))) throw base64::IllegalPaddingError{};
 
     int n = 3 * (m / 4) - p;
-    string sink{n};
+    String sink{n};
     int i = 0;
 
     for (int l = 0; l < m;) {

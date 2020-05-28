@@ -13,12 +13,12 @@
 namespace cc {
 namespace ui {
 
-TextDocument::TextDocument(const string &initialText)
+TextDocument::TextDocument(const String &initialText)
 {
     load(initialText);
 }
 
-void TextDocument::load(const string &text)
+void TextDocument::load(const String &text)
 {
     lines_ = Lines::create();
     // rootItem_ = Item::create();
@@ -27,13 +27,13 @@ void TextDocument::load(const string &text)
     else
         rootItem_ = Item::create();
 
-    string filteredText = filterChunk(text);
+    String filteredText = filterChunk(text);
     const int n = filteredText->count();
     for (int i = 0; i < n;) {
         int i0 = i;
         i = filteredText->scan('\n', i);
         i += (i < n);
-        string fragment = filteredText->copy(i0, i);
+        String fragment = filteredText->copy(i0, i);
         lines_->insertAt(
             lines_->count(),
             rootItem_->add<TextItem>(fragment),
@@ -48,7 +48,7 @@ void TextDocument::load(const string &text)
     lineCount_ = lines_->count();
 }
 
-string TextDocument::copy(Range range) const
+String TextDocument::copy(Range range) const
 {
     int lineIndex0 = 0;
     int lineIndex1 = 0;
@@ -66,14 +66,14 @@ string TextDocument::copy(Range range) const
     return parts->join();
 }
 
-Range TextDocument::paste(Range range, const string &newChunk)
+Range TextDocument::paste(Range range, const String &newChunk)
 {
     return TextEditorWithHistory::paste(range, newChunk);
 }
 
-string TextDocument::filterChunk(const string &newChunk) const
+String TextDocument::filterChunk(const String &newChunk) const
 {
-    string filteredChunk(newChunk->count(), '\0');
+    String filteredChunk(newChunk->count(), '\0');
     int j = 0;
     for (int i = 0; i < newChunk->count(); ++i) {
         uint8_t ch = newChunk->byteAt(i);
@@ -86,7 +86,7 @@ string TextDocument::filterChunk(const string &newChunk) const
     return filteredChunk;
 }
 
-void TextDocument::pasteChunk(Range range, const string &newChunk)
+void TextDocument::pasteChunk(Range range, const String &newChunk)
 {
     OnScopeExit updateCounts{[=]{
         byteCount_ = lines_->extent();
@@ -133,7 +133,7 @@ void TextDocument::cut(Range range)
     }
 }
 
-void TextDocument::pasteFragment(int targetOffset, const string &fragment)
+void TextDocument::pasteFragment(int targetOffset, const String &fragment)
 {
     TextItem *line = nullptr;
     int lineIndex = 0;

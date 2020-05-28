@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Process>
 #include "ConfigureShell.h"
 
@@ -22,11 +22,11 @@ ConfigureShell::ConfigureShell():
     cache_{Cache::create()}
 {}
 
-string ConfigureShell::run(const string &shellCommand)
+String ConfigureShell::run(const String &shellCommand)
 {
     if (shellCommand == "") return "";
 
-    string text;
+    String text;
     if (lookup(shellCommand, &text))
         return text;
 
@@ -42,8 +42,8 @@ string ConfigureShell::run(const string &shellCommand)
     text = sub->output()->readAll()->trim();
     int status = sub->wait();
     if (status != 0) {
-        throw string{
-            format{} << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")"
+        throw String{
+            Format{} << "Configure command failed with status = " << status << " (\"" << shellCommand << "\")"
         };
     }
 
@@ -52,12 +52,12 @@ string ConfigureShell::run(const string &shellCommand)
     return text;
 }
 
-bool ConfigureShell::lookup(const string &command, string *output) const
+bool ConfigureShell::lookup(const String &command, String *output) const
 {
     return cache_->lookup(command, output);
 }
 
-void ConfigureShell::insert(const string &command, const string &output)
+void ConfigureShell::insert(const String &command, const String &output)
 {
     cache_->insert(command, output);
 }

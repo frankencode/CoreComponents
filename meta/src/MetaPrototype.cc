@@ -12,12 +12,12 @@
 namespace cc {
 namespace meta {
 
-Ref<MetaPrototype> MetaPrototype::create(const string &className, const MetaProtocol *protocol)
+Ref<MetaPrototype> MetaPrototype::create(const String &className, const MetaProtocol *protocol)
 {
     return new MetaPrototype{className, protocol};
 }
 
-MetaPrototype::MetaPrototype(const string &className, const MetaProtocol *protocol):
+MetaPrototype::MetaPrototype(const String &className, const MetaProtocol *protocol):
     MetaObject{className},
     protocol_{protocol}
 {

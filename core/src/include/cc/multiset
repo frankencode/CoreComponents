@@ -10,7 +10,7 @@
 
 #include <initializer_list>
 #include <cc/MultiSet>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 
@@ -104,9 +104,9 @@ template<class T>
 bool operator>=(const multiset<T> &a, const multiset<T> &b) { return container::compare(a, b) >= 0; }
 
 template<class T>
-string str(const multiset<T> &a)
+String str(const multiset<T> &a)
 {
-    format f;
+    Format f;
     f << "[ ";
     for (auto &x: a)
         f << x << (&x == &a->last() ? " ]" : ", ");

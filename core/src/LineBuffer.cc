@@ -10,12 +10,12 @@
 
 namespace cc {
 
-Ref<LineBuffer> LineBuffer::open(Stream *stream, const string &prefix)
+Ref<LineBuffer> LineBuffer::open(Stream *stream, const String &prefix)
 {
     return new LineBuffer{stream, prefix};
 }
 
-LineBuffer::LineBuffer(Stream *stream, const string &prefix):
+LineBuffer::LineBuffer(Stream *stream, const String &prefix):
     stream_{stream},
     prefix_{prefix},
     backlog_{StringList::create()}
@@ -26,7 +26,7 @@ void LineBuffer::writeLine(const CharArray *data)
     if (stream_) stream_->write(data);
 }
 
-string LineBuffer::prefix() const
+String LineBuffer::prefix() const
 {
     return prefix_;
 }
@@ -62,10 +62,10 @@ void LineBuffer::write(const StringList *parts)
 
 int LineBuffer::flush()
 {
-    string h = prefix();
+    String h = prefix();
     if (backlog_->count() == 0) return 0;
     if (h != "") backlog_->pushFront(h);
-    string line = backlog_->join();
+    String line = backlog_->join();
     writeLine(line);
     backlog_ = StringList::create();
     return line->count();

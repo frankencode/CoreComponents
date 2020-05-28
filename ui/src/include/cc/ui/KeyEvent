@@ -24,7 +24,7 @@ public:
     KeyCode keyCode() const { return keyCode_; }
     KeyModifier modifiers() const { return modifiers_; }
 
-    string toString() const;
+    String toString() const;
 
 private:
     friend class Object;

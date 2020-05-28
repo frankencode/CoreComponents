@@ -17,12 +17,12 @@
 namespace cc {
 namespace ui {
 
-Ref<SdlWindow> SdlWindow::open(View *view, const string &title, WindowMode mode)
+Ref<SdlWindow> SdlWindow::open(View *view, const String &title, WindowMode mode)
 {
     return (new SdlWindow(view, title))->open(mode);
 }
 
-SdlWindow::SdlWindow(View *view, const string &title):
+SdlWindow::SdlWindow(View *view, const String &title):
     Window{view, title}
 {}
 
@@ -212,7 +212,7 @@ void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
         void *dstData = 0;
         int pitch = 0;
         if (SDL_LockTexture(context->sdlTexture_, 0, &dstData, &pitch) != 0) CC_DEBUG_ERROR(SDL_GetError());
-        if (pitch != image->pitch()) CC_DEBUG_ERROR(format{"Failed to upload texture: pitch mismatch (%% != %%)"} << image->pitch() << pitch);
+        if (pitch != image->pitch()) CC_DEBUG_ERROR(Format{"Failed to upload texture: pitch mismatch (%% != %%)"} << image->pitch() << pitch);
         ::memcpy(dstData, image->data()->bytes(), image->data()->count());
         SDL_UnlockTexture(context->sdlTexture_);
     }

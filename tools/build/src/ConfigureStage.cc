@@ -41,7 +41,7 @@ bool ConfigureStage::run()
     try {
         for (int i = 0; i < plan()->systemPrerequisitesByName()->count(); ++i)
         {
-            string name = plan()->systemPrerequisitesByName()->at(i)->key();
+            String name = plan()->systemPrerequisitesByName()->at(i)->key();
             SystemPrerequisiteList *prerequisiteList = plan()->systemPrerequisitesByName()->at(i)->value();
 
             for (SystemPrerequisite *prerequisite: prerequisiteList)
@@ -51,14 +51,14 @@ bool ConfigureStage::run()
                 if (prerequisite->autoConfigure()) {
                     try {
                         prerequisite->customCompileFlags()->appendList(
-                            configureShell(string{"pkg-config --cflags "} + prerequisite->name())->simplify()->split(' ')
+                            configureShell(String{"pkg-config --cflags "} + prerequisite->name())->simplify()->split(' ')
                         );
                         prerequisite->customLinkFlags()->appendList(
-                            configureShell(string{"pkg-config --libs "} + prerequisite->name())->simplify()->split(' ')
+                            configureShell(String{"pkg-config --libs "} + prerequisite->name())->simplify()->split(' ')
                         );
-                        version = configureShell(string{"pkg-config --modversion "} + prerequisite->name());
+                        version = configureShell(String{"pkg-config --modversion "} + prerequisite->name());
                     }
-                    catch (string &error) {
+                    catch (String &error) {
                         if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
                             ferr()
                                 << plan()->recipePath() << ": " << name << ":" << nl
@@ -72,8 +72,8 @@ bool ConfigureStage::run()
                     }
                 }
                 else if (prerequisite->configure() != "") {
-                    string configure = prerequisite->configure();
-                    string output;
+                    String configure = prerequisite->configure();
+                    String output;
                     if (!runConfigure(name, configure, &output)) {
                         if (plan()->options() & (BuildPlan::Verbose | BuildPlan::Configure)) {
                             ferr() << output;
@@ -85,7 +85,7 @@ bool ConfigureStage::run()
                         else
                             throw prerequisite;
                     }
-                    Ref<MetaObject> object = variant::cast<MetaObject *>(yason::parse(output));
+                    Ref<MetaObject> object = Variant::cast<MetaObject *>(yason::parse(output));
                     if (object) {
                         {
                             Ref<StringList> flags = getFlags(object, "compile-flags");
@@ -96,8 +96,8 @@ bool ConfigureStage::run()
                             if (flags) prerequisite->customLinkFlags()->appendList(flags);
                         }
                         {
-                            variant value = object->value("version");
-                            if (value->type() == VariantType::String) version = Version{string{value}};
+                            Variant value = object->value("version");
+                            if (value->type() == VariantType::String) version = Version{String{value}};
                             else if (value->type() == VariantType::Version) version = Version{value};
                         }
                     }
@@ -113,7 +113,7 @@ bool ConfigureStage::run()
                         if (prerequisite->versionConfigure() != "") // FIXME, why needed?
                             version = configureShell(prerequisite->versionConfigure());
                     }
-                    catch (string &error) {
+                    catch (String &error) {
                         if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
                             ferr()
                                 << plan()->recipePath() << ": " << name << ":" << nl
@@ -132,14 +132,14 @@ bool ConfigureStage::run()
                     Version versionMax = prerequisite->versionMax();
                     if (versionMin->isValid()) {
                         if (version < versionMin)
-                            throw string{format{} << "At least version " << versionMin << " is required (version " << version << " detected)"};
+                            throw String{Format{} << "At least version " << versionMin << " is required (version " << version << " detected)"};
                     }
                     if (versionMax->isValid()) {
                         if (versionMax < version)
-                            throw string{format{} << "At most version " << versionMax << " is supported (version " << version << " detected)"};
+                            throw String{Format{} << "At most version " << versionMax << " is supported (version " << version << " detected)"};
                     }
                 }
-                catch (string &error) {
+                catch (String &error) {
                     if (plan()->options() & (BuildPlan::Configure|BuildPlan::Verbose)) {
                         ferr()
                             << plan()->recipePath() << ": " << name << ":" << nl
@@ -169,7 +169,7 @@ bool ConfigureStage::run()
                             firstLine = false;
                             ferr() << plan()->recipePath() << ":" << nl;
                         }
-                        string ns = prerequisite->origName();
+                        String ns = prerequisite->origName();
                         if (ns == "" && prerequisite->configure() != "") ns = prerequisite->configure()->baseName();
                         if (ns != "") ns += ".";
                         if (prerequisite->customCompileFlags()->count() > 0)
@@ -199,7 +199,7 @@ bool ConfigureStage::run()
     return success_;
 }
 
-string ConfigureStage::configureShell(const string &shellCommand)
+String ConfigureStage::configureShell(const String &shellCommand)
 {
     return ConfigureShell::instance()->run(shellCommand);
 }
@@ -207,8 +207,8 @@ string ConfigureStage::configureShell(const string &shellCommand)
 void ConfigureStage::makeUseOf(BuildPlan *other)
 {
     if (other->options() & BuildPlan::Library) {
-        string path = other->projectPath();
-        string defaultIncludePath = path->extendPath("include");
+        String path = other->projectPath();
+        String defaultIncludePath = path->extendPath("include");
         if (Dir::exists(defaultIncludePath)) {
             if (!plan()->includePaths()->contains(defaultIncludePath))
                 plan()->includePaths()->append(defaultIncludePath);
@@ -241,9 +241,9 @@ void ConfigureStage::makeUseOf(BuildPlan *other)
     }
 }
 
-bool ConfigureStage::probeBuild(const string &name, const string &probe) const
+bool ConfigureStage::probeBuild(const String &name, const String &probe) const
 {
-    string probePath = plan()->projectPath()->extendPath(probe);
+    String probePath = plan()->projectPath()->extendPath(probe);
     Ref<FileStatus> sourceStatus = FileStatus::read(probePath);
 
     if (!sourceStatus->isValid()) {
@@ -255,8 +255,8 @@ bool ConfigureStage::probeBuild(const string &name, const string &probe) const
     if (!Dir::exists(plan()->configPath()))
         Dir::create(plan()->configPath());
 
-    string baseName = probePath->baseName();
-    string binPath = plan()->configPath()->extendPath(baseName);
+    String baseName = probePath->baseName();
+    String binPath = plan()->configPath()->extendPath(baseName);
 
     bool dirty = true;
     Ref<FileStatus> binStatus = plan()->shell()->fileStatus(binPath);
@@ -266,9 +266,9 @@ bool ConfigureStage::probeBuild(const string &name, const string &probe) const
     }
 
     if (dirty) {
-        string command = toolChain()->configureCompileCommand(plan(), probePath, binPath);
+        String command = toolChain()->configureCompileCommand(plan(), probePath, binPath);
         Ref<Process> sub = Process::open(command);
-        string output = sub->output()->readAll();
+        String output = sub->output()->readAll();
         int exitCode = sub->wait();
         if (exitCode != 0) {
             if (plan()->options() & (BuildPlan::Verbose /*| BuildPlan::Configure*/)) {
@@ -283,9 +283,9 @@ bool ConfigureStage::probeBuild(const string &name, const string &probe) const
     return true;
 }
 
-bool ConfigureStage::runConfigure(const string &name, const string &configure, string *output) const
+bool ConfigureStage::runConfigure(const String &name, const String &configure, String *output) const
 {
-    string configurePath = plan()->projectPath()->extendPath(configure);
+    String configurePath = plan()->projectPath()->extendPath(configure);
 
     Ref<FileStatus> sourceStatus = FileStatus::read(configurePath);
     if (!sourceStatus->isValid()) {
@@ -294,8 +294,8 @@ bool ConfigureStage::runConfigure(const string &name, const string &configure, s
         return false;
     }
 
-    string configureText;
-    string binPath;
+    String configureText;
+    String binPath;
 
     if (+(sourceStatus->mode() & FileMode::AnyExec)) {
         binPath = configurePath;
@@ -304,7 +304,7 @@ bool ConfigureStage::runConfigure(const string &name, const string &configure, s
         if (!Dir::exists(plan()->configPath()))
             Dir::create(plan()->configPath());
 
-        string baseName = configurePath->baseName();
+        String baseName = configurePath->baseName();
         binPath = plan()->configPath()->extendPath(baseName);
 
         bool dirty = true;
@@ -315,9 +315,9 @@ bool ConfigureStage::runConfigure(const string &name, const string &configure, s
         }
 
         if (dirty) {
-            string command = toolChain()->configureCompileCommand(plan(), configurePath, binPath);
+            String command = toolChain()->configureCompileCommand(plan(), configurePath, binPath);
             Ref<Process> sub = Process::open(command);
-            string output = sub->output()->readAll();
+            String output = sub->output()->readAll();
             int exitCode = sub->wait();
             if (exitCode != 0) {
                 if (plan()->options() & (BuildPlan::Verbose | BuildPlan::Configure)) {
@@ -335,14 +335,14 @@ bool ConfigureStage::runConfigure(const string &name, const string &configure, s
     return sub->wait() == 0;
 }
 
-Ref<StringList> ConfigureStage::getFlags(const MetaObject *object, const string &propertyName)
+Ref<StringList> ConfigureStage::getFlags(const MetaObject *object, const String &propertyName)
 {
-    variant value;
+    Variant value;
     if (object->lookup(propertyName, &value)) {
         if (value->type() == VariantType::String)
-            return string(value)->split(" ");
+            return String(value)->split(" ");
         else if (value->type() == VariantType::List && value->itemType() == VariantType::String)
-            return variant::cast<StringList *>(value);
+            return Variant::cast<StringList *>(value);
     }
     return Ref<StringList>{};
 }

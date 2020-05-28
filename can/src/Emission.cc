@@ -14,7 +14,7 @@
 namespace cc {
 namespace can {
 
-Ref<Emission> Emission::create(PeriodicEmitter *emitter, int canId, double interval, const string &initialData)
+Ref<Emission> Emission::create(PeriodicEmitter *emitter, int canId, double interval, const String &initialData)
 {
     Ref<Emission> emission = new Emission{canId, interval};
     emission->init(emitter, initialData);
@@ -32,13 +32,13 @@ Emission::Emission(int canId, double interval):
 Emission::~Emission()
 {}
 
-void Emission::init(PeriodicEmitter *emitter, const string &initialData)
+void Emission::init(PeriodicEmitter *emitter, const String &initialData)
 {
     updateData(initialData);
     emitter->registerEmission(this);
 }
 
-void Emission::updateData(const string &data)
+void Emission::updateData(const String &data)
 {
     Guard<Emission> guard(this);
     const int n = data->count();

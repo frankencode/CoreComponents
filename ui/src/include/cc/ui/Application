@@ -42,12 +42,12 @@ public:
     Property< Ref<Control> > pressedControl;
     Property< Ref<Control> > focusControl;
 
-    virtual Window *openWindow(View *view, const string &title = "", WindowMode mode = WindowMode::Default) = 0;
+    virtual Window *openWindow(View *view, const String &title = "", WindowMode mode = WindowMode::Default) = 0;
 
     virtual Ref<Cursor> createCursor(CursorShape shape) = 0;
 
-    virtual string getClipboardText() const = 0;
-    virtual void setClipboardText(const string &text) = 0;
+    virtual String getClipboardText() const = 0;
+    virtual void setClipboardText(const String &text) = 0;
 
     FontSmoothing fontSmoothing() const;
     void setTextSmoothing(FontSmoothing newValue) { fontSmoothing_ = newValue; }
@@ -89,8 +89,8 @@ protected:
     bool feedExposedEvent(Window *window);
     bool feedEnterEvent(Window *window);
     bool feedLeaveEvent(Window *window);
-    bool feedTextEditingEvent(const string &text, int start, int length);
-    bool feedTextInputEvent(const string &text);
+    bool feedTextEditingEvent(const String &text, int start, int length);
+    bool feedTextInputEvent(const String &text);
 
     FontSmoothing fontSmoothing_ { FontSmoothing::Default };
 

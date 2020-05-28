@@ -10,7 +10,7 @@ class Item: public Label
 {
     friend class Object;
 
-    Item(View *parent, const string &text):
+    Item(View *parent, const String &text):
         Label(parent, text)
     {
         margin = dp(20);

@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/File>
 #include <cc/FileStatus>
 #include <cc/meta/yason>
@@ -20,7 +20,7 @@ Ref<DependencyCache> DependencyCache::create(BuildPlan *plan)
     return new DependencyCache(plan);
 }
 
-string DependencyCache::cachePath(BuildPlan *plan)
+String DependencyCache::cachePath(BuildPlan *plan)
 {
     return plan->modulePath("DependencyCache");
 }
@@ -52,18 +52,18 @@ DependencyCache::DependencyCache(BuildPlan *plan):
 
         if (!plan->sources()->contains(item->key())) continue;
 
-        MetaObject *yason = variant::cast<MetaObject *>(item->value());
-        string command = yason->value("analyseCommand");
-        string modulePath = yason->value("modulePath");
-        Ref<StringList> dependencyPaths = variant::cast<const VariantList *>(yason->value("dependencyPaths"))->toList<string>();
-        string sourcePath = dependencyPaths->at(0);
+        MetaObject *yason = Variant::cast<MetaObject *>(item->value());
+        String command = yason->value("analyseCommand");
+        String modulePath = yason->value("modulePath");
+        Ref<StringList> dependencyPaths = Variant::cast<const VariantList *>(yason->value("dependencyPaths"))->toList<String>();
+        String sourcePath = dependencyPaths->at(0);
 
         bool dirty = false;
 
         Ref<FileStatus> objectStatus = buildPlan_->shell()->fileStatus(modulePath);
         double objectTime = objectStatus->lastModified();
 
-        for (string source: dependencyPaths)
+        for (String source: dependencyPaths)
         {
             Ref<FileStatus> sourceStatus = buildPlan_->shell()->fileStatus(source);
             if (!sourceStatus->isValid()) {
@@ -96,12 +96,12 @@ DependencyCache::DependencyCache(BuildPlan *plan):
 
 DependencyCache::~DependencyCache()
 {
-    format text;
-    string indent(4, ' ');
+    Format text;
+    String indent(4, ' ');
     text << "DependencyCache {\n";
     for (int i = 0; i < cache_->count(); ++i) {
         Cache::value_type item = cache_->at(i);
-        string sourcePath = item->key();
+        String sourcePath = item->key();
         Module *module = item->value();
         text
             << indent << "\"" << sourcePath << "\": Module {\n"
@@ -127,12 +127,12 @@ StringList *DependencyCache::previousSources() const
     return previousSources_;
 }
 
-bool DependencyCache::lookup(const string &source, Ref<Module> *module)
+bool DependencyCache::lookup(const String &source, Ref<Module> *module)
 {
     return cache_->lookup(source, module);
 }
 
-void DependencyCache::insert(const string &source, Module *module)
+void DependencyCache::insert(const String &source, Module *module)
 {
     cache_->insert(source, module);
 }

@@ -50,7 +50,7 @@ public:
     int height() const { return h_; }
 
     /// Total number of pixels per image
-    int count() const { return data_->itemCount<color>(); }
+    int count() const { return data_->itemCount<Color>(); }
 
     /** Check if raster position (x, y) is within range
       */
@@ -62,28 +62,28 @@ public:
 
     /** Access pixel at raster position (x, y)
       */
-    color &pixel(int x, int y) {
-        return mutate(data_)->item<color>(y * w_ + x);
+    Color &pixel(int x, int y) {
+        return mutate(data_)->item<Color>(y * w_ + x);
     }
 
     /** Access pixel at index \arg i
       */
-    color &pixel(int i) {
-        return mutate(data_)->item<color>(i);
+    Color &pixel(int i) {
+        return mutate(data_)->item<Color>(i);
     }
 
-    /** Clear the entire image with color \a c
+    /** Clear the entire image with Color \a c
       */
-    void clear(color c);
+    void clear(Color c);
 
     /** Convert the entire image from pre-multiplied alpha to non-premultiplied alpha
       */
     void normalize();
 
-    void shadowBlur(int radius, color shadowColor);
+    void shadowBlur(int radius, Color shadowColor);
 
     const CharArray *data() const { return data_; }
-    int pitch() const { return w_ * sizeof(color); }
+    int pitch() const { return w_ * sizeof(Color); }
 
 private:
     friend class View;
@@ -107,7 +107,7 @@ private:
 
     int w_ { 0 };
     int h_ { 0 };
-    string data_;
+    String data_;
 
     mutable cairo_surface_t *cairoSurface_ { nullptr };
 };

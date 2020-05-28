@@ -68,12 +68,12 @@ public:
 class HostNameResolutionError: public Exception
 {
 public:
-    HostNameResolutionError(const string &hostName);
-    string hostName() const;
-    string message() const override;
+    HostNameResolutionError(const String &hostName);
+    String hostName() const;
+    String message() const override;
 
 private:
-    string hostName_;
+    String hostName_;
 };
 
 /** \class InvalidAddressSyntax cc/net/exceptions
@@ -82,12 +82,12 @@ private:
 class InvalidAddressSyntax: public Exception
 {
 public:
-    InvalidAddressSyntax(const string &address);
-    string address() const;
-    string message() const override;
+    InvalidAddressSyntax(const String &address);
+    String address() const;
+    String message() const override;
 
 private:
-    string address_;
+    String address_;
 };
 
 }} // namespace cc::net

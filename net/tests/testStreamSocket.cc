@@ -24,13 +24,13 @@ class LocalEchoTest: public TestCase
 public:
     void run()
     {
-        string dirPath = Dir::createTemp();
+        String dirPath = Dir::createTemp();
         CC_INSPECT(dirPath);
         CC_VERIFY(Dir::exists(dirPath));
 
         CleanupGuard cleanup{dirPath};
 
-        string path = dirPath->extendPath("echo");
+        String path = dirPath->extendPath("echo");
         auto address = SocketAddress{ProtocolFamily::Local, path};
         CC_INSPECT(address);
 
@@ -52,9 +52,9 @@ public:
 
             auto echoClient = Worker::start([=]{
                 auto connectedSocket = StreamSocket::connect(address);
-                string message = "Hello, echo!";
+                String message = "Hello, echo!";
                 connectedSocket->write(message);
-                string echo = connectedSocket->readSpan(message->count());
+                String echo = connectedSocket->readSpan(message->count());
                 CC_INSPECT(message);
                 CC_INSPECT(echo);
                 CC_VERIFY(message == echo);

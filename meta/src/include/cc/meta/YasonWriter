@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/meta/MetaObject>
 
 namespace cc {
@@ -25,26 +25,26 @@ public:
       * \param indent whitespace to use for each indentation step
       * \return new object instance
       */
-    static Ref<YasonWriter> create(Stream *sink = nullptr, const string &indent = "  ");
+    static Ref<YasonWriter> create(Stream *sink = nullptr, const String &indent = "  ");
 
     /** Convert a meta value into YSON notation
       * \param value meta-value
       */
-    void write(variant value);
+    void write(Variant value);
 
 private:
-    YasonWriter(Stream *sink, const string &indent);
-    void writeValue(variant value, int depth);
-    void writeList(variant value, int depth);
-    bool isIdentifier(const string &name) const;
-    void writeObject(variant value, int depth);
+    YasonWriter(Stream *sink, const String &indent);
+    void writeValue(Variant value, int depth);
+    void writeList(Variant value, int depth);
+    bool isIdentifier(const String &name) const;
+    void writeObject(Variant value, int depth);
     void writeIndent(int depth);
 
     template<class T>
-    void writeTypedList(variant value, int depth);
+    void writeTypedList(Variant value, int depth);
 
-    format format_;
-    string indent_;
+    Format format_;
+    String indent_;
 };
 
 }} // namespace cc::meta

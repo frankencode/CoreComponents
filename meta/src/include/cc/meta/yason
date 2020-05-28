@@ -20,12 +20,12 @@ namespace yason {
   * \param protocol message protocol
   * \return parsed value
   */
-variant parse(const CharArray *text, const MetaProtocol *protocol = nullptr);
+Variant parse(const CharArray *text, const MetaProtocol *protocol = nullptr);
 
-/** Convenience function to stringify a variant value
-  * \param value variant value
+/** Convenience function to stringify a Variant value
+  * \param value Variant value
   * \return YASON message
   */
-string stringify(variant value);
+String stringify(Variant value);
 
 }}} // namespace cc::meta::yason

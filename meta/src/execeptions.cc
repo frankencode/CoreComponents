@@ -12,7 +12,7 @@
 namespace cc {
 namespace meta {
 
-MetaError::MetaError(const string &message, const MetaObject *offendingObject, const string &memberName):
+MetaError::MetaError(const String &message, const MetaObject *offendingObject, const String &memberName):
     UsageError{message},
     offendingObject_{offendingObject},
     memberName_{memberName}
@@ -23,7 +23,7 @@ const MetaObject *MetaError::offendingObject() const
     return offendingObject_;
 }
 
-string MetaError::memberName() const
+String MetaError::memberName() const
 {
     return memberName_;
 }

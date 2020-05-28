@@ -31,7 +31,7 @@ public:
     const FtFontFace *ftFontFace() const { return ftFontFace_; }
     cairo_scaled_font_t *cairoScaledFont() const { return cairoScaledFont_; }
 
-    string toString() const override;
+    String toString() const override;
 
 private:
     friend class Object;

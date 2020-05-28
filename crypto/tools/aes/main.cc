@@ -23,9 +23,9 @@ using namespace cc;
 using namespace cc::crypto;
 using namespace ccaes;
 
-string normalizePassword(const string &password)
+String normalizePassword(const String &password)
 {
-    string s = string::create(16);
+    String s = String::create(16);
     mutate(s)->fill(' ');
     mutate(s)->write(password);
     return s;
@@ -33,7 +33,7 @@ string normalizePassword(const string &password)
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
     bool encipher = !toolName->contains("un");
 
     try {
@@ -47,10 +47,10 @@ int main(int argc, char **argv)
         if (items->count() == 0 && stdIn()->isatty()) throw UsageError{"No input data"};
 
         if (encipher) {
-            string password, retype;
+            String password, retype;
             while (true) {
                 password = Readline::getPassword("Enter password: ");
-                string retype = Readline::getPassword("Enter again: ");
+                String retype = Readline::getPassword("Enter again: ");
                 if (password == retype) break;
                 fout() << "Passwords differ, try again" << nl;
             }
@@ -59,16 +59,16 @@ int main(int argc, char **argv)
 
             Ref<Stream> random = File::open("/dev/random");
 
-            for (string path: items)
+            for (String path: items)
             {
-                string contentKey = random->readSpan(16);
-                string encipheredContentKey = string::allocate(contentKey->count());
+                String contentKey = random->readSpan(16);
+                String encipheredContentKey = String::allocate(contentKey->count());
                 AesCipher::create(password)->encode(contentKey, mutate(encipheredContentKey));
 
                 Ref<BlockCipher> cipher = BlockCascade::create(AesCipher::create(contentKey));
 
-                string fileName = path->fileName();
-                string outPath = fileName + ".aes";
+                String fileName = path->fileName();
+                String outPath = fileName + ".aes";
                 if (File::exists(outPath)) {
                     ferr() << outPath << ": file exists, skipping" << nl;
                     continue;
@@ -83,8 +83,8 @@ int main(int argc, char **argv)
 
                 Ref<CipherSink> cipherSink = CipherSink::open(cipher, sink, random);
                 {
-                    Ref<ByteSink> header = ByteSink::open(cipherSink, mutate(string::allocate(0x100)));
-                    string challenge = random->readSpan(16);
+                    Ref<ByteSink> header = ByteSink::open(cipherSink, mutate(String::allocate(0x100)));
+                    String challenge = random->readSpan(16);
                     header->write(challenge);
                     header->writeUInt32(crc32(challenge));
                     header->writeInt32(fileName->count());
@@ -107,12 +107,12 @@ int main(int argc, char **argv)
                 stdErr()->duplicateTo(stdOut());
             }
 
-            string password = Readline::getPassword("Enter password: ");
+            String password = Readline::getPassword("Enter password: ");
             password = normalizePassword(password);
 
             if (viewMode) fout() << nl;
 
-            for (string path: items)
+            for (String path: items)
             {
                 Ref<Stream> source;
                 if (path == "")
@@ -120,17 +120,17 @@ int main(int argc, char **argv)
                 else
                     source = File::open(path);
 
-                string contentKey = string::allocate(16);
-                string encipheredContentKey = source->readSpan(16);
+                String contentKey = String::allocate(16);
+                String encipheredContentKey = source->readSpan(16);
                 AesCipher::create(password)->decode(encipheredContentKey, mutate(contentKey));
 
                 Ref<BlockCipher> cipher = BlockCascade::create(AesCipher::create(contentKey));
                 Ref<CipherSource> cipherSource = CipherSource::open(cipher, source);
-                string origName;
+                String origName;
                 uint64_t origSize = 0;
                 {
-                    Ref<ByteSource> header = ByteSource::open(cipherSource, mutate(string::allocate(1)));
-                    string challenge = header->readSpan(16);
+                    Ref<ByteSource> header = ByteSource::open(cipherSource, mutate(String::allocate(1)));
+                    String challenge = header->readSpan(16);
                     if (crc32(challenge) != header->readUInt32()) throw UsageError{"Invalid password or invalid file"};
                     int nameLength = header->readInt32();
                     origName = header->readSpan(nameLength);

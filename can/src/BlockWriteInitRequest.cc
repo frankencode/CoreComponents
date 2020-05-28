@@ -7,12 +7,12 @@
  */
 
 #include <cc/can/BlockWriteInitRequest>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockWriteInitRequest::createFrame(int serverId, Selector selector, const string &data)
+Ref<CanFrame> BlockWriteInitRequest::createFrame(int serverId, Selector selector, const String &data)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
@@ -35,11 +35,11 @@ Ref<CanFrame> BlockWriteInitRequest::createFrame(int serverId, Selector selector
     return frame;
 }
 
-string BlockWriteInitRequest::Instance::toString() const
+String BlockWriteInitRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockWriteInitRequest {" << nl
         << "  serverId      : " << serverId() << nl
         << "  selector      : " << selector() << nl

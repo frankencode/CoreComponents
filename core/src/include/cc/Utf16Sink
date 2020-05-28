@@ -77,17 +77,17 @@ private:
 
     class SurrogatePairEncodingError: public UnicodeError {
     public:
-        string message() const override;
+        String message() const override;
     };
 
     class ByteOrderMarkEncodingError: public UnicodeError {
     public:
-        string message() const override;
+        String message() const override;
     };
 
     class LargeCodePointEncodingError: public UnicodeError {
     public:
-        string message() const override;
+        String message() const override;
     };
 
     Ref<ByteSink> byteSink_;

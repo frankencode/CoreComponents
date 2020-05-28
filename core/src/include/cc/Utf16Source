@@ -57,7 +57,7 @@ public:
 private:
     class DecodingError: public UnicodeError {
     public:
-        string message() const override ;
+        String message() const override ;
     };
 
     Utf16Source(Stream *stream, CharArray *buffer, ByteOrder endian):

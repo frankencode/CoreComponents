@@ -31,7 +31,7 @@ public:
     Ref<TextCursor> copy() const override;
     void assign(const TextCursor *other) override;
 
-    string toString() const;
+    String toString() const;
 
 private:
     friend class Object;

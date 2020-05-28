@@ -63,7 +63,7 @@ public:
       * \param family limit the addressList() to a certain protocol family (e.g. AF_INET)
       * \return new object instance
       */
-    static Ref<NetworkInterface> query(const string &name, int family = AF_UNSPEC);
+    static Ref<NetworkInterface> query(const String &name, int family = AF_UNSPEC);
 
     /** Query information about all available network interfaces
       * \param family limit the addressList() to a certain protocol family (e.g. AF_INET)
@@ -75,7 +75,7 @@ public:
     bool isValid() const { return name_ != ""; }
 
     /// %System name of the network interface
-    string name() const { return name_; }
+    String name() const { return name_; }
 
     /// %System index of the network interface
     int index() const { return index_; }
@@ -87,7 +87,7 @@ public:
     unsigned flags() const { return flags_; }
 
     /// Hardware address
-    string hardwareAddress() const { return hardwareAddress_; }
+    String hardwareAddress() const { return hardwareAddress_; }
 
     /// Message transfer unit (MTU)
     uint32_t mtu() const { return mtu_; }
@@ -105,11 +105,11 @@ private:
     static Ref<NetworkInterfaceList> queryAllIoctl(int family);
     #endif
 
-    string name_;
+    String name_;
     int index_;
     unsigned type_;
     unsigned flags_;
-    string hardwareAddress_;
+    String hardwareAddress_;
     uint32_t mtu_;
     Ref<SocketAddressList> addressList_;
 };

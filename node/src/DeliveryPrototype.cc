@@ -13,12 +13,12 @@
 namespace cc {
 namespace http {
 
-Ref<DeliveryPrototype> DeliveryPrototype::create(const string &className)
+Ref<DeliveryPrototype> DeliveryPrototype::create(const String &className)
 {
     return new DeliveryPrototype{className};
 }
 
-DeliveryPrototype::DeliveryPrototype(const string &className, const MetaProtocol *protocol):
+DeliveryPrototype::DeliveryPrototype(const String &className, const MetaProtocol *protocol):
     MetaPrototype{className, protocol}
 {
     establish("request-limit", 100);

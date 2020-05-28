@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 #include <cc/Map>
 #include <cc/Singleton>
 
@@ -21,19 +21,19 @@ class ConfigureShell: public Object
 public:
     static ConfigureShell *instance();
     void setVerbose(bool on) { verbose_ = on; }
-    string run(const string &shellCommand);
+    String run(const String &shellCommand);
 
 private:
     friend class Singleton<ConfigureShell>;
 
-    bool lookup(const string &command, string *output) const;
-    void insert(const string &command, const string &output);
+    bool lookup(const String &command, String *output) const;
+    void insert(const String &command, const String &output);
 
     ConfigureShell();
 
     bool verbose_;
 
-    typedef Map<string, string> Cache;
+    typedef Map<String, String> Cache;
     Ref<Cache> cache_;
 };
 

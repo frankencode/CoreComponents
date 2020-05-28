@@ -39,8 +39,8 @@ private:
 
     Ref<Stream> stream_;
     Ref<TransferLimiter> drainage_;
-    string buffer_;
-    string pending_;
+    String buffer_;
+    String pending_;
     int pendingIndex_;
     int64_t payloadLeft_;
     int nlCount_, nlMax_;

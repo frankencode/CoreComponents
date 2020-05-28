@@ -31,10 +31,10 @@ Report::Report(const StringList *dirPaths, Pattern works, int worksMinLines):
     statementByDigest_(StatementByDigest::create())
 {
     for (int i = 0; i < dirPaths->count(); ++i) {
-        string dirPath = dirPaths->at(i)->canonicalPath();
+        String dirPath = dirPaths->at(i)->canonicalPath();
         Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
         dirWalker->setIgnoreHidden(true);
-        for (string path; dirWalker->read(&path);) {
+        for (String path; dirWalker->read(&path);) {
             if (FileStatus::read(path)->type() != FileType::Regular) continue;
             if (!works->match(path->fileName())->valid()) continue;
             Ref<Notice> notice;
@@ -50,7 +50,7 @@ Report::Report(const StringList *dirPaths, Pattern works, int worksMinLines):
             if (notice) {
                 coverage_->insert(path, notice);
                 {
-                    string digest = cc::crypto::sha1(notice->statement());
+                    String digest = cc::crypto::sha1(notice->statement());
                     Ref<Coverage> coverage;
                     if (!coverageByDigest_->lookup(digest, &coverage)) {
                         coverageByDigest_->insert(digest, coverage = Coverage::create());
@@ -61,7 +61,7 @@ Report::Report(const StringList *dirPaths, Pattern works, int worksMinLines):
                 {
                     CopyrightList *copyrights = notice->copyrights();
                     for (int j = 0; j < copyrights->count(); ++j) {
-                        string holder = copyrights->at(j)->holder();
+                        String holder = copyrights->at(j)->holder();
                         Ref<Coverage> coverage;
                         if (!coverageByHolder_->lookup(holder, &coverage))
                             coverageByHolder_->insert(holder, coverage = Coverage::create());
@@ -72,7 +72,7 @@ Report::Report(const StringList *dirPaths, Pattern works, int worksMinLines):
             else {
                 bool omit = false;
                 if (worksMinLines > 1) {
-                    string text = File::open(path)->map();
+                    String text = File::open(path)->map();
                     int i = -1, n = 1;
                     for (; n < worksMinLines; ++n) {
                         i = text->scan('\n', i + 1);

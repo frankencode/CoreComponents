@@ -7,13 +7,13 @@
  */
 
 #include <cc/str>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ui/keyboard>
 
 namespace cc {
 namespace ui {
 
-string str(ScanCode scanCode)
+String str(ScanCode scanCode)
 {
     const char* names[] = {
         nullptr,                    // 0
@@ -309,16 +309,16 @@ string str(ScanCode scanCode)
     static_assert(namesCount == 287, "");
 
     if (4 <= +scanCode && +scanCode < namesCount && names[+scanCode]) return names[+scanCode];
-    return format{"Unknown (%%)"} << +scanCode;
+    return Format{"Unknown (%%)"} << +scanCode;
 }
 
-string str(KeyCode keyCode)
+String str(KeyCode keyCode)
 {
-    if (0x20 <= +keyCode && +keyCode <= 0x7E) return format{"'%%'"} << char(+keyCode);
+    if (0x20 <= +keyCode && +keyCode <= 0x7E) return Format{"'%%'"} << char(+keyCode);
     return "0x" + hex(+keyCode);
 }
 
-string str(KeyModifier modifiers)
+String str(KeyModifier modifiers)
 {
     if (modifiers == KeyModifier::None) return "None";
 

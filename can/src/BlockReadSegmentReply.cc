@@ -7,12 +7,12 @@
  */
 
 #include <cc/can/BlockReadSegmentReply>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockReadSegmentReply::createFrame(int serverId, const string &data, int offset, int sequenceNumber)
+Ref<CanFrame> BlockReadSegmentReply::createFrame(int serverId, const String &data, int offset, int sequenceNumber)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
@@ -33,11 +33,11 @@ Ref<CanFrame> BlockReadSegmentReply::createFrame(int serverId, const string &dat
     return frame;
 }
 
-string BlockReadSegmentReply::Instance::toString() const
+String BlockReadSegmentReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockReadSegmentReply {" << nl
         << "  serverId      : " << serverId() << nl
         << "  sequenceNumber: " << sequenceNumber() << nl

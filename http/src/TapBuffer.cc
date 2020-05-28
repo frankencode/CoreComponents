@@ -13,17 +13,17 @@
 namespace cc {
 namespace http {
 
-Ref<TapBuffer> TapBuffer::open(Stream *stream, const string &prefix)
+Ref<TapBuffer> TapBuffer::open(Stream *stream, const String &prefix)
 {
     return new TapBuffer{stream, prefix};
 }
 
-TapBuffer::TapBuffer(Stream *stream, const string &prefix):
+TapBuffer::TapBuffer(Stream *stream, const String &prefix):
     LineBuffer{stream},
     prefix_{prefix}
 {}
 
-string TapBuffer::prefix() const
+String TapBuffer::prefix() const
 {
     return "(" + inum(uint64_t(Thread::self()->id()), 62) + ") " + prefix_;
 }
@@ -44,7 +44,7 @@ void TapBuffer::write(const CharArray *buf)
             else if (ch == 0x0D) parts->append("\\r");
             else if (ch == 0x0C) parts->append("\\f");
             else {
-                string s = "\\xXX";
+                String s = "\\xXX";
                 const char *hex = "0123456789ABCDEF";
                 mutate(s)->at(s->count() - 2) = hex[ch / 16];
                 mutate(s)->at(s->count() - 1) = hex[ch % 16];

@@ -21,7 +21,7 @@ class FontManager;
 class FontFamily: public Object
 {
 public:
-    string name() const { return name_; }
+    String name() const { return name_; }
     Pitch pitch() const { return pitch_; }
 
     Ref< Source<const FontFace *> > getFontFaces() const;
@@ -35,14 +35,14 @@ public:
 private:
     friend class FontManager;
 
-    static Ref<FontFamily> create(const string &name, Pitch pitch) {
+    static Ref<FontFamily> create(const String &name, Pitch pitch) {
         return new FontFamily{name, pitch};
     }
 
-    FontFamily(const string &name, Pitch pitch);
+    FontFamily(const String &name, Pitch pitch);
     ~FontFamily();
 
-    string name_;
+    String name_;
     Pitch pitch_;
 
     typedef List< Ref<const FontFace> > FontFaces;

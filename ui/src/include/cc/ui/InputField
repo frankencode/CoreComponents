@@ -16,12 +16,12 @@ namespace ui {
 class InputField: public Control
 {
 public:
-    Property<string> labelText;
-    Property<string> inputText;
-    Property<string> dummyText;
-    Property<string> helpText;
-    Property<string> statusText;
-    Property<string> errorText;
+    Property<String> labelText;
+    Property<String> inputText;
+    Property<String> dummyText;
+    Property<String> helpText;
+    Property<String> statusText;
+    Property<String> errorText;
 
     #if 0
     enum class Type {
@@ -40,7 +40,7 @@ public:
     Size maxSize() const override;
 
 protected:
-    InputField(View *parent, const string &labelText);
+    InputField(View *parent, const String &labelText);
     void init();
 
     virtual InputControl *addInputControl() = 0;

@@ -130,7 +130,7 @@ public:
     /// Cast to low-level C array
     operator Item*() { return data_; }
 
-    /// Create a deep copy of this string
+    /// Create a deep copy of this String
     Ref<Array> copy() const { return copy(0, size_); }
 
     /** Copy a range
@@ -161,7 +161,7 @@ public:
     Ref<Array> select(int i0, int i1) const { return new Array{this, i0, i1}; }
 
     /** Return the underlying unselected array
-      * \return original string
+      * \return original String
       */
     Array *unselect() const { return parent_; }
 

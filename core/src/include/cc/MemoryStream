@@ -27,7 +27,7 @@ public:
 
 private:
     MemoryStream(CharArray *buffer);
-    string buffer_;
+    String buffer_;
     int i_;
 };
 

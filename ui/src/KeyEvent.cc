@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ui/KeyEvent>
 
 namespace cc {
 namespace ui {
 
-string KeyEvent::toString() const
+String KeyEvent::toString() const
 {
-    return format{}
+    return Format{}
         << "KeyEvent {" << nl
         << "  action: " << action_ << nl
         << "  time: " << time_ << nl

@@ -20,7 +20,7 @@ public:
     Step wheelStep() const { return wheelStep_; }
     Point mousePos() const { return mousePos_; }
 
-    string toString() const;
+    String toString() const;
 
 private:
     friend class Object;

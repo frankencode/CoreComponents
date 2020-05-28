@@ -118,8 +118,8 @@ class LazyChoice: public TestCase
     void run()
     {
         Pattern pattern = "(Hans|HansPeter)Glück";
-        CC_VERIFY(pattern->match(string{"HansPeterGlück"})->valid());
-        CC_VERIFY(pattern->match(string{"HansGlück"})->valid());
+        CC_VERIFY(pattern->match(String{"HansPeterGlück"})->valid());
+        CC_VERIFY(pattern->match(String{"HansGlück"})->valid());
     }
 };
 
@@ -135,7 +135,7 @@ class UriDispatch: public TestCase
             << "*httpecho*";
 
         for (int i = 0; i < services->count(); ++i)
-            fout() << services->at(i) << ": " << Pattern{services->at(i)}->match(string{"cckit.cyblogic.com"})->valid() << nl;
+            fout() << services->at(i) << ": " << Pattern{services->at(i)}->match(String{"cckit.cyblogic.com"})->valid() << nl;
     }
 };
 
@@ -144,7 +144,7 @@ class TestEmpty: public TestCase
 {
     void run()
     {
-        fout() << Pattern(0)->match(string("Something"))->valid() << nl;
+        fout() << Pattern(0)->match(String("Something"))->valid() << nl;
     }
 };
 #endif

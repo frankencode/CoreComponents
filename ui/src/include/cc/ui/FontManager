@@ -23,18 +23,18 @@ class FontManager: public Object
 public:
     static FontManager *instance();
 
-    void addPath(const string &path, const string &namePrefix = "");
+    void addPath(const String &path, const String &namePrefix = "");
 
     Ref< Source<const FontFamily *> > getFontFamilies() const;
-    const FontFamily *selectFontFamily(const string &name) const;
+    const FontFamily *selectFontFamily(const String &name) const;
 
     virtual Ref<const ScaledFont> selectFont(const Font &font) const = 0;
-    virtual Ref<GlyphRun> typeset(const string &text, const Font &font, const Point &origin = Point{}) const = 0;
+    virtual Ref<GlyphRun> typeset(const String &text, const Font &font, const Point &origin = Point{}) const = 0;
 
     virtual Ref<TextRun> createTextRun() const = 0;
 
     typedef std::function<void(const Font &font, int i0, int i1)> ReturnFontRange;
-    virtual void selectFontRanges(const string &text, const Font &font, const ReturnFontRange &fontRange) const = 0;
+    virtual void selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const = 0;
 
 protected:
     static Font fixup(const Font &font);
@@ -42,15 +42,15 @@ protected:
     FontManager();
     ~FontManager();
 
-    virtual bool isFontFace(const string &path) const;
-    virtual Ref<FontFace> openFontFace(const string &path) = 0;
+    virtual bool isFontFace(const String &path) const;
+    virtual Ref<FontFace> openFontFace(const String &path) = 0;
 
     void addFontFace(const FontFace *fontFace);
-    const FontFamily *selectNearestFontFamily(const string &name) const;
+    const FontFamily *selectNearestFontFamily(const String &name) const;
 
-    static Ref<StringList> familySearchPattern(const string &name);
+    static Ref<StringList> familySearchPattern(const String &name);
 
-    typedef Map< string, Ref<FontFamily> > FontFamilies;
+    typedef Map< String, Ref<FontFamily> > FontFamilies;
     Ref<FontFamilies> fontFamilies_;
 };
 

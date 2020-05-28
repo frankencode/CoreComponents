@@ -41,7 +41,7 @@ public:
       * \exception HostNameResolutionError
       * \see waitForReady()
       */
-    static Ref<StreamSocket> connect(const string &hostName, int port);
+    static Ref<StreamSocket> connect(const String &hostName, int port);
 
     /** Create a pair of connected local sockets
       * \param first return the first socket

@@ -12,7 +12,7 @@
 #include <stdio.h> // rename
 #include <cc/exceptions>
 #include <cc/Random>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Process>
 #include <cc/Dir>
 #include <cc/System>
@@ -20,14 +20,14 @@
 
 namespace cc {
 
-Ref<File> File::open(const string &path, FileOpen flags, FileMode mode)
+Ref<File> File::open(const String &path, FileOpen flags, FileMode mode)
 {
     int fd = ::open(path, +flags|O_CLOEXEC, +mode);
     if (fd == -1) CC_SYSTEM_ERROR(errno, path);
     return new File{path, flags, fd};
 }
 
-Ref<File> File::tryOpen(const string &path, FileOpen flags, FileMode mode)
+Ref<File> File::tryOpen(const String &path, FileOpen flags, FileMode mode)
 {
     int fd = ::open(path, +flags|O_CLOEXEC, +mode);
     if (fd != -1) return new File{path, flags, fd};
@@ -36,20 +36,20 @@ Ref<File> File::tryOpen(const string &path, FileOpen flags, FileMode mode)
 
 Ref<File> File::openTemp(FileOpen flags)
 {
-    string path = createUnique(
-        format{"/tmp/%%_XXXXXXXX"}
+    String path = createUnique(
+        Format{"/tmp/%%_XXXXXXXX"}
             << Process::exePath()->fileName()
     );
     return open(path, flags);
 }
 
-File::File(const string &path, FileOpen openMode, int fd):
+File::File(const String &path, FileOpen openMode, int fd):
     SystemStream{fd},
     path_{path},
     openFlags_{openMode}
 {}
 
-string File::path() const
+String File::path() const
 {
     return path_;
 }
@@ -93,7 +93,7 @@ private:
     {}
 };
 
-string File::map() const
+String File::map() const
 {
     off_t fileEnd = ::lseek(fd_, 0, SEEK_END);
     if (fileEnd == -1)
@@ -162,70 +162,70 @@ void File::dataSync()
 #endif
 }
 
-bool File::checkAccess(const string &path, FileAccess flags)
+bool File::checkAccess(const String &path, FileAccess flags)
 {
     return ::access(path, +flags) == 0;
 }
 
-void File::create(const string &path, int mode)
+void File::create(const String &path, int mode)
 {
     int fd = ::open(path, O_RDONLY|O_CREAT|O_EXCL, mode);
     if (fd == -1) CC_SYSTEM_RESOURCE_ERROR(errno, path);
     ::close(fd);
 }
 
-void File::chown(const string &path, uid_t ownerId, gid_t groupId)
+void File::chown(const String &path, uid_t ownerId, gid_t groupId)
 {
     if (::chown(path, ownerId, groupId) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-void File::rename(const string &path, const string &newPath)
+void File::rename(const String &path, const String &newPath)
 {
     if (::rename(path, newPath) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-void File::link(const string &path, const string &newPath)
+void File::link(const String &path, const String &newPath)
 {
     if (::link(path, newPath) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, newPath);
 }
 
-void File::unlink(const string &path)
+void File::unlink(const String &path)
 {
     if (::unlink(path) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-void File::symlink(const string &path, const string &newPath)
+void File::symlink(const String &path, const String &newPath)
 {
     if (::symlink(path, newPath) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-string File::readlink(const string &path)
+String File::readlink(const String &path)
 {
-    string buf{128};
+    String buf{128};
     while (true) {
         ssize_t numBytes = ::readlink(path, mutate(buf)->chars(), buf->count());
         if (numBytes == -1)
-            return string{};
+            return String{};
         if (numBytes <= buf->count()) {
             if (numBytes < buf->count())
-                buf = string{buf->chars(), int(numBytes)};
+                buf = String{buf->chars(), int(numBytes)};
             break;
         }
-        buf = string{int(numBytes)};
+        buf = String{int(numBytes)};
     }
     return buf;
 }
 
-string File::resolve(const string &path)
+String File::resolve(const String &path)
 {
-    string resolvedPath = path;
+    String resolvedPath = path;
     while (FileStatus::readHead(resolvedPath)->type() == FileType::Symlink) {
-        string origPath = resolvedPath;
+        String origPath = resolvedPath;
         resolvedPath = File::readlink(resolvedPath);
         if (resolvedPath == "") break;
         if (resolvedPath->isRelativePath())
@@ -234,11 +234,11 @@ string File::resolve(const string &path)
     return resolvedPath;
 }
 
-string File::createUnique(const string &path, int mode, char placeHolder)
+String File::createUnique(const String &path, int mode, char placeHolder)
 {
     Ref<Random> random = Random::open(Process::getId());
     while (true) {
-        string candidate = path->copy();
+        String candidate = path->copy();
         for (int i = 0, n = candidate->count(); i < n; ++i) {
             if (candidate->at(i) == placeHolder) {
                 char r = random->get(0, 61);
@@ -263,7 +263,7 @@ string File::createUnique(const string &path, int mode, char placeHolder)
     }
 }
 
-void File::establish(const string &path, int fileMode, int dirMode)
+void File::establish(const String &path, int fileMode, int dirMode)
 {
     if (path->contains('/'))
         Dir::establish(path->reducePath(), dirMode);
@@ -271,7 +271,7 @@ void File::establish(const string &path, int fileMode, int dirMode)
         File::create(path, fileMode);
 }
 
-void File::clean(const string &path)
+void File::clean(const String &path)
 {
     auto status = FileStatus::read(path);
     if (status->isValid()) {
@@ -284,11 +284,11 @@ void File::clean(const string &path)
     }
 }
 
-string File::locate(const string &fileName, const StringList *dirs, FileAccess accessFlags)
+String File::locate(const String &fileName, const StringList *dirs, FileAccess accessFlags)
 {
-    string path;
+    String path;
     for (int i = 0; i < dirs->count(); ++i) {
-        string candidate = format{} << dirs->at(i) << "/" << fileName;
+        String candidate = Format{} << dirs->at(i) << "/" << fileName;
         if (checkAccess(candidate, accessFlags)) {
             path = candidate;
             break;
@@ -297,13 +297,13 @@ string File::locate(const string &fileName, const StringList *dirs, FileAccess a
     return path;
 }
 
-string File::load(const string &path)
+String File::load(const String &path)
 {
     establish(path);
     return open(path)->readAll();
 }
 
-void File::save(const string &path, const string &text)
+void File::save(const String &path, const String &text)
 {
     establish(path);
     Ref<File> file = open(path, FileOpen::WriteOnly);

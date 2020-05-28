@@ -10,27 +10,27 @@
 
 #include <new>
 #include <cc/bitmask>
-#include <cc/color>
+#include <cc/Color>
 #include <cc/Version>
-#include <cc/string>
+#include <cc/String>
 #include <cc/Map>
 
 namespace cc {
 
-class variant;
+class Variant;
 
-typedef List<variant> VariantList;
-typedef Map<string, variant> VariantMap;
+typedef List<Variant> VariantList;
+typedef Map<String, Variant> VariantMap;
 
 /** \internal
-  * \brief variant cast policy
-  * \see variant::cast()
+  * \brief Variant cast policy
+  * \see Variant::cast()
   */
 template<class T, bool IsPointer>
 class VariantCast {};
 
-/** Type of a variant value
-  * \see variant::type(), variant::itemType()
+/** Type of a Variant value
+  * \see Variant::type(), Variant::itemType()
   */
 enum class VariantType: uint16_t
 {
@@ -49,36 +49,36 @@ enum class VariantType: uint16_t
 
 CC_BITMASK(VariantType, uint16_t)
 
-/** \class variant cc/variant
+/** \class Variant cc/Variant
   * \ingroup misc
   * \brief Duck-typed value
   *
-  * A variant can represent different types.
-  * The type of a variant is defined implicitly at construction or assignment.
-  * Variants automatically cast to bool, int, float if the variant type is compatible
+  * A Variant can represent different types.
+  * The type of a Variant is defined implicitly at construction or assignment.
+  * Variants automatically cast to bool, int, float if the Variant type is compatible
   * with the target type requested by an expression.
   * In debug mode a DebugException will be thrown on illegal type casts.
   * Variants can be savely passed by value.
   */
-class variant
+class Variant
 {
 public:
-    /// Integer type used for storing integer values inside a variant
+    /// Integer type used for storing integer values inside a Variant
     typedef float Int;
 
-    /// Floating point number type used for storing real values inside a variant
+    /// Floating point number type used for storing real values inside a Variant
     typedef float Float;
 
     static const char *typeName(VariantType type, VariantType itemType);
 
-    /** Heuristically detect the type and read a variant value from a string
-      * \param s text representation of the variant value
-      * \return variant value
+    /** Heuristically detect the type and read a Variant value from a String
+      * \param s text representation of the Variant value
+      * \return Variant value
       */
-    static variant read(const string &s);
+    static Variant read(const String &s);
 
     template<class T>
-    inline static T cast(const variant &value) { return VariantCast<T, CC_IS_POINTER(T)>::cast(value); }
+    inline static T cast(const Variant &value) { return VariantCast<T, CC_IS_POINTER(T)>::cast(value); }
 
     class Instance
     {
@@ -87,23 +87,23 @@ public:
         VariantType itemType() const { return itemType_; }
         const char *typeName() const;
 
-        string toString() const;
+        String toString() const;
 
         /** TODO: allow to request more smart conversions explicitly and have proper range checking and exception handling at this point
           */
 
     private:
-        friend class variant;
+        friend class Variant;
 
         template<class, bool>
         friend class VariantCast;
 
-        friend string str(const variant &x);
-        friend int type(const variant &value);
-        friend int itemType(const variant &value);
+        friend String str(const Variant &x);
+        friend int type(const Variant &value);
+        friend int itemType(const Variant &value);
 
         template<class U>
-        friend U *cast(const variant &value);
+        friend U *cast(const Variant &value);
 
         Instance() {}
 
@@ -111,11 +111,11 @@ public:
         Instance(bool value)   : type_{VariantType::Bool},    int_{value}            {}
         Instance(float value)  : type_{VariantType::Float},   float_{value}          {}
         Instance(double value) : type_{VariantType::Float},   float_{float(value)}   {}
-        Instance(color value)  : type_{VariantType::Color},   word_{value->toWord()} {}
+        Instance(Color value)  : type_{VariantType::Color},   word_{value->toWord()} {}
         Instance(Version value): type_{VariantType::Version}, word_{value->toWord()} {}
 
-        Instance(const char *value)  : type_{VariantType::String} { initRef(mutate(string(value))); }
-        Instance(const string &value): type_{VariantType::String} { initRef(mutate(value)); }
+        Instance(const char *value)  : type_{VariantType::String} { initRef(mutate(String(value))); }
+        Instance(const String &value): type_{VariantType::String} { initRef(mutate(value)); }
 
         template<class T>
         Instance(const Ref<T> &value): type_{VariantType::Object} { initRef(value.get()); }
@@ -123,7 +123,7 @@ public:
         Instance(const Ref< List<int> > &value)    : type_{VariantType::List}, itemType_{VariantType::Int}     { initRef(value); }
         Instance(const Ref< List<bool> > &value)   : type_{VariantType::List}, itemType_{VariantType::Bool}    { initRef(value); }
         Instance(const Ref< List<float> > &value)  : type_{VariantType::List}, itemType_{VariantType::Float}   { initRef(value); }
-        Instance(const Ref< List<color> > &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
+        Instance(const Ref< List<Color> > &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
         Instance(const Ref< List<Version> > &value): type_{VariantType::List}, itemType_{VariantType::Version} { initRef(value); }
         Instance(const Ref<StringList> &value)     : type_{VariantType::List}, itemType_{VariantType::String}  { initRef(value); }
         Instance(const Ref<VariantList> &value)    : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
@@ -155,60 +155,60 @@ public:
         };
     };
 
-    variant() {}
+    Variant() {}
 
-    variant(int value)    : instance_{value} {}
-    variant(bool value)   : instance_{value} {}
-    variant(float value)  : instance_{value} {}
-    variant(double value) : instance_{value} {}
-    variant(color value)  : instance_{value} {}
-    variant(Version value): instance_{value} {}
+    Variant(int value)    : instance_{value} {}
+    Variant(bool value)   : instance_{value} {}
+    Variant(float value)  : instance_{value} {}
+    Variant(double value) : instance_{value} {}
+    Variant(Color value)  : instance_{value} {}
+    Variant(Version value): instance_{value} {}
 
-    variant(const char *value)  : instance_{value} {}
-    variant(const string &value): instance_{value} {}
-
-    template<class T>
-    variant(const Ref<T> &value): instance_{value} {}
+    Variant(const char *value)  : instance_{value} {}
+    Variant(const String &value): instance_{value} {}
 
     template<class T>
-    variant(const T *value): variant(Ref<T>(value)) {}
+    Variant(const Ref<T> &value): instance_{value} {}
 
     template<class T>
-    variant(T *value): variant(Ref<T>(value)) {}
-
-    variant(const Ref< List<int> > &value)    : instance_{value} {}
-    variant(const Ref< List<bool> > &value)   : instance_{value} {}
-    variant(const Ref< List<float> > &value)  : instance_{value} {}
-    variant(const Ref< List<color> > &value)  : instance_{value} {}
-    variant(const Ref< List<Version> > &value): instance_{value} {}
-    variant(const Ref<StringList> &value)     : instance_{value} {}
-    variant(const Ref<VariantList> &value)    : instance_{value} {}
-    variant(const Ref<VariantMap> &value)     : instance_{value} {}
+    Variant(const T *value): Variant(Ref<T>(value)) {}
 
     template<class T>
-    variant(const List<T> *value): variant(Ref<List<T>>(value)) {}
+    Variant(T *value): Variant(Ref<T>(value)) {}
+
+    Variant(const Ref< List<int> > &value)    : instance_{value} {}
+    Variant(const Ref< List<bool> > &value)   : instance_{value} {}
+    Variant(const Ref< List<float> > &value)  : instance_{value} {}
+    Variant(const Ref< List<Color> > &value)  : instance_{value} {}
+    Variant(const Ref< List<Version> > &value): instance_{value} {}
+    Variant(const Ref<StringList> &value)     : instance_{value} {}
+    Variant(const Ref<VariantList> &value)    : instance_{value} {}
+    Variant(const Ref<VariantMap> &value)     : instance_{value} {}
 
     template<class T>
-    variant(List<T> *value): variant(Ref<List<T>>(value)) {}
-
-    variant(const variant &b) { *this = b; }
-
-    ~variant() { if (+((*this)->type_ & VariantType::Object))(*this)->killRef(); }
-
-    const variant &operator=(bool value)          { (*this)->type_ = VariantType::Bool;    (*this)->int_ = value; return *this; }
-    const variant &operator=(int value)           { (*this)->type_ = VariantType::Int;     (*this)->int_ = value; return *this; }
-    const variant &operator=(float value)         { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
-    const variant &operator=(double value)        { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
-    const variant &operator=(color value)         { (*this)->type_ = VariantType::Color;   (*this)->word_ = value->toWord(); return *this; }
-    const variant &operator=(Version value)       { (*this)->type_ = VariantType::Version; (*this)->word_ = value->toWord(); return *this; }
-
-    const variant &operator=(const char *value)   { return (*this) = variant(value); }
-    const variant &operator=(const string &value) { return (*this) = variant(value); }
+    Variant(const List<T> *value): Variant(Ref<List<T>>(value)) {}
 
     template<class T>
-    const variant &operator=(const Ref<T> &value) { return (*this) = variant(value); }
+    Variant(List<T> *value): Variant(Ref<List<T>>(value)) {}
 
-    const variant &operator=(const variant &b)
+    Variant(const Variant &b) { *this = b; }
+
+    ~Variant() { if (+((*this)->type_ & VariantType::Object))(*this)->killRef(); }
+
+    const Variant &operator=(bool value)          { (*this)->type_ = VariantType::Bool;    (*this)->int_ = value; return *this; }
+    const Variant &operator=(int value)           { (*this)->type_ = VariantType::Int;     (*this)->int_ = value; return *this; }
+    const Variant &operator=(float value)         { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
+    const Variant &operator=(double value)        { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
+    const Variant &operator=(Color value)         { (*this)->type_ = VariantType::Color;   (*this)->word_ = value->toWord(); return *this; }
+    const Variant &operator=(Version value)       { (*this)->type_ = VariantType::Version; (*this)->word_ = value->toWord(); return *this; }
+
+    const Variant &operator=(const char *value)   { return (*this) = Variant(value); }
+    const Variant &operator=(const String &value) { return (*this) = Variant(value); }
+
+    template<class T>
+    const Variant &operator=(const Ref<T> &value) { return (*this) = Variant(value); }
+
+    const Variant &operator=(const Variant &b)
     {
         if (+((*this)->type_ & VariantType::Object)) (*this)->killRef();
         (*this)->type_ = b->type_;
@@ -236,42 +236,42 @@ public:
         CC_ASSERT2(+((*this)->type_ & VariantType::Float), illegalConversion);
         return (*this)->float_;
     }
-    operator color() const {
-        if (!+(*this)->type_) return color{};
+    operator Color() const {
+        if (!+(*this)->type_) return Color{};
         CC_ASSERT2(+((*this)->type_ & VariantType::Color), illegalConversion);
-        return color::fromWord((*this)->word_);
+        return Color::fromWord((*this)->word_);
     }
     operator Version() const {
         if (!+(*this)->type_) return Version();
         CC_ASSERT2(+((*this)->type_ & VariantType::Version), illegalConversion);
         return Version::fromWord((*this)->word_);
     }
-    operator string() const {
-        if (!+(*this)->type_) return string{};
+    operator String() const {
+        if (!+(*this)->type_) return String{};
         CC_ASSERT2(+((*this)->type_ & VariantType::String), illegalConversion);
-        return variant::cast<CharArray *>(*this);
+        return Variant::cast<CharArray *>(*this);
     }
 
     template<class T>
     operator Ref<T>() const {
         if (!+(*this)->type_) return Ref<T>();
         CC_ASSERT2(+((*this)->type_ & VariantType::Object), illegalConversion);
-        return variant::cast<T *>(*this);
+        return Variant::cast<T *>(*this);
     }
 
     const Instance *operator->() const { return &instance_; }
     Instance *operator->() { return &instance_; }
 
-    bool operator==(const variant &b) const;
-    bool operator<(const variant &b) const;
+    bool operator==(const Variant &b) const;
+    bool operator<(const Variant &b) const;
 
-    bool operator>(const variant &b) const  { return b < *this; }
-    bool operator!=(const variant &b) const { return !(*this == b); }
-    bool operator<=(const variant &b) const { return (*this < b) || (*this == b); }
-    bool operator>=(const variant &b) const { return (b < *this) || (*this == b); }
+    bool operator>(const Variant &b) const  { return b < *this; }
+    bool operator!=(const Variant &b) const { return !(*this == b); }
+    bool operator<=(const Variant &b) const { return (*this < b) || (*this == b); }
+    bool operator>=(const Variant &b) const { return (b < *this) || (*this == b); }
 
 private:
-    static constexpr const char *illegalConversion = "Illegal variant conversion";
+    static constexpr const char *illegalConversion = "Illegal Variant conversion";
 
     Instance instance_;
 };
@@ -279,7 +279,7 @@ private:
 template<class T>
 class VariantCast<T, true> {
 public:
-    static T cast(const variant &value) {
+    static T cast(const Variant &value) {
         typedef typename CC_DEREF(T) U;
         return (+(value->type() & VariantType::Object)) ? Object::cast<U *>(value->ref().get()) : nullptr;
     }
@@ -288,35 +288,35 @@ public:
 template<class T>
 class VariantCast<T, false> {
 public:
-    static T cast(const variant &value) {
+    static T cast(const Variant &value) {
         return T(value);
     }
 };
 
 template<>
-class VariantCast<string, false> {
+class VariantCast<String, false> {
 public:
-    static string cast(const variant &value) {
-        return variant::cast<CharArray *>(value);
+    static String cast(const Variant &value) {
+        return Variant::cast<CharArray *>(value);
     }
 };
 
 template<>
-class VariantCast<color, false> {
+class VariantCast<Color, false> {
 public:
-    static color cast(const variant &value) {
-        return color::fromWord(value->word_);
+    static Color cast(const Variant &value) {
+        return Color::fromWord(value->word_);
     }
 };
 
 template<>
 class VariantCast<Version, false> {
 public:
-    static Version cast(const variant &value) {
+    static Version cast(const Variant &value) {
         return Version::fromWord(value->word_);
     }
 };
 
-inline string str(const variant &x) { return x->toString(); }
+inline String str(const Variant &x) { return x->toString(); }
 
 } // namespace cc

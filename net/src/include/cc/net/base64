@@ -8,14 +8,14 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 namespace net {
 namespace base64 {
 
-string encode(const string &source);
-string decode(const string &source);
+String encode(const String &source);
+String decode(const String &source);
 
 /** \brief Base64 decoding failed: broken input
   */
@@ -28,7 +28,7 @@ class IllegalInputSize4Error: public DecodeError {
 public:
     ~IllegalInputSize4Error() throw() {}
 
-    virtual string message() const {
+    virtual String message() const {
         return "Base-64 error: input size need to be a multiple of 4 bytes";
     }
 };
@@ -37,7 +37,7 @@ class IllegalPaddingError: public DecodeError {
 public:
     ~IllegalPaddingError() throw() {}
 
-    virtual string message() const {
+    virtual String message() const {
         return "Base-64 error: unsupported padding";
     }
 };
@@ -46,7 +46,7 @@ class IllegalCharacterError: public DecodeError {
 public:
     ~IllegalCharacterError() throw() {}
 
-    virtual string message() const {
+    virtual String message() const {
         return "Base-64 error: illegal symbol";
     }
 };

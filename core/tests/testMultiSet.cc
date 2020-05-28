@@ -13,7 +13,7 @@
 using namespace cc;
 using namespace cc::testing;
 
-namespace cc { template class MultiSet<string>; }
+namespace cc { template class MultiSet<String>; }
 
 int main(int argc, char **argv)
 {

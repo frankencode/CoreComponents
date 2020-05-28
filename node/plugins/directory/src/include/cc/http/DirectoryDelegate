@@ -26,9 +26,9 @@ public:
 private:
     DirectoryDelegate(DeliveryWorker *worker, ScriptHandler *scriptHandler = nullptr);
 
-    void listDirectory(const HttpRequest *request, const string &path);
-    void deliverFile(const string &path);
-    void streamFile(const string &path);
+    void listDirectory(const HttpRequest *request, const String &path);
+    void deliverFile(const String &path);
+    void streamFile(const String &path);
 
     Ref<const DirectoryInstance> directoryInstance_;
     Ref<ScriptHandler> scriptHandler_;

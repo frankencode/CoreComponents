@@ -18,7 +18,7 @@ StylePlugin *StylePlugin::instance()
     return StyleManager::instance()->activePlugin();
 }
 
-StylePlugin::StylePlugin(const string &name):
+StylePlugin::StylePlugin(const String &name):
     name_{name}
 {}
 

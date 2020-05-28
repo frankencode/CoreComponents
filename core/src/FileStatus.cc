@@ -20,17 +20,17 @@ Ref<FileStatus> FileStatus::create()
     return new FileStatus{};
 }
 
-Ref<FileStatus> FileStatus::read(const string &path)
+Ref<FileStatus> FileStatus::read(const String &path)
 {
     return new FileStatus{path, true};
 }
 
-Ref<FileStatus> FileStatus::readHead(const string &path)
+Ref<FileStatus> FileStatus::readHead(const String &path)
 {
     return new FileStatus{path, false};
 }
 
-FileStatus::FileStatus(const string &path, bool follow):
+FileStatus::FileStatus(const String &path, bool follow):
     path_{path},
     follow_{follow}
 {

@@ -16,29 +16,29 @@ using namespace cc;
 using namespace cc::testing;
 using namespace cc::net;
 
-string familyToString(ProtocolFamily family)
+String familyToString(ProtocolFamily family)
 {
-    string s{"UNKNOWN"};
+    String s{"UNKNOWN"};
     if (+family == AF_INET) s = "INET";
     else if (+family == AF_INET6) s = "INET6";
     else if (+family == AF_UNSPEC) s = "UNSPEC";
     return s;
 }
 
-string socketTypeToString(SocketType type)
+String socketTypeToString(SocketType type)
 {
-    string s{"UNKNOWN"};
+    String s{"UNKNOWN"};
     if (+type == SOCK_DGRAM) s = "DGRAM";
     else if (+type == SOCK_STREAM) s = "STREAM";
     return s;
 }
 
-string protocolToString(InternetProtocol protocol)
+String protocolToString(InternetProtocol protocol)
 {
-    string s{"UNKNOWN"};
+    String s{"UNKNOWN"};
     if (+protocol == IPPROTO_TCP) s = "TCP";
     else if (+protocol == IPPROTO_UDP) s = "UDP";
-    else s = format{"<%%>"} << +protocol;
+    else s = Format{"<%%>"} << +protocol;
     return s;
 }
 
@@ -46,11 +46,11 @@ class ResolveHostName: public TestCase
 {
     void run() override
     {
-        string hostName = System::hostName();
+        String hostName = System::hostName();
 
         fout("hostName = \"%%\"\n") << hostName;
 
-        string canonicalName;
+        String canonicalName;
         Ref<SocketAddressList> list = SocketAddress::queryConnectionInfo(hostName, "http", ProtocolFamily::Unspecified, SocketType::Stream, &canonicalName);
 
         fout("canonicalName = \"%%\"\n") << canonicalName;
@@ -79,7 +79,7 @@ public:
             << "127.0.0.1:8080"
             << "::"
             << "[::]:8080";
-        for (string s: samples) {
+        for (String s: samples) {
             auto address = SocketAddress::resolveUri(s);
             fout("\"%%\" == \"%%\"\n") << s << address;
             CC_ASSERT(s == address->toString());

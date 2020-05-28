@@ -13,12 +13,12 @@
 namespace cc {
 namespace meta {
 
-Ref<MetaObject> MetaObject::create(const string &className)
+Ref<MetaObject> MetaObject::create(const String &className)
 {
     return new MetaObject{className};
 }
 
-MetaObject::MetaObject(const string &className):
+MetaObject::MetaObject(const String &className):
     className_{className},
     children_{MetaObjectList::create()}
 {}
@@ -26,12 +26,12 @@ MetaObject::MetaObject(const string &className):
 MetaObject::~MetaObject()
 {}
 
-variant MetaObject::toVariant() const
+Variant MetaObject::toVariant() const
 {
     return Ref<MetaObject>{const_cast<MetaObject *>(this)};
 }
 
-string MetaObject::toString() const
+String MetaObject::toString() const
 {
     return yason::stringify(toVariant());
 }
@@ -48,10 +48,10 @@ void MetaObject::autocomplete(MetaObject *target) const
 {
     if (count() != target->count()) {
         for (int i = 0; i < count(); ++i) {
-            string name = at(i)->key();
+            String name = at(i)->key();
             if (target->count() <= i || target->at(i)->key() != name) {
-                variant value = at(i)->value();
-                const MetaProtocol *protocol = variant::cast<const MetaProtocol *>(value);
+                Variant value = at(i)->value();
+                const MetaProtocol *protocol = Variant::cast<const MetaProtocol *>(value);
                 if (protocol) value = protocol->defaultObject();
                 target->insert(name, value);
             }

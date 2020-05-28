@@ -10,7 +10,7 @@
 
 #include <initializer_list>
 #include <cc/Set>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 
@@ -104,9 +104,9 @@ template<class T>
 bool operator>=(const set<T> &a, const set<T> &b) { return container::compare(a, b) >= 0; }
 
 template<class T>
-string str(const set<T> &a)
+String str(const set<T> &a)
 {
-    format f;
+    Format f;
     f << "[ ";
     for (auto &x: a)
         f << x << (&x == &a->last() ? " ]" : ", ");

@@ -51,8 +51,8 @@ protected:
     virtual void nodeReboot();
     virtual void nodeReset();
 
-    virtual string readServiceData(Selector::Key key) const;
-    virtual void writeServiceData(Selector::Key key, const string &data);
+    virtual String readServiceData(Selector::Key key) const;
+    virtual void writeServiceData(Selector::Key key, const String &data);
 
     virtual bool expeditedTransferIsEnabled() const { return true; }
 
@@ -89,7 +89,7 @@ private:
     Ref<const CanFrame> writeHead_;
     Ref<const CanFrame> readHead_;
 
-    string buffer_;
+    String buffer_;
     int fill_;
     int offset_;
 

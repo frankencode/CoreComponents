@@ -36,7 +36,7 @@ Ref<HttpResponse> HttpClientConnection::readResponse()
 
 void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *message)
 {
-    string line;
+    String line;
     if (!source->read(&line)) throw CloseRequest{};
 
     HttpResponse *response = Object::cast<HttpResponse *>(message);

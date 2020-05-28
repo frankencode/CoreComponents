@@ -14,7 +14,7 @@ namespace cc {
 namespace http {
 
 const char *reasonPhraseByStatusCode(int statusCode);
-string formatDate(Date *date);
-Ref<Date> scanDate(const string &text, bool *ok = nullptr);
+String formatDate(Date *date);
+Ref<Date> scanDate(const String &text, bool *ok = nullptr);
 
 }} // namespace cc::http

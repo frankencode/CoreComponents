@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/SystemStream>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 
@@ -34,11 +34,11 @@ inline SystemStream *standardError () { return stdErr(); } ///< Standard input s
 
 /** \brief Generate formatted text on the standard output stream
   */
-inline format fout(const string &pattern = "") { return format{pattern, stdOut()}; }
+inline Format fout(const String &pattern = "") { return Format{pattern, stdOut()}; }
 
 /** \brief Generate formatted text on the standard error stream
   */
-inline format ferr(const string &pattern = "") { return format{pattern, stdErr()}; }
+inline Format ferr(const String &pattern = "") { return Format{pattern, stdErr()}; }
 
 /** \}
   */

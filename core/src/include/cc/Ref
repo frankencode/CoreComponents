@@ -15,7 +15,7 @@
 namespace cc {
 
 class Object;
-class variant;
+class Variant;
 
 template<class, bool>
 class VariantCast;
@@ -142,7 +142,7 @@ public:
 protected:
     template<class T2> friend class Ref;
     friend class Object;
-    friend class variant;
+    friend class Variant;
 
     template<class, bool>
     friend class VariantCast;

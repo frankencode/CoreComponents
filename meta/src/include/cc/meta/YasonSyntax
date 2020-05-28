@@ -23,14 +23,14 @@ class YasonSyntax: public SyntaxDefinition
 public:
     static const YasonSyntax *instance();
 
-    variant parse(const CharArray *text, const MetaProtocol *protocol = nullptr) const;
+    Variant parse(const CharArray *text, const MetaProtocol *protocol = nullptr) const;
     Ref<MetaObject> readObject(const CharArray *text, const Token *token, const MetaProtocol *protocol = nullptr, const MetaPrototype *prototype = nullptr) const;
 
 protected:
     friend class Singleton<YasonSyntax>;
 
-    const Token *getMemberNameToken(const CharArray *text, const Token *objectToken, const string &memberName) const;
-    const Token *getMemberValueToken(const CharArray *text, const Token *objectToken, const string &memberName) const;
+    const Token *getMemberNameToken(const CharArray *text, const Token *objectToken, const String &memberName) const;
+    const Token *getMemberValueToken(const CharArray *text, const Token *objectToken, const String &memberName) const;
     const Token *getChildToken(const Token *objectToken, int childIndex) const;
 
     enum Options {
@@ -39,10 +39,10 @@ protected:
     };
     YasonSyntax(int options = 0);
 
-    string readName(const CharArray *text, const Token *token) const;
-    variant readValue(const CharArray *text, const Token *token, VariantType expectedType = VariantType::Undefined, VariantType expectedItemType = VariantType::Undefined) const;
-    variant readList(const CharArray *text, const Token *token, VariantType expectedItemType = VariantType::Undefined) const;
-    string readText(const CharArray *text, const Token *token) const;
+    String readName(const CharArray *text, const Token *token) const;
+    Variant readValue(const CharArray *text, const Token *token, VariantType expectedType = VariantType::Undefined, VariantType expectedItemType = VariantType::Undefined) const;
+    Variant readList(const CharArray *text, const Token *token, VariantType expectedItemType = VariantType::Undefined) const;
+    String readText(const CharArray *text, const Token *token) const;
 
     template<class T>
     Ref< List<T> > parseTypedList(const CharArray *text, const Token *token, VariantType expectedItemType) const;

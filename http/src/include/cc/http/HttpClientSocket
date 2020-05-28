@@ -26,15 +26,15 @@ using namespace cc::net;
 class HttpClientSocket: public HttpSocket
 {
 public:
-    static Ref<HttpClientSocket> create(const SocketAddress &serverAddress, const string &serverName = "", const HttpClientSecurity *security = nullptr);
-    static Ref<HttpClientSocket> connect(const SocketAddress &serverAddress, const string &serverName = "", const HttpClientSecurity *security = nullptr);
+    static Ref<HttpClientSocket> create(const SocketAddress &serverAddress, const String &serverName = "", const HttpClientSecurity *security = nullptr);
+    static Ref<HttpClientSocket> connect(const SocketAddress &serverAddress, const String &serverName = "", const HttpClientSecurity *security = nullptr);
 
     bool isSecure() const;
     void connect();
     void shutdown();
 
 private:
-    HttpClientSocket(const SocketAddress &serverAddress, const string &serverName, const HttpClientSecurity *security);
+    HttpClientSocket(const SocketAddress &serverAddress, const String &serverName, const HttpClientSecurity *security);
 
     void initSession();
     void handshake();
@@ -42,7 +42,7 @@ private:
     bool waitInput() override;
     void ioException(Exception &ex) const override;
 
-    string serverName_;
+    String serverName_;
     Ref<const HttpClientSecurity> security_;
     Ref<StreamSocket> controlMaster_, controlSlave_;
     const IoEvent *readyRead_;

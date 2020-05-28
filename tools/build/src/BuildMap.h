@@ -28,12 +28,12 @@ class BuildMap: public Object
 public:
     static BuildMap *instance();
 
-    void insertPlan(const string &path, BuildPlan *plan);
-    bool lookupPlan(const string &path, Ref<BuildPlan> *plan) const;
-    string commonPrefix() const;
+    void insertPlan(const String &path, BuildPlan *plan);
+    bool lookupPlan(const String &path, Ref<BuildPlan> *plan) const;
+    String commonPrefix() const;
 
-    bool registerLibrary(const string &name, const string &recipePath, string *exitingRecipePath);
-    bool registerApplication(const string &name, const string &recipePath, string *existingRecipePath);
+    bool registerLibrary(const String &name, const String &recipePath, String *exitingRecipePath);
+    bool registerApplication(const String &name, const String &recipePath, String *existingRecipePath);
 
 private:
     friend class Singleton<BuildMap>;
@@ -42,7 +42,7 @@ private:
     typedef PrefixTree<char, Ref<BuildPlan> > BuildPlanByPath;
     Ref<BuildPlanByPath> buildPlanByPath_;
 
-    typedef PrefixTree<char, string> RecipePathByTargetName;
+    typedef PrefixTree<char, String> RecipePathByTargetName;
     Ref<RecipePathByTargetName> libraries_;
     Ref<RecipePathByTargetName> applications_;
 };

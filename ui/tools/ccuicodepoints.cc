@@ -4,9 +4,9 @@
 
 using namespace cc;
 
-string camelize(const string &name)
+String camelize(const String &name)
 {
-    string s = name;
+    String s = name;
     if (s->count() == 0) return s;
     mutate(s)->at(0) = toUpper(s->at(0));
     for (int i = 1; i < s->count() - 1; ++i) {
@@ -16,17 +16,17 @@ string camelize(const string &name)
     return s->replace("_", "");
 }
 
-typedef Map<string, uchar_t> IconMap;
+typedef Map<String, uchar_t> IconMap;
 
-Ref<IconMap> parseFile(const string &path, int *maxNameLength)
+Ref<IconMap> parseFile(const String &path, int *maxNameLength)
 {
     auto lines = File::open(path)->map()->split("\n");
     auto map = IconMap::create();
     *maxNameLength = 0;
-    for (string line: lines) {
+    for (String line: lines) {
         auto parts = line->split(" ");
         if (parts->count() < 2) continue;
-        string name = camelize(parts->at(0));
+        String name = camelize(parts->at(0));
         uchar_t ch = parts->at(1)->toNumber<uchar_t, 16>();
         map->insert(name, ch);
         if (*maxNameLength < name->count())
@@ -37,7 +37,7 @@ Ref<IconMap> parseFile(const string &path, int *maxNameLength)
 
 void printEnum(const Arguments *arguments)
 {
-    for (string path: arguments->items())
+    for (String path: arguments->items())
     {
         int maxNameLength = 0;
         auto map = parseFile(path, &maxNameLength);
@@ -57,13 +57,13 @@ void printEnum(const Arguments *arguments)
 
 void printStr(const Arguments *arguments)
 {
-    for (string path: arguments->items())
+    for (String path: arguments->items())
     {
         int maxNameLength = 0;
         auto map = parseFile(path, &maxNameLength);
 
         fout(
-            "string str(Icon icon)\n"
+            "String str(Icon icon)\n"
             "{\n"
             "    switch(icon) {\n"
         );
@@ -74,7 +74,7 @@ void printStr(const Arguments *arguments)
         fout(
             "    }\n"
             "\n"
-            "    return string{};\n"
+            "    return String{};\n"
             "};\n"
         );
     }
@@ -82,7 +82,7 @@ void printStr(const Arguments *arguments)
 
 int main(int argc, char **argv)
 {
-    string toolName = string(argv[0])->baseName();
+    String toolName = String(argv[0])->baseName();
     try {
         Ref<VariantMap> options = VariantMap::create();
         options->insert("print-enum", false);
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
             "\n"
             "Options:\n"
             "  -print-enum   print C++ enum class\n"
-            "  -print-str    print C++ enum to string conversion routine\n"
+            "  -print-str    print C++ enum to String conversion routine\n"
             "\n"
         ) << toolName;
     }

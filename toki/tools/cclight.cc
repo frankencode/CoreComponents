@@ -17,14 +17,14 @@
 using namespace cc;
 using namespace cc::toki;
 
-string cssPath(const string &themeName)
+String cssPath(const String &themeName)
 {
     return themeName + ".css";
 }
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
         {
@@ -41,8 +41,8 @@ int main(int argc, char **argv)
         const StringList *items = arguments->items();
         bool verbose = options->value("verbose");
         bool cssOption = options->value("css");
-        string themeOption = options->value("theme");
-        string languageOption = options->value("language");
+        String themeOption = options->value("theme");
+        String languageOption = options->value("language");
 
         if (options->value("list-languages")) {
             for (int i = 0; i < Registry::instance()->languageCount(); ++i) {
@@ -67,14 +67,14 @@ int main(int argc, char **argv)
         Language *defaultLanguage = 0;
         if (languageOption != "") {
             if (!Registry::instance()->lookupLanguageByName(languageOption, &defaultLanguage))
-                throw UsageError{format{"Language \"%%\" is not supported"} << languageOption};
+                throw UsageError{Format{"Language \"%%\" is not supported"} << languageOption};
         }
 
         if (items->count() == 0) {
             Language *language = defaultLanguage;
             if (!language)
                 throw UsageError{"Please specify language (use -language option)"};
-            string text = stdIn()->readAll();
+            String text = stdIn()->readAll();
             Ref<SyntaxState> state = language->highlightingSyntax()->match(text, 0);
             ferr() << language->highlightingSyntax()->name() << "," << state->i0() << "," << state->i1() << nl;
             if (!state->valid()) throw SyntaxError{text, state, "<standard input>"};
@@ -82,13 +82,13 @@ int main(int argc, char **argv)
         }
         else {
             for (int i = 0; i < items->count(); ++i) {
-                string path = items->at(i);
-                string text = File::open(path)->map();
+                String path = items->at(i);
+                String text = File::open(path)->map();
 
                 Language *language = defaultLanguage;
                 if (!language) {
                     if (!Registry::instance()->detectLanguage(path, text, &language))
-                        throw UsageError{format{"%%: Failed to detect language (use -language option)"} << path};
+                        throw UsageError{Format{"%%: Failed to detect language (use -language option)"} << path};
                 }
                 Ref<SyntaxState> state;
                 while (true) {
@@ -102,10 +102,10 @@ int main(int argc, char **argv)
                 }
 
                 if (themeOption == "") themeOption = "ClassicWhite";
-                string htmlPath = path->fileName()->replace(".", "_") + ".html";
+                String htmlPath = path->fileName()->replace(".", "_") + ".html";
                 if (verbose) fout() << htmlPath << nl;
                 Ref<File> htmlFile = File::open(htmlPath, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly);
-                format sink{htmlFile};
+                Format sink{htmlFile};
                 sink <<
                     "<!DOCTYPE HTML>\n"
                     "<html>\n"

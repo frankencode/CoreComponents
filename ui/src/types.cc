@@ -17,7 +17,7 @@
 namespace cc {
 namespace ui {
 
-string str(FontSmoothing smoothing)
+String str(FontSmoothing smoothing)
 {
     switch (smoothing) {
         case FontSmoothing::Default     : return "FontSmoothing::Default";
@@ -29,10 +29,10 @@ string str(FontSmoothing smoothing)
         case FontSmoothing::VbgrSubpixel: return "FontSmoothing::VbgrSubpixel";
     }
 
-    return string{};
+    return String{};
 }
 
-string str(OutlineHinting outlineHinting)
+String str(OutlineHinting outlineHinting)
 {
     switch (outlineHinting) {
         case OutlineHinting::Default: return "OutlineHinting::Default";
@@ -42,10 +42,10 @@ string str(OutlineHinting outlineHinting)
         case OutlineHinting::Full   : return "OutlineHinting::Full";
     }
 
-    return string {};
+    return String {};
 }
 
-string str(MetricsHinting metricsHinting)
+String str(MetricsHinting metricsHinting)
 {
     switch (metricsHinting) {
         case MetricsHinting::Default: return "MetricsHinting::Default";
@@ -53,10 +53,10 @@ string str(MetricsHinting metricsHinting)
         case MetricsHinting::Off    : return "MetricsHinting::Off";
     }
 
-    return string{};
+    return String{};
 };
 
-string str(Slant slant)
+String str(Slant slant)
 {
     switch (slant) {
         case Slant::Normal : return "Slant::Normal";
@@ -64,10 +64,10 @@ string str(Slant slant)
         // case Slant::Oblique: return "Oblique";
     }
 
-    return string{};
+    return String{};
 }
 
-string str(Weight weight)
+String str(Weight weight)
 {
     switch (weight) {
         case Weight::Thin      : return "Weight::Thin";
@@ -81,10 +81,10 @@ string str(Weight weight)
         case Weight::Black     : return "Weight::Black";
     }
 
-    return string{};
+    return String{};
 }
 
-string str(Stretch stretch)
+String str(Stretch stretch)
 {
     switch (stretch) {
         case Stretch::UltraCondensed: return "Stretch::UltraCondensed";
@@ -98,20 +98,20 @@ string str(Stretch stretch)
         case Stretch::UltraExpanded : return "Stretch::UltraExpanded";
     }
 
-    return string{};
+    return String{};
 }
 
-string str(Pitch pitch)
+String str(Pitch pitch)
 {
     switch (pitch) {
         case Pitch::Fixed:    return "Pitch::Fixed";
         case Pitch::Variable: return "Pitch::Variable";
     }
 
-    return string{};
+    return String{};
 }
 
-string str(TextAlign align)
+String str(TextAlign align)
 {
     switch (align) {
         case TextAlign::Left:    return "TextAlign::Left";
@@ -120,10 +120,10 @@ string str(TextAlign align)
         case TextAlign::Justify: return "TextAlign::Justify";
     }
 
-    return string{};
+    return String{};
 }
 
-string str(Decoration decoration)
+String str(Decoration decoration)
 {
     if (decoration == Decoration::None) return "Decoration::None";
     Ref<StringList> parts = StringList::create();
@@ -132,7 +132,7 @@ string str(Decoration decoration)
     return parts->join("|");
 }
 
-string str(ColumnAlign align)
+String str(ColumnAlign align)
 {
     switch (align) {
         case ColumnAlign::Auto:   return "ColumnAlign::Auto";
@@ -141,10 +141,10 @@ string str(ColumnAlign align)
         case ColumnAlign::Center: return "ColumnAlign::Center";
     }
 
-    return string{};
+    return String{};
 }
 
-string str(RowAlign align)
+String str(RowAlign align)
 {
     switch (align) {
         case RowAlign::Top:    return "RowAlign::Top";
@@ -152,10 +152,10 @@ string str(RowAlign align)
         case RowAlign::Center: return "RowAlign::Center";
     }
 
-    return string{};
+    return String{};
 }
 
-string str(MouseButton mask)
+String str(MouseButton mask)
 {
     Ref<StringList> parts = StringList::create();
     if (+(mask & MouseButton::Left))  parts << "MouseButton::Left";
@@ -167,7 +167,7 @@ string str(MouseButton mask)
     return parts->join("|");
 }
 
-string str(PointerAction action)
+String str(PointerAction action)
 {
     switch (action) {
         case PointerAction::Moved   : return "PointerAction::Moved";
@@ -175,20 +175,20 @@ string str(PointerAction action)
         case PointerAction::Released: return "PointerAction::Released";
     };
 
-    return string{};
+    return String{};
 }
 
-string str(KeyAction action)
+String str(KeyAction action)
 {
     switch (action) {
         case KeyAction::Pressed : return "KeyAction::Pressed";
         case KeyAction::Released: return "KeyAction::Released";
     };
 
-    return string{};
+    return String{};
 }
 
-string str(CursorShape shape)
+String str(CursorShape shape)
 {
     switch (shape) {
         case CursorShape::Arrow                   : return "CursorShape::Arrow";
@@ -205,10 +205,10 @@ string str(CursorShape shape)
         case CursorShape::Hand                    : return "CursorShape::Hand";
     };
 
-    return string{};
+    return String{};
 }
 
-bool textWrapBehindDefault(const string &text, int byteOffset, int byteCount)
+bool textWrapBehindDefault(const String &text, int byteOffset, int byteCount)
 {
     uint8_t ch = text->byteAt(byteOffset + byteCount - 1);
     uint8_t ch2 = text->has(byteOffset + byteCount) ? text->byteAt(byteOffset + byteCount) : 0;

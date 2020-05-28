@@ -47,7 +47,7 @@ CanClient::CanClient(CanMedia *media, int nodeId, int timeout):
     timeout_{timeout}
 {}
 
-string CanClient::read(int peerId, Selector selector)
+String CanClient::read(int peerId, Selector selector)
 {
     media_->writeFrame(
         ReadRequest::createFrame(peerId, selector)
@@ -84,7 +84,7 @@ string CanClient::read(int peerId, Selector selector)
     return segmentedReadTransfer(peerId, selector);
 }
 
-void CanClient::write(int peerId, Selector selector, const string &data, int switchThreshold)
+void CanClient::write(int peerId, Selector selector, const String &data, int switchThreshold)
 {
     if (data->count() <= 4)
         expeditedWrite(peerId, selector, data);
@@ -94,7 +94,7 @@ void CanClient::write(int peerId, Selector selector, const string &data, int swi
         blockWrite(peerId, selector, data);
 }
 
-void CanClient::expeditedWrite(int peerId, Selector selector, const string &data)
+void CanClient::expeditedWrite(int peerId, Selector selector, const String &data)
 {
     CC_ASSERT(0 < data->count() && data->count() <= 4);
 
@@ -126,7 +126,7 @@ void CanClient::expeditedWrite(int peerId, Selector selector, const string &data
     }
 }
 
-string CanClient::segmentedReadTransfer(int peerId, Selector selector)
+String CanClient::segmentedReadTransfer(int peerId, Selector selector)
 {
     auto segments = StringList::create();
 
@@ -168,7 +168,7 @@ string CanClient::segmentedReadTransfer(int peerId, Selector selector)
     return segments->join();
 }
 
-void CanClient::segmentedWrite(int peerId, Selector selector, const string &data)
+void CanClient::segmentedWrite(int peerId, Selector selector, const String &data)
 {
     CC_ASSERT(4 < data->count());
 
@@ -238,23 +238,23 @@ void CanClient::segmentedWrite(int peerId, Selector selector, const string &data
     }
 }
 
-string CanClient::blockRead(int peerId, Selector selector, int blockSize, int switchThreshold)
+String CanClient::blockRead(int peerId, Selector selector, int blockSize, int switchThreshold)
 {
     bool crcSupport = false;
-    std::function<string()> fallback;
+    std::function<String()> fallback;
 
     blockReadInitiate(peerId, selector, blockSize, switchThreshold, &crcSupport, &fallback);
 
     if (fallback) return fallback();
 
-    string data = blockReadTransfer(peerId, selector, blockSize);
+    String data = blockReadTransfer(peerId, selector, blockSize);
 
     blockReadEnd(peerId, selector, &data, crcSupport);
 
     return data;
 }
 
-void CanClient::blockReadInitiate(int peerId, Selector selector, int blockSize, int switchThreshold, bool *crcSupport, std::function<string()> *fallback)
+void CanClient::blockReadInitiate(int peerId, Selector selector, int blockSize, int switchThreshold, bool *crcSupport, std::function<String()> *fallback)
 {
     CC_ASSERT(0 < blockSize && blockSize <= 0x7F);
     CC_ASSERT(0 <= switchThreshold);
@@ -297,7 +297,7 @@ void CanClient::blockReadInitiate(int peerId, Selector selector, int blockSize, 
     *crcSupport = BlockReadInitReply{frame}->crcSupport();
 }
 
-string CanClient::blockReadTransfer(int peerId, Selector selector, int blockSize)
+String CanClient::blockReadTransfer(int peerId, Selector selector, int blockSize)
 {
     media_->writeFrame(BlockReadStartRequest::createFrame(peerId));
 
@@ -343,7 +343,7 @@ string CanClient::blockReadTransfer(int peerId, Selector selector, int blockSize
     return parts->join();
 }
 
-void CanClient::blockReadEnd(int peerId, Selector selector, string *data, bool crcSupport)
+void CanClient::blockReadEnd(int peerId, Selector selector, String *data, bool crcSupport)
 {
     auto frame = getNextReply(peerId, selector);
 
@@ -376,7 +376,7 @@ void CanClient::blockReadEnd(int peerId, Selector selector, string *data, bool c
     );
 }
 
-void CanClient::blockWrite(int peerId, Selector selector, const string &data)
+void CanClient::blockWrite(int peerId, Selector selector, const String &data)
 {
     int blockSize = 0;
     bool crcSupport = false;
@@ -389,7 +389,7 @@ void CanClient::blockWrite(int peerId, Selector selector, const string &data)
     blockWriteEnd(peerId, selector, data, crcSupport);
 }
 
-void CanClient::blockWriteInitiate(int peerId, Selector selector, const string &data, int *blockSize, bool *crcSupport)
+void CanClient::blockWriteInitiate(int peerId, Selector selector, const String &data, int *blockSize, bool *crcSupport)
 {
     media_->writeFrame(
         BlockWriteInitRequest::createFrame(peerId, selector, data)
@@ -420,7 +420,7 @@ void CanClient::blockWriteInitiate(int peerId, Selector selector, const string &
     *crcSupport = BlockWriteInitReply{frame}->crcSupport();
 }
 
-void CanClient::blockWriteTransfer(int peerId, Selector selector, const string &data, int *blockSize, int *offset)
+void CanClient::blockWriteTransfer(int peerId, Selector selector, const String &data, int *blockSize, int *offset)
 {
     int seqNum = 0;
 
@@ -453,7 +453,7 @@ void CanClient::blockWriteTransfer(int peerId, Selector selector, const string &
         *blockSize = remaining / 7 + (remaining % 7 > 0);
 }
 
-void CanClient::blockWriteEnd(int peerId, Selector selector, const string &data, bool crcSupport)
+void CanClient::blockWriteEnd(int peerId, Selector selector, const String &data, bool crcSupport)
 {
     media_->writeFrame(
         BlockWriteEndRequest::createFrame(peerId, data, crcSupport)

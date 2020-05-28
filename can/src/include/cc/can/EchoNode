@@ -22,11 +22,11 @@ public:
 
     EchoNode(CanMedia *media, int nodeId, int timeout);
 
-    string readServiceData(Selector::Key key) const override;
-    void writeServiceData(Selector::Key key, const string &data) override;
+    String readServiceData(Selector::Key key) const override;
+    void writeServiceData(Selector::Key key, const String &data) override;
 
 private:
-    typedef Map<Selector, string> Settings;
+    typedef Map<Selector, String> Settings;
     Ref<Settings> settings_;
 };
 

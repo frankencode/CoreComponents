@@ -18,27 +18,27 @@ class PathManipulation: public TestCase
 public:
     void run()
     {
-        string execPath = TestSuite::instance()->execPath();
+        String execPath = TestSuite::instance()->execPath();
         fout("argv[0] = \"%%\"\n") << execPath;
-        fout("string(argv[0])->fileName() = \"%%\"\n") << execPath->fileName();
-        fout("string(argv[0])->isAbsolutePath() = %%\n") << execPath->isAbsolutePath();
-        fout("string(argv[0])->absolutePathRelativeTo(\"%%\") = \"%%\"\n") << Process::getWorkingDirectory() << execPath->absolutePathRelativeTo(Process::getWorkingDirectory());
+        fout("String{argv[0]}->fileName() = \"%%\"\n") << execPath->fileName();
+        fout("String{argv[0]}->isAbsolutePath() = %%\n") << execPath->isAbsolutePath();
+        fout("String{argv[0]}->absolutePathRelativeTo(\"%%\") = \"%%\"\n") << Process::getWorkingDirectory() << execPath->absolutePathRelativeTo(Process::getWorkingDirectory());
         {
-            string path = execPath->absolutePathRelativeTo(Process::getWorkingDirectory());
+            String path = execPath->absolutePathRelativeTo(Process::getWorkingDirectory());
             while (path != "/") {
                 path = path->reducePath();
                 fout("path1->reduce() = \"%%\"\n") << path;
             }
         }
         {
-            string path = execPath;
+            String path = execPath;
             while (path->contains('/')) {
                 path = path->reducePath();
                 fout("path2->reduce() = \"%%\"\n") << path;
             }
         }
-        fout() << "string{\"/\"}->expandPath(\"/usr\") = \"" << string{"/"}->extendPath("/usr") << "\"" << nl;
-        CC_VERIFY(string{"/"}->extendPath("/usr") == "/usr");
+        fout() << "String{\"/\"}->expandPath(\"/usr\") = \"" << String{"/"}->extendPath("/usr") << "\"" << nl;
+        CC_VERIFY(String{"/"}->extendPath("/usr") == "/usr");
     }
 };
 

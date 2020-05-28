@@ -23,11 +23,11 @@ ArWriter::ArWriter(Stream *sink):
     firstTime_{true}
 {}
 
-void ArWriter::writeFile(const string &path)
+void ArWriter::writeFile(const String &path)
 {
     if (firstTime_) {
         firstTime_ = false;
-        sink_->write(string{"!<arch>\n"});
+        sink_->write(String{"!<arch>\n"});
     }
 
     Ref<File> file = File::open(path);
@@ -38,42 +38,42 @@ void ArWriter::writeFile(const string &path)
 
     Ref<StringList> headerFields = StringList::create();
 
-    string pathField(16, ' ');
+    String pathField{16, ' '};
     mutate(pathField)->write(path);
     headerFields->append(pathField);
 
-    string lastModifiedField(12, ' ');
+    String lastModifiedField{12, ' '};
     mutate(lastModifiedField)->write(dec(status->st_mtime));
     headerFields->append(lastModifiedField);
 
-    string userIdField(6, ' ');
+    String userIdField{6, ' '};
     mutate(userIdField)->write(dec(status->ownerId()));
     headerFields->append(userIdField);
 
-    string groupIdField(6, ' ');
+    String groupIdField{6, ' '};
     mutate(groupIdField)->write(dec(status->groupId()));
     headerFields->append(groupIdField);
 
-    string modeField(8, ' ');
+    String modeField{8, ' '};
     mutate(modeField)->write(oct(+status->mode()));
     headerFields->append(modeField);
 
-    string sizeField(10, ' ');
+    String sizeField{10, ' '};
     mutate(sizeField)->write(dec(status->size()));
     headerFields->append(sizeField);
 
-    string magic(2);
+    String magic{2};
     mutate(magic)->byteAt(0) = 0x60;
     mutate(magic)->byteAt(1) = 0x0a;
     headerFields->append(magic);
 
-    string header = headerFields->join();
+    String header = headerFields->join();
     CC_ASSERT(header->count() == 60);
     sink_->write(header);
     file->transferSpanTo(contentSize, sink_);
 
     if (contentSize % 2 != 0)
-        sink_->write(string{"\0", 1});
+        sink_->write(String{"\0", 1});
 }
 
 }} // namespace cc::tar

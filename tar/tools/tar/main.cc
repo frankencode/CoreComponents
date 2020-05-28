@@ -9,7 +9,7 @@
 #include <cc/stdio>
 #include <cc/File>
 #include <cc/exceptions>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Arguments>
 #include <cc/tar/TarReader>
 #include <cc/tar/ArReader>
@@ -23,7 +23,7 @@ using namespace cc::tar;
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
     bool tarMode = toolName->contains("tar");
     bool unpackMode = toolName->contains("un");
     try {
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
         {
             if (items->count() == 0) items = StringList::create() << "";
 
-            for (string path: items)
+            for (String path: items)
             {
                 Ref<Stream> source;
                 if (path != "") source = File::open(path);
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
         }
         else {
             Ref<Stream> sink;
-            string sinkPath = options->value("output");
+            String sinkPath = options->value("output");
             if (sinkPath != "") {
                 try { File::unlink(sinkPath); } catch (SystemError &) {}
                 File::create(sinkPath);
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
             if (tarMode) archive = TarWriter::open(sink);
             else archive = ArWriter::open(sink);
 
-            for (string path: items)
+            for (String path: items)
                 cctar::pack(path, archive, options->value("verbose"));
         }
     }

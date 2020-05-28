@@ -18,8 +18,8 @@ Ref<PseudoPad> PseudoPad::open(BlockCipher *cipher)
 
 PseudoPad::PseudoPad(BlockCipher *cipher):
     cipher_(cipher),
-    p_(string::allocate(cipher->blockSize())),
-    c_(string::allocate(cipher->blockSize())),
+    p_(String::allocate(cipher->blockSize())),
+    c_(String::allocate(cipher->blockSize())),
     i_(c_->count())
 {
     mutate(p_)->fill(0);

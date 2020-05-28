@@ -26,7 +26,7 @@ class TextInput: public InputControl
 public:
     Property<Font> font;
 
-    string text() const override;
+    String text() const override;
     Point textPos() const override;
 
     Size preferredSize() const override;
@@ -34,7 +34,7 @@ public:
     Size maxSize() const override;
 
 protected:
-    TextInput(View *parent = nullptr, const string &initialText = "");
+    TextInput(View *parent = nullptr, const String &initialText = "");
     ~TextInput();
 
     void init();
@@ -57,14 +57,14 @@ private:
     bool onPointerMoved(const PointerEvent *event) override;
 
     Rect textInputArea() const override;
-    void onTextEdited(const string &chunk, int start, int length) override;
-    void onTextInput(const string &chunk) override;
+    void onTextEdited(const String &chunk, int start, int length) override;
+    void onTextInput(const String &chunk) override;
 
     bool onKeyPressed(const KeyEvent *event) override;
     bool onKeyReleased(const KeyEvent *event) override;
 
-    void paste(const string &chunk);
-    void paste(Range selection, const string &chunk);
+    void paste(const String &chunk);
+    void paste(Range selection, const String &chunk);
 
     void paint() override;
 

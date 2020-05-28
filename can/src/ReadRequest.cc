@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/ReadRequest>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -28,11 +28,11 @@ Ref<CanFrame> ReadRequest::createFrame(int serverId, Selector selector)
     return frame;
 }
 
-string ReadRequest::Instance::toString() const
+String ReadRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "ReadRequest {" << nl
         << "  serverId: " << serverId() << nl
         << "  selector: " << selector() << nl

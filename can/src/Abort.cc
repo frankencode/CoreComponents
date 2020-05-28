@@ -23,9 +23,9 @@ Ref<CanFrame> Abort::createFrame(int canId, uint8_t cs, Selector selector, Abort
     return frame;
 }
 
-string str(Abort::Reason reason)
+String str(Abort::Reason reason)
 {
-    string s;
+    String s;
 
     switch (reason) {
         case Abort::Reason::None                       : s = "Abort::Reason::None"; break;

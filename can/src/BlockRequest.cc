@@ -18,11 +18,11 @@
 namespace cc {
 namespace can {
 
-string BlockRequest::Instance::toString() const
+String BlockRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    string s;
+    String s;
     switch (specifier()) {
         case Specifier::BlockWriteStreamInit:
         case Specifier::BlockWriteInit      : s = BlockWriteInitRequest{frame_}; break;

@@ -16,7 +16,7 @@ using namespace cc::can;
 
 int main(int argc, char *argv[])
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
 
     try {
         auto arguments = Arguments::parse(argc, argv);
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
         NetworkCommand::Specifier commandSpecifier;
         {
-            string s = items->at(0)->toLower();
+            String s = items->at(0)->toLower();
             if (s == "start") commandSpecifier = NetworkCommand::Specifier::Start;
             else if (s == "stop") commandSpecifier = NetworkCommand::Specifier::Stop;
             else if (s == "halt") commandSpecifier = NetworkCommand::Specifier::Halt;
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
             else throw HelpRequest{};
         }
 
-        string interface = options->value("interface");
+        String interface = options->value("interface");
         int peerId = options->value("peer-id");
 
         auto media = CanSocket::open(interface);

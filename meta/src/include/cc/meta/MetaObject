@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/variant>
+#include <cc/Variant>
 #include <cc/meta/exceptions>
 
 namespace cc {
@@ -23,11 +23,11 @@ typedef List< Ref<MetaObject> > MetaObjectList;
 class MetaObject: public VariantMap
 {
 public:
-    static Ref<MetaObject> create(const string &className = "");
+    static Ref<MetaObject> create(const String &className = "");
 
-    string className() const { return className_; }
-    variant toVariant() const;
-    string toString() const;
+    String className() const { return className_; }
+    Variant toVariant() const;
+    String toString() const;
 
     bool hasChildren() const { return children_->count() > 0; }
     MetaObjectList *children() { return children_; }
@@ -46,11 +46,11 @@ public:
 protected:
     friend class MetaProtocol;
 
-    MetaObject(const string &className = "");
+    MetaObject(const String &className = "");
     ~MetaObject();
 
 private:
-    string className_;
+    String className_;
     Ref<MetaObjectList> children_;
 };
 

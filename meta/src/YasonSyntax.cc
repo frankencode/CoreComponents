@@ -11,7 +11,7 @@
 #include <cc/syntax/FloatSyntax>
 #include <cc/syntax/IntegerSyntax>
 #include <cc/Singleton>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace meta {
@@ -126,7 +126,7 @@ YasonSyntax::YasonSyntax(int options)
         )
     );
 
-    DEFINE("string", &string_,
+    DEFINE("String", &string_,
         GLUE(
             CHAR('"'),
             REPEAT(
@@ -148,11 +148,11 @@ YasonSyntax::YasonSyntax(int options)
     DEFINE("Text", &text_,
         CHOICE(
             GLUE(
-                REF("string"),
+                REF("String"),
                 REPEAT(
                     GLUE(
                         INLINE("Noise"),
-                        REF("string")
+                        REF("String")
                     )
                 )
             ),
@@ -238,7 +238,7 @@ YasonSyntax::YasonSyntax(int options)
                 NOT(RANGE('0', '9')),
                 INLINE("Identifier")
             ),
-            INLINE("string")
+            INLINE("String")
         )
     );
 
@@ -359,7 +359,7 @@ YasonSyntax::YasonSyntax(int options)
     LINK();
 }
 
-variant YasonSyntax::parse(const CharArray *text, const MetaProtocol *protocol) const
+Variant YasonSyntax::parse(const CharArray *text, const MetaProtocol *protocol) const
 {
     Ref<SyntaxState> state = match(text);
     if (!state->valid()) throw SyntaxError{text, state};
@@ -376,14 +376,14 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
     const Token *objectToken = token;
     token = token->firstChild();
 
-    string className;
+    String className;
     if (token && token->rule() == className_)
         className = text->copyRange(token);
 
     if (protocol) {
         if (!protocol->lookup(className, &prototype)) {
             throw SemanticError{
-                format{"Object of class \"%%\" is not allowed here"} << className,
+                Format{"Object of class \"%%\" is not allowed here"} << className,
                 text, token->i1()
             };
         }
@@ -391,7 +391,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
     else if (prototype) {
         if (className != prototype->className()) {
             throw SemanticError{
-                format{"Expected an object of class \"%%\""} << prototype->className(),
+                Format{"Expected an object of class \"%%\""} << prototype->className(),
                 text, token->i1()
             };
         }
@@ -409,40 +409,40 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
 
     while (token) {
         if (token->rule() == name_) {
-            string name = readName(text, token);
+            String name = readName(text, token);
 
-            variant defaultValue;
+            Variant defaultValue;
             const MetaPrototype *memberPrototype = nullptr;
             const MetaProtocol *memberProtocol = nullptr;
             if (prototype) {
                 if (prototype->count() > 0) {
                     if (!prototype->lookup(name, &defaultValue)) {
                         throw SemanticError{
-                            format{"Member \"%%\" is not supported"} << name,
+                            Format{"Member \"%%\" is not supported"} << name,
                             text, token->i1()
                         };
                     }
                     if (defaultValue->type() == VariantType::Object) {
-                        memberPrototype = variant::cast<const MetaPrototype *>(defaultValue);
+                        memberPrototype = Variant::cast<const MetaPrototype *>(defaultValue);
                         if (!memberPrototype)
-                            memberProtocol = variant::cast<const MetaProtocol *>(defaultValue);
+                            memberProtocol = Variant::cast<const MetaProtocol *>(defaultValue);
                     }
                 }
             }
 
             token = token->nextSibling();
 
-            variant value;
+            Variant value;
             if (memberPrototype || memberProtocol)
                 value = readObject(text, token, memberProtocol, memberPrototype);
             else
                 value = readValue(text, token, defaultValue->type(), defaultValue->itemType());
 
-            variant existingValue;
+            Variant existingValue;
             if (object->lookup(name, &existingValue)) {
                 if (value != existingValue) {
                     throw SemanticError{
-                        format{"Ambiguous value for member \"%%\""} << name,
+                        Format{"Ambiguous value for member \"%%\""} << name,
                         text, token->i1()
                     };
                 }
@@ -455,7 +455,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
             if (prototypeProtocol) {
                 if (object->children()->count() >= prototypeProtocol->maxCount()) {
                     throw SemanticError{
-                        format{"Maximum number of children (%%) exceeded"} << prototypeProtocol->maxCount(),
+                        Format{"Maximum number of children (%%) exceeded"} << prototypeProtocol->maxCount(),
                         text, token->i0()
                     };
                 }
@@ -476,13 +476,13 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
                 if (!object->hasChildren() || object->children()->count() < prototypeProtocol->minCount()) {
                     if (prototypeProtocol->prototypes_->count() == 1 && prototypeProtocol->minCount() == 1) {
                         throw SemanticError{
-                            format{"Object of type %% needs at least one child of type %%"} << object->className() << prototypeProtocol->prototypes_->at(0)->value()->className(),
+                            Format{"Object of type %% needs at least one child of type %%"} << object->className() << prototypeProtocol->prototypes_->at(0)->value()->className(),
                             text, objectToken->i0()
                         };
                     }
                     else {
                         throw SemanticError{
-                            format{"Object of type %% needs at least %% children"} << object->className() << prototypeProtocol->minCount(),
+                            Format{"Object of type %% needs at least %% children"} << object->className() << prototypeProtocol->minCount(),
                             text, objectToken->i0()
                         };
                     }
@@ -521,7 +521,7 @@ Ref<MetaObject> YasonSyntax::readObject(const CharArray *text, const Token *toke
     return object;
 }
 
-const Token *YasonSyntax::getMemberNameToken(const CharArray *text, const Token *objectToken, const string &memberName) const
+const Token *YasonSyntax::getMemberNameToken(const CharArray *text, const Token *objectToken, const String &memberName) const
 {
     for (const Token *token = objectToken->firstChild(); token; token = token->nextSibling()) {
         if (token->rule() == name_) {
@@ -532,7 +532,7 @@ const Token *YasonSyntax::getMemberNameToken(const CharArray *text, const Token 
     return objectToken;
 }
 
-const Token *YasonSyntax::getMemberValueToken(const CharArray *text, const Token *objectToken, const string &memberName) const
+const Token *YasonSyntax::getMemberValueToken(const CharArray *text, const Token *objectToken, const String &memberName) const
 {
     const Token *token = getMemberNameToken(text, objectToken, memberName);
     if (token != objectToken) return token->nextSibling();
@@ -550,15 +550,15 @@ const Token *YasonSyntax::getChildToken(const Token *objectToken, int childIndex
     return nullptr;
 }
 
-string YasonSyntax::readName(const CharArray *text, const Token *token) const
+String YasonSyntax::readName(const CharArray *text, const Token *token) const
 {
     bool stripQuotation = (text->at(token->i0()) == '"');
     return text->copy(token->i0() + stripQuotation, token->i1() - stripQuotation);
 }
 
-variant YasonSyntax::readValue(const CharArray *text, const Token *token, VariantType expectedType, VariantType expectedItemType) const
+Variant YasonSyntax::readValue(const CharArray *text, const Token *token, VariantType expectedType, VariantType expectedItemType) const
 {
-    variant value;
+    Variant value;
     bool typeError = false;
 
     if (token->rule() == float_)
@@ -586,7 +586,7 @@ variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
             IntegerSyntax::instance()->read(&x, &s, text, token);
             value = int(x) * s;
             if (expectedType == VariantType::Float)
-                value = variant::Float(value);
+                value = Variant::Float(value);
         }
         else
             typeError = true;
@@ -597,7 +597,7 @@ variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
              expectedType == VariantType::Color ||
              expectedItemType == VariantType::Color )
         {
-            value = color(string(text->copyRange(token)));
+            value = Color(String(text->copyRange(token)));
         }
         else
             typeError = true;
@@ -610,7 +610,7 @@ variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
              expectedItemType == VariantType::Version ||
              expectedItemType == VariantType::String )
         {
-            string chunk = text->copyRange(token);
+            String chunk = text->copyRange(token);
             if ( expectedType == VariantType::String ||
                  expectedItemType == VariantType::String )
                 value = chunk;
@@ -631,9 +631,9 @@ variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
         else if ( expectedType == VariantType::Color ||
                   expectedItemType == VariantType::Color )
         {
-            string s = readText(text, token);
+            String s = readText(text, token);
             bool ok = false;
-            value = color::parse(s, &ok);
+            value = Color::parse(s, &ok);
             if (!ok) typeError = true;
         }
         else
@@ -667,10 +667,10 @@ variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
     }
 
     if (typeError) {
-        throw SemanticError(
-            format("Expected a value of type %%") << variant::typeName(expectedType, expectedItemType),
+        throw SemanticError{
+            Format{"Expected a value of type %%"} << Variant::typeName(expectedType, expectedItemType),
             text, token->i0()
-        );
+        };
     }
 
     if (expectedType == VariantType::List && value->type() != VariantType::List) {
@@ -690,7 +690,7 @@ variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
             value = list;
         }
         else if (expectedItemType == VariantType::String) {
-            Ref< List<string> > list = List<string>::create();
+            Ref< List<String> > list = List<String>::create();
             list->append(value);
             value = list;
         }
@@ -704,9 +704,9 @@ variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
     return value;
 }
 
-variant YasonSyntax::readList(const CharArray *text, const Token *token, VariantType expectedItemType) const
+Variant YasonSyntax::readList(const CharArray *text, const Token *token, VariantType expectedItemType) const
 {
-    variant list;
+    Variant list;
     if (expectedItemType == VariantType::Int)
         list = parseTypedList<int>(text, token, expectedItemType);
     else if (expectedItemType == VariantType::Bool)
@@ -714,17 +714,17 @@ variant YasonSyntax::readList(const CharArray *text, const Token *token, Variant
     else if (expectedItemType == VariantType::Float)
         list = parseTypedList<float>(text, token, expectedItemType);
     else if (expectedItemType == VariantType::String)
-        list = parseTypedList<string>(text, token, expectedItemType);
+        list = parseTypedList<String>(text, token, expectedItemType);
     else
-        list = parseTypedList<variant>(text, token, expectedItemType);
+        list = parseTypedList<Variant>(text, token, expectedItemType);
     return list;
 }
 
-string YasonSyntax::readText(const CharArray *text, const Token *token) const
+String YasonSyntax::readText(const CharArray *text, const Token *token) const
 {
     token = token->firstChild();
 
-    string s;
+    String s;
 
     if (token->rule() != string_) {
         s = text->copyRange(token);

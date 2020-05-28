@@ -10,7 +10,7 @@
 
 namespace cc {
 
-Ref<LineSource> LineSource::open(const string &text) {
+Ref<LineSource> LineSource::open(const String &text) {
     return new LineSource{nullptr, mutate(text)};
 }
 
@@ -25,13 +25,13 @@ LineSource::LineSource(Stream *stream, CharArray *buffer):
     bufferOffset_{0},
     i0_{0}, i_{0}, n_{(buffer && !stream) ? buffer->count() : 0}
 {
-    if (!buffer_) buffer_ = string::allocate(0x1000);
+    if (!buffer_) buffer_ = String::allocate(0x1000);
 }
 
-bool LineSource::read(string *line)
+bool LineSource::read(String *line)
 {
     if (eoi_) {
-        *line = string{};
+        *line = String{};
         return false;
     }
 
@@ -70,20 +70,20 @@ bool LineSource::read(string *line)
         *line = backlog->join();
         return true;
     }
-    *line = string{};
+    *line = String{};
     return false;
 }
 
-string LineSource::readLine()
+String LineSource::readLine()
 {
-    string s;
+    String s;
     read(&s);
     return s;
 }
 
-string LineSource::pendingData() const
+String LineSource::pendingData() const
 {
-    if (eoi_) return string{};
+    if (eoi_) return String{};
     return buffer_->copy(i_, n_);
 }
 

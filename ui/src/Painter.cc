@@ -112,23 +112,23 @@ void Painter::Instance::circle(Point center, double radius)
     cairo_arc(cr_, center[0], center[1], radius, 0, 2 * M_PI);
 }
 
-void Painter::Instance::setSource(color color)
+void Painter::Instance::setSource(Color Color)
 {
-    if (color->isOpaque()) {
+    if (Color->isOpaque()) {
         cairo_set_source_rgb(
             cr_,
-            color->red()   / 255.,
-            color->green() / 255.,
-            color->blue()  / 255.
+            Color->red()   / 255.,
+            Color->green() / 255.,
+            Color->blue()  / 255.
         );
     }
     else {
         cairo_set_source_rgba(
             cr_,
-            color->red()   / 255.,
-            color->green() / 255.,
-            color->blue()  / 255.,
-            color->alpha() / 255.
+            Color->red()   / 255.,
+            Color->green() / 255.,
+            Color->blue()  / 255.,
+            Color->alpha() / 255.
         );
     }
 }
@@ -147,10 +147,10 @@ void Painter::Instance::fillPreserve()
 
 void Painter::Instance::fillGlyphRunBackground(const FtGlyphRun *ftGlyphRun)
 {
-    color color = ftGlyphRun->font()->paper();
-    if (!color->isValid()) return;
+    Color Color = ftGlyphRun->font()->paper();
+    if (!Color->isValid()) return;
 
-    setSource(color);
+    setSource(Color);
 
     Ref<const FontMetrics> metrics = ftGlyphRun->font()->getMetrics();
     double dy0 = metrics->ascender() + (metrics->lineHeight() - (metrics->ascender() - metrics->descender())) / 2;
@@ -310,7 +310,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         int byteOffset = 0;
         int glyphOffset = 0;
 
-        color bgColor0 = paper(0);
+        Color bgColor0 = paper(0);
         const cairo_glyph_t *glyph0 = &ftGlyphRun->cairoGlyphs()->at(0);
 
         for (int clusterIndex = 0, clusterCount = ftGlyphRun->cairoTextClusters()->count(); clusterIndex < clusterCount + 1; ++clusterIndex)
@@ -318,7 +318,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
             const cairo_text_cluster_t *cluster = 0;
             if (clusterIndex < clusterCount) cluster = &ftGlyphRun->cairoTextClusters()->at(clusterIndex);
 
-            color bgColor;
+            Color bgColor;
             const cairo_glyph_t *glyph = 0;
 
             bgColor = paper(byteOffset);
@@ -355,7 +355,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         int byteOffset = 0;
         int glyphOffset = 0;
 
-        color fgColor0 = ink(0);
+        Color fgColor0 = ink(0);
 
         int byteOffset0 = 0;
         int glyphOffset0 = 0;
@@ -369,7 +369,7 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
             glyphOffset += cluster->num_glyphs;
             ++clusterIndex;
 
-            color fgColor = ink(byteOffset);
+            Color fgColor = ink(byteOffset);
 
             if (fgColor0 != fgColor || clusterIndex == clusterCount)
             {
@@ -482,7 +482,7 @@ PainterError::PainterError(int errorStatus):
     errorStatus_{errorStatus}
 {}
 
-string PainterError::message() const
+String PainterError::message() const
 {
     return cairo_status_to_string(cairo_status_t(errorStatus_));
 }

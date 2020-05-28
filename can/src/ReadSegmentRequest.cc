@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/ReadSegmentRequest>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -26,11 +26,11 @@ Ref<CanFrame> ReadSegmentRequest::createFrame(int serverId, bool toggle)
     return frame;
 }
 
-string ReadSegmentRequest::Instance::toString() const
+String ReadSegmentRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "ReadSegmentRequest {" << nl
         << "  serverId: " << serverId() << nl
         << "  toggle  : " << toggle() << nl

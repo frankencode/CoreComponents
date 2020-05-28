@@ -18,35 +18,35 @@ class MaterialLight: public Theme
     friend class Object;
 
 public:
-    color primaryColor         () const override { return color{ Material::Blue500 }; }
-    color primaryDarkColor     () const          { return 0x0069c0; }
-    color primaryLightColor    () const          { return 0x6ec6ff; }
-    color secondaryColor       () const override { return color{ Material::Lime500 }; }
-    color secondaryDarkColor   () const          { return 0x99aa00; }
-    color secondaryLightColor  () const          { return 0xffff6e; }
-    color alertColor           () const override { return color{ Material::RedA400 }; }
+    Color primaryColor         () const override { return Color{ Material::Blue500 }; }
+    Color primaryDarkColor     () const          { return 0x0069c0; }
+    Color primaryLightColor    () const          { return 0x6ec6ff; }
+    Color secondaryColor       () const override { return Color{ Material::Lime500 }; }
+    Color secondaryDarkColor   () const          { return 0x99aa00; }
+    Color secondaryLightColor  () const          { return 0xffff6e; }
+    Color alertColor           () const override { return Color{ Material::RedA400 }; }
 
-    color statusBarColor       () const override { return color{ Material::Grey300 }; }
-    color appBarColor          () const override { return color{ Material::Grey100 }; }
-    color windowColor          () const override { return color{ Material::Grey50 }; }
-    color popupColor           () const override { return color::white; }
+    Color statusBarColor       () const override { return Color{ Material::Grey300 }; }
+    Color appBarColor          () const override { return Color{ Material::Grey100 }; }
+    Color windowColor          () const override { return Color{ Material::Grey50 }; }
+    Color popupColor           () const override { return Color::white; }
 
-    color titleTextColor       () const override { return color::white; }
-    color focusTextColor       () const override { return primaryDarkColor()(87); }
-    color primaryTextColor     () const override { return color::black(87); }
-    color secondaryTextColor   () const override { return color::black(54); }
-    color inactiveTextColor    () const override { return color::black(38); }
+    Color titleTextColor       () const override { return Color::white; }
+    Color focusTextColor       () const override { return primaryDarkColor()(87); }
+    Color primaryTextColor     () const override { return Color::black(87); }
+    Color secondaryTextColor   () const override { return Color::black(54); }
+    Color inactiveTextColor    () const override { return Color::black(38); }
 
-    color inputLineColor       () const override { return color::black(42); }
-    color hoverInputLineColor  () const override { return primaryTextColor(); }
-    color pressedInputLineColor() const override { return primaryDarkColor(); }
-    color focusInputLineColor  () const override { return primaryDarkColor(); }
-    color textCursorColor      () const override { return primaryColor(); }
-    color textSelectionInk     () const override { return primaryTextColor(); }
-    color textSelectionPaper   () const override { return secondaryLightColor(); }
+    Color inputLineColor       () const override { return Color::black(42); }
+    Color hoverInputLineColor  () const override { return primaryTextColor(); }
+    Color pressedInputLineColor() const override { return primaryDarkColor(); }
+    Color focusInputLineColor  () const override { return primaryDarkColor(); }
+    Color textCursorColor      () const override { return primaryColor(); }
+    Color textSelectionInk     () const override { return primaryTextColor(); }
+    Color textSelectionPaper   () const override { return secondaryLightColor(); }
 
-    color inputFieldFillColor  () const override { return windowColor()->darker(5); }
-    color itemHighlightColor   () const override { return windowColor()->darker(5); }
+    Color inputFieldFillColor  () const override { return windowColor()->darker(5); }
+    Color itemHighlightColor   () const override { return windowColor()->darker(5); }
 
 private:
     MaterialLight() = default;

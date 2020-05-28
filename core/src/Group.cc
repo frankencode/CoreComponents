@@ -17,7 +17,7 @@ Group::Group(gid_t id)
 {
     int bufSize = ::sysconf(_SC_GETGR_R_SIZE_MAX);
     if (bufSize == -1) CC_SYSTEM_DEBUG_ERROR(errno);
-    string buf = CharArray::allocate(bufSize);
+    String buf = CharArray::allocate(bufSize);
     struct group space;
     memclr(&space, sizeof(struct group));
     struct group *entry = 0;
@@ -26,11 +26,11 @@ Group::Group(gid_t id)
     load(entry);
 }
 
-Group::Group(const string &name)
+Group::Group(const String &name)
 {
     int bufSize = ::sysconf(_SC_GETGR_R_SIZE_MAX);
     if (bufSize == -1) CC_SYSTEM_DEBUG_ERROR(errno);
-    string buf = CharArray::allocate(bufSize);
+    String buf = CharArray::allocate(bufSize);
     struct group space;
     memclr(&space, sizeof(struct group));
     struct group *entry = 0;

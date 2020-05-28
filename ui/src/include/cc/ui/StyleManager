@@ -22,7 +22,7 @@ class StyleManager: public Object
 public:
     static StyleManager *instance();
 
-    bool getPlugin(const string &name, Ref<StylePlugin> *plugin) const;
+    bool getPlugin(const String &name, Ref<StylePlugin> *plugin) const;
     Ref< Source<StylePlugin *> > getAllPlugins() const;
 
     StylePlugin *activePlugin() const;
@@ -36,10 +36,10 @@ private:
 
     void registerPlugin(StylePlugin *plugin);
 
-    typedef Map< string, Ref<StylePlugin> > Plugins;
+    typedef Map< String, Ref<StylePlugin> > Plugins;
     Ref<Plugins> plugins_;
     mutable Ref<StylePlugin> activePlugin_;
-    string defaultStyleName_;
+    String defaultStyleName_;
 
     double pixelDensityRatio_;
 };

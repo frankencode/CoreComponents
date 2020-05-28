@@ -7,7 +7,7 @@
  */
 
 #include <cc/net/exceptions>
-#include <cc/format>
+#include <cc/Format>
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -34,32 +34,32 @@ ConnectionTimeout::ConnectionTimeout():
     NetworkError{ETIMEDOUT}
 {}
 
-HostNameResolutionError::HostNameResolutionError(const string &hostName):
+HostNameResolutionError::HostNameResolutionError(const String &hostName):
     hostName_{hostName}
 {}
 
-string HostNameResolutionError::hostName() const
+String HostNameResolutionError::hostName() const
 {
     return hostName_;
 }
 
-string HostNameResolutionError::message() const
+String HostNameResolutionError::message() const
 {
-    return format{"Failed to resolve host name \"%%\""} << hostName_;
+    return Format{"Failed to resolve host name \"%%\""} << hostName_;
 }
 
-InvalidAddressSyntax::InvalidAddressSyntax(const string &address):
+InvalidAddressSyntax::InvalidAddressSyntax(const String &address):
     address_{address}
 {}
 
-string InvalidAddressSyntax::address() const
+String InvalidAddressSyntax::address() const
 {
     return address_;
 }
 
-string InvalidAddressSyntax::message() const
+String InvalidAddressSyntax::message() const
 {
-    return format{"Failed to parse network address \"%%\""} << address_;
+    return Format{"Failed to parse network address \"%%\""} << address_;
 }
 
 }} // namespace cc::net

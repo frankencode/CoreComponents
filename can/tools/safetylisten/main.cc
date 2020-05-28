@@ -18,11 +18,11 @@
 using namespace cc;
 using namespace cc::can;
 
-void safetyListen(string interface, int canId, int invCanId, double cycleTime, double validationTime, double duration);
+void safetyListen(String interface, int canId, int invCanId, double cycleTime, double validationTime, double duration);
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
 
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
         if (arguments->items()->count() > 0) throw HelpRequest{};
 
-        string interface = options->value("interface");
+        String interface = options->value("interface");
         int canId = options->value("can-id");
         int invCanId = options->value("inv-can-id");
         double cycleTime = double(options->value("cycle-time"));
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
             "Listen to the CAN bus and report about a certain SRDO.\n"
             "\n"
             "Options:\n"
-            "  -interface=<string>           CAN interface to listen on (\"can0\" by default)\n"
+            "  -interface=<String>           CAN interface to listen on (\"can0\" by default)\n"
             "  -can-id=<number>              CAN ID of the SRDO\n"
             "  -inv-can-id=<number>          CAN ID of the inverse SRDO (defaults to CAN ID + 1)\n"
             "  -cycle-time=<number[s]>       Max time between two inverse SRDOs\n"
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void safetyListen(string interface, int canId, int invCanId, double cycleTime, double validationTime, double duration)
+void safetyListen(String interface, int canId, int invCanId, double cycleTime, double validationTime, double duration)
 {
     auto can = CanSocket::open(interface);
 
@@ -122,19 +122,19 @@ void safetyListen(string interface, int canId, int invCanId, double cycleTime, d
 
         lastTimes->establish(frame->canId(), t);
 
-        string annotation = "SRDO";
+        String annotation = "SRDO";
 
         try {
             if (int(frame->canId()) == invCanId) {
                 if (dt > cycleTime) {
-                    throw string{format{"ERROR, SCT EXCEEDED (dt = %%)"} << fixed(dt, 3, 3)};
+                    throw String{Format{"ERROR, SCT EXCEEDED (dt = %%)"} << fixed(dt, 3, 3)};
                 }
                 else {
                     double ts = 0;
                     double dtv = 0;
                     if (lastTimes->lookup(canId, &ts)) {
                         dtv = t - ts;
-                        if (dtv > validationTime) throw string{format{"ERROR, SRVT EXCEEDED (dtv = %%)"} << dtv};
+                        if (dtv > validationTime) throw String{Format{"ERROR, SRVT EXCEEDED (dtv = %%)"} << dtv};
                         if (dtv < dtvMin) dtvMin = dtv;
                         if (dtv > dtvMax) dtvMax = dtv;
                         dtvAvg += dtv;
@@ -151,7 +151,7 @@ void safetyListen(string interface, int canId, int invCanId, double cycleTime, d
                 }
             }
         }
-        catch (string &error) {
+        catch (String &error) {
             annotation = error;
             ++errorCount;
         }

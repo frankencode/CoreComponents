@@ -8,36 +8,36 @@
 
 #include <cc/Bundle>
 #include <cc/Dir>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/exceptions>
 #include <cc/toki/Theme>
 
 namespace cc {
 namespace toki {
 
-Ref<Theme> Theme::load(const string &path)
+Ref<Theme> Theme::load(const String &path)
 {
-    string themePath = path;
+    String themePath = path;
     if (themePath->isRelativePath()) {
         if (!Dir::exists(themePath)) {
             if (!themePath->contains('/'))
-                themePath = string{"themes/"} + themePath;
+                themePath = String{"themes/"} + themePath;
             if (!Dir::exists(themePath))
                 themePath = CC_BUNDLE_LOOKUP(themePath);
         }
     }
     if (themePath == "" || !Dir::exists(themePath))
-        throw UsageError{format{"Failed to locate theme \"%%\""} << path};
+        throw UsageError{Format{"Failed to locate theme \"%%\""} << path};
     return new Theme{themePath};
 }
 
-Theme::Theme(const string &path):
+Theme::Theme(const String &path):
     path_{path},
     name_{path->fileName()},
     paletteByScope_{PaletteByScope::create()}
 {
     Ref<Dir> dir = Dir::open(path);
-    string name;
+    String name;
     while (dir->read(&name)) {
         if (name == "." || name == "..") continue;
         if (!(name->count() > 0 && ('a' <= name->at(0) && name->at(0) <= 'z'))) continue;
@@ -45,20 +45,20 @@ Theme::Theme(const string &path):
         paletteByScope_->insert(palette->scope(), palette);
     }
     if (!paletteByScope_->lookup(Palette::defaultScope(), &defaultPalette_))
-        throw UsageError{format{"Palette \"default\" missing in theme \"%%\""} << path};
+        throw UsageError{Format{"Palette \"default\" missing in theme \"%%\""} << path};
 }
 
-Ref<StringList> themeList(const string &path)
+Ref<StringList> themeList(const String &path)
 {
     auto list = StringList::create();
-    string searchPath = path;
+    String searchPath = path;
     if (searchPath == "") {
         searchPath = CC_BUNDLE_LOOKUP("themes");
         list->appendList(themeList("themes"));
     }
     if (searchPath != "" && Dir::exists(searchPath)) {
         auto dir = Dir::open(searchPath);
-        for (string name; dir->read(&name);) {
+        for (String name; dir->read(&name);) {
             if (name == "." || name == "..") continue;
             list->append(path + "/" + name);
         }

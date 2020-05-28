@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockWriteAckReply>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -30,11 +30,11 @@ Ref<CanFrame> BlockWriteAckReply::createFrame(int serverId, int sequenceNumber, 
     return frame;
 }
 
-string BlockWriteAckReply::Instance::toString() const
+String BlockWriteAckReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockWriteAckReply {" << nl
         << "  serverId      : " << serverId() << nl
         << "  sequenceNumber: " << sequenceNumber() << nl

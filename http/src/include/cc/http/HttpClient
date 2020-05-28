@@ -32,22 +32,22 @@ class HttpClient: public Object
 public:
     static Ref<HttpResponse> get(const Uri &uri);
     static Ref<HttpResponse> head(const Uri &uri);
-    static Ref<HttpResponse> put(const Uri &uri, const string &payload);
+    static Ref<HttpResponse> put(const Uri &uri, const String &payload);
     static Ref<HttpResponse> put(const Uri &uri, Stream *source);
-    static Ref<HttpResponse> post(const Uri &uri, const string &payload);
+    static Ref<HttpResponse> post(const Uri &uri, const String &payload);
     static Ref<HttpResponse> post(const Uri &uri, Stream *source);
-    static Ref<HttpResponse> postForm(const Uri &uri, const Map<string> *form);
+    static Ref<HttpResponse> postForm(const Uri &uri, const Map<String> *form);
 
     static Ref<HttpClient> connect(const Uri &uri, const HttpClientSecurity *security = nullptr);
 
     typedef std::function<void(HttpGenerator *)> Generate;
-    Ref<HttpResponse> query(const string &method, const string &path, const Generate &generate = &generateDefault);
+    Ref<HttpResponse> query(const String &method, const String &path, const Generate &generate = &generateDefault);
 
-    void pipeline(const string &method, const string &path, const Generate &generate = &generateDefault);
+    void pipeline(const String &method, const String &path, const Generate &generate = &generateDefault);
     Ref<HttpResponse> readResponse();
 
 protected:
-    virtual string userAgent() const;
+    virtual String userAgent() const;
     virtual bool retry(int i);
 
 private:
@@ -55,10 +55,10 @@ private:
 
     HttpClient(const Uri &uri, const HttpClientSecurity *security);
     void connect();
-    Ref<HttpRequestGenerator> createRequest(const string &method, const string &path);
+    Ref<HttpRequestGenerator> createRequest(const String &method, const String &path);
 
     SocketAddress address_;
-    string host_;
+    String host_;
     Ref<const HttpClientSecurity> security_;
     Ref<HttpClientConnection> connection_;
 };

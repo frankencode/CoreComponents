@@ -11,7 +11,7 @@
 
 namespace cc {
 
-string str(Range range)
+String str(Range range)
 {
     return str(range->i0()) + ".." + str(range->i1());
 }

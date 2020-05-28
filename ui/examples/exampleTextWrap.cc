@@ -89,7 +89,7 @@ class MainView: public View
 int main(int argc, char **argv)
 {
     auto app = Application::open(argc, argv);
-    string fontPath = "<default font>";
+    String fontPath = "<default font>";
     if (argc > 1) {
         fontPath = argv[1];
         FontManager::instance()->addPath(fontPath);

@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/HeartBeat>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -22,11 +22,11 @@ Ref<CanFrame> HeartBeat::createFrame(int sourceId, NodeState nodeState)
     return frame;
 }
 
-string HeartBeat::Instance::toString() const
+String HeartBeat::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "HeartBeat {" << nl
         << "  sourceId : " << sourceId() << nl
         << "  nodeState: " << nodeState() << nl

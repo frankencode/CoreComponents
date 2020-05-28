@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ui/FontMetrics>
 
 namespace cc {
 namespace ui {
 
-string FontMetrics::toString() const
+String FontMetrics::toString() const
 {
-    return format{}
+    return Format{}
         << "FontMetrics {\n"
         << "  fontSize: " << fontSize() << nl
         << "  ascender: " << ascender() << nl

@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ui/WheelEvent>
 
 namespace cc {
 namespace ui {
 
-string WheelEvent::toString() const
+String WheelEvent::toString() const
 {
-    return format{}
+    return Format{}
         << "WheelEvent {" << nl
         << "  time: " << time_ << nl
         << "  wheelStep: " << wheelStep_ << nl

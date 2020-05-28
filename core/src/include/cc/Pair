@@ -12,33 +12,33 @@
 
 namespace cc {
 
-/** \class pair cc/pair
-  * \brief key_type value pair
+/** \class Pair cc/Pair
+  * \brief Key value pair
   */
 template<class K, class V = K>
-class pair
+class Pair
 {
 public:
     typedef K key_type;
     typedef V value_type;
 
-    pair()
+    Pair()
     {}
 
-    pair(const key_type &key):
+    Pair(const key_type &key):
         instance_{key}
     {}
 
-    pair(const key_type &key, const value_type &value):
+    Pair(const key_type &key, const value_type &value):
         instance_{key, value}
     {}
 
-    bool operator< (const pair &b) const { return instance_.key_ <  b.instance_.key_; }
-    bool operator> (const pair &b) const { return instance_.key_ >  b.instance_.key_; }
-    bool operator==(const pair &b) const { return instance_.key_ ==  b.instance_.key_; }
-    bool operator!=(const pair &b) const { return instance_.key_ !=  b.instance_.key_; }
-    bool operator<=(const pair &b) const { return instance_.key_ <=  b.instance_.key_; }
-    bool operator>=(const pair &b) const { return instance_.key_ >=  b.instance_.key_; }
+    bool operator< (const Pair &b) const { return instance_.key_ <  b.instance_.key_; }
+    bool operator> (const Pair &b) const { return instance_.key_ >  b.instance_.key_; }
+    bool operator==(const Pair &b) const { return instance_.key_ ==  b.instance_.key_; }
+    bool operator!=(const Pair &b) const { return instance_.key_ !=  b.instance_.key_; }
+    bool operator<=(const Pair &b) const { return instance_.key_ <=  b.instance_.key_; }
+    bool operator>=(const Pair &b) const { return instance_.key_ >=  b.instance_.key_; }
 
     class Instance {
     public:
@@ -48,7 +48,7 @@ public:
         void setValue(const value_type &newValue) { value_ = newValue; }
 
     private:
-        friend class pair;
+        friend class Pair;
         Instance()
         {}
         Instance(const key_type &key):
@@ -69,11 +69,11 @@ private:
 };
 
 template<class K, class V>
-class IteratorAccess< const pair<K, V> > {
+class IteratorAccess< const Pair<K, V> > {
 public:
     typedef K key_type;
     typedef V value_type;
-    typedef pair<K, V> Item;
+    typedef Pair<K, V> Item;
 
     typedef const Item &DerefAccess;
     typedef IteratorAccess MemberAccess;
@@ -90,11 +90,11 @@ private:
 };
 
 template<class K, class V>
-class IteratorAccess< pair<K, V> > {
+class IteratorAccess< Pair<K, V> > {
 public:
     typedef K key_type;
     typedef V value_type;
-    typedef pair<K, V> Item;
+    typedef Pair<K, V> Item;
 
     typedef const Item &DerefAccess;
     typedef IteratorAccess MemberAccess;

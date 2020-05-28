@@ -42,7 +42,7 @@ void HttpSocket::write(const CharArray *data)
         return;
     }
 
-    string pending = data;
+    String pending = data;
     while (true) {
         int ret = gnutls_record_send(session_, pending->bytes(), pending->count());
         if (ret == pending->count()) break;

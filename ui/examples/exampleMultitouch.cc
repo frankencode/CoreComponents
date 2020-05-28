@@ -16,13 +16,13 @@ class TouchPoint: public View
     friend class Object;
 
 public:
-    Property<color> fgColor;
+    Property<Color> fgColor;
 
 protected:
     TouchPoint(View *parent):
         View{parent}
     {
-        paper = color::transparent;
+        paper = Color::transparent;
         size = Size{100, 100};
     }
 
@@ -47,7 +47,7 @@ class MainView: public View
         size = DisplayManager::instance()->getDisplay(0)->nativeMode()->resolution();
         paper = 0xFFFFFF;
 
-        color fgColors[] = {
+        Color fgColors[] = {
             { 0xFF, 0x00, 0x00, 0xFF },
             { 0x00, 0xFF, 0x00, 0xFF },
             { 0x00, 0x00, 0xFF, 0xFF },

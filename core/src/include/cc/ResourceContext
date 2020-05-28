@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 
@@ -24,16 +24,16 @@ class ResourceContext: public Object
 public:
     static ResourceContext *instance();
 
-    void push(const string &resource);
-    string pop();
+    void push(const String &resource);
+    String pop();
 
-    string top() const;
+    String top() const;
 
 private:
     friend class ThreadLocalSingleton<ResourceContext>;
     ResourceContext();
 
-    Ref< Queue<string> > queue_;
+    Ref< Queue<String> > queue_;
 };
 
 } // namespace cc

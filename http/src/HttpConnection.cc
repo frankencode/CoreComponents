@@ -27,7 +27,7 @@ HttpConnection::HttpConnection(Stream *stream):
 HttpConnection::~HttpConnection()
 {}
 
-void HttpConnection::setupTransferLog(Stream *debugStream, const string &label)
+void HttpConnection::setupTransferLog(Stream *debugStream, const String &label)
 {
     Ref<Stream> inputBuffer = TapBuffer::open(debugStream, label + " >> ");
     Ref<Stream> outputBuffer = TapBuffer::open(debugStream, label + " << ");
@@ -52,8 +52,8 @@ void HttpConnection::readMessage(HttpMessage *message)
 
         readFirstLine(source, message);
 
-        string line;
-        string name, value;
+        String line;
+        String name, value;
         Ref<StringList> multiValue;
         while (source->read(&line)) {
             if (line == "")
@@ -94,7 +94,7 @@ void HttpConnection::readMessage(HttpMessage *message)
     }
     else {
         int64_t length = 0;
-        string h;
+        String h;
         if (message->lookup("Content-Length", &h)) {
             bool ok = true;
             length = h->toNumber<int64_t>(&ok);

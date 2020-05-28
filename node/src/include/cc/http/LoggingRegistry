@@ -26,7 +26,7 @@ public:
 
     void registerService(LoggingService *service);
 
-    LoggingService *serviceByName(const string &name) const;
+    LoggingService *serviceByName(const String &name) const;
 
     MetaProtocol *loggingProtocol() const;
 
@@ -35,7 +35,7 @@ private:
 
     LoggingRegistry();
 
-    typedef Map<string, Ref<LoggingService> > ServiceByName;
+    typedef Map<String, Ref<LoggingService> > ServiceByName;
     Ref<ServiceByName> serviceByName_;
 
     Ref<MetaProtocol> loggingProtocol_;

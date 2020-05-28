@@ -33,7 +33,7 @@ TextEdit::TextEdit(View *parent):
     lineNumberWidth->bind([=]{
         return
             std::ceil(
-                TextRun::create(string::create(lineNumberDigitCount(), '0'), lineNumberFont())->size()[0] +
+                TextRun::create(String::create(lineNumberDigitCount(), '0'), lineNumberFont())->size()[0] +
                 2 * lineNumberMargin()[0]
             );
     });
@@ -51,12 +51,12 @@ TextEdit::TextEdit(View *parent):
     cursor->bind([=]{ return Cursor::create(cursorShape()); });
 }
 
-void TextEdit::setText(const string &text)
+void TextEdit::setText(const String &text)
 {
     document_->load(text);
 }
 
-string TextEdit::getText() const
+String TextEdit::getText() const
 {
     return document_->text();
 }

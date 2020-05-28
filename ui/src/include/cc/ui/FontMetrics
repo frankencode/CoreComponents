@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 namespace ui {
@@ -23,7 +23,7 @@ public:
     virtual double underlinePosition() const = 0;
     virtual double underlineThickness() const = 0;
 
-    virtual string toString() const;
+    virtual String toString() const;
 };
 
 }} // namespace cc::ui

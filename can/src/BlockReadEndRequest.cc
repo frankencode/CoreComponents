@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockReadEndRequest>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -26,11 +26,11 @@ Ref<CanFrame> BlockReadEndRequest::createFrame(int serverId)
     return frame;
 }
 
-string BlockReadEndRequest::Instance::toString() const
+String BlockReadEndRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockReadEndRequest {" << nl
         << "  serverId: " << serverId() << nl
         << "}";

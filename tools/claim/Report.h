@@ -18,11 +18,11 @@ namespace ccclaim {
 using namespace cc;
 using namespace cc::glob;
 
-typedef Map<string, Ref<Notice> > Coverage;
-typedef Set<string> Exposure;
-typedef Map<string, Ref<Coverage> > CoverageByDigest;
-typedef Map<string, Ref<Coverage> > CoverageByHolder;
-typedef Map<string, string> StatementByDigest;
+typedef Map<String, Ref<Notice> > Coverage;
+typedef Set<String> Exposure;
+typedef Map<String, Ref<Coverage> > CoverageByDigest;
+typedef Map<String, Ref<Coverage> > CoverageByHolder;
+typedef Map<String, String> StatementByDigest;
 
 class Report: public Object
 {

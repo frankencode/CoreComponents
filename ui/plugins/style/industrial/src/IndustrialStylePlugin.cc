@@ -40,7 +40,7 @@ void IndustrialStylePlugin::activate()
     }
     else {
         // Debian
-        string dejavuPath = "/usr/share/fonts/truetype/dejavu";
+        String dejavuPath = "/usr/share/fonts/truetype/dejavu";
         if (Dir::exists(dejavuPath)) {
             FontManager::instance()->addPath(dejavuPath);
             defaultFont = Font{"DejaVu Sans", sp(16)};
@@ -91,7 +91,7 @@ void IndustrialStylePlugin::activate()
             FontManager::instance()->addPath(path);
     }
 
-    string iconsPath = CC_BUNDLE_LOOKUP("icons");
+    String iconsPath = CC_BUNDLE_LOOKUP("icons");
     if (iconsPath != "")
         FontManager::instance()->addPath(iconsPath);
     else

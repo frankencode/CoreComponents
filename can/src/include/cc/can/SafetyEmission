@@ -16,11 +16,11 @@ namespace can {
 class SafetyEmission: public Emission
 {
 public:
-    static Ref<SafetyEmission> create(PeriodicEmitter *emitter, int canId, int invCanId, double interval, const string &initialData);
+    static Ref<SafetyEmission> create(PeriodicEmitter *emitter, int canId, int invCanId, double interval, const String &initialData);
 
     const CanFrame *invFrame() const { return invFrame_; }
 
-    void updateData(const string &data) override;
+    void updateData(const String &data) override;
 
 private:
     SafetyEmission(int canId, int invCanId, double interval);

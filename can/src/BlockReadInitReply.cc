@@ -7,12 +7,12 @@
  */
 
 #include <cc/can/BlockReadInitReply>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockReadInitReply::createFrame(int serverId, Selector selector, const string &data)
+Ref<CanFrame> BlockReadInitReply::createFrame(int serverId, Selector selector, const String &data)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
 
@@ -32,11 +32,11 @@ Ref<CanFrame> BlockReadInitReply::createFrame(int serverId, Selector selector, c
     return frame;
 }
 
-string BlockReadInitReply::Instance::toString() const
+String BlockReadInitReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockReadInitReply {" << nl
         << "  serverId      : " << serverId() << nl
         << "  selector      : " << selector() << nl

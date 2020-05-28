@@ -61,10 +61,10 @@ void CanLogger::bootstrap()
                 dt = t - tl;
             lastTimes->establish(frame->canId(), t);
 
-            format f;
+            Format f;
             f << fixed(t, 3, 3) << " " << fixed(dt, 3, 3) << " -- " << frame << nl;
 
-            string info;
+            String info;
 
             if (ServiceReply{frame})
             {

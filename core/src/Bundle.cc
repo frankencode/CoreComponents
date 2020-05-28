@@ -13,19 +13,19 @@
 
 namespace cc {
 
-string Bundle::lookup(const string &relPath, const StringList *dirs)
+String Bundle::lookup(const String &relPath, const StringList *dirs)
 {
     return File::locate(relPath, dirs, FileAccess::Exists);
 }
 
-string Bundle::prefix(const char *defaultPrefix)
+String Bundle::prefix(const char *defaultPrefix)
 {
     if (Singleton<Bundle>::instance()->overridePrefix_ != "")
         return Singleton<Bundle>::instance()->overridePrefix_;
     return defaultPrefix;
 }
 
-string Bundle::exePrefix()
+String Bundle::exePrefix()
 {
     return Singleton<Bundle>::instance()->exePrefix_;
 }

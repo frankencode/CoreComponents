@@ -17,14 +17,14 @@ namespace cc {
   * \ingroup formatted_io
   * \brief Line input buffer
   */
-class LineSource: public Source<string>
+class LineSource: public Source<String>
 {
 public:
     /** Open a new line source feed from a memory buffer
       * \param text input buffer
       * \return new object instance
       */
-    static Ref<LineSource> open(const string &text);
+    static Ref<LineSource> open(const String &text);
 
     /** Open a new line source feed from an input stream
       * \param stream input stream
@@ -46,15 +46,15 @@ public:
       * \param line returns the next line (if not end of input)
       * \return true if not end of input, false otherwise
       */
-    bool read(string *line);
+    bool read(String *line);
 
     /** Read next line
       * \return next line (equals "" on end of input)
       */
-    string readLine();
+    String readLine();
 
     /// Return the remaining data from the input buffer
-    string pendingData() const;
+    String pendingData() const;
 
 private:
     LineSource(Stream *stream, CharArray *buffer);
@@ -63,7 +63,7 @@ private:
     static int skipEol(const CharArray *buffer, int n, int i);
 
     Ref<Stream> stream_;
-    string buffer_;
+    String buffer_;
     bool eoi_;
     int bufferOffset_;
     int i0_, i_, n_;

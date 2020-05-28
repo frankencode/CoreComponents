@@ -15,14 +15,14 @@ namespace ccbuild {
 BuildStageGuard::BuildStageGuard(BuildStage *stage):
     stage_{stage}
 {
-    for (const string &command: stage_->preCommands())
+    for (const String &command: stage_->preCommands())
         Process::execute(command);
 }
 
 BuildStageGuard::~BuildStageGuard()
 {
     if (stage_->success()) {
-        for (const string &command: stage_->postCommands())
+        for (const String &command: stage_->postCommands())
             Process::execute(command);
     }
 }

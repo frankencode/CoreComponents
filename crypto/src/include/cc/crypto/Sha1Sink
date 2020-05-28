@@ -33,7 +33,7 @@ public:
     int blockSize() const override;
 
     void write(const CharArray *data) override;
-    string finish() override;
+    String finish() override;
 
 private:
     Sha1Sink();
@@ -41,13 +41,13 @@ private:
 
     void consume();
 
-    string h_;
-    string m_;
-    string w_;
+    String h_;
+    String m_;
+    String w_;
     int j_;
     uint64_t l_;
 };
 
-string sha1(const CharArray *data);
+String sha1(const CharArray *data);
 
 }} // namespace cc::crypto

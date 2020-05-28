@@ -27,7 +27,7 @@ public:
 
     void write(const CharArray *data) override;
 
-    string finish() override;
+    String finish() override;
 
 private:
     static Ref<CryptoHashSink> prepareHashSink(const CryptoHashSink *hashSink, const CharArray *key, uint8_t blind);

@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/DeviceConfiguration>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -17,7 +17,7 @@ Ref<DeviceConfiguration> DeviceConfiguration::create()
     return new DeviceConfiguration;
 }
 
-Ref<DeviceConfiguration> DeviceConfiguration::parse(const string &text)
+Ref<DeviceConfiguration> DeviceConfiguration::parse(const String &text)
 {
     Ref<DeviceConfiguration> config = new DeviceConfiguration;
     config->IniSyntax::parse(text);
@@ -28,9 +28,9 @@ DeviceConfiguration::DeviceConfiguration():
     comissioning_{new Comissioning}
 {}
 
-string DeviceConfiguration::toString() const
+String DeviceConfiguration::toString() const
 {
-    return format{}
+    return Format{}
         << DeviceDescription::toString() << nl
         << comissioning_->toString();
 }
@@ -42,7 +42,7 @@ bool DeviceConfiguration::equals(const DeviceConfiguration *other) const
         DeviceDescription::equals(other);
 }
 
-void DeviceConfiguration::enterSection(const string &sectionName)
+void DeviceConfiguration::enterSection(const String &sectionName)
 {
     if (sectionName->match(comissioning_->sectionName())) setCurrentSection(comissioning_);
     else DeviceDescription::enterSection(sectionName);
@@ -52,7 +52,7 @@ DeviceConfiguration::Comissioning::Comissioning():
     Section{"DeviceComissioning"}
 {}
 
-void DeviceConfiguration::Comissioning::establish(const string &key, const string &value)
+void DeviceConfiguration::Comissioning::establish(const String &key, const String &value)
 {
     if (key->match("NodeID")) nodeId_ = value->toNumber<uint8_t>();
     else if (key->match("NodeName")) nodeName_ = value;
@@ -63,9 +63,9 @@ void DeviceConfiguration::Comissioning::establish(const string &key, const strin
     else if (key->match("LSS_SerialNumber")) serialNumber_ = value->toNumber<uint32_t>();
 }
 
-string DeviceConfiguration::Comissioning::toString() const
+String DeviceConfiguration::Comissioning::toString() const
 {
-    format f;
+    Format f;
     f << "[" << sectionName() << "]" << nl;
     f << "NodeID=" << nodeId_ << nl;
     if (nodeName_ != "") f << "NodeName=" << nodeName_ << nl;

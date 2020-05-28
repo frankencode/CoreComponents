@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Signal>
 
 namespace cc {
 
-string str(Signal signal)
+String str(Signal signal)
 {
-    string s;
+    String s;
     switch (signal) {
         case Signal::Abort                 : s = "Signal::Abort"; break;
         case Signal::Alarm                 : s = "Signal::Alarm"; break;
@@ -33,7 +33,7 @@ string str(Signal signal)
         case Signal::User2                 : s = "Signal::User2"; break;
         case Signal::WindowSizeChanged     : s = "Signal::"; break;
         case Signal::Undefined             : s = "Signal::Undefined"; break;
-        default                            : s = format{"Signal(%%)"} << +signal; break;
+        default                            : s = Format{"Signal(%%)"} << +signal; break;
     };
     return s;
 }
@@ -42,9 +42,9 @@ Signaled::Signaled(Signal signal):
     signal_{signal}
 {}
 
-string Signaled::message() const
+String Signaled::message() const
 {
-    return format{} << "Caught signal " << signal_;
+    return Format{} << "Caught signal " << signal_;
 }
 
 } // namespace cc

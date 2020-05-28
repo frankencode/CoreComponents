@@ -8,32 +8,32 @@
 
 #include <cmath>
 #include <cc/ColorNames>
-#include <cc/format>
-#include <cc/variant>
+#include <cc/Format>
+#include <cc/Variant>
 #include <cc/colors>
-#include <cc/color>
+#include <cc/Color>
 
 namespace cc {
 
-const color color::transparent { 0x00, 0x00, 0x00, 0x00 };
-const color color::black       { 0x00, 0x00, 0x00 };
-const color color::white       { 0xFF, 0xFF, 0xFF };
-const color color::red         { 0xFF, 0x00, 0x00 };
-const color color::green       { 0x00, 0xFF, 0x00 };
-const color color::blue        { 0x00, 0x00, 0xFF };
+const Color Color::transparent { 0x00, 0x00, 0x00, 0x00 };
+const Color Color::black       { 0x00, 0x00, 0x00 };
+const Color Color::white       { 0xFF, 0xFF, 0xFF };
+const Color Color::red         { 0xFF, 0x00, 0x00 };
+const Color Color::green       { 0x00, 0xFF, 0x00 };
+const Color Color::blue        { 0x00, 0x00, 0xFF };
 
-color::color(const variant &v)
+Color::Color(const Variant &v)
 {
-    *this = variant::cast<color>(v);
+    *this = Variant::cast<Color>(v);
 }
 
-color color::parse(const char *s, bool *ok)
+Color Color::parse(const char *s, bool *ok)
 {
     bool localOk;
     if (!ok) ok = &localOk;
     if (!s[0]) {
         *ok = false;
-        return color{};
+        return Color{};
     }
     if (s[0] == '#') {
         struct H {
@@ -45,7 +45,7 @@ color color::parse(const char *s, bool *ok)
                 return -1;
             }
         };
-        color c;
+        Color c;
         int n = 1;
         while (s[n] && n < 11) ++n;
         if (n == 7) { // #RRGGBB
@@ -56,8 +56,8 @@ color color::parse(const char *s, bool *ok)
             int gl = H::dehex(s[4], ok);
             int bh = H::dehex(s[5], ok);
             int bl = H::dehex(s[6], ok);
-            if (!*ok) return color{};
-            return color{
+            if (!*ok) return Color{};
+            return Color{
                 (rh << 4) | rl,
                 (gh << 4) | gl,
                 (bh << 4) | bl
@@ -73,8 +73,8 @@ color color::parse(const char *s, bool *ok)
             int bl = H::dehex(s[6], ok);
             int ah = H::dehex(s[7], ok);
             int al = H::dehex(s[8], ok);
-            if (!*ok) return color{};
-            return color{
+            if (!*ok) return Color{};
+            return Color{
                 (rh << 4) | rl,
                 (gh << 4) | gl,
                 (bh << 4) | bl,
@@ -86,8 +86,8 @@ color color::parse(const char *s, bool *ok)
             int rh = H::dehex(s[1], ok);
             int gh = H::dehex(s[2], ok);
             int bh = H::dehex(s[3], ok);
-            if (!*ok) return color{};
-            return color{
+            if (!*ok) return Color{};
+            return Color{
                 (rh << 4) | rh,
                 (gh << 4) | gh,
                 (bh << 4) | bh
@@ -99,8 +99,8 @@ color color::parse(const char *s, bool *ok)
             int gh = H::dehex(s[2], ok);
             int bh = H::dehex(s[3], ok);
             int ah = H::dehex(s[4], ok);
-            if (!*ok) return color{};
-            return color{
+            if (!*ok) return Color{};
+            return Color{
                 (rh << 4) | rh,
                 (gh << 4) | gh,
                 (bh << 4) | bh,
@@ -108,40 +108,40 @@ color color::parse(const char *s, bool *ok)
             };
         }
         *ok = false;
-        return color{};
+        return Color{};
     }
-    color c;
+    Color c;
     if (ColorNames::instance()->lookup(s, &c)) {
         *ok = true;
         return c;
     }
     *ok = false;
-    return color{};
+    return Color{};
 }
 
-color color::fromHsv(double h, double s, double v)
+Color Color::fromHsv(double h, double s, double v)
 {
     double r, g, b;
     hsvToRgb(h, s, v, &r, &g, &b);
-    return color{
+    return Color{
         uint32_t(std::round(0xFF * r)),
         uint32_t(std::round(0xFF * g)),
         uint32_t(std::round(0xFF * b))
     };
 }
 
-color color::fromHsl(double h, double s, double l)
+Color Color::fromHsl(double h, double s, double l)
 {
     double r, g, b;
     hslToRgb(h, s, l, &r, &g, &b);
-    return color{
+    return Color{
         uint32_t(std::round(0xFF * r)),
         uint32_t(std::round(0xFF * g)),
         uint32_t(std::round(0xFF * b))
     };
 }
 
-void color::Instance::applyOver(color b)
+void Color::Instance::applyOver(Color b)
 {
     const uint32_t h = component<AlphaShift, uint32_t>();
 
@@ -217,7 +217,7 @@ void color::Instance::applyOver(color b)
     }
 }
 
-void color::Instance::mixIn(color b, int percent)
+void Color::Instance::mixIn(Color b, int percent)
 {
     typedef uint32_t v4ui32 __attribute__((vector_size(16)));
 
@@ -240,9 +240,9 @@ void color::Instance::mixIn(color b, int percent)
     w_ = compose(v_a[0], v_a[1], v_a[2], v_a[3]);
 }
 
-string color::Instance::toString() const
+String Color::Instance::toString() const
 {
-    return format{}
+    return Format{}
         << "#"
         << hex(red(), 2)
         << hex(green(), 2)

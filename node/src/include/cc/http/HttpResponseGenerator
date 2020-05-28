@@ -20,8 +20,8 @@ class HttpResponseGenerator: public HttpGenerator
 public:
     static Ref<HttpResponseGenerator> create(HttpConnection *client);
 
-    void setStatus(int statusCode, const string &reasonPhrase = "");
-    void setNodeVersion(const string &nodeVersion);
+    void setStatus(int statusCode, const String &reasonPhrase = "");
+    void setNodeVersion(const String &nodeVersion);
 
 private:
     friend class DeliveryWorker;
@@ -34,11 +34,11 @@ private:
     size_t bytesWritten() const;
 
     void polishHeader() override;
-    void writeFirstLine(format &sink) override;
+    void writeFirstLine(Format &sink) override;
 
     int statusCode_;
-    string reasonPhrase_;
-    string nodeVersion_;
+    String reasonPhrase_;
+    String nodeVersion_;
 };
 
 }} // namespace cc::http

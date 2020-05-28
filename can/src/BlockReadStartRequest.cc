@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockReadStartRequest>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -26,11 +26,11 @@ Ref<CanFrame> BlockReadStartRequest::createFrame(int serverId)
     return frame;
 }
 
-string BlockReadStartRequest::Instance::toString() const
+String BlockReadStartRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockReadStartRequest {" << nl
         << "  serverId: " << serverId() << nl
         << "}";

@@ -27,13 +27,13 @@ DispatchLoggingInstance::DispatchLoggingInstance(const MetaObject *config):
     }
 }
 
-void DispatchLoggingInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const string &statusMessage) const
+void DispatchLoggingInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage) const
 {
     for (const LoggingInstance *target: loggingInstances_)
         target->logDelivery(client, statusCode, bytesWritten, statusMessage);
 }
 
-void DispatchLoggingInstance::logMessage(const string &message, LoggingLevel level) const
+void DispatchLoggingInstance::logMessage(const String &message, LoggingLevel level) const
 {
     if (verbosity() >= level) {
         for (const LoggingInstance *target: loggingInstances_)

@@ -7,14 +7,14 @@
  */
 
 #include <cc/can/types>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-string str(NodeState state)
+String str(NodeState state)
 {
-    string s;
+    String s;
 
     switch (state) {
         case NodeState::BootUp        : s = "NodeState::BootUp"; break;
@@ -27,9 +27,9 @@ string str(NodeState state)
     return s;
 }
 
-string str(TransferMode mode)
+String str(TransferMode mode)
 {
-    string s;
+    String s;
 
     switch (mode) {
         case TransferMode::Segmented: s = "TransferMode::Segmented"; break;
@@ -40,7 +40,7 @@ string str(TransferMode mode)
     return s;
 }
 
-string str(ErrorRegister flags)
+String str(ErrorRegister flags)
 {
     if (flags == ErrorRegister::None) return "ErrorRegister::None";
 
@@ -58,9 +58,9 @@ string str(ErrorRegister flags)
     return parts->join("|");
 }
 
-string str(SafetyError error)
+String str(SafetyError error)
 {
-    string s;
+    String s;
 
     switch (error) {
         case SafetyError::DataValidation   : s = "SafetyError::DataValidation"; break;
@@ -71,9 +71,9 @@ string str(SafetyError error)
     return s;
 }
 
-string str(DataType type)
+String str(DataType type)
 {
-    string s;
+    String s;
 
     switch (type) {
         case DataType::Boolean             : s = "DataType::Boolean"; break;
@@ -106,9 +106,9 @@ string str(DataType type)
     return s;
 }
 
-string str(ObjectCode code)
+String str(ObjectCode code)
 {
-    string s;
+    String s;
 
     switch (code) {
         case ObjectCode::Null     : s = "ObjectCode::Null"; break;
@@ -123,9 +123,9 @@ string str(ObjectCode code)
     return s;
 }
 
-string str(AccessType access)
+String str(AccessType access)
 {
-    string s;
+    String s;
 
     switch (access) {
         case AccessType::Undefined    : s = "AccessType::Undefined"; break;
@@ -139,7 +139,7 @@ string str(AccessType access)
     return s;
 }
 
-string str(ObjectFlags flags)
+String str(ObjectFlags flags)
 {
     if (flags == ObjectFlags::None) return "ObjectFlags::None";
 
@@ -151,15 +151,15 @@ string str(ObjectFlags flags)
 
 }
 
-string hexLine(const string &data)
+String hexLine(const String &data)
 {
-    string visual = data->copy();
+    String visual = data->copy();
     for (int i = 0; i < visual->count(); ++i) {
         if (visual->byteAt(i) < 0x20 || 0x7E < visual->byteAt(i))
             mutate(visual)->at(i) = '.';
     }
 
-    return format{}
+    return Format{}
         << data->toHex()->breakUp(2)->join(".")
         << "    "
         << "|" << visual << "|";

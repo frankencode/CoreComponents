@@ -35,7 +35,7 @@ int SystemLoggingInstance::getSyslogPriority(LoggingLevel level)
     return priority;
 }
 
-void SystemLoggingInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const string &statusMessage) const
+void SystemLoggingInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage) const
 {
     syslog(
         LOG_NOTICE,
@@ -44,7 +44,7 @@ void SystemLoggingInstance::logDelivery(const HttpServerConnection *client, int 
     );
 }
 
-void SystemLoggingInstance::logMessage(const string &message, LoggingLevel level) const
+void SystemLoggingInstance::logMessage(const String &message, LoggingLevel level) const
 {
     if (verbosity() >= level) syslog(getSyslogPriority(level), "%s", message->chars());
 }

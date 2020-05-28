@@ -24,8 +24,8 @@ class Registry: public Object
 public:
     static Registry *instance();
 
-    bool lookupLanguageByName(const string &name, Language **language) const;
-    bool detectLanguage(const string &path, const string &text, Language **language) const;
+    bool lookupLanguageByName(const String &name, Language **language) const;
+    bool detectLanguage(const String &path, const String &text, Language **language) const;
 
     int languageCount() const { return languageByName_->count(); }
     const Language *languageAt(int i) const { return languageByName_->at(i)->value(); }
@@ -38,7 +38,7 @@ private:
 
     void registerLanguage(Language *language);
 
-    typedef Map< string, Ref<Language> > LanguageByName;
+    typedef Map< String, Ref<Language> > LanguageByName;
     Ref<LanguageByName> languageByName_;
 };
 

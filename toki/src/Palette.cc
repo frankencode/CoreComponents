@@ -10,12 +10,12 @@
 #include <cc/toki/PaletteLoader>
 #include <cc/toki/Registry>
 #include <cc/ResourceContext>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace toki {
 
-Ref<Palette> Palette::load(const string &path)
+Ref<Palette> Palette::load(const String &path)
 {
     return PaletteLoader::instance()->load(path);
 }
@@ -29,7 +29,7 @@ int Palette::defaultScope()
     return SyntaxDefinition::scope("default");
 }
 
-int Palette::defaultRuleByName(const string &name)
+int Palette::defaultRuleByName(const String &name)
 {
     if (name == "Text") return Text;
     if (name == "CurrentLine") return CurrentLine;
@@ -51,7 +51,7 @@ void Palette::realize()
             style->rule_ = defaultRuleByName(style->ruleName());
             if (style->rule_ == Undefined) {
                 throw MetaError{
-                    format{"Undefined rule '%%'"} << style->ruleName(),
+                    Format{"Undefined rule '%%'"} << style->ruleName(),
                     style, "rule"
                 };
             }
@@ -62,7 +62,7 @@ void Palette::realize()
 
     Language *language = nullptr;
     if (!Registry::instance()->lookupLanguageByName(scopeName_, &language))
-        throw SemanticError{format{"Undefined language '%%'"} << scopeName_};
+        throw SemanticError{Format{"Undefined language '%%'"} << scopeName_};
 
     const SyntaxDefinition *syntax = language->highlightingSyntax();
     scope_ = syntax->id();
@@ -73,7 +73,7 @@ void Palette::realize()
         }
         catch (DebugError &ex) {
             throw MetaError{
-                format{"Undefined rule '%%'"} << style->ruleName(),
+                Format{"Undefined rule '%%'"} << style->ruleName(),
                 style, "rule"
             };
         }

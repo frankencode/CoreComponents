@@ -25,15 +25,15 @@ class SdlApplication: public Application
 public:
     static SdlApplication *instance();
 
-    Window *openWindow(View *view, const string &title = "", WindowMode mode = WindowMode::Default) override;
+    Window *openWindow(View *view, const String &title = "", WindowMode mode = WindowMode::Default) override;
 
     Ref<Cursor> createCursor(CursorShape shape) override;
 
     void setCursor(const Cursor *cursor) override;
     void unsetCursor() override;
 
-    string getClipboardText() const override;
-    void setClipboardText(const string &text) override;
+    String getClipboardText() const override;
+    void setClipboardText(const String &text) override;
 
     int run() override;
 
@@ -54,7 +54,7 @@ private:
     void handleTextEditingEvent(const SDL_TextEditingEvent *e);
     void handleTextInputEvent(const SDL_TextInputEvent *e);
 
-    static string windowEventToString(const SDL_WindowEvent *e);
+    static String windowEventToString(const SDL_WindowEvent *e);
     void handleWindowEvent(const SDL_WindowEvent *e);
 
     void startTextInput(const Window *window) override;

@@ -7,12 +7,12 @@
  */
 
 #include <cc/can/ReadSegmentReply>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-Ref<CanFrame> ReadSegmentReply::createFrame(int serverId, const string &data, int fill, int offset)
+Ref<CanFrame> ReadSegmentReply::createFrame(int serverId, const String &data, int fill, int offset)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(offset < fill);
@@ -33,11 +33,11 @@ Ref<CanFrame> ReadSegmentReply::createFrame(int serverId, const string &data, in
     return frame;
 }
 
-string ReadSegmentReply::Instance::toString() const
+String ReadSegmentReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "ReadSegmentReply {" << nl
         << "  serverId: " << serverId() << nl
         << "  toggle  : " << toggle() << nl

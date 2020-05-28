@@ -11,7 +11,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include <cc/SignalSet>
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 

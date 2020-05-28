@@ -42,7 +42,7 @@ private:
 
     Ref<Stream> sink_;
     off_t offset_;
-    string buffer_;
+    String buffer_;
     int i_;
 };
 
@@ -50,6 +50,6 @@ private:
   * \param data binary data
   * \return hexdump
   */
-string hexDump(const CharArray *data);
+String hexDump(const CharArray *data);
 
 } // namespace cc

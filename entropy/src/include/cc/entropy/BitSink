@@ -78,7 +78,7 @@ private:
     void flush(int n);
 
     Ref<Stream> sink_;
-    string buffer_;
+    String buffer_;
     ByteOrder endian_;
     int i_;       // byte offset within buf_
     int iBit_;    // bit offset within buf_[i_]

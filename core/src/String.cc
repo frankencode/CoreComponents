@@ -13,19 +13,19 @@
 #include <cc/Utf8Sink>
 #include <cc/Utf16Source>
 #include <cc/Utf16Sink>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/HexDump>
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 
-Ref<const CharArray>::Ref(const variant &b):
+Ref<const CharArray>::Ref(const Variant &b):
     a_{nullptr}
 {
-    set(variant::cast<string>(b));
+    set(Variant::cast<String>(b));
 }
 
-Ref<const CharArray>::Ref(const format &b):
+Ref<const CharArray>::Ref(const Format &b):
     a_{nullptr}
 {
     set(b->join());
@@ -43,13 +43,13 @@ private:
     {}
 };
 
-string Array<char>::allocate(int size)
+String Array<char>::allocate(int size)
 {
     if (size <= 0) return new CharArray;
     return new Chunk(new char[size], size);
 }
 
-string Array<char>::create(int size)
+String Array<char>::create(int size)
 {
     if (size <= 0) return new CharArray;
     char *data = new char[size + 1];
@@ -57,7 +57,7 @@ string Array<char>::create(int size)
     return new CharArray{data, size};
 }
 
-string Array<char>::copy(const char *data, int size)
+String Array<char>::copy(const char *data, int size)
 {
     if (!data) return new CharArray;
     if (size < 0) size = strlen(data);
@@ -68,19 +68,19 @@ string Array<char>::copy(const char *data, int size)
     return new CharArray{newData, size};
 }
 
-string Array<char>::join(const StringList *parts, const char *sep, int sepSize)
+String Array<char>::join(const StringList *parts, const char *sep, int sepSize)
 {
-    if (!parts) return string{};
+    if (!parts) return String{};
 
     if (parts->count() == 0)
-        return string{};
+        return String{};
 
     if (sepSize < 0) sepSize = strlen(sep);
     int size = 0;
     for (int i = 0; i < parts->count(); ++i)
         size += parts->at(i)->count();
     size += (parts->count() - 1) * sepSize;
-    string result{size};
+    String result{size};
     char *p = result->data_;
     for (int i = 0; i < parts->count(); ++i) {
         const CharArray *part = parts->at(i);
@@ -95,14 +95,14 @@ string Array<char>::join(const StringList *parts, const char *sep, int sepSize)
     return result;
 }
 
-string Array<char>::join(const StringList *parts, const string &sep)
+String Array<char>::join(const StringList *parts, const String &sep)
 {
     return join(parts, sep->chars(), sep->count());
 }
 
-string Array<char>::cat(const string &a, const string &b)
+String Array<char>::cat(const String &a, const String &b)
 {
-    string c{a->count() + b->count()};
+    String c{a->count() + b->count()};
     memcpy(c->data_, a->data_, a->size_);
     memcpy(c->data_ + a->size_, b->data_, b->size_);
     return c;
@@ -110,7 +110,7 @@ string Array<char>::cat(const string &a, const string &b)
 
 const CharArray *Array<char>::empty()
 {
-    static thread_local string empty_{new CharArray};
+    static thread_local String empty_{new CharArray};
     return empty_;
 }
 
@@ -207,7 +207,7 @@ void Array<char>::writeXor(const CharArray *b)
         bytes_[i] ^= b->bytes_[i];
 }
 
-string Array<char>::copy(int i0, int i1) const
+String Array<char>::copy(int i0, int i1) const
 {
     if (i0 < 0) i0 = 0;
     if (size_ < i0) i0 = size_;
@@ -221,7 +221,7 @@ string Array<char>::copy(int i0, int i1) const
     return new CharArray(newData, newSize);
 }
 
-string Array<char>::paste(int i0, int i1, const string &text) const
+String Array<char>::paste(int i0, int i1, const String &text) const
 {
     if (i0 < 0) i0 = 0;
     if (size_ < i0) i0 = size_;
@@ -318,12 +318,12 @@ int Array<char>::scan(const char *s, int i) const
     return size_;
 }
 
-int Array<char>::scan(const string &s, int i) const
+int Array<char>::scan(const String &s, int i) const
 {
     return scan(s->chars(), i);
 }
 
-bool Array<char>::contains(const string &s) const
+bool Array<char>::contains(const String &s) const
 {
     return contains(s->chars());
 }
@@ -358,7 +358,7 @@ Ref<StringList> Array<char>::split(const char *sep) const
     if (i0 < size_)
         parts->append(copy(i0, size_));
     else
-        parts->append(string{});
+        parts->append(String{});
     return parts;
 }
 
@@ -375,7 +375,7 @@ Ref<StringList> Array<char>::breakUp(int chunkSize) const
     return parts;
 }
 
-string Array<char>::replaceInsitu(const char *p, const char *r)
+String Array<char>::replaceInsitu(const char *p, const char *r)
 {
     int pn = strlen(p);
     int rn = strlen(r);
@@ -405,27 +405,27 @@ string Array<char>::replaceInsitu(const char *p, const char *r)
     return this;
 }
 
-string Array<char>::replaceEach(char p, char r) const
+String Array<char>::replaceEach(char p, char r) const
 {
     return mutate(copy())->replaceInsitu(p, r);
 }
 
-string Array<char>::replace(const char *p, const char *r) const
+String Array<char>::replace(const char *p, const char *r) const
 {
     return join(split(p), r);
 }
 
-string Array<char>::replace(const char *p, const string &r) const
+String Array<char>::replace(const char *p, const String &r) const
 {
     return replace(p, r->chars());
 }
 
-string Array<char>::replace(const string &p, const string &r) const
+String Array<char>::replace(const String &p, const String &r) const
 {
     return replace(p->chars(), r->chars());
 }
 
-int Array<char>::scanString(string *x, const char *termination, int i0, int i1) const
+int Array<char>::scanString(String *x, const char *termination, int i0, int i1) const
 {
     if (i1 < 0 || i1 > size_) i1 = size_;
     if (i0 > i1) i0 = i1;
@@ -442,21 +442,21 @@ int Array<char>::scanString(string *x, const char *termination, int i0, int i1) 
     return i;
 }
 
-string Array<char>::downcaseInsitu()
+String Array<char>::downcaseInsitu()
 {
     for (int i = 0; i < size_; ++i)
         chars_[i] = cc::toLower(chars_[i]);
     return this;
 }
 
-string Array<char>::upcaseInsitu()
+String Array<char>::upcaseInsitu()
 {
     for (int i = 0; i < size_; ++i)
         data_[i] = cc::toUpper(data_[i]);
     return this;
 }
 
-string Array<char>::escape() const
+String Array<char>::escape() const
 {
     Ref<StringList> parts;
     int i = 0, i0 = 0;
@@ -472,7 +472,7 @@ string Array<char>::escape() const
             else if (ch == 0x0D) parts->append("\\r");
             else if (ch == 0x0C) parts->append("\\f");
             else {
-                string s = "\\xXX";
+                String s = "\\xXX";
                 const char *hex = "0123456789ABCDEF";
                 mutate(s)->at(s->count() - 2) = hex[ch / 16];
                 mutate(s)->at(s->count() - 1) = hex[ch % 16];
@@ -487,12 +487,12 @@ string Array<char>::escape() const
     return parts->join();
 }
 
-string Array<char>::unescapeInsitu()
+String Array<char>::unescapeInsitu()
 {
     if (!contains('\\')) return this;
     int j = 0;
     uint32_t hs = 0; // high surrogate, saved
-    string ec; // buffer for encoded character
+    String ec; // buffer for encoded character
     for (int i = 0, n = size_; i < n;) {
         char ch = data_[i++];
         if ((ch == '\\') && (i < n)) {
@@ -517,7 +517,7 @@ string Array<char>::unescapeInsitu()
                         x += 0x10000;
                         hs = 0;
                     }
-                    if (!ec) ec = string{4};
+                    if (!ec) ec = String{4};
                     Ref<Utf8Sink> sink = Utf8Sink::open(mutate(ec));
                     sink->write(x);
                     int el = utf8::encoded_size(x);
@@ -560,7 +560,7 @@ string Array<char>::unescapeInsitu()
     return this;
 }
 
-string Array<char>::trimInsitu(const char *leadingSpace, const char *trailingSpace)
+String Array<char>::trimInsitu(const char *leadingSpace, const char *trailingSpace)
 {
     if (!trailingSpace) trailingSpace = leadingSpace;
     int i0 = 0, i1 = size_;
@@ -583,7 +583,7 @@ string Array<char>::trimInsitu(const char *leadingSpace, const char *trailingSpa
     return this;
 }
 
-string Array<char>::simplifyInsitu(const char *space)
+String Array<char>::simplifyInsitu(const char *space)
 {
     int j = 0;
     for (int i = 0, s = 0; i < size_; ++i) {
@@ -599,7 +599,7 @@ string Array<char>::simplifyInsitu(const char *space)
     return this;
 }
 
-string Array<char>::normalize(bool nameCase) const
+String Array<char>::normalize(bool nameCase) const
 {
     for (int i = 0; i < size_; ++i) {
         if ((0 <= data_[i]) && (data_[i] < 32))
@@ -607,7 +607,7 @@ string Array<char>::normalize(bool nameCase) const
     }
     Ref<StringList> parts = split(" ");
     for (int i = 0; i < parts->count(); ++i) {
-        string s = parts->at(i);
+        String s = parts->at(i);
         if (s->count() == 0) {
             parts->removeAt(i);
         }
@@ -623,7 +623,7 @@ string Array<char>::normalize(bool nameCase) const
     return join(parts, " ");
 }
 
-string Array<char>::xmlSanitize() const
+String Array<char>::xmlSanitize() const
 {
     Ref<StringList> parts = StringList::create();
     int i = 0, j = 0;
@@ -693,17 +693,17 @@ void Array<char>::checkUtf8() const
     for (uchar_t ch = 0; source->read(&ch););
 }
 
-string Array<char>::fromUtf16(const CharArray *utf16, ByteOrder endian)
+String Array<char>::fromUtf16(const CharArray *utf16, ByteOrder endian)
 {
     if (utf16->count() == 0) return CharArray::create();
 
-    string out;
+    String out;
     {
         int n = 0;
         Ref<Utf16Source> source = Utf16Source::open(utf16, endian);
         for (uchar_t ch; source->read(&ch);)
             n += utf8::encoded_size(ch);
-        out = string{n};
+        out = String{n};
     }
 
     Ref<Utf16Source> source = Utf16Source::open(utf16, endian);
@@ -739,15 +739,15 @@ bool Array<char>::toUtf16(void *buf, int *size)
     return (j <= n);
 }
 
-string Array<char>::toUtf16(ByteOrder endian) const
+String Array<char>::toUtf16(ByteOrder endian) const
 {
-    string out;
+    String out;
     {
         int n = 0; {
             for (uchar_t ch: unicode{chars()})
                 n += utf16::encoded_size(ch);
         }
-        out = string{n + 2};
+        out = String{n + 2};
         mutate(out)->at(n) = 0;
         mutate(out)->at(n + 1) = 0;
     }
@@ -759,11 +759,11 @@ string Array<char>::toUtf16(ByteOrder endian) const
     return out;
 }
 
-string Array<char>::toHex() const
+String Array<char>::toHex() const
 {
-    if (size_ == 0) return string{};
+    if (size_ == 0) return String{};
 
-    string s2 = CharArray::create(size_ * 2);
+    String s2 = CharArray::create(size_ * 2);
     int j = 0;
     for (int i = 0; i < size_; ++i) {
         unsigned char ch = bytes_[i];
@@ -778,19 +778,19 @@ string Array<char>::toHex() const
     return s2;
 }
 
-string Array<char>::hexDump() const
+String Array<char>::hexDump() const
 {
     return cc::hexDump(this);
 }
 
-string Array<char>::indent(const string &prefix) const
+String Array<char>::indent(const String &prefix) const
 {
     return prefix + trimTrailing()->split('\n')->join("\n" + prefix);
 }
 
 bool Array<char>::isRootPath() const
 {
-    return string(this) == "/";
+    return String(this) == "/";
 }
 
 bool Array<char>::isRelativePath() const
@@ -803,7 +803,7 @@ bool Array<char>::isAbsolutePath() const
     return (count() > 0) ? (at(0) == '/') : false;
 }
 
-string Array<char>::absolutePathRelativeTo(const string &currentDir) const
+String Array<char>::absolutePathRelativeTo(const String &currentDir) const
 {
     if (isAbsolutePath() || (currentDir == "."))
         return copy();
@@ -815,7 +815,7 @@ string Array<char>::absolutePathRelativeTo(const string &currentDir) const
 
     for (int i = 0; i < parts->count(); ++i)
     {
-        string c = parts->at(i);
+        String c = parts->at(i);
         if (c == ".")
         {}
         else if (c == "..") {
@@ -829,7 +829,7 @@ string Array<char>::absolutePathRelativeTo(const string &currentDir) const
         }
     }
 
-    string prefix = currentDir->copy();
+    String prefix = currentDir->copy();
 
     while (upCount > 0) {
         prefix = prefix->reducePath();
@@ -841,58 +841,58 @@ string Array<char>::absolutePathRelativeTo(const string &currentDir) const
     return absoluteParts->join("/");
 }
 
-string Array<char>::fileName() const
+String Array<char>::fileName() const
 {
-    string name;
+    String name;
     Ref<StringList> parts = split("/");
     if (parts->count() > 0)
         name = parts->at(parts->count() - 1);
     return name;
 }
 
-string Array<char>::baseName() const
+String Array<char>::baseName() const
 {
-    string name = fileName();
+    String name = fileName();
     if (!name->contains('.')) return name;
     Ref<StringList> parts = name->split(".");
     parts->removeAt(parts->count() - 1);
     return parts->join(".");
 }
 
-string Array<char>::fileSuffix() const
+String Array<char>::fileSuffix() const
 {
     Ref<StringList> parts = fileName()->split(".");
     return parts->at(parts->count() - 1);
 }
 
-string Array<char>::reducePath() const
+String Array<char>::reducePath() const
 {
     Ref<StringList> parts = split("/");
     while (parts->count() > 0) {
-        string component = parts->back();
+        String component = parts->back();
         parts->popBack();
         if (component != "") break;
     }
-    string resultPath = parts->join("/");
+    String resultPath = parts->join("/");
     if (resultPath == "")
         resultPath = isAbsolutePath() ? "/" : ".";
     return resultPath;
 }
 
-string Array<char>::extendPath(const string &relativePath) const
+String Array<char>::extendPath(const String &relativePath) const
 {
     if (count() == 0) return relativePath->copy();
     if (relativePath->count() == 0) return copy();
 
     Ref<StringList> parts = StringList::create();
-    if (string{this} != "/") parts << this;
+    if (String{this} != "/") parts << this;
     if (!endsWith('/') || !relativePath->startsWith('/')) parts << "/";
     parts << relativePath;
 
     return parts->join();
 }
 
-string Array<char>::canonicalPath() const
+String Array<char>::canonicalPath() const
 {
     if (!
         (contains('.') || contains("//") || endsWith('/'))
@@ -901,7 +901,7 @@ string Array<char>::canonicalPath() const
     Ref<StringList> parts = split("/");
     Ref<StringList> result = StringList::create();
     for (int i = 0; i < parts->count(); ++i) {
-        string part = parts->at(i);
+        String part = parts->at(i);
         if (part == "" && i > 0) continue;
         if (part == "" && i == parts->count() - 1) continue;
         if (part == "." && parts->count() > 1) continue;
@@ -916,7 +916,7 @@ string Array<char>::canonicalPath() const
     return result->join("/");
 }
 
-bool Array<char>::equalsCaseInsensitive(const string &b) const
+bool Array<char>::equalsCaseInsensitive(const String &b) const
 {
     if (size_ != b->size_) return false;
     for (int i = 0; i < size_; ++i)

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/color>
+#include <cc/Color>
 
 namespace cc {
 
@@ -18,21 +18,21 @@ template<class SubClass> class Singleton;
 
 /** \class ColorNames cc/ColorNames
   * \ingroup misc
-  * \brief Lookup table for SVG standard color names
+  * \brief Lookup table for SVG standard Color names
   */
 class ColorNames: public Object
 {
 public:
     static const ColorNames *instance();
 
-    bool lookup(const char *name, color *value) const;
+    bool lookup(const char *name, Color *value) const;
 
 private:
     friend class Singleton<ColorNames>;
 
     ColorNames();
 
-    typedef PrefixTree<char, color> ColorByName;
+    typedef PrefixTree<char, Color> ColorByName;
     Ref<ColorByName> colorByName_;
 };
 

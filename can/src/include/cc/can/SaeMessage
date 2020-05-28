@@ -32,7 +32,7 @@ public:
         uint32_t formatSpecific() const { return (frame_->canId() >> 8U) & 0xFFU; }
         uint32_t sourceAddress() const { return frame_->canId() & 0xFFU; }
 
-        string toString() const;
+        String toString() const;
 
     private:
         friend class SaeMessage;
@@ -51,7 +51,7 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator string() const { return instance_.toString(); }
+    operator String() const { return instance_.toString(); }
 
 private:
     const Instance instance_;

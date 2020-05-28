@@ -30,13 +30,13 @@ Ref<NodeConfig> loadNodeConfig(int argc, char **argv)
     arguments->validate(NodeConfig::prototype());
 
     Ref<MetaObject> config;
-    string dirPath;
+    String dirPath;
 
     if (items->count() > 0) {
         if (items->count() > 1)
             throw UsageError{"Handling multiple input arguments at once is not supported"};
 
-        string path = items->at(0);
+        String path = items->at(0);
         if (Dir::exists(path)) {
             dirPath = path;
         }
@@ -58,7 +58,7 @@ Ref<NodeConfig> loadNodeConfig(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-    string toolName = string{argv[0]}->fileName();
+    String toolName = String{argv[0]}->fileName();
     int exitCode = 0;
 
     try {

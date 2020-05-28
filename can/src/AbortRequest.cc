@@ -1,14 +1,14 @@
-#include <cc/format>
+#include <cc/Format>
 #include <cc/can/AbortRequest>
 
 namespace cc {
 namespace can {
 
-string AbortRequest::Instance::toString() const
+String AbortRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "AbortRequest {" << nl
         << "  serverId: " << serverId() << nl
         << "  selector: " << selector() << nl

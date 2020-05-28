@@ -14,19 +14,19 @@ namespace cc {
 
 /** \class utf8_iterator cc/utf8_iterator
   * \ingroup unicode
-  * \brief Iterate code points of an UTF-8 encoded string
+  * \brief Iterate code points of an UTF-8 encoded String
   *
   * The utf8_iterator allows iterating %Unicode characters of an UTF-8 byte sequence.
-  * The iterator will always halt at the string boundaries. If stepping over the string boundary
+  * The iterator will always halt at the String boundaries. If stepping over the String boundary
   * the iterator will switch to bool(iterator) == false and start delivering zero code points.
   *
-  * If placed at a string's terminating zero character it is possible to step backwards
-  * into the string.
+  * If placed at a String's terminating zero character it is possible to step backwards
+  * into the String.
   *
   * Illegal code sequences are overrun without error. In forward iteration corrupted code prefixes
   * may lead to at maximum one correct character overrun and up to 3 additional corrupt characters
   * delivered. Any bit error outside the code prefixes will lead to at most one illegal character
-  * delivered -- with one exception: Switching to all bits zero. A zero byte is always string
+  * delivered -- with one exception: Switching to all bits zero. A zero byte is always String
   * terminating.
   */
 class utf8_iterator:
@@ -48,9 +48,9 @@ public:
     {}
 
     /** Create a new iterator
-      * \param start byte string start
-      * \param end byte string end (points to behind last valid byte)
-      * \param pos position in byte string
+      * \param start byte String start
+      * \param end byte String end (points to behind last valid byte)
+      * \param pos position in byte String
       */
     utf8_iterator(const char *start, const char *end, const char *pos):
         s_{reinterpret_cast<const uint8_t *>(start)},

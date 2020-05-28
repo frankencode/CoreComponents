@@ -21,9 +21,9 @@ class Label: public View
     friend class Object;
 
 public:
-    Property<string> text;
+    Property<String> text;
     Property<Font> font;
-    Property<color> ink;
+    Property<Color> ink;
     Property<Size> margin;
 
     Point textPos(double relativeHeight = 0) const;
@@ -32,13 +32,13 @@ public:
     void anchorBaselineStartTo(const AnchorPoint &l)  { pos->bind([=]{ return l() - textPos(); }); }
     void anchorTextCenterLeftTo(const AnchorPoint &l) { pos->bind([=]{ return l() - textCenterLeft(); }); }
 
-    static Size preferredSize(const string &text, const Font &font = Font{}, Size margin = Size{});
+    static Size preferredSize(const String &text, const Font &font = Font{}, Size margin = Size{});
     static Size preferredSize(const TextRun *textRun, Size margin = Size{});
     Size preferredSize() const override;
     Size minSize() const override;
 
 protected:
-    Label(View *parent, const string &text = string{}, const Font &font = Font{});
+    Label(View *parent, const String &text = String{}, const Font &font = Font{});
     ~Label();
 
 private:

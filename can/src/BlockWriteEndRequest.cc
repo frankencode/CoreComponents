@@ -8,13 +8,13 @@
 
 #include <cc/can/BlockWriteEndRequest>
 #include <cc/can/Crc16Sink>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/str>
 
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockWriteEndRequest::createFrame(int serverId, const string &data, bool crcSupport)
+Ref<CanFrame> BlockWriteEndRequest::createFrame(int serverId, const String &data, bool crcSupport)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
@@ -33,11 +33,11 @@ Ref<CanFrame> BlockWriteEndRequest::createFrame(int serverId, const string &data
     return frame;
 }
 
-string BlockWriteEndRequest::Instance::toString() const
+String BlockWriteEndRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockWriteEndRequest {" << nl
         << "  serverId            : " << serverId() << nl
         << "  lastSegmentDataCount: " << lastSegmentDataCount() << nl

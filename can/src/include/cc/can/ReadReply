@@ -16,7 +16,7 @@ namespace can {
 class ReadReply
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, Selector selector, const string &data);
+    static Ref<CanFrame> createFrame(int serverId, Selector selector, const String &data);
 
     class Instance {
     public:
@@ -52,7 +52,7 @@ public:
                 0;
         }
 
-        string expeditedData() const {
+        String expeditedData() const {
             return frame_->copy(4, 4 + expeditedDataCount());
         }
 
@@ -71,7 +71,7 @@ public:
             return 0;
         }
 
-        string toString() const;
+        String toString() const;
 
     private:
         friend class ReadReply;
@@ -92,7 +92,7 @@ public:
     explicit operator bool() const { return instance_.isValid(); }
     const Instance *operator->() const { return &instance_; }
 
-    operator string() const { return instance_.toString(); }
+    operator String() const { return instance_.toString(); }
 
 private:
     Instance instance_;

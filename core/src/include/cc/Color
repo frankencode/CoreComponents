@@ -8,116 +8,116 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 
 namespace cc {
 
-class variant;
+class Variant;
 
-/** \class color cc/color
+/** \class Color cc/Color
   * \ingroup misc
   * \brief 32-bit ARGB color value
   */
-class color
+class Color
 {
 public:
     /** Convenience color values
       * @{
       */
-    static const color transparent;
-    static const color black;
-    static const color white;
-    static const color red;
-    static const color green;
-    static const color blue;
+    static const Color transparent;
+    static const Color black;
+    static const Color white;
+    static const Color red;
+    static const Color green;
+    static const Color blue;
     /** @}
       */
 
-    /** Construct an invalid color
+    /** Construct an invalid Color
       */
-    color():
+    Color():
         instance_{0x00FFFFFFu}
     {}
 
-    /** Construct a valid color from a 32-bit word \a w
+    /** Construct a valid Color from a 32-bit word \a w
       */
-    color(uint32_t w):
+    Color(uint32_t w):
         instance_{w | (w < 0x1000000u ? 0xFF000000u : 0u)}
     {}
 
-    /** \copydoc color(const string &s)
+    /** \copydoc Color(const String &s)
       */
-    explicit color(const char *s)
+    explicit Color(const char *s)
     {
         bool ok = false;
         *this = parse(s, &ok);
-        if (!ok) *this = color{};
+        if (!ok) *this = Color{};
     }
 
-    /** Construct a color from a color literal or name \a s
+    /** Construct a Color from color literal or name \a s
       * \param s color specification to parse
-      * %color literals can be either SVG color names (e.g. 'AliceBlue') or literal RGB tuples (\#RRGGBB, \#RRGGBBAA, \#RGB, \#RGBA).
+      * %Color literals can be either SVG color names (e.g. 'AliceBlue') or literal RGB tuples (\#RRGGBB, \#RRGGBBAA, \#RGB, \#RGBA).
       */
-    explicit color(const string &s)
+    explicit Color(const String &s)
     {
         bool ok = false;
         *this = parse(s, &ok);
-        if (!ok) *this = color{};
+        if (!ok) *this = Color{};
     }
 
-    /** Construct a color from a color value stored in a variant \a v
+    /** Construct a Color from a Variant \a v
       */
-    color(const variant &v);
+    Color(const Variant &v);
 
-    /** Compose a color from its components
+    /** Compose a Color from its components
       * \param r red component (0..0xFF)
       * \param g green component (0..0xFF)
       * \param b blue component (0..0xFF)
       * \param a alpha value / opacity (0..0xFF)
       */
     template<class T>
-    color(T r, T g, T b, T a = 0xFF):
+    Color(T r, T g, T b, T a = 0xFF):
         instance_{r, g, b, a}
     {}
 
-    /** Construct a color from a palette value \a v
+    /** Construct a Color from a palette value \a v
       */
     template<class T>
-    explicit color(T v):
-        color{static_cast<uint32_t>(v)}
+    explicit Color(T v):
+        Color{static_cast<uint32_t>(v)}
     {}
 
-    /** \copydoc color(const char *)
+    /** \copydoc Color(const char *)
       * \param ok return true if \a s is a valid color literal or name
       */
-    static color parse(const char *s, bool *ok = nullptr);
+    static Color parse(const char *s, bool *ok = nullptr);
 
-    /** Construct a color from a 32-bit word \a w
+    /** Construct a Color from a 32-bit word \a w
       */
-    static color fromWord(uint32_t w) { color c; c->w_ = w; return c; }
+    static Color fromWord(uint32_t w) { Color c; c->w_ = w; return c; }
 
     /** Return the full color with hue \a h
       * \param h hue in range [0, 360]
       */
-    static color fromHue(double h) { return fromHsv(h, 1., 1.); }
+    static Color fromHue(double h) { return fromHsv(h, 1., 1.); }
 
-    /** Construct color from a HSV
+    /** Construct Color from a HSV tuple
       * \param h hue in range [0, 360]
       * \param s saturation in range [0, 1]
       * \param v value in range [0, 1]
       */
-    static color fromHsv(double h, double s, double v);
+    static Color fromHsv(double h, double s, double v);
 
-    /** Construct color from a HSL
+    /** Construct Color from HSL tuple
       * \param h hue in range [0, 360]
       * \param s saturation in range [0, 1]
       * \param l luminance in range [0, 1]
       */
-    static color fromHsl(double h, double s, double l);
+    static Color fromHsl(double h, double s, double l);
 
     /** Alpha-blend color \a a over color \a b and return result
       */
-    static color blend(color a, color b)
+    static Color blend(Color a, Color b)
     {
         b->applyOver(a);
         return b;
@@ -125,8 +125,8 @@ public:
 
     class Instance {
     public:
-        /** Check if color \c is valid
-          * A color is considered invalid, if alpha is zero and red, green or blue is non-zero.
+        /** Check if valid
+          * A Color is considered invalid, if alpha is zero and red, green or blue is non-zero.
           */
         bool isValid() const {
             return !(
@@ -138,7 +138,7 @@ public:
             );
         }
 
-        /** Convenience function to check if \a c is a fully opaque color
+        /** Convenience function to check if \a c is a fully opaque
           */
         bool isOpaque() const {
             return alpha() == 0xFF;
@@ -156,42 +156,42 @@ public:
 
         /** Alpha-blend color \a b over this color
           */
-        void applyOver(color b);
+        void applyOver(Color b);
 
-        /** Mix another color \a b into this color
+        /** Mix color \a b into this color
           */
-        void mixIn(color b, int percent);
+        void mixIn(Color b, int percent);
 
         /** Return a lighter version of this color
           */
-        color lighter(int percent) const {
-            color c = color::fromWord(w_);
-            c->mixIn(color::white, percent);
+        Color lighter(int percent) const {
+            Color c = Color::fromWord(w_);
+            c->mixIn(Color::white, percent);
             return c;
         }
 
         /** Return a darker version of this color
           */
-        color darker(int percent) const {
-            color c = color::fromWord(w_);
-            c->mixIn(color::black, percent);
+        Color darker(int percent) const {
+            Color c = Color::fromWord(w_);
+            c->mixIn(Color::black, percent);
             return c;
         }
 
-        /** Translate this color from non-premultiplied to the premultiplied representation
+        /** Translate from non-premultiplied to premultiplied representation
           */
-        color premultiplied() const
+        Color premultiplied() const
         {
-            color c = color::fromWord(w_);
+            Color c = Color::fromWord(w_);
             c->premultiply();
             return c;
         }
 
-        /** Translate this color from premultiplied to non-premultiplied representation
+        /** Translate from premultiplied to non-premultiplied representation
           */
-        color normalized() const
+        Color normalized() const
         {
-            color c = color::fromWord(w_);
+            Color c = Color::fromWord(w_);
             c->normalize();
             return c;
         }
@@ -235,11 +235,11 @@ public:
         /// convert to a 32-bit word
         uint32_t toWord() const { return w_; }
 
-        /// Stringify this color
-        string toString() const;
+        /// Stringify this color value
+        String toString() const;
 
     private:
-        friend class color;
+        friend class Color;
 
         Instance()
         {}
@@ -280,9 +280,9 @@ public:
 
     /** Create a color tone from this color with \a percent opacity
       */
-    color operator()(int percent) const
+    Color operator()(int percent) const
     {
-        return color{
+        return Color{
             (*this)->red(),
             (*this)->green(),
             (*this)->blue(),
@@ -293,8 +293,8 @@ public:
     /** Comparism operators
       * @{
       */
-    bool operator==(const color &b) const { return (*this)->w_ == b->w_; }
-    bool operator!=(const color &b) const { return (*this)->w_ != b->w_; }
+    bool operator==(const Color &b) const { return (*this)->w_ == b->w_; }
+    bool operator!=(const Color &b) const { return (*this)->w_ != b->w_; }
     /** @}
       */
 
@@ -304,12 +304,12 @@ public:
     explicit operator bool() const { return (*this)->isValid(); }
 
 private:
-    friend class variant;
+    friend class Variant;
 
     Instance instance_;
 };
 
 /// Stringify color \a c
-inline string str(const color &c) { return c->toString(); }
+inline String str(const Color &c) { return c->toString(); }
 
 } // namespace cc

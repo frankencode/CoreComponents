@@ -8,7 +8,7 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/variant>
+#include <cc/Variant>
 #include <cc/System>
 #include <cc/Map>
 #include <cc/Random>
@@ -16,8 +16,8 @@
 using namespace cc;
 using namespace cc::testing;
 
-namespace cc { template class Map<string, string>; }
-namespace cc { template class Map<string, variant>; }
+namespace cc { template class Map<String, String>; }
+namespace cc { template class Map<String, Variant>; }
 
 int fib(int n)
 {
@@ -30,8 +30,8 @@ class InsertionIteration: public TestCase
 {
     void run()
     {
-        auto names = Map<string>::create();
-        string test[6][2] = {
+        auto names = Map<String>::create();
+        String test[6][2] = {
             { "Joe", "Doe" },
             { "Hans", "Mustermax" },
             { "Max", "Musterhans" },

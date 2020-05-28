@@ -17,11 +17,11 @@ using namespace cc::net;
 class SymmetryExamples: public TestCase
 {
     void run() {
-        string test[] = { "Man", "Hello world", "", "1" };
+        String test[] = { "Man", "Hello world", "", "1" };
         const int testCount = sizeof(test) / sizeof(test[0]);
 
         for (int i = 0; i < testCount; ++i) {
-            string a = test[i], b = base64::encode(a);
+            String a = test[i], b = base64::encode(a);
             fout("base64(\"%%\") = \"%%\"\n") << a << b;
             CC_VERIFY(base64::decode(b) == a);
         }

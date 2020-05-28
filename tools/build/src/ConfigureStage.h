@@ -18,13 +18,13 @@ public:
     ConfigureStage(BuildPlan *plan): BuildStage{plan} {}
     bool run();
 
-    string configureShell(const string &shellCommand);
+    String configureShell(const String &shellCommand);
     void makeUseOf(BuildPlan *other);
 
-    bool probeBuild(const string &name, const string &probe) const;
-    bool runConfigure(const string &name, const string &configure, string *output) const;
+    bool probeBuild(const String &name, const String &probe) const;
+    bool runConfigure(const String &name, const String &configure, String *output) const;
 
-    static Ref<StringList> getFlags(const MetaObject *object, const string &propertyName);
+    static Ref<StringList> getFlags(const MetaObject *object, const String &propertyName);
 };
 
 } // namespace ccbuild

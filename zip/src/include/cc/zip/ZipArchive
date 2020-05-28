@@ -27,28 +27,28 @@ public:
       * \param path file path of a ZIP archive
       * \return new object instance
       */
-    static Ref<ZipArchive> open(const string &path);
+    static Ref<ZipArchive> open(const String &path);
 
     /// Return the ZIP archive's file path
-    string path() const;
+    String path() const;
 
     /** Read next file name from the ZIP archive
       * \param name return name of next entry
       * \return false if no more entries, else true
       */
-    bool read(string *name) override;
+    bool read(String *name) override;
 
     /** Open a file from this ZIP archive
       * \param name name of the file to open
       * \return new content stream
       */
-    virtual Ref<Stream> openFile(const string &name) override;
+    virtual Ref<Stream> openFile(const String &name) override;
 
 private:
-    ZipArchive(const string &path);
+    ZipArchive(const String &path);
     ~ZipArchive();
 
-    string path_;
+    String path_;
     zip_t *archive_;
     uint64_t index_;
 };

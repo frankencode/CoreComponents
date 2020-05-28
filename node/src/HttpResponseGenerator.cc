@@ -9,7 +9,7 @@
 #include <cc/http/HttpResponseGenerator>
 #include <cc/http/utils>
 #include <cc/http/HttpConnection>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/System>
 #include <cc/Date>
 #include <cc/TransferMeter>
@@ -28,14 +28,14 @@ HttpResponseGenerator::HttpResponseGenerator(HttpConnection *client):
     reasonPhrase_{"OK"}
 {}
 
-void HttpResponseGenerator::setStatus(int statusCode, const string &reasonPhrase)
+void HttpResponseGenerator::setStatus(int statusCode, const String &reasonPhrase)
 {
     statusCode_ = statusCode;
     reasonPhrase_ = reasonPhrase;
     if (reasonPhrase_ == "") reasonPhrase_ = reasonPhraseByStatusCode(statusCode_);
 }
 
-void HttpResponseGenerator::setNodeVersion(const string &nodeVersion)
+void HttpResponseGenerator::setNodeVersion(const String &nodeVersion)
 {
     nodeVersion_ = nodeVersion;
 }
@@ -47,7 +47,7 @@ size_t HttpResponseGenerator::bytesWritten() const
 
 void HttpResponseGenerator::polishHeader()
 {
-    string now = formatDate(Date::breakdown(System::now()));
+    String now = formatDate(Date::breakdown(System::now()));
     if (nodeVersion_ != "") header_->insert("Server", nodeVersion_);
     header_->insert("Date", now);
 
@@ -63,7 +63,7 @@ void HttpResponseGenerator::polishHeader()
     }
 }
 
-void HttpResponseGenerator::writeFirstLine(format &sink)
+void HttpResponseGenerator::writeFirstLine(Format &sink)
 {
     sink << "HTTP/1.1 " << statusCode_ << " " << reasonPhrase_ << "\r\n";
 }

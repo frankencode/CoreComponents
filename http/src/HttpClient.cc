@@ -11,7 +11,7 @@
 #include <cc/http/HttpClientConnection>
 #include <cc/http/HttpRequestGenerator>
 #include <cc/KernelInfo>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace http {
@@ -26,7 +26,7 @@ Ref<HttpResponse> HttpClient::head(const Uri &uri)
     return HttpClient::connect(uri)->query("HEAD", uri->requestPath());
 }
 
-Ref<HttpResponse> HttpClient::put(const Uri &uri, const string &payload)
+Ref<HttpResponse> HttpClient::put(const Uri &uri, const String &payload)
 {
     return HttpClient::connect(uri)->query("PUT", uri->requestPath(),
         [=](HttpGenerator *request) { request->transmit(payload); }
@@ -40,7 +40,7 @@ Ref<HttpResponse> HttpClient::put(const Uri &uri, Stream *source)
     );
 }
 
-Ref<HttpResponse> HttpClient::post(const Uri &uri, const string &payload)
+Ref<HttpResponse> HttpClient::post(const Uri &uri, const String &payload)
 {
     return HttpClient::connect(uri)->query("POST", uri->requestPath(),
         [=](HttpGenerator *request) { request->transmit(payload); }
@@ -54,7 +54,7 @@ Ref<HttpResponse> HttpClient::post(const Uri &uri, Stream *source)
     );
 }
 
-Ref<HttpResponse> HttpClient::postForm(const Uri &uri, const Map<string> *form)
+Ref<HttpResponse> HttpClient::postForm(const Uri &uri, const Map<String> *form)
 {
     return HttpClient::connect(uri)->query("POST", uri->requestPath(),
         [=](HttpGenerator *request) {
@@ -86,20 +86,20 @@ void HttpClient::connect()
     );
 }
 
-Ref<HttpRequestGenerator> HttpClient::createRequest(const string &method, const string &path)
+Ref<HttpRequestGenerator> HttpClient::createRequest(const String &method, const String &path)
 {
     auto request = HttpRequestGenerator::create(connection_);
     request->setMethod(method);
     request->setHost(host_);
     request->setPath(path != "" ? path : "/");
     {
-        string h = userAgent();
+        String h = userAgent();
         if (h != "") request->setHeader("User-Agent", h);
     }
     return request;
 }
 
-Ref<HttpResponse> HttpClient::query(const string &method, const string &path, const Generate &generate)
+Ref<HttpResponse> HttpClient::query(const String &method, const String &path, const Generate &generate)
 {
     Ref<HttpResponse> response;
     for (int i = 0; retry(i); ++i) {
@@ -117,7 +117,7 @@ Ref<HttpResponse> HttpClient::query(const string &method, const string &path, co
     return response;
 }
 
-void HttpClient::pipeline(const string &method, const string &path, const Generate &generate)
+void HttpClient::pipeline(const String &method, const String &path, const Generate &generate)
 {
     generate(createRequest(method, path));
 }
@@ -127,10 +127,10 @@ Ref<HttpResponse> HttpClient::readResponse()
     return connection_->readResponse();
 }
 
-string HttpClient::userAgent() const
+String HttpClient::userAgent() const
 {
-    static string s =
-        format{"cchttp 1.0 (%%; %%)"}
+    static String s =
+        Format{"cchttp 1.0 (%%; %%)"}
             << KernelInfo::instance()->name()
             << KernelInfo::instance()->machine();
 

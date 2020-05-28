@@ -111,9 +111,9 @@ FtScaledFont::~FtScaledFont()
     cairo_font_face_destroy(cairoFontFace_);
 }
 
-string FtScaledFont::toString() const
+String FtScaledFont::toString() const
 {
-    return format{}
+    return Format{}
         << "FtScaledFont {\n"
         << "  ftFontFace: " << ftFontFace_ << nl
         << "  size: " << size() << nl

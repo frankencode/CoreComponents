@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockWriteEndReply>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -26,11 +26,11 @@ Ref<CanFrame> BlockWriteEndReply::createFrame(int serverId)
     return frame;
 }
 
-string BlockWriteEndReply::Instance::toString() const
+String BlockWriteEndReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockWriteEndReply{" << nl
         << "  serverId: " << serverId() << nl
         << "}";

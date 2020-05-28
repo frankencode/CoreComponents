@@ -7,12 +7,12 @@
  */
 
 #include <cc/can/WriteSegmentRequest>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
 
-Ref<CanFrame> WriteSegmentRequest::createFrame(int serverId, const string &data, int offset)
+Ref<CanFrame> WriteSegmentRequest::createFrame(int serverId, const String &data, int offset)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(offset < data->count());
@@ -32,11 +32,11 @@ Ref<CanFrame> WriteSegmentRequest::createFrame(int serverId, const string &data,
     return frame;
 }
 
-string WriteSegmentRequest::Instance::toString() const
+String WriteSegmentRequest::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "WriteSegmentRequest {" << nl
         << "  serverId: " << serverId() << nl
         << "  isLast  : " << isLast() << nl

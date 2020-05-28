@@ -18,7 +18,7 @@ using namespace cc::testing;
 
 void print(const List<int> *list)
 {
-    format f;
+    Format f;
     for (int i = 0; i < list->count(); ++i)
         f << list->at(i);
     ferr() << "(" << f->join(", ") << ")" << nl;

@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/AbortReply>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -19,11 +19,11 @@ Ref<CanFrame> AbortReply::createFrame(int serverId, Selector selector, Abort::Re
     return Abort::createFrame(0x580 + serverId, static_cast<uint8_t>(ServiceReply::Specifier::Abort), selector, reason);
 }
 
-string AbortReply::Instance::toString() const
+String AbortReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "AbortReply {" << nl
         << "  serverId: " << serverId() << nl
         << "  selector: " << selector() << nl

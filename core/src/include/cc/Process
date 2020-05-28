@@ -65,7 +65,7 @@ public:
           * \return pointer to this object
           * \warning This method is not thread-safe on all platforms! This is especially true on glibc before v2.29.
           */
-        Staging *setWorkingDirectory(const string &path);
+        Staging *setWorkingDirectory(const String &path);
 
         /** \brief Set standard input channel
           * \param channel IoChannel to use for standard input
@@ -139,13 +139,13 @@ public:
     private:
         friend class Process;
 
-        Staging(const string &command);
+        Staging(const String &command);
         ~Staging();
 
         void enableSpawnFlag(short flag);
 
-        string command_;
-        string execPath_;
+        String command_;
+        String execPath_;
         Ref<const StringList> args_;
         Ref<const EnvMap> envMap_;
 
@@ -159,7 +159,7 @@ public:
         #ifdef __GLIBC__
         #if __GLIBC_PREREQ(2, 29)
         #else
-        string cwd_;
+        String cwd_;
         #endif
         #endif
     };
@@ -168,25 +168,25 @@ public:
       * \param command Executable path plus command line arguments
       * \return new object instance
       */
-    static Ref<Staging> stage(const string &command = string{});
+    static Ref<Staging> stage(const String &command = String{});
 
     /** \brief Spawn a new child process with automatically attached standard input/output channels
       * \param command Executable path plus command line arguments
       * \return new object instance
       */
-    static Ref<Process> open(const string &command);
+    static Ref<Process> open(const String &command);
 
     /** \brief Spawn a new child process
       * \param command Executable path plus command line arguments
       * \return new object instance
       */
-    static Ref<Process> start(const string &command);
+    static Ref<Process> start(const String &command);
 
     /** \brief Spawn a new child process and wait for its termintation
       * \param command Executable path plus command line arguments
       * \return exit status
       */
-    static int execute(const string &command);
+    static int execute(const String &command);
 
     /// %Process ID of the child process
     pid_t id() const;
@@ -213,13 +213,13 @@ public:
     /** Change the current working directory of this process
       * \param path new directory path to enter
       */
-    static void setWorkingDirectory(const string &path);
+    static void setWorkingDirectory(const String &path);
 
     /// Current working directory of this process
-    static string getWorkingDirectory();
+    static String getWorkingDirectory();
 
     /// Actual pathname of the executed command
-    static string exePath();
+    static String exePath();
 
     /** Set the file mode creation mask
       * \param newMask the new file mode mask
@@ -258,23 +258,23 @@ public:
       * \param name name of the environment variable
       * \return value of the environment variable or "" if no value is set
       */
-    static string getEnv(const string &name);
+    static String getEnv(const String &name);
 
     /** Read an environment variable
       * \param name name of the environment variable
       * \param defaultValue default value
       * \return value of the environment variable or \a defaultValue if no value is set
       */
-    static string getEnv(const string &name, const string &defaultValue);
+    static String getEnv(const String &name, const String &defaultValue);
 
     /** Set an environment variable
       * \param name name of the environment variable
       * \param value value to set
       */
-    static void setEnv(const string &name, const string &value);
+    static void setEnv(const String &name, const String &value);
 
     /// Unset an environment variable
-    static void unsetEnv(const string &name);
+    static void unsetEnv(const String &name);
 
     /// Return the current environment of this process
     static Ref<EnvMap> getEnvMap();

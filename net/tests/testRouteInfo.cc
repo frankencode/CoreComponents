@@ -7,7 +7,7 @@
  */
 
 #include <cc/testing/TestSuite>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/stdio>
 #include <cc/net/RouteInfo>
 
@@ -24,17 +24,17 @@ public:
 
         for (int i = 0; i < list->count(); ++i) {
             RouteInfo *info = list->at(i);
-            format line;
+            Format line;
             if (info->destinationMask() == 0 && info->sourceMask() == 0) line << "default";
             if (info->gateway()) line << "via" << info->gateway();
             if (info->destination())
-                line << string(format{"%%/%%"} << info->destination() << info->destinationMask());
+                line << String(Format{"%%/%%"} << info->destination() << info->destinationMask());
             if (info->outputInterface() != "")
                 line << "out" << info->outputInterface();
             if (info->inputInterface() != "")
                 line << "in" << info->inputInterface();
             if (info->source())
-                line << "src" << string(format{"%%/%%"} << info->source() << info->sourceMask());
+                line << "src" << String(Format{"%%/%%"} << info->source() << info->sourceMask());
             line << info->priority();
             fout() << line->join(" ") << nl;
         }

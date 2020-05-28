@@ -10,7 +10,7 @@
 
 #include <cc/bucket>
 #include <cc/containers>
-#include <cc/pair>
+#include <cc/Pair>
 
 namespace cc {
 
@@ -22,13 +22,13 @@ class map;
   * \brief %Map data container
   * \tparam K key type
   * \tparam T mapped type
-  * \see MultiMap, Set, pair, KeySource, ValueSource
+  * \see MultiMap, Set, Pair, KeySource, ValueSource
   */
 template<class K, class T = K>
 class Map: public Object
 {
 public:
-    typedef pair<K, T> value_type; ///< item type
+    typedef Pair<K, T> value_type; ///< item type
     typedef bucket::Weight size_type; ///< undex type
     typedef K key_type; ///< key type
     typedef T mapped_type; ///< mapped type

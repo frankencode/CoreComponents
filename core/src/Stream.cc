@@ -7,7 +7,7 @@
  */
 
 #include <cc/types>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/Stream>
 
 namespace cc {
@@ -26,9 +26,9 @@ void Stream::write(const StringList *parts)
         write(parts->at(i));
 }
 
-void Stream::write(const format &data)
+void Stream::write(const Format &data)
 {
-    write(format::toStringList(data));
+    write(Format::toStringList(data));
 }
 
 class WrappedChunk: public CharArray {
@@ -55,9 +55,9 @@ off_t Stream::transferSpanTo(off_t count, Stream *sink, CharArray *buffer)
     if (count == 0) return 0;
 
     off_t total = 0;
-    string h;
+    String h;
     if (!buffer) {
-        h = string::allocate((0 < count && count < 0x4000) ? count : 0x4000);
+        h = String::allocate((0 < count && count < 0x4000) ? count : 0x4000);
         buffer = mutate(h);
     }
 
@@ -88,19 +88,19 @@ int Stream::readSpan(CharArray *data)
     return m;
 }
 
-string Stream::readSpan(int count)
+String Stream::readSpan(int count)
 {
-    if (count == 0) return string{};
+    if (count == 0) return String{};
     if (count < 0) return readAll();
-    string s{count};
+    String s{count};
     readSpan(mutate(s));
     return s;
 }
 
-string Stream::readAll(CharArray *buffer)
+String Stream::readAll(CharArray *buffer)
 {
-    string data = buffer;
-    if (!data) data = string::allocate(0x4000);
+    String data = buffer;
+    if (!data) data = String::allocate(0x4000);
     auto parts = StringList::create();
     while (true) {
         int n = read(mutate(data));

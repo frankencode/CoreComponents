@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 #ifndef NDEBUG
 #include <cc/syntax/SyntaxDebugger>
 #endif
@@ -29,20 +29,20 @@ public:
     Pattern();
 
     Pattern(const char *text);
-    Pattern(const string &text);
-    Pattern(const variant &variant);
+    Pattern(const String &text);
+    Pattern(const Variant &Variant);
 
     const Pattern &operator=(const char *text);
-    const Pattern &operator=(const string &text);
-    const Pattern &operator=(const variant &text);
+    const Pattern &operator=(const String &text);
+    const Pattern &operator=(const Variant &text);
 
-    operator string() const { return text_; }
+    operator String() const { return text_; }
 
 private:
-    friend string str(const Pattern &pattern);
-    string text_;
+    friend String str(const Pattern &pattern);
+    String text_;
 };
 
-string str(const Pattern &pattern);
+String str(const Pattern &pattern);
 
 }} // namespace cc::glob

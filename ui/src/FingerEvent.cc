@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/format>
+#include <cc/Format>
 #include <cc/ui/FingerEvent>
 
 namespace cc {
 namespace ui {
 
-string FingerEvent::toString() const
+String FingerEvent::toString() const
 {
-    return format{}
+    return Format{}
         << "FingerEvent {" << nl
         << "  action: " << action_ << nl
         << "  time: " << time_ << nl

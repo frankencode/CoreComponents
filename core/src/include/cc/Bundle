@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/string>
+#include <cc/String>
 
 /// Lookup a path of a bundled ressource
 #define CC_BUNDLE_LOOKUP(relPath) \
@@ -17,10 +17,10 @@
         cc::StringList::create() \
             << cc::Bundle::prefix(CC_XSTR(CCBUILD_BUNDLE_PREFIX)) \
             << cc::Bundle::exePrefix() \
-            << cc::string(__FILE__)->reducePath() \
+            << cc::String(__FILE__)->reducePath() \
     )
 
-/// Version of this application or library bundle (low-level C string)
+/// Version of this application or library bundle (low-level C String)
 #define CC_BUNDLE_VERSION CC_XSTR(CCBUILD_BUNDLE_VERSION)
 
 namespace cc {
@@ -35,15 +35,15 @@ class Singleton;
 class Bundle: public Object
 {
 public:
-    static string lookup(const string &relPath, const StringList *dirs);
-    static string prefix(const char *defaultPrefix);
-    static string exePrefix();
+    static String lookup(const String &relPath, const StringList *dirs);
+    static String prefix(const char *defaultPrefix);
+    static String exePrefix();
 
 private:
     friend class Singleton<Bundle>;
     Bundle();
-    string overridePrefix_;
-    string exePrefix_;
+    String overridePrefix_;
+    String exePrefix_;
 };
 
 } // namespace cc

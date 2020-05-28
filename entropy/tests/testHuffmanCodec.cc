@@ -22,20 +22,20 @@ class OneBufferTest: public TestCase
     void run() override
     {
         {
-            string m = "abrakadabra";
+            String m = "abrakadabra";
             CC_INSPECT(m);
-            string e = HuffmanCodec::encode(m);
+            String e = HuffmanCodec::encode(m);
             fout() << nl << e->hexDump() << nl;
-            string m2 = HuffmanCodec::decode(e);
+            String m2 = HuffmanCodec::decode(e);
             CC_INSPECT(m2);
             CC_VERIFY(m == m2);
         }
         {
-            string m = "Hello, world!";
+            String m = "Hello, world!";
             CC_INSPECT(m);
-            string e = HuffmanCodec::encode(m);
+            String e = HuffmanCodec::encode(m);
             fout() << nl << e->hexDump() << nl;
-            string m2 = HuffmanCodec::decode(e);
+            String m2 = HuffmanCodec::decode(e);
             CC_INSPECT(m2);
             CC_VERIFY(m == m2);
         }
@@ -51,9 +51,9 @@ class NoiseTest: public TestCase
         const int byteMax = 0x3F;
         const int seed = 0;
 
-        string message = RandomSource::open(seed, dataSize, byteMin, byteMax)->readAll();
+        String message = RandomSource::open(seed, dataSize, byteMin, byteMax)->readAll();
 
-        string encodedMessage; {
+        String encodedMessage; {
             auto capture = CaptureSink::open();
             {
                 auto source = ReplaySource::open(message);
@@ -70,7 +70,7 @@ class NoiseTest: public TestCase
         CC_INSPECT(encodedMessage->count());
         CC_INSPECT(double(encodedMessage->count()) / dataSize);
 
-        string decodedMessage; {
+        String decodedMessage; {
             auto capture = CaptureSink::open();
             {
                 auto replay = ReplaySource::open(encodedMessage);

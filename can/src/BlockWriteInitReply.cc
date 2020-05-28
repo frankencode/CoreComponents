@@ -7,7 +7,7 @@
  */
 
 #include <cc/can/BlockWriteInitReply>
-#include <cc/format>
+#include <cc/Format>
 
 namespace cc {
 namespace can {
@@ -33,11 +33,11 @@ Ref<CanFrame> BlockWriteInitReply::createFrame(int serverId, Selector selector, 
     return frame;
 }
 
-string BlockWriteInitReply::Instance::toString() const
+String BlockWriteInitReply::Instance::toString() const
 {
-    if (!isValid()) return string{};
+    if (!isValid()) return String{};
 
-    return format{}
+    return Format{}
         << "BlockWriteInitReply {" << nl
         << "  serverId  : " << serverId() << nl
         << "  selector  : " << selector() << nl

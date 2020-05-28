@@ -9,7 +9,7 @@
 #include "CHeaderStyle.h"
 #include <cc/Singleton>
 #include <cc/File>
-#include <cc/format>
+#include <cc/Format>
 #include <cc/syntax/SyntaxDefinition>
 
 namespace ccclaim {
@@ -44,42 +44,42 @@ CHeaderStyle::CHeaderStyle():
     HeaderStyle{"cxx"}
 {}
 
-Ref<Header> CHeaderStyle::scan(const string &path) const
+Ref<Header> CHeaderStyle::scan(const String &path) const
 {
-    string text = File::open(path)->map();
+    String text = File::open(path)->map();
     Ref<Token> rootToken = Singleton<CHeaderSyntax>::instance()->match(text, 0)->rootToken();
     if (!rootToken) return Ref<Header>();
     Token *token = rootToken->firstChild();
-    string message = trimHeader(text->copy(token->i0() + 2, token->i1() - 2), " \t\r*");
+    String message = trimHeader(text->copy(token->i0() + 2, token->i1() - 2), " \t\r*");
     return Header::create(path, rootToken, text, message);
 }
 
-string CHeaderStyle::str(const Notice *notice) const
+String CHeaderStyle::str(const Notice *notice) const
 {
-    format format;
-    format << "/*\n";
+    Format f;
+    f << "/*\n";
     CopyrightList *copyrights = notice->copyrights();
     for (int i = 0; i < copyrights->count(); ++i) {
         Copyright *c = copyrights->at(i);
-        format << " * Copyright (C) ";
-        if (c->yearStart() == c->yearEnd()) format << c->yearStart();
-        else format << c->yearStart() << "-" << c->yearEnd();
-        format << " " << c->holder() << ".";
-        if (i != copyrights->count() - 1) format << "\n";
+        f << " * Copyright (C) ";
+        if (c->yearStart() == c->yearEnd()) f << c->yearStart();
+        else f << c->yearStart() << "-" << c->yearEnd();
+        f << " " << c->holder() << ".";
+        if (i != copyrights->count() - 1) f << "\n";
     }
     /*if (copyrights->count() == 1 && !notice->statement()->contains('\n')) {
-        format << "  " << notice->statement() << ".\n";
+        f << "  " << notice->statement() << ".\n";
     }
     else {*/
-        format << "\n"
+        f << "\n"
             " *\n"
             " * " << notice->statement()->replace("\n", "\n * ") << "\n";
     //}
-    format <<
+    f <<
         " *\n"
         " */\n"
         "\n";
-    return format;
+    return f;
 }
 
 } // namespace ccclaim

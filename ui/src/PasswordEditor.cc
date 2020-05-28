@@ -12,16 +12,16 @@
 namespace cc {
 namespace ui {
 
-PasswordEditor::PasswordEditor(const string &bullet):
+PasswordEditor::PasswordEditor(const String &bullet):
     bullet_{bullet}
 {}
 
-string PasswordEditor::text() const
+String PasswordEditor::text() const
 {
     return text_();
 }
 
-string PasswordEditor::password() const
+String PasswordEditor::password() const
 {
     return password_();
 }
@@ -31,17 +31,17 @@ int PasswordEditor::byteCount() const
     return text_()->count();
 }
 
-string PasswordEditor::copy(Range range) const
+String PasswordEditor::copy(Range range) const
 {
     return text_()->copy(range->i0(), range->i1());
 }
 
-Range PasswordEditor::paste(Range range, const string &newChunk)
+Range PasswordEditor::paste(Range range, const String &newChunk)
 {
     if (!(0 <= range->i0() && range->i1() <= text_()->count()))
         return Range{};
 
-    string mask = string::multiply(bullet_, count(unicode{newChunk}));
+    String mask = String::multiply(bullet_, count(unicode{newChunk}));
 
     text_ = text_()->paste(range->i0(), range->i1(), mask);
 
