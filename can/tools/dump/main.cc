@@ -8,7 +8,6 @@
 
 #include <cc/stdio>
 #include <cc/System>
-#include <cc/Map>
 #include <cc/Thread>
 #include <cc/can/CanSocket>
 #include <cc/can/CanLogger>

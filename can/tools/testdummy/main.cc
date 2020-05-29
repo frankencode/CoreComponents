@@ -13,7 +13,7 @@
 #include <cc/Arguments>
 #include <cc/Thread>
 #include <cc/ByteSink>
-#include <cc/Map>
+#include <cc/map>
 #include <cc/System>
 #include <cc/debug>
 #include <cc/stdio>
@@ -33,8 +33,7 @@ public:
 
 private:
     TestNode(CanMedia *media, int nodeId, int timeout = -1):
-        CanNode{media, nodeId, timeout},
-        settings_{Settings::create()}
+        CanNode{media, nodeId, timeout}
     {}
 
     String readServiceData(Selector::Key key) const override
@@ -105,8 +104,7 @@ private:
         }
     }
 
-    typedef Map<Selector::Key, String> Settings;
-    Ref<Settings> settings_;
+    map<Selector::Key, String> settings_;
 };
 
 int main(int argc, char **argv)

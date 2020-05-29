@@ -55,7 +55,7 @@ void DirectoryDelegate::process(const HttpRequest *request)
     {
         String h;
         if (request->lookup("If-Modified-Since", &h)) {
-            Ref<Date> cacheDate = scanDate(h);
+            Date cacheDate = scanDate(h);
             if (cacheDate) {
                 if (fileStatus->lastModified() <= cacheDate->time()) {
                     response()->setStatus(304);
@@ -67,7 +67,7 @@ void DirectoryDelegate::process(const HttpRequest *request)
         }
     }
 
-    response()->setHeader("Last-Modified", formatDate(Date::breakdown(fileStatus->lastModified())));
+    response()->setHeader("Last-Modified", formatDate(Date{fileStatus->lastModified()}));
 
     if (fileStatus->type() == FileType::Directory) {
         String indexPath, indexName;

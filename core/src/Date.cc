@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -53,25 +53,11 @@ int daysInMonth(int i, int y)
     return days[i] + (i == 1) * leapYear(y);
 }
 
-Date::Date():
-    offset_{0},
+Date::Instance::Instance():
     time_{cc::nan()}
 {}
 
-Date::Date(const Date &b):
-    year_{b.year_},
-    month_{b.month_},
-    day_{b.day_},
-    weekDay_{b.weekDay_},
-    yearDay_{b.yearDay_},
-    hour_{b.hour_},
-    minutes_{b.minutes_},
-    seconds_{b.seconds_},
-    offset_{b.offset_},
-    time_{b.time_}
-{}
-
-Date::Date(double time, int offset):
+Date::Instance::Instance(double time, int offset):
     offset_{offset},
     time_{time}
 {
@@ -128,7 +114,7 @@ Date::Date(double time, int offset):
     day_ = n + 1;
 }
 
-Date::Date(int year, int month, int day, int hour, int minutes, int seconds, int offset):
+Date::Instance::Instance(int year, int month, int day, int hour, int minutes, int seconds, int offset):
     year_{year},
     month_{month},
     day_{day},
@@ -170,12 +156,12 @@ Date::Date(int year, int month, int day, int hour, int minutes, int seconds, int
     time_ = t;
 }
 
-double Date::time() const
+double Date::Instance::time() const
 {
     return time_;
 }
 
-String Date::toString() const
+String Date::Instance::toString() const
 {
     //! \todo fully enable ms resolution (ss.fraction in String output)
     //! \todo local time Formatting
@@ -192,7 +178,7 @@ String Date::toString() const
         << "T" << dec(hour_, 2) << dec(minutes_, 2) << dec(seconds_, 2) << tz;
 }
 
-String Date::monthName() const
+String Date::Instance::monthName() const
 {
     const char *names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
     int i = month_ - 1;
@@ -201,7 +187,7 @@ String Date::monthName() const
     return names[i];
 }
 
-String Date::dayName() const
+String Date::Instance::dayName() const
 {
     const char *names[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
     int i = weekDay_;

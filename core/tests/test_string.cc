@@ -10,7 +10,7 @@
 #include <cc/stdio>
 #include <cc/debug>
 #include <cc/String>
-#include <cc/unicode>
+#include <cc/Unicode>
 
 using namespace cc;
 using namespace cc::testing;
@@ -60,7 +60,7 @@ class CountCopySplitJoin: public TestCase
         CC_VERIFY("X" < s);
 
         fout("s = \"%%\"\n") << s;
-        fout("count(unicode{s}) = %%\n") << count(unicode{s});
+        fout("count(Unicode{s}) = %%\n") << count(Unicode{s});
         fout("s->size() = %%\n") << s->count();
         fout("s->copy() = \"%%\"\n") << s->copy();
 
@@ -83,7 +83,7 @@ class UnicodeEscapes: public TestCase
         fout("s = \"%%\"\n") << s;
         String se = s->unescape();
         fout("se = \"%%\"\n") << se;
-        for (auto ch: unicode{se})
+        for (auto ch: Unicode{se})
             fout() << ch << nl;
     }
 };
@@ -120,7 +120,7 @@ class SyntaxSugar: public TestCase
         }
         {
             String s = "Привет!";
-            for (auto ch: unicode{s}) fout() << ch << nl;
+            for (auto ch: Unicode{s}) fout() << ch << nl;
         }
         {
             String s = "ABC";

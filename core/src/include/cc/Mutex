@@ -27,7 +27,7 @@ public:
     /** \brief Create a new mutex
       * \return new object instance
       */
-    inline static Ref<Mutex> create() { return new Mutex; }
+    static Ref<Mutex> create() { return new Mutex; }
 
     /** Try to lock this mutex
       * \return true if this mutex was not already locked, false otherwise

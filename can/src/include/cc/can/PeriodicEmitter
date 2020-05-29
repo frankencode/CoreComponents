@@ -11,8 +11,8 @@
 #include <cc/can/CanMedia>
 #include <cc/can/Emission>
 #include <cc/can/SafetyEmission>
+#include <cc/set>
 
-namespace cc { template<class> class Set; };
 namespace cc { class Worker; }
 namespace cc { class Mutex; }
 namespace cc { class Semaphore; }
@@ -41,8 +41,7 @@ private:
 
     Ref<CanMedia> media_;
 
-    typedef Set< Ref<Emission> > Emissions;
-    Ref<Emissions> emissions_;
+    set< Ref<Emission> > emissions_;
     Ref<Mutex> mutex_;
 
     Ref<Worker> worker_;

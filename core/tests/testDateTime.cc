@@ -20,8 +20,8 @@ class BasicDateFormatting: public TestCase
     {
         double t = System::now();
         fout() << t << nl;
-        Ref<Date> d1 = Date::breakdown(Date::breakdown(t)->time());
-        Ref<Date> d2 = Date::breakdown(t);
+        Date d1{Date{t}->time()};
+        Date d2{t};
 
         fout() << d1->dayName() << ", " << d1 << nl;
         fout() << d2->dayName() << ", " << d2 << nl;
@@ -34,7 +34,7 @@ class BeginOfEpoch: public TestCase
 {
     void run()
     {
-        Ref<Date> date = Date::breakdown(0);
+        Date date{0};
         fout() << date << nl;
         fout() << "year: " << date->year() << nl;
         fout() << "month: " << date->month() << nl;
@@ -67,8 +67,8 @@ class CalendarDates: public TestCase
         };
         for (unsigned i = 0; i < sizeof(tests)/sizeof(tests[0]); ++i) {
             TestDate *d = &tests[i];
-            Ref<Date> date0 = Date::compose(d->year, d->month, d->day, d->hour, d->minutes, d->seconds);
-            Ref<Date> date1 = Date::breakdown(date0->time());
+            Date date0{d->year, d->month, d->day, d->hour, d->minutes, d->seconds};
+            Date date1{date0->time()};
             fout() << int64_t(date0->time()) << nl;
             fout() << "  " << date0->dayName() << ", " << date0 << " == " << date1->dayName() << ", " << date1 << nl;
             CC_VERIFY(date0->time() == date1->time());

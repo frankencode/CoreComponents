@@ -14,7 +14,6 @@
 #include <cc/Semaphore>
 #include <cc/Worker>
 #include <cc/Heap>
-#include <cc/Set>
 
 namespace cc {
 namespace can {
@@ -28,7 +27,6 @@ Ref<PeriodicEmitter> PeriodicEmitter::create(CanMedia *media)
 
 PeriodicEmitter::PeriodicEmitter(CanMedia *media):
     media_{media},
-    emissions_{Emissions::create()},
     mutex_{Mutex::create()},
     start_{Semaphore::create()},
     shutdown_{Semaphore::create()}

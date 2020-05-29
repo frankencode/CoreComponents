@@ -10,8 +10,6 @@
 #include <cc/LineSource>
 #include <cc/Format>
 #include <cc/str>
-#include <cc/Set>
-#include <cc/Map>
 #include <cc/Date>
 #include <cc/assert>
 
@@ -110,7 +108,7 @@ double DeviceDescription::FileInfo::creationTime() const
 
 void DeviceDescription::FileInfo::setCreationTime(double time)
 {
-    auto date = Date::breakdown(time);
+    Date date{time};
     creationDate_ = makeCalendarDate(date);
     creationDayTime_ = makeDayTime(date);
 }
@@ -122,17 +120,17 @@ double DeviceDescription::FileInfo::changedTime() const
 
 void DeviceDescription::FileInfo::setChangedTime(double time)
 {
-    auto date = Date::breakdown(time);
+    Date date{time};
     changedDate_ = makeCalendarDate(date);
     changedDayTime_ = makeDayTime(date);
 }
 
-String DeviceDescription::FileInfo::makeCalendarDate(const Date *date)
+String DeviceDescription::FileInfo::makeCalendarDate(const Date &date)
 {
     return dec(date->month(), 2) + "-" + dec(date->day(), 2) + "-" + dec(date->day(), 2);
 }
 
-String DeviceDescription::FileInfo::makeDayTime(const Date *date)
+String DeviceDescription::FileInfo::makeDayTime(const Date &date)
 {
     return dec(date->hour() > 12 ? date->hour() - 12 : date->hour(), 2) + ":" + dec(date->minutes(), 2) + (date->hour() > 12 ? "PM" : "AM");
 }
@@ -164,7 +162,7 @@ double DeviceDescription::FileInfo::makeTime(const String &calendarDate, const S
         }
         if (pm) hour += 12;
     }
-    return Date::compose(year, month, day, hour, minute)->time();
+    return Date{year, month, day, hour, minute}->time();
 }
 
 void DeviceDescription::FileInfo::establish(const String &key, const String &value)
@@ -214,8 +212,7 @@ bool DeviceDescription::FileInfo::equals(const FileInfo *other) const
 }
 
 DeviceDescription::DeviceInfo::DeviceInfo():
-    Section{"DeviceInfo"},
-    supportedBaudRates_{Set<uint32_t>::create()}
+    Section{"DeviceInfo"}
 {}
 
 bool DeviceDescription::DeviceInfo::supportsBaudRate(uint32_t baudRate) const { return supportedBaudRates_->contains(baudRate); }
@@ -310,8 +307,7 @@ bool DeviceDescription::DeviceInfo::equals(const DeviceInfo *other) const
 }
 
 DeviceDescription::DummyUsage::DummyUsage():
-    Section{"DummyUsage"},
-    dummies_{Set<uint16_t>::create()}
+    Section{"DummyUsage"}
 {}
 
 bool DeviceDescription::DummyUsage::dummyEnabled(uint16_t index) const
@@ -329,12 +325,12 @@ uint16_t DeviceDescription::DummyUsage::dummyAt(int i) const
     return dummies_->at(i);
 }
 
-void DeviceDescription::DummyUsage::enableDummy(uint16_t index) const
+void DeviceDescription::DummyUsage::enableDummy(uint16_t index)
 {
     dummies_->insert(index);
 }
 
-void DeviceDescription::DummyUsage::disableDummy(uint16_t index) const
+void DeviceDescription::DummyUsage::disableDummy(uint16_t index)
 {
     dummies_->remove(index);
 }
@@ -408,8 +404,7 @@ bool DeviceDescription::Comments::equals(const Comments *other) const
 }
 
 DeviceDescription::DictionarySection::DictionarySection(const String &name):
-    Section{name},
-    entries_{Entries::create()}
+    Section{name}
 {}
 
 int DeviceDescription::DictionarySection::entryCount() const
@@ -482,8 +477,7 @@ Ref<DeviceDescription::EntryInfo> DeviceDescription::EntryInfo::create(uint16_t 
 
 DeviceDescription::EntryInfo::EntryInfo(uint16_t index, uint8_t subIndex):
     index_{index},
-    subIndex_{subIndex},
-    subEntries_{SubEntries::create()}
+    subIndex_{subIndex}
 {}
 
 AccessType DeviceDescription::EntryInfo::accessType() const

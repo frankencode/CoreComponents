@@ -23,7 +23,8 @@
 #include <cc/stdio>
 #include <cc/Worker>
 #include <cc/System>
-#include <cc/Set>
+#include <cc/set>
+#include <cc/map>
 
 namespace cc {
 namespace can {
@@ -42,11 +43,10 @@ CanLogger::CanLogger(CanMedia *media):
 void CanLogger::bootstrap()
 {
     worker_ = Worker::start([=]{
-        auto blockWriteTransfers = Set<int>::create();
-        auto blockReadTransfers = Set<int>::create();
+        set<int> blockWriteTransfers;
+        set<int> blockReadTransfers;
 
-        typedef Map<int, double> LastTimes;
-        auto lastTimes = LastTimes::create();
+        map<int, double> lastTimes;
 
         double t0 = -1;
 

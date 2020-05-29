@@ -18,7 +18,7 @@ class MainView: public View
         inheritPaper();
 
         auto getClockText = []{
-            Ref<const Date> date = Date::breakdown(System::now());
+            Date date{System::now()};
             return dec(date->hour(), 2) + "∶" + dec(date->minutes(), 2) + "∶" + dec(date->seconds(), 2);
         };
 

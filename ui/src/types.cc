@@ -10,7 +10,7 @@
 
 #include <math.h>
 #include <cc/str>
-#include <cc/unicode>
+#include <cc/Unicode>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/Application>
 
@@ -227,7 +227,7 @@ bool textWrapBehindDefault(const String &text, int byteOffset, int byteCount)
 
 
     if (!canWrap && byteCount > 1) {
-        uchar_t ch = *unicode{text->chars() + byteOffset, text->count() - byteOffset}->begin();
+        uchar_t ch = *Unicode{text->chars() + byteOffset, text->count() - byteOffset}->begin();
 
         canWrap =
             ((0x4E00 <= ch && ch <= 0x9FEA) || (0xF900 <= ch && ch <= 0xFAFF) /* CJK Unified */) ||

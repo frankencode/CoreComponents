@@ -11,8 +11,8 @@
 #include <cc/can/EventHandler>
 #include <cc/can/SafetyEventHandler>
 #include <cc/can/CanMedia>
+#include <cc/map>
 
-namespace cc { template<class> class Set; }
 namespace cc { class Worker; }
 namespace cc { class Mutex; }
 namespace cc { class Semaphore; }
@@ -42,8 +42,7 @@ private:
 
     Ref<CanMedia> media_;
 
-    typedef Map< int, Ref<Event> > Events;
-    Ref<Events> events_;
+    map< int, Ref<Event> > events_;
 
     Ref<Worker> worker_;
     Ref<Mutex> mutex_;

@@ -13,6 +13,6 @@
 
 namespace cc {
 
-typedef utf8 unicode;
+typedef utf8 Unicode;
 
 } // namespace cc

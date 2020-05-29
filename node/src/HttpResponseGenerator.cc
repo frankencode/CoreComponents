@@ -47,7 +47,7 @@ size_t HttpResponseGenerator::bytesWritten() const
 
 void HttpResponseGenerator::polishHeader()
 {
-    String now = formatDate(Date::breakdown(System::now()));
+    String now = formatDate(Date{System::now()});
     if (nodeVersion_ != "") header_->insert("Server", nodeVersion_);
     header_->insert("Date", now);
 

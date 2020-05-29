@@ -174,7 +174,7 @@ inline String str(char *s) { return String(s); }
 /// Convert a character to a String
 inline String str(char ch) { return String{&ch, 1}; }
 
-/// Convert an unicode character to a String
+/// Convert an unicode character to a string
 String str(uchar_t ch);
 
 /// Convert a boolean to a String

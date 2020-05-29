@@ -34,7 +34,7 @@ void status(ArchiveReader *archive)
         if (entry->groupName() != "") status << entry->groupName() << "\t";
         else status << entry->groupId() << "\t";
         status << entry->size() << "\t";
-        status << Date::breakdown(entry->lastModified()) << "\t";
+        status << Date{entry->lastModified()} << "\t";
         status << entry->path() << nl;
     }
 }

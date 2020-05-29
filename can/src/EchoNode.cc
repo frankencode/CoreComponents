@@ -7,7 +7,6 @@
  */
 
 #include <cc/can/EchoNode>
-#include <cc/Map>
 
 namespace cc {
 namespace can {
@@ -20,8 +19,7 @@ Ref<EchoNode> EchoNode::create(CanMedia *media, int nodeId, int timeout)
 }
 
 EchoNode::EchoNode(CanMedia *media, int nodeId, int timeout):
-    CanNode{media, nodeId, timeout},
-    settings_{Settings::create()}
+    CanNode{media, nodeId, timeout}
 {}
 
 String EchoNode::readServiceData(Selector::Key key) const

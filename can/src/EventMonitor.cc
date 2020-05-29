@@ -9,7 +9,6 @@
 #include <cc/can/NextEvent>
 #include <cc/can/EventMonitor>
 #include <cc/System>
-#include <cc/Set>
 #include <cc/Heap>
 #include <cc/Mutex>
 #include <cc/Semaphore>
@@ -27,7 +26,6 @@ Ref<EventMonitor> EventMonitor::create(CanMedia *media)
 
 EventMonitor::EventMonitor(CanMedia *media):
     media_{media},
-    events_{Events::create()},
     mutex_{Mutex::create()},
     start_{Semaphore::create()},
     shutdown_{Semaphore::create()}

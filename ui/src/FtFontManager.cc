@@ -15,7 +15,7 @@
 #include <cairo/cairo-ft.h>
 #include <cmath>
 #include <cc/ThreadLocalSingleton>
-#include <cc/unicode>
+#include <cc/Unicode>
 #include <cc/ui/FtGlyphRun>
 #include <cc/ui/FtTextRun>
 #include <cc/ui/FtScaledFont>
@@ -115,7 +115,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
 
     auto ftGlyphRun = Object::create<FtGlyphRun>(text, font, origin);
 
-    const int codePointsCount = count(unicode{text});
+    const int codePointsCount = count(Unicode{text});
 
     auto cairoGlyphs = FtGlyphRun::CairoGlyphs::create(codePointsCount);
     auto cairoTextClusters = FtGlyphRun::CairoTextClusters::create(codePointsCount);
@@ -123,7 +123,7 @@ Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, c
     int cairoGlyphsCount = 0;
     int cairoTextClustersCount = 0;
 
-    auto walker = unicode{text}->begin();
+    auto walker = Unicode{text}->begin();
     FT_UInt previousGlyphIndex = 0;
 
     Point pos = origin;
@@ -250,7 +250,7 @@ void FtFontManager::selectFontRanges(const String &text, const Font &font, const
     Font targetFont = fixup(font);
     const FtFontFace *targetFontFace = Object::cast<const FtScaledFont *>(targetFont->getScaledFont())->ftFontFace();
 
-    for (auto walker = unicode{text}->begin(); walker;)
+    for (auto walker = Unicode{text}->begin(); walker;)
     {
         const int start = +walker;
 

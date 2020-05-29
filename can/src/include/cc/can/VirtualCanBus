@@ -9,8 +9,8 @@
 #pragma once
 
 #include <cc/can/CanMedia>
+#include <cc/set>
 
-namespace cc { template<class> class Set; }
 namespace cc { class Mutex; }
 
 namespace cc {
@@ -34,8 +34,7 @@ private:
 
     void broadcast(const VirtualCanMedia *source, const CanFrame *frame);
 
-    typedef Set< Ref<VirtualCanMedia> > Connections;
-    Ref<Connections> connections_;
+    set< Ref<VirtualCanMedia> > connections_;
 
     Ref<Mutex> mutex_;
 };

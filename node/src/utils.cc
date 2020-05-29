@@ -58,7 +58,7 @@ const char *reasonPhraseByStatusCode(int statusCode)
     return phrase;
 }
 
-String formatDate(Date *date)
+String formatDate(const Date &date)
 {
     return Format{}
         << date->dayName() << ", "
@@ -66,7 +66,7 @@ String formatDate(Date *date)
         << dec(date->hour(), 2) << ":" << dec(date->minutes(), 2) << ":" << dec(date->seconds(), 2) << " GMT";
 }
 
-Ref<Date> scanDate(const String &text, bool *ok)
+Date scanDate(const String &text, bool *ok)
 {
     // e.g.: Tue, 10 Sep 2013 11:01:10 GMT
     Ref<StringList> parts = text->split(' ');
@@ -122,7 +122,7 @@ Ref<Date> scanDate(const String &text, bool *ok)
         }
     }
     if (ok) *ok = true;
-    return Date::compose(year, month, day, hour, minutes, seconds);
+    return Date{year, month, day, hour, minutes, seconds};
 }
 
 }} // namespace cc::http

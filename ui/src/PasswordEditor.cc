@@ -7,7 +7,7 @@
  */
 
 #include <cc/ui/PasswordEditor>
-#include <cc/unicode>
+#include <cc/Unicode>
 
 namespace cc {
 namespace ui {
@@ -41,14 +41,14 @@ Range PasswordEditor::paste(Range range, const String &newChunk)
     if (!(0 <= range->i0() && range->i1() <= text_()->count()))
         return Range{};
 
-    String mask = String::multiply(bullet_, count(unicode{newChunk}));
+    String mask = String::multiply(bullet_, count(Unicode{newChunk}));
 
     text_ = text_()->paste(range->i0(), range->i1(), mask);
 
     int m0 = range->i0() / bullet_->count();
     int m1 = range->i1() / bullet_->count();
 
-    auto walker = unicode{newChunk}->begin();
+    auto walker = Unicode{newChunk}->begin();
     for (int i = 0; i < m0; ++i) ++walker;
     int p0 = +walker;
     for (int i = m0; i < m1; ++i) ++walker;

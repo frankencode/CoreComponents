@@ -36,7 +36,7 @@ String formatDeliveryLogMessage(const HttpServerConnection *client, int statusCo
 
     return Format{}
         << client->address()->networkAddress() << " "
-        << Date::breakdown(requestTime)->toString() << " "
+        << Date{requestTime}->toString() << " "
         << "\"" << requestHost << "\" "
         << "\"" << requestLine << "\" "
         << statusCode << " " << bytesWritten << " "

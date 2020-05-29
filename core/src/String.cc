@@ -8,7 +8,7 @@
 
 #include <math.h>
 #include <cc/List>
-#include <cc/unicode>
+#include <cc/Unicode>
 #include <cc/Utf8Source>
 #include <cc/Utf8Sink>
 #include <cc/Utf16Source>
@@ -718,7 +718,7 @@ bool Array<char>::toUtf16(void *buf, int *size)
 {
     uint16_t *buf2 = reinterpret_cast<uint16_t *>(buf);
     int j = 0, n = *size / 2;
-    for (uchar_t ch: unicode{chars()}) {
+    for (uchar_t ch: Unicode{chars()}) {
         if (ch < 0x10000) {
             if (j < n) buf2[j] = ch;
             ++j;
@@ -744,7 +744,7 @@ String Array<char>::toUtf16(ByteOrder endian) const
     String out;
     {
         int n = 0; {
-            for (uchar_t ch: unicode{chars()})
+            for (uchar_t ch: Unicode{chars()})
                 n += utf16::encoded_size(ch);
         }
         out = String{n + 2};
@@ -753,7 +753,7 @@ String Array<char>::toUtf16(ByteOrder endian) const
     }
     if (out->count() > 0) {
         Ref<Utf16Sink> sink = Utf16Sink::open(mutate(out), endian);
-        for (uchar_t ch: unicode{chars()})
+        for (uchar_t ch: Unicode{chars()})
             sink->write(ch);
     }
     return out;
