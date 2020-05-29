@@ -35,17 +35,17 @@ public:
         return new ArchiveEntry();
     }
 
-    inline int type() const { return type_; }
-    inline String path() const { return path_; }
-    inline String linkPath() const { return linkPath_; }
-    inline double lastModified() const { return lastModified_; }
-    inline uid_t userId() const { return userId_; }
-    inline gid_t groupId() const { return groupId_; }
-    inline String userName() const { return userName_; }
-    inline String groupName() const { return groupName_; }
-    inline int mode() const { return mode_; }
-    inline off_t offset() const { return offset_; }
-    inline off_t size() const { return size_; }
+    int type() const { return type_; }
+    String path() const { return path_; }
+    String linkPath() const { return linkPath_; }
+    double lastModified() const { return lastModified_; }
+    uid_t userId() const { return userId_; }
+    gid_t groupId() const { return groupId_; }
+    String userName() const { return userName_; }
+    String groupName() const { return groupName_; }
+    int mode() const { return mode_; }
+    off_t offset() const { return offset_; }
+    off_t size() const { return size_; }
 
     int type_;
     String path_;

@@ -21,7 +21,7 @@ public:
     static bool testFormat(Stream *source);
 
     bool readHeader(Ref<ArchiveEntry> *entry);
-    void readData(ArchiveEntry *entry, Stream* sink = 0);
+    void readData(ArchiveEntry *entry, Stream* sink = nullptr);
 
 private:
     TarReader(Stream *source);
