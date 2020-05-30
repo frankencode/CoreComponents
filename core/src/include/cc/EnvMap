@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include <cc/Map>
+#include <cc/map>
 #include <cc/String>
 
 namespace cc {
 
-typedef Map<String, String> EnvMap;
+typedef map<String> EnvMap;
 
 } // namespace cc

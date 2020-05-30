@@ -10,6 +10,7 @@
 
 #include <cc/FileStatus>
 #include <cc/http/DeliveryDelegate>
+#include <cc/EnvMap>
 
 namespace cc {
 namespace http {
@@ -28,10 +29,8 @@ public:
 private:
     CgiDelegate(DeliveryWorker *worker);
 
-    typedef Map<String, String> EnvMap;
-
-    Ref<EnvMap> makeEnv(const HttpRequest *request, CharArray *payload) const;
-    void logEnv(EnvMap *env);
+    EnvMap makeEnv(const HttpRequest *request, CharArray *payload) const;
+    void logEnv(const EnvMap &env);
     String compileHeader(const HttpRequest *request, CharArray *payload) const;
     static String urlDecode(const HttpRequest *request, CharArray *payload);
     static String wrapHttp(const String &header);

@@ -40,7 +40,7 @@ public:
           * \param envMap The environment map to use for the new child process (or zero pointer to inherit the parents environment map)
           * \return pointer to this object
           */
-        Staging *setEnvMap(const EnvMap *envMap);
+        Staging *setEnvMap(const EnvMap &envMap);
 
         /** \brief Set the process group
           * \param groupId Group ID of the process group to join or 0 to make the new process lead a new group
@@ -147,7 +147,8 @@ public:
         String command_;
         String execPath_;
         Ref<const StringList> args_;
-        Ref<const EnvMap> envMap_;
+        bool customEnvMap_ { false };
+        EnvMap envMap_;
 
         int spawnFlags_ { 0 };
         posix_spawnattr_t spawnAttributes_;
@@ -277,7 +278,7 @@ public:
     static void unsetEnv(const String &name);
 
     /// Return the current environment of this process
-    static Ref<EnvMap> getEnvMap();
+    static EnvMap getEnvMap();
 
     /// Get the process ID of calling process
     static pid_t getId();

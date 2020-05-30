@@ -100,7 +100,7 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
         if (!scriptPath->isAbsolutePath()) scriptPath = documentRoot->extendPath(scriptPath);
         args->at(0) = scriptPath;
 
-        Ref<EnvMap> env = makeEnv(request, mutate(payload));
+        EnvMap env = makeEnv(request, mutate(payload));
         env->insert("SCRIPT_NAME", "/" + scriptPath->baseName());
         if (documentRoot != "") env->insert("DOCUMENT_ROOT", documentRoot);
 
@@ -222,11 +222,11 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
     }
 }
 
-Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(const HttpRequest *request, CharArray *payload) const
+EnvMap CgiDelegate::makeEnv(const HttpRequest *request, CharArray *payload) const
 {
     String queryString = urlDecode(request, payload);
 
-    Ref<EnvMap> env = EnvMap::create();
+    EnvMap env;
     env->insert("CONTENT_LENGTH", str(payload->count()));
     env->insert("REQUEST_METHOD", request->method());
     env->insert("REQUEST_URI", request->uri());
@@ -249,16 +249,16 @@ Ref<CgiDelegate::EnvMap> CgiDelegate::makeEnv(const HttpRequest *request, CharAr
         env->insert("HTTPS", "on");
     }
 
-    for (int i = 0; i < request->count(); ++i)
-        env->insert(wrapHttp(request->at(i)->key()), request->at(i)->value());
+    for (const auto &pair: request)
+        env->insert(wrapHttp(pair->key()), pair->value());
 
-    for (auto pair: cgiInstance_->environment())
+    for (const auto &pair: cgiInstance_->environment())
         env->insert(pair->key(), pair->value());
 
     return env;
 }
 
-void CgiDelegate::logEnv(EnvMap *env)
+void CgiDelegate::logEnv(const EnvMap &env)
 {
     for (int i = 0; i < env->count(); ++i)
         CCNODE_DEBUG() << "environ[" << i << "] = \"" << env->at(i)->key() << "\": \"" << env->at(i)->value() << "\"" << nl;

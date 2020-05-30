@@ -72,6 +72,8 @@ public:
     map &operator>>(Pair<K, T>& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
 
 private:
+    explicit operator bool() const;
+
     Ref<Instance> instance_;
 };
 

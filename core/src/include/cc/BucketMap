@@ -15,7 +15,6 @@ namespace cc {
 
 /** \brief Bitmap based allocation scheme
   * \class BucketMap cc/BucketMap
-  * \todo rename to ShiftMap
   */
 template<unsigned Capacity>
 class BucketMap

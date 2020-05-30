@@ -60,8 +60,9 @@ Process::Staging *Process::Staging::setArgs(const StringList *args)
     return this;
 }
 
-Process::Staging *Process::Staging::setEnvMap(const EnvMap *envMap)
+Process::Staging *Process::Staging::setEnvMap(const EnvMap &envMap)
 {
+    customEnvMap_ = true;
     envMap_ = envMap;
     return this;
 }
@@ -249,13 +250,16 @@ Ref<Process> Process::bootstrap(const Staging *staging)
         }
         argv[argc] = 0;
 
-        const EnvMap *envMap = staging->envMap_;
-        if (envMap) {
-            int n = envMap->count();
+        if (staging->customEnvMap_) {
+            const EnvMap &envMap = staging->envMap_;
+            const int n = envMap->count();
             envp = new char*[n + 1];
-            for (int i = 0; i < n; ++i)
-                envp[i] = cc::strcat(envMap->at(i)->key()->chars(), "=", envMap->at(i)->value()->chars());
-            envp[n] = 0;
+            int i = 0;
+            for (auto &pair: envMap) {
+                envp[i] = cc::strcat(pair->key()->chars(), "=", pair->value()->chars());
+                ++i;
+            }
+            envp[n] = nullptr;
         }
     }
 
@@ -460,10 +464,10 @@ void Process::unsetEnv(const String &name)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-Ref<EnvMap> Process::getEnvMap()
+EnvMap Process::getEnvMap()
 {
     char **env = environ();
-    auto map = EnvMap::create();
+    EnvMap map;
     for (int i = 0; env[i]; ++i) {
         String s{env[i]};
         int j = 0;
