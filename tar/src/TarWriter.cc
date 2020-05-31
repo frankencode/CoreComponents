@@ -149,7 +149,7 @@ void TarWriter::writeFile(const String &path, const FileStatus *status)
 void TarWriter::writePadding(off_t unpaddedSize)
 {
     if (unpaddedSize % 512 != 0)
-        sink_->write(String{512 - unpaddedSize % 512, '\0'});
+        sink_->write(String{static_cast<int>(512 - unpaddedSize % 512), '\0'});
 }
 
 }} // namespace cc::tar

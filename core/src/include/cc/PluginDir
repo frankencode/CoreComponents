@@ -10,10 +10,9 @@
 
 #include <cc/Source>
 #include <cc/Plugin>
+#include <cc/map>
 
 namespace cc {
-
-template<typename, typename> class Map;
 
 class PluginDir: public Object
 {
@@ -33,8 +32,8 @@ private:
     PluginDir *open();
 
     String path_;
-    typedef Map<String, Ref<Plugin> > PluginByName;
-    Ref<PluginByName> loadedPlugins_;
+    typedef map< String, Ref<Plugin> > PluginByName;
+    PluginByName loadedPlugins_;
 };
 
 } // namespace cc

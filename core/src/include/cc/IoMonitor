@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Array>
-#include <cc/Map>
+#include <cc/map>
 #include <cc/IoTarget>
 #include <cc/SystemIo>
 
@@ -28,7 +28,8 @@ public:
 private:
     friend class IoMonitor;
 
-    static Ref<IoEvent> create(int index, IoReady type, IoTarget *target) {
+    static Ref<IoEvent> create(int index, IoReady type, IoTarget *target)
+    {
         return new IoEvent{index, type, target};
     }
 
@@ -90,12 +91,11 @@ public:
 private:
     typedef struct pollfd PollFd;
     typedef Array<PollFd> Fds;
-    typedef Map<int, Ref<IoEvent> > Events;
 
     IoMonitor(int maxCount);
 
     Ref<Fds> fds_;
-    Ref<Events> events_;
+    map<int, Ref<IoEvent> > events_;
 };
 
 } // namespace cc

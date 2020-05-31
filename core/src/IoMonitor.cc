@@ -12,11 +12,13 @@
 
 namespace cc {
 
-Ref<IoMonitor> IoMonitor::create(int maxCount) { return new IoMonitor(maxCount); }
+Ref<IoMonitor> IoMonitor::create(int maxCount)
+{
+    return new IoMonitor(maxCount);
+}
 
 IoMonitor::IoMonitor(int maxCount):
-    fds_{Fds::create(maxCount)},
-    events_{Events::create()}
+    fds_{Fds::create(maxCount)}
 {}
 
 const IoEvent *IoMonitor::addEvent(IoReady type, IoTarget *target)

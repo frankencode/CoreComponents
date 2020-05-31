@@ -20,9 +20,9 @@ class TransferMeter: public Stream
 public:
     static Ref<TransferMeter> open(Stream *stream);
 
-    inline Stream *stream() const { return stream_; }
-    inline off_t totalRead() const { return totalRead_; }
-    inline off_t totalWritten() const { return totalWritten_; }
+    Stream *stream() const { return stream_; }
+    off_t totalRead() const { return totalRead_; }
+    off_t totalWritten() const { return totalWritten_; }
 
     virtual int read(CharArray *buf) override;
     virtual void write(const CharArray *buf) override;

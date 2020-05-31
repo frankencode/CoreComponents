@@ -6,25 +6,23 @@
  *
  */
 
+#include <cc/PluginDir>
 #include <cc/stdio>
-#include <cc/Map>
 #include <cc/ValueSource>
 #include <cc/Dir>
 #include <cc/FileStatus>
 #include <cc/File>
 #include <cc/PluginManager>
-#include <cc/PluginDir>
 
 namespace cc {
 
 Ref<PluginDir> PluginDir::open(const String &path)
 {
-    return (new PluginDir(path))->open();
+    return (new PluginDir{path})->open();
 }
 
 PluginDir::PluginDir(const String &path):
-    path_{path},
-    loadedPlugins_{PluginByName::create()}
+    path_{path}
 {}
 
 PluginDir::~PluginDir()
@@ -37,7 +35,7 @@ String PluginDir::path() const
 
 Ref< Source<const Plugin *> > PluginDir::getLoadedPlugins() const
 {
-    return ValueSource<PluginByName, const Plugin *>::open(loadedPlugins_);
+    return ValueSource<PluginByName::Instance, const Plugin *>::open(loadedPlugins_);
 }
 
 void PluginDir::onLoadError(const String &pluginPath, const String &errorMessage)
