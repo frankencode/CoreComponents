@@ -13,10 +13,14 @@
 
 namespace cc {
 
+template<class T>
+class array;
+
 /** \class Array cc/Array
   * \ingroup container_lowlevel
   * \brief Typeded memory vector
   * \see List, CharArray
+  * \todo change size_type to 64 bit
   */
 template<class T>
 class Array: public Object
@@ -237,11 +241,14 @@ public:
       */
     typedef Iterator iterator;
     typedef ConstIterator const_iterator;
+    typedef int size_type;
+    typedef T value_type;
     /** @}
       */
 
 private:
     friend class Local<Array>;
+    friend class array<T>;
 
     Array(int size = 0):
         size_{0},

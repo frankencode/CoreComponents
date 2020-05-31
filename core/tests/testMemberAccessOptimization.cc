@@ -37,8 +37,8 @@ int main() {
     A a;
     a[0] = 1;
     fout("\n");
-    inspect(a->x());
+    CC_INSPECT(a->x());
     fout("\n");
-    inspect(a[0]);
+    CC_INSPECT(a[0]);
     return 0;
 }

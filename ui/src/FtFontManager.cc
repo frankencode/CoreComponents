@@ -252,7 +252,7 @@ void FtFontManager::selectFontRanges(const String &text, const Font &font, const
 
     for (auto walker = Unicode{text}->begin(); walker;)
     {
-        const int start = +walker;
+        const auto start = +walker;
 
         uchar_t ch = 0;
         while (walker) {

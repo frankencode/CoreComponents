@@ -8,13 +8,156 @@
 
 #pragma once
 
+#include <assert.h>
+#include <iterator>
 #include <cc/Object>
 #include <cc/BucketMap>
+#include <cc/containers>
 
 namespace cc {
 
 template<class T>
 class queue;
+
+template<class T>
+class QueueNode {
+public:
+    static constexpr unsigned Capacity = 16;
+
+    QueueNode():
+        pred_{nullptr},
+        succ_{nullptr},
+        fill_{0}
+    {}
+
+    QueueNode(QueueNode *pred, QueueNode *succ):
+        pred_{pred},
+        succ_{succ},
+        fill_{0}
+    {
+        if (pred) pred->succ_ = this;
+        if (succ) succ->pred_ = this;
+    }
+
+    ~QueueNode()
+    {
+        if (pred_) pred_->succ_ = succ_;
+        if (succ_) succ_->pred_ = pred_;
+    }
+
+    T &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+    const T &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+
+    void push(unsigned nodeIndex, const T &item) { slot_[map_->pushEntry(nodeIndex, &fill_)] = item; }
+    void pop(unsigned nodeIndex) { map_->popEntry(nodeIndex, &fill_); }
+
+    void pushBack(const T &item) { push(fill_, item); }
+    void popBack(T *item) { *item = at(fill_ - 1); pop(fill_ - 1); }
+
+    void pushFront(const T &item) { push(0, item); }
+    void popFront(T *item) { *item = at(0); pop(0); }
+
+    bool isFull() const { return fill_ == Capacity; }
+    bool isEmpty() const { return fill_ == 0; }
+
+    QueueNode *pred_;
+    QueueNode *succ_;
+    unsigned fill_;
+    Local< BucketMap<Capacity> > map_;
+    T slot_[Capacity];
+};
+
+/// \todo make sure iterators become invalid automatically in debug mode when the queue is modified
+template<class T, class Node>
+class QueueIterator:
+    public std::iterator<
+        /*iterator_category*/ std::bidirectional_iterator_tag,
+        /*value_type*/        T,
+        /*difference_type*/   int,
+        /*pointer*/           void,
+        /*reference*/         T
+    >
+{
+public:
+    QueueIterator():
+        node_{nullptr},
+        egress_{0}
+    {}
+
+    QueueIterator(Node *node, unsigned egress):
+        node_{node},
+        egress_{egress}
+    {}
+
+    T &operator*() const
+    {
+        assert(node_); // cannot dereference an exhausted iterator
+
+        return node_->at(egress_);
+    }
+
+    QueueIterator &operator++()
+    {
+        assert(node_); // cannot increment an exhausted iterator
+
+        ++egress_;
+        if (egress_ == node_->fill_) {
+            egress_ = 0;
+            node_ = node_->succ_;
+        }
+        return *this;
+    }
+
+    QueueIterator &operator--()
+    {
+        assert(node_); // cannot decrement an exhausted iterator
+
+        if (egress_ > 0) {
+            --egress_;
+        }
+        else {
+            node_ = node_->pred_;
+            egress_ = node_ ? node_->fill_ - 1 : 0;
+        }
+    }
+
+    QueueIterator operator++(int)
+    {
+        QueueIterator it = *this;
+        ++*this;
+        return it;
+    }
+
+    QueueIterator operator--(int)
+    {
+        QueueIterator it = *this;
+        --*this;
+        return it;
+    }
+
+    QueueIterator &operator+=(int delta)
+    {
+        for (;delta > 0; --delta) ++*this;
+        for (;delta < 0; ++delta) --*this;
+        return *this;
+    }
+
+    QueueIterator &operator-=(int delta)
+    {
+        for (;delta > 0; --delta) --*this;
+        for (;delta < 0; ++delta) ++*this;
+        return *this;
+    }
+
+    bool operator==(const QueueIterator &b) const { return egress_ == b.egress_ && node_ == b.node_; }
+    bool operator!=(const QueueIterator &b) const { return egress_ != b.egress_ || node_ != b.node_; }
+
+    explicit operator bool() const { return node_; }
+
+private:
+    Node *node_;
+    unsigned egress_;
+};
 
 /** \class Queue cc/Queue
   * \ingroup container_lowlevel
@@ -27,13 +170,29 @@ template<class T>
 class Queue: public Object
 {
 public:
-    typedef T value_type;
-    typedef int64_t size_type;
+    typedef T Item; ///< item type
+    typedef int64_t Index; ///< count type
+    typedef QueueIterator<const T, QueueNode<T> > ConstIterator; ///< constant iterator type
+    typedef QueueIterator<T, QueueNode<T> > Iterator; ///< iterator type
+
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< \internal
 
     /** Create a new queue
       * \return new object instance
       */
     static Ref<Queue> create() { return new Queue; }
+
+    /** Create a copy of another queue
+      * \param other the queue to copy
+      * \return new object instance
+      */
+    static Ref<Queue> copy(const Queue *other) { return new Queue{*other}; }
+
+    /** Make a copy of this queue
+      * \return new object instance
+      */
+    Ref<Queue> copy() const { return new Queue{*this}; }
 
     /** Add a new item to the end
       * \param item item value
@@ -77,7 +236,7 @@ public:
     T pop() { return popFront(); }
 
     /// Return number of items
-    size_type count() const { return count_; }
+    Index count() const { return count_; }
 
     /// Return the first item
     T front() const { return head_->at(0); }
@@ -97,66 +256,31 @@ public:
     void operator>>(T& item) { if (count() > 0) { popFront(&item); } }
     ///@}
 
+    ConstIterator begin() const { return ConstIterator{head_, 0}; }
+    ConstIterator end() const { return ConstIterator{nullptr, 0}; }
+
+    Iterator begin() { return Iterator{head_, 0}; }
+    Iterator end() { return Iterator{nullptr, 0}; }
+
 private:
     friend class Local<Queue>;
     friend class queue<T>;
 
-    class Node {
-    public:
-        static constexpr unsigned Capacity = 16;
-
-        Node():
-            pred_{nullptr},
-            succ_{nullptr},
-            fill_{0}
-        {}
-
-        Node(Node *pred, Node *succ):
-            pred_{pred},
-            succ_{succ},
-            fill_{0}
-        {
-            if (pred) pred->succ_ = this;
-            if (succ) succ->pred_ = this;
-        }
-
-        ~Node()
-        {
-            if (pred_) pred_->succ_ = succ_;
-            if (succ_) succ_->pred_ = pred_;
-        }
-
-        T &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
-        const T &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
-
-        void push(unsigned nodeIndex, const T &item) { slot_[map_->pushEntry(nodeIndex, &fill_)] = item; }
-        void pop(unsigned nodeIndex) { map_->popEntry(nodeIndex, &fill_); }
-
-        void pushBack(const T &item) { push(fill_, item); }
-        void popBack(T *item) { *item = at(fill_ - 1); pop(fill_ - 1); }
-
-        void pushFront(const T &item) { push(0, item); }
-        void popFront(T *item) { *item = at(0); pop(0); }
-
-        bool isFull() const { return fill_ == Capacity; }
-        bool isEmpty() const { return fill_ == 0; }
-
-        Node *pred_;
-        Node *succ_;
-        unsigned fill_;
-        Local< BucketMap<Capacity> > map_;
-        T slot_[Capacity];
-    };
-
     Queue() = default;
+
+    Queue(const Queue &other)
+    {
+        for (const auto &x: other)
+            pushBack(x);
+    }
 
     ~Queue()
     {
         deplete();
     }
 
-    Node *head_ { nullptr };
-    Node *tail_ { nullptr };
+    QueueNode<T> *head_ { nullptr };
+    QueueNode<T> *tail_ { nullptr };
     int64_t count_ { 0 };
 };
 
@@ -165,10 +289,10 @@ void Queue<T>::pushBack(const T &item)
 {
     if (tail_) {
         if (tail_->isFull())
-            tail_ = new Node{tail_, nullptr};
+            tail_ = new QueueNode<T>{tail_, nullptr};
     }
     else {
-        head_ = tail_ = new Node;
+        head_ = tail_ = new QueueNode<T>;
     }
 
     tail_->pushBack(item);
@@ -181,10 +305,10 @@ void Queue<T>::pushFront(const T &item)
 {
     if (head_) {
         if (head_->isFull())
-            head_ = new Node{nullptr, head_};
+            head_ = new QueueNode<T>{nullptr, head_};
     }
     else {
-        head_ = tail_ = new Node;
+        head_ = tail_ = new QueueNode<T>;
     }
 
     head_->pushFront(item);
@@ -200,7 +324,7 @@ const T &Queue<T>::popBack(T *item)
     tail_->popBack(item);
 
     if (tail_->isEmpty()) {
-        Node *oldTail = tail_;
+        QueueNode<T> *oldTail = tail_;
         tail_ = tail_->pred_;
         if (head_ == oldTail) head_ = nullptr;
         delete oldTail;
@@ -218,7 +342,7 @@ const T &Queue<T>::popFront(T *item)
     head_->popFront(item);
 
     if (head_->isEmpty()) {
-        Node *oldHead = head_;
+        QueueNode<T> *oldHead = head_;
         head_ = head_->succ_;
         if (tail_ == oldHead) tail_ = nullptr;
         delete oldHead;
@@ -231,8 +355,8 @@ const T &Queue<T>::popFront(T *item)
 template<class T>
 void Queue<T>::deplete()
 {
-    for (Node *node = head_; node;) {
-        Node *oldNode = node;
+    for (QueueNode<T> *node = head_; node;) {
+        QueueNode<T> *oldNode = node;
         node = node->succ_;
         delete oldNode;
     }

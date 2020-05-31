@@ -10,7 +10,6 @@
 
 #include <cc/containers>
 #include <cc/strings>
-#include <cc/Array>
 #include <cc/List>
 
 #ifdef QT_CORE_LIB
@@ -23,22 +22,14 @@
 
 namespace cc {
 
-template<class T>
-class Array;
-
-/** Convenience alias
-  * \ingroup strings
-  * \ingroup container_lowlevel
-  * \see Array<char>
-  */
-typedef Array<char> CharArray;
-
 class Variant;
 class Format;
 
+class CharArray;
+
 /** Spezialised Ref<T> for character arrays
   * \ingroup strings
-  * \see Array<char>
+  * \see CharArray
   */
 typedef Ref<const CharArray> String;
 
@@ -79,25 +70,25 @@ template<>
 class Ref<const CharArray>
 {
 public:
-    /// \copydoc Array<char>::allocate()
+    /// \copydoc CharArray::allocate()
     static String allocate(int size);
 
-    /// \copydoc Array<char>::create(int)
+    /// \copydoc CharArray::create(int)
     static String create(int size);
 
-    /// \copydoc Array<char>::create(int, char)
+    /// \copydoc CharArray::create(int, char)
     static String create(int size, char preset);
 
-    /// \copydoc Array<char>::copy(const char *, int)
+    /// \copydoc CharArray::copy(const char *, int)
     static String copy(const char *data, int size = -1);
 
     /// Create a copy of another String \a b
     static String copy(const String &b);
 
-    /// \copydoc Array<char>::cat()
+    /// \copydoc CharArray::cat()
     static String cat(const String &a, const String &b);
 
-    /// \copydoc Array<char>::join(const StringList *, const String &)
+    /// \copydoc CharArray::join(const StringList *, const String &)
     static String join(const StringList *parts, const String &sep = String{});
 
     /// Create a String containing \a n copies of \a b
@@ -248,15 +239,13 @@ private:
     String s_;
 };
 
-/** \class Array<char> cc/String
+/** \class CharArray cc/String
   * \brief Character array
   * \ingroup strings
-  * \see Array
   * \todo fix isZeroTerminated() for substrings and add CC_ASSERTS to all implicit const char* conversions
-  * \todo move to CharArray header
+  * \todo change size_type/Index to 64 bit
   */
-template<>
-class Array<char>: public Object
+class CharArray: public Object
 {
 public:
     /// Item type
@@ -1000,12 +989,12 @@ protected:
 
     typedef void (*Destroy)(CharArray *array);
 
-    Array();
-    Array(const char *data, int size = -1, Destroy destroy = nullptr);
-    Array(const CharArray *parent, int i0, int i1);
-    Array(const CharArray &b);
+    CharArray();
+    CharArray(const char *data, int size = -1, Destroy destroy = nullptr);
+    CharArray(const CharArray *parent, int i0, int i1);
+    CharArray(const CharArray &b);
 
-    ~Array();
+    ~CharArray();
 
     static void doNothing(CharArray *);
 
@@ -1028,7 +1017,7 @@ private:
 };
 
 template<class T>
-int Array<char>::scanNumber(T *value, int base, int i0, int i1) const
+int CharArray::scanNumber(T *value, int base, int i0, int i1) const
 {
     int i = i0;
     if (i1 < 0) i1 = size_;

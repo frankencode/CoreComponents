@@ -30,10 +30,14 @@ template<class T>
 class List: public Object
 {
 public:
-    typedef T value_type; ///< item type
-    typedef int64_t size_type; ///< index type
-    typedef bucket::Iterator<T> iterator; ///< iterator type
-    typedef bucket::ConstIterator<T> const_iterator; ///< constant iterator type
+    typedef T Item; ///< item type
+    typedef bucket::Weight Index; ///< index type
+    typedef bucket::Iterator<T> Iterator; ///< iterator type
+    typedef bucket::ConstIterator<T> ConstIterator; ///< constant iterator type
+
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< constant iterator type
+
 
     /** Create an empty list
       * \return new object instance
@@ -52,7 +56,7 @@ public:
     Ref<List> copy() const { return List::copy(this); }
 
     /// Return the number of items stored in this list
-    size_type count() const { return tree_->count(); }
+    Index count() const { return tree_->count(); }
 
     /// Check if an index is valid
     bool has(int index) const {
@@ -63,7 +67,7 @@ public:
       * \param index list index
       * \return reference to the item
       */
-    T &at(size_type index)
+    T &at(Index index)
     {
         assert(0 <= index && index < count());
         return tree_->at<T>(index);
@@ -71,35 +75,35 @@ public:
 
     /** \copydoc at(Index index)
       */
-    const T &at(size_type index) const
+    const T &at(Index index) const
     {
         assert(0 <= index && index < count());
         return tree_->at<T>(index);
     }
 
     /// Iterator pointing to the beginning (on first item)
-    iterator begin() { return iterator{&tree_}; }
+    Iterator begin() { return Iterator{&tree_}; }
 
     /// Iterator pointing to the item at \a index
-    iterator beginAt(size_type index) { return iterator{tree_, index}; }
+    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
 
     /// Iterator to the end (behind last item)
-    iterator end() { return iterator{&tree_, tree_->count()}; }
+    Iterator end() { return Iterator{&tree_, tree_->count()}; }
 
     /// Constant iterator to the beginning (on first item)
-    const_iterator begin() const { return const_iterator{tree_}; }
+    ConstIterator begin() const { return ConstIterator{tree_}; }
 
-    /// Constant Iterator pointing to the item at \a index
-    const_iterator beginAt(size_type index) const { return const_iterator{tree_, index}; }
+    /// Constant iterator pointing to the item at \a index
+    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
 
     /// Constant iterator to the end (behind last item)
-    const_iterator end() const { return const_iterator{tree_, tree_->count()}; }
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
 
     /** Insert new item at given index
       * \param index list index
       * \param item new item value
       */
-    void insertAt(size_type index, const T &item)
+    void insertAt(Index index, const T &item)
     {
         assert(0 <= index && index <= count());
         tree_->push<T>(index, item);
@@ -108,7 +112,7 @@ public:
     /** Remove item at given index
       * \param index list index
       */
-    void removeAt(size_type index)
+    void removeAt(Index index)
     {
         assert(0 <= index && index < count());
         tree_->pop<T>(index);
@@ -142,13 +146,13 @@ public:
     }
 
     /** Insert \a item at given \a target position */
-    void insert(iterator &target, const T &item)
+    void insert(Iterator &target, const T &item)
     {
         tree_->pushAndStep(target, item);
     }
 
     /** Remove \a item from given \a target position */
-    void remove(iterator &target)
+    void remove(Iterator &target)
     {
         tree_->popAndStep(target);
     }
@@ -161,7 +165,7 @@ public:
         if (other) {
             // TODO: improve performance
 
-            size_type i = 0;
+            Index i = 0;
             for (const T &item: other) {
                 insertAt(i, item);
                 ++i;
@@ -192,7 +196,7 @@ public:
       * \param index start and final position
       * \return true if item was found
       */
-    bool find(const T &item, size_type *index = nullptr)
+    bool find(const T &item, Index *index = nullptr)
     {
         int i = index ? *index : 0;
         i = scan(item, i);
@@ -205,7 +209,7 @@ public:
       * \param index start position for the search
       * \return first position the item was found in or count() if the item couldn't be found
       */
-    int scan(const T &item, size_type index = 0) const
+    int scan(const T &item, Index index = 0) const
     {
         auto it = beginAt(index);
         for (; it; ++it) {
@@ -356,7 +360,7 @@ private:
     friend class list<T>;
 
     // TODO: obsolete
-    static Ref<List> allocate(size_type count)
+    static Ref<List> allocate(Index count)
     {
         auto list = new List;
         for (; count > 0; --count) list->pushBack(T{});

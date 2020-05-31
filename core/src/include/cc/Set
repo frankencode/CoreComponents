@@ -25,10 +25,13 @@ template<class T>
 class Set: public Object
 {
 public:
-    typedef T value_type; ///< item type
-    typedef bucket::Weight size_type; ///< index type
-    typedef bucket::Iterator<T> iterator; ///< iterator type
-    typedef bucket::ConstIterator<T> const_iterator; ///< constant iterator type
+    typedef T Item; ///< item type
+    typedef bucket::Weight Index; ///< index type
+    typedef bucket::Iterator<T> Iterator; ///< iterator type
+    typedef bucket::ConstIterator<T> ConstIterator; ///< constant iterator type
+
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< \internal
 
     /** Create a new set
       * \return new object instance
@@ -47,37 +50,37 @@ public:
     Ref<Set> copy() const { return Set::copy(this); }
 
     /// Number of items
-    size_type count() const { return tree_->count(); }
+    Index count() const { return tree_->count(); }
 
     /// Check if an index is valid
-    bool has(size_type index) const {
+    bool has(Index index) const {
         return 0 <= index && index < count();
     }
 
     /// Return a reference to the item at \a index
-    const T &at(size_type index) const
+    const T &at(Index index) const
     {
         assert(0 <= index && index < count());
         return tree_->at<T>(index);
     }
 
     /// Iterator pointing to the beginning (on first item)
-    iterator begin() { return iterator{&tree_}; }
+    Iterator begin() { return Iterator{&tree_}; }
 
     /// Iterator pointing to the item at \a index
-    iterator beginAt(size_type index) { return iterator{tree_, index}; }
+    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
 
     /// Iterator to the end (behind last item)
-    iterator end() { return iterator{&tree_, tree_->count()}; }
+    Iterator end() { return Iterator{&tree_, tree_->count()}; }
 
     /// Constant iterator to the beginning (on first item)
-    const_iterator begin() const { return const_iterator{tree_}; }
+    ConstIterator begin() const { return ConstIterator{tree_}; }
 
-    /// Constant Iterator pointing to the item at \a index
-    const_iterator beginAt(size_type index) const { return const_iterator{tree_, index}; }
+    /// Constant iterator pointing to the item at \a index
+    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
 
     /// Constant iterator to the end (behind last item)
-    const_iterator end() const { return const_iterator{tree_, tree_->count()}; }
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
 
     /// Check if the set contains \a item
     bool contains(const T &item) const
@@ -87,31 +90,31 @@ public:
 
     /** Find a item value
       * \param item item to search for
-      * \param target returns an iterator to the item if found
+      * \param target returns an Iterator to the item if found
       * \return true if a matching item was found
       */
-    bool find(const T &item, const_iterator *target) const
+    bool find(const T &item, ConstIterator *target) const
     {
-        size_type index = 0;
+        Index index = 0;
         bucket::Leaf<T> *node = nullptr;
         unsigned egress = 0;
         bool found = tree_->lookup<T>(item, &index, &node, &egress);
-        if (target) *target = const_iterator{tree_, index, node, egress};
+        if (target) *target = ConstIterator{tree_, index, node, egress};
         return found;
     }
 
     /** Find a certain item value
       * \param item item to search for
-      * \param target returns an iterator to the item if found
+      * \param target returns an Iterator to the item if found
       * \return true if a matching item was found
       */
-    bool find(const T &item, iterator *target)
+    bool find(const T &item, Iterator *target)
     {
-        size_type index = 0;
+        Index index = 0;
         bucket::Leaf<T> *node = nullptr;
         unsigned egress = 0;
         bool found = tree_->lookup<T>(item, &index, &node, &egress);
-        if (target) *target = iterator{tree_, index, node, egress};
+        if (target) *target = Iterator{tree_, index, node, egress};
         return found;
     }
 
@@ -119,7 +122,7 @@ public:
       * \param item item value
       * \return true if the new item was inserted successfully
       */
-    bool insert(const T &item, T *currentItem = nullptr, size_type *index = nullptr)
+    bool insert(const T &item, T *currentItem = nullptr, Index *index = nullptr)
     {
         bucket::Leaf<T> *target = nullptr;
         unsigned egress = 0;
@@ -143,13 +146,13 @@ public:
     }
 
     /** Remove \a item at given \a target position */
-    void remove(iterator &target)
+    void remove(Iterator &target)
     {
         tree_->popAndStep(target);
     }
 
     /// Remove item at given \a index
-    void removeAt(size_type index)
+    void removeAt(Index index)
     {
         assert(0 <= index && index < count());
         tree_->pop<T>(index);

@@ -23,10 +23,16 @@ template<class T>
 class list {
 public:
     typedef List<T> Instance;
-    typedef typename Instance::value_type value_type;
-    typedef typename Instance::size_type size_type;
-    typedef typename Instance::iterator iterator;
-    typedef typename Instance::const_iterator const_iterator;
+
+    typedef typename Instance::Item Item; ///< item type
+    typedef typename Instance::Index Index; ///< index type
+    typedef typename Instance::Iterator Iterator; ///< iterator type
+    typedef typename Instance::ConstIterator ConstIterator; ///< constant iterator type
+
+    typedef Item value_type; ///< \internal
+    typedef Index size_type; ///< \internal
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< \internal
 
     list():
         instance_{new Instance}
@@ -68,6 +74,8 @@ public:
     list &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
 
 private:
+    explicit operator bool() const;
+
     Ref<Instance> instance_;
 };
 
@@ -109,8 +117,12 @@ String str(const list<T> &a)
 {
     Format f;
     f << "[ ";
-    for (auto &x: a)
-        f << x << (&x == &a->last() ? " ]" : ", ");
+    auto n = a->count();
+    for (const auto &x: a) {
+        f << x;
+        if (--n > 0) f << ", ";
+    }
+    f << " ]";
     return f;
 }
 

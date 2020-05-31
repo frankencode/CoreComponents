@@ -73,13 +73,13 @@ bool ConnectionManager::accept(HttpServerConnection *client)
 {
     uint64_t origin = client->address()->networkPrefix();
     int count = 0;
-    ConnectionCounts::size_type index = 0;
-    if (!connectionCounts_->insert(origin, 1, &count, &index)) {
+    ConnectionCounts::iterator it;
+    if (!connectionCounts_->insert(origin, 1, &it)) {
         if (connectionLimit_ > 0) {
-            if (count >= connectionLimit_)
+            if (it->value() >= connectionLimit_)
                 return false;
         }
-        connectionCounts_->setValueAt(index, count + 1); // \todo fix performance
+        ++it->value();
     }
     client->connectionInfo()->setPriority(count < 8 ? 0 : -count);
     return true;

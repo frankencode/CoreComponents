@@ -8,8 +8,9 @@
 
 #pragma once
 
-#include <cc/Map>
-#include <cc/Queue>
+#include <cc/debug>
+#include <cc/map>
+#include <cc/queue>
 
 namespace cc {
 
@@ -40,17 +41,28 @@ public:
       */
     void pushBack(const T &item, int priority = 0)
     {
-        inputQueue(priority)->pushBack(item);
+        typename QueueByPriority::iterator it;
+
+        if (!queueByPriority_->find(priority, &it))
+            queueByPriority_->insert(priority, queue<T>{}, &it);
+
+        it->value()->pushBack(item);
+        ++size_;
     }
 
     /** Remove an item from the head of the queue
-      * \param item optionally returns the item value
+      * \param item returns the item value
       * \return item value
       */
     const T &popFront(T *item)
     {
         CC_ASSERT(size_ > 0);
-        return outputQueue()->popFront(item);
+        --size_;
+
+        auto it = queueByPriority_->beginAt(queueByPriority_->count() - 1);
+        it->value()->popFront(item);
+        if (it->value()->count() == 0) queueByPriority_->remove(it);
+        return *item;
     }
 
     /** Remove the first item from the queue
@@ -74,7 +86,7 @@ public:
     int count() const { return size_; }
 
     /// Return the first item in the queue
-    T front() { return readQueue()->front(); }
+    T front() { return queueByPriority_->beginAt(queueByPriority_->count() - 1)->value()->front(); }
 
     /** \name Syntax sugar
       */
@@ -88,40 +100,12 @@ public:
 private:
     friend class priority_queue<T>;
 
-    PriorityQueue():
-        queueByPriority_{QueueByPriority::create()},
-        size_{0}
-    {}
+    typedef map< int, queue<T> > QueueByPriority;
 
-    Queue<T> *inputQueue(int priority)
-    {
-        ++size_;
-        Queue<T> *queue = queueByPriority_->value(priority);
-        if (!queue) {
-            Ref< Queue<T> > newQueue = Queue<T>::create();
-            queueByPriority_->insert(priority, newQueue);
-            queue = newQueue;
-        }
-        return queue;
-    }
+    PriorityQueue() = default;
 
-    Ref< Queue<T> > outputQueue()
-    {
-        --size_;
-        typename QueueByPriority::value_type pair = queueByPriority_->at(queueByPriority_->count() - 1);
-        if (pair->value()->count() == 1) queueByPriority_->remove(pair->key());
-        return pair->value();
-    }
-
-    Queue<T> *readQueue() const
-    {
-        return queueByPriority_->valueAt(queueByPriority_->count() - 1);
-    }
-
-    typedef Map<int, Ref< Queue<T> > > QueueByPriority;
-    Ref<QueueByPriority> queueByPriority_;
-
-    int size_;
+    QueueByPriority queueByPriority_;
+    int size_ { 0 };
 };
 
 } // namespace cc

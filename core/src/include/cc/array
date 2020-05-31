@@ -1,0 +1,120 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <initializer_list>
+#include <cc/Array>
+#include <cc/Format>
+
+namespace cc {
+
+/** \class array cc/array
+  * \ingroup container_highlevel
+  * \brief %Array data container
+  * \tparam T item type
+  */
+template<class T>
+class array {
+public:
+    typedef Array<T> Instance;
+    typedef typename Instance::value_type value_type;
+    typedef typename Instance::size_type size_type;
+    typedef typename Instance::iterator iterator;
+    typedef typename Instance::const_iterator const_iterator;
+
+    array(size_type size):
+        instance_{new Instance{size}}
+    {}
+
+    array(std::initializer_list<T> b):
+        instance_{new Instance{b.size()}}
+    {
+        size_type i = 0;
+        for (const auto &x: b) {
+            instance_->at(i) = x;
+            ++i;
+        }
+    }
+
+    array(const array &b) = default;
+
+    array(array &&b):
+        instance_{std::move(b.instance_)}
+    {}
+
+    array &operator=(const array &b) = default;
+
+    array &operator=(array &&b) {
+        instance_ = std::move(b.instance_);
+        return *this;
+    }
+
+    array(Instance *b):
+        instance_{b}
+    {}
+
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return Cow::get(instance_); }
+
+    operator const Instance *() const { return instance_; }
+    operator Instance *() { return Cow::get(instance_); }
+
+    T &operator[](size_type i) { return Cow::get(instance_)->at(i); }
+    const T &operator[](size_type i) const { return instance_->at(i); }
+
+private:
+    explicit operator bool() const;
+
+    Ref<Instance> instance_;
+};
+
+template<class T>
+typename array<T>::size_type count(const array<T> &a) { return a->count(); }
+
+template<class T>
+typename array<T>::const_iterator begin(const array<T> &a) { return a->begin(); }
+
+template<class T>
+typename array<T>::const_iterator end(const array<T> &a) { return a->end(); }
+
+template<class T>
+typename array<T>::iterator begin(array<T> &a) { return a->begin(); }
+
+template<class T>
+typename array<T>::iterator end(array<T> &a) { return a->end(); }
+
+template<class T>
+bool operator==(const array<T> &a, const array<T> &b) { return container::compare(a, b) == 0; }
+
+template<class T>
+bool operator!=(const array<T> &a, const array<T> &b) { return container::compare(a, b) != 0; }
+
+template<class T>
+bool operator<(const array<T> &a, const array<T> &b) { return container::compare(a, b) < 0; }
+
+template<class T>
+bool operator>(const array<T> &a, const array<T> &b) { return container::compare(a, b) > 0; }
+
+template<class T>
+bool operator<=(const array<T> &a, const array<T> &b) { return container::compare(a, b) <= 0; }
+
+template<class T>
+bool operator>=(const array<T> &a, const array<T> &b) { return container::compare(a, b) >= 0; }
+
+template<class T>
+String str(const array<T> &a)
+{
+    Format f;
+    f << "[ ";
+    for (auto &x: a)
+        f << x << (&x == &a->last() ? " ]" : ", ");
+    return f;
+}
+
+} // namespace cc

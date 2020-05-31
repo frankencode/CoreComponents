@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Array>
+#include <cc/array>
 #include <cc/map>
 #include <cc/IoTarget>
 #include <cc/SystemIo>
@@ -89,12 +89,9 @@ public:
     bool waitFor(const IoEvent *event, int timeout_ms = -1, const IoEvent **other = nullptr);
 
 private:
-    typedef struct pollfd PollFd;
-    typedef Array<PollFd> Fds;
-
     IoMonitor(int maxCount);
 
-    Ref<Fds> fds_;
+    array<struct pollfd> fds_;
     map<int, Ref<IoEvent> > events_;
 };
 

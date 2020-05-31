@@ -23,10 +23,15 @@ template<class T>
 class multiset {
 public:
     typedef MultiSet<T> Instance;
-    typedef typename Instance::value_type value_type;
-    typedef typename Instance::size_type size_type;
-    typedef typename Instance::iterator iterator;
-    typedef typename Instance::const_iterator const_iterator;
+
+    typedef typename Instance::Item Item; ///< item type
+    typedef typename Instance::Index Index; ///< index type
+
+    typedef typename Instance::Iterator Iterator; ///< iterator type
+    typedef typename Instance::ConstIterator ConstIterator; ///< constant iterator type
+
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< \internal
 
     multiset():
         instance_{new Instance}
@@ -61,7 +66,7 @@ public:
     operator const Instance *() const { return instance_; }
     operator Instance *() { return Cow::get(instance_); }
 
-    const T &operator[](size_type i) const { return instance_->at(i); }
+    const T &operator[](Index i) const { return instance_->at(i); }
 
     multiset &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
     multiset &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
@@ -108,8 +113,12 @@ String str(const multiset<T> &a)
 {
     Format f;
     f << "[ ";
-    for (auto &x: a)
-        f << x << (&x == &a->last() ? " ]" : ", ");
+    auto n = a->count();
+    for (const auto &x: a) {
+        f << x;
+        if (--n > 0) f << ", ";
+    }
+    f << " ]";
     return f;
 }
 

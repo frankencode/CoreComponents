@@ -33,6 +33,4 @@
   * ~~~~~~~~~~~~~
   */
 #define CC_INSPECT(expression) \
-  CC_DEBUG << "inspect(" << CC_XSTR(expression) << "): " << (expression)
-
-#define inspect(expression) CC_INSPECT(expression)
+  CC_DEBUG << CC_XSTR(expression) << " = " << (expression)

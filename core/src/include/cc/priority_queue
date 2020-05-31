@@ -41,10 +41,10 @@ public:
     {}
 
     const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return instance_; }
+    Instance *operator->() { return /*Cow::get(*/instance_/*)*/; }
 
     operator const Instance *() const { return instance_; }
-    operator Instance *() { return instance_; }
+    operator Instance *() { return /*Cow::get(*/instance_/*)*/; }
 
     priority_queue &operator<<(const T& x) { *instance_ << x; return *this; }
     priority_queue &operator>>(T& x) { if (instance_->count() > 0) *instance_ >> x; return *this; }

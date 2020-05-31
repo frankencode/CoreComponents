@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2007-2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bucket>
+
+
+
+namespace cc {
+
+namespace bucket { template<class> class Leaf; }
+
+/** \class KeyValue cc/KeyValue
+  * \brief Key value pair
+  */
+template<class K, class V = K>
+class KeyValue
+{
+public:
+    typedef K Key;
+    typedef V Value;
+
+    class Instance {
+    public:
+        Key key() const { return key_; }
+        Value value() const { return value_; }
+        Value &value() { return value_; }
+        void setValue(const Value &newValue) { value_ = newValue; }
+
+    private:
+        friend class KeyValue;
+        Instance()
+        {}
+        Instance(const Key &key):
+            key_{key}, value_{Value{}}
+        {}
+        Instance(const Key &key, const Value &value):
+            key_{key}, value_{value}
+        {}
+        Key key_;
+        Value value_;
+    };
+
+    KeyValue()
+    {}
+
+    KeyValue(const Key &key):
+        instance_{key}
+    {}
+
+    KeyValue(const Key &key, const Value &value):
+        instance_{key, value}
+    {}
+
+    bool operator< (const KeyValue &b) const { return instance_.key_ <  b.instance_.key_; }
+    bool operator> (const KeyValue &b) const { return instance_.key_ >  b.instance_.key_; }
+    bool operator==(const KeyValue &b) const { return instance_.key_ ==  b.instance_.key_; }
+    bool operator!=(const KeyValue &b) const { return instance_.key_ !=  b.instance_.key_; }
+    bool operator<=(const KeyValue &b) const { return instance_.key_ <=  b.instance_.key_; }
+    bool operator>=(const KeyValue &b) const { return instance_.key_ >=  b.instance_.key_; }
+
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
+
+private:
+    friend class bucket::Leaf<KeyValue>;
+
+    KeyValue &operator=(const KeyValue &other) = default;
+
+    Instance instance_;
+};
+
+} // namespace cc

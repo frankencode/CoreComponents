@@ -10,6 +10,7 @@
 
 #include <initializer_list>
 #include <cc/Queue>
+#include <cc/Format>
 
 namespace cc {
 
@@ -23,8 +24,15 @@ template<class T>
 class queue {
 public:
     typedef Queue<T> Instance;
-    typedef typename Instance::value_type value_type;
-    typedef typename Instance::size_type size_type;
+
+    typedef typename Instance::Item Item; ///< item type
+    typedef typename Instance::Index Index; ///< index type
+
+    typedef typename Instance::Iterator Iterator; ///< iterator type
+    typedef typename Instance::ConstIterator ConstIterator; ///< constant iterator type
+
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< \internal
 
     queue():
         instance_{new Instance}
@@ -41,22 +49,63 @@ public:
     {}
 
     const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return instance_; }
+    Instance *operator->() { return Cow::get(instance_); }
 
     operator const Instance *() const { return instance_; }
-    operator Instance *() { return instance_; }
+    operator Instance *() { return Cow::get(instance_); }
 
     queue &operator<<(const T& x) { *instance_ << x; return *this; }
     queue &operator>>(T& x) { if (instance_->count() > 0) *instance_ >> x; return *this; }
 
 private:
-    queue(const queue &b) = delete;
-    queue &operator=(const queue &b) = delete;
-
     Ref<Instance> instance_;
 };
 
 template<class T>
 typename queue<T>::size_type count(const queue<T> &a) { return a->count(); }
+
+template<class T>
+typename queue<T>::const_iterator begin(const queue<T> &a) { return a->begin(); }
+
+template<class T>
+typename queue<T>::const_iterator end(const queue<T> &a) { return a->end(); }
+
+template<class T>
+typename queue<T>::iterator begin(queue<T> &a) { return a->begin(); }
+
+template<class T>
+typename queue<T>::iterator end(queue<T> &a) { return a->end(); }
+
+template<class T>
+bool operator==(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) == 0; }
+
+template<class T>
+bool operator!=(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) != 0; }
+
+template<class T>
+bool operator<(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) < 0; }
+
+template<class T>
+bool operator>(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) > 0; }
+
+template<class T>
+bool operator<=(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) <= 0; }
+
+template<class T>
+bool operator>=(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) >= 0; }
+
+template<class T>
+String str(const queue<T> &a)
+{
+    Format f;
+    f << "[ ";
+    auto n = a->count();
+    for (const auto &x: a) {
+        f << x;
+        if (--n > 0) f << ", ";
+    }
+    f << " ]";
+    return f;
+}
 
 } // namespace cc

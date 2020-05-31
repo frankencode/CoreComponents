@@ -18,7 +18,7 @@ Ref<IoMonitor> IoMonitor::create(int maxCount)
 }
 
 IoMonitor::IoMonitor(int maxCount):
-    fds_{Fds::create(maxCount)}
+    fds_{maxCount}
 {}
 
 const IoEvent *IoMonitor::addEvent(IoReady type, IoTarget *target)
@@ -26,7 +26,7 @@ const IoEvent *IoMonitor::addEvent(IoReady type, IoTarget *target)
     CC_ASSERT(events_->count() < fds_->count());
     Ref<IoEvent> event = IoEvent::create(events_->count(), type, target);
     events_->insert(event->index_, event);
-    PollFd *p = &fds_->at(event->index_);
+    struct pollfd *p = &fds_->at(event->index_);
     p->fd = target->fd();
     p->events = static_cast<short>(type);
     return event;
@@ -49,7 +49,7 @@ void IoMonitor::removeEvent(const IoEvent *event)
 
 Ref<IoActivity> IoMonitor::wait(int timeout_ms)
 {
-    PollFd *fds = nullptr;
+    struct pollfd *fds = nullptr;
     if (events_->count() > 0) fds = fds_->data();
     int n = -1;
     do n = ::poll(fds, events_->count(), timeout_ms < 0 ? -1 : timeout_ms);
@@ -77,7 +77,7 @@ Ref<IoActivity> IoMonitor::wait(int timeout_ms)
 
 bool IoMonitor::waitFor(const IoEvent *event, int timeout_ms, const IoEvent **other)
 {
-    PollFd *fds = 0;
+    struct pollfd *fds = nullptr;
     if (events_->count() > 0) fds = fds_->data();
     int n = -1;
     do n = ::poll(fds, events_->count(), timeout_ms < 0 ? -1 : timeout_ms);
