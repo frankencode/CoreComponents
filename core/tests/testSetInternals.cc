@@ -18,14 +18,6 @@
 using namespace cc;
 using namespace cc::testing;
 
-void print(const Set<int> *set)
-{
-    Format f{stdOut()};
-    f << "(";
-    for (auto &x: set)
-        f << x << (&x == &set->last() ? ")\n" : ", ");
-}
-
 int sum(const Array<int> *items)
 {
     int sum = 0;

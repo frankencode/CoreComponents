@@ -80,19 +80,19 @@ private:
 };
 
 template<class T>
-typename list<T>::size_type count(const list<T> &a) { return a->count(); }
+typename list<T>::Index count(const list<T> &a) { return a->count(); }
 
 template<class T>
-typename list<T>::const_iterator begin(const list<T> &a) { return a->begin(); }
+typename list<T>::ConstIterator begin(const list<T> &a) { return a->begin(); }
 
 template<class T>
-typename list<T>::const_iterator end(const list<T> &a) { return a->end(); }
+typename list<T>::ConstIterator end(const list<T> &a) { return a->end(); }
 
 template<class T>
-typename list<T>::iterator begin(list<T> &a) { return a->begin(); }
+typename list<T>::Iterator begin(list<T> &a) { return a->begin(); }
 
 template<class T>
-typename list<T>::iterator end(list<T> &a) { return a->end(); }
+typename list<T>::Iterator end(list<T> &a) { return a->end(); }
 
 template<class T>
 bool operator==(const list<T> &a, const list<T> &b) { return container::compare(a, b) == 0; }

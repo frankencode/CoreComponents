@@ -76,19 +76,19 @@ private:
 };
 
 template<class T>
-typename multiset<T>::size_type count(const multiset<T> &a) { return a->count(); }
+typename multiset<T>::Index count(const multiset<T> &a) { return a->count(); }
 
 template<class T>
-typename multiset<T>::const_iterator begin(const multiset<T> &a) { return a->begin(); }
+typename multiset<T>::ConstIterator begin(const multiset<T> &a) { return a->begin(); }
 
 template<class T>
-typename multiset<T>::const_iterator end(const multiset<T> &a) { return a->end(); }
+typename multiset<T>::ConstIterator end(const multiset<T> &a) { return a->end(); }
 
 template<class T>
-typename multiset<T>::iterator begin(multiset<T> &a) { return a->begin(); }
+typename multiset<T>::Iterator begin(multiset<T> &a) { return a->begin(); }
 
 template<class T>
-typename multiset<T>::iterator end(multiset<T> &a) { return a->end(); }
+typename multiset<T>::Iterator end(multiset<T> &a) { return a->end(); }
 
 template<class T>
 bool operator==(const multiset<T> &a, const multiset<T> &b) { return container::compare(a, b) == 0; }

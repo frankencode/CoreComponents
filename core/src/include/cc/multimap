@@ -77,19 +77,19 @@ private:
 };
 
 template<class K, class T>
-typename multimap<K, T>::size_type count(const multimap<K, T> &a) { return a->count(); }
+typename multimap<K, T>::Index count(const multimap<K, T> &a) { return a->count(); }
 
 template<class K, class T>
-typename multimap<K, T>::const_iterator begin(const multimap<K, T> &a) { return a->begin(); }
+typename multimap<K, T>::ConstIterator begin(const multimap<K, T> &a) { return a->begin(); }
 
 template<class K, class T>
-typename multimap<K, T>::const_iterator end(const multimap<K, T> &a) { return a->end(); }
+typename multimap<K, T>::ConstIterator end(const multimap<K, T> &a) { return a->end(); }
 
 template<class K, class T>
-typename multimap<K, T>::iterator begin(multimap<K, T> &a) { return a->begin(); }
+typename multimap<K, T>::Iterator begin(multimap<K, T> &a) { return a->begin(); }
 
 template<class K, class T>
-typename multimap<K, T>::iterator end(multimap<K, T> &a) { return a->end(); }
+typename multimap<K, T>::Iterator end(multimap<K, T> &a) { return a->end(); }
 
 template<class K, class T>
 bool operator==(const multimap<K, T> &a, const multimap<K, T> &b) { return container::compare(a, b) == 0; }

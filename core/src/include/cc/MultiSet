@@ -49,6 +49,36 @@ public:
       */
     Ref<MultiSet> copy() const { return MultiSet::copy(this); }
 
+    /// Iterator pointing to the beginning (on first item)
+    Iterator begin() { return Iterator{&tree_}; }
+
+    /// Iterator pointing to the end (behind last item)
+    Iterator end() { return Iterator{&tree_, tree_->count()}; }
+
+    /// Constant iterator pointing to the beginning (on first item)
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+
+    /// Constant iterator pointing to the end (behind last item)
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+
+    /// Iterator pointing to the item at \a index
+    Iterator pos(Index index) { return Iterator{tree_, index}; }
+
+    /// Constant iterator pointing to the item at \a index
+    ConstIterator pos(Index index) const { return ConstIterator{tree_, index}; }
+
+    /// Iterator pointing to the first item
+    Iterator first() { return Iterator{tree_, 0}; }
+
+    /// Iterator pointing to the last item
+    Iterator last() { return Iterator{tree_, tree_->count() - 1}; }
+
+    /// Constant iterator pointing to the first item
+    ConstIterator first() const { return ConstIterator{tree_, 0}; }
+
+    /// Constant iterator pointing to the last item
+    ConstIterator last() const { return ConstIterator{tree_, tree_->count() - 1}; }
+
     /// Number of items
     Index count() const { return tree_->count(); }
 
@@ -63,24 +93,6 @@ public:
         assert(0 <= index && index < count());
         return tree_->at<T>(index);
     }
-
-    /// Iterator pointing to the beginning (on first item)
-    Iterator begin() { return Iterator{&tree_}; }
-
-    /// Iterator pointing to the item at \a index
-    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
-
-    /// Iterator to the end (behind last item)
-    Iterator end() { return Iterator{&tree_, tree_->count()}; }
-
-    /// Constant iterator to the beginning (on first item)
-    ConstIterator begin() const { return ConstIterator{tree_}; }
-
-    /// Constant iterator pointing to the item at \a index
-    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
-
-    /// Constant iterator to the end (behind last item)
-    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
 
     /// Check if the set contains \a item
     bool contains(const T &item) const
@@ -163,10 +175,10 @@ public:
     }
 
     /// Return the first item
-    const T &first() const { return tree_->first<T>(); }
+    const T &min() const { return tree_->first<T>(); }
 
     /// Return the last item
-    const T &last() const { return tree_->last<T>(); }
+    const T &max() const { return tree_->last<T>(); }
 
     /// Reset to an empty set
     void deplete() { tree_->deplete<T>(); }
@@ -178,7 +190,7 @@ public:
     void operator<<(const T& item) { insert(item); }
 
     /** Remove and return first item */
-    void operator>>(T& item) { if (count() > 0) { item = first(); removeAt(0); } }
+    void operator>>(T& item) { if (count() > 0) { item = min(); removeAt(0); } }
     ///@}
 
 private:

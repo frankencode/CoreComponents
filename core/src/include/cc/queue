@@ -62,19 +62,19 @@ private:
 };
 
 template<class T>
-typename queue<T>::size_type count(const queue<T> &a) { return a->count(); }
+typename queue<T>::Index count(const queue<T> &a) { return a->count(); }
 
 template<class T>
-typename queue<T>::const_iterator begin(const queue<T> &a) { return a->begin(); }
+typename queue<T>::ConstIterator begin(const queue<T> &a) { return a->begin(); }
 
 template<class T>
-typename queue<T>::const_iterator end(const queue<T> &a) { return a->end(); }
+typename queue<T>::ConstIterator end(const queue<T> &a) { return a->end(); }
 
 template<class T>
-typename queue<T>::iterator begin(queue<T> &a) { return a->begin(); }
+typename queue<T>::Iterator begin(queue<T> &a) { return a->begin(); }
 
 template<class T>
-typename queue<T>::iterator end(queue<T> &a) { return a->end(); }
+typename queue<T>::Iterator end(queue<T> &a) { return a->end(); }
 
 template<class T>
 bool operator==(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) == 0; }

@@ -76,19 +76,19 @@ private:
 };
 
 template<class T>
-typename set<T>::size_type count(const set<T> &a) { return a->count(); }
+typename set<T>::Index count(const set<T> &a) { return a->count(); }
 
 template<class T>
-typename set<T>::const_iterator begin(const set<T> &a) { return a->begin(); }
+typename set<T>::ConstIterator begin(const set<T> &a) { return a->begin(); }
 
 template<class T>
-typename set<T>::const_iterator end(const set<T> &a) { return a->end(); }
+typename set<T>::ConstIterator end(const set<T> &a) { return a->end(); }
 
 template<class T>
-typename set<T>::iterator begin(set<T> &a) { return a->begin(); }
+typename set<T>::Iterator begin(set<T> &a) { return a->begin(); }
 
 template<class T>
-typename set<T>::iterator end(set<T> &a) { return a->end(); }
+typename set<T>::Iterator end(set<T> &a) { return a->end(); }
 
 template<class T>
 bool operator==(const set<T> &a, const set<T> &b) { return container::compare(a, b) == 0; }

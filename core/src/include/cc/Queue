@@ -73,9 +73,9 @@ class QueueIterator:
     public std::iterator<
         /*iterator_category*/ std::bidirectional_iterator_tag,
         /*value_type*/        T,
-        /*difference_type*/   int,
-        /*pointer*/           void,
-        /*reference*/         T
+        /*difference_type*/   int64_t,
+        /*pointer*/           T *,
+        /*reference*/         T &
     >
 {
 public:
@@ -172,8 +172,8 @@ class Queue: public Object
 public:
     typedef T Item; ///< item type
     typedef int64_t Index; ///< count type
-    typedef QueueIterator<const T, QueueNode<T> > ConstIterator; ///< constant iterator type
     typedef QueueIterator<T, QueueNode<T> > Iterator; ///< iterator type
+    typedef QueueIterator<const T, QueueNode<T> > ConstIterator; ///< constant iterator type
 
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< \internal
@@ -193,6 +193,18 @@ public:
       * \return new object instance
       */
     Ref<Queue> copy() const { return new Queue{*this}; }
+
+    /// Iterator pointing to the beginning (on first item)
+    Iterator begin() { return Iterator{head_, 0}; }
+
+    /// Iterator pointing to the end (behind last item)
+    Iterator end() { return Iterator{nullptr, 0}; }
+
+    /// Constant iterator pointing to the beginning (on first item)
+    ConstIterator begin() const { return ConstIterator{head_, 0}; }
+
+    /// Constant iterator pointing to the end (behind last item)
+    ConstIterator end() const { return ConstIterator{nullptr, 0}; }
 
     /** Add a new item to the end
       * \param item item value
@@ -219,7 +231,7 @@ public:
     /** Remove the last item
       * \return item value
       */
-    T popBack () { T item; popBack (&item); return item; }
+    T popBack(){ T item; popBack (&item); return item; }
 
     /** Remove the first item
       * \return item value
@@ -255,12 +267,6 @@ public:
     /// Remove an item from the front
     void operator>>(T& item) { if (count() > 0) { popFront(&item); } }
     ///@}
-
-    ConstIterator begin() const { return ConstIterator{head_, 0}; }
-    ConstIterator end() const { return ConstIterator{nullptr, 0}; }
-
-    Iterator begin() { return Iterator{head_, 0}; }
-    Iterator end() { return Iterator{nullptr, 0}; }
 
 private:
     friend class Local<Queue>;

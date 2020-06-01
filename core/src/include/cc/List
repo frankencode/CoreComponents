@@ -38,7 +38,6 @@ public:
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< constant iterator type
 
-
     /** Create an empty list
       * \return new object instance
       */
@@ -55,6 +54,24 @@ public:
       */
     Ref<List> copy() const { return List::copy(this); }
 
+    /// Iterator pointing to the beginning (on first item)
+    Iterator begin() { return Iterator{&tree_}; }
+
+    /// Iterator pointing to the end (behind last item)
+    Iterator end() { return Iterator{&tree_, tree_->count()}; }
+
+    /// Constant iterator pointing to the beginning (on first item)
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+
+    /// Constant iterator pointing to the end (behind last item)
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+
+    /// Iterator pointing to the item at \a index
+    Iterator pos(Index index) { return Iterator{tree_, index}; }
+
+    /// Constant iterator pointing to the item at \a index
+    ConstIterator pos(Index index) const { return ConstIterator{tree_, index}; }
+
     /// Return the number of items stored in this list
     Index count() const { return tree_->count(); }
 
@@ -63,41 +80,19 @@ public:
         return 0 <= index && index < count();
     }
 
-    /** Return a reference to an item
-      * \param index list index
-      * \return reference to the item
-      */
+    /// Return a reference to the item at \a index
     T &at(Index index)
     {
         assert(0 <= index && index < count());
         return tree_->at<T>(index);
     }
 
-    /** \copydoc at(Index index)
-      */
+    /// Return a constant reference to the item at \a index
     const T &at(Index index) const
     {
         assert(0 <= index && index < count());
         return tree_->at<T>(index);
     }
-
-    /// Iterator pointing to the beginning (on first item)
-    Iterator begin() { return Iterator{&tree_}; }
-
-    /// Iterator pointing to the item at \a index
-    Iterator beginAt(Index index) { return Iterator{tree_, index}; }
-
-    /// Iterator to the end (behind last item)
-    Iterator end() { return Iterator{&tree_, tree_->count()}; }
-
-    /// Constant iterator to the beginning (on first item)
-    ConstIterator begin() const { return ConstIterator{tree_}; }
-
-    /// Constant iterator pointing to the item at \a index
-    ConstIterator beginAt(Index index) const { return ConstIterator{tree_, index}; }
-
-    /// Constant iterator to the end (behind last item)
-    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
 
     /** Insert new item at given index
       * \param index list index
@@ -173,58 +168,17 @@ public:
         }
     }
 
-    /// Directly access first item
-    T &first() { assert(count() > 0); return tree_->first<T>(); }
-
-    /// Directly access first item of a constant list
-    const T &first() const { assert(count() > 0); return tree_->first<T>(); }
-
-    /// Directly access last item
-    T &last() { assert(count() > 0); return tree_->last<T>(); }
-
-    /// Directly access last item of a constant list
-    const T &last() const { assert(count() > 0); return tree_->last<T>(); }
-
-    /// Check if \a x points to first item
-    bool first(const T *x) const { return &first() == x; }
-
-    /// Check if \a x points to last item
-    bool last(const T *x) const { return &last() == x; }
-
-    /** Search for an item
-      * \param item item to search for
-      * \param index start and final position
-      * \return true if item was found
-      */
-    bool find(const T &item, Index *index = nullptr)
-    {
-        int i = index ? *index : 0;
-        i = scan(item, i);
-        if (index) *index = i;
-        return i < count();
-    }
-
-    /** Search for an item
-      * \param item item to search for
-      * \param index start position for the search
-      * \return first position the item was found in or count() if the item couldn't be found
-      */
-    int scan(const T &item, Index index = 0) const
-    {
-        auto it = beginAt(index);
-        for (; it; ++it) {
-            if (*it == item) break;
-        }
-        return +it;
-    }
-
     /** Test if the list contains a certain item
       * \param item item to test for
       * \return true if the item appears in the list
       */
     bool contains(const T &item) const
     {
-        return scan(item) < count();
+        for (const auto &x: *this) {
+            if (item == x)
+                return true;
+        }
+        return false;
     }
 
     /// Remove all items from the list
