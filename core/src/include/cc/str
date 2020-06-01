@@ -15,6 +15,7 @@
 #include <cc/String>
 #include <cc/Variant>
 #include <cc/Local>
+#include <cc/KeyValue>
 
 namespace cc {
 

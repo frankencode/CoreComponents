@@ -8,9 +8,8 @@
 
 #pragma once
 
-#include <cc/debug>
-#include <cc/map>
-#include <cc/queue>
+#include <assert.h>
+#include <cc/multimap>
 
 namespace cc {
 
@@ -22,14 +21,15 @@ class priority_queue;
   * \brief Priority based queue data container
   * \tparam T item type
   * \see Queue, Channel
-  * \todo provide iterators
   */
 template<class T>
 class PriorityQueue: public Object
 {
+    typedef multimap<int, T> MultiQueue;
+
 public:
     typedef T Item;
-    typedef int64_t Index;
+    typedef typename MultiQueue::Index Index;
 
     /** Create a new queue
       * \return new object instance
@@ -51,62 +51,59 @@ public:
       * \param item item value
       * \param priority priority of item
       */
-    void pushBack(const T &item, int priority = 0)
+    void pushBack(const Item &item, int priority = 0)
     {
-        typename QueueByPriority::iterator it;
-
-        if (!queueByPriority_->find(priority, &it))
-            queueByPriority_->insert(priority, queue<T>{}, &it);
-
-        it->value()->pushBack(item);
-        ++size_;
+        multiQueue_->insert(priority, item);
     }
 
     /** Remove an item from the head of the queue
       * \param item returns the item value
       * \return item value
       */
-    const T &popFront(T *item)
+    const Item &popFront(Item *item)
     {
-        CC_ASSERT(size_ > 0);
-        --size_;
+        assert(count() > 0);
 
-        auto it = queueByPriority_->last();
-        it->value()->popFront(item);
-        if (it->value()->count() == 0) queueByPriority_->remove(it);
+        auto last = multiQueue_->last();
+        *item = last->value();
+        multiQueue_->remove(last);
+
         return *item;
     }
 
     /** Remove the first item from the queue
       * \return item value
       */
-    T popFront() {
-        T item;
+    Item popFront() {
+        Item item;
         return popFront(&item);
     }
 
     /// \copydoc pushBack()
-    void push(const T &item, int priority) { pushBack(item, priority); }
+    void push(const Item &item, int priority) { pushBack(item, priority); }
 
-    /// \copydoc popFront(T *)
-    const T &pop(T *item) { return popFront(item); }
+    /// \copydoc popFront(Item *)
+    const Item &pop(Item *item) { return popFront(item); }
 
     /// \copydoc popFront()
-    T pop() { return popFront(); }
+    Item pop() { return popFront(); }
 
     /// Return the number of queued items
-    Index count() const { return size_; }
+    Index count() const { return multiQueue_->count(); }
 
     /// Return the first item in the queue
-    T front() { return queueByPriority_->beginAt(queueByPriority_->count() - 1)->value()->front(); }
+    T front() const { return multiQueue_->max()->value(); }
+
+    /// Return the last item in the queue
+    T back() const { return multiQueue_->min()->value(); }
 
     /** \name Syntax sugar
       */
     ///@{
     /// Append an item to the end
-    void operator<<(const T& item) { pushBack(item); }
+    void operator<<(const Item& item) { pushBack(item); }
     /// Remove an item from the front
-    void operator>>(T& item) { if (count() > 0) { popFront(&item); } }
+    void operator>>(Item& item) { if (count() > 0) { popFront(&item); } }
     ///@}
 
 private:
@@ -114,19 +111,7 @@ private:
 
     PriorityQueue() = default;
 
-    PriorityQueue(const PriorityQueue *other)
-    {
-        for (const auto &item: queueByPriority_) {
-            auto priority = item->key();
-            for (const T &x: item->value())
-                pushBack(x, priority);
-        }
-    }
-
-    typedef map< int, queue<T> > QueueByPriority;
-
-    QueueByPriority queueByPriority_;
-    Index size_ { 0 };
+    MultiQueue multiQueue_;
 };
 
 } // namespace cc

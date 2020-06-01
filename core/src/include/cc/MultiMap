@@ -160,7 +160,7 @@ public:
         tree_->push<Item>(target, egress + found, item);
     }
 
-    /** Remove all key-value pairs matching a search key
+    /** Remove all key-value pairs of given key
       * \param key search key
       * \return number of items removed
       */

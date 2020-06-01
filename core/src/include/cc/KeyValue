@@ -10,8 +10,6 @@
 
 #include <cc/bucket>
 
-
-
 namespace cc {
 
 namespace bucket { template<class> class Leaf; }
