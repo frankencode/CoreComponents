@@ -20,7 +20,7 @@ class ThreadingExceptions: public TestCase
     void run()
     {
         try {
-            Mutex::create()->release();
+            Mutex{}->release();
             CC_VERIFY(false);
         }
         catch (Exception &ex) {

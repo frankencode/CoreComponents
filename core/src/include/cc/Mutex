@@ -21,36 +21,54 @@ class WaitCondition;
   * \brief %Thread synchronization primitive: mutual exclusive access
   * \see Guard
   */
-class Mutex: public Object
+class Mutex
 {
 public:
+    class Instance {
+    public:
+        /** Try to lock this mutex
+          * \return true if this mutex was not already locked, false otherwise
+          */
+        bool tryAcquire();
+
+        /// Lock this mutex
+        void acquire();
+
+        /// Release this mutex
+        void release();
+
+    private:
+        friend class Mutex;
+        friend class WaitCondition;
+
+        Instance();
+        ~Instance();
+
+        pthread_mutex_t mutex_;
+    };
+
     /** \brief Create a new mutex
-      * \return new object instance
       */
-    static Ref<Mutex> create() { return new Mutex; }
+    Mutex() = default;
 
-    /** Try to lock this mutex
-      * \return true if this mutex was not already locked, false otherwise
-      */
-    bool tryAcquire();
-
-    /// Lock this mutex
-    void acquire();
-
-    /// Release this mutex
-    void release();
-
-protected:
-    friend class WaitCondition;
-
-    Mutex();
-    ~Mutex();
+    Instance *operator->() const { return const_cast<Instance *>(&instance_); }
 
 private:
     Mutex(const Mutex&) = delete;
     Mutex& operator=(const Mutex&) = delete;
 
-    pthread_mutex_t mutex_;
+    Instance instance_;
+};
+
+template<>
+class Guard<Mutex>
+{
+public:
+    Guard(const Mutex &mutex): mutex_{mutex} { mutex_->acquire(); }
+    ~Guard() { mutex_->release(); }
+
+private:
+    const Mutex &mutex_;
 };
 
 } // namespace cc

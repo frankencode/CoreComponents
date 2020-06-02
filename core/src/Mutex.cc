@@ -6,15 +6,16 @@
  *
  */
 
+#include <cc/Mutex>
+
 #ifndef NDEBUG
 #include <cc/check>
 #endif
 #include <cc/exceptions>
-#include <cc/Mutex>
 
 namespace cc {
 
-Mutex::Mutex()
+Mutex::Instance::Instance()
 {
     pthread_mutexattr_t *pattr = 0;
     int ret;
@@ -34,7 +35,7 @@ Mutex::Mutex()
     #endif
 }
 
-Mutex::~Mutex()
+Mutex::Instance::~Instance()
 {
     #ifndef NDEBUG
     int ret =
@@ -45,7 +46,7 @@ Mutex::~Mutex()
     #endif
 }
 
-bool Mutex::tryAcquire()
+bool Mutex::Instance::tryAcquire()
 {
     int ret = -1;
     while (true) {
@@ -57,7 +58,7 @@ bool Mutex::tryAcquire()
     return ret != EBUSY;
 }
 
-void Mutex::acquire()
+void Mutex::Instance::acquire()
 {
     int ret = -1;
     while (true) {
@@ -67,7 +68,7 @@ void Mutex::acquire()
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
-void Mutex::release()
+void Mutex::Instance::release()
 {
     int ret = pthread_mutex_unlock(&mutex_);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);

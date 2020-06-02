@@ -9,9 +9,8 @@
 #pragma once
 
 #include <cc/Guard>
+#include <cc/Mutex>
 #include <cc/can/CanFrame>
-
-namespace cc { class Mutex; }
 
 namespace cc {
 namespace can {
@@ -50,7 +49,7 @@ private:
     int canId_;
     double interval_;
     Ref<CanFrame> frame_;
-    Ref<Mutex> mutex_;
+    Mutex mutex_;
 };
 
 }} // namespace cc::can

@@ -21,21 +21,20 @@ class WaitCondition: public Object
 {
 public:
     /** Create a new wait condition
-      * \return new object instance
       */
     static Ref<WaitCondition> create() { return new WaitCondition; }
 
     /** Wait for a certain condition
       * \param mutex mutex protecting the condition state
       */
-    void wait(Mutex *mutex);
+    void wait(Mutex &mutex);
 
     /** Wait for a certain condition up to a certain timeout
       * \param timeout maximum timeout
       * \param mutex mutex protecting the condition state
       * \see System::now()
       */
-    bool waitUntil(double timeout, Mutex *mutex);
+    bool waitUntil(double timeout, Mutex &mutex);
 
     /// Wakup one waiting thread
     void signal();

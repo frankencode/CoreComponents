@@ -26,7 +26,6 @@ Ref<EventMonitor> EventMonitor::create(CanMedia *media)
 
 EventMonitor::EventMonitor(CanMedia *media):
     media_{media},
-    mutex_{Mutex::create()},
     start_{Semaphore::create()},
     shutdown_{Semaphore::create()}
 {}

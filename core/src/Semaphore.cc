@@ -11,10 +11,9 @@
 namespace cc {
 
 Semaphore::Semaphore(int value):
-    mutex_(Mutex::create()),
-    notEmpty_(WaitCondition::create()),
-    supply_(value),
-    demand_(0)
+    notEmpty_{WaitCondition::create()},
+    supply_{value},
+    demand_{0}
 {
     CC_ASSERT(value >= 0);
 }
@@ -93,7 +92,7 @@ bool Semaphore::acquireBefore(double timeout, int amount)
 
 int Semaphore::getCurrentValue() const
 {
-    Guard<Mutex> guard(mutex_);
+    Guard<Mutex> guard{mutex_};
     return supply_;
 }
 

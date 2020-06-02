@@ -37,7 +37,7 @@ private:
 
     const NodeConfig *nodeConfig_;
     double refreshInterval_;
-    Ref<Mutex> mutex_;
+    Mutex mutex_;
     Ref< Channel<bool> > shutdown_;
     gnutls_datum_t key_;
 };

@@ -8,7 +8,6 @@
 
 #include <cc/can/VirtualCanBus>
 #include <cc/can/VirtualCanMedia>
-#include <cc/Mutex>
 #include <cc/Guard>
 #include <cc/Channel>
 
@@ -20,8 +19,7 @@ Ref<VirtualCanBus> VirtualCanBus::create()
     return new VirtualCanBus;
 }
 
-VirtualCanBus::VirtualCanBus():
-    mutex_{Mutex::create()}
+VirtualCanBus::VirtualCanBus()
 {}
 
 Ref<CanMedia> VirtualCanBus::connect()

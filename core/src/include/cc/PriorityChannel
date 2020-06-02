@@ -155,13 +155,12 @@ public:
 
 protected:
     PriorityChannel():
-        mutex_{Mutex::create()},
         notEmpty_{WaitCondition::create()}
     {}
 
 private:
     PriorityQueueValue<T> queue_;
-    Ref<Mutex> mutex_;
+    Mutex mutex_;
     Ref<WaitCondition> notEmpty_;
 };
 

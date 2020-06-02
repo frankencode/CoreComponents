@@ -22,7 +22,7 @@ public:
     /** Lowlevel constructor: acquire mutex
       * \param mutex mutex to hold
       */
-    Guard(Mutex *mutex): mutex_(mutex) { mutex_->acquire(); }
+    Guard(Mutex *mutex): mutex_{mutex} { mutex_->acquire(); }
 
     /** Lowlevel destructor: release mutex
       */

@@ -25,7 +25,7 @@ public:
       * \return new object instance
       */
     inline static Ref<Semaphore> create(int value = 0) {
-        return new Semaphore(value);
+        return new Semaphore{value};
     }
 
     /** Acquire a certain amount of a limited resource
@@ -70,7 +70,7 @@ public:
 private:
     Semaphore(int value);
 
-    Ref<Mutex> mutex_;
+    Mutex mutex_;
     Ref<WaitCondition> notEmpty_;
     int supply_, demand_;
 };

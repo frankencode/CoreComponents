@@ -21,27 +21,26 @@ class TransferInputWorker: public Thread
 public:
     static Ref<TransferInputWorker> start(TransferBufferQueue *freeQueue, TransferBufferQueue *writeQueue, Stream *source)
     {
-        return (new TransferInputWorker(freeQueue, writeQueue, source))->Thread::start();
+        return (new TransferInputWorker{freeQueue, writeQueue, source})->Thread::start();
     }
 
     bool ok() const { return ok_; }
     String errorMessage() const { return errorMessage_; }
 
-    off_t totalRead() const { Guard<Mutex> guard(mutex_); return totalRead_; }
+    off_t totalRead() const { Guard<Mutex> guard{mutex_}; return totalRead_; }
 
     void stop() { freeQueue_->pushFront(String{}); }
 
 private:
     TransferInputWorker(TransferBufferQueue *freeQueue, TransferBufferQueue *writeQueue, Stream *source):
-        freeQueue_(freeQueue),
-        writeQueue_(writeQueue),
-        source_(source),
-        mutex_(Mutex::create()),
-        totalRead_(0),
-        ok_(true)
+        freeQueue_{freeQueue},
+        writeQueue_{writeQueue},
+        source_{source},
+        totalRead_{0},
+        ok_{true}
     {}
 
-    virtual void run() override
+    void run() override
     {
         try {
             String buffer;
@@ -68,7 +67,7 @@ private:
     Ref<TransferBufferQueue> freeQueue_;
     Ref<TransferBufferQueue> writeQueue_;
     Ref<Stream> source_;
-    Ref<Mutex> mutex_;
+    Mutex mutex_;
     off_t totalRead_;
     bool ok_;
     String errorMessage_;
@@ -79,7 +78,7 @@ class TransferOutputWorker: public Thread
 public:
     static Ref<TransferOutputWorker> start(TransferBufferQueue *writeQueue, TransferBufferQueue *freeQueue, Stream *sink)
     {
-        return (new TransferOutputWorker(writeQueue, freeQueue, sink))->Thread::start();
+        return (new TransferOutputWorker{writeQueue, freeQueue, sink})->Thread::start();
     }
 
     bool ok() const { return ok_; }
@@ -91,29 +90,28 @@ public:
 
 private:
     TransferOutputWorker(TransferBufferQueue *writeQueue, TransferBufferQueue *freeQueue, Stream *sink):
-        writeQueue_(writeQueue),
-        freeQueue_(freeQueue),
-        sink_(sink),
-        mutex_(Mutex::create()),
-        totalWritten_(0),
-        ok_(true)
+        writeQueue_{writeQueue},
+        freeQueue_{freeQueue},
+        sink_{sink},
+        totalWritten_{0},
+        ok_{true}
     {}
 
-    virtual void run() override
+    void run() override
     {
         try {
             String buffer;
             while (writeQueue_->popFront(&buffer)) {
                 sink_->write(buffer);
                 {
-                    Guard<Mutex> guard(mutex_);
+                    Guard<Mutex> guard{mutex_};
                     totalWritten_ += buffer->count();
                 }
                 freeQueue_->pushBack(buffer->parent());
             }
         }
         catch (Exception &ex) {
-            errorMessage_ = ex.message();
+            errorMessage_ = ex->message();
             ok_ = false;
         }
         catch (...) {
@@ -124,7 +122,7 @@ private:
     Ref<TransferBufferQueue> writeQueue_;
     Ref<TransferBufferQueue> freeQueue_;
     Ref<Stream> sink_;
-    Ref<Mutex> mutex_;
+    Mutex mutex_;
     off_t totalWritten_;
     bool ok_;
     String errorMessage_;
@@ -132,7 +130,7 @@ private:
 
 Ref<Transfer> Transfer::start(Stream *source, Stream *sink, int bufferSize, int bufferCount)
 {
-    return new Transfer(source, sink, bufferSize, bufferCount);
+    return new Transfer{source, sink, bufferSize, bufferCount};
 }
 
 Transfer::Transfer(Stream *source, Stream *sink, int bufferSize, int bufferCount)

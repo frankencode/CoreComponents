@@ -27,7 +27,6 @@ Ref<SecurityCache> SecurityCache::start(const NodeConfig *nodeConfig)
 SecurityCache::SecurityCache(const NodeConfig *nodeConfig):
     nodeConfig_{nodeConfig},
     refreshInterval_{nodeConfig->security()->sessionResumptionKeyRefresh()},
-    mutex_{Mutex::create()},
     shutdown_{Channel<bool>::create()}
 {
     if (refreshInterval_ > 0) {

@@ -12,9 +12,9 @@
 #include <cc/can/SafetyEventHandler>
 #include <cc/can/CanMedia>
 #include <cc/MapValue>
+#include <cc/Mutex>
 
 namespace cc { class Worker; }
-namespace cc { class Mutex; }
 namespace cc { class Semaphore; }
 
 namespace cc {
@@ -45,7 +45,7 @@ private:
     MapValue< int, Ref<Event> > events_;
 
     Ref<Worker> worker_;
-    Ref<Mutex> mutex_;
+    Mutex mutex_;
     Ref<Semaphore> start_;
     Ref<Semaphore> shutdown_;
 };

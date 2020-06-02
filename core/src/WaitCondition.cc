@@ -18,7 +18,7 @@ namespace cc {
 
 WaitCondition::WaitCondition()
 {
-    int ret = pthread_cond_init(&cond_, 0);
+    int ret = pthread_cond_init(&cond_, nullptr);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
@@ -40,11 +40,11 @@ WaitCondition::~WaitCondition()
   * Note that the first thread scheduled by the OS may invalidate
   * the condition again.
   */
-void WaitCondition::wait(Mutex *mutex)
+void WaitCondition::wait(Mutex &mutex)
 {
     int ret = -1;
     while (true) {
-        ret = pthread_cond_wait(&cond_, &mutex->Mutex::mutex_);
+        ret = pthread_cond_wait(&cond_, &mutex->mutex_);
         if (ret != EINTR) break;
     }
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
@@ -54,7 +54,7 @@ void WaitCondition::wait(Mutex *mutex)
   * (see also: now()). Returns true if the condition was signalled
   * before 'timeout', else returns false.
   */
-bool WaitCondition::waitUntil(double timeout, Mutex *mutex)
+bool WaitCondition::waitUntil(double timeout, Mutex &mutex)
 {
     bool success = true;
     struct timespec ts;
@@ -63,7 +63,7 @@ bool WaitCondition::waitUntil(double timeout, Mutex *mutex)
     ts.tv_sec = sec;
     int ret = -1;
     while (true) {
-        ret = pthread_cond_timedwait(&cond_, &mutex->Mutex::mutex_, &ts);
+        ret = pthread_cond_timedwait(&cond_, &mutex->mutex_, &ts);
         if (ret != EINTR) break;
     }
     if (ret != 0) {

@@ -12,9 +12,9 @@
 #include <cc/can/Emission>
 #include <cc/can/SafetyEmission>
 #include <cc/SetValue>
+#include <cc/Mutex>
 
 namespace cc { class Worker; }
-namespace cc { class Mutex; }
 namespace cc { class Semaphore; }
 
 namespace cc {
@@ -42,7 +42,7 @@ private:
     Ref<CanMedia> media_;
 
     SetValue< Ref<Emission> > emissions_;
-    Ref<Mutex> mutex_;
+    Mutex mutex_;
 
     Ref<Worker> worker_;
     Ref<Semaphore> start_;
