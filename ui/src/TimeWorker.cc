@@ -22,8 +22,7 @@ Ref<TimeWorker> TimeWorker::create(TimeMaster *master)
 TimeWorker::TimeWorker(TimeMaster *master):
     master_{master},
     startRequests_{StartRequests::create()},
-    timeouts_{Timeouts::create()},
-    ack_{Semaphore::create()}
+    timeouts_{Timeouts::create()}
 {}
 
 void TimeWorker::startTimer(Timer *timer)

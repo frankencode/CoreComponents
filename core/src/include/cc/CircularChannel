@@ -154,14 +154,13 @@ public:
 
 protected:
     CircularChannel(int capacity):
-        queue_{CircularBuffer<T>::create(capacity)},
-        notEmpty_{WaitCondition::create()}
+        queue_{CircularBuffer<T>::create(capacity)}
     {}
 
 private:
     Mutex mutex_;
+    WaitCondition notEmpty_;
     Ref< CircularBuffer<T> > queue_;
-    Ref<WaitCondition> notEmpty_;
 };
 
 } // namespace cc

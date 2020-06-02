@@ -16,13 +16,13 @@
 
 namespace cc {
 
-WaitCondition::WaitCondition()
+WaitCondition::Instance::Instance()
 {
     int ret = pthread_cond_init(&cond_, nullptr);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
-WaitCondition::~WaitCondition()
+WaitCondition::Instance::~Instance()
 {
     #ifndef NDEBUG
     int ret =
@@ -33,14 +33,7 @@ WaitCondition::~WaitCondition()
     #endif
 }
 
-/** Enter wait state and atomically unlock provided mutex.
-  * The thread will be woken up again and reaquire the mutex atomically
-  * if the availability of the condition is signalled (to an arbritary number
-  * of threads by signal() or all threads by broadcast()).
-  * Note that the first thread scheduled by the OS may invalidate
-  * the condition again.
-  */
-void WaitCondition::wait(Mutex &mutex)
+void WaitCondition::Instance::wait(Mutex &mutex)
 {
     int ret = -1;
     while (true) {
@@ -50,11 +43,7 @@ void WaitCondition::wait(Mutex &mutex)
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
-/** Same as wait(), but also wakeup if system time reaches 'timeout'.
-  * (see also: now()). Returns true if the condition was signalled
-  * before 'timeout', else returns false.
-  */
-bool WaitCondition::waitUntil(double timeout, Mutex &mutex)
+bool WaitCondition::Instance::waitUntil(double timeout, Mutex &mutex)
 {
     bool success = true;
     struct timespec ts;
@@ -75,18 +64,13 @@ bool WaitCondition::waitUntil(double timeout, Mutex &mutex)
     return success;
 }
 
-/** Wakeup at least one waiting thread.
-  * (A system might wakeup as many threads as CPU's are idle.)
-  */
-void WaitCondition::signal()
+void WaitCondition::Instance::signal()
 {
     int ret = pthread_cond_signal(&cond_);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
-/** Wakeup all waiting threads.
-  */
-void WaitCondition::broadcast()
+void WaitCondition::Instance::broadcast()
 {
     int ret = pthread_cond_broadcast(&cond_);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);

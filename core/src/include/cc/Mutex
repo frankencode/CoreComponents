@@ -20,6 +20,7 @@ class WaitCondition;
   * \ingroup concurrency
   * \brief %Thread synchronization primitive: mutual exclusive access
   * \see Guard
+  * \todo mark as low-level
   */
 class Mutex
 {

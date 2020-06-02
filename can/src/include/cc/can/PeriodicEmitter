@@ -13,6 +13,7 @@
 #include <cc/can/SafetyEmission>
 #include <cc/SetValue>
 #include <cc/Mutex>
+#include <cc/Semaphore>
 
 namespace cc { class Worker; }
 namespace cc { class Semaphore; }
@@ -45,8 +46,8 @@ private:
     Mutex mutex_;
 
     Ref<Worker> worker_;
-    Ref<Semaphore> start_;
-    Ref<Semaphore> shutdown_;
+    Semaphore start_;
+    Semaphore shutdown_;
 };
 
 }} // namespace cc::can

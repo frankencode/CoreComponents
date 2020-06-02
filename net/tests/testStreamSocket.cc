@@ -35,8 +35,8 @@ public:
         CC_INSPECT(address);
 
         {
-            auto upAndRunning = Semaphore::create();
-            auto echoServer = Worker::start([=]{
+            Semaphore upAndRunning;
+            auto echoServer = Worker::start([&]{
                 try {
                     auto listeningSocket = StreamSocket::listen(address);
                     upAndRunning->release();

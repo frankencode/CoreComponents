@@ -16,37 +16,48 @@ namespace cc {
   * \ingroup concurrency
   * \brief Wait condition
   * \see Channel
+  * \todo mark as low-level
   */
-class WaitCondition: public Object
+class WaitCondition
 {
 public:
+    class Instance {
+    public:
+        Instance();
+        ~Instance();
+
+        /** Wait for a certain condition
+          * \param mutex mutex protecting the condition state
+          */
+        void wait(Mutex &mutex);
+
+        /** Wait for a certain condition up to a certain timeout
+          * \param timeout maximum timeout
+          * \param mutex mutex protecting the condition state
+          * \see System::now()
+          */
+        bool waitUntil(double timeout, Mutex &mutex);
+
+        /// Wakup one waiting thread
+        void signal();
+
+        /// Wakup all waiting threads
+        void broadcast();
+
+    private:
+        friend class WaitCondition;
+
+        pthread_cond_t cond_;
+    };
+
     /** Create a new wait condition
       */
-    static Ref<WaitCondition> create() { return new WaitCondition; }
+    WaitCondition() = default;
 
-    /** Wait for a certain condition
-      * \param mutex mutex protecting the condition state
-      */
-    void wait(Mutex &mutex);
-
-    /** Wait for a certain condition up to a certain timeout
-      * \param timeout maximum timeout
-      * \param mutex mutex protecting the condition state
-      * \see System::now()
-      */
-    bool waitUntil(double timeout, Mutex &mutex);
-
-    /// Wakup one waiting thread
-    void signal();
-
-    /// Wakup all waiting threads
-    void broadcast();
+    Instance *operator->() const { return const_cast<Instance *>(&instance_); }
 
 private:
-    WaitCondition();
-    ~WaitCondition();
-
-    pthread_cond_t cond_;
+    Instance instance_;
 };
 
 } // namespace cc

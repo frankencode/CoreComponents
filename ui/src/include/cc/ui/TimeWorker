@@ -89,7 +89,7 @@ protected:
     typedef Map<TimeKey, Ref<Timeout> > Timeouts;
     Ref<Timeouts> timeouts_;
 
-    Ref<Semaphore> ack_;
+    Semaphore ack_;
 };
 
 }} // namespace cc::ui

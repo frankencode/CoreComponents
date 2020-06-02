@@ -10,15 +10,14 @@
 
 namespace cc {
 
-Semaphore::Semaphore(int value):
-    notEmpty_{WaitCondition::create()},
+Semaphore::Instance::Instance(int value):
     supply_{value},
     demand_{0}
 {
     CC_ASSERT(value >= 0);
 }
 
-void Semaphore::acquire(int amount)
+void Semaphore::Instance::acquire(int amount)
 {
     mutex_->acquire();
     demand_ += amount;
@@ -29,7 +28,7 @@ void Semaphore::acquire(int amount)
     mutex_->release();
 }
 
-void Semaphore::release(int amount)
+void Semaphore::Instance::release(int amount)
 {
     if (amount <= 0) return;
     mutex_->acquire();
@@ -38,7 +37,7 @@ void Semaphore::release(int amount)
     mutex_->release();
 }
 
-int Semaphore::acquireAll(int minAmount)
+int Semaphore::Instance::acquireAll(int minAmount)
 {
     mutex_->acquire();
     while (supply_ < minAmount)
@@ -49,7 +48,7 @@ int Semaphore::acquireAll(int minAmount)
     return amount;
 }
 
-int Semaphore::releaseOnDemand(int maxAmount)
+int Semaphore::Instance::releaseOnDemand(int maxAmount)
 {
     mutex_->acquire();
     int amount = demand_;
@@ -62,7 +61,7 @@ int Semaphore::releaseOnDemand(int maxAmount)
     return amount;
 }
 
-bool Semaphore::tryAcquire(int amount)
+bool Semaphore::Instance::tryAcquire(int amount)
 {
     bool success = false;
     mutex_->acquire();
@@ -74,7 +73,7 @@ bool Semaphore::tryAcquire(int amount)
     return success;
 }
 
-bool Semaphore::acquireBefore(double timeout, int amount)
+bool Semaphore::Instance::acquireBefore(double timeout, int amount)
 {
     bool success = true;
     mutex_->acquire();
@@ -90,7 +89,7 @@ bool Semaphore::acquireBefore(double timeout, int amount)
     return success;
 }
 
-int Semaphore::getCurrentValue() const
+int Semaphore::Instance::getCurrentValue() const
 {
     Guard<Mutex> guard{mutex_};
     return supply_;

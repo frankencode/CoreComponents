@@ -154,14 +154,12 @@ public:
     }
 
 protected:
-    PriorityChannel():
-        notEmpty_{WaitCondition::create()}
-    {}
+    PriorityChannel() = default;
 
 private:
     PriorityQueueValue<T> queue_;
     Mutex mutex_;
-    Ref<WaitCondition> notEmpty_;
+    WaitCondition notEmpty_;
 };
 
 } // namespace cc

@@ -16,63 +16,73 @@ namespace cc {
 /** \class Semaphore cc/Semaphore
   * \ingroup concurrency
   * \brief Waiting for a limited resource
+  * \todo mark as low-level
   */
-class Semaphore: public Object
+class Semaphore
 {
 public:
+    class Instance {
+    public:
+        /** Acquire a certain amount of a limited resource
+          * \param amount number of items to acquire
+          */
+        void acquire(int amount = 1);
+
+        /** Release a certain amount of a limited resource
+          * \param amount number of items to acquire
+          */
+        void release(int amount = 1);
+
+        /** Acquire all items of a limited resource
+          * \param minAmount minimum number of items to acquire
+          * \return number of items acquired
+          */
+        int acquireAll(int minAmount = 1);
+
+        /** Release items of a limited resource on demand
+          * \param maxAmount maximum number of items to release
+          * \return number of items released
+          */
+        int releaseOnDemand(int maxAmount = intMax);
+
+        /** Try to acquire a certain amount of a limited resource
+          * \param amount number of items to acquire
+          * \return number of items released
+          */
+        bool tryAcquire(int amount = 1);
+
+        /** Try to acquire a certain amount of a limited resource for a giving timeout
+          * \param timeout absolute timestamp in seconds since the begin of Epoch
+          * \param amount number of items to acquire
+          * \see System::now()
+          */
+        bool acquireBefore(double timeout, int amount = 1);
+
+        /** Current supply of the limited resource
+          */
+        int getCurrentValue() const;
+
+    private:
+        friend class Semaphore;
+
+        Instance(int value);
+
+        WaitCondition notEmpty_;
+        Mutex mutex_;
+        int supply_, demand_;
+    };
+
     /** Create a new semaphore
       * \param value initial value
-      * \return new object instance
       */
-    inline static Ref<Semaphore> create(int value = 0) {
-        return new Semaphore{value};
-    }
+    Semaphore(int value = 0):
+        instance_{value}
+    {}
 
-    /** Acquire a certain amount of a limited resource
-      * \param amount number of items to acquire
-      */
-    void acquire(int amount = 1);
-
-    /** Release a certain amount of a limited resource
-      * \param amount number of items to acquire
-      */
-    void release(int amount = 1);
-
-    /** Acquire all items of a limited resource
-      * \param minAmount minimum number of items to acquire
-      * \return number of items acquired
-      */
-    int acquireAll(int minAmount = 1);
-
-    /** Release items of a limited resource on demand
-      * \param maxAmount maximum number of items to release
-      * \return number of items released
-      */
-    int releaseOnDemand(int maxAmount = intMax);
-
-    /** Try to acquire a certain amount of a limited resource
-      * \param amount number of items to acquire
-      * \return number of items released
-      */
-    bool tryAcquire(int amount = 1);
-
-    /** Try to acquire a certain amount of a limited resource for a giving timeout
-      * \param timeout absolute timestamp in seconds since the begin of Epoch
-      * \param amount number of items to acquire
-      * \see System::now()
-      */
-    bool acquireBefore(double timeout, int amount = 1);
-
-    /** Current supply of the limited resource
-      */
-    int getCurrentValue() const;
+    Instance *operator->() const { return const_cast<Instance *>(&instance_); }
 
 private:
-    Semaphore(int value);
-
-    Mutex mutex_;
-    Ref<WaitCondition> notEmpty_;
-    int supply_, demand_;
+    Instance instance_;
 };
 
 } // namespace cc

@@ -6,12 +6,10 @@
  *
  */
 
-#include <cc/can/NextEvent>
 #include <cc/can/EventMonitor>
+#include <cc/can/NextEvent>
 #include <cc/System>
 #include <cc/Heap>
-#include <cc/Mutex>
-#include <cc/Semaphore>
 #include <cc/Worker>
 
 namespace cc {
@@ -25,9 +23,7 @@ Ref<EventMonitor> EventMonitor::create(CanMedia *media)
 }
 
 EventMonitor::EventMonitor(CanMedia *media):
-    media_{media},
-    start_{Semaphore::create()},
-    shutdown_{Semaphore::create()}
+    media_{media}
 {}
 
 EventMonitor::~EventMonitor()

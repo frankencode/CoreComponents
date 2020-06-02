@@ -10,7 +10,6 @@
 #include <cc/can/NextEmission>
 #include <cc/System>
 #include <cc/Thread>
-#include <cc/Semaphore>
 #include <cc/Worker>
 #include <cc/Heap>
 
@@ -25,9 +24,7 @@ Ref<PeriodicEmitter> PeriodicEmitter::create(CanMedia *media)
 }
 
 PeriodicEmitter::PeriodicEmitter(CanMedia *media):
-    media_{media},
-    start_{Semaphore::create()},
-    shutdown_{Semaphore::create()}
+    media_{media}
 {}
 
 PeriodicEmitter::~PeriodicEmitter()

@@ -13,9 +13,9 @@
 #include <cc/can/CanMedia>
 #include <cc/MapValue>
 #include <cc/Mutex>
+#include <cc/Semaphore>
 
 namespace cc { class Worker; }
-namespace cc { class Semaphore; }
 
 namespace cc {
 namespace can {
@@ -46,8 +46,8 @@ private:
 
     Ref<Worker> worker_;
     Mutex mutex_;
-    Ref<Semaphore> start_;
-    Ref<Semaphore> shutdown_;
+    Semaphore start_;
+    Semaphore shutdown_;
 };
 
 }} // namespace cc::can

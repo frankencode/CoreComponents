@@ -155,14 +155,13 @@ public:
 
 protected:
     Channel():
-        queue_{Queue<T>::create()},
-        notEmpty_{WaitCondition::create()}
+        queue_{Queue<T>::create()}
     {}
 
 private:
     Mutex mutex_;
+    WaitCondition notEmpty_;
     Ref< Queue<T> > queue_;
-    Ref<WaitCondition> notEmpty_;
 };
 
 } // namespace cc
