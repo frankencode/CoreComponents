@@ -14,7 +14,7 @@
 namespace cc {
 
 template<class T>
-class set;
+class SetValue;
 
 /** \class Set cc/Set
   * \ingroup container_dynamic
@@ -194,7 +194,7 @@ public:
 private:
     friend class bucket::Internals;
     friend class Local<Set>;
-    friend class set<T>;
+    friend class SetValue<T>;
 
     Set() = default;
 

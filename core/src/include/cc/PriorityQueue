@@ -9,12 +9,12 @@
 #pragma once
 
 #include <assert.h>
-#include <cc/multimap>
+#include <cc/MultiMapValue>
 
 namespace cc {
 
 template<class T>
-class priority_queue;
+class PriorityQueueValue;
 
 /** \class PriorityQueue cc/PriorityQueue
   * \ingroup container_dynamic
@@ -25,7 +25,7 @@ class priority_queue;
 template<class T>
 class PriorityQueue: public Object
 {
-    typedef multimap<int, T> MultiQueue;
+    typedef MultiMapValue<int, T> MultiQueue;
 
 public:
     typedef T Item;
@@ -107,7 +107,7 @@ public:
     ///@}
 
 private:
-    friend class priority_queue<T>;
+    friend class PriorityQueueValue<T>;
 
     PriorityQueue() = default;
 

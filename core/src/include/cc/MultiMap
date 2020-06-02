@@ -15,7 +15,7 @@
 namespace cc {
 
 template<class K, class T>
-class multimap;
+class MultiMapValue;
 
 /** \class MultiMap cc/MultiMap
   * \ingroup container_lowlevel
@@ -201,7 +201,7 @@ public:
 protected:
     friend class bucket::Internals;
     friend class Local<MultiMap>;
-    friend class multimap<K, T>;
+    friend class MultiMapValue<K, T>;
 
     MultiMap() = default;
 

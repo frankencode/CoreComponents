@@ -13,14 +13,14 @@
 
 namespace cc {
 
-/** \class priority_queue cc/priority_queue
+/** \class PriorityQueueValue cc/PriorityQueueValue
   * \ingroup container_highlevel
   * \brief priority based queue data container
   * \tparam T item type
   * \see queue
   */
 template<class T>
-class priority_queue {
+class PriorityQueueValue {
 public:
     typedef PriorityQueue<T> Instance;
     typedef typename Instance::Item Item; ///< item type
@@ -29,17 +29,17 @@ public:
     typedef Item value_type; ///< \internal
     typedef Index size_type; ///< \internal
 
-    priority_queue():
+    PriorityQueueValue():
         instance_{new Instance}
     {}
 
-    priority_queue(std::initializer_list<T> b):
+    PriorityQueueValue(std::initializer_list<T> b):
         instance_{new Instance}
     {
         for (auto &x: b) *instance_ << x;
     }
 
-    priority_queue(Instance *b):
+    PriorityQueueValue(Instance *b):
         instance_{b}
     {}
 
@@ -49,17 +49,17 @@ public:
     operator const Instance *() const { return instance_; }
     operator Instance *() { return Cow::get(instance_); }
 
-    priority_queue &operator<<(const T& x) { *instance_ << x; return *this; }
-    priority_queue &operator>>(T& x) { if (instance_->count() > 0) *instance_ >> x; return *this; }
+    PriorityQueueValue &operator<<(const T& x) { *instance_ << x; return *this; }
+    PriorityQueueValue &operator>>(T& x) { if (instance_->count() > 0) *instance_ >> x; return *this; }
 
 private:
-    priority_queue(const priority_queue &b) = delete;
-    priority_queue &operator=(const priority_queue &b) = delete;
+    PriorityQueueValue(const PriorityQueueValue &b) = delete;
+    PriorityQueueValue &operator=(const PriorityQueueValue &b) = delete;
 
     Ref<Instance> instance_;
 };
 
 template<class T>
-typename priority_queue<T>::size_type count(const priority_queue<T> &a) { return a->count(); }
+typename PriorityQueueValue<T>::size_type count(const PriorityQueueValue<T> &a) { return a->count(); }
 
 } // namespace cc

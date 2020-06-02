@@ -15,7 +15,7 @@
 namespace cc {
 
 template<class K, class T>
-class map;
+class MapValue;
 
 /** \class Map cc/Map
   * \ingroup container_lowlevel
@@ -255,7 +255,7 @@ public:
 protected:
     friend class bucket::Internals;
     friend class Local<Map>;
-    friend class map<K, T>;
+    friend class MapValue<K, T>;
 
     Map() = default;
 

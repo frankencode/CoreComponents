@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/can/CanNode>
-#include <cc/map>
+#include <cc/MapValue>
 
 namespace cc {
 namespace can {
@@ -27,7 +27,7 @@ public:
     void writeServiceData(Selector::Key key, const String &data) override;
 
 private:
-    map<Selector, String> settings_;
+    MapValue<Selector, String> settings_;
 };
 
 }} // namespace cc::can

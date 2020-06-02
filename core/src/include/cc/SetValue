@@ -14,13 +14,13 @@
 
 namespace cc {
 
-/** \class set cc/set
+/** \class SetValue cc/SetValue
   * \ingroup container_highlevel
   * \brief %Set data container
   * \see multiset, map
   */
 template<class T>
-class set {
+class SetValue {
 public:
     typedef Set<T> Instance;
 
@@ -33,30 +33,30 @@ public:
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< \internal
 
-    set():
+    SetValue():
         instance_{new Instance}
     {}
 
-    set(std::initializer_list<T> b):
+    SetValue(std::initializer_list<T> b):
         instance_{new Instance}
     {
         for (auto &x: b) *instance_ << x;
     }
 
-    set(const set &b) = default;
+    SetValue(const SetValue &b) = default;
 
-    set(set &&b):
+    SetValue(SetValue &&b):
         instance_{std::move(b.instance_)}
     {}
 
-    set &operator=(const set &b) = default;
+    SetValue &operator=(const SetValue &b) = default;
 
-    set &operator=(set &&b) {
+    SetValue &operator=(SetValue &&b) {
         instance_ = std::move(b.instance_);
         return *this;
     }
 
-    set(Instance *b):
+    SetValue(Instance *b):
         instance_{b}
     {}
 
@@ -68,48 +68,48 @@ public:
 
     const T &operator[](Index i) const { return instance_->at(i); }
 
-    set &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
-    set &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
+    SetValue &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
+    SetValue &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
 
 private:
     Ref<Instance> instance_;
 };
 
 template<class T>
-typename set<T>::Index count(const set<T> &a) { return a->count(); }
+typename SetValue<T>::Index count(const SetValue<T> &a) { return a->count(); }
 
 template<class T>
-typename set<T>::ConstIterator begin(const set<T> &a) { return a->begin(); }
+typename SetValue<T>::ConstIterator begin(const SetValue<T> &a) { return a->begin(); }
 
 template<class T>
-typename set<T>::ConstIterator end(const set<T> &a) { return a->end(); }
+typename SetValue<T>::ConstIterator end(const SetValue<T> &a) { return a->end(); }
 
 template<class T>
-typename set<T>::Iterator begin(set<T> &a) { return a->begin(); }
+typename SetValue<T>::Iterator begin(SetValue<T> &a) { return a->begin(); }
 
 template<class T>
-typename set<T>::Iterator end(set<T> &a) { return a->end(); }
+typename SetValue<T>::Iterator end(SetValue<T> &a) { return a->end(); }
 
 template<class T>
-bool operator==(const set<T> &a, const set<T> &b) { return container::compare(a, b) == 0; }
+bool operator==(const SetValue<T> &a, const SetValue<T> &b) { return container::compare(a, b) == 0; }
 
 template<class T>
-bool operator!=(const set<T> &a, const set<T> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const SetValue<T> &a, const SetValue<T> &b) { return container::compare(a, b) != 0; }
 
 template<class T>
-bool operator<(const set<T> &a, const set<T> &b) { return container::compare(a, b) < 0; }
+bool operator<(const SetValue<T> &a, const SetValue<T> &b) { return container::compare(a, b) < 0; }
 
 template<class T>
-bool operator>(const set<T> &a, const set<T> &b) { return container::compare(a, b) > 0; }
+bool operator>(const SetValue<T> &a, const SetValue<T> &b) { return container::compare(a, b) > 0; }
 
 template<class T>
-bool operator<=(const set<T> &a, const set<T> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const SetValue<T> &a, const SetValue<T> &b) { return container::compare(a, b) <= 0; }
 
 template<class T>
-bool operator>=(const set<T> &a, const set<T> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const SetValue<T> &a, const SetValue<T> &b) { return container::compare(a, b) >= 0; }
 
 template<class T>
-String str(const set<T> &a)
+String str(const SetValue<T> &a)
 {
     Format f;
     f << "[ ";

@@ -24,8 +24,8 @@ class CharNode: public SyntaxNode
 {
 public:
     CharNode(char ch, int invert):
-        ch_(ch),
-        invert_(invert)
+        ch_{ch},
+        invert_{invert}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -55,8 +55,8 @@ class GreaterNode: public SyntaxNode
 {
 public:
     GreaterNode(char ch, int invert):
-        ch_(ch),
-        invert_(invert)
+        ch_{ch},
+        invert_{invert}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -87,8 +87,8 @@ class GreaterOrEqualNode: public SyntaxNode
 {
 public:
     GreaterOrEqualNode(char ch, int invert):
-        ch_(ch),
-        invert_(invert)
+        ch_{ch},
+        invert_{invert}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -127,9 +127,9 @@ class RangeMinMaxNode: public SyntaxNode
 {
 public:
     RangeMinMaxNode(char a, char b, int invert):
-        a_(a),
-        b_(b),
-        invert_(invert)
+        a_{a},
+        b_{b},
+        invert_{invert}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -160,8 +160,8 @@ class RangeExplicitNode: public SyntaxNode
 {
 public:
     RangeExplicitNode(const char *s, int invert):
-        s_(s),
-        invert_(invert)
+        s_{s},
+        invert_{invert}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -196,8 +196,8 @@ class StringNode: public SyntaxNode
 {
 public:
     StringNode(const char *s, bool caseSensitive):
-        s_(s),
-        caseSensitive_(caseSensitive)
+        s_{s},
+        caseSensitive_{caseSensitive}
     {
         if (!caseSensitive) mutate(s_)->downcaseInsitu();
     }
@@ -237,8 +237,8 @@ class KeywordNode: public SyntaxNode
 {
 public:
     KeywordNode(KeywordMap *map, bool caseSensitive):
-        map_(map),
-        caseSensitive_(caseSensitive)
+        map_{map},
+        caseSensitive_{caseSensitive}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -271,8 +271,8 @@ class RepeatNode: public SyntaxNode
 {
 public:
     RepeatNode(int minRepeat, int maxRepeat, SyntaxNode *entry):
-        minRepeat_(minRepeat),
-        maxRepeat_(maxRepeat)
+        minRepeat_{minRepeat},
+        maxRepeat_{maxRepeat}
     {
         appendChild(entry);
     }
@@ -324,7 +324,7 @@ class LazyRepeatNode: public SyntaxNode
 {
 public:
     LazyRepeatNode(int minRepeat, SyntaxNode *entry):
-        minRepeat_(minRepeat)
+        minRepeat_{minRepeat}
     {
         appendChild(entry);
     }
@@ -375,8 +375,8 @@ class GreedyRepeatNode: public SyntaxNode
 {
 public:
     GreedyRepeatNode(int minRepeat, int maxRepeat, SyntaxNode *entry):
-        minRepeat_(minRepeat),
-        maxRepeat_(maxRepeat)
+        minRepeat_{minRepeat},
+        maxRepeat_{maxRepeat}
     {
         appendChild(entry);
     }
@@ -454,7 +454,7 @@ class FilterNode: public SyntaxNode
 {
 public:
     FilterNode(SyntaxNode *filter, char blank, SyntaxNode *entry):
-        blank_(blank)
+        blank_{blank}
     {
         appendChild(filter);
         appendChild(entry);
@@ -514,8 +514,8 @@ class LengthNode: public SyntaxNode
 {
 public:
     LengthNode(int minLength, int maxLength, SyntaxNode *entry):
-        minLength_(minLength),
-        maxLength_(maxLength)
+        minLength_{minLength},
+        maxLength_{maxLength}
     {
         appendChild(entry);
     }
@@ -574,7 +574,7 @@ class PassNode: public SyntaxNode
 {
 public:
     PassNode(int invert):
-        invert_(invert)
+        invert_{invert}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -631,7 +631,7 @@ class AheadNode: public SyntaxNode
 {
 public:
     AheadNode(SyntaxNode *entry, int invert):
-        invert_(invert)
+        invert_{invert}
     {
         appendChild(entry);
     }
@@ -666,8 +666,8 @@ class BehindNode: public SyntaxNode
 {
 public:
     BehindNode(SyntaxNode *entry, int invert):
-        invert_(invert),
-        length_(entry->matchLength())
+        invert_{invert},
+        length_{entry->matchLength()}
     {
         appendChild(entry);
     }
@@ -845,8 +845,8 @@ class HintNode: public SyntaxNode
 {
 public:
     HintNode(const char *message, SyntaxNode *entry, bool strict = false):
-        message_(message),
-        strict_(strict)
+        message_{message},
+        strict_{strict}
     {
         appendChild(entry);
     }
@@ -879,8 +879,8 @@ class CallNode: public SyntaxNode
 {
 public:
     CallNode(CallBack callBack, Object *self):
-        callBack_(callBack),
-        self_(self)
+        callBack_{callBack},
+        self_{self}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -899,9 +899,9 @@ class SetNode: public SyntaxNode
 {
 public:
     SetNode(DefinitionNode *scope, int flagId, bool value):
-        scope_(scope),
-        flagId_(flagId),
-        value_(value)
+        scope_{scope},
+        flagId_{flagId},
+        value_{value}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -924,8 +924,8 @@ class IfNode: public SyntaxNode
 {
 public:
     IfNode(DefinitionNode *scope, int flagId, SyntaxNode *trueBranch, SyntaxNode *falseBranch):
-        scope_(scope),
-        flagId_(flagId)
+        scope_{scope},
+        flagId_{flagId}
     {
         appendChild(trueBranch);
         appendChild(falseBranch);
@@ -952,8 +952,8 @@ class CaptureNode: public SyntaxNode
 {
 public:
     CaptureNode(DefinitionNode *scope, int captureId, SyntaxNode *coverage):
-        scope_(scope),
-        captureId_(captureId)
+        scope_{scope},
+        captureId_{captureId}
     {
         appendChild(coverage);
     }
@@ -992,8 +992,8 @@ class ReplayNode: public SyntaxNode
 {
 public:
     ReplayNode(DefinitionNode *scope, int captureId):
-        scope_(scope),
-        captureId_(captureId)
+        scope_{scope},
+        captureId_{captureId}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -1020,12 +1020,12 @@ class RuleNode: public SyntaxNode
 {
 public:
     RuleNode(DefinitionNode *scope, const char *name, int id, SyntaxNode *entry, bool generate = true):
-        scope_(scope),
-        name_(name),
-        id_(id),
-        generate_(generate),
-        used_(false),
-        numberOfRefs_(-1)
+        scope_{scope},
+        name_{name},
+        id_{id},
+        generate_{generate},
+        used_{false},
+        numberOfRefs_{-1}
     {
         appendChild(entry);
     }
@@ -1065,8 +1065,8 @@ class LinkNode: public SyntaxNode
 {
 public:
     LinkNode(const char *ruleName):
-        ruleName_(ruleName),
-        rule_(0)
+        ruleName_{ruleName},
+        rule_{nullptr}
     {}
 
     LinkNode(RuleNode *rule):
@@ -1091,13 +1091,13 @@ protected:
 class RefNode: public LinkNode
 {
 public:
-    RefNode(const char *ruleName = 0, bool generate = true):
-        LinkNode(ruleName),
-        generate_(generate)
+    RefNode(const char *ruleName = nullptr, bool generate = true):
+        LinkNode{ruleName},
+        generate_{generate}
     {}
 
     RefNode(RuleNode *rule):
-        LinkNode(rule)
+        LinkNode{rule}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -1117,8 +1117,8 @@ private:
 class InvokeNode: public RefNode
 {
 public:
-    InvokeNode(const char *ruleName, SyntaxNode *coverage = 0):
-        RefNode(ruleName)
+    InvokeNode(const char *ruleName, SyntaxNode *coverage = nullptr):
+        RefNode{ruleName}
     {
         if (coverage) appendChild(coverage);
     }
@@ -1134,10 +1134,10 @@ private:
 class PreviousNode: public LinkNode
 {
 public:
-    PreviousNode(const char *ruleName, const char *keyword = 0):
-        LinkNode(ruleName),
-        keywordName_(keyword),
-        keyword_(-1)
+    PreviousNode(const char *ruleName, const char *keyword = nullptr):
+        LinkNode{ruleName},
+        keywordName_{keyword},
+        keyword_{-1}
     {}
 
     int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const override
@@ -1167,7 +1167,7 @@ class ContextNode: public LinkNode
 {
 public:
     ContextNode(const char *ruleName, SyntaxNode *inContext, SyntaxNode *outOfContext):
-        LinkNode(ruleName)
+        LinkNode{ruleName}
     {
         appendChild(inContext);
         appendChild(outOfContext);
@@ -1205,26 +1205,26 @@ class SyntaxDebugFactory;
 class DefinitionNode: public RefNode
 {
 public:
-    DefinitionNode(SyntaxDebugFactory *debugFactory = 0):
-        debugFactory_(debugFactory),
-        id_(scope()),
-        name_(0),
-        caseSensitive_(true),
-        scopeByName_(ScopeByName::create()),
-        ruleCount_(0),
-        keywordCount_(0),
-        ruleByName_(RuleByName::create()),
-        keywordByName_(KeywordByName::create()),
-        flagCount_(0),
-        captureCount_(0),
-        flagIdByName_(StateIdByName::create()),
-        captureIdByName_(StateIdByName::create())
+    DefinitionNode(SyntaxDebugFactory *debugFactory = nullptr):
+        debugFactory_{debugFactory},
+        id_{scope()},
+        name_{nullptr},
+        caseSensitive_{true},
+        scopeByName_{ScopeByName::create()},
+        ruleCount_{0},
+        keywordCount_{0},
+        ruleByName_{RuleByName::create()},
+        keywordByName_{KeywordByName::create()},
+        flagCount_{0},
+        captureCount_{0},
+        flagIdByName_{StateIdByName::create()},
+        captureIdByName_{StateIdByName::create()}
     {
         if (debugFactory_)
             debugFactory_->definition_ = this;
     }
 
-    static int scope(const char *name = 0) { return crc32(name); }
+    static int scope(const char *name = nullptr) { return crc32(name); }
 
     SyntaxDebugFactory *debugFactory() const { return debugFactory_; }
 
@@ -1238,7 +1238,7 @@ public:
         name_ = name;
     }
 
-    void IMPORT(const DefinitionNode *definition, const char *name = 0) {
+    void IMPORT(const DefinitionNode *definition, const char *name = nullptr) {
         if (!name) name = definition->name();
         if (!name)
             CC_DEBUG_ERROR("Cannot import anonymous syntax definition");

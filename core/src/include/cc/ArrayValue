@@ -14,13 +14,13 @@
 
 namespace cc {
 
-/** \class array cc/array
+/** \class ArrayValue cc/ArrayValue
   * \ingroup container_highlevel
   * \brief %Array data container
   * \tparam T item type
   */
 template<class T>
-class array {
+class ArrayValue {
 public:
     typedef Array<T> Instance;
     typedef typename Instance::value_type value_type;
@@ -28,11 +28,11 @@ public:
     typedef typename Instance::iterator iterator;
     typedef typename Instance::const_iterator const_iterator;
 
-    array(size_type size):
+    ArrayValue(size_type size):
         instance_{new Instance{size}}
     {}
 
-    array(std::initializer_list<T> b):
+    ArrayValue(std::initializer_list<T> b):
         instance_{new Instance{b.size()}}
     {
         size_type i = 0;
@@ -42,20 +42,20 @@ public:
         }
     }
 
-    array(const array &b) = default;
+    ArrayValue(const ArrayValue &b) = default;
 
-    array(array &&b):
+    ArrayValue(ArrayValue &&b):
         instance_{std::move(b.instance_)}
     {}
 
-    array &operator=(const array &b) = default;
+    ArrayValue &operator=(const ArrayValue &b) = default;
 
-    array &operator=(array &&b) {
+    ArrayValue &operator=(ArrayValue &&b) {
         instance_ = std::move(b.instance_);
         return *this;
     }
 
-    array(Instance *b):
+    ArrayValue(Instance *b):
         instance_{b}
     {}
 
@@ -75,40 +75,40 @@ private:
 };
 
 template<class T>
-typename array<T>::size_type count(const array<T> &a) { return a->count(); }
+typename ArrayValue<T>::size_type count(const ArrayValue<T> &a) { return a->count(); }
 
 template<class T>
-typename array<T>::const_iterator begin(const array<T> &a) { return a->begin(); }
+typename ArrayValue<T>::const_iterator begin(const ArrayValue<T> &a) { return a->begin(); }
 
 template<class T>
-typename array<T>::const_iterator end(const array<T> &a) { return a->end(); }
+typename ArrayValue<T>::const_iterator end(const ArrayValue<T> &a) { return a->end(); }
 
 template<class T>
-typename array<T>::iterator begin(array<T> &a) { return a->begin(); }
+typename ArrayValue<T>::iterator begin(ArrayValue<T> &a) { return a->begin(); }
 
 template<class T>
-typename array<T>::iterator end(array<T> &a) { return a->end(); }
+typename ArrayValue<T>::iterator end(ArrayValue<T> &a) { return a->end(); }
 
 template<class T>
-bool operator==(const array<T> &a, const array<T> &b) { return container::compare(a, b) == 0; }
+bool operator==(const ArrayValue<T> &a, const ArrayValue<T> &b) { return container::compare(a, b) == 0; }
 
 template<class T>
-bool operator!=(const array<T> &a, const array<T> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const ArrayValue<T> &a, const ArrayValue<T> &b) { return container::compare(a, b) != 0; }
 
 template<class T>
-bool operator<(const array<T> &a, const array<T> &b) { return container::compare(a, b) < 0; }
+bool operator<(const ArrayValue<T> &a, const ArrayValue<T> &b) { return container::compare(a, b) < 0; }
 
 template<class T>
-bool operator>(const array<T> &a, const array<T> &b) { return container::compare(a, b) > 0; }
+bool operator>(const ArrayValue<T> &a, const ArrayValue<T> &b) { return container::compare(a, b) > 0; }
 
 template<class T>
-bool operator<=(const array<T> &a, const array<T> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const ArrayValue<T> &a, const ArrayValue<T> &b) { return container::compare(a, b) <= 0; }
 
 template<class T>
-bool operator>=(const array<T> &a, const array<T> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const ArrayValue<T> &a, const ArrayValue<T> &b) { return container::compare(a, b) >= 0; }
 
 template<class T>
-String str(const array<T> &a)
+String str(const ArrayValue<T> &a)
 {
     Format f;
     f << "[ ";

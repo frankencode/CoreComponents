@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/can/CanMedia>
-#include <cc/set>
+#include <cc/SetValue>
 
 namespace cc { class Mutex; }
 
@@ -34,7 +34,7 @@ private:
 
     void broadcast(const VirtualCanMedia *source, const CanFrame *frame);
 
-    set< Ref<VirtualCanMedia> > connections_;
+    SetValue< Ref<VirtualCanMedia> > connections_;
 
     Ref<Mutex> mutex_;
 };

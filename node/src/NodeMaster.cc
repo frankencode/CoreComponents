@@ -133,7 +133,7 @@ void NodeMaster::runNode()
         startedChannel_->push(socket->address());
 
     while (true) {
-        Ref<IoActivity> activity = ioMonitor->wait(1000);
+        IoActivity activity = ioMonitor->wait(1000);
         for (const IoEvent *event: activity) {
             try {
                 StreamSocket *listeningSocket = Object::cast<StreamSocket *>(event->target());

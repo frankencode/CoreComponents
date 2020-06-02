@@ -10,8 +10,8 @@
 
 #include <cc/can/types>
 #include <cc/IniSyntax>
-#include <cc/set>
-#include <cc/map>
+#include <cc/SetValue>
+#include <cc/MapValue>
 
 namespace cc { class Date; }
 
@@ -186,7 +186,7 @@ public:
         uint32_t productNumber_ { 0 };
         uint32_t revisionNumber_ { 0 };
         String orderCode_;
-        set<uint32_t> supportedBaudRates_;
+        SetValue<uint32_t> supportedBaudRates_;
         bool simpleBootUpMaster_ { false };
         bool simpleBootUpSlave_ { false };
         uint8_t granularity_ { 8 };
@@ -216,7 +216,7 @@ public:
         DummyUsage();
         void establish(const String &key, const String &value) override;
 
-        set<uint16_t> dummies_;
+        SetValue<uint16_t> dummies_;
     };
 
     class Comments: public Section {
@@ -261,7 +261,7 @@ public:
         void enterSection(const String &sectionName) override;
         void establish(const String &key, const String &value) override;
 
-        map< uint16_t, Ref<EntryInfo> > entries_;
+        MapValue< uint16_t, Ref<EntryInfo> > entries_;
 
         EntryInfo *currentEntry_ { nullptr };
     };
@@ -347,7 +347,7 @@ public:
         uint16_t index_ { 0 };
         uint8_t subIndex_ { 0 };
 
-        map< uint16_t, Ref<EntryInfo> > subEntries_;
+        MapValue< uint16_t, Ref<EntryInfo> > subEntries_;
 
         EntryInfo *currentSubEntry_ { nullptr };
     };

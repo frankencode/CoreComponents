@@ -11,7 +11,7 @@
 #include <cc/can/EventHandler>
 #include <cc/can/SafetyEventHandler>
 #include <cc/can/CanMedia>
-#include <cc/map>
+#include <cc/MapValue>
 
 namespace cc { class Worker; }
 namespace cc { class Mutex; }
@@ -42,7 +42,7 @@ private:
 
     Ref<CanMedia> media_;
 
-    map< int, Ref<Event> > events_;
+    MapValue< int, Ref<Event> > events_;
 
     Ref<Worker> worker_;
     Ref<Mutex> mutex_;

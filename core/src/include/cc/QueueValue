@@ -14,14 +14,14 @@
 
 namespace cc {
 
-/** \class queue cc/queue
+/** \class QueueValue cc/QueueValue
   * \ingroup container_highlevel
   * \brief %Queue data container
   * \tparam T item type
   * \see priority_queue
   */
 template<class T>
-class queue {
+class QueueValue {
 public:
     typedef Queue<T> Instance;
 
@@ -34,17 +34,17 @@ public:
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< \internal
 
-    queue():
+    QueueValue():
         instance_{new Instance}
     {}
 
-    queue(std::initializer_list<T> b):
+    QueueValue(std::initializer_list<T> b):
         instance_{new Instance}
     {
         for (auto &x: b) *instance_ << x;
     }
 
-    queue(Instance *b):
+    QueueValue(Instance *b):
         instance_{b}
     {}
 
@@ -54,48 +54,48 @@ public:
     operator const Instance *() const { return instance_; }
     operator Instance *() { return Cow::get(instance_); }
 
-    queue &operator<<(const T& x) { *instance_ << x; return *this; }
-    queue &operator>>(T& x) { if (instance_->count() > 0) *instance_ >> x; return *this; }
+    QueueValue &operator<<(const T& x) { *instance_ << x; return *this; }
+    QueueValue &operator>>(T& x) { if (instance_->count() > 0) *instance_ >> x; return *this; }
 
 private:
     Ref<Instance> instance_;
 };
 
 template<class T>
-typename queue<T>::Index count(const queue<T> &a) { return a->count(); }
+typename QueueValue<T>::Index count(const QueueValue<T> &a) { return a->count(); }
 
 template<class T>
-typename queue<T>::ConstIterator begin(const queue<T> &a) { return a->begin(); }
+typename QueueValue<T>::ConstIterator begin(const QueueValue<T> &a) { return a->begin(); }
 
 template<class T>
-typename queue<T>::ConstIterator end(const queue<T> &a) { return a->end(); }
+typename QueueValue<T>::ConstIterator end(const QueueValue<T> &a) { return a->end(); }
 
 template<class T>
-typename queue<T>::Iterator begin(queue<T> &a) { return a->begin(); }
+typename QueueValue<T>::Iterator begin(QueueValue<T> &a) { return a->begin(); }
 
 template<class T>
-typename queue<T>::Iterator end(queue<T> &a) { return a->end(); }
+typename QueueValue<T>::Iterator end(QueueValue<T> &a) { return a->end(); }
 
 template<class T>
-bool operator==(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) == 0; }
+bool operator==(const QueueValue<T> &a, const QueueValue<T> &b) { return container::compare(a, b) == 0; }
 
 template<class T>
-bool operator!=(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const QueueValue<T> &a, const QueueValue<T> &b) { return container::compare(a, b) != 0; }
 
 template<class T>
-bool operator<(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) < 0; }
+bool operator<(const QueueValue<T> &a, const QueueValue<T> &b) { return container::compare(a, b) < 0; }
 
 template<class T>
-bool operator>(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) > 0; }
+bool operator>(const QueueValue<T> &a, const QueueValue<T> &b) { return container::compare(a, b) > 0; }
 
 template<class T>
-bool operator<=(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const QueueValue<T> &a, const QueueValue<T> &b) { return container::compare(a, b) <= 0; }
 
 template<class T>
-bool operator>=(const queue<T> &a, const queue<T> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const QueueValue<T> &a, const QueueValue<T> &b) { return container::compare(a, b) >= 0; }
 
 template<class T>
-String str(const queue<T> &a)
+String str(const QueueValue<T> &a)
 {
     Format f;
     f << "[ ";

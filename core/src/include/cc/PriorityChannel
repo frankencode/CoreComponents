@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/priority_queue>
+#include <cc/PriorityQueueValue>
 #include <cc/Mutex>
 #include <cc/Guard>
 #include <cc/WaitCondition>
@@ -29,7 +29,7 @@ public:
       * \return new object instance
       */
     static Ref<PriorityChannel> create() {
-        return new PriorityChannel{};
+        return new PriorityChannel;
     }
 
     /** Add a new item to the end of the queue
@@ -155,13 +155,12 @@ public:
 
 protected:
     PriorityChannel():
-        queue_{PriorityQueue<T>::create()},
         mutex_{Mutex::create()},
         notEmpty_{WaitCondition::create()}
     {}
 
 private:
-    Ref< PriorityQueue<T> > queue_;
+    PriorityQueueValue<T> queue_;
     Ref<Mutex> mutex_;
     Ref<WaitCondition> notEmpty_;
 };

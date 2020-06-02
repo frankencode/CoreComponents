@@ -87,7 +87,7 @@ void StorageMonitor::run()
 
         while (true)
         {
-            Ref<IoActivity> activity = ioMonitor->wait();
+            IoActivity activity = ioMonitor->wait();
             if (activity->find(shutdownEvent)) break;
 
             if (activity->find(monitorEvent))

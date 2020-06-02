@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/array>
-#include <cc/map>
+#include <cc/ArrayValue>
+#include <cc/MapValue>
 #include <cc/IoTarget>
 #include <cc/SystemIo>
 
@@ -47,7 +47,7 @@ private:
 };
 
 /// I/O activity vector
-typedef Array<const IoEvent *> IoActivity;
+typedef ArrayValue<const IoEvent *> IoActivity;
 
 /** \class IoMonitor cc/IoMonitor
   * \ingroup concurrency
@@ -78,7 +78,7 @@ public:
       * \param timeout_ms timeout in milliseconds (or infinite if < 0)
       * \return list of I/O events that occured before timed out
       */
-    Ref<IoActivity> wait(int timeout_ms = -1);
+    IoActivity wait(int timeout_ms = -1);
 
     /** Wait for a specific I/O event
       * \param event I/O event to wait for
@@ -91,8 +91,8 @@ public:
 private:
     IoMonitor(int maxCount);
 
-    array<struct pollfd> fds_;
-    map<int, Ref<IoEvent> > events_;
+    ArrayValue<struct pollfd> fds_;
+    MapValue<int, Ref<IoEvent> > events_;
 };
 
 } // namespace cc

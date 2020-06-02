@@ -1,18 +1,18 @@
 #include <cc/debug>
 #include <cc/stdio>
-#include <cc/list>
+#include <cc/ListValue>
 
-namespace cc { template class list<int>; }
+namespace cc { template class ListValue<int>; }
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
 
-    list<int> a;
+    ListValue<int> a;
     for (int i = 0; i < 10; ++i)
         a << i;
 
-    list<int> b = a;
+    ListValue<int> b = a;
 
     a[0] = -1;
 
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     fout() << nl;
     fout("b = %%") << b << nl;
 
-    list<int> c = { 1, 2, 4, 6 };
+    ListValue<int> c = { 1, 2, 4, 6 };
 
     a = c;
     for (int &x: c) ++x;

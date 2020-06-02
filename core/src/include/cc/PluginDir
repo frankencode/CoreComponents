@@ -10,7 +10,7 @@
 
 #include <cc/Source>
 #include <cc/Plugin>
-#include <cc/map>
+#include <cc/MapValue>
 
 namespace cc {
 
@@ -32,7 +32,7 @@ private:
     PluginDir *open();
 
     String path_;
-    typedef map< String, Ref<Plugin> > PluginByName;
+    typedef MapValue< String, Ref<Plugin> > PluginByName;
     PluginByName loadedPlugins_;
 };
 

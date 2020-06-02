@@ -14,15 +14,15 @@
 
 namespace cc {
 
-/** \class map cc/map
+/** \class MapValue cc/MapValue
   * \ingroup container_highlevel
   * \brief %Map data container
   * \tparam K key type
   * \tparam T mapped type
-  * \see multimap, set
+  * \see MultiMapValue, MultiSet
   */
 template<class K, class T = K>
-class map {
+class MapValue {
 public:
     typedef Map<K, T> Instance;
 
@@ -37,30 +37,30 @@ public:
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< \internal
 
-    map():
+    MapValue():
         instance_{new Instance}
     {}
 
-    map(std::initializer_list<KeyValue<K, T>> b):
+    MapValue(std::initializer_list<KeyValue<K, T>> b):
         instance_{new Instance}
     {
         for (auto &x: b) instance_->insert(x->key(), x->value());
     }
 
-    map(const map &b) = default;
+    MapValue(const MapValue &b) = default;
 
-    map(map &&b):
+    MapValue(MapValue &&b):
         instance_{std::move(b.instance_)}
     {}
 
-    map &operator=(const map &b) = default;
+    MapValue &operator=(const MapValue &b) = default;
 
-    map &operator=(map &&b) {
+    MapValue &operator=(MapValue &&b) {
         instance_ = std::move(b.instance_);
         return *this;
     }
 
-    map(Instance *b):
+    MapValue(Instance *b):
         instance_{b}
     {}
 
@@ -79,40 +79,40 @@ private:
 };
 
 template<class K, class T>
-typename map<K, T>::Index count(const map<K, T> &a) { return a->count(); }
+typename MapValue<K, T>::Index count(const MapValue<K, T> &a) { return a->count(); }
 
 template<class K, class T>
-typename map<K, T>::ConstIterator begin(const map<K, T> &a) { return a->begin(); }
+typename MapValue<K, T>::ConstIterator begin(const MapValue<K, T> &a) { return a->begin(); }
 
 template<class K, class T>
-typename map<K, T>::ConstIterator end(const map<K, T> &a) { return a->end(); }
+typename MapValue<K, T>::ConstIterator end(const MapValue<K, T> &a) { return a->end(); }
 
 template<class K, class T>
-typename map<K, T>::Iterator begin(map<K, T> &a) { return a->begin(); }
+typename MapValue<K, T>::Iterator begin(MapValue<K, T> &a) { return a->begin(); }
 
 template<class K, class T>
-typename map<K, T>::Iterator end(map<K, T> &a) { return a->end(); }
+typename MapValue<K, T>::Iterator end(MapValue<K, T> &a) { return a->end(); }
 
 template<class K, class T>
-bool operator==(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) == 0; }
+bool operator==(const MapValue<K, T> &a, const MapValue<K, T> &b) { return container::compare(a, b) == 0; }
 
 template<class K, class T>
-bool operator!=(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const MapValue<K, T> &a, const MapValue<K, T> &b) { return container::compare(a, b) != 0; }
 
 template<class K, class T>
-bool operator<(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) < 0; }
+bool operator<(const MapValue<K, T> &a, const MapValue<K, T> &b) { return container::compare(a, b) < 0; }
 
 template<class K, class T>
-bool operator>(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) > 0; }
+bool operator>(const MapValue<K, T> &a, const MapValue<K, T> &b) { return container::compare(a, b) > 0; }
 
 template<class K, class T>
-bool operator<=(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const MapValue<K, T> &a, const MapValue<K, T> &b) { return container::compare(a, b) <= 0; }
 
 template<class K, class T>
-bool operator>=(const map<K, T> &a, const map<K, T> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const MapValue<K, T> &a, const MapValue<K, T> &b) { return container::compare(a, b) >= 0; }
 
 template<class K, class T>
-String str(const map<K, T> &a)
+String str(const MapValue<K, T> &a)
 {
     Format f;
     f << "[ ";

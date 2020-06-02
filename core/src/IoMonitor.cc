@@ -47,7 +47,7 @@ void IoMonitor::removeEvent(const IoEvent *event)
     events_->remove(n - 1);
 }
 
-Ref<IoActivity> IoMonitor::wait(int timeout_ms)
+IoActivity IoMonitor::wait(int timeout_ms)
 {
     struct pollfd *fds = nullptr;
     if (events_->count() > 0) fds = fds_->data();
@@ -58,7 +58,7 @@ Ref<IoActivity> IoMonitor::wait(int timeout_ms)
 
     CC_ASSERT(n <= events_->count());
 
-    Ref<IoActivity> activity = IoActivity::create(n);
+    IoActivity activity{n};
     int j = 0;
     for (int i = 0; i < events_->count(); ++i) {
         if (fds_->at(i).revents != 0) {

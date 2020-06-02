@@ -11,7 +11,7 @@
 #include <cc/can/CanMedia>
 #include <cc/can/Emission>
 #include <cc/can/SafetyEmission>
-#include <cc/set>
+#include <cc/SetValue>
 
 namespace cc { class Worker; }
 namespace cc { class Mutex; }
@@ -41,7 +41,7 @@ private:
 
     Ref<CanMedia> media_;
 
-    set< Ref<Emission> > emissions_;
+    SetValue< Ref<Emission> > emissions_;
     Ref<Mutex> mutex_;
 
     Ref<Worker> worker_;

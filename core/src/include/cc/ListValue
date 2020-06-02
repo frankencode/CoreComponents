@@ -20,7 +20,7 @@ namespace cc {
   * \tparam T item type
   */
 template<class T>
-class list {
+class ListValue {
 public:
     typedef List<T> Instance;
 
@@ -34,30 +34,30 @@ public:
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< \internal
 
-    list():
+    ListValue():
         instance_{new Instance}
     {}
 
-    list(std::initializer_list<T> b):
+    ListValue(std::initializer_list<T> b):
         instance_{new Instance}
     {
         for (auto &x: b) *instance_ << x;
     }
 
-    list(const list &b) = default;
+    ListValue(const ListValue &b) = default;
 
-    list(list &&b):
+    ListValue(ListValue &&b):
         instance_{std::move(b.instance_)}
     {}
 
-    list &operator=(const list &b) = default;
+    ListValue &operator=(const ListValue &b) = default;
 
-    list &operator=(list &&b) {
+    ListValue &operator=(ListValue &&b) {
         instance_ = std::move(b.instance_);
         return *this;
     }
 
-    list(Instance *b):
+    ListValue(Instance *b):
         instance_{b}
     {}
 
@@ -70,8 +70,8 @@ public:
     T &operator[](size_type i) { return Cow::get(instance_)->at(i); }
     const T &operator[](size_type i) const { return instance_->at(i); }
 
-    list &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
-    list &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
+    ListValue &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
+    ListValue &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
 
 private:
     explicit operator bool() const;
@@ -80,40 +80,40 @@ private:
 };
 
 template<class T>
-typename list<T>::Index count(const list<T> &a) { return a->count(); }
+typename ListValue<T>::Index count(const ListValue<T> &a) { return a->count(); }
 
 template<class T>
-typename list<T>::ConstIterator begin(const list<T> &a) { return a->begin(); }
+typename ListValue<T>::ConstIterator begin(const ListValue<T> &a) { return a->begin(); }
 
 template<class T>
-typename list<T>::ConstIterator end(const list<T> &a) { return a->end(); }
+typename ListValue<T>::ConstIterator end(const ListValue<T> &a) { return a->end(); }
 
 template<class T>
-typename list<T>::Iterator begin(list<T> &a) { return a->begin(); }
+typename ListValue<T>::Iterator begin(ListValue<T> &a) { return a->begin(); }
 
 template<class T>
-typename list<T>::Iterator end(list<T> &a) { return a->end(); }
+typename ListValue<T>::Iterator end(ListValue<T> &a) { return a->end(); }
 
 template<class T>
-bool operator==(const list<T> &a, const list<T> &b) { return container::compare(a, b) == 0; }
+bool operator==(const ListValue<T> &a, const ListValue<T> &b) { return container::compare(a, b) == 0; }
 
 template<class T>
-bool operator!=(const list<T> &a, const list<T> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const ListValue<T> &a, const ListValue<T> &b) { return container::compare(a, b) != 0; }
 
 template<class T>
-bool operator<(const list<T> &a, const list<T> &b) { return container::compare(a, b) < 0; }
+bool operator<(const ListValue<T> &a, const ListValue<T> &b) { return container::compare(a, b) < 0; }
 
 template<class T>
-bool operator>(const list<T> &a, const list<T> &b) { return container::compare(a, b) > 0; }
+bool operator>(const ListValue<T> &a, const ListValue<T> &b) { return container::compare(a, b) > 0; }
 
 template<class T>
-bool operator<=(const list<T> &a, const list<T> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const ListValue<T> &a, const ListValue<T> &b) { return container::compare(a, b) <= 0; }
 
 template<class T>
-bool operator>=(const list<T> &a, const list<T> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const ListValue<T> &a, const ListValue<T> &b) { return container::compare(a, b) >= 0; }
 
 template<class T>
-String str(const list<T> &a)
+String str(const ListValue<T> &a)
 {
     Format f;
     f << "[ ";

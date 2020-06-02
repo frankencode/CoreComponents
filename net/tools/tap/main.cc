@@ -67,9 +67,8 @@ int main(int argc, char **argv)
             bool serverClosed = false;
             bool clientClosed = false;
             while (!(serverClosed || clientClosed)) {
-                Ref<IoActivity> activity = monitor->wait();
-                for (int i = 0; i < activity->count(); ++i) {
-                    const IoEvent *event = activity->at(i);
+                IoActivity activity = monitor->wait();
+                for (const IoEvent *event: activity) {
                     Ref<StreamSocket> socket = event->target();
                     if (socket == serverSocket) {
                         int n = serverSocket->read(mutate(data));

@@ -1,14 +1,14 @@
 #include <cc/debug>
 #include <cc/stdio>
-#include <cc/queue>
+#include <cc/QueueValue>
 
-namespace cc { template class queue<int>; }
+namespace cc { template class QueueValue<int>; }
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
 
-    queue<int> a;
+    QueueValue<int> a;
 
     for (int i = 0; i < 10; ++i) {
         a->pushBack(i);

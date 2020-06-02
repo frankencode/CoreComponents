@@ -14,13 +14,13 @@
 
 namespace cc {
 
-/** \class multiset cc/multiset
+/** \class MultiSetValue cc/MultiSetValue
   * \ingroup container_highlevel
   * \brief %Multi-set data container
-  * \see set, multimap
+  * \see MultiSet, MultiSetValue
   */
 template<class T>
-class multiset {
+class MultiSetValue {
 public:
     typedef MultiSet<T> Instance;
 
@@ -33,30 +33,30 @@ public:
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< \internal
 
-    multiset():
+    MultiSetValue():
         instance_{new Instance}
     {}
 
-    multiset(std::initializer_list<T> b):
+    MultiSetValue(std::initializer_list<T> b):
         instance_{new Instance}
     {
         for (auto &x: b) *instance_ << x;
     }
 
-    multiset(const multiset &b) = default;
+    MultiSetValue(const MultiSetValue &b) = default;
 
-    multiset(multiset &&b):
+    MultiSetValue(MultiSetValue &&b):
         instance_{std::move(b.instance_)}
     {}
 
-    multiset &operator=(const multiset &b) = default;
+    MultiSetValue &operator=(const MultiSetValue &b) = default;
 
-    multiset &operator=(multiset &&b) {
+    MultiSetValue &operator=(MultiSetValue &&b) {
         instance_ = std::move(b.instance_);
         return *this;
     }
 
-    multiset(Instance *b):
+    MultiSetValue(Instance *b):
         instance_{b}
     {}
 
@@ -68,48 +68,48 @@ public:
 
     const T &operator[](Index i) const { return instance_->at(i); }
 
-    multiset &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
-    multiset &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
+    MultiSetValue &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
+    MultiSetValue &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
 
 private:
     Ref<Instance> instance_;
 };
 
 template<class T>
-typename multiset<T>::Index count(const multiset<T> &a) { return a->count(); }
+typename MultiSetValue<T>::Index count(const MultiSetValue<T> &a) { return a->count(); }
 
 template<class T>
-typename multiset<T>::ConstIterator begin(const multiset<T> &a) { return a->begin(); }
+typename MultiSetValue<T>::ConstIterator begin(const MultiSetValue<T> &a) { return a->begin(); }
 
 template<class T>
-typename multiset<T>::ConstIterator end(const multiset<T> &a) { return a->end(); }
+typename MultiSetValue<T>::ConstIterator end(const MultiSetValue<T> &a) { return a->end(); }
 
 template<class T>
-typename multiset<T>::Iterator begin(multiset<T> &a) { return a->begin(); }
+typename MultiSetValue<T>::Iterator begin(MultiSetValue<T> &a) { return a->begin(); }
 
 template<class T>
-typename multiset<T>::Iterator end(multiset<T> &a) { return a->end(); }
+typename MultiSetValue<T>::Iterator end(MultiSetValue<T> &a) { return a->end(); }
 
 template<class T>
-bool operator==(const multiset<T> &a, const multiset<T> &b) { return container::compare(a, b) == 0; }
+bool operator==(const MultiSetValue<T> &a, const MultiSetValue<T> &b) { return container::compare(a, b) == 0; }
 
 template<class T>
-bool operator!=(const multiset<T> &a, const multiset<T> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const MultiSetValue<T> &a, const MultiSetValue<T> &b) { return container::compare(a, b) != 0; }
 
 template<class T>
-bool operator<(const multiset<T> &a, const multiset<T> &b) { return container::compare(a, b) < 0; }
+bool operator<(const MultiSetValue<T> &a, const MultiSetValue<T> &b) { return container::compare(a, b) < 0; }
 
 template<class T>
-bool operator>(const multiset<T> &a, const multiset<T> &b) { return container::compare(a, b) > 0; }
+bool operator>(const MultiSetValue<T> &a, const MultiSetValue<T> &b) { return container::compare(a, b) > 0; }
 
 template<class T>
-bool operator<=(const multiset<T> &a, const multiset<T> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const MultiSetValue<T> &a, const MultiSetValue<T> &b) { return container::compare(a, b) <= 0; }
 
 template<class T>
-bool operator>=(const multiset<T> &a, const multiset<T> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const MultiSetValue<T> &a, const MultiSetValue<T> &b) { return container::compare(a, b) >= 0; }
 
 template<class T>
-String str(const multiset<T> &a)
+String str(const MultiSetValue<T> &a)
 {
     Format f;
     f << "[ ";

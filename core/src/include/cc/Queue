@@ -17,7 +17,7 @@
 namespace cc {
 
 template<class T>
-class queue;
+class QueueValue;
 
 template<class T>
 class QueueNode {
@@ -270,7 +270,7 @@ public:
 
 private:
     friend class Local<Queue>;
-    friend class queue<T>;
+    friend class QueueValue<T>;
 
     Queue() = default;
 

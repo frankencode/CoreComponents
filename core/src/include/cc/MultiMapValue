@@ -14,7 +14,7 @@
 
 namespace cc {
 
-/** \class multimap cc/multimap
+/** \class MultiMapValue cc/MultiMapValue
   * \ingroup container_highlevel
   * \brief Multi-map data container
   * \tparam K key type
@@ -22,7 +22,7 @@ namespace cc {
   * \see map, multiset
   */
 template<class K, class T = K>
-class multimap {
+class MultiMapValue {
 public:
     typedef MultiMap<K, T> Instance;
 
@@ -37,30 +37,30 @@ public:
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< \internal
 
-    multimap():
+    MultiMapValue():
         instance_{new Instance}
     {}
 
-    multimap(std::initializer_list<KeyValue<K, T>> b):
+    MultiMapValue(std::initializer_list<KeyValue<K, T>> b):
         instance_{new Instance}
     {
         for (auto &x: b) instance_->insert(x->key(), x->value());
     }
 
-    multimap(const multimap &b) = default;
+    MultiMapValue(const MultiMapValue &b) = default;
 
-    multimap(multimap &&b):
+    MultiMapValue(MultiMapValue &&b):
         instance_{std::move(b.instance_)}
     {}
 
-    multimap &operator=(const multimap &b) = default;
+    MultiMapValue &operator=(const MultiMapValue &b) = default;
 
-    multimap &operator=(multimap &&b) {
+    MultiMapValue &operator=(MultiMapValue &&b) {
         instance_ = std::move(b.instance_);
         return *this;
     }
 
-    multimap(Instance *b):
+    MultiMapValue(Instance *b):
         instance_{b}
     {}
 
@@ -77,40 +77,40 @@ private:
 };
 
 template<class K, class T>
-typename multimap<K, T>::Index count(const multimap<K, T> &a) { return a->count(); }
+typename MultiMapValue<K, T>::Index count(const MultiMapValue<K, T> &a) { return a->count(); }
 
 template<class K, class T>
-typename multimap<K, T>::ConstIterator begin(const multimap<K, T> &a) { return a->begin(); }
+typename MultiMapValue<K, T>::ConstIterator begin(const MultiMapValue<K, T> &a) { return a->begin(); }
 
 template<class K, class T>
-typename multimap<K, T>::ConstIterator end(const multimap<K, T> &a) { return a->end(); }
+typename MultiMapValue<K, T>::ConstIterator end(const MultiMapValue<K, T> &a) { return a->end(); }
 
 template<class K, class T>
-typename multimap<K, T>::Iterator begin(multimap<K, T> &a) { return a->begin(); }
+typename MultiMapValue<K, T>::Iterator begin(MultiMapValue<K, T> &a) { return a->begin(); }
 
 template<class K, class T>
-typename multimap<K, T>::Iterator end(multimap<K, T> &a) { return a->end(); }
+typename MultiMapValue<K, T>::Iterator end(MultiMapValue<K, T> &a) { return a->end(); }
 
 template<class K, class T>
-bool operator==(const multimap<K, T> &a, const multimap<K, T> &b) { return container::compare(a, b) == 0; }
+bool operator==(const MultiMapValue<K, T> &a, const MultiMapValue<K, T> &b) { return container::compare(a, b) == 0; }
 
 template<class K, class T>
-bool operator!=(const multimap<K, T> &a, const multimap<K, T> &b) { return container::compare(a, b) != 0; }
+bool operator!=(const MultiMapValue<K, T> &a, const MultiMapValue<K, T> &b) { return container::compare(a, b) != 0; }
 
 template<class K, class T>
-bool operator<(const multimap<K, T> &a, const multimap<K, T> &b) { return container::compare(a, b) < 0; }
+bool operator<(const MultiMapValue<K, T> &a, const MultiMapValue<K, T> &b) { return container::compare(a, b) < 0; }
 
 template<class K, class T>
-bool operator>(const multimap<K, T> &a, const multimap<K, T> &b) { return container::compare(a, b) > 0; }
+bool operator>(const MultiMapValue<K, T> &a, const MultiMapValue<K, T> &b) { return container::compare(a, b) > 0; }
 
 template<class K, class T>
-bool operator<=(const multimap<K, T> &a, const multimap<K, T> &b) { return container::compare(a, b) <= 0; }
+bool operator<=(const MultiMapValue<K, T> &a, const MultiMapValue<K, T> &b) { return container::compare(a, b) <= 0; }
 
 template<class K, class T>
-bool operator>=(const multimap<K, T> &a, const multimap<K, T> &b) { return container::compare(a, b) >= 0; }
+bool operator>=(const MultiMapValue<K, T> &a, const MultiMapValue<K, T> &b) { return container::compare(a, b) >= 0; }
 
 template<class K, class T>
-String str(const multimap<K, T> &a)
+String str(const MultiMapValue<K, T> &a)
 {
     Format f;
     f << "[ ";

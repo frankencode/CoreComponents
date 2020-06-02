@@ -23,15 +23,15 @@ typedef List<int> IntList;
 class Consumer: public Thread
 {
 public:
-    static Ref<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer(id, channel, amount); }
-    inline Ref<IntList> list() const { return list_; }
+    static Ref<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer{id, channel, amount}; }
+    Ref<IntList> list() const { return list_; }
 
 private:
     Consumer(int id, MyChannel *channel, int amount):
-        id_(id),
-        channel_(channel),
-        amount_(amount),
-        list_(IntList::create())
+        id_{id},
+        channel_{channel},
+        amount_{amount},
+        list_{IntList::create()}
     {}
 
     void run() override
@@ -53,16 +53,16 @@ private:
 class Producer: public Thread
 {
 public:
-    static Ref<Producer> create(int id, MyChannel *channel, int amount) { return new Producer(id, channel, amount); }
+    static Ref<Producer> create(int id, MyChannel *channel, int amount) { return new Producer{id, channel, amount}; }
     inline Ref<IntList> list() const { return list_; }
 
 private:
     Producer(int id, MyChannel *channel, int amount):
-        id_(id),
-        channel_(channel),
-        amount_(amount),
-        random_(Random::open(amount)),
-        list_(IntList::create())
+        id_{id},
+        channel_{channel},
+        amount_{amount},
+        random_{Random::open(amount)},
+        list_{IntList::create()}
     {}
 
     void run() override

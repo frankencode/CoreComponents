@@ -1,14 +1,14 @@
 #include <cc/debug>
 #include <cc/stdio>
-#include <cc/priority_queue>
+#include <cc/PriorityQueueValue>
 
-namespace cc { template class priority_queue<int>; }
+namespace cc { template class PriorityQueueValue<int>; }
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
 
-    priority_queue<int> a;
+    PriorityQueueValue<int> a;
 
     for (int i = 0; i < 10; ++i)
         a->pushBack(i, (i % 2));
