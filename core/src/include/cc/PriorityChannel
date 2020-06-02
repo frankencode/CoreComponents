@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/PriorityQueue>
+#include <cc/priority_queue>
 #include <cc/Mutex>
 #include <cc/Guard>
 #include <cc/WaitCondition>
@@ -19,7 +19,6 @@ namespace cc {
   * \ingroup concurrency
   * \brief Inter-thread communication channel
   * \tparam T item type
-  * \todo provide a popBack() unidirectional iterator
   */
 template<class T>
 class PriorityChannel: public Object
@@ -39,7 +38,7 @@ public:
       */
     void pushBack(const T &item, int priority = 0)
     {
-        Guard<Mutex> guard(mutex_);
+        Guard<Mutex> guard{mutex_};
         queue_->pushBack(item, priority);
         notEmpty_->signal();
     }
@@ -50,16 +49,16 @@ public:
       */
     void pushFront(const T &item, int priority = 0)
     {
-        Guard<Mutex> guard(mutex_);
+        Guard<Mutex> guard{mutex_};
         queue_->pushFront(item, priority);
         notEmpty_->signal();
     }
 
     /** \copydoc Queue::popBack(T *)
       */
-    T popBack(T *item = 0)
+    T popBack(T *item = nullptr)
     {
-        Guard<Mutex> guard(mutex_);
+        Guard<Mutex> guard{mutex_};
         while (queue_->count() == 0)
             notEmpty_->wait(mutex_);
         return queue_->popBack(item);
@@ -67,9 +66,9 @@ public:
 
     /** \copydoc Queue::popFront(T *)
       */
-    T popFront(T *item = 0)
+    T popFront(T *item = nullptr)
     {
-        Guard<Mutex> guard(mutex_);
+        Guard<Mutex> guard{mutex_};
         while (queue_->count() == 0)
             notEmpty_->wait(mutex_);
         return queue_->popFront(item);
@@ -79,7 +78,7 @@ public:
       */
     void waitForNotEmpty()
     {
-        Guard<Mutex> guard(mutex_);
+        Guard<Mutex> guard{mutex_};
         while (queue_->count() == 0)
             notEmpty_->wait(mutex_);
     }
@@ -90,7 +89,7 @@ public:
       */
     bool waitForNotEmptyUntil(double timeout)
     {
-        Guard<Mutex> guard(mutex_);
+        Guard<Mutex> guard{mutex_};
         while (queue_->count() == 0) {
             if (!notEmpty_->waitUntil(timeout, mutex_))
                 return false;
@@ -105,7 +104,7 @@ public:
       */
     bool popBackBefore(double timeout, T *item)
     {
-        Guard<Mutex> guard(mutex_);
+        Guard<Mutex> guard{mutex_};
         while (queue_->count() == 0) {
             if (!notEmpty_->waitUntil(timeout, mutex_))
                 return false;
@@ -121,7 +120,7 @@ public:
       */
     bool popFrontBefore(double timeout, T *item)
     {
-        Guard<Mutex> guard(mutex_);
+        Guard<Mutex> guard{mutex_};
         while (queue_->count() == 0) {
             if (!notEmpty_->waitUntil(timeout, mutex_))
                 return false;
@@ -137,10 +136,10 @@ public:
     T pop(T *item = 0) { return popFront(item); }
 
     /// \copydoc popFrontBefore()
-    bool popBefore(double timeout, T *item = 0) { return popFrontBefore(timeout, item); }
+    bool popBefore(double timeout, T *item = nullptr) { return popFrontBefore(timeout, item); }
 
     /// Return number of queued items
-    int count() const { Guard<Mutex> guard(mutex_); return queue_->count(); }
+    int count() const { Guard<Mutex> guard{mutex_}; return queue_->count(); }
 
     /** Connect with another channel
       * \param other other channel to connect to
