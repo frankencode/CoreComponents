@@ -10,6 +10,7 @@
 
 #include <cc/assert>
 #include <cc/vectors>
+#include <cc/ArrayIterator>
 
 namespace cc {
 

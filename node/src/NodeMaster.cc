@@ -101,7 +101,7 @@ void NodeMaster::runNode()
 
     if (config()->user() != "") {
         String userName = config()->user();
-        Ref<User> user = User::lookup(userName);
+        User user{userName};
         if (!user->isValid()) throw UsageError{"No such user: \"" + userName + "\""};
         CCNODE_NOTICE() << "Dropping to user " << userName << " (uid = " << user->id() << ")" << nl;
         Process::setUserId(user->id());

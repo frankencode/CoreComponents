@@ -35,12 +35,16 @@ public:
     /** \name C++ iterators
       * @{
       */
-    typedef SourceIterator<Source> iterator;
-    typedef iterator const_iterator;
-    iterator begin() { return iterator(this); }
-    iterator end() { return iterator(); }
-    const_iterator begin() const { return const_iterator(this); }
-    const_iterator end() const { return const_iterator(); }
+    typedef SourceIterator<Source> Iterator; ///< constant iterator type
+    typedef Iterator ConstIterator; ///< constant iterator type
+
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator ; ///< \internal
+
+    Iterator begin() { return Iterator{this}; }
+    Iterator end() { return Iterator{}; }
+    ConstIterator begin() const { return ConstIterator{this}; }
+    ConstIterator end() const { return ConstIterator{}; }
     /** @} */
 };
 
@@ -48,7 +52,7 @@ template<class Source>
 class SourceIterator
 {
 public:
-    SourceIterator(Source *s = 0): s_(s) { getNext(); }
+    SourceIterator(Source *s = nullptr): s_(s) { getNext(); }
 
     inline const typename Source::Item &operator*() const { return x_; }
     inline SourceIterator &operator++() { getNext(); return *this; }

@@ -10,7 +10,7 @@
 #include <cc/stdio>
 #include <cc/Thread>
 #include <cc/Channel>
-#include <cc/List>
+#include <cc/ListValue>
 #include <cc/Random>
 #include <cc/System>
 
@@ -18,20 +18,18 @@ using namespace cc;
 using namespace cc::testing;
 
 typedef Channel<int> MyChannel;
-typedef List<int> IntList;
 
 class Consumer: public Thread
 {
 public:
     static Ref<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer{id, channel, amount}; }
-    Ref<IntList> list() const { return list_; }
+    ListValue<int> list() const { return list_; }
 
 private:
     Consumer(int id, MyChannel *channel, int amount):
         id_{id},
         channel_{channel},
-        amount_{amount},
-        list_{IntList::create()}
+        amount_{amount}
     {}
 
     void run() override
@@ -47,22 +45,21 @@ private:
     int id_;
     Ref<MyChannel> channel_;
     int amount_;
-    Ref<IntList> list_;
+    ListValue<int> list_;
 };
 
 class Producer: public Thread
 {
 public:
     static Ref<Producer> create(int id, MyChannel *channel, int amount) { return new Producer{id, channel, amount}; }
-    inline Ref<IntList> list() const { return list_; }
+    ListValue<int> list() const { return list_; }
 
 private:
     Producer(int id, MyChannel *channel, int amount):
         id_{id},
         channel_{channel},
         amount_{amount},
-        random_{Random::open(amount)},
-        list_{IntList::create()}
+        random_{Random::open(amount)}
     {}
 
     void run() override
@@ -80,7 +77,7 @@ private:
     Ref<MyChannel> channel_;
     int amount_;
     Ref<Random> random_;
-    Ref<IntList> list_;
+    ListValue<int> list_;
 };
 
 class ConsumerProducer: public TestCase

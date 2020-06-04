@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Object>
+#include <cc/String>
 
 namespace cc {
 
@@ -19,25 +19,32 @@ template<class> class Singleton;
   * \brief Query information about the operating system kernel
   * \see System
   */
-class KernelInfo: public Object
+class KernelInfo
 {
 public:
-    static const KernelInfo *instance();
+    class Instance: public Object
+    {
+    public:
+        String name() const { return name_; } ///< operating system name
+        String release() const { return release_; } ///< release version
+        String version() const { return version_; } ///< detailed build information
+        String machine() const { return machine_; } ///< system architecture
 
-    String name() const { return name_; } ///< operating system name
-    String release() const { return release_; } ///< release version
-    String version() const { return version_; } ///< detailed build information
-    String machine() const { return machine_; } ///< system architecture
+    private:
+        friend class Singleton<Instance>;
+        Instance();
+
+        String name_;
+        String release_;
+        String version_;
+        String machine_;
+    };
+
+    KernelInfo() = default;
+    const Instance *operator->() const;
 
 private:
-    friend class Singleton<KernelInfo>;
-
-    KernelInfo();
-
-    String name_;
-    String release_;
-    String version_;
-    String machine_;
+    Ref<Instance> instance_;
 };
 
 } // namespace cc

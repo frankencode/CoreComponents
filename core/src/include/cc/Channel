@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Queue>
+#include <cc/QueueValue>
 #include <cc/Mutex>
 #include <cc/Guard>
 #include <cc/WaitCondition>
@@ -154,14 +154,12 @@ public:
     }
 
 protected:
-    Channel():
-        queue_{Queue<T>::create()}
-    {}
+    Channel() = default;
 
 private:
     Mutex mutex_;
     WaitCondition notEmpty_;
-    Ref< Queue<T> > queue_;
+    QueueValue<T> queue_;
 };
 
 } // namespace cc

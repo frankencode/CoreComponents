@@ -24,6 +24,7 @@ typedef struct stat StructStat;
   * \ingroup file_system
   * \brief Read %File attributes
   * \see File
+  * \todo rename to FileInfo
   */
 class FileStatus: public StructStat, public Object
 {

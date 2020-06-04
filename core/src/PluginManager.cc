@@ -6,10 +6,9 @@
  *
  */
 
-#include <cc/Singleton>
-#include <cc/List>
-#include <cc/IterationSource>
 #include <cc/PluginManager>
+#include <cc/Singleton>
+#include <cc/IterationSource>
 
 namespace cc {
 
@@ -18,13 +17,7 @@ PluginManager *PluginManager::instance()
     return Singleton<PluginManager>::instance();
 }
 
-Ref< Source<const PluginDir *> > PluginManager::getPluginDirs() const
-{
-    return IterationSource<PluginDirs, const PluginDir *>::open(pluginDirs_);
-}
-
-PluginManager::PluginManager():
-    pluginDirs_{PluginDirs::create()}
+PluginManager::PluginManager()
 {}
 
 PluginManager::~PluginManager()

@@ -14,6 +14,6 @@ using namespace cc;
 
 int main()
 {
-    fout() << User::lookup(Process::getEffectiveUserId())->loginName() << nl;
+    fout() << User{Process::getEffectiveUserId()}->loginName() << nl;
     return 0;
 }

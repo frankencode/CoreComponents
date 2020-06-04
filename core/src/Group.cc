@@ -6,51 +6,50 @@
  *
  */
 
-#include <unistd.h> // sysconf
+#include <cc/Group>
 #include <cc/exceptions>
 #include <cc/User>
-#include <cc/Group>
+#include <unistd.h> // sysconf
 
 namespace cc {
 
-Group::Group(gid_t id)
+Group::Instance::Instance(gid_t id)
 {
     int bufSize = ::sysconf(_SC_GETGR_R_SIZE_MAX);
     if (bufSize == -1) CC_SYSTEM_DEBUG_ERROR(errno);
     String buf = CharArray::allocate(bufSize);
     struct group space;
     memclr(&space, sizeof(struct group));
-    struct group *entry = 0;
+    struct group *entry = nullptr;
     int ret = ::getgrgid_r(id, &space, mutate(buf)->chars(), buf->count(), &entry);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
     load(entry);
 }
 
-Group::Group(const String &name)
+Group::Instance::Instance(const String &name)
 {
     int bufSize = ::sysconf(_SC_GETGR_R_SIZE_MAX);
     if (bufSize == -1) CC_SYSTEM_DEBUG_ERROR(errno);
     String buf = CharArray::allocate(bufSize);
     struct group space;
     memclr(&space, sizeof(struct group));
-    struct group *entry = 0;
+    struct group *entry = nullptr;
     int ret = ::getgrnam_r(name, &space, mutate(buf)->chars(), buf->count(), &entry);
     if (ret != 0) CC_SYSTEM_RESOURCE_ERROR(ret, name);
     load(entry);
 }
 
-bool Group::checkMembership(const User *user) const
+bool Group::Instance::checkMembership(const User &user) const
 {
     return user->groupId() == id_ || otherMembers_->contains(user->name());
 }
 
-void Group::load(struct group *entry)
+void Group::Instance::load(struct group *entry)
 {
     if (entry) {
         isValid_ = true;
         id_ = entry->gr_gid;
         name_ = entry->gr_name;
-        otherMembers_ = StringList::create();
         char **pcs = entry->gr_mem;
         while (*pcs) {
             otherMembers_->append(*pcs);

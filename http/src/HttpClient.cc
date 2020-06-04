@@ -129,10 +129,12 @@ Ref<HttpResponse> HttpClient::readResponse()
 
 String HttpClient::userAgent() const
 {
+    KernelInfo kernel;
+
     static String s =
         Format{"cchttp 1.0 (%%; %%)"}
-            << KernelInfo::instance()->name()
-            << KernelInfo::instance()->machine();
+            << kernel->name()
+            << kernel->machine();
 
     return s;
 }

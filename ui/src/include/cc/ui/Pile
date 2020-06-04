@@ -10,6 +10,7 @@
 
 #include <cc/containers>
 #include <cc/Source>
+#include <cc/ArrayIterator>
 #include <cc/ui/PileTree>
 
 namespace cc {

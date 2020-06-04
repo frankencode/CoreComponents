@@ -113,12 +113,12 @@ void TarWriter::writeFile(const String &path, const FileStatus *status)
     headerFields->append(zero_);
 
     String userField{31, '\0'};
-    mutate(userField)->write(User::lookup(status->ownerId())->name());
+    mutate(userField)->write(User{status->ownerId()}->name());
     headerFields->append(userField);
     headerFields->append(zero_);
 
     String groupField{31, '\0'};
-    mutate(groupField)->write(Group::lookup(status->groupId())->name());
+    mutate(groupField)->write(Group{status->groupId()}->name());
     headerFields->append(groupField);
     headerFields->append(zero_);
 

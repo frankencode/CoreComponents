@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <grp.h>
 #include <cc/String>
+#include <cc/ListValue>
 
 namespace cc {
 
@@ -20,50 +21,59 @@ class User;
   * \ingroup sysinfo
   * \brief %System group information
   * \see User
+  * \todo rename to GroupInfo
   */
-class Group: public Object
+class Group
 {
 public:
+    class Instance: public Object {
+    public:
+        /// True if queried group exists on the system
+        bool isValid() const { return isValid_; }
+
+        gid_t id() const { return id_; } ///< system group ID
+        String name() const { return name_; } ///< group name
+
+        /// Return list of user logins, which are in this group, but for which this is not their primary group
+        ListValue<String> otherMembers() const { return otherMembers_; }
+
+        /** Check group membership
+          * \param user user information object
+          * \return true if the user is member of this group, false otherwise
+          */
+        bool checkMembership(const User &user) const;
+
+    private:
+        friend class Group;
+
+        Instance(gid_t id);
+        Instance(const String &name);
+
+        void load(struct group *entry);
+        bool isValid_;
+        gid_t id_;
+        String name_;
+        ListValue<String> otherMembers_;
+    };
+
     /** Lookup group information by group ID
       * \param id system group ID
-      * \return new object instance
       */
-    static Ref<Group> lookup(gid_t id) {
-        return new Group(id);
-    }
+    Group(gid_t id):
+        instance_{new Instance{id}}
+    {}
 
     /** Lookup group information by group name
       * \param name system group name
-      * \return new object instance
       */
-    static Ref<Group> lookup(const String &name) {
-        return new Group{name};
-    }
+    Group(const String &name):
+        instance_{new Instance{name}}
+    {}
 
-    /// True if queried group exists on the system
-    bool isValid() const { return isValid_; }
-
-    gid_t id() const { return id_; } ///< system group ID
-    String name() const { return name_; } ///< group name
-
-    /// Return list of user logins, which are in this group, but for which this is not their primary group
-    StringList *otherMembers() const { return otherMembers_; }
-
-    /** Check group membership
-      * \param user user information object
-      * \return true if the user is member of this group, false otherwise
-      */
-    bool checkMembership(const User *user) const;
+    const Instance *operator->() const { return instance_; }
 
 private:
-    Group(gid_t id);
-    Group(const String &name);
-
-    void load(struct group *entry);
-    bool isValid_;
-    gid_t id_;
-    String name_;
-    Ref<StringList> otherMembers_;
+    Ref<Instance> instance_;
 };
 
 } // namespace cc

@@ -8,6 +8,7 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
+#include <cc/ArrayValue>
 #include <cc/glob/Pattern>
 
 using namespace cc;
@@ -33,32 +34,34 @@ class EmailValidation: public TestCase
         fout() << nl;
         #endif
 
-        Ref<StringList> address = StringList::create()
-            << "info@cyblogic.com"
-            << "@lala.de"
-            << "otto@übertragungsfehler.de"
-            << ""
-            << "a@B"
-            << "a--b@C"
-            << "a-b.@C"
-            << "b-@C"
-            << "a.b.c@d.e.f";
+        ArrayValue<String> address {
+            "info@cyblogic.com",
+            "@lala.de",
+            "otto@übertragungsfehler.de",
+            "",
+            "a@B",
+            "a--b@C",
+            "a-b.@C",
+            "b-@C",
+            "a.b.c@d.e.f"
+        };
 
-        Ref< List<bool> > result = List<bool>::create()
-            << true
-            << false
-            << false
-            << false
-            << true
-            << false
-            << false
-            << false
-            << true;
+        ArrayValue<bool> result {
+            true,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            true
+        };
 
         for (int i = 0; i < address->count(); ++i) {
-            bool valid = pattern->match(address->at(i))->valid();
-            fout() << i << ": \"" << address->at(i) << "\": " << valid << nl;
-            CC_VERIFY(valid == result->at(i));
+            bool valid = pattern->match(address[i])->valid();
+            fout() << i << ": \"" << address[i] << "\": " << valid << nl;
+            CC_VERIFY(valid == result[i]);
         }
 
         fout() << nl;
@@ -71,13 +74,14 @@ class Globbing: public TestCase
     {
         Pattern pattern = "*.(c|h){..2:[^.]}";
 
-        Ref<StringList> path = StringList::create()
-            << "/home/hans/glück.hh"
-            << "a.b.c"
-            << "a.b.c.d.e.f"
-            << "test.cpp"
-            << "std.hxx"
-            << "stdio.h";
+        ArrayValue<String> path {
+            "/home/hans/glück.hh",
+            "a.b.c",
+            "a.b.c.d.e.f",
+            "test.cpp",
+            "std.hxx",
+            "stdio.h"
+        };
 
         #ifndef NDEBUG
         SyntaxDebugger *debugger = Object::cast<SyntaxDebugger *>(pattern->debugFactory());
@@ -85,18 +89,19 @@ class Globbing: public TestCase
         fout() << nl;
         #endif
 
-        Ref< List<bool> > result = List<bool>::create()
-            << true
-            << true
-            << false
-            << true
-            << true
-            << true;
+        ArrayValue<bool> result {
+            true,
+            true,
+            false,
+            true,
+            true,
+            true
+        };
 
         for (int i = 0; i < path->count(); ++i) {
-            bool valid = pattern->match(path->at(i))->valid();
-            fout() << i << ": \"" << path->at(i) << "\": " << valid << nl;
-            CC_VERIFY(valid == result->at(i));
+            bool valid = pattern->match(path[i])->valid();
+            fout() << i << ": \"" << path[i] << "\": " << valid << nl;
+            CC_VERIFY(valid == result[i]);
         }
 
         fout() << nl;
@@ -127,15 +132,16 @@ class UriDispatch: public TestCase
 {
     void run()
     {
-        Ref<StringList> services = StringList::create()
-            << "glibc.*"
-            << "cckit.*"
-            << "books.*"
-            << "test.*"
-            << "*httpecho*";
+        ArrayValue<String> services {
+            "glibc.*",
+            "cckit.*",
+            "books.*",
+            "test.*",
+            "*httpecho*"
+        };
 
         for (int i = 0; i < services->count(); ++i)
-            fout() << services->at(i) << ": " << Pattern{services->at(i)}->match(String{"cckit.cyblogic.com"})->valid() << nl;
+            fout() << services[i] << ": " << Pattern{services[i]}->match(String{"cckit.cyblogic.com"})->valid() << nl;
     }
 };
 

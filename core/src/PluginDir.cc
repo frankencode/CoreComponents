@@ -33,11 +33,6 @@ String PluginDir::path() const
     return path_;
 }
 
-Ref< Source<const Plugin *> > PluginDir::getLoadedPlugins() const
-{
-    return ValueSource<PluginByName::Instance, const Plugin *>::open(loadedPlugins_);
-}
-
 void PluginDir::onLoadError(const String &pluginPath, const String &errorMessage)
 {
     ferr() << "Failed to load plugin " << pluginPath << ": " << errorMessage << nl;
@@ -45,12 +40,12 @@ void PluginDir::onLoadError(const String &pluginPath, const String &errorMessage
 
 PluginDir *PluginDir::open()
 {
-    Ref<Dir> dir = Dir::open(path_);
-    for (String name; dir->read(&name);) {
+    auto dir = Dir::open(path_);
+    for (const auto &name: dir) {
         if (name == "." || name == "..") continue;
-        String path = path_->extendPath(name);
+        auto path = path_->extendPath(name);
         try {
-            Ref<FileStatus> status = FileStatus::readHead(path);
+            auto status = FileStatus::readHead(path);
             if (status->type() == FileType::Symlink) {
                 path = File::readlink(path);
                 if (path->isRelativePath())
@@ -61,7 +56,7 @@ PluginDir *PluginDir::open()
             else
                 continue;
 
-            Ref<Plugin> plugin = Plugin::load(path);
+            auto plugin = Plugin::load(path);
             loadedPlugins_->insert(plugin->name(), plugin);
             onLoaded(plugin);
         }

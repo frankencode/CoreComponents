@@ -6,38 +6,38 @@
  *
  */
 
-#include <unistd.h> // sysconf
-#include <cc/exceptions>
 #include <cc/User>
+#include <cc/exceptions>
+#include <unistd.h> // sysconf
 
 namespace cc {
 
-User::User(uid_t id)
+User::Instance::Instance(uid_t id)
 {
     int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
     if (bufSize == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 
     String buf{bufSize};
     struct passwd space;
-    struct passwd *entry = 0;
+    struct passwd *entry = nullptr;
     int ret = ::getpwuid_r(id, &space, mutate(buf)->chars(), buf->count(), &entry);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
     load(entry);
 }
 
-User::User(const String &name)
+User::Instance::Instance(const String &name)
 {
     int bufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
     if (bufSize == -1) CC_SYSTEM_DEBUG_ERROR(errno);
     String buf{bufSize};
     struct passwd space;
-    struct passwd *entry = 0;
+    struct passwd *entry = nullptr;
     int ret = ::getpwnam_r(name, &space, mutate(buf)->chars(), buf->count(), &entry);
     if (ret != 0) CC_SYSTEM_RESOURCE_ERROR(ret, name);
     load(entry);
 }
 
-void User::load(struct passwd *entry)
+void User::Instance::load(struct passwd *entry)
 {
     if (entry) {
         isValid_ = true;

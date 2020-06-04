@@ -13,10 +13,10 @@
 namespace cc {
 
 HexDump::HexDump(Stream *sink):
-    sink_(sink),
-    offset_(0),
+    sink_{sink},
+    offset_{0},
     buffer_{String::allocate(16)},
-    i_(0)
+    i_{0}
 {
     if (!sink_) sink_ = stdOut();
 }

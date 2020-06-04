@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <assert.h>
+
+namespace cc {
+
+template<class T>
+T bit(T x, unsigned i)
+{
+    assert(i < 8 * sizeof(T));
+    return x & (1u << i);
+}
+
+template<class T>
+T bits(T x, unsigned j, unsigned i)
+{
+    assert(j < 8 * sizeof(T));
+    assert(i <= j);
+    const T mask = (~T{}) >> (8 * sizeof(T) - (j - i + 1));
+    return (x >> j) & mask;
+}
+
+} // namespace cc

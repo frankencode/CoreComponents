@@ -1,24 +1,24 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
+#include <cc/KernelInfo>
 #include <sys/utsname.h>
 #include <cc/exceptions>
 #include <cc/Singleton>
-#include <cc/KernelInfo>
 
 namespace cc {
 
-const KernelInfo *KernelInfo::instance()
+const KernelInfo::Instance *KernelInfo::operator->() const
 {
-    return Singleton<KernelInfo>::instance();
+    return Singleton<KernelInfo::Instance>::instance();
 }
 
-KernelInfo::KernelInfo()
+KernelInfo::Instance::Instance()
 {
     struct utsname *data = new utsname;
     if (::uname(data) == -1)

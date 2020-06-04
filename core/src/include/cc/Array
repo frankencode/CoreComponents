@@ -10,6 +10,7 @@
 
 #include <cc/strings>
 #include <cc/containers>
+#include <cc/ArrayIterator>
 
 namespace cc {
 

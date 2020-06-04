@@ -20,7 +20,7 @@ public:
     static Ref<PluginDir> open(const String &path);
 
     String path() const;
-    Ref< Source<const Plugin *> > getLoadedPlugins() const;
+    MapValue< String, Ref<Plugin> > loadedPlugins() const;
 
 protected:
     virtual void onLoaded(Plugin *plugin) {}
@@ -32,8 +32,7 @@ private:
     PluginDir *open();
 
     String path_;
-    typedef MapValue< String, Ref<Plugin> > PluginByName;
-    PluginByName loadedPlugins_;
+    MapValue< String, Ref<Plugin> > loadedPlugins_;
 };
 
 } // namespace cc

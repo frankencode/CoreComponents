@@ -16,6 +16,8 @@ namespace can {
 
 typedef struct can_frame StructCanFrame;
 
+/** \todo value semantics and operator[]
+  */
 class CanFrame: public StructCanFrame, public Object
 {
 public:

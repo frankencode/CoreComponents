@@ -60,9 +60,9 @@ void unpack(ArchiveReader *archive, bool verbose)
                 uid_t userId = entry->userId();
                 gid_t groupId = entry->groupId();
                 if (entry->userName() != "")
-                    userId = User::lookup(entry->userName())->id();
+                    userId = User{entry->userName()}->id();
                 if (entry->groupName() != "")
-                    groupId = Group::lookup(entry->groupName())->id();
+                    groupId = Group{entry->groupName()}->id();
                 if (userId != 0 || groupId != 0)
                     File::chown(entry->path(), userId, groupId);
             }

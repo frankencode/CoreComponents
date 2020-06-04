@@ -40,9 +40,9 @@ class ProgramStatus: public TestCase
         fout("status->size() = %%\n") << status->size();
         fout("status->ownerId() = %%\n") << status->ownerId();
         fout("status->groupId() = %%\n") << status->groupId();
-        fout("User(status->ownerId()).loginName() = %%\n") << User::lookup(status->ownerId())->loginName();
+        fout("User(status->ownerId()).loginName() = %%\n") << User{status->ownerId()}->loginName();
         try {
-            fout("Group(status->groupId()).name() = %%\n") << Group::lookup(status->groupId())->name();
+            fout("Group(status->groupId()).name() = %%\n") << Group{status->groupId()}->name();
         }
         catch(...) {
             // we may not have enough rights on some systems

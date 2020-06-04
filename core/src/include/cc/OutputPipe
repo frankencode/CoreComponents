@@ -15,7 +15,7 @@ namespace cc {
 class InputPipe;
 
 /** \brief Child process output pipe
-  * \see Spawn, InputPipe
+  * \see InputPipe
   */
 class OutputPipe: public IoChannel
 {
