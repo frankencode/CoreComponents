@@ -26,7 +26,7 @@ public:
       * \param pad input stream to read the padding from (optional)
       * \return new object instance
       */
-    static Ref<CipherSink> open(BlockCipher *cipher, Stream *sink, Stream *pad = 0);
+    static Ref<CipherSink> open(BlockCipher *cipher, Stream *sink, Stream *pad = nullptr);
 
     void write(const CharArray *data) override;
 

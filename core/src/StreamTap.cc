@@ -12,13 +12,13 @@ namespace cc {
 
 Ref<StreamTap> StreamTap::open(Stream *stream, Stream *inputTap, Stream *outputTap)
 {
-    return new StreamTap(stream, inputTap, outputTap);
+    return new StreamTap{stream, inputTap, outputTap};
 }
 
 StreamTap::StreamTap(Stream *stream, Stream *inputTap, Stream *outputTap):
-    stream_(stream),
-    inputTap_(inputTap),
-    outputTap_(outputTap)
+    stream_{stream},
+    inputTap_{inputTap},
+    outputTap_{outputTap}
 {}
 
 int StreamTap::read(CharArray *data)
@@ -34,7 +34,7 @@ void StreamTap::write(const CharArray *data)
     stream_->write(data);
 }
 
-void StreamTap::write(const StringList *parts)
+void StreamTap::write(const StringList &parts)
 {
     if (outputTap_) outputTap_->write(parts);
     stream_->write(parts);

@@ -19,7 +19,7 @@ public:
     static Ref<HttpChunkedSink> open(Stream *stream);
 
     void write(const CharArray *data) override;
-    void write(const StringList *parts) override;
+    void write(const StringList &parts) override;
 
 private:
     HttpChunkedSink(Stream *stream);

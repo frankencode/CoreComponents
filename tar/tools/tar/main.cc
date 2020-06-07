@@ -42,11 +42,11 @@ int main(int argc, char **argv)
         }
 
         const VariantMap *options = arguments->options();
-        Ref<const StringList> items = arguments->items();
+        StringList items = arguments->items();
 
         if (unpackMode)
         {
-            if (items->count() == 0) items = StringList::create() << "";
+            if (items->count() == 0) items << "";
 
             for (String path: items)
             {

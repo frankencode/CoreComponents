@@ -128,7 +128,7 @@ void CanClient::expeditedWrite(int peerId, Selector selector, const String &data
 
 String CanClient::segmentedReadTransfer(int peerId, Selector selector)
 {
-    auto segments = StringList::create();
+    StringList segments;
 
     while (true) {
         auto requestFrame = ReadSegmentRequest::createFrame(peerId, segments->count() & 1);
@@ -303,11 +303,11 @@ String CanClient::blockReadTransfer(int peerId, Selector selector, int blockSize
 
     int seqNum = 1;
 
-    auto parts = StringList::create();
+    StringList parts;
 
     for (bool go = true; go;)
     {
-        auto segments = StringList::create();
+        StringList segments;
 
         for (; seqNum <= blockSize; ++seqNum)
         {

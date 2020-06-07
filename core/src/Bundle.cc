@@ -6,14 +6,14 @@
  *
  */
 
+#include <cc/Bundle>
 #include <cc/File>
 #include <cc/Process>
 #include <cc/Singleton>
-#include <cc/Bundle>
 
 namespace cc {
 
-String Bundle::lookup(const String &relPath, const StringList *dirs)
+String Bundle::lookup(const String &relPath, const StringList &dirs)
 {
     return File::locate(relPath, dirs, FileAccess::Exists);
 }

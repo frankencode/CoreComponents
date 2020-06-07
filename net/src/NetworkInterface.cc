@@ -370,7 +370,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
         if (line->contains(':')) {
             Ref<NetworkInterface> interface = NetworkInterface::create();
             list->append(interface);
-            Ref<StringList> parts = line->split(":");
+            StringList parts = line->split(":");
             String name = parts->at(0)->trim();
             interface->name_ = name;
 

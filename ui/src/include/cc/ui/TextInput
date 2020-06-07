@@ -42,7 +42,7 @@ protected:
     virtual Ref<TextEditor> createEditor();
 
 private:
-    Property< Ref<const StringList> > imeChunks;
+    Property<StringList> imeChunks;
     Property< Ref<const TextRun> > unwrappedTextRun;
     Property< Ref<const TextRun> > textRun;
     Property< Ref<TextCursor> > textCursor;

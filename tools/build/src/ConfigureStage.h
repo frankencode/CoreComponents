@@ -24,7 +24,7 @@ public:
     bool probeBuild(const String &name, const String &probe) const;
     bool runConfigure(const String &name, const String &configure, String *output) const;
 
-    static Ref<StringList> getFlags(const MetaObject *object, const String &propertyName);
+    static StringList getFlags(const MetaObject *object, const String &propertyName);
 };
 
 } // namespace ccbuild

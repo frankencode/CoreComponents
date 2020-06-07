@@ -33,7 +33,7 @@ public:
     {}
 
     ArrayValue(std::initializer_list<T> b):
-        instance_{new Instance{b.size()}}
+        instance_{new Instance{static_cast<size_type>(b.size())}}
     {
         size_type i = 0;
         for (const auto &x: b) {

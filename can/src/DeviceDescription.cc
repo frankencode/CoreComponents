@@ -41,7 +41,7 @@ DeviceDescription::DeviceDescription():
 
 String DeviceDescription::toString() const
 {
-    auto parts = StringList::create();
+    StringList parts;
     parts
         << fileInfo()->toString()
         << deviceInfo()->toString()
@@ -366,8 +366,7 @@ bool DeviceDescription::DummyUsage::equals(const DummyUsage *other) const
 }
 
 DeviceDescription::Comments::Comments():
-    Section{"Comments"},
-    lines_{StringList::create()}
+    Section{"Comments"}
 {}
 
 void DeviceDescription::Comments::establish(const String &key, const String &value)
@@ -383,7 +382,7 @@ String DeviceDescription::Comments::text() const
 
 void DeviceDescription::Comments::setText(const String &text)
 {
-    lines_ = StringList::create();
+    lines_ = StringList{};
     for (const String &line: LineSource::open(text))
         lines_->append(line);
 }
@@ -400,7 +399,7 @@ String DeviceDescription::Comments::toString() const
 
 bool DeviceDescription::Comments::equals(const Comments *other) const
 {
-    return *lines_ == *other->lines_;
+    return lines_ == other->lines_;
 }
 
 DeviceDescription::DictionarySection::DictionarySection(const String &name):

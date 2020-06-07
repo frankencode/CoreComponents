@@ -6,9 +6,8 @@
  *
  */
 
-#include <cc/debug> // DEBUG
-#include <cc/Format>
 #include <cc/Arguments>
+#include <cc/Format>
 
 namespace cc {
 
@@ -18,8 +17,7 @@ Ref<Arguments> Arguments::parse(int argc, char **argv, VariantMap *options)
 }
 
 Arguments::Arguments(int argc, char **argv, VariantMap *options):
-    options_{VariantMap::create()},
-    items_{StringList::create()}
+    options_{VariantMap::create()}
 {
     execPath_ = argv[0];
 
@@ -37,7 +35,7 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
 
         Variant value = true;
         if (isKeyValueOption) {
-            Ref<StringList> parts = s->split('=');
+            StringList parts = s->split('=');
             String name = parts->front();
             parts->popFront();
             String valueText = parts->join("=");
@@ -90,7 +88,7 @@ void Arguments::validate(const VariantMap *prototype)
                 options_->establish(name, str(value));
             }
             else if (value->type() == VariantType::String && defaultValue->type() == VariantType::List && defaultValue->itemType() == VariantType::String) {
-                options_->establish(name, StringList::create() << str(value));
+                options_->establish(name, StringList{str(value)});
             }
             else if (value->type() == VariantType::Int && defaultValue->type() == VariantType::List && defaultValue->itemType() == VariantType::Int) {
                 options_->establish(name, List<int>::create() << int(value));

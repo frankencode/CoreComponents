@@ -95,7 +95,7 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
     }
     else if (script != "")
     {
-        Ref<StringList> args = script->split(' ');
+        StringList args = script->split(' ');
         String scriptPath = args->at(0);
         if (!scriptPath->isAbsolutePath()) scriptPath = documentRoot->extendPath(scriptPath);
         args->at(0) = scriptPath;

@@ -15,7 +15,7 @@ String str(FileAccess flags)
 {
     String s;
     if (+flags) {
-        auto l = StringList::create();
+        StringList l;
         if (+(flags & FileAccess::Read))    l << "FileAccess::Read";
         if (+(flags & FileAccess::Write))   l << "FileAccess::Write";
         if (+(flags & FileAccess::Execute)) l << "FileAccess::Execute";
@@ -32,7 +32,7 @@ String str(FileMode mode)
 {
     String s;
     if (+mode) {
-        auto l = StringList::create();
+        StringList l;
         if (+(mode & FileMode::SetUserId))  l << "FileMode::SetUserId";
         if (+(mode & FileMode::SetGroupId)) l << "FileMode::SetGroupId";
         if (+(mode & FileMode::StickyBit))  l << "FileMode::StickyBit";
@@ -72,7 +72,7 @@ String str(FileOpen mode)
 {
     String s;
     if (+mode) {
-        auto l = StringList::create();
+        StringList l;
         if (+(mode & FileOpen::ReadOnly))  l << "FileOpen::ReadOnly";
         if (+(mode & FileOpen::WriteOnly)) l << "FileOpen::WriteOnly";
         if (+(mode & FileOpen::ReadWrite)) l << "FileOpen::ReadWrite";

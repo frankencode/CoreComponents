@@ -15,8 +15,7 @@ Ref<CaptureSink> CaptureSink::open()
     return new CaptureSink;
 }
 
-CaptureSink::CaptureSink():
-    parts_{StringList::create()}
+CaptureSink::CaptureSink()
 {}
 
 void CaptureSink::write(const CharArray *data)

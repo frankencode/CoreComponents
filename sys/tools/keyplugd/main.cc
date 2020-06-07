@@ -40,10 +40,11 @@ void runAttachCommand(const String &shellCommand, const String &devNode, const S
 
     Process::stage()
         ->setArgs(
-            StringList::create()
-                << Process::getEnv("SHELL")
-                << "-c"
-                << shellCommand
+            StringList {
+                Process::getEnv("SHELL"),
+                "-c",
+                shellCommand
+            }
         )
         ->setWorkingDirectory(guard->mountPath())
         ->execute();
@@ -55,10 +56,11 @@ void runDetachCommand(const String &shellCommand)
 
     Process::stage()
         ->setArgs(
-            StringList::create()
-                << Process::getEnv("SHELL")
-                << "-c"
-                << shellCommand
+            StringList {
+                Process::getEnv("SHELL"),
+                "-c",
+                shellCommand
+            }
         )
         ->start()
         ->wait();

@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/LineSource>
 #include <cc/http/HttpClientConnection>
+#include <cc/LineSource>
 
 namespace cc {
 namespace http {
@@ -41,7 +41,7 @@ void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *messag
 
     HttpResponse *response = Object::cast<HttpResponse *>(message);
 
-    Ref<StringList> parts = line->split(' ');
+    StringList parts = line->split(' ');
     if (parts->count() > 0) {
         response->version_ = parts->front();
         parts->popFront();

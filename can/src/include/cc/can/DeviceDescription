@@ -235,7 +235,7 @@ public:
         Comments();
         void establish(const String &key, const String &value) override;
 
-        Ref<StringList> lines_;
+        StringList lines_;
     };
 
     class EntryInfo;

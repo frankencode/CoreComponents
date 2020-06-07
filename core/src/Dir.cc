@@ -6,19 +6,18 @@
  *
  */
 
-#include <sys/stat.h> // mkdir
-#ifndef NDEBUG
-#include <cc/check>
-#endif
+#include <cc/Dir>
 #include <cc/exceptions>
-#include <cc/stdio> // DEBUG
 #include <cc/File>
 #include <cc/FileStatus>
 #include <cc/Random>
 #include <cc/Format>
 #include <cc/Process>
 #include <cc/DirWalker>
-#include <cc/Dir>
+#ifndef NDEBUG
+#include <cc/check>
+#endif
+#include <sys/stat.h> // mkdir
 
 namespace cc {
 
@@ -115,7 +114,7 @@ void Dir::create(const String &path, int mode)
 
 void Dir::establish(const String &path, int mode)
 {
-    Ref<StringList> missingDirs = StringList::create();
+    StringList missingDirs;
     for (
         String p = path;
         p->count() > 0 && p != "/";

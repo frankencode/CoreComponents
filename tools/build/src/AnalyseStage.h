@@ -18,11 +18,11 @@ class AnalyseStage: public BuildStage
 public:
     AnalyseStage(BuildPlan *plan): BuildStage{plan}, cacheTime_{0} {}
     bool run();
-    inline StringList *previousSources() const { return previousSources_; }
-    inline double cacheTime() const { return cacheTime_; }
+    StringList previousSources() const { return previousSources_; }
+    double cacheTime() const { return cacheTime_; }
 
 private:
-    Ref<StringList> previousSources_;
+    StringList previousSources_;
     double cacheTime_;
 };
 

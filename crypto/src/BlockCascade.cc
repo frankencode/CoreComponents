@@ -13,13 +13,13 @@ namespace crypto {
 
 Ref<BlockCascade> BlockCascade::create(BlockCipher *cipher, const CharArray *iv)
 {
-    return new BlockCascade(cipher, iv);
+    return new BlockCascade{cipher, iv};
 }
 
 BlockCascade::BlockCascade(BlockCipher *cipher, const CharArray *iv):
-    BlockCipher(cipher->blockSize()),
-    cipher_(cipher),
-    s_(String::allocate(cipher->blockSize()))
+    BlockCipher{cipher->blockSize()},
+    cipher_{cipher},
+    s_{String::allocate(cipher->blockSize())}
 {
     mutate(s_)->fill(0);
     if (iv) mutate(s_)->write(iv);

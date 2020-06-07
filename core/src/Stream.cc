@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/Stream>
 #include <cc/types>
 #include <cc/Format>
-#include <cc/Stream>
 
 namespace cc {
 
@@ -20,15 +20,16 @@ int Stream::read(CharArray *)
 void Stream::write(const CharArray *)
 {}
 
-void Stream::write(const StringList *parts)
+void Stream::write(const StringList &parts)
 {
-    for (int i = 0, n = parts->count(); i < n; ++i)
-        write(parts->at(i));
+    for (const String &part: parts)
+        write(part);
 }
 
+// \todo this helper method shouldn't be needed
 void Stream::write(const Format &data)
 {
-    write(Format::toStringList(data));
+    write(static_cast<const StringList &>(data));
 }
 
 class WrappedChunk: public CharArray {
@@ -101,7 +102,7 @@ String Stream::readAll(CharArray *buffer)
 {
     String data = buffer;
     if (!data) data = String::allocate(0x4000);
-    auto parts = StringList::create();
+    StringList parts;
     while (true) {
         int n = read(mutate(data));
         if (n == 0) break;

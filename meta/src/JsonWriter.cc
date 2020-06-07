@@ -48,7 +48,7 @@ void JsonWriter::writeValue(Variant value, int depth)
         writeList(value, depth);
     }
     else if (value->type() == VariantType::Object) {
-        writeObject(value, nullptr, depth);
+        writeObject(value, StringList{}, depth);
     }
     else {
         format_ << "\"" << str(value) << "\"";
@@ -69,7 +69,7 @@ void JsonWriter::writeList(Variant value, int depth)
         writeTypedList<Variant>(value, depth);
 }
 
-void JsonWriter::writeObject(Variant value, const StringList *names, int depth)
+void JsonWriter::writeObject(Variant value, const StringList &names, int depth)
 {
     Ref<MetaObject> object = Variant::cast<MetaObject *>(value);
     if (object->count() == 0) {
@@ -78,7 +78,7 @@ void JsonWriter::writeObject(Variant value, const StringList *names, int depth)
     }
     format_ << "{\n";
     writeIndent(depth + 1);
-    if (!names) {
+    if (names->count() == 0) {
         for (int i = 0; i < object->count(); ++i)
             writeMember(object->at(i)->key(), object->at(i)->value(), i == object->count() - 1, depth);
     }

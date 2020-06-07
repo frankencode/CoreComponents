@@ -37,7 +37,7 @@ public:
     /** Write multiple buffers atomically ("scatter write")
       * \param parts list of source buffers
       */
-    virtual void write(const StringList *parts);
+    virtual void write(const StringList &parts);
 
     /// Convenience wrapper
     void write(const String &data) { write(static_cast<const CharArray *>(data)); }

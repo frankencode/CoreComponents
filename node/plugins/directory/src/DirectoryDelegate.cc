@@ -128,7 +128,7 @@ void DirectoryDelegate::listDirectory(const HttpRequest *request, const String &
             prefix += "/";
     }
 
-    Ref<StringList> entries = StringList::create();
+    StringList entries;
     for (String name; dir->read(&name);) {
         if (name == "." || name == "..") continue;
         if ((!directoryInstance_->showHidden()) && name->startsWith('.')) continue;

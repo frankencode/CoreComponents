@@ -26,12 +26,12 @@ protected:
         insert("optimize", "");
         insert("static", false);
 
-        insert("include-paths", Ref<StringList>{});
-        insert("library-paths", Ref<StringList>{});
-        insert("link", Ref<StringList>{});
+        insert("include-paths", StringList{});
+        insert("library-paths", StringList{});
+        insert("link", StringList{});
 
-        insert("compile-flags", Ref<StringList>{});
-        insert("link-flags", Ref<StringList>{});
+        insert("compile-flags", StringList{});
+        insert("link-flags", StringList{});
     }
 };
 
@@ -96,7 +96,7 @@ protected:
     BuildOptionsPrototype(const String &className, MetaProtocol *protocol = nullptr):
         SpecificBuildParametersPrototype{className, createProtocol(protocol)}
     {
-        insert("use", StringList::create());
+        insert("use", StringList{});
         insert("root", "/");
         insert("prefix", "");
 
@@ -187,7 +187,7 @@ protected:
     PredicatePrototype(const String &className):
         MetaPrototype{className, PredicateMetaProtocol::create(this)}
     {
-        insert("source", StringList::create());
+        insert("source", StringList{});
         insert("target", "");
         insert("create", "");
         insert("update", "");
@@ -223,11 +223,11 @@ protected:
     {
         insert("name", "");
         insert("description", "");
-        insert("alias", StringList::create());
-        insert("depends", StringList::create());
-        insert("source", StringList::create() << "*.(cc|cpp|cxx|c)");
-        insert("bundle", StringList::create());
-        insert("version", Version());
+        insert("alias", StringList{});
+        insert("depends", StringList{});
+        insert("source", StringList{"*.(cc|cpp|cxx|c)"});
+        insert("bundle", StringList{});
+        insert("version", Version{});
     }
 };
 
@@ -318,7 +318,7 @@ protected:
         BuildOptionsPrototype{className}
     {
         insert("version", Version{});
-        insert("include", StringList::create());
+        insert("include", StringList{});
     }
 };
 

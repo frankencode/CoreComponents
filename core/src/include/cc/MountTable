@@ -47,7 +47,7 @@ public:
     private:
         Entry(const String &line);
 
-        Ref<StringList> parts_;
+        StringList parts_;
     };
 
     typedef Ref<const Entry> Item;
@@ -86,7 +86,7 @@ public:
 private:
     MountTable(const String &text);
 
-    Ref<StringList> lines_;
+    StringList lines_;
 };
 
 } // namespace cc

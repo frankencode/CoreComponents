@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/http/CgiInstance>
 #include <cc/http/CgiService>
 #include <cc/http/DeliveryRegistry>
-#include <cc/http/CgiInstance>
 
 namespace cc {
 namespace http {
@@ -32,7 +32,7 @@ CgiService::CgiService():
 void CgiService::establish(DeliveryPrototype *configPrototype)
 {
     configPrototype->establish("script", "");
-    configPrototype->establish("server", StringList::create());
+    configPrototype->establish("server", StringList{});
     configPrototype->establish("environment", MetaObject::create());
 }
 

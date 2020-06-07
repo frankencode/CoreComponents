@@ -91,7 +91,7 @@ void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *messag
     request->majorVersion_ = 1;
     request->minorVersion_ = 0;
 
-    Ref<StringList> parts = request->version_->split('/');
+    StringList parts = request->version_->split('/');
     if (parts->count() >= 2) {
         mutate(parts->at(0))->upcaseInsitu();
         if (parts->at(0) != "HTTP") throw UnsupportedVersion{};

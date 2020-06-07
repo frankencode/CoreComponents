@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/str>
 #include <cc/Variant>
+#include <cc/Format>
 
 namespace cc {
 
@@ -85,12 +85,12 @@ Variant Variant::read(const String &s)
     return Variant{s};
 }
 
-const char *Variant::Instance::typeName() const
+const char *VariantInstance::typeName() const
 {
     return Variant::typeName(type_, itemType_);
 }
 
-String Variant::Instance::toString() const
+String VariantInstance::toString() const
 {
     switch (type_) {
         case VariantType::Undefined: return String{};
@@ -105,7 +105,7 @@ String Variant::Instance::toString() const
     };
 
     if (+(type_ & VariantType::List) && +(itemType_ & VariantType::String))
-        return str(Variant::cast< Ref<StringList> >(ref().get()));
+        return str(StringList{static_cast<StringList::Instance *>(ref().get())});
 
     return String{};
 }

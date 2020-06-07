@@ -27,20 +27,20 @@ typedef Map<String, String> StatementByDigest;
 class Report: public Object
 {
 public:
-    static Ref<Report> create(const StringList *dirPaths, Pattern works, int worksMinLines);
+    static Ref<Report> create(const StringList &dirPaths, Pattern works, int worksMinLines);
 
-    inline const StringList *dirPaths() const { return dirPaths_; }
-    inline Pattern works() const { return works_; }
-    inline int worksMinLines() const { return worksMinLines_; }
-    inline Coverage *coverage() const { return coverage_; }
-    inline Exposure *exposure() const { return exposure_; }
-    inline CoverageByDigest *coverageByDigest() const { return coverageByDigest_; }
-    inline CoverageByHolder *coverageByHolder() const { return coverageByHolder_; }
-    inline StatementByDigest *statementByDigest() const { return statementByDigest_; }
+    StringList dirPaths() const { return dirPaths_; }
+    Pattern works() const { return works_; }
+    int worksMinLines() const { return worksMinLines_; }
+    Coverage *coverage() const { return coverage_; }
+    Exposure *exposure() const { return exposure_; }
+    CoverageByDigest *coverageByDigest() const { return coverageByDigest_; }
+    CoverageByHolder *coverageByHolder() const { return coverageByHolder_; }
+    StatementByDigest *statementByDigest() const { return statementByDigest_; }
 
 private:
-    Report(const StringList *dirPaths, Pattern works, int worksMinLines);
-    Ref<const StringList> dirPaths_;
+    Report(const StringList &dirPaths, Pattern works, int worksMinLines);
+    StringList dirPaths_;
     Pattern works_;
     int worksMinLines_;
     Ref<Coverage> coverage_;

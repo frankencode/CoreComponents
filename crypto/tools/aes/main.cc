@@ -40,7 +40,7 @@ int main(int argc, char **argv)
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
         arguments->validate(VariantMap::create());
 
-        Ref<const StringList> items = arguments->items();
+        StringList items = arguments->items();
 
         bool viewMode = stdErr()->isatty() && !stdOut()->isatty();
         bool filterMode = items->count() == 0 && !stdIn()->isatty();
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
             Ref<SystemStream> stdInSaved;
             Ref<SystemStream> stdOutSaved;
             if (items->count() == 0) {
-                items = StringList::create() << "";
+                items = StringList{""};
                 stdInSaved = SystemStream::duplicate(stdIn());
                 stdOutSaved = SystemStream::duplicate(stdOut());
                 stdErr()->duplicateTo(stdIn());

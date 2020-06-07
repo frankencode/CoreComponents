@@ -127,7 +127,7 @@ Ref<Job> GnuToolChain::createAnalyseJob(const BuildPlan *plan, const String &sou
 
 Ref<Module> GnuToolChain::finishAnalyseJob(const BuildPlan *plan, const Job *job) const
 {
-    Ref<StringList> parts = dependencySplitPattern_->split(job->outputText());
+    StringList parts = dependencySplitPattern_->split(job->outputText());
     String modulePath = parts->front();
     parts->popFront();
     if (plan->options() & BuildPlan::Tools)
@@ -210,7 +210,7 @@ String GnuToolChain::linkCommand(const BuildPlan *plan) const
         )->join();
     }
 
-    Ref<StringList> modulePaths = StringList::create();
+    StringList modulePaths;
     for (const Module *module: modules)
         modulePaths << module->modulePath();
     args->appendList(modulePaths->sort());
@@ -292,7 +292,7 @@ void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, const String &li
 {
     cleanLibrarySymlinks(plan, libName);
 
-    Ref<StringList> parts = libName->split('.');
+    StringList parts = libName->split('.');
     while (parts->back() != "so") {
         parts->popBack();
         plan->shell()->symlink(libName, parts->join("."));
@@ -301,7 +301,7 @@ void GnuToolChain::createLibrarySymlinks(const BuildPlan *plan, const String &li
 
 void GnuToolChain::cleanLibrarySymlinks(const BuildPlan *plan, const String &libName) const
 {
-    Ref<StringList> parts = libName->split('.');
+    StringList parts = libName->split('.');
     while (parts->back() != "so") {
         parts->popBack();
         plan->shell()->unlink(parts->join("."));
@@ -488,8 +488,8 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
 
     if (lFlags_ != "") args << lFlags_;
 
-    StringList *libraryPaths = plan->libraryPaths();
-    StringList *libraries = plan->libraries();
+    StringList libraryPaths = plan->libraryPaths();
+    StringList libraries = plan->libraries();
 
     if (!libraryPaths->contains("."))
         args << "-L.";
@@ -502,7 +502,7 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
 
     if (plan->containsCPlusPlus() && !cxxPath_->contains("++")) args << "-lstdc++";
 
-    Ref<StringList> rpaths = StringList::create();
+    StringList rpaths;
     if (rpathOverride_ != "")
         rpaths << "-rpath=" + rpathOverride_;
     else

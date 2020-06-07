@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/http/TapBuffer>
 #include <cc/Thread>
 #include <cc/str>
-#include <cc/http/TapBuffer>
 
 namespace cc {
 namespace http {
@@ -30,12 +30,11 @@ String TapBuffer::prefix() const
 
 void TapBuffer::write(const CharArray *buf)
 {
-    Ref<StringList> parts;
+    StringList parts;
     int i = 0, i0 = 0;
     for (int n = buf->count(); i < n; ++i) {
         uint8_t ch = buf->byteAt(i);
         if (ch <= 31 || 127 <= ch) {
-            if (!parts) parts = StringList::create();
             if (i0 < i) parts->append(buf->copy(i0, i));
             i0 = i + 1;
             if (ch == 0x08) parts->append("\\b");
@@ -53,7 +52,7 @@ void TapBuffer::write(const CharArray *buf)
             }
         }
     }
-    if (parts) {
+    if (parts->count() > 0) {
         if (i0 < i) parts->append(buf->copy(i0, i));
         LineBuffer::write(parts->join());
     }

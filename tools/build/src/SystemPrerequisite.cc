@@ -27,13 +27,7 @@ SystemPrerequisite::SystemPrerequisite(const String &name):
     optional_{false},
     cascade_{false},
     autoConfigure_{true}
-{
-    includePaths_ = StringList::create();
-    libraryPaths_ = StringList::create();
-    libraries_ = StringList::create();
-    customCompileFlags_ = StringList::create();
-    customLinkFlags_ = StringList::create();
-}
+{}
 
 SystemPrerequisite::SystemPrerequisite(const MetaObject *object, BuildPlan *plan):
     name_{object->value("name")},

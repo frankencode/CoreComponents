@@ -17,8 +17,7 @@ Ref<LineBuffer> LineBuffer::open(Stream *stream, const String &prefix)
 
 LineBuffer::LineBuffer(Stream *stream, const String &prefix):
     stream_{stream},
-    prefix_{prefix},
-    backlog_{StringList::create()}
+    prefix_{prefix}
 {}
 
 void LineBuffer::writeLine(const CharArray *data)
@@ -54,7 +53,7 @@ void LineBuffer::write(const CharArray *data)
     }
 }
 
-void LineBuffer::write(const StringList *parts)
+void LineBuffer::write(const StringList &parts)
 {
     for (int i = 0, n = parts->count(); i < n; ++i)
         write(parts->at(i));
@@ -67,7 +66,7 @@ int LineBuffer::flush()
     if (h != "") backlog_->pushFront(h);
     String line = backlog_->join();
     writeLine(line);
-    backlog_ = StringList::create();
+    backlog_ = StringList{};
     return line->count();
 }
 

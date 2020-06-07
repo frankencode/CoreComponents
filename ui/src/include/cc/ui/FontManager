@@ -48,7 +48,7 @@ protected:
     void addFontFace(const FontFace *fontFace);
     const FontFamily *selectNearestFontFamily(const String &name) const;
 
-    static Ref<StringList> familySearchPattern(const String &name);
+    static StringList familySearchPattern(const String &name);
 
     typedef Map< String, Ref<FontFamily> > FontFamilies;
     Ref<FontFamilies> fontFamilies_;

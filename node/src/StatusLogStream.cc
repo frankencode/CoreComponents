@@ -28,7 +28,7 @@ void StatusLogStream::write(const CharArray *data)
         sink_->logMessage(data, level_);
 }
 
-void StatusLogStream::write(const StringList *parts)
+void StatusLogStream::write(const StringList &parts)
 {
     write(parts->join());
 }

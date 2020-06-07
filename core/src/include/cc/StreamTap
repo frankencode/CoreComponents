@@ -19,11 +19,11 @@ class StreamTap: public Stream
 public:
     static Ref<StreamTap> open(Stream *stream, Stream *inputTap, Stream *outputTap);
 
-    inline Stream *stream() const { return stream_; }
+    Stream *stream() const { return stream_; }
 
     int read(CharArray *data) override;
     void write(const CharArray *data) override;
-    void write(const StringList *parts) override;
+    void write(const StringList &parts) override;
 
 private:
     StreamTap(Stream *stream, Stream *inputTap, Stream *outputTap);

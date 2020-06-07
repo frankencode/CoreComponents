@@ -45,7 +45,7 @@ public:
     const VariantMap *options() const { return options_; }
 
     /// Command line item arguments
-    const StringList *items() const { return items_; }
+    const StringList &items() const { return items_; }
 
     /** Execution path
       * \see Process::exePath()
@@ -56,7 +56,7 @@ private:
     Arguments(int argc, char **argv, VariantMap *options);
 
     Ref<VariantMap> options_;
-    Ref<StringList> items_;
+    StringList items_;
     String execPath_;
 };
 

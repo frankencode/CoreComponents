@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/Format>
 #include <cc/http/HttpChunkedSink>
+#include <cc/Format>
 
 namespace cc {
 namespace http {
@@ -31,7 +31,7 @@ void HttpChunkedSink::write(const CharArray *data)
     Format{stream_} << hex(data->count()) << "\r\n" << data << "\r\n";
 }
 
-void HttpChunkedSink::write(const StringList *parts)
+void HttpChunkedSink::write(const StringList &parts)
 {
     Format chunk{stream_};
     int total = 0;

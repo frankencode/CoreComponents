@@ -6,7 +6,7 @@
  *
  */
 
-#include <math.h>
+#include <cc/String>
 #include <cc/List>
 #include <cc/Unicode>
 #include <cc/Utf8Source>
@@ -15,7 +15,7 @@
 #include <cc/Utf16Sink>
 #include <cc/Format>
 #include <cc/HexDump>
-#include <cc/String>
+#include <math.h>
 
 namespace cc {
 
@@ -68,12 +68,9 @@ String CharArray::copy(const char *data, int size)
     return new CharArray{newData, size};
 }
 
-String CharArray::join(const StringList *parts, const char *sep, int sepSize)
+String CharArray::join(const StringList &parts, const char *sep, int sepSize)
 {
-    if (!parts) return String{};
-
-    if (parts->count() == 0)
-        return String{};
+    if (parts->count() == 0) return String{};
 
     if (sepSize < 0) sepSize = strlen(sep);
     int size = 0;
@@ -95,7 +92,7 @@ String CharArray::join(const StringList *parts, const char *sep, int sepSize)
     return result;
 }
 
-String CharArray::join(const StringList *parts, const String &sep)
+String CharArray::join(const StringList &parts, const String &sep)
 {
     return join(parts, sep->chars(), sep->count());
 }
@@ -228,7 +225,7 @@ String CharArray::paste(int i0, int i1, const String &text) const
     if (i1 < 0) i1 = 0;
     if (size_ < i1) i1 = size_;
     if (i1 < i0) return text;
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
     if (i0 > 0) parts->append(copy(0, i0));
     parts->append(text);
     if (i1 < size_) parts->append(copy(i1, size_));
@@ -328,9 +325,9 @@ bool CharArray::contains(const String &s) const
     return contains(s->chars());
 }
 
-Ref<StringList> CharArray::split(char sep) const
+StringList CharArray::split(char sep) const
 {
-    auto parts = StringList::create();
+    StringList parts;
     for (int i = 0; i < size_;) {
         int j = i;
         find(sep, &j);
@@ -344,9 +341,9 @@ Ref<StringList> CharArray::split(char sep) const
     return parts;
 }
 
-Ref<StringList> CharArray::split(const char *sep) const
+StringList CharArray::split(const char *sep) const
 {
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
     int i0 = 0;
     int sepLength = strlen(sep);
     while (i0 < size_) {
@@ -362,9 +359,9 @@ Ref<StringList> CharArray::split(const char *sep) const
     return parts;
 }
 
-Ref<StringList> CharArray::breakUp(int chunkSize) const
+StringList CharArray::breakUp(int chunkSize) const
 {
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
     int i0 = 0;
     while (i0 < size_) {
         int i1 = i0 + chunkSize;
@@ -458,12 +455,11 @@ String CharArray::upcaseInsitu()
 
 String CharArray::escape() const
 {
-    Ref<StringList> parts;
+    StringList parts;
     int i = 0, i0 = 0;
     for (; i < size_; ++i) {
         uint8_t ch = bytes_[i];
         if (ch < 32 || 127 <= ch) {
-            if (!parts) parts = StringList::create();
             if (i0 < i) parts->append(copy(i0, i));
             i0 = i + 1;
             if (ch == 0x08) parts->append("\\b");
@@ -480,7 +476,7 @@ String CharArray::escape() const
             }
         }
     }
-    if (!parts) return copy();
+    if (parts->count() == 0) return copy();
 
     if (i0 < i) parts->append(copy(i0, i));
 
@@ -605,7 +601,7 @@ String CharArray::normalize(bool nameCase) const
         if ((0 <= data_[i]) && (data_[i] < 32))
             data_[i] = 32;
     }
-    Ref<StringList> parts = split(" ");
+    StringList parts = split(" ");
     for (int i = 0; i < parts->count(); ++i) {
         String s = parts->at(i);
         if (s->count() == 0) {
@@ -625,7 +621,7 @@ String CharArray::normalize(bool nameCase) const
 
 String CharArray::xmlSanitize() const
 {
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
     int i = 0, j = 0;
     while (i < size_) {
         char ch = data_[i];
@@ -808,8 +804,8 @@ String CharArray::absolutePathRelativeTo(const String &currentDir) const
     if (isAbsolutePath() || (currentDir == "."))
         return copy();
 
-    Ref<StringList> absoluteParts = StringList::create();
-    Ref<StringList> parts = split("/");
+    StringList absoluteParts;
+    StringList parts = split("/");
 
     int upCount = 0;
 
@@ -844,7 +840,7 @@ String CharArray::absolutePathRelativeTo(const String &currentDir) const
 String CharArray::fileName() const
 {
     String name;
-    Ref<StringList> parts = split("/");
+    StringList parts = split("/");
     if (parts->count() > 0)
         name = parts->at(parts->count() - 1);
     return name;
@@ -854,20 +850,20 @@ String CharArray::baseName() const
 {
     String name = fileName();
     if (!name->contains('.')) return name;
-    Ref<StringList> parts = name->split(".");
+    StringList parts = name->split(".");
     parts->removeAt(parts->count() - 1);
     return parts->join(".");
 }
 
 String CharArray::fileSuffix() const
 {
-    Ref<StringList> parts = fileName()->split(".");
+    StringList parts = fileName()->split(".");
     return parts->at(parts->count() - 1);
 }
 
 String CharArray::reducePath() const
 {
-    Ref<StringList> parts = split("/");
+    StringList parts = split("/");
     while (parts->count() > 0) {
         String component = parts->back();
         parts->popBack();
@@ -884,7 +880,7 @@ String CharArray::extendPath(const String &relativePath) const
     if (count() == 0) return relativePath->copy();
     if (relativePath->count() == 0) return copy();
 
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
     if (String{this} != "/") parts << this;
     if (!endsWith('/') || !relativePath->startsWith('/')) parts << "/";
     parts << relativePath;
@@ -898,8 +894,8 @@ String CharArray::canonicalPath() const
         (contains('.') || contains("//") || endsWith('/'))
     ) return this;
 
-    Ref<StringList> parts = split("/");
-    Ref<StringList> result = StringList::create();
+    StringList parts = split("/");
+    StringList result;
     for (int i = 0; i < parts->count(); ++i) {
         String part = parts->at(i);
         if (part == "" && i > 0) continue;

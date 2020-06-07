@@ -30,12 +30,16 @@ public:
     String optimize() const { return optimize_; }
     bool linkStatic() const { return linkStatic_; }
 
-    StringList *includePaths() const { return includePaths_; }
-    StringList *libraryPaths() const { return libraryPaths_; }
-    StringList *libraries() const { return libraries_; }
+    StringList includePaths() const { return includePaths_; }
+    StringList libraryPaths() const { return libraryPaths_; }
+    StringList libraries() const { return libraries_; }
 
-    StringList *customCompileFlags() const { return customCompileFlags_; }
-    StringList *customLinkFlags() const { return customLinkFlags_; }
+    StringList customCompileFlags() const { return customCompileFlags_; }
+    StringList customLinkFlags() const { return customLinkFlags_; }
+    void makeCompileAndLinkFlagsUnique() {
+        customCompileFlags_->makeUnique();
+        customLinkFlags_->makeUnique();
+    }
 
 protected:
     BuildParameters() {}
@@ -44,12 +48,12 @@ protected:
     String optimize_;
     bool linkStatic_;
 
-    Ref<StringList> includePaths_;
-    Ref<StringList> libraryPaths_;
-    Ref<StringList> libraries_;
+    StringList includePaths_;
+    StringList libraryPaths_;
+    StringList libraries_;
 
-    Ref<StringList> customCompileFlags_;
-    Ref<StringList> customLinkFlags_;
+    StringList customCompileFlags_;
+    StringList customLinkFlags_;
 };
 
 } // namespace ccbuild

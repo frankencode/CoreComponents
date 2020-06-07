@@ -49,6 +49,83 @@ enum class VariantType: uint16_t
 
 CC_BITMASK(VariantType, uint16_t)
 
+class Variant;
+
+class VariantInstance
+{
+public:
+    VariantType type() const { return type_; }
+    VariantType itemType() const { return itemType_; }
+    const char *typeName() const;
+
+    String toString() const;
+
+    /** TODO: allow to request more smart conversions explicitly and have proper range checking and exception handling at this point
+      */
+
+private:
+    friend class Variant;
+
+    template<class, bool>
+    friend class VariantCast;
+
+    friend String str(const Variant &x);
+    friend int type(const Variant &value);
+    friend int itemType(const Variant &value);
+
+    template<class U>
+    friend U *cast(const Variant &value);
+
+    VariantInstance() {}
+
+    VariantInstance(int value)    : type_{VariantType::Int},     int_{value}            {}
+    VariantInstance(bool value)   : type_{VariantType::Bool},    int_{value}            {}
+    VariantInstance(float value)  : type_{VariantType::Float},   float_{value}          {}
+    VariantInstance(double value) : type_{VariantType::Float},   float_{float(value)}   {}
+    VariantInstance(Color value)  : type_{VariantType::Color},   word_{value->toWord()} {}
+    VariantInstance(Version value): type_{VariantType::Version}, word_{value->toWord()} {}
+
+    VariantInstance(const char *value)  : type_{VariantType::String} { initRef(mutate(String(value))); }
+    VariantInstance(const String &value): type_{VariantType::String} { initRef(mutate(value)); }
+
+    template<class T>
+    VariantInstance(const Ref<T> &value): type_{VariantType::Object} { initRef(value.get()); }
+
+    VariantInstance(const Ref< List<int> > &value)    : type_{VariantType::List}, itemType_{VariantType::Int}     { initRef(value); }
+    VariantInstance(const Ref< List<bool> > &value)   : type_{VariantType::List}, itemType_{VariantType::Bool}    { initRef(value); }
+    VariantInstance(const Ref< List<float> > &value)  : type_{VariantType::List}, itemType_{VariantType::Float}   { initRef(value); }
+    VariantInstance(const Ref< List<Color> > &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
+    VariantInstance(const Ref< List<Version> > &value): type_{VariantType::List}, itemType_{VariantType::Version} { initRef(value); }
+    VariantInstance(const StringList &value)          : type_{VariantType::List}, itemType_{VariantType::String}  { initRef(value); }
+    VariantInstance(const Ref<VariantList> &value)    : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
+    VariantInstance(const Ref<VariantMap> &value)     : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
+
+    void initRef(Object *object = nullptr) {
+        new(dummy_)Ref<Object>(object);
+    }
+
+    void killRef() {
+        ref().~Ref<Object>();
+    }
+
+    void setRef(Object *object) const {
+        ref() = object;
+    }
+
+    Ref<Object> &ref() const {
+        return *union_cast< Ref<Object> *>(dummy_);
+    }
+
+    VariantType type_ { VariantType::Undefined };
+    VariantType itemType_ { VariantType::Undefined };
+    union {
+        int32_t int_;
+        uint32_t word_;
+        float32_t float_;
+        mutable char dummy_[sizeof(Ref<Object>)];
+    };
+};
+
 /** \class Variant cc/Variant
   * \ingroup misc
   * \brief Duck-typed value
@@ -80,80 +157,7 @@ public:
     template<class T>
     inline static T cast(const Variant &value) { return VariantCast<T, CC_IS_POINTER(T)>::cast(value); }
 
-    class Instance
-    {
-    public:
-        VariantType type() const { return type_; }
-        VariantType itemType() const { return itemType_; }
-        const char *typeName() const;
-
-        String toString() const;
-
-        /** TODO: allow to request more smart conversions explicitly and have proper range checking and exception handling at this point
-          */
-
-    private:
-        friend class Variant;
-
-        template<class, bool>
-        friend class VariantCast;
-
-        friend String str(const Variant &x);
-        friend int type(const Variant &value);
-        friend int itemType(const Variant &value);
-
-        template<class U>
-        friend U *cast(const Variant &value);
-
-        Instance() {}
-
-        Instance(int value)    : type_{VariantType::Int},     int_{value}            {}
-        Instance(bool value)   : type_{VariantType::Bool},    int_{value}            {}
-        Instance(float value)  : type_{VariantType::Float},   float_{value}          {}
-        Instance(double value) : type_{VariantType::Float},   float_{float(value)}   {}
-        Instance(Color value)  : type_{VariantType::Color},   word_{value->toWord()} {}
-        Instance(Version value): type_{VariantType::Version}, word_{value->toWord()} {}
-
-        Instance(const char *value)  : type_{VariantType::String} { initRef(mutate(String(value))); }
-        Instance(const String &value): type_{VariantType::String} { initRef(mutate(value)); }
-
-        template<class T>
-        Instance(const Ref<T> &value): type_{VariantType::Object} { initRef(value.get()); }
-
-        Instance(const Ref< List<int> > &value)    : type_{VariantType::List}, itemType_{VariantType::Int}     { initRef(value); }
-        Instance(const Ref< List<bool> > &value)   : type_{VariantType::List}, itemType_{VariantType::Bool}    { initRef(value); }
-        Instance(const Ref< List<float> > &value)  : type_{VariantType::List}, itemType_{VariantType::Float}   { initRef(value); }
-        Instance(const Ref< List<Color> > &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
-        Instance(const Ref< List<Version> > &value): type_{VariantType::List}, itemType_{VariantType::Version} { initRef(value); }
-        Instance(const Ref<StringList> &value)     : type_{VariantType::List}, itemType_{VariantType::String}  { initRef(value); }
-        Instance(const Ref<VariantList> &value)    : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
-        Instance(const Ref<VariantMap> &value)     : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
-
-        void initRef(Object *object = nullptr) {
-            new(dummy_)Ref<Object>(object);
-        }
-
-        void killRef() {
-            ref().~Ref<Object>();
-        }
-
-        void setRef(Object *object) const {
-            ref() = object;
-        }
-
-        Ref<Object> &ref() const {
-            return *union_cast< Ref<Object> *>(dummy_);
-        }
-
-        VariantType type_ { VariantType::Undefined };
-        VariantType itemType_ { VariantType::Undefined };
-        union {
-            int32_t int_;
-            uint32_t word_;
-            float32_t float_;
-            mutable char dummy_[sizeof(Ref<Object>)];
-        };
-    };
+    typedef VariantInstance Instance;
 
     Variant() {}
 
@@ -176,12 +180,13 @@ public:
     template<class T>
     Variant(T *value): Variant(Ref<T>(value)) {}
 
+    Variant(const StringList &value): instance_{value} {}
+
     Variant(const Ref< List<int> > &value)    : instance_{value} {}
     Variant(const Ref< List<bool> > &value)   : instance_{value} {}
     Variant(const Ref< List<float> > &value)  : instance_{value} {}
     Variant(const Ref< List<Color> > &value)  : instance_{value} {}
     Variant(const Ref< List<Version> > &value): instance_{value} {}
-    Variant(const Ref<StringList> &value)     : instance_{value} {}
     Variant(const Ref<VariantList> &value)    : instance_{value} {}
     Variant(const Ref<VariantMap> &value)     : instance_{value} {}
 
@@ -314,6 +319,14 @@ class VariantCast<Version, false> {
 public:
     static Version cast(const Variant &value) {
         return Version::fromWord(value->word_);
+    }
+};
+
+template<>
+class VariantCast<StringList, false> {
+public:
+    static StringList cast(const Variant &value) {
+        return Variant::cast<StringList::Instance *>(value);
     }
 };
 

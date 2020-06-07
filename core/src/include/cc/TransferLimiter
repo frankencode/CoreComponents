@@ -33,7 +33,7 @@ public:
 
     int read(CharArray *data) override;
     void write(const CharArray *data) override;
-    void write(const StringList *parts) override;
+    void write(const StringList &parts) override;
 
 private:
     TransferLimiter(Stream *stream, size_t readLimit, size_t writeLimit);

@@ -202,7 +202,7 @@ public:
       * \param sep the separator to insert between the items
       * \return the resulting item
       */
-    T join(const T &sep = T{}) const { return T::join(this, sep); }
+    T join(const T &sep = T{}) const { return T::join(const_cast<List *>(this), sep); } // \todo rethink for performance
 
     /** Sort list
       * \param unique eliminate duplicates
@@ -243,6 +243,7 @@ public:
 
     /** Remove duplicate entries from the list
       * \param list list to eliminate duplicates from
+      * \todo remove this method
       */
     static void makeUnique(List *list)
     {
@@ -250,6 +251,17 @@ public:
         for (auto target = list->begin(); target;) {
             if (set->insert(*target)) ++target;
             else list->remove(target);
+        }
+    }
+
+    /** Remove duplicate entries from the list
+      */
+    void makeUnique()
+    {
+        auto set = Set<T>::create();
+        for (auto target = begin(); target;) {
+            if (set->insert(*target)) ++target;
+            else remove(target);
         }
     }
 

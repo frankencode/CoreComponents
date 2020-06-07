@@ -22,7 +22,7 @@ public:
     /** Open a new random number source
       * \return new object instance
       */
-    static Ref<RandomSource> open(const CharArray *salt = 0);
+    static Ref<RandomSource> open(const CharArray *salt = nullptr);
 
     int read(CharArray *data) override;
 

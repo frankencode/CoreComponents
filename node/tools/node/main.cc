@@ -25,7 +25,7 @@ using namespace cc::http;
 Ref<NodeConfig> loadNodeConfig(int argc, char **argv)
 {
     Ref<Arguments> arguments = Arguments::parse(argc, argv);
-    const StringList *items = arguments->items();
+    StringList items = arguments->items();
 
     arguments->validate(NodeConfig::prototype());
 

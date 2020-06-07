@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/Stream>
 #include <cc/http/HttpMessage>
+#include <cc/Stream>
 
 namespace cc { class LineSource; }
 

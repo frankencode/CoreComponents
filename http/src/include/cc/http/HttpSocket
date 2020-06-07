@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <gnutls/gnutls.h>
-#include <cc/net/StreamSocket>
 #include <cc/http/exceptions>
+#include <cc/net/StreamSocket>
+#include <gnutls/gnutls.h>
 
 namespace cc {
 namespace http {
@@ -24,7 +24,7 @@ class HttpSocket: public StreamSocket
 public:
     int read(CharArray *data) override;
     void write(const CharArray *data) override;
-    void write(const StringList *parts) override;
+    void write(const StringList &parts) override;
 
 protected:
     enum Mode {

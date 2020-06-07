@@ -71,7 +71,7 @@ int main(int argc, char **argv)
         arguments->validate(options);
         arguments->override(options);
 
-        Ref<const StringList> items = arguments->items();
+        StringList items = arguments->items();
 
         Pattern pathPattern = options->value("path");
         Pattern namePattern = options->value("name");
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
             replacement = "";
         }
 
-        if (items->count() == 0) items = StringList::create() << ".";
+        if (items->count() == 0) items << ".";
 
         for (String dirPath: items)
         {
@@ -261,7 +261,7 @@ void displayMatch(const CharArray *path, const CharArray *text, const TextMatch 
 
 String replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement)
 {
-    Ref<StringList> fragments = StringList::create();
+    StringList fragments;
     int fi0 = 0; // begin of fragment
     int si = 0, sl = 0; // index and line shift
     int nr = replacement->count('\n');

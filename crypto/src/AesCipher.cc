@@ -275,11 +275,11 @@ String keyExpansion(const CharArray *key, int Nr)
 using namespace aes;
 
 AesCipher::AesCipher(const CharArray *key):
-    BlockCipher(BlockSize),
-    Nk_(key->count() / 4),
-    Nr_(numRounds(Nk_)),
-    s_(String::create(Ns)),
-    w_(keyExpansion(key, Nr_))
+    BlockCipher{BlockSize},
+    Nk_{key->count() / 4},
+    Nr_{numRounds(Nk_)},
+    s_{String::create(Ns)},
+    w_{keyExpansion(key, Nr_)}
 {
     CC_ASSERT(key && (key->count() == 16 || key->count() == 24 || key->count() == 32));
 }

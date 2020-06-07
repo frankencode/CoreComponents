@@ -42,7 +42,7 @@ void TarWriter::writeFile(const String &path)
 
 void TarWriter::writeFile(const String &path, const FileStatus *status)
 {
-    Ref<StringList> headerFields = StringList::create();
+    StringList headerFields;
 
     off_t contentSize = status->size();
     if (status->type() != FileType::Regular) contentSize = 0;

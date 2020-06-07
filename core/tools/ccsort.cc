@@ -14,15 +14,15 @@ using namespace cc;
 
 int main()
 {
-    Ref<StringList> list = StringList::create();
+    StringList list;
     Ref<LineSource> source = LineSource::open(stdIn());
     for (String item; source->read(&item);)
         list->append(item);
 
     list = list->sort();
 
-    for (int i = 0; i < list->count(); ++i)
-        fout() << list->at(i) << nl;
+    for (const String &item: list)
+        fout() << item << nl;
 
     return 0;
 }

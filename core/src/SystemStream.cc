@@ -7,14 +7,14 @@
  */
 
 #include <cc/SystemStream>
+#include <cc/SystemIo>
+#include <cc/Format>
+#include <cc/exceptions>
 #ifndef NDEBUG
 #include <cc/check>
 #endif
-#include <cc/exceptions>
-#include <cc/SystemIo>
-#include <cc/Format>
 #include <sys/types.h>
-#include <sys/uio.h> // readv
+#include <sys/uio.h> // readv, writev
 #include <sys/socket.h> // socketpair
 #include <errno.h>
 #include <string.h>
@@ -93,7 +93,7 @@ void SystemStream::write(const CharArray *data)
     SystemIo::write(fd_, data->bytes(), data->count());
 }
 
-void SystemStream::write(const StringList *parts)
+void SystemStream::write(const StringList &parts)
 {
     const int n = parts->count();
 
@@ -117,12 +117,12 @@ void SystemStream::write(const StringList *parts)
 
     typedef struct iovec IoVector;
     struct IoGuard {
-        IoGuard(int n): iov_(new IoVector[n]) {}
+        IoGuard(int n): iov_{new IoVector[n]} {}
         ~IoGuard() { delete[] iov_; }
         IoVector *iov_;
     };
 
-    IoGuard guard(n);
+    IoGuard guard{n};
     IoVector *iov = guard.iov_;
 
     for (int i = 0; i < n; ++i) {
@@ -134,9 +134,10 @@ void SystemStream::write(const StringList *parts)
     SystemIo::writev(fd_, iov, n);
 }
 
+// \todo method should not be needed
 void SystemStream::write(const Format &data)
 {
-    write(Format::toStringList(data));
+    write(static_cast<const StringList &>(data));
 }
 
 bool SystemStream::waitFor(IoReady ready, int interval_ms)

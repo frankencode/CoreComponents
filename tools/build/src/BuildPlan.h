@@ -90,11 +90,11 @@ public:
 
     String name() const { return name_; }
     String description() const;
-    StringList *alias() const { return alias_; }
+    StringList alias() const { return alias_; }
     Version version() const { return version_; }
 
-    StringList *sources() const { return sources_; }
-    StringList *bundle() const { return bundle_; }
+    StringList sources() const { return sources_; }
+    StringList bundle() const { return bundle_; }
     ModuleList *modules() const { return modules_; }
     void setModules(ModuleList *newList) { modules_ = newList; }
     bool containsCPlusPlus() const { return containsCPlusPlus_; }
@@ -121,7 +121,7 @@ public:
 
     String previousLinkCommandPath() const;
 
-    Ref<StringList> globSources(StringList *pattern) const;
+    StringList globSources(const StringList &pattern) const;
 
     const BuildShell *shell() const { return shell_; }
     void setLibraryLinkJob(Job *linkJob) { libraryLinkJob_ = linkJob; }
@@ -156,8 +156,8 @@ private:
     void globSources();
     void initModules();
 
-    static Ref<StringList> queryableVariableNames();
-    void queryVariables(const StringList *names) const;
+    static StringList queryableVariableNames();
+    void queryVariables(const StringList &names) const;
 
     Ref<ToolChain> toolChain_;
 
@@ -174,11 +174,11 @@ private:
     bool disabled_;
 
     String name_;
-    Ref<StringList> alias_;
+    StringList alias_;
     Version version_;
 
-    Ref<StringList> sources_;
-    Ref<StringList> bundle_;
+    StringList sources_;
+    StringList bundle_;
     Ref<ModuleList> modules_;
     bool containsCPlusPlus_;
 

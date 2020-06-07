@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/Format>
 #include <cc/Version>
+#include <cc/Format>
 
 namespace cc {
 
@@ -18,7 +18,7 @@ Version::Version(const Variant &v)
 
 Version::Instance::Instance(const String &s)
 {
-    Ref<StringList> parts = s->trim("v")->split('.');
+    StringList parts = s->trim("v")->split('.');
     if (parts->has(0)) major_ = parts->at(0)->toNumber<int>();
     if (parts->has(1)) minor_ = parts->at(1)->toNumber<int>();
     if (parts->has(2)) patch_ = parts->at(2)->toNumber<int>();

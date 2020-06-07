@@ -730,7 +730,7 @@ String YasonSyntax::readText(const CharArray *text, const Token *token) const
         s = text->copyRange(token);
     }
     else {
-        Ref<StringList> l = StringList::create();
+        StringList l;
         while (token) {
             l->append(text->copy(token->i0() + 1, token->i1() - 1));
             token = token->nextSibling();

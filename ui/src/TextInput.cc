@@ -6,10 +6,10 @@
  *
  */
 
+#include <cc/ui/TextInput>
 #include <cc/ui/TextRun>
 #include <cc/ui/LineEditor>
 #include <cc/ui/Timer>
-#include <cc/ui/TextInput>
 
 namespace cc {
 namespace ui {
@@ -30,7 +30,7 @@ void TextInput::init()
 
     unwrappedTextRun->bind([=]{
         auto run = TextRun::create();
-        if (imeChunks()) {
+        if (imeChunks()->count() > 0) {
             for (const String &chunk: imeChunks()) {
                 if (chunk->count() > 0)
                     run->append(chunk, font());
@@ -200,11 +200,11 @@ Rect TextInput::textInputArea() const
 
 void TextInput::onTextEdited(const String &chunk, int start, int length)
 {
-    imeChunks =
-        StringList::create()
-            << text()->copy(0, textCursor()->byteOffset())
-            << chunk
-            << text()->copy(textCursor()->byteOffset(), text()->count());
+    imeChunks = StringList {
+        text()->copy(0, textCursor()->byteOffset()),
+        chunk,
+        text()->copy(textCursor()->byteOffset(), text()->count())
+    };
 }
 
 void TextInput::onTextInput(const String &chunk)

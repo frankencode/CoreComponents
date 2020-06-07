@@ -37,12 +37,12 @@ public:
 
 private:
     Glob(const String &expression);
-    Glob(const String &path, StringList *remainder);
+    Glob(const String &path, const StringList &remainder);
     void init(const String &path);
 
     Ref<Dir> dir_;
     Pattern pattern_;
-    Ref<StringList> remainder_;
+    StringList remainder_;
     Ref<Glob> child_;
 };
 

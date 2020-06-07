@@ -10,9 +10,11 @@
 
 #include <initializer_list>
 #include <cc/List>
-#include <cc/Format>
 
 namespace cc {
+
+class Variant;
+class VariantInstance;
 
 /** \class list cc/list
   * \ingroup container_highlevel
@@ -41,13 +43,29 @@ public:
     ListValue(std::initializer_list<T> b):
         instance_{new Instance}
     {
-        for (auto &x: b) *instance_ << x;
+        for (const auto &x: b) instance_->append(x);
     }
 
-    ListValue(const ListValue &b) = default;
+    ListValue(std::initializer_list<ListValue> b):
+        instance_{b.begin()->instance_}
+    {
+        bool first = true;
+        for (const auto &x: b) {
+            if (first) { first = false; continue; }
+            (*this)->appendList(x);
+        }
+    }
+
+    ListValue(const ListValue &b):
+        instance_{b.instance_}
+    {}
 
     ListValue(ListValue &&b):
         instance_{std::move(b.instance_)}
+    {}
+
+    ListValue(Instance *b):
+        instance_{b ? b : new Instance}
     {}
 
     ListValue &operator=(const ListValue &b) = default;
@@ -57,9 +75,10 @@ public:
         return *this;
     }
 
-    ListValue(Instance *b):
-        instance_{b}
-    {}
+    ListValue &operator=(const Ref<Instance> &b) { // \todo make sure this is not needed
+        instance_ = b;
+        return *this;
+    }
 
     const Instance *operator->() const { return instance_; }
     Instance *operator->() { return Cow::get(instance_); }
@@ -74,7 +93,12 @@ public:
     ListValue &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
 
 private:
+    friend class Variant; // HACK
+    friend class VariantInstance; // HACK
+    operator Object *() const { return instance_; } // HACK
+
     explicit operator bool() const;
+    // operator bool() const; \todo make it work
 
     Ref<Instance> instance_;
 };
@@ -111,19 +135,5 @@ bool operator<=(const ListValue<T> &a, const ListValue<T> &b) { return container
 
 template<class T>
 bool operator>=(const ListValue<T> &a, const ListValue<T> &b) { return container::compare(a, b) >= 0; }
-
-template<class T>
-String str(const ListValue<T> &a)
-{
-    Format f;
-    f << "[ ";
-    auto n = a->count();
-    for (const auto &x: a) {
-        f << x;
-        if (--n > 0) f << ", ";
-    }
-    f << " ]";
-    return f;
-}
 
 } // namespace cc
