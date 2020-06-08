@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/ui/StylePlugin>
 #include <cc/ui/Application>
 #include <cc/ui/StyleManager>
-#include <cc/ui/StylePlugin>
 
 namespace cc {
 namespace ui {

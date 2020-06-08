@@ -6,10 +6,10 @@
  *
  */
 
+#include <cc/ui/TextLineHandle>
 #include <cc/ui/TextLine>
 #include <cc/ui/TextEdit>
 #include <cc/ui/TextRun>
-#include <cc/ui/TextLineHandle>
 
 namespace cc {
 namespace ui {

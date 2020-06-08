@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/ui/PasswordEditor>
 #include <cc/ui/PasswordInput>
+#include <cc/ui/PasswordEditor>
 
 namespace cc {
 namespace ui {

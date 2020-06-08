@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/assert>
+#include <cc/ui/PlatformManager>
 #include <cc/Singleton>
 #include <cc/Map>
 #include <cc/ValueSource>
-#include <cc/ui/PlatformManager>
+#include <cc/assert>
 
 namespace cc {
 namespace ui {

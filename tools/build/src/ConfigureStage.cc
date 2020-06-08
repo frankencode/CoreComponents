@@ -89,11 +89,11 @@ bool ConfigureStage::run()
                     if (object) {
                         {
                             StringList flags = getFlags(object, "compile-flags");
-                            if (flags) prerequisite->customCompileFlags()->appendList(flags);
+                            if (flags->count() > 0) prerequisite->customCompileFlags()->appendList(flags);
                         }
                         {
                             StringList flags = getFlags(object, "link-flags");
-                            if (flags) prerequisite->customLinkFlags()->appendList(flags);
+                            if (flags->count() > 0) prerequisite->customLinkFlags()->appendList(flags);
                         }
                         {
                             Variant value = object->value("version");
@@ -193,7 +193,8 @@ bool ConfigureStage::run()
         success_ = false;
     }
 
-    plan()->makeCompileAndLinkFlagsUnique();
+    plan()->customCompileFlags()->makeUnique();
+    plan()->customLinkFlags()->makeUnique();
 
     return success_;
 }

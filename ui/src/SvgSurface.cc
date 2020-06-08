@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/ui/SvgSurface>
 #include <cairo/cairo.h>
 #include <cairo/cairo-svg.h>
-#include <cc/ui/SvgSurface>
 
 namespace cc {
 namespace ui {

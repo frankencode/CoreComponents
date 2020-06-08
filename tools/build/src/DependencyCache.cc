@@ -55,6 +55,8 @@ DependencyCache::DependencyCache(BuildPlan *plan):
         String command = yason->value("analyseCommand");
         String modulePath = yason->value("modulePath");
         StringList dependencyPaths = Variant::cast<StringList>(yason->value("dependencyPaths"));
+            // here VariantList is implicitly converted to StringList: this is expensive!
+            // \todo have proper prototypes for the cache files
         String sourcePath = dependencyPaths->at(0);
 
         bool dirty = false;

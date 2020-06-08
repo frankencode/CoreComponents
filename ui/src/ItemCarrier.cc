@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/Pile>
-#include <cc/ui/ItemView>
 #include <cc/ui/ItemCarrier>
+#include <cc/ui/ItemView>
+#include <cc/ui/Pile>
 
 namespace cc {
 namespace ui {

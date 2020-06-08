@@ -437,7 +437,7 @@ bool GnuToolChain::refreshLinkerCache(const BuildPlan *plan) const
     return plan->shell()->run(command);
 }
 
-void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) const
+void GnuToolChain::appendCompileOptions(Format &args, const BuildPlan *plan) const
 {
     if (plan->options() & BuildPlan::Debug) args << "-g";
     if (plan->options() & BuildPlan::Release) args << "-DNDEBUG";
@@ -468,7 +468,7 @@ void GnuToolChain::appendCompileOptions(Format args, const BuildPlan *plan) cons
         args << "-I" + plan->includePaths()->at(i);
 }
 
-void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
+void GnuToolChain::appendLinkOptions(Format &args, const BuildPlan *plan) const
 {
     for (int i = 0; i < plan->customLinkFlags()->count(); ++i)
         args << plan->customLinkFlags()->at(i);
@@ -517,7 +517,7 @@ void GnuToolChain::appendLinkOptions(Format args, const BuildPlan *plan) const
     args << "-Wl,--enable-new-dtags," + rpaths->join(",");
 }
 
-void GnuToolChain::appendRelocationMode(Format args, const BuildPlan *plan)
+void GnuToolChain::appendRelocationMode(Format &args, const BuildPlan *plan)
 {
     if (!(
         plan->customCompileFlags()->contains("-fPIC") ||

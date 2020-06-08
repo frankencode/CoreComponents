@@ -7,6 +7,11 @@
  */
 
 #include <cc/ui/FtFontManager>
+#include <cc/ui/FtGlyphRun>
+#include <cc/ui/FtTextRun>
+#include <cc/ui/FtScaledFont>
+#include <cc/ThreadLocalSingleton>
+#include <cc/Unicode>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -14,11 +19,6 @@
 #include <cairo/cairo.h>
 #include <cairo/cairo-ft.h>
 #include <cmath>
-#include <cc/ThreadLocalSingleton>
-#include <cc/Unicode>
-#include <cc/ui/FtGlyphRun>
-#include <cc/ui/FtTextRun>
-#include <cc/ui/FtScaledFont>
 
 namespace cc {
 namespace ui {

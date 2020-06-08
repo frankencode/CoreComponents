@@ -6,10 +6,10 @@
  *
  */
 
+#include <cc/ui/ImageManager>
 #include <cc/Singleton>
 #include <cc/Map>
 #include <cc/ValueSource>
-#include <cc/ui/ImageManager>
 
 namespace cc {
 namespace ui {

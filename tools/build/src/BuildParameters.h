@@ -33,13 +33,14 @@ public:
     StringList includePaths() const { return includePaths_; }
     StringList libraryPaths() const { return libraryPaths_; }
     StringList libraries() const { return libraries_; }
-
     StringList customCompileFlags() const { return customCompileFlags_; }
     StringList customLinkFlags() const { return customLinkFlags_; }
-    void makeCompileAndLinkFlagsUnique() {
-        customCompileFlags_->makeUnique();
-        customLinkFlags_->makeUnique();
-    }
+
+    StringList &includePaths() { return includePaths_; }
+    StringList &libraryPaths() { return libraryPaths_; }
+    StringList &libraries() { return libraries_; }
+    StringList &customCompileFlags() { return customCompileFlags_; }
+    StringList &customLinkFlags() { return customLinkFlags_; }
 
 protected:
     BuildParameters() {}

@@ -6,14 +6,15 @@
  *
  */
 
+#include <cc/ui/FtFontFace>
+#include <cc/ui/FtLibrary>
+#include <cc/Format>
+#include <cc/exceptions>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include FT_TRUETYPE_TABLES_H
-#include <cc/exceptions>
-#include <cc/Format>
-#include <cc/ui/FtLibrary>
-#include <cc/ui/FtFontFace>
 
 namespace cc {
 namespace ui {

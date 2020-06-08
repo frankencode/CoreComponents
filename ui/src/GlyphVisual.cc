@@ -6,11 +6,10 @@
  *
  */
 
-#include <cc/debug>
-#include <cc/Utf8Sink>
+#include <cc/ui/GlyphVisual>
 #include <cc/ui/Painter>
 #include <cc/ui/GlyphRun>
-#include <cc/ui/GlyphVisual>
+#include <cc/Utf8Sink>
 
 namespace cc {
 namespace ui {

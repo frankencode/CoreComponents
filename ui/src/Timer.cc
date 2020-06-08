@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/System>
-#include <cc/ui/TimeMaster>
 #include <cc/ui/Timer>
+#include <cc/ui/TimeMaster>
+#include <cc/System>
 
 namespace cc {
 namespace ui {

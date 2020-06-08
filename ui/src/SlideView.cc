@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/ui/Row>
 #include <cc/ui/SlideView>
+#include <cc/ui/Row>
 
 namespace cc {
 namespace ui {

@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/ui/TimeMaster>
 #include <cc/ui/PlatformPlugin>
 #include <cc/ui/TimeWorker>
-#include <cc/ui/TimeMaster>
 
 namespace cc {
 namespace ui {

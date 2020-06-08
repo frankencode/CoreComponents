@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/ui/keyboard>
 #include <cc/str>
 #include <cc/Format>
-#include <cc/ui/keyboard>
 
 namespace cc {
 namespace ui {

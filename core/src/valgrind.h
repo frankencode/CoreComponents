@@ -6213,14 +6213,14 @@ typedef
 #if defined(__GNUC__) || defined(__INTEL_COMPILER) && !defined(_MSC_VER)
 /* Modern GCC will optimize the static routine out if unused,
    and unused attribute will shut down warnings about it.  */
-static int VALGRIND_PRINTF(const char *Format, ...)
-   __attribute__((Format(__printf__, 1, 2), __unused__));
+static int VALGRIND_PRINTF(const char *format, ...)
+   __attribute__((format(__printf__, 1, 2), __unused__));
 #endif
 static int
 #if defined(_MSC_VER)
 __inline
 #endif
-VALGRIND_PRINTF(const char *Format, ...)
+VALGRIND_PRINTF(const char *format, ...)
 {
 #if defined(NVALGRIND)
    return 0;
@@ -6231,17 +6231,17 @@ VALGRIND_PRINTF(const char *Format, ...)
    unsigned long _qzz_res;
 #endif
    va_list vargs;
-   va_start(vargs, Format);
+   va_start(vargs, format);
 #if defined(_MSC_VER) || defined(__MINGW64__)
    _qzz_res = VALGRIND_DO_CLIENT_REQUEST_EXPR(0,
                               VG_USERREQ__PRINTF_VALIST_BY_REF,
-                              (uintptr_t)Format,
+                              (uintptr_t)format,
                               (uintptr_t)&vargs,
                               0, 0, 0);
 #else
    _qzz_res = VALGRIND_DO_CLIENT_REQUEST_EXPR(0,
                               VG_USERREQ__PRINTF_VALIST_BY_REF,
-                              (unsigned long)Format,
+                              (unsigned long)format,
                               (unsigned long)&vargs,
                               0, 0, 0);
 #endif
@@ -6251,14 +6251,14 @@ VALGRIND_PRINTF(const char *Format, ...)
 }
 
 #if defined(__GNUC__) || defined(__INTEL_COMPILER) && !defined(_MSC_VER)
-static int VALGRIND_PRINTF_BACKTRACE(const char *Format, ...)
-   __attribute__((Format(__printf__, 1, 2), __unused__));
+static int VALGRIND_PRINTF_BACKTRACE(const char *format, ...)
+   __attribute__((format(__printf__, 1, 2), __unused__));
 #endif
 static int
 #if defined(_MSC_VER)
 __inline
 #endif
-VALGRIND_PRINTF_BACKTRACE(const char *Format, ...)
+VALGRIND_PRINTF_BACKTRACE(const char *format, ...)
 {
 #if defined(NVALGRIND)
    return 0;
@@ -6269,17 +6269,17 @@ VALGRIND_PRINTF_BACKTRACE(const char *Format, ...)
    unsigned long _qzz_res;
 #endif
    va_list vargs;
-   va_start(vargs, Format);
+   va_start(vargs, format);
 #if defined(_MSC_VER) || defined(__MINGW64__)
    _qzz_res = VALGRIND_DO_CLIENT_REQUEST_EXPR(0,
                               VG_USERREQ__PRINTF_BACKTRACE_VALIST_BY_REF,
-                              (uintptr_t)Format,
+                              (uintptr_t)format,
                               (uintptr_t)&vargs,
                               0, 0, 0);
 #else
    _qzz_res = VALGRIND_DO_CLIENT_REQUEST_EXPR(0,
                               VG_USERREQ__PRINTF_BACKTRACE_VALIST_BY_REF,
-                              (unsigned long)Format,
+                              (unsigned long)format,
                               (unsigned long)&vargs,
                               0, 0, 0);
 #endif

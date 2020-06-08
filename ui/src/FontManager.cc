@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/debug>
-#include <cc/Map>
-#include <cc/ValueSource>
-#include <cc/DirWalker>
+#include <cc/ui/FontManager>
 #include <cc/ui/PlatformPlugin>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Application>
-#include <cc/ui/FontManager>
+#include <cc/Map>
+#include <cc/ValueSource>
+#include <cc/DirWalker>
+#include <cc/debug>
 
 namespace cc {
 namespace ui {

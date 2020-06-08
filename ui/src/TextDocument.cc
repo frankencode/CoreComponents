@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/Pile>
-#include <cc/ui/TextItem>
 #include <cc/ui/TextDocument>
+#include <cc/ui/TextItem>
+#include <cc/ui/Pile>
 
 namespace cc {
 namespace ui {

@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/Queue>
+#include <cc/ui/Window>
 #include <cc/ui/Application>
 #include <cc/ui/Control>
-#include <cc/ui/Window>
+#include <cc/Queue>
 
 namespace cc {
 namespace ui {

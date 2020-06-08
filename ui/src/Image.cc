@@ -6,10 +6,10 @@
  *
  */
 
+#include <cc/ui/Image>
+#include <cc/ui/shadowBlurInsitu>
 #include <cairo/cairo.h>
 #include <cmath>
-#include <cc/ui/shadowBlurInsitu>
-#include <cc/ui/Image>
 
 namespace cc {
 namespace ui {

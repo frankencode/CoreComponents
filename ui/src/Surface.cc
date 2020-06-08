@@ -6,8 +6,8 @@
  *
  */
 
-#include <cairo/cairo.h>
 #include <cc/ui/Surface>
+#include <cairo/cairo.h>
 
 namespace cc {
 namespace ui {

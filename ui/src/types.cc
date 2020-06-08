@@ -7,12 +7,11 @@
  */
 
 #include <cc/ui/types>
-
-#include <math.h>
-#include <cc/str>
-#include <cc/Unicode>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/Application>
+#include <cc/Unicode>
+#include <cc/str>
+#include <cmath>
 
 namespace cc {
 namespace ui {

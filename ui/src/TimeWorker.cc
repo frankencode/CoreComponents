@@ -6,10 +6,10 @@
  *
  */
 
-#include <math.h>
-#include <cc/System>
-#include <cc/ui/TimeMaster>
 #include <cc/ui/TimeWorker>
+#include <cc/ui/TimeMaster>
+#include <cc/System>
+#include <cmath>
 
 namespace cc {
 namespace ui {
@@ -68,7 +68,7 @@ void TimeWorker::run()
                     double t = System::now();
                     double &tn = timeout->nextTime_;
                     double T = timeout->interval_;
-                    if (T < t - tn) tn += ::floor((t - tn) / T) * T;
+                    if (T < t - tn) tn += std::floor((t - tn) / T) * T;
                     tn += T;
                 }
                 timeouts_->removeAt(0);

@@ -200,15 +200,16 @@ public:
 
     ~Variant() { if (+((*this)->type_ & VariantType::Object))(*this)->killRef(); }
 
-    const Variant &operator=(bool value)          { (*this)->type_ = VariantType::Bool;    (*this)->int_ = value; return *this; }
-    const Variant &operator=(int value)           { (*this)->type_ = VariantType::Int;     (*this)->int_ = value; return *this; }
-    const Variant &operator=(float value)         { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
-    const Variant &operator=(double value)        { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
-    const Variant &operator=(Color value)         { (*this)->type_ = VariantType::Color;   (*this)->word_ = value->toWord(); return *this; }
-    const Variant &operator=(Version value)       { (*this)->type_ = VariantType::Version; (*this)->word_ = value->toWord(); return *this; }
+    const Variant &operator=(bool value)    { (*this)->type_ = VariantType::Bool;    (*this)->int_ = value; return *this; }
+    const Variant &operator=(int value)     { (*this)->type_ = VariantType::Int;     (*this)->int_ = value; return *this; }
+    const Variant &operator=(float value)   { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
+    const Variant &operator=(double value)  { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
+    const Variant &operator=(Color value)   { (*this)->type_ = VariantType::Color;   (*this)->word_ = value->toWord(); return *this; }
+    const Variant &operator=(Version value) { (*this)->type_ = VariantType::Version; (*this)->word_ = value->toWord(); return *this; }
 
-    const Variant &operator=(const char *value)   { return (*this) = Variant(value); }
-    const Variant &operator=(const String &value) { return (*this) = Variant(value); }
+    const Variant &operator=(const char *value)       { return (*this) = Variant(value); }
+    const Variant &operator=(const String &value)     { return (*this) = Variant(value); }
+    const Variant &operator=(const StringList &value) { return (*this) = Variant(value); }
 
     template<class T>
     const Variant &operator=(const Ref<T> &value) { return (*this) = Variant(value); }
@@ -326,7 +327,16 @@ template<>
 class VariantCast<StringList, false> {
 public:
     static StringList cast(const Variant &value) {
-        return Variant::cast<StringList::Instance *>(value);
+        auto *sl = Variant::cast<StringList::Instance *>(value);
+        if (sl) return sl;
+        auto *vl = Variant::cast<VariantList *>(value);
+        if (vl) {
+            StringList sl2;
+            for (const auto &x: vl)
+                sl2 << x->toString();
+            return sl2;
+        }
+        return StringList{};
     }
 };
 

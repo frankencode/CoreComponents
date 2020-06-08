@@ -111,9 +111,10 @@ bool operator>=(const MultiSetValue<T> &a, const MultiSetValue<T> &b) { return c
 template<class T>
 String str(const MultiSetValue<T> &a)
 {
+    auto n = a->count();
+    if (n == 0) return "[]";
     Format f;
     f << "[ ";
-    auto n = a->count();
     for (const auto &x: a) {
         f << x;
         if (--n > 0) f << ", ";

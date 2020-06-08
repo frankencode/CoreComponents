@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/ui/TextDelta>
 #include <cc/ui/LineEditor>
+#include <cc/ui/TextDelta>
 
 namespace cc {
 namespace ui {

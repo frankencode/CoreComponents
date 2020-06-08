@@ -56,8 +56,13 @@ public:
     /// Assignment operator
     Format &operator=(const Format &b) = default;
 
-    /// Append or inject a String to the output text
+    /// Append or inject a string to the output text
     Format &operator<<(const String &s);
+
+    /// Automatically join a stringlist and append or inject it to the output text
+    Format &operator<<(const StringList &l) {
+        return *this << l->join();
+    }
 
     /** %Process a special formatting signal
       * \param s formatting signal (nl or flush)
@@ -96,9 +101,10 @@ public:
 template<class T>
 String str(const ListValue<T> &a)
 {
+    auto n = a->count();
+    if (n == 0) return "[]";
     Format f;
     f << "[ ";
-    auto n = a->count();
     for (const auto &x: a) {
         f << x;
         if (--n > 0) f << ", ";

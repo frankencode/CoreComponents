@@ -6,7 +6,16 @@
  *
  */
 
-#include <cc/stdio>
+#include "BuildPlan.h"
+#include "BuildMap.h"
+#include "DependencyCache.h"
+#include "ConfigureShell.h"
+#include "GnuToolChain.h"
+#include "JobScheduler.h"
+#include "RecipeProtocol.h"
+#include <cc/meta/yason>
+#include <cc/meta/JsonWriter>
+#include <cc/glob/Glob>
 #include <cc/Process>
 #include <cc/Crc32Sink>
 #include <cc/File>
@@ -14,16 +23,8 @@
 #include <cc/DirWalker>
 #include <cc/ResourceGuard>
 #include <cc/Arguments>
-#include <cc/glob/Glob>
-#include <cc/meta/yason>
-#include <cc/meta/JsonWriter>
-#include "BuildMap.h"
-#include "DependencyCache.h"
-#include "ConfigureShell.h"
-#include "GnuToolChain.h"
-#include "JobScheduler.h"
-#include "RecipeProtocol.h"
-#include "BuildPlan.h"
+#include <cc/stdio>
+#include <cc/debug> // DEBUG
 
 namespace ccbuild {
 
@@ -170,7 +171,7 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
     }
 
     StringList dependsList = Variant::cast<StringList>(recipe_->value("depends"));
-    if (dependsList) {
+    if (dependsList->count() > 0) {
         for (String item: dependsList) {
             String name;
             Version versionMin, versionMax;
@@ -506,6 +507,18 @@ void BuildPlan::readPrerequisites()
         if (packageItems->count() > 0) prerequisitePaths = packageItems;
     }
 
+    #if 0
+    CC_INSPECT(recipePath_);
+    CC_INSPECT(recipe_->value("use"));
+    CC_INSPECT(recipe_->value("use")->typeName());
+    CC_INSPECT(recipe_->value("include"));
+    CC_INSPECT(recipe_->value("include")->typeName());
+    CC_INSPECT(prerequisitePaths);
+    CC_INSPECT(prerequisitePaths->count());
+    CC_INSPECT(prerequisitePaths->at(0));
+    CC_INSPECT(prerequisitePaths->at(0)->count());
+    #endif
+
     for (const String &prerequisitePath: prerequisitePaths) {
         String path = findPrerequisite(prerequisitePath);
         if (path == "")
@@ -556,7 +569,7 @@ void BuildPlan::findVersion()
 
 void BuildPlan::globSources()
 {
-    if (sources_) return;
+    if (sources_->count() > 0) return;
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
