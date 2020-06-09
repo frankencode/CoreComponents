@@ -1,4 +1,0 @@
-Application {
-    name: sdowrite
-    use: [ core, can ]
-}

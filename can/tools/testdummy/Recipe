@@ -1,4 +1,0 @@
-Application {
-    name: testdummy
-    use: [ core, can ]
-}

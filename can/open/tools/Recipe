@@ -1,0 +1,3 @@
+Tools {
+    use: [ cc/core, can/core, can/open ]
+}

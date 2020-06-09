@@ -1,4 +1,0 @@
-Application {
-    name: safetycounter
-    use: [ core, can ]
-}

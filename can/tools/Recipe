@@ -1,3 +1,0 @@
-Package {
-    include: [ dump, sdoread, sdowrite, master, testsync, syncloop, srdotest, safetylisten, safetycounter, testdummy ]
-}

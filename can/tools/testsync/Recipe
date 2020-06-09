@@ -1,4 +1,0 @@
-Application {
-    name: testsync
-    use: [ core, can ]
-}

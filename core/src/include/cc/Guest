@@ -20,17 +20,17 @@ namespace cc {
   * the same alien object by two different alien wrappers.
   */
 template<class T>
-class Alien: public Object
+class Guest: public Object
 {
 public:
     typedef void (*DelFunc)(T *);
 
-    Alien(T *guest, DelFunc delFunc = nullptr):
+    Guest(T *guest, DelFunc delFunc = nullptr):
         guest_{guest},
         delFunc_{delFunc}
     {}
 
-    ~Alien()
+    ~Guest()
     {
         if (guest_ != 0)
         {
