@@ -16,7 +16,8 @@ namespace can {
 CanFrame::CanFrame()
 {
     ::memset(static_cast<StructCanFrame *>(this), 0, sizeof(StructCanFrame));
-    setPayloadCount(8);
+    can_dlc = 8;
+    can_id = 0;
 }
 
 CanFrame::CanFrame(const CanFrame *other)

@@ -55,6 +55,7 @@ public:
 
     String copy(int i0, int i1) const;
 
+    /// \todo make obsolete
     template<class Word>
     Word word(int i0, int i1) const
     {
@@ -70,6 +71,7 @@ public:
         return value;
     }
 
+    /// \todo make obsolete
     template<class Word>
     void setWord(int i0, int i1, Word value)
     {
@@ -77,6 +79,40 @@ public:
         if (i0 < 0) i0 = 0;
 
         for (int i = i0; i < i1; ++i) {
+            payloadAt(i) = value;
+            value >>= 8U;
+        }
+    }
+
+
+    template<class Word = unsigned>
+    Word payloadWord(unsigned i, unsigned j = sizeof(Word) - 1) const
+    {
+        unsigned i0 = i;
+        unsigned i1 = j + 1;
+
+        if (i1 > unsigned(payloadCount())) i1 = payloadCount();
+        if (i0 < 0) i = 0;
+
+        Word value = 0U;
+        for (unsigned i = i1 - 1; i >= i0; --i) {
+            value <<= 8U;
+            value |= payloadAt(i);
+        }
+
+        return value;
+    }
+
+    template<class Word = unsigned>
+    void setPayloadWord(unsigned i, unsigned j, Word value)
+    {
+        unsigned i0 = i;
+        unsigned i1 = j + 1;
+
+        if (i1 > unsigned(payloadCount())) i1 = payloadCount();
+        if (i0 < 0) i0 = 0;
+
+        for (unsigned i = i0; i < i1; ++i) {
             payloadAt(i) = value;
             value >>= 8U;
         }

@@ -22,6 +22,7 @@ class Color
 {
 public:
     /** Convenience color values
+      * \todo should be upper-case
       * @{
       */
     static const Color transparent;
