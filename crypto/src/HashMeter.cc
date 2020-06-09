@@ -13,12 +13,12 @@ namespace crypto {
 
 Ref<HashMeter> HashMeter::open(HashSink *hashSink, Stream *stream )
 {
-    return new HashMeter(hashSink, stream);
+    return new HashMeter{hashSink, stream};
 }
 
 HashMeter::HashMeter(HashSink *hashSink, Stream *stream):
-    hashSink_(hashSink),
-    stream_(stream)
+    hashSink_{hashSink},
+    stream_{stream}
 {}
 
 int HashMeter::read(CharArray *data)
@@ -37,10 +37,11 @@ void HashMeter::write(const CharArray *data)
     if (stream_) stream_->write(data);
 }
 
-void HashMeter::write(const StringList *parts)
+void HashMeter::write(const StringList &parts)
 {
-    for (int i = 0, n = parts->count(); i < n; ++i)
-        hashSink_->write(parts->at(i));
+    for (const String &part: parts)
+        hashSink_->write(part);
+
     if (stream_) stream_->write(parts);
 }
 

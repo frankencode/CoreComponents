@@ -29,8 +29,7 @@ DependencyCache::DependencyCache(BuildPlan *plan):
     buildPlan_{plan},
     cachePath_{cachePath(plan)},
     cacheTime_{-1},
-    cache_{Cache::create()},
-    previousSources_{StringList::create()}
+    cache_{Cache::create()}
 {
     File::establish(cachePath_);
     cacheTime_ = FileStatus::read(cachePath_)->lastModified();
@@ -55,7 +54,9 @@ DependencyCache::DependencyCache(BuildPlan *plan):
         MetaObject *yason = Variant::cast<MetaObject *>(item->value());
         String command = yason->value("analyseCommand");
         String modulePath = yason->value("modulePath");
-        Ref<StringList> dependencyPaths = Variant::cast<const VariantList *>(yason->value("dependencyPaths"))->toList<String>();
+        StringList dependencyPaths = Variant::cast<StringList>(yason->value("dependencyPaths"));
+            // here VariantList is implicitly converted to StringList: this is expensive!
+            // \todo have proper prototypes for the cache files
         String sourcePath = dependencyPaths->at(0);
 
         bool dirty = false;
@@ -121,7 +122,7 @@ DependencyCache::~DependencyCache()
     File::save(cachePath_, text);
 }
 
-StringList *DependencyCache::previousSources() const
+StringList DependencyCache::previousSources() const
 {
     return previousSources_;
 }

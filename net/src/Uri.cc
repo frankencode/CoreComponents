@@ -69,7 +69,7 @@ String Uri::Instance::requestHost() const
 String Uri::Instance::requestPath() const
 {
     if (query_ == "" && fragment_ == "") return path_;
-    auto parts = StringList::create();
+    StringList parts;
     parts << path_;
     if (query_ != "") parts << "?" << query_;
     if (fragment_ != "") parts << "#" << fragment_;
@@ -111,7 +111,7 @@ String Uri::encode(const String &s)
     mutate(s)->downcaseInsitu();
 
     const char *reserved = ":/?#[]@!$&'()*+,;=";
-    Ref<StringList> l = StringList::create();
+    StringList l;
     int j = 0;
     for (int i = 0, n = s->count(); i < n; ++i) {
         char ch = s->at(i);
@@ -168,7 +168,7 @@ String Uri::decode(const String &s)
 
 String Uri::encodeForm(const Map<String> *form)
 {
-    auto parts = StringList::create();
+    StringList parts;
     for (auto item: form) {
         parts->append(
             Format{"%%=%%"}

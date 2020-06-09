@@ -10,11 +10,12 @@
 
 #include <cc/String>
 #include <cc/Variant>
+#include <cc/Queue>
+#include <cc/Stream>
 #include <cc/str>
 
 namespace cc {
 
-class Stream;
 template<class> class Queue;
 
 /** \addtogroup formatted_io
@@ -32,7 +33,7 @@ extern FormatSignal flush; ///< The flush formatting signal causes the aggregate
 /** \class Format cc/Format
   * \brief Text formatting helper
   */
-class Format: public Ref<StringList>
+class Format: public StringList
 {
 public:
     /** Construct a new String formatting helper
@@ -50,13 +51,18 @@ public:
     ~Format();
 
     /// Copy-constructor
-    Format(const Format &b);
+    Format(const Format &b) = default;
 
     /// Assignment operator
-    Format &operator=(const Format &b);
+    Format &operator=(const Format &b) = default;
 
-    /// Append or inject a String to the output text
+    /// Append or inject a string to the output text
     Format &operator<<(const String &s);
+
+    /// Automatically join a stringlist and append or inject it to the output text
+    Format &operator<<(const StringList &l) {
+        return *this << l->join();
+    }
 
     /** %Process a special formatting signal
       * \param s formatting signal (nl or flush)
@@ -72,11 +78,7 @@ public:
         return *this << str(x);
     }
 
-    static const StringList *toStringList(const Format &f) { return f.get(); }
-
 private:
-    typedef Ref<StringList> Super;
-
     void flush();
 
     Ref<Stream> stream_;
@@ -95,6 +97,21 @@ public:
     template<class T>
     inline const NullFormat &operator<<(T) const { return *this; }
 };
+
+template<class T>
+String str(const ListValue<T> &a)
+{
+    auto n = a->count();
+    if (n == 0) return "[]";
+    Format f;
+    f << "[ ";
+    for (const auto &x: a) {
+        f << x;
+        if (--n > 0) f << ", ";
+    }
+    f << " ]";
+    return f;
+}
 
 /** \}
   */

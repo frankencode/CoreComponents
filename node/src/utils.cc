@@ -69,7 +69,7 @@ String formatDate(const Date &date)
 Date scanDate(const String &text, bool *ok)
 {
     // e.g.: Tue, 10 Sep 2013 11:01:10 GMT
-    Ref<StringList> parts = text->split(' ');
+    StringList parts = text->split(' ');
     if (ok) *ok = false;
     if (parts->count() != 6) return 0;
     int day = 0;

@@ -6,22 +6,22 @@
  *
  */
 
-#include <cc/NullStream>
 #include <cc/crypto/CipherSink>
+#include <cc/NullStream>
 
 namespace cc {
 namespace crypto {
 
 Ref<CipherSink> CipherSink::open(BlockCipher *cipher, Stream *sink, Stream *pad)
 {
-    return new CipherSink(cipher, sink, pad);
+    return new CipherSink{cipher, sink, pad};
 }
 
 CipherSink::CipherSink(BlockCipher *cipher, Stream *sink, Stream *pad):
-    cipher_(cipher),
-    sink_(sink),
-    pad_(pad),
-    block_(String::allocate(cipher->blockSize()))
+    cipher_{cipher},
+    sink_{sink},
+    pad_{pad},
+    block_{String::allocate(cipher->blockSize())}
 {
     if (!pad_) pad_ = NullStream::instance();
 }
@@ -39,7 +39,7 @@ void CipherSink::write(const CharArray *data)
     if (pending_) {
         feed = String::cat(pending_, data);
         data = feed;
-        pending_ = 0;
+        pending_ = nullptr;
     }
 
     const int n_b = cipher_->blockSize();

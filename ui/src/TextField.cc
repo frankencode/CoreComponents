@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/ui/TextInput>
 #include <cc/ui/TextField>
+#include <cc/ui/TextInput>
 
 namespace cc {
 namespace ui {

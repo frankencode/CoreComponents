@@ -6,12 +6,12 @@
  *
  */
 
+#include <cc/ui/Application>
 #include <cc/ui/PlatformManager>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/TimeMaster>
 #include <cc/ui/FingerEvent>
 #include <cc/ui/Control>
-#include <cc/ui/Application>
 
 namespace cc {
 namespace ui {

@@ -6,8 +6,9 @@
  *
  */
 
-#include <cc/File>
 #include <cc/MountTable>
+#include <cc/File>
+#include <cc/debug> // DEBUG
 
 namespace cc {
 
@@ -26,18 +27,17 @@ Ref<MountTable> MountTable::open(const String &path)
         else
             file = File::open(path);
 
-        text = file->readAll(); // FIXME: file->map()
+        text = file->readAll();
     }
-    return new MountTable(text);
+    return new MountTable{text};
 }
 
 Ref<MountTable> MountTable::parse(const String &text)
 {
-    return new MountTable(text);
+    return new MountTable{text};
 }
 
-MountTable::MountTable(const String &text):
-    lines_{StringList::create()}
+MountTable::MountTable(const String &text)
 {
     for (String line: text->split("\n")) {
         mutate(line)->simplifyInsitu();
@@ -48,7 +48,7 @@ MountTable::MountTable(const String &text):
 }
 
 MountTable::Entry::Entry(const String &line):
-    parts_(line->split(" "))
+    parts_{line->split(" ")}
 {
     while (parts_->count() < 4) parts_->append(String{});
 }

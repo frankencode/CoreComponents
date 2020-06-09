@@ -88,12 +88,12 @@ bool ConfigureStage::run()
                     Ref<MetaObject> object = Variant::cast<MetaObject *>(yason::parse(output));
                     if (object) {
                         {
-                            Ref<StringList> flags = getFlags(object, "compile-flags");
-                            if (flags) prerequisite->customCompileFlags()->appendList(flags);
+                            StringList flags = getFlags(object, "compile-flags");
+                            if (flags->count() > 0) prerequisite->customCompileFlags()->appendList(flags);
                         }
                         {
-                            Ref<StringList> flags = getFlags(object, "link-flags");
-                            if (flags) prerequisite->customLinkFlags()->appendList(flags);
+                            StringList flags = getFlags(object, "link-flags");
+                            if (flags->count() > 0) prerequisite->customLinkFlags()->appendList(flags);
                         }
                         {
                             Variant value = object->value("version");
@@ -193,8 +193,8 @@ bool ConfigureStage::run()
         success_ = false;
     }
 
-    StringList::makeUnique(plan()->customCompileFlags());
-    StringList::makeUnique(plan()->customLinkFlags());
+    plan()->customCompileFlags()->makeUnique();
+    plan()->customLinkFlags()->makeUnique();
 
     return success_;
 }
@@ -335,16 +335,16 @@ bool ConfigureStage::runConfigure(const String &name, const String &configure, S
     return sub->wait() == 0;
 }
 
-Ref<StringList> ConfigureStage::getFlags(const MetaObject *object, const String &propertyName)
+StringList ConfigureStage::getFlags(const MetaObject *object, const String &propertyName)
 {
     Variant value;
     if (object->lookup(propertyName, &value)) {
         if (value->type() == VariantType::String)
             return String(value)->split(" ");
         else if (value->type() == VariantType::List && value->itemType() == VariantType::String)
-            return Variant::cast<StringList *>(value);
+            return Variant::cast<StringList>(value);
     }
-    return Ref<StringList>{};
+    return StringList{};
 }
 
 } // namespace ccbuild

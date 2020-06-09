@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/ui/Label>
 #include <cc/ui/Application>
 #include <cc/ui/TextRun>
-#include <cc/ui/Label>
 
 namespace cc {
 namespace ui {

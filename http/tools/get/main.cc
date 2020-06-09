@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 
         String uri;
         {
-            auto parts = StringList::create();
+            StringList parts;
             for (int i = 1; i < argc; ++i)
                 parts->append(argv[i]);
             uri = parts->join("%20");

@@ -20,7 +20,7 @@ class BlockCipher: public Object
 {
 public:
     /// Block size in bytes
-    inline int blockSize() const { return blockSize_; }
+    int blockSize() const { return blockSize_; }
 
     /// Encipher a plaintext p into a ciphertext c
     virtual void encode(const CharArray *p, CharArray *c) = 0;

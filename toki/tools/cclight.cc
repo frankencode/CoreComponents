@@ -38,7 +38,7 @@ int main(int argc, char **argv)
         }
 
         const VariantMap *options = arguments->options();
-        const StringList *items = arguments->items();
+        StringList items = arguments->items();
         bool verbose = options->value("verbose");
         bool cssOption = options->value("css");
         String themeOption = options->value("theme");
@@ -53,9 +53,9 @@ int main(int argc, char **argv)
         }
 
         if (cssOption) {
-            Ref<StringList> paths;
+            StringList paths;
             if (themeOption == "") paths = themeList();
-            else paths = StringList::create() << themeOption;
+            else paths << themeOption;
             for (int i = 0; i < paths->count(); ++i) {
                 Ref<Theme> theme = Theme::load(paths->at(i));
                 Ref<File> file = File::open(cssPath(theme->name()), FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly);

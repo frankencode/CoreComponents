@@ -6,12 +6,11 @@
  *
  */
 
-#include <cc/debug> // DEBUG
+#include <cc/ui/TextLine>
 #include <cc/ui/TextRun>
 #include <cc/ui/TextItem>
 #include <cc/ui/TextEdit>
 #include <cc/ui/TextLineHandle>
-#include <cc/ui/TextLine>
 
 namespace cc {
 namespace ui {
@@ -57,9 +56,8 @@ bool TextLine::withinBounds(Point l) const
 
 bool TextLine::onPointerPressed(const PointerEvent *event)
 {
-    CC_INSPECT(event->pos());
     auto cursor = wrappedTextRun()->getNearestTextCursorInLine(event->pos() - textEdit_->textPos());
-    CC_INSPECT(cursor);
+    // \todo ...
     return true;
 }
 

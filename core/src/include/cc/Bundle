@@ -14,10 +14,11 @@
 #define CC_BUNDLE_LOOKUP(relPath) \
     cc::Bundle::lookup( \
         relPath, \
-        cc::StringList::create() \
-            << cc::Bundle::prefix(CC_XSTR(CCBUILD_BUNDLE_PREFIX)) \
-            << cc::Bundle::exePrefix() \
-            << cc::String(__FILE__)->reducePath() \
+        cc::StringList{ \
+            cc::Bundle::prefix(CC_XSTR(CCBUILD_BUNDLE_PREFIX)), \
+            cc::Bundle::exePrefix(), \
+            cc::String(__FILE__)->reducePath() \
+        } \
     )
 
 /// Version of this application or library bundle (low-level C String)
@@ -35,7 +36,7 @@ class Singleton;
 class Bundle: public Object
 {
 public:
-    static String lookup(const String &relPath, const StringList *dirs);
+    static String lookup(const String &relPath, const StringList &dirs);
     static String prefix(const char *defaultPrefix);
     static String exePrefix();
 

@@ -6,14 +6,14 @@
  *
  */
 
+#include <cc/http/HttpConnection>
+#include <cc/http/HttpStream>
+#include <cc/http/TapBuffer>
+#include <cc/http/exceptions>
 #include <cc/LineSource>
 #include <cc/TransferLimiter>
 #include <cc/StreamTap>
 #include <cc/LineBuffer>
-#include <cc/http/exceptions>
-#include <cc/http/TapBuffer>
-#include <cc/http/HttpStream>
-#include <cc/http/HttpConnection>
 
 namespace cc {
 namespace http {
@@ -54,22 +54,21 @@ void HttpConnection::readMessage(HttpMessage *message)
 
         String line;
         String name, value;
-        Ref<StringList> multiValue;
+        StringList multiValue;
         while (source->read(&line)) {
             if (line == "")
                 break;
             if (line->at(0) == ' ' || line->at(0) == '\t') {
-                if (!multiValue) {
-                    multiValue = StringList::create();
-                    multiValue->append(value);
+                if (multiValue->count() == 0) {
+                    multiValue = StringList{value};
                 }
                 mutate(line)->trimInsitu();
                 multiValue->append(line);
                 continue;
             }
-            if (multiValue) {
+            if (multiValue->count() != 0) {
                 message->establish(name, multiValue->join());
-                multiValue = 0;
+                multiValue->deplete();
             }
             int i = 0;
             if (!line->find(':', &i)) throw BadRequest{};
@@ -80,7 +79,7 @@ void HttpConnection::readMessage(HttpMessage *message)
             if (value != "")
                 message->establish(name, value);
         }
-        if (multiValue)
+        if (multiValue->count() != 0)
             message->establish(name, multiValue->join());
     }
     catch (ReadLimitExceeded &) {

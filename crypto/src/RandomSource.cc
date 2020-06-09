@@ -17,7 +17,7 @@ namespace crypto {
 
 Ref<RandomSource> RandomSource::open(const CharArray *salt)
 {
-    return new RandomSource(salt);
+    return new RandomSource{salt};
 }
 
 RandomSource::RandomSource(const CharArray *salt)

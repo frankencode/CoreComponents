@@ -6,9 +6,8 @@
  *
  */
 
-#include <cc/Queue>
-#include <cc/NullStream>
 #include <cc/Format>
+#include <cc/NullStream>
 
 namespace cc {
 
@@ -21,14 +20,13 @@ Format::Format(const String &pattern, Stream *stream):
     lastPosition_{0}
 {
     if (isNull_) return;
-    set(StringList::create());
     int i0 = 0, n = 0;
     while (true) {
         int i1 = pattern->scan("%%", i0);
         if (i0 < i1)
-            get()->append(pattern->copy(i0, i1));
+            (*this)->append(pattern->copy(i0, i1));
         if (i1 == pattern->count()) break;
-        int j = get()->count() + n;
+        int j = (*this)->count() + n;
         if (!placeHolder_) placeHolder_ = Queue<int>::create();
         placeHolder_->push(j);
         ++n;
@@ -42,7 +40,6 @@ Format::Format(Stream *stream):
     lastPosition_{0}
 {
     if (isNull_) return;
-    set(StringList::create());
 }
 
 Format::~Format()
@@ -57,38 +54,22 @@ Format::~Format()
 void Format::flush()
 {
     if (isNull_) return;
-    if (stream_ && get()->count() > 0) {
+    if (stream_ && (*this)->count() > 0) {
         if (placeHolder_ && lastInsert_ != "") {
             while (placeHolder_->count() > 0) {
                 int j = placeHolder_->pop();
-                get()->insertAt(j, lastInsert_);
+                (*this)->insertAt(j, lastInsert_);
             }
         }
-        stream_->write(get());
-        get()->deplete();
+        stream_->write(*this);
+        (*this)->deplete();
     }
-}
-
-Format::Format(const Format &b):
-    Super{b.get()},
-    stream_{b.stream_},
-    isNull_{b.isNull_},
-    placeHolder_{b.placeHolder_}
-{}
-
-Format &Format::operator=(const Format &b)
-{
-    set(b.get());
-    stream_ = b.stream_;
-    placeHolder_ = b.placeHolder_;
-    isNull_ = b.isNull_;
-    return *this;
 }
 
 Format &Format::operator<<(const String &s)
 {
     if (isNull_) return *this;
-    int j = get()->count();
+    int j = (*this)->count();
     if (placeHolder_) {
         if (placeHolder_->count() > 0) {
             j = placeHolder_->pop();
@@ -96,7 +77,7 @@ Format &Format::operator<<(const String &s)
         }
         else j = ++lastPosition_;
     }
-    get()->insertAt(j, s);
+    (*this)->insertAt(j, s);
     lastInsert_ = s;
     return *this;
 }

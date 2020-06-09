@@ -158,9 +158,6 @@ String dec(const Variant &x, int n = -1);
 inline String str(const String &s) { return s; }
 
 /// Convenience wrapper
-inline String str(const Ref<StringList> &x) { return x->join(); }
-
-/// Convenience wrapper
 inline String str(CharArray *s) { return String(s); }
 
 /// Convenience wrapper

@@ -6,12 +6,12 @@
  *
  */
 
-#include <cmath>
-#include <cairo/cairo.h>
+#include <cc/ui/Painter>
 #include <cc/ui/Surface>
 #include <cc/ui/FtGlyphRun>
 #include <cc/ui/FtTextRun>
-#include <cc/ui/Painter>
+#include <cairo/cairo.h>
+#include <cmath>
 
 namespace cc {
 namespace ui {

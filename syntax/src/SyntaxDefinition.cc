@@ -40,9 +40,10 @@ Ref<SyntaxState> SyntaxDefinition::match(const String &text, int i, TokenFactory
     return def_->match(text, i, tokenFactory);
 }
 
-Ref<StringList> SyntaxDefinition::split(const String &text) const
+StringList SyntaxDefinition::split(const String &text) const
 {
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
+
     for (int i = 0; i < text->count();) {
         Ref<SyntaxState> state = find(text, i);
         if (state->valid()) {
@@ -54,6 +55,7 @@ Ref<StringList> SyntaxDefinition::split(const String &text) const
             break;
         }
     }
+
     return parts;
 }
 

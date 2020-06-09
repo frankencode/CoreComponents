@@ -26,11 +26,11 @@ public:
       * \param stream input or output stream to meter
       * \return new object instance
       */
-    static Ref<HashMeter> open(HashSink *hashSink, Stream *stream = 0);
+    static Ref<HashMeter> open(HashSink *hashSink, Stream *stream = nullptr);
 
     int read(CharArray *data) override;
     void write(const CharArray *data) override;
-    void write(const StringList *parts) override;
+    void write(const StringList &parts) override;
 
     /// Finsh hash sum computation and return the resulting hash sum
     String finish();

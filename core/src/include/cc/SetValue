@@ -111,9 +111,10 @@ bool operator>=(const SetValue<T> &a, const SetValue<T> &b) { return container::
 template<class T>
 String str(const SetValue<T> &a)
 {
+    auto n = a->count();
+    if (n == 0) return "[]";
     Format f;
     f << "[ ";
-    auto n = a->count();
     for (const auto &x: a) {
         f << x;
         if (--n > 0) f << ", ";

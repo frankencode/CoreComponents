@@ -74,11 +74,12 @@ class ReadLocation: public TestCase
 public:
     void run() override
     {
-        auto samples = StringList::create()
-            << "192.168.0.1"
-            << "127.0.0.1:8080"
-            << "::"
-            << "[::]:8080";
+        StringList samples {
+            "192.168.0.1",
+            "127.0.0.1:8080",
+            "::",
+            "[::]:8080"
+        };
         for (String s: samples) {
             auto address = SocketAddress::resolveUri(s);
             fout("\"%%\" == \"%%\"\n") << s << address;

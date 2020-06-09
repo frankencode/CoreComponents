@@ -11,7 +11,7 @@
 #include <cc/containers>
 #include <cc/strings>
 #include <cc/ArrayIterator>
-#include <cc/List>
+#include <cc/ListValue>
 
 #ifdef QT_CORE_LIB
 #include <QString>
@@ -37,7 +37,7 @@ typedef Ref<const CharArray> String;
 /** Convenience alias
   * \ingroup strings
   */
-typedef List<String> StringList;
+typedef ListValue<String> StringList;
 
 class MutantString;
 
@@ -89,8 +89,8 @@ public:
     /// \copydoc CharArray::cat()
     static String cat(const String &a, const String &b);
 
-    /// \copydoc CharArray::join(const StringList *, const String &)
-    static String join(const StringList *parts, const String &sep = String{});
+    /// \copydoc CharArray::join(const StringList &, const String &)
+    static String join(const StringList &parts, const String &sep = String{});
 
     /// Create a String containing \a n copies of \a b
     static String multiply(const String &b, int n);
@@ -125,12 +125,12 @@ public:
     explicit Ref(int size, char preset = '\0');
 
     /// Construct a String by concatenating the items of list \a b
-    Ref(const Ref<StringList> &b);
+    Ref(const StringList &b);
 
     /// Contruct a String as an alias to the String stored in \a b
     Ref(const Variant &b);
 
-    /// \copydoc Ref(const Ref<StringList> &)
+    /// \copydoc Ref(const StringList &)
     Ref(const Format &b);
 
     /// \internal
@@ -152,13 +152,10 @@ public:
     String &operator=(const Variant &b) { set(String(b)); return *this; }
 
     /// Concatenate the items of list \a b and assign the resulting String
-    String &operator=(const Ref<StringList> &b) { set(String(b)); return *this; }
+    String &operator=(const StringList &b) { set(String::join(b)); return *this; }
 
     /// Concatenate the items of the formatting list \a b and assign the resulting String
-    String &operator=(const Format &b) { set(String(b)); return *this; }
-
-    /// Assign an empty String (FIXME: obsolete)
-    String &operator=(const int &null) { CC_ASSERT(null == 0); (void)null; set(nullptr); return *this; }
+    // String &operator=(const Format &b) { set(String::join(b)); return *this; }
 
     /// Assign an empty String
     String &operator=(std::nullptr_t) { set(nullptr); return *this; }
@@ -173,7 +170,7 @@ public:
     String &operator+=(const String &b);
 
     /// Concatenate this String and all items of String list \a b and assign the resulting String
-    String &operator+=(const Ref<StringList> &b);
+    String &operator+=(const StringList &b);
 
     /// Contextual conversion to bool (true if s->count() > 0)
     operator bool();
@@ -303,14 +300,14 @@ public:
       * \param sepSize the size of the separator (optional)
       * \return new object instance
       */
-    static String join(const StringList *parts, const char *sep = "", int sepSize = -1);
+    static String join(const StringList &parts, const char *sep = "", int sepSize = -1);
 
      /** Join a list of strings
       * \param parts the individual parts to join together
       * \param sep the separator to put between individual parts
       * \return new object instance
       */
-    static String join(const StringList *parts, const String &sep);
+    static String join(const StringList &parts, const String &sep);
 
     /** Concatenate two strings
       * \param a the left String
@@ -673,19 +670,19 @@ public:
       * \param sep split marker to search for
       * \return list of pieces without the split markers
       */
-    Ref<StringList> split(char sep) const;
+    StringList split(char sep) const;
 
     /// \copydoc split(char) const
-    Ref<StringList> split(const char *sep) const;
+    StringList split(const char *sep) const;
 
     /// \copydoc split(char) const
-    Ref<StringList> split(String sep) const { return split(sep->chars()); }
+    StringList split(const String &sep) const { return split(sep->chars()); }
 
     /** Create a String list by breaking up this String into equal sized chunks
       * \param chunkSize size of the individual chunks
       * \return list of chunks
       */
-    Ref<StringList> breakUp(int chunkSize) const;
+    StringList breakUp(int chunkSize) const;
 
     /** Replace individual character values
       * \param p character value to search for
@@ -1161,10 +1158,10 @@ inline Ref<const CharArray>::Ref(int size, char preset):
     set(s);
 }
 
-inline Ref<const CharArray>::Ref(const Ref<StringList> &b):
+inline Ref<const CharArray>::Ref(const StringList &b):
     a_{nullptr}
 {
-    if (b) set(CharArray::join(b));
+    set(CharArray::join(b));
 }
 
 inline String Ref<const CharArray>::allocate(int size)
@@ -1197,7 +1194,7 @@ inline String Ref<const CharArray>::cat(const String &a, const String &b)
     return CharArray::cat(a, b);
 }
 
-inline String Ref<const CharArray>::join(const StringList *parts, const String &sep)
+inline String Ref<const CharArray>::join(const StringList &parts, const String &sep)
 {
     return CharArray::join(parts, sep);
 }
@@ -1231,15 +1228,15 @@ inline Ref<const CharArray>::operator bool() const { return a_ && a_->count() > 
 inline Ref<const CharArray>::operator const char *() const { return get()->chars(); }
 inline Ref<const CharArray>::operator const char *() { return get()->chars(); }
 
-inline Ref<StringList> operator+(const String &a, const String &b) { return StringList::create() << a << b; }
-inline Ref<StringList> operator+(Ref<StringList> &a, const String &b) { return a << b; }
-inline Ref<StringList> operator+(const String &a, const char *b) { return a + String{b}; }
-inline Ref<StringList> operator+(const char *a, const String& b) { return String{a} + b; }
+inline StringList operator+(const String &a, const String &b) { return StringList{} << a << b; }
+inline StringList operator+(StringList &a, const String &b) { return a << b; }
+inline StringList operator+(const String &a, const char *b) { return a + String{b}; }
+inline StringList operator+(const char *a, const String& b) { return String{a} + b; }
 
 inline String &Ref<const CharArray>::operator+=(char b) { String s{1}; mutate(s)->at(0) = b; set(CharArray::cat(*this, s)); return *this; }
 inline String &Ref<const CharArray>::operator+=(const char *b) { set(CharArray::cat(*this, String{b})); return *this; }
 inline String &Ref<const CharArray>::operator+=(const String &b) { set(CharArray::cat(*this, b)); return *this; }
-inline String &Ref<const CharArray>::operator+=(const Ref<StringList> &b) { set(String{*this + b}); return *this; }
+inline String &Ref<const CharArray>::operator+=(const StringList &b) { set(String{*this + b}); return *this; }
 
 inline const CharArray *Ref<const CharArray>::get() const
 {

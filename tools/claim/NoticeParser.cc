@@ -179,7 +179,7 @@ Ref<Copyright> NoticeSyntax::readCopyright(Token *token, const String &message) 
     CC_ASSERT(token->rule() == holder_);
     token = token->firstChild();
     CC_ASSERT(token);
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
     while (token) {
         CC_ASSERT(token->rule() == word_);
         parts->append(message->copyRange(token));

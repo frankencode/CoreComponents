@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/ui/TextRun>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/FontManager>
-#include <cc/ui/TextRun>
 
 namespace cc {
 namespace ui {

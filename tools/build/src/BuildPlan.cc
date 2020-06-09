@@ -6,7 +6,16 @@
  *
  */
 
-#include <cc/stdio>
+#include "BuildPlan.h"
+#include "BuildMap.h"
+#include "DependencyCache.h"
+#include "ConfigureShell.h"
+#include "GnuToolChain.h"
+#include "JobScheduler.h"
+#include "RecipeProtocol.h"
+#include <cc/meta/yason>
+#include <cc/meta/JsonWriter>
+#include <cc/glob/Glob>
 #include <cc/Process>
 #include <cc/Crc32Sink>
 #include <cc/File>
@@ -14,16 +23,8 @@
 #include <cc/DirWalker>
 #include <cc/ResourceGuard>
 #include <cc/Arguments>
-#include <cc/glob/Glob>
-#include <cc/meta/yason>
-#include <cc/meta/JsonWriter>
-#include "BuildMap.h"
-#include "DependencyCache.h"
-#include "ConfigureShell.h"
-#include "GnuToolChain.h"
-#include "JobScheduler.h"
-#include "RecipeProtocol.h"
-#include "BuildPlan.h"
+#include <cc/stdio>
+#include <cc/debug> // DEBUG
 
 namespace ccbuild {
 
@@ -58,7 +59,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
     CCBUILD_BUILDPLAN_COMPONENTS_INIT
 {
     Ref<Arguments> arguments = Arguments::parse(argc, argv);
-    const StringList *items = arguments->items();
+    StringList items = arguments->items();
 
     if (items->count() > 0) {
         if (items->count() > 1)
@@ -169,18 +170,18 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
             includePaths_->append(defaultIncludePath);
     }
 
-    const StringList *dependsList = Variant::cast<const StringList *>(recipe_->value("depends"));
-    if (dependsList) {
+    StringList dependsList = Variant::cast<StringList>(recipe_->value("depends"));
+    if (dependsList->count() > 0) {
         for (String item: dependsList) {
             String name;
             Version versionMin, versionMax;
             if (item->contains(">=")) {
-                Ref<StringList> parts = item->split(">=");
+                StringList parts = item->split(">=");
                 name = parts->at(0)->trim();
                 if (parts->has(1)) versionMin = Version{parts->at(1)->trim()};
             }
             else if (item->contains("<=")) {
-                Ref<StringList> parts = item->split("<=");
+                StringList parts = item->split("<=");
                 name = parts->at(0)->trim();
                 if (parts->has(1)) versionMax = Version{parts->at(1)->trim()};
             }
@@ -432,9 +433,9 @@ String BuildPlan::previousLinkCommandPath() const
     return modulePath("LinkComannd");
 }
 
-Ref<StringList> BuildPlan::globSources(StringList *pattern) const
+StringList BuildPlan::globSources(const StringList &pattern) const
 {
-    Ref<StringList> sources = StringList::create();
+    StringList sources;
     for (int i = 0; i < pattern->count(); ++i) {
         Ref<Glob> glob = Glob::open(sourcePath(pattern->at(i)));
         for (String path; glob->read(&path);) {
@@ -499,12 +500,24 @@ void BuildPlan::readPrerequisites()
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
-    Ref<const StringList> prerequisitePaths = Variant::cast<const StringList *>(recipe_->value("use"));
+    StringList prerequisitePaths = Variant::cast<StringList>(recipe_->value("use"));
 
     if (options_ & Package) {
-        const StringList *packageItems = Variant::cast<const StringList *>(recipe_->value("include"));
+        StringList packageItems = Variant::cast<StringList>(recipe_->value("include"));
         if (packageItems->count() > 0) prerequisitePaths = packageItems;
     }
+
+    #if 0
+    CC_INSPECT(recipePath_);
+    CC_INSPECT(recipe_->value("use"));
+    CC_INSPECT(recipe_->value("use")->typeName());
+    CC_INSPECT(recipe_->value("include"));
+    CC_INSPECT(recipe_->value("include")->typeName());
+    CC_INSPECT(prerequisitePaths);
+    CC_INSPECT(prerequisitePaths->count());
+    CC_INSPECT(prerequisitePaths->at(0));
+    CC_INSPECT(prerequisitePaths->at(0)->count());
+    #endif
 
     for (const String &prerequisitePath: prerequisitePaths) {
         String path = findPrerequisite(prerequisitePath);
@@ -556,14 +569,12 @@ void BuildPlan::findVersion()
 
 void BuildPlan::globSources()
 {
-    if (sources_) return;
+    if (sources_->count() > 0) return;
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
     if (recipe_->contains("source"))
-        sources_ = globSources(Variant::cast<StringList *>(recipe_->value("source")));
-    else
-        sources_ = StringList::create();
+        sources_ = globSources(Variant::cast<StringList>(recipe_->value("source")));
 
     sourcePrefix_ = BuildMap::instance()->commonPrefix();
     if (sourcePrefix_ == "") sourcePrefix_ = projectPath_;
@@ -579,9 +590,7 @@ void BuildPlan::globSources()
     }
 
     if (recipe_->contains("bundle"))
-        bundle_ = globSources(Variant::cast<StringList *>(recipe_->value("bundle")));
-    else
-        bundle_ = StringList::create();
+        bundle_ = globSources(Variant::cast<StringList>(recipe_->value("bundle")));
 
     for (BuildPlan *plan: prerequisites_)
         plan->globSources();
@@ -625,20 +634,21 @@ void BuildPlan::initModules()
         prerequisite->initModules();
 }
 
-Ref<StringList> BuildPlan::queryableVariableNames()
+StringList BuildPlan::queryableVariableNames()
 {
-    return StringList::create()
-        << "name"
-        << "version"
-        << "source"
-        << "include-paths"
-        << "library-paths"
-        << "libraries"
-        << "custom-compile-flags"
-        << "custom-link-flags";
+    return StringList {
+        "name",
+        "version",
+        "source",
+        "include-paths",
+        "library-paths",
+        "libraries",
+        "custom-compile-flags",
+        "custom-link-flags"
+    };
 }
 
-void BuildPlan::queryVariables(const StringList *names) const
+void BuildPlan::queryVariables(const StringList &names) const
 {
     Ref<MetaObject> variables = MetaObject::create();
     variables->insert("name", name_);

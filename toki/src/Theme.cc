@@ -48,9 +48,9 @@ Theme::Theme(const String &path):
         throw UsageError{Format{"Palette \"default\" missing in theme \"%%\""} << path};
 }
 
-Ref<StringList> themeList(const String &path)
+StringList themeList(const String &path)
 {
-    auto list = StringList::create();
+    StringList list;
     String searchPath = path;
     if (searchPath == "") {
         searchPath = CC_BUNDLE_LOOKUP("themes");

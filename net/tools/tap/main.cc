@@ -18,7 +18,7 @@ using namespace cc::net;
 
 void dump(const String &prefix, const CharArray *data)
 {
-    Ref<StringList> parts = data->split('\n');
+    StringList parts = data->split('\n');
     for (int i = 0; i < parts->count(); ++i) {
         if (i != parts->count() - 1)
             parts->at(i) = parts->at(i) + "\n";
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     try {
         Ref<Arguments> arguments = Arguments::parse(argc, argv, VariantMap::create());
 
-        const StringList *items = arguments->items();
+        StringList items = arguments->items();
         if (items->count() != 2) throw HelpRequest{};
 
         auto proxyAddress = SocketAddress::resolveUri(items->at(0));

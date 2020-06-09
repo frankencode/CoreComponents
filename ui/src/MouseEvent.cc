@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/Format>
 #include <cc/ui/MouseEvent>
+#include <cc/Format>
 
 namespace cc {
 namespace ui {

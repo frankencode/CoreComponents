@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/ui/FtTextRun>
 #include <cc/ui/FtFontManager>
 #include <cc/ui/FtTextCursor>
-#include <cc/ui/FtTextRun>
 
 namespace cc {
 namespace ui {
@@ -73,12 +73,12 @@ Ref<TextRun> FtTextRun::wrap(double maxWidth, double lineHeight, const TextWrapB
 
 Ref<TextCursor> FtTextRun::getTextCursor(int byteOffset) const
 {
-    if ( byteCount_ < byteOffset || byteOffset < 0)
+    if (byteCount_ < byteOffset || byteOffset < 0 || glyphRuns_->count() == 0)
         return Object::create<FtTextCursor>();
 
     Ref<FtTextCursor> cursor = Object::create<FtTextCursor>(this);
 
-    if (byteOffset == byteCount()) {
+    if (byteOffset == byteCount_) {
         const int runIndex = glyphRuns_->count() - 1;
         const FtGlyphRun *run = glyphRuns_->at(runIndex);
         cursor->byteOffset_ = byteOffset;
@@ -238,7 +238,7 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
     Ref<FtGlyphRun> metaBlock = Object::create<FtGlyphRun>();
 
     {
-        auto parts = StringList::create();
+        StringList parts;
         for (const FtGlyphRun *glyphRun: glyphRuns) {
             parts->append(glyphRun->text());
         }

@@ -114,9 +114,10 @@ bool operator>=(const MapValue<K, T> &a, const MapValue<K, T> &b) { return conta
 template<class K, class T>
 String str(const MapValue<K, T> &a)
 {
+    auto n = a->count();
+    if (n == 0) return "[]";
     Format f;
     f << "[ ";
-    auto n = a->count();
     for (const auto &x: a) {
         f << "(" << x->key() << ": " << x->value() << ")";
         if (--n > 0) f << ", ";

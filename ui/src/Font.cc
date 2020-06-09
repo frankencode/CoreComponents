@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/debug>
-#include <cc/System>
+#include <cc/ui/Font>
 #include <cc/ui/ScaledFont>
 #include <cc/ui/StyleManager>
 #include <cc/ui/FontManager>
 #include <cc/ui/Application>
-#include <cc/ui/Font>
+#include <cc/System>
+#include <cc/Format>
 
 namespace cc {
 namespace ui {

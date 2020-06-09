@@ -25,8 +25,8 @@ int main(int argc, char **argv)
         Ref<Arguments> arguments = Arguments::parse(argc, argv);
         arguments->validate(VariantMap::create());
 
-        Ref<const StringList> items = arguments->items();
-        if (items->count() == 0) items = StringList::create() << "";
+        StringList items = arguments->items();
+        if (items->count() == 0) items = StringList{""};
 
         for (String path: items) {
             Ref<HashSink> hashSink;

@@ -268,7 +268,8 @@ private:
         if (size > 0) {
             size_ = size;
             data_ = new Item[size];
-            memclr(data_, size * sizeof(Item), zero);
+            for (int i = 0; i < size; ++i)
+                data_[i] = zero;
         }
     }
 
@@ -279,7 +280,8 @@ private:
         if (size > 0) {
             size_ = size;
             data_ = new Item[size];
-            memcpy(data_, data, size * sizeof(Item));
+            for (int i = 0; i < size; ++i)
+                data_[i] = data[i];
         }
     }
 

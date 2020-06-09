@@ -6,13 +6,12 @@
  *
  */
 
-#include <cc/debug> // DEBUG
-#include <cc/List>
+#include <cc/ui/View>
 #include <cc/ui/StyleManager>
 #include <cc/ui/Window>
 #include <cc/ui/Image>
 #include <cc/ui/Control>
-#include <cc/ui/View>
+#include <cc/List>
 
 namespace cc {
 namespace ui {

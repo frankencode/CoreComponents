@@ -40,6 +40,6 @@ private:
     Ref<Palette> defaultPalette_;
 };
 
-Ref<StringList> themeList(const String &path = "");
+StringList themeList(const String &path = "");
 
 }} // namespace cc::toki

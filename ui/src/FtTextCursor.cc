@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/Format>
-#include <cc/ui/FtTextRun>
 #include <cc/ui/FtTextCursor>
+#include <cc/ui/FtTextRun>
+#include <cc/Format>
 
 namespace cc {
 namespace ui {

@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/ui/keyboard>
 #include <cc/str>
 #include <cc/Format>
-#include <cc/ui/keyboard>
 
 namespace cc {
 namespace ui {
@@ -322,7 +322,7 @@ String str(KeyModifier modifiers)
 {
     if (modifiers == KeyModifier::None) return "None";
 
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
     if (+(modifiers & KeyModifier::LeftShift   )) parts << "LeftShift";
     if (+(modifiers & KeyModifier::RightShift  )) parts << "RightShift";
     if (+(modifiers & KeyModifier::LeftControl )) parts << "LeftControl";

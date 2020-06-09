@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/ui/View>
 #include <cc/ui/Column>
+#include <cc/ui/View>
 
 namespace cc {
 namespace ui {

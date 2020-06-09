@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/System>
-#include <cc/TransferLimiter>
-#include <cc/http/exceptions>
 #include <cc/http/HttpStream>
+#include <cc/http/exceptions>
+#include <cc/TransferLimiter>
+#include <cc/System>
 
 namespace cc {
 namespace http {
@@ -161,7 +161,7 @@ void HttpStream::write(const CharArray *data)
     stream_->write(data);
 }
 
-void HttpStream::write(const StringList *parts)
+void HttpStream::write(const StringList &parts)
 {
     stream_->write(parts);
 }

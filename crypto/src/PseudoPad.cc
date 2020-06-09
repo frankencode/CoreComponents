@@ -13,14 +13,14 @@ namespace crypto {
 
 Ref<PseudoPad> PseudoPad::open(BlockCipher *cipher)
 {
-    return new PseudoPad(cipher);
+    return new PseudoPad{cipher};
 }
 
 PseudoPad::PseudoPad(BlockCipher *cipher):
-    cipher_(cipher),
-    p_(String::allocate(cipher->blockSize())),
-    c_(String::allocate(cipher->blockSize())),
-    i_(c_->count())
+    cipher_{cipher},
+    p_{String::allocate(cipher->blockSize())},
+    c_{String::allocate(cipher->blockSize())},
+    i_{c_->count()}
 {
     mutate(p_)->fill(0);
 }

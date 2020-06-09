@@ -25,7 +25,7 @@ void SystemLogStream::write(const CharArray *data)
     syslog(priority_, "%s", data->chars());
 }
 
-void SystemLogStream::write(const StringList *parts)
+void SystemLogStream::write(const StringList &parts)
 {
     write(parts->join());
 }

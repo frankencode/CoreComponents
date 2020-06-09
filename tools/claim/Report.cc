@@ -15,20 +15,20 @@
 
 namespace ccclaim {
 
-Ref<Report> Report::create(const StringList *dirPaths, Pattern works, int worksMinLines)
+Ref<Report> Report::create(const StringList &dirPaths, Pattern works, int worksMinLines)
 {
-    return new Report(dirPaths, works, worksMinLines);
+    return new Report{dirPaths, works, worksMinLines};
 }
 
-Report::Report(const StringList *dirPaths, Pattern works, int worksMinLines):
-    dirPaths_(dirPaths),
-    works_(works),
-    worksMinLines_(worksMinLines),
-    coverage_(Coverage::create()),
-    exposure_(Exposure::create()),
-    coverageByDigest_(CoverageByDigest::create()),
-    coverageByHolder_(CoverageByHolder::create()),
-    statementByDigest_(StatementByDigest::create())
+Report::Report(const StringList &dirPaths, Pattern works, int worksMinLines):
+    dirPaths_{dirPaths},
+    works_{works},
+    worksMinLines_{worksMinLines},
+    coverage_{Coverage::create()},
+    exposure_{Exposure::create()},
+    coverageByDigest_{CoverageByDigest::create()},
+    coverageByHolder_{CoverageByHolder::create()},
+    statementByDigest_{StatementByDigest::create()}
 {
     for (int i = 0; i < dirPaths->count(); ++i) {
         String dirPath = dirPaths->at(i)->canonicalPath();

@@ -6,6 +6,11 @@
  *
  */
 
+#include <cc/Process>
+#include <cc/File>
+#include <cc/InputPipe>
+#include <cc/OutputPipe>
+#include <cc/strings> // cc::strdup, cc::free
 #include <sys/wait.h> // waitpid
 #include <sys/stat.h> // umask
 #include <errno.h> // errno
@@ -15,11 +20,6 @@
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 #include <crt_externs.h> // _NSGetEnviron
 #endif
-#include <cc/strings> // cc::strdup, cc::free
-#include <cc/File>
-#include <cc/InputPipe>
-#include <cc/OutputPipe>
-#include <cc/Process>
 
 #ifndef __MACH__
 extern "C" char **environ;
@@ -54,7 +54,7 @@ void Process::Staging::enableSpawnFlag(short flag)
     CC_SPAWN_CALL(posix_spawnattr_setflags(&spawnAttributes_, flags));
 }
 
-Process::Staging *Process::Staging::setArgs(const StringList *args)
+Process::Staging *Process::Staging::setArgs(const StringList &args)
 {
     args_ = args;
     return this;
@@ -208,19 +208,17 @@ Ref<Process> Process::bootstrap(const Staging *staging)
     /// locate executable and prepare argument list
 
     String execPath;
-    Ref<const StringList> args = staging->args_;
+    StringList args = staging->args_;
 
     if (staging->command_ != "") {
         String cmd = staging->command_;
         if (cmd->startsWith(' ') || cmd->endsWith(' '))
             cmd = cmd->trim();
         if (!cmd->contains(' ')) execPath = cmd;
-        if (!args) args = cmd->simplify()->split(' ');
+        if (args->count() == 0) args = cmd->simplify()->split(' ');
     }
 
-    if (args) if (args->count() == 0) args = 0;
-
-    if (execPath == "" && args) execPath = args->at(0);
+    if (execPath == "" && args->count() > 0) execPath = args->at(0);
 
     if (execPath != "") {
         if (execPath->contains('/')) {
@@ -238,10 +236,10 @@ Ref<Process> Process::bootstrap(const Staging *staging)
     char **argv = nullptr;
     char **envp = nullptr;
     {
-        int argc = args ? args->count() : 1;
+        int argc = (args->count() > 0) ? args->count() : 1;
         argv = new char*[argc + 1];
 
-        if (args) {
+        if (args->count() > 0) {
             for (int i = 0; i < args->count(); ++i)
                 argv[i] = cc::strdup(args->at(i)->chars());
         }

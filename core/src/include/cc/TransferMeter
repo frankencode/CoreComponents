@@ -26,7 +26,7 @@ public:
 
     virtual int read(CharArray *buf) override;
     virtual void write(const CharArray *buf) override;
-    virtual void write(const StringList *parts) override;
+    virtual void write(const StringList &parts) override;
 
 protected:
     TransferMeter(Stream *stream);

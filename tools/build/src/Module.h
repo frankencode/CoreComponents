@@ -17,7 +17,7 @@ using namespace cc;
 class Module: public Object
 {
 public:
-    static Ref<Module> create(const String &analyseCommand, const String &modulePath, const StringList *dependencyPaths, bool dirty) {
+    static Ref<Module> create(const String &analyseCommand, const String &modulePath, const StringList &dependencyPaths, bool dirty) {
         return new Module{analyseCommand, modulePath, dependencyPaths, dirty};
     }
 
@@ -25,11 +25,11 @@ public:
     String modulePath() const { return modulePath_; }
     String sourcePath() const { return dependencyPaths_->at(0); }
     String toolName() const { return sourcePath()->baseName(); }
-    const StringList *dependencyPaths() const { return dependencyPaths_; }
+    StringList dependencyPaths() const { return dependencyPaths_; }
     bool dirty() const { return dirty_; }
 
 private:
-    Module(const String &analyseCommand, const String &modulePath, const StringList *dependencyPaths, bool dirty):
+    Module(const String &analyseCommand, const String &modulePath, const StringList &dependencyPaths, bool dirty):
         analyseCommand_{analyseCommand},
         modulePath_{modulePath},
         dependencyPaths_{dependencyPaths},
@@ -38,7 +38,7 @@ private:
 
     String analyseCommand_;
     String modulePath_;
-    Ref<const StringList> dependencyPaths_;
+    StringList dependencyPaths_;
     bool dirty_;
 };
 

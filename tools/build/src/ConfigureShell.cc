@@ -32,10 +32,11 @@ String ConfigureShell::run(const String &shellCommand)
 
     Ref<Process> sub = Process::stage()
         ->setArgs(
-            StringList::create()
-                << Process::getEnv("SHELL")
-                << "-c"
-                << shellCommand
+            StringList{
+                Process::getEnv("SHELL"),
+                "-c",
+                shellCommand
+            }
         )
         ->open();
 

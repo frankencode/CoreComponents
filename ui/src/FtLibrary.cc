@@ -6,16 +6,15 @@
  *
  */
 
+#include <cc/ui/FtLibrary>
+#include <cc/exceptions>
+#include <cc/Format>
+#include <cc/ThreadLocalSingleton>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_MODULE_H
-
-#include <cc/exceptions>
-// #include <cc/Memory>
-#include <cc/Format>
-#include <cc/ThreadLocalSingleton>
 #include <freetype/ftlcdfil.h>
-#include <cc/ui/FtLibrary>
 
 namespace cc {
 namespace ui {

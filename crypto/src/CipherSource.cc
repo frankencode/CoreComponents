@@ -13,15 +13,15 @@ namespace crypto {
 
 Ref<CipherSource> CipherSource::open(BlockCipher *cipher, Stream *source)
 {
-    return new CipherSource(cipher,  source);
+    return new CipherSource{cipher,  source};
 }
 
 CipherSource::CipherSource(BlockCipher *cipher, Stream *source):
-    cipher_(cipher),
-    source_(source),
-    block_(String::allocate(cipher_->blockSize())),
-    buffer_(String::allocate(0x1000)),
-    j_(0), m_(0)
+    cipher_{cipher},
+    source_{source},
+    block_{String::allocate(cipher_->blockSize())},
+    buffer_{String::allocate(0x1000)},
+    j_{0}, m_{0}
 {}
 
 int CipherSource::read(CharArray *data)
@@ -38,7 +38,7 @@ int CipherSource::read(CharArray *data)
             if (pending_) {
                 mutate(buffer_->select(m_, buffer_->count() - m_))->write(pending_);
                 m_ += pending_->count();
-                pending_ = 0;
+                pending_ = nullptr;
             }
             else {
                 int n_r = source_->read(mutate(buffer_->select(m_, buffer_->count() - m_)));

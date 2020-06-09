@@ -35,7 +35,7 @@ public:
 private:
     CaptureSink();
 
-    Ref<StringList> parts_;
+    StringList parts_;
 };
 
 } // namespace cc

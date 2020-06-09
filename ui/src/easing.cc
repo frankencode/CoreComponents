@@ -6,8 +6,8 @@
  *
  */
 
-#include <cmath>
 #include <cc/ui/easing>
+#include <cmath>
 
 namespace cc {
 namespace ui {

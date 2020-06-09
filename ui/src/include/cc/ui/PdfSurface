@@ -10,6 +10,7 @@
 
 #include <cc/Stream>
 #include <cc/ui/Surface>
+#include <cairo/cairo.h>
 
 namespace cc {
 namespace ui {

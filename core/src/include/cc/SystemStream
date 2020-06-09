@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include <sys/types.h>
-#include <sys/poll.h> // POLLIN, POLLOUT, etc.
-#include <sys/socket.h> // SHUT_RD, etc.
 #include <cc/Stream>
 #include <cc/Exception>
 #include <cc/SystemIo>
 #include <cc/IoTarget>
+#include <sys/types.h>
+#include <sys/poll.h> // POLLIN, POLLOUT, etc.
+#include <sys/socket.h> // SHUT_RD, etc.
 
 namespace cc {
 
@@ -73,7 +73,7 @@ public:
 
     virtual int read(CharArray *data) override;
     virtual void write(const CharArray *data) override;
-    virtual void write(const StringList *parts) override;
+    virtual void write(const StringList &parts) override;
 
     /// Convenience wrapper
     void write(const String &data) { write(static_cast<const CharArray *>(data)); }
@@ -83,9 +83,6 @@ public:
 
     /// Convenience wrapper
     void write(const Format &data);
-
-    /// Convenience wrapper
-    void write(const Ref<StringList> &data) { write(static_cast<const StringList *>(data)); }
 
     /** Wait for a system I/O event
       * \param events combination of SystemIo::WaitEvent flags
@@ -111,7 +108,7 @@ public:
 
     /** %Set the I/O scatter limit
       *
-      * Scatter writes via write(const StringList *) and write(const Format &) will be merge into a single block
+      * Scatter writes via write(const StringList &) and write(const Format &) will be merge into a single block
       * if the total size of the scatter list is below the scatter limit.
       */
     void setScatterLimit(int newLimit) { scatterLimit_ = newLimit; }

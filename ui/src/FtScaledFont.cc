@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/ui/Font>
 #include <cc/ui/FtScaledFont>
+#include <cc/ui/Font>
 
 namespace cc {
 namespace ui {
 
 FtScaledFont::FtScaledFont(const FtFontFace *ftFontFace, const Font &font):
-    font_(font),
-    ftFontFace_(ftFontFace)
+    font_{font},
+    ftFontFace_{ftFontFace}
 {
     cairoFontFace_ = cairo_ft_font_face_create_for_ft_face(ftFontFace->ftFace(), 0);
 

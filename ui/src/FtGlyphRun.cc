@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/ui/FtFontManager>
 #include <cc/ui/FtGlyphRun>
+#include <cc/ui/FtFontManager>
 
 namespace cc {
 namespace ui {

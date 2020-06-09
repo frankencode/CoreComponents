@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/assert>
 #include <cc/http/HttpSocket>
+#include <cc/assert>
 
 namespace cc {
 namespace http {
@@ -53,7 +53,7 @@ void HttpSocket::write(const CharArray *data)
     }
 }
 
-void HttpSocket::write(const StringList *parts)
+void HttpSocket::write(const StringList &parts)
 {
     if (mode_ & Secure)
         write(parts->join());

@@ -6,13 +6,12 @@
  *
  */
 
-#include <cc/debug>
+#include <cc/ui/InputField>
 #include <cc/ui/Column>
 #include <cc/ui/InputLine>
 #include <cc/ui/Label>
 #include <cc/ui/TextInput>
 #include <cc/ui/Transition>
-#include <cc/ui/InputField>
 
 namespace cc {
 namespace ui {

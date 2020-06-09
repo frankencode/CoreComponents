@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/Format>
 #include <cc/ui/Key>
+#include <cc/Format>
 
 namespace cc {
 namespace ui {

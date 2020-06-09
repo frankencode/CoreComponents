@@ -35,7 +35,7 @@ bool LineSource::read(String *line)
         return false;
     }
 
-    Ref<StringList> backlog;
+    StringList backlog;
 
     while (true) {
         if (i_ < n_) {
@@ -52,8 +52,6 @@ bool LineSource::read(String *line)
                 i_ = skipEol(buffer_, n_, i_);
                 return true;
             }
-            if (!backlog)
-                backlog = StringList::create();
             backlog->append(buffer_->copy(i0_, i_));
         }
 
@@ -66,7 +64,7 @@ bool LineSource::read(String *line)
     }
 
     eoi_ = true;
-    if (backlog) {
+    if (backlog->count() > 0) {
         *line = backlog->join();
         return true;
     }

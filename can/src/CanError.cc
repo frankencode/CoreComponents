@@ -16,7 +16,7 @@ String str(CanError::Type flags)
 {
     if (flags == CanError::Type::None) return "CanError::Type::None";
 
-    auto parts = StringList::create();
+    StringList parts;
 
     if (+(flags & CanError::Type::TransmissionTimeout)) parts << "CanError::Type::TransmissionTimeout";
     if (+(flags & CanError::Type::LostArbitration))     parts << "CanError::Type::LostArbitration";
@@ -34,7 +34,7 @@ String str(CanError::Status flags)
 {
     if (flags == CanError::Status::None) return "CanError::Status::None";
 
-    auto parts = StringList::create();
+    StringList parts;
 
     if (+(flags & CanError::Status::RxOverflow))  parts << "CanError::Status::RxOverflow";
     if (+(flags & CanError::Status::TxOverflow))  parts << "CanError::Status::TxOverflow";

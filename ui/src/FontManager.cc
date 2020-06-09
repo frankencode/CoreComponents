@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/debug>
-#include <cc/Map>
-#include <cc/ValueSource>
-#include <cc/DirWalker>
+#include <cc/ui/FontManager>
 #include <cc/ui/PlatformPlugin>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Application>
-#include <cc/ui/FontManager>
+#include <cc/Map>
+#include <cc/ValueSource>
+#include <cc/DirWalker>
+#include <cc/debug>
 
 namespace cc {
 namespace ui {
@@ -89,13 +89,13 @@ void FontManager::addFontFace(const FontFace *fontFace)
 
 const FontFamily *FontManager::selectNearestFontFamily(const String &name) const
 {
-    Ref<StringList> searchPattern = familySearchPattern(name);
+    StringList searchPattern = familySearchPattern(name);
 
     const FontFamily *bestMatch = 0;
     int bestMatchRank = 0;
 
     for (const FontFamily *candidate: getFontFamilies()) {
-        Ref<StringList> candidatePattern = familySearchPattern(candidate->name());
+        StringList candidatePattern = familySearchPattern(candidate->name());
         int matchRank = 0;
         for (String component: searchPattern) {
             if (candidatePattern->contains(component)) {
@@ -123,9 +123,9 @@ const FontFamily *FontManager::selectNearestFontFamily(const String &name) const
     return bestMatch;
 }
 
-Ref<StringList> FontManager::familySearchPattern(const String &name)
+StringList FontManager::familySearchPattern(const String &name)
 {
-    Ref<StringList> searchPattern = StringList::create();
+    StringList searchPattern;
     for (String component: name->toLower()->split(' ')) {
         if (component != String{}) searchPattern->append(component);
     }

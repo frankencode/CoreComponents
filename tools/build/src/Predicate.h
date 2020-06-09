@@ -19,10 +19,10 @@ class Predicate: public MetaObject
 {
 public:
     static Ref<Predicate> read(const MetaObject *object) {
-        return new Predicate(object);
+        return new Predicate{object};
     }
 
-    StringList *source() const { return source_; }
+    StringList source() const { return source_; }
     String target() const { return target_; }
     String create() const { return create_; }
     String update() const { return update_; }
@@ -31,7 +31,7 @@ public:
 
 private:
     Predicate(const MetaObject *object):
-        source_(object->value("source")),
+        source_(Variant::cast<StringList>(object->value("source"))),
         target_(object->value("target")),
         create_(object->value("create")),
         update_(object->value("update")),
@@ -39,7 +39,7 @@ private:
         clean_(object->value("clean"))
     {}
 
-    Ref<StringList> source_;
+    StringList source_;
     String target_;
     String create_;
     String update_;

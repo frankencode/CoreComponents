@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/str>
 #include <cc/toki/HtmlScreen>
 #include <cc/toki/Theme>
+#include <cc/str>
 
 namespace cc {
 namespace toki {

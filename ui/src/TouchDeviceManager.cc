@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/ui/PlatformPlugin>
 #include <cc/ui/TouchDeviceManager>
+#include <cc/ui/PlatformPlugin>
 
 namespace cc {
 namespace ui {

@@ -6,16 +6,16 @@
  *
  */
 
+#include <cc/ui/PdfSurface>
 #include <cairo/cairo.h>
 #include <cairo/cairo-pdf.h>
-#include <cc/ui/PdfSurface>
 
 namespace cc {
 namespace ui {
 
 Ref<PdfSurface> PdfSurface::open(Stream *stream, Size sizePt)
 {
-    return new PdfSurface(stream, sizePt);
+    return new PdfSurface{stream, sizePt};
 }
 
 PdfSurface::PdfSurface(Stream *stream, Size sizePt):

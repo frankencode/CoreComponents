@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/ui/Application>
 #include <cc/ui/Cursor>
+#include <cc/ui/Application>
 
 namespace cc {
 namespace ui {

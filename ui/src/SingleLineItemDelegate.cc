@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/debug>
+#include <cc/ui/SingleLineItemDelegate>
 #include <cc/ui/Picture>
 #include <cc/ui/Label>
-#include <cc/ui/SingleLineItemDelegate>
+#include <cc/debug>
 
 namespace cc {
 namespace ui {

@@ -30,8 +30,8 @@ Glob::Glob(const String &expression):
     }
 }
 
-Glob::Glob(const String &path, StringList *remainder):
-    remainder_(remainder->copy())
+Glob::Glob(const String &path, const StringList &remainder):
+    remainder_{remainder}
 {
     init(path);
 }
@@ -50,8 +50,7 @@ bool Glob::read(String *path)
             return true;
         child_ = 0;
     }
-    String name;
-    while (dir_->read(&name)) {
+    for (String name; dir_->read(&name);) {
         if (name == ".") continue;
         if ((name == "..") && (pattern_ != "..")) continue;
         if (pattern_->match(name)->valid()) {
@@ -61,7 +60,7 @@ bool Glob::read(String *path)
                 return true;
             }
             if (Dir::exists(node)) {
-                child_ = new Glob(node, remainder_);
+                child_ = new Glob{node, remainder_};
                 return read(path);
             }
         }

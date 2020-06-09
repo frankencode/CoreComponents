@@ -44,7 +44,7 @@ String str(ErrorRegister flags)
 {
     if (flags == ErrorRegister::None) return "ErrorRegister::None";
 
-    auto parts = StringList::create();
+    StringList parts;
 
     if (+(flags & ErrorRegister::Generic      )) parts << "ErrorRegister::Generic";
     if (+(flags & ErrorRegister::Current      )) parts << "ErrorRegister::Current";
@@ -143,7 +143,7 @@ String str(ObjectFlags flags)
 {
     if (flags == ObjectFlags::None) return "ObjectFlags::None";
 
-    auto parts = StringList::create();
+    StringList parts;
     if (+(flags & ObjectFlags::IgnoreOnNodeInit)) parts << "ObjectFlags::IgnoreOnNodeInit";
     if (+(flags & ObjectFlags::IgnoreOnNodeScan)) parts << "ObjectFlags::IgnoreOnNodeScan";
 

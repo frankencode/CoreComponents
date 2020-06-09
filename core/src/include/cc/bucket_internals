@@ -27,7 +27,7 @@ public:
 
 private:
     static String dotifyTree(const Tree *tree);
-    static void dotifyNode(Format &Format, const Head *head, unsigned origin = 0);
+    static void dotifyNode(Format &format, const Head *head, unsigned origin = 0);
 };
 
 }} // namespace cc::bucket

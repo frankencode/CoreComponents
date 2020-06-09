@@ -34,7 +34,7 @@ public:
           * \param args Argument list, first entry is the executable name
           * \return pointer to this object
           */
-        Staging *setArgs(const StringList *args);
+        Staging *setArgs(const StringList &args);
 
         /** \brief Set environment map
           * \param envMap The environment map to use for the new child process (or zero pointer to inherit the parents environment map)
@@ -146,7 +146,7 @@ public:
 
         String command_;
         String execPath_;
-        Ref<const StringList> args_;
+        StringList args_;
         bool customEnvMap_ { false };
         EnvMap envMap_;
 

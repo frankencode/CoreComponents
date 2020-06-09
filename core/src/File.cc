@@ -6,17 +6,17 @@
  *
  */
 
-#include <sys/mman.h> // mmap
-#include <errno.h>
-#include <string.h>
-#include <stdio.h> // rename
+#include <cc/File>
 #include <cc/exceptions>
 #include <cc/Random>
 #include <cc/Format>
 #include <cc/Process>
 #include <cc/Dir>
 #include <cc/System>
-#include <cc/File>
+#include <sys/mman.h> // mmap
+#include <errno.h>
+#include <string.h>
+#include <stdio.h> // rename
 
 namespace cc {
 
@@ -115,9 +115,9 @@ String File::map() const
         #ifndef MAP_ANONYMOUS
         #define MAP_ANONYMOUS MAP_ANON
         #endif
-	#ifndef MAP_NORESERVE
-	#define MAP_NORESERVE 0
-	#endif
+        #ifndef MAP_NORESERVE
+        #define MAP_NORESERVE 0
+        #endif
         mapSize += pageSize;
         p = ::mmap(0, mapSize, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE, -1, 0);
         if (p == MAP_FAILED)
@@ -284,11 +284,11 @@ void File::clean(const String &path)
     }
 }
 
-String File::locate(const String &fileName, const StringList *dirs, FileAccess accessFlags)
+String File::locate(const String &fileName, const StringList &dirs, FileAccess accessFlags)
 {
     String path;
-    for (int i = 0; i < dirs->count(); ++i) {
-        String candidate = Format{} << dirs->at(i) << "/" << fileName;
+    for (const String &dir: dirs) {
+        String candidate = dir->extendPath(fileName);
         if (checkAccess(candidate, accessFlags)) {
             path = candidate;
             break;
@@ -311,4 +311,4 @@ void File::save(const String &path, const String &text)
     file->write(text);
 }
 
-} // namespace
+} // namespace cc

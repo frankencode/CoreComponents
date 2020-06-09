@@ -30,7 +30,7 @@ public:
     static String cachePath(BuildPlan *plan);
     double cacheTime() const { return cacheTime_; }
 
-    StringList *previousSources() const;
+    StringList previousSources() const;
 
     bool lookup(const String &source, Ref<Module> *module);
     void insert(const String &source, Module *module);
@@ -44,7 +44,7 @@ private:
     typedef Map< String, Ref<Module> > Cache;
     Ref<Cache> cache_;
 
-    Ref<StringList> previousSources_;
+    StringList previousSources_;
 };
 
 } // namespace ccbuild

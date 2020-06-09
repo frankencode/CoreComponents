@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/Pile>
-#include <cc/ui/TextItem>
 #include <cc/ui/TextDocument>
+#include <cc/ui/TextItem>
+#include <cc/ui/Pile>
 
 namespace cc {
 namespace ui {
@@ -55,7 +55,7 @@ String TextDocument::copy(Range range) const
     int currentByteOffset0 = 0;
     lines_->getView(range->i0(), range->i1(), &lineIndex0, &lineIndex1, &currentByteOffset0);
 
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
 
     for (int lineIndex = lineIndex0; lineIndex < lineIndex1; ++lineIndex) {
         const TextItem *item = static_cast<const TextItem *>(rootItem_->at(lineIndex));
@@ -97,7 +97,7 @@ void TextDocument::pasteChunk(Range range, const String &newChunk)
 
     if (newChunk->count() == 0) return;
 
-    Ref<StringList> fragments = filterChunk(newChunk)->split('\n');
+    StringList fragments = filterChunk(newChunk)->split('\n');
     int targetOffset = range->i0();
     for (int fragmentIndex = 0; fragmentIndex < fragments->count(); ++fragmentIndex) {
         pasteFragment(targetOffset, fragments->at(fragmentIndex));

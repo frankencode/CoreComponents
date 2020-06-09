@@ -22,7 +22,7 @@ public:
     static Ref<StatusLogStream> open(LoggingInstance *sink, LoggingLevel level);
 
     void write(const CharArray *data) override;
-    void write(const StringList *parts) override;
+    void write(const StringList &parts) override;
 
 private:
     StatusLogStream(LoggingInstance *sink, LoggingLevel level);

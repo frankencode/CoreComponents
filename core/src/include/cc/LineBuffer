@@ -24,7 +24,7 @@ public:
 
     int read(CharArray *data) override;
     void write(const CharArray *data) override;
-    void write(const StringList *parts) override;
+    void write(const StringList &parts) override;
 
     int flush();
 
@@ -36,7 +36,7 @@ protected:
 private:
     Ref<Stream> stream_;
     String prefix_;
-    Ref<StringList> backlog_;
+    StringList backlog_;
 };
 
 } // namespace cc

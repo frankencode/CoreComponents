@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/ui/PlatformPlugin>
 #include <cc/ui/FtFontManager>
 #include <cc/ui/PlatformManager>
-#include <cc/ui/PlatformPlugin>
 
 namespace cc {
 namespace ui {

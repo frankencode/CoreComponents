@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/Image>
-#include <cc/ui/ImageManager>
 #include <cc/ui/ImagePlugin>
+#include <cc/ui/ImageManager>
+#include <cc/ui/Image>
 
 namespace cc {
 namespace ui {

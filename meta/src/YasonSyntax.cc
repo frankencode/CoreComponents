@@ -647,7 +647,9 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
     {
         if ( expectedType == VariantType::Undefined ||
              expectedType == VariantType::List )
+        {
             value = readList(text, token, expectedItemType);
+        }
         else
             typeError = true;
     }
@@ -706,18 +708,25 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
 
 Variant YasonSyntax::readList(const CharArray *text, const Token *token, VariantType expectedItemType) const
 {
-    Variant list;
+    Variant value;
     if (expectedItemType == VariantType::Int)
-        list = parseTypedList<int>(text, token, expectedItemType);
+        value = parseTypedList<int>(text, token, expectedItemType);
     else if (expectedItemType == VariantType::Bool)
-        list = parseTypedList<bool>(text, token, expectedItemType);
+        value = parseTypedList<bool>(text, token, expectedItemType);
     else if (expectedItemType == VariantType::Float)
-        list = parseTypedList<float>(text, token, expectedItemType);
-    else if (expectedItemType == VariantType::String)
-        list = parseTypedList<String>(text, token, expectedItemType);
+        value = parseTypedList<float>(text, token, expectedItemType);
+    else if (expectedItemType == VariantType::String) {
+        // value = parseTypedList<String>(text, token, expectedItemType);
+        // workaround HACK
+        StringList list;
+        for (const Token *child = token->firstChild(); child; child = child->nextSibling()) {
+            list->append(readValue(text, child, VariantType::String));
+        }
+        value = list;
+    }
     else
-        list = parseTypedList<Variant>(text, token, expectedItemType);
-    return list;
+        value = parseTypedList<Variant>(text, token, expectedItemType);
+    return value;
 }
 
 String YasonSyntax::readText(const CharArray *text, const Token *token) const
@@ -730,7 +739,7 @@ String YasonSyntax::readText(const CharArray *text, const Token *token) const
         s = text->copyRange(token);
     }
     else {
-        Ref<StringList> l = StringList::create();
+        StringList l;
         while (token) {
             l->append(text->copy(token->i0() + 1, token->i1() - 1));
             token = token->nextSibling();

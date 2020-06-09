@@ -36,7 +36,7 @@ void ArWriter::writeFile(const String &path)
     off_t contentSize = status->size();
     if (status->type() != FileType::Regular) contentSize = 0;
 
-    Ref<StringList> headerFields = StringList::create();
+    StringList headerFields;
 
     String pathField{16, ' '};
     mutate(pathField)->write(path);

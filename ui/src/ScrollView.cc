@@ -6,13 +6,12 @@
  *
  */
 
-#include <cc/debug> // DEBUG
-#include <cc/math>
-#include <cc/System>
-#include <cc/ui/easing>
-#include <cc/ui/Timer>
-#include <cc/ui/InputField>
 #include <cc/ui/ScrollView>
+#include <cc/ui/InputField>
+#include <cc/ui/Timer>
+#include <cc/ui/easing>
+#include <cc/System>
+#include <cc/math>
 
 namespace cc {
 namespace ui {

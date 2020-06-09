@@ -175,7 +175,7 @@ public:
       * \param accessFlags file access flags to check
       * \return file path if found else empty String
       */
-    static String locate(const String &fileName, const StringList *dirs, FileAccess accessFlags = FileAccess::Exists);
+    static String locate(const String &fileName, const StringList &dirs, FileAccess accessFlags = FileAccess::Exists);
 
     /** Load contents of a file
       * \param path file path

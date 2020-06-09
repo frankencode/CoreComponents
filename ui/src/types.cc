@@ -7,12 +7,11 @@
  */
 
 #include <cc/ui/types>
-
-#include <math.h>
-#include <cc/str>
-#include <cc/Unicode>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/Application>
+#include <cc/Unicode>
+#include <cc/str>
+#include <cmath>
 
 namespace cc {
 namespace ui {
@@ -126,7 +125,7 @@ String str(TextAlign align)
 String str(Decoration decoration)
 {
     if (decoration == Decoration::None) return "Decoration::None";
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
     if (+(decoration & Decoration::Underline)) parts << "Decoration::Underline";
     if (+(decoration & Decoration::StrikeOut)) parts << "Decoration::StrikeOut";
     return parts->join("|");
@@ -157,7 +156,7 @@ String str(RowAlign align)
 
 String str(MouseButton mask)
 {
-    Ref<StringList> parts = StringList::create();
+    StringList parts;
     if (+(mask & MouseButton::Left))  parts << "MouseButton::Left";
     if (+(mask & MouseButton::Right)) parts << "MouseButton::Right";
     if (+(mask & MouseButton::X1))    parts << "MouseButton::X1";

@@ -19,7 +19,7 @@ HeaderStyle::HeaderStyle(const String &language):
 
 String HeaderStyle::trimHeader(const String &text, const char *space)
 {
-    Ref<StringList> lines = text->split('\n');
+    StringList lines = text->split('\n');
     for (int i = 0; i < lines->count(); ++i)
         lines->at(i) = lines->at(i)->trim(space);
     while (lines->count() > 0) {
