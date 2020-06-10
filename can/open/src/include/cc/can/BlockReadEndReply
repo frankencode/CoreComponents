@@ -16,7 +16,7 @@ namespace can {
 class BlockReadEndReply
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, const String &data, bool crcSupport = true);
+    static CanFrame createFrame(int serverId, const String &data, bool crcSupport = true);
 
     class Instance {
     public:
@@ -44,14 +44,14 @@ public:
     private:
         friend class BlockReadEndReply;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    BlockReadEndReply(const CanFrame *frame):
+    BlockReadEndReply(const CanFrame &frame):
         instance_{frame}
     {}
 

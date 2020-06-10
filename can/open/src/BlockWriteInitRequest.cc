@@ -12,13 +12,12 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockWriteInitRequest::createFrame(int serverId, Selector selector, const String &data)
+CanFrame BlockWriteInitRequest::createFrame(int serverId, Selector selector, const String &data)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
 
-    auto frame = CanFrame::create();
-    frame->setCanId(0x600 + serverId);
+    CanFrame frame{0x600 + serverId};
 
     const uint8_t ccs = static_cast<uint8_t>(ServiceRequest::Specifier::BlockWrite);
     const uint8_t cc  = 1; // CRC support

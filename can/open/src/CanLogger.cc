@@ -31,7 +31,7 @@ namespace can {
 
 Ref<CanLogger> CanLogger::create(CanMedia *media)
 {
-    Ref<CanLogger> logger = new CanLogger(media);
+    Ref<CanLogger> logger = new CanLogger{media};
     logger->bootstrap();
     return logger;
 }
@@ -50,7 +50,7 @@ void CanLogger::bootstrap()
 
         double t0 = -1;
 
-        for (auto frame = CanFrame::create(); media_->readFrame(frame);)
+        for (CanFrame frame; media_->readFrame(&frame);)
         {
             double t = System::now();
             if (t0 < 0) t0 = t;

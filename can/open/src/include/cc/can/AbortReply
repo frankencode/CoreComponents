@@ -17,7 +17,7 @@ namespace can {
 class AbortReply: public Abort
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, Selector selector, Abort::Reason reason);
+    static CanFrame createFrame(int serverId, Selector selector, Abort::Reason reason);
 
     class Instance: public Abort::Instance
     {
@@ -38,12 +38,12 @@ public:
     private:
         friend class AbortReply;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             Abort::Instance{frame}
         {}
     };
 
-    AbortReply(const CanFrame *frame):
+    AbortReply(const CanFrame &frame):
         instance_{frame}
     {}
 

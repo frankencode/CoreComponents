@@ -39,7 +39,6 @@
 #include <cc/can/BinaryValue>
 #include <cc/Worker>
 #include <cc/stdio>
-#include <cc/debug> // DEBUG
 
 namespace cc {
 namespace can {
@@ -190,8 +189,8 @@ void CanNode::issueEmergency(Emergency::Type emergencyType, uint64_t deviceError
 void CanNode::run()
 {
     while (true) {
-        auto frame = CanFrame::create();
-        if (!media_->readFrame(frame)) break;
+        CanFrame frame;
+        if (!media_->readFrame(&frame)) break;
 
         try {
             NetworkCommand command{frame};
@@ -317,7 +316,7 @@ void CanNode::handleNodeCommand(NetworkCommand::Specifier commandSpecifier)
     };
 }
 
-void CanNode::handleWriteRequest(const CanFrame *head)
+void CanNode::handleWriteRequest(const CanFrame &head)
 {
     if (!WriteRequest{head}) return;
 
@@ -328,7 +327,7 @@ void CanNode::handleWriteRequest(const CanFrame *head)
         {
             writeServiceData(+selector, WriteRequest{head}->expeditedData());
 
-            writeHead_ = nullptr;
+            writeHead_ = CanFrame{};
         }
         else {
             if (WriteRequest{head}->totalDataCount() > uint32_t(buffer_->count()))
@@ -338,7 +337,7 @@ void CanNode::handleWriteRequest(const CanFrame *head)
             fill_ = 0;
         }
 
-        readHead_ = nullptr;
+        readHead_ = CanFrame{};
 
         media_->writeFrame(
             WriteReply::createFrame(nodeId_, selector)
@@ -349,7 +348,7 @@ void CanNode::handleWriteRequest(const CanFrame *head)
     }
 }
 
-void CanNode::handleWriteSegmentRequest(const CanFrame *tail)
+void CanNode::handleWriteSegmentRequest(const CanFrame &tail)
 {
     if (!writeHead_) return;
 
@@ -376,7 +375,7 @@ void CanNode::handleWriteSegmentRequest(const CanFrame *tail)
         if (WriteSegmentRequest{tail}->isLast()) {
             String data = buffer_->copy(0, fill_);
             writeServiceData(+WriteRequest{writeHead_}->selector(), data);
-            writeHead_ = nullptr;
+            writeHead_ = CanFrame{};
         }
 
         media_->writeFrame(replyFrame);
@@ -386,7 +385,7 @@ void CanNode::handleWriteSegmentRequest(const CanFrame *tail)
     }
 }
 
-void CanNode::handleReadRequest(const CanFrame *head)
+void CanNode::handleReadRequest(const CanFrame &head)
 {
     if (!ReadRequest{head}) return;
 
@@ -399,7 +398,7 @@ void CanNode::handleReadRequest(const CanFrame *head)
 
         if (ReadReply{frame}->hasExpeditedData())
         {
-            readHead_ = nullptr;
+            readHead_ = CanFrame{};
         }
         else {
             if (data->count() > buffer_->count())
@@ -411,7 +410,7 @@ void CanNode::handleReadRequest(const CanFrame *head)
             offset_ = 0;
         }
 
-        writeHead_ = nullptr;
+        writeHead_ = CanFrame{};
 
         media_->writeFrame(frame);
     }
@@ -420,7 +419,7 @@ void CanNode::handleReadRequest(const CanFrame *head)
     }
 }
 
-void CanNode::handleReadSegmentRequest(const CanFrame *tail)
+void CanNode::handleReadSegmentRequest(const CanFrame &tail)
 {
     if (!readHead_) return;
 
@@ -436,14 +435,14 @@ void CanNode::handleReadSegmentRequest(const CanFrame *tail)
         offset_ += ReadSegmentReply{frame}->dataCount();
 
         media_->writeFrame(frame);
-        if (ReadSegmentReply{frame}->isLast()) readHead_ = nullptr;
+        if (ReadSegmentReply{frame}->isLast()) readHead_ = CanFrame{};
     }
     catch (CanAbort &abort) {
         canAbort(ReadRequest{readHead_}->selector(), abort->reason());
     }
 }
 
-void CanNode::handleBlockWriteRequest(const CanFrame *head)
+void CanNode::handleBlockWriteRequest(const CanFrame &head)
 {
     if (!BlockWriteInitRequest{head}) return;
 
@@ -529,7 +528,7 @@ void CanNode::handleBlockWriteRequest(const CanFrame *head)
     }
 }
 
-void CanNode::handleBlockReadRequest(const CanFrame *head)
+void CanNode::handleBlockReadRequest(const CanFrame &head)
 {
     if (!BlockReadInitRequest{head}) return;
 
@@ -602,15 +601,15 @@ void CanNode::handleBlockReadRequest(const CanFrame *head)
     }
 }
 
-Ref<CanFrame> CanNode::getNextRequest()
+CanFrame CanNode::getNextRequest()
 {
-    auto frame = CanFrame::create();
+    CanFrame frame;
 
     while (true) {
         if (!media_->waitFrame(timeout_))
             throw CanAbort{Abort::Reason::ServiceDataTimeout};
 
-        if (!media_->readFrame(frame)) throw CanDisconnect{};
+        if (!media_->readFrame(&frame)) throw CanDisconnect{};
 
         if (!ServiceRequest{frame}) continue;
         if (ServiceRequest{frame}->serverId() != nodeId_) continue;
@@ -627,8 +626,8 @@ void CanNode::canAbort(Selector selector, Abort::Reason reason)
         AbortReply::createFrame(nodeId_, selector, reason)
     );
 
-    writeHead_ = nullptr;
-    readHead_ = nullptr;
+    writeHead_ = CanFrame{};
+    readHead_ = CanFrame{};
 }
 
 }} // namespace cc::can

@@ -15,7 +15,7 @@ namespace can {
 
 class BlockReadEndRequest {
 public:
-    static Ref<CanFrame> createFrame(int serverId);
+    static CanFrame createFrame(int serverId);
 
     class Instance {
     public:
@@ -34,14 +34,14 @@ public:
     private:
         friend class BlockReadEndRequest;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    BlockReadEndRequest(const CanFrame *frame):
+    BlockReadEndRequest(const CanFrame &frame):
         instance_{frame}
     {}
 

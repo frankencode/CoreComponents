@@ -12,10 +12,9 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> Emergency::createFrame(int nodeId, Emergency::Type type, ErrorRegister errorRegister, uint64_t deviceError, int monitoredNodeId)
+CanFrame Emergency::createFrame(int nodeId, Emergency::Type type, ErrorRegister errorRegister, uint64_t deviceError, int monitoredNodeId)
 {
-    auto frame = CanFrame::create();
-    frame->setCanId(0x80 + nodeId);
+    CanFrame frame{0x80 + nodeId};
     uint16_t errorCode = static_cast<uint16_t>(type) + ((type == Emergency::Type::CanKeepAliveForNode) ? monitoredNodeId : 0);
     frame->payloadAt(0) = errorCode & 0xFF;
     frame->payloadAt(1) = (errorCode >> 8) & 0xFF;

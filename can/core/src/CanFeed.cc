@@ -31,19 +31,17 @@ bool CanFeed::waitFrame(int timeout)
 
 bool CanFeed::readFrame(CanFrame *frame)
 {
-    auto b = frameChannel_->popFront();
-    if (b) *frame = *b;
-    return b;
+    return bool(*frame = frameChannel_->popFront());
 }
 
-void CanFeed::feedFrame(const CanFrame *frame)
+void CanFeed::feedFrame(const CanFrame &frame)
 {
     frameChannel_->pushBack(frame);
 }
 
 void CanFeed::shutdown()
 {
-    frameChannel_->pushBack(nullptr);
+    frameChannel_->pushBack(CanFrame{});
 }
 
 }} // namespace cc::can

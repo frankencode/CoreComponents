@@ -23,7 +23,7 @@ private:
 
     CanNodeFeed(CanMedia *sink);
 
-    void writeFrame(const CanFrame *frame) override;
+    void writeFrame(const CanFrame &frame) override;
 
     Ref<CanMedia> sink_;
 };

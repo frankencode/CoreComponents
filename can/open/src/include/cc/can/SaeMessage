@@ -37,14 +37,14 @@ public:
     private:
         friend class SaeMessage;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    SaeMessage(const CanFrame *frame):
+    SaeMessage(const CanFrame &frame):
         instance_{frame}
     {}
 

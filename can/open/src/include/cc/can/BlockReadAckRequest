@@ -16,7 +16,7 @@ namespace can {
 class BlockReadAckRequest
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, int sequenceNumber, int newBlockSize);
+    static CanFrame createFrame(int serverId, int sequenceNumber, int newBlockSize);
 
     class Instance {
     public:
@@ -44,14 +44,14 @@ public:
     private:
         friend class BlockReadAckRequest;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    BlockReadAckRequest(const CanFrame *frame):
+    BlockReadAckRequest(const CanFrame &frame):
         instance_{frame}
     {}
 

@@ -11,10 +11,9 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> Abort::createFrame(int canId, uint8_t cs, Selector selector, Abort::Reason reason)
+CanFrame Abort::createFrame(int canId, uint8_t cs, Selector selector, Abort::Reason reason)
 {
-    auto frame = CanFrame::create();
-    frame->setCanId(canId);
+    CanFrame frame{canId};
     frame->payloadAt(0) = cs << 5;
     frame->payloadAt(1) = selector->index();
     frame->payloadAt(2) = selector->index() >> 8;

@@ -25,7 +25,7 @@ protected:
 
     void init();
 
-    virtual void log(const CanFrame *frame) const;
+    virtual void log(const CanFrame &frame) const;
 
 private:
     Ref<CanMedia> mediaA_, mediaB_;

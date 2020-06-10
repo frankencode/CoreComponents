@@ -17,7 +17,7 @@ namespace can {
 class HeartBeat
 {
 public:
-    static Ref<CanFrame> createFrame(int sourceId, NodeState nodeState);
+    static CanFrame createFrame(int sourceId, NodeState nodeState);
 
     class Instance {
     public:
@@ -38,14 +38,14 @@ public:
     private:
         friend class HeartBeat;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    HeartBeat(const CanFrame *frame):
+    HeartBeat(const CanFrame &frame):
         instance_{frame}
     {}
 

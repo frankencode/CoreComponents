@@ -28,7 +28,7 @@ public:
 
     bool waitFrame(int timeout = -1) override;
     bool readFrame(CanFrame *frame) override;
-    void writeFrame(const CanFrame *frame) override;
+    void writeFrame(const CanFrame &frame) override;
 
 protected:
     CanSocket(const String &interface);

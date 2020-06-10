@@ -68,16 +68,16 @@ private:
 
     void handleNodeCommand(NetworkCommand::Specifier type);
 
-    void handleWriteRequest(const CanFrame *head);
-    void handleWriteSegmentRequest(const CanFrame *tail);
+    void handleWriteRequest(const CanFrame &head);
+    void handleWriteSegmentRequest(const CanFrame &tail);
 
-    void handleReadRequest(const CanFrame *head);
-    void handleReadSegmentRequest(const CanFrame *tail);
+    void handleReadRequest(const CanFrame &head);
+    void handleReadSegmentRequest(const CanFrame &tail);
 
-    void handleBlockWriteRequest(const CanFrame *head);
-    void handleBlockReadRequest(const CanFrame *head);
+    void handleBlockWriteRequest(const CanFrame &head);
+    void handleBlockReadRequest(const CanFrame &head);
 
-    Ref<CanFrame> getNextRequest();
+    CanFrame getNextRequest();
     void canAbort(Selector selector, Abort::Reason reason);
 
     Ref<CanMedia> media_;
@@ -86,8 +86,8 @@ private:
 
     Ref<Worker> worker_;
 
-    Ref<const CanFrame> writeHead_;
-    Ref<const CanFrame> readHead_;
+    CanFrame writeHead_;
+    CanFrame readHead_;
 
     String buffer_;
     int fill_;

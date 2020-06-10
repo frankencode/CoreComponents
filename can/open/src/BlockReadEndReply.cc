@@ -13,13 +13,12 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockReadEndReply::createFrame(int serverId, const String &data, bool crcSupport)
+CanFrame BlockReadEndReply::createFrame(int serverId, const String &data, bool crcSupport)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
 
-    auto frame = CanFrame::create();
-    frame->setCanId(0x580 + serverId);
+    CanFrame frame{0x580 + serverId};
 
     const uint8_t scs = static_cast<const uint8_t>(ServiceReply::Specifier::BlockRead);
     const uint8_t ss  = 1;

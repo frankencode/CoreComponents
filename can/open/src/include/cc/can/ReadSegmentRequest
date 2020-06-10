@@ -16,7 +16,7 @@ namespace can {
 class ReadSegmentRequest
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, bool toggle);
+    static CanFrame createFrame(int serverId, bool toggle);
 
     class Instance {
     public:
@@ -39,14 +39,14 @@ public:
     private:
         friend class ReadSegmentRequest;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    ReadSegmentRequest(const CanFrame *frame):
+    ReadSegmentRequest(const CanFrame &frame):
         instance_{frame}
     {}
 

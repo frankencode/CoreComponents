@@ -77,7 +77,7 @@ void EventMonitor::run()
         }
     }
 
-    auto frame = CanFrame::create();
+    CanFrame frame;
     now = System::now();
 
     while (true) {
@@ -93,7 +93,7 @@ void EventMonitor::run()
             else {
                 if (media_->waitFrame((next->timeout() - now) * 1000))
                 {
-                    if (!media_->readFrame(frame)) return;
+                    if (!media_->readFrame(&frame)) return;
                     Ref<Event> event;
                     if (!events_->lookup(frame->canId(), &event)) {
                         now = System::now();

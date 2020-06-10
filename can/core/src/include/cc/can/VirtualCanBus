@@ -33,7 +33,7 @@ protected:
 private:
     friend class VirtualCanMedia;
 
-    void broadcast(const VirtualCanMedia *source, const CanFrame *frame);
+    void broadcast(const VirtualCanMedia *source, const CanFrame &frame);
 
     SetValue< Ref<VirtualCanMedia> > connections_;
     Mutex mutex_;

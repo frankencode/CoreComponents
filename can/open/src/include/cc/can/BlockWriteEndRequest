@@ -16,7 +16,7 @@ namespace can {
 class BlockWriteEndRequest
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, const String &data, bool crcSupport);
+    static CanFrame createFrame(int serverId, const String &data, bool crcSupport);
 
     class Instance {
     public:
@@ -35,7 +35,7 @@ public:
             return 7 - ((frame_->payloadAt(0) & 0xCU) >> 2);
         }
 
-        uint16_t crc() const { // TODO: rename to checksum
+        uint16_t crc() const { /// \todo rename to checksum
             return frame_->word<uint16_t>(1, 3);
         }
 
@@ -44,14 +44,14 @@ public:
     private:
         friend class BlockWriteEndRequest;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    BlockWriteEndRequest(const CanFrame *frame):
+    BlockWriteEndRequest(const CanFrame &frame):
         instance_{frame}
     {}
 

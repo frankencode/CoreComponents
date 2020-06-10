@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     double t0 = -1;
     double ta = t0;
 
-    for (auto frame = CanFrame::create(); can->readFrame(frame);) {
+    for (CanFrame frame; can->readFrame(&frame);) {
         double t = System::now();
         if (t0 < 0) {
             t0 = t;

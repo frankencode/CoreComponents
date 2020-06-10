@@ -25,7 +25,7 @@ private:
 
     VirtualCanMedia(VirtualCanBus *bus);
 
-    void writeFrame(const CanFrame *frame) override;
+    void writeFrame(const CanFrame &frame) override;
 
     Ref<VirtualCanBus> bus_;
 };

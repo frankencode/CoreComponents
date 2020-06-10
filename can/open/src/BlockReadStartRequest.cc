@@ -12,12 +12,11 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockReadStartRequest::createFrame(int serverId)
+CanFrame BlockReadStartRequest::createFrame(int serverId)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
 
-    auto frame = CanFrame::create();
-    frame->setCanId(0x600 + serverId);
+    CanFrame frame{0x600 + serverId};
 
     const uint8_t ccs = static_cast<uint8_t>(ServiceRequest::Specifier::BlockRead);
     const uint8_t cs  = 3;

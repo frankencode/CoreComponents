@@ -22,10 +22,8 @@ Ref<Emission> Emission::create(PeriodicEmitter *emitter, int canId, double inter
 
 Emission::Emission(int canId, double interval):
     interval_{interval},
-    frame_{CanFrame::create()}
-{
-    frame_->setCanId(canId);
-}
+    frame_{canId}
+{}
 
 Emission::~Emission()
 {}

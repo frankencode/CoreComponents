@@ -21,14 +21,12 @@ Ref<SafetyEmission> SafetyEmission::create(PeriodicEmitter *emitter, int canId, 
 
 SafetyEmission::SafetyEmission(int canId, int invCanId, double interval):
     Emission{canId, interval},
-    invFrame_{CanFrame::create()}
-{
-    invFrame_->setCanId(invCanId);
-}
+    invFrame_{invCanId}
+{}
 
 void SafetyEmission::updateData(const String &data)
 {
-    Guard<Emission> guard(this);
+    Guard<Emission> guard{this};
 
     const int n = data->count();
 
@@ -43,7 +41,7 @@ void SafetyEmission::updateData(const String &data)
 
 void SafetyEmission::generate(CanMedia *media)
 {
-    Guard<Emission> guard(this);
+    Guard<Emission> guard{this};
     media->writeFrame(frame_);
     media->writeFrame(invFrame_);
 }

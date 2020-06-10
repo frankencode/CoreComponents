@@ -48,14 +48,14 @@ public:
     private:
         friend class ServiceReply;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    ServiceReply(const CanFrame *frame):
+    ServiceReply(const CanFrame &frame):
         instance_{frame}
     {}
 

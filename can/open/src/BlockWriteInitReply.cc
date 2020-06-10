@@ -12,13 +12,12 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockWriteInitReply::createFrame(int serverId, Selector selector, int blockSize)
+CanFrame BlockWriteInitReply::createFrame(int serverId, Selector selector, int blockSize)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(1 <= blockSize && blockSize <= 0x7F);
 
-    auto frame = CanFrame::create();
-    frame->setCanId(0x580 + serverId);
+    CanFrame frame{0x580 + serverId};
 
     const uint8_t scs = static_cast<uint8_t>(ServiceReply::Specifier::BlockWrite);
     const uint8_t sc  = 1; // CRC support

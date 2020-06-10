@@ -20,7 +20,7 @@ class CanFeed: public CanMedia
 public:
     bool waitFrame(int timeout = -1) override;
     bool readFrame(CanFrame *frame) override;
-    void feedFrame(const CanFrame *frame);
+    void feedFrame(const CanFrame &frame);
     void shutdown();
 
 protected:
@@ -28,7 +28,7 @@ protected:
     ~CanFeed();
 
 private:
-    typedef Channel< Ref<const CanFrame> > FrameChannel;
+    typedef Channel<CanFrame> FrameChannel;
     Ref<FrameChannel> frameChannel_;
 };
 

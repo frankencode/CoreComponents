@@ -18,138 +18,144 @@ typedef struct can_frame StructCanFrame;
 
 /** \todo value semantics and operator[]
   */
-class CanFrame: public StructCanFrame, public Object
+class CanFrame
 {
 public:
-    inline static Ref<CanFrame> create() { return new CanFrame; }
-
-    inline Ref<CanFrame> copy() const { return new CanFrame{this}; }
-
-    CanFrame &operator=(const CanFrame &other);
-
-    bool equals(const CanFrame *other) const;
-
-    inline canid_t canId() const { return can_id & CAN_EFF_MASK; }
-    inline void setCanId(canid_t newValue) { can_id = newValue; }
-
-    inline int payloadCount() const { return can_dlc; }
-    inline void setPayloadCount(int newValue) {
-        CC_ASSERT(0 <= newValue && newValue <= CAN_MAX_DLEN);
-        can_dlc = newValue;
-    }
-
-    inline uint8_t payloadAt(int i) const {
-        CC_ASSERT(0 <= i && i < can_dlc && i < CAN_MAX_DLEN);
-        return data[i];
-    }
-    inline uint8_t &payloadAt(int i) {
-        CC_ASSERT(0 <= i && i < can_dlc && i < CAN_MAX_DLEN);
-        return data[i];
-    }
-
-    String payload() const;
-    void setPayload(const String &data);
-
-    void setValueUInt32(uint32_t value);
-    void updateInverse(CanFrame *invFrame) const;
-
-    String copy(int i0, int i1) const;
-
-    /// \todo make obsolete
-    template<class Word>
-    Word word(int i0, int i1) const
+    class Instance: public StructCanFrame
     {
-        if (i1 > payloadCount()) i1 = payloadCount();
-        if (i0 < 0) i0 = 0;
+    public:
+        bool isValid() const { return can_id != 0 || can_dlc != 0; }
 
-        Word value = 0U;
-        for (int i = i1 - 1; i >= i0; --i) {
-            value <<= 8U;
-            value |= payloadAt(i);
+        canid_t canId() const { return can_id & CAN_EFF_MASK; }
+        void setCanId(canid_t newValue) { can_id = newValue; }
+
+        int payloadCount() const { return can_dlc; }
+        void setPayloadCount(int newValue) {
+            CC_ASSERT(0 <= newValue && newValue <= CAN_MAX_DLEN);
+            can_dlc = newValue;
         }
 
-        return value;
-    }
-
-    /// \todo make obsolete
-    template<class Word>
-    void setWord(int i0, int i1, Word value)
-    {
-        if (i1 > payloadCount()) i1 = payloadCount();
-        if (i0 < 0) i0 = 0;
-
-        for (int i = i0; i < i1; ++i) {
-            payloadAt(i) = value;
-            value >>= 8U;
+        uint8_t payloadAt(int i) const {
+            CC_ASSERT(0 <= i && i < can_dlc && i < CAN_MAX_DLEN);
+            return data[i];
         }
-    }
-
-
-    template<class Word = unsigned>
-    Word payloadWord(unsigned i, unsigned j = sizeof(Word) - 1) const
-    {
-        unsigned i0 = i;
-        unsigned i1 = j + 1;
-
-        if (i1 > unsigned(payloadCount())) i1 = payloadCount();
-        if (i0 < 0) i = 0;
-
-        Word value = 0U;
-        for (unsigned i = i1 - 1; i >= i0; --i) {
-            value <<= 8U;
-            value |= payloadAt(i);
+        uint8_t &payloadAt(int i) {
+            CC_ASSERT(0 <= i && i < can_dlc && i < CAN_MAX_DLEN);
+            return data[i];
         }
 
-        return value;
-    }
+        String payload() const;
+        void setPayload(const String &data);
 
-    template<class Word = unsigned>
-    void setPayloadWord(unsigned i, unsigned j, Word value)
-    {
-        unsigned i0 = i;
-        unsigned i1 = j + 1;
+        void setValueUInt32(uint32_t value);
+        void updateInverse(CanFrame *invFrame) const;
 
-        if (i1 > unsigned(payloadCount())) i1 = payloadCount();
-        if (i0 < 0) i0 = 0;
+        String copy(int i0, int i1) const;
 
-        for (unsigned i = i0; i < i1; ++i) {
-            payloadAt(i) = value;
-            value >>= 8U;
+        /// \todo make obsolete
+        template<class Word>
+        Word word(int i0, int i1) const
+        {
+            if (i1 > payloadCount()) i1 = payloadCount();
+            if (i0 < 0) i0 = 0;
+
+            Word value = 0U;
+            for (int i = i1 - 1; i >= i0; --i) {
+                value <<= 8U;
+                value |= payloadAt(i);
+            }
+
+            return value;
         }
-    }
 
-    inline bool isRemoteTransmissionRequest() const { return can_id & CAN_RTR_FLAG; }
-    inline bool isError() const { return can_id & CAN_ERR_FLAG; }
-    inline bool isExtended() const { return can_id & CAN_EFF_FLAG; }
+        /// \todo make obsolete
+        template<class Word>
+        void setWord(int i0, int i1, Word value)
+        {
+            if (i1 > payloadCount()) i1 = payloadCount();
+            if (i0 < 0) i0 = 0;
 
-    inline void setRemoteTransmissionRequest(bool on) {
-        if (on) can_id |= CAN_RTR_FLAG;
-        else    can_id &= ~CAN_RTR_FLAG;
-    }
+            for (int i = i0; i < i1; ++i) {
+                payloadAt(i) = value;
+                value >>= 8U;
+            }
+        }
 
-    String toString() const;
 
-protected:
-    CanFrame();
-    CanFrame(const CanFrame *other);
+        template<class Word = unsigned>
+        Word payloadWord(unsigned i, unsigned j = sizeof(Word) - 1) const
+        {
+            unsigned i0 = i;
+            unsigned i1 = j + 1;
 
-    inline bool hasSizeIndicator() const {
-        return payloadAt(0) & 1;
-    }
+            if (i1 > unsigned(payloadCount())) i1 = payloadCount();
+            if (i0 < 0) i = 0;
 
-    inline void setHasSizeIndicator(bool on) {
-        payloadAt(0) &= ~1;
-        payloadAt(0) |= on;
-    }
+            Word value = 0U;
+            for (unsigned i = i1 - 1; i >= i0; --i) {
+                value <<= 8U;
+                value |= payloadAt(i);
+            }
 
-    inline int sizeIndicator() const {
-        return 4U - ((payloadAt(0) & 0xC) >> 2);
-    }
+            return value;
+        }
 
-    inline void setSizeIndicator(int byteCount) {
-        payloadAt(0) &= ~0xC;
-        payloadAt(0) |= ((4 - byteCount) << 2) & 0xC;
-    }
+        template<class Word = unsigned>
+        void setPayloadWord(unsigned i, unsigned j, Word value)
+        {
+            unsigned i0 = i;
+            unsigned i1 = j + 1;
+
+            if (i1 > unsigned(payloadCount())) i1 = payloadCount();
+            if (i0 < 0) i0 = 0;
+
+            for (unsigned i = i0; i < i1; ++i) {
+                payloadAt(i) = value;
+                value >>= 8U;
+            }
+        }
+
+        bool isRemoteTransmissionRequest() const { return can_id & CAN_RTR_FLAG; }
+        bool isError() const { return can_id & CAN_ERR_FLAG; }
+        bool isExtended() const { return can_id & CAN_EFF_FLAG; }
+
+        void setRemoteTransmissionRequest(bool on) {
+            if (on) can_id |= CAN_RTR_FLAG;
+            else    can_id &= ~CAN_RTR_FLAG;
+        }
+
+        String toString() const;
+
+        StructCanFrame *toRaw() { return static_cast<StructCanFrame *>(this); }
+        const StructCanFrame *toRaw() const { return static_cast<const StructCanFrame *>(this); }
+
+    private:
+        friend class CanFrame;
+
+        Instance();
+        Instance(canid_t canId);
+        const Instance *instance() const { return this; }
+        bool equals(const Instance *other) const;
+    };
+
+    CanFrame() = default;
+    CanFrame(canid_t canId): instance_{canId} {}
+
+    CanFrame(const CanFrame &) = default;
+    CanFrame &operator=(const CanFrame &) = default;
+
+    const Instance *operator->() const { return &instance_; }
+    Instance *operator->() { return &instance_; }
+
+    explicit operator bool() const { return (*this)->isValid(); }
+
+    bool operator==(const CanFrame &other) const { return (*this)->equals(other->instance()); }
+    bool operator!=(const CanFrame &other) const { return !(*this)->equals(other->instance()); }
+
+private:
+    Instance instance_;
 };
+
+String str(const CanFrame &frame);
 
 }} // namespace cc::can

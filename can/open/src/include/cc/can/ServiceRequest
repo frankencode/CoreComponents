@@ -48,14 +48,14 @@ public:
     protected:
         friend class ServiceRequest;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    ServiceRequest(const CanFrame *frame):
+    ServiceRequest(const CanFrame &frame):
         instance_{frame}
     {}
 

@@ -12,12 +12,11 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> WriteReply::createFrame(int serverId, Selector selector)
+CanFrame WriteReply::createFrame(int serverId, Selector selector)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
 
-    auto frame = CanFrame::create();
-    frame->setCanId(0x580 + serverId);
+    CanFrame frame{0x580 + serverId};
 
     const uint8_t scs = static_cast<uint8_t>(ServiceReply::Specifier::Write);
     frame->payloadAt(0) = scs << 5;

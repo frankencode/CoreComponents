@@ -38,7 +38,7 @@ namespace can {
 
 Ref<CanClient> CanClient::create(CanMedia *media, int nodeId, int timeout)
 {
-    return new CanClient(media, nodeId, timeout);
+    return new CanClient{media, nodeId, timeout};
 }
 
 CanClient::CanClient(CanMedia *media, int nodeId, int timeout):
@@ -59,8 +59,8 @@ String CanClient::read(int peerId, Selector selector)
             throw CanTimeout{};
         }
 
-        auto frame = CanFrame::create();
-        if (!media_->readFrame(frame)) throw CanDisconnect{};
+        CanFrame frame;
+        if (!media_->readFrame(&frame)) throw CanDisconnect{};
 
         if (!ServiceReply{frame}) continue;
         if (ServiceReply{frame}->serverId() != peerId) continue;
@@ -109,8 +109,8 @@ void CanClient::expeditedWrite(int peerId, Selector selector, const String &data
             throw CanTimeout{};
         }
 
-        auto frame = CanFrame::create();
-        if (!media_->readFrame(frame)) throw CanDisconnect{};
+        CanFrame frame;
+        if (!media_->readFrame(&frame)) throw CanDisconnect{};
 
         if (ServiceReply{frame}->serverId() != peerId) continue;
 
@@ -135,7 +135,7 @@ String CanClient::segmentedReadTransfer(int peerId, Selector selector)
         auto request = ReadSegmentRequest{requestFrame};
         media_->writeFrame(requestFrame);
 
-        Ref<CanFrame> frame;
+        CanFrame frame;
 
         while (true) {
             if (!media_->waitFrame(timeout_)) {
@@ -143,8 +143,7 @@ String CanClient::segmentedReadTransfer(int peerId, Selector selector)
                 throw CanTimeout{};
             }
 
-            frame = CanFrame::create();
-            if (!media_->readFrame(frame)) throw CanDisconnect{};
+            if (!media_->readFrame(&frame)) throw CanDisconnect{};
 
             if (ServiceReply{frame}->serverId() == peerId) break;
         }
@@ -183,8 +182,8 @@ void CanClient::segmentedWrite(int peerId, Selector selector, const String &data
             throw CanTimeout{};
         }
 
-        auto frame = CanFrame::create();
-        if (!media_->readFrame(frame)) throw CanDisconnect{};
+        CanFrame frame;
+        if (!media_->readFrame(&frame)) throw CanDisconnect{};
 
         if (ServiceReply{frame}->serverId() != peerId) continue;
 
@@ -214,8 +213,8 @@ void CanClient::segmentedWrite(int peerId, Selector selector, const String &data
                 throw CanTimeout{};
             }
 
-            auto frame = CanFrame::create();
-            if (!media_->readFrame(frame)) throw CanDisconnect{};
+            CanFrame frame;
+            if (!media_->readFrame(&frame)) throw CanDisconnect{};
 
             if (!ServiceReply{frame}) continue;
             if (ServiceReply{frame}->serverId() != peerId) continue;
@@ -265,7 +264,7 @@ void CanClient::blockReadInitiate(int peerId, Selector selector, int blockSize, 
         )
     );
 
-    auto frame = getNextReply(peerId, selector);
+    CanFrame frame = getNextReply(peerId, selector);
 
     if (AbortReply{frame})
         throw CanPeerAbort{AbortReply{frame}->reason()};
@@ -345,7 +344,7 @@ String CanClient::blockReadTransfer(int peerId, Selector selector, int blockSize
 
 void CanClient::blockReadEnd(int peerId, Selector selector, String *data, bool crcSupport)
 {
-    auto frame = getNextReply(peerId, selector);
+    CanFrame frame = getNextReply(peerId, selector);
 
     if (AbortReply{frame})
         throw CanPeerAbort{AbortReply{frame}->reason()};
@@ -395,7 +394,7 @@ void CanClient::blockWriteInitiate(int peerId, Selector selector, const String &
         BlockWriteInitRequest::createFrame(peerId, selector, data)
     );
 
-    auto frame = getNextReply(peerId, selector);
+    CanFrame frame = getNextReply(peerId, selector);
 
     if (AbortReply{frame})
         throw CanPeerAbort{AbortReply{frame}->reason()};
@@ -459,7 +458,7 @@ void CanClient::blockWriteEnd(int peerId, Selector selector, const String &data,
         BlockWriteEndRequest::createFrame(peerId, data, crcSupport)
     );
 
-    auto frame = getNextReply(peerId, selector);
+    CanFrame frame = getNextReply(peerId, selector);
 
     if (AbortReply{frame})
         throw CanPeerAbort{AbortReply{frame}->reason()};
@@ -470,9 +469,9 @@ void CanClient::blockWriteEnd(int peerId, Selector selector, const String &data,
     }
 }
 
-Ref<CanFrame> CanClient::getNextReply(int peerId, Selector selector)
+CanFrame CanClient::getNextReply(int peerId, Selector selector)
 {
-    auto frame = CanFrame::create();
+    CanFrame frame;
 
     while (true)
     {
@@ -481,7 +480,7 @@ Ref<CanFrame> CanClient::getNextReply(int peerId, Selector selector)
             throw CanTimeout{};
         }
 
-        if (!media_->readFrame(frame))
+        if (!media_->readFrame(&frame))
             throw CanDisconnect{};
 
         if (!ServiceReply{frame}) continue;

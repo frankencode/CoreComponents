@@ -12,14 +12,13 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockReadAckRequest::createFrame(int serverId, int sequenceNumber, int newBlockSize)
+CanFrame BlockReadAckRequest::createFrame(int serverId, int sequenceNumber, int newBlockSize)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(0 <= sequenceNumber && sequenceNumber <= 0x7F);
     CC_ASSERT(1 <= newBlockSize && newBlockSize <= 0x7F);
 
-    auto frame = CanFrame::create();
-    frame->setCanId(0x600 + serverId);
+    CanFrame frame{0x600 + serverId};
 
     const uint8_t ccs = static_cast<const uint8_t>(ServiceRequest::Specifier::BlockRead);
     const uint8_t cs  = 2;

@@ -16,7 +16,7 @@ namespace can {
 class BlockWriteInitRequest
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, Selector selector, const String &data);
+    static CanFrame createFrame(int serverId, Selector selector, const String &data);
 
     class Instance {
     public:
@@ -47,7 +47,7 @@ public:
             return (hasIndicatedSize()) ? frame_->word<uint32_t>(4, 8) : uint32_t(0);
         }
 
-        bool crcSupport() const { // TODO: rename to checksumSupport
+        bool crcSupport() const { /// \todo rename to checksumSupport
             return frame_->payloadAt(0) & 4U;
         }
 
@@ -60,14 +60,14 @@ public:
             return frame_->payloadAt(0) & 2U;
         }
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    BlockWriteInitRequest(const CanFrame *frame):
+    BlockWriteInitRequest(const CanFrame &frame):
         instance_{frame}
     {}
 

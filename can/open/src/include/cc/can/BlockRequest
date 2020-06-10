@@ -49,14 +49,14 @@ public:
     private:
         friend class BlockRequest;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    BlockRequest(const CanFrame *frame):
+    BlockRequest(const CanFrame &frame):
         instance_{frame}
     {}
 

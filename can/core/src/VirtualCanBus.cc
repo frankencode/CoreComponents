@@ -40,13 +40,12 @@ void VirtualCanBus::shutdown()
     connections_->deplete();
 }
 
-void VirtualCanBus::broadcast(const VirtualCanMedia *source, const CanFrame *frame)
+void VirtualCanBus::broadcast(const VirtualCanMedia *source, const CanFrame &frame)
 {
     Guard<Mutex> guard{mutex_};
-    Ref<const CanFrame> other = frame->copy();
     for (VirtualCanMedia *media: connections_) {
         if (media != source)
-            media->feedFrame(other);
+            media->feedFrame(frame);
     }
 }
 

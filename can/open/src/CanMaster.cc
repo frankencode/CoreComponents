@@ -14,7 +14,7 @@ namespace can {
 
 Ref<CanMaster> CanMaster::create(CanMedia *media)
 {
-    return new CanMaster(media);
+    return new CanMaster{media};
 }
 
 CanMaster::CanMaster(CanMedia *media):

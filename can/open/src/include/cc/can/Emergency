@@ -58,7 +58,7 @@ public:
         CanKeepAliveForNode = 0x8F00  ///< Node guarding or heart beat error monitoring a specific node being monitored
     };
 
-    static Ref<CanFrame> createFrame(int nodeId, Type type, ErrorRegister errorRegister, uint64_t deviceError = 0, int monitoredNodeId = 0);
+    static CanFrame createFrame(int nodeId, Type type, ErrorRegister errorRegister, uint64_t deviceError = 0, int monitoredNodeId = 0);
 
     class Instance {
     public:
@@ -104,14 +104,14 @@ public:
     private:
         friend class Emergency;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    Emergency(const CanFrame *frame):
+    Emergency(const CanFrame &frame):
         instance_{frame}
     {}
 

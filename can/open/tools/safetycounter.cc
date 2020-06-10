@@ -86,8 +86,8 @@ void safetyCounter(String interface, int canId, int invCanId, double refreshTime
 {
     auto can = CanSocket::open(interface);
 
-    auto frame = CanFrame::create();
-    auto invFrame = CanFrame::create();
+    CanFrame frame;
+    CanFrame invFrame;
 
     frame->setCanId(canId);
     invFrame->setCanId(invCanId);
@@ -95,7 +95,7 @@ void safetyCounter(String interface, int canId, int invCanId, double refreshTime
     uint32_t counter = 0;
     while (true) {
         frame->setValueUInt32(counter);
-        frame->updateInverse(invFrame);
+        frame->updateInverse(&invFrame);
         can->writeFrame(frame);
         can->writeFrame(invFrame);
         Thread::sleep(refreshTime);

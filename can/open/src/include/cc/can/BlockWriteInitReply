@@ -16,7 +16,7 @@ namespace can {
 class BlockWriteInitReply
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, Selector selector, int blockSize);
+    static CanFrame createFrame(int serverId, Selector selector, int blockSize);
 
     class Instance {
     public:
@@ -56,14 +56,14 @@ public:
     private:
         friend class BlockWriteInitReply;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    BlockWriteInitReply(const CanFrame *frame):
+    BlockWriteInitReply(const CanFrame &frame):
         instance_{frame}
     {}
 

@@ -47,14 +47,14 @@ public:
     private:
         friend class BlockReply;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    BlockReply(const CanFrame *frame):
+    BlockReply(const CanFrame &frame):
         instance_{frame}
     {}
 

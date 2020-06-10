@@ -12,7 +12,7 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> AbortReply::createFrame(int serverId, Selector selector, Abort::Reason reason)
+CanFrame AbortReply::createFrame(int serverId, Selector selector, Abort::Reason reason)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
 

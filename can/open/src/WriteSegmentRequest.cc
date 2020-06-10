@@ -12,13 +12,12 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> WriteSegmentRequest::createFrame(int serverId, const String &data, int offset)
+CanFrame WriteSegmentRequest::createFrame(int serverId, const String &data, int offset)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(offset < data->count());
 
-    auto frame = CanFrame::create();
-    frame->setCanId(0x600 + serverId);
+    CanFrame frame{0x600 + serverId};
 
     const uint8_t ccs = static_cast<uint8_t>(ServiceRequest::Specifier::WriteSegment);
     const uint8_t t   = offset & 1;

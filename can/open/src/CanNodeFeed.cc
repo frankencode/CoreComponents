@@ -20,7 +20,7 @@ CanNodeFeed::CanNodeFeed(CanMedia *sink):
     sink_{sink}
 {}
 
-void CanNodeFeed::writeFrame(const CanFrame *frame)
+void CanNodeFeed::writeFrame(const CanFrame &frame)
 {
     sink_->writeFrame(frame);
 }

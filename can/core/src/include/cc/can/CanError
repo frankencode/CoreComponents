@@ -56,14 +56,14 @@ public:
     private:
         friend class CanError;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    CanError(const CanFrame *frame):
+    CanError(const CanFrame &frame):
         instance_{frame}
     {}
 

@@ -17,7 +17,7 @@ namespace can {
 class AbortRequest: public Abort
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, Selector selector, Abort::Reason reason)
+    static CanFrame createFrame(int serverId, Selector selector, Abort::Reason reason)
     {
         CC_ASSERT(1 <= serverId && serverId <= 0x7F);
 
@@ -43,12 +43,12 @@ public:
     private:
         friend class AbortRequest;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             Abort::Instance{frame}
         {}
     };
 
-    AbortRequest(const CanFrame *frame):
+    AbortRequest(const CanFrame &frame):
         instance_{frame}
     {}
 

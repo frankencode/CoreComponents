@@ -54,7 +54,7 @@ public:
     };
 
 protected:
-    static Ref<CanFrame> createFrame(int canId, uint8_t cs, Selector selector, Abort::Reason reason);
+    static CanFrame createFrame(int canId, uint8_t cs, Selector selector, Abort::Reason reason);
 
     class Instance {
     public:
@@ -75,11 +75,11 @@ protected:
         }
 
     protected:
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
 };

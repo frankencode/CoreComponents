@@ -13,25 +13,19 @@
 namespace cc {
 namespace can {
 
-CanFrame::CanFrame()
+CanFrame::Instance::Instance()
+{
+    ::memset(static_cast<StructCanFrame *>(this), 0, sizeof(StructCanFrame));
+}
+
+CanFrame::Instance::Instance(canid_t canId)
 {
     ::memset(static_cast<StructCanFrame *>(this), 0, sizeof(StructCanFrame));
     can_dlc = 8;
-    can_id = 0;
+    can_id = canId;
 }
 
-CanFrame::CanFrame(const CanFrame *other)
-{
-    *this = *other;
-}
-
-CanFrame &CanFrame::operator=(const CanFrame &other)
-{
-    ::memcpy(static_cast<StructCanFrame *>(this), static_cast<const StructCanFrame *>(&other), sizeof(StructCanFrame));
-    return *this;
-}
-
-bool CanFrame::equals(const CanFrame *other) const
+bool CanFrame::Instance::equals(const Instance *other) const
 {
     if (canId() != other->canId()) return false;
     if (payloadCount() != other->payloadCount()) return false;
@@ -42,7 +36,7 @@ bool CanFrame::equals(const CanFrame *other) const
     return true;
 }
 
-String CanFrame::payload() const
+String CanFrame::Instance::payload() const
 {
     if (payloadCount() == 0) return String{};
     String data = String::allocate(payloadCount());
@@ -51,14 +45,14 @@ String CanFrame::payload() const
     return data;
 }
 
-void CanFrame::setPayload(const String &data)
+void CanFrame::Instance::setPayload(const String &data)
 {
     setPayloadCount(data->count());
     for (int i = 0; i < data->count(); ++i)
         payloadAt(i) = data->byteAt(i);
 }
 
-void CanFrame::setValueUInt32(uint32_t value)
+void CanFrame::Instance::setValueUInt32(uint32_t value)
 {
     setPayloadCount(4);
     payloadAt(0) = value & 0xFF;
@@ -67,14 +61,14 @@ void CanFrame::setValueUInt32(uint32_t value)
     payloadAt(3) = (value >> 24) & 0xFF;
 }
 
-void CanFrame::updateInverse(CanFrame *invFrame) const
+void CanFrame::Instance::updateInverse(CanFrame *invFrame) const
 {
-    invFrame->setPayloadCount(payloadCount());
+    (*invFrame)->setPayloadCount(payloadCount());
     for (int i = 0; i < payloadCount(); ++i)
-        invFrame->payloadAt(i) = ~payloadAt(i);
+        (*invFrame)->payloadAt(i) = ~payloadAt(i);
 }
 
-String CanFrame::copy(int i0, int i1) const
+String CanFrame::Instance::copy(int i0, int i1) const
 {
     if (i1 > payloadCount()) i1 = payloadCount();
     if (i0 < 0) i0 = 0;
@@ -85,7 +79,7 @@ String CanFrame::copy(int i0, int i1) const
     return data;
 }
 
-String CanFrame::toString() const
+String CanFrame::Instance::toString() const
 {
     Format f;
     f << hex(canId(), 3) << " [" << payloadCount() << "]";
@@ -96,6 +90,11 @@ String CanFrame::toString() const
     }
     if (isRemoteTransmissionRequest()) f << " // RTR";
     return f;
+}
+
+String str(const CanFrame &frame)
+{
+    return frame->toString();
 }
 
 }} // namespace cc::can

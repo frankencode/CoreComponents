@@ -18,8 +18,8 @@ int main(int argc, char **argv)
     auto can0 = CanSocket::open("can0");
     auto can1 = CanSocket::open("can1");
 
-    auto frameA = CanFrame::create();
-    auto frameB = CanFrame::create();
+    CanFrame frameA;
+    CanFrame frameB;
 
     frameA->setCanId(0x80);
     frameA->setPayloadCount(0);
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < 1000; ++i) {
         auto tA = System::now();
         can0->writeFrame(frameA);
-        can1->readFrame(frameB);
+        can1->readFrame(&frameB);
         auto tB = System::now();
         fout() << fixed(tB - tA, 3, 6) << " s: " << frameB << nl;
     }

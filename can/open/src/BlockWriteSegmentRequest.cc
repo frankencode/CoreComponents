@@ -12,15 +12,14 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockWriteSegmentRequest::createFrame(int serverId, const String &data, int offset, int sequenceNumber)
+CanFrame BlockWriteSegmentRequest::createFrame(int serverId, const String &data, int offset, int sequenceNumber)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(data->count() > 0);
     CC_ASSERT(0 <= offset && offset < data->count());
     CC_ASSERT(1 <= sequenceNumber && sequenceNumber <= 0x7F);
 
-    auto frame = CanFrame::create();
-    frame->setCanId(0x600 + serverId);
+    CanFrame frame{0x600 + serverId};
 
     const uint8_t c     = offset + 7 >= data->count();
     const uint8_t seqno = sequenceNumber;

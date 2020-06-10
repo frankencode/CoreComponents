@@ -27,16 +27,16 @@ VirtualCanBridge::VirtualCanBridge(CanMedia *mediaA, CanMedia *mediaB):
 void VirtualCanBridge::init()
 {
     aToB_ = Worker::start([=]{
-        for (auto frame = CanFrame::create(); mediaA_->readFrame(frame);)
+        for (CanFrame frame; mediaA_->readFrame(&frame);)
             mediaB_->writeFrame(frame);
     });
     bToA_ = Worker::start([=]{
-        for (auto frame = CanFrame::create(); mediaB_->readFrame(frame);)
+        for (CanFrame frame; mediaB_->readFrame(&frame);)
             mediaA_->writeFrame(frame);
     });
 }
 
-void VirtualCanBridge::log(const CanFrame *frame) const
+void VirtualCanBridge::log(const CanFrame &frame) const
 {}
 
 }} // namespace cc::can

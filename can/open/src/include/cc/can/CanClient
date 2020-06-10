@@ -49,7 +49,7 @@ protected:
     void blockWriteEnd(int peerId, Selector selector, const String &data, bool crcSupport);
 
 private:
-    Ref<CanFrame> getNextReply(int peerId, Selector selector);
+    CanFrame getNextReply(int peerId, Selector selector);
     void canAbort(int peerId, Selector selector, Abort::Reason reason);
 
     Ref<CanMedia> media_;

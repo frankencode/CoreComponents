@@ -87,12 +87,12 @@ private:
             const int sendId = recvId + 2;
             SafetyEventHandler::create(monitor(), recvId, recvId + 1, 1.5, 0.1,
                 [=](const String &data) {
-                    auto frame = CanFrame::create();
+                    CanFrame frame;
                     frame->setCanId(sendId);
                     frame->setPayload(data);
-                    auto invFrame = CanFrame::create();
+                    CanFrame invFrame;
                     invFrame->setCanId(sendId + 1);
-                    frame->updateInverse(invFrame);
+                    frame->updateInverse(&invFrame);
                     media()->writeFrame(frame);
                     media()->writeFrame(invFrame);
                     logMessage(recvId, data->toHex()->breakUp(2)->join("."));

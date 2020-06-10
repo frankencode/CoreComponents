@@ -16,7 +16,7 @@ namespace can {
 class BlockReadInitRequest
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, Selector selector, int blockSize, int switchThreshold);
+    static CanFrame createFrame(int serverId, Selector selector, int blockSize, int switchThreshold);
 
     class Instance {
     public:
@@ -60,14 +60,14 @@ public:
     private:
         friend class BlockReadInitRequest;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    BlockReadInitRequest(const CanFrame *frame):
+    BlockReadInitRequest(const CanFrame &frame):
         instance_{frame}
     {}
 

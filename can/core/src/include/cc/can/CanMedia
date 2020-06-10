@@ -18,7 +18,7 @@ class CanMedia: public Object
 public:
     virtual bool waitFrame(int timeout = -1) = 0;
     virtual bool readFrame(CanFrame *frame) = 0;
-    virtual void writeFrame(const CanFrame *frame) = 0;
+    virtual void writeFrame(const CanFrame &frame) = 0;
 };
 
 }} // namespace cc::can

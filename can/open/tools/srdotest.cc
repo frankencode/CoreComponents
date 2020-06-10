@@ -29,10 +29,8 @@ void runTest(const VariantMap *options)
     auto socket = CanSocket::open(interface);
 
     if (transmit) {
-        auto frame = CanFrame::create();
-        auto invFrame = CanFrame::create();
-        frame->setCanId(cobId);
-        invFrame->setCanId(invCobId);
+        CanFrame frame{cobId};
+        CanFrame invFrame{invCobId};
         uint8_t r = 1;
         while (true) {
             double t = System::now();
@@ -47,11 +45,11 @@ void runTest(const VariantMap *options)
         }
     }
     else if (receive) {
-        auto frame = CanFrame::create();
-        auto invFrame = CanFrame::create();
+        CanFrame frame;
+        CanFrame invFrame;
         double t0 = -1;
         while (true) {
-            if (!socket->readFrame(frame)) break;
+            if (!socket->readFrame(&frame)) break;
             if (frame->canId() == invCobId) continue;
             double tv = System::now() + validationTime;
             fout() << frame << nl;
@@ -63,7 +61,7 @@ void runTest(const VariantMap *options)
                     ferr() << "ERROR: SRDO VALIDATION TIMED OUT" << nl;
                     break;
                 }
-                socket->readFrame(invFrame);
+                socket->readFrame(&invFrame);
                 if (invFrame->canId() == cobId) {
                     ferr() << "ERROR: INVERSE SRDO MISSING" << nl;
                     break;

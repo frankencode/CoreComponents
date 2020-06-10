@@ -28,7 +28,7 @@ public:
         Reset  = 130  ///< Request slave node(s) to return to Initialization state (warm reset)
     };
 
-    static Ref<CanFrame> createFrame(Specifier commandSpecifier, int targetId = 0);
+    static CanFrame createFrame(Specifier commandSpecifier, int targetId = 0);
 
     class Instance {
     public:
@@ -42,14 +42,14 @@ public:
     private:
         friend class NetworkCommand;
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    NetworkCommand(const CanFrame *frame):
+    NetworkCommand(const CanFrame &frame):
         instance_{frame}
     {}
 

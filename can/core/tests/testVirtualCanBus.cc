@@ -12,11 +12,12 @@ class SimpleReadWriteTest: public TestCase
 {
     void run() override
     {
+        CC_INSPECT(sizeof(CanFrame));
+
         auto bus = VirtualCanBus::create();
 
-        auto inFrame = CanFrame::create();
+        CanFrame inFrame{0x123};
         {
-            inFrame->setCanId(0x123);
             for (int i = 0; i < inFrame->payloadCount(); ++i)
                 inFrame->payloadAt(i) = i + 1;
         }
@@ -28,11 +29,11 @@ class SimpleReadWriteTest: public TestCase
         media1->writeFrame(inFrame);
         CC_VERIFY(media2->waitFrame());
 
-        auto outFrame = CanFrame::create();
-        media2->readFrame(outFrame);
+        CanFrame outFrame;
+        media2->readFrame(&outFrame);
 
         CC_INSPECT(outFrame);
-        CC_VERIFY(inFrame->equals(outFrame));
+        CC_VERIFY(inFrame == outFrame);
 
         bus->shutdown();
     }
@@ -49,9 +50,8 @@ class ComplexReadWriteTest: public TestCase
         // log messages and verify that all messages are transmitted
         auto monitorMedia = bus->connect();
         auto monitor = Worker::start([=]{
-            auto frame = CanFrame::create();
             int m = 0;
-            while (monitorMedia->readFrame(frame)) {
+            for (CanFrame frame; monitorMedia->readFrame(&frame);) {
                 ++m;
                 fout("(%%) %%\n") << m << frame;
                 if (frame->canId() == 0xCBA && frame->payloadAt(0) == n) break;
@@ -63,8 +63,7 @@ class ComplexReadWriteTest: public TestCase
         // echo all messages
         auto echoMedia = bus->connect();
         auto echo = Worker::start([=]{
-            auto frame = CanFrame::create();
-            while (echoMedia->readFrame(frame)) {
+            for (CanFrame frame; echoMedia->readFrame(&frame);) {
                 frame->setCanId(0xCBA);
                 echoMedia->writeFrame(frame);
             }
@@ -73,8 +72,7 @@ class ComplexReadWriteTest: public TestCase
         // generate n messages
         auto generatorMedia = bus->connect();
         auto generator = Worker::start([=]{
-            auto frame = CanFrame::create();
-            frame->setCanId(0xABC);
+            CanFrame frame{0xABC};
             for (int i = 0; i < n; ++i) {
                 for (int k = 0; k < frame->payloadCount(); ++k)
                     frame->payloadAt(k) = i + k + 1;

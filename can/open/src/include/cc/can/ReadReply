@@ -16,7 +16,7 @@ namespace can {
 class ReadReply
 {
 public:
-    static Ref<CanFrame> createFrame(int serverId, Selector selector, const String &data);
+    static CanFrame createFrame(int serverId, Selector selector, const String &data);
 
     class Instance {
     public:
@@ -78,14 +78,14 @@ public:
 
         bool hasIndicatedSize() const { return frame_->payloadAt(0) & 1U; }
 
-        Instance(const CanFrame *frame):
+        Instance(const CanFrame &frame):
             frame_{frame}
         {}
 
-        const CanFrame *frame_;
+        const CanFrame &frame_;
     };
 
-    ReadReply(const CanFrame *frame):
+    ReadReply(const CanFrame &frame):
         instance_{frame}
     {}
 

@@ -26,7 +26,7 @@ public:
 
     int canId() const { return frame_->canId(); }
     double interval() const { return interval_; }
-    const CanFrame *frame() const { return frame_; } // TODO, FIXME: should not be public
+    const CanFrame &frame() const { return frame_; } /// \todo should not be public
 
     virtual void updateData(const String &data);
 
@@ -48,7 +48,7 @@ private:
 
     int canId_;
     double interval_;
-    Ref<CanFrame> frame_;
+    CanFrame frame_;
     Mutex mutex_;
 };
 

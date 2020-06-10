@@ -12,11 +12,10 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> NetworkCommand::createFrame(NetworkCommand::Specifier commandSpecifier, int targetId)
+CanFrame NetworkCommand::createFrame(NetworkCommand::Specifier commandSpecifier, int targetId)
 {
     CC_ASSERT(0 <= targetId && targetId <= 0x7F);
-    auto frame = CanFrame::create();
-    frame->setCanId(0);
+    CanFrame frame{0};
     frame->setPayloadCount(2);
     frame->payloadAt(0) = static_cast<uint8_t>(commandSpecifier);
     frame->payloadAt(1) = static_cast<uint8_t>(targetId);

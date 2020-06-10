@@ -76,7 +76,7 @@ bool CanSocket::readFrame(CanFrame *frame)
 {
     int n = 0;
     while (true) {
-        n = ::read(socket_->fd(), static_cast<StructCanFrame *>(frame), sizeof(StructCanFrame));
+        n = ::read(socket_->fd(), (*frame)->toRaw(), sizeof(StructCanFrame));
         if (n == -1) {
             if (errno != EINTR)
                 CC_SYSTEM_ERROR(errno, interface_);
@@ -88,10 +88,10 @@ bool CanSocket::readFrame(CanFrame *frame)
     return n > 0;
 }
 
-void CanSocket::writeFrame(const CanFrame *frame)
+void CanSocket::writeFrame(const CanFrame &frame)
 {
     while (true) {
-        if (::write(socket_->fd(), static_cast<const StructCanFrame *>(frame), sizeof(StructCanFrame)) == -1) {
+        if (::write(socket_->fd(), frame->toRaw(), sizeof(StructCanFrame)) == -1) {
             if (errno != EINTR)
                 CC_SYSTEM_ERROR(errno, interface_);
         }

@@ -12,11 +12,10 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> HeartBeat::createFrame(int sourceId, NodeState nodeState)
+CanFrame HeartBeat::createFrame(int sourceId, NodeState nodeState)
 {
     CC_ASSERT(1 <= sourceId && sourceId <= 0x7F);
-    auto frame = CanFrame::create();
-    frame->setCanId(0x700 + sourceId);
+    CanFrame frame{0x700 + sourceId};
     frame->setPayloadCount(1);
     frame->payloadAt(0) = static_cast<uint8_t>(nodeState);
     return frame;

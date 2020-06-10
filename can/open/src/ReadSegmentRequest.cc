@@ -12,12 +12,11 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> ReadSegmentRequest::createFrame(int serverId, bool toggle)
+CanFrame ReadSegmentRequest::createFrame(int serverId, bool toggle)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
 
-    auto frame = CanFrame::create();
-    frame->setCanId(0x600 + serverId);
+    CanFrame frame{0x600 + serverId};
 
     const uint8_t ccs = static_cast<uint8_t>(ServiceRequest::Specifier::ReadSegment);
     const uint8_t t   = toggle ? 1 : 0;

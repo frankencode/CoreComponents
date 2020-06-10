@@ -12,14 +12,13 @@
 namespace cc {
 namespace can {
 
-Ref<CanFrame> BlockReadInitRequest::createFrame(int serverId, Selector selector, int blockSize, int switchThreshold)
+CanFrame BlockReadInitRequest::createFrame(int serverId, Selector selector, int blockSize, int switchThreshold)
 {
     CC_ASSERT(1 <= serverId && serverId <= 0x7F);
     CC_ASSERT(1 <= blockSize && blockSize <= 0x7F);
     CC_ASSERT(0 <= switchThreshold && switchThreshold <= 0xFF);
 
-    auto frame = CanFrame::create();
-    frame->setCanId(0x600 + serverId);
+    CanFrame frame{0x600 + serverId};
 
     const uint8_t ccs = static_cast<const uint8_t>(ServiceRequest::Specifier::BlockRead);
     const uint8_t cc  = 1;

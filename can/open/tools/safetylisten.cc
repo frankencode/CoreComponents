@@ -112,7 +112,7 @@ void safetyListen(String interface, int canId, int invCanId, double cycleTime, d
     double dtAvg = 0;
     double dtvAvg = 0;
 
-    for (auto frame = CanFrame::create(); can->readFrame(frame);)
+    for (CanFrame frame; can->readFrame(&frame);)
     {
         double t = System::now();
         double dt = 0, tl = 0;

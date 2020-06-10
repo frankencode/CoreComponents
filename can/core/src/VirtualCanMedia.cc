@@ -21,7 +21,7 @@ VirtualCanMedia::VirtualCanMedia(VirtualCanBus *bus):
     bus_{bus}
 {}
 
-void VirtualCanMedia::writeFrame(const CanFrame *frame)
+void VirtualCanMedia::writeFrame(const CanFrame &frame)
 {
     bus_->broadcast(this, frame);
 }
