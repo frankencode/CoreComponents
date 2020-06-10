@@ -125,7 +125,7 @@ int main(int argc, char **argv)
         String interface = options->value("interface");
         int nodeId = options->value("node-id");
 
-        auto socket = CanSocket::open(interface);
+        CanSocket socket{interface};
         auto server = TestNode::create(socket, nodeId);
 
         while (true)

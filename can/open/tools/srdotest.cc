@@ -26,7 +26,7 @@ void runTest(const VariantMap *options)
     double cycleTime = options->value("cycle-time");
     double validationTime = options->value("validation-time");
 
-    auto socket = CanSocket::open(interface);
+    CanSocket socket{interface};
 
     if (transmit) {
         CanFrame frame{cobId};

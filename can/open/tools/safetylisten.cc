@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 
 void safetyListen(String interface, int canId, int invCanId, double cycleTime, double validationTime, double duration)
 {
-    auto can = CanSocket::open(interface);
+    CanSocket can{interface};
 
     MapValue<int, double> lastTimes;
 

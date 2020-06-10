@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Frank Mertens.
+ * Copyright (C) 2019-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -16,29 +16,41 @@ namespace cc { class SystemStream; }
 namespace cc {
 namespace can {
 
-class CanSocket: public CanMedia
+class CanSocket
 {
 public:
-    static Ref<CanSocket> open(const String &interface);
+    class Instance: public CanMedia
+    {
+    public:
+        void enableLoopback(bool on);
+        void enableErrorFrames(bool on);
 
-    inline String interface() const { return interface_; }
+        bool waitFrame(int timeout = -1) override;
+        bool readFrame(CanFrame *frame) override;
+        void writeFrame(const CanFrame &frame) override;
 
-    void enableLoopback(bool on);
-    void enableErrorFrames(bool on);
+    private:
+        friend class CanSocket;
 
-    bool waitFrame(int timeout = -1) override;
-    bool readFrame(CanFrame *frame) override;
-    void writeFrame(const CanFrame &frame) override;
+        Instance(const String &interface);
+        ~Instance();
 
-protected:
-    CanSocket(const String &interface);
-    ~CanSocket();
+        static int lookupInterfaceIndex(int fd, const String &interface);
 
-    static int lookupInterfaceIndex(int fd, const String &interface);
+        Ref<SystemStream> socket_;
+    };
+
+    CanSocket(const String &interface):
+        instance_{interface}
+    {}
+
+    const Instance *operator->() const { return &instance_; }
+    Instance *operator->() { return &instance_; }
+
+    operator CanMedia *() { return &instance_; }
 
 private:
-    Ref<SystemStream> socket_;
-    String interface_;
+    Instance instance_;
 };
 
 }} // namespace cc::can

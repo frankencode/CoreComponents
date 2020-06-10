@@ -15,8 +15,8 @@ using namespace cc::can;
 
 int main(int argc, char **argv)
 {
-    auto can0 = CanSocket::open("can0");
-    auto can1 = CanSocket::open("can1");
+    CanSocket can0{"can0"};
+    CanSocket can1{"can1"};
 
     CanFrame frameA;
     CanFrame frameB;

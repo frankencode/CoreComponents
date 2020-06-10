@@ -56,7 +56,7 @@ int main(int argc, char **argv)
             CC_INSPECT(timeout);
         }
 
-        auto media = CanSocket::open(interface);
+        CanSocket media{interface};
         auto client = CanClient::create(media, clientId, timeout);
         String data = client->read(serverId, selector);
         fout() << data->hexDump() << nl;
