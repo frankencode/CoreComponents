@@ -10,7 +10,7 @@
 #include <cc/File>
 #include <cc/UnlinkGuard>
 #include <cc/Process>
-#include <cc/Process>
+#include <cc/Spawn>
 #include <cc/Dir>
 #include <cc/glob/Pattern>
 #include "BuildPlan.h"
@@ -81,7 +81,7 @@ String GnuToolChain::compiler(const BuildPlan *plan) const
 
 String GnuToolChain::queryMachine(const String &compiler)
 {
-    String machine = Process::stage(machineCommand(compiler))->setError(stdErr())->open()->output()->readAll();
+    String machine = Spawn{machineCommand(compiler)}->output()->readAll();
     mutate(machine)->trimInsitu();
     mutate(machine)->replaceInsitu("-pc-", "-"); // workaround for clang/bash
     return machine;
@@ -99,7 +99,12 @@ String GnuToolChain::machineCommand() const
 
 String GnuToolChain::querySystemRoot(const String &compiler)
 {
-    String systemRoot = Process::stage(compiler + " -print-sysroot")->setError(stdErr())->open()->output()->readAll();
+    String systemRoot =
+        Spawn{
+            Command{compiler + " -print-sysroot"}
+            ->setError(stdErr())
+        }->output()->readAll();
+
     mutate(systemRoot)->trimInsitu();
     return systemRoot;
 }

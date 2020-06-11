@@ -10,7 +10,7 @@
 #include <cc/Dir>
 #include <cc/File>
 #include <cc/FileStatus>
-#include <cc/Process>
+#include <cc/Spawn>
 #include <cc/meta/yason>
 #include "BuildPlan.h"
 #include "ConfigureShell.h"
@@ -267,7 +267,7 @@ bool ConfigureStage::probeBuild(const String &name, const String &probe) const
 
     if (dirty) {
         String command = toolChain()->configureCompileCommand(plan(), probePath, binPath);
-        Ref<Process> sub = Process::open(command);
+        Spawn sub{command};
         String output = sub->output()->readAll();
         int exitCode = sub->wait();
         if (exitCode != 0) {
@@ -316,7 +316,7 @@ bool ConfigureStage::runConfigure(const String &name, const String &configure, S
 
         if (dirty) {
             String command = toolChain()->configureCompileCommand(plan(), configurePath, binPath);
-            Ref<Process> sub = Process::open(command);
+            Spawn sub{command};
             String output = sub->output()->readAll();
             int exitCode = sub->wait();
             if (exitCode != 0) {
@@ -330,7 +330,7 @@ bool ConfigureStage::runConfigure(const String &name, const String &configure, S
         }
     }
 
-    Ref<Process> sub = Process::open(binPath);
+    Spawn sub{binPath};
     *output = sub->output()->readAll();
     return sub->wait() == 0;
 }

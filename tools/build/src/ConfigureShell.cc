@@ -7,7 +7,7 @@
  */
 
 #include <cc/Format>
-#include <cc/Process>
+#include <cc/Spawn>
 #include "ConfigureShell.h"
 
 namespace ccbuild {
@@ -30,15 +30,10 @@ String ConfigureShell::run(const String &shellCommand)
     if (lookup(shellCommand, &text))
         return text;
 
-    Ref<Process> sub = Process::stage()
-        ->setArgs(
-            StringList{
-                Process::getEnv("SHELL"),
-                "-c",
-                shellCommand
-            }
-        )
-        ->open();
+    Spawn sub {
+        Command{}
+        ->setArgs({Process::getEnv("SHELL"), "-c", shellCommand})
+    };
 
     text = sub->output()->readAll()->trim();
     int status = sub->wait();

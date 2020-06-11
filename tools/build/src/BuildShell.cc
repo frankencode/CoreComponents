@@ -38,7 +38,7 @@ bool BuildShell::run(const String &command) const
 {
     fout() << beautify(command) << nl;
     if (plan()->options() & BuildPlan::Simulate) return true;
-    return Process::execute(command) == 0;
+    return Process{command}->wait() == 0;
 }
 
 Ref<FileStatus> BuildShell::fileStatus(const String &path) const

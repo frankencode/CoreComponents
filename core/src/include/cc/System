@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class System cc/System
   * \ingroup sysinfo
-  * \brief %System information
+  * \brief %System utilities
   * \see KernelInfo
   */
 class System

@@ -10,6 +10,7 @@
 #include <cc/stdio>
 #include <cc/debug>
 #include <cc/Process>
+#include <cc/Spawn>
 #include <cc/InputPipe>
 #include <cc/OutputPipe>
 
@@ -22,7 +23,7 @@ class SimpleSpawnTest: public TestCase
 {
     void run() override
     {
-        int ret = Process::stage(execPath + " test")->start()->wait();
+        int ret = Process{execPath + " test"}->wait();
         CC_VERIFY(ret == 7);
     }
 };
@@ -31,7 +32,7 @@ class SimpleEchoTest: public TestCase
 {
     void run() override
     {
-        auto spawn = Process::open(execPath + " echo");
+        Spawn spawn { execPath + " echo" };
         String message = "Hello, echo!";
         spawn->input()->write(message);
         spawn->input()->close();
@@ -47,6 +48,7 @@ class SimpleEchoTest: public TestCase
 int main(int argc, char **argv)
 {
     execPath = argv[0];
+
     if (argc == 2) {
         if (String{argv[1]} == "test") {
             fout() << "Hello, echo!" << nl;

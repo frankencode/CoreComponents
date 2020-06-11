@@ -38,32 +38,21 @@ void runAttachCommand(const String &shellCommand, const String &devNode, const S
 
     MountGuard guard{devNode, fsType, mountOptions};
 
-    Process::stage()
-        ->setArgs(
-            StringList {
-                Process::getEnv("SHELL"),
-                "-c",
-                shellCommand
-            }
-        )
+    Process{
+        Command{}
+        ->setArgs({Process::getEnv("SHELL"), "-c", shellCommand})
         ->setWorkingDirectory(guard->mountPath())
-        ->execute();
+    }->wait();
 }
 
 void runDetachCommand(const String &shellCommand)
 {
     if (shellCommand == "") return;
 
-    Process::stage()
-        ->setArgs(
-            StringList {
-                Process::getEnv("SHELL"),
-                "-c",
-                shellCommand
-            }
-        )
-        ->start()
-        ->wait();
+    Process{
+        Command{}
+        ->setArgs({Process::getEnv("SHELL"), "-c", shellCommand})
+    }->wait();
 }
 
 void runMonitor(const VariantMap *options)

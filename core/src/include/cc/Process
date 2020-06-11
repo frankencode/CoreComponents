@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Frank Mertens.
+ * Copyright (C) 2019-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,13 +8,8 @@
 
 #pragma once
 
-#include <sys/types.h> // pid_t
-#include <spawn.h>
 #include <cc/files>
-#include <cc/exceptions>
-#include <cc/SignalSet>
-#include <cc/EnvMap>
-#include <cc/IoChannel>
+#include <cc/Command>
 
 namespace cc {
 
@@ -22,194 +17,71 @@ namespace cc {
   * \ingroup concurrency
   * \brief Child process creation and current process state
   */
-class Process: public Object
+class Process
 {
 public:
-    /** \brief Child process staging helper
-      */
-    class Staging: public Object
+    using Stage = Command;
+
+    class Instance: public Object
     {
     public:
-        /** \brief Set command line arguments
-          * \param args Argument list, first entry is the executable name
-          * \return pointer to this object
-          */
-        Staging *setArgs(const StringList &args);
+        /// %Process ID of the child process
+        pid_t id() const;
 
-        /** \brief Set environment map
-          * \param envMap The environment map to use for the new child process (or zero pointer to inherit the parents environment map)
-          * \return pointer to this object
+        /** \brief Send signal to the child process
+          * \param signal the signal to deliver
           */
-        Staging *setEnvMap(const EnvMap &envMap);
+        void kill(Signal signal = Signal::Terminate);
 
-        /** \brief Set the process group
-          * \param groupId Group ID of the process group to join or 0 to make the new process lead a new group
-          * \return pointer to this object
+        /** \brief Wait for child process termination
+          * \return exit status of child process (<0 if signaled, exit status = -signal number)
           */
-        Staging *setProcessGroup(pid_t groupId = 0);
+        int wait();
 
-        /** \brief Set the signal mask
-          * \param mask Initial signal mask for the new child process
-          * \return pointer to this object
-          */
-        Staging *setSignalMask(const SignalSet *mask);
+        /// Attached standard input channel/stream (if any, nullptr otherwise)
+        SystemStream *input() const;
 
-        /** \brief Reset signal handling strategy to the default for specific signals
-          * \param set Set of signals to reset to default signal handling behavior
-          * \return pointer to this object
-          */
-        Staging *setSignalDefault(const SignalSet *set);
+        /// Attached standard output channel/stream (if any, nullptr otherwise)
+        SystemStream *output() const;
 
-        /** \brief Set initial working directory
-          * \param path directory path
-          * \return pointer to this object
-          * \warning This method is not thread-safe on all platforms! This is especially true on glibc before v2.29.
-          */
-        Staging *setWorkingDirectory(const String &path);
-
-        /** \brief Set standard input channel
-          * \param channel IoChannel to use for standard input
-          * \return pointer to this object
-          * \see InputPipe
-          */
-        Staging *setInputChannel(IoChannel *channel);
-
-        /** \brief Set standard output channel
-          * \param channel IoChannel to use for standard output
-          * \return pointer to this object
-          * \see OutputPipe
-          */
-        Staging *setOutputChannel(IoChannel *channel);
-
-        /** \brief Set standard error channel
-          * \param channel IoChannel to use for standard error
-          * \return pointer to this object
-          * \see OutputPipe
-          */
-        Staging *setErrorChannel(IoChannel *channel);
-
-        /** \brief Attach an I/O channel
-          * \param channel IoChannel to attach
-          * \param targetFd target file descriptor in the child's file descriptor table
-          * \return pointer to this object
-          */
-        Staging *attachChannel(IoChannel *channel, int targetFd);
-
-        /** \brief Set standard input
-          * \param stream SystemStream to use for standard input
-          * \return pointer to this objects
-          */
-        Staging *setInput(SystemStream *stream);
-
-        /** \brief Set standard input
-          * \param stream SystemStream to use for standard output
-          * \return pointer to this objects
-          */
-        Staging *setOutput(SystemStream *stream);
-
-        /** \brief Set standard input
-          * \param stream SystemStream to use for standard error
-          * \return pointer to this objects
-          */
-        Staging *setError(SystemStream *stream);
-
-        /** \brief Attach an I/O stream
-          * \param stream SystemStream to attach
-          * \param targetFd target file descriptor in the child's file descriptor table
-          * \return pointer to this object
-          */
-        Staging *attach(SystemStream *stream, int targetFd);
-
-        /** \brief Spawn a new child process
-          * \return new object instance
-          */
-        Ref<Process> start();
-
-        /** \brief Spawn a new child process with automatically attached standard input/output channels
-          * \return new object instance
-          */
-        Ref<Process> open();
-
-
-        /** \brief Spawn a new child process and wait for its termintation
-          * \return exit status
-          */
-        int execute();
+        /// Attached standard error channel/stream (if any, nullptr otherwise)
+        SystemStream *error() const;
 
     private:
         friend class Process;
 
-        Staging(const String &command);
-        ~Staging();
+        Instance(Command &command);
+        Instance(Command::Instance *command);
+        ~Instance();
 
-        void enableSpawnFlag(short flag);
-
-        String command_;
-        String execPath_;
-        StringList args_;
-        bool customEnvMap_ { false };
-        EnvMap envMap_;
-
-        int spawnFlags_ { 0 };
-        posix_spawnattr_t spawnAttributes_;
-        posix_spawn_file_actions_t fileActions_;
+        pid_t pid_;
         bool groupLead_ { false };
-        Ref<IoChannel> channelHead_;
+        int exitStatus_ { 0 };
         Ref<SystemStream> standardStreams_[3];
-
-        #ifdef __GLIBC__
-        #if __GLIBC_PREREQ(2, 29)
-        #else
-        String cwd_;
-        #endif
-        #endif
     };
 
-    /** \brief Create a new parameter stage
-      * \param command Executable path plus command line arguments
-      * \return new object instance
-      */
-    static Ref<Staging> stage(const String &command = String{});
-
-    /** \brief Spawn a new child process with automatically attached standard input/output channels
-      * \param command Executable path plus command line arguments
-      * \return new object instance
-      */
-    static Ref<Process> open(const String &command);
+    Process() = default;
 
     /** \brief Spawn a new child process
       * \param command Executable path plus command line arguments
-      * \return new object instance
       */
-    static Ref<Process> start(const String &command);
+    Process(const String &command)
+    {
+        Command c{command};
+        instance_ = new Instance{c};
+    }
 
-    /** \brief Spawn a new child process and wait for its termintation
-      * \param command Executable path plus command line arguments
-      * \return exit status
+   /** \brief Spawn a new child process
+      * \param command Sub-process staging instructions
       */
-    static int execute(const String &command);
+    Process(Command::Instance *command):
+        instance_{new Instance{command}}
+    {}
 
-    /// %Process ID of the child process
-    pid_t id() const;
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return instance_; }
 
-    /** \brief Send signal to the child process
-      * \param signal the signal to deliver
-      */
-    void kill(Signal signal = Signal::Terminate);
-
-    /** \brief Wait for child process termination
-      * \return exit status of child process (<0 if signaled, exit status = -signal number)
-      */
-    int wait();
-
-    /// Attached standard input channel/stream (if any, nullptr otherwise)
-    SystemStream *input() const;
-
-    /// Attached standard output channel/stream (if any, nullptr otherwise)
-    SystemStream *output() const;
-
-    /// Attached standard error channel/stream (if any, nullptr otherwise)
-    SystemStream *error() const;
+    explicit operator bool() const { return instance_; }
 
     /** Change the current working directory of this process
       * \param path new directory path to enter
@@ -315,19 +187,9 @@ public:
     static pid_t makeSessionLeader();
 
 private:
-    friend class Staging;
-
     static char **&environ();
 
-    static Ref<Process> bootstrap(const Staging *staging);
-
-    Process(pid_t pid, const Staging *staging);
-    ~Process();
-
-    pid_t pid_;
-    bool groupLead_ { false };
-    int exitStatus_ { 0 };
-    Ref<SystemStream> standardStreams_[3];
+    Ref<Instance> instance_;
 };
 
 } // namespace cc

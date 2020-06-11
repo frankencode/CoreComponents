@@ -76,18 +76,11 @@ class RecursivePredicatesTest: public TestCase
         );
 
         CC_VERIFY(
-            Process::stage("ccbuild jobs=1")
+            Process{
+                Command{"ccbuild jobs=1"}
                 ->setWorkingDirectory("TestApp")
-                ->execute()
-            == 0
+            }->wait() == 0
         );
-
-        /*
-        String cwdSaved = Process::getCwd();
-        Process::setWorkingDirectory("TestApp");
-        CC_VERIFY(Process::execute(cwdSaved + "/ccbuild jobs=1") == 0);
-        Process::setWorkingDirectory(cwdSaved);
-        CC_VERIFY(File::exists("TestApp/testApp"));*/
     }
 };
 

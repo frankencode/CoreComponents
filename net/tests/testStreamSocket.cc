@@ -36,7 +36,7 @@ public:
 
         {
             Semaphore upAndRunning;
-            auto echoServer = Worker::start([&]{
+            auto echoServer = Worker::start([=]{
                 try {
                     auto listeningSocket = StreamSocket::listen(address);
                     upAndRunning->release();

@@ -27,6 +27,7 @@ protected:
 
 private:
     friend class Process;
+    friend class Command;
 
     mutable Ref<IoChannel> next_;
 };

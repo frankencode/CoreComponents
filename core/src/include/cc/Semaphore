@@ -21,7 +21,7 @@ namespace cc {
 class Semaphore
 {
 public:
-    class Instance {
+    class Instance: public Object {
     public:
         /** Acquire a certain amount of a limited resource
           * \param amount number of items to acquire
@@ -76,13 +76,13 @@ public:
       * \param value initial value
       */
     Semaphore(int value = 0):
-        instance_{value}
+        instance_{new Instance{value}}
     {}
 
-    Instance *operator->() const { return const_cast<Instance *>(&instance_); }
+    Instance *operator->() const { return instance_; }
 
 private:
-    Instance instance_;
+    Ref<Instance> instance_;
 };
 
 } // namespace cc

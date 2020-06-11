@@ -58,7 +58,7 @@ bool CgiDelegate::process(const HttpRequest *request, const FileStatus *status, 
 void CgiDelegate::process(const HttpRequest *request, const String &script, const String &documentRoot)
 {
     Ref<CgiServerConnection> cgiServer;
-    Ref<Process> sub;
+    Process sub;
 
     String payload;
     {
@@ -105,13 +105,15 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
         if (documentRoot != "") env->insert("DOCUMENT_ROOT", documentRoot);
 
         Ref<SocketPair> pair = SocketPair::create();
-        sub = Process::stage()
-            ->setArgs(args)
-            ->setEnvMap(env)
-            ->setInputChannel(pair)
-            ->setOutputChannel(pair)
-            ->setErrorChannel(pair)
-            ->start();
+        sub =
+            Process{
+                Command{}
+                ->setArgs(args)
+                ->setEnvMap(env)
+                ->setInputChannel(pair)
+                ->setOutputChannel(pair)
+                ->setErrorChannel(pair)
+            };
 
         cgiServer = CgiServerConnection::open(pair);
         if (errorLoggingInstance()->verbosity() >= LoggingLevel::Debug)

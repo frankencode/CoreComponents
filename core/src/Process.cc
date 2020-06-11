@@ -8,8 +8,6 @@
 
 #include <cc/Process>
 #include <cc/File>
-#include <cc/InputPipe>
-#include <cc/OutputPipe>
 #include <cc/strings> // cc::strdup, cc::free
 #include <sys/wait.h> // waitpid
 #include <sys/stat.h> // umask
@@ -27,191 +25,19 @@ extern "C" char **environ;
 
 namespace cc {
 
-#define CC_SPAWN_CALL(call) \
-{\
-    int ret = call; \
-    if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret); \
-}
+Process::Instance::Instance(Command &command):
+    Process::Instance::Instance{command.instance_}
+{}
 
-Process::Staging::Staging(const String &command):
-    command_{command}
-{
-    CC_SPAWN_CALL(posix_spawnattr_init(&spawnAttributes_));
-    CC_SPAWN_CALL(posix_spawn_file_actions_init(&fileActions_));
-}
-
-Process::Staging::~Staging()
-{
-    posix_spawn_file_actions_destroy(&fileActions_);
-    posix_spawnattr_destroy(&spawnAttributes_);
-}
-
-void Process::Staging::enableSpawnFlag(short flag)
-{
-    short flags = 0;
-    CC_SPAWN_CALL(posix_spawnattr_getflags(&spawnAttributes_, &flags));
-    flags |= flag;
-    CC_SPAWN_CALL(posix_spawnattr_setflags(&spawnAttributes_, flags));
-}
-
-Process::Staging *Process::Staging::setArgs(const StringList &args)
-{
-    args_ = args;
-    return this;
-}
-
-Process::Staging *Process::Staging::setEnvMap(const EnvMap &envMap)
-{
-    customEnvMap_ = true;
-    envMap_ = envMap;
-    return this;
-}
-
-Process::Staging *Process::Staging::setProcessGroup(pid_t groupId)
-{
-    CC_SPAWN_CALL(posix_spawnattr_setpgroup(&spawnAttributes_, groupId));
-    enableSpawnFlag(POSIX_SPAWN_SETPGROUP);
-    groupLead_ = (groupId == 0);
-    return this;
-}
-
-Process::Staging *Process::Staging::setSignalDefault(const SignalSet *set)
-{
-    CC_SPAWN_CALL(posix_spawnattr_setsigdefault(&spawnAttributes_, set->rawSet()));
-    enableSpawnFlag(POSIX_SPAWN_SETSIGDEF);
-    return this;
-}
-
-Process::Staging *Process::Staging::setSignalMask(const SignalSet *mask)
-{
-    CC_SPAWN_CALL(posix_spawnattr_setsigmask(&spawnAttributes_, mask->rawSet()));
-    enableSpawnFlag(POSIX_SPAWN_SETSIGMASK);
-    return this;
-}
-
-Process::Staging *Process::Staging::setWorkingDirectory(const String &path)
-{
-    #ifdef __GLIBC__
-    #if __GLIBC_PREREQ(2, 29)
-    CC_SPAWN_CALL(posix_spawn_file_actions_addchdir_np(&fileActions_, path));
-    #else
-    cwd_ = path;
-    #endif
-    #else
-    CC_SPAWN_CALL(posix_spawn_file_actions_addchdir_np(&fileActions_, path));
-    #endif
-    return this;
-}
-
-Process::Staging *Process::Staging::setInputChannel(IoChannel *channel)
-{
-    return attachChannel(channel, 0);
-}
-
-Process::Staging *Process::Staging::setOutputChannel(IoChannel *channel)
-{
-    return attachChannel(channel, 1);
-}
-
-Process::Staging *Process::Staging::setErrorChannel(IoChannel *channel)
-{
-    return attachChannel(channel, 2);
-}
-
-Process::Staging *Process::Staging::attachChannel(IoChannel *channel, int targetFd)
-{
-    if (!channel->next_) {
-        channel->next_ = channelHead_;
-        channelHead_ = channel;
-    }
-    if (0 <= targetFd && targetFd <= 2) standardStreams_[targetFd] = channel;
-    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd(), targetFd));
-    return this;
-}
-
-Process::Staging *Process::Staging::setInput(SystemStream *stream)
-{
-    return attach(stream, 0);
-}
-
-Process::Staging *Process::Staging::setOutput(SystemStream *stream)
-{
-    return attach(stream, 1);
-}
-
-Process::Staging *Process::Staging::setError(SystemStream *stream)
-{
-    return attach(stream, 2);
-}
-
-Process::Staging *Process::Staging::attach(SystemStream *stream, int targetFd)
-{
-    if (0 <= targetFd && targetFd <= 2) standardStreams_[targetFd] = stream;
-    CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, stream->fd(), targetFd));
-    return this;
-}
-
-Ref<Process> Process::Staging::start()
-{
-    auto spawn = Process::bootstrap(this);
-
-    while (channelHead_) {
-        channelHead_->onStart();
-        Ref<IoChannel> next = channelHead_->next_;
-        channelHead_->next_ = nullptr;
-        channelHead_ = next;
-    }
-
-    return spawn;
-}
-
-Ref<Process> Process::Staging::open()
-{
-    if (!standardStreams_[0]) setInputChannel(InputPipe::create());
-
-    if (!standardStreams_[1] || !standardStreams_[2]) {
-        auto channel = OutputPipe::create();
-        if (!standardStreams_[1]) setOutputChannel(channel);
-        if (!standardStreams_[2]) setErrorChannel(channel);
-    }
-
-    return start();
-}
-
-int Process::Staging::execute()
-{
-    return start()->wait();
-}
-
-Ref<Process::Staging> Process::stage(const String &command)
-{
-    return new Staging{command};
-}
-
-Ref<Process> Process::open(const String &command)
-{
-    return stage(command)->open();
-}
-
-Ref<Process> Process::start(const String &command)
-{
-    return stage(command)->start();
-}
-
-int Process::execute(const String &command)
-{
-    return stage(command)->execute();
-}
-
-Ref<Process> Process::bootstrap(const Staging *staging)
+Process::Instance::Instance(Command::Instance *command)
 {
     /// locate executable and prepare argument list
 
     String execPath;
-    StringList args = staging->args_;
+    StringList args = command->args_;
 
-    if (staging->command_ != "") {
-        String cmd = staging->command_;
+    if (command->command_ != "") {
+        String cmd = command->command_;
         if (cmd->startsWith(' ') || cmd->endsWith(' '))
             cmd = cmd->trim();
         if (!cmd->contains(' ')) execPath = cmd;
@@ -248,8 +74,8 @@ Ref<Process> Process::bootstrap(const Staging *staging)
         }
         argv[argc] = 0;
 
-        if (staging->customEnvMap_) {
-            const EnvMap &envMap = staging->envMap_;
+        if (command->customEnvMap_) {
+            const EnvMap &envMap = command->envMap_;
             const int n = envMap->count();
             envp = new char*[n + 1];
             int i = 0;
@@ -280,12 +106,12 @@ Ref<Process> Process::bootstrap(const Staging *staging)
     private:
         String cwdSaved_;
     };
-    CwdGuard guard{staging->cwd_};
+    CwdGuard guard{command->cwd_};
     #endif
     #endif
 
-    pid_t pid = -1;
-    int ret = ::posix_spawn(&pid, execPath, &staging->fileActions_, &staging->spawnAttributes_, argv, envp ? envp : ::environ);
+    pid_ = -1;
+    int ret = ::posix_spawn(&pid_, execPath, &command->fileActions_, &command->spawnAttributes_, argv, envp ? envp : ::environ);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 
     if (envp) {
@@ -294,28 +120,25 @@ Ref<Process> Process::bootstrap(const Staging *staging)
         delete[] envp;
     }
 
-    return new Process{pid, staging};
-}
+    groupLead_ = command->groupLead_;
 
-Process::Process(pid_t pid, const Staging *staging):
-    pid_{pid},
-    groupLead_{staging->groupLead_}
-{
     for (int i = 0; i <= 2; ++i)
-        standardStreams_[i] = staging->standardStreams_[i];
+        standardStreams_[i] = command->standardStreams_[i];
+
+    command->startDone();
 }
 
-Process::~Process()
+Process::Instance::~Instance()
 {
     wait();
 }
 
-pid_t Process::id() const
+pid_t Process::Instance::id() const
 {
     return pid_;
 }
 
-void Process::kill(Signal signal)
+void Process::Instance::kill(Signal signal)
 {
     if (::kill(groupLead_ ? -pid_ : pid_, +signal) == -1) {
         if (errno == EPERM) throw PermissionError{};
@@ -323,7 +146,7 @@ void Process::kill(Signal signal)
     }
 }
 
-int Process::wait()
+int Process::Instance::wait()
 {
     if (pid_ < 0) return exitStatus_;
 
@@ -339,17 +162,17 @@ int Process::wait()
     return exitStatus_ = WEXITSTATUS(ret);
 }
 
-SystemStream *Process::input() const
+SystemStream *Process::Instance::input() const
 {
     return standardStreams_[0];
 }
 
-SystemStream *Process::output() const
+SystemStream *Process::Instance::output() const
 {
     return standardStreams_[1];
 }
 
-SystemStream *Process::error() const
+SystemStream *Process::Instance::error() const
 {
     return standardStreams_[2];
 }
