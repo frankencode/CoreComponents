@@ -26,8 +26,15 @@ public:
     public:
         bool isValid() const { return can_id != 0 || can_dlc != 0; }
 
-        canid_t canId() const { return can_id & CAN_EFF_MASK; }
+        canid_t canId() const { return can_id & CAN_EFF_MASK; } /// \todo see below
         void setCanId(canid_t newValue) { can_id = newValue; }
+
+        /// \todo
+        // unsigned objectId() const { return can_id & CAN_EFF_MASK; }
+        // void setObjectId(unsigned id) { can_id = static_cast<canid_t>(id) & CAN_EFF_MASK; }
+
+        /// \todo
+        // canid_t &id() { return can_id; }
 
         int payloadCount() const { return can_dlc; }
         void setPayloadCount(int newValue) {

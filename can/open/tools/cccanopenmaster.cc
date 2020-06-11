@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         String interface = options->value("interface");
         int peerId = options->value("peer-id");
 
-        auto media = CanSocket::open(interface);
+        CanSocket media{interface};
         auto master = CanMaster::create(media);
         master->issueNetworkCommand(commandSpecifier, peerId);
     }

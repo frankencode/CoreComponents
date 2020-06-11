@@ -19,7 +19,8 @@ int main(int argc, char **argv)
 {
     String interface = "can0";
     if (argc >= 2) interface = argv[1];
-    auto media = CanSocket::open(interface);
+
+    CanSocket media{interface};
     media->enableErrorFrames(true);
 
     auto logger = CanLogger::create(media);

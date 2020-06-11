@@ -93,7 +93,7 @@ int main(int argc, char **argv)
             CC_INSPECT(timeout);
         }
 
-        auto client = CanClient::create(CanSocket::open(interface), clientId, timeout);
+        auto client = CanClient::create(CanSocket{interface}, clientId, timeout);
         client->write(serverId, selector, newData);
     }
     catch (HelpRequest &) {

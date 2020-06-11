@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 
 void safetyCounter(String interface, int canId, int invCanId, double refreshTime)
 {
-    auto can = CanSocket::open(interface);
+    CanSocket can{interface};
 
     CanFrame frame;
     CanFrame invFrame;

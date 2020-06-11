@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Frank Mertens.
+ * Copyright (C) 2019-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -19,13 +19,7 @@
 namespace cc {
 namespace can {
 
-Ref<CanSocket> CanSocket::open(const String &interface)
-{
-    return new CanSocket(interface);
-}
-
-CanSocket::CanSocket(const String &interface):
-    interface_{interface}
+CanSocket::Instance::Instance(const String &interface)
 {
     int fd = ::socket(PF_CAN, SOCK_RAW, CAN_RAW);
     if (fd == -1) CC_SYSTEM_DEBUG_ERROR(errno);
@@ -40,10 +34,10 @@ CanSocket::CanSocket(const String &interface):
         CC_SYSTEM_ERROR(errno, interface);
 }
 
-CanSocket::~CanSocket()
+CanSocket::Instance::~Instance()
 {}
 
-int CanSocket::lookupInterfaceIndex(int fd, const String &interface)
+int CanSocket::Instance::lookupInterfaceIndex(int fd, const String &interface)
 {
     struct ifreq ifr;
     strncpy(ifr.ifr_name, interface, sizeof(ifr.ifr_name));
@@ -53,33 +47,33 @@ int CanSocket::lookupInterfaceIndex(int fd, const String &interface)
     return ifr.ifr_ifindex;
 }
 
-void CanSocket::enableLoopback(bool on)
+void CanSocket::Instance::enableLoopback(bool on)
 {
     int value = on;
     if (::setsockopt(socket_->fd(), SOL_CAN_RAW, CAN_RAW_LOOPBACK, &value, sizeof(value)) == -1)
-        CC_SYSTEM_ERROR(errno, interface_);
+        CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void CanSocket::enableErrorFrames(bool on)
+void CanSocket::Instance::enableErrorFrames(bool on)
 {
     can_err_mask_t errorMask = CAN_ERR_MASK;
     if (::setsockopt(socket_->fd(), SOL_CAN_RAW, CAN_RAW_ERR_FILTER, &errorMask, sizeof(errorMask)) == -1)
-        CC_SYSTEM_ERROR(errno, interface_);
+        CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-bool CanSocket::waitFrame(int timeout)
+bool CanSocket::Instance::waitFrame(int timeout)
 {
     return socket_->waitFor(IoReady::Read, timeout);
 }
 
-bool CanSocket::readFrame(CanFrame *frame)
+bool CanSocket::Instance::readFrame(CanFrame *frame)
 {
-    int n = 0;
+    ssize_t n = 0;
     while (true) {
         n = ::read(socket_->fd(), (*frame)->toRaw(), sizeof(StructCanFrame));
         if (n == -1) {
             if (errno != EINTR)
-                CC_SYSTEM_ERROR(errno, interface_);
+                CC_SYSTEM_DEBUG_ERROR(errno);
         }
         else
             break;
@@ -88,12 +82,12 @@ bool CanSocket::readFrame(CanFrame *frame)
     return n > 0;
 }
 
-void CanSocket::writeFrame(const CanFrame &frame)
+void CanSocket::Instance::writeFrame(const CanFrame &frame)
 {
     while (true) {
         if (::write(socket_->fd(), frame->toRaw(), sizeof(StructCanFrame)) == -1) {
             if (errno != EINTR)
-                CC_SYSTEM_ERROR(errno, interface_);
+                CC_SYSTEM_DEBUG_ERROR(errno);
         }
         else
             break;

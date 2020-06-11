@@ -15,7 +15,7 @@ using namespace cc::can;
 
 int main(int argc, char **argv)
 {
-    auto can = CanSocket::open("can0");
+    CanSocket can{"can0"};
 
     const double syncInterval = 0.06;
     const double syncTolerance = 0.1;
