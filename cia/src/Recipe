@@ -1,0 +1,4 @@
+Library {
+    name: cccia
+    use: [ cc/core, can ]
+}

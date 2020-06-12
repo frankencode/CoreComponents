@@ -1,4 +1,0 @@
-Library {
-    name: cccanopen
-    use: [ cc/core, can/core ]
-}
