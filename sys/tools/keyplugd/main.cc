@@ -114,7 +114,7 @@ int main(int argc, char **argv)
         options->insert("options", "");
         options->insert("verbose", false);
 
-        auto arguments = Arguments::parse(argc, argv, options);
+        Arguments arguments{argc, argv, options};
 
         runMonitor(arguments->options());
     }

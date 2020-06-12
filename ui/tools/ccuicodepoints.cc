@@ -35,7 +35,7 @@ Ref<IconMap> parseFile(const String &path, int *maxNameLength)
     return map;
 }
 
-void printEnum(const Arguments *arguments)
+void printEnum(const Arguments &arguments)
 {
     for (String path: arguments->items())
     {
@@ -55,7 +55,7 @@ void printEnum(const Arguments *arguments)
     }
 }
 
-void printStr(const Arguments *arguments)
+void printStr(const Arguments &arguments)
 {
     for (String path: arguments->items())
     {
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
         Ref<VariantMap> options = VariantMap::create();
         options->insert("print-enum", false);
         options->insert("print-str", false);
-        Ref<Arguments> arguments = Arguments::parse(argc, argv, options);
+        Arguments arguments{argc, argv, options};
 
         if (options->value("print-enum"))
             printEnum(arguments);

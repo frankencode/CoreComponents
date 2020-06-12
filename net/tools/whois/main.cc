@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     int exitStatus = 0;
 
     try {
-        auto arguments = Arguments::parse(argc, argv, VariantMap::create());
+        Arguments arguments{argc, argv, VariantMap::create()};
 
         auto ianaAddress = SocketAddress::resolveHost("whois.iana.org", 43);
 

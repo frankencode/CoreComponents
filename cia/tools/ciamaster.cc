@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/stdio>
-#include <cc/Arguments>
 #include <cc/can/CanSocket>
 #include <cc/can/CanMaster>
+#include <cc/Arguments>
+#include <cc/stdio>
 
 using namespace cc;
 using namespace cc::can;
@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     String toolName = String{argv[0]}->fileName();
 
     try {
-        auto arguments = Arguments::parse(argc, argv);
+        Arguments arguments{argc, argv};
 
         auto options = VariantMap::create();
         {

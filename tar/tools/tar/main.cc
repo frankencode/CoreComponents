@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     bool tarMode = toolName->contains("tar");
     bool unpackMode = toolName->contains("un");
     try {
-        Ref<Arguments> arguments = Arguments::parse(argc, argv);
+        Arguments arguments{argc, argv};
         {
             Ref<VariantMap> prototype = VariantMap::create();
             if (unpackMode) {

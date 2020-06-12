@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
-        Ref<Arguments> arguments = Arguments::parse(argc, argv);
+        Arguments arguments{argc, argv};
 
         Ref<VariantMap> options = VariantMap::create();
         {

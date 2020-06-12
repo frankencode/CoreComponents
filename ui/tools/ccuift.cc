@@ -9,7 +9,7 @@
 using namespace cc;
 using namespace cc::ui;
 
-void printFamilyInfo(const Arguments *arguments)
+void printFamilyInfo(const Arguments &arguments)
 {
     for (String path: arguments->items()) {
         Ref<FtFontFace> face = FtFontFace::open(path);
@@ -24,7 +24,7 @@ void printFamilyInfo(const Arguments *arguments)
     }
 }
 
-void printGlyphLists(const Arguments *arguments)
+void printGlyphLists(const Arguments &arguments)
 {
     for (String path: arguments->items()) {
         Ref<FtFontFace> face = FtFontFace::open(path);
@@ -88,7 +88,7 @@ Ref<GlyphMap> parseFile(const String &path, int *maxKeyLength)
     return map;
 }
 
-void printIconEnum(const Arguments *arguments)
+void printIconEnum(const Arguments &arguments)
 {
     for (String path: arguments->items())
     {
@@ -107,7 +107,7 @@ void printIconEnum(const Arguments *arguments)
     }
 }
 
-void printIconStr(const Arguments *arguments)
+void printIconStr(const Arguments &arguments)
 {
     for (String path: arguments->items())
     {
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
         options->insert("glyph-list", false);
         options->insert("icon-enum", false);
         options->insert("icon-str", false);
-        Ref<Arguments> arguments = Arguments::parse(argc, argv, options);
+        Arguments arguments{argc, argv, options};
 
         if (options->value("family-info"))
             printFamilyInfo(arguments);

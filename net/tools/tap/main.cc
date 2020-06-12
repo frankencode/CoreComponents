@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
-        Ref<Arguments> arguments = Arguments::parse(argc, argv, VariantMap::create());
+        Arguments arguments{argc, argv, VariantMap::create()};
 
         StringList items = arguments->items();
         if (items->count() != 2) throw HelpRequest{};

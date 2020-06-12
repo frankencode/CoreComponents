@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
-        Ref<Arguments> arguments = Arguments::parse(argc, argv);
+        Arguments arguments{argc, argv};
         arguments->validate(VariantMap::create());
 
         StringList items = arguments->items();

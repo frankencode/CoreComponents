@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     bool encipher = !toolName->contains("un");
 
     try {
-        Ref<Arguments> arguments = Arguments::parse(argc, argv);
+        Arguments arguments{argc, argv};
         arguments->validate(VariantMap::create());
 
         StringList items = arguments->items();

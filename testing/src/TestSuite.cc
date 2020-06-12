@@ -47,7 +47,7 @@ bool TestSuite::init(int argc, char **argv)
     name_ = execPath_->baseName();
 
     try {
-        Ref<Arguments> arguments = Arguments::parse(argc, argv);
+        Arguments arguments{argc, argv};
 
         Ref<VariantMap> options = VariantMap::create();
         options->insert("report", "txt");

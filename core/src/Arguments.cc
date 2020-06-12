@@ -11,12 +11,7 @@
 
 namespace cc {
 
-Ref<Arguments> Arguments::parse(int argc, char **argv, VariantMap *options)
-{
-    return new Arguments{argc, argv, options};
-}
-
-Arguments::Arguments(int argc, char **argv, VariantMap *options):
+Arguments::Instance::Instance(int argc, char **argv, VariantMap *options):
     options_{VariantMap::create()}
 {
     execPath_ = argv[0];
@@ -64,7 +59,7 @@ Arguments::Arguments(int argc, char **argv, VariantMap *options):
     }
 }
 
-void Arguments::validate(const VariantMap *prototype)
+void Arguments::Instance::validate(const VariantMap *prototype)
 {
     for (int i = 0; i < options_->count(); ++i)
     {
@@ -106,7 +101,7 @@ void Arguments::validate(const VariantMap *prototype)
     }
 }
 
-void Arguments::override(VariantMap *config) const
+void Arguments::Instance::override(VariantMap *config) const
 {
     for (int i = 0; i < options_->count(); ++i)
     {
