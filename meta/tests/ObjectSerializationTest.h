@@ -81,7 +81,7 @@ protected:
         CC_VERIFY(String(object->value("name")) == "Hans Mustermann");
         CC_VERIFY(int(object->value("age")) == 17);
 
-        const VariantList *hobbies = Variant::cast<const VariantList *>(object->value("hobbies"));
+        VariantList hobbies = Variant::cast<VariantList>(object->value("hobbies"));
         CC_VERIFY(String(hobbies->at(0)) == "Sky Diving");
         CC_VERIFY(String(hobbies->at(1)) == "Mountain Biking");
         CC_VERIFY(String(hobbies->at(2)) == "Poetry");
@@ -96,7 +96,7 @@ protected:
         CC_VERIFY(float(home->value("latitude")) == float(12.34));
         CC_VERIFY(float(home->value("longitude")) == float(123.4));
 
-        const VariantList *numbers = Variant::cast<const VariantList *>(object->value("favouriteNumbers"));
+        VariantList numbers = Variant::cast<VariantList>(object->value("favouriteNumbers"));
         CC_VERIFY(int(numbers->at(0)) == 2);
         CC_VERIFY(int(numbers->at(1)) == 5);
         CC_VERIFY(int(numbers->at(2)) == 7);

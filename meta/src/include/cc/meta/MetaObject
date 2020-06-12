@@ -15,7 +15,7 @@ namespace cc {
 namespace meta {
 
 class MetaObject;
-typedef List< Ref<MetaObject> > MetaObjectList;
+using MetaObjectList = ListValue< Ref<MetaObject> >;
 
 /** \class MetaObject cc/meta/MetaObject
   * \brief Duck-typed object
@@ -30,8 +30,8 @@ public:
     String toString() const;
 
     bool hasChildren() const { return children_->count() > 0; }
-    MetaObjectList *children() { return children_; }
-    const MetaObjectList *children() const { return children_; }
+    MetaObjectList &children() { return children_; }
+    const MetaObjectList &children() const { return children_; }
 
     Ref<MetaObject> clone() const;
 
@@ -51,7 +51,7 @@ protected:
 
 private:
     String className_;
-    Ref<MetaObjectList> children_;
+    MetaObjectList children_;
 };
 
 }} // namespace cc::meta

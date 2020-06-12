@@ -19,7 +19,7 @@ namespace cc {
 
 class Variant;
 
-typedef List<Variant> VariantList;
+using VariantList = ListValue<Variant>;
 typedef Map<String, Variant> VariantMap;
 
 /** \internal
@@ -58,10 +58,8 @@ public:
     VariantType itemType() const { return itemType_; }
     const char *typeName() const;
 
+    /// \todo allow to request more smart conversions explicitly and have proper range checking and exception handling at this point
     String toString() const;
-
-    /** TODO: allow to request more smart conversions explicitly and have proper range checking and exception handling at this point
-      */
 
 private:
     friend class Variant;
@@ -97,8 +95,8 @@ private:
     VariantInstance(const Ref< List<Color> > &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
     VariantInstance(const Ref< List<Version> > &value): type_{VariantType::List}, itemType_{VariantType::Version} { initRef(value); }
     VariantInstance(const StringList &value)          : type_{VariantType::List}, itemType_{VariantType::String}  { initRef(value); }
-    VariantInstance(const Ref<VariantList> &value)    : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
-    VariantInstance(const Ref<VariantMap> &value)     : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
+    VariantInstance(const VariantList &value)         : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
+    VariantInstance(const Ref<VariantMap> &value)     : type_{VariantType::Map }, itemType_{VariantType::Any}     { initRef(value); }
 
     void initRef(Object *object = nullptr) {
         new(dummy_)Ref<Object>(object);
@@ -180,14 +178,14 @@ public:
     template<class T>
     Variant(T *value): Variant(Ref<T>(value)) {}
 
-    Variant(const StringList &value): instance_{value} {}
+    Variant(const StringList &value) : instance_{value} {}
+    Variant(const VariantList &value): instance_{value} {}
 
     Variant(const Ref< List<int> > &value)    : instance_{value} {}
     Variant(const Ref< List<bool> > &value)   : instance_{value} {}
     Variant(const Ref< List<float> > &value)  : instance_{value} {}
     Variant(const Ref< List<Color> > &value)  : instance_{value} {}
     Variant(const Ref< List<Version> > &value): instance_{value} {}
-    Variant(const Ref<VariantList> &value)    : instance_{value} {}
     Variant(const Ref<VariantMap> &value)     : instance_{value} {}
 
     template<class T>
@@ -209,7 +207,7 @@ public:
 
     const Variant &operator=(const char *value)       { return (*this) = Variant(value); }
     const Variant &operator=(const String &value)     { return (*this) = Variant(value); }
-    const Variant &operator=(const StringList &value) { return (*this) = Variant(value); }
+    const Variant &operator=(const StringList &list)  { return (*this) = Variant(list); }
 
     template<class T>
     const Variant &operator=(const Ref<T> &value) { return (*this) = Variant(value); }
@@ -225,6 +223,8 @@ public:
             (*this)->int_ = b->int_;
         return *this;
     }
+
+    const Variant &operator=(const VariantList &list) { return (*this) = Variant(list); }
 
     operator bool() const {
         if (!+(*this)->type_) return bool();
@@ -329,7 +329,7 @@ public:
     static StringList cast(const Variant &value) {
         auto *sl = Variant::cast<StringList::Instance *>(value);
         if (sl) return sl;
-        auto *vl = Variant::cast<VariantList *>(value);
+        auto *vl = Variant::cast<VariantList::Instance *>(value);
         if (vl) {
             StringList sl2;
             for (const auto &x: vl)
@@ -337,6 +337,14 @@ public:
             return sl2;
         }
         return StringList{};
+    }
+};
+
+template<>
+class VariantCast<VariantList, false> {
+public:
+    static VariantList cast(const Variant &value) {
+        return Variant::cast<VariantList::Instance *>(value);
     }
 };
 

@@ -6,7 +6,6 @@
  *
  */
 
-#include <cc/debug>
 #include <cc/meta/JsonWriter>
 
 namespace cc {

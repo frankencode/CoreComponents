@@ -98,7 +98,7 @@ void YasonWriter::writeObject(Variant value, int depth)
         return;
     }
     format_ << "{\n";
-    writeIndent(depth + 1); // FIXME: having an "IndentStream" would be nice
+    writeIndent(depth + 1);
     for (int i = 0; i < object->count(); ++i) {
         String memberName = object->at(i)->key();
         Variant memberValue = object->at(i)->value();
@@ -113,7 +113,7 @@ void YasonWriter::writeObject(Variant value, int depth)
     }
     if (object->hasChildren()) {
         if (object->count() > 0) writeIndent(depth + 1);
-        const MetaObjectList *children = object->children();
+        const MetaObjectList &children = object->children();
         for (int i = 0; i < children->count(); ++i) {
             writeObject(children->at(i), depth + 1);
             format_ << "\n";

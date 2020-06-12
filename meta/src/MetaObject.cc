@@ -19,8 +19,7 @@ Ref<MetaObject> MetaObject::create(const String &className)
 }
 
 MetaObject::MetaObject(const String &className):
-    className_{className},
-    children_{MetaObjectList::create()}
+    className_{className}
 {}
 
 MetaObject::~MetaObject()

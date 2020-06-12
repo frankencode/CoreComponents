@@ -7,11 +7,11 @@
  */
 
 #include <cc/meta/YasonSyntax>
-#include <cc/syntax/exceptions>
 #include <cc/syntax/FloatSyntax>
 #include <cc/syntax/IntegerSyntax>
-#include <cc/Singleton>
+#include <cc/syntax/exceptions>
 #include <cc/Format>
+#include <cc/Singleton>
 
 namespace cc {
 namespace meta {
@@ -692,14 +692,10 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
             value = list;
         }
         else if (expectedItemType == VariantType::String) {
-            Ref< List<String> > list = List<String>::create();
-            list->append(value);
-            value = list;
+            value = StringList{value};
         }
         else {
-            Ref<VariantList> list = VariantList::create();
-            list->append(value);
-            value = list;
+            value = VariantList{value};
         }
     }
 
@@ -716,16 +712,20 @@ Variant YasonSyntax::readList(const CharArray *text, const Token *token, Variant
     else if (expectedItemType == VariantType::Float)
         value = parseTypedList<float>(text, token, expectedItemType);
     else if (expectedItemType == VariantType::String) {
-        // value = parseTypedList<String>(text, token, expectedItemType);
-        // workaround HACK
         StringList list;
         for (const Token *child = token->firstChild(); child; child = child->nextSibling()) {
             list->append(readValue(text, child, VariantType::String));
         }
         value = list;
     }
-    else
-        value = parseTypedList<Variant>(text, token, expectedItemType);
+    else {
+        VariantList list;
+        for (const Token *child = token->firstChild(); child; child = child->nextSibling()) {
+            list->append(readValue(text, child, expectedItemType));
+        }
+        value = list;
+    }
+
     return value;
 }
 
