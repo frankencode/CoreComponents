@@ -6,6 +6,8 @@
  *
  */
 
+#include <cc/System>
+#include <cc/exceptions>
 #include <unistd.h> // sysconf(3), alarm(2)
 #ifndef __linux
 #include <sys/types.h>
@@ -16,8 +18,6 @@
 #endif
 #include <sys/mount.h>
 #include <time.h>
-#include <cc/exceptions>
-#include <cc/System>
 
 namespace cc {
 

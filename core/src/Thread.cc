@@ -6,14 +6,14 @@
  *
  */
 
+#include <cc/Thread>
+#include <cc/System>
+#include <cc/strings>
+#include <cc/exceptions>
 #include <sys/mman.h>
 #include <time.h>
 #include <math.h>
 #include <limits.h>
-#include <cc/strings>
-#include <cc/exceptions>
-#include <cc/System>
-#include <cc/Thread>
 
 namespace cc {
 
@@ -60,7 +60,15 @@ Thread *Thread::start()
 void Thread::wait()
 {
     int ret = pthread_join(tid_, 0);
+    if (
+        ret == EDEADLK &&
+        pthread_equal(pthread_self(), tid_)
+    ) {
+        ret = pthread_detach(tid_);
+    }
+    #ifndef NDEBUG
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
+    #endif
 }
 
 void Thread::kill(int signal)

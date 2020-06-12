@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/Command>
 #include <cc/InputPipe>
 #include <cc/OutputPipe>
-#include <cc/Command>
 
 namespace cc {
 

@@ -6,9 +6,11 @@
  *
  */
 
-#include <pthread.h>
 #include <cc/SpinLock>
-#include "helgrind.h"
+#include <pthread.h>
+#ifndef NDEBUG
+#include <valgrind/helgrind.h>
+#endif
 
 namespace cc {
 

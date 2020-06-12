@@ -37,7 +37,6 @@
 #include <cc/can/CanNodeFeed>
 #include <cc/can/HeartBeatGenerator>
 #include <cc/can/BinaryValue>
-#include <cc/Worker>
 #include <cc/stdio>
 
 namespace cc {
@@ -71,7 +70,7 @@ void CanNode::init()
         monitor_->start();
 
     Ref<CanNode> self = this;
-    worker_ = Worker::start([=]{ self->run(); });
+    worker_ = Worker{[=]{ self->run(); }};
 }
 
 void CanNode::initSettings()

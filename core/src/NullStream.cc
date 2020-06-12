@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/Singleton>
 #include <cc/NullStream>
+#include <cc/Singleton>
 
 namespace cc {
 

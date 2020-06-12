@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/ResourceContext>
 #include <cc/ResourceGuard>
+#include <cc/ResourceContext>
 
 namespace cc {
 

@@ -11,8 +11,8 @@
 namespace cc {
 
 ReplaySource::ReplaySource(const CharArray *buffer):
-    buffer_(buffer),
-    i_(0)
+    buffer_{buffer},
+    i_{0}
 {}
 
 int ReplaySource::read(CharArray *data)

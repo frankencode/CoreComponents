@@ -7,9 +7,9 @@
  */
 
 #include <cc/KernelInfo>
-#include <sys/utsname.h>
-#include <cc/exceptions>
 #include <cc/Singleton>
+#include <cc/exceptions>
+#include <sys/utsname.h>
 
 namespace cc {
 

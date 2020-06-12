@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/Stack>
-#include <cc/math>
-#include <cc/Utf8Sink>
 #include <cc/str>
+#include <cc/Stack>
+#include <cc/Utf8Sink>
+#include <cc/math>
 
 namespace cc {
 

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/can/CanMedia>
+#include <cc/Worker>
 
 namespace cc { class Worker; }
 
@@ -29,7 +30,7 @@ protected:
 
 private:
     Ref<CanMedia> mediaA_, mediaB_;
-    Ref<Worker> aToB_, bToA_;
+    Worker aToB_, bToA_;
 };
 
 }} // namespace cc::can

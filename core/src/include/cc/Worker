@@ -9,27 +9,56 @@
 #pragma once
 
 #include <functional>
-#include <cc/Object>
+#include <cc/Thread>
 
 namespace cc {
 
 class WorkerThread;
+
+class WorkerThread: public Thread {
+private:
+    friend class Worker;
+
+    WorkerThread(const std::function<void()> &f):
+        f_{f}
+    {}
+
+    ~WorkerThread()
+    {
+        wait();
+    }
+
+    void run() override
+    {
+        f_();
+    }
+
+    std::function<void()> f_;
+};
 
 /** \class Worker cc/Worker
   * \ingroup concurrency
   * \brief Convenience wrapper around the %Thread class
   * \see Thread, Mutex, Channel, Process
   */
-class Worker: public Object
+class Worker
 {
 public:
+    Worker() = default;
+
     /// Start function \a f in a new worker thread
-    static Ref<Worker> start(const std::function<void()> &f);
+    Worker(const std::function<void()> &f):
+        thread_{new WorkerThread{f}}
+    {
+        thread_->start();
+    }
+
+    /// Wait for termination of the worker thread
+    ~Worker() = default;
+
+    explicit operator bool() const { return thread_; }
 
 private:
-    Worker(const std::function<void()> &f);
-    ~Worker();
-
     Ref<WorkerThread> thread_;
 };
 

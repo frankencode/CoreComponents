@@ -13,6 +13,7 @@
 #include <cc/can/Emergency>
 #include <cc/can/CanMedia>
 #include <cc/can/DictionaryKey>
+#include <cc/Worker>
 
 namespace cc { class Worker; }
 
@@ -84,7 +85,7 @@ private:
     int nodeId_;
     int timeout_;
 
-    Ref<Worker> worker_;
+    Worker worker_;
 
     CanFrame writeHead_;
     CanFrame readHead_;

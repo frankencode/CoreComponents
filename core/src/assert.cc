@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/exceptions>
 #include <cc/assert>
+#include <cc/exceptions>
 
 namespace cc {
 

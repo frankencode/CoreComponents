@@ -6,10 +6,10 @@
  *
  */
 
+#include <cc/SocketPair>
+#include <cc/exceptions>
 #include <sys/socket.h> // socketpair
 #include <errno.h>
-#include <cc/exceptions>
-#include <cc/SocketPair>
 
 namespace cc {
 

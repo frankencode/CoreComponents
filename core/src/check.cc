@@ -6,8 +6,8 @@
  *
  */
 
-#include <signal.h>
 #include <cc/check>
+#include <signal.h>
 
 namespace cc {
 

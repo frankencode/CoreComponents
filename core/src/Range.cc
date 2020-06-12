@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/str>
 #include <cc/Range>
+#include <cc/str>
 
 namespace cc {
 

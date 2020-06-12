@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/strings>
 #include <cc/Crc32Sink>
+#include <cc/strings>
 
 namespace cc {
 

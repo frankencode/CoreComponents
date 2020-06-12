@@ -6,11 +6,11 @@
  *
  */
 
+#include <cc/Transfer>
 #include <cc/Exception>
 #include <cc/CircularChannel>
 #include <cc/Channel>
 #include <cc/Thread>
-#include <cc/Transfer>
 
 namespace cc {
 

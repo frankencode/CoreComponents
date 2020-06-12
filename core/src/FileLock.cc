@@ -6,9 +6,9 @@
  *
  */
 
-#include <errno.h>
-#include <cc/exceptions>
 #include <cc/FileLock>
+#include <cc/exceptions>
+#include <errno.h>
 
 namespace cc {
 

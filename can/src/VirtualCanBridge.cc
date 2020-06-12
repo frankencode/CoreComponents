@@ -7,7 +7,6 @@
  */
 
 #include <cc/can/VirtualCanBridge>
-#include <cc/Worker>
 
 namespace cc {
 namespace can {
@@ -26,14 +25,14 @@ VirtualCanBridge::VirtualCanBridge(CanMedia *mediaA, CanMedia *mediaB):
 
 void VirtualCanBridge::init()
 {
-    aToB_ = Worker::start([=]{
+    aToB_ = Worker{[=]{
         for (CanFrame frame; mediaA_->readFrame(&frame);)
             mediaB_->writeFrame(frame);
-    });
-    bToA_ = Worker::start([=]{
+    }};
+    bToA_ = Worker{[=]{
         for (CanFrame frame; mediaB_->readFrame(&frame);)
             mediaA_->writeFrame(frame);
-    });
+    }};
 }
 
 void VirtualCanBridge::log(const CanFrame &frame) const

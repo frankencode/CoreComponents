@@ -6,13 +6,13 @@
  *
  */
 
-#include <pthread.h>
-#include <math.h>
+#include <cc/WaitCondition>
 #ifndef NDEBUG
 #include <cc/check>
 #endif
 #include <cc/exceptions>
-#include <cc/WaitCondition>
+#include <pthread.h>
+#include <cmath>
 
 namespace cc {
 
@@ -48,7 +48,7 @@ bool WaitCondition::Instance::waitUntil(double timeout, Mutex &mutex)
     bool success = true;
     struct timespec ts;
     double sec = 0;
-    ts.tv_nsec = modf(timeout, &sec) * 1e9;
+    ts.tv_nsec = std::modf(timeout, &sec) * 1e9;
     ts.tv_sec = sec;
     int ret = -1;
     while (true) {

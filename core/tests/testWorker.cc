@@ -22,15 +22,15 @@ class WorkerTest: public TestCase
 
         auto channel = Channel<int>::create();
 
-        auto consumer = Worker::start([=]{
+        auto consumer = Worker{[=]{
             for (int i = 0; i < n; ++i)
                 fout() << channel->popFront() << nl;
-        });
+        }};
 
-        auto producer = Worker::start([=]{
+        auto producer = Worker{[=]{
             for (int i = 0; i < n; ++i)
                 channel->pushBack(i);
-        });
+        }};
     }
 };
 

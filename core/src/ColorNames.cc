@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/Singleton>
-#include <cc/PrefixTree>
 #include <cc/ColorNames>
+#include <cc/PrefixTree>
+#include <cc/Singleton>
 
 namespace cc {
 

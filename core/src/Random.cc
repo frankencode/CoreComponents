@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/System>
 #include <cc/Random>
+#include <cc/System>
 
 namespace cc {
 
 Random::Random(int seed):
-    x_(seed)
+    x_{seed}
 {
     if (seed < 0) {
         while (x_ <= 1)

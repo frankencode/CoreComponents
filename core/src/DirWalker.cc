@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/DirWalker>
 #include <cc/Dir>
 #include <cc/File>
-#include <cc/DirWalker>
 
 namespace cc {
 

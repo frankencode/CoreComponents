@@ -6,11 +6,11 @@
  *
  */
 
-#include <string.h> // strerror_r
-#include <signal.h>
+#include <cc/exceptions>
 #include <cc/Format>
 #include <cc/ResourceContext>
-#include <cc/exceptions>
+#include <string.h> // strerror_r
+#include <signal.h>
 
 namespace cc {
 

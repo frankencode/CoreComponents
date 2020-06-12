@@ -16,7 +16,11 @@ class SimpleEmissionTest: public TestCase
     {
         auto bus = VirtualCanBus::create();
 
+        CC_DEBUG;
+
         auto logger = CanLogger::create(bus->connect());
+
+        CC_DEBUG;
 
         auto emitter = PeriodicEmitter::create(bus->connect());
         Emission::create(emitter, 0x181, 0.1, "ABCD");

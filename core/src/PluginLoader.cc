@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/PluginDir>
 #include <cc/PluginLoader>
+#include <cc/PluginDir>
 
 namespace cc {
 

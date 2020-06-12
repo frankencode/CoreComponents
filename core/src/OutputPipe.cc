@@ -6,11 +6,11 @@
  *
  */
 
+#include <cc/OutputPipe>
+#include <cc/exceptions>
 #include <fcntl.h> // O_CLOEXEC
 #include <unistd.h> // pipe2
 #include <errno.h>
-#include <cc/exceptions>
-#include <cc/OutputPipe>
 
 namespace cc {
 

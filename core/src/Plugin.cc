@@ -6,8 +6,8 @@
  *
  */
 
-#include <dlfcn.h>
 #include <cc/Plugin>
+#include <dlfcn.h>
 
 namespace cc {
 

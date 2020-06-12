@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/Set>
 #include <cc/PropertyBinding>
+#include <cc/Set>
 
 namespace cc {
 

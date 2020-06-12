@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/Random>
 #include <cc/RandomSource>
+#include <cc/Random>
 
 namespace cc {
 
 Ref<RandomSource> RandomSource::open(int seed, off_t eoi, int byteMin, int byteMax)
 {
-    return new RandomSource(seed, eoi, byteMin, byteMax);
+    return new RandomSource{seed, eoi, byteMin, byteMax};
 }
 
 RandomSource::RandomSource(int seed, off_t eoi, int byteMin, int byteMax):

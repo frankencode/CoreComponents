@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/File>
 #include <cc/CleanupGuard>
+#include <cc/File>
 
 namespace cc {
 

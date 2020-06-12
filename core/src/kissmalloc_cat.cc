@@ -688,7 +688,7 @@ size_t KISSMALLOC_NAME(memusage)()
 #endif
 
 #ifdef KISSMALLOC_VALGRIND
-#include "valgrind.h"
+#include <valgrind/valgrind.h>
 #ifndef KISSMALLOC_REDZONE_SIZE
 #ifdef NDEBUG
 #define KISSMALLOC_REDZONE_SIZE 0

@@ -6,13 +6,13 @@
  *
  */
 
+#include <cc/SystemIo>
+#include <cc/Singleton>
+#include <cc/assert>
+#include <cc/exceptions>
 #include <sys/uio.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-#include <cc/assert>
-#include <cc/exceptions>
-#include <cc/Singleton>
-#include <cc/SystemIo>
 
 namespace cc {
 

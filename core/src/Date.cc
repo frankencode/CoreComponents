@@ -8,7 +8,7 @@
 
 #include <cc/Date>
 #include <cc/Format>
-#include <stdint.h>
+#include <cstdint>
 
 namespace cc {
 

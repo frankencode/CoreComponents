@@ -14,6 +14,7 @@
 #include <cc/MapValue>
 #include <cc/Mutex>
 #include <cc/Semaphore>
+#include <cc/Worker>
 
 namespace cc { class Worker; }
 
@@ -44,7 +45,7 @@ private:
 
     MapValue< int, Ref<Event> > events_;
 
-    Ref<Worker> worker_;
+    Worker worker_;
     Mutex mutex_;
     Semaphore start_;
     Semaphore shutdown_;

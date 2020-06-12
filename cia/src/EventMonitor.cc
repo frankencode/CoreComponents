@@ -10,7 +10,6 @@
 #include <cc/can/NextEvent>
 #include <cc/System>
 #include <cc/Heap>
-#include <cc/Worker>
 
 namespace cc {
 namespace can {
@@ -34,7 +33,7 @@ EventMonitor::~EventMonitor()
 void EventMonitor::init()
 {
     Ref<EventMonitor> self{this};
-    worker_ = Worker::start([=]{ self->run(); });
+    worker_ = Worker{[=]{ self->run(); }};
 }
 
 void EventMonitor::registerEvent(Event *event)

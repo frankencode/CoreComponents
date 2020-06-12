@@ -6,12 +6,12 @@
  *
  */
 
+#include <cc/FileStatus>
+#include <cc/File>
+#include <cc/exceptions>
 #include <sys/time.h> // utimes
 #include <errno.h>
 #include <math.h>
-#include <cc/exceptions>
-#include <cc/File>
-#include <cc/FileStatus>
 
 namespace cc {
 

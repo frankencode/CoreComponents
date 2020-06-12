@@ -49,7 +49,7 @@ class ComplexReadWriteTest: public TestCase
 
         // log messages and verify that all messages are transmitted
         auto monitorMedia = bus->connect();
-        auto monitor = Worker::start([=]{
+        auto monitor = Worker{[=]{
             int m = 0;
             for (CanFrame frame; monitorMedia->readFrame(&frame);) {
                 ++m;
@@ -58,27 +58,27 @@ class ComplexReadWriteTest: public TestCase
             }
             bus->shutdown();
             CC_VERIFY(m == 2 * n);
-        });
+        }};
 
         // echo all messages
         auto echoMedia = bus->connect();
-        auto echo = Worker::start([=]{
+        auto echo = Worker{[=]{
             for (CanFrame frame; echoMedia->readFrame(&frame);) {
                 frame->setCanId(0xCBA);
                 echoMedia->writeFrame(frame);
             }
-        });
+        }};
 
         // generate n messages
         auto generatorMedia = bus->connect();
-        auto generator = Worker::start([=]{
+        auto generator = Worker{[=]{
             CanFrame frame{0xABC};
             for (int i = 0; i < n; ++i) {
                 for (int k = 0; k < frame->payloadCount(); ++k)
                     frame->payloadAt(k) = i + k + 1;
                 generatorMedia->writeFrame(frame);
             }
-        });
+        }};
     }
 };
 

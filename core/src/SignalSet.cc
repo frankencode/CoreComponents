@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/exceptions>
 #include <cc/SignalSet>
+#include <cc/exceptions>
 
 namespace cc {
 

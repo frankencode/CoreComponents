@@ -6,9 +6,9 @@
  *
  */
 
-#include <signal.h>
-#include <cc/exceptions>
 #include <cc/SignalMaster>
+#include <cc/exceptions>
+#include <signal.h>
 
 namespace cc {
 

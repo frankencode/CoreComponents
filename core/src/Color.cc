@@ -6,12 +6,12 @@
  *
  */
 
-#include <cmath>
+#include <cc/Color>
 #include <cc/ColorNames>
 #include <cc/Format>
 #include <cc/Variant>
 #include <cc/colors>
-#include <cc/Color>
+#include <cmath>
 
 namespace cc {
 

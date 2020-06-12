@@ -9,8 +9,7 @@
 #pragma once
 
 #include <cc/can/CanMedia>
-
-namespace cc { class Worker; }
+#include <cc/Worker>
 
 namespace cc {
 namespace can {
@@ -23,9 +22,10 @@ public:
 private:
     CanLogger(CanMedia *media);
     void bootstrap();
+    void run();
 
     Ref<CanMedia> media_;
-    Ref<Worker> worker_;
+    Worker worker_;
 };
 
 }} // namespace cc::can

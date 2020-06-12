@@ -6,13 +6,13 @@
  *
  */
 
+#include <cc/PseudoTerminal>
+#include <cc/exceptions>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h> // open
 #include <unistd.h> // close
 #include <stdlib.h> // posix_openpt, grantpt, unlockpt, ptsname
-#include <cc/exceptions>
-#include <cc/PseudoTerminal>
 
 namespace cc {
 

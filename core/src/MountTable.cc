@@ -8,7 +8,6 @@
 
 #include <cc/MountTable>
 #include <cc/File>
-#include <cc/debug> // DEBUG
 
 namespace cc {
 

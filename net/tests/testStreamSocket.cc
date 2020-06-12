@@ -36,7 +36,7 @@ public:
 
         {
             Semaphore upAndRunning;
-            auto echoServer = Worker::start([=]{
+            auto echoServer = Worker{[=]{
                 try {
                     auto listeningSocket = StreamSocket::listen(address);
                     upAndRunning->release();
@@ -46,11 +46,11 @@ public:
                 catch (Exception &ex) {
                     CC_INSPECT(ex);
                 }
-            });
+            }};
 
             upAndRunning->acquire();
 
-            auto echoClient = Worker::start([=]{
+            auto echoClient = Worker{[=]{
                 auto connectedSocket = StreamSocket::connect(address);
                 String message = "Hello, echo!";
                 connectedSocket->write(message);
@@ -58,7 +58,7 @@ public:
                 CC_INSPECT(message);
                 CC_INSPECT(echo);
                 CC_VERIFY(message == echo);
-            });
+            }};
         }
     }
 };

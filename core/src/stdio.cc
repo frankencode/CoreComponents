@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/stdio>
 #include <cc/Singleton>
 #include <cc/File>
-#include <cc/stdio>
 
 namespace cc {
 

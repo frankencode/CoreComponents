@@ -6,10 +6,10 @@
  *
  */
 
+#include <cc/colors>
 #include <algorithm>
 #include <limits>
 #include <cmath>
-#include <cc/colors>
 
 namespace cc {
 

@@ -10,9 +10,9 @@
 
 #include <cc/can/types>
 #include <cc/can/CanMedia>
+#include <cc/Worker>
 
 namespace cc { template<class> class Channel; }
-namespace cc { class Worker; }
 
 namespace cc {
 namespace can {
@@ -109,7 +109,7 @@ private:
     Ref<CommandChannel> commandChannel_;
 
     Ref<Command> beat_;
-    Ref<Worker> worker_;
+    Worker worker_;
 
     double interval_ { 0 };
     NodeState nodeState_ { NodeState::Undefined };

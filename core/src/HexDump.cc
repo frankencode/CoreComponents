@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/stdio>
-#include <cc/CaptureSink>
 #include <cc/HexDump>
+#include <cc/CaptureSink>
+#include <cc/stdio>
 
 namespace cc {
 

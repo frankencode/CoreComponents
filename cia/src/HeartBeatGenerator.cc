@@ -8,7 +8,6 @@
 
 #include <cc/can/HeartBeatGenerator>
 #include <cc/can/HeartBeat>
-#include <cc/Worker>
 #include <cc/Channel>
 #include <cc/System>
 
@@ -36,7 +35,7 @@ HeartBeatGenerator::~HeartBeatGenerator()
 
 void HeartBeatGenerator::bootstrap()
 {
-    worker_ = Worker::start([this]{ run(); });
+    worker_ = Worker{[this]{ run(); }};
 }
 
 uint16_t HeartBeatGenerator::interval() const

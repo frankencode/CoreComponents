@@ -6,9 +6,9 @@
  *
  */
 
+#include <cc/ResourceContext>
 #include <cc/ThreadLocalSingleton>
 #include <cc/Queue>
-#include <cc/ResourceContext>
 
 namespace cc {
 
