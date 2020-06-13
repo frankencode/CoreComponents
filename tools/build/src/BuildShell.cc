@@ -41,10 +41,10 @@ bool BuildShell::run(const String &command) const
     return Process{command}->wait() == 0;
 }
 
-Ref<FileStatus> BuildShell::fileStatus(const String &path) const
+FileStatus BuildShell::fileStatus(const String &path) const
 {
-    if (plan()->options() & BuildPlan::Blindfold) return FileStatus::create();
-    return FileStatus::readHead(path);
+    if (plan()->options() & BuildPlan::Blindfold) return FileStatus{};
+    return FileStatus{path, false};
 }
 
 void BuildShell::mkdir(const String &path) const
@@ -102,7 +102,7 @@ bool BuildShell::install(const String &sourcePath, const String &destPath) const
     try {
         if (destDirMissing) Dir::establish(destDirPath);
         Ref<File> source = File::open(sourcePath);
-        Ref<FileStatus> sourceStatus = FileStatus::read(sourcePath);
+        FileStatus sourceStatus{sourcePath};
         Ref<File> sink = File::open(destPath, FileOpen::WriteOnly|FileOpen::Create|FileOpen::Truncate, sourceStatus->mode());
         sink->write(source->map());
     }

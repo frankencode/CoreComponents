@@ -86,7 +86,7 @@ int main(int argc, char **argv)
                     header->writeUInt32(crc32(challenge));
                     header->writeInt32(fileName->count());
                     header->write(fileName);
-                    header->writeUInt64(FileStatus::read(path)->size());
+                    header->writeUInt64(FileStatus{path}->size());
                 }
                 source->transferTo(cipherSink);
 

@@ -86,12 +86,12 @@ Ref<Stream> Dir::openFile(const String &path)
 
 bool Dir::access(const String &path, int flags)
 {
-    return ::access(path, flags) && (FileStatus::read(path)->type() == FileType::Directory);
+    return ::access(path, flags) && (FileStatus{path}->type() == FileType::Directory);
 }
 
 bool Dir::exists(const String &path)
 {
-    return File::exists(path) && (FileStatus::read(path)->type() == FileType::Directory);
+    return File::exists(path) && (FileStatus{path}->type() == FileType::Directory);
 }
 
 int Dir::count(const String &path)

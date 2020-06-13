@@ -244,7 +244,7 @@ void ConfigureStage::makeUseOf(BuildPlan *other)
 bool ConfigureStage::probeBuild(const String &name, const String &probe) const
 {
     String probePath = plan()->projectPath()->extendPath(probe);
-    Ref<FileStatus> sourceStatus = FileStatus::read(probePath);
+    FileStatus sourceStatus{probePath};
 
     if (!sourceStatus->isValid()) {
         ferr() << plan()->recipePath() << ": " << name << ":" << nl;
@@ -259,7 +259,7 @@ bool ConfigureStage::probeBuild(const String &name, const String &probe) const
     String binPath = plan()->configPath()->extendPath(baseName);
 
     bool dirty = true;
-    Ref<FileStatus> binStatus = plan()->shell()->fileStatus(binPath);
+    FileStatus binStatus = plan()->shell()->fileStatus(binPath);
     if (binStatus->isValid()) {
         if (binStatus->lastModified() > sourceStatus->lastModified())
             dirty = false;
@@ -287,7 +287,7 @@ bool ConfigureStage::runConfigure(const String &name, const String &configure, S
 {
     String configurePath = plan()->projectPath()->extendPath(configure);
 
-    Ref<FileStatus> sourceStatus = FileStatus::read(configurePath);
+    FileStatus sourceStatus = FileStatus{configurePath};
     if (!sourceStatus->isValid()) {
         ferr() << plan()->recipePath() << ": " << name << ":" << nl;
         ferr() << "  " << configure << ": no such file" << nl;
@@ -308,7 +308,7 @@ bool ConfigureStage::runConfigure(const String &name, const String &configure, S
         binPath = plan()->configPath()->extendPath(baseName);
 
         bool dirty = true;
-        Ref<FileStatus> binStatus = plan()->shell()->fileStatus(binPath);
+        FileStatus binStatus = plan()->shell()->fileStatus(binPath);
         if (binStatus->isValid()) {
             if (binStatus->lastModified() > sourceStatus->lastModified())
                 dirty = false;

@@ -45,7 +45,7 @@ PluginDir *PluginDir::open()
         if (name == "." || name == "..") continue;
         auto path = path_->extendPath(name);
         try {
-            auto status = FileStatus::readHead(path);
+            FileStatus status{path, false};
             if (status->type() == FileType::Symlink) {
                 path = File::readlink(path);
                 if (path->isRelativePath())

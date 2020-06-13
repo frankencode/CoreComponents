@@ -23,9 +23,7 @@ Ref<TarWriter> TarWriter::open(Stream *sink)
 
 TarWriter::TarWriter(Stream *sink):
     sink_{sink},
-    zero_{String{"\0", 1}},
-    longPathStatus_{FileStatus::create()},
-    longLinkStatus_{FileStatus::create()}
+    zero_{String{"\0", 1}}
 {}
 
 TarWriter::~TarWriter()
@@ -35,11 +33,11 @@ TarWriter::~TarWriter()
 
 void TarWriter::writeFile(const String &path)
 {
-    Ref<FileStatus> status = FileStatus::readHead(path);
+    FileStatus status{path, false};
     writeFile(path, status);
 }
 
-void TarWriter::writeFile(const String &path, const FileStatus *status)
+void TarWriter::writeFile(const String &path, const FileStatus &status)
 {
     StringList headerFields;
 
@@ -54,9 +52,11 @@ void TarWriter::writeFile(const String &path, const FileStatus *status)
     }
 
     String pathField{99, '\0'};
+    #if 0
     if (status == longPathStatus_ || status == longLinkStatus_)
         mutate(pathField)->write(String{"././@LongLink"});
     else
+    #endif
         mutate(pathField)->write(exactPath);
     headerFields->append(pathField);
     headerFields->append(zero_);
@@ -67,9 +67,11 @@ void TarWriter::writeFile(const String &path, const FileStatus *status)
     headerFields->append(zero_);
     headerFields->append(oct(status->groupId(), 7));
     headerFields->append(zero_);
+    #if 0
     if (status == longPathStatus_ || status == longLinkStatus_)
         headerFields->append(oct(exactPath->count() + 1, 11));
     else
+    #endif
         headerFields->append(oct(contentSize, 11));
     headerFields->append(zero_);
     headerFields->append(oct(status->st_mtime, 11));
@@ -80,9 +82,12 @@ void TarWriter::writeFile(const String &path, const FileStatus *status)
     headerFields->append(String{"\0 ", 2});
 
     String typeField, linkTarget;
+    #if 0
     if (status == longLinkStatus_ )                       typeField = "K";
     else if (status == longPathStatus_)                   typeField = "L";
-    else {
+    else
+    #endif
+    {
              if (status->type() == FileType::Regular);
         else if (status->type() == FileType::Directory)   typeField = "5";
         else if (status->type() == FileType::Symlink)     typeField = "2";
@@ -121,10 +126,12 @@ void TarWriter::writeFile(const String &path, const FileStatus *status)
     headerFields->append(groupField);
     headerFields->append(zero_);
 
+    #if 0
     if (status != longPathStatus_ && status != longLinkStatus_) {
         if (exactPath->count() > pathField->count()) writeFile(exactPath, longPathStatus_);
         if (linkTarget->count() > linkField->count()) writeFile(linkTarget, longLinkStatus_);
     }
+    #endif
 
     String header = headerFields->join();
     CC_ASSERT(header->count() == 329);
@@ -134,12 +141,15 @@ void TarWriter::writeFile(const String &path, const FileStatus *status)
     sink_->write(header);
     writePadding(header->count());
 
+    #if 0
     if (status == longPathStatus_ || status == longLinkStatus_) {
         sink_->write(exactPath);
         sink_->write(zero_);
         writePadding(exactPath->count() + 1);
     }
-    else if (contentSize > 0) {
+    else
+    #endif
+    if (contentSize > 0) {
         File::open(exactPath)->transferSpanTo(contentSize, sink_);
         writePadding(contentSize);
     }

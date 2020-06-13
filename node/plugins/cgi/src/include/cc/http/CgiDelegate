@@ -9,8 +9,8 @@
 #pragma once
 
 #include <cc/FileStatus>
-#include <cc/http/DeliveryDelegate>
 #include <cc/EnvMap>
+#include <cc/http/DeliveryDelegate>
 
 namespace cc {
 namespace http {
@@ -23,7 +23,7 @@ public:
     static Ref<CgiDelegate> create(DeliveryWorker *worker);
 
     void process(const HttpRequest *request) override;
-    bool process(const HttpRequest *request, const FileStatus *status, const String &documentRoot = "");
+    bool process(const HttpRequest *request, const FileStatus &status, const String &documentRoot = "");
     void process(const HttpRequest *request, const String &script, const String &documentRoot = "");
 
 private:

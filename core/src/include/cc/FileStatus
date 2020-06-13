@@ -26,88 +26,86 @@ typedef struct stat StructStat;
   * \see File
   * \todo rename to FileInfo
   */
-class FileStatus: public StructStat, public Object
+class FileStatus
 {
 public:
-    /** Create an invalid file status
-      * \return new object instance
-      */
-    static Ref<FileStatus> create();
+    class Instance: public StructStat, public Object {
+    public:
+        /// %File or directory path
+        String path() const { return path_; }
 
-    /** Read file status
-      * \param path file or directory path
-      * \return new object instance
-      */
-    static Ref<FileStatus> read(const String &path);
+        /// %File type
+        FileType type() const { return static_cast<FileType>(st_mode & S_IFMT); }
 
-    /** Read file status (without following a symlink)
-      * \param path file or directory path
-      * \return new object instance
-      */
-    static Ref<FileStatus> readHead(const String &path);
+        /// %File access mask
+        FileMode mode() const { return static_cast<FileMode>(st_mode & (~S_IFMT)); }
 
-    /// %File or directory path
-    String path() const { return path_; }
+        /// %File size in number of bytes
+        off_t size() const { return st_size; }
 
-    /// %File type
-    FileType type() const { return static_cast<FileType>(st_mode & S_IFMT); }
+        /// %File size in number of blocks
+        off_t sizeInBlocks() const { return st_blocks; }
 
-    /// %File access mask
-    FileMode mode() const { return static_cast<FileMode>(st_mode & (~S_IFMT)); }
+        /// Block size
+        off_t sizeOfBlock() const { return st_blksize; }
 
-    /// %File size in number of bytes
-    off_t size() const { return st_size; }
+        /// %File owner user ID
+        uid_t ownerId() const { return st_uid; }
 
-    /// %File size in number of blocks
-    off_t sizeInBlocks() const { return st_blocks; }
+        /// %File owner group ID
+        gid_t groupId() const { return st_gid; }
 
-    /// Block size
-    off_t sizeOfBlock() const { return st_blksize; }
+        /// Time when file was last accessed
+        double lastAccess() const { return st_atime; }
 
-    /// %File owner user ID
-    uid_t ownerId() const { return st_uid; }
+        /// Time when file was last modified
+        double lastModified() const { return st_mtime; }
 
-    /// %File owner group ID
-    gid_t groupId() const { return st_gid; }
+        /// Time when file meta information was last modified
+        double lastChanged() const { return st_ctime; }
 
-    /// Time when file was last accessed
-    double lastAccess() const { return st_atime; }
+        /** %Set the file times
+          * \param lastAccess time when file was last accessed
+          * \param lastModified time when file was last modified
+          */
+        void setTimes(double lastAccess, double lastModified);
 
-    /// Time when file was last modified
-    double lastModified() const { return st_mtime; }
+        /// ID of devices containing the file
+        dev_t storageId() const { return st_dev; }
 
-    /// Time when file meta information was last modified
-    double lastChanged() const { return st_ctime; }
+        /// Inode number
+        ino_t inodeNumber() const { return st_ino; }
 
-    /** %Set the file times
-      * \param lastAccess time when file was last accessed
-      * \param lastModified time when file was last modified
-      */
-    void setTimes(double lastAccess, double lastModified);
+        /// Number of hard links (number of directory entries)
+        nlink_t numberOfHardLinks() const { return st_nlink; }
 
-    /// ID of devices containing the file
-    dev_t storageId() const { return st_dev; }
+        /// Device ID (if device file)
+        dev_t deviceId() const { return st_rdev; }
 
-    /// Inode number
-    ino_t inodeNumber() const { return st_ino; }
+        /// Returns true if file exists otherwise false
+        bool isValid() const { return isValid_; }
 
-    /// Number of hard links (number of directory entries)
-    nlink_t numberOfHardLinks() const { return st_nlink; }
+    private:
+        friend class FileStatus;
 
-    /// Device ID (if device file)
-    dev_t deviceId() const { return st_rdev; }
+        Instance(const String &path, bool followSymlink);
+        bool update();
+        String path_;
+        bool isValid_;
+        bool followSymlink_;
+    };
 
-    /// Returns true if file exists otherwise false
-    bool isValid() const { return isValid_; }
+    FileStatus(const String &path = "", bool followSymlink = true):
+        instance_{new Instance{path, followSymlink}}
+    {}
+
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return instance_; }
+
+    explicit operator bool() const { return (*this)->isValid(); }
 
 private:
-    FileStatus(const String &path = "", bool follow = true);
-
-    bool update();
-
-    String path_;
-    bool isValid_;
-    bool follow_;
+    Ref<Instance> instance_;
 };
 
 } // namespace cc

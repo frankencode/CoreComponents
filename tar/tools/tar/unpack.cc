@@ -70,7 +70,7 @@ void unpack(ArchiveReader *archive, bool verbose)
                 Ref<File> file = File::open(entry->path(), FileOpen::WriteOnly);
                 archive->readData(entry, file);
             }
-            Ref<FileStatus> status = FileStatus::read(entry->path());
+            FileStatus status{entry->path()}; /// \todo FIXME: followSymlink=false?
             status->setTimes(status->lastAccess(), entry->lastModified());
         }
     }

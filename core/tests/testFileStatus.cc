@@ -34,7 +34,7 @@ class ProgramStatus: public TestCase
     void run()
     {
         String path = TestSuite::instance()->execPath();
-        Ref<FileStatus> status = FileStatus::read(path);
+        FileStatus status{path};
         fout("status->type() = %%\n") << oct(int(status->type()));
         fout("status->mode() = %%\n") << oct(+status->mode());
         fout("status->size() = %%\n") << status->size();

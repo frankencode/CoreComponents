@@ -26,7 +26,7 @@ public:
     String beautify(const String &command) const;
     bool run(const String &command) const;
 
-    Ref<FileStatus> fileStatus(const String &path) const;
+    FileStatus fileStatus(const String &path) const;
 
     void mkdir(const String &path) const;
     void rmdir(const String &path) const;

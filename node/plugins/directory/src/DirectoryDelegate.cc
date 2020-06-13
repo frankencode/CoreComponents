@@ -38,7 +38,7 @@ void DirectoryDelegate::process(const HttpRequest *request)
 
     if ((!directoryInstance_->showHidden()) && path->baseName()->startsWith('.')) throw NotFound{};
 
-    Ref<FileStatus> fileStatus = FileStatus::read(path);
+    FileStatus fileStatus{path};
 
     if (scriptHandler_) {
         if (

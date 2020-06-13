@@ -11,51 +11,36 @@
 #include <cc/exceptions>
 #include <sys/time.h> // utimes
 #include <errno.h>
-#include <math.h>
+#include <cmath>
 
 namespace cc {
 
-Ref<FileStatus> FileStatus::create()
-{
-    return new FileStatus{};
-}
-
-Ref<FileStatus> FileStatus::read(const String &path)
-{
-    return new FileStatus{path, true};
-}
-
-Ref<FileStatus> FileStatus::readHead(const String &path)
-{
-    return new FileStatus{path, false};
-}
-
-FileStatus::FileStatus(const String &path, bool follow):
+FileStatus::Instance::Instance(const String &path, bool followSymlink):
     path_{path},
-    follow_{follow}
+    followSymlink_{followSymlink}
 {
     isValid_ = update();
 }
 
-void FileStatus::setTimes(double lastAccess, double lastModified)
+void FileStatus::Instance::setTimes(double lastAccess, double lastModified)
 {
     struct timeval tv[2];
     double sec;
-    tv[0].tv_usec = modf(lastAccess, &sec) * 1e6;
+    tv[0].tv_usec = std::modf(lastAccess, &sec) * 1e6;
     tv[0].tv_sec = sec;
-    tv[1].tv_usec = modf(lastModified, &sec) * 1e6;
+    tv[1].tv_usec = std::modf(lastModified, &sec) * 1e6;
     tv[1].tv_sec = sec;
     int ret = ::utimes(path_, tv);
     if(ret == -1) CC_SYSTEM_ERROR(errno, path_);
 }
 
-bool FileStatus::update()
+bool FileStatus::Instance::update()
 {
     StructStat *buf = static_cast<StructStat *>(this);
     memclr(buf, sizeof(StructStat));
     if (path_ == "")
         return isValid_ = false;
-    int ret = follow_ ? ::stat(path_, buf) : ::lstat(path_, buf);
+    int ret = followSymlink_ ? ::stat(path_, buf) : ::lstat(path_, buf);
     if (ret == -1) {
         if ((errno == ENOENT) || (errno == ENOTDIR)) {
             isValid_ = false;

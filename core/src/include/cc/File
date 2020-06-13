@@ -120,7 +120,7 @@ public:
     /** Create a new directory entry for this file
       * \param path file path
       * \param newPath file path to new directory entry
-      * \see FileStatus::numberOfHardLinks()
+      * \see FileStatus::Instance::numberOfHardLinks()
       */
     static void link(const String &path, const String &newPath);
 

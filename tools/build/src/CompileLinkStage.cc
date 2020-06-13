@@ -106,7 +106,7 @@ void CompileLinkStage::scheduleJobs(JobScheduler *scheduler)
 
     if (!dirty)
     {
-        Ref<FileStatus> productStatus = shell()->fileStatus(toolChain()->linkName(plan()));
+        FileStatus productStatus = shell()->fileStatus(toolChain()->linkName(plan()));
         if (!productStatus->isValid()) dirty = true;
         else {
             String previousLinkCommandPath = plan()->previousLinkCommandPath();
@@ -117,14 +117,14 @@ void CompileLinkStage::scheduleJobs(JobScheduler *scheduler)
             else {
                 double productTime = productStatus->lastModified();
                 for (const Module *module: plan()->modules()) {
-                    Ref<FileStatus> moduleStatus = shell()->fileStatus(module->modulePath());
+                    FileStatus moduleStatus = shell()->fileStatus(module->modulePath());
                     if (moduleStatus->lastModified() > productTime) {
                         dirty = true;
                         break;
                     }
                 }
                 if (!dirty) {
-                    Ref<FileStatus> recipeStatus = shell()->fileStatus(plan()->recipePath());
+                    FileStatus recipeStatus = shell()->fileStatus(plan()->recipePath());
                     if (recipeStatus->isValid()) {
                         if (recipeStatus->lastModified() > productTime)
                             dirty = true;

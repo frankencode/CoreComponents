@@ -224,7 +224,7 @@ String File::readlink(const String &path)
 String File::resolve(const String &path)
 {
     String resolvedPath = path;
-    while (FileStatus::readHead(resolvedPath)->type() == FileType::Symlink) {
+    while (FileStatus{resolvedPath, false}->type() == FileType::Symlink) {
         String origPath = resolvedPath;
         resolvedPath = File::readlink(resolvedPath);
         if (resolvedPath == "") break;
@@ -273,7 +273,7 @@ void File::establish(const String &path, int fileMode, int dirMode)
 
 void File::clean(const String &path)
 {
-    auto status = FileStatus::read(path);
+    FileStatus status{path};
     if (status->isValid()) {
         if (status->type() == FileType::Directory) {
             Dir::deplete(path);

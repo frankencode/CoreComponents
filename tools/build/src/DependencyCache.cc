@@ -32,7 +32,7 @@ DependencyCache::DependencyCache(BuildPlan *plan):
     cache_{Cache::create()}
 {
     File::establish(cachePath_);
-    cacheTime_ = FileStatus::read(cachePath_)->lastModified();
+    cacheTime_ = FileStatus{cachePath_}->lastModified();
 
     Ref<MetaObject> dependencyCache;
     try {
@@ -61,12 +61,12 @@ DependencyCache::DependencyCache(BuildPlan *plan):
 
         bool dirty = false;
 
-        Ref<FileStatus> objectStatus = buildPlan_->shell()->fileStatus(modulePath);
+        FileStatus objectStatus = buildPlan_->shell()->fileStatus(modulePath);
         double objectTime = objectStatus->lastModified();
 
         for (String source: dependencyPaths)
         {
-            Ref<FileStatus> sourceStatus = buildPlan_->shell()->fileStatus(source);
+            FileStatus sourceStatus = buildPlan_->shell()->fileStatus(source);
             if (!sourceStatus->isValid()) {
                 dirty = true;
                 break;

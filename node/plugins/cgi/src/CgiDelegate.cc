@@ -42,7 +42,7 @@ void CgiDelegate::process(const HttpRequest *request)
     process(request, cgiInstance_->script());
 }
 
-bool CgiDelegate::process(const HttpRequest *request, const FileStatus *status, const String &documentRoot)
+bool CgiDelegate::process(const HttpRequest *request, const FileStatus &status, const String &documentRoot)
 {
     String script;
 

@@ -31,7 +31,7 @@ void ArWriter::writeFile(const String &path)
     }
 
     Ref<File> file = File::open(path);
-    Ref<FileStatus> status = FileStatus::read(path);
+    FileStatus status{path};
 
     off_t contentSize = status->size();
     if (status->type() != FileType::Regular) contentSize = 0;

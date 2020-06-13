@@ -8,9 +8,9 @@
 
 #pragma once
 
+#include <cc/tar/ArchiveWriter>
 #include <cc/FileStatus>
 #include <cc/MapValue>
-#include <cc/tar/ArchiveWriter>
 
 namespace cc {
 namespace tar {
@@ -25,7 +25,7 @@ public:
 private:
     TarWriter(Stream *sink);
     ~TarWriter();
-    void writeFile(const String &path, const FileStatus *status);
+    void writeFile(const String &path, const FileStatus &status);
     void writePadding(off_t unpaddedSize);
 
     Ref<Stream> sink_;
@@ -35,7 +35,7 @@ private:
         FileId()
         {}
 
-        FileId(const FileStatus *status):
+        FileId(const FileStatus &status):
             deviceId_{status->deviceId()},
             inodeNumber_{status->inodeNumber()}
         {}
@@ -53,8 +53,10 @@ private:
 
     String zero_;
     MapValue<FileId, String> hardLinks_;
-    Ref<FileStatus> longPathStatus_;
-    Ref<FileStatus> longLinkStatus_;
+    #if 0
+    FileStatus longPathStatus_;
+    FileStatus longLinkStatus_;
+    #endif
 };
 
 }} // namespace cc::tar

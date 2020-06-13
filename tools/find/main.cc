@@ -114,7 +114,7 @@ int main(int argc, char **argv)
                     if (!namePattern->match(path->fileName())->valid()) continue;
                 }
                 if (typePattern != "") {
-                    FileType type = FileStatus::readHead(path)->type();
+                    FileType type = FileStatus{path, false}->type();
                     bool shortMode = (typePattern->matchLength() == 1);
                     String typeString;
                     if (type == FileType::Regular)          typeString = shortMode ? "r" : "regular file";
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
                     if (!typePattern->find(typeString)->valid()) continue;
                 }
                 if (textPattern != "") {
-                    if (FileStatus::read(path)->type() != FileType::Regular)
+                    if (FileStatus{path}->type() != FileType::Regular)
                         continue;
 
                     String text = File::open(path)->map();
