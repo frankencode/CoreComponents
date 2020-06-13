@@ -6,16 +6,15 @@
  *
  */
 
-#include <cc/stdio>
+#include "Job.h"
 #include <cc/Spawn>
 #include <cc/Mutex>
-#include "Job.h"
+#include <cc/stdio>
 
 namespace ccbuild {
 
 void Job::registerDerivative(Job *derivative)
 {
-    if (!derivatives_) derivatives_ = Job::Derivatives::create();
     derivatives_->pushBack(derivative);
     ++derivative->countDown_;
 }

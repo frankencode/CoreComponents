@@ -128,6 +128,21 @@ String str(const MapValue<K, T> &a)
     return f;
 }
 
+template<class T>
+String str(const SetValue<T> &a)
+{
+    auto n = a->count();
+    if (n == 0) return "[]";
+    Format f;
+    f << "[ ";
+    for (const auto &x: a) {
+        f << x;
+        if (--n > 0) f << ", ";
+    }
+    f << " ]";
+    return f;
+}
+
 /** \}
   */
 

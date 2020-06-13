@@ -21,8 +21,7 @@ Ref<TimeWorker> TimeWorker::create(TimeMaster *master)
 
 TimeWorker::TimeWorker(TimeMaster *master):
     master_{master},
-    startRequests_{StartRequests::create()},
-    timeouts_{Timeouts::create()}
+    startRequests_{StartRequests::create()}
 {}
 
 void TimeWorker::startTimer(Timer *timer)
@@ -73,7 +72,7 @@ void TimeWorker::run()
                 }
                 timeouts_->removeAt(0);
                 ack_->acquire();
-                timeouts_->insert(TimeKey(timeout->nextTime_, ++nextSerial), timeout);
+                timeouts_->insert(TimeKey{timeout->nextTime_, ++nextSerial}, timeout);
                 continue;
             }
         }
@@ -81,7 +80,7 @@ void TimeWorker::run()
             startRequests_->popBack(&request);
 
         if (!request) break;
-        timeouts_->insert(TimeKey(request->nextTime_, ++nextSerial), request);
+        timeouts_->insert(TimeKey{request->nextTime_, ++nextSerial}, request);
     }
 }
 

@@ -1,10 +1,10 @@
+#include <cc/ui/FtFontFace>
+#include <cc/Arguments>
+#include <cc/stdio>
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
-
-#include <cc/stdio>
-#include <cc/Arguments>
-#include <cc/ui/FtFontFace>
 
 using namespace cc;
 using namespace cc::ui;
@@ -57,9 +57,9 @@ String camelize(const String &name)
     return s->replace("_", "")->replace("-", "");
 }
 
-typedef Map<String, uchar_t> GlyphMap;
+using GlyphMap = MapValue<String, uchar_t>;
 
-Ref<GlyphMap> parseFile(const String &path, int *maxKeyLength)
+GlyphMap parseFile(const String &path, int *maxKeyLength)
 {
     Ref<FtFontFace> face = FtFontFace::open(path);
     FT_Face ftFace = face->ftFace();
@@ -68,7 +68,7 @@ Ref<GlyphMap> parseFile(const String &path, int *maxKeyLength)
         return nullptr;
     }
 
-    auto map = GlyphMap::create();
+    GlyphMap map;
 
     FT_UInt glyphIndex = 0;
     FT_ULong ch = FT_Get_First_Char(ftFace, &glyphIndex);
@@ -94,7 +94,7 @@ void printIconEnum(const Arguments &arguments)
     {
         int maxKeyLength = 0;
         auto map = parseFile(path, &maxKeyLength);
-        if (!map) continue;
+        if (map->count() == 0) continue;
 
         fout("enum class Icon: uchar_t {\n");
         for (int i = 0; i < map->count(); ++i) {
@@ -113,7 +113,7 @@ void printIconStr(const Arguments &arguments)
     {
         int maxKeyLength = 0;
         auto map = parseFile(path, &maxKeyLength);
-        if (!map) continue;
+        if (map->count() == 0) continue;
 
         fout(
             "String str(Icon icon)\n"

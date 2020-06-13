@@ -6,12 +6,12 @@
  *
  */
 
+#include "Report.h"
+#include "NoticeParser.h"
+#include "Registry.h"
+#include <cc/crypto/Sha1Sink>
 #include <cc/DirWalker>
 #include <cc/File>
-#include <cc/crypto/Sha1Sink>
-#include "Registry.h"
-#include "NoticeParser.h"
-#include "Report.h"
 
 namespace ccclaim {
 
@@ -23,12 +23,7 @@ Ref<Report> Report::create(const StringList &dirPaths, Pattern works, int worksM
 Report::Report(const StringList &dirPaths, Pattern works, int worksMinLines):
     dirPaths_{dirPaths},
     works_{works},
-    worksMinLines_{worksMinLines},
-    coverage_{Coverage::create()},
-    exposure_{Exposure::create()},
-    coverageByDigest_{CoverageByDigest::create()},
-    coverageByHolder_{CoverageByHolder::create()},
-    statementByDigest_{StatementByDigest::create()}
+    worksMinLines_{worksMinLines}
 {
     for (int i = 0; i < dirPaths->count(); ++i) {
         String dirPath = dirPaths->at(i)->canonicalPath();
@@ -51,21 +46,21 @@ Report::Report(const StringList &dirPaths, Pattern works, int worksMinLines):
                 coverage_->insert(path, notice);
                 {
                     String digest = cc::crypto::sha1(notice->statement());
-                    Ref<Coverage> coverage;
-                    if (!coverageByDigest_->lookup(digest, &coverage)) {
-                        coverageByDigest_->insert(digest, coverage = Coverage::create());
+                    MapValue<String, Coverage>::Iterator it;
+                    if (!coverageByDigest_->find(digest, &it)) {
+                        coverageByDigest_->insert(digest, Coverage{}, &it);
                         statementByDigest_->insert(digest, notice->statement());
                     }
-                    coverage->insert(path, notice);
+                    it->value()->insert(path, notice);
                 }
                 {
                     CopyrightList *copyrights = notice->copyrights();
                     for (int j = 0; j < copyrights->count(); ++j) {
                         String holder = copyrights->at(j)->holder();
-                        Ref<Coverage> coverage;
-                        if (!coverageByHolder_->lookup(holder, &coverage))
-                            coverageByHolder_->insert(holder, coverage = Coverage::create());
-                        coverage->insert(path, notice);
+                        MapValue<String, Coverage>::Iterator it;
+                        if (!coverageByHolder_->find(holder, &it))
+                            coverageByHolder_->insert(holder, Coverage{}, &it);
+                        it->value()->insert(path, notice);
                     }
                 }
             }

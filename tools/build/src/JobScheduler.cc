@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/System>
-#include "JobServer.h"
 #include "JobScheduler.h"
+#include "JobServer.h"
+#include <cc/System>
 
 namespace ccbuild {
 
@@ -21,7 +21,6 @@ JobScheduler::JobScheduler(int concurrency):
     concurrency_{(concurrency > 0) ? concurrency : System::concurrency()},
     requestChannel_{JobChannel::create()},
     replyChannel_{JobChannel::create()},
-    derivatives_{Derivatives::create()},
     started_{false},
     status_{0},
     totalCount_{0},
@@ -32,7 +31,6 @@ void JobScheduler::start()
 {
     if (started_) return;
     started_ = true;
-    serverPool_ = ServerPool::create();
     for (int i = 0; i < concurrency_; ++i)
         serverPool_->pushBack(JobServer::start(requestChannel_, replyChannel_));
 }

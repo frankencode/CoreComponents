@@ -11,7 +11,7 @@
 #include <cc/Thread>
 #include <cc/Channel>
 #include <cc/Semaphore>
-#include <cc/Map>
+#include <cc/MapValue>
 #include <cc/ui/Timer>
 
 namespace cc {
@@ -37,10 +37,10 @@ protected:
     class Timeout: public Object {
     public:
         static Ref<Timeout> create(Timer *timer) {
-            return new Timeout(timer);
+            return new Timeout{timer};
         }
 
-        inline bool isActive() const {
+        bool isActive() const {
             return timer_->isActive_ && timer_->timeout_ == static_cast<const void *>(this);
         }
 
@@ -50,9 +50,9 @@ protected:
 
     private:
         Timeout(Timer *timer):
-            timer_(timer),
-            nextTime_(timer->firstTime()),
-            interval_(timer->interval())
+            timer_{timer},
+            nextTime_{timer->firstTime()},
+            interval_{timer->interval()}
         {
             timer->timeout_ = this;
         }
@@ -61,16 +61,16 @@ protected:
     class TimeKey {
     public:
         TimeKey():
-            nextTime_(0),
-            serial_(0)
+            nextTime_{0},
+            serial_{0}
         {}
 
         TimeKey(double nextTime, uint64_t serial):
-            nextTime_(nextTime),
-            serial_(serial)
+            nextTime_{nextTime},
+            serial_{serial}
         {}
 
-        inline bool operator<(const TimeKey &b) const {
+        bool operator<(const TimeKey &b) const {
             return
                 (nextTime_ < b.nextTime_) ||
                 (nextTime_ == b.nextTime_ && serial_ < b.serial_);
@@ -86,8 +86,7 @@ protected:
     typedef Channel< Ref<Timeout> > StartRequests;
     Ref<StartRequests> startRequests_;
 
-    typedef Map<TimeKey, Ref<Timeout> > Timeouts;
-    Ref<Timeouts> timeouts_;
+    MapValue<TimeKey, Ref<Timeout> > timeouts_;
 
     Semaphore ack_;
 };

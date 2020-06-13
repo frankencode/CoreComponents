@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/str>
+#include <cc/tar/TarWriter>
+#include <cc/tar/TarCommon>
 #include <cc/File>
 #include <cc/User>
 #include <cc/Group>
-#include <cc/tar/TarCommon>
-#include <cc/tar/TarWriter>
+#include <cc/str>
 
 namespace cc {
 namespace tar {
@@ -24,7 +24,6 @@ Ref<TarWriter> TarWriter::open(Stream *sink)
 TarWriter::TarWriter(Stream *sink):
     sink_{sink},
     zero_{String{"\0", 1}},
-    hardLinks_{HardLinks::create()},
     longPathStatus_{FileStatus::create()},
     longLinkStatus_{FileStatus::create()}
 {}

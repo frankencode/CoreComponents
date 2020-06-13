@@ -55,7 +55,7 @@ public:
     /// Priority of the route
     int priority() const { return priority_; }
 
-    // String toString() const; // TODO
+    // String toString() const; // \todo
 
 private:
     static Ref<RouteInfo> create() { return new RouteInfo; }

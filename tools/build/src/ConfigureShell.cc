@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/Format>
-#include <cc/Spawn>
 #include "ConfigureShell.h"
+#include <cc/Spawn>
+#include <cc/Format>
 
 namespace ccbuild {
 
@@ -18,8 +18,7 @@ ConfigureShell *ConfigureShell::instance()
 }
 
 ConfigureShell::ConfigureShell():
-    verbose_{false},
-    cache_{Cache::create()}
+    verbose_{false}
 {}
 
 String ConfigureShell::run(const String &shellCommand)

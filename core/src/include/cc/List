@@ -11,7 +11,7 @@
 #include <cc/bucket>
 #include <cc/containers>
 #include <cc/Heap>
-#include <cc/Set>
+#include <cc/SetValue>
 
 namespace cc {
 
@@ -247,10 +247,10 @@ public:
       */
     static void makeUnique(List *list)
     {
-        auto set = Set<T>::create();
-        for (auto target = list->begin(); target;) {
-            if (set->insert(*target)) ++target;
-            else list->remove(target);
+        SetValue<T> set;
+        for (auto it = list->begin(); it;) {
+            if (set->insert(*it)) ++it;
+            else list->remove(it);
         }
     }
 
@@ -258,10 +258,10 @@ public:
       */
     void makeUnique()
     {
-        auto set = Set<T>::create();
-        for (auto target = begin(); target;) {
-            if (set->insert(*target)) ++target;
-            else remove(target);
+        SetValue<T> set;
+        for (auto it = begin(); it;) {
+            if (set->insert(*it)) ++it;
+            else remove(it);
         }
     }
 

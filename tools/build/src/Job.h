@@ -10,7 +10,7 @@
 
 #include <cc/String>
 #include <cc/Channel>
-#include <cc/Queue>
+#include <cc/QueueValue>
 
 namespace ccbuild {
 
@@ -54,8 +54,7 @@ private:
 
     int countDown_;
 
-    typedef Queue< Ref<Job> > Derivatives;
-    Ref<Derivatives> derivatives_;
+    QueueValue< Ref<Job> > derivatives_;
 };
 
 typedef Channel< Ref<Job> > JobChannel;

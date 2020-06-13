@@ -1,6 +1,6 @@
-#include <cc/stdio>
 #include <cc/Arguments>
 #include <cc/File>
+#include <cc/stdio>
 
 using namespace cc;
 
@@ -16,12 +16,12 @@ String camelize(const String &name)
     return s->replace("_", "");
 }
 
-typedef Map<String, uchar_t> IconMap;
+using IconMap = MapValue<String, uchar_t>;
 
-Ref<IconMap> parseFile(const String &path, int *maxNameLength)
+IconMap parseFile(const String &path, int *maxNameLength)
 {
     auto lines = File::open(path)->map()->split("\n");
-    auto map = IconMap::create();
+    IconMap map;
     *maxNameLength = 0;
     for (String line: lines) {
         auto parts = line->split(" ");
@@ -35,9 +35,9 @@ Ref<IconMap> parseFile(const String &path, int *maxNameLength)
     return map;
 }
 
-void printEnum(const Arguments &arguments)
+void printEnum(const StringList &items)
 {
-    for (String path: arguments->items())
+    for (String path: items)
     {
         int maxNameLength = 0;
         auto map = parseFile(path, &maxNameLength);
@@ -55,9 +55,9 @@ void printEnum(const Arguments &arguments)
     }
 }
 
-void printStr(const Arguments &arguments)
+void printStr(const StringList &items)
 {
-    for (String path: arguments->items())
+    for (String path: items)
     {
         int maxNameLength = 0;
         auto map = parseFile(path, &maxNameLength);
@@ -88,15 +88,14 @@ int main(int argc, char **argv)
         options->insert("print-enum", false);
         options->insert("print-str", false);
 
-        Arguments arguments{argc, argv};
-        arguments->read(options);
+        StringList items = Arguments{argc, argv}->read(options);
 
         if (options->value("print-enum"))
-            printEnum(arguments);
+            printEnum(items);
         else if (options->value("print-str"))
-            printStr(arguments);
+            printStr(items);
         else
-            printEnum(arguments);
+            printEnum(items);
     }
     catch (HelpRequest &) {
         fout(

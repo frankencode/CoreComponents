@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/FileStatus>
-#include <cc/Map>
+#include <cc/MapValue>
 #include <cc/tar/ArchiveWriter>
 
 namespace cc {
@@ -51,10 +51,8 @@ private:
         ino_t inodeNumber_;
     };
 
-    typedef Map<FileId, String> HardLinks;
-
     String zero_;
-    Ref<HardLinks> hardLinks_;
+    MapValue<FileId, String> hardLinks_;
     Ref<FileStatus> longPathStatus_;
     Ref<FileStatus> longLinkStatus_;
 };

@@ -63,10 +63,10 @@ int main(int argc, char **argv)
 
         if (reportOption) {
             if (focus == "coverage") {
-                CoverageByDigest *coverageByDigest = report->coverageByDigest();
-                StatementByDigest *statementByDigest = report->statementByDigest();
+                auto coverageByDigest = report->coverageByDigest();
+                auto statementByDigest = report->statementByDigest();
                 for (int i = 0; i < coverageByDigest->count(); ++i) {
-                    Coverage *coverage = coverageByDigest->at(i)->value();
+                    auto coverage = coverageByDigest->at(i)->value();
                     String digest = coverageByDigest->at(i)->key();
                     String statement = statementByDigest->value(digest);
                     fout() << "Statement (" << i + 1 << "):" << nl;
@@ -77,15 +77,15 @@ int main(int argc, char **argv)
                 }
             }
             else if (focus == "exposure") {
-                Exposure *exposure = report->exposure();
+                auto exposure = report->exposure();
                 for (int i = 0; i < exposure->count(); ++i)
                     fout() << exposure->at(i) << nl;
                 if (exposure->count() > 0) return 1;
             }
             else if (focus == "holder") {
-                CoverageByHolder *coverageByHolder = report->coverageByHolder();
+                auto coverageByHolder = report->coverageByHolder();
                 for (int i = 0; i < coverageByHolder->count(); ++i) {
-                    Coverage *coverage = coverageByHolder->at(i)->value();
+                    auto coverage = coverageByHolder->at(i)->value();
                     String holder = coverageByHolder->at(i)->key();
                     fout() << "Copyright " << holder << ":" << nl;
                     for (int j = 0; j < coverage->count(); ++j) {
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
         }
 
         if (stripOption) {
-            Coverage *coverage = report->coverageByHolder()->value(holder);
+            auto coverage = report->coverageByHolder()->value(holder);
             if (!coverage) return 0;
             for (int i = 0; i < coverage->count(); ++i) {
                 String path = coverage->at(i)->key();
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
         }
 
         if (insertOption) {
-            Exposure *exposure = report->exposure();
+            auto exposure = report->exposure();
             Ref<CopyrightList> copyrights = CopyrightList::create();
             copyrights->append(Copyright::create(holder, yearStart, yearEnd));
             Ref<Notice> notice = Notice::create(copyrights, statement);
