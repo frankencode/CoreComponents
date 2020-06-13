@@ -137,12 +137,14 @@ int main(int argc, char **argv)
 {
     String toolName = String(argv[0])->baseName();
     try {
-        Ref<VariantMap> options = VariantMap::create();
+        VariantMap options;
         options->insert("family-info", false);
         options->insert("glyph-list", false);
         options->insert("icon-enum", false);
         options->insert("icon-str", false);
-        Arguments arguments{argc, argv, options};
+
+        Arguments arguments{argc, argv};
+        arguments->read(options);
 
         if (options->value("family-info"))
             printFamilyInfo(arguments);

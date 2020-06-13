@@ -22,9 +22,8 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
-        Arguments arguments{argc, argv};
 
-        Ref<VariantMap> options = VariantMap::create();
+        VariantMap options;
         {
             int year = Date{System::now()}->year();
             options->insert("report", false);
@@ -38,11 +37,9 @@ int main(int argc, char **argv)
             options->insert("statement-file", "");
             options->insert("works", "*");
             options->insert("works-min-lines", 10);
-            arguments->validate(options);
-            arguments->override(options);
         }
 
-        StringList items = arguments->items();
+        StringList items = Arguments{argc, argv}->read(options);
 
         bool reportOption = options->value("report");
         bool stripOption = options->value("strip");

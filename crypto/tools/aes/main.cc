@@ -37,10 +37,7 @@ int main(int argc, char **argv)
     bool encipher = !toolName->contains("un");
 
     try {
-        Arguments arguments{argc, argv};
-        arguments->validate(VariantMap::create());
-
-        StringList items = arguments->items();
+        StringList items = Arguments{argc, argv}->read();
 
         bool viewMode = stdErr()->isatty() && !stdOut()->isatty();
         bool filterMode = items->count() == 0 && !stdIn()->isatty();

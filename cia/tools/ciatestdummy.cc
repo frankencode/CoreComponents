@@ -112,15 +112,11 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->baseName();
 
     try {
-        Arguments arguments{argc, argv};
+        VariantMap options;
+        options->insert("interface", "can0");
+        options->insert("node-id", 7);
 
-        auto options = VariantMap::create();
-        {
-            options->insert("interface", "can0");
-            options->insert("node-id", 7);
-            arguments->validate(options);
-            arguments->override(options);
-        }
+        Arguments{argc, argv}->read(options);
 
         String interface = options->value("interface");
         int nodeId = options->value("node-id");

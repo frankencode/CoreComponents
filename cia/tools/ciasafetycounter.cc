@@ -23,18 +23,14 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
+        VariantMap options;
+        options->insert("interface", "can0");
+        options->insert("can-id", 0);
+        options->insert("inv-can-id", 0);
+        options->insert("refresh-time", 0.5);
+
         Arguments arguments{argc, argv};
-
-        Ref<VariantMap> options = VariantMap::create();
-        {
-            options->insert("interface", "can0");
-            options->insert("can-id", 0);
-            options->insert("inv-can-id", 0);
-            options->insert("refresh-time", 0.5);
-
-            arguments->validate(options);
-            arguments->override(options);
-        }
+        arguments->read(options);
 
         if (arguments->items()->count() > 0) throw HelpRequest{};
 

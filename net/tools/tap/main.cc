@@ -34,9 +34,7 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
-        Arguments arguments{argc, argv, VariantMap::create()};
-
-        StringList items = arguments->items();
+        StringList items = Arguments{argc, argv}->read();
         if (items->count() != 2) throw HelpRequest{};
 
         auto proxyAddress = SocketAddress::resolveUri(items->at(0));

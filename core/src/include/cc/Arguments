@@ -27,18 +27,50 @@ public:
           * \param prototype prototype configuration
           * \exception UsageError if a non-existing option or an optino of invalid type is encountered
           */
-        void validate(const VariantMap *prototype);
+        void validate(const VariantMap &prototype);
 
         /** Override a configuration object with command line options
           * \param config configuration map
           */
-        void override(VariantMap *config) const;
+        void override(VariantMap &config) const;
+
+        /// \todo remove workaround HACK
+        void validate(const VariantMap::Instance *prototype)
+        {
+            validate(VariantMap{const_cast<VariantMap::Instance *>(prototype)});
+        }
+
+        /// \todo remove workaround HACK
+        void override(VariantMap::Instance *config) const
+        {
+            for (int i = 0; i < options_->count(); ++i)
+            {
+                String name = options_->at(i)->key();
+                Variant value = options_->at(i)->value();
+                config->establish(name, value);
+            }
+        }
+
+        /** Convenience function to read command line options and items
+          */
+        StringList read(VariantMap &options) {
+            validate(options);
+            override(options);
+            return items_;
+        }
+
+        /** Convenience function to read command line items
+          */
+        StringList read() {
+            validate(VariantMap{});
+            return items_;
+        }
 
         /// Command line options (e.g.: x=1, -x or --x)
-        const VariantMap *options() const { return options_; }
+        VariantMap options() const { return options_; }
 
         /// Command line item arguments
-        const StringList &items() const { return items_; }
+        StringList items() const { return items_; }
 
         /** Execution path
           * \see Process::exePath()
@@ -48,9 +80,9 @@ public:
     private:
         friend class Arguments;
 
-        Instance(int argc, char **argv, VariantMap *options);
+        Instance(int argc, char *argv[]);
 
-        Ref<VariantMap> options_;
+        VariantMap options_;
         StringList items_;
         String execPath_;
     };
@@ -62,8 +94,8 @@ public:
       * \exception HelpRequest command line contains a help option (-h or --help)
       * \exception VersionRequest command line contains a version option (-v or --version)
       */
-    Arguments(int argc, char **argv, VariantMap *options = nullptr):
-        instance_{new Instance{argc, argv, options}}
+    Arguments(int argc, char *argv[]):
+        instance_{new Instance{argc, argv}}
     {}
 
     const Instance *operator->() const { return instance_; }

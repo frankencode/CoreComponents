@@ -47,12 +47,10 @@ bool TestSuite::init(int argc, char **argv)
     name_ = execPath_->baseName();
 
     try {
-        Arguments arguments{argc, argv};
-
-        Ref<VariantMap> options = VariantMap::create();
+        VariantMap options;
         options->insert("report", "txt");
-        arguments->validate(options);
-        arguments->override(options);
+
+        Arguments{argc, argv}->read(options);
 
         String reportType = options->value("report");
         if (reportType == "txt")

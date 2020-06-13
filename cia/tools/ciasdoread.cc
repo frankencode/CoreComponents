@@ -20,20 +20,18 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
-        Arguments arguments{argc, argv};
+        VariantMap options;
+        options->insert("interface", "can0");
+        options->insert("my-id", 0x7F);
+        options->insert("peer-id", 1);
+        options->insert("index", 0x1000);
+        options->insert("sub-index", 0);
+        options->insert("timeout", -1);
+        options->insert("debug", false);
 
-        Ref<VariantMap> options = VariantMap::create();
-        {
-            options->insert("interface", "can0");
-            options->insert("my-id", 0x7F);
-            options->insert("peer-id", 1);
-            options->insert("index", 0x1000);
-            options->insert("sub-index", 0);
-            options->insert("timeout", -1);
-            options->insert("debug", false);
-            arguments->validate(options);
-            arguments->override(options);
-        }
+        Arguments arguments{argc, argv};
+        arguments->validate(options);
+        arguments->override(options);
 
         String interface = options->value("interface");
         int clientId     = options->value("my-id");

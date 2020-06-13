@@ -51,11 +51,11 @@ int main(int argc, char **argv)
     int exitStatus = 0;
 
     try {
-        Arguments arguments{argc, argv, VariantMap::create()};
+        StringList items = Arguments{argc, argv}->read();
 
         auto ianaAddress = SocketAddress::resolveHost("whois.iana.org", 43);
 
-        for (const String &item: arguments->items())
+        for (const String &item: items)
         {
             bool addressQuery = false;
             try {

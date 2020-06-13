@@ -55,7 +55,7 @@ void runDetachCommand(const String &shellCommand)
     }->wait();
 }
 
-void runMonitor(const VariantMap *options)
+void runMonitor(const VariantMap &options)
 {
     auto serials = String(options->value("serial"))->split(",");
     String attachCommand = options->value("attach");
@@ -107,16 +107,16 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
-        auto options = VariantMap::create();
+        VariantMap options;
         options->insert("serial", "");
         options->insert("attach", "");
         options->insert("detach", "");
         options->insert("options", "");
         options->insert("verbose", false);
 
-        Arguments arguments{argc, argv, options};
+        Arguments{argc, argv}->read(options);
 
-        runMonitor(arguments->options());
+        runMonitor(options);
     }
     catch (HelpRequest &) {
         fout(

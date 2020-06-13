@@ -25,19 +25,16 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
-        Arguments arguments{argc, argv};
+        VariantMap options;
+        options->insert("interface", "can0");
+        options->insert("can-id", 0);
+        options->insert("inv-can-id", 0);
+        options->insert("cycle-time", 0.);
+        options->insert("validation-time", 0.);
+        options->insert("duration", 0.);
 
-        Ref<VariantMap> options = VariantMap::create();
-        {
-            options->insert("interface", "can0");
-            options->insert("can-id", 0);
-            options->insert("inv-can-id", 0);
-            options->insert("cycle-time", 0.);
-            options->insert("validation-time", 0.);
-            options->insert("duration", 0.);
-            arguments->validate(options);
-            arguments->override(options);
-        }
+        Arguments arguments{argc, argv};
+        arguments->read(options);
 
         if (arguments->items()->count() > 0) throw HelpRequest{};
 

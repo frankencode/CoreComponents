@@ -14,7 +14,7 @@
 
 namespace cc {
 
-template<class K, class T>
+template<class, class>
 class MapValue;
 
 /** \class Map cc/Map

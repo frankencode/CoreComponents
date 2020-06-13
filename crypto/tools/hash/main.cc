@@ -22,11 +22,8 @@ int main(int argc, char **argv)
 {
     String toolName = String{argv[0]}->fileName();
     try {
-        Arguments arguments{argc, argv};
-        arguments->validate(VariantMap::create());
-
-        StringList items = arguments->items();
-        if (items->count() == 0) items = StringList{""};
+        StringList items = Arguments{argc, argv}->read();
+        if (items->count() == 0) items->append("");
 
         for (String path: items) {
             Ref<HashSink> hashSink;

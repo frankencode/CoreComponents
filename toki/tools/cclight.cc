@@ -26,19 +26,15 @@ int main(int argc, char **argv)
 {
     String toolName = String{argv[0]}->fileName();
     try {
-        Arguments arguments{argc, argv};
-        {
-            Ref<VariantMap> prototype = VariantMap::create();
-            prototype->insert("verbose", stdOut()->isatty());
-            prototype->insert("css", false);
-            prototype->insert("theme", "");
-            prototype->insert("language", "");
-            prototype->insert("list-languages", false);
-            arguments->validate(prototype);
-        }
+        VariantMap options;
+        options->insert("verbose", stdOut()->isatty());
+        options->insert("css", false);
+        options->insert("theme", "");
+        options->insert("language", "");
+        options->insert("list-languages", false);
 
-        const VariantMap *options = arguments->options();
-        StringList items = arguments->items();
+        StringList items = Arguments{argc, argv}->read(options);
+
         bool verbose = options->value("verbose");
         bool cssOption = options->value("css");
         String themeOption = options->value("theme");

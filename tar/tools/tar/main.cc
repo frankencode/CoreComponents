@@ -27,22 +27,17 @@ int main(int argc, char **argv)
     bool tarMode = toolName->contains("tar");
     bool unpackMode = toolName->contains("un");
     try {
-        Arguments arguments{argc, argv};
-        {
-            Ref<VariantMap> prototype = VariantMap::create();
-            if (unpackMode) {
-                prototype->insert("list", false);
-                prototype->insert("status", false);
-            }
-            else {
-                prototype->insert("output", "");
-            }
-            prototype->insert("verbose", false);
-            arguments->validate(prototype);
+        VariantMap options;
+        if (unpackMode) {
+            options->insert("list", false);
+            options->insert("status", false);
         }
+        else {
+            options->insert("output", "");
+        }
+        options->insert("verbose", false);
 
-        const VariantMap *options = arguments->options();
-        StringList items = arguments->items();
+        StringList items = Arguments{argc, argv}->read(options);
 
         if (unpackMode)
         {

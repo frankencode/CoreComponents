@@ -11,10 +11,7 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
-        Arguments arguments{argc, argv};
-        arguments->validate(VariantMap::create());
-
-        StringList items = arguments->items();
+        StringList items = Arguments{argc, argv}->read();
         if (items->count() == 0) items << "";
 
         for (String path: items)

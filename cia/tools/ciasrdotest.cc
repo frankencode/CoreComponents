@@ -15,7 +15,7 @@
 using namespace cc;
 using namespace cc::can;
 
-void runTest(const VariantMap *options)
+void runTest(const VariantMap &options)
 {
     bool transmit = options->value("transmit");
     bool receive  = options->value("receive");
@@ -103,21 +103,17 @@ int main(int argc, char **argv)
     String toolName = String{argv[0]}->fileName();
 
     try {
-        Arguments arguments{argc, argv};
+        VariantMap options;
+        options->insert("transmit", false);
+        options->insert("receive", false);
+        options->insert("interface", "can0");
+        options->insert("cob-id", 0x101);
+        options->insert("cob-id-inv", 0x102);
+        options->insert("refresh-time", 1.);
+        options->insert("cycle-time", 1.1);
+        options->insert("validation-time", 0.1);
 
-        auto options = VariantMap::create();
-        {
-            options->insert("transmit", false);
-            options->insert("receive", false);
-            options->insert("interface", "can0");
-            options->insert("cob-id", 0x101);
-            options->insert("cob-id-inv", 0x102);
-            options->insert("refresh-time", 1.);
-            options->insert("cycle-time", 1.1);
-            options->insert("validation-time", 0.1);
-            arguments->validate(options);
-            arguments->override(options);
-        }
+        Arguments{argc, argv}->read(options);
 
         runTest(options);
     }

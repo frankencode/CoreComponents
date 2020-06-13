@@ -20,7 +20,7 @@ using MetaObjectList = ListValue< Ref<MetaObject> >;
 /** \class MetaObject cc/meta/MetaObject
   * \brief Duck-typed object
   */
-class MetaObject: public VariantMap
+class MetaObject: public VariantMap::Instance
 {
 public:
     static Ref<MetaObject> create(const String &className = "");

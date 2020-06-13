@@ -299,7 +299,7 @@ String CgiDelegate::compileHeader(const HttpRequest *request, CharArray *payload
     for (const auto &item: request)
         header << wrapHttp(item->key()) << item->value();
 
-    Ref<VariantMap> userEnv = cgiInstance_->environment();
+    VariantMap userEnv = cgiInstance_->environment();
     for (const auto &item: userEnv)
         header << item->key() << item->value();
 

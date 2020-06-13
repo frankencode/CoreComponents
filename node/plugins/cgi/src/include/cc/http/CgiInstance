@@ -25,7 +25,7 @@ public:
 
     String script() const { return script_; }
     StringList server() const { return server_; }
-    VariantMap *environment() const { return environment_; }
+    VariantMap environment() const { return static_cast<VariantMap::Instance *>(environment_); }
 
     const SocketAddressList *serverAddress() const { return serverAddress_; }
 

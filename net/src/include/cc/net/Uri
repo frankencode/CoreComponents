@@ -10,7 +10,7 @@
 
 #include <cc/exceptions>
 #include <cc/String>
-#include <cc/Map>
+#include <cc/MapValue>
 #include <cc/net/types>
 
 namespace cc { class Token; }
@@ -108,8 +108,8 @@ public:
     static String encode(const String &s);
     static String decode(const String &s);
 
-    static String encodeForm(const Map<String> *form);
-    static Ref<Map<String> > decodeForm(const String &payload);
+    static String encodeForm(const MapValue<String> &form);
+    static MapValue<String> decodeForm(const String &payload);
 
     /** Create a new URI
       * \return new object instance

@@ -113,6 +113,21 @@ String str(const ListValue<T> &a)
     return f;
 }
 
+template<class K, class T>
+String str(const MapValue<K, T> &a)
+{
+    auto n = a->count();
+    if (n == 0) return "[]";
+    Format f;
+    f << "[ ";
+    for (const auto &x: a) {
+        f << "(" << x->key() << ": " << x->value() << ")";
+        if (--n > 0) f << ", ";
+    }
+    f << " ]";
+    return f;
+}
+
 /** \}
   */
 

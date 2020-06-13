@@ -19,15 +19,12 @@ int main(int argc, char *argv[])
     String toolName = String{argv[0]}->fileName();
 
     try {
-        Arguments arguments{argc, argv};
+        VariantMap options;
+        options->insert("interface", "can0");
+        options->insert("peer-id", 0);
 
-        auto options = VariantMap::create();
-        {
-            options->insert("interface", "can0");
-            options->insert("peer-id", 0);
-            arguments->validate(options);
-            arguments->override(options);
-        }
+        Arguments arguments{argc, argv};
+        arguments->read(options);
 
         auto items = arguments->items();
         if (items->count() != 1) throw HelpRequest{};

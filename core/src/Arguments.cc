@@ -11,8 +11,7 @@
 
 namespace cc {
 
-Arguments::Instance::Instance(int argc, char **argv, VariantMap *options):
-    options_{VariantMap::create()}
+Arguments::Instance::Instance(int argc, char *argv[])
 {
     execPath_ = argv[0];
 
@@ -51,15 +50,9 @@ Arguments::Instance::Instance(int argc, char **argv, VariantMap *options):
 
     if (options_->contains("v") || options_->contains("version"))
         throw VersionRequest{};
-
-    if (options) {
-        validate(options);
-        override(options);
-        options_ = options;
-    }
 }
 
-void Arguments::Instance::validate(const VariantMap *prototype)
+void Arguments::Instance::validate(const VariantMap &prototype)
 {
     for (int i = 0; i < options_->count(); ++i)
     {
@@ -101,7 +94,7 @@ void Arguments::Instance::validate(const VariantMap *prototype)
     }
 }
 
-void Arguments::Instance::override(VariantMap *config) const
+void Arguments::Instance::override(VariantMap &config) const
 {
     for (int i = 0; i < options_->count(); ++i)
     {

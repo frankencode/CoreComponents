@@ -18,15 +18,15 @@ using namespace cc::glob;
 
 class TextMatch: public Object {
 public:
-    inline static Ref<TextMatch> create(int ln, int i0, int i1) {
-        return new TextMatch(ln, i0, i1);
+    static Ref<TextMatch> create(int ln, int i0, int i1) {
+        return new TextMatch{ln, i0, i1};
     }
 
-    inline int ln() const { return ln_; }
-    inline int i0() const { return i0_; }
-    inline int i1() const { return i1_; }
+    int ln() const { return ln_; }
+    int i0() const { return i0_; }
+    int i1() const { return i1_; }
 
-    inline void moveTo(int ln, int i0, int i1) {
+    void moveTo(int ln, int i0, int i1) {
         ln_ = ln;
         i0_ = i0;
         i1_ = i1;
@@ -34,9 +34,9 @@ public:
 
 private:
     TextMatch(int ln, int i0, int i1):
-        ln_(ln),
-        i0_(i0),
-        i1_(i1)
+        ln_{ln},
+        i0_{i0},
+        i1_{i1}
     {}
     int ln_;
     int i0_;
@@ -51,12 +51,10 @@ String replaceMatches(const CharArray *text, Matches *matches, const CharArray *
 
 int main(int argc, char **argv)
 {
-    String toolName = String(argv[0])->fileName();
+    String toolName = String{argv[0]}->fileName();
 
     try {
-        Arguments arguments{argc, argv};
-
-        Ref<VariantMap> options = VariantMap::create();
+        VariantMap options;
         options->insert("path", "");
         options->insert("name", "");
         options->insert("type", "");
@@ -68,10 +66,9 @@ int main(int argc, char **argv)
         options->insert("replace", "");
         options->insert("paste", "");
         options->insert("erase", false);
-        arguments->validate(options);
-        arguments->override(options);
 
-        StringList items = arguments->items();
+        Arguments arguments{argc, argv};
+        StringList items = arguments->read(options);
 
         Pattern pathPattern = options->value("path");
         Pattern namePattern = options->value("name");

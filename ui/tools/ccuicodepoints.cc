@@ -84,10 +84,12 @@ int main(int argc, char **argv)
 {
     String toolName = String(argv[0])->baseName();
     try {
-        Ref<VariantMap> options = VariantMap::create();
+        VariantMap options;
         options->insert("print-enum", false);
         options->insert("print-str", false);
-        Arguments arguments{argc, argv, options};
+
+        Arguments arguments{argc, argv};
+        arguments->read(options);
 
         if (options->value("print-enum"))
             printEnum(arguments);
