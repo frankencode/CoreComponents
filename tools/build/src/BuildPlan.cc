@@ -24,7 +24,6 @@
 #include <cc/ResourceGuard>
 #include <cc/Arguments>
 #include <cc/stdio>
-#include <cc/debug> // DEBUG
 
 namespace ccbuild {
 

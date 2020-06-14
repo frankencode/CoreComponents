@@ -18,8 +18,7 @@ Ref<DispatchLoggingInstance> DispatchLoggingInstance::create(const MetaObject *c
 }
 
 DispatchLoggingInstance::DispatchLoggingInstance(const MetaObject *config):
-    LoggingInstance{config},
-    loggingInstances_{LoggingInstances::create()}
+    LoggingInstance{config}
 {
     for (const MetaObject *child: config->children()) {
         const LoggingService *service = LoggingRegistry::instance()->serviceByName(child->className());

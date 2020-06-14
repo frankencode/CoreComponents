@@ -52,6 +52,6 @@ private:
     Ref<Stream> debugStream_;
 };
 
-typedef List< Ref<const LoggingInstance> > LoggingInstances;
+using LoggingInstances = ListValue< Ref<const LoggingInstance> >;
 
 }} // namespace cc::http

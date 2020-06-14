@@ -55,7 +55,7 @@ public:
     const LoggingInstance *errorLoggingInstance() const { return errorLoggingInstance_; }
     const LoggingInstance *accessLoggingInstance() const { return accessLoggingInstance_; }
 
-    DeliveryInstances *deliveryInstances() const { return deliveryInstances_; }
+    DeliveryInstances deliveryInstances() const { return deliveryInstances_; }
 
     const DeliveryInstance *selectService(const String &host, const String &uri = "") const;
 
@@ -83,7 +83,7 @@ private:
     Ref<const LoggingInstance> errorLoggingInstance_;
     Ref<const LoggingInstance> accessLoggingInstance_;
 
-    Ref<DeliveryInstances> deliveryInstances_;
+    DeliveryInstances deliveryInstances_;
 };
 
 }} // namespace cc::http

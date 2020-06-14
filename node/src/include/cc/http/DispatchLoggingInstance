@@ -22,7 +22,7 @@ public:
 private:
     DispatchLoggingInstance(const MetaObject *config);
 
-    Ref<LoggingInstances> loggingInstances_;
+    LoggingInstances loggingInstances_;
 };
 
 }} // namespace cc::http

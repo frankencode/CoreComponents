@@ -12,7 +12,7 @@
 #include <cc/http/LoggingInstance>
 #include <cc/meta/MetaObject>
 #include <cc/glob/Pattern>
-#include <cc/List>
+#include <cc/ListValue>
 
 namespace cc {
 namespace http {
@@ -63,6 +63,6 @@ protected:
     Ref<const LoggingInstance> accessLoggingInstance_;
 };
 
-typedef List< Ref<const DeliveryInstance> > DeliveryInstances;
+using DeliveryInstances = ListValue< Ref<const DeliveryInstance> >;
 
 }} // namespace cc::http

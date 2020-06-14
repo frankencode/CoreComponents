@@ -126,7 +126,6 @@ NodeConfig::NodeConfig(const MetaObject *config):
     errorLoggingInstance_ = loadLoggingInstance(config->value("error-log"));
     accessLoggingInstance_ = loadLoggingInstance(config->value("access-log"));
 
-    deliveryInstances_ = DeliveryInstances::create();
     for (const MetaObject *child: config->children()) {
         const DeliveryService *service = DeliveryRegistry::instance()->serviceByName(child->className());
         deliveryInstances_->append(createDeliveryInstance(service, child));
