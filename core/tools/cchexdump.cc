@@ -18,7 +18,7 @@ int main(int argc, char **argv)
         {
             Ref<Stream> source;
             if (path == "") source = stdIn();
-            else source = File::open(path);
+            else source = File{path};
 
             Ref<HexDump> hexDump = HexDump::open(stdOut());
             source->transferTo(hexDump);

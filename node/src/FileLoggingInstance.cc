@@ -23,7 +23,7 @@ FileLoggingInstance::FileLoggingInstance(const MetaObject *config):
 {
     String path = config->value("path");
     if (path == "") sink_ = NullStream::instance();
-    else sink_ = File::open(path, FileOpen::WriteOnly|FileOpen::Append|FileOpen::Create);
+    else sink_ = File{path, FileOpen::WriteOnly|FileOpen::Append|FileOpen::Create};
 }
 
 void FileLoggingInstance::logDelivery(const HttpServerConnection *client, int statusCode, size_t bytesWritten, const String &statusMessage) const

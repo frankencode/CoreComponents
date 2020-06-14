@@ -25,7 +25,7 @@ int main(int argc, char **argv)
     try {
         if (argc > 1) {
             for (int i = 1; i < argc; ++i)
-                stdOut()->write(reverse(File::open(argv[i])->map()));
+                stdOut()->write(reverse(File{argv[i]}->map()));
         }
         else {
             stdOut()->write(reverse(stdIn()->readAll()));

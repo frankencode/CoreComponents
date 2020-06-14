@@ -14,7 +14,7 @@ namespace toki {
 
 Ref<Document> Document::load(const String &path)
 {
-    return Document::create(File::open(path)->map(), path);
+    return Document::create(File{path}->map(), path);
 }
 
 void Document::save()

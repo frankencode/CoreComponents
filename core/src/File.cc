@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,8 +9,8 @@
 #include <cc/File>
 #include <cc/exceptions>
 #include <cc/Random>
-#include <cc/Format>
 #include <cc/Process>
+#include <cc/Format>
 #include <cc/Dir>
 #include <cc/System>
 #include <sys/mman.h> // mmap
@@ -20,59 +20,42 @@
 
 namespace cc {
 
-Ref<File> File::open(const String &path, FileOpen flags, FileMode mode)
-{
-    int fd = ::open(path, +flags|O_CLOEXEC, +mode);
-    if (fd == -1) CC_SYSTEM_ERROR(errno, path);
-    return new File{path, flags, fd};
-}
-
-Ref<File> File::tryOpen(const String &path, FileOpen flags, FileMode mode)
-{
-    int fd = ::open(path, +flags|O_CLOEXEC, +mode);
-    if (fd != -1) return new File{path, flags, fd};
-    return nullptr;
-}
-
-Ref<File> File::openTemp(FileOpen flags)
-{
-    String path = createUnique(
-        Format{"/tmp/%%_XXXXXXXX"}
-            << Process::exePath()->fileName()
-    );
-    return open(path, flags);
-}
-
-File::File(const String &path, FileOpen openMode, int fd):
-    SystemStream{fd},
+File::Instance::Instance(const String &path, FileOpen flags, FileMode mode):
+    SystemStream{::open(path, +flags|O_CLOEXEC, +mode)},
     path_{path},
-    openFlags_{openMode}
+    openFlags_{flags}
+{
+    if (fd_ == -1) CC_SYSTEM_ERROR(errno, path);
+}
+
+File::Instance::Instance():
+    openFlags_{FileOpen::None}
 {}
 
-String File::path() const
+String File::Instance::path() const
 {
     return path_;
 }
 
-void File::truncate(off_t length)
+void File::Instance::truncate(off_t length)
 {
     if (::ftruncate(fd_, length) == -1)
         CC_SYSTEM_ERROR(errno, path_);
 }
 
-off_t File::seek(off_t distance, Seek method)
+off_t File::Instance::seek(off_t distance, Seek method)
 {
     off_t ret = ::lseek(fd_, distance, int(method));
     if (ret == -1) CC_SYSTEM_ERROR(errno, path_);
     return ret;
 }
 
-bool File::isSeekable() const
+bool File::Instance::isSeekable() const
 {
     return ::lseek(fd_, 0, SEEK_CUR) != -1;
 }
 
-off_t File::transferSpanTo(off_t count, Stream *sink, CharArray *buf)
+off_t File::Instance::transferSpanTo(off_t count, Stream *sink, CharArray *buf)
 {
     if (count == 0) return 0;
     if (!sink) {
@@ -89,11 +72,11 @@ class MappedByteArray: public CharArray
 private:
     friend class File;
     MappedByteArray(char *data, int size):
-        CharArray(data, size, File::unmap)
+        CharArray{data, size, File::Instance::unmap}
     {}
 };
 
-String File::map() const
+String File::Instance::map() const
 {
     off_t fileEnd = ::lseek(fd_, 0, SEEK_END);
     if (fileEnd == -1)
@@ -137,7 +120,7 @@ String File::map() const
         );
 }
 
-void File::unmap(CharArray *s)
+void File::Instance::unmap(CharArray *s)
 {
     int pageSize = System::pageSize();
     size_t mapSize = s->count();
@@ -146,13 +129,13 @@ void File::unmap(CharArray *s)
     ::munmap((void *)s->bytes(), mapSize);
 }
 
-void File::sync()
+void File::Instance::sync()
 {
     if (::fsync(fd_) == -1)
         CC_SYSTEM_ERROR(errno, path_);
 }
 
-void File::dataSync()
+void File::Instance::dataSync()
 {
 #if _POSIX_SYNCHRONIZED_IO > 0
     if (::fdatasync(fd_) == -1)
@@ -167,9 +150,9 @@ bool File::checkAccess(const String &path, FileAccess flags)
     return ::access(path, +flags) == 0;
 }
 
-void File::create(const String &path, int mode)
+void File::create(const String &path, FileMode mode)
 {
-    int fd = ::open(path, O_RDONLY|O_CREAT|O_EXCL, mode);
+    int fd = ::open(path, O_RDONLY|O_CREAT|O_EXCL, +mode);
     if (fd == -1) CC_SYSTEM_RESOURCE_ERROR(errno, path);
     ::close(fd);
 }
@@ -234,7 +217,7 @@ String File::resolve(const String &path)
     return resolvedPath;
 }
 
-String File::createUnique(const String &path, int mode, char placeHolder)
+String File::createUnique(const String &path, FileMode mode, char placeHolder)
 {
     Ref<Random> random = Random::open(Process::getId());
     while (true) {
@@ -263,7 +246,16 @@ String File::createUnique(const String &path, int mode, char placeHolder)
     }
 }
 
-void File::establish(const String &path, int fileMode, int dirMode)
+String File::createTemp(FileMode mode)
+{
+    return
+        createUnique(
+            Format{"/tmp/%%_########"} << Process::exePath()->fileName(),
+            mode
+        );
+}
+
+void File::establish(const String &path, FileMode fileMode, FileMode dirMode)
 {
     if (path->contains('/'))
         Dir::establish(path->reducePath(), dirMode);
@@ -300,13 +292,13 @@ String File::locate(const String &fileName, const StringList &dirs, FileAccess a
 String File::load(const String &path)
 {
     establish(path);
-    return open(path)->readAll();
+    return File{path}->readAll();
 }
 
 void File::save(const String &path, const String &text)
 {
     establish(path);
-    Ref<File> file = open(path, FileOpen::WriteOnly);
+    File file{path, FileOpen::WriteOnly};
     file->truncate(0);
     file->write(text);
 }

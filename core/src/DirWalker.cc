@@ -7,36 +7,24 @@
  */
 
 #include <cc/DirWalker>
-#include <cc/Dir>
 #include <cc/File>
 
 namespace cc {
 
-Ref<DirWalker> DirWalker::open(const String &path)
-{
-    return new DirWalker{path};
-}
-
-Ref<DirWalker> DirWalker::tryOpen(const String &path)
-{
-    Ref<Dir> dir = Dir::tryOpen(path);
-    Ref<DirWalker> walker;
-    if (dir) walker = new DirWalker{path, dir};
-    return walker;
-}
-
-DirWalker::DirWalker(const String &path, Dir *dir):
+DirWalker::Instance::Instance(const String &path, const Dir &dir):
     maxDepth_{-1},
     ignoreHidden_{false},
     followSymlink_{false},
     deleteOrder_{false},
     depth_{0},
     dir_{dir}
-{
-    if (!dir_) dir_ = Dir::open(path);
-}
+{}
 
-bool DirWalker::read(String *path, bool *isDir)
+DirWalker::Instance::Instance(const String &path):
+    Instance{path, Dir{path}}
+{}
+
+bool DirWalker::Instance::read(String *path, bool *isDir)
 {
     if (child_) {
         if (child_->read(path, isDir))
@@ -54,7 +42,8 @@ bool DirWalker::read(String *path, bool *isDir)
         if (name == "") continue;
         if (ignoreHidden_) if (name->at(0) == '.') continue;
         String h = dir_->path()->extendPath(name);
-        child_ = tryOpen(h);
+        try { child_ = new Instance{h}; }
+        catch (...) { child_ = nullptr; }
         bool d = child_;
         if (child_) {
             if (depth_ != maxDepth_) {

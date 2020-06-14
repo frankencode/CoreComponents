@@ -36,7 +36,7 @@ class PushBackPopBackTest: public TestCase
                 CC_VERIFY(list->at(k) == k);
         }
         CC_VERIFY(list->count() == n);
-        File::open("tree_push_back.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(&list));
+        File{"tree_push_back.dot", FileOpen::Overwrite}->write(bucket::Internals::dotify(&list));
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == k);
@@ -58,7 +58,7 @@ class PushFrontPopFrontTest: public TestCase
                 CC_VERIFY(list->at(k) == i - k);
         }
         CC_VERIFY(list->count() == n);
-        File::open("tree_push_front.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(&list));
+        File{"tree_push_front.dot", FileOpen::Overwrite}->write(bucket::Internals::dotify(&list));
         for (int i = 0; i < n; ++i) {
             for (int k = 0; k < n - i; ++k)
                 CC_VERIFY(list->at(k) == n - i - 1 - k);
@@ -128,7 +128,7 @@ class PushPopRandomTest: public TestCase
         t = ::clock() - t;
         CC_INSPECT(t);
         CC_VERIFY(list->count() == n);
-        File::open("tree_random.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(&list));
+        File{"tree_random.dot", FileOpen::Overwrite}->write(bucket::Internals::dotify(&list));
         for (int i = 0; i < n; ++i) {
             auto r = random->get(0, list->count() - 1);
             list->removeAt(r);

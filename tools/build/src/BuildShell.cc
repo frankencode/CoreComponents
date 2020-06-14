@@ -101,9 +101,9 @@ bool BuildShell::install(const String &sourcePath, const String &destPath) const
 
     try {
         if (destDirMissing) Dir::establish(destDirPath);
-        Ref<File> source = File::open(sourcePath);
+        File source{sourcePath};
         FileStatus sourceStatus{sourcePath};
-        Ref<File> sink = File::open(destPath, FileOpen::WriteOnly|FileOpen::Create|FileOpen::Truncate, sourceStatus->mode());
+        File sink{destPath, FileOpen::WriteOnly|FileOpen::Create|FileOpen::Truncate, sourceStatus->mode()};
         sink->write(source->map());
     }
     catch (SystemError &ex) {
@@ -135,8 +135,9 @@ bool BuildShell::unlink(const String &path) const
 
 bool BuildShell::installAll(const String &sourcePrefix, const String &installPrefix) const
 {
-    Ref<DirWalker> walker = DirWalker::tryOpen(sourcePrefix);
-    if (!walker) return true;
+    DirWalker walker;
+    try { walker = DirWalker{sourcePrefix}; }
+    catch (...) { return true; }
 
     try {
         String sourcePath;
@@ -164,8 +165,9 @@ bool BuildShell::installAll(const String &sourcePrefix, const String &installPre
 
 bool BuildShell::unlinkAll(const String &sourcePrefix, const String &installPrefix) const
 {
-    Ref<DirWalker> walker = DirWalker::tryOpen(sourcePrefix);
-    if (!walker) return true;
+    DirWalker walker;
+    try { walker = DirWalker{sourcePrefix}; }
+    catch (...) { return true; }
 
     try {
         String sourcePath;

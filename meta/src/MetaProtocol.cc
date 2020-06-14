@@ -18,7 +18,6 @@ Ref<MetaProtocol> MetaProtocol::create(const MetaProtocol *parent)
 
 MetaProtocol::MetaProtocol(const MetaProtocol *parent):
     parent_{parent},
-    prototypes_{Prototypes::create()},
     minCount_{0},
     maxCount_{cc::intMax}
 {}

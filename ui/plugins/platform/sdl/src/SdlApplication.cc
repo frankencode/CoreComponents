@@ -6,10 +6,7 @@
  *
  */
 
-#include <cc/debug>
-#include <cc/exceptions>
-#include <cc/Singleton>
-#include <cc/Format>
+#include <cc/ui/SdlApplication>
 #include <cc/ui/SdlWindow>
 #include <cc/ui/SdlCursor>
 #include <cc/ui/Timer>
@@ -19,7 +16,10 @@
 #include <cc/ui/PointerEvent>
 #include <cc/ui/WheelEvent>
 #include <cc/ui/KeyEvent>
-#include <cc/ui/SdlApplication>
+#include <cc/exceptions>
+#include <cc/Singleton>
+#include <cc/Format>
+#include <cc/debug>
 
 namespace cc {
 namespace ui {
@@ -30,7 +30,6 @@ SdlApplication *SdlApplication::instance()
 }
 
 SdlApplication::SdlApplication():
-    windows_{Windows::create()},
     event_{new SDL_Event}
 {
     cursorVisible->connect([=]{

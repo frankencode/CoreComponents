@@ -12,8 +12,6 @@
 #include <cc/ui/Font>
 #include <cc/ui/Cursor>
 
-// namespace cc { template<class> class Set; }
-
 namespace cc {
 namespace ui {
 
@@ -94,8 +92,7 @@ protected:
 
     FontSmoothing fontSmoothing_ { FontSmoothing::Default };
 
-    typedef Map<TouchFingerId, Ref<Control> > TouchTargets; // FIXME: rename to TouchedControl
-    Ref<TouchTargets> touchTargets_;
+    MapValue<TouchFingerId, Ref<Control> > touchTargets_; // \todo rename to "touchedControls_"
 
     const Control *focusControlSaved_ { nullptr };
 };

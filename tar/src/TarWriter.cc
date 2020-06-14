@@ -150,7 +150,7 @@ void TarWriter::writeFile(const String &path, const FileStatus &status)
     else
     #endif
     if (contentSize > 0) {
-        File::open(exactPath)->transferSpanTo(contentSize, sink_);
+        File{exactPath}->transferSpanTo(contentSize, sink_);
         writePadding(contentSize);
     }
 }

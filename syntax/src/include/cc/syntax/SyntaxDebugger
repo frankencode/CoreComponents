@@ -54,19 +54,19 @@ protected:
 class SyntaxDebugger: public SyntaxDebugFactory
 {
 public:
-    inline static Ref<SyntaxDebugger> create(String indent = "\t") {
+    static Ref<SyntaxDebugger> create(String indent = "\t") {
         return new SyntaxDebugger(indent);
     }
 
-    virtual SyntaxNode *produce(SyntaxNode *newNode, const char *nodeType);
+    SyntaxNode *produce(SyntaxNode *newNode, const char *nodeType) override;
     void printDefinition(bool omitUnusedRules = false);
 
     typedef DefinitionNode::StateIdByName StateIdByName;
-    typedef Map<int, String> StateNameById;
+    typedef MapValue<int, String> StateNameById;
 
-    Ref<StateNameById> newReverseMap(StateIdByName *stateIdByName);
-    StateNameById *flagNameById();
-    StateNameById *captureNameById();
+    StateNameById newReverseMap(StateIdByName *stateIdByName);
+    StateNameById &flagNameById();
+    StateNameById &captureNameById();
 
 private:
     friend class DefinitionNode;
@@ -99,8 +99,10 @@ private:
 
     String indent_;
 
-    Ref<StateNameById> flagNameById_;
-    Ref<StateNameById> captureNameById_;
+    bool flagNameByIdFirstTime_ { true };
+    bool captureNameByIdFirstTime_ { true };
+    StateNameById flagNameById_;
+    StateNameById captureNameById_;
 };
 
 }} // namespace cc::syntax

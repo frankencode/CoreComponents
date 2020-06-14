@@ -25,7 +25,7 @@ FontManager *FontManager::instance()
 
 void FontManager::addPath(const String &dirPath, const String &namePrefix)
 {
-    Ref<DirWalker> walker = DirWalker::open(dirPath);
+    DirWalker walker{dirPath};
     String path;
     bool isDir = false;
     while (walker->read(&path, &isDir)) {

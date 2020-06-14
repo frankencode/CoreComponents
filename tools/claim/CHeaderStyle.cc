@@ -46,7 +46,7 @@ CHeaderStyle::CHeaderStyle():
 
 Ref<Header> CHeaderStyle::scan(const String &path) const
 {
-    String text = File::open(path)->map();
+    String text = File{path}->map();
     Ref<Token> rootToken = Singleton<CHeaderSyntax>::instance()->match(text, 0)->rootToken();
     if (!rootToken) return Ref<Header>();
     Token *token = rootToken->firstChild();

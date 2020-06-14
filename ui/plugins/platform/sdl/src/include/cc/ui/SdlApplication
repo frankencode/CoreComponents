@@ -63,8 +63,7 @@ private:
 
     void triggerTimer(const Timer *timer);
 
-    typedef Map<uint32_t, Ref<SdlWindow> > Windows;
-    Ref<Windows> windows_;
+    MapValue<uint32_t, Ref<SdlWindow> > windows_;
 
     SDL_Event *event_;
     Uint32 timerEvent_;

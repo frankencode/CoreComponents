@@ -27,7 +27,7 @@ Report::Report(const StringList &dirPaths, Pattern works, int worksMinLines):
 {
     for (int i = 0; i < dirPaths->count(); ++i) {
         String dirPath = dirPaths->at(i)->canonicalPath();
-        Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
+        DirWalker dirWalker{dirPath};
         dirWalker->setIgnoreHidden(true);
         for (String path; dirWalker->read(&path);) {
             if (FileStatus{path}->type() != FileType::Regular) continue;
@@ -67,7 +67,7 @@ Report::Report(const StringList &dirPaths, Pattern works, int worksMinLines):
             else {
                 bool omit = false;
                 if (worksMinLines > 1) {
-                    String text = File::open(path)->map();
+                    String text = File{path}->map();
                     int i = -1, n = 1;
                     for (; n < worksMinLines; ++n) {
                         i = text->scan('\n', i + 1);

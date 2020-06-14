@@ -52,7 +52,8 @@ enum class FileMode: mode_t {
     OtherWrite = 0002, ///< Writable by others
     OtherExec  = 0001, ///< Executable by others
     AnyExec    = UserExec|GroupExec|OtherExec, ///< Executable by anyone
-    Default    = UserRead|UserWrite|GroupRead|OtherRead ///< Default permissions mask for regular files
+    Default    = UserRead|UserWrite|GroupRead|OtherRead, ///< Default permissions mask for regular files
+    DirDefault = UserExec|UserRead|UserWrite|GroupExec|GroupRead|OtherExec|OtherRead ///< Default permissions mask for directories
 };
 
 CC_BITMASK(FileMode, mode_t)
@@ -82,7 +83,7 @@ enum class FileOpen: int {
     Create    = O_CREAT,  ///< Create file if not exists
     Truncate  = O_TRUNC,  ///< Truncate file to size zero
     Virgin    = O_EXCL,   ///< Fail to open if file exists already
-    WriteOver = FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate ///< Convenience shorthand for 'FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate'
+    Overwrite = FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate ///< Convenience shorthand for 'FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate'
 };
 
 CC_BITMASK(FileOpen, int)

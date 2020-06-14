@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 {
     if (argc > 1) {
         for (int i = 1; i < argc; ++i)
-            decode(File::open(argv[i]));
+            decode(File{argv[i]});
     }
     else {
         decode(stdIn());

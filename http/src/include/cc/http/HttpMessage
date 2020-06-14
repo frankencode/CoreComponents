@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/String>
-#include <cc/Map>
+#include <cc/MapValue>
 #include <cc/Stream>
 
 namespace cc {
@@ -17,7 +17,7 @@ namespace http {
 
 class HttpConnection;
 
-class HttpMessage: public Map<String, String>
+class HttpMessage: public MapValue<String>::Instance
 {
 public:
     static Ref<HttpMessage> create() { return new HttpMessage; }

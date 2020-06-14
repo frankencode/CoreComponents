@@ -20,7 +20,7 @@ using IconMap = MapValue<String, uchar_t>;
 
 IconMap parseFile(const String &path, int *maxNameLength)
 {
-    auto lines = File::open(path)->map()->split("\n");
+    auto lines = File{path}->map()->split("\n");
     IconMap map;
     *maxNameLength = 0;
     for (String line: lines) {

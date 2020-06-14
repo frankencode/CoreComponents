@@ -20,8 +20,7 @@ Ref<Palette> Palette::load(const String &path)
     return PaletteLoader::instance()->load(path);
 }
 
-Palette::Palette():
-    styleByRule_{StyleByRule::create()}
+Palette::Palette()
 {}
 
 int Palette::defaultScope()

@@ -33,10 +33,9 @@ Ref<Theme> Theme::load(const String &path)
 
 Theme::Theme(const String &path):
     path_{path},
-    name_{path->fileName()},
-    paletteByScope_{PaletteByScope::create()}
+    name_{path->fileName()}
 {
-    Ref<Dir> dir = Dir::open(path);
+    Dir dir{path};
     String name;
     while (dir->read(&name)) {
         if (name == "." || name == "..") continue;
@@ -57,7 +56,7 @@ StringList themeList(const String &path)
         list->appendList(themeList("themes"));
     }
     if (searchPath != "" && Dir::exists(searchPath)) {
-        auto dir = Dir::open(searchPath);
+        Dir dir{searchPath};
         for (String name; dir->read(&name);) {
             if (name == "." || name == "..") continue;
             list->append(path + "/" + name);

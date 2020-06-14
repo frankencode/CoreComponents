@@ -15,16 +15,18 @@ Ref<MountTable> MountTable::open(const String &path)
 {
     String text;
     {
-        Ref<File> file;
+        File file;
         if (path == String{}) {
             #ifdef __linux
-            file = File::tryOpen("/proc/self/mounts");
-            if (!file)
+            try { file = File{"/proc/self/mounts"}; }
+            catch (...)
             #endif
-            file = File::open("/etc/mtab");
+            {
+                file = File{"/etc/mtab"};
+            }
         }
         else
-            file = File::open(path);
+            file = File{path};
 
         text = file->readAll();
     }

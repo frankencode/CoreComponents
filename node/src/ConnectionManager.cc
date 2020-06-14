@@ -7,8 +7,8 @@
  */
 
 #include <cc/http/ConnectionManager>
-#include <cc/http/NodeConfig>
 #include <cc/http/HttpServerConnection>
+#include <cc/http/NodeConfig>
 #include <cc/http/debug>
 #include <cc/System>
 
@@ -23,8 +23,6 @@ Ref<ConnectionManager> ConnectionManager::create(const NodeConfig *nodeConfig)
 ConnectionManager::ConnectionManager(const NodeConfig *nodeConfig):
     nodeConfig_{nodeConfig},
     closedConnections_{ClosedConnections::create()},
-    connectionCounts_{ConnectionCounts::create()},
-    visits_{Visits::create()},
     serviceWindow_{nodeConfig->serviceWindow()},
     connectionLimit_{nodeConfig->connectionLimit()}
 {
@@ -60,7 +58,7 @@ void ConnectionManager::cycle()
             Ref<ConnectionInfo> visit = visits_->front();
             visits_->popFront();
             uint64_t origin = visit->remoteAddress()->networkPrefix();
-            ConnectionCounts::iterator target;
+            ConnectionCounts::Iterator target;
             if (!connectionCounts_->find(origin, &target)) continue;
 
             if (target->value() == 1) connectionCounts_->remove(target);
@@ -73,7 +71,7 @@ bool ConnectionManager::accept(HttpServerConnection *client)
 {
     uint64_t origin = client->address()->networkPrefix();
     int count = 0;
-    ConnectionCounts::iterator it;
+    ConnectionCounts::Iterator it;
     if (!connectionCounts_->insert(origin, 1, &it)) {
         if (connectionLimit_ > 0) {
             if (it->value() >= connectionLimit_)

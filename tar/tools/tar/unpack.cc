@@ -45,7 +45,7 @@ void unpack(ArchiveReader *archive, bool verbose)
         if (verbose) fout() << entry->path() << nl;
         if (entry->type() == ArchiveEntry::Directory) {
             if (entry->path() == "." || entry->path() == "./") ;
-            else Dir::establish(entry->path(), entry->mode());
+            else Dir::establish(entry->path(), static_cast<FileMode>(entry->mode()));
         }
         else if (entry->type() == ArchiveEntry::Link) {
             File::link(entry->linkPath(), entry->path());
@@ -55,7 +55,7 @@ void unpack(ArchiveReader *archive, bool verbose)
             File::symlink(entry->linkPath(), entry->path());
         }
         else if (entry->type() == ArchiveEntry::Regular) {
-            File::create(entry->path(), entry->mode());
+            File::create(entry->path(), static_cast<FileMode>(entry->mode()));
             if (Process::isSuperUser()) {
                 uid_t userId = entry->userId();
                 gid_t groupId = entry->groupId();
@@ -67,7 +67,7 @@ void unpack(ArchiveReader *archive, bool verbose)
                     File::chown(entry->path(), userId, groupId);
             }
             if (entry->size() > 0) {
-                Ref<File> file = File::open(entry->path(), FileOpen::WriteOnly);
+                File file{entry->path(), FileOpen::WriteOnly};
                 archive->readData(entry, file);
             }
             FileStatus status{entry->path()}; /// \todo FIXME: followSymlink=false?

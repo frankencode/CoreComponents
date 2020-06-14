@@ -11,8 +11,8 @@
 #include <cc/http/DeliveryWorker>
 #include <cc/http/ConnectionInfo>
 #include <cc/types>
-#include <cc/List>
-#include <cc/Map>
+#include <cc/ListValue>
+#include <cc/MapValue>
 
 namespace cc {
 namespace http {
@@ -34,13 +34,12 @@ private:
 
     const LoggingInstance *errorLoggingInstance() const;
 
-    typedef Map<uint64_t, int> ConnectionCounts;
-    typedef List< Ref<ConnectionInfo> > Visits;
+    using ConnectionCounts = MapValue<uint64_t, int>;
 
     Ref<const NodeConfig> nodeConfig_;
     Ref<ClosedConnections> closedConnections_;
-    Ref<ConnectionCounts> connectionCounts_;
-    Ref<Visits> visits_;
+    ConnectionCounts connectionCounts_;
+    ListValue< Ref<ConnectionInfo> > visits_;
     int serviceWindow_;
     int connectionLimit_;
 };

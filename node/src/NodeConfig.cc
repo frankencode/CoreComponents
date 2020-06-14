@@ -42,7 +42,7 @@ const MetaObject *NodeConfig::prototype()
 Ref<NodeConfig> NodeConfig::load(const String &path)
 {
     ResourceGuard context{path};
-    return load(parse(File::open(path)->map()));
+    return load(parse(File{path}->map()));
 }
 
 Ref<NodeConfig> NodeConfig::create()

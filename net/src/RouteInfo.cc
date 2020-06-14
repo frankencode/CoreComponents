@@ -6,6 +6,13 @@
  *
  */
 
+#include <cc/net/RouteInfo>
+#ifdef __linux
+#include <cc/net/NetworkInterface>
+#include <cc/MapValue>
+#include <cc/stdio> // DEBUG
+#endif // __linux
+#include <cc/exceptions>
 #ifdef __linux
 #include <unistd.h>
 #include <sys/types.h>
@@ -14,14 +21,6 @@
 #include <linux/rtnetlink.h>
 #include <errno.h>
 #endif // __linux
-
-#include <cc/exceptions>
-#ifdef __linux
-#include <cc/Map>
-#include <cc/net/NetworkInterface>
-#include <cc/stdio> // DEBUG
-#endif // __Linux
-#include <cc/net/RouteInfo>
 
 namespace cc {
 namespace net {
@@ -78,8 +77,7 @@ Ref<RouteInfoList> RouteInfo::queryTable()
         cc::free(msg);
     }
 
-    typedef Map<int, Ref<NetworkInterface> > InterfaceByIndex;
-    Ref<InterfaceByIndex> interfaceByIndex = InterfaceByIndex::create();
+    MapValue<int, Ref<NetworkInterface> > interfaceByIndex;
 
     // process reply
     {

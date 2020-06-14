@@ -88,7 +88,7 @@ int main(int argc, char **argv)
         if (String(options->value("paste")) != "") {
             // if (replaceOption == true) // FIXME: multiple conflicting replacement options
             replaceOption = true;
-            replacement = File::open(options->value("paste"))->map();
+            replacement = File{options->value("paste")}->map();
         }
         if (options->value("erase")) {
             // if (replaceOption == true) // FIXME: multiple conflicting replacement options
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
         for (String dirPath: items)
         {
             dirPath = dirPath->canonicalPath();
-            Ref<DirWalker> dirWalker = DirWalker::open(dirPath);
+            DirWalker dirWalker{dirPath};
             dirWalker->setMaxDepth(maxDepth);
             dirWalker->setIgnoreHidden(ignoreHidden);
 
@@ -130,11 +130,11 @@ int main(int argc, char **argv)
                     if (FileStatus{path}->type() != FileType::Regular)
                         continue;
 
-                    String text = File::open(path)->map();
+                    String text = File{path}->map();
                     Ref<Matches> matches = findMatches(text, textPattern);
 
                     if (replaceOption && matches->count() > 0) {
-                        Ref<File> file = File::open(path, FileOpen::ReadWrite);
+                        File file{path, FileOpen::ReadWrite};
                         text = replaceMatches(text, matches, replacement);
                         file->truncate(0);
                         file->write(text);

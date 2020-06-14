@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
             password = normalizePassword(password);
 
-            Ref<Stream> random = File::open("/dev/random");
+            Ref<Stream> random = File{"/dev/random"}->stream();
 
             for (String path: items)
             {
@@ -70,12 +70,12 @@ int main(int argc, char **argv)
                     ferr() << outPath << ": file exists, skipping" << nl;
                     continue;
                 }
-                Ref<Stream> source = File::open(path);
+                Ref<Stream> source { File{path} };
                 Ref<Stream> sink;
                 if (viewMode)
                     sink = stdOut();
                 else
-                    sink = File::open(outPath, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly);
+                    sink = File{outPath, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly};
                 sink->write(encipheredContentKey);
 
                 Ref<CipherSink> cipherSink = CipherSink::open(cipher, sink, random);
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
                 if (path == "")
                     source = stdInSaved;
                 else
-                    source = File::open(path);
+                    source = File{path};
 
                 String contentKey = String::allocate(16);
                 String encipheredContentKey = source->readSpan(16);
@@ -147,7 +147,7 @@ int main(int argc, char **argv)
                         ferr() << origName << ": file exists, skipping" << nl;
                         continue;
                     }
-                    sink = File::open(origName, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly);
+                    sink = File{origName, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly};
                 }
                 cipherSource->transferSpanTo(origSize, sink);
             }

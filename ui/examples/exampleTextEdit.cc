@@ -24,7 +24,7 @@ class MainView: public View
         // app()->defaultFixedFont();
         CC_INSPECT(edit->font()->family());
         edit->setText(
-            File::open(path)->map()
+            File{path}->map()
         );
         // CC_INSPECT(edit->getText());
         // CC_INSPECT(size());

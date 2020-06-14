@@ -8,7 +8,6 @@
 
 #include <cc/http/LoggingRegistry>
 #include <cc/Singleton>
-#include <cc/Map>
 
 namespace cc {
 namespace http {
@@ -19,7 +18,6 @@ LoggingRegistry *LoggingRegistry::instance()
 }
 
 LoggingRegistry::LoggingRegistry():
-    serviceByName_{ServiceByName::create()},
     loggingProtocol_{MetaProtocol::create()}
 {}
 

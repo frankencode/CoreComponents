@@ -30,8 +30,7 @@ Application *Application::instance()
     return PlatformManager::instance()->activePlugin()->application();
 }
 
-Application::Application():
-    touchTargets_{TouchTargets::create()}
+Application::Application()
 {
     textInputArea->connect([=]{
         if (focusControl())

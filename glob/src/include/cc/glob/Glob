@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/glob/Pattern>
-#include <cc/Source>
+#include <cc/Dir>
 
 namespace cc { class Dir; }
 
@@ -40,7 +40,7 @@ private:
     Glob(const String &path, const StringList &remainder);
     void init(const String &path);
 
-    Ref<Dir> dir_;
+    Dir dir_;
     Pattern pattern_;
     StringList remainder_;
     Ref<Glob> child_;

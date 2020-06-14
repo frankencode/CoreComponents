@@ -108,7 +108,7 @@ void DirectoryDelegate::process(const HttpRequest *request)
 
 void DirectoryDelegate::listDirectory(const HttpRequest *request, const String &path)
 {
-    Ref<Dir> dir = Dir::open(path);
+    Dir dir{path};
 
     response()->setHeader("Content-Type", "text/html");
     response()->chunk() <<
@@ -146,7 +146,7 @@ void DirectoryDelegate::listDirectory(const HttpRequest *request, const String &
 
 void DirectoryDelegate::deliverFile(const String &path)
 {
-    String content = File::open(path)->map();
+    String content = File{path}->map();
     String mediaType = deliveryInstance()->mediaTypeDatabase()->lookup(path, content);
     if (mediaType != "") response()->setHeader("Content-Type", mediaType);
     response()->beginTransmission(content->count());
@@ -156,7 +156,7 @@ void DirectoryDelegate::deliverFile(const String &path)
 
 void DirectoryDelegate::streamFile(const String &path)
 {
-    Ref<File> file = File::open(path);
+    File file{path};
     String head;
     ssize_t size = -1;
     if (file->seekable()) {

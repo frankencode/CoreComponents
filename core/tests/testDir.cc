@@ -16,7 +16,7 @@ using namespace cc::testing;
 class ListCwd: public TestCase
 {
     void run() {
-        for (auto path: Dir::open("."))
+        for (auto path: Dir{"."})
             fout() << path << nl;
     }
 };

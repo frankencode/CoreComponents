@@ -71,7 +71,7 @@ BuildPlan::BuildPlan(int argc, char **argv):
     recipePath_ = recipePath(projectPath_);
 
     ResourceGuard context(recipePath_);
-    recipe_ = yason::parse(File::open(recipePath_)->map(), RecipeProtocol::instance());
+    recipe_ = yason::parse(File{recipePath_}->map(), RecipeProtocol::instance());
     arguments->validate(recipe_);
     arguments->override(recipe_);
 
@@ -95,7 +95,7 @@ BuildPlan::BuildPlan(const String &projectPath, BuildPlan *parentPlan):
     CCBUILD_BUILDPLAN_COMPONENTS_INIT
 {
     ResourceGuard context(recipePath_);
-    recipe_ = yason::parse(File::open(recipePath_)->map(), RecipeProtocol::instance());
+    recipe_ = yason::parse(File{recipePath_}->map(), RecipeProtocol::instance());
     readRecipe(parentPlan);
     BuildMap::instance()->insertPlan(projectPath_, this);
 }
@@ -439,15 +439,16 @@ StringList BuildPlan::globSources(const StringList &pattern) const
     for (int i = 0; i < pattern->count(); ++i) {
         Ref<Glob> glob = Glob::open(sourcePath(pattern->at(i)));
         for (String path; glob->read(&path);) {
-            Ref<DirWalker> walker = DirWalker::tryOpen(path);
-            if (walker) {
+            try {
+                DirWalker walker{path};
                 bool isDir = false;
                 for (String path; walker->read(&path, &isDir);) {
                     if (!isDir) sources->append(path);
                 }
             }
-            else
+            catch (...) {
                 sources->append(path);
+            }
         }
     }
     return sources;

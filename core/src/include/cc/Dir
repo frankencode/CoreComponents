@@ -8,9 +8,10 @@
 
 #pragma once
 
+#include <cc/Folder>
+#include <cc/files>
 #include <sys/types.h> // mode_t
 #include <dirent.h> // DIR, opendir, closedir, readdir_r
-#include <cc/Folder>
 
 namespace cc {
 
@@ -19,42 +20,59 @@ namespace cc {
   * \brief Work with directory files
   * \see File, CleanupGuard, DirWalker
   */
-class Dir: public Folder
+class Dir
 {
 public:
+    class Instance: public Folder
+    {
+    public:
+        /// Return the directory's file path
+        String path() const;
+
+        /** Read next directory entry
+          * \param name return name of next entry
+          * \return false if no more entries, else true
+          */
+        bool read(String *name) override;
+
+        /** Open a file from this directory
+          * \param path file path of the file to open
+          * \return new content stream
+          */
+        Ref<Stream> openFile(const String &path) override;
+
+    private:
+        friend class Dir;
+
+        Instance(const String &path, DIR *dir = nullptr);
+        ~Instance();
+
+        String path_;
+        DIR *dir_;
+    };
+
+    using Iterator = Instance::Iterator;
+
+    Dir() = default; /// \todo improve logic
+
     /** Open an existing directory
       * \param path directory file path
-      * \return new object instance
       */
-    static Ref<Dir> open(const String &path);
+    Dir(const String &path):
+        instance_{new Instance{path}}
+    {}
 
-    /** Open an existing directory, if exists
-      * \param path directory file path
-      * \return new object instance or null if directory does not exists
-      */
-    static Ref<Dir> tryOpen(const String &path);
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return instance_; }
 
-    /// Return the directory's file path
-    String path() const;
-
-    /** Read next directory entry
-      * \param name return name of next entry
-      * \return false if no more entries, else true
-      */
-    bool read(String *name) override;
-
-    /** Open a file from this directory
-      * \param path file path of the file to open
-      * \return new content stream
-      */
-    Ref<Stream> openFile(const String &path) override;
+    explicit operator bool() const { return instance_; }
 
     /** Check access permissions
       * \param path directory file path
       * \param flags a combination of cc::Access
       * \return true if the calling process has needed credentials
       */
-    static bool access(const String &path, int flags);
+    static bool checkAccess(const String &path, FileAccess flags);
 
     /** Check if directory exists
       * \param path directory file path
@@ -72,13 +90,13 @@ public:
       * \param path directory file path
       * \param mode a combination of cc::Mode
       */
-    static void create(const String &path, int mode = 0755);
+    static void create(const String &path, FileMode mode = FileMode::DirDefault);
 
     /** Establish a new directory path
       * \param path directory file path
       * \param mode a combination of cc::Mode
       */
-    static void establish(const String &path, int mode = 0755);
+    static void establish(const String &path, FileMode mode = FileMode::DirDefault);
 
     /** Remove directory
       * \param path directory file path
@@ -91,14 +109,14 @@ public:
       * \param placeHolder place holder character in path to replace with random characters
       * \return name of the newly created directory
       */
-    static String createUnique(const String &path, int mode = 0755, char placeHolder = '#');
+    static String createUnique(const String &path, FileMode mode = FileMode::DirDefault, char placeHolder = '#');
 
     /** Create a temporary directory
       * \param path directory file path pattern
       * \param mode a combination of cc::Mode
       * \return name of the newly created directory
       */
-    static String createTemp(int mode = 0755);
+    static String createTemp(FileMode mode = FileMode::DirDefault);
 
     /** Cleanup directory contents recursively
       * \param path directory file path
@@ -107,11 +125,10 @@ public:
     static void deplete(const String &path);
 
 private:
-    Dir(const String &path, DIR *dir = nullptr);
-    ~Dir();
-
-    String path_;
-    DIR *dir_;
+    Ref<Instance> instance_;
 };
+
+inline Dir::Iterator begin(Dir &dir) { return dir->begin(); }
+inline Dir::Iterator end  (Dir &dir) { return dir->end(); }
 
 } // namespace cc

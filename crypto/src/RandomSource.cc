@@ -30,7 +30,7 @@ RandomSource::RandomSource(const CharArray *salt)
         mutate(iv)->fill(0);
     }
     else {
-        Ref<Stream> random = File::open("/dev/urandom");
+        Ref<Stream> random = File{"/dev/urandom"}->stream();
         random->readSpan(mutate(key));
         random->readSpan(mutate(iv));
     }

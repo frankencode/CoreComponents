@@ -79,7 +79,7 @@ class AscendingInsertionRemovalTest: public InsertionRemovalTest
 
     void dotify(const Set<int> *set)
     {
-        File::open("set_asc_ins.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(set));
+        File{"set_asc_ins.dot", FileOpen::Overwrite}->write(bucket::Internals::dotify(set));
     }
 };
 
@@ -100,7 +100,7 @@ class RandomInsertionRemovalTest: public InsertionRemovalTest
 
     void dotify(const Set<int> *set)
     {
-        File::open("set_rnd_ins.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(set));
+        File{"set_rnd_ins.dot", FileOpen::Overwrite}->write(bucket::Internals::dotify(set));
     }
 };
 

@@ -54,7 +54,7 @@ int main(int argc, char **argv)
             else paths << themeOption;
             for (int i = 0; i < paths->count(); ++i) {
                 Ref<Theme> theme = Theme::load(paths->at(i));
-                Ref<File> file = File::open(cssPath(theme->name()), FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly);
+                File file{cssPath(theme->name()), FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly};
                 if (verbose) fout() << file->path() << nl;
                 HtmlScreen::writeCss(theme, file);
             }
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
         else {
             for (int i = 0; i < items->count(); ++i) {
                 String path = items->at(i);
-                String text = File::open(path)->map();
+                String text = File{path}->map();
 
                 Language *language = defaultLanguage;
                 if (!language) {
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
                 if (themeOption == "") themeOption = "ClassicWhite";
                 String htmlPath = path->fileName()->replace(".", "_") + ".html";
                 if (verbose) fout() << htmlPath << nl;
-                Ref<File> htmlFile = File::open(htmlPath, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly);
+                File htmlFile{htmlPath, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly};
                 Format sink{htmlFile};
                 sink <<
                     "<!DOCTYPE HTML>\n"

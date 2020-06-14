@@ -12,17 +12,17 @@
 
 namespace cc {
 
-FileLock::FileLock(File *file, Type type, off_t start, off_t length):
-    fd_(file->fd())
+FileLock::Instance::Instance(File &file, Type type, off_t start, off_t length):
+    fd_{file->fd()}
 {
     memclr(static_cast<FLockStruct *>(this), sizeof(FLockStruct));
-    FLockStruct::l_type = int(type);
+    FLockStruct::l_type = static_cast<int>(type);
     FLockStruct::l_start = start;
     FLockStruct::l_len = length;
     FLockStruct::l_whence = SEEK_SET;
 }
 
-bool FileLock::tryAcquire()
+bool FileLock::Instance::tryAcquire()
 {
     bool success = (::fcntl(fd_, F_SETLK, static_cast<FLockStruct*>(this)) != -1);
     if (!success)
@@ -31,13 +31,13 @@ bool FileLock::tryAcquire()
     return success;
 }
 
-void FileLock::acquire()
+void FileLock::Instance::acquire()
 {
     if (::fcntl(fd_, F_SETLKW, static_cast<FLockStruct*>(this)) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void FileLock::release()
+void FileLock::Instance::release()
 {
     struct flock h = *static_cast<FLockStruct*>(this);
     h.l_type = F_UNLCK;

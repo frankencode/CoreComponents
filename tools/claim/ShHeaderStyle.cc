@@ -78,7 +78,7 @@ ShHeaderStyle::ShHeaderStyle():
 
 Ref<Header> ShHeaderStyle::scan(const String &path) const
 {
-    String text = File::open(path)->map();
+    String text = File{path}->map();
     Ref<Token> rootToken = Singleton<ShHeaderSyntax>::instance()->match(text, 0)->rootToken();
     if (!rootToken) return Ref<Header>();
     Token *token = rootToken->firstChild();

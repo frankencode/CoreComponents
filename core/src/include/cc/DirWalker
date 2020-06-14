@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/Dir>
 #include <cc/Source>
 #include <cc/String>
 
@@ -20,68 +21,84 @@ class Dir;
   * \brief Recursive directory tree traversal
   * \see Dir
   */
-class DirWalker: public Source<String>
+class DirWalker
 {
 public:
+    class Instance: public Source<String>
+    {
+    public:
+        /// Maximum recursive tree traversal depth (or -1 if none)
+        int maxDepth() const { return maxDepth_; }
+
+        /// \copydoc maxDepth()
+        void setMaxDepth(int depth) { maxDepth_ = depth; }
+
+        /// Overstep hidden files and directories during recursive tree traversal (defaults to false)
+        bool ignoreHidden() const { return ignoreHidden_; }
+
+        /// \copydoc ignoreHidden()
+        void setIgnoreHidden(bool on) { ignoreHidden_ = on; }
+
+        /// Follow symbolic links during recursive tree traversal (defaults to false)
+        bool followSymlink() const { return followSymlink_; }
+
+        /// \copydoc followSymlink()
+        void setFollowSymlink(bool on) { followSymlink_ = on; }
+
+        /// Child-first recursive tree traversal order (defaults to false)
+        bool deleteOrder() const { return deleteOrder_; }
+
+        /// \copydoc deleteOrder()
+        void setDeleteOrder(bool on) { deleteOrder_ = on; }
+
+        /** Read next file or directory path
+          * \param path return the file or directory path
+          * \param isDir true if the return path points to a directory
+          * \return true if not end of information
+          */
+        bool read(String *path, bool *isDir);
+
+        /** Read next file or directory path
+          * \param path return the file or directory path
+          * \return true if not end of information
+          */
+        bool read(String *path) { return read(path, nullptr); }
+
+        Source<String> *source() { return this; }
+
+    private:
+        friend class DirWalker;
+
+        Instance(const String &path);
+        Instance(const String &path, const Dir &dir);
+
+        int maxDepth_;
+        bool ignoreHidden_;
+        bool followSymlink_;
+        bool deleteOrder_;
+        int depth_;
+        Dir dir_;
+        Ref<Instance> child_;
+    };
+
+    DirWalker() = default;
+
     /** Open a directory for recursive tree traversal
       * \param path directory path
-      * \return new object instance
       */
-    static Ref<DirWalker> open(const String &path);
+    DirWalker(const String &path):
+        instance_{new Instance{path}}
+    {}
 
-    /** Open a directory for recursive tree traversal, if it exists
-      * \param path directory path
-      * \return new object instance
-      */
-    static Ref<DirWalker> tryOpen(const String &path);
-
-    /// Maximum recursive tree traversal depth (or -1 if none)
-    int maxDepth() const { return maxDepth_; }
-
-    /// \copydoc maxDepth()
-    void setMaxDepth(int depth) { maxDepth_ = depth; }
-
-    /// Overstep hidden files and directories during recursive tree traversal (defaults to false)
-    bool ignoreHidden() const { return ignoreHidden_; }
-
-    /// \copydoc ignoreHidden()
-    void setIgnoreHidden(bool on) { ignoreHidden_ = on; }
-
-    /// Follow symbolic links during recursive tree traversal (defaults to false)
-    bool followSymlink() const { return followSymlink_; }
-
-    /// \copydoc followSymlink()
-    void setFollowSymlink(bool on) { followSymlink_ = on; }
-
-    /// Child-first recursive tree traversal order (defaults to false)
-    bool deleteOrder() const { return deleteOrder_; }
-
-    /// \copydoc deleteOrder()
-    void setDeleteOrder(bool on) { deleteOrder_ = on; }
-
-    /** Read next file or directory path
-      * \param path return the file or directory path
-      * \param isDir true if the return path points to a directory
-      * \return true if not end of information
-      */
-    bool read(String *path, bool *isDir);
-
-    /** Read next file or directory path
-      * \param path return the file or directory path
-      * \return true if not end of information
-      */
-    bool read(String *path) { return read(path, nullptr); }
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return instance_; }
 
 private:
-    DirWalker(const String &path, Dir *dir = nullptr);
+    DirWalker(const String &path, const Dir &dir):
+        instance_{new Instance{path, dir}}
+    {}
 
-    int maxDepth_;
-    bool ignoreHidden_;
-    bool followSymlink_;
-    bool deleteOrder_;
-    int depth_;
-    Ref<Dir> dir_;
-    Ref<DirWalker> child_;
+    Ref<Instance> instance_;
 };
 
 } // namespace cc

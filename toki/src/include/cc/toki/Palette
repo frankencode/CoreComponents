@@ -55,8 +55,7 @@ private:
     String scopeName_;
     int scope_;
 
-    typedef Map<int, Ref<Style> > StyleByRule;
-    Ref<StyleByRule> styleByRule_;
+    MapValue<int, Ref<Style> > styleByRule_;
 };
 
 }} // namespace cc::toki

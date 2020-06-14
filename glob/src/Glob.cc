@@ -6,9 +6,8 @@
  *
  */
 
-#include <cc/Dir>
-#include <cc/glob/Pattern>
 #include <cc/glob/Glob>
+#include <cc/glob/Pattern>
 
 namespace cc {
 namespace glob {
@@ -38,7 +37,7 @@ Glob::Glob(const String &path, const StringList &remainder):
 
 void Glob::init(const String &path)
 {
-    dir_ = Dir::open(path);
+    dir_ = Dir{path};
     pattern_ = remainder_->front();
     remainder_->popFront();
 }

@@ -8,6 +8,7 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
+#include <cc/debug>
 #include <algorithm>
 
 using namespace cc;
@@ -15,17 +16,11 @@ using namespace cc::testing;
 
 class TestAlgorithms: public TestCase
 {
-    void print(const List<String> *l) {
-        for (auto x: l)
-            fout() << "\"" << x << "\" ";
-        fout() << nl;
-    }
-
     void run()
     {
-        auto fruits = List<String>::create() << "melon" << "banana" << "pear" << "melon" << "apple" << "peach";
+        ListValue<String> fruits { "melon", "banana", "pear", "melon", "apple", "peach" };
         std::sort(fruits->begin(), fruits->end());
-        print(fruits);
+        CC_INSPECT(str(fruits));
         {
             auto i = std::find(fruits->begin(), fruits->end(), "pear");
             fout() << "Index of " << *i << " is " << i - fruits->begin() << nl;
@@ -38,9 +33,9 @@ class TestAlgorithms: public TestCase
             CC_VERIFY(n == 2);
         }
         std::reverse(fruits->begin(), fruits->end());
-        print(fruits);
+        CC_INSPECT(str(fruits));
         std::unique(fruits->begin(), fruits->end());
-        print(fruits);
+        CC_INSPECT(str(fruits));
         {
             int n = std::count(fruits->begin(), fruits->end(), "melon");
             fout() << "Number of melons: " << n << nl;

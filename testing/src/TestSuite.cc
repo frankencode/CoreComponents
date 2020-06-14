@@ -109,12 +109,12 @@ int TestSuite::run(int argc, char **argv)
         report_->beginTestCase(testCase);
 
         Ref<SystemStream> outSaved, errSaved;
-        Ref<File> outFile, errFile;
+        File outFile, errFile;
         if (report_->captureOutput()) {
             outSaved = SystemStream::duplicate(stdOut());
             errSaved = SystemStream::duplicate(stdErr());
-            outFile = File::openTemp();
-            errFile = File::openTemp();
+            outFile = File{File::createTemp()};
+            errFile = File{File::createTemp()};
             UnlinkGuard outGuard{outFile->path()};
             UnlinkGuard errGuard{errFile->path()};
             outFile->duplicateTo(stdOut());

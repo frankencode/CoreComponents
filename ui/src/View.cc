@@ -16,9 +16,7 @@
 namespace cc {
 namespace ui {
 
-View::View(View *parent):
-    children_{Children::create()},
-    visibleChildren_{Children::create()}
+View::View(View *parent)
 {
     if (parent)
     {

@@ -40,7 +40,7 @@ void PluginDir::onLoadError(const String &pluginPath, const String &errorMessage
 
 PluginDir *PluginDir::open()
 {
-    auto dir = Dir::open(path_);
+    Dir dir{path_};
     for (const auto &name: dir) {
         if (name == "." || name == "..") continue;
         auto path = path_->extendPath(name);

@@ -55,7 +55,7 @@ int main(int argc, char **argv)
         Pattern works = options->value("works");
         int worksMinLines = options->value("works-min-lines");
 
-        if (statementPath != "") statement = File::open(statementPath)->map();
+        if (statementPath != "") statement = File{statementPath}->map();
 
         if (items->count() == 0) items << ".";
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
                 for (int j = 0; j < copyrights->count(); ++j)
                     if (copyrights->at(j)->holder() != holder) continue;
                 Token *token = notice->header()->token();
-                Ref<File> file = File::open(path, FileOpen::ReadWrite);
+                File file{path, FileOpen::ReadWrite};
                 String text = file->map();
                 String newText = Format{} << text->copy(0, token->i0()) << text->copy(token->i1(), text->count());
                 file->seek(0);
@@ -136,7 +136,7 @@ int main(int argc, char **argv)
             Ref<Notice> notice = Notice::create(copyrights, statement);
             for (int i = 0; i < exposure->count(); ++i) {
                 String path = exposure->at(i);
-                Ref<File> file = File::open(path, FileOpen::ReadWrite);
+                File file{path, FileOpen::ReadWrite};
                 String text = file->map();
                 HeaderStyle *style = 0;
                 if (registry()->detectHeaderStyle(path, text, &style)) {

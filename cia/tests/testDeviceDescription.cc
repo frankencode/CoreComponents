@@ -13,7 +13,7 @@ class DeciveDescriptionTest: public TestCase
     void run() override
     {
         String edsPath = String{__FILE__}->reducePath()->extendPath("BatteryModule.eds");
-        String edsText = File::open(edsPath)->map();
+        String edsText = File{edsPath}->map();
         auto deviceDescription = DeviceDescription::parse(edsText);
 
         String edsText2 = deviceDescription->toString();
@@ -32,7 +32,7 @@ class DeviceConfigurationTest: public TestCase
     void run() override
     {
         String dcfPath = String{__FILE__}->reducePath()->extendPath("BatteryModule.dcf");
-        String dcfText = File::open(dcfPath)->map();
+        String dcfText = File{dcfPath}->map();
         auto deviceConfiguration = DeviceConfiguration::parse(dcfText);
 
         String dcfText2 = deviceConfiguration->toString();

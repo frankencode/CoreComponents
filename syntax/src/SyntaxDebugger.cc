@@ -687,8 +687,7 @@ void SyntaxDebugger::printDefinition(bool omitUnusedRules)
     typedef DefinitionNode::RuleByName RuleByName;
     RuleByName *ruleByName = SyntaxDebugFactory::definition()->ruleByName_;
 
-    typedef Map<int, RuleNode *> RuleById;
-    Ref<RuleById> ruleById = RuleById::create();
+    MapValue<int, RuleNode *> ruleById;
 
     for (RuleByName::Index i = ruleByName->first(); ruleByName->has(i); ++i) {
         RuleNode *rule = ruleByName->value(i);
@@ -718,9 +717,9 @@ SyntaxNode *SyntaxDebugger::produce(SyntaxNode *newNode, const char *nodeType)
     return factoryByNodeType_->lookup(nodeType, &factory) ? factory->produce(newNode) : newNode;
 }
 
-Ref<SyntaxDebugger::StateNameById> SyntaxDebugger::newReverseMap(StateIdByName *stateIdByName)
+SyntaxDebugger::StateNameById SyntaxDebugger::newReverseMap(StateIdByName *stateIdByName)
 {
-    Ref<StateNameById> stateNameById = StateNameById::create();
+    StateNameById stateNameById;
     for (StateIdByName::Index i = stateIdByName->first(); stateIdByName->has(i); ++i) {
         String name = stateIdByName->key(i);
         int id = stateIdByName->value(i);
@@ -729,15 +728,19 @@ Ref<SyntaxDebugger::StateNameById> SyntaxDebugger::newReverseMap(StateIdByName *
     return stateNameById;
 }
 
-SyntaxDebugger::StateNameById *SyntaxDebugger::flagNameById() {
-    if (!flagNameById_)
+SyntaxDebugger::StateNameById &SyntaxDebugger::flagNameById() {
+    if (flagNameByIdFirstTime_) {
+        flagNameByIdFirstTime_ = false;
         flagNameById_ = newReverseMap(this->definition()->flagIdByName_);
+    }
     return flagNameById_;
 }
 
-SyntaxDebugger::StateNameById *SyntaxDebugger::captureNameById() {
-    if (!captureNameById_)
+SyntaxDebugger::StateNameById &SyntaxDebugger::captureNameById() {
+    if (captureNameByIdFirstTime_) {
+        captureNameByIdFirstTime_ = false;
         captureNameById_ = newReverseMap(this->definition()->captureIdByName_);
+    }
     return captureNameById_;
 }
 

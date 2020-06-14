@@ -154,7 +154,7 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
             CCNODE_DEBUG() << "Redirect to \"" << location << "\"" << nl;
             if (location->startsWith("/")) {
                 cgiResponse->remove(target);
-                String content = File::open(location)->map();
+                String content = File{location}->map();
                 String contentType;
                 if (!cgiResponse->lookup("Content-Type", &contentType)) {
                     contentType = deliveryInstance()->mediaTypeDatabase()->lookup(location, content);

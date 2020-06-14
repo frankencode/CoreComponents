@@ -30,7 +30,7 @@ int main(int argc, char **argv)
             if (toolName->contains("sha1")) hashSink = Sha1Sink::open();
             else hashSink = Md5Sink::open();
             Ref<Stream> source;
-            if (path != "") source = File::open(path);
+            if (path != "") source = File{path};
             else { source = cc::stdIn(); path = "-"; }
             source->transferTo(hashSink);
             fout() << hashSink->finish()->toHex() << "\t" << path << nl;

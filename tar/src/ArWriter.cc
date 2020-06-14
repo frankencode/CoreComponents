@@ -30,7 +30,7 @@ void ArWriter::writeFile(const String &path)
         sink_->write(String{"!<arch>\n"});
     }
 
-    Ref<File> file = File::open(path);
+    File file{path};
     FileStatus status{path};
 
     off_t contentSize = status->size();

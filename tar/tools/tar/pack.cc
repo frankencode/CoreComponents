@@ -17,15 +17,17 @@ void pack(const String &path, ArchiveWriter *archive, bool verbose)
     if (verbose) ferr() << path << nl;
     archive->writeFile(path);
 
-    Ref<DirWalker> walker = DirWalker::tryOpen(path);
-    if (!walker) return;
-
-    walker->setFollowSymlink(true);
-    String sourcePath;
-    while (walker->read(&sourcePath)) {
-        if (verbose) ferr() << sourcePath << nl;
-        archive->writeFile(sourcePath);
+    try {
+        DirWalker walker{path};
+        walker->setFollowSymlink(true);
+        String sourcePath;
+        while (walker->read(&sourcePath)) {
+            if (verbose) ferr() << sourcePath << nl;
+            archive->writeFile(sourcePath);
+        }
     }
+    catch (...)
+    {}
 }
 
 } // namespace cctar

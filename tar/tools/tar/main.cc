@@ -46,7 +46,7 @@ int main(int argc, char **argv)
             for (String path: items)
             {
                 Ref<Stream> source;
-                if (path != "") source = File::open(path);
+                if (path != "") source = File{path};
                 else source = stdIn();
 
                 Ref<ArchiveReader> archive;
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
             if (sinkPath != "") {
                 try { File::unlink(sinkPath); } catch (SystemError &) {}
                 File::create(sinkPath);
-                sink = File::open(sinkPath, FileOpen::WriteOnly);
+                sink = File{sinkPath, FileOpen::WriteOnly};
             }
             else {
                 sink = stdOut();

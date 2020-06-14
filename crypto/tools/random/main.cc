@@ -15,7 +15,7 @@ int main()
     using namespace cc;
     using namespace cc::crypto;
 
-    Ref<File> random = File::open("/dev/random");
+    // File random{"/dev/random"}; \\todo
     Ref<Stream> source = RandomSource::open();
 
     String buffer = CharArray::allocate(0x4000);

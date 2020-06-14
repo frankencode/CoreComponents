@@ -42,7 +42,7 @@ Ref<NodeConfig> loadNodeConfig(int argc, char **argv)
         }
         else {
             ResourceGuard context{path};
-            config = NodeConfig::parse(File::open(path)->map());
+            config = NodeConfig::parse(File{path}->map());
         }
     }
 

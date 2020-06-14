@@ -1,12 +1,12 @@
-#include <cc/stdio>
-#include <cc/CircularBuffer>
-#include <cc/Map>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/TouchDeviceManager>
 #include <cc/ui/FingerEvent>
 #include <cc/ui/PointerEvent>
 #include <cc/ui/Application>
 #include <cc/ui/View>
+#include <cc/QueueValue>
+#include <cc/MapValue>
+#include <cc/stdio>
 
 using namespace cc;
 using namespace cc::ui;
@@ -40,9 +40,7 @@ class MainView: public View
     friend class Object;
 
     MainView():
-        assignedTouchPoints_(AssignedTouchPoints::create()),
-        freeTouchPoints_(FreeTouchPoints::create(10)),
-        touchDevice_(TouchDeviceManager::instance()->getTouchDevice(0))
+        touchDevice_{TouchDeviceManager::instance()->getTouchDevice(0)}
     {
         size = DisplayManager::instance()->getDisplay(0)->nativeMode()->resolution();
         paper = 0xFFFFFF;
@@ -61,7 +59,7 @@ class MainView: public View
             { 0x00, 0x00, 0x00, 0xFF },
         };
 
-        while (freeTouchPoints_->count() < freeTouchPoints_->capacity()) {
+        while (freeTouchPoints_->count() < 10) {
             Ref<TouchPoint> touchPoint = Object::create<TouchPoint>(this);
             touchPoint->fgColor = fgColors[freeTouchPoints_->count()];
             freeTouchPoints_->pushBack(touchPoint);
@@ -92,11 +90,8 @@ class MainView: public View
         return true;
     }
 
-    typedef Map<TouchFingerId, TouchPoint *> AssignedTouchPoints;
-    typedef CircularBuffer<TouchPoint *> FreeTouchPoints;
-
-    Ref<AssignedTouchPoints> assignedTouchPoints_;
-    Ref<FreeTouchPoints> freeTouchPoints_;
+    MapValue<TouchFingerId, TouchPoint *> assignedTouchPoints_;
+    QueueValue<TouchPoint *> freeTouchPoints_;
     Ref<TouchDevice> touchDevice_;
 };
 

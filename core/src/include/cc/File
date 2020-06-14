@@ -8,14 +8,14 @@
 
 #pragma once
 
+#include <cc/FileStatus>
+#include <cc/SystemStream>
+#include <cc/String>
+#include <cc/files>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <cc/files>
-#include <cc/String>
-#include <cc/SystemStream>
-#include <cc/FileStatus>
 
 namespace cc {
 
@@ -26,63 +26,84 @@ class MappedByteArray;
   * \brief Handle files
   * \see FileStatus, UnlinkGuard, Dir
   */
-class File: public SystemStream
+class File
 {
 public:
-    /** Open a file
+    class Instance: public SystemStream
+    {
+    public:
+        /// %File path this file was opened from
+        String path() const;
+
+        /** Truncate or extend file
+          * \param length new file length
+          */
+        void truncate(off_t length);
+
+        /** Set/get file offset
+          * \param distance relative distance to move the file offset
+          * \param method from which point to apply the seek distance
+          * \return new file offset
+          */
+        off_t seek(off_t distance, Seek method = Seek::Begin);
+
+        /// Query if this file is seekable (e.g. character devices aren't seekable)
+        bool seekable() const { return isSeekable(); } // FIXME: obsolete
+
+        /// Query if this file is seekable (e.g. character devices aren't seekable)
+        bool isSeekable() const;
+
+        /// Current file offset
+        off_t fileOffset() { return seek(0, Seek::Begin); }
+
+        virtual off_t transferSpanTo(off_t count = -1, Stream *sink = nullptr, CharArray *buf = nullptr) override;
+
+        /// %Map the entire file into memory and return the file mapping as String
+        String map() const;
+
+        /// Synchronise the files's state with the underlying storage device
+        void sync();
+
+        /// Same as sync() but synchronize the file's contents, only
+        void dataSync();
+
+        /// Typecast helper
+        SystemStream *stream() { return this; }
+
+    private:
+        friend class File;
+        friend class MappedByteArray;
+
+        Instance();
+        Instance(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default);
+
+        static int translateOpenFlags(int openMode);
+
+        static void unmap(CharArray *s);
+
+        String path_;
+        FileOpen openFlags_;
+    };
+
+    /** Open file
       * \param path file path
       * \param flags file open flags
       * \param mode file permissions for new file (optional)
-      * \return new object instance
       */
-    static Ref<File> open(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default);
+    File(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default):
+        instance_{new Instance{path, flags, mode}}
+    {}
 
-    /** Try to %open a file
-      * \copydetails open()
+    /** Create invalid file
       */
-    static Ref<File> tryOpen(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default);
+    File():
+        instance_{new Instance}
+    {}
 
-    /** Open a temporary file
-      * \param flags file open flags
-      * \return new object instance
-      * \see UnlinkGuard, File::createUnique()
-      */
-    static Ref<File> openTemp(FileOpen flags = FileOpen::ReadWrite);
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return instance_; }
 
-    /// %File path this file was opened from
-    String path() const;
-
-    /** Truncate or extend file
-      * \param length new file length
-      */
-    void truncate(off_t length);
-
-    /** Set/get file offset
-      * \param distance relative distance to move the file offset
-      * \param method from which point to apply the seek distance
-      * \return new file offset
-      */
-    off_t seek(off_t distance, Seek method = Seek::Begin);
-
-    /// Query if this file is seekable (e.g. character devices aren't seekable)
-    bool seekable() const { return isSeekable(); } // FIXME: obsolete
-
-    /// Query if this file is seekable (e.g. character devices aren't seekable)
-    bool isSeekable() const;
-
-    /// Current file offset
-    off_t fileOffset() { return seek(0, Seek::Begin); }
-
-    virtual off_t transferSpanTo(off_t count = -1, Stream *sink = nullptr, CharArray *buf = nullptr) override;
-
-    /// %Map the entire file into memory and return the file mapping as String
-    String map() const;
-
-    /// Synchronise the files's state with the underlying storage device
-    void sync();
-
-    /// Same as sync() but synchronize the file's contents, only
-    void dataSync();
+    operator SystemStream *() { return instance_; }
 
     /** Test file access permissions
       * \param path file path to test
@@ -101,7 +122,7 @@ public:
       * \param path file path
       * \param mode file permissions for new file, a combination of cc::FileMode
       */
-    static void create(const String &path, int mode = 0644);
+    static void create(const String &path, FileMode mode = FileMode::Default); // \todo make use of FileMode
 
     /** Change ownership of the file
       * \param path file path
@@ -154,14 +175,19 @@ public:
       * \return name of the newly created file
       * \see File::openTemp()
       */
-    static String createUnique(const String &path, int mode = 0644, char placeHolder = '#');
+    static String createUnique(const String &path, FileMode mode = FileMode::Default, char placeHolder = '#');
+
+    /** Create a temporary file and return its path
+      * \param mode file permissions for new file, a combination of cc::FileMode
+      */
+    static String createTemp(FileMode mode = FileMode::Default);
 
     /** Create a new file and all parent directories as needed
       * \param path file path of new file
       * \param fileMode file permissions for new file, a combination of cc::FileMode
       * \param dirMode directory permissions for the on-demand created parent directories
       */
-    static void establish(const String &path, int fileMode = 0644, int dirMode = 0755);
+    static void establish(const String &path, FileMode fileMode = FileMode::Default, FileMode dirMode = FileMode::DirDefault);
 
     /** Cleanup files recursively
       * \param path path to directory or file
@@ -190,16 +216,7 @@ public:
     static void save(const String &path, const String &text);
 
 private:
-    friend class MappedByteArray;
-
-    static int translateOpenFlags(int openMode);
-
-    File(const String &path, FileOpen openMode, int fd);
-
-    static void unmap(CharArray *s);
-
-    String path_;
-    FileOpen openFlags_;
+    Ref<Instance> instance_;
 };
 
 } // namespace cc

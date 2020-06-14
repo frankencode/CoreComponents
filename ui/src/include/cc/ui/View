@@ -188,9 +188,8 @@ private:
     Window *window_ { nullptr };
     View *parent_ { nullptr };
 
-    typedef Map<uint64_t, Ref<View> > Children;
-    Ref<Children> children_;
-    Ref<Children> visibleChildren_;
+    MapValue<uint64_t, Ref<View> > children_;
+    MapValue<uint64_t, Ref<View> > visibleChildren_;
 
     Ref<Image> image_;
     Ref<Object> context_;

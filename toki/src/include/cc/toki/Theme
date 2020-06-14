@@ -35,8 +35,7 @@ private:
     String path_;
     String name_;
 
-    typedef Map<int, Ref<Palette> > PaletteByScope;
-    Ref<PaletteByScope> paletteByScope_;
+    MapValue<int, Ref<Palette> > paletteByScope_;
     Ref<Palette> defaultPalette_;
 };
 

@@ -7,13 +7,13 @@
  */
 
 #include <cc/Dir>
-#include <cc/exceptions>
 #include <cc/File>
 #include <cc/FileStatus>
 #include <cc/Random>
 #include <cc/Format>
 #include <cc/Process>
 #include <cc/DirWalker>
+#include <cc/exceptions>
 #ifndef NDEBUG
 #include <cc/check>
 #endif
@@ -21,19 +21,7 @@
 
 namespace cc {
 
-Ref<Dir> Dir::open(const String &path)
-{
-    return new Dir{path};
-}
-
-Ref<Dir> Dir::tryOpen(const String &path)
-{
-    DIR *dir = ::opendir(path);
-    if (dir) return new Dir(path, dir);
-    return 0;
-}
-
-Dir::Dir(const String &path, DIR *dir):
+Dir::Instance::Instance(const String &path, DIR *dir):
     path_{path},
     dir_{dir}
 {
@@ -43,7 +31,7 @@ Dir::Dir(const String &path, DIR *dir):
     }
 }
 
-Dir::~Dir()
+Dir::Instance::~Instance()
 {
     #ifndef NDEBUG
     int ret =
@@ -54,12 +42,12 @@ Dir::~Dir()
     #endif
 }
 
-String Dir::path() const
+String Dir::Instance::path() const
 {
     return path_;
 }
 
-bool Dir::read(String *name)
+bool Dir::Instance::read(String *name)
 {
     while (true) {
         errno = 0;
@@ -77,16 +65,16 @@ bool Dir::read(String *name)
     return false;
 }
 
-Ref<Stream> Dir::openFile(const String &path)
+Ref<Stream> Dir::Instance::openFile(const String &path)
 {
-    return File::open(
+    return File{
         path->isRelativePath() ? path_->extendPath(path) : path
-    );
+    }->stream();
 }
 
-bool Dir::access(const String &path, int flags)
+bool Dir::checkAccess(const String &path, FileAccess flags)
 {
-    return ::access(path, flags) && (FileStatus{path}->type() == FileType::Directory);
+    return ::access(path, +flags) && (FileStatus{path}->type() == FileType::Directory);
 }
 
 bool Dir::exists(const String &path)
@@ -96,23 +84,25 @@ bool Dir::exists(const String &path)
 
 int Dir::count(const String &path)
 {
-    Ref<Dir> dir = tryOpen(path);
-    if (!dir) return 0;
     int n = 0;
-    for (String name; dir->read(&name);) {
-        if (name != "." && name != "..")
-            ++n;
+    try {
+        Dir dir{path};
+        for (String name; dir->read(&name);) {
+            if (name != "." && name != "..")
+                ++n;
+        }
     }
+    catch (...) {}
     return n;
 }
 
-void Dir::create(const String &path, int mode)
+void Dir::create(const String &path, FileMode mode)
 {
-    if (::mkdir(path, mode) == -1)
+    if (::mkdir(path, +mode) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-void Dir::establish(const String &path, int mode)
+void Dir::establish(const String &path, FileMode mode)
 {
     StringList missingDirs;
     for (
@@ -135,7 +125,7 @@ void Dir::remove(const String &path)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-String Dir::createUnique(const String &path, int mode, char placeHolder)
+String Dir::createUnique(const String &path, FileMode mode, char placeHolder)
 {
     Ref<Random> random = Random::open(Process::getId());
     while (true) {
@@ -152,7 +142,7 @@ String Dir::createUnique(const String &path, int mode, char placeHolder)
                 mutate(candidate)->at(i) = r;
             }
         }
-        if (::mkdir(candidate, mode) == -1) {
+        if (::mkdir(candidate, +mode) == -1) {
             if (errno != EEXIST)
                 CC_SYSTEM_RESOURCE_ERROR(errno, candidate);
         }
@@ -162,7 +152,7 @@ String Dir::createUnique(const String &path, int mode, char placeHolder)
     }
 }
 
-String Dir::createTemp(int mode)
+String Dir::createTemp(FileMode mode)
 {
     return createUnique(
         Format{"/tmp/%%_########"}
@@ -173,7 +163,7 @@ String Dir::createTemp(int mode)
 
 void Dir::deplete(const String &path)
 {
-    Ref<DirWalker> walker = DirWalker::open(path);
+    DirWalker walker{path};
     walker->setIgnoreHidden(false);
     walker->setFollowSymlink(false);
     walker->setDeleteOrder(true);
