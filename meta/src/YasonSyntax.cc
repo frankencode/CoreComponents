@@ -711,20 +711,10 @@ Variant YasonSyntax::readList(const CharArray *text, const Token *token, Variant
         value = parseTypedList<bool>(text, token, expectedItemType);
     else if (expectedItemType == VariantType::Float)
         value = parseTypedList<float>(text, token, expectedItemType);
-    else if (expectedItemType == VariantType::String) {
-        StringList list;
-        for (const Token *child = token->firstChild(); child; child = child->nextSibling()) {
-            list->append(readValue(text, child, VariantType::String));
-        }
-        value = list;
-    }
-    else {
-        VariantList list;
-        for (const Token *child = token->firstChild(); child; child = child->nextSibling()) {
-            list->append(readValue(text, child, expectedItemType));
-        }
-        value = list;
-    }
+    else if (expectedItemType == VariantType::String)
+        value = parseTypedList<String>(text, token, expectedItemType);
+    else
+        value = parseTypedList<Variant>(text, token, expectedItemType);
 
     return value;
 }

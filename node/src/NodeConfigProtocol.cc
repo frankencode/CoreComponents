@@ -29,11 +29,7 @@ protected:
     {
         bool superUser = Process::isSuperUser();
         establish("address", "*");
-        establish("port",
-            superUser ?
-            (List<int>::create() << 80 << 443) :
-            (List<int>::create() << 8080 << 4443)
-        );
+        establish("port", superUser ? ListValue<int>{80, 443} : ListValue<int>{8080, 4443});
         establish("family", "");
         establish("tls", false);
         establish("user", "");

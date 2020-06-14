@@ -21,7 +21,7 @@ class TransferOutputWorker;
   * \see Stream
   * To achieve high performance data transfers reading from a source and writing to a sink has to be decoupled
   * into concurrent activities. Thereby waiting for pending writes to complete and waiting for new data to become
-  * available from the source can happen at the same time.
+  * available can happen at the same time.
   */
 class Transfer: public Object
 {
