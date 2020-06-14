@@ -15,7 +15,7 @@ namespace net {
 
 class RouteInfo;
 
-typedef List< Ref<RouteInfo> > RouteInfoList;
+using RouteInfoList = ListValue< Ref<RouteInfo> >;
 
 /** \class RouteInfo cc/net/RouteInfo
   * \brief Routing table access
@@ -26,7 +26,7 @@ public:
     /** Query the contents of the routing table
       * \return list of routing table entries
       */
-    static Ref<RouteInfoList> queryTable();
+    static RouteInfoList queryTable();
 
     /// Size of the source address in bits
     int sourceMask() const { return sourceMask_; }

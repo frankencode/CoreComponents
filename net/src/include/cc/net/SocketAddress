@@ -25,7 +25,7 @@ namespace net {
 class SocketAddressDetails;
 class SocketAddress;
 
-typedef List<SocketAddress> SocketAddressList;
+using SocketAddressList = ListValue<SocketAddress>;
 
 /** \class SocketAddress cc/net/SocketAddress
   * \brief Socket address
@@ -130,7 +130,7 @@ public:
       * The fully qualified domain name (aka canonical name) can be optionally retrieved.
       * \exception HostNameResolutionError
       */
-    static Ref<SocketAddressList> queryConnectionInfo(
+    static SocketAddressList queryConnectionInfo(
         const String &hostName,
         const String &serviceName = "",
         ProtocolFamily family = ProtocolFamily::Unspecified,

@@ -27,7 +27,7 @@ public:
     StringList server() const { return server_; }
     VariantMap environment() const { return static_cast<VariantMap::Instance *>(environment_); }
 
-    const SocketAddressList *serverAddress() const { return serverAddress_; }
+    SocketAddressList serverAddress() const { return serverAddress_; }
 
     int randomSeed() const { // FIXME: move to point of use
         static int counter = 0;
@@ -41,7 +41,7 @@ protected:
     StringList server_;
     Ref<MetaObject> environment_;
 
-    Ref<SocketAddressList> serverAddress_;
+    SocketAddressList serverAddress_;
 };
 
 }} // namespace cc::http

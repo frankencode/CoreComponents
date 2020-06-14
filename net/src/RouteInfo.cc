@@ -27,9 +27,9 @@ namespace net {
 
 #ifdef __linux
 
-Ref<RouteInfoList> RouteInfo::queryTable()
+RouteInfoList RouteInfo::queryTable()
 {
-    Ref<RouteInfoList> list = RouteInfoList::create();
+    RouteInfoList list;
 
     int fd = ::socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
     if (fd == -1) CC_SYSTEM_DEBUG_ERROR(errno);
@@ -187,10 +187,10 @@ Ref<RouteInfoList> RouteInfo::queryTable()
 
 #else // __linux
 
-Ref<RouteInfoList> RouteInfo::queryTable()
+RouteInfoList RouteInfo::queryTable()
 {
     #warning "RouteInfo is currently not supported for non-Linux systems"
-    return RouteInfoList::create();
+    return RouteInfoList{};
 }
 
 #endif // __linux

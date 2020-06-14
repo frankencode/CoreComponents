@@ -23,7 +23,7 @@ NetworkState::NetworkState(const String &interfaceName):
 {
     SocketAddress candidate;
 
-    Ref<RouteInfoList> routingTable = RouteInfo::queryTable();
+    RouteInfoList routingTable = RouteInfo::queryTable();
     for (const RouteInfo *entry: routingTable) {
         if (entry->source() || entry->destination()) continue;
         if (interfaceName_ != "" && entry->outputInterface() != interfaceName_) continue;

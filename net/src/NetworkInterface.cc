@@ -38,7 +38,7 @@ Ref<NetworkInterface> NetworkInterface::create()
 
 Ref<NetworkInterface> NetworkInterface::query(const String &name, int family)
 {
-    Ref<NetworkInterfaceList> list = queryAll(family);
+    NetworkInterfaceList list = queryAll(family);
     for (auto interface: list) {
         if (interface->name() == name)
             return interface;
@@ -48,10 +48,10 @@ Ref<NetworkInterface> NetworkInterface::query(const String &name, int family)
 }
 
 #ifdef __linux
-Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
+NetworkInterfaceList NetworkInterface::queryAll(int family)
 {
-    Ref<NetworkInterfaceList> list = NetworkInterfaceList::create();
-    getLink(list);
+    NetworkInterfaceList list;
+    getLink(&list);
 
     int families[2];
     families[0] = ((family == AF_UNSPEC) || (family == AF_INET6)) ? AF_INET6 : -1;
@@ -151,7 +151,7 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
                     }
 
                     if (!interface) {
-                        if (!getLink(list, data->ifa_index))
+                        if (!getLink(&list, data->ifa_index))
                             continue;
                         interface = list->at(list->count() - 1);
                     }
@@ -228,13 +228,12 @@ NetworkInterface::NetworkInterface():
     index_{-1},
     type_{0},
     flags_{0},
-    mtu_{0},
-    addressList_{SocketAddressList::create()}
+    mtu_{0}
 {}
 
 Ref<NetworkInterface> NetworkInterface::getLink(NetworkInterfaceList *list, int index)
 {
-    Ref<NetworkInterface> firstFound = 0;
+    Ref<NetworkInterface> firstFound;
 
     {
         int fd = ::socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
@@ -340,7 +339,7 @@ Ref<NetworkInterface> NetworkInterface::getLink(NetworkInterfaceList *list, int 
                     }
 
                     if (!firstFound) firstFound = interface;
-                    if (list) list->append(interface);
+                    if (list) (*list)->append(interface);
                     else break;
                 }
             }
@@ -355,9 +354,9 @@ Ref<NetworkInterface> NetworkInterface::getLink(NetworkInterfaceList *list, int 
     return firstFound;
 }
 
-Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
+NetworkInterfaceList NetworkInterface::queryAllIoctl(int family)
 {
-    Ref<NetworkInterfaceList> list = NetworkInterfaceList::create();
+    NetworkInterfaceList list;
 
     int fd = ::socket(AF_INET, SOCK_DGRAM, 0);
     if (fd == -1) CC_SYSTEM_DEBUG_ERROR(errno);
@@ -470,9 +469,9 @@ Ref<NetworkInterfaceList> NetworkInterface::queryAllIoctl(int family)
 #endif
 #define SA_RLEN(sa) ((sa)->sa_len ? (((sa)->sa_len + SALIGN) & ~SALIGN) : (SALIGN + 1))
 
-Ref<NetworkInterfaceList> NetworkInterface::queryAll(int family)
+NetworkInterfaceList NetworkInterface::queryAll(int family)
 {
-    Ref<NetworkInterfaceList> list = NetworkInterfaceList::create();
+    NetworkInterfaceList list;
 
     int mib[6];
     mib[0] = CTL_NET;

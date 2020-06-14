@@ -51,7 +51,7 @@ class ResolveHostName: public TestCase
         fout("hostName = \"%%\"\n") << hostName;
 
         String canonicalName;
-        Ref<SocketAddressList> list = SocketAddress::queryConnectionInfo(hostName, "http", ProtocolFamily::Unspecified, SocketType::Stream, &canonicalName);
+        SocketAddressList list = SocketAddress::queryConnectionInfo(hostName, "http", ProtocolFamily::Unspecified, SocketType::Stream, &canonicalName);
 
         fout("canonicalName = \"%%\"\n") << canonicalName;
 

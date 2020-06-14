@@ -67,13 +67,12 @@ NodeConfig::NodeConfig(const MetaObject *config):
 
     forceSecureTransport_ = config->value("tls");
 
-    address_ = SocketAddressList::create();
     if (family == ProtocolFamily::Local) {
         address_->append(SocketAddress{ProtocolFamily::Local, address});
     }
     else {
         if (address != "" && address != "*") {
-            Ref<SocketAddressList> l = SocketAddress::queryConnectionInfo(address, "http", family, SocketType::Stream);
+            SocketAddressList l = SocketAddress::queryConnectionInfo(address, "http", family, SocketType::Stream);
             for (SocketAddress &a: l) {
                 for (int p: ports) {
                     a->setPort(p);

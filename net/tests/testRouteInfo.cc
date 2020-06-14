@@ -20,7 +20,7 @@ class QueryRouteInfo: public TestCase
 public:
     void run()
     {
-        Ref<RouteInfoList> list = RouteInfo::queryTable();
+        RouteInfoList list = RouteInfo::queryTable();
 
         for (int i = 0; i < list->count(); ++i) {
             RouteInfo *info = list->at(i);

@@ -360,7 +360,7 @@ SocketAddress SocketAddress::resolveHost(const String &hostName, int port)
     return address;
 }
 
-Ref<SocketAddressList> SocketAddress::queryConnectionInfo(const String &hostName, const String &serviceName, ProtocolFamily family, SocketType socketType, String *canonicalName)
+SocketAddressList SocketAddress::queryConnectionInfo(const String &hostName, const String &serviceName, ProtocolFamily family, SocketType socketType, String *canonicalName)
 {
     addrinfo hint;
     addrinfo *head = nullptr;
@@ -383,7 +383,7 @@ Ref<SocketAddressList> SocketAddress::queryConnectionInfo(const String &hostName
     if (ret != 0 && ret != EAI_NONAME)
         CC_DEBUG_ERROR(gai_strerror(ret));
 
-    auto list = SocketAddressList::create();
+    SocketAddressList list;
 
     if (canonicalName) {
         if (head) {

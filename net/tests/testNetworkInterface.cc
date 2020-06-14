@@ -18,7 +18,7 @@ class QueryNetworkInterfaces: public TestCase
 {
     void run()
     {
-        Ref<NetworkInterfaceList> interfaces = NetworkInterface::queryAll();
+        NetworkInterfaceList interfaces = NetworkInterface::queryAll();
         for (int i = 0; i < interfaces->count(); ++i) {
             NetworkInterface *interface = interfaces->at(i);
             if (i != 0) fout() << nl;
@@ -36,36 +36,34 @@ class QueryNetworkInterfaces: public TestCase
             fout() << nl;
             fout() << "  HwAddr: " << interface->hardwareAddress()->toHex()->breakUp(2)->join("-") << nl;
             fout() << "  MTU:    " << interface->mtu() << nl;
-            const SocketAddressList *addressList = interface->addressList();
-            if (addressList) {
-                for (int k = 0; k < addressList->count(); ++k) {
-                    const SocketAddress &address = addressList->at(k);
-                    fout() << "  Addr:   " << address;
-                    const SocketAddressDetails *details = address->details();
-                    if (details) {
-                        bool comma = false;
-                        bool delim = true;
-                        if (details->networkMask() > 0)
-                            fout() << "/" << details->networkMask();
-                        if (details->localAddress()) {
-                            if (delim) { fout() << " --"; delim = false; }
-                            fout() << " Local: " << details->localAddress();
-                            comma = true;
-                        }
-                        if (details->broadcastAddress()) {
-                            if (delim) { fout() << " --"; delim = false; }
-                            if (comma) fout() << ",";
-                            fout() << " Bcast: " << details->broadcastAddress();
-                            comma = true;
-                        }
-                        if (details->anycastAddress()) {
-                            if (delim) { fout() << " --"; delim = false; }
-                            if (comma) fout() << ",";
-                            fout() << " Acast: " << details->anycastAddress();
-                        }
+            SocketAddressList addressList = interface->addressList();
+            for (int k = 0; k < addressList->count(); ++k) {
+                const SocketAddress &address = addressList->at(k);
+                fout() << "  Addr:   " << address;
+                const SocketAddressDetails *details = address->details();
+                if (details) {
+                    bool comma = false;
+                    bool delim = true;
+                    if (details->networkMask() > 0)
+                        fout() << "/" << details->networkMask();
+                    if (details->localAddress()) {
+                        if (delim) { fout() << " --"; delim = false; }
+                        fout() << " Local: " << details->localAddress();
+                        comma = true;
                     }
-                    fout() << nl;
+                    if (details->broadcastAddress()) {
+                        if (delim) { fout() << " --"; delim = false; }
+                        if (comma) fout() << ",";
+                        fout() << " Bcast: " << details->broadcastAddress();
+                        comma = true;
+                    }
+                    if (details->anycastAddress()) {
+                        if (delim) { fout() << " --"; delim = false; }
+                        if (comma) fout() << ",";
+                        fout() << " Acast: " << details->anycastAddress();
+                    }
                 }
+                fout() << nl;
             }
         }
     }

@@ -17,7 +17,7 @@ namespace cc {
 namespace http {
 
 using cc::net::SocketAddress;
-using cc::net::SocketAddressList;
+using cc::net::SocketAddressList; /// \todo shouldn't there by a cc::net::http?
 
 class DeliveryInstance;
 
@@ -34,7 +34,7 @@ public:
     void addDirectoryInstance(const String &path);
     void addEchoInstance();
 
-    const SocketAddressList *address() const { return address_; }
+    SocketAddressList address() const { return address_; }
 
     bool forceSecureTransport() const { return forceSecureTransport_; }
     int securePort() const { return securePort_; }
@@ -64,7 +64,7 @@ private:
 
     Ref<DeliveryInstance> createDeliveryInstance(const DeliveryService *service, const MetaObject *config) const;
 
-    Ref<SocketAddressList> address_;
+    SocketAddressList address_;
     bool forceSecureTransport_;
     int securePort_;
     String user_;

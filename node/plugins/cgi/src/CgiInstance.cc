@@ -25,8 +25,7 @@ CgiInstance::CgiInstance(const MetaObject *config):
     DeliveryInstance{config},
     script_{config->value("script")},
     server_{config->value("server")},
-    environment_{config->value("environment")},
-    serverAddress_{SocketAddressList::create()}
+    environment_{config->value("environment")}
 {
     /*if (script_ == "" && server_->count() == 0)
         throw UsageError{"CGI: Please provide a \"script\" or a \"server\""};*/
@@ -40,7 +39,7 @@ CgiInstance::CgiInstance(const MetaObject *config):
             }
             else {
                 CCNODE_NOTICE() << "Resolving host name of server \"" << uri->host() << "\"..." << nl;
-                Ref<SocketAddressList> list = SocketAddress::queryConnectionInfo(uri->host());
+                SocketAddressList list = SocketAddress::queryConnectionInfo(uri->host());
                 if (list->count() == 0)
                     throw UsageError{Format{"CGI: Failed to resolve host name of server \"%%\""} << uri->host()};
                 address = list->at(0);
