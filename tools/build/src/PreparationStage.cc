@@ -36,7 +36,7 @@ bool PreparationStage::run()
             return success_ = false;
     }
 
-    if (!plan()->predicates()) return success_ = true;
+    if (plan()->predicates()->count() == 0) return success_ = true;
 
     for (Predicate *predicate: plan()->predicates())
     {

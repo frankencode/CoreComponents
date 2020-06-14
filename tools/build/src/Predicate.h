@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/meta/MetaObject>
-#include <cc/List>
+#include <cc/ListValue>
 
 namespace ccbuild {
 
@@ -47,6 +47,6 @@ private:
     String clean_;
 };
 
-typedef List< Ref<Predicate> > PredicateList;
+using PredicateList = ListValue< Ref<Predicate> > ;
 
 } // namespace ccbuild

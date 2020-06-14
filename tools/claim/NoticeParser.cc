@@ -151,7 +151,7 @@ Ref<Notice> NoticeSyntax::readNotice(Header *header) const
     Token *token = rootToken->firstChild();
     CC_ASSERT(token);
     token = token->nextSibling();
-    Ref<CopyrightList> copyrights = CopyrightList::create();
+    CopyrightList copyrights;
     while (token) {
         if (token->rule() != copyright_) break;
         copyrights->append(readCopyright(token, message));

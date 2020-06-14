@@ -90,7 +90,7 @@ String ShHeaderStyle::str(const Notice *notice) const
 {
     Format f;
     f << "##\n";
-    CopyrightList *copyrights = notice->copyrights();
+    CopyrightList copyrights = notice->copyrights();
     for (int i = 0; i < copyrights->count(); ++i) {
         Copyright *c = copyrights->at(i);
         f << " # Copyright (C) ";

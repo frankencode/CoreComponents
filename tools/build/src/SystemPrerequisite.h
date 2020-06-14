@@ -63,7 +63,7 @@ private:
     bool autoConfigure_;
 };
 
-typedef List< Ref<SystemPrerequisite> > SystemPrerequisiteList;
-typedef Map< String, Ref<SystemPrerequisiteList> > SystemPrerequisitesByName;
+using SystemPrerequisiteList = ListValue< Ref<SystemPrerequisite> >;
+using SystemPrerequisitesByName = MapValue<String, SystemPrerequisiteList>;
 
 } // namespace ccbuild

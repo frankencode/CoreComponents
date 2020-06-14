@@ -43,11 +43,11 @@ private:
     int i1_;
 };
 
-typedef List< Ref<TextMatch> > Matches;
+using Matches = ListValue< Ref<TextMatch> >;
 
-Ref<Matches> findMatches(const CharArray *text, const SyntaxDefinition *textPattern);
+Matches findMatches(const CharArray *text, const SyntaxDefinition *textPattern);
 void displayMatch(const CharArray *path, const CharArray *text, const TextMatch *match);
-String replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement);
+String replaceMatches(const CharArray *text, Matches &matches, const CharArray *replacement);
 
 int main(int argc, char **argv)
 {
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
                         continue;
 
                     String text = File{path}->map();
-                    Ref<Matches> matches = findMatches(text, textPattern);
+                    Matches matches = findMatches(text, textPattern);
 
                     if (replaceOption && matches->count() > 0) {
                         File file{path, FileOpen::ReadWrite};
@@ -195,9 +195,9 @@ int main(int argc, char **argv)
     return 0;
 }
 
-Ref<Matches> findMatches(const CharArray *text, const SyntaxDefinition *textPattern)
+Matches findMatches(const CharArray *text, const SyntaxDefinition *textPattern)
 {
-    Ref<Matches> matches = Matches::create();
+    Matches matches;
     int ln = 1;
     for (int i = 0; i < text->count();) {
         Ref<SyntaxState> state = textPattern->find(text, i);
@@ -256,7 +256,7 @@ void displayMatch(const CharArray *path, const CharArray *text, const TextMatch 
     }
 }
 
-String replaceMatches(const CharArray *text, Matches *matches, const CharArray *replacement)
+String replaceMatches(const CharArray *text, Matches &matches, const CharArray *replacement)
 {
     StringList fragments;
     int fi0 = 0; // begin of fragment

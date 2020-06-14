@@ -92,7 +92,7 @@ int main(int argc, char **argv)
                         Notice *notice = coverage->at(j)->value();
                         Format line{stdOut()};
                         line << coverage->at(j)->key() << " (";
-                        CopyrightList *copyrights = notice->copyrights();
+                        CopyrightList copyrights = notice->copyrights();
                         for (int k = 0; k < copyrights->count(); ++k) {
                             Copyright *copyright = copyrights->at(k);
                             if (copyright->holder() == holder) {
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
             for (int i = 0; i < coverage->count(); ++i) {
                 String path = coverage->at(i)->key();
                 Notice *notice = coverage->at(i)->value();
-                CopyrightList *copyrights = notice->copyrights();
+                CopyrightList copyrights = notice->copyrights();
                 for (int j = 0; j < copyrights->count(); ++j)
                     if (copyrights->at(j)->holder() != holder) continue;
                 Token *token = notice->header()->token();
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 
         if (insertOption) {
             auto exposure = report->exposure();
-            Ref<CopyrightList> copyrights = CopyrightList::create();
+            CopyrightList copyrights;
             copyrights->append(Copyright::create(holder, yearStart, yearEnd));
             Ref<Notice> notice = Notice::create(copyrights, statement);
             for (int i = 0; i < exposure->count(); ++i) {

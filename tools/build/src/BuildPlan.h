@@ -100,10 +100,10 @@ public:
     ModuleList modules() const { return modules_; }
     bool containsCPlusPlus() const { return containsCPlusPlus_; }
 
-    PredicateList *predicates() const { return predicates_; }
+    PredicateList predicates() const { return predicates_; }
     BuildPlanList &prerequisites() { return prerequisites_; }
     BuildPlanList prerequisites() const { return prerequisites_; }
-    SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
+    SystemPrerequisitesByName systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
 
     BuildPlan *extensionTarget() const { return extensionTarget_; }
 
@@ -185,8 +185,8 @@ private:
     bool modulesInitialized_ { false };
     bool containsCPlusPlus_;
 
-    Ref<PredicateList> predicates_;
-    Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
+    PredicateList predicates_;
+    SystemPrerequisitesByName systemPrerequisitesByName_;
     BuildPlanList prerequisites_;
     bool prerequisitesRead_ { false };
     Ref<BuildPlan> extensionTarget_;

@@ -18,22 +18,22 @@ using namespace cc;
 class Notice: public Object
 {
 public:
-    static Ref<Notice> create(CopyrightList *copyrights, const String &statement, Header *header = nullptr) {
+    static Ref<Notice> create(const CopyrightList &copyrights, const String &statement, Header *header = nullptr) {
         return new Notice{copyrights, statement, header};
     }
 
-    CopyrightList *copyrights() const { return copyrights_; }
+    CopyrightList copyrights() const { return copyrights_; }
     String statement() const { return statement_; }
     Header *header() const { return header_; }
 
 private:
-    Notice(CopyrightList *copyrights, const String &statement, Header *header = nullptr):
+    Notice(const CopyrightList &copyrights, const String &statement, Header *header = nullptr):
         copyrights_{copyrights},
         statement_{statement->trim()},
         header_{header}
     {}
 
-    Ref<CopyrightList> copyrights_;
+    CopyrightList copyrights_;
     String statement_;
     Ref<Header> header_;
 };

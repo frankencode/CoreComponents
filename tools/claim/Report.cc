@@ -54,7 +54,7 @@ Report::Report(const StringList &dirPaths, Pattern works, int worksMinLines):
                     it->value()->insert(path, notice);
                 }
                 {
-                    CopyrightList *copyrights = notice->copyrights();
+                    CopyrightList copyrights = notice->copyrights();
                     for (int j = 0; j < copyrights->count(); ++j) {
                         String holder = copyrights->at(j)->holder();
                         MapValue<String, Coverage>::Iterator it;

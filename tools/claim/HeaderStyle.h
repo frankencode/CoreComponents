@@ -9,7 +9,6 @@
 #pragma once
 
 #include <cc/Registration>
-#include <cc/List>
 #include "Header.h"
 #include "Notice.h"
 
@@ -34,7 +33,5 @@ protected:
     Ref<HeaderStyle> headerStyle_;
     String language_;
 };
-
-typedef List< Ref<HeaderStyle> > HeaderStyleList;
 
 } // namespace ccclaim

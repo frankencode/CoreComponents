@@ -189,16 +189,14 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
                 name = item;
             }
 
-            if (!systemPrerequisitesByName_)
-                systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
-            Ref<SystemPrerequisiteList> l;
-            if (!systemPrerequisitesByName_->lookup(name, &l))
-                systemPrerequisitesByName_->insert(name, l = SystemPrerequisiteList::create());
+            SystemPrerequisitesByName::Iterator it;
+            if (!systemPrerequisitesByName_->find(name, &it))
+                systemPrerequisitesByName_->insert(name, SystemPrerequisiteList{}, &it);
 
             Ref<SystemPrerequisite> prerequisite = SystemPrerequisite::create(name);
             prerequisite->setVersionMin(versionMin);
             prerequisite->setVersionMax(versionMax);
-            l->append(prerequisite);
+            it->value()->append(prerequisite);
         }
     }
 
@@ -206,17 +204,14 @@ void BuildPlan::readRecipe(BuildPlan *parentPlan)
         for (const MetaObject *object: recipe_->children()) {
             if (object->className() == "Dependency") {
                 Ref<SystemPrerequisite> p = SystemPrerequisite::read(object, this);
-                if (!systemPrerequisitesByName_)
-                    systemPrerequisitesByName_ = SystemPrerequisitesByName::create();
-                Ref<SystemPrerequisiteList> l;
-                if (!systemPrerequisitesByName_->lookup(p->name(), &l))
-                    systemPrerequisitesByName_->insert(p->name(), l = SystemPrerequisiteList::create());
+                SystemPrerequisitesByName::Iterator it;
+                if (!systemPrerequisitesByName_->find(p->name(), &it))
+                    systemPrerequisitesByName_->insert(p->name(), SystemPrerequisiteList{}, &it);
                 else
                     throw UsageError{Format{"%%: Ambiguous system dependency '%%'"} << recipePath_ << p->name()};
-                l->append(p);
+                it->value()->append(p);
             }
             else if (object->className() == "Predicate") {
-                if (!predicates_) predicates_ = PredicateList::create();
                 readPredicate(object);
             }
             else if (object->className() == "PreBuild") {
