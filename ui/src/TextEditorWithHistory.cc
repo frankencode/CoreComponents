@@ -11,9 +11,7 @@
 namespace cc {
 namespace ui {
 
-TextEditorWithHistory::TextEditorWithHistory():
-    past_{History::create()},
-    future_{History::create()}
+TextEditorWithHistory::TextEditorWithHistory()
 {}
 
 String TextEditorWithHistory::text() const

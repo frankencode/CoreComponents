@@ -6,7 +6,11 @@
  *
  */
 
+#include <cc/net/NetworkInterface>
+#include <cc/exceptions>
 #ifdef __linux
+#include <cc/File>
+#include <cc/LineSource>
 #include <sys/types.h>
 #include <sys/socket.h> // socket, sendmsg, recvmsg
 #include <linux/netlink.h>
@@ -22,14 +26,7 @@
 #include <net/route.h>
 #include <errno.h>
 #endif
-
 #include <unistd.h> // getpid
-#ifdef __linux
-#include <cc/File>
-#include <cc/LineSource>
-#endif
-#include <cc/exceptions>
-#include <cc/net/NetworkInterface>
 
 namespace cc {
 namespace net {

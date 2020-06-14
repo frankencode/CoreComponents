@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/stdio>
-#include "DependencyCache.h"
-#include "BuildPlan.h"
-#include "JobScheduler.h"
 #include "AnalyseStage.h"
+#include "JobScheduler.h"
+#include "BuildPlan.h"
+#include "DependencyCache.h"
+#include <cc/stdio>
 
 namespace ccbuild {
 
@@ -73,7 +73,7 @@ bool AnalyseStage::run()
     struct ModulePathOrder {
         inline static bool below(Module *a, Module *b) { return a->modulePath() < b->modulePath(); }
     };
-    plan()->setModules(plan()->modules()->sort<ModulePathOrder>());
+    plan()->modules() = plan()->modules()->sort<ModulePathOrder>();
 
     return success_ = true;
 }

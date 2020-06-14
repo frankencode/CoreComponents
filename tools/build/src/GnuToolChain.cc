@@ -198,7 +198,7 @@ String GnuToolChain::linkCommand(const BuildPlan *plan) const
     String name = plan->name();
     Version version = plan->version();
     int options = plan->options();
-    ModuleList *modules = plan->modules();
+    ModuleList modules = plan->modules();
 
     Format args;
 
@@ -376,7 +376,7 @@ String GnuToolChain::pkgConfig(const BuildPlan *plan) const
     f << "Libs: -L${libdir} -l" << plan->name() << nl;
 
     if (plan->prerequisites()->count() > 0) {
-        auto requiresList = List<const BuildPlan *>::create();
+        ListValue<const BuildPlan *> requiresList;
         for (const BuildPlan *prerequisite: plan->prerequisites()) {
             if (prerequisite->options() & BuildPlan::Package) {
                 for (const BuildPlan *child: prerequisite->prerequisites()) {

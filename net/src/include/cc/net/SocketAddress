@@ -8,16 +8,16 @@
 
 #pragma once
 
+#include <cc/net/Uri>
+#include <cc/net/types>
+#include <cc/net/exceptions>
+#include <cc/str>
+
+#include <sys/socket.h> // connect
+#include <sys/un.h> // sockaddr_un
 #include <arpa/inet.h>
 #include <netinet/in.h> // sockaddr_in, etc.
 #include <netdb.h> // addrinfo
-#include <sys/socket.h> // connect
-#include <sys/un.h> // sockaddr_un
-
-#include <cc/str>
-#include <cc/net/types>
-#include <cc/net/exceptions>
-#include <cc/net/Uri>
 
 namespace cc {
 namespace net {

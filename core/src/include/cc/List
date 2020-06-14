@@ -209,9 +209,9 @@ public:
       * \return sorted list
       */
     template<class SortOrder>
-    Ref<List> sort(bool unique = false) const
+    ListValue<T> sort(bool unique = false) const
     {
-        if (count() == 0) return List::create();
+        if (count() == 0) return ListValue<T>{};
         auto heap = GenericHeap<T, SortOrder>::create(count());
         return sortWithHeap(heap, unique);
     }
@@ -221,9 +221,9 @@ public:
       * \param unique eliminate duplicates
       * \return sorted list
       */
-    Ref<List> sort(SortOrder order = Ascending, bool unique = false) const
+    ListValue<T> sort(SortOrder order = Ascending, bool unique = false) const
     {
-        if (count() == 0) return List::create();
+        if (count() == 0) return ListValue<T>{};
         auto heap = Heap<T>::create(count(), order);
         return sortWithHeap(heap, unique);
     }
@@ -342,11 +342,11 @@ private:
     }
 
     template<class Heap>
-    Ref<List> sortWithHeap(Ref<Heap> heap, bool unique = false) const
+    ListValue<T> sortWithHeap(Ref<Heap> heap, bool unique = false) const
     {
         for (const T &item: this) heap->push(item);
 
-        Ref<List> result = List::create();
+        ListValue<T> result;
         if (unique) {
             T prev, item;
             heap->pop(&prev);

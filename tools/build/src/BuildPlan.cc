@@ -295,10 +295,8 @@ void BuildPlan::gatherAutoConfigureSystemPrerequisites(SetValue<String> &names)
         }
     }
 
-    if (prerequisites_) {
-        for (auto plan: prerequisites_)
-            plan->gatherAutoConfigureSystemPrerequisites(names);
-    }
+    for (auto plan: prerequisites_)
+        plan->gatherAutoConfigureSystemPrerequisites(names);
 }
 
 int BuildPlan::run()
@@ -495,9 +493,8 @@ String BuildPlan::findPrerequisite(const String &prerequisitePath) const
 
 void BuildPlan::readPrerequisites()
 {
-    if (prerequisites_) return;
-
-    prerequisites_ = BuildPlanList::create();
+    if (prerequisitesRead_) return;
+    prerequisitesRead_ = true;
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
@@ -507,18 +504,6 @@ void BuildPlan::readPrerequisites()
         StringList packageItems = Variant::cast<StringList>(recipe_->value("include"));
         if (packageItems->count() > 0) prerequisitePaths = packageItems;
     }
-
-    #if 0
-    CC_INSPECT(recipePath_);
-    CC_INSPECT(recipe_->value("use"));
-    CC_INSPECT(recipe_->value("use")->typeName());
-    CC_INSPECT(recipe_->value("include"));
-    CC_INSPECT(recipe_->value("include")->typeName());
-    CC_INSPECT(prerequisitePaths);
-    CC_INSPECT(prerequisitePaths->count());
-    CC_INSPECT(prerequisitePaths->at(0));
-    CC_INSPECT(prerequisitePaths->at(0)->count());
-    #endif
 
     for (const String &prerequisitePath: prerequisitePaths) {
         String path = findPrerequisite(prerequisitePath);
@@ -599,11 +584,11 @@ void BuildPlan::globSources()
 
 void BuildPlan::initModules()
 {
-    if (modules_) return;
+    if (modulesInitialized_) return;
 
     if ((options_ & Test) && !(options_ & BuildTests)) return;
 
-    modules_ = ModuleList::create();
+    modulesInitialized_ = true;
 
     String suffix;
     {

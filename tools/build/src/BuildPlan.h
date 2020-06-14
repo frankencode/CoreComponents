@@ -37,7 +37,7 @@ using namespace cc;
 using namespace cc::meta;
 
 class BuildPlan;
-typedef List< Ref<BuildPlan> > BuildPlanList;
+using BuildPlanList = ListValue< Ref<BuildPlan> >;
 
 class BuildPlan: public BuildParameters
 {
@@ -96,12 +96,13 @@ public:
 
     StringList sources() const { return sources_; }
     StringList bundle() const { return bundle_; }
-    ModuleList *modules() const { return modules_; }
-    void setModules(ModuleList *newList) { modules_ = newList; }
+    ModuleList &modules() { return modules_; }
+    ModuleList modules() const { return modules_; }
     bool containsCPlusPlus() const { return containsCPlusPlus_; }
 
     PredicateList *predicates() const { return predicates_; }
-    BuildPlanList *prerequisites() const { return prerequisites_; }
+    BuildPlanList &prerequisites() { return prerequisites_; }
+    BuildPlanList prerequisites() const { return prerequisites_; }
     SystemPrerequisitesByName *systemPrerequisitesByName() const { return systemPrerequisitesByName_; }
 
     BuildPlan *extensionTarget() const { return extensionTarget_; }
@@ -180,12 +181,14 @@ private:
 
     StringList sources_;
     StringList bundle_;
-    Ref<ModuleList> modules_;
+    ModuleList modules_;
+    bool modulesInitialized_ { false };
     bool containsCPlusPlus_;
 
     Ref<PredicateList> predicates_;
     Ref<SystemPrerequisitesByName> systemPrerequisitesByName_;
-    Ref<BuildPlanList> prerequisites_;
+    BuildPlanList prerequisites_;
+    bool prerequisitesRead_ { false };
     Ref<BuildPlan> extensionTarget_;
 
     Ref<BuildParameters> usage_;

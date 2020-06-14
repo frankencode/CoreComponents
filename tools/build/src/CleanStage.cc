@@ -48,7 +48,7 @@ bool CleanStage::run()
     }
 
     if (plan()->options() & BuildPlan::Tools) {
-        for (Module *module: plan()->modules())
+        for (const Module *module: plan()->modules())
             shell()->unlink(module->toolName());
     }
 

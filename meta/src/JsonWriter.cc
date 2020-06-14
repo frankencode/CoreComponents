@@ -113,7 +113,7 @@ void JsonWriter::writeIndent(int depth)
 template<class T>
 void JsonWriter::writeTypedList(Variant value, int depth)
 {
-    List<T> *list = Variant::cast< List<T> *>(value);
+    ListValue<T> list = Variant::cast< ListValue<T> >(value);
     if (list->count() == 0) {
         format_ << "[]";
         return;

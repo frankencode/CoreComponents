@@ -24,8 +24,7 @@ void Document::save()
 
 Document::Document(const String &text, const String &path):
     path_{path},
-    text_{text},
-    spans_{Spans::create()}
+    text_{text}
 {}
 
 }} // namespace cc::toki

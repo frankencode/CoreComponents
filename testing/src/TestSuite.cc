@@ -29,7 +29,6 @@ TestSuite *TestSuite::instance()
 }
 
 TestSuite::TestSuite():
-    testCases_{TestCases::create()},
     testCaseFailureCount_{0},
     testCaseSkipCount_{0},
     totalFailureCount_{0}

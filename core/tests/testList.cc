@@ -67,8 +67,8 @@ class Sorting: public TestCase
         for (int i = 0; i < 10; ++i)
             list->append(random->get(0, 99));
         print(list);
-        Ref<IntList> list2 = list->sort();
-        print(list2);
+        auto list2 = list->sort();
+        // print(list2);
         CC_VERIFY(list2->count() == list->count());
         for (int i = 0; i < list2->count() - 1; ++i)
             CC_VERIFY(list2->at(i) <= list2->at(i + 1));
