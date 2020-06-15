@@ -206,8 +206,9 @@ public:
     Ref(const QByteArray &b): Ref{b.constData(), b.size()} {}
     Ref(const QString &b): Ref{b.toUtf8()} {}
 
-    operator QByteArray() const { return QByteArray{get()->chars(), get->count()}; }
-    operator QString() const { return QString::fromUtf8(get()->chars(), get()->count()); }
+    operator QByteArray() const;
+    operator QString() const;
+
     /** @}
       */
     #endif // QT_CORE_LIB
@@ -1252,5 +1253,17 @@ inline void Ref<const CharArray>::set(const CharArray *b)
         a_ = b;
     }
 }
+
+#ifdef QT_CORE_LIB
+inline Ref<const CharArray>::operator QByteArray() const
+{
+    return QByteArray{get()->chars(), get()->count()};
+}
+
+inline Ref<const CharArray>::operator QString() const
+{
+    return QString::fromUtf8(get()->chars(), get()->count());
+}
+#endif // QT_CORE_LIB
 
 } // namespace cc
