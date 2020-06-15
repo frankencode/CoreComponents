@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2007-2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,167 +8,40 @@
 
 #pragma once
 
-#include <cc/assert>
-#include <cc/ArrayInstance>
+#include <cc/CircularBufferInstance>
 
 namespace cc {
 
 /** \class CircularBuffer cc/CircularBuffer
-  * \ingroup container_lowlevel
+  * \ingroup container
   * \brief Circular buffer data container
   * \tparam T item type
-  * \see QueueInstance, CircularChannel
+  * \see Queue, CircularChannel
+  * \todo provide constant iterator type
   */
 template<class T>
-class CircularBuffer: public Object
+class CircularBuffer
 {
 public:
-    /// Item type
-    typedef T Item;
+    typedef CircularBufferInstance<T> Instance;
+    typedef typename Instance::Item Item; ///< item type
 
-    /** Create a new circular buffer
-      * \param capacity max number of items storable in the circular buffer
-      * \return new object instance
-      */
-    static Ref<CircularBuffer> create(int capacity)
-    {
-        return new CircularBuffer{capacity};
-    }
+    CircularBuffer() = default;
 
-    /// Maximum number of items storable in the circular buffer
-    int capacity() const { return size_; }
+    CircularBuffer(int capacity):
+        instance_{new Instance{capacity}}
+    {}
 
-    /// Current number of items stored in the circular buffer
-    int count() const { return fill_; }
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return instance_; }
 
-    /** Check if index is within range
-      * \param i item index
-      * \return true if i is a valid index
-      */
-    bool has(int i) const { return (0 <= i) && (i < fill_); }
+    CircularBuffer &operator<<(const T& x) { instance_->pushBack(x); return *this; }
+    CircularBuffer &operator>>(T& x) { instance_->popFront(&x); return *this; }
 
-    /** Access item at index i (readonly)
-      * \param i item index
-      * \return low-level reference
-      */
-    T at(int i) const { return front(i); }
-
-    /** Insert a new item at the end of the circular buffer
-      * \param item item value
-      */
-    void pushBack(const T& item)
-    {
-        if (fill_ == size_) popFront();
-        ++head_;
-        if (head_ >= size_) head_ = 0;
-        ++fill_;
-        buf_->at(head_) = item;
-    }
-
-    /** Add a new item to the head of the queue
-      * \param item item value
-      */
-    void pushFront(const T& item)
-    {
-        if (fill_ == size_) popBack();
-        buf_->at(tail_) = item;
-        --tail_;
-        if (tail_ < 0) tail_ = size_ - 1;
-        ++fill_;
-    }
-
-    /** Remove an item from the head of the queue
-      * \param item optionally return the item value
-      * \return item value
-      */
-    T popFront(T* item)
-    {
-        CC_ASSERT(fill_ > 0);
-        ++tail_;
-        if (tail_ >= size_) tail_ = 0;
-        --fill_;
-        return *item = buf_->at(tail_);
-    }
-
-    /** Remove an item from the end of the queue
-      * \param item optionally return the item value
-      * \return item value
-      */
-    T popBack(T* item)
-    {
-        CC_ASSERT(fill_ > 0);
-        *item = buf_->at(head_);
-        --head_;
-        if (head_ < 0) head_ = size_ - 1;
-        --fill_;
-        return *item;
-    }
-
-    /** Remove the last item from the queue
-      * \return item value
-      */
-    T popBack() { T item; return popBack(&item); }
-
-    /** Remove the first item from the queue
-      * \return item value
-      */
-    T popFront() { T item; return popFront(&item); }
-
-    /// \copydoc pushBack(const T &, int)
-    void push(const T &item) { pushBack(item); }
-
-    /// \copydoc popFront(T *)
-    T pop(T* item) { return popFront(item); }
-
-    /// \copydoc popFront()
-    T pop() { return popFront(); }
-
-    /// Return the an item from the front
-    T back(int i = 0) const
-    {
-        CC_ASSERT((0 <= i) && (i < fill_));
-        i = -i;
-        i += head_;
-        if (i < 0) i += size_;
-        return buf_->at(i);
-    }
-
-    /// Return the an item from the end
-    T front(int i = 0) const
-    {
-        CC_ASSERT((0 <= i) && (i < fill_));
-        i += tail_ + 1;
-        if (i >= size_) i -= size_;
-        return buf_->at(i);
-    }
-
-    /// Reset the circular buffer to an empty state
-    void deplete()
-    {
-        fill_ = 0;
-        head_ = size_ - 1;
-        tail_ = size_ - 1;
-    }
+    explicit operator bool() const { return instance_; }
 
 private:
-    friend class Local<CircularBuffer>;
-
-    CircularBuffer(int size):
-        fill_{0},
-        size_{size},
-        head_{size_ - 1},
-        tail_{size_ - 1},
-        buf_{size}
-    {}
-
-    ~CircularBuffer()
-    {}
-
-    int fill_;
-    int size_;
-    int head_;
-    int tail_;
-    Local< ArrayInstance<T> > buf_;
+    Ref<Instance> instance_;
 };
 
 } // namespace cc

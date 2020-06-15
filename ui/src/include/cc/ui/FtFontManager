@@ -41,9 +41,10 @@ private:
 
     Ref<FontFace> openFontFace(const String &path) override;
 
-    typedef CircularBuffer< Ref<const FtScaledFont> > RecentFonts;
+    using RecentFonts = CircularBuffer< Ref<const FtScaledFont> >;
+    using FontCache = Map<String, RecentFonts>;
 
-    mutable Map< String, Ref<RecentFonts> > fontCache_;
+    mutable FontCache fontCache_;
 };
 
 }} // namespace cc::ui

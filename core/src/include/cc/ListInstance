@@ -15,7 +15,7 @@
 
 namespace cc {
 
-template<class T>
+template<class>
 class List;
 
 /** \class ListInstance cc/ListInstance
