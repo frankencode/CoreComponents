@@ -273,7 +273,7 @@ void BuildPlan::checkDuplicateTargetNames()
     }
 }
 
-void BuildPlan::gatherAutoConfigureSystemPrerequisites(SetValue<String> &names)
+void BuildPlan::gatherAutoConfigureSystemPrerequisites(Set<String> &names)
 {
     if (configureListComplete_) return;
     configureListComplete_ = true;
@@ -298,7 +298,7 @@ int BuildPlan::run()
     readPrerequisites();
 
     if (recipe_->value("configure-list")) {
-        SetValue<String> names;
+        Set<String> names;
         gatherAutoConfigureSystemPrerequisites(names);
         for (auto name: names)
             fout() << name << nl;

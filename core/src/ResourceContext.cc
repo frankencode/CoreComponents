@@ -8,7 +8,7 @@
 
 #include <cc/ResourceContext>
 #include <cc/ThreadLocalSingleton>
-#include <cc/Queue>
+#include <cc/QueueInstance>
 
 namespace cc {
 
@@ -18,7 +18,7 @@ ResourceContext *ResourceContext::instance()
 }
 
 ResourceContext::ResourceContext():
-    queue_{Queue<String>::create()}
+    queue_{QueueInstance<String>::create()}
 {}
 
 void ResourceContext::push(const String &resource)

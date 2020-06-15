@@ -11,10 +11,8 @@
 #include <cc/ui/FontFamily>
 #include <cc/ui/GlyphRun>
 #include <cc/ui/TextRun>
-#include <cc/MapValue>
+#include <cc/Map>
 #include <cc/Source>
-
-namespace cc { template<class, class> class Map; }
 
 namespace cc {
 namespace ui {
@@ -51,7 +49,7 @@ protected:
 
     static StringList familySearchPattern(const String &name);
 
-    using FontFamilies = MapValue< String, Ref<FontFamily> >;
+    using FontFamilies = Map< String, Ref<FontFamily> >;
     FontFamilies fontFamilies_;
 };
 

@@ -10,8 +10,6 @@
 
 #include <cc/ui/Display>
 
-namespace cc { template<class, class> class Map; }
-
 namespace cc {
 namespace ui {
 

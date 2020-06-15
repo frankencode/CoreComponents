@@ -4,8 +4,8 @@
 #include <cc/ui/PointerEvent>
 #include <cc/ui/Application>
 #include <cc/ui/View>
-#include <cc/QueueValue>
-#include <cc/MapValue>
+#include <cc/Queue>
+#include <cc/Map>
 #include <cc/stdio>
 
 using namespace cc;
@@ -90,8 +90,8 @@ class MainView: public View
         return true;
     }
 
-    MapValue<TouchFingerId, TouchPoint *> assignedTouchPoints_;
-    QueueValue<TouchPoint *> freeTouchPoints_;
+    Map<TouchFingerId, TouchPoint *> assignedTouchPoints_;
+    Queue<TouchPoint *> freeTouchPoints_;
     Ref<TouchDevice> touchDevice_;
 };
 

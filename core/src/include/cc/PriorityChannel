@@ -54,7 +54,7 @@ public:
         notEmpty_->signal();
     }
 
-    /** \copydoc Queue::popBack(T *)
+    /** \copydoc QueueInstance::popBack(T *)
       */
     T popBack(T *item = nullptr)
     {
@@ -64,7 +64,7 @@ public:
         return queue_->popBack(item);
     }
 
-    /** \copydoc Queue::popFront(T *)
+    /** \copydoc QueueInstance::popFront(T *)
       */
     T popFront(T *item = nullptr)
     {

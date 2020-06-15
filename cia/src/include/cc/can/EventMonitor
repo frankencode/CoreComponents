@@ -11,7 +11,7 @@
 #include <cc/can/EventHandler>
 #include <cc/can/SafetyEventHandler>
 #include <cc/can/CanMedia>
-#include <cc/MapValue>
+#include <cc/Map>
 #include <cc/Mutex>
 #include <cc/Semaphore>
 #include <cc/Worker>
@@ -43,7 +43,7 @@ private:
 
     Ref<CanMedia> media_;
 
-    MapValue< int, Ref<Event> > events_;
+    Map< int, Ref<Event> > events_;
 
     Worker worker_;
     Mutex mutex_;

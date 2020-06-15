@@ -10,7 +10,7 @@
 
 #include <cc/ui/FontManager>
 #include <cc/CircularBuffer>
-#include <cc/MapValue>
+#include <cc/Map>
 
 namespace cc { template<class> class ThreadLocalSingleton; }
 
@@ -43,7 +43,7 @@ private:
 
     typedef CircularBuffer< Ref<const FtScaledFont> > RecentFonts;
 
-    mutable MapValue< String, Ref<RecentFonts> > fontCache_;
+    mutable Map< String, Ref<RecentFonts> > fontCache_;
 };
 
 }} // namespace cc::ui

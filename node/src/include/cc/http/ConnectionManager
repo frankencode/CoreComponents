@@ -12,7 +12,7 @@
 #include <cc/http/ConnectionInfo>
 #include <cc/types>
 #include <cc/List>
-#include <cc/MapValue>
+#include <cc/Map>
 
 namespace cc {
 namespace http {
@@ -34,7 +34,7 @@ private:
 
     const LoggingInstance *errorLoggingInstance() const;
 
-    using ConnectionCounts = MapValue<uint64_t, int>;
+    using ConnectionCounts = Map<uint64_t, int>;
 
     Ref<const NodeConfig> nodeConfig_;
     Ref<ClosedConnections> closedConnections_;

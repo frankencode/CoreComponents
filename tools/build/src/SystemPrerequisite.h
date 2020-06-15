@@ -64,6 +64,6 @@ private:
 };
 
 using SystemPrerequisiteList = List< Ref<SystemPrerequisite> >;
-using SystemPrerequisitesByName = MapValue<String, SystemPrerequisiteList>;
+using SystemPrerequisitesByName = Map<String, SystemPrerequisiteList>;
 
 } // namespace ccbuild

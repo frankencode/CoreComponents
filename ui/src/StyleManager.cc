@@ -8,7 +8,6 @@
 
 #include <cc/ui/StyleManager>
 #include <cc/Singleton>
-#include <cc/Map>
 #include <cc/ValueSource>
 #include <cc/Process>
 #include <cc/assert>

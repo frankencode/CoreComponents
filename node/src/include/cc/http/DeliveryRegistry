@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/http/DeliveryService>
-#include <cc/MapValue>
+#include <cc/Map>
 
 namespace cc { template<class> class Singleton; }
 
@@ -33,7 +33,7 @@ private:
 
     DeliveryRegistry();
 
-    MapValue< String, Ref<DeliveryService> > serviceByName_;
+    Map< String, Ref<DeliveryService> > serviceByName_;
 };
 
 }} // namespace cc::http

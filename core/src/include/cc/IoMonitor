@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/ArrayValue>
-#include <cc/MapValue>
+#include <cc/Map>
 #include <cc/IoTarget>
 #include <cc/SystemIo>
 
@@ -92,7 +92,7 @@ private:
     IoMonitor(int maxCount);
 
     ArrayValue<struct pollfd> fds_;
-    MapValue<int, Ref<IoEvent> > events_;
+    Map<int, Ref<IoEvent> > events_;
 };
 
 } // namespace cc

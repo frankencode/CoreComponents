@@ -10,7 +10,7 @@
 
 #include <cc/tar/ArchiveWriter>
 #include <cc/FileStatus>
-#include <cc/MapValue>
+#include <cc/Map>
 
 namespace cc {
 namespace tar {
@@ -52,7 +52,7 @@ private:
     };
 
     String zero_;
-    MapValue<FileId, String> hardLinks_;
+    Map<FileId, String> hardLinks_;
     #if 0
     FileStatus longPathStatus_;
     FileStatus longLinkStatus_;

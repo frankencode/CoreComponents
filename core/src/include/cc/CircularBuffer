@@ -17,7 +17,7 @@ namespace cc {
   * \ingroup container_lowlevel
   * \brief Circular buffer data container
   * \tparam T item type
-  * \see Queue, CircularChannel
+  * \see QueueInstance, CircularChannel
   */
 template<class T>
 class CircularBuffer: public Object

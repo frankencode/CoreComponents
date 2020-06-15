@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/String>
-#include <cc/MapValue>
+#include <cc/Map>
 #include <cc/Singleton>
 
 namespace ccbuild {
@@ -33,7 +33,7 @@ private:
 
     bool verbose_;
 
-    MapValue<String> cache_;
+    Map<String> cache_;
 };
 
 } // namespace ccbuild

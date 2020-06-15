@@ -188,8 +188,8 @@ private:
     Window *window_ { nullptr };
     View *parent_ { nullptr };
 
-    MapValue<uint64_t, Ref<View> > children_;
-    MapValue<uint64_t, Ref<View> > visibleChildren_;
+    Map<uint64_t, Ref<View> > children_;
+    Map<uint64_t, Ref<View> > visibleChildren_;
 
     Ref<Image> image_;
     Ref<Object> context_;

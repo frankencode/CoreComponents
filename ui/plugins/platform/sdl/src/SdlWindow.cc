@@ -8,7 +8,7 @@
 
 #include <cc/exceptions>
 #include <cc/stdio>
-#include <cc/Queue>
+#include <cc/QueueInstance>
 #include <cc/ui/Image>
 #include <cc/ui/View>
 #include <cc/ui/SdlContext>
@@ -306,4 +306,4 @@ SdlContext *SdlWindow::sdlContext(View *view)
     return context;
 }
 
-}} // namespace cc::ui
+}} // namespace

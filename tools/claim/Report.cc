@@ -46,7 +46,7 @@ Report::Report(const StringList &dirPaths, Pattern works, int worksMinLines):
                 coverage_->insert(path, notice);
                 {
                     String digest = cc::crypto::sha1(notice->statement());
-                    MapValue<String, Coverage>::Iterator it;
+                    Map<String, Coverage>::Iterator it;
                     if (!coverageByDigest_->find(digest, &it)) {
                         coverageByDigest_->insert(digest, Coverage{}, &it);
                         statementByDigest_->insert(digest, notice->statement());
@@ -57,7 +57,7 @@ Report::Report(const StringList &dirPaths, Pattern works, int worksMinLines):
                     CopyrightList copyrights = notice->copyrights();
                     for (int j = 0; j < copyrights->count(); ++j) {
                         String holder = copyrights->at(j)->holder();
-                        MapValue<String, Coverage>::Iterator it;
+                        Map<String, Coverage>::Iterator it;
                         if (!coverageByHolder_->find(holder, &it))
                             coverageByHolder_->insert(holder, Coverage{}, &it);
                         it->value()->insert(path, notice);

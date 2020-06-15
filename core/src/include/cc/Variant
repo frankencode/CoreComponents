@@ -13,14 +13,14 @@
 #include <cc/Color>
 #include <cc/Version>
 #include <cc/String>
-#include <cc/MapValue>
+#include <cc/Map>
 
 namespace cc {
 
 class Variant;
 
 using VariantList = List<Variant>;
-using VariantMap = MapValue<String, Variant>;
+using VariantMap = Map<String, Variant>;
 
 /** \internal
   * \brief Variant cast policy

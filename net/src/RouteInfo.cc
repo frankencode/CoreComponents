@@ -9,7 +9,7 @@
 #include <cc/net/RouteInfo>
 #ifdef __linux
 #include <cc/net/NetworkInterface>
-#include <cc/MapValue>
+#include <cc/Map>
 #include <cc/stdio> // DEBUG
 #endif // __linux
 #include <cc/exceptions>
@@ -77,7 +77,7 @@ RouteInfoList RouteInfo::queryTable()
         cc::free(msg);
     }
 
-    MapValue<int, Ref<NetworkInterface> > interfaceByIndex;
+    Map<int, Ref<NetworkInterface> > interfaceByIndex;
 
     // process reply
     {

@@ -13,7 +13,7 @@
 #include <cc/Arguments>
 #include <cc/Thread>
 #include <cc/ByteSink>
-#include <cc/MapValue>
+#include <cc/Map>
 #include <cc/System>
 #include <cc/debug>
 #include <cc/stdio>
@@ -104,7 +104,7 @@ private:
         }
     }
 
-    MapValue<Selector::Key, String> settings_;
+    Map<Selector::Key, String> settings_;
 };
 
 int main(int argc, char **argv)

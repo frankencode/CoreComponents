@@ -687,7 +687,7 @@ void SyntaxDebugger::printDefinition(bool omitUnusedRules)
     typedef DefinitionNode::RuleByName RuleByName;
     RuleByName *ruleByName = SyntaxDebugFactory::definition()->ruleByName_;
 
-    MapValue<int, RuleNode *> ruleById;
+    Map<int, RuleNode *> ruleById;
 
     for (RuleByName::Index i = ruleByName->first(); ruleByName->has(i); ++i) {
         RuleNode *rule = ruleByName->value(i);

@@ -9,7 +9,7 @@
 #include <cc/ui/Window>
 #include <cc/ui/Application>
 #include <cc/ui/Control>
-#include <cc/Queue>
+#include <cc/QueueInstance>
 
 namespace cc {
 namespace ui {

@@ -10,9 +10,8 @@
 
 #include <cc/http/LoggingService>
 #include <cc/meta/MetaProtocol>
-#include <cc/MapValue>
+#include <cc/Map>
 
-namespace cc { template<class, class> class Map; }
 namespace cc { template<class> class Singleton; }
 
 namespace cc {
@@ -36,7 +35,7 @@ private:
 
     LoggingRegistry();
 
-    MapValue<String, Ref<LoggingService> > serviceByName_;
+    Map<String, Ref<LoggingService> > serviceByName_;
     Ref<MetaProtocol> loggingProtocol_;
 };
 

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/MapValue>
-#include <cc/SetValue>
+#include <cc/Map>
+#include <cc/Set>
 #include <cc/glob/Pattern>
 #include "Notice.h"
 
@@ -18,7 +18,7 @@ namespace ccclaim {
 using namespace cc;
 using namespace cc::glob;
 
-using Coverage = MapValue<String, Ref<Notice> >;
+using Coverage = Map<String, Ref<Notice> >;
 
 class Report: public Object
 {
@@ -29,10 +29,10 @@ public:
     Pattern works() const { return works_; }
     int worksMinLines() const { return worksMinLines_; }
     Coverage coverage() const { return coverage_; }
-    SetValue<String> exposure() const { return exposure_; }
-    MapValue<String, Coverage> coverageByDigest() const { return coverageByDigest_; }
-    MapValue<String, Coverage> coverageByHolder() const { return coverageByHolder_; }
-    MapValue<String, String> statementByDigest() const { return statementByDigest_; }
+    Set<String> exposure() const { return exposure_; }
+    Map<String, Coverage> coverageByDigest() const { return coverageByDigest_; }
+    Map<String, Coverage> coverageByHolder() const { return coverageByHolder_; }
+    Map<String, String> statementByDigest() const { return statementByDigest_; }
 
 private:
     Report(const StringList &dirPaths, Pattern works, int worksMinLines);
@@ -40,10 +40,10 @@ private:
     Pattern works_;
     int worksMinLines_;
     Coverage coverage_;
-    SetValue<String> exposure_;
-    MapValue<String, Coverage> coverageByDigest_;
-    MapValue<String, Coverage> coverageByHolder_;
-    MapValue<String, String> statementByDigest_;
+    Set<String> exposure_;
+    Map<String, Coverage> coverageByDigest_;
+    Map<String, Coverage> coverageByHolder_;
+    Map<String, String> statementByDigest_;
 };
 
 } // namespace ccclaim

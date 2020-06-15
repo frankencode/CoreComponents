@@ -62,7 +62,7 @@ public:
     void printDefinition(bool omitUnusedRules = false);
 
     typedef DefinitionNode::StateIdByName StateIdByName;
-    typedef MapValue<int, String> StateNameById;
+    typedef Map<int, String> StateNameById;
 
     StateNameById newReverseMap(StateIdByName *stateIdByName);
     StateNameById &flagNameById();

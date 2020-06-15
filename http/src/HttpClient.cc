@@ -54,7 +54,7 @@ Ref<HttpResponse> HttpClient::post(const Uri &uri, Stream *source)
     );
 }
 
-Ref<HttpResponse> HttpClient::postForm(const Uri &uri, const MapValue<String> &form)
+Ref<HttpResponse> HttpClient::postForm(const Uri &uri, const Map<String> &form)
 {
     return HttpClient::connect(uri)->query("POST", uri->requestPath(),
         [=](HttpGenerator *request) {

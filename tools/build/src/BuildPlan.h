@@ -10,7 +10,7 @@
 
 #include <cc/PrefixTree>
 #include <cc/Map>
-#include <cc/SetValue>
+#include <cc/Set>
 #include <cc/Version>
 #include "Module.h"
 #include "BuildParameters.h"
@@ -149,7 +149,7 @@ private:
     void readRecipe(BuildPlan *parentPlan = nullptr);
     void readPredicate(const MetaObject *object);
     void checkDuplicateTargetNames();
-    void gatherAutoConfigureSystemPrerequisites(SetValue<String> &names);
+    void gatherAutoConfigureSystemPrerequisites(Set<String> &names);
 
     String findPrerequisite(const String &prerequisitePath) const;
     void readPrerequisites();

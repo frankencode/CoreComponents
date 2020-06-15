@@ -13,7 +13,7 @@
 namespace cc {
 
 template<class> class ThreadLocalSingleton;
-template<class> class Queue;
+template<class> class QueueInstance;
 
 /** \class ResourceContext cc/ResourceContext
   * \brief Cascaded resource context for error reporting
@@ -33,7 +33,7 @@ private:
     friend class ThreadLocalSingleton<ResourceContext>;
     ResourceContext();
 
-    Ref< Queue<String> > queue_;
+    Ref< QueueInstance<String> > queue_;
 };
 
 } // namespace cc

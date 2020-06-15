@@ -1,21 +1,21 @@
 #include <cc/debug>
 #include <cc/stdio>
-#include <cc/MapValue>
+#include <cc/Map>
 
-namespace cc { template class MapValue<int>; }
+namespace cc { template class Map<int>; }
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
 
-    MapValue<int> a;
+    Map<int> a;
     for (int i = 0; i < 10; ++i)
         a->insert(i, i * i);
 
     CC_INSPECT(a);
 
-    MapValue<int> b = { KeyValue<int>{1, 1}, KeyValue<int>{2, 2}, KeyValue<int>{3, 4}, KeyValue<int>{4, 6} };
-    MapValue<int> c = b;
+    Map<int> b = { KeyValue<int>{1, 1}, KeyValue<int>{2, 2}, KeyValue<int>{3, 4}, KeyValue<int>{4, 6} };
+    Map<int> c = b;
 
     for (auto &x: b) ++x->value();
 

@@ -57,7 +57,7 @@ String camelize(const String &name)
     return s->replace("_", "")->replace("-", "");
 }
 
-using GlyphMap = MapValue<String, uchar_t>;
+using GlyphMap = Map<String, uchar_t>;
 
 GlyphMap parseFile(const String &path, int *maxKeyLength)
 {

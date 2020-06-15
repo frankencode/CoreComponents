@@ -92,7 +92,7 @@ protected:
 
     FontSmoothing fontSmoothing_ { FontSmoothing::Default };
 
-    MapValue<TouchFingerId, Ref<Control> > touchTargets_; // \todo rename to "touchedControls_"
+    Map<TouchFingerId, Ref<Control> > touchTargets_; // \todo rename to "touchedControls_"
 
     const Control *focusControlSaved_ { nullptr };
 };

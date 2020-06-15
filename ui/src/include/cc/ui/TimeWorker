@@ -11,7 +11,7 @@
 #include <cc/Thread>
 #include <cc/Channel>
 #include <cc/Semaphore>
-#include <cc/MapValue>
+#include <cc/Map>
 #include <cc/ui/Timer>
 
 namespace cc {
@@ -86,7 +86,7 @@ protected:
     typedef Channel< Ref<Timeout> > StartRequests;
     Ref<StartRequests> startRequests_;
 
-    MapValue<TimeKey, Ref<Timeout> > timeouts_;
+    Map<TimeKey, Ref<Timeout> > timeouts_;
 
     Semaphore ack_;
 };

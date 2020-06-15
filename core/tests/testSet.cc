@@ -8,12 +8,12 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/Set>
+#include <cc/SetInstance>
 
 using namespace cc;
 using namespace cc::testing;
 
-namespace cc { template class Set<String>; }
+namespace cc { template class SetInstance<String>; }
 
 int main(int argc, char **argv)
 {

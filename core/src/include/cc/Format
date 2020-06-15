@@ -10,13 +10,13 @@
 
 #include <cc/String>
 #include <cc/Variant>
-#include <cc/Queue>
+#include <cc/QueueInstance>
 #include <cc/Stream>
 #include <cc/str>
 
 namespace cc {
 
-template<class> class Queue;
+template<class> class QueueInstance;
 
 /** \addtogroup formatted_io
   * \{
@@ -83,7 +83,7 @@ private:
 
     Ref<Stream> stream_;
     bool isNull_;
-    Ref< Queue<int> > placeHolder_;
+    Ref< QueueInstance<int> > placeHolder_;
     String lastInsert_;
     int lastPosition_;
 };
@@ -114,7 +114,7 @@ String str(const List<T> &a)
 }
 
 template<class K, class T>
-String str(const MapValue<K, T> &a)
+String str(const Map<K, T> &a)
 {
     auto n = a->count();
     if (n == 0) return "[]";
@@ -129,7 +129,7 @@ String str(const MapValue<K, T> &a)
 }
 
 template<class T>
-String str(const SetValue<T> &a)
+String str(const Set<T> &a)
 {
     auto n = a->count();
     if (n == 0) return "[]";

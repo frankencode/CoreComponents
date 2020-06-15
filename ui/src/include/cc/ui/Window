@@ -13,12 +13,12 @@
 #include <cc/ui/Image>
 #include <cc/ui/ScaledFont>
 
-namespace cc { template<class> class Queue; }
+namespace cc { template<class> class QueueInstance; }
 
 namespace cc {
 namespace ui {
 
-typedef Queue< Ref<const UpdateRequest> > Frame;
+typedef QueueInstance< Ref<const UpdateRequest> > Frame;
 
 enum class WindowMode: unsigned int {
     Default           = 0,

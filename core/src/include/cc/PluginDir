@@ -10,7 +10,7 @@
 
 #include <cc/Source>
 #include <cc/Plugin>
-#include <cc/MapValue>
+#include <cc/Map>
 
 namespace cc {
 
@@ -20,7 +20,7 @@ public:
     static Ref<PluginDir> open(const String &path);
 
     String path() const;
-    MapValue< String, Ref<Plugin> > loadedPlugins() const;
+    Map< String, Ref<Plugin> > loadedPlugins() const;
 
 protected:
     virtual void onLoaded(Plugin *plugin) {}
@@ -32,7 +32,7 @@ private:
     PluginDir *open();
 
     String path_;
-    MapValue< String, Ref<Plugin> > loadedPlugins_;
+    Map< String, Ref<Plugin> > loadedPlugins_;
 };
 
 } // namespace cc

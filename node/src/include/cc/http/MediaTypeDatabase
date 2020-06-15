@@ -10,7 +10,6 @@
 
 #include <cc/String>
 #include <cc/PrefixTree>
-#include <cc/Map>
 
 namespace cc { template<class> class Singleton; }
 

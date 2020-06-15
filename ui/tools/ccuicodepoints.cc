@@ -16,7 +16,7 @@ String camelize(const String &name)
     return s->replace("_", "");
 }
 
-using IconMap = MapValue<String, uchar_t>;
+using IconMap = Map<String, uchar_t>;
 
 IconMap parseFile(const String &path, int *maxNameLength)
 {

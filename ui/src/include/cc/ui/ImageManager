@@ -10,7 +10,7 @@
 
 #include <cc/ui/ImagePlugin>
 #include <cc/ui/Image>
-#include <cc/MapValue>
+#include <cc/Map>
 #include <cc/Source>
 
 namespace cc { template<typename> class Singleton; }
@@ -35,7 +35,7 @@ private:
     ImageManager();
     void registerPlugin(ImagePlugin *plugin);
 
-    using Plugins = MapValue< String, Ref<ImagePlugin> >;
+    using Plugins = Map< String, Ref<ImagePlugin> >;
     Plugins plugins_;
 };
 

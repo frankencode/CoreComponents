@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/QueueValue>
+#include <cc/Queue>
 #include <cc/Mutex>
 #include <cc/Guard>
 #include <cc/WaitCondition>
@@ -32,7 +32,7 @@ public:
         return new Channel{};
     }
 
-    /// \copydoc Queue::pushBack()
+    /// \copydoc QueueInstance::pushBack()
     void pushBack(const T &item)
     {
         Guard<Mutex> guard{mutex_};
@@ -40,7 +40,7 @@ public:
         notEmpty_->signal();
     }
 
-    /// \copydoc Queue::pushFront()
+    /// \copydoc QueueInstance::pushFront()
     void pushFront(const T &item)
     {
         Guard<Mutex> guard{mutex_};
@@ -48,7 +48,7 @@ public:
         notEmpty_->signal();
     }
 
-    /// \copydoc Queue::popBack(T *)
+    /// \copydoc QueueInstance::popBack(T *)
     const T &popBack(T *item)
     {
         Guard<Mutex> guard{mutex_};
@@ -57,7 +57,7 @@ public:
         return queue_->popBack(item);
     }
 
-    /// \copydoc Queue::popFront(T *)
+    /// \copydoc QueueInstance::popFront(T *)
     const T &popFront(T *item)
     {
         Guard<Mutex> guard{mutex_};
@@ -66,10 +66,10 @@ public:
         return queue_->popFront(item);
     }
 
-    /// \copydoc Queue::popBack()
+    /// \copydoc QueueInstance::popBack()
     T popBack() { T h; return popBack(&h); }
 
-    /// \copydoc Queue::popFront()
+    /// \copydoc QueueInstance::popFront()
     T popFront() { T h; return popFront(&h); }
 
     /// Wait for the channel to become not empty
@@ -159,7 +159,7 @@ protected:
 private:
     Mutex mutex_;
     WaitCondition notEmpty_;
-    QueueValue<T> queue_;
+    Queue<T> queue_;
 };
 
 } // namespace cc

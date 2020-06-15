@@ -22,8 +22,8 @@
 #include <cc/can/SaeMessage>
 #include <cc/stdio>
 #include <cc/System>
-#include <cc/SetValue>
-#include <cc/MapValue>
+#include <cc/Set>
+#include <cc/Map>
 
 namespace cc {
 namespace can {
@@ -47,10 +47,10 @@ void CanLogger::bootstrap()
 
 void CanLogger::run()
 {
-    SetValue<int> blockWriteTransfers;
-    SetValue<int> blockReadTransfers;
+    Set<int> blockWriteTransfers;
+    Set<int> blockReadTransfers;
 
-    MapValue<int, double> lastTimes;
+    Map<int, double> lastTimes;
 
     double t0 = -1;
 

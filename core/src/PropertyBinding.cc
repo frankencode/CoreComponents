@@ -7,7 +7,7 @@
  */
 
 #include <cc/PropertyBinding>
-#include <cc/Set>
+#include <cc/SetInstance>
 
 namespace cc {
 

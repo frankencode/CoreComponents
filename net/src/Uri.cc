@@ -166,7 +166,7 @@ String Uri::decode(const String &s)
     return s;
 }
 
-String Uri::encodeForm(const MapValue<String> &form)
+String Uri::encodeForm(const Map<String> &form)
 {
     StringList parts;
     for (auto item: form) {
@@ -179,9 +179,9 @@ String Uri::encodeForm(const MapValue<String> &form)
     return parts->join("&");
 }
 
-MapValue<String> Uri::decodeForm(const String &payload)
+Map<String> Uri::decodeForm(const String &payload)
 {
-    MapValue<String> form;
+    Map<String> form;
     auto parts = payload->split("&");
     for (auto part: parts) {
         int j = part->scan('&');

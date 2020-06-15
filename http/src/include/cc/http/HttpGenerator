@@ -30,7 +30,7 @@ public:
     void transmit(const String &payload);
     void transmit(Stream *source);
 
-    typedef Map<String, String> Header;
+    typedef Map<String, String>::Instance Header;
     void setHeader(Header *header);
 
     void beginTransmission(ssize_t contentLength = -1);

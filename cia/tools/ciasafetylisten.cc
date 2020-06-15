@@ -10,7 +10,7 @@
 #include <cc/Arguments>
 #include <cc/stdio>
 #include <cc/System>
-#include <cc/MapValue>
+#include <cc/Map>
 #include <cc/exceptions>
 #include <cc/debug>
 #include <limits>
@@ -94,7 +94,7 @@ void safetyListen(String interface, int canId, int invCanId, double cycleTime, d
 {
     CanSocket can{interface};
 
-    MapValue<int, double> lastTimes;
+    Map<int, double> lastTimes;
 
     double t0 = System::now();
 

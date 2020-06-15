@@ -27,7 +27,7 @@ Format::Format(const String &pattern, Stream *stream):
             (*this)->append(pattern->copy(i0, i1));
         if (i1 == pattern->count()) break;
         int j = (*this)->count() + n;
-        if (!placeHolder_) placeHolder_ = Queue<int>::create();
+        if (!placeHolder_) placeHolder_ = QueueInstance<int>::create();
         placeHolder_->push(j);
         ++n;
         i0 = i1 + 2;
@@ -90,4 +90,4 @@ Format &Format::operator<<(const FormatSignal &s)
     return *this;
 }
 
-} // namespace cc
+} // namesp

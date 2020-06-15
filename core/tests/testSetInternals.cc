@@ -2,11 +2,10 @@
 #include <cc/stdio>
 #include <cc/debug>
 #include <cc/Random>
-#include <cc/Set>
+#include <cc/SetInstance>
 #include <cc/bucket_internals>
 #include <cc/File>
 #include <cc/Array>
-#include <cc/Set>
 #include <time.h>
 #include <set>
 #ifdef _MSC_VER
@@ -25,7 +24,7 @@ int sum(const Array<int> *items)
     return sum;
 }
 
-int sum(const Set<int> *items)
+int sum(const SetInstance<int> *items)
 {
     int sum = 0;
     for (int x: items) sum += x;
@@ -36,7 +35,7 @@ class InsertionRemovalTest: public TestCase
 {
 protected:
     virtual void scramble(Array<int> *test) = 0;
-    virtual void dotify(const Set<int> *set) {}
+    virtual void dotify(const SetInstance<int> *set) {}
 
 private:
     void run() override
@@ -51,7 +50,7 @@ private:
 
         scramble(&test);
 
-        Local<Set<int>> set;
+        Local<SetInstance<int>> set;
         auto t = ::clock();
         for (auto x: test) set->insert(x);
         t = ::clock() - t;
@@ -77,7 +76,7 @@ class AscendingInsertionRemovalTest: public InsertionRemovalTest
     void scramble(Array<int> *) override
     {}
 
-    void dotify(const Set<int> *set)
+    void dotify(const SetInstance<int> *set)
     {
         File{"set_asc_ins.dot", FileOpen::Overwrite}->write(bucket::Internals::dotify(set));
     }
@@ -98,7 +97,7 @@ class RandomInsertionRemovalTest: public InsertionRemovalTest
         Local<Random>{0}->scramble(test);
     }
 
-    void dotify(const Set<int> *set)
+    void dotify(const SetInstance<int> *set)
     {
         File{"set_rnd_ins.dot", FileOpen::Overwrite}->write(bucket::Internals::dotify(set));
     }
@@ -119,7 +118,7 @@ int main(int argc, char **argv)
 
     CC_INSPECT(sum(test));
 
-    Local<Set<int>> set;
+    Local<SetInstance<int>> set;
     for (auto x: test) set->insert(x);
 
     File::open("set_rnd_ins.dot", FileOpen::WriteOver)->write(bucket::Internals::dotify(&set));
@@ -153,11 +152,11 @@ int main(int argc, char **argv)
 
     #ifdef NDEBUG
     #if 1
-    CC_INSPECT(sizeof(Set<int>));
+    CC_INSPECT(sizeof(SetInstance<int>));
     CC_INSPECT(sizeof(bucket::Node));
     CC_INSPECT(sizeof(bucket::Branch));
     CC_INSPECT(sizeof(bucket::Leaf<int>));
-    CC_INSPECT(sizeof(Set<int>)/16.);
+    CC_INSPECT(sizeof(SetInstance<int>)/16.);
     CC_INSPECT(sizeof(bucket::Node)/16.);
     CC_INSPECT(sizeof(bucket::Branch)/16.);
     CC_INSPECT(sizeof(bucket::Leaf<int>)/16.);
@@ -184,7 +183,7 @@ int main(int argc, char **argv)
     {
         auto tl = ::clock();
         for (int j = 0; j < m; ++j) {
-            Local<Set<int>> set;
+            Local<SetInstance<int>> set;
             for (auto x: test) set->insert(x);
         }
         tl = ::clock() - tl;
@@ -212,7 +211,7 @@ int main(int argc, char **argv)
         {
             uint64_t tx = __rdtsc();
             //{
-                Local<Set<Item>> set;
+                Local<SetInstance<Item>> set;
                 for (auto x: test) set->insert(x);
             //}
             tx = __rdtsc() - tx;

@@ -12,14 +12,14 @@
 
 namespace cc {
 
-template<class> class Set;
+template<class> class SetInstance;
 
 class PropertyBinding: public Object
 {
 protected:
     Notifier changed;
 
-    typedef Set< Ref<PropertyBinding> > Association;
+    typedef SetInstance< Ref<PropertyBinding> > Association;
 
     PropertyBinding(bool dirty);
 

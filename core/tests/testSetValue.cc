@@ -1,20 +1,20 @@
 #include <cc/debug>
 #include <cc/stdio>
-#include <cc/SetValue>
+#include <cc/Set>
 
-namespace cc { template class SetValue<int>; }
+namespace cc { template class Set<int>; }
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
 
-    SetValue<int> a;
+    Set<int> a;
     for (int i = 0; i < 10; ++i)
         a << i;
 
     CC_INSPECT(a);
 
-    SetValue<int> b = a;
+    Set<int> b = a;
     int x, y;
     a >> x >> y;
 
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     CC_INSPECT(a < b);
     CC_INSPECT(b < a);
 
-    SetValue<String> c = { "A", "B", "C" };
+    Set<String> c = { "A", "B", "C" };
 
     CC_INSPECT(c);
 

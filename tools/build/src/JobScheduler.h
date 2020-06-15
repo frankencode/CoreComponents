@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Thread>
-#include <cc/SetValue>
+#include <cc/Set>
 #include "Job.h"
 
 namespace ccbuild {
@@ -51,8 +51,8 @@ private:
     Ref<JobChannel> requestChannel_;
     Ref<JobChannel> replyChannel_;
 
-    QueueValue< Ref<JobServer> > serverPool_;
-    SetValue< Ref<Job> > derivatives_;
+    Queue< Ref<JobServer> > serverPool_;
+    Set< Ref<Job> > derivatives_;
 
     bool started_;
     int status_;

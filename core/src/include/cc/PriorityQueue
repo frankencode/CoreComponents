@@ -20,7 +20,7 @@ class PriorityQueueValue;
   * \ingroup container_dynamic
   * \brief Priority based queue data container
   * \tparam T item type
-  * \see Queue, Channel
+  * \see QueueInstance, Channel
   */
 template<class T>
 class PriorityQueue: public Object

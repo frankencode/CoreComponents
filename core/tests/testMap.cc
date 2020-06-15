@@ -10,14 +10,14 @@
 #include <cc/stdio>
 #include <cc/Variant>
 #include <cc/System>
-#include <cc/Map>
+#include <cc/MapInstance>
 #include <cc/Random>
 
 using namespace cc;
 using namespace cc::testing;
 
-namespace cc { template class Map<String, String>; }
-namespace cc { template class Map<String, Variant>; }
+namespace cc { template class MapInstance<String, String>; }
+namespace cc { template class MapInstance<String, Variant>; }
 
 int fib(int n)
 {
@@ -30,7 +30,7 @@ class InsertionIteration: public TestCase
 {
     void run()
     {
-        auto names = Map<String>::create();
+        auto names = MapInstance<String>::create();
         String test[6][2] = {
             { "Joe", "Doe" },
             { "Hans", "Mustermax" },
@@ -53,7 +53,7 @@ class InsertionRemoval: public TestCase
 {
     void run()
     {
-        auto map = Map<int>::create();
+        auto map = MapInstance<int>::create();
         const int n = 20;
         {
             auto random = Random::open(0);
