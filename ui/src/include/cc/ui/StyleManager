@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include <cc/Source>
 #include <cc/ui/StylePlugin>
+#include <cc/MapValue>
+#include <cc/Source>
 
 namespace cc { template<typename> class Singleton; }
-namespace cc { template<typename, typename> class Map; }
 
 namespace cc {
 namespace ui {
@@ -36,8 +36,8 @@ private:
 
     void registerPlugin(StylePlugin *plugin);
 
-    typedef Map< String, Ref<StylePlugin> > Plugins;
-    Ref<Plugins> plugins_;
+    using Plugins = MapValue< String, Ref<StylePlugin> >;
+    Plugins plugins_;
     mutable Ref<StylePlugin> activePlugin_;
     String defaultStyleName_;
 

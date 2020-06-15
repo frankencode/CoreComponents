@@ -8,8 +8,9 @@
 
 #pragma once
 
-#include <cc/CircularBuffer>
 #include <cc/ui/FontManager>
+#include <cc/CircularBuffer>
+#include <cc/MapValue>
 
 namespace cc { template<class> class ThreadLocalSingleton; }
 
@@ -41,9 +42,8 @@ private:
     Ref<FontFace> openFontFace(const String &path) override;
 
     typedef CircularBuffer< Ref<const FtScaledFont> > RecentFonts;
-    typedef Map< String, Ref<RecentFonts> > FontCache;
 
-    mutable Ref<FontCache> fontCache_;
+    mutable MapValue< String, Ref<RecentFonts> > fontCache_;
 };
 
 }} // namespace cc::ui

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/String>
-#include <cc/Map>
+#include <cc/MapValue>
 
 namespace cc { class File; }
 namespace cc { namespace meta { class MetaObject; }}
@@ -41,9 +41,7 @@ private:
     Ref<BuildPlan> buildPlan_;
     String cachePath_;
     double cacheTime_;
-    typedef Map< String, Ref<Module> > Cache;
-    Ref<Cache> cache_;
-
+    MapValue< String, Ref<Module> > cache_;
     StringList previousSources_;
 };
 

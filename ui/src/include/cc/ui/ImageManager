@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include <cc/Source>
-#include <cc/ui/Image>
 #include <cc/ui/ImagePlugin>
+#include <cc/ui/Image>
+#include <cc/MapValue>
+#include <cc/Source>
 
 namespace cc { template<typename> class Singleton; }
-namespace cc { template<typename, typename> class Map; }
 
 namespace cc {
 namespace ui {
@@ -35,8 +35,8 @@ private:
     ImageManager();
     void registerPlugin(ImagePlugin *plugin);
 
-    typedef Map< String, Ref<ImagePlugin> > Plugins;
-    Ref<Plugins> plugins_;
+    using Plugins = MapValue< String, Ref<ImagePlugin> >;
+    Plugins plugins_;
 };
 
 }} // namespace cc::ui

@@ -9,7 +9,6 @@
 #include <cc/http/DeliveryRegistry>
 #include <cc/http/NodeConfigProtocol>
 #include <cc/Singleton>
-#include <cc/Map>
 
 namespace cc {
 namespace http {
@@ -19,8 +18,7 @@ DeliveryRegistry *DeliveryRegistry::instance()
     return Singleton<DeliveryRegistry>::instance();
 }
 
-DeliveryRegistry::DeliveryRegistry():
-    serviceByName_{ServiceByName::create()}
+DeliveryRegistry::DeliveryRegistry()
 {}
 
 void DeliveryRegistry::registerService(DeliveryService *service)

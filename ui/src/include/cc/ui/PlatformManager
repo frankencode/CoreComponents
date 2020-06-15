@@ -9,9 +9,9 @@
 #pragma once
 
 #include <cc/ui/PlatformPlugin>
+#include <cc/MapValue>
 
 namespace cc { template<typename> class Singleton; }
-namespace cc { template<typename, typename> class Map; }
 
 namespace cc {
 namespace ui {
@@ -35,8 +35,8 @@ private:
 
     void registerPlugin(PlatformPlugin *plugin);
 
-    typedef Map< String, Ref<PlatformPlugin> > Plugins;
-    Ref<Plugins> plugins_;
+    using Plugins = MapValue< String, Ref<PlatformPlugin> >;
+    Plugins plugins_;
 
     Ref<PlatformPlugin> activePlugin_;
 };

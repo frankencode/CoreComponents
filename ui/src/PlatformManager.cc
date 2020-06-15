@@ -8,7 +8,6 @@
 
 #include <cc/ui/PlatformManager>
 #include <cc/Singleton>
-#include <cc/Map>
 #include <cc/ValueSource>
 #include <cc/assert>
 
@@ -20,8 +19,7 @@ PlatformManager *PlatformManager::instance()
     return Singleton<PlatformManager>::instance();
 }
 
-PlatformManager::PlatformManager():
-    plugins_{Plugins::create()}
+PlatformManager::PlatformManager()
 {}
 
 void PlatformManager::registerPlugin(PlatformPlugin *plugin)
@@ -39,7 +37,7 @@ bool PlatformManager::getPlugin(const String &name, PlatformPlugin **plugin) con
 
 Ref< Source<PlatformPlugin *> > PlatformManager::getAllPlugins() const
 {
-    return ValueSource<Plugins, PlatformPlugin *>::open(plugins_);
+    return ValueSource<Plugins::Instance, PlatformPlugin *>::open(plugins_);
 }
 
 PlatformPlugin *PlatformManager::activePlugin() const

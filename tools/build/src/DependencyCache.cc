@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/Format>
+#include "DependencyCache.h"
+#include "BuildPlan.h"
+#include <cc/meta/yason>
 #include <cc/File>
 #include <cc/FileStatus>
-#include <cc/meta/yason>
-#include "BuildPlan.h"
-#include "DependencyCache.h"
+#include <cc/Format>
 
 namespace ccbuild {
 
@@ -28,8 +28,7 @@ String DependencyCache::cachePath(BuildPlan *plan)
 DependencyCache::DependencyCache(BuildPlan *plan):
     buildPlan_{plan},
     cachePath_{cachePath(plan)},
-    cacheTime_{-1},
-    cache_{Cache::create()}
+    cacheTime_{-1}
 {
     File::establish(cachePath_);
     cacheTime_ = FileStatus{cachePath_}->lastModified();

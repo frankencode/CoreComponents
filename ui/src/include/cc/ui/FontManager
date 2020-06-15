@@ -8,10 +8,11 @@
 
 #pragma once
 
-#include <cc/Source>
 #include <cc/ui/FontFamily>
 #include <cc/ui/GlyphRun>
 #include <cc/ui/TextRun>
+#include <cc/MapValue>
+#include <cc/Source>
 
 namespace cc { template<class, class> class Map; }
 
@@ -50,8 +51,8 @@ protected:
 
     static StringList familySearchPattern(const String &name);
 
-    typedef Map< String, Ref<FontFamily> > FontFamilies;
-    Ref<FontFamilies> fontFamilies_;
+    using FontFamilies = MapValue< String, Ref<FontFamily> >;
+    FontFamilies fontFamilies_;
 };
 
 }} // namespace cc::ui

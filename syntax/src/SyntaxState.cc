@@ -73,7 +73,6 @@ bool SyntaxState::lookupCapture(const char *name, Range *range) const
 SyntaxState *SyntaxState::stateByScope(const DefinitionNode *scope)
 {
     if (scope == definition_) return this;
-    if (!stateByScope_) stateByScope_ = StateByScope::create();
     Ref<SyntaxState> state;
     if (!stateByScope_->lookup(scope, &state)) {
         state = scope->createState(tokenFactory_);

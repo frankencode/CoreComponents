@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Map>
+#include <cc/MapValue>
 #include "HeaderStyle.h"
 
 namespace cc { template<class> class Singleton; }
@@ -34,8 +34,7 @@ private:
 
     void registerHeaderStyle(HeaderStyle *style);
 
-    typedef Map< String, Ref<HeaderStyle> > HeaderStyleByLanguage;
-    Ref<HeaderStyleByLanguage> headerStyleByLanguage_;
+    MapValue< String, Ref<HeaderStyle> > headerStyleByLanguage_;
 };
 
 Registry *registry();

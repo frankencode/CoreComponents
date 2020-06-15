@@ -7,13 +7,12 @@
  */
 
 #include "Registry.h"
-#include <cc/Singleton>
 #include <cc/toki/Registry>
+#include <cc/Singleton>
 
 namespace ccclaim {
 
-Registry::Registry():
-      headerStyleByLanguage_{HeaderStyleByLanguage::create()}
+Registry::Registry()
 {}
 
 const HeaderStyle *Registry::headerStyleByLanguage(const String &language) const

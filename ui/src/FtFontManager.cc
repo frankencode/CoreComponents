@@ -28,8 +28,7 @@ FtFontManager *FtFontManager::instance()
     return ThreadLocalSingleton<FtFontManager>::instance();
 }
 
-FtFontManager::FtFontManager():
-    fontCache_{FontCache::create()}
+FtFontManager::FtFontManager()
 {}
 
 Ref<FontFace> FtFontManager::openFontFace(const String &path)

@@ -6,8 +6,8 @@
  *
  */
 
-#include <cc/Singleton>
 #include <cc/toki/Registry>
+#include <cc/Singleton>
 
 namespace cc {
 namespace toki {
@@ -17,8 +17,7 @@ Registry *Registry::instance()
     return Singleton<Registry>::instance();
 }
 
-Registry::Registry():
-    languageByName_{LanguageByName::create()}
+Registry::Registry()
 {}
 
 bool Registry::lookupLanguageByName(const String &name, Language **language) const

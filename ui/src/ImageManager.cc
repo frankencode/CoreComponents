@@ -8,7 +8,6 @@
 
 #include <cc/ui/ImageManager>
 #include <cc/Singleton>
-#include <cc/Map>
 #include <cc/ValueSource>
 
 namespace cc {
@@ -19,8 +18,7 @@ ImageManager *ImageManager::instance()
     return Singleton<ImageManager>::instance();
 }
 
-ImageManager::ImageManager():
-    plugins_{Plugins::create()}
+ImageManager::ImageManager()
 {}
 
 void ImageManager::registerPlugin(ImagePlugin *plugin)
@@ -35,7 +33,7 @@ bool ImageManager::getPlugin(const String &name, const ImagePlugin **plugin) con
 
 Ref< Source<const ImagePlugin *> > ImageManager::getAllPlugins() const
 {
-    return ValueSource<Plugins, const ImagePlugin *>::open(plugins_);
+    return ValueSource<Plugins::Instance, const ImagePlugin *>::open(plugins_);
 }
 
 Ref<Image> ImageManager::load(const String &uri, unsigned index) const

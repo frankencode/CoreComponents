@@ -10,7 +10,6 @@
 #include <cc/ui/PlatformPlugin>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Application>
-#include <cc/Map>
 #include <cc/ValueSource>
 #include <cc/DirWalker>
 #include <cc/debug>
@@ -39,7 +38,7 @@ void FontManager::addPath(const String &dirPath, const String &namePrefix)
 
 Ref< Source<const FontFamily *> > FontManager::getFontFamilies() const
 {
-    return ValueSource<FontFamilies, const FontFamily *>::open(fontFamilies_);
+    return ValueSource<FontFamilies::Instance, const FontFamily *>::open(fontFamilies_);
 }
 
 const FontFamily *FontManager::selectFontFamily(const String &family) const
@@ -62,8 +61,7 @@ Font FontManager::fixup(const Font &font)
     return f;
 }
 
-FontManager::FontManager():
-    fontFamilies_{FontFamilies::create()}
+FontManager::FontManager()
 {}
 
 FontManager::~FontManager()

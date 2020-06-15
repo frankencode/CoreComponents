@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include <cc/Registration>
-#include <cc/Map>
 #include <cc/syntax/SyntaxDefinition>
 #include <cc/toki/Language>
 #include <cc/toki/Theme>
+#include <cc/Registration>
+#include <cc/MapValue>
 
 namespace cc { template<class> class Singleton; }
 
@@ -38,8 +38,7 @@ private:
 
     void registerLanguage(Language *language);
 
-    typedef Map< String, Ref<Language> > LanguageByName;
-    Ref<LanguageByName> languageByName_;
+    MapValue< String, Ref<Language> > languageByName_;
 };
 
 }} // namespace cc::toki

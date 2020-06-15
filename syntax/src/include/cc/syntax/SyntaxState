@@ -10,7 +10,7 @@
 
 #include <cc/Range>
 #include <cc/Array>
-#include <cc/Map>
+#include <cc/MapValue>
 #include <cc/Token>
 
 namespace cc {
@@ -90,8 +90,7 @@ private:
 
     Ref<const DefinitionNode> definition_;
 
-    typedef Map< const DefinitionNode *, Ref<SyntaxState> > StateByScope;
-    Ref<StateByScope> stateByScope_;
+    MapValue< const DefinitionNode *, Ref<SyntaxState> > stateByScope_;
 
     typedef Array<bool> Flags;
     typedef Array<Range> Captures;
