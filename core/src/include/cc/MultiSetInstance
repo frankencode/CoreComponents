@@ -14,21 +14,21 @@
 namespace cc {
 
 template<class T>
-class Set;
+class MultiSet;
 
-/** \class SetInstance cc/SetInstance
-  * \ingroup container_dynamic
-  * \brief %Set data container
-  * \see MultiSet, Map
+/** \class MultiSetInstance cc/MultiSetInstance
+  * \ingroup container_lowlevel
+  * \brief %Multi-set data container
+  * \see Set, MultiMap
   */
 template<class T>
-class SetInstance: public Object
+class MultiSetInstance: public Object
 {
 public:
     typedef T Item; ///< item type
     typedef bucket::Weight Index; ///< index type
-    typedef bucket::Iterator<T> Iterator; ///< iterator type
-    typedef bucket::ConstIterator<T> ConstIterator; ///< constant iterator type
+    typedef bucket::Iterator<T> Iterator; ///< Iterator type
+    typedef bucket::ConstIterator<T> ConstIterator; ///< constant Iterator type
 
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< \internal
@@ -36,21 +36,18 @@ public:
     /** Create a new set
       * \return new object instance
       */
-    static Ref<SetInstance> create() { return new SetInstance; }
+    static Ref<MultiSetInstance> create() { return new MultiSetInstance; }
 
     /** Create a copy of another set
       * \param other the list to copy
       * \return new object instance
       */
-    static Ref<SetInstance> copy(const SetInstance *other) { return new SetInstance{other}; }
+    static Ref<MultiSetInstance> copy(const MultiSetInstance *other) { return new MultiSetInstance{other}; }
 
     /** Make a copy of this set
       * \return new object instance
       */
-    Ref<SetInstance> copy() const { return SetInstance::copy(this); }
-
-    /// Number of items
-    Index count() const { return tree_->count(); }
+    Ref<MultiSetInstance> copy() const { return MultiSetInstance::copy(this); }
 
     /// Iterator pointing to the beginning (on first item)
     Iterator begin() { return Iterator{&tree_}; }
@@ -82,11 +79,8 @@ public:
     /// Constant iterator pointing to the last item
     ConstIterator last() const { return ConstIterator{tree_, tree_->count() - 1}; }
 
-    /// Check if the set contains \a item
-    bool contains(const T &item) const
-    {
-        return tree_->lookup<T>(item);
-    }
+    /// Number of items
+    Index count() const { return tree_->count(); }
 
     /// Check if an index is valid
     bool has(Index index) const {
@@ -100,63 +94,71 @@ public:
         return tree_->at<T>(index);
     }
 
-    /** Find a item value
+    /// Check if the set contains \a item
+    bool contains(const T &item) const
+    {
+        return tree_->lookup<T>(item);
+    }
+
+    /** Lookup \a item
+      * \tparam Search search strategy (FindFirst or FindLast)
       * \param item item to search for
       * \param target returns an Iterator to the item if found
       * \return true if a matching item was found
       */
+    template<class Search = FindFirst>
     bool find(const T &item, ConstIterator *target) const
     {
         Index index = 0;
         bucket::Leaf<T> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<T>(item, &index, &node, &egress);
+        bool found = tree_->lookup<T, Search>(item, &index, &node, &egress);
         if (target) *target = ConstIterator{tree_, index, node, egress};
         return found;
     }
 
-    /** Find a certain item value
+    /** Lookup \a item
+      * \tparam Search search strategy (FindFirst or FindLast)
       * \param item item to search for
       * \param target returns an Iterator to the item if found
       * \return true if a matching item was found
       */
+    template<class Search = FindFirst>
     bool find(const T &item, Iterator *target)
     {
         Index index = 0;
         bucket::Leaf<T> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<T>(item, &index, &node, &egress);
+        bool found = tree_->lookup<T, Search>(item, &index, &node, &egress);
         if (target) *target = Iterator{tree_, index, node, egress};
         return found;
     }
 
-    /** Insert a new item if no item with the same value exists already
+    /** Insert a new item
       * \param item item value
-      * \param target return iterator pointing the exiting or newly inserted key-value pair
-      * \return true if the new item was inserted successfully
       */
-    bool insert(const T &item, Iterator *target = nullptr)
-    {
-        bucket::Leaf<Item> *leaf = nullptr;
-        unsigned egress = 0;
-        Index index = 0;
-        bool found = tree_->lookup<Item>(item, &index, &leaf, &egress);
-        if (!found) tree_->pushAndTell<Item>(leaf, egress, item);
-        if (target ) *target = Iterator{tree_, index, leaf, egress};
-        return !found;
-    }
-
-    /** Remove the given \a item from the set
-      * \param item item value
-      * \return true if a matching item was found and removed
-      */
-    bool remove(const T &item)
+    void insert(const T &item)
     {
         bucket::Leaf<T> *target = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<T>(item, nullptr, &target, &egress);
-        if (found) tree_->pop<T>(target, egress);
-        return found;
+        bool found = tree_->lookup<T, FindLast>(item, nullptr, &target, &egress);
+        tree_->push<T>(target, egress + found, item);
+    }
+
+    /** Remove all matching items
+      * \param item item value to search for
+      * \return number of items removed
+      */
+    Index remove(const T &item)
+    {
+        Index removalCount = 0;
+        Iterator target;
+        find(item, &target);
+        while (target && *target == item) {
+            remove(target);
+            ++removalCount;
+        }
+        return removalCount;
     }
 
     /** Remove \a item at given \a target position */
@@ -193,17 +195,17 @@ public:
 
 private:
     friend class bucket::Internals;
-    friend class Local<SetInstance>;
-    friend class Set<T>;
+    friend class Local<MultiSetInstance>;
+    friend class MultiSet<T>;
 
-    SetInstance() = default;
+    MultiSetInstance() = default;
 
-    SetInstance(const SetInstance *other)
+    MultiSetInstance(const MultiSetInstance *other)
     {
         tree_->populate<T>(other);
     }
 
-    ~SetInstance() { tree_->deplete<T>(); }
+    ~MultiSetInstance() { tree_->deplete<T>(); }
 
     Local<bucket::Tree> tree_;
 };

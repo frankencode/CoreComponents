@@ -1,20 +1,20 @@
 #include <cc/debug>
 #include <cc/stdio>
-#include <cc/MultiSetValue>
+#include <cc/MultiSet>
 
-namespace cc { template class MultiSetValue<int>; }
+namespace cc { template class MultiSet<int>; }
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
 
-    MultiSetValue<int> a;
+    MultiSet<int> a;
     for (int i = 0; i < 10; ++i)
         a << i;
 
     CC_INSPECT(a);
 
-    MultiSetValue<int> b = a;
+    MultiSet<int> b = a;
     int x, y;
     a >> x >> y;
 
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     CC_INSPECT(a < b);
     CC_INSPECT(b < a);
 
-    MultiSetValue<String> c = { "A", "A", "B", "C" };
+    MultiSet<String> c = { "A", "A", "B", "C" };
     CC_INSPECT(c);
 
     return 0;

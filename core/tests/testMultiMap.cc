@@ -8,13 +8,13 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/MultiMap>
+#include <cc/MultiMapInstance>
 #include <cc/Random>
 
 using namespace cc;
 using namespace cc::testing;
 
-namespace cc { template class MultiMap<String>; }
+namespace cc { template class MultiMapInstance<String>; }
 
 class InsertionIteration: public TestCase
 {
@@ -24,7 +24,7 @@ class InsertionIteration: public TestCase
         const int n = 40;
         const int a = 0, b = 10;
 
-        auto map = MultiMap<int>::create();
+        auto map = MultiMapInstance<int>::create();
         for (int i = 0; i < n; ++i) {
             int key = random->get(a, b);
             map->insert(key, i);
@@ -43,7 +43,7 @@ class InsertionIteration: public TestCase
 
         for (int x = a; x < b; ++x) {
             fout("%% => ") << x;
-            MultiMap<int>::const_iterator t;
+            MultiMapInstance<int>::const_iterator t;
             if (map->find<FindFirst>(x, &t)) {
                 int y2 = 0; int i = 0;
                 while (t && t->key() == x) {
@@ -60,7 +60,7 @@ class InsertionIteration: public TestCase
 
         for (int x = a; x < b; ++x) {
             fout("%% => ") << x;
-            MultiMap<int>::const_iterator t;
+            MultiMapInstance<int>::const_iterator t;
             if (map->find<FindLast>(x, &t)) {
                 int y2 = 0; int i = 0;
                 while (t && t->key() == x) {

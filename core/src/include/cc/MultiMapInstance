@@ -14,18 +14,18 @@
 
 namespace cc {
 
-template<class, class>
-class Map;
+template<class K, class T>
+class MultiMap;
 
-/** \class MapInstance cc/MapInstance
+/** \class MultiMapInstance cc/MultiMapInstance
   * \ingroup container_lowlevel
-  * \brief %MapInstance data container
+  * \brief Multi-map data container
   * \tparam K key type
   * \tparam T mapped type
-  * \see MultiMap, Set, KeyValue, KeySource, ValueSource
+  * \see Map, MultiSet, KeyValue, KeySource, ValueSource
   */
 template<class K, class T = K>
-class MapInstance: public Object
+class MultiMapInstance: public Object
 {
 public:
     typedef KeyValue<K, T> Item; ///< item type
@@ -39,26 +39,26 @@ public:
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< \internal
 
-    /** Create a new map
+    /** Create a new relation
       * \return new object instance
       */
-    static Ref<MapInstance> create() { return new MapInstance; }
+    static Ref<MultiMapInstance> create() { return new MultiMapInstance; }
 
     /** Create a copy of another map
       * \param other the map to copy
       * \return new object instance
       */
-    static Ref<MapInstance> copy(const MapInstance *other) { return new MapInstance{other}; }
+    static Ref<MultiMapInstance> copy(const MultiMapInstance *other) { return new MultiMapInstance{other}; }
 
     /** Make a copy of this map
       * \return new object instance
       */
-    Ref<MapInstance> copy() const { return MapInstance::copy(this); }
+    Ref<MultiMapInstance> copy() const { return MultiMapInstance::copy(this); }
 
-    /// Iterator pointing to the beginning (on first item)
+    /// Iterator to the beginning (on first item)
     Iterator begin() { return Iterator{&tree_}; }
 
-    /// Iterator pointing to the end (behind last item)
+    /// Iterator to the end (behind last item)
     Iterator end() { return Iterator{&tree_, tree_->count()}; }
 
     /// Constant iterator pointing to the beginning (on first item)
@@ -107,131 +107,77 @@ public:
         return tree_->at<Item>(index);
     }
 
-    /// Check if the map contains \a key
+    /// Check if the relation contains \a key
     bool contains(const Key &key) const
     {
         return tree_->lookup<Item>(Item{key});
     }
 
     /** Lookup key-value pair by given key
-      * If a matching key-value pair is found the value is returned in 'value' and the
-      * function returns with true. If a matching key could not be found 'value' is not set
-      * and the function returns false.
-      */
-    template<class ReturnValue>
-    bool lookup(const Key &key, ReturnValue *value) const
-    {
-        bucket::Leaf<Item> *target = nullptr;
-        unsigned egress = 0;
-        bool found = tree_->lookup(Item{key}, nullptr, &target, &egress);
-        if (found) *value = target->at(egress)->value();
-        return found;
-    }
-
-    /** Find key-value pair by given key
+      * \tparam Search search strategy (FindFirst or FindLast)
       * \param key key to search for
-      * \param target returns an iterator to the key-value if found
+      * \param target returns an iterator to a key-value if found
       * \return true if a matching key-value pair was found
       */
+    template<class Search = FindFirst>
     bool find(const Key &key, ConstIterator *target) const
     {
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item>(Item{key}, &index, &node, &egress);
+        bool found = tree_->lookup<Item, Search>(Item{key}, &index, &node, &egress);
         if (target) *target = ConstIterator{tree_, index, node, egress};
         return found;
     }
 
-    /** Find key-value pair by given key
+    /** Lookup key-value pair by given key
+      * \tparam Search search strategy (FindFirst or FindLast)
       * \param key key to search for
-      * \param target returns an iterator to the key-value if found
+      * \param target returns an iterator to a key-value if found
       * \return true if a matching key-value pair was found
       */
+    template<class Search = FindFirst>
     bool find(const Key &key, Iterator *target)
     {
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item>(Item{key}, &index, &node, &egress);
+        bool found = tree_->lookup<Item, Search>(Item{key}, &index, &node, &egress);
         if (target) *target = Iterator{tree_, index, node, egress};
         return found;
     }
 
-    /** Insert a new key-value pair if the map doesn't contain the key already
-      * \param key search key
-      * \param value new value
-      * \param target return iterator pointing the exiting or newly inserted key-value pair
-      * \return true if the new key-value pair was inserted successfully
-      */
-    bool insert(const Key &key, const Value &value, Iterator *target = nullptr)
-    {
-        bucket::Leaf<Item> *leaf = nullptr;
-        unsigned egress = 0;
-        Item item{key, value};
-        Index index = 0;
-        bool found = tree_->lookup<Item>(item, &index, &leaf, &egress);
-        if (!found) tree_->pushAndTell<Item>(leaf, egress, item);
-        if (target ) *target = Iterator{tree_, index, leaf, egress};
-        return !found;
-    }
-
-    /** Insert a new or overwrite an existing key-value mapping
+    /** Insert a new key-value pair
       * \param key search key
       * \param value new value
       */
-    void establish(const Key &key, const Value &value)
+    void insert(const Key &key, const Value &value)
     {
         bucket::Leaf<Item> *target = nullptr;
         unsigned egress = 0;
         Item item{key, value};
-        bool found = tree_->lookup<Item>(item, nullptr, &target, &egress);
-        if (found) target->at(egress)->setValue(value);
-        else tree_->push<Item>(target, egress, item);
+        bool found = tree_->lookup<Item, FindLast>(item, nullptr, &target, &egress);
+        tree_->push<Item>(target, egress + found, item);
     }
 
-    /** Remove the given \a key from the map
-      * \return true if a matching key was found and removed
-      */
-    bool remove(const Key &key)
-    {
-        bucket::Leaf<Item> *target = nullptr;
-        unsigned egress = 0;
-        bool found = tree_->lookup<Item>(Item{key}, nullptr, &target, &egress);
-        if (found) tree_->pop<Item>(target, egress);
-        return found;
-    }
-
-    /** Retrieve value of associated with a given \a key
+    /** Remove all key-value pairs of given key
       * \param key search key
-      * \param fallback fallback value
-      * \return retieved value if key was found, fallback value otherwise
+      * \return number of items removed
       */
-    Value value(const Key &key, const Value &fallback = Value{}) const
+    Index remove(const Key &key)
     {
-        bucket::Leaf<Item> *target = nullptr;
-        unsigned egress = 0;
-        bool found = tree_->lookup(Item{key}, nullptr, &target, &egress);
-        return found ? target->at(egress)->value() : fallback;
+        Index removalCount = 0;
+        iterator target;
+        find(key, &target);
+        while (target && target->key() == key) {
+            remove(target);
+            ++removalCount;
+        }
+        return removalCount;
     }
 
-    /** Modify value of an existing key-value mapping
-      * \param key search key
-      * \param value new value
-      * \return true if key is was found, false otherwise
-      */
-    bool setValue(const Key &key, const Value &value)
-    {
-        bucket::Leaf<Item> *target = nullptr;
-        unsigned egress = 0;
-        Item item{key, value};
-        bool found = tree_->lookup(item, nullptr, &target, &egress);
-        if (found) target->at(egress)->setValue(value);
-        return found;
-    }
-
-    /// Remove \a item at given \a target position
-    void remove(iterator &target)
+    /** Remove \a item at given \a target position */
+    void remove(Iterator &target)
     {
         tree_->popAndStep(target);
     }
@@ -249,24 +195,23 @@ public:
     /// Return the last item
     const Item &max() const { return tree_->last<Item>(); }
 
-    /// Reset to an empty map
+    /// Reset to an empty relation
     void deplete() { tree_->deplete<Item>(); }
 
 protected:
     friend class bucket::Internals;
-    friend class Local<MapInstance>;
-    friend class Map<K, T>;
+    friend class Local<MultiMapInstance>;
+    friend class MultiMap<K, T>;
 
-    MapInstance() = default;
+    MultiMapInstance() = default;
 
-    MapInstance(const MapInstance *other)
+    MultiMapInstance(const MultiMapInstance *other)
     {
         tree_->populate<Item>(other);
     }
 
-    ~MapInstance() { tree_->deplete<Item>(); }
+    ~MultiMapInstance() { tree_->deplete<Item>(); }
 
-private:
     Local<bucket::Tree> tree_;
 };
 

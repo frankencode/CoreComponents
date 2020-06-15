@@ -89,7 +89,9 @@ class Cloning: public TestCase
         Ref<IntList> b = IntList::copy(a);
         print(a);
         print(b);
-        CC_VERIFY(*a == *b);
+        CC_VERIFY(a->count() == b->count());
+        for (int i = 0; i < a->count(); ++i)
+            CC_VERIFY(a->at(i) == b->at(i));
     }
 };
 

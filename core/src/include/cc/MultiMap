@@ -8,229 +8,120 @@
 
 #pragma once
 
-#include <cc/bucket>
-#include <cc/containers>
-#include <cc/KeyValue>
+#include <initializer_list>
+#include <cc/MultiMapInstance>
+#include <cc/Format>
 
 namespace cc {
 
-template<class K, class T>
-class MultiMapValue;
-
 /** \class MultiMap cc/MultiMap
-  * \ingroup container_lowlevel
+  * \ingroup container_highlevel
   * \brief Multi-map data container
   * \tparam K key type
   * \tparam T mapped type
-  * \see Map, MultiSet, KeyValue, KeySource, ValueSource
+  * \see map, multiset
   */
 template<class K, class T = K>
-class MultiMap: public Object
-{
+class MultiMap {
 public:
-    typedef KeyValue<K, T> Item; ///< item type
-    typedef bucket::Weight Index; ///< index type
-    typedef K Key; ///< key type
-    typedef T Value; ///< mapped value type
+    typedef MultiMapInstance<K, T> Instance;
 
-    typedef bucket::Iterator<Item> Iterator; ///< iterator type
-    typedef bucket::ConstIterator<Item> ConstIterator; ///< constant iterator type
+    typedef typename Instance::Item Item; ///< item type
+    typedef typename Instance::Index Index; ///< index type
+    typedef typename Instance::Key Key; ///< key type
+    typedef typename Instance::Value Value; ///< mapped value type
+
+    typedef typename Instance::Iterator Iterator; ///< iterator type
+    typedef typename Instance::ConstIterator ConstIterator; ///< constant iterator type
 
     typedef Iterator iterator; ///< \internal
     typedef ConstIterator const_iterator; ///< \internal
 
-    /** Create a new relation
-      * \return new object instance
-      */
-    static Ref<MultiMap> create() { return new MultiMap; }
+    MultiMap():
+        instance_{new Instance}
+    {}
 
-    /** Create a copy of another map
-      * \param other the map to copy
-      * \return new object instance
-      */
-    static Ref<MultiMap> copy(const MultiMap *other) { return new MultiMap{other}; }
-
-    /** Make a copy of this map
-      * \return new object instance
-      */
-    Ref<MultiMap> copy() const { return MultiMap::copy(this); }
-
-    /// Iterator to the beginning (on first item)
-    Iterator begin() { return Iterator{&tree_}; }
-
-    /// Iterator to the end (behind last item)
-    Iterator end() { return Iterator{&tree_, tree_->count()}; }
-
-    /// Constant iterator pointing to the beginning (on first item)
-    ConstIterator begin() const { return ConstIterator{tree_}; }
-
-    /// Constant iterator pointing to the end (behind last item)
-    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
-
-    /// Iterator pointing to the item at \a index
-    Iterator pos(Index index) { return Iterator{tree_, index}; }
-
-    /// Constant iterator pointing to the item at \a index
-    ConstIterator pos(Index index) const { return ConstIterator{tree_, index}; }
-
-    /// Iterator pointing to the first item
-    Iterator first() { return Iterator{tree_, 0}; }
-
-    /// Iterator pointing to the last item
-    Iterator last() { return Iterator{tree_, tree_->count() - 1}; }
-
-    /// Constant iterator pointing to the first item
-    ConstIterator first() const { return ConstIterator{tree_, 0}; }
-
-    /// Constant iterator pointing to the last item
-    ConstIterator last() const { return ConstIterator{tree_, tree_->count() - 1}; }
-
-    /// Number of items
-    Index count() const { return tree_->count(); }
-
-    /// Check if an index is valid
-    bool has(Index index) const {
-        return 0 <= index && index < count();
-    }
-
-    /// Return a reference to the item at \a index
-    Item &at(Index index)
+    MultiMap(std::initializer_list<KeyValue<K, T>> b):
+        instance_{new Instance}
     {
-        assert(0 <= index && index < count());
-        return tree_->at<Item>(index);
+        for (auto &x: b) instance_->insert(x->key(), x->value());
     }
 
-    /// Return a constant reference to the item at \a index
-    const Item &at(Index index) const
-    {
-        assert(0 <= index && index < count());
-        return tree_->at<Item>(index);
+    MultiMap(const MultiMap &b) = default;
+
+    MultiMap(MultiMap &&b):
+        instance_{std::move(b.instance_)}
+    {}
+
+    MultiMap &operator=(const MultiMap &b) = default;
+
+    MultiMap &operator=(MultiMap &&b) {
+        instance_ = std::move(b.instance_);
+        return *this;
     }
 
-    /// Check if the relation contains \a key
-    bool contains(const Key &key) const
-    {
-        return tree_->lookup<Item>(Item{key});
-    }
+    MultiMap(Instance *b):
+        instance_{b}
+    {}
 
-    /** Lookup key-value pair by given key
-      * \tparam Search search strategy (FindFirst or FindLast)
-      * \param key key to search for
-      * \param target returns an iterator to a key-value if found
-      * \return true if a matching key-value pair was found
-      */
-    template<class Search = FindFirst>
-    bool find(const Key &key, ConstIterator *target) const
-    {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
-        unsigned egress = 0;
-        bool found = tree_->lookup<Item, Search>(Item{key}, &index, &node, &egress);
-        if (target) *target = ConstIterator{tree_, index, node, egress};
-        return found;
-    }
+    Instance *operator->() { return Cow::get(instance_); }
+    const Instance *operator->() const { return instance_; }
 
-    /** Lookup key-value pair by given key
-      * \tparam Search search strategy (FindFirst or FindLast)
-      * \param key key to search for
-      * \param target returns an iterator to a key-value if found
-      * \return true if a matching key-value pair was found
-      */
-    template<class Search = FindFirst>
-    bool find(const Key &key, Iterator *target)
-    {
-        Index index = 0;
-        bucket::Leaf<Item> *node = nullptr;
-        unsigned egress = 0;
-        bool found = tree_->lookup<Item, Search>(Item{key}, &index, &node, &egress);
-        if (target) *target = Iterator{tree_, index, node, egress};
-        return found;
-    }
+    operator const Instance *() const { return instance_; }
+    operator Instance *() { return Cow::get(instance_); }
 
-    /** Insert a new key-value pair
-      * \param key search key
-      * \param value new value
-      */
-    void insert(const Key &key, const Value &value)
-    {
-        bucket::Leaf<Item> *target = nullptr;
-        unsigned egress = 0;
-        Item item{key, value};
-        bool found = tree_->lookup<Item, FindLast>(item, nullptr, &target, &egress);
-        tree_->push<Item>(target, egress + found, item);
-    }
+    const Item &operator[](Index i) const { return instance_->at(i); }
 
-    /** Remove all key-value pairs of given key
-      * \param key search key
-      * \return number of items removed
-      */
-    Index remove(const Key &key)
-    {
-        Index removalCount = 0;
-        iterator target;
-        find(key, &target);
-        while (target && target->key() == key) {
-            remove(target);
-            ++removalCount;
-        }
-        return removalCount;
-    }
-
-    /** Remove \a item at given \a target position */
-    void remove(Iterator &target)
-    {
-        tree_->popAndStep(target);
-    }
-
-    /// Remove item at given \a index
-    void removeAt(Index index)
-    {
-        assert(0 <= index && index < count());
-        tree_->pop<Item>(index);
-    }
-
-    /// Return the first item
-    const Item &min() const { return tree_->first<Item>(); }
-
-    /// Return the last item
-    const Item &max() const { return tree_->last<Item>(); }
-
-    /// Reset to an empty relation
-    void deplete() { tree_->deplete<Item>(); }
-
-protected:
-    friend class bucket::Internals;
-    friend class Local<MultiMap>;
-    friend class MultiMapValue<K, T>;
-
-    MultiMap() = default;
-
-    MultiMap(const MultiMap *other)
-    {
-        tree_->populate<Item>(other);
-    }
-
-    ~MultiMap() { tree_->deplete<Item>(); }
-
-    Local<bucket::Tree> tree_;
+private:
+    Ref<Instance> instance_;
 };
 
 template<class K, class T>
-bool operator==(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) == 0; }
+typename MultiMap<K, T>::Index count(const MultiMap<K, T> &a) { return a->count(); }
 
 template<class K, class T>
-bool operator!=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) != 0; }
+typename MultiMap<K, T>::ConstIterator begin(const MultiMap<K, T> &a) { return a->begin(); }
 
 template<class K, class T>
-bool operator<(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) < 0; }
+typename MultiMap<K, T>::ConstIterator end(const MultiMap<K, T> &a) { return a->end(); }
 
 template<class K, class T>
-bool operator>(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) > 0; }
+typename MultiMap<K, T>::Iterator begin(MultiMap<K, T> &a) { return a->begin(); }
 
 template<class K, class T>
-bool operator<=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) <= 0; }
+typename MultiMap<K, T>::Iterator end(MultiMap<K, T> &a) { return a->end(); }
 
 template<class K, class T>
-bool operator>=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(&a, &b) >= 0; }
+bool operator==(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) == 0; }
+
+template<class K, class T>
+bool operator!=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) != 0; }
+
+template<class K, class T>
+bool operator<(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) < 0; }
+
+template<class K, class T>
+bool operator>(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) > 0; }
+
+template<class K, class T>
+bool operator<=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) <= 0; }
+
+template<class K, class T>
+bool operator>=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) >= 0; }
+
+template<class K, class T>
+String str(const MultiMap<K, T> &a)
+{
+    auto n = a->count();
+    if (n == 0) return "[]";
+    Format f;
+    f << "[ ";
+    for (const auto &x: a) {
+        f << "(" << x->key() << ": " << x->value() << ")";
+        if (--n > 0) f << ", ";
+    }
+    f << " ]";
+    return f;
+}
 
 } // namespace cc

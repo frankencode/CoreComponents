@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/PriorityQueueValue>
+#include <cc/PriorityQueue>
 #include <cc/Mutex>
 #include <cc/Guard>
 #include <cc/WaitCondition>
@@ -157,7 +157,7 @@ protected:
     PriorityChannel() = default;
 
 private:
-    PriorityQueueValue<T> queue_;
+    PriorityQueue<T> queue_;
     Mutex mutex_;
     WaitCondition notEmpty_;
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,110 +8,58 @@
 
 #pragma once
 
-#include <assert.h>
-#include <cc/MultiMapValue>
+#include <initializer_list>
+#include <cc/PriorityQueueInstance>
 
 namespace cc {
 
-template<class T>
-class PriorityQueueValue;
-
 /** \class PriorityQueue cc/PriorityQueue
-  * \ingroup container_dynamic
-  * \brief Priority based queue data container
+  * \ingroup container_highlevel
+  * \brief priority based queue data container
   * \tparam T item type
-  * \see QueueInstance, Channel
+  * \see queue
   */
 template<class T>
-class PriorityQueue: public Object
-{
-    typedef MultiMapValue<int, T> MultiQueue;
-
+class PriorityQueue {
 public:
-    typedef T Item;
-    typedef typename MultiQueue::Index Index;
+    typedef PriorityQueueInstance<T> Instance;
+    typedef typename Instance::Item Item; ///< item type
+    typedef typename Instance::Index Index; ///< count type
 
-    /** Create a new queue
-      * \return new object instance
-      */
-    static Ref<PriorityQueue> create() { return new PriorityQueue; }
+    typedef Item value_type; ///< \internal
+    typedef Index size_type; ///< \internal
 
-    /** Create a copy of another queue
-      * \param other the queue to copy
-      * \return new object instance
-      */
-    static Ref<PriorityQueue> copy(const PriorityQueue *other) { return new PriorityQueue{*other}; }
+    PriorityQueue():
+        instance_{new Instance}
+    {}
 
-    /** Make a copy of this queue
-      * \return new object instance
-      */
-    Ref<PriorityQueue> copy() const { return new PriorityQueue{*this}; }
-
-    /** Add a new item to the end of the queue
-      * \param item item value
-      * \param priority priority of item
-      */
-    void pushBack(const Item &item, int priority = 0)
+    PriorityQueue(std::initializer_list<T> b):
+        instance_{new Instance}
     {
-        multiQueue_->insert(priority, item);
+        for (auto &x: b) *instance_ << x;
     }
 
-    /** Remove an item from the head of the queue
-      * \param item returns the item value
-      * \return item value
-      */
-    const Item &popFront(Item *item)
-    {
-        assert(count() > 0);
+    PriorityQueue(Instance *b):
+        instance_{b}
+    {}
 
-        auto last = multiQueue_->last();
-        *item = last->value();
-        multiQueue_->remove(last);
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return Cow::get(instance_); }
 
-        return *item;
-    }
+    operator const Instance *() const { return instance_; }
+    operator Instance *() { return Cow::get(instance_); }
 
-    /** Remove the first item from the queue
-      * \return item value
-      */
-    Item popFront() {
-        Item item;
-        return popFront(&item);
-    }
-
-    /// \copydoc pushBack()
-    void push(const Item &item, int priority) { pushBack(item, priority); }
-
-    /// \copydoc popFront(Item *)
-    const Item &pop(Item *item) { return popFront(item); }
-
-    /// \copydoc popFront()
-    Item pop() { return popFront(); }
-
-    /// Return the number of queued items
-    Index count() const { return multiQueue_->count(); }
-
-    /// Return the first item in the queue
-    T front() const { return multiQueue_->max()->value(); }
-
-    /// Return the last item in the queue
-    T back() const { return multiQueue_->min()->value(); }
-
-    /** \name Syntax sugar
-      */
-    ///@{
-    /// Append an item to the end
-    void operator<<(const Item& item) { pushBack(item); }
-    /// Remove an item from the front
-    void operator>>(Item& item) { if (count() > 0) { popFront(&item); } }
-    ///@}
+    PriorityQueue &operator<<(const T& x) { *instance_ << x; return *this; }
+    PriorityQueue &operator>>(T& x) { if (instance_->count() > 0) *instance_ >> x; return *this; }
 
 private:
-    friend class PriorityQueueValue<T>;
+    PriorityQueue(const PriorityQueue &b) = delete;
+    PriorityQueue &operator=(const PriorityQueue &b) = delete;
 
-    PriorityQueue() = default;
-
-    MultiQueue multiQueue_;
+    Ref<Instance> instance_;
 };
+
+template<class T>
+typename PriorityQueue<T>::size_type count(const PriorityQueue<T> &a) { return a->count(); }
 
 } // namespace cc

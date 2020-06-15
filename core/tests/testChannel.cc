@@ -97,7 +97,7 @@ class ConsumerProducer: public TestCase
 
         fout("\ndt = %% us\n\n") << int(dt * 1e6);
 
-        CC_VERIFY(*p->list() == *c->list());
+        CC_VERIFY(p->list() == c->list());
     }
 };
 

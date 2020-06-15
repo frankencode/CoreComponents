@@ -333,22 +333,4 @@ private:
     Ref<ArrayInstance> parent_;
 };
 
-template<class T>
-bool operator==(const ArrayInstance<T> &a, const ArrayInstance<T> &b) { return container::arrayCompare(a, b) == 0; }
-
-template<class T>
-bool operator!=(const ArrayInstance<T> &a, const ArrayInstance<T> &b) { return container::arrayCompare(a, b) != 0; }
-
-template<class T>
-bool operator<(const ArrayInstance<T> &a, const ArrayInstance<T> &b) { return container::arrayCompare(a, b) < 0; }
-
-template<class T>
-bool operator>(const ArrayInstance<T> &a, const ArrayInstance<T> &b) { return container::arrayCompare(a, b) > 0; }
-
-template<class T>
-bool operator<=(const ArrayInstance<T> &a, const ArrayInstance<T> &b) { return container::arrayCompare(a, b) <= 0; }
-
-template<class T>
-bool operator>=(const ArrayInstance<T> &a, const ArrayInstance<T> &b) { return container::arrayCompare(a, b) >= 0; }
-
 } // namespace cc

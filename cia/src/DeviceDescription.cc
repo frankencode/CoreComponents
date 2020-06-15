@@ -295,7 +295,7 @@ bool DeviceDescription::DeviceInfo::equals(const DeviceInfo *other) const
         productNumber_ == other->productNumber_ &&
         revisionNumber_ == other->revisionNumber_ &&
         orderCode_ == other->orderCode_ &&
-        *supportedBaudRates_ == *other->supportedBaudRates_ &&
+        supportedBaudRates_ == other->supportedBaudRates_ &&
         simpleBootUpMaster_ == other->simpleBootUpMaster_ &&
         simpleBootUpSlave_ == other->simpleBootUpSlave_ &&
         granularity_ == other->granularity_ &&
@@ -362,7 +362,7 @@ String DeviceDescription::DummyUsage::toString() const
 
 bool DeviceDescription::DummyUsage::equals(const DummyUsage *other) const
 {
-    return *dummies_ == *other->dummies_;
+    return dummies_ == other->dummies_;
 }
 
 DeviceDescription::Comments::Comments():

@@ -370,22 +370,4 @@ private:
     Local<bucket::Tree> tree_;
 };
 
-template<class T>
-bool operator==(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) == 0; }
-
-template<class T>
-bool operator!=(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) != 0; }
-
-template<class T>
-bool operator<(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) < 0; }
-
-template<class T>
-bool operator>(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) > 0; }
-
-template<class T>
-bool operator<=(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) <= 0; }
-
-template<class T>
-bool operator>=(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) >= 0; }
-
 } // namespace cc
