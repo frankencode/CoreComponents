@@ -28,7 +28,7 @@ void Item::insertAt(int i, Item *item)
 
     updateExtents(1 + item->totalCount());
 
-    delta_->indexPath_ = IndexPath::create() << i;
+    delta_->indexPath_ = IndexPath{i};
     delta_->removedCount_  = 0;
     delta_->insertedCount_ = 1;
     emit();
@@ -46,13 +46,13 @@ void Item::removeAt(int i)
 
     updateExtents(-1 - item->count());
 
-    delta_->indexPath_ = IndexPath::create() << i;
+    delta_->indexPath_ = IndexPath{i};
     delta_->removedCount_  = 1;
     delta_->insertedCount_ = 0;
     emit();
 }
 
-void Item::paste(int i0, int i1, const ItemList *items)
+void Item::paste(int i0, int i1, const ItemList &items)
 {
     if (i0 < 0) i0 = 0;
     if (children_->count() < i1) i1 = children_->count();
@@ -68,21 +68,19 @@ void Item::paste(int i0, int i1, const ItemList *items)
         children_->removeAt(i0);
     }
 
-    if (items) {
-        for (int j = 0; j < items->count(); ++j) {
-            Item *child = items->at(j);
-            children_->insertAt(i0 + j, child, 1 + child->count());
-            CC_ASSERT(!child->parent_);
-            child->parent_ = this;
-            deltaCount += 1 + child->count();
-        }
+    for (int j = 0; j < items->count(); ++j) {
+        Item *child = items->at(j);
+        children_->insertAt(i0 + j, child, 1 + child->count());
+        CC_ASSERT(!child->parent_);
+        child->parent_ = this;
+        deltaCount += 1 + child->count();
     }
 
     updateExtents(deltaCount);
 
-    delta_->indexPath_ = IndexPath::create() << i0;
+    delta_->indexPath_ = IndexPath{i0};
     delta_->removedCount_ = i1 - i0;
-    delta_->insertedCount_ = (items) ? items->count() : 0;
+    delta_->insertedCount_ = items->count();
     emit();
 }
 
@@ -113,9 +111,9 @@ void Item::emit()
         while (true) {
             Item *parent = item->parent_;
             if (!parent) break;
-            parent->delta_->indexPath_     = item->delta_->indexPath_->copy();
+            parent->delta_->indexPath_ = item->delta_->indexPath_;
             parent->delta_->indexPath_->pushFront(item->getIndex());
-            parent->delta_->removedCount_  = item->delta_->removedCount_;
+            parent->delta_->removedCount_ = item->delta_->removedCount_;
             parent->delta_->insertedCount_ = item->delta_->insertedCount_;
             item = parent;
         }

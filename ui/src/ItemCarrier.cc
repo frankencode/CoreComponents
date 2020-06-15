@@ -28,7 +28,7 @@ ItemCarrier::ItemCarrier(View *parent, Item *rootItem):
 
     rootItem_->changed->connect([=]{
         const ItemDelta *delta = rootItem_->delta();
-        const IndexPath *indexPath = delta->indexPath();
+        IndexPath indexPath = delta->indexPath();
 
         Item *item = rootItem_;
         for (int k = 0; k < indexPath->count() - 1; ++k)

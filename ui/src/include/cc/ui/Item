@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/List>
 #include <cc/ui/Pile>
+#include <cc/ListValue>
 #include <cc/Notifier>
 
 namespace cc {
@@ -17,13 +17,13 @@ namespace ui {
 
 class Item;
 
-typedef List< Ref<Item> > ItemList;
-typedef List<int> IndexPath;
+using ItemList = ListValue< Ref<Item> >;
+using IndexPath = ListValue<int> ;
 
 class ItemDelta
 {
 public:
-    const IndexPath *indexPath() const { return indexPath_; }
+    IndexPath indexPath() const { return indexPath_; }
     int removedCount() const { return removedCount_; }
     int insertedCount() const { return insertedCount_; }
 
@@ -37,7 +37,7 @@ private:
 
     ItemDelta *operator->() { return this; }
 
-    Ref<IndexPath> indexPath_;
+    IndexPath indexPath_;
     int removedCount_;
     int insertedCount_;
 };
@@ -70,7 +70,7 @@ public:
         return item;
     }
 
-    void paste(int i0, int i1, const ItemList *items = 0);
+    void paste(int i0, int i1, const ItemList &items = ItemList{});
 
     const ItemDelta *delta() const { return &delta_; }
 

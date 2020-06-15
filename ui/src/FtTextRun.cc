@@ -13,24 +13,12 @@
 namespace cc {
 namespace ui {
 
-FtTextRun::FtTextRun():
-    glyphRuns_{FtGlyphRuns::create()}
+FtTextRun::FtTextRun()
 {}
 
 Ref<TextRun> FtTextRun::copy() const
 {
-    Ref<FtTextRun> textRun = new FtTextRun;
-    textRun->glyphRuns_ = FtGlyphRuns::create();
-    for (const FtGlyphRun *glyphRun: glyphRuns_)
-        textRun->glyphRuns_->append(glyphRun->ftCopy());
-    textRun->advance_ = advance_;
-    textRun->firstLineHeight_ = firstLineHeight_;
-    textRun->size_ = size_;
-    textRun->maxAscender_ = maxAscender_;
-    textRun->minDescender_ = minDescender_;
-    textRun->lineCount_ = lineCount_;
-    textRun->byteCount_ = byteCount_;
-    return textRun;
+    return new FtTextRun{*this};
 }
 
 void FtTextRun::append(const String &text, const Font &font)
@@ -219,7 +207,7 @@ int FtTextRun::moveTextCursor(FtTextCursor *cursor, int steps) const
     return stepsMoved;
 }
 
-double FtTextRun::maxLineHeight(const FtGlyphRuns *glyphRuns)
+double FtTextRun::maxLineHeight(const FtGlyphRuns &glyphRuns)
 {
     double max = 0;
     for (const FtGlyphRun *glyphRun: glyphRuns) {
@@ -231,7 +219,7 @@ double FtTextRun::maxLineHeight(const FtGlyphRuns *glyphRuns)
     return max;
 }
 
-Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
+Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns &glyphRuns) const
 {
     if (glyphRuns->count() == 1) return glyphRuns->at(0);
 
@@ -292,7 +280,7 @@ Ref<const FtGlyphRun> FtTextRun::fold(const FtGlyphRuns *glyphRuns) const
     return metaBlock;
 }
 
-Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns) const
+Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns &glyphRuns) const
 {
     Ref<FtTextRun> textRun = Object::create<FtTextRun>();
     textRun->advance_ = metaBlock->advance_;
@@ -302,7 +290,6 @@ Ref<FtTextRun> FtTextRun::unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns 
     textRun->byteCount_ = metaBlock->text_->count();
     textRun->lineCount_ = metaBlock->lineCount_;
 
-    textRun->glyphRuns_ = FtGlyphRuns::create();
     int j = 0;
     int k = 0;
     for (const FtGlyphRun *glyphRun: glyphRuns)

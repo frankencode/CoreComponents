@@ -1,7 +1,7 @@
-#include <cc/debug>
 #include <cc/ui/Application>
-#include <cc/ui/View>
 #include <cc/ui/FontManager>
+#include <cc/ui/View>
+#include <cc/debug>
 
 using namespace cc;
 using namespace cc::ui;
@@ -14,8 +14,6 @@ class MainView: public View
     {
         size = Size{640, 480};
         paper = Color::white;
-
-        glyphRuns_ = List< Ref<const GlyphRun> >::create();
 
         String pangram = "the quick brown fox jumps over the lazy dog";
         pangram = pangram->toUpper() + " / " + pangram;
@@ -54,7 +52,7 @@ class MainView: public View
     }
 
     const double fontSize_ = 20;
-    Ref< List< Ref<const GlyphRun> > > glyphRuns_;
+    ListValue< Ref<const GlyphRun> > glyphRuns_;
 };
 
 int main(int argc, char **argv)

@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <cc/IterationSource>
-#include <cc/ui/TextRun>
 #include <cc/ui/FtGlyphRun>
+#include <cc/ui/TextRun>
+#include <cc/IterationSource>
 
 namespace cc {
 namespace ui {
@@ -43,7 +43,7 @@ public:
 
     Ref< Source<const GlyphRun *> > getAllGlyphRuns() const override
     {
-        return IterationSource<FtGlyphRuns, const GlyphRun *>::open(glyphRuns_);
+        return IterationSource<FtGlyphRuns::Instance, const GlyphRun *>::open(glyphRuns_);
     }
 
     Ref<TextCursor> getTextCursor(int byteOffset = 0) const override;
@@ -53,18 +53,18 @@ private:
     friend class Painter;
     friend class FtTextCursor;
 
-    typedef List< Ref<const FtGlyphRun> > FtGlyphRuns;
+    using FtGlyphRuns = ListValue< Ref<const FtGlyphRun> >;
 
-    static double maxLineHeight(const FtGlyphRuns *glyphRuns);
-    Ref<const FtGlyphRun> fold(const FtGlyphRuns *glyphRuns) const;
-    Ref<FtTextRun> unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns *glyphRuns) const;
+    static double maxLineHeight(const FtGlyphRuns &glyphRuns);
+    Ref<const FtGlyphRun> fold(const FtGlyphRuns &glyphRuns) const;
+    Ref<FtTextRun> unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns &glyphRuns) const;
 
     FtTextRun();
 
     Point advance(const FtTextCursor *cursor) const;
     int moveTextCursor(FtTextCursor *cursor, int steps) const;
 
-    Ref<FtGlyphRuns> glyphRuns_;
+    FtGlyphRuns glyphRuns_;
     Point advance_;
     double firstLineHeight_ { 0 };
     Size size_;
