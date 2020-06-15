@@ -1,5 +1,7 @@
-#if __cplusplus > 201402L
+#ifdef NDEBUG
 #include <stophere>
 #endif
+
+#include <valgrind/valgrind.h>
 
 int main() { return 0; }

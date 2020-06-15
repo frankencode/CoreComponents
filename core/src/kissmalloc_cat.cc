@@ -682,7 +682,10 @@ size_t KISSMALLOC_NAME(memusage)()
 #include <new>
 
 #ifndef KISSMALLOC_VALGRIND
-#ifndef NDEBUG
+// #ifndef NDEBUG
+// #define KISSMALLOC_VALGRIND
+// #endif
+#ifdef CC_VALGRIND
 #define KISSMALLOC_VALGRIND
 #endif
 #endif

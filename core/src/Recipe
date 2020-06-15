@@ -5,5 +5,10 @@ Library {
         compile-flags: -std=c++11
         cascade: true
     }
+    Dependency {
+        probe: probe/valgrind.cc
+        compile-flags: -DCC_VALGRIND
+        cascade: true
+    }
     link: dl
 }

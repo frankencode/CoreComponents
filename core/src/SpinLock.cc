@@ -8,13 +8,14 @@
 
 #include <cc/SpinLock>
 #include <pthread.h>
-#ifndef NDEBUG
+#ifdef CC_VALGRIND
 #include <valgrind/helgrind.h>
 #endif
 
 namespace cc {
 
-#ifndef NDEBUG
+#ifdef CC_VALGRIND
+
 SpinLock::SpinLock():
     flag_{0}
 {
@@ -47,9 +48,9 @@ void SpinLock::release()
     __sync_bool_compare_and_swap(&flag_, 1, 0);
     VALGRIND_HG_MUTEX_UNLOCK_POST(&flag_);
 }
-#endif // ndef NDEBUG
 
-#ifdef NDEBUG
+#else
+
 SpinLock::SpinLock():
     flag_{0}
 {}
@@ -71,7 +72,7 @@ void SpinLock::release()
 {
     flag_ = 0;
 }
-#endif // def NDEBUG
+#endif // def CC_VALGRIND
 
 void SpinLock::yield()
 {
