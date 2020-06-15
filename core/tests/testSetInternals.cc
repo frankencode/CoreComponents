@@ -5,7 +5,7 @@
 #include <cc/SetInstance>
 #include <cc/bucket_internals>
 #include <cc/File>
-#include <cc/Array>
+#include <cc/ArrayInstance>
 #include <time.h>
 #include <set>
 #ifdef _MSC_VER
@@ -17,7 +17,7 @@
 using namespace cc;
 using namespace cc::testing;
 
-int sum(const Array<int> *items)
+int sum(const ArrayInstance<int> *items)
 {
     int sum = 0;
     for (int x: items) sum += x;
@@ -34,7 +34,7 @@ int sum(const SetInstance<int> *items)
 class InsertionRemovalTest: public TestCase
 {
 protected:
-    virtual void scramble(Array<int> *test) = 0;
+    virtual void scramble(ArrayInstance<int> *test) = 0;
     virtual void dotify(const SetInstance<int> *set) {}
 
 private:
@@ -42,7 +42,7 @@ private:
     {
         const int n = 513;
 
-        Local<Array<int>> test{n};
+        Local<ArrayInstance<int>> test{n};
         for (int i = 0; i < n; ++i)
             test->at(i) = i;
 
@@ -73,7 +73,7 @@ private:
 
 class AscendingInsertionRemovalTest: public InsertionRemovalTest
 {
-    void scramble(Array<int> *) override
+    void scramble(ArrayInstance<int> *) override
     {}
 
     void dotify(const SetInstance<int> *set)
@@ -84,7 +84,7 @@ class AscendingInsertionRemovalTest: public InsertionRemovalTest
 
 class DescendingInsertionRemovalTest: public InsertionRemovalTest
 {
-    void scramble(Array<int> *test) override
+    void scramble(ArrayInstance<int> *test) override
     {
         test->reverseInsitu();
     }
@@ -92,7 +92,7 @@ class DescendingInsertionRemovalTest: public InsertionRemovalTest
 
 class RandomInsertionRemovalTest: public InsertionRemovalTest
 {
-    void scramble(Array<int> *test) override
+    void scramble(ArrayInstance<int> *test) override
     {
         Local<Random>{0}->scramble(test);
     }
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
     const int n = 129;
     // const int m = 1000;
 
-    Local<Array<int>> test{n};
+    Local<ArrayInstance<int>> test{n};
     for (int i = 0; i < n; ++i)
         test->at(i) = i;
 
@@ -166,12 +166,12 @@ int main(int argc, char **argv)
     const int m = 1000;  // repetition
 
     typedef int Item;
-    Local<Array<Item>> test{n};
+    Local<ArrayInstance<Item>> test{n};
     for (int i = 0; i < n; ++i)
         test->at(i) = i;
 
     //auto test_2 = test->select(n/2, n);
-    //Local<Random>{0}->scramble<Array<int>>(test_2);
+    //Local<Random>{0}->scramble<ArrayInstance<int>>(test_2);
 
     Local<Random>{0}->scramble(&test);
 

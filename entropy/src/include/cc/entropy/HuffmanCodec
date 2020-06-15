@@ -99,11 +99,11 @@ private:
 
     String buffer_;
 
-    Ref< Array<Node> > nodes_;
+    Array<Node> nodes_;
     int nodesFill_;
     uint16_t root_;
 
-    Ref< Array<NodeRef> > codeMap_;
+    Array<NodeRef> codeMap_;
     Ref< MinHeap<NodeRef> > heap_;
     Ref< Stack<uint8_t> > bitStack_;
 };

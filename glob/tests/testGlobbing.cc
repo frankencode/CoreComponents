@@ -8,7 +8,7 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
-#include <cc/ArrayValue>
+#include <cc/Array>
 #include <cc/glob/Pattern>
 
 using namespace cc;
@@ -34,7 +34,7 @@ class EmailValidation: public TestCase
         fout() << nl;
         #endif
 
-        ArrayValue<String> address {
+        Array<String> address {
             "info@cyblogic.com",
             "@lala.de",
             "otto@übertragungsfehler.de",
@@ -46,7 +46,7 @@ class EmailValidation: public TestCase
             "a.b.c@d.e.f"
         };
 
-        ArrayValue<bool> result {
+        Array<bool> result {
             true,
             false,
             false,
@@ -74,7 +74,7 @@ class Globbing: public TestCase
     {
         Pattern pattern = "*.(c|h){..2:[^.]}";
 
-        ArrayValue<String> path {
+        Array<String> path {
             "/home/hans/glück.hh",
             "a.b.c",
             "a.b.c.d.e.f",
@@ -89,7 +89,7 @@ class Globbing: public TestCase
         fout() << nl;
         #endif
 
-        ArrayValue<bool> result {
+        Array<bool> result {
             true,
             true,
             false,
@@ -132,7 +132,7 @@ class UriDispatch: public TestCase
 {
     void run()
     {
-        ArrayValue<String> services {
+        Array<String> services {
             "glibc.*",
             "cckit.*",
             "books.*",

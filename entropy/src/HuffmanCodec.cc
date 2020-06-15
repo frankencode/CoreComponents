@@ -6,19 +6,19 @@
  *
  */
 
-#include <cc/ReplaySource>
-#include <cc/CaptureSink>
 #include <cc/entropy/HuffmanCodec>
+#include <cc/CaptureSink>
+#include <cc/ReplaySource>
 
 namespace cc {
 namespace entropy {
 
 HuffmanCodec::HuffmanCodec():
-    buffer_(CharArray::allocate(4096)),
-    nodes_(Array<Node>::create(512)),
-    codeMap_(Array<NodeRef>::create(256 + 512)),
-    heap_(MinHeap<NodeRef>::create(codeMap_->data() + 256, 512)),
-    bitStack_(Stack<uint8_t>::create(256))
+    buffer_{CharArray::allocate(4096)},
+    nodes_{512},
+    codeMap_{256 + 512},
+    heap_{MinHeap<NodeRef>::create(codeMap_->data() + 256, 512)},
+    bitStack_{Stack<uint8_t>::create(256)}
 {
 }
 

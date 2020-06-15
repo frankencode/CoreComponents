@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/ArrayValue>
+#include <cc/Array>
 #include <cc/Map>
 #include <cc/IoTarget>
 #include <cc/SystemIo>
@@ -47,7 +47,7 @@ private:
 };
 
 /// I/O activity vector
-typedef ArrayValue<const IoEvent *> IoActivity;
+typedef Array<const IoEvent *> IoActivity;
 
 /** \class IoMonitor cc/IoMonitor
   * \ingroup concurrency
@@ -91,7 +91,7 @@ public:
 private:
     IoMonitor(int maxCount);
 
-    ArrayValue<struct pollfd> fds_;
+    Array<struct pollfd> fds_;
     Map<int, Ref<IoEvent> > events_;
 };
 

@@ -1,5 +1,5 @@
 #include <cc/Random>
-#include <cc/Array>
+#include <cc/ArrayInstance>
 #include <cc/ui/Application>
 #include <cc/ui/View>
 #include <cc/ui/FontManager>
@@ -29,8 +29,8 @@ class MainView: public View
             );
 
         auto random = Random::open(0);
-        fgColors_ = Array<Color>::create(glyphRun_->text()->count());
-        bgColors_ = Array<Color>::create(glyphRun_->text()->count());
+        fgColors_ = ArrayInstance<Color>::create(glyphRun_->text()->count());
+        bgColors_ = ArrayInstance<Color>::create(glyphRun_->text()->count());
         Color fg, bg;
         for (int i = 0; i < glyphRun_->text()->count(); ++i) {
             if (!fg->isValid()) {
@@ -75,8 +75,8 @@ class MainView: public View
 
     const double margins_ = 30;
     const double fontSize_ = 20;
-    Ref< Array<Color> > fgColors_;
-    Ref< Array<Color> > bgColors_;
+    Ref< ArrayInstance<Color> > fgColors_;
+    Ref< ArrayInstance<Color> > bgColors_;
     Ref<const GlyphRun> glyphRun_;
     Ref<const GlyphRun> wrappedGlyphRun_;
 };

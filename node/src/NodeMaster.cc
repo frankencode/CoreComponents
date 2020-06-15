@@ -115,8 +115,7 @@ void NodeMaster::runNode()
 
     CCNODE_NOTICE() << "Creating worker pool (concurrency = " << config()->concurrency() << ")" << nl;
 
-    typedef Array< Ref<DeliveryWorker> > WorkerPool;
-    Ref<WorkerPool> workerPool = WorkerPool::create(config()->concurrency());
+    Array< Ref<DeliveryWorker> > workerPool{config()->concurrency()};
     for (Ref<DeliveryWorker> &worker: workerPool) {
         worker = DeliveryWorker::create(config(), pendingConnections, closedConnections);
         worker->start();

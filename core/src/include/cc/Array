@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,347 +8,113 @@
 
 #pragma once
 
-#include <cc/strings>
-#include <cc/containers>
-#include <cc/ArrayIterator>
+#include <initializer_list>
+#include <cc/ArrayInstance>
+#include <cc/Format>
 
 namespace cc {
 
-template<class T>
-class ArrayValue;
-
 /** \class Array cc/Array
-  * \ingroup container_lowlevel
-  * \brief Typeded memory vector
-  * \see List, CharArray
-  * \todo change size_type to 64 bit
+  * \ingroup container_highlevel
+  * \brief %Array data container
+  * \tparam T item type
   */
 template<class T>
-class Array: public Object
-{
+class Array {
 public:
-    /// Item type
-    typedef T Item;
+    typedef ArrayInstance<T> Instance;
+    typedef typename Instance::value_type value_type;
+    typedef typename Instance::size_type size_type;
+    typedef typename Instance::iterator iterator;
+    typedef typename Instance::const_iterator const_iterator;
 
-    /// Index type
-    typedef int Index;
+    Array(size_type size):
+        instance_{new Instance{size}}
+    {}
 
-    /** Create a new array
-      * \param size size of the array
-      * \return new object instance
-      */
-    static Ref<Array> create(int size) { return new Array{size}; }
-
-    /** Create a new array
-      * \param size size of the array
-      * \return new object instance
-      */
-    static Ref<Array> allocate(int size) { return new Array{size}; }
-
-    /** Create a new array
-      * \param size size of the array
-      * \param zero preset item value
-      * \return new object instance
-      */
-    static Ref<Array> create(int size, Item zero) { return new Array{size, zero}; }
-
-    /** Create a deep copy of a memory vector
-      * \param data pointer to a memory vector of type Item
-      * \param size size of the memory vector
-      * \return new object instance
-      */
-    static Ref<Array> copy(const Item *data, int size) { return new Array{data, size}; }
-
-    /** Create a deep copy of an array
-      * \param other the other array
-      * \return new object instance
-      */
-    static Ref<Array> copy(const Array *other) { return other->copy(); }
-
-    /** Write contents
-      * \param b source to copy
-      */
-    void write(const Array *b)
+    Array(std::initializer_list<T> b):
+        instance_{new Instance{static_cast<size_type>(b.size())}}
     {
-        const int size = size_ < b->size_ ? b->size_ : size_;
-        memcpy(data_, b->data_, size * sizeof(Item));
-    }
-
-    /** %Set all items to a default value
-      * \param zero default value
-      */
-    void fill(const Item &zero)
-    {
-        for (int i = 0, n = size_; i < n; ++i)
-            data_[i] = zero;
-    }
-
-    /** Shrink in size
-      * \param newSize new size
-      */
-    void truncate(int newSize)
-    {
-        if (newSize <= 0)
-            reset();
-        else if (newSize < size_)
-            size_ = newSize;
-    }
-
-    /// Number of items
-    int count() const { return size_; }
-
-    /** Check if index is within range
-      * \param i item index
-      * \return true if i is a valid index
-      */
-    bool has(int i) const {
-        return (0 <= i) && (i < size_);
-    }
-
-    /** Access character at index i (readonly)
-      * \param i byte index
-      * \return low-level reference
-      */
-    const Item &at(int i) const {
-        CC_ASSERT(has(i));
-        return data_[i];
-    }
-
-    /** Access character at index i
-      * \param i byte index
-      * \return low-level reference
-      */
-    Item &at(int i) {
-        CC_ASSERT(has(i));
-        return data_[i];
-    }
-
-    /// Return byte pointer to the internal memory vector (readonly)
-    const Item *data() const { return data_; }
-
-    /// Return byte pointer to the internal memory vector
-    Item *data() { return data_; }
-
-    /// Cast to low-level C array (readonly)
-    operator const Item*() const { return data_; }
-
-    /// Cast to low-level C array
-    operator Item*() { return data_; }
-
-    /// Create a deep copy of this String
-    Ref<Array> copy() const { return copy(0, size_); }
-
-    /** Copy a range
-      * \param i0 begin of range (index of first selected item)
-      * \param i1 end of range (index behind the last selected item)
-      * \return copied range
-      */
-    Ref<Array> copy(int i0, int i1) const {
-        if (i0 < 0) i0 = 0;
-        if (i0 > size_) i0 = size_;
-        if (i1 < 0) i1 = 0;
-        if (i1 > size_) i1 = size_;
-        return (i0 < i1) ? new Array{data_ + i0, i1 - i0} : new Array{};
-    }
-
-    /** Check if a range is valid
-      * \param i0 begin of range (index of first selected byte)
-      * \param i1 end of range (index behind the last selected byte)
-      * \return true if range is valid
-      */
-    bool canSelect(int i0, int i1) const { return i0 <= i1 && 0 <= i0 && i1 <= size_; }
-
-    /** Create a selection (reference to a range of this array)
-      * \param i0 begin of range (index of first selected byte)
-      * \param i1 end of range (index behind the last selected byte)
-      * \return the selection
-      */
-    Ref<Array> select(int i0, int i1) const { return new Array{this, i0, i1}; }
-
-    /** Return the underlying unselected array
-      * \return original String
-      */
-    Array *unselect() const { return parent_; }
-
-    /** Copy the head of this array
-      * \param n size of the head
-      * \return copied array
-      */
-    Ref<Array> head(int n) const { return copy(0, n); }
-
-    /** Copy the tail of this array
-      * \param n size of the tail
-      * \return copied array
-      */
-    Ref<Array> tail(int n) const { return copy(size_ - n, size_); }
-
-    /** Search for an item
-      * \param item item to search for
-      * \param index pass start position and return final position
-      * \return true if item was found
-      */
-    bool find(const Item &item, int *index = nullptr) const
-    {
-        int i = index ? *index : 0;
-        while (i < size_) {
-            if (data_[i] == item)
-                break;
+        size_type i = 0;
+        for (const auto &x: b) {
+            instance_->at(i) = x;
             ++i;
         }
-        if (index) *index = i;
-        return i < size_;
     }
 
-    /** Replace all appearances of an item value
-      * \param oldItem old item value to search for
-      * \param newItem new item value to put in place
-      * \return pointer to this array
-      */
-    Array *replaceInsitu(const Item &oldItem, const Item &newItem) {
-        for (int i = 0; i < size_; ++i) {
-            if (data_[i] == oldItem)
-                data_[i] = newItem;
-        }
-        return this;
+    Array(const Array &b) = default;
+
+    Array(Array &&b):
+        instance_{std::move(b.instance_)}
+    {}
+
+    Array &operator=(const Array &b) = default;
+
+    Array &operator=(Array &&b) {
+        instance_ = std::move(b.instance_);
+        return *this;
     }
 
-    /// Reverse the order of the items
-    void reverseInsitu()
-    {
-        for (int i = 0, j = count() - 1; i < j; ++i, --j)
-        {
-            Item h = at(i);
-            at(i) = at(j);
-            at(j) = h;
-        }
-    }
+    Array(Instance *b):
+        instance_{b}
+    {}
 
-    /** \name Iterators
-      * @{
-      */
-    typedef ArrayIterator<Array> Iterator;
-    typedef ConstArrayIterator<Array> ConstIterator;
+    const Instance *operator->() const { return instance_; }
+    Instance *operator->() { return Cow::get(instance_); }
 
-    Iterator begin() { return Iterator{this, 0}; }
-    Iterator end() { return Iterator{this, count()}; }
+    operator const Instance *() const { return instance_; }
+    operator Instance *() { return Cow::get(instance_); }
 
-    ConstIterator begin() const { return ConstIterator{this, 0}; }
-    ConstIterator end() const { return ConstIterator{this, count()}; }
-    /** @}
-      */
-
-    /** \internal
-      * @{
-      */
-    typedef Iterator iterator;
-    typedef ConstIterator const_iterator;
-    typedef int size_type;
-    typedef T value_type;
-    /** @}
-      */
+    T &operator[](size_type i) { return Cow::get(instance_)->at(i); }
+    const T &operator[](size_type i) const { return instance_->at(i); }
 
 private:
-    friend class Local<Array>;
-    friend class ArrayValue<T>;
+    explicit operator bool() const;
 
-    Array(int size = 0):
-        size_{0},
-        data_{nullptr}
-    {
-        if (size > 0) {
-            size_ = size;
-            data_ = new Item[size];
-        }
-    }
-
-    Array(int size, Item zero):
-        size_{0},
-        data_{nullptr}
-    {
-        if (size > 0) {
-            size_ = size;
-            data_ = new Item[size];
-            for (int i = 0; i < size; ++i)
-                data_[i] = zero;
-        }
-    }
-
-    Array(const Item *data, int size):
-        size_{0},
-        data_{nullptr}
-    {
-        if (size > 0) {
-            size_ = size;
-            data_ = new Item[size];
-            for (int i = 0; i < size; ++i)
-                data_[i] = data[i];
-        }
-    }
-
-    Array(const Array &b):
-        size_{0},
-        data_{nullptr}
-    {
-        if (b.size_ > 0) {
-            size_ = b.size_;
-            data_ = new Item[b.size_];
-            memcpy(data_, b.data_, b.size_ * sizeof(Item));
-        }
-    }
-
-    Array(const Array *parent, int i0, int i1):
-        parent_{const_cast<Array *>(parent)}
-    {
-        if (i0 < 0) i0 = 0;
-        else if (i0 > parent->size_) i0 = parent_->size_;
-        if (i1 < i0) i1 = i0;
-        else if (i1 > parent->size_) i1 = parent_->size_;
-        size_ = i1 - i0;
-        data_ = parent_->data_ + i0;
-    }
-
-    ~Array()
-    {
-        if (size_ > 0 && !parent_) delete[] data_;
-    }
-
-    void reset(int newSize = 0)
-    {
-        if (size_ != newSize) {
-            if (size_ > 0) delete[] data_;
-            if (newSize > 0) {
-                size_ = newSize;
-                data_ = new Item[newSize];
-            }
-            else {
-                size_ = 0;
-                data_ = nullptr;
-            }
-        }
-    }
-
-    int size_;
-    Item *data_;
-
-    Ref<Array> parent_;
+    Ref<Instance> instance_;
 };
 
 template<class T>
-bool operator==(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) == 0; }
+typename Array<T>::size_type count(const Array<T> &a) { return a->count(); }
 
 template<class T>
-bool operator!=(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) != 0; }
+typename Array<T>::const_iterator begin(const Array<T> &a) { return a->begin(); }
 
 template<class T>
-bool operator<(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) < 0; }
+typename Array<T>::const_iterator end(const Array<T> &a) { return a->end(); }
 
 template<class T>
-bool operator>(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) > 0; }
+typename Array<T>::iterator begin(Array<T> &a) { return a->begin(); }
 
 template<class T>
-bool operator<=(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) <= 0; }
+typename Array<T>::iterator end(Array<T> &a) { return a->end(); }
 
 template<class T>
-bool operator>=(const Array<T> &a, const Array<T> &b) { return container::arrayCompare(a, b) >= 0; }
+bool operator==(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) == 0; }
+
+template<class T>
+bool operator!=(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) != 0; }
+
+template<class T>
+bool operator<(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) < 0; }
+
+template<class T>
+bool operator>(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) > 0; }
+
+template<class T>
+bool operator<=(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) <= 0; }
+
+template<class T>
+bool operator>=(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) >= 0; }
+
+template<class T>
+String str(const Array<T> &a)
+{
+    Format f;
+    f << "[ ";
+    for (auto &x: a)
+        f << x << (&x == &a->last() ? " ]" : ", ");
+    return f;
+}
 
 } // namespace cc

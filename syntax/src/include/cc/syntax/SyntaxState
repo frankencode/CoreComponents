@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Range>
-#include <cc/Array>
+#include <cc/ArrayInstance>
 #include <cc/Map>
 #include <cc/Token>
 
@@ -92,8 +92,8 @@ private:
 
     Map< const DefinitionNode *, Ref<SyntaxState> > stateByScope_;
 
-    typedef Array<bool> Flags;
-    typedef Array<Range> Captures;
+    typedef ArrayInstance<bool> Flags;
+    typedef ArrayInstance<Range> Captures;
 
     Ref<Flags> flags_;
     Ref<Captures> captures_;

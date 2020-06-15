@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/assert>
-#include <cc/Array>
+#include <cc/ArrayInstance>
 
 namespace cc {
 
@@ -168,7 +168,7 @@ private:
     int size_;
     int head_;
     int tail_;
-    Local< Array<T> > buf_;
+    Local< ArrayInstance<T> > buf_;
 };
 
 } // namespace cc

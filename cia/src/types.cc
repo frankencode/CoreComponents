@@ -165,4 +165,4 @@ String hexLine(const String &data)
         << "|" << visual << "|";
 }
 
-}} // namespace cc::can
+}} // nam

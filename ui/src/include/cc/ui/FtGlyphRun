@@ -10,7 +10,7 @@
 
 #include <cairo/cairo.h>
 #include <cairo/cairo-ft.h>
-#include <cc/Array>
+#include <cc/ArrayInstance>
 #include <cc/ui/FtScaledFont>
 #include <cc/ui/GlyphRun>
 
@@ -42,9 +42,9 @@ public:
 
     const FtScaledFont *ftScaledFont() const { return Object::cast<const FtScaledFont *>(font_->getScaledFont()); }
 
-    typedef Array<cairo_glyph_t> CairoGlyphs;
-    typedef Array<cairo_text_cluster_t> CairoTextClusters;
-    typedef Array<double> GlyphAdvances;
+    typedef ArrayInstance<cairo_glyph_t> CairoGlyphs;
+    typedef ArrayInstance<cairo_text_cluster_t> CairoTextClusters;
+    typedef ArrayInstance<double> GlyphAdvances;
 
     const CairoGlyphs *cairoGlyphs() const { return cairoGlyphs_; }
     const CairoTextClusters *cairoTextClusters() const { return cairoTextClusters_; }
