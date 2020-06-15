@@ -19,7 +19,7 @@ namespace cc {
 
 class Variant;
 
-using VariantList = ListValue<Variant>;
+using VariantList = List<Variant>;
 using VariantMap = MapValue<String, Variant>;
 
 /** \internal
@@ -89,11 +89,11 @@ private:
     template<class T>
     VariantInstance(const Ref<T> &value): type_{VariantType::Object} { initRef(value.get()); }
 
-    VariantInstance(const ListValue<int> &value)    : type_{VariantType::List}, itemType_{VariantType::Int}     { initRef(value); }
-    VariantInstance(const ListValue<bool> &value)   : type_{VariantType::List}, itemType_{VariantType::Bool}    { initRef(value); }
-    VariantInstance(const ListValue<float> &value)  : type_{VariantType::List}, itemType_{VariantType::Float}   { initRef(value); }
-    VariantInstance(const ListValue<Color> &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
-    VariantInstance(const ListValue<Version> &value): type_{VariantType::List}, itemType_{VariantType::Version} { initRef(value); }
+    VariantInstance(const List<int> &value)    : type_{VariantType::List}, itemType_{VariantType::Int}     { initRef(value); }
+    VariantInstance(const List<bool> &value)   : type_{VariantType::List}, itemType_{VariantType::Bool}    { initRef(value); }
+    VariantInstance(const List<float> &value)  : type_{VariantType::List}, itemType_{VariantType::Float}   { initRef(value); }
+    VariantInstance(const List<Color> &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
+    VariantInstance(const List<Version> &value): type_{VariantType::List}, itemType_{VariantType::Version} { initRef(value); }
     VariantInstance(const StringList &value)        : type_{VariantType::List}, itemType_{VariantType::String}  { initRef(value); }
     VariantInstance(const VariantList &value)       : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
     VariantInstance(const VariantMap &value)        : type_{VariantType::Map }, itemType_{VariantType::Any}     { initRef(value); }
@@ -182,17 +182,17 @@ public:
     Variant(const VariantList &value): instance_{value} {}
     Variant(const VariantMap &value) : instance_{value} {}
 
-    Variant(const ListValue<bool> &value)   : instance_{value} {}
-    Variant(const ListValue<int> &value)    : instance_{value} {}
-    Variant(const ListValue<float> &value)  : instance_{value} {}
-    Variant(const ListValue<Color> &value)  : instance_{value} {}
-    Variant(const ListValue<Version> &value): instance_{value} {}
+    Variant(const List<bool> &value)   : instance_{value} {}
+    Variant(const List<int> &value)    : instance_{value} {}
+    Variant(const List<float> &value)  : instance_{value} {}
+    Variant(const List<Color> &value)  : instance_{value} {}
+    Variant(const List<Version> &value): instance_{value} {}
 
     template<class T>
-    Variant(const List<T> *value): Variant(Ref<List<T>>(value)) {}
+    Variant(const ListInstance<T> *value): Variant(Ref<ListInstance<T>>(value)) {}
 
     template<class T>
-    Variant(List<T> *value): Variant(Ref<List<T>>(value)) {}
+    Variant(ListInstance<T> *value): Variant(Ref<ListInstance<T>>(value)) {}
 
     Variant(const Variant &b) { *this = b; }
 
@@ -207,10 +207,10 @@ public:
 
     const Variant &operator=(const char *value)           { return (*this) = Variant(value); }
     const Variant &operator=(const String &value)         { return (*this) = Variant(value); }
-    const Variant &operator=(const ListValue<bool> &list) { return (*this) = Variant(list); }
-    const Variant &operator=(const ListValue<int> &list)  { return (*this) = Variant(list); }
-    const Variant &operator=(const ListValue<float> &list){ return (*this) = Variant(list); }
-    const Variant &operator=(const ListValue<Color> &list){ return (*this) = Variant(list); }
+    const Variant &operator=(const List<bool> &list) { return (*this) = Variant(list); }
+    const Variant &operator=(const List<int> &list)  { return (*this) = Variant(list); }
+    const Variant &operator=(const List<float> &list){ return (*this) = Variant(list); }
+    const Variant &operator=(const List<Color> &list){ return (*this) = Variant(list); }
     const Variant &operator=(const StringList &list)      { return (*this) = Variant(list); }
     const Variant &operator=(const VariantMap &map)       { return (*this) = Variant(map); }
 
@@ -346,34 +346,34 @@ public:
 };
 
 template<>
-class VariantCast<ListValue<bool>, false> {
+class VariantCast<List<bool>, false> {
 public:
-    static ListValue<bool> cast(const Variant &value) {
-        return Variant::cast<ListValue<bool>::Instance *>(value);
+    static List<bool> cast(const Variant &value) {
+        return Variant::cast<List<bool>::Instance *>(value);
     }
 };
 
 template<>
-class VariantCast<ListValue<int>, false> {
+class VariantCast<List<int>, false> {
 public:
-    static ListValue<int> cast(const Variant &value) {
-        return Variant::cast<ListValue<int>::Instance *>(value);
+    static List<int> cast(const Variant &value) {
+        return Variant::cast<List<int>::Instance *>(value);
     }
 };
 
 template<>
-class VariantCast<ListValue<float>, false> {
+class VariantCast<List<float>, false> {
 public:
-    static ListValue<float> cast(const Variant &value) {
-        return Variant::cast<ListValue<float>::Instance *>(value);
+    static List<float> cast(const Variant &value) {
+        return Variant::cast<List<float>::Instance *>(value);
     }
 };
 
 template<>
-class VariantCast<ListValue<Color>, false> {
+class VariantCast<List<Color>, false> {
 public:
-    static ListValue<Color> cast(const Variant &value) {
-        return Variant::cast<ListValue<Color>::Instance *>(value);
+    static List<Color> cast(const Variant &value) {
+        return Variant::cast<List<Color>::Instance *>(value);
     }
 };
 

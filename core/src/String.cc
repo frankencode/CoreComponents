@@ -7,7 +7,6 @@
  */
 
 #include <cc/String>
-#include <cc/List>
 #include <cc/Unicode>
 #include <cc/Utf8Source>
 #include <cc/Utf8Sink>

@@ -11,7 +11,6 @@
 #include <cc/ui/Window>
 #include <cc/ui/Image>
 #include <cc/ui/Control>
-#include <cc/List>
 
 namespace cc {
 namespace ui {

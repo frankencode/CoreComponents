@@ -11,7 +11,7 @@
 #include <cc/containers>
 #include <cc/strings>
 #include <cc/ArrayIterator>
-#include <cc/ListValue>
+#include <cc/List>
 
 #ifdef QT_CORE_LIB
 #include <QString>
@@ -37,7 +37,7 @@ typedef Ref<const CharArray> String;
 /** Convenience alias
   * \ingroup strings
   */
-typedef ListValue<String> StringList;
+typedef List<String> StringList;
 
 class MutantString;
 

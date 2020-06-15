@@ -63,7 +63,7 @@ private:
     bool autoConfigure_;
 };
 
-using SystemPrerequisiteList = ListValue< Ref<SystemPrerequisite> >;
+using SystemPrerequisiteList = List< Ref<SystemPrerequisite> >;
 using SystemPrerequisitesByName = MapValue<String, SystemPrerequisiteList>;
 
 } // namespace ccbuild

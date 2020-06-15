@@ -19,7 +19,7 @@ namespace net {
 class RouteInfo;
 class NetworkInterface;
 
-using NetworkInterfaceList = ListValue< Ref<NetworkInterface> >;
+using NetworkInterfaceList = List< Ref<NetworkInterface> >;
 
 /** \class NetworkInterface cc/net/NetworkInterface
   * \brief Query network interface configuration: addresses, flags, etc.

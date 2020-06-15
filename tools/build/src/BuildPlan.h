@@ -37,7 +37,7 @@ using namespace cc;
 using namespace cc::meta;
 
 class BuildPlan;
-using BuildPlanList = ListValue< Ref<BuildPlan> >;
+using BuildPlanList = List< Ref<BuildPlan> >;
 
 class BuildPlan: public BuildParameters
 {

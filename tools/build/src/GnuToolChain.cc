@@ -376,7 +376,7 @@ String GnuToolChain::pkgConfig(const BuildPlan *plan) const
     f << "Libs: -L${libdir} -l" << plan->name() << nl;
 
     if (plan->prerequisites()->count() > 0) {
-        ListValue<const BuildPlan *> requiresList;
+        List<const BuildPlan *> requiresList;
         for (const BuildPlan *prerequisite: plan->prerequisites()) {
             if (prerequisite->options() & BuildPlan::Package) {
                 for (const BuildPlan *child: prerequisite->prerequisites()) {

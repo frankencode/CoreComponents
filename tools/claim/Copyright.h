@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/String>
-#include <cc/ListValue>
+#include <cc/List>
 
 namespace ccclaim {
 
@@ -38,6 +38,6 @@ private:
     int yearEnd_;
 };
 
-using CopyrightList = ListValue< Ref<Copyright> >;
+using CopyrightList = List< Ref<Copyright> >;
 
 } // namespace ccclaim

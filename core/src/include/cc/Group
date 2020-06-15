@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <grp.h>
 #include <cc/String>
-#include <cc/ListValue>
+#include <cc/List>
 
 namespace cc {
 
@@ -35,7 +35,7 @@ public:
         String name() const { return name_; } ///< group name
 
         /// Return list of user logins, which are in this group, but for which this is not their primary group
-        ListValue<String> otherMembers() const { return otherMembers_; }
+        List<String> otherMembers() const { return otherMembers_; }
 
         /** Check group membership
           * \param user user information object
@@ -53,7 +53,7 @@ public:
         bool isValid_;
         gid_t id_;
         String name_;
-        ListValue<String> otherMembers_;
+        List<String> otherMembers_;
     };
 
     /** Lookup group information by group ID

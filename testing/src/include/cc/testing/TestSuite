@@ -51,7 +51,7 @@ private:
     String execPath_;
     Ref<TestReport> report_;
 
-    ListValue<Ref<TestCase>> testCases_;
+    List<Ref<TestCase>> testCases_;
 
     Ref<TestCase> currentTestCase_;
     int testCaseFailureCount_;

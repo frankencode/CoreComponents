@@ -52,7 +52,7 @@ class MainView: public View
     }
 
     const double fontSize_ = 20;
-    ListValue< Ref<const GlyphRun> > glyphRuns_;
+    List< Ref<const GlyphRun> > glyphRuns_;
 };
 
 int main(int argc, char **argv)

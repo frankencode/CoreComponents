@@ -15,7 +15,7 @@ namespace net {
 
 class RouteInfo;
 
-using RouteInfoList = ListValue< Ref<RouteInfo> >;
+using RouteInfoList = List< Ref<RouteInfo> >;
 
 /** \class RouteInfo cc/net/RouteInfo
   * \brief Routing table access

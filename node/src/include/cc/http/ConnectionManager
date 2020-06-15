@@ -11,7 +11,7 @@
 #include <cc/http/DeliveryWorker>
 #include <cc/http/ConnectionInfo>
 #include <cc/types>
-#include <cc/ListValue>
+#include <cc/List>
 #include <cc/MapValue>
 
 namespace cc {
@@ -39,7 +39,7 @@ private:
     Ref<const NodeConfig> nodeConfig_;
     Ref<ClosedConnections> closedConnections_;
     ConnectionCounts connectionCounts_;
-    ListValue< Ref<ConnectionInfo> > visits_;
+    List< Ref<ConnectionInfo> > visits_;
     int serviceWindow_;
     int connectionLimit_;
 };

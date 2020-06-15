@@ -1,0 +1,391 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bucket>
+#include <cc/containers>
+#include <cc/Heap>
+#include <cc/SetValue>
+
+namespace cc {
+
+template<class T>
+class List;
+
+/** \class ListInstance cc/ListInstance
+  * \ingroup container_lowlevel
+  * \brief %ListInstance data container
+  * \tparam T item type
+  *
+  * The ListInstance class provides a very efficient data structure for small and medium-sized lists.
+  * For larger lists it provides good memory density while still scaling logarithmically for all basic operations.
+  */
+template<class T>
+class ListInstance: public Object
+{
+public:
+    typedef T Item; ///< item type
+    typedef bucket::Weight Index; ///< index type
+    typedef bucket::Iterator<T> Iterator; ///< iterator type
+    typedef bucket::ConstIterator<T> ConstIterator; ///< constant iterator type
+
+    typedef Iterator iterator; ///< \internal
+    typedef ConstIterator const_iterator; ///< constant iterator type
+
+    /** Create an empty list
+      * \return new object instance
+      */
+    static Ref<ListInstance> create() { return new ListInstance; }
+
+    /** Create a copy of another list
+      * \param other the list to copy
+      * \return new object instance
+      */
+    static Ref<ListInstance> copy(const ListInstance *other) { return new ListInstance{other}; }
+
+    /** Make a copy of this list
+      * \return new object instance
+      */
+    Ref<ListInstance> copy() const { return ListInstance::copy(this); }
+
+    /// Iterator pointing to the beginning (on first item)
+    Iterator begin() { return Iterator{&tree_}; }
+
+    /// Iterator pointing to the end (behind last item)
+    Iterator end() { return Iterator{&tree_, tree_->count()}; }
+
+    /// Constant iterator pointing to the beginning (on first item)
+    ConstIterator begin() const { return ConstIterator{tree_}; }
+
+    /// Constant iterator pointing to the end (behind last item)
+    ConstIterator end() const { return ConstIterator{tree_, tree_->count()}; }
+
+    /// Iterator pointing to the item at \a index
+    Iterator pos(Index index) { return Iterator{tree_, index}; }
+
+    /// Constant iterator pointing to the item at \a index
+    ConstIterator pos(Index index) const { return ConstIterator{tree_, index}; }
+
+    /// Return the number of items stored in this list
+    Index count() const { return tree_->count(); }
+
+    /// Check if an index is valid
+    bool has(int index) const {
+        return 0 <= index && index < count();
+    }
+
+    /// Return a reference to the item at \a index
+    T &at(Index index)
+    {
+        assert(0 <= index && index < count());
+        return tree_->at<T>(index);
+    }
+
+    /// Return a constant reference to the item at \a index
+    const T &at(Index index) const
+    {
+        assert(0 <= index && index < count());
+        return tree_->at<T>(index);
+    }
+
+    /** Insert new item at given index
+      * \param index list index
+      * \param item new item value
+      */
+    void insertAt(Index index, const T &item)
+    {
+        assert(0 <= index && index <= count());
+        tree_->push<T>(index, item);
+    }
+
+    /** Remove item at given index
+      * \param index list index
+      */
+    void removeAt(Index index)
+    {
+        assert(0 <= index && index < count());
+        tree_->pop<T>(index);
+    }
+
+    /** Append \a item to the end of the list
+      */
+    void append(const T &item)
+    {
+        tree_->pushBack(item);
+    }
+
+    /** Prepend \a item to the front of the list
+      */
+    void prepend(const T &item)
+    {
+        insertAt(0, item);
+    }
+
+    /** Append a copy of another list to this list
+      * \param other another list
+      */
+    void appendList(const ListInstance *other)
+    {
+        if (other) {
+            // TODO: improve performance
+
+            for (const T &item: other)
+                append(item);
+        }
+    }
+
+    /** Insert \a item at given \a target position */
+    void insert(Iterator &target, const T &item)
+    {
+        tree_->pushAndStep(target, item);
+    }
+
+    /** Remove \a item from given \a target position */
+    void remove(Iterator &target)
+    {
+        tree_->popAndStep(target);
+    }
+
+    /** Prepend a copy of another list to this list
+      * \param other another list
+      */
+    void prependList(const ListInstance *other)
+    {
+        if (other) {
+            // TODO: improve performance
+
+            Index i = 0;
+            for (const T &item: other) {
+                insertAt(i, item);
+                ++i;
+            }
+        }
+    }
+
+    /** Test if the list contains a certain item
+      * \param item item to test for
+      * \return true if the item appears in the list
+      */
+    bool contains(const T &item) const
+    {
+        for (const auto &x: *this) {
+            if (item == x)
+                return true;
+        }
+        return false;
+    }
+
+    /// Remove all items from the list
+    void deplete() { tree_->deplete<T>(); }
+
+    /** Replace all appearances of an item value
+      * \param oldItem old item value to search for
+      * \param newItem new item value to put in place
+      * \return pointer to this list
+      */
+    ListInstance *replaceInsitu(const T &oldItem, const T &newItem)
+    {
+        for (T &item: this) {
+            if (item == oldItem)
+                item = newItem;
+        }
+        return this;
+    }
+
+    /** Join all items of this list into a single item
+      * \param sep the separator to insert between the items
+      * \return the resulting item
+      */
+    T join(const T &sep = T{}) const { return T::join(const_cast<ListInstance *>(this), sep); } // \todo rethink for performance
+
+    /** Sort list
+      * \param unique eliminate duplicates
+      * \return sorted list
+      */
+    template<class SortOrder>
+    List<T> sort(bool unique = false) const
+    {
+        if (count() == 0) return List<T>{};
+        auto heap = GenericHeap<T, SortOrder>::create(count());
+        return sortWithHeap(heap, unique);
+    }
+
+    /** Create a sorted copy of this list
+      * \param order sort order
+      * \param unique eliminate duplicates
+      * \return sorted list
+      */
+    List<T> sort(SortOrder order = Ascending, bool unique = false) const
+    {
+        if (count() == 0) return List<T>{};
+        auto heap = Heap<T>::create(count(), order);
+        return sortWithHeap(heap, unique);
+    }
+
+    /** Create a reversed copy of this list
+      * \return reversed list
+      */
+    Ref<ListInstance> reverse() const
+    {
+        // TODO: improve performance
+
+        auto result = ListInstance::allocate(count());
+        for (int i = 0, n = count(); i < n; ++i)
+            result->at(i) = at(n - i - 1);
+        return result;
+    }
+
+    /** Remove duplicate entries from the list
+      * \param list list to eliminate duplicates from
+      * \todo remove this method
+      */
+    static void makeUnique(ListInstance *list)
+    {
+        SetValue<T> set;
+        for (auto it = list->begin(); it;) {
+            if (set->insert(*it)) ++it;
+            else list->remove(it);
+        }
+    }
+
+    /** Remove duplicate entries from the list
+      */
+    void makeUnique()
+    {
+        SetValue<T> set;
+        for (auto it = begin(); it;) {
+            if (set->insert(*it)) ++it;
+            else remove(it);
+        }
+    }
+
+    /** Convert to a list of different item type
+      * \tparam T2 the target item type
+      * \return new list instance
+      */
+    template<class T2>
+    Ref< ListInstance<T2> > toList() const {
+        auto other = ListInstance<T2>::create();
+        for (auto &item: this) {
+            T2 item2;
+            item2 = item;
+            other->append(item2);
+        }
+        return other;
+    }
+
+    /** \name Syntax sugar
+      */
+    ///@{
+    /** Append \a item to the list */
+    void operator<<(const T& item) { pushBack(item); }
+    /** Remove and return first item */
+    void operator>>(T& item) { if (count() > 0) { item = front(); popFront(); } }
+    ///@}
+
+    /** \name Queuelike
+      * @{
+      */
+
+    /** Append item at the end of the list */
+    void pushBack(const T &item) { tree_->pushBack(item); }
+
+    /** Remove the last from end of the list */
+    void popBack() { removeAt(count() - 1); }
+
+    /** Insert a new item at the beginning of the list */
+    void pushFront(const T &item) { insertAt(0, item); }
+
+    /** Remove the first item from the beginning of the list */
+    void popFront() { removeAt(0); }
+
+    /** Directly access item at the front */
+    T &front() { assert(count() > 0); return tree_->first<T>(); }
+
+    /** Directly access item at the front */
+    const T &front() const { assert(count() > 0); return tree_->first<T>(); }
+
+    /** Directly access item at the back */
+    T &back() { assert(count() > 0); return tree_->last<T>(); }
+
+    /** Directly access item at the back */
+    const T &back() const { assert(count() > 0); return tree_->last<T>(); }
+
+    /** @}
+      */
+
+private:
+    friend class Local<ListInstance>;
+    friend class bucket::Internals;
+    friend class List<T>;
+
+    // TODO: obsolete
+    static Ref<ListInstance> allocate(Index count)
+    {
+        auto list = new ListInstance;
+        for (; count > 0; --count) list->pushBack(T{});
+        return list;
+    }
+
+    ListInstance() = default;
+    ~ListInstance() { tree_->deplete<T>(); }
+
+    ListInstance(const ListInstance *other)
+    {
+        tree_->populate<T>(other);
+    }
+
+    template<class Heap>
+    List<T> sortWithHeap(Ref<Heap> heap, bool unique = false) const
+    {
+        for (const T &item: this) heap->push(item);
+
+        List<T> result;
+        if (unique) {
+            T prev, item;
+            heap->pop(&prev);
+            result->append(prev);
+            while (!heap->isEmpty()) {
+                heap->pop(&item);
+                if (item != prev) {
+                    result->append(item);
+                    prev = item;
+                }
+            }
+        }
+        else {
+            while (!heap->isEmpty())
+                result->append(heap->pop());
+        }
+
+        return result;
+    }
+
+    Local<bucket::Tree> tree_;
+};
+
+template<class T>
+bool operator==(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) == 0; }
+
+template<class T>
+bool operator!=(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) != 0; }
+
+template<class T>
+bool operator<(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) < 0; }
+
+template<class T>
+bool operator>(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) > 0; }
+
+template<class T>
+bool operator<=(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) <= 0; }
+
+template<class T>
+bool operator>=(const ListInstance<T> &a, const ListInstance<T> &b) { return container::compare(&a, &b) >= 0; }
+
+} // namespace cc

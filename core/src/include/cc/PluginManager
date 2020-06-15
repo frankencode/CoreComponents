@@ -10,7 +10,7 @@
 
 #include <cc/Source>
 #include <cc/PluginDir>
-#include <cc/ListValue>
+#include <cc/List>
 
 namespace cc {
 
@@ -20,7 +20,7 @@ class PluginManager: public Object
 {
 public:
     static PluginManager *instance();
-    ListValue< Ref<PluginDir> > pluginDirs() const { return pluginDirs_; }
+    List< Ref<PluginDir> > pluginDirs() const { return pluginDirs_; }
 
 private:
     friend class Singleton<PluginManager>;
@@ -31,7 +31,7 @@ private:
 
     void registerPluginDir(PluginDir *pluginDir);
 
-    ListValue< Ref<PluginDir> > pluginDirs_;
+    List< Ref<PluginDir> > pluginDirs_;
 };
 
 } // namespace cc

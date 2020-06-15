@@ -79,7 +79,7 @@ void Arguments::Instance::validate(const VariantMap &prototype)
                 options_->establish(name, StringList{str(value)});
             }
             else if (value->type() == VariantType::Int && defaultValue->type() == VariantType::List && defaultValue->itemType() == VariantType::Int) {
-                options_->establish(name, ListValue<int>{int(value)});
+                options_->establish(name, List<int>{int(value)});
             }
             else {
                 throw UsageError{

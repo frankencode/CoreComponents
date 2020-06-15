@@ -34,8 +34,8 @@ protected:
     virtual String filterChunk(const String &newChunk) const;
     virtual void pasteChunk(Range range, const String &newChunk) = 0;
 
-    ListValue< Ref<const TextDelta> > past_;
-    ListValue< Ref<const TextDelta> > future_;
+    List< Ref<const TextDelta> > past_;
+    List< Ref<const TextDelta> > future_;
 };
 
 }} // namespace cc::ui

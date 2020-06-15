@@ -18,7 +18,7 @@ class TestAlgorithms: public TestCase
 {
     void run()
     {
-        ListValue<String> fruits { "melon", "banana", "pear", "melon", "apple", "peach" };
+        List<String> fruits { "melon", "banana", "pear", "melon", "apple", "peach" };
         std::sort(fruits->begin(), fruits->end());
         CC_INSPECT(str(fruits));
         {

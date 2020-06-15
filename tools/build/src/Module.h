@@ -42,6 +42,6 @@ private:
     bool dirty_;
 };
 
-using ModuleList = ListValue< Ref<Module> >;
+using ModuleList = List< Ref<Module> >;
 
 } // namespace ccbuild

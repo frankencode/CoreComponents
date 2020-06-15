@@ -25,7 +25,7 @@ namespace net {
 class SocketAddressDetails;
 class SocketAddress;
 
-using SocketAddressList = ListValue<SocketAddress>;
+using SocketAddressList = List<SocketAddress>;
 
 /** \class SocketAddress cc/net/SocketAddress
   * \brief Socket address

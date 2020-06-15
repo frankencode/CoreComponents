@@ -55,7 +55,7 @@ NodeConfig::NodeConfig(const MetaObject *config):
 {
     String address = config->value("address");
 
-    ListValue<int> ports = Variant::cast<ListValue<int>>(config->value("port"));
+    List<int> ports = Variant::cast<List<int>>(config->value("port"));
 
     ProtocolFamily family = ProtocolFamily::Unspecified;
     {

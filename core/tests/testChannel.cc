@@ -10,7 +10,7 @@
 #include <cc/stdio>
 #include <cc/Thread>
 #include <cc/Channel>
-#include <cc/ListValue>
+#include <cc/List>
 #include <cc/Random>
 #include <cc/System>
 
@@ -23,7 +23,7 @@ class Consumer: public Thread
 {
 public:
     static Ref<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer{id, channel, amount}; }
-    ListValue<int> list() const { return list_; }
+    List<int> list() const { return list_; }
 
 private:
     Consumer(int id, MyChannel *channel, int amount):
@@ -45,14 +45,14 @@ private:
     int id_;
     Ref<MyChannel> channel_;
     int amount_;
-    ListValue<int> list_;
+    List<int> list_;
 };
 
 class Producer: public Thread
 {
 public:
     static Ref<Producer> create(int id, MyChannel *channel, int amount) { return new Producer{id, channel, amount}; }
-    ListValue<int> list() const { return list_; }
+    List<int> list() const { return list_; }
 
 private:
     Producer(int id, MyChannel *channel, int amount):
@@ -77,7 +77,7 @@ private:
     Ref<MyChannel> channel_;
     int amount_;
     Ref<Random> random_;
-    ListValue<int> list_;
+    List<int> list_;
 };
 
 class ConsumerProducer: public TestCase

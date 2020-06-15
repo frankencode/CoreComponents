@@ -99,7 +99,7 @@ public:
 };
 
 template<class T>
-String str(const ListValue<T> &a)
+String str(const List<T> &a)
 {
     auto n = a->count();
     if (n == 0) return "[]";

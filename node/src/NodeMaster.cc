@@ -90,7 +90,7 @@ void NodeMaster::run()
 
 void NodeMaster::runNode()
 {
-    ListValue< Ref<StreamSocket> > listeningSockets;
+    List< Ref<StreamSocket> > listeningSockets;
 
     for (const SocketAddress &address: config()->address()) {
         auto socket = StreamSocket::listen(address);

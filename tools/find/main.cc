@@ -43,7 +43,7 @@ private:
     int i1_;
 };
 
-using Matches = ListValue< Ref<TextMatch> >;
+using Matches = List< Ref<TextMatch> >;
 
 Matches findMatches(const CharArray *text, const SyntaxDefinition *textPattern);
 void displayMatch(const CharArray *path, const CharArray *text, const TextMatch *match);

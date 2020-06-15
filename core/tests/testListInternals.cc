@@ -1,5 +1,5 @@
 #include <cc/testing/TestSuite>
-#include <cc/List>
+#include <cc/ListInstance>
 #include <cc/bucket_internals>
 #include <cc/debug>
 #include <cc/File>
@@ -16,7 +16,7 @@
 using namespace cc;
 using namespace cc::testing;
 
-void print(const List<int> *list)
+void print(const ListInstance<int> *list)
 {
     Format f;
     for (int i = 0; i < list->count(); ++i)
@@ -29,7 +29,7 @@ class PushBackPopBackTest: public TestCase
     void run() override
     {
         const int n = 1024;
-        Local<List<int>> list;
+        Local<ListInstance<int>> list;
         for (int i = 0; i < n; ++i) {
             list->insertAt(list->count(), i);
             for (int k = 0; k <= i; ++k)
@@ -51,7 +51,7 @@ class PushFrontPopFrontTest: public TestCase
     void run() override
     {
         const int n = 1024;
-        Local<List<int>> list;
+        Local<ListInstance<int>> list;
         for (int i = 0; i < n; ++i) {
             list->insertAt(0, i);
             for (int k = 0; k <= i; ++k)
@@ -73,7 +73,7 @@ class PushFrontPopBackTest: public TestCase
     void run() override
     {
         const int n = 1024;
-        Local<List<int>> list;
+        Local<ListInstance<int>> list;
         for (int i = 0; i < n; ++i) {
             list->insertAt(0, i);
             for (int k = 0; k <= i; ++k)
@@ -95,7 +95,7 @@ class PushBackPopFrontTest: public TestCase
     void run() override
     {
         const int n = 1024;
-        Local<List<int>> list;
+        Local<ListInstance<int>> list;
         auto t = ::clock();
         for (int i = 0; i < n; ++i) {
             list->insertAt(list->count(), i);
@@ -118,7 +118,7 @@ class PushPopRandomTest: public TestCase
     void run() override
     {
         const int n = 1024;
-        Local<List<int>> list;
+        Local<ListInstance<int>> list;
         Local<Random> random{0};
         auto t = ::clock();
         for (int i = 0; i < n; ++i) {
@@ -140,7 +140,7 @@ class PushPopRandomTest: public TestCase
 int main(int argc, char **argv)
 {
     #if 0
-    auto primes = List<unsigned>::create();
+    auto primes = ListInstance<unsigned>::create();
     const unsigned b = std::numeric_limits<unsigned>::max();
     unsigned x = 2, y = x;
     while (x <= b) {
@@ -171,12 +171,12 @@ int main(int argc, char **argv)
         #if 1
         for (int k = 0; k < h; ++k)
         {
-            Local<List<int>> list;
+            Local<ListInstance<int>> list;
             for (int i = 0; i < n; ++i)
                 list->push(i, i);
         }
         {
-            Local<List<int>> list;
+            Local<ListInstance<int>> list;
             tx = ::clock();
             for (int i = 0; i < n; ++i)
                 list->push(i, i);
@@ -220,7 +220,7 @@ int main(int argc, char **argv)
             CC_INSPECT(x[m - 1]);
         }
         {
-            Local<List<int>> list;
+            Local<ListInstance<int>> list;
             for (int i = 0; i < n; ++i) list->insertAt(i, i);
             tx = ::clock();
             int h = 0;
@@ -250,7 +250,7 @@ int main(int argc, char **argv)
     return 0;
     #endif
     #if 0
-    Local<List<int>> list;
+    Local<ListInstance<int>> list;
     const int n = 33;
     for (int i = 0; i < n; ++i) {
         auto t = __rdtsc();

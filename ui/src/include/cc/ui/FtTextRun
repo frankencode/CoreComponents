@@ -53,7 +53,7 @@ private:
     friend class Painter;
     friend class FtTextCursor;
 
-    using FtGlyphRuns = ListValue< Ref<const FtGlyphRun> >;
+    using FtGlyphRuns = List< Ref<const FtGlyphRun> >;
 
     static double maxLineHeight(const FtGlyphRuns &glyphRuns);
     Ref<const FtGlyphRun> fold(const FtGlyphRuns &glyphRuns) const;

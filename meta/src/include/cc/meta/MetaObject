@@ -15,7 +15,7 @@ namespace cc {
 namespace meta {
 
 class MetaObject;
-using MetaObjectList = ListValue< Ref<MetaObject> >;
+using MetaObjectList = List< Ref<MetaObject> >;
 
 /** \class MetaObject cc/meta/MetaObject
   * \brief Duck-typed object

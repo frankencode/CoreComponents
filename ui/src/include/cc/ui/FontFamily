@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/ui/FontFace>
-#include <cc/ListValue>
+#include <cc/List>
 
 namespace cc {
 namespace ui {
@@ -22,7 +22,7 @@ public:
     String name() const { return name_; }
     Pitch pitch() const { return pitch_; }
 
-    ListValue< Ref<const FontFace> > fontFaces() const { return fontFaces_; }
+    List< Ref<const FontFace> > fontFaces() const { return fontFaces_; }
 
     const FontFace *selectFontFace(
         Weight weight = Weight::Normal,
@@ -42,7 +42,7 @@ private:
 
     String name_;
     Pitch pitch_;
-    ListValue< Ref<const FontFace> > fontFaces_;
+    List< Ref<const FontFace> > fontFaces_;
 };
 
 }} // namespace cc::ui

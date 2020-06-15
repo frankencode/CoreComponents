@@ -9,15 +9,15 @@
 #include <cc/testing/TestSuite>
 #include <cc/stdio>
 #include <cc/Random>
-#include <cc/List>
+#include <cc/ListInstance>
 
 using namespace cc;
 using namespace cc::testing;
 
-namespace cc { template class List<String>; }
+namespace cc { template class ListInstance<String>; }
 
 template<class T>
-void print(Ref< List<T> > list) {
+void print(Ref< ListInstance<T> > list) {
     fout("[");
     for (int i = 0; i < list->count(); ++i) {
         fout() << list->at(i);
@@ -26,7 +26,7 @@ void print(Ref< List<T> > list) {
     fout("]\n");
 }
 
-typedef List<int> IntList;
+typedef ListInstance<int> IntList;
 
 class InsertionIteration: public TestCase
 {

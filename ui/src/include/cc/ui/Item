@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/ui/Pile>
-#include <cc/ListValue>
+#include <cc/List>
 #include <cc/Notifier>
 
 namespace cc {
@@ -17,8 +17,8 @@ namespace ui {
 
 class Item;
 
-using ItemList = ListValue< Ref<Item> >;
-using IndexPath = ListValue<int> ;
+using ItemList = List< Ref<Item> >;
+using IndexPath = List<int> ;
 
 class ItemDelta
 {

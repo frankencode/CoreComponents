@@ -677,13 +677,13 @@ Variant YasonSyntax::readValue(const CharArray *text, const Token *token, Varian
 
     if (expectedType == VariantType::List && value->type() != VariantType::List) {
         if (expectedItemType == VariantType::Int) {
-            value = ListValue<int>{int(value)};
+            value = List<int>{int(value)};
         }
         else if (expectedItemType == VariantType::Bool) {
-            value = ListValue<int>{bool(value)};
+            value = List<int>{bool(value)};
         }
         else if (expectedItemType == VariantType::Float) {
-            value = ListValue<int>{float(value)};
+            value = List<int>{float(value)};
         }
         else if (expectedItemType == VariantType::String) {
             value = StringList{value};

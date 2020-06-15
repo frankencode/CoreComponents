@@ -65,7 +65,7 @@ protected:
 
     String path_;
     String text_;
-    ListValue<Span> spans_;
+    List<Span> spans_;
 };
 
 }} // namespace cc::toki
