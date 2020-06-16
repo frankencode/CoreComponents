@@ -33,10 +33,8 @@ int main(int argc, char **argv)
         options->insert("validation-time", 0.);
         options->insert("duration", 0.);
 
-        Arguments arguments{argc, argv};
-        arguments->read(options);
-
-        if (arguments->items()->count() > 0) throw HelpRequest{};
+        if (Arguments{argc, argv}->read(options)->count() > 0)
+            throw HelpRequest{};
 
         String interface = options->value("interface");
         int canId = options->value("can-id");

@@ -29,10 +29,8 @@ int main(int argc, char **argv)
         options->insert("inv-can-id", 0);
         options->insert("refresh-time", 0.5);
 
-        Arguments arguments{argc, argv};
-        arguments->read(options);
-
-        if (arguments->items()->count() > 0) throw HelpRequest{};
+        if (Arguments{argc, argv}->read(options)->count() > 0)
+            throw HelpRequest{};
 
         String interface = options->value("interface");
         int canId = options->value("can-id");

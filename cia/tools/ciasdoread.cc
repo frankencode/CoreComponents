@@ -29,9 +29,8 @@ int main(int argc, char **argv)
         options->insert("timeout", -1);
         options->insert("debug", false);
 
-        Arguments arguments{argc, argv};
-        arguments->validate(options);
-        arguments->override(options);
+        if (Arguments{argc, argv}->read(options)->count() > 0)
+            throw HelpRequest{};
 
         String interface = options->value("interface");
         int clientId     = options->value("my-id");

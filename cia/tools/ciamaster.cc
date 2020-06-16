@@ -23,10 +23,7 @@ int main(int argc, char *argv[])
         options->insert("interface", "can0");
         options->insert("peer-id", 0);
 
-        Arguments arguments{argc, argv};
-        arguments->read(options);
-
-        auto items = arguments->items();
+        auto items = Arguments{argc, argv}->read(options);
         if (items->count() != 1) throw HelpRequest{};
 
         NetworkCommand::Specifier commandSpecifier;

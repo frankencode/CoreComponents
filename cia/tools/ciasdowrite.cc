@@ -33,7 +33,8 @@ int main(int argc, char **argv)
         options->insert("timeout", -1);
         options->insert("debug", false);
 
-        Arguments{argc, argv}->read(options);
+        if (Arguments{argc, argv}->read(options)->count() > 0)
+            throw HelpRequest{};
 
         String interface   = options->value("interface");
         int clientId       = options->value("my-id");
