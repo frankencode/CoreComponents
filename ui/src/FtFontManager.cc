@@ -40,27 +40,25 @@ Ref<const ScaledFont> FtFontManager::selectFont(const Font &font) const
 {
     Font target = fixup(font);
 
-    Ref<RecentFonts> recentFonts;
-    if (fontCache_->lookup(target->family(), &recentFonts)) {
-        for (int i = 0; i < recentFonts->count(); ++i) {
-            const FtScaledFont *candidate = recentFonts->at(i);
-            if (
-                candidate->font()->size() == target->size() &&
-                candidate->font()->slant() == target->slant() &&
-                candidate->font()->weight() == target->weight() &&
-                candidate->font()->stretch() == target->stretch() &&
-                candidate->font()->smoothing() == target->smoothing() &&
-                candidate->font()->outlineHinting() == target->outlineHinting() &&
-                candidate->font()->metricsHinting() == target->metricsHinting()
-            )
-                return candidate;
-        }
-    }
-    else {
-        recentFonts = RecentFonts::create(6);
+    FontCache::Iterator it;
+    if (!fontCache_->find(target->family(), &it)) {
+        fontCache_->insert(target->family(), RecentFonts{6}, &it);
             // buffer size is small to support scaling animations
+    }
 
-        fontCache_->insert(target->family(), recentFonts);
+    for (int i = 0; i < it->value()->count(); ++i)
+    {
+        const FtScaledFont *candidate = it->value()->at(i);
+        if (
+            candidate->font()->size() == target->size() &&
+            candidate->font()->slant() == target->slant() &&
+            candidate->font()->weight() == target->weight() &&
+            candidate->font()->stretch() == target->stretch() &&
+            candidate->font()->smoothing() == target->smoothing() &&
+            candidate->font()->outlineHinting() == target->outlineHinting() &&
+            candidate->font()->metricsHinting() == target->metricsHinting()
+        )
+            return candidate;
     }
 
     const FtFontFace *fontFace =
@@ -69,7 +67,7 @@ Ref<const ScaledFont> FtFontManager::selectFont(const Font &font) const
         );
 
     Ref<const FtScaledFont> scaledFont = Object::create<FtScaledFont>(fontFace, target);
-    recentFonts->pushBack(scaledFont);
+    it->value()->pushBack(scaledFont);
 
     return scaledFont;
 }
