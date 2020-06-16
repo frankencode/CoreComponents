@@ -307,26 +307,6 @@ int BuildPlan::run()
 
     Process::setEnv("SOURCE", projectPath_);
 
-    if (options_ & Bootstrap) {
-        fout(
-            "#!/bin/sh -ex\n"
-            "SOURCE=$1\n"
-            "MACHINE=$(%%)\n"
-        ) << toolChain_->machineCommand();
-    }
-
-    if (!(options_ & Configure)) {
-        if (!preparationStage()->run()) return 1;
-        if (recipe_->value("prepare")) return 0;
-    }
-
-    String defaultIncludePath = projectPath_->extendPath("include");
-    if (Dir::exists(defaultIncludePath)) {
-        if (!includePaths_->contains(defaultIncludePath))
-            includePaths_->append(defaultIncludePath);
-    }
-
-    globSources();
     initModules();
 
     configureStage()->run();
@@ -340,6 +320,27 @@ int BuildPlan::run()
     }
     if (options_ & Configure)
         return configureStage()->success() ? 0 : 1;
+
+    if (options_ & Bootstrap) {
+        fout(
+            "#!/bin/sh -ex\n"
+            "SOURCE=$1\n"
+            "MACHINE=$(%%)\n"
+        ) << toolChain_->machineCommand();
+    }
+
+    if (configureStage()->success()) {
+        if (!preparationStage()->run()) return 1;
+    }
+    if (recipe_->value("prepare")) return 0;
+
+    String defaultIncludePath = projectPath_->extendPath("include");
+    if (Dir::exists(defaultIncludePath)) {
+        if (!includePaths_->contains(defaultIncludePath))
+            includePaths_->append(defaultIncludePath);
+    }
+
+    globSources();
 
     if (recipe_->value("pkg-config")) {
         if (options_ & Package) {

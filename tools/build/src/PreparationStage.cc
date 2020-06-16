@@ -188,9 +188,12 @@ bool PreparationStage::run()
     return success_ = true;
 }
 
-String PreparationStage::expand(const String &command, const String &sourcePath, const String &targetPath)
+String PreparationStage::expand(const String &command, const String &sourcePath, const String &targetPath) const
 {
     return command
+        ->replace("$CFLAGS", plan()->customCompileFlags()->join(" "))
+        ->replace("$@@", plan()->modulePath())
+        ->replace("$<<", plan()->projectPath())
         ->replace("$<", sourcePath)
         ->replace("$@", targetPath);
 }
