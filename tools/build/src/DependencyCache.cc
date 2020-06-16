@@ -42,13 +42,18 @@ DependencyCache::DependencyCache(BuildPlan *plan):
     if (!dependencyCache) return;
     if (dependencyCache->className() != "DependencyCache") return;
 
+    // CC_INSPECT(plan->sources()->join("\n"));
+
     for (int i = 0; i < dependencyCache->count(); ++i)
     {
         MetaObject::Item item = dependencyCache->at(i);
 
         previousSources_->append(item->key());
 
-        if (!plan->sources()->contains(item->key())) continue;
+        if (!plan->sources()->contains(item->key())) {
+            // CC_INSPECT(item->key());
+            continue;
+        }
 
         MetaObject *yason = Variant::cast<MetaObject *>(item->value());
         String command = yason->value("analyseCommand");

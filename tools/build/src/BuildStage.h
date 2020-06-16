@@ -9,6 +9,7 @@
 #pragma once
 
 #include "BuildStageGuard.h"
+#include <cc/String>
 
 namespace ccbuild {
 

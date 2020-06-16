@@ -38,15 +38,17 @@ bool PreparationStage::run()
 
     if (plan()->predicates()->count() == 0) return success_ = true;
 
+    shell()->mkdir(plan()->prestagePath());
+
     for (Predicate *predicate: plan()->predicates())
     {
         Ref<JobScheduler> scheduler;
 
         if (predicate->source()->count() == 0) {
-            String targetPath = plan()->sourcePath(predicate->target()->replace("%", ""));
+            String targetPath = plan()->prestagePath(predicate->target()->replace("%", ""));
             if (plan()->options() & BuildPlan::Clean) {
                 if (predicate->clean() != "") {
-                    String command = expand(predicate->clean(), "", targetPath);
+                    String command = expandCommand(predicate->clean(), "", targetPath);
                     if (plan()->options() & BuildPlan::Simulate) {
                         fout() << shell()->beautify(command) << nl;
                     }
@@ -62,7 +64,7 @@ bool PreparationStage::run()
             }
             if (predicate->create() != "") {
                 if (!shell()->fileStatus(targetPath)->isValid()) {
-                    String command = expand(predicate->create(), "", targetPath);
+                    String command = expandCommand(predicate->create(), "", targetPath);
                     if (plan()->options() & BuildPlan::Simulate) {
                         fout() << shell()->beautify(command) << nl;
                     }
@@ -94,11 +96,11 @@ bool PreparationStage::run()
                     name = sourcePath->baseName();
                 }
                 String targetPath =
-                    plan()->sourcePath(
+                    plan()->prestagePath(
                         predicate->target()->replace("%", name)
                     );
                 if (plan()->options() & BuildPlan::Clean) {
-                    String command = expand(predicate->clean(), sourcePath, targetPath);
+                    String command = expandCommand(predicate->clean(), sourcePath, targetPath);
                     if (plan()->options() & BuildPlan::Simulate) {
                         fout() << shell()->beautify(command) << nl;
                     }
@@ -115,7 +117,7 @@ bool PreparationStage::run()
                     (plan()->options() & BuildPlan::Blindfold) ||
                     shell()->fileStatus(targetPath)->lastModified() < shell()->fileStatus(sourcePath)->lastModified()
                 ) {
-                    String command = expand(predicate->update(), sourcePath, targetPath);
+                    String command = expandCommand(predicate->update(), sourcePath, targetPath);
                     if (plan()->options() & BuildPlan::Simulate) {
                         fout() << shell()->beautify(command) << nl;
                     }
@@ -158,7 +160,7 @@ bool PreparationStage::run()
                     }
                 }
                 if (!sourceFound) {
-                    String command = expand(predicate->remove(), "", targetPath);
+                    String command = expandCommand(predicate->remove(), "", targetPath);
                     if (plan()->options() & BuildPlan::Simulate) {
                         fout() << shell()->beautify(command) << nl;
                     }
@@ -188,11 +190,11 @@ bool PreparationStage::run()
     return success_ = true;
 }
 
-String PreparationStage::expand(const String &command, const String &sourcePath, const String &targetPath) const
+String PreparationStage::expandCommand(const String &command, const String &sourcePath, const String &targetPath) const
 {
     return command
         ->replace("$CFLAGS", plan()->customCompileFlags()->join(" "))
-        ->replace("$@@", plan()->modulePath())
+        ->replace("$@@", plan()->prestagePath())
         ->replace("$<<", plan()->projectPath())
         ->replace("$<", sourcePath)
         ->replace("$@", targetPath);

@@ -876,8 +876,8 @@ String CharArray::reducePath() const
 
 String CharArray::extendPath(const String &relativePath) const
 {
-    if (count() == 0) return relativePath->copy();
-    if (relativePath->count() == 0) return copy();
+    if (count() == 0) return relativePath->copy(); // \todo remove needless copy()
+    if (relativePath->count() == 0) return copy(); // \todo remove needless copy()
 
     StringList parts;
     if (String{this} != "/") parts << this;

@@ -449,7 +449,7 @@ public:
     const uint32_t *words() const { return words_; }
 
     /// Create a copy of this String
-    String copy() const { return new CharArray(*this); }
+    String copy() const { return new CharArray{*this}; }
 
     /** Create a selection (reference to a sub-String)
       * \param i0 begin of selection (index of first selected character)
@@ -461,7 +461,7 @@ public:
       * Sub-String selections can be cascaded to arbitrary depth.
       */
     String select(int i0, int i1) const {
-        return new CharArray(this, i0, i1);
+        return new CharArray{this, i0, i1};
     }
 
     /** Create a selection (reference to a sub-String)
@@ -469,7 +469,7 @@ public:
       * \return the selected sub-String
       */
     String select(int i1) const {
-        return new CharArray(this, 0, i1);
+        return new CharArray{this, 0, i1};
     }
 
     /** Create a selection (reference to a sub-String)
@@ -477,7 +477,7 @@ public:
       * \return the selected sub-String
       */
     String selectFrom(int i0) const {
-        return new CharArray(this, i0, size_);
+        return new CharArray{this, i0, size_};
     }
 
     /// Pointer to parent String if this String is a sub-String selection (nullptr otherwise)
