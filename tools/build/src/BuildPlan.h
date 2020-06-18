@@ -81,6 +81,7 @@ public:
     String userPkgConfigPath() const { return projectPath_->extendPath(toolChain_->pkgConfigName(this)); }
     String scope() const { return scope_; }
     String modulePath() const { return modulePath_; }
+    String prestagePath() const { return prestagePath_; }
     String configPath() const { return configPath_; }
     MetaObject *recipe() const { return recipe_; }
 
@@ -115,6 +116,7 @@ public:
     String testArgs() const { return testArgs_; }
 
     String sourcePath(const String &source) const;
+    String prestagePath(const String &precursor) const;
     String modulePath(const String &object) const;
     String installPath(const String &relativeInstallPath) const;
 
@@ -123,7 +125,7 @@ public:
 
     String previousLinkCommandPath() const;
 
-    StringList globSources(const StringList &pattern) const;
+    StringList globSources(const StringList &patternList) const;
 
     const BuildShell *shell() const { return shell_; }
     void setLibraryLinkJob(Job *linkJob) { libraryLinkJob_ = linkJob; }
@@ -168,6 +170,7 @@ private:
     String scope_;
     String modulePath_;
     String configPath_;
+    String prestagePath_;
     Ref<MetaObject> recipe_;
 
     int options_;

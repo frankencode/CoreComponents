@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/stdio>
-#include <cc/File>
-#include <cc/FileStatus>
+#include "CompileLinkStage.h"
 #include "JobScheduler.h"
 #include "BuildShell.h"
 #include "BuildPlan.h"
-#include "CompileLinkStage.h"
+#include <cc/stdio>
+#include <cc/File>
+#include <cc/FileStatus>
 
 namespace ccbuild {
 

@@ -6,10 +6,10 @@
  *
  */
 
+#include "BuildStage.h"
 #include "JobScheduler.h"
 #include "BuildPlan.h"
 #include "ConfigureShell.h"
-#include "BuildStage.h"
 
 namespace ccbuild {
 

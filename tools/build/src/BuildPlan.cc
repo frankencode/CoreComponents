@@ -307,26 +307,6 @@ int BuildPlan::run()
 
     Process::setEnv("SOURCE", projectPath_);
 
-    if (options_ & Bootstrap) {
-        fout(
-            "#!/bin/sh -ex\n"
-            "SOURCE=$1\n"
-            "MACHINE=$(%%)\n"
-        ) << toolChain_->machineCommand();
-    }
-
-    if (!(options_ & Configure)) {
-        if (!preparationStage()->run()) return 1;
-        if (recipe_->value("prepare")) return 0;
-    }
-
-    String defaultIncludePath = projectPath_->extendPath("include");
-    if (Dir::exists(defaultIncludePath)) {
-        if (!includePaths_->contains(defaultIncludePath))
-            includePaths_->append(defaultIncludePath);
-    }
-
-    globSources();
     initModules();
 
     configureStage()->run();
@@ -340,6 +320,27 @@ int BuildPlan::run()
     }
     if (options_ & Configure)
         return configureStage()->success() ? 0 : 1;
+
+    if (options_ & Bootstrap) {
+        fout(
+            "#!/bin/sh -ex\n"
+            "SOURCE=$1\n"
+            "MACHINE=$(%%)\n"
+        ) << toolChain_->machineCommand();
+    }
+
+    if (configureStage()->success()) {
+        if (!preparationStage()->run()) return 1;
+    }
+    if (recipe_->value("prepare")) return 0;
+
+    String defaultIncludePath = projectPath_->extendPath("include");
+    if (Dir::exists(defaultIncludePath)) {
+        if (!includePaths_->contains(defaultIncludePath))
+            includePaths_->append(defaultIncludePath);
+    }
+
+    globSources();
 
     if (recipe_->value("pkg-config")) {
         if (options_ & Package) {
@@ -396,6 +397,11 @@ String BuildPlan::sourcePath(const String &source) const
     return projectPath_->extendPath(source);
 }
 
+String BuildPlan::prestagePath(const String &precursor) const
+{
+    return prestagePath_->extendPath(precursor);
+}
+
 String BuildPlan::modulePath(const String &object) const
 {
     return modulePath_->extendPath(object);
@@ -422,14 +428,14 @@ String BuildPlan::pluginReversePath() const
 
 String BuildPlan::previousLinkCommandPath() const
 {
-    return modulePath("LinkComannd");
+    return modulePath("LinkCommand");
 }
 
-StringList BuildPlan::globSources(const StringList &pattern) const
+StringList BuildPlan::globSources(const StringList &patternList) const
 {
     StringList sources;
-    for (int i = 0; i < pattern->count(); ++i) {
-        Ref<Glob> glob = Glob::open(sourcePath(pattern->at(i)));
+    for (const String &pattern: patternList) {
+        Ref<Glob> glob = Glob::open(sourcePath(pattern));
         for (String path; glob->read(&path);) {
             try {
                 DirWalker walker{path};
@@ -443,6 +449,25 @@ StringList BuildPlan::globSources(const StringList &pattern) const
             }
         }
     }
+    for (const String &pattern: patternList) {
+        Ref<Glob> glob = Glob::open(prestagePath(pattern));
+        for (String path; glob->read(&path);) {
+            try {
+                DirWalker walker{path};
+                bool isDir = false;
+                for (String path; walker->read(&path, &isDir);) {
+                    if (!isDir)
+                        sources->append(path);
+                }
+            }
+            catch (...) {
+                if (path->startsWith("./")) // \todo FIXME, why?!
+                    path = path->copy(2, path->count());
+                sources->append(path);
+            }
+        }
+    }
+
     return sources;
 }
 
@@ -609,6 +634,7 @@ void BuildPlan::initModules()
     }
     modulePath_ = ".modules-" + suffix;
     configPath_ = ".config-" + suffix;
+    prestagePath_ = ".prestage-" + suffix;
 
     for (BuildPlan *prerequisite: prerequisites_)
         prerequisite->initModules();
