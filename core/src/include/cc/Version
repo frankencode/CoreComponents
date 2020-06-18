@@ -80,11 +80,7 @@ public:
     private:
         friend class Version;
 
-        Instance():
-            major_{0},
-            minor_{0},
-            patch_{0}
-        {}
+        Instance() = default;
 
         Instance(int major, int minor, int patch):
             major_{uint8_t(major)},
@@ -94,9 +90,9 @@ public:
 
         Instance(const String &s);
 
-        uint8_t major_;
-        uint8_t minor_;
-        uint16_t patch_;
+        uint8_t major_ { 0 };
+        uint8_t minor_ { 0 };
+        uint16_t patch_ { 0 };
     };
 
     const Instance *operator->() const { return &instance_; }
