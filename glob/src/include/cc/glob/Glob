@@ -20,30 +20,47 @@ namespace glob {
   * \brief Collect file names matching a globbing pattern
   * \see DirWalker
   */
-class Glob: public Source<String>
+class Glob
 {
 public:
+    class Instance: public Source<String>
+    {
+    public:
+        /** Get the next matched path
+          * \param path returns the next path
+          * \return true if another matching path could be read
+          */
+        bool read(String *path);
+
+    private:
+        friend class Glob;
+
+        Instance(const String &expression);
+        Instance(const String &path, const StringList &remainder);
+        void init(const String &path);
+
+        Dir dir_;
+        Pattern pattern_;
+        StringList remainder_;
+        Ref<Instance> child_;
+    };
+
+    using Iterator = Instance::Iterator;
+
     /** Create a new globbing source
       * \param expression globbing expression to use for path matching
-      * \return new object instance
       */
-    static Ref<Glob> open(const String &expression);
+    Glob(const String &expression);
 
-    /** Get the next matched path
-      * \param path returns the next path
-      * \return true if another mathing path could be read
-      */
-    bool read(String *path);
+    Instance *operator->() { return instance_; }
+
+    operator Instance*() { return instance_; }
 
 private:
-    Glob(const String &expression);
-    Glob(const String &path, const StringList &remainder);
-    void init(const String &path);
-
-    Dir dir_;
-    Pattern pattern_;
-    StringList remainder_;
-    Ref<Glob> child_;
+    Ref<Instance> instance_;
 };
+
+inline Glob::Iterator begin(Glob &glob) { return glob->begin(); }
+inline Glob::Iterator end  (Glob &glob) { return glob->end(); }
 
 }} // namespace cc::glob

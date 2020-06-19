@@ -435,7 +435,7 @@ StringList BuildPlan::globSources(const StringList &patternList) const
 {
     StringList sources;
     for (const String &pattern: patternList) {
-        Ref<Glob> glob = Glob::open(sourcePath(pattern));
+        Glob glob{sourcePath(pattern)};
         for (String path; glob->read(&path);) {
             try {
                 DirWalker walker{path};
@@ -450,7 +450,7 @@ StringList BuildPlan::globSources(const StringList &patternList) const
         }
     }
     for (const String &pattern: patternList) {
-        Ref<Glob> glob = Glob::open(prestagePath(pattern));
+        Glob glob{prestagePath(pattern)};
         for (String path; glob->read(&path);) {
             try {
                 DirWalker walker{path};

@@ -85,7 +85,7 @@ bool PreparationStage::run()
                     sourceText->replace("%", "(?@*)")
                 );
             Pattern sourcePattern = sourceExpression;
-            Ref<Glob> glob = Glob::open(sourceExpression);
+            Glob glob{sourceExpression};
             for (String sourcePath; glob->read(&sourcePath);) {
                 String name;
                 if (sourceText->contains('%')) {
@@ -138,7 +138,7 @@ bool PreparationStage::run()
                     predicate->target()->replace("%", "(?@*)")
                 );
             Pattern targetPattern = targetExpression;
-            Ref<Glob> glob = Glob::open(targetExpression);
+            Glob glob{targetExpression};
             for (String targetPath; glob->read(&targetPath);) {
                 String name;
                 if (predicate->target()->contains('%')) {

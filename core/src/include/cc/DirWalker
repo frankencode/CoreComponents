@@ -81,6 +81,8 @@ public:
         Ref<Instance> child_;
     };
 
+    using Iterator = Instance::Iterator;
+
     DirWalker() = default;
 
     /** Open a directory for recursive tree traversal
@@ -100,5 +102,8 @@ private:
 
     Ref<Instance> instance_;
 };
+
+inline DirWalker::Iterator begin(DirWalker &walker) { return walker->begin(); }
+inline DirWalker::Iterator end  (DirWalker &walker) { return walker->end(); }
 
 } // namespace cc

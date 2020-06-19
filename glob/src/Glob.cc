@@ -12,12 +12,11 @@
 namespace cc {
 namespace glob {
 
-Ref<Glob> Glob::open(const String &expression)
-{
-    return new Glob{expression};
-}
-
 Glob::Glob(const String &expression):
+    instance_{new Instance{expression}}
+{}
+
+Glob::Instance::Instance(const String &expression):
     remainder_{expression->split('/')}
 {
     if (expression->head(1) == "/") {
@@ -29,25 +28,25 @@ Glob::Glob(const String &expression):
     }
 }
 
-Glob::Glob(const String &path, const StringList &remainder):
+Glob::Instance::Instance(const String &path, const StringList &remainder):
     remainder_{remainder}
 {
     init(path);
 }
 
-void Glob::init(const String &path)
+void Glob::Instance::init(const String &path)
 {
     dir_ = Dir{path};
     pattern_ = remainder_->front();
     remainder_->popFront();
 }
 
-bool Glob::read(String *path)
+bool Glob::Instance::read(String *path)
 {
     if (child_) {
         if (child_->read(path))
             return true;
-        child_ = 0;
+        child_ = nullptr;
     }
     for (String name; dir_->read(&name);) {
         if (name == ".") continue;
@@ -59,7 +58,7 @@ bool Glob::read(String *path)
                 return true;
             }
             if (Dir::exists(node)) {
-                child_ = new Glob{node, remainder_};
+                child_ = new Instance{node, remainder_};
                 return read(path);
             }
         }
