@@ -94,7 +94,7 @@ class RandomInsertionRemovalTest: public InsertionRemovalTest
 {
     void scramble(ArrayInstance<int> *test) override
     {
-        Local<Random>{0}->scramble(test);
+        Random{0}->scramble(test);
     }
 
     void dotify(const SetInstance<int> *set)
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
     for (int i = 0; i < n; ++i)
         test->at(i) = i;
 
-    Local<Random>{0}->scramble(&test);
+    Random{0}->scramble(&test);
     // test->reverseInsitu();
 
     CC_INSPECT(sum(test));
@@ -171,9 +171,9 @@ int main(int argc, char **argv)
         test->at(i) = i;
 
     //auto test_2 = test->select(n/2, n);
-    //Local<Random>{0}->scramble<ArrayInstance<int>>(test_2);
+    //Random{0}->scramble<ArrayInstance<int>>(test_2);
 
-    Local<Random>{0}->scramble(&test);
+    Random{0}->scramble(&test);
 
     // test->reverseInsitu();
 

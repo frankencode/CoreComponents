@@ -7,12 +7,12 @@
  */
 
 #include <cc/testing/TestSuite>
-#include <cc/stdio>
 #include <cc/Thread>
 #include <cc/Channel>
+#include <cc/System>
 #include <cc/List>
 #include <cc/Random>
-#include <cc/System>
+#include <cc/stdio>
 
 using namespace cc;
 using namespace cc::testing;
@@ -59,7 +59,7 @@ private:
         id_{id},
         channel_{channel},
         amount_{amount},
-        random_{Random::open(amount)}
+        random_{amount}
     {}
 
     void run() override
@@ -76,7 +76,7 @@ private:
     int id_;
     Ref<MyChannel> channel_;
     int amount_;
-    Ref<Random> random_;
+    Random random_;
     List<int> list_;
 };
 

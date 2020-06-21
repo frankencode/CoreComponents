@@ -63,7 +63,7 @@ class Sorting: public TestCase
 {
     void run() {
         Ref<IntList> list = IntList::create();
-        Ref<Random> random = Random::open();
+        Random random;
         for (int i = 0; i < 10; ++i)
             list->append(random->get(0, 99));
         print(list);
@@ -82,7 +82,7 @@ class Sorting: public TestCase
 class Cloning: public TestCase
 {
     void run() {
-        Ref<Random> random = Random::open();
+        Random random;
         Ref<IntList> a = IntList::create();
         for (int i = 0; i < 10; ++i)
             a->append(random->get(0, 99));

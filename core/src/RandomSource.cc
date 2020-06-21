@@ -7,7 +7,6 @@
  */
 
 #include <cc/RandomSource>
-#include <cc/Random>
 
 namespace cc {
 
@@ -17,7 +16,7 @@ Ref<RandomSource> RandomSource::open(int seed, off_t eoi, int byteMin, int byteM
 }
 
 RandomSource::RandomSource(int seed, off_t eoi, int byteMin, int byteMax):
-    random_{Random::open(seed)},
+    random_{seed},
     byteMin_{byteMin},
     byteMax_{byteMax},
     n_{0},

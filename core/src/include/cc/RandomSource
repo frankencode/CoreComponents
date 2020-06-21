@@ -8,11 +8,10 @@
 
 #pragma once
 
+#include <cc/Random>
 #include <cc/Stream>
 
 namespace cc {
-
-class Random;
 
 /** \class RandomSource cc/RandomSource
   * \ingroup misc
@@ -30,7 +29,7 @@ protected:
     RandomSource(int seed, off_t eoi, int byteMin, int byteMax);
 
 private:
-    Ref<Random> random_;
+    Random random_;
     int byteMin_;
     int byteMax_;
     off_t n_;

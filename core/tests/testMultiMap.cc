@@ -7,9 +7,9 @@
  */
 
 #include <cc/testing/TestSuite>
-#include <cc/stdio>
 #include <cc/MultiMapInstance>
 #include <cc/Random>
+#include <cc/stdio>
 
 using namespace cc;
 using namespace cc::testing;
@@ -20,7 +20,7 @@ class InsertionIteration: public TestCase
 {
     void run()
     {
-        auto random = Random::open(0);
+        Random random{0};
         const int n = 40;
         const int a = 0, b = 10;
 

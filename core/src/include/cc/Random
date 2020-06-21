@@ -22,64 +22,73 @@ namespace cc {
   *
   * \see RandomSource
   */
-class Random: public Object
+class Random
 {
 public:
+    class Instance: public Object
+    {
+    public:
+        /// Minimum random number
+        int min() const { return 0; }
+
+        /// Maximum random number
+        int max() const { return m_ - 1; }
+
+        /// Number of random numbers until the series repeats itself
+        int period() const { return m_ - 1; }
+
+        /// Generate another random number in the range min() to max()
+        int get() {
+            x_ = (16807 * x_) % m_; /* 7^5 == 16807 */
+            return x_;
+        }
+
+        /** Get another random number in the range a to b
+          * \param a minimum random number
+          * \param b maximum random number
+          * \return next random number
+          */
+        int get(int a, int b) {
+            CC_ASSERT(b <= m_ - 1);
+            CC_ASSERT(a <= b);
+            return (uint64_t(get()) * (b - a)) / (m_ - 1) + a;
+        }
+
+        /** Randomly exchange the items in a container
+          * \param items container storing items
+          */
+        template<class Items>
+        void scramble(Items *items)
+        {
+            for (typename Items::Index i = 0, n = items->count(); i < n; ++i) {
+                typename Items::Index j = get(0, n - 1);
+                auto h = items->at(i);
+                items->at(i) = items->at(j);
+                items->at(j) = h;
+            }
+        }
+
+    private:
+        friend class Random;
+
+        Instance(int seed = -1);
+
+        enum { m_ = (1u << 31u) - 1 };
+        unsigned x_;
+    };
+
     /** Create a new random number generator.
       * \param seed seed number
-      * \return new object instance
       */
-    static Ref<Random> open(int seed = -1) {
-        return new Random{seed};
-    }
+    Random(int seed = -1):
+        instance_{seed}
+    {}
 
-    /// Minimum random number
-    int min() const { return 0; }
-
-    /// Maximum random number
-    int max() const { return m_ - 1; }
-
-    /// Number of random numbers until the series repeats itself
-    int period() const { return m_ - 1; }
-
-    /// Get another random number in the range min() to max()
-    int get() {
-        x_ = (16807 * x_) % m_; /* 7^5 == 16807 */
-        return x_;
-    }
-
-    /** Get another random number in the range a to b
-      * \param a minimum random number
-      * \param b maximum random number
-      * \return next random number
-      */
-    int get(int a, int b) {
-        CC_ASSERT(b <= m_ - 1);
-        CC_ASSERT(a <= b);
-        return (uint64_t(get()) * (b - a)) / (m_ - 1) + a;
-    }
-
-    /** Randomly exchange the items in a container
-      * \param items container storing items
-      */
-    template<class Items>
-    void scramble(Items *items)
-    {
-        for (typename Items::Index i = 0, n = items->count(); i < n; ++i) {
-            typename Items::Index j = get(0, n - 1);
-            auto h = items->at(i);
-            items->at(i) = items->at(j);
-            items->at(j) = h;
-        }
-    }
+    const Instance *operator->() const { return &instance_; }
+    Instance *operator->() { return &instance_; }
 
 private:
-    friend class Local<Random>;
-
-    Random(int seed = -1);
-
-    enum { m_ = (1u << 31u) - 1 };
-    unsigned x_;
+    Instance instance_;
 };
 
 } // namespace cc

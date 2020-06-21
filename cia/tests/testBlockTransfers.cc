@@ -52,7 +52,7 @@ class FullBlockTransferTest: public BlockTransferTest
     {
         auto data = String::allocate(0x700);
         {
-            auto random = Random::open();
+            Random random;
             for (int i = 0; i < data->count(); ++i)
                 mutate(data)->byteAt(i) = random->get(0, 0xFF);
         }

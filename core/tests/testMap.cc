@@ -56,7 +56,7 @@ class InsertionRemoval: public TestCase
         auto map = MapInstance<int>::create();
         const int n = 20;
         {
-            auto random = Random::open(0);
+            Random random{0};
             for (int i = 0; i < n; ++i) {
                 int key = random->get();
                 int value = random->get();
@@ -64,7 +64,7 @@ class InsertionRemoval: public TestCase
             }
         }
         {
-            auto random = Random::open(0);
+            Random random{0};
             for (int i = 0; i < n; ++i) {
                 int key = random->get();
                 int value = random->get();
@@ -72,7 +72,7 @@ class InsertionRemoval: public TestCase
             }
         }
         {
-            auto random = Random::open(0);
+            Random random{0};
             for (int i = 0; i < n; ++i) {
                 int j = random->get(0, map->count() - 1);
                 map->remove(map->at(j)->key());

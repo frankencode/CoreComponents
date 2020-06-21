@@ -11,7 +11,7 @@
 
 namespace cc {
 
-Random::Random(int seed):
+Random::Instance::Instance(int seed):
     x_{seed}
 {
     if (seed < 0) {

@@ -41,14 +41,13 @@ private:
     TestSource(int transmissionSize):
         transmissionSize_(transmissionSize),
         transmissionLeft_(transmissionSize),
-        randomSource_(RandomSource::open()),
-        random_(Random::open())
+        randomSource_(RandomSource::open())
     {}
 
     int transmissionSize_;
     int transmissionLeft_;
     Ref<RandomSource> randomSource_;
-    Ref<Random> random_;
+    Random random_;
 };
 
 class TestSink: public Stream

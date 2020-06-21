@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
-#include <cc/debug>
-#include <cc/Random>
 #include <cc/ui/Pile>
+#include <cc/testing/TestSuite>
+#include <cc/Random>
+#include <cc/stdio>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::ui;

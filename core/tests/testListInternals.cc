@@ -119,7 +119,7 @@ class PushPopRandomTest: public TestCase
     {
         const int n = 1024;
         Local<ListInstance<int>> list;
-        Local<Random> random{0};
+        Random random{0};
         auto t = ::clock();
         for (int i = 0; i < n; ++i) {
             auto r = random->get(0, i + 1);

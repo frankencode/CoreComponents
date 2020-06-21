@@ -65,7 +65,7 @@ class TestBufferBoundary: public TestSmth
         String key = "\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c";
         Ref<BlockCipher> cipher = AesCipher::create(key);
         String text = String::create(0x1001);
-        Ref<Random> random = Random::open();
+        Random random;
         for (int i = 0; i < text->count(); ++i) mutate(text)->byteAt(i) = random->get() & 0xFF;
         {
             String text1 = text->copy(0, text->count() - 1);

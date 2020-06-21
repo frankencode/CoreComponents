@@ -28,7 +28,7 @@ class MainView: public View
                 Font{fontSize_} << Pitch::Fixed
             );
 
-        auto random = Random::open(0);
+        Random random{0};
         fgColors_ = Array<Color>{glyphRun_->text()->count()};
         bgColors_ = Array<Color>{glyphRun_->text()->count()};
         Color fg, bg;
