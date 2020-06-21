@@ -14,7 +14,7 @@ namespace ui {
 
 Ref<Cursor> Cursor::create(CursorShape shape)
 {
-    return Application::instance()->createCursor(shape);
+    return Application{}->createCursor(shape);
 }
 
 }} // namespace cc::ui

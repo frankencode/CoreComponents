@@ -7,7 +7,7 @@
  */
 
 #include <cc/Singleton>
-#include <cc/ui/SdlApplication>
+#include <cc/ui/SdlApplicationInstance>
 #include <cc/ui/SdlTimeMaster>
 
 namespace cc {
@@ -20,7 +20,7 @@ SdlTimeMaster *SdlTimeMaster::instance()
 
 void SdlTimeMaster::triggerTimer(const Timer *timer)
 {
-    SdlApplication::instance()->triggerTimer(timer);
+    SdlApplicationInstance::instance()->triggerTimer(timer);
 }
 
 }} // namespace cc::ui

@@ -1,6 +1,5 @@
-#include <cc/debug>
-#include <cc/ui/Application>
 #include <cc/ui/PasswordField>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::ui;
@@ -24,7 +23,6 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    Application::open(argc, argv);
     Window::open<MainView>("Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
-    return Application::instance()->run();
+    return Application{}->run();
 }

@@ -1,6 +1,5 @@
-#include <algorithm>
-#include <cc/ui/Application>
 #include <cc/ui/View>
+#include <algorithm>
 
 using namespace cc;
 using namespace cc::ui;
@@ -32,7 +31,6 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     Window::open(Object::create<MainView>());
-    return app->run();
+    return Application{}->run();
 }

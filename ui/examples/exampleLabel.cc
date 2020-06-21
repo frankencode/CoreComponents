@@ -1,9 +1,8 @@
-#include <cc/System>
-#include <cc/Date>
-#include <cc/ui/Application>
+#include <cc/ui/Label>
 #include <cc/ui/Timer>
 #include <cc/ui/Transition>
-#include <cc/ui/Label>
+#include <cc/System>
+#include <cc/Date>
 
 using namespace cc;
 using namespace cc::ui;
@@ -38,9 +37,9 @@ class MainView: public View
         if (+(event->modifiers() & KeyModifier::Control))
         {
             if (event->keyCode() == '+')
-                Application::instance()->textZoom += 0.1;
+                app()->textZoom += 0.1;
             else if (event->keyCode() == '-')
-                Application::instance()->textZoom -= 0.1;
+                app()->textZoom -= 0.1;
         }
 
         return true;
@@ -49,7 +48,6 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     Window::open<MainView>("Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
-    return app->run();
+    return Application{}->run();
 }

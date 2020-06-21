@@ -14,7 +14,7 @@
 namespace cc {
 namespace ui {
 
-class SdlApplication;
+class SdlApplicationInstance;
 
 class SdlCursor: public Cursor
 {
@@ -22,7 +22,7 @@ public:
     static Ref<SdlCursor> create(CursorShape shape);
 
 private:
-    friend class SdlApplication;
+    friend class SdlApplicationInstance;
 
     SdlCursor(CursorShape shape);
     ~SdlCursor();

@@ -1,8 +1,7 @@
-#include <cc/debug>
-#include <cc/ui/Application>
 #include <cc/ui/ItemView>
-#include <cc/ui/Column>
 #include <cc/ui/SingleLineItemDelegate>
+#include <cc/ui/Column>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::ui;
@@ -80,12 +79,11 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     if (argc == 2 && String{argv[1]}->contains("fullscreen")) {
         // app->cursorVisible = false;
         Window::open<MainView>(/*WindowMode::Accelerated|*/WindowMode::Fullscreen|WindowMode::VSync);
     }
     else
         Window::open<MainView>(/*WindowMode::Accelerated|*/WindowMode::VSync);
-    return app->run();
+    return Application{}->run();
 }

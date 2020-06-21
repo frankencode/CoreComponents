@@ -9,7 +9,7 @@
 #include <SDL2/SDL.h>
 #include <cc/exceptions>
 #include <cc/Registration>
-#include <cc/ui/SdlApplication>
+#include <cc/ui/SdlApplicationInstance>
 #include <cc/ui/SdlTimeMaster>
 #include <cc/ui/SdlDisplayManager>
 #include <cc/ui/SdlTouchDeviceManager>
@@ -27,9 +27,9 @@ SdlPlatformPlugin::SdlPlatformPlugin():
         CC_DEBUG_ERROR(SDL_GetError());
 }
 
-Application *SdlPlatformPlugin::application() const
+ApplicationInstance *SdlPlatformPlugin::application() const
 {
-    return SdlApplication::instance();
+    return SdlApplicationInstance::instance();
 }
 
 TimeMaster *SdlPlatformPlugin::timeMaster() const

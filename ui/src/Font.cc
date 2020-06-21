@@ -10,7 +10,6 @@
 #include <cc/ui/ScaledFont>
 #include <cc/ui/StyleManager>
 #include <cc/ui/FontManager>
-#include <cc/ui/Application>
 #include <cc/System>
 #include <cc/Format>
 

@@ -244,9 +244,9 @@ void View::childDone(View *child)
     if (organizer_) organizer_->childDone(child);
 }
 
-Application *View::app() const
+Application View::app()
 {
-    return Application::instance();
+    return Application{};
 }
 
 StylePlugin *View::style() const

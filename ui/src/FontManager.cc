@@ -57,7 +57,7 @@ Font FontManager::fixup(const Font &font)
     if (!f->family_) f->family_ = StylePlugin::instance()->defaultFont()->family();
     if (f->size_ <= 0) f->size_ = StylePlugin::instance()->defaultFont()->size();
     if (f->smoothing() == FontSmoothing::Default)
-        f->smoothing_ = static_cast<uint8_t>( Application::instance()->fontSmoothing() );
+        f->smoothing_ = static_cast<uint8_t>(Application{}->fontSmoothing());
     return f;
 }
 

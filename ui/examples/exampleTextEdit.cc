@@ -1,6 +1,6 @@
-#include <cc/debug> // DEBUG
-#include <cc/File>
 #include <cc/ui/TextEdit>
+#include <cc/File>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::ui;
@@ -33,9 +33,8 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    Application::open(argc, argv);
     if (argc > 1) path = argv[1];
     else path = __FILE__;
     Window::open<MainView>("Hello, world!", WindowMode::Accelerated|/*WindowMode::Fullscreen|*/WindowMode::VSync);
-    return Application::instance()->run();
+    return Application{}->run();
 }

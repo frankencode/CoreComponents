@@ -1,8 +1,8 @@
-#include <cc/Random>
-#include <cc/ArrayInstance>
-#include <cc/ui/Application>
-#include <cc/ui/View>
 #include <cc/ui/FontManager>
+#include <cc/ui/View>
+#include <cc/Array>
+#include <cc/Random>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::ui;
@@ -25,12 +25,12 @@ class MainView: public View
                 "sie hatte die Hand schon ausgestreckt und die Finger gekrümmt, um sie "
                 "wieder zufangen, da schlug sie neben vorbei auf die Erde, rollte und rollte "
                 "und geradezu in das Wasser hinein.",
-                Font(fontSize_) << Pitch::Fixed
+                Font{fontSize_} << Pitch::Fixed
             );
 
         auto random = Random::open(0);
-        fgColors_ = ArrayInstance<Color>::create(glyphRun_->text()->count());
-        bgColors_ = ArrayInstance<Color>::create(glyphRun_->text()->count());
+        fgColors_ = Array<Color>{glyphRun_->text()->count()};
+        bgColors_ = Array<Color>{glyphRun_->text()->count()};
         Color fg, bg;
         for (int i = 0; i < glyphRun_->text()->count(); ++i) {
             if (!fg->isValid()) {
@@ -38,8 +38,8 @@ class MainView: public View
                 fg = Color::fromHue(angle);
                 bg = Color::fromHue((angle + 180) % 360);
             }
-            fgColors_->at(i) = fg;
-            bgColors_->at(i) = bg;
+            fgColors_[i] = fg;
+            bgColors_[i] = bg;
             if (glyphRun_->text()->at(i) == ' ') fg = Color{};
         }
 
@@ -54,12 +54,12 @@ class MainView: public View
 
     void paint() override
     {
-        Painter p(this);
-        p->setSource(0xE0F0FF);
+        Painter p{this};
+        p->setSource(Color{0xE0F0FF});
         p->rectangle(Point{0, 0}, Size{margins_, size()[1]});
         p->rectangle(Point{size()[0]-margins_, 0}, Size{margins_, size()[1]});
         p->fill();
-        p->setSource(0x000000);
+        p->setSource(Color::black);
         p->showGlyphRun(
             Point{margins_, margins_ + fontSize_}, wrappedGlyphRun_,
             [=](int i) {
@@ -75,15 +75,14 @@ class MainView: public View
 
     const double margins_ = 30;
     const double fontSize_ = 20;
-    Ref< ArrayInstance<Color> > fgColors_;
-    Ref< ArrayInstance<Color> > bgColors_;
+    Array<Color> fgColors_;
+    Array<Color> bgColors_;
     Ref<const GlyphRun> glyphRun_;
     Ref<const GlyphRun> wrappedGlyphRun_;
 };
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     Window::open<MainView>("Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
-    return app->run();
+    return Application{}->run();
 }

@@ -105,7 +105,7 @@ public:
 
 protected:
     friend class Window;
-    friend class Application;
+    friend class ApplicationInstance;
     friend class Organizer;
 
     View(View *parent = nullptr);
@@ -148,7 +148,7 @@ protected:
     virtual void childReady(View *child);
     virtual void childDone(View *child);
 
-    Application *app() const;
+    static Application app();
     StylePlugin *style() const;
     const Theme *theme() const;
 

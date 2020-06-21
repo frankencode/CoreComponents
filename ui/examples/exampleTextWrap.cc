@@ -71,12 +71,12 @@ class MainView: public View
 
     void paint() override
     {
-        Painter p(this);
-        p->setSource(0xE0F0FF);
+        Painter p{this};
+        p->setSource(Color{0xE0F0FF});
         p->rectangle(Point{0, 0}, Size{margins_, size()[1]});
         p->rectangle(Point{size()[0]-margins_, 0}, Size{margins_, size()[1]});
         p->fill();
-        p->setSource(0x000000);
+        p->setSource(Color{0x000000});
         p->showGlyphRun(Point{margins_, margins_ + fontSize_}, wrappedGlyphRun_);
     }
 
@@ -88,12 +88,11 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     String fontPath = "<default font>";
     if (argc > 1) {
         fontPath = argv[1];
         FontManager::instance()->addPath(fontPath);
     }
     Window::open<MainView>(fontPath, WindowMode::Accelerated|WindowMode::VSync);
-    return app->run();
+    return Application{}->run();
 }

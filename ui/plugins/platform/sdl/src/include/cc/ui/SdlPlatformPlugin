@@ -16,7 +16,7 @@ namespace ui {
 class SdlPlatformPlugin: public PlatformPlugin
 {
 public:
-    Application *application() const override;
+    ApplicationInstance *application() const override;
     TimeMaster *timeMaster() const override;
     DisplayManager *displayManager() const override;
     TouchDeviceManager *touchDeviceManager() const override;

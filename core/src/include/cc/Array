@@ -28,7 +28,11 @@ public:
     typedef typename Instance::iterator iterator;
     typedef typename Instance::const_iterator const_iterator;
 
-    Array(size_type size):
+    Array():
+        instance_{new Instance}
+    {}
+
+    explicit Array(size_type size):
         instance_{new Instance{size}}
     {}
 

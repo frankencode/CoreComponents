@@ -79,7 +79,7 @@ public:
     Property<Size> size;
 
 protected:
-    friend class Application;
+    friend class ApplicationInstance;
     friend class View;
     friend class Control;
 

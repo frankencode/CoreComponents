@@ -249,7 +249,7 @@ double dp(double x)
 
 double sp(double x)
 {
-    return std::ceil(dp(x) * Application::instance()->textZoom());
+    return std::ceil(dp(x) * Application{}->textZoom());
 }
 
 }} // namespace cc::ui

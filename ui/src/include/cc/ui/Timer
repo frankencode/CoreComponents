@@ -8,9 +8,9 @@
 
 #pragma once
 
+#include <cc/Notifier>
 #include <atomic>
 #include <memory>
-#include <cc/Notifier>
 
 namespace cc {
 namespace ui {
@@ -39,7 +39,7 @@ public:
 
 private:
     friend class TimeWorker;
-    friend class Application;
+    friend class ApplicationInstance;
 
     Timer(double interval);
 
@@ -50,4 +50,4 @@ private:
     std::atomic<void *> timeout_ { nullptr };
 };
 
-}} // namespace cc::ui
+}} // namespace

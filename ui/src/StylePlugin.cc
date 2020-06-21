@@ -27,7 +27,7 @@ void StylePlugin::init()
     theme = dayTheme();
     StyleManager::instance()->registerPlugin(this);
 
-    Application *app = Application::instance();
+    Application app;
 
     app->defaultFont->bind([=]{
         return Font(sp(

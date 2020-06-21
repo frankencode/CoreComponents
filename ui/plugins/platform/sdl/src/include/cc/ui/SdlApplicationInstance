@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/ui/Application>
+#include <cc/ui/ApplicationInstance>
 #include <SDL2/SDL.h>
 
 namespace cc { template<class> class Singleton; }
@@ -20,10 +20,10 @@ class SdlWindow;
 class SdlTimeMaster;
 class Timer;
 
-class SdlApplication: public Application
+class SdlApplicationInstance: public ApplicationInstance
 {
 public:
-    static SdlApplication *instance();
+    static SdlApplicationInstance *instance();
 
     Window *openWindow(View *view, const String &title = "", WindowMode mode = WindowMode::Default) override;
 
@@ -38,13 +38,11 @@ public:
     int run() override;
 
 private:
-    friend class Singleton<SdlApplication>;
+    friend class Singleton<SdlApplicationInstance>;
     friend class SdlTimeMaster;
 
-    SdlApplication();
-    ~SdlApplication();
-
-    void init(int argc, char **argv) override;
+    SdlApplicationInstance();
+    ~SdlApplicationInstance();
 
     void handleFingerEvent(const SDL_TouchFingerEvent *e);
     void handleMouseMotionEvent(const SDL_MouseMotionEvent *e);

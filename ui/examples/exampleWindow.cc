@@ -1,7 +1,6 @@
-#include <cc/System>
-#include <cc/ui/Application>
 #include <cc/ui/View>
 #include <cc/ui/Timer>
+#include <cc/System>
 
 using namespace cc;
 using namespace cc::ui;
@@ -25,7 +24,7 @@ class MainView: public View
 
     void paint() override
     {
-        Painter p(this);
+        Painter p{this};
 
         p->translate(center());
 
@@ -45,8 +44,7 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     auto window = Window::open<MainView>();
     window->title->bind([=]{ return "Test window " + str(window->size()) + " at " + str(window->pos()); });
-    return app->run();
+    return Application{}->run();
 }

@@ -1,4 +1,3 @@
-#include <cc/ui/Application>
 #include <cc/ui/Row>
 #include <cc/ui/Column>
 #include <cc/ui/Label>
@@ -47,7 +46,6 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     Window::open<MainView>("Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
-    return app->run();
+    return Application{}->run();
 }

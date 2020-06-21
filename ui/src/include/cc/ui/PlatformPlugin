@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/ui/Application>
+#include <cc/ui/ApplicationInstance>
 #include <cc/ui/TimeMaster>
 #include <cc/ui/FontManager>
 #include <cc/ui/DisplayManager>
@@ -25,7 +25,7 @@ public:
     String name() const { return name_; }
     bool isPlatformDefault() const { return isPlatformDefault_; }
 
-    virtual Application *application() const = 0;
+    virtual ApplicationInstance *application() const = 0;
     virtual TimeMaster *timeMaster() const = 0;
 
     virtual FontManager *fontManager() const;

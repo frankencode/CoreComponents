@@ -13,7 +13,7 @@
 #include <cc/File>
 #include <cc/Dir>
 #include <cc/ui/types>
-#include <cc/ui/Application>
+#include <cc/ui/ApplicationInstance>
 #include <cc/ui/FontManager>
 #include <cc/ui/MaterialLight>
 #include <cc/ui/MaterialDark>

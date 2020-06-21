@@ -1,14 +1,12 @@
-#include <cc/stdio>
-#include <cc/debug>
-#include <cc/ui/Application>
 #include <cc/ui/DisplayManager>
+#include <cc/stdio>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::ui;
 
 int main(int argc, char **argv)
 {
-    Application::open(argc, argv);
     auto dm = DisplayManager::instance();
     CC_INSPECT(dm->displayDensityRatio());
     CC_INSPECT(dm->defaultFontSmoothing());

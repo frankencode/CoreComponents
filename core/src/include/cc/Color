@@ -42,7 +42,7 @@ public:
 
     /** Construct a valid Color from a 32-bit word \a w
       */
-    Color(uint32_t w):
+    explicit Color(uint32_t w):
         instance_{w | (w < 0x1000000u ? 0xFF000000u : 0u)}
     {}
 

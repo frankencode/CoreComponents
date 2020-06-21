@@ -14,13 +14,13 @@
 namespace cc {
 namespace ui {
 
-class SdlApplication;
+class SdlApplicationInstance;
 class SdlContext;
 
 class SdlWindow: public Window
 {
 private:
-    friend class SdlApplication;
+    friend class SdlApplicationInstance;
 
     static Ref<SdlWindow> open(View *view, const String &title = String{}, WindowMode mode = WindowMode::Default);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,93 +8,17 @@
 
 #pragma once
 
-#include <cc/ui/Window>
-#include <cc/ui/Font>
-#include <cc/ui/Cursor>
+#include <cc/ui/ApplicationInstance>
 
 namespace cc {
 namespace ui {
 
-class Timer;
-class PointerEvent;
-class FingerEvent;
-
-class Application: public Object
+class Application
 {
 public:
-    static Application *open(int argc, char **argv);
-    static Application *instance();
+    using Instance = ApplicationInstance;
 
-    Property<bool> cursorVisible { true };
-    Property<bool> screenSaverEnabled { false };
-
-    Property<double> textZoom { 1 };
-    Property<Font> defaultFont;
-    Property<Font> defaultFixedFont;
-    Property<Font> smallFont;
-
-    Property<double> minMouseDragDistance { []{ return dp(6); } };
-    Property<double> minTouchDragDistance { []{ return dp(10); } };
-
-    Property< Ref<Control> > hoverControl;
-    Property< Ref<Control> > pressedControl;
-    Property< Ref<Control> > focusControl;
-
-    virtual Window *openWindow(View *view, const String &title = "", WindowMode mode = WindowMode::Default) = 0;
-
-    virtual Ref<Cursor> createCursor(CursorShape shape) = 0;
-
-    virtual String getClipboardText() const = 0;
-    virtual void setClipboardText(const String &text) = 0;
-
-    FontSmoothing fontSmoothing() const;
-    void setTextSmoothing(FontSmoothing newValue) { fontSmoothing_ = newValue; }
-
-    bool pointerIsDragged(const PointerEvent *event, Point dragStart) const;
-
-    virtual int run() = 0;
-
-    static bool fin() { return fin_; }
-
-protected:
-    friend class View;
-
-    static bool fin_;
-
-    Property< Ref<Control> > cursorControl;
-    Property< Ref<const Cursor> > cursor;
-
-    Property<Rect> textInputArea;
-
-    Application();
-    ~Application();
-
-    virtual void init(int argc, char **argv) = 0;
-
-    virtual void setCursor(const Cursor *cursor) = 0;
-    virtual void unsetCursor() = 0;
-
-    virtual void startTextInput(const Window *window) = 0;
-    virtual void setTextInputArea(const Rect &inputArea) = 0;
-    virtual void stopTextInput() = 0;
-
-    void notifyTimer(Timer *t);
-
-    bool feedFingerEvent(Window *window, FingerEvent *event);
-    bool feedMouseEvent(Window *window, MouseEvent *event);
-    bool feedWheelEvent(Window *window, WheelEvent *event);
-    bool feedKeyEvent(Window *window, KeyEvent *event);
-    bool feedExposedEvent(Window *window);
-    bool feedEnterEvent(Window *window);
-    bool feedLeaveEvent(Window *window);
-    bool feedTextEditingEvent(const String &text, int start, int length);
-    bool feedTextInputEvent(const String &text);
-
-    FontSmoothing fontSmoothing_ { FontSmoothing::Default };
-
-    Map<TouchFingerId, Ref<Control> > touchTargets_; // \todo rename to "touchedControls_"
-
-    const Control *focusControlSaved_ { nullptr };
+    Instance *operator->() const { return ApplicationInstance::instance(); }
 };
 
 }} // namespace cc::ui

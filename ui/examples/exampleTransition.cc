@@ -1,8 +1,7 @@
-#include <cc/stdio>
-#include <cc/ui/Application>
 #include <cc/ui/Control>
 #include <cc/ui/Transition>
 #include <cc/ui/colors>
+#include <cc/stdio>
 
 using namespace cc;
 using namespace cc::ui;
@@ -40,7 +39,6 @@ class MainView: public Control
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     Window::open<MainView>("Click me!", WindowMode::Accelerated|WindowMode::VSync);
-    return app->run();
+    return Application{}->run();
 }

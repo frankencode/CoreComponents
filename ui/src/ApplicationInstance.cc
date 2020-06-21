@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/ui/Application>
+#include <cc/ui/ApplicationInstance>
 #include <cc/ui/PlatformManager>
 #include <cc/ui/DisplayManager>
 #include <cc/ui/TimeMaster>
@@ -16,21 +16,14 @@
 namespace cc {
 namespace ui {
 
-bool Application::fin_ { false };
+bool ApplicationInstance::fin_ { false };
 
-Application *Application::open(int argc, char **argv)
-{
-    Application *app = Application::instance();
-    app->init(argc, argv);
-    return app;
-}
-
-Application *Application::instance()
+ApplicationInstance *ApplicationInstance::instance()
 {
     return PlatformManager::instance()->activePlugin()->application();
 }
 
-Application::Application()
+ApplicationInstance::ApplicationInstance()
 {
     textInputArea->connect([=]{
         if (focusControl())
@@ -71,12 +64,12 @@ Application::Application()
     });
 }
 
-Application::~Application()
+ApplicationInstance::~ApplicationInstance()
 {
     fin_ = true;
 }
 
-FontSmoothing Application::fontSmoothing() const
+FontSmoothing ApplicationInstance::fontSmoothing() const
 {
     if (fontSmoothing_ == FontSmoothing::Default)
         return PlatformManager::instance()->activePlugin()->displayManager()->defaultFontSmoothing();
@@ -84,20 +77,20 @@ FontSmoothing Application::fontSmoothing() const
     return fontSmoothing_;
 }
 
-bool Application::pointerIsDragged(const PointerEvent *event, Point dragStart) const
+bool ApplicationInstance::pointerIsDragged(const PointerEvent *event, Point dragStart) const
 {
     double minDragDistance = Object::cast<const MouseEvent *>(event) ? minMouseDragDistance() : minTouchDragDistance();
     return absPow2(event->pos() - dragStart) >= minDragDistance * minDragDistance;
 }
 
-void Application::notifyTimer(Timer *t)
+void ApplicationInstance::notifyTimer(Timer *t)
 {
     if (t->interval_ > 0)
         TimeMaster::instance()->ack();
     t->triggered->emit();
 }
 
-bool Application::feedFingerEvent(Window *window, FingerEvent *event)
+bool ApplicationInstance::feedFingerEvent(Window *window, FingerEvent *event)
 {
     cursorControl = nullptr;
     hoverControl = nullptr;
@@ -138,7 +131,7 @@ bool Application::feedFingerEvent(Window *window, FingerEvent *event)
     return window->view()->feedFingerEvent(event);
 }
 
-bool Application::feedMouseEvent(Window *window, MouseEvent *event)
+bool ApplicationInstance::feedMouseEvent(Window *window, MouseEvent *event)
 {
     Control *topControl = window->getControlAt(window->view()->mapToLocal(event->pos()));
 
@@ -182,12 +175,12 @@ bool Application::feedMouseEvent(Window *window, MouseEvent *event)
     return eaten;
 }
 
-bool Application::feedWheelEvent(Window *window, WheelEvent *event)
+bool ApplicationInstance::feedWheelEvent(Window *window, WheelEvent *event)
 {
     return window->view()->feedWheelEvent(event);
 }
 
-bool Application::feedKeyEvent(Window *window, KeyEvent *event)
+bool ApplicationInstance::feedKeyEvent(Window *window, KeyEvent *event)
 {
     if (focusControl())
         return focusControl()->feedKeyEvent(event);
@@ -195,22 +188,22 @@ bool Application::feedKeyEvent(Window *window, KeyEvent *event)
     return window->view()->feedKeyEvent(event);
 }
 
-bool Application::feedExposedEvent(Window *window)
+bool ApplicationInstance::feedExposedEvent(Window *window)
 {
     return window->view()->feedExposedEvent();
 }
 
-bool Application::feedEnterEvent(Window *window)
+bool ApplicationInstance::feedEnterEvent(Window *window)
 {
     return window->view()->feedEnterEvent();
 }
 
-bool Application::feedLeaveEvent(Window *window)
+bool ApplicationInstance::feedLeaveEvent(Window *window)
 {
     return window->view()->feedLeaveEvent();
 }
 
-bool Application::feedTextEditingEvent(const String &text, int start, int length)
+bool ApplicationInstance::feedTextEditingEvent(const String &text, int start, int length)
 {
     if (focusControl()) {
         focusControl()->onTextEdited(text, start, length);
@@ -220,7 +213,7 @@ bool Application::feedTextEditingEvent(const String &text, int start, int length
     return false;
 }
 
-bool Application::feedTextInputEvent(const String &text)
+bool ApplicationInstance::feedTextInputEvent(const String &text)
 {
     if (focusControl()) {
         focusControl()->onTextInput(text);

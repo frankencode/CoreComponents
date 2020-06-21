@@ -32,7 +32,7 @@ public:
 protected:
     friend class View;
     friend class ScrollView;
-    friend class Application;
+    friend class ApplicationInstance;
 
     Property< Ref<Control> > delegate;
 

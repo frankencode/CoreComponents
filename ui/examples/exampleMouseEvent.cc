@@ -1,7 +1,6 @@
 #include <cc/stdio>
 #include <cc/debug>
 #include <cc/System>
-#include <cc/ui/Application>
 #include <cc/ui/Control>
 #include <cc/ui/PointerEvent>
 #include <cc/ui/WheelEvent>
@@ -66,7 +65,6 @@ class MainView: public Control
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     Window::open<MainView>("Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
-    return app->run();
+    return Application{}->run();
 }

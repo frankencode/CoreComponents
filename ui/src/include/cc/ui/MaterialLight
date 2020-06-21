@@ -19,11 +19,11 @@ class MaterialLight: public Theme
 
 public:
     Color primaryColor         () const override { return Color{ Material::Blue500 }; }
-    Color primaryDarkColor     () const          { return 0x0069c0; }
-    Color primaryLightColor    () const          { return 0x6ec6ff; }
+    Color primaryDarkColor     () const          { return Color{ 0x0069c0u }; }
+    Color primaryLightColor    () const          { return Color{ 0x6ec6ffu }; }
     Color secondaryColor       () const override { return Color{ Material::Lime500 }; }
-    Color secondaryDarkColor   () const          { return 0x99aa00; }
-    Color secondaryLightColor  () const          { return 0xffff6e; }
+    Color secondaryDarkColor   () const          { return Color{ 0x99aa00u }; }
+    Color secondaryLightColor  () const          { return Color{ 0xffff6eu }; }
     Color alertColor           () const override { return Color{ Material::RedA400 }; }
 
     Color statusBarColor       () const override { return Color{ Material::Grey300 }; }

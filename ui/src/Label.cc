@@ -7,7 +7,6 @@
  */
 
 #include <cc/ui/Label>
-#include <cc/ui/Application>
 #include <cc/ui/TextRun>
 
 namespace cc {

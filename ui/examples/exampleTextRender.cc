@@ -1,4 +1,3 @@
-#include <cc/ui/Application>
 #include <cc/ui/FontManager>
 #include <cc/ui/View>
 #include <cc/debug>
@@ -57,12 +56,11 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     String fontPath = "<default font>";
     if (argc > 1) {
         fontPath = argv[1];
         FontManager::instance()->addPath(fontPath);
     }
     Window::open<MainView>(fontPath, WindowMode::Accelerated|WindowMode::VSync);
-    return app->run();
+    return Application{}->run();
 }

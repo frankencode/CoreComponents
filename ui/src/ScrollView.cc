@@ -49,7 +49,7 @@ void ScrollView::init()
     });
 
     focusControl->bind([]{
-        return Application::instance()->focusControl();
+        return app()->focusControl();
     });
 
     focusControl->connect([=]{
@@ -143,11 +143,11 @@ bool ScrollView::onPointerReleased(const PointerEvent *event)
 
 bool ScrollView::onPointerMoved(const PointerEvent *event)
 {
-    if (!isDragged_ && Application::instance()->pointerIsDragged(event, dragStart_)) {
+    if (!isDragged_ && app()->pointerIsDragged(event, dragStart_)) {
         isDragged_ = true;
         carrierOrigin_ = carrier_->pos();
         lastDragTime_ = 0;
-        Application::instance()->pressedControl = nullptr;
+        app()->pressedControl = nullptr;
     }
 
     if (isDragged_) {
@@ -169,8 +169,8 @@ bool ScrollView::onPointerMoved(const PointerEvent *event)
 
 bool ScrollView::onWheelMoved(const WheelEvent *event)
 {
-    if (Application::instance()->focusControl())
-        Application::instance()->focusControl = nullptr;
+    if (app()->focusControl())
+        app()->focusControl = nullptr;
 
     if (timerMode_ == TimerMode::Bouncing || timerMode_ == TimerMode::Traversing)
         carrierStop();

@@ -16,7 +16,7 @@ namespace ui {
 
 Window *Window::open(View *view, const String &title, WindowMode mode)
 {
-    return Application::instance()->openWindow(view, title, mode);
+    return Application{}->openWindow(view, title, mode);
 }
 
 Window::Window(View *view, const String &title):

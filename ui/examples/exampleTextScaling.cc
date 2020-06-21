@@ -1,6 +1,5 @@
-#include <cc/ui/Application>
-#include <cc/ui/Transition>
 #include <cc/ui/Label>
+#include <cc/ui/Transition>
 
 using namespace cc;
 using namespace cc::ui;
@@ -39,7 +38,6 @@ class MainView: public View
 
 int main(int argc, char **argv)
 {
-    auto app = Application::open(argc, argv);
     Window::open<MainView>("Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
-    return app->run();
+    return Application{}->run();
 }

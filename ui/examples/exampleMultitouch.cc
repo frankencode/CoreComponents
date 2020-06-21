@@ -2,7 +2,6 @@
 #include <cc/ui/TouchDeviceManager>
 #include <cc/ui/FingerEvent>
 #include <cc/ui/PointerEvent>
-#include <cc/ui/Application>
 #include <cc/ui/View>
 #include <cc/Queue>
 #include <cc/Map>
@@ -101,7 +100,8 @@ int main(int argc, char **argv)
         ferr() << "No touch device found!" << nl;
         return 1;
     }
-    auto app = Application::open(argc, argv);
+
+    Application app;
     app->cursorVisible = false;
     app->screenSaverEnabled = true;
 

@@ -183,7 +183,7 @@ void InputField::gotoNext()
                     findMyself = false;
             }
             else {
-                Application::instance()->focusControl = inputField->input_;
+                app()->focusControl = inputField->input_;
                 break;
             }
         }
@@ -204,7 +204,7 @@ void InputField::gotoPrevious()
                     findMyself = false;
             }
             else {
-                Application::instance()->focusControl = inputField->input_;
+                app()->focusControl = inputField->input_;
                 break;
             }
         }

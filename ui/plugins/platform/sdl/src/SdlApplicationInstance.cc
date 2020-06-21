@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/ui/SdlApplication>
+#include <cc/ui/SdlApplicationInstance>
 #include <cc/ui/SdlWindow>
 #include <cc/ui/SdlCursor>
 #include <cc/ui/Timer>
@@ -24,12 +24,12 @@
 namespace cc {
 namespace ui {
 
-SdlApplication *SdlApplication::instance()
+SdlApplicationInstance *SdlApplicationInstance::instance()
 {
-    return Singleton<SdlApplication>::instance();
+    return Singleton<SdlApplicationInstance>::instance();
 }
 
-SdlApplication::SdlApplication():
+SdlApplicationInstance::SdlApplicationInstance():
     event_{new SDL_Event}
 {
     cursorVisible->connect([=]{
@@ -53,9 +53,11 @@ SdlApplication::SdlApplication():
     // SDL_SetHint(SDL_HINT_RENDER_BATCHING, "0");
     // SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1");
     SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
+
+    timerEvent_ = SDL_RegisterEvents(1);
 }
 
-SdlApplication::~SdlApplication()
+SdlApplicationInstance::~SdlApplicationInstance()
 {
     fin_ = true;
     delete event_;
@@ -63,46 +65,41 @@ SdlApplication::~SdlApplication()
     SDL_Quit();
 }
 
-void SdlApplication::init(int argc, char **argv)
-{
-    timerEvent_ = SDL_RegisterEvents(1);
-}
-
-Window *SdlApplication::openWindow(View *view, const String &title, WindowMode mode)
+Window *SdlApplicationInstance::openWindow(View *view, const String &title, WindowMode mode)
 {
     auto window = SdlWindow::open(view, title, mode);
     windows_->insert(window->id_, window);
     return window;
 }
 
-Ref<Cursor> SdlApplication::createCursor(CursorShape shape)
+Ref<Cursor> SdlApplicationInstance::createCursor(CursorShape shape)
 {
     return SdlCursor::create(shape);
 }
 
-void SdlApplication::setCursor(const Cursor *cursor)
+void SdlApplicationInstance::setCursor(const Cursor *cursor)
 {
     SDL_SetCursor(Object::cast<const SdlCursor *>(cursor)->sdlCursor_);
 }
 
-void SdlApplication::unsetCursor()
+void SdlApplicationInstance::unsetCursor()
 {
     SDL_SetCursor(SDL_GetDefaultCursor());
 }
 
-String SdlApplication::getClipboardText() const
+String SdlApplicationInstance::getClipboardText() const
 {
     if (!SDL_HasClipboardText()) return String{};
     return SDL_GetClipboardText();
 }
 
-void SdlApplication::setClipboardText(const String &text)
+void SdlApplicationInstance::setClipboardText(const String &text)
 {
     /*int ret =*/ SDL_SetClipboardText(text);
     // TODO: error handling?
 }
 
-int SdlApplication::run()
+int SdlApplicationInstance::run()
 {
     while (true) {
         if (!SDL_WaitEvent(event_))
@@ -167,7 +164,7 @@ int SdlApplication::run()
     return 0;
 }
 
-void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
+void SdlApplicationInstance::handleFingerEvent(const SDL_TouchFingerEvent *e)
 {
     PointerAction action; {
         switch (e->type) {
@@ -194,7 +191,7 @@ void SdlApplication::handleFingerEvent(const SDL_TouchFingerEvent *e)
     }
 }
 
-void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
+void SdlApplicationInstance::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
 {
     if (e->which == SDL_TOUCH_MOUSEID) return;
 
@@ -223,7 +220,7 @@ void SdlApplication::handleMouseMotionEvent(const SDL_MouseMotionEvent *e)
     }
 }
 
-void SdlApplication::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
+void SdlApplicationInstance::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
 {
     if (e->which == SDL_TOUCH_MOUSEID) return;
 
@@ -259,7 +256,7 @@ void SdlApplication::handleMouseButtonEvent(const SDL_MouseButtonEvent *e)
     }
 }
 
-void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
+void SdlApplicationInstance::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
 {
     int mx = 0, my = 0;
     SDL_GetMouseState(&mx, &my);
@@ -278,7 +275,7 @@ void SdlApplication::handleMouseWheelEvent(const SDL_MouseWheelEvent *e)
     }
 }
 
-void SdlApplication::handleKeyboardEvent(const SDL_KeyboardEvent *e)
+void SdlApplicationInstance::handleKeyboardEvent(const SDL_KeyboardEvent *e)
 {
     auto event =
         Object::create<KeyEvent>(
@@ -296,17 +293,17 @@ void SdlApplication::handleKeyboardEvent(const SDL_KeyboardEvent *e)
     }
 }
 
-void SdlApplication::handleTextEditingEvent(const SDL_TextEditingEvent *e)
+void SdlApplicationInstance::handleTextEditingEvent(const SDL_TextEditingEvent *e)
 {
     feedTextEditingEvent(e->text, e->start, e->length);
 }
 
-void SdlApplication::handleTextInputEvent(const SDL_TextInputEvent *e)
+void SdlApplicationInstance::handleTextInputEvent(const SDL_TextInputEvent *e)
 {
     feedTextInputEvent(e->text);
 }
 
-String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
+String SdlApplicationInstance::windowEventToString(const SDL_WindowEvent *e)
 {
     switch (e->event) {
         case SDL_WINDOWEVENT_SHOWN: return "SDL_WINDOWEVENT_SHOWN";
@@ -331,7 +328,7 @@ String SdlApplication::windowEventToString(const SDL_WindowEvent *e)
     return String{};
 }
 
-void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)
+void SdlApplicationInstance::handleWindowEvent(const SDL_WindowEvent *e)
 {
     // CC_DEBUG << windowEventToString(e);
     switch (e->event) {
@@ -396,7 +393,7 @@ void SdlApplication::handleWindowEvent(const SDL_WindowEvent *e)
     };
 }
 
-void SdlApplication::startTextInput(const Window *window)
+void SdlApplicationInstance::startTextInput(const Window *window)
 {
     const SdlWindow *w = Object::cast<const SdlWindow *>(window);
 
@@ -409,7 +406,7 @@ void SdlApplication::startTextInput(const Window *window)
     SDL_StartTextInput();
 }
 
-void SdlApplication::setTextInputArea(const Rect &inputArea)
+void SdlApplicationInstance::setTextInputArea(const Rect &inputArea)
 {
     SDL_Rect rect;
     rect.x = inputArea->pos()[0];
@@ -419,12 +416,12 @@ void SdlApplication::setTextInputArea(const Rect &inputArea)
     SDL_SetTextInputRect(&rect);
 }
 
-void SdlApplication::stopTextInput()
+void SdlApplicationInstance::stopTextInput()
 {
     SDL_StopTextInput();
 }
 
-void SdlApplication::triggerTimer(const Timer *timer)
+void SdlApplicationInstance::triggerTimer(const Timer *timer)
 {
     SDL_Event event;
     SDL_memset(&event, 0, sizeof(event));
