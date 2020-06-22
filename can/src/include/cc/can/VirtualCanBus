@@ -8,35 +8,47 @@
 
 #pragma once
 
-#include <cc/can/CanMedia>
-#include <cc/Set>
+#include <cc/can/CanFeed>
+#include <cc/List>
 #include <cc/Mutex>
-
-namespace cc { class Mutex; }
 
 namespace cc {
 namespace can {
 
-class VirtualCanMedia;
+class VirtualCanMediaInstance;
 
-class VirtualCanBus: public Object
+/** \brief Purely virtual CAN bus
+  * The VirtualCanBus allows to build a purely virtual CAN bus segment.
+  * \see VirtualCanBridge
+  */
+class VirtualCanBus
 {
 public:
-    static Ref<VirtualCanBus> create();
+    class Instance: public Object
+    {
+    public:
+        CanMedia connect();
+        void shutdown();
 
-    Ref<CanMedia> connect();
-    void shutdown();
+    private:
+        friend class VirtualCanBus;
+        friend class VirtualCanMediaInstance;
 
-protected:
-    VirtualCanBus();
+        Instance() = default;
+        void broadcast(const CanFrame &frame);
+
+        List<CanFeed> connections_;
+        Mutex mutex_;
+    };
+
+    VirtualCanBus():
+        instance_{new Instance}
+    {}
+
+    Instance *operator->() { return instance_; }
 
 private:
-    friend class VirtualCanMedia;
-
-    void broadcast(const VirtualCanMedia *source, const CanFrame &frame);
-
-    Set< Ref<VirtualCanMedia> > connections_;
-    Mutex mutex_;
+    Ref<Instance> instance_;
 };
 
 }} // namespace cc::can

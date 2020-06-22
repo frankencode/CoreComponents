@@ -42,7 +42,7 @@
 namespace cc {
 namespace can {
 
-CanNode::CanNode(CanMedia *media, int nodeId, int timeout):
+CanNode::CanNode(const CanMedia &media, int nodeId, int timeout):
     media_{media},
     nodeId_{nodeId},
     timeout_{timeout},
@@ -94,7 +94,7 @@ EventMonitor *CanNode::monitor()
     if (worker_) return nullptr;
 
     if (!monitor_) {
-        eventFeed_ = CanNodeFeed::create(media_);
+        eventFeed_ = CanNodeFeed{media_};
         monitor_ = EventMonitor::create(eventFeed_);
     }
     return monitor_;

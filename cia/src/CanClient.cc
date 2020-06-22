@@ -36,12 +36,12 @@
 namespace cc {
 namespace can {
 
-Ref<CanClient> CanClient::create(CanMedia *media, int nodeId, int timeout)
+Ref<CanClient> CanClient::create(const CanMedia &media, int nodeId, int timeout)
 {
     return new CanClient{media, nodeId, timeout};
 }
 
-CanClient::CanClient(CanMedia *media, int nodeId, int timeout):
+CanClient::CanClient(const CanMedia &media, int nodeId, int timeout):
     media_{media},
     nodeId_{nodeId},
     timeout_{timeout}

@@ -28,14 +28,14 @@
 namespace cc {
 namespace can {
 
-Ref<CanLogger> CanLogger::create(CanMedia *media)
+Ref<CanLogger> CanLogger::create(const CanMedia &media)
 {
     Ref<CanLogger> logger = new CanLogger{media};
     logger->bootstrap();
     return logger;
 }
 
-CanLogger::CanLogger(CanMedia *media):
+CanLogger::CanLogger(const CanMedia &media):
     media_{media}
 {}
 

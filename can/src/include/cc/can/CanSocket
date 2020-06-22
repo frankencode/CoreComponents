@@ -16,10 +16,10 @@ namespace cc { class SystemStream; }
 namespace cc {
 namespace can {
 
-class CanSocket
+class CanSocket: public CanMedia
 {
 public:
-    class Instance: public CanMedia
+    class Instance: public CanMedia::Instance
     {
     public:
         void enableLoopback(bool on);
@@ -37,20 +37,15 @@ public:
 
         static int lookupInterfaceIndex(int fd, const String &interface);
 
-        Ref<SystemStream> socket_;
+        Ref<SystemStream> socket_; /// \todo Local<SystemStream>
     };
 
     CanSocket(const String &interface):
-        instance_{interface}
+        CanMedia{new Instance{interface}}
     {}
 
-    const Instance *operator->() const { return &instance_; }
-    Instance *operator->() { return &instance_; }
-
-    operator CanMedia *() { return &instance_; }
-
-private:
-    Instance instance_;
+    const Instance *operator->() const { return get<Instance>(); }
+    Instance *operator->() { return get<Instance>(); }
 };
 
 }} // namespace cc::can

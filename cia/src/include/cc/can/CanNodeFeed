@@ -16,16 +16,28 @@ namespace can {
 
 class CanNodeFeed: public CanFeed
 {
-private:
-    friend class CanNode;
+public:
+    class Instance: public CanFeed::Instance
+    {
+    public:
+        void writeFrame(const CanFrame &frame) override
+        {
+            sink_->writeFrame(frame);
+        }
 
-    static Ref<CanNodeFeed> create(CanMedia *sink);
+    private:
+        friend class CanNodeFeed;
 
-    CanNodeFeed(CanMedia *sink);
+        Instance(const CanMedia &sink):
+            sink_{sink}
+        {}
 
-    void writeFrame(const CanFrame &frame) override;
+        CanMedia sink_;
+    };
 
-    Ref<CanMedia> sink_;
+    CanNodeFeed(const CanMedia &sink):
+        CanFeed{new Instance{sink}}
+    {}
 };
 
 }} // namespace cc::can

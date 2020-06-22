@@ -14,14 +14,14 @@
 namespace cc {
 namespace can {
 
-Ref<HeartBeatGenerator> HeartBeatGenerator::create(int nodeId, CanMedia *media)
+Ref<HeartBeatGenerator> HeartBeatGenerator::create(int nodeId, const CanMedia &media)
 {
     Ref<HeartBeatGenerator> self = new HeartBeatGenerator{nodeId, media};
     self->bootstrap();
     return self;
 }
 
-HeartBeatGenerator::HeartBeatGenerator(int nodeId, CanMedia *media):
+HeartBeatGenerator::HeartBeatGenerator(int nodeId, const CanMedia &media):
     nodeId_{nodeId},
     media_{media},
     commandChannel_{CommandChannel::create()},

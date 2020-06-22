@@ -20,9 +20,9 @@ namespace can {
 class CanClient: public Object
 {
 public:
-    static Ref<CanClient> create(CanMedia *media, int nodeId, int timeout = -1);
+    static Ref<CanClient> create(const CanMedia &media, int nodeId, int timeout = -1);
 
-    CanMedia *media() const { return media_; }
+    CanMedia media() const { return media_; }
     int nodeId() const { return nodeId_; }
     int timeout() const { return timeout_; }
 
@@ -33,7 +33,7 @@ public:
     void blockWrite(int peerId, Selector selector, const String &data);
 
 protected:
-    CanClient(CanMedia *media, int nodeId, int timeout = -1);
+    CanClient(const CanMedia &media, int nodeId, int timeout = -1);
 
     String segmentedReadTransfer(int peerId, Selector selector);
 
@@ -52,7 +52,7 @@ private:
     CanFrame getNextReply(int peerId, Selector selector);
     void canAbort(int peerId, Selector selector, Abort::Reason reason);
 
-    Ref<CanMedia> media_;
+    CanMedia media_;
     int nodeId_;
     int timeout_;
 };

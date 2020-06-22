@@ -14,14 +14,14 @@
 namespace cc {
 namespace can {
 
-Ref<EventMonitor> EventMonitor::create(CanMedia *media)
+Ref<EventMonitor> EventMonitor::create(const CanMedia &media)
 {
     Ref<EventMonitor> monitor = new EventMonitor{media};
     monitor->init();
     return monitor;
 }
 
-EventMonitor::EventMonitor(CanMedia *media):
+EventMonitor::EventMonitor(const CanMedia &media):
     media_{media}
 {}
 

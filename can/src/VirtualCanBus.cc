@@ -7,46 +7,66 @@
  */
 
 #include <cc/can/VirtualCanBus>
-#include <cc/can/VirtualCanMedia>
+#include <cc/can/CanFeed>
 #include <cc/Guard>
-#include <cc/Channel>
+#include <cc/Channel> /// \todo whatfore?
 
 namespace cc {
 namespace can {
 
-Ref<VirtualCanBus> VirtualCanBus::create()
-{
-    return new VirtualCanBus;
-}
+class VirtualCanMedia;
 
-VirtualCanBus::VirtualCanBus()
-{}
-
-Ref<CanMedia> VirtualCanBus::connect()
+class VirtualCanMediaInstance: public CanFeed::Instance
 {
-    auto media = VirtualCanMedia::create(this);
+public:
+    void writeFrame(const CanFrame &frame) override
+    {
+        FeedGuard guard{this};
+        bus_->broadcast(frame);
+    }
+
+private:
+    friend class VirtualCanMedia;
+
+    VirtualCanMediaInstance(VirtualCanBus::Instance *bus):
+        bus_{bus}
+    {}
+
+    Ref<VirtualCanBus::Instance> bus_;
+};
+
+class VirtualCanMedia: public CanFeed
+{
+public:
+    VirtualCanMedia(VirtualCanBus::Instance *bus):
+        CanFeed{new VirtualCanMediaInstance{bus}}
+    {}
+};
+
+CanMedia VirtualCanBus::Instance::connect()
+{
+    VirtualCanMedia media{this};
     {
         Guard<Mutex> guard{mutex_};
-        connections_->insert(media);
+        connections_->append(media);
     }
     return media;
 }
 
-void VirtualCanBus::shutdown()
+void VirtualCanBus::Instance::shutdown()
 {
     Guard<Mutex> guard{mutex_};
-    for (VirtualCanMedia *media: connections_)
+    for (CanFeed &media: connections_)
         media->shutdown();
+
     connections_->deplete();
 }
 
-void VirtualCanBus::broadcast(const VirtualCanMedia *source, const CanFrame &frame)
+void VirtualCanBus::Instance::broadcast(const CanFrame &frame)
 {
     Guard<Mutex> guard{mutex_};
-    for (VirtualCanMedia *media: connections_) {
-        if (media != source)
-            media->feedFrame(frame);
-    }
+    for (CanFeed &media: connections_)
+        media->feedFrame(frame);
 }
 
 }} // namespace cc::can

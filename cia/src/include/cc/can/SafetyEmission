@@ -25,7 +25,7 @@ public:
 private:
     SafetyEmission(int canId, int invCanId, double interval);
 
-    void generate(CanMedia *media) override;
+    void generate(CanMedia &media) override;
 
     CanFrame invFrame_;
 };

@@ -13,14 +13,14 @@
 namespace cc {
 namespace can {
 
-CanFeed::CanFeed():
+CanFeed::Instance::Instance():
     frameChannel_{FrameChannel::create()}
 {}
 
-CanFeed::~CanFeed()
+CanFeed::Instance::~Instance()
 {}
 
-bool CanFeed::waitFrame(int timeout)
+bool CanFeed::Instance::waitFrame(int timeout)
 {
     if (timeout <= 0) {
         frameChannel_->waitForNotEmpty();
@@ -29,17 +29,18 @@ bool CanFeed::waitFrame(int timeout)
     return frameChannel_->waitForNotEmptyUntil(System::now() + 0.001 * timeout);
 }
 
-bool CanFeed::readFrame(CanFrame *frame)
+bool CanFeed::Instance::readFrame(CanFrame *frame)
 {
     return bool(*frame = frameChannel_->popFront());
 }
 
-void CanFeed::feedFrame(const CanFrame &frame)
+void CanFeed::Instance::feedFrame(const CanFrame &frame)
 {
-    frameChannel_->pushBack(frame);
+    if (!blocked_)
+        frameChannel_->pushBack(frame);
 }
 
-void CanFeed::shutdown()
+void CanFeed::Instance::shutdown()
 {
     frameChannel_->pushBack(CanFrame{});
 }

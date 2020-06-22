@@ -24,14 +24,14 @@ protected:
 
     SafetyEvent(int canId, double idleInterval);
 
-    virtual void onError(CanMedia *media, SafetyError error);
+    virtual void onError(CanMedia &media, SafetyError error);
 
 private:
     bool isPrimaryEvent() const;
     bool autoStart() const { return isPrimaryEvent(); }
 
-    void onIdle(CanMedia *media) final;
-    void feed(CanMedia *media, const String &data) final;
+    void onIdle(CanMedia &media) final;
+    void feed(CanMedia &media, const String &data) final;
     void timeAdvance(NextEvent *next, double now) final;
 
     SafetyEvent *primaryEvent_ { nullptr };

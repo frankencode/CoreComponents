@@ -17,7 +17,7 @@ namespace can {
 class CanMaster: public Object
 {
 public:
-    static Ref<CanMaster> create(CanMedia *media);
+    static Ref<CanMaster> create(const CanMedia &media);
 
     /** Send a network command to request a state transition of slave node(s)
       * \param type the state transition to be requested
@@ -26,12 +26,12 @@ public:
     void issueNetworkCommand(NetworkCommand::Specifier type, int who = 0);
 
 protected:
-    CanMaster(CanMedia *media);
+    CanMaster(const CanMedia &media);
 
-    CanMedia *media() const { return media_; }
+    CanMedia media() const { return media_; }
 
 private:
-    Ref<CanMedia> media_;
+    CanMedia media_;
 };
 
 }} // namespace cc::can

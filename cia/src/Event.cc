@@ -16,7 +16,7 @@ namespace can {
 Ref<Event> Event::create(EventMonitor *monitor, int canId, double idleInterval)
 {
     CC_ASSERT(idleInterval > 0);
-    Ref<Event> event = new Event(canId, idleInterval);
+    Ref<Event> event = new Event{canId, idleInterval};
     event->init(monitor);
     return event;
 }
@@ -32,13 +32,13 @@ void Event::init(EventMonitor *monitor)
     monitor->registerEvent(this);
 }
 
-void Event::onReceived(CanMedia *media, const String &data)
+void Event::onReceived(CanMedia &media, const String &data)
 {}
 
-void Event::onIdle(CanMedia *media)
+void Event::onIdle(CanMedia &media)
 {}
 
-void Event::feed(CanMedia *media, const String &data)
+void Event::feed(CanMedia &media, const String &data)
 {
     onReceived(media, data);
 }

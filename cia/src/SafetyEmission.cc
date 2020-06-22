@@ -39,7 +39,7 @@ void SafetyEmission::updateData(const String &data)
         invFrame_->payloadAt(i) = ~data->byteAt(i);
 }
 
-void SafetyEmission::generate(CanMedia *media)
+void SafetyEmission::generate(CanMedia &media)
 {
     Guard<Emission> guard{this};
     media->writeFrame(frame_);

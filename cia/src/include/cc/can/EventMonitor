@@ -24,14 +24,14 @@ namespace can {
 class EventMonitor: public Object
 {
 public:
-    static Ref<EventMonitor> create(CanMedia *media);
+    static Ref<EventMonitor> create(const CanMedia &media);
 
     void start();
 
 private:
     friend class Event;
 
-    EventMonitor(CanMedia *media);
+    EventMonitor(const CanMedia &media);
     ~EventMonitor();
 
     void init();
@@ -41,7 +41,7 @@ private:
 
     void run();
 
-    Ref<CanMedia> media_;
+    CanMedia media_;
 
     Map< int, Ref<Event> > events_;
 

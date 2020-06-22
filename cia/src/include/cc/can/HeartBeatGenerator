@@ -20,7 +20,7 @@ namespace can {
 class HeartBeatGenerator: public Object
 {
 public:
-    static Ref<HeartBeatGenerator> create(int nodeId, CanMedia *media);
+    static Ref<HeartBeatGenerator> create(int nodeId, const CanMedia &media);
 
     uint16_t interval() const;
     void setInterval(uint16_t newInterval);
@@ -92,7 +92,7 @@ private:
         {}
     };
 
-    HeartBeatGenerator(int nodeId, CanMedia *media);
+    HeartBeatGenerator(int nodeId, const CanMedia &media);
     ~HeartBeatGenerator();
 
     void bootstrap();
@@ -103,7 +103,7 @@ private:
     void run();
 
     int nodeId_;
-    Ref<CanMedia> media_;
+    CanMedia media_;
 
     typedef Channel< Ref<Command> > CommandChannel;
     Ref<CommandChannel> commandChannel_;

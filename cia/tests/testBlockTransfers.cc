@@ -1,11 +1,11 @@
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
-#include <cc/debug>
-#include <cc/Random>
 #include <cc/can/VirtualCanBus>
 #include <cc/can/EchoNode>
 #include <cc/can/CanClient>
 #include <cc/can/CanLogger>
+#include <cc/testing/TestSuite>
+#include <cc/Random>
+#include <cc/stdio>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::can;
@@ -21,7 +21,7 @@ protected:
             const int serverId = 1;
             const int clientId = 2;
 
-            auto bus = VirtualCanBus::create();
+            VirtualCanBus bus;
 
             auto server = EchoNode::create(bus->connect(), serverId);
             auto client = CanClient::create(bus->connect(), clientId);

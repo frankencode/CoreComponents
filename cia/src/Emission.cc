@@ -43,7 +43,7 @@ void Emission::updateData(const String &data)
         frame_->payloadAt(i) = data->byteAt(i);
 }
 
-void Emission::generate(CanMedia *media)
+void Emission::generate(CanMedia &media)
 {
     Guard<Emission> guard(this);
     media->writeFrame(frame_);

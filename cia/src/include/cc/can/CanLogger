@@ -17,14 +17,14 @@ namespace can {
 class CanLogger: public Object
 {
 public:
-    static Ref<CanLogger> create(CanMedia *media);
+    static Ref<CanLogger> create(const CanMedia &media);
 
 private:
-    CanLogger(CanMedia *media);
+    CanLogger(const CanMedia &media);
     void bootstrap();
     void run();
 
-    Ref<CanMedia> media_;
+    CanMedia media_;
     Worker worker_;
 };
 

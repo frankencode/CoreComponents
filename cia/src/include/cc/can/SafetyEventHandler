@@ -35,8 +35,8 @@ private:
         OnReceived onReceived, OnError onError
     );
 
-    void onReceived(CanMedia *media, const String &data) override;
-    void onError(CanMedia *media, SafetyError error) override;
+    void onReceived(CanMedia &media, const String &data) override;
+    void onError(CanMedia &media, SafetyError error) override;
 
     OnReceived onReceived_;
     OnError onError_;

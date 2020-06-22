@@ -24,7 +24,7 @@ using namespace cc::can;
 class TestNode: public CanNode
 {
 public:
-    static Ref<TestNode> create(CanMedia *media, int nodeId, int timeout = -1)
+    static Ref<TestNode> create(const CanMedia &media, int nodeId, int timeout = -1)
     {
         Ref<TestNode> node = new TestNode{media, nodeId, timeout};
         node->init();
@@ -32,7 +32,7 @@ public:
     }
 
 private:
-    TestNode(CanMedia *media, int nodeId, int timeout = -1):
+    TestNode(const CanMedia &media, int nodeId, int timeout = -1):
         CanNode{media, nodeId, timeout}
     {}
 

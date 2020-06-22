@@ -40,7 +40,7 @@ protected:
 
     void init(PeriodicEmitter *emitter, const String &initialData);
 
-    virtual void generate(CanMedia *media);
+    virtual void generate(CanMedia &media);
 
 private:
     void acquire();

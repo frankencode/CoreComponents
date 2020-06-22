@@ -33,8 +33,8 @@ private:
         const OnIdle &onIdle
     );
 
-    void onReceived(CanMedia *media, const String &data) final;
-    void onIdle(CanMedia *media) final;
+    void onReceived(CanMedia &media, const String &data) final;
+    void onIdle(CanMedia &media) final;
 
     OnReceived onReceived_;
     OnIdle onIdle_;

@@ -53,8 +53,13 @@ public:
         thread_->start();
     }
 
-    /// Wait for termination of the worker thread
-    ~Worker() = default;
+    void wait()
+    {
+        if (thread_) {
+            thread_->wait();
+            thread_ = nullptr;
+        }
+    }
 
     explicit operator bool() const { return thread_; }
 

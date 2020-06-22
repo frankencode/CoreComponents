@@ -22,7 +22,7 @@ namespace can {
 class PeriodicEmitter: public Object
 {
 public:
-    static Ref<PeriodicEmitter> create(CanMedia *media);
+    static Ref<PeriodicEmitter> create(const CanMedia &media);
 
     void start();
     void shutdown();
@@ -30,7 +30,7 @@ public:
 private:
     friend class Emission;
 
-    PeriodicEmitter(CanMedia *media);
+    PeriodicEmitter(const CanMedia &media);
     ~PeriodicEmitter();
 
     void init();
@@ -38,7 +38,7 @@ private:
 
     void run();
 
-    Ref<CanMedia> media_;
+    CanMedia media_;
 
     Set< Ref<Emission> > emissions_;
     Mutex mutex_;

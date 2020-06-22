@@ -14,7 +14,7 @@ class SimpleReadWriteTest: public TestCase
     {
         CC_INSPECT(sizeof(CanFrame));
 
-        auto bus = VirtualCanBus::create();
+        VirtualCanBus bus;
 
         CanFrame inFrame{0x123};
         {
@@ -45,40 +45,39 @@ class ComplexReadWriteTest: public TestCase
     {
         const int n = 10; // number of frame to generate (<= 255)
 
-        auto bus = VirtualCanBus::create();
+        VirtualCanBus bus;
+        {
+            // echo all messages
+            Worker echo{[&bus]{
+                CanMedia media = bus->connect();
+                for (CanFrame frame; media->readFrame(&frame);) {
+                    frame->setCanId(0xCBA);
+                    media->writeFrame(frame);
+                }
+            }};
 
-        // log messages and verify that all messages are transmitted
-        auto monitorMedia = bus->connect();
-        auto monitor = Worker{[=]{
+            // generate n messages
+            Worker generator{[&bus]{
+                CanMedia media = bus->connect();
+                CanFrame frame{0xABC};
+                for (int i = 0; i < n; ++i) {
+                    for (int k = 0; k < frame->payloadCount(); ++k)
+                        frame->payloadAt(k) = i + k + 1;
+                    media->writeFrame(frame);
+                }
+            }};
+
+            // log messages and verify that all messages are transmitted
+            CanMedia media = bus->connect();
             int m = 0;
-            for (CanFrame frame; monitorMedia->readFrame(&frame);) {
+            for (CanFrame frame; media->readFrame(&frame);) {
                 ++m;
                 fout("(%%) %%\n") << m << frame;
                 if (frame->canId() == 0xCBA && frame->payloadAt(0) == n) break;
             }
             bus->shutdown();
-            CC_VERIFY(m == 2 * n);
-        }};
-
-        // echo all messages
-        auto echoMedia = bus->connect();
-        auto echo = Worker{[=]{
-            for (CanFrame frame; echoMedia->readFrame(&frame);) {
-                frame->setCanId(0xCBA);
-                echoMedia->writeFrame(frame);
-            }
-        }};
-
-        // generate n messages
-        auto generatorMedia = bus->connect();
-        auto generator = Worker{[=]{
-            CanFrame frame{0xABC};
-            for (int i = 0; i < n; ++i) {
-                for (int k = 0; k < frame->payloadCount(); ++k)
-                    frame->payloadAt(k) = i + k + 1;
-                generatorMedia->writeFrame(frame);
-            }
-        }};
+            CC_VERIFY(m > n);
+        }
     }
 };
 

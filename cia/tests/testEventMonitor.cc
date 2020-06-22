@@ -16,7 +16,7 @@ class SimpleEventProcessing: public TestCase
 {
     void run()
     {
-        auto bus = VirtualCanBus::create();
+        VirtualCanBus bus;
 
         auto monitor = EventMonitor::create(bus->connect());
         double t0 = System::now();
@@ -43,7 +43,7 @@ class ComplexEventProcessing: public TestCase
 {
     void run()
     {
-        auto bus = VirtualCanBus::create();
+        VirtualCanBus bus;
 
         auto monitor = EventMonitor::create(bus->connect());
         double t0 = System::now();
@@ -80,7 +80,7 @@ class SimpleSafetyEventProcessing: public TestCase
 {
     void run()
     {
-        auto bus = VirtualCanBus::create();
+        VirtualCanBus bus;
 
         auto monitor = EventMonitor::create(bus->connect());
         double t0 = System::now();
@@ -107,7 +107,7 @@ class ComplexSafetyEventProcessing: public TestCase
 {
     void run()
     {
-        auto bus = VirtualCanBus::create();
+        VirtualCanBus bus;
 
         auto monitor = EventMonitor::create(bus->connect());
         double t0 = System::now();

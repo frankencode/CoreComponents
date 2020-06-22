@@ -16,21 +16,25 @@ namespace cc { class Worker; }
 namespace cc {
 namespace can {
 
-class VirtualCanBridge: public Object
+class VirtualCanBridge
 {
 public:
-    static Ref<VirtualCanBridge> create(CanMedia *mediaA, CanMedia *mediaB);
+    class Instance: public Object
+    {
+        friend class VirtualCanBridge;
 
-protected:
-    VirtualCanBridge(CanMedia *mediaA, CanMedia *mediaB);
+        Instance(const CanMedia &mediaA, const CanMedia &mediaB);
 
-    void init();
+        CanMedia mediaA_, mediaB_;
+        Worker aToB_, bToA_;
+    };
 
-    virtual void log(const CanFrame &frame) const;
+    VirtualCanBridge(const CanMedia &mediaA, const CanMedia &mediaB):
+        instance_{new Instance{mediaA, mediaB}}
+    {}
 
 private:
-    Ref<CanMedia> mediaA_, mediaB_;
-    Worker aToB_, bToA_;
+    Ref<Instance> instance_;
 };
 
 }} // namespace cc::can

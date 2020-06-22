@@ -12,12 +12,12 @@
 namespace cc {
 namespace can {
 
-Ref<CanMaster> CanMaster::create(CanMedia *media)
+Ref<CanMaster> CanMaster::create(const CanMedia &media)
 {
     return new CanMaster{media};
 }
 
-CanMaster::CanMaster(CanMedia *media):
+CanMaster::CanMaster(const CanMedia &media):
     media_{media}
 {}
 

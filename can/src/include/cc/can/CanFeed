@@ -18,18 +18,48 @@ namespace can {
 class CanFeed: public CanMedia
 {
 public:
-    bool waitFrame(int timeout = -1) override;
-    bool readFrame(CanFrame *frame) override;
-    void feedFrame(const CanFrame &frame);
-    void shutdown();
+    class Instance: public CanMedia::Instance
+    {
+    public:
+        bool waitFrame(int timeout = -1) override;
+        bool readFrame(CanFrame *frame) override;
+        void feedFrame(const CanFrame &frame);
+        void shutdown();
 
-protected:
-    CanFeed();
-    ~CanFeed();
+    protected:
+        friend class CanFeed;
 
-private:
-    typedef Channel<CanFrame> FrameChannel;
-    Ref<FrameChannel> frameChannel_;
+        class FeedGuard {
+        public:
+            FeedGuard(Instance *instance):
+                blocked_{instance->blocked_}
+            {
+                blocked_ = true;
+            }
+            ~FeedGuard()
+            {
+                blocked_ = false;
+            }
+        private:
+            bool &blocked_;
+        };
+
+        Instance();
+        ~Instance();
+
+        typedef Channel<CanFrame> FrameChannel;
+        Ref<FrameChannel> frameChannel_;
+
+        bool blocked_ { false };
+    };
+
+    Instance *operator->() { return get<Instance>(); }
+
+    CanFeed() = default;
+
+    CanFeed(Instance *instance):
+        CanMedia{instance}
+    {}
 };
 
 }} // namespace cc::can

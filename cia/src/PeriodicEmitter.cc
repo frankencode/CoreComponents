@@ -14,14 +14,14 @@
 namespace cc {
 namespace can {
 
-Ref<PeriodicEmitter> PeriodicEmitter::create(CanMedia *media)
+Ref<PeriodicEmitter> PeriodicEmitter::create(const CanMedia &media)
 {
     Ref<PeriodicEmitter> emitter = new PeriodicEmitter{media};
     emitter->init();
     return emitter;
 }
 
-PeriodicEmitter::PeriodicEmitter(CanMedia *media):
+PeriodicEmitter::PeriodicEmitter(const CanMedia &media):
     media_{media}
 {}
 

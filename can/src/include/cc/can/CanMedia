@@ -13,12 +13,51 @@
 namespace cc {
 namespace can {
 
-class CanMedia: public Object
+class CanMedia
 {
 public:
-    virtual bool waitFrame(int timeout = -1) = 0;
-    virtual bool readFrame(CanFrame *frame) = 0;
-    virtual void writeFrame(const CanFrame &frame) = 0;
+    class Instance: public Object
+    {
+    public:
+        /** Wait for a frame to be received
+          * \param timeout number of milliseconds to wait
+          * \return true if a frame has become available before timeout
+          */
+        virtual bool waitFrame(int timeout = -1) = 0;
+
+        /** Read frame
+          * \param frame return next frame
+          * \return true if a frame could be read
+          */
+        virtual bool readFrame(CanFrame *frame) = 0;
+
+        /** Write frame
+          * \param frame frame to write
+          */
+        virtual void writeFrame(const CanFrame &frame) = 0;
+
+        Instance *instance() { return this; }
+    };
+
+    CanMedia() = default;
+
+    CanMedia(Instance *instance): ///< \todo should be protected
+        instance_{instance}
+    {}
+
+    Instance *operator->() { return instance_; }
+
+    explicit operator bool() const { return instance_; }
+
+protected:
+    template<class T>
+    T *get() { return static_cast<T *>(static_cast<Instance *>(instance_)); }
+
+    template<class T>
+    const T *get() const { return static_cast<const T *>(static_cast<const Instance *>(instance_)); }
+
+private:
+    Ref<Instance> instance_;
 };
 
 }} // namespace cc::can

@@ -11,19 +11,9 @@
 namespace cc {
 namespace can {
 
-Ref<VirtualCanBridge> VirtualCanBridge::create(CanMedia *mediaA, CanMedia *mediaB)
-{
-    Ref<VirtualCanBridge> bridge = new VirtualCanBridge{mediaA, mediaB};
-    bridge->init();
-    return bridge;
-}
-
-VirtualCanBridge::VirtualCanBridge(CanMedia *mediaA, CanMedia *mediaB):
+VirtualCanBridge::Instance::Instance(const CanMedia &mediaA, const CanMedia &mediaB):
     mediaA_{mediaA},
     mediaB_{mediaB}
-{}
-
-void VirtualCanBridge::init()
 {
     aToB_ = Worker{[=]{
         for (CanFrame frame; mediaA_->readFrame(&frame);)
@@ -34,8 +24,5 @@ void VirtualCanBridge::init()
             mediaA_->writeFrame(frame);
     }};
 }
-
-void VirtualCanBridge::log(const CanFrame &frame) const
-{}
 
 }} // namespace cc::can

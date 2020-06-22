@@ -11,14 +11,14 @@
 namespace cc {
 namespace can {
 
-Ref<EchoNode> EchoNode::create(CanMedia *media, int nodeId, int timeout)
+Ref<EchoNode> EchoNode::create(const CanMedia &media, int nodeId, int timeout)
 {
     auto node = new EchoNode{media, nodeId, timeout};
     node->init();
     return node;
 }
 
-EchoNode::EchoNode(CanMedia *media, int nodeId, int timeout):
+EchoNode::EchoNode(const CanMedia &media, int nodeId, int timeout):
     CanNode{media, nodeId, timeout}
 {}
 

@@ -19,9 +19,9 @@ namespace can {
 class EchoNode: public CanNode
 {
 public:
-    static Ref<EchoNode> create(CanMedia *media, int nodeId, int timeout = -1);
+    static Ref<EchoNode> create(const CanMedia &media, int nodeId, int timeout = -1);
 
-    EchoNode(CanMedia *media, int nodeId, int timeout);
+    EchoNode(const CanMedia &media, int nodeId, int timeout);
 
     String readServiceData(Selector::Key key) const override;
     void writeServiceData(Selector::Key key, const String &data) override;

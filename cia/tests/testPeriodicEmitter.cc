@@ -1,10 +1,10 @@
-#include <cc/testing/TestSuite>
-#include <cc/debug>
-#include <cc/Worker>
-#include <cc/Thread>
 #include <cc/can/VirtualCanBus>
 #include <cc/can/PeriodicEmitter>
 #include <cc/can/CanLogger>
+#include <cc/testing/TestSuite>
+#include <cc/Worker>
+#include <cc/Thread>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::can;
@@ -14,7 +14,7 @@ class SimpleEmissionTest: public TestCase
 {
     void run() override
     {
-        auto bus = VirtualCanBus::create();
+        VirtualCanBus bus;
 
         CC_DEBUG;
 
@@ -37,7 +37,7 @@ class SafetyEmissionTest: public TestCase
 {
     void run() override
     {
-        auto bus = VirtualCanBus::create();
+        VirtualCanBus bus;
 
         auto logger = CanLogger::create(bus->connect());
 

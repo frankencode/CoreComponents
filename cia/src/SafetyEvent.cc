@@ -22,10 +22,10 @@ SafetyEvent::SafetyEvent(int canId, double idleInterval):
     Event{canId, idleInterval}
 {}
 
-void SafetyEvent::onError(CanMedia *media, SafetyError error)
+void SafetyEvent::onError(CanMedia &media, SafetyError error)
 {}
 
-void SafetyEvent::onIdle(CanMedia *media)
+void SafetyEvent::onIdle(CanMedia &media)
 {
     if (isPrimaryEvent()) onError(media, SafetyError::RefreshTimeout);
     else primaryEvent_->onError(media, SafetyError::ValidationTimeout);
@@ -36,7 +36,7 @@ bool SafetyEvent::isPrimaryEvent() const
     return primaryEvent_ == nullptr;
 }
 
-void SafetyEvent::feed(CanMedia *media, const String &data)
+void SafetyEvent::feed(CanMedia &media, const String &data)
 {
     if (isPrimaryEvent()) {
         lastData_ = data;
