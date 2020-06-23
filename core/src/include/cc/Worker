@@ -53,15 +53,9 @@ public:
         thread_->start();
     }
 
-    void wait()
-    {
-        if (thread_) {
-            thread_->wait();
-            thread_ = nullptr;
-        }
-    }
-
     explicit operator bool() const { return thread_; }
+
+    Thread *operator->() { return thread_; }
 
 private:
     Ref<WorkerThread> thread_;
