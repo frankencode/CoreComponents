@@ -39,7 +39,6 @@ public:
 
     CanMedia() = default;
 
-    explicit operator bool() const { return self_; }
     operator const Instance *() const { return self_; }
 
     Instance *operator->() { return self_; }
