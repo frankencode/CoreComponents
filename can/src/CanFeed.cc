@@ -12,12 +12,6 @@
 namespace cc {
 namespace can {
 
-CanFeed::Instance::Instance()
-{}
-
-CanFeed::Instance::~Instance()
-{}
-
 bool CanFeed::Instance::waitFrame(int timeout)
 {
     if (timeout <= 0) return frameChannel_->wait();

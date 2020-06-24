@@ -14,12 +14,6 @@
 
 namespace cc {
 
-/** \class Queue cc/Queue
-  * \ingroup container_highlevel
-  * \brief %Queue data container
-  * \tparam T item type
-  * \see priority_queue
-  */
 template<class T>
 class Queue {
 public:

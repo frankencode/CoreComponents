@@ -16,12 +16,6 @@ namespace cc {
 template<class T>
 class PriorityQueue;
 
-/** \class PriorityQueueInstance cc/PriorityQueueInstance
-  * \ingroup container_dynamic
-  * \brief Priority based queue data container
-  * \tparam T item type
-  * \see QueueInstance, Channel
-  */
 template<class T>
 class PriorityQueueInstance: public Object
 {

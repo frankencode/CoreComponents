@@ -25,23 +25,21 @@ public:
         void feedFrame(const CanFrame &frame);
         void shutdown();
 
-        const Instance *instance() const { return this; }
-
     protected:
         friend class CanFeed;
 
-        Instance();
-        ~Instance();
+        Instance() = default;
 
         Channel<CanFrame> frameChannel_;
     };
 
-    Instance *operator->() { return get<Instance>(); }
+    Instance *operator->() { return as<Instance>(self_); }
 
     CanFeed() = default;
 
-    CanFeed(Instance *instance):
-        CanMedia{instance}
+protected:
+    CanFeed(Instance *self):
+        CanMedia{self}
     {}
 };
 

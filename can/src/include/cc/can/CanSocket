@@ -44,8 +44,8 @@ public:
         CanMedia{new Instance{interface}}
     {}
 
-    const Instance *operator->() const { return get<Instance>(); }
-    Instance *operator->() { return get<Instance>(); }
+    const Instance *operator->() const { return as<Instance>(self_); }
+    Instance *operator->() { return as<Instance>(self_); }
 };
 
 }} // namespace cc::can

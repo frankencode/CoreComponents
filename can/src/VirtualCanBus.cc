@@ -64,7 +64,7 @@ void VirtualCanBus::Instance::broadcast(const CanFrame &frame, CanFeed::Instance
 {
     Guard<Mutex> guard{mutex_};
     for (CanFeed &media: connections_) {
-        if (source != media->instance())
+        if (source != media)
             media->feedFrame(frame);
     }
 }

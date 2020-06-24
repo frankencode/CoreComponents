@@ -160,11 +160,11 @@ private:
 };
 
 /** \class QueueInstance cc/QueueInstance
-  * \ingroup container_lowlevel
   * \brief %QueueInstance data container
   * \tparam T item type
   * \see PriorityQueue, Channel
   * \inherit Object
+  * \internal
   */
 template<class T>
 class QueueInstance: public Object

@@ -17,13 +17,6 @@ namespace cc {
 template<class K, class T>
 class MultiMap;
 
-/** \class MultiMapInstance cc/MultiMapInstance
-  * \ingroup container_lowlevel
-  * \brief Multi-map data container
-  * \tparam K key type
-  * \tparam T mapped type
-  * \see Map, MultiSet, KeyValue, KeySource, ValueSource
-  */
 template<class K, class T = K>
 class MultiMapInstance: public Object
 {
