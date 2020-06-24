@@ -61,6 +61,10 @@ public:
             return false;
         }
 
+        /** Remove an item from the end
+          * \param item returns the item value
+          * \return true if successful
+          */
         bool popBack(T *item)
         {
             Guard<Mutex> guard{mutex_};
@@ -74,6 +78,10 @@ public:
             return false;
         }
 
+        /** Remove an item from the front
+          * \param item returns the item value
+          * \return true if successful
+          */
         bool popFront(T *item)
         {
             Guard<Mutex> guard{mutex_};
@@ -87,11 +95,13 @@ public:
             return false;
         }
 
+        /// \copydoc popFront(T *)
         bool read(T *item) override
         {
             return popFront(item);
         }
 
+        /// \copydoc pushBack(const T &)
         bool write(const T &item) override
         {
             return pushBack(item);
