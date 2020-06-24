@@ -8,8 +8,9 @@
 
 #pragma once
 
-#include <cc/Thread>
 #include <cc/http/NodeConfig>
+#include <cc/Thread>
+#include <cc/Channel>
 
 namespace cc { template<class> class Channel; }
 
@@ -40,11 +41,8 @@ private:
 
     Ref<const NodeConfig> config_;
 
-    typedef Channel<SocketAddress> StartedChannel;
-    Ref<StartedChannel> startedChannel_;
-
-    typedef Channel<Signal> Signals;
-    Ref<Signals> signals_;
+    Channel<SocketAddress> startedChannel_;
+    Channel<Signal> signals_;
     int exitCode_;
 };
 

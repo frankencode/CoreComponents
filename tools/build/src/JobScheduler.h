@@ -48,8 +48,8 @@ private:
 
     int concurrency_;
 
-    Ref<JobChannel> requestChannel_;
-    Ref<JobChannel> replyChannel_;
+    JobChannel requestChannel_;
+    JobChannel replyChannel_;
 
     Queue< Ref<JobServer> > serverPool_;
     Set< Ref<Job> > derivatives_;

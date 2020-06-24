@@ -35,7 +35,7 @@ public:
         friend class VirtualCanMediaInstance;
 
         Instance() = default;
-        void broadcast(const CanFrame &frame);
+        void broadcast(const CanFrame &frame, CanFeed::Instance *source);
 
         List<CanFeed> connections_;
         Mutex mutex_;

@@ -22,7 +22,6 @@ Ref<ConnectionManager> ConnectionManager::create(const NodeConfig *nodeConfig)
 
 ConnectionManager::ConnectionManager(const NodeConfig *nodeConfig):
     nodeConfig_{nodeConfig},
-    closedConnections_{ClosedConnections::create()},
     serviceWindow_{nodeConfig->serviceWindow()},
     connectionLimit_{nodeConfig->connectionLimit()}
 {
@@ -42,8 +41,8 @@ const LoggingInstance *ConnectionManager::errorLoggingInstance() const
 
 void ConnectionManager::cycle()
 {
-    for (int i = 0, n = closedConnections_->count(); i < n; ++i) {
-        Ref<ConnectionInfo> visit = closedConnections_->pop();
+    for (int i = 0, n = closedConnections->count(); i < n; ++i) {
+        Ref<ConnectionInfo> visit = closedConnections->pop();
         visits_->append(visit);
     }
 

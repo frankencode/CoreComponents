@@ -9,7 +9,6 @@
 #include <cc/can/VirtualCanBus>
 #include <cc/can/CanFeed>
 #include <cc/Guard>
-#include <cc/Channel> /// \todo whatfore?
 
 namespace cc {
 namespace can {
@@ -21,8 +20,7 @@ class VirtualCanMediaInstance: public CanFeed::Instance
 public:
     void writeFrame(const CanFrame &frame) override
     {
-        FeedGuard guard{this};
-        bus_->broadcast(frame);
+        bus_->broadcast(frame, this);
     }
 
 private:
@@ -62,11 +60,13 @@ void VirtualCanBus::Instance::shutdown()
     connections_->deplete();
 }
 
-void VirtualCanBus::Instance::broadcast(const CanFrame &frame)
+void VirtualCanBus::Instance::broadcast(const CanFrame &frame, CanFeed::Instance *source)
 {
     Guard<Mutex> guard{mutex_};
-    for (CanFeed &media: connections_)
-        media->feedFrame(frame);
+    for (CanFeed &media: connections_) {
+        if (source != media->instance())
+            media->feedFrame(frame);
+    }
 }
 
 }} // namespace cc::can

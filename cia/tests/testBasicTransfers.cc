@@ -32,6 +32,7 @@ protected:
             outData = client->read(serverId, 1);
 
             bus->shutdown();
+            logger->wait();
         }
         CC_VERIFY(inData == outData);
     }

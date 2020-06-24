@@ -28,7 +28,7 @@ typedef Channel< Ref<ConnectionInfo> > ClosedConnections;
 class DeliveryWorker: public Thread
 {
 public:
-    static Ref<DeliveryWorker> create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections);
+    static Ref<DeliveryWorker> create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, const ClosedConnections &closedConnections);
 
     const NodeConfig *nodeConfig() const { return nodeConfig_; }
 
@@ -40,7 +40,7 @@ public:
     void closeConnection();
 
 private:
-    DeliveryWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections);
+    DeliveryWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, const ClosedConnections &closedConnections);
     ~DeliveryWorker();
 
     const LoggingInstance *errorLoggingInstance() const;
@@ -53,7 +53,7 @@ private:
 
     const NodeConfig *nodeConfig_;
     Ref<PendingConnections> pendingConnections_;
-    Ref<ClosedConnections> closedConnections_;
+    ClosedConnections closedConnections_;
 
     Ref<HttpServerConnection> client_;
     Ref<HttpResponseGenerator> response_;

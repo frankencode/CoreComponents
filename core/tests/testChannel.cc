@@ -17,16 +17,14 @@
 using namespace cc;
 using namespace cc::testing;
 
-typedef Channel<int> MyChannel;
-
 class Consumer: public Thread
 {
 public:
-    static Ref<Consumer> create(int id, MyChannel *channel, int amount) { return new Consumer{id, channel, amount}; }
+    static Ref<Consumer> create(int id, const Channel<int> &channel, int amount) { return new Consumer{id, channel, amount}; }
     List<int> list() const { return list_; }
 
 private:
-    Consumer(int id, MyChannel *channel, int amount):
+    Consumer(int id, const Channel<int> &channel, int amount):
         id_{id},
         channel_{channel},
         amount_{amount}
@@ -43,7 +41,7 @@ private:
     }
 
     int id_;
-    Ref<MyChannel> channel_;
+    Channel<int> channel_;
     int amount_;
     List<int> list_;
 };
@@ -51,11 +49,11 @@ private:
 class Producer: public Thread
 {
 public:
-    static Ref<Producer> create(int id, MyChannel *channel, int amount) { return new Producer{id, channel, amount}; }
+    static Ref<Producer> create(int id, const Channel<int> &channel, int amount) { return new Producer{id, channel, amount}; }
     List<int> list() const { return list_; }
 
 private:
-    Producer(int id, MyChannel *channel, int amount):
+    Producer(int id, const Channel<int> &channel, int amount):
         id_{id},
         channel_{channel},
         amount_{amount},
@@ -74,7 +72,7 @@ private:
     }
 
     int id_;
-    Ref<MyChannel> channel_;
+    Channel<int> channel_;
     int amount_;
     Random random_;
     List<int> list_;
@@ -84,7 +82,7 @@ class ConsumerProducer: public TestCase
 {
     void run() override
     {
-        Ref<MyChannel> channel = MyChannel::create();
+        Channel<int> channel;
         Ref<Producer> p = Producer::create(1, channel, 8);
         Ref<Consumer> c = Consumer::create(1, channel, 8);
 

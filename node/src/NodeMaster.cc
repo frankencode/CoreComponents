@@ -14,7 +14,6 @@
 #include <cc/http/SecurityCache>
 #include <cc/http/exceptions>
 #include <cc/http/debug>
-#include <cc/Channel>
 #include <cc/Process>
 #include <cc/File>
 #include <cc/User>
@@ -36,8 +35,6 @@ Ref<NodeMaster> NodeMaster::create(const NodeConfig *config)
 
 NodeMaster::NodeMaster(const NodeConfig *config):
     config_{config},
-    startedChannel_{StartedChannel::create()},
-    signals_{Signals::create()},
     exitCode_{0}
 {
     if (config->daemon())
@@ -111,7 +108,7 @@ void NodeMaster::runNode()
 
     Ref<ConnectionManager> connectionManager = ConnectionManager::create(config());
     Ref<PendingConnections> pendingConnections = PendingConnections::create();
-    Ref<ClosedConnections> closedConnections = connectionManager->closedConnections();
+    ClosedConnections closedConnections = connectionManager->closedConnections;
 
     CCNODE_NOTICE() << "Creating worker pool (concurrency = " << config()->concurrency() << ")" << nl;
 

@@ -10,16 +10,16 @@
 
 namespace ccbuild {
 
-JobServer::JobServer(JobChannel *requestChannel, JobChannel *replyChannel):
-    requestChannel_(requestChannel),
-    replyChannel_(replyChannel)
+JobServer::JobServer(const JobChannel &requestChannel, const JobChannel &replyChannel):
+    requestChannel_{requestChannel},
+    replyChannel_{replyChannel}
 {
     Thread::start();
 }
 
 JobServer::~JobServer()
 {
-    requestChannel_->pushFront(0);
+    requestChannel_->pushFront(nullptr);
     Thread::wait();
 }
 

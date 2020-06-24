@@ -17,18 +17,17 @@ namespace ccbuild {
 class JobServer: public Thread
 {
 public:
-    inline static Ref<JobServer> start(JobChannel *requestChannel, JobChannel *replyChannel) {
-        return new JobServer(requestChannel, replyChannel);
+    static Ref<JobServer> start(const JobChannel &requestChannel, const JobChannel &replyChannel) {
+        return new JobServer{requestChannel, replyChannel};
     }
 
 private:
-    JobServer(JobChannel *requestChannel, JobChannel *replyChannel);
+    JobServer(const JobChannel &requestChannel, const JobChannel &replyChannel);
     ~JobServer();
     virtual void run();
 
-    Ref<JobChannel> requestChannel_;
-    Ref<JobChannel> replyChannel_;
+    JobChannel requestChannel_;
+    JobChannel replyChannel_;
 };
 
 } // namespace ccbuild
-

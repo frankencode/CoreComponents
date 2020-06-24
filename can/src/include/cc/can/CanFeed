@@ -9,8 +9,7 @@
 #pragma once
 
 #include <cc/can/CanMedia>
-
-namespace cc { template<class> class Channel; }
+#include <cc/Channel>
 
 namespace cc {
 namespace can {
@@ -26,31 +25,15 @@ public:
         void feedFrame(const CanFrame &frame);
         void shutdown();
 
+        const Instance *instance() const { return this; }
+
     protected:
         friend class CanFeed;
-
-        class FeedGuard {
-        public:
-            FeedGuard(Instance *instance):
-                blocked_{instance->blocked_}
-            {
-                blocked_ = true;
-            }
-            ~FeedGuard()
-            {
-                blocked_ = false;
-            }
-        private:
-            bool &blocked_;
-        };
 
         Instance();
         ~Instance();
 
-        typedef Channel<CanFrame> FrameChannel;
-        Ref<FrameChannel> frameChannel_;
-
-        bool blocked_ { false };
+        Channel<CanFrame> frameChannel_;
     };
 
     Instance *operator->() { return get<Instance>(); }

@@ -7,14 +7,12 @@
  */
 
 #include <cc/can/CanFeed>
-#include <cc/Channel>
 #include <cc/System>
 
 namespace cc {
 namespace can {
 
-CanFeed::Instance::Instance():
-    frameChannel_{FrameChannel::create()}
+CanFeed::Instance::Instance()
 {}
 
 CanFeed::Instance::~Instance()
@@ -36,8 +34,7 @@ bool CanFeed::Instance::readFrame(CanFrame *frame)
 
 void CanFeed::Instance::feedFrame(const CanFrame &frame)
 {
-    if (!blocked_)
-        frameChannel_->pushBack(frame);
+    frameChannel_->pushBack(frame);
 }
 
 void CanFeed::Instance::shutdown()

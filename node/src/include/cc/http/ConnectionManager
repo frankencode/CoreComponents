@@ -24,7 +24,7 @@ class ConnectionManager: public Object
 public:
     static Ref<ConnectionManager> create(const NodeConfig *nodeConfig);
 
-    ClosedConnections *closedConnections() const { return closedConnections_; }
+    ClosedConnections closedConnections;
 
     void cycle();
     bool accept(HttpServerConnection *client);
@@ -37,7 +37,6 @@ private:
     using ConnectionCounts = Map<uint64_t, int>;
 
     Ref<const NodeConfig> nodeConfig_;
-    Ref<ClosedConnections> closedConnections_;
     ConnectionCounts connectionCounts_;
     List< Ref<ConnectionInfo> > visits_;
     int serviceWindow_;

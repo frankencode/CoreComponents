@@ -27,8 +27,7 @@ class StorageMonitor: public Thread
 public:
     static Ref<StorageMonitor> start();
 
-    typedef Channel< Ref<const StorageEvent> > Events;
-    Events *events() const { return events_; }
+    Channel< Ref<const StorageEvent> > events;
 
     void shutdown();
 
@@ -40,7 +39,6 @@ private:
 
     static void printDebug(struct udev_device *device);
 
-    Ref<Events> events_;
     Ref<SystemStream> controlMaster_, controlSlave_;
 };
 

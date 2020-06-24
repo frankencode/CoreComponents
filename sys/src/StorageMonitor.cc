@@ -22,8 +22,7 @@ Ref<StorageMonitor> StorageMonitor::start()
     return monitor;
 }
 
-StorageMonitor::StorageMonitor():
-    events_{Events::create()}
+StorageMonitor::StorageMonitor()
 {
     SystemStream::connect(&controlMaster_, &controlSlave_);
 }
@@ -62,7 +61,7 @@ void StorageMonitor::enumerate(struct udev *udev)
         String sysPath = udev_list_entry_get_name(entry);
         struct udev_device *dev = udev_device_new_from_syspath(udev, sysPath);
 
-        events_->pushBack(Object::create<StorageEvent>(dev));
+        events->pushBack(Object::create<StorageEvent>(dev));
 
         udev_device_unref(dev);
     }
@@ -97,13 +96,13 @@ void StorageMonitor::run()
 
                 // printDebug(dev);
 
-                events_->pushBack(Object::create<StorageEvent>(dev));
+                events->pushBack(Object::create<StorageEvent>(dev));
 
                 udev_device_unref(dev);
             }
         }
 
-        events_->pushBack(nullptr);
+        events->pushBack(nullptr);
 
         udev_monitor_unref(mon);
         udev_unref(udev);

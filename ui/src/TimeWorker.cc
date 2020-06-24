@@ -20,8 +20,7 @@ Ref<TimeWorker> TimeWorker::create(TimeMaster *master)
 }
 
 TimeWorker::TimeWorker(TimeMaster *master):
-    master_{master},
-    startRequests_{StartRequests::create()}
+    master_{master}
 {}
 
 void TimeWorker::startTimer(Timer *timer)

@@ -20,12 +20,12 @@
 namespace cc {
 namespace http {
 
-Ref<DeliveryWorker> DeliveryWorker::create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections)
+Ref<DeliveryWorker> DeliveryWorker::create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, const ClosedConnections &closedConnections)
 {
     return new DeliveryWorker{nodeConfig, pendingConnections, closedConnections};
 }
 
-DeliveryWorker::DeliveryWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections):
+DeliveryWorker::DeliveryWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, const ClosedConnections &closedConnections):
     nodeConfig_{nodeConfig},
     pendingConnections_{pendingConnections},
     closedConnections_{closedConnections}
