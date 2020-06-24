@@ -8,10 +8,9 @@
 
 #pragma once
 
-#include <functional>
 #include <cc/Thread>
-#include <cc/Channel>
 #include <cc/SignalSet>
+#include <functional>
 
 namespace cc {
 

@@ -154,12 +154,12 @@ public:
     const Instance *operator->() const { return &instance_; }
     Instance *operator->() { return &instance_; }
 
-    explicit operator bool() const { return (*this)->isValid(); }
-
     bool operator==(const CanFrame &other) const { return (*this)->equals(other->instance()); }
     bool operator!=(const CanFrame &other) const { return !(*this)->equals(other->instance()); }
 
 private:
+    explicit operator bool() const { return (*this)->isValid(); }
+
     Instance instance_;
 };
 

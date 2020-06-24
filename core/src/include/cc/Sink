@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \class Sink cc/Sink
+  * \brief Generic data sink
+  * \tparam T item type
+  */
+template<class T>
+class Sink: public virtual Object
+{
+public:
+    /// Item type
+    typedef T Item;
+
+    /** Write an item to the sink
+      * \param item item to write
+      * \return true if channel of communication is still open
+      */
+    virtual bool write(const T &item) = 0;
+};
+
+} // namespace cc

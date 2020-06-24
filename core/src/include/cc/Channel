@@ -9,6 +9,8 @@
 #pragma once
 
 #include <cc/Queue>
+#include <cc/Source>
+#include <cc/Sink>
 #include <cc/Mutex>
 #include <cc/Guard>
 #include <cc/WaitCondition>
@@ -19,76 +21,105 @@ namespace cc {
   * \ingroup concurrency
   * \brief Inter-thread communication channel
   * \tparam T item type
-  * \todo provide wait(), send(), read() convenience methods
-  * \todo provide Source interface / iteration
   */
 template<class T>
 class Channel
 {
 public:
-    class Instance: public Object
+    class Instance: public Source<T>, public Sink<T>
     {
     public:
-        /// \copydoc QueueInstance::pushBack()
-        void pushBack(const T &item)
-        {
-            Guard<Mutex> guard{mutex_};
-            queue_->pushBack(item);
-            notEmpty_->signal();
-        }
-
-        /// \copydoc QueueInstance::pushFront()
-        void pushFront(const T &item)
-        {
-            Guard<Mutex> guard{mutex_};
-            queue_->pushFront(item);
-            notEmpty_->signal();
-        }
-
-        /// \copydoc QueueInstance::popBack(T *)
-        const T &popBack(T *item)
-        {
-            Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0)
-                notEmpty_->wait(mutex_);
-            return queue_->popBack(item);
-        }
-
-        /// \copydoc QueueInstance::popFront(T *)
-        const T &popFront(T *item)
-        {
-            Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0)
-                notEmpty_->wait(mutex_);
-            return queue_->popFront(item);
-        }
-
-        /// \copydoc QueueInstance::popBack()
-        T popBack() { T h; return popBack(&h); }
-
-        /// \copydoc QueueInstance::popFront()
-        T popFront() { T h; return popFront(&h); }
-
-        /// Wait for the channel to become not empty
-        void waitForNotEmpty()
-        {
-            Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0)
-                notEmpty_->wait(mutex_);
-        }
-
-        /** Wait for the channel to become not empty
-          * \param timeout absolute timeout (e.g. System::now() + 10)
-          * \return true if the channel contains at least one item before timeout
+        /** Add a new item to the end of the channel
+          * \param item item value
+          * \param priority item priority
+          * \return true if successful
           */
-        bool waitForNotEmptyUntil(double timeout)
+        bool pushBack(const T &item)
         {
             Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0) {
-                if (!notEmpty_->waitUntil(timeout, mutex_))
-                    return false;
+            if (!close_) {
+                queue_->pushBack(item);
+                notEmpty_->signal();
+                return true;
             }
-            return true;
+            return false;
+        }
+
+        /** Add a new item to the front of the channel
+          * \param item item value
+          * \param priority item priority
+          * \return true if successful
+          */
+        bool pushFront(const T &item)
+        {
+            Guard<Mutex> guard{mutex_};
+            if (!close_) {
+                queue_->pushFront(item);
+                notEmpty_->signal();
+                return true;
+            }
+            return false;
+        }
+
+        bool popBack(T *item)
+        {
+            Guard<Mutex> guard{mutex_};
+            while (queue_->count() == 0 && !close_) {
+                notEmpty_->wait(mutex_);
+            }
+            if (queue_->count() > 0) {
+                queue_->popBack(item);
+                return true;
+            }
+            return false;
+        }
+
+        bool popFront(T *item)
+        {
+            Guard<Mutex> guard{mutex_};
+            while (queue_->count() == 0 && !close_) {
+                notEmpty_->wait(mutex_);
+            }
+            if (queue_->count() > 0) {
+                queue_->popFront(item);
+                return true;
+            }
+            return false;
+        }
+
+        bool read(T *item) override
+        {
+            return popFront(item);
+        }
+
+        bool write(const T &item) override
+        {
+            return pushBack(item);
+        }
+
+        /** Wait for the channel to become ready to read
+          * \return true if the channel contains at least one item before timeout or the channel has been closed
+          */
+        bool wait()
+        {
+            Guard<Mutex> guard{mutex_};
+            while (queue_->count() == 0 && !close_)
+                notEmpty_->wait(mutex_);
+            return queue_->count() > 0 || close_;
+        }
+
+        /** Wait for the channel to become ready to read
+          * \param timeout absolute timeout (e.g. System::now() + 10)
+          * \return true if the channel contains at least one item before timeout or the channel has been closed
+          */
+        bool waitUntil(double timeout)
+        {
+            Guard<Mutex> guard{mutex_};
+            while (queue_->count() == 0 && !close_) {
+                if (!notEmpty_->waitUntil(timeout, mutex_))
+                    break;
+            }
+            return queue_->count() > 0 || close_;
         }
 
         /** Remove an item from the end of the queue before a certain timeout
@@ -99,12 +130,15 @@ public:
         bool popBackBefore(double timeout, T *item)
         {
             Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0) {
+            while (queue_->count() == 0 && !close_) {
                 if (!notEmpty_->waitUntil(timeout, mutex_))
-                    return false;
+                    break;
             }
-            queue_->popBack(item);
-            return true;
+            if (queue_->count() > 0) {
+                queue_->popBack(item);
+                return true;
+            }
+            return false;
         }
 
         /** Remove an item from the head of the queue before a certain timeout
@@ -115,46 +149,36 @@ public:
         bool popFrontBefore(double timeout, T *item)
         {
             Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0) {
+            while (queue_->count() == 0 && !close_) {
                 if (!notEmpty_->waitUntil(timeout, mutex_))
-                    return false;
+                    break;
             }
-            queue_->popFront(item);
-            return true;
+            if (queue_->count() > 0) {
+                queue_->popFront(item);
+                return true;
+            }
+            return false;
         }
-
-        /// \copydoc pushBack()
-        void push(const T &item) { return pushBack(item); }
-
-        /// \copydoc popFront(T *)
-        const T &pop(T *item) { return popFront(item); }
-
-        /// \copydoc popFront()
-        T pop() { return popFront(); }
-
-        /// \copydoc popFrontBefore()
-        bool popBefore(double timeout, T *item = nullptr) { return popFrontBefore(timeout, item); }
 
         /// Return number of queued items
         int count() const { Guard<Mutex> guard{mutex_}; return queue_->count(); }
 
-        /** Connect with another channel
-          * \param other other channel to connect to
-          * \return pointer to the new connecting shared channel
-          */
-        Channel *connect(Channel *other)
+        /// Close channel
+        void close()
         {
-            other->queue_ = queue_;
-            other->notEmpty_ = notEmpty_;
-            other->mutex_ = mutex_;
-            return this;
+            Guard<Mutex> guard{mutex_};
+            close_ = true;
+            notEmpty_->broadcast();
         }
 
     private:
         Mutex mutex_;
         WaitCondition notEmpty_;
         Queue<T> queue_;
+        bool close_ { false };
     };
+
+    using ConstIterator = typename Instance::ConstIterator;
 
     /** Create a new channel
       */
@@ -170,5 +194,17 @@ private:
 
     Ref<Instance> instance_;
 };
+
+template<class T>
+typename Channel<T>::ConstIterator begin(const Channel<T> &a) { return a->begin(); }
+
+template<class T>
+typename Channel<T>::ConstIterator end(const Channel<T> &a) { return a->end(); }
+
+template<class T>
+typename Channel<T>::ConstIterator begin(Channel<T> &a) { return a->begin(); }
+
+template<class T>
+typename Channel<T>::ConstIterator end(Channel<T> &a) { return a->end(); }
 
 } // namespace cc

@@ -20,26 +20,23 @@ CanFeed::Instance::~Instance()
 
 bool CanFeed::Instance::waitFrame(int timeout)
 {
-    if (timeout <= 0) {
-        frameChannel_->waitForNotEmpty();
-        return true;
-    }
-    return frameChannel_->waitForNotEmptyUntil(System::now() + 0.001 * timeout);
+    if (timeout <= 0) return frameChannel_->wait();
+    return frameChannel_->waitUntil(System::now() + 0.001 * timeout);
 }
 
 bool CanFeed::Instance::readFrame(CanFrame *frame)
 {
-    return bool(*frame = frameChannel_->popFront());
+    return frameChannel_->read(frame);
 }
 
 void CanFeed::Instance::feedFrame(const CanFrame &frame)
 {
-    frameChannel_->pushBack(frame);
+    frameChannel_->write(frame);
 }
 
 void CanFeed::Instance::shutdown()
 {
-    frameChannel_->pushBack(CanFrame{});
+    frameChannel_->close();
 }
 
 }} // namespace cc::can

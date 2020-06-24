@@ -56,7 +56,8 @@ bool JobScheduler::collect(Ref<Job> *finishedJob)
         return false;
     }
 
-    Ref<Job> job = replyChannel_->popFront();
+    Ref<Job> job;
+    replyChannel_->popFront(&job);
     *finishedJob = job;
     if (job->status() == 0) {
         if (job->derivatives_) {

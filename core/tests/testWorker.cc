@@ -25,13 +25,14 @@ class WorkerTest: public TestCase
         Worker producer{[=]{
             Channel<int> out = channel;
             for (int i = 0; i < n; ++i)
-                out->pushBack(i);
+                out->write(i);
+            out->close();
         }};
 
         Worker consumer{[=]{
             Channel<int> in = channel;
-            for (int i = 0; i < n; ++i)
-                fout() << in->popFront() << nl;
+            for (int x = 0; in->read(&x);)
+                fout() << x << nl;
         }};
     }
 };

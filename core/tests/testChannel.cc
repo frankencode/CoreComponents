@@ -32,8 +32,7 @@ private:
 
     void run() override
     {
-        while (amount_ > 0) {
-            int x = channel_->pop();
+        for (int x: channel_) {
             fout("consumer %%: consuming %%\n") << id_ << x;
             list_->append(x);
             --amount_;
@@ -66,9 +65,10 @@ private:
             int x = random_->get();
             fout("producer %%: producing %%\n") << id_ << x;
             list_->append(x);
-            channel_->push(x);
+            channel_->write(x);
             --amount_;
         }
+        channel_->close();
     }
 
     int id_;

@@ -42,7 +42,8 @@ const LoggingInstance *ConnectionManager::errorLoggingInstance() const
 void ConnectionManager::cycle()
 {
     for (int i = 0, n = closedConnections->count(); i < n; ++i) {
-        Ref<ConnectionInfo> visit = closedConnections->pop();
+        Ref<ConnectionInfo> visit;
+        closedConnections->read(&visit);
         visits_->append(visit);
     }
 

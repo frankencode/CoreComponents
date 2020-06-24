@@ -26,7 +26,8 @@ JobServer::~JobServer()
 void JobServer::run()
 {
     while (true) {
-        Ref<Job> job = requestChannel_->popFront();
+        Ref<Job> job;
+        requestChannel_->popFront(&job);
         if (!job) break;
         job->run(); // FIXME: shouldn't we stop scheduling if run() returns false?
         replyChannel_->pushBack(job);

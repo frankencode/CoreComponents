@@ -1,12 +1,12 @@
-#include <cc/testing/TestSuite>
-#include <cc/debug>
-#include <cc/stdio>
-#include <cc/System>
-#include <cc/Thread>
 #include <cc/can/VirtualCanBus>
 #include <cc/can/CanLogger>
 #include <cc/can/PeriodicEmitter>
 #include <cc/can/EventMonitor>
+#include <cc/testing/TestSuite>
+#include <cc/System>
+#include <cc/Thread>
+#include <cc/stdio>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::can;
@@ -108,8 +108,10 @@ class ComplexSafetyEventProcessing: public TestCase
     void run()
     {
         VirtualCanBus bus;
+        CanMedia monitorMedia = bus->connect();
+        CanMedia emitterMedia = bus->connect();
 
-        auto monitor = EventMonitor::create(bus->connect());
+        auto monitor = EventMonitor::create(monitorMedia);
         double t0 = System::now();
         SafetyEventHandler::create(monitor, 0x101, 0x102, 0.1, 0.05,
             [=](const String &data){
@@ -129,7 +131,7 @@ class ComplexSafetyEventProcessing: public TestCase
         );
         monitor->start();
 
-        auto emitter = PeriodicEmitter::create(bus->connect());
+        auto emitter = PeriodicEmitter::create(emitterMedia);
         SafetyEmission::create(emitter, 0x101, 0x102, 0.09, "01234567");
         SafetyEmission::create(emitter, 0x103, 0x104, 0.19, "ABCD");
         emitter->start();
