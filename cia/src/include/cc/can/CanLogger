@@ -18,9 +18,11 @@ class CanLogger: public Object
 {
 public:
     static Ref<CanLogger> create(const CanMedia &media);
+    void wait() { worker_->wait(); }
 
 private:
     CanLogger(const CanMedia &media);
+
     void bootstrap();
     void run();
 

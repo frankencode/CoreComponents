@@ -27,11 +27,6 @@
   * High-level container types
   */
 
-/** \defgroup container_lowlevel Low-level container
-  * \ingroup container
-  * Low-level data structures
-  */
-
 /** \defgroup file_system File system
   * Access to file system primitives
   */

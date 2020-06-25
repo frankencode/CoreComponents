@@ -16,7 +16,7 @@ namespace can {
 class CanMedia
 {
 public:
-    class Instance: public Object
+    class Instance: public virtual Object
     {
     public:
         /** Wait for a frame to be received
@@ -35,29 +35,21 @@ public:
           * \param frame frame to write
           */
         virtual void writeFrame(const CanFrame &frame) = 0;
-
-        Instance *instance() { return this; }
     };
 
     CanMedia() = default;
 
-    CanMedia(Instance *instance): ///< \todo should be protected
-        instance_{instance}
-    {}
+    operator const Instance *() const { return self_; }
 
-    Instance *operator->() { return instance_; }
+    Instance *operator->() { return self_; }
 
-    explicit operator bool() const { return instance_; }
 
 protected:
-    template<class T>
-    T *get() { return static_cast<T *>(static_cast<Instance *>(instance_)); }
+    CanMedia(Instance *self):
+        self_{self}
+    {}
 
-    template<class T>
-    const T *get() const { return static_cast<const T *>(static_cast<const Instance *>(instance_)); }
-
-private:
-    Ref<Instance> instance_;
+    Ref<Instance> self_;
 };
 
 }} // namespace cc::can

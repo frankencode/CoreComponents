@@ -76,7 +76,7 @@ void runMonitor(const VariantMap &options)
         }
     );
 
-    for (Ref<const StorageEvent> event; monitor->events()->popFront(&event);)
+    for (Ref<const StorageEvent> event; monitor->events->popFront(&event);)
     {
         if (verbose) fout() << event << nl;
 

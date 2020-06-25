@@ -20,16 +20,19 @@ class WorkerTest: public TestCase
     {
         const int n = 20;
 
-        auto channel = Channel<int>::create();
+        Channel<int> channel;
 
-        auto consumer = Worker{[=]{
+        Worker producer{[=]{
+            Channel<int> out = channel;
             for (int i = 0; i < n; ++i)
-                fout() << channel->popFront() << nl;
+                out->write(i);
+            out->close();
         }};
 
-        auto producer = Worker{[=]{
-            for (int i = 0; i < n; ++i)
-                channel->pushBack(i);
+        Worker consumer{[=]{
+            Channel<int> in = channel;
+            for (int x = 0; in->read(&x);)
+                fout() << x << nl;
         }};
     }
 };

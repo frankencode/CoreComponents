@@ -19,8 +19,6 @@ Ref<JobScheduler> JobScheduler::create(int concurrency)
 
 JobScheduler::JobScheduler(int concurrency):
     concurrency_{(concurrency > 0) ? concurrency : System::concurrency()},
-    requestChannel_{JobChannel::create()},
-    replyChannel_{JobChannel::create()},
     started_{false},
     status_{0},
     totalCount_{0},
@@ -58,7 +56,8 @@ bool JobScheduler::collect(Ref<Job> *finishedJob)
         return false;
     }
 
-    Ref<Job> job = replyChannel_->popFront();
+    Ref<Job> job;
+    replyChannel_->popFront(&job);
     *finishedJob = job;
     if (job->status() == 0) {
         if (job->derivatives_) {

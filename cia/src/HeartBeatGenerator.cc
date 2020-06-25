@@ -8,7 +8,6 @@
 
 #include <cc/can/HeartBeatGenerator>
 #include <cc/can/HeartBeat>
-#include <cc/Channel>
 #include <cc/System>
 
 namespace cc {
@@ -24,7 +23,6 @@ Ref<HeartBeatGenerator> HeartBeatGenerator::create(int nodeId, const CanMedia &m
 HeartBeatGenerator::HeartBeatGenerator(int nodeId, const CanMedia &media):
     nodeId_{nodeId},
     media_{media},
-    commandChannel_{CommandChannel::create()},
     beat_{Beat::create()}
 {}
 

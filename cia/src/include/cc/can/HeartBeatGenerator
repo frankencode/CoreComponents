@@ -10,9 +10,8 @@
 
 #include <cc/can/types>
 #include <cc/can/CanMedia>
+#include <cc/Channel>
 #include <cc/Worker>
-
-namespace cc { template<class> class Channel; }
 
 namespace cc {
 namespace can {
@@ -105,8 +104,7 @@ private:
     int nodeId_;
     CanMedia media_;
 
-    typedef Channel< Ref<Command> > CommandChannel;
-    Ref<CommandChannel> commandChannel_;
+    Channel< Ref<Command> > commandChannel_;
 
     Ref<Command> beat_;
     Worker worker_;

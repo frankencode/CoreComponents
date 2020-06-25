@@ -17,13 +17,6 @@ namespace cc {
 template<class, class>
 class Map;
 
-/** \class MapInstance cc/MapInstance
-  * \ingroup container_lowlevel
-  * \brief %MapInstance data container
-  * \tparam K key type
-  * \tparam T mapped type
-  * \see MultiMap, Set, KeyValue, KeySource, ValueSource
-  */
 template<class K, class T = K>
 class MapInstance: public Object
 {

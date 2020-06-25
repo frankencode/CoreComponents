@@ -8,11 +8,11 @@
 
 #pragma once
 
+#include <cc/ui/Timer>
 #include <cc/Thread>
 #include <cc/Channel>
 #include <cc/Semaphore>
 #include <cc/Map>
-#include <cc/ui/Timer>
 
 namespace cc {
 namespace ui {
@@ -83,8 +83,7 @@ protected:
 
     TimeMaster *master_;
 
-    typedef Channel< Ref<Timeout> > StartRequests;
-    Ref<StartRequests> startRequests_;
+    Channel< Ref<Timeout> > startRequests_;
 
     Map<TimeKey, Ref<Timeout> > timeouts_;
 

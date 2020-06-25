@@ -20,12 +20,12 @@
 namespace cc {
 namespace http {
 
-Ref<DeliveryWorker> DeliveryWorker::create(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections)
+Ref<DeliveryWorker> DeliveryWorker::create(const NodeConfig *nodeConfig, const PendingConnections &pendingConnections, const ClosedConnections &closedConnections)
 {
     return new DeliveryWorker{nodeConfig, pendingConnections, closedConnections};
 }
 
-DeliveryWorker::DeliveryWorker(const NodeConfig *nodeConfig, PendingConnections *pendingConnections, ClosedConnections *closedConnections):
+DeliveryWorker::DeliveryWorker(const NodeConfig *nodeConfig, const PendingConnections &pendingConnections, const ClosedConnections &closedConnections):
     nodeConfig_{nodeConfig},
     pendingConnections_{pendingConnections},
     closedConnections_{closedConnections}
@@ -33,7 +33,7 @@ DeliveryWorker::DeliveryWorker(const NodeConfig *nodeConfig, PendingConnections 
 
 DeliveryWorker::~DeliveryWorker()
 {
-    pendingConnections_->push(Ref<HttpServerConnection>{});
+    pendingConnections_->pushBack(Ref<HttpServerConnection>{});
     Thread::wait();
 }
 
@@ -154,7 +154,7 @@ void DeliveryWorker::closeConnection()
         Ref<ConnectionInfo> visit = client_->connectionInfo();
         visit->updateDepartureTime();
         client_ = nullptr;
-        closedConnections_->push(visit);
+        closedConnections_->write(visit);
     }
 }
 

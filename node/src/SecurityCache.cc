@@ -26,8 +26,7 @@ Ref<SecurityCache> SecurityCache::start(const NodeConfig *nodeConfig)
 
 SecurityCache::SecurityCache(const NodeConfig *nodeConfig):
     nodeConfig_{nodeConfig},
-    refreshInterval_{nodeConfig->security()->sessionResumptionKeyRefresh()},
-    shutdown_{Channel<bool>::create()}
+    refreshInterval_{nodeConfig->security()->sessionResumptionKeyRefresh()}
 {
     if (refreshInterval_ > 0) {
         int ret = gnutls_session_ticket_key_generate(&key_);
@@ -45,7 +44,7 @@ SecurityCache::SecurityCache(const NodeConfig *nodeConfig):
 SecurityCache::~SecurityCache()
 {
     if (refreshInterval_ > 0) {
-        shutdown_->push(true);
+        shutdown_->release();
         Thread::wait();
         deleteKey(&key_);
     }
@@ -78,7 +77,7 @@ void SecurityCache::prepareSessionResumption(gnutls_session_t session)
 
 void SecurityCache::run()
 {
-    for (double t = System::now() + refreshInterval_; !shutdown_->popBefore(t); t += refreshInterval_)
+    for (double t = System::now() + refreshInterval_; !shutdown_->acquireBefore(t); t += refreshInterval_)
     {
         Guard<Mutex> guard{mutex_};
         deleteKey(&key_);

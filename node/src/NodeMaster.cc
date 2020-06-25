@@ -14,7 +14,6 @@
 #include <cc/http/SecurityCache>
 #include <cc/http/exceptions>
 #include <cc/http/debug>
-#include <cc/Channel>
 #include <cc/Process>
 #include <cc/File>
 #include <cc/User>
@@ -36,8 +35,6 @@ Ref<NodeMaster> NodeMaster::create(const NodeConfig *config)
 
 NodeMaster::NodeMaster(const NodeConfig *config):
     config_{config},
-    startedChannel_{StartedChannel::create()},
-    signals_{Signals::create()},
     exitCode_{0}
 {
     if (config->daemon())
@@ -52,7 +49,9 @@ NodeMaster::NodeMaster(const NodeConfig *config):
 
 SocketAddress NodeMaster::waitStarted()
 {
-    return startedChannel_->pop();
+    SocketAddress address;
+    startedChannel_->popFront(&address);
+    return address;
 }
 
 void NodeMaster::sendSignal(Signal signal)
@@ -110,8 +109,8 @@ void NodeMaster::runNode()
     Ref<SecurityCache> securityCache = SecurityCache::start(config());
 
     Ref<ConnectionManager> connectionManager = ConnectionManager::create(config());
-    Ref<PendingConnections> pendingConnections = PendingConnections::create();
-    Ref<ClosedConnections> closedConnections = connectionManager->closedConnections();
+    PendingConnections pendingConnections;
+    ClosedConnections closedConnections = connectionManager->closedConnections;
 
     CCNODE_NOTICE() << "Creating worker pool (concurrency = " << config()->concurrency() << ")" << nl;
 
@@ -128,7 +127,7 @@ void NodeMaster::runNode()
     CCNODE_DEBUG() << "Accepting connections" << nl;
 
     for (StreamSocket *socket: listeningSockets)
-        startedChannel_->push(socket->address());
+        startedChannel_->pushBack(socket->address());
 
     while (true) {
         IoActivity activity = ioMonitor->wait(1000);
@@ -153,7 +152,8 @@ void NodeMaster::runNode()
         connectionManager->cycle();
 
         while (signals_->count() > 0) {
-            Signal signal = signals_->popFront();
+            Signal signal;
+            signals_->popFront(&signal);
             if (+signal == SIGINT || +signal == SIGTERM || +signal == SIGHUP) {
                 CCNODE_NOTICE() << "Received " << signal << ", shutting down" << nl;
                 workerPool = nullptr;

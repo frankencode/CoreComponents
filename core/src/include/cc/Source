@@ -20,7 +20,7 @@ template<class> class SourceIterator;
   * \tparam T item type
   */
 template<class T>
-class Source: public Object
+class Source: public virtual Object
 {
 public:
     /// Item type
@@ -52,14 +52,14 @@ template<class Source>
 class SourceIterator
 {
 public:
-    SourceIterator(Source *s = nullptr): s_(s) { getNext(); }
+    SourceIterator(Source *s = nullptr): s_{s} { getNext(); }
 
     inline const typename Source::Item &operator*() const { return x_; }
     inline SourceIterator &operator++() { getNext(); return *this; }
     inline bool operator!=(const SourceIterator &b) const { return s_ != b.s_; }
 
 private:
-    inline void getNext() { if (s_) { if (!s_->read(&x_)) s_ = 0; } }
+    inline void getNext() { if (s_) { if (!s_->read(&x_)) s_ = nullptr; } }
     Source *s_;
     typename Source::Item x_;
 };

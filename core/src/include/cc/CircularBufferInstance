@@ -16,12 +16,6 @@ namespace cc {
 template<class>
 class CircularBuffer;
 
-/** \class CircularBufferInstance cc/CircularBufferInstance
-  * \ingroup container_lowlevel
-  * \brief Circular buffer data container
-  * \tparam T item type
-  * \see QueueInstance, CircularChannel
-  */
 template<class T>
 class CircularBufferInstance: public Object
 {

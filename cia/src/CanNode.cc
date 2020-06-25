@@ -349,7 +349,7 @@ void CanNode::handleWriteRequest(const CanFrame &head)
 
 void CanNode::handleWriteSegmentRequest(const CanFrame &tail)
 {
-    if (!writeHead_) return;
+    if (writeHead_->canId() == 0) return;
 
     try {
         if (!WriteSegmentRequest{tail})
@@ -420,7 +420,8 @@ void CanNode::handleReadRequest(const CanFrame &head)
 
 void CanNode::handleReadSegmentRequest(const CanFrame &tail)
 {
-    if (!readHead_) return;
+    // if (!readHead_) return;
+    if (readHead_->canId() == 0) return;
 
     try {
         if (!ReadSegmentRequest{tail})

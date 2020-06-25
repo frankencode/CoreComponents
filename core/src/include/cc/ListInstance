@@ -18,14 +18,6 @@ namespace cc {
 template<class>
 class List;
 
-/** \class ListInstance cc/ListInstance
-  * \ingroup container_lowlevel
-  * \brief %ListInstance data container
-  * \tparam T item type
-  *
-  * The ListInstance class provides a very efficient data structure for small and medium-sized lists.
-  * For larger lists it provides good memory density while still scaling logarithmically for all basic operations.
-  */
 template<class T>
 class ListInstance: public Object
 {
