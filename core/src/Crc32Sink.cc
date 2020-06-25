@@ -46,18 +46,18 @@ static const uint32_t crcTable[] = {
     0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D
 };
 
-void Crc32Sink::feed(const void *buf, int bufFill)
+void Crc32Sink::Instance::feed(const void *buf, int bufFill)
 {
     for (int i = 0; i < bufFill; ++i)
         crc_ = crcTable[(crc_ ^ static_cast<const uint8_t *>(buf)[i]) & 0xFF] ^ (crc_ >> 8);
 }
 
-void Crc32Sink::write(const CharArray *data)
+void Crc32Sink::Instance::write(const CharArray *data)
 {
     feed(data->bytes(), data->count());
 }
 
-String Crc32Sink::finish()
+String Crc32Sink::Instance::finish()
 {
     String sum = String::create(Size);
     mutate(sum)->at(0) = (crc_ >> 24) & 0xFF;

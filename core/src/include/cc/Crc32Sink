@@ -17,45 +17,58 @@ namespace cc {
 /** \class Crc32Sink cc/Crc32Sink
   * \brief CRC-32 check sum generator
   */
-class Crc32Sink: public HashSink
+class Crc32Sink
 {
 public:
-    enum { Size = 4 };
+    static constexpr int Size = 4;
+    static constexpr uint32_t DefaultSeed = ~uint32_t(0);
 
-    static uint32_t defaultSeed() { return ~uint32_t(0); }
+    class Instance: public HashSink
+    {
+    public:
+        void feed(const void *buf, int bufFill);
+        uint32_t sum() const { return crc_; }
 
-    static Ref<Crc32Sink> open(uint32_t seed = defaultSeed()) { return new Crc32Sink{seed}; }
+        void write(const CharArray *data) override;
+        String finish() override;
 
-    Crc32Sink(uint32_t seed = defaultSeed()):
-        crc_{seed}
+    private:
+        friend class Crc32Sink;
+
+        Instance(uint32_t seed):
+            crc_{seed}
+        {}
+
+        uint32_t crc_;
+    };
+
+    Crc32Sink(uint32_t seed = DefaultSeed):
+        instance_{seed}
     {}
 
-    void feed(const void *buf, int bufFill);
-    inline uint32_t sum() const { return crc_; }
-
-    void write(const CharArray *data) override;
-    String finish() override;
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
 
 private:
-    uint32_t crc_;
+    Instance instance_;
 };
 
 inline uint32_t crc32(const void *buf, int bufSize) {
     Crc32Sink crc;
-    if (buf) crc.feed(buf, bufSize);
-    return crc.sum();
+    if (buf) crc->feed(buf, bufSize);
+    return crc->sum();
 }
 
 inline uint32_t crc32(const char *s) {
     Crc32Sink crc;
-    if (s) crc.feed(s, strlen(s));
-    return crc.sum();
+    if (s) crc->feed(s, strlen(s));
+    return crc->sum();
 }
 
 inline uint32_t crc32(const String &s) {
     Crc32Sink crc;
-    crc.feed(s->bytes(), s->count());
-    return crc.sum();
+    crc->feed(s->bytes(), s->count());
+    return crc->sum();
 }
 
 } // namespace cc

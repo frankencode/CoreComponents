@@ -16,45 +16,58 @@ namespace cc {
 /** \class Crc16Sink cc/Crc16Sink
   * \brief CRC-16 check sum generator, according to RFC 1171
   */
-class Crc16Sink: public HashSink
+class Crc16Sink
 {
 public:
-    enum { Size = 2 };
+    static constexpr int Size = 2;
+    static constexpr uint16_t DefaultSeed = ~uint16_t(0);
 
-    static uint16_t defaultSeed() { return ~uint16_t(0); }
+    class Instance: public HashSink
+    {
+    public:
+        void feed(const void *buf, int bufFill);
+        uint16_t sum() const { return crc_; }
 
-    static Ref<Crc16Sink> open(uint16_t seed = defaultSeed()) { return new Crc16Sink{seed}; }
+        void write(const CharArray *data) override;
+        String finish() override;
 
-    Crc16Sink(uint16_t seed = defaultSeed()):
-        crc_{seed}
+    private:
+        friend class Crc16Sink;
+
+        Instance(uint16_t seed):
+            crc_{seed}
+        {}
+
+        uint16_t crc_;
+    };
+
+    Crc16Sink(uint16_t seed = DefaultSeed):
+        instance_{seed}
     {}
 
-    void feed(const void *buf, int bufFill);
-    uint16_t sum() const { return crc_; }
-
-    void write(const CharArray *data) override;
-    String finish() override;
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
 
 private:
-    uint16_t crc_;
+    Instance instance_;
 };
 
 inline uint16_t crc16(const void *buf, int bufSize) {
     Crc16Sink crc;
-    if (buf) crc.feed(buf, bufSize);
-    return crc.sum();
+    if (buf) crc->feed(buf, bufSize);
+    return crc->sum();
 }
 
 inline uint16_t crc16(const char *s) {
     Crc16Sink crc;
-    if (s) crc.feed(s, strlen(s));
-    return crc.sum();
+    if (s) crc->feed(s, strlen(s));
+    return crc->sum();
 }
 
 inline uint16_t crc16(const String &s) {
     Crc16Sink crc;
-    crc.feed(s->bytes(), s->count());
-    return crc.sum();
+    crc->feed(s->bytes(), s->count());
+    return crc->sum();
 }
 
 } // namespace cc

@@ -19,12 +19,6 @@ namespace cc {
   */
 class CleanupGuard: public Object {
 public:
-    /** \brief Create a CleanupGuard
-      * \param path directory path
-      * \return new object instance
-      */
-    static Ref<CleanupGuard> post(const String &path);
-
     /** \brief Low-level constructor
       * \param path file path
       */

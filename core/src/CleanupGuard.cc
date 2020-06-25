@@ -11,11 +11,6 @@
 
 namespace cc {
 
-Ref<CleanupGuard> CleanupGuard::post(const String &path)
-{
-    return new CleanupGuard{path};
-}
-
 CleanupGuard::CleanupGuard(const String &path):
     path_{path}
 {}
