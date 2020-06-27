@@ -7,8 +7,9 @@
  */
 
 #include <cc/testing/TestSuite>
-#include <cc/debug>
 #include <cc/MountTable>
+#include <cc/TempFile>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::testing;
@@ -17,7 +18,8 @@ class ComplexParseTest: public TestCase
 {
     void run() override
     {
-        String text =
+        TempFile file;
+        file->write(
             "sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0\n"
             "proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0\n"
             "udev /dev devtmpfs rw,nosuid,relatime,size=8152032k,nr_inodes=2038008,mode=755 0 0\n"
@@ -67,9 +69,11 @@ class ComplexParseTest: public TestCase
             "/home/fme/.Private /var/lib/schroot/mount/debby-nine-9974f1eb-2874-463d-af58-7d0aad86acb3/home/fme ecryptfs rw,nosuid,nodev,relatime,ecryptfs_fnek_sig=e944ab8207926335,ecryptfs_sig=6d0849c33cc9c1a6,ecryptfs_cipher=aes,ecryptfs_key_bytes=16,ecryptfs_unlink_sigs 0 0\n"
             "/dev/sdb1 /var/lib/schroot/mount/debby-nine-9974f1eb-2874-463d-af58-7d0aad86acb3/tmp ext4 rw,relatime,errors=remount-ro,data=ordered 0 0\n"
             "gvfsd-fuse /run/user/1001/gvfs fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1001,group_id=1001 0 0\n"
-            "# /dev/sdc1 /media/fme/3D85-AC8E vfat rw,nosuid,nodev,relatime,uid=1001,gid=1001,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,showexec,utf8,flush,errors=remount-ro 0 0\n";
+            "# /dev/sdc1 /media/fme/3D85-AC8E vfat rw,nosuid,nodev,relatime,uid=1001,gid=1001,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,showexec,utf8,flush,errors=remount-ro 0 0\n"
+        );
+        file->close();
 
-        auto table = MountTable::parse(text);
+        MountTable table{file->path()};
         for (auto entry: table)
             fout() << entry->source() << " -> " << entry->target() << " (" << entry->type() << ": " << entry->options() << ")" << nl;
 

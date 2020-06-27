@@ -18,75 +18,86 @@ namespace cc {
 class MountTable: public Object
 {
 public:
-    /** Open a filesystem mount table
-      * \param path path to the filesystem table to read (defaults to the system's mtab, i.e. currently mounted filesystems)
-      * \return new object instance
-      */
-    static Ref<MountTable> open(const String &path = "");
-
-    /** Parse a mount table
-      * \param text mount table in fstab format
-      * \return new object instance
-      */
-    static Ref<MountTable> parse(const String &text);
-
     /** Filesystem table entry
       */
-    class Entry: public Object
+    class Entry
     {
-        friend class Object;
-
     public:
-        String source () const { return parts_->at(0); } ///< device (paritition device node, etc.)
-        String target () const { return parts_->at(1); } ///< path to the mounted root of the filesystem
-        String type   () const { return parts_->at(2); } ///< comma separated list of filesystem types
-        String options() const { return parts_->at(3); } ///< comma separated list of mount options (key or key=value format)
+        class Instance
+        {
+        public:
+            String source () const { return parts_->at(0); } ///< device (paritition device node, etc.)
+            String target () const { return parts_->at(1); } ///< path to the mounted root of the filesystem
+            String type   () const { return parts_->at(2); } ///< comma separated list of filesystem types
+            String options() const { return parts_->at(3); } ///< comma separated list of mount options (key or key=value format)
 
-        String toString() const { return parts_->join(" "); }
+            String toString() const { return parts_->join(" "); }
+
+        private:
+            friend class Entry;
+
+            Instance(const String &line);
+
+            StringList parts_;
+        };
+
+        Entry(const String &line): instance_{line} {}
+
+        const Instance *operator->() const { return &instance_; }
 
     private:
-        Entry(const String &line);
-
-        StringList parts_;
+        Instance instance_;
     };
 
-    typedef Ref<const Entry> Item;
-    typedef int Index;
+    class Instance {
+    public:
+        using Item = Entry; ///< item type
+        using Index = int; ///< index type
+        using ConstIterator = ConstArrayIterator<Instance>; ///< constant iterator type
+        using Iteator = ConstIterator; ///< constant iterator type
 
-    /// number of table entries
-    int count() const { return lines_->count(); }
+        /// number of table entries
+        int count() const { return lines_->count(); }
 
-    /// check if table index \a i is valid
-    bool has(int i) const { return lines_->has(i); }
+        /// check if table index \a i is valid
+        bool has(int i) const { return lines_->has(i); }
 
-    /// get table entry at index \a i
-    Ref<const Entry> at(int i) const { return Object::create<Entry>(lines_->at(i)); }
+        /// get table entry at index \a i
+        Entry at(int i) const { return lines_->at(i); }
 
-    /** \name Iterators
-      * @{
+        /// constant iterator pointing to the beginning (on first item)
+        ConstIterator begin() const { return ConstIterator{this, 0}; }
+
+        /// constant iterator pointing to the end (behind last item)
+        ConstIterator end() const { return ConstIterator{this, count()}; }
+
+    private:
+        friend class MountTable;
+
+        Instance(const String &text);
+        StringList lines_;
+    };
+
+    using Item = Instance::Item;
+    using Index = Instance::Index;
+    using ConstIterator = Instance::ConstIterator;
+
+    /** Open mount table
+      * \param path path to the filesystem table
       */
-    typedef ConstArrayIterator<MountTable> ConstIterator;
-    typedef ConstIterator Iterator;
+    MountTable(const String &path = "");
 
-    Iterator begin() { return Iterator{this, 0}; }
-    Iterator end() { return Iterator{this, count()}; }
-    ConstIterator begin() const { return ConstIterator{this, 0}; }
-    ConstIterator end() const { return ConstIterator{this, count()}; }
-    /** @}
-      */
-
-    /** \internal
-      * @{
-      */
-    typedef Iterator iterator;
-    typedef ConstIterator const_iterator;
-    /** @}
-      */
+    const Instance *operator->() const { return &instance_; }
 
 private:
-    MountTable(const String &text);
+    static String load(const String &path);
 
-    StringList lines_;
+    Instance instance_;
 };
+
+inline MountTable::ConstIterator begin(const MountTable &a) { return a->begin(); }
+inline MountTable::ConstIterator end(const MountTable &a) { return a->end(); }
+inline MountTable::ConstIterator begin(MountTable &a) { return a->begin(); }
+inline MountTable::ConstIterator end(MountTable &a) { return a->end(); }
 
 } // namespace cc

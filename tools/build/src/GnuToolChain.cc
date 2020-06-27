@@ -8,7 +8,6 @@
 
 #include <cc/stdio>
 #include <cc/File>
-#include <cc/UnlinkGuard>
 #include <cc/Process>
 #include <cc/Spawn>
 #include <cc/Dir>

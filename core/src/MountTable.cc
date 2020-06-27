@@ -11,7 +11,27 @@
 
 namespace cc {
 
-Ref<MountTable> MountTable::open(const String &path)
+MountTable::Entry::Instance::Instance(const String &line):
+    parts_{line->split(" ")}
+{
+    while (parts_->count() < 4) parts_->append(String{});
+}
+
+MountTable::Instance::Instance(const String &text)
+{
+    for (String line: text->split("\n")) {
+        mutate(line)->simplifyInsitu();
+        if (line->count() == 0) continue;
+        if (line->at(0) == '#') continue;
+        lines_->append(line);
+    }
+}
+
+MountTable::MountTable(const String &path):
+    instance_{load(path)}
+{}
+
+String MountTable::load(const String &path)
 {
     String text;
     {
@@ -30,28 +50,7 @@ Ref<MountTable> MountTable::open(const String &path)
 
         text = file->readAll();
     }
-    return new MountTable{text};
-}
-
-Ref<MountTable> MountTable::parse(const String &text)
-{
-    return new MountTable{text};
-}
-
-MountTable::MountTable(const String &text)
-{
-    for (String line: text->split("\n")) {
-        mutate(line)->simplifyInsitu();
-        if (line->count() == 0) continue;
-        if (line->at(0) == '#') continue;
-        lines_->append(line);
-    }
-}
-
-MountTable::Entry::Entry(const String &line):
-    parts_{line->split(" ")}
-{
-    while (parts_->count() < 4) parts_->append(String{});
+    return text;
 }
 
 } // namespace cc

@@ -16,14 +16,8 @@ namespace cc {
   * \ingroup file_system
   * \brief Automatically unlink a file at the end of the current scope
   */
-class UnlinkGuard: public Object {
+class UnlinkGuard {
 public:
-    /** \brief Create an unlink guard
-      * \param path file path
-      * \return new object instance
-      */
-    static Ref<UnlinkGuard> create(const String &path) { return new UnlinkGuard{path}; }
-
     /** \brief Low-level constructor
       * \param path file path
       */

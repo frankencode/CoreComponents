@@ -24,7 +24,7 @@ class MappedByteArray;
 /** \class File cc/File
   * \ingroup file_system
   * \brief Handle files
-  * \see FileStatus, UnlinkGuard, Dir
+  * \see FileStatus, TempFile, Dir, UnlinkGuard
   */
 class File
 {
@@ -70,7 +70,7 @@ public:
         /// Typecast helper
         SystemStream *stream() { return this; }
 
-    private:
+    protected:
         friend class File;
         friend class MappedByteArray;
 
@@ -214,6 +214,11 @@ public:
       * \param text new file'a contents
       */
     static void save(const String &path, const String &text);
+
+protected:
+    File(Instance *instance):
+        instance_{instance}
+    {}
 
 private:
     Ref<Instance> instance_;

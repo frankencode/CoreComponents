@@ -13,7 +13,7 @@
 #include <cc/stdio>
 #include <cc/Singleton>
 #include <cc/File>
-#include <cc/UnlinkGuard>
+#include <cc/TempFile>
 #include <cc/Arguments>
 #include <cc/testing/XmlTestReport>
 #include <cc/testing/TxtTestReport>
@@ -112,10 +112,8 @@ int TestSuite::run(int argc, char **argv)
         if (report_->captureOutput()) {
             outSaved = SystemStream::duplicate(stdOut());
             errSaved = SystemStream::duplicate(stdErr());
-            outFile = File{File::createTemp()};
-            errFile = File{File::createTemp()};
-            UnlinkGuard outGuard{outFile->path()};
-            UnlinkGuard errGuard{errFile->path()};
+            outFile = TempFile{};
+            errFile = TempFile{};
             outFile->duplicateTo(stdOut());
             errFile->duplicateTo(stdErr());
         }
