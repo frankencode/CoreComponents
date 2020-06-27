@@ -20,7 +20,7 @@ namespace cc {
   * The generated numbers lay in the range min() to max(). The series will repeat
   * after period() numbers. Any choosen seed value will yield the same period.
   *
-  * \see RandomSource
+  * \see RandomBytes
   */
 class Random
 {

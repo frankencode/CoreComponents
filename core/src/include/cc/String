@@ -122,7 +122,12 @@ public:
       * \param size number of characters (excluding the terminating '\0')
       * \param preset initial character value
       */
-    explicit Ref(int size, char preset = '\0');
+    explicit Ref(int size, char preset);
+
+    /** Construct an uninitialized non-zero-terminated String
+      * \param size number of characters
+      */
+    explicit Ref(int size);
 
     /// Construct a String by concatenating the items of list \a b
     Ref(const StringList &b);
@@ -1157,6 +1162,12 @@ inline Ref<const CharArray>::Ref(int size, char preset):
     auto s = CharArray::create(size);
     mutate(s)->fill(preset);
     set(s);
+}
+
+inline Ref<const CharArray>::Ref(int size):
+    a_{nullptr}
+{
+    set(CharArray::allocate(size));
 }
 
 inline Ref<const CharArray>::Ref(const StringList &b):

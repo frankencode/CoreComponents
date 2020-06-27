@@ -8,7 +8,7 @@
 
 #include <cc/testing/TestSuite>
 #include <cc/debug>
-#include <cc/RandomSource>
+#include <cc/RandomBytes>
 #include <cc/CaptureSink>
 #include <cc/ReplaySource>
 #include <cc/entropy/HuffmanCodec>
@@ -51,7 +51,7 @@ class NoiseTest: public TestCase
         const int byteMax = 0x3F;
         const int seed = 0;
 
-        String message = RandomSource::open(seed, dataSize, byteMin, byteMax)->readAll();
+        String message = RandomBytes{seed, dataSize, byteMin, byteMax}->readAll();
 
         String encodedMessage; {
             auto capture = CaptureSink::open();

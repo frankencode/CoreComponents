@@ -6,16 +6,11 @@
  *
  */
 
-#include <cc/RandomSource>
+#include <cc/RandomBytes>
 
 namespace cc {
 
-Ref<RandomSource> RandomSource::open(int seed, off_t eoi, int byteMin, int byteMax)
-{
-    return new RandomSource{seed, eoi, byteMin, byteMax};
-}
-
-RandomSource::RandomSource(int seed, off_t eoi, int byteMin, int byteMax):
+RandomBytes::Instance::Instance(int seed, off_t eoi, int byteMin, int byteMax):
     random_{seed},
     byteMin_{byteMin},
     byteMax_{byteMax},
@@ -23,7 +18,7 @@ RandomSource::RandomSource(int seed, off_t eoi, int byteMin, int byteMax):
     eoi_{eoi}
 {}
 
-int RandomSource::read(CharArray *data)
+int RandomBytes::Instance::read(CharArray *data)
 {
     if (n_ == eoi_) return 0;
     for (int i = 0; i < data->count(); ++i) {

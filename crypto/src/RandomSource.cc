@@ -22,17 +22,17 @@ Ref<RandomSource> RandomSource::open(const CharArray *salt)
 
 RandomSource::RandomSource(const CharArray *salt)
 {
-    String key = String::allocate(16);
-    String iv = String::allocate(AesCipher::BlockSize);
+    String key{16};
+    String iv{AesCipher::BlockSize};
 
     if (salt) {
         mutate(key)->write(salt);
         mutate(iv)->fill(0);
     }
     else {
-        Ref<Stream> random = File{"/dev/urandom"}->stream();
-        random->readSpan(mutate(key));
-        random->readSpan(mutate(iv));
+        File file{"/dev/urandom"};
+        file->readSpan(mutate(key));
+        file->readSpan(mutate(iv));
     }
 
     source_ =

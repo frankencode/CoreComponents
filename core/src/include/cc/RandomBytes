@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) 2007-2017 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Random>
+#include <cc/Stream>
+
+namespace cc {
+
+/** \class RandomBytes cc/RandomBytes
+  * \ingroup misc
+  * \brief %Random data source
+  * \see Random
+  */
+class RandomBytes
+{
+public:
+    class Instance: public Stream
+    {
+    public:
+        virtual int read(CharArray *data) override;
+
+    private:
+        friend class RandomBytes;
+
+        Instance(int seed, off_t eoi, int byteMin, int byteMax);
+
+        Random random_;
+        int byteMin_;
+        int byteMax_;
+        off_t n_;
+        off_t eoi_;
+    };
+
+    RandomBytes(int seed = -1, off_t eoi = -1, int byteMin = 0x00, int byteMax = 0xFF):
+        instance_{new Instance{seed, eoi, byteMin, byteMax}}
+    {}
+
+    Instance *operator->() { return instance_; }
+
+private:
+    Ref<Instance> instance_;
+};
+
+} // namespace cc
