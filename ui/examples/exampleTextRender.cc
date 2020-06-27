@@ -12,7 +12,7 @@ class MainView: public View
     MainView()
     {
         size = Size{640, 480};
-        paper = Color::white;
+        paper = Color::White;
 
         String pangram = "the quick brown fox jumps over the lazy dog";
         pangram = pangram->toUpper() + " / " + pangram;
@@ -40,7 +40,7 @@ class MainView: public View
     void paint() override
     {
         Painter p{this};
-        p->setSource(Color::black);
+        p->setSource(Color::Black);
         int i = 0;
         for (const GlyphRun *glyphRun: glyphRuns_) {
             p->showGlyphRun(

@@ -8,8 +8,9 @@
 
 #include <cmath>
 #include <cc/testing/TestSuite>
-#include <cc/stdio>
 #include <cc/Color>
+#include <cc/ColorNames>
+#include <cc/DEBUG>
 
 using namespace cc;
 using namespace cc::testing;

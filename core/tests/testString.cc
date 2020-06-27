@@ -11,6 +11,7 @@
 #include <cc/debug>
 #include <cc/String>
 #include <cc/Unicode>
+#include <cc/Casefree>
 
 using namespace cc;
 using namespace cc::testing;
@@ -132,6 +133,17 @@ class SyntaxSugar: public TestCase
     }
 };
 
+class CasefreeComparisms: public TestCase
+{
+    void run() override
+    {
+        CC_VERIFY(Casefree<String>{"Hello"} == Casefree<String>{"hello"});
+        CC_VERIFY(Casefree<String>{"abra"} < Casefree<String>{"Kadabra"});
+        CC_VERIFY(Casefree<String>{"abra"} < Casefree<String>{"ABRAKADABRA"});
+        CC_VERIFY(Casefree<String>{"abra"} != Casefree<String>{"abrakadabra"});
+    }
+};
+
 int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(ArgumentPassing);
@@ -140,6 +152,7 @@ int main(int argc, char **argv)
     CC_TESTSUITE_ADD(UnicodeEscapes);
     CC_TESTSUITE_ADD(FindSplitReplace);
     CC_TESTSUITE_ADD(SyntaxSugar);
+    CC_TESTSUITE_ADD(CasefreeComparisms);
 
     return TestSuite::instance()->run(argc, argv);
 }

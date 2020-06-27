@@ -22,15 +22,14 @@ class Color
 {
 public:
     /** Convenience color values
-      * \todo should be upper-case
       * @{
       */
-    static const Color transparent;
-    static const Color black;
-    static const Color white;
-    static const Color red;
-    static const Color green;
-    static const Color blue;
+    static const Color Transparent;
+    static const Color Black;
+    static const Color White;
+    static const Color Red;
+    static const Color Green;
+    static const Color Blue;
     /** @}
       */
 
@@ -167,7 +166,7 @@ public:
           */
         Color lighter(int percent) const {
             Color c = Color::fromWord(w_);
-            c->mixIn(Color::white, percent);
+            c->mixIn(Color::White, percent);
             return c;
         }
 
@@ -175,7 +174,7 @@ public:
           */
         Color darker(int percent) const {
             Color c = Color::fromWord(w_);
-            c->mixIn(Color::black, percent);
+            c->mixIn(Color::Black, percent);
             return c;
         }
 

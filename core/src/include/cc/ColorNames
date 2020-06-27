@@ -9,31 +9,35 @@
 #pragma once
 
 #include <cc/Color>
+#include <cc/String>
+#include <cc/Map>
 
 namespace cc {
 
-template<class Char, class Value> class PrefixTree;
-
-template<class SubClass> class Singleton;
+template<class> class Singleton;
 
 /** \class ColorNames cc/ColorNames
   * \ingroup misc
   * \brief Lookup table for SVG standard Color names
   */
-class ColorNames: public Object
+class ColorNames
 {
 public:
-    static const ColorNames *instance();
+    class Instance: public Object {
+    public:
+        bool lookup(const String &name, Color *value) const;
 
-    bool lookup(const char *name, Color *value) const;
+    private:
+        friend class Singleton<Instance>;
 
-private:
-    friend class Singleton<ColorNames>;
+        Instance();
 
-    ColorNames();
+        Map<Casefree<String>, Color> colorByName_;
+    };
 
-    typedef PrefixTree<char, Color> ColorByName;
-    Ref<ColorByName> colorByName_;
+    ColorNames() = default;
+
+    const Instance *operator->() const;
 };
 
 } // namespace cc

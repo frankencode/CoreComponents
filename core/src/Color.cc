@@ -15,12 +15,12 @@
 
 namespace cc {
 
-const Color Color::transparent { 0x00, 0x00, 0x00, 0x00 };
-const Color Color::black       { 0x00, 0x00, 0x00 };
-const Color Color::white       { 0xFF, 0xFF, 0xFF };
-const Color Color::red         { 0xFF, 0x00, 0x00 };
-const Color Color::green       { 0x00, 0xFF, 0x00 };
-const Color Color::blue        { 0x00, 0x00, 0xFF };
+const Color Color::Transparent { 0x00, 0x00, 0x00, 0x00 };
+const Color Color::Black       { 0x00, 0x00, 0x00 };
+const Color Color::White       { 0xFF, 0xFF, 0xFF };
+const Color Color::Red         { 0xFF, 0x00, 0x00 };
+const Color Color::Green       { 0x00, 0xFF, 0x00 };
+const Color Color::Blue        { 0x00, 0x00, 0xFF };
 
 Color::Color(const Variant &v)
 {
@@ -111,7 +111,7 @@ Color Color::parse(const char *s, bool *ok)
         return Color{};
     }
     Color c;
-    if (ColorNames::instance()->lookup(s, &c)) {
+    if (ColorNames{}->lookup(s, &c)) {
         *ok = true;
         return c;
     }

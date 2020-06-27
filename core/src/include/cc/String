@@ -12,6 +12,7 @@
 #include <cc/strings>
 #include <cc/ArrayIterator>
 #include <cc/List>
+#include <cc/Casefree>
 
 #ifdef QT_CORE_LIB
 #include <QString>
@@ -71,6 +72,9 @@ template<>
 class Ref<const CharArray>
 {
 public:
+    using Index = int; ///< index type
+    using Item = char; ///< item type
+
     /// \copydoc CharArray::allocate()
     static String allocate(int size);
 

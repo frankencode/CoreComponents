@@ -168,6 +168,17 @@ inline bool isSpace(Char ch) {
     return (ch == ' ') || (ch == '\t');
 }
 
+template<class String>
+String commonPrefix(const String &a, const String &b)
+{
+    using Index = typename String::Index;
+    Index i = 0, n = a->count() < b->count() ? a->count() : b->count();
+    for(; i < n; ++i) {
+        if (a->at(i) != b->at(i)) break;
+    }
+    return a->copy(0, i);
+}
+
 template<class T>
 class Identity {
 public:

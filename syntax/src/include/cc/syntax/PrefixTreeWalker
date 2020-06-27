@@ -9,6 +9,7 @@
 #pragma once
 
 namespace cc {
+namespace syntax {
 
 template<class Char, class Value>
 class PrefixTree;
@@ -76,4 +77,4 @@ private:
     Node *node_;
 };
 
-} // namespace cc
+}} // namespace cc::syntax

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/PrefixTree>
+#include <cc/syntax/PrefixTree>
 #include <cc/Map>
 #include <cc/Set>
 #include <cc/Version>
@@ -35,6 +35,7 @@ namespace ccbuild {
 
 using namespace cc;
 using namespace cc::meta;
+using namespace cc::syntax;
 
 class BuildPlan;
 using BuildPlanList = List< Ref<BuildPlan> >;

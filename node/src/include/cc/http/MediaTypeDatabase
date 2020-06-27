@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/String>
-#include <cc/PrefixTree>
+#include <cc/Map>
 
 namespace cc { template<class> class Singleton; }
 
@@ -27,8 +27,8 @@ private:
     friend class Singleton<MediaTypeDatabase>;
     MediaTypeDatabase();
 
-    Ref< PrefixTree<char, String> > mediaTypeByPathSuffix_;
-    Ref< PrefixTree<char, String> > mediaTypeByContentPrefix_;
+    Map<Casefree<String>, String> mediaTypeByPathSuffix_;
+    Map<Casefree<String>, String> mediaTypeByContentPrefix_;
 };
 
 }} // namespace cc::http

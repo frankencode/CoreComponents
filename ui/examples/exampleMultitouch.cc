@@ -21,7 +21,7 @@ protected:
     TouchPoint(View *parent):
         View{parent}
     {
-        paper = Color::transparent;
+        paper = Color::Transparent;
         size = Size{100, 100};
     }
 

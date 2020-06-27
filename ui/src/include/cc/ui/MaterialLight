@@ -29,15 +29,15 @@ public:
     Color statusBarColor       () const override { return Color{ Material::Grey300 }; }
     Color appBarColor          () const override { return Color{ Material::Grey100 }; }
     Color windowColor          () const override { return Color{ Material::Grey50 }; }
-    Color popupColor           () const override { return Color::white; }
+    Color popupColor           () const override { return Color::White; }
 
-    Color titleTextColor       () const override { return Color::white; }
+    Color titleTextColor       () const override { return Color::White; }
     Color focusTextColor       () const override { return primaryDarkColor()(87); }
-    Color primaryTextColor     () const override { return Color::black(87); }
-    Color secondaryTextColor   () const override { return Color::black(54); }
-    Color inactiveTextColor    () const override { return Color::black(38); }
+    Color primaryTextColor     () const override { return Color::Black(87); }
+    Color secondaryTextColor   () const override { return Color::Black(54); }
+    Color inactiveTextColor    () const override { return Color::Black(38); }
 
-    Color inputLineColor       () const override { return Color::black(42); }
+    Color inputLineColor       () const override { return Color::Black(42); }
     Color hoverInputLineColor  () const override { return primaryTextColor(); }
     Color pressedInputLineColor() const override { return primaryDarkColor(); }
     Color focusInputLineColor  () const override { return primaryDarkColor(); }

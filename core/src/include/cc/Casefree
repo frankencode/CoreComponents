@@ -1,0 +1,82 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/types>
+
+namespace cc {
+
+/** \class Casefree cc/Casefree
+  * \brief Convenience class for case insensitive string comparisms
+  * \ingroup strings
+  * \see String
+  */
+template<class String>
+class Casefree: public String
+{
+public:
+    using Index = typename String::Index;
+    using Item = typename String::Item;
+
+    Casefree() = default;
+
+    Casefree(const String &s):
+        String{s}
+    {}
+
+    Casefree(String &&s):
+        String{s}
+    {}
+
+    Casefree(const Item *s):
+        String{s}
+    {}
+
+    bool operator==(const Casefree &b) const
+    {
+        Index n = (*this)->count();
+        if (n != b->count()) return false;
+        for (Index i = 0; i < n; ++i) {
+            if (toLower((*this)->at(i)) != toLower(b->at(i)))
+                return false;
+        }
+        return true;
+    }
+
+    bool operator<(const Casefree &b) const
+    {
+        Index n = (*this)->count();
+        Index m = b->count();
+        Index l = n < m ? m : n;
+        for (Index i = 0; i < l; ++i) {
+            Item x = (i < n) ? toLower((*this)->at(i)) : Item{0};
+            Item y = (i < m) ? toLower(b->at(i)) :  Item{0};
+            if (x < y) return true;
+            else if (y < x) return false;
+        }
+        return false;
+    }
+
+    bool operator>(const Casefree &b) const
+    {
+        return b < *this;
+    }
+
+    bool operator<=(const Casefree &b) const
+    {
+        return !(b < *this);
+    }
+
+    bool operator>=(const Casefree &b) const
+    {
+        return !(*this < b);
+    }
+};
+
+} // namespace cc

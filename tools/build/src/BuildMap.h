@@ -8,12 +8,10 @@
 
 #pragma once
 
-#include <cc/PrefixTree>
+#include <cc/Map>
+#include <cc/String>
 
-namespace cc {
-template<class, class> class PrefixTree;
-template<class> class Singleton;
-}
+namespace cc { template<class> class Singleton; }
 
 namespace ccbuild {
 
@@ -39,12 +37,9 @@ private:
     friend class Singleton<BuildMap>;
     BuildMap();
 
-    typedef PrefixTree<char, Ref<BuildPlan> > BuildPlanByPath;
-    Ref<BuildPlanByPath> buildPlanByPath_;
-
-    typedef PrefixTree<char, String> RecipePathByTargetName;
-    Ref<RecipePathByTargetName> libraries_;
-    Ref<RecipePathByTargetName> applications_;
+    Map<String, Ref<BuildPlan> > buildPlanByPath_;
+    Map<String, String> libraryNameByPath_;
+    Map<String, String> applicationNameByPath_;
 };
 
 } // namespace ccbuild

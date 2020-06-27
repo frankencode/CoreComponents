@@ -7,7 +7,6 @@
  */
 
 #include <cc/ColorNames>
-#include <cc/PrefixTree>
 #include <cc/Singleton>
 
 namespace cc {
@@ -169,13 +168,7 @@ PaletteEntry svgPalette[] = {
 
 const int svgPaletteSize = sizeof(svgPalette) / sizeof(svgPalette[0]);
 
-const ColorNames *ColorNames::instance()
-{
-    return Singleton<ColorNames>::instance();
-}
-
-ColorNames::ColorNames():
-    colorByName_{ColorByName::create()}
+ColorNames::Instance::Instance()
 {
     for (int i = 0; i < svgPaletteSize; ++i) {
         colorByName_->insert(
@@ -189,9 +182,14 @@ ColorNames::ColorNames():
     }
 }
 
-bool ColorNames::lookup(const char *name, Color *value) const
+bool ColorNames::Instance::lookup(const String &name, Color *value) const
 {
-    return colorByName_->lookup(name, value, /*caseSensitive =*/false);
+    return colorByName_->lookup(name, value);
+}
+
+const ColorNames::Instance *ColorNames::operator->() const
+{
+    return Singleton<Instance>::instance();
 }
 
 } // namespace cc

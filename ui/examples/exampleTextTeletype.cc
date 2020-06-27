@@ -59,7 +59,7 @@ class MainView: public View
         p->rectangle(Point{0, 0}, Size{margins_, size()[1]});
         p->rectangle(Point{size()[0]-margins_, 0}, Size{margins_, size()[1]});
         p->fill();
-        p->setSource(Color::black);
+        p->setSource(Color::Black);
         p->showGlyphRun(
             Point{margins_, margins_ + fontSize_}, wrappedGlyphRun_,
             [=](int i) {

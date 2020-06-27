@@ -13,9 +13,10 @@
 #include <cc/Tree>
 #include <cc/ArrayInstance>
 #include <cc/String>
-#include <cc/PrefixTreeWalker>
+#include <cc/syntax/PrefixTreeWalker>
 
 namespace cc {
+namespace syntax {
 
 template<class Char, class Value>
 class PrefixTree;
@@ -332,4 +333,4 @@ protected:
     Value value_;
 };
 
-} // namespace cc
+}} // namespace cc::syntax
