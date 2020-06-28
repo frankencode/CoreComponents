@@ -10,6 +10,7 @@
 #include <cc/System>
 #include <cc/strings>
 #include <cc/exceptions>
+#include <cc/strings>
 #include <sys/mman.h>
 #include <time.h>
 #include <math.h>
@@ -115,6 +116,29 @@ void Thread::unblockSignals(SignalSet *set)
 {
     Singleton<SignalSet>::instance();
     int ret = pthread_sigmask(SIG_UNBLOCK, set->rawSet(), 0/*oldset*/);
+    if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
+}
+
+int Thread::getMinPriority(SchedulingPolicy policy)
+{
+    int ret = sched_get_priority_min(static_cast<int>(policy));
+    if (ret == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+    return ret;
+}
+
+int Thread::getMaxPriority(SchedulingPolicy policy)
+{
+    int ret = sched_get_priority_max(static_cast<int>(policy));
+    if (ret == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+    return ret;
+}
+
+void Thread::setSchedulingPolicy(SchedulingPolicy policy, int priority)
+{
+    struct sched_param param;
+    memclr(&param, sizeof(param));
+    param.sched_priority = priority;
+    int ret = sched_setscheduler(0, static_cast<int>(policy), &param);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 

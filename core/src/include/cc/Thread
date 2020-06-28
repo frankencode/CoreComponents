@@ -9,11 +9,20 @@
 #pragma once
 
 #include <pthread.h>
+#include <sched.h>
 #include <signal.h>
 #include <cc/SignalSet>
 #include <cc/String>
 
 namespace cc {
+
+/// Thread scheduling policy
+enum class SchedulingPolicy
+{
+    Other      = SCHED_OTHER, ///< best guess scheduling
+    Fifo       = SCHED_FIFO,  ///< priority based scheduling
+    RoundRobin = SCHED_RR     ///< priority based fixed time-slice scheduling
+};
 
 /** \class Thread cc/Thread
   * \ingroup concurrency
@@ -62,6 +71,12 @@ public:
     /// POSIX thread ID
     pthread_t id() const { return tid_; }
 
+    /// Get minimum priority level supported by the sytem under giving scheduling policy
+    static int getMinPriority(SchedulingPolicy policy);
+
+    /// Get maximum priority level supported by the sytem under giving scheduling policy
+    static int getMaxPriority(SchedulingPolicy policy);
+
 protected:
     /// Low-level initializer
     Thread() {}
@@ -70,6 +85,9 @@ protected:
       * \param stackSize size of the program stack to allocate in bytes
       */
     void setStackSize(int stackSize) { stackSize_ = stackSize; }
+
+    /// Set scheduling policy of the calling thread
+    void setSchedulingPolicy(SchedulingPolicy policy, int priority = 0);
 
     /// First method which gets invoked once thread execution is started.
     virtual void run();
