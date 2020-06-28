@@ -9,9 +9,9 @@
 #pragma once
 
 #include <cc/Crc32Sink>
-#include <cc/PrefixTree>
 #include <cc/exceptions>
 #include <cc/Format>
+#include <cc/syntax/PrefixTree>
 #include <cc/syntax/SyntaxNode>
 #include <cc/syntax/SyntaxDebugFactory>
 
