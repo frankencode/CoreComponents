@@ -85,9 +85,9 @@ class AesExamples: public TestCase
     bool testCipher(String k, String p, String c)
     {
         fout("Testing AES-%%...") << k->count() * 8 << nl;
-        Ref<AesCipher> codec = AesCipher::create(k);
-        String c2(codec->blockSize());
-        String p2(codec->blockSize());
+        AesCipher codec{k};
+        String c2{codec->blockSize()};
+        String p2{codec->blockSize()};
         codec->encode(p, mutate(c2));
         printState("plaintext", p);
         printState("enciphered text", c2);

@@ -19,24 +19,39 @@ namespace crypto {
   *
   * The PseudoPad runs a given block cipher in counter mode to generate a random byte sequence.
   */
-class PseudoPad: public Stream
+class PseudoPad
 {
 public:
-    /** Open a new pseudo random number byte source
-      * \return new object instance
-      */
-    static Ref<PseudoPad> open(BlockCipher *cipher);
+    class Instance: public Stream
+    {
+    public:
+        int read(CharArray *data) override;
 
-    int read(CharArray *data) override;
+    private:
+        friend class PseudoPad;
+
+        static void increment(CharArray *bigWord);
+
+        Instance(BlockCipher *ciper);
+
+        Ref<BlockCipher> cipher_;
+        String p_;
+        String c_;
+        int i_;
+    };
+
+    /** Open a new pseudo random number byte source
+      */
+    PseudoPad(BlockCipher *cipher):
+        instance_{new Instance{cipher}}
+    {}
+
+    Instance *operator->() { return instance_; }
+
+    operator Instance *() { return instance_; }
 
 private:
-    PseudoPad(BlockCipher *cipher);
-    static void increment(CharArray *bigWord);
-
-    Ref<BlockCipher> cipher_;
-    String p_;
-    String c_;
-    int i_;
+    Ref<Instance> instance_;
 };
 
 }} // namespace cc::crypto

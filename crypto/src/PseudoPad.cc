@@ -11,12 +11,7 @@
 namespace cc {
 namespace crypto {
 
-Ref<PseudoPad> PseudoPad::open(BlockCipher *cipher)
-{
-    return new PseudoPad{cipher};
-}
-
-PseudoPad::PseudoPad(BlockCipher *cipher):
+PseudoPad::Instance::Instance(BlockCipher *cipher):
     cipher_{cipher},
     p_{String::allocate(cipher->blockSize())},
     c_{String::allocate(cipher->blockSize())},
@@ -25,7 +20,7 @@ PseudoPad::PseudoPad(BlockCipher *cipher):
     mutate(p_)->fill(0);
 }
 
-void PseudoPad::increment(CharArray *bigWord)
+void PseudoPad::Instance::increment(CharArray *bigWord)
 {
     for (int i = 0, u = 1; i < bigWord->count() && u > 0; ++i) {
         int d = bigWord->byteAt(i);
@@ -36,7 +31,7 @@ void PseudoPad::increment(CharArray *bigWord)
     }
 }
 
-int PseudoPad::read(CharArray *data)
+int PseudoPad::Instance::read(CharArray *data)
 {
     for (int j = 0; j < data->count(); ++j) {
         if (i_ == c_->count()) {

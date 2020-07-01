@@ -16,27 +16,41 @@ namespace crypto {
 /** \class AesCipher cc/crypto/AesCipher
   * \brief Rijndael Block Cipher according to the AES (FIPS-197)
   */
-class AesCipher: public BlockCipher
+class AesCipher
 {
 public:
-    enum {
-        BlockSize = 16 ///< block size of the cipher in bytes
+    /// block size of the cipher in bytes
+    static constexpr int BlockSize = 16;
+
+    class Instance: public BlockCipher
+    {
+    public:
+        void encode(const CharArray *p, CharArray *c) override;
+        void decode(const CharArray *c, CharArray *p) override;
+
+    private:
+        friend class AesCipher;
+
+        Instance(const CharArray *key);
+
+        const int Nk_, Nr_;
+        String s_;
+        String w_;
     };
 
     /** Create a new AES block cipher
       * \param key 128 or 256 bit key (16 or 32 bytes)
-      * \return new object instance
       */
-    static Ref<AesCipher> create(const CharArray *key) { return new AesCipher{key}; }
+    AesCipher(const CharArray *key):
+        instance_{new Instance{key}}
+    {}
 
-    void encode(const CharArray *p, CharArray *c) override;
-    void decode(const CharArray *c, CharArray *p) override;
+    Instance *operator->() { return instance_; }
+
+    operator Instance *() { return instance_; }
 
 private:
-    AesCipher(const CharArray *key);
-    const int Nk_, Nr_;
-    String s_;
-    String w_;
+    Ref<Instance> instance_;
 };
 
 }} // namespace cc::crypto

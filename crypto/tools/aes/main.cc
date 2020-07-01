@@ -60,9 +60,9 @@ int main(int argc, char **argv)
             {
                 String contentKey = random->readSpan(16);
                 String encipheredContentKey = String::allocate(contentKey->count());
-                AesCipher::create(password)->encode(contentKey, mutate(encipheredContentKey));
+                AesCipher{password}->encode(contentKey, mutate(encipheredContentKey));
 
-                Ref<BlockCipher> cipher = BlockCascade::create(AesCipher::create(contentKey));
+                BlockCascade cipher{AesCipher{contentKey}};
 
                 String fileName = path->fileName();
                 String outPath = fileName + ".aes";
@@ -119,9 +119,9 @@ int main(int argc, char **argv)
 
                 String contentKey = String::allocate(16);
                 String encipheredContentKey = source->readSpan(16);
-                AesCipher::create(password)->decode(encipheredContentKey, mutate(contentKey));
+                AesCipher{password}->decode(encipheredContentKey, mutate(contentKey));
 
-                Ref<BlockCipher> cipher = BlockCascade::create(AesCipher::create(contentKey));
+                BlockCascade cipher{AesCipher{contentKey}};
                 Ref<CipherSource> cipherSource = CipherSource::open(cipher, source);
                 String origName;
                 uint64_t origSize = 0;

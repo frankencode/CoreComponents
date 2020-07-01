@@ -274,7 +274,7 @@ String keyExpansion(const CharArray *key, int Nr)
 
 using namespace aes;
 
-AesCipher::AesCipher(const CharArray *key):
+AesCipher::Instance::Instance(const CharArray *key):
     BlockCipher{BlockSize},
     Nk_{key->count() / 4},
     Nr_{numRounds(Nk_)},
@@ -284,7 +284,7 @@ AesCipher::AesCipher(const CharArray *key):
     CC_ASSERT(key && (key->count() == 16 || key->count() == 24 || key->count() == 32));
 }
 
-void AesCipher::encode(const CharArray *p, CharArray *c)
+void AesCipher::Instance::encode(const CharArray *p, CharArray *c)
 {
     CC_ASSERT(p && p->count() == Ns);
     CC_ASSERT(c && c->count() == Ns);
@@ -307,7 +307,7 @@ void AesCipher::encode(const CharArray *p, CharArray *c)
     c->write(s_);
 }
 
-void AesCipher::decode(const CharArray *c, CharArray *p)
+void AesCipher::Instance::decode(const CharArray *c, CharArray *p)
 {
     CC_ASSERT(c && c->count() == Ns);
     CC_ASSERT(p && p->count() == Ns);

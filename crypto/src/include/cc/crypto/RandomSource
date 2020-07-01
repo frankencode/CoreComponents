@@ -19,15 +19,16 @@ namespace crypto {
 class RandomSource: public Stream
 {
 public:
-    /** Open a new random number source
-      * \return new object instance
-      */
-    static Ref<RandomSource> open(const CharArray *salt = nullptr);
+    using Instance = Stream;
 
-    int read(CharArray *data) override;
+    /** Open a new random number source
+      */
+    RandomSource(const CharArray *salt = nullptr);
+
+    Instance *operator->() { return source_; }
+    operator Stream *() { return source_; }
 
 private:
-    RandomSource(const CharArray *salt);
     Ref<Stream> source_;
 };
 

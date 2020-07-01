@@ -15,11 +15,6 @@
 namespace cc {
 namespace crypto {
 
-Ref<RandomSource> RandomSource::open(const CharArray *salt)
-{
-    return new RandomSource{salt};
-}
-
 RandomSource::RandomSource(const CharArray *salt)
 {
     String key = String::allocate(16);
@@ -36,17 +31,12 @@ RandomSource::RandomSource(const CharArray *salt)
     }
 
     source_ =
-        PseudoPad::open(
-            BlockCascade::create(
-                AesCipher::create(key),
+        PseudoPad{
+            BlockCascade{
+                AesCipher{key},
                 iv
-            )
-        );
-}
-
-int RandomSource::read(CharArray *data)
-{
-    return source_->read(data);
+            }
+        };
 }
 
 }} // namespace cc::crypto

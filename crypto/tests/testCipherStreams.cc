@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
-#include <cc/math>
-#include <cc/Random>
-#include <cc/MemoryStream>
-#include <cc/NullStream>
 #include <cc/crypto/CipherSink>
 #include <cc/crypto/CipherSource>
 #include <cc/crypto/AesCipher>
+#include <cc/testing/TestSuite>
+#include <cc/MemoryStream>
+#include <cc/NullStream>
+#include <cc/Random>
+#include <cc/stdio>
+#include <cc/math>
 
 using namespace cc;
 using namespace cc::testing;
@@ -47,7 +47,7 @@ class TestBlockBoundary: public TestSmth
     void run()
     {
         String key = "\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c";
-        Ref<BlockCipher> cipher = AesCipher::create(key);
+        AesCipher cipher{key};
         String text = "0123456789,0123456789,0123456789";
         for (int n = 1; n <= text->count(); ++n) {
             String text1 = text->copy(0, n);
@@ -63,7 +63,7 @@ class TestBufferBoundary: public TestSmth
     void run()
     {
         String key = "\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\x15\x88\x09\xcf\x4f\x3c";
-        Ref<BlockCipher> cipher = AesCipher::create(key);
+        AesCipher cipher{key};
         String text = String::create(0x1001);
         Random random;
         for (int i = 0; i < text->count(); ++i) mutate(text)->byteAt(i) = random->get() & 0xFF;
