@@ -18,9 +18,9 @@ GlyphVisual::GlyphVisual(uchar_t ch, const Font &initialFont):
     font{initialFont},
     s_{String::create(4)}
 {
-    auto sink = Utf8Sink::open(mutate(s_));
+    Utf8Sink sink{mutate(s_)};
     sink->write(ch);
-    mutate(s_)->truncate(sink->byteSink()->currentOffset());
+    mutate(s_)->truncate(sink->bytesWritten());
 
     glyphRun_->bind([=]{ return GlyphRun::typeset(s_, font()); });
 

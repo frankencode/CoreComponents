@@ -20,22 +20,37 @@ namespace cc {
 class CaptureSink: public Stream
 {
 public:
-    /** Open a new CaptureSink
-      * \return new object instance
+    class Instance: public Stream::Instance
+    {
+    public:
+        void write(const CharArray *data) override
+        {
+            parts_->append(data);
+        }
+
+        /** Collect all data written to this sink
+          * \return captured output
+          */
+        String collect() const
+        {
+            return parts_->join();
+        }
+
+    private:
+        friend class CaptureSink;
+
+        Instance() = default;
+
+        StringList parts_;
+    };
+
+    /** Create a new CaptureSink
       */
-    static Ref<CaptureSink> open();
+    CaptureSink():
+        Stream{new Instance}
+    {}
 
-    void write(const CharArray *data) override;
-
-    /** Collect all data written to this sink
-      * \return Captured output
-      */
-    String collect() const;
-
-private:
-    CaptureSink();
-
-    StringList parts_;
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 } // namespace cc

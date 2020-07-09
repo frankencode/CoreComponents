@@ -16,11 +16,18 @@ namespace cc {
 class PseudoTerminal: public IoChannel
 {
 public:
-    static Ref<PseudoTerminal> create();
+    class Instance: public IoChannel::Instance
+    {
+    private:
+        friend class PseudoTerminal;
 
-private:
-    PseudoTerminal();
-    void onStart() override;
+        Instance();
+        void onStart() override;
+    };
+
+    PseudoTerminal():
+        IoChannel{new Instance}
+    {}
 };
 
 } // namespace cc

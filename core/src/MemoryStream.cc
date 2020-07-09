@@ -10,17 +10,12 @@
 
 namespace cc {
 
-Ref<MemoryStream> MemoryStream::open(CharArray *buffer)
-{
-    return new MemoryStream(buffer);
-}
-
-MemoryStream::MemoryStream(CharArray *buffer):
-    buffer_(buffer),
-    i_(0)
+MemoryStream::Instance::Instance(CharArray *buffer):
+    buffer_{buffer},
+    i_{0}
 {}
 
-int MemoryStream::read(CharArray *data)
+int MemoryStream::Instance::read(CharArray *data)
 {
     if (i_ == buffer_->count()) return 0;
     const int n =
@@ -30,7 +25,7 @@ int MemoryStream::read(CharArray *data)
     return n;
 }
 
-void MemoryStream::write(const CharArray *data)
+void MemoryStream::Instance::write(const CharArray *data)
 {
     if (i_ == buffer_->count()) return;
     const int n =

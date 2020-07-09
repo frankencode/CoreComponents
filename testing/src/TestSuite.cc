@@ -107,11 +107,11 @@ int TestSuite::run(int argc, char **argv)
 
         report_->beginTestCase(testCase);
 
-        Ref<SystemStream> outSaved, errSaved;
+        SystemStream outSaved, errSaved;
         File outFile, errFile;
         if (report_->captureOutput()) {
-            outSaved = SystemStream::duplicate(stdOut());
-            errSaved = SystemStream::duplicate(stdErr());
+            outSaved->duplicate(stdOut());
+            errSaved->duplicate(stdErr());
             outFile = TempFile{};
             errFile = TempFile{};
             outFile->duplicateTo(stdOut());

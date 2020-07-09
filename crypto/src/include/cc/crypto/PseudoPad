@@ -19,10 +19,10 @@ namespace crypto {
   *
   * The PseudoPad runs a given block cipher in counter mode to generate a random byte sequence.
   */
-class PseudoPad
+class PseudoPad: public Stream
 {
 public:
-    class Instance: public Stream
+    class Instance: public Stream::Instance
     {
     public:
         int read(CharArray *data) override;
@@ -43,15 +43,12 @@ public:
     /** Open a new pseudo random number byte source
       */
     PseudoPad(BlockCipher *cipher):
-        instance_{new Instance{cipher}}
+        Stream{new Instance{cipher}}
     {}
 
-    Instance *operator->() { return instance_; }
+    Instance *operator->() const { return my<Instance>(); }
 
-    operator Instance *() { return instance_; }
-
-private:
-    Ref<Instance> instance_;
+    operator Instance *() { return my<Instance>(); }
 };
 
 }} // namespace cc::crypto

@@ -361,8 +361,8 @@ NetworkInterfaceList NetworkInterface::queryAllIoctl(int family)
     int fd = ::socket(AF_INET, SOCK_DGRAM, 0);
     if (fd == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 
-    Ref<LineSource> source = LineSource::open(File{"/proc/net/dev"});
-    for (String line; source->read(&line);) {
+    for (const String &line: LineSource{File{"/proc/net/dev"}})
+    {
         if (line->contains(':')) {
             Ref<NetworkInterface> interface = NetworkInterface::create();
             list->append(interface);

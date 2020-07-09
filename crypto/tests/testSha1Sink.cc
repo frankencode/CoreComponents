@@ -36,7 +36,7 @@ public:
         };
 
         for (int i = 0; i < tests->count(); ++i) {
-            Ref<Sha1Sink> hashSink = Sha1Sink::open();
+            Sha1Sink hashSink;
             for (int j = 0; j < repeatCount[i]; ++j) hashSink->write(tests->at(i));
             String requiredSum = results->at(i)->replace(" ", "")->toLower();
             String sum = hashSink->finish()->toHex();

@@ -17,13 +17,15 @@ using namespace cc::net;
 
 String whoisQuery(const SocketAddress &serverAddress, const String &clientRequest, const String &queryKey = "")
 {
-    auto server = StreamSocket::connect(serverAddress);
+    StreamSocket server;
+    server->connect(serverAddress);
+    // \todo, need a server->waitForReady() ?
     server->write(clientRequest + "\r\n");
 
     String result;
 
     if (queryKey != "") {
-        for (const String &line: LineSource::open(server)) {
+        for (const String &line: LineSource{server}) {
             if (line->count() > 0 && !line->startsWith('%')) {
                 auto parts = line->split(":");
                 if (parts->count() == 2) {

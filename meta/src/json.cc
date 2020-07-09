@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/CaptureSink>
-#include <cc/syntax/exceptions>
+#include <cc/meta/json>
 #include <cc/meta/YasonSyntax>
 #include <cc/meta/JsonWriter>
-#include <cc/meta/json>
+#include <cc/syntax/exceptions>
+#include <cc/CaptureSink>
 
 namespace cc {
 namespace meta {
@@ -23,7 +23,7 @@ Variant parse(const CharArray *text)
 
 String stringify(Variant value)
 {
-    Ref<CaptureSink> sink = CaptureSink::open();
+    CaptureSink sink;
     JsonWriter::create(sink)->write(value);
     return sink->collect();
 }

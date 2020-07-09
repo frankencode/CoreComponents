@@ -13,16 +13,16 @@
 namespace cc {
 namespace ui {
 
-Ref<PdfSurface> PdfSurface::open(Stream *stream, Size sizePt)
+Ref<PdfSurface> PdfSurface::open(const Stream &stream, Size sizePt)
 {
     return new PdfSurface{stream, sizePt};
 }
 
-PdfSurface::PdfSurface(Stream *stream, Size sizePt):
+PdfSurface::PdfSurface(const Stream &stream, Size sizePt):
     stream_{stream},
-    cairoSurface_(
+    cairoSurface_{
         cairo_pdf_surface_create_for_stream(cairoWrite, this, sizePt[0], sizePt[1])
-    )
+    }
 {}
 
 PdfSurface::~PdfSurface()

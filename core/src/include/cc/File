@@ -26,10 +26,10 @@ class MappedByteArray;
   * \brief Handle files
   * \see FileStatus, TempFile, Dir, UnlinkGuard
   */
-class File
+class File: public SystemStream
 {
 public:
-    class Instance: public SystemStream
+    class Instance: public SystemStream::Instance
     {
     public:
         /// %File path this file was opened from
@@ -56,7 +56,7 @@ public:
         /// Current file offset
         off_t fileOffset() { return seek(0, Seek::Begin); }
 
-        virtual off_t transferSpanTo(off_t count = -1, Stream *sink = nullptr, CharArray *buf = nullptr) override;
+        virtual off_t transferSpanTo(off_t count = -1, const Stream &sink = Stream{}, CharArray *buf = nullptr) override;
 
         /// %Map the entire file into memory and return the file mapping as String
         String map() const;
@@ -67,14 +67,11 @@ public:
         /// Same as sync() but synchronize the file's contents, only
         void dataSync();
 
-        /// Typecast helper
-        SystemStream *stream() { return this; }
-
     protected:
         friend class File;
         friend class MappedByteArray;
 
-        Instance();
+        Instance() = default;
         Instance(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default);
 
         static int translateOpenFlags(int openMode);
@@ -82,8 +79,12 @@ public:
         static void unmap(CharArray *s);
 
         String path_;
-        FileOpen openFlags_;
+        FileOpen openFlags_ { FileOpen::None };
     };
+
+    /** Create invalid file
+      */
+    File() = default;
 
     /** Open file
       * \param path file path
@@ -91,19 +92,10 @@ public:
       * \param mode file permissions for new file (optional)
       */
     File(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default):
-        instance_{new Instance{path, flags, mode}}
+        SystemStream{new Instance{path, flags, mode}}
     {}
 
-    /** Create invalid file
-      */
-    File():
-        instance_{new Instance}
-    {}
-
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return instance_; }
-
-    operator SystemStream *() { return instance_; }
+    Instance *operator->() const { return my<Instance>(); }
 
     /** Test file access permissions
       * \param path file path to test
@@ -217,11 +209,8 @@ public:
 
 protected:
     File(Instance *instance):
-        instance_{instance}
+        SystemStream{instance}
     {}
-
-private:
-    Ref<Instance> instance_;
 };
 
 } // namespace cc

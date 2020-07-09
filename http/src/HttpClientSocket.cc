@@ -6,29 +6,17 @@
  *
  */
 
-#include <gnutls/gnutls.h>
-#include <cc/assert>
-#include <cc/System>
-#include <cc/IoMonitor>
 #include <cc/http/HttpClientSocket>
+#include <cc/IoMonitor>
+#include <cc/System>
+#include <cc/assert>
+#include <gnutls/gnutls.h>
 
 namespace cc {
 namespace http {
 
-Ref<HttpClientSocket> HttpClientSocket::create(const SocketAddress &serverAddress, const String &serverName, const HttpClientSecurity *security)
-{
-    return new HttpClientSocket{serverAddress, serverName, security};
-}
-
-Ref<HttpClientSocket> HttpClientSocket::connect(const SocketAddress &serverAddress, const String &serverName, const HttpClientSecurity *security)
-{
-    auto socket = HttpClientSocket::create(serverAddress, serverName, security);
-    socket->connect();
-    return socket;
-}
-
-HttpClientSocket::HttpClientSocket(const SocketAddress &serverAddress, const String &serverName, const HttpClientSecurity *security):
-    HttpSocket{serverAddress, (serverAddress->port() % 80 == 0 || !security) ? 0 : Secure},
+HttpClientSocket::Instance::Instance(const SocketAddress &serverAddress, const String &serverName, const HttpClientSecurity *security):
+    HttpSocket::Instance{serverAddress, (serverAddress->port() % 80 == 0 || !security) ? 0 : Secure},
     serverName_{serverName},
     security_{security},
     readyRead_{0}
@@ -36,28 +24,28 @@ HttpClientSocket::HttpClientSocket(const SocketAddress &serverAddress, const Str
     if ((mode_ & Secure) && !security_)
         security_ = HttpClientSecurity::createDefault();
 
-    StreamSocket::connect(&controlMaster_, &controlSlave_);
+    controlMaster_->connect(controlSlave_);
 }
 
-bool HttpClientSocket::isSecure() const
+bool HttpClientSocket::Instance::isSecure() const
 {
     return mode_ & Secure;
 }
 
-void HttpClientSocket::connect()
+void HttpClientSocket::Instance::connect()
 {
-    StreamSocket::connect();
+    StreamSocket::Instance::connect(address());
     initSession();
-    StreamSocket::waitForReady();
+    StreamSocket::Instance::waitForReady();
     handshake();
 }
 
-void HttpClientSocket::shutdown()
+void HttpClientSocket::Instance::shutdown()
 {
-    controlMaster_ = nullptr;
+    controlMaster_->close();
 }
 
-void HttpClientSocket::initSession()
+void HttpClientSocket::Instance::initSession()
 {
     if (!(mode_ & Secure)) return;
 
@@ -67,7 +55,7 @@ void HttpClientSocket::initSession()
     initTransport();
 }
 
-void HttpClientSocket::handshake()
+void HttpClientSocket::Instance::handshake()
 {
     if (!(mode_ & Secure)) return;
 
@@ -83,12 +71,12 @@ void HttpClientSocket::handshake()
     mode_ |= Open;
 }
 
-bool HttpClientSocket::waitInput()
+bool HttpClientSocket::Instance::waitInput()
 {
     return waitFor(IoReady::Read);
 }
 
-void HttpClientSocket::ioException(Exception &ex) const
+void HttpClientSocket::Instance::ioException(Exception &ex) const
 {
     // FIXME: need a thread local singleton to propagate this exception
 }

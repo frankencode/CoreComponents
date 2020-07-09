@@ -162,17 +162,17 @@ int Process::Instance::wait()
     return exitStatus_ = WEXITSTATUS(ret);
 }
 
-SystemStream *Process::Instance::input() const
+SystemStream Process::Instance::input() const
 {
     return standardStreams_[0];
 }
 
-SystemStream *Process::Instance::output() const
+SystemStream Process::Instance::output() const
 {
     return standardStreams_[1];
 }
 
-SystemStream *Process::Instance::error() const
+SystemStream Process::Instance::error() const
 {
     return standardStreams_[2];
 }

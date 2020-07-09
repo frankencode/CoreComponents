@@ -33,7 +33,7 @@ Ref<HttpResponse> HttpClient::put(const Uri &uri, const String &payload)
     );
 }
 
-Ref<HttpResponse> HttpClient::put(const Uri &uri, Stream *source)
+Ref<HttpResponse> HttpClient::put(const Uri &uri, const Stream &source)
 {
     return HttpClient::connect(uri)->query("PUT", uri->requestPath(),
         [=](HttpGenerator *request) { request->transmit(source); }
@@ -47,7 +47,7 @@ Ref<HttpResponse> HttpClient::post(const Uri &uri, const String &payload)
     );
 }
 
-Ref<HttpResponse> HttpClient::post(const Uri &uri, Stream *source)
+Ref<HttpResponse> HttpClient::post(const Uri &uri, const Stream &source)
 {
     return HttpClient::connect(uri)->query("POST", uri->requestPath(),
         [=](HttpGenerator *request) { request->transmit(source); }
@@ -82,7 +82,7 @@ HttpClient::HttpClient(const Uri &uri, const HttpClientSecurity *security):
 void HttpClient::connect()
 {
     connection_ = HttpClientConnection::open(
-        HttpClientSocket::connect(address_, host_, security_)
+        HttpClientSocket{address_, host_, security_}
     );
 }
 

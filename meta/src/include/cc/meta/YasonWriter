@@ -25,7 +25,7 @@ public:
       * \param indent whitespace to use for each indentation step
       * \return new object instance
       */
-    static Ref<YasonWriter> create(Stream *sink = nullptr, const String &indent = "  ");
+    static Ref<YasonWriter> create(const Stream &sink = Stream{}, const String &indent = "  ");
 
     /** Convert a meta value into YSON notation
       * \param value meta-value
@@ -33,7 +33,7 @@ public:
     void write(Variant value);
 
 private:
-    YasonWriter(Stream *sink, const String &indent);
+    YasonWriter(const Stream &sink, const String &indent);
     void writeValue(Variant value, int depth);
     void writeList(Variant value, int depth);
     bool isIdentifier(const String &name) const;

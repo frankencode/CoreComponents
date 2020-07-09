@@ -29,7 +29,7 @@ public:
     virtual void decode(const CharArray *c, CharArray *p) = 0;
 
 protected:
-    BlockCipher(int blockSize): blockSize_(blockSize) {}
+    BlockCipher(int blockSize): blockSize_{blockSize} {}
 
 private:
     int blockSize_;

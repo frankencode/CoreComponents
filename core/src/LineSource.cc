@@ -10,15 +10,7 @@
 
 namespace cc {
 
-Ref<LineSource> LineSource::open(const String &text) {
-    return new LineSource{nullptr, mutate(text)};
-}
-
-Ref<LineSource> LineSource::open(Stream *stream, CharArray *buffer) {
-    return new LineSource{stream, buffer};
-}
-
-LineSource::LineSource(Stream *stream, CharArray *buffer):
+LineSource::Instance::Instance(const Stream &stream, CharArray *buffer):
     stream_{stream},
     buffer_{buffer},
     eoi_{false},
@@ -28,7 +20,7 @@ LineSource::LineSource(Stream *stream, CharArray *buffer):
     if (!buffer_) buffer_ = String::allocate(0x1000);
 }
 
-bool LineSource::read(String *line)
+bool LineSource::Instance::read(String *line)
 {
     if (eoi_) {
         *line = String{};
@@ -72,20 +64,20 @@ bool LineSource::read(String *line)
     return false;
 }
 
-String LineSource::readLine()
+String LineSource::Instance::readLine()
 {
     String s;
     read(&s);
     return s;
 }
 
-String LineSource::pendingData() const
+String LineSource::Instance::pendingData() const
 {
     if (eoi_) return String{};
     return buffer_->copy(i_, n_);
 }
 
-int LineSource::findEol(const CharArray *buffer, int n, int i)
+int LineSource::Instance::findEol(const CharArray *buffer, int n, int i)
 {
     for (; i < n; ++i) {
         char ch = buffer->at(i);
@@ -95,7 +87,7 @@ int LineSource::findEol(const CharArray *buffer, int n, int i)
     return i;
 }
 
-int LineSource::skipEol(const CharArray *buffer, int n, int i)
+int LineSource::Instance::skipEol(const CharArray *buffer, int n, int i)
 {
     if (i < n) if (buffer->at(i) == '\r') ++i;
     if (i < n) if (buffer->at(i) == '\n') ++i;

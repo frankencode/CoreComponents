@@ -17,13 +17,13 @@ namespace cc {
 /** \class Crc32Sink cc/Crc32Sink
   * \brief CRC-32 check sum generator
   */
-class Crc32Sink
+class Crc32Sink: public HashSink
 {
 public:
     static constexpr int Size = 4;
     static constexpr uint32_t DefaultSeed = ~uint32_t(0);
 
-    class Instance: public HashSink
+    class Instance: public HashSink::Instance
     {
     public:
         void feed(const void *buf, int bufFill);
@@ -43,14 +43,10 @@ public:
     };
 
     Crc32Sink(uint32_t seed = DefaultSeed):
-        instance_{seed}
+        HashSink{new Instance{seed}}
     {}
 
-    Instance *operator->() { return &instance_; }
-    const Instance *operator->() const { return &instance_; }
-
-private:
-    Instance instance_;
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 inline uint32_t crc32(const void *buf, int bufSize) {

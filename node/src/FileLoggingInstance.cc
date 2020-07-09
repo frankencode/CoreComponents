@@ -22,7 +22,7 @@ FileLoggingInstance::FileLoggingInstance(const MetaObject *config):
     LoggingInstance{config}
 {
     String path = config->value("path");
-    if (path == "") sink_ = NullStream::instance();
+    if (path == "") sink_ = NullStream{};
     else sink_ = File{path, FileOpen::WriteOnly|FileOpen::Append|FileOpen::Create};
 }
 

@@ -17,7 +17,7 @@ namespace cc {
   *
   * Example usage:
   * ~~~~~~~~~~~~~
-  * File::open("test.dat")->transferTo(HexDump::open(stdOut()));
+  * File{"test.dat"}->transferTo(HexDump{stdOut()});
   * ~~~~~~~~~~~~~
   *
   * \see StreamTap
@@ -25,25 +25,32 @@ namespace cc {
 class HexDump: public Stream
 {
 public:
+    class Instance: public Stream::Instance
+    {
+    public:
+        void write(const CharArray *data) override;
+
+    private:
+        friend class HexDump;
+
+        Instance(const Stream &sink);
+        ~Instance();
+
+        void writeByte(uint8_t ch);
+        void flush();
+
+        Stream sink_;
+        off_t offset_;
+        String buffer_;
+        int i_;
+    };
+
     /** Open a new hexdump sink
       * \param sink where the hexdump is written to (defaults to stdOut())
-      * \return new object instance
       */
-    static Ref<HexDump> open(Stream *sink = nullptr) { return new HexDump{sink}; }
-
-    void write(const CharArray *data) override;
-
-private:
-    HexDump(Stream *sink);
-    ~HexDump();
-
-    void writeByte(uint8_t ch);
-    void flush();
-
-    Ref<Stream> sink_;
-    off_t offset_;
-    String buffer_;
-    int i_;
+    HexDump(const Stream &sink = Stream{}):
+        Stream{new Instance{sink}}
+    {}
 };
 
 /** Convert binary data into a hexdump

@@ -21,7 +21,7 @@ class SimpleMd5MacTest: public TestCase
 {
     void run()
     {
-        auto md5Sink = Md5Sink::open();
+        Md5Sink md5Sink;
 
         {
             String key = String::allocate(16);;
@@ -30,7 +30,7 @@ class SimpleMd5MacTest: public TestCase
 
             String text = "Hi There";
 
-            auto macSink = HashMacSink::open(md5Sink, key);
+            HashMacSink macSink{md5Sink, key};
             macSink->write(text);
             String mac = macSink->finish()->toHex();
 
@@ -42,7 +42,7 @@ class SimpleMd5MacTest: public TestCase
             String key = "Jefe";
             String text = "what do ya want for nothing?";
 
-            auto macSink = HashMacSink::open(md5Sink, key);
+            HashMacSink macSink{md5Sink, key};
             macSink->write(text);
             String mac = macSink->finish()->toHex();
 
@@ -57,7 +57,7 @@ class SimpleSha1MacTest: public TestCase
 {
     void run()
     {
-        auto sha1Sink = Sha1Sink::open();
+        Sha1Sink sha1Sink;
 
         {
             String key = String::allocate(20);;
@@ -66,7 +66,7 @@ class SimpleSha1MacTest: public TestCase
 
             String text = "Hi There";
 
-            auto macSink = HashMacSink::open(sha1Sink, key);
+            HashMacSink macSink{sha1Sink, key};
             macSink->write(text);
             String mac = macSink->finish()->toHex();
 
@@ -78,7 +78,7 @@ class SimpleSha1MacTest: public TestCase
             String key = "Jefe";
             String text = "what do ya want for nothing?";
 
-            auto macSink = HashMacSink::open(sha1Sink, key);
+            HashMacSink macSink{sha1Sink, key};
             macSink->write(text);
             String mac = macSink->finish()->toHex();
 

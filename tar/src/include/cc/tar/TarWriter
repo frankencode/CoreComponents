@@ -18,17 +18,17 @@ namespace tar {
 class TarWriter: public ArchiveWriter
 {
 public:
-    static Ref<TarWriter> open(Stream *sink);
+    static Ref<TarWriter> open(const Stream &sink);
 
     void writeFile(const String &path) override;
 
 private:
-    TarWriter(Stream *sink);
+    TarWriter(const Stream &sink);
     ~TarWriter();
     void writeFile(const String &path, const FileStatus &status);
     void writePadding(off_t unpaddedSize);
 
-    Ref<Stream> sink_;
+    Stream sink_;
 
     class FileId {
     public:

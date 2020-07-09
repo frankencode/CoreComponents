@@ -11,12 +11,12 @@
 namespace cc {
 namespace http {
 
-Ref<CgiServerConnection> CgiServerConnection::open(Stream *stream)
+Ref<CgiServerConnection> CgiServerConnection::open(const Stream &stream)
 {
     return new CgiServerConnection{stream};
 }
 
-CgiServerConnection::CgiServerConnection(Stream *stream):
+CgiServerConnection::CgiServerConnection(const Stream &stream):
     HttpConnection{stream}
 {}
 

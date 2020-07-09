@@ -12,7 +12,7 @@
 
 namespace cc {
 
-HexDump::HexDump(Stream *sink):
+HexDump::Instance::Instance(const Stream &sink):
     sink_{sink},
     offset_{0},
     buffer_{String::allocate(16)},
@@ -21,27 +21,27 @@ HexDump::HexDump(Stream *sink):
     if (!sink_) sink_ = stdOut();
 }
 
-HexDump::~HexDump()
+HexDump::Instance::~Instance()
 {
     flush();
 }
 
-void HexDump::write(const CharArray *data)
+void HexDump::Instance::write(const CharArray *data)
 {
     for (int i = 0; i < data->count(); ++i)
         writeByte(data->byteAt(i));
 }
 
-void HexDump::writeByte(uint8_t ch)
+void HexDump::Instance::writeByte(uint8_t ch)
 {
     if (i_ == buffer_->count()) flush();
     mutate(buffer_)->byteAt(i_) = ch;
     ++i_;
 }
 
-void HexDump::flush()
+void HexDump::Instance::flush()
 {
-    Format f(sink_);
+    Format f{sink_};
     f << hex(offset_, 8) << "  ";
     for (int j = 0; j < buffer_->count(); ++j) {
         if (j < i_) {
@@ -59,8 +59,8 @@ void HexDump::flush()
 
 String hexDump(const CharArray *data)
 {
-    Ref<CaptureSink> capture = CaptureSink::open();
-    HexDump::open(capture)->write(data);
+    CaptureSink capture;
+    HexDump{capture}->write(data);
     return capture->collect();
 }
 

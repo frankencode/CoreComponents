@@ -15,7 +15,7 @@
 namespace cc {
 namespace crypto {
 
-RandomSource::RandomSource(const CharArray *salt)
+BlockCascade RandomSource::createCipher(const CharArray *salt)
 {
     String key = String::allocate(16);
     String iv = String::allocate(AesCipher::BlockSize);
@@ -30,12 +30,10 @@ RandomSource::RandomSource(const CharArray *salt)
         file->readSpan(mutate(iv));
     }
 
-    source_ =
-        PseudoPad{
-            BlockCascade{
-                AesCipher{key},
-                iv
-            }
+    return
+        BlockCascade{
+            AesCipher{key},
+            iv
         };
 }
 

@@ -19,15 +19,24 @@ class LoggingInstance;
 class StatusLogStream: public Stream
 {
 public:
-    static Ref<StatusLogStream> open(LoggingInstance *sink, LoggingLevel level);
+    class Instance: public Stream::Instance
+    {
+    public:
+        void write(const CharArray *data) override;
+        void write(const StringList &parts) override;
 
-    void write(const CharArray *data) override;
-    void write(const StringList &parts) override;
+    private:
+        friend class StatusLogStream;
 
-private:
-    StatusLogStream(LoggingInstance *sink, LoggingLevel level);
-    Ref<LoggingInstance> sink_;
-    LoggingLevel level_;
+        Instance(LoggingInstance *sink, LoggingLevel level);
+
+        Ref<LoggingInstance> sink_;
+        LoggingLevel level_;
+    };
+
+    StatusLogStream(LoggingInstance *sink, LoggingLevel level):
+        Stream{new Instance{sink, level}}
+    {}
 };
 
 }} // namespace cc::http

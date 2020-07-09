@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/Stream>
 #include <cc/ui/Surface>
+#include <cc/Stream>
 #include <cairo/cairo.h>
 
 namespace cc {
@@ -18,17 +18,17 @@ namespace ui {
 class SvgSurface: public Surface
 {
 public:
-    static Ref<SvgSurface> open(Stream *stream, Size sizePt);
+    static Ref<SvgSurface> open(const Stream &stream, Size sizePt);
 
 private:
     static cairo_status_t cairoWrite(void *closure, const unsigned char *data, unsigned int length);
 
-    SvgSurface(Stream *stream, Size sizePt);
+    SvgSurface(const Stream &stream, Size sizePt);
     ~SvgSurface();
 
     cairo_surface_t *cairoSurface() const override;
 
-    Ref<Stream> stream_;
+    Stream stream_;
     cairo_surface_t *cairoSurface_;
 };
 

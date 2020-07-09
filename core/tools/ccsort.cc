@@ -15,7 +15,7 @@ using namespace cc;
 int main()
 {
     StringList list;
-    Ref<LineSource> source = LineSource::open(stdIn());
+    LineSource source{stdIn()};
     for (String item; source->read(&item);)
         list->append(item);
 

@@ -19,7 +19,7 @@ typedef CircularChannel<String> TransferBufferQueue;
 class TransferInputWorker: public Thread
 {
 public:
-    static Ref<TransferInputWorker> start(TransferBufferQueue *freeQueue, TransferBufferQueue *writeQueue, Stream *source)
+    static Ref<TransferInputWorker> start(TransferBufferQueue *freeQueue, TransferBufferQueue *writeQueue, const Stream &source)
     {
         return (new TransferInputWorker{freeQueue, writeQueue, source})->Thread::start();
     }
@@ -32,7 +32,7 @@ public:
     void stop() { freeQueue_->pushFront(String{}); }
 
 private:
-    TransferInputWorker(TransferBufferQueue *freeQueue, TransferBufferQueue *writeQueue, Stream *source):
+    TransferInputWorker(TransferBufferQueue *freeQueue, TransferBufferQueue *writeQueue, const Stream &source):
         freeQueue_{freeQueue},
         writeQueue_{writeQueue},
         source_{source},
@@ -48,7 +48,7 @@ private:
                 int n = source_->read(mutate(buffer));
                 if (n == 0) break;
                 {
-                    Guard<Mutex> guard(mutex_);
+                    Guard<Mutex> guard{mutex_};
                     totalRead_ += n;
                 }
                 writeQueue_->pushBack(buffer->select(0, n));
@@ -66,7 +66,7 @@ private:
 
     Ref<TransferBufferQueue> freeQueue_;
     Ref<TransferBufferQueue> writeQueue_;
-    Ref<Stream> source_;
+    Stream source_;
     Mutex mutex_;
     off_t totalRead_;
     bool ok_;
@@ -76,7 +76,7 @@ private:
 class TransferOutputWorker: public Thread
 {
 public:
-    static Ref<TransferOutputWorker> start(TransferBufferQueue *writeQueue, TransferBufferQueue *freeQueue, Stream *sink)
+    static Ref<TransferOutputWorker> start(TransferBufferQueue *writeQueue, TransferBufferQueue *freeQueue, const Stream &sink)
     {
         return (new TransferOutputWorker{writeQueue, freeQueue, sink})->Thread::start();
     }
@@ -89,7 +89,7 @@ public:
     void stop() { writeQueue_->pushFront(String{}); }
 
 private:
-    TransferOutputWorker(TransferBufferQueue *writeQueue, TransferBufferQueue *freeQueue, Stream *sink):
+    TransferOutputWorker(TransferBufferQueue *writeQueue, TransferBufferQueue *freeQueue, const Stream &sink):
         writeQueue_{writeQueue},
         freeQueue_{freeQueue},
         sink_{sink},
@@ -121,19 +121,19 @@ private:
 
     Ref<TransferBufferQueue> writeQueue_;
     Ref<TransferBufferQueue> freeQueue_;
-    Ref<Stream> sink_;
+    Stream sink_;
     Mutex mutex_;
     off_t totalWritten_;
     bool ok_;
     String errorMessage_;
 };
 
-Ref<Transfer> Transfer::start(Stream *source, Stream *sink, int bufferSize, int bufferCount)
+Ref<Transfer> Transfer::start(const Stream &source, const Stream &sink, int bufferSize, int bufferCount)
 {
     return new Transfer{source, sink, bufferSize, bufferCount};
 }
 
-Transfer::Transfer(Stream *source, Stream *sink, int bufferSize, int bufferCount)
+Transfer::Transfer(const Stream &source, const Stream &sink, int bufferSize, int bufferCount)
 {
     Ref<TransferBufferQueue> freeQueue = TransferBufferQueue::create(bufferCount);
     Ref<TransferBufferQueue> writeQueue = TransferBufferQueue::create(bufferCount);

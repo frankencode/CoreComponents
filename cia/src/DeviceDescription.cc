@@ -383,7 +383,7 @@ String DeviceDescription::Comments::text() const
 void DeviceDescription::Comments::setText(const String &text)
 {
     lines_ = StringList{};
-    for (const String &line: LineSource::open(text))
+    for (const String &line: LineSource{text})
         lines_->append(line);
 }
 

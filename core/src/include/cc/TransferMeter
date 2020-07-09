@@ -18,23 +18,33 @@ namespace cc {
 class TransferMeter: public Stream
 {
 public:
-    static Ref<TransferMeter> open(Stream *stream);
+    class Instance: public Stream::Instance
+    {
+    public:
+        off_t totalRead() const { return totalRead_; }
+        off_t totalWritten() const { return totalWritten_; }
 
-    Stream *stream() const { return stream_; }
-    off_t totalRead() const { return totalRead_; }
-    off_t totalWritten() const { return totalWritten_; }
+        int read(CharArray *buf) override;
+        void write(const CharArray *buf) override;
+        void write(const StringList &parts) override;
 
-    virtual int read(CharArray *buf) override;
-    virtual void write(const CharArray *buf) override;
-    virtual void write(const StringList &parts) override;
+    private:
+        friend class TransferMeter;
 
-protected:
-    TransferMeter(Stream *stream);
+        Instance(const Stream &stream);
 
-private:
-    Ref<Stream> stream_;
-    off_t totalRead_;
-    off_t totalWritten_;
+        Stream stream_;
+        off_t totalRead_;
+        off_t totalWritten_;
+    };
+
+    TransferMeter() = default;
+
+    TransferMeter(const Stream &stream):
+        Stream{new Instance{stream}}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 } // namespace cc

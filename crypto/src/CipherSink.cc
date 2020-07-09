@@ -12,27 +12,22 @@
 namespace cc {
 namespace crypto {
 
-Ref<CipherSink> CipherSink::open(BlockCipher *cipher, Stream *sink, Stream *pad)
-{
-    return new CipherSink{cipher, sink, pad};
-}
-
-CipherSink::CipherSink(BlockCipher *cipher, Stream *sink, Stream *pad):
+CipherSink::Instance::Instance(BlockCipher *cipher, const Stream &sink, const Stream &pad):
     cipher_{cipher},
     sink_{sink},
     pad_{pad},
     block_{String::allocate(cipher->blockSize())}
 {
-    if (!pad_) pad_ = NullStream::instance();
+    if (!pad_) pad_ = NullStream{};
 }
 
-CipherSink::~CipherSink()
+CipherSink::Instance::~Instance()
 {
     if (pending_)
         write(pad_->readSpan(cipher_->blockSize() - pending_->count()));
 }
 
-void CipherSink::write(const CharArray *data)
+void CipherSink::Instance::write(const CharArray *data)
 {
     String feed;
 

@@ -16,12 +16,12 @@ namespace http {
 class CgiServerConnection: public HttpConnection
 {
 public:
-    static Ref<CgiServerConnection> open(Stream *stream);
+    static Ref<CgiServerConnection> open(const Stream &stream);
 
     Ref<HttpMessage> readResponse();
 
 private:
-    CgiServerConnection(Stream *stream);
+    CgiServerConnection(const Stream &stream);
 };
 
 }} // namespace cc::http

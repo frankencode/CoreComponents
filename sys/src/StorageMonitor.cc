@@ -24,7 +24,7 @@ Ref<StorageMonitor> StorageMonitor::start()
 
 StorageMonitor::StorageMonitor()
 {
-    SystemStream::connect(&controlMaster_, &controlSlave_);
+    controlMaster_->connect(controlSlave_);
 }
 
 void StorageMonitor::shutdown()
@@ -76,7 +76,8 @@ void StorageMonitor::run()
         struct udev_monitor *mon = udev_monitor_new_from_netlink(udev, "udev");
         udev_monitor_filter_add_match_subsystem_devtype(mon, "block", "partition");
         udev_monitor_enable_receiving(mon);
-        Ref<SystemStream> monitorStream = SystemStream::duplicate(udev_monitor_get_fd(mon));
+        SystemStream monitorStream;
+        monitorStream->duplicate(udev_monitor_get_fd(mon));
 
         Ref<IoMonitor> ioMonitor = IoMonitor::create(2);
         const IoEvent *shutdownEvent = ioMonitor->addEvent(IoReady::Read, controlSlave_);

@@ -21,16 +21,12 @@
 namespace cc {
 
 File::Instance::Instance(const String &path, FileOpen flags, FileMode mode):
-    SystemStream{::open(path, +flags|O_CLOEXEC, +mode)},
+    SystemStream::Instance{::open(path, +flags|O_CLOEXEC, +mode)},
     path_{path},
     openFlags_{flags}
 {
     if (fd_ == -1) CC_SYSTEM_ERROR(errno, path);
 }
-
-File::Instance::Instance():
-    openFlags_{FileOpen::None}
-{}
 
 String File::Instance::path() const
 {
@@ -55,7 +51,7 @@ bool File::Instance::isSeekable() const
     return ::lseek(fd_, 0, SEEK_CUR) != -1;
 }
 
-off_t File::Instance::transferSpanTo(off_t count, Stream *sink, CharArray *buf)
+off_t File::Instance::transferSpanTo(off_t count, const Stream &sink, CharArray *buf)
 {
     if (count == 0) return 0;
     if (!sink) {
@@ -64,7 +60,7 @@ off_t File::Instance::transferSpanTo(off_t count, Stream *sink, CharArray *buf)
         else ret = ::lseek(fd_, 0, SEEK_END);
         if (ret != -1) return count;
     }
-    return Stream::transferSpanTo(count, sink, buf);
+    return Stream::Instance::transferSpanTo(count, sink, buf);
 }
 
 class MappedByteArray: public CharArray

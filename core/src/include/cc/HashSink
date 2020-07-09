@@ -18,8 +18,21 @@ namespace cc {
 class HashSink: public Stream
 {
 public:
-    /// Finish hash sum computation and return the result
-    virtual String finish() = 0;
+    class Instance: public Stream::Instance
+    {
+    public:
+        /// Finish hash sum computation and return the result
+        virtual String finish() = 0;
+    };
+
+    HashSink() = default;
+
+    Instance *operator->() const { return my<Instance>(); }
+
+protected:
+    HashSink(Instance *instance):
+        Stream{instance}
+    {}
 };
 
 } // namespace cc

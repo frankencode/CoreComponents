@@ -46,7 +46,7 @@ static uint16_t crcTable[256] = {
     0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
 
-void Crc16Sink::feed(const void *buf, int bufFill)
+void Crc16Sink::Instance::feed(const void *buf, int bufFill)
 {
     const uint8_t *data = static_cast<const uint8_t *>(buf);
     for (int i = 0; i < bufFill; ++i) {
@@ -55,12 +55,12 @@ void Crc16Sink::feed(const void *buf, int bufFill)
     }
 }
 
-void Crc16Sink::write(const CharArray *data)
+void Crc16Sink::Instance::write(const CharArray *data)
 {
     feed(data->bytes(), data->count());
 }
 
-String Crc16Sink::finish()
+String Crc16Sink::Instance::finish()
 {
     auto sum = String::allocate(Size);
     mutate(sum)->at(0) = (crc_ >> 8) & 0xFFU;

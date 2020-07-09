@@ -16,11 +16,11 @@ int main(int argc, char **argv)
 
         for (String path: items)
         {
-            Ref<Stream> source;
+            Stream source;
             if (path == "") source = stdIn();
             else source = File{path};
 
-            Ref<HexDump> hexDump = HexDump::open(stdOut());
+            HexDump hexDump{stdOut()};
             source->transferTo(hexDump);
         }
     }

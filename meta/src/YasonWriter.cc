@@ -11,12 +11,12 @@
 namespace cc {
 namespace meta {
 
-Ref<YasonWriter> YasonWriter::create(Stream *sink, const String &indent)
+Ref<YasonWriter> YasonWriter::create(const Stream &sink, const String &indent)
 {
     return new YasonWriter{sink, indent};
 }
 
-YasonWriter::YasonWriter(Stream *sink, const String &indent):
+YasonWriter::YasonWriter(const Stream &sink, const String &indent):
     format_{sink},
     indent_{indent}
 {}

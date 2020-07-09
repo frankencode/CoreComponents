@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 
             for (String path: items)
             {
-                Ref<Stream> source;
+                Stream source;
                 if (path != "") source = File{path};
                 else source = stdIn();
 
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
             }
         }
         else {
-            Ref<Stream> sink;
+            Stream sink;
             String sinkPath = options->value("output");
             if (sinkPath != "") {
                 try { File::unlink(sinkPath); } catch (SystemError &) {}

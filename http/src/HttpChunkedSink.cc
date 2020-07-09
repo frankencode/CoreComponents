@@ -12,26 +12,21 @@
 namespace cc {
 namespace http {
 
-Ref<HttpChunkedSink> HttpChunkedSink::open(Stream *stream)
-{
-    return new HttpChunkedSink{stream};
-}
-
-HttpChunkedSink::HttpChunkedSink(Stream *stream):
+HttpChunkedSink::Instance::Instance(const Stream &stream):
     stream_{stream}
 {}
 
-HttpChunkedSink::~HttpChunkedSink()
+HttpChunkedSink::Instance::~Instance()
 {
     Format{stream_} << 0 << "\r\n" << "\r\n";
 }
 
-void HttpChunkedSink::write(const CharArray *data)
+void HttpChunkedSink::Instance::write(const CharArray *data)
 {
     Format{stream_} << hex(data->count()) << "\r\n" << data << "\r\n";
 }
 
-void HttpChunkedSink::write(const StringList &parts)
+void HttpChunkedSink::Instance::write(const StringList &parts)
 {
     Format chunk{stream_};
     int total = 0;

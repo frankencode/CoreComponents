@@ -7,7 +7,6 @@
  */
 
 #include <cc/http/HttpConnection>
-#include <cc/http/HttpStream>
 #include <cc/http/TapBuffer>
 #include <cc/http/exceptions>
 #include <cc/LineSource>
@@ -18,8 +17,8 @@
 namespace cc {
 namespace http {
 
-HttpConnection::HttpConnection(Stream *stream):
-    httpStream_{HttpStream::open(stream)},
+HttpConnection::HttpConnection(const Stream &stream):
+    httpStream_{stream},
     stream_{httpStream_},
     lineBuffer_{CharArray::allocate(0x1000)}
 {}
@@ -27,11 +26,11 @@ HttpConnection::HttpConnection(Stream *stream):
 HttpConnection::~HttpConnection()
 {}
 
-void HttpConnection::setupTransferLog(Stream *debugStream, const String &label)
+void HttpConnection::setupTransferLog(const Stream &debugStream, const String &label)
 {
-    Ref<Stream> inputBuffer = TapBuffer::open(debugStream, label + " >> ");
-    Ref<Stream> outputBuffer = TapBuffer::open(debugStream, label + " << ");
-    stream_ = StreamTap::open(stream_, inputBuffer, outputBuffer);
+    TapBuffer inputBuffer{debugStream, label + " >> "};
+    TapBuffer outputBuffer{debugStream, label + " << "};
+    stream_ = StreamTap{stream_, inputBuffer, outputBuffer};
 }
 
 bool HttpConnection::isPayloadConsumed() const
@@ -47,15 +46,14 @@ void HttpConnection::readMessage(HttpMessage *message)
     message->payload_ = stream_;
 
     try {
-        Ref<TransferLimiter> limiter = TransferLimiter::open(stream_, 0x10000);
-        Ref<LineSource> source = LineSource::open(limiter, mutate(lineBuffer_));
+        TransferLimiter limiter{stream_, 0x10000};
+        LineSource source{limiter, mutate(lineBuffer_)};
 
         readFirstLine(source, message);
 
-        String line;
         String name, value;
         StringList multiValue;
-        while (source->read(&line)) {
+        for (String line; source->read(&line);) {
             if (line == "")
                 break;
             if (line->at(0) == ' ' || line->at(0) == '\t') {

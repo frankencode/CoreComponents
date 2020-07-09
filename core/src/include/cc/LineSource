@@ -17,56 +17,74 @@ namespace cc {
   * \ingroup formatted_io
   * \brief Line input buffer
   */
-class LineSource: public Source<String>
+class LineSource
 {
 public:
+    class Instance: public Source<String>
+    {
+    public:
+        /// Input stream used to read lines from
+        Stream stream() const { return stream_; }
+
+        /// Input buffer used to cache input data
+        const CharArray *buffer() const { return buffer_; }
+
+        /// Current line start offset
+        int offset() const { return bufferOffset_ + i0_; }
+
+        /** Read next line
+          * \param line returns the next line (if not end of input)
+          * \return true if not end of input, false otherwise
+          */
+        bool read(String *line);
+
+        /** Read next line
+          * \return next line (equals "" on end of input)
+          */
+        String readLine();
+
+        /// Return the remaining data from the input buffer
+        String pendingData() const;
+
+    private:
+        friend class LineSource;
+
+        Instance(const Stream &stream, CharArray *buffer);
+
+        static int findEol(const CharArray *buffer, int n, int i);
+        static int skipEol(const CharArray *buffer, int n, int i);
+
+        Stream stream_;
+        String buffer_;
+        bool eoi_;
+        int bufferOffset_;
+        int i0_, i_, n_;
+    };
+
+    using Iterator = Instance::Iterator;
+
     /** Open a new line source feed from a memory buffer
       * \param text input buffer
-      * \return new object instance
       */
-    static Ref<LineSource> open(const String &text);
+    LineSource(const String &text):
+        instance_{new Instance{Stream{}, mutate(text)}}
+    {}
 
     /** Open a new line source feed from an input stream
       * \param stream input stream
       * \param buffer input buffer (optional)
-      * \return new object instance
       */
-    static Ref<LineSource> open(Stream *stream, CharArray *buffer = nullptr);
+    LineSource(const Stream &stream, CharArray *buffer = nullptr):
+        instance_{new Instance{stream, buffer}}
+    {}
 
-    /// Input stream used to read lines from
-    Stream *stream() const { return stream_; }
-
-    /// Input buffer used to cache input data
-    const CharArray *buffer() const { return buffer_; }
-
-    /// Current line start offset
-    int offset() const { return bufferOffset_ + i0_; }
-
-    /** Read next line
-      * \param line returns the next line (if not end of input)
-      * \return true if not end of input, false otherwise
-      */
-    bool read(String *line);
-
-    /** Read next line
-      * \return next line (equals "" on end of input)
-      */
-    String readLine();
-
-    /// Return the remaining data from the input buffer
-    String pendingData() const;
+    Instance *operator->() const { return instance_; }
 
 private:
-    LineSource(Stream *stream, CharArray *buffer);
-
-    static int findEol(const CharArray *buffer, int n, int i);
-    static int skipEol(const CharArray *buffer, int n, int i);
-
-    Ref<Stream> stream_;
-    String buffer_;
-    bool eoi_;
-    int bufferOffset_;
-    int i0_, i_, n_;
+    Ref<Instance> instance_;
 };
+
+inline LineSource::Iterator begin(LineSource &source) { return source->begin(); }
+inline LineSource::Iterator end  (LineSource &source) { return source->end(); }
 
 } // namespace cc

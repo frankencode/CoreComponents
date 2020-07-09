@@ -21,57 +21,61 @@ namespace cc {
   * if the input streams delivers full 16-bit words and it requires a high
   * surrogate to be followed by a low surrogate.
   */
-class Utf16Source: public Object
+class Utf16Source
 {
 public:
+    class Instance
+    {
+    public:
+        /** Read the next %Unicode character
+          * \param ch returns the %Unicode character read if any
+          * \return true if not end of information, false otherwise
+          */
+        bool read(uchar_t *ch);
+
+    private:
+        friend class Utf16Source;
+
+        class DecodingError: public UnicodeError {
+        public:
+            String message() const override;
+        };
+
+        Instance(const Stream &stream, CharArray *buffer, ByteOrder endian):
+            byteSource_{stream, buffer, endian},
+            firstTime_{true}
+        {}
+
+        Instance(const CharArray *buffer, ByteOrder endian):
+            byteSource_{buffer, endian},
+            firstTime_{true}
+        {}
+
+        ByteSource byteSource_;
+        bool firstTime_;
+    };
+
     /** Open a new UTF-16 decoding data source
       * \param stream underlying data stream
       * \param buffer input buffer (optional)
       * \param endian endianess of the 16 bit words transmitted
-      * \return new object instance
       */
-    static Ref<Utf16Source> open(Stream *stream, CharArray *buffer = 0, ByteOrder endian = ByteOrder::BigEndian)
-    {
-        return new Utf16Source{stream, buffer, endian};
-    }
+    Utf16Source(const Stream &stream, CharArray *buffer = nullptr, ByteOrder endian = ByteOrder::BigEndian):
+        instance_{stream, buffer, endian}
+    {}
 
     /** Open a new UTF-16 decoding data source
       * \param buffer input buffer
       * \param endian endianess of the 16 bit words transmitted
-      * \return new object instance
       */
-    static Ref<Utf16Source> open(const CharArray *buffer, ByteOrder endian = ByteOrder::BigEndian)
-    {
-        return new Utf16Source{buffer, endian};
-    }
+    Utf16Source(const CharArray *buffer, ByteOrder endian = ByteOrder::BigEndian):
+        instance_{buffer, endian}
+    {}
 
-    /** Read the next %Unicode character
-      * \param ch returns the %Unicode character read if any
-      * \return true if not end of information, false otherwise
-      */
-    bool read(uchar_t *ch);
-
-    /// Underlying byte source
-    ByteSource *byteSource() const { return byteSource_; }
+    Instance *operator->() { return &instance_; }
 
 private:
-    class DecodingError: public UnicodeError {
-    public:
-        String message() const override ;
-    };
-
-    Utf16Source(Stream *stream, CharArray *buffer, ByteOrder endian):
-        byteSource_{ByteSource::open(stream, buffer, endian)},
-        firstTime_{true}
-    {}
-
-    Utf16Source(const CharArray *buffer, ByteOrder endian):
-        byteSource_{ByteSource::open(buffer, endian)},
-        firstTime_{true}
-    {}
-
-    Ref<ByteSource> byteSource_;
-    bool firstTime_;
+    Instance instance_;
 };
 
 } // namespace cc

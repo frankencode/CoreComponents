@@ -12,12 +12,12 @@
 namespace cc {
 namespace http {
 
-Ref<HttpClientConnection> HttpClientConnection::open(HttpClientSocket *socket)
+Ref<HttpClientConnection> HttpClientConnection::open(const HttpClientSocket &socket)
 {
     return new HttpClientConnection{socket};
 }
 
-HttpClientConnection::HttpClientConnection(HttpClientSocket *socket):
+HttpClientConnection::HttpClientConnection(const HttpClientSocket &socket):
     HttpConnection{socket},
     socket_{socket}
 {}
@@ -34,7 +34,7 @@ Ref<HttpResponse> HttpClientConnection::readResponse()
     return response;
 }
 
-void HttpClientConnection::readFirstLine(LineSource *source, HttpMessage *message)
+void HttpClientConnection::readFirstLine(LineSource &source, HttpMessage *message)
 {
     String line;
     if (!source->read(&line)) throw CloseRequest{};

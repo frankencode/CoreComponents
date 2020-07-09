@@ -25,35 +25,43 @@ class SecurityCache;
 class HttpServerSocket: public HttpSocket
 {
 public:
-    static Ref<HttpServerSocket> accept(StreamSocket *listeningSocket, const NodeConfig *nodeConfig, SecurityCache *securityCache);
+    class Instance: public HttpSocket::Instance
+    {
+    public:
+        bool isSecure() const { return mode_ & Secure; }
+        void upgradeToSecureTransport();
 
-    bool isSecure() const { return mode_ & Secure; }
-    void upgradeToSecureTransport();
+    private:
+        friend class HttpServerSocket;
+        friend class ClientHelloContext;
+        friend class HttpServerConnection;
 
-private:
-    friend class ClientHelloContext;
-    friend class HttpServerConnection;
+        static int initialMode(const StreamSocket &socket, const NodeConfig *config);
 
-    static int initialMode(StreamSocket *socket, const NodeConfig *config);
+        Instance(StreamSocket &listeningSocket, const NodeConfig *nodeConfig, SecurityCache *securityCache);
+        ~Instance();
 
-    HttpServerSocket(const SocketAddress &address, int mode, const NodeConfig *nodeConfig, SecurityCache *securityCache);
-    ~HttpServerSocket();
+        const NodeConfig *nodeConfig() const { return nodeConfig_; }
+        const LoggingInstance *errorLoggingInstance() const;
 
-    const NodeConfig *nodeConfig() const { return nodeConfig_; }
-    const LoggingInstance *errorLoggingInstance() const;
+        static int onClientHello(gnutls_session_t session);
+        const DeliveryInstance *handshake();
 
-    static int onClientHello(gnutls_session_t session);
-    const DeliveryInstance *handshake();
+        void initSession();
 
-    void initSession();
+        bool waitInput() override;
+        void ioException(Exception &ex) const override;
 
-    bool waitInput() override;
-    void ioException(Exception &ex) const override;
+        const NodeConfig *nodeConfig_;
+        SecurityCache *securityCache_;
+        double t0_;
+        double te_;
+    };
 
-    const NodeConfig *nodeConfig_;
-    SecurityCache *securityCache_;
-    double t0_;
-    double te_;
+    HttpServerSocket(StreamSocket &listeningSocket, const NodeConfig *nodeConfig, SecurityCache *securityCache);
+
+    Instance *operator->() const { return my<Instance>(); }
 };
+
 
 }} // namespace cc::http

@@ -21,128 +21,138 @@ namespace cc {
 /** \class SystemStream cc/SystemStream
   * \ingroup binary_io
   * \brief Base class for all system streams
+  * \todo rename to IoStream (which fits IoMonitor, etc.)
   */
-class SystemStream: public Stream, public IoTarget
+class SystemStream: public Stream
 {
 public:
-    /** Create a new SystemStream object
-      * \param fd file descriptor
-      * \return new object instance
-      */
-    static Ref<SystemStream> create(int fd) {
-        return new SystemStream{fd};
-    }
-
-    /** Create a pair of connected local sockets
-      * \param first return the first socket
-      * \param second return the second socket
-      */
-    static void connect(Ref<SystemStream> *first, Ref<SystemStream> *second);
-
-    /** Duplicate an existing file descriptor
-      * \param fd file descriptor
-      * \return new object instance
-      */
-    static Ref<SystemStream> duplicate(int fd);
-
-    /** Duplicate a system stream
-      * \param other the system stream to duplicate
-      * \return new object instance
-      * The duplicate() method duplicates an entry in the file descriptor table and creates a
-      * corresponding SystemStream instance for the newly created file descriptor.
-      * \see duplicateTo()
-      */
-    static Ref<SystemStream> duplicate(SystemStream *other);
-
-    /// The underlying file descriptor
-    int fd() const;
-
-    /** Return true if this is a TTY (i.e. a terminal device).
-      *
-      * This method is useful to distinguish between interactive from non-interactive
-      * invocation.
-      * ~~~~~~~~~~~~~
-      * if (stdIn()->isatty()) fout() << "Hello, Jane!" << nl;
-      * else; // continue silently
-      * ~~~~~~~~~~~~~
-      */
-    bool isatty() const;
-
-    /// Enabled/disable echo of character input if this is a terminal device
-    void echo(bool on);
-
-    virtual int read(CharArray *data) override;
-    virtual void write(const CharArray *data) override;
-    virtual void write(const StringList &parts) override;
-
-    /// Convenience wrapper
-    void write(const String &data) { write(static_cast<const CharArray *>(data)); }
-
-    /// Convenience wrapper
-    void write(const char *data) { write(String{data}); }
-
-    /// Convenience wrapper
-    void write(const Format &data);
-
-    /** Wait for a system I/O event
-      * \param events combination of SystemIo::WaitEvent flags
-      * \param interval_ms the interval to wait at max (or infinite if < 0)
-      * \return true if one of the indicated events occured, false on timeout
-      */
-    bool waitFor(IoReady ready, int interval_ms = -1);
-
     /// Full duplex connection shutdown
-    enum ShutdownType {
-        ReadShutdown = SHUT_RD,  ///< Partially shutdown the communication channel for reading
-        WriteShutdown = SHUT_WR, ///< Partially shutdown the communication channel for writing
-        FullShutdown = SHUT_RDWR ///< Fully shutdown the communication channel
+    enum class Shutdown {
+        Read  = SHUT_RD,  ///< Partially shutdown the communication channel for reading
+        Write = SHUT_WR,  ///< Partially shutdown the communication channel for writing
+        Full  = SHUT_RDWR ///< Fully shutdown the communication channel
     };
 
-    /** Shutdown a full duplex communication channel
-      * \param type shutdown for reading (ReadShutdown), writing (WriteShutdown) or both (FullShutdown)
+    class Instance: public Stream::Instance, public IoTarget
+    {
+    public:
+        /// The underlying file descriptor
+        int fd() const;
+
+        /** Return true if this is a TTY (i.e. a terminal device).
+          *
+          * This method is useful to distinguish between interactive from non-interactive
+          * invocation.
+          * ~~~~~~~~~~~~~
+          * if (stdIn()->isatty()) fout() << "Hello, Jane!" << nl;
+          * else; // continue silently
+          * ~~~~~~~~~~~~~
+          */
+        bool isatty() const;
+
+        /// Enabled/disable echo of character input if this is a terminal device
+        void echo(bool on);
+
+        int read(CharArray *data) override;
+        void write(const CharArray *data) override;
+        void write(const StringList &parts) override;
+
+        /// Convenience wrapper
+        void write(const String &data) { write(static_cast<const CharArray *>(data)); }
+
+        /// Convenience wrapper
+        void write(const char *data) { write(String{data}); }
+
+        /// Convenience wrapper
+        void write(const Format &data);
+
+        /** Wait for a system I/O event
+          * \param events combination of SystemIo::WaitEvent flags
+          * \param interval_ms the interval to wait at max (or infinite if < 0)
+          * \return true if one of the indicated events occured, false on timeout
+          */
+        bool waitFor(IoReady ready, int interval_ms = -1);
+
+        /** Shutdown a full duplex communication channel
+          * \param type shutdown for reading (ReadShutdown), writing (WriteShutdown) or both (FullShutdown)
+          */
+        void shutdown(Shutdown type = Shutdown::Full);
+
+        /// Currently set I/O scatter limit
+        int scatterLimit() const { return scatterLimit_; }
+
+        /** %Set the I/O scatter limit
+          *
+          * Scatter writes via write(const StringList &) and write(const Format &) will be merge into a single block
+          * if the total size of the scatter list is below the scatter limit.
+          */
+        void setScatterLimit(int newLimit) { scatterLimit_ = newLimit; }
+
+        /** Duplicate this system stream
+          * \param other the other system stream to take over
+          *
+          * The duplicate() method duplicates an entry in the file descriptor table.
+          *
+          * This for instance allows to set a file as standard input:
+          * ~~~~~~~~~~~~~
+          * File{"binary.dat"}->duplicateTo(stdIn());
+          * ~~~~~~~~~~~~~
+          * \see duplicate()
+          */
+        void duplicateTo(SystemStream &other);
+
+        /** Issue device control requests
+          * \param request device control request
+          * \param arg input/ouput argument
+          * \return can be a value returned by the request, otherwise 0
+          */
+        int ioctl(int request, void *arg);
+
+        /// Close this stream
+        void close();
+
+        /** Duplicate a system stream
+          * \param other the system stream to duplicate
+          */
+        void duplicate(const SystemStream &other);
+
+        /** Establish a local socket connection
+          * \param other the other system stream to connect to
+          */
+        void connect(SystemStream &other);
+
+    protected:
+        friend class SystemStream;
+
+        Instance(int fd = -1);
+        ~Instance();
+
+        int fd_;
+        int scatterLimit_;
+    };
+
+    /** Create an invalid SystemStream
       */
-    void shutdown(ShutdownType type = FullShutdown);
+    SystemStream():
+        Stream{new Instance}
+    {}
 
-    /// Currently set I/O scatter limit
-    int scatterLimit() const { return scatterLimit_; }
-
-    /** %Set the I/O scatter limit
-      *
-      * Scatter writes via write(const StringList &) and write(const Format &) will be merge into a single block
-      * if the total size of the scatter list is below the scatter limit.
+    /** Create a new SystemStream
+      * \param fd file descriptor
       */
-    void setScatterLimit(int newLimit) { scatterLimit_ = newLimit; }
+    SystemStream(int fd):
+        Stream{new Instance{fd}}
+    {}
 
-    /** Duplicate this file stream
-      * \param other the other system stream to take over
-      *
-      * The duplicate() method duplicates an entry in the file descriptor table.
-      *
-      * This for instance allows to set a file as standard input:
-      * ~~~~~~~~~~~~~
-      * auto inSaved = stdIn()->duplicate();
-      * File::open("binary.dat")->duplicateTo(stdIn());
-      * ~~~~~~~~~~~~~
-      * \see duplicate()
-      */
-    void duplicateTo(SystemStream *other);
+    Instance *operator->() const { return my<Instance>(); }
+    operator Instance *() const { return my<Instance>(); }
 
-    /** Issue device control requests
-      * \param request device control request
-      * \param arg input/ouput argument
-      * \return can be a value returned by the request, otherwise 0
-      */
-    int ioctl(int request, void *arg);
-
-    /// Close this stream
-    void close();
+    operator bool() const { return my<Instance>()->fd() != -1; }
 
 protected:
-    SystemStream(int fd = -1);
-    ~SystemStream();
-
-    int fd_;
-    int scatterLimit_;
+    SystemStream(Instance *instance):
+        Stream{instance}
+    {}
 };
 
 } // namespace cc

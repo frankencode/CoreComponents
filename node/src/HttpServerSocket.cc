@@ -23,23 +23,11 @@
 namespace cc {
 namespace http {
 
-Ref<HttpServerSocket> HttpServerSocket::accept(StreamSocket *listeningSocket, const NodeConfig *nodeConfig, SecurityCache *securityCache)
-{
-    Ref<HttpServerSocket> client =
-        new HttpServerSocket{
-            SocketAddress{listeningSocket->address()->family()},
-            initialMode(listeningSocket, nodeConfig),
-            nodeConfig,
-            securityCache
-        };
-    client->fd_ = StreamSocket::accept(listeningSocket, &client->address_);
-    client->connected_ = true;
-    client->mode_ |= Connected | ((client->mode_ & Secure) ? 0 : Open);
-    client->initSession();
-    return client;
-}
+HttpServerSocket::HttpServerSocket(StreamSocket &listeningSocket, const NodeConfig *nodeConfig, SecurityCache *securityCache):
+    HttpSocket{new Instance{listeningSocket, nodeConfig, securityCache}}
+{}
 
-int HttpServerSocket::initialMode(StreamSocket *socket, const NodeConfig *config)
+int HttpServerSocket::Instance::initialMode(const StreamSocket &socket, const NodeConfig *config)
 {
     return Secure * (
         config->forceSecureTransport() ||
@@ -47,13 +35,17 @@ int HttpServerSocket::initialMode(StreamSocket *socket, const NodeConfig *config
     );
 }
 
-HttpServerSocket::HttpServerSocket(const SocketAddress &address, int mode, const NodeConfig *nodeConfig, SecurityCache *securityCache):
-    HttpSocket{address, mode},
+HttpServerSocket::Instance::Instance(StreamSocket &listeningSocket, const NodeConfig *nodeConfig, SecurityCache *securityCache):
+    HttpSocket::Instance{SocketAddress{listeningSocket->address()->family()}, initialMode(listeningSocket, nodeConfig)},
     nodeConfig_{nodeConfig},
     securityCache_{securityCache}
-{}
+{
+    listeningSocket->accept(this);
+    mode_ |= Connected | ((mode_ & Secure) ? 0 : Open);
+    initSession();
+}
 
-HttpServerSocket::~HttpServerSocket()
+HttpServerSocket::Instance::~Instance()
 {
     if (mode_ & Secure)
     {
@@ -68,7 +60,7 @@ HttpServerSocket::~HttpServerSocket()
     }
 }
 
-const LoggingInstance *HttpServerSocket::errorLoggingInstance() const
+const LoggingInstance *HttpServerSocket::Instance::errorLoggingInstance() const
 {
     return nodeConfig_->errorLoggingInstance();
 }
@@ -98,7 +90,7 @@ public:
                 if (serverName_->count() > 0) {
                     if (serverName_->at(serverName_->count() - 1) == 0)
                         mutate(serverName_)->truncate(serverName_->count() - 1);
-                    if (errorLoggingInstance()->infoStream() != NullStream::instance())
+                    if (!errorLoggingInstance()->infoStream()->isReadOnly())
                         CCNODE_INFO() << "TLS client hello: SNI=\"" << serverName_ << "\"" << nl;
                     deliveryInstance_ = nodeConfig_->selectService(serverName_);
                     if (deliveryInstance_)
@@ -135,7 +127,7 @@ private:
     const DeliveryInstance *deliveryInstance_ { nullptr };
 };
 
-void HttpServerSocket::initSession()
+void HttpServerSocket::Instance::initSession()
 {
     CC_ASSERT(mode_ & Connected);
 
@@ -153,18 +145,18 @@ void HttpServerSocket::initSession()
     nodeConfig()->security()->establish(session_);
 
     gnutls_handshake_set_post_client_hello_function(session_, onClientHello);
-    HttpSocket::initTransport();
+    HttpSocket::Instance::initTransport();
 
     securityCache_->prepareSessionResumption(session_);
 }
 
-int HttpServerSocket::onClientHello(gnutls_session_t session)
+int HttpServerSocket::Instance::onClientHello(gnutls_session_t session)
 {
     ClientHelloContext::instance()->selectService(session);
     return 0;
 }
 
-const DeliveryInstance *HttpServerSocket::handshake()
+const DeliveryInstance *HttpServerSocket::Instance::handshake()
 {
     CC_ASSERT(mode_ & Connected);
 
@@ -185,7 +177,7 @@ const DeliveryInstance *HttpServerSocket::handshake()
 
     mode_ |= Open;
 
-    if (errorLoggingInstance()->infoStream() != NullStream::instance()) {
+    if (!errorLoggingInstance()->infoStream()->isReadOnly()) {
         double t1 = System::now();
         CCNODE_INFO() << "TLS handshake took " << int(1000 * (t1 - t0_)) << "ms" << nl;
     }
@@ -201,7 +193,7 @@ const DeliveryInstance *HttpServerSocket::handshake()
     return deliveryInstance;
 }
 
-void HttpServerSocket::upgradeToSecureTransport()
+void HttpServerSocket::Instance::upgradeToSecureTransport()
 {
     CC_ASSERT(mode_ & Connected);
     CC_ASSERT(!(mode_ & Secure));
@@ -211,14 +203,14 @@ void HttpServerSocket::upgradeToSecureTransport()
     initSession();
 }
 
-bool HttpServerSocket::waitInput()
+bool HttpServerSocket::Instance::waitInput()
 {
     double d = te_ - System::now();
     if (d <= 0) throw RequestTimeout{};
     return waitFor(IoReady::Read, d * 1000);
 }
 
-void HttpServerSocket::ioException(Exception &ex) const
+void HttpServerSocket::Instance::ioException(Exception &ex) const
 {
     CCNODE_ERROR() << "!" << ex << nl;
 }

@@ -33,7 +33,7 @@ public:
       * \param bufferCount number of I/O buffers to use
       * \return new object instance
       */
-    static Ref<Transfer> start(Stream *source, Stream *sink, int bufferSize = 0x8000, int bufferCount = 10);
+    static Ref<Transfer> start(const Stream &source, const Stream &sink, int bufferSize = 0x8000, int bufferCount = 10);
 
     /// Return the total number of bytes read up until this point (thread-safe)
     off_t totalRead() const;
@@ -50,7 +50,7 @@ public:
     void waitComplete();
 
 private:
-    Transfer(Stream *source, Stream *sink, int bufferSize, int bufferCount);
+    Transfer(const Stream &source, const Stream &sink, int bufferSize, int bufferCount);
 
     Ref<TransferInputWorker> inputWorker_;
     Ref<TransferOutputWorker> outputWorker_;

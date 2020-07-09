@@ -19,17 +19,30 @@ namespace cc {
 class IoChannel: public SystemStream
 {
 public:
-    int slaveFd() const { return slaveFd_; }
+    class Instance: public SystemStream::Instance
+    {
+    public:
+        int slaveFd() const { return slaveFd_; }
+
+    protected:
+        friend class IoChannel;
+        friend class Process;
+        friend class Command;
+
+        Instance() = default;
+
+        int slaveFd_ { -1 };
+        virtual void onStart() {}
+    };
+
+    IoChannel() = default;
+
+    Instance *operator->() const { return my<Instance>(); }
 
 protected:
-    int slaveFd_ { -1 };
-    virtual void onStart() {}
-
-private:
-    friend class Process;
-    friend class Command;
-
-    mutable Ref<IoChannel> next_;
+    IoChannel(Instance *instance):
+        SystemStream{instance}
+    {}
 };
 
 } // namespace cc

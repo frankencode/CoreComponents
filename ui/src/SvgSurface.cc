@@ -13,16 +13,16 @@
 namespace cc {
 namespace ui {
 
-Ref<SvgSurface> SvgSurface::open(Stream *stream, Size sizePt)
+Ref<SvgSurface> SvgSurface::open(const Stream &stream, Size sizePt)
 {
     return new SvgSurface{stream, sizePt};
 }
 
-SvgSurface::SvgSurface(Stream *stream, Size sizePt):
+SvgSurface::SvgSurface(const Stream &stream, Size sizePt):
     stream_{stream},
-    cairoSurface_(
+    cairoSurface_{
         cairo_svg_surface_create_for_stream(cairoWrite, this, sizePt[0], sizePt[1])
-    )
+    }
 {}
 
 SvgSurface::~SvgSurface()

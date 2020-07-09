@@ -17,18 +17,24 @@ namespace cc {
 class StreamTap: public Stream
 {
 public:
-    static Ref<StreamTap> open(Stream *stream, Stream *inputTap, Stream *outputTap);
+    class Instance: public Stream::Instance
+    {
+    public:
+        int read(CharArray *data) override;
+        void write(const CharArray *data) override;
+        void write(const StringList &parts) override;
 
-    Stream *stream() const { return stream_; }
+    private:
+        friend class StreamTap;
 
-    int read(CharArray *data) override;
-    void write(const CharArray *data) override;
-    void write(const StringList &parts) override;
+        Instance(const Stream &stream, const Stream &inputTap, const Stream &outputTap);
 
-private:
-    StreamTap(Stream *stream, Stream *inputTap, Stream *outputTap);
+        Stream stream_, inputTap_, outputTap_;
+    };
 
-    Ref<Stream> stream_, inputTap_, outputTap_;
+    StreamTap(const Stream &stream, const Stream &inputTap, const Stream &outputTap):
+        Stream{new Instance{stream, inputTap, outputTap}}
+    {}
 };
 
 } // namespace cc

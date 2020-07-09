@@ -16,12 +16,12 @@
 namespace cc {
 namespace http {
 
-Ref<HttpServerConnection> HttpServerConnection::open(HttpServerSocket *socket)
+Ref<HttpServerConnection> HttpServerConnection::open(const HttpServerSocket &socket)
 {
     return new HttpServerConnection{socket};
 }
 
-HttpServerConnection::HttpServerConnection(HttpServerSocket *socket):
+HttpServerConnection::HttpServerConnection(const HttpServerSocket &socket):
     HttpConnection{socket},
     socket_{socket},
     connectionInfo_{ConnectionInfo::create(socket->address())}
@@ -73,7 +73,7 @@ void HttpServerConnection::putBack(HttpRequest *request)
     pendingRequest_ = request;
 }
 
-void HttpServerConnection::readFirstLine(LineSource *source, HttpMessage *message)
+void HttpServerConnection::readFirstLine(LineSource &source, HttpMessage *message)
 {
     String line;
     if (!source->read(&line)) throw CloseRequest{};

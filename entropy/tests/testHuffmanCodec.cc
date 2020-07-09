@@ -54,12 +54,11 @@ class NoiseTest: public TestCase
         String message = RandomBytes{seed, dataSize, byteMin, byteMax}->readAll();
 
         String encodedMessage; {
-            auto capture = CaptureSink::open();
+            CaptureSink capture;
             {
-                auto source = ReplaySource::open(message);
-                auto sink = BitSink::open(capture);
-                auto codec = HuffmanCodec::create();
-                while (codec->encode(source, sink));
+                ReplaySource source{message};
+                BitSink sink{capture};
+                for (HuffmanCodec huffman; huffman->encode(source, sink););
             }
             encodedMessage = capture->collect();
         }
@@ -71,12 +70,11 @@ class NoiseTest: public TestCase
         CC_INSPECT(double(encodedMessage->count()) / dataSize);
 
         String decodedMessage; {
-            auto capture = CaptureSink::open();
+            CaptureSink capture;
             {
-                auto replay = ReplaySource::open(encodedMessage);
-                auto source = BitSource::open(replay);
-                auto codec = HuffmanCodec::create();
-                while (codec->decode(source, capture));
+                ReplaySource replay{encodedMessage};
+                BitSource source{replay};
+                for (HuffmanCodec huffman; huffman->decode(source, capture););
             }
             decodedMessage = capture->collect();
         }

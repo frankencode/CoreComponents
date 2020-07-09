@@ -513,9 +513,9 @@ String CharArray::unescapeInsitu()
                         hs = 0;
                     }
                     if (!ec) ec = String{4};
-                    Ref<Utf8Sink> sink = Utf8Sink::open(mutate(ec));
+                    Utf8Sink sink{mutate(ec)};
                     sink->write(x);
-                    int el = utf8::encoded_size(x);
+                    const int el = sink->bytesWritten();
                     for (int k = 0; k < el; ++k)
                         data_[j++] = ec->at(k);
                 }
@@ -684,7 +684,7 @@ bool CharArray::linePosToOffset(int line, int pos, int *offset) const
 
 void CharArray::checkUtf8() const
 {
-    auto source = Utf8Source::open(this);
+    Utf8Source source{this};
     for (uchar_t ch = 0; source->read(&ch););
 }
 
@@ -695,14 +695,14 @@ String CharArray::fromUtf16(const CharArray *utf16, ByteOrder endian)
     String out;
     {
         int n = 0;
-        Ref<Utf16Source> source = Utf16Source::open(utf16, endian);
+        Utf16Source source{utf16, endian};
         for (uchar_t ch; source->read(&ch);)
             n += utf8::encoded_size(ch);
         out = String{n};
     }
 
-    Ref<Utf16Source> source = Utf16Source::open(utf16, endian);
-    Ref<Utf8Sink> sink = Utf8Sink::open(mutate(out));
+    Utf16Source source{utf16, endian};
+    Utf8Sink sink{mutate(out)};
     for (uchar_t ch; source->read(&ch);)
         sink->write(ch);
 
@@ -747,7 +747,7 @@ String CharArray::toUtf16(ByteOrder endian) const
         mutate(out)->at(n + 1) = 0;
     }
     if (out->count() > 0) {
-        Ref<Utf16Sink> sink = Utf16Sink::open(mutate(out), endian);
+        Utf16Sink sink{mutate(out), endian};
         for (uchar_t ch: Unicode{chars()})
             sink->write(ch);
     }

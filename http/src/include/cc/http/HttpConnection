@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/http/HttpMessage>
-#include <cc/Stream>
+#include <cc/http/HttpStream>
 
 namespace cc { class LineSource; }
 
@@ -23,22 +23,22 @@ class HttpStream;
 class HttpConnection: public Object
 {
 public:
-    Stream *stream() const { return stream_; }
+    Stream stream() const { return stream_; }
 
-    void setupTransferLog(Stream *debugStream, const String &label);
+    void setupTransferLog(const Stream &debugStream, const String &label);
 
     bool isPayloadConsumed() const;
 
 protected:
-    HttpConnection(Stream *stream);
+    HttpConnection(const Stream &stream);
     ~HttpConnection() override;
 
     void readMessage(HttpMessage *message);
-    virtual void readFirstLine(LineSource *source, HttpMessage *message) {}
+    virtual void readFirstLine(LineSource &source, HttpMessage *message) {}
     virtual void onHeaderReceived(HttpMessage *message) {}
 
-    Ref<HttpStream> httpStream_;
-    Ref<Stream> stream_;
+    HttpStream httpStream_;
+    Stream stream_;
     String lineBuffer_;
 };
 

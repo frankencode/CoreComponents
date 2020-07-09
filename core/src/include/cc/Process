@@ -38,14 +38,14 @@ public:
           */
         int wait();
 
-        /// Attached standard input channel/stream (if any, nullptr otherwise)
-        SystemStream *input() const;
+        /// Attached standard input channel/stream
+        SystemStream input() const;
 
-        /// Attached standard output channel/stream (if any, nullptr otherwise)
-        SystemStream *output() const;
+        /// Attached standard output channel/stream
+        SystemStream output() const;
 
-        /// Attached standard error channel/stream (if any, nullptr otherwise)
-        SystemStream *error() const;
+        /// Attached standard error channel/stream
+        SystemStream error() const;
 
     private:
         friend class Process;
@@ -57,7 +57,7 @@ public:
         pid_t pid_;
         bool groupLead_ { false };
         int exitStatus_ { 0 };
-        Ref<SystemStream> standardStreams_[3];
+        SystemStream standardStreams_[3];
     };
 
     Process() = default;

@@ -23,7 +23,7 @@ public:
 
     virtual bool project(Token *token, int i0, int i1);
 
-    static void writeCss(Theme *theme, Stream *sink = nullptr);
+    static void writeCss(Theme *theme, const Stream &sink = Stream{});
 
 private:
     HtmlScreen(const String &text, const Format &sink);

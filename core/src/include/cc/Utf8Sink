@@ -20,82 +20,62 @@ namespace cc {
 class Utf8Sink: public Object
 {
 public:
+    class Instance
+    {
+    public:
+        /** Write an %Unicode character
+          * \param ch %Unicode character
+          * \exception UnicodeError
+          */
+        void write(uchar_t ch);
+
+        /// Return the total number of byte written
+        off_t bytesWritten() const { return byteSink_->currentOffset(); }
+
+    private:
+        friend class Utf8Sink;
+
+        Instance(const Stream &stream, CharArray* buffer):
+            byteSink_{stream, buffer}
+        {}
+
+        class SurrogatePairEncodingError: public UnicodeError {
+        public:
+            String message() const override;
+        };
+
+        class NonCharacterEncodingError: public UnicodeError {
+        public:
+            String message() const override;
+        };
+
+        class LargeCodePointEncodingError: public UnicodeError {
+        public:
+            String message() const override;
+        };
+
+        ByteSink byteSink_;
+    };
+
     /** Open a new UTF-8 encoding data sink
       * \param stream underlying data stream
       * \param buffer output buffer (optional)
-      * \return new object instance
       */
-    static Ref<Utf8Sink> open(Stream *stream, CharArray* buffer = nullptr)
-    {
-        return new Utf8Sink{stream, buffer};
-    }
+    Utf8Sink(const Stream &stream, CharArray* buffer = nullptr):
+        instance_{stream, buffer}
+    {}
 
     /** Open a new UTF-8 encoding data sink
       * \param buffer output buffer
-      * \return new object instance
       */
-    static Ref<Utf8Sink> open(CharArray* buffer) {
-        return new Utf8Sink{nullptr, buffer};
-    }
-
-    /** Write an %Unicode character
-      * \param ch %Unicode character
-      * \exception UnicodeError
-      */
-    void write(uchar_t ch);
-
-    /// Underlying byte sink used for UTF-8 encoding
-    ByteSink *byteSink() const { return byteSink_; }
-
-private:
-    Utf8Sink(Stream *stream, CharArray* buffer):
-        byteSink_{ByteSink::open(stream, buffer)}
+    Utf8Sink(CharArray* buffer):
+        instance_{Stream{}, buffer}
     {}
 
-    class SurrogatePairEncodingError: public UnicodeError {
-    public:
-        String message() const override;
-    };
+    Instance *operator->() { return &instance_; }
 
-    class NonCharacterEncodingError: public UnicodeError {
-    public:
-        String message() const override;
-    };
-
-    class LargeCodePointEncodingError: public UnicodeError {
-    public:
-        String message() const override;
-    };
-
-    Ref<ByteSink> byteSink_;
+private:
+    Instance instance_;
 };
-
-inline void Utf8Sink::write(uchar_t ch)
-{
-    if (ch < 0x80) { // ASCII range: 0xxxxxxx
-        byteSink_->writeUInt8(ch);
-    }
-    else if (ch < 0x800) { // two-byte codes: 110yyyxx | 10xxxxx
-        byteSink_->writeUInt8((ch >> 6) | 0xC0);   // 0xC = (1100)2, code prefix: (110)2
-        byteSink_->writeUInt8((ch & 0x3F) | 0x80); // 0x8 = (1000)2, code prefix: (10)2
-    }
-    else if (ch < 0x10000) { // three-byte codes: 1110yyyy | 10yyyyxx | 10xxxxxx
-        if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw SurrogatePairEncodingError{};
-        else if ((0xFDD0 <= ch) && (ch <= 0xFDEF)) throw NonCharacterEncodingError{};
-        byteSink_->writeUInt8((ch >> 12) | 0xE0);         // 0xE = (1110)2, code prefix: (1110)2
-        byteSink_->writeUInt8(((ch >> 6) & 0x3F) | 0x80); // 0x8 = (1000)2, code prefix: (10)2
-        byteSink_->writeUInt8((ch & 0x3F) | 0x80);        // 0x8 = (1000)2, code prefix: (10)2
-    }
-    else if (ch < 0x110000) { // four-byte codes: 11110zzz | 10zzyyyy | 10yyyyxx | 10xxxxxx
-        if ((ch & 0xFFFE) == 0xFFFE) throw NonCharacterEncodingError{};
-        byteSink_->writeUInt8((ch >> 18) | 0xF0);           // 0xF = (1111)2, code prefix: (11110)2
-        byteSink_->writeUInt8(((ch >> 12) & 0x3F) | 0x80); // 0x8 = (1000)2, code prefix: (10)2
-        byteSink_->writeUInt8(((ch >> 6) & 0x3F) | 0x80);  // 0x8 = (1000)2, code prefix: (10)2
-        byteSink_->writeUInt8((ch & 0x3F) | 0x80);         // 0x8 = (1000)2, code prefix: (10)2
-    }
-    else {
-        throw LargeCodePointEncodingError();
-    }
-}
 
 } // namespace cc

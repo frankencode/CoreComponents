@@ -10,7 +10,7 @@
 
 namespace cc {
 
-bool Utf16Source::read(uchar_t *ch)
+bool Utf16Source::Instance::read(uchar_t *ch)
 {
     bool more = byteSource_->hasMore();
     if (more) {
@@ -31,7 +31,7 @@ bool Utf16Source::read(uchar_t *ch)
     return more;
 }
 
-String Utf16Source::DecodingError::message() const
+String Utf16Source::Instance::DecodingError::message() const
 {
     return "UTF-16 error: failed to decode input bytes";
 }

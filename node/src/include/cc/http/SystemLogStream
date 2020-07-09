@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include <syslog.h>
 #include <cc/Stream>
 
 namespace cc {
@@ -17,14 +16,22 @@ namespace http {
 class SystemLogStream: public Stream
 {
 public:
-    static Ref<SystemLogStream> open(int priority);
+    class Instance: public Stream::Instance
+    {
+    public:
+        void write(const CharArray *data) override;
+        void write(const StringList &parts) override;
 
-    void write(const CharArray *data) override;
-    void write(const StringList &parts) override;
+    private:
+        friend class SystemLogStream;
 
-private:
-    SystemLogStream(int priority);
-    int priority_;
+        Instance(int priority);
+        int priority_;
+    };
+
+    SystemLogStream(int priority):
+        Stream{new Instance{priority}}
+    {}
 };
 
 }} // namespace cc::http

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/Stream>
 #include <cc/crypto/BlockCipher>
+#include <cc/Stream>
 
 namespace cc {
 namespace crypto {
@@ -20,24 +20,33 @@ namespace crypto {
 class CipherSource: public Stream
 {
 public:
+    class Instance: public Stream::Instance
+    {
+    public:
+        int read(CharArray *data) override;
+
+    private:
+        friend class CipherSource;
+
+        Instance(BlockCipher *cipher, const Stream &source);
+
+        Ref<BlockCipher> cipher_;
+        Stream source_;
+        String block_;
+        String buffer_; // decoding buffer
+        String pending_; // undecoded pending bytes
+        int j_, m_; // consumption index and fill mark
+    };
+
     /** Open a new deciphering input stream
       * \param cipher cipher to use for deciphering the ciphertext
       * \param source source to read the ciphertext from
-      * \return new object instance
       */
-    static Ref<CipherSource> open(BlockCipher *cipher, Stream *source);
+    CipherSource(BlockCipher *cipher, const Stream &source):
+        Stream{new Instance{cipher, source}}
+    {}
 
-    int read(CharArray *data) override;
-
-private:
-    CipherSource(BlockCipher *cipher, Stream *source);
-
-    Ref<BlockCipher> cipher_;
-    Ref<Stream> source_;
-    String block_;
-    String buffer_; // decoding buffer
-    String pending_; // undecoded pending bytes
-    int j_, m_; // consumption index and fill mark
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::crypto

@@ -6,11 +6,10 @@
  *
  */
 
-#include <cc/Format>
-#include <cc/TransferMeter>
-#include <cc/http/HttpConnection>
-#include <cc/http/HttpChunkedSink>
 #include <cc/http/HttpGenerator>
+#include <cc/http/HttpChunkedSink>
+#include <cc/http/HttpConnection>
+#include <cc/Format>
 
 namespace cc {
 namespace http {
@@ -45,7 +44,7 @@ void HttpGenerator::transmit(const String &payload)
     endTransmission();
 }
 
-void HttpGenerator::transmit(Stream *source)
+void HttpGenerator::transmit(const Stream &source)
 {
     beginTransmission(-1);
     source->transferTo(payload());
@@ -81,15 +80,15 @@ void HttpGenerator::beginTransmission(ssize_t contentLength)
     }
 }
 
-Stream *HttpGenerator::payload()
+Stream HttpGenerator::payload()
 {
     if (!payload_) {
         if (!headerWritten_) writeHeader();
-        Ref<Stream> stream = peer_->stream();
+        Stream stream = peer_->stream();
         if (contentLength_ < 0) {
-            stream = HttpChunkedSink::open(stream);
+            stream = HttpChunkedSink{stream};
         }
-        payload_ = TransferMeter::open(stream);
+        payload_ = TransferMeter{stream};
     }
     return payload_;
 }
@@ -113,7 +112,7 @@ void HttpGenerator::endTransmission()
 {
     if (payload_) {
         bytesWritten_ = payload_->totalWritten();
-        payload_ = 0;
+        payload_ = TransferMeter{};
     }
 }
 

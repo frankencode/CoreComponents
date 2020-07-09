@@ -18,114 +18,126 @@ namespace cc {
   * \brief Byte encoding sink
   * \see ByteSource, CaptureSink
   */
-class ByteSink: public Object
+class ByteSink
 {
 public:
+    class Instance
+    {
+    public:
+        /// write a single character
+        void write(char ch) { writeUInt8((uint8_t)ch); }
+
+        /// write a String of bytes
+        void write(const String &s);
+
+        /// Write a single byte
+        void writeUInt8(uint8_t x);
+
+        /// Write a 2-byte word
+        void writeUInt16(uint16_t x);
+
+        /// Write a 4-byte word
+        void writeUInt32(uint32_t x);
+
+        /// Write an 8-byte word
+        void writeUInt64(uint64_t x);
+
+        /// Write a signed byte
+        void writeInt8(int8_t x) { writeUInt8(union_cast<uint8_t>(x)); }
+
+        /// Write a signed 2-byte word
+        void writeInt16(int16_t x) { writeUInt16(union_cast<uint16_t>(x)); }
+
+        /// Write a signed 4-byte word
+        void writeInt32(int32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
+
+        /// Write a signed 8-byte word
+        void writeInt64(int64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
+
+        /// Write a simple precision floating point number
+        void writeFloat32(float32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
+
+        /// Write a double precision floating point number
+        void writeFloat64(float64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
+
+        /// Flush the output buffer and write cached bytes to the output sink
+        void flush();
+
+        /// The output sink
+        Stream sink() const { return sink_; }
+
+        /// The output buffer
+        const CharArray *buffer() const { return buffer_; }
+
+        /// Current endianess for encoding multi-byte words
+        ByteOrder endian() const { return endian_; }
+
+        /// Switch endianess
+        void setEndian(ByteOrder endian) { endian_ = endian; }
+
+        /// Total number of bytes written
+        off_t currentOffset() const { return i0_ + i_; }
+
+    private:
+        friend class ByteSink;
+
+        Instance(const Stream &sink, CharArray *buffer, ByteOrder endian):
+            sink_{sink},
+            buffer_{buffer},
+            endian_{endian},
+            i0_{0}, i_{0}
+        {
+            if (!buffer_) buffer_ = String::allocate(0x1000);
+        }
+
+        ~Instance()
+        {
+            if (sink_ &&  i_ > 0) flush();
+        }
+
+        Stream sink_;
+        String buffer_;
+        ByteOrder endian_;
+        off_t i0_;
+        int i_;
+    };
+
     /** Open a new ByteSink
       * \param sink datra sink to write bytes to
       * \param buffer output buffer to use
       * \param endian endianess for writing multi-byte words
-      * \return new object instance
       */
-    static Ref<ByteSink> open(Stream *sink, CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian) {
-        return new ByteSink{sink, buffer, endian};
-    }
+    ByteSink(const Stream &sink, CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian):
+        instance_{sink, buffer, endian}
+    {}
 
     /** Open a new ByteSink
       * \param sink sink to write bytes to
       * \param endian endianess for writing multi-byte words
-      * \return new object instance
       */
-    static Ref<ByteSink> open(Stream *sink, ByteOrder endian = ByteOrder::LittleEndian) {
-        return new ByteSink{sink, nullptr, endian};
-    }
+    ByteSink(const Stream &sink, ByteOrder endian = ByteOrder::LittleEndian):
+        instance_{sink, nullptr, endian}
+    {}
 
     /** Open a new ByteSink
       * \param buffer output buffer to use
       * \param endian endianess for writing multi-byte words
-      * \return new object instance
       */
-    static Ref<ByteSink> open(CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian) {
-        return new ByteSink{nullptr, buffer, endian};
-    }
+    ByteSink(CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian):
+        instance_{Stream{}, buffer, endian}
+    {}
 
-    /// write a single character
-    void write(char ch) { writeUInt8((uint8_t)ch); }
-
-    /// write a String of bytes
-    void write(const String &s);
-
-    /// Write a single byte
-    void writeUInt8(uint8_t x);
-
-    /// Write a 2-byte word
-    void writeUInt16(uint16_t x);
-
-    /// Write a 4-byte word
-    void writeUInt32(uint32_t x);
-
-    /// Write an 8-byte word
-    void writeUInt64(uint64_t x);
-
-    /// Write a signed byte
-    void writeInt8(int8_t x) { writeUInt8(union_cast<uint8_t>(x)); }
-
-    /// Write a signed 2-byte word
-    void writeInt16(int16_t x) { writeUInt16(union_cast<uint16_t>(x)); }
-
-    /// Write a signed 4-byte word
-    void writeInt32(int32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
-
-    /// Write a signed 8-byte word
-    void writeInt64(int64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
-
-    /// Write a simple precision floating point number
-    void writeFloat32(float32_t x) { writeUInt32(union_cast<uint32_t>(x)); }
-
-    /// Write a double precision floating point number
-    void writeFloat64(float64_t x) { writeUInt64(union_cast<uint64_t>(x)); }
-
-    /// Flush the output buffer and write cached bytes to the output sink
-    void flush();
-
-    /// The output sink
-    Stream *sink() const { return sink_; }
-
-    /// The output buffer
-    const CharArray *buffer() const { return buffer_; }
-
-    /// Current endianess for encoding multi-byte words
-    ByteOrder endian() const { return endian_; }
-
-    /// Switch endianess
-    void setEndian(ByteOrder endian) { endian_ = endian; }
-
-    /// Total number of bytes written
-    off_t currentOffset() const { return i0_ + i_; }
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
 
 private:
-    ByteSink(Stream *sink, CharArray *buffer, ByteOrder endian):
-        sink_{sink},
-        buffer_{buffer},
-        endian_{endian},
-        i0_{0}, i_{0}
-    {
-        if (!buffer_) buffer_ = String::allocate(0x1000);
-    }
+    ByteSink(const ByteSink &);
+    ByteSink &operator=(const ByteSink &);
 
-    ~ByteSink()
-    {
-        if (sink_ &&  i_ > 0) flush();
-    }
-
-    Ref<Stream> sink_;
-    String buffer_;
-    ByteOrder endian_;
-    off_t i0_;
-    int i_;
+    Instance instance_;
 };
 
-inline void ByteSink::flush()
+inline void ByteSink::Instance::flush()
 {
     if (!sink_) throw BufferOverflow{};
 
@@ -134,19 +146,19 @@ inline void ByteSink::flush()
     i_ = 0;
 }
 
-inline void ByteSink::write(const String &s)
+inline void ByteSink::Instance::write(const String &s)
 {
     for (int i = 0, n = s->count(); i < n; ++i)
         write(s->at(i));
 }
 
-inline void ByteSink::writeUInt8(uint8_t x)
+inline void ByteSink::Instance::writeUInt8(uint8_t x)
 {
     if (i_ == buffer_->count()) flush();
     mutate(buffer_)->at(i_++) = x;
 }
 
-inline void ByteSink::writeUInt16(uint16_t x)
+inline void ByteSink::Instance::writeUInt16(uint16_t x)
 {
     if (endian_ == ByteOrder::LittleEndian)
     {
@@ -160,7 +172,7 @@ inline void ByteSink::writeUInt16(uint16_t x)
     }
 }
 
-inline void ByteSink::writeUInt32(uint32_t x)
+inline void ByteSink::Instance::writeUInt32(uint32_t x)
 {
     if (endian_ == ByteOrder::LittleEndian)
     {
@@ -178,7 +190,7 @@ inline void ByteSink::writeUInt32(uint32_t x)
     }
 }
 
-inline void ByteSink::writeUInt64(uint64_t x)
+inline void ByteSink::Instance::writeUInt64(uint64_t x)
 {
     if (endian_ == ByteOrder::LittleEndian) {
         for (int i = 0; i < int(sizeof(x)); ++i, x >>= 8)

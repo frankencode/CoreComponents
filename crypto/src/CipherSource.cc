@@ -11,12 +11,7 @@
 namespace cc {
 namespace crypto {
 
-Ref<CipherSource> CipherSource::open(BlockCipher *cipher, Stream *source)
-{
-    return new CipherSource{cipher,  source};
-}
-
-CipherSource::CipherSource(BlockCipher *cipher, Stream *source):
+CipherSource::Instance::Instance(BlockCipher *cipher, const Stream &source):
     cipher_{cipher},
     source_{source},
     block_{String::allocate(cipher_->blockSize())},
@@ -24,7 +19,7 @@ CipherSource::CipherSource(BlockCipher *cipher, Stream *source):
     j_{0}, m_{0}
 {}
 
-int CipherSource::read(CharArray *data)
+int CipherSource::Instance::read(CharArray *data)
 {
     if (m_ < 0) return 0;
 

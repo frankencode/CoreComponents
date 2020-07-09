@@ -40,12 +40,12 @@ public:
       * \param pattern formatting pattern containing injection placeholders ("%%")
       * \param stream output stream to write the resulting text to (optional)
       */
-    Format(const String &pattern, Stream *stream = nullptr);
+    Format(const String &pattern, const Stream &stream = Stream{});
 
     /** Construct a new String formatting helper
       * \param stream output stream to write the resulting text to (optional)
       */
-    Format(Stream *stream = nullptr);
+    Format(const Stream &stream = Stream{});
 
     /// Low-level destructor
     ~Format();
@@ -81,7 +81,7 @@ public:
 private:
     void flush();
 
-    Ref<Stream> stream_;
+    Stream stream_;
     bool isNull_;
     Ref< QueueInstance<int> > placeHolder_;
     String lastInsert_;

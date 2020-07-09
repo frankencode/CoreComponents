@@ -78,7 +78,7 @@ int main(int argc, char **argv)
         }
         else {
             newData = String::allocate(4);
-            ByteSink::open(mutate(newData))->writeInt32(intValue);
+            ByteSink{mutate(newData)}->writeInt32(intValue);
         }
 
         if (debug) {

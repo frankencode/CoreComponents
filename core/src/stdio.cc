@@ -17,16 +17,16 @@ class StdIo: public Object, public Singleton< StdIo<fd> >
 {
 public:
     StdIo():
-        stream_{SystemStream::create(fd)}
+        stream_{fd}
     {
         stream_->setScatterLimit(-1);
     }
 
-    Ref<SystemStream> stream_;
+    SystemStream stream_;
 };
 
-SystemStream *stdIn () { return StdIo<StandardInputFd >::instance()->stream_; }
-SystemStream *stdOut() { return StdIo<StandardOutputFd>::instance()->stream_; }
-SystemStream *stdErr() { return StdIo<StandardErrorFd >::instance()->stream_; }
+SystemStream &stdIn () { return StdIo<StandardInputFd >::instance()->stream_; }
+SystemStream &stdOut() { return StdIo<StandardOutputFd>::instance()->stream_; }
+SystemStream &stdErr() { return StdIo<StandardErrorFd >::instance()->stream_; }
 
 } // namespace cc

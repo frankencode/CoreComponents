@@ -89,10 +89,11 @@ void NodeMaster::run()
 
 void NodeMaster::runNode()
 {
-    List< Ref<StreamSocket> > listeningSockets;
+    List<StreamSocket> listeningSockets;
 
     for (const SocketAddress &address: config()->address()) {
-        auto socket = StreamSocket::listen(address);
+        StreamSocket socket;
+        socket->listen(address);
         CCNODE_NOTICE() << "Start listening at " << socket->address() << nl;
         listeningSockets->append(socket);
     }
@@ -121,20 +122,20 @@ void NodeMaster::runNode()
     }
 
     Ref<IoMonitor> ioMonitor = IoMonitor::create(listeningSockets->count());
-    for (StreamSocket *socket: listeningSockets)
+    for (StreamSocket &socket: listeningSockets)
         ioMonitor->addEvent(IoReady::Accept, socket);
 
     CCNODE_DEBUG() << "Accepting connections" << nl;
 
-    for (StreamSocket *socket: listeningSockets)
+    for (StreamSocket &socket: listeningSockets)
         startedChannel_->pushBack(socket->address());
 
     while (true) {
         IoActivity activity = ioMonitor->wait(1000);
         for (const IoEvent *event: activity) {
             try {
-                StreamSocket *listeningSocket = Object::cast<StreamSocket *>(event->target());
-                Ref<HttpServerSocket> clientSocket = HttpServerSocket::accept(listeningSocket, config(), securityCache);
+                StreamSocket listeningSocket = event->target();
+                HttpServerSocket clientSocket{listeningSocket, config(), securityCache};
                 Ref<HttpServerConnection> clientConnection = HttpServerConnection::open(clientSocket);
                 if (connectionManager->accept(clientConnection)) {
                     CCNODE_DEBUG() << "Accepted connection from " << clientConnection->address() << " with priority " << clientConnection->priority() << nl;

@@ -13,7 +13,7 @@
 namespace cc {
 namespace entropy {
 
-HuffmanCodec::HuffmanCodec():
+HuffmanCodec::Instance::Instance():
     buffer_{CharArray::allocate(4096)},
     nodes_{512},
     codeMap_{256 + 512},
@@ -22,14 +22,14 @@ HuffmanCodec::HuffmanCodec():
 {
 }
 
-void HuffmanCodec::reset()
+void HuffmanCodec::Instance::reset()
 {
     nodesFill_ = 0;
     for (NodeRef &entry: codeMap_)
         entry.node_ = 0;
 }
 
-inline void HuffmanCodec::addSymbol(int value, int count0)
+inline void HuffmanCodec::Instance::addSymbol(int value, int count0)
 {
     nodes_->at(nodesFill_) = Node {
         .parent_ = 0xFFFF,
@@ -42,7 +42,7 @@ inline void HuffmanCodec::addSymbol(int value, int count0)
     ++nodesFill_;
 }
 
-void HuffmanCodec::generateCodeTable()
+void HuffmanCodec::Instance::generateCodeTable()
 {
     heap_->deplete();
     for (int i = 0; i < nodesFill_; ++i)
@@ -71,7 +71,7 @@ void HuffmanCodec::generateCodeTable()
         root_ = 0xFFFF;
 }
 
-int HuffmanCodec::encode(Stream *source, BitSink *sink)
+int HuffmanCodec::Instance::encode(Stream &source, BitSink &sink)
 {
     /// fill input buffer
 
@@ -168,7 +168,7 @@ int HuffmanCodec::encode(Stream *source, BitSink *sink)
     return bufferFill;
 }
 
-int HuffmanCodec::decode(BitSource *source, Stream *sink)
+int HuffmanCodec::Instance::decode(BitSource &source, Stream &sink)
 {
     /// read header
 
@@ -213,21 +213,20 @@ int HuffmanCodec::decode(BitSource *source, Stream *sink)
 
 String HuffmanCodec::encode(const String &message)
 {
-    auto replaySource = ReplaySource::open(message);
-    auto captureSink = CaptureSink::open();
+    ReplaySource replaySource{message};
+    CaptureSink captureSink;
     {
-        auto bitSink = BitSink::open(captureSink);
-        while (HuffmanCodec::create()->encode(replaySource, bitSink));
+        BitSink bitSink{captureSink};
+        for (HuffmanCodec huffman; huffman->encode(replaySource, bitSink););
     }
     return captureSink->collect();
 }
 
 String HuffmanCodec::decode(const String &message)
 {
-    auto bitSource = BitSource::open(message);
-    auto captureSink = CaptureSink::open();
-    auto huffmanCodec = HuffmanCodec::create();
-    while (huffmanCodec->decode(bitSource, captureSink));
+    BitSource bitSource{message};
+    CaptureSink captureSink;
+    for (HuffmanCodec huffman; huffman->decode(bitSource, captureSink););
     return captureSink->collect();
 }
 

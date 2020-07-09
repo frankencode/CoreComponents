@@ -39,7 +39,7 @@ private:
 
     static void printDebug(struct udev_device *device);
 
-    Ref<SystemStream> controlMaster_, controlSlave_;
+    SystemStream controlMaster_, controlSlave_;
 };
 
 }} // namespace cc::sys

@@ -39,7 +39,7 @@ public:
           * \param path file path of the file to open
           * \return new content stream
           */
-        Ref<Stream> openFile(const String &path) override;
+        Stream openFile(const String &path) override;
 
     private:
         friend class Dir;

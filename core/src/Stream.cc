@@ -12,22 +12,22 @@
 
 namespace cc {
 
-int Stream::read(CharArray *)
+int Stream::Instance::read(CharArray *)
 {
     return 0;
 }
 
-void Stream::write(const CharArray *)
+void Stream::Instance::write(const CharArray *)
 {}
 
-void Stream::write(const StringList &parts)
+void Stream::Instance::write(const StringList &parts)
 {
     for (const String &part: parts)
         write(part);
 }
 
 // \todo this helper method shouldn't be needed
-void Stream::write(const Format &data)
+void Stream::Instance::write(const Format &data)
 {
     write(static_cast<const StringList &>(data));
 }
@@ -45,13 +45,13 @@ public:
     {}
 };
 
-void Stream::write(const void *data, int size)
+void Stream::Instance::write(const void *data, int size)
 {
     WrappedChunk chunk(data, size);
     write(&chunk);
 }
 
-off_t Stream::transferSpanTo(off_t count, Stream *sink, CharArray *buffer)
+off_t Stream::Instance::transferSpanTo(off_t count, const Stream &sink, CharArray *buffer)
 {
     if (count == 0) return 0;
 
@@ -77,7 +77,7 @@ off_t Stream::transferSpanTo(off_t count, Stream *sink, CharArray *buffer)
     return total;
 }
 
-int Stream::readSpan(CharArray *data)
+int Stream::Instance::readSpan(CharArray *data)
 {
     const int w = data->count();
     int m = 0;
@@ -89,7 +89,7 @@ int Stream::readSpan(CharArray *data)
     return m;
 }
 
-String Stream::readSpan(int count)
+String Stream::Instance::readSpan(int count)
 {
     if (count == 0) return String{};
     if (count < 0) return readAll();
@@ -98,7 +98,7 @@ String Stream::readSpan(int count)
     return s;
 }
 
-String Stream::readAll(CharArray *buffer)
+String Stream::Instance::readAll(CharArray *buffer)
 {
     String data = buffer;
     if (!data) data = String::allocate(0x4000);

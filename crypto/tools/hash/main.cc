@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/stdio>
-#include <cc/exceptions>
-#include <cc/Arguments>
-#include <cc/File>
-#include <cc/Transfer>
 #include <cc/crypto/Sha1Sink>
 #include <cc/crypto/Md5Sink>
 #include <cc/crypto/HashMeter>
+#include <cc/File>
+#include <cc/Transfer>
+#include <cc/Arguments>
+#include <cc/exceptions>
+#include <cc/stdio>
 
 using namespace cc;
 using namespace cc::crypto;
@@ -26,10 +26,10 @@ int main(int argc, char **argv)
         if (items->count() == 0) items->append("");
 
         for (String path: items) {
-            Ref<HashSink> hashSink;
-            if (toolName->contains("sha1")) hashSink = Sha1Sink::open();
-            else hashSink = Md5Sink::open();
-            Ref<Stream> source;
+            HashSink hashSink;
+            if (toolName->contains("sha1")) hashSink = Sha1Sink{};
+            else hashSink = Md5Sink{};
+            Stream source;
             if (path != "") source = File{path};
             else { source = cc::stdIn(); path = "-"; }
             source->transferTo(hashSink);

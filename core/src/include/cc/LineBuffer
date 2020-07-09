@@ -17,26 +17,42 @@ namespace cc {
 class LineBuffer: public Stream
 {
 public:
-    static Ref<LineBuffer> open(Stream *stream = nullptr, const String &prefix = "");
+    class Instance: public Stream::Instance
+    {
+    public:
+        Stream sink() const { return sink_; }
+        virtual String prefix() const;
 
-    Stream *stream() const { return stream_; }
-    virtual String prefix() const;
+        int read(CharArray *data) override;
+        void write(const CharArray *data) override;
+        void write(const StringList &parts) override;
 
-    int read(CharArray *data) override;
-    void write(const CharArray *data) override;
-    void write(const StringList &parts) override;
+        int flush();
 
-    int flush();
+    protected:
+        friend class LineBuffer;
+
+        Instance(const Stream &sink, const String &prefix = "");
+
+        virtual void writeLine(const CharArray *data);
+
+    private:
+        Stream sink_;
+        String prefix_;
+        StringList backlog_;
+    };
+
+    LineBuffer(const Stream &sink = Stream{}, const String &prefix = ""):
+        Stream{new Instance{sink, prefix}}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
+    operator Instance *() const { return my<Instance>(); }
 
 protected:
-    LineBuffer(Stream *stream = nullptr, const String &prefix = "");
-
-    virtual void writeLine(const CharArray *data);
-
-private:
-    Ref<Stream> stream_;
-    String prefix_;
-    StringList backlog_;
+    LineBuffer(Instance *instance):
+        Stream{instance}
+    {}
 };
 
 } // namespace cc

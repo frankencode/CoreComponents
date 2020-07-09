@@ -23,7 +23,7 @@ class DeliveryInstance;
 class HttpServerConnection: public HttpConnection
 {
 public:
-    static Ref<HttpServerConnection> open(HttpServerSocket *socket);
+    static Ref<HttpServerConnection> open(const HttpServerSocket &socket);
 
     SocketAddress address() const { return socket_->address(); }
 
@@ -38,13 +38,13 @@ public:
     int priority() const { return connectionInfo_->priority(); }
 
 private:
-    HttpServerConnection(HttpServerSocket *socket);
+    HttpServerConnection(const HttpServerSocket &socket);
 
     Ref<HttpRequest> scanRequest();
-    void readFirstLine(LineSource *source, HttpMessage *message) override;
+    void readFirstLine(LineSource &source, HttpMessage *message) override;
     void onHeaderReceived(HttpMessage *message) override;
 
-    Ref<HttpServerSocket> socket_;
+    HttpServerSocket socket_;
     Ref<HttpRequest> request_, pendingRequest_;
     Ref<ConnectionInfo> connectionInfo_;
 };

@@ -19,14 +19,24 @@ namespace crypto {
 class CryptoHashSink: public HashSink
 {
 public:
-    /** Create a deep copy of this hash sink
-      * \return new object instance
-      */
-    virtual Ref<CryptoHashSink> copy() const = 0;
+    class Instance: public HashSink::Instance
+    {
+    public:
+        /** Create a deep copy of this hash sink
+          */
+        virtual CryptoHashSink copy() const = 0;
 
-    /** Block size of the hash sum in bytes
-      */
-    virtual int blockSize() const = 0;
+        /** Block size of the hash sum in bytes
+          */
+        virtual int blockSize() const = 0;
+    };
+
+    Instance *operator->() const { return my<Instance>(); }
+
+protected:
+    CryptoHashSink(Instance *instance):
+        HashSink{instance}
+    {}
 };
 
 }} // namespace cc::crypto

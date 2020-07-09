@@ -36,17 +36,7 @@ inline uint32_t f(int t, uint32_t b, uint32_t c, uint32_t d)
 
 } // namespace _sha1
 
-Ref<Sha1Sink> Sha1Sink::open()
-{
-    return new Sha1Sink;
-}
-
-Ref<CryptoHashSink> Sha1Sink::copy() const
-{
-    return new Sha1Sink{this};
-}
-
-Sha1Sink::Sha1Sink():
+Sha1Sink::Instance::Instance():
     h_{String::create(20)},
     m_{String::create(64)},
     w_{String::create(320)},
@@ -60,7 +50,7 @@ Sha1Sink::Sha1Sink():
     mutate(h_)->wordAt(4) = 0xC3D2E1F0;
 }
 
-Sha1Sink::Sha1Sink(const Sha1Sink *other):
+Sha1Sink::Instance::Instance(const Instance *other):
     h_{other->h_->copy()},
     m_{other->m_->copy()},
     w_{other->w_->copy()},
@@ -68,12 +58,17 @@ Sha1Sink::Sha1Sink(const Sha1Sink *other):
     l_{other->l_}
 {}
 
-int Sha1Sink::blockSize() const
+CryptoHashSink Sha1Sink::Instance::copy() const
+{
+    return Sha1Sink{new Instance{this}};
+}
+
+int Sha1Sink::Instance::blockSize() const
 {
     return 64;
 }
 
-void Sha1Sink::write(const CharArray *data)
+void Sha1Sink::Instance::write(const CharArray *data)
 {
     for (int i = 0; i < data->count(); ++i) {
         uint8_t b = data->byteAt(i);
@@ -83,7 +78,7 @@ void Sha1Sink::write(const CharArray *data)
     l_ += uint64_t(data->count()) * 8;
 }
 
-String Sha1Sink::finish()
+String Sha1Sink::Instance::finish()
 {
     mutate(m_)->byteAt(j_++) = 0x80;
     if (j_ == 64) consume();
@@ -107,7 +102,7 @@ String Sha1Sink::finish()
     return h_;
 }
 
-void Sha1Sink::consume()
+void Sha1Sink::Instance::consume()
 {
     j_ = 0;
 
@@ -146,9 +141,9 @@ void Sha1Sink::consume()
 
 String sha1(const CharArray *data)
 {
-    Ref<Sha1Sink> h = Sha1Sink::open();
-    h->write(data);
-    return h->finish();
+    Sha1Sink hash;
+    hash->write(data);
+    return hash->finish();
 }
 
 }} // namespace cc::crypto

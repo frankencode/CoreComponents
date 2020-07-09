@@ -26,26 +26,37 @@ using namespace cc::net;
 class HttpClientSocket: public HttpSocket
 {
 public:
-    static Ref<HttpClientSocket> create(const SocketAddress &serverAddress, const String &serverName = "", const HttpClientSecurity *security = nullptr);
-    static Ref<HttpClientSocket> connect(const SocketAddress &serverAddress, const String &serverName = "", const HttpClientSecurity *security = nullptr);
+    class Instance: public HttpSocket::Instance
+    {
+    public:
+        bool isSecure() const;
+        void shutdown();
 
-    bool isSecure() const;
-    void connect();
-    void shutdown();
+    private:
+        friend class HttpClientSocket;
 
-private:
-    HttpClientSocket(const SocketAddress &serverAddress, const String &serverName, const HttpClientSecurity *security);
+        Instance(const SocketAddress &serverAddress, const String &serverName, const HttpClientSecurity *security);
 
-    void initSession();
-    void handshake();
+        void connect();
+        void initSession();
+        void handshake();
 
-    bool waitInput() override;
-    void ioException(Exception &ex) const override;
+        bool waitInput() override;
+        void ioException(Exception &ex) const override;
 
-    String serverName_;
-    Ref<const HttpClientSecurity> security_;
-    Ref<StreamSocket> controlMaster_, controlSlave_;
-    const IoEvent *readyRead_;
+        String serverName_;
+        Ref<const HttpClientSecurity> security_;
+        StreamSocket controlMaster_, controlSlave_;
+        const IoEvent *readyRead_;
+    };
+
+    HttpClientSocket(const SocketAddress &serverAddress, const String &serverName = "", const HttpClientSecurity *security = nullptr):
+        HttpSocket{new Instance{serverAddress, serverName, security}}
+    {
+        my<Instance>()->connect();
+    }
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::http

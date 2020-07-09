@@ -10,7 +10,7 @@
 
 namespace cc {
 
-char32_t Utf8Source::readMultiByte(char32_t ch)
+char32_t Utf8Source::Instance::readMultiByte(char32_t ch)
 {
     int n = -1; // number of additional bytes
 
@@ -58,7 +58,7 @@ char32_t Utf8Source::readMultiByte(char32_t ch)
     return ch;
 }
 
-String Utf8Source::DecodingError::message() const
+String Utf8Source::Instance::DecodingError::message() const
 {
     return "UTF-8 error: failed to decode input bytes";
 }

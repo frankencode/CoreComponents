@@ -13,16 +13,12 @@
 
 namespace cc {
 
-Ref<SocketPair> SocketPair::create()
-{
-    return new SocketPair{};
-}
-
-SocketPair::SocketPair()
+SocketPair::Instance::Instance()
 {
     int fd[2] = { 0, 0 };
     if (::socketpair(AF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC, 0, fd) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
+
     fd_ = fd[0];
     slaveFd_ = fd[1];
 }

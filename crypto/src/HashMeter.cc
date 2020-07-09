@@ -11,7 +11,7 @@
 namespace cc {
 namespace crypto {
 
-HashMeter::Instance::Instance(HashSink *hashSink, Stream *stream):
+HashMeter::Instance::Instance(const HashSink &hashSink, const Stream &stream):
     hashSink_{hashSink},
     stream_{stream}
 {}

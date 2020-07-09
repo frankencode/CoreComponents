@@ -11,12 +11,7 @@
 namespace cc {
 namespace crypto {
 
-Ref<HashMacSink> HashMacSink::open(const CryptoHashSink *hashSink, const CharArray *key)
-{
-    return new HashMacSink{hashSink, key};
-}
-
-Ref<CryptoHashSink> HashMacSink::prepareHashSink(const CryptoHashSink *hashSink, const CharArray *key, uint8_t blind)
+CryptoHashSink HashMacSink::Instance::prepareHashSink(const CryptoHashSink &hashSink, const CharArray *key, uint8_t blind)
 {
     auto preparedKey = String::allocate(hashSink->blockSize());
     mutate(preparedKey)->fill(0);
@@ -29,32 +24,32 @@ Ref<CryptoHashSink> HashMacSink::prepareHashSink(const CryptoHashSink *hashSink,
     return preparedHashSink;
 }
 
-HashMacSink::HashMacSink(const CryptoHashSink *hashSink, const CharArray *key):
+HashMacSink::Instance::Instance(const CryptoHashSink &hashSink, const CharArray *key):
     outerHashSink_{prepareHashSink(hashSink, key, 0x5CU)},
     innerHashSink_{prepareHashSink(hashSink, key, 0x36U)}
 {}
 
-HashMacSink::HashMacSink(const HashMacSink *other):
+HashMacSink::Instance::Instance(const Instance *other):
     outerHashSink_{other->outerHashSink_->copy()},
     innerHashSink_{other->innerHashSink_->copy()}
 {}
 
-Ref<CryptoHashSink> HashMacSink::copy() const
+CryptoHashSink HashMacSink::Instance::copy() const
 {
-    return new HashMacSink{this};
+    return HashMacSink{new Instance{this}};
 }
 
-int HashMacSink::blockSize() const
+int HashMacSink::Instance::blockSize() const
 {
     return innerHashSink_->blockSize();
 }
 
-void HashMacSink::write(const CharArray *data)
+void HashMacSink::Instance::write(const CharArray *data)
 {
     innerHashSink_->write(data);
 }
 
-String HashMacSink::finish()
+String HashMacSink::Instance::finish()
 {
     outerHashSink_->write(innerHashSink_->finish());
     return outerHashSink_->finish();

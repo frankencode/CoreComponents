@@ -35,7 +35,7 @@ class SimpleEchoTest: public TestCase
         );
         server->start();
         auto address = server->waitStarted();
-        auto socket = HttpClientSocket::connect(address, "127.0.0.1");
+        HttpClientSocket socket{address, "127.0.0.1"};
         auto connection = HttpClientConnection::open(socket);
         auto request = HttpRequestGenerator::create(connection);
         request->setMethod("GET");

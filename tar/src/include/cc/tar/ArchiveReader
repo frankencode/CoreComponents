@@ -34,7 +34,7 @@ class ArchiveReader: public Object
 {
 public:
     virtual bool readHeader(Ref<ArchiveEntry> *entry) = 0;
-    virtual void readData(ArchiveEntry *entry, Stream *sink = nullptr) = 0;
+    virtual void readData(ArchiveEntry *entry, Stream sink = Stream{}) = 0;
     void skipData(ArchiveEntry *entry);
 };
 

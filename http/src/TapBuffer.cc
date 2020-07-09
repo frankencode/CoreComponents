@@ -13,22 +13,17 @@
 namespace cc {
 namespace http {
 
-Ref<TapBuffer> TapBuffer::open(Stream *stream, const String &prefix)
-{
-    return new TapBuffer{stream, prefix};
-}
-
-TapBuffer::TapBuffer(Stream *stream, const String &prefix):
-    LineBuffer{stream},
+TapBuffer::Instance::Instance(const Stream &stream, const String &prefix):
+    LineBuffer::Instance{stream},
     prefix_{prefix}
 {}
 
-String TapBuffer::prefix() const
+String TapBuffer::Instance::prefix() const
 {
     return "(" + inum(uint64_t(Thread::self()->id()), 62) + ") " + prefix_;
 }
 
-void TapBuffer::write(const CharArray *buf)
+void TapBuffer::Instance::write(const CharArray *buf)
 {
     StringList parts;
     int i = 0, i0 = 0;
@@ -54,10 +49,10 @@ void TapBuffer::write(const CharArray *buf)
     }
     if (parts->count() > 0) {
         if (i0 < i) parts->append(buf->copy(i0, i));
-        LineBuffer::write(parts->join());
+        LineBuffer::Instance::write(parts->join());
     }
     else
-        LineBuffer::write(buf);
+        LineBuffer::Instance::write(buf);
 }
 
 }} // namespace cc::http

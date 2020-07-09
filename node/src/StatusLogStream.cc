@@ -12,23 +12,18 @@
 namespace cc {
 namespace http {
 
-Ref<StatusLogStream> StatusLogStream::open(LoggingInstance *sink, LoggingLevel level)
-{
-    return new StatusLogStream{sink, level};
-}
-
-StatusLogStream::StatusLogStream(LoggingInstance *sink, LoggingLevel level):
+StatusLogStream::Instance::Instance(LoggingInstance *sink, LoggingLevel level):
     sink_{sink},
     level_{level}
 {}
 
-void StatusLogStream::write(const CharArray *data)
+void StatusLogStream::Instance::write(const CharArray *data)
 {
     if (data->endsWith('\n'))
         sink_->logMessage(data, level_);
 }
 
-void StatusLogStream::write(const StringList &parts)
+void StatusLogStream::Instance::write(const StringList &parts)
 {
     write(parts->join());
 }

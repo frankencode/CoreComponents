@@ -8,83 +8,93 @@
 
 #pragma once
 
-#include <cc/exceptions>
 #include <cc/Stream>
+#include <cc/exceptions>
 
 namespace cc {
 namespace entropy {
 
-class BitSource: public Object
+class BitSource
 {
 public:
-    static Ref<BitSource> open(Stream *source, CharArray *buffer = nullptr, ByteOrder endian = ByteOrder::LittleEndian)
+    class Instance
     {
-        return new BitSource{source, buffer, endian};
-    }
+    public:
+        uint8_t readBit();
+        uint8_t readUInt8();
+        uint16_t readUInt16();
+        uint32_t readUInt32();
+        uint64_t readUInt64();
 
-    static Ref<BitSource> open(const CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian)
-    {
-        return new BitSource{buffer, endian};
-    }
+        template<int DigitSize = 4>
+        unsigned readUIntVlc();
 
-    uint8_t readBit();
-    uint8_t readUInt8();
-    uint16_t readUInt16();
-    uint32_t readUInt32();
-    uint64_t readUInt64();
+        template<int DigitSize = 4>
+        int readIntVlc();
 
-    template<int DigitSize = 4>
-    unsigned readUIntVlc();
+        template<int wordSize>
+        unsigned readUInt();
 
-    template<int DigitSize = 4>
-    int readIntVlc();
+        unsigned readUInt(int wordSize);
 
-    template<int wordSize>
-    unsigned readUInt();
+        template<int wordSize>
+        int readInt();
 
-    unsigned readUInt(int wordSize);
+        int readInt(int wordSize);
 
-    template<int wordSize>
-    int readInt();
+        off_t currentOffset() const;
 
-    int readInt(int wordSize);
+    private:
+        friend class BitSource;
 
-    off_t currentOffset() const;
+        Instance(const Stream &source, CharArray *buffer, ByteOrder endian):
+            source_{source},
+            buffer_{buffer},
+            endian_{endian},
+            fill_{0},
+            i_{0},
+            iBit_{8},
+            nr_{0}
+        {
+            if (!buffer_) buffer_ = CharArray::allocate(0x1000);
+        }
 
-private:
-    BitSource(Stream *source, CharArray *buffer, ByteOrder endian):
-        source_{source},
-        buffer_{buffer},
-        endian_{endian},
-        fill_{0},
-        i_{0},
-        iBit_{8},
-        nr_{0}
-    {
-        if (!buffer_) buffer_ = CharArray::allocate(0x1000);
-    }
+        Instance(const CharArray *buffer, ByteOrder endian):
+            buffer_{const_cast<CharArray *>(buffer)},
+            endian_{endian},
+            fill_{buffer->count()},
+            i_{0},
+            iBit_{0},
+            nr_{buffer->count()}
+        {}
 
-    BitSource(const CharArray *buffer, ByteOrder endian):
-        buffer_{const_cast<CharArray *>(buffer)},
-        endian_{endian},
-        fill_{buffer->count()},
-        i_{0},
-        iBit_{0},
-        nr_{buffer->count()}
+        void fill();
+
+        Stream source_;
+        String buffer_;
+        ByteOrder endian_;
+        int fill_;
+        int i_;    // byte offset within buf_
+        int iBit_;    // bit offset in buf_[i]
+        off_t nr_;    // accumulated number of bytes read
+    };
+
+    BitSource(const Stream &source, CharArray *buffer = nullptr, ByteOrder endian = ByteOrder::LittleEndian):
+        instance_{source, buffer, endian}
     {}
 
-    void fill();
+    BitSource(const CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian):
+        instance_{buffer, endian}
+    {}
 
-    Ref<Stream> source_;
-    String buffer_;
-    ByteOrder endian_;
-    int fill_;
-    int i_;    // byte offset within buf_
-    int iBit_;    // bit offset in buf_[i]
-    off_t nr_;    // accumulated number of bytes read
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
+
+private:
+    Instance instance_;
 };
 
-inline void BitSource::fill()
+inline void BitSource::Instance::fill()
 {
     if (!source_) throw UnexpectedEndOfInputError{};
 
@@ -97,7 +107,7 @@ inline void BitSource::fill()
     iBit_ = 0;
 }
 
-inline uint8_t BitSource::readBit()
+inline uint8_t BitSource::Instance::readBit()
 {
     if (iBit_ == 8) {
         iBit_ = 0;
@@ -107,7 +117,7 @@ inline uint8_t BitSource::readBit()
     return (buffer_->byteAt(i_) >> (iBit_++)) & 1;
 }
 
-inline uint8_t BitSource::readUInt8()
+inline uint8_t BitSource::Instance::readUInt8()
 {
     uint8_t h = 0;
     for (int i = 0; i < 8; ++i)
@@ -115,7 +125,7 @@ inline uint8_t BitSource::readUInt8()
     return h;
 }
 
-inline uint16_t BitSource::readUInt16()
+inline uint16_t BitSource::Instance::readUInt16()
 {
     uint16_t h;
 
@@ -131,7 +141,7 @@ inline uint16_t BitSource::readUInt16()
     return h;
 }
 
-inline uint32_t BitSource::readUInt32()
+inline uint32_t BitSource::Instance::readUInt32()
 {
     uint32_t h;
 
@@ -151,7 +161,7 @@ inline uint32_t BitSource::readUInt32()
     return h;
 }
 
-inline uint64_t BitSource::readUInt64()
+inline uint64_t BitSource::Instance::readUInt64()
 {
     uint64_t h = 0;
 
@@ -168,7 +178,7 @@ inline uint64_t BitSource::readUInt64()
 }
 
 template<int DigitSize>
-inline unsigned BitSource::readUIntVlc()
+inline unsigned BitSource::Instance::readUIntVlc()
 {
     unsigned x = 0;
 
@@ -184,7 +194,7 @@ inline unsigned BitSource::readUIntVlc()
 }
 
 template<int DigitSize>
-inline int BitSource::readIntVlc()
+inline int BitSource::Instance::readIntVlc()
 {
     int x;
     if (readBit())
@@ -195,12 +205,12 @@ inline int BitSource::readIntVlc()
 }
 
 template<int WordSize>
-inline unsigned BitSource::readUInt()
+inline unsigned BitSource::Instance::readUInt()
 {
     return readUInt(WordSize);
 }
 
-inline unsigned BitSource::readUInt(int wordSize)
+inline unsigned BitSource::Instance::readUInt(int wordSize)
 {
     unsigned x = 0;
     for (int i = 0; i < wordSize; ++i)
@@ -209,17 +219,17 @@ inline unsigned BitSource::readUInt(int wordSize)
 }
 
 template<int WordSize>
-inline int BitSource::readInt()
+inline int BitSource::Instance::readInt()
 {
     return (int)readUInt<WordSize>();
 }
 
-inline int BitSource::readInt(int wordSize)
+inline int BitSource::Instance::readInt(int wordSize)
 {
     return (int)readUInt(wordSize);
 }
 
-inline off_t BitSource::currentOffset() const
+inline off_t BitSource::Instance::currentOffset() const
 {
     return nr_ - (/* unconsumed buffer bytes */ fill_ - i_ - (i_ + iBit_ > 0));
 }

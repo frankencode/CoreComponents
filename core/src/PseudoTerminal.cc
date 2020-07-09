@@ -16,12 +16,7 @@
 
 namespace cc {
 
-Ref<PseudoTerminal> PseudoTerminal::create()
-{
-    return new PseudoTerminal;
-}
-
-PseudoTerminal::PseudoTerminal()
+PseudoTerminal::Instance::Instance()
 {
     fd_ = ::posix_openpt(O_RDWR|O_NOCTTY);
     if (fd_ == -1) CC_SYSTEM_DEBUG_ERROR(errno);
@@ -31,7 +26,7 @@ PseudoTerminal::PseudoTerminal()
     if (slaveFd_ == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void PseudoTerminal::onStart()
+void PseudoTerminal::Instance::onStart()
 {
     ::close(slaveFd_);
 }

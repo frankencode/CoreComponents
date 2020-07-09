@@ -18,77 +18,101 @@ class Format;
   * \ingroup binary_io
   * \brief Abstract data stream
   */
-class Stream: public Object
+class Stream
 {
 public:
-    /** Read available data
-      * \param data target buffer
-      * \return number of bytes read
-      * \see CharArray::select()
-      */
-    virtual int read(CharArray *data);
+    class Instance: public virtual Object
+    {
+    public:
+        /** Read available data
+          * \param data target buffer
+          * \return number of bytes read
+          * \see CharArray::select()
+          */
+        virtual int read(CharArray *data);
 
-    /** Write data
-      * \param data source buffer
-      * \see CharArray::select()
-      */
-    virtual void write(const CharArray *data);
+        /** Write data
+          * \param data source buffer
+          * \see CharArray::select()
+          */
+        virtual void write(const CharArray *data);
 
-    /** Write multiple buffers atomically ("scatter write")
-      * \param parts list of source buffers
-      */
-    virtual void write(const StringList &parts);
+        /** Write multiple buffers atomically ("scatter write")
+          * \param parts list of source buffers
+          */
+        virtual void write(const StringList &parts);
 
-    /// Convenience wrapper
-    void write(const String &data) { write(static_cast<const CharArray *>(data)); }
+        /// Convenience wrapper
+        void write(const String &data) { write(static_cast<const CharArray *>(data)); }
 
-    /// Convenience wrapper
-    void write(const char *data) { write(String{data}); }
+        /// Convenience wrapper
+        void write(const char *data) { write(String{data}); }
 
-    /// Convenience wrapper
-    void write(const Format &data);
+        /// Convenience wrapper
+        void write(const Format &data);
 
-    /// Convenience wrapper
-    void write(const void *data, int size);
+        /// Convenience wrapper
+        void write(const void *data, int size);
 
-    /** Transfer a span of bytes
-      * \param count number of bytes to transfer (or -1 for all)
-      * \param sink target stream (or null for dump mode)
-      * \param buffer auxiliary transfer buffer
-      * \return number of bytes transferred
-      * \see Transfer
-      */
-    virtual off_t transferSpanTo(off_t count, Stream *sink, CharArray *buffer = nullptr);
+        /** Transfer a span of bytes
+          * \param count number of bytes to transfer (or -1 for all)
+          * \param sink target stream (or null for dump mode)
+          * \param buffer auxiliary transfer buffer
+          * \return number of bytes transferred
+          * \see Transfer
+          */
+        virtual off_t transferSpanTo(off_t count, const Stream &sink = Stream{}, CharArray *buffer = nullptr);
 
-    /// Convenience wrapper for transferSpanTo(sink, -1, buffer)
-    off_t transferTo(Stream *sink, CharArray *buffer = nullptr) { return transferSpanTo(-1, sink, buffer); }
+        /// Convenience wrapper for transferSpanTo(sink, -1, buffer)
+        off_t transferTo(const Stream &sink, CharArray *buffer = nullptr) { return transferSpanTo(-1, sink, buffer); }
 
-    /// Convenience wrapper for transferSpanTo(0, count)
-    off_t skip(off_t count) { return transferSpanTo(count, nullptr); }
+        /// Convenience wrapper for transferSpanTo(0, count)
+        off_t skip(off_t count) { return transferSpanTo(count, nullptr); }
 
-    /// Convenience wrapper for transferSpanTo(-1, nullptr, buffer)
-    void drain(CharArray *buffer = nullptr) { transferSpanTo(-1, nullptr, buffer); }
+        /// Convenience wrapper for transferSpanTo(-1, nullptr, buffer)
+        void drain(CharArray *buffer = nullptr) { transferSpanTo(-1, nullptr, buffer); }
 
-    /** Read a span of bytes
-      * \param data target buffer
-      * \return number of bytes read
-      */
-    int readSpan(CharArray *data);
+        /** Read a span of bytes
+          * \param data target buffer
+          * \return number of bytes read
+          */
+        int readSpan(CharArray *data);
 
-    /** Read a fixed number of bytes (N)
-      * \param count number of bytes to read (N)
-      * \return String of exactly N bytes (padded with zeros if no more data could be read)
-      */
-    String readSpan(int count);
+        /** Read a fixed number of bytes (N)
+          * \param count number of bytes to read (N)
+          * \return String of exactly N bytes (padded with zeros if no more data could be read)
+          */
+        String readSpan(int count);
 
-    /** Read the entire stream
-      * \param buffer auxiliary transfer buffer
-      * \return all byte read from the stream
-      */
-    String readAll(CharArray *buffer = nullptr);
+        /** Read the entire stream
+          * \param buffer auxiliary transfer buffer
+          * \return all byte read from the stream
+          */
+        String readAll(CharArray *buffer = nullptr);
+
+        /// Return true if this Stream is readonly
+        virtual bool isReadOnly() const { return false; }
+
+    protected:
+        Instance() = default;
+    };
+
+    Stream() = default;
+
+    Stream(Instance *instance):
+        instance_{instance}
+    {}
+
+    Instance *operator->() const { return instance_; }
+    operator Instance *() const { return instance_; }
+    explicit operator bool() const { return instance_; }
 
 protected:
-    virtual ~Stream() {}
+    template<class T>
+    T *my() const { return as<T>(instance_); }
+
+private:
+    Ref<Instance> instance_;
 };
 
 } // namespace cc

@@ -82,7 +82,9 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
         if (cgiInstance_->serverAddress()->count() > 1)
             CCNODE_DEBUG() << "Forwarding request to server " << address << nl;
 
-        cgiServer = CgiServerConnection::open(StreamSocket::connect(address));
+        StreamSocket cgiSocket;
+        cgiSocket->connect(address);
+        cgiServer = CgiServerConnection::open(cgiSocket);
         if (errorLoggingInstance()->verbosity() >= LoggingLevel::Debug)
             cgiServer->setupTransferLog(errorLoggingInstance()->debugStream(), address->toString());
 
@@ -104,7 +106,8 @@ void CgiDelegate::process(const HttpRequest *request, const String &script, cons
         env->insert("SCRIPT_NAME", "/" + scriptPath->baseName());
         if (documentRoot != "") env->insert("DOCUMENT_ROOT", documentRoot);
 
-        Ref<SocketPair> pair = SocketPair::create();
+        SocketPair pair;
+
         sub =
             Process{
                 Command{}

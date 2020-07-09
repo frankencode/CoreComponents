@@ -18,10 +18,10 @@ namespace crypto {
   * \brief Hash sum computing stream meter
   * \see cc::stream::TransferMeter
   */
-class HashMeter
+class HashMeter: public Stream
 {
 public:
-    class Instance: public Stream
+    class Instance: public Stream::Instance
     {
     public:
         int read(CharArray *data) override;
@@ -34,22 +34,21 @@ public:
     private:
         friend class HashMeter;
 
-        Instance(HashSink *hashSink, Stream *stream);
+        Instance(const HashSink &hashSink, const Stream &stream);
 
-        Ref<HashSink> hashSink_;
-        Ref<Stream> stream_;
+        HashSink hashSink_;
+        Stream stream_;
     };
 
     /** Open a new hash sum computing output stream
       * \param hashSink hashing sink to use (e.g. Sha1Sink)
       * \param stream input or output stream to meter
       */
-    HashMeter(HashSink *hashSink, Stream *stream = nullptr):
-        instance_{new Instance{hashSink, stream}}
+    HashMeter(const HashSink &hashSink, const Stream &stream = Stream{}):
+        Stream{new Instance{hashSink, stream}}
     {}
 
-private:
-    Ref<Instance> instance_;
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::crypto

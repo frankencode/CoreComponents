@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/Stream>
 #include <cc/crypto/BlockCipher>
+#include <cc/Stream>
 
 namespace cc {
 namespace crypto {
@@ -20,25 +20,34 @@ namespace crypto {
 class CipherSink: public Stream
 {
 public:
+    class Instance: public Stream::Instance
+    {
+    public:
+        void write(const CharArray *data) override;
+
+    private:
+        friend class CipherSink;
+
+        Instance(BlockCipher *cipher, const Stream &sink, const Stream &pad);
+        ~Instance();
+
+        Ref<BlockCipher> cipher_;
+        Stream sink_;
+        Stream pad_;
+        String block_;
+        String pending_;
+    };
+
     /** Open a new enciphering output stream
       * \param cipher block cipher to use for enciphering the plaintext
       * \param sink output sink to write the ciphertext to
       * \param pad input stream to read the padding from (optional)
-      * \return new object instance
       */
-    static Ref<CipherSink> open(BlockCipher *cipher, Stream *sink, Stream *pad = nullptr);
+    CipherSink(BlockCipher *cipher, const Stream &sink, const Stream &pad = Stream{}):
+        Stream{new Instance{cipher, sink, pad}}
+    {}
 
-    void write(const CharArray *data) override;
-
-private:
-    CipherSink(BlockCipher *cipher, Stream *sink, Stream *pad);
-    ~CipherSink();
-
-    Ref<BlockCipher> cipher_;
-    Ref<Stream> sink_;
-    Ref<Stream> pad_;
-    String block_;
-    String pending_;
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::crypto

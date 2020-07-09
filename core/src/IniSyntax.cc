@@ -13,7 +13,7 @@ namespace cc {
 
 void IniSyntax::parse(const String &text)
 {
-    auto source = LineSource::open(text);
+    LineSource source{text};
 
     for (String line; source->read(&line);) {
         mutate(line)->trimInsitu(" \t", " \t");

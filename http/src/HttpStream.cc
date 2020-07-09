@@ -8,18 +8,12 @@
 
 #include <cc/http/HttpStream>
 #include <cc/http/exceptions>
-#include <cc/TransferLimiter>
 #include <cc/System>
 
 namespace cc {
 namespace http {
 
-Ref<HttpStream> HttpStream::open(Stream *stream)
-{
-    return new HttpStream{stream};
-}
-
-HttpStream::HttpStream(Stream *stream):
+HttpStream::Instance::Instance(const Stream &stream):
     stream_{stream},
     payloadLeft_{-1},
     nlCount_{0},
@@ -27,12 +21,12 @@ HttpStream::HttpStream(Stream *stream):
     chunked_{false}
 {}
 
-bool HttpStream::isPayloadConsumed() const
+bool HttpStream::Instance::isPayloadConsumed() const
 {
     return payloadLeft_ == 0;
 }
 
-void HttpStream::nextHeader()
+void HttpStream::Instance::nextHeader()
 {
     if (eoi_) return;
     if (payloadLeft_ > 0) throw CloseRequest{};
@@ -41,14 +35,14 @@ void HttpStream::nextHeader()
     nlMax_ = 2;
 }
 
-void HttpStream::nextPayload(int64_t length)
+void HttpStream::Instance::nextPayload(int64_t length)
 {
     if (eoi_) throw CloseRequest{};
     payloadLeft_ = length;
     chunked_ = false;
 }
 
-void HttpStream::nextLine()
+void HttpStream::Instance::nextLine()
 {
     if (eoi_) throw CloseRequest{};
     payloadLeft_ = -1;
@@ -56,7 +50,7 @@ void HttpStream::nextLine()
     nlMax_ = 1;
 }
 
-void HttpStream::nextChunk()
+void HttpStream::Instance::nextChunk()
 {
     if (chunked_) {
         chunked_ = false;
@@ -78,20 +72,20 @@ void HttpStream::nextChunk()
     }
 }
 
-CharArray *HttpStream::buffer()
+CharArray *HttpStream::Instance::buffer()
 {
     if (!buffer_) buffer_ = String::allocate(0x1000);
     return mutate(buffer_);
 }
 
-void HttpStream::discard()
+void HttpStream::Instance::discard()
 {
-    if (!drainage_) drainage_ = TransferLimiter::open(this, 0x10000);
+    if (!drainage_) drainage_ = TransferLimiter{this, 0x10000};
     else drainage_->reset();
     drainage_->drain(buffer());
 }
 
-int HttpStream::read(CharArray *data)
+int HttpStream::Instance::read(CharArray *data)
 {
     if (eoi_) return 0;
 
@@ -156,12 +150,12 @@ int HttpStream::read(CharArray *data)
     return n;
 }
 
-void HttpStream::write(const CharArray *data)
+void HttpStream::Instance::write(const CharArray *data)
 {
     stream_->write(data);
 }
 
-void HttpStream::write(const StringList &parts)
+void HttpStream::Instance::write(const StringList &parts)
 {
     stream_->write(parts);
 }

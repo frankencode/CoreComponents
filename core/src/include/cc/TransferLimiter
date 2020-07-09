@@ -18,31 +18,43 @@ namespace cc {
 class TransferLimiter: public Stream
 {
 public:
-    static Ref<TransferLimiter> open(Stream *stream, size_t readLimit, size_t writeLimit = 0);
+    class Instance: public Stream::Instance
+    {
+    public:
+        Stream stream() const { return stream_; }
+        size_t readLimit() const { return readLimit_; }
+        size_t writeLimit() const { return writeLimit_; }
+        size_t totalRead() const { return totalRead_; }
+        size_t totalWritten() const { return totalWritten_; }
 
-    Stream *stream() const { return stream_; }
-    size_t readLimit() const { return readLimit_; }
-    size_t writeLimit() const { return writeLimit_; }
-    size_t totalRead() const { return totalRead_; }
-    size_t totalWritten() const { return totalWritten_; }
+        void reset() {
+            totalRead_ = 0;
+            totalWritten_ = 0;
+        }
 
-    void reset() {
-        totalRead_ = 0;
-        totalWritten_ = 0;
-    }
+        int read(CharArray *data) override;
+        void write(const CharArray *data) override;
+        void write(const StringList &parts) override;
 
-    int read(CharArray *data) override;
-    void write(const CharArray *data) override;
-    void write(const StringList &parts) override;
+    private:
+        friend class TransferLimiter;
 
-private:
-    TransferLimiter(Stream *stream, size_t readLimit, size_t writeLimit);
+        Instance(const Stream &stream, size_t readLimit, size_t writeLimit);
 
-    Ref<Stream> stream_;
-    size_t readLimit_;
-    size_t writeLimit_;
-    size_t totalRead_;
-    size_t totalWritten_;
+        Stream stream_;
+        size_t readLimit_;
+        size_t writeLimit_;
+        size_t totalRead_;
+        size_t totalWritten_;
+    };
+
+    TransferLimiter() = default;
+
+    TransferLimiter(const Stream &stream, size_t readLimit, size_t writeLimit = 0):
+        Stream{new Instance{stream, readLimit, writeLimit}}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 /** \brief General transfer limit exceeded exception

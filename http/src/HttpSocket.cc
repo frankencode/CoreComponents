@@ -12,18 +12,18 @@
 namespace cc {
 namespace http {
 
-HttpSocket::HttpSocket(const SocketAddress &address, int mode):
-    StreamSocket{address},
+HttpSocket::Instance::Instance(const SocketAddress &address, int mode):
+    StreamSocket::Instance{address},
     mode_{mode}
 {}
 
-int HttpSocket::read(CharArray *data)
+int HttpSocket::Instance::read(CharArray *data)
 {
     if (data->count() == 0) return 0;
 
     if (!(mode_ & Secure)) {
         if (!waitInput()) throw RequestTimeout{};
-        return StreamSocket::read(data);
+        return StreamSocket::Instance::read(data);
     }
 
     int ret = gnutls_record_recv(session_, data->bytes(), data->count());
@@ -33,12 +33,12 @@ int HttpSocket::read(CharArray *data)
     return ret;
 }
 
-void HttpSocket::write(const CharArray *data)
+void HttpSocket::Instance::write(const CharArray *data)
 {
     if (data->count() == 0) return;
 
     if (!(mode_ & Secure)) {
-        StreamSocket::write(data);
+        StreamSocket::Instance::write(data);
         return;
     }
 
@@ -53,45 +53,45 @@ void HttpSocket::write(const CharArray *data)
     }
 }
 
-void HttpSocket::write(const StringList &parts)
+void HttpSocket::Instance::write(const StringList &parts)
 {
     if (mode_ & Secure)
         write(parts->join());
     else
-        StreamSocket::write(parts);
+        StreamSocket::Instance::write(parts);
 }
 
-void HttpSocket::initTransport()
+void HttpSocket::Instance::initTransport()
 {
     gnutls_transport_set_ptr(session_, this);
     gnutls_transport_set_pull_function(session_, gnuTlsPull);
     gnutls_transport_set_vec_push_function(session_, gnuTlsPushVec);
 }
 
-bool HttpSocket::gnuTlsCheckSuccess(int ret)
+bool HttpSocket::Instance::gnuTlsCheckSuccess(int ret)
 {
     return gnuTlsCheckSuccess(ret, address());
 }
 
-void HttpSocket::gnuTlsCheckError(int ret)
+void HttpSocket::Instance::gnuTlsCheckError(int ret)
 {
     gnuTlsCheckError(ret, address());
 }
 
-bool HttpSocket::gnuTlsCheckSuccess(int ret, const SocketAddress &peerAddress)
+bool HttpSocket::Instance::gnuTlsCheckSuccess(int ret, const SocketAddress &peerAddress)
 {
     if (ret != GNUTLS_E_SUCCESS) throw SecurityError{ret, peerAddress};
     return true;
 }
 
-void HttpSocket::gnuTlsCheckError(int ret, const SocketAddress &peerAddress)
+void HttpSocket::Instance::gnuTlsCheckError(int ret, const SocketAddress &peerAddress)
 {
     if (ret < 0) throw SecurityError{ret, peerAddress};
 }
 
-ssize_t HttpSocket::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size)
+ssize_t HttpSocket::Instance::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t size)
 {
-    HttpSocket *socket = (HttpSocket *)ctx;
+    Instance *socket = (Instance *)ctx;
     ssize_t n = -1;
     try {
         if (socket->waitInput()) n = SystemIo::read(socket->fd(), data, size);
@@ -103,13 +103,13 @@ ssize_t HttpSocket::gnuTlsPull(gnutls_transport_ptr_t ctx, void *data, size_t si
     return n;
 }
 
-ssize_t HttpSocket::gnuTlsPushVec(gnutls_transport_ptr_t ctx, const giovec_t *iov, int iovcnt)
+ssize_t HttpSocket::Instance::gnuTlsPushVec(gnutls_transport_ptr_t ctx, const giovec_t *iov, int iovcnt)
 {
     CC_STATIC_ASSERT(offsetof(struct iovec, iov_base) == offsetof(giovec_t, iov_base));
     CC_STATIC_ASSERT(offsetof(struct iovec, iov_len) == offsetof(giovec_t, iov_len));
     CC_STATIC_ASSERT(sizeof(struct iovec) == sizeof(giovec_t));
 
-    HttpSocket *socket = (HttpSocket *)ctx;
+    Instance *socket = (Instance *)ctx;
     try {
         SystemIo::writev(socket->fd(), (const struct iovec *)iov, iovcnt);
     }

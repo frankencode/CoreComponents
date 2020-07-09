@@ -175,9 +175,9 @@ String dec(const Variant &x, int n)
 String str(uchar_t ch)
 {
     String s{4};
-    Ref<Utf8Sink> sink = Utf8Sink::open(mutate(s));
+    Utf8Sink sink{mutate(s)};
     sink->write(ch);
-    mutate(s)->truncate(sink->byteSink()->currentOffset());
+    mutate(s)->truncate(sink->bytesWritten());
     return s;
 }
 

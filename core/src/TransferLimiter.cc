@@ -10,12 +10,7 @@
 
 namespace cc {
 
-Ref<TransferLimiter> TransferLimiter::open(Stream *stream, size_t readLimit, size_t writeLimit)
-{
-    return new TransferLimiter{stream, readLimit, writeLimit};
-}
-
-TransferLimiter::TransferLimiter(Stream *stream, size_t readLimit, size_t writeLimit):
+TransferLimiter::Instance::Instance(const Stream &stream, size_t readLimit, size_t writeLimit):
     stream_{stream},
     readLimit_{readLimit},
     writeLimit_{writeLimit},
@@ -23,7 +18,7 @@ TransferLimiter::TransferLimiter(Stream *stream, size_t readLimit, size_t writeL
     totalWritten_{0}
 {}
 
-int TransferLimiter::read(CharArray *data)
+int TransferLimiter::Instance::read(CharArray *data)
 {
     if (readLimit_ > 0 && totalRead_ >= readLimit_)
         throw ReadLimitExceeded{};
@@ -32,7 +27,7 @@ int TransferLimiter::read(CharArray *data)
     return n;
 }
 
-void TransferLimiter::write(const CharArray *data)
+void TransferLimiter::Instance::write(const CharArray *data)
 {
     if (writeLimit_ > 0 && totalWritten_ + data->count() > writeLimit_)
         throw WriteLimitExceeded{};
@@ -40,7 +35,7 @@ void TransferLimiter::write(const CharArray *data)
     totalWritten_ += data->count();
 }
 
-void TransferLimiter::write(const StringList &parts)
+void TransferLimiter::Instance::write(const StringList &parts)
 {
     size_t h = 0;
     for (int i = 0, n = parts->count(); i < n; ++i)

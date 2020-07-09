@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/Stream>
 #include <cc/tar/ArchiveWriter>
+#include <cc/Stream>
 
 namespace cc {
 namespace tar {
@@ -17,14 +17,14 @@ namespace tar {
 class ArWriter: public ArchiveWriter
 {
 public:
-    static Ref<ArWriter> open(Stream *sink);
+    static Ref<ArWriter> open(const Stream &sink);
 
     void writeFile(const String &path) override;
 
 private:
-    ArWriter(Stream *sink);
+    ArWriter(const Stream &sink);
 
-    Ref<Stream> sink_;
+    Stream sink_;
     bool firstTime_;
 };
 

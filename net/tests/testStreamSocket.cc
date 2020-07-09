@@ -31,16 +31,17 @@ public:
         CleanupGuard cleanup{dirPath};
 
         String path = dirPath->extendPath("echo");
-        auto address = SocketAddress{ProtocolFamily::Local, path};
+        SocketAddress address{ProtocolFamily::Local, path};
         CC_INSPECT(address);
 
         {
             Semaphore upAndRunning;
             auto echoServer = Worker{[=]{
                 try {
-                    auto listeningSocket = StreamSocket::listen(address);
+                    StreamSocket listeningSocket;
+                    listeningSocket->listen(address);
                     upAndRunning->release();
-                    auto connectedSocket = listeningSocket->accept();
+                    StreamSocket connectedSocket = listeningSocket->accept();
                     connectedSocket->transferTo(connectedSocket);
                 }
                 catch (Exception &ex) {
@@ -51,7 +52,8 @@ public:
             upAndRunning->acquire();
 
             auto echoClient = Worker{[=]{
-                auto connectedSocket = StreamSocket::connect(address);
+                StreamSocket connectedSocket;
+                connectedSocket->connect(address);
                 String message = "Hello, echo!";
                 connectedSocket->write(message);
                 String echo = connectedSocket->readSpan(message->count());

@@ -6,9 +6,9 @@
  *
  */
 
-#include <zip.h>
-#include <cc/zip/ZipFile>
 #include <cc/zip/ZipArchive>
+#include <cc/zip/ZipFile>
+#include <zip.h>
 
 namespace cc {
 namespace zip {
@@ -45,10 +45,10 @@ bool ZipArchive::read(String *name)
     return true;
 }
 
-Ref<Stream> ZipArchive::openFile(const String &name)
+Stream ZipArchive::openFile(const String &name)
 {
     String filePath = name->canonicalPath();
-    Ref<ZipFile> stream = new ZipFile(filePath);
+    ZipFile stream{filePath};
     stream->zipPath_ = path_;
     stream->archive_ = archive_;
     stream->file_ = zip_fopen(archive_, filePath, 0);

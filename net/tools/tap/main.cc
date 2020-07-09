@@ -40,7 +40,8 @@ int main(int argc, char **argv)
         auto proxyAddress = SocketAddress::resolveUri(items->at(0));
         auto origAddress  = SocketAddress::resolveUri(items->at(1));
 
-        Ref<StreamSocket> listenSocket = StreamSocket::listen(proxyAddress);
+        StreamSocket listenSocket;
+        listenSocket->listen(proxyAddress);
 
         ferr()
             << "Listening at " << proxyAddress << " to intercept messages to " << origAddress << nl
@@ -48,8 +49,10 @@ int main(int argc, char **argv)
 
         while (true)
         {
-            Ref<StreamSocket> serverSocket = listenSocket->accept();
-            Ref<StreamSocket> clientSocket = StreamSocket::connect(origAddress);
+            StreamSocket serverSocket = listenSocket->accept();
+
+            StreamSocket clientSocket;
+            clientSocket->connect(origAddress);
 
             ferr()
                 << "~~~~~ CONNECTION ESTABLISHED" << nl
@@ -67,7 +70,7 @@ int main(int argc, char **argv)
             while (!(serverClosed || clientClosed)) {
                 IoActivity activity = monitor->wait();
                 for (const IoEvent *event: activity) {
-                    Ref<StreamSocket> socket = event->target();
+                    StreamSocket socket = event->target();
                     if (socket == serverSocket) {
                         int n = serverSocket->read(mutate(data));
                         if (n == 0) {

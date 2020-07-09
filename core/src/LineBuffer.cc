@@ -10,32 +10,27 @@
 
 namespace cc {
 
-Ref<LineBuffer> LineBuffer::open(Stream *stream, const String &prefix)
-{
-    return new LineBuffer{stream, prefix};
-}
-
-LineBuffer::LineBuffer(Stream *stream, const String &prefix):
-    stream_{stream},
+LineBuffer::Instance::Instance(const Stream &sink, const String &prefix):
+    sink_{sink},
     prefix_{prefix}
 {}
 
-void LineBuffer::writeLine(const CharArray *data)
+void LineBuffer::Instance::writeLine(const CharArray *data)
 {
-    if (stream_) stream_->write(data);
+    if (sink_) sink_->write(data);
 }
 
-String LineBuffer::prefix() const
+String LineBuffer::Instance::prefix() const
 {
     return prefix_;
 }
 
-int LineBuffer::read(CharArray *data)
+int LineBuffer::Instance::read(CharArray *data)
 {
-    return (stream_) ? stream_->read(data) : 0;
+    return (sink_) ? sink_->read(data) : 0;
 }
 
-void LineBuffer::write(const CharArray *data)
+void LineBuffer::Instance::write(const CharArray *data)
 {
     int i = 0, n = data->count();
     if (n == 0) return;
@@ -53,13 +48,13 @@ void LineBuffer::write(const CharArray *data)
     }
 }
 
-void LineBuffer::write(const StringList &parts)
+void LineBuffer::Instance::write(const StringList &parts)
 {
-    for (int i = 0, n = parts->count(); i < n; ++i)
-        write(parts->at(i));
+    for (const String &s: parts)
+        write(s);
 }
 
-int LineBuffer::flush()
+int LineBuffer::Instance::flush()
 {
     String h = prefix();
     if (backlog_->count() == 0) return 0;

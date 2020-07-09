@@ -13,6 +13,9 @@
 struct zip_file;
 typedef zip_file zip_file_t;
 
+struct zip;
+typedef struct zip zip_t;
+
 namespace cc {
 namespace zip {
 
@@ -24,15 +27,27 @@ class ZipArchive;
 class ZipFile: public Stream
 {
 public:
-    virtual int read(CharArray *data) override;
+    class Instance: public Stream::Instance
+    {
+    public:
+        virtual int read(CharArray *data) override;
 
-private:
-    friend class ZipArchive;
-    ZipFile(const String &path): path_{path} {}
-    String zipPath_;
-    zip_t *archive_;
-    zip_file_t *file_;
-    String path_;
+    private:
+        friend class ZipFile;
+        friend class ZipArchive;
+
+        Instance(const String &path): path_{path} {}
+        String zipPath_;
+        zip_t *archive_;
+        zip_file_t *file_;
+        String path_;
+    };
+
+    ZipFile(const String &path):
+        Stream{new Instance{path}}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::zip

@@ -16,17 +16,17 @@ namespace tar {
 class ArReader: public ArchiveReader
 {
 public:
-    static Ref<ArReader> open(Stream *source);
+    static Ref<ArReader> open(const Stream &source);
 
-    static bool testFormat(Stream *source);
+    static bool testFormat(Stream source);
 
     bool readHeader(Ref<ArchiveEntry> *entry);
-    void readData(ArchiveEntry *entry, Stream* sink = nullptr);
+    void readData(ArchiveEntry *entry, Stream sink = Stream{});
 
 private:
-    ArReader(Stream *source);
+    ArReader(const Stream &source);
 
-    Ref<Stream> source_;
+    Stream source_;
     String data_;
     off_t i_;
 };

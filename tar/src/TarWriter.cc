@@ -16,12 +16,12 @@
 namespace cc {
 namespace tar {
 
-Ref<TarWriter> TarWriter::open(Stream *sink)
+Ref<TarWriter> TarWriter::open(const Stream &sink)
 {
     return new TarWriter{sink};
 }
 
-TarWriter::TarWriter(Stream *sink):
+TarWriter::TarWriter(const Stream &sink):
     sink_{sink},
     zero_{String{"\0", 1}}
 {}

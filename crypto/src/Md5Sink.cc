@@ -11,17 +11,7 @@
 namespace cc {
 namespace crypto {
 
-Ref<Md5Sink> Md5Sink::open()
-{
-    return new Md5Sink;
-}
-
-Ref<CryptoHashSink> Md5Sink::copy() const
-{
-    return new Md5Sink{this};
-}
-
-Md5Sink::Md5Sink():
+Md5Sink::Instance::Instance():
     aux_{String::create(0x4000 + 64)},
     auxFill_{0},
     bytesFeed_{0},
@@ -31,7 +21,7 @@ Md5Sink::Md5Sink():
     CC_ASSERT((aux_->count() % 64) == 0);
 }
 
-Md5Sink::Md5Sink(const Md5Sink *other):
+Md5Sink::Instance::Instance(const Instance *other):
     aux_{other->aux_->copy()},
     auxFill_{other->auxFill_},
     bytesFeed_{other->bytesFeed_},
@@ -39,12 +29,17 @@ Md5Sink::Md5Sink(const Md5Sink *other):
     c_{other->c_}, d_{other->d_}
 {}
 
-int Md5Sink::blockSize() const
+CryptoHashSink Md5Sink::Instance::copy() const
+{
+    return Md5Sink{new Instance{this}};
+}
+
+int Md5Sink::Instance::blockSize() const
 {
     return 64;
 }
 
-void Md5Sink::write(const CharArray *data)
+void Md5Sink::Instance::write(const CharArray *data)
 {
     const uint8_t *src = data->bytes();
     int srcLeft = data->count();
@@ -63,7 +58,7 @@ void Md5Sink::write(const CharArray *data)
     }
 }
 
-String Md5Sink::finish()
+String Md5Sink::Instance::finish()
 {
     /** manually feed the padding and message size
       */
@@ -189,7 +184,7 @@ inline static void r4(const uint32_t *x, uint32_t &a, uint32_t b, uint32_t c, ui
     a = b + rol32(a + l(b, c, d) + x[k] + t, s);
 }
 
-void Md5Sink::consume()
+void Md5Sink::Instance::consume()
 {
     uint32_t *m = mutate(aux_)->words();
     for (int i = 0, nc = auxFill_ / 64; i < nc; ++i) {
@@ -236,9 +231,9 @@ void Md5Sink::consume()
 
 String md5(const CharArray *data)
 {
-    Ref<Md5Sink> h = Md5Sink::open();
-    h->write(data);
-    return h->finish();
+    Md5Sink hash;
+    hash->write(data);
+    return hash->finish();
 }
 
-}} // namespace cc::crypt
+}} // namespace cc::crypto

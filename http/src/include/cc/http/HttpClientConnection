@@ -18,7 +18,7 @@ namespace http {
 class HttpClientConnection: public HttpConnection
 {
 public:
-    static Ref<HttpClientConnection> open(HttpClientSocket *socket);
+    static Ref<HttpClientConnection> open(const HttpClientSocket &socket);
 
     SocketAddress address() const { return socket_->address(); }
 
@@ -27,11 +27,11 @@ public:
     Ref<HttpResponse> readResponse();
 
 private:
-    HttpClientConnection(HttpClientSocket *socket);
+    HttpClientConnection(const HttpClientSocket &socket);
 
-    void readFirstLine(LineSource *source, HttpMessage *message) override;
+    void readFirstLine(LineSource &source, HttpMessage *message) override;
 
-    Ref<HttpClientSocket> socket_;
+    HttpClientSocket socket_;
 };
 
 }} // namespace cc::http

@@ -19,18 +19,17 @@
 namespace cc {
 namespace can {
 
-CanSocket::Instance::Instance(const String &interface)
+CanSocket::Instance::Instance(const String &interface):
+    socket_{::socket(PF_CAN, SOCK_RAW, CAN_RAW)}
 {
-    int fd = ::socket(PF_CAN, SOCK_RAW, CAN_RAW);
-    if (fd == -1) CC_SYSTEM_DEBUG_ERROR(errno);
-    socket_ = SystemStream::create(fd);
+    if (socket_->fd() == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 
     struct sockaddr_can addr;
     memclr(&addr, sizeof(addr));
     addr.can_family = AF_CAN;
-    addr.can_ifindex = lookupInterfaceIndex(fd, interface);
+    addr.can_ifindex = lookupInterfaceIndex(socket_->fd(), interface);
 
-    if (::bind(fd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
+    if (::bind(socket_->fd(), (struct sockaddr *)&addr, sizeof(addr)) == -1)
         CC_SYSTEM_ERROR(errno, interface);
 }
 

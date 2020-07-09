@@ -33,12 +33,10 @@ Command::Instance::~Instance()
 
 void Command::Instance::startDone()
 {
-    while (channelHead_) {
-        channelHead_->onStart();
-        Ref<IoChannel> next = channelHead_->next_;
-        channelHead_->next_ = nullptr;
-        channelHead_ = next;
-    }
+    for (IoChannel &channel: ioChannels_)
+        channel->onStart();
+
+    ioChannels_->deplete();
 }
 
 void Command::Instance::enableSpawnFlag(short flag)
@@ -98,48 +96,45 @@ Command::Instance *Command::Instance::setWorkingDirectory(const String &path)
     return this;
 }
 
-Command::Instance *Command::Instance::setInputChannel(IoChannel *channel)
+Command::Instance *Command::Instance::setInputChannel(const IoChannel &channel)
 {
     return attachChannel(channel, 0);
 }
 
-Command::Instance *Command::Instance::setOutputChannel(IoChannel *channel)
+Command::Instance *Command::Instance::setOutputChannel(const IoChannel &channel)
 {
     return attachChannel(channel, 1);
 }
 
-Command::Instance *Command::Instance::setErrorChannel(IoChannel *channel)
+Command::Instance *Command::Instance::setErrorChannel(const IoChannel &channel)
 {
     return attachChannel(channel, 2);
 }
 
-Command::Instance *Command::Instance::attachChannel(IoChannel *channel, int targetFd)
+Command::Instance *Command::Instance::attachChannel(const IoChannel &channel, int targetFd)
 {
-    if (!channel->next_) {
-        channel->next_ = channelHead_;
-        channelHead_ = channel;
-    }
+    ioChannels_->append(channel);
     if (0 <= targetFd && targetFd <= 2) standardStreams_[targetFd] = channel;
     CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, channel->slaveFd(), targetFd));
     return this;
 }
 
-Command::Instance *Command::Instance::setInput(SystemStream *stream)
+Command::Instance *Command::Instance::setInput(const SystemStream &stream)
 {
     return attach(stream, 0);
 }
 
-Command::Instance *Command::Instance::setOutput(SystemStream *stream)
+Command::Instance *Command::Instance::setOutput(const SystemStream &stream)
 {
     return attach(stream, 1);
 }
 
-Command::Instance *Command::Instance::setError(SystemStream *stream)
+Command::Instance *Command::Instance::setError(const SystemStream &stream)
 {
     return attach(stream, 2);
 }
 
-Command::Instance *Command::Instance::attach(SystemStream *stream, int targetFd)
+Command::Instance *Command::Instance::attach(const SystemStream &stream, int targetFd)
 {
     if (0 <= targetFd && targetFd <= 2) standardStreams_[targetFd] = stream;
     CC_SPAWN_CALL(posix_spawn_file_actions_adddup2(&fileActions_, stream->fd(), targetFd));
@@ -148,12 +143,12 @@ Command::Instance *Command::Instance::attach(SystemStream *stream, int targetFd)
 
 Command::Instance *Command::Instance::simpleRedirection()
 {
-    if (!standardStreams_[0]) setInputChannel(InputPipe::create());
+    if (!standardStreams_[0]) setInputChannel(InputPipe{});
 
     if (!standardStreams_[1] || !standardStreams_[2]) {
-        auto channel = OutputPipe::create();
-        if (!standardStreams_[1]) setOutputChannel(channel);
-        if (!standardStreams_[2]) setErrorChannel(channel);
+        OutputPipe outputPipe;
+        if (!standardStreams_[1]) setOutputChannel(outputPipe);
+        if (!standardStreams_[2]) setErrorChannel(outputPipe);
     }
 
     return this;

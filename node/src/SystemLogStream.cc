@@ -7,25 +7,21 @@
  */
 
 #include <cc/http/SystemLogStream>
+#include <syslog.h>
 
 namespace cc {
 namespace http {
 
-Ref<SystemLogStream> SystemLogStream::open(int priority)
-{
-    return new SystemLogStream{priority};
-}
-
-SystemLogStream::SystemLogStream(int priority):
+SystemLogStream::Instance::Instance(int priority):
     priority_{priority}
 {}
 
-void SystemLogStream::write(const CharArray *data)
+void SystemLogStream::Instance::write(const CharArray *data)
 {
     syslog(priority_, "%s", data->chars());
 }
 
-void SystemLogStream::write(const StringList &parts)
+void SystemLogStream::Instance::write(const StringList &parts)
 {
     write(parts->join());
 }

@@ -18,10 +18,17 @@ namespace cc {
 class SocketPair: public IoChannel
 {
 public:
-    static Ref<SocketPair> create();
+    class Instance: public IoChannel::Instance
+    {
+    private:
+        friend class SocketPair;
 
-protected:
-    SocketPair();
+        Instance();
+    };
+
+    SocketPair():
+        IoChannel{new Instance}
+    {}
 };
 
 } // namespace cc

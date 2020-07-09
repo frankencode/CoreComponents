@@ -8,84 +8,94 @@
 
 #pragma once
 
-#include <cc/exceptions>
 #include <cc/Stream>
+#include <cc/exceptions>
 
 namespace cc {
 namespace entropy {
 
-class BitSink: public Object
+class BitSink
 {
 public:
-    static Ref<BitSink> open(Stream *sink, CharArray *buffer = nullptr, ByteOrder endian = ByteOrder::LittleEndian)
+    class Instance
     {
-        return new BitSink{sink, buffer, endian};
-    }
+    public:
+        void writeBit(uint8_t x);
+        void writeUInt8(uint8_t x);
+        void writeUInt16(uint16_t x);
+        void writeUInt32(uint32_t x);
+        void writeUInt64(uint64_t x);
 
-    static Ref<BitSink> open(const CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian)
-    {
-        return new BitSink{nullptr, const_cast<CharArray *>(buffer), endian};
-    }
+        template<int DigitSize = 4>
+        void writeUIntVlc(unsigned x);
 
-    void writeBit(uint8_t x);
-    void writeUInt8(uint8_t x);
-    void writeUInt16(uint16_t x);
-    void writeUInt32(uint32_t x);
-    void writeUInt64(uint64_t x);
+        template<int DigitSize = 4>
+        void writeIntVlc(int x);
 
-    template<int DigitSize = 4>
-    void writeUIntVlc(unsigned x);
+        template<int DigitSize = 4>
+        static int bitsPerUIntVlc(unsigned x);
 
-    template<int DigitSize = 4>
-    void writeIntVlc(int x);
+        template<int DigitSize = 4>
+        static int bitsPerIntVlc(int x);
 
-    template<int DigitSize = 4>
-    static int bitsPerUIntVlc(unsigned x);
+        template<int wordSize>
+        void writeUInt(unsigned x);
 
-    template<int DigitSize = 4>
-    static int bitsPerIntVlc(int x);
+        void writeUInt(int wordSize, unsigned x);
 
-    template<int wordSize>
-    void writeUInt(unsigned x);
+        template<int wordSize>
+        void writeInt(int x);
 
-    void writeUInt(int wordSize, unsigned x);
+        void writeInt(int wordSize, int x);
 
-    template<int wordSize>
-    void writeInt(int x);
+        off_t currentOffset() const;
 
-    void writeInt(int wordSize, int x);
+    private:
+        friend class BitSink;
 
-    off_t currentOffset() const;
+        Instance(const Stream &sink, CharArray *buffer, ByteOrder endian):
+            sink_{sink},
+            buffer_{buffer},
+            endian_{endian},
+            i_{0},
+            iBit_{0},
+            nw_{0}
+        {
+            if (!buffer_) buffer_ = CharArray::allocate(0x1000);
+            mutate(buffer_)->fill(0);
+        }
+
+        ~Instance()
+        {
+            if (sink_) flush(i_ + (iBit_ > 0));
+        }
+
+        void flush(int n);
+
+        Stream sink_;
+        String buffer_;
+        ByteOrder endian_;
+        int i_;       // byte offset within buf_
+        int iBit_;    // bit offset within buf_[i_]
+        off_t nw_;    // accumulated number of written bytes
+    };
+
+    BitSink(const Stream &sink, CharArray *buffer = nullptr, ByteOrder endian = ByteOrder::LittleEndian):
+        instance_{sink, buffer, endian}
+    {}
+
+    BitSink(const CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian):
+        instance_{Stream{}, const_cast<CharArray *>(buffer), endian}
+    {}
+
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
 
 private:
-    BitSink(Stream *sink, CharArray *buffer, ByteOrder endian):
-        sink_{sink},
-        buffer_{buffer},
-        endian_{endian},
-        i_{0},
-        iBit_{0},
-        nw_{0}
-    {
-        if (!buffer_) buffer_ = CharArray::allocate(0x1000);
-        mutate(buffer_)->fill(0);
-    }
-
-    ~BitSink()
-    {
-        if (sink_) flush(i_ + (iBit_ > 0));
-    }
-
-    void flush(int n);
-
-    Ref<Stream> sink_;
-    String buffer_;
-    ByteOrder endian_;
-    int i_;       // byte offset within buf_
-    int iBit_;    // bit offset within buf_[i_]
-    off_t nw_;    // accumulated number of written bytes
+    Instance instance_;
 };
 
-void BitSink::flush(int n)
+void BitSink::Instance::flush(int n)
 {
     if (!sink_) throw BufferOverflow{};
 
@@ -98,7 +108,7 @@ void BitSink::flush(int n)
     }
 }
 
-inline void BitSink::writeBit(uint8_t x)
+inline void BitSink::Instance::writeBit(uint8_t x)
 {
     if (iBit_ == 8) {
         iBit_ = 0;
@@ -109,7 +119,7 @@ inline void BitSink::writeBit(uint8_t x)
     ++iBit_;
 }
 
-inline void BitSink::writeUInt8(uint8_t x)
+inline void BitSink::Instance::writeUInt8(uint8_t x)
 {
     for (int i = 8; i > 0; --i) {
         writeBit(x & 1);
@@ -117,7 +127,7 @@ inline void BitSink::writeUInt8(uint8_t x)
     }
 }
 
-inline void BitSink::writeUInt16(uint16_t x)
+inline void BitSink::Instance::writeUInt16(uint16_t x)
 {
     if (endian_ == ByteOrder::LittleEndian) {
         writeUInt8((uint8_t)x);
@@ -129,7 +139,7 @@ inline void BitSink::writeUInt16(uint16_t x)
     }
 }
 
-inline void BitSink::writeUInt32(uint32_t x)
+inline void BitSink::Instance::writeUInt32(uint32_t x)
 {
     if (endian_ == ByteOrder::LittleEndian) {
         writeUInt8((uint8_t)x);
@@ -145,7 +155,7 @@ inline void BitSink::writeUInt32(uint32_t x)
     }
 }
 
-inline void BitSink::writeUInt64(uint64_t x)
+inline void BitSink::Instance::writeUInt64(uint64_t x)
 {
     if (endian_ == ByteOrder::LittleEndian) {
         for (int i = 0; i <= 7*8; i += 8)
@@ -158,7 +168,7 @@ inline void BitSink::writeUInt64(uint64_t x)
 }
 
 template<int DigitSize>
-inline void BitSink::writeUIntVlc(unsigned x)
+inline void BitSink::Instance::writeUIntVlc(unsigned x)
 {
     do {
         for (int k = DigitSize; k > 0; --k) {
@@ -170,7 +180,7 @@ inline void BitSink::writeUIntVlc(unsigned x)
 }
 
 template<int DigitSize>
-inline int BitSink::bitsPerUIntVlc(unsigned x)
+inline int BitSink::Instance::bitsPerUIntVlc(unsigned x)
 {
     int i = (x == 0);
     for (unsigned y = x; y > 0; y >>= DigitSize) ++i;
@@ -178,7 +188,7 @@ inline int BitSink::bitsPerUIntVlc(unsigned x)
 }
 
 template<int DigitSize>
-inline void BitSink::writeIntVlc(int x)
+inline void BitSink::Instance::writeIntVlc(int x)
 {
     writeBit(x < 0);
     if (x < 0) x = -x;
@@ -186,19 +196,19 @@ inline void BitSink::writeIntVlc(int x)
 }
 
 template<int DigitSize>
-inline int BitSink::bitsPerIntVlc(int x)
+inline int BitSink::Instance::bitsPerIntVlc(int x)
 {
     if (x < 0) x = -x;
     return bitsPerUIntVlc<DigitSize>(x) + 1;
 }
 
 template<int WordSize>
-inline void BitSink::writeUInt(unsigned x)
+inline void BitSink::Instance::writeUInt(unsigned x)
 {
     writeUInt(WordSize, x);
 }
 
-inline void BitSink::writeUInt(int wordSize, unsigned x)
+inline void BitSink::Instance::writeUInt(int wordSize, unsigned x)
 {
     for (int i = wordSize; i > 0; --i) {
         writeBit(x & 1);
@@ -207,17 +217,17 @@ inline void BitSink::writeUInt(int wordSize, unsigned x)
 }
 
 template<int WordSize>
-inline void BitSink::writeInt(int x)
+inline void BitSink::Instance::writeInt(int x)
 {
     writeUInt<WordSize>((unsigned)x);
 }
 
-inline void BitSink::writeInt(int wordSize, int x)
+inline void BitSink::Instance::writeInt(int wordSize, int x)
 {
     writeUInt(wordSize, (unsigned)x);
 }
 
-inline off_t BitSink::currentOffset() const
+inline off_t BitSink::Instance::currentOffset() const
 {
     return nw_ + i_ + (i_ + iBit_ > 0);
 }

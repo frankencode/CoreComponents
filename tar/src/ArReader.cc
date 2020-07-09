@@ -12,17 +12,17 @@
 namespace cc {
 namespace tar {
 
-Ref<ArReader> ArReader::open(Stream *source)
+Ref<ArReader> ArReader::open(const Stream &source)
 {
-    return new ArReader(source);
+    return new ArReader{source};
 }
 
-ArReader::ArReader(Stream *source)
-    : source_(source),
-      i_(0)
+ArReader::ArReader(const Stream &source):
+    source_{source},
+    i_{0}
 {}
 
-bool ArReader::testFormat(Stream *source)
+bool ArReader::testFormat(Stream source)
 {
     return source->readSpan(8) == "!<arch>\n";
 }
@@ -59,7 +59,7 @@ bool ArReader::readHeader(Ref<ArchiveEntry> *nextEntry)
     return true;
 }
 
-void ArReader::readData(ArchiveEntry *entry, Stream* sink)
+void ArReader::readData(ArchiveEntry *entry, Stream sink)
 {
     i_ += source_->transferSpanTo(entry->size(), sink);
     if (entry->size() % 2 != 0)

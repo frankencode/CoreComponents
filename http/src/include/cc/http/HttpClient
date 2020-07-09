@@ -33,9 +33,9 @@ public:
     static Ref<HttpResponse> get(const Uri &uri);
     static Ref<HttpResponse> head(const Uri &uri);
     static Ref<HttpResponse> put(const Uri &uri, const String &payload);
-    static Ref<HttpResponse> put(const Uri &uri, Stream *source);
+    static Ref<HttpResponse> put(const Uri &uri, const Stream &source);
     static Ref<HttpResponse> post(const Uri &uri, const String &payload);
-    static Ref<HttpResponse> post(const Uri &uri, Stream *source);
+    static Ref<HttpResponse> post(const Uri &uri, const Stream &source);
     static Ref<HttpResponse> postForm(const Uri &uri, const Map<String> &form);
 
     static Ref<HttpClient> connect(const Uri &uri, const HttpClientSecurity *security = nullptr);

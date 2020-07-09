@@ -7,7 +7,6 @@
  */
 
 #include <cc/InputPipe>
-#include <cc/OutputPipe>
 #include <cc/exceptions>
 #include <fcntl.h> // O_CLOEXEC
 #include <unistd.h> // pipe2
@@ -15,12 +14,7 @@
 
 namespace cc {
 
-Ref<InputPipe> InputPipe::create()
-{
-    return new InputPipe;
-}
-
-InputPipe::InputPipe()
+InputPipe::Instance::Instance()
 {
     int fd[2] = { 0, 0 };
     if (::pipe2(fd, O_CLOEXEC) == -1)
@@ -29,16 +23,9 @@ InputPipe::InputPipe()
     slaveFd_ = fd[0];
 }
 
-void InputPipe::onStart()
+void InputPipe::Instance::onStart()
 {
     ::close(slaveFd_);
 }
-
-InputPipe::InputPipe(const OutputPipe *outputPipe)
-{
-    slaveFd_ = outputPipe->fd_;
-    fd_ = outputPipe->slaveFd_;
-}
-
 
 } // namespace cc

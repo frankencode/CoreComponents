@@ -20,78 +20,104 @@ namespace net {
 class StreamSocket: public SystemStream
 {
 public:
-    /** Open a new listening socket
-      * \param localAddress local address to bind to
-      * \param backlog number of connections to queue when the process is busy
-      * \return new object instance
+    class Instance: public SystemStream::Instance
+    {
+    public:
+        /** Establish a local socket connection
+          * \param other the other socket stream to connect to
+          */
+        void connect(StreamSocket &other);
+
+        /** Initiate connection to a peer socket
+          * \param peerAddress address of peer socket
+          * \see waitForReady()
+          */
+        void connect(const SocketAddress &peerAddress);
+
+        /** Initiate connection to a peer socket
+          * \param hostName host name of server
+          * \param port port number
+          * \exception HostNameResolutionError
+          * \see waitForReady()
+          */
+        void connect(const String &hostName, int port);
+
+        /** Open address for incoming connection requests
+          * \param localAddress local address to bind to
+          * \param backlog number of connections to queue when the process is busy
+          */
+        void listen(const SocketAddress &localAddress, int backlog = 1024);
+
+        /** Accept an incoming connection request
+          * \return connected socket
+          */
+        StreamSocket accept();
+
+        /** Wait until the connection has been fully established
+          * \param interval the interval to wait at max in milliseconds (or infinite if interval < 0)
+          * \return true if the connection has been established before timeout, false otherwise
+          * \exception NetworkError
+          */
+        bool waitForReady(int timeout = -1);
+
+        /** The local address if this is a listening sockets, the peer address otherwise
+          */
+        SocketAddress address() const;
+
+        /** %Set the timeout of accumulating incoming data
+          * \param interval timeout in seconds
+          */
+        void setRecvTimeout(double interval);
+
+        /** %Set the timeout of accumulating outgoing data
+          * \param interval timeout in seconds
+          */
+        void setSendTimeout(double interval);
+
+        /// \todo FIXME, should be protected
+        void accept(StreamSocket::Instance *client);
+
+    protected:
+        friend class StreamSocket;
+
+        Instance(int fd = -1);
+        Instance(const SocketAddress &address);
+
+        SocketAddress address_;
+        bool connected_ { false };
+    };
+
+    /** Create an undefined stream socket
       */
-    static Ref<StreamSocket> listen(const SocketAddress &localAddress, int backlog = 1024);
+    StreamSocket():
+        SystemStream{new Instance}
+    {}
 
-    /** Initiate connection to a peer socket
-      * \param peerAddress address of peer socket
-      * \return new object instance
-      * \see waitForReady()
-      */
-    static Ref<StreamSocket> connect(const SocketAddress &peerAddress);
+    StreamSocket(IoTarget *target):
+        SystemStream{instanceFromIoTarget(target)}
+    {}
 
-    /** Initiate connection to a peer socket
-      * \param hostName host name of server
-      * \param port port number
-      * \return new object instance
-      * \exception HostNameResolutionError
-      * \see waitForReady()
-      */
-    static Ref<StreamSocket> connect(const String &hostName, int port);
+    Instance *operator->() const { return my<Instance>(); }
 
-    /** Create a pair of connected local sockets
-      * \param first return the first socket
-      * \param second return the second socket
-      */
-    static void connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second);
+    operator Instance *() { return my<Instance>(); }
 
-    /** Accept a connection request
-      * \return new object instance
-      */
-    Ref<StreamSocket> accept();
-
-    /** Wait until the connection has been fully established
-      * \param interval_ms the interval to wait at max (or infinite if < 0)
-      * \return true if the connection has been established before timeout, false otherwise
-      * \exception NetworkError
-      */
-    bool waitForReady(int timeout_ms = -1);
-
-    /** Returns the local or remote address associated with this socket
-      */
-    SocketAddress address() const;
-
-    /** %Set the timeout of accumulating incoming data
-      * \param interval timeout in seconds
-      */
-    void setRecvTimeout(double interval);
-
-    /** %Set the timeout of accumulating outgoing data
-      * \param interval timeout in seconds
-      */
-    void setSendTimeout(double interval);
-
-protected:
-    StreamSocket(int fd);
-    StreamSocket(const SocketAddress &address);
-
-    void listen(int backlog = 1024);
-    int accept(SocketAddress *clientAddress);
-
-    static int accept(StreamSocket *listeningSocket, SocketAddress *clientAddress) {
-        return listeningSocket->accept(clientAddress);
+    bool operator==(const StreamSocket &other) const
+    {
+        return (*this)->fd_ == other->fd_;
     }
 
-    void connect();
+private:
+    friend class Instance;
 
-    bool isConnected() const { return connected_; }
+    static StreamSocket::Instance *instanceFromIoTarget(IoTarget *target)
+    {
+        auto instance = dynamic_cast<StreamSocket::Instance *>(target);
+        return instance ? instance : new Instance;
+    }
 
-    SocketAddress address_;
-    bool connected_;
+    StreamSocket(const SocketAddress &address):
+        SystemStream{new Instance{address}}
+    {}
 };
 
 }} // namespace cc::net

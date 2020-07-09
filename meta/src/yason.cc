@@ -22,7 +22,7 @@ Variant parse(const CharArray *text, const MetaProtocol *protocol)
 
 String stringify(Variant value)
 {
-    Ref<CaptureSink> sink = CaptureSink::open();
+    CaptureSink sink;
     YasonWriter::create(sink)->write(value);
     return sink->collect();
 }

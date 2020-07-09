@@ -14,21 +14,30 @@ namespace cc {
 
 /** \class MemoryStream cc/MemoryStream
   * \ingroup binary_io
-  * \brief Read data from a memory buffer
+  * \brief Read/write data from/to a memory buffer
   * \see ReplaySource, CaptureSink
   */
 class MemoryStream: public Stream
 {
 public:
-    static Ref<MemoryStream> open(CharArray *buffer);
+    class Instance: public Stream::Instance
+    {
+    public:
+        int read(CharArray *data) override;
+        void write(const CharArray *data) override;
 
-    int read(CharArray *data) override;
-    void write(const CharArray *data) override;
+    private:
+        friend class MemoryStream;
 
-private:
-    MemoryStream(CharArray *buffer);
-    String buffer_;
-    int i_;
+        Instance(CharArray *buffer);
+
+        String buffer_;
+        int i_;
+    };
+
+    MemoryStream(CharArray *buffer):
+        Stream{new Instance{buffer}}
+    {}
 };
 
 } // namespace cc

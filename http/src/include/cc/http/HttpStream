@@ -8,9 +8,7 @@
 
 #pragma once
 
-#include <cc/Stream>
-
-namespace cc { class TransferLimiter; }
+#include <cc/TransferLimiter>
 
 namespace cc {
 namespace http {
@@ -18,34 +16,44 @@ namespace http {
 class HttpStream: public Stream
 {
 public:
-    static Ref<HttpStream> open(Stream *stream);
+    class Instance: public Stream::Instance
+    {
+    public:
+        bool isPayloadConsumed() const;
 
-    bool isPayloadConsumed() const;
+        void nextHeader();
+        void nextPayload(int64_t length);
+        void nextLine();
+        void nextChunk();
 
-    void nextHeader();
-    void nextPayload(int64_t length);
-    void nextLine();
-    void nextChunk();
+        int read(CharArray *data) override;
+        void write(const CharArray *data) override;
+        void write(const StringList &parts) override;
 
-    int read(CharArray *data) override;
-    void write(const CharArray *data) override;
-    void write(const StringList &parts) override;
+    private:
+        friend class HttpStream;
 
-private:
-    HttpStream(Stream *stream);
+        Instance(const Stream &stream);
 
-    CharArray *buffer();
-    void discard();
+        CharArray *buffer();
+        void discard();
 
-    Ref<Stream> stream_;
-    Ref<TransferLimiter> drainage_;
-    String buffer_;
-    String pending_;
-    int pendingIndex_;
-    int64_t payloadLeft_;
-    int nlCount_, nlMax_;
-    bool eoi_;
-    bool chunked_;
+        Stream stream_;
+        TransferLimiter drainage_;
+        String buffer_;
+        String pending_;
+        int pendingIndex_;
+        int64_t payloadLeft_;
+        int nlCount_, nlMax_;
+        bool eoi_;
+        bool chunked_;
+    };
+
+    HttpStream(const Stream &stream):
+        Stream{new Instance{stream}}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::http

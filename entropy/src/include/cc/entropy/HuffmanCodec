@@ -22,30 +22,76 @@ namespace entropy {
 
 /** \brief Huffman entropy encoding
   */
-class HuffmanCodec: public Object
+class HuffmanCodec
 {
 public:
-    /** Create a new HuffmanCodec
-      * \return new object instance
-      */
-    inline static Ref<HuffmanCodec> create()
+    class Instance: public Object
     {
-        return new HuffmanCodec();
-    }
+    public:
+        /** Encode a data stream
+          * \param source source to read input symbols from
+          * \param sink sink to write the encoded data to
+          * \return number of input symbols read
+          */
+        int encode(Stream &source, BitSink &sink);
 
-    /** Encode a data stream
-      * \param source source to read input symbols from
-      * \param sink sink to write the encoded data to
-      * \return number of input symbols read
-      */
-    int encode(Stream *source, BitSink *sink);
+        /** Decode a block of symbols
+          * \param source source to read the encoded data from
+          * \param sink sink to write the output symbols to
+          * \return number of output symbols written
+          */
+        int decode(BitSource &source, Stream &sink);
 
-    /** Decode a block of symbols
-      * \param source source to read the encoded data from
-      * \param sink sink to write the output symbols to
-      * \return number of output symbols written
-      */
-    int decode(BitSource *source, Stream *sink);
+    private:
+        friend class HuffmanCodec;
+
+        /** \brief Huffman tree node
+          */
+        struct Node
+        {
+            uint16_t parent_;
+            uint16_t leftChild_;
+            uint16_t rightChild_;
+            int16_t value_;
+            int count_;
+        };
+
+        /** \brief Comparable reference to a huffman tree node
+          */
+        struct NodeRef
+        {
+            NodeRef(Node *node = nullptr): node_(node) {}
+
+            Node *node_;
+
+            inline bool operator<(const NodeRef &b) const
+            {
+                return
+                    node_->count_ < b.node_->count_ ||
+                    (
+                        node_->count_ == b.node_->count_ &&
+                        node_->value_ < b.node_->value_
+                    );
+            }
+        };
+
+        Instance();
+
+        void reset();
+        void addSymbol(int value, int count0);
+
+        void generateCodeTable();
+
+        String buffer_;
+
+        Array<Node> nodes_;
+        int nodesFill_;
+        uint16_t root_;
+
+        Array<NodeRef> codeMap_;
+        Ref< MinHeap<NodeRef> > heap_;
+        Ref< Stack<uint8_t> > bitStack_;
+    };
 
     /** Encode a String
       * \param message the source to encode
@@ -59,53 +105,16 @@ public:
       */
     static String decode(const String &message);
 
+    /** Create a new HuffmanCodec
+      */
+    HuffmanCodec():
+        instance_{new Instance}
+    {}
+
+    Instance *operator->() { return instance_; }
+
 private:
-    /** \brief Huffman tree node
-      */
-    struct Node
-    {
-        uint16_t parent_;
-        uint16_t leftChild_;
-        uint16_t rightChild_;
-        int16_t value_;
-        int count_;
-    };
-
-    /** \brief Comparable reference to a huffman tree node
-      */
-    struct NodeRef
-    {
-        NodeRef(Node *node = nullptr): node_(node) {}
-
-        Node *node_;
-
-        inline bool operator<(const NodeRef &b) const
-        {
-            return
-                node_->count_ < b.node_->count_ ||
-                (
-                    node_->count_ == b.node_->count_ &&
-                    node_->value_ < b.node_->value_
-                );
-        }
-    };
-
-    HuffmanCodec();
-
-    void reset();
-    void addSymbol(int value, int count0);
-
-    void generateCodeTable();
-
-    String buffer_;
-
-    Array<Node> nodes_;
-    int nodesFill_;
-    uint16_t root_;
-
-    Array<NodeRef> codeMap_;
-    Ref< MinHeap<NodeRef> > heap_;
-    Ref< Stack<uint8_t> > bitStack_;
+    Ref<Instance> instance_;
 };
 
 }} // namespace cc::entropy

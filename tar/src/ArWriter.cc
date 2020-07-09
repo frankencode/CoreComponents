@@ -6,19 +6,19 @@
  *
  */
 
-#include <cc/str>
-#include <cc/File>
 #include <cc/tar/ArWriter>
+#include <cc/File>
+#include <cc/str>
 
 namespace cc {
 namespace tar {
 
-Ref<ArWriter> ArWriter::open(Stream *sink)
+Ref<ArWriter> ArWriter::open(const Stream &sink)
 {
     return new ArWriter{sink};
 }
 
-ArWriter::ArWriter(Stream *sink):
+ArWriter::ArWriter(const Stream &sink):
     sink_{sink},
     firstTime_{true}
 {}

@@ -10,9 +10,7 @@
 
 #include <cc/String>
 #include <cc/Map>
-#include <cc/Stream>
-
-namespace cc { class TransferMeter; }
+#include <cc/TransferMeter>
 
 namespace cc {
 namespace http {
@@ -28,13 +26,13 @@ public:
 
     void transmit();
     void transmit(const String &payload);
-    void transmit(Stream *source);
+    void transmit(const Stream &source);
 
     typedef Map<String, String>::Instance Header;
     void setHeader(Header *header);
 
     void beginTransmission(ssize_t contentLength = -1);
-    Stream *payload();
+    Stream payload();
     void write(const String &data);
     Format chunk(const String &pattern);
     Format chunk();
@@ -52,7 +50,7 @@ protected:
     Ref<HttpConnection> peer_;
     Ref<Header> header_;
     bool headerWritten_;
-    Ref<TransferMeter> payload_;
+    TransferMeter payload_;
     ssize_t contentLength_;
     size_t bytesWritten_;
 };

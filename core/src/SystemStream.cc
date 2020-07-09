@@ -25,47 +25,24 @@
 
 namespace cc {
 
-Ref<SystemStream> SystemStream::duplicate(int fd)
-{
-    int fd2 = ::dup(fd);
-    if (fd == -1) CC_SYSTEM_DEBUG_ERROR(errno);
-    return new SystemStream(fd2);
-}
-
-Ref<SystemStream> SystemStream::duplicate(SystemStream *other)
-{
-    return duplicate(other->fd_);
-}
-
-void SystemStream::connect(Ref<SystemStream> *first, Ref<SystemStream> *second)
-{
-    int fd[2];
-    fd[0] = 0;
-    fd[1] = 0;
-    if (::socketpair(AF_LOCAL, SOCK_STREAM, 0, fd) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
-    *first = new SystemStream{fd[0]};
-    *second = new SystemStream{fd[1]};
-}
-
-SystemStream::SystemStream(int fd):
+SystemStream::Instance::Instance(int fd):
     fd_{fd},
     scatterLimit_{1<<14}
 {}
 
-SystemStream::~SystemStream()
+SystemStream::Instance::~Instance()
 {
     if (fd_ >= 0) ::close(fd_);
 }
 
-int SystemStream::fd() const { return fd_; }
+int SystemStream::Instance::fd() const { return fd_; }
 
-bool SystemStream::isatty() const
+bool SystemStream::Instance::isatty() const
 {
     return ::isatty(fd_);
 }
 
-void SystemStream::echo(bool on)
+void SystemStream::Instance::echo(bool on)
 {
     struct termios settings;
 
@@ -83,17 +60,17 @@ void SystemStream::echo(bool on)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-int SystemStream::read(CharArray *data)
+int SystemStream::Instance::read(CharArray *data)
 {
     return SystemIo::read(fd_, data->bytes(), data->count());
 }
 
-void SystemStream::write(const CharArray *data)
+void SystemStream::Instance::write(const CharArray *data)
 {
     SystemIo::write(fd_, data->bytes(), data->count());
 }
 
-void SystemStream::write(const StringList &parts)
+void SystemStream::Instance::write(const StringList &parts)
 {
     const int n = parts->count();
 
@@ -135,37 +112,56 @@ void SystemStream::write(const StringList &parts)
 }
 
 // \todo method should not be needed
-void SystemStream::write(const Format &data)
+void SystemStream::Instance::write(const Format &data)
 {
     write(static_cast<const StringList &>(data));
 }
 
-bool SystemStream::waitFor(IoReady ready, int interval_ms)
+bool SystemStream::Instance::waitFor(IoReady ready, int interval_ms)
 {
     return SystemIo::poll(fd_, static_cast<int>(ready), interval_ms);
 }
 
-void SystemStream::shutdown(ShutdownType type)
+void SystemStream::Instance::shutdown(Shutdown type)
 {
-    if (::shutdown(fd_, type) == -1)
+    if (::shutdown(fd_, static_cast<int>(type)) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void SystemStream::duplicateTo(SystemStream *other)
+void SystemStream::Instance::duplicateTo(SystemStream &other)
 {
     if (::dup2(fd_, other->fd_) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-int SystemStream::ioctl(int request, void *arg)
+int SystemStream::Instance::ioctl(int request, void *arg)
 {
     return SystemIo::ioctl(fd_, request, arg);
 }
 
-void SystemStream::close()
+void SystemStream::Instance::close()
 {
     if (::close(fd_) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
+}
+
+void SystemStream::Instance::duplicate(const SystemStream &other)
+{
+    int fd2 = ::dup(other->fd_);
+    if (fd2 == -1) CC_SYSTEM_DEBUG_ERROR(errno);
+    if (fd_ != -1) close();
+    fd_ = fd2;
+}
+
+void SystemStream::Instance::connect(SystemStream &other)
+{
+    int fd[2] = { 0, 0 };
+    if (::socketpair(AF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC, 0, fd) == -1)
+        CC_SYSTEM_DEBUG_ERROR(errno);
+    if (fd_ != -1) close();
+    if (other->fd_ != -1) other->close();
+    fd_ = fd[0];
+    other->fd_ = fd[1];
 }
 
 } // namespace cc

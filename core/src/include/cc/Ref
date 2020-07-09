@@ -174,10 +174,12 @@ template<class T> class DerefPointerType< Ref<T> > { public: typedef T DerefType
 
 /// convenience function to statically cast a Ref
 template<class C, class P>
-C *as(Ref<P> &p) { return static_cast<C *>(static_cast<P *>(p)); }
+C *as(const Ref<P> &p) { return static_cast<C *>(static_cast<P *>(p)); }
 
+#if 0
 /// convenience function to statically cast a const Ref
 template<class C, class P>
 const C *as(const Ref<P> &p) { return static_cast<const C *>(static_cast<const P *>(p)); }
+#endif
 
 } // namespace cc

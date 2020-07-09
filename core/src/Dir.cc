@@ -65,11 +65,9 @@ bool Dir::Instance::read(String *name)
     return false;
 }
 
-Ref<Stream> Dir::Instance::openFile(const String &path)
+Stream Dir::Instance::openFile(const String &path)
 {
-    return File{
-        path->isRelativePath() ? path_->extendPath(path) : path
-    }->stream();
+    return File{path->isRelativePath() ? path_->extendPath(path) : path};
 }
 
 bool Dir::checkAccess(const String &path, FileAccess flags)

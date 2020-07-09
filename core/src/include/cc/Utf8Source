@@ -16,64 +16,68 @@ namespace cc {
   * \ingroup unicode
   * \brief %Unicode UTF-8 decoding data source
   */
-class Utf8Source: public Object
+class Utf8Source
 {
 public:
+    class Instance
+    {
+    public:
+        /** Read the next %Unicode character
+          * \param ch returns the %Unicode character read if any
+          * \return true if not end of information, false otherwise
+          * \exception UnicodeError
+          */
+        bool read(uchar_t *ch)
+        {
+            bool more = byteSource_->hasMore();
+            if (more) {
+                *ch = byteSource_->readUInt8();
+                if ((*ch & 0x80) != 0) // distinguish 7 bit ASCII from multibyte sequence
+                    *ch = readMultiByte(*ch);
+            }
+            return more;
+        }
+
+    private:
+        friend class Utf8Source;
+
+        class DecodingError: public UnicodeError {
+        public:
+            String message() const override;
+        };
+
+        Instance(const Stream &stream, CharArray *buffer):
+            byteSource_{stream, buffer}
+        {}
+
+        Instance(const CharArray *buffer):
+            byteSource_{buffer}
+        {}
+
+        char32_t readMultiByte(char32_t ch);
+
+        ByteSource byteSource_;
+    };
+
     /** Open a new UTF-8 decoding data source
       * \param stream underlying data stream
       * \param buffer input buffer (optional)
-      * \return new object instance
       */
-    static Ref<Utf8Source> open(Stream *stream, CharArray *buffer = nullptr)
-    {
-        return new Utf8Source{stream, buffer};
-    }
+    Utf8Source(const Stream &stream, CharArray *buffer = nullptr):
+        instance_{stream, buffer}
+    {}
 
     /** Open a new UTF-8 decoding data source
       * \param buffer input buffer
-      * \return new object instance
       */
-    static Ref<Utf8Source> open(const CharArray *buffer)
-    {
-        return new Utf8Source{buffer};
-    }
+    Utf8Source(const CharArray *buffer):
+        instance_{buffer}
+    {}
 
-    /** Read the next %Unicode character
-      * \param ch returns the %Unicode character read if any
-      * \return true if not end of information, false otherwise
-      * \exception UnicodeError
-      */
-    bool read(uchar_t *ch)
-    {
-        bool more = byteSource_->hasMore();
-        if (more) {
-            *ch = byteSource_->readUInt8();
-            if ((*ch & 0x80) != 0) // distinguish 7 bit ASCII from multibyte sequence
-                *ch = readMultiByte(*ch);
-        }
-        return more;
-    }
-
-    /// Underlying byte source used for UTF-8 decoding
-    ByteSource *byteSource() const { return byteSource_; }
+    Instance *operator->() { return &instance_; }
 
 private:
-    class DecodingError: public UnicodeError {
-    public:
-        String message() const override;
-    };
-
-    Utf8Source(Stream *stream, CharArray *buffer):
-        byteSource_{ByteSource::open(stream, buffer)}
-    {}
-
-    Utf8Source(const CharArray *buffer):
-        byteSource_{ByteSource::open(buffer)}
-    {}
-
-    char32_t readMultiByte(char32_t ch);
-
-    Ref<ByteSource> byteSource_;
+    Instance instance_;
 };
 
 } // namespace cc

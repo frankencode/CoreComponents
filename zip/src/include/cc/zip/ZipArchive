@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/Folder>
 #include <cc/zip/exceptions>
+#include <cc/Folder>
 
 struct zip;
 typedef struct zip zip_t;
@@ -42,7 +42,7 @@ public:
       * \param name name of the file to open
       * \return new content stream
       */
-    virtual Ref<Stream> openFile(const String &name) override;
+    virtual Stream openFile(const String &name) override;
 
 private:
     ZipArchive(const String &path);

@@ -14,6 +14,7 @@
 #include <cc/SignalSet>
 #include <cc/EnvMap>
 #include <cc/IoChannel>
+#include <cc/List>
 
 namespace cc {
 
@@ -70,53 +71,53 @@ public:
           * \return pointer to this object
           * \see InputPipe
           */
-        Instance *setInputChannel(IoChannel *channel);
+        Instance *setInputChannel(const IoChannel &channel);
 
         /** \brief Set standard output channel
           * \param channel IoChannel to use for standard output
           * \return pointer to this object
           * \see OutputPipe
           */
-        Instance *setOutputChannel(IoChannel *channel);
+        Instance *setOutputChannel(const IoChannel &channel);
 
         /** \brief Set standard error channel
           * \param channel IoChannel to use for standard error
           * \return pointer to this object
           * \see OutputPipe
           */
-        Instance *setErrorChannel(IoChannel *channel);
+        Instance *setErrorChannel(const IoChannel &channel);
 
         /** \brief Attach an I/O channel
           * \param channel IoChannel to attach
           * \param targetFd target file descriptor in the child's file descriptor table
           * \return pointer to this object
           */
-        Instance *attachChannel(IoChannel *channel, int targetFd);
+        Instance *attachChannel(const IoChannel &channel, int targetFd);
 
         /** \brief Set standard input
           * \param stream SystemStream to use for standard input
           * \return pointer to this objects
           */
-        Instance *setInput(SystemStream *stream);
+        Instance *setInput(const SystemStream &stream);
 
         /** \brief Set standard input
           * \param stream SystemStream to use for standard output
           * \return pointer to this objects
           */
-        Instance *setOutput(SystemStream *stream);
+        Instance *setOutput(const SystemStream &stream);
 
         /** \brief Set standard input
           * \param stream SystemStream to use for standard error
           * \return pointer to this objects
           */
-        Instance *setError(SystemStream *stream);
+        Instance *setError(const SystemStream &stream);
 
         /** \brief Attach an I/O stream
           * \param stream SystemStream to attach
           * \param targetFd target file descriptor in the child's file descriptor table
           * \return pointer to this object
           */
-        Instance *attach(SystemStream *stream, int targetFd);
+        Instance *attach(const SystemStream &stream, int targetFd);
 
         /** \brief Convenience function to setup standard I/O redirection
           * \return pointer to this object
@@ -144,8 +145,8 @@ public:
         posix_spawnattr_t spawnAttributes_;
         posix_spawn_file_actions_t fileActions_;
         bool groupLead_ { false };
-        Ref<IoChannel> channelHead_;
-        Ref<SystemStream> standardStreams_[3];
+        List<IoChannel> ioChannels_;
+        SystemStream standardStreams_[3];
 
         #ifdef __GLIBC__
         #if __GLIBC_PREREQ(2, 29)

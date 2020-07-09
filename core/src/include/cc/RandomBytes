@@ -18,13 +18,13 @@ namespace cc {
   * \brief %Random data source
   * \see Random
   */
-class RandomBytes
+class RandomBytes: public Stream
 {
 public:
-    class Instance: public Stream
+    class Instance: public Stream::Instance
     {
     public:
-        virtual int read(CharArray *data) override;
+        int read(CharArray *data) override;
 
     private:
         friend class RandomBytes;
@@ -39,13 +39,10 @@ public:
     };
 
     RandomBytes(int seed = -1, off_t eoi = -1, int byteMin = 0x00, int byteMax = 0xFF):
-        instance_{new Instance{seed, eoi, byteMin, byteMax}}
+        Stream{new Instance{seed, eoi, byteMin, byteMax}}
     {}
 
-    Instance *operator->() { return instance_; }
-
-private:
-    Ref<Instance> instance_;
+    Instance *operator->() { return my<Instance>(); }
 };
 
 } // namespace cc

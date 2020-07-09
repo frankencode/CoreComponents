@@ -27,14 +27,14 @@ protected:
     {
         String buffer = CharArray::allocate(roundUpToNext(cipher->blockSize(), text->count()));
         {
-            Ref<Stream> stream = MemoryStream::open(mutate(buffer));
-            Ref<CipherSink> sink = CipherSink::open(cipher, stream, NullStream::instance());
+            MemoryStream stream{mutate(buffer)};
+            CipherSink sink{cipher, stream, NullStream{}};
             sink->write(text);
         }
         String text2 = String::create(text->count());
         {
-            Ref<Stream> stream = MemoryStream::open(mutate(buffer));
-            Ref<CipherSource> source = CipherSource::open(cipher, stream);
+            MemoryStream stream{mutate(buffer)};
+            CipherSource source{cipher, stream};
             source->read(mutate(text2));
         }
         return text2;

@@ -254,6 +254,7 @@ private:
   * \ingroup strings
   * \todo fix isZeroTerminated() for substrings and add CC_ASSERTS to all implicit const char* conversions
   * \todo change size_type/Index to 64 bit
+  * \todo think about: ByteArray, ByteArray::Instance
   */
 class CharArray: public Object
 {

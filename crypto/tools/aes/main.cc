@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
             password = normalizePassword(password);
 
-            Ref<Stream> random = File{"/dev/random"}->stream();
+            File random{"/dev/random"};
 
             for (String path: items)
             {
@@ -70,17 +70,17 @@ int main(int argc, char **argv)
                     ferr() << outPath << ": file exists, skipping" << nl;
                     continue;
                 }
-                Ref<Stream> source { File{path} };
-                Ref<Stream> sink;
+                Stream source = File{path};
+                Stream sink;
                 if (viewMode)
                     sink = stdOut();
                 else
                     sink = File{outPath, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly};
                 sink->write(encipheredContentKey);
 
-                Ref<CipherSink> cipherSink = CipherSink::open(cipher, sink, random);
+                CipherSink cipherSink{cipher, sink, random};
                 {
-                    Ref<ByteSink> header = ByteSink::open(cipherSink, mutate(String::allocate(0x100)));
+                    ByteSink header{cipherSink, mutate(String::allocate(0x100))};
                     String challenge = random->readSpan(16);
                     header->write(challenge);
                     header->writeUInt32(crc32(challenge));
@@ -94,12 +94,12 @@ int main(int argc, char **argv)
             }
         }
         else {
-            Ref<SystemStream> stdInSaved;
-            Ref<SystemStream> stdOutSaved;
+            SystemStream stdInSaved;
+            SystemStream stdOutSaved;
             if (items->count() == 0) {
                 items = StringList{""};
-                stdInSaved = SystemStream::duplicate(stdIn());
-                stdOutSaved = SystemStream::duplicate(stdOut());
+                stdInSaved->duplicate(stdIn());
+                stdOutSaved->duplicate(stdOut());
                 stdErr()->duplicateTo(stdIn());
                 stdErr()->duplicateTo(stdOut());
             }
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 
             for (String path: items)
             {
-                Ref<Stream> source;
+                Stream source;
                 if (path == "")
                     source = stdInSaved;
                 else
@@ -122,11 +122,11 @@ int main(int argc, char **argv)
                 AesCipher{password}->decode(encipheredContentKey, mutate(contentKey));
 
                 BlockCascade cipher{AesCipher{contentKey}};
-                Ref<CipherSource> cipherSource = CipherSource::open(cipher, source);
+                CipherSource cipherSource{cipher, source};
                 String origName;
                 uint64_t origSize = 0;
                 {
-                    Ref<ByteSource> header = ByteSource::open(cipherSource, mutate(String::allocate(1)));
+                    ByteSource header{cipherSource, mutate(String::allocate(1))};
                     String challenge = header->readSpan(16);
                     if (crc32(challenge) != header->readUInt32()) throw UsageError{"Invalid password or invalid file"};
                     int nameLength = header->readInt32();
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 
                     if (!viewMode && !filterMode) fout() << origName << nl;
                 }
-                Ref<Stream> sink;
+                Stream sink;
                 if (viewMode || filterMode) {
                     if (stdOutSaved)
                         sink = stdOutSaved;

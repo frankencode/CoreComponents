@@ -11,12 +11,12 @@
 namespace cc {
 namespace meta {
 
-Ref<JsonWriter> JsonWriter::create(Stream *sink, const String &indent)
+Ref<JsonWriter> JsonWriter::create(const Stream &sink, const String &indent)
 {
     return new JsonWriter{sink, indent};
 }
 
-JsonWriter::JsonWriter(Stream *sink, const String &indent):
+JsonWriter::JsonWriter(const Stream &sink, const String &indent):
     format_{sink},
     indent_{indent}
 {}

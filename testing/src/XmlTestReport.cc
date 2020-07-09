@@ -6,14 +6,14 @@
  *
  */
 
+#include <cc/testing/XmlTestReport>
 #include <cc/Format>
 #include <cc/Stream>
-#include <cc/testing/XmlTestReport>
 
 namespace cc {
 namespace testing {
 
-XmlTestReport::XmlTestReport(Stream *stream):
+XmlTestReport::XmlTestReport(const Stream &stream):
     stream_{stream}
 {}
 

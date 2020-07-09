@@ -19,32 +19,46 @@ namespace crypto {
 class Md5Sink: public CryptoHashSink
 {
 public:
-    enum {
-        Size = 16 ///< size of the hash sum in bytes
+    static constexpr int Size = 16; ///< size of the hash sum in bytes
+
+    class Instance: public CryptoHashSink::Instance
+    {
+    public:
+        CryptoHashSink copy() const override;
+
+        int blockSize() const override;
+
+        void write(const CharArray *data) override;
+        String finish() override;
+
+    private:
+        friend class Md5Sink;
+
+        Instance();
+        Instance(const Instance *other);
+
+        void consume();
+
+        String aux_;
+        int auxFill_;
+        uint64_t bytesFeed_;
+        uint32_t a_, b_, c_, d_;
     };
 
     /** Open a new MD5 sum computing hash sink
-      * \return new object instance
       */
-    static Ref<Md5Sink> open();
+    Md5Sink():
+        CryptoHashSink{new Instance}
+    {}
 
-    Ref<CryptoHashSink> copy() const override;
-
-    int blockSize() const override;
-
-    void write(const CharArray *data) override;
-    String finish() override;
+    Instance *operator->() const { return my<Instance>(); }
 
 private:
-    Md5Sink();
-    Md5Sink(const Md5Sink *other);
+    friend class Instance;
 
-    void consume();
-
-    String aux_;
-    int auxFill_;
-    uint64_t bytesFeed_;
-    uint32_t a_, b_, c_, d_;
+    Md5Sink(Instance *instance):
+        CryptoHashSink{instance}
+    {}
 };
 
 String md5(const CharArray *data);

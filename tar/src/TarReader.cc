@@ -14,12 +14,12 @@
 namespace cc {
 namespace tar {
 
-Ref<TarReader> TarReader::open(Stream *source)
+Ref<TarReader> TarReader::open(const Stream &source)
 {
-    return new TarReader(source);
+    return new TarReader{source};
 }
 
-bool TarReader::testFormat(Stream *source)
+bool TarReader::testFormat(Stream source)
 {
     String data = String::create(512);
     if (source->readSpan(mutate(data)) < data->count()) return false;
@@ -28,7 +28,7 @@ bool TarReader::testFormat(Stream *source)
     return magic == "ustar " || magic == "ustar";
 }
 
-TarReader::TarReader(Stream *source):
+TarReader::TarReader(const Stream &source):
     source_{source},
     i_{0}
 {}
@@ -125,7 +125,7 @@ bool TarReader::readHeader(Ref<ArchiveEntry> *nextEntry)
     return true;
 }
 
-void TarReader::readData(ArchiveEntry *entry, Stream* sink)
+void TarReader::readData(ArchiveEntry *entry, Stream sink)
 {
     i_ += source_->transferSpanTo(entry->size(), sink);
     if (entry->size() % 512 != 0)

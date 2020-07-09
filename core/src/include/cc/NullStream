@@ -12,8 +12,6 @@
 
 namespace cc {
 
-template<class T> class Singleton;
-
 /** \class NullStream cc/NullStream
   * \ingroup binary_io
   * \brief Zero storage information dump
@@ -21,14 +19,42 @@ template<class T> class Singleton;
 class NullStream: public Stream
 {
 public:
-    static NullStream *instance();
+    class Instance: public Stream::Instance
+    {
+    public:
+        int read(CharArray *data) override
+        {
+            data->fill(0);
+            return data->count();
+        }
 
-    int read(CharArray *data) override;
-    void write(const CharArray *data) override;
+        void write(const CharArray *data) override
+        {}
+
+        void write(const StringList &parts) override
+        {}
+
+        bool isReadOnly() const override
+        {
+            return true;
+        }
+
+    private:
+        friend class NullStream;
+
+        Instance() = default;
+    };
+
+    NullStream():
+        Stream{instance()}
+    {}
 
 private:
-    friend class Singleton<NullStream>;
-    NullStream() {}
+    static Instance *instance()
+    {
+        static thread_local Instance instance_;
+        return &instance_;
+    }
 };
 
 } // namespace cc

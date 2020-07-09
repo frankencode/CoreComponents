@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/testing/TestReport>
+#include <cc/Stream>
 
 namespace cc {
 namespace testing {
@@ -16,7 +17,7 @@ namespace testing {
 class XmlTestReport: public TestReport
 {
 public:
-    inline static Ref<XmlTestReport> create(Stream *stream) { return new XmlTestReport(stream); }
+    inline static Ref<XmlTestReport> create(const Stream &stream) { return new XmlTestReport{stream}; }
 
     virtual bool captureOutput() const;
 
@@ -29,12 +30,12 @@ public:
     virtual void endTestSuite(TestSuite *testSuite) override;
 
 protected:
-    XmlTestReport(Stream *stream);
+    XmlTestReport(const Stream &stream);
 
 private:
     static String xmlEscape(const String &text);
 
-    Ref<Stream> stream_;
+    Stream stream_;
 };
 
 }} // namespace cc::testing

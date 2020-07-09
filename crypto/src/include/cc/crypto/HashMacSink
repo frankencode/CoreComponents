@@ -19,24 +19,38 @@ namespace crypto {
 class HashMacSink: public CryptoHashSink
 {
 public:
-    static Ref<HashMacSink> open(const CryptoHashSink *hashSink, const CharArray *key);
+    class Instance: public CryptoHashSink::Instance
+    {
+    public:
+        CryptoHashSink copy() const override;
 
-    Ref<CryptoHashSink> copy() const override;
+        int blockSize() const override;
 
-    int blockSize() const override;
+        void write(const CharArray *data) override;
+        String finish() override;
 
-    void write(const CharArray *data) override;
+    private:
+        friend class HashMacSink;
 
-    String finish() override;
+        static CryptoHashSink prepareHashSink(const CryptoHashSink &hashSink, const CharArray *key, uint8_t blind);
+
+        Instance(const CryptoHashSink &hashSink, const CharArray *key);
+        Instance(const Instance *other);
+
+        CryptoHashSink outerHashSink_;
+        CryptoHashSink innerHashSink_;
+    };
+
+    HashMacSink(const CryptoHashSink &hashSink, const CharArray *key):
+        CryptoHashSink{new Instance{hashSink, key}}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 
 private:
-    static Ref<CryptoHashSink> prepareHashSink(const CryptoHashSink *hashSink, const CharArray *key, uint8_t blind);
-
-    HashMacSink(const CryptoHashSink *hashSink, const CharArray *key);
-    HashMacSink(const HashMacSink *other);
-
-    Ref<CryptoHashSink> outerHashSink_;
-    Ref<CryptoHashSink> innerHashSink_;
+    HashMacSink(Instance *instance):
+        CryptoHashSink{instance}
+    {}
 };
 
 }} // namespace cc::crypto

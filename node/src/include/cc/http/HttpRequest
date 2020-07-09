@@ -44,8 +44,6 @@ private:
 
     String line_;
     double time_;
-
-    Ref<Stream> payload_;
 };
 
 }} // namespace cc::http

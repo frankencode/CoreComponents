@@ -14,17 +14,7 @@
 
 namespace cc {
 
-Ref<OutputPipe> OutputPipe::create()
-{
-    return new OutputPipe;
-}
-
-Ref<InputPipe> OutputPipe::connectInput() const
-{
-    return new InputPipe{this};
-}
-
-OutputPipe::OutputPipe()
+OutputPipe::Instance::Instance()
 {
     int fd[2] = { 0, 0 };
     if (::pipe2(fd, O_CLOEXEC) == -1)
@@ -33,7 +23,7 @@ OutputPipe::OutputPipe()
     slaveFd_ = fd[1];
 }
 
-void OutputPipe::onStart()
+void OutputPipe::Instance::onStart()
 {
     ::close(slaveFd_);
 }

@@ -8,7 +8,8 @@
 
 #pragma once
 
-#include <cc/Stream>
+#include <cc/crypto/PseudoPad>
+#include <cc/crypto/BlockCascade>
 
 namespace cc {
 namespace crypto {
@@ -16,20 +17,15 @@ namespace crypto {
 /** \class RandomSource cc/crypto/RandomSource
   * \brief Pseudo random number source of the system
   */
-class RandomSource: public Stream
+class RandomSource: public PseudoPad
 {
 public:
-    using Instance = Stream;
-
-    /** Open a new random number source
-      */
-    RandomSource(const CharArray *salt = nullptr);
-
-    Instance *operator->() { return source_; }
-    operator Stream *() { return source_; }
+    RandomSource(const CharArray *salt = nullptr):
+        PseudoPad{createCipher(salt)}
+    {}
 
 private:
-    Ref<Stream> source_;
+    static BlockCascade createCipher(const CharArray *salt);
 };
 
 }} // namespace cc::crypto

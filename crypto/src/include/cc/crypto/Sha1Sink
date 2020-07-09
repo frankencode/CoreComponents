@@ -19,33 +19,47 @@ namespace crypto {
 class Sha1Sink: public CryptoHashSink
 {
 public:
-    enum {
-        Size = 20 ///< size of the hash sum in bytes
+    static constexpr int Size = 20;
+
+    class Instance: public CryptoHashSink::Instance
+    {
+    public:
+        CryptoHashSink copy() const override;
+
+        int blockSize() const override;
+
+        void write(const CharArray *data) override;
+        String finish() override;
+
+    private:
+        friend class Sha1Sink;
+
+        Instance();
+        Instance(const Instance *other);
+
+        void consume();
+
+        String h_;
+        String m_;
+        String w_;
+        int j_;
+        uint64_t l_;
     };
 
     /** Open a new SHA-1 computing hash sink
-      * \return new object instance
       */
-    static Ref<Sha1Sink> open();
+    Sha1Sink():
+        CryptoHashSink{new Instance}
+    {}
 
-    Ref<CryptoHashSink> copy() const override;
-
-    int blockSize() const override;
-
-    void write(const CharArray *data) override;
-    String finish() override;
+    Instance *operator->() const { return my<Instance>(); }
 
 private:
-    Sha1Sink();
-    Sha1Sink(const Sha1Sink *other);
+    friend class Instance;
 
-    void consume();
-
-    String h_;
-    String m_;
-    String w_;
-    int j_;
-    uint64_t l_;
+    Sha1Sink(Instance *instance):
+        CryptoHashSink{instance}
+    {}
 };
 
 String sha1(const CharArray *data);

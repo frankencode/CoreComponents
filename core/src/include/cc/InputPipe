@@ -12,22 +12,24 @@
 
 namespace cc {
 
-class OutputPipe;
-
 /** \brief Child process input pipe
   * \see OutputPipe
   */
 class InputPipe: public IoChannel
 {
 public:
-    static Ref<InputPipe> create();
+    class Instance: public IoChannel::Instance
+    {
+    private:
+        friend class InputPipe;
 
-private:
-    friend class OutputPipe;
+        Instance();
+        void onStart() override;
+    };
 
-    InputPipe();
-    InputPipe(const OutputPipe *outputPipe);
-    void onStart() override;
+    InputPipe():
+        IoChannel{new Instance}
+    {}
 };
 
 } // namepspace cc

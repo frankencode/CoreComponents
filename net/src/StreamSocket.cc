@@ -20,61 +20,70 @@
 namespace cc {
 namespace net {
 
-Ref<StreamSocket> StreamSocket::listen(const SocketAddress &localAddress, int backlog)
-{
-    Ref<StreamSocket> socket = new StreamSocket{localAddress};
-    socket->listen(backlog);
-    return socket;
-}
+StreamSocket::Instance::Instance(int fd):
+    SystemStream::Instance{fd}
+{}
 
-Ref<StreamSocket> StreamSocket::connect(const SocketAddress &peerAddress)
-{
-    Ref<StreamSocket> socket = new StreamSocket{peerAddress};
-    socket->connect();
-    return socket;
-}
+StreamSocket::Instance::Instance(const SocketAddress &address):
+    address_{address}
+{}
 
-Ref<StreamSocket> StreamSocket::connect(const String &hostName, int port)
+void StreamSocket::Instance::connect(StreamSocket &other)
 {
-    return connect(SocketAddress::resolveHost(hostName, port));
-}
-
-void StreamSocket::connect(Ref<StreamSocket> *first, Ref<StreamSocket> *second)
-{
-    int fd[2];
-    fd[0] = 0;
-    fd[1] = 0;
+    int fd[2] = { 0, 0 };
     if (::socketpair(AF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC, 0, fd) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
-    *first = new StreamSocket{fd[0]};
-    *second = new StreamSocket{fd[1]};
+    if (fd_ != -1) close();
+    if (other->fd_ != -1) other->close();
+    fd_ = fd[0];
+    other->fd_ = fd[1];
 }
 
-Ref<StreamSocket> StreamSocket::accept()
+void StreamSocket::Instance::connect(const SocketAddress &peerAddress)
 {
-    Ref<StreamSocket> client = new StreamSocket{SocketAddress{address_->family()}};
-    client->fd_ = accept(&client->address_);
-    client->connected_ = true;
-    return client;
+    address_ = peerAddress;
+    fd_ = ::socket(+address_->family(), SOCK_STREAM, 0);
+    if (fd_ == -1)
+        CC_SYSTEM_DEBUG_ERROR(errno);
+
+    int flags = 0;
+
+    if (+address_->family() != AF_LOCAL) {
+        flags = ::fcntl(fd_, F_GETFL, 0);
+        if (flags == -1)
+            CC_SYSTEM_DEBUG_ERROR(errno);
+        if (::fcntl(fd_, F_SETFL, flags | O_NONBLOCK) == -1)
+            CC_SYSTEM_DEBUG_ERROR(errno);
+    }
+
+    int ret = -1;
+    do ret = ::connect(fd_, address_->addr(), address_->addrLen());
+    while (ret == -1 && errno == EINTR);
+
+    if (ret == -1) {
+        if (errno != EINPROGRESS)
+            CC_SYSTEM_DEBUG_ERROR(errno);
+    }
+
+    connected_ = (ret != -1);
+
+    if (+address_->family() != AF_LOCAL) {
+        if (::fcntl(fd_, F_SETFL, flags) == -1)
+            CC_SYSTEM_DEBUG_ERROR(errno);
+    }
 }
 
-StreamSocket::StreamSocket(int fd):
-    SystemStream{fd},
-    connected_{true}
-{}
-
-StreamSocket::StreamSocket(const SocketAddress &address):
-    address_{address},
-    connected_{false}
-{}
-
-SocketAddress StreamSocket::address() const
+void StreamSocket::Instance::connect(const String &hostName, int port)
 {
-    return address_;
+    connect(SocketAddress::resolveHost(hostName, port));
 }
 
-void StreamSocket::listen(int backlog)
+void StreamSocket::Instance::listen(const SocketAddress &localAddress, int backlog)
 {
+    address_ = localAddress;
+
+    if (fd_ != -1) close();
+
     fd_ = ::socket(+address_->family(), SOCK_STREAM, 0);
     if (fd_ == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
@@ -112,15 +121,29 @@ void StreamSocket::listen(int backlog)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-int StreamSocket::accept(SocketAddress *clientAddress)
+StreamSocket StreamSocket::Instance::accept()
 {
-    socklen_t len = (*clientAddress)->addrLen();
-    int fdc = ::accept(fd_, (*clientAddress)->addr(), &len);
-    if (fdc < 0) CC_SYSTEM_DEBUG_ERROR(errno);
-    return fdc;
+    StreamSocket client{SocketAddress{address_->family()}};
+    accept(client);
+    return client;
 }
 
-bool StreamSocket::waitForReady(int timeout_ms)
+void StreamSocket::Instance::accept(StreamSocket::Instance *client)
+{
+    socklen_t len = client->address_->addrLen();
+    int fdc = ::accept(fd_, client->address_->addr(), &len);
+    if (fdc < 0) CC_SYSTEM_DEBUG_ERROR(errno);
+
+    client->fd_ = fdc;
+    client->connected_ = true;
+}
+
+SocketAddress StreamSocket::Instance::address() const
+{
+    return address_;
+}
+
+bool StreamSocket::Instance::waitForReady(int timeout)
 {
     if (connected_) return true;
 
@@ -128,9 +151,9 @@ bool StreamSocket::waitForReady(int timeout_ms)
     fds.fd = fd_;
     fds.events = POLLIN|POLLOUT;
 
-    if (timeout_ms < 0) timeout_ms = -1;
+    if (timeout < 0) timeout = -1;
     int ret = -1;
-    do ret = ::poll(&fds, 1, timeout_ms);
+    do ret = ::poll(&fds, 1, timeout);
     while (ret == -1 && errno == EINTR);
 
     if (ret == -1) CC_SYSTEM_DEBUG_ERROR(errno);
@@ -149,40 +172,7 @@ bool StreamSocket::waitForReady(int timeout_ms)
     return connected_;
 }
 
-void StreamSocket::connect()
-{
-    fd_ = ::socket(+address_->family(), SOCK_STREAM, 0);
-    if (fd_ == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
-
-    int flags = 0;
-
-    if (+address_->family() != AF_LOCAL) {
-        flags = ::fcntl(fd_, F_GETFL, 0);
-        if (flags == -1)
-            CC_SYSTEM_DEBUG_ERROR(errno);
-        if (::fcntl(fd_, F_SETFL, flags | O_NONBLOCK) == -1)
-            CC_SYSTEM_DEBUG_ERROR(errno);
-    }
-
-    int ret = -1;
-    do ret = ::connect(fd_, address_->addr(), address_->addrLen());
-    while (ret == -1 && errno == EINTR);
-
-    if (ret == -1) {
-        if (errno != EINPROGRESS)
-            CC_SYSTEM_DEBUG_ERROR(errno);
-    }
-
-    connected_ = (ret != -1);
-
-    if (+address_->family() != AF_LOCAL) {
-        if (::fcntl(fd_, F_SETFL, flags) == -1)
-            CC_SYSTEM_DEBUG_ERROR(errno);
-    }
-}
-
-void StreamSocket::setRecvTimeout(double interval)
+void StreamSocket::Instance::setRecvTimeout(double interval)
 {
     struct timeval tval;
     double sec = 0;
@@ -192,7 +182,7 @@ void StreamSocket::setRecvTimeout(double interval)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void StreamSocket::setSendTimeout(double interval)
+void StreamSocket::Instance::setSendTimeout(double interval)
 {
     struct timeval tval;
     double sec = 0;
