@@ -36,6 +36,7 @@ void InputField::init()
     input->gotoNext->connect([=]{ gotoNext(); });
     input->gotoPrevious->connect([=]{ gotoPrevious(); });
     input_ = input;
+    inputText->bind([=]{ return input_->text(); });
 
     size->bind([=]{ return preferredSize(); });
 
