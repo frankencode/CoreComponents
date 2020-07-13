@@ -9,9 +9,9 @@ using namespace cc::ui;
 
 int main(int argc, char **argv)
 {
-    Timer::startAt(std::ceil(System::now()), 1, []{
+    Timer{1, []{
         fout() << fixed(System::now(), 6) << nl;
-    });
+    }}->startAt(std::ceil(System::now()));
 
     return Application{}->run();
 }

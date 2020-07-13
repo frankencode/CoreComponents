@@ -18,7 +18,6 @@ namespace ui {
 
 class SdlWindow;
 class SdlTimeMaster;
-class Timer;
 
 class SdlApplicationInstance: public ApplicationInstance
 {
@@ -59,7 +58,7 @@ private:
     void setTextInputArea(const Rect &inputArea) override;
     void stopTextInput() override;
 
-    void triggerTimer(const Timer *timer);
+    void triggerTimer(const Timer::Instance *timer);
 
     Map<uint32_t, Ref<SdlWindow> > windows_;
 

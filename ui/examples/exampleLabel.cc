@@ -29,7 +29,7 @@ class MainView: public View
         label->pos->bind([=]{ return center() - label->center(); });
 
         easeOn(label->angle, 0.5, easing::Bezier(0.5, -0.4, 0.5, 1.4));
-        Timer::start(1, [=]{ label->text = getClockText(); label->angle += 45; });
+        Timer{1, [=]{ label->text = getClockText(); label->angle += 45; }}->start();
     }
 
     bool onKeyPressed(const KeyEvent *event)

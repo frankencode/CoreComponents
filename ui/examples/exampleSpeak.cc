@@ -14,7 +14,7 @@ class MainView: public View
     MainView()
     {
         voice_ = Process{
-            Command{"espeak -v de"}
+            Command{"espeak -v de -s 120"}
             ->simpleRedirection()
         };
 

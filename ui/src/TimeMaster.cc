@@ -30,7 +30,7 @@ TimeMaster::~TimeMaster()
     worker_->wait();
 }
 
-void TimeMaster::startTimer(Timer *timer)
+void TimeMaster::startTimer(Timer::Instance *timer)
 {
     worker_->startTimer(timer);
 }

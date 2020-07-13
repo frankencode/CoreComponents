@@ -83,11 +83,11 @@ bool ApplicationInstance::pointerIsDragged(const PointerEvent *event, Point drag
     return absPow2(event->pos() - dragStart) >= minDragDistance * minDragDistance;
 }
 
-void ApplicationInstance::notifyTimer(Timer *t)
+void ApplicationInstance::notifyTimer(Timer::Instance *t)
 {
     if (t->interval_ > 0)
         TimeMaster::instance()->ack();
-    t->triggered->emit();
+    t->timeout->emit();
 }
 
 bool ApplicationInstance::feedFingerEvent(Window *window, FingerEvent *event)

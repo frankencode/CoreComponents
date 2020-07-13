@@ -8,8 +8,9 @@
 
 #pragma once
 
-#include <cc/Range>
 #include <cc/ui/InputControl>
+#include <cc/ui/Timer>
+#include <cc/Range>
 
 namespace cc {
 namespace ui {
@@ -69,7 +70,7 @@ private:
     void paint() override;
 
     Ref<TextEditor> editor_;
-    Ref<Timer> timer_;
+    Timer timer_;
     bool shiftKey_ { false };
 };
 

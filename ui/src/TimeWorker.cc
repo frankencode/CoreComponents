@@ -23,7 +23,7 @@ TimeWorker::TimeWorker(TimeMaster *master):
     master_{master}
 {}
 
-void TimeWorker::startTimer(Timer *timer)
+void TimeWorker::startTimer(Timer::Instance *timer)
 {
     startRequests_->pushBack(Timeout::create(timer));
 }

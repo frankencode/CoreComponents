@@ -9,7 +9,6 @@
 #include <cc/ui/TextInput>
 #include <cc/ui/TextRun>
 #include <cc/ui/LineEditor>
-#include <cc/ui/Timer>
 
 namespace cc {
 namespace ui {
@@ -66,8 +65,8 @@ void TextInput::init()
         else stopBlink();
     });
 
-    timer_ = Timer::create(0.5);
-    timer_->triggered->connect([=]{
+    timer_ = Timer{0.5};
+    timer_->timeout->connect([=]{
         textCursorVisible = !textCursorVisible();
     });
 }

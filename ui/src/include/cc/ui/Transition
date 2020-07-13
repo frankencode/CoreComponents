@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include <cc/Property>
-#include <cc/System>
 #include <cc/ui/easing>
 #include <cc/ui/Timer>
+#include <cc/Property>
+#include <cc/System>
 
 namespace cc {
 namespace ui {
@@ -48,10 +48,9 @@ private:
     Transition(Property<T> &property, double duration, const Easing &easing):
         alias_{alias(property)},
         duration_{duration},
-        easing_{easing},
-        timer_{Timer::create(1./60.)}
+        easing_{easing}
     {
-        timer_->triggered->connect([this]{timeout();});
+        timer_->timeout->connect([this]{timeout();});
     }
 
     void timeout()
@@ -78,7 +77,7 @@ private:
     Property<T> alias_;
     double duration_;
     Easing easing_;
-    Ref<Timer> timer_;
+    Timer timer_ { 1./60. };
     T oldValue_;
     T newValue_;
 };

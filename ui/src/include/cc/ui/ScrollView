@@ -9,11 +9,10 @@
 #pragma once
 
 #include <cc/ui/Control>
+#include <cc/ui/Timer>
 
 namespace cc {
 namespace ui {
-
-class Timer;
 
 class ScrollView: public Control
 {
@@ -78,8 +77,8 @@ private:
 
     Property<Control *> focusControl;
 
-    View *carrier_;
-    bool isDragged_;
+    View *carrier_ { nullptr };
+    bool isDragged_ { false };
     Point dragStart_;
     Point carrierOrigin_;
 
@@ -91,7 +90,7 @@ private:
     enum class TimerMode { Stopped, Flying, Bouncing, Traversing };
     TimerMode timerMode_ { TimerMode::Stopped };
 
-    Ref<Timer> timer_;
+    Timer timer_ { 1./60 };
     double lastTime_;
 
     Point startPos_;

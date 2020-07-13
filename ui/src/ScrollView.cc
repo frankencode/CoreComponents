@@ -22,10 +22,7 @@ Ref<ScrollView> ScrollView::create(View *parent)
 }
 
 ScrollView::ScrollView(View *parent):
-    Control{parent},
-    carrier_{nullptr},
-    isDragged_{false},
-    timer_{Timer::create(1./60)}
+    Control{parent}
 {
     if (parent) size->bind([=]{ return parent->size(); });
 }
@@ -42,7 +39,7 @@ void ScrollView::init()
         keepFocusControlInView();
     });
 
-    timer_->triggered->connect([=]{
+    timer_->timeout->connect([=]{
         if (timerMode_ == TimerMode::Flying) carrierFly();
         else if (timerMode_ == TimerMode::Bouncing) carrierBounce();
         else if (timerMode_ == TimerMode::Traversing) carrierTraverse();

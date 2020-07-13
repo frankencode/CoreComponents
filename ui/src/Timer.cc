@@ -13,49 +13,23 @@
 namespace cc {
 namespace ui {
 
-void Timer::start(double interval, const std::function<void()> &handler)
-{
-    Ref<Timer> timer = Timer::create(interval);
-    timer->triggered->connect(handler);
-    timer->start();
-}
-
-void Timer::startAt(double startTime, double interval, const std::function<void()> &handler)
-{
-    Ref<Timer> timer = Timer::create(interval);
-    timer->triggered->connect(handler);
-    timer->startAt(startTime);
-}
-
-void Timer::startIn(double delayTime, const std::function<void()> &handler)
-{
-    Ref<Timer> timer = Timer::create();
-    timer->triggered->connect(handler);
-    timer->startIn(delayTime);
-}
-
-Ref<Timer> Timer::create(double interval)
-{
-    return new Timer{interval};
-}
-
-Timer::Timer(double interval):
+Timer::Instance::Instance(double interval):
     interval_{interval}
 {}
 
-void Timer::start()
+void Timer::Instance::start()
 {
     startIn(interval_);
 }
 
-void Timer::startAt(double startTime)
+void Timer::Instance::startAt(double startTime)
 {
     isActive_ = true;
     firstTime_ = startTime_ = startTime;
     TimeMaster::instance()->startTimer(this);
 }
 
-void Timer::startIn(double delayTime)
+void Timer::Instance::startIn(double delayTime)
 {
     isActive_ = true;
     startTime_ = System::now();
@@ -63,7 +37,7 @@ void Timer::startIn(double delayTime)
     TimeMaster::instance()->startTimer(this);
 }
 
-void Timer::stop()
+void Timer::Instance::stop()
 {
     isActive_ = false;
 }

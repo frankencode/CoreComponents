@@ -9,7 +9,6 @@
 #include <cc/ui/SdlApplicationInstance>
 #include <cc/ui/SdlWindow>
 #include <cc/ui/SdlCursor>
-#include <cc/ui/Timer>
 #include <cc/ui/TimeMaster>
 #include <cc/ui/FingerEvent>
 #include <cc/ui/MouseEvent>
@@ -108,9 +107,9 @@ int SdlApplicationInstance::run()
         // CC_INSPECT(event_->type);
 
         if (event_->type == timerEvent_) {
-            Timer *t = (Timer *)event_->user.data1;
-            notifyTimer(t);
-            t->decRefCount();
+            Timer::Instance *timer = (Timer::Instance *)event_->user.data1;
+            notifyTimer(timer);
+            timer->decRefCount();
         }
         else switch(event_->type) {
             case SDL_FINGERMOTION:
@@ -421,15 +420,14 @@ void SdlApplicationInstance::stopTextInput()
     SDL_StopTextInput();
 }
 
-void SdlApplicationInstance::triggerTimer(const Timer *timer)
+void SdlApplicationInstance::triggerTimer(const Timer::Instance *timer)
 {
     SDL_Event event;
     SDL_memset(&event, 0, sizeof(event));
     event.type = timerEvent_;
     event.user.code = 0;
-    Timer *t = const_cast<Timer *>(timer);
-    t->incRefCount();
-    event.user.data1 = (void *)t;
+    timer->incRefCount();
+    event.user.data1 = (void *)timer;
     event.user.data2 = 0;
     SDL_PushEvent(&event);
 }

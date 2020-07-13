@@ -21,7 +21,7 @@ public:
     static SdlTimeMaster *instance();
 
 protected:
-    void triggerTimer(const Timer *timer) override;
+    void triggerTimer(const Timer::Instance *timer) override;
 
 private:
     friend class Singleton<SdlTimeMaster>;

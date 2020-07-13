@@ -20,7 +20,7 @@ class TimeMaster: public Object
 public:
     static TimeMaster *instance();
 
-    void startTimer(Timer *timer);
+    void startTimer(Timer::Instance *timer);
     void ack();
 
 protected:
@@ -29,7 +29,7 @@ protected:
     TimeMaster();
     ~TimeMaster();
 
-    virtual void triggerTimer(const Timer *timer) = 0;
+    virtual void triggerTimer(const Timer::Instance *timer) = 0;
 
 private:
     Ref<TimeWorker> worker_;
