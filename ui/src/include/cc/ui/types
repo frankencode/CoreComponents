@@ -131,7 +131,7 @@ CC_BITMASK(Decoration, uint8_t)
 
 String str(Decoration decoration);
 
-/** alignment within a Column
+/** alignment within a ColumnLayout
   */
 enum class ColumnAlign {
     Auto,  ///< align according to language preference
@@ -142,7 +142,7 @@ enum class ColumnAlign {
 
 String str(ColumnAlign align);
 
-/** alignment within a Row
+/** alignment within a RowLayout
   */
 enum class RowAlign {
     Top,    ///< align top

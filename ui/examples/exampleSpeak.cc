@@ -1,6 +1,6 @@
 #include <cc/ui/ScrollView>
 #include <cc/ui/TextField>
-#include <cc/ui/Row>
+#include <cc/ui/RowLayout>
 #include <cc/Process>
 #include <cc/debug>
 
@@ -18,14 +18,14 @@ class MainView: public View
             ->simpleRedirection()
         };
 
-        // Application{}->textZoom = 1.2;
+        Application{}->textZoom = 1.2;
 
-        size = Size { 640, 480 };
+        size = Size{640, 480};
         inheritPaper();
 
         auto carrier = add<ScrollView>()->carrier();
 
-        auto row = carrier->organize<Row>();
+        RowLayout row{carrier};
         row->margin = dp(12);
         row->spacing = dp(12);
 

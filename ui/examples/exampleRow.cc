@@ -1,5 +1,5 @@
-#include <cc/ui/Row>
-#include <cc/ui/Column>
+#include <cc/ui/RowLayout>
+#include <cc/ui/ColumnLayout>
 #include <cc/ui/Label>
 
 using namespace cc;
@@ -29,7 +29,7 @@ class MainView: public View
         box->paper = 0xD0D0FF;
         box->centerInParent();
 
-        box->organize<Row>();
+        RowLayout{box};
 
         box->add<Item>("• Item 1");
         box->add<Item>("• Item 2");
@@ -37,7 +37,7 @@ class MainView: public View
         auto subBox = box->add<View>();
         subBox->paper = 0xD0FFD0;
 
-        subBox->organize<Column>();
+        ColumnLayout{subBox};
 
         subBox->add<Item>("• Item A");
         subBox->add<Item>("• Item B"); // ◦

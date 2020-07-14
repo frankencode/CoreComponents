@@ -58,8 +58,8 @@ View::View(View *parent)
 
 View::~View()
 {
-    organizer_ = nullptr;
-        // destroy the organizer before releasing the children for efficiency
+    layout_ = Layout{};
+        // destroy the layout before releasing the children for efficiency
 }
 
 Point View::mapToGlobal(Point l) const
@@ -236,12 +236,12 @@ void View::update(UpdateReason reason)
 
 void View::childReady(View *child)
 {
-    if (organizer_) organizer_->childReady(child);
+    if (layout_) layout_->childReady(child);
 }
 
 void View::childDone(View *child)
 {
-    if (organizer_) organizer_->childDone(child);
+    if (layout_) layout_->childDone(child);
 }
 
 Application View::app()

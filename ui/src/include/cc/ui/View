@@ -12,7 +12,7 @@
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Surface>
 #include <cc/ui/UpdateRequest>
-#include <cc/ui/Organizer>
+#include <cc/ui/Layout>
 #include <cc/ui/PointerEvent>
 #include <cc/ui/MouseEvent>
 #include <cc/ui/FingerEvent>
@@ -95,10 +95,7 @@ public:
     Color findBasePaper() const;
     void inheritPaper();
 
-    inline Organizer *organizer() const { return organizer_; }
-
-    template<class T>
-    T *organize() { return Object::create<T>(this); }
+    Layout layout() const { return layout_; }
 
     template<class T, class... Args>
     T *add(Args... args) { return Object::create<T>(this, args...); }
@@ -106,7 +103,7 @@ public:
 protected:
     friend class Window;
     friend class ApplicationInstance;
-    friend class Organizer;
+    friend class Layout;
 
     View(View *parent = nullptr);
     ~View();
@@ -193,7 +190,7 @@ private:
 
     Ref<Image> image_;
     Ref<Object> context_;
-    Ref<Organizer> organizer_;
+    Layout layout_;
 };
 
 }} // namespace cc::ui

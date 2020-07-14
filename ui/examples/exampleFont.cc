@@ -1,5 +1,5 @@
 #include <cc/ui/ScrollView>
-#include <cc/ui/Column>
+#include <cc/ui/ColumnLayout>
 #include <cc/ui/Label>
 
 using namespace cc;
@@ -15,7 +15,7 @@ class MainView: public View
         inheritPaper();
 
         auto scroll = ScrollView::create(this);
-        scroll->carrier()->organize<Column>();
+        ColumnLayout{scroll->carrier()};
 
         for (int size = 16; size <= 64; size += 8) {
             String text = "A small brown fox... (" + str(size) + ")";

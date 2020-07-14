@@ -7,7 +7,7 @@
  */
 
 #include <cc/ui/InputField>
-#include <cc/ui/Column>
+#include <cc/ui/ColumnLayout>
 #include <cc/ui/InputLine>
 #include <cc/ui/Label>
 #include <cc/ui/TextInput>

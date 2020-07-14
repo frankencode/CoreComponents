@@ -244,7 +244,7 @@ double degree(double angle)
 
 double dp(double x)
 {
-    return DisplayManager::instance()->displayDensityRatio() * x;
+    return DisplayManager::instance()->displayDensityRatio() * x * Application{}->textZoom();
 }
 
 double sp(double x)

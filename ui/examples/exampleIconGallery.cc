@@ -1,6 +1,6 @@
 #include <cc/ui/ItemView>
 #include <cc/ui/SingleLineItemDelegate>
-#include <cc/ui/Column>
+#include <cc/ui/ColumnLayout>
 #include <cc/DEBUG>
 
 using namespace cc;
@@ -62,7 +62,7 @@ class MainView: public View
             scroll->carrier()->add<SingleLineItemDelegate>(str(icon), style()->getIconVisual(icon));
         }
 
-        scroll->carrier()->organize<Column>();*/
+        scroll->carrier()->organize<ColumnLayout>();*/
 
         auto scroll = add<IconView>(
             Object::create<IconModel>()

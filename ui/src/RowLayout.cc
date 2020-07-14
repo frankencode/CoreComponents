@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/ui/Row>
+#include <cc/ui/RowLayout>
 #include <cc/ui/View>
 
 namespace cc {
 namespace ui {
 
-Row::Row(View *view):
-    Organizer{view}
+RowLayout::Instance::Instance(View *view):
+    Layout::Instance{view}
 {
     align->connect([=]{ updateLayout(); });
     margin->connect([=]{ updateLayout(); });
@@ -22,7 +22,7 @@ Row::Row(View *view):
     updateLayout();
 }
 
-void Row::childReady(View *child)
+void RowLayout::Instance::childReady(View *child)
 {
     if (child->visible()) {
         if (align() == RowAlign::Top) {
@@ -64,12 +64,12 @@ void Row::childReady(View *child)
     child->padding->connect([=]{ updateLayout(); });
 }
 
-void Row::childDone(View *child)
+void RowLayout::Instance::childDone(View *child)
 {
     updateLayout();
 }
 
-void Row::updateChildPos(View *child, Size innerSize, double x)
+void RowLayout::Instance::updateChildPos(View *child, Size innerSize, double x)
 {
     if (align() == RowAlign::Top)
         child->pos = Point{ x, 0 } + margin();
@@ -79,7 +79,7 @@ void Row::updateChildPos(View *child, Size innerSize, double x)
         child->pos = Point{ x, 0.5 * (innerSize[1] - child->size()[1]) } + margin();
 }
 
-void Row::updateLayout()
+void RowLayout::Instance::updateLayout()
 {
     Size innerSize;
 

@@ -1,6 +1,6 @@
 #include <cc/ui/SlideView>
 #include <cc/ui/Transition>
-#include <cc/ui/Column>
+#include <cc/ui/ColumnLayout>
 #include <cc/ui/Label>
 
 using namespace cc;
@@ -28,7 +28,7 @@ class Slide2: public View
         box->paper = 0xD0D0FF;
         box->centerInParent();
 
-        box->organize<Column>();
+        ColumnLayout{box};
 
         box->add<Label>("• Item 1");
         box->add<Label>("• Item 2");

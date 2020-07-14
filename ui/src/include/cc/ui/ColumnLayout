@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2018 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Layout>
+
+namespace cc {
+namespace ui {
+
+class ColumnLayout: public Layout
+{
+public:
+    class Instance: public Layout::Instance
+    {
+    public:
+        Property<ColumnAlign> align { ColumnAlign::Left };
+        Property<Size> margin;
+        Property<double> spacing { 0 };
+        Property<double> indent { 0 };
+
+    private:
+        friend class ColumnLayout;
+
+        Instance(View *view);
+
+        void childReady(View *child) final;
+        void childDone(View *child) final;
+
+        void updateChildPos(View *child, Size innerSize, double y);
+        void updateLayout();
+    };
+
+    ColumnLayout(View *view):
+        Layout{new Instance{view}}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
+};
+
+}} // namespace cc::ui

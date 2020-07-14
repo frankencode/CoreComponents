@@ -1,5 +1,5 @@
 #include <cc/ui/ScrollView>
-#include <cc/ui/Column>
+#include <cc/ui/ColumnLayout>
 #include <cc/ui/Label>
 #include <cc/debug>
 
@@ -28,7 +28,7 @@ class MainView: public View
 
         auto scroll = add<ScrollView>();
 
-        scroll->carrier()->organize<Column>();
+        ColumnLayout{scroll->carrier()};
 
         for (int i = 0; i < 50; ++i)
             scroll->carrier()->add<Item>("Item " + str(i + 1));

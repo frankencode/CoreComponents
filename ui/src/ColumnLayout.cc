@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/ui/Column>
+#include <cc/ui/ColumnLayout>
 #include <cc/ui/View>
 
 namespace cc {
 namespace ui {
 
-Column::Column(View *view):
-    Organizer(view)
+ColumnLayout::Instance::Instance(View *view):
+    Layout::Instance{view}
 {
     align->connect([=]{ updateLayout(); });
     margin->connect([=]{ updateLayout(); });
@@ -23,7 +23,7 @@ Column::Column(View *view):
     updateLayout();
 }
 
-void Column::childReady(View *child)
+void ColumnLayout::Instance::childReady(View *child)
 {
     if (child->visible())
     {
@@ -66,12 +66,12 @@ void Column::childReady(View *child)
     child->padding->connect([=]{ updateLayout(); });
 }
 
-void Column::childDone(View *child)
+void ColumnLayout::Instance::childDone(View *child)
 {
     updateLayout();
 }
 
-void Column::updateChildPos(View *child, Size innerSize, double y)
+void ColumnLayout::Instance::updateChildPos(View *child, Size innerSize, double y)
 {
     if (align() == ColumnAlign::Auto || align() == ColumnAlign::Left)
         child->pos = Point{ indent(), y } + margin();
@@ -81,7 +81,7 @@ void Column::updateChildPos(View *child, Size innerSize, double y)
         child->pos = Point{ 0.5 * (innerSize[0] - child->size()[0]), y } + margin();
 }
 
-void Column::updateLayout()
+void ColumnLayout::Instance::updateLayout()
 {
     Size innerSize;
 

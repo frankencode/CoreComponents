@@ -1,5 +1,5 @@
 #include <cc/ui/ScrollView>
-#include <cc/ui/Column>
+#include <cc/ui/ColumnLayout>
 #include <cc/ui/TextField>
 #include <cc/ui/PasswordField>
 
@@ -17,7 +17,7 @@ class MainView: public View
 
         auto carrier = add<ScrollView>()->carrier();
 
-        auto column = carrier->organize<Column>();
+        ColumnLayout column{carrier};
         column->margin = dp(12);
         column->spacing = dp(12);
 
