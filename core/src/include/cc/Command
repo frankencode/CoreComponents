@@ -51,13 +51,13 @@ public:
           * \param mask Initial signal mask for the new child process
           * \return pointer to this object
           */
-        Instance *setSignalMask(const SignalSet *mask);
+        Instance *setSignalMask(const SignalSet &mask);
 
         /** \brief Reset signal handling strategy to the default for specific signals
           * \param set Set of signals to reset to default signal handling behavior
           * \return pointer to this object
           */
-        Instance *setSignalDefault(const SignalSet *set);
+        Instance *setSignalDefault(const SignalSet &set);
 
         /** \brief Set initial working directory
           * \param path directory path

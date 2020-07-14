@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Notifier>
+#include <cc/Signal>
 #include <atomic>
 #include <memory>
 
@@ -17,30 +17,48 @@ namespace ui {
 
 class TimeWorker;
 
+/** \class Timer cc/ui/Timer
+  * \brief Periodic interval timer
+  */
 class Timer
 {
 public:
     class Instance: public Object
     {
     public:
+        /// Start timer, now.
         void start();
+
+        /// Start timer at a later \a startTime
         void startAt(double startTime);
+
+        /// Start timer after a giving \a delayTime
         void startIn(double delayTime);
+
+        /// Stop the timer
         void stop();
 
+        /// Timer is active an generates timeout signals
         bool isActive() const { return isActive_; }
+
+        /// The first time the timer emits the timeout signal
         double firstTime() const { return firstTime_; }
+
+        /// Beginning of the first timeout interval
         double startTime() const { return startTime_; }
+
+        /// Time between two timeout signal emissions
         double interval() const { return interval_; }
 
-        Notifier timeout;
+        /// Generated after an interval has timed out
+        Signal timeout;
 
     private:
         friend class Timer;
         friend class TimeWorker;
         friend class ApplicationInstance;
 
-        Instance(double interval);
+        Instance(double interval = 0);
 
         mutable std::atomic_bool isActive_ { false };
         double firstTime_ { 0 };
@@ -49,18 +67,34 @@ public:
         std::atomic<void *> timeout_ { nullptr };
     };
 
-    Timer(double interval = 0):
+    /** Create a single-shot timer.
+      */
+    Timer():
+        instance_{new Instance}
+    {}
+
+    /** Create a repeating interval timer.
+      * \param interval interval in which the timeout signal is triggered
+      */
+    Timer(double interval):
         instance_{new Instance{interval}}
     {}
 
+    /** Create a repeating interval timer.
+      * \param interval interval in which the timeout signal is triggered
+      * \param onTimeout handler to be called on timeout
+      */
     Timer(double interval, const std::function<void()> &onTimeout):
         instance_{new Instance{interval}}
     {
         (*this)->timeout->connect(onTimeout);
     }
 
+    /** Create a single-shot timer.
+      * \param onTimeout handler to be called on timeout
+      */
     Timer(const std::function<void()> &onTimeout):
-        instance_{new Instance{0}}
+        instance_{new Instance}
     {
         (*this)->timeout->connect(onTimeout);
     }

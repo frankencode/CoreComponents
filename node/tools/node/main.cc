@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     int exitCode = 0;
 
     try {
-        Thread::blockSignals(SignalSet::createFull());
+        Thread::blockSignals(SignalSet::full());
 
         auto config = loadNodeConfig(argc, argv);
 
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 
         auto node = NodeMaster::create(config);
 
-        auto signalMaster = SignalMaster::start([=](Signal signal, bool *fin){
+        auto signalMaster = SignalMaster::start([=](SystemSignal signal, bool *fin){
             node->sendSignal(signal);
             *fin = (+signal == SIGINT || +signal == SIGTERM);
         });

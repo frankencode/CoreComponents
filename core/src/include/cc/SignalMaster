@@ -15,12 +15,12 @@
 namespace cc {
 
 /** \class SignalMaster cc/SignalMaster
-  * \brief Signal handling thread in a mulithreaded application
+  * \brief SystemSignal handling thread in a mulithreaded application
   */
 class SignalMaster: public Thread
 {
 public:
-    typedef std::function<void(Signal, bool *)> SignalHandler;
+    typedef std::function<void(SystemSignal, bool *)> SignalHandler;
 
     static Ref<SignalMaster> start(const SignalHandler &handler);
 

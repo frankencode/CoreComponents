@@ -25,13 +25,13 @@ SignalMaster::SignalMaster(const SignalHandler &handler):
 
 void SignalMaster::run()
 {
-    auto listenSet = SignalSet::createFull();
+    auto all = SignalSet::full();
 
     for (bool fin = false; !fin;) {
         int signal = 0;
-        int error = ::sigwait(listenSet->rawSet(), &signal);
+        int error = ::sigwait(all, &signal);
         if (error != 0) CC_SYSTEM_DEBUG_ERROR(error);
-        handler_(static_cast<Signal>(signal), &fin);
+        handler_(static_cast<SystemSignal>(signal), &fin);
     }
 }
 

@@ -48,7 +48,7 @@ class SimpleEchoTest: public TestCase
         fout() << text;
         CC_VERIFY(text->contains("localhost"));
         CC_VERIFY(text->startsWith("GET"));
-        server->sendSignal(Signal::Terminate);
+        server->sendSignal(SystemSignal::Terminate);
         server->wait();
     }
 };

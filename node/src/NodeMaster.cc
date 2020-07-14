@@ -54,7 +54,7 @@ SocketAddress NodeMaster::waitStarted()
     return address;
 }
 
-void NodeMaster::sendSignal(Signal signal)
+void NodeMaster::sendSignal(SystemSignal signal)
 {
     signals_->pushBack(signal);
 }
@@ -153,7 +153,7 @@ void NodeMaster::runNode()
         connectionManager->cycle();
 
         while (signals_->count() > 0) {
-            Signal signal;
+            SystemSignal signal;
             signals_->popFront(&signal);
             if (+signal == SIGINT || +signal == SIGTERM || +signal == SIGHUP) {
                 CCNODE_NOTICE() << "Received " << signal << ", shutting down" << nl;

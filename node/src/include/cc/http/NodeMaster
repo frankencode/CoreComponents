@@ -25,7 +25,7 @@ public:
 
     SocketAddress waitStarted();
 
-    void sendSignal(Signal signal);
+    void sendSignal(SystemSignal signal);
 
     int exitCode() const;
 
@@ -42,7 +42,7 @@ private:
     Ref<const NodeConfig> config_;
 
     Channel<SocketAddress> startedChannel_;
-    Channel<Signal> signals_;
+    Channel<SystemSignal> signals_;
     int exitCode_;
 };
 

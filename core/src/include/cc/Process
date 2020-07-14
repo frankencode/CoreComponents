@@ -31,7 +31,7 @@ public:
         /** \brief Send signal to the child process
           * \param signal the signal to deliver
           */
-        void kill(Signal signal = Signal::Terminate);
+        void kill(SystemSignal signal = SystemSignal::Terminate);
 
         /** \brief Wait for child process termination
           * \return exit status of child process (<0 if signaled, exit status = -signal number)
@@ -159,18 +159,13 @@ public:
     static pid_t getParentId();
 
     /// Send a signal to a process
-    static void kill(pid_t processId, Signal signal = Signal::Terminate);
+    static void kill(pid_t processId, SystemSignal signal = SystemSignal::Terminate);
 
     /// Send a signal to a process group
-    static void killGroup(pid_t processGroupId, Signal signal = Signal::Terminate);
+    static void killGroup(pid_t processGroupId, SystemSignal signal = SystemSignal::Terminate);
 
     /// Raise a signal against the calling process
-    static void raise(Signal signal);
-
-    /** Returns the default signal mask of this process before any modifications
-      * by Thread::blockSignals() or Thread::unblockSignals()
-      */
-    static SignalSet *defaultSignalMask();
+    static void raise(SystemSignal signal);
 
     /** Terminate this process
       * \param exitCode exit code (0..255)

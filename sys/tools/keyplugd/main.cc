@@ -63,12 +63,12 @@ void runMonitor(const VariantMap &options)
     String mountOptions = options->value("options");
     bool verbose = options->value("verbose");
 
-    Thread::blockSignals(SignalSet::createFull());
+    Thread::blockSignals(SignalSet::full());
 
     auto monitor = StorageMonitor::start();
 
     auto signalMaster = SignalMaster::start(
-        [=](Signal signal, bool *fin) {
+        [=](SystemSignal signal, bool *fin) {
             if (+signal == SIGINT || +signal == SIGTERM || +signal == SIGHUP) {
                 monitor->shutdown();
                 *fin = true;

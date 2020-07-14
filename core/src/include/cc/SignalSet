@@ -8,42 +8,47 @@
 
 #pragma once
 
-#include <cc/Singleton>
-#include <cc/Signal>
+#include <cc/SystemSignal>
 
 namespace cc {
 
-class Thread;
-
 /** \class SignalSet cc/SignalSet
-  * \brief Signal set
+  * \brief A set of system signals
   * \see Thread
   */
-class SignalSet: public Object
+class SignalSet
 {
 public:
-    static Ref<SignalSet> createEmpty();
-    static Ref<SignalSet> createFull();
+    class Instance
+    {
+    public:
+        Instance *empty() { sigemptyset(&set_); return this; }
+        Instance *fill()  { sigfillset(&set_); return this; }
+        Instance *query() { pthread_sigmask(/*how*/0, /*new_set*/nullptr, /*old_set*/&set_); return this; } /// \todo move to Thread
+        Instance *insert(SystemSignal signal) { sigaddset(&set_, +signal); return this; }
+        Instance *remove(SystemSignal signal) { sigdelset(&set_, +signal); return this; }
 
-    void insert(Signal signal);
-    void remove(Signal signal);
+        bool contains(SystemSignal signal) const { return sigismember(&set_, +signal); }
 
-    bool contains(Signal signal) const;
+    private:
+        friend class SignalSet;
+        Instance() = default;
+        sigset_t set_;
+    };
 
-    sigset_t *rawSet() { return &rawSet_; }
+    static SignalSet full()  { SignalSet s; s->fill(); return s; }
+    static SignalSet empty() { SignalSet s; s->empty(); return s; }
 
-    const sigset_t *rawSet() const { return &rawSet_; }
+    SignalSet() = default;
+
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
+
+    operator sigset_t *() { return &(*this)->set_; }
+    operator const sigset_t *() const { return &(*this)->set_; }
 
 private:
-    friend class Thread;
-    friend class Singleton<SignalSet>;
-
-    static Ref<SignalSet> create();
-
-    enum class Preset { Empty, Full, Query };
-
-    SignalSet(Preset preset = Preset::Query);
-    sigset_t rawSet_;
+    Instance instance_;
 };
 
 } // namespace cc

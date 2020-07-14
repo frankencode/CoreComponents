@@ -105,17 +105,15 @@ void Thread::sleepUntil(double timeout)
     sleep(now - timeout);
 }
 
-void Thread::blockSignals(SignalSet *set)
+void Thread::blockSignals(const SignalSet &set)
 {
-    Singleton<SignalSet>::instance();
-    int ret = pthread_sigmask(SIG_BLOCK, set->rawSet(), 0/*oldset*/);
+    int ret = pthread_sigmask(SIG_BLOCK, set, nullptr/*oldset*/);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
-void Thread::unblockSignals(SignalSet *set)
+void Thread::unblockSignals(const SignalSet &set)
 {
-    Singleton<SignalSet>::instance();
-    int ret = pthread_sigmask(SIG_UNBLOCK, set->rawSet(), 0/*oldset*/);
+    int ret = pthread_sigmask(SIG_UNBLOCK, set, nullptr/*oldset*/);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 

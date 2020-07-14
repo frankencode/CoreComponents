@@ -61,12 +61,12 @@ public:
     /** Block a set of signals
       * \param set set of signals to block
       */
-    static void blockSignals(SignalSet *set);
+    static void blockSignals(const SignalSet &set);
 
     /** Unblock a set of signals
       * \param set set of signals to unblock
       */
-    static void unblockSignals(SignalSet *set);
+    static void unblockSignals(const SignalSet &set);
 
     /// POSIX thread ID
     pthread_t id() const { return tid_; }
@@ -79,7 +79,7 @@ public:
 
 protected:
     /// Low-level initializer
-    Thread() {}
+    Thread() = default;
 
     /** %Set the stack size before starting thread execution
       * \param stackSize size of the program stack to allocate in bytes
@@ -98,7 +98,6 @@ private:
 
     int stackSize_ { 1 << 17 };
     pthread_t tid_;
-    int lastSignal_ { 0 };
 };
 
 } // namespace cc

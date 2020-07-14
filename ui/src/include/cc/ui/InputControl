@@ -19,10 +19,10 @@ public:
     virtual String text() const = 0;
     virtual Point textPos() const = 0;
 
-    Notifier accepted;
-    Notifier rejected;
-    Notifier gotoNext;
-    Notifier gotoPrevious;
+    Signal accepted;
+    Signal rejected;
+    Signal gotoNext;
+    Signal gotoPrevious;
 
 protected:
     InputControl(View *parent):

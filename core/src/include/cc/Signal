@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Frank Mertens.
+ * Copyright (C) 2007-2019 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,52 +8,65 @@
 
 #pragma once
 
-#include <signal.h>
-#include <cc/Exception>
+#include <functional>
+#include <cc/Object>
 
 namespace cc {
 
-enum class Signal: int {
-    Abort                  = SIGABRT,
-    Alarm                  = SIGALRM,
-    Bus                    = SIGBUS,
-    Child                  = SIGCHLD,
-    Continue               = SIGCONT,
-    FloatingPointException = SIGFPE,
-    HangUp                 = SIGHUP,
-    Interrupt              = SIGINT,
-    Kill                   = SIGKILL,
-    Pipe                   = SIGPIPE,
-    Quit                   = SIGQUIT,
-    SegmentationViolation  = SIGSEGV,
-    Stop                   = SIGSTOP,
-    Terminate              = SIGTERM,
-    User1                  = SIGUSR1,
-    User2                  = SIGUSR2,
-    WindowSizeChanged      = SIGWINCH,
-    Undefined              = 0
-};
+class PropertyBinding;
 
-inline int operator+(Signal signal) { return static_cast<int>(signal); }
-
-String str(Signal signal);
-
-/** \class Signaled cc/exceptions
-  * \brief Signal received
-  */
-class Signaled: public Exception
+class Signal
 {
 public:
-    Signaled(Signal signal);
+    class Instance {
+    public:
+        template<class F>
+        void connect(const F &f) {
+            first_ = Node::create(f, first_);
+        }
 
-    Signal signal() const { return signal_; }
+        void emit() const {
+            for (Node *node = first_; node; node = node->next_)
+                node->f_();
+        }
 
-    String message() const override;
+    private:
+        friend class Signal;
+        friend class PropertyBinding;
 
-    const Signaled *operator->() const { return this; }
+        Instance() = default;
+
+        bool hasListeners() const { return first_; }
+        void disband() { first_ = 0; }
+
+        class Node: public Object {
+        public:
+            template<class F>
+            static Ref<Node> create(const F &f, Node *next) { return new Node(f, next); }
+
+            std::function<void()> f_;
+            Ref<Node> next_;
+
+        private:
+            template<class F>
+            Node(const F &f, Node *next): f_{f}, next_{next} {}
+        };
+
+        Ref<Node> first_;
+    };
+
+    Signal() = default;
+
+    Instance *operator->() { return &instance_; }
+    const Instance *operator->() const { return &instance_; }
+
+    void operator()() const { instance_.emit(); }
 
 private:
-    Signal signal_;
+    Signal(const Signal&);
+    Signal& operator=(const Signal&);
+
+    Instance instance_;
 };
 
 } // namespace cc

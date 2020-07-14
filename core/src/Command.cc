@@ -68,16 +68,16 @@ Command::Instance *Command::Instance::setProcessGroup(pid_t groupId)
     return this;
 }
 
-Command::Instance *Command::Instance::setSignalDefault(const SignalSet *set)
+Command::Instance *Command::Instance::setSignalDefault(const SignalSet &set)
 {
-    CC_SPAWN_CALL(posix_spawnattr_setsigdefault(&spawnAttributes_, set->rawSet()));
+    CC_SPAWN_CALL(posix_spawnattr_setsigdefault(&spawnAttributes_, set));
     enableSpawnFlag(POSIX_SPAWN_SETSIGDEF);
     return this;
 }
 
-Command::Instance *Command::Instance::setSignalMask(const SignalSet *mask)
+Command::Instance *Command::Instance::setSignalMask(const SignalSet &mask)
 {
-    CC_SPAWN_CALL(posix_spawnattr_setsigmask(&spawnAttributes_, mask->rawSet()));
+    CC_SPAWN_CALL(posix_spawnattr_setsigmask(&spawnAttributes_, mask));
     enableSpawnFlag(POSIX_SPAWN_SETSIGMASK);
     return this;
 }

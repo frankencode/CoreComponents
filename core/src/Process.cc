@@ -138,7 +138,7 @@ pid_t Process::Instance::id() const
     return pid_;
 }
 
-void Process::Instance::kill(Signal signal)
+void Process::Instance::kill(SystemSignal signal)
 {
     if (::kill(groupLead_ ? -pid_ : pid_, +signal) == -1) {
         if (errno == EPERM) throw PermissionError{};
@@ -321,26 +321,21 @@ pid_t Process::getParentId()
     return ::getppid();
 }
 
-void Process::kill(pid_t processId, Signal signal)
+void Process::kill(pid_t processId, SystemSignal signal)
 {
     if (::kill(processId, +signal) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void Process::killGroup(pid_t processGroupId, Signal signal)
+void Process::killGroup(pid_t processGroupId, SystemSignal signal)
 {
     Process::kill(-processGroupId, signal);
 }
 
-void Process::raise(Signal signal)
+void Process::raise(SystemSignal signal)
 {
     if (::raise(+signal) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
-}
-
-SignalSet *Process::defaultSignalMask()
-{
-    return Singleton<SignalSet>::instance();
 }
 
 void Process::exit(int exitCode)

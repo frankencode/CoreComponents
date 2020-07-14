@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Notifier>
+#include <cc/Signal>
 
 namespace cc {
 
@@ -17,7 +17,7 @@ template<class> class SetInstance;
 class PropertyBinding: public Object
 {
 protected:
-    Notifier changed;
+    Signal changed;
 
     typedef SetInstance< Ref<PropertyBinding> > Association;
 
