@@ -117,6 +117,13 @@ void Thread::unblockSignals(const SignalSet &set)
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
+SignalSet Thread::getSignalMask()
+{
+    SignalSet set;
+    pthread_sigmask(/*how*/0, /*new_set*/nullptr, /*old_set*/set);
+    return set;
+}
+
 int Thread::getMinPriority(SchedulingPolicy policy)
 {
     int ret = sched_get_priority_min(static_cast<int>(policy));

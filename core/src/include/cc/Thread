@@ -68,7 +68,11 @@ public:
       */
     static void unblockSignals(const SignalSet &set);
 
-    /// POSIX thread ID
+    /** Query the currently active signal mask
+      */
+    static SignalSet getSignalMask();
+
+    /// Thread ID
     pthread_t id() const { return tid_; }
 
     /// Get minimum priority level supported by the sytem under giving scheduling policy

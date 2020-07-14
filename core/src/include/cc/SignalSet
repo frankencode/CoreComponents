@@ -24,7 +24,6 @@ public:
     public:
         Instance *empty() { sigemptyset(&set_); return this; }
         Instance *fill()  { sigfillset(&set_); return this; }
-        Instance *query() { pthread_sigmask(/*how*/0, /*new_set*/nullptr, /*old_set*/&set_); return this; } /// \todo move to Thread
         Instance *insert(SystemSignal signal) { sigaddset(&set_, +signal); return this; }
         Instance *remove(SystemSignal signal) { sigdelset(&set_, +signal); return this; }
 
@@ -36,9 +35,13 @@ public:
         sigset_t set_;
     };
 
+    /// Return a full signal set
     static SignalSet full()  { SignalSet s; s->fill(); return s; }
+
+    /// Return an empty signal set
     static SignalSet empty() { SignalSet s; s->empty(); return s; }
 
+    /// Create an undefined signal set
     SignalSet() = default;
 
     Instance *operator->() { return &instance_; }
