@@ -20,6 +20,15 @@ namespace ui {
 
 using cc::str;
 
+enum class UpdateReason {
+    Moved,
+    Changed,
+    Resized,
+    Exposed,
+    // Shown,
+    Hidden
+};
+
 /** text anti-aliasing strategy
   */
 enum class FontSmoothing: uint8_t {

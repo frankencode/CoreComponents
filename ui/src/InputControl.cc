@@ -7,11 +7,12 @@
  */
 
 #include <cc/ui/InputControl>
+#include <cc/ui/Application>
 
 namespace cc {
 namespace ui {
 
-bool InputControl::onKeyPressed(const KeyEvent *event)
+bool InputControl::Instance::onKeyPressed(const KeyEvent *event)
 {
     if (
         event->scanCode() == ScanCode::Key_Return ||
@@ -23,7 +24,7 @@ bool InputControl::onKeyPressed(const KeyEvent *event)
     else if (
         event->scanCode() == ScanCode::Key_Escape
     ) {
-        app()->focusControl = nullptr;
+        Application{}->focusControl = Control{};
         rejected();
     }
     else if (

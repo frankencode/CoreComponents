@@ -16,88 +16,102 @@ namespace ui {
 
 class ScrollView: public Control
 {
-    friend class Object;
-
 public:
-    static Ref<ScrollView> create(View *parent = nullptr);
+    class Instance: public Control::Instance
+    {
+    public:
+        Property<double> maxFlyTime { 1.5 };
+        Property<double> maxSpeed { [=]{ return 3 * max(size()); } };
+        Property<double> minHoldTime { 0.1 };
+        Property<double> boundary { dp(60) };
+        Property<double> maxBounceTime { 0.6 };
+        Property<double> traverseTime { 0.5 };
 
-    Property<double> maxFlyTime { 1.5 };
-    Property<double> maxSpeed { [=]{ return 3 * max(size()); } };
-    Property<double> minHoldTime { 0.1 };
-    Property<double> boundary { dp(60) };
-    Property<double> maxBounceTime { 0.6 };
-    Property<double> traverseTime { 0.5 };
+        Property<double> wheelGranularity { 3 * std::ceil(style()->itemHeight2()) };
+        Property<double> maxWheelTime { 0.1 };
+        Property<bool> wheelInversion { style()->wheelInversion() };
+        Property<bool> wheelBouncing { true };
 
-    Property<double> wheelGranularity { 3 * std::ceil(style()->itemHeight2()) };
-    Property<double> maxWheelTime { 0.1 };
-    Property<bool> wheelInversion { style()->wheelInversion() };
-    Property<bool> wheelBouncing { true };
+        View carrier() const { return carrier_; }
 
-    View *carrier() const { return carrier_; }
+    protected:
+        friend class Object;
+        friend class ScrollView;
 
-protected:
-    ScrollView(View *parent = nullptr);
-    ~ScrollView();
-    void init();
+        Instance();
+        ~Instance();
 
-    virtual View *addCarrier();
-    virtual void preheat();
+        virtual View createCarrier();
+        virtual void preheat();
 
-    virtual void positionCarrierOnResize();
+        virtual void positionCarrierOnResize();
 
-    void resetCarrier();
+        void resetCarrier();
 
-    bool carrierAtRest() const { return carrierAtRest_; }
+        bool carrierAtRest() const { return carrierAtRest_; }
 
-    bool onPointerClicked(const PointerEvent *event) override;
-    bool onPointerPressed(const PointerEvent *event) override;
-    bool onPointerReleased(const PointerEvent *event) override;
-    bool onPointerMoved(const PointerEvent *event) override;
-    bool onWheelMoved(const WheelEvent *event) override;
-    bool onWindowLeft() override;
+        bool onPointerClicked(const PointerEvent *event) override;
+        bool onPointerPressed(const PointerEvent *event) override;
+        bool onPointerReleased(const PointerEvent *event) override;
+        bool onPointerMoved(const PointerEvent *event) override;
+        bool onWheelMoved(const WheelEvent *event) override;
+        bool onWindowLeft() override;
 
-private:
-    void insertChild(View *child) override;
+    private:
+        void insertChild(View child) override;
 
-    bool carrierInsideBoundary() const;
-    Point carrierStep(Point p, double b = 0);
+        bool carrierInsideBoundary() const;
+        Point carrierStep(Point p, double b = 0);
 
-    void carrierFlyStart();
-    void carrierBounceStart();
-    void carrierTraverseStart(Step distance);
-    void carrierStop();
-    void timerStop();
+        void carrierFlyStart();
+        void carrierBounceStart();
+        void carrierTraverseStart(Step distance);
+        void carrierStop();
+        void timerStop();
 
-    void carrierFly();
-    void carrierBounce();
-    void carrierTraverse();
-    void carrierStopped();
+        void carrierFly();
+        void carrierBounce();
+        void carrierTraverse();
+        void carrierStopped();
 
-    void keepFocusControlInView();
+        void keepFocusControlInView();
 
-    Property<Control *> focusControl;
+        Property<Control> focusControl;
 
-    View *carrier_ { nullptr };
-    bool isDragged_ { false };
-    Point dragStart_;
-    Point carrierOrigin_;
+        View carrier_ { nullptr };
+        bool isDragged_ { false };
+        Point dragStart_;
+        Point carrierOrigin_;
 
-    Point lastDragPos_;
-    double lastDragTime_;
-    double releaseSpeedMagnitude_;
-    Step speed_;
+        Point lastDragPos_;
+        double lastDragTime_;
+        double releaseSpeedMagnitude_;
+        Step speed_;
 
-    enum class TimerMode { Stopped, Flying, Bouncing, Traversing };
-    TimerMode timerMode_ { TimerMode::Stopped };
+        enum class TimerMode { Stopped, Flying, Bouncing, Traversing };
+        TimerMode timerMode_ { TimerMode::Stopped };
 
-    Timer timer_ { 1./60 };
-    double lastTime_;
+        Timer timer_ { 1./60 };
+        double lastTime_;
 
-    Point startPos_;
-    Point finalPos_;
+        Point startPos_;
+        Point finalPos_;
 
-    bool wasFlying_ { false };
-    bool carrierAtRest_ { true };
+        bool wasFlying_ { false };
+        bool carrierAtRest_ { true };
+    };
+
+    ScrollView(double width, double height):
+        Control{new Instance}
+    {
+        (*this)->size = Size{width, height};
+    }
+
+    ScrollView(Instance *instance):
+        Control{instance}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

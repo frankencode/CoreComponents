@@ -16,21 +16,31 @@ namespace ui {
 
 class SingleLineItemDelegate: public View
 {
-    friend class Object;
-
 public:
-    Property< Ref<Visual> > icon;
-    Property<String> text;
+    class Instance: public View::Instance
+    {
+    public:
+        Property< Ref<Visual> > icon;
+        Property<String> text;
 
-    bool isPainted() const override { return false; }
+        bool isPainted() const override { return false; }
 
-    Size preferredSize() const override;
-    Size minSize() const override;
+        Size preferredSize() const override;
+        Size minSize() const override;
 
-private:
-    Property<Size> preferredSize_;
-    SingleLineItemDelegate(View *parent, const String &text = String{}, Visual *icon = nullptr);
-    void init();
+    private:
+        friend class SingleLineItemDelegate;
+
+        Property<Size> preferredSize_;
+
+        Instance(const String &text, Visual *icon);
+    };
+
+    SingleLineItemDelegate(const String &text = String{}, Visual *icon = nullptr):
+        View{new Instance{text, icon}}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

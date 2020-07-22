@@ -231,7 +231,7 @@ public:
     /** Remove the last item
       * \return item value
       */
-    T popBack(){ T item; popBack (&item); return item; }
+    T popBack() { T item; popBack (&item); return item; }
 
     /** Remove the first item
       * \return item value
@@ -364,8 +364,13 @@ void QueueInstance<T>::deplete()
     for (QueueNode<T> *node = head_; node;) {
         QueueNode<T> *oldNode = node;
         node = node->succ_;
+        oldNode->pred_ = nullptr;
+        oldNode->succ_ = nullptr;
         delete oldNode;
     }
+    head_ = nullptr;
+    tail_ = nullptr;
+    count_ = 0;
 }
 
 } // namespace cc

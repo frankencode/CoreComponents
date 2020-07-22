@@ -7,8 +7,8 @@
  */
 
 #include <cc/testing/TestSuite>
-#include <cc/stdio>
 #include <cc/Signal>
+#include <cc/stdio>
 
 using namespace cc;
 using namespace cc::testing;
@@ -16,9 +16,9 @@ using namespace cc::testing;
 int main(int argc, char **argv)
 {
     Signal trainArrived;
-    trainArrived->connect([]{ fout() << "The train has arrived!" << nl; });
-    trainArrived->connect([]{ fout() << "Caution!" << nl; });
-    trainArrived->emit();
+    trainArrived >>[=]{ fout() << "The train has arrived!" << nl; };
+    trainArrived >>[=]{ fout() << "Caution!" << nl; };
+    trainArrived();
     fout() << sizeof(trainArrived) << nl;
 
     return 0;

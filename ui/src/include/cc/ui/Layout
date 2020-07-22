@@ -23,15 +23,15 @@ public:
     protected:
         friend class View;
 
-        Instance(View *view);
+        Instance(View &view);
 
-        virtual void childReady(View *child) = 0;
-        virtual void childDone(View *child) = 0;
+        virtual void childReady(View child) = 0;
+        virtual void childDone(View child) = 0;
 
-        View *view() const { return view_; }
+        View &view() const { return view_; }
         void updateView();
 
-        View *view_;
+        View &view_;
     };
 
     Layout() = default;

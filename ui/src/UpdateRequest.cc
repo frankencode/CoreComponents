@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-UpdateRequest::UpdateRequest(UpdateReason reason, View *view):
+UpdateRequest::UpdateRequest(UpdateReason reason, const View &view):
     reason_{reason},
     view_{view}
 {}

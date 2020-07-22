@@ -13,77 +13,72 @@
 namespace cc {
 namespace ui {
 
-ItemView::ItemView(View *parent, Item *rootItem):
-    ScrollView{parent},
+ItemView::Instance::Instance(Item *rootItem):
     rootItem_{rootItem}
 {
     wheelGranularity = 0;
 }
 
-Ref<Item> ItemView::initItemModel()
+Ref<Item> ItemView::Instance::initItemModel()
 {
     return Item::create();
 }
 
-void ItemView::resetItemModel()
+void ItemView::Instance::resetItemModel()
 {
     resetCarrier();
 }
 
-int ItemView::currentRow() const
+int ItemView::Instance::currentRow() const
 {
     return currentRow_();
 }
 
-int ItemView::rowCount() const
+int ItemView::Instance::Instance::rowCount() const
 {
     return itemCarrier()->layout_->count();
 }
 
-Item *ItemView::currentItem() const
+Item *ItemView::Instance::currentItem() const
 {
-    return itemCarrier()->layout_->at(currentRow_())->item();
+    return itemCarrier()->layout_->at(currentRow_())->item_;
 }
 
-Item *ItemView::itemAt(int row) const
+Item *ItemView::Instance::itemAt(int row) const
 {
-    return itemCarrier()->layout_->at(row)->item();
+    return itemCarrier()->layout_->at(row)->item_;
 }
 
-View *ItemView::addDelegate(View *parent, Item *item)
+View ItemView::Instance::createDelegate(Item *item)
 {
     int depth = 0;
     for (const Item *p = item->parent(); p != rootItem_; p = p->parent())
         ++depth;
 
-    auto label = parent->add<Label>(
-        Format{"Item %%"} << item->getIndex() + 1
-    );
-
-    label->pos = Point{ depth * dp(16), 0 };
+    Label label{Format{"Item %%"} << item->getIndex() + 1};
+    label->pos = Point{depth * dp(16), 0};
     label->margin = dp(12);
-
     return label;
 }
 
-View *ItemView::delegateAt(int row) const
+View ItemView::Instance::delegateAt(int row) const
 {
-    return itemCarrier()->layout_->at(row)->delegate();
+    return itemCarrier()->layout_->at(row)->delegate_;
 }
 
-View *ItemView::addCarrier()
+View ItemView::Instance::createCarrier()
 {
     if (!rootItem_) rootItem_ = initItemModel();
-    return add<ItemCarrier>(rootItem_);
+    return ItemCarrier{rootItem_};
 }
 
-void ItemView::preheat()
+void ItemView::Instance::preheat()
 {
     if (cacheRatio() > 0)
         itemCarrier()->updateView(true);
 }
 
-bool ItemView::onPointerClicked(const PointerEvent *event)
+bool ItemView::Instance::onPointerClicked(const PointerEvent *event)
 {
     if (carrierAtRest() && 0 <= currentRow_()) clicked();
     currentDelegate_ = nullptr;
@@ -91,16 +86,16 @@ bool ItemView::onPointerClicked(const PointerEvent *event)
     return true;
 }
 
-bool ItemView::onPointerPressed(const PointerEvent *event)
+bool ItemView::Instance::onPointerPressed(const PointerEvent *event)
 {
-    View *highlight = itemCarrier()->highlight_;
+    View highlight = itemCarrier()->highlight_;
     Ref<ItemCarrier::LayoutItem> layoutItem;
     int row = 0;
     if (itemCarrier()->layout_->lookup(event->pos()[1] - carrier()->pos()[1], &layoutItem, &row)) {
-        highlight->pos = Point{ 0, layoutItem->delegate()->pos()[1] };
-        highlight->size = Size{ size()[0], layoutItem->delegate()->size()[1] };
+        highlight->pos = Point{ 0, layoutItem->delegate_->pos()[1] };
+        highlight->size = Size{ size()[0], layoutItem->delegate_->size()[1] };
         highlight->visible = true;
-        currentDelegate_ = layoutItem->delegate();
+        currentDelegate_ = layoutItem->delegate_;
         if (currentDelegate_()->paper() != highlight->paper()) {
             delegatePaperSaved_ = currentDelegate_()->paper();
             hasSavedDelegatePaper_ = true;
@@ -113,12 +108,12 @@ bool ItemView::onPointerPressed(const PointerEvent *event)
         currentDelegate_ = nullptr;
         currentRow_ = -1;
     }
-    return ScrollView::onPointerPressed(event);
+    return ScrollView::Instance::onPointerPressed(event);
 }
 
-bool ItemView::onPointerReleased(const PointerEvent *event)
+bool ItemView::Instance::onPointerReleased(const PointerEvent *event)
 {
-    ScrollView::onPointerReleased(event);
+    ScrollView::Instance::onPointerReleased(event);
 
     itemCarrier()->highlight_->visible = false;
     if (currentDelegate_() && hasSavedDelegatePaper_) {
@@ -129,7 +124,7 @@ bool ItemView::onPointerReleased(const PointerEvent *event)
     return true;
 }
 
-bool ItemView::onWheelMoved(const WheelEvent *event)
+bool ItemView::Instance::onWheelMoved(const WheelEvent *event)
 {
     itemCarrier()->highlight_->visible = false;
     if (currentDelegate_() && hasSavedDelegatePaper_) {
@@ -139,10 +134,10 @@ bool ItemView::onWheelMoved(const WheelEvent *event)
     currentDelegate_ = nullptr;
     currentRow_ = -1;
 
-    return ScrollView::onWheelMoved(event);
+    return ScrollView::Instance::onWheelMoved(event);
 }
 
-bool ItemView::onWindowLeft()
+bool ItemView::Instance::onWindowLeft()
 {
     itemCarrier()->highlight_->visible = false;
     if (currentDelegate_() && hasSavedDelegatePaper_) {
@@ -152,12 +147,12 @@ bool ItemView::onWindowLeft()
     currentDelegate_ = nullptr;
     currentRow_ = -1;
 
-    return ScrollView::onWindowLeft();
+    return ScrollView::Instance::onWindowLeft();
 }
 
-ItemCarrier *ItemView::itemCarrier() const
+ItemCarrier ItemView::Instance::itemCarrier() const
 {
-    return static_cast<ItemCarrier *>(carrier());
+    return carrier()->as<ItemCarrier>();
 }
 
 }} // namespace cc::ui

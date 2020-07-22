@@ -13,69 +13,72 @@
 namespace cc {
 namespace ui {
 
-ItemCarrier::ItemCarrier(View *parent, Item *rootItem):
-    View{parent},
+ItemCarrier::Instance::Instance(Item *rootItem):
     rootItem_{rootItem},
-    layout_{Layout::create()}
+    layout_{ItemLayout::create()}
 {
-    highlight_ = add<View>();
-    highlight_->visible = false;
-    highlight_->paper->bind([=] { return theme()->itemHighlightColor(); });
+    build >>[=]{
+        highlight_ = View{};
+        highlight_->visible = false;
+        highlight_->paper <<[=]{ return theme()->itemHighlightColor(); };
+        (*this) << highlight_;
 
-    generateLayout(rootItem_, 0, rootItem_->count());
-    layoutExtent = layout_->extent();
-    cacheMargin->bind([=]{ return parent->size()[1] * static_cast<ItemView *>(parent)->cacheRatio(); });
-
-    rootItem_->changed->connect([=]{
-        const ItemDelta *delta = rootItem_->delta();
-        IndexPath indexPath = delta->indexPath();
-
-        Item *item = rootItem_;
-        for (int k = 0; k < indexPath->count() - 1; ++k)
-            item = item->at(indexPath->at(k));
-
-        int itemIndex = indexPath->at(indexPath->count() - 1);
-        int layoutIndex = item->getLayoutIndex(itemIndex);
-
-        for (int j = 0; j < delta->removedCount(); ++j) {
-            LayoutItem *layoutItem = layout_->at(layoutIndex);
-            removeChild(layoutItem->delegate());
-            layout_->removeAt(layoutIndex);
-        }
-
-        generateLayout(item, itemIndex, itemIndex + delta->insertedCount(), layoutIndex);
+        generateLayout(rootItem_, 0, rootItem_->count());
         layoutExtent = layout_->extent();
+        cacheMargin <<[=]{ return parent()->size()[1] * parent()->as<ItemView>()->cacheRatio(); };
+
+        rootItem_->changed >>[=]{
+            const ItemDelta *delta = rootItem_->delta();
+            IndexPath indexPath = delta->indexPath();
+
+            Item *item = rootItem_;
+            for (int k = 0; k < indexPath->count() - 1; ++k)
+                item = item->at(indexPath->at(k));
+
+            int itemIndex = indexPath->at(indexPath->count() - 1);
+            int layoutIndex = item->getLayoutIndex(itemIndex);
+
+            for (int j = 0; j < delta->removedCount(); ++j) {
+                LayoutItem *layoutItem = layout_->at(layoutIndex);
+                removeChild(layoutItem->delegate_);
+                layout_->removeAt(layoutIndex);
+            }
+
+            generateLayout(item, itemIndex, itemIndex + delta->insertedCount(), layoutIndex);
+            layoutExtent = layout_->extent();
+
+            updateView(true);
+        };
+
+        size <<[=]{ return Size { parent()->size()[0], layoutExtent() }; };
 
         updateView(true);
-    });
-
-    size->bind([=]{ return Size{ parent->size()[0], layoutExtent() }; });
-
-    updateView(true);
-    pos->connect([=]{ updateView(false); });
-    size->connect([=]{ updateView(true); });
+        pos >>[=]{ updateView(false); };
+        size >>[=]{ updateView(true); };
+    };
 }
 
-int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex)
+int ItemCarrier::Instance::generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex)
 {
     for (int i = itemIndex0; i < itemIndex1; ++i)
     {
         Item *child = item->at(i);
-        ItemView *itemView = static_cast<ItemView *>(parent());
-        View *delegate = itemView->addDelegate(this, child);
+        ItemView itemView = parent()->as<ItemView>();
+        View delegate = itemView->createDelegate(child);
         if (itemView->wheelGranularity() == 0)
             itemView->wheelGranularity = 3 * delegate->size()[1];
         Ref<LayoutItem> layoutItem = Object::create<LayoutItem>(child, delegate);
         double extent = 0.;
         if (delegate) {
             extent = delegate->size()[1];
-            delegate->size->connect([=]{
+            delegate->size >>[=]{
                 if (layout_->updateExtentAt(layoutItem->getIndex(), delegate->size()[1]))
                     layoutExtent = layout_->extent();
-            });
+            };
         }
         layout_->insertAt(layoutIndex, layoutItem, extent);
         delegate->pos = Point{ delegate->pos()[0], layout_->getPosAt(layoutIndex) };
+        (*this) << delegate;
         ++layoutIndex;
         layoutIndex = generateLayout(child, 0, child->count(), layoutIndex);
     }
@@ -83,7 +86,7 @@ int ItemCarrier::generateLayout(Item *item, int itemIndex0, int itemIndex1, int 
     return layoutIndex;
 }
 
-void ItemCarrier::updateView(bool preheat)
+void ItemCarrier::Instance::updateView(bool preheat)
 {
     // determine the visible range (r0, r1)
     //
@@ -108,7 +111,7 @@ void ItemCarrier::updateView(bool preheat)
     // iterate through all visible children and make them invisible if out of view
     //
     for (int i = 0; i < visibleChildCount();) {
-        View *delegate = visibleChildAt(i);
+        View delegate = visibleChildAt(i);
         double d0 = delegate->pos()[1];
         double d1 = delegate->pos()[1] + delegate->size()[1];
         if (
@@ -134,11 +137,13 @@ void ItemCarrier::updateView(bool preheat)
         else
             layout_->getView(r0, r1, &i0, &i1, &y);
 
+        ItemView itemView = parent()->as<ItemView>();
+
         for (int i = i0; i < i1; ++i) {
-            View *delegate = layout_->at(i)->delegate();
+            View delegate = layout_->at(i)->delegate_;
             delegate->pos = Point{ delegate->pos()[0], y };
             delegate->visible = true;
-            static_cast<ItemView *>(parent())->updateDelegateInView(delegate, i);
+            itemView->updateDelegateInView(delegate, i);
             y += delegate->size()[1];
         }
     }

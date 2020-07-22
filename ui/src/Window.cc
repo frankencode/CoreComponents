@@ -14,64 +14,39 @@
 namespace cc {
 namespace ui {
 
-Window *Window::open(View *view, const String &title, WindowMode mode)
+Window *Window::open(const View &view, const String &title, WindowMode mode)
 {
     return Application{}->openWindow(view, title, mode);
 }
 
-Window::Window(View *view, const String &title):
+Window::Window(const View &view, const String &title):
     title{title},
     size{alias(view->size)},
     view_{view},
     nextFrame_{Frame::create()}
 {
     view_->window_ = this;
+    view_->build();
     view_->polish(this);
 }
 
 Window::~Window()
-{}
+{
+    /// \todo have a more complete View::disband(), which cascades to all children and does a more thorough cleanup job
+    view_->build = Signal{};
+    view_->paint = Signal{};
+}
 
-Control *Window::getControlAt(Point pos) const
+Control Window::getControlAt(Point pos) const
 {
     if (view_) {
-        Control *control = view_->getControlAt(pos);
+        Control control = view_->getControlAt(pos);
         if (!control && view_->containsLocal(pos))
-            control = Object::cast<Control *>(view_);
+            control = view_->as<Control>();
         return control;
     }
 
-    return nullptr;
-}
-
-Object *Window::getContext(View *view)
-{
-    return view->context_;
-}
-
-void Window::setContext(View *view, Object *context)
-{
-    view->context_ = context;
-}
-
-bool Window::isOpaque(View *view)
-{
-    return view->isOpaque();
-}
-
-bool Window::isPainted(View *view)
-{
-    return view->isPainted();
-}
-
-bool Window::isStatic(View *view)
-{
-    return view->isStatic();
-}
-
-Image *Window::image(View *view)
-{
-    return view->image();
+    return Control{};
 }
 
 void Window::addToFrame(const UpdateRequest *request)

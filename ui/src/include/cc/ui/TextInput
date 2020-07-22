@@ -22,56 +22,71 @@ class TextEditor;
 
 class TextInput: public InputControl
 {
-    friend class Object;
-
 public:
-    Property<Font> font;
+    class Instance: public InputControl::Instance
+    {
+    public:
+        Property<Font> font;
 
-    String text() const override;
-    Point textPos() const override;
+        String text() const override;
+        Point textPos() const override;
 
-    Size preferredSize() const override;
-    Size minSize() const override;
-    Size maxSize() const override;
+        Size preferredSize() const override;
+        Size minSize() const override;
+        Size maxSize() const override;
 
-protected:
-    TextInput(View *parent = nullptr, const String &initialText = "");
-    ~TextInput();
+    protected:
+        friend class TextInput;
 
-    void init();
+        Instance(const String &initialText = "");
+        ~Instance();
 
-    virtual Ref<TextEditor> createEditor();
+        void init();
 
-private:
-    Property<StringList> imeChunks;
-    Property< Ref<const TextRun> > unwrappedTextRun;
-    Property< Ref<const TextRun> > textRun;
-    Property< Ref<TextCursor> > textCursor;
-    Property<bool> textCursorVisible;
-    Property<Range> selection;
+        virtual Ref<TextEditor> createEditor(const String &initialText);
 
-    void startBlink();
-    void stopBlink();
+    private:
+        Property<StringList> imeChunks;
+        Property< Ref<const TextRun> > unwrappedTextRun;
+        Property< Ref<const TextRun> > textRun;
+        Property< Ref<TextCursor> > textCursor;
+        Property<bool> textCursorVisible;
+        Property<Range> selection;
 
-    bool onPointerClicked(const PointerEvent *event) override;
-    bool onPointerPressed(const PointerEvent *event) override;
-    bool onPointerMoved(const PointerEvent *event) override;
+        void startBlink();
+        void stopBlink();
 
-    Rect textInputArea() const override;
-    void onTextEdited(const String &chunk, int start, int length) override;
-    void onTextInput(const String &chunk) override;
+        bool onPointerClicked(const PointerEvent *event) override;
+        bool onPointerPressed(const PointerEvent *event) override;
+        bool onPointerMoved(const PointerEvent *event) override;
 
-    bool onKeyPressed(const KeyEvent *event) override;
-    bool onKeyReleased(const KeyEvent *event) override;
+        Rect textInputArea() const override;
+        void onTextEdited(const String &chunk, int start, int length) override;
+        void onTextInput(const String &chunk) override;
 
-    void paste(const String &chunk);
-    void paste(Range selection, const String &chunk);
+        bool onKeyPressed(const KeyEvent *event) override;
+        bool onKeyReleased(const KeyEvent *event) override;
 
-    void paint() override;
+        void paste(const String &chunk);
+        void paste(Range selection, const String &chunk);
 
-    Ref<TextEditor> editor_;
-    Timer timer_;
-    bool shiftKey_ { false };
+        void onPaint() override;
+
+        Ref<TextEditor> editor_;
+        Timer timer_;
+        bool shiftKey_ { false };
+    };
+
+    TextInput(const String &initialText = ""):
+        InputControl{new Instance{initialText}}
+    {}
+
+    TextInput(Instance *instance):
+        InputControl{instance}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
+
 
 }} // namespace cc::ui

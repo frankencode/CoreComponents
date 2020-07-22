@@ -92,12 +92,12 @@ void ApplicationInstance::notifyTimer(Timer::Instance *t)
 
 bool ApplicationInstance::feedFingerEvent(Window *window, FingerEvent *event)
 {
-    cursorControl = nullptr;
-    hoverControl = nullptr;
+    cursorControl = Control{};
+    hoverControl = Control{};
 
     if (event->action() == PointerAction::Pressed) {
         Point pos = window->size() * event->pos();
-        Control *topControl = window->getControlAt(window->view()->mapToLocal(pos));
+        Control topControl = window->getControlAt(window->view()->mapToLocal(pos));
         if (topControl) {
             touchTargets_->establish(event->fingerId(), topControl);
             pressedControl = topControl;
@@ -106,10 +106,10 @@ bool ApplicationInstance::feedFingerEvent(Window *window, FingerEvent *event)
 
     if (event->action() == PointerAction::Released) {
         if (focusControl() != pressedControl())
-            focusControl = nullptr;
+            focusControl = Control{};
     }
 
-    Ref<View> touchTarget;
+    View touchTarget;
     if (touchTargets_->lookup(event->fingerId(), &touchTarget)) {
         if (event->action() == PointerAction::Released)
             touchTargets_->remove(event->fingerId());
@@ -120,7 +120,7 @@ bool ApplicationInstance::feedFingerEvent(Window *window, FingerEvent *event)
         pressedControl()->pointerPos = pressedControl()->mapToLocal(pos);
         bool eaten = pressedControl()->feedFingerEvent(event);
         if (event->action() == PointerAction::Released)
-            pressedControl = nullptr;
+            pressedControl = Control{};
         if (eaten) return true;
     }
     else if (touchTarget) {
@@ -133,7 +133,7 @@ bool ApplicationInstance::feedFingerEvent(Window *window, FingerEvent *event)
 
 bool ApplicationInstance::feedMouseEvent(Window *window, MouseEvent *event)
 {
-    Control *topControl = window->getControlAt(window->view()->mapToLocal(event->pos()));
+    Control topControl = window->getControlAt(window->view()->mapToLocal(event->pos()));
 
     if (topControl)
         topControl->pointerPos = topControl->mapToLocal(event->pos());
@@ -147,12 +147,12 @@ bool ApplicationInstance::feedMouseEvent(Window *window, MouseEvent *event)
         if (!pressedControl())
             pressedControl = topControl;
 
-        hoverControl = nullptr;
+        hoverControl = Control{};
     }
     else if (event->action() == PointerAction::Released)
     {
         if (focusControl() != pressedControl())
-            focusControl = nullptr;
+            focusControl = Control{};
 
         hoverControl = topControl;
     }
@@ -164,7 +164,7 @@ bool ApplicationInstance::feedMouseEvent(Window *window, MouseEvent *event)
         eaten = pressedControl()->feedMouseEvent(event);
 
         if (event->action() == PointerAction::Released)
-            pressedControl = nullptr;
+            pressedControl = Control{};
     }
 
     if (!eaten)

@@ -22,7 +22,7 @@ class MainView: public View
 
     MainView()
     {
-        size = Size{ 640, 480 };
+        size = Size{640, 480};
         paper = 0xFFFFFF;
 
         auto box = add<View>();

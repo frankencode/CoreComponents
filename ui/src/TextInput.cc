@@ -7,71 +7,70 @@
  */
 
 #include <cc/ui/TextInput>
+#include <cc/ui/Application>
 #include <cc/ui/TextRun>
 #include <cc/ui/LineEditor>
 
 namespace cc {
 namespace ui {
 
-TextInput::TextInput(View *parent, const String &initialText):
-    InputControl{parent}
-{}
-
-TextInput::~TextInput()
-{}
-
-void TextInput::init()
+TextInput::Instance::Instance(const String &initialText)
 {
-    editor_ = createEditor();
-    inheritPaper();
+    build >>[=]{
+        editor_ = createEditor(initialText);
+        inheritPaper();
 
-    if (!font()) font->bind([=]{ return app()->defaultFont(); });
+        if (!font()) font <<[=]{ return Application{}->defaultFont(); };
 
-    unwrappedTextRun->bind([=]{
-        auto run = TextRun::create();
-        if (imeChunks()->count() > 0) {
-            for (const String &chunk: imeChunks()) {
-                if (chunk->count() > 0)
-                    run->append(chunk, font());
+        unwrappedTextRun <<[=]{
+            auto run = TextRun::create();
+            if (imeChunks()->count() > 0) {
+                for (const String &chunk: imeChunks()) {
+                    if (chunk->count() > 0)
+                        run->append(chunk, font());
+                }
             }
-        }
-        else
-            run->append(text(), font());
-        return run;
-    });
+            else
+                run->append(text(), font());
+            return run;
+        };
 
-    textRun->bind([=]{
-        return unwrappedTextRun()->wrap(size()[0]);
-    });
+        textRun <<[=]{
+            return unwrappedTextRun()->wrap(size()[0]);
+        };
 
-    if (text()->count() > 0)
-        selection = Range { 0, text()->count() };
+        if (text()->count() > 0)
+            selection = Range { 0, text()->count() };
 
-    textCursor = textRun()->getTextCursor(text()->count());
+        textCursor = textRun()->getTextCursor(text()->count());
 
-    textRun->connect([=]{
-        if (textCursor())
-            textCursor = textRun()->getTextCursor(textCursor()->byteOffset());
-    });
+        textRun >>[=]{
+            if (textCursor())
+                textCursor = textRun()->getTextCursor(textCursor()->byteOffset());
+        };
 
-    size->bind([=]{
-        return preferredSize();
-    });
+        size <<[=]{
+            return preferredSize();
+        };
 
-    cursor->bind([=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); });
+        cursor <<[=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); };
 
-    focus->connect([=]{
-        if (focus()) startBlink();
-        else stopBlink();
-    });
+        focus >>[=]{
+            if (focus()) startBlink();
+            else stopBlink();
+        };
 
-    timer_ = Timer{0.5};
-    timer_->timeout->connect([=]{
-        textCursorVisible = !textCursorVisible();
-    });
+        timer_ = Timer{0.5};
+        timer_->timeout >>[=]{
+            textCursorVisible = !textCursorVisible();
+        };
+    };
 }
 
-Size TextInput::preferredSize() const
+TextInput::Instance::~Instance()
+{}
+
+Size TextInput::Instance::preferredSize() const
 {
     double h = 0;
     if (textRun()->lineCount() < 2) {
@@ -83,47 +82,47 @@ Size TextInput::preferredSize() const
     return Size{ 280, h };
 }
 
-Size TextInput::minSize() const
+Size TextInput::Instance::minSize() const
 {
     return Size{ 0, preferredSize()[1] };
 }
 
-Size TextInput::maxSize() const
+Size TextInput::Instance::maxSize() const
 {
     return Size{ std::numeric_limits<double>::max(), preferredSize()[1] };
 }
 
-Ref<TextEditor> TextInput::createEditor()
+Ref<TextEditor> TextInput::Instance::createEditor(const String &initialText)
 {
-    return Object::create<LineEditor>();
+    return Object::create<LineEditor>(initialText);
 }
 
-String TextInput::text() const
+String TextInput::Instance::text() const
 {
     return editor_->text();
 }
 
-Point TextInput::textPos() const
+Point TextInput::Instance::textPos() const
 {
     return Point { 0, std::ceil(font()->getMetrics()->ascender()) };
 }
 
-void TextInput::startBlink()
+void TextInput::Instance::startBlink()
 {
     textCursorVisible = false;
     timer_->startIn(0);
 }
 
-void TextInput::stopBlink()
+void TextInput::Instance::stopBlink()
 {
     timer_->stop();
     textCursorVisible = false;
 }
 
-bool TextInput::onPointerClicked(const PointerEvent *event)
+bool TextInput::Instance::onPointerClicked(const PointerEvent *event)
 {
     if (!focus()) {
-        app()->focusControl = this;
+        Application{}->focusControl = this;
         return true;
     }
 
@@ -139,7 +138,7 @@ bool TextInput::onPointerClicked(const PointerEvent *event)
     return true;
 }
 
-bool TextInput::onPointerPressed(const PointerEvent *event)
+bool TextInput::Instance::onPointerPressed(const PointerEvent *event)
 {
     if (!focus()) return false;
 
@@ -153,7 +152,7 @@ bool TextInput::onPointerPressed(const PointerEvent *event)
     return true;
 }
 
-bool TextInput::onPointerMoved(const PointerEvent *event)
+bool TextInput::Instance::onPointerMoved(const PointerEvent *event)
 {
     if (!focus()) return false;
 
@@ -182,7 +181,7 @@ bool TextInput::onPointerMoved(const PointerEvent *event)
     return true;
 }
 
-Rect TextInput::textInputArea() const
+Rect TextInput::Instance::textInputArea() const
 {
     double cx = (textCursor()) ? textCursor()->posA()[0] : 0.;
 
@@ -197,7 +196,7 @@ Rect TextInput::textInputArea() const
     };
 }
 
-void TextInput::onTextEdited(const String &chunk, int start, int length)
+void TextInput::Instance::onTextEdited(const String &chunk, int start, int length)
 {
     imeChunks = StringList {
         text()->copy(0, textCursor()->byteOffset()),
@@ -206,14 +205,14 @@ void TextInput::onTextEdited(const String &chunk, int start, int length)
     };
 }
 
-void TextInput::onTextInput(const String &chunk)
+void TextInput::Instance::onTextInput(const String &chunk)
 {
     Range s = selection();
     if (!s) s = Range { textCursor()->byteOffset() };
     paste(s, chunk);
 }
 
-bool TextInput::onKeyPressed(const KeyEvent *event)
+bool TextInput::Instance::onKeyPressed(const KeyEvent *event)
 {
     imeChunks = nullptr;
 
@@ -298,7 +297,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
     )
     {
         if (selection()) {
-            app()->setClipboardText(
+            Application{}->setClipboardText(
                 text()->copy(selection()->i0(), selection()->i1())
             );
             paste(selection(), String{});
@@ -311,7 +310,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
         )
     ) {
         if (selection()) {
-            app()->setClipboardText(
+            Application{}->setClipboardText(
                 text()->copy(selection()->i0(), selection()->i1())
             );
         }
@@ -322,7 +321,7 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
             event->keyCode() == KeyCode::Key_V
         )
     ) {
-        String chunk = app()->getClipboardText();
+        String chunk = Application{}->getClipboardText();
         if (chunk) paste(chunk);
     }
     else if (
@@ -351,10 +350,10 @@ bool TextInput::onKeyPressed(const KeyEvent *event)
         shiftKey_ = true;
     }
 
-    return InputControl::onKeyPressed(event);
+    return InputControl::Instance::onKeyPressed(event);
 }
 
-bool TextInput::onKeyReleased(const KeyEvent *event)
+bool TextInput::Instance::onKeyReleased(const KeyEvent *event)
 {
     if (
         event->scanCode() == ScanCode::Key_LeftShift ||
@@ -365,14 +364,14 @@ bool TextInput::onKeyReleased(const KeyEvent *event)
     return true;
 }
 
-void TextInput::paste(const String &chunk)
+void TextInput::Instance::paste(const String &chunk)
 {
     Range s = selection();
     if (!s) s = Range { textCursor()->byteOffset() };
     paste(s, chunk);
 }
 
-void TextInput::paste(Range range, const String &chunk)
+void TextInput::Instance::paste(Range range, const String &chunk)
 {
     if (! (0 <= range->i0() && range->i1() <= text()->count()) )
         return;
@@ -391,9 +390,9 @@ void TextInput::paste(Range range, const String &chunk)
     }
 }
 
-void TextInput::paint()
+void TextInput::Instance::onPaint()
 {
-    Painter p(this);
+    Painter p{this};
 
     p->setSource(theme()->primaryTextColor());
 

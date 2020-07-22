@@ -12,49 +12,49 @@
 namespace cc {
 namespace ui {
 
-Ref<SlideView> SlideView::create(View *parent)
+SlideView::Instance::Instance()
 {
-    return Object::create<SlideView>(parent);
+    build >>[=]{
+        if (parent()) {
+            pos->restrict([](Point &, Point){ return false; });
+            size <<[=]{ return parent()->size(); };
+        }
+
+        slideCarrier_ = View{};
+        slideCarrier_->pos <<[=]{
+            return currentIndex() * Point{ -size()[0], 0 };
+        };
+        (*this) << slideCarrier_;
+
+        RowLayout{slideCarrier_};
+
+        slideCount <<[=]{ return slideCarrier_->childCount(); };
+        currentIndex->restrict([=](int &newIndex, int){
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= slideCount()) newIndex = slideCount() - 1;
+            return true;
+        });
+    };
 }
 
-SlideView::SlideView(View *parent):
-    View{parent}
-{
-    if (parent) {
-        pos->restrict([](Point &, Point){ return false; });
-        size->bind([=]{ return parent->size(); });
-    }
-
-    slideCarrier_ = add<View>();
-    slideCarrier_->pos->bind([=]{ return currentIndex() * Point{ -size()[0], 0 }; });
-    RowLayout{slideCarrier_};
-
-    slideCount->bind([=]{ return slideCarrier_->childCount(); });
-    currentIndex->restrict([=](int &newIndex, int){
-        if (newIndex < 0) newIndex = 0;
-        if (newIndex >= slideCount()) newIndex = slideCount() - 1;
-        return true;
-    });
-}
-
-View *SlideView::currentSlide() const
+View SlideView::Instance::currentSlide() const
 {
     return slideCarrier_->childAt(currentIndex());
 }
 
-View *SlideView::slideCarrier() const
+View SlideView::Instance::slideCarrier() const
 {
     return slideCarrier_;
 }
 
-void SlideView::insertChild(View *child)
+void SlideView::Instance::insertChild(View child)
 {
     if (slideCarrier_) {
-        child->size->bind([=]{ return size(); });
+        child->size <<[=]{ return size(); };
         adoptChild(slideCarrier_, child);
     }
     else
-        View::insertChild(child);
+        View::Instance::insertChild(child);
 }
 
 }} // namespace cc::ui

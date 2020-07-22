@@ -13,33 +13,28 @@
 namespace cc {
 namespace ui {
 
-Ref<SvgSurface> SvgSurface::open(const Stream &stream, Size sizePt)
-{
-    return new SvgSurface{stream, sizePt};
-}
-
-SvgSurface::SvgSurface(const Stream &stream, Size sizePt):
+SvgSurface::Instance::Instance(const Stream &stream, Size sizePt):
     stream_{stream},
     cairoSurface_{
         cairo_svg_surface_create_for_stream(cairoWrite, this, sizePt[0], sizePt[1])
     }
 {}
 
-SvgSurface::~SvgSurface()
+SvgSurface::Instance::~Instance()
 {
     if (cairoSurface_)
         cairo_surface_destroy(cairoSurface_);
 }
 
-cairo_surface_t *SvgSurface::cairoSurface() const
+cairo_surface_t *SvgSurface::Instance::cairoSurface() const
 {
     return cairoSurface_;
 }
 
-cairo_status_t SvgSurface::cairoWrite(void *closure, const unsigned char *data, unsigned int length)
+cairo_status_t SvgSurface::Instance::cairoWrite(void *closure, const unsigned char *data, unsigned int length)
 {
     try {
-        reinterpret_cast<SvgSurface *>(closure)->stream_->write(data, length);
+        reinterpret_cast<SvgSurface::Instance *>(closure)->stream_->write(data, length);
     }
     catch (...)
     {

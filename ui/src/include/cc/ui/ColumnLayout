@@ -27,16 +27,16 @@ public:
     private:
         friend class ColumnLayout;
 
-        Instance(View *view);
+        Instance(View &view);
 
-        void childReady(View *child) final;
-        void childDone(View *child) final;
+        void childReady(View child) final;
+        void childDone(View child) final;
 
-        void updateChildPos(View *child, Size innerSize, double y);
+        void updateChildPos(View child, Size innerSize, double y);
         void updateLayout();
     };
 
-    ColumnLayout(View *view):
+    ColumnLayout(View &view):
         Layout{new Instance{view}}
     {}
 

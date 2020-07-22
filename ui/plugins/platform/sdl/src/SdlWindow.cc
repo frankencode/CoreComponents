@@ -17,12 +17,12 @@
 namespace cc {
 namespace ui {
 
-Ref<SdlWindow> SdlWindow::open(View *view, const String &title, WindowMode mode)
+Ref<SdlWindow> SdlWindow::open(const View &view, const String &title, WindowMode mode)
 {
-    return (new SdlWindow(view, title))->open(mode);
+    return (new SdlWindow{view, title})->open(mode);
 }
 
-SdlWindow::SdlWindow(View *view, const String &title):
+SdlWindow::SdlWindow(const View &view, const String &title):
     Window{view, title}
 {}
 
@@ -163,10 +163,10 @@ void SdlWindow::renderFrame(Frame *frame)
     SDL_RenderPresent(sdlRenderer_);
 }
 
-void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
+void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View::Instance *view)
 {
     SdlContext *context = sdlContext(view);
-    Image *image = Window::image(view);
+    Image::Instance *image = Window::image(view);
     bool hasPixels = isPainted(view) && image->count() > 0;
 
     if (
@@ -218,7 +218,7 @@ void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View *view)
     }
 }
 
-void SdlWindow::renderCascade(SDL_Renderer *sdlRenderer, View *view)
+void SdlWindow::renderCascade(SDL_Renderer *sdlRenderer, View::Instance *view)
 {
     if (!view->visible()) return;
 
@@ -228,7 +228,7 @@ void SdlWindow::renderCascade(SDL_Renderer *sdlRenderer, View *view)
         renderCascade(sdlRenderer, view->visibleChildAt(i));
 }
 
-void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
+void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View::Instance *view)
 {
     SdlContext *context = sdlContext(view);
     SDL_Texture *sdlTexture = context->sdlTexture_;
@@ -255,7 +255,7 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
             destRect.y = std::round(view->pos()[1]);
         }
 
-        for (View *ancestor = view->parent(); ancestor; ancestor = ancestor->parent())
+        for (View::Instance *ancestor = view->parent(); ancestor; ancestor = ancestor->parent())
         {
             if (ancestor->moving()) {
                 destRect.x += ancestor->pos()[0];
@@ -295,7 +295,7 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View *view)
     }
 }
 
-SdlContext *SdlWindow::sdlContext(View *view)
+SdlContext *SdlWindow::sdlContext(View::Instance *view)
 {
     SdlContext *context = Object::cast<SdlContext *>(getContext(view));
     if (!context) {

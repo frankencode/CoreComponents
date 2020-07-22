@@ -7,111 +7,111 @@
  */
 
 #include <cc/ui/View>
+#include <cc/ui/Application>
 #include <cc/ui/StyleManager>
 #include <cc/ui/Window>
-#include <cc/ui/Image>
+#include <cc/ui/UpdateRequest>
 #include <cc/ui/Control>
 
 namespace cc {
 namespace ui {
 
-View::View(View *parent)
+View::Instance::Instance()
 {
-    if (parent)
-    {
-        parent->insertChild(this);
-
-        pos->connect([=]{
-            if (visible()) update(UpdateReason::Moved);
-        });
-    }
-    else {
-        pos->restrict([](Point&, Point) { return false; });
-    }
-
-    picture->schedule([=]{ update(UpdateReason::Changed); });
-
-    angle->connect([=]{ update(UpdateReason::Moved); });
-    scale->connect([=]{ update(UpdateReason::Moved); });
-
-    visible->connect([=]{
-        for (int i = 0, n = childCount(); i < n; ++i)
-            childAt(i)->visible = visible();
-        if (!visible()) {
-            context_ = nullptr;
-            image_ = nullptr;
-            if (parent_)
-                parent_->visibleChildren_->remove(serial_);
-            update(UpdateReason::Hidden);
+    build >>[=]{
+        if (parent()) {
+            pos >>[=]{
+                if (visible()) update(UpdateReason::Moved);
+            };
         }
         else {
-            if (parent_)
-                parent_->visibleChildren_->insert(serial_, this);
-            if (isPainted()) {
-                clear();
-                paint();
-                update(UpdateReason::Changed);
-            }
+            pos->restrict([](Point&, Point) { return false; });
         }
-    });
+
+        picture->schedule([=]{ update(UpdateReason::Changed); });
+
+        angle >>[=]{ update(UpdateReason::Moved); };
+        scale >>[=]{ update(UpdateReason::Moved); };
+
+        visible >>[=]{
+            for (int i = 0, n = childCount(); i < n; ++i)
+                childAt(i)->visible = visible();
+            if (!visible()) {
+                context_ = nullptr;
+                image_ = Image{};
+                if (parent_)
+                    parent_->visibleChildren_->remove(serial_);
+                update(UpdateReason::Hidden);
+            }
+            else {
+                if (parent())
+                    parent()->visibleChildren_->insert(serial_, this);
+                if (isPainted()) {
+                    clear();
+                    onPaint();
+                    update(UpdateReason::Changed);
+                }
+            }
+        };
+    };
 }
 
-View::~View()
+View::Instance::~Instance()
 {
     layout_ = Layout{};
         // destroy the layout before releasing the children for efficiency
 }
 
-Point View::mapToGlobal(Point l) const
+Point View::Instance::mapToGlobal(Point l) const
 {
-    for (const View *view = this; view->parent_; view = view->parent_)
-        l += view->pos();
+    for (const Instance *h = this; h->parent_; h = h->parent_)
+        l += h->pos();
     return l;
 }
 
-Point View::mapToLocal(Point g) const
+Point View::Instance::mapToLocal(Point g) const
 {
-    for (const View *view = this; view->parent_; view = view->parent_)
-       g -= view->pos();
+    for (const Instance *h = this; h->parent_; h = h->parent_)
+       g -= h->pos();
     return g;
 }
 
-Point View::mapToChild(const View *child, Point l) const
+Point View::Instance::mapToChild(const Instance *child, Point l) const
 {
-    for (const View *view = child; view != this && view->parent(); view = view->parent())
-        l -= view->pos();
+    for (const Instance *h = child; h != this && h->parent_; h = h->parent_)
+        l -= h->pos();
     return l;
 }
 
-Point View::mapToParent(const View *parent, Point l) const
+Point View::Instance::mapToParent(const Instance *parent, Point l) const
 {
-    for (const View *view = this; view != parent; view = view->parent())
-        l += view->pos();
+    for (const Instance *h = this; h != parent && h->parent_; h = h->parent_)
+        l += h->pos();
     return l;
 }
 
-bool View::withinBounds(Point l) const
+bool View::Instance::withinBounds(Point l) const
 {
     return
         0 <= l[1] && l[1] < size()[1] &&
         0 <= l[0] && l[0] < size()[0];
 }
 
-View *View::getChildAt(Point l)
+View View::Instance::getChildAt(Point l) /// \todo replace by a safer version: bool lookupChildAt(Point l, View *view) const;
 {
     for (auto pair: visibleChildren_) {
-        View *child = pair->value();
+        View child = pair->value();
         if (child->containsLocal(mapToChild(child, l))) return child;
     }
-    return nullptr;
+    return View{};
 }
 
-Control *View::getControlAt(Point l)
+Control View::Instance::getControlAt(Point l) /// \todo replace by a safer version: bool lookupControlAt(Point l, Control *view) const;
 {
     for (auto pair: visibleChildren_) {
-        View *child = pair->value();
+        View child = pair->value();
         if (child->containsLocal(mapToChild(child, l))) {
-            Control *control = Object::cast<Control *>(child);
+            Control control = child->as<Control>();
             if (control) {
                 while (control->delegate())
                     control = control->delegate();
@@ -119,19 +119,19 @@ Control *View::getControlAt(Point l)
             }
         }
     }
-    return nullptr;
+    return Control{};
 }
 
-bool View::isParentOf(const View *other) const
+bool View::Instance::isParentOf(const Instance *other) const
 {
-    for (const View *view = other; view; view = view->parent()) {
-        if (view == this)
+    for (const Instance *h = other; h; h = h->parent_) {
+        if (h == this)
             return true;
     }
     return false;
 }
 
-bool View::isFullyVisibleIn(const View *other) const
+bool View::Instance::isFullyVisibleIn(const Instance *other) const
 {
     if (!other) return false;
     if (other == this) return true;
@@ -142,83 +142,86 @@ bool View::isFullyVisibleIn(const View *other) const
         other->withinBounds(mapToParent(other, size() - Size{1, 1}));
 }
 
-void View::centerInParent()
+void View::Instance::centerInParent()
 {
-    if (parent()) pos->bind([=]{ return 0.5 * (parent()->size() - size()); });
+    if (parent()) pos <<[=]{ return 0.5 * (parent()->size() - size()); };
     else pos = Point{};
 }
 
-Color View::findBasePaper() const
+/// \todo rename to basePaper
+Color View::Instance::findBasePaper() const
 {
-    for (View *view = parent(); view; view = view->parent()) {
-        if (view->paper())
-            return view->paper();
+    for (const Instance *h = parent_; h; h = h->parent_) {
+        if (h->paper())
+            return h->paper();
     }
 
     return style()->theme()->windowColor();
 }
 
-void View::inheritPaper()
+void View::Instance::inheritPaper()
 {
-    paper->bind([=]{ return findBasePaper(); });
+    paper <<[=]{ return findBasePaper(); };
 }
 
-bool View::isOpaque() const
+bool View::Instance::isOpaque() const
 {
     return paper()->isOpaque();
 }
 
-bool View::isPainted() const
+bool View::Instance::isPainted() const
 {
     return paper()->isValid() && size()[0] > 0 && size()[1] > 0;
 }
 
-bool View::isStatic() const
+bool View::Instance::isStatic() const
 {
     return false; // FIXME
 }
 
-void View::clear(Color c)
+void View::Instance::clear(Color c)
 {
     image()->clear(c->premultiplied());
 }
 
-void View::clear()
+void View::Instance::clear()
 {
     clear(paper());
 }
 
-void View::paint()
-{}
+void View::Instance::onPaint()
+{
+    paint();
+}
 
-bool View::onPointerPressed(const PointerEvent *event) { return false; }
-bool View::onPointerReleased(const PointerEvent *event) { return false; }
-bool View::onPointerMoved(const PointerEvent *event) { return false; }
+bool View::Instance::onPointerPressed(const PointerEvent *event) { return false; }
+bool View::Instance::onPointerReleased(const PointerEvent *event) { return false; }
+bool View::Instance::onPointerMoved(const PointerEvent *event) { return false; }
 
-bool View::onMousePressed(const MouseEvent *event) { return false; }
-bool View::onMouseReleased(const MouseEvent *event) { return false; }
-bool View::onMouseMoved(const MouseEvent *event) { return false; }
+bool View::Instance::onMousePressed(const MouseEvent *event) { return false; }
+bool View::Instance::onMouseReleased(const MouseEvent *event) { return false; }
+bool View::Instance::onMouseMoved(const MouseEvent *event) { return false; }
 
-bool View::onFingerPressed(const FingerEvent *event) { return false; }
-bool View::onFingerReleased(const FingerEvent *event) { return false; }
-bool View::onFingerMoved(const FingerEvent *event) { return false; }
+bool View::Instance::onFingerPressed(const FingerEvent *event) { return false; }
+bool View::Instance::onFingerReleased(const FingerEvent *event) { return false; }
+bool View::Instance::onFingerMoved(const FingerEvent *event) { return false; }
 
-bool View::onWheelMoved(const WheelEvent *event) { return false; }
+bool View::Instance::onWheelMoved(const WheelEvent *event) { return false; }
 
-bool View::onKeyPressed(const KeyEvent *event) { return false; }
-bool View::onKeyReleased(const KeyEvent *event) { return false; }
+bool View::Instance::onKeyPressed(const KeyEvent *event) { return false; }
+bool View::Instance::onKeyReleased(const KeyEvent *event) { return false; }
 
-bool View::onWindowExposed()
+bool View::Instance::onWindowExposed()
 {
     update(UpdateReason::Exposed);
         // FIXME: double composition on startup?
     return false;
 }
 
-bool View::onWindowEntered() { return false; }
-bool View::onWindowLeft() { return false; }
+bool View::Instance::onWindowEntered() { return false; }
+bool View::Instance::onWindowLeft() { return false; }
 
-void View::update(UpdateReason reason)
+void View::Instance::update(UpdateReason reason)
 {
     Window *w = window();
     if (!w) return;
@@ -234,32 +237,27 @@ void View::update(UpdateReason reason)
     w->addToFrame(UpdateRequest::create(reason, this));
 }
 
-void View::childReady(View *child)
+void View::Instance::childReady(View &child)
 {
     if (layout_) layout_->childReady(child);
 }
 
-void View::childDone(View *child)
+void View::Instance::childDone(View &child)
 {
     if (layout_) layout_->childDone(child);
 }
 
-Application View::app()
-{
-    return Application{};
-}
-
-StylePlugin *View::style() const
+StylePlugin *View::Instance::style() const
 {
     return StyleManager::instance()->activePlugin();
 }
 
-const Theme *View::theme() const
+const Theme *View::Instance::theme() const
 {
     return style()->theme();
 }
 
-Window *View::window() const
+Window *View::Instance::window() const
 {
     if (!window_) {
         if (parent_)
@@ -268,30 +266,31 @@ Window *View::window() const
     return window_;
 }
 
-Image *View::image()
+Image::Instance *View::Instance::image()
 {
     if (!image_ || (
         image_->width()  != std::ceil(size()[0]) ||
         image_->height() != std::ceil(size()[1])
     ))
-        image_ = Image::create(std::ceil(size()[0]), std::ceil(size()[1]));
+        image_ = Image{int(std::ceil(size()[0])), int(std::ceil(size()[1]))};
 
     return image_;
 }
 
-void View::insertChild(View *child)
+void View::Instance::insertChild(View child)
 {
     child->parent_ = this;
     child->serial_ = nextSerial();
     children_->insert(child->serial_, child);
+    child->init();
     if (child->visible())
         visibleChildren_->insert(child->serial_, child);
     childCount += 1;
 }
 
-void View::removeChild(View *child)
+void View::Instance::removeChild(View child)
 {
-    Ref<View> hook = child;
+    View hook = child;
     children_->remove(child->serial_);
     if (child->visible())
         visibleChildren_->remove(child->serial_);
@@ -300,12 +299,12 @@ void View::removeChild(View *child)
     childDone(child);
 }
 
-void View::adoptChild(View *parent, View *child)
+void View::Instance::adoptChild(View &parent, View &child)
 {
     parent->insertChild(child);
 }
 
-bool View::feedFingerEvent(FingerEvent *event)
+bool View::Instance::feedFingerEvent(FingerEvent *event)
 {
     {
         PointerEvent::PosGuard guard{event, mapToLocal(window()->size() * event->pos())};
@@ -319,10 +318,10 @@ bool View::feedFingerEvent(FingerEvent *event)
         {
             bool eaten = onPointerReleased(event) || onFingerReleased(event);
 
-            if (app()->pressedControl()) {
+            if (Application{}->pressedControl()) {
                 if (
-                    app()->pressedControl()->onPointerClicked(event) ||
-                    app()->pressedControl()->onFingerClicked(event)
+                    Application{}->pressedControl()->onPointerClicked(event) ||
+                    Application{}->pressedControl()->onFingerClicked(event)
                 )
                     eaten = true;
             }
@@ -338,7 +337,7 @@ bool View::feedFingerEvent(FingerEvent *event)
 
     for (auto pair: visibleChildren_)
     {
-        View *child = pair->value();
+        View child = pair->value();
 
         if (child->containsGlobal(event->pos()))
         {
@@ -350,7 +349,7 @@ bool View::feedFingerEvent(FingerEvent *event)
     return false;
 }
 
-bool View::feedMouseEvent(MouseEvent *event)
+bool View::Instance::feedMouseEvent(MouseEvent *event)
 {
     {
         PointerEvent::PosGuard guard{event, mapToLocal(event->pos())};
@@ -364,10 +363,10 @@ bool View::feedMouseEvent(MouseEvent *event)
         {
             bool eaten = onPointerReleased(event) || onMouseReleased(event);
 
-            if (app()->pressedControl()) {
+            if (Application{}->pressedControl()) {
                 if (
-                    app()->pressedControl()->onPointerClicked(event) ||
-                    app()->pressedControl()->onMouseClicked(event)
+                    Application{}->pressedControl()->onPointerClicked(event) ||
+                    Application{}->pressedControl()->onMouseClicked(event)
                 )
                     eaten = true;
             }
@@ -386,7 +385,7 @@ bool View::feedMouseEvent(MouseEvent *event)
 
     for (auto pair: visibleChildren_)
     {
-        View *child = pair->value();
+        View child = pair->value();
 
         if (child->containsGlobal(event->pos()))
         {
@@ -398,7 +397,7 @@ bool View::feedMouseEvent(MouseEvent *event)
     return false;
 }
 
-bool View::feedWheelEvent(WheelEvent *event)
+bool View::Instance::feedWheelEvent(WheelEvent *event)
 {
     if (containsGlobal(event->mousePos()))
     {
@@ -408,7 +407,7 @@ bool View::feedWheelEvent(WheelEvent *event)
 
     for (auto pair: visibleChildren_)
     {
-        View *child = pair->value();
+        View child = pair->value();
 
         if (child->containsGlobal(event->mousePos()))
         {
@@ -420,7 +419,7 @@ bool View::feedWheelEvent(WheelEvent *event)
     return false;
 }
 
-bool View::feedKeyEvent(KeyEvent *event)
+bool View::Instance::feedKeyEvent(KeyEvent *event)
 {
     if (event->action() == KeyAction::Pressed)
     {
@@ -433,7 +432,7 @@ bool View::feedKeyEvent(KeyEvent *event)
 
     for (auto pair: visibleChildren_)
     {
-        View *child = pair->value();
+        View child = pair->value();
 
         if (child->feedKeyEvent(event))
             return true;
@@ -442,13 +441,13 @@ bool View::feedKeyEvent(KeyEvent *event)
     return false;
 }
 
-bool View::feedExposedEvent()
+bool View::Instance::feedExposedEvent()
 {
     if (onWindowExposed()) return true;
 
     for (auto pair: visibleChildren_)
     {
-        View *child = pair->value();
+        View child = pair->value();
 
         if (child->feedExposedEvent())
             return true;
@@ -457,13 +456,13 @@ bool View::feedExposedEvent()
     return false;
 }
 
-bool View::feedEnterEvent()
+bool View::Instance::feedEnterEvent()
 {
     if (onWindowEntered()) return true;
 
     for (auto pair: visibleChildren_)
     {
-        View *child = pair->value();
+        View child = pair->value();
 
         if (child->feedLeaveEvent())
             return true;
@@ -472,13 +471,13 @@ bool View::feedEnterEvent()
     return false;
 }
 
-bool View::feedLeaveEvent()
+bool View::Instance::feedLeaveEvent()
 {
     if (onWindowLeft()) return true;
 
     for (auto pair: visibleChildren_)
     {
-        View *child = pair->value();
+        View child = pair->value();
 
         if (child->feedLeaveEvent())
             return true;
@@ -487,21 +486,16 @@ bool View::feedLeaveEvent()
     return false;
 }
 
-void View::init()
-{
-    if (parent()) parent()->childReady(this);
-}
-
-uint64_t View::nextSerial() const
+uint64_t View::Instance::nextSerial() const
 {
     return (children_->count() > 0) ? children_->at(children_->count() - 1)->key() + 1 : 1;
 }
 
-void View::polish(Window *window)
+void View::Instance::polish(Window *window)
 {
     for (auto pair: visibleChildren_)
     {
-        View *child = pair->value();
+        View child = pair->value(); /// \todo const View &
 
         child->polish(window);
     }
@@ -511,9 +505,9 @@ void View::polish(Window *window)
     window->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
 }
 
-cairo_surface_t *View::cairoSurface() const
+cairo_surface_t *View::Instance::cairoSurface() const
 {
-    return const_cast<View *>(this)->image()->cairoSurface();
+    return const_cast<Instance *>(this)->image()->cairoSurface();
 }
 
 }} // namespace cc::ui

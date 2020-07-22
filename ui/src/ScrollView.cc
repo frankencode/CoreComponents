@@ -7,6 +7,7 @@
  */
 
 #include <cc/ui/ScrollView>
+#include <cc/ui/Application>
 #include <cc/ui/InputField>
 #include <cc/ui/Timer>
 #include <cc/ui/easing>
@@ -16,77 +17,73 @@
 namespace cc {
 namespace ui {
 
-Ref<ScrollView> ScrollView::create(View *parent)
+ScrollView::Instance::Instance()
 {
-    return Object::create<ScrollView>(parent);
+    build >>[=]{
+        if (parent()) size <<[=]{ return parent()->size(); };
+
+        carrier_ = createCarrier();
+        (*this) << carrier_;
+
+        size >>[=]{
+            positionCarrierOnResize();
+            keepFocusControlInView();
+        };
+
+        timer_->timeout >>[=]{
+            if (timerMode_ == TimerMode::Flying) carrierFly();
+            else if (timerMode_ == TimerMode::Bouncing) carrierBounce();
+            else if (timerMode_ == TimerMode::Traversing) carrierTraverse();
+        };
+
+        focusControl <<[=]{
+            return Application{}->focusControl();
+        };
+
+        focusControl >>[=]{
+            keepFocusControlInView();
+        };
+    };
 }
 
-ScrollView::ScrollView(View *parent):
-    Control{parent}
-{
-    if (parent) size->bind([=]{ return parent->size(); });
-}
-
-ScrollView::~ScrollView()
+ScrollView::Instance::~Instance()
 {}
 
-void ScrollView::init()
+View ScrollView::Instance::createCarrier()
 {
-    carrier_ = addCarrier();
-
-    size->connect([=]{
-        positionCarrierOnResize();
-        keepFocusControlInView();
-    });
-
-    timer_->timeout->connect([=]{
-        if (timerMode_ == TimerMode::Flying) carrierFly();
-        else if (timerMode_ == TimerMode::Bouncing) carrierBounce();
-        else if (timerMode_ == TimerMode::Traversing) carrierTraverse();
-    });
-
-    focusControl->bind([]{
-        return app()->focusControl();
-    });
-
-    focusControl->connect([=]{
-        keepFocusControlInView();
-    });
+    return View{};
 }
 
-View *ScrollView::addCarrier()
-{
-    return add<View>();
-}
-
-void ScrollView::preheat()
+void ScrollView::Instance::preheat()
 {}
 
-void ScrollView::positionCarrierOnResize()
+void ScrollView::Instance::positionCarrierOnResize()
 {
     carrier_->pos = carrierStep(carrier_->pos());
 }
 
-void ScrollView::resetCarrier()
+void ScrollView::Instance::resetCarrier()
 {
     timerStop();
     removeChild(carrier_);
-    carrier_ = addCarrier();
+    carrier_ = nullptr;
+    carrier_ = createCarrier();
+    (*this) << carrier_;
 }
 
-void ScrollView::insertChild(View *child)
+void ScrollView::Instance::insertChild(View child)
 {
     if (carrier_)
         adoptChild(carrier_, child);
     else
-        View::insertChild(child);
+        View::Instance::insertChild(child);
 }
 
-bool ScrollView::onPointerClicked(const PointerEvent *event)
+bool ScrollView::Instance::onPointerClicked(const PointerEvent *event)
 {
     if (!carrierAtRest_) return true;
 
-    Control *control = getControlAt(event->pos());
+    Control control = getControlAt(event->pos());
     if (control) {
         PointerEvent::PosGuard guard{const_cast<PointerEvent *>(event), mapToChild(control, event->pos())};
         return control->onPointerClicked(event);
@@ -95,7 +92,7 @@ bool ScrollView::onPointerClicked(const PointerEvent *event)
     return true;
 }
 
-bool ScrollView::onPointerPressed(const PointerEvent *event)
+bool ScrollView::Instance::onPointerPressed(const PointerEvent *event)
 {
     dragStart_ = event->pos();
     isDragged_ = false;
@@ -108,9 +105,9 @@ bool ScrollView::onPointerPressed(const PointerEvent *event)
     }
     else {
         wasFlying_ = false;
-        Control *control = carrier()->getControlAt(mapToChild(carrier(), event->pos()));
+        Control control = carrier()->getControlAt(mapToChild(carrier(), event->pos()));
         if (control) {
-            app()->pressedControl = control;
+            Application{}->pressedControl = control;
             PointerEvent::PosGuard guard{const_cast<PointerEvent *>(event), mapToChild(control, event->pos())};
             return control->onPointerPressed(event);
         }
@@ -119,7 +116,7 @@ bool ScrollView::onPointerPressed(const PointerEvent *event)
     return true;
 }
 
-bool ScrollView::onPointerReleased(const PointerEvent *event)
+bool ScrollView::Instance::onPointerReleased(const PointerEvent *event)
 {
     if (isDragged_) {
         if (event->time() - lastDragTime_ > minHoldTime()) speed_ = Point{};
@@ -138,13 +135,13 @@ bool ScrollView::onPointerReleased(const PointerEvent *event)
     return true;
 }
 
-bool ScrollView::onPointerMoved(const PointerEvent *event)
+bool ScrollView::Instance::onPointerMoved(const PointerEvent *event)
 {
-    if (!isDragged_ && app()->pointerIsDragged(event, dragStart_)) {
+    if (!isDragged_ && Application{}->pointerIsDragged(event, dragStart_)) {
         isDragged_ = true;
         carrierOrigin_ = carrier_->pos();
         lastDragTime_ = 0;
-        app()->pressedControl = nullptr;
+        Application{}->pressedControl = Control{};
     }
 
     if (isDragged_) {
@@ -164,10 +161,10 @@ bool ScrollView::onPointerMoved(const PointerEvent *event)
     return true;
 }
 
-bool ScrollView::onWheelMoved(const WheelEvent *event)
+bool ScrollView::Instance::onWheelMoved(const WheelEvent *event)
 {
-    if (app()->focusControl())
-        app()->focusControl = nullptr;
+    if (Application{}->focusControl())
+        Application{}->focusControl = Control{};
 
     if (timerMode_ == TimerMode::Bouncing || timerMode_ == TimerMode::Traversing)
         carrierStop();
@@ -183,7 +180,7 @@ bool ScrollView::onWheelMoved(const WheelEvent *event)
     return true;
 }
 
-bool ScrollView::onWindowLeft()
+bool ScrollView::Instance::onWindowLeft()
 {
     if (carrierInsideBoundary())
         carrierBounceStart();
@@ -191,7 +188,7 @@ bool ScrollView::onWindowLeft()
     return false;
 }
 
-bool ScrollView::carrierInsideBoundary() const
+bool ScrollView::Instance::carrierInsideBoundary() const
 {
     double x = carrier_->pos()[0];
     double y = carrier_->pos()[1];
@@ -203,7 +200,7 @@ bool ScrollView::carrierInsideBoundary() const
         (h > size()[1] && (y > 0 || y + h < size()[1]));
 }
 
-Point ScrollView::carrierStep(Point p, double b)
+Point ScrollView::Instance::carrierStep(Point p, double b)
 {
     double x = p[0];
     double y = p[1];
@@ -222,10 +219,10 @@ Point ScrollView::carrierStep(Point p, double b)
     }
     else y = 0;
 
-    return Point{ x, y };
+    return Point{x, y};
 }
 
-void ScrollView::carrierFlyStart()
+void ScrollView::Instance::carrierFlyStart()
 {
     timerMode_ = TimerMode::Flying;
     timer_->start();
@@ -236,7 +233,7 @@ void ScrollView::carrierFlyStart()
     carrier_->moving = true;
 }
 
-void ScrollView::carrierBounceStart()
+void ScrollView::Instance::carrierBounceStart()
 {
     timerMode_ = TimerMode::Bouncing;
     timer_->start();
@@ -245,7 +242,7 @@ void ScrollView::carrierBounceStart()
     carrier_->moving = true;
 }
 
-void ScrollView::carrierTraverseStart(Step distance)
+void ScrollView::Instance::carrierTraverseStart(Step distance)
 {
     timerMode_ = TimerMode::Traversing;
     timer_->start();
@@ -254,7 +251,7 @@ void ScrollView::carrierTraverseStart(Step distance)
     carrier_->moving = true;
 }
 
-void ScrollView::carrierStop()
+void ScrollView::Instance::carrierStop()
 {
     carrier_->moving = false;
     carrier_->pos = finalPos_;
@@ -262,7 +259,7 @@ void ScrollView::carrierStop()
     carrierStopped();
 }
 
-void ScrollView::timerStop()
+void ScrollView::Instance::timerStop()
 {
     timer_->stop();
     timerMode_ = TimerMode::Stopped;
@@ -277,7 +274,7 @@ static double fastAbs(Vector<double, 2> v)
     return a;
 }
 
-void ScrollView::carrierFly()
+void ScrollView::Instance::carrierFly()
 {
     double t = System::now();
     double T = t - lastTime_;
@@ -304,7 +301,7 @@ void ScrollView::carrierFly()
         carrier_->pos = pb;
 }
 
-void ScrollView::carrierBounce()
+void ScrollView::Instance::carrierBounce()
 {
     const double t0 = timer_->startTime();
     const double t1 = t0 + maxBounceTime();
@@ -319,7 +316,7 @@ void ScrollView::carrierBounce()
     carrier_->pos = (1 - s) * startPos_ + s * finalPos_;
 }
 
-void ScrollView::carrierTraverse()
+void ScrollView::Instance::carrierTraverse()
 {
     const double t0 = timer_->startTime();
     const double t1 = t0 + traverseTime();
@@ -334,19 +331,19 @@ void ScrollView::carrierTraverse()
     carrier_->pos = (1 - s) * startPos_ + s * finalPos_;
 }
 
-void ScrollView::carrierStopped()
+void ScrollView::Instance::carrierStopped()
 {
     preheat();
 }
 
-void ScrollView::keepFocusControlInView()
+void ScrollView::Instance::keepFocusControlInView()
 {
     if (!carrier_) return;
     if (!focusControl()) return;
     if (!carrier_->isParentOf(focusControl())) return;
-    const InputField *inputField = nullptr;
-    for (const View *view = focusControl()->parent(); view && !inputField; view = view->parent())
-        inputField = Object::cast<const InputField *>(view);
+    InputField inputField = nullptr;
+    for (View view = focusControl()->parent(); view && !inputField; view = view->parent())
+        inputField = view->as<InputField>();
     if (inputField) {
         if (inputField->isFullyVisibleIn(this)) return;
         Point topLeft = inputField->mapToParent(this, Point{});

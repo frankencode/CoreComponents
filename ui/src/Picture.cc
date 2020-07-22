@@ -11,27 +11,27 @@
 namespace cc {
 namespace ui {
 
-Picture::Picture(View *parent, Visual *initialVisual):
-    View{parent},
+Picture::Instance::Instance(Visual *initialVisual):
     visual{initialVisual}
 {
-    inheritPaper();
+    build >>[=]{
+        inheritPaper();
 
-    size->bind([=]{
-        if (!visual()) return Size{};
-        return visual()->size();
-    });
+        size <<[=]{
+            if (!visual()) return Size{};
+            return visual()->size();
+        };
+    };
+
+    paint >>[=]{
+        Painter p{this};
+        visual()->paint(p);
+    };
 }
 
-bool Picture::isPainted() const
+bool Picture::Instance::isPainted() const
 {
     return visual();
-}
-
-void Picture::paint()
-{
-    Painter p{this};
-    visual()->paint(p);
 }
 
 }} // namespace cc::ui

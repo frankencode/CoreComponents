@@ -64,7 +64,7 @@ SdlApplicationInstance::~SdlApplicationInstance()
     SDL_Quit();
 }
 
-Window *SdlApplicationInstance::openWindow(View *view, const String &title, WindowMode mode)
+Window *SdlApplicationInstance::openWindow(const View &view, const String &title, WindowMode mode)
 {
     auto window = SdlWindow::open(view, title, mode);
     windows_->insert(window->id_, window);

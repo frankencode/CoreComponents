@@ -12,6 +12,7 @@
 #include <cc/ui/Font>
 #include <cc/ui/Cursor>
 #include <cc/ui/Timer>
+#include <cc/ui/Control>
 
 namespace cc {
 namespace ui {
@@ -35,11 +36,11 @@ public:
     Property<double> minMouseDragDistance { []{ return dp(6); } };
     Property<double> minTouchDragDistance { []{ return dp(10); } };
 
-    Property< Ref<Control> > hoverControl;
-    Property< Ref<Control> > pressedControl;
-    Property< Ref<Control> > focusControl;
+    Property<Control> hoverControl { Control{nullptr} };
+    Property<Control> pressedControl { Control{nullptr} };
+    Property<Control> focusControl { Control{nullptr} };
 
-    virtual Window *openWindow(View *view, const String &title = "", WindowMode mode = WindowMode::Default) = 0;
+    virtual Window *openWindow(const View &view, const String &title = "", WindowMode mode = WindowMode::Default) = 0;
 
     virtual Ref<Cursor> createCursor(CursorShape shape) = 0;
 
@@ -60,7 +61,7 @@ protected:
 
     static bool fin_;
 
-    Property< Ref<Control> > cursorControl;
+    Property<Control> cursorControl { Control{nullptr} };
     Property< Ref<const Cursor> > cursor;
 
     Property<Rect> textInputArea;
@@ -89,9 +90,9 @@ protected:
 
     FontSmoothing fontSmoothing_ { FontSmoothing::Default };
 
-    Map<TouchFingerId, Ref<Control> > touchTargets_; // \todo rename to "touchedControls_"
+    Map<TouchFingerId, Control> touchTargets_; // \todo rename to "touchedControls_" or "contacts_"
 
-    const Control *focusControlSaved_ { nullptr };
+    Control focusControlSaved_ { Control{nullptr} };
 };
 
 }} // namespace cc::ui

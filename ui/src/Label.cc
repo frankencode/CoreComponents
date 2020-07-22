@@ -7,39 +7,41 @@
  */
 
 #include <cc/ui/Label>
+#include <cc/ui/Application>
 #include <cc/ui/TextRun>
 
 namespace cc {
 namespace ui {
 
-Label::Label(View *parent, const String &text_, const Font &font_):
-    View{parent},
-    text{text_}
+Label::Instance::Instance(const String &initialText, const Font &initialFont):
+    text{initialText}
 {
-    if (font_)
-        font = font_;
-    else
-        font->bind([=]{ return app()->defaultFont(); });
+    build >>[=]{
+        if (initialFont)
+            font = initialFont;
+        else
+            font <<[=]{ return Application{}->defaultFont(); };
 
-    if (font_->paper())
-        paper = font_->paper();
-    else
-        inheritPaper();
+        if (initialFont->paper())
+            paper = initialFont->paper();
+        else
+            inheritPaper();
 
-    textRun->bind([=]{ return TextRun::createHtml(text(), font()); });
+        textRun <<[=]{ return TextRun::createHtml(text(), font()); };
 
-    size->bind([=]{ return preferredSize(); });
+        size <<[=]{ return preferredSize(); };
 
-    if (font_->ink())
-        ink = font_->ink();
-    else
-        ink->bind([=]{ return style()->theme()->primaryTextColor(); });
+        if (initialFont->ink())
+            ink = initialFont->ink();
+        else
+            ink <<[=]{ return style()->theme()->primaryTextColor(); };
+    };
 }
 
-Label::~Label()
+Label::Instance::~Instance()
 {}
 
-Point Label::textPos(double relativeHeight) const
+Point Label::Instance::textPos(double relativeHeight) const
 {
     return
         center() -
@@ -53,12 +55,12 @@ Point Label::textPos(double relativeHeight) const
         };
 }
 
-Size Label::preferredSize(const String &text, const Font &font, Size margin)
+Size Label::Instance::preferredSize(const String &text, const Font &font, Size margin)
 {
     return preferredSize(TextRun::createHtml(text, font), margin);
 }
 
-Size Label::preferredSize(const TextRun *textRun, Size margin)
+Size Label::Instance::preferredSize(const TextRun *textRun, Size margin)
 {
     Size size =
         2 * margin +
@@ -69,17 +71,17 @@ Size Label::preferredSize(const TextRun *textRun, Size margin)
     return Size{ std::ceil(size[0]), std::ceil(size[1]) };
 }
 
-Size Label::preferredSize() const
+Size Label::Instance::preferredSize() const
 {
     return preferredSize(textRun(), margin());
 }
 
-Size Label::minSize() const
+Size Label::Instance::minSize() const
 {
     return preferredSize();
 }
 
-void Label::paint()
+void Label::Instance::onPaint()
 {
     Painter p{this};
     if (ink()) p->setSource(ink());

@@ -15,57 +15,57 @@
 namespace cc {
 namespace ui {
 
-TextLine::TextLine(View *parent, TextEdit *textEdit, TextItem *textItem):
-    Control{parent},
+TextLine::Instance::Instance(TextEdit::Instance *textEdit, TextItem *textItem):
     textEdit_{textEdit},
     textItem_{textItem}
 {
-    inheritPaper();
+    build >>[=]{
+        inheritPaper();
 
-    lineNumberRun->bind([=]{
-        return TextRun::create(str(lineNumber()), textEdit_->lineNumberFont());
-    });
-
-    textRun->bind([=]{
-        return TextRun::create(textItem->text(), textEdit_->font());
-    });
-
-    wrappedTextRun->bind([=]{
-        return textRun()->wrap(textEdit_->textWidthSansMargin());
-    });
-
-    size->bind([=]{
-        const double h1 = lineNumberRun()->size()[1] + 2 * textEdit_->lineNumberMargin()[1];
-        const double h2 = wrappedTextRun()->size()[1] + 2 * textEdit_->textMargin()[1];
-        return Size {
-            textEdit_->lineNumberWidth() +
-            wrappedTextRun()->size()[0] + 2 * textEdit_->textMargin()[0],
-            h1 < h2 ? h2 : h1
+        lineNumberRun <<[=]{
+            return TextRun::create(str(lineNumber()), textEdit_->lineNumberFont());
         };
-    });
 
-    add<TextLineHandle>(this);
+        textRun <<[=]{
+            return TextRun::create(textItem->text(), textEdit_->font());
+        };
+
+        wrappedTextRun <<[=]{
+            return textRun()->wrap(textEdit_->textWidthSansMargin());
+        };
+
+        size <<[=]{
+            const double h1 = lineNumberRun()->size()[1] + 2 * textEdit_->lineNumberMargin()[1];
+            const double h2 = wrappedTextRun()->size()[1] + 2 * textEdit_->textMargin()[1];
+            return Size {
+                textEdit_->lineNumberWidth() +
+                wrappedTextRun()->size()[0] + 2 * textEdit_->textMargin()[0],
+                h1 < h2 ? h2 : h1
+            };
+        };
+
+        (*this) << TextLineHandle{this};
+    };
+
+    paint >>[=]{
+        Painter p{this};
+        p->setSource(textEdit_->ink());
+        p->showTextRun(textEdit_->textPos(), wrappedTextRun());
+    };
 }
 
-bool TextLine::withinBounds(Point l) const
+bool TextLine::Instance::withinBounds(Point l) const
 {
     return
         0 <= l[1] && l[1] < size()[1] &&
         0 <= l[0] && l[0] < parent()->size()[0];
 }
 
-bool TextLine::onPointerPressed(const PointerEvent *event)
+bool TextLine::Instance::onPointerPressed(const PointerEvent *event)
 {
     auto cursor = wrappedTextRun()->getNearestTextCursorInLine(event->pos() - textEdit_->textPos());
     // \todo ...
     return true;
-}
-
-void TextLine::paint()
-{
-    Painter p(this);
-    p->setSource(textEdit_->ink());
-    p->showTextRun(textEdit_->textPos(), wrappedTextRun());
 }
 
 }} // namespace cc::ui

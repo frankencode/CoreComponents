@@ -35,6 +35,6 @@
 namespace cc {
 namespace ui {
 
-void shadowBlurInsitu(Image *image, int radius, Color shadowColor);
+void shadowBlurInsitu(Image::Instance *image, int radius, Color shadowColor);
 
 }} // namespace cc::ui

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <functional>
-#include <cc/Object>
+#include <cc/Queue>
 
 namespace cc {
 
@@ -21,14 +21,8 @@ public:
     class Instance {
     public:
         template<class F>
-        void connect(const F &f) {
-            first_ = Node::create(f, first_);
-        }
-
-        void emit() const {
-            for (Node *node = first_; node; node = node->next_)
-                node->f_();
-        }
+        void connect(const F &f) { queue_ << f; }
+        void emit() const { for (auto &f: queue_) f(); }
 
     private:
         friend class Signal;
@@ -36,36 +30,23 @@ public:
 
         Instance() = default;
 
-        bool hasListeners() const { return first_; }
-        void disband() { first_ = 0; }
+        bool hasListeners() const { return queue_->count() > 0; }
+        void disband() { queue_->deplete(); }
 
-        class Node: public Object {
-        public:
-            template<class F>
-            static Ref<Node> create(const F &f, Node *next) { return new Node(f, next); }
-
-            std::function<void()> f_;
-            Ref<Node> next_;
-
-        private:
-            template<class F>
-            Node(const F &f, Node *next): f_{f}, next_{next} {}
-        };
-
-        Ref<Node> first_;
+        Queue<std::function<void()>> queue_;
     };
 
     Signal() = default;
 
+    template<class F>
+    Signal &operator>>(const F &f) { (*this)->connect(f); return *this; }
+
+    void operator()() const { (*this)->emit(); }
+
     Instance *operator->() { return &instance_; }
     const Instance *operator->() const { return &instance_; }
 
-    void operator()() const { instance_.emit(); }
-
 private:
-    Signal(const Signal&);
-    Signal& operator=(const Signal&);
-
     Instance instance_;
 };
 

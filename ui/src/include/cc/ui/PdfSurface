@@ -18,18 +18,27 @@ namespace ui {
 class PdfSurface: public Surface
 {
 public:
-    static Ref<PdfSurface> open(const Stream &stream, Size sizePt);
+    class Instance: public Surface::Instance
+    {
+    private:
+        friend class PdfSurface;
 
-private:
-    static cairo_status_t cairoWrite(void *closure, const unsigned char *data, unsigned int length);
+        static cairo_status_t cairoWrite(void *closure, const unsigned char *data, unsigned int length);
 
-    PdfSurface(const Stream &stream, Size sizePt);
-    ~PdfSurface();
+        Instance(const Stream &stream, Size sizePt);
+        ~Instance();
 
-    cairo_surface_t *cairoSurface() const override;
+        cairo_surface_t *cairoSurface() const override;
 
-    Stream stream_;
-    cairo_surface_t *cairoSurface_;
+        Stream stream_;
+        cairo_surface_t *cairoSurface_;
+    };
+
+    PdfSurface() = default;
+
+    PdfSurface(const Stream &stream, Size sizePt):
+        Surface{new Instance{stream, sizePt}}
+    {}
 };
 
 }} // namespace cc::ui

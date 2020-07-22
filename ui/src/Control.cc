@@ -7,42 +7,44 @@
  */
 
 #include <cc/ui/Control>
+#include <cc/ui/Application>
 
 namespace cc {
 namespace ui {
 
-Control::Control(View *parent):
-    View{parent}
+Control::Instance::Instance()
 {
-    hover->bind([=]{ return isParentOf(app()->hoverControl()); });
-    pressed->bind([=]{ return isParentOf(app()->pressedControl()); });
-    focus->bind([=]{ return isParentOf(app()->focusControl()); });
+    build >>[=]{
+        hover <<[=]{ return isParentOf(Application{}->hoverControl()); };
+        pressed <<[=]{ return isParentOf(Application{}->pressedControl()); };
+        focus <<[=]{ return isParentOf(Application{}->focusControl()); };
+    };
 }
 
-bool Control::onPointerClicked(const PointerEvent *event)
-{
-    return false;
-}
-
-bool Control::onMouseClicked(const MouseEvent *event)
+bool Control::Instance::onPointerClicked(const PointerEvent *event)
 {
     return false;
 }
 
-bool Control::onFingerClicked(const FingerEvent *event)
+bool Control::Instance::onMouseClicked(const MouseEvent *event)
 {
     return false;
 }
 
-Rect Control::textInputArea() const
+bool Control::Instance::onFingerClicked(const FingerEvent *event)
 {
-    return Rect{ Point{}, size() };
+    return false;
 }
 
-void Control::onTextEdited(const String &text, int start, int length)
+Rect Control::Instance::textInputArea() const
+{
+    return Rect{Point{}, size()};
+}
+
+void Control::Instance::onTextEdited(const String &text, int start, int length)
 {}
 
-void Control::onTextInput(const String &text)
+void Control::Instance::onTextInput(const String &text)
 {}
 
 }} // namespace cc::ui

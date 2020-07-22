@@ -20,41 +20,52 @@ class ItemView;
 
 class ItemCarrier: public View
 {
-    friend class Object;
-    friend class ItemView;
-
+public:
     class LayoutItem: public Object, public IndexTracking
     {
         friend class Object;
 
     public:
-        Item *item() const { return item_; }
-        View *delegate() const { return delegate_; }
-
-    private:
-        LayoutItem(Item *item, View *delegate):
+        LayoutItem(Item *item, const View &delegate):
             item_{item},
             delegate_{delegate}
         {}
 
         Item *item_;
-        View *delegate_;
+        View delegate_;
     };
 
-    Property<double> layoutExtent;
-    Property<double> cacheMargin;
+    class Instance: public View::Instance
+    {
+    private:
+        friend class ItemCarrier;
+        friend class ItemView;
 
-    ItemCarrier(View *parent, Item *rootItem);
+        Property<double> layoutExtent;
+        Property<double> cacheMargin;
 
-    int generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex = 0);
-    void updateView(bool preheat);
+        Instance(Item *rootItem);
 
-    Item *rootItem_;
+        int generateLayout(Item *item, int itemIndex0, int itemIndex1, int layoutIndex = 0);
+        void updateView(bool preheat);
 
-    typedef Pile< Ref<LayoutItem>, double > Layout;
-    Ref<Layout> layout_;
+        Item *rootItem_;
 
-    View *highlight_;
+        typedef Pile< Ref<LayoutItem>, double > ItemLayout;
+        Ref<ItemLayout> layout_;
+
+        View highlight_;
+    };
+
+    ItemCarrier(Item *rootItem):
+        View{new Instance{rootItem}}
+    {}
+
+    ItemCarrier(Instance *instance):
+        View{instance}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

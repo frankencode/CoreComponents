@@ -7,6 +7,7 @@
  */
 
 #include <cc/ui/InputField>
+#include <cc/ui/Application>
 #include <cc/ui/ColumnLayout>
 #include <cc/ui/InputLine>
 #include <cc/ui/Label>
@@ -16,196 +17,170 @@
 namespace cc {
 namespace ui {
 
-InputField::InputField(View *parent, const String &labelText_):
-    Control{parent},
+InputField::Instance::Instance(const String &labelText_):
     labelText{labelText_}
 {
-    paper->bind([=]{
+    paper <<[=]{
         return theme()->inputFieldFillColor();
             // FIXME: should be a function on background Color
             // FIXME: make depend on input field type
-    });
-}
+    };
 
-void InputField::init()
-{
-    InputControl *input = addInputControl();
-    input->pos = Point { dp(12), dp(24) };
-    input->accepted->connect([=]{ accepted(); });
-    input->rejected->connect([=]{ rejected(); });
-    input->gotoNext->connect([=]{ gotoNext(); });
-    input->gotoPrevious->connect([=]{ gotoPrevious(); });
-    input_ = input;
-    inputText->bind([=]{ return input_->text(); });
+    build >>[=]{
+        InputControl input = createInputControl();
+        input->pos = Point { dp(12), dp(24) };
+        input->accepted >>[=]{ accepted(); };
+        input->rejected >>[=]{ rejected(); };
+        input->gotoNext >>[=]{ gotoNext(); };
+        input->gotoPrevious >>[=]{ gotoPrevious(); };
+        (*this) << input;
+        input_ = input;
+        inputText <<[=]{ return input_->text(); };
 
-    size->bind([=]{ return preferredSize(); });
+        size <<[=]{ return preferredSize(); };
 
-    Label *dummy = add<Label>();
-    dummy->text->bind([=]{ return dummyText(); });
-    dummy->ink->bind([=]{ return theme()->secondaryTextColor(); });
-    dummy->visible->bind([=]{ return dummy->text() && !input->text(); });
-    dummy->pos->bind([=]{
-        return Point {
-            input->left(),
-            input->size()[1]/2 - dummy->size()[1] / 2
+        Label dummy;
+        dummy->text <<[=]{ return dummyText(); };
+        dummy->ink <<[=]{ return theme()->secondaryTextColor(); };
+        dummy->visible <<[=]{ return dummy->text() && !input->text(); };
+        dummy->pos <<[=]{
+            return Point {
+                input->left(),
+                input->size()[1]/2 - dummy->size()[1] / 2
+            };
         };
-    });
 
-    Label *label = add<Label>();
-    label->text->bind([=]{ return labelText(); });
-    label->ink->bind([=]{
-        return (pressed() || focus()) ?
-            style()->theme()->focusTextColor() :
-            style()->theme()->secondaryTextColor();
-    });
-    {
-        Label *smallLabel = add<Label>();
-        smallLabel->text->bind([=]{ return labelText(); });
-        smallLabel->font->bind([=]{ return app()->smallFont(); });
-        smallLabel->pos->bind([=]{ return Point { dp(12), dp(12) }; });
-        smallLabel->visible = false;
+        (*this) << dummy;
 
-        Label *bigLabel = add<Label>();
-        bigLabel->text->bind([=]{ return labelText(); });
-        bigLabel->font->bind([=]{ return app()->defaultFont(); });
-        bigLabel->pos->bind([=]{ return Point { dp(12), size()[1] / 2 - bigLabel->size()[1] / 2 }; });
-        bigLabel->visible = false;
+        Label label;
+        label->text <<[=]{ return labelText(); };
+        label->ink <<[=]{
+            return (pressed() || focus()) ?
+                style()->theme()->focusTextColor() :
+                style()->theme()->secondaryTextColor();
+        };
+        {
+            Label smallLabel;
+            smallLabel->text <<[=]{ return labelText(); };
+            smallLabel->font <<[=]{ return Application{}->smallFont(); };
+            smallLabel->pos <<[=]{ return Point { dp(12), dp(12) }; };
+            smallLabel->visible = false;
+            (*this) << smallLabel;
 
-        label->font->bind([=]{
-            return (focus() || input->text() || dummy->text()) ?
-                smallLabel->font() :
-                bigLabel->font();
-        });
-        label->pos->bind([=]{
-            return (focus() || input->text() || dummy->text()) ?
-                smallLabel->pos() :
-                bigLabel->pos();
-        });
+            Label bigLabel;
+            bigLabel->text <<[=]{ return labelText(); };
+            bigLabel->font <<[=]{ return Application{}->defaultFont(); };
+            bigLabel->pos <<[=]{ return Point { dp(12), size()[1] / 2 - bigLabel->size()[1] / 2 }; };
+            bigLabel->visible = false;
+            (*this) << bigLabel;
 
-        auto easing = easing::Bezier(0.5, 0.0, 0.5, 1.0);
-        easeOn(label->font, 0.1, easing);
-        easeOn(label->pos, 0.1, easing);
-    }
+            label->font <<[=]{
+                return (focus() || input->text() || dummy->text()) ?
+                    smallLabel->font() :
+                    bigLabel->font();
+            };
+            label->pos <<[=]{
+                return (focus() || input->text() || dummy->text()) ?
+                    smallLabel->pos() :
+                    bigLabel->pos();
+            };
 
-    InputLine *inputLine = add<InputLine>(dp(2));
-    inputLine->thickness->bind([=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); });
-    inputLine->ink->bind([=]{
-        if (pressed()) return style()->theme()->pressedInputLineColor();
-        if (focus()) return style()->theme()->focusInputLineColor();
-        if (hover()) return style()->theme()->hoverInputLineColor();
-        return style()->theme()->inputLineColor();
-    });
+            auto easing = easing::Bezier(0.5, 0.0, 0.5, 1.0);
+            easeOn(label->font, 0.1, easing);
+            easeOn(label->pos, 0.1, easing);
+        }
+        (*this) << label;
 
-    inputLine->pos->bind([=]{
-        return Point { 0, std::ceil(size()[1]) - inputLine->size()[1] };
-    });
+        InputLine inputLine{dp(2)};
+        inputLine->thickness <<[=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); };
+        inputLine->ink <<[=]{
+            if (pressed()) return style()->theme()->pressedInputLineColor();
+            if (focus()) return style()->theme()->focusInputLineColor();
+            if (hover()) return style()->theme()->hoverInputLineColor();
+            return style()->theme()->inputLineColor();
+        };
+        inputLine->pos <<[=]{
+            return Point { 0, std::ceil(size()[1]) - inputLine->size()[1] };
+        };
 
-    // inputLine->anchorBottomLeftTo(bottomLeft());
+        (*this) << inputLine;
 
-    delegate = input;
+        delegate = input;
+    };
 
-    #if 0
-    View *messageArea = add<View>();
-    messageArea->size->bind([=]{ return Size { size()[0], sp(12) }; });
-    messageArea->padding = dp(8);
+    paint >>[=]{
+        const double w = size()[0];
+        const double h = size()[1];
+        const double r = dp(6);
 
-    Label *help = messageArea->add<Label>();
-    help->font->bind([=]{ return app()->smallFont(); });
-    help->ink->bind([=]{ return style()->theme()->secondaryTextColor(); });
-    help->text->bind([=]{ return helpText(); });
-
-    Label *error = messageArea->add<Label>();
-    error->font->bind([=]{ return app()->smallFont(); });
-    error->ink->bind([=]{ return style()->theme()->alertColor(); });
-    error->text->bind([=]{ return "Error: " + errorText(); });
-
-    Label *status = messageArea->add<Label>();
-    status->font->bind([=]{ return app()->smallFont(); });
-    status->text->bind([=]{ return statusText(); });
-    status->pos->bind([=]{ return Point { messageArea->size()[0] - status->size()[0], 0 }; });
-
-    help->visible->bind([=]{ return helpText() != "" && !error->visible() && input->visible(); } );
-    status->visible->bind([=]{ return statusText() != "" && !error->visible() && focus(); });
-    error->visible->bind([=]{ return errorText() != "" && focus(); });
-    messageArea->visible->bind([=]{ return help->visible() || error->visible() || status->visible(); });
-    #endif
-
-    Control::init();
+        Painter p{this};
+        p->moveTo(Point{0, h});
+        p->lineTo(Point{0, r});
+        p->arc(Point{r, r}, r, degree(180), degree(270));
+        p->lineTo(Point{w - r, 0});
+        p->arc(Point{w - r, r}, r, degree(270), degree(360));
+        p->lineTo(Point{w, h});
+        p->setSource(paper());
+        p->fill();
+    };
 }
 
-Size InputField::preferredSize() const
+Size InputField::Instance::preferredSize() const
 {
-    return input_->preferredSize() + Size { std::ceil(24), std::ceil(dp(32)) };
+    return input_->preferredSize() + Size { std::ceil(dp(24)), std::ceil(dp(32)) };
 }
 
-Size InputField::minSize() const
+Size InputField::Instance::minSize() const
 {
-    return input_->minSize() + Size { std::ceil(24), std::ceil(dp(32)) };
+    return input_->minSize() + Size { std::ceil(dp(24)), std::ceil(dp(32)) };
 }
 
-Size InputField::maxSize() const
+Size InputField::Instance::maxSize() const
 {
-    return input_->maxSize() + Size { std::ceil(24), std::ceil(dp(32)) };
+    return input_->maxSize() + Size { std::ceil(dp(24)), std::ceil(dp(32)) };
 }
 
-void InputField::clear()
+void InputField::Instance::clear()
 {
-    View::clear(parent()->paper());
+    View::Instance::clear(parent()->paper());
 }
 
-void InputField::paint()
+void InputField::Instance::gotoNext()
 {
-    const double w = size()[0];
-    const double h = size()[1];
-    const double r = dp(6);
-
-    Painter p{this};
-    p->moveTo(Point{0, h});
-    p->lineTo(Point{0, r});
-    p->arc(Point{r, r}, r, degree(180), degree(270));
-    p->lineTo(Point{w - r, 0});
-    p->arc(Point{w - r, r}, r, degree(270), degree(360));
-    p->lineTo(Point{w, h});
-    p->setSource(paper());
-    p->fill();
-}
-
-void InputField::gotoNext()
-{
-    View *p = parent();
+    View p = parent();
     if (!p) return;
 
     bool findMyself = true;
     for (int i = 0; i < p->childCount(); ++i) {
-        InputField *inputField = Object::cast<InputField *>(p->childAt(i));
+        InputField inputField = p->childAt(i)->as<InputField>();
         if (inputField) {
             if (findMyself) {
                 if (inputField == this)
                     findMyself = false;
             }
             else {
-                app()->focusControl = inputField->input_;
+                Application{}->focusControl = inputField->input_;
                 break;
             }
         }
     }
 }
 
-void InputField::gotoPrevious()
+void InputField::Instance::gotoPrevious()
 {
-    View *p = parent();
+    View p = parent();
     if (!p) return;
 
     bool findMyself = true;
     for (int i = p->childCount() - 1; i >= 0; --i) {
-        InputField *inputField = Object::cast<InputField *>(p->childAt(i));
+        InputField inputField = p->childAt(i)->as<InputField>();
         if (inputField) {
             if (findMyself) {
                 if (inputField == this)
                     findMyself = false;
             }
             else {
-                app()->focusControl = inputField->input_;
+                Application{}->focusControl = inputField->input_;
                 break;
             }
         }

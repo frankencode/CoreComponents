@@ -8,23 +8,23 @@
 
 #include <cc/ui/PasswordInput>
 #include <cc/ui/PasswordEditor>
+#include <cc/ui/Application>
 
 namespace cc {
 namespace ui {
 
-PasswordInput::PasswordInput(View *parent, const String &bullet):
-    TextInput{parent},
+PasswordInput::Instance::Instance(const String &bullet):
     passwordEditor_{Object::create<PasswordEditor>(bullet)}
 {
-    font->bind([=]{ return app()->defaultFixedFont(); });
+    font <<[=]{ return Application{}->defaultFixedFont(); };
 }
 
-String PasswordInput::password() const
+String PasswordInput::Instance::password() const
 {
     return passwordEditor_->password();
 }
 
-Ref<TextEditor> PasswordInput::createEditor()
+Ref<TextEditor> PasswordInput::Instance::createEditor(const String &)
 {
     return passwordEditor_;
 }

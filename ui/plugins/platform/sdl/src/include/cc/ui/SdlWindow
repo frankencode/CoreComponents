@@ -22,9 +22,9 @@ class SdlWindow: public Window
 private:
     friend class SdlApplicationInstance;
 
-    static Ref<SdlWindow> open(View *view, const String &title = String{}, WindowMode mode = WindowMode::Default);
+    static Ref<SdlWindow> open(const View &view, const String &title = String{}, WindowMode mode = WindowMode::Default);
 
-    SdlWindow(View *view, const String &title);
+    SdlWindow(const View &view, const String &title);
     ~SdlWindow();
 
     SdlWindow *open(WindowMode mode = WindowMode::Default);
@@ -36,11 +36,11 @@ private:
 
     void renderFrame(Frame *frame) override;
 
-    static void updateTexture(SDL_Renderer *sdlRenderer, View *view);
-    void renderCascade(SDL_Renderer *sdlRenderer, View *view);
-    void renderTexture(SDL_Renderer *sdlRenderer, View *view);
+    static void updateTexture(SDL_Renderer *sdlRenderer, View::Instance *view);
+    void renderCascade(SDL_Renderer *sdlRenderer, View::Instance *view);
+    void renderTexture(SDL_Renderer *sdlRenderer, View::Instance *view);
 
-    static SdlContext *sdlContext(View *view);
+    static SdlContext *sdlContext(View::Instance *view);
 
     uint32_t id_;
     SDL_Window *sdlWindow_;

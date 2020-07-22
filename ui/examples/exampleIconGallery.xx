@@ -38,10 +38,10 @@ class IconView: public ItemView
         ItemView{parent, model}
     {}
 
-    View *addDelegate(View *parent, Item *item) override
+    View addDelegate(const View &parent, Item *item) override
     {
         IconItem *iconItem = Object::cast<IconItem *>(item);
-        return parent->add<SingleLineItemDelegate>(str(iconItem->icon()), style()->getIconVisual(iconItem->icon()));
+        return SingleLineItemDelegate{parent, str(iconItem->icon()), style()->getIconVisual(iconItem->icon())};
     }
 };
 

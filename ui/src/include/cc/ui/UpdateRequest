@@ -8,39 +8,28 @@
 
 #pragma once
 
-#include <cc/Object>
+#include <cc/ui/View>
 
 namespace cc {
 namespace ui {
 
-enum class UpdateReason {
-    Moved,
-    Changed,
-    Resized,
-    Exposed,
-    // Shown,
-    Hidden
-};
-
-class View;
-
 class UpdateRequest: public Object
 {
 public:
-    static Ref<UpdateRequest> create(UpdateReason reason, View *view) {
+    static Ref<UpdateRequest> create(UpdateReason reason, const View &view) {
         return new UpdateRequest{reason, view};
     }
 
     UpdateReason reason() const { return reason_; }
-    View *view() const { return view_; }
+    View view() const { return view_; }
 
     bool equals(const UpdateRequest *other) const;
 
 private:
-    UpdateRequest(UpdateReason reason, View *view);
+    UpdateRequest(UpdateReason reason, const View &view);
 
     UpdateReason reason_;
-    Ref<View> view_;
+    View view_;
 };
 
 }} // namespace cc::ui

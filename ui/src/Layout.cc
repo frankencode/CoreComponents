@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-Layout::Instance::Instance(View *view):
+Layout::Instance::Instance(View &view):
     view_{view}
 {
     view->layout_ = this;

@@ -15,23 +15,31 @@ namespace ui {
 
 class SlideView: public View
 {
-    friend class Object;
-
 public:
-    static Ref<SlideView> create(View *parent);
+    class Instance: public View::Instance
+    {
+    public:
+        Property<int> slideCount;
+        Property<int> currentIndex { 0 };
 
-    Property<int> slideCount;
-    Property<int> currentIndex { 0 };
+        View currentSlide() const;
+        View slideCarrier() const;
 
-    View *currentSlide() const;
-    View *slideCarrier() const;
+    protected:
+        friend class SlideView;
 
-protected:
-    SlideView(View *parent = nullptr);
+        Instance();
 
-    void insertChild(View *child) override;
+        void insertChild(View child) override;
 
-    Ref<View> slideCarrier_;
+        View slideCarrier_;
+    };
+
+    SlideView(double width, double height):
+        View{new Instance}
+    {
+        (*this)->size = Size{width, height};
+    }
 };
 
 }} // namespace cc::ui

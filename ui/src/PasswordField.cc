@@ -12,19 +12,21 @@
 namespace cc {
 namespace ui {
 
-PasswordField::PasswordField(View *parent, const String &labelText, const String &bullet):
-    InputField{parent, labelText},
+PasswordField::Instance::Instance(const String &labelText, const String &bullet):
+    InputField::Instance{labelText},
     bullet_{bullet}
 {}
 
-String PasswordField::password() const
+String PasswordField::Instance::password() const
 {
-    return passwordInput_->password();
+    return getPassword_();
 }
 
-InputControl *PasswordField::addInputControl()
+InputControl PasswordField::Instance::createInputControl()
 {
-    return passwordInput_ = add<PasswordInput>(bullet_);
+    PasswordInput input{bullet_};
+    getPassword_ = [input]{ return input->password(); };
+    return input;
 }
 
 }} // namespace cc::ui

@@ -18,35 +18,49 @@ class TextRun;
 
 class Label: public View
 {
-    friend class Object;
-
 public:
-    Property<String> text;
-    Property<Font> font;
-    Property<Color> ink;
-    Property<Size> margin;
+    class Instance: public View::Instance
+    {
+    public:
+        Property<String> text;
+        Property<Font> font;
+        Property<Color> ink;
+        Property<Size> margin;
 
-    Point textPos(double relativeHeight = 0) const;
-    Point textCenterLeft() const { return textPos(0.5); }
+        Point textPos(double relativeHeight = 0) const;
+        Point textCenterLeft() const { return textPos(0.5); }
 
-    void anchorBaselineStartTo(const AnchorPoint &l)  { pos->bind([=]{ return l() - textPos(); }); }
-    void anchorTextCenterLeftTo(const AnchorPoint &l) { pos->bind([=]{ return l() - textCenterLeft(); }); }
+        void anchorBaselineStartTo(const AnchorPoint &l)  { pos->bind([=]{ return l() - textPos(); }); }
+        void anchorTextCenterLeftTo(const AnchorPoint &l) { pos->bind([=]{ return l() - textCenterLeft(); }); }
 
-    static Size preferredSize(const String &text, const Font &font = Font{}, Size margin = Size{});
-    static Size preferredSize(const TextRun *textRun, Size margin = Size{});
-    Size preferredSize() const override;
-    Size minSize() const override;
+        static Size preferredSize(const String &text, const Font &font = Font{}, Size margin = Size{});
+        static Size preferredSize(const TextRun *textRun, Size margin = Size{});
+        Size preferredSize() const override;
+        Size minSize() const override;
 
-protected:
-    Label(View *parent, const String &text = String{}, const Font &font = Font{});
-    ~Label();
+    protected:
+        friend class Label;
 
-private:
-    void paint() override;
+        Instance(const String &initialText = String{}, const Font &initialFont = Font{});
+        ~Instance();
 
-    static Size effectiveMargin(Size margin);
+    private:
+        void onPaint() override;
 
-    Property< Ref<const TextRun> > textRun;
+        static Size effectiveMargin(Size margin);
+
+        Property< Ref<const TextRun> > textRun;
+    };
+
+    Label(const String &text = String{}, const Font &font = Font{}):
+        View{new Instance{text, font}}
+    {}
+
+    Label(Instance *instance):
+        View{instance}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

@@ -8,38 +8,49 @@
 
 #pragma once
 
-#include <cc/ui/Control>
+#include <cc/ui/TextEdit>
 
 namespace cc {
 namespace ui {
 
 class TextItem;
-class TextEdit;
 class TextRun;
 class TextLineHandle;
 
 class TextLine: public Control
 {
-    friend class Object;
-
 public:
-    Property<int> lineNumber { -1 };
+    class Instance: public Control::Instance
+    {
+    public:
+        Property<int> lineNumber { -1 };
 
-private:
-    friend class TextLineHandle;
+    private:
+        friend class TextLine;
+        friend class TextLineHandle;
 
-    Property< Ref<TextRun> > lineNumberRun;
-    Property< Ref<TextRun> > textRun;
-    Property< Ref<TextRun> > wrappedTextRun;
+        Property< Ref<TextRun> > lineNumberRun;
+        Property< Ref<TextRun> > textRun;
+        Property< Ref<TextRun> > wrappedTextRun;
 
-    TextLine(View *parent, TextEdit *textEdit, TextItem *textItem);
+        Instance(TextEdit::Instance *textEdit, TextItem *textItem);
 
-    bool withinBounds(Point l) const override;
-    bool onPointerPressed(const PointerEvent *event) override;
-    void paint() override;
+        bool withinBounds(Point l) const override;
+        bool onPointerPressed(const PointerEvent *event) override;
 
-    TextEdit *textEdit_;
-    TextItem *textItem_;
+        TextEdit::Instance *textEdit_;
+        TextItem *textItem_;
+    };
+
+    TextLine(TextEdit::Instance *textEdit, TextItem *textItem):
+        Control{new Instance{textEdit, textItem}}
+    {}
+
+    TextLine(Instance *instance):
+        Control{instance}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

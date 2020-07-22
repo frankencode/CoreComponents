@@ -16,16 +16,33 @@ namespace ui {
 
 class Picture: public View
 {
-    friend class Object;
-
 public:
-    Property< Ref<Visual> > visual;
+    class Instance: public View::Instance
+    {
+    public:
+        Property< Ref<Visual> > visual;
 
-    bool isPainted() const;
+        bool isPainted() const override;
 
-private:
-    Picture(View *parent, Visual *visual = nullptr);
-    void paint() override;
+    private:
+        friend class Picture;
+
+        Instance(Visual *initialVisual = nullptr);
+    };
+
+    Picture():
+        View{new Instance}
+    {}
+
+    Picture(Visual *visual):
+        View{new Instance{visual}}
+    {}
+
+    Picture(Instance *instance):
+        View{instance}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

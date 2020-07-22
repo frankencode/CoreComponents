@@ -20,7 +20,7 @@ class ImagePlugin: public Object
 public:
     String name() const { return name_; }
 
-    virtual Ref<Image> load(const String &path, unsigned index = 0) const = 0;
+    virtual Image load(const String &path, unsigned index = 0) const = 0;
 
 protected:
     ImagePlugin(const String &name);

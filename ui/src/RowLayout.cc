@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-RowLayout::Instance::Instance(View *view):
+RowLayout::Instance::Instance(View &view):
     Layout::Instance{view}
 {
     align->connect([=]{ updateLayout(); });
@@ -22,7 +22,7 @@ RowLayout::Instance::Instance(View *view):
     updateLayout();
 }
 
-void RowLayout::Instance::childReady(View *child)
+void RowLayout::Instance::childReady(View child)
 {
     if (child->visible()) {
         if (align() == RowAlign::Top) {
@@ -64,12 +64,12 @@ void RowLayout::Instance::childReady(View *child)
     child->padding->connect([=]{ updateLayout(); });
 }
 
-void RowLayout::Instance::childDone(View *child)
+void RowLayout::Instance::childDone(View child)
 {
     updateLayout();
 }
 
-void RowLayout::Instance::updateChildPos(View *child, Size innerSize, double x)
+void RowLayout::Instance::updateChildPos(View child, Size innerSize, double x)
 {
     if (align() == RowAlign::Top)
         child->pos = Point{ x, 0 } + margin();
@@ -85,7 +85,7 @@ void RowLayout::Instance::updateLayout()
 
     for (int i = 0, n = view()->childCount(); i < n; ++i)
     {
-        View *child = view()->childAt(i);
+        View child = view()->childAt(i);
         if (!child->visible()) continue;
         if (child->size()[1] > innerSize[1]) innerSize[1] = child->size()[1];
         innerSize[0] += child->padding() + child->size()[0];
@@ -98,7 +98,7 @@ void RowLayout::Instance::updateLayout()
 
     for (int i = 0, n = view()->childCount(); i < n; ++i)
     {
-        View *child = view()->childAt(i);
+        View child = view()->childAt(i);
         if (!child->visible()) continue;
 
         x += child->padding();

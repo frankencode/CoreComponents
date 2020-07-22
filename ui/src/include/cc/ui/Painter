@@ -16,7 +16,7 @@ typedef struct _cairo cairo_t;
 namespace cc {
 namespace ui {
 
-class Surface;
+class SurfaceInstance;
 class GlyphRun;
 class FtGlyphRun;
 class TextRun;
@@ -25,10 +25,6 @@ class Painter
 {
 public:
     typedef std::function<Color(int)> GetColor; ///< get Color for a given byte offset
-
-    Painter(Surface *surface):
-        instance_{surface}
-    {}
 
     class Instance {
     public:
@@ -106,16 +102,20 @@ public:
     private:
         friend class Painter;
 
-        void checkForError();
-        Instance(Surface *surface);
+        Instance(SurfaceInstance *surface);
         ~Instance();
 
+        void checkForError();
         void fillGlyphRunBackground(const FtGlyphRun *ftGlyphRun);
 
         cairo_t *cr_;
     };
 
-    inline Instance *operator->() { return &instance_; }
+    Painter(SurfaceInstance *surface):
+        instance_{surface}
+    {}
+
+    Instance *operator->() { return &instance_; }
 
 private:
     Painter(const Painter&) = delete;

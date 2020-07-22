@@ -226,7 +226,7 @@ bool textWrapBehindDefault(const String &text, int byteOffset, int byteCount)
 
 
     if (!canWrap && byteCount > 1) {
-        uchar_t ch = *Unicode{text->chars() + byteOffset, text->count() - byteOffset}->begin();
+        uchar_t ch = *Unicode{text->chars() + byteOffset, size_t(text->count()) - byteOffset}->begin();
 
         canWrap =
             ((0x4E00 <= ch && ch <= 0x9FEA) || (0xF900 <= ch && ch <= 0xFAFF) /* CJK Unified */) ||

@@ -26,7 +26,7 @@ public:
     bool getPlugin(const String &name, const ImagePlugin **plugin) const;
     Ref< Source<const ImagePlugin *> > getAllPlugins() const;
 
-    Ref<Image> load(const String &uri, unsigned index = 0) const;
+    Image load(const String &uri, unsigned index = 0) const;
 
 private:
     friend class Singleton<ImageManager>;

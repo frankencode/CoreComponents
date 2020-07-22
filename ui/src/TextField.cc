@@ -12,13 +12,13 @@
 namespace cc {
 namespace ui {
 
-TextField::TextField(View *parent, const String &labelText):
-    InputField{parent, labelText}
+TextField::Instance::Instance(const String &labelText):
+    InputField::Instance{labelText}
 {}
 
-InputControl *TextField::addInputControl()
+InputControl TextField::Instance::createInputControl()
 {
-    return add<TextInput>();
+    return TextInput{};
 }
 
 }} // namespace cc::ui

@@ -21,20 +21,6 @@ template<class T>
 class Property
 {
 public:
-    Property(): instance_{Instance::create()} {}
-    Property(const T &b): instance_{Instance::create(b)} {}
-
-    Property(const Property &b): Property{b->value()} {}
-    Property &operator=(const Property &b) { instance_->setValue(b->value()); return *this; }
-
-    Property(Property &&b): instance_{std::move(b.instance_)} {}
-    Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
-
-    Property(const std::function<T()> &f): instance_{Instance::create()} { instance_->associate(f); }
-    Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
-
-    ~Property() { instance_->disband(); }
-
     class Instance: public PropertyBinding {
     public:
         template<class F>
@@ -137,10 +123,30 @@ public:
         std::function<bool(T&, T)> g_;
     };
 
+    Property(): instance_{Instance::create()} {}
+    Property(const T &b): instance_{Instance::create(b)} {}
+
+    Property(const Property &b): Property{b->value()} {}
+    Property &operator=(const Property &b) { instance_->setValue(b->value()); return *this; }
+
+    Property(Property &&b): instance_{std::move(b.instance_)} {}
+    Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
+
+    Property(const std::function<T()> &f): instance_{Instance::create()} { instance_->associate(f); }
+    Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
+
+    ~Property() { instance_->disband(); }
+
     Instance *operator->() { return instance_; }
     const Instance *operator->() const { return instance_; }
 
     T operator()() const { return instance_->value(); }
+
+    template<class F>
+    void operator<<(const F &f) { instance_->bind(f); }
+
+    template<class F>
+    Property &operator>>(const F &f) { instance_->connect(f); return *this; }
 
     Property &operator=(const T &b) { instance_->setValue(b); return *this; }
 

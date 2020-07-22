@@ -26,16 +26,16 @@ public:
     private:
         friend class RowLayout;
 
-        Instance(View *view);
+        Instance(View &view);
 
-        void childReady(View *child) final;
-        void childDone(View *child) final;
+        void childReady(View child) final;
+        void childDone(View child) final;
 
-        void updateChildPos(View *child, Size innerSize, double x);
+        void updateChildPos(View child, Size innerSize, double x);
         void updateLayout();
     };
 
-    RowLayout(View *view):
+    RowLayout(View &view):
         Layout{new Instance{view}}
     {}
 

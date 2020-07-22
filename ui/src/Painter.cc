@@ -16,7 +16,7 @@
 namespace cc {
 namespace ui {
 
-Painter::Instance::Instance(Surface *surface):
+Painter::Instance::Instance(Surface::Instance *surface):
     cr_{cairo_create(surface->cairoSurface())}
 {}
 

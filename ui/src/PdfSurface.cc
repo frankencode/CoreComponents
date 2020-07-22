@@ -13,33 +13,28 @@
 namespace cc {
 namespace ui {
 
-Ref<PdfSurface> PdfSurface::open(const Stream &stream, Size sizePt)
-{
-    return new PdfSurface{stream, sizePt};
-}
-
-PdfSurface::PdfSurface(const Stream &stream, Size sizePt):
+PdfSurface::Instance::Instance(const Stream &stream, Size sizePt):
     stream_{stream},
     cairoSurface_{
         cairo_pdf_surface_create_for_stream(cairoWrite, this, sizePt[0], sizePt[1])
     }
 {}
 
-PdfSurface::~PdfSurface()
+PdfSurface::Instance::~Instance()
 {
     if (cairoSurface_)
         cairo_surface_destroy(cairoSurface_);
 }
 
-cairo_surface_t *PdfSurface::cairoSurface() const
+cairo_surface_t *PdfSurface::Instance::cairoSurface() const
 {
     return cairoSurface_;
 }
 
-cairo_status_t PdfSurface::cairoWrite(void *closure, const unsigned char *data, unsigned int length)
+cairo_status_t PdfSurface::Instance::cairoWrite(void *closure, const unsigned char *data, unsigned int length)
 {
     try {
-        reinterpret_cast<PdfSurface *>(closure)->stream_->write(data, length);
+        reinterpret_cast<PdfSurface::Instance *>(closure)->stream_->write(data, length);
     }
     catch (...)
     {

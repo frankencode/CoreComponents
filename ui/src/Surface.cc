@@ -12,12 +12,12 @@
 namespace cc {
 namespace ui {
 
-bool Surface::isValid() const
+bool SurfaceInstance::isValid() const
 {
     return cairo_surface_status(cairoSurface()) == CAIRO_STATUS_SUCCESS;
 }
 
-void Surface::nextPage(bool clear)
+void SurfaceInstance::nextPage(bool clear)
 {
     if (clear)
         cairo_surface_show_page(cairoSurface());

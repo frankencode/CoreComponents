@@ -17,12 +17,22 @@ class TextInput;
 
 class TextField: public InputField
 {
-    friend class Object;
+public:
+    class Instance: public InputField::Instance
+    {
+    protected:
+        friend class TextField;
 
-protected:
-    TextField(View *parent, const String &labelText);
+        Instance(const String &labelText);
 
-    InputControl *addInputControl() override;
+        InputControl createInputControl() override;
+    };
+
+    TextField(const String &labelText):
+        InputField{new Instance{labelText}}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

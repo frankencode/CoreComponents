@@ -15,15 +15,23 @@ namespace ui {
 
 class InputLine: public View
 {
-    friend class Object;
-
 public:
-    Property<double> thickness { dp(1) };
-    Property<Color> ink { Color { 0x000000 } };
+    class Instance: public View::Instance {
+    public:
+        Property<double> thickness { dp(1) };
+        Property<Color> ink { Color { 0x000000 } };
 
-protected:
-    InputLine(View *parent, double maxThickness = dp(1));
-    void paint() override;
+    protected:
+        friend class InputLine;
+
+        Instance(double maxThickness);
+    };
+
+    InputLine(double maxThickness = dp(1)):
+        View{new Instance{maxThickness}}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

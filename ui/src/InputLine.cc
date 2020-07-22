@@ -11,22 +11,22 @@
 namespace cc {
 namespace ui {
 
-InputLine::InputLine(View *parent, double maxThickness):
-    View{parent}
+InputLine::Instance::Instance(double maxThickness)
 {
-    inheritPaper();
+    build >>[=]{
+        inheritPaper();
 
-    size->bind([=]{
-        return Size { parent->size()[0], std::ceil(maxThickness) };
-    });
-}
+        size <<[=]{
+            return Size { parent()->size()[0], std::ceil(maxThickness) };
+        };
+    };
 
-void InputLine::paint()
-{
-    Painter p{this};
-    p->rectangle(Point{ 0, size()[1] - thickness() }, size());
-    p->setSource(ink());
-    p->fill();
+    paint >>[=]{
+        Painter p{this};
+        p->rectangle(Point{ 0, size()[1] - thickness() }, size());
+        p->setSource(ink());
+        p->fill();
+    };
 }
 
 }} // namespace cc::ui

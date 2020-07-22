@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/ui/Item>
 #include <cc/ui/ScrollView>
+#include <cc/ui/Item>
 
 namespace cc {
 namespace ui {
@@ -18,51 +18,66 @@ class ItemCarrier;
 
 class ItemView: public ScrollView
 {
-    friend class Object;
-
 public:
-    Property<double> cacheRatio { 2 };
-    Signal clicked;
+    class Instance: public ScrollView::Instance
+    {
+    public:
+        Property<double> cacheRatio { 2 };
+        Signal clicked;
 
-    int currentRow() const;
-    int rowCount() const;
+        int currentRow() const;
+        int rowCount() const;
 
-    Item *currentItem() const;
-    Item *itemAt(int row) const;
+        Item *currentItem() const;
+        Item *itemAt(int row) const;
 
-protected:
-    ItemView(View *parent, Item *rootItem = nullptr);
+    protected:
+        Instance(Item *rootItem = nullptr);
 
-    virtual Ref<Item> initItemModel();
-    void resetItemModel();
+        virtual Ref<Item> initItemModel();
+        void resetItemModel();
 
-    Item *rootItem() { return rootItem_; }
+        Item *rootItem() { return rootItem_; }
 
-    virtual View *addDelegate(View *parent, Item *item);
-    virtual void updateDelegateInView(View *delegate, int layoutIndex) {}
+        virtual View createDelegate(Item *item);
+        virtual void updateDelegateInView(View &delegate, int layoutIndex) {}
 
-    View *delegateAt(int row) const;
+        View delegateAt(int row) const;
 
-private:
-    friend class ItemCarrier;
+    private:
+        friend class ItemView;
+        friend class ItemCarrier;
 
-    Property<int> currentRow_ { -1 };
-    Property<View *> currentDelegate_ { nullptr };
+        Property<int> currentRow_ { -1 };
+        Property<View> currentDelegate_;
 
-    View *addCarrier() override;
-    void preheat() override;
+        View createCarrier() override;
+        void preheat() override;
 
-    bool onPointerClicked(const PointerEvent *event) override;
-    bool onPointerPressed(const PointerEvent *event) override;
-    bool onPointerReleased(const PointerEvent *event) override;
-    bool onWheelMoved(const WheelEvent *event) override;
-    bool onWindowLeft() override;
+        bool onPointerClicked(const PointerEvent *event) override;
+        bool onPointerPressed(const PointerEvent *event) override;
+        bool onPointerReleased(const PointerEvent *event) override;
+        bool onWheelMoved(const WheelEvent *event) override;
+        bool onWindowLeft() override;
 
-    ItemCarrier *itemCarrier() const;
+        ItemCarrier itemCarrier() const;
 
-    Ref<Item> rootItem_;
-    Color delegatePaperSaved_;
-    bool hasSavedDelegatePaper_ { false };
+        Ref<Item> rootItem_;
+        Color delegatePaperSaved_;
+        bool hasSavedDelegatePaper_ { false };
+    };
+
+    ItemView(double width, double height):
+        ScrollView{new Instance}
+    {
+        (*this)->size = Size{width, height};
+    }
+
+    ItemView(Instance *instance):
+        ScrollView{instance}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

@@ -24,7 +24,7 @@ class SdlApplicationInstance: public ApplicationInstance
 public:
     static SdlApplicationInstance *instance();
 
-    Window *openWindow(View *view, const String &title = "", WindowMode mode = WindowMode::Default) override;
+    Window *openWindow(const View &view, const String &title = "", WindowMode mode = WindowMode::Default) override;
 
     Ref<Cursor> createCursor(CursorShape shape) override;
 

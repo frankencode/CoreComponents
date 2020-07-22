@@ -17,15 +17,39 @@ namespace ui {
 
 class Painter;
 
-class Surface: public Object
+class SurfaceInstance;
+
+class Surface
+{
+public:
+    using Instance = SurfaceInstance;
+
+    Surface() = default;
+
+    Instance *operator->() { return instance_; }
+    const Instance *operator->() const { return instance_; }
+
+    explicit operator bool() const { return instance_; }
+
+protected:
+    Surface(Instance *instance):
+        instance_{instance}
+    {}
+
+    template<class T>
+    T *my() const { return as<T>(instance_); }
+
+private:
+    Ref<Instance> instance_;
+};
+
+class SurfaceInstance: public Object
 {
 public:
     bool isValid() const;
 
     void nextPage(bool clear = true);
 
-protected:
-    friend class Painter;
     virtual cairo_surface_t *cairoSurface() const = 0;
 };
 

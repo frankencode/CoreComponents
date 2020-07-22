@@ -18,33 +18,52 @@ class ScrollView;
 
 class Control: public View
 {
-    friend class Object;
-
 public:
-    Property< Ref<const Cursor> > cursor;
+    class Instance: public View::Instance
+    {
+    public:
+        Property< Ref<const Cursor> > cursor;
 
-    Property<bool> hover;   ///< mouse pointer is hovering over this control
-    Property<bool> pressed; ///< the control is pressed by the user
-    Property<bool> focus;   ///< this control holds text input focus
+        Property<bool> hover;   ///< mouse pointer is hovering over this control
+        Property<bool> pressed; ///< the control is pressed by the user
+        Property<bool> focus;   ///< this control holds text input focus
 
-    Property<Point> pointerPos; ///< position of the mouse pointer or touch contact
+        Property<Point> pointerPos; ///< position of the mouse pointer or touch contact
 
-protected:
-    friend class View;
-    friend class ScrollView;
-    friend class ApplicationInstance;
+    protected:
+        friend class Control;
+        friend class View;
+        friend class ScrollView;
+        friend class ApplicationInstance;
 
-    Property< Ref<Control> > delegate;
+        Property<Control> delegate;
 
-    Control(View *parent = nullptr);
+        Instance();
 
-    virtual bool onPointerClicked(const PointerEvent *event);
-    virtual bool onMouseClicked(const MouseEvent *event);
-    virtual bool onFingerClicked(const FingerEvent *event);
+        virtual bool onPointerClicked(const PointerEvent *event);
+        virtual bool onMouseClicked(const MouseEvent *event);
+        virtual bool onFingerClicked(const FingerEvent *event);
 
-    virtual Rect textInputArea() const;
-    virtual void onTextEdited(const String &text, int start, int length);
-    virtual void onTextInput(const String &text);
+        virtual Rect textInputArea() const;
+        virtual void onTextEdited(const String &text, int start, int length);
+        virtual void onTextInput(const String &text);
+    };
+
+    Control():
+        View{new Instance}
+    {}
+
+    Control(double width, double height):
+        View{new Instance}
+    {
+        (*this)->size = Size{width, height};
+    }
+
+    Control(Instance *instance):
+        View{instance}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

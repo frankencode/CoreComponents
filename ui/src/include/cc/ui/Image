@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <cc/ui/types>
 #include <cc/ui/Surface>
+#include <cc/ui/types>
 
 namespace cc {
 namespace ui {
@@ -18,98 +18,83 @@ namespace ui {
   */
 class Image: public Surface
 {
-    friend class Object;
-
 public:
-    /** Create an invalid image
-      * \see isValid()
-      */
-    static Ref<Image> create()
+    class Instance: public Surface::Instance
     {
-        return Object::create<Image>();
-    }
+    public:
+        /// Number of pixels per image row
+        int width() const { return w_; }
+
+        /// Number of pixel rows per image
+        int height() const { return h_; }
+
+        /// Total number of pixels per image
+        int count() const { return data_->itemCount<Color>(); }
+
+        /** Check if raster position (x, y) is within range
+          */
+        bool hasPixel(int x, int y) const {
+            return
+                0 <= x && x < w_ &&
+                0 <= y && y < h_;
+        }
+
+        /** Access pixel at raster position (x, y)
+          */
+        Color &pixel(int x, int y) {
+            return mutate(data_)->item<Color>(y * w_ + x);
+        }
+
+        /** Access pixel at index \arg i
+          */
+        Color &pixel(int i) {
+            return mutate(data_)->item<Color>(i);
+        }
+
+        /** Clear the entire image with Color \a c
+          */
+        void clear(Color c);
+
+        /** Convert the entire image from pre-multiplied alpha to non-premultiplied alpha
+          */
+        void normalize();
+
+        void shadowBlur(int radius, Color shadowColor);
+
+        const CharArray *data() const { return data_; }
+        int pitch() const { return w_ * sizeof(Color); }
+
+    private:
+        friend class Image;
+        friend class View;
+
+        Instance(int width, int height);
+        ~Instance();
+
+        cairo_surface_t *cairoSurface() const override;
+
+        int w_ { 0 };
+        int h_ { 0 };
+        String data_;
+
+        mutable cairo_surface_t *cairoSurface_ { nullptr };
+    };
+
+    /** Create an invalid image
+      * \todo make it actually create a zero sized image and introduce Image(Instance *)
+      */
+    Image() = default;
 
     /** Allocate image of given size
       * \param width number of pixels per image row
       * \param height number of pixel rows per image
-      * \return new object instance
       */
-    static Ref<Image> create(int width, int height)
-    {
-        return Object::create<Image>(width, height);
-    }
-
-    /** Return true if this image is valid (of non-null size)
-      */
-    bool isValid() const { return w_ > 0 && h_ > 0; }
-
-    /// Number of pixels per image row
-    int width() const { return w_; }
-
-    /// Number of pixel rows per image
-    int height() const { return h_; }
-
-    /// Total number of pixels per image
-    int count() const { return data_->itemCount<Color>(); }
-
-    /** Check if raster position (x, y) is within range
-      */
-    bool hasPixel(int x, int y) const {
-        return
-            0 <= x && x < w_ &&
-            0 <= y && y < h_;
-    }
-
-    /** Access pixel at raster position (x, y)
-      */
-    Color &pixel(int x, int y) {
-        return mutate(data_)->item<Color>(y * w_ + x);
-    }
-
-    /** Access pixel at index \arg i
-      */
-    Color &pixel(int i) {
-        return mutate(data_)->item<Color>(i);
-    }
-
-    /** Clear the entire image with Color \a c
-      */
-    void clear(Color c);
-
-    /** Convert the entire image from pre-multiplied alpha to non-premultiplied alpha
-      */
-    void normalize();
-
-    void shadowBlur(int radius, Color shadowColor);
-
-    const CharArray *data() const { return data_; }
-    int pitch() const { return w_ * sizeof(Color); }
-
-private:
-    friend class View;
-
-    Image()
+    Image(int width, int height):
+        Surface{new Instance{width, height}}
     {}
 
-    Image(int width, int height):
-        w_{width},
-        h_{height}
-    {
-        if (w_ <= 0) width = 1;
-        if (h_ <= 0) height = 1;
-    }
-
-    ~Image();
-
-    void init();
-
-    cairo_surface_t *cairoSurface() const override;
-
-    int w_ { 0 };
-    int h_ { 0 };
-    String data_;
-
-    mutable cairo_surface_t *cairoSurface_ { nullptr };
+    Instance *operator->() const { return my<Instance>(); }
+    operator Instance *() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui

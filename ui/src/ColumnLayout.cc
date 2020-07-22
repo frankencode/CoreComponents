@@ -12,7 +12,7 @@
 namespace cc {
 namespace ui {
 
-ColumnLayout::Instance::Instance(View *view):
+ColumnLayout::Instance::Instance(View &view):
     Layout::Instance{view}
 {
     align->connect([=]{ updateLayout(); });
@@ -23,7 +23,7 @@ ColumnLayout::Instance::Instance(View *view):
     updateLayout();
 }
 
-void ColumnLayout::Instance::childReady(View *child)
+void ColumnLayout::Instance::childReady(View child)
 {
     if (child->visible())
     {
@@ -66,12 +66,12 @@ void ColumnLayout::Instance::childReady(View *child)
     child->padding->connect([=]{ updateLayout(); });
 }
 
-void ColumnLayout::Instance::childDone(View *child)
+void ColumnLayout::Instance::childDone(View child)
 {
     updateLayout();
 }
 
-void ColumnLayout::Instance::updateChildPos(View *child, Size innerSize, double y)
+void ColumnLayout::Instance::updateChildPos(View child, Size innerSize, double y)
 {
     if (align() == ColumnAlign::Auto || align() == ColumnAlign::Left)
         child->pos = Point{ indent(), y } + margin();
@@ -87,7 +87,7 @@ void ColumnLayout::Instance::updateLayout()
 
     for (int i = 0, n = view()->childCount(); i < n; ++i)
     {
-        View *child = view()->childAt(i);
+        View child = view()->childAt(i);
         if (!child->visible()) continue;
 
         if (child->size()[0] > innerSize[0]) innerSize[0] = child->size()[0];
@@ -101,7 +101,7 @@ void ColumnLayout::Instance::updateLayout()
 
     for (int i = 0, n = view()->childCount(); i < n; ++i)
     {
-        View *child = view()->childAt(i);
+        View child = view()->childAt(i);
         if (!child->visible()) continue;
 
         y += child->padding();

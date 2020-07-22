@@ -18,18 +18,27 @@ namespace ui {
 class SvgSurface: public Surface
 {
 public:
-    static Ref<SvgSurface> open(const Stream &stream, Size sizePt);
+    class Instance: public Surface::Instance
+    {
+    private:
+        friend class SvgSurface;
 
-private:
-    static cairo_status_t cairoWrite(void *closure, const unsigned char *data, unsigned int length);
+        static cairo_status_t cairoWrite(void *closure, const unsigned char *data, unsigned int length);
 
-    SvgSurface(const Stream &stream, Size sizePt);
-    ~SvgSurface();
+        Instance(const Stream &stream, Size sizePt);
+        ~Instance();
 
-    cairo_surface_t *cairoSurface() const override;
+        cairo_surface_t *cairoSurface() const override;
 
-    Stream stream_;
-    cairo_surface_t *cairoSurface_;
+        Stream stream_;
+        cairo_surface_t *cairoSurface_;
+    };
+
+    SvgSurface() = default;
+
+    SvgSurface(const Stream &stream, Size sizePt):
+        Surface{new Instance{stream, sizePt}}
+    {}
 };
 
 }} // namespace cc::ui
