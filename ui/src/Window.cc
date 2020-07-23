@@ -46,7 +46,7 @@ Control Window::getControlAt(Point pos) const
         return control;
     }
 
-    return Control{};
+    return Control{nullptr};
 }
 
 void Window::addToFrame(const UpdateRequest *request)

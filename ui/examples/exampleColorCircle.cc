@@ -9,7 +9,7 @@ int main(int argc, char **argv)
 
     View view{640, 480};
     view->paper = 0xFFFFFF;
-    view->paint >> [=]{
+    view->paint >>[=]{
         Painter p{view};
         Point center = view->size() / 2;
         const double step = 10;

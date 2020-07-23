@@ -103,7 +103,7 @@ View View::Instance::getChildAt(Point l) /// \todo replace by a safer version: b
         View child = pair->value();
         if (child->containsLocal(mapToChild(child, l))) return child;
     }
-    return View{};
+    return View{nullptr};
 }
 
 Control View::Instance::getControlAt(Point l) /// \todo replace by a safer version: bool lookupControlAt(Point l, Control *view) const;
@@ -119,7 +119,7 @@ Control View::Instance::getControlAt(Point l) /// \todo replace by a safer versi
             }
         }
     }
-    return Control{};
+    return Control{nullptr};
 }
 
 bool View::Instance::isParentOf(const Instance *other) const

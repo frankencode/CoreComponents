@@ -92,8 +92,8 @@ void ApplicationInstance::notifyTimer(Timer::Instance *t)
 
 bool ApplicationInstance::feedFingerEvent(Window *window, FingerEvent *event)
 {
-    cursorControl = Control{};
-    hoverControl = Control{};
+    cursorControl = Control{nullptr};
+    hoverControl = Control{nullptr};
 
     if (event->action() == PointerAction::Pressed) {
         Point pos = window->size() * event->pos();
@@ -106,7 +106,7 @@ bool ApplicationInstance::feedFingerEvent(Window *window, FingerEvent *event)
 
     if (event->action() == PointerAction::Released) {
         if (focusControl() != pressedControl())
-            focusControl = Control{};
+            focusControl = Control{nullptr};
     }
 
     View touchTarget;
@@ -120,7 +120,7 @@ bool ApplicationInstance::feedFingerEvent(Window *window, FingerEvent *event)
         pressedControl()->pointerPos = pressedControl()->mapToLocal(pos);
         bool eaten = pressedControl()->feedFingerEvent(event);
         if (event->action() == PointerAction::Released)
-            pressedControl = Control{};
+            pressedControl = Control{nullptr};
         if (eaten) return true;
     }
     else if (touchTarget) {
@@ -147,12 +147,12 @@ bool ApplicationInstance::feedMouseEvent(Window *window, MouseEvent *event)
         if (!pressedControl())
             pressedControl = topControl;
 
-        hoverControl = Control{};
+        hoverControl = Control{nullptr};
     }
     else if (event->action() == PointerAction::Released)
     {
         if (focusControl() != pressedControl())
-            focusControl = Control{};
+            focusControl = Control{nullptr};
 
         hoverControl = topControl;
     }
@@ -164,7 +164,7 @@ bool ApplicationInstance::feedMouseEvent(Window *window, MouseEvent *event)
         eaten = pressedControl()->feedMouseEvent(event);
 
         if (event->action() == PointerAction::Released)
-            pressedControl = Control{};
+            pressedControl = Control{nullptr};
     }
 
     if (!eaten)

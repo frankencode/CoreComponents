@@ -24,7 +24,7 @@ bool InputControl::Instance::onKeyPressed(const KeyEvent *event)
     else if (
         event->scanCode() == ScanCode::Key_Escape
     ) {
-        Application{}->focusControl = Control{};
+        Application{}->focusControl = Control{nullptr};
         rejected();
     }
     else if (

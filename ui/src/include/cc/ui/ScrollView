@@ -76,7 +76,7 @@ public:
 
         void keepFocusControlInView();
 
-        Property<Control> focusControl;
+        Property<Control> focusControl { Control{nullptr} };
 
         View carrier_ { nullptr };
         bool isDragged_ { false };

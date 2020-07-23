@@ -36,7 +36,7 @@ public:
         friend class ScrollView;
         friend class ApplicationInstance;
 
-        Property<Control> delegate;
+        Property<Instance *> delegate; /// \todo need to be set to null on destruction of delegate
 
         Instance();
 

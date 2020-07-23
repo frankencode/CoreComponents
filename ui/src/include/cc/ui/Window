@@ -98,7 +98,7 @@ protected:
 
     virtual void renderFrame(Frame *frame) = 0;
 
-    View view_;
+    View view_ { nullptr };
     Ref<Frame> nextFrame_;
 };
 

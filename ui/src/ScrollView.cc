@@ -141,7 +141,7 @@ bool ScrollView::Instance::onPointerMoved(const PointerEvent *event)
         isDragged_ = true;
         carrierOrigin_ = carrier_->pos();
         lastDragTime_ = 0;
-        Application{}->pressedControl = Control{};
+        Application{}->pressedControl = Control{nullptr};
     }
 
     if (isDragged_) {
@@ -164,7 +164,7 @@ bool ScrollView::Instance::onPointerMoved(const PointerEvent *event)
 bool ScrollView::Instance::onWheelMoved(const WheelEvent *event)
 {
     if (Application{}->focusControl())
-        Application{}->focusControl = Control{};
+        Application{}->focusControl = Control{nullptr};
 
     if (timerMode_ == TimerMode::Bouncing || timerMode_ == TimerMode::Traversing)
         carrierStop();

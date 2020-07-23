@@ -38,6 +38,7 @@ public:
     {}
 
     Instance *operator->() const { return my<Instance>(); }
+    operator Instance *() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui
