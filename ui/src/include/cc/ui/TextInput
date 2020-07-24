@@ -70,8 +70,6 @@ public:
         void paste(const String &chunk);
         void paste(Range selection, const String &chunk);
 
-        void onPaint() override;
-
         Ref<TextEditor> editor_;
         Timer timer_;
         bool shiftKey_ { false };

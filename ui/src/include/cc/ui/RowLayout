@@ -26,7 +26,7 @@ public:
     private:
         friend class RowLayout;
 
-        Instance(View &view);
+        Instance(const View &view);
 
         void childReady(View child) final;
         void childDone(View child) final;
@@ -35,7 +35,7 @@ public:
         void updateLayout();
     };
 
-    RowLayout(View &view):
+    RowLayout(const View &view):
         Layout{new Instance{view}}
     {}
 

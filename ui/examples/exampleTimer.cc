@@ -2,16 +2,17 @@
 #include <cc/ui/Timer>
 #include <cc/System>
 #include <cc/stdio>
-#include <cc/str>
-
-using namespace cc;
-using namespace cc::ui;
 
 int main(int argc, char **argv)
 {
-    Timer{1, []{
+    using namespace cc;
+    using namespace cc::ui;
+
+    Timer timer{1};
+    timer->timeout >>[=]{
         fout() << fixed(System::now(), 6) << nl;
-    }}->startAt(std::ceil(System::now()));
+    };
+    timer->startAt(std::ceil(System::now()));
 
     return Application{}->run();
 }

@@ -32,9 +32,7 @@ Window::Window(const View &view, const String &title):
 
 Window::~Window()
 {
-    /// \todo have a more complete View::disband(), which cascades to all children and does a more thorough cleanup job
-    view_->build = Signal{};
-    view_->paint = Signal{};
+    view_->disband();
 }
 
 Control Window::getControlAt(Point pos) const

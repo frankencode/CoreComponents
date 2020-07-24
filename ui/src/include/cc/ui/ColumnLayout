@@ -27,7 +27,7 @@ public:
     private:
         friend class ColumnLayout;
 
-        Instance(View &view);
+        Instance(const View &view);
 
         void childReady(View child) final;
         void childDone(View child) final;
@@ -36,7 +36,7 @@ public:
         void updateLayout();
     };
 
-    ColumnLayout(View &view):
+    ColumnLayout(const View &view):
         Layout{new Instance{view}}
     {}
 

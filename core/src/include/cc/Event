@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2019 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -13,33 +13,33 @@
 
 namespace cc {
 
-class Signal
+template<class T>
+class Event
 {
 public:
     class Instance {
     public:
         template<class F>
         void connect(const F &f) { queue_ << f; }
-        void emit() const { for (auto &f: queue_) f(); }
+        void propagate(const T &value) const { for (auto &f: queue_) if (f(value)) break; }
 
-        bool hasListeners() const { return queue_->count() > 0; }
+        bool hasConsumers() const { return queue_->count() > 0; }
         void disband() { queue_->deplete(); }
 
     private:
-        friend class Signal;
-        friend class PropertyBinding;
+        friend class Event;
 
         Instance() = default;
 
-        Queue<std::function<void()>> queue_;
+        Queue<std::function<bool(T)>> queue_;
     };
 
-    Signal() = default;
+    Event() = default;
 
     template<class F>
-    Signal &operator>>(const F &f) { (*this)->connect(f); return *this; }
+    Event &operator>>(const F &f) { (*this)->connect(f); return *this; }
 
-    void operator()() const { (*this)->emit(); }
+    void operator()(const T &value) const { (*this)->propagate(); }
 
     Instance *operator->() { return &instance_; }
     const Instance *operator->() const { return &instance_; }

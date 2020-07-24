@@ -81,20 +81,20 @@ public:
         Point centerLeft () const { return pos() + Step { 0, center()[1] }; }
         Point centerRight() const { return pos() + Step { size()[0], center()[1] }; }
 
-        void anchorTopLeftTo    (const AnchorPoint &l) { pos->bind([=]{ return l(); }); }
-        void anchorTopRightTo   (const AnchorPoint &l) { pos->bind([=]{ return l() - Step { size()[0], 0 }; }); }
-        void anchorBottomLeftTo (const AnchorPoint &l) { pos->bind([=]{ return l() - Step { 0, size()[1] }; }); }
-        void anchorBottomRighTo (const AnchorPoint &l) { pos->bind([=]{ return l() - size(); }); }
-        void anchorCenterLeftTo (const AnchorPoint &l) { pos->bind([=]{ return l() - Step { 0, center()[1] }; }); }
-        void anchorCenterRightTo(const AnchorPoint &l) { pos->bind([=]{ return l() - Step { size()[0], center()[1] }; }); }
-        void anchorCenterTo     (const AnchorPoint &l) { pos->bind([=]{ return l() - center(); }); }
+        void anchorTopLeftTo     (const AnchorPoint &l) { pos <<[=]{ return l();                                   }; }
+        void anchorTopRightTo    (const AnchorPoint &l) { pos <<[=]{ return l() - Step { size()[0], 0 };           }; }
+        void anchorBottomLeftTo  (const AnchorPoint &l) { pos <<[=]{ return l() - Step { 0, size()[1] };           }; }
+        void anchorBottomRightTo (const AnchorPoint &l) { pos <<[=]{ return l() - size();                          }; }
+        void anchorCenterLeftTo  (const AnchorPoint &l) { pos <<[=]{ return l() - Step { 0, center()[1] };         }; }
+        void anchorCenterRightTo (const AnchorPoint &l) { pos <<[=]{ return l() - Step { size()[0], center()[1] }; }; }
+        void anchorCenterTo      (const AnchorPoint &l) { pos <<[=]{ return l() - center();                        }; }
         void centerInParent();
 
         virtual Size preferredSize() const { return Size{}; }
         virtual Size minSize() const { return Size{}; }
         virtual Size maxSize() const { return Size{ std::numeric_limits<double>::max() }; }
 
-        Color findBasePaper() const;
+        Color basePaper() const;
         void inheritPaper();
 
         Layout layout() const { return layout_; }
@@ -116,6 +116,8 @@ public:
         Instance();
         ~Instance();
 
+        void disband();
+
         virtual bool isOpaque() const;
         virtual bool isPainted() const;
         virtual bool isStatic() const;
@@ -123,7 +125,6 @@ public:
         void clear(Color Color);
 
         virtual void clear();
-        virtual void onPaint();
 
         virtual bool onPointerPressed(const PointerEvent *event);
         virtual bool onPointerReleased(const PointerEvent *event);
@@ -167,7 +168,7 @@ public:
             [=]{
                 if (isPainted()) {
                     clear();
-                    onPaint();
+                    paint();
                 }
             }
         };
@@ -195,7 +196,7 @@ public:
 
         Image image_;
         Ref<Object> context_;
-        Layout layout_;
+        Layout layout_ { nullptr };
     };
 
     View():
@@ -215,7 +216,7 @@ public:
     Instance *operator->() const { return my<Instance>(); }
     operator Instance *() const { return my<Instance>(); }
 
-    View &operator<<(const View &child) {
+    const View &operator<<(const View &child) const {
         my<Instance>()->insertChild(child);
         return *this;
     }

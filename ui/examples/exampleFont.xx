@@ -1,34 +1,33 @@
+#include <cc/ui/Application>
 #include <cc/ui/ScrollView>
 #include <cc/ui/ColumnLayout>
 #include <cc/ui/Label>
+#include <cc/DEBUG>
 
-using namespace cc;
-using namespace cc::ui;
-
-class MainView: public View
+int main()
 {
-    friend class Object;
+    using namespace cc;
+    using namespace cc::ui;
 
-    MainView()
-    {
-        size = Size{640, 480};
-        inheritPaper();
+    View view;
+    view->size = Size{640, 480};
+    view->inheritPaper();
 
-        auto scroll = ScrollView::create(this);
+    ScrollView scroll;
+    scroll->build >>[=] {
         ColumnLayout{scroll->carrier()};
 
-        for (int size = 16; size <= 64; size += 8) {
+        for (double size = 16; size <= 64; size += 8) {
             String text = "A small brown fox... (" + str(size) + ")";
-            scroll->add<Label>(text, Font(size));
-            scroll->add<Label>(text, Font(size) << Slant::Italic);
-            scroll->add<Label>(text, Font(size) << Weight::Bold);
-            scroll->add<Label>(text, Font(size) << Slant::Italic << Weight::Bold);
+            scroll->carrier() << Label{text, Font{size}};
+            scroll->carrier() << Label{text, Font{size} << Slant::Italic};
+            scroll->carrier() << Label{text, Font{size} << Weight::Bold};
+            scroll->carrier() << Label{text, Font{size} << Slant::Italic << Weight::Bold};
         }
-    }
-};
+    };
+    view << scroll;
 
-int main(int argc, char **argv)
-{
-    Window::open<MainView>("Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
+    Window::open(view, "Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
+
     return Application{}->run();
 }

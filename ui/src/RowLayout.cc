@@ -12,12 +12,12 @@
 namespace cc {
 namespace ui {
 
-RowLayout::Instance::Instance(View &view):
+RowLayout::Instance::Instance(const View &view):
     Layout::Instance{view}
 {
-    align->connect([=]{ updateLayout(); });
-    margin->connect([=]{ updateLayout(); });
-    spacing->connect([=]{ updateLayout(); });
+    align >>[=]{ updateLayout(); };
+    margin >>[=]{ updateLayout(); };
+    spacing >>[=]{ updateLayout(); };
 
     updateLayout();
 }
@@ -45,7 +45,7 @@ void RowLayout::Instance::childReady(View child)
             updateLayout();
     }
 
-    child->size->connect([=]{
+    child->size >>[=]{
         if (view()->childCount() > 0) {
             if (child == view()->childAt(view()->childCount() - 1)) {
                 double newWidth = child->pos()[0] + child->size()[0] + margin()[0];
@@ -58,10 +58,10 @@ void RowLayout::Instance::childReady(View child)
             }
         }
         updateLayout();
-    });
+    };
 
-    child->visible->connect([=]{ updateLayout(); });
-    child->padding->connect([=]{ updateLayout(); });
+    child->visible >>[=]{ updateLayout(); };
+    child->padding >>[=]{ updateLayout(); };
 }
 
 void RowLayout::Instance::childDone(View child)

@@ -23,7 +23,7 @@ public:
     protected:
         friend class View;
 
-        Instance(View &view);
+        Instance(const View &view);
 
         virtual void childReady(View child) = 0;
         virtual void childDone(View child) = 0;
@@ -34,17 +34,15 @@ public:
         View &view_;
     };
 
-    Layout() = default;
+    Layout(Instance *instance):
+        instance_{instance}
+    {}
 
     Instance *operator->() { return instance_; }
 
     operator bool() const { return instance_; }
 
 protected:
-    Layout(Instance *instance):
-        instance_{instance}
-    {}
-
     template<class T>
     T *my() const { return as<T>(instance_); }
 

@@ -12,8 +12,8 @@
 namespace cc {
 namespace ui {
 
-Layout::Instance::Instance(View &view):
-    view_{view}
+Layout::Instance::Instance(const View &view):
+    view_{const_cast<View &>(view)}
 {
     view->layout_ = this;
 }

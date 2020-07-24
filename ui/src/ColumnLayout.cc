@@ -12,13 +12,13 @@
 namespace cc {
 namespace ui {
 
-ColumnLayout::Instance::Instance(View &view):
+ColumnLayout::Instance::Instance(const View &view):
     Layout::Instance{view}
 {
-    align->connect([=]{ updateLayout(); });
-    margin->connect([=]{ updateLayout(); });
-    spacing->connect([=]{ updateLayout(); });
-    indent->connect([=]{ updateLayout(); });
+    align >>[=]{ updateLayout(); };
+    margin >>[=]{ updateLayout(); };
+    spacing >>[=]{ updateLayout(); };
+    indent >>[=]{ updateLayout(); };
 
     updateLayout();
 }
@@ -47,7 +47,7 @@ void ColumnLayout::Instance::childReady(View child)
             updateLayout();
     }
 
-    child->size->connect([=]{
+    child->size >>[=]{
         if (view()->childCount() > 0) {
             if (child == view()->childAt(view()->childCount() - 1)) {
                 double newHeight = child->pos()[1] + child->size()[1] + margin()[1];
@@ -60,10 +60,10 @@ void ColumnLayout::Instance::childReady(View child)
             }
         }
         updateLayout();
-    });
+    };
 
-    child->visible->connect([=]{ updateLayout(); });
-    child->padding->connect([=]{ updateLayout(); });
+    child->visible >>[=]{ updateLayout(); };
+    child->padding >>[=]{ updateLayout(); };
 }
 
 void ColumnLayout::Instance::childDone(View child)

@@ -361,6 +361,8 @@ const T &QueueInstance<T>::popFront(T *item)
 template<class T>
 void QueueInstance<T>::deplete()
 {
+    if (count_ == 0) return;
+
     for (QueueNode<T> *node = head_; node;) {
         QueueNode<T> *oldNode = node;
         node = node->succ_;

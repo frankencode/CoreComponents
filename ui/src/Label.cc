@@ -9,6 +9,7 @@
 #include <cc/ui/Label>
 #include <cc/ui/Application>
 #include <cc/ui/TextRun>
+#include <cc/DEBUG>
 
 namespace cc {
 namespace ui {
@@ -16,25 +17,27 @@ namespace ui {
 Label::Instance::Instance(const String &initialText, const Font &initialFont):
     text{initialText}
 {
-    build >>[=]{
-        if (initialFont)
-            font = initialFont;
-        else
-            font <<[=]{ return Application{}->defaultFont(); };
-
+    if (initialFont) {
+        font = initialFont;
         if (initialFont->paper())
             paper = initialFont->paper();
-        else
-            inheritPaper();
+    }
+    else
+        font <<[=]{ return Application{}->defaultFont(); };
 
-        textRun <<[=]{ return TextRun::createHtml(text(), font()); };
+    textRun <<[=]{ return TextRun::createHtml(text(), font()); };
 
-        size <<[=]{ return preferredSize(); };
+    size <<[=]{ return preferredSize(); };
 
-        if (initialFont->ink())
-            ink = initialFont->ink();
-        else
-            ink <<[=]{ return style()->theme()->primaryTextColor(); };
+    if (initialFont->ink())
+        ink = initialFont->ink();
+    else
+        ink <<[=]{ return style()->theme()->primaryTextColor(); };
+
+    paint >>[=]{
+        Painter p{this};
+        if (ink()) p->setSource(ink());
+        p->showTextRun(textPos(), textRun());
     };
 }
 
@@ -79,13 +82,6 @@ Size Label::Instance::preferredSize() const
 Size Label::Instance::minSize() const
 {
     return preferredSize();
-}
-
-void Label::Instance::onPaint()
-{
-    Painter p{this};
-    if (ink()) p->setSource(ink());
-    p->showTextRun(textPos(), textRun());
 }
 
 }} // namespace cc::ui

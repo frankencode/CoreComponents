@@ -59,6 +59,14 @@ public:
             changed->connect(h);
         }
 
+        void disband() override
+        {
+            PropertyBinding::disband();
+            value_ = T{};
+            f_ = std::function<T()>{};
+            g_ = std::function<bool(T&, T)>{};
+        }
+
     private:
         friend class Property;
         friend class PropertyMutator<T>;
@@ -109,13 +117,6 @@ public:
                 value_ = newValue;
                 emit();
             }
-        }
-
-        void disband() override
-        {
-            PropertyBinding::disband();
-            value_ = T{};
-            f_ = std::function<T()>{};
         }
 
         mutable T value_;

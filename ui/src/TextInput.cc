@@ -65,6 +65,38 @@ TextInput::Instance::Instance(const String &initialText)
             textCursorVisible = !textCursorVisible();
         };
     };
+
+    paint >>[=]{
+        Painter p{this};
+
+        p->setSource(theme()->primaryTextColor());
+
+        if (selection() && focus()) {
+            int s0 = selection()->i0();
+            int s1 = selection()->i1();
+            p->showTextRun(
+                textPos(), textRun(),
+                [=](int byteOffset) -> Color {
+                    return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionInk() : Color{};
+                },
+                [=](int byteOffset) -> Color {
+                    return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionPaper() : Color{};
+                }
+            );
+        }
+        else {
+            p->showTextRun(textPos(), textRun());
+        }
+
+        if ((focus() || pressed()) && textCursorVisible() && textCursor()) {
+            p->setSource(theme()->textCursorColor());
+            p->rectangle(
+                textPos() + textCursor()->posA(),
+                Size { theme()->textCursorWidth(), (textCursor()->posB() - textCursor()->posA())[1] }
+            );
+            p->fill();
+        }
+    };
 }
 
 TextInput::Instance::~Instance()
@@ -387,39 +419,6 @@ void TextInput::Instance::paste(Range range, const String &chunk)
     if (newRange) {
         textCursor = textRun()->getTextCursor(newRange->i1());
         startBlink();
-    }
-}
-
-void TextInput::Instance::onPaint()
-{
-    Painter p{this};
-
-    p->setSource(theme()->primaryTextColor());
-
-    if (selection() && focus()) {
-        int s0 = selection()->i0();
-        int s1 = selection()->i1();
-        p->showTextRun(
-            textPos(), textRun(),
-            [=](int byteOffset) -> Color {
-                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionInk() : Color{};
-            },
-            [=](int byteOffset) -> Color {
-                return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionPaper() : Color{};
-            }
-        );
-    }
-    else {
-        p->showTextRun(textPos(), textRun());
-    }
-
-    if ((focus() || pressed()) && textCursorVisible() && textCursor()) {
-        p->setSource(theme()->textCursorColor());
-        p->rectangle(
-            textPos() + textCursor()->posA(),
-            Size { theme()->textCursorWidth(), (textCursor()->posB() - textCursor()->posA())[1] }
-        );
-        p->fill();
     }
 }
 

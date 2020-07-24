@@ -48,7 +48,7 @@ View::Instance::Instance()
                     parent()->visibleChildren_->insert(serial_, this);
                 if (isPainted()) {
                     clear();
-                    onPaint();
+                    paint();
                     update(UpdateReason::Changed);
                 }
             }
@@ -58,8 +58,32 @@ View::Instance::Instance()
 
 View::Instance::~Instance()
 {
-    layout_ = Layout{};
+    layout_ = Layout{nullptr};
         // destroy the layout before releasing the children for efficiency
+}
+
+void View::Instance::disband()
+{
+    for (auto &item: children_)
+        item->value()->disband();
+
+    build->disband();
+    paint->disband();
+
+    visible->disband();
+    moving->disband();
+    paper->disband();
+
+    pos->disband();
+    size->disband();
+    padding->disband();
+
+    center->disband();
+    angle->disband();
+    scale->disband();
+    childCount->disband();
+
+    layout_ = Layout{nullptr};
 }
 
 Point View::Instance::mapToGlobal(Point l) const
@@ -149,9 +173,9 @@ void View::Instance::centerInParent()
 }
 
 /// \todo rename to basePaper
-Color View::Instance::findBasePaper() const
+Color View::Instance::basePaper() const
 {
-    for (const Instance *h = parent_; h; h = h->parent_) {
+    for (const Instance *h = parent(); h; h = h->parent()) {
         if (h->paper())
             return h->paper();
     }
@@ -161,7 +185,7 @@ Color View::Instance::findBasePaper() const
 
 void View::Instance::inheritPaper()
 {
-    paper <<[=]{ return findBasePaper(); };
+    paper <<[=]{ return basePaper(); };
 }
 
 bool View::Instance::isOpaque() const
@@ -187,11 +211,6 @@ void View::Instance::clear(Color c)
 void View::Instance::clear()
 {
     clear(paper());
-}
-
-void View::Instance::onPaint()
-{
-    paint();
 }
 
 bool View::Instance::onPointerPressed(const PointerEvent *event) { return false; }
@@ -282,7 +301,7 @@ void View::Instance::insertChild(View child)
     child->parent_ = this;
     child->serial_ = nextSerial();
     children_->insert(child->serial_, child);
-    child->init();
+    child->build();
     if (child->visible())
         visibleChildren_->insert(child->serial_, child);
     childCount += 1;
