@@ -10,8 +10,7 @@ int main()
     using namespace cc;
     using namespace cc::ui;
 
-    View view;
-    view->size = Size{640, 480};
+    View view{640, 480};
     view->paper = Color::White;
 
     Label label;
