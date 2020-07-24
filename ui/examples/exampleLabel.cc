@@ -14,24 +14,22 @@ int main()
     view->size = Size{640, 480};
     view->paper = Color::White;
 
-    auto timeDisplay = []{
-        Date date{System::now()};
-        return dec(date->hour(), 2) + "∶" + dec(date->minutes(), 2) + "∶" + dec(date->seconds(), 2);
-    };
-
-    Label label{timeDisplay(), Font{sp(40)}};
+    Label label;
     label->paper = 0xD0D0FF;
     label->ink = Color::Black;
     label->margin = sp(20);
+    label->font = sp(40);
     label->pos <<[=]{ return view->center() - label->center(); };
 
     Easing{label->angle, 0.5, easing::Bezier{0.5, -0.4, 0.5, 1.4}};
+    Easing{label->size, 0.5, easing::Bezier{0.5, -0.4, 0.5, 1.4}};
 
     view << label;
 
     Timer timer{1};
     timer->timeout >>[=]{
-        label->text = timeDisplay();
+        Date date{System::now()};
+        label->text = dec(date->hour(), 2) + "∶" + dec(date->minutes(), 2) + "∶" + dec(date->seconds(), 2);
         label->angle += 45;
     };
     timer->start();
