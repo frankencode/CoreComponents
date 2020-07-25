@@ -9,8 +9,8 @@
 #include <cc/ui/ScrollView>
 #include <cc/ui/Application>
 #include <cc/ui/InputField>
+#include <cc/ui/Easing>
 #include <cc/ui/Timer>
-#include <cc/ui/easing>
 #include <cc/System>
 #include <cc/math>
 
@@ -312,7 +312,7 @@ void ScrollView::Instance::carrierBounce()
         return;
     }
 
-    double s = easing::outBounce((t - t0) / (t1 - t0));
+    double s = Easing::outBounce((t - t0) / (t1 - t0));
     carrier_->pos = (1 - s) * startPos_ + s * finalPos_;
 }
 
@@ -327,7 +327,7 @@ void ScrollView::Instance::carrierTraverse()
         return;
     }
 
-    double s = easing::inQuad((t - t0) / (t1 - t0));
+    double s = Easing::inQuad((t - t0) / (t1 - t0));
     carrier_->pos = (1 - s) * startPos_ + s * finalPos_;
 }
 

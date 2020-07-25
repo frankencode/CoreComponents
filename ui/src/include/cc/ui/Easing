@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/ui/Transition>
+#include <cc/ui/types>
 
 namespace cc {
 namespace ui {
@@ -17,10 +18,93 @@ class Easing
 {
 public:
     template<class T>
-    Easing(Property<T> &property, double duration, const typename Transition<T>::Easing &easing = easing::linear)
+    Easing(Property<T> &property, double duration, const typename Transition<T>::Easing &easing = Easing::linear)
     {
         Transition<T>::setup(property, duration, easing);
     }
+
+    static double linear(double t);
+
+    static double inQuad(double t);
+    static double outQuad(double t);
+    static double inOutQuad(double t);
+
+    static double inCubic(double t);
+    static double outCubic(double t);
+    static double inOutCubic(double t);
+
+    static double inQuart(double t);
+    static double outQuart(double t);
+    static double inOutQuart(double t);
+
+    static double inQuint(double t);
+    static double outQuint(double t);
+    static double inOutQuint(double t);
+
+    static double inSine(double t);
+    static double outSine(double t);
+    static double inOutSine(double t);
+
+    static double inCirc(double t);
+    static double outCirc(double t);
+    static double inOutCirc(double t);
+
+    static double inExpo(double t);
+    static double outExpo(double t);
+    static double inOutExpo(double t);
+
+    static double inElastic(double t);
+    static double outElastic(double t);
+    static double inOutElastic(double t);
+
+    static double inBack(double t);
+    static double outBack(double t);
+    static double inOutBack(double t);
+
+    static double inBounce(double t);
+    static double outBounce(double t);
+    static double inOutBounce(double t);
+
+    class Bezier
+    {
+    public:
+        class Instance {
+        public:
+            Point p1() const { return p1_; }
+            Point p2() const { return p2_; }
+
+            double getValue(double t) const;
+            Point getPoint(double s) const;
+
+        private:
+            friend class Bezier;
+
+            Instance(const Point &p1, const Point &p2):
+                p1_{p1}, p2_{p2}
+            {}
+
+            Point p1_;
+            Point p2_;
+        };
+
+        Bezier(const Point &p1, const Point &p2):
+            instance_{p1, p2}
+        {}
+
+        Bezier(double x1, double y1, double x2, double y2):
+            instance_{Point{x1, y1}, Point{x2, y2}}
+        {}
+
+        double operator()(double t) const
+        {
+            return instance_.getValue(t);
+        }
+
+        const Instance *operator->() const { return &instance_; }
+
+    private:
+        Instance instance_;
+    };
 };
 
 }} // namespace cc::ui

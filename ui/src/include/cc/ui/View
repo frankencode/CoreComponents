@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include <cc/ui/types>
 #include <cc/ui/StylePlugin>
 #include <cc/ui/Image>
 #include <cc/ui/Layout>
@@ -17,6 +16,7 @@
 #include <cc/ui/FingerEvent>
 #include <cc/ui/WheelEvent>
 #include <cc/ui/KeyEvent>
+#include <cc/ui/types>
 
 namespace cc {
 namespace ui {

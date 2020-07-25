@@ -20,8 +20,8 @@ int main()
     label->font = sp(40);
     label->pos <<[=]{ return view->center() - label->center(); };
 
-    Easing{label->angle, 0.5, easing::Bezier{0.5, -0.4, 0.5, 1.4}};
-    Easing{label->size, 0.5, easing::Bezier{0.5, -0.4, 0.5, 1.4}};
+    Easing{label->angle, 0.5, Easing::Bezier{0.5, -0.4, 0.5, 1.4}};
+    Easing{label->size, 0.5, Easing::Bezier{0.5, -0.4, 0.5, 1.4}};
 
     view << label;
 

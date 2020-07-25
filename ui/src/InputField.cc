@@ -12,7 +12,7 @@
 #include <cc/ui/InputLine>
 #include <cc/ui/Label>
 #include <cc/ui/TextInput>
-#include <cc/ui/Transition>
+#include <cc/ui/Easing>
 
 namespace cc {
 namespace ui {
@@ -85,9 +85,9 @@ InputField::Instance::Instance(const String &labelText_):
                     bigLabel->pos();
             };
 
-            auto easing = easing::Bezier(0.5, 0.0, 0.5, 1.0);
-            easeOn(label->font, 0.1, easing);
-            easeOn(label->pos, 0.1, easing);
+            auto easing = Easing::Bezier(0.5, 0.0, 0.5, 1.0);
+            Easing{label->font, 0.1, easing};
+            Easing{label->pos, 0.1, easing};
         }
         (*this) << label;
 

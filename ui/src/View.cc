@@ -305,6 +305,7 @@ void View::Instance::insertChild(View child)
     if (child->visible())
         visibleChildren_->insert(child->serial_, child);
     childCount += 1;
+    childReady(child);
 }
 
 void View::Instance::removeChild(View child)
