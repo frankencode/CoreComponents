@@ -25,6 +25,8 @@ Label::Instance::Instance(const String &initialText, const Font &initialFont):
     else
         font <<[=]{ return Application{}->defaultFont(); };
 
+    if (!paper()) paper <<[=]{ return basePaper(); };
+
     textRun <<[=]{ return TextRun::createHtml(text(), font()); };
 
     size <<[=]{ return preferredSize(); };

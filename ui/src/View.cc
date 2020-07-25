@@ -19,7 +19,7 @@ namespace ui {
 View::Instance::Instance()
 {
     build >>[=]{
-        if (parent()) {
+        if (parentInstance()) {
             pos >>[=]{
                 if (visible()) update(UpdateReason::Moved);
             };
@@ -39,13 +39,13 @@ View::Instance::Instance()
             if (!visible()) {
                 context_ = nullptr;
                 image_ = Image{};
-                if (parent_)
-                    parent_->visibleChildren_->remove(serial_);
+                if (parentInstance())
+                    parentInstance()->visibleChildren_->remove(serial_);
                 update(UpdateReason::Hidden);
             }
             else {
-                if (parent())
-                    parent()->visibleChildren_->insert(serial_, this);
+                if (parentInstance())
+                    parentInstance()->visibleChildren_->insert(serial_, this);
                 if (isPainted()) {
                     clear();
                     paint();
@@ -88,28 +88,28 @@ void View::Instance::disband()
 
 Point View::Instance::mapToGlobal(Point l) const
 {
-    for (const Instance *h = this; h->parent_; h = h->parent_)
+    for (const Instance *h = this; h->parentInstance(); h = h->parentInstance())
         l += h->pos();
     return l;
 }
 
 Point View::Instance::mapToLocal(Point g) const
 {
-    for (const Instance *h = this; h->parent_; h = h->parent_)
+    for (const Instance *h = this; h->parentInstance(); h = h->parentInstance())
        g -= h->pos();
     return g;
 }
 
 Point View::Instance::mapToChild(const Instance *child, Point l) const
 {
-    for (const Instance *h = child; h != this && h->parent_; h = h->parent_)
+    for (const Instance *h = child; h != this && h->parentInstance(); h = h->parentInstance())
         l -= h->pos();
     return l;
 }
 
 Point View::Instance::mapToParent(const Instance *parent, Point l) const
 {
-    for (const Instance *h = this; h != parent && h->parent_; h = h->parent_)
+    for (const Instance *h = this; h != parent && h->parentInstance(); h = h->parentInstance())
         l += h->pos();
     return l;
 }
@@ -148,7 +148,7 @@ Control View::Instance::getControlAt(Point l) /// \todo replace by a safer versi
 
 bool View::Instance::isParentOf(const Instance *other) const
 {
-    for (const Instance *h = other; h; h = h->parent_) {
+    for (const Instance *h = other; h; h = h->parentInstance()) {
         if (h == this)
             return true;
     }
@@ -168,14 +168,13 @@ bool View::Instance::isFullyVisibleIn(const Instance *other) const
 
 void View::Instance::centerInParent()
 {
-    if (parent()) pos <<[=]{ return 0.5 * (parent()->size() - size()); };
-    else pos = Point{};
+    pos <<[=]{ return parentInstance() ? 0.5 * (parentInstance()->size() - size()): Point{}; };
 }
 
 /// \todo rename to basePaper
 Color View::Instance::basePaper() const
 {
-    for (const Instance *h = parent(); h; h = h->parent()) {
+    for (const Instance *h = parentInstance(); h; h = h->parentInstance()) {
         if (h->paper())
             return h->paper();
     }
@@ -279,8 +278,8 @@ const Theme *View::Instance::theme() const
 Window *View::Instance::window() const
 {
     if (!window_) {
-        if (parent_)
-            return parent_->window();
+        if (parentInstance())
+            return parentInstance()->window();
     }
     return window_;
 }
@@ -298,7 +297,7 @@ Image::Instance *View::Instance::image()
 
 void View::Instance::insertChild(View child)
 {
-    child->parent_ = this;
+    child->parentInstance = this;
     child->serial_ = nextSerial();
     children_->insert(child->serial_, child);
     child->build();

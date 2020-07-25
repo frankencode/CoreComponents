@@ -48,7 +48,7 @@ public:
         Property<double> scale { 1 };
 
         bool isValid() const { return size()[0] > 0 && size()[1] > 0; }
-        Instance *parent() const { return parent_; }
+        View parent() const { return parentInstance(); }
 
         Property<int> childCount { 0 };
         View childAt(int i) const { return children_->at(i)->value(); }
@@ -112,6 +112,8 @@ public:
         friend class Window;
         friend class ApplicationInstance;
         friend class Layout;
+
+        Property<Instance *> parentInstance { nullptr };
 
         Instance();
         ~Instance();

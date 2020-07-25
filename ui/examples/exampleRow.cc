@@ -1,5 +1,6 @@
 #include <cc/ui/Application>
 #include <cc/ui/ColumnLayout>
+#include <cc/ui/RowLayout>
 #include <cc/ui/Label>
 
 int main()
@@ -29,8 +30,7 @@ int main()
     {
         View subBox;
         subBox->paper = Color{0xD0FFD0};
-        ColumnLayout layout{subBox};
-        layout->indent = 2 * Application{}->defaultFont()->size();
+        RowLayout{subBox};
         subBox << MyLabel{"◦ Item A"};
         subBox << MyLabel{"◦ Item B"};
         subBox << MyLabel{"◦ Item C"};
