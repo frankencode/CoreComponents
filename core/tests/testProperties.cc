@@ -7,10 +7,10 @@
  */
 
 #include <cc/testing/TestSuite>
+#include <cc/Property>
+#include <cc/Range>
 #include <cc/stdio>
 #include <cc/debug>
-#include <cc/Range>
-#include <cc/Property>
 
 using namespace cc;
 using namespace cc::testing;
@@ -77,16 +77,21 @@ class ConstrainingTest: public TestCase
     }
 };
 
-class VoidScheduleTest: public TestCase
+class BindingLoopTest: public TestCase
 {
-    Property<String> surface { "?" };
-    Property<void> paint;
-
     void run() override
     {
-        paint->bind([=]{ fout() << "Filling the " << surface() << nl; });
-        paint->schedule([=]{ fout() << "Scheduling a paint operation" << nl; paint(); });
-        surface = "void";
+        struct TestObject {
+            Property<int> x { [=]{ return y() + 1; } };
+            Property<int> y { [=]{ return x() + 1; } };
+        };
+        try {
+            TestObject{}.x();
+            CC_VERIFY(false);
+        }
+        catch (PropertyBindingError &ex) {
+            CC_INSPECT(ex);
+        };
     }
 };
 
@@ -94,6 +99,6 @@ int main(int argc, char **argv)
 {
     CC_TESTSUITE_ADD(BasicBindingTest);
     CC_TESTSUITE_ADD(ConstrainingTest);
-    CC_TESTSUITE_ADD(VoidScheduleTest);
+    CC_TESTSUITE_ADD(BindingLoopTest);
     return TestSuite::instance()->run(argc, argv);
 };

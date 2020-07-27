@@ -31,6 +31,9 @@ Label::Instance::Instance(const String &initialText, const Font &initialFont):
 
     size <<[=]{ return preferredSize(); };
 
+    text >>[=]{ update(); };
+    ink >>[=]{ update(); };
+
     if (initialFont->ink())
         ink = initialFont->ink();
     else

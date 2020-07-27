@@ -11,7 +11,44 @@
 
 namespace cc {
 
-thread_local PropertyBinding *PropertyBinding::activeInstance_ = nullptr;
+String PropertyBindingLoop::message() const
+{
+    return "Property binding loop detected";
+}
+
+class PropertyActivator
+{
+public:
+    PropertyActivator(PropertyBinding *binding):
+        parent_{head_},
+        binding_{binding}
+    {
+        if (binding && detectCycle()) throw PropertyBindingLoop{};
+        head_ = this;
+    }
+
+    ~PropertyActivator() {
+        head_ = parent_;
+    }
+
+    static PropertyBinding *activeBinding() { return head_ ? head_->binding_ : nullptr; }
+
+    PropertyActivator *operator->() { return this; }
+
+private:
+    bool detectCycle() const
+    {
+        PropertyActivator *a = parent_;
+        while (a && a->binding_ != binding_) a = a->parent_;
+        return a;
+    }
+
+    static thread_local PropertyActivator *head_;
+    PropertyActivator *parent_ { nullptr };
+    PropertyBinding *binding_ { nullptr };
+};
+
+thread_local PropertyActivator *PropertyActivator::head_ { nullptr };
 
 PropertyBinding::PropertyBinding(bool dirty):
     dirty_{dirty}
@@ -24,9 +61,10 @@ void PropertyBinding::preAccess() const
         const_cast<PropertyBinding *>(this)->cascade();
     }
 
-    if ((activeInstance_) && (activeInstance_ != this)) {
-        if (activeInstance_->dependencies()->insert(const_cast<PropertyBinding *>(this)))
-            subscribers()->insert(activeInstance_);
+    PropertyBinding *activeBinding = PropertyActivator::activeBinding();
+    if (activeBinding && (activeBinding != this)) {
+        if (activeBinding->dependencies()->insert(const_cast<PropertyBinding *>(this)))
+            subscribers()->insert(activeBinding);
     }
 }
 
@@ -73,32 +111,19 @@ void PropertyBinding::emit()
         for (PropertyBinding *other: subscribers_) {
             if (other->hasConsumers()) {
                 other->dirty_ = false;
-                other->evaluate();
+                other->cascade();
             }
-            else {
+            else
                 other->dirty_ = true;
-                other->evaluateLater();
-            }
         }
     }
+    PropertyActivator activator{nullptr};
     changed->emit();
 }
 
 void PropertyBinding::cascade()
 {
-    class Activator {
-    public:
-        Activator(PropertyBinding *instance): savedActiveInstance_{PropertyBinding::activeInstance_} {
-            PropertyBinding::activeInstance_ = instance;
-        }
-        ~Activator() {
-            PropertyBinding::activeInstance_ = savedActiveInstance_;
-        }
-    private:
-        PropertyBinding *savedActiveInstance_;
-    };
-
-    Activator activator(this);
+    PropertyActivator activator{this};
     evaluate();
 }
 

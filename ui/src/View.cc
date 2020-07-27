@@ -18,41 +18,38 @@ namespace ui {
 
 View::Instance::Instance()
 {
-    build >>[=]{
-        if (parentInstance()) {
-            pos >>[=]{
-                if (visible()) update(UpdateReason::Moved);
-            };
+    pos >>[=]{ update(UpdateReason::Moved); };
+    angle >>[=]{ update(UpdateReason::Moved); };
+    scale >>[=]{ update(UpdateReason::Moved); };
+    size >>[=]{ update(UpdateReason::Resized); };
+    paper >>[=]{ update(UpdateReason::Changed); };
+
+    visible >>[=]{
+        for (int i = 0, n = childCount(); i < n; ++i)
+            childAt(i)->visible = visible();
+        if (!visible()) {
+            context_ = nullptr;
+            image_ = Image{};
+            if (parentInstance())
+                parentInstance()->visibleChildren_->remove(serial_);
+            update(UpdateReason::Hidden);
         }
         else {
-            pos->restrict([](Point&, Point) { return false; });
+            if (parentInstance())
+                parentInstance()->visibleChildren_->insert(serial_, this);
+            if (isPainted()) {
+                clear();
+                paint();
+                update(UpdateReason::Changed);
+            }
         }
+    };
 
-        picture->schedule([=]{ update(UpdateReason::Changed); });
-
-        angle >>[=]{ update(UpdateReason::Moved); };
-        scale >>[=]{ update(UpdateReason::Moved); };
-
-        visible >>[=]{
-            for (int i = 0, n = childCount(); i < n; ++i)
-                childAt(i)->visible = visible();
-            if (!visible()) {
-                context_ = nullptr;
-                image_ = Image{};
-                if (parentInstance())
-                    parentInstance()->visibleChildren_->remove(serial_);
-                update(UpdateReason::Hidden);
-            }
-            else {
-                if (parentInstance())
-                    parentInstance()->visibleChildren_->insert(serial_, this);
-                if (isPainted()) {
-                    clear();
-                    paint();
-                    update(UpdateReason::Changed);
-                }
-            }
-        };
+    render >>[=]{
+        if (isPainted()) {
+            clear();
+            paint();
+        }
     };
 }
 
@@ -168,10 +165,9 @@ bool View::Instance::isFullyVisibleIn(const Instance *other) const
 
 void View::Instance::centerInParent()
 {
-    pos <<[=]{ return parentInstance() ? 0.5 * (parentInstance()->size() - size()): Point{}; };
+    pos <<[=]{ return parentInstance() ? 0.5 * (parentInstance()->size() - size()) : Point{}; };
 }
 
-/// \todo rename to basePaper
 Color View::Instance::basePaper() const
 {
     for (const Instance *h = parentInstance(); h; h = h->parentInstance()) {
@@ -244,13 +240,13 @@ void View::Instance::update(UpdateReason reason)
     Window *w = window();
     if (!w) return;
 
+    if (!visible() && reason != UpdateReason::Hidden) return;
+
     if (
         isPainted() &&
         (reason == UpdateReason::Changed || reason == UpdateReason::Resized)
     )
-        picture();
-
-    if (!visible() && reason != UpdateReason::Hidden) return;
+        render();
 
     w->addToFrame(UpdateRequest::create(reason, this));
 }
@@ -519,7 +515,7 @@ void View::Instance::polish(Window *window)
         child->polish(window);
     }
 
-    picture();
+    render();
 
     window->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
 }

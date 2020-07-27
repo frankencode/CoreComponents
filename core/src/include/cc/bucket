@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <iterator>
 #include <limits>
+#include <cc/assert>
 #include <cc/BucketMap>
 #include <cc/BinarySearch>
 
@@ -652,7 +653,7 @@ public:
     TreeIterator &operator++()
     {
         assert(node_); // cannot increment an exhausted iterator
-        assert(revision_ == tree_->revision()); // cannot modify container while iterating it
+        CC_ASSERT(revision_ == tree_->revision()); // cannot modify container while iterating it
 
         #if 0
         if (!node_) {

@@ -166,15 +166,6 @@ public:
         void adoptChild(View &parent, View &child); /// \todo 'static'?
 
     private:
-        Property<void> picture {
-            [=]{
-                if (isPainted()) {
-                    clear();
-                    paint();
-                }
-            }
-        };
-
         virtual bool feedFingerEvent(FingerEvent *event);
         virtual bool feedMouseEvent(MouseEvent *event);
         virtual bool feedWheelEvent(WheelEvent *event);
@@ -189,6 +180,7 @@ public:
 
         cairo_surface_t *cairoSurface() const override;
 
+        Signal render;
         uint64_t serial_ { 0 };
         Window *window_ { nullptr };
         Instance *parent_ { nullptr };

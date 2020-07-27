@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/exceptions>
-#include <cc/stdio>
-#include <cc/QueueInstance>
+#include <cc/ui/SdlWindow>
+#include <cc/ui/SdlContext>
 #include <cc/ui/Image>
 #include <cc/ui/View>
-#include <cc/ui/SdlContext>
-#include <cc/ui/SdlWindow>
+#include <cc/QueueInstance>
+#include <cc/exceptions>
+#include <cc/stdio>
 
 namespace cc {
 namespace ui {
@@ -108,19 +108,19 @@ SdlWindow *SdlWindow::open(WindowMode mode)
     }
     #endif
 
-    title->connect([=]{
+    title >>[=]{
         SDL_SetWindowTitle(sdlWindow_, title());
-    });
+    };
 
-    size->connect([=]{
+    size >>[=]{
         if (size() != currentSize_)
             SDL_SetWindowSize(sdlWindow_, size()[0], size()[1]);
-    });
+    };
 
-    pos->connect([=]{
+    pos >>[=]{
         if (pos() != currentPos_)
             SDL_SetWindowPosition(sdlWindow_, pos()[0], pos()[1]);
-    });
+    };
 
     return this;
 }

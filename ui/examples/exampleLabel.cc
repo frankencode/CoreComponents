@@ -21,7 +21,6 @@ int main()
     label->pos <<[=]{ return view->center() - label->center(); };
 
     Easing{label->angle, 0.5, Easing::Bezier{0.5, -0.4, 0.5, 1.4}};
-    Easing{label->size, 0.5, Easing::Bezier{0.5, -0.4, 0.5, 1.4}};
 
     view << label;
 
@@ -31,6 +30,7 @@ int main()
         label->text = dec(date->hour(), 2) + "∶" + dec(date->minutes(), 2) + "∶" + dec(date->seconds(), 2);
         label->angle += 45;
     };
+    timer->timeout();
     timer->start();
 
     Window::open(view, "Hello, world!", WindowMode::Accelerated|WindowMode::VSync);

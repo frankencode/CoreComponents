@@ -81,7 +81,7 @@ public:
             value_{b}
         {}
 
-        Property alias() { return Property(this, true); }
+        Property alias() { return Property{this, true}; }
 
         const T &value() const
         {
@@ -169,98 +169,7 @@ public:
 private:
     friend class Instance;
 
-    Property(Instance *instance, bool): instance_{instance} {}
-
-    Ref<Instance> instance_;
-};
-
-template<>
-class Property<void>
-{
-public:
-    Property(): instance_{Instance::create()} {}
-
-    Property(Property &&b): instance_{std::move(b.instance_)} {}
-    Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
-
-    Property(const std::function<void()> &f): instance_{Instance::create()} { instance_->associate(f); }
-    Property &operator=(const std::function<void()> &f) { instance_->bind(f); return *this; }
-
-    ~Property() { instance_->disband(); }
-
-    class Instance: public PropertyBinding {
-    public:
-        template<class F>
-        void bind(const F &f)
-        {
-            clearDependencies();
-
-            f_ = f;
-            dirty_ = false;
-            cascade();
-        }
-
-        template<class F>
-        void associate(const F &f)
-        {
-            clearDependencies();
-
-            f_ = f;
-            dirty_ = true;
-        }
-
-        template<class S>
-        void schedule(const S &s)
-        {
-            s_ = s;
-        }
-
-    private:
-        friend class Property;
-
-        template<class T2>
-        friend Property<T2> alias(Property<T2> &p);
-
-        static Ref<Instance> create() { return new Instance{}; }
-
-        Instance():
-            PropertyBinding{true}
-        {}
-
-        void value() const
-        {
-            preAccess();
-        }
-
-        void evaluate() override
-        {
-            f_();
-        }
-
-        void evaluateLater() override
-        {
-            if (s_) s_();
-        }
-
-        void disband() override
-        {
-            PropertyBinding::disband();
-            f_ = std::function<void()>{};
-        }
-
-        std::function<void()> f_;
-        std::function<void()> s_;
-    };
-
-    Instance *operator->() { return instance_; }
-    const Instance *operator->() const { return instance_; }
-
-    void operator()() const { instance_->value(); }
-
-private:
-    friend class Instance;
-
-    Property(Instance *instance, bool): instance_{instance} {}
+    explicit Property(Instance *instance, bool): instance_{instance} {}
 
     Ref<Instance> instance_;
 };

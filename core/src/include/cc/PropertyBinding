@@ -8,11 +8,21 @@
 
 #pragma once
 
+#include <cc/exceptions>
 #include <cc/Signal>
 
 namespace cc {
 
 template<class> class SetInstance;
+
+class PropertyBindingError: public Exception
+{};
+
+class PropertyBindingLoop: public PropertyBindingError
+{
+public:
+    String message() const override;
+};
 
 class PropertyBinding: public Object
 {
@@ -37,14 +47,11 @@ protected:
     void cascade();
 
     virtual void evaluate() = 0;
-    virtual void evaluateLater() {}
     virtual void disband();
 
     bool dirty_;
 
 private:
-    static thread_local PropertyBinding *activeInstance_;
-
     mutable Ref<Association> dependencies_;
     mutable Ref<Association> subscribers_;
 };
