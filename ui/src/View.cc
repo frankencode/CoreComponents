@@ -79,6 +79,7 @@ void View::Instance::disband()
     angle->disband();
     scale->disband();
     childCount->disband();
+    parentInstance->disband();
 
     layout_ = Layout{nullptr};
 }
@@ -314,9 +315,12 @@ void View::Instance::removeChild(View child)
     childDone(child);
 }
 
-void View::Instance::adoptChild(View &parent, View &child)
+void View::Instance::adoptChild(View parent, View child)
 {
-    parent->insertChild(child);
+    if (child->parent() != parent) {
+        if (child->parent()) child->parent()->removeChild(child);
+        parent->insertChild(child);
+    }
 }
 
 bool View::Instance::feedFingerEvent(FingerEvent *event)

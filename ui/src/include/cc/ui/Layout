@@ -23,15 +23,11 @@ public:
     protected:
         friend class View;
 
-        Instance(const View &view);
-
         virtual void childReady(View child) = 0;
         virtual void childDone(View child) = 0;
 
-        View &view() const { return view_; }
-        void updateView();
-
-        View &view_;
+        void init(View &view);
+        static void update(View &view);
     };
 
     Layout(Instance *instance):

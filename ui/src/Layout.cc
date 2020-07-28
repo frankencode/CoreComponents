@@ -12,15 +12,14 @@
 namespace cc {
 namespace ui {
 
-Layout::Instance::Instance(const View &view):
-    view_{const_cast<View &>(view)}
+void Layout::Instance::init(View &view)
 {
     view->layout_ = this;
 }
 
-void Layout::Instance::updateView()
+void Layout::Instance::update(View &view)
 {
-    view_->update();
+    view->update();
 }
 
 }} // namespace cc::ui

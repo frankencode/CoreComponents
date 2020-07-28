@@ -13,8 +13,10 @@ namespace cc {
 namespace ui {
 
 RowLayout::Instance::Instance(const View &view):
-    Layout::Instance{view}
+    view_{view}
 {
+    init(view_);
+
     align >>[=]{ updateLayout(); };
     margin >>[=]{ updateLayout(); };
     spacing >>[=]{ updateLayout(); };
@@ -27,33 +29,33 @@ void RowLayout::Instance::childReady(View child)
     if (child->visible()) {
         if (align() == RowAlign::Top) {
             Size innerSize;
-            if (view()->size()[0] > 0)
-                innerSize = view()->size() - 2 * margin();
+            if (view_->size()[0] > 0)
+                innerSize = view_->size() - 2 * margin();
 
             const double x = innerSize[0];
 
             if (child->size()[1] > innerSize[1]) innerSize[1] = child->size()[1];
             innerSize[0] += child->padding() + child->size()[0];
-            if (view()->childCount() > 0) innerSize[0] += spacing();
+            if (view_->childCount() > 0) innerSize[0] += spacing();
 
-            view()->size = innerSize + 2 * margin();
+            view_->size = innerSize + 2 * margin();
 
             updateChildPos(child, innerSize, x);
-            updateView();
+            update(view_);
         }
         else
             updateLayout();
     }
 
     child->size >>[=]{
-        if (view()->childCount() > 0) {
-            if (child == view()->childAt(view()->childCount() - 1)) {
+        if (view_->childCount() > 0) {
+            if (child == view_->childAt(view_->childCount() - 1)) {
                 double newWidth = child->pos()[0] + child->size()[0] + margin()[0];
                 double newHeight = child->size()[1] + 2 * margin()[1];
-                if (newHeight < view()->size()[1]) newHeight = view()->size()[1];
-                view()->size = Size{ newWidth, newHeight };
-                updateChildPos(child, view()->size() - 2 * margin(), child->pos()[0]);
-                updateView();
+                if (newHeight < view_->size()[1]) newHeight = view_->size()[1];
+                view_->size = Size{ newWidth, newHeight };
+                updateChildPos(child, view_->size() - 2 * margin(), child->pos()[0]);
+                update(view_);
                 return;
             }
         }
@@ -83,22 +85,22 @@ void RowLayout::Instance::updateLayout()
 {
     Size innerSize;
 
-    for (int i = 0, n = view()->childCount(); i < n; ++i)
+    for (int i = 0, n = view_->childCount(); i < n; ++i)
     {
-        View child = view()->childAt(i);
+        View child = view_->childAt(i);
         if (!child->visible()) continue;
         if (child->size()[1] > innerSize[1]) innerSize[1] = child->size()[1];
         innerSize[0] += child->padding() + child->size()[0];
         if (i < n - 1) innerSize[0] += spacing();
     }
 
-    view()->size = innerSize + 2 * margin();
+    view_->size = innerSize + 2 * margin();
 
     double x = 0;
 
-    for (int i = 0, n = view()->childCount(); i < n; ++i)
+    for (int i = 0, n = view_->childCount(); i < n; ++i)
     {
-        View child = view()->childAt(i);
+        View child = view_->childAt(i);
         if (!child->visible()) continue;
 
         x += child->padding();
@@ -108,7 +110,7 @@ void RowLayout::Instance::updateLayout()
         x += child->size()[0] + spacing();
     }
 
-    updateView();
+    update(view_);
 }
 
 }} // namespace cc::ui

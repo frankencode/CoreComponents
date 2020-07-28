@@ -113,8 +113,6 @@ public:
         friend class ApplicationInstance;
         friend class Layout;
 
-        Property<Instance *> parentInstance { nullptr };
-
         Instance();
         ~Instance();
 
@@ -163,7 +161,9 @@ public:
         virtual void insertChild(View child);
         virtual void removeChild(View child);
 
-        void adoptChild(View &parent, View &child); /// \todo 'static'?
+        static void adoptChild(View parent, View child);
+
+        Property<Instance *> parentInstance { nullptr };
 
     private:
         virtual bool feedFingerEvent(FingerEvent *event);
@@ -183,7 +183,6 @@ public:
         Signal render;
         uint64_t serial_ { 0 };
         Window *window_ { nullptr };
-        Instance *parent_ { nullptr };
 
         Map<uint64_t, View> children_;
         Map<uint64_t, View> visibleChildren_;

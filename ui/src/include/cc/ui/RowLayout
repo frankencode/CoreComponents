@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/ui/Layout>
+#include <cc/ui/View>
 
 namespace cc {
 namespace ui {
@@ -33,6 +33,8 @@ public:
 
         void updateChildPos(View child, Size innerSize, double x);
         void updateLayout();
+
+        View view_;
     };
 
     RowLayout(const View &view):

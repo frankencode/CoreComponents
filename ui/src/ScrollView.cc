@@ -17,33 +17,32 @@
 namespace cc {
 namespace ui {
 
-ScrollView::Instance::Instance()
+ScrollView::Instance::Instance(const View &carrier):
+    carrier_{carrier}
 {
-    build >>[=]{
-        if (parent()) size <<[=]{ return parent()->size(); };
+    size <<[=]{ return parent() ? parent()->size() : Size{}; };
 
-        carrier_ = createCarrier();
-        (*this) << carrier_;
-
-        size >>[=]{
-            positionCarrierOnResize();
-            keepFocusControlInView();
-        };
-
-        timer_->timeout >>[=]{
-            if (timerMode_ == TimerMode::Flying) carrierFly();
-            else if (timerMode_ == TimerMode::Bouncing) carrierBounce();
-            else if (timerMode_ == TimerMode::Traversing) carrierTraverse();
-        };
-
-        focusControl <<[=]{
-            return Application{}->focusControl();
-        };
-
-        focusControl >>[=]{
-            keepFocusControlInView();
-        };
+    size >>[=]{
+        positionCarrierOnResize();
+        keepFocusControlInView();
     };
+
+    timer_->timeout >>[=]{
+        if (timerMode_ == TimerMode::Flying) carrierFly();
+        else if (timerMode_ == TimerMode::Bouncing) carrierBounce();
+        else if (timerMode_ == TimerMode::Traversing) carrierTraverse();
+    };
+
+    focusControl <<[=]{
+        return Application{}->focusControl();
+    };
+
+    focusControl >>[=]{
+        keepFocusControlInView();
+    };
+
+    if (!carrier_) carrier_ = View{};
+    if (!carrier_->parent()) View::Instance::insertChild(carrier_);
 }
 
 ScrollView::Instance::~Instance()

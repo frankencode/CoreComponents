@@ -38,10 +38,10 @@ public:
         friend class Object;
         friend class ScrollView;
 
-        Instance();
+        Instance(const View &carrier = View{nullptr});
         ~Instance();
 
-        virtual View createCarrier();
+        virtual View createCarrier(); // FIXME: obsolete
         virtual void preheat();
 
         virtual void positionCarrierOnResize();
