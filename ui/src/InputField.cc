@@ -9,7 +9,6 @@
 #include <cc/ui/InputField>
 #include <cc/ui/Application>
 #include <cc/ui/ColumnLayout>
-#include <cc/ui/InputLine>
 #include <cc/ui/Label>
 #include <cc/ui/TextInput>
 #include <cc/ui/Easing>
@@ -17,96 +16,107 @@
 namespace cc {
 namespace ui {
 
-InputField::Instance::Instance(const String &labelText_):
-    labelText{labelText_}
+InputField::Instance::Instance(const InputControl &input, const String &inputLabel):
+    labelText{inputLabel},
+    input_{input}
 {
+    delegate = input_;
+
     paper <<[=]{
         return theme()->inputFieldFillColor();
             // FIXME: should be a function on background Color
             // FIXME: make depend on input field type
     };
 
-    build >>[=]{
-        InputControl input = createInputControl();
-        input->pos = Point { dp(12), dp(24) };
-        input->accepted >>[=]{ accepted(); };
-        input->rejected >>[=]{ rejected(); };
-        input->gotoNext >>[=]{ gotoNext(); };
-        input->gotoPrevious >>[=]{ gotoPrevious(); };
-        (*this) << input;
-        input_ = input;
-        inputText <<[=]{ return input_->text(); };
+    input_->pos = Point { dp(12), dp(24) };
+    input_->accepted >>[=]{ accepted(); };
+    input_->rejected >>[=]{ rejected(); };
+    input_->gotoNext >>[=]{ gotoNext(); };
+    input_->gotoPrevious >>[=]{ gotoPrevious(); };
+    (*this) << input_;
 
-        size <<[=]{ return preferredSize(); };
+    inputText <<[=]{ return input_->text(); };
 
-        Label dummy;
-        dummy->text <<[=]{ return dummyText(); };
-        dummy->ink <<[=]{ return theme()->secondaryTextColor(); };
-        dummy->visible <<[=]{ return dummy->text() && !input->text(); };
-        dummy->pos <<[=]{
-            return Point {
-                input->left(),
-                input->size()[1]/2 - dummy->size()[1] / 2
-            };
+    size <<[=]{ return preferredSize(); };
+
+    Label dummy;
+    dummy->text <<[=]{ return dummyText(); };
+    dummy->ink <<[=]{ return theme()->secondaryTextColor(); };
+    dummy->visible <<[=]{ return dummy->text() && !input->text(); };
+    dummy->pos <<[=]{
+        return Point {
+            input->left(),
+            input->size()[1]/2 - dummy->size()[1] / 2
+        };
+    };
+
+    (*this) << dummy;
+
+    Label label;
+    label->text <<[=]{ return labelText(); };
+    label->ink <<[=]{
+        return (pressed() || focus()) ?
+            style()->theme()->focusTextColor() :
+            style()->theme()->secondaryTextColor();
+    };
+    {
+        Label smallLabel;
+        smallLabel->text <<[=]{ return labelText(); };
+        smallLabel->font <<[=]{ return Application{}->smallFont(); };
+        smallLabel->pos <<[=]{ return Point { dp(12), dp(12) }; };
+        smallLabel->visible = false;
+        (*this) << smallLabel;
+
+        Label bigLabel;
+        bigLabel->text <<[=]{ return labelText(); };
+        bigLabel->font <<[=]{ return Application{}->defaultFont(); };
+        bigLabel->pos <<[=]{ return Point { dp(12), size()[1] / 2 - bigLabel->size()[1] / 2 }; };
+        bigLabel->visible = false;
+        (*this) << bigLabel;
+
+        label->font <<[=]{
+            return (focus() || input->text() || dummy->text()) ?
+                smallLabel->font() :
+                bigLabel->font();
+        };
+        label->pos <<[=]{
+            return (focus() || input->text() || dummy->text()) ?
+                smallLabel->pos() :
+                bigLabel->pos();
         };
 
-        (*this) << dummy;
+        auto easing = Easing::Bezier(0.5, 0.0, 0.5, 1.0);
+        Easing{label->font, 0.1, easing};
+        Easing{label->pos, 0.1, easing};
+    }
+    (*this) << label;
 
-        Label label;
-        label->text <<[=]{ return labelText(); };
-        label->ink <<[=]{
-            return (pressed() || focus()) ?
-                style()->theme()->focusTextColor() :
-                style()->theme()->secondaryTextColor();
+    {
+        View underline;
+        underline->inheritPaper();
+        underline->size <<[=]{
+            return Size{size()[0], std::ceil(dp(2))};
         };
-        {
-            Label smallLabel;
-            smallLabel->text <<[=]{ return labelText(); };
-            smallLabel->font <<[=]{ return Application{}->smallFont(); };
-            smallLabel->pos <<[=]{ return Point { dp(12), dp(12) }; };
-            smallLabel->visible = false;
-            (*this) << smallLabel;
-
-            Label bigLabel;
-            bigLabel->text <<[=]{ return labelText(); };
-            bigLabel->font <<[=]{ return Application{}->defaultFont(); };
-            bigLabel->pos <<[=]{ return Point { dp(12), size()[1] / 2 - bigLabel->size()[1] / 2 }; };
-            bigLabel->visible = false;
-            (*this) << bigLabel;
-
-            label->font <<[=]{
-                return (focus() || input->text() || dummy->text()) ?
-                    smallLabel->font() :
-                    bigLabel->font();
-            };
-            label->pos <<[=]{
-                return (focus() || input->text() || dummy->text()) ?
-                    smallLabel->pos() :
-                    bigLabel->pos();
-            };
-
-            auto easing = Easing::Bezier(0.5, 0.0, 0.5, 1.0);
-            Easing{label->font, 0.1, easing};
-            Easing{label->pos, 0.1, easing};
-        }
-        (*this) << label;
-
-        InputLine inputLine{dp(2)};
-        inputLine->thickness <<[=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); };
-        inputLine->ink <<[=]{
+        underline->pos <<[=]{
+            return Point { 0, std::ceil(size()[1]) - underline->size()[1] };
+        };
+        underlineThickness <<[=]{ return (hover() || pressed() || focus()) ? dp(2) : dp(1); };
+        underlineInk <<[=]{
             if (pressed()) return style()->theme()->pressedInputLineColor();
             if (focus()) return style()->theme()->focusInputLineColor();
             if (hover()) return style()->theme()->hoverInputLineColor();
             return style()->theme()->inputLineColor();
         };
-        inputLine->pos <<[=]{
-            return Point { 0, std::ceil(size()[1]) - inputLine->size()[1] };
+        underlineThickness >>[=]{ underline->update(); };
+        underlineInk >>[=]{ underline->update(); };
+        underline->paint >>[=]{
+            Painter p{underline};
+            p->rectangle(Point{ 0, underline->size()[1] - underlineThickness() }, underline->size());
+            p->setSource(underlineInk());
+            p->fill();
         };
-
-        (*this) << inputLine;
-
-        delegate = input;
-    };
+        (*this) << underline;
+    }
 
     paint >>[=]{
         const double w = size()[0];

@@ -36,17 +36,18 @@ public:
     protected:
         friend class InputField;
 
-        Instance(const String &labelText);
-
-        virtual InputControl createInputControl() = 0;
+        Instance(const InputControl &input, const String &inputLabel);
 
         void clear() override;
+
+        InputControl input_ { nullptr };
 
     private:
         void gotoNext();
         void gotoPrevious();
 
-        InputControl input_ { nullptr };
+        Property<double> underlineThickness;
+        Property<Color> underlineInk;
     };
 
     InputField(Instance *instance):

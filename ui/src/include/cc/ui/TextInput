@@ -38,12 +38,12 @@ public:
     protected:
         friend class TextInput;
 
-        Instance(const String &initialText = "");
+        Instance(const String &initialText);
+        Instance(Ref<TextEditor> editor);
         ~Instance();
 
         void init();
-
-        virtual Ref<TextEditor> createEditor(const String &initialText);
+        const TextEditor *editor() const { return editor_; }
 
     private:
         Property<StringList> imeChunks;

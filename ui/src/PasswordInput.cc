@@ -14,19 +14,14 @@ namespace cc {
 namespace ui {
 
 PasswordInput::Instance::Instance(const String &bullet):
-    passwordEditor_{Object::create<PasswordEditor>(bullet)}
+    TextInput::Instance{Object::create<PasswordEditor>(bullet)}
 {
     font <<[=]{ return Application{}->defaultFixedFont(); };
 }
 
 String PasswordInput::Instance::password() const
 {
-    return passwordEditor_->password();
-}
-
-Ref<TextEditor> PasswordInput::Instance::createEditor(const String &)
-{
-    return passwordEditor_;
+    return dynamic_cast<const PasswordEditor *>(editor())->password();
 }
 
 }} // namespace cc::ui

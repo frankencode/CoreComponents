@@ -13,12 +13,7 @@ namespace cc {
 namespace ui {
 
 TextField::Instance::Instance(const String &labelText):
-    InputField::Instance{labelText}
+    InputField::Instance{TextInput{}, labelText}
 {}
-
-InputControl TextField::Instance::createInputControl()
-{
-    return TextInput{};
-}
 
 }} // namespace cc::ui

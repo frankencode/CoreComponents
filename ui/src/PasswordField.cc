@@ -12,21 +12,13 @@
 namespace cc {
 namespace ui {
 
-PasswordField::Instance::Instance(const String &labelText, const String &bullet):
-    InputField::Instance{labelText},
-    bullet_{bullet}
+PasswordField::Instance::Instance(const String &label, const String &bullet):
+    InputField::Instance{PasswordInput{bullet}, label}
 {}
 
 String PasswordField::Instance::password() const
 {
-    return getPassword_();
-}
-
-InputControl PasswordField::Instance::createInputControl()
-{
-    PasswordInput input{bullet_};
-    getPassword_ = [input]{ return input->password(); };
-    return input;
+    return input_->as<PasswordInput>()->password();
 }
 
 }} // namespace cc::ui

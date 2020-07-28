@@ -14,57 +14,63 @@
 namespace cc {
 namespace ui {
 
-TextInput::Instance::Instance(const String &initialText)
+TextInput::Instance::Instance(const String &initialText):
+    Instance{Object::create<LineEditor>(initialText)}
+{}
+
+TextInput::Instance::Instance(Ref<TextEditor> editor):
+    editor_{editor}
 {
-    build >>[=]{
-        editor_ = createEditor(initialText);
-        inheritPaper();
+    inheritPaper();
 
-        if (!font()) font <<[=]{ return Application{}->defaultFont(); };
+    if (!font()) font <<[=]{ return Application{}->defaultFont(); };
 
-        unwrappedTextRun <<[=]{
-            auto run = TextRun::create();
-            if (imeChunks()->count() > 0) {
-                for (const String &chunk: imeChunks()) {
-                    if (chunk->count() > 0)
-                        run->append(chunk, font());
-                }
+    unwrappedTextRun <<[=]{
+        auto run = TextRun::create();
+        if (imeChunks()->count() > 0) {
+            for (const String &chunk: imeChunks()) {
+                if (chunk->count() > 0)
+                    run->append(chunk, font());
             }
-            else
-                run->append(text(), font());
-            return run;
-        };
-
-        textRun <<[=]{
-            return unwrappedTextRun()->wrap(size()[0]);
-        };
-
-        if (text()->count() > 0)
-            selection = Range { 0, text()->count() };
-
-        textCursor = textRun()->getTextCursor(text()->count());
-
-        textRun >>[=]{
-            if (textCursor())
-                textCursor = textRun()->getTextCursor(textCursor()->byteOffset());
-        };
-
-        size <<[=]{
-            return preferredSize();
-        };
-
-        cursor <<[=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); };
-
-        focus >>[=]{
-            if (focus()) startBlink();
-            else stopBlink();
-        };
-
-        timer_ = Timer{0.5};
-        timer_->timeout >>[=]{
-            textCursorVisible = !textCursorVisible();
-        };
+        }
+        else
+            run->append(text(), font());
+        return run;
     };
+
+    textRun <<[=]{
+        return unwrappedTextRun()->wrap(size()[0]);
+    };
+
+    if (text()->count() > 0)
+        selection = Range { 0, text()->count() };
+
+    textCursor = textRun()->getTextCursor(text()->count());
+
+    textRun >>[=]{
+        if (textCursor())
+            textCursor = textRun()->getTextCursor(textCursor()->byteOffset());
+        update();
+    };
+
+    size <<[=]{
+        return preferredSize();
+    };
+
+    cursor <<[=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); };
+
+    focus >>[=]{
+        if (focus()) startBlink();
+        else stopBlink();
+    };
+
+    timer_ = Timer{0.5};
+    timer_->timeout >>[=]{
+        textCursorVisible = !textCursorVisible();
+    };
+
+    textCursorVisible >>[=]{ update(); };
+    selection >>[=]{ update(); };
 
     paint >>[=]{
         Painter p{this};
@@ -122,11 +128,6 @@ Size TextInput::Instance::minSize() const
 Size TextInput::Instance::maxSize() const
 {
     return Size{ std::numeric_limits<double>::max(), preferredSize()[1] };
-}
-
-Ref<TextEditor> TextInput::Instance::createEditor(const String &initialText)
-{
-    return Object::create<LineEditor>(initialText);
 }
 
 String TextInput::Instance::text() const

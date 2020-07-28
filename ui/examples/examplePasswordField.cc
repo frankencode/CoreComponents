@@ -1,8 +1,8 @@
 #include <cc/ui/Application>
-#include <cc/ui/TextField>
+#include <cc/ui/PasswordField>
 #include <cc/DEBUG>
 
-int main()
+int main(int argc, char **argv)
 {
     using namespace cc;
     using namespace cc::ui;
@@ -10,10 +10,10 @@ int main()
     View view{640, 480};
     view->inheritPaper();
 
-    TextField field{"First name"};
+    PasswordField field{"Enter password"};
     field->centerInParent();
     field->accepted >>[=]{
-        CC_INSPECT(field->inputText());
+        CC_INSPECT(field->password());
     };
     view << field;
 

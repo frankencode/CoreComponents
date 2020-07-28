@@ -107,6 +107,8 @@ public:
             return *this;
         }
 
+        void update(UpdateReason reason = UpdateReason::Changed);
+
     protected:
         friend class View;
         friend class Window;
@@ -146,8 +148,6 @@ public:
         virtual bool onWindowExposed();
         virtual bool onWindowEntered();
         virtual bool onWindowLeft();
-
-        void update(UpdateReason reason = UpdateReason::Changed);
 
         virtual void childReady(View &child);
         virtual void childDone(View &child);

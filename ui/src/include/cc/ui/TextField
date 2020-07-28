@@ -23,16 +23,12 @@ public:
     protected:
         friend class TextField;
 
-        Instance(const String &labelText);
-
-        InputControl createInputControl() override;
+        Instance(const String &label);
     };
 
-    TextField(const String &labelText):
-        InputField{new Instance{labelText}}
+    TextField(const String &label):
+        InputField{new Instance{label}}
     {}
-
-    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui
