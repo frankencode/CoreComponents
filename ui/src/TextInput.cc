@@ -50,7 +50,6 @@ TextInput::Instance::Instance(Ref<TextEditor> editor):
     textRun >>[=]{
         if (textCursor())
             textCursor = textRun()->getTextCursor(textCursor()->byteOffset());
-        update();
     };
 
     size <<[=]{
@@ -69,10 +68,7 @@ TextInput::Instance::Instance(Ref<TextEditor> editor):
         textCursorVisible = !textCursorVisible();
     };
 
-    textCursorVisible >>[=]{ update(); };
-    selection >>[=]{ update(); };
-
-    paint >>[=]{
+    paint <<[=]{
         Painter p{this};
 
         p->setSource(theme()->primaryTextColor());
@@ -302,7 +298,6 @@ bool TextInput::Instance::onKeyPressed(const KeyEvent *event)
             selection = Range{};
 
         startBlink();
-        update();
     }
     else if (event->scanCode() == ScanCode::Key_Backspace)
     {

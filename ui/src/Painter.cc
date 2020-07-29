@@ -18,7 +18,9 @@ namespace ui {
 
 Painter::Instance::Instance(Surface::Instance *surface):
     cr_{cairo_create(surface->cairoSurface())}
-{}
+{
+    surface->polish();
+}
 
 Painter::Instance::~Instance()
 {

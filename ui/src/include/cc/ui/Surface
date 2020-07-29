@@ -51,6 +51,7 @@ public:
     void nextPage(bool clear = true);
 
     virtual cairo_surface_t *cairoSurface() const = 0;
+    virtual void polish() {}
 };
 
 }} // namespace cc::ui

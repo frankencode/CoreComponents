@@ -32,8 +32,8 @@ public:
     class Instance: public Surface::Instance
     {
     public:
-        Signal build; // FIXME: obsolete
-        Property<void> paint;
+        Signal build;
+        Property<> paint;
 
         Property<bool> visible { true };
         Property<bool> moving { false };
@@ -107,8 +107,6 @@ public:
             return *this;
         }
 
-        void update(UpdateReason reason = UpdateReason::Changed);
-
     protected:
         friend class View;
         friend class Window;
@@ -125,8 +123,9 @@ public:
         virtual bool isStatic() const;
 
         void clear(Color Color);
+        void clear();
 
-        virtual void clear();
+        void polish() override { clear(); }
 
         virtual bool onPointerPressed(const PointerEvent *event);
         virtual bool onPointerReleased(const PointerEvent *event);
@@ -148,6 +147,8 @@ public:
         virtual bool onWindowExposed();
         virtual bool onWindowEntered();
         virtual bool onWindowLeft();
+
+        void update(UpdateReason reason = UpdateReason::Changed);
 
         virtual void childReady(View &child);
         virtual void childDone(View &child);

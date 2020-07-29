@@ -44,7 +44,7 @@ protected:
     void cascade();
 
     virtual void evaluate() = 0;
-    virtual void disband();
+    void disband();
 
     bool dirty_;
 

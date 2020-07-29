@@ -23,7 +23,7 @@ TextLineHandle::Instance::Instance(TextLine::Instance *textLine):
         pos <<[=]{ return Point{ textLine_->textEdit_->size()[0] - textLine_->textEdit_->lineNumberWidth(), 0 }; };
     };
 
-    paint >>[=]{
+    paint <<[=]{
         Painter p{this};
         if (textLine_->textEdit_->showLineNumbers()) {
             p->setSource(textLine_->textEdit_->lineNumberInk());

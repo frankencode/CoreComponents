@@ -42,14 +42,13 @@ InputField::Instance::Instance(const InputControl &input, const String &inputLab
     Label dummy;
     dummy->text <<[=]{ return dummyText(); };
     dummy->ink <<[=]{ return theme()->secondaryTextColor(); };
-    dummy->visible <<[=]{ return dummy->text() && !input->text(); };
+    dummy->visible <<[=]{ return dummy->text() && !input_->text(); };
     dummy->pos <<[=]{
         return Point {
             input->left(),
             input->size()[1]/2 - dummy->size()[1] / 2
         };
     };
-
     (*this) << dummy;
 
     Label label;
@@ -107,9 +106,7 @@ InputField::Instance::Instance(const InputControl &input, const String &inputLab
             if (hover()) return style()->theme()->hoverInputLineColor();
             return style()->theme()->inputLineColor();
         };
-        underlineThickness >>[=]{ underline->update(); };
-        underlineInk >>[=]{ underline->update(); };
-        underline->paint >>[=]{
+        underline->paint <<[=]{
             Painter p{underline};
             p->rectangle(Point{ 0, underline->size()[1] - underlineThickness() }, underline->size());
             p->setSource(underlineInk());
@@ -118,7 +115,7 @@ InputField::Instance::Instance(const InputControl &input, const String &inputLab
         (*this) << underline;
     }
 
-    paint >>[=]{
+    paint <<[=]{
         const double w = size()[0];
         const double h = size()[1];
         const double r = dp(6);
@@ -150,10 +147,12 @@ Size InputField::Instance::maxSize() const
     return input_->maxSize() + Size { std::ceil(dp(24)), std::ceil(dp(32)) };
 }
 
+#if 0
 void InputField::Instance::clear()
 {
-    View::Instance::clear(parent()->paper());
+    if (parent()) View::Instance::clear(parent()->paper()); // FIXME, why not use inheritPaper()?!
 }
+#endif
 
 void InputField::Instance::gotoNext()
 {

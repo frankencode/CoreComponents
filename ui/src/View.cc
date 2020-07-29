@@ -12,7 +12,6 @@
 #include <cc/ui/Window>
 #include <cc/ui/UpdateRequest>
 #include <cc/ui/Control>
-#include <cc/DEBUG>
 
 namespace cc {
 namespace ui {
@@ -40,13 +39,9 @@ View::Instance::Instance()
         }
     };
 
-    paint >>[=]{
-        update(UpdateReason::Changed);
-    };
+    paint <<[=]{ if (isPainted()) Painter{this}; };
 
-    paint <<[=]{
-        if (isPainted()) clear();
-    };
+    paint >>[=]{ update(UpdateReason::Changed); };
 }
 
 View::Instance::~Instance()
@@ -60,7 +55,8 @@ void View::Instance::disband()
     for (auto &item: children_)
         item->value()->disband();
 
-    // render->disband();
+    #if 0 // FIXME: review cleanup strategy
+    build->disband();
     paint->disband();
 
     visible->disband();
@@ -76,6 +72,7 @@ void View::Instance::disband()
     scale->disband();
     childCount->disband();
     parentInstance->disband();
+    #endif
 
     layout_ = Layout{nullptr};
 }

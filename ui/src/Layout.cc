@@ -18,8 +18,6 @@ void Layout::Instance::init(View &view)
 }
 
 void Layout::Instance::update(View &view)
-{
-    view->update();
-}
+{}
 
 }} // namespace cc::ui

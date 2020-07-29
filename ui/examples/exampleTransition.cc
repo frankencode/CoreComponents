@@ -8,20 +8,22 @@ int main()
     using namespace cc;
     using namespace cc::ui;
 
-    Control control{640, 480};
-    control->paper = Material::White;
-    control->paint >>[=]{
-        Painter p{control};
-        p->translate(control->center());
-        p->setSource(Color{Material::Blue500});
-        p->rectangle(-Point{50, 50}, Size{100, 100});
-        p->fill();
+    View view{640, 480};
+    view->paper = Material::White;
+
+    Control blueBox{200, 200};
+    blueBox->centerInParent();
+    blueBox->paper = Color{Material::Blue500};
+    #if 1
+    blueBox->pressed >>[=]{
+        if (!blueBox->pressed()) fout() << blueBox->pointerPos() << nl;
+        blueBox->angle += 45;
     };
-    control->pressed >>[=]{
-        if (!control->pressed()) fout() << control->pointerPos() << nl;
-        control->angle += 45;
-    };
-    Easing{control->angle, 0.5, Easing::Bezier{0.5, -0.4, 0.5, 1.4}};
-    Window::open(control, "Click me!", WindowMode::Accelerated|WindowMode::VSync);
+    #endif
+    Easing{blueBox->angle, 0.5, Easing::Bezier{0.5, -0.4, 0.5, 1.4}};
+    view << blueBox;
+
+    Window::open(view, "Click me!", WindowMode::Accelerated|WindowMode::VSync);
+
     return Application{}->run();
 }

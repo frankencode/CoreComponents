@@ -47,7 +47,7 @@ TextLine::Instance::Instance(TextEdit::Instance *textEdit, TextItem *textItem):
         (*this) << TextLineHandle{this};
     };
 
-    paint >>[=]{
+    paint <<[=]{
         Painter p{this};
         p->setSource(textEdit_->ink());
         p->showTextRun(textEdit_->textPos(), wrappedTextRun());

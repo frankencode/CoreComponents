@@ -11,7 +11,6 @@
 #include <cc/String>
 #include <cc/PropertyBinding>
 #include <utility>
-#include <cc/DEBUG>
 
 namespace cc {
 
@@ -30,17 +29,13 @@ public:
             clearDependencies();
 
             f_ = f;
-            dirty_ = false;
-            cascade();
-        }
-
-        template<class F>
-        void associate(const F &f)
-        {
-            clearDependencies();
-
-            f_ = f;
-            dirty_ = true;
+            if (hasConsumers()) {
+                dirty_ = false;
+                cascade();
+            }
+            else {
+                dirty_ = true;
+            }
         }
 
         template<class G>
@@ -54,13 +49,13 @@ public:
         {
             if (dirty_) {
                 dirty_ = false;
-                evaluate();
+                cascade();
             }
 
             changed->connect(h);
         }
 
-        void disband() override
+        void disband()
         {
             PropertyBinding::disband();
             value_ = T{};
@@ -81,6 +76,11 @@ public:
             PropertyBinding{false},
             value_{b}
         {}
+
+        ~Instance()
+        {
+            disband();
+        }
 
         Property alias() { return Property{this, true}; }
 
@@ -134,10 +134,9 @@ public:
     Property(Property &&b): instance_{std::move(b.instance_)} {}
     Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
 
-    explicit Property(const std::function<T()> &f): instance_{Instance::create()} { instance_->associate(f); }
-    // Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
+    explicit Property(const std::function<T()> &f): instance_{Instance::create()} { instance_->bind(f); }
 
-    ~Property() { instance_->disband(); }
+    ~Property() {/* instance_->disband(); */}
 
     Instance *operator->() { return instance_; }
     const Instance *operator->() const { return instance_; }
@@ -187,17 +186,13 @@ public:
             clearDependencies();
 
             f_ = f;
-            dirty_ = false;
-            cascade();
-        }
-
-        template<class F>
-        void associate(const F &f)
-        {
-            clearDependencies();
-
-            f_ = f;
-            dirty_ = true;
+            if (hasConsumers()) {
+                dirty_ = false;
+                cascade();
+            }
+            else {
+                dirty_ = true;
+            }
         }
 
         template<class H>
@@ -210,7 +205,7 @@ public:
             changed->connect(h);
         }
 
-        void disband() override
+        void disband()
         {
             PropertyBinding::disband();
             f_ = std::function<void()>{};
@@ -237,8 +232,10 @@ public:
 
         void evaluate() override
         {
-            if (f_) f_();
-            emit();
+            if (f_) {
+                f_();
+                emit();
+            }
         }
 
         std::function<void()> f_;
@@ -249,10 +246,8 @@ public:
     Property(Property &&b): instance_{std::move(b.instance_)} {}
     Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
 
-    explicit Property(const std::function<void()> &f): instance_{Instance::create()} { instance_->associate(f); }
-    // Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
-
-    ~Property() { instance_->disband(); }
+    explicit Property(const std::function<void()> &f): instance_{Instance::create()} { instance_->bind(f); }
+    ~Property() {/* instance_->disband(); */}
 
     Instance *operator->() { return instance_; }
     const Instance *operator->() const { return instance_; }

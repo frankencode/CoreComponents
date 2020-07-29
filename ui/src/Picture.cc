@@ -23,7 +23,7 @@ Picture::Instance::Instance(Visual *initialVisual):
         };
     };
 
-    paint >>[=]{
+    paint <<[=]{
         Painter p{this};
         visual()->paint(p);
     };
