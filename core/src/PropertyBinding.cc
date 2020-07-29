@@ -63,61 +63,43 @@ void PropertyBinding::preAccess() const
 
     PropertyBinding *activeBinding = PropertyActivator::activeBinding();
     if (activeBinding && (activeBinding != this)) {
-        if (activeBinding->dependencies()->insert(const_cast<PropertyBinding *>(this)))
-            subscribers()->insert(activeBinding);
+        if (activeBinding->dependencies_->insert(const_cast<PropertyBinding *>(this)))
+            subscribers_->insert(activeBinding);
     }
-}
-
-PropertyBinding::Association *PropertyBinding::dependencies() const
-{
-    if (!dependencies_) dependencies_ = Association::create();
-    return dependencies_;
-}
-
-PropertyBinding::Association *PropertyBinding::subscribers() const
-{
-    if (!subscribers_) subscribers_ = Association::create();
-    return subscribers_;
 }
 
 bool PropertyBinding::hasConsumers() const
 {
-    return
-        (subscribers_ && subscribers_->count() > 0) ||
-        changed->hasListeners();
+    return subscribers_->count() > 0 || changed->hasListeners();
 }
 
 void PropertyBinding::clearDependencies()
 {
-    if (!dependencies_) return;
-
     for (PropertyBinding *other: dependencies_)
         other->subscribers_->remove(this);
-    dependencies_ = nullptr;
+    dependencies_->deplete();
 }
 
 void PropertyBinding::clearSubscribers()
 {
-    if (!subscribers_) return;
-
     for (PropertyBinding *other: subscribers_)
         other->dependencies_->remove(this);
-    subscribers_ = nullptr;
+    subscribers_->deplete();
 }
 
 void PropertyBinding::emit()
 {
-    if (subscribers_) {
-        for (PropertyBinding *other: subscribers_) {
-            if (other->hasConsumers()) {
-                other->dirty_ = false;
-                other->cascade();
-            }
-            else
-                other->dirty_ = true;
+    Association others = subscribers_;
+    for (PropertyBinding *other: others) {
+        if (other->hasConsumers()) {
+            other->dirty_ = false;
+            other->cascade();
         }
+        else
+            other->dirty_ = true;
     }
-    PropertyActivator activator{nullptr};
+
+    PropertyActivator activator{nullptr}; // FIXME
     changed->emit();
 }
 
@@ -131,13 +113,11 @@ void PropertyBinding::disband()
 {
     changed->disband();
     clearDependencies();
-    if (subscribers_) {
-        while (subscribers_->count() > 0) {
-            PropertyBinding *other = subscribers_->at(0);
-            other->disband();
-        }
-        subscribers_ = nullptr;
+    while (subscribers_->count() > 0) {
+        PropertyBinding *other = subscribers_->at(0);
+        other->disband();
     }
+    subscribers_->deplete();
 }
 
 } // namespace cc

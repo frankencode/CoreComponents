@@ -27,18 +27,15 @@ public:
 class PropertyBinding: public Object
 {
 protected:
-    Signal changed;
+    typedef Set< Ref<PropertyBinding> > Association;
 
-    typedef SetInstance< Ref<PropertyBinding> > Association;
+    Signal changed;
 
     PropertyBinding(bool dirty);
 
     void preAccess() const;
 
-    Association *dependencies() const;
-    Association *subscribers() const;
-
-    bool hasConsumers() const;
+    virtual bool hasConsumers() const;
 
     void clearDependencies();
     void clearSubscribers();
@@ -52,8 +49,8 @@ protected:
     bool dirty_;
 
 private:
-    mutable Ref<Association> dependencies_;
-    mutable Ref<Association> subscribers_;
+    mutable Association dependencies_;
+    mutable Association subscribers_;
 };
 
 } // namespace cc

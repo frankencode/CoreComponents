@@ -32,8 +32,8 @@ public:
     class Instance: public Surface::Instance
     {
     public:
-        Signal build;
-        Signal paint;
+        Signal build; // FIXME: obsolete
+        Property<void> paint;
 
         Property<bool> visible { true };
         Property<bool> moving { false };
@@ -180,7 +180,6 @@ public:
 
         cairo_surface_t *cairoSurface() const override;
 
-        Signal render;
         uint64_t serial_ { 0 };
         Window *window_ { nullptr };
 

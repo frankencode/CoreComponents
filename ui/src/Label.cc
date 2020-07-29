@@ -31,15 +31,16 @@ Label::Instance::Instance(const String &initialText, const Font &initialFont):
 
     size <<[=]{ return preferredSize(); };
 
-    text >>[=]{ update(); };
-    ink >>[=]{ update(); };
+/*    text >>[=]{ update(); };
+    ink >>[=]{ update(); };*/
 
     if (initialFont->ink())
         ink = initialFont->ink();
     else
         ink <<[=]{ return style()->theme()->primaryTextColor(); };
 
-    paint >>[=]{
+    paint <<[=]{
+        clear();
         Painter p{this};
         if (ink()) p->setSource(ink());
         p->showTextRun(textPos(), textRun());

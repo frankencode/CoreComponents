@@ -12,6 +12,7 @@
 #include <cc/ui/Window>
 #include <cc/ui/UpdateRequest>
 #include <cc/ui/Control>
+#include <cc/DEBUG>
 
 namespace cc {
 namespace ui {
@@ -21,8 +22,6 @@ View::Instance::Instance()
     pos >>[=]{ update(UpdateReason::Moved); };
     angle >>[=]{ update(UpdateReason::Moved); };
     scale >>[=]{ update(UpdateReason::Moved); };
-    size >>[=]{ update(UpdateReason::Resized); };
-    paper >>[=]{ update(UpdateReason::Changed); };
 
     visible >>[=]{
         for (int i = 0, n = childCount(); i < n; ++i)
@@ -37,19 +36,16 @@ View::Instance::Instance()
         else {
             if (parentInstance())
                 parentInstance()->visibleChildren_->insert(serial_, this);
-            if (isPainted()) {
-                clear();
-                paint();
-                update(UpdateReason::Changed);
-            }
+            paint();
         }
     };
 
-    render >>[=]{
-        if (isPainted()) {
-            clear();
-            paint();
-        }
+    paint >>[=]{
+        update(UpdateReason::Changed);
+    };
+
+    paint <<[=]{
+        if (isPainted()) clear();
     };
 }
 
@@ -64,7 +60,7 @@ void View::Instance::disband()
     for (auto &item: children_)
         item->value()->disband();
 
-    build->disband();
+    // render->disband();
     paint->disband();
 
     visible->disband();
@@ -228,8 +224,7 @@ bool View::Instance::onKeyReleased(const KeyEvent *event) { return false; }
 
 bool View::Instance::onWindowExposed()
 {
-    update(UpdateReason::Exposed);
-        // FIXME: double composition on startup?
+    paint();
     return false;
 }
 
@@ -242,12 +237,6 @@ void View::Instance::update(UpdateReason reason)
     if (!w) return;
 
     if (!visible() && reason != UpdateReason::Hidden) return;
-
-    if (
-        isPainted() &&
-        (reason == UpdateReason::Changed || reason == UpdateReason::Resized)
-    )
-        render();
 
     w->addToFrame(UpdateRequest::create(reason, this));
 }
@@ -512,6 +501,7 @@ uint64_t View::Instance::nextSerial() const
 
 void View::Instance::polish(Window *window)
 {
+#if 0
     for (auto pair: visibleChildren_)
     {
         View child = pair->value(); /// \todo const View &
@@ -519,9 +509,10 @@ void View::Instance::polish(Window *window)
         child->polish(window);
     }
 
-    render();
+    paint();
 
     window->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
+#endif
 }
 
 cairo_surface_t *View::Instance::cairoSurface() const

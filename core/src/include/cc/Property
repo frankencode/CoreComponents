@@ -11,13 +11,14 @@
 #include <cc/String>
 #include <cc/PropertyBinding>
 #include <utility>
+#include <cc/DEBUG>
 
 namespace cc {
 
 template<class T>
 class PropertyMutator;
 
-template<class T>
+template<class T = void>
 class Property
 {
 public:
@@ -133,8 +134,8 @@ public:
     Property(Property &&b): instance_{std::move(b.instance_)} {}
     Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
 
-    Property(const std::function<T()> &f): instance_{Instance::create()} { instance_->associate(f); }
-    Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
+    explicit Property(const std::function<T()> &f): instance_{Instance::create()} { instance_->associate(f); }
+    // Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
 
     ~Property() { instance_->disband(); }
 
@@ -165,6 +166,104 @@ public:
 
     template<class T2>
     Property &operator/=(const T2 &b) { instance_->setValue(instance_->value() / b); return *this; }
+
+private:
+    friend class Instance;
+
+    explicit Property(Instance *instance, bool): instance_{instance} {}
+
+    Ref<Instance> instance_;
+};
+
+template<>
+class Property<void>
+{
+public:
+    class Instance: public PropertyBinding {
+    public:
+        template<class F>
+        void bind(const F &f)
+        {
+            clearDependencies();
+
+            f_ = f;
+            dirty_ = false;
+            cascade();
+        }
+
+        template<class F>
+        void associate(const F &f)
+        {
+            clearDependencies();
+
+            f_ = f;
+            dirty_ = true;
+        }
+
+        template<class H>
+        void connect(const H &h)
+        {
+            if (dirty_) {
+                dirty_ = false;
+                evaluate();
+            }
+            changed->connect(h);
+        }
+
+        void disband() override
+        {
+            PropertyBinding::disband();
+            f_ = std::function<void()>{};
+        }
+
+    private:
+        friend class Property;
+
+        template<class T2>
+        friend Property<T2> alias(Property<T2> &p);
+
+        static Ref<Instance> create() { return new Instance; }
+
+        Instance(): PropertyBinding{false} {}
+
+        Property alias() { return Property{this, true}; }
+
+        bool hasConsumers() const override { return true; }
+
+        void value()
+        {
+            cascade();
+        }
+
+        void evaluate() override
+        {
+            if (f_) f_();
+            emit();
+        }
+
+        std::function<void()> f_;
+    };
+
+    Property(): instance_{Instance::create()} {}
+
+    Property(Property &&b): instance_{std::move(b.instance_)} {}
+    Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
+
+    explicit Property(const std::function<void()> &f): instance_{Instance::create()} { instance_->associate(f); }
+    // Property &operator=(const std::function<T()> &f) { instance_->bind(f); return *this; }
+
+    ~Property() { instance_->disband(); }
+
+    Instance *operator->() { return instance_; }
+    const Instance *operator->() const { return instance_; }
+
+    void operator()() const { instance_->value(); }
+
+    template<class F>
+    void operator<<(const F &f) { instance_->bind(f); }
+
+    template<class F>
+    Property &operator>>(const F &f) { instance_->connect(f); return *this; }
 
 private:
     friend class Instance;

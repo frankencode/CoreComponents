@@ -7,7 +7,7 @@ int main()
 
     View view{640, 480};
     view->paper = Color::White;
-    view->paint >>[=]{
+    view->paint <<[=]{
         Painter p{view};
         Point center = view->size() / 2;
         const double step = 10;

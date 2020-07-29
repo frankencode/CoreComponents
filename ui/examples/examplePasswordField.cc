@@ -2,7 +2,7 @@
 #include <cc/ui/PasswordField>
 #include <cc/DEBUG>
 
-int main(int argc, char **argv)
+int main()
 {
     using namespace cc;
     using namespace cc::ui;
