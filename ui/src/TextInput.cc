@@ -52,9 +52,7 @@ TextInput::Instance::Instance(Ref<TextEditor> editor):
             textCursor = textRun()->getTextCursor(textCursor()->byteOffset());
     };
 
-    size <<[=]{
-        return preferredSize();
-    };
+    size <<[=]{ return preferredSize(); };
 
     cursor <<[=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); };
 

@@ -52,10 +52,10 @@ View::Instance::~Instance()
 
 void View::Instance::disband()
 {
+    #if 0 // FIXME: review cleanup strategy
     for (auto &item: children_)
         item->value()->disband();
 
-    #if 0 // FIXME: review cleanup strategy
     build->disband();
     paint->disband();
 
@@ -72,9 +72,9 @@ void View::Instance::disband()
     scale->disband();
     childCount->disband();
     parentInstance->disband();
-    #endif
 
     layout_ = Layout{nullptr};
+    #endif
 }
 
 Point View::Instance::mapToGlobal(Point l) const
@@ -307,6 +307,12 @@ void View::Instance::adoptChild(View parent, View child)
         if (child->parent()) child->parent()->removeChild(child);
         parent->insertChild(child);
     }
+}
+
+View View::Instance::setLayout(const Layout &layout)
+{
+    layout_ = layout;
+    return this;
 }
 
 bool View::Instance::feedFingerEvent(FingerEvent *event)

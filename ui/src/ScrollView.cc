@@ -78,6 +78,11 @@ void ScrollView::Instance::insertChild(View child)
         View::Instance::insertChild(child);
 }
 
+View ScrollView::Instance::setLayout(const Layout &layout)
+{
+    return carrier_->setLayout(layout);
+}
+
 bool ScrollView::Instance::onPointerClicked(const PointerEvent *event)
 {
     if (!carrierAtRest_) return true;

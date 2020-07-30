@@ -38,8 +38,6 @@ public:
 
         Instance(const InputControl &input, const String &inputLabel);
 
-        // void clear() override;
-
         InputControl input_ { nullptr };
 
     private:

@@ -14,10 +14,10 @@ namespace ui {
 
 void Layout::Instance::init(View &view)
 {
-    view->layout_ = this;
+    view = view->setLayout(this);
 }
 
-void Layout::Instance::update(View &view)
+void Layout::Instance::update(View &view) // FIXME: obsolete
 {}
 
 }} // namespace cc::ui

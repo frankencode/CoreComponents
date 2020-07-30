@@ -28,7 +28,8 @@ InputField::Instance::Instance(const InputControl &input, const String &inputLab
             // FIXME: make depend on input field type
     };
 
-    input_->pos = Point { dp(12), dp(24) };
+    input_->pos = Point { std::ceil(dp(12)), std::ceil(dp(24)) };
+    input_->size <<[=]{ return size() - Size{ std::ceil(dp(24)), std::ceil(dp(32)) }; };
     input_->accepted >>[=]{ accepted(); };
     input_->rejected >>[=]{ rejected(); };
     input_->gotoNext >>[=]{ gotoNext(); };
@@ -146,13 +147,6 @@ Size InputField::Instance::maxSize() const
 {
     return input_->maxSize() + Size { std::ceil(dp(24)), std::ceil(dp(32)) };
 }
-
-#if 0
-void InputField::Instance::clear()
-{
-    if (parent()) View::Instance::clear(parent()->paper()); // FIXME, why not use inheritPaper()?!
-}
-#endif
 
 void InputField::Instance::gotoNext()
 {

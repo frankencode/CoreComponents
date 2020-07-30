@@ -97,7 +97,8 @@ public:
         Color basePaper() const;
         void inheritPaper();
 
-        Layout layout() const { return layout_; }
+        virtual Layout layout() const { return layout_; }
+        virtual View setLayout(const Layout &layout); // FIXME: should be protected
 
         template<class T>
         T as() { return dynamic_cast<typename T::Instance *>(this); }

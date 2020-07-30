@@ -23,11 +23,16 @@ public:
         parent_{head_},
         binding_{binding}
     {
-        if (binding && detectCycle()) throw PropertyBindingLoop{};
+        if (binding_) {
+            ++binding_->cascadeDepth_;
+            if (binding_->cascadeDepth_ > 3) throw PropertyBindingLoop{};
+        }
         head_ = this;
     }
 
-    ~PropertyActivator() {
+    ~PropertyActivator()
+    {
+        if (binding_) --binding_->cascadeDepth_;
         head_ = parent_;
     }
 
@@ -36,13 +41,6 @@ public:
     PropertyActivator *operator->() { return this; }
 
 private:
-    bool detectCycle() const
-    {
-        PropertyActivator *a = parent_;
-        while (a && a->binding_ != binding_) a = a->parent_;
-        return a;
-    }
-
     static thread_local PropertyActivator *head_;
     PropertyActivator *parent_ { nullptr };
     PropertyBinding *binding_ { nullptr };

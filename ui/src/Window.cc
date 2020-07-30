@@ -9,6 +9,7 @@
 #include <cc/ui/Window>
 #include <cc/ui/Application>
 #include <cc/ui/Control>
+#include <cc/ui/StyleManager>
 #include <cc/QueueInstance>
 
 namespace cc {
@@ -26,6 +27,7 @@ Window::Window(const View &view, const String &title):
     nextFrame_{Frame::create()}
 {
     view_->window_ = this;
+    if (!view_->paper()) view_->paper <<[=]{ return StyleManager::instance()->activePlugin()->theme()->windowColor(); };
     view_->build();
     view_->polish(this);
 }

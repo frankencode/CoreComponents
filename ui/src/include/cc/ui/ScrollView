@@ -32,7 +32,7 @@ public:
         Property<bool> wheelInversion { style()->wheelInversion() };
         Property<bool> wheelBouncing { true };
 
-        View carrier() const { return carrier_; }
+        View carrier() const { return carrier_; } // FIXME: obsolete
 
     protected:
         friend class Object;
@@ -59,6 +59,7 @@ public:
 
     private:
         void insertChild(View child) override;
+        View setLayout(const Layout &layout) override;
 
         bool carrierInsideBoundary() const;
         Point carrierStep(Point p, double b = 0);

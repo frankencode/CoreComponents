@@ -15,15 +15,6 @@ namespace cc {
 
 template<class> class SetInstance;
 
-class PropertyBindingError: public Exception
-{};
-
-class PropertyBindingLoop: public PropertyBindingError
-{
-public:
-    String message() const override;
-};
-
 class PropertyBinding: public Object
 {
 protected:
@@ -49,8 +40,20 @@ protected:
     bool dirty_;
 
 private:
+    friend class PropertyActivator;
+
     mutable Association dependencies_;
     mutable Association subscribers_;
+    int cascadeDepth_ { 0 };
+};
+
+class PropertyBindingError: public Exception
+{};
+
+class PropertyBindingLoop: public PropertyBindingError
+{
+public:
+    String message() const override;
 };
 
 } // namespace cc

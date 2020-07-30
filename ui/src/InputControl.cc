@@ -29,14 +29,18 @@ bool InputControl::Instance::onKeyPressed(const KeyEvent *event)
     }
     else if (
         event->scanCode() == ScanCode::Key_Tab &&
-        !+(event->modifiers() & KeyModifier::Shift)
+        !+(event->modifiers() & KeyModifier::Shift) &&
+        !+(event->modifiers() & KeyModifier::Alt) &&
+        !+(event->modifiers() & KeyModifier::Control)
     ) {
         accepted();
         gotoNext();
     }
     else if (
         event->scanCode() == ScanCode::Key_Tab &&
-        +(event->modifiers() & KeyModifier::Shift)
+        +(event->modifiers() & KeyModifier::Shift) &&
+        !+(event->modifiers() & KeyModifier::Alt) &&
+        !+(event->modifiers() & KeyModifier::Control)
     ) {
         accepted();
         gotoPrevious();
