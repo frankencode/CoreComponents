@@ -19,8 +19,18 @@ class Event
 public:
     class Instance {
     public:
-        template<class F>
-        void connect(const F &f) { queue_->pushFront(f); }
+        void connect(const std::function<bool(T)> &f)
+        {
+            queue_->pushFront(f);
+        }
+
+        void connect(const std::function<void()> &f)
+        {
+            connect([=](T){
+                f();
+                return false;
+            });
+        }
 
         bool propagate(const T &value) const
         {

@@ -20,6 +20,7 @@ public:
     public:
         template<class F>
         void connect(const F &f) { queue_ << f; }
+
         void emit() const { for (auto &f: queue_) f(); }
 
         bool hasListeners() const { return queue_->count() > 0; }

@@ -11,15 +11,15 @@ int main()
     View view{640, 480};
     view->paper = Material::White;
 
-    Control blueBox{200, 200};
-    blueBox->centerInParent();
-    blueBox->paper = Color{Material::Blue500};
-    blueBox->pressed >>[=]{
-        if (!blueBox->pressed()) fout() << blueBox->pointerPos() << nl;
-        blueBox->angle += 45;
+    Control box{200, 200};
+    box->centerInParent();
+    box->paper = Color{Material::Blue500};
+    box->pointerClicked >>[=]{
+        fout() << box->pointerPos() << nl;
+        box->angle += 45;
     };
-    Easing{blueBox->angle, 0.5, Easing::Bezier{0.5, -0.4, 0.5, 1.4}};
-    view << blueBox;
+    Easing{box->angle, 0.5, Easing::Bezier{0.5, -0.4, 0.5, 1.4}};
+    view << box;
 
     Window::open(view, "Click me!", WindowMode::Accelerated|WindowMode::VSync);
 

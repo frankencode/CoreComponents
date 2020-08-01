@@ -40,6 +40,12 @@ public:
     {
         (*this)->size = Size{width, height};
     }
+
+    SlideView(Instance *instance):
+        View{instance}
+    {}
+
+    Instance *operator->() const { return my<Instance>(); }
 };
 
 }} // namespace cc::ui
