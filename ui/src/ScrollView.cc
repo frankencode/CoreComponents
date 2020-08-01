@@ -43,6 +43,112 @@ ScrollView::Instance::Instance(const View &carrier):
 
     if (!carrier_) carrier_ = View{};
     if (!carrier_->parent()) View::Instance::insertChild(carrier_);
+
+    windowLeft >>[=]{
+        if (carrierInsideBoundary())
+            carrierBounceStart();
+    };
+
+    pointerClicked >>[=](const PointerEvent *event)
+    {
+        if (!carrierAtRest_) return true;
+
+        Control control = getControlAt(event->pos());
+        if (control) {
+            PointerEvent::PosGuard guard{const_cast<PointerEvent *>(event), mapToChild(control, event->pos())};
+            return control->pointerClicked(event);
+        }
+
+        return true;
+    };
+
+    pointerPressed >>[=](const PointerEvent *event)
+    {
+        dragStart_ = event->pos();
+        isDragged_ = false;
+        speed_ = Point{};
+
+        if (timer_->isActive()) {
+            wasFlying_ = true;
+            timerStop();
+            carrier_->moving = false;
+        }
+        else {
+            wasFlying_ = false;
+            Control control = carrier_->getControlAt(mapToChild(carrier_, event->pos()));
+            if (control) {
+                Application{}->pressedControl = control;
+                PointerEvent::PosGuard guard{const_cast<PointerEvent *>(event), mapToChild(control, event->pos())};
+                return control->pointerPressed(event);
+            }
+        }
+
+        return true;
+    };
+
+    pointerReleased >>[=](const PointerEvent *event)
+    {
+        if (isDragged_) {
+            if (event->time() - lastDragTime_ > minHoldTime()) speed_ = Point{};
+            isDragged_ = false;
+        }
+
+        carrierAtRest_ = false;
+
+        if (carrierInsideBoundary())
+            carrierBounceStart();
+        else if (speed_ != Step{})
+            carrierFlyStart();
+        else if (!wasFlying_)
+            carrierAtRest_ = true;
+
+        return true;
+    };
+
+    pointerMoved >>[=](const PointerEvent *event)
+    {
+        if (!isDragged_ && Application{}->pointerIsDragged(event, dragStart_)) {
+            isDragged_ = true;
+            carrierOrigin_ = carrier_->pos();
+            lastDragTime_ = 0;
+            Application{}->pressedControl = Control{nullptr};
+        }
+
+        if (isDragged_) {
+            double t = event->time();
+            if (lastDragTime_ > 0 && t != lastDragTime_)
+                speed_ = (lastDragPos_ - event->pos()) / (t - lastDragTime_);
+
+            lastDragTime_ = t;
+            lastDragPos_ = event->pos();
+
+            Step d = event->pos() - dragStart_;
+            Point p = carrierOrigin_ + d;
+
+            carrier_->pos = carrierStep(p, boundary());
+        }
+
+        return true;
+    };
+
+    wheelMoved >>[=](const WheelEvent *event)
+    {
+        if (Application{}->focusControl())
+            Application{}->focusControl = Control{nullptr};
+
+        if (timerMode_ == TimerMode::Bouncing || timerMode_ == TimerMode::Traversing)
+            carrierStop();
+
+        if (timerMode_ != TimerMode::Stopped)
+            return true;
+
+        carrier_->pos = carrierStep(carrier_->pos() + event->wheelStep() * wheelGranularity(), wheelBouncing() ? boundary() : 0);
+
+        if (carrierInsideBoundary())
+            carrierBounceStart();
+
+        return true;
+    };
 }
 
 ScrollView::Instance::~Instance()
@@ -80,116 +186,7 @@ void ScrollView::Instance::insertChild(View child)
 
 View ScrollView::Instance::setLayout(const Layout &layout)
 {
-    return carrier_->setLayout(layout);
-}
-
-bool ScrollView::Instance::onPointerClicked(const PointerEvent *event)
-{
-    if (!carrierAtRest_) return true;
-
-    Control control = getControlAt(event->pos());
-    if (control) {
-        PointerEvent::PosGuard guard{const_cast<PointerEvent *>(event), mapToChild(control, event->pos())};
-        return control->onPointerClicked(event);
-    }
-
-    return true;
-}
-
-bool ScrollView::Instance::onPointerPressed(const PointerEvent *event)
-{
-    dragStart_ = event->pos();
-    isDragged_ = false;
-    speed_ = Point{};
-
-    if (timer_->isActive()) {
-        wasFlying_ = true;
-        timerStop();
-        carrier_->moving = false;
-    }
-    else {
-        wasFlying_ = false;
-        Control control = carrier()->getControlAt(mapToChild(carrier(), event->pos()));
-        if (control) {
-            Application{}->pressedControl = control;
-            PointerEvent::PosGuard guard{const_cast<PointerEvent *>(event), mapToChild(control, event->pos())};
-            return control->onPointerPressed(event);
-        }
-    }
-
-    return true;
-}
-
-bool ScrollView::Instance::onPointerReleased(const PointerEvent *event)
-{
-    if (isDragged_) {
-        if (event->time() - lastDragTime_ > minHoldTime()) speed_ = Point{};
-        isDragged_ = false;
-    }
-
-    carrierAtRest_ = false;
-
-    if (carrierInsideBoundary())
-        carrierBounceStart();
-    else if (speed_ != Step{})
-        carrierFlyStart();
-    else if (!wasFlying_)
-        carrierAtRest_ = true;
-
-    return true;
-}
-
-bool ScrollView::Instance::onPointerMoved(const PointerEvent *event)
-{
-    if (!isDragged_ && Application{}->pointerIsDragged(event, dragStart_)) {
-        isDragged_ = true;
-        carrierOrigin_ = carrier_->pos();
-        lastDragTime_ = 0;
-        Application{}->pressedControl = Control{nullptr};
-    }
-
-    if (isDragged_) {
-        double t = event->time();
-        if (lastDragTime_ > 0 && t != lastDragTime_)
-            speed_ = (lastDragPos_ - event->pos()) / (t - lastDragTime_);
-
-        lastDragTime_ = t;
-        lastDragPos_ = event->pos();
-
-        Step d = event->pos() - dragStart_;
-        Point p = carrierOrigin_ + d;
-
-        carrier_->pos = carrierStep(p, boundary());
-    }
-
-    return true;
-}
-
-bool ScrollView::Instance::onWheelMoved(const WheelEvent *event)
-{
-    if (Application{}->focusControl())
-        Application{}->focusControl = Control{nullptr};
-
-    if (timerMode_ == TimerMode::Bouncing || timerMode_ == TimerMode::Traversing)
-        carrierStop();
-
-    if (timerMode_ != TimerMode::Stopped)
-        return true;
-
-    carrier_->pos = carrierStep(carrier_->pos() + event->wheelStep() * wheelGranularity(), wheelBouncing() ? boundary() : 0);
-
-    if (carrierInsideBoundary())
-        carrierBounceStart();
-
-    return true;
-}
-
-bool ScrollView::Instance::onWindowLeft()
-{
-    if (carrierInsideBoundary())
-        carrierBounceStart();
-
-    return false;
+    return adoptLayout(carrier_, layout);
 }
 
 bool ScrollView::Instance::carrierInsideBoundary() const

@@ -30,7 +30,7 @@ public:
     protected:
         friend class InputControl;
 
-        bool onKeyPressed(const KeyEvent *event) override;
+        Instance();
     };
 
     InputControl(Instance *instance):

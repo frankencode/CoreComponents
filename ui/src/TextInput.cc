@@ -97,6 +97,219 @@ TextInput::Instance::Instance(Ref<TextEditor> editor):
             p->fill();
         }
     };
+
+    pointerClicked >>[=](const PointerEvent *event)
+    {
+        if (!focus()) {
+            Application{}->focusControl = this;
+            return true;
+        }
+
+        const MouseEvent *mouseEvent = Object::cast<const MouseEvent *>(event);
+        if (mouseEvent) {
+            if (mouseEvent->clickCount() == 2) {
+                selection = Range { 0, text()->count() };
+                textCursor()->step(text()->count());
+                startBlink();
+            }
+        }
+
+        return true;
+    };
+
+    pointerPressed >>[=](const PointerEvent *event)
+    {
+        if (!focus()) return false;
+
+        if (shiftKey_) return pointerMoved(event);
+
+        selection = Range{};
+        imeChunks = nullptr;
+        textCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
+        startBlink();
+
+        return true;
+    };
+
+    pointerMoved >>[=](const PointerEvent *event)
+    {
+        if (!focus()) return false;
+
+        Ref<TextCursor> newTextCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
+
+        if (newTextCursor->byteOffset() == textCursor()->byteOffset())
+            return true;
+
+        if (!selection()) {
+            selection = Range { newTextCursor->byteOffset(), textCursor()->byteOffset() };
+        }
+        else {
+            Range newSelection;
+            if (textCursor()->byteOffset() == selection()->i0())
+                newSelection = Range { newTextCursor->byteOffset(), selection()->i1() };
+            else if (textCursor()->byteOffset() == selection()->i1())
+                newSelection = Range { selection()->i0(), newTextCursor->byteOffset() };
+            if (newSelection->count() > 0)
+                selection = newSelection;
+            else
+                selection = Range{};
+        }
+
+        textCursor = newTextCursor;
+
+        return true;
+    };
+
+    keyPressed >>[=](const KeyEvent *event)
+    {
+        imeChunks = nullptr;
+
+        if (
+            +(event->modifiers() & KeyModifier::Control) &&
+            event->keyCode() == KeyCode::Key_A
+        ) {
+            selection = Range { 0, text()->count() };
+            textCursor()->step(text()->count());
+            startBlink();
+        }
+        else if (
+            event->scanCode() == ScanCode::Key_Left ||
+            event->scanCode() == ScanCode::Key_Right ||
+            event->scanCode() == ScanCode::Key_Up ||
+            event->scanCode() == ScanCode::Key_Down ||
+            event->scanCode() == ScanCode::Key_Home ||
+            event->scanCode() == ScanCode::Key_End
+        ) {
+            int o = textCursor()->byteOffset();
+
+            textCursor()->step(
+                -1 * (event->scanCode() == ScanCode::Key_Left)
+                +1 * (event->scanCode() == ScanCode::Key_Right)
+                -text()->count() * (event->scanCode() == ScanCode::Key_Home)
+                +text()->count() * (event->scanCode() == ScanCode::Key_End)
+            );
+
+            textCursor()->lineStep(
+                -1 * (event->scanCode() == ScanCode::Key_Up)
+                +1 * (event->scanCode() == ScanCode::Key_Down)
+            );
+
+            int n = textCursor()->byteOffset();
+
+            if (+(event->modifiers() & KeyModifier::Shift))
+            {
+                if (selection()) {
+                    int s = selection()->begin();
+                    int e = selection()->end();
+
+                    if (o == s) s = n;
+                    else if (o == e) e = n;
+
+                    if (s != e)
+                        selection = Range{s, e};
+                    else
+                        selection = Range{};
+                }
+                else if (n != o)
+                    selection = Range{o, n};
+            }
+            else
+                selection = Range{};
+
+            startBlink();
+        }
+        else if (event->scanCode() == ScanCode::Key_Backspace)
+        {
+            Range s = selection();
+            if (!s) {
+                int i1 = textCursor()->byteOffset();
+                if (textCursor()->step(-1))
+                    s = Range { textCursor()->byteOffset(), i1 };
+            }
+            if (s) paste(s, String{});
+        }
+        else if (event->scanCode() == ScanCode::Key_Delete)
+        {
+            Range s = selection();
+            if (!s) {
+                int i0 = textCursor()->byteOffset();
+                if (textCursor()->step(1))
+                s = Range { i0, textCursor()->byteOffset() };
+            }
+            if (s) paste(s, String{});
+        }
+        else if (
+            +(event->modifiers() & KeyModifier::Control) &&
+            event->keyCode() == KeyCode::Key_X
+        )
+        {
+            if (selection()) {
+                Application{}->setClipboardText(
+                    text()->copy(selection()->i0(), selection()->i1())
+                );
+                paste(selection(), String{});
+            }
+        }
+        else if (
+            +(event->modifiers() & KeyModifier::Control) && (
+                event->scanCode() == ScanCode::Key_Insert ||
+                event->keyCode() == KeyCode::Key_C
+            )
+        ) {
+            if (selection()) {
+                Application{}->setClipboardText(
+                    text()->copy(selection()->i0(), selection()->i1())
+                );
+            }
+        }
+        else if (
+            event->scanCode() == ScanCode::Key_Insert || (
+                +(event->modifiers() & KeyModifier::Control) &&
+                event->keyCode() == KeyCode::Key_V
+            )
+        ) {
+            String chunk = Application{}->getClipboardText();
+            if (chunk) paste(chunk);
+        }
+        else if (
+            +(event->modifiers() & KeyModifier::Control) &&
+            event->scanCode() == ScanCode::Key_Y
+        ) {
+            Range range;
+            if (+(event->modifiers() & KeyModifier::Shift)) {
+                if (editor_->canRedo()) textCursor = nullptr;
+                range = editor_->redo();
+            }
+            else {
+                if (editor_->canUndo()) textCursor = nullptr;
+                range = editor_->undo();
+            }
+
+            if (range) {
+                textCursor = textRun()->getTextCursor(range->i1());
+                startBlink();
+            }
+        }
+        else if (
+            event->scanCode() == ScanCode::Key_LeftShift ||
+            event->scanCode() == ScanCode::Key_RightShift
+        ) {
+            shiftKey_ = true;
+        }
+
+        return false;
+    };
+
+    keyReleased >>[=](const KeyEvent *event)
+    {
+        if (
+            event->scanCode() == ScanCode::Key_LeftShift ||
+            event->scanCode() == ScanCode::Key_RightShift
+        )
+            shiftKey_ = false;
+
+        return false;
+    };
 }
 
 TextInput::Instance::~Instance()
@@ -146,68 +359,6 @@ void TextInput::Instance::stopBlink()
     textCursorVisible = false;
 }
 
-bool TextInput::Instance::onPointerClicked(const PointerEvent *event)
-{
-    if (!focus()) {
-        Application{}->focusControl = this;
-        return true;
-    }
-
-    const MouseEvent *mouseEvent = Object::cast<const MouseEvent *>(event);
-    if (mouseEvent) {
-        if (mouseEvent->clickCount() == 2) {
-            selection = Range { 0, text()->count() };
-            textCursor()->step(text()->count());
-            startBlink();
-        }
-    }
-
-    return true;
-}
-
-bool TextInput::Instance::onPointerPressed(const PointerEvent *event)
-{
-    if (!focus()) return false;
-
-    if (shiftKey_) return onPointerMoved(event);
-
-    selection = Range{};
-    imeChunks = nullptr;
-    textCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
-    startBlink();
-
-    return true;
-}
-
-bool TextInput::Instance::onPointerMoved(const PointerEvent *event)
-{
-    if (!focus()) return false;
-
-    Ref<TextCursor> newTextCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
-
-    if (newTextCursor->byteOffset() == textCursor()->byteOffset())
-        return true;
-
-    if (!selection()) {
-        selection = Range { newTextCursor->byteOffset(), textCursor()->byteOffset() };
-    }
-    else {
-        Range newSelection;
-        if (textCursor()->byteOffset() == selection()->i0())
-            newSelection = Range { newTextCursor->byteOffset(), selection()->i1() };
-        else if (textCursor()->byteOffset() == selection()->i1())
-            newSelection = Range { selection()->i0(), newTextCursor->byteOffset() };
-        if (newSelection->count() > 0)
-            selection = newSelection;
-        else
-            selection = Range{};
-    }
-
-    textCursor = newTextCursor;
-
-    return true;
-}
-
 Rect TextInput::Instance::textInputArea() const
 {
     double cx = (textCursor()) ? textCursor()->posA()[0] : 0.;
@@ -237,157 +388,6 @@ void TextInput::Instance::onTextInput(const String &chunk)
     Range s = selection();
     if (!s) s = Range { textCursor()->byteOffset() };
     paste(s, chunk);
-}
-
-bool TextInput::Instance::onKeyPressed(const KeyEvent *event)
-{
-    imeChunks = nullptr;
-
-    if (
-        +(event->modifiers() & KeyModifier::Control) &&
-        event->keyCode() == KeyCode::Key_A
-    ) {
-        selection = Range { 0, text()->count() };
-        textCursor()->step(text()->count());
-        startBlink();
-    }
-    else if (
-        event->scanCode() == ScanCode::Key_Left ||
-        event->scanCode() == ScanCode::Key_Right ||
-        event->scanCode() == ScanCode::Key_Up ||
-        event->scanCode() == ScanCode::Key_Down ||
-        event->scanCode() == ScanCode::Key_Home ||
-        event->scanCode() == ScanCode::Key_End
-    ) {
-        int o = textCursor()->byteOffset();
-
-        textCursor()->step(
-            -1 * (event->scanCode() == ScanCode::Key_Left)
-            +1 * (event->scanCode() == ScanCode::Key_Right)
-            -text()->count() * (event->scanCode() == ScanCode::Key_Home)
-            +text()->count() * (event->scanCode() == ScanCode::Key_End)
-        );
-
-        textCursor()->lineStep(
-            -1 * (event->scanCode() == ScanCode::Key_Up)
-            +1 * (event->scanCode() == ScanCode::Key_Down)
-        );
-
-        int n = textCursor()->byteOffset();
-
-        if (+(event->modifiers() & KeyModifier::Shift))
-        {
-            if (selection()) {
-                int s = selection()->begin();
-                int e = selection()->end();
-
-                if (o == s) s = n;
-                else if (o == e) e = n;
-
-                if (s != e)
-                    selection = Range{s, e};
-                else
-                    selection = Range{};
-            }
-            else if (n != o)
-                selection = Range{o, n};
-        }
-        else
-            selection = Range{};
-
-        startBlink();
-    }
-    else if (event->scanCode() == ScanCode::Key_Backspace)
-    {
-        Range s = selection();
-        if (!s) {
-            int i1 = textCursor()->byteOffset();
-            if (textCursor()->step(-1))
-                s = Range { textCursor()->byteOffset(), i1 };
-        }
-        if (s) paste(s, String{});
-    }
-    else if (event->scanCode() == ScanCode::Key_Delete)
-    {
-        Range s = selection();
-        if (!s) {
-            int i0 = textCursor()->byteOffset();
-            if (textCursor()->step(1))
-            s = Range { i0, textCursor()->byteOffset() };
-        }
-        if (s) paste(s, String{});
-    }
-    else if (
-        +(event->modifiers() & KeyModifier::Control) &&
-        event->keyCode() == KeyCode::Key_X
-    )
-    {
-        if (selection()) {
-            Application{}->setClipboardText(
-                text()->copy(selection()->i0(), selection()->i1())
-            );
-            paste(selection(), String{});
-        }
-    }
-    else if (
-        +(event->modifiers() & KeyModifier::Control) && (
-            event->scanCode() == ScanCode::Key_Insert ||
-            event->keyCode() == KeyCode::Key_C
-        )
-    ) {
-        if (selection()) {
-            Application{}->setClipboardText(
-                text()->copy(selection()->i0(), selection()->i1())
-            );
-        }
-    }
-    else if (
-        event->scanCode() == ScanCode::Key_Insert || (
-            +(event->modifiers() & KeyModifier::Control) &&
-            event->keyCode() == KeyCode::Key_V
-        )
-    ) {
-        String chunk = Application{}->getClipboardText();
-        if (chunk) paste(chunk);
-    }
-    else if (
-        +(event->modifiers() & KeyModifier::Control) &&
-        event->scanCode() == ScanCode::Key_Y
-    ) {
-        Range range;
-        if (+(event->modifiers() & KeyModifier::Shift)) {
-            if (editor_->canRedo()) textCursor = nullptr;
-            range = editor_->redo();
-        }
-        else {
-            if (editor_->canUndo()) textCursor = nullptr;
-            range = editor_->undo();
-        }
-
-        if (range) {
-            textCursor = textRun()->getTextCursor(range->i1());
-            startBlink();
-        }
-    }
-    else if (
-        event->scanCode() == ScanCode::Key_LeftShift ||
-        event->scanCode() == ScanCode::Key_RightShift
-    ) {
-        shiftKey_ = true;
-    }
-
-    return InputControl::Instance::onKeyPressed(event);
-}
-
-bool TextInput::Instance::onKeyReleased(const KeyEvent *event)
-{
-    if (
-        event->scanCode() == ScanCode::Key_LeftShift ||
-        event->scanCode() == ScanCode::Key_RightShift
-    )
-        shiftKey_ = false;
-
-    return true;
 }
 
 void TextInput::Instance::paste(const String &chunk)

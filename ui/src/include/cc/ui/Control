@@ -22,6 +22,10 @@ public:
     class Instance: public View::Instance
     {
     public:
+        Event<const PointerEvent *> pointerClicked;
+        Event<const MouseEvent *> mouseClicked;
+        Event<const FingerEvent *> fingerClicked;
+
         Property< Ref<const Cursor> > cursor;
 
         Property<bool> hover;   ///< mouse pointer is hovering over this control
@@ -39,11 +43,6 @@ public:
         Property<Instance *> delegate; /// \todo need to be set to null on destruction of delegate
 
         Instance();
-
-        virtual bool onPointerClicked(const PointerEvent *event);
-        virtual bool onMouseClicked(const MouseEvent *event);
-        virtual bool onFingerClicked(const FingerEvent *event);
-
         virtual Rect textInputArea() const;
         virtual void onTextEdited(const String &text, int start, int length);
         virtual void onTextInput(const String &text);

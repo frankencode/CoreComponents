@@ -14,12 +14,10 @@ int main()
     Control blueBox{200, 200};
     blueBox->centerInParent();
     blueBox->paper = Color{Material::Blue500};
-    #if 1
     blueBox->pressed >>[=]{
         if (!blueBox->pressed()) fout() << blueBox->pointerPos() << nl;
         blueBox->angle += 45;
     };
-    #endif
     Easing{blueBox->angle, 0.5, Easing::Bezier{0.5, -0.4, 0.5, 1.4}};
     view << blueBox;
 

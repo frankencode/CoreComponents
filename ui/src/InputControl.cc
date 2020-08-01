@@ -12,41 +12,50 @@
 namespace cc {
 namespace ui {
 
-bool InputControl::Instance::onKeyPressed(const KeyEvent *event)
+InputControl::Instance::Instance()
 {
-    if (
-        event->scanCode() == ScanCode::Key_Return ||
-        event->scanCode() == ScanCode::Key_Return2
-    ) {
-        accepted();
-        gotoNext();
-    }
-    else if (
-        event->scanCode() == ScanCode::Key_Escape
-    ) {
-        Application{}->focusControl = Control{nullptr};
-        rejected();
-    }
-    else if (
-        event->scanCode() == ScanCode::Key_Tab &&
-        !+(event->modifiers() & KeyModifier::Shift) &&
-        !+(event->modifiers() & KeyModifier::Alt) &&
-        !+(event->modifiers() & KeyModifier::Control)
-    ) {
-        accepted();
-        gotoNext();
-    }
-    else if (
-        event->scanCode() == ScanCode::Key_Tab &&
-        +(event->modifiers() & KeyModifier::Shift) &&
-        !+(event->modifiers() & KeyModifier::Alt) &&
-        !+(event->modifiers() & KeyModifier::Control)
-    ) {
-        accepted();
-        gotoPrevious();
-    }
+    keyPressed >>[=](const KeyEvent *event)
+    {
+        bool cosumed = false;
 
-    return true;
+        if (
+            event->scanCode() == ScanCode::Key_Return ||
+            event->scanCode() == ScanCode::Key_Return2
+        ) {
+            accepted();
+            gotoNext();
+            cosumed = true;
+        }
+        else if (
+            event->scanCode() == ScanCode::Key_Escape
+        ) {
+            Application{}->focusControl = Control{nullptr};
+            rejected();
+            cosumed = true;
+        }
+        else if (
+            event->scanCode() == ScanCode::Key_Tab &&
+            !+(event->modifiers() & KeyModifier::Shift) &&
+            !+(event->modifiers() & KeyModifier::Alt) &&
+            !+(event->modifiers() & KeyModifier::Control)
+        ) {
+            accepted();
+            gotoNext();
+            cosumed = true;
+        }
+        else if (
+            event->scanCode() == ScanCode::Key_Tab &&
+            +(event->modifiers() & KeyModifier::Shift) &&
+            !+(event->modifiers() & KeyModifier::Alt) &&
+            !+(event->modifiers() & KeyModifier::Control)
+        ) {
+            accepted();
+            gotoPrevious();
+            cosumed = true;
+        }
+
+        return cosumed;
+    };
 }
 
 }} // namespace cc::ui

@@ -56,16 +56,9 @@ public:
         void startBlink();
         void stopBlink();
 
-        bool onPointerClicked(const PointerEvent *event) override;
-        bool onPointerPressed(const PointerEvent *event) override;
-        bool onPointerMoved(const PointerEvent *event) override;
-
         Rect textInputArea() const override;
         void onTextEdited(const String &chunk, int start, int length) override;
         void onTextInput(const String &chunk) override;
-
-        bool onKeyPressed(const KeyEvent *event) override;
-        bool onKeyReleased(const KeyEvent *event) override;
 
         void paste(const String &chunk);
         void paste(Range selection, const String &chunk);

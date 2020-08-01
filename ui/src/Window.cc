@@ -29,7 +29,6 @@ Window::Window(const View &view, const String &title):
     view_->window_ = this;
     if (!view_->paper()) view_->paper <<[=]{ return StyleManager::instance()->activePlugin()->theme()->windowColor(); };
     view_->build();
-    view_->polish(this);
 }
 
 Window::~Window()

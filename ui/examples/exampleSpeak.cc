@@ -3,7 +3,7 @@
 #include <cc/ui/TextField>
 #include <cc/Process>
 
-int main(int argc, char **argv)
+int main()
 {
     using namespace cc;
     using namespace cc::ui;
@@ -32,9 +32,5 @@ int main(int argc, char **argv)
 
     Window::open(view, "Robosprech", WindowMode::Accelerated|WindowMode::VSync);
 
-    Application{}->run();
-
-    voice->kill();
-
-    return 0;
+    return Application{}->run();
 }

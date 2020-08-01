@@ -20,8 +20,15 @@ public:
     class Instance {
     public:
         template<class F>
-        void connect(const F &f) { queue_ << f; }
-        void propagate(const T &value) const { for (auto &f: queue_) if (f(value)) break; }
+        void connect(const F &f) { queue_->pushFront(f); }
+
+        bool propagate(const T &value) const
+        {
+            for (auto &f: queue_) {
+                if (f(value)) return true;
+            }
+            return false;
+        }
 
         bool hasConsumers() const { return queue_->count() > 0; }
         void disband() { queue_->deplete(); }
@@ -39,7 +46,7 @@ public:
     template<class F>
     Event &operator>>(const F &f) { (*this)->connect(f); return *this; }
 
-    void operator()(const T &value) const { (*this)->propagate(); }
+    bool operator()(const T &value) const { return (*this)->propagate(value); }
 
     Instance *operator->() { return &instance_; }
     const Instance *operator->() const { return &instance_; }

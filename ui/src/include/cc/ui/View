@@ -17,6 +17,7 @@
 #include <cc/ui/WheelEvent>
 #include <cc/ui/KeyEvent>
 #include <cc/ui/types>
+#include <cc/Event>
 
 namespace cc {
 namespace ui {
@@ -32,7 +33,27 @@ public:
     class Instance: public Surface::Instance
     {
     public:
-        Signal build;
+        Signal windowEntered;
+        Signal windowLeft;
+
+        Event<const PointerEvent *> pointerPressed;
+        Event<const PointerEvent *> pointerReleased;
+        Event<const PointerEvent *> pointerMoved;
+
+        Event<const MouseEvent *> mousePressed;
+        Event<const MouseEvent *> mouseReleased;
+        Event<const MouseEvent *> mouseMoved;
+
+        Event<const FingerEvent *> fingerPressed;
+        Event<const FingerEvent *> fingerReleased;
+        Event<const FingerEvent *> fingerMoved;
+
+        Event<const WheelEvent *> wheelMoved;
+
+        Event<const KeyEvent *> keyPressed;
+        Event<const KeyEvent *> keyReleased;
+
+        Signal build; // FIXME: obsolete
         Property<> paint;
 
         Property<bool> visible { true };
@@ -97,9 +118,6 @@ public:
         Color basePaper() const;
         void inheritPaper();
 
-        virtual Layout layout() const { return layout_; }
-        virtual View setLayout(const Layout &layout); // FIXME: should be protected
-
         template<class T>
         T as() { return dynamic_cast<typename T::Instance *>(this); }
 
@@ -128,27 +146,6 @@ public:
 
         void polish() override { clear(); }
 
-        virtual bool onPointerPressed(const PointerEvent *event);
-        virtual bool onPointerReleased(const PointerEvent *event);
-        virtual bool onPointerMoved(const PointerEvent *event);
-
-        virtual bool onMousePressed(const MouseEvent *event);
-        virtual bool onMouseReleased(const MouseEvent *event);
-        virtual bool onMouseMoved(const MouseEvent *event);
-
-        virtual bool onFingerPressed(const FingerEvent *event);
-        virtual bool onFingerReleased(const FingerEvent *event);
-        virtual bool onFingerMoved(const FingerEvent *event);
-
-        virtual bool onWheelMoved(const WheelEvent *event);
-
-        virtual bool onKeyPressed(const KeyEvent *event);
-        virtual bool onKeyReleased(const KeyEvent *event);
-
-        virtual bool onWindowExposed();
-        virtual bool onWindowEntered();
-        virtual bool onWindowLeft();
-
         void update(UpdateReason reason = UpdateReason::Changed);
 
         virtual void childReady(View &child);
@@ -163,7 +160,10 @@ public:
         virtual void insertChild(View child);
         virtual void removeChild(View child);
 
+        virtual View setLayout(const Layout &layout);
+
         static void adoptChild(View parent, View child);
+        static View adoptLayout(View &view, const Layout &layout);
 
         Property<Instance *> parentInstance { nullptr };
 
@@ -177,8 +177,6 @@ public:
         virtual bool feedLeaveEvent();
 
         uint64_t nextSerial() const;
-
-        void polish(Window *window);
 
         cairo_surface_t *cairoSurface() const override;
 

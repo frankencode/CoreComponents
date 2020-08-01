@@ -202,32 +202,6 @@ void View::Instance::clear()
     clear(paper());
 }
 
-bool View::Instance::onPointerPressed(const PointerEvent *event) { return false; }
-bool View::Instance::onPointerReleased(const PointerEvent *event) { return false; }
-bool View::Instance::onPointerMoved(const PointerEvent *event) { return false; }
-
-bool View::Instance::onMousePressed(const MouseEvent *event) { return false; }
-bool View::Instance::onMouseReleased(const MouseEvent *event) { return false; }
-bool View::Instance::onMouseMoved(const MouseEvent *event) { return false; }
-
-bool View::Instance::onFingerPressed(const FingerEvent *event) { return false; }
-bool View::Instance::onFingerReleased(const FingerEvent *event) { return false; }
-bool View::Instance::onFingerMoved(const FingerEvent *event) { return false; }
-
-bool View::Instance::onWheelMoved(const WheelEvent *event) { return false; }
-
-bool View::Instance::onKeyPressed(const KeyEvent *event) { return false; }
-bool View::Instance::onKeyReleased(const KeyEvent *event) { return false; }
-
-bool View::Instance::onWindowExposed()
-{
-    paint();
-    return false;
-}
-
-bool View::Instance::onWindowEntered() { return false; }
-bool View::Instance::onWindowLeft() { return false; }
-
 void View::Instance::update(UpdateReason reason)
 {
     Window *w = window();
@@ -301,6 +275,12 @@ void View::Instance::removeChild(View child)
     childDone(child);
 }
 
+View View::Instance::setLayout(const Layout &layout)
+{
+    layout_ = layout;
+    return this;
+}
+
 void View::Instance::adoptChild(View parent, View child)
 {
     if (child->parent() != parent) {
@@ -309,10 +289,9 @@ void View::Instance::adoptChild(View parent, View child)
     }
 }
 
-View View::Instance::setLayout(const Layout &layout)
+View View::Instance::adoptLayout(View &view, const Layout &layout)
 {
-    layout_ = layout;
-    return this;
+    return view->setLayout(layout);
 }
 
 bool View::Instance::feedFingerEvent(FingerEvent *event)
@@ -322,17 +301,17 @@ bool View::Instance::feedFingerEvent(FingerEvent *event)
 
         if (event->action() == PointerAction::Pressed)
         {
-            if (onPointerPressed(event) || onFingerPressed(event))
+            if (pointerPressed(event) || fingerPressed(event))
                 return true;
         }
         else if (event->action() == PointerAction::Released)
         {
-            bool eaten = onPointerReleased(event) || onFingerReleased(event);
+            bool eaten = pointerReleased(event) || fingerReleased(event);
 
             if (Application{}->pressedControl()) {
                 if (
-                    Application{}->pressedControl()->onPointerClicked(event) ||
-                    Application{}->pressedControl()->onFingerClicked(event)
+                    Application{}->pressedControl()->pointerClicked(event) ||
+                    Application{}->pressedControl()->fingerClicked(event)
                 )
                     eaten = true;
             }
@@ -341,7 +320,7 @@ bool View::Instance::feedFingerEvent(FingerEvent *event)
         }
         else if (event->action() == PointerAction::Moved)
         {
-            if (onPointerMoved(event) || onFingerMoved(event))
+            if (pointerMoved(event) || fingerMoved(event))
                 return true;
         }
     }
@@ -367,17 +346,17 @@ bool View::Instance::feedMouseEvent(MouseEvent *event)
 
         if (event->action() == PointerAction::Pressed)
         {
-            if (onPointerPressed(event) || onMousePressed(event))
+            if (pointerPressed(event) || mousePressed(event))
                 return true;
         }
         else if (event->action() == PointerAction::Released)
         {
-            bool eaten = onPointerReleased(event) || onMouseReleased(event);
+            bool eaten = pointerReleased(event) || mouseReleased(event);
 
             if (Application{}->pressedControl()) {
                 if (
-                    Application{}->pressedControl()->onPointerClicked(event) ||
-                    Application{}->pressedControl()->onMouseClicked(event)
+                    Application{}->pressedControl()->pointerClicked(event) ||
+                    Application{}->pressedControl()->mouseClicked(event)
                 )
                     eaten = true;
             }
@@ -387,8 +366,8 @@ bool View::Instance::feedMouseEvent(MouseEvent *event)
         else if (event->action() == PointerAction::Moved)
         {
             if (
-                (event->button() != MouseButton::None && onPointerMoved(event)) ||
-                onMouseMoved(event)
+                (event->button() != MouseButton::None && pointerMoved(event)) ||
+                mouseMoved(event)
             )
                 return true;
         }
@@ -412,7 +391,7 @@ bool View::Instance::feedWheelEvent(WheelEvent *event)
 {
     if (containsGlobal(event->mousePos()))
     {
-        if (onWheelMoved(event))
+        if (wheelMoved(event))
             return true;
     }
 
@@ -434,11 +413,11 @@ bool View::Instance::feedKeyEvent(KeyEvent *event)
 {
     if (event->action() == KeyAction::Pressed)
     {
-        if (onKeyPressed(event)) return true;
+        if (keyPressed(event)) return true;
     }
     else if (event->action() == KeyAction::Released)
     {
-        if (onKeyReleased(event)) return true;
+        if (keyReleased(event)) return true;
     }
 
     for (auto pair: visibleChildren_)
@@ -454,7 +433,7 @@ bool View::Instance::feedKeyEvent(KeyEvent *event)
 
 bool View::Instance::feedExposedEvent()
 {
-    if (onWindowExposed()) return true;
+    if (isPainted()) paint();
 
     for (auto pair: visibleChildren_)
     {
@@ -469,13 +448,13 @@ bool View::Instance::feedExposedEvent()
 
 bool View::Instance::feedEnterEvent()
 {
-    if (onWindowEntered()) return true;
+    windowEntered();
 
     for (auto pair: visibleChildren_)
     {
         View child = pair->value();
 
-        if (child->feedLeaveEvent())
+        if (child->feedEnterEvent())
             return true;
     }
 
@@ -484,7 +463,7 @@ bool View::Instance::feedEnterEvent()
 
 bool View::Instance::feedLeaveEvent()
 {
-    if (onWindowLeft()) return true;
+    windowLeft();
 
     for (auto pair: visibleChildren_)
     {
@@ -500,22 +479,6 @@ bool View::Instance::feedLeaveEvent()
 uint64_t View::Instance::nextSerial() const
 {
     return (children_->count() > 0) ? children_->at(children_->count() - 1)->key() + 1 : 1;
-}
-
-void View::Instance::polish(Window *window)
-{
-#if 0
-    for (auto pair: visibleChildren_)
-    {
-        View child = pair->value(); /// \todo const View &
-
-        child->polish(window);
-    }
-
-    paint();
-
-    window->addToFrame(UpdateRequest::create(UpdateReason::Changed, this));
-#endif
 }
 
 cairo_surface_t *View::Instance::cairoSurface() const

@@ -17,6 +17,74 @@ ItemView::Instance::Instance(Item *rootItem):
     rootItem_{rootItem}
 {
     wheelGranularity = 0;
+
+    windowLeft >>[=]{
+        itemCarrier()->highlight_->visible = false;
+        if (currentDelegate_() && hasSavedDelegatePaper_) {
+            currentDelegate_()->paper = delegatePaperSaved_;
+            hasSavedDelegatePaper_ = false;
+        }
+        currentDelegate_ = nullptr;
+        currentRow_ = -1;
+    };
+
+    pointerClicked >>[=](const PointerEvent *event)
+    {
+        if (carrierAtRest() && 0 <= currentRow_()) clicked();
+        currentDelegate_ = nullptr;
+        currentRow_ = -1;
+        return true;
+    };
+
+    pointerPressed >>[=](const PointerEvent *event)
+    {
+        View highlight = itemCarrier()->highlight_;
+        Ref<ItemCarrier::LayoutItem> layoutItem;
+        int row = 0;
+        if (itemCarrier()->layout_->lookup(event->pos()[1] - carrier()->pos()[1], &layoutItem, &row)) {
+            highlight->pos = Point{ 0, layoutItem->delegate_->pos()[1] };
+            highlight->size = Size{ size()[0], layoutItem->delegate_->size()[1] };
+            highlight->visible = true;
+            currentDelegate_ = layoutItem->delegate_;
+            if (currentDelegate_()->paper() != highlight->paper()) {
+                delegatePaperSaved_ = currentDelegate_()->paper();
+                hasSavedDelegatePaper_ = true;
+                currentDelegate_()->paper = highlight->paper();
+            }
+            currentRow_ = row;
+        }
+        else {
+            highlight->visible = false;
+            currentDelegate_ = nullptr;
+            currentRow_ = -1;
+        }
+
+        return false;
+    };
+
+    pointerReleased >>[=](const PointerEvent *event)
+    {
+        itemCarrier()->highlight_->visible = false;
+        if (currentDelegate_() && hasSavedDelegatePaper_) {
+            currentDelegate_()->paper = delegatePaperSaved_;
+            hasSavedDelegatePaper_ = false;
+        }
+
+        return false;
+    };
+
+    wheelMoved >>[=](const WheelEvent *event)
+    {
+        itemCarrier()->highlight_->visible = false;
+        if (currentDelegate_() && hasSavedDelegatePaper_) {
+            currentDelegate_()->paper = delegatePaperSaved_;
+            hasSavedDelegatePaper_ = false;
+        }
+        currentDelegate_ = nullptr;
+        currentRow_ = -1;
+
+        return false;
+    };
 }
 
 Ref<Item> ItemView::Instance::initItemModel()
@@ -76,78 +144,6 @@ void ItemView::Instance::preheat()
 {
     if (cacheRatio() > 0)
         itemCarrier()->updateView(true);
-}
-
-bool ItemView::Instance::onPointerClicked(const PointerEvent *event)
-{
-    if (carrierAtRest() && 0 <= currentRow_()) clicked();
-    currentDelegate_ = nullptr;
-    currentRow_ = -1;
-    return true;
-}
-
-bool ItemView::Instance::onPointerPressed(const PointerEvent *event)
-{
-    View highlight = itemCarrier()->highlight_;
-    Ref<ItemCarrier::LayoutItem> layoutItem;
-    int row = 0;
-    if (itemCarrier()->layout_->lookup(event->pos()[1] - carrier()->pos()[1], &layoutItem, &row)) {
-        highlight->pos = Point{ 0, layoutItem->delegate_->pos()[1] };
-        highlight->size = Size{ size()[0], layoutItem->delegate_->size()[1] };
-        highlight->visible = true;
-        currentDelegate_ = layoutItem->delegate_;
-        if (currentDelegate_()->paper() != highlight->paper()) {
-            delegatePaperSaved_ = currentDelegate_()->paper();
-            hasSavedDelegatePaper_ = true;
-            currentDelegate_()->paper = highlight->paper();
-        }
-        currentRow_ = row;
-    }
-    else {
-        highlight->visible = false;
-        currentDelegate_ = nullptr;
-        currentRow_ = -1;
-    }
-    return ScrollView::Instance::onPointerPressed(event);
-}
-
-bool ItemView::Instance::onPointerReleased(const PointerEvent *event)
-{
-    ScrollView::Instance::onPointerReleased(event);
-
-    itemCarrier()->highlight_->visible = false;
-    if (currentDelegate_() && hasSavedDelegatePaper_) {
-        currentDelegate_()->paper = delegatePaperSaved_;
-        hasSavedDelegatePaper_ = false;
-    }
-
-    return true;
-}
-
-bool ItemView::Instance::onWheelMoved(const WheelEvent *event)
-{
-    itemCarrier()->highlight_->visible = false;
-    if (currentDelegate_() && hasSavedDelegatePaper_) {
-        currentDelegate_()->paper = delegatePaperSaved_;
-        hasSavedDelegatePaper_ = false;
-    }
-    currentDelegate_ = nullptr;
-    currentRow_ = -1;
-
-    return ScrollView::Instance::onWheelMoved(event);
-}
-
-bool ItemView::Instance::onWindowLeft()
-{
-    itemCarrier()->highlight_->visible = false;
-    if (currentDelegate_() && hasSavedDelegatePaper_) {
-        currentDelegate_()->paper = delegatePaperSaved_;
-        hasSavedDelegatePaper_ = false;
-    }
-    currentDelegate_ = nullptr;
-    currentRow_ = -1;
-
-    return ScrollView::Instance::onWindowLeft();
 }
 
 ItemCarrier ItemView::Instance::itemCarrier() const

@@ -14,26 +14,9 @@ namespace ui {
 
 Control::Instance::Instance()
 {
-    build >>[=]{
-        hover <<[=]{ return isParentOf(Application{}->hoverControl()); };
-        pressed <<[=]{ return isParentOf(Application{}->pressedControl()); };
-        focus <<[=]{ return isParentOf(Application{}->focusControl()); };
-    };
-}
-
-bool Control::Instance::onPointerClicked(const PointerEvent *event)
-{
-    return false;
-}
-
-bool Control::Instance::onMouseClicked(const MouseEvent *event)
-{
-    return false;
-}
-
-bool Control::Instance::onFingerClicked(const FingerEvent *event)
-{
-    return false;
+    hover <<[=]{ return isParentOf(Application{}->hoverControl()); };
+    pressed <<[=]{ return isParentOf(Application{}->pressedControl()); };
+    focus <<[=]{ return isParentOf(Application{}->focusControl()); };
 }
 
 Rect Control::Instance::textInputArea() const

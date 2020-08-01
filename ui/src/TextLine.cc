@@ -52,6 +52,13 @@ TextLine::Instance::Instance(TextEdit::Instance *textEdit, TextItem *textItem):
         p->setSource(textEdit_->ink());
         p->showTextRun(textEdit_->textPos(), wrappedTextRun());
     };
+
+    pointerPressed >>[=](const PointerEvent *event)
+    {
+        auto cursor = wrappedTextRun()->getNearestTextCursorInLine(event->pos() - textEdit_->textPos());
+        // \todo ...
+        return true;
+    };
 }
 
 bool TextLine::Instance::withinBounds(Point l) const
@@ -59,13 +66,6 @@ bool TextLine::Instance::withinBounds(Point l) const
     return
         0 <= l[1] && l[1] < size()[1] &&
         0 <= l[0] && l[0] < parent()->size()[0];
-}
-
-bool TextLine::Instance::onPointerPressed(const PointerEvent *event)
-{
-    auto cursor = wrappedTextRun()->getNearestTextCursorInLine(event->pos() - textEdit_->textPos());
-    // \todo ...
-    return true;
 }
 
 }} // namespace cc::ui

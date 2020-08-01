@@ -36,7 +36,6 @@ public:
         Instance(TextEdit::Instance *textEdit, TextItem *textItem);
 
         bool withinBounds(Point l) const override;
-        bool onPointerPressed(const PointerEvent *event) override;
 
         TextEdit::Instance *textEdit_;
         TextItem *textItem_;
