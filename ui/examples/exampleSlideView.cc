@@ -1,9 +1,7 @@
 #include <cc/ui/Application>
 #include <cc/ui/SlideView>
 #include <cc/ui/ColumnLayout>
-#include <cc/ui/Easing>
 #include <cc/ui/Label>
-#include <cc/DEBUG>
 
 int main()
 {
@@ -11,19 +9,15 @@ int main()
     using namespace cc::ui;
 
     SlideView view{640, 480};
-    view->paper = Color::White;
-    // Easing(view->slideCarrier()->pos, 0.5, Easing::Bezier(0.5, -0.4, 0.5, 1.4));
 
-    View slide1{640, 480};
+    View slide1;
     {
         Label label{"Press (->)"};
-        label->paper = Color::Red;
         label->centerInParent();
         slide1 << label;
     }
     view << slide1;
 
-    #if 0
     View slide2;
     {
         View box;
@@ -39,24 +33,20 @@ int main()
     }
     view << slide2;
 
-    view->keyPressed >>[=](const KeyEvent *event)
+    View slide3;
     {
-        if (event->scanCode() == ScanCode::Key_Left)
-        {
-            view->currentIndex -= 1;
-        }
-        else if (event->scanCode() == ScanCode::Key_Right)
-        {
-            view->currentIndex += 1;
-        }
-        else if ('0' <= +event->keyCode() && +event->keyCode() <= '9')
-        {
-            view->currentIndex = +event->keyCode() - '1' + 10 * (+event->keyCode() == '0');
-        }
+        View box;
+        box->paper = 0xD0FFD0;
+        box->centerInParent();
 
-        return true;
-    };
-    #endif
+        ColumnLayout{box};
+        box << Label{"• Item A"};
+        box << Label{"• Item B"};
+        box << Label{"• Item C"};
+
+        slide3 << box;
+    }
+    view << slide3;
 
     Window::open(view, "Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
 

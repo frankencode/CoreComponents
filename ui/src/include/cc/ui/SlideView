@@ -32,7 +32,7 @@ public:
 
         void insertChild(View child) override;
 
-        View slideCarrier_;
+        View slideCarrier_ { nullptr };
     };
 
     SlideView(double width, double height):
