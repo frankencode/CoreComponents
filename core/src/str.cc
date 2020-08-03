@@ -181,7 +181,7 @@ String str(uchar_t ch)
     return s;
 }
 
-String str(void *x)
+String str(const void *x)
 {
     if (sizeof(void *) == sizeof(uint64_t))
         return dec(union_cast<uint64_t>(x));

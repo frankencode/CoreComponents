@@ -179,7 +179,7 @@ String str(uchar_t ch);
 inline String str(bool x) { return x ? "true" : "false"; }
 
 /// Convert a pointer to a String
-String str(void *x);
+String str(const void *x);
 
 /// Convert an object to String
 template<class T>

@@ -54,10 +54,7 @@ PropertyBinding::PropertyBinding(bool dirty):
 
 void PropertyBinding::preAccess() const
 {
-    if (dirty_) {
-        const_cast<PropertyBinding *>(this)->dirty_ = false;
-        const_cast<PropertyBinding *>(this)->cascade();
-    }
+    if (dirty_) const_cast<PropertyBinding *>(this)->cascade();
 
     PropertyBinding *activeBinding = PropertyActivator::activeBinding();
     if (activeBinding && (activeBinding != this)) {
@@ -89,15 +86,13 @@ void PropertyBinding::emit()
 {
     Association others = subscribers_;
     for (PropertyBinding *other: others) {
-        if (other->hasConsumers()) {
-            other->dirty_ = false;
+        if (other->hasConsumers())
             other->cascade();
-        }
         else
             other->dirty_ = true;
     }
 
-    PropertyActivator activator{nullptr}; // FIXME
+    PropertyActivator activator{nullptr};
     changed->emit();
 }
 

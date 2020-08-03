@@ -69,14 +69,6 @@ int main(int argc, char **argv)
 
     View view{640, 480};
 
-    Property< Ref<const GlyphRun> > wrappedRun;
-    #if 0 // FIXME
-    wrappedRun <<[=]{
-        CC_DEBUG;
-        return glyphRun->wrap(view->size()[0] - 2 * margins, TextAlign::Justify);
-    };
-    #endif
-
     view->paint <<[=]{
         auto wrappedRun = glyphRun->wrap(view->size()[0] - 2 * margins, TextAlign::Justify);
         Painter p{view};

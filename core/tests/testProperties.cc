@@ -49,7 +49,7 @@ class BasicBindingTest: public TestCase
         shadow->y->bind([=]{ return shape->y() + 10; });
         shape->moveTo(10, 20);
         shape->moveTo(11, 30);
-        shape->x = shape->y;
+        shape->x = shape->y();
         shape->left = 7;
         shape->left = false;
         fout() << "Shadow followed to " << shadow->x() << ", " << shadow->y() << " (x + y = " << shadow->sum() << ")" << nl;

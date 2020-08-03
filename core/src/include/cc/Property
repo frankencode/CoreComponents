@@ -29,13 +29,10 @@ public:
             clearDependencies();
 
             f_ = f;
-            if (hasConsumers()) {
-                dirty_ = false;
+            if (hasConsumers())
                 cascade();
-            }
-            else {
+            else
                 dirty_ = true;
-            }
         }
 
         template<class G>
@@ -47,11 +44,7 @@ public:
         template<class H>
         void connect(const H &h)
         {
-            if (dirty_) {
-                dirty_ = false;
-                cascade();
-            }
-
+            if (dirty_) cascade();
             changed->connect(h);
         }
 
@@ -95,7 +88,6 @@ public:
             if (f_) {
                 clearDependencies();
                 f_ = std::function<T()>{};
-                dirty_ = false;
             }
             establish(newValue);
         }
@@ -114,6 +106,7 @@ public:
 
         void store(const T &newValue)
         {
+            if (dirty_) dirty_ = false;
             if (value_ != newValue) {
                 value_ = newValue;
                 emit();
@@ -128,8 +121,7 @@ public:
     Property(): instance_{Instance::create()} {}
     Property(const T &b): instance_{Instance::create(b)} {}
 
-    Property(const Property &b): Property{b->value()} {}
-    Property &operator=(const Property &b) { instance_->setValue(b->value()); return *this; }
+    explicit Property(const Property &b): instance_{b.instance_} {}
 
     Property(Property &&b): instance_{std::move(b.instance_)} {}
     Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
@@ -186,22 +178,16 @@ public:
             clearDependencies();
 
             f_ = f;
-            if (hasConsumers()) {
-                dirty_ = false;
+            if (hasConsumers())
                 cascade();
-            }
-            else {
+            else
                 dirty_ = true;
-            }
         }
 
         template<class H>
         void connect(const H &h)
         {
-            if (dirty_) {
-                dirty_ = false;
-                evaluate();
-            }
+            if (dirty_) cascade();
             changed->connect(h);
         }
 

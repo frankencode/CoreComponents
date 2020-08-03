@@ -54,7 +54,7 @@ public:
         Event<const KeyEvent *> keyReleased;
 
         Signal build; // FIXME: obsolete
-        Property<> paint;
+        Property<void> paint;
 
         Property<bool> visible { true };
         Property<bool> moving { false };
