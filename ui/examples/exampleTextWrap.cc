@@ -25,9 +25,9 @@ int main(int argc, char **argv)
             "ἄλλων διδάσκαλοι γεγόνασι, καὶ τὸ τῶν Ἑλλήνων ὄνομα πεποίηκε "
             "μηκέτι τοῦ γένους ἀλλὰ τῆς διανοίας δοκεῖν εἶναι, καὶ μᾶλλον "
             "Ἕλληνας καλεῖσθαι τοὺς τῆς παιδεύσεως τῆς ἡμετέρας ἢ τοὺς τῆς "
-            "κοινῆς φύσεως μετέχοντας. (Isocrates' speech)"
+            "κοινῆς φύσεως μετέχοντας (Isocrates' speech). "
             #endif
-            #if 0
+            #if 1
             "Молчи, скрывайся и таи "
             "И чувства, и мечты свои - "
             "Пускай в душевной глубине "
@@ -47,8 +47,8 @@ int main(int argc, char **argv)
             "Дневные разгонят лучи, - "
             "Внимай их пенью - и молчи!.. "
             #endif
-            #if 0
-            "古池や蛙飛び込む水の音ふるいけやかわずとびこむみずのおと (Bashō's old pond)",
+            #if 1
+            "古池や蛙飛び込む水の音ふるいけやかわずとびこむみずのおと (Bashō's old pond). "
             #endif
             #if 1
             "Es war einmal eine Königstochter, die ging hinaus in den Wald und setzte "
@@ -57,9 +57,9 @@ int main(int argc, char **argv)
             "Luft und hatte ihre Lust daran. Einmal war die Kugel gar hoch geflogen, "
             "sie hatte die Hand schon ausgestreckt und die Finger gekrümmt, um sie "
             "wieder zufangen, da schlug sie neben vorbei auf die Erde, rollte und rollte "
-            "und geradezu in das Wasser hinein."
+            "und geradezu in das Wasser hinein. "
             #endif
-            #if 0
+            #if 1
             "人之初，性本善。性相近，习相远。苟不教，性乃迁。教之道，贵以专。昔孟母，择邻处。子不学，断机杼，窦燕山，有义方，教五子，名俱扬。养不教，父之过。教不严，师之惰。 (Confucius)"
             #endif
             ,
