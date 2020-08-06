@@ -109,7 +109,7 @@ bool ApplicationInstance::feedFingerEvent(Window *window, FingerEvent *event)
             focusControl = Control{nullptr};
     }
 
-    View touchTarget;
+    View touchTarget { nullptr };
     if (touchTargets_->lookup(event->fingerId(), &touchTarget)) {
         if (event->action() == PointerAction::Released)
             touchTargets_->remove(event->fingerId());
