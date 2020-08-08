@@ -6,6 +6,7 @@
 #include <cc/Queue>
 #include <cc/Map>
 #include <cc/stdio>
+#include <cc/DEBUG>
 
 int main()
 {
@@ -61,17 +62,18 @@ int main()
     auto onPressed = [&](const FingerEvent *event){
         View touchPoint { nullptr };
         if (!assignedTouchPoints->lookup(event->fingerId(), &touchPoint)) {
-            touchPoint = freeTouchPoints->popFront();
+            freeTouchPoints->popFront(&touchPoint);
             assignedTouchPoints->establish(event->fingerId(), touchPoint);
         }
-        touchPoint->visible = true;
+        // touchPoint->visible = true;
         touchPoint->pos = /*view->size() **/ event->pos() - touchPoint->size() / 2;
         return true;
     };
     auto onRelease = [&](const FingerEvent *event){
         View touchPoint { nullptr };
         if (assignedTouchPoints->lookup(event->fingerId(), &touchPoint)) {
-            touchPoint->visible = false;
+            // touchPoint->visible = false;
+            touchPoint->pos = Point{};
             freeTouchPoints->pushBack(touchPoint);
         }
         return true;

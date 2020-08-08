@@ -103,7 +103,7 @@ public:
     /// Check if the relation contains \a key
     bool contains(const Key &key) const
     {
-        return tree_->lookup<Item>(Item{key});
+        return tree_->lookup<Item>(key);
     }
 
     /** Lookup key-value pair by given key
@@ -118,7 +118,7 @@ public:
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item, Search>(Item{key}, &index, &node, &egress);
+        bool found = tree_->lookup<Item, Search>(key, &index, &node, &egress);
         if (target) *target = ConstIterator{tree_, index, node, egress};
         return found;
     }
@@ -135,7 +135,7 @@ public:
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item, Search>(Item{key}, &index, &node, &egress);
+        bool found = tree_->lookup<Item, Search>(key, &index, &node, &egress);
         if (target) *target = Iterator{tree_, index, node, egress};
         return found;
     }
@@ -148,9 +148,8 @@ public:
     {
         bucket::Leaf<Item> *target = nullptr;
         unsigned egress = 0;
-        Item item{key, value};
-        bool found = tree_->lookup<Item, FindLast>(item, nullptr, &target, &egress);
-        tree_->push<Item>(target, egress + found, item);
+        bool found = tree_->lookup<Item, FindLast>(key, nullptr, &target, &egress);
+        tree_->push<Item>(target, egress + found, Item{key, value});
     }
 
     /** Remove all key-value pairs of given key

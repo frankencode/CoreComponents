@@ -218,20 +218,18 @@ public:
 
     /** Remove an item from the end
       * \param item returns the item value
-      * \return reference to \a item
       */
-    const T &popBack (T *item);
+    void popBack(T *item);
 
     /** Remove an item from the front
       * \param item returns the item value
-      * \return reference to \a item
       */
-    const T &popFront(T *item);
+    void popFront(T *item);
 
     /** Remove the last item
       * \return item value
       */
-    T popBack() { T item; popBack (&item); return item; }
+    T popBack() { T item; popBack(&item); return item; }
 
     /** Remove the first item
       * \return item value
@@ -242,7 +240,7 @@ public:
     void push(const T &item) { pushBack(item); }
 
     /// \copydoc popFront(T *)
-    const T &pop(T *item) { return popFront(item); }
+    void pop(T *item) { return popFront(item); }
 
     /// \copydoc popFront()
     T pop() { return popFront(); }
@@ -323,7 +321,7 @@ void QueueInstance<T>::pushFront(const T &item)
 }
 
 template<class T>
-const T &QueueInstance<T>::popBack(T *item)
+void QueueInstance<T>::popBack(T *item)
 {
     assert(tail_ && !tail_->isEmpty());
 
@@ -337,11 +335,10 @@ const T &QueueInstance<T>::popBack(T *item)
     }
 
     --count_;
-    return *item;
 }
 
 template<class T>
-const T &QueueInstance<T>::popFront(T *item)
+void QueueInstance<T>::popFront(T *item)
 {
     assert(head_ && !head_->isEmpty());
 
@@ -355,7 +352,6 @@ const T &QueueInstance<T>::popFront(T *item)
     }
 
     --count_;
-    return *item;
 }
 
 template<class T>

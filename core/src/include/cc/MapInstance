@@ -103,7 +103,7 @@ public:
     /// Check if the map contains \a key
     bool contains(const Key &key) const
     {
-        return tree_->lookup<Item>(Item{key});
+        return tree_->lookup<Item>(key);
     }
 
     /** Lookup key-value pair by given key
@@ -116,7 +116,7 @@ public:
     {
         bucket::Leaf<Item> *target = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup(Item{key}, nullptr, &target, &egress);
+        bool found = tree_->lookup(key, nullptr, &target, &egress);
         if (found) *value = target->at(egress)->value();
         return found;
     }
@@ -131,7 +131,7 @@ public:
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item>(Item{key}, &index, &node, &egress);
+        bool found = tree_->lookup(key, &index, &node, &egress);
         if (target) *target = ConstIterator{tree_, index, node, egress};
         return found;
     }
@@ -146,7 +146,7 @@ public:
         Index index = 0;
         bucket::Leaf<Item> *node = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item>(Item{key}, &index, &node, &egress);
+        bool found = tree_->lookup(key, &index, &node, &egress);
         if (target) *target = Iterator{tree_, index, node, egress};
         return found;
     }
@@ -161,10 +161,9 @@ public:
     {
         bucket::Leaf<Item> *leaf = nullptr;
         unsigned egress = 0;
-        Item item{key, value};
         Index index = 0;
-        bool found = tree_->lookup<Item>(item, &index, &leaf, &egress);
-        if (!found) tree_->pushAndTell<Item>(leaf, egress, item);
+        bool found = tree_->lookup(key, &index, &leaf, &egress);
+        if (!found) tree_->pushAndTell<Item>(leaf, egress, Item{key, value});
         if (target ) *target = Iterator{tree_, index, leaf, egress};
         return !found;
     }
@@ -177,10 +176,9 @@ public:
     {
         bucket::Leaf<Item> *target = nullptr;
         unsigned egress = 0;
-        Item item{key, value};
-        bool found = tree_->lookup<Item>(item, nullptr, &target, &egress);
+        bool found = tree_->lookup<Item>(key, nullptr, &target, &egress);
         if (found) target->at(egress)->setValue(value);
-        else tree_->push<Item>(target, egress, item);
+        else tree_->push<Item>(target, egress, Item{key, value});
     }
 
     /** Remove the given \a key from the map
@@ -190,7 +188,7 @@ public:
     {
         bucket::Leaf<Item> *target = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup<Item>(Item{key}, nullptr, &target, &egress);
+        bool found = tree_->lookup(key, nullptr, &target, &egress);
         if (found) tree_->pop<Item>(target, egress);
         return found;
     }
@@ -204,7 +202,7 @@ public:
     {
         bucket::Leaf<Item> *target = nullptr;
         unsigned egress = 0;
-        bool found = tree_->lookup(Item{key}, nullptr, &target, &egress);
+        bool found = tree_->lookup(key, nullptr, &target, &egress);
         return found ? target->at(egress)->value() : fallback;
     }
 
@@ -217,8 +215,7 @@ public:
     {
         bucket::Leaf<Item> *target = nullptr;
         unsigned egress = 0;
-        Item item{key, value};
-        bool found = tree_->lookup(item, nullptr, &target, &egress);
+        bool found = tree_->lookup(key, nullptr, &target, &egress);
         if (found) target->at(egress)->setValue(value);
         return found;
     }

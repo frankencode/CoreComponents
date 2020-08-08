@@ -332,7 +332,7 @@ void SdlApplicationInstance::handleWindowEvent(const SDL_WindowEvent *e)
     // CC_DEBUG << windowEventToString(e);
     switch (e->event) {
         case SDL_WINDOWEVENT_SIZE_CHANGED: {
-            SdlWindow *window = 0;
+            SdlWindow *window = nullptr;
             if (windows_->lookup(e->windowID, &window)) {
                 int w = 0, h = 0;
                 SDL_GetWindowSize(window->sdlWindow_, &w, &h);
@@ -343,7 +343,7 @@ void SdlApplicationInstance::handleWindowEvent(const SDL_WindowEvent *e)
         }
         #if 0
         case SDL_WINDOWEVENT_RESIZED: {
-            SdlWindow *window = 0;
+            SdlWindow *window = nullptr;
             if (windows_->lookup(e->windowID, &window)) {
                 int w = 0, h = 0;
                 SDL_GetWindowSize(window->sdlWindow_, &w, &h);
@@ -354,37 +354,37 @@ void SdlApplicationInstance::handleWindowEvent(const SDL_WindowEvent *e)
         }
         #endif
         case SDL_WINDOWEVENT_SHOWN: {
-            SdlWindow *window = 0;
+            SdlWindow *window = nullptr;
             if (windows_->lookup(e->windowID, &window))
                 window->onWindowShown();
             break;
         }
         case SDL_WINDOWEVENT_HIDDEN: {
-            SdlWindow *window = 0;
+            SdlWindow *window = nullptr;
             if (windows_->lookup(e->windowID, &window))
                 window->onWindowHidden();
             break;
         }
         case SDL_WINDOWEVENT_EXPOSED: {
-            SdlWindow *window = 0;
+            SdlWindow *window = nullptr;
             if (windows_->lookup(e->windowID, &window))
                 feedExposedEvent(window);
             break;
         }
         case SDL_WINDOWEVENT_MOVED: {
-            SdlWindow *window;
+            SdlWindow *window = nullptr;
             if (windows_->lookup(e->windowID, &window))
                 window->onWindowMoved(Point{double(e->data1), double(e->data2)});
             break;
         }
         case SDL_WINDOWEVENT_ENTER: {
-            SdlWindow *window = 0;
+            SdlWindow *window = nullptr;
             if (windows_->lookup(e->windowID, &window))
                 feedEnterEvent(window);
             break;
         }
         case SDL_WINDOWEVENT_LEAVE: {
-            SdlWindow *window = 0;
+            SdlWindow *window = nullptr;
             if (windows_->lookup(e->windowID, &window))
                 feedLeaveEvent(window);
             break;

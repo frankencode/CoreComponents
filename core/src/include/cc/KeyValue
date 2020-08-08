@@ -58,10 +58,10 @@ public:
 
     bool operator< (const KeyValue &b) const { return instance_.key_ <  b.instance_.key_; }
     bool operator> (const KeyValue &b) const { return instance_.key_ >  b.instance_.key_; }
-    bool operator==(const KeyValue &b) const { return instance_.key_ ==  b.instance_.key_; }
-    bool operator!=(const KeyValue &b) const { return instance_.key_ !=  b.instance_.key_; }
-    bool operator<=(const KeyValue &b) const { return instance_.key_ <=  b.instance_.key_; }
-    bool operator>=(const KeyValue &b) const { return instance_.key_ >=  b.instance_.key_; }
+    bool operator==(const KeyValue &b) const { return instance_.key_ == b.instance_.key_; }
+    bool operator!=(const KeyValue &b) const { return instance_.key_ != b.instance_.key_; }
+    bool operator<=(const KeyValue &b) const { return instance_.key_ <= b.instance_.key_; }
+    bool operator>=(const KeyValue &b) const { return instance_.key_ >= b.instance_.key_; }
 
     Instance *operator->() { return &instance_; }
     const Instance *operator->() const { return &instance_; }
@@ -73,5 +73,11 @@ private:
 
     Instance instance_;
 };
+
+template<class K, class V>
+inline bool operator<(const KeyValue<K, V> &a, const K &b) { return a->key() < b; }
+
+template<class K, class V>
+inline bool operator<(const K &a, const KeyValue<K, V> &b) { return a < b->key(); }
 
 } // namespace cc

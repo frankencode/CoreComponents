@@ -26,8 +26,7 @@ public:
 
     Surface() = default;
 
-    Instance *operator->() { return instance_; }
-    const Instance *operator->() const { return instance_; }
+    Instance *operator->() const { return instance_; }
 
     explicit operator bool() const { return instance_; }
 
