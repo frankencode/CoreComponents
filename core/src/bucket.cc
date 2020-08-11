@@ -102,7 +102,7 @@ void Tree::unlink(Node *node)
     relieve(parent);
 }
 
-void Tree::shiftWeights(Node *from, Node *to, int64_t delta)
+void Tree::shiftWeights(Node *from, Node *to, Weight delta)
 {
     while (from != to) {
         weight(from) -= delta;
@@ -112,7 +112,7 @@ void Tree::shiftWeights(Node *from, Node *to, int64_t delta)
     }
 }
 
-void Tree::updateWeights(Node *node, int64_t delta)
+void Tree::updateWeights(Node *node, Weight delta)
 {
     while (node != root_.node_) {
         weight(node) += delta;
