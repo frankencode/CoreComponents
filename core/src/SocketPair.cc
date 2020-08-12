@@ -23,4 +23,9 @@ SocketPair::Instance::Instance()
     slaveFd_ = fd[1];
 }
 
+SocketPair::Instance::~Instance()
+{
+    ::close(slaveFd_);
+}
+
 } // namespace cc

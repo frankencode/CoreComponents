@@ -33,7 +33,7 @@ public:
     unsigned mapToBucket(unsigned slotIndex, unsigned fill) const;
 
     unsigned pushEntry(unsigned bucketIndex, unsigned *fill);
-    void popEntry(unsigned bucketIndex, unsigned *fill);
+    unsigned popEntry(unsigned bucketIndex, unsigned *fill);
 
 private:
     std::uint64_t map_ { UINT64_C(0x0123456789ABCDEF) };
@@ -95,7 +95,7 @@ inline unsigned BucketMap<16>::pushEntry(unsigned bucketIndex, unsigned *fill)
     return slotIndex;
 }
 
-inline void BucketMap<16>::popEntry(unsigned bucketIndex, unsigned *fill)
+inline unsigned BucketMap<16>::popEntry(unsigned bucketIndex, unsigned *fill)
 {
     assert(*fill > 0);
     assert(bucketIndex < *fill);
@@ -109,6 +109,7 @@ inline void BucketMap<16>::popEntry(unsigned bucketIndex, unsigned *fill)
     map_ = (slotIndex << 60u) | ((map_ >> 4u) & highMask) | (map_ & lowMask);
 
     --*fill;
+    return slotIndex;
 }
 
 } // namespace cc

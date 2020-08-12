@@ -210,9 +210,9 @@ String Process::exePath()
     #ifdef __linux
     path = File::readlink("/proc/self/exe");
     #elif __OpenBSD__
-    return File::readlink("/proc/curproc/file");
+    path = File::readlink("/proc/curproc/file");
     #elif __NetBSD__
-	return File::readlink("/proc/curproc/exe")
+    path = File::readlink("/proc/curproc/exe")
     #elif __MACH__
     char *buf = 0;
     uint32_t bufSize = 0;

@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <iterator>
 #include <limits>
+#include <type_traits>
 #include <cc/BucketMap>
 #include <cc/BinarySearch>
 
@@ -64,7 +65,10 @@ public:
         head.node_->parent_ = this;
     }
 
-    void pop(unsigned egress) { popEntry(egress, &fill_); }
+    void pop(unsigned egress)
+    {
+        popEntry(egress, &fill_);
+    }
 
     Weight weightAt(unsigned egress) const { return at(egress).weight_; }
 
@@ -83,6 +87,14 @@ class Leaf: public Node
 {
 public:
     Leaf(): Node{/*isBranch=*/false} {}
+    ~Leaf() {
+        if (!std::is_trivial<Item>::value) {
+            for (unsigned i = 0; i < fill_; ++i) {
+                Item *p = &at(i);
+                p->~Item();
+            }
+        }
+    }
 
     Item &at(unsigned egress) { return slotAt(mapToSlot(egress, fill_)); }
     const Item &at(unsigned egress) const { return slotAt(mapToSlot(egress, fill_)); }
@@ -93,11 +105,18 @@ public:
     {
         unsigned slotIndex = pushEntry(egress, &fill_);
         Item *p = &slotAt(slotIndex);
-        new (p) Item;
+        if (!std::is_trivial<Item>::value) new (p) Item;
         *p = item;
     }
 
-    void pop(unsigned egress) { popEntry(egress, &fill_); }
+    void pop(unsigned egress)
+    {
+        unsigned slotIndex = popEntry(egress, &fill_);
+        if (!std::is_trivial<Item>::value) {
+            Item *p = &slotAt(slotIndex);
+            p->~Item();
+        }
+    }
 
     static Weight weightAt(unsigned egress) { return 1; }
 

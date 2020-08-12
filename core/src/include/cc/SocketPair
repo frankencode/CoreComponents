@@ -24,6 +24,7 @@ public:
         friend class SocketPair;
 
         Instance();
+        ~Instance();
     };
 
     SocketPair():
