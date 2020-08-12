@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <atomic>
+#include <cstdint>
+
+namespace cc {
+
+template<class T>
+class Shared
+{
+public:
+    template<class... Args>
+    explicit Shared(Args... args):
+        data_{new Data{args...}}
+    {}
+
+    Shared(const Shared &other):
+        data_{other.data_}
+    {
+        data_->acquire();
+    }
+
+    ~Shared()
+    {
+        data_->release();
+    }
+
+    Shared &operator=(const Shared &other)
+    {
+        data_ = other->data_;
+        data_->acquire();
+        return *this;
+    }
+
+    T &operator()() { return data_->value_; }
+    const T &operator()() const { return data_->value_; }
+
+private:
+    class Data {
+    public:
+        template<class... Args>
+        Data(Args... args):
+            value_{args...}
+        {}
+
+        void acquire()
+        {
+            ++refCount_;
+        }
+
+        void release()
+        {
+            if (--refCount_ == 0)
+                delete this;
+        }
+
+        T value_;
+        std::atomic<std::int64_t> refCount_ { 1 };
+    };
+
+    Data *data_;
+};
+
+} // namespace cc

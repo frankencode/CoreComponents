@@ -161,31 +161,28 @@ int main(int argc, char **argv)
     return 0;
     #endif
 
-    #if 0
+    #if 1 // def NDEBUG
     {
-        const int n = 256;
+        const int n = 1024;
         const int h = 1000;
 
         uint64_t tx, ts;
 
-        #if 1
         for (int k = 0; k < h; ++k)
         {
             Local<ListInstance<int>> list;
             for (int i = 0; i < n; ++i)
-                list->push(i, i);
+                list->pushBack(i);
         }
         {
             Local<ListInstance<int>> list;
             tx = ::clock();
             for (int i = 0; i < n; ++i)
-                list->push(i, i);
+                list->pushBack(i);
             tx = ::clock() - tx;
             // CC_INSPECT(tx);
         }
-        #endif
 
-        #if 1
         for (int k = 0; k < h; ++k)
         {
             std::list<int> list;
@@ -200,15 +197,13 @@ int main(int argc, char **argv)
             ts = ::clock() - ts;
             // CC_INSPECT(ts);
         }
-        #endif
 
+        // CC_INSPECT(double(tx)/ts);
         CC_INSPECT(double(ts)/tx);
-        CC_INSPECT(double(tx)/ts);
-
     }
     return 0;
     #endif
-    #ifdef NDEBUG
+    #if 0 // def NDEBUG
     {
         const int n = 100000;
         const int w = 1000;
@@ -221,7 +216,7 @@ int main(int argc, char **argv)
         }
         {
             Local<ListInstance<int>> list;
-            for (int i = 0; i < n; ++i) list->insertAt(i, i);
+            for (int i = 0; i < n; ++i) list->pushBack(i);
             tx = ::clock();
             int h = 0;
             for (int i = 0; i < w; ++i) {
