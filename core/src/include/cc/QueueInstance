@@ -8,7 +8,8 @@
 
 #pragma once
 
-#include <assert.h>
+#include <cassert>
+#include <type_traits>
 #include <iterator>
 #include <cc/Object>
 #include <cc/BucketMap>
@@ -43,13 +44,34 @@ public:
     {
         if (pred_) pred_->succ_ = succ_;
         if (succ_) succ_->pred_ = pred_;
+
+        if (!std::is_trivial<T>::value) {
+            for (unsigned i = 0; i < fill_; ++i) {
+                T *p = &at(i);
+                p->~T();
+            }
+        }
     }
 
-    T &at(unsigned nodeIndex) { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
-    const T &at(unsigned nodeIndex) const { return slot_[map_->mapToSlot(nodeIndex, fill_)]; }
+    T &at(unsigned nodeIndex) { return slotAt(map_->mapToSlot(nodeIndex, fill_)); }
+    const T &at(unsigned nodeIndex) const { return slotAt(map_->mapToSlot(nodeIndex, fill_)); }
 
-    void push(unsigned nodeIndex, const T &item) { slot_[map_->pushEntry(nodeIndex, &fill_)] = item; }
-    void pop(unsigned nodeIndex) { map_->popEntry(nodeIndex, &fill_); }
+    void push(unsigned nodeIndex, const T &item)
+    {
+        const unsigned slotIndex = map_->pushEntry(nodeIndex, &fill_);
+        T *p = &slotAt(slotIndex);
+        if (!std::is_trivial<T>::value) new (p) T{item};
+        else *p = item;
+    }
+
+    void pop(unsigned nodeIndex)
+    {
+        const unsigned slotIndex = map_->popEntry(nodeIndex, &fill_);
+        if (!std::is_trivial<T>::value) {
+            T *p = &slotAt(slotIndex);
+            p->~T();
+        }
+    }
 
     void pushBack(const T &item) { push(fill_, item); }
     void popBack(T *item) { *item = at(fill_ - 1); pop(fill_ - 1); }
@@ -60,11 +82,14 @@ public:
     bool isFull() const { return fill_ == Capacity; }
     bool isEmpty() const { return fill_ == 0; }
 
+    T &slotAt(unsigned nodeIndex) { return reinterpret_cast<T *>(data_)[nodeIndex]; }
+    const T& slotAt(unsigned nodeIndex) const { return reinterpret_cast<const T *>(data_)[nodeIndex]; }
+
     QueueNode *pred_;
     QueueNode *succ_;
     unsigned fill_;
     Local< BucketMap<Capacity> > map_;
-    T slot_[Capacity];
+    uint8_t data_[Capacity * sizeof(T)];
 };
 
 /// \todo make sure iterators become invalid automatically in debug mode when the queue is modified
