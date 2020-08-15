@@ -86,6 +86,16 @@ public:
         return tree_->at<T>(index);
     }
 
+    /** Create a new item at given position
+      * \param args constructor arguments for the new item
+      */
+    template<class... Args>
+    void emplaceAt(Index index, Args... args)
+    {
+        assert(0 <= index && index <= count());
+        tree_->emplace<T>(index, args...);
+    }
+
     /** Insert new item at given index
       * \param index list index
       * \param item new item value
@@ -103,6 +113,24 @@ public:
     {
         assert(0 <= index && index < count());
         tree_->pop<T>(index);
+    }
+
+    /** Create a new item at the end of the list
+      * \param args constructor arguments for the new item
+      */
+    template<class... Args>
+    void emplaceBack(Args... args)
+    {
+        tree_->emplaceBack(args...);
+    }
+
+    /** Create a new item at the front of the list
+      * \param args constructor arguments for the new item
+      */
+    template<class... Args>
+    void emplaceFront(Args... args)
+    {
+        emplaceAt(0, args...);
     }
 
     /** Append \a item to the end of the list

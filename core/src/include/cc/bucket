@@ -86,7 +86,10 @@ template<class Item>
 class Leaf: public Node
 {
 public:
-    Leaf(): Node{/*isBranch=*/false} {}
+    Leaf():
+        Node{/*isBranch=*/false}
+    {}
+
     ~Leaf() {
         if (!std::is_trivial<Item>::value) {
             for (unsigned i = 0; i < fill_; ++i) {
@@ -101,12 +104,20 @@ public:
 
     unsigned count() const { return fill_; }
 
+    template<class... Args>
+    void emplace(unsigned egress, Args... args)
+    {
+        unsigned slotIndex = pushEntry(egress, &fill_);
+        Item *p = &slotAt(slotIndex);
+        new (p) Item{args...};
+    }
+
     void push(unsigned egress, const Item &item)
     {
         unsigned slotIndex = pushEntry(egress, &fill_);
         Item *p = &slotAt(slotIndex);
-        if (!std::is_trivial<Item>::value) new (p) Item;
-        *p = item;
+        if (!std::is_trivial<Item>::value) new (p) Item{item};
+        else *p = item;
     }
 
     void pop(unsigned egress)
@@ -151,11 +162,30 @@ public:
 
     Weight count() const { return root_.weight_; }
 
+    template<class Item, class... Args>
+    void emplace(Weight index, Args... args);
+
     template<class Item>
     void push(Weight index, const Item &item);
 
+    template<class Item, class... Args>
+    void emplaceBack(Args... args)
+    {
+        emplace<Item>(lastLeaf_, lastLeaf_ ? lastLeaf_->fill_ : 0, args...);
+    }
+
     template<class Item>
-    void pushBack(const Item &item);
+    void pushBack(const Item &item)
+    {
+        push<Item>(lastLeaf_, lastLeaf_ ? lastLeaf_->fill_ : 0, item);
+    }
+
+    template<class Item, class... Args>
+    void emplace(Node *target, unsigned egress, Args... args)
+    {
+        Leaf<Item> *leaf = target ? static_cast<Leaf<Item> *>(target) : nullptr;
+        emplaceAndTell<Item>(leaf, egress, args...);
+    }
 
     template<class Item>
     void push(Node *target, unsigned egress, const Item &item)
@@ -164,8 +194,20 @@ public:
         pushAndTell<Item>(leaf, egress, item);
     }
 
+    template<class Item, class... Args>
+    void emplaceAndTell(Leaf<Item> *&target, unsigned &egress, Args... args);
+
     template<class Item>
     void pushAndTell(Leaf<Item> *&target, unsigned &egress, const Item &item);
+
+    template<class Iterator, class... Args>
+    void emplaceAndStep(Iterator &iterator, Args... args)
+    {
+        if (count() == 0) emplaceBack(args...);
+        else assert(bool(iterator)); // cannot insert an item using an invalid iterator
+        emplace<typename Iterator::ValueType>(iterator.index_, args...);
+        iterator = Iterator{this, iterator.index_};
+    }
 
     template<class Iterator>
     void pushAndStep(Iterator &iterator, const typename Iterator::value_type &item)
@@ -355,6 +397,14 @@ private:
     #endif
 };
 
+template<class Item, class... Args>
+void Tree::emplace(Weight index, Args... args)
+{
+    unsigned egress = 0;
+    Node *node = stepDownTo(index, &egress);
+    emplace<Item>(node, egress, args...);
+}
+
 template<class Item>
 void Tree::push(Weight index, const Item &item)
 {
@@ -363,10 +413,27 @@ void Tree::push(Weight index, const Item &item)
     push(node, egress, item);
 }
 
-template<class Item>
-void Tree::pushBack(const Item &item)
+template<class Item, class... Args>
+void Tree::emplaceAndTell(Leaf<Item> *&target, unsigned &egress, Args... args)
 {
-    push(lastLeaf_, lastLeaf_ ? lastLeaf_->fill_ : 0, item);
+    if (target) {
+        dissipate(target, egress);
+        target->emplace(egress, args...);
+        updateWeights(target, 1);
+    }
+    else {
+        target = new Leaf<Item>;
+        egress = 0;
+        target->emplace(egress, args...);
+        root_.weight_ = 1;
+        root_.node_ = target;
+        lastLeaf_ = target;
+        // firstLeaf_ = leaf;
+        // leafCount_ = 1;
+    }
+    #ifndef NDEBUG
+    ++revision_;
+    #endif
 }
 
 template<class Item>
