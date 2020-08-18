@@ -24,6 +24,8 @@ public:
         friend class OutputPipe;
 
         Instance();
+        ~Instance();
+
         void onStart() override;
     };
 

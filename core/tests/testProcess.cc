@@ -7,12 +7,10 @@
  */
 
 #include <cc/testing/TestSuite>
-#include <cc/stdio>
-#include <cc/debug>
 #include <cc/Process>
 #include <cc/Spawn>
-#include <cc/InputPipe>
-#include <cc/OutputPipe>
+#include <cc/DEBUG>
+#include <cc/stdio>
 
 using namespace cc;
 using namespace cc::testing;
@@ -36,6 +34,7 @@ class SimpleEchoTest: public TestCase
         String message = "Hello, echo!";
         spawn->input()->write(message);
         spawn->input()->close();
+        CC_DEBUG;
         String reply = spawn->output()->readAll();
         CC_INSPECT(message);
         CC_INSPECT(reply);

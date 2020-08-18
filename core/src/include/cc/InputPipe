@@ -24,12 +24,15 @@ public:
         friend class InputPipe;
 
         Instance();
+        ~Instance();
+
         void onStart() override;
     };
 
     InputPipe():
         IoChannel{new Instance}
     {}
+
 };
 
 } // namepspace cc

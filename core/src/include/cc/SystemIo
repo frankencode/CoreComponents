@@ -46,8 +46,6 @@ protected:
 
     SystemIo();
 
-    static void checkErrors(int ret);
-
     static SystemIo *instance();
 
     long iovMax_;

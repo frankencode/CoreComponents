@@ -74,7 +74,7 @@ public:
         bool waitFor(IoReady ready, int interval_ms = -1);
 
         /** Shutdown a full duplex communication channel
-          * \param type shutdown for reading (ReadShutdown), writing (WriteShutdown) or both (FullShutdown)
+          * \param type shutdown mode
           */
         void shutdown(Shutdown type = Shutdown::Full);
 

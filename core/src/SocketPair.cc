@@ -25,7 +25,13 @@ SocketPair::Instance::Instance()
 
 SocketPair::Instance::~Instance()
 {
+    if (slaveFd_ != -1) ::close(slaveFd_);
+}
+
+void SocketPair::Instance::onStart()
+{
     ::close(slaveFd_);
+    slaveFd_ = -1;
 }
 
 } // namespace cc

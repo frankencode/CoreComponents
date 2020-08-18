@@ -42,7 +42,11 @@ ssize_t SystemIo::read(int fd, void *buf, size_t count)
     ssize_t ret = -1;
     do ret = ::read(fd, buf, count);
     while (ret == -1 && errno == EINTR);
-    SystemIo::checkErrors(ret);
+    if (ret == -1) {
+        if (errno == EWOULDBLOCK) throw Timeout{};
+        if (errno == ECONNRESET || errno == EPIPE) throw ConnectionResetByPeer{};
+        CC_SYSTEM_DEBUG_ERROR(errno);
+    }
     return ret;
 }
 
@@ -55,7 +59,11 @@ void SystemIo::write(int fd, const void *buf, size_t count)
         ssize_t ret = -1;
         do ret = ::write(fd, p, n);
         while (ret == -1 && errno == EINTR);
-        SystemIo::checkErrors(ret);
+        if (ret == -1) {
+            if (errno == EWOULDBLOCK) throw Timeout{};
+            if (errno == ECONNRESET || errno == EPIPE) throw ConnectionResetByPeer{};
+            CC_SYSTEM_DEBUG_ERROR(errno);
+        }
         p += ret;
         n -= ret;
     }
@@ -70,7 +78,11 @@ void SystemIo::writev(int fd, const struct iovec *iov, int iovcnt)
         ssize_t ret = -1;
         do ret = ::writev(fd, iov + i, m);
         while (ret == -1 && errno == EINTR);
-        SystemIo::checkErrors(ret);
+        if (ret == -1) {
+            if (errno == EWOULDBLOCK) throw Timeout{};
+            if (errno == ECONNRESET || errno == EPIPE) throw ConnectionResetByPeer{};
+            CC_SYSTEM_DEBUG_ERROR(errno);
+        }
         i += m;
     }
 }
@@ -81,15 +93,6 @@ int SystemIo::ioctl(int fd, int request, void *arg)
     if (value == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
     return value;
-}
-
-void SystemIo::checkErrors(int ret)
-{
-    if (ret == -1) {
-        if (errno == EWOULDBLOCK) throw Timeout{};
-        if (errno == ECONNRESET || errno == EPIPE) throw ConnectionResetByPeer{};
-        CC_SYSTEM_DEBUG_ERROR(errno);
-    }
 }
 
 SystemIo *SystemIo::instance()

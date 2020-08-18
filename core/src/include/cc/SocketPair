@@ -25,6 +25,8 @@ public:
 
         Instance();
         ~Instance();
+
+         void onStart() override;
     };
 
     SocketPair():

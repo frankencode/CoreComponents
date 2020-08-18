@@ -39,6 +39,7 @@ void JobScheduler::schedule(Job *job)
         requestChannel_->pushBack(job);
     else
         derivatives_->insert(job);
+
     ++totalCount_;
 }
 

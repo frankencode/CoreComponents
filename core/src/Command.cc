@@ -7,6 +7,7 @@
  */
 
 #include <cc/Command>
+#include <cc/SocketPair>
 #include <cc/InputPipe>
 #include <cc/OutputPipe>
 
@@ -143,10 +144,10 @@ Command::Instance *Command::Instance::attach(const SystemStream &stream, int tar
 
 Command::Instance *Command::Instance::simpleRedirection()
 {
-    if (!standardStreams_[0]) setInputChannel(InputPipe{});
+    if (!standardStreams_[0]) setInputChannel(SocketPair{});
 
     if (!standardStreams_[1] || !standardStreams_[2]) {
-        OutputPipe outputPipe;
+        SocketPair outputPipe;
         if (!standardStreams_[1]) setOutputChannel(outputPipe);
         if (!standardStreams_[2]) setErrorChannel(outputPipe);
     }
