@@ -8,8 +8,6 @@
 
 #include <cc/Command>
 #include <cc/SocketPair>
-#include <cc/InputPipe>
-#include <cc/OutputPipe>
 
 namespace cc {
 
