@@ -69,21 +69,21 @@ public:
         /** \brief Set standard input channel
           * \param channel IoChannel to use for standard input
           * \return pointer to this object
-          * \see InputPipe
+          * \see SocketPair
           */
         Instance *setInputChannel(const IoChannel &channel);
 
         /** \brief Set standard output channel
           * \param channel IoChannel to use for standard output
           * \return pointer to this object
-          * \see OutputPipe
+          * \see SocketPair
           */
         Instance *setOutputChannel(const IoChannel &channel);
 
         /** \brief Set standard error channel
           * \param channel IoChannel to use for standard error
           * \return pointer to this object
-          * \see OutputPipe
+          * \see SocketPair
           */
         Instance *setErrorChannel(const IoChannel &channel);
 
