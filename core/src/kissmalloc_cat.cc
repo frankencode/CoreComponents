@@ -779,48 +779,50 @@ void *operator new(std::size_t size, std::align_val_t alignment)
 {
     void *data = nullptr;
     #ifndef KISSMALLOC_VALGRIND
-    if (KISSMALLOC_NAME(posix_memalign)(&data, alignment, size) != 0) KISSMALLOC_THROW;
+    if (KISSMALLOC_NAME(posix_memalign)(&data, static_cast<std::size_t>(alignment), size) != 0) KISSMALLOC_THROW;
     #else
     #ifdef KISSMALLOC_OVERLOAD_LIBC
-    if (posix_memalign(&data, alignment, size) != 0) KISSMALLOC_THROW;
+    if (posix_memalign(&data, static_cast<std::size_t>(alignment), size) != 0) KISSMALLOC_THROW;
     #else
-    if (KISSMALLOC_NAME(posix_memalign)(&data, alignment, size + 2 * KISSMALLOC_REDZONE_SIZE) != 0) KISSMALLOC_THROW;
+    if (KISSMALLOC_NAME(posix_memalign)(&data, static_cast<std::size_t>(alignment), size + 2 * KISSMALLOC_REDZONE_SIZE) != 0) KISSMALLOC_THROW;
     if (data) {
         data = (void *)((char *)data + KISSMALLOC_REDZONE_SIZE);
         VALGRIND_MALLOCLIKE_BLOCK(data, size, KISSMALLOC_REDZONE_SIZE, /*is_zeroed=*/true);
     }
     #endif
     #endif
+    return data;
 }
 
 void *operator new[](std::size_t size, std::align_val_t alignment)
 {
     void *data = nullptr;
     #ifndef KISSMALLOC_VALGRIND
-    if (KISSMALLOC_NAME(posix_memalign)(&data, alignment, size) != 0) KISSMALLOC_THROW;
+    if (KISSMALLOC_NAME(posix_memalign)(&data, static_cast<std::size_t>(alignment), size) != 0) KISSMALLOC_THROW;
     #else
     #ifdef KISSMALLOC_OVERLOAD_LIBC
     if (posix_memalign(&data, alignment, size) != 0) KISSMALLOC_THROW;
     #else
-    if (KISSMALLOC_NAME(posix_memalign)(&data, alignment, size + 2 * KISSMALLOC_REDZONE_SIZE) != 0) KISSMALLOC_THROW;
+    if (KISSMALLOC_NAME(posix_memalign)(&data, static_cast<std::size_t>(alignment), size + 2 * KISSMALLOC_REDZONE_SIZE) != 0) KISSMALLOC_THROW;
     if (data) {
         data = (void *)((char *)data + KISSMALLOC_REDZONE_SIZE);
         VALGRIND_MALLOCLIKE_BLOCK(data, size, KISSMALLOC_REDZONE_SIZE, /*is_zeroed=*/true);
     }
     #endif
     #endif
+    return data;
 }
 
 void *operator new(std::size_t size, std::align_val_t alignment, const std::nothrow_t &)
 {
     void *data = nullptr;
     #ifndef KISSMALLOC_VALGRIND
-    KISSMALLOC_NAME(posix_memalign)(&data, alignment, size);
+    KISSMALLOC_NAME(posix_memalign)(&data, static_cast<std::size_t>(alignment), size);
     #else
     #ifdef KISSMALLOC_OVERLOAD_LIBC
-    posix_memalign(&data, alignment, size);
+    posix_memalign(&data, static_cast<std::size_t>(alignment), size);
     #else
-    KISSMALLOC_NAME(posix_memalign)(&data, alignment, size + 2 * KISSMALLOC_REDZONE_SIZE);
+    KISSMALLOC_NAME(posix_memalign)(&data, static_cast<std::size_t>(alignment), size + 2 * KISSMALLOC_REDZONE_SIZE);
     if (data) {
         data = (void *)((char *)data + KISSMALLOC_REDZONE_SIZE);
         VALGRIND_MALLOCLIKE_BLOCK(data, size, KISSMALLOC_REDZONE_SIZE, /*is_zeroed=*/true);
@@ -834,12 +836,12 @@ void *operator new[](std::size_t size, std::align_val_t alignment, const std::no
 {
     void *data = nullptr;
     #ifndef KISSMALLOC_VALGRIND
-    KISSMALLOC_NAME(posix_memalign)(&data, alignment, size);
+    KISSMALLOC_NAME(posix_memalign)(&data, static_cast<std::size_t>(alignment), size);
     #else
     #ifdef KISSMALLOC_OVERLOAD_LIBC
-    posix_memalign(&data, alignment, size);
+    posix_memalign(&data, static_cast<std::size_t>(alignment), size);
     #else
-    KISSMALLOC_NAME(posix_memalign)(&data, alignment, size + 2 * KISSMALLOC_REDZONE_SIZE);
+    KISSMALLOC_NAME(posix_memalign)(&data, static_cast<std::size_t>(alignment), size + 2 * KISSMALLOC_REDZONE_SIZE);
     if (data) {
         data = (void *)((char *)data + KISSMALLOC_REDZONE_SIZE);
         VALGRIND_MALLOCLIKE_BLOCK(data, size, KISSMALLOC_REDZONE_SIZE, /*is_zeroed=*/true);

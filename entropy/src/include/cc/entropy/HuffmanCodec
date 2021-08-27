@@ -60,7 +60,7 @@ public:
           */
         struct NodeRef
         {
-            NodeRef(Node *node = nullptr): node_(node) {}
+            NodeRef(Node *node = nullptr): node_{node} {}
 
             Node *node_;
 

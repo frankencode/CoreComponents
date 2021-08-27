@@ -146,7 +146,7 @@ public:
     };
 
     CanFrame() = default;
-    CanFrame(canid_t canId): instance_{canId} {}
+    CanFrame(int canId): instance_{static_cast<canid_t>(canId)} {}
 
     CanFrame(const CanFrame &) = default;
     CanFrame &operator=(const CanFrame &) = default;

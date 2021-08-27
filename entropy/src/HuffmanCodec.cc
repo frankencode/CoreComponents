@@ -46,7 +46,7 @@ void HuffmanCodec::Instance::generateCodeTable()
 {
     heap_->deplete();
     for (int i = 0; i < nodesFill_; ++i)
-        heap_->push(NodeRef{ .node_ = nodes_->data() + i});
+        heap_->push(NodeRef{nodes_->data() + i});
 
     while (heap_->count() > 1)
     {
@@ -100,7 +100,7 @@ int HuffmanCodec::Instance::encode(Stream &source, BitSink &sink)
     {
         heap_->deplete();
         for (int i = 0; i < nodesFill_; ++i)
-            heap_->push(NodeRef{ .node_ = &nodes_->at(i) });
+            heap_->push(NodeRef{&nodes_->at(i) });
 
         int maxCountDelta = 0;
         {
@@ -121,7 +121,7 @@ int HuffmanCodec::Instance::encode(Stream &source, BitSink &sink)
             Node &node = nodes_->at(i);
             if (node.value_ > maxValue) maxValue = node.value_;
             if (node.value_ < minValue) minValue = node.value_;
-            heap_->push(NodeRef{ .node_ = &node });
+            heap_->push(NodeRef{&node});
         }
 
         int bitsPerSymbolValue = ilog<2>(maxValue-minValue);
