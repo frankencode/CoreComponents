@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/NetworkInterface>
+
+namespace cc {
+
+/** \class NetworkState cc/NetworkState
+  * \ingroup net
+  * \brief Simplified network configuration state
+  */
+class NetworkState: public Object
+{
+public:
+    /** Get the current network configuration state
+      * \param interfaceName %Name of the primary network interface (optional)
+      */
+    NetworkState(const String &interfaceName = "");
+
+    /** Name of the network interface
+      */
+    String interfaceName() const;
+
+    /** Network interface
+      */
+    const NetworkInterface &interface() const;
+
+    /** Size of the network mask (IPv4 only)
+      */
+    int networkMask() const;
+
+    /** Configured address
+      */
+    SocketAddress address() const;
+
+    /** Configured gateway
+      */
+    SocketAddress gateway() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

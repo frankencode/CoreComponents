@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -13,12 +13,12 @@ namespace cc {
 
 ResourceGuard::ResourceGuard(const String &resource)
 {
-    ResourceContext::instance()->push(resource);
+    ResourceContext{}.push(resource);
 }
 
 ResourceGuard::~ResourceGuard()
 {
-    ResourceContext::instance()->pop();
+    ResourceContext{}.pop();
 }
 
 } // namespace cc

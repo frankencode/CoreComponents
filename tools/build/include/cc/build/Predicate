@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaObject>
+
+namespace cc::build {
+
+class Predicate: public Object
+{
+public:
+    explicit Predicate(const MetaObject &object):
+        Object{new State{object}}
+    {}
+
+    List<String> source() const { return me().source_; }
+    String target() const { return me().target_; }
+    String create() const { return me().create_; }
+    String update() const { return me().update_; }
+    String remove() const { return me().remove_; }
+    String clean() const { return me().clean_; }
+
+private:
+    struct State: public Object::State
+    {
+        State(const MetaObject &object):
+            source_{object("source").to<List<String>>()},
+            target_{object("target").to<String>()},
+            create_{object("create").to<String>()},
+            update_{object("update").to<String>()},
+            remove_{object("remove").to<String>()},
+            clean_{object("clean").to<String>()}
+        {}
+
+        List<String> source_;
+        String target_;
+        String create_;
+        String update_;
+        String remove_;
+        String clean_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::build

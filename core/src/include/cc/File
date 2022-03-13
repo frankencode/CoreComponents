@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,209 +8,185 @@
 
 #pragma once
 
-#include <cc/FileStatus>
-#include <cc/SystemStream>
-#include <cc/String>
+#include <cc/IoStream>
+#include <cc/exceptions>
 #include <cc/files>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
 
 namespace cc {
 
-class MappedByteArray;
-
 /** \class File cc/File
   * \ingroup file_system
-  * \brief Handle files
-  * \see FileStatus, TempFile, Dir, UnlinkGuard
+  * \brief %File I/O streams
   */
-class File: public SystemStream
+class File: public IoStream
 {
 public:
-    class Instance: public SystemStream::Instance
-    {
-    public:
-        /// %File path this file was opened from
-        String path() const;
+    /** Check if file under \a path is accessible with \a mode
+      */
+    static bool access(const String &path, FileAccess mode);
 
-        /** Truncate or extend file
-          * \param length new file length
-          */
-        void truncate(off_t length);
+    /** Check if a file under \a path exists
+      */
+    static bool exists(const String &path);
 
-        /** Set/get file offset
-          * \param distance relative distance to move the file offset
-          * \param method from which point to apply the seek distance
-          * \return new file offset
-          */
-        off_t seek(off_t distance, Seek method = Seek::Begin);
+    /** Create a new file under \a path with initial permissions \a mode
+      */
+    static void create(const String &path, FileMode mode = FileMode::Default);
 
-        /// Query if this file is seekable (e.g. character devices aren't seekable)
-        bool seekable() const { return isSeekable(); } // FIXME: obsolete
+    /** Establish a new file path
+      * \param path File path of new file
+      * \param fileMode Initial file permissions
+      * \param dirMode Initial directory permissions
+      */
+    static void establish(const String &path, FileMode fileMode = FileMode::Default, FileMode dirMode = FileMode::DirDefault);
 
-        /// Query if this file is seekable (e.g. character devices aren't seekable)
-        bool isSeekable() const;
+    /** Create a uniquely named file
+      * \param path File path pattern
+      * \param mode Initial file permissions
+      * \param placeHolder Place holder character in \a path to be replaced with random characters
+      * \return File path to the newly created file
+      */
+    static String createUnique(const String &path, FileMode mode = FileMode::Default, char placeHolder = '#');
 
-        /// Current file offset
-        off_t fileOffset() { return seek(0, Seek::Begin); }
+    /** Create a temporary file and return its path
+      * \param mode Initial file permissions
+      * \return File path of the newly created file
+      */
+    static String createTemp(FileMode mode = FileMode::Default);
 
-        virtual off_t transferSpanTo(off_t count = -1, const Stream &sink = Stream{}, CharArray *buf = nullptr) override;
+    /** Change ownership of file under \a path to \a ownerId : \a groupId
+      */
+    static void chown(const String &path, uid_t ownerId, gid_t groupId);
 
-        /// %Map the entire file into memory and return the file mapping as String
-        String map() const;
+    /** Rename file under \a oldPath to \a newPath (moving it within the filesystem if required)
+      * \warning An exiting file under \a newPath will be automatically deleted.
+      */
+    static void rename(const String &oldPath, const String &newPath);
 
-        /// Synchronise the files's state with the underlying storage device
-        void sync();
+    /** Create a new name \a newPath for the file under \a oldPath
+      */
+    static void link(const String &oldPath, const String &newPath);
 
-        /// Same as sync() but synchronize the file's contents, only
-        void dataSync();
+    /** Delete the name \a path
+      */
+    static void unlink(const String &path);
 
-    protected:
-        friend class File;
-        friend class MappedByteArray;
+    /** Create a symbolic link under \a newPath pointing to \a oldPath
+      */
+    static void symlink(const String &oldPath, const String &newPath);
 
-        Instance() = default;
-        Instance(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default);
+    /** Read the symbolic link under \a path
+      */
+    static String readlink(const String &path);
 
-        static int translateOpenFlags(int openMode);
+    /** Remove files recursively
+      * \param path Path to directory or file
+      *
+      * Cleans up the given path recursively deleting all files and directories in the process.
+      */
+    static void clean(const String &path);
 
-        static void unmap(CharArray *s);
+    /** Search for a file in a list of directories
+      * \param fileName Name or relative path of the file
+      * \param dirs List of directories search in
+      * \param accessFlags File access flags to check
+      * \return File path if file was found
+      */
+    static String locate(const String &fileName, const List<String> &dirs, FileAccess accessFlags = FileAccess::Exists);
 
-        String path_;
-        FileOpen openFlags_ { FileOpen::None };
-    };
+    /** Load contents of file under \a path
+      */
+    static String load(const String &path);
+
+    /** Replace contents of file under \a path by \a text
+      */
+    static void save(const String &path, const String &text);
 
     /** Create invalid file
       */
     File() = default;
 
     /** Open file
-      * \param path file path
-      * \param flags file open flags
-      * \param mode file permissions for new file (optional)
+      * \param path File path
+      * \param flags File open flags
+      * \param mode File permissions for new file (optional)
       */
-    File(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default):
-        SystemStream{new Instance{path, flags, mode}}
+    explicit File(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default);
+
+    /** %File path this file was opened from
+      */
+    String path() const { return me().path_; }
+
+    /** Truncate or extend file to \a length bytes
+      */
+    void truncate(off_t length);
+
+    /** Move the current file offset
+      * \param distance Relative distance to move the file offset
+      * \param whence From which point to apply the seek distance
+      * \return New file offset
+      */
+    off_t seek(off_t distance, Seek whence = Seek::Begin);
+
+    /** Check if this file is seekable (e.g. character devices aren't seekable)
+      */
+    bool isSeekable() const;
+
+    /** Get current file offset
+      */
+    off_t currentOffset() const;
+
+    /** Synchronise the files's state with the underlying storage device
+      */
+    void sync();
+
+    /** Synchronise the files's content with the underlying storage device
+      */
+    void dataSync();
+
+    /** Read the file's entire contents
+      */
+    String readAll();
+
+    /** %Map the file's entire contents into memory
+      */
+    String map();
+
+    /** %Map the file's contents in range [\a i0, \a i1) into memory
+      */
+    String map(off_t i0, off_t i1);
+
+    /** Close file
+      */
+    void close();
+
+private:
+    struct State: public IoStream::State
+    {
+        State(int fd, const String &path, FileOpen flags):
+            IoStream::State{fd},
+            path_{path},
+            flags_{flags}
+        {}
+
+        ~State()
+        {
+            if ((flags_ & FileOpen::Temporary) && path_ != "")
+                File::unlink(path_);
+        }
+
+        long long transferTo(const Stream &sink, long long count, const Bytes &buffer) override;
+
+        String path_;
+        FileOpen flags_;
+    };
+
+    explicit File(State *newState):
+        IoStream{newState}
     {}
 
-    Instance *operator->() const { return my<Instance>(); }
-
-    /** Test file access permissions
-      * \param path file path to test
-      * \param flags a combination of cc::Access
-      * \return true if accessible
-      */
-    static bool checkAccess(const String &path, FileAccess flags);
-
-    /** Check if a file exists
-      * \param path file path
-      * \return true if file exists
-      */
-    static bool exists(const String &path) { return (path != "") && checkAccess(path, FileAccess::Exists); }
-
-    /** Create a new file
-      * \param path file path
-      * \param mode file permissions for new file, a combination of cc::FileMode
-      */
-    static void create(const String &path, FileMode mode = FileMode::Default); // \todo make use of FileMode
-
-    /** Change ownership of the file
-      * \param path file path
-      * \param ownerId user id of new owner
-      * \param groupId one of the new owner's group ids
-      * \see User, Group
-      */
-    static void chown(const String &path, uid_t ownerId, gid_t groupId);
-
-    /** Rename file
-      * \param path old file path
-      * \param newPath new file path
-      */
-    static void rename(const String &path, const String &newPath);
-
-    /** Create a new directory entry for this file
-      * \param path file path
-      * \param newPath file path to new directory entry
-      * \see FileStatus::Instance::numberOfHardLinks()
-      */
-    static void link(const String &path, const String &newPath);
-
-    /** Delete a directory entry associated with a non-directory file
-      * \param path file path
-      * \see UnlinkGuard, Dir::remove()
-      */
-    static void unlink(const String &path);
-
-    /** Create a symbolic link special file
-      * \param targetPath file path to link to
-      * \param newPath file path of new symbolic link special file
-      */
-    static void symlink(const String &targetPath, const String &newPath);
-
-    /** Read a contents of a symbolic link special file
-      * \param path file path
-      * \return symbolic link target path
-      */
-    static String readlink(const String &path);
-
-    /** Fully resolve a symbolic link chain
-      * \return final target path
-      */
-    static String resolve(const String &path);
-
-    /** Create a uniquely named file
-      * \param path file path
-      * \param mode file permissions for new file, a combination of cc::FileMode
-      * \param placeHolder place holder character in path to replace with random characters
-      * \return name of the newly created file
-      * \see File::openTemp()
-      */
-    static String createUnique(const String &path, FileMode mode = FileMode::Default, char placeHolder = '#');
-
-    /** Create a temporary file and return its path
-      * \param mode file permissions for new file, a combination of cc::FileMode
-      */
-    static String createTemp(FileMode mode = FileMode::Default);
-
-    /** Create a new file and all parent directories as needed
-      * \param path file path of new file
-      * \param fileMode file permissions for new file, a combination of cc::FileMode
-      * \param dirMode directory permissions for the on-demand created parent directories
-      */
-    static void establish(const String &path, FileMode fileMode = FileMode::Default, FileMode dirMode = FileMode::DirDefault);
-
-    /** Cleanup files recursively
-      * \param path path to directory or file
-      * Cleans up the given path recursively deleting all files and directories in the process.
-      */
-    static void clean(const String &path);
-
-    /** Search for a file in a list of directories
-      * \param fileName name of the file (or relative path)
-      * \param dirs list of directories
-      * \param accessFlags file access flags to check
-      * \return file path if found else empty String
-      */
-    static String locate(const String &fileName, const StringList &dirs, FileAccess accessFlags = FileAccess::Exists);
-
-    /** Load contents of a file
-      * \param path file path
-      * \return contents of file
-      */
-    static String load(const String &path);
-
-    /** Replace contents of a file
-      * \param path file path
-      * \param text new file'a contents
-      */
-    static void save(const String &path, const String &text);
-
-protected:
-    File(Instance *instance):
-        SystemStream{instance}
-    {}
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-} // namespace cc
+} // namespac cc

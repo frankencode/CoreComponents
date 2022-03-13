@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaObject>
+#include <cc/Stream>
+
+namespace cc {
+
+/** \class JsonWriter cc/JsonWriter
+  * \brief Generate JSON representations of variant values
+  * \ingroup meta
+  */
+class JsonWriter: public Object
+{
+public:
+    /** Create a new JSON writer
+      * \param sink %Data stream to write the formatted output to
+      * \param indent %Whitespace to use for each indentation step
+      */
+    explicit JsonWriter(const Stream &sink, const String &indent = "  ");
+
+    /** Write \a value
+      */
+    void write(const Variant &value);
+
+    /** Write \a object
+      * \param object %Meta-object
+      * \param names %Selected members (and their order) to output
+      */
+    void writeObject(const MetaObject &object, const List<String> &names = List<String>{});
+
+private:
+    struct State;
+
+    State &me();
+};
+
+} // namespace cc

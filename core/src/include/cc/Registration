@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,12 +8,11 @@
 
 #pragma once
 
-#include <cc/Object>
-
 namespace cc {
 
 /** \class Registration cc/Registration
-  * \brief %Object registration during library initialization
+  * \ingroup plugins
+  * \brief Basic idiom for library initialization
   */
 template<class Asset>
 class Registration
@@ -21,7 +20,7 @@ class Registration
 public:
     Registration() {
         static bool firstTime = true;
-        if (firstTime) Object::create<Asset>();
+        if (firstTime) Asset{};
         firstTime = false;
     }
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,24 +9,38 @@
 #pragma once
 
 #include <cc/ui/Display>
+#include <cc/Singleton>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class DisplayManager: public Object
+class DisplayManager: public Singleton
 {
 public:
-    static DisplayManager *instance();
+    DisplayManager();
 
-    virtual Ref<Display> getDisplay(int index) const = 0;
-    virtual int getDisplayCount() const = 0;
+    List<Display> displays() const { return me().displays_; }
 
-    double displayDensityRatio() const { return displayDensityRatio_; }
-    FontSmoothing defaultFontSmoothing() const { return defaultFontSmoothing_; }
+    double displayDensityRatio() const { return me().displayDensityRatio_; }
+
+    FontSmoothing defaultFontSmoothing() const { return me().defaultFontSmoothing_; }
+
+    double refreshRate() const { return me().refreshRate_; }
 
 protected:
-    double displayDensityRatio_ { 1 };
-    FontSmoothing defaultFontSmoothing_ { FontSmoothing::Grayscale };
+    struct State: public Singleton::State
+    {
+        List<Display> displays_;
+        double displayDensityRatio_ { 1 };
+        double refreshRate_ { 60 };
+        FontSmoothing defaultFontSmoothing_ { FontSmoothing::Grayscale };
+    };
+
+    explicit DisplayManager(State *state):
+        Singleton{state}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

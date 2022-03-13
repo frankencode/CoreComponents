@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TlsServerStream>
+#include <cc/SocketAddress>
+
+namespace cc {
+
+/** \internal
+  * \class TlsHelloContext cc/TlsHelloContext
+  * \ingroup tls
+  * \brief Helper class to map TLS client hello to a service instance
+  */
+class TlsHelloContext: public Object
+{
+public:
+    TlsHelloContext();
+
+    SocketAddress peerAddress() const;
+
+    void init(const SocketAddress &peerAddress, TlsServiceSelector &&serviceSelector);
+
+    TlsServerOptions selectService(const String &serverName);
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

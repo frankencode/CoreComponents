@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,18 +7,16 @@
  */
 
 #include <cc/ui/FtScaledFont>
-#include <cc/ui/Font>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-FtScaledFont::FtScaledFont(const FtFontFace *ftFontFace, const Font &font):
-    font_{font},
-    ftFontFace_{ftFontFace}
+FtScaledFont::State::State(const FtFontFace &fontFace, const Font &font):
+    ScaledFont::State{font},
+    fontFace_{fontFace}
 {
-    cairoFontFace_ = cairo_ft_font_face_create_for_ft_face(ftFontFace->ftFace(), 0);
+    cairoFontFace_ = cairo_ft_font_face_create_for_ft_face(fontFace.ftFace(), fontFace.pitch() == Pitch::Fixed ? FT_LOAD_FORCE_AUTOHINT : 0);
 
-    double size = font->size();
+    double size = font.size();
 
     cairo_matrix_t fontMatrix = {
         size, 0,
@@ -34,7 +32,7 @@ FtScaledFont::FtScaledFont(const FtFontFace *ftFontFace, const Font &font):
 
     cairo_font_options_t *fontOptions = cairo_font_options_create();
 
-    switch (font->smoothing()) {
+    switch (font.smoothing()) {
         case FontSmoothing::Default:
         case FontSmoothing::Grayscale:
             cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_GRAY);
@@ -56,68 +54,68 @@ FtScaledFont::FtScaledFont(const FtFontFace *ftFontFace, const Font &font):
             cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_SUBPIXEL);
             break;
         case FontSmoothing::None:
+        default:
             cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_NONE);
             break;
-    }
+    };
 
-    cairo_font_options_set_hint_style(fontOptions,
-        [=](OutlineHinting h) -> cairo_hint_style_t {
-            switch (h) {
-                case OutlineHinting::Default: return CAIRO_HINT_STYLE_DEFAULT;
-                case OutlineHinting::None   : return CAIRO_HINT_STYLE_NONE;
-                case OutlineHinting::Slight : return CAIRO_HINT_STYLE_SLIGHT;
-                case OutlineHinting::Medium : return CAIRO_HINT_STYLE_MEDIUM;
-                case OutlineHinting::Full   : return CAIRO_HINT_STYLE_FULL;
-            }
-            return CAIRO_HINT_STYLE_DEFAULT;
-        }(font->outlineHinting())
-    );
+    switch (font.outlineHinting()) {
+        case OutlineHinting::Default:
+            cairo_font_options_set_hint_style(fontOptions, CAIRO_HINT_STYLE_DEFAULT);
+            break;
+        case OutlineHinting::None:
+            cairo_font_options_set_hint_style(fontOptions, CAIRO_HINT_STYLE_NONE);
+            break;
+        case OutlineHinting::Slight:
+            cairo_font_options_set_hint_style(fontOptions, CAIRO_HINT_STYLE_SLIGHT);
+            break;
+        case OutlineHinting::Medium:
+            cairo_font_options_set_hint_style(fontOptions, CAIRO_HINT_STYLE_MEDIUM);
+            break;
+        case OutlineHinting::Full:
+        default:
+            cairo_font_options_set_hint_style(fontOptions, CAIRO_HINT_STYLE_FULL);
+            break;
+    };
 
-    cairo_font_options_set_hint_metrics(fontOptions,
-        [=](MetricsHinting h) -> cairo_hint_metrics_t {
-            switch (h) {
-                case MetricsHinting::Default: return CAIRO_HINT_METRICS_DEFAULT;
-                case MetricsHinting::On     : return CAIRO_HINT_METRICS_ON;
-                case MetricsHinting::Off    : return CAIRO_HINT_METRICS_OFF;
-            }
-            return CAIRO_HINT_METRICS_DEFAULT;
-        }(font->metricsHinting())
-    );
+    switch (font.metricsHinting()) {
+        case MetricsHinting::Default:
+            cairo_font_options_set_hint_metrics(fontOptions, CAIRO_HINT_METRICS_DEFAULT);
+            break;
+        case MetricsHinting::On:
+            cairo_font_options_set_hint_metrics(fontOptions, CAIRO_HINT_METRICS_ON);
+            break;
+        case MetricsHinting::Off:
+        default:
+            cairo_font_options_set_hint_metrics(fontOptions, CAIRO_HINT_METRICS_OFF);
+            break;
+    };
 
     cairoScaledFont_ = cairo_scaled_font_create(cairoFontFace_, &fontMatrix, &userToDeviceMatrix, fontOptions);
 
     cairo_font_options_destroy(fontOptions);
-
-    {
-        Ref<FtFontMetrics> metrics = Object::create<FtFontMetrics>();
-
-        FtFaceGuard guard{this};
-        FT_Face ftFace = guard->ftFace();
-        metrics->fontSize_ = font_->size();
-        metrics->unitsPerEm_ = ftFace->units_per_EM;
-        metrics->ascender_ = ftFace->ascender;
-        metrics->descender_ = ftFace->descender;
-        metrics->lineHeight_ = ftFace->height;
-        metrics->underlinePosition_ = ftFace->underline_position;
-        metrics->underlineThickness_ = ftFace->underline_thickness;
-
-        ftFontMetrics_ = metrics;
-    }
 }
 
-FtScaledFont::~FtScaledFont()
+FtScaledFont::State::~State()
 {
     cairo_scaled_font_destroy(cairoScaledFont_);
     cairo_font_face_destroy(cairoFontFace_);
 }
 
-String FtScaledFont::toString() const
+FtScaledFont::FtScaledFont(const FtFontFace &fontFace, const Font &font):
+    ScaledFont{new State{fontFace, font}}
 {
-    return Format{}
-        << "FtScaledFont {\n"
-        << "  ftFontFace: " << ftFontFace_ << nl
-        << "  size: " << size() << nl
-        << "}";
+    FtFaceGuard ftFaceGuard{*this};
+    FT_Face ftFace = ftFaceGuard.ftFace();
+
+    double scale = font.size() / ftFace->units_per_EM;
+    auto &state = metricsState();
+    state.fontSize_ = font.size();
+    state.ascender_ = scale * ftFace->ascender;
+    state.descender_ = scale * ftFace->descender;
+    state.lineHeight_ = scale * ftFace->height;
+    state.underlinePosition_ = scale * ftFace->underline_position;
+    state.underlineThickness_ = scale * ftFace->underline_thickness;
 }
 
-}} // namespace cc::ui
+} // namespace cc::ui

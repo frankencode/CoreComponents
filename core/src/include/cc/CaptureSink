@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -13,44 +13,24 @@
 namespace cc {
 
 /** \class CaptureSink cc/CaptureSink
-  * \ingroup binary_io
+  * \ingroup streams
   * \brief Capture output in memory
-  * \see ReplaySource, ByteSink
   */
 class CaptureSink: public Stream
 {
 public:
-    class Instance: public Stream::Instance
-    {
-    public:
-        void write(const CharArray *data) override
-        {
-            parts_->append(data);
-        }
-
-        /** Collect all data written to this sink
-          * \return captured output
-          */
-        String collect() const
-        {
-            return parts_->join();
-        }
-
-    private:
-        friend class CaptureSink;
-
-        Instance() = default;
-
-        StringList parts_;
-    };
-
-    /** Create a new CaptureSink
+    /** Create a new capture sink
       */
-    CaptureSink():
-        Stream{new Instance}
-    {}
+    CaptureSink();
 
-    Instance *operator->() const { return my<Instance>(); }
+    /** Get all bytes that have been written to this sink up to this point
+      */
+    List<Bytes> collect() const;
+
+private:
+    struct State;
+
+    const State &me() const;
 };
 
 } // namespace cc

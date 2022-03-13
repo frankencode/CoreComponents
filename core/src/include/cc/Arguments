@@ -1,108 +1,77 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#pragma once
-
 #include <cc/Variant>
+#include <cc/Composite>
 #include <cc/exceptions>
 
-namespace cc {
+namespace cc
+{
 
 /** \class Arguments cc/Arguments
   * \ingroup misc
-  * \brief Command line arguments parser
+  * \brief %Command line arguments parser
   */
-class Arguments
-{
+class Arguments {
 public:
-    class Instance: public Object
-    {
-    public:
-        /** Check validity of command line arguments according to a prototype configuration
-          * \param prototype prototype configuration
-          * \exception UsageError if a non-existing option or an optino of invalid type is encountered
-          */
-        void validate(const VariantMap &prototype);
-
-        /** Override a configuration object with command line options
-          * \param config configuration map
-          */
-        void override(VariantMap &config) const;
-
-        /// \todo remove workaround HACK
-        void validate(const VariantMap::Instance *prototype)
-        {
-            validate(VariantMap{const_cast<VariantMap::Instance *>(prototype)});
-        }
-
-        /// \todo remove workaround HACK
-        void override(VariantMap::Instance *config) const
-        {
-            for (int i = 0; i < options_->count(); ++i)
-            {
-                String name = options_->at(i)->key();
-                Variant value = options_->at(i)->value();
-                config->establish(name, value);
-            }
-        }
-
-        /** Convenience function to read command line options and items
-          */
-        StringList read(VariantMap &options) {
-            validate(options);
-            override(options);
-            return items_;
-        }
-
-        /** Convenience function to read command line items
-          */
-        StringList read() {
-            validate(VariantMap{});
-            return items_;
-        }
-
-        /// Command line options (e.g.: x=1, -x or --x)
-        VariantMap options() const { return options_; }
-
-        /// Command line item arguments
-        StringList items() const { return items_; }
-
-        /** Execution path
-          * \see Process::exePath()
-          */
-        String execPath() const { return execPath_; }
-
-    private:
-        friend class Arguments;
-
-        Instance(int argc, char *argv[]);
-
-        VariantMap options_;
-        StringList items_;
-        String execPath_;
-    };
-
     /** \brief Read command line arguments and separate options from items
-      * \param argc arguments count
-      * \param argv argument values
-      * \param options validate/return command line options
-      * \exception HelpRequest command line contains a help option (-h or --help)
-      * \exception VersionRequest command line contains a version option (-v or --version)
+      * \param argc Number of arguments
+      * \param argv Argument values
+      * \exception HelpRequest Command line contains a help option (-h or --help)
+      * \exception VersionRequest Command line contains a version option (-v or --version)
       */
-    Arguments(int argc, char *argv[]):
-        instance_{new Instance{argc, argv}}
-    {}
+    Arguments(int argc, char *argv[]);
 
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return instance_; }
+    /** Parse and validate command line options
+      * \return %Command line items
+      * \exception UsageError if a non-existing option or an option of invalid type is encountered
+      */
+    List<String> read(Out<Map<String, Variant>> options = None{})
+    {
+        if (options != None{}) {
+            validate(options);
+            override(&options);
+        }
+        else {
+            validate(Map<String, Variant>{});
+        }
+        return items();
+    }
+
+    /** Check validity of command line arguments according to a prototype configuration
+      * \param prototype Prototype configuration
+      * \exception UsageError if a non-existing option or an option of invalid type is encountered
+      */
+    void validate(const Map<String, Variant> &prototype);
+
+    /** Override \a config with command line options
+      */
+    void override(InOut<Map<String, Variant>> config) const;
+
+    /** %Command line options (e.g.: "x=1", "-x" or "--x")
+      */
+    Map<String, Variant> options() const { return me().options; }
+
+    /** %Command line item arguments
+      */
+    List<String> items() const { return me().items; }
+
+    /** Execution path
+      */
+    String execPath() const { return me().execPath; }
 
 private:
-    Ref<Instance> instance_;
+    struct State {
+        String execPath;
+        Map<String, Variant> options;
+        List<String> items;
+    };
+    Composite<State> me;
 };
 
 } // namespace cc

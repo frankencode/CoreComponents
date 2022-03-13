@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,7 +10,12 @@
 
 namespace cc {
 
-char32_t Utf8Source::Instance::readMultiByte(char32_t ch)
+String Utf8Source::DecodingError::message() const
+{
+    return "UTF-8 error: failed to decode input bytes";
+}
+
+char32_t Utf8Source::readMultiByte(char32_t ch)
 {
     int n = -1; // number of additional bytes
 
@@ -32,7 +37,7 @@ char32_t Utf8Source::Instance::readMultiByte(char32_t ch)
 
     // read n successive characters (chs), which carry the code prefix (10)2
     while (n > 0) {
-        uint8_t chs = byteSource_->readUInt8();
+        uint8_t chs = byteSource_.readUInt8();
         if ((chs >> 6) == 2) // 2 = (10)2
             ch = (ch << 6) | (chs & 0x3F);
         else
@@ -56,11 +61,6 @@ char32_t Utf8Source::Instance::readMultiByte(char32_t ch)
     if (n < 0) throw DecodingError{};
 
     return ch;
-}
-
-String Utf8Source::Instance::DecodingError::message() const
-{
-    return "UTF-8 error: failed to decode input bytes";
 }
 
 } // namespace cc

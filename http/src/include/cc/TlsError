@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SocketAddress>
+#include <cc/Exception>
+
+namespace cc {
+
+/** \class TlsError cc/TlsError
+  * \ingroup tls
+  * \brief TLS related error
+  */
+class TlsError: public Exception
+{
+public:
+    explicit TlsError(int errorCode, const SocketAddress &peerAddress = SocketAddress{});
+
+    String message() const override;
+
+private:
+    int errorCode_ { -1 };
+    SocketAddress peerAddress_;
+};
+
+} // namespace cc

@@ -1,0 +1,332 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bucket/Map>
+#include <cc/bucket/Stop>
+#include <cc/find>
+#include <cassert>
+#include <limits>
+#include <type_traits>
+
+namespace cc {
+namespace bucket {
+
+class Branch;
+
+class Node: public Stop
+{
+public:
+    Node *succ() const { return static_cast<Node *>(succ_); }
+    Node *pred() const { return static_cast<Node *>(pred_); }
+    Branch *parent_ { nullptr };
+    Map<Capacity> map_;
+    bool isBranch_ { false };
+};
+
+class Head {
+public:
+    long weight_;
+    Node *node_;
+};
+
+class Branch: public Node
+{
+public:
+    Branch() { isBranch_ = true; }
+
+    Head &at(unsigned egress) { return slots_[map_.mapToSlot(egress, fill_)]; }
+    const Head &at(unsigned egress) const { return slots_[map_.mapToSlot(egress, fill_)]; }
+
+    void push(unsigned egress, const Head &head)
+    {
+        unsigned slotIndex = map_.pushEntry(egress, &fill_);
+        slots_[slotIndex] = head;
+        head.node_->slotIndex_ = slotIndex;
+        head.node_->parent_ = this;
+    }
+
+    void pop(unsigned egress)
+    {
+        map_.popEntry(egress, &fill_);
+    }
+
+    long weightAt(unsigned egress) const { return at(egress).weight_; }
+
+    long &weightOf(const Node *child) { return slots_[child->slotIndex_].weight_; }
+
+    unsigned indexOf(const Node *child) const { return map_.mapToBucket(child->slotIndex_, fill_); }
+
+private:
+    Head slots_[Capacity];
+};
+
+template<class Item>
+class Leaf: public Node
+{
+public:
+    Leaf() = default;
+
+    ~Leaf() {
+        if (!std::is_trivial<Item>::value) {
+            for (unsigned i = 0; i < fill_; ++i) {
+                Item *p = &at(i);
+                p->~Item();
+            }
+        }
+    }
+
+    Item &at(unsigned egress) { return slotAt(map_.mapToSlot(egress, fill_)); }
+    const Item &at(unsigned egress) const { return slotAt(map_.mapToSlot(egress, fill_)); }
+
+    unsigned count() const { return fill_; }
+
+    template<class... Args>
+    void emplace(unsigned egress, Args... args)
+    {
+        unsigned slotIndex = map_.pushEntry(egress, &fill_);
+        Item *p = &slotAt(slotIndex);
+        new (p) Item{args...};
+    }
+
+    void push(unsigned egress, const Item &item)
+    {
+        unsigned slotIndex = map_.pushEntry(egress, &fill_);
+        Item *p = &slotAt(slotIndex);
+        if (!std::is_trivial<Item>::value) new (p) Item{item};
+        else *p = item;
+    }
+
+    void pop(unsigned egress)
+    {
+        unsigned slotIndex = map_.popEntry(egress, &fill_);
+        if (!std::is_trivial<Item>::value) {
+            Item *p = &slotAt(slotIndex);
+            p->~Item();
+        }
+    }
+
+    static long weightAt(unsigned egress) { return 1; }
+
+private:
+    Item &slotAt(unsigned slotIndex) {
+        return reinterpret_cast<Item *>(data_)[slotIndex];
+    }
+
+    const Item &slotAt(unsigned slotIndex) const {
+        return reinterpret_cast<const Item *>(data_)[slotIndex];
+    }
+
+    std::uint8_t data_[Capacity * sizeof(Item)];
+};
+
+class Tree
+{
+public:
+    long count() const { return root_.weight_; }
+
+    long idealLeafCount() const
+    {
+        return (height_ > 0) ? root_.node_->fill_ << ((height_ - 1) << 2) : 1;
+    }
+
+    Node *idealLeafAt(long idealIndex) const
+    {
+        Node *node = root_.node_;
+        for (unsigned h = height_; h > 0; --h) {
+            unsigned i = (idealIndex >> ((h - 1) << 2)) & 0xFu;
+            if (node->fill_ <= i) i = node->fill_ - 1;
+            node = static_cast<const Branch *>(node)->at(i).node_;
+        }
+        return node;
+    }
+
+    Node *getMinNode() const
+    {
+        Node *node = root_.node_;
+        if (node) {
+            while (node->isBranch_) {
+                node = static_cast<const Branch *>(node)->at(0).node_;
+            }
+        }
+        return node;
+    }
+
+    Node *getMaxNode() const
+    {
+        Node *node = root_.node_;
+        if (node) {
+            while (node->isBranch_) {
+                node = static_cast<const Branch *>(node)->at(node->fill_ - 1).node_;
+            }
+        }
+        return node;
+    }
+
+    const Head *root() const { return &root_; }
+
+    #ifndef NDEBUG
+    long revision() const { return root_.weight_; }
+    #endif
+
+    Node *stepDownTo(long index, unsigned *egress) const;
+
+protected:
+    template<class Node>
+    void dissipate(Node *&node, unsigned &egress);
+
+    template<class Node>
+    void relieve(Node *node, bool recursive = false);
+
+    template<class Node>
+    void dissipateForward(Node *from, Node *to);
+
+    template<class Node>
+    void dissipateBackward(Node *to, Node *from);
+
+    template<class Node>
+    void distributeForward(Node *from, Node *to);
+
+    void joinSucc(Node *node, Node *newNode);
+
+    template<class Node>
+    void collapseSucc(Node *node, Node *succ);
+
+    void unlink(Node *node);
+
+    static long &weight(Node *child) {
+        assert(child->parent_);
+        return child->parent_->weightOf(child);
+    }
+
+    static void shiftWeights(Node *from, Node *to, long delta);
+    void updateWeights(Node *node, long delta);
+
+    void reduce();
+
+    static long nodeOffset(const Node *node)
+    {
+        long offset = 0;
+        while (node && node->parent_) {
+            const Branch *parent = node->parent_;
+            unsigned n = parent->indexOf(node);
+            for (unsigned i = 0; i < n; ++i) {
+                offset += parent->at(i).weight_;
+            }
+            node = parent;
+        }
+        return offset;
+    }
+
+    Head root_ { .weight_ = 0, .node_ = nullptr };
+    Node *lastLeaf_ { nullptr };
+    // Node *firstLeaf_ { nullptr };
+    bool isDense_ { true };
+    unsigned height_ { 0 };
+};
+
+template<class Node>
+void Tree::dissipate(Node *&node, unsigned &egress)
+{
+    if (node->fill_ == Capacity)
+    {
+        Node *succ = static_cast<Node *>(node->succ_);
+
+        if (!succ || succ->fill_ >= HalfCapacity) {
+            succ = new Node;
+            joinSucc(node, succ);
+        }
+
+        if (egress < Capacity)
+        {
+            distributeForward(node, succ);
+            if (egress > HalfCapacity) {
+                node = succ;
+                egress -= HalfCapacity;
+            }
+        }
+        else {
+            node = succ;
+            egress = 0;
+        }
+    }
+}
+
+template<class Node>
+void Tree::relieve(Node *node, bool recursive)
+{
+    Node *succ = static_cast<Node *>(node->succ_);
+    if (node->fill_ < MinFill) {
+        if (succ) {
+            if (succ->fill_ > MinFill)
+                dissipateBackward(node, succ);
+            else
+                collapseSucc(node, succ);
+        }
+        else if (node->fill_ == 0) {
+            unlink(node);
+        }
+    }
+}
+
+template<class Node>
+void Tree::dissipateForward(Node *from, Node *to)
+{
+    assert(from->fill_ > 0);
+    assert(to->fill_ < Capacity);
+
+    long delta = from->weightAt(from->fill_ - 1);
+    to->push(0, from->at(from->fill_ - 1));
+    from->pop(from->fill_ - 1);
+    shiftWeights(from, to, delta);
+}
+
+template<class Node>
+void Tree::dissipateBackward(Node *to, Node *from)
+{
+    assert(from->fill_ > 0);
+    assert(to->fill_ < Capacity);
+
+    long delta = from->weightAt(0);
+    to->push(to->fill_, from->at(0));
+    from->pop(0);
+    shiftWeights(from, to, delta);
+}
+
+template<class Node>
+void Tree::distributeForward(Node *from, Node *to)
+{
+    assert(from->fill_ == Capacity);
+    assert(to->fill_ <= HalfCapacity);
+
+    long delta = 0;
+    for (unsigned i = 0; i < HalfCapacity; ++i) {
+        delta += from->weightAt(HalfCapacity);
+        to->push(i, from->at(HalfCapacity));
+        from->pop(HalfCapacity);
+    }
+
+    shiftWeights(from, to, delta);
+
+    isDense_ = false;
+}
+
+template<class Node>
+void Tree::collapseSucc(Node *node, Node *succ)
+{
+    assert(node->fill_ + succ->fill_ <= Capacity);
+
+    for (unsigned i = 0; i < succ->fill_; ++i) {
+        node->push(node->fill_, succ->at(i));
+    }
+    shiftWeights(succ, node, weight(succ));
+    unlink(succ);
+}
+
+}} // namespace cc::bucket

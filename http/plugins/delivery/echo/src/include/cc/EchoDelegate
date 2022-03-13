@@ -1,0 +1,22 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/HttpServiceDelegate>
+
+namespace cc {
+
+class EchoDelegate final: public HttpServiceDelegate
+{
+public:
+    EchoDelegate();
+
+private:
+    struct State;
+};
+
+} // namespace cc

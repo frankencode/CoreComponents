@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,36 +8,27 @@
 
 #include <cc/ui/TimeMaster>
 #include <cc/ui/PlatformPlugin>
-#include <cc/ui/TimeWorker>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-TimeMaster *TimeMaster::instance()
+TimeMaster::TimeMaster()
 {
-    return PlatformPlugin::instance()->timeMaster();
+    *this = platform().timeMaster();
 }
 
-TimeMaster::TimeMaster():
-    worker_{TimeWorker::create(this)}
+void TimeMaster::startTimer(const Timer &timer)
 {
-    worker_->start();
-}
-
-TimeMaster::~TimeMaster()
-{
-    worker_->shutdown();
-    worker_->wait();
-}
-
-void TimeMaster::startTimer(Timer::Instance *timer)
-{
-    worker_->startTimer(timer);
+    me().worker_.startTimer(timer);
 }
 
 void TimeMaster::ack()
 {
-    worker_->ack();
+    me().worker_.ack();
 }
 
-}} // namespace cc::ui
+TimeMaster::State::~State()
+{
+    worker_.shutdown();
+}
+
+} // namespace cc::ui

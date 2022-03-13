@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/BlockCipher>
+
+namespace cc {
+
+/** \class CbcBlockCipher cc/CbcBlockCipher
+  * \ingroup crypto
+  * \brief Run any block cipher in Cipher Block Chaining mode (CBC)
+  */
+class CbcBlockCipher final: public BlockCipher
+{
+public:
+    /** Create a new CBC mode block cipher
+      * \param cipher %The underlying block cipher
+      * \param start %Initialization vector
+      */
+    explicit CbcBlockCipher(const BlockCipher &cipher, const Bytes &start = Bytes{});
+
+private:
+    struct State;
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,27 +8,26 @@
 
 #pragma once
 
-#include <cc/ui/types>
 #include <cc/ui/keyboard>
+#include <cc/ui/types>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class KeyEvent: public Object
+/** \class KeyEvent cc/ui/KeyEvent
+  * \ingroup ui
+  * \brief Keyboard input event
+  */
+class KeyEvent final
 {
 public:
-    KeyAction action() const { return action_; }
-    double time() const { return time_; }
-    int repeatCount() const { return repeatCount_; }
-    ScanCode scanCode() const { return scanCode_; }
-    KeyCode keyCode() const { return keyCode_; }
-    KeyModifier modifiers() const { return modifiers_; }
-
-    String toString() const;
-
-private:
-    friend class Object;
-
+    /** Create a new keyboard input event
+      * \param action \copydoc action()
+      * \param time \copydoc time()
+      * \param repeatCount \copydoc repeatCount()
+      * \param scanCode \copydoc scanCode()
+      * \param keyCode \copydoc keyCode()
+      * \param modifiers \copydoc modifiers()
+      */
     KeyEvent(
         KeyAction action,
         double time,
@@ -37,20 +36,64 @@ private:
         KeyCode keyCode,
         KeyModifier modifiers
     ):
-        action_{action},
-        time_{time},
-        repeatCount_{repeatCount},
-        scanCode_{scanCode},
-        keyCode_{keyCode},
-        modifiers_{modifiers}
+        me{
+            action,
+            time,
+            repeatCount,
+            scanCode,
+            keyCode,
+            modifiers
+        }
     {}
 
-    KeyAction action_;
-    double time_;
-    int repeatCount_;
-    ScanCode scanCode_;
-    KeyCode keyCode_;
-    KeyModifier modifiers_;
+    /** \copydoc KeyAction
+      */
+    KeyAction action() const { return me().action_; }
+
+    /** Event time
+      */
+    double time() const { return me().time_; }
+
+    /** Automatic key repeat count
+      */
+    int repeatCount() const { return me().repeatCount_; }
+
+    /** \copydoc ScanCode
+      */
+    ScanCode scanCode() const { return me().scanCode_; }
+
+    /** \copydoc KeyCode
+      */
+    KeyCode keyCode() const { return me().keyCode_; }
+
+    /** \copydoc KeyModifier
+      */
+    KeyModifier modifiers() const { return me().modifiers_; }
+
+private:
+    struct State {
+        KeyAction action_;
+        double time_;
+        int repeatCount_;
+        ScanCode scanCode_;
+        KeyCode keyCode_;
+        KeyModifier modifiers_;
+    };
+
+    Shared<State> me;
 };
 
-}} // namespace cc::ui
+inline String str(const KeyEvent &event)
+{
+    return Format{}
+        << "KeyEvent {" << nl
+        << "  action: " << event.action() << nl
+        << "  time: " << event.time() << nl
+        << "  repeatCount: " << event.repeatCount() << nl
+        << "  scanCode: " << event.scanCode() << nl
+        << "  keyCode: " << event.keyCode() << nl
+        << "  modifiers: " << event.modifiers() << nl
+        << "}";
+}
+
+} // namespace cc::ui

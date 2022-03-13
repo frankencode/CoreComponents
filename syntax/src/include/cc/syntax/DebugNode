@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/SyntaxNode>
+
+namespace cc::syntax {
+
+/** \class DebugNode cc/syntax/DebugNode
+  * \brief Show debugging information for a sub-expression match
+  */
+class DebugNode: public SyntaxNode
+{
+public:
+    /** \param entry Sub-expression to match
+      * \param label Debug label
+      */
+    DebugNode(const SyntaxNode &entry, const String &label = String{});
+
+private:
+    struct State;
+};
+
+} // namespace cc::syntax

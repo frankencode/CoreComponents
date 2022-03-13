@@ -1,0 +1,235 @@
+/**
+  * The following source code is an optimized version of David Barina's uFFT library.
+  *
+  * -----------------------------------------------------------------------------
+  *
+  * Copyright (c) 2017 David Barina
+  *
+  * Permission is hereby granted, free of charge, to any person obtaining a copy
+  * of this software and associated documentation files (the "Software"), to deal
+  * in the Software without restriction, including without limitation the rights
+  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  * copies of the Software, and to permit persons to whom the Software is
+  * furnished to do so, subject to the following conditions:
+  *
+  * The above copyright notice and this permission notice shall be included in all
+  * copies or substantial portions of the Software.
+  *
+  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  * SOFTWARE.
+  *
+  */
+#pragma once
+
+#include <cassert>
+#include <complex>
+#include <numbers>
+#include <bit>
+
+namespace cc {
+
+template<class Complex>
+class FFT
+{
+public:
+    FFT() = default;
+
+    ~FFT()
+    {
+        if (cache_) delete[] cache_;
+    }
+
+    template<template<class> class Vector>
+    void computeInverse(Vector<Complex> *out, const Vector<Complex> &in)
+    {
+        compute<Vector, -1>(out, in);
+    }
+
+    template<class T>
+    bool isPowerOfTwo(T x)
+    {
+        return (x & (x - 1)) == 0;
+    }
+
+    template<template<class> class Vector, int dir = 1>
+    void compute(Vector<Complex> *out, const Vector<Complex> &in)
+    {
+        assert(out);
+        assert(isPowerOfTwo(in.size()));
+        assert(in.size() == out->size());
+        if (in.size() == 0) return;
+
+        const size_t R = static_cast<size_t>(in.size());
+        if (N_ < R) {
+            if (cache_) delete cache_;
+            N_ = R;
+            cache_ = new Complex[2 * N_];
+        }
+
+        {
+            size_t j = 0;
+            for (const Complex &x: in) {
+                cache_[j] = x;
+                ++j;
+            }
+            for (; j < N_; ++j) {
+                cache_[j] = 0;
+            }
+        }
+
+        Complex *buffers[2] = { cache_, cache_ + N_ };
+
+        unsigned b = 0;
+        b = nopReverse(b, buffers, N_);
+        b = fftReverse<dir>(b, buffers, N_);
+        b = nopReverse(b, buffers, N_);
+
+        {
+            const Complex *result = buffers[b & 1];
+            size_t j = 0;
+            for (Complex &x: *out) {
+                x = result[j];
+                ++j;
+            }
+        }
+    }
+
+private:
+    using Float = Complex::value_type;
+
+    static void nopSplit(Complex *X, const Complex *x, size_t N)
+    {
+        const size_t H = N / 2;
+
+        for (size_t n = 0; n < H; ++n) {
+            X[n] = x[2 * n];
+            X[H + n] = x[2 * n + 1];
+        }
+    }
+
+    template<int dir>
+    static void fftSplit(Complex *X, const Complex *x, size_t N, const Complex &C)
+    {
+        const size_t H = N / 2;
+
+        for (size_t n = 0; n < H; ++n) {
+            const size_t n2 = 2 * n;
+            const Complex F = x[n2 + 1] * C;
+            X[n] = x[n2] + F;
+            if (dir < 0) X[n] /= 2;
+            X[H + n] = x[n2] - F;
+            if (dir < 0) X[H + n] /= 2;
+        }
+    }
+
+    static size_t reverseBits(size_t v, int J)
+    {
+        size_t r = 0;
+
+        for (int k = J - 1; k >= 0; --k) {
+            r |= (v & 1) << k;
+            v >>= 1;
+        }
+
+        return r;
+    }
+
+    static unsigned nopReverse(unsigned b, Complex *buffers[2], size_t N)
+    {
+        const int J = std::countr_zero(N);
+
+        for (int j = 0; j < J - 1; ++j, ++b)
+        {
+            size_t delta = N >> j;
+
+            for (size_t n = 0; n < N; n += delta)
+            {
+                nopSplit(buffers[~b & 1] + n, buffers[b & 1] + n, delta);
+            }
+        }
+
+        return b;
+    }
+
+    template<int dir>
+    unsigned fftReverse(unsigned b, Complex *buffers[2], size_t N)
+    {
+        const int J = std::countr_zero(N);
+        const Complex alpha = ((dir > 0 ? -2 : 2) * std::numbers::pi_v<Float> * Complex{0, 1});
+
+        for (int j = 0; j < J; ++j, ++b)
+        {
+            const size_t delta = N >> j;
+            const Complex beta = alpha / static_cast<Float>(2 << j);
+
+            for (size_t k = 0, n = 0; n < N; n += delta, ++k)
+            {
+                const Complex phi = beta * static_cast<Float>(reverseBits(k, j));
+
+                fftSplit<dir>(buffers[~b & 1] + n, buffers[b & 1] + n, delta, std::exp(phi));
+            }
+        }
+
+        return b;
+    }
+
+private:
+    size_t N_ { 0 };
+    Complex *cache_ { nullptr };
+};
+
+/** \name Fast Fourier Transform (FFT)
+  */
+///@{
+/// \ingroup math
+
+/** Translate \a vt from time domain to \a vf in frequency domain
+  * \ingroup math
+  */
+template<template<class> class Vector, class Complex>
+void fft(Vector<Complex> *vf, const Vector<Complex> &vt)
+{
+    assert(vf);
+    thread_local FFT<Complex> fft_;
+    fft_.compute(vf, vt);
+}
+
+/** Translate \a v in-place from time domain to frequency domain
+  * \ingroup math
+  */
+template<template<class> class Vector, class Complex>
+void fft(Vector<Complex> *v)
+{
+    assert(v);
+    fft(v, *v);
+}
+
+/** Translate \a vf from frequency domain to \a vt in time domain
+  * \ingroup math
+  */
+template<template<class> class Vector, class Complex>
+void ift(Vector<Complex> *vf, const Vector<Complex> &vt)
+{
+    assert(vf);
+    thread_local FFT<Complex> fft_;
+    fft_.computeInverse(vf, vt);
+}
+
+/** Translate \a v in-place from frequency domain to time domain
+  * \ingroup math
+  */
+template<template<class> class Vector, class Complex>
+void ift(Vector<Complex> *v)
+{
+    assert(v);
+    ift(v, *v);
+}
+
+///@}
+
+} // namespace cc

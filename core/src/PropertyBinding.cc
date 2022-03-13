@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2019 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,14 +7,8 @@
  */
 
 #include <cc/PropertyBinding>
-#include <cc/SetInstance>
 
 namespace cc {
-
-String PropertyBindingLoop::message() const
-{
-    return "Property binding loop detected";
-}
 
 class PropertyActivator
 {
@@ -48,7 +42,8 @@ private:
 
 thread_local PropertyActivator *PropertyActivator::head_ { nullptr };
 
-PropertyBinding::PropertyBinding(bool dirty):
+PropertyBinding::PropertyBinding(void *owner, bool dirty):
+    owner_{owner},
     dirty_{dirty}
 {}
 
@@ -58,42 +53,42 @@ void PropertyBinding::preAccess() const
 
     PropertyBinding *activeBinding = PropertyActivator::activeBinding();
     if (activeBinding && (activeBinding != this)) {
-        if (activeBinding->dependencies_->insert(const_cast<PropertyBinding *>(this)))
-            subscribers_->insert(activeBinding);
+        if (activeBinding->dependencies_.insert(Handle<PropertyBinding>::alias(const_cast<PropertyBinding *>(this))))
+            subscribers_.insert(Handle<PropertyBinding>::alias(activeBinding));
     }
 }
 
 bool PropertyBinding::hasConsumers() const
 {
-    return subscribers_->count() > 0 || changed->hasListeners();
+    return subscribers_.count() > 0 || changed.hasListeners();
 }
 
 void PropertyBinding::clearDependencies()
 {
-    for (PropertyBinding *other: dependencies_)
-        other->subscribers_->remove(this);
-    dependencies_->deplete();
+    for (auto &other: dependencies_)
+        other().subscribers_.remove(this);
+    dependencies_.deplete();
 }
 
 void PropertyBinding::clearSubscribers()
 {
-    for (PropertyBinding *other: subscribers_)
-        other->dependencies_->remove(this);
-    subscribers_->deplete();
+    for (auto &other: subscribers_)
+        other().dependencies_.remove(this);
+    subscribers_.deplete();
 }
 
 void PropertyBinding::emit()
 {
     Association others = subscribers_;
-    for (PropertyBinding *other: others) {
-        if (other->hasConsumers())
-            other->cascade();
+    for (auto &other: others) {
+        if (other().hasConsumers())
+            other.mutate().cascade();
         else
-            other->dirty_ = true;
+            other.mutate().dirty_ = true;
     }
 
     PropertyActivator activator{nullptr};
-    changed->emit();
+    changed.emit();
 }
 
 void PropertyBinding::cascade()
@@ -104,13 +99,11 @@ void PropertyBinding::cascade()
 
 void PropertyBinding::disband()
 {
-    changed->disband();
+    changed.disband();
     clearDependencies();
-    while (subscribers_->count() > 0) {
-        PropertyBinding *other = subscribers_->at(0);
-        other->disband();
-    }
-    subscribers_->deplete();
+    while (subscribers_.count() > 0)
+        subscribers_.at(0).mutate().disband();
+    subscribers_.deplete();
 }
 
 } // namespace cc

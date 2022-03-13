@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SyntaxDefinition>
+
+namespace cc {
+
+/** \class InetAddressSyntax cc/InetAddressSyntax
+  * \ingroup syntax
+  * \brief Syntax of an internet address
+  */
+class InetAddressSyntax final: public SyntaxDefinition
+{
+public:
+    /** Get an instance of this syntax definition
+      */
+    InetAddressSyntax();
+
+    SyntaxRule inetAddress4() const;
+    SyntaxRule inetAddress6() const;
+    SyntaxRule inetAddress() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

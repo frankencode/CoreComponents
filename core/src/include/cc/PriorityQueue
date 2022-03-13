@@ -8,58 +8,153 @@
 
 #pragma once
 
-#include <initializer_list>
-#include <cc/PriorityQueueInstance>
+#include <cc/MultiMap>
+#include <cc/Composite>
 
 namespace cc {
 
 /** \class PriorityQueue cc/PriorityQueue
-  * \ingroup container_highlevel
-  * \brief priority based queue data container
-  * \tparam T item type
-  * \see queue
+  * \ingroup container
+  * \brief Priority queue data container
+  * \tparam T Item type
+  * \tparam P Priority type
   */
-template<class T>
-class PriorityQueue {
+template<class T, class P = int>
+class PriorityQueue
+{
 public:
-    typedef PriorityQueueInstance<T> Instance;
-    typedef typename Instance::Item Item; ///< item type
-    typedef typename Instance::Index Index; ///< count type
+    using Item = T; ///< Item type
+    using Priority = P; ///< Priority type
 
-    typedef Item value_type; ///< \internal
-    typedef Index size_type; ///< \internal
+    /** \name Construction and Assignment
+      */
+    ///@{
 
-    PriorityQueue():
-        instance_{new Instance}
-    {}
+    /** Construct an empty queue
+      */
+    PriorityQueue() = default;
 
-    PriorityQueue(std::initializer_list<T> b):
-        instance_{new Instance}
+    /** Construct a copy of \a other
+      */
+    PriorityQueue(const PriorityQueue &other) = default;
+
+    /** Construct with initial \a items
+      */
+    PriorityQueue(std::initializer_list<Item> items)
     {
-        for (auto &x: b) *instance_ << x;
+        for (const auto &x: items) pushBack(x);
     }
 
-    PriorityQueue(Instance *b):
-        instance_{b}
-    {}
+    ///@}
 
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return Cow::get(instance_); }
+    /** \name Item Access
+      */
+    ///@{
 
-    operator const Instance *() const { return instance_; }
-    operator Instance *() { return Cow::get(instance_); }
+    /** Get the number of items stored in the priority queue
+      */
+    long count() const { return me().count(); }
 
-    PriorityQueue &operator<<(const T& x) { *instance_ << x; return *this; }
-    PriorityQueue &operator>>(T& x) { if (instance_->count() > 0) *instance_ >> x; return *this; }
+    /** Get item at position \a pos
+      */
+    Item at(Locator pos) const
+    {
+        assert(pos);
+        return me().at(pos).value();
+    }
+
+    ///@}
+
+    /** \name Priority-Queue Operations
+      */
+    ///@{
+
+    /** Get a locator pointing to the first item
+      */
+    Locator head() const { return me().head(); }
+
+    /** Get a locator pointing to the last item
+      */
+    Locator tail() const { return me().tail(); }
+
+    /** Append \a item to the queue
+      */
+    void pushBack(const Item &item, Priority priority = Priority{})
+    {
+        me().insert(priority, item);
+    }
+
+    /** Remove and return the first of the highest priority items
+      */
+    void popFront(Out<Item> item = None{})
+    {
+        assert(count() > 0);
+        Locator pos = me().head();
+        item << me().at(pos).value();
+        me().removeAt(pos);
+    }
+
+    /** Append \a item to the end of the queue
+      */
+    void operator<<(const Item& item)
+    {
+        pushBack(item);
+    }
+
+    /** Remove and return \a item from the front of the queue
+      */
+    void operator>>(Item& item)
+    {
+        if (count() > 0) popFront(&item);
+    }
+
+    ///@}
+
+    using const_iterator = Iterator<const PriorityQueue>; ///< \internal Readonly value iterator
+    using const_reverse_iterator = ReverseIterator<const PriorityQueue>; ///< \internal Readonly reverse value iterator
+    using value_type = Item; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
+
+    /** \name Standard iterators
+      */
+    ///@{
+
+    const_iterator begin () const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+
+    const_reverse_iterator rbegin () const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+
+    ///@}
+
+    /** \name Comparism Operators
+      */
+    ///@{
+
+    template<class B> bool operator==(const B &b) const { return container::equal(*this, b); } ///< %Return true if this container equals \a b
+    template<class B> bool operator!=(const B &b) const { return container::differ(*this, b); } ///< %Return true if this container differs from \a b
+    template<class B> bool operator< (const B &b) const { return container::below(*this, b); } ///< %Return true if this container is lower than \a b
+    template<class B> bool operator> (const B &b) const { return container::above(*this, b); } ///< %Return true if this container is greater than \a b
+    template<class B> bool operator<=(const B &b) const { return container::belowOrEqual(*this, b); } ///< %Return true if this container is lower or equal than b
+    template<class B> bool operator>=(const B &b) const { return container::aboveOrEqual(*this, b); } ///< %Return true if this container is greater or equal than b
+
+    ///@}
 
 private:
-    PriorityQueue(const PriorityQueue &b) = delete;
-    PriorityQueue &operator=(const PriorityQueue &b) = delete;
+    friend class Iterator<PriorityQueue>;
+    friend class ReverseIterator<PriorityQueue>;
 
-    Ref<Instance> instance_;
+    template<class Access>
+    Access &value(Locator pos) const
+    {
+        return me().template value<Access>(pos).value();
+    }
+
+    Composite<MultiMap<Priority, Item>> me;
 };
-
-template<class T>
-typename PriorityQueue<T>::size_type count(const PriorityQueue<T> &a) { return a->count(); }
 
 } // namespace cc

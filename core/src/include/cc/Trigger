@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Queue>
+#include <cc/Call>
+
+namespace cc {
+
+/** \class Trigger cc/Trigger
+  * \ingroup misc
+  * \brief Callback mechanism: get notified on state changes
+  */
+class Trigger
+{
+public:
+    /** Connect a new listener \a f
+      */
+    void connect(Call<void()> &&f) const { queue_.emplaceBack(std::move(f)); }
+
+    /** Report state change to all listeners
+      */
+    void emit() const { for (auto &f: queue_) f(); }
+
+    /** Check if anyone is listening
+      */
+    bool hasListeners() const { return queue_.count() > 0; }
+
+    /** Remove all listeners
+      */
+    void disband() { queue_.deplete(); }
+
+    /** \copydoc connect()
+      */
+    void operator()(Call<void()> &&f) const { connect(std::move(f)); }
+
+    /** \copydoc emit()
+      */
+    void operator()() const { emit(); }
+
+private:
+    friend struct PropertyBinding;
+
+    mutable Queue<Call<void()>> queue_;
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -13,26 +13,35 @@
 namespace cc {
 
 /** \class HashSink cc/HashSink
-  * \brief Hashsum computing sink
+  * \ingroup streams
+  * \brief Generic hashsum computing sink
   */
 class HashSink: public Stream
 {
 public:
-    class Instance: public Stream::Instance
-    {
-    public:
-        /// Finish hash sum computation and return the result
-        virtual String finish() = 0;
-    };
-
+    /** Create a null hash sink
+      */
     HashSink() = default;
 
-    Instance *operator->() const { return my<Instance>(); }
+    /** Finish hash computation and return the final hash sum
+      */
+    Bytes finish() { return me().finish(); }
 
 protected:
-    HashSink(Instance *instance):
-        Stream{instance}
+    /** \brief Internal state
+      */
+    struct State: public Stream::State
+    {
+        virtual Bytes finish() = 0;
+    };
+
+    /** Initialize with \a newState
+      */
+    explicit HashSink(State *newState):
+        Stream{newState}
     {}
+
+    State &me() { return Object::me.as<State>(); }
 };
 
 } // namespace cc

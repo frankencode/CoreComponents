@@ -1,0 +1,197 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SocketAddress>
+#include <cc/bitmask>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <net/if.h> // IFF_UP, etc.
+
+namespace cc {
+
+/** Network interface flags
+  * \ingroup net
+  */
+enum class NetworkInterfaceFlags: unsigned {
+    Up           = IFF_UP,         ///< Network interface is in up state
+    #ifdef IFF_RUNNING
+    Running      = IFF_RUNNING,
+    #else
+    Running      = 0,
+    #endif                         ///< Network interface is up and running
+    #ifdef IFF_LOWER_UP
+    LowerUp      = IFF_LOWER_UP,
+    #else
+    LowerUp      = 0,
+    #endif                         ///< Network interface is in lower-up state
+    #ifdef IFF_DORMANT
+    Dormant      = IFF_DORMANT,
+    #else
+    Dormant      = 0,              ///< Network interface is waiting for an 802.1X event
+    #endif
+    Broadcast    = IFF_BROADCAST,  ///< Valid broadcast is set
+    Multicast    = IFF_MULTICAST,  ///< Multicasting is supported
+    Loopback     = IFF_LOOPBACK,   ///< Network interface is a loopback interface
+    PointToPoint = IFF_POINTOPOINT ///< Network interface is a point-to-point link
+};
+
+CC_BITMASK(NetworkInterfaceFlags)
+
+/** \class NetworkLabel cc/NetworkInterface
+  * \ingroup net
+  * \brief %Network interface address information
+  */
+class NetworkLabel: public Object
+{
+public:
+    /** Create a null object
+      */
+    NetworkLabel() = default;
+
+    /** %Assigned network address
+      */
+    SocketAddress address() const { return me().address_; }
+
+    /** %Size of the subnet mask (IPv4 only)
+      */
+    int networkMask() const { return me().networkMask_; }
+
+    /** %Local address (IPv4 only)
+      */
+    SocketAddress localAddress() const { return me().localAddress_; }
+
+    /** %Broadcast address (IPv4 only)
+      */
+    SocketAddress broadcastAddress() const { return me().broadcastAddress_; }
+
+    /** Destination address in cases this is a point-to-point link (IPv4 only)
+      */
+    SocketAddress destinationAddress() const { return me().broadcastAddress_; }
+
+    /** Anycast address (IPv4 only)
+      */
+    SocketAddress anycastAddress() const { return me().anycastAddress_; }
+
+private:
+    friend class NetworkInterface;
+
+    struct State: public Object::State
+    {
+        State(const SocketAddress &address):
+            address_{address}
+        {}
+
+        SocketAddress address_;
+        int networkMask_ { 0 };
+        SocketAddress localAddress_;
+        SocketAddress broadcastAddress_;
+        SocketAddress anycastAddress_;
+    };
+
+    explicit NetworkLabel(const SocketAddress &address):
+        Object{new State{address}}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+
+    State *operator->() { return &me(); }
+    const State *operator->() const { return &me(); }
+};
+
+/** \class NetworkInterface cc/NetworkInterface
+  * \brief Query network interface configuration: assigned addresses, flags, etc.
+  * \ingroup net
+  */
+class NetworkInterface: public Object
+{
+public:
+    /** Query information about a certain network interface
+      * \param name system name of the interface
+      * \param family limit the addressList() to a certain protocol family (e.g. AF_INET)
+      * \return new object instance
+      */
+    static NetworkInterface query(const String &name, ProtocolFamily family = ProtocolFamily::Unspec);
+
+    /** Query information about all available network interfaces
+      * \param family %Limit the addressList() to a certain protocol family (e.g. AF_INET)
+      * \return
+      */
+    static List<NetworkInterface> queryAll(ProtocolFamily family = ProtocolFamily::Unspec);
+
+    /** Create an invalid NetworkInterface
+      */
+    NetworkInterface() = default;
+
+    /** %System name of the network interface
+      */
+    String name() const { return me().name_; }
+
+    /** %System index of the network interface
+      */
+    int index() const { return me().index_; }
+
+    /** Network interface face type
+      */
+    unsigned type() const { return me().type_; }
+
+    /** Network interface flags
+      */
+    NetworkInterfaceFlags flags() const { return me().flags_; }
+
+    /** Hardware address
+      */
+    String hardwareAddress() const { return me().hardwareAddress_; }
+
+    /** Message transfer unit (MTU)
+      */
+    uint32_t mtu() const { return me().mtu_; }
+
+    /** Network addresses currently assigned to this interface
+      */
+    List<NetworkLabel> labels() const { return me().addressList_; }
+
+private:
+    #ifdef __linux
+    friend class NetworkRoute;
+    static NetworkInterface getLink(Out<List<NetworkInterface>> list = None{}, int index = -1);
+    static NetworkInterface getLink(int index) { return getLink(None{}, index); }
+    static List<NetworkInterface> queryAllIoctl(int family);
+    #endif
+
+    struct State: public Object::State
+    {
+        State(int index, unsigned type, NetworkInterfaceFlags flags):
+            index_{index},
+            type_{type},
+            flags_{flags}
+        {}
+
+        int index_;
+        unsigned type_;
+        NetworkInterfaceFlags flags_;
+        String name_;
+        String hardwareAddress_;
+        uint32_t mtu_ { 0 };
+        List<NetworkLabel> addressList_;
+    };
+
+    NetworkInterface(int index, unsigned type, NetworkInterfaceFlags flags):
+        Object{new State{index, type, flags}}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+
+    State *operator->() { return &me(); }
+    const State *operator->() const { return &me(); }
+};
+
+} // namespace cc

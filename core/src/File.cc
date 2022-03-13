@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,143 +7,21 @@
  */
 
 #include <cc/File>
-#include <cc/exceptions>
-#include <cc/Random>
-#include <cc/Process>
-#include <cc/Format>
+#include <cc/FileStatus>
 #include <cc/Dir>
-#include <cc/System>
-#include <sys/mman.h> // mmap
-#include <errno.h>
-#include <string.h>
-#include <stdio.h> // rename
+#include <cc/Random>
+#include <cc/str>
 
 namespace cc {
 
-File::Instance::Instance(const String &path, FileOpen flags, FileMode mode):
-    SystemStream::Instance{::open(path, +flags|O_CLOEXEC, +mode)},
-    path_{path},
-    openFlags_{flags}
+bool File::access(const String &path, FileAccess mode)
 {
-    if (fd_ == -1) CC_SYSTEM_ERROR(errno, path);
+    return (path != "") && ::access(path, +mode) == 0;
 }
 
-String File::Instance::path() const
+bool File::exists(const String &path)
 {
-    return path_;
-}
-
-void File::Instance::truncate(off_t length)
-{
-    if (::ftruncate(fd_, length) == -1)
-        CC_SYSTEM_ERROR(errno, path_);
-}
-
-off_t File::Instance::seek(off_t distance, Seek method)
-{
-    off_t ret = ::lseek(fd_, distance, int(method));
-    if (ret == -1) CC_SYSTEM_ERROR(errno, path_);
-    return ret;
-}
-
-bool File::Instance::isSeekable() const
-{
-    return ::lseek(fd_, 0, SEEK_CUR) != -1;
-}
-
-off_t File::Instance::transferSpanTo(off_t count, const Stream &sink, CharArray *buf)
-{
-    if (count == 0) return 0;
-    if (!sink) {
-        off_t ret = 0;
-        if (count > 0) ret = ::lseek(fd_, count, SEEK_CUR);
-        else ret = ::lseek(fd_, 0, SEEK_END);
-        if (ret != -1) return count;
-    }
-    return Stream::Instance::transferSpanTo(count, sink, buf);
-}
-
-class MappedByteArray: public CharArray
-{
-private:
-    friend class File;
-    MappedByteArray(char *data, int size):
-        CharArray{data, size, File::Instance::unmap}
-    {}
-};
-
-String File::Instance::map() const
-{
-    off_t fileEnd = ::lseek(fd_, 0, SEEK_END);
-    if (fileEnd == -1)
-        CC_SYSTEM_ERROR(errno, path_);
-    size_t fileSize = fileEnd;
-    if (fileSize == 0) return "";
-    if (fileSize >= size_t(intMax)) fileSize = intMax;
-    int pageSize = System::pageSize();
-    size_t mapSize = fileSize;
-    int protection = PROT_READ | (PROT_WRITE * (+openFlags_ & (O_WRONLY|O_RDWR)));
-    void *p = 0;
-    if (fileSize % pageSize > 0) {
-        mapSize += pageSize - fileSize % pageSize;
-        p = ::mmap(0, fileSize, protection, MAP_PRIVATE | MAP_NORESERVE, fd_, 0);
-        if (p == MAP_FAILED)
-            CC_SYSTEM_ERROR(errno, path_);
-    }
-    else {
-        #ifndef MAP_ANONYMOUS
-        #define MAP_ANONYMOUS MAP_ANON
-        #endif
-        #ifndef MAP_NORESERVE
-        #define MAP_NORESERVE 0
-        #endif
-        mapSize += pageSize;
-        p = ::mmap(0, mapSize, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE, -1, 0);
-        if (p == MAP_FAILED)
-            CC_SYSTEM_DEBUG_ERROR(errno);
-        p = ::mmap(p, fileSize, protection, MAP_PRIVATE | MAP_FIXED | MAP_NORESERVE, fd_, 0);
-        if (p == MAP_FAILED)
-            CC_SYSTEM_ERROR(errno, path_);
-    }
-    #ifdef MADV_SEQUENTIAL
-    if (::madvise(p, mapSize, MADV_SEQUENTIAL) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
-    #endif
-    return
-        new MappedByteArray(
-            reinterpret_cast<char *>(p),
-            fileSize
-        );
-}
-
-void File::Instance::unmap(CharArray *s)
-{
-    int pageSize = System::pageSize();
-    size_t mapSize = s->count();
-    if (s->count() % pageSize > 0) mapSize += pageSize - s->count() % pageSize;
-    else mapSize += pageSize;
-    ::munmap((void *)s->bytes(), mapSize);
-}
-
-void File::Instance::sync()
-{
-    if (::fsync(fd_) == -1)
-        CC_SYSTEM_ERROR(errno, path_);
-}
-
-void File::Instance::dataSync()
-{
-#if _POSIX_SYNCHRONIZED_IO > 0
-    if (::fdatasync(fd_) == -1)
-        CC_SYSTEM_ERROR(errno, path_);
-#else
-    sync();
-#endif
-}
-
-bool File::checkAccess(const String &path, FileAccess flags)
-{
-    return ::access(path, +flags) == 0;
+    return access(path, FileAccess::Exists);
 }
 
 void File::create(const String &path, FileMode mode)
@@ -153,21 +31,68 @@ void File::create(const String &path, FileMode mode)
     ::close(fd);
 }
 
+void File::establish(const String &path, FileMode fileMode, FileMode dirMode)
+{
+    if (path.find('/'))
+        Dir::establish(path.cdUp(), dirMode);
+    if (!File::exists(path))
+        File::create(path, fileMode);
+}
+
+String File::createUnique(const String &path, FileMode mode, char placeHolder)
+{
+    assert(path.find(placeHolder));
+
+    String candidate;
+
+    for (Random random; true;) {
+        candidate = path.copy();
+        for (int i = 0, n = candidate.count(); i < n; ++i) {
+            if (candidate[i] == placeHolder) {
+                char r = static_cast<char>(random.get(0, 61));
+                if ((0 <= r) && (r <= 9))
+                    r += '0';
+                else if ((10 <= r) && (r <= 35))
+                    r += 'a' - 10;
+                else if ((36 <= r) && (r <= 61))
+                    r += 'A' - 36;
+                candidate[i] = r;
+            }
+        }
+        int fd = ::open(candidate, O_RDONLY|O_CREAT|O_EXCL, mode);
+        if (fd == -1) {
+            if (errno != EEXIST)
+                CC_SYSTEM_RESOURCE_ERROR(errno, candidate);
+        }
+        else {
+            ::close(fd);
+            break;
+        }
+    }
+
+    return candidate;
+}
+
+String File::createTemp(FileMode mode)
+{
+    return createUnique("/tmp/" + str(::getpid()) + "_########", mode, '#');
+}
+
 void File::chown(const String &path, uid_t ownerId, gid_t groupId)
 {
     if (::chown(path, ownerId, groupId) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-void File::rename(const String &path, const String &newPath)
+void File::rename(const String &oldPath, const String &newPath)
 {
-    if (::rename(path, newPath) == -1)
-        CC_SYSTEM_RESOURCE_ERROR(errno, path);
+    if (::rename(oldPath, newPath) == -1)
+        CC_SYSTEM_RESOURCE_ERROR(errno, oldPath);
 }
 
-void File::link(const String &path, const String &newPath)
+void File::link(const String &oldPath, const String &newPath)
 {
-    if (::link(path, newPath) == -1)
+    if (::link(oldPath, newPath) == -1)
         CC_SYSTEM_RESOURCE_ERROR(errno, newPath);
 }
 
@@ -185,85 +110,24 @@ void File::symlink(const String &path, const String &newPath)
 
 String File::readlink(const String &path)
 {
-    String buf{128};
+    String buf = String::allocate(128);
     while (true) {
-        ssize_t numBytes = ::readlink(path, mutate(buf)->chars(), buf->count());
-        if (numBytes == -1)
-            return String{};
-        if (numBytes <= buf->count()) {
-            if (numBytes < buf->count())
-                buf = String{buf->chars(), int(numBytes)};
+        long n = ::readlink(path, buf, buf.count());
+        if (n == -1) return String{};
+        if (n <= buf.count()) {
+            buf.truncate(n);
             break;
         }
-        buf = String{int(numBytes)};
+        buf = String::allocate(n);
     }
     return buf;
-}
-
-String File::resolve(const String &path)
-{
-    String resolvedPath = path;
-    while (FileStatus{resolvedPath, false}->type() == FileType::Symlink) {
-        String origPath = resolvedPath;
-        resolvedPath = File::readlink(resolvedPath);
-        if (resolvedPath == "") break;
-        if (resolvedPath->isRelativePath())
-            resolvedPath = origPath->reducePath()->extendPath(resolvedPath);
-    }
-    return resolvedPath;
-}
-
-String File::createUnique(const String &path, FileMode mode, char placeHolder)
-{
-    Random random { Process::getId() };
-    while (true) {
-        String candidate = path->copy();
-        for (int i = 0, n = candidate->count(); i < n; ++i) {
-            if (candidate->at(i) == placeHolder) {
-                char r = random->get(0, 61);
-                if ((0 <= r) && (r <= 9))
-                    r += '0';
-                else if ((10 <= r) && (r <= 35))
-                    r += 'a' - 10;
-                else if ((36 <= r) && (r <= 61))
-                    r += 'A' - 36;
-                mutate(candidate)->at(i) = r;
-            }
-        }
-        int fd = ::open(candidate, O_RDONLY|O_CREAT|O_EXCL, mode);
-        if (fd == -1) {
-            if (errno != EEXIST)
-                CC_SYSTEM_RESOURCE_ERROR(errno, candidate);
-        }
-        else {
-            ::close(fd);
-            return candidate;
-        }
-    }
-}
-
-String File::createTemp(FileMode mode)
-{
-    return
-        createUnique(
-            Format{"/tmp/%%_########"} << Process::exePath()->fileName(),
-            mode
-        );
-}
-
-void File::establish(const String &path, FileMode fileMode, FileMode dirMode)
-{
-    if (path->contains('/'))
-        Dir::establish(path->reducePath(), dirMode);
-    if (!File::exists(path))
-        File::create(path, fileMode);
 }
 
 void File::clean(const String &path)
 {
     FileStatus status{path};
-    if (status->isValid()) {
-        if (status->type() == FileType::Directory) {
+    if (status.isValid()) {
+        if (status.type() == FileType::Directory) {
             Dir::deplete(path);
             Dir::remove(path);
         }
@@ -272,12 +136,12 @@ void File::clean(const String &path)
     }
 }
 
-String File::locate(const String &fileName, const StringList &dirs, FileAccess accessFlags)
+String File::locate(const String &fileName, const List<String> &dirs, FileAccess accessFlags)
 {
     String path;
     for (const String &dir: dirs) {
-        String candidate = dir->extendPath(fileName);
-        if (checkAccess(candidate, accessFlags)) {
+        String candidate = dir / fileName;
+        if (File::access(candidate, accessFlags)) {
             path = candidate;
             break;
         }
@@ -287,16 +151,127 @@ String File::locate(const String &fileName, const StringList &dirs, FileAccess a
 
 String File::load(const String &path)
 {
-    establish(path);
-    return File{path}->readAll();
+    File::establish(path);
+    return File{path}.readAll();
 }
 
 void File::save(const String &path, const String &text)
 {
-    establish(path);
-    File file{path, FileOpen::WriteOnly};
-    file->truncate(0);
-    file->write(text);
+    File::establish(path);
+    File{path, FileOpen::WriteOnly|FileOpen::Truncate}.write(text);
+}
+
+File::File(const String &path, FileOpen flags, FileMode mode):
+    File{new File::State{::open(path, +flags|O_CLOEXEC, +mode), path, flags}}
+{
+    if (fd() == -1) CC_SYSTEM_ERROR(errno, path);
+}
+
+void File::truncate(off_t length)
+{
+    if (::ftruncate(fd(), length) == -1)
+        CC_SYSTEM_ERROR(errno, path());
+}
+
+off_t File::seek(off_t distance, Seek whence)
+{
+    off_t ret = ::lseek(fd(), distance, +whence);
+    if (ret == -1) CC_SYSTEM_ERROR(errno, path());
+    return ret;
+}
+
+bool File::isSeekable() const
+{
+    return ::lseek(fd(), 0, SEEK_CUR) != -1;
+}
+
+off_t File::currentOffset() const
+{
+    off_t ret = ::lseek(fd(), 0, SEEK_CUR);
+    if (ret == -1) CC_SYSTEM_ERROR(errno, path());
+    return ret;
+}
+
+void File::sync()
+{
+    if (::fsync(fd()) == -1)
+        CC_SYSTEM_ERROR(errno, path());
+}
+
+void File::dataSync()
+{
+#if _POSIX_SYNCHRONIZED_IO > 0
+    if (::fdatasync(fd()) == -1)
+#else
+    if (::fsync(fd()) == -1)
+#endif
+        CC_SYSTEM_ERROR(errno, path());
+}
+
+String File::readAll()
+{
+    off_t size = ::lseek(fd(), 0, SEEK_END);
+    if (size == -1) return IoStream::readAll();
+
+    if (::lseek(fd(), 0, SEEK_SET) == -1)
+        CC_SYSTEM_ERROR(errno, path());
+
+    String buffer = String::allocate(size);
+    read(&buffer);
+    return buffer;
+}
+
+String File::map()
+{
+    off_t len = ::lseek(fd(), 0, SEEK_END);
+    if (len == -1)
+        CC_SYSTEM_ERROR(errno, path());
+
+    return map(0, len);
+}
+
+String File::map(off_t i0, off_t i1)
+{
+    assert(0 <= i0 && i0 <= i1);
+    if (i0 == i1) return String{};
+
+    off_t len = i1 - i0;
+    bool writeable = +me().flags_ & (O_WRONLY|O_RDWR);
+
+    void *p = ::mmap(
+        nullptr,
+        len,
+        (writeable ? PROT_WRITE : 0) | PROT_READ,
+        writeable ? MAP_SHARED : MAP_PRIVATE,
+        fd(),
+        i0
+    );
+
+    if (p == MAP_FAILED)
+        CC_SYSTEM_DEBUG_ERROR(errno);
+
+    return String{static_cast<char *>(p), len, 1};
+}
+
+void File::close()
+{
+    if (me().fd_ >= 0) {
+        if (::close(me().fd_) == -1)
+            CC_SYSTEM_DEBUG_ERROR(errno);
+        me().fd_ = -1;
+    }
+}
+
+long long File::State::transferTo(const Stream &sink, long long count, const Bytes &buffer)
+{
+    if (!sink && count > 0) {
+        off_t ret = 0;
+        if (count > 0) ret = ::lseek(fd_, count, SEEK_CUR);
+        else ret = ::lseek(fd_, 0, SEEK_END);
+        if (ret != -1) return count;
+    }
+    //! \todo make use of memory mapped I/O if applicable
+    return IoStream::State::transferTo(sink, count, buffer);
 }
 
 } // namespace cc

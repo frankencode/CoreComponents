@@ -1,69 +1,48 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/net/DatagramSocket>
+#include <cc/DatagramSocket>
+#include <cstring>
 
 namespace cc {
-namespace net {
 
-DatagramSocket::Instance::Instance(int fd):
-    SystemStream::Instance{fd},
-    family_{ProtocolFamily::Local}
-{}
-
-DatagramSocket::Instance::Instance(const SocketAddress &address):
-    family_{address->family()}
+String HostUnreachable::message() const
 {
-    fd_ = ::socket(+address->family(), SOCK_DGRAM, 0);
-    if (fd_ == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
+    return "Host unreachable";
+}
 
-    if (address->port() != 0) {
+DatagramSocket::State::State(const SocketAddress &address):
+    Socket::State{address.family(), SOCK_DGRAM}
+{
+    if (address.port() != 0) {
         int on = 1;
-        if (::setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1)
-            CC_SYSTEM_DEBUG_ERROR(errno);
+        CC_SYSCALL(::setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)));
 
-        if (address->family() == ProtocolFamily::Internet6) {
+        if (address.family() == ProtocolFamily::Inet6) {
             int on = 1;
-            if (::setsockopt(fd_, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)) == -1)
-                CC_SYSTEM_DEBUG_ERROR(errno);
+            CC_SYSCALL(::setsockopt(fd_, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)));
         }
     }
 
-    if (::bind(fd_, address->addr(), address->addrLen()) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
+    CC_SYSCALL(::bind(fd_, address.addr(), address.addrLen()));
 }
 
-void DatagramSocket::Instance::allowBroadcasting(bool on)
+int DatagramSocket::State::receive(Out<Bytes> message, Out<SocketAddress> address)
 {
-    int value = on;
-    if (::setsockopt(fd_, SOL_SOCKET, SO_BROADCAST, &value, sizeof(value)) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
-}
-
-void DatagramSocket::Instance::setRecvBufferSize(int newSize)
-{
-    if (::setsockopt(fd_, SOL_SOCKET, SO_RCVBUF, &newSize, sizeof(newSize)) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
-}
-
-void DatagramSocket::Instance::setSendBufferSize(int newSize)
-{
-    if (::setsockopt(fd_, SOL_SOCKET, SO_RCVBUF, &newSize, sizeof(newSize)) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
-}
-
-int DatagramSocket::Instance::recvFrom(SocketAddress *peerAddress, CharArray *buffer)
-{
-    *peerAddress = SocketAddress{family_}; // FIXME: performance: setFamily() should suffice
-    socklen_t len = (*peerAddress)->addrLen();
+    struct sockaddr *src = nullptr;
+    socklen_t len = 0;
+    if (address != None{}) {
+        if (!address()) address() = SocketAddress{New{}};
+        src = address().addr();
+        len = address().addrLen();
+    }
     int ret = -1;
-    do ret = ::recvfrom(fd_, buffer->bytes(), buffer->count(), 0, (*peerAddress)->addr(), &len);
+    do ret = ::recvfrom(fd_, message(), message().count(), /*flags =*/0, src, &len);
     while (ret == -1 && errno == EINTR);
     if (ret == -1) {
         if (errno == EHOSTUNREACH) throw HostUnreachable{};
@@ -72,10 +51,16 @@ int DatagramSocket::Instance::recvFrom(SocketAddress *peerAddress, CharArray *bu
     return ret;
 }
 
-int DatagramSocket::Instance::sendTo(const SocketAddress &peerAddress, const CharArray *message)
+int DatagramSocket::State::send(const Bytes &message, const SocketAddress &address)
 {
+    const struct sockaddr *dst = nullptr;
+    socklen_t len = 0;
+    if (address) {
+        dst = address.addr();
+        len = address.addrLen();
+    }
     int ret = -1;
-    do ret = ::sendto(fd_, message->bytes(), message->count(), 0, peerAddress->addr(), peerAddress->addrLen());
+    do ret = ::sendto(fd_, message, message.count(), 0, dst, len);
     while (ret == -1 && errno == EINTR);
     if (ret == -1) {
         if (errno == EHOSTUNREACH) throw HostUnreachable{};
@@ -84,24 +69,26 @@ int DatagramSocket::Instance::sendTo(const SocketAddress &peerAddress, const Cha
     return ret;
 }
 
-void DatagramSocket::Instance::connect(const SocketAddress &peerAddress)
+void DatagramSocket::State::connect(const SocketAddress &address)
 {
     int ret = -1;
-    do ret = ::connect(fd_, peerAddress->addr(), peerAddress->addrLen());
+    do ret = ::connect(fd_, address.addr(), address.addrLen());
     while (ret == -1 && errno == EINTR);
     if (ret == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 }
 
-void DatagramSocket::connect(DatagramSocket &first, DatagramSocket &second)
+void DatagramSocket::State::broadcasting(bool on)
 {
-    int fd[2];
-    fd[0] = 0;
-    fd[1] = 0;
-    if (::socketpair(AF_LOCAL, SOCK_DGRAM|SOCK_CLOEXEC, 0, fd) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
-
-    first = DatagramSocket{fd[0]};
-    second = DatagramSocket{fd[1]};
+    int value = on;
+    CC_SYSCALL(::setsockopt(fd_, SOL_SOCKET, SO_BROADCAST, &value, sizeof(value)));
 }
 
-}} // namespace cc::net
+void DatagramSocket::State::join(const SocketAddress &address)
+{
+    struct group_req req;
+    std::memset(&req, 0, sizeof(req));
+    std::memcpy(&req.gr_group, address.addr(), address.addrLen());
+    CC_SYSCALL(::setsockopt(fd_, address.level(), MCAST_JOIN_GROUP, &req, sizeof(req)));
+}
+
+} // namespace cc

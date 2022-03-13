@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,49 +8,54 @@
 
 #pragma once
 
-#include <cc/ui/Painter>
+#include <cc/Object>
 
 typedef struct _cairo_surface cairo_surface_t;
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
 class Painter;
 
-class SurfaceInstance;
-
-class Surface
+/** \class Surface cc/ui/Surface
+  * \ingroup ui
+  * \brief Painting surface
+  */
+class Surface: public Object
 {
 public:
-    using Instance = SurfaceInstance;
-
+    /** Create a null surface
+      */
     Surface() = default;
 
-    Instance *operator->() const { return instance_; }
-
-    explicit operator bool() const { return instance_; }
-
-protected:
-    Surface(Instance *instance):
-        instance_{instance}
-    {}
-
-    template<class T>
-    T *my() const { return as<T>(instance_); }
-
-private:
-    Ref<Instance> instance_;
-};
-
-class SurfaceInstance: public Object
-{
-public:
-    bool isValid() const;
-
+    /** Open next page
+      * \param clear Open a clean page (clear = true) or a copy of this current page (clear = false)
+      */
     void nextPage(bool clear = true);
 
-    virtual cairo_surface_t *cairoSurface() const = 0;
-    virtual void polish() {}
+    /** Get a pointer to the underlying Cairo surface
+      */
+    cairo_surface_t *cairoSurface() { return me().cairoSurface(); }
+
+    /** Prepare surface before start painting
+      */
+    void polish() { me().polish(); }
+
+protected:
+    friend class Object;
+    friend class Painter;
+
+    struct State: public Object::State
+    {
+        virtual cairo_surface_t *cairoSurface() = 0;
+        virtual void polish();
+    };
+
+    explicit Surface(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

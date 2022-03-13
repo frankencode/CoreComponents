@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpMessageGenerator>
+#include <cc/HttpStatus>
+
+namespace cc {
+
+/** \class HttpResponseGenerator cc/HttpResponseGenerator
+  * \ingroup http_protocol
+  * \brief HTTP response generator
+  */
+class HttpResponseGenerator final: public HttpMessageGenerator
+{
+public:
+    /** Create a null HTTP response generator
+      */
+    HttpResponseGenerator() = default;
+
+    /** Create a HTTP response generator
+      */
+    explicit HttpResponseGenerator(const Stream &stream);
+
+    /** %Set HTTP status code
+      */
+    void setStatus(HttpStatus status, const String &reasonPhrase = "");
+
+    /** %Set node name/version
+      */
+    void setNodeVersion(const String &nodeVersion);
+
+    /** %Total number of payload bytes written
+      */
+    long long bytesWritten() const;
+
+    /** %Response has been delivered
+      */
+    bool delivered() const;
+
+    /** HTTP status code
+      */
+    HttpStatus status() const;
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

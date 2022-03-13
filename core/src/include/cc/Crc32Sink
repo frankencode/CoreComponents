@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,63 +8,66 @@
 
 #pragma once
 
-#include <cc/types>
-#include <cc/strings>
 #include <cc/HashSink>
+#include <cstdint>
 
 namespace cc {
 
 /** \class Crc32Sink cc/Crc32Sink
-  * \brief CRC-32 check sum generator
+  * \ingroup streams
+  * \brief CRC-32 checksum generator
   */
-class Crc32Sink: public HashSink
+class Crc32Sink final: public HashSink
 {
 public:
-    static constexpr int Size = 4;
-    static constexpr uint32_t DefaultSeed = ~uint32_t(0);
+    /** CRC-32 checksum size
+      */
+    static constexpr int HashSize = 4;
 
-    class Instance: public HashSink::Instance
-    {
-    public:
-        void feed(const void *buf, int bufFill);
-        uint32_t sum() const { return crc_; }
+    /** %Default CRC-32 seed
+      */
+    static constexpr std::uint32_t DefaultSeed = ~std::uint32_t(0);
 
-        void write(const CharArray *data) override;
-        String finish() override;
+    /** Create a null CRC-32 sink
+      */
+    Crc32Sink() = default;
 
-    private:
-        friend class Crc32Sink;
+    /** Create a new CRC-32 sink
+      * \param seed %Initial checksum value
+      */
+    explicit Crc32Sink(std::uint32_t seed = DefaultSeed);
 
-        Instance(uint32_t seed):
-            crc_{seed}
-        {}
+    /** %Current CRC-32 checksum value
+      */
+    std::uint32_t sum() const;
 
-        uint32_t crc_;
-    };
+private:
+    friend std::uint32_t crc32(const void *buffer, long size);
+    friend std::uint32_t crc32(const char *s);
+    friend std::uint32_t crc32(const Bytes &s);
 
-    Crc32Sink(uint32_t seed = DefaultSeed):
-        HashSink{new Instance{seed}}
-    {}
+    struct State;
 
-    Instance *operator->() const { return my<Instance>(); }
+    const State &me() const;
 };
 
-inline uint32_t crc32(const void *buf, int bufSize) {
-    Crc32Sink crc;
-    if (buf) crc->feed(buf, bufSize);
-    return crc->sum();
-}
+/** Generate CRC-32 checksum
+  * \ingroup streams
+  * \param buffer Input buffer
+  * \param size Number of bytes
+  */
+std::uint32_t crc32(const void *buffer, long size);
 
-inline uint32_t crc32(const char *s) {
-    Crc32Sink crc;
-    if (s) crc->feed(s, strlen(s));
-    return crc->sum();
-}
+/** Generate CRC-32 checksum
+  * \ingroup streams
+  * \param buffer Input C-string
+  */
+std::uint32_t crc32(const char *buffer);
 
-inline uint32_t crc32(const String &s) {
-    Crc32Sink crc;
-    crc->feed(s->bytes(), s->count());
-    return crc->sum();
-}
+/** Generate CRC-32 checksum
+  * \ingroup streams
+  * \param buffer Input buffer
+  */
+std::uint32_t crc32(const Bytes &buffer);
 
 } // namespace cc

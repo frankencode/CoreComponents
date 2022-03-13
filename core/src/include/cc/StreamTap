@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -12,29 +12,22 @@
 
 namespace cc {
 
-/** \brief Bi-directional traffic redirection and duplication
+/** \class StreamTap cc/StreamTap
+  * \ingroup streams
+  * \brief Bi-directional traffic redirection and duplication
   */
-class StreamTap: public Stream
+class StreamTap final: public Stream
 {
 public:
-    class Instance: public Stream::Instance
-    {
-    public:
-        int read(CharArray *data) override;
-        void write(const CharArray *data) override;
-        void write(const StringList &parts) override;
+    /** Create a new stream tap
+      * \param stream Data stream to tap into
+      * \param inputTap %Input tap: receives everything read from \a stream as a write (pass Stream{} to omit tapping into the reads)
+      * \param outputTap %Output tap: receives everything written to \a stream as a write (pass Stream{} to omit tapping into the writes)
+      */
+    StreamTap(const Stream &stream, const Stream &inputTap, const Stream &outputTap);
 
-    private:
-        friend class StreamTap;
-
-        Instance(const Stream &stream, const Stream &inputTap, const Stream &outputTap);
-
-        Stream stream_, inputTap_, outputTap_;
-    };
-
-    StreamTap(const Stream &stream, const Stream &inputTap, const Stream &outputTap):
-        Stream{new Instance{stream, inputTap, outputTap}}
-    {}
+private:
+    struct State;
 };
 
 } // namespace cc

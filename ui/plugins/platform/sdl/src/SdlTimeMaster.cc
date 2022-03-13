@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,20 +7,21 @@
  */
 
 #include <cc/ui/SdlTimeMaster>
-#include <cc/ui/SdlApplicationInstance>
-#include <cc/Singleton>
+#include <cc/ui/SdlApplication>
+#include <SDL2/SDL.h>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-SdlTimeMaster *SdlTimeMaster::instance()
+struct SdlTimeMaster::State final: public TimeMaster::State
 {
-    return Singleton<SdlTimeMaster>::instance();
-}
+    void triggerTimer(const Timer &timer) override
+    {
+        SdlApplication{}.triggerTimer(timer);
+    }
+};
 
-void SdlTimeMaster::triggerTimer(const Timer::Instance *timer)
-{
-    SdlApplicationInstance::instance()->triggerTimer(timer);
-}
+SdlTimeMaster::SdlTimeMaster():
+    TimeMaster{instance<State>()}
+{}
 
-}} // namespace cc::ui
+} // namespace cc::ui

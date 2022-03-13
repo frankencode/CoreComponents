@@ -8,117 +8,875 @@
 
 #pragma once
 
-#include <initializer_list>
-#include <cc/ArrayInstance>
-#include <cc/Format>
+#include <cc/ArrayIterator>
+#include <cc/List>
+#include <cc/Shared>
+#include <sys/mman.h> // munmap
+#include <type_traits>
+#include <cstring>
 
 namespace cc {
 
-/** \class Array cc/Array
-  * \ingroup container_highlevel
-  * \brief %Array data container
-  * \tparam T item type
+class String;
+
+/** \brief XOR write over policy
+  */
+class Xor {
+public:
+    template<class T>
+    inline static void apply(T &dst, const T &src) {
+        dst ^= src;
+    }
+};
+
+/** \internal
+  */
+template<class T, bool isTriviallyCopyable = std::is_trivially_copyable_v<T>>
+class MemCopy {
+public:
+    static void copy(T *dst, const T *src, long count)
+    {
+        for (long i = 0; i < count; ++i)
+            dst[i] = src[i];
+    }
+};
+
+/** \internal
   */
 template<class T>
-class Array {
+class MemCopy<T, /*isTriviallyCopyable = */true> {
 public:
-    typedef ArrayInstance<T> Instance;
-    typedef typename Instance::value_type value_type;
-    typedef typename Instance::size_type size_type;
-    typedef typename Instance::iterator iterator;
-    typedef typename Instance::const_iterator const_iterator;
-
-    Array():
-        instance_{new Instance}
-    {}
-
-    explicit Array(size_type size):
-        instance_{new Instance{size}}
-    {}
-
-    Array(std::initializer_list<T> b):
-        instance_{new Instance{static_cast<size_type>(b.size())}}
+    static void copy(T *dst, const T *src, long count)
     {
-        size_type i = 0;
-        for (const auto &x: b) {
-            instance_->at(i) = x;
-            ++i;
+        std::memcpy(dst, src, count * sizeof(T));
+    }
+};
+
+/** \internal
+  */
+template<class T, bool isTriviallyCopyable = std::is_trivially_copyable_v<T>, int byteSize = sizeof(T)>
+class MemFill {
+public:
+    static void fill(T *dst, T src, long count)
+    {
+        for (long i = 0; i < count; ++i)
+            dst[i] = src;
+    }
+};
+
+/** \internal
+  */
+template<class T>
+class MemFill<T, /*isTriviallyCopyable =*/true, /*byteSize =*/1> {
+public:
+    static void fill(T *dst, T src, long count)
+    {
+        std::memset(dst, src, count);
+    }
+};
+
+static_assert(sizeof(char) == sizeof(uint8_t));
+
+/** \class Array cc/Array
+  * \ingroup container_lowlevel
+  * \brief An array of items within a contiguous chunk of memory
+  * \tparam T Item type
+  */
+template<class T>
+class Array
+{
+public:
+    using Item = T; ///< Item type
+
+    /** \name Construction and Assignment
+      */
+    ///@{
+
+    /** Create a array of \a n items
+      * \note For performance reasons the items are not initialized if the item type is a fundamental type (e.g. char).
+      */
+    static Array allocate(long n)
+    {
+        return Array{n, Allocate{}};
+    }
+
+    /** Create an empty array
+      */
+    Array():
+        me{
+            /*.count = */0,
+            /*.isMapped = */0u,
+            /*.isWrapped = */0u,
+            /*.items = */nullptr
+        }
+    {}
+
+    /** Construct a copy of \a other
+      */
+    Array(const Array &other) = default;
+
+    /** Construct from right-side \a b
+      */
+    Array(Array &&b):
+        me{std::move(b.me)}
+    {}
+
+    /** Construct with initial \a items
+      */
+    Array(std::initializer_list<T> items):
+        me{
+            /*.count = */static_cast<long>(items.size()),
+            /*.isMapped = */0u,
+            /*.isWrapped = */0u,
+            /*.items = */(items.size() > 0) ? new T[items.size()] : nullptr
+        }
+    {
+        Item * const dst = me().items;
+        long i = 0;
+        for (const auto &x: items) dst[i++] = x;
+    }
+
+    /** Concatenate \a arrays into a single new array
+      */
+    Array(std::initializer_list<Array> arrays):
+        Array{}
+    {
+        assert(arrays.size() > 0);
+
+        if (arrays.size() == 1) {
+            for (const Array &src: arrays) *this = src;
+        }
+        else {
+            long totalCount = 0;
+            for (const Array &src: arrays) {
+                totalCount += src.count();
+            }
+            if (totalCount > 0) {
+                Array dst = Array::allocate(totalCount);
+                long i0 = 0;
+                for (const Array &src: arrays) {
+                    if (src.count() == 0) continue;
+                    src.copyToOffset(&dst, i0);
+                    i0 += src.count();
+                }
+                *this = dst;
+            }
         }
     }
 
-    Array(const Array &b) = default;
+    /** Create a copy of the low-level array \a src of \a count items
+      */
+    explicit Array(const Item *src, long count):
+        Array{count, Allocate{}}
+    {
+        MemCopy<Item>::copy(me().items, src, count);
+    }
 
-    Array(Array &&b):
-        instance_{std::move(b.instance_)}
-    {}
+    /** Join several arrays into one
+      */
+    explicit Array(const List<Array> &parts):
+        Array{totalCount(parts), Allocate{}}
+    {
+        long offset = 0;
+        for (const Array &part: parts) {
+            Item * const dst = me().items + offset;
+            Item * const src = part.me().items;
+            const long m = part.me().count;
+            MemCopy<Item>::copy(dst, src, m);
+            offset += m;
+        }
+    }
 
-    Array &operator=(const Array &b) = default;
+    /** Join several arrays into one using \a sep as interposing separator
+      */
+    explicit Array(const List<Array> &parts, Item sep):
+        Array{totalCount(parts) + parts.count() - (parts.count() > 0), Allocate{}}
+    {
+        long offset = 0;
+        for (const Array &part: parts) {
+            if (offset > 0) {
+                me().items[offset] = sep;
+                ++offset;
+            }
+            Item * const dst = me().items + offset;
+            Item * const src = part.me().items;
+            const long m = part.me().count;
+            MemCopy<Item>::copy(dst, src, m);
+            offset += m;
+        }
+    }
 
-    Array &operator=(Array &&b) {
-        instance_ = std::move(b.instance_);
+    /** Default assignment operator
+      */
+    Array &operator=(const Array &) = default;
+
+    /** Assign right-side \a b
+      */
+    Array &operator=(Array &&b)
+    {
+        me = std::move(b.me);
         return *this;
     }
 
-    Array(Instance *b):
-        instance_{b}
-    {}
+    ///@}
 
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return Cow::get(instance_); }
+    /** \name Item Access
+      */
+    ///@{
 
-    operator const Instance *() const { return instance_; }
-    operator Instance *() { return Cow::get(instance_); }
+    /** Size of this array in number of items
+      */
+    long count() const { return me().count; }
 
-    T &operator[](size_type i) { return Cow::get(instance_)->at(i); }
-    const T &operator[](size_type i) const { return instance_->at(i); }
+    /** \copydoc count()
+      */
+    long size() const { return me().count; }
+
+    /** Check if \a i is a valid index
+      */
+    bool has(long i) const { return i < me().count && 0 <= i; }
+
+    /** Check if this array is non-empty
+      */
+    explicit operator bool() const { return count() > 0; }
+
+    /** \copydoc count()
+      */
+    long operator+() const { return me().count; }
+
+    /** Get a reference to the item at \a i
+      */
+    Item &at(long i)
+    {
+        assert(0 <= i && i < count());
+        return me().items[i];
+    }
+
+    /** Get a constant reference to the item at \a i
+      */
+    const Item &at(long i) const
+    {
+        assert(0 <= i && i < count());
+        return me().items[i];
+    }
+
+    /** Get number of items of type \a U
+      */
+    template<class U>
+    long itemCount() const
+    {
+        return count() / sizeof(U);
+    }
+
+    /** %Return a reference to an object of type \a U at object index \a j
+      */
+    template<class U>
+    U &item(long j)
+    {
+        assert(0 <= j && j < count() * static_cast<long>(sizeof(U)));
+        return reinterpret_cast<U *>(me().items)[j];
+    }
+
+    /** %Return a constant reference to an object of type \a U at object index \a j
+      */
+    template<class U>
+    const U &item(long j) const
+    {
+        assert(0 <= j && j < count() * static_cast<long>(sizeof(U)));
+        return reinterpret_cast<const U *>(me().items)[j];
+    }
+
+    /** Convenience function for item<std::uint8_t>()
+      */
+    std::uint8_t &byteAt(long j)
+    {
+        return item<std::uint8_t>(j);
+    }
+
+    /** Convenience function for item<std::uint8_t>()
+      */
+    const std::uint8_t &byteAt(long j) const
+    {
+        return item<std::uint8_t>(j);
+    }
+
+    /** Convenience function for item<std::uint32_t>()
+      */
+    std::uint32_t &wordAt(long j)
+    {
+        return item<std::uint32_t>(j);
+    }
+
+    /** Convenience function for item<std::uint32_t>()
+      */
+    const std::uint32_t &wordAt(long j) const
+    {
+        return item<std::uint32_t>(j);
+    }
+
+    /** \copydoc at(long)
+      */
+    Item &operator[](long i)
+    {
+        assert(0 <= i && i < count());
+        return me().items[i];
+    }
+
+    /** \copydoc at(long) const
+      */
+    const Item &operator[](long i) const
+    {
+        assert(0 <= i && i < count());
+        return me().items[i];
+    }
+
+    /** Get constant reference to first item
+      */
+    const Item &first() const
+    {
+        assert(count() > 0);
+        return me().items[0];
+    }
+
+    /** Get constant reference to last item
+      */
+    const Item &last() const
+    {
+        assert(count() > 0);
+        return me().items[count() - 1];
+    }
+
+    /** Check if \a head equals the start of this array
+      */
+    bool startsWith(const Array &head) const
+    {
+        const Item *a = items();
+        const Item *b = head.items();
+        long an = count();
+        long bn = head.count();
+        if (bn <= an) {
+            for (long i = 0; i < bn; ++i) {
+                if (a[i] != b[i])
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /** Check if \a tail equals the end of this array
+      */
+    bool endsWith(const Array &tail) const
+    {
+        const Item *a = items();
+        const Item *b = tail.items();
+        long an = count();
+        long bn = tail.count();
+        if (bn <= an) {
+            long i0 = an - bn;
+            for (long i = 0; i < bn; ++i) {
+                if (a[i0 + i] != b[i])
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    ///@}
+
+    /** \name Global Operations
+      */
+    ///@{
+
+    /** Count the number of occurences of item \a b
+      */
+    long count(const Item &b) const
+    {
+        long n = me().count;
+        const Item *a = me().items;
+        long o = 0;
+        for (long i = 0; i < n; ++i) {
+            if (a[i] == b) ++o;
+        }
+        return o;
+    }
+
+    /** Find item \a b
+      * \param b The item to search for
+      * \param i0 Provides the starting position and returns the final position
+      * \return True if item \a b was found, false otherwise
+      */
+    bool find(const Item &b, InOut<long> i0 = None{}) const
+    {
+        long n = me().count;
+        const Item *a = me().items;
+        long i = i0;
+        while (i < n) {
+            if (a[i] == b)
+                break;
+            ++i;
+        }
+        i0 = i;
+        return i < n;
+    }
+
+    /** Replace all occurance of \a b by \a s
+      */
+    void replace(const Item &b, const Item &s)
+    {
+        long n = me().count;
+        Item *a = me().items;
+        for (long i = 0; i < n; ++i) {
+            if (a[i] == b) a[i] = s;
+        }
+    }
+
+    /** Create a deep copy of this array
+      */
+    Array copy() const
+    {
+        if (count() <= 0) return Array{};
+        return copy(0, count());
+    }
+
+    /** Create a copy of range [\a i0, \a i1)
+      */
+    Array copy(long i0, long i1) const
+    {
+        assert(0 <= i0 && i0 <= i1 && i1 <= count());
+        long m = i1 - i0;
+        if (m <= 0) return Array{};
+        Array result = Array::allocate(m);
+        Item *dst = result.me().items;
+        Item *src = me().items + i0;
+        MemCopy<Item>::copy(dst, src, m);
+        return result;
+    }
+
+    /** Copy the items in range [\a i0, \a i1] to array \a dst
+      */
+    void copyRangeTo(long i0, long i1, Out<Array> dst) const
+    {
+        assert(0 <= i0 && i0 <= i1 && i1 <= count());
+        long m = i1 - i0;
+        if (m > dst->count()) m = dst->count();
+        if (m > 0) MemCopy<Item>::copy(dst->items(), items() + i0, m);
+    }
+
+    /** Copy the items in range [\a i0, \a i1] to array \a dst starting at item \a dst[j0]
+      */
+    void copyRangeToOffset(long i0, long i1, Out<Array> dst, long j0) const
+    {
+        assert(0 <= i0 && i0 <= i1 && i1 <= count());
+        assert(0 <= j0 && j0 <= j0 + i1 - i0 && j0 + i1 - i0  <= dst->count());
+        MemCopy<Item>::copy(dst->items() + j0, items() + i0, i1 - i0);
+    }
+
+    /** Copy contents of this array to array \a dst
+      */
+    void copyTo(Out<Array> dst) const
+    {
+        long m = count();
+        if (m > dst->count()) m = dst->count();
+        MemCopy<Item>::copy(dst->items(), items(), m);
+    }
+
+    /** Copy contents of this array to array \a dst starting at item \a dst[j0]
+      */
+    void copyToOffset(Out<Array> dst, long j0) const
+    {
+        assert(count() <= j0 + dst->count());
+        MemCopy<Item>::copy(dst->items() + j0, items(), count());
+    }
+
+    /** Copy contents of this array to array \a dst in the range \a dst[j0]..dst[j1-1]
+      * \note \a j1 is only the upper limit. A fewer number of bytes might be written.
+      */
+    void copyToRange(Out<Array> dst, long j0, long j1) const
+    {
+        assert(0 <= j0 && j0 <= j1 && j1 <= dst->count());
+        long m = j1 - j0;
+        if (m > count()) m = count();
+        if (m > 0) MemCopy<Item>::copy(dst->items() + j0, items(), m);
+    }
+
+    /** Apply the contents of this array to array \a dst
+      * \tparam F Application policy (e.g. Xor)
+      */
+    template<class F>
+    void applyTo(InOut<Array> dst) const
+    {
+        const Item *srcItems = items();
+        Item *dstItems = dst->items();
+        long m = dst->count() < count() ? dst->count() : count();
+        for (long i = 0; i < m; ++i) F::apply(dstItems[i], srcItems[i]);
+    }
+
+    /** %Set all items to \a b
+      */
+    void fill(const Item &b)
+    {
+        MemFill<Item>::fill(me().items, b, me().count);
+    }
+
+    /** Resize this array to \a n items preserving the contents (new items are uninitialized)
+      */
+    void resize(long n)
+    {
+        if (count() != n) {
+            if (n <= 0) {
+                *this = Array{};
+            }
+            else {
+                Array old = *this;
+                (*this) = Array::allocate(n);
+                old.copyTo(this);
+            }
+        }
+    }
+
+    /** Reduce the length of this array to \a n items without freeing memory
+      */
+    void truncate(long n)
+    {
+        assert(n >= 0);
+        if (n < me().count)
+            me().count = n;
+    }
+
+    /** Truncate to zero length and free all previously stored items
+      */
+    void deplete()
+    {
+        *this = Array{};
+    }
+
+    /** %Return a selection of range [\a i0, \a i1)
+      */
+    Array select(long i0, long i1)
+    {
+        assert(0 <= i0 && i0 <= i1 && i1 <= count());
+        if (i0 == 0 && i1 == count()) return *this;
+        return Array{me, i0, i1};
+    }
+
+    /** Select the first \a n items or less (if \a n > count())
+      */
+    Array selectHead(long n)
+    {
+        assert(n >= 0);
+        if (count() < n) n = count();
+        return select(0, n);
+    }
+
+    /** Select the last \a n items or less (if \a n > count())
+      */
+    Array selectTail(long n)
+    {
+        assert(n >= 0);
+        if (count() < n) n = count();
+        return select(count() - n, count());
+    }
+
+    /** Offset of this array within its parent array if this array is a selection (0 otherwise)
+      */
+    long offset() const
+    {
+        return me().parent ? static_cast<long>(me().items - me().parent().items) : 0;
+    }
+
+    /** Get parent array if this array is a selection
+      */
+    Array parent()
+    {
+        return me().parent ? Array{me().parent} : *this;
+    }
+
+    /** Truncate \a |n| items from the front (n > 0) or from the back (n < 0)
+      */
+    void shift(long n)
+    {
+        assert(-count() <= n && n <= count());
+
+        if (n > 0) {
+            if (!me().parent) *this = select(n, count());
+            else {
+                me().items += n;
+                me().count -= n;
+            }
+        }
+        else if (n < 0) {
+            if (!me().parent) *this = select(0, count() + n);
+            else me().count += n;
+        }
+    }
+
+    /** Reverse the order of items in this array
+      */
+    void reverse()
+    {
+        Item *a = me().items;
+        long i = 0;
+        long j = count() - 1;
+        while (i < j) {
+            std::swap(a[i], a[j]);
+            ++i;
+            --j;
+        }
+    }
+
+    /** Get a copy of this array with order of items reversed
+      */
+    Array reversed() const
+    {
+        Array a = copy();
+        a.reverse();
+        return a;
+    }
+
+    ///@}
+
+    /** \name Type Compatibility
+      */
+    ///@{
+
+    /** Get pointer to internal memory buffer
+      */
+    const Item *items() const { return me().items; }
+
+    /** Get pointer to internal memory buffer
+      */
+    Item *items() { return me().items; }
+
+    /** Low-level access to the underlying characters
+      */
+    const char *chars() const
+    {
+        return reinterpret_cast<const char *>(me().items);
+    }
+
+    /** Low-level access to the underlying characters
+      */
+    char *chars()
+    {
+        return reinterpret_cast<char *>(me().items);
+    }
+
+    /** Low-level access to the underlying bytes
+      */
+    const uint8_t *bytes() const { return static_cast<const uint8_t *>(static_cast<const void *>(me().items)); }
+
+    /** Low-level access to the underlying bytes
+      */
+    uint8_t *bytes() { return static_cast<uint8_t *>(static_cast<void *>(me().items)); }
+
+    /** Low-level access to the underlying memory words
+      */
+    const uint32_t *words() const { return static_cast<const uint32_t *>(static_cast<const void *>(me().items)); }
+
+    /** Low-level access to the underlying memory words
+      */
+    uint32_t *words() { return static_cast<uint32_t *>(static_cast<void *>(me().items)); }
+
+    /** Automatic conversion to low-level pointer
+      */
+    operator Item *() { return me().items; }
+
+    /** Automatic conversion to constant low-level pointer
+      */
+    operator const Item *() const { return me().items; }
+
+    /** Automatic conversion to low-level data pointer
+      */
+    explicit operator void *() { return me().items; }
+
+    /** Automatic conversion to constant low-level data pointer
+      */
+    explicit operator const void *() const { return me().items; }
+
+    /** Wrap this array around the low-level memory vector \a data of \a count items.
+      * \note This only works if this array is empty or has been used for wrapping before.
+      */
+    void wrapAround(void *data, long count)
+    {
+        auto &self = me();
+        assert(self.isWrapped || !self.items);
+        self.count = count;
+        self.isMapped = 0u;
+        self.isWrapped = 1u;
+        self.items = static_cast<Item *>(data);
+    }
+
+    /** Create a new array wrapped around \a data containing \a count items.
+      * \note Referencing the \a data array at the same time with different Array or Item types is not supported in C++ (see "pointer aliasing").
+      */
+    static Array wrap(void *data, long count)
+    {
+        Array a;
+        a.wrapAround(data, count);
+        return a;
+    }
+
+    ///@}
+
+    using iterator = ArrayIterator<Array, 1>; ///< \internal Value iterator
+    using const_iterator = ArrayIterator<const Array, 1>; ///< \internal Readonly value iterator
+    using reverse_iterator = ArrayIterator<Array, -1>; ///< \internal Reverse value iterator
+    using const_reverse_iterator = ArrayIterator<const Array, -1>; ///< \internal Readonly reverse value iterator
+    using value_type = Item; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
+
+    /** \name Standard iterators
+      */
+    ///@{
+
+    iterator begin() { return iterator{*this, 0}; } ///< %Return iterator pointing to the first item (if any)
+    iterator end  () { return iterator{*this, count()}; } ///< %Return iterator pointing behind the last item
+
+    const_iterator begin () const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
+
+    reverse_iterator rbegin() { return reverse_iterator{*this, count() - 1}; } ///< %Return reverse iterator pointing to the last item (if any)
+    reverse_iterator rend  () { return reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
+
+    const_reverse_iterator rbegin () const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return const_reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const { return const_reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
+
+    ///@}
+
+    /** \name Comparism Operators
+      */
+    ///@{
+
+    bool operator==(const Array &b) const { return container::equal(*this, b); } ///< %Return true if this container equals \a b
+    bool operator!=(const Array &b) const { return container::differ(*this, b); } ///< %Return true if this container differs from \a b
+    bool operator< (const Array &b) const { return container::below(*this, b); } ///< %Return true if this container is lower than \a b
+    bool operator> (const Array &b) const { return container::above(*this, b); } ///< %Return true if this container is greater than \a b
+    bool operator<=(const Array &b) const { return container::belowOrEqual(*this, b); } ///< %Return true if this container is lower or equal than b
+    bool operator>=(const Array &b) const { return container::aboveOrEqual(*this, b); } ///< %Return true if this container is greater or equal than b
+
+    ///@}
 
 private:
-    explicit operator bool() const;
+    friend class String;
 
-    Ref<Instance> instance_;
+    class Allocate{};
+
+    explicit Array(long n, Allocate):
+        me{
+            /*.count = */n,
+            /*.isMapped = */0u,
+            /*.isWrapped = */0u,
+            /*.items = */(n > 0) ? new T[n] : nullptr
+        }
+    {
+        assert(n >= 0);
+    }
+
+    template<class Part>
+    void assignParts(const List<Part> &parts)
+    {
+        long offset = 0;
+        for (const Part &src: parts) {
+            std::memcpy(me().items + offset, src.me().items, src.me().count * sizeof(char));
+            offset += src.me().count;
+        }
+        --me().count;
+        me().items[me().count] = '\0';
+    }
+
+    template<class Part>
+    static long totalCount(const List<Part> &parts)
+    {
+        long total = 0;
+        for (const Part &part: parts)
+            total += part.count();
+        return total;
+    }
+
+
+    struct State
+    {
+        long count: sizeof(long) * 8 - 2;
+        unsigned long isMapped: 1;
+        unsigned long isWrapped: 1;
+        T *items;
+        Use<State> parent;
+
+        ~State() {
+            if (items && !parent) {
+                if (isMapped)
+                    ::munmap(items, sizeof(T) * count);
+                else if (!isWrapped)
+                    delete[] items;
+            }
+        }
+    };
+
+    explicit Array(T *items, long count, bool isMapped):
+        me{count, isMapped, 0u, items}
+    {}
+
+    explicit Array(Shared<State> &parent, long i0, long i1):
+        me{i1 - i0, 0u, 0u, parent().items + i0, parent}
+    {}
+
+    explicit Array(Use<State> &parent):
+        me{parent}
+    {}
+
+    Shared<State> me;
 };
 
-template<class T>
-typename Array<T>::size_type count(const Array<T> &a) { return a->count(); }
+/** Convenience alias
+  */
+using Bytes = Array<uint8_t>;
 
-template<class T>
-typename Array<T>::const_iterator begin(const Array<T> &a) { return a->begin(); }
+namespace container {
 
-template<class T>
-typename Array<T>::const_iterator end(const Array<T> &a) { return a->end(); }
-
-template<class T>
-typename Array<T>::iterator begin(Array<T> &a) { return a->begin(); }
-
-template<class T>
-typename Array<T>::iterator end(Array<T> &a) { return a->end(); }
-
-template<class T>
-bool operator==(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) == 0; }
-
-template<class T>
-bool operator!=(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) != 0; }
-
-template<class T>
-bool operator<(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) < 0; }
-
-template<class T>
-bool operator>(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) > 0; }
-
-template<class T>
-bool operator<=(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) <= 0; }
-
-template<class T>
-bool operator>=(const Array<T> &a, const Array<T> &b) { return container::compare(a, b) >= 0; }
-
-template<class T>
-String str(const Array<T> &a)
+template<>
+inline bool equal<Bytes, Bytes>(const Bytes &a, const Bytes &b)
 {
-    Format f;
-    f << "[ ";
-    for (auto &x: a)
-        f << x << (&x == &a->last() ? " ]" : ", ");
-    return f;
+    return +a == +b && std::strncmp(a.chars(), b.chars(), a.count()) == 0;
 }
+
+template<>
+inline bool differ<Bytes, Bytes>(const Bytes &a, const Bytes &b)
+{
+    return !(a == b);
+}
+
+template<>
+inline bool below<Bytes, Bytes>(const Bytes &a, const Bytes &b)
+{
+    int r = std::strncmp(a.chars(), b.chars(), a.count() < b.count() ? a.count() : b.count());
+    return r < 0 || (r == 0 && a.count() < b.count());
+}
+
+template<>
+inline bool above<Bytes, Bytes>(const Bytes &a, const Bytes &b)
+{
+    return b < a;
+}
+
+template<>
+inline bool belowOrEqual<Bytes, Bytes>(const Bytes &a, const Bytes &b)
+{
+    int r = std::strncmp(a.chars(), b.chars(), a.count() < b.count() ? a.count() : b.count());
+    return r < 0 || (r == 0 && a.count() <= b.count());
+}
+
+template<>
+inline bool aboveOrEqual<Bytes, Bytes>(const Bytes &a, const Bytes &b)
+{
+    return b <= a;
+}
+
+} // namespace container
 
 } // namespace cc

@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Exception>
+
+namespace cc {
+
+/** \class TextError cc/TextError
+  * \ingroup strings
+  * \brief Text error
+  */
+class TextError: public Exception
+{
+public:
+    /** Create a text error
+      * \param text %Text in which the error occured
+      * \param offset %Byte offset within the text
+      * \param hint %Error reason
+      */
+    explicit TextError(const String &text, long offset = 0, const String &hint = String{});
+
+    String message() const override;
+
+    String source() const { return source_; } ///< Source the text was read from (if any)
+    String text() const { return text_; } ///< Parsed text
+    long offset() const { return offset_; } ///< %Error offset
+    String hint() const { return hint_; } ///< %Error hint
+
+private:
+    String source_;
+    String text_;
+    long offset_;
+    String hint_;
+};
+
+} // namespace cc

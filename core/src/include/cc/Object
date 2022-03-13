@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,86 +8,286 @@
 
 #pragma once
 
+#include <cc/Handle>
+#include <type_traits>
+#include <cstddef>
 #include <cassert>
-#include <cc/Ref>
+#include <utility>
+#include <atomic>
 
 namespace cc {
 
-class Cow;
+/** \class New cc/Object
+  * \ingroup objects
+  * \brief Helper type to select non-null contruction
+  */
+class New{};
 
 /** \class Object cc/Object
-  * \ingroup mman
-  * \brief Reference counting and secure destruction
-  *
-  * Base class for all classes T, whose instances can be referred to by Ref<T>.
-  * Enforces a consistent allocation schema by surpressing two things:
-  *   - combination of static allocation and dynamic destruction
-  *   - manual detruction by delete operator
-  * In debug mode in both cases a DebugException is thrown.
-  *
-  * \see Ref
+  * \ingroup objects
+  * \brief %Object with value semantics
   */
 class Object
 {
 public:
-    Object(): refCount_{0} {}
+    /** Create a null object
+      */
+    Object() = default;
 
-    virtual ~Object() {
-        assert(refCount_ == 0); // check if object is still in use (but don't throw an exception!)
+    /** Check if this is a non-null object
+      */
+    explicit operator bool() const { return me; }
+
+    /** Check if this is a null object
+      */
+    bool isNull() const { return !me; }
+
+    /** Check if this object is of type \a T
+      */
+    template<class T>
+    bool is() const
+    {
+        return me.is<typename T::State>();
     }
 
-    int refCount() const { return refCount_; }
-
-    void incRefCount() const {
-        __sync_add_and_fetch(&refCount_, 1);
+    /** Cast this object to type \a T
+      */
+    template<class T>
+    T as() const
+    {
+        assert(!isNull());
+        return alias<T>(&me.as<typename T::State>());
     }
 
-    void decRefCount() const {
-        if (__sync_sub_and_fetch(&refCount_, 1) == 0)
-            delete this;
-    }
+    /** Equal to operator
+      */
+    bool operator==(const Object &b) const { return me == b.me; }
 
-    template<class U, class T>
-    static U cast(T p) {
-        typedef typename CC_DEREF(T) V;
-        typedef typename CC_DEREF(U) W;
-        return CastHelper<V, W, ConversionFromTo<T, U>::Exists>::cast(p);
-    }
+    /** Not equal to operator
+      */
+    bool operator!=(const Object &b) const { return me != b.me; }
 
-    template<class U, class T>
-    static U cast(const Ref<T>& p) {
-        return Object::cast<U>(p.get());
-    }
+    /** Lower than operator
+      */
+    bool operator<(const Object &b) const { return me < b.me; }
 
-    template<class T, class... Args>
-    static Ref<T> create(Args... args) {
-        Ref<T> object = new T{args...};
-        object->init();
-        return object;
-    }
+    /** Reference count
+      */
+    long useCount() const { return me ? me().useCount() : 0; }
 
 protected:
-    friend class Cow;
+    template<class T, bool>
+    friend class ObjectAs;
 
-    Object(const Object &) = default;
-    void init() {}
-
-private:
-    const Object &operator=(const Object &);
-
-    mutable volatile int refCount_;
-};
-
-class Cow {
-public:
-    template <class T>
-    static T *get(Ref<T> &instance)
+    /** \ingroup objects
+      * \brief Policy to provide a thread-local default state for Object{}
+      */
+    class Defined
     {
-        if (instance->refCount_ <= 1)
-            return instance;
-        instance = instance->copy();
-        return instance;
+        template<class>
+        friend class Handle;
+
+        template<class T>
+        static T *get() {
+            static thread_local T default_;
+            return &default_;
+        };
+    };
+
+    /** \ingroup objects
+      * \brief Policy to not provide a default state for Object{}
+      */
+    class Undefined
+    {
+        template<class>
+        friend class Handle;
+
+        template<class>
+        static constexpr std::nullptr_t get() { return nullptr; }
+    };
+
+    /** \ingroup objects
+      * \brief Policy for shared object access
+      */
+    class SharedAccess
+    {
+        template<class>
+        friend class Handle;
+
+        static void touch(void *) {}
+    };
+
+    /** \ingroup object
+      * \brief Policy for state duplication used by the copy-on-write policy
+      * \see CopyOnWrite
+      */
+    class Duplicate
+    {
+        template<class>
+        friend class Handle;
+
+        template<class T>
+        static T *copy(T *state)
+        {
+            static_assert(std::is_final<T>::value, "Default Object::Duplicate policy is only applicable on final classes");
+            assert(state);
+            return new T{*state};
+        }
+    };
+
+    /** \ingroup objects
+      * \brief Policy for copy-on-write object access
+      * \tparam T Object::State type
+      * \see Object::Duplicate
+      * \note You also have to implement your curstom Duplicate policy for virtual base classes.
+      */
+    class CopyOnWrite
+    {
+        template<class>
+        friend class Handle;
+
+        template<class T>
+        static void touch(T *&state)
+        {
+            assert(state);
+            if (state->useCount() > 1) {
+                T *oldState = state;
+                state = Duplicate::copy(state);
+                state->release();
+            }
+        }
+    };
+
+public:
+    /** \brief Reference counted object state
+      * \todo Object::State should be protected
+      */
+    class State
+    {
+    public:
+        /** Default constructor
+          */
+        State() = default;
+
+        /** Copy constructor
+          */
+        State(const State &)
+        {}
+
+        /** Virtual destructor
+          */
+        virtual ~State()
+        {}
+
+        /** Reference count
+          */
+        long useCount() const
+        {
+            return useCount_.load(std::memory_order_acquire);
+        }
+
+        /** \internal
+          */
+        const State &operator=(const State &) const { return *this; }
+
+        /** Check if this state is of type \a T
+          */
+        template<class T>
+        bool is() const
+        {
+            return dynamic_cast<const T *>(this);
+        }
+
+        /** Statically cast this state to a different type T
+          */
+        template<class T>
+        T &as() {
+            assert(is<T>());
+            return static_cast<T &>(*this);
+        }
+
+        /** Statically cast this state to a different type T
+          */
+        template<class T>
+        const T &as() const {
+            assert(is<T>());
+            return static_cast<const T &>(*this);
+        }
+
+    protected:
+        template<class> friend class Handle;
+        friend class CopyOnWrite;
+
+        /** Policy for dereferencing undefined references (Handle<T>{})
+          */
+        using Default = Undefined;
+
+        /** Policy for accessing objects references
+          */
+        using Access = SharedAccess;
+
+    private:
+        void acquire()
+        {
+            useCount_.fetch_add(1, std::memory_order_release);
+        }
+
+        void release()
+        {
+            if (useCount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
+                delete this;
+        }
+
+        std::atomic<long> useCount_ { 1 };
+    };
+
+protected:
+    /** Create an alias object for the given \a state
+      * \tparam T %Type of object
+      */
+    template<class T>
+    static T alias(const State *state)
+    {
+        T target;
+        if (state) target.Object::me = Handle<State>::alias(state);
+        return target;
     }
+
+    /** Create the object state when called the first time
+      * \tparam T %Type of object state
+      */
+    template<class T>
+    inline void initOnce() {
+        static Handle<State> me{new T};
+        Object::me = me;
+    }
+
+    /** Create a distinct object state for each thread when called the first time in that thread
+      * \tparam T %Type of object state
+      */
+    template<class T>
+    inline void initOncePerThread() {
+        thread_local Handle<State> me{new T};
+        Object::me = me;
+    }
+
+    /** Initialize object with \a newState
+      */
+    explicit Object(State *newState):
+        me{newState}
+    {}
+
+    explicit Object(State *state, Alias):
+        me{state, Alias{}}
+    {}
+
+    Object &operator=(std::nullptr_t)
+    {
+        me = nullptr;
+        return *this;
+    }
+
+    mutable Handle<State> me; ///< %Internal object state
 };
 
 } // namespace cc

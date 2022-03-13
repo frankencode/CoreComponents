@@ -1,0 +1,80 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/SyntaxNode>
+
+namespace cc::syntax {
+
+/** \class StringNode cc/syntax/StringNode
+  * \brief %Match a constant multi-character literal
+  * \tparam Casefree Case-insensitive character matching
+  */
+template<int Casefree = 0>
+class StringNode: public SyntaxNode
+{
+public:
+    /** \param literal The constant multi-character literal to match
+      */
+    explicit StringNode(const String &literal):
+        SyntaxNode{new State{literal}}
+    {}
+
+    String literal() const { return me().literal_; }
+
+private:
+    struct State: public SyntaxNode::State
+    {
+        State(const String &literal):
+            literal_{literal}
+        {
+            if (Casefree) literal_.downcase();
+        }
+
+        long matchNext(const String &text, long offset, Token &production) const override
+        {
+            if (text.has(offset)) {
+                long k = 0, n = literal_.count();
+                while (k < n && text.has(offset)) {
+                    char ch = text.at(offset++);
+                    if (Casefree) ch = toLower(ch);
+                    if (literal_.at(k) != ch) break;
+                    ++k;
+                }
+                if (k != n)
+                    offset = -1;
+            }
+            else
+                offset = -1;
+
+            return offset;
+        }
+
+        long matchLength() const override
+        {
+            return literal_.count();
+        }
+
+        String hint() const override
+        {
+            return literal_;
+        }
+
+        List<String> explain() const override
+        {
+            return List<String>{} << (Casefree ? "Casefree{" : "Literal{") << "\"" << literal_ << "\"" << "}";
+        }
+
+        String literal_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::syntax

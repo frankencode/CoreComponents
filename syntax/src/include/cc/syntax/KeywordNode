@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/SyntaxNode>
+#include <cc/Prefix>
+#include <cc/Set>
+
+namespace cc::syntax {
+
+/** \class KeywordNode cc/syntax/KeywordNode
+  * \brief Match the shortest matching keyword out of a set of keywords
+  */
+class KeywordNode final: public SyntaxNode
+{
+public:
+    /** \param keywords The set of keywords to match
+      */
+    explicit KeywordNode(std::initializer_list<String> keywords);
+
+    Set<String> keywords() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc::syntax

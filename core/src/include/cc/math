@@ -12,73 +12,112 @@
 
 namespace cc {
 
-inline double roundToZero(double x)
-{
-    double ip; // integral part
-    double fp = std::modf(x, &ip); // fractional part;
-    return ip - int(fp < -0.5) + int(0.5 < fp);
-}
+/** \name Rounding Functions
+  */
+///@{
+/// \ingroup math
 
-inline double ceilToInf(double x)
-{
-    double ip; // integral part
-    double fp = std::modf(x, &ip); // fractional part;
-    return ip - int(fp < 0) + int(0 < fp);
-}
-
-inline double roundToInf(double x)
+/** Round \a x towards nearest integral number or if ambigious towards +-inifinity (commercial rounding)
+  */
+inline double roundRich(double x)
 {
     double ip; // integral part
     double fp = std::modf(x, &ip); // fractional part;
     return ip - int(fp <= -0.5) + int(0.5 <= fp);
 }
 
-inline double floorToZero(double x)
+/** Round \a x towards nearest integral number or if ambigious towards zero (pessimitic rounding)
+  */
+inline double roundPoor(double x)
+{
+    double ip; // integral part
+    double fp = std::modf(x, &ip); // fractional part;
+    return ip - int(fp < -0.5) + int(0.5 < fp);
+}
+
+/** Round \a x towards next integral number towards +-infinity
+  */
+inline double roundOut(double x)
+{
+    double ip; // integral part
+    double fp = std::modf(x, &ip); // fractional part;
+    return ip - int(fp < 0) + int(0 < fp);
+}
+
+/** Round \a x towards next integral number towards zero
+  */
+inline double roundIn(double x)
 {
     double ip; // integral part
     std::modf(x, &ip);
     return ip;
 }
 
-inline double floorToMinusInf(double x)
+/** Round \a x towards the next integral number towards +infinity
+  */
+inline double roundUp(double x)
+{
+    double ip; // integral part
+    double fp = std::modf(x, &ip); // fractional part;
+    return ip + int(0 < fp);
+}
+
+/** Round \a x towards the next integral number towards -infinity
+  */
+inline double roundDown(double x)
 {
     double ip; // integral part
     double fp = std::modf(x, &ip); // fractional part;
     return ip - int(fp < 0);
 }
 
-template<class T>
-inline int sign(T x) { return 1 - 2 * (x < 0); }
-
-template<class T>
-inline int sgn(T x) { return (0 < x) - (x < 0); }
-
-template<class T>
-inline T bound(T min, T x, T max) {
-    if (x < min) x = min;
-    else if (x > max) x = max;
-    return x;
-}
-
-/** round x down to the next multiple of a whole number g
+/** Round \a x down to the next multiple of a whole number \a g
   */
 template<class G, class X>
-X roundDownToNext(G g, X x) { return x - x % g; }
+X downToNext(G g, X x) { return x - x % g; }
 
-/** round x up to the next multiple of a whole number g
+/** Round \a x up to the next multiple of a whole number \a g
   */
 template<class G, class X>
-X roundUpToNext(G g, X x) { return x - x % g + (x % g != 0 ? g : 0); }
+X upToNext(G g, X x) { return x - x % g + (x % g != 0 ? g : 0); }
 
-/** rounded up logarithm of n to base B
+/** Rounded up logarithm of \a n to base \a B
   */
 template<int B>
-inline static int ilog(int n)
+int ilog(int n)
 {
     int i = 0;
     for (int h = 1; h <= n; h *= B)
         ++i;
     return i;
 }
+
+///@}
+
+/** \name Utility Functions
+  */
+///@{
+/// \ingroup math
+
+/** %Return sign of \a x -1 if x < 0, +1 if x >= 0)
+  */
+template<class T>
+int sign(T x) { return 1 - 2 * (x < 0); }
+
+/** %Return signum of \a x (-1 if x < 0, +1 if x > 0, 0 if x == 0)
+  */
+template<class T>
+int sgn(T x) { return (0 < x) - (x < 0); }
+
+/** Limit \a x to the range [\a min, \a max]
+  */
+template<class T>
+T bound(T min, T x, T max) {
+    if (x < min) x = min;
+    else if (x > max) x = max;
+    return x;
+}
+
+///@}
 
 } // namespace cc

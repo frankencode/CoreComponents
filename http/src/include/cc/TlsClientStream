@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TlsClientOptions>
+#include <cc/TlsStream>
+#include <cc/TlsCertificateError>
+#include <cc/Call>
+
+namespace cc {
+
+/** \class TlsClientStream cc/TlsClientStream
+  * \ingroup tls
+  * \brief %Client-side TLS stream
+  * \exception TlsError
+  * \exception TlsCertificateError
+  * \exception SystemError
+  */
+class TlsClientStream final: public TlsStream
+{
+public:
+    /** Create a null client-side TLS stream
+      */
+    TlsClientStream() = default;
+
+    /** Open a new client-side TLS stream
+      * \param stream Underlying transport stream
+      * \param options %Client credentials and connection parameters (optional)
+      * \note This constructor blocks until the stream becomes ready.
+      */
+    TlsClientStream(const Stream &stream, const TlsClientOptions &options = TlsClientOptions{});
+
+    /** %Set TLS warning callback to \a f
+      */
+    void onTlsWarning(Call<void(const char *errorName)> &&f);
+
+private:
+    struct State;
+
+    State &me();
+};
+
+} // namespace cc

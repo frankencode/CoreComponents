@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,73 +9,143 @@
 #pragma once
 
 #include <cc/ui/types>
-#include <cc/ui/FontMetrics>
+#include <cc/Composite>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class ScaledFont;
-class StylePlugin;
-
-/** Text styling
+/** \class Font cc/ui/Font
+  * \ingroup ui
+  * \brief %Font selector
   */
 class Font
 {
 public:
-    class Instance {
-    public:
-        String family() const { return family_; }
-        void setFamily(const String &newValue) { family_ = newValue; }
+    /** Create an unspecific font selector
+      */
+    Font()
+    {
+        me().stretch_ = +Stretch::Normal;
+        me().decoration_ = +Decoration::None;
+        me().smoothing_ = +FontSmoothing::Default;
+        me().outlineHinting_ = +OutlineHinting::Default;
+        me().metricsHinting_ = +MetricsHinting::Default;
+    }
 
-        double size() const { return size_; }
-        void setSize(double newValue) { size_ = newValue; }
+    /** Create font selector for given \a size
+      */
+    Font(double size):
+        Font{}
+    {
+        me().size_ = size;
+    }
 
-        Slant slant() const { return slant_; }
-        void setSlant(Slant newValue) { slant_ = newValue; }
+    /** Check if this font selector is specific
+      */
+    operator bool() const
+    {
+        return *this != Font{};
+    }
 
-        Weight weight() const { return weight_; }
-        void setWeight(Weight newValue) { weight_ = newValue; }
+    /** Create font selector for given \a family and \a size
+      */
+    Font(const String &family, double size):
+        Font{}
+    {
+        me().family_ = family;
+        me().size_ = size;
+    }
 
-        Stretch stretch() const { return static_cast<Stretch>(stretch_); }
-        void setStretch(Stretch newValue) { stretch_ = static_cast<uint8_t>(newValue); }
+    /** Create font selector for given \a family
+      */
+    Font(const String &family):
+        Font{}
+    {
+        me().family_ = family;
+    }
 
-        Decoration decoration() const { return static_cast<Decoration>(decoration_); }
-        void setDecoration(Decoration newValue) { decoration_ = static_cast<uint8_t>(newValue); }
+    /** Create font selector for given \a pitch
+      */
+    Font(Pitch pitch);
 
-        FontSmoothing smoothing() const { return static_cast<FontSmoothing>(smoothing_); }
-        void setSmoothing(FontSmoothing newValue) { smoothing_ = static_cast<uint8_t>(newValue); }
+    /** Create font selector for given \a pitch and \a size
+      */
+    Font(Pitch pitch, double size):
+        Font{pitch}
+    {
+        me().size_ = size;
+    }
 
-        OutlineHinting outlineHinting() const { return static_cast<OutlineHinting>(outlineHinting_); }
-        void setOutlineHinting(OutlineHinting newValue) { outlineHinting_ = static_cast<uint8_t>(newValue); }
+    String family() const { return me().family_; } ///< Get font family
+    Font &family(const String &newValue) { me().family_ = newValue; return *this; }  ///< %Set font family
 
-        MetricsHinting metricsHinting() const { return static_cast<MetricsHinting>(metricsHinting_); }
-        void setMetricsHinting(MetricsHinting newValue) { metricsHinting_ = static_cast<uint8_t>(newValue); }
+    double size() const { return me().size_; } ///< Get font size (in pixel)
+    Font &size(double newValue) { me().size_ = newValue; return *this; } ///< %Set font size (in pixel)
 
-        Color ink() const { return ink_; }
-        void setInk(Color newValue) { ink_ = newValue; }
+    static double defaultSize(Pitch pitch = Pitch::Variable); ///< Get default font size (in pixel) for given \a pitch
 
-        Color paper() const { return paper_; }
-        void setPaper(Color newValue) { paper_ = newValue; }
+    Slant slant() const { return me().slant_; } ///< Get slant
+    Font &slant(Slant newValue) { me().slant_ = newValue; return *this; } ///< %Set slant
 
-        bool isValid() const { return size_ > 0; }
+    Weight weight() const { return me().weight_; } ///< Get weight
+    Font &weight(Weight newValue) { me().weight_ = newValue; return *this; } ///< %Set weight
 
-        Ref<const FontMetrics> getMetrics() const;
-        Ref<const ScaledFont> getScaledFont() const;
+    Stretch stretch() const { return static_cast<Stretch>(me().stretch_); } ///< Get stretch
+    Font &stretch(Stretch newValue) { me().stretch_ = static_cast<uint8_t>(newValue); return *this; } ///< %Set stretch
 
-    private:
-        friend class Font;
-        friend class FontManager;
+    Decoration decoration() const { return static_cast<Decoration>(me().decoration_); } ///< Get decoration
+    Font &decoration(Decoration newValue) { me().decoration_ = static_cast<uint8_t>(newValue); return *this; } ///< %Set decoration
 
-        inline static StylePlugin *style() { return Font::style(); }
+    FontSmoothing smoothing() const { return static_cast<FontSmoothing>(me().smoothing_); } ///< Get smoothing
+    Font &smoothing(FontSmoothing newValue) { me().smoothing_ = static_cast<uint8_t>(newValue); return *this; } ///< %Set smoothing
 
-        Instance();
-        Instance(double size);
-        Instance(const String &family, double size);
-        Instance(const Instance &b);
-        ~Instance();
+    OutlineHinting outlineHinting() const { return static_cast<OutlineHinting>(me().outlineHinting_); } ///< Get outline hinting
+    Font &outlineHinting(OutlineHinting newValue) { me().outlineHinting_ = static_cast<uint8_t>(newValue); return *this; } ///< %Set outline hinting
 
+    MetricsHinting metricsHinting() const { return static_cast<MetricsHinting>(me().metricsHinting_); } ///< Get metrics hinting
+    Font &metricsHinting(MetricsHinting newValue) { me().metricsHinting_ = static_cast<uint8_t>(newValue); return *this; } ///< %Set metrics hinting
+
+    Color color() const { return me().ink_; } ///< Get foreground color
+    Font &color(Color newValue) { me().ink_ = newValue; return *this; } ///< %Set foreground color
+
+    Color paper() const { return me().paper_; } ///< Get background color
+    Font &paper(Color newValue) { me().paper_ = newValue; return *this; } ///< %Set background color
+
+    Font &operator*=(double scale)
+    {
+        return size(
+            (size() <= 0 ? defaultSize() : size()) * scale
+        );
+    }
+
+    /** Equal to operator
+      */
+    bool operator==(const Font &b) const
+    {
+        return
+            family()         == b.family()         &&
+            size()           == b.size()           &&
+            weight()         == b.weight()         &&
+            slant()          == b.slant()          &&
+            stretch()        == b.stretch()        &&
+            decoration()     == b.decoration()     &&
+            smoothing()      == b.smoothing()      &&
+            outlineHinting() == b.outlineHinting() &&
+            metricsHinting() == b.metricsHinting() &&
+            color()          == b.color()          &&
+            paper()          == b.paper();
+    }
+
+    /** Not equal to operator
+      */
+    bool operator!=(const Font &b) const
+    {
+        return !(*this == b);
+    }
+
+private:
+    struct State {
         String family_;
-        float size_;
+        float size_ { -1 };
         Slant slant_ { Slant::Normal };
         Weight weight_ { Weight::Normal };
         uint8_t stretch_ : 4;
@@ -87,66 +157,33 @@ public:
         Color paper_;
     };
 
-    Font(double size = -1): instance_{size} {}
-    Font(const String &family, double size = -1): instance_{family, size} {}
-
-    Font &operator<<(Slant slant) {
-        (*this)->setSlant(slant);
-        return *this;
-    }
-
-    Font &operator<<(Weight weight) {
-        (*this)->setWeight(weight);
-        return *this;
-    }
-
-    Font &operator<<(Stretch stretch) {
-        (*this)->setStretch(stretch);
-        return *this;
-    }
-
-    Font &operator<<(Decoration decoration) {
-        (*this)->setDecoration(decoration);
-        return *this;
-    }
-
-    Font &operator<<(Pitch pitch);
-
-    Font &operator<<(Color Color) {
-        (*this)->setInk(Color);
-        return *this;
-    }
-
-    Font &operator*=(double scale);
-    Font &operator/=(double scale) { return (*this) *= (1/scale); }
-
-    const Instance *operator->() const { return &instance_; }
-    Instance *operator->() { return &instance_; }
-
-    bool operator==(const Font &b) const { return !differ(*this, b); }
-    bool operator!=(const Font &b) const { return differ(*this, b); }
-
-    explicit operator bool() const { return (*this)->isValid(); }
-
-private:
-    friend class Instance;
-
-    static StylePlugin *style();
-    static bool differ(const Font &a, const Font &b);
-
-    Font(const Font::Instance &b): instance_(b) {}
-
-    Instance instance_;
+    Composite<State> me;
 };
 
-inline Font operator*(const Font &font, double scale) { Font f = font; return f *= scale; }
+inline Font operator*(const Font &font, double scale) { Font target = font; return target *= scale; }
 inline Font operator*(double scale, const Font &font) { return font * scale; }
-inline Font operator/(const Font &font, double scale) { return (1/scale) * font; }
 
-inline Font operator+(const Font &a, const Font &b) {
-    return Font(a->family(), a->size() + b->size());
+inline Font operator+(const Font &a, const Font &b)
+{
+    return Font{a.family(), a.size() + b.size()};
 }
 
-String str(const Font &font);
+inline String str(const Font &font)
+{
+    return Format{}
+        << "Font {" << nl
+        << "  family: " << font.family() << nl
+        << "  size: " << font.size() << nl
+        << "  weight: " << font.weight() << nl
+        << "  slant: " << font.slant() << nl
+        << "  stretch: " << font.stretch() << nl
+        << "  decoration: " << font.decoration() << nl
+        << "  smoothing: " << font.smoothing() << nl
+        << "  outlineHinting: " << font.outlineHinting() << nl
+        << "  metricsHinting: " << font.metricsHinting() << nl
+        << "  color: " << font.color() << nl
+        << "  paper: " << font.paper() << nl
+        << "}";
+}
 
-}} // namespace cc::ui
+} // namespace cc::ui

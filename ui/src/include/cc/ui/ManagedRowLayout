@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2020-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc::ui {
+
+/** \class ManagedRowLayout cc/ui/ManagedRowLayout
+  * \ingroup ui_layout
+  * \brief Layout children views in a row and smartly adjust sizes as needed
+  */
+class ManagedRowLayout final: public View::Layout
+{
+public:
+    /** Create new row layout
+      */
+    ManagedRowLayout();
+
+    RowAlign align() const; ///< Get row alignment
+    ManagedRowLayout &align(RowAlign newValue); ///< %Set row alignment
+
+private:
+    class State;
+
+    State& me();
+    const State& me() const;
+};
+
+} // namespace cc::ui

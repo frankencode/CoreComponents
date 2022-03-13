@@ -1,77 +1,69 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/testing/TestSuite>
+#include <cc/NetworkInterface>
+#include <cc/testing>
 #include <cc/stdio>
-#include <cc/net/NetworkInterface>
 
-using namespace cc;
-using namespace cc::testing;
-using namespace cc::net;
-
-class QueryNetworkInterfaces: public TestCase
+int main(int argc, char *argv[])
 {
-    void run()
-    {
-        NetworkInterfaceList interfaces = NetworkInterface::queryAll();
-        for (int i = 0; i < interfaces->count(); ++i) {
-            NetworkInterface *interface = interfaces->at(i);
-            if (i != 0) fout() << nl;
-            fout() << interface->name() << ":" << nl;
-            fout() << "  Flags: ";
-            int flags = interface->flags();
-            if (flags & NetworkInterface::Up) fout() << " up";
-            if (flags & NetworkInterface::Running) fout() << " running";
-            if (flags & NetworkInterface::LowerUp) fout() << " lower_up";
-            if (flags & NetworkInterface::Dormant) fout() << " dormant";
-            if (flags & NetworkInterface::Broadcast) fout() << " bcast";
-            if (flags & NetworkInterface::Multicast) fout() << " mcast";
-            if (flags & NetworkInterface::Loopback) fout() << " loop";
-            if (flags & NetworkInterface::PointToPoint) fout() << " p2p";
-            fout() << nl;
-            fout() << "  HwAddr: " << interface->hardwareAddress()->toHex()->breakUp(2)->join("-") << nl;
-            fout() << "  MTU:    " << interface->mtu() << nl;
-            SocketAddressList addressList = interface->addressList();
-            for (int k = 0; k < addressList->count(); ++k) {
-                const SocketAddress &address = addressList->at(k);
-                fout() << "  Addr:   " << address;
-                const SocketAddressDetails *details = address->details();
-                if (details) {
-                    bool comma = false;
-                    bool delim = true;
-                    if (details->networkMask() > 0)
-                        fout() << "/" << details->networkMask();
-                    if (details->localAddress()) {
-                        if (delim) { fout() << " --"; delim = false; }
-                        fout() << " Local: " << details->localAddress();
-                        comma = true;
-                    }
-                    if (details->broadcastAddress()) {
-                        if (delim) { fout() << " --"; delim = false; }
-                        if (comma) fout() << ",";
-                        fout() << " Bcast: " << details->broadcastAddress();
-                        comma = true;
-                    }
-                    if (details->anycastAddress()) {
-                        if (delim) { fout() << " --"; delim = false; }
-                        if (comma) fout() << ",";
-                        fout() << " Acast: " << details->anycastAddress();
-                    }
-                }
+    using namespace cc;
+
+    TestCase {
+        "QueryNetworkInterfaces",
+        []{
+            List<NetworkInterface> interfaceList = NetworkInterface::queryAll();
+            for (const NetworkInterface &interface: interfaceList) {
+                if (!interfaceList.first(interface)) fout() << nl;
+                fout() << interface.name() << ":" << nl;
+                fout() << "  Flags: ";
+                NetworkInterfaceFlags flags = interface.flags();
+                if (flags & NetworkInterfaceFlags::Up) fout() << " up";
+                if (flags & NetworkInterfaceFlags::Running) fout() << " running";
+                if (flags & NetworkInterfaceFlags::LowerUp) fout() << " lower_up";
+                if (flags & NetworkInterfaceFlags::Dormant) fout() << " dormant";
+                if (flags & NetworkInterfaceFlags::Broadcast) fout() << " bcast";
+                if (flags & NetworkInterfaceFlags::Multicast) fout() << " mcast";
+                if (flags & NetworkInterfaceFlags::Loopback) fout() << " loop";
+                if (flags & NetworkInterfaceFlags::PointToPoint) fout() << " p2p";
                 fout() << nl;
+                fout() << "  HwAddr: " << hex(interface.hardwareAddress()).breakUp(2).join('-') << nl;
+                fout() << "  MTU:    " << interface.mtu() << nl;
+
+                for (const NetworkLabel &label: interface.labels()) {
+                    fout() << "  Addr:   " << label.address();
+                    if (label.address().family() == ProtocolFamily::Inet4) {
+                        bool comma = false;
+                        bool delim = true;
+                        if (label.networkMask() > 0)
+                            fout() << "/" << label.networkMask();
+                        if (label.localAddress()) {
+                            if (delim) { fout() << " --"; delim = false; }
+                            fout() << " Local: " << label.localAddress();
+                            comma = true;
+                        }
+                        if (label.broadcastAddress()) {
+                            if (delim) { fout() << " --"; delim = false; }
+                            if (comma) fout() << ",";
+                            fout() << " Bcast: " << label.broadcastAddress();
+                            comma = true;
+                        }
+                        if (label.anycastAddress()) {
+                            if (delim) { fout() << " --"; delim = false; }
+                            if (comma) fout() << ",";
+                            fout() << " Acast: " << label.anycastAddress();
+                        }
+                    }
+                    fout() << nl;
+                }
             }
         }
-    }
-};
+    };
 
-int main(int argc, char** argv)
-{
-    CC_TESTSUITE_ADD(QueryNetworkInterfaces);
-
-    return TestSuite::instance()->run(argc, argv);
+    return TestSuite{argc, argv}.run();
 }

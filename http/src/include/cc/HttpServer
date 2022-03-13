@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpServerConfig>
+#include <cc/Signal>
+#include <cc/Channel>
+
+namespace cc {
+
+/** \class HttpServer cc/HttpServer
+  * \ingroup http_server
+  * \brief HTTP(s) web server
+  */
+class HttpServer final: public Object
+{
+public:
+    /** Create a new HTTP server
+      * \param config %Node configuration
+      */
+    explicit HttpServer(const String &config);
+
+    /** Create a new HTTP server
+      * \param config %Node configuration
+      */
+    explicit HttpServer(const HttpServerConfig &config);
+
+    /** Start the server
+      */
+    void start();
+
+    /** Wait until the server is up and running
+      */
+    SocketAddress waitStarted();
+
+    /** Wait for server shutdown
+      */
+    void wait();
+
+    /** Request server shutdown
+      */
+    void shutdown();
+
+    /** Communicate signals caught to the HTTP server
+      */
+    Channel<Signal> &signals();
+
+    /** Exit code which can be used on process termination
+      */
+    int exitCode() const;
+
+private:
+    friend class HttpServerConfig;
+
+    struct State;
+
+    static void loadPlugins();
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

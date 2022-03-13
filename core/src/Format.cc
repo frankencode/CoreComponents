@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,40 +7,34 @@
  */
 
 #include <cc/Format>
-#include <cc/NullStream>
 
 namespace cc {
 
-FormatSignal nl;
-FormatSignal flush;
+NewLine nl;
+Flush flush;
 
 Format::Format(const String &pattern, const Stream &stream):
-    stream_{stream},
-    isNull_{stream && stream->isReadOnly()},
-    lastPosition_{0}
+    me{stream, stream && stream.isDiscarding()}
 {
-    if (isNull_) return;
-    int i0 = 0, n = 0;
+    if (me().discardMode) return;
+    String p = pattern;
+    long i = 0, n = 0;
     while (true) {
-        int i1 = pattern->scan("%%", i0);
-        if (i0 < i1)
-            (*this)->append(pattern->copy(i0, i1));
-        if (i1 == pattern->count()) break;
-        int j = (*this)->count() + n;
-        if (!placeHolder_) placeHolder_ = QueueInstance<int>::create();
-        placeHolder_->push(j);
+        long i0 = i;
+        bool found = p.find("%%", &i);
+        if (i0 < i) (*this).append(p.select(i0, i));
+        if (!found) break;
+        long j = (*this).count() + n;
+        me().placeHolder.pushBack(j);
         ++n;
-        i0 = i1 + 2;
+        i += 2;
     }
+    me().injectionMode = me().placeHolder.count() > 0;
 }
 
 Format::Format(const Stream &stream):
-    stream_{stream},
-    isNull_{stream && stream->isReadOnly()},
-    lastPosition_{0}
-{
-    if (isNull_) return;
-}
+    me{stream, stream && stream.isDiscarding()}
+{}
 
 Format::~Format()
 {
@@ -53,41 +47,56 @@ Format::~Format()
 
 void Format::flush()
 {
-    if (isNull_) return;
-    if (stream_ && (*this)->count() > 0) {
-        if (placeHolder_ && lastInsert_ != "") {
-            while (placeHolder_->count() > 0) {
-                int j = placeHolder_->pop();
-                (*this)->insertAt(j, lastInsert_);
+    if (me().discardMode) return;
+    if (me().stream && (*this).count() > 0) {
+        if (me().injectionMode && me().lastInsert.count() != 0) {
+            while (me().placeHolder.count() > 0) {
+                int j = 0;
+                me().placeHolder.popFront(&j);
+                (*this).insertAt(j, me().lastInsert);
             }
         }
-        stream_->write(*this);
-        (*this)->deplete();
+        me().stream.write(String{*this});
+        (*this).deplete();
     }
 }
 
-Format &Format::operator<<(const String &s)
+Format &Format::operator<<(const Bytes &s)
 {
-    if (isNull_) return *this;
-    int j = (*this)->count();
-    if (placeHolder_) {
-        if (placeHolder_->count() > 0) {
-            j = placeHolder_->pop();
-            lastPosition_ = j;
+    if (me().discardMode) return *this;
+
+    int j = (*this).count();
+
+    if (me().injectionMode) {
+        if (me().placeHolder.count() > 0) {
+            me().placeHolder.popFront(&j);
+            me().lastPosition = j;
         }
-        else j = ++lastPosition_;
+        else {
+            j = ++me().lastPosition;
+        }
+        (*this).insertAt(j, s);
+        me().lastInsert = s;
     }
-    (*this)->insertAt(j, s);
-    lastInsert_ = s;
+    else {
+        (*this).append(s);
+    }
+
     return *this;
 }
 
-Format &Format::operator<<(const FormatSignal &s)
+Format &Format::operator<<(const NewLine &)
 {
-    if (isNull_) return *this;
-    if (&s == &cc::nl) (*this)->append(String{"\n"});
-    else if (&s == &cc::flush) Format::flush();
+    if (me().discardMode) return *this;
+    (*this).append(String{"\n", 1});
     return *this;
 }
 
-} // namesp
+Format &Format::operator<<(const Flush &)
+{
+    if (me().discardMode) return *this;
+    flush();
+    return *this;
+}
+
+} // namespace cc

@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaProtocol>
+
+namespace cc {
+
+/** \class HttpServerConfigProtocol cc/HttpServerConfigProtocol
+  * \ingroup http_server
+  * \brief Configuration protocol for the HTTP server
+  */
+class HttpServerConfigProtocol final: public MetaProtocol
+{
+public:
+    /** Get a shallow copy of the config protocol singleton
+      */
+    HttpServerConfigProtocol();
+
+    /** Get the default node configuration
+      */
+    MetaObject configPrototype() const;
+
+private:
+    friend class HttpServiceRegistry;
+
+    struct State;
+
+    void registerService(const MetaPrototype &configPrototype);
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

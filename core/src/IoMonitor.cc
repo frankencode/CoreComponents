@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,98 +7,85 @@
  */
 
 #include <cc/IoMonitor>
-#include <cc/exceptions>
-#include <cc/assert>
+#include <cc/Map>
+#include <poll.h>
 
 namespace cc {
 
-Ref<IoMonitor> IoMonitor::create(int maxCount)
+struct IoMonitor::State: public Object::State
 {
-    return new IoMonitor(maxCount);
-}
+    Map<int, IoActivity> subjects;
+    Array<struct pollfd> fds;
+    bool dirty { true };
+};
 
-IoMonitor::IoMonitor(int maxCount):
-    fds_{maxCount}
+IoMonitor::IoMonitor():
+    Object{new State}
 {}
 
-const IoEvent *IoMonitor::addEvent(IoReady type, IoTarget *target)
+void IoMonitor::watch(const IoStream &target, IoEvent mask)
 {
-    CC_ASSERT(events_->count() < fds_->count());
-    Ref<IoEvent> event = IoEvent::create(events_->count(), type, target);
-    events_->insert(event->index_, event);
-    struct pollfd *p = &fds_->at(event->index_);
-    p->fd = target->fd();
-    p->events = static_cast<short>(type);
-    return event;
+    me().dirty = true;
+    me().subjects.establish(target.fd(), IoActivity{target, mask});
 }
 
-void IoMonitor::removeEvent(const IoEvent *event)
+void IoMonitor::unwatch(const IoStream &target)
 {
-    int i = event->index_;
-    int n = events_->count();
-
-    if (i != n - 1) {
-        IoEvent *h = events_->value(n - 1);
-        h->index_ = i;
-        events_->establish(i, h);
-        fds_->at(i) = fds_->at(n - 1);
-    }
-
-    events_->remove(n - 1);
+    me().dirty = true;
+    me().subjects.remove(target.fd());
 }
 
-IoActivity IoMonitor::wait(int timeout_ms)
+bool IoMonitor::wait(const Call<void(const IoActivity &)> &onReady, int timeout)
 {
-    struct pollfd *fds = nullptr;
-    if (events_->count() > 0) fds = fds_->data();
-    int n = -1;
-    do n = ::poll(fds, events_->count(), timeout_ms < 0 ? -1 : timeout_ms);
-    while (n == -1 && errno == EINTR);
-    if (n < 0) CC_SYSTEM_DEBUG_ERROR(errno);
+    assert(me().subjects.count() > 0);
 
-    CC_ASSERT(n <= events_->count());
-
-    IoActivity activity{n};
-    int j = 0;
-    for (int i = 0; i < events_->count(); ++i) {
-        if (fds_->at(i).revents != 0) {
-            CC_ASSERT(j < n);
-            IoEvent *event = events_->value(i);
-            event->ready_ = static_cast<IoReady>(fds_->at(i).revents & (POLLIN|POLLOUT));
-            activity->at(j) = event;
-            ++j;
+    if (me().dirty) {
+        me().dirty = false;
+        me().fds = Array<struct pollfd>::allocate(me().subjects.count());
+        long i = 0;
+        for (const auto &pair: me().subjects) {
+            struct pollfd &p = me().fds[i++];
+            p.fd = pair.value().target().fd();
+            p.events = 0;
+            if (pair.value().mask() & IoEvent::ReadyRead) p.events |= POLLIN;
+            if (pair.value().mask() & IoEvent::ReadyWrite) p.events |= POLLOUT;
+            if (pair.value().mask() & IoEvent::Established) p.events = POLLIN|POLLOUT;
         }
     }
 
-    CC_ASSERT(j == n);
-
-    return activity;
-}
-
-bool IoMonitor::waitFor(const IoEvent *event, int timeout_ms, const IoEvent **other)
-{
-    struct pollfd *fds = nullptr;
-    if (events_->count() > 0) fds = fds_->data();
     int n = -1;
-    do n = ::poll(fds, events_->count(), timeout_ms < 0 ? -1 : timeout_ms);
+    do n = ::poll(me().fds, me().fds.count(), (timeout < 0) ? -1 : timeout);
     while (n == -1 && errno == EINTR);
     if (n < 0) CC_SYSTEM_DEBUG_ERROR(errno);
 
-    if (n > 0) {
-        for (int i = 0; i < events_->count(); ++i) {
-            const IoEvent *candidate = events_->at(i)->value();
-            if (candidate == event) {
-                if (fds_->at(i).revents != 0) return true;
-                if (!other) return false;
-            }
-            if (other) {
-                if (fds_->at(i).revents != 0)
-                    *other = candidate;
+    bool ready = (n > 0);
+
+    if (ready) {
+        for (int i = 0; i < me().fds.count(); ++i) {
+            const struct pollfd &p = me().fds[i];
+            if (p.revents != 0) {
+                IoActivity &activity = me().subjects(p.fd);
+                IoEvent &event = activity.me().event_;
+                event = IoEvent::None;
+                if (p.revents & POLLIN) event |= IoEvent::ReadyRead;
+                if (p.revents & POLLOUT) event |= IoEvent::ReadyWrite;
+                onReady(activity);
+                if (--n == 0) break;
             }
         }
     }
 
-    return false;
+    return ready;
+}
+
+IoMonitor::State &IoMonitor::me()
+{
+    return Object::me.as<State>();
+}
+
+const IoMonitor::State &IoMonitor::me() const
+{
+    return Object::me.as<State>();
 }
 
 } // namespace cc

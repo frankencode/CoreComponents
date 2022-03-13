@@ -1,0 +1,214 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bytes>
+#include <iterator>
+#include <cstdint>
+#include <cstddef>
+
+namespace cc {
+
+/** \class Utf16Iterator cc/Utf16Iterator
+  * \brief Iterate code points of an UTF-16 encoded string
+  *
+  * The Utf16Iterator allows iterating the %Unicode code points of an UTF-16 word sequence.
+  * The iterator will always halt at the string boundaries. If stepping over the string boundary
+  * the walker will switch to an invalid state and start delivering zero code points.
+  *
+  * If placed at a string's terminating zero character it is possible to step backwards
+  * into the string.
+  *
+  * Illegal code sequences are run over without error, but possibly illegal code points are
+  * delivered in this case. In both forward and backward iteration at least one illegal code point
+  * is delivered for a single ill-coded word.
+  *
+  * \todo create a test harness
+  */
+class Utf16Iterator:
+    public std::iterator<
+        /*iterator_category*/ std::bidirectional_iterator_tag,
+        /*value_type*/        char32_t,
+        /*difference_type*/   std::ptrdiff_t,
+        /*pointer*/           void,
+        /*reference*/         char32_t
+    >
+{
+public:
+    /** Create an invalid iterator
+      */
+    Utf16Iterator():
+        s_{nullptr},
+        e_{nullptr},
+        p_{nullptr},
+        endian_{ByteOrder::BigEndian}
+    {}
+
+    /** Create a new iterator
+      * \param start Pointer to start of UTF-16 encoded string
+      * \param end Pointer to end of UTF-16 encoded string (behind last valid word)
+      * \param pos Current position within the UTF-16 encoded string
+      * \param endian Byte order
+      */
+    Utf16Iterator(const std::uint16_t *start, const std::uint16_t *end, const std::uint16_t *pos, ByteOrder endian = localEndian()):
+        s_{start},
+        e_{end},
+        p_{pos},
+        endian_{endian}
+    {}
+
+    /** \internal
+      */
+    Utf16Iterator(const Utf16Iterator &b) = default;
+
+    /** Prefix increment operator: step one code point forward
+      */
+    Utf16Iterator &operator++()
+    {
+        if (p_ < e_) {
+            std::uint16_t ch = endianGate(*p_, endian_);
+            ++p_;
+            // take another step if reading a surrogate pair
+            if (((0xD800 <= ch) || (ch < 0xDC00)) && (p_ < e_)) {
+                ch = endianGate(*(p_ + 1), endian_);
+                if ((0xDC00 <= ch) && (ch < 0xE000))
+                    ++p_;
+            }
+        }
+        return *this;
+    }
+
+    /** Prefix decrement operator: step one code point backward
+      */
+    Utf16Iterator &operator--()
+    {
+        if (s_ < p_) {
+            --p_;
+            std::uint16_t ch = endianGate(*p_, endian_);
+            // take another step if reading a surrogate pair
+            if ((0xDC00 <= ch) && (ch < 0xE000) && (s_ < p_)) {
+                ch = endianGate(*(p_ - 1), endian_);
+                if ((0xD800 <= ch) && (ch < 0xDC00))
+                    --p_;
+            }
+        }
+        else {
+            // underflow to the end of the word sequence
+            s_ = e_;
+        }
+        return *this;
+    }
+
+    /** Postfix increment operator: step one code point forward and return old position
+      */
+    Utf16Iterator operator++(int) {
+        Utf16Iterator it = *this;
+        ++(*this);
+        return it;
+    }
+
+    /** Postfix decrement operator: step one code point backward and return old position
+      */
+    Utf16Iterator operator--(int) {
+        Utf16Iterator it = *this;
+        --(*this);
+        return it;
+    }
+
+    /** Assignment addition operator: iterate in forward direction a given distance \a d
+      */
+    Utf16Iterator &operator+=(ptrdiff_t d) {
+        while (d > 0) { ++(*this); --d; }
+        while (d < 0) { --(*this); ++d; }
+        return *this;
+    }
+
+    /** Assignment substraction operator: iterate in backward direction a given distance \a d
+      */
+    Utf16Iterator &operator-=(ptrdiff_t d) {
+        while (d > 0) { --(*this); --d; }
+        while (d < 0) { ++(*this); ++d; }
+        return *this;
+    }
+
+    /** Addition operator: get iterator in forward direction at distance \a d
+      */
+    Utf16Iterator operator+(ptrdiff_t d) const {
+        Utf16Iterator it = *this;
+        return it += d;
+    }
+
+    /** Substraction operator: get iterator in backward direction at distance \a d
+      */
+    Utf16Iterator operator-(ptrdiff_t d) const {
+        Utf16Iterator it = *this;
+        return it -= d;
+    }
+
+    /** Difference operator: compute distance in number of characters
+      */
+    std::ptrdiff_t operator-(const Utf16Iterator &b) const
+    {
+        std::ptrdiff_t n = 0;
+        if (s_ == b.s_) {
+            if (p_ <= b.p_) {
+                Utf16Iterator w{*this};
+                while (w.p_ != b.p_) {
+                    ++w;
+                    --n;
+                }
+            }
+            else
+                n = -(b - *this);
+        }
+        return n;
+    }
+
+    /** Cast to bool operator: indicate if this iterator can step forward another code point
+      */
+    explicit operator bool() const { return p_ < e_; }
+
+    /** Dereference operator: decode current code point
+      */
+    char32_t operator*() const
+    {
+        char32_t ch = 0;
+        if (p_ < e_) {
+            char32_t ch = endianGate(*p_, endian_);
+            if ((0xD800 <= ch) && (ch < 0xDC00) && (p_ + 1 < e_)) {
+                // extract high surrogate (0xD800..0xDBFF)
+                ch -= 0xD800;
+                ch <<= 10;
+                // extract low surrogate (0xDC00..0xDFFF)
+                ch |= (endianGate(*(p_ + 1), endian_) - 0xDC00) & 0x3FF;
+            }
+        }
+        return ch;
+    }
+
+    /** Unary plus operator: return the current decoding position as a byte offset
+      */
+    size_t operator+() const { return static_cast<size_t>(p_ - s_); }
+
+    /** Compare for equality
+      */
+    bool operator==(const Utf16Iterator &b) const { return p_ == b.p_; }
+
+    /** Compare for in-equality
+      */
+    bool operator!=(const Utf16Iterator &b) const { return p_ != b.p_; }
+
+private:
+    const std::uint16_t *s_;
+    const std::uint16_t *e_;
+    const std::uint16_t *p_;
+    ByteOrder endian_;
+};
+
+} // namespace cc

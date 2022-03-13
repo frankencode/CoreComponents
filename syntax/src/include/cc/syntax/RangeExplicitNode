@@ -1,0 +1,85 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/SyntaxNode>
+
+namespace cc::syntax {
+
+/** \class RangeExplicitNode cc/syntax/RangeExplicitNode
+  * \brief %Match the next character against a set of characters
+  * \tparam Invert Invert the match (1) or keep it straight (0)
+  */
+template<int Invert = 0>
+class RangeExplicitNode: public SyntaxNode
+{
+public:
+    /** \param chars The set of characters to match against
+      */
+    explicit RangeExplicitNode(std::initializer_list<char> chars):
+        SyntaxNode{new State{chars}}
+    {}
+
+    /** \param chars The set of characters to match against
+      */
+    explicit RangeExplicitNode(const String &chars):
+        SyntaxNode{new State{chars}}
+    {}
+
+    String chars() const { return me().chars_; }
+
+private:
+    struct State: public SyntaxNode::State
+    {
+        State(std::initializer_list<char> chars):
+            chars_{String::allocate(chars.size())}
+        {
+            long i = 0;
+            for (char ch: chars) chars_[i++] = ch;
+        }
+
+        State(const String &chars):
+            chars_{chars}
+        {}
+
+        long matchNext(const String &text, long offset, Token &production) const override
+        {
+            if (text.has(offset)) {
+                char ch = text.at(offset++);
+                long k = 0, n = chars_.count();
+                while (k < n) {
+                    if (chars_.at(k) == ch) break;
+                    ++k;
+                }
+                if ((k == n) ^ Invert)
+                    offset = -1;
+            }
+            else
+                offset = -1;
+
+            return offset;
+        }
+
+        long matchLength() const override
+        {
+            return 1;
+        }
+
+        List<String> explain() const override
+        {
+            return List<String>{} << (Invert ? "NoneOf{" : "OneOf{") << "\"" << chars_ << "\"" << "}";
+        }
+
+        String chars_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::syntax

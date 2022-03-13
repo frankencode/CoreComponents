@@ -1,443 +1,372 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/Singleton>
-#include <cc/Format>
-#include <cc/syntax/exceptions>
-#ifndef NDEBUG
-#include <cc/syntax/SyntaxDebugger>
-#endif
-#include <cc/syntax/syntax>
-#include <cc/glob/Pattern>
-#include <cc/glob/PatternSyntax>
+#include <cc/PatternSyntax>
+#include <cc/Array>
+#include <cc/Queue>
+#include <cc/input>
 
 namespace cc {
-namespace glob {
 
-const PatternSyntax *PatternSyntax::instance()
+struct PatternSyntax::State: public SyntaxDefinition::State
 {
-    return Singleton<PatternSyntax>::instance();
-}
+    SyntaxRule any { '#' };
+
+    SyntaxRule gap { '*' };
+
+    SyntaxRule boi { Sequence { Boi{}, '^' } };
+
+    SyntaxRule eoi { Sequence { '^', Eoi{} } };
+
+    SyntaxRule character {
+        Choice {
+            NoneOf{'#', '*', '\\', '[', ']', '(', ')', '{', '}', '|', '^'},
+            Sequence{
+                '\\',
+                Expect{
+                    Choice{
+                        OneOf{
+                            '#', '*', '\\', '[', ']', '(', ')', '{', '}', '|', '^', ':',
+                            'n', 's', 't', 'r', 'f'
+                        },
+                        Sequence{
+                            'x',
+                            Repeat{2, 2,
+                                Choice{
+                                    Within{'0', '9'},
+                                    Within{'a', 'f'},
+                                    Within{'A', 'F'}
+                                }
+                            }
+                        }
+                    },
+                    "Invalid escape sequence"
+                }
+            }
+        }
+    };
+
+    SyntaxRule string {  Repeat{2, &character} };
+
+    SyntaxRule rangeMinMax {
+        Sequence {
+            '[',
+            Choice{
+                Sequence{
+                    Repeat{0, 1, '^'},
+                    Choice{
+                        Sequence{ "..", &character },
+                        Sequence{ &character, "..", &character },
+                        Sequence{ &character, ".." }
+                    }
+                },
+                ".."
+            },
+            Expect{']'}
+        }
+    };
+
+    SyntaxRule rangeExplicit {
+        Sequence{
+            '[',
+            Repeat{0, 1, '^'},
+            Repeat{1, &character},
+            Expect{']'}
+        }
+    };
+
+    SyntaxRule range {
+        Sequence{
+            Ahead{'['},
+            Expect{
+                Choice{
+                    &rangeMinMax,
+                    &rangeExplicit
+                },
+                "Expected range definition"
+            }
+        }
+    };
+
+    SyntaxRule number {
+        Repeat{1, 20,
+            Within{'0', '9'}
+        }
+    };
+
+    SyntaxRule minRepeat { Inline{&number} };
+    SyntaxRule maxRepeat { Inline{&number} };
+
+    SyntaxRule repeat {
+        Sequence {
+            '{',
+            Repeat{0, 1,
+                Sequence{
+                    Repeat{0, 1, &minRepeat},
+                    "..",
+                    Repeat{0, 1, &maxRepeat},
+                    Expect{':'}
+                }
+            },
+            Expect{
+                &choice,
+                "Expected repeat expression"
+            },
+            Expect{'}'}
+        }
+    };
+
+    SyntaxRule sequence {
+        Repeat{
+            Choice{
+                &repeat,
+                &string,
+                &character,
+                &any,
+                &gap,
+                Inline{&range},
+                &boi,
+                &eoi,
+                &group,
+                &behind,
+                &ahead
+            }
+        }
+    };
+
+    SyntaxRule group {
+        Sequence{
+            '(',
+            Not{OneOf{'>', '<', '^'}},
+            &choice,
+            Expect{')'}
+        }
+    };
+
+    SyntaxRule ahead {
+        Sequence{
+            '(',
+            Repeat{0, 1, '^'},
+            '>',
+            Expect{
+                &choice,
+                "Expected ahead expression"
+            },
+            Expect{')'}
+        }
+    };
+
+    SyntaxRule behind {
+        Sequence{
+            '(',
+            Repeat{0, 1, '^'},
+            '<',
+            Expect{
+                &choice,
+                "Expected begin expression"
+            },
+            Expect{')'}
+        }
+    };
+
+    SyntaxRule choice {
+        Sequence{
+            &sequence,
+            Repeat{
+                Sequence{
+                    '|',
+                    &sequence
+                }
+            }
+        }
+    };
+
+    SyntaxRule pattern {
+        Sequence{
+            &choice,
+            Eoi{}
+        }
+    };
+
+    State():
+        SyntaxDefinition::State{&pattern}
+    {}
+
+    SyntaxNode compile(const String &text) const
+    {
+        if (text.count() == 0) return Pass{};
+
+        Token token = match(text);
+        if (!token) throw TextError{text, text.count(), "Illegal expression syntax"};
+
+        return compileChoice(text, token.children().first());
+    }
+
+    SyntaxNode compileSequence(const String &text, const Token &token) const
+    {
+        return compileSequence(text, token, token.children().begin());
+    }
+
+    SyntaxNode compileSequence(const String &text, const Token &token, Token::Children::iterator head) const
+    {
+        Queue<SyntaxNode> nodes;
+
+        for (auto it = head; it; ++it) {
+            const Token &child = *it;
+            if (child.rule() == string) nodes.pushBack(Literal{readString(text, child)});
+            else if (child.rule() == character) nodes.pushBack(Char{readChar(text, child)});
+            else if (child.rule() == any) nodes.pushBack(Any{});
+            else if (child.rule() == gap) {
+                auto succ = it + 1;
+                if (succ) {
+                    nodes.pushBack(FindLast{compileSequence(text, token, succ)});
+                    break;
+                }
+                else nodes.pushBack(Repeat{Any{}});
+            }
+            else if (child.rule() == rangeMinMax) nodes.pushBack(compileRangeMinMax(text, child));
+            else if (child.rule() == rangeExplicit) nodes.pushBack(compileRangeExplicit(text, child));
+            else if (child.rule() == repeat) nodes.pushBack(compileRepeat(text, child));
+            else if (child.rule() == boi) nodes.pushBack(Boi{});
+            else if (child.rule() == eoi) nodes.pushBack(Eoi{});
+            else if (child.rule() == group) nodes.pushBack(compileGroup(text, child.children().first()));
+            else if (child.rule() == ahead) nodes.pushBack(compileAhead(text, child));
+            else if (child.rule() == behind) nodes.pushBack(compileBehind(text, child));
+        }
+
+        if (nodes.count() == 1) return nodes.first();
+
+        return Sequence{nodes.toArray<SyntaxNode>()};
+    }
+
+    SyntaxRule compileGroup(const String &text, const Token &token) const
+    {
+        return SyntaxRule{compileChoice(text, token)};
+    }
+
+    SyntaxNode compileChoice(const String &text, const Token &token) const
+    {
+        if (token.children().count() == 1)
+            return compileSequence(text, token.children().first());
+
+        Array<SyntaxNode> choices = Array<SyntaxNode>::allocate(token.children().count());
+        long i = 0;
+        for (const Token &child: token.children()) {
+            choices[i++] = compileSequence(text, child);
+        }
+
+        return LongestChoice{choices};
+    }
+
+    SyntaxNode compileAhead(const String &text, const Token &token) const
+    {
+        return (text.at(token.i0() + 1) != '^') ?
+            Ahead{compileChoice(text, token.children().first())}.as<SyntaxNode>() :
+            Not{compileChoice(text, token.children().first())}.as<SyntaxNode>();
+    }
+
+    SyntaxNode compileBehind(const String &text, const Token &token) const
+    {
+        return (text.at(token.i0() + 1) != '^') ?
+            Behind{compileChoice(text, token.children().first())}.as<SyntaxNode>() :
+            NotBehind{compileChoice(text, token.children().first())}.as<SyntaxNode>();
+    }
+
+    char readChar(const String &text, const Token &token) const
+    {
+        if (token.i1() - token.i0() > 1) {
+            String h = text.copy(token);
+            h.expand();
+            return h.at(0);
+        }
+        return text.at(token.i0());
+    }
+
+    String readString(const String &text, const Token &token) const
+    {
+        String s = String::allocate(token.children().count());
+        long i = 0;
+        for (const Token &child: token.children())
+            s[i++] = readChar(text, child);
+        return s;
+    }
+
+    SyntaxNode compileRangeMinMax(const String &text, const Token &token) const
+    {
+        bool invert = (text.at(token.i0() + 1) == '^');
+        long n = token.children().count();
+        if (n == 2) {
+            char a = readChar(text, token.children().first());
+            char b = readChar(text, token.children().last());
+            return invert ? Outside{a, b}.as<SyntaxNode>() : Within{a, b}.as<SyntaxNode>();
+        }
+        else if (n == 1) {
+            Token child = token.children().first();
+            char ch = readChar(text, child);
+            if (invert) {
+                if (child.i0() - token.i0() <= 2)
+                    return Match{[ch](char x) { return x <  ch; }};
+                else
+                    return Match{[ch](char x) { return x >  ch; }};
+            }
+            else {
+                if (child.i0() - token.i0() <= 2)
+                    return Match{[ch](char x) { return x >= ch; }};
+                else
+                    return Match{[ch](char x) { return x <= ch; }};
+            }
+        }
+        return Any{};
+    }
+
+    SyntaxNode compileRangeExplicit(const String &text, const Token &token) const
+    {
+        bool invert = (text.at(token.i0() + 1) == '^');
+
+        long i = 0, n = token.children().count();
+        String s = String::allocate(n);
+        for (const Token &child: token.children())
+            s[i++] = readChar(text, child);
+
+        return invert ? NoneOf{s}.as<SyntaxNode>() : OneOf{s}.as<SyntaxNode>();
+    }
+
+    SyntaxNode compileRepeat(const String &text, const Token &token) const
+    {
+        long minRepeatCount = 0;
+        long maxRepeatCount = std::numeric_limits<long>::max();
+
+        for (const Token &child: token.children()) {
+            if (child.rule() == minRepeat) minRepeatCount = readNumber<long>(text.copy(child));
+            else if (child.rule() == maxRepeat) maxRepeatCount = readNumber<long>(text.copy(child));
+            else break;
+        }
+
+        return Repeat{
+            minRepeatCount, maxRepeatCount,
+            compileChoice(text, token.children().last())
+        };
+    }
+};
 
 PatternSyntax::PatternSyntax()
 {
-    SYNTAX("pattern");
-
-    any_ = DEFINE("Any", CHAR('#'));
-    gap_ = DEFINE("Gap", CHAR('*'));
-    boi_ = DEFINE("Boi", GLUE(BOI(), CHAR('^')));
-    eoi_ = DEFINE("Eoi", GLUE(CHAR('^'), EOI()));
-
-    char_ =
-        DEFINE("Char",
-            CHOICE(
-                EXCEPT("#*\\[](){}|^:"),
-                GLUE(
-                    CHAR('\\'),
-                    EXPECT("Invalid escape sequence",
-                        CHOICE(
-                            RANGE(
-                                "#*\\[](){}|^:"
-                                "nstrf"
-                            ),
-                            GLUE(
-                                CHAR('x'),
-                                REPEAT(2, 2,
-                                    CHOICE(
-                                        RANGE('0', '9'),
-                                        RANGE('a', 'f'),
-                                        RANGE('A', 'F')
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-    string_ =
-        DEFINE("String",
-            REPEAT(2,
-                REF("Char")
-            )
-        );
-
-    rangeMinMax_ =
-        DEFINE("RangeMinMax",
-            GLUE(
-                CHAR('['),
-                CHOICE(
-                    GLUE(
-                        REPEAT(0, 1, CHAR('^')),
-                        CHOICE(
-                            GLUE(
-                                STRING(".."),
-                                REF("Char")
-                            ),
-                            GLUE(
-                                REF("Char"),
-                                STRING(".."),
-                                REF("Char")
-                            ),
-                            GLUE(
-                                REF("Char"),
-                                STRING("..")
-                            )
-                        )
-                    ),
-                    STRING("..")
-                ),
-                EXPECT("Expected closing ']'",
-                    CHAR(']')
-                )
-            )
-        );
-
-    rangeExplicit_ =
-        DEFINE("RangeExplicit",
-            GLUE(
-                CHAR('['),
-                REPEAT(0, 1, CHAR('^')),
-                REPEAT(1, REF("Char")),
-                EXPECT("Expected closing ']'",
-                    CHAR(']')
-                )
-            )
-        );
-
-    DEFINE("Range",
-        GLUE(
-            AHEAD(CHAR('[')),
-            EXPECT("Expected range definition",
-                CHOICE(
-                    REF("RangeMinMax"),
-                    REF("RangeExplicit")
-                )
-            )
-        )
-    );
-
-    DEFINE("Number",
-        REPEAT(1, 20,
-            RANGE('0', '9')
-        )
-    );
-
-    minRepeat_ = DEFINE("MinRepeat", INLINE("Number"));
-    maxRepeat_ = DEFINE("MaxRepeat", INLINE("Number"));
-
-    repeat_ =
-        DEFINE("Repeat",
-            GLUE(
-                CHAR('{'),
-                REPEAT(0, 1, RANGE("<~>")),
-                REPEAT(0, 1,
-                    GLUE(
-                        REPEAT(0, 1, REF("MinRepeat")),
-                        STRING(".."),
-                        REPEAT(0, 1, REF("MaxRepeat")),
-                        EXPECT("Expected ':' after repeat counts",
-                            CHAR(':')
-                        )
-                    )
-                ),
-                EXPECT("Expected repeat expression",
-                    REF("Choice")
-                ),
-                EXPECT("Expected closing '}'",
-                    CHAR('}')
-                )
-            )
-        );
-
-    sequence_ =
-        DEFINE("Sequence",
-            REPEAT(
-                CHOICE(
-                    REF("Repeat"),
-                    REF("String"),
-                    REF("Char"),
-                    REF("Any"),
-                    REF("Gap"),
-                    INLINE("Range"),
-                    REF("Boi"),
-                    REF("Eoi"),
-                    REF("Group"),
-                    REF("Behind"),
-                    REF("Ahead"),
-                    REF("Capture"),
-                    REF("Replay")
-                )
-            )
-        );
-
-    group_ =
-        DEFINE("Group",
-            GLUE(
-                CHAR('('),
-                NOT(CHAR('?')),
-                REF("Choice"),
-                EXPECT("Expected closing ')'",
-                    CHAR(')')
-                )
-            )
-        );
-
-    ahead_ =
-        DEFINE("Ahead",
-            GLUE(
-                STRING("(?>"),
-                REPEAT(0, 1, CHAR('!')),
-                REPEAT(0, 1, CHAR(':')),
-                EXPECT("Expected ahead expression",
-                    REF("Choice")
-                ),
-                EXPECT("Expected closing ')'",
-                    CHAR(')')
-                )
-            )
-        );
-
-    behind_ =
-        DEFINE("Behind",
-            GLUE(
-                STRING("(?<"),
-                REPEAT(0, 1, CHAR('!')),
-                REPEAT(0, 1, CHAR(':')),
-                EXPECT("Expected behind expression",
-                    REF("Choice")
-                ),
-                EXPECT("Expected closing ')'",
-                    CHAR(')')
-                )
-            )
-        );
-
-    identifier_ =
-        DEFINE("CaptureIdentifier",
-            REPEAT(
-                CHOICE(
-                    RANGE('a', 'z'),
-                    RANGE('A', 'Z'),
-                    RANGE('0', '9'),
-                    CHAR('_')
-                )
-            )
-        );
-
-    capture_ =
-        DEFINE("Capture",
-            GLUE(
-                STRING("(?@"),
-                REPEAT(0, 1,
-                    GLUE(
-                        REF("CaptureIdentifier"),
-                        CHAR(':')
-                    )
-                ),
-                EXPECT("Expected capture expression",
-                    LENGTH(1,
-                        REF("Choice")
-                    )
-                ),
-                EXPECT("Expected closing ')'",
-                    CHAR(')')
-                )
-            )
-        );
-
-    replay_ =
-        DEFINE("Replay",
-            GLUE(
-                STRING("(?="),
-                REF("CaptureIdentifier"),
-                EXPECT("Expected closing ')'",
-                    CHAR(')')
-                )
-            )
-        );
-
-    choice_ =
-        DEFINE("Choice",
-            GLUE(
-                REF("Sequence"),
-                REPEAT(
-                    GLUE(
-                        CHAR('|'),
-                        REF("Sequence")
-                    )
-                )
-            )
-        );
-
-    pattern_ =
-        DEFINE("Pattern",
-            GLUE(
-                REF("Choice"),
-                EOI()
-            )
-        );
-
-    ENTRY("Pattern");
-    LINK();
+    initOnce<State>();
 }
 
-void PatternSyntax::compile(const CharArray *text, SyntaxDefinition *definition) const
+SyntaxRule PatternSyntax::compile(const String &text) const
 {
-    Ref<SyntaxState> state = match(text);
-    if (!state->valid()) throw SyntaxError{text, state};
-    NODE entry;
-    if (text->count() == 0) entry = definition->PASS();
-    else entry = compileChoice(text, state->rootToken()->firstChild(), definition);
-    definition->DEFINE("Expression", entry);
-    definition->ENTRY("Expression");
-    definition->LINK();
+    return SyntaxRule{me().compile(text)};
 }
 
-NODE PatternSyntax::compileChoice(const CharArray *text, Token *token, SyntaxDefinition *definition) const
+const PatternSyntax::State &PatternSyntax::me() const
 {
-    if (token->countChildren() == 1)
-        return compileSequence(text, token->firstChild(), definition);
-    NODE node = new LazyChoiceNode;
-    for (Token *child = token->firstChild(); child; child = child->nextSibling())
-        node->appendChild(compileSequence(text, child, definition));
-    return definition->debug(node, "Choice");
+    return Object::me.as<State>();
 }
 
-NODE PatternSyntax::compileSequence(const CharArray *text, Token *token, SyntaxDefinition *definition) const
-{
-    NODE node = new GlueNode;
-    for (Token *child = token->firstChild(); child; child = child->nextSibling()) {
-        if (child->rule() == string_) node->appendChild(definition->STRING(readString(text, child)));
-        else if (child->rule() == char_) node->appendChild(definition->CHAR(readChar(text, child)));
-        else if (child->rule() == any_) node->appendChild(definition->ANY());
-        else if (child->rule() == gap_) node->appendChild(definition->GREEDY_REPEAT(definition->ANY()));
-        else if (child->rule() == rangeMinMax_) node->appendChild(compileRangeMinMax(text, child, definition));
-        else if (child->rule() == rangeExplicit_) node->appendChild(compileRangeExplicit(text, child, definition));
-        else if (child->rule() == repeat_) { node->appendChild(compileRepeat(text, child, definition)); }
-        else if (child->rule() == boi_) node->appendChild(definition->BOI());
-        else if (child->rule() == eoi_) node->appendChild(definition->EOI());
-        else if (child->rule() == group_) node->appendChild(compileChoice(text, child->firstChild(), definition));
-        else if (child->rule() == ahead_) node->appendChild(compileAhead(text, child, definition));
-        else if (child->rule() == behind_) node->appendChild(compileBehind(text, child, definition));
-        else if (child->rule() == capture_) node->appendChild(compileCapture(text, child, definition));
-        else if (child->rule() == replay_) node->appendChild(compileReference(text, child, definition));
-    }
-    if (node->firstChild() == node->lastChild()) {
-        NODE child = node->firstChild();
-        if (child) {
-            child->unlink();
-            return child;
-        }
-    }
-    return definition->debug(node, "Glue");
-}
-
-NODE PatternSyntax::compileAhead(const CharArray *text, Token *token, SyntaxDefinition *definition) const
-{
-    return (text->at(token->i0() + 3) != '!') ?
-        definition->AHEAD(compileChoice(text, token->firstChild(), definition)) :
-        definition->NOT(compileChoice(text, token->firstChild(), definition));
-}
-
-NODE PatternSyntax::compileBehind(const CharArray *text, Token *token, SyntaxDefinition *definition) const
-{
-    return (text->at(token->i0() + 3) != '!') ?
-        definition->BEHIND(compileChoice(text, token->firstChild(), definition)) :
-        definition->NOT_BEHIND(compileChoice(text, token->firstChild(), definition));
-}
-
-NODE PatternSyntax::compileCapture(const CharArray *text, Token *token, SyntaxDefinition *definition) const
-{
-    String name;
-    if (token->firstChild() != token->lastChild())
-        name = text->copyRange(token->firstChild());
-    return definition->CAPTURE(name, compileChoice(text, token->lastChild(), definition));
-}
-
-NODE PatternSyntax::compileReference(const CharArray *text, Token *token, SyntaxDefinition *definition) const
-{
-    String name = text->copyRange(token->firstChild());
-    return definition->REPLAY(name);
-}
-
-char PatternSyntax::readChar(const CharArray *text, Token *token) const
-{
-    if (token->i1() - token->i0() > 1) {
-        String h = text->copyRange(token);
-        mutate(h)->unescapeInsitu();
-        return h->at(0);
-    }
-    return text->at(token->i0());
-}
-
-String PatternSyntax::readString(const CharArray *text, Token *token) const
-{
-    String s{token->countChildren()};
-    int i = 0;
-    for (Token *child = token->firstChild(); child; child = child->nextSibling())
-        mutate(s)->at(i++) = readChar(text, child);
-    return s;
-}
-
-NODE PatternSyntax::compileRangeMinMax(const CharArray *text, Token *token, SyntaxDefinition *definition) const
-{
-    int n = token->countChildren();
-    bool invert = (text->at(token->i0() + 1) == '^');
-    if (n == 2) {
-        Token *min = token->firstChild();
-        Token *max = min->nextSibling();
-        char a = readChar(text, min);
-        char b = readChar(text, max);
-        return  invert ? definition->EXCEPT(a, b) : definition->RANGE(a, b);
-    }
-    else if (n == 1) {
-        Token *child = token->firstChild();
-        char ch = readChar(text, child);
-        return invert ?
-            ( (child->i0() - token->i0() <= 2) ? definition->BELOW(ch)            : definition->GREATER(ch)        ) :
-            ( (child->i0() - token->i0() <= 2) ? definition->GREATER_OR_EQUAL(ch) : definition->BELOW_OR_EQUAL(ch) );
-    }
-    return definition->ANY();
-}
-
-NODE PatternSyntax::compileRangeExplicit(const CharArray *text, Token *token, SyntaxDefinition *definition) const
-{
-    Token *child = token->firstChild();
-    bool invert = (text->at(token->i0() + 1) == '^');
-    int n = token->countChildren();
-    String s{n};
-    for (int i = 0; i < n; ++i) {
-        mutate(s)->at(i) = readChar(text, child);
-        child = child->nextSibling();
-    }
-    return invert ? definition->EXCEPT(s) : definition->RANGE(s);
-}
-
-NODE PatternSyntax::compileRepeat(const CharArray *text, Token *token, SyntaxDefinition *definition) const
-{
-    Token *child = token->firstChild(), *min = 0, *max = 0;
-    while (child) {
-        if (child->rule() == minRepeat_) min = child;
-        else if (child->rule() == maxRepeat_) max = child;
-        child = child->nextSibling();
-    }
-    int minRepeat = min ? text->copyRange(min)->toNumber<int>() : 0;
-    int maxRepeat = max ? text->copyRange(max)->toNumber<int>() : intMax;
-    char modifier = text->at(token->i0() + 1);
-    NODE node = compileChoice(text, token->lastChild(), definition);
-    if (modifier == '<')
-        return definition->LAZY_REPEAT(minRepeat, node);
-    else if (modifier == '~')
-        return definition->REPEAT(minRepeat, maxRepeat, node);
-    // else if (modifier == '>');
-    return definition->GREEDY_REPEAT(minRepeat, maxRepeat, node);
-}
-
-}} // namespace cc::glob
+} // namespace cc

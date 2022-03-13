@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,45 +7,24 @@
  */
 
 #include <cc/ui/StylePlugin>
-#include <cc/ui/Application>
 #include <cc/ui/StyleManager>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-StylePlugin *StylePlugin::instance()
+StylePlugin::StylePlugin(State *state):
+    Object{state}
 {
-    return StyleManager::instance()->activePlugin();
+    StyleManager{}.registerPlugin(*this);
 }
 
-StylePlugin::StylePlugin(const String &name):
-    name_{name}
-{}
-
-void StylePlugin::init()
+StylePlugin style()
 {
-    theme = dayTheme();
-    StyleManager::instance()->registerPlugin(this);
-
-    Application app;
-
-    app->defaultFont->bind([=]{
-        return Font(sp(
-            theme()->defaultFontSize() * app->textZoom()
-        ));
-    });
-
-    app->defaultFixedFont->bind([=]{
-        return Font(sp(
-            theme()->defaultFixedFontSize() * app->textZoom()
-        )) << Pitch::Fixed;
-    });
-
-    app->smallFont->bind([=]{
-        return Font(sp(
-            theme()->smallFontSize() * app->textZoom()
-        ));
-    });
+    return StyleManager{}.activePlugin();
 }
 
-}} // namespace cc::ui
+Theme theme()
+{
+    return StyleManager{}.activePlugin().theme();
+}
+
+} // namespace cc::ui

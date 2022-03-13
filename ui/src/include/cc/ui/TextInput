@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020-2022 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,75 +9,73 @@
 #pragma once
 
 #include <cc/ui/InputControl>
-#include <cc/ui/Timer>
-#include <cc/Range>
+#include <cc/ui/TextEditor>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class TextRun;
-class TextCursor;
-class Timer;
-class TextEditor;
-
+/** \class TextInput cc/ui/TextInput
+  * \ingroup ui
+  * \brief %Single-line text input control
+  */
 class TextInput: public InputControl
 {
 public:
-    class Instance: public InputControl::Instance
-    {
-    public:
-        Property<Font> font;
+    /** Create a primordial text input control
+      */
+    TextInput();
 
-        String text() const override;
-        Point textPos() const override;
+    /** Create a new text input control
+      */
+    explicit TextInput(Out<TextInput> self);
 
-        Size preferredSize() const override;
-        Size minSize() const override;
-        Size maxSize() const override;
+    /** Create a new text input control
+      */
+    explicit TextInput(const String &text, Out<TextInput> self = None{});
 
-    protected:
-        friend class TextInput;
+    String text() const; ///< Get current input text
+    TextInput &text(const String &newValue); ///< %Set current input text
 
-        Instance(const String &initialText);
-        Instance(Ref<TextEditor> editor);
-        ~Instance();
+    TextAlign textAlign() const; ///< Get text alignment
+    TextInput &textAlign(TextAlign newValue); ///< %Set text alignment
 
-        void init();
-        const TextEditor *editor() const { return editor_; }
+    Point textPos() const; ///< Get the baseline start position of the input text
 
-    private:
-        Property<StringList> imeChunks;
-        Property< Ref<const TextRun> > unwrappedTextRun;
-        Property< Ref<const TextRun> > textRun;
-        Property< Ref<TextCursor> > textCursor;
-        Property<bool> textCursorVisible;
-        Property<Range> selection;
+    Font font() const; ///< Get the font
+    TextInput &font(Font newValue); ///< %Set the font
+    TextInput &font(Definition<Font> &&f); ///< Define the font
 
-        void startBlink();
-        void stopBlink();
+    String sizerText() const; ///< Get sizer text
+    TextInput &sizerText(const String &newValue); ///< %Set sizer text
+    TextInput &sizerText(Definition<String> &&f); ///< %Define sizer text
 
-        Rect textInputArea() const override;
-        void onTextEdited(const String &chunk, int start, int length) override;
-        void onTextInput(const String &chunk) override;
+    TextInput &accept(Call<bool()> &&f); ///< Define acceptable input text
+    TextInput &filter(Call<bool(Range range, InOut<String>)> &&f); ///< Define text input filter
 
-        void paste(const String &chunk);
-        void paste(Range selection, const String &chunk);
+    void selectAll();
 
-        Ref<TextEditor> editor_;
-        Timer timer_;
-        bool shiftKey_ { false };
-    };
+protected:
+    /** Internal state
+      */
+    struct State;
 
-    TextInput(const String &initialText = ""):
-        InputControl{new Instance{initialText}}
-    {}
+    /** Initialize text input control
+      */
+    explicit TextInput(const TextEditor &editor);
 
-    TextInput(Instance *instance):
-        InputControl{instance}
-    {}
+    /** Initialize primordial text input control
+      */
+    explicit TextInput(CreateState onDemand);
 
-    Instance *operator->() const { return my<Instance>(); }
+    /** Initialize text input with \a newState
+      */
+    explicit TextInput(State *newState);
+
+    /** Get the underlying editor
+      */
+    TextEditor editor() const;
+
+    State &me();
+    const State &me() const;
 };
 
-
-}} // namespace cc::ui
+} // namespace cc::ui

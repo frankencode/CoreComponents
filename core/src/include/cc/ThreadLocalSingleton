@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2022 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,49 +9,34 @@
 #pragma once
 
 #include <cc/Object>
-#include <cc/Ref>
 
 namespace cc {
 
-/** \class ThreadLocalSingleton cc/ThreadLocalSingleton
-  * \ingroup mman
-  * \brief Implementation pattern for thread-local singletons
-  *
-  * The following shows how to implement a thread-local singleton using the ThreadLocalSingleton<T> template.
-  *
-  * %ThreadLocalSingleton declaration (example):
-  * ~~~~~~~~~~~~~
-  * template<class> class ThreadLocalSingleton;
-  *
-  * class Settings: public Object
-  * {
-  * public:
-  *     static const Settings *instance();
-  * private:
-  *     friend class ThreadLocalSingleton<Settings>;
-  *     Settings();
-  * };
-  * ~~~~~~~~~~~~~
-  *
-  * %Singleton implementation (example):
-  * ~~~~~~~~~~~~~
-  * #include <cc/ThreadLocalSingleton>
-  * ...
-  * const Settings *Settings::instance() { return ThreadLocalSingleton<Settings>::instance() }
-  * Settings::Settings() {}
-  * ~~~~~~~~~~~~~
+/** \class Singleton cc/Singleton
+  * \ingroup objects
+  * \brief %Process-wide singletons
   */
-template<class SubClass>
-class ThreadLocalSingleton
+class ThreadLocalSingleton: public Object
 {
-public:
-    /** Return pointer to the singleton instance creating it on-demand if it does not exist yet
+protected:
+    /** Get access to the singleton instance
       */
-    static SubClass *instance()
+    template<class T>
+    static T *instance()
     {
-        static thread_local Ref<SubClass> instance_{new SubClass};
-        return instance_;
+        thread_local Handle<T> handle { new T };
+        return &handle();
     }
+
+    /** Create a null singleton
+      */
+    ThreadLocalSingleton() = default;
+
+    /** Initialize singleton object with instance \a state
+      */
+    explicit ThreadLocalSingleton(State *state):
+        Object{state, Alias{}}
+    {}
 };
 
 } // namespace cc

@@ -1,90 +1,56 @@
-/*
- * Copyright (C) 2007-2017 Frank Mertens.
- *
- * Distribution and use is allowed under the terms of the zlib license
- * (see cc/LICENSE-zlib).
- *
- */
+#include <cc/Map>
+#include <cc/testing>
 
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
-#include <cc/Variant>
-#include <cc/System>
-#include <cc/MapInstance>
-#include <cc/Random>
+namespace cc { template class Map<int>; }
 
-using namespace cc;
-using namespace cc::testing;
-
-namespace cc { template class MapInstance<String, String>; }
-namespace cc { template class MapInstance<String, Variant>; }
-
-int fib(int n)
+int main(int argc, char *argv[])
 {
-    if (n == 0) return 0;
-    if (n == 1) return 1;
-    return fib(n - 1) + fib(n - 2);
-}
+    using namespace cc;
 
-class InsertionIteration: public TestCase
-{
-    void run()
-    {
-        auto names = MapInstance<String>::create();
-        String test[6][2] = {
-            { "Joe", "Doe" },
-            { "Hans", "Mustermax" },
-            { "Max", "Musterhans" },
-            { "Otto", "Müller" },
-            { "Johanna", "Berg" },
-            { "Güther", "Becker" }
-        };
-        const int testCount = sizeof(test) / sizeof(test[0]);
-        for (int i = 0; i < testCount; ++i)
-            names->insert(test[i][0], test[i][1]);
-        for (int i = 0; i < names->count(); ++i)
-            fout("%% %%\n") << names->at(i)->key() << names->at(i)->value();
-        for (int i = 0; i < testCount; ++i)
-            CC_VERIFY(names->value(test[i][0]) == test[i][1]);
-    }
-};
-
-class InsertionRemoval: public TestCase
-{
-    void run()
-    {
-        auto map = MapInstance<int>::create();
-        const int n = 20;
-        {
-            Random random{0};
-            for (int i = 0; i < n; ++i) {
-                int key = random->get();
-                int value = random->get();
-                map->insert(key, value);
-            }
+    TestCase {
+        "InsertionOperator",
+        []{
+            Map<int> m;
+            m(0) = 1;
+            m(1) = 2;
+            CC_CHECK(m.count() == 2);
+            CC_CHECK(m(0) == 1);
+            CC_CHECK(m(1) == 2);
         }
-        {
-            Random random{0};
-            for (int i = 0; i < n; ++i) {
-                int key = random->get();
-                int value = random->get();
-                CC_VERIFY(map->value(key) == value);
-            }
-        }
-        {
-            Random random{0};
-            for (int i = 0; i < n; ++i) {
-                int j = random->get(0, map->count() - 1);
-                map->remove(map->at(j)->key());
-            }
-        }
-    }
-};
+    };
 
-int main(int argc, char **argv)
-{
-    CC_TESTSUITE_ADD(InsertionIteration);
-    CC_TESTSUITE_ADD(InsertionRemoval);
+    TestCase {
+        "InsertionRemoval",
+        []{
+            Map<int> map;
+            const int n = 20;
+            {
+                Random random{0};
+                for (int i = 0; i < n; ++i) {
+                    int key = random.get();
+                    int value = random.get();
+                    map.insert(key, value);
+                }
+            }
+            CC_CHECK(map.count() == 20);
+            {
+                Random random{0};
+                for (int i = 0; i < n; ++i) {
+                    int key = random.get();
+                    int value = random.get();
+                    CC_VERIFY(map.value(key) == value);
+                }
+            }
+            {
+                Random random{0};
+                for (int i = 0; i < n; ++i) {
+                    int j = random.get(0, map.count() - 1);
+                    map.remove(map.at(j).key());
+                }
+            }
+            CC_CHECK(map.count() == 0);
+        }
+    };
 
-    return TestSuite::instance()->run(argc, argv);
+    return TestSuite{argc, argv}.run();
 }

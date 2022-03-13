@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,214 +8,210 @@
 
 #pragma once
 
-#include <cc/exceptions>
+#include <cc/Composite>
 #include <cc/Stream>
+#include <cc/Array>
+#include <cc/exceptions>
+#include <cc/bytes>
 
 namespace cc {
 
 /** \class ByteSource cc/ByteSource
-  * \ingroup binary_io
+  * \ingroup streams
   * \brief Byte decoding sink
-  * \see ByteSink, ReplaySource
+  * \exception InputExhaustion
   */
 class ByteSource
 {
 public:
-    class Instance
-    {
-    public:
-        /** Read a single byte
-          * \param x target to write the byte into
-          * \return true if not end of input
-          */
-        bool readByte(uint8_t *x);
-
-        /** Read a single character
-          * \param ch target to write the character into
-          * \return true if not end of input
-          */
-        bool readChar(char *ch) { return readByte(reinterpret_cast<uint8_t*>(ch)); }
-
-        /** Read a fixed number of bytes (N)
-          * \param span target buffer (N = span->count())
-          * \see CharArray::select()
-          */
-        void read(CharArray *span);
-
-        /** Read a fixed number of bytes
-          * \param n number of bytes to read
-          * \return bytes read
-          */
-        String readSpan(int n);
-
-        /// Return true if more bytes can be read
-        bool hasMore();
-
-        /// Read a byte
-        uint8_t readUInt8();
-
-        /// Read a 2-byte word
-        uint16_t readUInt16();
-
-        /// Read a 4-byte word
-        uint32_t readUInt32();
-
-        /// Read an 8-byte word
-        uint64_t readUInt64();
-
-        /// Read a signed byte
-        int8_t readInt8() { return union_cast<int8_t>(readUInt8()); }
-
-        /// Read a signed 2-byte word
-        int16_t readInt16() { return union_cast<int16_t>(readUInt16()); }
-
-        /// Read a signed 4-byte word
-        int32_t readInt32() { return union_cast<int32_t>(readUInt32()); }
-
-        /// Read a signed 8-byte word
-        int64_t readInt64() { return union_cast<int64_t>(readUInt64()); }
-
-        /// Read a single precision floating point number
-        float32_t readFloat32() { return union_cast<float32_t>(readUInt32()); }
-
-        /// Read a double precision floating point number
-        float64_t readFloat64() { return union_cast<float64_t>(readUInt64()); }
-
-        /// Data source to read bytes from
-        Stream source() const { return source_; }
-
-        /// The output buffer
-        const CharArray *buffer() const { return buffer_; }
-
-        /// Current endianess for decoding multi-byte words
-        ByteOrder endian() const { return endian_; }
-
-        /// Switch endianess
-        void setEndian(ByteOrder endian) { endian_ = endian; }
-
-        /// Total number of bytes read
-        off_t currentOffset() const { return i0_ + i_; }
-
-    private:
-        friend class ByteSource;
-
-        Instance(const Stream &source, CharArray *buffer, ByteOrder endian):
-            source_{source},
-            buffer_{buffer},
-            endian_{endian},
-            i0_{0}, i_{0},
-            n_{source_ ? 0 : buffer->count()}
-        {
-            if (!buffer_) buffer_ = CharArray::allocate(0x1000);
-        }
-
-        Stream source_;
-        String buffer_;
-        ByteOrder endian_;
-        off_t i0_;
-        int i_, n_;
-    };
-
     /** Open a new ByteSource
-      * \param source data source to write bytes from
-      * \param buffer input buffer to use
-      * \param endian endianess for reading multi-byte words
+      * \param source Data source to write bytes from
+      * \param buffer Input buffer to use
+      * \param endian Endianess for reading multi-byte words
       */
-    ByteSource(const Stream &source, CharArray *buffer = nullptr, ByteOrder endian = ByteOrder::LittleEndian):
-        instance_{source, buffer, endian}
+    ByteSource(const Stream &source, const Bytes &buffer, ByteOrder endian = ByteOrder::LittleEndian):
+        me{source, buffer, endian, source ? 0 : buffer.count()}
     {}
 
     /** Open a new ByteSource
-      * \param buffer input buffer to read bytes from
-      * \param endian endianess for reading multi-byte words
+      * \param source Data source to write bytes from
+      * \param endian Endianess for reading multi-byte words
       */
-    ByteSource(const CharArray *buffer, ByteOrder endian = ByteOrder::LittleEndian):
-        instance_{Stream{}, const_cast<CharArray *>(buffer), endian}
+    ByteSource(const Stream &source, ByteOrder endian = ByteOrder::LittleEndian):
+        ByteSource{source, Bytes::allocate(0x1000), endian}
     {}
 
-    Instance *operator->() { return &instance_; }
-    const Instance *operator->() const { return &instance_; }
+    /** Open a new ByteSource
+      * \param buffer Input buffer to read bytes from
+      * \param endian Endianess for reading multi-byte words
+      */
+    ByteSource(const Bytes &buffer, ByteOrder endian = ByteOrder::LittleEndian):
+        ByteSource{Stream{}, buffer, endian}
+    {}
+
+    /** Read byte into \a x and return true if successful
+      */
+    bool readByte(Out<uint8_t> x);
+
+    /** Read character into \a x and return true if successful
+      */
+    bool readChar(Out<char> ch);
+
+    /** Read a fixed number of bytes (N)
+      * \param span target buffer (N = span->count())
+      */
+    void read(Out<Bytes> span);
+
+    /** Read \a n bytes
+      */
+    Bytes readSpan(int n);
+
+    /** Fill input buffer and return true if more bytes can be read
+      */
+    bool prefetch() { return me().prefetch(); }
+
+    /** Read a byte
+      */
+    uint8_t readUInt8() { return me().read(); }
+
+    /** Read a 2-byte word
+      */
+    uint16_t readUInt16();
+
+    /** Read a 4-byte word
+      */
+    uint32_t readUInt32();
+
+    /** Read an 8-byte word
+      */
+    uint64_t readUInt64();
+
+    /** Read a signed byte
+      */
+    int8_t readInt8() { return static_cast<int8_t>(readUInt8()); }
+
+    /** Read a signed 2-byte word
+      */
+    int16_t readInt16() { return static_cast<int16_t>(readUInt16()); }
+
+    /** Read a signed 4-byte word
+      */
+    int32_t readInt32() { return static_cast<int32_t>(readUInt32()); }
+
+    /** Read a signed 8-byte word
+      */
+    int64_t readInt64() { return static_cast<int64_t>(readUInt64()); }
+
+    /** Data source to read bytes from
+      */
+    Stream source() const { return me().source; }
+
+    /** The output buffer
+      */
+    const Bytes &buffer() const { return me().buffer; }
+
+    /** Byte-order for decoding multi-byte words
+      */
+    ByteOrder endian() const { return me().endian; }
+
+    /** %Set byte-order
+      */
+    void setEndian(ByteOrder endian) { me().endian = endian; }
+
+    /** Total number of bytes read
+      */
+    long long currentOffset() const { return me().i0 + me().i; }
 
 private:
-    ByteSource(const ByteSource &);
-    ByteSource &operator=(const ByteSource &);
+    struct State
+    {
+        Stream source;
+        Bytes buffer;
+        ByteOrder endian;
+        long n;
+        int i { 0 };
+        long long i0 { 0 };
 
-    Instance instance_;
+        inline bool prefetch()
+        {
+            if (i == n && source) {
+                n = source.read(&buffer);
+                i0 += i;
+                i = 0;
+            }
+            return i < n;
+        }
+
+        inline uint8_t read()
+        {
+            if (i == n) {
+                if (!source) throw InputExhaustion{};
+
+                n = source.read(&buffer);
+                i = 0;
+
+                if (n == 0) throw InputExhaustion{};
+            }
+
+            return buffer.item<uint8_t>(i++);
+        }
+    };
+
+    Composite<State> me;
 };
 
-inline bool ByteSource::Instance::readByte(uint8_t *x)
+inline bool ByteSource::readByte(Out<uint8_t> x)
 {
-    bool more = hasMore();
-    if (more)
-        *x = readUInt8();
+    bool more = me().prefetch();
+    if (more) x = me().read();
     return more;
 }
 
-inline void ByteSource::Instance::read(CharArray *span)
+inline bool ByteSource::readChar(Out<char> ch)
 {
-    for (int i = 0, n = span->count(); i < n; ++i)
-        span->at(i) = readUInt8();
+    uint8_t x = 0;
+    bool ok = readByte(&x);
+    ch = static_cast<char>(x);
+    return ok;
 }
 
-inline String ByteSource::Instance::readSpan(int n)
+inline void ByteSource::read(Out<Bytes> span)
 {
-    String bytes = String::create(n);
-    read(mutate(bytes));
+    for (int i = 0, n = span().count(); i < n; ++i)
+        span().item<uint8_t>(i) = readUInt8();
+}
+
+inline Bytes ByteSource::readSpan(int n)
+{
+    Bytes bytes = Bytes::allocate(n);
+    read(&bytes);
     return bytes;
 }
 
-inline bool ByteSource::Instance::hasMore()
-{
-    if (i_ == n_ && source_) {
-        n_ = source_->read(mutate(buffer_));
-        i0_ += i_;
-        i_ = 0;
-    }
-    return i_ < n_;
-}
-
-inline uint8_t ByteSource::Instance::readUInt8()
-{
-    if (i_ == n_) {
-        if (!source_) throw UnexpectedEndOfInputError{};
-
-        n_ = source_->read(mutate(buffer_));
-        i_ = 0;
-
-        if (n_ == 0) throw UnexpectedEndOfInputError{};
-    }
-
-    return buffer_->at(i_++);
-}
-
-inline uint16_t ByteSource::Instance::readUInt16()
+inline uint16_t ByteSource::readUInt16()
 {
     uint16_t h;
-    if (endian_ == ByteOrder::LittleEndian)
-    {
+    if (me().endian == ByteOrder::LittleEndian) {
         h  = uint16_t(readUInt8());
         h |= uint16_t(readUInt8()) << 8;
     }
-    else // if (endian_ == ByteOrder::BigEndian)
-    {
+    else {
         h  = uint16_t(readUInt8()) << 8;
         h |= uint16_t(readUInt8());
     }
     return h;
 }
 
-inline uint32_t ByteSource::Instance::readUInt32()
+inline uint32_t ByteSource::readUInt32()
 {
     uint32_t h;
-    if (endian_ == ByteOrder::LittleEndian)
-    {
+    if (me().endian == ByteOrder::LittleEndian) {
         h  = uint32_t(readUInt8());
         h |= uint32_t(readUInt8()) << 8;
         h |= uint32_t(readUInt8()) << 16;
         h |= uint32_t(readUInt8()) << 24;
     }
-    else // if (endian_ == ByteOrder::BigEndian)
-    {
+    else {
         h  = uint32_t(readUInt8()) << 24;
         h |= uint32_t(readUInt8()) << 16;
         h |= uint32_t(readUInt8()) << 8;
@@ -224,16 +220,15 @@ inline uint32_t ByteSource::Instance::readUInt32()
     return h;
 }
 
-inline uint64_t ByteSource::Instance::readUInt64()
+inline uint64_t ByteSource::readUInt64()
 {
     uint64_t h = 0;
-    if (endian_ == ByteOrder::LittleEndian)
+    if (me().endian == ByteOrder::LittleEndian)
     {
         for (int i = 0; i <= 7*8; i += 8)
             h |= uint64_t(readUInt8()) << i;
     }
-    else // if (endian_ == ByteOrder::BigEndian)
-    {
+    else {
         for (int i = 7*8; i >= 0; i -= 8)
             h |= uint64_t(readUInt8()) << i;
     }

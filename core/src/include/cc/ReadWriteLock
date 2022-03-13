@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SystemError>
+#include <pthread.h>
+
+namespace cc {
+
+/** \class ReadWriteLock cc/ReadWriteLock
+  * \brief Read-write lock
+  * \ingroup concurrency
+  * \see ReadGuard, WriteGuard
+  */
+class ReadWriteLock final
+{
+public:
+    /** Create a new read-write lcok
+      * \exception SystemError
+      */
+    ReadWriteLock();
+
+    /** Destroy the read-write lock
+      */
+    ~ReadWriteLock();
+
+    /** Acquire the read-write lock for reading
+      * \see ReadGuard
+      */
+    void readAcquire();
+
+    /** Acquire the read-write lock exclusively for writing
+      */
+    void writeAcquire();
+
+    /** Release the read-write lock
+      */
+    void release();
+
+private:
+    ReadWriteLock(const ReadWriteLock&) = delete;
+    ReadWriteLock& operator=(const ReadWriteLock&) = delete;
+
+    pthread_rwlock_t lock_;
+};
+
+} // namespace cc
+
+#include <cc/ReadGuard>
+#include <cc/WriteGuard>

@@ -1,0 +1,40 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ReadWriteLock>
+
+namespace cc {
+
+/** \class ReadGuard cc/ReadGuard
+  * \brief For-reading lock guard
+  */
+class ReadGuard final
+{
+public:
+    /** Post guard: acquire read-write lock for reading
+      */
+    explicit ReadGuard(ReadWriteLock &lock):
+        lock_{lock}
+    {
+        lock_.readAcquire();
+    }
+
+    /** Disband guard: release read-write lock
+      */
+    ~ReadGuard()
+    {
+        lock_.release();
+    }
+
+private:
+    ReadWriteLock &lock_;
+};
+
+} // namespace cc

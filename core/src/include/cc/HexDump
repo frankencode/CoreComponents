@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -13,50 +13,30 @@
 namespace cc {
 
 /** \class HexDump cc/HexDump
-  * \brief Hexdumping data sink
+  * \brief Generate a readable hexadecimal dump
   *
   * Example usage:
   * ~~~~~~~~~~~~~
-  * File{"test.dat"}->transferTo(HexDump{stdOut()});
+  * File{"test.dat"}.transferTo(HexDump{});
   * ~~~~~~~~~~~~~
   *
   * \see StreamTap
   */
-class HexDump: public Stream
+class HexDump final: public Stream
 {
 public:
-    class Instance: public Stream::Instance
-    {
-    public:
-        void write(const CharArray *data) override;
-
-    private:
-        friend class HexDump;
-
-        Instance(const Stream &sink);
-        ~Instance();
-
-        void writeByte(uint8_t ch);
-        void flush();
-
-        Stream sink_;
-        off_t offset_;
-        String buffer_;
-        int i_;
-    };
-
-    /** Open a new hexdump sink
-      * \param sink where the hexdump is written to (defaults to stdOut())
+    /** Create a new hexdump sink
+      * \param sink %Where the hexdump is written to (defaults to IoStream::output())
       */
-    HexDump(const Stream &sink = Stream{}):
-        Stream{new Instance{sink}}
-    {}
+    explicit HexDump(const Stream &sink = Stream{});
+
+
+private:
+    struct State;
 };
 
-/** Convert binary data into a hexdump
-  * \param data binary data
-  * \return hexdump
+/** Generate a readable hexadecimal dump of \a data
   */
-String hexDump(const CharArray *data);
+String hexdump(const Bytes &data);
 
 } // namespace cc

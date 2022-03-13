@@ -1,36 +1,33 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
-#include <cc/net/base64>
+#include <cc/base64>
+#include <cc/testing>
 
-using namespace cc;
-using namespace cc::testing;
-using namespace cc::net;
-
-class SymmetryExamples: public TestCase
+int main(int argc, char* argv[])
 {
-    void run() {
-        String test[] = { "Man", "Hello world", "", "1" };
-        const int testCount = sizeof(test) / sizeof(test[0]);
+    using namespace cc;
 
-        for (int i = 0; i < testCount; ++i) {
-            String a = test[i], b = base64::encode(a);
-            fout("base64(\"%%\") = \"%%\"\n") << a << b;
-            CC_VERIFY(base64::decode(b) == a);
+    TestCase {
+        "Base64ShortStrings",
+        []{
+            String test[] = { "Man", "Hello world", "", "1" };
+            const int testCount = sizeof(test) / sizeof(test[0]);
+
+            for (int i = 0; i < testCount; ++i) {
+                String a = test[i], b = base64Encode(a);
+                fout("base64(\"%%\") = \"%%\"\n") << a << b;
+                CC_VERIFY(base64Decode(b) == a);
+            }
+
+            CC_INSPECT(hex(base64Decode(String{"FfxLSnBiza9x7YQb"})));
         }
-    }
-};
+    };
 
-int main(int argc, char** argv)
-{
-    CC_TESTSUITE_ADD(SymmetryExamples);
-
-    return TestSuite::instance()->run(argc, argv);
+    return TestSuite{argc, argv}.run();
 }

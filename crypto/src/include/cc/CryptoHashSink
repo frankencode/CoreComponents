@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HashSink>
+
+namespace cc {
+
+/** \class CryptoHashSink cc/CryptoHashSink
+  * \ingroup crypto
+  * \brief %Compute a cryptographic hashsum from written data
+  * \see StreamTap
+  */
+class CryptoHashSink: public HashSink
+{
+public:
+    /** Create a null hash sink
+      */
+    CryptoHashSink() = default;
+
+    /** Block size of the hash sum in bytes
+      */
+    int blockSize() const { return me().blockSize(); }
+
+protected:
+    struct State: public HashSink::State
+    {
+        /** \copydoc CryptoHashSink::blockSize()
+          */
+        virtual int blockSize() const = 0;
+
+    private:
+        void write(const List<Bytes> &buffers) override;
+        void write(const struct iovec *iov, int iovcnt) override;
+    };
+
+    explicit CryptoHashSink(State *newState):
+        HashSink{newState}
+    {}
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

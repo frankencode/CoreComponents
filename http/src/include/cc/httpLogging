@@ -1,0 +1,40 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpClientConnection>
+#include <cc/HttpRequest>
+
+namespace cc {
+
+/** \brief HTTP server log level
+  * \ingroup http_server
+  */
+enum class LoggingLevel {
+    Silent  = 0, ///< Do not output any log messages
+    Error   = 1, ///< Produce only error messages
+    Warning = 2, ///< Produce both error and warning messages
+    Notice  = 3, ///< Also log notices
+    Info    = 4, ///< Also log additional information
+    Debug   = 5, ///< Also produce debug messages
+#ifdef NDEBUG
+    Default = Notice ///< Default log level
+#else
+    Default = Debug ///< Default log level
+#endif
+};
+
+LoggingLevel readLoggingLevel(const String &text);
+
+String formatDeliveryNotice(const HttpClientConnection &client, const HttpRequest &request, HttpStatus statusCode, long long bytesWritten, const String &statusMessage);
+
+const char *syslogLoggingServiceName();
+const char *foregroundLoggingServiceName();
+
+} // namespace cc

@@ -1,0 +1,117 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/Exception>
+#include <cc/HttpStatus>
+
+#pragma once
+
+namespace cc {
+
+/** \class HttpError cc/HttpError
+  * \ingroup http_protocol
+  * \brief HTTP request could not be successfully processed
+  */
+class HttpError: public Exception
+{
+public:
+    /** Create a new HTTP error
+      */
+    HttpError(HttpStatus status, const char *reason):
+        status_{status},
+        reason_{reason}
+    {}
+
+    /** \copybrief HttpStatus
+      */
+    HttpStatus status() const { return status_; }
+
+    /** %Reason phrase
+      */
+    const char *reason() const { return reason_; }
+
+    String message() const override { return reason_; }
+
+private:
+    HttpStatus status_;
+    const char *reason_;
+};
+
+/** \class HttpBadRequest cc/HttpError
+  * \brief The request was syntactically maleformed
+  */
+class HttpBadRequest: public HttpError
+{
+public:
+    HttpBadRequest();
+};
+
+/** \class HttpForbidden cc/HttpError
+  * \brief Insufficient permissions to execute the request
+  */
+class HttpForbidden: public HttpError
+{
+public:
+    HttpForbidden();
+};
+
+/** \class HttpNotFound cc/HttpError
+  * \brief Requested resource could not be found
+  */
+class HttpNotFound: public HttpError
+{
+public:
+    HttpNotFound();
+};
+
+/** \class HttpRequestTimeout cc/HttpError
+  * \brief Connection has timed out
+  */
+class HttpRequestTimeout: public HttpError
+{
+public:
+    HttpRequestTimeout();
+};
+
+/** \class HttpPayloadTooLarge cc/HttpError
+  * \brief Message payload exceeded allowed upper limit
+  */
+class HttpPayloadTooLarge: public HttpError
+{
+public:
+    HttpPayloadTooLarge();
+};
+
+/** \class HttpInternalServerError cc/HttpError
+  * \brief Internal server malefunction
+  */
+class HttpInternalServerError: public HttpError
+{
+public:
+    HttpInternalServerError();
+};
+
+/** \class HttpUnsupportedVersion cc/HttpError
+  * \brief Request protocol version is not supported
+  */
+class HttpUnsupportedVersion: public HttpError
+{
+public:
+    HttpUnsupportedVersion();
+};
+
+/** \class HttpNotImplemented cc/HttpError
+  * \brief HTTP protocol feature not implemented
+  */
+class HttpNotImplemented: public HttpError
+{
+public:
+    HttpNotImplemented();
+};
+
+} // namespace cc

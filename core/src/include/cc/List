@@ -8,132 +8,582 @@
 
 #pragma once
 
+#include <cc/bucket/Vector>
+#include <cc/Iterator>
+#include <cc/Cow>
+#include <cc/container>
+#include <cc/sort>
 #include <initializer_list>
-#include <cc/ListInstance>
+#include <utility>
+#include <cassert>
 
 namespace cc {
 
-class Variant;
-class VariantInstance;
-
-/** \class list cc/list
-  * \ingroup container_highlevel
+/** \class List cc/List
+  * \ingroup container
   * \brief %List data container
-  * \tparam T item type
+  * \tparam T Item type
+  * \todo List::allocate(long)
   */
 template<class T>
 class List {
 public:
-    typedef ListInstance<T> Instance;
+    using Item = T; ///< Item type
 
-    typedef typename Instance::Item Item; ///< item type
-    typedef typename Instance::Index Index; ///< index type
-    typedef typename Instance::Iterator Iterator; ///< iterator type
-    typedef typename Instance::ConstIterator ConstIterator; ///< constant iterator type
+    /** \name Construction and Assignment
+      */
+    /// @{
 
-    typedef Item value_type; ///< \internal
-    typedef Index size_type; ///< \internal
-    typedef Iterator iterator; ///< \internal
-    typedef ConstIterator const_iterator; ///< \internal
+    /** Construct an empty list
+      */
+    List() = default;
 
-    List():
-        instance_{new Instance}
-    {}
+    /** Construct a copy of \a other
+      */
+    List(const List &other) = default;
 
-    List(std::initializer_list<T> b):
-        instance_{new Instance}
+    /** Construct with initial \a items
+      */
+    List(std::initializer_list<Item> items)
     {
-        for (const auto &x: b) instance_->append(x);
+        for (const auto &x: items) append(x);
     }
 
-    List(std::initializer_list<List> b):
-        instance_{b.begin()->instance_}
+    /** Initialize by joining initial \a lists
+      */
+    List(std::initializer_list<List> lists)
     {
-        bool first = true;
-        for (const auto &x: b) {
-            if (first) { first = false; continue; }
-            (*this)->appendList(x);
+        assert(lists.size() > 0);
+
+        if (lists.size() == 1) {
+            for (const auto &x: lists) *this = x;
+        }
+        else {
+            for (const auto &x: lists) appendList(x);
         }
     }
 
-    List(const List &b):
-        instance_{b.instance_}
+    /** Take over the right-side list \a other
+      */
+    List(List &&other):
+        me{std::move(other.me)}
     {}
 
-    List(List &&b):
-        instance_{std::move(b.instance_)}
-    {}
+    /** Assign list \a other
+      */
+    List &operator=(const List &other) = default;
 
-    List(Instance *b):
-        instance_{b ? b : new Instance}
-    {}
-
-    List &operator=(const List &b) = default;
-
-    List &operator=(List &&b) {
-        instance_ = std::move(b.instance_);
+    /** Assign right-side list \a other
+      */
+    List &operator=(List &&other)
+    {
+        me = std::move(other.me);
         return *this;
     }
 
-    List &operator=(const Ref<Instance> &b) { // \todo make sure this is not needed
-        instance_ = b;
+    ///@}
+
+    /** \name Item Access
+      */
+    ///@{
+
+    /** Get a locator pointing to the first item
+      */
+    Locator head() const { return me().head(); }
+
+    /** Get a locator pointing to the last item
+      */
+    Locator tail() const { return me().tail(); }
+
+    /** Get a locator pointing to the item at \a index
+      */
+    Locator from(long index) const { return me().from(index); }
+
+    /** Get the number of items stored in the list
+      */
+    long count() const { return me().count(); }
+
+    /** \copydoc count()
+      */
+    long size() const { return me().count(); }
+
+    /** Check if this list is non-empty
+      */
+    explicit operator bool() const { return count() > 0; }
+
+    /** \copydoc count()
+      */
+    long operator+() const { return me().count(); }
+
+    /** Get constant reference to the item at position \a pos
+      */
+    const Item &at(Locator pos) const
+    {
+        assert(pos);
+        return me().at(pos);
+    }
+
+    /** Get constant reference to the item at \a index
+      */
+    const Item &at(long index) const
+    {
+        assert(0 <= index && index < count());
+        return me().at(index);
+    }
+
+    /** Get reference to the item at position \a pos
+      */
+    Item &mutableAt(Locator pos)
+    {
+        assert(pos);
+        return me().at(pos);
+    }
+
+    /** Get reference to the item at \a index
+      */
+    Item &mutableAt(long index)
+    {
+        assert(0 <= index && index < count());
+        return me().at(index);
+    }
+
+    /** \copydoc at(long index) const
+      */
+    const Item &operator[](long index) const { return at(index); }
+
+    /** \copydoc mutableAt(long)
+      */
+    Item &operator[](long index) { return mutableAt(index); }
+
+    /** Get constant reference to first item
+      */
+    const Item &first() const
+    {
+        assert(count() > 0);
+        return me().first();
+    }
+
+    /** Get constant reference to last item
+      */
+    const Item &last() const
+    {
+        assert(count() > 0);
+        return me().last();
+    }
+
+    /** Tell if \a item is the first item
+      */
+    bool first(const Item &item) const
+    {
+        return &item == &first();
+    }
+
+    /** Tell if \a item is the last item
+      */
+    bool last(const Item &item) const
+    {
+        return &item == &last();
+    }
+
+    /** Get reference to first item
+      */
+    Item &touchFirst()
+    {
+        assert(count() > 0);
+        return me().first();
+    }
+
+    /** Get reference to last item
+      */
+    Item &touchLast()
+    {
+        assert(count() > 0);
+        return me().last();
+    }
+
+    ///@}
+
+    /** \name Front and Back Operations
+      */
+    ///@{
+
+    /** Insert \a item at the end of the list
+      */
+    void append(const Item &item)
+    {
+        me().pushBack(item);
+    }
+
+    /** Insert \a item at the beginning of the list
+      */
+    void prepend(const Item &item)
+    {
+        insertAt(0, item);
+    }
+
+    /** Append a copy of list \a other
+      */
+    template<class Item>
+    void appendList(const List<Item> &other)
+    {
+         for (const Item &item: other)
+            append(item);
+    }
+
+    /** Prepend a copy of list \a other
+      */
+    template<class Item>
+    void prependList(const List<Item> &other)
+    {
+        for (const Item &item: other)
+            prepend(item);
+    }
+
+    /** Insert \a item as a new last item
+      */
+    void pushBack(const Item &item)
+    {
+        me().pushBack(item);
+    }
+
+    /** Insert \a item as a new first item
+      */
+    void pushFront(const Item &item)
+    {
+        insertAt(0, item);
+    }
+
+    /** Remove the last item
+      */
+    void popBack()
+    {
+        assert(count() > 0);
+        me().pop(count() - 1);
+    }
+
+    /** Remove the first item
+      */
+    void popFront()
+    {
+        assert(count() > 0);
+        removeAt(0);
+    }
+
+    /** Insert a new last item
+      * \param args construction arguments
+      */
+    template<class... Args>
+    void emplaceBack(Args... args)
+    {
+        me().emplaceLast(args...);
+    }
+
+    /** Insert a new first item
+      * \param args construction arguments
+      */
+    template<class... Args>
+    void emplaceFront(Args... args)
+    {
+        me().emplaceAt(0, args...);
+    }
+
+    /** Append \a item
+      */
+    List &operator<<(const Item& item)
+    {
+        pushBack(item);
         return *this;
     }
 
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return Cow::get(instance_); }
+    /** Remove and return the first item
+      */
+    List &operator>>(Item& item)
+    {
+        if (count() > 0) {
+            item = first();
+            popFront();
+        }
+        return *this;
+    }
 
-    operator const Instance *() const { return instance_; }
-    operator Instance *() { return Cow::get(instance_); }
+    ///@}
 
-    T &operator[](size_type i) { return Cow::get(instance_)->at(i); }
-    const T &operator[](size_type i) const { return instance_->at(i); }
+    /** \name Positional Operations
+      */
+    ///@{
 
-    List &operator<<(const T& x) { *Cow::get(instance_) << x; return *this; }
-    List &operator>>(T& x) { if (instance_->count() > 0) *Cow::get(instance_) >> x; return *this; }
+    /** Insert \a item at position \a pos
+      */
+    void insertAt(Locator &pos, const Item &item)
+    {
+        me().pushAndStep(pos, item);
+    }
+
+    /** Insert \a item at \a index
+      */
+    void insertAt(long index, const Item &item)
+    {
+        assert(0 <= index && index <= count());
+        me().push(index, item);
+    }
+
+    /** Remove item at position \a pos (and advance \a pos to the next item)
+      */
+    void removeAt(Locator &pos)
+    {
+        me().popAndStep(pos);
+    }
+
+    /** Remove item at \a index
+      */
+    void removeAt(long index)
+    {
+        assert(0 <= index && index < count());
+        me().pop(index);
+    }
+
+    /** Create a new item at position \a pos (initialized with \a args)
+      */
+    template<class... Args>
+    void emplaceAt(Locator &pos, Args... args)
+    {
+        assert(pos);
+        me().emplaceAt(pos, args...);
+    }
+
+    /** Create a new item at \a index (initialized with \a args)
+      */
+    template<class... Args>
+    void emplaceAt(long index, Args... args)
+    {
+        assert(0 <= index && index < count());
+        me().emplaceAt(index, args...);
+    }
+
+    ///@}
+
+    /** \name Global Operations
+      */
+    ///@{
+
+    /** Find item \a b
+      * \tparam Pattern Pattern type
+      * \param pattern The pattern to search for
+      * \param pos Provides the starting position and returns the final position
+      * \return True if item \a b was found, false otherwise
+      */
+    template<class Pattern>
+    bool find(const Pattern &pattern, InOut<Locator> pos = None{}) const
+    {
+        Locator target = pos;
+        if (!target) target = head();
+        for (; target; ++target) {
+            if (at(target) == pattern)
+                break;
+        }
+        pos = target;
+        return bool(target);
+    }
+
+    /** Convenience method
+      * \tparam Pattern Pattern type
+      * \param pattern The pattern to search for
+      */
+    template<class Pattern>
+    bool contains(const Pattern &pattern) const
+    {
+        return find(pattern);
+    }
+
+    /** Replace all occurences of \a pattern by \a substitute
+      */
+    template<class Pattern>
+    void replace(const Pattern &pattern, const Item &substitute)
+    {
+        for (Item &item: *this) {
+            if (item == pattern)
+                item = substitute;
+        }
+    }
+
+    /** Sort the list
+      * \tparam Order %Sorting order type
+      * \param order %Sorting order function
+      *
+      * Sorts the list of items according the given sorting order.
+      * The order of equal elements is preserved.
+      */
+    template<class Order = Asc>
+    void sort(Order order = Order{})
+    {
+        stableSort(me(), order);
+    }
+
+    /** Sort the list and remove all doubles
+      * \tparam Order %Sorting order type
+      * \param order %Sorting order function
+      *
+      * Sorts the list of items according the given sorting order and
+      * removes all doubles thereafter.
+      */
+    template<class Order = Asc>
+    void sortUnique(Order order = Order{})
+    {
+        if (count() <= 1) return;
+        sort();
+        Locator pos = head();
+        Item x = at(pos);
+        ++pos;
+        while (pos) {
+            const Item &y = at(pos);
+            if (order(x, y)) {
+                x = y;
+                ++pos;
+            }
+            else {
+                removeAt(pos);
+            }
+        }
+    }
+
+    /** %Return a sorted copy of this list
+      * \tparam Order %Sorting order type
+      * \param order %Sorting order function
+      * \return sorted copy of this list
+      *
+      * Sorts the list of items according the given sorting order.
+      * The order of equal elements is preserved.
+      */
+    template<class Order = Asc>
+    List sorted(Order order = Order{}) const
+    {
+        List result;
+        auto &buffer = result.me.touch();
+        for (auto pos = head(); pos; ++pos)
+            buffer.insertLast(at(pos), order);
+        return result;
+    }
+
+    /** %Return a sorted copy of this list which does not contain repeated items
+      * \tparam Order %Sorting order type
+      * \param order %Sorting order function
+      * \return sorted copy of this list
+      *
+      * Sorts the list of items according the given sorting order.
+      * For repeated items only the first occurance is added to the sorted list.
+      */
+    template<class Order = Asc>
+    List sortedUnique(Order order = Order{}) const
+    {
+        List result;
+        auto &buffer = result.me.touch();
+        for (auto pos = head(); pos; ++pos)
+            buffer.insertUnique(at(pos), None{}, order);
+        return result;
+    }
+
+    /** %Reverse the order of items in the list
+      */
+    void reverse()
+    {
+        me().reverse();
+    }
+
+    /** %Return a copy of the list in which the order of items is reversed
+      */
+    List reversed() const
+    {
+        List result;
+        auto &buffer = result.me.touch();
+        for (auto pos = tail(); pos; --pos)
+            buffer.pushBack(at(pos));
+        return result;
+    }
+
+    /** %Call function \a f for each item
+      * \tparam F Function type (lambda or functor)
+      * \param f Unary function which gets called for each item
+      */
+    template<class F>
+    void forEach(F f) const
+    {
+        for (auto &x: *this) f(x);
+    }
+
+    /** %Call function \a f for each item
+      * \tparam F Function type (lambda or functor)
+      * \param f Unary function which gets called for each item
+      */
+    template<class F>
+    void forEach(F f)
+    {
+        for (auto &x: *this) f(x);
+    }
+
+    /** Remove all items
+      */
+    void deplete()
+    {
+        me().deplete();
+    }
+
+    /** Merge into a single item interspersed by \a sep
+      */
+    template<class R = T, class S = T>
+    R join(S sep) const { return R(*this, sep); }
+
+    /** Merge into a single item
+      */
+    template<class R = T>
+    R join() const { return R{*this}; }
+
+    ///@}
+
+    using iterator = Iterator<bucket::Vector<Item>>; ///< \internal Value iterator
+    using const_iterator = Iterator<const bucket::Vector<Item>>; ///< \internal Readonly value iterator
+    using reverse_iterator = ReverseIterator<bucket::Vector<Item>>; ///< \internal Reverse value iterator
+    using const_reverse_iterator = ReverseIterator<const bucket::Vector<Item>>; ///< \internal Readonly reverse value iterator
+    using value_type = Item; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
+
+    /** \name Standard iterators
+      */
+    ///@{
+
+    iterator begin() { me(); return head(); } ///< %Return iterator pointing to the first item (if any)
+    iterator end  () { me(); return Locator{count()}; } ///< %Return iterator pointing behind the last item
+
+    const_iterator begin () const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+
+    reverse_iterator rbegin() { me(); return tail(); } ///< %Return reverse iterator pointing to the last item (if any)
+    reverse_iterator rend  () { me(); return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+
+    const_reverse_iterator rbegin () const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+
+    const_reverse_iterator crend  () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+
+    ///@}
+
+    /** \name Comparism Operators
+      */
+    ///@{
+
+    template<class B> bool operator==(const B &b) const { return container::equal(*this, b); } ///< %Return true if this container equals \a b
+    template<class B> bool operator!=(const B &b) const { return container::differ(*this, b); } ///< %Return true if this container differs from \a b
+    template<class B> bool operator< (const B &b) const { return container::below(*this, b); } ///< %Return true if this container is lower than \a b
+    template<class B> bool operator> (const B &b) const { return container::above(*this, b); } ///< %Return true if this container is greater than \a b
+    template<class B> bool operator<=(const B &b) const { return container::belowOrEqual(*this, b); } ///< %Return true if this container is lower or equal than b
+    template<class B> bool operator>=(const B &b) const { return container::aboveOrEqual(*this, b); } ///< %Return true if this container is greater or equal than b
+
+    ///@}
 
 private:
-    friend class Variant; // HACK
-    friend class VariantInstance; // HACK
-    operator Object *() const { return instance_; } // HACK
-
-    explicit operator bool() const;
-    // operator bool() const; \todo make it work
-
-    Ref<Instance> instance_;
+    Cow<bucket::Vector<Item>> me;
 };
-
-template<class T>
-typename List<T>::Index count(const List<T> &a) { return a->count(); }
-
-template<class T>
-typename List<T>::ConstIterator begin(const List<T> &a) { return a->begin(); }
-
-template<class T>
-typename List<T>::ConstIterator end(const List<T> &a) { return a->end(); }
-
-template<class T>
-typename List<T>::Iterator begin(List<T> &a) { return a->begin(); }
-
-template<class T>
-typename List<T>::Iterator end(List<T> &a) { return a->end(); }
-
-template<class T>
-bool operator==(const List<T> &a, const List<T> &b) { return container::compare(a, b) == 0; }
-
-template<class T>
-bool operator!=(const List<T> &a, const List<T> &b) { return container::compare(a, b) != 0; }
-
-template<class T>
-bool operator<(const List<T> &a, const List<T> &b) { return container::compare(a, b) < 0; }
-
-template<class T>
-bool operator>(const List<T> &a, const List<T> &b) { return container::compare(a, b) > 0; }
-
-template<class T>
-bool operator<=(const List<T> &a, const List<T> &b) { return container::compare(a, b) <= 0; }
-
-template<class T>
-bool operator>=(const List<T> &a, const List<T> &b) { return container::compare(a, b) >= 0; }
 
 } // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,71 +8,64 @@
 
 #pragma once
 
-#include <cc/ui/FtGlyphRun>
 #include <cc/ui/TextRun>
-#include <cc/IterationSource>
+#include <cc/ui/FtGlyphRun>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class Painter;
 class FtTextCursor;
 
+/** \internal
+  */
 class FtTextRun: public TextRun
 {
 public:
-    static Ref<FtTextRun> create() {
-        return new FtTextRun;
-    }
+    FtTextRun():
+        TextRun{new State}
+    {}
 
-    Ref<TextRun> copy() const override;
-
-    void append(const String &text, const Font &font = Font{}) override;
-
-    Point advance() const override { return advance_; }
-    Size size() const override { return size_; }
-    double maxAscender() const override { return maxAscender_; }
-    double minDescender() const override { return minDescender_; }
-    int byteCount() const override { return byteCount_; }
-    int lineCount() const override { return lineCount_; }
-
-    TextAlign textAlign() const override { return textAlign_; }
-    void setTextAlign(TextAlign textAlign) override { textAlign_ = textAlign; }
-
-    Ref<TextRun> wrap(double maxWidth, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const override;
-
-    Ref< Source<const GlyphRun *> > getAllGlyphRuns() const override
+    Point advance(const FtTextCursor &cursor) const
     {
-        return IterationSource<FtGlyphRuns::Instance, const GlyphRun *>::open(glyphRuns_);
+        return me().advance(cursor);
     }
 
-    Ref<TextCursor> getTextCursor(int byteOffset = 0) const override;
+    int moveTextCursor(FtTextCursor &cursor, int steps) const
+    {
+        return me().moveTextCursor(cursor, steps);
+    }
+
+    List<FtGlyphRun> glyphRuns() const { return me().glyphRuns_; }
 
 private:
     friend class Object;
-    friend class Painter;
     friend class FtTextCursor;
 
-    using FtGlyphRuns = List< Ref<const FtGlyphRun> >;
+    struct State: public TextRun::State
+    {
+        FtTextRun self() const;
 
-    static double maxLineHeight(const FtGlyphRuns &glyphRuns);
-    Ref<const FtGlyphRun> fold(const FtGlyphRuns &glyphRuns) const;
-    Ref<FtTextRun> unfold(const FtGlyphRun *metaBlock, const FtGlyphRuns &glyphRuns) const;
+        void append(const String &text, const Font &font) override;
+        TextRun wrap(double maxWidth, TextAlign textAlign, double lineHeight, const TextWrapBehind &wrapBehind) const override;
 
-    FtTextRun();
+        static double maxLineHeight(const List<FtGlyphRun> &glyphRuns);
 
-    Point advance(const FtTextCursor *cursor) const;
-    int moveTextCursor(FtTextCursor *cursor, int steps) const;
+        FtGlyphRun fold(const List<FtGlyphRun> &glyphRuns) const;
+        FtTextRun unfold(FtGlyphRun &metaBlock, const List<FtGlyphRun> &glyphRuns) const;
 
-    FtGlyphRuns glyphRuns_;
-    Point advance_;
-    double firstLineHeight_ { 0 };
-    Size size_;
-    double maxAscender_ { 0 };
-    double minDescender_ { 0 };
-    int byteCount_ { 0 };
-    int lineCount_ { 1 };
-    TextAlign textAlign_ { TextAlign::Left };
+        TextCursor getTextCursor(int byteOffset) const override;
+        int moveTextCursor(FtTextCursor &cursor, int steps) const;
+
+        Point advance(const FtTextCursor &cursor) const;
+
+        List<FtGlyphRun> glyphRuns_;
+    };
+
+    explicit FtTextRun(State *newState):
+        TextRun{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

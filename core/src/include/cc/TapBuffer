@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/LineBuffer>
+
+namespace cc {
+
+/** \class TapBuffer cc/TapBuffer
+  * \ingroup http
+  * \brief Line buffer with human readable output logging
+  */
+class TapBuffer: public LineBuffer
+{
+public:
+    TapBuffer(const Stream &stream, const String &prefix);
+
+private:
+    struct State;
+};
+
+} // namespace cc

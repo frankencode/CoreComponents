@@ -1,40 +1,43 @@
-#include <cc/http/HttpClient>
+#include <cc/HttpClient>
+#include <cc/IoStream>
+#include <cc/exceptions>
 #include <cc/stdio>
 
-using namespace cc;
-using namespace cc::net;
-using namespace cc::http;
-
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
-    auto toolName = String{argv[0]}->fileName();
-    int exitStatus = 0;
+    using namespace cc;
+
+    auto toolName = String{argv[0]}.baseName();
 
     try {
-        if (argc < 2) throw HelpRequest{};
+        if (argc != 2) throw HelpRequest{};
 
-        String uri;
-        {
-            StringList parts;
-            for (int i = 1; i < argc; ++i)
-                parts->append(argv[i]);
-            uri = parts->join("%20");
-        }
+        Uri uri{argv[1]};
+        HttpClient client{uri};
+        if (!client.waitEstablished()) return 2;
 
-        auto response = HttpClient::get(uri);
+        ferr() << "Connected to " << client.address() << nl;
 
-        if (response->statusCode() >= 300) exitStatus = response->statusCode() / 100;
-
-        ferr() << response->version() << " " << response->statusCode() << " " << response->reasonPhrase() << nl;
-        response->payload()->transferTo(stdOut());
+        HttpResponse response = client.query("GET", uri.path());
+        ferr() << response.version() << " " << +response.status() << " " << response.reasonPhrase() << nl;
+        response.payload().transferTo(IoStream::output());
+        // IoStream::error().write("\n");
+        return +response.status() >= 300 ? +response.status() / 100 : 0;
     }
     catch (HelpRequest &) {
-        fout(
+        ferr(
             "Usage: %% <URI>\n"
             "Simple HTTP(S) client\n"
             "\n"
         ) << toolName;
+        return 1;
     }
+    #ifdef NDEBUG
+    catch (Exception &other) {
+        ferr() << other << nl;
+        return 2;
+    }
+    #endif
 
-    return exitStatus;
+    return 0;
 }

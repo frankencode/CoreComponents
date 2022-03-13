@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Exception>
+
+namespace cc::ui {
+
+/** \class FontError cc/ui/exceptions
+  * \brief Failed to load a font file
+  */
+class FontError: public Exception {};
+
+/** \class PlatformError cc/ui/exceptions
+  * \brief Failed to load a platform plugin
+  */
+class PlatformError: public Exception {};
+
+} // namespace cc::ui

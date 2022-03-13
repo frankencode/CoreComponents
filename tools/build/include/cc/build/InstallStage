@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildStage>
+
+namespace cc::build {
+
+/** \brief Copy executables, libraries, headers and resources to default system directories
+  */
+class InstallStage: public BuildStage
+{
+public:
+    bool run();
+    bool installTool(const Module &module);
+    bool installApplicationOrLibrary();
+
+    bool linkerCacheDirty() const { return linkerCacheDirty_; }
+
+private:
+    bool linkerCacheDirty_ { false };
+};
+
+} // namespace cc::build

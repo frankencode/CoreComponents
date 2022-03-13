@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,18 +8,55 @@
 
 #pragma once
 
-#include <errno.h>
 #include <cc/Exception>
 
 namespace cc {
 
+/** \class IoExhaustion cc/exceptions
+  * \ingroup exceptions
+  * \brief Input or Output exhaustion
+  */
+class IoExhaustion: public Exception
+{};
+
+/** \class OutputExhaustion cc/exceptions
+  * \ingroup exceptions
+  * \brief Output exhaustion
+  */
+class OutputExhaustion: public IoExhaustion
+{
+public:
+    String message() const override;
+};
+
+/** \class InputExhaustion cc/exceptions
+  * \ingroup exceptions
+  * \brief Input exhaustion
+  */
+class InputExhaustion: public IoExhaustion
+{
+public:
+    String message() const override;
+};
+
+/** \class Timeout cc/exceptions
+  * \ingroup exceptions
+  * \brief Operation timed out
+  */
+class Timeout: public Exception
+{
+public:
+    String message() const override;
+};
+
 /** \class UsageError cc/exceptions
+  * \ingroup exceptions
   * \brief %User input ambiguous, report back to user and provide guidance
   */
 class UsageError: public Exception
 {
 public:
-    UsageError(const String &message = ""): message_{message} {}
+    explicit UsageError(const String &message = ""): message_{message} {}
 
     String message() const override { return message_; }
 
@@ -28,54 +65,104 @@ private:
 };
 
 /** \class HelpRequest cc/exceptions
+  * \ingroup exceptions
   * \brief %User requested help
   */
 class HelpRequest: public Exception
 {
 public:
-    String message() const override { return "No help, yet ..."; }
+    String message() const override;
 };
 
-/** \class VersionError cc/exceptions
+/** \class VersionRequest cc/exceptions
+  * \ingroup exceptions
   * \brief %User requested the application version
   */
 class VersionRequest: public Exception
 {
 public:
-    String message() const override { return "Application is not versioned, yet ..."; }
+    String message() const override;
 };
 
 /** \class EncodingError cc/exceptions
+  * \ingroup exceptions
   * \brief Some encoded data is malformed
   */
 class EncodingError: public Exception
 {};
 
 /** \class UnicodeError cc/exceptions
-  * \brief Encoding/decoding of an %Unicode String failed
+  * \ingroup exceptions
+  * \brief Encoding/decoding of an %Unicode string failed
   */
 class UnicodeError: public EncodingError
 {};
 
-/** \class UnexpectedEndOfInputError cc/exceptions
-  * \brief End of input reached although more data is needed
+/** \class PropertyBindingError cc/exceptions
+  * \ingroup exceptions
+  * \brief General error binding properties
   */
-class UnexpectedEndOfInputError: public Exception
+class PropertyBindingError: public Exception
+{};
+
+/** \class PropertyBindingLoop cc/exceptions
+  * \ingroup exceptions
+  * \brief %Property binding loop detected
+  */
+class PropertyBindingLoop: public PropertyBindingError
 {
 public:
-    String message() const override { return "Unexpected end of input"; }
+    String message() const override;
 };
 
-/** \class BufferOverflow cc/exceptions
-  * \brief Some buffer size is exceeded
+/** \class CommandNotFound cc/exceptions
+  * \ingroup exceptions
+  * \brief %Command not found
   */
-class BufferOverflow: public Exception
+class CommandNotFound: public UsageError
 {
 public:
-    String message() const override { return "Buffer overflow"; }
+    CommandNotFound(const String &command = ""):
+        command_{command}
+    {}
+
+    /** The command in question
+      */
+    String command() const { return command_; }
+
+    String message() const override;
+
+private:
+    String command_;
 };
+
+/** \class DebugError cc/exceptions
+  * \ingroup exceptions
+  * \brief Debugging hint on internal system malfunction
+  * \see SystemError
+  */
+class DebugError: public Exception
+{
+public:
+    DebugError(const String &reason, const char *source, int line):
+        reason_{reason},
+        source_{source},
+        line_{line}
+    {}
+
+    String message() const override;
+
+private:
+    String reason_;
+    const char *source_;
+    int line_;
+};
+
+#define CC_DEBUG_ERROR(reason) \
+    throw DebugError(reason, __FILE__, __LINE__)
 
 /** \class Error cc/exceptions
+  * \ingroup exceptions
   * \brief Generic application error
   */
 class Error: public Exception
@@ -93,224 +180,9 @@ public:
     String message() const override { return message_; }
     int exitCode() const { return exitCode_; }
 
-    const Error *operator->() const { return this; }
-
 private:
     String message_;
     int exitCode_;
-};
-
-/** \class DebugError cc/exceptions
-  * \brief Debugging hint on internal system malfunction
-  */
-class DebugError: public Exception
-{
-public:
-    DebugError(const String &reason, const char *source, int line):
-        reason_{reason},
-        source_{source},
-        line_{line}
-    {}
-
-    String message() const override;
-
-    const DebugError *operator->() const { return this; }
-
-private:
-    String reason_;
-    const char *source_;
-    int line_;
-};
-
-String systemError(int errorCode);
-
-/** \class SystemError cc/exceptions
-  * \brief %System call failed
-  */
-class SystemError: public Exception
-{
-public:
-    SystemError(int errorCode): errorCode_{errorCode} {}
-
-    int errorCode() const { return errorCode_; }
-
-    String message() const override;
-
-    const SystemError *operator->() const { return this; }
-
-protected:
-    int errorCode_;
-};
-
-/** \class SystemResourceError cc/exceptions
-  * \brief %System call failed to perform an action on a named resource (e.g. a file)
-  */
-class SystemResourceError: public SystemError
-{
-public:
-    SystemResourceError(int errorCode, const String &resource, const char *source, int line):
-        SystemError{errorCode},
-        resource_{resource},
-        source_{source},
-        line_{line}
-    {}
-
-    String resource() const { return resource_; }
-    const char *source() const { return source_; }
-    int line() const { return line_; }
-
-    String message() const override;
-
-    const SystemResourceError *operator->() const { return this; }
-
-private:
-    String resource_;
-    const char *source_;
-    int line_;
-};
-
-/** \class SystemDebugError cc/exceptions
-  * \brief Debugging hint on system call failure
-  */
-class SystemDebugError: public SystemError
-{
-public:
-    SystemDebugError(int errorCode, const char *source, int line):
-        SystemError{errorCode},
-        source_{source},
-        line_{line}
-    {}
-
-    const char *source() const { return source_; }
-    int line() const { return line_; }
-
-    String message() const override;
-
-    const SystemDebugError *operator->() const { return this; }
-
-private:
-    const char *source_;
-    int line_;
-};
-
-#define CC_DEBUG_ERROR(reason) \
-    throw DebugError(reason, __FILE__, __LINE__)
-
-#define CC_SYSTEM_RESOURCE_ERROR(errorCode, resource) \
-    throw SystemResourceError(errorCode, resource, __FILE__, __LINE__)
-
-#define CC_SYSTEM_DEBUG_ERROR(errorCode) \
-    throw SystemDebugError(errorCode, __FILE__, __LINE__)
-
-#define CC_SYSTEM_ERROR(errorCode, resource) \
-    { \
-        if (resource != "") CC_SYSTEM_RESOURCE_ERROR(errorCode, resource); \
-        else CC_SYSTEM_DEBUG_ERROR(errorCode); \
-    }
-
-/** \class TextError cc/exceptions
-  * \brief General error related to a text (progam text, config file, etc.)
-  */
-class TextError: public Exception
-{
-public:
-    String text() const { return text_; }
-    int offset() const { return offset_; }
-    String resource() const { return resource_; }
-
-    void setResource(const String &resource) { resource_ = resource; }
-
-    const TextError *operator->() const { return this; }
-
-protected:
-    TextError(const String &text, int offset, const String &resource = "");
-
-    String text_;
-    int offset_;
-    String resource_;
-};
-
-/** \class SemanticError cc/exceptions
-  * \brief Semantic error
-  */
-class SemanticError: public TextError
-{
-public:
-    SemanticError(const String &reason, const String &text = "", int offset = -1, const String &resource = ""):
-        TextError{text, offset, resource},
-        reason_{reason}
-    {}
-
-    String reason() const { return reason_; }
-
-    String message() const override;
-
-    const SemanticError *operator->() const { return this; }
-
-private:
-    String reason_;
-};
-
-/** \class Timeout cc/exceptions
-  * \brief Operation timed out
-  */
-class Timeout: public Exception
-{
-public:
-    String message() const override;
-};
-
-/** \class ConnectionResetByPeer cc/exceptions
-  * \brief Other end of a communication channel was closed (pipe or socket)
-  */
-class ConnectionResetByPeer: public Exception
-{
-public:
-    String message() const override;
-};
-
-/** \class TransferError cc/exceptions
-  * \brief A data transfer operation failed
-  * \see Transfer
-  */
-class TransferError: public Exception
-{
-public:
-    TransferError(const String &details);
-
-    String message() const override;
-
-private:
-    String details_;
-};
-
-/** \class PermissionError cc/exceptions
-  * \brief Insufficient permission to perform operation
-  */
-class PermissionError: public UsageError
-{
-public:
-    String message() const override;
-};
-
-/** \class CommandNotFound cc/exceptions
-  * \brief Command not found error
-  */
-class CommandNotFound: public UsageError
-{
-public:
-    CommandNotFound(const String &command = ""):
-        command_{command}
-    {}
-
-    String command() const { return command_; }
-
-    String message() const override;
-
-    const CommandNotFound *operator->() const { return this; }
-
-private:
-    String command_;
 };
 
 } // namespace cc

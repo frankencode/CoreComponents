@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,21 +7,17 @@
  */
 
 #include <cc/ui/PasswordInput>
-#include <cc/ui/PasswordEditor>
-#include <cc/ui/Application>
+#include <cc/ui/PasswordInputState>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-PasswordInput::Instance::Instance(const String &bullet):
-    TextInput::Instance{Object::create<PasswordEditor>(bullet)}
+PasswordInput::PasswordInput():
+    TextInput{onDemand<State>}
+{}
+
+String PasswordInput::password() const
 {
-    font <<[=]{ return Application{}->defaultFixedFont(); };
+    return editor().as<PasswordEditor>().password();
 }
 
-String PasswordInput::Instance::password() const
-{
-    return dynamic_cast<const PasswordEditor *>(editor())->password();
-}
-
-}} // namespace cc::ui
+} // namespace cc::ui

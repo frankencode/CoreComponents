@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,26 +7,40 @@
  */
 
 #include <cc/Version>
-#include <cc/Format>
+#include <cc/input>
+#include <cc/str>
 
 namespace cc {
 
-Version::Version(const Variant &v)
+Version::Version(const String &s)
 {
-    *this = Variant::cast<Version>(v);
+    List<String> parts = s.trimmed("v").split('.');
+    if (parts.count() > 0) me().major = readNumber<int>(parts.at(0));
+    if (parts.count() > 1) me().minor = readNumber<int>(parts.at(1));
+    if (parts.count() > 2) me().patch = readNumber<int>(parts.at(2));
 }
 
-Version::Instance::Instance(const String &s)
+String Version::toString() const
 {
-    StringList parts = s->trim("v")->split('.');
-    if (parts->has(0)) major_ = parts->at(0)->toNumber<int>();
-    if (parts->has(1)) minor_ = parts->at(1)->toNumber<int>();
-    if (parts->has(2)) patch_ = parts->at(2)->toNumber<int>();
+    return String{
+        List<String>{} << str(major()) << str(minor()) << str(patch()),
+        "."
+    };
 }
 
-String Version::Instance::toString() const
+const TypeInfo VariantType<Version>::info
 {
-    return Format{"%%.%%.%%"} << major_ << minor_ << patch_;
-}
+    .typeName = "Version",
+    .str = [](const void *bytes) {
+        return VariantType<Version>::retrieve(bytes).toString();
+    },
+    .cleanup = [](void *bytes){},
+    .assign = [](void *dst, const void *src) {
+        new(dst)Version{*static_cast<const Version *>(src)};
+    },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<Version>::retrieve(a) == VariantType<Version>::retrieve(b);
+    }
+};
 
 } // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,76 +9,84 @@
 #pragma once
 
 #include <cc/ui/Timer>
+#include <cc/ui/DisplayManager>
 #include <cc/Property>
 #include <cc/System>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+using EasingCurve = std::function<double(double)>;
+
+/** \internal
+  * \todo specialize for Color
+  */
 template<class T>
 class Transition: public Object, private PropertyMutator<T>
 {
 public:
-    typedef std::function<double(double)> Easing;
-
-    static Transition *setup(Property<T> &property, double duration, const Easing &easing)
+    Transition(Property<T> &property, const EasingCurve &curve, double duration):
+        Object{new State{property, curve, duration}}
     {
-        Ref<Transition> transition = new Transition{property, duration, easing};
-        Transition *self = transition;
-        property->restrict([transition, self](T &newValue, T oldValue){
-            if (self->isActive()) return false;
-            self->start(oldValue, newValue);
-            return false;
-        });
-        return transition;
+        property.restrict(*this);
     }
 
-    void start(T oldValue, T newValue)
+    bool operator()(T &newValue, T oldValue)
     {
-        if (oldValue == newValue || timer_->isActive()) return;
-        oldValue_ = oldValue;
-        newValue_ = newValue;
-        timer_->start();
+        if (oldValue != newValue) {
+            if (me().timer_.isActive()) {
+                me().timer_.stop();
+                return true;
+            }
+            me().oldValue_ = oldValue;
+            me().newValue_ = newValue;
+            me().timer_.start();
+        }
+        return false;
     }
-
-    bool isActive() const { return timer_->isActive(); }
 
 private:
-    Transition(Property<T> &property, double duration, const Easing &easing):
-        alias_{alias(property)},
-        duration_{duration},
-        easing_{easing}
+    struct State: public Object::State
     {
-        timer_->timeout->connect([this]{timeout();});
-    }
-
-    void timeout()
-    {
-        const double t0 = timer_->startTime();
-        const double t1 = t0 + duration_;
-        const double t = System::now();
-
-        if (t >= t1) {
-            PropertyMutator<T>::store(alias_, newValue_);
-            timer_->stop();
+        State(Property<T> &property, const EasingCurve &curve, double duration):
+            alias_{&property},
+            curve_{curve},
+            duration_{duration},
+            timer_{1./DisplayManager{}.refreshRate()}
+        {
+            timer_.onTimeout([this]{timeout();});
         }
-        else {
-            const T &a = oldValue_;
-            const T &b = newValue_;
-            double s = easing_((t - t0) / (t1 - t0));
-            PropertyMutator<T>::store(
-                alias_,
-                (1 - s) * a + s * b
-            );
-        }
-    }
 
-    Property<T> alias_;
-    double duration_;
-    Easing easing_;
-    Timer timer_ { 1./60. };
-    T oldValue_;
-    T newValue_;
+        void timeout()
+        {
+            const double t0 = timer_.startTime();
+            const double t1 = t0 + duration_;
+            const double t = System::now();
+
+            if (t >= t1) {
+                PropertyMutator<T>::store(alias_, newValue_);
+                timer_.stop();
+            }
+            else {
+                const T &a = oldValue_;
+                const T &b = newValue_;
+                double s = curve_((t - t0) / (t1 - t0));
+                PropertyMutator<T>::store(
+                    alias_,
+                    a * (1 - s) + b * s
+                );
+            }
+        }
+
+        Property<T> alias_;
+        EasingCurve curve_;
+        double duration_;
+        Timer timer_;
+        T oldValue_;
+        T newValue_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

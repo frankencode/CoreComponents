@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,91 +7,24 @@
  */
 
 #include <cc/Dir>
-#include <cc/File>
-#include <cc/FileStatus>
-#include <cc/Random>
-#include <cc/Format>
-#include <cc/Process>
 #include <cc/DirWalker>
-#include <cc/exceptions>
-#ifndef NDEBUG
-#include <cc/check>
-#endif
-#include <sys/stat.h> // mkdir
+#include <cc/FileStatus>
+#include <cc/File>
+#include <cc/Random>
+#include <cc/str>
+#include <cstring>
+#include <dirent.h> // DIR, opendir, closedir, readdir
 
 namespace cc {
 
-Dir::Instance::Instance(const String &path, DIR *dir):
-    path_{path},
-    dir_{dir}
+bool Dir::access(const String &path, FileAccess mode)
 {
-    if (!dir_) {
-        dir_ = ::opendir(path_);
-        if (!dir_) CC_SYSTEM_RESOURCE_ERROR(errno, path);
-    }
-}
-
-Dir::Instance::~Instance()
-{
-    #ifndef NDEBUG
-    int ret =
-    #endif
-    ::closedir(dir_);
-    #ifndef NDEBUG
-    check(ret != -1);
-    #endif
-}
-
-String Dir::Instance::path() const
-{
-    return path_;
-}
-
-bool Dir::Instance::read(String *name)
-{
-    while (true) {
-        errno = 0;
-        struct dirent *entry = readdir(dir_);
-        if (!entry && errno) CC_SYSTEM_DEBUG_ERROR(errno);
-        if (entry) {
-            if (strcmp(entry->d_name, ".") == 0) continue;
-            if (strcmp(entry->d_name, "..") == 0) continue;
-            *name = entry->d_name;
-            return true;
-        }
-        break;
-    }
-
-    return false;
-}
-
-Stream Dir::Instance::openFile(const String &path)
-{
-    return File{path->isRelativePath() ? path_->extendPath(path) : path};
-}
-
-bool Dir::checkAccess(const String &path, FileAccess flags)
-{
-    return ::access(path, +flags) && (FileStatus{path}->type() == FileType::Directory);
+    return ::access(path, +mode) == 0 && FileStatus{path}.type() == FileType::Directory;
 }
 
 bool Dir::exists(const String &path)
 {
-    return File::exists(path) && (FileStatus{path}->type() == FileType::Directory);
-}
-
-int Dir::count(const String &path)
-{
-    int n = 0;
-    try {
-        Dir dir{path};
-        for (String name; dir->read(&name);) {
-            if (name != "." && name != "..")
-                ++n;
-        }
-    }
-    catch (...) {}
-    return n;
+    return FileStatus{path}.type() == FileType::Directory;
 }
 
 void Dir::create(const String &path, FileMode mode)
@@ -102,19 +35,60 @@ void Dir::create(const String &path, FileMode mode)
 
 void Dir::establish(const String &path, FileMode mode)
 {
-    StringList missingDirs;
+    List<String> missingDirs;
     for (
         String p = path;
-        p->count() > 0 && p != "/";
-        p = p->reducePath()
+        p.count() > 0 && p != "/";
+        p = p.cdUp()
     ) {
         if (Dir::exists(p)) break;
-        missingDirs->pushFront(p);
+        missingDirs.pushFront(p);
     }
-    while (missingDirs->count() > 0) {
-        Dir::create(missingDirs->front(), mode);
-        missingDirs->popFront();
+    while (missingDirs.count() > 0) {
+        const String &head = missingDirs.first();
+        if (::mkdir(head, +mode) == -1) {
+            if (!(errno == EEXIST && Dir::exists(head)))
+                CC_SYSTEM_RESOURCE_ERROR(errno, head);
+        }
+        missingDirs.popFront();
     }
+}
+
+String Dir::createUnique(const String &path, FileMode mode, char placeHolder)
+{
+    assert(path.find(placeHolder));
+
+    String candidate;
+
+    for (Random random; true;) {
+        candidate = path.copy();
+        for (int i = 0, n = candidate.count(); i < n; ++i) {
+            if (candidate[i] == placeHolder) {
+                char r = static_cast<char>(random.get(0, 61));
+                if ((0 <= r) && (r <= 9))
+                    r += '0';
+                else if ((10 <= r) && (r <= 35))
+                    r += 'a' - 10;
+                else if ((36 <= r) && (r <= 61))
+                    r += 'A' - 36;
+                candidate[i] = r;
+            }
+        }
+        if (::mkdir(candidate, +mode) == -1) {
+            if (!(errno == EEXIST && Dir::exists(candidate)))
+                CC_SYSTEM_RESOURCE_ERROR(errno, candidate);
+        }
+        else {
+            break;
+        }
+    }
+
+    return candidate;
+}
+
+String Dir::createTemp(FileMode mode)
+{
+    return createUnique("/tmp/" + str(::getpid()) + "_########", mode, '#');
 }
 
 void Dir::remove(const String &path)
@@ -123,55 +97,80 @@ void Dir::remove(const String &path)
         CC_SYSTEM_RESOURCE_ERROR(errno, path);
 }
 
-String Dir::createUnique(const String &path, FileMode mode, char placeHolder)
-{
-    Random random { Process::getId() };
-    while (true) {
-        String candidate = path->copy();
-        for (int i = 0, n = candidate->count(); i < n; ++i) {
-            if (candidate->at(i) == placeHolder) {
-                char r = random->get(0, 61);
-                if ((0 <= r) && (r <= 9))
-                    r += '0';
-                else if ((10 <= r) && (r <= 35))
-                    r += 'a' - 10;
-                else if ((36 <= r) && (r <= 61))
-                    r += 'A' - 36;
-                mutate(candidate)->at(i) = r;
-            }
-        }
-        if (::mkdir(candidate, +mode) == -1) {
-            if (errno != EEXIST)
-                CC_SYSTEM_RESOURCE_ERROR(errno, candidate);
-        }
-        else {
-            return candidate;
-        }
-    }
-}
-
-String Dir::createTemp(FileMode mode)
-{
-    return createUnique(
-        Format{"/tmp/%%_########"}
-            << Process::exePath()->fileName(),
-        mode
-    );
-}
-
 void Dir::deplete(const String &path)
 {
     DirWalker walker{path};
-    walker->setIgnoreHidden(false);
-    walker->setFollowSymlink(false);
-    walker->setDeleteOrder(true);
+    walker.setIgnoreHidden(false);
+    walker.setFollowSymlink(false);
+    walker.setDeleteOrder(true);
 
     String childPath;
     bool isDir = false;
-    while (walker->read(&childPath, &isDir)) {
+    while (walker.read(&childPath, &isDir)) {
         if (isDir) Dir::remove(childPath);
         else File::unlink(childPath);
     }
+}
+
+struct Dir::State: public Object::State
+{
+    using Default = Defined;
+
+    String path;
+    DIR *dir { nullptr };
+
+    ~State()
+    {
+        if (dir) ::closedir(dir);
+    }
+};
+
+Dir::Dir(const String &path):
+    Object{new State}
+{
+    me().path = path;
+    me().dir = ::opendir(path);
+    if (!me().dir) CC_SYSTEM_RESOURCE_ERROR(errno, path);
+}
+
+String Dir::path() const
+{
+    return me().path;
+}
+
+bool Dir::read(Out<String> name)
+{
+    struct dirent *entry = nullptr;
+
+    while (true) {
+        errno = 0;
+        entry = ::readdir(me().dir);
+        if (!entry && errno) CC_SYSTEM_DEBUG_ERROR(errno);
+        if (entry) {
+            if (std::strcmp(entry->d_name, ".") == 0) continue;
+            if (std::strcmp(entry->d_name, "..") == 0) continue;
+            name = entry->d_name;
+        }
+        break;
+    }
+
+    return entry;
+}
+
+Stream Dir::openFile(const String &path, FileOpen flags)
+{
+    String targetPath = path.isRelativePath() ? (me().path / path) : path;
+    return File{targetPath, flags};
+}
+
+Dir::State &Dir::me()
+{
+    return Object::me.as<State>();
+}
+
+const Dir::State &Dir::me() const
+{
+    return Object::me.as<State>();
 }
 
 } // namespace cc

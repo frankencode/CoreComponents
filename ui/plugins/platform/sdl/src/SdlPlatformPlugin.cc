@@ -1,52 +1,69 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <SDL2/SDL.h>
-#include <cc/exceptions>
-#include <cc/Registration>
-#include <cc/ui/SdlApplicationInstance>
-#include <cc/ui/SdlTimeMaster>
-#include <cc/ui/SdlDisplayManager>
-#include <cc/ui/SdlTouchDeviceManager>
 #include <cc/ui/SdlPlatformPlugin>
+#include <cc/ui/SdlDisplayManager>
+#include <cc/ui/SdlTimeMaster>
+#include <cc/ui/SdlApplication>
+#include <cc/Registration>
+#include <SDL2/SDL.h>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
+
+struct SdlPlatformPlugin::State: public PlatformPlugin::State
+{
+    State():
+        PlatformPlugin::State{"SDL", true}
+    {
+        #ifdef SDL_HINT_RENDER_BATCHING
+        SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
+        #endif
+
+        SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+            // linear filtering causes artefacts with moving objects with OpenGL acceleration
+            // therefore we might force nearest-neighbor filtering, which looks quite OK at the higher framerate
+
+        //#ifdef SDL_HINT_MOUSE_TOUCH_EVENTS
+        //SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
+        //#endif
+
+        //#ifdef SDL_HINT_TOUCH_MOUSE_EVENTS
+        //SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+        //#endif
+
+        // SDL_SetHint(SDL_HINT_EVENT_LOGGING, "1");
+        // SDL_SetHint(SDL_HINT_XINPUT_ENABLED, "1");
+
+        SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
+
+        if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0) throw SdlPlatformError{};
+    }
+
+    DisplayManager displayManager() const override
+    {
+        return SdlDisplayManager{};
+    }
+
+    TimeMaster timeMaster() const override
+    {
+        return SdlTimeMaster{};
+    }
+
+    Application application() const override
+    {
+        return SdlApplication{};
+    }
+};
 
 SdlPlatformPlugin::SdlPlatformPlugin():
-    PlatformPlugin("SDL", true)
-{
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+    PlatformPlugin{new State}
+{}
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
-        CC_DEBUG_ERROR(SDL_GetError());
-}
+CC_REGISTRATION(SdlPlatformPlugin);
 
-ApplicationInstance *SdlPlatformPlugin::application() const
-{
-    return SdlApplicationInstance::instance();
-}
-
-TimeMaster *SdlPlatformPlugin::timeMaster() const
-{
-    return SdlTimeMaster::instance();
-}
-
-DisplayManager *SdlPlatformPlugin::displayManager() const
-{
-    return SdlDisplayManager::instance();
-}
-
-TouchDeviceManager *SdlPlatformPlugin::touchDeviceManager() const
-{
-    return SdlTouchDeviceManager::instance();
-}
-
-CC_REGISTRATION(SdlPlatformPlugin)
-
-}} // namespace cc::ui
+} // namespace cc::ui

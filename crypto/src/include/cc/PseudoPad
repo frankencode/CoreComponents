@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/BlockCipher>
+#include <cc/Stream>
+
+namespace cc {
+
+/** \class PseudoPad cc/PseudoPad
+  * \ingroup crypto
+  * \brief %Pseudo random byte source
+  *
+  * The PseudoPad runs a given block cipher in counter mode to generate a random byte sequence.
+  * \see EntropySource
+  */
+class PseudoPad: public Stream
+{
+public:
+    explicit PseudoPad(const BlockCipher &cipher);
+
+private:
+    struct State;
+};
+
+} // namespace cc

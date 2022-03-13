@@ -1,0 +1,80 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/SyntaxNode>
+
+namespace cc::syntax {
+
+/** \class LookBehindNode cc/syntax/LookBehindNode
+  * \brief Match a given sub-expression behind the current text position.
+  * \tparam Invert %Invert the match (1) or keep it straight (0)
+  */
+template<int Invert = 0>
+class LookBehindNode: public SyntaxNode
+{
+public:
+    /** \param entry Sub-expression to match
+      */
+    explicit LookBehindNode(const SyntaxNode &entry):
+        SyntaxNode{new State{entry}}
+    {}
+
+    SyntaxNode entry() const { return me().entry_; }
+
+private:
+    struct State: public SyntaxNode::State
+    {
+        State(const SyntaxNode &entry):
+            entry_{entry}
+        {}
+
+        long matchNext(const String &text, long offset, Token &production) const override
+        {
+            auto transaction = production.children().transaction();
+
+            long length = entry_.matchLength();
+
+            if (length < 0) return -1;
+
+            long h = -1;
+            if (offset - length >= 0) {
+                h = entry_.matchNext(text, offset - length, production);
+            }
+
+            if ((h == -1) ^ Invert) offset = -1;
+
+            transaction.rollback();
+
+            return offset;
+        }
+
+        long matchLength() const override
+        {
+            return -1;
+        }
+
+        void decycle() override
+        {
+            entry_ = SyntaxNode{};
+        }
+
+        List<String> explain() const override
+        {
+            return List<String>{}
+                << (Invert ? "NotBehind{" : "Behind{") << entry_.explain() << "}";
+        }
+
+        SyntaxNode entry_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::syntax

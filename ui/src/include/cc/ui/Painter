@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,141 +8,170 @@
 
 #pragma once
 
-#include <cc/Exception>
+#include <cc/ui/Surface>
+#include <cc/ui/Pen>
 #include <cc/ui/types>
+#include <cc/Exception>
 
 typedef struct _cairo cairo_t;
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class SurfaceInstance;
 class GlyphRun;
-class FtGlyphRun;
 class TextRun;
+class FtGlyphRun;
 
+/** \class Painter cc/ui/Painter
+  * \ingroup ui
+  * \brief Drawing 2D vector graphics
+  * \exception PainterError
+  */
 class Painter
 {
 public:
-    typedef std::function<Color(int)> GetColor; ///< get Color for a given byte offset
+    /** \name Painter State
+      */
+    ///@{
 
-    class Instance {
-    public:
-        /** Path creation
-          * @{
-          */
-        void newPath();
-        void newSubPath();
-        void closePath();
+    /** Create a new painter for \a surface
+      */
+    explicit Painter(const Surface &surface);
 
-        bool hasCurrentPoint() const;
-        Point currentPoint() const;
-        void moveTo(Point nextPoint);
-        void lineTo(Point nextPoint);
-        void curveTo(Point controlPointA, Point controlPointB, Point endPoint);
-        void arc(Point center, double radius, double startAngle, double stopAngle);
-        void arcNegative(Point center, double radius, double startAngle, double stopAngle);
-        /** @}
-          */
+    /** Create a new painter
+      */
+    explicit Painter(Surface::State *state);
 
-        /** Convenience functions for path creation
-          * @{
-          */
-        void relMoveTo(Step delta);
-        void relLineTo(Step delta);
-        void relCurveTo(Step deltaA, Step deltaB, Step deltaE);
-        void rectangle(Point position, Size size);
-        void circle(Point center, double radius);
-        /** @}
-          */
+    void save(); ///< Save painter state to the top of the state stack
+    void restore(); ///< Restore painter state from the top of the state stack
 
-        /** Drawing
-          * @{
-          */
-        void setSource(Color Color);
-        void fill();
-        void fillPreserve();
-        /** @}
-          */
+    /** Emit current page
+      * \param clear Start with clean page
+      */
+    void nextPage(bool clear = true);
 
-        /** Text rendering
-          * @{
-          */
-        void showGlyphRun(Point pos, const GlyphRun *glyphRun);
-        void showGlyphRun(Point pos, const GlyphRun *glyphRun, const GetColor &ink, const GetColor &paper = GetColor{});
+    ///@}
 
-        void showTextRun(Point pos, const TextRun *textRun);
-        void showTextRun(Point pos, const TextRun *textRun, const GetColor &ink, const GetColor &paper = GetColor{});
-        /** @}
-          */
+    /** \name Path Creation
+      */
 
-        /** Transformations
-          * @{
-          */
-        void translate(Step step);
-        void scale(Scale ratio);
-        void rotate(double angle);
-        /** @}
-          */
+    ///@{
 
-        /** Save and restore the Painter state
-          * \see Painter::StateGuard
-          * @{
-          */
-        void save();
-        void restore();
-        /** @}
-          */
+    void newPath(); ///< Start a new path
+    void newSubPath(); ///< Start a new sub-path without setting an initial current point
+    void closePath(); ///< Close path with a line segment
 
-        /** emit current page
-          * \param clear start with clean page (true)
-          */
-        void nextPage(bool clear = true);
+    bool hasCurrentPoint() const; ///< Check if there is a current point
+    Point currentPoint() const; ///< Get the current point
+    void moveTo(Point c); ///< Start a new sub-path starting at \a c
+    void lineTo(Point c); ///< Add a line segment to the path from the current point to the new current point \a c
+    void curveTo(Point a, Point b, Point c); ///< Add a cubic Bézier spline starting in the current point, spanning over control points \a a, \a b and ending in the new current point \a c
+    void arc(Point m, double r, double alpha0 = 0, double alpha1 = 2 * M_PI); ///< Add a circular arc of radius \a r centered at \a m starting at angle \a alpha0 and ending at angle \a alpha1 (in radians)
+    void arcNegative(Point m, double r, double alpha0, double alpha1); ///< Add a circular arc with \a alpha1 < \a alpha0
 
-    private:
-        friend class Painter;
+    void rectangle(Point pos, Size size); ///< Add a closed sub-path in form of a rectangle with top-left at \a pos and given dimensions \a size
 
-        Instance(SurfaceInstance *surface);
-        ~Instance();
+    Rect pathExtents() const; ///< Get the current path's extents
+    Rect fillExtents() const; ///< Get the current path's exact rasterization extents
 
-        void checkForError();
-        void fillGlyphRunBackground(const FtGlyphRun *ftGlyphRun);
+    ///@}
 
-        cairo_t *cr_;
+    using GetColor = std::function<Color(int)> ; ///< Get color for a given byte offset
+
+    /** \name Text Rendering
+      */
+    ///@{
+
+    /** Show glyph run
+      * \param pos %Baseline position
+      * \param run %Glyph run
+      */
+    void showGlyphRun(Point pos, const GlyphRun &run);
+
+    /** Show glyph run with additional colors
+      * \param pos %Baseline position
+      * \param run %Glyph run
+      * \param ink %Foreground colors
+      * \param paper %Background colors
+      */
+    void showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, const GetColor &paper = GetColor{});
+
+    /** Show text run
+      * \param pos %Baseline position
+      * \param run %Text run
+      */
+    void showTextRun(Point pos, const TextRun &run);
+
+    /** Show text run with additional colors
+      * \param pos %Baseline position
+      * \param run %Text run
+      * \param ink %Foreground colors
+      * \param paper %Background colors
+      */
+    void showTextRun(Point pos, const TextRun &run, const GetColor &ink, const GetColor &paper);
+
+    ///@}
+
+    /** \name Coordinate System Transformations
+      */
+    ///@{
+
+    void translate(Step step); ///< Move coordinate system by \a step
+    void scale(Scale ratio); ///< Scale coordinate system by \a ratio
+    void rotate(double angle); ///< Rotate coordinate system by \a angle (in radians)
+
+    ///@}
+
+    /** \name Drawing
+      */
+    ///@{
+
+    void setPen(Color color); ///< %Set source color
+    void setPen(const Pen &pen); ///< %Set source color and line style in one go
+
+    /** Tells if to delete the current path after a stroke or fill operation
+      */
+    enum class CurrentPath {
+        Clear, ///< %Clear the current path from the painting context
+        Preserve ///< %Preserve the painting context's current path
     };
 
-    Painter(SurfaceInstance *surface):
-        instance_{surface}
-    {}
+    /** Fill the current path
+      * \param mode \copydoc CurrentPath
+      */
+    void fill(CurrentPath mode = CurrentPath::Clear);
 
-    Instance *operator->() { return &instance_; }
+    /** Stroke the outline of the current path
+      * \param mode \copydoc CurrentPath
+      */
+    void stroke(CurrentPath mode = CurrentPath::Clear);
+
+    ///@}
 
 private:
-    Painter(const Painter&) = delete;
-    Painter& operator=(const Painter&) = delete;
+    Painter(const Painter &) = delete;
 
-    Instance instance_;
+    void fillGlyphRunBackground(const FtGlyphRun &ftGlyphRun);
+
+    void setLineWidth(double width); ///< %Set current line width
+    void setLineCap(LineCap style); ///< %Set line cap style
+    void setLineJoin(LineJoin style); ///< %Set line join style
+    void setMiterLimit(double limit); ///< %Set limit for automatically switching between miter and bevel joins (limit = 1/sin(angle/2))
+    void setLineDash(const Array<double> &pattern, double offset = 0); ///< %Set line dash pattern
+
+    cairo_t *cr_;
 };
 
-/** \brief Something went wrong during painting
+/** \class PainterError cc/ui/Painter
+  * \brief Something went wrong during painting
   */
 class PainterError: public Exception
 {
 public:
     PainterError(int errorStatus);
     String message() const override;
+
 private:
     int errorStatus_;
 };
 
-/** \brief Scope guard for a Painter's state
-  */
-class PainterGuard {
-public:
-    PainterGuard(Painter *p): p_{p} { (*p_)->save(); }
-    ~PainterGuard() { (*p_)->restore(); }
-private:
-    Painter *p_;
-};
-
-}} // namespace cc::ui
+} // namespace cc::ui

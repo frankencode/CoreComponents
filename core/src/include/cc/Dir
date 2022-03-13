@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,127 +8,101 @@
 
 #pragma once
 
-#include <cc/Folder>
+#include <cc/SourceIterator>
+#include <cc/SystemError>
+#include <cc/Stream>
+#include <cc/Object>
 #include <cc/files>
-#include <sys/types.h> // mode_t
-#include <dirent.h> // DIR, opendir, closedir, readdir_r
 
 namespace cc {
 
 /** \class Dir cc/Dir
   * \ingroup file_system
-  * \brief Work with directory files
-  * \see File, CleanupGuard, DirWalker
+  * \brief %File system directories
   */
-class Dir
+class Dir: public Object
 {
 public:
-    class Instance: public Folder
-    {
-    public:
-        /// Return the directory's file path
-        String path() const;
+    using Item = String; ///< Item type
 
-        /** Read next directory entry
-          * \param name return name of next entry
-          * \return false if no more entries, else true
-          */
-        bool read(String *name) override;
-
-        /** Open a file from this directory
-          * \param path file path of the file to open
-          * \return new content stream
-          */
-        Stream openFile(const String &path) override;
-
-    private:
-        friend class Dir;
-
-        Instance(const String &path, DIR *dir = nullptr);
-        ~Instance();
-
-        String path_;
-        DIR *dir_;
-    };
-
-    using Iterator = Instance::Iterator;
-
-    Dir() = default; /// \todo improve logic
-
-    /** Open an existing directory
-      * \param path directory file path
+    /** Check if directory under \a path is accessible with \a mode
       */
-    Dir(const String &path):
-        instance_{new Instance{path}}
-    {}
+    static bool access(const String &path, FileAccess mode);
 
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return instance_; }
-
-    explicit operator bool() const { return instance_; }
-
-    /** Check access permissions
-      * \param path directory file path
-      * \param flags a combination of cc::Access
-      * \return true if the calling process has needed credentials
-      */
-    static bool checkAccess(const String &path, FileAccess flags);
-
-    /** Check if directory exists
-      * \param path directory file path
-      * \return true if a directory exists under given path
+    /** Check if directory exists under \a path
       */
     static bool exists(const String &path);
 
-    /** Count number of files in directory
-      * \param path directory file path
-      * \return 0 if there is no such directory, otherwise number of files
-      */
-    static int count(const String &path);
-
-    /** Create a new directory
-      * \param path directory file path
-      * \param mode a combination of cc::Mode
+    /** Create a new directory under \a path with initial permissions \a mode
       */
     static void create(const String &path, FileMode mode = FileMode::DirDefault);
 
     /** Establish a new directory path
-      * \param path directory file path
-      * \param mode a combination of cc::Mode
+      * \param path Directory path to establish
+      * \param mode Initial permissions
       */
     static void establish(const String &path, FileMode mode = FileMode::DirDefault);
 
-    /** Remove directory
-      * \param path directory file path
-      */
-    static void remove(const String &path);
-
     /** Create a uniquely named directory
-      * \param path directory file path pattern
-      * \param mode a combination of cc::Mode
-      * \param placeHolder place holder character in path to replace with random characters
-      * \return name of the newly created directory
+      * \param path Directory path pattern
+      * \param mode Initial permissions
+      * \param placeHolder Place holder character in \a path to be replaced with random characters
+      * \return Path to the newly created directory
       */
     static String createUnique(const String &path, FileMode mode = FileMode::DirDefault, char placeHolder = '#');
 
     /** Create a temporary directory
-      * \param path directory file path pattern
-      * \param mode a combination of cc::Mode
-      * \return name of the newly created directory
+      * \param mode Initial permissions
+      * \return Path to the newly created directory
       */
     static String createTemp(FileMode mode = FileMode::DirDefault);
 
-    /** Cleanup directory contents recursively
-      * \param path directory file path
-      * \see File::clean()
+    /** Remove directory under \a path
+      */
+    static void remove(const String &path);
+
+    /** Recursively remove all files and directories within \a path
       */
     static void deplete(const String &path);
 
-private:
-    Ref<Instance> instance_;
-};
+    /** Create a null directory
+      */
+    Dir() = default;
 
-inline Dir::Iterator begin(Dir &dir) { return dir->begin(); }
-inline Dir::Iterator end  (Dir &dir) { return dir->end(); }
+    /** Open directory at \a path
+      */
+    Dir(const String &path);
+
+    /** Directory path used to open this directory
+      */
+    String path() const;
+
+    /** Read the next directory entry
+      * \param name Returns the name of next entry
+      * \return False if no more entries, else true
+      */
+    bool read(Out<String> name);
+
+    /** Open file
+      * \param path Relative file path
+      * \param flags File open flags
+      * \return New content stream
+      */
+    Stream openFile(const String &path, FileOpen flags = FileOpen::ReadOnly);
+
+    /** Iteration start
+      */
+    SourceIterator<Dir> begin() { return SourceIterator<Dir>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<Dir> end() { return SourceIterator<Dir>{}; }
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
 
 } // namespace cc

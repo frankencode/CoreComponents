@@ -1,0 +1,4 @@
+Application {
+    name: cc_pulse_info
+    use: [ cc/core, cc/pulse ]
+}

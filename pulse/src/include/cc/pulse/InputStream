@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/pulse/Context>
+
+namespace cc::pulse {
+
+/** \class InputStream cc/pulse/InputStream
+  * \brief %Pulse %Audio recording stream
+  */
+class InputStream: public Object
+{
+public:
+    explicit InputStream(const Context &context, int sampleRate = 8000, int channelCount = 1);
+
+    int sampleRate() const;
+
+    void incoming(Call<void(const Bytes &data)> &&sample);
+
+    void connect(const String &target = String{}, Call<void()> &&ready = Call<void()>{});
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::pulse

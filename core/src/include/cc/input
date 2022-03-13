@@ -1,0 +1,74 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/math>
+
+namespace cc {
+
+/** \name Text Input Functions
+  */
+///@{
+/// \ingroup strings
+
+/** %Scan for a sub-string up to a lexical termination
+  * \param text Input text
+  * \param token %Return the scanned sub-string
+  * \param lt Set of lexical termination characters
+  * \param i0 Begin of range to scan (index of first character)
+  * \param i1 End of range to scan (index behind the last charater)
+  * \return Final scan position
+  */
+long scanToken(const String &text, Out<String> token, const char *lt = " \t\n", long i0 = 0, long i1 = -1);
+
+/** \brief %Map byte offset to editor coordinates
+  * \param text Text to scan
+  * \param offset Global byte offset
+  * \param line Returns the line number (starting with 1)
+  * \param pos Returns the byte offset on the target line (starting with 0)
+  * \return True if offset is within range
+  */
+bool offsetToLinePos(const String &text, long offset, Out<long> line = None{}, Out<long> pos = None{});
+
+/** \brief %Map editor coordinates to byte offset
+  * \param text Text to scan
+  * \param line Line number (starting with 1)
+  * \param pos Character offset on the line (starting with 0)
+  * \param offset Retunrs the global byte offset
+  * \return True if successful
+  */
+bool linePosToOffset(const String &text, long line, long pos, Out<long> offset = None{});
+
+/** Replace all non-printable and non-ASCII characters in \a text by escape sequences
+  */
+String escape(const String &text);
+
+/** \brief Common user input normalization
+  * \param text Input text
+  * \param nameCase Make sure the first character is upper case
+  * \return Normalized input text
+  */
+String normalize(const String &text, bool nameCase = true);
+
+/** Escape all XML tags an entities in \a text
+  */
+String xmlEscape(const String &text);
+
+/** Remove all XML tags and entities in \a text
+  */
+String xmlSanitize(const String &text);
+
+/** Insert \a prefix at the beginning of each line of \a text
+  */
+String indent(const String &text, const String &prefix);
+
+///@}
+
+} // namespace cc

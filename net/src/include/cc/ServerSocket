@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/StreamSocket>
+
+namespace cc {
+
+/** \class ServerSocket cc/ServerSocket
+  * \ingroup net
+  * \brief Server socket
+  */
+class ServerSocket: public StreamSocket
+{
+public:
+    /** Create a null server socket
+      */
+    ServerSocket() = default;
+
+    /** Create a new server socket listening
+      * \param address %Local address to listen on
+      * \param backlog %Maximum number of connections to queue
+      */
+    explicit ServerSocket(const SocketAddress &address, int backlog = 1024):
+        StreamSocket{new State{address, backlog}}
+    {}
+
+    /** Accept the next queued connection request
+      * \return %Connected socket
+      */
+    StreamSocket accept() { return me().accept(); }
+
+private:
+    friend class Object;
+
+    struct State: public StreamSocket::State
+    {
+        State(const SocketAddress &address, int backlog);
+
+        StreamSocket accept();
+    };
+
+    State &me() { return Object::me.as<State>(); }
+};
+
+} // namespace cc

@@ -1,0 +1,42 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/str>
+#include <complex>
+
+namespace cc {
+
+using Complex = std::complex<double>;
+
+template<class T>
+String str(const std::complex<T> &x)
+{
+    const auto b = std::imag(x);
+    List<String> parts;
+    parts << str(std::real(x));
+    if (b < 0) parts << "-" << str(-b);
+    else parts << "+" << str(b);
+    parts << "i";
+    return parts;
+}
+
+template<class T>
+String fixed(const std::complex<T> &x, int nf)
+{
+    const auto b = std::imag(x);
+    List<String> parts;
+    parts << fixed(std::real(x), nf);
+    if (b < 0) parts << "-" << fixed(-b, nf);
+    else parts << "+" << fixed(b, nf);
+    parts << "i";
+    return parts;
+}
+
+} // namespace cc

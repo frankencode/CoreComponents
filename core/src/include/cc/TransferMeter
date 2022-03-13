@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -12,39 +12,33 @@
 
 namespace cc {
 
-/** \brief %Transfer measuring stream
-  * \see Transfer
+/** \class TransferMeter cc/TransferMeter
+  * \ingroup streams
+  * \brief %Transfer measuring stream
   */
-class TransferMeter: public Stream
+class TransferMeter final: public Stream
 {
 public:
-    class Instance: public Stream::Instance
-    {
-    public:
-        off_t totalRead() const { return totalRead_; }
-        off_t totalWritten() const { return totalWritten_; }
-
-        int read(CharArray *buf) override;
-        void write(const CharArray *buf) override;
-        void write(const StringList &parts) override;
-
-    private:
-        friend class TransferMeter;
-
-        Instance(const Stream &stream);
-
-        Stream stream_;
-        off_t totalRead_;
-        off_t totalWritten_;
-    };
-
+    /** Create an undefined transfer meter
+      */
     TransferMeter() = default;
 
-    TransferMeter(const Stream &stream):
-        Stream{new Instance{stream}}
-    {}
+    /** Create a new transfer meter on \a stream
+      */
+    explicit TransferMeter(const Stream &stream);
 
-    Instance *operator->() const { return my<Instance>(); }
+    /** Total number of bytes read
+      */
+    long long totalRead() const;
+
+    /** Total number of byte written
+      */
+    long long totalWritten() const;
+
+private:
+    struct State;
+
+    const State &me() const;
 };
 
 } // namespace cc

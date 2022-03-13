@@ -1,0 +1,81 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/httpLogging>
+#include <cc/MetaObject>
+#include <cc/Stream>
+
+namespace cc {
+
+/** \class HttpLoggingServiceInstance cc/HttpLoggingServiceInstance
+  * \ingroup http_server
+  * \brief %Logging service instance
+  */
+class HttpLoggingServiceInstance: public Object
+{
+public:
+    /** Create a null logging instance
+      */
+    HttpLoggingServiceInstance() = default;
+
+    /** Create a logging instance according to \a config
+      */
+    explicit HttpLoggingServiceInstance(const MetaObject &config);
+
+    void logDelivery(const HttpClientConnection &client, const HttpRequest &request, HttpStatus status, long long bytesWritten = 0, const String &statusMessage = "") const
+    {
+        return me().logDelivery(client, request, status, bytesWritten, statusMessage);
+    }
+
+    void logMessage(const String &message, LoggingLevel level = LoggingLevel::Default) const
+    {
+        return me().logMessage(message, level);
+    }
+
+    Stream errorStream() const { return me().errorStream_; }
+    Stream warningStream() const { return me().warningStream_; }
+    Stream noticeStream() const { return me().noticeStream_; }
+    Stream infoStream() const { return me().infoStream_; }
+    Stream debugStream() const { return me().debugStream_; }
+
+    LoggingLevel verbosity() const { return me().verbosity_; }
+
+protected:
+    friend class HttpStatusLogStream;
+
+    struct State: public Object::State
+    {
+        explicit State(const MetaObject &config);
+
+        virtual void logDelivery(const HttpClientConnection &client, const HttpRequest &request, HttpStatus status, long long bytesWritten, const String &statusMessage) const = 0;
+        virtual void logMessage(const String &message, LoggingLevel level) const = 0;
+
+        LoggingLevel verbosity() const { return verbosity_; }
+
+    private:
+        friend class HttpLoggingServiceInstance;
+
+        LoggingLevel verbosity_ { LoggingLevel::Default };
+        Stream errorStream_;
+        Stream warningStream_;
+        Stream noticeStream_;
+        Stream infoStream_;
+        Stream debugStream_;
+    };
+
+    explicit HttpLoggingServiceInstance(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

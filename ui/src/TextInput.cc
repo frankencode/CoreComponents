@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020-2022 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,149 +7,153 @@
  */
 
 #include <cc/ui/TextInput>
-#include <cc/ui/Application>
+#include <cc/ui/TextInputState>
+#include <cc/ui/TextLineEditor>
 #include <cc/ui/TextRun>
-#include <cc/ui/LineEditor>
+#include <cc/ui/FontMetrics>
+#include <cc/ui/Painter>
+#include <cc/ui/Application>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-TextInput::Instance::Instance(const String &initialText):
-    Instance{Object::create<LineEditor>(initialText)}
+TextInput::State::State():
+    State{TextLineEditor{}}
 {}
 
-TextInput::Instance::Instance(Ref<TextEditor> editor):
+TextInput::State::State(const TextEditor &editor):
     editor_{editor}
 {
-    inheritPaper();
+    paper([this]{ return basePaper(); });
 
-    if (!font()) font <<[=]{ return Application{}->defaultFont(); };
+    font([this]{ return style().defaultFont(); });
 
-    unwrappedTextRun <<[=]{
-        auto run = TextRun::create();
-        if (imeChunks()->count() > 0) {
+    unwrappedTextRun([this]{
+        TextRun run;
+        if (imeChunks().count() > 0) {
             for (const String &chunk: imeChunks()) {
-                if (chunk->count() > 0)
-                    run->append(chunk, font());
+                if (chunk.count() > 0)
+                    run.append(chunk, font());
             }
         }
         else
-            run->append(text(), font());
+            run.append(text(), font());
         return run;
-    };
+    });
 
-    textRun <<[=]{
-        return unwrappedTextRun()->wrap(size()[0]);
-    };
+    textRun([this]{
+        return unwrappedTextRun().wrap(size()[0], textAlign());
+    });
 
-    if (text()->count() > 0)
-        selection = Range { 0, text()->count() };
+    if (text().count() > 0)
+        selection = Range{0, text().count()};
 
-    textCursor = textRun()->getTextCursor(text()->count());
+    textCursor = textRun().getTextCursor(text().count());
 
-    textRun >>[=]{
-        if (textCursor())
-            textCursor = textRun()->getTextCursor(textCursor()->byteOffset());
-    };
+    textRun.onChanged([this]{
+        if (textCursor()) {
+            int offset = textCursor().offset();
+            if (offset > textRun().byteCount()) offset = textRun().byteCount();
+            textCursor(textRun().getTextCursor(offset));
+        }
+    });
 
-    size <<[=]{ return preferredSize(); };
+    size([this]{ return preferredSize(); });
 
-    cursor <<[=]{ return Cursor::create(focus() ? CursorShape::IBeam : CursorShape::Hand); };
+    cursor([this]{ return Cursor{focus() ? CursorShape::IBeam : CursorShape::Hand}; });
 
-    focus >>[=]{
+    focus.onChanged([this]{
         if (focus()) startBlink();
         else stopBlink();
-    };
+    });
 
-    timer_ = Timer{0.5};
-    timer_->timeout >>[=]{
+    timer_.onTimeout([this]{
         textCursorVisible = !textCursorVisible();
-    };
+    });
 
-    paint <<[=]{
+    paint([this]
+    {
         Painter p{this};
 
-        p->setSource(theme()->primaryTextColor());
+        p.setPen(theme().primaryTextColor());
 
         if (selection() && focus()) {
-            int s0 = selection()->i0();
-            int s1 = selection()->i1();
-            p->showTextRun(
+            long s0 = selection().i0();
+            long s1 = selection().i1();
+            p.showTextRun(
                 textPos(), textRun(),
                 [=](int byteOffset) -> Color {
-                    return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionInk() : Color{};
+                    return (s0 <= byteOffset && byteOffset < s1) ? theme().textSelectionColor() : Color{};
                 },
                 [=](int byteOffset) -> Color {
-                    return (s0 <= byteOffset && byteOffset < s1) ? theme()->textSelectionPaper() : Color{};
+                    return (s0 <= byteOffset && byteOffset < s1) ? theme().textSelectionPaper() : Color{};
                 }
             );
         }
         else {
-            p->showTextRun(textPos(), textRun());
+            p.showTextRun(textPos(), textRun());
         }
 
         if ((focus() || pressed()) && textCursorVisible() && textCursor()) {
-            p->setSource(theme()->textCursorColor());
-            p->rectangle(
-                textPos() + textCursor()->posA(),
-                Size { theme()->textCursorWidth(), (textCursor()->posB() - textCursor()->posA())[1] }
+            p.rectangle(
+                textPos() + textCursor().posA(),
+                Size{theme().textCursorWidth(), (textCursor().posB() - textCursor().posA())[1] }
             );
-            p->fill();
+            p.setPen(theme().textCursorColor());
+            p.fill();
         }
-    };
+    });
 
-    pointerClicked >>[=](const PointerEvent *event)
+    onPointerClicked([this](const PointerEvent &event)
     {
         if (!focus()) {
-            Application{}->focusControl = this;
+            grabFocus();
             return true;
         }
 
-        const MouseEvent *mouseEvent = Object::cast<const MouseEvent *>(event);
-        if (mouseEvent) {
-            if (mouseEvent->clickCount() == 2) {
-                selection = Range { 0, text()->count() };
-                textCursor()->step(text()->count());
+        if (event.is<MouseEvent>()) {
+            if (event.as<MouseEvent>().clickCount() == 2) {
+                selection = Range{0, text().count()};
+                textCursor().step(text().count());
                 startBlink();
             }
         }
 
         return true;
-    };
+    });
 
-    pointerPressed >>[=](const PointerEvent *event)
+    onPointerPressed([this](const PointerEvent &event)
     {
         if (!focus()) return false;
 
-        if (shiftKey_) return pointerMoved(event);
+        if (shiftKey_) return onPointerMoved(event);
 
         selection = Range{};
-        imeChunks = nullptr;
-        textCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
+        imeChunks = List<String>{};
+        textCursor = textRun().getNearestTextCursor(event.pos() - textPos());
         startBlink();
 
         return true;
-    };
+    });
 
-    pointerMoved >>[=](const PointerEvent *event)
+    onPointerMoved([this](const PointerEvent &event)
     {
         if (!focus()) return false;
 
-        Ref<TextCursor> newTextCursor = textRun()->getNearestTextCursor(event->pos() - textPos());
+        TextCursor newTextCursor = textRun().getNearestTextCursor(event.pos() - textPos());
 
-        if (newTextCursor->byteOffset() == textCursor()->byteOffset())
+        if (newTextCursor.offset() == textCursor().offset())
             return true;
 
         if (!selection()) {
-            selection = Range { newTextCursor->byteOffset(), textCursor()->byteOffset() };
+            selection = Range{newTextCursor.offset(), textCursor().offset()};
         }
         else {
             Range newSelection;
-            if (textCursor()->byteOffset() == selection()->i0())
-                newSelection = Range { newTextCursor->byteOffset(), selection()->i1() };
-            else if (textCursor()->byteOffset() == selection()->i1())
-                newSelection = Range { selection()->i0(), newTextCursor->byteOffset() };
-            if (newSelection->count() > 0)
+            if (textCursor().offset() == selection().i0())
+                newSelection = Range{newTextCursor.offset(), selection().i1()};
+            else if (textCursor().offset() == selection().i1())
+                newSelection = Range{selection().i0(), newTextCursor.offset()};
+            if (newSelection.count() > 0)
                 selection = newSelection;
             else
                 selection = Range{};
@@ -158,49 +162,47 @@ TextInput::Instance::Instance(Ref<TextEditor> editor):
         textCursor = newTextCursor;
 
         return true;
-    };
+    });
 
-    keyPressed >>[=](const KeyEvent *event)
+    onKeyPressed([this](const KeyEvent &event)
     {
-        imeChunks = nullptr;
+        imeChunks = List<String>{};
 
         if (
-            +(event->modifiers() & KeyModifier::Control) &&
-            event->keyCode() == KeyCode::Key_A
+            (event.modifiers() & KeyModifier::Control) &&
+            event.keyCode() == KeyCode::Key_A
         ) {
-            selection = Range { 0, text()->count() };
-            textCursor()->step(text()->count());
-            startBlink();
+            selectAll();
         }
         else if (
-            event->scanCode() == ScanCode::Key_Left ||
-            event->scanCode() == ScanCode::Key_Right ||
-            event->scanCode() == ScanCode::Key_Up ||
-            event->scanCode() == ScanCode::Key_Down ||
-            event->scanCode() == ScanCode::Key_Home ||
-            event->scanCode() == ScanCode::Key_End
+            event.scanCode() == ScanCode::Key_Left ||
+            event.scanCode() == ScanCode::Key_Right ||
+            event.scanCode() == ScanCode::Key_Up ||
+            event.scanCode() == ScanCode::Key_Down ||
+            event.scanCode() == ScanCode::Key_Home ||
+            event.scanCode() == ScanCode::Key_End
         ) {
-            int o = textCursor()->byteOffset();
+            int o = textCursor().offset();
 
-            textCursor()->step(
-                -1 * (event->scanCode() == ScanCode::Key_Left)
-                +1 * (event->scanCode() == ScanCode::Key_Right)
-                -text()->count() * (event->scanCode() == ScanCode::Key_Home)
-                +text()->count() * (event->scanCode() == ScanCode::Key_End)
+            textCursor().step(
+                -1 * (event.scanCode() == ScanCode::Key_Left)
+                +1 * (event.scanCode() == ScanCode::Key_Right)
+                -text().count() * (event.scanCode() == ScanCode::Key_Home)
+                +text().count() * (event.scanCode() == ScanCode::Key_End)
             );
 
-            textCursor()->lineStep(
-                -1 * (event->scanCode() == ScanCode::Key_Up)
-                +1 * (event->scanCode() == ScanCode::Key_Down)
+            textCursor().lineStep(
+                -1 * (event.scanCode() == ScanCode::Key_Up)
+                +1 * (event.scanCode() == ScanCode::Key_Down)
             );
 
-            int n = textCursor()->byteOffset();
+            int n = textCursor().offset();
 
-            if (+(event->modifiers() & KeyModifier::Shift))
+            if (event.modifiers() & KeyModifier::Shift)
             {
                 if (selection()) {
-                    int s = selection()->begin();
-                    int e = selection()->end();
+                    int s = selection().i0();
+                    int e = selection().i1();
 
                     if (o == s) s = n;
                     else if (o == e) e = n;
@@ -218,150 +220,183 @@ TextInput::Instance::Instance(Ref<TextEditor> editor):
 
             startBlink();
         }
-        else if (event->scanCode() == ScanCode::Key_Backspace)
+        else if (event.scanCode() == ScanCode::Key_Backspace)
         {
             Range s = selection();
             if (!s) {
-                int i1 = textCursor()->byteOffset();
-                if (textCursor()->step(-1))
-                    s = Range { textCursor()->byteOffset(), i1 };
+                int i1 = textCursor().offset();
+                if (textCursor().step(-1))
+                    s = Range{textCursor().offset(), i1};
             }
             if (s) paste(s, String{});
         }
-        else if (event->scanCode() == ScanCode::Key_Delete)
+        else if (event.scanCode() == ScanCode::Key_Delete)
         {
             Range s = selection();
             if (!s) {
-                int i0 = textCursor()->byteOffset();
-                if (textCursor()->step(1))
-                s = Range { i0, textCursor()->byteOffset() };
+                int i0 = textCursor().offset();
+                if (textCursor().step(1))
+                    s = Range{i0, textCursor().offset()};
             }
             if (s) paste(s, String{});
         }
         else if (
-            +(event->modifiers() & KeyModifier::Control) &&
-            event->keyCode() == KeyCode::Key_X
+            (event.modifiers() & KeyModifier::Control) &&
+            event.keyCode() == KeyCode::Key_X
         )
         {
             if (selection()) {
-                Application{}->setClipboardText(
-                    text()->copy(selection()->i0(), selection()->i1())
+                Application{}.clipboardText(
+                    editor_.copy(selection())
                 );
                 paste(selection(), String{});
             }
         }
         else if (
-            +(event->modifiers() & KeyModifier::Control) && (
-                event->scanCode() == ScanCode::Key_Insert ||
-                event->keyCode() == KeyCode::Key_C
+            (event.modifiers() & KeyModifier::Control) && (
+                event.scanCode() == ScanCode::Key_Insert ||
+                event.keyCode() == KeyCode::Key_C
             )
         ) {
             if (selection()) {
-                Application{}->setClipboardText(
-                    text()->copy(selection()->i0(), selection()->i1())
+                Application{}.clipboardText(
+                    editor_.copy(selection())
                 );
             }
         }
         else if (
-            event->scanCode() == ScanCode::Key_Insert || (
-                +(event->modifiers() & KeyModifier::Control) &&
-                event->keyCode() == KeyCode::Key_V
+            event.scanCode() == ScanCode::Key_Insert || (
+                (event.modifiers() & KeyModifier::Control) &&
+                event.keyCode() == KeyCode::Key_V
             )
         ) {
-            String chunk = Application{}->getClipboardText();
-            if (chunk) paste(chunk);
+            String chunk = Application{}.clipboardText();
+            if (chunk.count() > 0) paste(chunk);
         }
         else if (
-            +(event->modifiers() & KeyModifier::Control) &&
-            event->scanCode() == ScanCode::Key_Y
+            (event.modifiers() & KeyModifier::Control) &&
+            event.scanCode() == ScanCode::Key_Y
         ) {
             Range range;
-            if (+(event->modifiers() & KeyModifier::Shift)) {
-                if (editor_->canRedo()) textCursor = nullptr;
-                range = editor_->redo();
+            if (event.modifiers() & KeyModifier::Shift) {
+                if (editor_.canRedo()) textCursor = TextCursor{};
+                range = editor_.redo();
             }
             else {
-                if (editor_->canUndo()) textCursor = nullptr;
-                range = editor_->undo();
+                if (editor_.canUndo()) textCursor = TextCursor{};
+                range = editor_.undo();
             }
 
             if (range) {
-                textCursor = textRun()->getTextCursor(range->i1());
+                textCursor = textRun().getTextCursor(range.i1());
                 startBlink();
             }
         }
         else if (
-            event->scanCode() == ScanCode::Key_LeftShift ||
-            event->scanCode() == ScanCode::Key_RightShift
+            event.scanCode() == ScanCode::Key_LeftShift ||
+            event.scanCode() == ScanCode::Key_RightShift
         ) {
             shiftKey_ = true;
         }
 
         return false;
-    };
+    });
 
-    keyReleased >>[=](const KeyEvent *event)
+    onKeyReleased([this](const KeyEvent &event)
     {
         if (
-            event->scanCode() == ScanCode::Key_LeftShift ||
-            event->scanCode() == ScanCode::Key_RightShift
+            event.scanCode() == ScanCode::Key_LeftShift ||
+            event.scanCode() == ScanCode::Key_RightShift
         )
             shiftKey_ = false;
 
         return false;
-    };
+    });
 }
 
-TextInput::Instance::~Instance()
-{}
-
-Size TextInput::Instance::preferredSize() const
+String TextInput::State::text() const
 {
-    double h = 0;
-    if (textRun()->lineCount() < 2) {
-        Ref<const FontMetrics> m = font()->getMetrics();
-        h += std::ceil(m->ascender()) - std::floor(m->descender());
+    return editor_.text();
+}
+
+void TextInput::State::text(const String &newValue)
+{
+    if (editor_.text() != newValue) {
+        editor_.paste(Range{0, editor_.text().count()}, newValue);
+        textCursor = textRun().getTextCursor(newValue.count());
     }
-    else
-        h += textRun()->size()[1];
-    return Size{ 280, h };
 }
 
-Size TextInput::Instance::minSize() const
+Point TextInput::State::textPos() const
 {
-    return Size{ 0, preferredSize()[1] };
+    Point p;
+    switch(textAlign()) {
+        case TextAlign::Center:
+            p = Point{std::floor((size()[0] - textRun().size()[0]) / 2), std::ceil(FontMetrics{font()}.ascender())};
+            break;
+        case TextAlign::Right:
+            p = Point{size()[0] - textRun().size()[0], std::ceil(FontMetrics{font()}.ascender())};
+            break;
+        case TextAlign::Justify:
+        case TextAlign::Left:
+            p = Point{0, std::ceil(FontMetrics{font()}.ascender())};
+            break;
+    };
+    return p;
 }
 
-Size TextInput::Instance::maxSize() const
+bool TextInput::State::accept() const
 {
-    return Size{ std::numeric_limits<double>::max(), preferredSize()[1] };
+    return !accept_ || accept_();
 }
 
-String TextInput::Instance::text() const
+Size TextInput::State::preferredSize() const
 {
-    return editor_->text();
+    Size s;
+
+    if (sizerText().count() == 0) {
+        s[0] = sp(280);
+    }
+    else {
+        s[0] = TextRun{sizerText()}.size()[0] + sp(1);
+    }
+
+    if (textRun().lineCount() < 2) {
+        FontMetrics m{font()};
+        s[1] += std::ceil(m.ascender()) - std::floor(m.descender());
+    }
+    else {
+        s[1] += textRun().size()[1];
+    }
+
+    return s;
 }
 
-Point TextInput::Instance::textPos() const
+Size TextInput::State::minSize() const
 {
-    return Point { 0, std::ceil(font()->getMetrics()->ascender()) };
+    return Size{0, preferredSize()[1]};
 }
 
-void TextInput::Instance::startBlink()
+Size TextInput::State::maxSize() const
+{
+    return Size{std::numeric_limits<double>::max(), preferredSize()[1]};
+}
+
+void TextInput::State::startBlink()
 {
     textCursorVisible = false;
-    timer_->startIn(0);
+    timer_.startIn(0);
 }
 
-void TextInput::Instance::stopBlink()
+void TextInput::State::stopBlink()
 {
-    timer_->stop();
+    timer_.stop();
     textCursorVisible = false;
 }
 
-Rect TextInput::Instance::textInputArea() const
+Rect TextInput::State::textInputArea() const
 {
-    double cx = (textCursor()) ? textCursor()->posA()[0] : 0.;
+    double cx = (textCursor()) ? textCursor().posA()[0] : 0.;
 
     Point origin { textPos()[0] + cx, 0 };
 
@@ -374,46 +409,173 @@ Rect TextInput::Instance::textInputArea() const
     };
 }
 
-void TextInput::Instance::onTextEdited(const String &chunk, int start, int length)
+void TextInput::State::onTextEdited(const String &chunk, int start, int length)
 {
-    imeChunks = StringList {
-        text()->copy(0, textCursor()->byteOffset()),
+    imeChunks = List<String> {
+        editor_.copy(Range{0, textCursor().offset()}),
         chunk,
-        text()->copy(textCursor()->byteOffset(), text()->count())
+        editor_.copy(Range{textCursor().offset(), text().count()})
     };
 }
 
-void TextInput::Instance::onTextInput(const String &chunk)
+void TextInput::State::onTextInput(const String &chunk)
 {
     Range s = selection();
-    if (!s) s = Range { textCursor()->byteOffset() };
+    if (!s) s = Range{textCursor().offset()};
     paste(s, chunk);
 }
 
-void TextInput::Instance::paste(const String &chunk)
+void TextInput::State::paste(const String &chunk)
 {
     Range s = selection();
-    if (!s) s = Range { textCursor()->byteOffset() };
+    if (!s) s = Range{textCursor().offset()};
     paste(s, chunk);
 }
 
-void TextInput::Instance::paste(Range range, const String &chunk)
+void TextInput::State::paste(Range range, const String &chunk)
 {
-    if (! (0 <= range->i0() && range->i1() <= text()->count()) )
-        return;
+    if (!(0 <= range.i0() && range.i1() <= text().count())) return;
+
+    String h = chunk;
+
+    String filteredChunk = chunk.replaced("\n", " ");
+    if (filter_ && filter_(range, &filteredChunk)) return;
 
     selection = Range{};
-    textCursor = nullptr;
-    imeChunks = nullptr;
+    textCursor = TextCursor{};
+    imeChunks = List<String>{};
 
-    String filteredChunk = chunk;
-    mutate(filteredChunk)->replaceInsitu("\n", " ");
-
-    Range newRange = editor_->paste(range, filteredChunk);
+    Range newRange = editor_.paste(range, filteredChunk);
     if (newRange) {
-        textCursor = textRun()->getTextCursor(newRange->i1());
+        textCursor = textRun().getTextCursor(newRange.i1());
         startBlink();
     }
 }
 
-}} // namespace cc::ui
+void TextInput::State::selectAll()
+{
+    selection = Range{0, text().count()};
+    textCursor().step(text().count());
+    startBlink();
+}
+
+TextInput::TextInput():
+    InputControl{onDemand<State>}
+{}
+
+TextInput::TextInput(Out<TextInput> self):
+    TextInput{String{}, self}
+{}
+
+TextInput::TextInput(const String &text, Out<TextInput> self):
+    InputControl{new State{TextLineEditor{text}}}
+{
+    self = *this;
+}
+
+TextInput::TextInput(const TextEditor &editor):
+    InputControl{new State{editor}}
+{}
+
+TextInput::TextInput(CreateState onDemand):
+    InputControl{onDemand}
+{}
+
+TextInput::TextInput(State *newState):
+    InputControl{newState}
+{}
+
+String TextInput::text() const
+{
+    return me().text();
+}
+
+TextInput &TextInput::text(const String &newValue)
+{
+    me().text(newValue);
+    return *this;
+}
+
+TextAlign TextInput::textAlign() const
+{
+    return me().textAlign();
+}
+
+TextInput &TextInput::textAlign(TextAlign newValue)
+{
+    me().textAlign(newValue);
+    return *this;
+}
+
+Point TextInput::textPos() const
+{
+    return me().textPos();
+}
+
+Font TextInput::font() const
+{
+    return me().font();
+}
+
+TextInput &TextInput::font(Font newValue)
+{
+    me().font(newValue);
+    return *this;
+}
+
+TextInput &TextInput::font(Definition<Font> &&f)
+{
+    me().font(std::move(f));
+    return *this;
+}
+
+String TextInput::sizerText() const
+{
+    return me().sizerText();
+}
+
+TextInput &TextInput::sizerText(const String &newValue)
+{
+    me().sizerText(newValue);
+    return *this;
+}
+
+TextInput &TextInput::sizerText(Definition<String> &&f)
+{
+    me().sizerText(std::move(f));
+    return *this;
+}
+
+TextInput &TextInput::accept(Call<bool()> &&f)
+{
+    me().accept_ = std::move(f);
+    return *this;
+}
+
+TextInput &TextInput::filter(Call<bool(Range range, InOut<String>)> &&f)
+{
+    me().filter_ = std::move(f);
+    return *this;
+}
+
+void TextInput::selectAll()
+{
+    me().selectAll();
+}
+
+TextEditor TextInput::editor() const
+{
+    return me().editor_;
+}
+
+TextInput::State &TextInput::me()
+{
+    return View::me().as<State>();
+}
+
+const TextInput::State &TextInput::me() const
+{
+    return View::me().as<State>();
+}
+
+} // namespace cc::ui

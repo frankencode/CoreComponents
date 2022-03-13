@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/IoChannel>
+
+namespace cc {
+
+/** \class LocalChannel cc/LocalChannel
+  * \ingroup concurrency
+  * \brief Local socket communication channel
+  * \exception SystemError
+  */
+class LocalChannel: public IoChannel
+{
+public:
+    /** Create a local socket communication channel
+      */
+    LocalChannel();
+
+private:
+    struct State: public IoChannel::State
+    {
+        State();
+        ~State();
+
+        void onStart() override;
+    };
+};
+
+} // namespace cc

@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc::ui {
+
+/** \class ImageView cc/ui/ImageView
+  * \ingroup ui
+  * \brief %Show a raster image
+  */
+class ImageView final: public View
+{
+public:
+    /** Create a primordial image view
+      */
+    ImageView();
+
+    /** Create a new image view
+      * \param self Reference to newly created object
+      */
+    explicit ImageView(Out<ImageView> self);
+
+    /** Create a new image view
+      * \param displayImage Initial image to display
+      * \param self Reference to newly created object
+      */
+    ImageView(const Image &displayImage, Out<ImageView> self = None{});
+
+    Image displayImage() const { return me().displayImage(); } ///< Get display image
+    ImageView &displayImage(const Image &newValue) { me().displayImage(newValue); return *this; } ///< %Set display image
+    ImageView &displayImage(Definition<Image> &&f) { me().displayImage(std::move(f)); return *this; } ///< %Define display image
+
+private:
+    struct State: public View::State
+    {
+        State(const Image &initImage = Image{});
+
+        Property<Image> displayImage;
+    };
+
+    State &me() { return View::me().as<State>(); }
+    const State &me() const { return View::me().as<State>(); }
+};
+
+} // namespace cc::ui

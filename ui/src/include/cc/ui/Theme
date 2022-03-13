@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,45 +8,141 @@
 
 #pragma once
 
-#include <cc/ui/colors>
+#include <cc/ui/types>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \class Theme cc/ui/Theme
+  * \ingroup ui
+  * \brief User interface styling theme
+  */
 class Theme: public Object
 {
 public:
-    virtual Color primaryColor         () const = 0;
-    virtual Color secondaryColor       () const = 0;
-    virtual Color alertColor           () const = 0;
+    Theme() = default; ///< Create a null theme
 
-    virtual Color statusBarColor       () const = 0;
-    virtual Color appBarColor          () const = 0;
-    virtual Color windowColor          () const = 0;
-    virtual Color popupColor           () const = 0;
+    Color primaryColor() const { return me().primaryColor(); } ///< Primary application color
+    Color secondaryColor() const { return me().secondaryColor(); } ///< Secondary application color
+    Color alertColor() const { return me().alertColor(); } ///< %Warning/error color
+    Color statusBarColor() const { return me().statusBarColor(); } ///< Status bar background color
+    Color appBarColor() const { return me().appBarColor(); } ///< %Application bar background color
+    Color windowColor() const { return me().windowColor(); } ///< %Window background color
+    Color popupColor() const { return me().popupColor(); } ///< %Popup window background color
 
-    virtual Color titleTextColor       () const = 0;
-    virtual Color focusTextColor       () const = 0;
-    virtual Color primaryTextColor     () const = 0;
-    virtual Color secondaryTextColor   () const = 0;
-    virtual Color inactiveTextColor    () const = 0;
+    Color titleTextColor() const { return me().titleTextColor(); } ///< %Title text color
+    Color focusTextColor() const { return me().focusTextColor(); } ///< %Text color for an item with active input focus
+    Color primaryTextColor() const { return me().primaryTextColor(); } ///< %Default text color
+    Color secondaryTextColor() const { return me().secondaryTextColor(); } ///< Alternative text color
+    Color inactiveTextColor() const { return me().inactiveTextColor(); } ///< %Text color for inactive/disabled controls
 
-    virtual Color inputLineColor       () const = 0;
-    virtual Color hoverInputLineColor  () const = 0;
-    virtual Color pressedInputLineColor() const = 0;
-    virtual Color focusInputLineColor  () const = 0;
-    virtual Color textCursorColor      () const = 0;
-    virtual Color textSelectionInk     () const = 0;
-    virtual Color textSelectionPaper   () const = 0;
+    Color inputLineColor() const { return me().inputLineColor(); } ///< %Default color of the underline of input fields
+    Color hoverInputLineColor() const { return me().hoverInputLineColor(); } ///< %Color of the input line when the mouse is hovering over it
+    Color pressedInputLineColor() const { return me().pressedInputLineColor(); } ///< %Color of the input line when pressed by the user
+    Color focusInputLineColor() const { return me().focusInputLineColor(); } ///< %Color of the input line when input field has keyboard input focus
+    Color textCursorColor() const { return me().textCursorColor(); } ///< %Color of the text input cursor
+    Color textSelectionColor() const { return me().textSelectionColor(); } ///< %Text color of text selections
+    Color textSelectionPaper() const { return me().textSelectionPaper(); } ///< %Background color of text selections
 
-    virtual Color inputFieldFillColor  () const = 0;
+    Color dividerColor() const { return me().dividerColor(); } ///< %Divider color
 
-    virtual Color itemHighlightColor   () const = 0;
+    Color inputFieldFillColor() const { return me().inputFieldFillColor(); } ///< %Background color of input fields
+    Color inputFieldFillColor(bool pressed) const { return me().inputFieldFillColor(pressed); } ///< %Background color of input fields
 
-    virtual double defaultFontSize     () const { return 16; }
-    virtual double defaultFixedFontSize() const { return 16; }
-    virtual double smallFontSize       () const { return 12; }
-    virtual double textCursorWidth     () const { return dp(1); }
+    Color itemHighlightColor() const { return me().itemHighlightColor(); } ///< %Item highlight background color
+
+    Color sliderKnobColor() const { return me().sliderKnobColor(); } ///< %Color of a slider knob
+    Color sliderKnobShadowColor() const { return me().sliderKnobShadowColor(); }
+    Color sliderActiveTrackColor() const { return me().sliderActiveTrackColor(); } ///< %Color of the active slider track
+    Color sliderInactiveTrackColor() const { return me().sliderInactiveTrackColor(); } ///< %Color of the inactive slider track
+    Color sliderFocusColor() const { return me().sliderFocusColor(); } ///< %Color of the slider knob focus indicator
+
+    Color switchKnobColor(bool on) const { return me().switchKnobColor(on); }
+    Color switchKnobShadowColor(bool on) const { return me().switchKnobShadowColor(on); }
+    Color switchTrackColor(bool on) const { return me().switchTrackColor(on); }
+    Color switchFocusColor() const { return me().switchFocusColor(); }
+
+    Color buttonColor(bool pressed) const { return me().buttonColor(pressed); }
+    Color buttonFocusColor(bool pressed) const { return me().buttonFocusColor(pressed); }
+    Color buttonTextColor(bool pressed) const { return me().buttonTextColor(pressed); }
+    Color buttonTextFocusColor(bool pressed) const { return me().buttonTextFocusColor(pressed); }
+
+    Color elevatedButtonColor(bool pressed) const { return me().elevatedButtonColor(pressed); }
+    Color elevatedButtonFocusColor(bool pressed) const { return me().elevatedButtonFocusColor(pressed); }
+    Color elevatedButtonTextColor(bool pressed) const { return me().elevatedButtonTextColor(pressed); }
+    Color elevatedButtonFocusTextColor(bool pressed) const { return me().elevatedButtonFocusTextColor(pressed); }
+    Color elevatedButtonShadowColor() const { return me().elevatedButtonShadowColor(); }
+
+    double defaultFontSize() const { return me().defaultFontSize(); } ///< Default font size
+    double defaultFixedFontSize() const { return me().defaultFixedFontSize(); } ///< Default font size for the default fixed pitch fonts
+    double smallFontSize() const { return me().smallFontSize(); } ///< Secondary small font size
+    double textCursorWidth() const { return me().textCursorWidth(); } ///< Width of the text cursor in text input controls
+
+protected:
+    struct State: public Object::State
+    {
+        virtual Color primaryColor() const = 0;
+        virtual Color secondaryColor() const = 0;
+        virtual Color alertColor() const = 0;
+
+        virtual Color statusBarColor() const = 0;
+        virtual Color appBarColor() const = 0;
+        virtual Color windowColor() const = 0;
+        virtual Color popupColor() const = 0;
+
+        virtual Color titleTextColor() const = 0;
+        virtual Color focusTextColor() const = 0;
+        virtual Color primaryTextColor() const = 0;
+        virtual Color secondaryTextColor() const = 0;
+        virtual Color inactiveTextColor() const = 0;
+
+        virtual Color inputLineColor() const = 0;
+        virtual Color hoverInputLineColor() const = 0;
+        virtual Color pressedInputLineColor() const = 0;
+        virtual Color focusInputLineColor() const = 0;
+        virtual Color textCursorColor() const = 0;
+        virtual Color textSelectionColor() const = 0;
+        virtual Color textSelectionPaper() const = 0;
+
+        virtual Color dividerColor() const = 0;
+
+        virtual Color inputFieldFillColor() const = 0;
+        virtual Color inputFieldFillColor(bool pressed) const { return inputFieldFillColor(); }
+
+        virtual Color itemHighlightColor() const = 0;
+
+        virtual Color sliderKnobColor() const = 0;
+        virtual Color sliderKnobShadowColor() const = 0;
+        virtual Color sliderActiveTrackColor() const = 0;
+        virtual Color sliderInactiveTrackColor() const = 0;
+        virtual Color sliderFocusColor() const = 0;
+
+        virtual Color switchKnobColor(bool on) const = 0;
+        virtual Color switchKnobShadowColor(bool on) const = 0;
+        virtual Color switchTrackColor(bool on) const = 0;
+        virtual Color switchFocusColor() const = 0;
+
+        virtual Color buttonColor(bool pressed) const = 0;
+        virtual Color buttonFocusColor(bool pressed) const = 0;
+        virtual Color buttonTextColor(bool pressed) const = 0;
+        virtual Color buttonTextFocusColor(bool pressed) const = 0;
+
+        virtual Color elevatedButtonColor(bool pressed) const = 0;
+        virtual Color elevatedButtonFocusColor(bool pressed) const = 0;
+        virtual Color elevatedButtonTextColor(bool pressed) const = 0;
+        virtual Color elevatedButtonFocusTextColor(bool pressed) const = 0;
+        virtual Color elevatedButtonShadowColor() const = 0;
+
+        virtual double defaultFontSize() const { return 16; }
+        virtual double defaultFixedFontSize() const { return 16; }
+        virtual double smallFontSize() const { return 12; }
+        virtual double textCursorWidth() const { return dp(1); }
+    };
+
+    explicit Theme(State *newState):
+        Object{newState}
+    {}
+
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

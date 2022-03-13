@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2019 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,72 +8,29 @@
 
 #pragma once
 
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <cc/bitmask>
-#include <cc/String>
+#include <sys/stat.h>
+#include <fcntl.h> // O_*, S_*
+#include <unistd.h> // *_OK
 
 namespace cc {
 
-/// File descriptors of the standard I/O streams
-enum StandardFd {
-    StandardInputFd  = 0, ///< Standard input file descriptor
-    StandardOutputFd = 1, ///< Standard output file descriptor
-    StandardErrorFd  = 2  ///< Standard error file descriptor
-};
-
-/// %File access testing flags
+/** %File access testing flags
+  * \ingroup streams
+  */
 enum class FileAccess: int {
-    None    = 0,    ///< Test no permissions
+    None    = 0,    ///< Test for no permissions
     Read    = R_OK, ///< Test for read permission
     Write   = W_OK, ///< Test for write permission
     Execute = X_OK, ///< Test for execution permission
     Exists  = F_OK  ///< Test if a file (of any type) exists
 };
 
-CC_BITMASK(FileAccess, int)
+CC_BITMASK(FileAccess)
 
-String str(FileAccess flags);
-
-/// %File permission flags
-enum class FileMode: mode_t {
-    None       = 0, ///< Empty mode
-    SetUserId  = S_ISUID, ///< %Set effective user to file owner on execution
-    SetGroupId = S_ISGID, ///< %Set effective group to file owner on execution
-    StickyBit  = S_ISVTX,  ///< Allow to read and write, but not delete files when applied to a directory
-    UserRead   = 0400, ///< Readable by owner
-    UserWrite  = 0200, ///< Writable by owner
-    UserExec   = 0100, ///< Executable by owner
-    GroupRead  = 0040, ///< Readable by group members
-    GroupWrite = 0020, ///< Writable by group members
-    GroupExec  = 0010, ///< Executable by group members
-    OtherRead  = 0004, ///< Readable by others
-    OtherWrite = 0002, ///< Writable by others
-    OtherExec  = 0001, ///< Executable by others
-    AnyExec    = UserExec|GroupExec|OtherExec, ///< Executable by anyone
-    Default    = UserRead|UserWrite|GroupRead|OtherRead, ///< Default permissions mask for regular files
-    DirDefault = UserExec|UserRead|UserWrite|GroupExec|GroupRead|OtherExec|OtherRead ///< Default permissions mask for directories
-};
-
-CC_BITMASK(FileMode, mode_t)
-
-String str(FileMode);
-
-/// %File type
-enum class FileType: int {
-    Regular     = S_IFREG, ///< Regular file
-    Directory   = S_IFDIR, ///< Directory
-    CharDevice  = S_IFCHR, ///< Character device
-    BlockDevice = S_IFBLK, ///< Block device
-    Fifo        = S_IFIFO, ///< Named pipe
-    Symlink     = S_IFLNK, ///< Symbolic link
-    Socket      = S_IFSOCK, ///< Named local socket
-};
-
-String str(FileType type);
-
-/// %File open flags
+/** %File open flags
+  * \ingroup streams
+  */
 enum class FileOpen: int {
     None      = 0,        ///< Empty mode
     ReadOnly  = O_RDONLY, ///< Open for reading, only
@@ -83,20 +40,70 @@ enum class FileOpen: int {
     Create    = O_CREAT,  ///< Create file if not exists
     Truncate  = O_TRUNC,  ///< Truncate file to size zero
     Virgin    = O_EXCL,   ///< Fail to open if file exists already
-    Overwrite = FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate ///< Convenience shorthand for 'FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate'
+    Temporary = 1 << (sizeof(int) * 8 - 2), ///< Automatically unlink the file when done
+    Overwrite = FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate ///< Convenience shorthand for \code{.cpp}FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate\endcode
 };
 
-CC_BITMASK(FileOpen, int)
+CC_BITMASK(FileOpen)
 
-String str(FileOpen mode);
+/** %File permission flags
+  * \ingroup streams
+  */
+enum class FileMode: mode_t {
+    None       = 0, ///< Empty mode
+    SetUserId  = S_ISUID, ///< %Set effective user to file owner on execution
+    SetGroupId = S_ISGID, ///< %Set effective group to file owner on execution
+    StickyBit  = S_ISVTX, ///< Allow to read and write, but not delete files when applied to a directory
+    UserRead   = S_IRUSR, ///< Readable by owner
+    UserWrite  = S_IWUSR, ///< Writable by owner
+    UserExec   = S_IXUSR, ///< Executable by owner
+    GroupRead  = S_IRGRP, ///< Readable by group members
+    GroupWrite = S_IWGRP, ///< Writable by group members
+    GroupExec  = S_IXGRP, ///< Executable by group members
+    OtherRead  = S_IROTH, ///< Readable by others
+    OtherWrite = S_IWOTH, ///< Writable by others
+    OtherExec  = S_IXOTH, ///< Executable by others
+    AnyExec    = UserExec|GroupExec|OtherExec, ///< Executable by anyone
+    Default    = UserRead|UserWrite|GroupRead|OtherRead, ///< Default permissions mask for regular files
+    DirDefault = UserExec|UserRead|UserWrite|GroupExec|GroupRead|OtherExec|OtherRead ///< Default permissions mask for directories
+};
 
-/// Seek method
+CC_BITMASK(FileMode)
+
+/** Seek method
+  * \ingroup streams
+  */
 enum class Seek: int {
     Begin   = SEEK_SET, ///< Seek from the beginning of the file
     Current = SEEK_CUR, ///< Seek relative to the current file offset
     End     = SEEK_END  ///< Seek relative to the end of file
 };
 
-String str(Seek method);
+CC_BITMASK(Seek)
+
+/** %File type
+  * \ingroup streams
+  */
+enum class FileType: int {
+    Undefined   = 0, ///< Missing file
+    Regular     = S_IFREG, ///< Regular file
+    Directory   = S_IFDIR, ///< Directory
+    CharDevice  = S_IFCHR, ///< Character device
+    BlockDevice = S_IFBLK, ///< Block device
+    Fifo        = S_IFIFO, ///< Named pipe
+    Symlink     = S_IFLNK, ///< Symbolic link
+    Socket      = S_IFSOCK, ///< Named local socket
+};
+
+CC_BITMASK(FileType)
+
+/** File access type
+  */
+enum class FileContention: int {
+    Shared    = F_RDLCK, ///< Lock for reading
+    Exclusive = F_WRLCK ///< Lock for reading and writing
+};
+
+inline int operator+(FileContention type) { return static_cast<int>(type); }
 
 } // namespace cc

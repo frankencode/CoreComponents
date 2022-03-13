@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020-2022 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,331 +7,349 @@
  */
 
 #include <cc/ui/View>
-#include <cc/ui/Application>
-#include <cc/ui/StyleManager>
 #include <cc/ui/Window>
-#include <cc/ui/UpdateRequest>
 #include <cc/ui/Control>
+#include <cc/ui/PosGuard>
+#include <cc/DEBUG>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-View::Instance::Instance()
+View::State::State()
 {
-    pos >>[=]{ update(UpdateReason::Moved); };
-    angle >>[=]{ update(UpdateReason::Moved); };
-    scale >>[=]{ update(UpdateReason::Moved); };
+    opacity([this]{ return hasParent() ? parent().opacity() : 1.; });
 
-    visible >>[=]{
-        for (int i = 0, n = childCount(); i < n; ++i)
-            childAt(i)->visible = visible();
+    pos.onChanged([this]{ update(UpdateReason::Moved); });
+    angle.onChanged([this]{ update(UpdateReason::Moved); });
+    scale.onChanged([this]{ update(UpdateReason::Moved); });
+    opacity.onChanged([this]{ update(UpdateReason::Faded); });
+
+    visible.onChanged([this]{
+        for (View child: children_) child.me().visible = visible();
+
+        if (decoration()) {
+            decoration().visible(visible());
+        }
+
         if (!visible()) {
-            context_ = nullptr;
+            context_ = Object{};
             image_ = Image{};
-            if (parentInstance())
-                parentInstance()->visibleChildren_->remove(serial_);
+            if (hasParent()) {
+                parent().me().visibleChildren_.remove(self());
+            }
             update(UpdateReason::Hidden);
         }
         else {
-            if (parentInstance())
-                parentInstance()->visibleChildren_->insert(serial_, this);
+            if (hasParent()) {
+                parent().me().visibleChildren_.insert(self());
+            }
             paint();
+            if (decoration()) decoration()->paint();
         }
-    };
+    });
 
-    paint <<[=]{ if (isPainted()) Painter{this}; };
+    decoration.onChanged([this]{
+        decoration()->parent_ = this;
+    });
 
-    paint >>[=]{ update(UpdateReason::Changed); };
+    paint([this]{ if (isPainted()) polish(); });
+
+    paint.onChanged([this]{
+        update(UpdateReason::Changed);
+    });
 }
 
-View::Instance::~Instance()
+View::State::~State()
 {
-    layout_ = Layout{nullptr};
+    if (layout_) {
         // destroy the layout before releasing the children for efficiency
+        layout_ = Layout{};
+    }
 }
 
-void View::Instance::disband()
+double View::State::expandableWidth(double width) const
 {
-    #if 0 // FIXME: review cleanup strategy
-    for (auto &item: children_)
-        item->value()->disband();
+    double maxWidth = 0;
+    if (
+        hasParent() &&
+        parent().layout() &&
+        !parent().layout().isManaged() &&
+        parent().layout().orientation() == Orientation::Vertical
+    ) {
+        maxWidth = parent().innerWidth();
+    }
 
-    build->disband();
-    paint->disband();
-
-    visible->disband();
-    moving->disband();
-    paper->disband();
-
-    pos->disband();
-    size->disband();
-    padding->disband();
-
-    center->disband();
-    angle->disband();
-    scale->disband();
-    childCount->disband();
-    parentInstance->disband();
-
-    layout_ = Layout{nullptr};
-    #endif
+    return width < maxWidth ? maxWidth : width;
 }
 
-Point View::Instance::mapToGlobal(Point l) const
+Point View::State::mapToGlobal(Point l) const
 {
-    for (const Instance *h = this; h->parentInstance(); h = h->parentInstance())
-        l += h->pos();
+    for (View h = self(); h.hasParent(); h = h.parent()) l += h.pos();
     return l;
 }
 
-Point View::Instance::mapToLocal(Point g) const
+Point View::State::mapToLocal(Point g) const
 {
-    for (const Instance *h = this; h->parentInstance(); h = h->parentInstance())
-       g -= h->pos();
+    for (View h = self(); h.hasParent(); h = h.parent()) g -= h.pos();
     return g;
 }
 
-Point View::Instance::mapToChild(const Instance *child, Point l) const
+Point View::State::mapToParent(const View &parent, Point l) const
 {
-    for (const Instance *h = child; h != this && h->parentInstance(); h = h->parentInstance())
-        l -= h->pos();
+    for (View h = self(); h != parent && h.hasParent(); h = h.parent()) l += h.pos();
     return l;
 }
 
-Point View::Instance::mapToParent(const Instance *parent, Point l) const
+Point View::State::mapToChild(const View &child, Point l) const
 {
-    for (const Instance *h = this; h != parent && h->parentInstance(); h = h->parentInstance())
-        l += h->pos();
+    View s = self();
+    for (View h = child; h != s && h.hasParent(); h = h.parent()) l -= h.pos();
     return l;
 }
 
-bool View::Instance::withinBounds(Point l) const
+View View::State::findChild(Point l) const
 {
-    return
-        0 <= l[1] && l[1] < size()[1] &&
-        0 <= l[0] && l[0] < size()[0];
-}
-
-View View::Instance::getChildAt(Point l) /// \todo replace by a safer version: bool lookupChildAt(Point l, View *view) const;
-{
-    for (auto pair: visibleChildren_) {
-        View child = pair->value();
-        if (child->containsLocal(mapToChild(child, l))) return child;
+    for (auto pos = visibleChildren_.tail(); pos; --pos) {
+        View candidate = visibleChildren_.at(pos);
+        if (candidate.containsLocal(mapToChild(candidate, l)))
+            return candidate;
     }
-    return View{nullptr};
+    return View{};
 }
 
-Control View::Instance::getControlAt(Point l) /// \todo replace by a safer version: bool lookupControlAt(Point l, Control *view) const;
+Control View::State::findControl(Point l) const
 {
-    for (auto pair: visibleChildren_) {
-        View child = pair->value();
-        if (child->containsLocal(mapToChild(child, l))) {
-            Control control = child->as<Control>();
-            if (control) {
-                while (control->delegate())
-                    control = control->delegate();
-                return control;
+    Control control;
+    for (auto pos = visibleChildren_.tail(); pos; --pos) {
+        View candidate = visibleChildren_.at(pos);
+        Point lc = mapToChild(candidate, l);
+        if (candidate.containsLocal(lc)) {
+            if (candidate.is<Control>()) {
+                control = candidate.as<Control>();
+                if (control.delegate()) {
+                    while (control.delegate())
+                        control = control.delegate();
+                }
             }
+            else
+                control = candidate.findControl(lc);
+            break;
         }
     }
-    return Control{nullptr};
+    return control;
 }
 
-bool View::Instance::isParentOf(const Instance *other) const
+bool View::State::isParentOf(const View &other) const
 {
-    for (const Instance *h = other; h; h = h->parentInstance()) {
-        if (h == this)
-            return true;
+    View s = self();
+    for (View h = other; h; h = h.parent()) {
+        if (h == s) return true;
     }
     return false;
 }
 
-bool View::Instance::isFullyVisibleIn(const Instance *other) const
+bool View::State::laysInsideOf(const View &other, double margin) const
 {
     if (!other) return false;
-    if (other == this) return true;
-    if (!other->isParentOf(this)) return false;
 
     return
-        other->withinBounds(mapToParent(other, Point{})) &&
-        other->withinBounds(mapToParent(other, size() - Size{1, 1}));
+        other.containsGlobal(mapToGlobal(Point{-margin, -margin})) &&
+        other.containsGlobal(mapToGlobal(size() - Size{1 - margin, 1 - margin}));
 }
 
-void View::Instance::centerInParent()
+Color View::State::basePaper() const
 {
-    pos <<[=]{ return parentInstance() ? 0.5 * (parentInstance()->size() - size()) : Point{}; };
-}
-
-Color View::Instance::basePaper() const
-{
-    for (const Instance *h = parentInstance(); h; h = h->parentInstance()) {
-        if (h->paper())
-            return h->paper();
+    for (View h = parent(); h; h = h.parent()) {
+        if (h.paper())
+            return h.paper();
     }
 
-    return style()->theme()->windowColor();
+    return theme().windowColor();
 }
 
-void View::Instance::inheritPaper()
+void View::State::childReady(InOut<View> child)
 {
-    paper <<[=]{ return basePaper(); };
+    child()->settled();
 }
 
-bool View::Instance::isOpaque() const
+void View::State::childDone(InOut<View> child)
+{}
+
+void View::State::settled()
+{}
+
+void View::State::insertAt(Locator target, View child)
 {
-    return paper()->isOpaque();
-}
-
-bool View::Instance::isPainted() const
-{
-    return paper()->isValid() && size()[0] > 0 && size()[1] > 0;
-}
-
-bool View::Instance::isStatic() const
-{
-    return false; // FIXME
-}
-
-void View::Instance::clear(Color c)
-{
-    image()->clear(c->premultiplied());
-}
-
-void View::Instance::clear()
-{
-    clear(paper());
-}
-
-void View::Instance::update(UpdateReason reason)
-{
-    Window *w = window();
-    if (!w) return;
-
-    if (!visible() && reason != UpdateReason::Hidden) return;
-
-    w->addToFrame(UpdateRequest::create(reason, this));
-}
-
-void View::Instance::childReady(View &child)
-{
-    if (layout_) layout_->childReady(child);
-}
-
-void View::Instance::childDone(View &child)
-{
-    if (layout_) layout_->childDone(child);
-}
-
-StylePlugin *View::Instance::style() const
-{
-    return StyleManager::instance()->activePlugin();
-}
-
-const Theme *View::Instance::theme() const
-{
-    return style()->theme();
-}
-
-Window *View::Instance::window() const
-{
-    if (!window_) {
-        if (parentInstance())
-            return parentInstance()->window();
+    if (target) {
+        View sibling1 = children_.at(target);
+        View sibling2;
+        --target;
+        if (target) sibling2 = children_.at(target);
+        double newId = sibling1.id();
+        if (sibling2)
+            newId = (newId + sibling2.id()) / 2;
+        else
+            --newId;
+        child.me().id_ = newId;
     }
-    return window_;
+    insertChild(child);
 }
 
-Image::Instance *View::Instance::image()
+void View::State::insertChild(View child)
+{
+    child.me().parent_ = this;
+    if (std::isnan(child.me().id_))
+        child.me().id_ = nextId();
+    children_.insert(child);
+    if (!visible()) child.visible(false);
+    if (child.visible())
+        visibleChildren_.insert(child);
+    childReady(&child);
+    ++childrenCount;
+}
+
+void View::State::removeChild(View child)
+{
+    children_.remove(child);
+    if (child.visible())
+        visibleChildren_.remove(child);
+    child.me().id_ = 0;
+    childDone(&child);
+    --childrenCount;
+}
+
+void View::State::moveToTop(View child)
+{
+    if (children_.max() != child && children_.find(child))
+    {
+        child.visible(false);
+        children_.remove(child);
+        child.me().id_ = children_.max().id() + 1;
+        children_.insert(child);
+        child.visible(true);
+    }
+}
+
+void View::State::moveToBottom(View child)
+{
+    if (children_.min() != child && children_.find(child))
+    {
+        child.visible(false);
+        children_.remove(child);
+        child.me().id_ = children_.min().id() - 1;
+        children_.insert(child);
+        child.visible(true);
+    }
+}
+
+cairo_surface_t *View::State::cairoSurface()
+{
+    return image().cairoSurface();
+}
+
+Image View::State::image()
 {
     if (!image_ || (
-        image_->width()  != std::ceil(size()[0]) ||
-        image_->height() != std::ceil(size()[1])
+        image_.width()  != std::ceil(size()[0]) ||
+        image_.height() != std::ceil(size()[1])
     ))
         image_ = Image{int(std::ceil(size()[0])), int(std::ceil(size()[1]))};
 
     return image_;
 }
 
-void View::Instance::insertChild(View child)
+View View::State::self() const
 {
-    child->parentInstance = this;
-    child->serial_ = nextSerial();
-    children_->insert(child->serial_, child);
-    child->build();
-    if (child->visible())
-        visibleChildren_->insert(child->serial_, child);
-    childCount += 1;
-    childReady(child);
+    return Object::alias<View>(this);
 }
 
-void View::Instance::removeChild(View child)
+Window View::State::window() const
 {
-    View hook = child;
-    children_->remove(child->serial_);
-    if (child->visible())
-        visibleChildren_->remove(child->serial_);
-    child->serial_ = 0;
-    childCount -= 1;
-    childDone(child);
+    return window_() ? Object::alias<Window>(window_()) : Window{};
 }
 
-View View::Instance::setLayout(const Layout &layout)
+bool View::State::isHandheld() const
 {
-    layout_ = layout;
-    return this;
+    return (window_() && window().display()) ? window().display().isHandheld() : true;
 }
 
-void View::Instance::adoptChild(View parent, View child)
+void View::State::update(UpdateReason reason)
 {
-    if (child->parent() != parent) {
-        if (child->parent()) child->parent()->removeChild(child);
-        parent->insertChild(child);
-    }
+    if (!window()) return;
+
+    if (!visible() && reason != UpdateReason::Hidden) return;
+
+    window().me().addToFrame(UpdateRequest{reason, self()});
 }
 
-View View::Instance::adoptLayout(View &view, const Layout &layout)
+bool View::State::feedExposedEvent() const
 {
-    return view->setLayout(layout);
-}
-
-bool View::Instance::feedFingerEvent(FingerEvent *event)
-{
-    {
-        PointerEvent::PosGuard guard{event, mapToLocal(window()->size() * event->pos())};
-
-        if (event->action() == PointerAction::Pressed)
-        {
-            if (pointerPressed(event) || fingerPressed(event))
-                return true;
-        }
-        else if (event->action() == PointerAction::Released)
-        {
-            bool eaten = pointerReleased(event) || fingerReleased(event);
-
-            if (Application{}->pressedControl()) {
-                if (
-                    Application{}->pressedControl()->pointerClicked(event) ||
-                    Application{}->pressedControl()->fingerClicked(event)
-                )
-                    eaten = true;
-            }
-
-            if (eaten) return true;
-        }
-        else if (event->action() == PointerAction::Moved)
-        {
-            if (pointerMoved(event) || fingerMoved(event))
-                return true;
-        }
+    if (isPainted()) {
+        paint();
+        if (decoration()) decoration()->paint();
     }
 
-    for (auto pair: visibleChildren_)
+    for (const View &child: visibleChildren_)
     {
-        View child = pair->value();
+        if (child.me().feedExposedEvent())
+            return true;
+    }
 
-        if (child->containsGlobal(event->pos()))
+    return false;
+}
+
+bool View::State::feedEnterEvent() const
+{
+    onWindowEntered.emit();
+
+    for (const View &child: visibleChildren_)
+    {
+        if (child.me().feedEnterEvent())
+            return true;
+    }
+
+    return false;
+}
+
+bool View::State::feedLeaveEvent() const
+{
+    onWindowLeft.emit();
+
+    for (const View &child: visibleChildren_)
+    {
+        if (child.me().feedLeaveEvent())
+            return true;
+    }
+
+    return false;
+}
+
+bool View::State::feedFingerEvent(FingerEvent &event) const
+{
+    {
+        PosGuard guard{event, mapToLocal(window().size() * event.pos())};
+
+        if (event.action() == PointerAction::Pressed)
         {
-            if (child->feedFingerEvent(event))
+            if (onPointerPressed.propagate(event) || onFingerPressed.propagate(event))
+                return true;
+        }
+        else if (event.action() == PointerAction::Released)
+        {
+            if (onPointerReleased.propagate(event) || onFingerReleased.propagate(event))
+                return true;
+        }
+        else if (event.action() == PointerAction::Moved)
+        {
+            if (onPointerMoved.propagate(event) || onFingerMoved.propagate(event))
+                return true;
+        }
+    }
+
+    for (const View &child: visibleChildren_)
+    {
+        if (child.containsGlobal(event.pos()))
+        {
+            if (child.me().feedFingerEvent(event))
                 return true;
         }
     }
@@ -339,47 +357,36 @@ bool View::Instance::feedFingerEvent(FingerEvent *event)
     return false;
 }
 
-bool View::Instance::feedMouseEvent(MouseEvent *event)
+bool View::State::feedMouseEvent(MouseEvent &event) const
 {
     {
-        PointerEvent::PosGuard guard{event, mapToLocal(event->pos())};
+        PosGuard guard{event, mapToLocal(event.pos())};
 
-        if (event->action() == PointerAction::Pressed)
+        if (event.action() == PointerAction::Pressed)
         {
-            if (pointerPressed(event) || mousePressed(event))
+            if (onPointerPressed.propagate(event) || onMousePressed.propagate(event))
                 return true;
         }
-        else if (event->action() == PointerAction::Released)
+        else if (event.action() == PointerAction::Released)
         {
-            bool eaten = pointerReleased(event) || mouseReleased(event);
-
-            if (Application{}->pressedControl()) {
-                if (
-                    Application{}->pressedControl()->pointerClicked(event) ||
-                    Application{}->pressedControl()->mouseClicked(event)
-                )
-                    eaten = true;
-            }
-
-            if (eaten) return true;
+            if (onPointerReleased.propagate(event) || onMouseReleased.propagate(event))
+                return true;
         }
-        else if (event->action() == PointerAction::Moved)
+        else if (event.action() == PointerAction::Moved)
         {
             if (
-                (event->button() != MouseButton::None && pointerMoved(event)) ||
-                mouseMoved(event)
+                (event.button() != MouseButton::None && onPointerMoved.propagate(event)) ||
+                onMouseMoved.propagate(event)
             )
                 return true;
         }
     }
 
-    for (auto pair: visibleChildren_)
+    for (const View &child: visibleChildren_)
     {
-        View child = pair->value();
-
-        if (child->containsGlobal(event->pos()))
+        if (child.containsGlobal(event.pos()))
         {
-            if (child->feedMouseEvent(event))
+            if (child.me().feedMouseEvent(event))
                 return true;
         }
     }
@@ -387,21 +394,19 @@ bool View::Instance::feedMouseEvent(MouseEvent *event)
     return false;
 }
 
-bool View::Instance::feedWheelEvent(WheelEvent *event)
+bool View::State::feedWheelEvent(WheelEvent &event) const
 {
-    if (containsGlobal(event->mousePos()))
+    if (containsGlobal(event.mousePos()))
     {
-        if (wheelMoved(event))
+        if (onWheelMoved.propagate(event))
             return true;
     }
 
-    for (auto pair: visibleChildren_)
+    for (const View &child: visibleChildren_)
     {
-        View child = pair->value();
-
-        if (child->containsGlobal(event->mousePos()))
+        if (child.me().containsGlobal(event.mousePos()))
         {
-            if (child->feedWheelEvent(event))
+            if (child.me().feedWheelEvent(event))
                 return true;
         }
     }
@@ -409,81 +414,34 @@ bool View::Instance::feedWheelEvent(WheelEvent *event)
     return false;
 }
 
-bool View::Instance::feedKeyEvent(KeyEvent *event)
+bool View::State::feedKeyEvent(KeyEvent &event) const
 {
-    if (event->action() == KeyAction::Pressed)
+    if (event.action() == KeyAction::Pressed)
     {
-        if (keyPressed(event)) return true;
+        if (onKeyPressed.propagate(event)) return true;
     }
-    else if (event->action() == KeyAction::Released)
+    else if (event.action() == KeyAction::Released)
     {
-        if (keyReleased(event)) return true;
+        if (onKeyReleased.propagate(event)) return true;
     }
 
-    for (auto pair: visibleChildren_)
+    for (const View &child: visibleChildren_)
     {
-        View child = pair->value();
-
-        if (child->feedKeyEvent(event))
+        if (child.me().feedKeyEvent(event))
             return true;
     }
 
     return false;
 }
 
-bool View::Instance::feedExposedEvent()
+Control View::findControl(Point l) const
 {
-    if (isPainted()) paint();
-
-    for (auto pair: visibleChildren_)
-    {
-        View child = pair->value();
-
-        if (child->feedExposedEvent())
-            return true;
-    }
-
-    return false;
+    return me().findControl(l);
 }
 
-bool View::Instance::feedEnterEvent()
+Window View::window() const
 {
-    windowEntered();
-
-    for (auto pair: visibleChildren_)
-    {
-        View child = pair->value();
-
-        if (child->feedEnterEvent())
-            return true;
-    }
-
-    return false;
+    return me().window();
 }
 
-bool View::Instance::feedLeaveEvent()
-{
-    windowLeft();
-
-    for (auto pair: visibleChildren_)
-    {
-        View child = pair->value();
-
-        if (child->feedLeaveEvent())
-            return true;
-    }
-
-    return false;
-}
-
-uint64_t View::Instance::nextSerial() const
-{
-    return (children_->count() > 0) ? children_->at(children_->count() - 1)->key() + 1 : 1;
-}
-
-cairo_surface_t *View::Instance::cairoSurface() const
-{
-    return const_cast<Instance *>(this)->image()->cairoSurface();
-}
-
-}} // namespace cc::ui
+} // namespace cc::u

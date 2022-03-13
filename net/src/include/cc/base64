@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Exception>
+#include <cc/String>
+
+namespace cc {
+
+/** Base-64 encode \a source
+  * \ingroup net
+  */
+String base64Encode(const Bytes &source);
+
+/** Base-64 decode \a source
+  * \ingroup net
+  * \exception Base64DecodeError
+  */
+String base64Decode(const String &source);
+
+/** \brief Base-64 decoding failed
+  */
+class Base64DecodeError: public Exception {};
+
+class Base64IllegalInputSizeError: public Base64DecodeError {
+public:
+    String message() const override {
+        return "Base-64 error: input size need to be a multiple of 4 bytes";
+    }
+};
+
+class Base64IllegalPaddingError: public Base64DecodeError {
+public:
+    String message() const override {
+        return "Base-64 error: unsupported padding";
+    }
+};
+
+class Base64IllegalCharacterError: public Base64DecodeError {
+public:
+    String message() const override {
+        return "Base-64 error: illegal symbol";
+    }
+};
+
+} // namespace cc

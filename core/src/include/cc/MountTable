@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,96 +8,77 @@
 
 #pragma once
 
-#include <cc/iterators>
 #include <cc/String>
 
 namespace cc {
 
-/** \brief Read a filesystem mount table (fstab format)
+/** \class MountPoint cc/MountTable
+  * \brief Mount table entry
   */
-class MountTable: public Object
+class MountPoint
 {
 public:
-    /** Filesystem table entry
+    /** Storage device path
       */
-    class Entry
-    {
-    public:
-        class Instance
-        {
-        public:
-            String source () const { return parts_->at(0); } ///< device (paritition device node, etc.)
-            String target () const { return parts_->at(1); } ///< path to the mounted root of the filesystem
-            String type   () const { return parts_->at(2); } ///< comma separated list of filesystem types
-            String options() const { return parts_->at(3); } ///< comma separated list of mount options (key or key=value format)
+    String source() const { return parts_.at(0); }
 
-            String toString() const { return parts_->join(" "); }
-
-        private:
-            friend class Entry;
-
-            Instance(const String &line);
-
-            StringList parts_;
-        };
-
-        Entry(const String &line): instance_{line} {}
-
-        const Instance *operator->() const { return &instance_; }
-
-    private:
-        Instance instance_;
-    };
-
-    class Instance {
-    public:
-        using Item = Entry; ///< item type
-        using Index = int; ///< index type
-        using ConstIterator = ConstArrayIterator<Instance>; ///< constant iterator type
-        using Iteator = ConstIterator; ///< constant iterator type
-
-        /// number of table entries
-        int count() const { return lines_->count(); }
-
-        /// check if table index \a i is valid
-        bool has(int i) const { return lines_->has(i); }
-
-        /// get table entry at index \a i
-        Entry at(int i) const { return lines_->at(i); }
-
-        /// constant iterator pointing to the beginning (on first item)
-        ConstIterator begin() const { return ConstIterator{this, 0}; }
-
-        /// constant iterator pointing to the end (behind last item)
-        ConstIterator end() const { return ConstIterator{this, count()}; }
-
-    private:
-        friend class MountTable;
-
-        Instance(const String &text);
-        StringList lines_;
-    };
-
-    using Item = Instance::Item;
-    using Index = Instance::Index;
-    using ConstIterator = Instance::ConstIterator;
-
-    /** Open mount table
-      * \param path path to the filesystem table
+    /** Mounted filesystem root path
       */
-    MountTable(const String &path = "");
+    String target() const { return parts_.at(1); }
 
-    const Instance *operator->() const { return &instance_; }
+    /** Comma-separated filesystem types
+      */
+    String type() const { return parts_.at(2); }
+
+    /** Comma-separated mount options in "key=value" format
+      */
+    String options() const { return parts_.at(3); }
+
+    /** Stringify
+      */
+    String toString() const { return parts_; }
 
 private:
-    static String load(const String &path);
+    friend class MountTable;
 
-    Instance instance_;
+    MountPoint(const String &line);
+
+    List<String> parts_;
 };
 
-inline MountTable::ConstIterator begin(const MountTable &a) { return a->begin(); }
-inline MountTable::ConstIterator end(const MountTable &a) { return a->end(); }
-inline MountTable::ConstIterator begin(MountTable &a) { return a->begin(); }
-inline MountTable::ConstIterator end(MountTable &a) { return a->end(); }
+inline String str(const MountPoint &entry) { return entry.toString(); }
+
+/** \class MountTable cc/MountTable
+  * \ingroup sysinfo
+  * \brief Filesystem mount table (fstab format)
+  */
+class MountTable: public List<MountPoint>
+{
+public:
+    /** Parse an in-memory mount table
+      * \param text Mount table in text format
+      * \return Parsed mount table
+      */
+    static MountTable read(const String &text);
+
+    /** Load mount table from file
+      * \param path File path
+      */
+    explicit MountTable(const String &path);
+
+    /** Stringify this mount table
+      */
+    String toString() const;
+
+private:
+    static String loadText(const String &path);
+
+    MountTable() = default;
+    void readLines(const String &text);
+};
+
+/** Stringify mount table \a table
+  */
+inline String str(const MountTable &table) { return table.toString(); }
 
 } // namespace cc

@@ -1,0 +1,138 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Exception>
+#include <cerrno>
+
+namespace cc {
+
+/** \ingroup exceptions
+  * \brief Translate system error code to error message
+  */
+String systemError(int errorCode);
+
+/** \class SystemError cc/SystemError
+  * \ingroup exceptions
+  * \brief %System call failed
+  */
+class SystemError: public Exception
+{
+public:
+    explicit SystemError(int errorCode): errorCode_{errorCode} {}
+
+    /** Error code return by a system call
+      */
+    int errorCode() const { return errorCode_; }
+
+    /** Error code translated into a human readable error message
+      */
+    String message() const override;
+
+protected:
+    int errorCode_;
+};
+
+/** \class SystemResourceError cc/SystemError
+  * \ingroup exceptions
+  * \brief %System call failed to perform an action on a named resource (e.g. a file)
+  * \see CC_SYSTEM_ERROR
+  */
+class SystemResourceError: public SystemError
+{
+public:
+    SystemResourceError(int errorCode, const String &resource, const char *source, int line):
+        SystemError{errorCode},
+        resource_{resource},
+        source_{source},
+        line_{line}
+    {}
+
+    /** Name of affected system resource (e.g. file name)
+      */
+    String resource() const { return resource_; }
+
+    /** %File path to the source code which has thrown this exception
+      */
+    const char *source() const { return source_; }
+
+    /** Line number within the source code
+      */
+    int line() const { return line_; }
+
+    String message() const override;
+
+private:
+    String resource_;
+    const char *source_;
+    int line_;
+};
+
+/** \class SystemDebugError cc/SystemError
+  * \ingroup exceptions
+  * \brief Debugging hint on system call failure
+  * \see CC_SYSTEM_ERROR
+  */
+class SystemDebugError: public SystemError
+{
+public:
+    SystemDebugError(int errorCode, const char *source, int line):
+        SystemError{errorCode},
+        source_{source},
+        line_{line}
+    {}
+
+    /** %File path to the source code which has thrown this exception
+      */
+    const char *source() const { return source_; }
+
+    /** Line number within the source code
+      */
+    int line() const { return line_; }
+
+    String message() const override;
+
+private:
+    const char *source_;
+    int line_;
+};
+
+/** Convenience macro to throw a SystemResourceError
+  * \ingroup exceptions
+  */
+#define CC_SYSTEM_RESOURCE_ERROR(errorCode, resource) \
+    throw SystemResourceError(errorCode, resource, __FILE__, __LINE__)
+
+/** Convenience macro to throw a SystemDebugError
+  * \ingroup exceptions
+  */
+#define CC_SYSTEM_DEBUG_ERROR(errorCode) \
+    throw SystemDebugError(errorCode, __FILE__, __LINE__)
+
+inline int systemCall(int ret, const char *file, int line)
+{
+    if (ret == -1) throw SystemDebugError(errno, file, line);
+    return ret;
+}
+
+/** Convenience macro to invoke a system call and automatically have it throw a SystemDebugError on errors
+  * \ingroup exceptions
+  */
+#define CC_SYSCALL(ret) systemCall(ret, __FILE__, __LINE__)
+
+/** Convenience macro to throw a SystemDebugError or SystemResourceError
+  * \ingroup exceptions
+  */
+#define CC_SYSTEM_ERROR(errorCode, resource) \
+    { \
+        if (resource != "") CC_SYSTEM_RESOURCE_ERROR(errorCode, resource); \
+        else CC_SYSTEM_DEBUG_ERROR(errorCode); \
+    }
+
+} // namespace cc

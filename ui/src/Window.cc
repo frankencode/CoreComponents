@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,60 +8,63 @@
 
 #include <cc/ui/Window>
 #include <cc/ui/Application>
-#include <cc/ui/Control>
-#include <cc/ui/StyleManager>
-#include <cc/QueueInstance>
+#include <cc/ui/DisplayManager>
+#include <cc/DEBUG>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-Window *Window::open(const View &view, const String &title, WindowMode mode)
+Window::Window(const View &view)
 {
-    return Application{}->openWindow(view, title, mode);
+    *this = Application{}->createWindow(view);
 }
 
-Window::Window(const View &view, const String &title):
-    title{title},
-    size{alias(view->size)},
-    view_{view},
-    nextFrame_{Frame::create()}
+Control Window::findControl(Point pos) const
 {
-    view_->window_ = this;
-    if (!view_->paper()) view_->paper <<[=]{ return StyleManager::instance()->activePlugin()->theme()->windowColor(); };
-    view_->build();
-}
-
-Window::~Window()
-{
-    view_->disband();
-}
-
-Control Window::getControlAt(Point pos) const
-{
-    if (view_) {
-        Control control = view_->getControlAt(pos);
-        if (!control && view_->containsLocal(pos))
-            control = view_->as<Control>();
+    if (view()) {
+        Control control = view().findControl(pos);
+        if (!control && view().containsLocal(pos) && view().is<Control>()) {
+            control = view().as<Control>();
+        }
         return control;
     }
-
-    return Control{nullptr};
+    return Control{};
 }
 
-void Window::addToFrame(const UpdateRequest *request)
+Window::State::State(View view):
+    size{&view.me().size},
+    view_{view}
 {
-    if (nextFrame_->count() > 0) {
-        if (nextFrame_->back()->equals(request))
+    if (!view_.paper()) view_.paper([this]{ return theme().windowColor(); });
+    view_.me().window_ = this;
+
+    display([this]{
+        List<Display> displays = DisplayManager{}.displays();
+        Display displayFound;
+        Point windowCenter = pos() + size() / 2;
+        for (const Display &candidate: displays) {
+            if (candidate.geometry().contains(windowCenter)) {
+                displayFound = candidate;
+                break;
+            }
+        }
+        return displayFound;
+    });
+}
+
+void Window::State::addToFrame(const UpdateRequest &request)
+{
+    if (nextFrame_.count() > 0) {
+        if (nextFrame_.last() == request)
             return;
     }
-    nextFrame_->pushBack(request);
+    nextFrame_.pushBack(request);
 }
 
-void Window::commitFrame()
+void Window::State::commitFrame()
 {
-    if (nextFrame_->count() == 0) return;
+    if (nextFrame_.count() == 0) return;
     renderFrame(nextFrame_);
-    nextFrame_ = Frame::create();
+    nextFrame_ = Frame{};
 }
 
-}} // namespace cc::ui
+} // namespace cc::ui

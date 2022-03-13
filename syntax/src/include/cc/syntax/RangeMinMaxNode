@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/SyntaxNode>
+#include <cc/str>
+
+namespace cc::syntax {
+
+/** \class RangeMinMaxNode cc/syntax/RangeMinMaxNode
+  * \brief %Match the next character for a given range
+  * \tparam Invert Invert the match (1) or keep it straight (0)
+  */
+template<int Invert = 0>
+class RangeMinMaxNode: public SyntaxNode
+{
+public:
+    explicit RangeMinMaxNode(char a, char b):
+        SyntaxNode{new State{a, b}}
+    {}
+
+    char a() const { return me().a_; }
+    char b() const { return me().b_; }
+
+private:
+    struct State: public SyntaxNode::State
+    {
+        State(char a, char b):
+            a_{a},
+            b_{b}
+        {}
+
+        long matchNext(const String &text, long offset, Token &production) const override
+        {
+            if (text.has(offset)) {
+                char ch = text.at(offset++);
+                if (((ch < a_) || (b_ < ch)) ^ Invert)
+                    offset = -1;
+            }
+            else
+                offset = -1;
+
+            return offset;
+        }
+
+        long matchLength() const override
+        {
+            return 1;
+        }
+
+        List<String> explain() const override
+        {
+            return List<String>{}
+                << (Invert ? "Outside{" : "Within{") << "'" << str(a_) << "','" << str(b_) << "'}";
+        }
+
+        char a_, b_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::syntax

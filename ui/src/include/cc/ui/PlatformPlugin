@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,38 +8,73 @@
 
 #pragma once
 
-#include <cc/ui/ApplicationInstance>
-#include <cc/ui/TimeMaster>
 #include <cc/ui/FontManager>
 #include <cc/ui/DisplayManager>
-#include <cc/ui/TouchDeviceManager>
+#include <cc/ui/TimeMaster>
+#include <cc/ui/Application>
+#include <cc/ui/exceptions>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \internal
+  * \class PlatformPlugin cc/ui/PlatformPlugin
+  * \ingroup ui
+  * \brief Application platform support
+  */
 class PlatformPlugin: public Object
 {
 public:
-    static PlatformPlugin *instance();
+    /** Create a null platform plugin
+      */
+    PlatformPlugin() = default;
 
-    String name() const { return name_; }
-    bool isPlatformDefault() const { return isPlatformDefault_; }
+    /** %Plugin name
+      */
+    String name() const { return me().name_; }
 
-    virtual ApplicationInstance *application() const = 0;
-    virtual TimeMaster *timeMaster() const = 0;
+    /** If this is the system's default platform plugin
+      */
+    bool isPlatformDefault() const { return me().isPlatformDefault_; }
 
-    virtual FontManager *fontManager() const;
+    /** Get the platform's font manager
+      */
+    FontManager fontManager() const { return me().fontManager(); }
 
-    virtual DisplayManager *displayManager() const = 0;
-    virtual TouchDeviceManager *touchDeviceManager() const = 0;
+    /** Get the platform's display manager
+      */
+    DisplayManager displayManager() const { return me().displayManager(); }
+
+    /** Get the platform's time master
+      */
+    TimeMaster timeMaster() const { return me().timeMaster(); }
+
+    /** Get the platform's application event loop
+      */
+    Application application() const { return me().application(); }
 
 protected:
-    PlatformPlugin(const String &name, bool isPlatformDefault = false);
-    void init();
+    struct State: public Object::State
+    {
+        State(const String &name, bool isPlatformDefault = false):
+            name_{name},
+            isPlatformDefault_{isPlatformDefault}
+        {}
 
-private:
-    String name_;
-    bool isPlatformDefault_;
+        virtual FontManager fontManager() const;
+        virtual DisplayManager displayManager() const = 0;
+        virtual TimeMaster timeMaster() const = 0;
+        virtual Application application() const = 0;
+
+        String name_;
+        bool isPlatformDefault_;
+    };
+
+    explicit PlatformPlugin(State *newState);
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+PlatformPlugin platform();
+
+} // namespace cc::ui

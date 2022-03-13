@@ -1,0 +1,5 @@
+Plugin {
+    name: cc_httpSyslogLoggingPlugin
+    group: logging
+    extend: cc/http
+}

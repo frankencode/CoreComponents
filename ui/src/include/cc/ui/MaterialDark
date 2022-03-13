@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,42 +10,18 @@
 
 #include <cc/ui/Theme>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \class MaterialDark cc/ui/MaterialDark
+  * \brief %Material %Design nighttime theme
+  */
 class MaterialDark: public Theme
 {
-    friend class Object;
-
 public:
-    Color primaryColor         () const override { return Color{ Material::Purple500 }; }
-    Color secondaryColor       () const override { return Color{ Material::Cyan500 }; }
-    Color alertColor           () const override { return Color{ Material::RedA400 }; }
+    MaterialDark();
 
-    Color statusBarColor       () const override { return Color{ Material::Black }; }
-    Color appBarColor          () const override { return Color{ Material::Grey900 }; }
-    Color windowColor          () const override { return Color{ 0x303030 }; }
-    Color popupColor           () const override { return Color{ Material::Grey800 }; }
-
-    Color titleTextColor       () const override { return Color::White; }
-    Color focusTextColor       () const override { return primaryColor(); }
-    Color primaryTextColor     () const override { return Color::White; }
-    Color secondaryTextColor   () const override { return Color::White(70); }
-    Color inactiveTextColor    () const override { return Color::White(50); }
-
-    Color inputLineColor       () const override { return secondaryTextColor(); }
-    Color hoverInputLineColor  () const override { return primaryTextColor(); }
-    Color pressedInputLineColor() const override { return primaryColor(); }
-    Color focusInputLineColor  () const override { return primaryColor(); }
-    Color textCursorColor      () const override { return primaryColor(); }
-    Color textSelectionInk     () const override { return primaryTextColor(); }
-    Color textSelectionPaper   () const override { return secondaryColor(); }
-
-    Color inputFieldFillColor  () const override { return windowColor()->lighter(4); }
-    Color itemHighlightColor   () const override { return windowColor()->lighter(4); }
-
-private:
-    MaterialDark() = default;
+protected:
+    struct State;
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

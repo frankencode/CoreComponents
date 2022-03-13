@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <functional>
+#include <cstdint>
+
+namespace cc {
+
+template<class T>
+struct VariantType
+{};
+
+struct TypeInfo {
+    const char *typeName;
+
+    std::function<String(const void *)> str;
+
+    std::function<void(void *)> cleanup = [](void *){};
+
+    std::function<void(void *, const void *)> assign = [](void *dst, const void *src){
+        *static_cast<uint64_t *>(dst) = *static_cast<const uint64_t *>(src);
+    };
+
+    std::function<bool(const void *, const void *)> equal = [](const void *, const void *) {
+        return false;
+    };
+};
+
+} // namespace cc

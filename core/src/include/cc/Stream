@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,110 +9,198 @@
 #pragma once
 
 #include <cc/String>
+#include <cc/Object>
+#include <cc/bitmask>
+
+struct iovec;
 
 namespace cc {
 
-class Format;
+/** I/O event type
+  * \ingroup streams
+  */
+enum class IoEvent: short {
+    None             = 0,                    ///< Undefined
+    ReadyRead        = 1,                    ///< Ready for reading
+    ReadyWrite       = 2,                    ///< Ready for writing
+    ReadyAccept      = ReadyRead,            ///< Ready for accepting a connection (on a listening socket)
+    ReadyReadOrWrite = ReadyRead|ReadyWrite, ///< Ready for reading and writing
+    Established      = ReadyRead|ReadyWrite  ///< Wait until the stream is established
+};
+
+CC_BITMASK(IoEvent)
 
 /** \class Stream cc/Stream
-  * \ingroup binary_io
+  * \ingroup streams
   * \brief Abstract data stream
   */
-class Stream
+class Stream: public Object
 {
 public:
-    class Instance: public virtual Object
-    {
-    public:
-        /** Read available data
-          * \param data target buffer
-          * \return number of bytes read
-          * \see CharArray::select()
-          */
-        virtual int read(CharArray *data);
-
-        /** Write data
-          * \param data source buffer
-          * \see CharArray::select()
-          */
-        virtual void write(const CharArray *data);
-
-        /** Write multiple buffers atomically ("scatter write")
-          * \param parts list of source buffers
-          */
-        virtual void write(const StringList &parts);
-
-        /// Convenience wrapper
-        void write(const String &data) { write(static_cast<const CharArray *>(data)); }
-
-        /// Convenience wrapper
-        void write(const char *data) { write(String{data}); }
-
-        /// Convenience wrapper
-        void write(const Format &data);
-
-        /// Convenience wrapper
-        void write(const void *data, int size);
-
-        /** Transfer a span of bytes
-          * \param count number of bytes to transfer (or -1 for all)
-          * \param sink target stream (or null for dump mode)
-          * \param buffer auxiliary transfer buffer
-          * \return number of bytes transferred
-          * \see Transfer
-          */
-        virtual off_t transferSpanTo(off_t count, const Stream &sink = Stream{}, CharArray *buffer = nullptr);
-
-        /// Convenience wrapper for transferSpanTo(sink, -1, buffer)
-        off_t transferTo(const Stream &sink, CharArray *buffer = nullptr) { return transferSpanTo(-1, sink, buffer); }
-
-        /// Convenience wrapper for transferSpanTo(0, count)
-        off_t skip(off_t count) { return transferSpanTo(count, nullptr); }
-
-        /// Convenience wrapper for transferSpanTo(-1, nullptr, buffer)
-        void drain(CharArray *buffer = nullptr) { transferSpanTo(-1, nullptr, buffer); }
-
-        /** Read a span of bytes
-          * \param data target buffer
-          * \return number of bytes read
-          */
-        int readSpan(CharArray *data);
-
-        /** Read a fixed number of bytes (N)
-          * \param count number of bytes to read (N)
-          * \return String of exactly N bytes (padded with zeros if no more data could be read)
-          */
-        String readSpan(int count);
-
-        /** Read the entire stream
-          * \param buffer auxiliary transfer buffer
-          * \return all byte read from the stream
-          */
-        String readAll(CharArray *buffer = nullptr);
-
-        /// Return true if this Stream is readonly
-        virtual bool isReadOnly() const { return false; }
-
-    protected:
-        Instance() = default;
-    };
-
+    /** Create a null stream
+      */
     Stream() = default;
 
-    Stream(Instance *instance):
-        instance_{instance}
-    {}
+    /** Wait until the connection is fully established
+      * \param timeout Maximum timeout to wait in milliseconds
+      * \return True if connectio was established before timeout
+      * \exception SocketError %Connection request failed
+      */
+    bool waitEstablished(int timeout = -1) { return me().waitEstablished(timeout); }
 
-    Instance *operator->() const { return instance_; }
-    operator Instance *() const { return instance_; }
-    explicit operator bool() const { return instance_; }
+    /** Wait for an I/O event
+      * \param event Combination of IoEvent flags
+      * \param timeout Maximum timeout in milliseconds (or infinite if < 0)
+      * \return %True if one of the indicated events occured, false otherwise
+      */
+    bool wait(IoEvent event, int timeout = -1) { return me().wait(event, timeout); }
+
+    /** Read available bytes into \a buffer and return number of bytes read
+      */
+    long read(Out<Bytes> buffer, long maxFill = -1) { return me().read(buffer, maxFill); }
+
+    /** Write \a fill bytes from \a buffer (if fill < 0 write all bytes from \a buffer)
+      */
+    void write(const Bytes &buffer, long fill = -1) { me().write(buffer, fill); }
+
+    /** Write the contents of \a buffers in one go
+      */
+    void write(const List<Bytes> &buffers) { me().write(buffers); }
+
+    /** Convenience method, equivalent to 'write(parts.join())'
+      */
+    void write(const List<String> &parts) { write(parts.join()); }
+
+    /** Write the contents of the \a iov buffers in one go
+      * \see writev(2)
+      */
+    void write(const struct iovec *iov, int iovcnt) { me().write(iov, iovcnt); }
+
+    /** Write C-string \a s
+      */
+    void write(const char *s) { write(String{s}); }
+
+    /** %Return true if this stream is discarding all writes
+      */
+    bool isDiscarding() const { return me().isDiscarding(); }
+
+    /** Transfer a span of bytes
+      * \param sink Target stream
+      * \param count Number of bytes to transfer (or -1 for all)
+      * \param buffer Auxiliary transfer buffer
+      * \return Number of bytes transferred
+      */
+    long long transferTo(const Stream &sink, long long count, const Bytes &buffer) { return me().transferTo(sink, count, buffer); }
+
+    /** Transfer a span of bytes
+      * \param sink Target stream
+      * \param count Number of bytes to transfer (or -1 for all)
+      * \return Number of bytes transferred
+      */
+    long long transferTo(const Stream &sink, long long count = -1) { return me().transferTo(sink, count); }
+
+    /** Default I/O buffer size
+      */
+    long defaultTransferUnit() const { return me().defaultTransferUnit(); }
+
+    /** Read and discard \a count bytes
+      */
+    long long skip(long long count) { return me().skip(count); }
+
+    /** Read everything that is left
+      * \param auxBuffer Auxiliary transfer buffer
+      */
+    void drain(const Bytes &auxBuffer = Bytes{}) { me().drain(auxBuffer); }
+
+    /** Read fixed number of bytes
+      * \param buffer Target buffer (size of of the buffer defines span length)
+      * \return Number of bytes read, which is only lower than buffer.count() on end of input
+      */
+    long readSpan(Out<Bytes> buffer) { return me().readSpan(buffer); }
+
+    /** Read a fixed number of bytes
+      * \param count Number of bytes to read
+      * \return A String of exactly \a count bytes (possibly padded with zeros on end of input)
+      */
+    String readSpan(long count) { return me().readSpan(count); }
+
+    /** Read the entire stream
+      * \return A String comprising of all bytes read from the stream
+      */
+    String readAll() { return me().readAll(); }
 
 protected:
-    template<class T>
-    T *my() const { return as<T>(instance_); }
+    /** \brief Internal state
+      */
+    struct State: public Object::State
+    {
+        /** \copydoc Stream::waitEstablished(int)
+          */
+        virtual bool waitEstablished(int timeout = -1) { return true; }
 
-private:
-    Ref<Instance> instance_;
+        /** \copydoc Stream::wait(IoEvent, int)
+          */
+        virtual bool wait(IoEvent event, int timeout = -1) { return true; }
+
+        /** \copydoc Stream::read(Out<Bytes>, long)
+          */
+        virtual long read(Out<Bytes> buffer, long maxFill = -1) { return 0; }
+
+        /** \copydoc Stream::write(const Bytes &, long)
+          */
+        virtual void write(const Bytes &buffer, long fill = -1) {}
+
+        /** \copydoc Stream::write(const List<Bytes> &)
+          */
+        virtual void write(const List<Bytes> &buffers);
+
+        /** \copydoc Stream::write(const struct iovec *iov, int iovcnt)
+          */
+        virtual void write(const struct iovec *iov, int iovcnt);
+
+        /** \copydoc Stream::isDiscarding()
+          */
+        virtual bool isDiscarding() const { return false; }
+
+        /** \copydoc Stream::transferTo(const Stream &, long long, const Bytes &)
+          */
+        virtual long long transferTo(const Stream &sink, long long count, const Bytes &buffer);
+
+        /** \copydoc Stream::defaultTransferUnit()
+          */
+        virtual long defaultTransferUnit() const { return 0x4000; }
+
+        /** \copydoc Stream::transferTo(const Stream &, long long)
+          */
+        long long transferTo(const Stream &sink, long long count = -1);
+
+        /** \copydoc Stream::skip(long long)
+          */
+        long long skip(long long count);
+
+        /** \copydoc Stream::drain()
+          */
+        void drain(const Bytes &auxBuffer = Bytes{});
+
+        /** \copydoc Stream::readSpan(Out<Bytes>)
+          */
+        long readSpan(Out<Bytes> buffer);
+
+        /** \copydoc Stream::readSpan(long)
+          */
+        String readSpan(long count);
+
+        /** \copydoc Stream::readAll()
+          */
+        String readAll(const Bytes &auxBuffer = Bytes{});
+    };
+
+    explicit Stream(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
 } // namespace cc

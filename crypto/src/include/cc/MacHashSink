@@ -1,0 +1,70 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/CryptoHashSink>
+
+namespace cc {
+
+/** \class MacHashSink cc/MacHashSink
+  * \ingroup crypto
+  * \brief HMAC Message authentication hash sink
+  * \tparam T %Underlying cryptographic hash sink type
+  * \internal
+  * \see RFC 2104 for details
+  */
+template<class T>
+class MacHashSink final: public CryptoHashSink
+{
+public:
+    /** Create a new message authentification sink
+      */
+    explicit MacHashSink(const Bytes &key):
+        CryptoHashSink{new State{key}}
+    {}
+
+private:
+    struct State: public CryptoHashSink::State
+    {
+        static Bytes preparedKey(const int blockSize, const Bytes &key, uint8_t blind)
+        {
+            Bytes preparedKey = Bytes::allocate(blockSize);
+            preparedKey.fill(0);
+            key.copyTo(&preparedKey);
+            for (int i = 0; i < preparedKey.count(); ++i) {
+                preparedKey.byteAt(i) ^= blind;
+            }
+            return preparedKey;
+        }
+
+        State(const Bytes &key)
+        {
+            innerHashSink_.write(preparedKey(innerHashSink_.blockSize(), key, 0x36U));
+            outerHashSink_.write(preparedKey(outerHashSink_.blockSize(), key, 0x5CU));
+        }
+
+        int blockSize() const override { return innerHashSink_.blockSize(); }
+
+        void write(const Bytes &data, long fill = -1) override
+        {
+            innerHashSink_.write(data, fill);
+        }
+
+        Bytes finish() override
+        {
+            outerHashSink_.write(innerHashSink_.finish());
+            return outerHashSink_.finish();
+        }
+
+        T innerHashSink_;
+        T outerHashSink_;
+    };
+};
+
+} // namespace cc

@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/BlockCipherSink>
+
+namespace cc {
+
+/** \class ModuloPadding cc/ModuloPadding
+  * \ingroup crypto
+  * \brief PKCS#7 style paddding (RFC 2315)
+  */
+class ModuloPadding
+{
+public:
+    /** Write the final padding bytes to \a sink
+      * \note No further bytes should be written.
+      */
+    static void writePadding(Out<BlockCipherSink> sink);
+
+    /** Remove the padding bytes from \a message
+      */
+    static void removePadding(InOut<Bytes> message);
+};
+
+} // namespace cc

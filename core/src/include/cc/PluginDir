@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,31 +8,54 @@
 
 #pragma once
 
-#include <cc/Source>
 #include <cc/Plugin>
-#include <cc/Map>
+#include <cc/MultiMap>
 
 namespace cc {
 
-class PluginDir: public Object
+/** \class PluginDir cc/PluginDir
+  * \ingroup plugins
+  * \brief %Plugin directory
+  */
+class PluginDir final: public Object
 {
 public:
-    static Ref<PluginDir> open(const String &path);
+    /** Load plugins from directory \a path
+      */
+    explicit PluginDir(const String &path);
 
-    String path() const;
-    Map< String, Ref<Plugin> > loadedPlugins() const;
+    /** %Plugin directory path
+      */
+    String path() const { return me().path_; }
+
+    /** %List of all loaded plugins
+      */
+    MultiMap<String, Plugin> loadedPlugins() const { return me().loadedPlugins_; }
+
+    /** %List of all plugin directories
+      */
+    static List<PluginDir> pluginDirs() { return getPluginDirs(); }
 
 protected:
-    virtual void onLoaded(Plugin *plugin) {}
-    virtual void onLoadError(const String &pluginPath, const String &errorMessage);
+    virtual void onLoaded(Plugin &plugin) {}
+    virtual void onError(const String &pluginPath, const String &errorMessage);
 
 private:
-    PluginDir(const String &path);
-    ~PluginDir();
-    PluginDir *open();
+    static List<PluginDir> &getPluginDirs()
+    {
+        static List<PluginDir> pluginDirs;
+        return pluginDirs;
+    }
 
-    String path_;
-    Map< String, Ref<Plugin> > loadedPlugins_;
+    struct State: public Object::State
+    {
+        State(const String &path): path_{path} {}
+        String path_;
+        MultiMap<String, Plugin> loadedPlugins_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
 } // namespace cc

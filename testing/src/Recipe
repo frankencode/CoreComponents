@@ -1,4 +1,4 @@
 Library {
-    name: cctesting
+    name: cc_testing
     use: core
 }

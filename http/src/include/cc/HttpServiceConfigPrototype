@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaPrototype>
+#include <cc/MetaProtocol>
+
+namespace cc {
+
+/** \class HttpServiceConfigPrototype cc/HttpServiceConfigPrototype
+  * \ingroup http_server
+  * \brief %HTTP service configuration prototype
+  */
+class HttpServiceConfigPrototype: public MetaPrototype
+{
+public:
+    /** Create a new HTTP service configuration prototype
+      * \param className %Upper-case service name
+      * \param protocol %Optional children protocol
+      */
+    explicit HttpServiceConfigPrototype(const String &className, const MetaProtocol &protocol = MetaProtocol{});
+};
+
+} // namespace cc

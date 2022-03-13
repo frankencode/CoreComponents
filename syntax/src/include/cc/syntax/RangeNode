@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/RangeMinMaxNode>
+
+namespace cc::syntax {
+
+/** \class RangeNode cc/syntax/RangeNode
+  * \brief %Match the next character for lying in a given range
+  */
+class RangeNode final: public RangeMinMaxNode<0>
+{
+public:
+    /** \param a Minimum character value
+      * \param b Maximum character value
+      */
+    explicit RangeNode(char a, char b):
+        RangeMinMaxNode<0>{a, b}
+    {}
+};
+
+} // namespace cc::syntax

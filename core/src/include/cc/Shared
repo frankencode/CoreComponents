@@ -8,65 +8,102 @@
 
 #pragma once
 
-#include <atomic>
-#include <cstdint>
+#include <cc/Use>
 
 namespace cc {
 
+/** \class Shared cc/basics
+  * \ingroup basics
+  * \brief %Shared aggregate
+  * \tparam T Type of shared data structure
+  */
 template<class T>
 class Shared
 {
+    using Data = typename Use<T>::Data;
+
 public:
+    /** Initial construction of the aggregate
+      * \param args construction arguments for the aggregate value
+      */
     template<class... Args>
     explicit Shared(Args... args):
-        data_{new Data{args...}}
+        data{new Data{args...}}
     {}
 
-    Shared(const Shared &other):
-        data_{other.data_}
+    explicit Shared(Use<T> &handle):
+        data{handle.data}
     {
-        data_->acquire();
+        data->acquire();
     }
 
+    /** Initialize by aggregate \a other
+      */
+    Shared(const Shared &other):
+        data{other.data}
+    {
+        data->acquire();
+    }
+
+    /** Initialize by right-side aggregate \a other
+      */
+    Shared(Shared &&other):
+        data{other.data}
+    {
+        other.data = nullptr;
+    }
+
+    /** Cleanup
+      */
     ~Shared()
     {
-        data_->release();
+        if (data) data->release();
+        #ifndef NDEBUG
+        data = nullptr;
+        #endif
     }
 
+    /** Assign aggregate \a other
+      */
     Shared &operator=(const Shared &other)
     {
-        data_ = other->data_;
-        data_->acquire();
+        if (data) data->release();
+        data = other.data;
+        data->acquire();
         return *this;
     }
 
-    T &operator()() { return data_->value_; }
-    const T &operator()() const { return data_->value_; }
+    /** Assign right-side aggregate \a other
+      */
+    Shared &operator=(Shared &&other)
+    {
+        if (data) data->release();
+        data = other.data;
+        other.data = nullptr;
+        return *this;
+    }
+
+    /** Get reference to aggregate value
+      */
+    T &operator()() { return Use<T>::value(data); }
+
+    /** Get constant reference to aggregate value
+      */
+    const T &operator()() const { return Use<T>::value(data); }
+
+    /** %Return the usage count for this aggregate
+      */
+    long useCount() const { return data->useCount(); }
+
+    /** Check if is null
+      */
+    bool isNull() const { return !data; }
 
 private:
-    class Data {
-    public:
-        template<class... Args>
-        Data(Args... args):
-            value_{args...}
-        {}
+    template<class>
+    friend class Use;
 
-        void acquire()
-        {
-            ++refCount_;
-        }
-
-        void release()
-        {
-            if (--refCount_ == 0)
-                delete this;
-        }
-
-        T value_;
-        std::atomic<std::int64_t> refCount_ { 1 };
-    };
-
-    Data *data_;
+    Data *data;
 };
 
 } // namespace cc

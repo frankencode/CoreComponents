@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,26 +10,17 @@
 
 #include <cc/ui/DisplayManager>
 
-namespace cc { template<class> class Singleton; }
+namespace cc::ui {
 
-namespace cc {
-namespace ui {
-
-class SdlDisplayManager: public DisplayManager
+class SdlDisplayManager final: public DisplayManager
 {
 public:
-    static SdlDisplayManager *instance();
-
-    virtual Ref<Display> getDisplay(int index) const;
-    virtual int getDisplayCount() const;
-
-private:
-    friend class Singleton<SdlDisplayManager>;
-
     SdlDisplayManager();
 
-    static Ref<Display> getDisplay_(int index);
-    static int getDisplayCount_();
+private:
+    class State;
+
+    static Display getDisplay(int index);
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

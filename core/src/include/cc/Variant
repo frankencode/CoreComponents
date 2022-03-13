@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,391 +8,461 @@
 
 #pragma once
 
-#include <new>
-#include <cc/bitmask>
-#include <cc/Color>
-#include <cc/Version>
-#include <cc/String>
+#include <cc/VariantType>
+#include <cc/Composite>
 #include <cc/Map>
+#include <initializer_list>
+#include <cassert>
 
 namespace cc {
 
-class Variant;
-
-using VariantList = List<Variant>;
-using VariantMap = Map<String, Variant>;
-
-/** \internal
-  * \brief Variant cast policy
-  * \see Variant::cast()
-  */
-template<class T, bool IsPointer>
-class VariantCast {};
-
-/** Type of a Variant value
-  * \see Variant::type(), Variant::itemType()
-  */
-enum class VariantType: uint16_t
+template<>
+struct VariantType<void>
 {
-    Undefined = 0,
-    Int       = 1,
-    Bool      = 2 | Int,
-    Float     = 4,
-    Color     = 8,
-    Version   = 16,
-    Object    = 32,
-    String    = 64 | Object,
-    List      = 128 | Object,
-    Map       = 256 | Object,
-    Any       = 511
+    static const TypeInfo info;
 };
 
-CC_BITMASK(VariantType, uint16_t)
+template<>
+struct VariantType<long>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, long x)
+    {
+        static_assert(sizeof(long) <= 8);
+
+        *static_cast<std::int64_t *>(bytes) = x;
+    }
+
+    static long retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<long>::info); // expected type 'long'
+
+        return *static_cast<const std::int64_t *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<bool>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, bool x)
+    {
+        *static_cast<std::uint64_t *>(bytes) = x;
+    }
+
+    static bool retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<bool>::info || &typeInfo == &VariantType<long>::info); // expected type 'bool'
+
+        return *static_cast<const std::uint64_t *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<double>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, double x)
+    {
+        static_assert(sizeof(double) <= 8);
+
+        *static_cast<double *>(bytes) = x;
+    }
+
+    static double retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        if (&typeInfo == &VariantType<double>::info)
+            return *static_cast<const double *>(bytes);
+
+        if (&typeInfo == &VariantType<long>::info)
+            return static_cast<double>(VariantType<long>::retrieve(bytes));
+
+        assert(false); // expected type 'double'
+        return 0;
+    }
+};
+
+template<>
+struct VariantType<String>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, const char *x)
+    {
+        static_assert(sizeof(String) <= 8);
+
+        new(bytes)String{x};
+    }
+
+    static void store(void *bytes, const String &x)
+    {
+        static_assert(sizeof(String) <= 8);
+
+        new(bytes)String{x};
+    }
+
+    static String retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<String>::info); // expected type 'String'
+
+        return *static_cast<const String *>(bytes);
+    }
+};
 
 class Variant;
 
-class VariantInstance
+template<>
+struct VariantType<List<Variant>>
 {
-public:
-    VariantType type() const { return type_; }
-    VariantType itemType() const { return itemType_; }
-    const char *typeName() const;
+    static const TypeInfo info;
 
-    /// \todo allow to request more smart conversions explicitly and have proper range checking and exception handling at this point
-    String toString() const;
+    static void store(void *bytes, const List<Variant> &x)
+    {
+        static_assert(sizeof(List<Variant>) <= 8);
 
-private:
-    friend class Variant;
-
-    template<class, bool>
-    friend class VariantCast;
-
-    friend String str(const Variant &x);
-    friend int type(const Variant &value);
-    friend int itemType(const Variant &value);
-
-    template<class U>
-    friend U *cast(const Variant &value);
-
-    VariantInstance() {}
-
-    VariantInstance(int value)    : type_{VariantType::Int},     int_{value}            {}
-    VariantInstance(bool value)   : type_{VariantType::Bool},    int_{value}            {}
-    VariantInstance(float value)  : type_{VariantType::Float},   float_{value}          {}
-    VariantInstance(double value) : type_{VariantType::Float},   float_{float(value)}   {}
-    VariantInstance(Color value)  : type_{VariantType::Color},   word_{value->toWord()} {}
-    VariantInstance(Version value): type_{VariantType::Version}, word_{value->toWord()} {}
-
-    VariantInstance(const char *value)  : type_{VariantType::String} { initRef(mutate(String(value))); }
-    VariantInstance(const String &value): type_{VariantType::String} { initRef(mutate(value)); }
-
-    template<class T>
-    VariantInstance(const Ref<T> &value): type_{VariantType::Object} { initRef(value.get()); }
-
-    VariantInstance(const List<int> &value)    : type_{VariantType::List}, itemType_{VariantType::Int}     { initRef(value); }
-    VariantInstance(const List<bool> &value)   : type_{VariantType::List}, itemType_{VariantType::Bool}    { initRef(value); }
-    VariantInstance(const List<float> &value)  : type_{VariantType::List}, itemType_{VariantType::Float}   { initRef(value); }
-    VariantInstance(const List<Color> &value)  : type_{VariantType::List}, itemType_{VariantType::Color}   { initRef(value); }
-    VariantInstance(const List<Version> &value): type_{VariantType::List}, itemType_{VariantType::Version} { initRef(value); }
-    VariantInstance(const StringList &value)        : type_{VariantType::List}, itemType_{VariantType::String}  { initRef(value); }
-    VariantInstance(const VariantList &value)       : type_{VariantType::List}, itemType_{VariantType::Any}     { initRef(value); }
-    VariantInstance(const VariantMap &value)        : type_{VariantType::Map }, itemType_{VariantType::Any}     { initRef(value); }
-
-    void initRef(Object *object = nullptr) {
-        new(dummy_)Ref<Object>(object);
+        new(bytes)List<Variant>{x};
     }
 
-    void killRef() {
-        ref().~Ref<Object>();
+    static List<Variant> retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<List<Variant>>::info); // expected type 'List<Variant>'
+
+        return *static_cast<const List<Variant> *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<List<String>>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, const List<String> &x)
+    {
+        static_assert(sizeof(List<String>) <= 8);
+
+        new(bytes)List<String>{x};
     }
 
-    void setRef(Object *object) const {
-        ref() = object;
+    static List<String> retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<List<String>>::info);
+        return *static_cast<const List<String> *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<List<bool>>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, const List<bool> &x)
+    {
+        static_assert(sizeof(List<bool>) <= 8);
+
+        new(bytes)List<bool>{x};
     }
 
-    Ref<Object> &ref() const {
-        return *union_cast< Ref<Object> *>(dummy_);
+    static List<bool> retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<List<bool>>::info); // expected type 'List<bool>'
+
+        return *static_cast<const List<bool> *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<List<long>>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, const List<long> &x)
+    {
+        static_assert(sizeof(List<long>) <= 8);
+
+        new(bytes)List<long>{x};
     }
 
-    VariantType type_ { VariantType::Undefined };
-    VariantType itemType_ { VariantType::Undefined };
-    union {
-        int32_t int_;
-        uint32_t word_;
-        float32_t float_;
-        mutable char dummy_[sizeof(Ref<Object>)];
-    };
+    static List<long> retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<List<long>>::info); // expected type 'List<long>'
+
+        return *static_cast<const List<long> *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<List<double>>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, const List<double> &x)
+    {
+        static_assert(sizeof(List<double>) <= 8);
+
+        new(bytes)List<double>{x};
+    }
+
+    static List<double> retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<List<double>>::info); // expected type 'List<double>'
+
+        return *static_cast<const List<double> *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<Map<String, Variant>>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, const Map<String, Variant> &x);
+
+    static Map<String, Variant> retrieve(const void *bytes, const TypeInfo &typeInfo = info);
 };
 
 /** \class Variant cc/Variant
   * \ingroup misc
   * \brief Duck-typed value
-  *
-  * A Variant can represent different types.
-  * The type of a Variant is defined implicitly at construction or assignment.
-  * Variants automatically cast to bool, int, float if the Variant type is compatible
-  * with the target type requested by an expression.
-  * In debug mode a DebugException will be thrown on illegal type casts.
-  * Variants can be savely passed by value.
+  * \todo provide iterator for child iteration
+  * \todo introduce VariantTypeMismatch debug exception
   */
 class Variant
 {
 public:
-    /// Integer type used for storing integer values inside a Variant
-    typedef float Int;
-
-    /// Floating point number type used for storing real values inside a Variant
-    typedef float Float;
-
-    static const char *typeName(VariantType type, VariantType itemType);
-
-    /** Heuristically detect the type and read a Variant value from a String
-      * \param s text representation of the Variant value
-      * \return Variant value
+    /** Automatically sense type and read value from string \a s
       */
     static Variant read(const String &s);
 
+    /** Create a variant without an value
+      */
+    Variant():
+        me{&VariantType<void>::info}
+    {}
+
+    /** Create a variant with \a value
+      */
     template<class T>
-    inline static T cast(const Variant &value) { return VariantCast<T, CC_IS_POINTER(T)>::cast(value); }
-
-    typedef VariantInstance Instance;
-
-    Variant() {}
-
-    Variant(int value)    : instance_{value} {}
-    Variant(bool value)   : instance_{value} {}
-    Variant(float value)  : instance_{value} {}
-    Variant(double value) : instance_{value} {}
-    Variant(Color value)  : instance_{value} {}
-    Variant(Version value): instance_{value} {}
-
-    Variant(const char *value)  : instance_{value} {}
-    Variant(const String &value): instance_{value} {}
-
-    template<class T>
-    Variant(const Ref<T> &value): instance_{value} {}
-
-    template<class T>
-    Variant(const T *value): Variant(Ref<T>(value)) {}
-
-    template<class T>
-    Variant(T *value): Variant(Ref<T>(value)) {}
-
-    Variant(const StringList &value) : instance_{value} {}
-    Variant(const VariantList &value): instance_{value} {}
-    Variant(const VariantMap &value) : instance_{value} {}
-
-    Variant(const List<bool> &value)   : instance_{value} {}
-    Variant(const List<int> &value)    : instance_{value} {}
-    Variant(const List<float> &value)  : instance_{value} {}
-    Variant(const List<Color> &value)  : instance_{value} {}
-    Variant(const List<Version> &value): instance_{value} {}
-
-    template<class T>
-    Variant(const ListInstance<T> *value): Variant(Ref<ListInstance<T>>(value)) {}
-
-    template<class T>
-    Variant(ListInstance<T> *value): Variant(Ref<ListInstance<T>>(value)) {}
-
-    Variant(const Variant &b) { *this = b; }
-
-    ~Variant() { if (+((*this)->type_ & VariantType::Object))(*this)->killRef(); }
-
-    const Variant &operator=(bool value)    { (*this)->type_ = VariantType::Bool;    (*this)->int_ = value; return *this; }
-    const Variant &operator=(int value)     { (*this)->type_ = VariantType::Int;     (*this)->int_ = value; return *this; }
-    const Variant &operator=(float value)   { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
-    const Variant &operator=(double value)  { (*this)->type_ = VariantType::Float;   (*this)->float_ = value; return *this; }
-    const Variant &operator=(Color value)   { (*this)->type_ = VariantType::Color;   (*this)->word_ = value->toWord(); return *this; }
-    const Variant &operator=(Version value) { (*this)->type_ = VariantType::Version; (*this)->word_ = value->toWord(); return *this; }
-
-    const Variant &operator=(const char *value)           { return (*this) = Variant(value); }
-    const Variant &operator=(const String &value)         { return (*this) = Variant(value); }
-    const Variant &operator=(const List<bool> &list) { return (*this) = Variant(list); }
-    const Variant &operator=(const List<int> &list)  { return (*this) = Variant(list); }
-    const Variant &operator=(const List<float> &list){ return (*this) = Variant(list); }
-    const Variant &operator=(const List<Color> &list){ return (*this) = Variant(list); }
-    const Variant &operator=(const StringList &list)      { return (*this) = Variant(list); }
-    const Variant &operator=(const VariantMap &map)       { return (*this) = Variant(map); }
-
-    template<class T>
-    const Variant &operator=(const Ref<T> &value) { return (*this) = Variant(value); }
-
-    const Variant &operator=(const Variant &b)
+    Variant(T value):
+        me{&VariantType<T>::info}
     {
-        if (+((*this)->type_ & VariantType::Object)) (*this)->killRef();
-        (*this)->type_ = b->type_;
-        (*this)->itemType_ = b->itemType_;
-        if (+(b->type_ & VariantType::Object))
-            (*this)->initRef(b->ref().get());
-        else if (+b->type_)
-            (*this)->int_ = b->int_;
+        VariantType<T>::store(me().bytes, value);
+    }
+
+    /** Convenience function for calling Variant(long)
+      */
+    Variant(int value):
+        me{&VariantType<long>::info}
+    {
+        VariantType<long>::store(me().bytes, static_cast<long>(value));
+    }
+
+    /** Convenience function for calling Variant(double)
+      */
+    Variant(float value):
+        me{&VariantType<double>::info}
+    {
+        VariantType<double>::store(me().bytes, static_cast<double>(value));
+    }
+
+    /** Convenience function for calling Variant(const String &)
+      */
+    Variant(const char *value):
+        me{&VariantType<String>::info}
+    {
+        VariantType<String>::store(me().bytes, String{value});
+    }
+
+    /** Create a variant storing a list of strings
+      */
+    Variant(std::initializer_list<const char *> values)
+    {
+        if (values.size() == 1) {
+            me().typeInfo = &VariantType<String>::info;
+            VariantType<String>::store(me().bytes, String{*values.begin()});
+        }
+        else {
+            me().typeInfo = &VariantType<List<String>>::info;
+            List<String> list;
+            for (const char *value: values) list.append(String{value});
+            VariantType<List<String>>::store(me().bytes, list);
+        }
+    }
+
+    /** Create a variant storing a list of longs
+      */
+    Variant(std::initializer_list<int> values)
+    {
+        if (values.size() == 1) {
+            me().typeInfo = &VariantType<long>::info;
+            VariantType<long>::store(me().bytes, static_cast<long>(*values.begin()));
+        }
+        else {
+            me().typeInfo = &VariantType<List<long>>::info;
+            List<long> list;
+            for (int value: values) list.append(value);
+            VariantType<List<long>>::store(me().bytes, list);
+        }
+    }
+
+    /** Create a variant storing a list of longs
+      */
+    Variant(std::initializer_list<long> values)
+    {
+        if (values.size() == 1) {
+            me().typeInfo = &VariantType<long>::info;
+            VariantType<long>::store(me().bytes, *values.begin());
+        }
+        else {
+            me().typeInfo = &VariantType<List<long>>::info;
+            List<long> list;
+            for (int value: values) list.append(value);
+            VariantType<List<long>>::store(me().bytes, list);
+        }
+    }
+
+    /**  Create a variant storing a list of doubles
+      */
+    Variant(std::initializer_list<double> values):
+        me{&VariantType<List<double>>::info}
+    {
+        if (values.size() == 1) {
+            me().typeInfo = &VariantType<double>::info;
+            VariantType<double>::store(me().bytes, *values.begin());
+        }
+        else {
+            List<double> list;
+            for (double value: values) list.append(value);
+            VariantType<List<double>>::store(me().bytes, list);
+        }
+    }
+
+    /** Copy-constructor
+      */
+    Variant(const Variant &b):
+        Variant{}
+    {
+        *this = b;
+    }
+
+    /** R-value constructor
+      */
+    Variant(Variant &&b):
+        me{b.me}
+    {
+        b.me().typeInfo = &VariantType<void>::info;
+    }
+
+    /** \internal
+      *  Automatic cleanup
+      */
+    ~Variant()
+    {
+        me().typeInfo->cleanup(me().bytes);
+    }
+
+    /** Assignment operator
+      */
+    Variant &operator=(const Variant &b)
+    {
+        me().typeInfo->cleanup(me().bytes);
+        me().typeInfo = b.me().typeInfo;
+        me().typeInfo->assign(me().bytes, b.me().bytes);
         return *this;
     }
 
-    const Variant &operator=(const VariantList &list) { return (*this) = Variant(list); }
-
-    operator bool() const {
-        if (!+(*this)->type_) return bool();
-        CC_ASSERT2(+((*this)->type_ & VariantType::Int), illegalConversion);
-        return (*this)->int_;
-    }
-    operator int() const {
-        if (!+(*this)->type_) return int();
-        CC_ASSERT2(+((*this)->type_ & VariantType::Int), illegalConversion);
-        return (*this)->int_;
-    }
-    operator float() const {
-        if (!+(*this)->type_) return float();
-        if (+((*this)->type_ & VariantType::Int)) return (*this)->int_;
-        CC_ASSERT2(+((*this)->type_ & VariantType::Float), illegalConversion);
-        return (*this)->float_;
-    }
-    operator Color() const {
-        if (!+(*this)->type_) return Color{};
-        CC_ASSERT2(+((*this)->type_ & VariantType::Color), illegalConversion);
-        return Color::fromWord((*this)->word_);
-    }
-    operator Version() const {
-        if (!+(*this)->type_) return Version();
-        CC_ASSERT2(+((*this)->type_ & VariantType::Version), illegalConversion);
-        return Version::fromWord((*this)->word_);
-    }
-    operator String() const {
-        if (!+(*this)->type_) return String{};
-        CC_ASSERT2(+((*this)->type_ & VariantType::String), illegalConversion);
-        return Variant::cast<CharArray *>(*this);
+    /** R-value assignment operator
+      */
+    Variant &operator=(Variant &&b)
+    {
+        me() = b.me();
+        b.me().typeInfo = &VariantType<void>::info;
+        return *this;
     }
 
+    /** Check if stored value is of type \a T
+      */
     template<class T>
-    operator Ref<T>() const {
-        if (!+(*this)->type_) return Ref<T>();
-        CC_ASSERT2(+((*this)->type_ & VariantType::Object), illegalConversion);
-        return Variant::cast<T *>(*this);
+    bool is() const { return me().typeInfo == &VariantType<T>::info; }
+
+    /** Retrieve stored value of type \a T
+      * \note The type of the stored value must be exactly of type T.
+      */
+    template<class T>
+    T to() const { return VariantType<T>::retrieve(me().bytes, *me().typeInfo); }
+
+    /** \copydoc to()
+      */
+    template<class T>
+    explicit operator T() const { return to<T>(); }
+
+    /** Stringify this variant
+      */
+    operator String() const { return is<String>() ? to<String>() : str(*this); }
+
+    /** Check if this variant is of the same type as variant \a b
+      */
+    bool sameTypeAs(const Variant &b) const
+    {
+        return me().typeInfo == b.me().typeInfo;
     }
 
-    const Instance *operator->() const { return &instance_; }
-    Instance *operator->() { return &instance_; }
+    /** Get the type name of the store value
+      */
+    const char *typeName() const { return me().typeInfo->typeName; }
 
-    bool operator==(const Variant &b) const;
-    bool operator<(const Variant &b) const;
+    /** Convenience method to get the value of a member of this meta-object value
+      */
+    Variant operator()(const String &key) const;
 
-    bool operator>(const Variant &b) const  { return b < *this; }
-    bool operator!=(const Variant &b) const { return !(*this == b); }
-    bool operator<=(const Variant &b) const { return (*this < b) || (*this == b); }
-    bool operator>=(const Variant &b) const { return (b < *this) || (*this == b); }
+    /** Convenience method to get/set the value of a member of this meta-object value
+      */
+    Variant &operator()(const String &key);
+
+    /** Convenience method to get the child at \a index of this meta-object value
+      */
+    Variant operator[](long index) const;
+
+    /** Convenience method to get the number of children of this meta-object value
+      */
+    long count() const;
+
+    /** Compare for equality with \a b
+      */
+    bool operator==(const Variant &b) const
+    {
+        return
+            me().typeInfo == b.me().typeInfo &&
+            me().typeInfo->equal(me().bytes, b.me().bytes);
+    }
+
+    /** Compare for equality with \a b
+      */
+    bool operator==(const char *b) const
+    {
+        return static_cast<String>(*this) == b;
+    }
 
 private:
-    static constexpr const char *illegalConversion = "Illegal Variant conversion";
+    friend String str(const Variant &);
 
-    Instance instance_;
+    String toString() const { return me().typeInfo->str(me().bytes); }
+
+    struct State {
+        const TypeInfo *typeInfo;
+        char bytes[8];
+    };
+    Composite<State> me;
 };
 
-template<class T>
-class VariantCast<T, true> {
-public:
-    static T cast(const Variant &value) {
-        typedef typename CC_DEREF(T) U;
-        return (+(value->type() & VariantType::Object)) ? Object::cast<U *>(value->ref().get()) : nullptr;
-    }
-};
+/** Convert \a value to string
+  */
+inline String str(const Variant &value) { return value.toString(); }
 
-template<class T>
-class VariantCast<T, false> {
-public:
-    static T cast(const Variant &value) {
-        return T(value);
-    }
-};
-
-template<>
-class VariantCast<String, false> {
-public:
-    static String cast(const Variant &value) {
-        return Variant::cast<CharArray *>(value);
-    }
-};
-
-template<>
-class VariantCast<Color, false> {
-public:
-    static Color cast(const Variant &value) {
-        return Color::fromWord(value->word_);
-    }
-};
-
-template<>
-class VariantCast<Version, false> {
-public:
-    static Version cast(const Variant &value) {
-        return Version::fromWord(value->word_);
-    }
-};
-
-template<>
-class VariantCast<StringList, false> {
-public:
-    static StringList cast(const Variant &value) {
-        auto *sl = Variant::cast<StringList::Instance *>(value);
-        if (sl) return sl;
-        auto *vl = Variant::cast<VariantList::Instance *>(value);
-        if (vl) {
-            StringList sl2;
-            for (const auto &x: vl)
-                sl2 << x->toString();
-            return sl2;
-        }
-        return StringList{};
-    }
-};
-
-template<>
-class VariantCast<List<bool>, false> {
-public:
-    static List<bool> cast(const Variant &value) {
-        return Variant::cast<List<bool>::Instance *>(value);
-    }
-};
-
-template<>
-class VariantCast<List<int>, false> {
-public:
-    static List<int> cast(const Variant &value) {
-        return Variant::cast<List<int>::Instance *>(value);
-    }
-};
-
-template<>
-class VariantCast<List<float>, false> {
-public:
-    static List<float> cast(const Variant &value) {
-        return Variant::cast<List<float>::Instance *>(value);
-    }
-};
-
-template<>
-class VariantCast<List<Color>, false> {
-public:
-    static List<Color> cast(const Variant &value) {
-        return Variant::cast<List<Color>::Instance *>(value);
-    }
-};
-
-template<>
-class VariantCast<VariantList, false> {
-public:
-    static VariantList cast(const Variant &value) {
-        return Variant::cast<VariantList::Instance *>(value);
-    }
-};
-
-template<>
-class VariantCast<VariantMap, false> {
-public:
-    static VariantMap cast(const Variant &value) {
-        return Variant::cast<VariantMap::Instance *>(value);
-    }
-};
-
-inline String str(const Variant &x) { return x->toString(); }
+/** Convert \a list to string
+  */
+inline String str(const List<Variant> &list) { return str(Variant{list}); }
 
 } // namespace cc

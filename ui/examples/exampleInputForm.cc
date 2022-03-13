@@ -1,31 +1,59 @@
 #include <cc/ui/Application>
-#include <cc/ui/ScrollView>
+#include <cc/ui/Flickable>
 #include <cc/ui/ColumnLayout>
 #include <cc/ui/TextField>
+#include <cc/ui/NumberField>
 #include <cc/ui/PasswordField>
+#include <cc/ui/SliderField>
+#include <cc/ui/SwitchField>
+#include <cc/ui/Icon>
+#include <cc/ui/Divider>
+#include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
     using namespace cc::ui;
 
-    ScrollView scroll{640, 480};
+    const double gap = sp(16);
 
-    ColumnLayout column{scroll};
-    column->margin = dp(12);
-    column->spacing = dp(12);
+    PasswordField passwordField;
 
-    scroll << TextField{"First name"};
-    scroll << TextField{"Middle name"};
-    scroll << TextField{"Last name"};
-    scroll << TextField{"Age"};
-    scroll << PasswordField{"Enter password"};
-    scroll << PasswordField{"Repeat password"};
-    scroll << TextField{"Street address"};
-    scroll << TextField{"Zip code"};
-    scroll << TextField{"Country"};
+    Window{
+        Flickable{sp(400), sp(500)}
+        .layout(
+            ColumnLayout{}
+            .margin(gap)
+            .spacing(gap)
+        )
+        .add(TextField{"First name"})
+        .add(TextField{"Middle name"})
+        .add(TextField{"Last name"})
+        .add(
+            NumberField{"Age"}
+            .value(-1)
+            .min(0)
+            .max(1000)
+        )
+        .add(Divider{})
+        .add(
+            PasswordField{"Enter password", &passwordField}
+            .onAccepted([&]{
+                CC_INSPECT(passwordField.password());
+            })
+        )
+        .add(PasswordField{"Repeat password"})
+        .add(SwitchField{}.text("Super user"))
+        .add(SwitchField{}.text("Tutorial mode"))
+        .add(TextField{"Street address"})
+        .add(TextField{"Zip code"})
+        .add(
+            SliderField{}
+            .leading(Icon{Ideographic::VolumeLow})
+            .trailing(Icon{Ideographic::VolumeHigh})
+        )
+        .add(TextField{"Country"})
+    }.show();
 
-    Window::open(scroll, "Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
-
-    return Application{}->run();
+    return Application{}.run();
 }

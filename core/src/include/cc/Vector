@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,139 +8,405 @@
 
 #pragma once
 
-#include <cc/assert>
-#include <cc/vectors>
 #include <cc/ArrayIterator>
+#include <cc/Format>
+#include <cc/str>
+#include <initializer_list>
+#include <cmath>
+#include <cassert>
 
 namespace cc {
 
 /** \class Vector cc/Vector
-  * \ingroup misc
-  * \brief %Vector algebra data type
+  * \ingroup math
+  * \brief Algebraic vector
+  * \tparam T Item type
+  * \tparam N Number of components
   */
 template<class T, int N>
 class Vector
 {
 public:
-    typedef T Item;
-    typedef int Index;
+    /** Item type
+      */
+    using Item = T;
 
+    /** Number of components
+      */
     static constexpr int Count = N;
 
-    Vector() {}
-    Vector(std::initializer_list<T> l): instance_{l} {}
-    Vector(const Vector &b): instance_{b.instance_} {}
-    Vector(T b): Vector{b} {}
+    /** \name Construction and Assignment
+      */
+    ///@{
 
-    class Instance {
-    public:
-        typedef T Item;
+    /** Create a null vector
+      */
+    Vector(): v{} {}
 
-        bool has(int i) const { return 0 <= i && i < N; }
-        T &at(int i) { CC_ASSERT(has(i)); return v_[i]; }
-        T at(int i) const { CC_ASSERT(has(i)); return v_[i]; }
-
-        static constexpr int count() { return N; }
-
-    private:
-        friend class Vector;
-        Instance(): v_{} {}
-        Instance(std::initializer_list<T> l) {
-            for (int i = 0; true;) {
-                for (auto b: l) {
-                    if (i == N) return;
-                    v_[i++] = b;
-                }
+    /** Create a vector with initial components \a l
+      */
+    Vector(std::initializer_list<T> l)
+    {
+        unsigned i = 0;
+        for (auto b: l) {
+            assert(i < N);
+            v[i++] = b;
+        }
+        if (l.size() < N) {
+            for (auto b: l) {
+                if (i == N) break;
+                v[i++] = b;
             }
         }
-        T v_[N];
-    };
+    }
 
-    const Instance *operator->() const { return &instance_; }
-    Instance *operator->() { return &instance_; }
+    /** Create a vector with all components initialized with \a b
+      */
+    Vector(T b)
+    {
+        for (int i = 0; i < N; ++i) v[i] = b;
+    }
 
-    T &operator[](int i) { return instance_.at(i); }
-    T operator[](int i) const { return instance_.at(i); }
+    ///@}
 
-    operator const T *() const { return &instance_.v_; }
-    operator T *() { return &instance_.v_; }
+    /** \name Item Access
+      */
+    ///@{
 
-    bool operator==(const Vector &b) const {
-        for (int i = 0; i < N; ++i)
-            if (instance_.v_[i] != b.instance_.v_[i]) return false;
+    /** Get the number of components
+      */
+    static constexpr int count() { return N; }
+
+    /** Get reference to component at \a i
+      */
+    T &at(int i)
+    {
+        assert(0 <= i && i < N);
+        return v[i];
+    }
+
+    /** Get constant reference to component at \a i
+      */
+    const T &at(int i) const
+    {
+        assert(0 <= i && i < N);
+        return v[i];
+    }
+
+    /** \copydoc at(int)
+      */
+    T &operator[](int i) { return at(i); }
+
+    /** \copydoc at(int) const
+      */
+    const T &operator[](int i) const { return at(i); }
+
+    T x() const { static_assert(2 <= N); return v[0]; } ///< Get value of the first component
+    T y() const { static_assert(2 <= N); return v[1]; } ///< Get value of the second component
+    T z() const { static_assert(3 <= N); return v[2]; } ///< Get value of the third component
+
+    ///@}
+
+    /** \name Global Operations
+      */
+    ///@{
+
+    /** Negate all components of the vector
+      */
+    Vector operator-() const
+    {
+        Vector b{*this};
+        for (unsigned i = 0; i < N; ++i)
+            b.v[i] = -v[i];
+        return b;
+    }
+
+    /** Add component-vise vector \a b
+      */
+    Vector &operator+=(const Vector &b)
+    {
+        for (unsigned i = 0; i < N; ++i)
+            v[i] += b.v[i];
+        return *this;
+    }
+
+    /** Substract component-vise vector \a b
+      */
+    Vector &operator-=(const Vector &b)
+    {
+        for (unsigned i = 0; i < N; ++i)
+            v[i] -= b.v[i];
+        return *this;
+    }
+
+    /** Multiply component-vise vector \a b
+      */
+    Vector &operator*=(const Vector &b)
+    {
+        for (unsigned i = 0; i < N; ++i)
+            v[i] *= b.v[i];
+        return *this;
+    }
+
+    /** Divide component-vise vector \a b
+      */
+    Vector &operator/=(const Vector &b)
+    {
+        for (unsigned i = 0; i < N; ++i)
+            v[i] /= b.v[i];
+        return *this;
+    }
+
+    /** Multiply each component with \a b
+      */
+    Vector &operator*=(T b)
+    {
+        for (unsigned i = 0; i < N; ++i)
+            v[i] *= b;
+        return *this;
+    }
+
+    /** Divide each component with \a b
+      */
+    Vector &operator/=(T b)
+    {
+        for (unsigned i = 0; i < N; ++i)
+            v[i] /= b;
+        return *this;
+    }
+
+    /** Add vector \a b and return result
+      */
+    Vector operator+(const Vector &b) const { return Vector{*this} += b; }
+
+    /** Substract vector \a b and return result
+      */
+    Vector operator-(const Vector &b) const { return Vector{*this} -= b; }
+
+    /** Component-wise multiply vector \a b and return result
+      */
+    Vector operator*(const Vector &b) const { return Vector{*this} *= b; }
+
+    /** Component-wise divide vector \a b and return result
+      */
+    Vector operator/(const Vector &b) const { return Vector{*this} /= b; }
+
+
+    /** Multiply each component with \a b and return result
+      */
+    Vector operator*(T b) const { return Vector{*this} *= b; }
+
+    /** Divide each component with \a b and return result
+      */
+    Vector operator/(T b) const { return Vector{*this} /= b; }
+
+    /** Get a copy of this vector with each component rounded
+      */
+    Vector round() const
+    {
+        Vector result{*this};
+        for (unsigned i = 0; i < N; ++i)
+            result[i] = std::round(result[i]);
+        return result;
+    }
+
+    /** Get a copy of this vector with each component rounded upwards
+      */
+    Vector ceil() const
+    {
+        Vector result{*this};
+        for (unsigned i = 0; i < N; ++i)
+            result[i] = std::ceil(result[i]);
+        return result;
+    }
+
+    /** Get the smallest component value
+      */
+    T min() const
+    {
+        T m = v[0];
+        for (unsigned i = 1; i < N; ++i) {
+            if (v[i] < m) m = v[i];
+        }
+        return m;
+    }
+
+    /** Get the greatest component value
+      */
+    T max() const
+    {
+        T m = v[0];
+        for (unsigned i = 1; i < N; ++i) {
+            if (m < v[i]) m = v[i];
+        }
+        return m;
+    }
+
+    /** Magnitude squared
+      */
+    T absPow2() const
+    {
+        T s = 0;
+        for (unsigned i = 0; i < N; ++i) s += v[i] * v[i];
+        return s;
+    }
+
+    /** Magnitude
+      */
+    T abs() const
+    {
+        return std::sqrt(absPow2());
+    }
+
+    /** Compute the average of all component values
+      */
+    T avg() const
+    {
+        T s = 0;
+        for (unsigned i = 0; i < N; ++i) s += v[i];
+        return s / N;
+    }
+
+    ///@}
+
+    using iterator = ArrayIterator<Vector, 1>; ///< \internal Value iterator
+    using const_iterator = ArrayIterator<const Vector, 1>; ///< \internal Readonly value iterator
+    using reverse_iterator = ArrayIterator<Vector, -1>; ///< \internal Reverse value iterator
+    using const_reverse_iterator = ArrayIterator<const Vector, -1>; ///< \internal Readonly reverse value iterator
+    using value_type = Item; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
+
+    /** \name Standard iterators
+      */
+    ///@{
+
+    iterator begin() { return iterator{*this, 0}; } ///< %Return iterator pointing to the first item (if any)
+    iterator end  () { return iterator{*this, count()}; } ///< %Return iterator pointing behind the last item
+
+    const_iterator begin () const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
+
+    reverse_iterator rbegin() { return reverse_iterator{*this, count() - 1}; } ///< %Return reverse iterator pointing to the last item (if any)
+    reverse_iterator rend  () { return reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
+
+    const_reverse_iterator rbegin () const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return const_reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const { return const_reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
+
+    ///@}
+
+    /** \name Comparism Operators
+      */
+    ///@{
+
+    /** Equal to operator
+      */
+    bool operator==(const Vector &b) const
+    {
+        for (unsigned i = 0; i < N; ++i) {
+            if (v[i] != b.v[i])
+                return false;
+        }
         return true;
     }
-    bool operator!=(const Vector &b) const {
-        for (int i = 0; i < N; ++i)
-            if (instance_.v_[i] != b.instance_.v_[i]) return true;
+
+    /** Not equal to operator
+      */
+    bool operator!=(const Vector &b) const
+    {
+        return !(*this == b);
+    }
+
+    /** Lower than operator
+      */
+    bool operator<(const Vector &b) const
+    {
+        for (unsigned i = 0; i < N; ++i) {
+            if (v[i] < b.v[i])
+                return true;
+            else if (b.v[i] < v[i])
+                break;
+        }
         return false;
     }
 
-    Vector operator-() const {
-        Vector a(*this);
-        for (int i = 0; i < N; ++i) a.instance_.v_[i] = -instance_.v_[i];
-        return a;
-    }
-
-    Vector &operator+=(const Vector &b) {
-        for (int i = 0; i < N; ++i) instance_.v_[i] += b.instance_.v_[i];
-        return *this;
-    }
-    Vector &operator-=(const Vector &b) {
-        for (int i = 0; i < N; ++i) instance_.v_[i] -= b.instance_.v_[i];
-        return *this;
-    }
-    Vector &operator*=(const Vector &b) {
-        for (int i = 0; i < N; ++i) instance_.v_[i] *= b.instance_.v_[i];
-        return *this;
-    }
-    Vector &operator/=(const Vector &b) {
-        for (int i = 0; i < N; ++i) instance_.v_[i] /= b.instance_.v_[i];
-        return *this;
-    }
-    Vector &operator*=(T b) {
-        for (int i = 0; i < N; ++i) instance_.v_[i] *= b;
-        return *this;
-    }
-    Vector &operator/=(T b) {
-        for (int i = 0; i < N; ++i) instance_.v_[i] /= b;
-        return *this;
-    }
-
-    Vector operator+(const Vector &b) const { return Vector(*this) += b; }
-    Vector operator-(const Vector &b) const { return Vector(*this) -= b; }
-    Vector operator*(const Vector &b) const { return Vector(*this) *= b; }
-    Vector operator/(const Vector &b) const { return Vector(*this) /= b; }
-    Vector operator*(T b) const { return Vector(*this) *= b; }
-    Vector operator/(T b) const { return Vector(*this) /= b; }
-
-    /** \name Iterators
-      * @{
+    /** Lower or equal operator
       */
-    typedef ConstArrayIterator<Instance> ConstIterator;
-    typedef ArrayIterator<Instance> Iterator;
+    bool operator<=(const Vector &b) const
+    {
+        for (unsigned i = 0; i < N; ++i) {
+            if (v[i] < b.v[i])
+                return true;
+            else if (b.v[i] < v[i])
+                break;
+        }
+        return true;
+    }
 
-    Iterator begin() { return Iterator{&instance_, 0}; }
-    Iterator end() { return Iterator{&instance_, N}; }
+    /** Greater than operator
+      */
+    bool operator>(const Vector &b) const
+    {
+        return b < *this;
+    }
 
-    ConstIterator begin() const { return ConstIterator{&instance_, 0}; }
-    ConstIterator end() const { return ConstIterator{&instance_, N}; }
-    /** @}
+    /** Greater or equal operator
       */
+    bool operator>=(const Vector &b) const
+    {
+        return b <= *this;
+    }
 
-    /** \internal
-      * @{
-      */
-    typedef Iterator iterator;
-    typedef ConstIterator const_iterator;
-    /** @}
-      */
+    ///@}
 
 private:
-    Instance instance_;
+    T v[N];
 };
 
+/** Multiply a scalar with a vector
+  * \ingroup math
+  */
 template<class S, class T, int N>
 inline Vector<T, N> operator*(S a, const Vector<T, N> &b) { return b * T(a); }
+
+/** Stringify vector \a v
+  */
+template<class T, int N>
+inline String str(const Vector<T, N> &v)
+{
+    Format f;
+    f << "( ";
+    for (auto x: v) f << x << " ";
+    f << ")";
+    return f;
+}
+
+/** Stringify vector \a v (fixed notation)
+  * \param v Vector to ne stringified
+  * \param nf Number of fractional digits
+  */
+template<class T, int N>
+inline String fixed(const Vector<T, N> &v, int nf)
+{
+    return fixed(v, 0, nf);
+}
+
+/** Stringify vector \a v (fixed notation)
+  * \param v Vector to ne stringified
+  * \param ni Number of integral digits
+  * \param nf Number of fractional digits
+  */
+template<class T, int N>
+inline String fixed(const Vector<T, N> &v, int ni, int nf)
+{
+    Format f;
+    f << "( ";
+    for (auto x: v) f << fixed(x, ni, nf) << " ";
+    f << ")";
+    return f;
+}
 
 } // namespace cc

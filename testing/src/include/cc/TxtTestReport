@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TestReport>
+
+namespace cc {
+
+class TxtTestReport: public TestReport
+{
+    bool captureOutput() const override;
+
+    void beginTestSuite(const TestSuite &testSuite) override;
+    void beginTestCase(const TestCase &testCase) override;
+    void verify(const TestCase &testCase, bool condition, const String &message, const String &codePath, int codeLine) override;
+    void error(const TestCase &testCase, const String &type, const String &message) override;
+    void endTestCase(const TestCase &testCase, const String &outText = "", const String &errText = "") override;
+    void skipTestCase(const TestCase &testCase) override;
+    void endTestSuite(const TestSuite &testSuite) override;
+};
+
+} // namespace cc

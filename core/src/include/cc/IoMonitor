@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,91 +8,90 @@
 
 #pragma once
 
-#include <cc/Array>
-#include <cc/Map>
-#include <cc/IoTarget>
-#include <cc/SystemIo>
+#include <cc/IoStream>
+#include <cc/Call>
 
 namespace cc {
 
-/** \class IoEvent cc/IoMonitor
-  * \brief I/O event
+/** \class IoActivity cc/IoMonitor
+  * \brief Entry on the I/O watch list of an I/O monitor
   */
-class IoEvent: public Object
+class IoActivity: public Object
 {
 public:
-    IoReady type() const { return type_; }       ///< type of I/O event
-    IoReady ready() const { return ready_; }     ///< tells if ready for reading or writing when the event occured
-    IoTarget *target() const { return target_; } ///< I/O target
+    /** \internal
+      */
+    IoActivity() = default;
+
+    /** Monitored I/O stream
+      */
+    IoStream target() const { return me().target_; }
+
+    /** Type of I/O event that occured
+      */
+    IoEvent event() const { return me().event_; }
 
 private:
     friend class IoMonitor;
 
-    static Ref<IoEvent> create(int index, IoReady type, IoTarget *target)
+    struct State: public Object::State
     {
-        return new IoEvent{index, type, target};
-    }
+        State(const IoStream &target, IoEvent mask):
+            target_{target},
+            mask_{mask}
+        {}
 
-    IoEvent(int index, IoReady type, IoTarget *target):
-        index_{index},
-        type_{type},
-        ready_{IoReady::Undefined},
-        target_{target}
+        IoStream target_;
+        IoEvent mask_;
+        IoEvent event_ { IoEvent::None };
+    };
+
+    IoActivity(const IoStream &target, IoEvent mask):
+        Object{new State{target, mask}}
     {}
 
-    int index_;
-    IoReady type_;
-    IoReady ready_;
-    IoTarget *target_;
+    /** Types of I/O events to wait for
+      */
+    IoEvent mask() const { return me().mask_; }
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-/// I/O activity vector
-typedef Array<const IoEvent *> IoActivity;
-
 /** \class IoMonitor cc/IoMonitor
-  * \ingroup concurrency
-  * \brief Register and wait for I/O events
+  * \ingroup streams
+  * \brief Wait for I/O events
   */
 class IoMonitor: public Object
 {
 public:
     /** Create a new I/O monitor
-      * \param maxCount maximum number of I/O events
-      * \return new object instance
+      * \param maxCount Maximum number of I/O streams to monitor
       */
-    static Ref<IoMonitor> create(int maxCount = 0);
+    IoMonitor();
 
-    /** Add a new I/O event to the watch list
-      * \param type I/O event type
-      * \param target I/O event target
-      * \return pointer to newly added I/O event
+    /** Add an entry to the watch list
+      * \param target I/O stream to monitor
+      * \param mask I/O event mask
       */
-    const IoEvent *addEvent(IoReady type, IoTarget *target);
+    void watch(const IoStream &target, IoEvent mask = IoEvent::ReadyReadOrWrite);
 
-    /** Remove an I/O event from the watch list
-      * \param event pointer to I/O event
+    /** Remove an entry from the watch list
+      * \param target I/O stream to stop monitoring
       */
-    void removeEvent(const IoEvent *event);
+    void unwatch(const IoStream &target);
 
     /** Wait for I/O events
-      * \param timeout_ms timeout in milliseconds (or infinite if < 0)
-      * \return list of I/O events that occured before timed out
+      * \param onReady %Callback function to handle I/O events
+      * \param timeout %Timeout in milliseconds (or infinite if < 0)
       */
-    IoActivity wait(int timeout_ms = -1);
-
-    /** Wait for a specific I/O event
-      * \param event I/O event to wait for
-      * \param timeout_ms timeout in milliseconds (or infinite if < 0)
-      * \param other return I/O %event, if a different I/O %event than specified in \a event occured
-      * \return true if the given I/O event occured before timeout, false if timed out or a different I/O event occured
-      */
-    bool waitFor(const IoEvent *event, int timeout_ms = -1, const IoEvent **other = nullptr);
+    bool wait(const Call<void(const IoActivity &)> &onReady, int timeout = -1);
 
 private:
-    IoMonitor(int maxCount);
+    struct State;
 
-    Array<struct pollfd> fds_;
-    Map<int, Ref<IoEvent> > events_;
+    State &me();
+    const State &me() const;
 };
 
 } // namespace cc

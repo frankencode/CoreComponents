@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TlsServerOptions>
+#include <cc/TlsSessionCache>
+#include <cc/TlsStream>
+#include <cc/Call>
+
+namespace cc {
+
+/** %Function used to select service after TLS client hello
+  */
+using TlsServiceSelector = Call<TlsServerOptions(const String &serverName, const SocketAddress &peerAddress)>;
+
+/** \class TlsServerStream cc/TlsServerStream
+  * \ingroup tls
+  * \brief Server-side TLS stream
+  */
+class TlsServerStream final: public TlsStream
+{
+public:
+    /** Create a null TLS server stream
+      */
+    TlsServerStream() = default;
+
+    /** Open a new server-side TLS stream
+      * \param stream %Underlying transport stream
+      * \param peerAddress %Client address
+      * \param options %Server credentials and connection parameters
+      * \param sessionCache %TLS session key cache
+      * \exception TlsError
+      */
+    TlsServerStream(const Stream &stream, const SocketAddress &peerAddress, const TlsServerOptions &options, const TlsSessionCache &sessionCache);
+
+    /** Perform TLS handshake and select service
+      * \param serviceSelector %Function used to select service after TLS client hello
+      * \param timeout %Timeout in milliseconds
+      * \todo allow to pass a debug function to receive errors/warnings
+      * \exception TlsError
+      * \exception SystemError
+      */
+    void handshake(TlsServiceSelector &&serviceSelector, int timeout);
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,82 +7,284 @@
  */
 
 #include <cc/ui/Label>
-#include <cc/ui/Application>
-#include <cc/ui/TextRun>
+#include <cc/ui/Painter>
+#include <cc/ui/GlyphRun>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-Label::Instance::Instance(const String &initialText, const Font &initialFont):
-    text{initialText}
+struct Label::State: public View::State
 {
-    if (initialFont) {
-        font = initialFont;
-        if (initialFont->paper())
-            paper = initialFont->paper();
+    State(const String &initText = String{}, const Font &initFont = String{}):
+        text{initText},
+        font{initFont}
+    {
+        if (font()) {
+            if (font().paper())
+                paper(font().paper());
+        }
+        else
+            font([this]{ return style().defaultFont(); });
+
+        if (!paper()) paper([this]{ return basePaper(); });
+
+        glyphRun([this]{
+            return GlyphRun{text(), font()};
+        });
+
+        elidedRun([this]{
+            if (0 < maxWidth()) {
+                double maxLineWidth = maxWidth() - 2 * margin()[0];
+                if (maxLineWidth < glyphRun().size()[0]) {
+                    return glyphRun().elide(maxLineWidth);
+                }
+            }
+            return glyphRun();
+        });
+
+        size([this]{ return preferredSize(); });
+
+        if (font().color())
+            color(font().color());
+        else
+            color([this]{ return theme().primaryTextColor(); });
+
+        paint([this]{
+            Painter p{this};
+            p.setPen(color());
+            p.showGlyphRun(textPos().round(), elidedRun());
+        });
     }
-    else
-        font <<[=]{ return Application{}->defaultFont(); };
 
-    if (!paper()) paper <<[=]{ return basePaper(); };
+    Size preferredSize() const override
+    {
+        return preferredSize(GlyphRun{text, font}, margin);
+    }
 
-    textRun <<[=]{ return TextRun::createHtml(text(), font()); };
+    Size preferredSize(const GlyphRun &glyphRun, Size margin) const
+    {
+        Size size = 2 * margin +
+            Size{
+                glyphRun.size()[0],
+                glyphRun.maxAscender() - glyphRun.minDescender()
+            };
 
-    size <<[=]{ return preferredSize(); };
+        if (0 < maxWidth && maxWidth < size[0]) size[0] = maxWidth;
 
-    if (initialFont->ink())
-        ink = initialFont->ink();
-    else
-        ink <<[=]{ return style()->theme()->primaryTextColor(); };
+        return size.ceil();
+    }
 
-    paint <<[=]{
-        Painter p{this};
-        if (ink()) p->setSource(ink());
-        p->showTextRun(textPos(), textRun());
-    };
-}
+    Size minSize() const override
+    {
+        return preferredSize();
+    }
 
-Label::Instance::~Instance()
+    Size maxSize() const override
+    {
+        return preferredSize();
+    }
+
+    Point textPos(double relativeHeight = 0) const
+    {
+        GlyphRun run = elidedRun();
+
+        return
+            0.5 * (
+                size() -
+                Size {
+                    run.size()[0],
+                    run.maxAscender() - run.minDescender()
+                }
+            ) +
+            Size {
+                0,
+                run.maxAscender() * (1 - relativeHeight)
+            };
+    }
+
+    void baselineStart(Definition<Point> &&a)
+    {
+        pos([this, a]{ return a() - textPos(); });
+    }
+
+    void baselineEnd(Definition<Point> &&a)
+    {
+        pos([this, a]{ return a() - textPos() - Point{width(), 0}; });
+    }
+
+    void textCenterLeft(Definition<Point> &&a)
+    {
+        pos([this, a]{ return a() - textPos(0.5); });
+    }
+
+    Property<String> text; ///< %Text displayed by the label
+    Property<Font> font; ///< %Font used
+    Property<Color> color; ///< %Foreground color
+    Property<Size> margin; ///< %Outside margin around the text
+    Property<double> maxWidth;
+    Property<GlyphRun> glyphRun;
+    Property<GlyphRun> elidedRun;
+};
+
+Label::Label():
+    View{onDemand<State>}
 {}
 
-Point Label::Instance::textPos(double relativeHeight) const
+Label::Label(Out<Label> self):
+    View{new State}
 {
-    return
-        center() -
-        0.5 * Size {
-            textRun()->size()[0],
-            textRun()->maxAscender() - textRun()->minDescender()
-        } +
-        Size {
-            0,
-            textRun()->maxAscender() * (1 - relativeHeight)
-        };
+    self = *this;
 }
 
-Size Label::Instance::preferredSize(const String &text, const Font &font, Size margin)
+Label::Label(const String &text, Out<Label> self):
+    View{new State{text}}
 {
-    return preferredSize(TextRun::createHtml(text, font), margin);
+    self = *this;
 }
 
-Size Label::Instance::preferredSize(const TextRun *textRun, Size margin)
+Label::Label(const String &text, const Font &font, Out<Label> self):
+    View{new State{text, font}}
 {
-    Size size =
-        2 * margin +
-        Size {
-            textRun->size()[0],
-            textRun->maxAscender() - textRun->minDescender()
-        };
-    return Size{ std::ceil(size[0]), std::ceil(size[1]) };
+    self = *this;
 }
 
-Size Label::Instance::preferredSize() const
+String Label::text() const
 {
-    return preferredSize(textRun(), margin());
+    return me().text();
 }
 
-Size Label::Instance::minSize() const
+Label &Label::text(const String &newValue)
 {
-    return preferredSize();
+    me().text(newValue);
+    return *this;
 }
 
-}} // namespace cc::ui
+Label &Label::text(Definition<String> &&f)
+{
+    me().text(std::move(f));
+    return *this;
+}
+
+Font Label::font() const
+{
+    return me().font();
+}
+
+Label &Label::font(Font newValue)
+{
+    me().font(newValue);
+    return *this;
+}
+
+Label &Label::font(Definition<Font> &&f)
+{
+    me().font(std::move(f));
+    return *this;
+}
+
+Label &Label::fontEasing(const EasingCurve &easing, double duration)
+{
+    Easing{me().font, easing, duration};
+    return *this;
+}
+
+Color Label::color() const
+{
+    return me().color();
+}
+
+Label &Label::color(Color newValue)
+{
+    me().color(newValue);
+    return *this;
+}
+
+Label &Label::color(Definition<Color> &&f)
+{
+    me().color(std::move(f));
+    return *this;
+}
+
+Label &Label::colorEasing(const EasingCurve &easing, double duration)
+{
+    Easing{me().font, easing, duration};
+    return *this;
+}
+
+Size Label::margin() const
+{
+    return me().margin();
+}
+
+Label &Label::margin(Size newValue)
+{
+    me().margin(newValue);
+    return *this;
+}
+
+Label &Label::margin(Definition<Size> &&f)
+{
+    me().margin(std::move(f));
+    return *this;
+}
+
+double Label::maxWidth() const
+{
+    return me().maxWidth();
+}
+
+Label &Label::maxWidth(double newValue)
+{
+    me().maxWidth(newValue);
+    return *this;
+}
+
+Label &Label::maxWidth(Definition<double> &&f)
+{
+    me().maxWidth(std::move(f));
+    return *this;
+}
+
+Point Label::textPos() const
+{
+    return me().textPos();
+}
+
+Point Label::textCenterLeft() const
+{
+    return me().textPos(0.5);
+}
+
+Label &Label::baselineStart(Definition<Point> &&a)
+{
+    me().baselineStart(std::move(a));
+    return *this;
+}
+
+Label &Label::baselineEnd(Definition<Point> &&a)
+{
+    me().baselineEnd(std::move(a));
+    return *this;
+}
+
+Label &Label::textCenterLeft(Definition<Point> &&a)
+{
+    me().textCenterLeft(std::move(a));
+    return *this;
+}
+
+FontMetrics Label::fontMetrics() const
+{
+    return FontMetrics{font()};
+}
+
+Label::State &Label::me()
+{
+    return View::me().as<State>();
+}
+
+const Label::State &Label::me() const
+{
+    return View::me().as<State>();
+}
+
+} // namespace cc::ui

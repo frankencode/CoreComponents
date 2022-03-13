@@ -1,0 +1,70 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpServiceWorker>
+#include <cc/HttpServiceDelegate>
+#include <cc/TlsServerStream>
+#include <cc/HttpRequestParser>
+#include <cc/HttpResponseGenerator>
+#include <cc/Thread>
+
+namespace cc {
+
+struct HttpServiceWorkerState: public Object::State
+{
+    HttpServiceWorkerState(
+        const HttpServerConfig &nodeConfig,
+        const PendingConnections &pendingConnections,
+        const ClosedConnections &closedConnections,
+        const TlsSessionCache &sessionCache
+    );
+
+    ~HttpServiceWorkerState();
+
+    void start();
+    void run();
+
+    void setupTap(Stream &stream);
+
+    void initiate(Stream &stream);
+    void serve(Stream &stream);
+
+    HttpRequest readRequest();
+
+    void closeConnection();
+
+    const HttpLoggingServiceInstance &errorLoggingInstance() const
+    {
+        return serviceInstance_ ?
+            serviceInstance_.errorLoggingInstance() :
+            nodeConfig_.errorLoggingInstance();
+    }
+
+    const HttpLoggingServiceInstance &accessLoggingInstance() const
+    {
+        return serviceInstance_ ?
+            serviceInstance_.accessLoggingInstance() :
+            nodeConfig_.accessLoggingInstance();
+    }
+
+    HttpServiceInstance serviceInstance_;
+    HttpServiceDelegate serviceDelegate_;
+    HttpServerConfig nodeConfig_;
+    PendingConnections pendingConnections_;
+    ClosedConnections closedConnections_;
+    TlsSessionCache sessionCache_;
+    HttpClientConnection client_;
+    HttpRequestParser requestParser_;
+    HttpRequest pendingRequest_;
+    HttpResponseGenerator response_;
+    Thread thread_;
+};
+
+} // namespace cc

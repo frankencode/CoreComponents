@@ -1,0 +1,105 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/SyntaxNode>
+#include <cc/str>
+
+namespace cc::syntax {
+
+struct Equal  { template<class T> static bool compare(T a, T b) { return a == b; } };
+struct Differ { template<class T> static bool compare(T a, T b) { return a != b; } };
+
+template<class Compare>
+struct CharCompareNodeHint
+{
+    static String hint(char ch) { return String{}; }
+};
+
+template<>
+struct CharCompareNodeHint<Equal>
+{
+    static String hint(char ch) { return String::allocate(1, ch); }
+};
+
+template<class Compare>
+struct CharCompareNodeName
+{
+    static const char *name() { return "?"; }
+};
+
+template<>
+struct CharCompareNodeName<Equal>
+{
+    static const char *name() { return "Char"; }
+};
+
+template<>
+struct CharCompareNodeName<Differ>
+{
+    static const char *name() { return "Other"; }
+};
+
+/** \class CharCompareNode cc/syntax/CharCompareNode
+  * \brief Match a single character literal
+  * \tparam Compare Comparism method
+  */
+template<class Compare>
+class CharCompareNode: public SyntaxNode
+{
+public:
+    /** \param ch Character to match
+      */
+    explicit CharCompareNode(char ch):
+        SyntaxNode{new State{ch}}
+    {}
+
+    char ch() const { return me().ch_; } ///< Character to match
+
+private:
+    struct State: public SyntaxNode::State
+    {
+        State(char ch):
+            ch_{ch}
+        {}
+
+        long matchNext(const String &text, long offset, Token &production) const override
+        {
+            if (text.has(offset)) {
+                char ch = text.at(offset++);
+                if (!Compare::compare(ch, ch_)) offset = -1;
+            }
+            else
+                offset = -1;
+
+            return offset;
+        }
+
+        long matchLength() const override
+        {
+            return 1;
+        }
+
+        String hint() const override
+        {
+            return CharCompareNodeHint<Compare>::hint(ch_);
+        }
+
+        List<String> explain() const override
+        {
+            return List<String>{} << CharCompareNodeName<Compare>::name() << "{'" << str(ch_) << "'}";
+        }
+
+        char ch_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::syntax

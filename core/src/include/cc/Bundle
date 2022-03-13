@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,18 +10,21 @@
 
 #include <cc/String>
 
-/// Lookup a path of a bundled ressource
+/** Lookup a path of a bundled ressource
+  * \ingroup sysinfo
+  */
 #define CC_BUNDLE_LOOKUP(relPath) \
     cc::Bundle::lookup( \
         relPath, \
-        cc::StringList{ \
+        cc::List<String>{ \
             cc::Bundle::prefix(CC_XSTR(CCBUILD_BUNDLE_PREFIX)), \
             cc::Bundle::exePrefix(), \
-            cc::String(__FILE__)->reducePath() \
+            cc::String{__FILE__}.cdUp() \
         } \
     )
 
-/// Version of this application or library bundle (low-level C String)
+/** Version of this application or library bundle (low-level C String)
+  */
 #define CC_BUNDLE_VERSION CC_XSTR(CCBUILD_BUNDLE_VERSION)
 
 namespace cc {
@@ -33,15 +36,15 @@ class Singleton;
   * \ingroup sysinfo
   * \brief Lookup files in installation directories
   */
-class Bundle: public Object
+class Bundle
 {
 public:
-    static String lookup(const String &relPath, const StringList &dirs);
+    static String lookup(const String &relPath, const List<String> &dirs);
     static String prefix(const char *defaultPrefix);
     static String exePrefix();
 
 private:
-    friend class Singleton<Bundle>;
+    static Bundle &instance();
     Bundle();
     String overridePrefix_;
     String exePrefix_;

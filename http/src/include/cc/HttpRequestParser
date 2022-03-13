@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpMessageParser>
+#include <cc/HttpRequest>
+
+namespace cc {
+
+/** \class HttpRequestParser cc/HttpRequestParser
+  * \ingroup http_protocol
+  * \brief HTTP server-side message parser
+  */
+class HttpRequestParser: public HttpMessageParser
+{
+public:
+    /** Create a null HTTP request message parser
+      */
+    HttpRequestParser() = default;
+
+    /** Create a new HTTP request message parser
+      * \param stream %Stream to read requests from
+      */
+    explicit HttpRequestParser(const Stream &stream);
+
+    /** Read the next HTTP request send by the client
+      * \exception HttpError
+      */
+    HttpRequest readRequest();
+
+private:
+    struct State;
+};
+
+} // namespace cc

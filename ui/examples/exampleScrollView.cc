@@ -1,27 +1,28 @@
 #include <cc/ui/Application>
 #include <cc/ui/ScrollView>
-#include <cc/ui/ColumnLayout>
 #include <cc/ui/Label>
+#include <cc/DEBUG>
 
-int main(int argc, char **argv)
+int main()
 {
     using namespace cc;
     using namespace cc::ui;
 
-    View view{640, 480};
-    view->inheritPaper();
+    ScrollView scrollView{640, 480};
 
-    ScrollView scroll;
-    ColumnLayout{scroll->carrier()};
+    scrollView.carrier().size(Size{1280, 960});
+    scrollView.carrier().add(
+        View{400, 400}
+        .centerInParent()
+        .paper(Color::Red)
+    );
 
-    for (int i = 0; i < 50; ++i) {
-        Label label{"Item" + str(i + 1)};
-        label->margin = Size{label->font()->size()};
-        scroll->carrier() << label;
-    }
-    view << scroll;
+    scrollView.carrier().add(
+        Label{"Test 1, 2, 3"}
+        .pos(100, 100)
+    );
 
-    Window::open(view, "Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
+    Window{scrollView}.show();
 
-    return Application{}->run();
+    return Application{}.run();
 }

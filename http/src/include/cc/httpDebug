@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Format>
+#include <cc/NullFormat>
+#include <cc/Thread>
+#include <cc/str>
+
+namespace cc {
+
+#ifdef NDEBUG
+#define CCNODE_LOG(sink) \
+    sink << "(" << inum(Thread::id(), 62) << ") " << String{__FILE__}.baseName() << ":"
+#else
+#define CCNODE_LOG(sink) \
+    sink << "(" << inum(Thread::id(), 62) << ") " << String{__FILE__}.fileName() << ":" << __LINE__ << ": "
+#endif
+
+#define CCNODE_ERROR()   CCNODE_LOG(Format{errorLoggingInstance().errorStream()  })
+#define CCNODE_WARNING() CCNODE_LOG(Format{errorLoggingInstance().warningStream()})
+#define CCNODE_NOTICE()  CCNODE_LOG(Format{errorLoggingInstance().noticeStream() })
+#define CCNODE_INFO()    CCNODE_LOG(Format{errorLoggingInstance().infoStream()   })
+#ifndef NDEBUG
+#define CCNODE_DEBUG()   CCNODE_LOG(Format{errorLoggingInstance().debugStream()  })
+#else
+#define CCNODE_DEBUG()   NullFormat{}
+#endif
+
+} // namespace cc

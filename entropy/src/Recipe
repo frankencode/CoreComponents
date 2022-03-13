@@ -1,4 +1,0 @@
-Library {
-    name: ccentropy
-    use: cc/core
-}

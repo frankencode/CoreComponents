@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,38 +10,48 @@
 
 #include <cc/ui/View>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class RowLayout: public Layout
+/** \class RowLayout cc/ui/RowLayout
+  * \ingroup ui_layout
+  * \brief Layout children views in a row
+  * \see RowLayout
+  * \note Do not use a ManagedRowLayout when a RowLayout suffices!
+  */
+class RowLayout final: public View::Layout
 {
 public:
-    class Instance: public Layout::Instance
+    /** Create new column layout and assign it to \a view
+      */
+    RowLayout():
+        Layout{new RowLayout::State}
+    {}
+
+    RowAlign align() const { return me().align(); } ///< Get row alignment
+    RowLayout &align(RowAlign newValue) { me().align(newValue); return *this; } ///< %Set row alignment
+
+private:
+    class State final: public View::Layout::State
     {
     public:
+        Orientation orientation() const override { return Orientation::Horizontal; }
+
         Property<RowAlign> align { RowAlign::Top };
-        Property<Size> margin;
-        Property<double> spacing { 0 };
 
     private:
         friend class RowLayout;
 
-        Instance(const View &view);
+        State() = default;
 
-        void childReady(View child) final;
-        void childDone(View child) final;
-
-        void updateChildPos(View child, Size innerSize, double x);
         void updateLayout();
 
-        View view_;
+        Property<void> update { [this]{ updateLayout(); } };
+        bool firstTime_ { true };
+        bool setViewSize_ { false };
     };
 
-    RowLayout(const View &view):
-        Layout{new Instance{view}}
-    {}
-
-    Instance *operator->() const { return my<Instance>(); }
+    State& me() { return Object::me.as<State>(); }
+    const State& me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

@@ -1,4 +1,0 @@
-Plugin {
-    name: ccuipngimageplugin
-    extend: cc/ui
-}

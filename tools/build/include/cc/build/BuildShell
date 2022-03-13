@@ -1,0 +1,40 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildPlan>
+#include <cc/FileStatus>
+
+namespace cc::build {
+
+class BuildShell
+{
+public:
+    virtual BuildPlan plan() const = 0;
+
+    String beautify(const String &command) const;
+    bool run(const String &command) const;
+
+    FileStatus fileStatus(const String &path) const;
+
+    void mkdir(const String &path) const;
+    void rmdir(const String &path) const;
+    bool clean(const String &path) const;
+    void symlink(const String &path, const String &newPath) const;
+
+    bool install(const String &sourcePath, const String &destPath) const;
+    bool unlink(const String &path) const;
+
+    bool installAll(const String &sourcePrefix, const String &installPrefix) const;
+    bool unlinkAll(const String &sourcePrefix, const String &installPrefix) const;
+
+    void cd(const String &path) const;
+};
+
+} // namespace cc::build

@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaPrototype>
+
+namespace cc {
+
+/** \internal
+  */
+class TlsServerOptionsPrototype: public MetaPrototype
+{
+public:
+    TlsServerOptionsPrototype():
+        MetaPrototype{"TLS"}
+    {
+        establish("certificate", "");
+        establish("private-key", "");
+        establish("ciphers", "");
+        establish("session-resumption-key-refresh", 3600.);
+    }
+};
+
+} // namespace cc

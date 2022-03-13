@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \class Composite cc/basics
+  * \ingroup basics
+  * \brief %Composite aggregate
+  * \tparam T Value type
+  */
+template<class T>
+class Composite
+{
+public:
+    using Value = T; ///< Value type
+
+    /** Initial construction of the aggregate
+      * \param args construction arguments for the aggregate value
+      */
+    template<class... Args>
+    explicit Composite(Args... args):
+        value{args...}
+    {}
+
+    /** Get reference to aggregate value
+      */
+    T &operator()() { return value; }
+
+    /** Get constant reference to aggregate value
+      */
+    const T &operator()() const { return value; }
+
+    /** %Return the usage count for this aggregate
+      */
+    long useCount() const { return 1; }
+
+private:
+    Value value;
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,28 +8,49 @@
 
 #pragma once
 
-#include <cc/Thread>
+#include <cc/Object>
+#include <cc/Channel>
 #include <cc/SignalSet>
-#include <functional>
 
 namespace cc {
 
 /** \class SignalMaster cc/SignalMaster
-  * \brief SystemSignal handling thread in a mulithreaded application
+  * \brief %Signal handling master thread in a multi-threaded application
+  * \ingroup concurrency
+  * \note Before starting the SignalMaster one has to block all signals in all threads.
+  * \see Thread::blockSignals()
   */
-class SignalMaster: public Thread
+class SignalMaster final: public Object
 {
 public:
-    typedef std::function<void(SystemSignal, bool *)> SignalHandler;
+    static SignalSet defaultShutdownSignals();
 
-    static Ref<SignalMaster> start(const SignalHandler &handler);
+    /** Create a null signal master
+      */
+    SignalMaster() = default;
+
+    /** Create a new signal master thread
+      * \param signals %Channel which transmits the received system signals
+      * \param shutdownSet %Signals that cause the shutdown of the signal master
+      */
+    explicit SignalMaster(const Channel<Signal> &signals, const SignalSet &shutdownSet = defaultShutdownSignals());
+
+    /** Start the signal master thread
+      */
+    void start();
+
+    /** Wait for termination of the signal master thread
+      */
+    void wait();
+
+    /** Send signal to the signal master thread
+      */
+    void kill(Signal signal = Signal::Terminate);
 
 private:
-    SignalMaster(const SignalHandler &handler);
+    struct State;
 
-    virtual void run();
-
-    SignalHandler handler_;
+    State &me();
 };
 
 } // namespace cc

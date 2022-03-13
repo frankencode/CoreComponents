@@ -1,0 +1,149 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TransferMeter>
+#include <cc/Format>
+#include <cc/Map>
+
+namespace cc {
+
+/** \class HttpMessageGenerator cc/HttpMessageGenerator
+  * \ingroup http_protocol
+  * \brief HTTP message generator
+  */
+class HttpMessageGenerator: public Object
+{
+public:
+    /** Create a null HTTP message generator
+      */
+    HttpMessageGenerator() = default;
+
+    /** %Set message header \a name to \a value
+      */
+    void setHeader(const String &name, const String &value)
+    {
+        me().setHeader(name, value);
+    }
+
+    /** Transmit HTTP message without payload
+      */
+    void transmit()
+    {
+        me().transmit();
+    }
+
+    /** Transmit HTTP message with attached \a payload
+      */
+    void transmit(const String &payload)
+    {
+        me().transmit(payload);
+    }
+
+    /** Transmit HTTP message and stream the payload from \a source
+      */
+    void transmit(const Stream &source)
+    {
+        me().transmit(source);
+    }
+
+    /** %Set a custom message header
+      */
+    void setHeader(const Map<String, String> &header)
+    {
+        me().setHeader(header);
+    }
+
+    /** Begin message transmission
+      */
+    void beginTransmission(long long contentLength = -1)
+    {
+        me().beginTransmission(contentLength);
+    }
+
+    /** Get access to the payload stream
+      */
+    Stream payload()
+    {
+        return me().payload();
+    }
+
+    /** Write \a data to the payload stream
+      */
+    void write(const Bytes &data)
+    {
+        me().write(data);
+    }
+
+    /** Create a new payload chunk with given format \a pattern
+      */
+    Format chunk(const String &pattern)
+    {
+        return me().chunk(pattern);
+    }
+
+    /** Create a new payload chunk
+      */
+    Format chunk()
+    {
+        return me().chunk();
+    }
+
+    /** End of message transmission
+      */
+    void endTransmission()
+    {
+        me().endTransmission();
+    }
+
+protected:
+    struct State: public Object::State
+    {
+        void setHeader(const String &name, const String &value);
+
+        void transmit();
+        void transmit(const String &payload);
+        void transmit(const Stream &source);
+
+        void setHeader(const Map<String, String> &header);
+
+        void beginTransmission(long long contentLength = -1);
+        Stream payload();
+        void write(const Bytes &data);
+        Format chunk(const String &pattern);
+        Format chunk();
+        void endTransmission();
+
+    protected:
+        State(const Stream &stream):
+            stream_{stream}
+        {}
+
+        virtual void polishHeader() = 0;
+        virtual void writeFirstLine(Format &sink) = 0;
+
+        void writeHeader();
+
+        Stream stream_;
+        Map<String, String> header_;
+        bool headerWritten_ { false };
+        TransferMeter payload_;
+        long long contentLength_ { -1 };
+        long long bytesWritten_ { 0 };
+    };
+
+    HttpMessageGenerator(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

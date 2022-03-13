@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpLoggingService>
+#include <cc/MetaProtocol>
+
+namespace cc {
+
+/** \class HttpLoggingServiceRegistry cc/HttpLoggingServiceRegistry
+  * \ingroup http_server
+  * \brief %Keep track of available logging services
+  */
+class HttpLoggingServiceRegistry: public Object
+{
+public:
+    /** %Get access to the logging service registry
+      */
+    HttpLoggingServiceRegistry();
+
+    /** %Register \a service
+      */
+    void registerService(const HttpLoggingService &service);
+
+    /** %Get registered service by \a name
+      */
+    HttpLoggingService serviceByName(const String &name) const;
+
+    /** %Combined logging configuration protocol for all registered logging services
+      */
+    MetaProtocol loggingProtocol() const;
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

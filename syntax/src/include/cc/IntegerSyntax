@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SyntaxDefinition>
+
+namespace cc {
+
+/** \class IntegerSyntax cc/IntegerSyntax
+  * \ingroup syntax
+  * \brief C-style integer literals
+  * \see readNumber()
+  */
+class IntegerSyntax final: public SyntaxDefinition
+{
+public:
+    /** Get an instance of this syntax definition
+      */
+    IntegerSyntax();
+
+    /** Read an integer literal
+      * \param value Returns the value without sign
+      * \param sign Returns the sign
+      * \param text The text to read
+      * \param token %Production generated from this definition
+      */
+    void read(Out<uint64_t> value, Out<int> sign, const String &text, const Token &token) const;
+
+    /** Read an integer literal
+      * \param value Returns the value without sign
+      * \param sign Returns the sign
+      * \param text The text to read
+      * \param offset &Byte offset within the text
+      * \return %Syntax production
+      */
+    Token read(Out<uint64_t> value, Out<int> sign, const String &text, long offset) const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

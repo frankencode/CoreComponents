@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,16 +7,16 @@
  */
 
 #include <cc/Random>
-#include <cc/System>
+#include <time.h> // clock(2)
 
 namespace cc {
 
-Random::Instance::Instance(int seed):
-    x_{seed}
+Random::Random(int seed):
+    x_{static_cast<unsigned>(seed)}
 {
     if (seed < 0) {
         while (x_ <= 1)
-            x_ = int(System::now() * 1e9);
+            x_ = static_cast<int>(::clock());
     }
     else {
         x_ = seed + 2;

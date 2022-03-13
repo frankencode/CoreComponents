@@ -1,0 +1,63 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpServerConfig>
+#include <cc/HttpClientConnection>
+#include <cc/HttpServiceInstance>
+#include <cc/PriorityChannel>
+#include <cc/Channel>
+
+namespace cc { class HttpResponseGenerator; }
+namespace cc { class TlsSessionCache; }
+
+namespace cc {
+
+using PendingConnections = PriorityChannel<HttpClientConnection>;
+using ClosedConnections = Channel<HttpClientConnection>;
+
+class HttpServiceWorkerState;
+
+/** \internal
+  * \class HttpServiceWorker cc/HttpServiceWorker
+  * \ingroup http_server
+  * \brief Threaded background worker
+  */
+class HttpServiceWorker final: public Object
+{
+public:
+    HttpServiceWorker() = default;
+
+    HttpServiceWorker(
+        const HttpServerConfig &nodeConfig,
+        const PendingConnections &pendingConnections,
+        const ClosedConnections &closedConnections,
+        const TlsSessionCache &sessionCache
+    );
+
+    void start();
+
+    const HttpServerConfig &nodeConfig() const;
+    const HttpServiceInstance &serviceInstance() const;
+    HttpClientConnection &client();
+
+    void closeConnection();
+
+private:
+    friend class HttpServiceDelegate;
+
+    using State = HttpServiceWorkerState;
+
+    HttpResponseGenerator &response();
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

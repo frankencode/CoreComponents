@@ -1,0 +1,4 @@
+Application {
+    name: cc_pulse_fft
+    use: [ cc/core, cc/pulse, cc/ui ]
+}

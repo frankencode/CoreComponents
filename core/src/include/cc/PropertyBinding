@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2019 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,21 +8,22 @@
 
 #pragma once
 
+#include <cc/Trigger>
+#include <cc/Object>
+#include <cc/Set>
 #include <cc/exceptions>
-#include <cc/Signal>
 
 namespace cc {
 
-template<class> class SetInstance;
-
-class PropertyBinding: public Object
+/** \internal
+  */
+struct PropertyBinding: public Object::State
 {
-protected:
-    typedef Set< Ref<PropertyBinding> > Association;
+    using Association = Set< Handle<PropertyBinding> >;
 
-    Signal changed;
+    Trigger changed;
 
-    PropertyBinding(bool dirty);
+    PropertyBinding(void *owner, bool dirty);
 
     void preAccess() const;
 
@@ -37,23 +38,11 @@ protected:
     virtual void evaluate() = 0;
     void disband();
 
-    bool dirty_;
-
-private:
-    friend class PropertyActivator;
-
+    void *owner_ { nullptr };
+    mutable bool dirty_;
     mutable Association dependencies_;
     mutable Association subscribers_;
     int cascadeDepth_ { 0 };
-};
-
-class PropertyBindingError: public Exception
-{};
-
-class PropertyBindingLoop: public PropertyBindingError
-{
-public:
-    String message() const override;
 };
 
 } // namespace cc

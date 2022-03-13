@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,22 +8,69 @@
 
 #pragma once
 
-#include <cc/ui/types>
+#include <cc/ui/FontFace>
 #include <cc/ui/FontMetrics>
+#include <cc/ui/Font>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class Font;
-
+/** \class ScaledFont cc/ui/ScaledFont
+  * \ingroup ui
+  * \brief Scaled font needed for painting text
+  */
 class ScaledFont: public Object
 {
 public:
-    virtual Font font() const = 0;
+    /** Create a null scaled font
+      */
+    ScaledFont() = default;
 
-    virtual const FontMetrics *metrics() const = 0;
+    /** Get the font selector
+      */
+    Font font() const { return me().font_; }
 
-    virtual String toString() const = 0;
+    /** Get the font size (in pixel)
+      */
+    double size() const { return me().font_.size(); }
+
+    /** Get the font metrics
+      */
+    FontMetrics metrics() const { return me().metrics_; }
+
+    /** Get the selected font face
+      */
+    FontFace fontFace() const { return me().fontFace(); }
+
+protected:
+    struct State: public Object::State
+    {
+        State(const Font &font):
+            font_{font}
+        {}
+
+        virtual FontFace fontFace() const = 0;
+
+        Font font_;
+        FontMetrics metrics_;
+    };
+
+    explicit ScaledFont(State *newState):
+        Object{newState}
+    {}
+
+    FontMetrics::State &metricsState() { return me().metrics_.me(); }
+
+    const State &me() const { return Object::me.as<State>(); }
+    State &me() { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+inline String str(const ScaledFont &sf)
+{
+    return Format{}
+        << "ScaledFont {" << nl
+        << "  path: " << sf.fontFace().path() << nl
+        << "  size: " << sf.font().size() << nl
+        << "}";
+}
+
+} //namespace cc::ui

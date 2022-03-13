@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,45 +8,36 @@
 
 #include <cc/ui/FontFamily>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-FontFamily::FontFamily(const String &name, Pitch pitch):
-    name_{name},
-    pitch_{pitch}
-{}
-
-FontFamily::~FontFamily()
-{}
-
-const FontFace *FontFamily::selectFontFace(Weight weight, Slant slant, Stretch stretch) const
+FontFace FontFamily::selectFontFace(Weight weight, Slant slant, Stretch stretch) const
 {
-    const FontFace *nearChoice = 0;
-    const FontFace *farChoice = 0;
-    const FontFace *fallbackChoice = 0;
+    FontFace nearChoice;
+    FontFace farChoice;
+    FontFace fallbackChoice;
 
-    for (const FontFace *candidate: fontFaces_)
+    for (const FontFace &candidate: me().fontFaces_)
     {
         if (!fallbackChoice)
             fallbackChoice = candidate;
 
-        if (candidate->slant() == slant) {
-            if (candidate->weight() == weight) {
+        if (candidate.slant() == slant) {
+            if (candidate.weight() == weight) {
                 nearChoice = candidate;
-                if (candidate->stretch() == stretch)
+                if (candidate.stretch() == stretch)
                     return candidate;
             }
             else if (
-                candidate->weight() == Weight::Normal &&
-                candidate->stretch() == Stretch::Normal
+                candidate.weight() == Weight::Normal &&
+                candidate.stretch() == Stretch::Normal
             )
                 farChoice = candidate;
         }
 
         if (
-            candidate->slant() == Slant::Normal &&
-            candidate->weight() == Weight::Normal &&
-            candidate->stretch() == Stretch::Normal
+            candidate.slant() == Slant::Normal &&
+            candidate.weight() == Weight::Normal &&
+            candidate.stretch() == Stretch::Normal
         )
             fallbackChoice = candidate;
     }
@@ -56,4 +47,4 @@ const FontFace *FontFamily::selectFontFace(Weight weight, Slant slant, Stretch s
     return fallbackChoice;
 }
 
-}} // namespace cc::ui
+} // namespace cc::ui

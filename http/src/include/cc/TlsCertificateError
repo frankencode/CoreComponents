@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Exception>
+
+namespace cc {
+
+/** \class TlsCertificateError cc/TlsCertificateError
+  * \ingroup tls
+  * \brief %Verification of the TLS server's certificate failed for some reason
+  */
+class TlsCertificateError: public Exception
+{
+public:
+    explicit TlsCertificateError(unsigned status);
+
+    String message() const override;
+
+    unsigned status() const { return status_; }
+
+private:
+    unsigned status_;
+};
+
+} // namespace cc

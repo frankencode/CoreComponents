@@ -1,0 +1,74 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TestCase>
+#include <cc/TestReport>
+#include <cc/exceptions>
+#include <cc/basics>
+
+namespace cc {
+
+class TestReport;
+
+/** \class TestSuite cc/TestSuite
+  * \ingroup testing
+  * \brief Defines a test suite
+  */
+class TestSuite
+{
+public:
+    /** \internal
+      */
+    TestSuite() = default;
+
+    /** Create a test suite with command line arguments \a argc, \a argv
+      */
+    TestSuite(int argc, char *argv[]);
+
+    /** Path of the test program
+      */
+    String execPath() const { return me().execPath; }
+
+    /** Name of the test program
+      */
+    String name() const { return me().name; }
+
+    /** Number of test cases
+      */
+    long testCaseCount() const { return me().testCases.count(); }
+
+    /** \internal
+      */
+    bool verify(bool condition, const String &conditionText, const String &codePath, int codeLine);
+
+    /** Run this test suite
+      * \return Number of failed tests
+      */
+    int run();
+
+private:
+    friend class TestCase;
+
+    struct State: public Object::State
+    {
+        String execPath;
+        String name;
+        Handle<TestReport> report;
+        List<TestCase> testCases;
+        TestCase currentTestCase;
+        int failureCount { 0 };
+        int skipCount { 0 };
+        int totalFailureCount { 0 };
+    };
+
+    static Handle<State> me;
+};
+
+} // namespace cc

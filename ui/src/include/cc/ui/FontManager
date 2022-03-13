@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,48 +9,109 @@
 #pragma once
 
 #include <cc/ui/FontFamily>
+#include <cc/ui/ScaledFont>
 #include <cc/ui/GlyphRun>
 #include <cc/ui/TextRun>
-#include <cc/Map>
-#include <cc/Source>
+#include <cc/ThreadLocalSingleton>
+#include <cc/Set>
 
 namespace cc {
 namespace ui {
 
-class FontManager: public Object
+/** \class FontManager cc/ui/FontManager
+  * \ingroup ui
+  * \brief Keep track of application fonts
+  * \exception FontError
+  */
+class FontManager: public ThreadLocalSingleton
 {
 public:
-    static FontManager *instance();
+    /** Get access to the platform's font manager
+      */
+    FontManager();
 
-    void addPath(const String &path, const String &namePrefix = "");
+    /** Make font directory known to the font manager
+      */
+    void addPath(const String &dirPath, const String &namePrefix = "");
 
-    Ref< Source<const FontFamily *> > getFontFamilies() const;
-    const FontFamily *selectFontFamily(const String &name) const;
+    /** %Return set of all available font families
+      */
+    Set<FontFamily> fontFamilies() const { return me().fontFamilies_; }
 
-    virtual Ref<const ScaledFont> selectFont(const Font &font) const = 0;
-    virtual Ref<GlyphRun> typeset(const String &text, const Font &font, const Point &origin = Point{}) const = 0;
+    /** Select font family which matches best giving \a name
+      */
+    FontFamily selectFontFamily(const String &name) const
+    {
+        return me().selectFontFamily(name);
+    }
 
-    virtual Ref<TextRun> createTextRun() const = 0;
+    /** Select font which matches best giving font selector \a font
+      */
+    ScaledFont selectFont(const Font &font) const
+    {
+        return me().selectFont(font);
+    }
 
-    typedef std::function<void(const Font &font, int i0, int i1)> ReturnFontRange;
-    virtual void selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const = 0;
+    /** Typeset a text and return the resulting glyph run
+      * \param text %Text to typeset
+      * \param font %Font to use
+      * \param origin Starting position
+      */
+    GlyphRun typeset(const String &text, const Font &font, const Point &origin = Point{}) const
+    {
+        return me().typeset(text, font, origin);
+    }
+
+    /** Create a new text run
+      */
+    TextRun createTextRun() const
+    {
+        return me().createTextRun();
+    }
+
+    /** Inform about fonts covering ranges of text
+      */
+    using FontRange = std::function<void(const Font &font, long i0, long i1)> ;
+
+    /** Select a proper font for each range of \a text
+      * \param text %Text to find covering fonts for
+      * \param font %Default font to use
+      * \param fontRange %Function to call for each font range
+      */
+    void selectFontRanges(const String &text, const Font &font, const FontRange &fontRange) const
+    {
+        return me().selectFontRanges(text, font, fontRange);
+    }
 
 protected:
-    static Font fixup(const Font &font);
+    struct State: public Object::State
+    {
+        static Font fixup(Font font);
+        static List<String> familySearchPattern(const String &name);
 
-    FontManager();
-    ~FontManager();
+        FontFamily selectFontFamily(const String &name) const;
+        FontFamily selectNearestFontFamily(const String &name) const;
 
-    virtual bool isFontFace(const String &path) const;
-    virtual Ref<FontFace> openFontFace(const String &path) = 0;
+        virtual bool isFontFace(const String &path) const;
+        virtual FontFace openFontFace(const String &path) = 0;
+        virtual ScaledFont selectFont(const Font &font) const = 0;
+        virtual GlyphRun typeset(const String &text, const Font &font, const Point &origin = Point{}) const = 0;
 
-    void addFontFace(const FontFace *fontFace);
-    const FontFamily *selectNearestFontFamily(const String &name) const;
+        virtual TextRun createTextRun() const = 0;
 
-    static StringList familySearchPattern(const String &name);
+        virtual void selectFontRanges(const String &text, const Font &font, const FontRange &fontRange) const = 0;
 
-    using FontFamilies = Map< String, Ref<FontFamily> >;
-    FontFamilies fontFamilies_;
+        Set<FontFamily> fontFamilies_;
+    };
+
+    explicit FontManager(State *state):
+        ThreadLocalSingleton{state}
+    {}
+
+    void addFontFace(const FontFace &fontFace);
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
 }} // namespace cc::ui

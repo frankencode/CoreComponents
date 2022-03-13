@@ -1,28 +1,26 @@
-/*
- * Copyright (C) 2007-2017 Frank Mertens.
- *
- * Distribution and use is allowed under the terms of the zlib license
- * (see cc/LICENSE-zlib).
- *
- */
-
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
 #include <cc/Dir>
+#include <cc/DirWalker>
+#include <cc/testing>
 
-using namespace cc;
-using namespace cc::testing;
-
-class ListCwd: public TestCase
+int main(int argc, char *argv[])
 {
-    void run() {
-        for (auto path: Dir{"."})
-            fout() << path << nl;
-    }
-};
+    using namespace cc;
 
-int main(int argc, char **argv)
-{
-    CC_TESTSUITE_ADD(ListCwd);
-    return TestSuite::instance()->run(argc, argv);
+    TestCase {
+        "CwdIterate",
+        []{
+            for (auto name: Dir{"."})
+                fout() << name << nl;
+        }
+    };
+
+    TestCase {
+        "CwdTraverse",
+        []{
+            for (auto name: DirWalker{"."})
+                fout() << name << nl;
+        }
+    };
+
+    return TestSuite{argc, argv}.run();
 }

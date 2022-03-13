@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,74 +8,66 @@
 
 #pragma once
 
-#include <cc/exceptions>
 #include <cc/ByteSink>
+#include <cc/exceptions>
 
 namespace cc {
 
 /** \class Utf8Sink cc/Utf8Sink
   * \ingroup unicode
-  * \brief %Unicode UTF-8 encoding data sink
+  * \brief UTF-8 encoding data sink
+  * \exception UnicodeError
   */
-class Utf8Sink: public Object
+class Utf8Sink
 {
 public:
-    class Instance
-    {
-    public:
-        /** Write an %Unicode character
-          * \param ch %Unicode character
-          * \exception UnicodeError
-          */
-        void write(uchar_t ch);
-
-        /// Return the total number of byte written
-        off_t bytesWritten() const { return byteSink_->currentOffset(); }
-
-    private:
-        friend class Utf8Sink;
-
-        Instance(const Stream &stream, CharArray* buffer):
-            byteSink_{stream, buffer}
-        {}
-
-        class SurrogatePairEncodingError: public UnicodeError {
-        public:
-            String message() const override;
-        };
-
-        class NonCharacterEncodingError: public UnicodeError {
-        public:
-            String message() const override;
-        };
-
-        class LargeCodePointEncodingError: public UnicodeError {
-        public:
-            String message() const override;
-        };
-
-        ByteSink byteSink_;
-    };
-
-    /** Open a new UTF-8 encoding data sink
-      * \param stream underlying data stream
-      * \param buffer output buffer (optional)
+    /** Create a new UTF-8 encoding data sink
+      * \param stream Underlying data stream
       */
-    Utf8Sink(const Stream &stream, CharArray* buffer = nullptr):
-        instance_{stream, buffer}
+    Utf8Sink(const Stream &stream):
+        byteSink_{stream}
     {}
 
-    /** Open a new UTF-8 encoding data sink
-      * \param buffer output buffer
+    /** Create a new UTF-8 encoding data sink
+      * \param stream Underlying data stream
+      * \param buffer Output buffer
       */
-    Utf8Sink(CharArray* buffer):
-        instance_{Stream{}, buffer}
+    Utf8Sink(const Stream &stream, const Bytes &buffer):
+        byteSink_{stream, buffer}
     {}
 
-    Instance *operator->() { return &instance_; }
+    /** Create a new UTF-8 encoding data sink
+      * \param buffer Output buffer
+      */
+    Utf8Sink(const Bytes &buffer):
+        byteSink_{buffer}
+    {}
+
+    /** Write %Unicode character \a ch
+      */
+    void write(char32_t ch);
+
+    /** Get the total number of bytes written
+      */
+    long long currentOffset() const { return byteSink_.currentOffset(); }
 
 private:
-    Instance instance_;
+    class SurrogatePairEncodingError: public UnicodeError {
+    public:
+        String message() const override;
+    };
+
+    class NonCharacterEncodingError: public UnicodeError {
+    public:
+        String message() const override;
+    };
+
+    class LargeCodePointEncodingError: public UnicodeError {
+    public:
+        String message() const override;
+    };
+
+    ByteSink byteSink_;
 };
 
 } // namespace cc

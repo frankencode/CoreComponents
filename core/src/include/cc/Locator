@@ -1,0 +1,148 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bucket/Stop>
+#include <cassert>
+
+namespace cc {
+namespace bucket {
+template<class T> class Vector;
+template<class T> class Chain;
+}};
+
+namespace cc {
+
+/** \class Locator cc/Locator
+  * \brief Locate items inside containers
+  */
+class Locator
+{
+public:
+    /** Create a locator pointing to \a index
+      */
+    Locator(long index = 0):
+        index_{index},
+        stop_{nullptr},
+        egress_{0}
+    {}
+
+    /** %Return the index value of the locator (unary plus operator)
+      */
+    long index() const { return index_; }
+
+    /** \copydoc index()
+      */
+    long operator+() const { return index_; }
+
+    /** Step to the next item (prefix increment operator)
+      */
+    Locator &operator++() { stepNext(); return *this; }
+
+    /** Step to the previous item (prefix decrement operator)
+      */
+    Locator &operator--() { stepBack();  return *this; }
+
+    /** Step to the next item and return the old locator value (postfix increment operator)
+      */
+    Locator operator++(int) { Locator pos = *this; stepNext(); return pos; }
+
+    /** Step to the previous item and return the old locator value (postfix decrement operator)
+      */
+    Locator operator--(int) { Locator pos = *this; stepBack(); return pos; }
+
+    /** Get locator value stepped \a delta items forward (addition operator)
+      */
+    Locator operator+(long delta)
+    {
+        Locator pos = *this;
+        for (; delta > 0; --delta) ++pos;
+        for (; delta < 0; ++delta) --pos;
+        return pos;
+    }
+
+    /** Get locator value stepped \a delta items backward (substraction operator)
+      */
+    Locator operator-(long delta) { return (*this) + -delta; }
+
+    /** Get distance between this and another locator (substraction operator)
+      */
+    long operator-(const Locator &b) const { return index_ - b.index_; }
+
+    bool operator==(const Locator &b) const { return index_ == b.index_; } ///< Equal to operator
+    bool operator!=(const Locator &b) const { return index_ != b.index_; } ///< Not equal to operator
+    bool operator< (const Locator &b) const { return index_ <  b.index_; } ///< Less than operator
+    bool operator> (const Locator &b) const { return index_ >  b.index_; } ///< Greater than operator
+    bool operator<=(const Locator &b) const { return index_ <= b.index_; } ///< Less than or equal to operator
+    bool operator>=(const Locator &b) const { return index_ >= b.index_; } ///< Greater than or equal to operator
+
+    /** Check if this locator is valid
+      */
+    bool isValid() const { return stop_; }
+
+    /** \copydoc isValid()
+      */
+    explicit operator bool() const { return stop_; }
+
+protected:
+    using Stop = bucket::Stop;
+
+    template<class>
+    friend class cc::bucket::Vector;
+
+    template<class>
+    friend class cc::bucket::Chain;
+
+    explicit Locator(const long *revision, long index, Stop *stop, unsigned egress):
+        #ifndef NDEBUG
+        revisionSaved_{*revision},
+        revisionPtr_{revision},
+        #endif
+        index_{index},
+        stop_{stop},
+        egress_{egress}
+    {}
+
+    void stepNext()
+    {
+        assert(stop_); // cannot increment an invalid locator
+        assert(*revisionPtr_ == revisionSaved_); // locator became undefined due to prior container modification
+
+        ++index_;
+        ++egress_;
+        if (egress_ == stop_->fill_) {
+            egress_ = 0;
+            stop_ = stop_->succ_;
+        }
+    }
+
+    void stepBack()
+    {
+        assert(stop_); // cannot decrement an invalid locator
+        assert(*revisionPtr_ == revisionSaved_); // locator became undefined due to prior container modification
+
+        --index_;
+        if (egress_ == 0) {
+            stop_ = stop_->pred_;
+            egress_ = stop_ ? stop_->fill_ - 1 : 0;
+        }
+        else
+            --egress_;
+    }
+
+    #ifndef NDEBUG
+    long revisionSaved_ { 0 };
+    const long *revisionPtr_ { &revisionSaved_ };
+    #endif
+    long index_;
+    Stop *stop_;
+    unsigned egress_;
+};
+
+} // namespace cc

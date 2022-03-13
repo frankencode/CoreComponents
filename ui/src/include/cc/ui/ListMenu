@@ -1,0 +1,65 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Flickable>
+#include <cc/ui/ListItem>
+
+namespace cc::ui {
+
+/** \class ListMenu cc/ui/ListMenu
+  * \ingroup ui
+  * \brief %List menu
+  */
+class ListMenu final: public Flickable
+{
+public:
+    /** Create a primodrial list menu
+      */
+    ListMenu();
+
+    /** Create a new list menu
+      */
+    explicit ListMenu(Out<ListMenu> self):
+        Flickable{new State}
+    {
+        self = *this;
+    }
+
+    /** Create a new list menu of size (\a width, \a height)
+      */
+    ListMenu(double width, double height):
+        ListMenu{}
+    {
+        size(width, height);
+    }
+
+    View header() const { return me().header(); } ///< Get the header
+    ListMenu &header(const View &newValue); ///< %Set the header
+
+    View footer() const { return me().footer(); } ///< Get the footer
+    ListMenu &footer(const View &newValue); ///< %Set the footer
+
+protected:
+    class Carrier;
+
+    struct State: public Flickable::State
+    {
+        State();
+        void insertChild(View child) override;
+
+        Property<View> header;
+        Property<View> footer;
+    };
+
+    State &me() { return View::me().as<State>(); }
+    const State &me() const { return View::me().as<State>(); }
+};
+
+} // namespace cc::ui

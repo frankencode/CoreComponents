@@ -1,0 +1,135 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <atomic>
+#include <cassert>
+
+namespace cc {
+
+/** \internal
+  * \class Use cc/Use
+  * \ingroup basics
+  * \brief References to aggregates
+  * \tparam T Value type
+  */
+template<class T>
+class Use
+{
+public:
+    /** Create a null reference
+      */
+    Use():
+        data{nullptr}
+    {}
+
+    /** Take reference to \a target
+      */
+    template<class Aggregate>
+    Use(Aggregate &target):
+        data{target.data}
+    {
+        data->acquire();
+    }
+
+    /** Copy constructor
+      */
+    Use(const Use &other):
+        data{other.data}
+    {
+        if (data) data->acquire();
+    }
+
+    /** R-value constructor
+      */
+    Use(Use &&other):
+        data{other.data}
+    {
+        other.data = nullptr;
+    }
+
+    /** Release reference
+      */
+    ~Use()
+    {
+        if (data) data->release();
+    }
+
+    /** Assignment operator
+      */
+    Use &operator=(const Use &other)
+    {
+        if (data) data->release();
+        data = other.data;
+        data->acquire();
+        return *this;
+    }
+
+    /** R-value assignment operator
+      */
+    Use &operator=(Use &&other)
+    {
+        if (data) data->release();
+        data = other.data;
+        other.data = nullptr;
+        return *this;
+    }
+
+    /** %Return constant reference to the referenced value
+      */
+    const T &operator()() const { assert(data); return data->value; }
+
+    /** %Return reference to the referenced value
+      */
+    T &operator()() { assert(data); return data->value; }
+
+    /** Check if this reference is a non-null
+      */
+    explicit operator bool() const { return data; }
+
+private:
+    template<class>
+    friend class Shared;
+
+    template<class>
+    friend class Cow;
+
+    class Data {
+    public:
+        template<class... Args>
+        Data(Args... args):
+            value{args...}
+        {}
+
+        void acquire()
+        {
+            useCount_.fetch_add(1, std::memory_order_release);
+        }
+
+        void release()
+        {
+            if (useCount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
+                delete this;
+        }
+
+        long useCount() const
+        {
+            return useCount_.load(std::memory_order_acquire);
+        }
+
+        T value;
+        std::atomic<long> useCount_ { 1 };
+    };
+
+    static T &value(Data *data) { return data->value; }
+
+    Data *data;
+};
+
+} // namespace cc

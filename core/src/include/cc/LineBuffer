@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -12,47 +12,43 @@
 
 namespace cc {
 
-/** \brief Line output buffer
+/** \class LineBuffer cc/LineBuffer
+  * \ingroup streams
+  * \brief Line output buffer
   */
 class LineBuffer: public Stream
 {
 public:
-    class Instance: public Stream::Instance
-    {
-    public:
-        Stream sink() const { return sink_; }
-        virtual String prefix() const;
+    /** Create a new line output buffer
+      * \param sink Stream to write lines to
+      * \param prefix Prefix to prepend to each line
+      */
+    LineBuffer(const Stream &sink = Stream{}, const String &prefix = "");
 
-        int read(CharArray *data) override;
-        void write(const CharArray *data) override;
-        void write(const StringList &parts) override;
-
-        int flush();
-
-    protected:
-        friend class LineBuffer;
-
-        Instance(const Stream &sink, const String &prefix = "");
-
-        virtual void writeLine(const CharArray *data);
-
-    private:
-        Stream sink_;
-        String prefix_;
-        StringList backlog_;
-    };
-
-    LineBuffer(const Stream &sink = Stream{}, const String &prefix = ""):
-        Stream{new Instance{sink, prefix}}
-    {}
-
-    Instance *operator->() const { return my<Instance>(); }
-    operator Instance *() const { return my<Instance>(); }
+    /** Flush partially transmitted line
+      */
+    long flush();
 
 protected:
-    LineBuffer(Instance *instance):
-        Stream{instance}
-    {}
+    struct State: public Stream::State
+    {
+        State(const Stream &sink, const String &prefix);
+
+        long read(Out<Bytes> buffer, long maxFill) override;
+        void write(const Bytes &buffer, long fill = -1) override;
+        virtual String prefix() const;
+        long flush();
+        virtual void writeLine(const Bytes &line);
+
+        Stream sink_;
+        String prefix_;
+        List<Bytes> backlog_;
+    };
+
+    explicit LineBuffer(State *newState);
+
+    const State &me() const { return Object::me.as<State>(); }
+    State &me() { return Object::me.as<State>(); }
 };
 
 } // namespace cc

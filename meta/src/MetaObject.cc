@@ -1,67 +1,60 @@
 /*
- * Copyright (C) 2007-2019 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/meta/MetaObject>
-#include <cc/meta/yason>
-#include <cc/Guard>
+#include <cc/MetaObject>
+#include <cc/MetaPrototype>
+#include <cc/YasonWriter>
+#include <cc/CaptureSink>
 
 namespace cc {
-namespace meta {
 
-Ref<MetaObject> MetaObject::create(const String &className)
+void MetaObject::autocomplete(InOut<MetaObject> target) const
 {
-    return new MetaObject{className};
-}
-
-MetaObject::MetaObject(const String &className):
-    className_{className}
-{}
-
-MetaObject::~MetaObject()
-{}
-
-Variant MetaObject::toVariant() const
-{
-    return Ref<MetaObject>{const_cast<MetaObject *>(this)};
-}
-
-String MetaObject::toString() const
-{
-    return yason::stringify(toVariant());
-}
-
-Ref<MetaObject> MetaObject::clone() const
-{
-    auto object = produce();
-    autocomplete(object);
-    object->realize();
-    return object;
-}
-
-void MetaObject::autocomplete(MetaObject *target) const
-{
-    if (count() != target->count()) {
-        for (int i = 0; i < count(); ++i) {
-            String name = at(i)->key();
-            if (target->count() <= i || target->at(i)->key() != name) {
-                Variant value = at(i)->value();
-                const MetaProtocol *protocol = Variant::cast<const MetaProtocol *>(value);
-                if (protocol) value = protocol->defaultObject();
-                target->insert(name, value);
+    if (members().count() != target().members().count()) {
+        for (int i = 0, n = members().count(); i < n; ++i) {
+            String name = members().at(i).key();
+            if (target().members().count() <= i || target().members().at(i).key() != name) {
+                Variant value = members().at(i).value();
+                if (value.is<MetaProtocol>()) value = value.to<MetaProtocol>().defaultObject();
+                else if (value.is<MetaPrototype>()) value = value.to<MetaPrototype>().as<MetaObject>();
+                target().members().insert(name, value);
             }
         }
     }
 
-    for (const MetaObject *child: children())
-        target->children_->append(child->clone());
+    target().children().appendList(children());
 }
 
-void MetaObject::realize()
-{}
+MetaObject MetaObject::clone() const
+{
+    auto object = produce();
+    autocomplete(&object);
+    object.me().realize();
+    return object;
+}
 
-}} // namespace cc::meta
+const TypeInfo VariantType<MetaObject>::info
+{
+    .typeName = "MetaObject",
+    .str = [](const void *bytes) {
+        CaptureSink sink;
+        YasonWriter{sink}.writeObject(*static_cast<const MetaObject *>(bytes));
+        return sink.collect();
+    },
+    .cleanup = [](void *bytes) {
+        static_cast<MetaObject *>(bytes)->~MetaObject();
+    },
+    .assign = [](void *dst, const void *src) {
+        new(dst)MetaObject{*static_cast<const MetaObject *>(src)};
+    },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<MetaObject>::retrieve(a) == VariantType<MetaObject>::retrieve(b);
+    }
+};
+
+} // namespace cc

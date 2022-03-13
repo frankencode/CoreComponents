@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -11,25 +11,23 @@
 namespace cc {
 
 /** \class Guard cc/Guard
-  * \ingroup concurrency
   * \brief %Mutex guard
-  * \see Mutex, FileLock
+  * \tparam T %Mutex type
   */
-template<class Mutex>
-class Guard
+template<class T>
+class Guard final
 {
 public:
-    /** Lowlevel constructor: acquire mutex
-      * \param mutex mutex to hold
+    /** Post guard: acquire \a mutex
       */
-    Guard(Mutex *mutex): mutex_{mutex} { mutex_->acquire(); }
+    explicit Guard(T &mutex): mutex_{mutex} { mutex_.acquire(); }
 
-    /** Lowlevel destructor: release mutex
+    /** Disband guard: release \a mutex
       */
-    ~Guard() { mutex_->release(); }
+    ~Guard() { mutex_.release(); }
 
 private:
-    Mutex *mutex_;
+    T &mutex_;
 };
 
 } // namespace cc

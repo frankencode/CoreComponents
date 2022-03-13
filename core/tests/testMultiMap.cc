@@ -1,85 +1,65 @@
-/*
- * Copyright (C) 2020 Frank Mertens.
- *
- * Distribution and use is allowed under the terms of the zlib license
- * (see cc/LICENSE-zlib).
- *
- */
+#include <cc/MultiMap>
+#include <cc/testing>
 
-#include <cc/testing/TestSuite>
-#include <cc/MultiMapInstance>
-#include <cc/Random>
-#include <cc/stdio>
+namespace cc { template class MultiMap<int>; }
 
-using namespace cc;
-using namespace cc::testing;
-
-namespace cc { template class MultiMapInstance<String>; }
-
-class InsertionIteration: public TestCase
+int main(int argc, char *argv[])
 {
-    void run()
-    {
-        Random random{0};
-        const int n = 40;
-        const int a = 0, b = 10;
+    using namespace cc;
 
-        auto map = MultiMapInstance<int>::create();
-        for (int i = 0; i < n; ++i) {
-            int key = random->get(a, b);
-            map->insert(key, i);
+    TestCase {
+        "Insertion",
+        []{
+            MultiMap<int> m;
+            m.insert(0, 1);
+            m.insert(0, 2);
+            m.insert(1, 3);
+            m.insert(1, 4);
+            CC_CHECK(m.at(0).key() == 0);
+            CC_CHECK(m.at(0).value() == 1);
+            CC_CHECK(m.at(1).key() == 0);
+            CC_CHECK(m.at(1).value() == 2);
+            CC_CHECK(m.at(2).key() == 1);
+            CC_CHECK(m.at(2).value() == 3);
+            CC_CHECK(m.at(3).key() == 1);
+            CC_CHECK(m.at(3).value() == 4);
         }
+    };
 
-        {
-            int x2 = 0;
-            for (int i = 0; i < map->count(); ++i) {
-                int x = map->at(i)->key();
-                int y = map->at(i)->value();
-                fout("%%: %% => %%\n") << i << x << y;
-                if (i > 0) CC_VERIFY(x2 <= x);
-                x2 = x;
-            }
-        }
-
-        for (int x = a; x < b; ++x) {
-            fout("%% => ") << x;
-            MultiMapInstance<int>::const_iterator t;
-            if (map->find<FindFirst>(x, &t)) {
-                int y2 = 0; int i = 0;
-                while (t && t->key() == x) {
-                    int y = t->value();
-                    fout() << y << " ";
-                    if (i > 0) CC_VERIFY(y2 <= y);
-                    y2 = y;
-                    ++t;
-                    ++i;
+    TestCase {
+        "InsertionRemoval",
+        []{
+            MultiMap<int> map;
+            const int n = 20;
+            {
+                Random random{0};
+                for (int i = 0; i < n; ++i) {
+                    int key = random.get();
+                    int value = random.get();
+                    map.insert(key, value);
                 }
             }
-            fout() << nl;
-        }
-
-        for (int x = a; x < b; ++x) {
-            fout("%% => ") << x;
-            MultiMapInstance<int>::const_iterator t;
-            if (map->find<FindLast>(x, &t)) {
-                int y2 = 0; int i = 0;
-                while (t && t->key() == x) {
-                    int y = t->value();
-                    fout() << y << " ";
-                    if (i > 0) CC_VERIFY(y2 >= y);
-                    y2 = y;
-                    --t;
-                    ++i;
+            CC_CHECK(map.count() == 20);
+            {
+                Random random{0};
+                for (int i = 0; i < n; ++i) {
+                    int key = random.get();
+                    int value = random.get();
+                    Locator pos;
+                    CC_VERIFY(map.find(key, &pos));
+                    CC_VERIFY(map.at(pos).value() == value);
                 }
             }
-            fout() << nl;
+            {
+                Random random{0};
+                for (int i = 0; i < n; ++i) {
+                    int j = random.get(0, map.count() - 1);
+                    map.remove(map.at(j).key());
+                }
+            }
+            CC_CHECK(map.count() == 0);
         }
-    }
-};
+    };
 
-int main(int argc, char **argv)
-{
-    CC_TESTSUITE_ADD(InsertionIteration);
-
-    return TestSuite::instance()->run(argc, argv);
+    return TestSuite{argc, argv}.run();
 }

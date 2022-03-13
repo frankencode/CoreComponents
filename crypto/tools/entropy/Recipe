@@ -1,0 +1,4 @@
+Application {
+    name: cc_entropy
+    use: [ core, crypto ]
+}

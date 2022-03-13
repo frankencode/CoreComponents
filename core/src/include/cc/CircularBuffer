@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,40 +8,202 @@
 
 #pragma once
 
-#include <cc/CircularBufferInstance>
+#include <cc/Array>
+#include <cc/Shared>
+#include <cassert>
 
 namespace cc {
 
 /** \class CircularBuffer cc/CircularBuffer
-  * \ingroup container
-  * \brief Circular buffer data container
-  * \tparam T item type
-  * \see Queue, CircularChannel
-  * \todo provide constant iterator type
+  * \ingroup container_lowlevel
+  * \brief %Fixed-size circular data buffer
+  * \tparam T Item type
   */
 template<class T>
 class CircularBuffer
 {
 public:
-    typedef CircularBufferInstance<T> Instance;
-    typedef typename Instance::Item Item; ///< item type
+    /** Allocate a new circular buffer of capacity \a size
+      */
+    static CircularBuffer allocate(int size) { return CircularBuffer{size}; }
 
-    CircularBuffer() = default;
+    /** Buffer capacity
+      */
+    int size() const { return me().size_; }
 
-    CircularBuffer(int capacity):
-        instance_{new Instance{capacity}}
-    {}
+    /** Current fill level
+      */
+    int fill() const { return me().fill_; }
 
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return instance_; }
+    /** \copydoc front()
+      */
+    T at(int i) const { return front(i); }
 
-    CircularBuffer &operator<<(const T& x) { instance_->pushBack(x); return *this; }
-    CircularBuffer &operator>>(T& x) { instance_->popFront(&x); return *this; }
+    /** Get the first item
+      */
+    T first() const
+    {
+        assert(fill() > 0);
+        return front(0);
+    }
 
-    explicit operator bool() const { return instance_; }
+    /** Get the last item
+      */
+    T last() const
+    {
+        assert(fill() > 0);
+        return back(0);
+    }
+
+    /** Get the \a i-th item from the front
+      */
+    T front(int i = 0) const
+    {
+        assert(0 <= i && i < fill());
+        return me().front(i);
+    }
+
+    /** Get the \a i-th item from the end
+      */
+    T back(int i = 0) const
+    {
+        assert(0 <= i && i < fill());
+        return me().back(i);
+    }
+
+    /** Insert \a item at the end
+      */
+    void pushBack(const T& item)
+    {
+        me().pushBack(item);
+    }
+
+    /** Insert \a item at the front
+      */
+    void pushFront(const T& item)
+    {
+        me().pushFront(item);
+    }
+
+    /** Remove an item from the front
+      */
+    void popFront()
+    {
+        assert(fill() > 0);
+        me().popFront();
+    }
+
+    /** Remove an item from the end
+      */
+    void popBack()
+    {
+        assert(fill() > 0);
+        me().popBack();
+    }
+
+    /** Reset to an empty state
+      */
+    void deplete()
+    {
+        me().deplete();
+    }
+
+    /** Insert \a item as a new last item
+      */
+    CircularBuffer &operator<<(const T& item)
+    {
+        pushBack(item);
+        return *this;
+    }
+
+    /** Remove and return the first item
+      */
+    CircularBuffer &operator>>(T& item)
+    {
+        if (fill() > 0) {
+            item = first();
+            popFront();
+        }
+        return *this;
+    }
 
 private:
-    Ref<Instance> instance_;
+    explicit CircularBuffer(int size):
+        me{size}
+    {}
+
+    struct State
+    {
+        State(int size):
+            fill_{0},
+            size_{size},
+            head_{size - 1},
+            tail_{size - 1},
+            buffer_{Array<T>::allocate(size)}
+        {}
+
+        T front(int i = 0) const
+        {
+            i += tail_ + 1;
+            if (i >= size_) i -= size_;
+            return buffer_.at(i);
+        }
+
+        T back(int i = 0) const
+        {
+            i = -i;
+            i += head_;
+            if (i < 0) i += size_;
+            return buffer_.at(i);
+        }
+
+        void pushBack(const T& item)
+        {
+            if (fill_ == size_) popFront();
+            ++head_;
+            if (head_ >= size_) head_ = 0;
+            ++fill_;
+            buffer_.at(head_) = item;
+        }
+
+        void pushFront(const T& item)
+        {
+            if (fill_ == size_) popBack();
+            buffer_.at(tail_) = item;
+            --tail_;
+            if (tail_ < 0) tail_ = size_ - 1;
+            ++fill_;
+        }
+
+        void popFront()
+        {
+            ++tail_;
+            if (tail_ >= size_) tail_ = 0;
+            --fill_;
+        }
+
+        void popBack()
+        {
+            --head_;
+            if (head_ < 0) head_ = size_ - 1;
+            --fill_;
+        }
+
+        void deplete()
+        {
+            fill_ = 0;
+            head_ = size_ - 1;
+            tail_ = size_ - 1;
+        }
+
+        int fill_;
+        int size_;
+        int head_;
+        int tail_;
+        Array<T> buffer_;
+    };
+
+    Shared<State> me;
 };
 
 } // namespace cc

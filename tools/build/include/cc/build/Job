@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/Object>
+
+namespace cc::build {
+
+class Job: public Object
+{
+public:
+    Job() = default;
+
+    explicit Job(const String &command);
+
+    String command() const;
+
+    int status() const;
+    String outputText() const;
+
+    void registerDerivative(Job &job);
+    bool getNextDerivative(Out<Job> derivative);
+
+    int countDown() const;
+
+    bool run();
+    bool finish();
+
+protected:
+    struct State;
+
+    explicit Job(State *newState);
+
+    const State &me() const;
+    State &me();
+};
+
+} // namespace cc::build

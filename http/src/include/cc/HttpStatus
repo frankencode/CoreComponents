@@ -1,0 +1,90 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+
+namespace cc {
+
+/** \brief HTTP status code
+  * \ingroup http_protocol
+  */
+enum class HttpStatus: int
+{
+    Continue                    = 100, ///< Continue with the reminder of a partically received request
+    SwitchingProtocols          = 101, ///< Server is about to switch to request protocol
+    OK                          = 200, ///< Request has succeeded
+    Created                     = 201, ///< New resources was successfully created
+    Accepted                    = 202, ///< Request as been accepted and processing is in progress
+    NonAuthoritativeInformation = 203, ///< Same as HttpStatus::OK, but delivered meta-information may differ from the origin server
+    NoContent                   = 204, ///< Request succeeded: new meta-information might be contained in the response, but there won't be any content
+    ResetContent                = 205, ///< Request succeeded, please reset the user agent's content (e.g. an input form)
+    PartialContent              = 206, ///< Successful response to a partial GET request
+    MultipleChoices             = 300, ///< A list of resource choices is delivered in the content (e.g. as HTML links)
+    MovedPermanently            = 301, ///< The requested resources as moved permanently to a new location
+    MovedTemporarily            = 302, ///< The requested resources as moved temporarily to a new location
+    SeeOther                    = 303, ///< The user agent should retrieve the response from another URI (e.g. after a POST request)
+    NotModified                 = 304, ///< Resource has not changed since last cached GET request
+    UseProxy                    = 305, ///< Requested resource is only available from proxy server specified in the Location field
+    BadRequest                  = 400, ///< \copybrief HttpBadRequest
+    Unauthorized                = 401, ///< Missing user authentication
+    PaymentRequired             = 402, ///< No free beer
+    Forbidden                   = 403, ///< \copybrief HttpForbidden
+    NotFound                    = 404, ///< \copybrief HttpNotFound
+    MethodNotAllowed            = 405, ///< Request method is not allowed on the indicated resource
+    NotAcceptable               = 406, ///< Server-driven content negotiation failed
+    ProxyAuthenticationRequired = 407, ///< Missing user authentication with a proxy server
+    RequestTimeout              = 408, ///< \copybrief HttpRequestTimeout
+    Conflict                    = 409, ///< A user resolveable resource conflict occured
+    Gone                        = 410, ///< The requested resource is marked as permanently deleted
+    LengthRequired              = 411, ///< Content-Length header field was missing
+    PreconditionFailed          = 412, ///< Server cannot fullfil the client indicated preconditions
+    PayloadTooLarge             = 413, ///< \copybrief HttpPayloadTooLarge
+    RequestUriTooLong           = 414, ///< The request URI exceeds the servers acceptable maximum URI length
+    UnsupportedMediaType        = 415, ///< Requested media type is not available on the server
+    InternalServerError         = 500, ///< \copybrief HttpInternalServerError
+    NotImplemented              = 501, ///< \copybrief HttpNotImplemented
+    BadGateway                  = 502, ///< Response by an HTTP gateway which itself got an error requesting the resource from another server
+    ServiceUnavailable          = 503, ///< The server is temporarily unavailable due to technical difficulties (e.g. overloading)
+    GatewayTimeout              = 504, ///< The server timed out on a forwarded request
+    UnsupportedVersion          = 505, ///< \copybrief HttpUnsupportedVersion
+};
+
+/** \ingroup http_protocol
+  * @{
+  */
+
+/** Unary plus operator: cast HTTP status to integer
+  */
+inline int operator+(HttpStatus status) { return static_cast<int>(status); }
+
+/** Check if the HTTP status code indicates that the request was processed successfully by the server
+  */
+inline bool httpSuccess(HttpStatus status) { return 200 <= +status && +status < 300; }
+
+/** Check if the HTTP status code indicates that further client actions are necessary to fullfil the request
+  */
+inline bool httpRedirection(HttpStatus status) { return 300 <= +status && +status < 400; }
+
+/** Check if the HTTP status code indicates an error condition
+  */
+inline bool httpError(HttpStatus status) { return 400 <= +status; }
+
+/** Translate a HTTP status code into a human-readable form
+  */
+const char *httpReasonPhrase(HttpStatus status);
+
+/** Stringify a HTTP status code
+  */
+inline String str(HttpStatus status) { return httpReasonPhrase(status); }
+
+/** @}
+  */
+
+} // namespace cc

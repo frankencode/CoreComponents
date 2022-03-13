@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,22 +8,80 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/ui/types>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+class Font;
+class ScaledFont;
+
+/** \class FontMetrics cc/ui/FontMetrics
+  * \ingroup ui
+  * \brief %Font metrics
+  */
 class FontMetrics: public Object
 {
 public:
-    virtual double fontSize() const = 0;
-    virtual double ascender() const = 0;
-    virtual double descender() const = 0;
-    virtual double lineHeight() const = 0;
-    virtual double underlinePosition() const = 0;
-    virtual double underlineThickness() const = 0;
+    /** Create null font metrics
+      */
+    FontMetrics();
 
-    virtual String toString() const;
+    /** Get font metrics for \a font
+      */
+    FontMetrics(const Font &font);
+
+    /** Size of the font
+      */
+    double fontSize() const { return me().fontSize_; }
+
+    /** Above baseline height
+      */
+    double ascender() const { return me().ascender_; }
+
+    /** Below baseline depth
+      */
+    double descender() const { return me().descender_; }
+
+    /** Distance between two baselines
+      */
+    double lineHeight() const { return me().lineHeight_; }
+
+    /** Vertical position of the underline
+      */
+    double underlinePosition() const { return me().underlinePosition_; }
+
+    /** Thickness of the underline
+      */
+    double underlineThickness() const { return me().underlineThickness_; }
+
+protected:
+    friend class ScaledFont;
+
+    struct State: public Object::State
+    {
+        double fontSize_ { 0 };
+        double ascender_ { 0 };
+        double descender_ { 0 };
+        double lineHeight_ { 0 };
+        double underlinePosition_ { 0 };
+        double underlineThickness_ { 0 };
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+inline String str(const FontMetrics &metrics)
+{
+    return Format{}
+        << "FontMetrics {\n"
+        << "  fontSize: " << metrics.fontSize() << nl
+        << "  ascender: " << metrics.ascender() << nl
+        << "  descender: " << metrics.descender() << nl
+        << "  lineHeight: " << metrics.lineHeight() << nl
+        << "  underlinePosition: " << metrics.underlinePosition() << nl
+        << "  underlineThickness: " << metrics.underlineThickness() << nl
+        << "}";
+}
+
+} // namespace cc::ui

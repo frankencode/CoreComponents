@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,42 +9,19 @@
 #pragma once
 
 #include <cc/ui/FontManager>
-#include <cc/CircularBuffer>
-#include <cc/Map>
 
-namespace cc { template<class> class ThreadLocalSingleton; }
+namespace cc::ui {
 
-namespace cc {
-namespace ui {
-
-class FtGlyphRun;
-class FtScaledFont;
-
-class FtFontManager: public FontManager
+class FtFontManager final: public FontManager
 {
 public:
-    static FtFontManager *instance();
-
-    Ref<const ScaledFont> selectFont(const Font &font) const override;
-
-    Ref<GlyphRun> typeset(const String &text, const Font &font, const Point &origin = Point{}) const override;
-    Ref<FtGlyphRun> ftTypeset(const String &text, const Font &font, const Point &origin = Point{}) const;
-
-    Ref<TextRun> createTextRun() const override;
-
-    void selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const override;
-
-private:
-    friend class ThreadLocalSingleton<FtFontManager>;
-
     FtFontManager();
 
-    Ref<FontFace> openFontFace(const String &path) override;
+private:
+    struct State;
 
-    using RecentFonts = CircularBuffer< Ref<const FtScaledFont> >;
-    using FontCache = Map<String, RecentFonts>;
-
-    mutable FontCache fontCache_;
+    State &me();
+    const State &me() const;
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

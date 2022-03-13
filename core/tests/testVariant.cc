@@ -1,55 +1,74 @@
-/*
- * Copyright (C) 2007-2017 Frank Mertens.
- *
- * Distribution and use is allowed under the terms of the zlib license
- * (see cc/LICENSE-zlib).
- *
- */
-
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
 #include <cc/Variant>
+#include <cc/testing>
 
-using namespace cc;
-using namespace cc::testing;
-
-class Comparisms: public TestCase
+int main(int argc, char *argv[])
 {
-    void run()
-    {
-        Variant x = 1;
-        Variant y = "2.";
-        Variant z = true;
-        Variant a = String{"abc"};
+    using namespace cc;
 
-        CC_VERIFY(!(x < y));
-        CC_VERIFY(!(x == y));
-        CC_VERIFY(!(x < z));
-        CC_VERIFY(x == z);
-        CC_VERIFY(y < a);
-        CC_VERIFY(y != a);
-        CC_VERIFY(!(Variant() < x));
-        CC_VERIFY(!(x == Variant()));
-        CC_VERIFY(!(Variant() < Variant()));
-        CC_VERIFY(Variant() == Variant());
-    }
-};
+    TestCase {
+        "SimpleValueStorageAndRetrieval",
+        []{
+            Variant a = 1;
+            Variant b = 2.3;
+            Variant c = "123";
+            Variant d = true;
 
-class Casting: public TestCase
-{
-    void run()
-    {
-        Variant value = StringList{"A", "B", "C"};
-        StringList list = Variant::cast<StringList>(value);
-        fout() << list->join(", ") << nl;
-        CC_VERIFY(list->join() == "ABC");
-    }
-};
+            CC_INSPECT(a);
+            CC_INSPECT(b);
+            CC_INSPECT(c);
+            CC_INSPECT(d);
 
-int main(int argc, char **argv)
-{
-    CC_TESTSUITE_ADD(Comparisms);
-    CC_TESTSUITE_ADD(Casting);
+            CC_CHECK(a.is<long>());
+            CC_CHECK(b.is<double>());
+            CC_CHECK(c.is<String>());
+            CC_CHECK(d.is<bool>());
 
-    return TestSuite::instance()->run(argc, argv);
+            CC_CHECK(String{a.typeName()} == "long");
+
+            CC_CHECK(a.to<long>() == 1);
+            CC_CHECK(static_cast<bool>(a) == true);
+            CC_CHECK(static_cast<double>(a) == 1.);
+            CC_CHECK(static_cast<double>(b) == 2.3);
+            CC_CHECK(static_cast<String>(c) == "123");
+
+            a = 2;
+            a = static_cast<long>(a) + 1;
+
+            CC_CHECK(a.to<long>() == 3);
+            CC_INSPECT(sizeof(Variant));
+            CC_CHECK(sizeof(Variant) <= 16);
+        }
+    };
+
+
+    TestCase {
+        "ComplexValueStorageAndRetrieval",
+        []{
+            Variant l = List<Variant>{"A", "B", "C"};
+            CC_INSPECT(l);
+
+            Variant m { "x", "y", "z" };
+            CC_INSPECT(m);
+            CC_INSPECT(m.typeName());
+            CC_VERIFY(m.is<List<String>>());
+
+            Variant n { 1, 2, 3 };
+            CC_INSPECT(n);
+            CC_INSPECT(n.typeName());
+            CC_VERIFY(n.is<List<long>>());
+
+            Variant o { 1.1, 2.2, 3.3 };
+            CC_INSPECT(o);
+            CC_INSPECT(o.typeName());
+            CC_VERIFY(o.is<List<double>>());
+
+            Variant p { 1.1 };
+            CC_INSPECT(p);
+            CC_INSPECT(p.typeName());
+            CC_VERIFY(p.is<double>());
+        }
+    };
+
+
+    return TestSuite{argc, argv}.run();
 }

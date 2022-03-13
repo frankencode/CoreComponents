@@ -3,7 +3,7 @@
 if [ $# -ne 0 ]; then
     echo "Usage: path/to/cc/bootstrap"
     echo
-    echo "Bootstraps the build system (ccbuild)."
+    echo "Bootstraps the build system (cc_build)."
     exit 1
 fi
 

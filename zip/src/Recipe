@@ -1,5 +1,0 @@
-Library {
-    name: cczip
-    use: core
-    depends: libzip >= 1.1.0
-}

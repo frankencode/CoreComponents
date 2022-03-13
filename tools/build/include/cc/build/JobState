@@ -1,0 +1,54 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/Job>
+#include <cc/Process>
+#include <cc/Queue>
+#include <cc/stdio>
+
+namespace cc::build {
+
+struct Job::State: public Object::State
+{
+    State(const String &command):
+        command_{command}
+    {}
+
+    virtual bool run()
+    {
+        try {
+            Process process{command_};
+            outputText_ = process.output().readAll();
+            status_ = process.wait();
+        }
+        catch (Exception &ex) {
+            ferr() << ex << nl;
+            status_ = -1;
+        }
+
+        return status_ == 0;
+    }
+
+    virtual bool finish()
+    {
+        return true;
+    }
+
+    String command_;
+
+    int status_ { -1 };
+    String outputText_;
+
+    int countDown_ { 0 };
+
+    Queue<Job> derivatives_;
+};
+
+} // namespace cc::build

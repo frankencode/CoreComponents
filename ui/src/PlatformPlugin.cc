@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,30 +7,25 @@
  */
 
 #include <cc/ui/PlatformPlugin>
-#include <cc/ui/FtFontManager>
 #include <cc/ui/PlatformManager>
+#include <cc/ui/FtFontManager>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-PlatformPlugin *PlatformPlugin::instance()
+FontManager PlatformPlugin::State::fontManager() const
 {
-    return PlatformManager::instance()->activePlugin();
+    return FtFontManager{};
 }
 
-PlatformPlugin::PlatformPlugin(const String &name, bool isPlatformDefault):
-    name_{name},
-    isPlatformDefault_{true}
-{}
-
-void PlatformPlugin::init()
+PlatformPlugin::PlatformPlugin(State *state):
+    Object{state}
 {
-    PlatformManager::instance()->registerPlugin(this);
+    PlatformManager{}.registerPlugin(*this);
 }
 
-FontManager *PlatformPlugin::fontManager() const
+PlatformPlugin platform()
 {
-    return FtFontManager::instance();
+    return PlatformManager{}.activePlugin();
 }
 
-}} // namespace cc::ui
+} // namespace cc::ui

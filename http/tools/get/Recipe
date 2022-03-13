@@ -1,4 +1,4 @@
 Application {
-    name: ccget
-    use: [ core, net, http ]
+    name: cc_get
+    use: [ core, glob, net, http ]
 }

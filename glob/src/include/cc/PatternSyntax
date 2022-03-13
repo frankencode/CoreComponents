@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SyntaxDefinition>
+
+namespace cc {
+
+/** \class PatternSyntax cc/PatternSyntax
+  * \brief Regular expression pattern syntax
+  */
+class PatternSyntax final: public SyntaxDefinition
+{
+public:
+    /** Get an instance of this syntax definition
+      */
+    PatternSyntax();
+
+    /** Compile a grammar from the regular expression pattern \a text
+      */
+    SyntaxRule compile(const String &text) const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

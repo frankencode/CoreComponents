@@ -1,0 +1,54 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/Job>
+
+namespace cc::build {
+
+/** \brief Background job scheduler
+  * \note The JobScheduler itself is not meant to be shared between threads
+  */
+class JobScheduler: public Object
+{
+public:
+    JobScheduler() = default;
+
+    explicit JobScheduler(int concurrency);
+
+    int concurrency() const;
+
+    /** Start executing jobs in the background
+      */
+    void start();
+
+    /** Schedule \a job for execution in the background
+      */
+    void schedule(const Job &job);
+
+    /** \brief Collect the next finished job (\a finishedJob)
+      * \return true if \a finishedJob is returned otherwise return false (end of operation)
+      */
+    bool collect(Out<Job> finishedJob);
+
+    /** Exit status of the first unsuccessfully finished job, or 0 if all jobs completed successully
+      */
+    int status() const;
+
+    int totalCount() const;
+    int finishCount() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+    State &me();
+};
+
+} // namespace cc::build

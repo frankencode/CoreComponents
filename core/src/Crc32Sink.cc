@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,11 +7,10 @@
  */
 
 #include <cc/Crc32Sink>
-#include <cc/strings>
 
 namespace cc {
 
-static const uint32_t crcTable[] = {
+static const std::uint32_t crcTable[] = {
     0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
     0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988, 0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91,
     0x1DB71064, 0x6AB020F2, 0xF3B97148, 0x84BE41DE, 0x1ADAD47D, 0x6DDDE4EB, 0xF4D4B551, 0x83D385C7,
@@ -46,25 +45,74 @@ static const uint32_t crcTable[] = {
     0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D
 };
 
-void Crc32Sink::Instance::feed(const void *buf, int bufFill)
+struct Crc32Sink::State: public HashSink::State
 {
-    for (int i = 0; i < bufFill; ++i)
-        crc_ = crcTable[(crc_ ^ static_cast<const uint8_t *>(buf)[i]) & 0xFF] ^ (crc_ >> 8);
+    State(std::uint32_t seed = Crc32Sink::DefaultSeed):
+        crc_{seed}
+    {}
+
+    void feed(const void *buffer, long fill)
+    {
+        for (int i = 0; i < fill; ++i)
+            crc_ = crcTable[(crc_ ^ static_cast<const std::uint8_t *>(buffer)[i]) & 0xFF] ^ (crc_ >> 8);
+    }
+
+    long read(Out<Bytes> buffer, long maxFill) override
+    {
+        return 0;
+    }
+
+    void write(const Bytes &buffer, long fill) override
+    {
+        feed(buffer, (0 < fill) ? fill : +buffer);
+    }
+
+    Bytes finish() override
+    {
+        Bytes sum = Bytes::allocate(HashSize);
+        sum[0] = (crc_ >> 24) & 0xFF;
+        sum[1] = (crc_ >> 16) & 0xFF;
+        sum[2] = (crc_ >> 8) & 0xFF;
+        sum[3] = crc_ & 0xFF;
+        return sum;
+    }
+
+    std::uint32_t crc_;
+};
+
+Crc32Sink::Crc32Sink(std::uint32_t seed):
+    HashSink{new State{seed}}
+{}
+
+std::uint32_t Crc32Sink::sum() const
+{
+    return me().crc_;
 }
 
-void Crc32Sink::Instance::write(const CharArray *data)
+const Crc32Sink::State &Crc32Sink::me() const
 {
-    feed(data->bytes(), data->count());
+    return Object::me.as<State>();
 }
 
-String Crc32Sink::Instance::finish()
+std::uint32_t crc32(const void *buffer, long size)
 {
-    String sum = String::create(Size);
-    mutate(sum)->at(0) = (crc_ >> 24) & 0xFF;
-    mutate(sum)->at(1) = (crc_ >> 16) & 0xFF;
-    mutate(sum)->at(2) = (crc_ >> 8) & 0xFF;
-    mutate(sum)->at(3) = crc_ & 0xFF;
-    return sum;
+    Crc32Sink::State state;
+    if (buffer) state.feed(buffer, size);
+    return state.crc_;
+}
+
+std::uint32_t crc32(const char *buffer)
+{
+    Crc32Sink::State state;
+    if (buffer) state.feed(buffer, std::strlen(buffer));
+    return state.crc_;
+}
+
+std::uint32_t crc32(const Bytes &buffer)
+{
+    Crc32Sink::State state;
+    state.feed(buffer, +buffer);
+    return state.crc_;
 }
 
 } // namespace cc

@@ -10,30 +10,33 @@ int main()
     using namespace cc;
     using namespace cc::ui;
 
-    View view{640, 480};
-    view->paper = Color::White;
-
+    Property<double> time = System::now();
     Label label;
-    label->paper = 0xD0D0FF;
-    label->ink = Color::Black;
-    label->margin = sp(20);
-    label->font = sp(40);
-    label->pos <<[=]{ return view->center() - label->center(); };
 
-    Easing{label->angle, 0.5, Easing::Bezier{0.5, -0.4, 0.5, 1.4}};
-
-    view << label;
+    Window{
+        View{640, 480}
+        .paper(Color::White)
+        .add(
+            Label{&label}
+            .font(Font{Pitch::Fixed, sp(40)})
+            .text([=]{
+                Date date{time};
+                return dec(date.hour(), 2) + "∶" + dec(date.minutes(), 2) + "∶" + dec(date.seconds(), 2);
+            })
+            .margin(sp(20))
+            .color(Color::Black)
+            .paper(0xD0D0FF)
+            .angleEasing(Easing::Bezier{0.5, -0.4, 0.5, 1.4}, 0.5)
+            .centerInParent()
+        )
+    }.show();
 
     Timer timer{1};
-    timer->timeout >>[=]{
-        Date date{System::now()};
-        label->text = dec(date->hour(), 2) + "∶" + dec(date->minutes(), 2) + "∶" + dec(date->seconds(), 2);
-        label->angle += 45;
-    };
-    timer->timeout();
-    timer->start();
+    timer.onTimeout([&time, &label]{
+        time = System::now();
+        label.angle(label.angle() + 45);
+    });
+    timer.startAt(std::ceil(time));
 
-    Window::open(view, "Hello, world!", WindowMode::Accelerated|WindowMode::VSync);
-
-    return Application{}->run();
+    return Application{}.run();
 }

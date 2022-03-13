@@ -1,0 +1,21 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildStage>
+
+namespace cc::build {
+
+class CleanStage: public BuildStage
+{
+public:
+    bool run();
+};
+
+} // namespace cc::build

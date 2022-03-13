@@ -15,17 +15,17 @@ VERSION=$1
 SOURCE=$(realpath $(dirname $0))
 PACKAGE=$(basename $SOURCE)
 
-echo "Check Recipe version..."
-if ! cat $SOURCE/Recipe|grep $VERSION; then
-    echo "Version mismatch, update Recipe!"
-    exit 1
-fi
+#echo "Check Recipe version..."
+#if ! cat $SOURCE/Recipe|grep $VERSION; then
+#    echo "Version mismatch, update Recipe!"
+#    exit 1
+#fi
 
 echo "Update bootstrap file..."
 rm -rf /tmp/cc_bootstrap
 mkdir -p /tmp/cc_bootstrap
 pushd /tmp/cc_bootstrap
-ccbuild -bootstrap -jobs=1 -release $SOURCE/tools/build > $SOURCE/tools/build/bootstrap
+cc_build -bootstrap -jobs=1 -release $SOURCE/tools/build > $SOURCE/tools/build/bootstrap
 chmod +x $SOURCE/tools/build/bootstrap
 popd
 
@@ -33,13 +33,8 @@ echo "Create source tarball..."
 pushd $SOURCE/..
 rm -rf $PACKAGE-$VERSION
 cp -a $PACKAGE $PACKAGE-$VERSION
-rm $PACKAGE-$VERSION/.fslckout || true
-rm $PACKAGE-$VERSION/*.fossil || true
 rm -rf $PACKAGE-$VERSION/.git || true
-rm $PACKAGE-$VERSION/doc/.make_docs.swp || true
-rm -rf $PACKAGE-$VERSION/doc/html || true
-rm -rf $PACKAGE-$VERSION/ui || true
 tar -cv $PACKAGE-$VERSION | gzip --best > $PACKAGE-$VERSION.tar.gz
-printf "md5\t$(ccmd5 $PACKAGE-$VERSION.tar.gz)\n" > $PACKAGE-$VERSION.hash
-printf "sha1\t$(ccsha1 $PACKAGE-$VERSION.tar.gz)\n" >> $PACKAGE-$VERSION.hash
+# printf "md5\t$(cc_md5 $PACKAGE-$VERSION.tar.gz)\n" > $PACKAGE-$VERSION.hash
+# printf "sha1\t$(cc_sha1 $PACKAGE-$VERSION.tar.gz)\n" >> $PACKAGE-$VERSION.hash
 popd

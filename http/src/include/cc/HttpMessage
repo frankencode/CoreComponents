@@ -1,0 +1,59 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpStatus>
+#include <cc/Stream>
+#include <cc/Map>
+
+namespace cc {
+
+/** \class HttpMessage cc/HttpMessage
+  * \ingroup http_protocol
+  * \brief HTTP message
+  */
+class HttpMessage: public Object
+{
+public:
+    /** Create a null HTTP message
+      */
+    HttpMessage() = default;
+
+    /** Message header
+      */
+    const Map<String> &header() const { return me().header_; }
+
+    /** %Get message header value by \a name
+      */
+    String header(const String &name) const { return me().header_(name); }
+
+    /** %Payload stream
+      */
+    Stream payload() const { return me().payload_; }
+
+protected:
+    friend class HttpMessageParser;
+
+    struct State: public Object::State
+    {
+        Map<String> header_;
+        Stream payload_;
+    };
+
+    HttpMessage(State *newState):
+        Object{newState}
+    {}
+
+    State *operator->() { return &me(); }
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

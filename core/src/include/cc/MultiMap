@@ -8,120 +8,355 @@
 
 #pragma once
 
+#include <cc/bucket/Vector>
+#include <cc/Iterator>
+#include <cc/Cow>
+#include <cc/InOut>
+#include <cc/KeyValue>
+#include <cc/container>
 #include <initializer_list>
-#include <cc/MultiMapInstance>
-#include <cc/Format>
+#include <utility>
+#include <cassert>
 
 namespace cc {
 
 /** \class MultiMap cc/MultiMap
-  * \ingroup container_highlevel
+  * \ingroup container
   * \brief Multi-map data container
-  * \tparam K key type
-  * \tparam T mapped type
-  * \see map, multiset
+  * \tparam K Key type
+  * \tparam T Value type
   */
 template<class K, class T = K>
 class MultiMap {
 public:
-    typedef MultiMapInstance<K, T> Instance;
+    using Key = K; ///< Key type
+    using Value = T; ///< Value type
+    using Item = KeyValue<K, T>; ///< Item type
 
-    typedef typename Instance::Item Item; ///< item type
-    typedef typename Instance::Index Index; ///< index type
-    typedef typename Instance::Key Key; ///< key type
-    typedef typename Instance::Value Value; ///< mapped value type
+    /** \name Construction and Assignment
+      */
+    ///@{
 
-    typedef typename Instance::Iterator Iterator; ///< iterator type
-    typedef typename Instance::ConstIterator ConstIterator; ///< constant iterator type
+    /** Construct an empty multi-map
+      */
+    MultiMap() = default;
 
-    typedef Iterator iterator; ///< \internal
-    typedef ConstIterator const_iterator; ///< \internal
+    /** Construct a copy of \a other
+      */
+    MultiMap(const MultiMap &other) = default;
 
-    MultiMap():
-        instance_{new Instance}
-    {}
-
-    MultiMap(std::initializer_list<KeyValue<K, T>> b):
-        instance_{new Instance}
+    /** Construct with initial \a items
+      */
+    MultiMap(std::initializer_list<Item> items)
     {
-        for (auto &x: b) instance_->insert(x->key(), x->value());
+        for (const auto &x: items) insert(x.key(), x.value());
     }
 
-    MultiMap(const MultiMap &b) = default;
-
-    MultiMap(MultiMap &&b):
-        instance_{std::move(b.instance_)}
+    /** Take over the right-side multi-map \a other
+      */
+    MultiMap(MultiMap &&other):
+        me{std::move(other.me)}
     {}
 
-    MultiMap &operator=(const MultiMap &b) = default;
+    /** Assign multi-map \a other
+      */
+    MultiMap &operator=(const MultiMap &other) = default;
 
-    MultiMap &operator=(MultiMap &&b) {
-        instance_ = std::move(b.instance_);
+    /** Take over the right-side multi-map \a other
+      */
+    MultiMap &operator=(MultiMap &&other)
+    {
+        me = std::move(other.me);
         return *this;
     }
 
-    MultiMap(Instance *b):
-        instance_{b}
-    {}
+    ///@}
 
-    Instance *operator->() { return Cow::get(instance_); }
-    const Instance *operator->() const { return instance_; }
+    /** \name Item Access
+      */
+    ///@{
 
-    operator const Instance *() const { return instance_; }
-    operator Instance *() { return Cow::get(instance_); }
+    /** Get a locator pointing to the first item
+      */
+    Locator head() const { return me().head(); }
 
-    const Item &operator[](Index i) const { return instance_->at(i); }
+    /** Get a locator pointing to the last item
+      */
+    Locator tail() const { return me().tail(); }
+
+    /** Get a locator pointing to the item at \a index
+      */
+    Locator from(long index) const { return me().from(index); }
+
+    /** Get the number of items stored in the multi-map
+      */
+    long count() const { return me().count(); }
+
+    /** \copydoc count()
+      */
+    long size() const { return me().count(); }
+
+    /** Check if this multi-map is non-empty
+      */
+    explicit operator bool() const { return count() > 0; }
+
+    /** \copydoc count()
+      */
+    long operator+() const { return me().count(); }
+
+    /** Get constant reference to the item at position \a pos
+      */
+    const Item &at(Locator pos) const
+    {
+        assert(pos);
+        return me().at(pos);
+    }
+
+    /** Get constant reference to the item at \a index
+      */
+    const Item &at(long index) const
+    {
+        assert(0 <= index && index < count());
+        return me().at(index);
+    }
+
+    /** Get reference to the value at position \a pos
+      */
+    Value &valueAt(Locator pos)
+    {
+        assert(pos);
+        return me().at(pos).value();
+    }
+
+    /** Get reference to the value at \a index
+      */
+    Value &valueAt(long index)
+    {
+        assert(0 <= index && index < count());
+        return me().at(index).value();
+    }
+
+    /** %Modify an item in place
+      * \tparam Modify %Function type (lambda or functor)
+      * \param pos %Position of item to modify
+      * \param modify %Function of type void(Item &)
+      */
+    template<class Modify>
+    void modifyAt(Locator pos, Modify modify)
+    {
+        assert(pos);
+        Item &item = me().at(pos);
+        #ifndef NDEBUG
+        Item oldItem = item;
+        #endif
+        modify(item);
+        assert(item == oldItem); // changing the value of an item results in undefined behavior
+    }
+
+    /** %Modify an item in place
+      * \tparam Modify %Function type (lambda or functor)
+      * \param index %Index of item to modify
+      * \param modify %Function of type void(Item &)
+      */
+    template<class Modify>
+    void modifyAt(long index, Modify modify)
+    {
+        assert(0 <= index && index < count());
+        Item &item = me().at(index);
+        #ifndef NDEBUG
+        Item oldItem = item;
+        #endif
+        modify(item);
+        assert(item == oldItem || index == count() || &at(index) != &item); // changing the value of an item results in undefined behavior
+    }
+
+    /** \copydoc at(long) const
+      */
+    const Item &operator[](long index) const { return at(index); }
+
+    /** Get constant reference to first item
+      */
+    const Item &first() const
+    {
+        assert(count() > 0);
+        return me().first();
+    }
+
+    /** Get constant reference to last item
+      */
+    const Item &last() const
+    {
+        assert(count() > 0);
+        return me().last();
+    }
+
+    /** Tell if \a item is the first item
+      */
+    bool first(const Item &item) const
+    {
+        return &item == &first();
+    }
+
+    /** Tell if \a item is the last item
+      */
+    bool last(const Item &item) const
+    {
+        return &item == &last();
+    }
+
+    /** Get constant reference to the first item
+      */
+    const Item &min() const
+    {
+        assert(count() > 0);
+        return me().first();
+    }
+
+    /** Get constant reference to the last item
+      */
+    const Item &max() const
+    {
+        assert(count() > 0);
+        return me().last();
+    }
+
+    ///@}
+
+    /** \name Multi-Map Operations
+      */
+    ///@{
+
+    /** Search for a key in the multi-map
+      * \tparam Search search strategy (FindFirst, FindLast or FindAny)
+      * \param key %Key to search for
+      * \param pos Returns the position of the item that was found
+      * \return True if key was found
+      */
+    template<class Search = FindFirst>
+    bool find(const Key &key, Out<Locator> pos = None{}) const
+    {
+        return me().template find<Search>(key, pos);
+    }
+
+    /** Insert a new key-value pair
+      * \param key %Search key
+      * \param value %New value
+      * \note The insertion order of ambiguous keys is maintained.
+      */
+    void insert(const Key &key, const Value &value)
+    {
+        return me().insertLast(Item{key, value});
+    }
+
+    /** Remove all matching keys
+      * \param key %Search key
+      * \return Number of items removed
+      * \todo optimize performance
+      */
+    long remove(const Key &key)
+    {
+        long removalCount = 0;
+        Locator pos;
+        if (find<FindFirst>(key, &pos)) {
+            while (pos && at(pos) == key) {
+                removeAt(pos);
+                ++removalCount;
+            }
+        }
+        return removalCount;
+    }
+
+    ///@}
+
+    /** \name Positional Operations
+      */
+
+    ///@{
+
+    /** Remove \a item at position \a pos (and increment \a pos)
+      */
+    void removeAt(Locator &pos)
+    {
+        me().popAndStep(pos);
+    }
+
+    /** Remove item at \a index
+      */
+    void removeAt(long index)
+    {
+        assert(0 <= index && index < count());
+        me().pop(index);
+    }
+
+    ///@}
+
+    /** \name Global Operations
+      */
+    ///@{
+
+    /** Call function \a f for each item
+      * \tparam F Function type (lambda or functor)
+      * \param f Unary function which gets called for each item
+      */
+    template<class F>
+    void forEach(F f) const
+    {
+        for (auto &x: *this) f(x);
+    }
+
+    /** Remove all items
+      */
+    void deplete()
+    {
+        me().deplete();
+    }
+
+    ///@}
+
+    using iterator = Iterator<bucket::Vector<Item>>; ///< \internal Value iterator
+    using const_iterator = Iterator<const bucket::Vector<Item>>; ///< \internal Readonly value iterator
+    using reverse_iterator = ReverseIterator<bucket::Vector<Item>>; ///< \internal Reverse value iterator
+    using const_reverse_iterator = ReverseIterator<const bucket::Vector<Item>>; ///< \internal Readonly reverse value iterator
+    using value_type = Item; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
+
+    /** \name Standard iterators
+      */
+    ///@{
+
+    iterator begin() { me(); return head(); } ///< %Return iterator pointing to the first item (if any)
+    iterator end  () { me(); return Locator{count()}; } ///< %Return iterator pointing behind the last item
+
+    const_iterator begin () const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+
+    reverse_iterator rbegin() { me(); return tail(); } ///< %Return reverse iterator pointing to the last item (if any)
+    reverse_iterator rend  () { me(); return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+
+    const_reverse_iterator rbegin () const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+
+    ///@}
+
+    /** \name Comparism Operators
+      */
+    ///@{
+
+    template<class B> bool operator==(const B &b) const { return container::equal(*this, b); } ///< %Return true if this container equals \a b
+    template<class B> bool operator!=(const B &b) const { return container::differ(*this, b); } ///< %Return true if this container differs from \a b
+    template<class B> bool operator< (const B &b) const { return container::below(*this, b); } ///< %Return true if this container is lower than \a b
+    template<class B> bool operator> (const B &b) const { return container::above(*this, b); } ///< %Return true if this container is greater than \a b
+    template<class B> bool operator<=(const B &b) const { return container::belowOrEqual(*this, b); } ///< %Return true if this container is lower or equal than b
+    template<class B> bool operator>=(const B &b) const { return container::aboveOrEqual(*this, b); } ///< %Return true if this container is greater or equal than b
+
+    ///@}
 
 private:
-    Ref<Instance> instance_;
+    Cow<bucket::Vector<Item>> me;
 };
-
-template<class K, class T>
-typename MultiMap<K, T>::Index count(const MultiMap<K, T> &a) { return a->count(); }
-
-template<class K, class T>
-typename MultiMap<K, T>::ConstIterator begin(const MultiMap<K, T> &a) { return a->begin(); }
-
-template<class K, class T>
-typename MultiMap<K, T>::ConstIterator end(const MultiMap<K, T> &a) { return a->end(); }
-
-template<class K, class T>
-typename MultiMap<K, T>::Iterator begin(MultiMap<K, T> &a) { return a->begin(); }
-
-template<class K, class T>
-typename MultiMap<K, T>::Iterator end(MultiMap<K, T> &a) { return a->end(); }
-
-template<class K, class T>
-bool operator==(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) == 0; }
-
-template<class K, class T>
-bool operator!=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) != 0; }
-
-template<class K, class T>
-bool operator<(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) < 0; }
-
-template<class K, class T>
-bool operator>(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) > 0; }
-
-template<class K, class T>
-bool operator<=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) <= 0; }
-
-template<class K, class T>
-bool operator>=(const MultiMap<K, T> &a, const MultiMap<K, T> &b) { return container::compare(a, b) >= 0; }
-
-template<class K, class T>
-String str(const MultiMap<K, T> &a)
-{
-    auto n = a->count();
-    if (n == 0) return "[]";
-    Format f;
-    f << "[ ";
-    for (const auto &x: a) {
-        f << "(" << x->key() << ": " << x->value() << ")";
-        if (--n > 0) f << ", ";
-    }
-    f << " ]";
-    return f;
-}
 
 } // namespace cc

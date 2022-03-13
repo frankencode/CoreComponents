@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,56 +8,49 @@
 
 #pragma once
 
+#include <cc/SystemError>
 #include <cc/Mutex>
+#include <pthread.h>
 
 namespace cc {
 
 /** \class WaitCondition cc/WaitCondition
-  * \ingroup concurrency
-  * \brief Wait condition
-  * \see Channel
-  * \todo mark as low-level
+  * \brief Conditional thread suspension and resumption
+  * \exception SystemError
   */
 class WaitCondition
 {
 public:
-    class Instance {
-    public:
-        Instance();
-        ~Instance();
-
-        /** Wait for a certain condition
-          * \param mutex mutex protecting the condition state
-          */
-        void wait(Mutex &mutex);
-
-        /** Wait for a certain condition up to a certain timeout
-          * \param timeout maximum timeout
-          * \param mutex mutex protecting the condition state
-          * \see System::now()
-          */
-        bool waitUntil(double timeout, Mutex &mutex);
-
-        /// Wakup one waiting thread
-        void signal();
-
-        /// Wakup all waiting threads
-        void broadcast();
-
-    private:
-        friend class WaitCondition;
-
-        pthread_cond_t cond_;
-    };
-
     /** Create a new wait condition
       */
-    WaitCondition() = default;
+    WaitCondition();
 
-    Instance *operator->() const { return const_cast<Instance *>(&instance_); }
+    /** \internal
+      */
+    ~WaitCondition();
+
+    /** Wait for a certain condition
+      * \param mutex Mutex protecting the condition state
+      */
+    void wait(Mutex &mutex);
+
+    /** Wait for a certain condition for a limited time
+      * \param time Seconds elapsed since the begin of Epoch
+      * \param mutex Mutex protecting the condition state
+      * \see System::now()
+      */
+    bool waitUntil(double time, Mutex &mutex);
+
+    /** Wake up one waiting thread
+      */
+    void signal();
+
+    /** Wake up all waiting threads
+      */
+    void broadcast();
 
 private:
-    Instance instance_;
+    pthread_cond_t cond_;
 };
 
 } // namespace cc

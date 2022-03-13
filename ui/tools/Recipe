@@ -1,4 +1,0 @@
-Tools {
-    use: [ cc/core, cc/ui ]
-    depends: freetype2
-}

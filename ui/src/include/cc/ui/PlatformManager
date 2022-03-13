@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -11,34 +11,31 @@
 #include <cc/ui/PlatformPlugin>
 #include <cc/Map>
 
-namespace cc { template<typename> class Singleton; }
+namespace cc::ui {
 
-namespace cc {
-namespace ui {
-
-class PlatformManager: public Object
+class PlatformManager final: public Singleton
 {
 public:
-    static PlatformManager *instance();
-
-    bool getPlugin(const String &name, PlatformPlugin **plugin) const;
-    Ref< Source<PlatformPlugin *> > getAllPlugins() const;
-
-    PlatformPlugin *activePlugin() const;
-    void activatePlugin(PlatformPlugin *plugin);
-
-private:
-    friend class Singleton<PlatformManager>;
-    friend class PlatformPlugin;
-
     PlatformManager();
 
-    void registerPlugin(PlatformPlugin *plugin);
+    PlatformPlugin activePlugin() const { return me().activePlugin_; }
+    void setActivePlugin(const PlatformPlugin &plugin);
 
-    using Plugins = Map< String, Ref<PlatformPlugin> >;
-    Plugins plugins_;
+    Map<String, PlatformPlugin> plugins() const { return me().plugins_; }
 
-    Ref<PlatformPlugin> activePlugin_;
+private:
+    friend class PlatformPlugin;
+
+    struct State: public Singleton::State
+    {
+        Map<String, PlatformPlugin> plugins_;
+        PlatformPlugin activePlugin_;
+    };
+
+    void registerPlugin(const PlatformPlugin &plugin);
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

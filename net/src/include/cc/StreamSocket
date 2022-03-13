@@ -1,0 +1,64 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Socket>
+
+namespace cc {
+
+/** \class StreamSocket cc/StreamSocket
+  * \ingroup net
+  * \brief Byte-sequential connection oriented network communication
+  * \see LocalChannel
+  */
+class StreamSocket: public Socket
+{
+public:
+    /** Create a null stream socket
+      */
+    StreamSocket() = default;
+
+    /** %Address associated with this socket
+      */
+    SocketAddress address() const { return me().address_; }
+
+protected:
+    friend class ServerSocket;
+
+    struct State: public Socket::State
+    {
+        State(const SocketAddress &address):
+            Socket::State{address.family(), SOCK_STREAM},
+            address_{address}
+        {}
+
+        State(const SocketAddress &address, int fd):
+            Socket::State{fd},
+            address_{address}
+        {}
+
+        SocketAddress address_;
+    };
+
+    explicit StreamSocket(const SocketAddress &address):
+        Socket{new State{address}}
+    {}
+
+    explicit StreamSocket(const SocketAddress &address, int fd):
+        Socket{new State{address, fd}}
+    {}
+
+    explicit StreamSocket(State *newState):
+        Socket{newState}
+    {}
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

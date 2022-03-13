@@ -1,0 +1,54 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/DragArea>
+
+namespace cc::ui {
+
+/** \class ScrollBar cc/ui/ScrollBar
+  * \ingroup ui
+  * \brief Scroll bar
+  */
+class ScrollBar final: public DragArea
+{
+public:
+    /** Create a primordial scroll bar
+      */
+    ScrollBar();
+
+    /** Create a new scroll bar
+      */
+    explicit ScrollBar(Out<ScrollBar> self);
+
+    Orientation orientation() const; ///< Get orientation
+    ScrollBar &orientation(Orientation newValue); ///< %Set orientation
+
+    double visibleOffset() const; ///< Get carrier position
+    ScrollBar &visibleOffset(double newValue); ///< %Set carrier position
+    ScrollBar &visibleOffset(Definition<double> &&f); ///< Define carrier position
+
+    double totalExtent() const; ///< Get carrier size
+    ScrollBar &totalExtent(double newValue); ///< %Set carrier size
+    ScrollBar &totalExtent(Definition<double> &&f); ///< Define carrier size
+
+    double autoHide() const; ///< Get auto hide
+    ScrollBar &autoHide(bool newValue); ///< %Set auto hide
+    ScrollBar &autoHide(Definition<bool> &&f); ///< Define auto hide
+
+    double visibleExtent() const; ///< Get visible extent
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::ui

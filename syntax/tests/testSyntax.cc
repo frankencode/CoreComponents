@@ -1,203 +1,153 @@
-/*
- * Copyright (C) 2007-2017 Frank Mertens.
- *
- * Distribution and use is allowed under the terms of the zlib license
- * (see cc/LICENSE-zlib).
- *
- */
-
-#include <cc/testing/TestSuite>
+#include <cc/TestSuite>
+#include <cc/testing>
 #include <cc/stdio>
 #include <cc/System>
-#include <cc/syntax/SyntaxDebugger>
-#include <cc/syntax/SyntaxDefinition>
+#include <cc/SyntaxDefinition>
+#include <limits>
 
 using namespace cc;
-using namespace cc::syntax;
-using namespace cc::testing;
 
-class Expression: public SyntaxDefinition
+class Expression final: public SyntaxDefinition
 {
 public:
-    Expression(SyntaxDebugger *debugger = 0):
-        SyntaxDefinition(debugger)
+    Expression():
+        SyntaxDefinition{new State}
+    {}
+
+    double eval(const String &text) const
     {
-        number_ =
-            DEFINE("number",
-                GLUE(
-                    REPEAT(0, 1, CHAR('-')),
-                    REPEAT(1, 20, RANGE('0', '9'))
-                )
-            );
-
-        factor_ =
-            DEFINE("factor",
-                CHOICE(
-                    REF("number"),
-                    GLUE(
-                        CHAR('('),
-                        REF("sum"),
-                        CHAR(')')
-                    )
-                )
-            );
-
-        mulOp_ = DEFINE("mulOp", RANGE("*/"));
-
-        addOp_ = DEFINE("addOp", RANGE("+-"));
-
-        product_ =
-            DEFINE("product",
-                GLUE(
-                    REF("factor"),
-                    REPEAT(
-                        GLUE(
-                            REF("mulOp"),
-                            REF("factor")
-                        )
-                    )
-                )
-            );
-
-        sum_ =
-            DEFINE("sum",
-                GLUE(
-                    REF("product"),
-                    REPEAT(
-                        GLUE(
-                            REF("addOp"),
-                            REF("product")
-                        )
-                    )
-                )
-            );
-
-        ENTRY("sum");
-        LINK();
-    }
-
-    double eval(const String &text)
-    {
-        Ref<Token> rootToken = match(text)->rootToken();
-        double value = cc::nan();
-
-        if (rootToken) {
-            text_ = text;
-            value = eval(rootToken);
-        }
-
-        return value;
+        Token root = me().match(text);
+        return root ? me().eval(text, root) : std::numeric_limits<double>::quiet_NaN();
     }
 
 private:
-    double eval(Token *token)
+    struct State: public SyntaxDefinition::State
     {
-        double value = cc::nan();
+        SyntaxRule number {
+            Sequence{
+                Repeat{0, 1, '-'},
+                Repeat{1, 20, Within{'0', '9'}}
+            }
+        };
 
-        if (token->rule() == sum_)
-        {
-            value = 0.;
-            char op = '+';
-            int i = 0;
-            token = token->firstChild();
+        SyntaxRule factor {
+            Choice{
+                &number,
+                Sequence{'(', &sum, ')'}
+            }
+        };
 
-            while (token)
-            {
-                if (i % 2 == 0)
-                {
-                    if (op == '+')
-                        value += eval(token);
-                    else if (op == '-')
-                        value -= eval(token);
+        SyntaxRule mulOp { OneOf{'*', '/'} };
+        SyntaxRule addOp { OneOf{'+', '-'} };
+
+        SyntaxRule product {
+            Sequence{
+                &factor,
+                Repeat{
+                    Sequence{
+                        &mulOp,
+                        &factor
+                    }
                 }
-                else
-                    op = text_->at(token->i0());
-
-                token = token->nextSibling();
-                ++i;
             }
-        }
-        else if (token->rule() == product_)
-        {
-            value = 1.;
-            char op = '*';
-            int i = 0;
-            token = token->firstChild();
+        };
 
-            while (token)
-            {
-                if (i % 2 == 0)
-                {
-                    if (op == '*')
-                        value *= eval(token);
-                    else if (op == '/')
-                        value /= eval(token);
+        SyntaxRule sum {
+            Sequence{
+                &product,
+                Repeat{
+                    Sequence{
+                        &addOp,
+                        &product
+                    }
                 }
-                else
-                    op = text_->at(token->i0());
-
-                token = token->nextSibling();
-                ++i;
             }
-        }
-        else if (token->rule() == factor_)
+        };
+
+        State():
+            SyntaxDefinition::State{&sum}
+        {}
+
+        double eval(const String &text, const Token &token) const
         {
-            value = eval(token->firstChild());
-        }
-        else if (token->rule() == number_)
-        {
-            int sign = (text_->at(token->i0()) == '-') ? -1 : 1;
-            value = 0;
-            for (int i = token->i0() + (sign == -1); i < token->i1(); ++i) {
-                value *= 10;
-                value += text_->at(i) - '0';
+            double value = std::numeric_limits<double>::quiet_NaN();
+
+            if (token.rule() == sum)
+            {
+                value = 0.;
+                char op = '+';
+                for (const Token &child: token.children()) {
+                    if (child.rule() == product) {
+                        double nextValue = eval(text, child);
+                        if (op == '+')
+                            value += nextValue;
+                        else if (op == '-')
+                            value -= nextValue;
+                    }
+                    else
+                        op = text.at(child.range()[0]);
+                }
             }
-            value *= sign;
+            else if (token.rule() == product)
+            {
+                value = 1.;
+                char op = '*';
+                for (const Token &child: token.children()) {
+                    if (child.rule() == factor) {
+                        double nextValue = eval(text, child);
+                        if (op == '*')
+                            value *= nextValue;
+                        else if (op == '/')
+                            value /= nextValue;
+                    }
+                    else
+                        op = text.at(child.range()[0]);
+                }
+            }
+            else if (token.rule() == factor)
+            {
+                value = eval(text, token.children().first());
+            }
+            else if (token.rule() == number)
+            {
+                int sign = text.at(token.range()[0]) == '-' ? -1 : 1;
+                value = 0;
+                for (long i = token.range()[0] + (sign == -1); i < token.range()[1]; ++i) {
+                    value *= 10;
+                    value += text.at(i) - '0';
+                }
+                value *= sign;
+            }
+
+            return value;
         }
+    };
 
-        return value;
-    }
-
-    int number_;
-    int factor_;
-    int mulOp_;
-    int addOp_;
-    int product_;
-    int sum_;
-
-    String text_;
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-class Calculator: public TestCase
+int main(int argc, char *argv[])
 {
-    void run()
-    {
-        Ref<SyntaxDebugger> debugger =
-        #ifdef NDEBUG
-            0;
-        #else
-            SyntaxDebugger::create();
-        #endif
-        Ref<Expression> expression = new Expression(debugger);
+    TestCase {
+        "Calculator",
+        []{
+            Expression expression;
+            double dt = System::now();
 
-        double dt = System::now();
+            double result = expression.eval("(-12+34)*(56-78)");
 
-        double result = expression->eval("(-12+34)*(56-78)");
+            dt = System::now() - dt;
+            fout() << "Took " << int(dt * 1e6) << " µs" << nl;
 
-        dt = System::now() - dt;
-        fout("took %% us\n") << int(dt * 1e6);
-        fout("evaluates to %%\n") << result;
+            CC_CHECK_EQUALS(result, -484);
 
-        CC_VERIFY(result == -484);
+            #if 0
+            CC_INSPECT(Token::sizeOfState());
+            CC_INSPECT(Token::sizeOfState() / 16);
+            CC_INSPECT(Token::sizeOfState() % 16);
+            #endif
+        }
+    };
 
-        if (debugger)
-            debugger->printDefinition();
-    }
-};
-
-int main(int argc, char** argv)
-{
-    CC_TESTSUITE_ADD(Calculator);
-
-    return TestSuite::instance()->run(argc, argv);
+    return TestSuite{argc, argv}.run();
 }

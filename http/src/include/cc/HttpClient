@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Uri>
+#include <cc/TlsClientOptions>
+#include <cc/SocketAddress>
+#include <cc/HttpRequestGenerator>
+#include <cc/HttpResponse>
+#include <cc/Call>
+
+namespace cc {
+
+/** \class HttpClient cc/HttpClient
+  * \ingroup http_client
+  * \brief HTTP client
+  */
+class HttpClient final: public Object
+{
+public:
+    /** Create a new HTTP client (automatically start to establish a connection to \a uri)
+      * \param uri Provides the host name and port of the HTTP server to connect to
+      * \param tlsOptions %TLS client credentials and connection parameters
+      * \note The client will automatically connect to port 443 (TLS) if not explicitly specifying the URI scheme "http".
+      * \exception HostNameResolutionError
+      */
+    explicit HttpClient(const Uri &uri, const TlsClientOptions &tlsOptions = TlsClientOptions{});
+
+    /** Create a new HTTP client (automatically start to establish a connection to \a address)
+      * \param address The host address and port number of the HTTP server to connect to
+      * \param tlsOptions %TLS client credentials and connection parameters
+      */
+    explicit HttpClient(const SocketAddress &address, const TlsClientOptions &tlsOptions = TlsClientOptions{});
+
+    /** %Address of the HTTP server.
+      */
+    SocketAddress address() const;
+
+    /** Wait until the connection to the HTTP server has been established
+      * \param timeout %Timeout in milliseconds (-1 for indefinite)
+      * \return True if connection was successfully established before timeout
+      */
+    bool waitEstablished(int timeout = -1);
+
+    /** User-defined generator function
+      */
+    using Generate = Call<void(HttpMessageGenerator &)>;
+
+    /** Send out HTTP request and wait for the response
+      * \param method HTTP method ("GET", "HEAD", "PUT", "POST" or "DELETE")
+      * \param path HTTP request path
+      * \param generate %Custom method which allows to add custom headers or payload
+      * \return HTTP response
+      * \exception IoExhaustion
+      * \exception HttpCloseRequest
+      * \exception SystemError
+      */
+    HttpResponse query(const String &method, const String &path = String{}, const Generate &generate = Generate{});
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

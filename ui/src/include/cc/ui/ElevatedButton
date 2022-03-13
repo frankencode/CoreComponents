@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/InputControl>
+#include <cc/ui/Ideographic>
+
+namespace cc::ui {
+
+/** \class ElevatedButton cc/ui/ElevatedButton
+  * \ingroup ui
+  * \brief Elevated button
+  */
+class ElevatedButton final: public InputControl
+{
+public:
+    /** Create a primordial elevated button
+      */
+    ElevatedButton();
+
+    /** Create a new elevated button
+      */
+    explicit ElevatedButton(Out<ElevatedButton> self);
+
+    String text() const; ///< Get the button's label text
+    ElevatedButton &text(const String &newValue); ///< %Set the button's label text
+    ElevatedButton &text(Definition<String> &&f); ///< Define the button's label text
+
+    ElevatedButton &icon(Ideographic ch); ///< %Set leading decoration icon
+    ElevatedButton &leading(const View &view); ///< %Set leading decoration
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::ui

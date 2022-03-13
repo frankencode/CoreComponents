@@ -1,163 +1,218 @@
 /*
- * Copyright (C) 2007-2019 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/http/HttpStream>
-#include <cc/http/exceptions>
-#include <cc/System>
+#include <cc/HttpStream>
+#include <cc/NullStream>
+#include <cc/input>
 
 namespace cc {
-namespace http {
 
-HttpStream::Instance::Instance(const Stream &stream):
-    stream_{stream},
-    payloadLeft_{-1},
-    nlCount_{0},
-    eoi_{false},
-    chunked_{false}
-{}
-
-bool HttpStream::Instance::isPayloadConsumed() const
+struct HttpStream::State: public Stream::State
 {
-    return payloadLeft_ == 0;
-}
+    State(const Stream &stream):
+        stream_{stream}
+    {}
 
-void HttpStream::Instance::nextHeader()
-{
-    if (eoi_) return;
-    if (payloadLeft_ > 0) throw CloseRequest{};
-    payloadLeft_ = -1;
-    nlCount_ = 0;
-    nlMax_ = 2;
-}
-
-void HttpStream::Instance::nextPayload(int64_t length)
-{
-    if (eoi_) throw CloseRequest{};
-    payloadLeft_ = length;
-    chunked_ = false;
-}
-
-void HttpStream::Instance::nextLine()
-{
-    if (eoi_) throw CloseRequest{};
-    payloadLeft_ = -1;
-    nlCount_ = 0;
-    nlMax_ = 1;
-}
-
-void HttpStream::Instance::nextChunk()
-{
-    if (chunked_) {
-        chunked_ = false;
-        nextLine();
-        readAll();
+    bool isPayloadConsumed() const
+    {
+        return payloadLeft_ == 0;
     }
-    bool ok = false;
-    nextLine();
-    String line = readAll(buffer());
-    mutate(line)->trimInsitu();
-    payloadLeft_ = line->toNumber<int, 16>(&ok);
-    chunked_ = true;
-    if (!ok) throw BadRequest{};
-    if (payloadLeft_ == 0) {
-        chunked_ = false;
-        nextHeader();
-        nlCount_ = 1;
-        discard();
+
+    void nextHeader()
+    {
+        if (eoi_) return;
+        if (payloadLeft_ > 0) throw HttpCloseRequest{};
+        payloadLeft_ = -1;
+        nlCount_ = 0;
+        nlMax_ = 2;
     }
-}
 
-CharArray *HttpStream::Instance::buffer()
-{
-    if (!buffer_) buffer_ = String::allocate(0x1000);
-    return mutate(buffer_);
-}
+    void nextPayload(long length)
+    {
+        if (eoi_) throw HttpCloseRequest{};
+        payloadLeft_ = length;
+        chunked_ = false;
+    }
 
-void HttpStream::Instance::discard()
-{
-    if (!drainage_) drainage_ = TransferLimiter{this, 0x10000};
-    else drainage_->reset();
-    drainage_->drain(buffer());
-}
+    void nextLine()
+    {
+        if (eoi_) throw HttpCloseRequest{};
+        payloadLeft_ = -1;
+        nlCount_ = 0;
+        nlMax_ = 1;
+    }
 
-int HttpStream::Instance::read(CharArray *data)
-{
-    if (eoi_) return 0;
-
-    if (payloadLeft_ == 0) {
+    void nextChunk()
+    {
         if (chunked_) {
-            nextChunk();
-            if (payloadLeft_ == 0)
-                return 0;
+            chunked_ = false;
+            nextLine();
+            drain(buffer());
         }
-        else return 0;
+        nextLine();
+        String line = readAll(buffer());
+        line.trim();
+        chunked_ = true;
+        if (!scanNumber<long>(line, &payloadLeft_, 16)) {
+            throw HttpBadRequest{};
+        }
+        if (payloadLeft_ == 0) {
+            chunked_ = false;
+            nextHeader();
+            nlCount_ = 1;
+            discard();
+        }
     }
 
-    int n = 0;
-    if (pending_) {
-        data->write(pending_->select(pendingIndex_, pending_->count()));
-        int h = pending_->count() - pendingIndex_;
-        if (data->count() < h) {
-            pendingIndex_ += data->count();
-            n = data->count();
+    bool waitEstablished(int timeout) override
+    {
+        return stream_.waitEstablished(timeout);
+    }
+
+    long read(Out<Bytes> buffer, long maxFill) override
+    {
+        if (eoi_) return 0;
+
+        if (maxFill < 0) maxFill = buffer().count();
+        if (maxFill == 0) return 0;
+
+        if (payloadLeft_ == 0) {
+            if (chunked_) {
+                nextChunk();
+                if (payloadLeft_ == 0)
+                    return 0;
+            }
+            else return 0;
+        }
+
+        long n = 0;
+        if (pending_) {
+            n = pending_.count() - pendingIndex_;
+            if (n > maxFill) n = maxFill;
+            pending_.copyRangeTo(pendingIndex_, pendingIndex_ + n, &buffer);
+            pendingIndex_ += n;
+            if (pendingIndex_ == pending_.count()) pending_ = Bytes{};
         }
         else {
-            pending_ = nullptr;
-            n = h;
+            n = stream_.read(buffer);
         }
-    }
-    else
-        n = stream_->read(data);
 
-    if (n == 0) {
-        eoi_ = true;
-        return 0;
-    }
+        if (n == 0) {
+            eoi_ = true;
+            return 0;
+        }
 
-    if (payloadLeft_ == -1) {
-        int i = 0;
-        for (;i < n && nlCount_ < nlMax_; ++i) {
-            if (data->at(i) == '\r')
-                continue;
-            if (data->at(i) == '\n') {
-                ++nlCount_;
-                continue;
+        if (payloadLeft_ == -1) {
+            int i = 0;
+            for (;i < n && nlCount_ < nlMax_; ++i) {
+                if (buffer().at(i) == '\r')
+                    continue;
+                if (buffer().at(i) == '\n') {
+                    ++nlCount_;
+                    continue;
+                }
+                nlCount_ = 0;
             }
-            nlCount_ = 0;
+            if (nlCount_ == nlMax_) {
+                if (i < n) pending_ = buffer().select(i, n);
+                pendingIndex_ = 0;
+                payloadLeft_ = 0;
+                n = i;
+            }
         }
-        if (nlCount_ == nlMax_) {
-            if (i < n) pending_ = data->select(i, n);
+        else if (payloadLeft_ < n) {
+            pending_ = buffer().select(payloadLeft_, n);
             pendingIndex_ = 0;
+            n = payloadLeft_;
             payloadLeft_ = 0;
-            n = i;
         }
-    }
-    else if (payloadLeft_ < n) {
-        pending_ = data->select(payloadLeft_, n);
-        pendingIndex_ = 0;
-        n = payloadLeft_;
-        payloadLeft_ = 0;
-    }
-    else {
-        payloadLeft_ -= n;
+        else {
+            payloadLeft_ -= n;
+        }
+
+        return n;
     }
 
-    return n;
-}
+    void write(const Bytes &buffer, long fill) override
+    {
+        stream_.write(buffer, fill);
+    }
 
-void HttpStream::Instance::write(const CharArray *data)
+    void write(const List<Bytes> &buffers) override
+    {
+        stream_.write(buffers);
+    }
+
+    void write(const struct iovec *iov, int iovcnt) override
+    {
+        stream_.write(iov, iovcnt);
+    }
+
+    Bytes &buffer()
+    {
+        if (!buffer_) buffer_ = Bytes::allocate(0x1000);
+        return buffer_;
+    }
+
+    void discard()
+    {
+        transferTo(drainage_, 0x10000, buffer());
+    }
+
+    Stream stream_;
+    NullStream drainage_;
+    Bytes buffer_;
+    Bytes pending_;
+    int pendingIndex_ { 0 };
+    long payloadLeft_ { -1 };
+    int nlCount_ { 0 };
+    int nlMax_ { 0 };
+    bool eoi_ { false };
+    bool chunked_ { false };
+};
+
+HttpStream::HttpStream(const Stream &stream):
+    Stream{new State{stream}}
+{}
+
+bool HttpStream::isPayloadConsumed() const
 {
-    stream_->write(data);
+    return me().isPayloadConsumed();
 }
 
-void HttpStream::Instance::write(const StringList &parts)
+void HttpStream::nextHeader()
 {
-    stream_->write(parts);
+    me().nextHeader();
 }
 
-}} // namespace cc::http
+void HttpStream::nextPayload(int64_t length)
+{
+    me().nextPayload(length);
+}
+
+void HttpStream::nextLine()
+{
+    me().nextLine();
+}
+
+void HttpStream::nextChunk()
+{
+    me().nextChunk();
+}
+
+HttpStream::State &HttpStream::me()
+{
+    return Object::me.as<State>();
+}
+
+const HttpStream::State &HttpStream::me() const
+{
+    return Object::me.as<State>();
+}
+
+} // namespace cc

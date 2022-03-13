@@ -1,0 +1,210 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <iterator>
+#include <cstdint>
+#include <cstddef>
+
+namespace cc {
+
+/** \class Utf8Iterator cc/Utf8Iterator
+  * \brief Iterate code points of an UTF-8 encoded string
+  *
+  * The Utf8Iterator allows iterating %Unicode characters of an UTF-8 byte sequence.
+  * The iterator will always halt at the string boundaries. If stepping over the string boundary
+  * the iterator will automatically switch to an invalid state delivering zero code points.
+  *
+  * If placed at a string's terminating zero character it is possible to step backwards
+  * into the string.
+  *
+  * Illegal code sequences are overrun without error. In forward iteration corrupted code prefixes
+  * may lead to at maximum one correct character overrun and up to 3 additional corrupt characters
+  * delivered. Any bit error outside the code prefixes will lead to at most one illegal character
+  * delivered -- with one exception: switching to all bits zero (a zero byte is always string
+  * terminating).
+  */
+class Utf8Iterator:
+    public std::iterator<
+        /*iterator_category*/ std::bidirectional_iterator_tag,
+        /*value_type*/        char32_t,
+        /*difference_type*/   std::ptrdiff_t,
+        /*pointer*/           void,
+        /*reference*/         char32_t
+    >
+{
+public:
+    /** Create an invalid iterator
+      */
+    Utf8Iterator():
+        s_{nullptr},
+        e_{nullptr},
+        p_{nullptr}
+    {}
+
+    /** Create a new iterator
+      * \param start Pointer to start of UTF-8 encoded string
+      * \param end Pointer to end of UTF-8 encoded string (behind last valid byte)
+      * \param pos Current position within the UTF-8 encoded string
+      */
+    Utf8Iterator(const char *start, const char *end, const char *pos):
+        s_{reinterpret_cast<const std::uint8_t *>(start)},
+        e_{reinterpret_cast<const std::uint8_t *>(end)},
+        p_{reinterpret_cast<const std::uint8_t *>(pos)}
+    {}
+
+    /** \internal
+      */
+    Utf8Iterator(const Utf8Iterator &b) = default;
+
+    /** %Prefix increment operator: step a single code point forward
+      */
+    Utf8Iterator &operator++()
+    {
+        std::uint8_t ch = *p_;
+        if (ch) {
+            ++p_;
+            // step forwards shifting out all prefix bits of first byte
+            while ((0xBF < ch) && (p_ < e_)) {
+                ch <<= 1;
+                ++p_;
+            }
+        }
+        return *this;
+    }
+
+    /** %Prefix decrement operator: step a single code point backward
+      */
+    Utf8Iterator &operator--()
+    {
+        if (s_ < p_) {
+            --p_;
+            // step backwards while code prefix equals (10)2
+            while ((s_ < p_) && ((*p_ & 0xC0) == 0x80)) --p_;
+        }
+        else {
+            // underflow to the end of the byte sequence
+            p_ = e_;
+        }
+        return *this;
+    }
+
+    /** Postfix increment operator: step a single code point forward and return old position
+      */
+    Utf8Iterator operator++(int) {
+        Utf8Iterator it = *this;
+        ++(*this);
+        return it;
+    }
+
+    /** Postfix decrement operator: step a single code point backward and return old position
+      */
+    Utf8Iterator operator--(int) {
+        Utf8Iterator it = *this;
+        --(*this);
+        return it;
+    }
+
+    /** Assignment addition operator: step in forward direction a given distance \a d
+      */
+    Utf8Iterator &operator+=(std::ptrdiff_t d) {
+        while (d > 0) { ++(*this); --d; }
+        while (d < 0) { --(*this); ++d; }
+        return *this;
+    }
+
+    /** Assignment substraction operator: step in backward direction a given distance \a d
+      */
+    Utf8Iterator &operator-=(std::ptrdiff_t d) {
+        while (d > 0) { --(*this); --d; }
+        while (d < 0) { ++(*this); ++d; }
+        return *this;
+    }
+
+    /** Addition operator: get iterator in forward direction at given distance \a d
+      */
+    Utf8Iterator operator+(std::ptrdiff_t d) const {
+        Utf8Iterator it = *this;
+        return it += d;
+    }
+
+    /** Substraction operator: get iterator in backward direction at given distance \a d
+      */
+    Utf8Iterator operator-(std::ptrdiff_t d) const {
+        Utf8Iterator it = *this;
+        return it -= d;
+    }
+
+    /** Difference operator: compute distance in number of characters
+      */
+    std::ptrdiff_t operator-(const Utf8Iterator &b) const
+    {
+        std::ptrdiff_t n = 0;
+        if (s_ == b.s_) {
+            if (p_ <= b.p_) {
+                Utf8Iterator w{*this};
+                while (w.p_ != b.p_) {
+                    ++w;
+                    --n;
+                }
+            }
+            else
+                n = -(b - *this);
+        }
+        return n;
+    }
+
+    /** Cast to bool operator: indicate if this iterator can step forward another code point
+      */
+    explicit operator bool() const { return p_ < e_; }
+
+    /** Dereference operator: decode current code point
+      */
+    char32_t operator*() const
+    {
+        char32_t ch = 0;
+        if (p_ < e_) {
+            // merging extra bytes by incrementally reducing the code prefix of the first byte
+            // prefix bits => extra bytes: (110)2 => 1 eb, (1110)2 => 2 eb, (11110)2 => 3 eb
+            ch = *p_;
+            if (0x7F < ch) {
+                const std::uint8_t *p = p_;
+                char32_t bit = 0x80;
+                ch ^= bit; // clear first prefix bit
+                bit >>= 1; // take next prefix bit
+                while (((ch & bit) != 0) && (p < e_)) { // yet another prefix bit?
+                    ch ^= bit; // clear prefix bit of first byte
+                    ch <<= 6; // make space
+                    bit <<= 5; // take next prefix bit
+                    ch |= (*(++p)) & 0x3F; // merge code bits
+                }
+            }
+        }
+        return ch;
+    }
+
+    /** Unary plus operator: return the current decoding position as a byte offset
+      */
+    std::ptrdiff_t operator+() const { return p_ - s_; }
+
+    /** Compare for equality
+      */
+    bool operator==(const Utf8Iterator &b) const { return p_ == b.p_; }
+
+    /** Compare for in-equality
+      */
+    bool operator!=(const Utf8Iterator &b) const { return p_ != b.p_; }
+
+private:
+    const std::uint8_t *s_;
+    const std::uint8_t *e_;
+    const std::uint8_t *p_;
+};
+
+} // namespace cc

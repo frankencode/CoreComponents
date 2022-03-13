@@ -1,0 +1,64 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+
+namespace cc {
+
+/** \class Prefix cc/Prefix
+  * \ingroup strings
+  * \brief %String prefix
+  */
+class Prefix
+{
+public:
+    /** Create an empty prefix
+      */
+    Prefix():
+        offset_{0}
+    {}
+
+    /** Create a prefix from \a text starting at \a offset
+      */
+    Prefix(const String &text, long offset = 0):
+        text_{text},
+        offset_{offset}
+    {
+        assert(offset <= text.count());
+    }
+
+private:
+    friend bool operator<(const Prefix &a, const String &b);
+    friend bool operator<(const String &a, const Prefix &b);
+
+    String text_;
+    long offset_;
+};
+
+inline bool operator<(const Prefix &a, const String &b)
+{
+    const char *pa = a.text_.chars() + a.offset_;
+    const char *pb = b.chars();
+    const long na = a.text_.count() - a.offset_;
+    const long nb = b.count();
+    int r = std::strncmp(pa, pb, na < nb ? na : nb);
+    return r < 0 || (r == 0 && na < nb);
+}
+
+inline bool operator<(const String &a, const Prefix &b)
+{
+    const char *pa = a.chars();
+    const char *pb = b.text_.chars() + b.offset_;
+    const long na = a.count();
+    const long nb = b.text_.count() - b.offset_;
+    return std::strncmp(pa, pb, na < nb ? na : nb) < 0;
+}
+
+} // namespace cc

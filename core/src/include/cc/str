@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,241 +8,322 @@
 
 #pragma once
 
-/** \file str
-  * \brief Output formatting helper functions
-  */
-
 #include <cc/String>
-#include <cc/Variant>
-#include <cc/Local>
-#include <cc/KeyValue>
+#include <cc/Range>
+#include <cstdint>
+#include <cstddef>
 
 namespace cc {
 
+template<bool IsSigned>
+struct SignBit {
+    template<class T>
+    static constexpr int get(T x) { return x < 0; }
+};
+
+template<>
+struct SignBit<false> {
+    template<class T>
+    static constexpr int get(T x) { return 0; }
+};
+
 template<class T>
-struct Sign { inline static int get(T x) { return x < 0; } };
+int signBit(T x) { return SignBit<std::is_signed<T>::value>::get(x); }
 
-template<>
-struct Sign<unsigned char> { inline static int get(unsigned char) { return 0; } };
-
-template<>
-struct Sign<unsigned short> { inline static int get(unsigned short) { return 0; } };
-
-template<>
-struct Sign<unsigned int> { inline static int get(unsigned int) { return 0; } };
-
-template<>
-struct Sign<unsigned long> { inline static int get(unsigned long) { return 0; } };
-
-template<>
-struct Sign<unsigned long long> { inline static int get(unsigned long long) { return 0; } };
-
-/** \addtogroup formatted_io
-  * \{
+/** \name Number Formatting Functions
   */
+///@{
+/// \ingroup strings
 
-/** Convert an integer value to String
-  * \tparam T integer type
-  * \param x integer value
-  * \param base number base (2..62)
-  * \param n maximum number of digits
-  * \return String representation of x
+/** Convert an integer value to string
+  * \tparam T Integer type
+  * \param x Integer value
+  * \param base Number base (2..62)
+  * \param n Maximum number of digits
+  * \return Text representation of x
   */
 template<class T>
 String inum(T x, int base = 10, int n = -1)
 {
-    int sign = Sign<T>::get(x);
+    int sign = signBit(x);
     if (sign) x = -x;
     int m = (x == 0);
     for (T y = x; y > 0; y /= base) ++m;
     if (sign) ++m;
     if (n > 0 && m < n) m = n;
-    String s{m, '0'};
-    if (sign) mutate(s)->at(0) = '-';
-    for (int i = s->count() - 1; x > 0 && s->has(i); x /= base, --i) {
+    String s = String::allocate(m, '0');
+    if (sign) s[0] = '-';
+    for (int i = s.count() - 1; x > 0 && s.has(i); x /= base, --i) {
         const char *fig =
             "0123456789"
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "abcdefghijklmnopqrstuvwxyz";
-        mutate(s)->at(i) = fig[x % base];
+        s[i] = fig[x % base];
     }
     return s;
 }
 
-/** Convert a floating point number to String
-  * \param x floating point value
-  * \param precision number of significiant digits
-  * \param base number base (2..62)
-  * \param screen maximum absolute exponent for choosing a non-exponential notation
-  * \return String representation of x
-  */
-String fnum(float64_t x, int precision = 16, int base = 10, int screen = 6);
-
-/** Convert a floating point number to a String
-  * \param x floating point value
-  * \param nf number of fractional digits
-  * \return String representation of x
-  */
-String fixed(float64_t x, int nf);
-
-/** Convert a floating point number to a String
-  * \param x floating point value
-  * \param ni number of integral digits
-  * \param nf number of fractional digits
-  * \return String representation of x
-  */
-String fixed(float64_t x, int ni, int nf);
-
-/** Convert an integer to a decimal String
-  * \param x integer value
-  * \param n number of digits
-  * \return String representation of x
+/** Convert an integer to a decimal string
+  * \param x Integer value
+  * \param n Number of digits
+  * \return Text representation of x
   */
 template<class T>
-inline String dec(T x, int n = -1) { return inum(x, 10, n); }
+String dec(T x, int n = -1) { return inum(x, 10, n); }
 
-/** Convert an integer to a hexadecimal String
-  * \param x integer value
-  * \param n number of digits
-  * \return String representation of x
+/** Convert an integer to a hexadecimal string
+  * \param x Integer value
+  * \param n Number of digits
+  * \return Text representation of x
   */
 template<class T>
-inline String hex(T x, int n = -1) { return inum(x, 16, n); }
+String hex(T x, int n = -1) { return inum(x, 16, n); }
 
-/** Convert an integer to an octal String
-  * \param x integer value
-  * \param n number of digits
-  * \return String representation of x
+/** Convert \a data to hexadecimal
+  */
+String hex(const Bytes &data);
+
+/** Convert hexadecimal literal \a hex to a byte array
+  */
+Bytes readHex(const String &hex);
+
+/** Convert \a data to hexadecimal
+  */
+inline String hex(const String &data) { return hex(data.asBytes()); }
+
+/** Convert an integer to an octal string
+  * \param x Integer value
+  * \param n Number of digits
+  * \return Text representation of x
   */
 template<class T>
-inline String oct(T x, int n = -1) { return inum(x, 8, n); }
+String oct(T x, int n = -1) { return inum(x, 8, n); }
 
-/** Convert an integer to a binary String
-  * \param x integer value
-  * \param n number of digits
-  * \return String representation of x
+/** Convert an integer to a binary string
+  * \param x Integer value
+  * \param n Number of digits
+  * \return Text representation of x
   */
 template<class T>
-inline String bin(T x, int n = -1) { return inum(x, 2, n); }
+String bin(T x, int n = -1) { return inum(x, 2, n); }
 
-/** Convert a floating point number to a exponental notation String
-  * \param x integer value
-  * \param precision number of significiant digits
-  * \return String representation of x
+/** Convert a floating-point number to string
+  * \param x Floating-point value
+  * \param precision Number of significiant digits
+  * \param base Number base (2..62)
+  * \param screen Maximum absolute exponent for choosing a non-exponential notation
+  * \return Text representation of x
   */
-inline String sci(float32_t x, int precision = 8) { return fnum(x, precision, 10, 0); }
+String fnum(double x, int precision = 16, int base = 10, int screen = 6);
 
-/** \copydoc sci(float32_t, int)
+/** Convert a floating point number to a fixed point notation string
+  * \param x Floating point value
+  * \param nf Number of fractional digits
+  * \return Text representation of x
   */
-inline String sci(float64_t x, int precision = 17) { return fnum(x, precision, 10, 0); }
+String fixed(double x, int nf);
 
-/** Convert a floating point number to decimal String
-  * \param x floating point number
-  * \param precision number of significiant digits
-  * \return String representation of x
+/** Convert a floating point number to a fixed point notation string
+  * \param x Floating point value
+  * \param ni Number of integral digits
+  * \param nf Number of fractional digits
+  * \return Text representation of x
   */
-inline String dec(float32_t x, int precision = 8) { return fnum(x, precision, 10, 6); }
+String fixed(double x, int ni, int nf);
 
-/** \copydoc dec(float32_t, int)
+/** Convert a floating point number to a exponential notation string
+  * \param x Integer value
+  * \param precision Number of significiant digits
+  * \return Text representation of x
   */
-inline String dec(float64_t x, int precision = 17) { return fnum(x, precision, 10, 6); }
+inline String sci(float x, int precision = 8) { return fnum(x, precision, 10, 0); }
 
-/** Convert a Variant to a decimal String
-  * \param x Variant value
-  * \param n maximum number of digits
-  * \return String representation of x
+/** \copydoc sci(float, int)
   */
-String dec(const Variant &x, int n = -1);
+inline String sci(double x, int precision = 17) { return fnum(x, precision, 10, 0); }
 
-/// Convenience wrapper
-inline String str(const String &s) { return s; }
+/** Convert a floating point number to decimal string
+  * \param x Floating point number
+  * \param precision Number of significiant digits
+  * \return Text representation of x
+  */
+inline String dec(float x, int precision = 8) { return fnum(x, precision, 10, 6); }
 
-/// Convenience wrapper
-inline String str(CharArray *s) { return String(s); }
+/** \copydoc dec(float, int)
+  */
+inline String dec(double x, int precision = 17) { return fnum(x, precision, 10, 6); }
 
-/// Convenience wrapper
-inline String str(const CharArray *s) { return String(s); }
+///@}
 
-/// Convert a C-String to a String
-inline String str(const char *s) { return String(s); }
+/** \name Default Stringification Functions
+  */
+///@{
+/// \ingroup strings
 
-/// Convert a C-String to a String
-inline String str(char *s) { return String(s); }
+/** Convert \a x to string */
+inline String str(const String &x) { return x; }
 
-/// Convert a character to a String
-inline String str(char ch) { return String{&ch, 1}; }
+/** Convert \a x to string */
+inline String str(const char *x) { return x; }
 
-/// Convert an unicode character to a string
-String str(uchar_t ch);
+/** Convert \a x to string */
+inline String str(char *x) { return String{x}; }
 
-/// Convert a boolean to a String
+/** Convert \a x to string */
 inline String str(bool x) { return x ? "true" : "false"; }
 
-/// Convert a pointer to a String
+/** Convert \a x to string */
 String str(const void *x);
 
-/// Convert an object to String
-template<class T>
-inline String str(const Ref<T> &x) { return x->toString(); }
+/** Convert \a x to string */
+inline String str(char x) { return String{&x, 1}; }
 
-/// Convert an object to String
-template<class T>
-inline String str(const T *x) { return x ? x->toString() : String{"null"}; }
+/** Convert an unicode character to a string */
+String str(char32_t ch);
 
-/// Convert an object to String
-template<class T>
-inline String str(const Local<T> &x) { return x->toString(); }
-
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(unsigned char x) { return dec(x); }
 
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(unsigned short x) { return dec(x); }
 
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(unsigned int x) { return dec(x); }
 
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(unsigned long x) { return dec(x); }
 
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(unsigned long long x) { return dec(x); }
 
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(short x) { return dec(x); }
 
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(int x) { return dec(x); }
 
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(long x) { return dec(x); }
 
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(long long x) { return dec(x); }
 
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(float x) { return dec(x); }
 
-/// Convenience wrapper to dec()
+/** Convert \a x to string */
 inline String str(double x) { return dec(x); }
 
-/** Align a String to the left
-  * \param s input String
-  * \param w width of display field
-  * \param blank fill character
-  * \return left aligned String
+/** Convert \a list to string
   */
-String left(const String &s, int w, char blank = ' ');
+template<class T>
+String str(const List<T> &list)
+{
+    if (list.count() == 0) return "[]";
+    List<String> f;
+    f << String{"[ "};
+    for (auto pos = list.head(); pos; ++pos) {
+        f << str(list.at(pos));
+        if (+pos != list.count() - 1)
+            f << String{", "};
+    }
+    f << String{" ]"};
+    return f;
+}
 
-/** Align a String to the right
-  * \param s input String
-  * \param w width of display field
-  * \param blank fill character
-  * \return right aligned String
-  */
-String right(const String &s, int w, char blank = ' ');
+template<class, class>
+class Map;
 
-/** \}
+/** Convert \a map to string
   */
+template<class K, class T>
+String str(const Map<K, T> &map)
+{
+    auto n = map.count();
+    if (n == 0) return "[]";
+    List<String> f;
+    f << String{"[ "};
+    for (const auto &x: map) {
+        f << String{"("} << str(x.key()) << String{": "} << str(x.value()) << String{")"};
+        if (--n > 0) f << String{", "};
+    }
+    f << String{" ]"};
+    return f;
+}
+
+template<class, class>
+class MultiMap;
+
+/** Convert \a map to string
+  */
+template<class K, class T>
+String str(const MultiMap<K, T> &map)
+{
+    auto n = map.count();
+    if (n == 0) return "[]";
+    List<String> f;
+    f << String{"[ "};
+    for (const auto &x: map) {
+        f << String{"("} << str(x.key()) << String{": "} << str(x.value()) << String{")"};
+        if (--n > 0) f << String{", "};
+    }
+    f << String{" ]"};
+    return f;
+}
+
+template<class>
+class Set;
+
+/** Convert \a set to string
+  */
+template<class T>
+String str(const Set<T> &set)
+{
+    auto n = set.count();
+    if (n == 0) return "[]";
+    List<String> f;
+    f << String{"[ "};
+    for (const auto &x: set) {
+        f << str(x);
+        if (--n > 0) f << String{", "};
+    }
+    f << String{" ]"};
+    return f;
+}
+
+template<class>
+class MultiSet;
+
+/** Convert \a set to string
+  */
+template<class T>
+String str(const MultiSet<T> &set)
+{
+    auto n = set.count();
+    if (n == 0) return "[]";
+    List<String> f;
+    f << String{"[ "};
+    for (const auto &x: set) {
+        f << str(x);
+        if (--n > 0) f << String{", "};
+    }
+    f << String{" ]"};
+    return f;
+}
+
+/** Convert \a range to string
+  */
+inline String str(const Range &range)
+{
+    List<String> f;
+    f << String{"["};
+    f << str(range[0]);
+    f << String{".."};
+    f << str(range[1]);
+    f << String{")"};
+    return f;
+}
+
+///@}
 
 } // namespace cc

@@ -1,0 +1,100 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpMessage>
+
+namespace cc {
+
+/** \class HttpRequest cc/HttpRequest
+  * \ingroup http_protocol
+  * \brief HTTP request message
+  */
+class HttpRequest: public HttpMessage
+{
+public:
+    /** %Create a null HTTP request message
+      */
+    HttpRequest() = default;
+
+    /** %HTTP request method ("GET", "HEAD", "PUT", "POST" or "DELETE")
+      */
+    String method() const { return me().method_; }
+
+    /** %Full request URI
+      */
+    String uri() const { return me().uri_; }
+
+    /** %Query part of the request URI
+      */
+    String query() const { return me().query(); }
+
+    /** %Protocol version
+      */
+    String version() const { return me().version_; }
+
+    /** %Major protocol version
+      */
+    int majorVersion() const { return me().majorVersion_; }
+
+    /** %Minor protocol version
+      */
+    int minorVersion() const { return me().minorVersion_; }
+
+    /** Server name
+      */
+    String host() const { return me().host_; }
+
+    /** %The full request line
+      */
+    String line() const { return me().line_; }
+
+    /** %The time the request was received
+      */
+    double time() const { return me().time_; }
+
+private:
+    friend class Object;
+    friend class HttpRequestParser;
+
+    struct State: public HttpMessage::State
+    {
+        String query() const
+        {
+            String q;
+            long i = 0;
+            if (uri_.find('?', &i)) {
+                q = uri_.copy(i + 1, uri_.count());
+            }
+            return q;
+        }
+
+        String method_;
+        String uri_;
+        String version_;
+        int majorVersion_ { 0 };
+        int minorVersion_ { 0 };
+        String host_;
+
+        String line_;
+        double time_ { 0 };
+    };
+
+    explicit HttpRequest(New):
+        HttpMessage{new State}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+
+private:
+    State *operator->() { return &me(); }
+};
+
+} // namespace cc

@@ -1,0 +1,70 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cstdint>
+
+namespace cc {
+
+using uint8_t = std::uint8_t;
+using uint16_t = std::uint16_t;
+using uint32_t = std::uint32_t;
+using uint64_t = std::uint64_t;
+
+using int8_t = std::int8_t;
+using int16_t = std::int16_t;
+using int32_t = std::int32_t;
+using int64_t = std::int64_t;
+
+/** Optimization safe raw type casting
+  */
+template<class B, class A>
+inline B union_cast(A a)
+{
+    union Bimorph { A a; B b; };
+    Bimorph morph;
+    morph.a = a;
+    return morph.b;
+}
+
+/** Byte order
+  * \ingroup bits
+  */
+enum class ByteOrder {
+    LittleEndian = 1, ///< Low order byte precedes the high order byte
+    BigEndian    = 0  ///< High order byte precedes the low order byte
+};
+
+/** %Return current system byte order
+  * \ingroup bits
+  */
+inline ByteOrder localEndian()
+{
+    return static_cast<ByteOrder>(union_cast<std::uint8_t, unsigned>(1));
+}
+
+/** Swap endianess from channel byte order to system byte order
+  * \ingroup bits
+  */
+template<class UInt>
+inline UInt endianGate(UInt x, const ByteOrder channelByteOrder = ByteOrder::BigEndian)
+{
+    if (localEndian() != channelByteOrder) {
+        const int n = sizeof(x);
+        UInt z = 0;
+        for (int i = 0; i < n; ++i) {
+            z <<= 8;
+            z |= (x >> (i * 8)) & 0xFF;
+        }
+        x = z;
+    }
+    return x;
+}
+
+} // namespace cc

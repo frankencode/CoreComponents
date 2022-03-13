@@ -1,0 +1,88 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SocketAddress>
+
+namespace cc {
+
+/** \class NetworkRoute cc/NetworkRoute
+  * \ingroup net
+  * \brief %Network routing table access
+  */
+class NetworkRoute: public Object
+{
+public:
+    /** Read the systems's routing table
+      */
+    static List<NetworkRoute> queryAll();
+
+    /** Create an invalid routing table entry
+      */
+    NetworkRoute() = default;
+
+    /** %Size of the source address in bits
+      */
+    int sourceMask() const { return me().sourceMask_; }
+
+    /** %Size of the destination address in bits
+      */
+    int destinationMask() const { return me().destinationMask_; }
+
+    /** %Source network address
+      */
+    SocketAddress source() const { return me().source_; }
+
+    /** Destination network address
+      */
+    SocketAddress destination() const { return me().destination_; }
+
+    /** Address of gateway to reach destination
+      */
+    SocketAddress gateway() const { return me().gateway_; }
+
+    /** Name of the network interface the packet arrives on the system
+      */
+    String inputInterface() const { return me().inputInterface_; }
+
+    /** Name of the network interface the packet leaves leaves the system
+      */
+    String outputInterface() const { return me().outputInterface_; }
+
+    /** Cost to take the route
+      */
+    int metric() const { return me().metric_; }
+
+    /** Priority of the route
+      */
+    int priority() const { return me().priority_; }
+
+private:
+    struct State: public Object::State
+    {
+        int sourceMask_;
+        int destinationMask_;
+        SocketAddress source_;
+        SocketAddress destination_;
+        SocketAddress gateway_;
+        String inputInterface_;
+        String outputInterface_;
+        int metric_;
+        int priority_;
+    };
+
+    explicit NetworkRoute(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,83 +8,60 @@
 
 #pragma once
 
-#include <cc/Source>
+#include <cc/SourceIterator>
 #include <cc/Stream>
 
 namespace cc {
 
 /** \class LineSource cc/LineSource
-  * \ingroup formatted_io
+  * \ingroup streams
   * \brief Line input buffer
+  * \note LineSource supports any type of line terminatation style (e.g. "\r\n", "\n", "\r" or "\0").
+  * \todo The auxiliary buffer should be of type Bytes.
   */
-class LineSource
+class LineSource final: public Object
 {
 public:
-    class Instance: public Source<String>
-    {
-    public:
-        /// Input stream used to read lines from
-        Stream stream() const { return stream_; }
+    using Item = String; ///< Item type
 
-        /// Input buffer used to cache input data
-        const CharArray *buffer() const { return buffer_; }
-
-        /// Current line start offset
-        int offset() const { return bufferOffset_ + i0_; }
-
-        /** Read next line
-          * \param line returns the next line (if not end of input)
-          * \return true if not end of input, false otherwise
-          */
-        bool read(String *line);
-
-        /** Read next line
-          * \return next line (equals "" on end of input)
-          */
-        String readLine();
-
-        /// Return the remaining data from the input buffer
-        String pendingData() const;
-
-    private:
-        friend class LineSource;
-
-        Instance(const Stream &stream, CharArray *buffer);
-
-        static int findEol(const CharArray *buffer, int n, int i);
-        static int skipEol(const CharArray *buffer, int n, int i);
-
-        Stream stream_;
-        String buffer_;
-        bool eoi_;
-        int bufferOffset_;
-        int i0_, i_, n_;
-    };
-
-    using Iterator = Instance::Iterator;
-
-    /** Open a new line source feed from a memory buffer
-      * \param text input buffer
+    /** Create a null line source
       */
-    LineSource(const String &text):
-        instance_{new Instance{Stream{}, mutate(text)}}
-    {}
+    LineSource() = default;
 
-    /** Open a new line source feed from an input stream
-      * \param stream input stream
-      * \param buffer input buffer (optional)
+    /** Open a new line source fed from a memory buffer
+      * \param buffer Input buffer
       */
-    LineSource(const Stream &stream, CharArray *buffer = nullptr):
-        instance_{new Instance{stream, buffer}}
-    {}
+    explicit LineSource(const String &buffer);
 
-    Instance *operator->() const { return instance_; }
+    /** Open a new line source fed from an input stream
+      * \param stream Input stream
+      */
+    explicit LineSource(const Stream &stream);
+
+    /** Open a new line source fed from an input stream
+      * \param stream Input stream
+      * \param buffer Input buffer
+      */
+    LineSource(const Stream &stream, const String &buffer);
+
+    /** Read next line
+      * \param line Returns the next line (if not end of input)
+      * \return True if not end of input
+      */
+    bool read(Out<String> line);
+
+    /** Iteration start
+      */
+    SourceIterator<LineSource> begin() { return SourceIterator<LineSource>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<LineSource> end() { return SourceIterator<LineSource>{}; }
 
 private:
-    Ref<Instance> instance_;
-};
+    struct State;
 
-inline LineSource::Iterator begin(LineSource &source) { return source->begin(); }
-inline LineSource::Iterator end  (LineSource &source) { return source->end(); }
+    State &me();
+};
 
 } // namespace cc

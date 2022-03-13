@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpService>
+
+namespace cc {
+
+/** \class HttpServiceRegistry cc/HttpServiceRegistry
+  * \ingroup http_server
+  * \brief %Delivery service registry
+  */
+class HttpServiceRegistry: public Object
+{
+public:
+    /** \brief Announce a new service
+      * \tparam T %Service type
+      */
+    template<class T>
+    class Announcer {
+    public:
+        Announcer() {
+            static bool done = false;
+            if (done) return;
+            HttpServiceRegistry{}.registerService<T>();
+            done = true;
+        }
+    };
+
+    /** %Create a shallow copy of the singleton instance
+      */
+    HttpServiceRegistry();
+
+    /** %Register a new service of type \a T
+      */
+    template<class T>
+    void registerService() { registerService(T{}); }
+
+    /** %Register a new service
+      */
+    void registerService(const HttpService &service);
+
+    /** %Lookup service by \a name
+      */
+    HttpService serviceByName(const String &name) const;
+
+private:
+    struct State;
+
+    const State &me() const;
+    State &me();
+};
+
+} // namespace cc

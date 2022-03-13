@@ -1,0 +1,47 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpError>
+#include <cc/Stream>
+
+namespace cc {
+
+/** \class HttpCloseRequest cc/HttpStream
+  * \ingroup http_protocol
+  * \brief A request to close the HTTP pipeline has been received
+  */
+class HttpCloseRequest{};
+
+/** \class HttpStream cc/HttpStream
+  * \ingroup http_protocol
+  * \brief HTTP message stream (pipelining and chunked I/O)
+  */
+class HttpStream final: public Stream
+{
+public:
+    HttpStream() = default;
+
+    explicit HttpStream(const Stream &stream);
+
+    bool isPayloadConsumed() const;
+
+    void nextHeader();
+    void nextPayload(long length);
+    void nextLine();
+    void nextChunk();
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,36 +8,75 @@
 
 #pragma once
 
-#include <cc/Tree>
-#include <cc/CharArray>
-#include <cc/Token>
-#include <cc/syntax/SyntaxState>
+#include <cc/Object>
+#include <cc/String>
+#include <functional>
 
-namespace cc {
-namespace syntax {
+namespace cc { class SyntaxRule; }
+namespace cc { class Token; }
 
-class SyntaxNode: public Tree<SyntaxNode>
+namespace cc::syntax {
+
+/** \class SyntaxNode cc/syntax/SyntaxNode
+  * \brief %Syntax definition node
+  */
+class SyntaxNode: public Object
 {
 public:
-    static void rollBack(Token *parentToken, Token *lastChildSaved) {
-        if (parentToken) {
-            while (parentToken->lastChild() != lastChildSaved)
-                parentToken->lastChild()->unlink();
-        }
+    /** Create an null syntax node
+      */
+    SyntaxNode() = default;
+
+    SyntaxNode(char ch);
+
+    SyntaxNode(const char *s);
+
+    SyntaxNode(const SyntaxRule *rule);
+
+    SyntaxNode(std::function<bool(char)> &&match);
+
+    /** Match \a text at \a offset against this node
+      */
+    long matchNext(const String &text, long offset, Token &production) const
+    {
+        return me().matchNext(text, offset, production);
     }
 
-    virtual int matchNext(const CharArray *text, int i, Token *parentToken, SyntaxState *state) const = 0;
-
-    virtual SyntaxNode *succ(SyntaxNode *node) const { return nullptr; }
-    virtual int matchLength() const { return -1; }
-
-    SyntaxNode *succ() const {
-        return parent() ? parent()->succ(SyntaxNode::self()) : nullptr;
+    /** Match length for this node (or -1 if variable)
+      */
+    long matchLength() const
+    {
+        return me().matchLength();
     }
 
-    SyntaxNode *self() const { return const_cast<SyntaxNode *>(this); }
+    /** %Hint for generating syntax error messages (Expect failed)
+      */
+    String hint() const { return me().hint(); }
+
+    /** Convert to a human-readable form
+      */
+    List<String> explain() const { return me().explain(); }
+
+protected:
+    friend class Object;
+    friend class SyntaxDefinition;
+
+    struct State: public Object::State
+    {
+        virtual long matchNext(const String &text, long offset, Token &production) const = 0;
+        virtual long matchLength() const = 0;
+        virtual String hint() const { return String{}; }
+        virtual void decycle();
+
+        virtual List<String> explain() const = 0;
+    };
+
+    explicit SyntaxNode(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-typedef Ref<SyntaxNode> NODE;
-
-}} // namespace cc::syntax
+} // namespace cc::syntax

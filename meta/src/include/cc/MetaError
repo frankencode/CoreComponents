@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaObject>
+#include <cc/exceptions>
+
+namespace cc {
+
+/** \class MetaError cc/MetaError
+  * \ingroup meta
+  * \brief %Error thrown during object realization
+  * \see MetaObject::realize()
+  */
+class MetaError: public UsageError
+{
+public:
+    /** Create a new meta error
+      * \param message %Error message
+      * \param offendingObject \copybrief offendingObject()
+      * \param memberName \copybrief memberName()
+      */
+    MetaError(const String &message, const MetaObject &offendingObject = MetaObject{}, const String &memberName = "");
+
+    /** %Offending meta-object which couldn't be realized
+      */
+    MetaObject offendingObject() const;
+
+    /** %Offending member which was missing or out-of-range
+      */
+    String memberName() const;
+
+private:
+    MetaObject offendingObject_;
+    String memberName_;
+};
+
+} // namespace cc

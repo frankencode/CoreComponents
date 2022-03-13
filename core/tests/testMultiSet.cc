@@ -1,21 +1,28 @@
-/*
- * Copyright (C) 2020 Frank Mertens.
- *
- * Distribution and use is allowed under the terms of the zlib license
- * (see cc/LICENSE-zlib).
- *
- */
+#include <cc/MultiSet>
+#include <cc/testing>
 
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
-#include <cc/MultiSetInstance>
+namespace cc { template class MultiSet<int>; }
 
-using namespace cc;
-using namespace cc::testing;
-
-namespace cc { template class MultiSetInstance<String>; }
-
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
-    return 0;
+    using namespace cc;
+
+    TestCase {
+        "InsertionSimple",
+        []{
+            MultiSet<int> a;
+            a.insert(1);
+            a.insert(2);
+            a.insert(2);
+            a.insert(3);
+
+            CC_CHECK(a.count() == 4);
+            CC_CHECK(a.at(0) == 1);
+            CC_CHECK(a.at(1) == 2);
+            CC_CHECK(a.at(2) == 2);
+            CC_CHECK(a.at(3) == 3);
+        }
+    };
+
+    return TestSuite{argc, argv}.run();
 }

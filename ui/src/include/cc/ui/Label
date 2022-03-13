@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,56 +9,81 @@
 #pragma once
 
 #include <cc/ui/View>
-#include <cc/ui/Font>
+#include <cc/ui/FontMetrics>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class TextRun;
-
-class Label: public View
+/** \class Label cc/ui/Label
+  * \ingroup ui
+  * \brief %Single line text view for name tags and value displays
+  * \see Text
+  *
+  * Labels show single line texts with minimum pixel coverage.
+  * When maxWidth() is set the text will be automatically elided if necessary.
+  * A Label is more performant than a Text, but it does not perform full font shaping under its hood.
+  * This means that all glyphs are drawn from the same font face without falling back to another font face if a glyph is missing.
+  */
+class Label final: public View
 {
 public:
-    class Instance: public View::Instance
-    {
-    public:
-        Property<String> text;
-        Property<Font> font;
-        Property<Color> ink;
-        Property<Size> margin;
+    /** Create a primordial label
+      */
+    Label();
 
-        Point textPos(double relativeHeight = 0) const;
-        Point textCenterLeft() const { return textPos(0.5); }
+    /** Create a new label
+      * \param self %Reference to newly created object
+      */
+    explicit Label(Out<Label> self);
 
-        void anchorBaselineStartTo(const AnchorPoint &l)  { pos <<[=]{ return l() - textPos(); }; }
-        void anchorTextCenterLeftTo(const AnchorPoint &l) { pos <<[=]{ return l() - textCenterLeft(); }; }
+    /** Create a new label
+      * \param text %Label text
+      * \param self %Reference to newly created object
+      */
+    explicit Label(const String &text, Out<Label> self = None{});
 
-        static Size preferredSize(const String &text, const Font &font = Font{}, Size margin = Size{});
-        static Size preferredSize(const TextRun *textRun, Size margin = Size{});
-        Size preferredSize() const override;
-        Size minSize() const override;
+    /** Create a new label
+      * \param text %Label text
+      * \param font %Label font
+      * \param self %Reference to newly create object
+      */
+    Label(const String &text, const Font &font, Out<Label> self = None{});
 
-    protected:
-        friend class Label;
+    String text() const; ///< Get label text
+    Label &text(const String &newValue); ///< %Set label text
+    Label &text(Definition<String> &&f); ///< Define label text
 
-        Instance(const String &initialText = String{}, const Font &initialFont = Font{});
-        ~Instance();
+    Font font() const; ///< Get label font
+    Label &font(Font newValue); ///< %Set label font
+    Label &font(Definition<Font> &&f); ///< Define label font
+    Label &fontEasing(const EasingCurve &easing, double duration); ///< %Set easing on font
 
-    private:
-        static Size effectiveMargin(Size margin);
+    Color color() const; ///< Get text color
+    Label &color(Color newValue); ///< %Set text color
+    Label &color(Definition<Color> &&f); ///< Define text color
+    Label &colorEasing(const EasingCurve &easing, double duration); ///< %Set easing on color
 
-        Property< Ref<const TextRun> > textRun;
-    };
+    Size margin() const; ///< Get inside margins
+    Label &margin(Size newValue); ///< %Set inside margins
+    Label &margin(Definition<Size> &&f); ///< Define inside margins
 
-    Label(const String &text = String{}, const Font &font = Font{}):
-        View{new Instance{text, font}}
-    {}
+    double maxWidth() const; ///< Get maximum width
+    Label &maxWidth(double newValue); ///< %Set maximum width
+    Label &maxWidth(Definition<double> &&f); ///< Define maximum width
 
-    Label(Instance *instance):
-        View{instance}
-    {}
+    Point textPos() const;
+    Point textCenterLeft() const; ///< Center-left of the display text
 
-    Instance *operator->() const { return my<Instance>(); }
+    Label &baselineStart(Definition<Point> &&a); ///< %Anchor the label with its text display baseline start to \a a
+    Label &baselineEnd(Definition<Point> &&a); ///<  %Anchor the label with its text display baseline end to \a a
+    Label &textCenterLeft(Definition<Point> &&a); ///< %Anchor the label with its center-left of the display text to \a a
+
+    FontMetrics fontMetrics() const; ///< %Current font metrics
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

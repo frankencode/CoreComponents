@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,57 +10,78 @@
 
 #include <cc/ui/types>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class View;
+class PosGuard;
+class MouseEvent;
 
+/** \class PointerEvent cc/ui/PointerEvent
+  * \ingroup ui
+  * \brief Input event from a pointing device (e.g. mouse or pen)
+  */
 class PointerEvent: public Object
 {
 public:
-    PointerAction action() const { return action_; }
-    double time() const { return time_; }
-    Point pos() const { return pos_; }
-    Step step() const { return step_; }
+    /** \copydoc PointerAction
+      */
+    PointerAction action() const { return me().action_; }
 
-    virtual String toString() const = 0;
+    /** Time the event occured
+      */
+    double time() const { return me().time_; }
 
-    class PosGuard {
-    public:
-        PosGuard(PointerEvent *event, Point newPos):
-            pos_{&event->pos_},
-            origPos_{event->pos_}
-        {
-            *pos_ = newPos;
-        }
-        ~PosGuard() {
-            *pos_ = origPos_;
-        }
-        Point origPos() const { return origPos_; }
-    private:
-        Point *pos_;
-        Point origPos_;
-    };
+    /** Position of the pointer
+      */
+    Point pos() const { return me().pos_; }
+
+    /** Distance the pointer has been moved
+      */
+    Step step() const { return me().step_; }
 
 protected:
+    friend class Object;
     friend class PosGuard;
+    friend class MouseEvent;
 
-    PointerEvent(
-        PointerAction action,
-        double time,
-        const Point &pos,
-        const Step &step
-    ):
-        action_{action},
-        time_{time},
-        pos_{pos},
-        step_{step}
+    friend String str(const PointerEvent &event);
+
+    struct State: public Object::State
+    {
+        State(
+            PointerAction action,
+            double time,
+            const Point &pos,
+            const Step &step
+        ):
+            action_{action},
+            time_{time},
+            pos_{pos},
+            step_{step}
+        {}
+
+        virtual String toString() const = 0;
+
+        PointerAction action_;
+        double time_;
+        Point pos_;
+        Step step_;
+    };
+
+    /** Create a null pointer event
+      */
+    PointerEvent() = default;
+
+    explicit PointerEvent(State *newState):
+        Object{newState}
     {}
 
-    PointerAction action_;
-    double time_;
-    Point pos_;
-    Step step_;
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+inline String str(const PointerEvent &event)
+{
+    return event.me().toString();
+}
+
+} // namespace cc::ui

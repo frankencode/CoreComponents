@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,26 +8,59 @@
 
 #pragma once
 
-#include <SDL2/SDL.h>
 #include <cc/ui/Cursor>
+#include <SDL2/SDL.h>
 
-namespace cc {
-namespace ui {
-
-class SdlApplicationInstance;
+namespace cc::ui {
 
 class SdlCursor: public Cursor
 {
+    struct State;
+
 public:
-    static Ref<SdlCursor> create(CursorShape shape);
+    SdlCursor(CursorShape shape):
+        Cursor{new State{shape}}
+    {}
+
+    SdlCursor(const Cursor &cursor)
+    {
+        static_cast<Cursor &>(*this) = cursor;
+    }
+
+    SDL_Cursor *sdlCursor() const { return me().sdlCursor_; }
 
 private:
-    friend class SdlApplicationInstance;
+    friend class Object;
 
-    SdlCursor(CursorShape shape);
-    ~SdlCursor();
+    struct State: public Cursor::State
+    {
+        State(CursorShape shape):
+            Cursor::State{shape},
+            sdlCursor_{SDL_CreateSystemCursor(
+                [=]() {
+                    switch (shape) {
+                        case CursorShape::Arrow                   : return SDL_SYSTEM_CURSOR_ARROW;
+                        case CursorShape::IBeam                   : return SDL_SYSTEM_CURSOR_IBEAM;
+                        case CursorShape::Wait                    : return SDL_SYSTEM_CURSOR_WAIT;
+                        case CursorShape::CrossHair               : return SDL_SYSTEM_CURSOR_CROSSHAIR;
+                        case CursorShape::WaitArrow               : return SDL_SYSTEM_CURSOR_WAITARROW;
+                        case CursorShape::ResizeNorthWestSouthEast: return SDL_SYSTEM_CURSOR_SIZENWSE;
+                        case CursorShape::ResizeNorthEastSouthWest: return SDL_SYSTEM_CURSOR_SIZENESW;
+                        case CursorShape::ResizeWestEast          : return SDL_SYSTEM_CURSOR_SIZEWE;
+                        case CursorShape::ResizeNorthSouth        : return SDL_SYSTEM_CURSOR_SIZENS;
+                        case CursorShape::ResizeCross             : return SDL_SYSTEM_CURSOR_SIZEALL;
+                        case CursorShape::Forbidden               : return SDL_SYSTEM_CURSOR_NO;
+                        case CursorShape::Hand                    : return SDL_SYSTEM_CURSOR_HAND;
+                    }
+                    return SDL_SYSTEM_CURSOR_ARROW;
+                }()
+            )}
+        {}
 
-    SDL_Cursor *sdlCursor_;
+        SDL_Cursor *sdlCursor_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

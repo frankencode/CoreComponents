@@ -1,0 +1,135 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildOption>
+#include <cc/build/SystemPrerequisite>
+#include <cc/MultiMap>
+#include <cc/Version>
+
+namespace cc::build {
+
+class ToolChain;
+class BuildShell;
+class Module;
+class Predicate;
+class Job;
+
+class PreparationStage;
+class ConfigureStage;
+class AnalyseStage;
+class PreprocessStage;
+class CompileLinkStage;
+class TestRunStage;
+class InstallStage;
+class UninstallStage;
+class CleanStage;
+
+/** \brief %Build instructions according to a %Recipe
+  */
+class BuildPlan: public BuildParameters
+{
+public:
+    BuildPlan() = default;
+    BuildPlan(int argc, char *argv[]);
+
+    int run();
+
+    const ToolChain &toolChain() const;
+    const BuildShell &shell() const;
+
+    BuildOption options() const;
+    int concurrency() const;
+    int testRunConcurrency() const;
+    bool goForBuild() const;
+
+    String name() const;
+    List<String> alias() const;
+
+    Version version() const;
+    String description() const;
+    bool containsCPlusPlus() const;
+
+    const List<String> &sources() const;
+    const List<String> &bundle() const;
+    const List<Module> &modules() const;
+    List<Module> &modules();
+
+    String projectPath() const;
+    String systemSourcePath() const;
+    bool isSystemSource() const;
+    String sourcePath(const String &source) const;
+    String recipePath() const;
+    String userPkgConfigPath() const;
+    String scope() const;
+    String modulePath() const;
+    String modulePath(const String &objectName) const;
+    String configPath() const;
+    String prestagePath() const;
+    String prestagePath(const String &precursor) const;
+
+    String sourcePrefix() const;
+    String installRoot() const;
+    String installPrefix() const;
+    String installPath(const String &relativeInstallPath) const;
+
+    String pluginPath(const String &targetLibName) const;
+    String pluginReversePath() const;
+
+    String previousLinkCommandPath() const;
+
+    void setLibraryLinkJob(const Job &linkJob);
+    void registerLinkDerivative(Job &linkJob);
+
+    String testArgs() const;
+    bool testReport() const;
+
+    const List<Predicate> &predicates() const;
+    MultiMap<String, SystemPrerequisite> systemPrerequisitesByName() const;
+    const List<BuildPlan> &prerequisites() const;
+    List<BuildPlan> &prerequisites();
+
+    const BuildPlan &extensionTarget() const;
+
+    PreparationStage &preparationStage();
+    ConfigureStage &configureStage();
+    const ConfigureStage &configureStage() const;
+    AnalyseStage &analyseStage();
+    PreprocessStage &preprocessStage();
+    CompileLinkStage &compileLinkStage();
+    TestRunStage &testRunStage();
+    InstallStage &installStage();
+    UninstallStage &uninstallStage();
+    CleanStage &cleanStage();
+
+private:
+    struct State;
+
+    BuildPlan(const String &projectPath, const BuildPlan &parentPlan = BuildPlan{});
+    explicit BuildPlan(State *newState);
+
+    static bool lookupCache(const String &projectPath, Out<BuildPlan> plan);
+    BuildPlan loadChild(const String &projectPath);
+    void readPrerequisites();
+
+    Variant recipe(const String &name) const;
+
+    static List<String> queryableVariableNames();
+    void queryVariables(const List<String> &names) const;
+
+    Job libraryLinkJob() const;
+
+    State *operator->();
+    const State *operator->() const;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::build

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,26 +10,75 @@
 
 #include <cc/ui/types>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \class TextCursor cc/ui/TextCursor
+  * \ingroup ui
+  * \brief %Cursor position within a text run
+  */
 class TextCursor: public Object
 {
 public:
-    virtual Point posA() const = 0;
-    virtual Point posB() const = 0;
-    virtual Point advance() const = 0;
+    /** Create a null text cursor
+      */
+    TextCursor() = default;
 
-    virtual int byteOffset() const = 0;
-    virtual bool isValid() const = 0;
+    Point posA() const { return me().posA_; } ///< Above baseline position
+    Point posB() const { return me().posB_; } ///< Below baseline position
 
-    virtual int step(int steps) = 0;
-    virtual int lineStep(int steps) = 0;
+    // Point advance() const { return me().textRun_ ? me().textRun_.advance(this) : Point{}; }
 
-    virtual Ref<TextCursor> copy() const = 0;
-    virtual void assign(const TextCursor *other) = 0;
+    int offset() const { return isNull() ? -1 : me().offset_; } ///< %Byte offset within the text
 
-    String toString() const;
+    TextCursor copy() const { return me().copy(); } ///< Get a deep copy of this cursor
+
+    int step(int steps) { return isNull() ? 0 : me().step(steps); } ///< Step forward (steps > 0) or backward (steps < 0)
+
+    int lineStep(int steps) { return isNull() ? 0 : me().lineStep(steps); } ///< Step lines forward (steps > 0) or backward (steps < 0)
+
+    void assign(const TextCursor &other) { if (!isNull()) me().assign(other); } ///< Assign a deep-copy of \a other
+
+    bool operator==(const TextCursor &b) const { return offset() == b.offset(); } ///< Equal to operator
+
+    bool operator!=(const TextCursor &b) const { return offset() != b.offset(); } ///< Not equal to operator
+
+protected:
+    friend class Object;
+
+    struct State: public Object::State
+    {
+        virtual TextCursor copy() const = 0;
+        virtual void assign(const TextCursor &other) = 0;
+        virtual int step(int steps) = 0;
+        virtual int lineStep(int steps) = 0;
+
+        Point posA_;
+        Point posB_;
+        int offset_ { 0 };
+        int runIndex_ { 0 };
+        int clusterIndex_ { 0 };
+        int glyphIndex_ { 0 };
+    };
+
+    explicit TextCursor(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+inline String str(const TextCursor &cursor)
+{
+    if (!cursor) return "TextCursor{}";
+
+    return Format{}
+        << "TextCursor {" << nl
+        << "  posA: " << cursor.posA() << nl
+        << "  posB: " << cursor.posB() << nl
+        // << "  advance: " << cursor.advance() << nl
+        << "  offset: " << cursor.offset() << nl
+        << "}";
+}
+
+} // namespace cc::ui

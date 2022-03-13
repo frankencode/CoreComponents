@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,108 +8,77 @@
 
 #pragma once
 
-#include <cc/ui/Control>
-#include <cc/ui/Timer>
+#include <cc/ui/Flickable>
+#include <cc/ui/ScrollBar>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class ScrollView: public Control
+/** \class ScrollView cc/ui/ScrollView
+  * \ingroup ui
+  * \brief Scrollable view
+  */
+class ScrollView: public View
 {
 public:
-    class Instance: public Control::Instance
-    {
-    public:
-        Property<double> maxFlyTime { 1.5 };
-        Property<double> maxSpeed { [=]{ return 3 * max(size()); } };
-        Property<double> minHoldTime { 0.1 };
-        Property<double> boundary { dp(60) };
-        Property<double> maxBounceTime { 0.6 };
-        Property<double> traverseTime { 0.5 };
-
-        Property<double> wheelGranularity { 3 * std::ceil(style()->itemHeight2()) };
-        Property<double> maxWheelTime { 0.1 };
-        Property<bool> wheelInversion { style()->wheelInversion() };
-        Property<bool> wheelBouncing { true };
-
-        View carrier() const { return carrier_; } // FIXME: obsolete
-
-    protected:
-        friend class Object;
-        friend class ScrollView;
-
-        Instance(const View &carrier = View{nullptr});
-        ~Instance();
-
-        virtual View createCarrier(); // FIXME: obsolete
-        virtual void preheat();
-
-        virtual void positionCarrierOnResize();
-
-        void resetCarrier();
-
-        bool carrierAtRest() const { return carrierAtRest_; }
-
-    private:
-        void insertChild(View child) override;
-        View setLayout(const Layout &layout) override;
-
-        bool carrierInsideBoundary() const;
-        Point carrierStep(Point p, double b = 0);
-
-        void carrierFlyStart();
-        void carrierBounceStart();
-        void carrierTraverseStart(Step distance);
-        void carrierStop();
-        void timerStop();
-
-        void carrierFly();
-        void carrierBounce();
-        void carrierTraverse();
-        void carrierStopped();
-
-        void keepFocusControlInView();
-
-        Property<Control> focusControl { Control{nullptr} };
-
-        View carrier_ { nullptr };
-        bool isDragged_ { false };
-        Point dragStart_;
-        Point carrierOrigin_;
-
-        Point lastDragPos_;
-        double lastDragTime_;
-        double releaseSpeedMagnitude_;
-        Step speed_;
-
-        enum class TimerMode { Stopped, Flying, Bouncing, Traversing };
-        TimerMode timerMode_ { TimerMode::Stopped };
-
-        Timer timer_ { 1./60 };
-        double lastTime_;
-
-        Point startPos_;
-        Point finalPos_;
-
-        bool wasFlying_ { false };
-        bool carrierAtRest_ { true };
-    };
-
+    /** Create a primordial scroll view
+      */
     ScrollView():
-        Control{new Instance}
+        View{onDemand<State>}
     {}
 
-    ScrollView(double width, double height):
-        Control{new Instance}
+    /** Create a new scroll view
+      */
+    explicit ScrollView(Out<ScrollView> self):
+        View{new State}
     {
-        (*this)->size = Size{width, height};
+        self = *this;
     }
 
-    ScrollView(Instance *instance):
-        Control{instance}
-    {}
+    /** Create a new scroll view of size (\a width, \a height)
+      */
+    ScrollView(double width, double height, Out<ScrollView> self = None{}):
+        View{new State}
+    {
+        size(Size{width, height});
+        self = *this;
+    }
 
-    Instance *operator->() const { return my<Instance>(); }
+    /** Create a new scroll view with custom \a carrier
+      */
+    explicit ScrollView(const View &carrier, Out<ScrollView> self = None{}):
+        View{new State{carrier}}
+    {
+        self = *this;
+    }
+
+    /** Get the carrier
+      */
+    View carrier() const { return me().flickable_.carrier(); }
+
+    /** Get scroll bar auto hide mode
+      */
+    bool scrollBarAutoHide() const { return me().scrollBarAutoHide(); }
+
+    /** %Set scroll bar auto hide mode
+      */
+    ScrollView &scrollBarAutoHide(bool newValue) { me().scrollBarAutoHide(newValue); return *this; }
+
+protected:
+    struct State: public View::State
+    {
+        State(const View &carrier = Carrier{});
+
+        Property<bool> scrollBarAutoHide { true };
+        Property<void> scrollMonitor;
+        Property<void> carrierMonitor;
+
+        Flickable flickable_;
+        ScrollBar vScroll_;
+        ScrollBar hScroll_;
+    };
+
+    State &me() { return View::me().as<State>(); }
+    const State &me() const { return View::me().as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

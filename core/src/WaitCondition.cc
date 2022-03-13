@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,54 +7,50 @@
  */
 
 #include <cc/WaitCondition>
-#ifndef NDEBUG
-#include <cc/check>
-#endif
-#include <cc/exceptions>
-#include <pthread.h>
+#include <cassert>
 #include <cmath>
 
 namespace cc {
 
-WaitCondition::Instance::Instance()
+WaitCondition::WaitCondition()
 {
     int ret = pthread_cond_init(&cond_, nullptr);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
-WaitCondition::Instance::~Instance()
+WaitCondition::~WaitCondition()
 {
     #ifndef NDEBUG
     int ret =
     #endif
     pthread_cond_destroy(&cond_);
     #ifndef NDEBUG
-    check(ret == 0);
+    assert(ret == 0);
     #endif
 }
 
-void WaitCondition::Instance::wait(Mutex &mutex)
+void WaitCondition::wait(Mutex &mutex)
 {
     int ret = -1;
-    while (true) {
-        ret = pthread_cond_wait(&cond_, &mutex->mutex_);
-        if (ret != EINTR) break;
-    }
+    do {
+        ret = pthread_cond_wait(&cond_, &mutex.mutex_);
+    } while (ret == EINTR);
+
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
-bool WaitCondition::Instance::waitUntil(double timeout, Mutex &mutex)
+bool WaitCondition::waitUntil(double time, Mutex &mutex)
 {
     bool success = true;
     struct timespec ts;
     double sec = 0;
-    ts.tv_nsec = std::modf(timeout, &sec) * 1e9;
+    ts.tv_nsec = std::modf(time, &sec) * 1e9;
     ts.tv_sec = sec;
     int ret = -1;
-    while (true) {
-        ret = pthread_cond_timedwait(&cond_, &mutex->mutex_, &ts);
-        if (ret != EINTR) break;
-    }
+    do {
+        ret = pthread_cond_timedwait(&cond_, &mutex.mutex_, &ts);
+    } while (ret == EINTR);
+
     if (ret != 0) {
         if (ret == ETIMEDOUT)
             success = false;
@@ -64,13 +60,13 @@ bool WaitCondition::Instance::waitUntil(double timeout, Mutex &mutex)
     return success;
 }
 
-void WaitCondition::Instance::signal()
+void WaitCondition::signal()
 {
     int ret = pthread_cond_signal(&cond_);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
-void WaitCondition::Instance::broadcast()
+void WaitCondition::broadcast()
 {
     int ret = pthread_cond_broadcast(&cond_);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);

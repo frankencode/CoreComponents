@@ -1,0 +1,22 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/HttpServiceInstance>
+
+namespace cc {
+
+class EchoInstance final: public HttpServiceInstance
+{
+public:
+    EchoInstance(const MetaObject &config);
+
+private:
+    struct State;
+};
+
+} // namespace cc

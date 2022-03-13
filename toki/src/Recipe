@@ -1,5 +1,0 @@
-Library {
-    name: cctoki
-    bundle: themes/*
-    use: [ core, syntax, glob, meta ]
-}

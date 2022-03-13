@@ -1,60 +1,54 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
+#include <cc/TxtTestReport>
+#include <cc/TestSuite>
 #include <cc/stdio>
-#include <cc/testing/TxtTestReport>
 
 namespace cc {
-namespace testing {
-
-TxtTestReport::TxtTestReport()
-{}
 
 bool TxtTestReport::captureOutput() const
 {
     return false;
 }
 
-void TxtTestReport::beginTestSuite(TestSuite *testSuite)
+void TxtTestReport::beginTestSuite(const TestSuite &testSuite)
 {}
 
-void TxtTestReport::skipTestCase(TestCase *testCase)
+void TxtTestReport::beginTestCase(const TestCase &testCase)
 {
-    fout("Test case \"%%\": SKIPPED\n") << testCase->name();
+    fout("%%: %%::run()\n") << TestSuite{}.name() << testCase.name();
     fout("...........................................................\n");
 }
 
-void TxtTestReport::beginTestCase(TestCase *testCase)
-{
-    fout("%%: %%::run()\n") << TestSuite::instance()->name() << testCase->name();
-    fout("...........................................................\n");
-}
-
-void TxtTestReport::verify(TestCase *testCase, bool condition, const String &message, const String &codePath, int codeLine)
+void TxtTestReport::verify(const TestCase &testCase, bool condition, const String &message, const String &codePath, int codeLine)
 {
     if (!condition) {
         fout("FAILED: %%:%%: CC_VERIFY(%%)\n")
-            << codePath->fileName() << codeLine << message;
+            << codePath.fileName() << codeLine << message;
     }
 }
 
-void TxtTestReport::error(TestCase *testCase, const String &type, const String &message)
+void TxtTestReport::error(const TestCase &, const String &type, const String &message)
 {
     fout("CAUGHT EXCEPTION %%: %%\n") << type << message;
 }
 
-void TxtTestReport::endTestCase(TestCase *testCase, const String &outText, const String &errText)
+void TxtTestReport::endTestCase(const TestCase &testCase, const String &, const String &)
 {
     fout("...........................................................\n");
-    fout("%%\n\n") << (testCase->passed() ? "PASSED" : "FAILED");
+    fout("%%\n\n") << (testCase.passed() ? "PASSED" : "FAILED");
 }
 
-void TxtTestReport::endTestSuite(TestSuite *testSuite)
+void TxtTestReport::skipTestCase(const TestCase &testCase)
 {}
 
-}} // namespace cc::testing
+void TxtTestReport::endTestSuite(const TestSuite &testSuite)
+{}
+
+} // namespace cc

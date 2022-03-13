@@ -1,4 +1,0 @@
-Application {
-    name: cctap
-    use: [ core, net ]
-}

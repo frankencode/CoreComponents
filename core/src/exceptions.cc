@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,96 +7,48 @@
  */
 
 #include <cc/exceptions>
-#include <cc/Format>
-#include <cc/ResourceContext>
-#include <string.h> // strerror_r
-#include <signal.h>
+#include <cc/str>
 
 namespace cc {
 
-String DebugError::message() const
+String OutputExhaustion::message() const
 {
-    return Format{} << reason_ << " (" << String{source_}->fileName() << ":" << line_ << ")";
+    return "Output exhaustion";
 }
 
-String systemError(int errorCode)
+String InputExhaustion::message() const
 {
-    String buf{1023};  // HACK, save bet
-    const char *unknown = "Unknown error";
-    memcpy(mutate(buf)->chars(), unknown, strlen(unknown) + 1);
-#ifdef __USE_GNU
-    return strerror_r(errorCode, mutate(buf)->chars(), buf->count());
-#else
-    /*int ret = */strerror_r(errorCode, mutate(buf)->chars(), buf->count());
-    return buf;
-#endif
-}
-
-String SystemError::message() const
-{
-    return systemError(errorCode_);
-}
-
-String SystemResourceError::message() const
-{
-    return Format{} << systemError(errorCode_) << ": \"" << resource_ << "\""
-        #ifndef NDEBUG
-        << " (" << String{source_}->fileName() << ":" << line_ << ")"
-        #endif
-        ;
-}
-
-String SystemDebugError::message() const
-{
-    return Format() << systemError(errorCode_) << " (" << String{source_}->fileName() << ":" << line_ << ")";
-}
-
-TextError::TextError(const String &text, int offset, const String &resource):
-    text_{text},
-    offset_{offset},
-    resource_{resource != "" ? resource : ResourceContext::instance()->top()}
-{}
-
-String SemanticError::message() const
-{
-    Format Format;
-    if (offset_ >= 0) {
-        int line = 0, pos = 0;
-        text_->offsetToLinePos(offset_, &line, &pos);
-        if (resource_ != "") Format << resource_ << ":";
-        Format << line << ":" << pos << ": ";
-    }
-    Format << reason_;
-    return Format;
+    return "Input exhaustion";
 }
 
 String Timeout::message() const
 {
-    return "Operation timed out";
+    return "Operation timeout";
 }
 
-String ConnectionResetByPeer::message() const
+String HelpRequest::message() const
 {
-    return "Connection reset by peer";
+    return "No help, yet ...";
 }
 
-TransferError::TransferError(const String &details):
-    details_{details}
-{}
-
-String TransferError::message() const
+String VersionRequest::message() const
 {
-    return String{"Data transfer failed: "} + details_;
+    return "Application is not versioned, yet ...";
 }
 
-String PermissionError::message() const
+String PropertyBindingLoop::message() const
 {
-    return "Insufficient permission to perform operation";
+    return "Property binding loop detected";
 }
 
 String CommandNotFound::message() const
 {
-    return Format{"Command not found: '%%'"} << command_;
+    return List<String>{} << "Command not found: '" << command_ << "'";
+}
+
+String DebugError::message() const
+{
+    return List<String>{} << source_ << ":" << str(line_) << ": " << reason_;
 }
 
 } // namespace cc

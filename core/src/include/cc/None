@@ -1,0 +1,19 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \class None cc/None
+  * \brief Type of an unused return value
+  * \see \ref InOut
+  */
+class None {};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,71 +7,31 @@
  */
 
 #include <cc/ui/FtLibrary>
-#include <cc/exceptions>
-#include <cc/Format>
-#include <cc/ThreadLocalSingleton>
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include FT_MODULE_H
+#include <cc/DEBUG>
 #include <freetype/ftlcdfil.h>
+#include <cassert>
 
-namespace cc {
-namespace ui {
-
-FtLibrary *FtLibrary::instance()
-{
-    return ThreadLocalSingleton<FtLibrary>::instance();
-}
-
-FT_Library FtLibrary::ftLibrary()
-{
-    return library_;
-}
+namespace cc::ui {
 
 FtLibrary::FtLibrary():
-    memory_{&memoryRec_}
-{
-    memory_->user = 0;
-    #if 0
-    memory_->alloc = FtLibrary::alloc;
-    memory_->free = FtLibrary::free;
-    memory_->realloc = FtLibrary::realloc;
-    FT_Error error = FT_New_Library(memory_, &library_);
-    if (error != 0)
-        CC_DEBUG_ERROR(Format{"Failed to initialize the freetype library (error = %%)"} << error);
-    FT_Add_Default_Modules(library_); // FIXME: select needed modules specifically
-    #endif
-    FT_Error error = FT_Init_FreeType(&library_);
-    if (error != 0)
-        CC_DEBUG_ERROR(Format{"Failed to initialize the freetype library (error = %%)"} << error);
+    ThreadLocalSingleton{instance<State>()}
+{}
 
-    // FT_Library_SetLcdFilter(library_, FT_LCD_FILTER_DEFAULT);
+FtLibrary::State::State()
+{
+    #ifndef NDEBUG
+    FT_Error error =
+    #endif
+    FT_Init_FreeType(&library_);
+    assert(error == 0);
+
+    // error = FT_Library_SetLcdFilter(library_, FT_LCD_FILTER_DEFAULT);
+    // if (error != 0) CC_DEBUG << "Failed to enable default LCD fitler";
 }
 
-FtLibrary::~FtLibrary()
+FtLibrary::State::~State()
 {
     FT_Done_FreeType(library_);
 }
 
-#if 0
-void *FtLibrary::alloc(FT_Memory /*memory*/, long size)
-{
-    return Memory::allocate(size);
-}
-
-void FtLibrary::free(FT_Memory /*memory*/, void *block)
-{
-    Memory::free(block);
-}
-
-void *FtLibrary::realloc(FT_Memory /*memory*/, long currentSize, long newSize, void *block)
-{
-    void *newBlock = Memory::allocate(newSize);
-    ::memcpy(newBlock, block, currentSize < newSize ? currentSize : newSize);
-    Memory::free(block);
-    return newBlock;
-}
-#endif
-
-}} // namespace cc::ui
+} // namespace cc::ui

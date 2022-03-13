@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/StreamSocket>
+
+namespace cc {
+
+/** \internal
+  * \class HttpClientConnection cc/HttpClientConnection
+  * \ingroup http_server
+  * \brief %Connection information needed for connection queueing
+  */
+class HttpClientConnection final: public Object
+{
+public:
+    HttpClientConnection() = default;
+
+    explicit HttpClientConnection(const StreamSocket &stream, const SocketAddress &localAddress):
+        Object{new State{stream, localAddress}}
+    {}
+
+    StreamSocket stream() const { return me().stream_; }
+
+    SocketAddress localAddress() const { return me().localAddress_; }
+    SocketAddress peerAddress() const { return me().stream_.address(); }
+
+    int priority() const { return me().priority_; }
+    void setPriority(int newPriority) { me().priority_ = newPriority; }
+
+    uint64_t originAddress() const { return me().originAddress_; }
+    double arrivalTime() const { return me().arrivalTime_; }
+    double departureTime() const { return me().departureTime_; }
+
+    void updateDepartureTime();
+
+private:
+    struct State: public Object::State
+    {
+        State(const StreamSocket &stream, const SocketAddress &localAddress);
+
+        StreamSocket stream_;
+        SocketAddress localAddress_;
+        int priority_;
+        uint64_t originAddress_;
+        double arrivalTime_;
+        double departureTime_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

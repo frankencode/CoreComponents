@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,23 +8,24 @@
 
 #pragma once
 
-#include <exception>
 #include <cc/String>
+#include <exception>
 
 namespace cc {
 
 /** \class Exception cc/Exception
-  * \brief Root class of the exception class hierarchy
-  * \see exceptions, std::current_exception()
+  * \ingroup exceptions
+  * \brief %Abstract base class for exceptions
   */
 class Exception: public std::exception
 {
 public:
+    /** Generate error message for debug output
+      */
     virtual String message() const = 0;
 
+private:
     const char* what() const throw() override;
-
-    const Exception *operator->() const { return this; }
 };
 
 inline String str(const Exception &ex) { return ex.message(); }

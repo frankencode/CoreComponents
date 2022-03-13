@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,40 +7,36 @@
  */
 
 #include <cc/ui/FtFontFace>
-#include <cc/ui/FtLibrary>
-#include <cc/Format>
-#include <cc/exceptions>
+#include <cc/ui/exceptions>
+#include <cc/input>
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include FT_GLYPH_H
-#include FT_TRUETYPE_TABLES_H
+namespace cc::ui {
 
-namespace cc {
-namespace ui {
-
-Ref<FtFontFace> FtFontFace::open(const String &path)
+class FtFontError: public FontError
 {
-    return (new FtFontFace{path})->open();
-}
+public:
+    FtFontError(const String &path, FT_Error error):
+        path_{path},
+        error_{error}
+    {}
 
-FtFontFace::FtFontFace(const String &path):
-    ftLibrary_{FtLibrary::instance()},
-    path_{path}
-{}
+    String message() const override
+    {
+        return Format{"Failed to load font face \"%%\": error = %%\n"} << path_ << error_;
+    }
 
-FtFontFace::~FtFontFace()
+private:
+    String path_;
+    FT_Error error_;
+};
+
+FtFontFace::State::State(const String &path):
+    FontFace::State{path}
 {
-    FT_Done_Face(face_);
-}
+    FT_Error error = FT_New_Face(ftLibrary_.ftLibrary(), path_, 0, &face_);
+    if (error) throw FtFontError(path_, error);
 
-FtFontFace *FtFontFace::open()
-{
-    FT_Error error = FT_New_Face(ftLibrary_->ftLibrary(), path_, 0, &face_);
-    if (error != 0)
-        CC_DEBUG_ERROR(Format{"Failed to load font face (path = \"%%\", index = %%)\n"} << path_ << 0);
-
-    family_ = face_->family_name;
+    family_ = normalize(face_->family_name);
 
     TT_OS2 *os2 = (TT_OS2 *)FT_Get_Sfnt_Table(face_, ft_sfnt_os2);
     if (os2) weight_ = static_cast<Weight>(os2->usWeightClass / 100);
@@ -50,21 +46,25 @@ FtFontFace *FtFontFace::open()
 
     slant_ = (face_->style_flags & FT_STYLE_FLAG_ITALIC) ? Slant::Italic : Slant::Normal;
     pitch_ = (face_->face_flags & FT_FACE_FLAG_FIXED_WIDTH) ? Pitch::Fixed : Pitch::Variable;
-
-    return this;
 }
 
-String FtFontFace::toString() const
+FtFontFace::State::~State()
 {
-    return Format{}
-        << "FtFontFace {" << nl
-        << "  family:  " << family_ << nl
-        << "  weight:  " << weight_ << nl
-        << "  slant:   " << slant_ << nl
-        << "  stretch: " << stretch_ << nl
-        << "  pitch:   " << pitch_ << nl
-        << "  path:    " << path_ << nl
-        << "}";
+    if (face_) FT_Done_Face(face_);
 }
 
-}} // namespace cc::ui
+FtFontFace::FtFontFace(const String &path):
+    FontFace{new State{path}}
+{}
+
+FT_Face FtFontFace::ftFace() const
+{
+    return me().face_;
+}
+
+const FtFontFace::State &FtFontFace::me() const
+{
+    return Object::me.as<State>();
+}
+
+} // namespace cc::ui

@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/BlockCipher>
+
+namespace cc {
+
+/** \class AesBlockCipher cc/AesBlockCipher
+  * \ingroup crypto
+  * \brief Rijndael Block Cipher according to the American Encryption Standard (AES / FIPS-197)
+  */
+class AesBlockCipher final: public BlockCipher
+{
+public:
+    /** %Block size of the cipher in bytes
+      */
+    static constexpr int BlockSize = 16;
+
+    /** Create a null AES cipher
+      */
+    AesBlockCipher() = default;
+
+    /** Create a new AES block cipher
+      * \param key 128, 192 or 256 bit key (16, 24 or 32 bytes)
+      */
+    explicit AesBlockCipher(const Bytes &key);
+
+private:
+    struct State;
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -13,48 +13,18 @@
 namespace cc {
 
 /** \class NullStream cc/NullStream
-  * \ingroup binary_io
-  * \brief Zero storage information dump
+  * \ingroup streams
+  * \brief Read zeros and discard writes
   */
 class NullStream: public Stream
 {
 public:
-    class Instance: public Stream::Instance
-    {
-    public:
-        int read(CharArray *data) override
-        {
-            data->fill(0);
-            return data->count();
-        }
-
-        void write(const CharArray *data) override
-        {}
-
-        void write(const StringList &parts) override
-        {}
-
-        bool isReadOnly() const override
-        {
-            return true;
-        }
-
-    private:
-        friend class NullStream;
-
-        Instance() = default;
-    };
-
-    NullStream():
-        Stream{instance()}
-    {}
+    /** Create a new null stream
+      */
+    NullStream();
 
 private:
-    static Instance *instance()
-    {
-        static thread_local Instance instance_;
-        return &instance_;
-    }
+    struct State;
 };
 
 } // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,102 +8,68 @@
 
 #pragma once
 
-#include <cc/Dir>
-#include <cc/Source>
 #include <cc/String>
+#include <cc/SourceIterator>
+#include <cc/Object>
 
 namespace cc {
-
-class Dir;
 
 /** \class DirWalker cc/DirWalker
   * \ingroup file_system
   * \brief Recursive directory tree traversal
-  * \see Dir
   */
-class DirWalker
+class DirWalker: public Object
 {
 public:
-    class Instance: public Source<String>
-    {
-    public:
-        /// Maximum recursive tree traversal depth (or -1 if none)
-        int maxDepth() const { return maxDepth_; }
+    using Item = String; ///< Item type
 
-        /// \copydoc maxDepth()
-        void setMaxDepth(int depth) { maxDepth_ = depth; }
-
-        /// Overstep hidden files and directories during recursive tree traversal (defaults to false)
-        bool ignoreHidden() const { return ignoreHidden_; }
-
-        /// \copydoc ignoreHidden()
-        void setIgnoreHidden(bool on) { ignoreHidden_ = on; }
-
-        /// Follow symbolic links during recursive tree traversal (defaults to false)
-        bool followSymlink() const { return followSymlink_; }
-
-        /// \copydoc followSymlink()
-        void setFollowSymlink(bool on) { followSymlink_ = on; }
-
-        /// Child-first recursive tree traversal order (defaults to false)
-        bool deleteOrder() const { return deleteOrder_; }
-
-        /// \copydoc deleteOrder()
-        void setDeleteOrder(bool on) { deleteOrder_ = on; }
-
-        /** Read next file or directory path
-          * \param path return the file or directory path
-          * \param isDir true if the return path points to a directory
-          * \return true if not end of information
-          */
-        bool read(String *path, bool *isDir);
-
-        /** Read next file or directory path
-          * \param path return the file or directory path
-          * \return true if not end of information
-          */
-        bool read(String *path) { return read(path, nullptr); }
-
-        Source<String> *source() { return this; }
-
-    private:
-        friend class DirWalker;
-
-        Instance(const String &path);
-        Instance(const String &path, const Dir &dir);
-
-        int maxDepth_;
-        bool ignoreHidden_;
-        bool followSymlink_;
-        bool deleteOrder_;
-        int depth_;
-        Dir dir_;
-        Ref<Instance> child_;
-    };
-
-    using Iterator = Instance::Iterator;
-
+    /** Create a null directory walker
+      */
     DirWalker() = default;
 
-    /** Open a directory for recursive tree traversal
-      * \param path directory path
+    /** Open directory at \a path for recursive tree traversal
       */
-    DirWalker(const String &path):
-        instance_{new Instance{path}}
-    {}
+    explicit DirWalker(const String &path);
 
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return instance_; }
+    /** Read next path
+      * \param path Returns the next path
+      * \param isDir True if the returned path points to a directory
+      * \return True if not end of information
+      */
+    bool read(Out<String> path, Out<bool> isDir = None{});
+
+    /** %Set maximum tree traversal recursion depth (or -1 if none)
+      */
+    void setMaxDepth(int depth);
+
+    /** Ignore hidden files and directories during recursive tree traversal (defaults to false)
+      */
+    void setIgnoreHidden(bool on);
+
+    /** Follow symbolic links during recursive tree traversal (defaults to false)
+      */
+    void setFollowSymlink(bool on);
+
+    /** Child-first recursive tree traversal order (defaults to false)
+      */
+    void setDeleteOrder(bool on);
+
+    /** Iteration start
+      */
+    SourceIterator<DirWalker> begin() { return SourceIterator<DirWalker>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<DirWalker> end() { return SourceIterator<DirWalker>{}; }
 
 private:
-    DirWalker(const String &path, const Dir &dir):
-        instance_{new Instance{path, dir}}
-    {}
+    // template<class>
+    // friend class SourceIterator;
 
-    Ref<Instance> instance_;
+    struct State;
+
+    State &me();
+    const State &me() const;
 };
-
-inline DirWalker::Iterator begin(DirWalker &walker) { return walker->begin(); }
-inline DirWalker::Iterator end  (DirWalker &walker) { return walker->end(); }
 
 } // namespace cc

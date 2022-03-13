@@ -1,52 +1,38 @@
-/*
- * Copyright (C) 2007-2019 Frank Mertens.
- *
- * Distribution and use is allowed under the terms of the zlib license
- * (see cc/LICENSE-zlib).
- *
- */
-
-#include <cc/testing/TestSuite>
 #include <cc/Process>
-#include <cc/Spawn>
-#include <cc/DEBUG>
-#include <cc/stdio>
+#include <cc/Command>
+#include <cc/testing>
 
-using namespace cc;
-using namespace cc::testing;
-
-static String execPath;
-
-class SimpleSpawnTest: public TestCase
+int main(int argc, char *argv[])
 {
-    void run() override
+    using namespace cc;
+
+    TestCase {
+        "SimpleSpawning",
+        []{
+            String execPath = Process::execPath();
+            CC_INSPECT(execPath);
+            int ret = Process{execPath + " test"}.wait();
+            CC_CHECK(ret == 7);
+        }
+    };
+
+    TestCase
     {
-        int ret = Process{execPath + " test"}->wait();
-        CC_VERIFY(ret == 7);
-    }
-};
-
-class SimpleEchoTest: public TestCase
-{
-    void run() override
-    {
-        Spawn spawn { execPath + " echo" };
-        String message = "Hello, echo!";
-        spawn->input()->write(message);
-        spawn->input()->close();
-        CC_DEBUG;
-        String reply = spawn->output()->readAll();
-        CC_INSPECT(message);
-        CC_INSPECT(reply);
-        CC_VERIFY(message == reply);
-        int ret = spawn->wait();
-        CC_VERIFY(ret == 11);
-    }
-};
-
-int main(int argc, char **argv)
-{
-    execPath = argv[0];
+        "SimpleEcho",
+        []{
+            String execPath = Process::execPath();
+            Process process{execPath + " echo"};
+            String message = "Hello, echo!";
+            process.input().write(message);
+            process.input().close();
+            String reply = process.output().readAll();
+            CC_INSPECT(message);
+            CC_INSPECT(reply);
+            CC_CHECK(message == reply);
+            int ret = process.wait();
+            CC_CHECK(ret == 11);
+        }
+    };
 
     if (argc == 2) {
         if (String{argv[1]} == "test") {
@@ -54,13 +40,10 @@ int main(int argc, char **argv)
             return 7;
         }
         if (String{argv[1]} == "echo") {
-            stdIn()->transferTo(stdOut());
+            IoStream::output().write(IoStream::input().readAll());
             return 11;
         }
     }
 
-    CC_TESTSUITE_ADD(SimpleSpawnTest);
-    CC_TESTSUITE_ADD(SimpleEchoTest);
-
-    return TestSuite::instance()->run(argc, argv);
+    return TestSuite{argc, argv}.run();
 }

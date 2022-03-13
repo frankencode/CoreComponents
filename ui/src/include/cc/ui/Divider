@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/ui/View>
+
+namespace cc::ui {
+
+/** \class Divider cc/ui/Divider
+  * \ingroup ui
+  * \brief Horizontal dividing line
+  */
+class Divider final: public View
+{
+public:
+    /** Create a primordial divider
+      */
+    Divider();
+
+    /** Create a new divider
+      */
+    explicit Divider(Out<Divider> self);
+
+    Color color() const { return me().color(); } ///< Get color
+    Divider &color(Color newValue) { me().color(newValue); return *this; } ///< %Set color
+
+    double thickness() const { return me().thickness(); } ///< Get thickness
+    Divider &thickness(double newValue) { me().thickness(newValue); return *this; } ///< %Set thickness
+
+private:
+    struct State: public View::State
+    {
+        State();
+
+        Size preferredSize() const override;
+        Size minSize() const override;
+        Size maxSize() const override;
+
+        Property<Color> color;
+        Property<double> thickness;
+    };
+
+    State &me() { return View::me().as<State>(); }
+    const State &me() const { return View::me().as<State>(); }
+};
+
+} // namespace cc::ui

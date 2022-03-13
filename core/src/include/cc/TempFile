@@ -14,29 +14,15 @@ namespace cc {
 
 /** \class TempFile cc/TempFile
   * \ingroup file_system
-  * \brief Convenience class to create temporary files
+  * \brief Temporary files
   */
 class TempFile: public File
 {
 public:
-    class Instance: public File::Instance
-    {
-    private:
-        friend class TempFile;
-
-        Instance():
-            File::Instance{File::createTemp(), FileOpen::ReadWrite}
-        {}
-
-        ~Instance()
-        {
-            File::unlink(path());
-        }
-    };
-
-    /// Create and open a temporary file
+    /** Open a new temporary file
+      */
     TempFile():
-        File{new Instance}
+        File{File::createTemp(), FileOpen::ReadWrite|FileOpen::Temporary}
     {}
 };
 

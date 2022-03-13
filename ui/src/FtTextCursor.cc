@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,109 +8,65 @@
 
 #include <cc/ui/FtTextCursor>
 #include <cc/ui/FtTextRun>
-#include <cc/Format>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-FtTextCursor::FtTextCursor(const FtTextRun *ftTextRun):
-    ftTextRun_{ftTextRun},
-    byteOffset_{0},
-    runIndex_{0},
-    clusterIndex_{0},
-    glyphIndex_{0}
-{}
-
-FtTextCursor::FtTextCursor(const FtTextCursor *other):
-    ftTextRun_{other->ftTextRun_},
-    posA_{other->posA_},
-    posB_{other->posB_},
-    byteOffset_{other->byteOffset_},
-    runIndex_{other->runIndex_},
-    clusterIndex_{other->clusterIndex_},
-    glyphIndex_{other->glyphIndex_}
-{}
-
-Point FtTextCursor::advance() const
+FtTextCursor FtTextCursor::State::self() const
 {
-    return ftTextRun_ ? ftTextRun_->advance(this) : Point{};
+    return Object::alias<FtTextCursor>(this);
 }
 
-bool FtTextCursor::isValid() const
+TextCursor FtTextCursor::State::copy() const
 {
-    return ftTextRun_;
+    return FtTextCursor{new State{*this}};
 }
 
-int FtTextCursor::step(int steps)
+void FtTextCursor::State::assign(const TextCursor &other)
 {
-    if (!isValid()) return false;
-    return ftTextRun_->moveTextCursor(this, steps);
+    if (!other) return;
+
+    State &otherState = other.as<FtTextCursor>().me();
+
+    if (textRun_ != otherState.textRun_)
+        textRun_ = otherState.textRun_;
+
+    as<TextCursor::State>() = otherState;
 }
 
-int FtTextCursor::lineStep(int steps)
+int FtTextCursor::State::step(int steps)
+{
+    FtTextCursor movingCursor = self();
+    return textRun_.moveTextCursor(movingCursor, steps);
+}
+
+int FtTextCursor::State::lineStep(int steps)
 {
     int stepsMoved = 0;
-    if (steps != 0 && isValid()) {
-        Ref<FtTextCursor> movingCursor = this;
+
+    if (steps != 0) {
+        FtTextCursor movingCursor = self();
+        int offsetSaved = offset_;
         for (; steps < 0; ++steps) {
-            Ref<FtTextCursor> aboveCursor = ftTextRun_->getNearestTextCursorAbove(movingCursor);
-            if (aboveCursor->byteOffset() == byteOffset()) break;
+            FtTextCursor aboveCursor = textRun_.getNearestTextCursorAbove(movingCursor).as<FtTextCursor>();
+            if (aboveCursor.offset() == offsetSaved) break;
             movingCursor = aboveCursor;
             ++stepsMoved;
         }
         for (; steps > 0; --steps) {
-            Ref<FtTextCursor> belowCursor = ftTextRun_->getNearestTextCursorBelow(movingCursor);
-            if (belowCursor->byteOffset() == byteOffset()) break;
+            FtTextCursor belowCursor = textRun_.getNearestTextCursorBelow(movingCursor).as<FtTextCursor>();
+            if (belowCursor.offset() == offsetSaved) break;
             movingCursor = belowCursor;
             ++stepsMoved;
         }
-        posA_ = movingCursor->posA_;
-        posB_ = movingCursor->posB_;
-        byteOffset_ = movingCursor->byteOffset_;
-        runIndex_ = movingCursor->runIndex_;
-        clusterIndex_ = movingCursor->clusterIndex_;
-        glyphIndex_ = movingCursor->glyphIndex_;
+        posA_ = movingCursor.me().posA_;
+        posB_ = movingCursor.me().posB_;
+        offset_ = movingCursor.me().offset_;
+        runIndex_ = movingCursor.me().runIndex_;
+        clusterIndex_ = movingCursor.me().clusterIndex_;
+        glyphIndex_ = movingCursor.me().glyphIndex_;
     }
+
     return stepsMoved;
 }
 
-Ref<TextCursor> FtTextCursor::copy() const
-{
-    return ftCopy();
-}
-
-Ref<FtTextCursor> FtTextCursor::ftCopy() const
-{
-    return Object::create<FtTextCursor>(this);
-}
-
-void FtTextCursor::assign(const TextCursor *other)
-{
-    const FtTextCursor *target = Object::cast<const FtTextCursor *>(other);
-    if (target) {
-        ftTextRun_    = target->ftTextRun_;
-        posA_         = target->posA_;
-        posB_         = target->posB_;
-        byteOffset_   = target->byteOffset_;
-        runIndex_     = target->runIndex_;
-        clusterIndex_ = target->clusterIndex_;
-        glyphIndex_   = target->glyphIndex_;
-    }
-}
-
-String FtTextCursor::toString() const
-{
-    return Format{}
-        << "FtTextCursor {" << nl
-        << "  posA: " << posA_ << nl
-        << "  posB: " << posB_ << nl
-        << "  advance: " << advance() << nl
-        << "  byteOffset: " << byteOffset_ << nl
-        << "  isValid: " << isValid() << nl
-        << "  runIndex: " << runIndex_ << nl
-        << "  clusterIndex: " << clusterIndex_ << nl
-        << "  glyphIndex: " << glyphIndex_ << nl
-        << "}";
-}
-
-}} // namespace cc::ui
+} // namespace cc::ui

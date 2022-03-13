@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,32 +8,26 @@
 
 #pragma once
 
-#include <cc/ui/IconVisual>
+#include <cc/ui/Visual>
 #include <cc/ui/Font>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class GlyphVisual: public IconVisual
+/** \class GlyphVisual cc/ui/GlyphVisual
+  * \ingroup ui
+  * \brief %Visual representation of a single glyph
+  */
+class GlyphVisual final: public Visual
 {
-    friend class Object;
-
 public:
-    Property<Font> font;
+    /** Create a new glyph visual
+      * \param ch %Unicode point
+      * \param font %Font to use
+      */
+    explicit GlyphVisual(uint32_t ch, const Font &font = Font{});
 
-    static Ref<GlyphVisual> create(uchar_t ch, const Font &font = Font{}) {
-        return Object::create<GlyphVisual>(ch, font);
-    }
-
-    void paint(Painter &p) override;
-
-private:
-    GlyphVisual(uchar_t ch, const Font &initialFont);
-
-    Property< Ref<GlyphRun> > glyphRun_;
-    Property<Size> preferredSize_;
-
-    String s_;
+protected:
+    struct State;
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

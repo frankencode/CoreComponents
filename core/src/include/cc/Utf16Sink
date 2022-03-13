@@ -1,107 +1,104 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#pragma once
-
 #include <cc/ByteSink>
+#include <cc/exceptions>
 
 namespace cc {
 
 /** \class Utf16Sink cc/Utf16Sink
   * \ingroup unicode
-  * \brief %Unicode UTF-16 encoding data sink
+  * \brief UTF-16 encoding data sink
+  * \exception UnicodeError
   */
 class Utf16Sink
 {
 public:
-    class Instance
+    /** Create a new UTF-16 encoding data sink
+      * \param stream Underlying data stream
+      * \param endian Byte order of the 16-bit words transmitted
+      */
+    Utf16Sink(const Stream &stream, ByteOrder endian = ByteOrder::BigEndian):
+        byteSink_{stream},
+        endian_{endian}
+    {}
+
+    /** Create a new UTF-16 encoding data sink
+      * \param stream Underlying data stream
+      * \param buffer Output buffer
+      * \param endian Byte order of the 16-bit words transmitted
+      */
+    Utf16Sink(const Stream &stream, const Bytes &buffer, ByteOrder endian = ByteOrder::BigEndian):
+        byteSink_{stream, buffer},
+        endian_{endian}
+    {}
+
+    /** Create a new UTF-16 encoding data sink
+      * \param buffer Output buffer
+      * \param endian Byte order of the 16 bit words transmitted
+      */
+    Utf16Sink(const Bytes &buffer, ByteOrder endian = ByteOrder::BigEndian):
+        byteSink_{buffer},
+        endian_{endian}
+    {}
+
+    /** Write the optional Byte Order Mark (BOM).
+      * The BOM is the first 16 bit word of the transmission.
+      * It signifies the byte order for the following words.
+      * (The value of the BOM is 0xFEFF).
+      */
+    void writeByteOrderMark()
     {
-    public:
-        /** Write the optional Byte-Order-Mark (BOM).
-          * The Byte-Order-Mark is a 16 bit word at the beginning of the transmission.
-          * It signifies the endianess used for UTF-16 encoding. The value of the BOM
-          * is 0xFEFF.
-          */
-        void writeByteOrderMark()
-        {
-            byteSink_->writeUInt16(0xFEFF);
-        }
+        byteSink_.writeUInt16(0xFEFF);
+    }
 
-        /** Write an %Unicode character
-          * \param ch %Unicode character
-          */
-        void write(uchar_t ch)
-        {
-            if (ch < 0x10000) {
-                if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw SurrogatePairEncodingError{};
-                else if ((ch == 0xFEFF) || (ch == 0xFFFE)) throw ByteOrderMarkEncodingError{};
-                byteSink_->writeUInt16(ch);
-            }
-            else {
-                if (0x10FFFF < ch) throw LargeCodePointEncodingError{};
-                ch -= 0x10000;
-                byteSink_->writeUInt16((ch >> 10) + 0xD800);
-                byteSink_->writeUInt16((ch & 0x3FF) + 0xDC00);
-            }
-        }
-
-        /// Return the total number of bytes written
-        off_t bytesWritten() const
-        {
-            return byteSink_->currentOffset();
-        }
-
-    private:
-        friend class Utf16Sink;
-
-        Instance(const Stream &stream, CharArray* buffer, ByteOrder endian):
-            byteSink_{stream, buffer, endian}
-        {}
-
-        class SurrogatePairEncodingError: public UnicodeError {
-        public:
-            String message() const override;
-        };
-
-        class ByteOrderMarkEncodingError: public UnicodeError {
-        public:
-            String message() const override;
-        };
-
-        class LargeCodePointEncodingError: public UnicodeError {
-        public:
-            String message() const override;
-        };
-
-        ByteSink byteSink_;
-    };
-
-    /** Open a new UTF-16 encoding data sink
-      * \param stream underlying data stream
-      * \param buffer output buffer (optional)
-      * \param endian endianess of the 16 bit words transmitted
+    /** Write an %Unicode character \a ch
       */
-    Utf16Sink(const Stream &stream, CharArray *buffer = nullptr, ByteOrder endian = ByteOrder::BigEndian):
-        instance_{stream, buffer, endian}
-    {}
+    void write(char32_t ch)
+    {
+        if (ch < 0x10000) {
+            if ((0xD800 <= ch) && (ch <= 0xDFFF)) throw SurrogatePairEncodingError{};
+            else if ((ch == 0xFEFF) || (ch == 0xFFFE)) throw ByteOrderMarkEncodingError{};
+            byteSink_.writeUInt16(ch);
+        }
+        else {
+            if (0x10FFFF < ch) throw LargeCodePointEncodingError{};
+            ch -= 0x10000;
+            byteSink_.writeUInt16((ch >> 10) + 0xD800);
+            byteSink_.writeUInt16((ch & 0x3FF) + 0xDC00);
+        }
+    }
 
-    /** Open a new UTF-16 encoding data sink
-      * \param buffer output buffer
-      * \param endian endianess of the 16 bit words transmitted
+    /** Get the total number of bytes written
       */
-    Utf16Sink(CharArray *buffer, ByteOrder endian = ByteOrder::BigEndian):
-        instance_{Stream{}, buffer, endian}
-    {}
-
-    Instance *operator->() { return &instance_; }
+    long long currentOffset() const
+    {
+        return byteSink_.currentOffset();
+    }
 
 private:
-    Instance instance_;
+    class SurrogatePairEncodingError: public UnicodeError {
+    public:
+        String message() const override;
+    };
+
+    class ByteOrderMarkEncodingError: public UnicodeError {
+    public:
+        String message() const override;
+    };
+
+    class LargeCodePointEncodingError: public UnicodeError {
+    public:
+        String message() const override;
+    };
+
+    ByteSink byteSink_;
+    ByteOrder endian_;
 };
 
 } // namespace cc

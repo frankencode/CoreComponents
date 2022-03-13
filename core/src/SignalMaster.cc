@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,32 +7,81 @@
  */
 
 #include <cc/SignalMaster>
-#include <cc/exceptions>
-#include <signal.h>
+#include <cc/Thread>
+#include <cc/SystemError>
 
 namespace cc {
 
-Ref<SignalMaster> SignalMaster::start(const SignalHandler &handler)
+struct SignalMaster::State: public Object::State
 {
-    Ref<SignalMaster> master = new SignalMaster{handler};
-    master->Thread::start();
-    return master;
+    State(const Channel<Signal> &signals, const SignalSet &shutdownSet):
+        signals_{signals},
+        shutdownSet_{shutdownSet}
+    {}
+
+    void start()
+    {
+        thread_ = Thread{[this]{ run(); }};
+        thread_.start();
+    }
+
+    void wait()
+    {
+        thread_.wait();
+    }
+
+    void kill(Signal signal)
+    {
+        thread_.kill(signal);
+    }
+
+    void run()
+    {
+        SignalSet all = SignalSet::full();
+        while (true) {
+            int signal = 0;
+            int error = ::sigwait(all, &signal);
+            if (error != 0) CC_SYSTEM_DEBUG_ERROR(error);
+            signals_.pushBack(static_cast<Signal>(signal));
+            if (shutdownSet_.contains(static_cast<Signal>(signal))) break;
+        }
+    }
+
+    Channel<Signal> signals_;
+    SignalSet shutdownSet_;
+    Thread thread_;
+};
+
+SignalSet SignalMaster::defaultShutdownSignals()
+{
+    SignalSet set = SignalSet::empty();
+    set.insert(Signal::Interrupt);
+    set.insert(Signal::Terminate);
+    return set;
 }
 
-SignalMaster::SignalMaster(const SignalHandler &handler):
-    handler_{handler}
+SignalMaster::SignalMaster(const Channel<Signal> &signals, const SignalSet &shutdownSet):
+    Object{new State{signals, shutdownSet}}
 {}
 
-void SignalMaster::run()
+void SignalMaster::start()
 {
-    auto all = SignalSet::full();
+    me().start();
+}
 
-    for (bool fin = false; !fin;) {
-        int signal = 0;
-        int error = ::sigwait(all, &signal);
-        if (error != 0) CC_SYSTEM_DEBUG_ERROR(error);
-        handler_(static_cast<SystemSignal>(signal), &fin);
-    }
+void SignalMaster::wait()
+{
+    me().wait();
+}
+
+void SignalMaster::kill(Signal signal)
+{
+    me().kill(signal);
+}
+
+SignalMaster::State &SignalMaster::me()
+{
+    return Object::me.as<State>();
 }
 
 } // namespace cc

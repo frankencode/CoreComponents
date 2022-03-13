@@ -1,0 +1,139 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SystemError>
+#include <cc/Stream>
+#include <cc/exceptions>
+#include <cc/bitmask>
+
+namespace cc {
+
+/** Shutdown mode for full-duplex communication channels
+  * \ingroup streams
+  * \see IoStream::shutdown()
+  */
+enum class IoShutdown: int {
+    Read  = 1, ///< Partially shutdown the communication channel for reading
+    Write = 2, ///< Partially shutdown the communication channel for writing
+    Full  = 4  ///< Fully shutdown the communication channel
+};
+
+inline int operator+(IoShutdown mode) { return static_cast<int>(mode); }
+
+/** \class IoStream cc/IoStream
+  * \ingroup streams
+  * \brief Base class for all system I/O streams
+  */
+class IoStream: public Stream
+{
+public:
+    /** Standard input stream
+      */
+    static IoStream &input();
+
+    /** Standard output stream
+      */
+    static IoStream &output();
+
+    /** Standard error stream
+      */
+    static IoStream &error();
+
+    /** Establish a full-duplex communication channel between \a a and \a b
+      */
+    static void pair(Out<IoStream> a, Out<IoStream> b);
+
+    /** Create a null I/O stream
+      */
+    IoStream() = default;
+
+    /** Create an I/O stream for file descriptor \a fd
+      */
+    explicit IoStream(int fd);
+
+    /** %File descriptor
+      */
+    int fd() const { return me().fd_; }
+
+
+    /** Manually close this I/O stream
+      */
+    void close() { shutdown(IoShutdown::Write); }
+
+    /** Manually shutdown this I/O stream
+      * \param mode Shutdown mode
+      */
+    void shutdown(IoShutdown mode = IoShutdown::Full);
+
+    /** Duplicate this I/O stream
+      * \param other The other I/O stream to take over
+      *
+      * The duplicate() method duplicates an entry in the file descriptor table.
+      *
+      * This for instance allows to set a file as standard input:
+      * ~~~~~~~~~~~~~
+      * File{"binary.dat"}.duplicateTo(stdIn());
+      * ~~~~~~~~~~~~~
+      * \see duplicate()
+      */
+    void duplicateTo(IoStream &other);
+
+    /** Duplicate I/O stream \a other
+      */
+    IoStream duplicate() const;
+
+    /** Check if this is a teletype (e.g. a pseudo-terminal)
+      */
+    bool isInteractive() const;
+
+    /** %Set echo mode of this I/O stream to \a on
+      */
+    void echo(bool on);
+
+    /** Issue an device control request
+      * \param request Device control request
+      * \param arg Request argument
+      * \return Value returned by the request or 0
+      */
+    int ioctl(int request, void *arg);
+
+    /** I/O scatter limit (in bytes)
+      */
+    long scatterLimit() const { return me().scatterLimit_; }
+
+    /** %Set the I/O scatter limit (in bytes)
+      */
+    void setScatterLimit(long newLimit) { me().scatterLimit_ = newLimit; }
+
+protected:
+    struct State: public Stream::State
+    {
+        State() = default;
+        State(int fd): fd_{fd} {}
+        ~State();
+
+        bool wait(IoEvent event, int interval = -1) override;
+        long read(Out<Bytes> buffer, long maxFill) override;
+        void write(const Bytes &buffer, long fill = -1) override;
+        void write(const List<Bytes> &buffers) override;
+
+        int fd_ { -1 };
+        long scatterLimit_ { 1 << 14 };
+    };
+
+    explicit IoStream(State *newState):
+        Stream{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

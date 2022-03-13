@@ -8,98 +8,246 @@
 
 #pragma once
 
-#include <initializer_list>
-#include <cc/QueueInstance>
-#include <cc/Format>
+#include <cc/bucket/Chain>
+#include <cc/Iterator>
+#include <cc/Shared>
+#include <cc/container>
 
 namespace cc {
 
-template<class T>
+template<class>
+class Array;
+
+/** \class Queue cc/Queue
+  * \ingroup container_lowlevel
+  * \brief Double-ended queue data container
+  * \tparam T Item type
+  * \tparam Access %Access policy
+  */
+template<class T, template<class> class Access = Shared>
 class Queue {
 public:
-    typedef QueueInstance<T> Instance;
+    using Item = T; ///< Item type
 
-    typedef typename Instance::Item Item; ///< item type
-    typedef typename Instance::Index Index; ///< index type
+    /** \name Construction and Assignment
+      */
+    ///@{
 
-    typedef typename Instance::Iterator Iterator; ///< iterator type
-    typedef typename Instance::ConstIterator ConstIterator; ///< constant iterator type
+    /** Construct an empty queue
+      */
+    Queue() = default;
 
-    typedef Iterator iterator; ///< \internal
-    typedef ConstIterator const_iterator; ///< \internal
+    /** Construct a copy of \a other
+      */
+    Queue(const Queue &other) = default;
 
-    Queue():
-        instance_{new Instance}
-    {}
-
-    Queue(std::initializer_list<T> b):
-        instance_{new Instance}
+    /** Construct with initial \a items
+      */
+    Queue(std::initializer_list<Item> items)
     {
-        for (auto &x: b) *instance_ << x;
+        for (const auto &x: items) pushBack(x);
     }
 
-    Queue(Instance *b):
-        instance_{b}
+    /** Take over the right-side \a other
+      */
+    Queue(Queue &&other):
+        me{std::move(other.me)}
     {}
 
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return Cow::get(instance_); }
+    /** Assign queue \a other
+      */
+    Queue &operator=(const Queue &other) = default;
 
-    operator const Instance *() const { return instance_; }
-    operator Instance *() { return Cow::get(instance_); }
+    /** Assign right-side queue \a other
+      */
+    Queue &operator=(Queue &&other)
+    {
+        me = std::move(other.me);
+        return *this;
+    }
 
-    Queue &operator<<(const T& x) { *instance_ << x; return *this; }
-    Queue &operator>>(T& x) { if (instance_->count() > 0) *instance_ >> x; return *this; }
+    ///@}
+
+    /** \name Item Access
+      */
+    ///@{
+
+    /** Get a locator pointing to the first item
+      */
+    Locator head() const { return me().head(); }
+
+    /** Get a locator pointing to the last item
+      */
+    Locator tail() const { return me().tail(); }
+
+    /** Get the number of items stored in the queue
+      */
+    long count() const { return me().count(); }
+
+    /** \copydoc count()
+      */
+    long size() const { return me().count(); }
+
+    /** \copydoc count()
+      */
+    long operator+() const { return me().count(); }
+
+    /** Get the constant reference to item at position \a pos
+      */
+    const Item &at(Locator pos) const
+    {
+        assert(pos);
+        return me().at(pos);
+    }
+
+    /** Get constant reference to first item
+      */
+    const Item &first() const
+    {
+        assert(count() > 0);
+        return me().first();
+    }
+
+    /** Get constant reference to last item
+      */
+    const Item &last() const
+    {
+        assert(count() > 0);
+        return me().last();
+    }
+
+    /** Tell if \a item is the first item
+      */
+    bool first(const Item &item) const
+    {
+        return &item == &first();
+    }
+
+    /** Tell if \a item is the last item
+      */
+    bool last(const Item &item) const
+    {
+        return &item == &last();
+    }
+
+    ///@}
+
+    /** \name Front and Back Operations
+      */
+    ///@{
+
+    /** Insert a new last item
+      * \param args construction arguments
+      */
+    template<class... Args>
+    void emplaceBack(Args... args) { me().emplaceBack(args...); }
+
+    /** Insert a new first item
+      * \param args construction arguments
+      */
+    template<class... Args>
+    void emplaceFront(Args... args) { me().emplaceFront(args...); }
+
+    /** Append \a item to the queue
+      */
+    void pushBack(const Item &item) { me().pushBack(item); }
+
+    /** Prepend \a item to the queue
+      */
+    void pushFront(const Item &item) { me().pushFront(item); }
+
+    /** Remove and return the last item in the queue
+      */
+    void popBack(Out<Item> item = None{}) { me().popBack(item); }
+
+    /** Remove and return the first item in the queue
+      */
+    void popFront(Out<Item> item = None{}) { me().popFront(item); }
+
+    /** Append \a item to the end of the queue
+      */
+    void operator<<(const Item& item)
+    {
+        pushBack(item);
+    }
+
+    /** Remove and return \a item from the front of the queue
+      */
+    void operator>>(Item& item)
+    {
+        if (count() > 0) popFront(&item);
+    }
+
+    ///@}
+
+    /** \name Global Operations
+      */
+    ///@{
+
+    /** Call function \a f for each item
+      * \tparam F Function type (lambda or functor)
+      * \param f Unary function which gets called for each item
+      */
+    template<class F>
+    void forEach(F f) const
+    {
+        for (auto &x: *this) f(x);
+    }
+
+    /** Convert to an array or list
+      * \tparam Item %Target item type
+      */
+    template<class Item>
+    Array<Item> toArray() const
+    {
+        Array<Item> array = Array<Item>::allocate(count());
+        long i = 0;
+        for (const auto &x: *this) array[i++] = x;
+        return array;
+    }
+
+    /** Remove all items
+      */
+    void deplete() { return me().deplete(); }
+
+    ///@}
+
+    using const_iterator = Iterator<const bucket::Chain<Item>>; ///< \internal Readonly value iterator
+    using const_reverse_iterator = ReverseIterator<const bucket::Chain<Item>>; ///< \internal Readonly reverse value iterator
+    using value_type = Item; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
+
+    /** \name Standard iterators
+      */
+    ///@{
+
+    const_iterator begin () const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+
+    const_reverse_iterator rbegin () const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+
+    ///@}
+
+    /** \name Comparism Operators
+      */
+    ///@{
+
+    template<class B> bool operator==(const B &b) const { return container::equal(*this, b); } ///< %Return true if this container equals \a b
+    template<class B> bool operator!=(const B &b) const { return container::differ(*this, b); } ///< %Return true if this container differs from \a b
+    template<class B> bool operator< (const B &b) const { return container::below(*this, b); } ///< %Return true if this container is lower than \a b
+    template<class B> bool operator> (const B &b) const { return container::above(*this, b); } ///< %Return true if this container is greater than \a b
+    template<class B> bool operator<=(const B &b) const { return container::belowOrEqual(*this, b); } ///< %Return true if this container is lower or equal than b
+    template<class B> bool operator>=(const B &b) const { return container::aboveOrEqual(*this, b); } ///< %Return true if this container is greater or equal than b
+
+    ///@}
 
 private:
-    Ref<Instance> instance_;
+    Access<bucket::Chain<Item>> me;
 };
-
-template<class T>
-typename Queue<T>::Index count(const Queue<T> &a) { return a->count(); }
-
-template<class T>
-typename Queue<T>::ConstIterator begin(const Queue<T> &a) { return a->begin(); }
-
-template<class T>
-typename Queue<T>::ConstIterator end(const Queue<T> &a) { return a->end(); }
-
-template<class T>
-typename Queue<T>::Iterator begin(Queue<T> &a) { return a->begin(); }
-
-template<class T>
-typename Queue<T>::Iterator end(Queue<T> &a) { return a->end(); }
-
-template<class T>
-bool operator==(const Queue<T> &a, const Queue<T> &b) { return container::compare(a, b) == 0; }
-
-template<class T>
-bool operator!=(const Queue<T> &a, const Queue<T> &b) { return container::compare(a, b) != 0; }
-
-template<class T>
-bool operator<(const Queue<T> &a, const Queue<T> &b) { return container::compare(a, b) < 0; }
-
-template<class T>
-bool operator>(const Queue<T> &a, const Queue<T> &b) { return container::compare(a, b) > 0; }
-
-template<class T>
-bool operator<=(const Queue<T> &a, const Queue<T> &b) { return container::compare(a, b) <= 0; }
-
-template<class T>
-bool operator>=(const Queue<T> &a, const Queue<T> &b) { return container::compare(a, b) >= 0; }
-
-template<class T>
-String str(const Queue<T> &a)
-{
-    Format f;
-    f << "[ ";
-    auto n = a->count();
-    for (const auto &x: a) {
-        f << x;
-        if (--n > 0) f << ", ";
-    }
-    f << " ]";
-    return f;
-}
 
 } // namespace cc

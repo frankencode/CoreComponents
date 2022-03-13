@@ -1,144 +1,152 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/Singleton>
-#include <cc/syntax/IntegerSyntax>
+#include <cc/IntegerSyntax>
+#include <cc/InOut>
 
 namespace cc {
-namespace syntax {
 
-const IntegerSyntax *IntegerSyntax::instance()
+struct IntegerSyntax::State: public SyntaxDefinition::State
 {
-    return Singleton<IntegerSyntax>::instance();
-}
+    SyntaxRule plusMinus {
+        OneOf{'+', '-'}
+    };
+
+    SyntaxRule binary {
+        Sequence {
+            Literal{"0b"},
+            Repeat{1, 256, OneOf{'0', '1'}}
+        }
+    };
+
+    SyntaxRule octal {
+        Sequence {
+            Char{'0'},
+            Repeat{1, 24, Within{'0', '9'}}
+        }
+    };
+
+    SyntaxRule hexadecimal {
+        Sequence {
+            Literal{"0x"},
+            Repeat{1, 20,
+                Choice{
+                    Within{'0', '9'},
+                    Within{'a', 'f'},
+                    Within{'A', 'F'}
+                }
+            }
+        }
+    };
+
+    SyntaxRule decimal {
+        Repeat{1, 20,
+            Within{'0', '9'}
+        }
+    };
+
+    SyntaxRule integer {
+        Sequence{
+            Repeat{0, 1, &plusMinus},
+            Choice{
+                &binary,
+                &octal,
+                &hexadecimal,
+                &decimal
+            },
+            Not{
+                OneOf{'.', 'e', 'E'}
+            }
+        }
+    };
+
+    State():
+        SyntaxDefinition::State{&integer}
+    {}
+
+    void read(Out<uint64_t> value, Out<int> sign, const String &text, const Token &token) const
+    {
+        sign = 1;
+        value = 0;
+
+        Token child = token.children().first();
+
+        if (child.rule() == plusMinus)
+        {
+            if (text.at(child) == '-') sign = -1;
+            child = *(++token.children().begin());
+        }
+
+        if (child.rule() == decimal)
+        {
+            for (long i = child.range()[0]; i < child.range()[1]; ++i)
+            {
+                value *= 10;
+                value += text.at(i) - '0';
+            }
+        }
+        else if (child.rule() == hexadecimal)
+        {
+            for (long i = child.range()[0] + 2; i < child.range()[1]; ++i)
+            {
+                char x = text.at(i);
+                if (('0' <= x) && (x <= '9')) x -= '0';
+                else if (('a' <= x) && (x <= 'z')) x -= 'a' - 10;
+                else if (('A' <= x) && (x <= 'Z')) x -= 'A' - 10;
+                value *= 16;
+                value += x;
+            }
+        }
+        else if (child.rule() == binary)
+        {
+            for (long i = child.range()[0] + 2; i < child.range()[1]; ++i)
+            {
+                value *= 2;
+                value += text.at(i) - '0';
+            }
+        }
+        else if (child.rule() == octal)
+        {
+            for (long i = child.range()[0] + 1; i < child.range()[1]; ++i)
+            {
+                value *= 8;
+                value += text.at(i) - '0';
+            }
+        }
+    }
+
+    Token read(Out<uint64_t> value, Out<int> sign, const String &text, long offset) const
+    {
+        String section = (offset == 0) ? text : String{text}.select(offset, text.count());
+        Token token = match(section);
+        if (token) read(value, sign, text, token);
+        return token;
+    }
+};
 
 IntegerSyntax::IntegerSyntax()
 {
-    SYNTAX("int");
-
-    sign_ = DEFINE("Sign", RANGE("+-"));
-
-    binNumber_ =
-        DEFINE("BinNumber",
-            GLUE(
-                STRING("0b"),
-                REPEAT(1, 256, RANGE('0', '1'))
-            )
-        );
-
-    octNumber_ =
-        DEFINE("OctNumber",
-            GLUE(
-                CHAR('0'),
-                REPEAT(1, 24, RANGE('0', '9'))
-            )
-        );
-
-    hexNumber_ =
-        DEFINE("HexNumber",
-            GLUE(
-                STRING("0x"),
-                REPEAT(1, 20,
-                    CHOICE(
-                        RANGE('0', '9'),
-                        RANGE('a', 'f'),
-                        RANGE('A', 'F')
-                    )
-                )
-            )
-        );
-
-    decNumber_ =
-        DEFINE("DecNumber",
-            REPEAT(1, 20,
-                RANGE('0', '9')
-            )
-        );
-
-    literal_ =
-        DEFINE("Literal",
-            GLUE(
-                REPEAT(0, 1, REF("Sign")),
-                CHOICE(
-                    REF("BinNumber"),
-                    REF("OctNumber"),
-                    REF("HexNumber"),
-                    REF("DecNumber")
-                ),
-                NOT(RANGE(".eE"))
-            )
-        );
-
-    ENTRY("Literal");
-    LINK();
+    initOnce<State>();
 }
 
-void IntegerSyntax::read(uint64_t *value, int *sign, const CharArray *text, const Token *token) const
+void IntegerSyntax::read(Out<uint64_t> value, Out<int> sign, const String &text, const Token &token) const
 {
-    *sign = 1;
-    *value = 0;
-
-    token = token->firstChild();
-
-    if (token->rule() == sign_)
-    {
-        if (text->at(token->i0()) == '-')
-            *sign = -1;
-        token = token->nextSibling();
-    }
-
-    if (token->rule() == binNumber_)
-    {
-        for (int i = token->i0() + 2; i < token->i1(); ++i)
-        {
-            int x = text->at(i) - '0';
-            *value *= 2;
-            *value += x;
-        }
-    }
-    else if (token->rule() == octNumber_)
-    {
-        for (int i = token->i0() + 1; i < token->i1(); ++i)
-        {
-            int x = text->at(i) - '0';
-            *value *= 8;
-            *value += x;
-        }
-    }
-    else if (token->rule() == hexNumber_)
-    {
-        for (int i = token->i0() + 2; i < token->i1(); ++i)
-        {
-            int x = text->at(i);
-            if (('0' <= x) && (x <= '9')) x -= '0';
-            else if (('a' <= x) && (x <= 'z')) x -= 'a' - 10;
-            else if (('A' <= x) && (x <= 'Z')) x -= 'A' - 10;
-            *value *= 16;
-            *value += x;
-        }
-    }
-    else if (token->rule() == decNumber_)
-    {
-        for (int i = token->i0(); i < token->i1(); ++i)
-        {
-            int x = text->at(i) - '0';
-            *value *= 10;
-            *value += x;
-        }
-    }
+    me().read(value, sign, text, token);
 }
 
-Ref<Token> IntegerSyntax::read(uint64_t *value, int *sign, const CharArray *text, int i) const
+Token IntegerSyntax::read(Out<uint64_t> value, Out<int> sign, const String &text, long offset) const
 {
-    Ref<Token> token = match(text, i)->rootToken();
-    if (token)
-        read(value, sign, text, token);
-    return token;
+    return me().read(value, sign, text, offset);
 }
 
-}} // namespace cc::syntax
+const IntegerSyntax::State &IntegerSyntax::me() const
+{
+    return Object::me.as<State>();
+}
+
+} // namespace cc

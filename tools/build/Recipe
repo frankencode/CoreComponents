@@ -1,3 +1,4 @@
-Package {
-    include: [ src ]
+Application {
+    name: cc_build
+    use: [ core, glob, meta ]
 }

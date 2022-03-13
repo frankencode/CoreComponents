@@ -1,0 +1,192 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Locator>
+#include <iterator>
+
+namespace cc {
+
+/** \class Iterator cc/Iterator
+  * \brief Value iterator
+  * \tparam Container %Container type
+  */
+template<class Container>
+class Iterator:
+    public std::iterator<
+        /*iterator_category*/ std::bidirectional_iterator_tag,
+        /*value_type*/        typename Container::Item,
+        /*difference_type*/   long,
+        /*pointer*/           typename Container::Item *,
+        /*reference*/         typename Container::Item &
+    >
+{
+    template<class T, bool addConst>
+    struct MakeAccessType {};
+
+    template<class T>
+    struct MakeAccessType<T, true> { using Type = const T; };
+
+    template<class T>
+    struct MakeAccessType<T, false> { using Type = T; };
+
+public:
+    using Item = typename Container::Item; ///< Item type
+    using Access = typename MakeAccessType<Item, std::is_const<Container>::value>::Type; ///< Item access type
+
+    /** Create a value iterator from the locator \a pos
+      */
+    Iterator(const Locator &pos):
+        pos_{pos}
+    {}
+
+    /** Get access to current item value
+      */
+    Access &operator*() const { return Container::template value<Access>(pos_); }
+
+    /** %Return the index value of the iterator (unary plus operator)
+      */
+    long operator+() const { return +pos_; }
+
+    /** Step to the next item (prefix increment operator)
+      */
+    Iterator &operator++() { ++pos_; return *this; }
+
+    /** Step to the previous item (prefix decrement operator)
+      */
+    Iterator &operator--() { --pos_;  return *this; }
+
+    /** Step to the next item and return the old iterator value (postfix increment operator)
+      */
+    Iterator operator++(int) { Iterator it2 = *this; ++pos_; return it2; }
+
+    /** Step to the previous item and return the old iterator value (postfix decrement operator)
+      */
+    Iterator operator--(int) { Iterator it2 = *this; --pos_; return it2; }
+
+    /** Get iterator value stepped \a delta items forward (addition operator)
+      */
+    Iterator operator+(long delta) { return Iterator{pos_ + delta}; }
+
+    /** Get iterator value stepped \a delta items backward (substraction operator)
+      */
+    Iterator operator-(long delta) { return Iterator{pos_ - delta}; }
+
+    /** Get distance between this and another iterator (substraction operator)
+      */
+    long operator-(const Iterator &b) const { return pos_ - b.pos_; }
+
+    bool operator==(const Iterator &b) const { return pos_ == b.pos_; } ///< Equal to operator
+    bool operator!=(const Iterator &b) const { return pos_ != b.pos_; } ///< Not equal to operator
+    bool operator< (const Iterator &b) const { return pos_ <  b.pos_; } ///< Less than operator
+    bool operator> (const Iterator &b) const { return pos_ >  b.pos_; } ///< Greater than operator
+    bool operator<=(const Iterator &b) const { return pos_ <= b.pos_; } ///< Less than or equal to operator
+    bool operator>=(const Iterator &b) const { return pos_ >= b.pos_; } ///< Greater than or equal to operator
+
+    /** Check if this iterator is valid (explicitly cast to bool)
+      */
+    explicit operator bool() const { return bool(pos_); }
+
+    /** Convert to locator type (implicity type conversion)
+      */
+    operator Locator() const { return pos_; }
+
+private:
+    Locator pos_;
+};
+
+/** \class ReverseIterator cc/Iterator
+  * \brief Reverse value iterator
+  * \tparam Container %Container type
+  */
+template<class Container>
+class ReverseIterator:
+    public std::iterator<
+        /*iterator_category*/ std::bidirectional_iterator_tag,
+        /*value_type*/        typename Container::Item,
+        /*difference_type*/   long,
+        /*pointer*/           typename Container::Item *,
+        /*reference*/         typename Container::Item &
+    >
+{
+    template<class T, bool addConst>
+    struct MakeAccessType {};
+
+    template<class T>
+    struct MakeAccessType<T, true> { using Type = const T; };
+
+    template<class T>
+    struct MakeAccessType<T, false> { using Type = T; };
+
+public:
+    using Item = typename Container::Item; ///< Item type
+    using Access = typename MakeAccessType<Item, std::is_const<Container>::value>::Type; ///< Item access type
+
+    /** Create a value iterator from locator \a pos
+      */
+    ReverseIterator(const Locator &pos):
+        pos_{pos}
+    {}
+
+    /** Get access to current item value
+      */
+    Access &operator*() const { return Container::template value<Access>(pos_); }
+
+    /** %Return the index value of the iterator (unary plus operator)
+      */
+    long operator+() const { return +pos_; }
+
+    /** Step to the next item (prefix increment operator)
+      */
+    ReverseIterator &operator++() { --pos_; return *this; }
+
+    /** Step to the previous item (prefix decrement operator)
+      */
+    ReverseIterator &operator--() { ++pos_;  return *this; }
+
+    /** Step to the next item and return the old iterator value (postfix increment operator)
+      */
+    ReverseIterator operator++(int) { ReverseIterator it2 = *this; --pos_; return it2; }
+
+    /** Step to the previous item and return the old iterator value (postfix decrement operator)
+      */
+    ReverseIterator operator--(int) { ReverseIterator it2 = *this; ++pos_; return it2; }
+
+    /** Get iterator value stepped \a delta items forward (addition operator)
+      */
+    ReverseIterator operator+(long delta) { return ReverseIterator{pos_ - delta}; }
+
+    /** Get iterator value stepped \a delta items backward (substraction operator)
+      */
+    ReverseIterator operator-(long delta) { return ReverseIterator{pos_ + delta}; }
+
+    /** Get distance between this and another iterator (substraction operator)
+      */
+    long operator-(const ReverseIterator &b) const { return pos_ - b.pos_; }
+
+    bool operator==(const ReverseIterator &b) const { return pos_ == b.pos_; } ///< Equal to operator
+    bool operator!=(const ReverseIterator &b) const { return pos_ != b.pos_; } ///< Not equal to operator
+    bool operator< (const ReverseIterator &b) const { return pos_ <  b.pos_; } ///< Less than operator
+    bool operator> (const ReverseIterator &b) const { return pos_ >  b.pos_; } ///< Greater than operator
+    bool operator<=(const ReverseIterator &b) const { return pos_ <= b.pos_; } ///< Less than or equal to operator
+    bool operator>=(const ReverseIterator &b) const { return pos_ >= b.pos_; } ///< Greater than or equal to operator
+
+    /** Check if this iterator is valid (explicitly cast to bool)
+      */
+    explicit operator bool() const { return bool(pos_); }
+
+    /** Convert to locator type (implicit type conversion)
+      */
+    operator Locator() const { return pos_; }
+
+private:
+    Locator pos_;
+};
+
+} // namespace cc

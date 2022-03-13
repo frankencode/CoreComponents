@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,17 +8,19 @@
 
 #include <cc/ui/PasswordField>
 #include <cc/ui/PasswordInput>
+#include <cc/ui/PasswordInputState>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-PasswordField::Instance::Instance(const String &label, const String &bullet):
-    InputField::Instance{PasswordInput{bullet}, label}
-{}
-
-String PasswordField::Instance::password() const
+PasswordField::PasswordField(const String &label, Out<PasswordField> self):
+    TextField{PasswordInput{}, label}
 {
-    return input_->as<PasswordInput>()->password();
+    self = *this;
 }
 
-}} // namespace cc::ui
+String PasswordField::password() const
+{
+    return input().as<PasswordInput>().password();
+}
+
+} // namespace cc::ui

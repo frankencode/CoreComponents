@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpMessage>
+#include <cc/HttpStream>
+
+namespace cc {
+
+class LineSource;
+
+/** \class HttpMessageParser cc/HttpMessageParser
+  * \ingroup http_protocol
+  * \brief HTTP message parser
+  */
+class HttpMessageParser: public Object
+{
+public:
+    /** Create a null HTTP message parser
+      */
+    HttpMessageParser() = default;
+
+    /** Read next HTTP message
+      * \param message Returns the next message
+      */
+    void readMessage(Out<HttpMessage> message) { return me().readMessage(message); }
+
+    /** Payload has been fully consumed
+      */
+    bool isPayloadConsumed() const { return me().isPayloadConsumed(); }
+
+protected:
+    friend class HttpMessageGenerator;
+
+    struct State: public Object::State
+    {
+        State(const Stream &stream);
+
+        bool isPayloadConsumed() const;
+
+        void readMessage(Out<HttpMessage> message);
+        virtual void onFirstLineReceived(const String &line, HttpMessage &message) {}
+        virtual void onHeaderReceived(HttpMessage &message) {}
+
+        HttpStream httpStream_;
+        String lineBuffer_;
+    };
+
+    explicit HttpMessageParser(State *newState);
+
+    const State &me() const { return Object::me.as<State>(); }
+    State &me() { return Object::me.as<State>(); }
+};
+
+} // namespace cc

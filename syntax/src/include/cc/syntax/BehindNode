@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/LookBehindNode>
+
+namespace cc::syntax {
+
+/** \class BehindNode cc/syntax/BehindNode
+  * \brief Match a given sub-expression behind the current text position
+  */
+class BehindNode final: public LookBehindNode<0>
+{
+public:
+    /** \param entry Sub-expression to match
+      */
+    explicit BehindNode(const SyntaxNode &entry):
+        LookBehindNode<0>{entry}
+    {}
+};
+
+} // namespace cc::syntax

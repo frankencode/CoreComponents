@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/BlockCipher>
+#include <cc/Stream>
+
+namespace cc {
+
+/** \class BlockCipherSource cc/BlockCipherSource
+  * \ingroup crypto
+  * \brief %Block cipher input stream
+  */
+class BlockCipherSource final: public Stream
+{
+public:
+    /** Create a new block cipher input stream
+      * \param source %Source to read the ciphertext from
+      * \param cipher %Block cipher to use for decrypting the ciphertext
+      */
+    BlockCipherSource(const Stream &source, const BlockCipher &cipher);
+
+private:
+    struct State;
+};
+
+} // namespace cc

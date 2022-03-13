@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,194 +7,142 @@
  */
 
 #include <cc/ui/Painter>
-#include <cc/ui/Surface>
+#include <cc/ui/FtScaledFont>
 #include <cc/ui/FtGlyphRun>
 #include <cc/ui/FtTextRun>
+#include <cc/ui/Surface>
 #include <cairo/cairo.h>
 #include <cmath>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-Painter::Instance::Instance(Surface::Instance *surface):
-    cr_{cairo_create(surface->cairoSurface())}
+static_assert(+LineJoin::Miter == CAIRO_LINE_JOIN_MITER);
+static_assert(+LineJoin::Round == CAIRO_LINE_JOIN_ROUND);
+static_assert(+LineJoin::Bevel == CAIRO_LINE_JOIN_BEVEL);
+
+static_assert(+LineCap::Butt == CAIRO_LINE_CAP_BUTT);
+static_assert(+LineCap::Round == CAIRO_LINE_CAP_ROUND);
+static_assert(+LineCap::Square == CAIRO_LINE_CAP_SQUARE);
+
+Painter::Painter(const Surface &surface):
+    Painter{&const_cast<Surface &>(surface).me()}
+{}
+
+Painter::Painter(Surface::State *state)
 {
-    surface->polish();
+    state->polish();
+    cr_ = cairo_create(state->cairoSurface());
 }
 
-Painter::Instance::~Instance()
+void Painter::save()
 {
-    cairo_destroy(cr_);
+    cairo_save(cr_);
 }
 
-void Painter::Instance::newPath()
+void Painter::restore()
+{
+    cairo_restore(cr_);
+}
+
+void Painter::nextPage(bool clear)
+{
+    if (clear)
+        cairo_show_page(cr_);
+    else
+        cairo_copy_page(cr_);
+}
+
+void Painter::newPath()
 {
     cairo_new_path(cr_);
 }
 
-void Painter::Instance::newSubPath()
+void Painter::newSubPath()
 {
     cairo_new_sub_path(cr_);
 }
 
-void Painter::Instance::closePath()
+void Painter::closePath()
 {
     cairo_close_path(cr_);
 }
 
-bool Painter::Instance::hasCurrentPoint() const
+bool Painter::hasCurrentPoint() const
 {
     return cairo_has_current_point(cr_);
 }
 
-Point Painter::Instance::currentPoint() const
+Point Painter::currentPoint() const
 {
-    Point p;
-    cairo_get_current_point(cr_, &p[0], &p[1]);
-    return p;
+    Point c;
+    cairo_get_current_point(cr_, &c[0], &c[1]);
+    return c;
 }
 
-void Painter::Instance::moveTo(Point nextPoint)
+void Painter::moveTo(Point c)
 {
-    cairo_move_to(cr_, nextPoint[0], nextPoint[1]);
+    cairo_move_to(cr_, c[0], c[1]);
 }
 
-void Painter::Instance::lineTo(Point nextPoint)
+void Painter::lineTo(Point c)
 {
-    cairo_line_to(cr_, nextPoint[0], nextPoint[1]);
+    cairo_line_to(cr_, c[0], c[1]);
 }
 
-void Painter::Instance::curveTo(Point controlPointA, Point controlPointB, Point endPoint)
+void Painter::curveTo(Point a, Point b, Point c)
 {
     cairo_curve_to(
         cr_,
-        controlPointA[0], controlPointA[1],
-        controlPointB[0], controlPointB[1],
-        endPoint[0], endPoint[1]
+        a[0], a[1],
+        b[0], b[1],
+        c[0], c[1]
     );
 }
 
-void Painter::Instance::arc(Point center, double radius, double startAngle, double stopAngle)
+void Painter::arc(Point m, double r, double alpha0, double alpha1)
 {
-    cairo_arc(cr_, center[0], center[1], radius, startAngle, stopAngle);
+    cairo_arc(cr_, m[0], m[1], r, alpha0, alpha1);
 }
 
-void Painter::Instance::arcNegative(Point center, double radius, double startAngle, double stopAngle)
+void Painter::arcNegative(Point m, double r, double alpha0, double alpha1)
 {
-    cairo_arc_negative(cr_, center[0], center[1], radius, startAngle, stopAngle);
+    cairo_arc_negative(cr_, m[0], m[1], r, alpha0, alpha1);
 }
 
-void Painter::Instance::relMoveTo(Step delta)
+void Painter::rectangle(Point pos, Size size)
 {
-    cairo_rel_move_to(cr_, delta[0], delta[1]);
+    cairo_rectangle(cr_, pos[0], pos[1], size[0], size[1]);
 }
 
-void Painter::Instance::relLineTo(Step delta)
+Rect Painter::pathExtents() const
 {
-    cairo_rel_line_to(cr_, delta[0], delta[1]);
+    double x0 = 0;
+    double y0 = 0;
+    double x1 = 0;
+    double y1 = 0;
+    cairo_path_extents(cr_, &x0, &y0, &x1, &y1);
+    return Rect{Point{x0, y0}, Size{x1-x0, y1-y0}};
 }
 
-void Painter::Instance::relCurveTo(Step deltaA, Step deltaB, Step deltaE)
+Rect Painter::fillExtents() const
 {
-    cairo_curve_to(
-        cr_,
-        deltaA[0], deltaA[1],
-        deltaB[0], deltaB[1],
-        deltaE[0], deltaE[1]
-    );
+    double x0 = 0;
+    double y0 = 0;
+    double x1 = 0;
+    double y1 = 0;
+    cairo_fill_extents(cr_, &x0, &y0, &x1, &y1);
+    return Rect{Point{x0, y0}, Size{x1-x0, y1-y0}};
 }
 
-void Painter::Instance::rectangle(Point position, Size size)
+void Painter::showGlyphRun(Point pos, const GlyphRun &glyphRun)
 {
-    cairo_rectangle(cr_, position[0], position[1], size[0], size[1]);
-}
+    FtGlyphRun ftGlyphRun = glyphRun.as<FtGlyphRun>();
+    auto ftScaledFont = glyphRun.scaledFont().as<FtScaledFont>();
 
-void Painter::Instance::circle(Point center, double radius)
-{
-    cairo_arc(cr_, center[0], center[1], radius, 0, 2 * M_PI);
-}
+    if (ftGlyphRun.text().count() == 0) return;
+    if (ftGlyphRun.cairoGlyphs().count() == 0) return;
 
-void Painter::Instance::setSource(Color Color)
-{
-    if (Color->isOpaque()) {
-        cairo_set_source_rgb(
-            cr_,
-            Color->red()   / 255.,
-            Color->green() / 255.,
-            Color->blue()  / 255.
-        );
-    }
-    else {
-        cairo_set_source_rgba(
-            cr_,
-            Color->red()   / 255.,
-            Color->green() / 255.,
-            Color->blue()  / 255.,
-            Color->alpha() / 255.
-        );
-    }
-}
-
-void Painter::Instance::fill()
-{
-    cairo_fill(cr_);
-    checkForError();
-}
-
-void Painter::Instance::fillPreserve()
-{
-    cairo_fill_preserve(cr_);
-    checkForError();
-}
-
-void Painter::Instance::fillGlyphRunBackground(const FtGlyphRun *ftGlyphRun)
-{
-    Color Color = ftGlyphRun->font()->paper();
-    if (!Color->isValid()) return;
-
-    setSource(Color);
-
-    Ref<const FontMetrics> metrics = ftGlyphRun->font()->getMetrics();
-    double dy0 = metrics->ascender() + (metrics->lineHeight() - (metrics->ascender() - metrics->descender())) / 2;
-
-    int byteOffset = 0;
-    int glyphOffset = 0;
-
-    const cairo_glyph_t *glyph0 = &ftGlyphRun->cairoGlyphs()->at(0);
-
-    for (int clusterIndex = 0, clusterCount = ftGlyphRun->cairoTextClusters()->count(); clusterIndex < clusterCount + 1; ++clusterIndex)
-    {
-        const cairo_text_cluster_t *cluster = 0;
-        if (clusterIndex < clusterCount) cluster = &ftGlyphRun->cairoTextClusters()->at(clusterIndex);
-
-        const cairo_glyph_t *glyph = 0;
-
-        if (glyphOffset < ftGlyphRun->cairoGlyphs()->count()) glyph = &ftGlyphRun->cairoGlyphs()->at(glyphOffset);
-
-        if (!glyph || glyph->y != glyph0->y) {
-            double x1 = (!glyph || glyph->y != glyph0->y) ? ftGlyphRun->size()[0] : glyph->x;
-            rectangle(
-                Point{glyph0->x, glyph0->y - dy0},
-                Size{x1 - glyph0->x, metrics->lineHeight()}
-            );
-            fill();
-
-            glyph0 = glyph;
-        }
-
-        if (cluster) {
-            byteOffset += cluster->num_bytes;
-            glyphOffset += cluster->num_glyphs;
-        }
-    }
-}
-
-void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
-{
-    if (glyphRun->text()->count() == 0) return;
-
-    const FtGlyphRun *ftGlyphRun = Object::cast<const FtGlyphRun *>(glyphRun);
-    cairo_set_scaled_font(cr_, ftGlyphRun->ftScaledFont()->cairoScaledFont());
+    cairo_set_scaled_font(cr_, ftScaledFont.cairoScaledFont());
 
     cairo_matrix_t matrixSaved;
     cairo_get_matrix(cr_, &matrixSaved);
@@ -202,50 +150,50 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
 
     cairo_pattern_t *sourceSaved = 0;
 
-    if (glyphRun->font()->paper()->isValid()) {
+    if (glyphRun.font().paper().isValid()) {
         sourceSaved = cairo_pattern_reference(cairo_get_source(cr_));
         fillGlyphRunBackground(ftGlyphRun);
         cairo_set_source(cr_, sourceSaved);
     }
 
-    if (glyphRun->font()->ink()->isValid()) {
+    if (glyphRun.font().color().isValid()) {
         if (!sourceSaved) sourceSaved = cairo_pattern_reference(cairo_get_source(cr_));
-        setSource(glyphRun->font()->ink());
+        setPen(glyphRun.font().color());
     }
 
-    Decoration decoration = ftGlyphRun->font()->decoration();
+    Decoration decoration = ftGlyphRun.font().decoration();
     if (decoration != Decoration::None)
     {
         double u = 0;
         double v = 0; {
-            Ref<const FontMetrics> metrics = ftGlyphRun->font()->getMetrics();
-            v = metrics->underlineThickness();
-            if (+(decoration & Decoration::Underline))
-                u = -metrics->underlinePosition() + v / 2;
-            else if (+(decoration & Decoration::StrikeOut))
-                u = -2 * metrics->ascender() / 5 + v / 2;
+            FontMetrics metrics = ftGlyphRun.scaledFont().metrics();
+            v = metrics.underlineThickness();
+            if (decoration & Decoration::Underline)
+                u = -metrics.underlinePosition() + v / 2;
+            else if (decoration & Decoration::StrikeOut)
+                u = -2 * metrics.ascender() / 5 + v / 2;
         }
 
-        const CharArray *text = ftGlyphRun->text();
+        String text = ftGlyphRun.text();
 
-        const cairo_glyph_t *glyph0 = &ftGlyphRun->cairoGlyphs()->at(0);
-        char ch0 = text->at(0);
+        const cairo_glyph_t *glyph0 = &ftGlyphRun.cairoGlyphs()[0];
+        char ch0 = text[0];
 
         int byteOffset = 0;
         int glyphOffset = 0;
 
         for (
-            int clusterIndex = 1, clusterCount = ftGlyphRun->cairoTextClusters()->count();
+            int clusterIndex = 1, clusterCount = ftGlyphRun.cairoTextClusters().count();
             clusterIndex < clusterCount;
             ++clusterIndex
         ) {
             {
-                const cairo_text_cluster_t *cluster = &ftGlyphRun->cairoTextClusters()->at(clusterIndex - 1);
+                const cairo_text_cluster_t *cluster = &ftGlyphRun.cairoTextClusters()[clusterIndex - 1];
                 byteOffset += cluster->num_bytes;
                 glyphOffset += cluster->num_glyphs;
             }
-            const cairo_glyph_t *glyph1 = &ftGlyphRun->cairoGlyphs()->at(glyphOffset);
-            char ch1 = text->at(byteOffset);
+            const cairo_glyph_t *glyph1 = &ftGlyphRun.cairoGlyphs()[glyphOffset];
+            char ch1 = text.at(byteOffset);
             if (ch0 > 0x20 && ch1 <= 0x20) {
                 rectangle(
                     Point{ glyph0->x            , std::round(glyph0->y + u) },
@@ -260,25 +208,31 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
             ch0 = ch1;
         }
 
-        if (ftGlyphRun->advance()[0] - glyph0->x > 0) {
+        if (ftGlyphRun.advance()[0] - glyph0->x > 0) {
             rectangle(
-                Point{ glyph0->x                           , std::round(glyph0->y + u) },
-                Size { ftGlyphRun->advance()[0] - glyph0->x, v                         }
+                Point{ glyph0->x                          , std::round(glyph0->y + u) },
+                Size { ftGlyphRun.advance()[0] - glyph0->x, v                         }
             );
             fill();
         }
     }
 
-    cairo_show_text_glyphs(
-        cr_,
-        ftGlyphRun->text()->chars(),
-        ftGlyphRun->text()->count(),
-        ftGlyphRun->cairoGlyphs()->data(),
-        ftGlyphRun->cairoGlyphs()->count(),
-        ftGlyphRun->cairoTextClusters()->data(),
-        ftGlyphRun->cairoTextClusters()->count(),
-        (cairo_text_cluster_flags_t)0
-    );
+    int byteCheck = 0;
+    for (int i = 0; i < ftGlyphRun.cairoTextClusters().count(); ++i)
+        byteCheck += ftGlyphRun.cairoTextClusters()[i].num_bytes;
+
+    if (byteCheck == ftGlyphRun.text().count()) {
+        cairo_show_text_glyphs(
+            cr_,
+            ftGlyphRun.text().chars(),
+            ftGlyphRun.text().count(),
+            ftGlyphRun.cairoGlyphs().items(),
+            ftGlyphRun.cairoGlyphs().count(),
+            ftGlyphRun.cairoTextClusters().items(),
+            ftGlyphRun.cairoTextClusters().count(),
+            (cairo_text_cluster_flags_t)0
+        );
+    }
 
     if (sourceSaved) {
         cairo_set_source(cr_, sourceSaved);
@@ -288,12 +242,15 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun)
     cairo_set_matrix(cr_, &matrixSaved);
 }
 
-void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const GetColor &ink, const GetColor &paper)
+void Painter::showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, const GetColor &paper)
 {
-    if (glyphRun->text()->count() == 0) return;
+    auto ftGlyphRun = run.as<FtGlyphRun>();
+    auto ftScaledFont = run.scaledFont().as<FtScaledFont>();
 
-    const FtGlyphRun *ftGlyphRun = Object::cast<const FtGlyphRun *>(glyphRun);
-    cairo_set_scaled_font(cr_, ftGlyphRun->ftScaledFont()->cairoScaledFont());
+    if (ftGlyphRun.text().count() == 0) return;
+    if (ftGlyphRun.cairoGlyphs().count() == 0) return;
+
+    cairo_set_scaled_font(cr_, ftScaledFont.cairoScaledFont());
 
     cairo_matrix_t matrixSaved;
     cairo_get_matrix(cr_, &matrixSaved);
@@ -301,42 +258,42 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
 
     cairo_pattern_t *sourceSaved = cairo_pattern_reference(cairo_get_source(cr_));
 
-    if (glyphRun->font()->paper()->isValid())
+    if (ftGlyphRun.font().paper().isValid())
         fillGlyphRunBackground(ftGlyphRun);
 
     if (paper)
     {
-        Ref<const FontMetrics> metrics = glyphRun->font()->getScaledFont()->metrics();
-        double dy0 = metrics->ascender() + (metrics->lineHeight() - (metrics->ascender() - metrics->descender())) / 2;
+        FontMetrics metrics = ftScaledFont.metrics();
+        double dy0 = metrics.ascender() + (metrics.lineHeight() - (metrics.ascender() - metrics.descender())) / 2;
 
         int byteOffset = 0;
         int glyphOffset = 0;
 
         Color bgColor0 = paper(0);
-        const cairo_glyph_t *glyph0 = &ftGlyphRun->cairoGlyphs()->at(0);
+        const cairo_glyph_t *glyph0 = &ftGlyphRun.cairoGlyphs()[0];
 
-        for (int clusterIndex = 0, clusterCount = ftGlyphRun->cairoTextClusters()->count(); clusterIndex < clusterCount + 1; ++clusterIndex)
+        for (int clusterIndex = 0, clusterCount = ftGlyphRun.cairoTextClusters().count(); clusterIndex < clusterCount + 1; ++clusterIndex)
         {
-            const cairo_text_cluster_t *cluster = 0;
-            if (clusterIndex < clusterCount) cluster = &ftGlyphRun->cairoTextClusters()->at(clusterIndex);
+            const cairo_text_cluster_t *cluster = nullptr;
+            if (clusterIndex < clusterCount) cluster = &ftGlyphRun.cairoTextClusters()[clusterIndex];
 
             Color bgColor;
-            const cairo_glyph_t *glyph = 0;
+            const cairo_glyph_t *glyph = nullptr;
 
             bgColor = paper(byteOffset);
-            if (glyphOffset < ftGlyphRun->cairoGlyphs()->count()) glyph = &ftGlyphRun->cairoGlyphs()->at(glyphOffset);
+            if (glyphOffset < ftGlyphRun.cairoGlyphs().count()) glyph = &ftGlyphRun.cairoGlyphs()[glyphOffset];
 
             if (bgColor != bgColor0 || !glyph || glyph->y != glyph0->y)
             {
                 double x1 = (!glyph || glyph->y != glyph0->y) ?
-                    ftGlyphRun->cairoGlyphs()->at(glyphOffset - 1).x + ftGlyphRun->glyphAdvances()->at(glyphOffset - 1) :
+                    ftGlyphRun.cairoGlyphs()[glyphOffset - 1].x + ftGlyphRun.glyphAdvances()[glyphOffset - 1] :
                     glyph->x;
 
                 if (bgColor0) {
-                    setSource(bgColor0);
+                    setPen(bgColor0);
                     rectangle(
                         Point{glyph0->x, glyph0->y - dy0},
-                        Size{x1 - glyph0->x, metrics->lineHeight()}
+                        Size{x1 - glyph0->x, metrics.lineHeight()}
                     );
                     fill();
                 }
@@ -363,9 +320,9 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
         int glyphOffset0 = 0;
         int clusterIndex0 = 0;
 
-        for (int clusterIndex = 0, clusterCount = ftGlyphRun->cairoTextClusters()->count(); clusterIndex < clusterCount;)
+        for (int clusterIndex = 0, clusterCount = ftGlyphRun.cairoTextClusters().count(); clusterIndex < clusterCount;)
         {
-            const cairo_text_cluster_t *cluster = &ftGlyphRun->cairoTextClusters()->at(clusterIndex);
+            const cairo_text_cluster_t *cluster = &ftGlyphRun.cairoTextClusters()[clusterIndex];
 
             byteOffset += cluster->num_bytes;
             glyphOffset += cluster->num_glyphs;
@@ -375,17 +332,17 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
 
             if (fgColor0 != fgColor || clusterIndex == clusterCount)
             {
-                if (fgColor0->isValid()) setSource(fgColor0);
-                else if (glyphRun->font()->ink()) setSource(glyphRun->font()->ink());
+                if (fgColor0) setPen(fgColor0);
+                else if (ftGlyphRun.font().color()) setPen(ftGlyphRun.font().color());
                 else cairo_set_source(cr_, sourceSaved);
 
                 cairo_show_text_glyphs(
                     cr_,
-                    ftGlyphRun->text()->chars() + byteOffset0,
+                    &ftGlyphRun.text()[byteOffset0],
                     byteOffset - byteOffset0,
-                    ftGlyphRun->cairoGlyphs()->data() + glyphOffset0,
+                    &ftGlyphRun.cairoGlyphs()[glyphOffset0],
                     glyphOffset - glyphOffset0,
-                    ftGlyphRun->cairoTextClusters()->data() + clusterIndex0,
+                    &ftGlyphRun.cairoTextClusters()[clusterIndex0],
                     clusterIndex - clusterIndex0,
                     (cairo_text_cluster_flags_t)0
                 );
@@ -404,12 +361,12 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
 
         cairo_show_text_glyphs(
             cr_,
-            ftGlyphRun->text()->chars(),
-            ftGlyphRun->text()->count(),
-            ftGlyphRun->cairoGlyphs()->data(),
-            ftGlyphRun->cairoGlyphs()->count(),
-            ftGlyphRun->cairoTextClusters()->data(),
-            ftGlyphRun->cairoTextClusters()->count(),
+            ftGlyphRun.text().chars(),
+            ftGlyphRun.text().count(),
+            ftGlyphRun.cairoGlyphs().items(),
+            ftGlyphRun.cairoGlyphs().count(),
+            ftGlyphRun.cairoTextClusters().items(),
+            ftGlyphRun.cairoTextClusters().count(),
             (cairo_text_cluster_flags_t)0
         );
     }
@@ -419,62 +376,169 @@ void Painter::Instance::showGlyphRun(Point pos, const GlyphRun *glyphRun, const 
     cairo_set_matrix(cr_, &matrixSaved);
 }
 
-void Painter::Instance::showTextRun(Point pos, const TextRun *textRun)
+void Painter::showTextRun(Point pos, const TextRun &run)
 {
-    const FtTextRun *ftTextRun = Object::cast<const FtTextRun *>(textRun);
-    for (const GlyphRun *glyphRun: ftTextRun->glyphRuns_)
+    for (const GlyphRun &glyphRun: run.as<FtTextRun>().glyphRuns())
         showGlyphRun(pos, glyphRun);
 }
 
-void Painter::Instance::showTextRun(Point pos, const TextRun *textRun, const GetColor &ink, const GetColor &paper)
+void Painter::showTextRun(Point pos, const TextRun &run, const GetColor &ink, const GetColor &paper)
 {
-    const FtTextRun *ftTextRun = Object::cast<const FtTextRun *>(textRun);
+    FtTextRun ftTextRun = run.as<FtTextRun>();
     int i0 = 0;
     GetColor ink_;
     GetColor paper_;
     if (ink) ink_ = [&](int i) { return ink(i + i0); };
     if (paper) paper_ = [&](int i) { return paper(i + i0); };
-    for (const GlyphRun *glyphRun: ftTextRun->glyphRuns_) {
+    for (const GlyphRun &glyphRun: ftTextRun.glyphRuns()) {
         showGlyphRun(pos, glyphRun, ink_, paper_);
-        i0 += glyphRun->byteCount();
+        i0 += glyphRun.text().count();
     }
 }
 
-void Painter::Instance::translate(Step step)
+void Painter::fillGlyphRunBackground(const FtGlyphRun &ftGlyphRun)
+{
+    Color color = ftGlyphRun.font().paper();
+    if (!color.isValid()) return;
+
+    setPen(color);
+
+    FontMetrics metrics = ftGlyphRun.scaledFont().metrics();
+    double dy0 = metrics.ascender() + (metrics.lineHeight() - (metrics.ascender() - metrics.descender())) / 2;
+
+    int byteOffset = 0;
+    int glyphOffset = 0;
+
+    const cairo_glyph_t *glyph0 = &ftGlyphRun.cairoGlyphs()[0];
+
+    for (int clusterIndex = 0, clusterCount = ftGlyphRun.cairoTextClusters().count(); clusterIndex < clusterCount + 1; ++clusterIndex)
+    {
+        const cairo_text_cluster_t *cluster = nullptr;
+        if (clusterIndex < clusterCount) cluster = &ftGlyphRun.cairoTextClusters()[clusterIndex];
+
+        const cairo_glyph_t *glyph = nullptr;
+
+        if (glyphOffset < ftGlyphRun.cairoGlyphs().count()) glyph = &ftGlyphRun.cairoGlyphs()[glyphOffset];
+
+        if (!glyph || glyph->y != glyph0->y) {
+            double x1 = (!glyph || glyph->y != glyph0->y) ? ftGlyphRun.size()[0] : glyph->x;
+            rectangle(
+                Point{glyph0->x, glyph0->y - dy0},
+                Size{x1 - glyph0->x, metrics.lineHeight()}
+            );
+            fill();
+
+            glyph0 = glyph;
+        }
+
+        if (cluster) {
+            byteOffset += cluster->num_bytes;
+            glyphOffset += cluster->num_glyphs;
+        }
+    }
+}
+
+void Painter::translate(Step step)
 {
     cairo_translate(cr_, step[0], step[1]);
 }
 
-void Painter::Instance::scale(Scale ratio)
+void Painter::scale(Scale ratio)
 {
     cairo_scale(cr_, ratio[0], ratio[1]);
 }
 
-void Painter::Instance::rotate(double angle)
+void Painter::rotate(double angle)
 {
     cairo_rotate(cr_, angle);
 }
 
-void Painter::Instance::save()
+void Painter::setPen(Color color)
 {
-    cairo_save(cr_);
+    if (!color) return;
+
+    if (color.isOpaque()) {
+        cairo_set_source_rgb(
+            cr_,
+            color.red()   / 255.,
+            color.green() / 255.,
+            color.blue()  / 255.
+        );
+    }
+    else {
+        cairo_set_source_rgba(
+            cr_,
+            color.red()   / 255.,
+            color.green() / 255.,
+            color.blue()  / 255.,
+            color.alpha() / 255.
+        );
+    }
 }
 
-void Painter::Instance::restore()
+void Painter::setPen(const Pen &pen)
 {
-    cairo_restore(cr_);
+    setPen(pen.color());
+    setLineWidth(pen.lineWidth());
+    setLineCap(pen.lineCap());
+    setLineJoin(pen.lineJoin());
+    setMiterLimit(pen.miterLimit());
+    setLineDash(pen.lineDash(), pen.lineDashOffset());
 }
 
-void Painter::Instance::nextPage(bool clear)
+void Painter::setLineWidth(double width)
 {
-    if (clear)
-        cairo_show_page(cr_);
+    if (width > 0) cairo_set_line_width(cr_, width);
+}
+
+void Painter::setLineCap(LineCap style)
+{
+    if (style != LineCap::Undef) cairo_set_line_cap(cr_, static_cast<cairo_line_cap_t>(+style));
+}
+
+void Painter::setLineJoin(LineJoin style)
+{
+    if (style != LineJoin::Undef) cairo_set_line_join(cr_, static_cast<cairo_line_join_t>(+style));
+}
+
+void Painter::setMiterLimit(double limit)
+{
+    if (limit > 0) cairo_set_miter_limit(cr_, limit);
+}
+
+void Painter::setLineDash(const Array<double> &pattern, double offset)
+{
+    if (pattern.count() > 0) {
+        cairo_set_dash(cr_, pattern, pattern.count(), offset);
+
+        cairo_status_t status = cairo_status(cr_);
+        if (status != CAIRO_STATUS_SUCCESS)
+            throw PainterError{int(status)};
+    }
+    else if (cairo_get_dash_count(cr_) > 0) {
+        cairo_set_dash(cr_, pattern, pattern.count(), offset);
+    }
+}
+
+void Painter::fill(CurrentPath mode)
+{
+    if (mode == CurrentPath::Clear)
+        cairo_fill(cr_);
     else
-        cairo_copy_page(cr_);
+        cairo_fill_preserve(cr_);
+
+    cairo_status_t status = cairo_status(cr_);
+    if (status != CAIRO_STATUS_SUCCESS)
+        throw PainterError{int(status)};
 }
 
-void Painter::Instance::checkForError()
+void Painter::stroke(CurrentPath mode)
 {
+    if (mode == CurrentPath::Clear)
+        cairo_stroke(cr_);
+    else
+        cairo_stroke_preserve(cr_);
+
     cairo_status_t status = cairo_status(cr_);
     if (status != CAIRO_STATUS_SUCCESS)
         throw PainterError{int(status)};
@@ -489,4 +553,4 @@ String PainterError::message() const
     return cairo_status_to_string(cairo_status_t(errorStatus_));
 }
 
-}} // namespace cc::ui
+} // namespace cc::ui

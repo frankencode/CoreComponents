@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2019 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,45 +8,60 @@
 
 #pragma once
 
-#include <cc/Queue>
-#include <functional>
+#include <cc/Exception>
+#include <signal.h>
 
 namespace cc {
 
-class Signal
+/** System signal numbers
+  * \ingroup concurrency
+  */
+enum class Signal: int {
+    Abort       = SIGABRT, ///< %Abort signal (e.g. assert failed)
+    Alarm       = SIGALRM, ///< %Timer signal
+    Bus         = SIGBUS, ///< %Memory protection violation
+    Child       = SIGCHLD, ///< %Child stopped or terminated
+    FPE         = SIGFPE, ///< Floating Point %Exception
+    HangUp      = SIGHUP, ///< Terminal hangup (Ctrl-D)
+    Interrupt   = SIGINT, ///< Interactive termination request (Ctrl-C)
+    Kill        = SIGKILL, ///< Forceful process termination
+    Pipe        = SIGPIPE, ///< Broken Pipe
+    Quit        = SIGQUIT, ///< Interactive quit request (Ctrl-Q)
+    SegV        = SIGSEGV, ///< %Memory protection violation
+    Stop        = SIGSTOP, ///< Stop process execution
+    Continue    = SIGCONT, ///< Continue process execution
+    Terminate   = SIGTERM, ///< Graceful process termination
+    User1       = SIGUSR1, ///< %User signal 1
+    User2       = SIGUSR2, ///< %User signal 2
+    WindowSize  = SIGWINCH, ///< %Window size changed
+    Undefined   = 0 ///< %Undefined signal
+};
+
+inline int operator+(Signal signal) { return static_cast<int>(signal); }
+
+/** Convert signal number to string
+  */
+String str(Signal signal);
+
+/** \class Signaled cc/Signal
+  * \ingroup concurrency
+  * \brief %Thread execution interrupted by system signal
+  */
+class Signaled: public Exception
 {
 public:
-    class Instance {
-    public:
-        template<class F>
-        void connect(const F &f) { queue_ << f; }
+    /** Create a new exception
+      */
+    explicit Signaled(Signal signal);
 
-        void emit() const { for (auto &f: queue_) f(); }
+    /** %Signal number
+      */
+    Signal signal() const { return signal_; }
 
-        bool hasListeners() const { return queue_->count() > 0; }
-        void disband() { queue_->deplete(); }
-
-    private:
-        friend class Signal;
-        friend class PropertyBinding;
-
-        Instance() = default;
-
-        Queue<std::function<void()>> queue_;
-    };
-
-    Signal() = default;
-
-    template<class F>
-    Signal &operator>>(const F &f) { (*this)->connect(f); return *this; }
-
-    void operator()() const { (*this)->emit(); }
-
-    Instance *operator->() { return &instance_; }
-    const Instance *operator->() const { return &instance_; }
+    String message() const override;
 
 private:
-    Instance instance_;
+    Signal signal_;
 };
 
 } // namespace cc

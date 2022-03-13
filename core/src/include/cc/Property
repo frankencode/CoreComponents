@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,74 +8,214 @@
 
 #pragma once
 
-#include <cc/String>
 #include <cc/PropertyBinding>
+#include <cc/str>
 #include <utility>
 
 namespace cc {
 
+/** %Property definition function
+  * \tparam T %Property value type
+  */
+template<class T>
+using Definition = std::function<T()>;
+
 template<class T>
 class PropertyMutator;
 
-template<class T = void>
+/** \class Property cc/Property
+  * \ingroup misc
+  * \brief %Property bindings
+  * \tparam T Value type
+  */
+template<class T>
 class Property
 {
 public:
-    class Instance: public PropertyBinding {
-    public:
-        template<class F>
-        void bind(const F &f)
-        {
-            clearDependencies();
+    /** Create property with default value (T{})
+      */
+    Property():
+        me{new State{this}}
+    {}
 
-            f_ = f;
-            if (hasConsumers())
-                cascade();
-            else
-                dirty_ = true;
+    /** Create property with initial value \a b
+      */
+    Property(const T &b):
+        me{new State{this, b}}
+    {}
+
+    /** Create property with initial value \a b
+      * \todo improve list initialization
+      */
+    Property(std::initializer_list<T> b):
+        me{new State{this, *b.begin()}}
+    {}
+
+    /** Create property with defining function \a f
+      */
+    explicit Property(std::function<T()> &&f):
+        me{new State{this}}
+    {
+        define(std::move(f));
+    }
+
+    /** \internal
+      * Implicitly create an alias of property \a b
+      */
+    Property(const Property &b):
+        me{b.me}
+    {}
+
+    /** Create an alias of property \a b
+      */
+    explicit Property(Property *b):
+        me{b->me}
+    {}
+
+    /** Assign value of \b (and break prior bindings)
+      */
+    Property &operator=(const Property &b)
+    {
+        return *this = b();
+    }
+
+    /** \internal
+      */
+    Property(Property &&b):
+        me{std::move(b.me)}
+    {
+        if (me().owner_ == &b)
+            me().owner_ = this;
+    }
+
+    /** \internal
+      */
+    Property &operator=(Property &&b)
+    {
+        me = std::move(b.me);
+        if (me().owner_ == &b)
+            me().owner_ = this;
+        return *this;
+    }
+
+    /** Cleanup: disconnect all bindings and listeners
+      */
+    ~Property()
+    {
+        if (me && me().owner_ == this) {
+            me().disband();
+            me().f_ = nullptr;
+            me().g_ = nullptr;
         }
+    }
 
-        template<class G>
-        void restrict(const G &g)
-        {
-            g_ = g;
-        }
+    /** Set a new defining function \a f
+      */
+    void define(std::function<T()> &&f)
+    {
+        me().clearDependencies();
+        me().f_ = f;
+        if (me().hasConsumers())
+            me().cascade();
+        else
+            me().dirty_ = true;
 
-        template<class H>
-        void connect(const H &h)
-        {
-            if (dirty_) cascade();
-            changed->connect(h);
-        }
+        me().owner_ = this;
+    }
 
-        void disband()
-        {
-            PropertyBinding::disband();
-            value_ = T{};
-            f_ = std::function<T()>{};
-            g_ = std::function<bool(T&, T)>{};
-        }
+    /** Assign a new value \a b (and break prior bindings)
+      */
+    void operator()(const T &b) { me().setValue(b); }
 
-    private:
-        friend class Property;
-        friend class PropertyMutator<T>;
+    /** \copydoc define()
+      */
+    void operator()(std::function<T()> &&f)
+    {
+        return define(std::move(f));
+    }
 
-        template<class T2>
-        friend Property<T2> alias(Property<T2> &p);
+    /** Setup restrictor function \a g
+      */
+    void restrict(std::function<bool(T&, T)> &&g)
+    {
+        me().g_ = g;
+    }
 
-        static Ref<Instance> create(const T &b = T{}) { return new Instance{b}; }
+    /** Register function \a f to be called when the property value changes
+      */
+    void onChanged(std::function<void()> &&f) const
+    {
+        if (me().dirty_) me.mutate().cascade();
+        return me().changed.connect(std::move(f));
+    }
 
-        Instance(const T &b):
-            PropertyBinding{false},
+    /** Evaluate current property value
+      */
+    T operator()() const { return me().value(); }
+
+    /** Evaluate current property value
+      */
+    operator T() const { return me().value(); }
+
+    /** Assign a new value \a b (and break prior bindings)
+      */
+    Property &operator=(const T &b) { me().setValue(b); return *this; }
+
+    /** Assign a new value \a b (and break prior bindings)
+      * \tparam T2 Value type
+      */
+    template<class T2>
+    Property &operator=(const T2 &b) { me().setValue(static_cast<T>(b)); return *this; }
+
+    /** Increment the current value by \a b (and break prior bindings)
+      * \tparam T2 Delta type
+      */
+    template<class T2>
+    Property &operator+=(const T2 &b) { me().setValue(me().value() + b); return *this; }
+
+    /** Decrement the current value by \a b (and break prior bindings)
+      * \tparam T2 Delta type
+      */
+    template<class T2>
+    Property &operator-=(const T2 &b) { me().setValue(me().value() - b); return *this; }
+
+    /** Multiply the current value by \a b (and break prior bindings)
+      * \tparam T2 Multiplication factor type
+      */
+    template<class T2>
+    Property &operator*=(const T2 &b) { me().setValue(me().value() * b); return *this; }
+
+    /** Divide the current value by \a b (and break prior bindings)
+      * \tparam T2 Divisor type
+      */
+    template<class T2>
+    Property &operator/=(const T2 &b) { me().setValue(me().value() / b); return *this; }
+
+    /** Prefix increment operator: Add 1 to the current value and return the new value
+      */
+    Property &operator++() { return *this += 1; }
+
+    /** Prefix decrement operator: Subtract 1 from the current value and return the new value
+      */
+    Property &operator--() { return *this += 1; }
+
+    /** Postfix increment operator: Add 1 to the current value and return the old value
+      */
+    T operator++(int) { T old = *this(); ++(*this); return old; }
+
+    /** Postfix decrement operator: Subtract 1 from the current value and return the old value
+      */
+    T &operator--(int) { T old = *this(); --(*this); return old; }
+
+private:
+    friend class PropertyMutator<T>;
+
+    struct State: public PropertyBinding
+    {
+        State(void *owner, const T &b = T{}):
+            PropertyBinding{owner, false},
             value_{b}
         {}
-
-        ~Instance()
-        {
-            disband();
-        }
-
-        Property alias() { return Property{this, true}; }
 
         const T &value() const
         {
@@ -118,102 +258,111 @@ public:
         std::function<bool(T&, T)> g_;
     };
 
-    Property(): instance_{Instance::create()} {}
-    Property(const T &b): instance_{Instance::create(b)} {}
-
-    explicit Property(const Property &b): instance_{b.instance_} {}
-
-    Property(Property &&b): instance_{std::move(b.instance_)} {}
-    Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
-
-    explicit Property(const std::function<T()> &f): instance_{Instance::create()} { instance_->bind(f); }
-
-    ~Property() {/* instance_->disband(); */}
-
-    Instance *operator->() { return instance_; }
-    const Instance *operator->() const { return instance_; }
-
-    T operator()() const { return instance_->value(); }
-
-    template<class F>
-    void operator<<(const F &f) { instance_->bind(f); }
-
-    template<class F>
-    Property &operator>>(const F &f) { instance_->connect(f); return *this; }
-
-    Property &operator=(const T &b) { instance_->setValue(b); return *this; }
-
-    template<class T2>
-    Property &operator=(const T2 &b) { instance_->setValue(T(b)); return *this; }
-
-    template<class T2>
-    Property &operator+=(const T2 &b) { instance_->setValue(instance_->value() + b); return *this; }
-
-    template<class T2>
-    Property &operator-=(const T2 &b) { instance_->setValue(instance_->value() - b); return *this; }
-
-    template<class T2>
-    Property &operator*=(const T2 &b) { instance_->setValue(instance_->value() * b); return *this; }
-
-    template<class T2>
-    Property &operator/=(const T2 &b) { instance_->setValue(instance_->value() / b); return *this; }
-
-private:
-    friend class Instance;
-
-    explicit Property(Instance *instance, bool): instance_{instance} {}
-
-    Ref<Instance> instance_;
+    Handle<State> me;
 };
 
 template<>
 class Property<void>
 {
 public:
-    class Instance: public PropertyBinding {
-    public:
-        template<class F>
-        void bind(const F &f)
-        {
-            clearDependencies();
+    /** Create property with default value (T{})
+      */
+    Property():
+        me{new State{this}}
+    {}
 
-            f_ = f;
-            if (hasConsumers())
-                cascade();
-            else
-                dirty_ = true;
+    /** Create property with defining function \a f
+      */
+    template<class F>
+    explicit Property(const F &f):
+        me{new State{this}}
+    {
+        define(f);
+    }
+
+    /** \internal
+      */
+    Property(const Property &b):
+        me{b.me}
+    {}
+
+    /** \internal
+      */
+    Property &operator=(const Property &b) = delete;
+
+    /** \internal
+      */
+    Property(Property &&b):
+        me{std::move(b.me)}
+    {
+        if (me().owner_ == &b)
+            me().owner_ = this;
+    }
+
+    /** \internal
+      */
+    Property &operator=(Property &&b)
+    {
+        me = std::move(b.me);
+        if (me().owner_ == &b)
+            me().owner_ = this;
+        return *this;
+    }
+
+    /** Cleanup: disconnect all bindings and listeners
+      */
+    ~Property()
+    {
+        if (me && me().owner_ == this) {
+            me().disband();
+            me().f_ = nullptr;
         }
+    }
 
-        template<class H>
-        void connect(const H &h)
-        {
-            if (dirty_) cascade();
-            changed->connect(h);
-        }
+    /** Set a new defining function \a f
+      */
+    void define(std::function<void()> &&f)
+    {
+        me().clearDependencies();
 
-        void disband()
-        {
-            PropertyBinding::disband();
-            f_ = std::function<void()>{};
-        }
+        me().f_ = f;
+        if (me().hasConsumers())
+            me().cascade();
+        else
+            me().dirty_ = true;
 
-    private:
-        friend class Property;
+        me().owner_ = this;
+    }
 
-        template<class T2>
-        friend Property<T2> alias(Property<T2> &p);
+    /** \copydoc define()
+      */
+    void operator()(std::function<void()> &&f)
+    {
+        return define(std::move(f));
+    }
 
-        static Ref<Instance> create() { return new Instance; }
+    /** Register function \a f to be called when the property value has been reevaluated
+      */
+    void onChanged(std::function<void()> &&f) const
+    {
+        if (me().dirty_) me.mutate().cascade();
+        me.mutate().changed.connect(std::move(f));
+    }
 
-        Instance(): PropertyBinding{false} {}
+    /** Evaluate current property value
+      */
+    void operator()() const { me().value(); }
 
-        Property alias() { return Property{this, true}; }
+private:
+    struct State: public PropertyBinding
+    {
+        State(void *owner): PropertyBinding{owner, false} {}
 
         bool hasConsumers() const override { return true; }
 
-        void value()
+        void value() const
         {
-            cascade();
+            const_cast<State *>(this)->cascade();
         }
 
         void evaluate() override
@@ -227,40 +376,17 @@ public:
         std::function<void()> f_;
     };
 
-    Property(): instance_{Instance::create()} {}
-
-    Property(Property &&b): instance_{std::move(b.instance_)} {}
-    Property &operator=(Property &&b) { instance_ = std::move(b.instance_); return *this; }
-
-    explicit Property(const std::function<void()> &f): instance_{Instance::create()} { instance_->bind(f); }
-    ~Property() {/* instance_->disband(); */}
-
-    Instance *operator->() { return instance_; }
-    const Instance *operator->() const { return instance_; }
-
-    void operator()() const { instance_->value(); }
-
-    template<class F>
-    void operator<<(const F &f) { instance_->bind(f); }
-
-    template<class F>
-    Property &operator>>(const F &f) { instance_->connect(f); return *this; }
-
-private:
-    friend class Instance;
-
-    explicit Property(Instance *instance, bool): instance_{instance} {}
-
-    Ref<Instance> instance_;
+    Handle<State> me;
 };
 
-template<class T>
-inline Property<T> alias(Property<T> &p) { return p->alias(); }
+/** Convenience alias
+  */
+using Monitor = Property<void>;
 
 template<class T>
 class PropertyMutator {
 protected:
-    static void store(Property<T> &property, const T &newValue) { property->store(newValue); }
+    static void store(Property<T> &property, const T &newValue) { property.me().store(newValue); }
 };
 
 class OnScopeExit {
@@ -270,5 +396,8 @@ public:
 private:
     std::function<void()> f_;
 };
+
+template<class T>
+inline String str(const Property<T> &property) { return str(property()); }
 
 } // namespace cc

@@ -1,0 +1,80 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/TlsClientOptions>
+#include <gnutls/gnutls.h>
+
+namespace cc {
+
+struct TlsClientOptions::State: public Object::State
+{
+    State()
+    {
+        gnutls_certificate_allocate_credentials(&cred_);
+    }
+
+    ~State()
+    {
+        if (prio_) gnutls_priority_deinit(prio_);
+        gnutls_certificate_free_credentials(cred_);
+    }
+
+    void setCredentials(const String &certPath, const String &keyPath)
+    {
+        certPath_ = certPath;
+        keyPath_ = keyPath;
+        int ret = gnutls_certificate_set_x509_key_file(cred_, certPath, keyPath, GNUTLS_X509_FMT_PEM);
+        if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
+    }
+
+    void setTrustFilePath(const String &filePath)
+    {
+        trustFilePath_ = filePath;
+        int ret = gnutls_certificate_set_x509_trust_file(cred_, filePath, GNUTLS_X509_FMT_PEM);
+        if (ret < 0) throw TlsError{ret};
+        defaultTrust_ = false;
+    }
+
+    void setSystemTrust()
+    {
+        if (trustFilePath_ != "") trustFilePath_ = "";
+        int ret = gnutls_certificate_set_x509_system_trust(cred_);
+        if (ret < 0) throw TlsError{ret};
+        defaultTrust_ = false;
+    }
+
+    void setCiphers(const String &ciphers)
+    {
+        ciphers_ = ciphers;
+        if (prio_) gnutls_priority_deinit(prio_);
+        int ret = gnutls_priority_init(&prio_, ciphers_, NULL);
+        if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
+    }
+
+    void establish(gnutls_session_t session)
+    {
+        if (defaultTrust_) setSystemTrust();
+        int ret = gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, cred_);
+        if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
+        if (prio_) ret = gnutls_priority_set(session, prio_);
+        else ret = gnutls_set_default_priority(session);
+        if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
+    }
+
+    String serverName_;
+    String certPath_;
+    String keyPath_;
+    String trustFilePath_;
+    String ciphers_;
+    bool defaultTrust_ { true };
+
+    gnutls_certificate_credentials_t cred_ { nullptr };
+    gnutls_priority_t prio_ { nullptr };
+};
+
+} // namespace cc

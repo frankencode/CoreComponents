@@ -1,0 +1,55 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/StreamSocket>
+
+namespace cc {
+
+/** \class ClientSocket cc/ClientSocket
+  * \ingroup net
+  * \brief Client socket
+  */
+class ClientSocket final: public StreamSocket
+{
+public:
+    /** Createa a null client socket
+      */
+    ClientSocket() = default;
+
+    /** Initiate connection to a TCP server
+      * \param serverName %Host name of the server
+      * \param serviceName %Service name (e.g. "http")
+      * \exception HostNameResolutionError
+      * \see waitForReady()
+      */
+    ClientSocket(const String &serverName, const String &serviceName);
+
+    /** Initiate connection to a TCP server
+      * \param serverName %Host name of the server
+      * \param servicePort %Service port number
+      * \exception HostNameResolutionError
+      * \see waitForReady()
+      */
+    ClientSocket(const String &serverName, int servicePort);
+
+    /** Initiate connection to a TCP server
+      * \param address %Network address of the server
+      * \see waitForReady()
+      */
+    explicit ClientSocket(const SocketAddress &address);
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

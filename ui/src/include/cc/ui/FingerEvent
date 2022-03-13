@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,39 +10,97 @@
 
 #include <cc/ui/PointerEvent>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \class FingerEvent cc/ui/FingerEvent
+  * \ingroup ui
+  * \brief Touch input event
+  */
 class FingerEvent final: public PointerEvent
 {
 public:
-    TouchDeviceId deviceId() const { return deviceId_; }
-    TouchFingerId fingerId() const { return fingerId_; }
-    double pressure() const { return pressure_; }
-
-    String toString() const override;
-
-private:
-    friend class Object;
-
+    /** Create a new touch input event
+      * \param action \copydoc PointerEvent::action()
+      * \param time \copydoc PointerEvent::time()
+      * \param deviceId \copydoc deviceId()
+      * \param fingerId \copydoc fingerId()
+      * \param pos \copydoc PointerEvent::pos()
+      * \param step \copydoc PointerEvent::step()
+      * \param pressure \copydoc pressure()
+      */
     FingerEvent(
         PointerAction action,
         double time,
-        TouchDeviceId deviceId,
-        TouchFingerId fingerId,
+        int64_t deviceId,
+        int64_t fingerId,
         const Point &pos,
         const Step &step,
         double pressure
     ):
-        PointerEvent(action, time, pos, step),
-        deviceId_(deviceId),
-        fingerId_(fingerId),
-        pressure_(pressure)
+        PointerEvent{
+            new State{
+                action,
+                time,
+                deviceId,
+                fingerId,
+                pos,
+                step,
+                pressure
+            }
+        }
     {}
 
-    TouchDeviceId deviceId_;
-    TouchFingerId fingerId_;
-    double pressure_;
+    /** Touch device ID
+      */
+    int64_t deviceId() const { return me().deviceId_; }
+
+    /** Contact point tracking ID
+      */
+    int64_t fingerId() const { return me().fingerId_; }
+
+    /** Contact pressure
+      */
+    double pressure() const { return me().pressure_; }
+
+private:
+    friend class Object;
+
+    struct State: public PointerEvent::State
+    {
+        State(
+            PointerAction action,
+            double time,
+            int64_t deviceId,
+            int64_t fingerId,
+            const Point &pos,
+            const Step &step,
+            double pressure
+        ):
+            PointerEvent::State{action, time, pos, step},
+            deviceId_{deviceId},
+            fingerId_{fingerId}
+        {}
+
+        String toString() const override
+        {
+            return Format{}
+                << "FingerEvent {" << nl
+                << "  action: " << action_ << nl
+                << "  time: " << time_ << nl
+                << "  deviceId: " << deviceId_ << nl
+                << "  fingerId: " << fingerId_ << nl
+                << "  pos: " << pos_ << nl
+                << "  step: " << step_ << nl
+                << "  pressure: " << pressure_ << nl
+                << "}";
+        }
+
+        int64_t deviceId_;
+        int64_t fingerId_;
+        double pressure_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

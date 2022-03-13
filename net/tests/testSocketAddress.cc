@@ -1,97 +1,44 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
+#include <cc/SocketAddress>
 #include <cc/System>
-#include <cc/net/Uri>
-#include <cc/net/SocketAddress>
+#include <cc/testing>
 
-using namespace cc;
-using namespace cc::testing;
-using namespace cc::net;
-
-String familyToString(ProtocolFamily family)
+int main(int argc, char *argv[])
 {
-    String s{"UNKNOWN"};
-    if (+family == AF_INET) s = "INET";
-    else if (+family == AF_INET6) s = "INET6";
-    else if (+family == AF_UNSPEC) s = "UNSPEC";
-    return s;
-}
+    using namespace cc;
 
-String socketTypeToString(SocketType type)
-{
-    String s{"UNKNOWN"};
-    if (+type == SOCK_DGRAM) s = "DGRAM";
-    else if (+type == SOCK_STREAM) s = "STREAM";
-    return s;
-}
+    TestCase {
+        "ResolveHostName",
+        []{
+            String hostName = System::hostName();
 
-String protocolToString(InternetProtocol protocol)
-{
-    String s{"UNKNOWN"};
-    if (+protocol == IPPROTO_TCP) s = "TCP";
-    else if (+protocol == IPPROTO_UDP) s = "UDP";
-    else s = Format{"<%%>"} << +protocol;
-    return s;
-}
+            fout("hostName = \"%%\"\n") << hostName;
 
-class ResolveHostName: public TestCase
-{
-    void run() override
-    {
-        String hostName = System::hostName();
+            String canonicalName;
+            List<SocketAddress> list = SocketAddress::queryConnectionInfo(hostName, "http", ProtocolFamily::Unspec, SocketType::Stream, &canonicalName);
 
-        fout("hostName = \"%%\"\n") << hostName;
+            fout("canonicalName = \"%%\"\n") << canonicalName;
 
-        String canonicalName;
-        SocketAddressList list = SocketAddress::queryConnectionInfo(hostName, "http", ProtocolFamily::Unspecified, SocketType::Stream, &canonicalName);
-
-        fout("canonicalName = \"%%\"\n") << canonicalName;
-
-        for (const SocketAddress &address: list)
-        {
-            fout("%% : %% : %% : %% : %% : %% : %%\n")
-                << familyToString(address->family())
-                << address->toString()
-                << address->port()
-                << socketTypeToString(address->socketType())
-                << protocolToString(address->protocol())
-                << address->lookupHostName()
-                << address->lookupServiceName();
+            for (const SocketAddress &address: list)
+            {
+                fout("%% : %% : %% : %% : %% : %% : %%\n")
+                    << address.family()
+                    << address.toString()
+                    << address.port()
+                    << address.socketType()
+                    << address.protocol()
+                    << address.lookupHostName()
+                    << address.lookupServiceName();
+            }
         }
-    }
-};
+    };
 
-class ReadLocation: public TestCase
-{
-public:
-    void run() override
-    {
-        StringList samples {
-            "192.168.0.1",
-            "127.0.0.1:8080",
-            "::",
-            "[::]:8080"
-        };
-        for (String s: samples) {
-            auto address = SocketAddress::resolveUri(s);
-            fout("\"%%\" == \"%%\"\n") << s << address;
-            CC_ASSERT(s == address->toString());
-        }
-    }
-};
-
-int main(int argc, char** argv)
-{
-    CC_TESTSUITE_ADD(ResolveHostName);
-    CC_TESTSUITE_ADD(ReadLocation);
-
-    return TestSuite::instance()->run(argc, argv);
+    return TestSuite{argc, argv}.run();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,34 +7,46 @@
  */
 
 #include <cc/ResourceContext>
-#include <cc/ThreadLocalSingleton>
-#include <cc/QueueInstance>
+#include <cc/Queue>
 
 namespace cc {
 
-ResourceContext *ResourceContext::instance()
+struct ResourceContext::State: public Object::State
 {
-    return ThreadLocalSingleton<ResourceContext>::instance();
-}
+    Queue<String> queue_;
+};
 
-ResourceContext::ResourceContext():
-    queue_{QueueInstance<String>::create()}
-{}
+ResourceContext::ResourceContext()
+{
+    initOncePerThread<State>();
+}
 
 void ResourceContext::push(const String &resource)
 {
-    queue_->pushBack(resource);
+    me().queue_.pushBack(resource);
 }
 
 String ResourceContext::pop()
 {
-    if (queue_->count() == 0) return String{};
-    return queue_->popBack();
+    if (me().queue_.count() == 0) return String{};
+    String resource = me().queue_.last();
+    me().queue_.popBack();
+    return resource;
 }
 
 String ResourceContext::top() const
 {
-    return queue_->count() > 0 ? queue_->back() : String{};
+    return me().queue_.count() > 0 ? me().queue_.last() : String{};
+}
+
+ResourceContext::State &ResourceContext::me()
+{
+    return Object::me.as<State>();
+}
+
+const ResourceContext::State &ResourceContext::me() const
+{
+    return Object::me.as<State>();
 }
 
 } // namespace cc

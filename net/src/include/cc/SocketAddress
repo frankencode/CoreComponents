@@ -1,0 +1,302 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Exception>
+#include <cc/Object>
+#include <arpa/inet.h>
+
+namespace cc {
+
+/** \brief Protocol family
+  * \ingroup net
+  */
+enum class ProtocolFamily: int
+{
+    Unspec = PF_UNSPEC, ///< %Protocol family is not specified
+    Inet4  = PF_INET,   ///< %Internet %Protocol %Version 4
+    Inet6  = PF_INET6,  ///< %Internet %Protocol %Version 6
+    Local  = PF_LOCAL   ///< %Unix %Domain %Protocol
+};
+
+/** %Prefix plus operator: shorthand to convert ProtocolFamily to int
+  * \ingroup net
+  */
+inline int operator+(ProtocolFamily family) { return static_cast<int>(family); }
+
+/** Stringify protocol family
+  * \ingroup net
+  */
+String str(ProtocolFamily family);
+
+/** \brief Socket type
+  * \ingroup net
+  */
+enum class SocketType: int
+{
+    Unspec   = 0,           ///< %Socket type is not specified
+    Stream   = SOCK_STREAM, ///< Reliable sequential byte streams
+    Datagram = SOCK_DGRAM   ///< Unrealiable message passing
+};
+
+/** %Prefix plus operator: shorthand to convert SocketType to int
+  * \ingroup net
+  */
+inline int operator+(SocketType type) { return static_cast<int>(type); }
+
+/** Stringify socket type
+  * \ingroup net
+   */
+String str(SocketType type);
+
+/** \brief Internet protocol type
+  * \ingroup net
+  */
+enum class InternetProtocol: int
+{
+    Unspec = 0,           ///< Internet protocol is not specified
+    Tcp    = IPPROTO_TCP, ///< Transport Control Protocol (TCP)
+    Udp    = IPPROTO_UDP  ///< User Datagram Protocol (UDP)
+};
+
+/** %Prefix plus operator: shorthand to convert InternetProtocol to int
+  * \ingroup net
+  */
+inline int operator+(InternetProtocol protocol) { return static_cast<int>(protocol); }
+
+/** Stringify internet protocol
+  * \ingroup net
+  */
+String str(InternetProtocol protocol);
+
+/** \class HostNameResolutionError cc/SocketAddress
+  * \brief Failed to resolve a host name
+  */
+class HostNameResolutionError: public Exception
+{
+public:
+    HostNameResolutionError(const String &hostName):
+        hostName_{hostName}
+    {}
+
+    String hostName() const { return hostName_; }
+
+    String message() const override;
+
+private:
+    String hostName_;
+};
+
+/** \class HostNameResolutionError cc/SocketAddress
+  * \brief Failed to resolve a host name
+  */
+class HostNameLookupError: public Exception
+{
+public:
+    HostNameLookupError(int errorCode):
+        errorCode_{errorCode}
+    {}
+
+    String message() const override;
+
+private:
+    int errorCode_;
+};
+
+/** \class ServiceNameLookupError cc/SocketAddress
+  * \brief Failed to resolve a service name
+  */
+class ServiceNameLookupError: public Exception
+{
+public:
+    ServiceNameLookupError(int errorCode):
+        errorCode_{errorCode}
+    {}
+
+    String message() const override;
+
+private:
+    int errorCode_;
+};
+
+/** \class InvalidAddressSyntax cc/SocketAddress
+  * \brief Failed to parse textual representation of a socket address
+  */
+class InvalidAddressSyntax: public Exception
+{
+public:
+    InvalidAddressSyntax(const String &address);
+    String address() const;
+    String message() const override;
+
+private:
+    String address_;
+};
+
+class Uri;
+
+class Socket;
+
+/** \class SocketAddress cc/SocketAddress
+  * \ingroup net
+  * \brief %Socket address
+  */
+class SocketAddress: public Object
+{
+public:
+    /** Resolve Internet address of \a uri
+      * \param uri %Uri providing numeric address or domain name of target host
+      * \param port %Port number to set (if not provided by \a uri)
+      * \exception HostNameResolutionError
+      */
+    static SocketAddress resolveUri(const Uri &uri, int port = 0);
+
+    /** Resolve Internet address of a host
+      * \param hostName %Host or domain name to resolve
+      * \param port %Port number to set
+      * \exception HostNameResolutionError
+      */
+    static SocketAddress resolveHostName(const String &hostName, int port = 0);
+
+    /** Resolve Internet address of a host
+      * \param hostName %Host or domain name to resolve
+      * \param serviceName %Service name to resolve (e.g. "http")
+      * \exception HostNameResolutionError
+      */
+    static SocketAddress resolveHostAndServiceName(const String &hostName, const String &serviceName);
+
+    /** Query the complete connection information for given host name, service name and
+      * protocol family. The call blocks until the local resolver has resolved the
+      * host name. This may take several seconds.
+      *   Depending on supported protocol stacks and service availability in
+      * different protocols (UDP/TCP) and number of network addresses of the
+      * queried host multiple SocketAddress objects will be returned.
+      *   An empty list is returned, if the host name is unknown, service is
+      * not available or protocol family is not supported by the host.
+      *   The host name can be a short name relative to the local domain.
+      * The fully qualified domain name (aka canonical name) can be optionally retrieved.
+      * \param hostName %Host or domain name to resolve
+      * \param serviceName %Service name (e.g. "http")
+      * \param family %Protocol family
+      * \param socketType \copydoc SocketType
+      * \param canonicalName Optionally return the fully qualified domain name
+      * \exception HostNameResolutionError
+      */
+    static List<SocketAddress> queryConnectionInfo(
+        const String &hostName,
+        const String &serviceName = "",
+        ProtocolFamily family = ProtocolFamily::Unspec,
+        SocketType socketType = SocketType::Unspec,
+        Out<String> canonicalName = None{}
+    );
+
+    /** Create a null socket address
+      */
+    SocketAddress() = default;
+
+    /** Create a new socket address
+      */
+    explicit SocketAddress(New);
+
+    /** \brief Create a new socket address from \a uri
+      * \param uri Host address, which will be automatically resolved if the host part is non-numerical
+      * \param port %Service port (fallback if not provided in \a uri)
+      * \exception HostNameResolutionError
+      */
+    explicit SocketAddress(const Uri &uri, int port = 0);
+
+    /** \brief Create a socket address
+      * \param address %Numerical host address, wildcard ("*", "::") or file path
+      * \param port %Service port
+      * \exception InvalidAddressSyntax
+      */
+    explicit SocketAddress(const String &address, int port = 0);
+
+    /** \brief Create a socket address
+      * \param family %Protocol family
+      * \param address %Numerical host address, wildcard ("*", "::") or file path
+      * \param port %Service port
+      * \exception InvalidAddressSyntax
+      */
+    explicit SocketAddress(ProtocolFamily family, const String &address = "", int port = 0);
+
+    /** Create an IPv4 broadcast address
+     */
+    explicit SocketAddress(int port);
+
+    /** Retrieve locally bound socket address of \a socket
+      */
+    explicit SocketAddress(const Socket &socket);
+
+    ProtocolFamily family() const; ///< %Protocol family
+    SocketType socketType() const; ///< %Socket type if this address is a result of name resolution
+    InternetProtocol protocol() const;  ///< %Socket protocol if this address is a result of name resolution
+    int port() const; ///< %Service port
+    void setPort(int port); ///< %Change the service port
+
+    String networkAddress() const; ///< Convert the socket address to a string (sans port number)
+    String toString() const; ///< Convert the full address to a string (with port number)
+
+    int scope() const; ///< IPv6 scope of this address
+    void setScope(int scope); ///< Change the IPv6 scope
+
+    /** Lookup the host name of this address. Usually a reverse DNS
+      * lookup will be issued, which may take several seconds.
+      * \exception HostNameLookupError
+      */
+    String lookupHostName() const;
+
+    /** Lookup the service name of this address. In most setups the service name will be looked up
+      * in a local file (/etc/services) and therefore the call returns almost immediately.
+      * \exception ServiceNameLookupError
+      */
+    String lookupServiceName() const;
+
+    /** Returns network prefix (the leading 64 bits of an IPv6 address).
+      * For an IPv4 address the entire address is returned.
+      */
+    uint64_t networkPrefix() const;
+
+    int bitLength() const { return 8 * addrLen(); } ///< %Size of the address in bits
+
+    struct sockaddr *addr(); ///< Provide access to the underlying low-level address structure
+    const struct sockaddr *addr() const; ///< Provide access to the underlying low-level address structure (read-only)
+    int addrLen() const; ///< %Size of the underlying low-level address structure in bytes
+    int level() const; ///< %Level parameter used to set socket options
+
+    /** Equal to operator
+      */
+    bool operator==(const SocketAddress &other) const;
+
+    /** Lower than operator
+      */
+    bool operator<(const SocketAddress &other) const;
+
+    /** Protocol family of \a uri (if \a uri contains a numeric host part)
+      */
+    static ProtocolFamily familyOf(const Uri &uri);
+
+private:
+    friend class NetworkInterface;
+    friend class NetworkRoute;
+
+    struct State;
+
+    explicit SocketAddress(struct sockaddr_in *addr);
+    explicit SocketAddress(struct sockaddr_in6 *addr);
+
+    explicit SocketAddress(State *newState);
+
+    State &me();
+    const State &me() const;
+};
+
+inline String str(const SocketAddress &address) { return address.toString(); }
+
+} // namespace cc

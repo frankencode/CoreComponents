@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,47 +8,52 @@
 
 #pragma once
 
-#include <cc/ui/TextCursor>
+#include <cc/ui/FtTextRun>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class FtTextRun;
-
+/** \internal
+  */
 class FtTextCursor: public TextCursor
 {
 public:
-    Point posA() const override { return posA_; }
-    Point posB() const override { return posB_; }
-    Point advance() const override;
+    FtTextCursor() = default;
 
-    int byteOffset() const override { return byteOffset_; }
-    bool isValid() const override;
+    explicit FtTextCursor(const FtTextRun &textRun):
+        TextCursor{new State{textRun}}
+    {}
 
-    int step(int steps) override;
-    int lineStep(int steps) override;
-
-    Ref<TextCursor> copy() const override;
-    void assign(const TextCursor *other) override;
-
-    String toString() const;
+    int runIndex() const { return me().runIndex_; } ///< %Glyph run index
+    int clusterIndex() const { return me().clusterIndex_; } ///< %Cluster index
+    int glyphIndex() const { return me().glyphIndex_; } ///< &Glyph index within the glyph run
 
 private:
     friend class Object;
     friend class FtTextRun;
 
-    FtTextCursor(const FtTextRun *ftTextRun = nullptr);
-    FtTextCursor(const FtTextCursor *other);
+    struct State: public TextCursor::State
+    {
+        State(const FtTextRun &textRun):
+            textRun_{textRun}
+        {}
 
-    Ref<FtTextCursor> ftCopy() const;
+        FtTextCursor self() const;
 
-    Ref<const FtTextRun> ftTextRun_;
-    Point posA_;
-    Point posB_;
-    int byteOffset_;
-    int runIndex_;
-    int clusterIndex_;
-    int glyphIndex_;
+        TextCursor copy() const override;
+        void assign(const TextCursor &other) override;
+
+        int step(int steps) override;
+        int lineStep(int steps) override;
+
+        FtTextRun textRun_;
+    };
+
+    explicit FtTextCursor(State *newState):
+        TextCursor{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

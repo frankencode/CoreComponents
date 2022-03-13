@@ -1,0 +1,4 @@
+Application {
+    name: cc_node
+    use: [ core, net, meta, glob, http ]
+}

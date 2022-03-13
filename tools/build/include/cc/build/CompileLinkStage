@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildStage>
+
+namespace cc::build {
+
+/** \brief Compile and link source code modules
+  */
+class CompileLinkStage: public BuildStage
+{
+public:
+    bool run();
+
+private:
+    void scheduleJobs(JobScheduler &scheduler);
+};
+
+
+} // namespace cc::build

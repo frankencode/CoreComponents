@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaProtocol>
+#include <cc/MetaPrototype>
+#include <limits>
+
+namespace cc {
+
+struct MetaProtocol::State: public Object::State
+{
+    State() = default;
+
+    State(const MetaProtocol &parent):
+        parent_{parent}
+    {}
+
+    virtual bool lookup(const String &className, Out<MetaPrototype> prototype) const
+    {
+        if (!prototypes_.lookup(className, prototype)) {
+            return parent_ ? parent_.me().lookup(className, prototype) : false;
+        }
+        return true;
+    }
+
+    void define(const MetaPrototype &prototype)
+    {
+        prototypes_.insert(prototype.className(), prototype);
+    }
+
+    MetaProtocol parent_;
+
+    Map<String, MetaPrototype> prototypes_;
+
+    long minCount_ { 0 };
+    long maxCount_ { std::numeric_limits<long>::max() };
+
+    MetaObject defaultObject_;
+};
+
+} // namespace cc

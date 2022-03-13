@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,23 +10,15 @@
 
 #include <cc/ui/TimeMaster>
 
-namespace cc { template<class> class Singleton; }
+namespace cc::ui {
 
-namespace cc {
-namespace ui {
-
-class SdlTimeMaster: public TimeMaster
+class SdlTimeMaster final: public TimeMaster
 {
 public:
-    static SdlTimeMaster *instance();
-
-protected:
-    void triggerTimer(const Timer::Instance *timer) override;
+    SdlTimeMaster();
 
 private:
-    friend class Singleton<SdlTimeMaster>;
-
-    SdlTimeMaster() = default;
+    struct State;
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

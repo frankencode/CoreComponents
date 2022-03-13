@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,20 +10,23 @@
 
 #include <cc/ui/PointerEvent>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \class MouseEvent cc/ui/MouseEvent
+  * \ingroup ui
+  * \brief Mouse event
+  */
 class MouseEvent final: public PointerEvent
 {
 public:
-    MouseButton button() const { return button_; }
-    int clickCount() const { return clickCount_; }
-
-    String toString() const override;
-
-private:
-    friend class Object;
-
+    /** Create a new mouse event
+      * \param action \copydoc PointerEvent::action()
+      * \param time \copydoc PointerEvent::time()
+      * \param button \copydoc button()
+      * \param clickCount \copydoc clickCount()
+      * \param pos \copydoc PointerEvent::pos()
+      * \param step \copydoc PointerEvent::step()
+      */
     MouseEvent(
         PointerAction action,
         double time,
@@ -32,14 +35,66 @@ private:
         const Point &pos,
         const Step &step
     ):
-        PointerEvent{action, time, pos, step},
-        button_{button},
-        clickCount_{clickCount}
+        PointerEvent{
+            new State{
+                action,
+                time,
+                button,
+                clickCount,
+                pos,
+                step
+            }
+        }
     {}
 
-    MouseButton button_;
-    int clickCount_;
+    /** \copydoc MouseButton
+      */
+    MouseButton button() const { return me().button_; }
+
+    /** Click repetition count
+      */
+    int clickCount() const { return me().clickCount_; }
+
+private:
+    friend class Object;
+
+    struct State: public PointerEvent::State
+    {
+        State(
+            PointerAction action,
+            double time,
+            MouseButton button,
+            int clickCount,
+            const Point &pos,
+            const Step &step
+        ):
+            PointerEvent::State{action, time, pos, step},
+            button_{button},
+            clickCount_{clickCount}
+        {}
+
+        String toString() const override
+        {
+            return Format{}
+                << "MouseEvent {" << nl
+                << "  action: " << action_ << nl
+                << "  time: " << time_ << nl
+                << "  button: " << button_ << nl
+                << "  clickCount: " << clickCount_ << nl
+                << "  pos: " << pos_ << nl
+                << "  step: " << step_ << nl
+                << "}";
+        }
+
+        MouseButton button_;
+        int clickCount_;
+    };
+
+    /** Create a null mouse event
+      */
+    MouseEvent() = default;
+
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-
-}} // namespace cc::ui
+} // namespace cc::ui

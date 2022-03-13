@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SyntaxDefinition>
+
+namespace cc {
+
+/** \class UriSyntax cc/UriSyntax
+  * \ingroup syntax
+  * \brief Syntax of an Uniform Resource Identifier
+  */
+class UriSyntax final: public SyntaxDefinition
+{
+public:
+    /** Get an instance of this syntax definition
+      */
+    UriSyntax();
+
+    SyntaxRule userInfo() const; ///< %Syntax rule
+    SyntaxRule host() const; ///< %Syntax rule
+    SyntaxRule port() const; ///< %Syntax rule
+
+    SyntaxRule scheme() const; ///< %Syntax rule
+    SyntaxRule authority() const; ///< %Syntax rule
+    SyntaxRule path() const; ///< %Syntax rule
+    SyntaxRule query() const; ///< %Syntax rule
+    SyntaxRule fragment() const; ///< %Syntax rule
+
+    SyntaxRule uri() const; ///< %Syntax rule
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

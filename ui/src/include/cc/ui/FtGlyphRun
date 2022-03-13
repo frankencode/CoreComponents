@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,14 +8,12 @@
 
 #pragma once
 
+#include <cc/ui/GlyphRun>
+#include <cc/Array>
 #include <cairo/cairo.h>
 #include <cairo/cairo-ft.h>
-#include <cc/ArrayInstance>
-#include <cc/ui/FtScaledFont>
-#include <cc/ui/GlyphRun>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
 class FtFontManager;
 class FtTextRun;
@@ -23,73 +21,61 @@ class FtTextRun;
 class FtGlyphRun: public GlyphRun
 {
 public:
-    String text() const override { return text_; }
-    Font font() const override { return font_; }
+    FtGlyphRun() = default;
 
-    Point origin() const override { return origin_; }
-    Point advance() const override { return advance_; }
-    Size size() const override { return size_ ; }
-    double maxAscender() const override { return maxAscender_; }
-    double minDescender() const override { return minDescender_; }
+    FtGlyphRun(const String &text, const Font &font, const Point &origin);
 
-    int byteCount() const override { return text_->count(); }
-    int lineCount() const override { return lineCount_; }
+    using CairoGlyphs = Array<cairo_glyph_t>;
+    using CairoTextClusters = Array<cairo_text_cluster_t>;
+    using GlyphAdvances = Array<double>;
 
-    Ref<const GlyphRun> wrap(double maxWidth, TextAlign textAlign = TextAlign::Left, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const override;
-    Ref<const GlyphRun> elide(double maxWidth) const override;
-
-    Ref<GlyphRun> copy() const override;
-
-    const FtScaledFont *ftScaledFont() const { return Object::cast<const FtScaledFont *>(font_->getScaledFont()); }
-
-    typedef ArrayInstance<cairo_glyph_t> CairoGlyphs;
-    typedef ArrayInstance<cairo_text_cluster_t> CairoTextClusters;
-    typedef ArrayInstance<double> GlyphAdvances;
-
-    const CairoGlyphs *cairoGlyphs() const { return cairoGlyphs_; }
-    const CairoTextClusters *cairoTextClusters() const { return cairoTextClusters_; }
-    const GlyphAdvances *glyphAdvances() const { return glyphAdvances_; }
+    CairoGlyphs cairoGlyphs() const { return me().cairoGlyphs_; }
+    CairoTextClusters cairoTextClusters() const { return me().cairoTextClusters_; }
+    GlyphAdvances glyphAdvances() const { return me().glyphAdvances_; }
 
 private:
     friend class Object;
     friend class FtFontManager;
     friend class FtTextRun;
 
-    FtGlyphRun(): lineCount_{1} {}
-    FtGlyphRun(const String &text, const Font &font, const Point &origin);
+    struct State: public GlyphRun::State
+    {
+        State() = default;
 
-    Ref<FtGlyphRun> ftCopy() const;
+        State(const State &other);
 
-    static void lineJustify(
-        FtGlyphRun *ftGlyphRun, double spaceDelta,
-        int byteOffset0, int glyphOffset0, int clusterIndex0,
-        int byteOffset1, int glyphOffset1, int clusterIndex1
-    );
+        State(const String &text, const Font &font, const Point &origin):
+            GlyphRun::State{text, font, origin}
+        {}
 
-    static void lineShift(
-        FtGlyphRun *ftGlyphRun,
-        int glyphOffset0,
-        int glyphOffset1,
-        double shiftX
-    );
+        GlyphRun wrap(double maxWidth, TextAlign textAlign, double lineHeight, const TextWrapBehind &wrapBehind) const override;
 
-    static void lineShift(FtGlyphRun *ftGlyphRun, double shiftX);
+        void lineJustify(
+            double spaceDelta,
+            int byteOffset0, int glyphOffset0, int clusterIndex0,
+            int byteOffset1, int glyphOffset1, int clusterIndex1
+        );
 
-    String text_;
-    Font font_;
+        void lineShift(int glyphOffset0, int glyphOffset1, double shiftX);
 
-    Point origin_;
-    Point advance_;
-    Size size_;
-    double maxAscender_ { 0 };
-    double minDescender_ { 0 };
-    int lineCount_ { 1 };
+        void lineShift(double shiftX);
 
-    Ref<CairoGlyphs> cairoGlyphs_;
-    Ref<CairoTextClusters> cairoTextClusters_;
-    Ref<GlyphAdvances> glyphAdvances_;
+        GlyphRun elide(double maxWidth) const override;
 
-    Step finalGlyphAdvance_;
+        FtGlyphRun self() const;
+
+        CairoGlyphs cairoGlyphs_;
+        CairoTextClusters cairoTextClusters_;
+        GlyphAdvances glyphAdvances_;
+        Step finalGlyphAdvance_;
+    };
+
+    explicit FtGlyphRun(State *newState):
+        GlyphRun{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

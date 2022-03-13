@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Stream>
+
+namespace cc {
+
+/** \class HttpChunkedSink cc/HttpChunkedSink
+  * \ingroup http_protocol
+  * \brief HTTP chunked transfer sink
+  */
+class HttpChunkedSink final: public Stream
+{
+public:
+    explicit HttpChunkedSink(const Stream &stream);
+
+private:
+    struct State;
+};
+
+} // namespace cc

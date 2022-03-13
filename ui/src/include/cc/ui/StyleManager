@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,41 +9,42 @@
 #pragma once
 
 #include <cc/ui/StylePlugin>
+#include <cc/Singleton>
 #include <cc/Map>
-#include <cc/Source>
 
-namespace cc { template<typename> class Singleton; }
+namespace cc::ui {
 
-namespace cc {
-namespace ui {
-
-class StyleManager: public Object
+/** \internal
+  * \class StyleManager cc/ui/StyleManager
+  * \ingroup ui
+  * \brief Keep track of visual styles
+  */
+class StyleManager: public Singleton
 {
 public:
-    static StyleManager *instance();
-
-    bool getPlugin(const String &name, Ref<StylePlugin> *plugin) const;
-    Ref< Source<StylePlugin *> > getAllPlugins() const;
-
-    StylePlugin *activePlugin() const;
-    void activatePlugin(StylePlugin *plugin);
-
-private:
-    friend class Singleton<StyleManager>;
-    friend class StylePlugin;
-
+    /** Get access to the style manager singleton
+      */
     StyleManager();
 
-    void registerPlugin(StylePlugin *plugin);
+    StylePlugin activePlugin() const { return me().activePlugin_; }
+    void setActivePlugin(const StylePlugin &plugin);
 
-    using Plugins = Map< String, Ref<StylePlugin> >;
-    Plugins plugins_;
-    mutable Ref<StylePlugin> activePlugin_;
-    String defaultStyleName_;
+    Map<String, StylePlugin> plugins() const { return me().plugins_; }
 
-    double pixelDensityRatio_;
+private:
+    friend class StylePlugin;
+
+    void registerPlugin(const StylePlugin &plugin);
+
+    struct State: public Singleton::State {
+        State();
+        Map<String, StylePlugin> plugins_;
+        StylePlugin activePlugin_;
+        String defaultStyleName_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-
-
-}} // namespace cc::ui
+} // namespace cc::ui

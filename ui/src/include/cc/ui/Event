@@ -1,0 +1,68 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc::ui {
+
+/** %Event filter
+  * \tparam T %Event type
+  */
+template<class T>
+using Filter = std::function<bool(const T &)>;
+
+/** \internal
+  * \class Event cc/ui/Event
+  * \ingroup ui
+  * \brief %Event propagation mechanism
+  * \tparam T %Event value type
+  */
+template<class T>
+class Event
+{
+public:
+    /** Subscribe a new consumer \a f
+      */
+    void subscribe(std::function<bool(const T &)> &&f) const
+    {
+        queue_.emplaceFront(std::move(f));
+    }
+
+    /** Propagate \a event to all consumers
+      */
+    bool propagate(const T &event) const
+    {
+        for (auto &f: queue_) {
+            if (f(event)) return true;
+        }
+        return false;
+    }
+
+    /** Check if anyone is listening
+      */
+    bool hasConsumers() const { return queue_.count() > 0; }
+
+    /** Remove all listeners
+      */
+    void disband() { queue_.deplete(); }
+
+    /** \copydoc subscribe()
+      */
+    void operator()(std::function<bool(const T &)> &&f) const { subscribe(std::move(f)); }
+
+    /** \copydoc propagate()
+      */
+    bool operator()(const T &event) const { return propagate(event); }
+
+private:
+    friend class PropertyBinding;
+
+    mutable Queue<std::function<bool(const T &)>> queue_;
+};
+
+} // namespace cc::ui

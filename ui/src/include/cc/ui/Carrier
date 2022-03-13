@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc::ui {
+
+/** \class Carrier cc/ui/Carrier
+  * \ingroup ui
+  * \brief Default carrier type for flickables
+  */
+class Carrier: public View
+{
+public:
+    /** Create a primordial carrier
+      */
+    Carrier():
+        View{onDemand<State>}
+    {}
+
+    /** Create a new carrier
+      */
+    explicit Carrier(Out<Carrier> self):
+        View{new State}
+    {
+        self = *this;
+    }
+
+    /** Create a new carrier of size (\a width, \a height)
+      */
+    Carrier(double width, double height):
+        View{new State}
+    {
+        size({width, height});
+    }
+
+protected:
+    struct State: public View::State
+    {
+        State() = default;
+
+        Size preferredSize() const override;
+    };
+};
+
+} // namespace cc::ui

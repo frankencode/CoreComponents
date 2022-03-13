@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,212 +9,281 @@
 #pragma once
 
 #include <cc/Queue>
-#include <cc/Source>
-#include <cc/Sink>
-#include <cc/Mutex>
-#include <cc/Guard>
+#include <cc/SourceIterator>
 #include <cc/WaitCondition>
 
 namespace cc {
 
 /** \class Channel cc/Channel
   * \ingroup concurrency
-  * \brief Inter-thread communication channel
-  * \tparam T item type
+  * \brief %Thread communication channel
+  * \tparam T Item type
   */
 template<class T>
 class Channel
 {
 public:
-    class Instance: public Source<T>, public Sink<T>
+    /** Item type
+      */
+    using Item = T;
+
+    /** Create a new channel
+      */
+    Channel() = default;
+
+    /** Add a new item to the end
+      * \param item Item value
+      * \return True if successful
+      */
+    bool pushBack(const T &item)
     {
-    public:
-        /** Add a new item to the end of the channel
-          * \param item item value
-          * \param priority item priority
-          * \return true if successful
-          */
-        bool pushBack(const T &item)
-        {
-            Guard<Mutex> guard{mutex_};
-            if (!close_) {
-                queue_->pushBack(item);
-                notEmpty_->signal();
-                return true;
-            }
-            return false;
+        return emplaceBack(item);
+    }
+
+    /** Add a new item to the front
+      * \param item Item value
+      * \return True if successful
+      */
+    bool pushFront(const T &item)
+    {
+        return emplaceFront(item);
+    }
+
+    /** Add a new item after removing all existing items
+      * \param item Item value
+      * \return True if successful
+      */
+    bool pushExclusive(const T &item)
+    {
+        return emplaceExclusive(item);
+    }
+
+    /** Add a new item to the end
+      * \tparam Args %Construction argument types
+      * \param args %Construction arguments
+      * \return True if successful
+      */
+    template<class... Args>
+    bool emplaceBack(Args... args)
+    {
+        Guard<Mutex> guard{me().mutex_};
+        if (!me().close_) {
+            me().queue_.emplaceBack(args...);
+            me().notEmpty_.signal();
+            return true;
         }
+        return false;
+    }
 
-        /** Add a new item to the front of the channel
-          * \param item item value
-          * \param priority item priority
-          * \return true if successful
-          */
-        bool pushFront(const T &item)
-        {
-            Guard<Mutex> guard{mutex_};
-            if (!close_) {
-                queue_->pushFront(item);
-                notEmpty_->signal();
-                return true;
-            }
-            return false;
+    /** Add a new item to the front
+      * \tparam Args %Construction argument types
+      * \param args %Construction arguments
+      * \return True if successful
+      */
+    template<class... Args>
+    bool emplaceFront(Args... args)
+    {
+        Guard<Mutex> guard{me().mutex_};
+        if (!me().close_) {
+            me().queue_.emplaceFront(args...);
+            me().notEmpty_.signal();
+            return true;
         }
+        return false;
+    }
 
-        /** Remove an item from the end
-          * \param item returns the item value
-          * \return true if successful
-          */
-        bool popBack(T *item)
-        {
-            Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0 && !close_) {
-                notEmpty_->wait(mutex_);
-            }
-            if (queue_->count() > 0) {
-                queue_->popBack(item);
-                return true;
-            }
-            return false;
+    /** Add a new item after replacing all existing items
+      * \tparam Args %Construction argument types
+      * \param args %Construction arguments
+      * \return True if successful
+      */
+    template<class... Args>
+    bool emplaceExclusive(Args... args)
+    {
+        Guard<Mutex> guard{me().mutex_};
+        if (!me().close_) {
+            me().queue_.deplete();
+            me().queue_.emplaceFront(args...);
+            me().notEmpty_.signal();
+            return true;
         }
+        return false;
+    }
 
-        /** Remove an item from the front
-          * \param item returns the item value
-          * \return true if successful
-          */
-        bool popFront(T *item)
-        {
-            Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0 && !close_) {
-                notEmpty_->wait(mutex_);
-            }
-            if (queue_->count() > 0) {
-                queue_->popFront(item);
-                return true;
-            }
-            return false;
+    /** Remove an item from the end
+      * \param item Returns the item value
+      * \return True if successful
+      */
+    bool popBack(Out<T> item = None{})
+    {
+        Guard<Mutex> guard{me().mutex_};
+        while (me().queue_.count() == 0 && !me().close_) {
+            me().notEmpty_.wait(me().mutex_);
         }
-
-        /// \copydoc popFront(T *)
-        bool read(T *item) override
-        {
-            return popFront(item);
+        if (me().queue_.count() > 0) {
+            me().queue_.popBack(&item);
+            return true;
         }
+        return false;
+    }
 
-        /// \copydoc pushBack(const T &)
-        bool write(const T &item) override
-        {
-            return pushBack(item);
+    /** Remove an item from the front
+      * \param item Returns the item value
+      * \return True if successful
+      */
+    bool popFront(Out<T> item = None{})
+    {
+        Guard<Mutex> guard{me().mutex_};
+        while (me().queue_.count() == 0 && !me().close_) {
+            me().notEmpty_.wait(me().mutex_);
         }
-
-        /** Wait for the channel to become ready to read
-          * \return true if the channel contains at least one item before timeout or the channel has been closed
-          */
-        bool wait()
-        {
-            Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0 && !close_)
-                notEmpty_->wait(mutex_);
-            return queue_->count() > 0 || close_;
+        if (me().queue_.count() > 0) {
+            me().queue_.popFront(&item);
+            return true;
         }
+        return false;
+    }
 
-        /** Wait for the channel to become ready to read
-          * \param timeout absolute timeout (e.g. System::now() + 10)
-          * \return true if the channel contains at least one item before timeout or the channel has been closed
-          */
-        bool waitUntil(double timeout)
-        {
-            Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0 && !close_) {
-                if (!notEmpty_->waitUntil(timeout, mutex_))
-                    break;
-            }
-            return queue_->count() > 0 || close_;
+    /** \copydoc popFront()
+      */
+    bool read(Out<T> item)
+    {
+        return popFront(&item);
+    }
+
+    /** \copydoc pushBack()
+      */
+    bool write(const T &item)
+    {
+        return pushBack(item);
+    }
+
+    /** \copydoc pushBack()
+      */
+    Channel &operator<<(const Item& item)
+    {
+        pushBack(item);
+        return *this;
+    }
+
+    /** \copydoc popFront()
+      */
+    Channel &operator>>(Item& item)
+    {
+        popFront(&item);
+        return *this;
+    }
+
+    /** Wait for the channel to become ready to read
+      * \return True if successful
+      */
+    bool wait()
+    {
+        Guard<Mutex> guard{me().mutex_};
+        while (me().queue_.count() == 0 && !me().close_) {
+            me().notEmpty_.wait(me().mutex_);
         }
+        return me().queue_.count() > 0 || me().close_;
+    }
 
-        /** Remove an item from the end of the queue before a certain timeout
-          * \param timeout absolute timeout (e.g. System::now() + 10)
-          * \param item optionally return the item value
-          * \return true if an item was available before reaching the timeout, otherwise false
-          */
-        bool popBackBefore(double timeout, T *item)
-        {
-            Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0 && !close_) {
-                if (!notEmpty_->waitUntil(timeout, mutex_))
-                    break;
-            }
-            if (queue_->count() > 0) {
-                queue_->popBack(item);
-                return true;
-            }
-            return false;
+    /** Wait for the channel to become ready to read for a limited time
+      * \param time Seconds elapsed since the begin of Epoch
+      * \return True if successful
+      * \see System::now()
+      */
+    bool waitUntil(double time)
+    {
+        Guard<Mutex> guard{me().mutex_};
+        while (me().queue_.count() == 0 && !me().close_) {
+            if (!me().notEmpty_.waitUntil(time, me().mutex_))
+                break;
         }
+        return me().queue_.count() > 0 || me().close_;
+    }
 
-        /** Remove an item from the head of the queue before a certain timeout
-          * \param timeout absolute timeout (e.g. System::now() + 10)
-          * \param item optionally return the item value
-          * \return true if an item was available before reaching the timeout, otherwise false
-          */
-        bool popFrontBefore(double timeout, T *item)
-        {
-            Guard<Mutex> guard{mutex_};
-            while (queue_->count() == 0 && !close_) {
-                if (!notEmpty_->waitUntil(timeout, mutex_))
-                    break;
-            }
-            if (queue_->count() > 0) {
-                queue_->popFront(item);
-                return true;
-            }
-            return false;
+    /** Remove an item from the end of the queue before given time
+      * \param time Seconds elapsed since the begin of Epoch
+      * \param item Returns the item value
+      * \return True if successful
+      * \see System::now()
+      */
+    bool popBackBefore(double time, Out<T> item = None{})
+    {
+        Guard<Mutex> guard{me().mutex_};
+        while (me().queue_.count() == 0 && !me().close_) {
+            if (!me().notEmpty_.waitUntil(time, me().mutex_))
+                break;
         }
-
-        /// Return number of queued items
-        int count() const { Guard<Mutex> guard{mutex_}; return queue_->count(); }
-
-        /// Close channel
-        void close()
-        {
-            Guard<Mutex> guard{mutex_};
-            close_ = true;
-            notEmpty_->broadcast();
+        if (me().queue_.count() > 0) {
+            me().queue_.popBack(&item);
+            return true;
         }
+        return false;
+    }
 
-    private:
-        Mutex mutex_;
+    /** Remove an item from the head of the queue before given time
+      * \param time Seconds elapsed since the begin of Epoch
+      * \param item Returns the item value
+      * \return True if successful
+      * \see System::now()
+      */
+    bool popFrontBefore(double time, Out<T> item = None{})
+    {
+        Guard<Mutex> guard{me().mutex_};
+        while (me().queue_.count() == 0 && !me().close_) {
+            if (!me().notEmpty_.waitUntil(time, me().mutex_))
+                break;
+        }
+        if (me().queue_.count() > 0) {
+            me().queue_.popFront(&item);
+            return true;
+        }
+        return false;
+    }
+
+    /** Get the number of queued items
+      */
+    long count() const
+    {
+        Guard<Mutex> guard{me().mutex_};
+        return me().queue_.count();
+    }
+
+    /** Close for writing
+      */
+    void close()
+    {
+        Guard<Mutex> guard{me().mutex_};
+        me().close_ = true;
+        me().notEmpty_.broadcast();
+    }
+
+    /** Shutdown communication: close for reading and writing and discard all intermediate data
+      */
+    void shutdown()
+    {
+        Guard<Mutex> guard{me().mutex_};
+        me().queue_.deplete();
+        me().close_ = true;
+        me().notEmpty_.broadcast();
+    }
+
+    /** Iteration start
+      */
+    SourceIterator<Channel> begin() { return SourceIterator<Channel>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<Channel> end() { return SourceIterator<Channel>{}; }
+
+private:
+    struct State {
+        mutable Mutex mutex_;
         WaitCondition notEmpty_;
         Queue<T> queue_;
         bool close_ { false };
     };
-
-    using ConstIterator = typename Instance::ConstIterator;
-
-    /** Create a new channel
-      */
-    Channel():
-        instance_{new Instance}
-    {}
-
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return instance_; }
-
-private:
-    Channel &operator=(const Channel &other);
-
-    Ref<Instance> instance_;
+    Shared<State> me;
 };
-
-template<class T>
-typename Channel<T>::ConstIterator begin(const Channel<T> &a) { return a->begin(); }
-
-template<class T>
-typename Channel<T>::ConstIterator end(const Channel<T> &a) { return a->end(); }
-
-template<class T>
-typename Channel<T>::ConstIterator begin(Channel<T> &a) { return a->begin(); }
-
-template<class T>
-typename Channel<T>::ConstIterator end(Channel<T> &a) { return a->end(); }
 
 } // namespace cc

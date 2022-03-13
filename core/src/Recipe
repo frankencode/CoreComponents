@@ -1,8 +1,8 @@
 Library {
-    name: cccore
+    name: cc_core
     Dependency {
-        probe: probe/cxx11.cc
-        compile-flags: -std=c++11
+        probe: probe/cxx20.cc
+        compile-flags: -std=c++20
         cascade: true
     }
     Dependency {

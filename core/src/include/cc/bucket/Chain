@@ -1,0 +1,276 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bucket/Map>
+#include <cc/bucket/Stop>
+#include <cc/Locator>
+#include <cc/InOut>
+#include <type_traits>
+#include <iterator>
+#include <cassert>
+
+namespace cc {
+namespace bucket {
+
+template<class T>
+class Link: public Stop {
+public:
+    Link() = default;
+
+    Link(Link *pred, Link *succ):
+        Stop{pred, succ}
+    {}
+
+    ~Link()
+    {
+        if (pred_) pred_->succ_ = succ_;
+        if (succ_) succ_->pred_ = pred_;
+
+        if (!std::is_trivial<T>::value) {
+            for (unsigned i = 0; i < fill_; ++i) {
+                T *p = &at(i);
+                p->~T();
+            }
+        }
+    }
+
+    Link *succ() const { return static_cast<Link *>(succ_); }
+    Link *pred() const { return static_cast<Link *>(pred_); }
+
+    T &at(unsigned nodeIndex) { return slotAt(map_.mapToSlot(nodeIndex, fill_)); }
+    const T &at(unsigned nodeIndex) const { return slotAt(map_.mapToSlot(nodeIndex, fill_)); }
+
+    template<class... Args>
+    void emplace(unsigned nodeIndex, Args... args)
+    {
+        const unsigned slotIndex = map_.pushEntry(nodeIndex, &fill_);
+        T *p = &slotAt(slotIndex);
+        new (p) T{args...};
+    }
+
+    void push(unsigned nodeIndex, const T &item)
+    {
+        const unsigned slotIndex = map_.pushEntry(nodeIndex, &fill_);
+        T *p = &slotAt(slotIndex);
+        if (!std::is_trivial<T>::value) new (p) T{item};
+        else *p = item;
+    }
+
+    void pop(unsigned nodeIndex)
+    {
+        const unsigned slotIndex = map_.popEntry(nodeIndex, &fill_);
+        if (!std::is_trivial<T>::value) {
+            T *p = &slotAt(slotIndex);
+            p->~T();
+        }
+    }
+
+    template<class... Args>
+    void emplaceBack(Args... args) { emplace(fill_, args...); }
+
+    void pushBack(const T &item) { push(fill_, item); }
+    void popBack(Out<T> item) { item << at(fill_ - 1); pop(fill_ - 1); }
+
+    template<class... Args>
+    void emplaceFront(Args... args) { emplace(0, args...); }
+
+    void pushFront(const T &item) { push(0, item); }
+    void popFront(Out<T> item) { item << at(0); pop(0); }
+
+    bool isFull() const { return fill_ == Capacity; }
+    bool isEmpty() const { return fill_ == 0; }
+
+    T &slotAt(unsigned nodeIndex) { return reinterpret_cast<T *>(data_)[nodeIndex]; }
+    const T& slotAt(unsigned nodeIndex) const { return reinterpret_cast<const T *>(data_)[nodeIndex]; }
+
+    Map<Capacity> map_;
+    std::uint8_t data_[Capacity * sizeof(T)];
+};
+
+/** \internal
+  * \brief Optimized data structure for double-ended queues
+  */
+template<class T>
+class Chain
+{
+public:
+    using Item = T;
+
+    Chain() = default;
+
+    Chain(const Chain &other)
+    {
+        for (auto pos = other.head(); pos; ++pos)
+            pushBack(other.at(pos));
+    }
+
+    ~Chain()
+    {
+        deplete();
+    }
+
+    long count() const { return count_; }
+
+    const T &first() const
+    {
+        assert(count() > 0);
+        return head_->at(0);
+    }
+
+    const T &last() const
+    {
+        assert(count() > 0);
+        return tail_->at(tail_->fill_ - 1);
+    }
+
+    Locator head() const
+    {
+        return Locator{&count_, 0, head_, 0};
+    }
+
+    Locator tail() const
+    {
+        return Locator{&count_, count_ - 1, tail_, tail_ ? tail_->fill_ - 1 : 0};
+    }
+
+    T &at(Locator target) const
+    {
+        assert(target);
+        assert(target.revisionPtr_ == &count_); // locator needs to belong to this container
+
+        return static_cast<Node *>(target.stop_)->at(target.egress_);
+    }
+
+    template<class Access = T>
+    static Access &value(const Locator &target)
+    {
+        return static_cast<Node *>(target.stop_)->at(target.egress_);
+    }
+
+    template<class... Args>
+    void emplaceBack(Args... args)
+    {
+        if (tail_) {
+            if (tail_->isFull())
+                tail_ = new Node{tail_, nullptr};
+        }
+        else {
+            head_ = tail_ = new Node;
+        }
+
+        tail_->emplaceBack(args...);
+
+        ++count_;
+    }
+
+    template<class... Args>
+    void emplaceFront(Args... args)
+    {
+        if (head_) {
+            if (head_->isFull())
+                head_ = new Node{nullptr, head_};
+        }
+        else {
+            head_ = tail_ = new Node;
+        }
+
+        head_->emplaceFront(args...);
+
+        ++count_;
+    }
+
+    void pushBack(const T &item)
+    {
+        if (tail_) {
+            if (tail_->isFull())
+                tail_ = new Node{tail_, nullptr};
+        }
+        else {
+            head_ = tail_ = new Node;
+        }
+
+        tail_->pushBack(item);
+
+        ++count_;
+    }
+
+    void pushFront(const T &item)
+    {
+        if (head_) {
+            if (head_->isFull())
+                head_ = new Node{nullptr, head_};
+        }
+        else {
+            head_ = tail_ = new Node;
+        }
+
+        head_->pushFront(item);
+
+        ++count_;
+    }
+
+    void popBack(Out<T> item)
+    {
+        assert(tail_ && !tail_->isEmpty());
+
+        tail_->popBack(&item);
+
+        if (tail_->isEmpty()) {
+            Node *oldTail = tail_;
+            tail_ = tail_->pred();
+            if (head_ == oldTail) head_ = nullptr;
+            delete oldTail;
+        }
+
+        --count_;
+    }
+
+    void popFront(Out<T> item)
+    {
+        assert(head_ && !head_->isEmpty());
+
+        head_->popFront(&item);
+
+        if (head_->isEmpty()) {
+            Node *oldHead = head_;
+            head_ = head_->succ();
+            if (tail_ == oldHead) tail_ = nullptr;
+            delete oldHead;
+        }
+
+        --count_;
+    }
+
+    void deplete()
+    {
+        if (count_ == 0) return;
+
+        for (Node *node = head_; node;) {
+            Node *oldNode = node;
+            node = node->succ();
+            oldNode->pred_ = nullptr;
+            oldNode->succ_ = nullptr;
+            delete oldNode;
+        }
+
+        head_ = nullptr;
+        tail_ = nullptr;
+        count_ = 0;
+    }
+
+private:
+    using Node = Link<T>;
+
+    Node *head_ { nullptr };
+    Node *tail_ { nullptr };
+    long count_ { 0 };
+};
+
+}} // namespace cc::bucket

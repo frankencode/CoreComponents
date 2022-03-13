@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaObject>
+#include <cc/MetaProtocol>
+#include <cc/TextError>
+
+namespace cc {
+
+/** \brief %Convenience function to parse a YASON message
+  * \ingroup meta
+  * \param message JSON message
+  * \param protocol %Message protocol
+  * \return parsed value
+  * \exception TextError
+  */
+Variant yasonParse(const String &message, const MetaProtocol &protocol = MetaProtocol{});
+
+/** Convenience function to stringify a variant value
+  * \ingroup meta
+  * \param value %Variant value
+  * \return YASON message
+  */
+String yasonStringify(const Variant &value);
+
+} // namespace cc

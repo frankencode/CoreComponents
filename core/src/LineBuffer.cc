@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,59 +10,66 @@
 
 namespace cc {
 
-LineBuffer::Instance::Instance(const Stream &sink, const String &prefix):
+LineBuffer::State::State(const Stream &sink, const String &prefix):
     sink_{sink},
     prefix_{prefix}
 {}
 
-void LineBuffer::Instance::writeLine(const CharArray *data)
+long LineBuffer::State::read(Out<Bytes> buffer, long maxFill)
 {
-    if (sink_) sink_->write(data);
+    return (sink_) ? sink_.read(buffer, maxFill) : 0;
 }
 
-String LineBuffer::Instance::prefix() const
+void LineBuffer::State::write(const Bytes &buffer, long fill)
 {
-    return prefix_;
-}
+    long i = 0, n = (fill < 0 || buffer.count() < fill) ? buffer.count() : fill;
 
-int LineBuffer::Instance::read(CharArray *data)
-{
-    return (sink_) ? sink_->read(data) : 0;
-}
-
-void LineBuffer::Instance::write(const CharArray *data)
-{
-    int i = 0, n = data->count();
-    if (n == 0) return;
     while (i < n) {
-        int i0 = i;
-        if (data->find('\n', &i)) {
+        long i0 = i;
+        if (buffer.find('\n', &i)) {
             ++i;
-            backlog_->pushBack(data->copy(i0, i));
+            backlog_.pushBack(buffer.copy(i0, i));
             i0 = i;
             flush();
         }
         else {
-            backlog_->pushBack(data->copy(i0, n));
+            backlog_.pushBack(buffer.copy(i0, n));
         }
     }
 }
 
-void LineBuffer::Instance::write(const StringList &parts)
+String LineBuffer::State::prefix() const
 {
-    for (const String &s: parts)
-        write(s);
+    return prefix_;
 }
 
-int LineBuffer::Instance::flush()
+long LineBuffer::State::flush()
 {
     String h = prefix();
-    if (backlog_->count() == 0) return 0;
-    if (h != "") backlog_->pushFront(h);
-    String line = backlog_->join();
+    if (backlog_.count() == 0) return 0;
+    if (h != "") backlog_.pushFront(h);
+    Bytes line{backlog_};
     writeLine(line);
-    backlog_ = StringList{};
-    return line->count();
+    backlog_.deplete();
+    return line.count();
+}
+
+void LineBuffer::State::writeLine(const Bytes &line)
+{
+    if (sink_) sink_.write(line);
+}
+
+LineBuffer::LineBuffer(const Stream &sink, const String &prefix):
+    Stream{new LineBuffer::State{sink, prefix}}
+{}
+
+LineBuffer::LineBuffer(State *newState):
+    Stream{newState}
+{}
+
+long LineBuffer::flush()
+{
+    return me().flush();
 }
 
 } // namespace cc

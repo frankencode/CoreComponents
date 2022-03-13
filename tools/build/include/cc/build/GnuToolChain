@@ -1,0 +1,24 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/ToolChain>
+
+namespace cc::build {
+
+class GnuToolChain final: public ToolChain
+{
+public:
+    GnuToolChain(const String &compiler, const String &libInstallPath);
+
+private:
+    struct State;
+};
+
+} // namespace cc::build

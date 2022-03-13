@@ -1,10 +1,6 @@
 Application {
-    name: ccaes
-    alias: ccunaes
+    name: cc_aes
+    alias: cc_unaes
     use: [ core, crypto ]
-    Dependency {
-        name: readline
-        configure: config/readline.cc
-        // hint: readline/readline.h
-    }
+    depends: readline
 }

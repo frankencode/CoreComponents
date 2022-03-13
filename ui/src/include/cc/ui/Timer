@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,102 +8,91 @@
 
 #pragma once
 
-#include <cc/Signal>
+#include <cc/Object>
+#include <cc/Trigger>
 #include <atomic>
-#include <memory>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class TimeWorker;
+class Application;
+class TimeoutRequest;
 
 /** \class Timer cc/ui/Timer
-  * \brief Periodic interval timer
+  * \ingroup ui
+  * \brief Inverval timer
   */
-class Timer
+class Timer: public Object
 {
 public:
-    class Instance: public Object
-    {
-    public:
-        /// Start timer, now.
-        void start();
-
-        /// Start timer at a later \a startTime
-        void startAt(double startTime);
-
-        /// Start timer after a giving \a delayTime
-        void startIn(double delayTime);
-
-        /// Stop the timer
-        void stop();
-
-        /// Timer is active an generates timeout signals
-        bool isActive() const { return isActive_; }
-
-        /// The first time the timer emits the timeout signal
-        double firstTime() const { return firstTime_; }
-
-        /// Beginning of the first timeout interval
-        double startTime() const { return startTime_; }
-
-        /// Time between two timeout signal emissions
-        double interval() const { return interval_; }
-
-        /// Generated after an interval has timed out
-        Signal timeout;
-
-    private:
-        friend class Timer;
-        friend class TimeWorker;
-        friend class ApplicationInstance;
-
-        Instance(double interval = 0);
-
-        mutable std::atomic_bool isActive_ { false };
-        double firstTime_ { 0 };
-        double startTime_ { 0 };
-        double interval_;
-        std::atomic<void *> timeout_ { nullptr };
-    };
-
-    /** Create a single-shot timer.
+    /** Create a single-shot timer
       */
-    Timer():
-        instance_{new Instance}
+    Timer() = default;
+
+    /** Create a repeating interval timer
+      * \param interval %Interval in which the timeout signal is triggered
+      */
+    explicit Timer(double interval):
+        Object{new State{interval}}
     {}
 
-    /** Create a repeating interval timer.
-      * \param interval interval in which the timeout signal is triggered
+    /** Start timer
       */
-    Timer(double interval):
-        instance_{new Instance{interval}}
-    {}
-
-    /** Create a repeating interval timer.
-      * \param interval interval in which the timeout signal is triggered
-      * \param onTimeout handler to be called on timeout
-      */
-    Timer(double interval, const std::function<void()> &onTimeout):
-        instance_{new Instance{interval}}
+    void start()
     {
-        (*this)->timeout->connect(onTimeout);
+        startIn(me().interval_);
     }
 
-    /** Create a single-shot timer.
-      * \param onTimeout handler to be called on timeout
+    /** Start timer at a later \a startTime
       */
-    Timer(const std::function<void()> &onTimeout):
-        instance_{new Instance}
-    {
-        (*this)->timeout->connect(onTimeout);
-    }
+    void startAt(double startTime);
 
-    Instance *operator->() { return instance_; }
-    const Instance *operator->() const { return instance_; }
+    /** Start timer after a giving \a delayTime
+      */
+    void startIn(double delayTime);
+
+    /** Stop the timer
+      */
+    void stop();
+
+    /** Timer is active an generates timeout signals
+      */
+    bool isActive() const { return me().isActive_; }
+
+    /** The first time the timer emits the timeout signal
+      */
+    double firstTime() const { return me().firstTime_; }
+
+    /** Beginning of the first timeout interval
+      */
+    double startTime() const { return me().startTime_; }
+
+    /** %Time between two timeout signal emissions
+      */
+    double interval() const { return me().interval_; }
+
+    /** Register function \a f to be called on timeout
+      */
+    void onTimeout(std::function<void()> &&f) { me().timeout_(std::move(f)); }
 
 private:
-    Ref<Instance> instance_;
+    friend class Application;
+    friend class TimeoutRequest;
+
+    struct State: public Object::State
+    {
+        State(double interval):
+            interval_{interval}
+        {}
+        double interval_;
+        Trigger timeout_;
+        mutable std::atomic<bool> isActive_ { false };
+        double firstTime_ { 0 };
+        double startTime_ { 0 };
+        std::atomic<uint64_t> requestId_ { 0 };
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace
+} // namespace cc::ui

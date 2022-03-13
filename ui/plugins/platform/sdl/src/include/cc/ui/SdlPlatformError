@@ -1,0 +1,23 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/exceptions>
+
+namespace cc::ui {
+
+/** \internal
+  */
+class SdlPlatformError: public PlatformError
+{
+public:
+    String message() const override;
+};
+
+} // namespace cc::ui

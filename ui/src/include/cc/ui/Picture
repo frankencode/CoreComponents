@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -11,38 +11,59 @@
 #include <cc/ui/View>
 #include <cc/ui/Visual>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \class Picture cc/ui/Picture
+  * \ingroup ui
+  * \brief A view showing a static visual
+  * \see Icon
+  */
 class Picture: public View
 {
 public:
-    class Instance: public View::Instance
+    /** Create a premordial picture
+      */
+    Picture();
+
+    /** Create a new picture
+      * \param self Reference to newly created object
+      */
+    explicit Picture(Out<Picture> self);
+
+    /** Create a new picture
+      * \param visual Visual which paints the picture
+      * \param color Default color to used for painting the picture
+      * \param self Reference to newly created object
+      */
+    Picture(const Visual &visual, Color color = Color{}, Out<Picture> self = None{});
+
+    /** Create a new picture
+      * \param ch %Ideographic code
+      * \param size %Size in pixel
+      * \param color %Foreground color
+      * \param self Reference to newly created object
+      */
+    Picture(Ideographic ch, double size = 0, Color color = Color{}, Out<Picture> self = None{});
+
+    Visual visual() const { return me().visual(); } ///< Get the visual
+    Picture &visual(const Visual &newValue) { me().visual(newValue); return *this; } ///< %Set the visual
+    Picture &visual(Definition<Visual> &&f) { me().visual(std::move(f)); return *this; } ///< %Define the visual
+
+    Color color() const { return me().color(); } ///< Get the foreground color
+    Picture &color(const Color &newValue) { me().color(newValue); return *this; } ///< %Set the foreground color
+    Picture &color(Definition<Color> &&f) { me().color(std::move(f)); return *this; } ///< %Define the foreground color
+
+private:
+    struct State: public View::State
     {
-    public:
-        Property< Ref<Visual> > visual;
+        State(const Visual &initVisual = Visual{}, Color initColor = Color{});
 
-        bool isPainted() const override;
-
-    private:
-        friend class Picture;
-
-        Instance(Visual *initialVisual = nullptr);
+        Property<Visual> visual;
+        Property<Color> color;
     };
 
-    Picture():
-        View{new Instance}
-    {}
-
-    Picture(Visual *visual):
-        View{new Instance{visual}}
-    {}
-
-    Picture(Instance *instance):
-        View{instance}
-    {}
-
-    Instance *operator->() const { return my<Instance>(); }
+    State &me() { return View::me().as<State>(); }
+    const State &me() const { return View::me().as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

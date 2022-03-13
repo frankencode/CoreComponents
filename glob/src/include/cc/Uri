@@ -1,0 +1,184 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/Cow>
+#include <cc/Map>
+
+namespace cc {
+
+class Token;
+class UriSyntax;
+
+/** \class Uri cc/Uri
+  * \ingroup glob
+  * \brief Uniform Resource Indentifier (URI)
+  */
+class Uri
+{
+public:
+    /** Create an invalid URI
+      */
+    Uri() = default;
+
+    /** Create a new URI from \a text
+      * \exception TextError Invalid URI syntax
+      */
+    Uri(const String &text);
+
+    /** \copydoc Uri(const String &)
+      */
+    Uri(const char *text):
+        Uri{String{text}}
+    {}
+
+    /** Create a new URI from \a text using the UriSyntax production \a token
+      */
+    Uri(const String &text, const Token &token);
+
+    /** Tell if this URI is valid
+      */
+    bool isValid() const { return me().isValid_; }
+
+    /** \copydoc isValid()
+      */
+    explicit operator bool() const { return me().isValid_; }
+
+    /** URI scheme (e.g. http, file)
+      */
+    String scheme() const { return me().scheme_; }
+
+    /** %Set the URI scheme to \a newValue
+      */
+    void setScheme(const String &newValue) { me().scheme_ = newValue.downcased(); }
+
+    /** User and password information (e.g. "oscar:123456")
+      */
+    String userInfo() const { return me().userInfo_; }
+
+    /** %Set the user information to \a newValue
+      */
+    void setUserInfo(const String &newValue) { me().userInfo_ = newValue; }
+
+    /** Registered host name or numeric address (IPv4 or IPv6)
+      */
+    String host() const { return me().host_; }
+
+    /** %Set the host name to \a newValue
+      */
+    void setHost(const String &newValue) { me().host_ = newValue.downcased(); }
+
+    /** Tell if the host part is a numeric address
+      * \todo obsolete
+      */
+    bool hostIsNumeric() const { return me().hostIsNumeric_; }
+
+    /** Tell if the host part is a numeric address
+      */
+    bool isHostNumeric() const { return me().hostIsNumeric_; }
+
+    /** Service port
+      */
+    int port() const { return me().port_; }
+
+    /** %Set the service port to \a newValue
+      */
+    void setPort(int newValue) { me().port_ = newValue; }
+
+    /** Path component of the URI
+      */
+    String path() const { return me().path_; }
+
+    /** %Set the path component of the URI to \a newValue
+      */
+    void setPath(const String &newValue) { me().path_ = newValue; }
+
+    /** Get tje query component of the URI
+      */
+    String query() const { return me().query_; }
+
+    /** %Set the query component of the URI to \a newValue
+      */
+    void setQuery(const String &newValue) { me().query_ = newValue; }
+
+    /** Get the fragment component of the URI
+      */
+    String fragment() const { return me().fragment_; }
+
+    /** %Set the fragment component of the URI to \a newValue
+      */
+    void setFragment(const String &newValue) { me().fragment_ = newValue; }
+
+    /** Get the host name including the port number
+      */
+    String requestHost() const;
+
+    /** Get the full request path (path, query and fragment component)
+      */
+    String requestPath() const;
+
+    /** %Return the human readable textual representation of this URI
+      */
+    String toString() const;
+
+    /** %Return an percent encoded textual representation of this URI
+      */
+    String encoded() const;
+
+    /** Encode \a text using percent encoding
+      */
+    static String encode(const String &text) { return encodeReserved(text); }
+
+    /** Decode \a text from percent encoding
+      */
+    static String decode(const String &text);
+
+    /** \copydoc decode()
+      */
+    static void decode(InOut<String> text);
+
+    /** Encode a percent encoded web input form
+      */
+    static String encodeForm(const Map<String> &form);
+
+    /** Decode a percent encoded web input form
+      */
+    static Map<String> decodeForm(const String &payload);
+
+private:
+    struct State
+    {
+        bool isValid_ { false };
+        bool hostIsNumeric_ { false };
+        int port_ { 0 };
+        String scheme_;
+        String userInfo_;
+        String host_;
+        String path_;
+        String query_;
+        String fragment_;
+
+        void readUri(const UriSyntax &syntax, const String &text, const Token &token);
+        void readAuthority(const UriSyntax &syntax, const String &text, const Token &token);
+
+        String requestHost() const;
+        String requestPath() const;
+        String toString() const;
+        String encoded() const;
+    };
+
+    static String encodeReserved(const String &text, const char *reserved = ":/?#[]@!$&'()*+,;=");
+
+    Cow<State> me;
+};
+
+inline String str(const Uri &uri) { return uri.toString(); }
+
+} // namespace cc

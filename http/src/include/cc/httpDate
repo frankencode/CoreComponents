@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Date>
+
+namespace cc {
+
+/** Stringify \a date for use in HTTP header fields
+  * \ingroup http_protocol
+  */
+String httpDateToString(const Date &date);
+
+/** Read the textual representation of a HTTP date from \a text (e.g. "Tue, 10 Sep 2013 11:01:10 GMT")
+  * \ingroup http_protocol
+  */
+Date httpDateFromString(const String &text, Out<bool> ok = None{});
+
+} // namespace cc

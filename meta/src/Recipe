@@ -1,4 +1,4 @@
 Library {
-    name: ccmeta
+    name: cc_meta
     use: [ core, syntax ]
 }

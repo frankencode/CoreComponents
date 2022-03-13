@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/SyntaxNode>
+
+namespace cc::syntax {
+
+/** \class RefNode cc/syntax/RefNode
+  * \brief Bind a reference to another syntax rule
+  */
+class RefNode final: public syntax::SyntaxNode
+{
+public:
+    /** \param rule Pointer to the syntax rule to bind a reference to
+      */
+    explicit RefNode(const SyntaxRule *rule);
+
+private:
+    struct State;
+};
+
+inline SyntaxNode::SyntaxNode(const SyntaxRule *rule)
+{
+    *this = RefNode{rule};
+}
+
+} // namespace cc::syntax

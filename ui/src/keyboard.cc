@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,11 +7,9 @@
  */
 
 #include <cc/ui/keyboard>
-#include <cc/str>
 #include <cc/Format>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
 String str(ScanCode scanCode)
 {
@@ -322,19 +320,19 @@ String str(KeyModifier modifiers)
 {
     if (modifiers == KeyModifier::None) return "None";
 
-    StringList parts;
-    if (+(modifiers & KeyModifier::LeftShift   )) parts << "LeftShift";
-    if (+(modifiers & KeyModifier::RightShift  )) parts << "RightShift";
-    if (+(modifiers & KeyModifier::LeftControl )) parts << "LeftControl";
-    if (+(modifiers & KeyModifier::RightControl)) parts << "RightControl";
-    if (+(modifiers & KeyModifier::LeftAlt     )) parts << "LeftAlt";
-    if (+(modifiers & KeyModifier::RightAlt    )) parts << "RightAlt";
-    if (+(modifiers & KeyModifier::LeftMeta    )) parts << "LeftMeta";
-    if (+(modifiers & KeyModifier::RightMeta   )) parts << "RightMeta";
-    if (+(modifiers & KeyModifier::NumLock     )) parts << "NumLock";
-    if (+(modifiers & KeyModifier::CapsLock    )) parts << "CapsLock";
-    if (+(modifiers & KeyModifier::ModeLock    )) parts << "ModeLock";
-    return parts->join("|");
+    List<String> parts;
+    if (modifiers & KeyModifier::LeftShift   ) parts << "LeftShift";
+    if (modifiers & KeyModifier::RightShift  ) parts << "RightShift";
+    if (modifiers & KeyModifier::LeftControl ) parts << "LeftControl";
+    if (modifiers & KeyModifier::RightControl) parts << "RightControl";
+    if (modifiers & KeyModifier::LeftAlt     ) parts << "LeftAlt";
+    if (modifiers & KeyModifier::RightAlt    ) parts << "RightAlt";
+    if (modifiers & KeyModifier::LeftMeta    ) parts << "LeftMeta";
+    if (modifiers & KeyModifier::RightMeta   ) parts << "RightMeta";
+    if (modifiers & KeyModifier::NumLock     ) parts << "NumLock";
+    if (modifiers & KeyModifier::CapsLock    ) parts << "CapsLock";
+    if (modifiers & KeyModifier::ModeLock    ) parts << "ModeLock";
+    return parts.join('|');
 }
 
-}} // namespace cc::ui
+} // namespace cc::ui

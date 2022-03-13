@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SocketAddress>
+#include <cc/MetaObject>
+
+namespace cc {
+
+/** \class TlsServerOptions cc/TlsServerOptions
+  * \ingroup tls
+  * \brief TLS server credentials and connection parameters
+  */
+class TlsServerOptions final: public Object
+{
+public:
+    /** Create null TLS server options
+      */
+    TlsServerOptions() = default;
+
+    /** Create new TLS server options from \a config
+      */
+    explicit TlsServerOptions(const MetaObject &config);
+
+    bool hasCredentials() const;
+    double sessionResumptionKeyRefresh() const;
+
+private:
+    friend class TlsServerStream;
+
+    struct State;
+
+    State *operator->() { return &me(); }
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,7 +7,9 @@
  */
 
 #include <cc/Date>
-#include <cc/Format>
+#include <cc/str>
+#include <limits>
+#include <cmath>
 #include <cstdint>
 
 namespace cc {
@@ -53,13 +55,7 @@ int daysInMonth(int i, int y)
     return days[i] + (i == 1) * leapYear(y);
 }
 
-Date::Instance::Instance():
-    time_{cc::nan()}
-{}
-
-Date::Instance::Instance(double time, int offset):
-    offset_{offset},
-    time_{time}
+void Date::State::timeToCalendar()
 {
     const int C1   = 365;
     const int C4   =  4 * C1 + 1;
@@ -67,14 +63,14 @@ Date::Instance::Instance(double time, int offset):
     const int C400 =  4 * C100 + 1;
     const int N0   = 719528; // linear day number of Jan 1st year 0
 
-    int64_t t = int64_t(time) + int64_t(N0) * 86400;
+    std::int64_t t = std::int64_t(time) + std::int64_t(N0) * 86400;
     int n = t / 86400;
     if (n < 0) n = 0;
 
-    hour_ = (t / 3600) % 24;
-    minutes_ = (t / 60) % 60;
-    seconds_ = t % 60;
-    weekDay_ = (n + 6) % 7;
+    hour = (t / 3600) % 24;
+    minutes = (t / 60) % 60;
+    seconds = t % 60;
+    weekDay = (n + 6) % 7;
 
     int y = 400 * (n / C400);
     n = n % C400;
@@ -100,28 +96,21 @@ Date::Instance::Instance(double time, int offset):
         ++y;
     }
 
-    year_ = y;
-    yearDay_ = n;
+    year = y;
+    yearDay = n;
 
-    month_ = 0;
+    month = 0;
     while (true) {
-        int h = daysInMonth(month_, y);
+        int h = daysInMonth(month, y);
         if (n < h) break;
-        ++month_;
+        ++month;
         n -= h;
     }
-    ++month_;
-    day_ = n + 1;
+    ++month;
+    day = n + 1;
 }
 
-Date::Instance::Instance(int year, int month, int day, int hour, int minutes, int seconds, int offset):
-    year_{year},
-    month_{month},
-    day_{day},
-    hour_{hour},
-    minutes_{minutes},
-    seconds_{seconds},
-    offset_{offset}
+void Date::State::calendarToTime()
 {
     if (year < 1) year = 1;
     if (month > 12) month = 12;
@@ -144,56 +133,75 @@ Date::Instance::Instance(int year, int month, int day, int hour, int minutes, in
     for (int i = 0; i < month; ++i)
         t += daysInMonth(i, year);
     t += day;
-    yearDay_ = t;
+    yearDay = t;
     t += (31 * 7 + 30 * 4 + 28) * (year - 1970);
     if (year >= 1970)
         t += leaps(1970, year);
     else
         t -= leaps(1970, year - 1);
-    weekDay_ = (719528 + t + 6) % 7;
+    weekDay = (719528 + t + 6) % 7;
     t *= 86400;
     t += 3600 * hour + 60 * minutes + seconds;
-    time_ = t;
+    time = t;
+
+    ++day;
+    ++month;
 }
 
-double Date::Instance::time() const
+Date::Date():
+    me{std::numeric_limits<double>::quiet_NaN()}
+{}
+
+Date::Date(double time, int offset):
+    me{time, offset}
 {
-    return time_;
+    me().timeToCalendar();
 }
 
-String Date::Instance::toString() const
+Date::Date(int year, int month, int day, int hour, int minutes, int seconds, int offset):
+    me{0., offset, year, month, day, hour, minutes, seconds}
 {
-    //! \todo fully enable ms resolution (ss.fraction in String output)
-    //! \todo local time Formatting
-
-    String tz = "Z";
-    int offset = offset_ / 60;
-    if (offset > 0)
-        tz = Format{} << "+" << dec(offset / 60, 2) << dec(offset % 60, 2);
-    else if (offset < 0)
-        tz = Format{} << "-" << dec((-offset) / 60, 2) << dec((-offset) % 60, 2);
-
-    return Format{}
-        << dec(year_, 4) << "-" << dec(month_, 2) << "-" << dec(day_, 2)
-        << "T" << dec(hour_, 2) << dec(minutes_, 2) << dec(seconds_, 2) << tz;
+    me().calendarToTime();
 }
 
-String Date::Instance::monthName() const
+bool Date::isValid() const
+{
+    return !std::isnan(me().time);
+}
+
+String Date::monthName() const
 {
     const char *names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-    int i = month_ - 1;
+    int i = month() - 1;
     if (i < 0) i = 0;
     else if (i > 11) i = 11;
     return names[i];
 }
 
-String Date::Instance::dayName() const
+String Date::dayName() const
 {
     const char *names[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-    int i = weekDay_;
+    int i = weekDay();
     if (i < 0) i = 0;
     else if (i > 6) i = 6;
     return names[i];
+}
+
+String Date::toString() const
+{
+    //! \todo fully enable ms resolution (ss.fraction in String output)
+    //! \todo local time Formatting
+
+    String tz = "Z";
+    int offset = me().offset / 60;
+    if (offset > 0)
+        tz = List<String>{} << "+" << dec(offset / 60, 2) << dec(offset % 60, 2);
+    else if (offset < 0)
+        tz = List<String>{} << "-" << dec((-offset) / 60, 2) << dec((-offset) % 60, 2);
+
+    return List<String>{}
+        << dec(me().year, 4) << "-" << dec(me().month, 2) << "-" << dec(me().day, 2)
+        << "T" << dec(me().hour, 2) << dec(me().minutes, 2) << dec(me().seconds, 2) << tz;
 }
 
 } // namespace cc

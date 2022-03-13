@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,28 +10,32 @@
 
 namespace cc {
 
-bool Utf16Source::Instance::read(uchar_t *ch)
+bool Utf16Source::read(Out<char32_t> ch)
 {
-    bool more = byteSource_->hasMore();
-    if (more) {
-        uint16_t w = byteSource_->readUInt16();
+    bool hasMore = byteSource_.prefetch();
+
+    if (hasMore) {
+        uint16_t w = byteSource_.readUInt16();
         if (w == 0xFFFE && firstTime_) {
             firstTime_ = false;
-            byteSource_->setEndian((byteSource_->endian() == ByteOrder::BigEndian) ? ByteOrder::LittleEndian : ByteOrder::BigEndian);
-            w = byteSource_->readUInt16();
+            byteSource_.setEndian((byteSource_.endian() == ByteOrder::BigEndian) ? ByteOrder::LittleEndian : ByteOrder::BigEndian);
+            w = byteSource_.readUInt16();
         }
-        *ch = w;
-        if ((0xD800 <= *ch) && (*ch < 0xDC00)) {
-            uint16_t w = byteSource_->readUInt16();
+        char32_t u = w;
+        if ((0xD800 <= u) && (u < 0xDC00)) {
+            uint16_t w = byteSource_.readUInt16();
             if (!((0xDC00 <= w) && (w < 0xE000))) throw DecodingError{};
-            *ch = 0x10000 + (((*ch - 0xD800) << 10) | (w - 0xDC00));
+            u = 0x10000 + (((u - 0xD800) << 10) | (w - 0xDC00));
         }
-        else if (0x10FFFF < *ch) throw DecodingError{};
+        else if (0x10FFFF < u) throw DecodingError{};
+
+        ch << u;
     }
-    return more;
+
+    return hasMore;
 }
 
-String Utf16Source::Instance::DecodingError::message() const
+String Utf16Source::DecodingError::message() const
 {
     return "UTF-16 error: failed to decode input bytes";
 }

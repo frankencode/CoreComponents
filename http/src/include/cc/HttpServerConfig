@@ -1,0 +1,124 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpLoggingServiceInstance>
+#include <cc/HttpServiceInstance>
+#include <cc/TlsServerOptions>
+#include <cc/SocketAddress>
+#include <cc/MetaObject>
+
+namespace cc {
+
+/** \class HttpServerConfig cc/HttpServerConfig
+  * \ingroup http_server
+  * \brief Configuration for the HTTP server
+  */
+class HttpServerConfig: public Object
+{
+public:
+    /** HTTP server configuration prototype
+      */
+    static MetaObject prototype();
+
+    /** Parse HTTP sever configuration from \a text
+      */
+    static MetaObject parse(const String &text);
+
+    /** Create a null HTTP server configuration
+      */
+    HttpServerConfig() = default;
+
+    /** Load a HTTP server configuration from \a config
+      */
+    explicit HttpServerConfig(const MetaObject &config);
+
+    /** Load a HTTP server configuration by parsing \a text (YASON format)
+      */
+    explicit HttpServerConfig(const String &text);
+
+    /** Add an instance of the directory service serving files from \a path
+      */
+    void addDirectoryInstance(const String &path);
+
+    /** Add an instance of the echo service
+      */
+    void addEchoInstance();
+
+    /** %List of socket addresses the server is listening on
+      */
+    List<SocketAddress> address() const;
+
+    /** %Transport layer security is required
+      */
+    bool forceSecureTransport() const;
+
+    /** Configured TLS port
+      */
+    long securePort() const;
+
+    /** Name of user to switch to for server operation
+      */
+    String user() const;
+
+    /** Name of group to switch to for server operation
+      */
+    String group() const;
+
+    /** HTTP server version string (server identification)
+      */
+    String version() const;
+
+    /** Daemonize process on server startup
+      */
+    bool daemon() const;
+
+    String daemonName() const;
+
+    /** %File path to use to store the process ID
+      */
+    String pidPath() const;
+
+    /** Number of parallel connections to serve simultanously
+      */
+    long concurrency() const;
+
+    long serviceWindow() const;
+
+    /** Maximum number of simultanous connections allowed from a single source
+      */
+    long connectionLimit() const;
+
+    /** Maximum time to wait for a request on a stale connection
+      */
+    double connectionTimeout() const;
+
+    int connectionTimeoutMs() const;
+
+    /** TLS options
+      */
+    TlsServerOptions tlsOptions() const;
+
+    const HttpLoggingServiceInstance &errorLoggingInstance() const;
+    const HttpLoggingServiceInstance &accessLoggingInstance() const;
+
+    /** Configured HTTP service instances
+      */
+    List<HttpServiceInstance> serviceInstances() const;
+
+    HttpServiceInstance selectService(const String &host, const String &uri = "") const;
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

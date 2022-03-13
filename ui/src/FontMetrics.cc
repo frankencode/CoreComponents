@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,22 +7,19 @@
  */
 
 #include <cc/ui/FontMetrics>
-#include <cc/Format>
+#include <cc/ui/FontManager>
+#include <cc/ui/Font>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-String FontMetrics::toString() const
+FontMetrics::FontMetrics():
+    Object{new State}
+{}
+
+FontMetrics::FontMetrics(const Font &font):
+    Object{new State}
 {
-    return Format{}
-        << "FontMetrics {\n"
-        << "  fontSize: " << fontSize() << nl
-        << "  ascender: " << ascender() << nl
-        << "  descender: " << descender() << nl
-        << "  lineHeight: " << lineHeight() << nl
-        << "  underlinePosition: " << underlinePosition() << nl
-        << "  underlineThickness: " << underlineThickness() << nl
-        << "}";
+    *this = FontManager{}.selectFont(font).metrics();
 }
 
-}} // namespace cc::ui
+} // namespace cc::ui

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,24 +9,52 @@
 #pragma once
 
 #include <cc/String>
+#include <cc/Object>
 #include <cc/Range>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \class TextEditor cc/ui/TextEditor
+  * \ingroup ui
+  * \brief %Abstract text editor
+  */
 class TextEditor: public Object
 {
 public:
-    virtual int byteCount() const = 0;
-    virtual String copy(Range range) const = 0;
+    /** Create a null text editor
+      */
+    TextEditor() = default;
 
-    virtual String text() const = 0;
-    virtual Range paste(Range range, const String &newChunk) = 0;
+    long count() const { return me().count(); } ///< Length of the text
+    String copy(Range range) const { return me().copy(range); } ///< Get a copy of a range of the text
+    String text() const { return me().text(); } ///< Get a copy of the complete text
+    Range paste(Range range, const String &chunk) { return me().paste(range, chunk); } ///< Paste \a chunk into the \a range of the text
+    bool canUndo() const { return me().canUndo(); } ///< Check if latest paste operation can be undone
+    bool canRedo() const { return me().canRedo(); } ///< Check if latest undo operation an be redone
+    Range undo() { return me().undo(); } ///< Undo the latest paste operation
+    Range redo() { return me().redo(); } ///< Redo the latest undo operation
 
-    virtual bool canUndo() const = 0;
-    virtual bool canRedo() const = 0;
-    virtual Range undo() = 0;
-    virtual Range redo() = 0;
+protected:
+    struct State: public Object::State
+    {
+        virtual long count() const = 0;
+        virtual String copy(Range range) const = 0;
+
+        virtual String text() const = 0;
+        virtual Range paste(Range range, const String &chunk) = 0;
+
+        virtual bool canUndo() const = 0;
+        virtual bool canRedo() const = 0;
+        virtual Range undo() = 0;
+        virtual Range redo() = 0;
+    };
+
+    explicit TextEditor(State *state):
+        Object{state}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

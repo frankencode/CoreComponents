@@ -1,0 +1,137 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/None>
+#include <cassert>
+
+namespace cc {
+
+/** \class InOut cc/basics
+  * \ingroup basics
+  * \brief Call by reference function arguments
+  * \tparam T return value type
+  * \todo rename to InOut and differentiate from strictly Out
+  */
+template<class T>
+class InOut
+{
+public:
+    /** Construct an call by reference argument
+      */
+    InOut(T *x): p{x} {}
+
+    /** Construct a default call by reference argument
+      */
+    InOut(const None &): p{nullptr} {}
+
+    /** Assign a value \a y to be returned
+      */
+    InOut &operator=(const T &y)
+    {
+        if (p) *p = y;
+        return *this;
+    }
+
+    /** Assign a value \a y to be returned
+      */
+    InOut &operator<<(const T &y)
+    {
+        if (p) *p = y;
+        return *this;
+    }
+
+    /** Access return value
+      */
+    operator T() const { return p ? *p : T{}; }
+
+    /** Check if a return value is requested
+      */
+    bool requested() const { return p; }
+
+    /** Check if a return value is requested
+      */
+    bool operator==(const None &) const { return p == nullptr; }
+
+    /** Check if a return value is not requested
+      */
+    bool operator!=(const None &) const { return p != nullptr; }
+
+    /** Automatically cast to a compatible return value type
+      */
+    template<class U>
+    operator InOut<U>() { return InOut<U>{*p}; }
+
+    /** Get reference to return value
+      */
+    T &operator()() { return p ? *p : dummy(); }
+
+    /** Get constant reference to return value
+      */
+    const T &operator()() const { return p ? *p : dummy(); }
+
+    /** Get reference to return value
+      */
+    T &operator*() { return (*this)(); }
+
+    /** Get constant reference to return value
+      */
+    const T &operator*() const { return (*this)(); }
+
+    /** Get access to the return value
+      */
+    T *operator->() { return &(*this)(); }
+
+    /** Get access to the return value
+      */
+    const T *operator->() const { return &(*this)(); }
+
+    /** Addition assignment
+      */
+    template<class B>
+    InOut &operator+=(const B &b) { (*this)() += b; return *this; }
+
+    /** Subtraction assignment
+      */
+    template<class B>
+    InOut &operator-=(const B &b) { (*this)() += b; return *this; }
+
+    /** Multiplication assignment
+      */
+    template<class B>
+    InOut &operator*=(const B &b) { (*this)() *= b; return *this; }
+
+    /** Division assignment
+      */
+    template<class B>
+    InOut &operator/=(const B &b) { (*this)() /= b; return *this; }
+
+    /** Get address of
+      */
+    T *operator&() { return p; }
+
+    /** Get return value statically casted to type \a B
+      */
+    template<class B>
+    B &as() { assert(p); return static_cast<B &>(*p); }
+
+private:
+    static T &dummy() {
+        static T value;
+        return value;
+    }
+    T * const p;
+};
+
+/** Convenience alias for InOut<T>
+  */
+template<class T>
+using Out = InOut<T>;
+
+} // namespace cc

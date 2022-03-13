@@ -1,0 +1,173 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Color>
+
+namespace cc::color {
+
+/** \class Web cc/color/Web
+  * \ingroup color
+  * \brief CSS color palette
+  */
+class Web {
+public:
+    static constexpr uint32_t Pink                 = 0xFFC0CB; ///< <span style="float: left; width: 200px; background-color: #FFC0CB">&nbsp;</span>
+    static constexpr uint32_t LightPink            = 0xFFB6C1; ///< <span style="float: left; width: 200px; background-color: #FFB6C1">&nbsp;</span>
+    static constexpr uint32_t HotPink              = 0xFF69B4; ///< <span style="float: left; width: 200px; background-color: #FF69B4">&nbsp;</span>
+    static constexpr uint32_t DeepPink             = 0xFF1493; ///< <span style="float: left; width: 200px; background-color: #FF1493">&nbsp;</span>
+    static constexpr uint32_t PaleVioletRed        = 0xDB7093; ///< <span style="float: left; width: 200px; background-color: #DB7093">&nbsp;</span>
+    static constexpr uint32_t MediumVioletRed      = 0xC71585; ///< <span style="float: left; width: 200px; background-color: #C71585">&nbsp;</span>
+
+    static constexpr uint32_t LightSalmon          = 0xFFA07A; ///< <span style="float: left; width: 200px; background-color: #FFA07A">&nbsp;</span>
+    static constexpr uint32_t Salmon               = 0xFA8072; ///< <span style="float: left; width: 200px; background-color: #FA8072">&nbsp;</span>
+    static constexpr uint32_t DarkSalmon           = 0xE9967A; ///< <span style="float: left; width: 200px; background-color: #E9967A">&nbsp;</span>
+    static constexpr uint32_t LightCoral           = 0xF08080; ///< <span style="float: left; width: 200px; background-color: #F08080">&nbsp;</span>
+    static constexpr uint32_t IndianRed            = 0xCD5C5C; ///< <span style="float: left; width: 200px; background-color: #CD5C5C">&nbsp;</span>
+    static constexpr uint32_t Crimson              = 0xDC143C; ///< <span style="float: left; width: 200px; background-color: #DC143C">&nbsp;</span>
+    static constexpr uint32_t FireBrick            = 0xB22222; ///< <span style="float: left; width: 200px; background-color: #B22222">&nbsp;</span>
+    static constexpr uint32_t DarkRed              = 0x8B0000; ///< <span style="float: left; width: 200px; background-color: #8B0000">&nbsp;</span>
+    static constexpr uint32_t Red                  = 0xFF0000; ///< <span style="float: left; width: 200px; background-color: #FF0000">&nbsp;</span>
+
+    static constexpr uint32_t OrangeRed            = 0xFF4500; ///< <span style="float: left; width: 200px; background-color: #FF4500">&nbsp;</span>
+    static constexpr uint32_t Tomato               = 0xFF6347; ///< <span style="float: left; width: 200px; background-color: #FF6347">&nbsp;</span>
+    static constexpr uint32_t Coral                = 0xFF7F50; ///< <span style="float: left; width: 200px; background-color: #FF7F50">&nbsp;</span>
+    static constexpr uint32_t DarkOrange           = 0xFF8C00; ///< <span style="float: left; width: 200px; background-color: #FF8C00">&nbsp;</span>
+    static constexpr uint32_t Orange               = 0xFFA500; ///< <span style="float: left; width: 200px; background-color: #FFA500">&nbsp;</span>
+
+    static constexpr uint32_t Yellow               = 0xFFFF00; ///< <span style="float: left; width: 200px; background-color: #FFFF00">&nbsp;</span>
+    static constexpr uint32_t LightYellow          = 0xFFFFE0; ///< <span style="float: left; width: 200px; background-color: #FFFFE0">&nbsp;</span>
+    static constexpr uint32_t LemonChiffon         = 0xFFFACD; ///< <span style="float: left; width: 200px; background-color: #FFFACD">&nbsp;</span>
+    static constexpr uint32_t LightGoldenrodYellow = 0xFAFAD2; ///< <span style="float: left; width: 200px; background-color: #FAFAD2">&nbsp;</span>
+    static constexpr uint32_t PapayaWhip           = 0xFFEFD5; ///< <span style="float: left; width: 200px; background-color: #FFEFD5">&nbsp;</span>
+    static constexpr uint32_t Moccasin             = 0xFFE4B5; ///< <span style="float: left; width: 200px; background-color: #FFE4B5">&nbsp;</span>
+    static constexpr uint32_t PeachPuff            = 0xFFDAB9; ///< <span style="float: left; width: 200px; background-color: #FFDAB9">&nbsp;</span>
+    static constexpr uint32_t PaleGoldenrod        = 0xEEE8AA; ///< <span style="float: left; width: 200px; background-color: #EEE8AA">&nbsp;</span>
+    static constexpr uint32_t Khaki                = 0xF0E68C; ///< <span style="float: left; width: 200px; background-color: #F0E68C">&nbsp;</span>
+    static constexpr uint32_t DarkKhaki            = 0xBDB76B; ///< <span style="float: left; width: 200px; background-color: #BDB76B">&nbsp;</span>
+    static constexpr uint32_t Gold                 = 0xFFD700; ///< <span style="float: left; width: 200px; background-color: #FFD700">&nbsp;</span>
+
+    static constexpr uint32_t Cornsilk             = 0xFFF8DC; ///< <span style="float: left; width: 200px; background-color: #FFF8DC">&nbsp;</span>
+    static constexpr uint32_t BlanchedAlmond       = 0xFFEBCD; ///< <span style="float: left; width: 200px; background-color: #FFEBCD">&nbsp;</span>
+    static constexpr uint32_t Bisque               = 0xFFE4C4; ///< <span style="float: left; width: 200px; background-color: #FFE4C4">&nbsp;</span>
+    static constexpr uint32_t NavajoWhite          = 0xFFDEAD; ///< <span style="float: left; width: 200px; background-color: #FFDEAD">&nbsp;</span>
+    static constexpr uint32_t Wheat                = 0xF5DEB3; ///< <span style="float: left; width: 200px; background-color: #F5DEB3">&nbsp;</span>
+    static constexpr uint32_t BurlyWood            = 0xDEB887; ///< <span style="float: left; width: 200px; background-color: #DEB887">&nbsp;</span>
+    static constexpr uint32_t Tan                  = 0xD2B48C; ///< <span style="float: left; width: 200px; background-color: #D2B48C">&nbsp;</span>
+    static constexpr uint32_t RosyBrown            = 0xBC8F8F; ///< <span style="float: left; width: 200px; background-color: #BC8F8F">&nbsp;</span>
+    static constexpr uint32_t SandyBrown           = 0xF4A460; ///< <span style="float: left; width: 200px; background-color: #F4A460">&nbsp;</span>
+    static constexpr uint32_t Goldenrod            = 0xDAA520; ///< <span style="float: left; width: 200px; background-color: #DAA520">&nbsp;</span>
+    static constexpr uint32_t DarkGoldenrod        = 0xB8860B; ///< <span style="float: left; width: 200px; background-color: #B8860B">&nbsp;</span>
+    static constexpr uint32_t Peru                 = 0xCD853F; ///< <span style="float: left; width: 200px; background-color: #CD853F">&nbsp;</span>
+    static constexpr uint32_t Chocolate            = 0xD2691E; ///< <span style="float: left; width: 200px; background-color: #D2691E">&nbsp;</span>
+    static constexpr uint32_t SaddleBrown          = 0x8B4513; ///< <span style="float: left; width: 200px; background-color: #8B4513">&nbsp;</span>
+    static constexpr uint32_t Sienna               = 0xA0522D; ///< <span style="float: left; width: 200px; background-color: #A0522D">&nbsp;</span>
+    static constexpr uint32_t Brown                = 0xA52A2A; ///< <span style="float: left; width: 200px; background-color: #A52A2A">&nbsp;</span>
+    static constexpr uint32_t Maroon               = 0x800000; ///< <span style="float: left; width: 200px; background-color: #800000">&nbsp;</span>
+
+    static constexpr uint32_t DarkOliveGreen       = 0x556B2F; ///< <span style="float: left; width: 200px; background-color: #556B2F">&nbsp;</span>
+    static constexpr uint32_t Olive                = 0x808000; ///< <span style="float: left; width: 200px; background-color: #808000">&nbsp;</span>
+    static constexpr uint32_t OliveDrab            = 0x6B8E23; ///< <span style="float: left; width: 200px; background-color: #6B8E23">&nbsp;</span>
+    static constexpr uint32_t YellowGreen          = 0x9ACD32; ///< <span style="float: left; width: 200px; background-color: #9ACD32">&nbsp;</span>
+    static constexpr uint32_t LimeGreen            = 0x32CD32; ///< <span style="float: left; width: 200px; background-color: #32CD32">&nbsp;</span>
+    static constexpr uint32_t Lime                 = 0x00FF00; ///< <span style="float: left; width: 200px; background-color: #00FF00">&nbsp;</span>
+    static constexpr uint32_t LawnGreen            = 0x7CFC00; ///< <span style="float: left; width: 200px; background-color: #7CFC00">&nbsp;</span>
+    static constexpr uint32_t Chartreuse           = 0x7FFF00; ///< <span style="float: left; width: 200px; background-color: #7FFF00">&nbsp;</span>
+    static constexpr uint32_t GreenYellow          = 0xADFF2F; ///< <span style="float: left; width: 200px; background-color: #ADFF2F">&nbsp;</span>
+    static constexpr uint32_t SpringGreen          = 0x00FF7F; ///< <span style="float: left; width: 200px; background-color: #00FF7F">&nbsp;</span>
+    static constexpr uint32_t MediumSpringGreen    = 0x00FA9A; ///< <span style="float: left; width: 200px; background-color: #00FA9A">&nbsp;</span>
+    static constexpr uint32_t LightGreen           = 0x90EE90; ///< <span style="float: left; width: 200px; background-color: #90EE90">&nbsp;</span>
+    static constexpr uint32_t PaleGreen            = 0x98FB98; ///< <span style="float: left; width: 200px; background-color: #98FB98">&nbsp;</span>
+    static constexpr uint32_t DarkSeaGreen         = 0x8FBC8F; ///< <span style="float: left; width: 200px; background-color: #8FBC8F">&nbsp;</span>
+    static constexpr uint32_t MediumAquamarine     = 0x66CDAA; ///< <span style="float: left; width: 200px; background-color: #66CDAA">&nbsp;</span>
+    static constexpr uint32_t MediumSeaGreen       = 0x3CB371; ///< <span style="float: left; width: 200px; background-color: #3CB371">&nbsp;</span>
+    static constexpr uint32_t SeaGreen             = 0x2E8B57; ///< <span style="float: left; width: 200px; background-color: #2E8B57">&nbsp;</span>
+    static constexpr uint32_t ForestGreen          = 0x228B22; ///< <span style="float: left; width: 200px; background-color: #228B22">&nbsp;</span>
+    static constexpr uint32_t Green                = 0x008000; ///< <span style="float: left; width: 200px; background-color: #008000">&nbsp;</span>
+    static constexpr uint32_t DarkGreen            = 0x006400; ///< <span style="float: left; width: 200px; background-color: #006400">&nbsp;</span>
+
+    static constexpr uint32_t Aqua                 = 0x00FFFF; ///< <span style="float: left; width: 200px; background-color: #00FFFF">&nbsp;</span>
+    static constexpr uint32_t Cyan                 = 0x00FFFF; ///< <span style="float: left; width: 200px; background-color: #00FFFF">&nbsp;</span>
+    static constexpr uint32_t LightCyan            = 0xE0FFFF; ///< <span style="float: left; width: 200px; background-color: #E0FFFF">&nbsp;</span>
+    static constexpr uint32_t PaleTurquoise        = 0xAFEEEE; ///< <span style="float: left; width: 200px; background-color: #AFEEEE">&nbsp;</span>
+    static constexpr uint32_t Aquamarine           = 0x7FFFD4; ///< <span style="float: left; width: 200px; background-color: #7FFFD4">&nbsp;</span>
+    static constexpr uint32_t Turquoise            = 0x40E0D0; ///< <span style="float: left; width: 200px; background-color: #40E0D0">&nbsp;</span>
+    static constexpr uint32_t MediumTurquoise      = 0x48D1CC; ///< <span style="float: left; width: 200px; background-color: #48D1CC">&nbsp;</span>
+    static constexpr uint32_t DarkTurquoise        = 0x00CED1; ///< <span style="float: left; width: 200px; background-color: #00CED1">&nbsp;</span>
+    static constexpr uint32_t LightSeaGreen        = 0x20B2AA; ///< <span style="float: left; width: 200px; background-color: #20B2AA">&nbsp;</span>
+    static constexpr uint32_t CadetBlue            = 0x5F9EA0; ///< <span style="float: left; width: 200px; background-color: #5F9EA0">&nbsp;</span>
+    static constexpr uint32_t DarkCyan             = 0x008B8B; ///< <span style="float: left; width: 200px; background-color: #008B8B">&nbsp;</span>
+    static constexpr uint32_t Teal                 = 0x008080; ///< <span style="float: left; width: 200px; background-color: #008080">&nbsp;</span>
+
+    static constexpr uint32_t LightSteelBlue       = 0xB0C4DE; ///< <span style="float: left; width: 200px; background-color: #B0C4DE">&nbsp;</span>
+    static constexpr uint32_t PowderBlue           = 0xB0E0E6; ///< <span style="float: left; width: 200px; background-color: #B0E0E6">&nbsp;</span>
+    static constexpr uint32_t LightBlue            = 0xADD8E6; ///< <span style="float: left; width: 200px; background-color: #ADD8E6">&nbsp;</span>
+    static constexpr uint32_t SkyBlue              = 0x87CEEB; ///< <span style="float: left; width: 200px; background-color: #87CEEB">&nbsp;</span>
+    static constexpr uint32_t LightSkyBlue         = 0x87CEFA; ///< <span style="float: left; width: 200px; background-color: #87CEFA">&nbsp;</span>
+    static constexpr uint32_t DeepSkyBlue          = 0x00BFFF; ///< <span style="float: left; width: 200px; background-color: #00BFFF">&nbsp;</span>
+    static constexpr uint32_t DodgerBlue           = 0x1E90FF; ///< <span style="float: left; width: 200px; background-color: #1E90FF">&nbsp;</span>
+    static constexpr uint32_t CornflowerBlue       = 0x6495ED; ///< <span style="float: left; width: 200px; background-color: #6495ED">&nbsp;</span>
+    static constexpr uint32_t SteelBlue            = 0x4682B4; ///< <span style="float: left; width: 200px; background-color: #4682B4">&nbsp;</span>
+    static constexpr uint32_t RoyalBlue            = 0x4169E1; ///< <span style="float: left; width: 200px; background-color: #4169E1">&nbsp;</span>
+    static constexpr uint32_t Blue                 = 0x0000FF; ///< <span style="float: left; width: 200px; background-color: #0000FF">&nbsp;</span>
+    static constexpr uint32_t MediumBlue           = 0x0000CD; ///< <span style="float: left; width: 200px; background-color: #0000CD">&nbsp;</span>
+    static constexpr uint32_t DarkBlue             = 0x00008B; ///< <span style="float: left; width: 200px; background-color: #00008B">&nbsp;</span>
+    static constexpr uint32_t Navy                 = 0x000080; ///< <span style="float: left; width: 200px; background-color: #000080">&nbsp;</span>
+    static constexpr uint32_t MidnightBlue         = 0x191970; ///< <span style="float: left; width: 200px; background-color: #191970">&nbsp;</span>
+
+    static constexpr uint32_t Lavender             = 0xE6E6FA; ///< <span style="float: left; width: 200px; background-color: #E6E6FA">&nbsp;</span>
+    static constexpr uint32_t Thistle              = 0xD8BFD8; ///< <span style="float: left; width: 200px; background-color: #D8BFD8">&nbsp;</span>
+    static constexpr uint32_t Plum                 = 0xDDA0DD; ///< <span style="float: left; width: 200px; background-color: #DDA0DD">&nbsp;</span>
+    static constexpr uint32_t Violet               = 0xEE82EE; ///< <span style="float: left; width: 200px; background-color: #EE82EE">&nbsp;</span>
+    static constexpr uint32_t Orchid               = 0xDA70D6; ///< <span style="float: left; width: 200px; background-color: #DA70D6">&nbsp;</span>
+    static constexpr uint32_t Fuchsia              = 0xFF00FF; ///< <span style="float: left; width: 200px; background-color: #FF00FF">&nbsp;</span>
+    static constexpr uint32_t Magenta              = 0xFF00FF; ///< <span style="float: left; width: 200px; background-color: #FF00FF">&nbsp;</span>
+    static constexpr uint32_t MediumOrchid         = 0xBA55D3; ///< <span style="float: left; width: 200px; background-color: #BA55D3">&nbsp;</span>
+    static constexpr uint32_t MediumPurple         = 0x9370DB; ///< <span style="float: left; width: 200px; background-color: #9370DB">&nbsp;</span>
+    static constexpr uint32_t BlueViolet           = 0x8A2BE2; ///< <span style="float: left; width: 200px; background-color: #8A2BE2">&nbsp;</span>
+    static constexpr uint32_t DarkViolet           = 0x9400D3; ///< <span style="float: left; width: 200px; background-color: #9400D3">&nbsp;</span>
+    static constexpr uint32_t DarkOrchid           = 0x9932CC; ///< <span style="float: left; width: 200px; background-color: #9932CC">&nbsp;</span>
+    static constexpr uint32_t DarkMagenta          = 0x8B008B; ///< <span style="float: left; width: 200px; background-color: #8B008B">&nbsp;</span>
+    static constexpr uint32_t Purple               = 0x800080; ///< <span style="float: left; width: 200px; background-color: #800080">&nbsp;</span>
+    static constexpr uint32_t Indigo               = 0x4B0082; ///< <span style="float: left; width: 200px; background-color: #4B0082">&nbsp;</span>
+    static constexpr uint32_t DarkSlateBlue        = 0x483D8B; ///< <span style="float: left; width: 200px; background-color: #483D8B">&nbsp;</span>
+    static constexpr uint32_t SlateBlue            = 0x6A5ACD; ///< <span style="float: left; width: 200px; background-color: #6A5ACD">&nbsp;</span>
+    static constexpr uint32_t MediumSlateBlue      = 0x7B68EE; ///< <span style="float: left; width: 200px; background-color: #7B68EE">&nbsp;</span>
+
+    static constexpr uint32_t White                = 0xFFFFFF; ///< <span style="float: left; width: 200px; background-color: #FFFFFF">&nbsp;</span>
+    static constexpr uint32_t Snow                 = 0xFFFAFA; ///< <span style="float: left; width: 200px; background-color: #FFFAFA">&nbsp;</span>
+    static constexpr uint32_t Honeydew             = 0xF0FFF0; ///< <span style="float: left; width: 200px; background-color: #F0FFF0">&nbsp;</span>
+    static constexpr uint32_t MintCream            = 0xF5FFFA; ///< <span style="float: left; width: 200px; background-color: #F5FFFA">&nbsp;</span>
+    static constexpr uint32_t Azure                = 0xF0FFFF; ///< <span style="float: left; width: 200px; background-color: #F0FFFF">&nbsp;</span>
+    static constexpr uint32_t AliceBlue            = 0xF0F8FF; ///< <span style="float: left; width: 200px; background-color: #F0F8FF">&nbsp;</span>
+    static constexpr uint32_t GhostWhite           = 0xF8F8FF; ///< <span style="float: left; width: 200px; background-color: #F8F8FF">&nbsp;</span>
+    static constexpr uint32_t WhiteSmoke           = 0xF5F5F5; ///< <span style="float: left; width: 200px; background-color: #F5F5F5">&nbsp;</span>
+    static constexpr uint32_t Seashell             = 0xFFF5EE; ///< <span style="float: left; width: 200px; background-color: #FFF5EE">&nbsp;</span>
+    static constexpr uint32_t Beige                = 0xF5F5DC; ///< <span style="float: left; width: 200px; background-color: #F5F5DC">&nbsp;</span>
+    static constexpr uint32_t OldLace              = 0xFDF5E6; ///< <span style="float: left; width: 200px; background-color: #FDF5E6">&nbsp;</span>
+    static constexpr uint32_t FloralWhite          = 0xFFFAF0; ///< <span style="float: left; width: 200px; background-color: #FFFAF0">&nbsp;</span>
+    static constexpr uint32_t Ivory                = 0xFFFFF0; ///< <span style="float: left; width: 200px; background-color: #FFFFF0">&nbsp;</span>
+    static constexpr uint32_t AntiqueWhite         = 0xFAEBD7; ///< <span style="float: left; width: 200px; background-color: #FAEBD7">&nbsp;</span>
+    static constexpr uint32_t Linen                = 0xFAF0E6; ///< <span style="float: left; width: 200px; background-color: #FAF0E6">&nbsp;</span>
+    static constexpr uint32_t LavenderBlush        = 0xFFF0F5; ///< <span style="float: left; width: 200px; background-color: #FFF0F5">&nbsp;</span>
+    static constexpr uint32_t MistyRose            = 0xFFE4E1; ///< <span style="float: left; width: 200px; background-color: #FFE4E1">&nbsp;</span>
+
+    static constexpr uint32_t Gainsboro            = 0xDCDCDC; ///< <span style="float: left; width: 200px; background-color: #DCDCDC">&nbsp;</span>
+    static constexpr uint32_t LightGray            = 0xD3D3D3; ///< <span style="float: left; width: 200px; background-color: #D3D3D3">&nbsp;</span>
+    static constexpr uint32_t Silver               = 0xC0C0C0; ///< <span style="float: left; width: 200px; background-color: #C0C0C0">&nbsp;</span>
+    static constexpr uint32_t DarkGray             = 0xA9A9A9; ///< <span style="float: left; width: 200px; background-color: #A9A9A9">&nbsp;</span>
+    static constexpr uint32_t Gray                 = 0x808080; ///< <span style="float: left; width: 200px; background-color: #808080">&nbsp;</span>
+    static constexpr uint32_t DimGray              = 0x696969; ///< <span style="float: left; width: 200px; background-color: #696969">&nbsp;</span>
+    static constexpr uint32_t LightSlateGray       = 0x778899; ///< <span style="float: left; width: 200px; background-color: #778899">&nbsp;</span>
+    static constexpr uint32_t SlateGray            = 0x708090; ///< <span style="float: left; width: 200px; background-color: #708090">&nbsp;</span>
+    static constexpr uint32_t DarkSlateGray        = 0x2F4F4F; ///< <span style="float: left; width: 200px; background-color: #2F4F4F">&nbsp;</span>
+    static constexpr uint32_t Black                = 0x000000; ///< <span style="float: left; width: 200px; background-color: #000000">&nbsp;</span>
+};
+
+} // namespace cc::color

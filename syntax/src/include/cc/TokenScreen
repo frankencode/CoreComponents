@@ -1,0 +1,40 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Token>
+
+namespace cc {
+
+/** \class TokenScreen cc/TokenScreen
+  * \ingroup syntax
+  * \brief Projection target for a token tree
+  */
+class TokenScreen: public Object
+{
+public:
+    bool project(const Token &token, long offset0, long offset1)
+    {
+        return me().project(token, offset0, offset1);
+    }
+
+protected:
+    struct State: public Object::State
+    {
+        virtual bool project(const Token &token, long offset0, long offset1) = 0;
+    };
+
+    explicit TokenScreen(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+};
+
+} // namespace cc

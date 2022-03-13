@@ -1,4 +1,0 @@
-Application {
-    name: keyplugd
-    use: [ cc/core, cc/sys ]
-}

@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildPlan>
+#include <cc/build/Predicate>
+#include <cc/String>
+
+namespace cc::build {
+
+class BuildShell;
+class ToolChain;
+class JobScheduler;
+
+/** \brief %Stage of the multi-stage build process
+  */
+class BuildStage
+{
+public:
+    bool complete() const { return complete_; }
+    bool success() const { return success_; }
+    int status() const { return status_; }
+
+    List<String> preCommands() const { return preCommands_; }
+    List<String> postCommands() const { return postCommands_; }
+
+protected:
+    friend class BuildPlan;
+
+    virtual BuildPlan plan() const = 0;
+    const BuildShell &shell() const;
+    const ToolChain &toolChain() const;
+    JobScheduler createScheduler() const;
+
+    bool outOfScope() const;
+
+    bool complete_ { false };
+    bool success_ { true };
+    int status_ { 0 };
+    List<String> preCommands_;
+    List<String> postCommands_;
+};
+
+} // namespace cc::build

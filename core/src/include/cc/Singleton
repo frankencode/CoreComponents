@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2022 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,94 +9,34 @@
 #pragma once
 
 #include <cc/Object>
-#include <cc/Ref>
-#include <cc/LocalStatic>
-#include <cc/ThreadLocalSingleton>
 
 namespace cc {
 
-template<class SubClass>
-class Singleton;
-
-template<class SubClass>
-class CoreSingleton
-{
-public:
-    static SubClass *instance()
-    {
-        SpinLock &mutex = localStatic<SpinLock, SubClass>();
-        Guard<SpinLock> guard{&mutex};
-        Ref<SubClass> &instance_ = localStatic< Ref<SubClass>, CoreSingleton<SubClass> >();
-        if (!instance_)
-            instance_ = Singleton<SubClass>::create();
-        return instance_;
-    }
-};
-
-template<class SubClass>
-class CoreSingletonWrapper: public Object
-{
-public:
-    CoreSingletonWrapper():
-        instance_{CoreSingleton<SubClass>::instance()}
-    {}
-    Ref<SubClass> instance_;
-};
-
 /** \class Singleton cc/Singleton
-  * \ingroup mman
-  * \brief Implementation pattern for process-wide singletons
-  *
-  * The Singleton class provides an efficient implementation pattern for process-wide singletons.
-  * The singleton objects are created on-demand on first use. Singletons provides global information
-  * to all running threads, e.g. configuration information from a configuration file. Singletons
-  * should be referenced only by const pointers to make sure all shared data is immutable.
-  * Used correctly they can significiantly speed up multi-threaded applications.
-  * The singleton pattern also provides an automatic resolution of the order in which global
-  * objects are initialized. By postponing the creation of optionally needed global objects
-  * it can significiantly improve the startup speed of complex applications.
-  *
-  * The following shows how to implement a singleton using the Singleton class.
-  *
-  * Example singleton declaration:
-  * ~~~~~~~~~~~~~
-  * template<class> class Singleton;
-  *
-  * class Settings: public Object
-  * {
-  * public:
-  *     static const Settings *instance();
-  * private:
-  *     friend class Singleton<Settings>;
-  *     Settings();
-  * };
-  * ~~~~~~~~~~~~~
-  *
-  * Example singleton implementation:
-  * ~~~~~~~~~~~~~
-  * #include <cc/Singleton>
-  * ...
-  * const Settings *Settings::instance() { return Singleton<Settings>::instance() }
-  * Settings::Settings() {}
-  * ~~~~~~~~~~~~~
-  *
-  * \see ThreadLocalSingleton
-  *
-  * By providing access to the singleton object with a 'const Settings *' pointer the compiler is instructed
-  * to enforce immutability of the shared data.
+  * \ingroup objects
+  * \brief %Process-wide singletons
   */
-template<class SubClass>
-class Singleton: public ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >
+class Singleton: public Object
 {
-public:
-    /** Return pointer to the singleton instance creating it on-demand if it does not exist yet
+protected:
+    /** Get access to the singleton instance
       */
-    inline static SubClass *instance() {
-        return ThreadLocalSingleton< CoreSingletonWrapper<SubClass> >::instance()->instance_;
+    template<class T>
+    static T *instance()
+    {
+        static Handle<T> handle { new T };
+        return &handle();
     }
-private:
-    friend class CoreSingleton<SubClass>;
-    inline static SubClass *create() { return new SubClass; }
+
+    /** Create a null singleton
+      */
+    Singleton() = default;
+
+    /** Initialize singleton object with instance \a state
+      */
+    explicit Singleton(State *state):
+        Object{state, Alias{}}
+    {}
 };
 
 } // namespace cc

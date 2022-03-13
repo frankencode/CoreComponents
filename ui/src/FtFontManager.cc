@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,310 +7,325 @@
  */
 
 #include <cc/ui/FtFontManager>
+#include <cc/ui/FtFontFace>
+#include <cc/ui/FtScaledFont>
 #include <cc/ui/FtGlyphRun>
 #include <cc/ui/FtTextRun>
-#include <cc/ui/FtScaledFont>
-#include <cc/ThreadLocalSingleton>
-#include <cc/Unicode>
+#include <cc/Utf8>
+#include <cc/Map>
+#include <cc/CircularBuffer>
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include FT_GLYPH_H
-#include <cairo/cairo.h>
-#include <cairo/cairo-ft.h>
-#include <cmath>
+namespace cc::ui {
 
-namespace cc {
-namespace ui {
-
-FtFontManager *FtFontManager::instance()
+struct FtFontManager::State final: public FontManager::State
 {
-    return ThreadLocalSingleton<FtFontManager>::instance();
-}
-
-FtFontManager::FtFontManager()
-{}
-
-Ref<FontFace> FtFontManager::openFontFace(const String &path)
-{
-    return FtFontFace::open(path);
-}
-
-Ref<const ScaledFont> FtFontManager::selectFont(const Font &font) const
-{
-    Font target = fixup(font);
-
-    FontCache::Iterator it;
-    if (!fontCache_->find(target->family(), &it)) {
-        fontCache_->insert(target->family(), RecentFonts{6}, &it);
-            // buffer size is small to support scaling animations
-    }
-
-    for (int i = 0; i < it->value()->count(); ++i)
+    FontFace openFontFace(const String &path) override
     {
-        const FtScaledFont *candidate = it->value()->at(i);
-        if (
-            candidate->font()->size() == target->size() &&
-            candidate->font()->slant() == target->slant() &&
-            candidate->font()->weight() == target->weight() &&
-            candidate->font()->stretch() == target->stretch() &&
-            candidate->font()->smoothing() == target->smoothing() &&
-            candidate->font()->outlineHinting() == target->outlineHinting() &&
-            candidate->font()->metricsHinting() == target->metricsHinting()
-        )
-            return candidate;
+        return FtFontFace{path};
     }
 
-    const FtFontFace *fontFace =
-        Object::cast<const FtFontFace *>(
-            selectFontFamily(target->family())->selectFontFace(target->weight(), target->slant(), target->stretch())
-        );
+    ScaledFont selectFont(const Font &font) const override
+    {
+        Font target = fixup(font);
 
-    Ref<const FtScaledFont> scaledFont = Object::create<FtScaledFont>(fontFace, target);
-    it->value()->pushBack(scaledFont);
+        Locator pos;
+        if (!fontCache_.find(target.family(), &pos)) {
+            fontCache_.insert(target.family(), RecentFonts::allocate(6), &pos);
+        }
 
-    return scaledFont;
-}
+        RecentFonts recentFonts = fontCache_.at(pos).value();
 
-Ref<GlyphRun> FtFontManager::typeset(const String &text, const Font &font, const Point &origin) const
-{
-    return ftTypeset(text, font, origin);
-}
+        for (int i = 0; i < recentFonts.fill(); ++i)
+        {
+            FtScaledFont candidate = recentFonts.back(i);
+            if (
+                candidate.font().size()           == target.size() &&
+                candidate.font().slant()          == target.slant() &&
+                candidate.font().weight()         == target.weight() &&
+                candidate.font().stretch()        == target.stretch() &&
+                candidate.font().smoothing()      == target.smoothing() &&
+                candidate.font().outlineHinting() == target.outlineHinting() &&
+                candidate.font().metricsHinting() == target.metricsHinting()
+            )
+                return std::move(candidate);
+        }
 
-Ref<FtGlyphRun> FtFontManager::ftTypeset(const String &text, const Font &font, const Point &origin) const
-{
-    if (text->contains('\n'))
-        return ftTypeset(text->replace("\n", ""), font, origin);
+        FtFontFace fontFace =
+            selectFontFamily(target.family())
+            .selectFontFace(target.weight(), target.slant(), target.stretch())
+            .as<FtFontFace>();
 
-    const FtScaledFont *ftScaledFont = Object::cast<const FtScaledFont *>(font->getScaledFont());
+        FtScaledFont scaledFont = FtScaledFont{fontFace, target};
+        recentFonts.pushBack(scaledFont);
 
-    FtFaceGuard guard{ftScaledFont};
-    FT_Face ftFace = guard->ftFace();
+        return std::move(scaledFont);
+    }
 
-    FT_UInt32 glyphLoadingFlags =
-        [](const Font &f) -> FT_UInt32 {
-            OutlineHinting h = f->outlineHinting();
-            switch (f->smoothing()) {
+    GlyphRun typeset(const String &text, const Font &font, const Point &origin) const override
+    {
+        if (text.find('\n'))
+            return typeset(text.replaced("\n", ""), font, origin);
+
+        auto ftScaledFont = selectFont(font).as<FtScaledFont>();
+
+        FtFaceGuard guard{ftScaledFont};
+        FT_Face ftFace = guard.ftFace();
+
+        FT_UInt32 glyphLoadingFlags = 0;
+        {
+            Font font = ftScaledFont.font();
+            OutlineHinting hinting = font.outlineHinting();
+
+            switch (font.smoothing()) {
                 case FontSmoothing::Default:
                 case FontSmoothing::Grayscale: {
-                    if (h == OutlineHinting::Slight)
-                        return FT_LOAD_TARGET_LIGHT;
+                    if (hinting == OutlineHinting::Slight)
+                        glyphLoadingFlags = FT_LOAD_TARGET_LIGHT;
                     else
-                        return FT_LOAD_DEFAULT;
+                        glyphLoadingFlags = FT_LOAD_DEFAULT;
+                    break;
                 }
                 case FontSmoothing::RgbSubpixel:
                 case FontSmoothing::BgrSubpixel:
-                    return FT_LOAD_TARGET_LCD;
+                    glyphLoadingFlags = FT_LOAD_TARGET_LCD;
+                    break;
                 case FontSmoothing::VrgbSubpixel:
                 case FontSmoothing::VbgrSubpixel:
-                    return FT_LOAD_TARGET_LCD_V;
+                    glyphLoadingFlags = FT_LOAD_TARGET_LCD_V;
+                    break;
                 case FontSmoothing::None:
-                    return FT_LOAD_TARGET_MONO;
-            }
-            return FT_LOAD_DEFAULT;
-        }(ftScaledFont->font()) /*| FT_LOAD_FORCE_AUTOHINT*/;
-
-    auto ftGlyphRun = Object::create<FtGlyphRun>(text, font, origin);
-
-    const int codePointsCount = count(Unicode{text});
-
-    auto cairoGlyphs = FtGlyphRun::CairoGlyphs::create(codePointsCount);
-    auto cairoTextClusters = FtGlyphRun::CairoTextClusters::create(codePointsCount);
-    auto glyphAdvances = FtGlyphRun::GlyphAdvances::create(codePointsCount);
-    int cairoGlyphsCount = 0;
-    int cairoTextClustersCount = 0;
-
-    auto walker = Unicode{text}->begin();
-    FT_UInt previousGlyphIndex = 0;
-
-    Point pos = origin;
-    Point pos0 = origin;
-
-    Step glyphAdvance;
-
-    for (;; ++cairoGlyphsCount)
-    {
-        uchar_t ch = 0;
-        int byteCount = +walker;
-        if (!walker) break;
-        ch = *walker;
-        ++walker;
-        byteCount = +walker - byteCount;
-
-        struct GlyphLoadingError {};
-
-        FT_UInt glyphIndex = 0;
-
-        try {
-            glyphIndex = FT_Get_Char_Index(ftFace, ch);
-            if (glyphIndex == 0) throw GlyphLoadingError{};
-
-            if (FT_HAS_KERNING(ftFace)) {
-                if (previousGlyphIndex != 0 && glyphIndex != 0 && ch > 0x20) {
-                    FT_Vector delta;
-                    if (FT_Get_Kerning(ftFace, previousGlyphIndex, glyphIndex, FT_KERNING_DEFAULT, &delta) == 0)
-                        pos += Point{double(delta.x), double(delta.y)} / 64.;
-                }
-            }
-
-            if (FT_Load_Glyph(ftFace, glyphIndex, glyphLoadingFlags) != 0) throw GlyphLoadingError{};
-        }
-        catch (GlyphLoadingError &) {
-            glyphIndex = FT_Get_Char_Index(ftFace, 0xFFFD /* � */);
-            if (glyphIndex == 0) continue;
-            if (FT_Load_Glyph(ftFace, glyphIndex, glyphLoadingFlags) != 0) continue;
+                    glyphLoadingFlags = FT_LOAD_TARGET_MONO;
+                    break;
+                default:
+                    glyphLoadingFlags = FT_LOAD_DEFAULT;
+                    break;
+            };
         }
 
-        cairoGlyphs->at(cairoGlyphsCount).index = glyphIndex;
-        cairoGlyphs->at(cairoGlyphsCount).x = pos[0];
-        cairoGlyphs->at(cairoGlyphsCount).y = pos[1];
-
-        auto g = ftFace->glyph;
-        auto a = &ftFace->glyph->advance;
-        auto m = &ftFace->glyph->metrics;
-
-        if (a->x == 0 && a->y == 0 && cairoTextClustersCount > 0
-        ) {
-            cairoTextClusters->at(cairoTextClustersCount - 1).num_bytes += byteCount;
-            cairoTextClusters->at(cairoTextClustersCount - 1).num_glyphs += 1;
-        }
-        else {
-            cairoTextClusters->at(cairoTextClustersCount).num_bytes = byteCount;
-            cairoTextClusters->at(cairoTextClustersCount).num_glyphs = 1;
-            ++cairoTextClustersCount;
+        if (ftScaledFont.fontFace().pitch() == Pitch::Fixed) {
+            // keep in sync with flags passed in cairo_ft_font_face_create_for_ft_face (e.g. in FtScaledFont)
+            glyphLoadingFlags |= FT_LOAD_FORCE_AUTOHINT;
         }
 
-        const double ascender = std::ceil(m->horiBearingY / 64.);
-        const double descender = std::floor(ascender - m->height / 64.);
-        if (ftGlyphRun->maxAscender_ < ascender) ftGlyphRun->maxAscender_ = ascender;
-        if (ftGlyphRun->minDescender_ > descender) ftGlyphRun->minDescender_ = descender;
+        FtGlyphRun ftGlyphRun{text, font, origin};
+        ftGlyphRun.me().scaledFont_ = ftScaledFont;
 
-        glyphAdvance = Step {
-            double(a->x + g->rsb_delta - g->lsb_delta),
-            double(a->y)
-        } / 64.;
+        const long codePointsCount = Utf8{text}.count();
 
-        glyphAdvances->at(cairoGlyphsCount) = glyphAdvance[0];
+        FtGlyphRun::CairoGlyphs cairoGlyphs = FtGlyphRun::CairoGlyphs::allocate(codePointsCount);
+        FtGlyphRun::CairoTextClusters cairoTextClusters = FtGlyphRun::CairoTextClusters::allocate(codePointsCount);
+        FtGlyphRun::GlyphAdvances glyphAdvances = FtGlyphRun::GlyphAdvances::allocate(codePointsCount);
+        int cairoGlyphsCount = 0;
+        int cairoTextClustersCount = 0;
 
-        pos += glyphAdvance;
+        auto walker = Utf8{text}.begin();
+        FT_UInt previousGlyphIndex = 0;
 
-        previousGlyphIndex = glyphIndex;
-    }
+        Point pos = origin;
+        Point pos0 = origin;
 
-    {
-        Step step = pos - pos0;
+        Step glyphAdvance;
 
-        const double maxGlyphHeight =
-            std::ceil( ftFace->ascender * ftScaledFont->size() / ftFace->units_per_EM ) +
-            std::ceil( -ftFace->descender * ftScaledFont->size() / ftFace->units_per_EM );
-
-        Size size {
-            std::abs(step[0]),
-            std::abs(step[1]) + maxGlyphHeight
-        };
-
-        ftGlyphRun->advance_ = pos;
-        ftGlyphRun->size_ = size;
-    }
-
-    cairoGlyphs->truncate(cairoGlyphsCount);
-    cairoTextClusters->truncate(cairoTextClustersCount);
-    glyphAdvances->truncate(cairoGlyphsCount);
-    ftGlyphRun->cairoGlyphs_ = cairoGlyphs;
-    ftGlyphRun->cairoTextClusters_ = cairoTextClusters;
-    ftGlyphRun->glyphAdvances_ = glyphAdvances;
-    ftGlyphRun->finalGlyphAdvance_ = glyphAdvance;
-
-    return ftGlyphRun;
-}
-
-Ref<TextRun> FtFontManager::createTextRun() const
-{
-    return FtTextRun::create();
-}
-
-void FtFontManager::selectFontRanges(const String &text, const Font &font, const ReturnFontRange &fontRange) const
-{
-    bool allAscii = true;
-    for (int i = 0, n = text->count(); i < n; ++i) {
-        if (text->byteAt(i) >= 0x80) {
-            allAscii = false;
-            break;
-        }
-    }
-
-    if (allAscii) {
-        fontRange(font, 0, text->count());
-        return;
-    }
-
-    Font targetFont = fixup(font);
-    const FtFontFace *targetFontFace = Object::cast<const FtScaledFont *>(targetFont->getScaledFont())->ftFontFace();
-
-    for (auto walker = Unicode{text}->begin(); walker;)
-    {
-        const auto start = +walker;
-
-        uchar_t ch = 0;
-        while (walker) {
-            ch = *walker;
-            if (FT_Get_Char_Index(targetFontFace->ftFace(), ch) == 0) break;
-            ++walker;
-        }
-
-        if (start < +walker)
-            fontRange(targetFont, start, +walker);
-
-        if (!walker) break;
-
-        bool searchExhausted = true;
-
-        for (auto entry: fontFamilies_)
+        for (;; ++cairoGlyphsCount)
         {
-            if (
-                entry->key() == targetFont->family() ||
-                entry->value()->pitch() == Pitch::Fixed
-            ) continue;
-
-            const FtFontFace *fallbackFontFace =
-                Object::cast<const FtFontFace *>(
-                    entry->value()->selectFontFace(
-                        targetFont->weight(),
-                        targetFont->slant(),
-                        targetFont->stretch()
-                    )
-                );
-
-            if (FT_Get_Char_Index(fallbackFontFace->ftFace(), ch) == 0) continue;
-            const int start = +walker;
+            uint32_t ch = 0;
+            int byteCount = +walker;
+            if (!walker) break;
+            ch = *walker;
             ++walker;
+            byteCount = +walker - byteCount;
 
-            searchExhausted = false;
+            struct GlyphLoadingError {};
 
+            FT_UInt glyphIndex = 0;
+
+            try {
+                glyphIndex = FT_Get_Char_Index(ftFace, ch);
+                if (glyphIndex == 0) throw GlyphLoadingError{};
+
+                if (FT_HAS_KERNING(ftFace)) {
+                    if (previousGlyphIndex != 0 && glyphIndex != 0 && ch > 0x20) {
+                        FT_Vector delta;
+                        if (FT_Get_Kerning(ftFace, previousGlyphIndex, glyphIndex, FT_KERNING_DEFAULT, &delta) == 0)
+                            pos += Point{double(delta.x), double(delta.y)} / 64.;
+                    }
+                }
+
+                if (FT_Load_Glyph(ftFace, glyphIndex, glyphLoadingFlags) != 0) throw GlyphLoadingError{};
+            }
+            catch (GlyphLoadingError &) {
+                glyphIndex = FT_Get_Char_Index(ftFace, 0xFFFD /* � */);
+                if (glyphIndex == 0) break;
+                if (FT_Load_Glyph(ftFace, glyphIndex, glyphLoadingFlags) != 0) break;
+            }
+
+            cairoGlyphs[cairoGlyphsCount].index = glyphIndex;
+            cairoGlyphs[cairoGlyphsCount].x = pos[0];
+            cairoGlyphs[cairoGlyphsCount].y = pos[1];
+
+            auto g = ftFace->glyph;
+            auto a = &ftFace->glyph->advance;
+            auto m = &ftFace->glyph->metrics;
+
+            if (a->x == 0 && a->y == 0 && cairoTextClustersCount > 0) {
+                cairoTextClusters[cairoTextClustersCount - 1].num_bytes += byteCount;
+                cairoTextClusters[cairoTextClustersCount - 1].num_glyphs += 1;
+            }
+            else {
+                cairoTextClusters[cairoTextClustersCount].num_bytes = byteCount;
+                cairoTextClusters[cairoTextClustersCount].num_glyphs = 1;
+                ++cairoTextClustersCount;
+            }
+
+            const double ascender = std::ceil(m->horiBearingY / 64.);
+            const double descender = std::floor(ascender - m->height / 64.);
+            if (ftGlyphRun.me().maxAscender_ < ascender) ftGlyphRun.me().maxAscender_ = ascender;
+            if (ftGlyphRun.me().minDescender_ > descender) ftGlyphRun.me().minDescender_ = descender;
+
+            glyphAdvance = Step {
+                double(a->x + g->rsb_delta - g->lsb_delta),
+                double(a->y)
+            } / 64.;
+
+            glyphAdvances[cairoGlyphsCount] = glyphAdvance[0];
+
+            pos += glyphAdvance;
+
+            previousGlyphIndex = glyphIndex;
+        }
+
+        {
+            Step step = pos - pos0;
+
+            const double maxGlyphHeight =
+                std::ceil( ftFace->ascender * ftScaledFont.size() / ftFace->units_per_EM ) +
+                std::ceil( -ftFace->descender * ftScaledFont.size() / ftFace->units_per_EM );
+
+            Size size {
+                std::abs(step[0]),
+                std::abs(step[1]) + maxGlyphHeight
+            };
+
+            ftGlyphRun.me().advance_ = pos;
+            ftGlyphRun.me().size_ = size;
+        }
+
+        cairoGlyphs.truncate(cairoGlyphsCount);
+        cairoTextClusters.truncate(cairoTextClustersCount);
+        glyphAdvances.truncate(cairoGlyphsCount);
+        ftGlyphRun.me().cairoGlyphs_ = cairoGlyphs;
+        ftGlyphRun.me().cairoTextClusters_ = cairoTextClusters;
+        ftGlyphRun.me().glyphAdvances_ = glyphAdvances;
+        ftGlyphRun.me().finalGlyphAdvance_ = glyphAdvance;
+
+        return std::move(ftGlyphRun);
+    }
+
+    TextRun createTextRun() const override
+    {
+        return FtTextRun{};
+    }
+
+    void selectFontRanges(const String &text, const Font &font, const FontRange &fontRange) const override
+    {
+        bool allAscii = true;
+        for (long i = 0, n = text.count(); i < n; ++i) {
+            if (text.byteAt(i) >= 0x80) {
+                allAscii = false;
+                break;
+            }
+        }
+
+        if (allAscii) {
+            fontRange(font, 0, text.count());
+            return;
+        }
+
+        auto ftScaledFont = selectFont(font).as<FtScaledFont>();
+        Font targetFont = ftScaledFont.font();
+        FtFontFace targetFontFace = ftScaledFont.ftFontFace();
+
+        for (auto walker = Utf8{text}.begin(); walker;)
+        {
+            const auto start = +walker;
+
+            uint32_t ch = 0;
             while (walker) {
                 ch = *walker;
-                if (
-                    FT_Get_Char_Index(targetFontFace->ftFace(), ch) != 0 ||
-                    FT_Get_Char_Index(fallbackFontFace->ftFace(), ch) == 0
-                ) break;
+                if (FT_Get_Char_Index(targetFontFace.ftFace(), ch) == 0) break;
                 ++walker;
             }
 
-            Font fallbackFont = targetFont;
-            fallbackFont->setFamily (fallbackFontFace->family());
-            fallbackFont->setWeight (fallbackFontFace->weight());
-            fallbackFont->setSlant  (fallbackFontFace->slant());
-            fallbackFont->setStretch(fallbackFontFace->stretch());
-            fontRange(fallbackFont, start, +walker);
-            break;
-        }
+            if (start < +walker)
+                fontRange(targetFont, start, +walker);
 
-        if (searchExhausted) {
-            const int start = +walker;
-            ++walker;
-            fontRange(targetFont, start, +walker);
+            if (!walker) break;
+
+            bool searchExhausted = true;
+
+            for (const FontFamily &fontFamily: fontFamilies_)
+            {
+                if (
+                    fontFamily.name() == targetFont.family() ||
+                    fontFamily.pitch() == Pitch::Fixed
+                ) continue;
+
+                FtFontFace fallbackFontFace =
+                    fontFamily.selectFontFace(
+                        targetFont.weight(),
+                        targetFont.slant(),
+                        targetFont.stretch()
+                    ).as<FtFontFace>();
+
+                if (FT_Get_Char_Index(fallbackFontFace.ftFace(), ch) == 0) continue;
+                const auto start = +walker;
+                ++walker;
+
+                searchExhausted = false;
+
+                for (;walker; ++walker) {
+                    ch = *walker;
+                    if (
+                        FT_Get_Char_Index(targetFontFace.ftFace(), ch) != 0 ||
+                        FT_Get_Char_Index(fallbackFontFace.ftFace(), ch) == 0
+                    ) break;
+                }
+
+                Font fallbackFont = targetFont;
+                fallbackFont.family(fallbackFontFace.family());
+                fallbackFont.weight(fallbackFontFace.weight());
+                fallbackFont.slant(fallbackFontFace.slant());
+                fallbackFont.stretch(fallbackFontFace.stretch());
+                fontRange(fallbackFont, start, +walker);
+                break;
+            }
+
+            if (searchExhausted) {
+                const auto start = +walker;
+                ++walker;
+                fontRange(targetFont, start, +walker);
+            }
         }
     }
+
+    using RecentFonts = CircularBuffer<FtScaledFont>;
+    using FontCache = Map<String, RecentFonts>;
+
+    mutable FontCache fontCache_;
+};
+
+FtFontManager::FtFontManager():
+    FontManager{instance<State>()}
+{}
+
+FtFontManager::State &FtFontManager::me()
+{
+    return Object::me.as<State>();
 }
 
-}} // namespace cc::ui
+const FtFontManager::State &FtFontManager::me() const
+{
+    return Object::me.as<State>();
+}
+
+} // namespace cc::ui

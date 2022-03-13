@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -17,10 +17,15 @@
 
 namespace cc {
 
-class PluginLoader: public Object
+/** \class PluginLoader cc/PluginLoader
+  * \ingroup plugins
+  * \brief %Plugin loading during library initialization
+  */
+class PluginLoader
 {
 public:
-    PluginLoader(const String &libraryPath, const String &group = "");
+    explicit PluginLoader(const String &libraryPath, const String &group = "");
+    PluginLoader(const String &libraryPath, const List<String> groups);
 };
 
 #define CC_PLUGIN_LOADER \
@@ -31,7 +36,7 @@ inline const char *getLibraryPath() \
     return info.dli_fname; \
 } \
 namespace { \
-    PluginLoader pluginLoader(getLibraryPath()); \
+    PluginLoader pluginLoader{getLibraryPath()}; \
 }
 
 #define CC_PLUGIN_GROUP_LOADER(group) \
@@ -42,7 +47,15 @@ inline const char *group ## getLibraryPath() \
     return info.dli_fname; \
 } \
 namespace { \
-    PluginLoader group ## pluginLoader(group ## getLibraryPath(), CC_XSTR(group)); \
+    PluginLoader group ## pluginLoader{group ## getLibraryPath(), CC_XSTR(group)}; \
+}
+
+#define CC_PLUGIN_TARGET \
+inline const char *pluginTarget() \
+{ \
+    Dl_info info; \
+    dladdr((void *)pluginTarget, &info); \
+    return info.dli_fname; \
 }
 
 } // namespace cc

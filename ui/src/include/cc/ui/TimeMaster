@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,31 +8,49 @@
 
 #pragma once
 
+#include <cc/ui/TimeWorker>
 #include <cc/ui/Timer>
+#include <cc/Singleton>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class TimeWorker;
-
-class TimeMaster: public Object
+/** \internal
+  * \class TimeMaster cc/ui/TimeMaster
+  * \ingroup ui
+  * \brief Platform specific timer implementation
+  */
+class TimeMaster: public Singleton
 {
 public:
-    static TimeMaster *instance();
+    /** Get access to the platform's time master
+      */
+    TimeMaster();
 
-    void startTimer(Timer::Instance *timer);
+    /** Start \a timer
+      */
+    void startTimer(const Timer &timer);
+
+    /** Trigger \a timer on timeout
+      */
+    void triggerTimer(const Timer &timer) { me().triggerTimer(timer); }
+
     void ack();
 
 protected:
-    friend class TimeWorker;
+    struct State: public Singleton::State
+    {
+        ~State();
 
-    TimeMaster();
-    ~TimeMaster();
+        virtual void triggerTimer(const Timer &timer) = 0;
 
-    virtual void triggerTimer(const Timer::Instance *timer) = 0;
+        TimeWorker worker_;
+    };
 
-private:
-    Ref<TimeWorker> worker_;
+    explicit TimeMaster(State *state):
+        Singleton{state}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

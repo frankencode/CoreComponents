@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,147 +7,258 @@
  */
 
 #include <cc/Variant>
-#include <cc/Format>
+#include <cc/input>
+#include <cc/str>
 
 namespace cc {
 
-const char *Variant::typeName(VariantType type, VariantType itemType)
+const TypeInfo VariantType<void>::info
 {
-    switch (type) {
-        case VariantType::Undefined: return "undefined";
-        case VariantType::Int      : return "integer";
-        case VariantType::Bool     : return "boolean";
-        case VariantType::Float    : return "float";
-        case VariantType::Color    : return "color";
-        case VariantType::Version  : return "version";
-        case VariantType::Object   : return "object";
-        case VariantType::String   : return "String";
-        case VariantType::Any      : return "any";
-        case VariantType::List     : {
-            switch (itemType) {
-                case VariantType::Undefined: return "list of undefined";
-                case VariantType::Int      : return "list of integer";
-                case VariantType::Bool     : return "list of boolean";
-                case VariantType::Float    : return "list of float";
-                case VariantType::Color    : return "list of color";
-                case VariantType::Version  : return "list of version";
-                case VariantType::Object   : return "list of object";
-                case VariantType::String   : return "list of string";
-                case VariantType::Any      : return "list of any";
-                case VariantType::List     : return "list of list";
-                case VariantType::Map      : return "list of map";
-            }
-            return "list of unkown";
-        }
-        case VariantType::Map     : {
-            switch (itemType) {
-                case VariantType::Undefined: return "map of undefined";
-                case VariantType::Int      : return "map of integer";
-                case VariantType::Bool     : return "map of boolean";
-                case VariantType::Float    : return "map of float";
-                case VariantType::Color    : return "map of color";
-                case VariantType::Version  : return "map of version";
-                case VariantType::Object   : return "map of object";
-                case VariantType::String   : return "map of string";
-                case VariantType::Any      : return "map of any";
-                case VariantType::List     : return "map of list";
-                case VariantType::Map      : return "map of map";
-            }
-            return "map of unkown";
-        }
+    .typeName = "void",
+    .str = [](const void *bytes) { return String{}; }
+};
+
+const TypeInfo VariantType<long>::info
+{
+    .typeName = "long",
+    .str = [](const void *bytes) { return str(VariantType<long>::retrieve(bytes)); },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<long>::retrieve(a) == VariantType<long>::retrieve(b);
     }
-    return "unknown";
+};
+
+const TypeInfo VariantType<bool>::info
+{
+    .typeName = "bool",
+    .str = [](const void *bytes) { return str(VariantType<bool>::retrieve(bytes)); },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<bool>::retrieve(a) == VariantType<bool>::retrieve(b);
+    }
+};
+
+const TypeInfo VariantType<double>::info
+{
+    .typeName = "double",
+    .str = [](const void *bytes) { return str(VariantType<double>::retrieve(bytes)); },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<double>::retrieve(a) == VariantType<double>::retrieve(b);
+    }
+};
+
+const TypeInfo VariantType<String>::info {
+    .typeName = "String",
+    .str = [](const void *bytes) {
+        return String{VariantType<String>::retrieve(bytes)};
+    },
+    .cleanup = [](void *bytes){
+        static_cast<String *>(bytes)->~String();
+    },
+    .assign = [](void *dst, const void *src) {
+        new(dst)String{*static_cast<const String *>(src)};
+    },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<String>::retrieve(a) == VariantType<String>::retrieve(b);
+    }
+};
+
+const TypeInfo VariantType<List<Variant>>::info {
+    .typeName = "List<Variant>",
+    .str = [](const void *bytes) {
+        const List<Variant> &list = *static_cast<const List<Variant> *>(bytes);
+        if (list.count() == 0) return String{"[]"};
+        List<String> parts;
+        parts << "[ ";
+        for (Locator pos = list.head(); pos; ++pos) {
+            Variant value = list.at(pos);
+            if (value.is<String>()) parts << "\"";
+            parts << value;
+            if (value.is<String>()) parts << "\"";
+            if (+pos != list.count() - 1)
+                parts << ", ";
+        }
+        parts << " ]";
+        return String{parts};
+    },
+    .cleanup = [](void *bytes) {
+        static_cast<List<Variant> *>(bytes)->~List<Variant>();
+    },
+    .assign = [](void *dst, const void *src) {
+        new(dst)List<Variant>{*static_cast<const List<Variant> *>(src)};
+    },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<List<Variant>>::retrieve(a) == VariantType<List<Variant>>::retrieve(b);
+    }
+};
+
+const TypeInfo VariantType<List<String>>::info {
+    .typeName = "List<String>",
+    .str = [](const void *bytes) {
+        const List<String> &list = *static_cast<const List<String> *>(bytes);
+        if (list.count() == 0) return String{"[]"};
+        return String{"[ \"" + String{list, "\", \""} + "\" ]"};
+    },
+    .cleanup = [](void *bytes) {
+        static_cast<List<String> *>(bytes)->~List<String>();
+    },
+    .assign = [](void *dst, const void *src) {
+        new(dst)List<String>{*static_cast<const List<String> *>(src)};
+    },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<List<String>>::retrieve(a) == VariantType<List<String>>::retrieve(b);
+    }
+};
+
+const TypeInfo VariantType<List<bool>>::info {
+    .typeName = "List<bool>",
+    .str = [](const void *bytes) {
+        const List<bool> &list = *static_cast<const List<bool> *>(bytes);
+        if (list.count() == 0) return String{"[]"};
+        List<String> parts;
+        parts << "[ ";
+        for (Locator pos = list.head(); pos; ++pos) {
+            parts << str(list.at(pos));
+            if (+pos != list.count() - 1)
+                parts << ", ";
+        }
+        parts << " ]";
+        return String{parts};
+    },
+    .cleanup = [](void *bytes) {
+        static_cast<List<bool> *>(bytes)->~List<bool>();
+    },
+    .assign = [](void *dst, const void *src) {
+        new(dst)List<bool>{*static_cast<const List<bool> *>(src)};
+    },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<List<bool>>::retrieve(a) == VariantType<List<bool>>::retrieve(b);
+    }
+};
+
+const TypeInfo VariantType<List<long>>::info {
+    .typeName = "List<long>",
+    .str = [](const void *bytes) {
+        const List<long> &list = *static_cast<const List<long> *>(bytes);
+        if (list.count() == 0) return String{"[]"};
+        List<String> parts;
+        parts << "[ ";
+        for (Locator pos = list.head(); pos; ++pos) {
+            parts << str(list.at(pos));
+            if (+pos != list.count() - 1)
+                parts << ", ";
+        }
+        parts << " ]";
+        return String{parts};
+    },
+    .cleanup = [](void *bytes) {
+        static_cast<List<long> *>(bytes)->~List<long>();
+    },
+    .assign = [](void *dst, const void *src) {
+        new(dst)List<long>{*static_cast<const List<long> *>(src)};
+    },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<List<long>>::retrieve(a) == VariantType<List<long>>::retrieve(b);
+    }
+};
+
+const TypeInfo VariantType<List<double>>::info {
+    .typeName = "List<double>",
+    .str = [](const void *bytes) {
+        const List<double> &list = *static_cast<const List<double> *>(bytes);
+        if (list.count() == 0) return String{"[]"};
+        List<String> parts;
+        parts << "[ ";
+        for (Locator pos = list.head(); pos; ++pos) {
+            parts << str(list.at(pos));
+            if (+pos != list.count() - 1)
+                parts << ", ";
+        }
+        parts << " ]";
+        return String{parts};
+    },
+    .cleanup = [](void *bytes) {
+        static_cast<List<double> *>(bytes)->~List<double>();
+    },
+    .assign = [](void *dst, const void *src) {
+        new(dst)List<double>{*static_cast<const List<double> *>(src)};
+    },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<List<double>>::retrieve(a) == VariantType<List<double>>::retrieve(b);
+    }
+};
+
+const TypeInfo VariantType<Map<String, Variant>>::info {
+    .typeName = "Map<String,Variant>",
+    .str = [](const void *bytes) {
+        const Map<String, Variant> &map = *static_cast<const Map<String, Variant> *>(bytes);
+        List<String> parts;
+        parts << "{ ";
+        for (Locator pos = map.head(); pos; ++pos) {
+            Variant value = map.at(pos).value();
+            parts << "\"" << map.at(pos).key() << "\": ";
+            if (value.is<String>()) parts << "\"";
+            parts << str(value);
+            if (value.is<String>()) parts << "\"";
+            if (+pos != map.count() - 1)
+                parts << ", ";
+        }
+        parts << " }";
+        return String{parts};
+    },
+    .cleanup = [](void *bytes) {
+        static_cast<Map<String, Variant> *>(bytes)->~Map<String, Variant>();
+    },
+    .assign = [](void *dst, const void *src) {
+        new(dst)Map<String, Variant>{*static_cast<const Map<String, Variant> *>(src)};
+    },
+    .equal = [](const void *a, const void *b) {
+        return VariantType<Map<String, Variant>>::retrieve(a) == VariantType<Map<String, Variant>>::retrieve(b);
+    }
+};
+
+void VariantType<Map<String, Variant>>::store(void *bytes, const Map<String, Variant> &x)
+{
+    static_assert(sizeof(Map<String, Variant>) <= 8);
+
+    new(bytes)Map<String, Variant>{x};
+}
+
+Map<String, Variant> VariantType<Map<String, Variant>>::retrieve(const void *bytes, const TypeInfo &typeInfo)
+{
+    assert((&typeInfo == &VariantType<Map<String, Variant>>::info)); // expected type 'Map<String, Variant>'
+
+    return *static_cast<const Map<String, Variant> *>(bytes);
 }
 
 Variant Variant::read(const String &s)
 {
-    if (s->startsWith('"') && s->endsWith('"'))
-        return Variant{s->copy(1, s->count() - 1)};
+    if (s.startsWith('"') && s.endsWith('"'))
+        return Variant{s.copy(1, s.count() - 1)};
 
-    if (s->startsWith('[') && s->endsWith(']')) {
-        auto sl = s->copy(1, s->count() - 1)->split(',');
-        return Variant{sl};
+    if (s.startsWith('[') && s.endsWith(']')) {
+        List<String> sl = s.copy(1, s.count() - 1).split(',');
+        List<Variant> vl;
+        for (String &x: sl) {
+            x.trim();
+            vl.append(Variant::read(x));
+        }
+        return Variant{vl};
     }
 
     if (
-        s->contains('.') ||
-        (!s->startsWith("0x") && (s->contains('e') || s->contains('E')))
+        s.find('.') ||
+        (!s.startsWith("0x") && (s.find('e') || s.find('E')))
     ) {
         double value = 0;
-        if (s->scanNumber(&value) == s->count()) return Variant(value);
+        if (scanNumber<double>(s, &value) == s.count())
+            return Variant{value};
     }
 
-    int value = 0;
-    if (s->scanNumber(&value) == s->count()) return Variant(value);
-    if (s == "true" || s == "on") return Variant(true);
-    if (s == "false" || s == "off") return Variant(false);
+    long value = 0;
+    if (scanNumber<long>(s, &value) == s.count()) return Variant{value};
+    if (s == "true" || s == "on") return Variant{true};
+    if (s == "false" || s == "off") return Variant{false};
 
     return Variant{s};
-}
-
-const char *VariantInstance::typeName() const
-{
-    return Variant::typeName(type_, itemType_);
-}
-
-String VariantInstance::toString() const
-{
-    switch (type_) {
-        case VariantType::Undefined: return String{};
-        case VariantType::Bool     : return str(int_ != 0);
-        case VariantType::Int      : return str(int_);
-        case VariantType::Float    : return str(float_);
-        case VariantType::Color    : return str(Color::fromWord(word_));
-        case VariantType::Version  : return str(Version::fromWord(word_));
-        case VariantType::String   : return Variant::cast<CharArray *>(ref().get());
-        case VariantType::Object   : return str((void *)Variant::cast<Object *>(ref().get()));
-        default                    :;
-    };
-
-    if (+(type_ & VariantType::List) && +(itemType_ & VariantType::String))
-        return str(StringList{static_cast<StringList::Instance *>(ref().get())});
-
-    return String{};
-}
-
-bool Variant::operator==(const Variant &b) const
-{
-    bool equal = false;
-
-    if (+((*this)->type_ & VariantType::Int) && +(b->type_ & VariantType::Int))
-        equal = ((*this)->int_ == b->int_);
-    else if (+((*this)->type_ & VariantType::Float) && +(b->type_ & VariantType::Float))
-        equal = ((*this)->float_ == b->float_);
-    else if (+((*this)->type_ & VariantType::Color) && +(b->type_ & VariantType::Color))
-        equal = ((*this)->word_ == b->word_);
-    else if (+((*this)->type_ & VariantType::Version) && +(b->type_ & VariantType::Version))
-        equal = ((*this)->word_ == b->word_);
-    else if (((*this)->type_ == VariantType::String) && (b->type_ == VariantType::String))
-        equal = Variant::cast<CharArray *>(*this)->equals(Variant::cast<CharArray *>(b));
-    else if (((*this)->type_ == VariantType::Object) && (b->type_ == VariantType::Object))
-        equal = ((*this)->ref().get() == b->ref().get());
-    else
-        equal = (((*this)->type_ == VariantType::Undefined) && (b->type_ == VariantType::Undefined));
-
-    return equal;
-}
-
-bool Variant::operator<(const Variant &b) const
-{
-    bool below = false;
-
-    if (+((*this)->type_ & VariantType::Int) && +(b->type_ & VariantType::Int))
-        below = ((*this)->int_ < b->int_);
-    else if (+((*this)->type_ & VariantType::Float) && +(b->type_ & VariantType::Float))
-        below = ((*this)->float_ < b->float_);
-    else if (+((*this)->type_ & VariantType::Version) && +(b->type_ & VariantType::Version))
-        below = (Version::fromWord((*this)->word_) < Version::fromWord(b->word_));
-    else if (((*this)->type_ == VariantType::String) && (b->type_ == VariantType::String))
-        below = Variant::cast<CharArray *>(*this)->below(Variant::cast<CharArray *>(b));
-    else if (((*this)->type_ == VariantType::Object) && (b->type_ == VariantType::Object))
-        below = ((*this)->ref().get() < b->ref().get());
-
-    return below;
 }
 
 } // namespace cc

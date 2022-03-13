@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/BlockCipher>
+#include <cc/Stream>
+
+namespace cc {
+
+/** \class BlockCipherSink cc/BlockCipherSink
+  * \ingroup crypto
+  * \brief %Block cipher output stream
+  */
+class BlockCipherSink final: public Stream
+{
+public:
+    /** Create a null block cipher output stream
+      */
+    BlockCipherSink() = default;
+
+    /** Create a new block cipher output stream
+      * \param sink %Output sink to write the ciphertext to
+      * \param cipher %Block cipher to use for encrypting the plaintext
+      * \param pad %Input stream to read the padding from (optional)
+      */
+    BlockCipherSink(const Stream &sink, const BlockCipher &cipher, const Stream &pad = Stream{});
+
+    /** Block size of the underdyling block cipher
+      */
+    int blockSize() const;
+
+    /** Number of bytes pending because the last write did not fill up a complete cipher block
+      */
+    long pendingCount() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,39 +8,19 @@
 
 #pragma once
 
-#include <cc/SystemStream>
+#include <cc/IoStream>
 #include <cc/Format>
 
 namespace cc {
 
-/** \addtogroup binary_io
-  * \{
-  */
-
-SystemStream &stdIn(); ///< Standard input stream
-SystemStream &stdOut(); ///< Standard output stream
-SystemStream &stdErr(); ///< Standard error stream
-
-inline SystemStream &standardInput () { return stdIn();  } ///< Standard input stream
-inline SystemStream &standardOutput() { return stdOut(); } ///< Standard input stream
-inline SystemStream &standardError () { return stdErr(); } ///< Standard input stream
-
-/** \}
-  */
-
-/** \addtogroup formatted_io
-  * \{
-  */
-
 /** \brief Generate formatted text on the standard output stream
+  * \ingroup strings
   */
-inline Format fout(const String &pattern = "") { return Format{pattern, stdOut()}; }
+inline Format fout(const String &pattern = "") { return Format{pattern, IoStream::output()}; }
 
 /** \brief Generate formatted text on the standard error stream
+  * \ingroup strings
   */
-inline Format ferr(const String &pattern = "") { return Format{pattern, stdErr()}; }
-
-/** \}
-  */
+inline Format ferr(const String &pattern = "") { return Format{pattern, IoStream::error()}; }
 
 } // namespace cc

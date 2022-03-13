@@ -1,30 +1,28 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
+#include <cc/yason>
+#include <cc/YasonSyntax>
+#include <cc/YasonWriter>
 #include <cc/CaptureSink>
-#include <cc/meta/YasonSyntax>
-#include <cc/meta/YasonWriter>
-#include <cc/meta/yason>
 
 namespace cc {
-namespace meta {
-namespace yason {
 
-Variant parse(const CharArray *text, const MetaProtocol *protocol)
+Variant yasonParse(const String &message, const MetaProtocol &protocol)
 {
-    return YasonSyntax::instance()->parse(text, protocol);
+    return YasonSyntax{}.parse(message, protocol);
 }
 
-String stringify(Variant value)
+String yasonStringify(const Variant &value)
 {
     CaptureSink sink;
-    YasonWriter::create(sink)->write(value);
-    return sink->collect();
+    YasonWriter{sink}.write(value);
+    return sink.collect();
 }
 
-}}} // namespace cc::meta::yason
+} // namespace cc

@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SocketAddress>
+#include <cc/IoStream>
+#include <cc/SystemError>
+
+namespace cc {
+
+/** \class SocketError cc/Socket
+  * \brief Networking related system error
+  */
+class SocketError: public SystemError
+{
+public:
+    explicit SocketError(int errorCode):
+        SystemError{errorCode}
+    {}
+};
+
+/** \class Socket cc/Socket
+  * \ingroup net
+  * \brief Abstract base class for all networking sockets
+  */
+class Socket: public IoStream
+{
+public:
+    /** Create an invalid networking socket
+      */
+    Socket() = default;
+
+    /** %Set the timeout of accumulating incoming data
+      * \param interval %Timeout in seconds
+      */
+    void setIncomingTimeout(double interval);
+
+    /** %Set the timeout of accumulating outgoing data
+      * \param interval %Timeout in seconds
+      */
+    void setOutgoingTimeout(double interval);
+
+    /** Retrieve the address which is locally bound to this socket
+      */
+    SocketAddress getLocalAddress() const;
+
+protected:
+    struct State: public IoStream::State
+    {
+        State(ProtocolFamily family, int type);
+
+        State(int fd): IoStream::State{fd} {}
+    };
+
+    explicit Socket(ProtocolFamily family, int type);
+
+    explicit Socket(int fd):
+        IoStream{new State{fd}}
+    {}
+
+    explicit Socket(State *newState):
+        IoStream{newState}
+    {}
+};
+
+} // namespace cc

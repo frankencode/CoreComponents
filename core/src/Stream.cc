@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,108 +7,113 @@
  */
 
 #include <cc/Stream>
-#include <cc/types>
-#include <cc/Format>
+#include <cc/NullStream>
+#include <sys/uio.h> // iovec
+#include <cassert>
 
 namespace cc {
 
-int Stream::Instance::read(CharArray *)
+void Stream::State::write(const List<Bytes> &buffers)
 {
-    return 0;
+    for (const auto &b: buffers)
+        write(b, b.count());
 }
 
-void Stream::Instance::write(const CharArray *)
-{}
-
-void Stream::Instance::write(const StringList &parts)
+void Stream::State::write(const struct iovec *iov, int iovcnt)
 {
-    for (const String &part: parts)
-        write(part);
-}
-
-// \todo this helper method shouldn't be needed
-void Stream::Instance::write(const Format &data)
-{
-    write(static_cast<const StringList &>(data));
-}
-
-class WrappedChunk: public CharArray {
-public:
-    WrappedChunk(const void *data, int size):
-        CharArray{(const char *)data, size, CharArray::doNothing}
-    {}
-
-    ~WrappedChunk()
-    {}
-
-    static void operator delete(void*, std::size_t)
-    {}
-};
-
-void Stream::Instance::write(const void *data, int size)
-{
-    WrappedChunk chunk(data, size);
-    write(&chunk);
-}
-
-off_t Stream::Instance::transferSpanTo(off_t count, const Stream &sink, CharArray *buffer)
-{
-    if (count == 0) return 0;
-
-    off_t total = 0;
-    String h;
-    if (!buffer) {
-        h = String::allocate((0 < count && count < 0x4000) ? count : 0x4000);
-        buffer = mutate(h);
+    long total = 0;
+    for (int i = 0; i < iovcnt; ++i) {
+        total += iov[i].iov_len;
     }
 
-    while (true) {
-        int n = read(buffer);
+    Bytes buffer = Bytes::allocate(total);
+    long offset = 0;
+    for (int i = 0; i < iovcnt; ++i) {
+        std::memcpy(buffer.items() + offset, iov[i].iov_base, iov[i].iov_len);
+        offset += iov[i].iov_len;
+    }
+
+    write(buffer, total);
+}
+
+long long Stream::State::transferTo(const Stream &sink, long long count, const Bytes &buffer)
+{
+    Bytes buffer_{buffer};
+    Stream sink_{sink};
+    long long total = 0;
+
+    while (count != 0) {
+        long m = (count < 0 || buffer_.count() < count) ? buffer_.count() : count;
+        long n = read(&buffer_, m);
         if (n == 0) break;
-        if (sink) sink->write(buffer->select(0, n));
+        sink_.write(buffer_, n);
         total += n;
-        if (count > 0) {
-            count -= n;
-            if (count == 0) break;
-            if (count < buffer->count()) buffer->truncate(count);
-        }
+        count -= n;
     }
 
     return total;
 }
 
-int Stream::Instance::readSpan(CharArray *data)
+long long Stream::State::transferTo(const Stream &sink, long long count)
 {
-    const int w = data->count();
-    int m = 0;
+    const long n = defaultTransferUnit();
+    Bytes buffer = Bytes::allocate((0 < count && count < n) ? count : n);
+    return transferTo(sink, count, buffer);
+}
+
+long long Stream::State::skip(long long count)
+{
+    NullStream sink;
+    return transferTo(sink, count);
+}
+
+void Stream::State::drain(const Bytes &auxBuffer)
+{
+    Bytes buffer = auxBuffer;
+    if (!buffer) buffer = Bytes::allocate(defaultTransferUnit());
+    NullStream sink;
+    transferTo(sink, -1, buffer);
+}
+
+long Stream::State::readSpan(Out<Bytes> buffer)
+{
+    const long w = buffer().count();
+    long m = 0;
     while (m < w) {
-        int n = read(mutate(data->select(m, w)));
+        auto s = buffer().select(m, w);
+        long n = read(&s);
         if (n == 0) break;
         m += n;
     }
     return m;
 }
 
-String Stream::Instance::readSpan(int count)
+String Stream::State::readSpan(long count)
 {
     if (count == 0) return String{};
     if (count < 0) return readAll();
-    String s{count};
-    readSpan(mutate(s));
+    String s = String::allocate(count, '\0');
+    readSpan(&s);
     return s;
 }
 
-String Stream::Instance::readAll(CharArray *buffer)
+String Stream::State::readAll(const Bytes &auxBuffer)
 {
-    String data = buffer;
-    if (!data) data = String::allocate(0x4000);
-    StringList parts;
+    Bytes buffer = auxBuffer;
+    if (!buffer) buffer = Bytes::allocate(defaultTransferUnit());
+    List<Bytes> parts;
     while (true) {
-        int n = read(mutate(data));
+        long n = read(&buffer);
         if (n == 0) break;
-        parts->append(data->copy(0, n));
+        if (n < buffer.count()) {
+            parts.append(buffer.copy(0, n));
+        }
+        else {
+            parts.append(buffer);
+            buffer = Bytes::allocate(buffer.count());
+        }
     }
-    return parts->join();
+    return parts;
 }
 
 } // namespace cc

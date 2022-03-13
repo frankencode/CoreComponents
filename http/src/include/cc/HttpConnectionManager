@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpServerConfig>
+#include <cc/HttpClientConnection>
+#include <cc/Channel>
+
+namespace cc {
+
+/** \internal
+  * \class HttpConnectionManager cc/HttpConnectionManager
+  * \ingroup http_server
+  * \brief Keep track and prioritize client connections
+  */
+class HttpConnectionManager: public Object
+{
+public:
+    explicit HttpConnectionManager(const HttpServerConfig &config);
+
+    Channel<HttpClientConnection> &closedConnections();
+
+    void cycle();
+    bool accept(InOut<HttpClientConnection> client);
+
+private:
+    struct State;
+
+    State &me();
+};
+
+} // namespace cc

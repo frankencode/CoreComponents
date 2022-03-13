@@ -1,21 +1,27 @@
-/*
- * Copyright (C) 2020 Frank Mertens.
- *
- * Distribution and use is allowed under the terms of the zlib license
- * (see cc/LICENSE-zlib).
- *
- */
+#include <cc/Set>
+#include <cc/testing>
 
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
-#include <cc/SetInstance>
+namespace cc { template class Set<int>; }
 
-using namespace cc;
-using namespace cc::testing;
-
-namespace cc { template class SetInstance<String>; }
-
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
-    return 0;
+    using namespace cc;
+
+    TestCase {
+        "InsertionSimple",
+        []{
+            Set<int> a;
+            a.insert(1);
+            a.insert(2);
+            a.insert(2);
+            a.insert(3);
+
+            CC_CHECK(a.count() == 3);
+            CC_CHECK(a.at(0) == 1);
+            CC_CHECK(a.at(1) == 2);
+            CC_CHECK(a.at(2) == 3);
+        }
+    };
+
+    return TestSuite{argc, argv}.run();
 }

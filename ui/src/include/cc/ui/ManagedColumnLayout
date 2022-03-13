@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2020-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/View>
+
+namespace cc::ui {
+
+/** \class ManagedColumnLayout cc/ui/ManagedColumnLayout
+  * \ingroup ui_layout
+  * \brief Layout children views in a column and smartly adjust sizes as needed
+  * \see ColumnLayout
+  * \note Do not use a ManagedColumnLayout when a ColumnLayout suffices!
+  */
+class ManagedColumnLayout final: public View::Layout
+{
+public:
+    /** Create new column layout
+      */
+    ManagedColumnLayout();
+
+    ColumnAlign align() const; ///< Get column alignment
+    ManagedColumnLayout &align(ColumnAlign newValue); ///< %Set column alignment
+
+    double indent() const; ///< Get horizontal indentation
+    ManagedColumnLayout &indent(double newValue); ///< %Set horizontal indentation
+
+private:
+    class State;
+
+    State& me();
+    const State& me() const;
+};
+
+} // namespace cc::ui

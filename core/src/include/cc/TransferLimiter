@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,73 +9,54 @@
 #pragma once
 
 #include <cc/Stream>
-#include <cc/Exception>
+#include <cc/exceptions>
 
 namespace cc {
 
-/** \brief Traffic limiting stream
+/** \class TransferLimiter cc/TransferLimiter
+  * \ingroup streams
+  * \brief Limit the maximum number of bytes transferred
+  * \exception InputExhaustion Read limit exceeded
+  * \exception OutputExhaustion Write limit exceeded
   */
-class TransferLimiter: public Stream
+class TransferLimiter final: public Stream
 {
 public:
-    class Instance: public Stream::Instance
-    {
-    public:
-        Stream stream() const { return stream_; }
-        size_t readLimit() const { return readLimit_; }
-        size_t writeLimit() const { return writeLimit_; }
-        size_t totalRead() const { return totalRead_; }
-        size_t totalWritten() const { return totalWritten_; }
-
-        void reset() {
-            totalRead_ = 0;
-            totalWritten_ = 0;
-        }
-
-        int read(CharArray *data) override;
-        void write(const CharArray *data) override;
-        void write(const StringList &parts) override;
-
-    private:
-        friend class TransferLimiter;
-
-        Instance(const Stream &stream, size_t readLimit, size_t writeLimit);
-
-        Stream stream_;
-        size_t readLimit_;
-        size_t writeLimit_;
-        size_t totalRead_;
-        size_t totalWritten_;
-    };
-
+    /** Create an undefined transfer limiter
+      */
     TransferLimiter() = default;
 
-    TransferLimiter(const Stream &stream, size_t readLimit, size_t writeLimit = 0):
-        Stream{new Instance{stream, readLimit, writeLimit}}
-    {}
+    /** Create a new transfer limiter
+      */
+    explicit TransferLimiter(const Stream &stream, long long readLimit, long long writeLimit = -1);
 
-    Instance *operator->() const { return my<Instance>(); }
-};
+    /** Get the read transfer limit
+      */
+    long long readLimit() const;
 
-/** \brief General transfer limit exceeded exception
-  */
-class TransferLimitExceeded: public Exception
-{};
+    /** Get the write transfer limit
+      */
+    long long writeLimit() const;
 
-/** \brief %Exception thrown when a read limit is exceeded
-  */
-class ReadLimitExceeded: public TransferLimitExceeded
-{
-public:
-    String message() const override { return "Read transfer limit exceeded"; }
-};
+    /** Get the total number of bytes read
+      */
+    long long totalRead() const;
 
-/** \brief %Exception thrown when a write limit is exceeded
-  */
-class WriteLimitExceeded: public TransferLimitExceeded
-{
-public:
-    String message() const override { return "Write transfer limit exceeded"; }
+    /** Get the total number of bytes written
+      */
+    long long totalWritten() const;
+
+    /** Reset the transfer counter to zero
+      */
+    void reset();
+
+private:
+    struct State;
+
+    explicit TransferLimiter(State *state);
+
+    const State &me() const;
+    State &me();
 };
 
 } // namespace cc

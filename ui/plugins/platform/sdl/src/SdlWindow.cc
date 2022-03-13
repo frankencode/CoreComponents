@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,155 +7,215 @@
  */
 
 #include <cc/ui/SdlWindow>
-#include <cc/ui/SdlContext>
-#include <cc/ui/Image>
-#include <cc/ui/View>
-#include <cc/QueueInstance>
-#include <cc/exceptions>
+#include <cc/ui/SdlApplication>
+#include <cc/ui/SdlPlatformError>
+#ifndef NDEBUG
 #include <cc/stdio>
+#endif
+#include <cassert>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-Ref<SdlWindow> SdlWindow::open(const View &view, const String &title, WindowMode mode)
+class SdlContext: public Object
 {
-    return (new SdlWindow{view, title})->open(mode);
-}
-
-SdlWindow::SdlWindow(const View &view, const String &title):
-    Window{view, title}
-{}
-
-SdlWindow::~SdlWindow()
-{
-    SDL_DestroyRenderer(sdlRenderer_);
-    SDL_DestroyWindow(sdlWindow_);
-}
-
-SdlWindow *SdlWindow::open(WindowMode mode)
-{
-    auto sdlWindowFlags = [](WindowMode mode) -> Uint32 {
-        Uint32 flags = 0;
-        if (+(mode & WindowMode::Fullscreen))        flags |= SDL_WINDOW_FULLSCREEN;
-        if (+(mode & WindowMode::FullscreenDesktop)) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-        if (+(mode & WindowMode::OpenGl))            flags |= SDL_WINDOW_OPENGL;
-        if (+(mode & WindowMode::Hidden))            flags |= SDL_WINDOW_HIDDEN;
-        if (+(mode & WindowMode::Borderless))        flags |= SDL_WINDOW_BORDERLESS;
-        if (!+(mode & WindowMode::FixedSize))        flags |= SDL_WINDOW_RESIZABLE;
-        if (+(mode & WindowMode::Minimized))         flags |= SDL_WINDOW_MINIMIZED;
-        if (+(mode & WindowMode::Maximized))         flags |= SDL_WINDOW_MAXIMIZED;
-        if (+(mode & WindowMode::InputGrabbed))      flags |= SDL_WINDOW_INPUT_GRABBED;
-        if (+(mode & WindowMode::InputFocus))        flags |= SDL_WINDOW_INPUT_FOCUS;
-        if (+(mode & WindowMode::MouseFocus))        flags |= SDL_WINDOW_MOUSE_FOCUS;
-        if (+(mode & WindowMode::Foreign))           flags |= SDL_WINDOW_FOREIGN;
-        #ifdef SDL_WINDOW_ALLOW_HIGHDPI
-        if (+(mode & WindowMode::AllowHighDpi))      flags |= SDL_WINDOW_ALLOW_HIGHDPI;
-        #endif
-        #ifdef SDL_WINDOW_MOUSE_CAPTURE
-        if (+(mode & WindowMode::MouseCapture))      flags |= SDL_WINDOW_MOUSE_CAPTURE;
-        #endif
-        #ifdef SDL_WINDOW_ALWAYS_ON_TOP
-        if (+(mode & WindowMode::AlwaysOnTop))       flags |= SDL_WINDOW_ALWAYS_ON_TOP;
-        #endif
-        #ifdef SDL_WINDOW_SKIP_TASKBAR
-        if (+(mode & WindowMode::SkipTaskBar))       flags |= SDL_WINDOW_SKIP_TASKBAR;
-        #endif
-        #ifdef SDL_WINDOW_UTILITY
-        if (+(mode & WindowMode::Utility))           flags |= SDL_WINDOW_UTILITY;
-        #endif
-        #ifdef SDL_WINDOW_TOOLTIP
-        if (+(mode & WindowMode::Tooltip))           flags |= SDL_WINDOW_TOOLTIP;
-        #endif
-        #ifdef SDL_WINDOW_POPUP_MENU
-        if (+(mode & WindowMode::PopupMenu))         flags |= SDL_WINDOW_POPUP_MENU;
-        #endif
-        return flags;
-    };
-
-    const int screen = 0; // FIXME
-    sdlWindow_ = SDL_CreateWindow(title(), SDL_WINDOWPOS_UNDEFINED_DISPLAY(screen), SDL_WINDOWPOS_UNDEFINED_DISPLAY(screen), size()[0], size()[1], sdlWindowFlags(mode));
-    if (!sdlWindow_) CC_DEBUG_ERROR(SDL_GetError());
-    id_ = SDL_GetWindowID(sdlWindow_);
-
-    currentSize_ = size();
+public:
+    struct State: public Object::State
     {
-        int x = 0, y = 0;
-        SDL_GetWindowPosition(sdlWindow_, &x, &y);
-        pos = Point{double(x), double(y)};
-    }
+        ~State() {
+            if (sdlTexture_) SDL_DestroyTexture(sdlTexture_);
+        }
 
-    if (
-        +(mode & WindowMode::Accelerated) ||
-        +(mode & WindowMode::Fullscreen) ||
-        +(mode & WindowMode::FullscreenDesktop)
-    )
-        sdlRenderer_ = SDL_CreateRenderer(
-            sdlWindow_,
-            -1,
-            ((+(mode & WindowMode::Accelerated)) ? SDL_RENDERER_ACCELERATED : 0) |
-            ((+(mode & WindowMode::VSync)) ? SDL_RENDERER_PRESENTVSYNC : 0)
-        );
-    else
-        sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_SOFTWARE);
-
-    if (!sdlRenderer_) CC_DEBUG_ERROR(SDL_GetError());
-
-    #ifndef NDEBUG
-    {
-        SDL_RendererInfo info_, *info = &info_;
-        if (SDL_GetRendererInfo(sdlRenderer_, info) != 0) CC_DEBUG_ERROR(SDL_GetError());
-        fout() << "SDL renderer: " << info->name << " (" << ((info->flags & SDL_RENDERER_ACCELERATED) ? "ACCELERATED" : "SOFTWARE") << ")" << nl;
-    }
-    #endif
-
-    title >>[=]{
-        SDL_SetWindowTitle(sdlWindow_, title());
+        SDL_Texture *sdlTexture_ { nullptr };
+        int sdlTextureWidth_ { 0 };
+        int sdlTextureHeight_ { 0 };
     };
 
-    size >>[=]{
-        if (size() != currentSize_)
-            SDL_SetWindowSize(sdlWindow_, size()[0], size()[1]);
-    };
+    SdlContext():
+        Object{new State}
+    {}
 
-    pos >>[=]{
-        if (pos() != currentPos_)
-            SDL_SetWindowPosition(sdlWindow_, pos()[0], pos()[1]);
-    };
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
 
-    return this;
+SdlWindow::State::State(const View &view):
+    Window::State{view}
+{
+    minSizeMonitor([this]{
+        if (visible()) setMinSize(view_.minSize());
+    });
+
+    maxSizeMonitor([this]{
+        if (visible()) setMaxSize(view_.maxSize());
+    });
 }
 
-void SdlWindow::onWindowResized(Size newSize)
+void SdlWindow::State::onWindowResized(Size newSize)
 {
     currentSize_ = newSize;
     size = newSize;
 }
 
-void SdlWindow::onWindowMoved(Point newPos)
+void SdlWindow::State::onWindowMoved(Point newPos)
 {
     currentPos_ = newPos;
     pos = newPos;
 }
 
-void SdlWindow::onWindowShown()
+void SdlWindow::State::onWindowShown()
 {
     visible = true;
 }
 
-void SdlWindow::onWindowHidden()
+void SdlWindow::State::onWindowHidden()
 {
     visible = false;
 }
 
-void SdlWindow::renderFrame(Frame *frame)
+void SdlWindow::State::show(int display)
 {
-    while (frame->count() > 0) {
-        Ref<const UpdateRequest> request = frame->popFront();
+    if (primordial_) {
+        Uint32 flags = 0;
+        if (mode_ & WindowMode::Fullscreen)        flags |= SDL_WINDOW_FULLSCREEN;
+        if (mode_ & WindowMode::FullscreenDesktop) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+        if (mode_ & WindowMode::OpenGl)            flags |= SDL_WINDOW_OPENGL;
+        if (mode_ & WindowMode::Vulkan)            flags |= SDL_WINDOW_VULKAN;
+        if (mode_ & WindowMode::Borderless)        flags |= SDL_WINDOW_BORDERLESS;
+        if (!(mode_ & WindowMode::FixedSize))      flags |= SDL_WINDOW_RESIZABLE;
+        if (mode_ & WindowMode::Minimized)         flags |= SDL_WINDOW_MINIMIZED;
+        if (mode_ & WindowMode::Maximized)         flags |= SDL_WINDOW_MAXIMIZED;
+        if (mode_ & WindowMode::InputGrabbed)      flags |= SDL_WINDOW_INPUT_GRABBED;
+        if (mode_ & WindowMode::InputFocus)        flags |= SDL_WINDOW_INPUT_FOCUS;
+        if (mode_ & WindowMode::MouseFocus)        flags |= SDL_WINDOW_MOUSE_FOCUS;
+        #ifdef SDL_WINDOW_ALLOW_HIGHDPI
+        if (mode_ & WindowMode::AllowHighDpi)      flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+        #endif
+        #ifdef SDL_WINDOW_MOUSE_CAPTURE
+        if (mode_ & WindowMode::MouseCapture)      flags |= SDL_WINDOW_MOUSE_CAPTURE;
+        #endif
+        #ifdef SDL_WINDOW_ALWAYS_ON_TOP
+        if (mode_ & WindowMode::AlwaysOnTop)       flags |= SDL_WINDOW_ALWAYS_ON_TOP;
+        #endif
+        #ifdef SDL_WINDOW_SKIP_TASKBAR
+        if (mode_ & WindowMode::SkipTaskBar)       flags |= SDL_WINDOW_SKIP_TASKBAR;
+        #endif
+        #ifdef SDL_WINDOW_UTILITY
+        if (mode_ & WindowMode::Utility)           flags |= SDL_WINDOW_UTILITY;
+        #endif
+        #ifdef SDL_WINDOW_TOOLTIP
+        if (mode_ & WindowMode::Tooltip)           flags |= SDL_WINDOW_TOOLTIP;
+        #endif
+        #ifdef SDL_WINDOW_POPUP_MENU
+        if (mode_ & WindowMode::PopupMenu)         flags |= SDL_WINDOW_POPUP_MENU;
+        #endif
+
+        {
+            int x = pos()[0], y = pos()[1], w = size()[0], h = size()[1];
+            if (pos() == Point{}) {
+                x = SDL_WINDOWPOS_UNDEFINED_DISPLAY(display);
+                y = SDL_WINDOWPOS_UNDEFINED_DISPLAY(display);
+            }
+            sdlWindow_ = SDL_CreateWindow(title(), x, y, w, h, flags);
+            if (!sdlWindow_) throw SdlPlatformError{};
+        }
+
+        id_ = SDL_GetWindowID(sdlWindow_);
+
+        currentSize_ = size();
+        {
+            int x = 0, y = 0;
+            SDL_GetWindowPosition(sdlWindow_, &x, &y);
+            pos = Point{double(x), double(y)};
+        }
+
         if (
-            request->reason() == UpdateReason::Changed ||
-            request->reason() == UpdateReason::Resized
+            (mode_ & WindowMode::Accelerated) ||
+            (mode_ & WindowMode::Fullscreen)  ||
+            (mode_ & WindowMode::FullscreenDesktop)
         )
-            updateTexture(sdlRenderer_, request->view());
+            sdlRenderer_ = SDL_CreateRenderer(
+                sdlWindow_,
+                -1,
+                ((mode_ & WindowMode::Accelerated) ? SDL_RENDERER_ACCELERATED  : 0) |
+                ((mode_ & WindowMode::VSync      ) ? SDL_RENDERER_PRESENTVSYNC : 0)
+            );
+        else
+            sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_SOFTWARE);
+
+        if (!sdlRenderer_) throw SdlPlatformError{};
+
+        #ifndef NDEBUG
+        {
+            SDL_RendererInfo info_, *info = &info_;
+            if (SDL_GetRendererInfo(sdlRenderer_, info) != 0) throw SdlPlatformError{};
+            fout() << "SDL renderer: " << info->name << " (" << ((info->flags & SDL_RENDERER_ACCELERATED) ? "ACCELERATED" : "SOFTWARE") << ")" << nl;
+        }
+        #endif
+
+        title.onChanged([this]{ SDL_SetWindowTitle(sdlWindow_, title()); });
+
+        size.onChanged([this]{
+            if (size() != currentSize_) {
+                SDL_SetWindowSize(sdlWindow_, size()[0], size()[1]);
+            }
+        });
+
+        pos.onChanged([this]{
+            if (pos() != currentPos_)
+                SDL_SetWindowPosition(sdlWindow_, pos()[0], pos()[1]);
+        });
+
+        primordial_ = false;
+        SdlApplication{}.registerWindow(alias<SdlWindow>(this));
+    }
+    else {
+        SDL_ShowWindow(sdlWindow_);
+    }
+}
+
+void SdlWindow::State::hide()
+{
+    if (!primordial_)
+        SDL_HideWindow(sdlWindow_);
+}
+
+void SdlWindow::State::raise()
+{
+    if (!primordial_ && visible())
+        SDL_RaiseWindow(sdlWindow_);
+}
+
+void SdlWindow::State::setOpacity(double opacity)
+{
+    SDL_SetWindowOpacity(sdlWindow_, opacity);
+}
+
+void SdlWindow::State::setMinSize(Size size)
+{
+    SDL_SetWindowMinimumSize(sdlWindow_, static_cast<int>(std::ceil(size[0])), static_cast<int>(std::ceil(size[1])));
+}
+
+void SdlWindow::State::setMaxSize(Size size)
+{
+    int maxWidth = size[0] < std::numeric_limits<double>::max() ? static_cast<int>(std::ceil(size[0])) : std::numeric_limits<int>::max();
+    int maxHeight = size[1] < std::numeric_limits<double>::max() ? static_cast<int>(std::ceil(size[1])) : std::numeric_limits<int>::max();
+    SDL_SetWindowMaximumSize(sdlWindow_, maxWidth, maxHeight);
+}
+
+void SdlWindow::State::renderFrame(const Frame &frame)
+{
+    for (const UpdateRequest &request: frame)
+    {
+        switch (request.reason()) {
+            case UpdateReason::Changed:
+            case UpdateReason::Resized:
+                updateTexture(sdlRenderer_, request.view());
+                break;
+            case UpdateReason::Faded:
+                updateOpacity(request.view());
+                break;
+            default:;
+        };
     }
 
     renderCascade(sdlRenderer_, view_);
@@ -163,99 +223,144 @@ void SdlWindow::renderFrame(Frame *frame)
     SDL_RenderPresent(sdlRenderer_);
 }
 
-void SdlWindow::updateTexture(SDL_Renderer *sdlRenderer, View::Instance *view)
+void SdlWindow::State::updateTexture(SDL_Renderer *sdlRenderer, View view)
 {
-    SdlContext *context = sdlContext(view);
-    Image::Instance *image = Window::image(view);
-    bool hasPixels = isPainted(view) && image->count() > 0;
+    if (!viewContext(view)) viewContext(view) = SdlContext{};
+    SdlContext::State &context = viewContext(view).as<SdlContext>().me();
+
+    Image image = viewState(view).image();
+    bool hasPixels = viewState(view).isPainted() && image.count() > 0;
 
     if (
         (
             !hasPixels || (
-                context->sdlTextureWidth_ != image->width() ||
-                context->sdlTextureHeight_ != image->height()
+                context.sdlTextureWidth_ != image.width() ||
+                context.sdlTextureHeight_ != image.height()
             )
-        ) && context->sdlTexture_
+        ) && context.sdlTexture_
     ) {
-        SDL_DestroyTexture(context->sdlTexture_);
-        context->sdlTexture_ = 0;
+        SDL_DestroyTexture(context.sdlTexture_);
+        context.sdlTexture_ = nullptr;
     }
 
     if (!hasPixels) return;
 
-    if (!context->sdlTexture_) {
-        context->sdlTexture_ = SDL_CreateTexture(
+    if (!context.sdlTexture_) {
+        context.sdlTexture_ = SDL_CreateTexture(
             sdlRenderer,
             #ifdef SDL_PIXELFORMAT_ARGB32
             SDL_PIXELFORMAT_ARGB32,
             #else
             SDL_PIXELFORMAT_ARGB8888,
             #endif
-            isStatic(view) ? SDL_TEXTUREACCESS_STATIC : SDL_TEXTUREACCESS_STREAMING,
-            image->width(),
-            image->height()
+            viewState(view).isStatic() ? SDL_TEXTUREACCESS_STATIC : SDL_TEXTUREACCESS_STREAMING,
+            image.width(),
+            image.height()
         );
-        if (!context->sdlTexture_) CC_DEBUG_ERROR(SDL_GetError());
-        context->sdlTextureWidth_ = image->width();
-        context->sdlTextureHeight_ = image->height();
-        SDL_SetTextureBlendMode(context->sdlTexture_, isOpaque(view) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND);
-        // SDL_SetTextureBlendMode(context->sdlTexture_, SDL_BLENDMODE_BLEND);
+        if (!context.sdlTexture_) throw SdlPlatformError{};
+        context.sdlTextureWidth_ = image.width();
+        context.sdlTextureHeight_ = image.height();
+        double opacity = viewState(view).opacity();
+        SDL_SetTextureBlendMode(
+            context.sdlTexture_,
+            (viewState(view).isOpaque() && opacity == 1.) ? SDL_BLENDMODE_NONE : SDL_BLENDMODE_BLEND
+        );
+
+        if (opacity != 1.) {
+            if (SDL_SetTextureAlphaMod(context.sdlTexture_, 0xFF * opacity))
+                throw SdlPlatformError{};
+        }
     }
 
-    if (!isOpaque(view)) image->normalize();
+    if (!viewState(view).isOpaque()) image.normalize();
 
-    if (isStatic(view)) {
-        if (SDL_UpdateTexture(context->sdlTexture_, 0, image->data()->bytes(), image->pitch()) != 0)
-            CC_DEBUG_ERROR(SDL_GetError());
+    if (viewState(view).isStatic()) {
+        if (SDL_UpdateTexture(context.sdlTexture_, 0, image.data(), image.pitch()) != 0)
+            throw SdlPlatformError{};
     }
     else {
         void *dstData = 0;
         int pitch = 0;
-        if (SDL_LockTexture(context->sdlTexture_, 0, &dstData, &pitch) != 0) CC_DEBUG_ERROR(SDL_GetError());
-        if (pitch != image->pitch()) CC_DEBUG_ERROR(Format{"Failed to upload texture: pitch mismatch (%% != %%)"} << image->pitch() << pitch);
-        ::memcpy(dstData, image->data()->bytes(), image->data()->count());
-        SDL_UnlockTexture(context->sdlTexture_);
+        if (SDL_LockTexture(context.sdlTexture_, 0, &dstData, &pitch) != 0) throw SdlPlatformError{};
+        assert(pitch == image.pitch());
+        ::memcpy(dstData, image.data(), image.data().count());
+        SDL_UnlockTexture(context.sdlTexture_);
     }
 }
 
-void SdlWindow::renderCascade(SDL_Renderer *sdlRenderer, View::Instance *view)
+void SdlWindow::State::updateOpacity(View view)
 {
-    if (!view->visible()) return;
+    if (!viewContext(view)) viewContext(view) = SdlContext{};
+    SdlContext::State &context = viewContext(view).as<SdlContext>().me();
+
+    if (context.sdlTexture_) {
+        if (SDL_SetTextureAlphaMod(context.sdlTexture_, 0xFF * view.opacity()) < 0)
+            throw SdlPlatformError{};
+    }
+}
+
+void SdlWindow::State::renderCascade(SDL_Renderer *sdlRenderer, View &view)
+{
+    if (!view.visible() || view.opacity() <= 0) return;
+
+    {
+        View decoration = viewState(view).decoration();
+        if (decoration) renderCascade(sdlRenderer, decoration);
+    }
 
     renderTexture(sdlRenderer, view);
 
-    for (int i = 0, n = view->visibleChildCount(); i < n; ++i)
-        renderCascade(sdlRenderer, view->visibleChildAt(i));
+    bool clip = view.clip() && view.childrenCount() > 0;
+    if (clip) {
+        SDL_Rect clipRect;
+        Point pos = view.mapToGlobal(Point{0, 0});
+        clipRect.x = std::floor(pos[0]);
+        clipRect.y = std::floor(pos[1]);
+        Size size = view.size();
+        size *= view.scale();
+        clipRect.w = std::ceil(size[0]);
+        clipRect.h = std::ceil(size[1]);
+        SDL_RenderSetClipRect(sdlRenderer_, &clipRect);
+    }
+
+    for (View child: view.visibleChildren())
+        renderCascade(sdlRenderer, child);
+
+    if (clip)
+        SDL_RenderSetClipRect(sdlRenderer_, nullptr);
 }
 
-void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View::Instance *view)
+void SdlWindow::State::renderTexture(SDL_Renderer *sdlRenderer, const View &view)
 {
-    SdlContext *context = sdlContext(view);
-    SDL_Texture *sdlTexture = context->sdlTexture_;
+    if (!viewContext(view)) return;
+
+    const SdlContext::State &context = viewContext(view).as<SdlContext>().me();
+    SDL_Texture *sdlTexture = context.sdlTexture_;
+
     if (!sdlTexture) return;
 
     SDL_FRect destRect;
-    destRect.w = context->sdlTextureWidth_;
-    destRect.h = context->sdlTextureHeight_;
-    if (view->scale() != 1) {
-        destRect.w *= view->scale();
-        destRect.h *= view->scale();
+    destRect.w = context.sdlTextureWidth_;
+    destRect.h = context.sdlTextureHeight_;
+    if (view.scale() != 1) {
+        destRect.w *= view.scale();
+        destRect.h *= view.scale();
     }
     destRect.w = std::ceil(destRect.w);
     destRect.h = std::ceil(destRect.h);
 
-    if (view->parent())
+    if (viewState(view).hasParent())
     {
-        if (view->moving()) {
-            destRect.x = view->pos()[0];
-            destRect.y = view->pos()[1];
+        if (view.moving()) {
+            destRect.x = view.pos()[0];
+            destRect.y = view.pos()[1];
         }
         else {
-            destRect.x = std::round(view->pos()[0]);
-            destRect.y = std::round(view->pos()[1]);
+            destRect.x = std::round(view.pos()[0]);
+            destRect.y = std::round(view.pos()[1]);
         }
 
-        for (View::Instance *ancestor = view->parent(); ancestor; ancestor = ancestor->parent())
+        for (auto ancestor = parent(view); ancestor; ancestor = parent(ancestor))
         {
             if (ancestor->moving()) {
                 destRect.x += ancestor->pos()[0];
@@ -272,38 +377,16 @@ void SdlWindow::renderTexture(SDL_Renderer *sdlRenderer, View::Instance *view)
         destRect.y = 0;
     }
 
-    double angle = view->angle();
+    double angle = view.angle();
     if (angle != 0) angle = std::fmod(angle, 360);
     if (angle == 0) {
         SDL_RenderCopyF(sdlRenderer, sdlTexture, nullptr, &destRect);
     }
     else {
-        Point center = view->center();
-        SDL_FPoint sdlCenter{ float(center[0]), float(center[1]) };
-        #if 0
-        SDL_BlendMode blendModeSaved;
-        SDL_GetTextureBlendMode(sdlTexture, &blendModeSaved);
-        if (blendModeSaved != SDL_BLENDMODE_BLEND)
-            SDL_SetTextureBlendMode(sdlTexture, SDL_BLENDMODE_BLEND);
-                // FIXME: SDL_BLENDMODE_NONE cannot work with SDL_RenderCopyExF(), e.g. because of edge AA
-        #endif
-        SDL_RenderCopyExF(sdlRenderer, sdlTexture, nullptr, &destRect, view->angle(), &sdlCenter, SDL_FLIP_NONE);
-        #if 0
-        if (blendModeSaved != SDL_BLENDMODE_BLEND)
-            SDL_SetTextureBlendMode(sdlTexture, blendModeSaved);
-        #endif
+        Point pivot = view.pivot();
+        SDL_FPoint sdlPivot{ float(pivot[0]), float(pivot[1]) };
+        SDL_RenderCopyExF(sdlRenderer, sdlTexture, nullptr, &destRect, view.angle(), &sdlPivot, SDL_FLIP_NONE);
     }
 }
 
-SdlContext *SdlWindow::sdlContext(View::Instance *view)
-{
-    SdlContext *context = Object::cast<SdlContext *>(getContext(view));
-    if (!context) {
-        Ref<SdlContext> newContext = SdlContext::create();
-        setContext(view, newContext);
-        context = newContext;
-    }
-    return context;
-}
-
-}} // namespace
+} // namespace cc::ui

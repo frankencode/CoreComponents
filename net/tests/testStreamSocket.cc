@@ -1,73 +1,61 @@
 /*
- * Copyright (C) 2019 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
-#include <cc/debug>
+#include <cc/ServerSocket>
+#include <cc/ClientSocket>
+#include <cc/ScopeGuard>
+#include <cc/File>
 #include <cc/Dir>
-#include <cc/CleanupGuard>
-#include <cc/Worker>
+#include <cc/Thread>
 #include <cc/Semaphore>
-#include <cc/net/StreamSocket>
+#include <cc/testing>
 
-using namespace cc;
-using namespace cc::testing;
-using namespace cc::net;
-
-class LocalEchoTest: public TestCase
+int main(int argc, char *argv[])
 {
-public:
-    void run()
-    {
-        String dirPath = Dir::createTemp();
-        CC_INSPECT(dirPath);
-        CC_VERIFY(Dir::exists(dirPath));
+    using namespace cc;
 
-        CleanupGuard cleanup{dirPath};
+    TestCase {
+        "LocalEchoTest",
+        []{
+            String dirPath = Dir::createTemp();
+            CC_VERIFY(Dir::exists(dirPath));
 
-        String path = dirPath->extendPath("echo");
-        SocketAddress address{ProtocolFamily::Local, path};
-        CC_INSPECT(address);
-
-        {
-            Semaphore upAndRunning;
-            auto echoServer = Worker{[=]{
-                try {
-                    StreamSocket listeningSocket;
-                    listeningSocket->listen(address);
-                    upAndRunning->release();
-                    StreamSocket connectedSocket = listeningSocket->accept();
-                    connectedSocket->transferTo(connectedSocket);
-                }
-                catch (Exception &ex) {
-                    CC_INSPECT(ex);
-                }
+            ScopeGuard cleanup {[=]{
+                File::clean(dirPath);
             }};
 
-            upAndRunning->acquire();
+            SocketAddress address{dirPath / "echo"};
+            CC_INSPECT(address);
 
-            auto echoClient = Worker{[=]{
-                StreamSocket connectedSocket;
-                connectedSocket->connect(address);
+            Semaphore<int> go;
+
+            Thread server{[&]{
+                ServerSocket socket{address};
+                go.release();
+                StreamSocket client = socket.accept();
+                client.transferTo(client);
+            }};
+
+            Thread client{[&]{
+                ClientSocket socket{address};
                 String message = "Hello, echo!";
-                connectedSocket->write(message);
-                String echo = connectedSocket->readSpan(message->count());
-                CC_INSPECT(message);
-                CC_INSPECT(echo);
-                CC_VERIFY(message == echo);
+                socket.write(message);
+                String echo = socket.readSpan(message.count());
+                CC_CHECK_EQUALS(message, echo);
             }};
+
+            server.start();
+            go.acquire();
+            client.start();
+            server.wait();
+            client.wait();
         }
-    }
-};
+    };
 
-int main(int argc, char **argv)
-{
-    CC_TESTSUITE_ADD(LocalEchoTest);
-
-    return TestSuite::instance()->run(argc, argv);
+    return TestSuite{argc, argv}.run();
 }

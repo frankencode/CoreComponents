@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,20 +8,20 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <cc/bitmask>
 #include <cc/String>
+#include <cc/bitmask>
+#include <cstdint>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-/** \brief Keyboard scan codes
+/** \brief Keyboard scan code
+  *
   * Keyboard scan codes reflect the physical location of individual keys on a keyboard.
   * The keys may be labelled differently depending on the currently active keyboard layout.
   * These keyboard scan codes are based on the <a href="http://www.usb.org/developers/docs/">USB specification</a>.
   * \see KeyCode
-  * \intern
-  * The list of scan codes is based on SDL_scancode.h (SDL v2.0.8).
+  * \internal
+  * The list of scan codes is based on SDL2/SDL_scancode.h.
   */
 enum class ScanCode: int32_t {
     Unknown                  = 0,
@@ -278,6 +278,8 @@ String str(ScanCode scanCode);
 
 #define CCUI_SCANCODE_TO_KEYCODE(scanCode) static_cast<int32_t>(scanCode) | (1 << 30)
 
+/** Hardware independent key code
+  */
 enum class KeyCode: int32_t {
     Unknown                  = 0,
     Key_Return               = '\r',
@@ -527,6 +529,8 @@ inline bool operator!=(KeyCode keyCode, char ch) { return +keyCode != ch; }
 
 String str(KeyCode keyCode);
 
+/** Shortcut keys
+  */
 enum class KeyModifier: int32_t
 {
     None         = 0x0000,
@@ -547,8 +551,8 @@ enum class KeyModifier: int32_t
     Meta         = LeftMeta | RightMeta
 };
 
-CC_BITMASK(KeyModifier, int32_t);
+CC_BITMASK(KeyModifier)
 
 String str(KeyModifier modifiers);
 
-}} // namespace cc::ui
+} // namespace cc::ui

@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaObject>
+#include <cc/TextError>
+
+namespace cc {
+
+/** Convenience function to parse a JSON message
+  * \ingroup meta
+  * \param message JSON message
+  * \return parsed value
+  * \exception TextError
+  */
+Variant jsonParse(const String &message);
+
+/** Convenience function to stringify a variant value
+  * \ingroup meta
+  * \param value %Variant value
+  * \return JSON message
+  */
+String jsonStringify(const Variant &value);
+
+} // namespace cc

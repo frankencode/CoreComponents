@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/SyntaxNode>
+
+namespace cc::syntax {
+
+/** \class CaptureNode cc/syntax/CaptureNode
+  * \brief %Match a sub-expression and copy the matching sequence
+  * \see cc::Token::capturedValue()
+  */
+class CaptureNode final: public SyntaxNode
+{
+public:
+    /** \param entry Sub-expression used for matching
+      * \param name Name to store the captured value under
+      */
+    explicit CaptureNode(const SyntaxNode &entry, const String &name = String{});
+
+private:
+    struct State;
+};
+
+} // namespace cc::syntax

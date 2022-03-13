@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,17 +8,43 @@
 
 #pragma once
 
-#include <cc/Property>
 #include <cc/ui/Painter>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \class Visual cc/ui/Visual
+  * \ingroup ui
+  * \brief %Visual representation of something
+  */
 class Visual: public Object
 {
 public:
-    Property<Size> size;
-    virtual void paint(Painter &p) = 0;
+    /** Create a null visual
+      */
+    Visual() = default;
+
+    /** Paint this visual to painter \a p
+      */
+    void paint(Painter &p) const { me().paint(p); }
+
+    Size size() const { return me().size();  } ///< Get the size
+    Visual &size(Size newValue) { me().size(newValue); return *this; } ///< %Set the size
+    Visual &size(Definition<Size> &&f) { me().size(std::move(f)); return *this; } ///< %Define the size
+
+protected:
+    struct State: public Object::State
+    {
+        virtual void paint(Painter &p) const = 0;
+
+        Property<Size> size;
+    };
+
+    explicit Visual(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

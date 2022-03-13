@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/PseudoPad>
+
+namespace cc {
+
+/** \class AesEntropySource cc/AesEntropySource
+  * \ingroup crypto
+  * \brief An AES based entropy source
+  */
+class AesEntropySource final: public PseudoPad
+{
+public:
+    /** Create a new AES entropy source
+      * \param salt %Difficult to predict bytes (ideally 16, 24 or 32 bytes)
+      */
+    explicit AesEntropySource(const Bytes &salt = Bytes{});
+};
+
+} // namespace cc

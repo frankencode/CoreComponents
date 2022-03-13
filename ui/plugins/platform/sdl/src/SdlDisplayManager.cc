@@ -1,119 +1,90 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <SDL2/SDL.h>
-#include <cc/Singleton>
 #include <cc/ui/SdlDisplayManager>
+#include <cc/ui/SdlPlatformError>
+#include <SDL2/SDL.h>
+#include <cc/DEBUG>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-SdlDisplayManager *SdlDisplayManager::instance()
+struct SdlDisplayManager::State final: public DisplayManager::State
 {
-    return Singleton<SdlDisplayManager>::instance();
-}
-
-SdlDisplayManager::SdlDisplayManager()
-{
-    const int n = getDisplayCount_();
-    Ref<const Display> largestDisplay;
-    #if 0
-    bool allDesktop = true;
-    bool allLandscape = true;
-    bool allPortrait = true;
-    bool allHighResolution = true;
-    #endif
-    for (int i = 0; i < n; ++i) {
-        Ref<const Display> display = getDisplay_(i);
-        if (!largestDisplay || display->diagonal() > largestDisplay->diagonal())
-            largestDisplay = display;
-        #if 0
-        if (display->size()[1] < display->size()[0])
-            allPortrait = false;
-        if (display->size()[0] < display->size()[1])
-            allLandscape = false;
-        if (display->isHandheld())
-            allDesktop = false;
-        if (largestDisplay->dpi()[0] < 150)
-            allHighResolution = false;
-        #endif
-    }
-
-    if (largestDisplay) {
-        double dpi = avg(largestDisplay->dpi());
-        displayDensityRatio_ = dpi / 160;
-
-        // limit the minimal text size to a minimum of recognizable pixels
-        if (displayDensityRatio_ < 0.9) displayDensityRatio_ = 0.9;
-
-        if (dpi < 200) {
-            if (largestDisplay->size()[1] < largestDisplay->size()[0]) defaultFontSmoothing_ = FontSmoothing::RgbSubpixel;
-            else defaultFontSmoothing_ = FontSmoothing::VrgbSubpixel;
-        }
-        else
-            defaultFontSmoothing_ = FontSmoothing::Grayscale;
-
-        #if 0
-        if (allDesktop && !allHighResolution) {
-            if (allLandscape) defaultFontSmoothing_ = FontSmoothing::RgbSubpixel;
-            else if (allPortrait) defaultFontSmoothing_ = FontSmoothing::VrgbSubpixel;
-            else defaultFontSmoothing_ = FontSmoothing::Grayscale;
-        }
-        else
-            defaultFontSmoothing_ = FontSmoothing::Grayscale;
-        #endif
-    }
-    else
-        defaultFontSmoothing_ = FontSmoothing::Grayscale;
-}
-
-Ref<Display> SdlDisplayManager::getDisplay(int index) const
-{
-    return getDisplay_(index);
-}
-
-int SdlDisplayManager::getDisplayCount() const
-{
-    return getDisplayCount_();
-}
-
-Ref<Display> SdlDisplayManager::getDisplay_(int index)
-{
-    Ref<Display> display = Object::create<Display>();
+    State()
     {
+        const int n = SDL_GetNumVideoDisplays();
+        Display largestDisplay;
+        for (int i = 0; i < n; ++i) {
+            Display display = getDisplay(i);
+            displays_.append(display);
+            if (largestDisplay && display.diagonal() > largestDisplay.diagonal())
+                largestDisplay = display;
+        }
+
+        if (largestDisplay) {
+            double dpi = largestDisplay.dpi().avg();
+            displayDensityRatio_ = dpi / 160;
+
+            // limit the minimal text size to a minimum of recognizable pixels
+            if (displayDensityRatio_ < 0.9) displayDensityRatio_ = 0.9;
+
+            if (dpi < 200) {
+                if (largestDisplay.size()[1] < largestDisplay.size()[0]) defaultFontSmoothing_ = FontSmoothing::RgbSubpixel;
+                else defaultFontSmoothing_ = FontSmoothing::VrgbSubpixel;
+            }
+            else
+                defaultFontSmoothing_ = FontSmoothing::Grayscale;
+
+            refreshRate_ = largestDisplay.nativeMode().refreshRate();
+        }
+        else
+            defaultFontSmoothing_ = FontSmoothing::Grayscale;
+    }
+};
+
+SdlDisplayManager::SdlDisplayManager():
+    DisplayManager{instance<State>()}
+{}
+
+Display SdlDisplayManager::getDisplay(int index)
+{
+    Point pos;
+    Size size;
+    Size dpi;
+    DisplayMode nativeMode;
+
+    try {
         float hdpi = 0;
         float vdpi = 0;
-        if (SDL_GetDisplayDPI(index, NULL, &hdpi, &vdpi) != 0) {
-            // TODO...
-        }
-        display->dpi = Size{ double(hdpi), double(vdpi) };
+        if (SDL_GetDisplayDPI(index, NULL, &hdpi, &vdpi) != 0) throw SdlPlatformError{};
+        dpi = Size{ double(hdpi), double(vdpi) };
     }
+    catch (Exception &error)
+    {
+        CC_INSPECT(error);
+        CC_INSPECT(index);
+        dpi = Size{150, 150};
+    }
+
     {
         SDL_Rect rect;
-        if (SDL_GetDisplayBounds(index, &rect) != 0) {
-            // TODO...
-        }
-        display->pos = Point{ double(rect.x), double(rect.y) };
-        display->size = Size{ double(rect.w), double(rect.h) };
+        if (SDL_GetDisplayBounds(index, &rect) != 0) throw SdlPlatformError{};
+        pos = Point{ double(rect.x), double(rect.y) };
+        size = Size{ double(rect.w), double(rect.h) };
     }
 
-    display->nativeMode->bind([=]{
+    {
         SDL_DisplayMode mode;
         SDL_GetDesktopDisplayMode(index, &mode);
-        return DisplayMode( Size{ double(mode.w), double(mode.h) }, mode.refresh_rate );
-    });
+        nativeMode = DisplayMode{ Size{ double(mode.w), double(mode.h) }, double(mode.refresh_rate) };
+    }
 
-    return display;
+    return Display{pos, size, dpi, nativeMode};
 }
 
-int SdlDisplayManager::getDisplayCount_()
-{
-    return SDL_GetNumVideoDisplays();
-}
-
-}} // namespace cc::ui
+} // namespace cc::ui

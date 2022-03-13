@@ -1,0 +1,298 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Color>
+
+namespace cc::color {
+
+/** \class Material cc/color/Material
+  * \ingroup color
+  * \brief The %Material %Design color palette
+  */
+class Material {
+public:
+    static constexpr uint32_t Red50          = 0xFFEBEE; ///< <span style="float: left; width: 200px; background-color: #FFEBEE">&nbsp;</span>
+    static constexpr uint32_t Red100         = 0xFFCDD2; ///< <span style="float: left; width: 200px; background-color: #FFCDD2">&nbsp;</span>
+    static constexpr uint32_t Red200         = 0xEF9A9A; ///< <span style="float: left; width: 200px; background-color: #EF9A9A">&nbsp;</span>
+    static constexpr uint32_t Red300         = 0xE57373; ///< <span style="float: left; width: 200px; background-color: #E57373">&nbsp;</span>
+    static constexpr uint32_t Red400         = 0xEF5350; ///< <span style="float: left; width: 200px; background-color: #EF5350">&nbsp;</span>
+    static constexpr uint32_t Red500         = 0xF44336; ///< <span style="float: left; width: 200px; background-color: #F44336">&nbsp;</span>
+    static constexpr uint32_t Red600         = 0xE53935; ///< <span style="float: left; width: 200px; background-color: #E53935">&nbsp;</span>
+    static constexpr uint32_t Red700         = 0xD32F2F; ///< <span style="float: left; width: 200px; background-color: #D32F2F">&nbsp;</span>
+    static constexpr uint32_t Red800         = 0xC62828; ///< <span style="float: left; width: 200px; background-color: #C62828">&nbsp;</span>
+    static constexpr uint32_t Red900         = 0xB71C1C; ///< <span style="float: left; width: 200px; background-color: #B71C1C">&nbsp;</span>
+    static constexpr uint32_t RedA100        = 0xFF8A80; ///< <span style="float: left; width: 200px; background-color: #FF8A80">&nbsp;</span>
+    static constexpr uint32_t RedA200        = 0xFF5252; ///< <span style="float: left; width: 200px; background-color: #FF5252">&nbsp;</span>
+    static constexpr uint32_t RedA400        = 0xFF1744; ///< <span style="float: left; width: 200px; background-color: #FF1744">&nbsp;</span>
+    static constexpr uint32_t RedA700        = 0xD50000; ///< <span style="float: left; width: 200px; background-color: #D50000">&nbsp;</span>
+
+    static constexpr uint32_t Pink50         = 0xFCE4EC; ///< <span style="float: left; width: 200px; background-color: #FCE4EC">&nbsp;</span>
+    static constexpr uint32_t Pink100        = 0xF8BBD0; ///< <span style="float: left; width: 200px; background-color: #F8BBD0">&nbsp;</span>
+    static constexpr uint32_t Pink200        = 0xF48FB1; ///< <span style="float: left; width: 200px; background-color: #F48FB1">&nbsp;</span>
+    static constexpr uint32_t Pink300        = 0xF06292; ///< <span style="float: left; width: 200px; background-color: #F06292">&nbsp;</span>
+    static constexpr uint32_t Pink400        = 0xEC407A; ///< <span style="float: left; width: 200px; background-color: #EC407A">&nbsp;</span>
+    static constexpr uint32_t Pink500        = 0xE91E63; ///< <span style="float: left; width: 200px; background-color: #E91E63">&nbsp;</span>
+    static constexpr uint32_t Pink600        = 0xD81B60; ///< <span style="float: left; width: 200px; background-color: #D81B60">&nbsp;</span>
+    static constexpr uint32_t Pink700        = 0xC2185B; ///< <span style="float: left; width: 200px; background-color: #C2185B">&nbsp;</span>
+    static constexpr uint32_t Pink800        = 0xAD1457; ///< <span style="float: left; width: 200px; background-color: #AD1457">&nbsp;</span>
+    static constexpr uint32_t Pink900        = 0x880E4F; ///< <span style="float: left; width: 200px; background-color: #880E4F">&nbsp;</span>
+    static constexpr uint32_t PinkA100       = 0xFF80AB; ///< <span style="float: left; width: 200px; background-color: #FF80AB">&nbsp;</span>
+    static constexpr uint32_t PinkA200       = 0xFF4081; ///< <span style="float: left; width: 200px; background-color: #FF4081">&nbsp;</span>
+    static constexpr uint32_t PinkA400       = 0xF50057; ///< <span style="float: left; width: 200px; background-color: #F50057">&nbsp;</span>
+    static constexpr uint32_t PinkA700       = 0xC51162; ///< <span style="float: left; width: 200px; background-color: #C51162">&nbsp;</span>
+
+    static constexpr uint32_t Purple50       = 0xF3E5F5; ///< <span style="float: left; width: 200px; background-color: #F3E5F5">&nbsp;</span>
+    static constexpr uint32_t Purple100      = 0xE1BEE7; ///< <span style="float: left; width: 200px; background-color: #E1BEE7">&nbsp;</span>
+    static constexpr uint32_t Purple200      = 0xCE93D8; ///< <span style="float: left; width: 200px; background-color: #CE93D8">&nbsp;</span>
+    static constexpr uint32_t Purple300      = 0xBA68C8; ///< <span style="float: left; width: 200px; background-color: #BA68C8">&nbsp;</span>
+    static constexpr uint32_t Purple400      = 0xAB47BC; ///< <span style="float: left; width: 200px; background-color: #AB47BC">&nbsp;</span>
+    static constexpr uint32_t Purple500      = 0x9C27B0; ///< <span style="float: left; width: 200px; background-color: #9C27B0">&nbsp;</span>
+    static constexpr uint32_t Purple600      = 0x8E24AA; ///< <span style="float: left; width: 200px; background-color: #8E24AA">&nbsp;</span>
+    static constexpr uint32_t Purple700      = 0x7B1FA2; ///< <span style="float: left; width: 200px; background-color: #7B1FA2">&nbsp;</span>
+    static constexpr uint32_t Purple800      = 0x6A1B9A; ///< <span style="float: left; width: 200px; background-color: #6A1B9A">&nbsp;</span>
+    static constexpr uint32_t Purple900      = 0x4A148C; ///< <span style="float: left; width: 200px; background-color: #4A148C">&nbsp;</span>
+    static constexpr uint32_t PurpleA100     = 0xEA80FC; ///< <span style="float: left; width: 200px; background-color: #EA80FC">&nbsp;</span>
+    static constexpr uint32_t PurpleA200     = 0xE040FB; ///< <span style="float: left; width: 200px; background-color: #E040FB">&nbsp;</span>
+    static constexpr uint32_t PurpleA400     = 0xD500F9; ///< <span style="float: left; width: 200px; background-color: #D500F9">&nbsp;</span>
+    static constexpr uint32_t PurpleA700     = 0xAA00FF; ///< <span style="float: left; width: 200px; background-color: #AA00FF">&nbsp;</span>
+
+    static constexpr uint32_t DeepPurple50   = 0xEDE7F6; ///< <span style="float: left; width: 200px; background-color: #EDE7F6">&nbsp;</span>
+    static constexpr uint32_t DeepPurple100  = 0xD1C4E9; ///< <span style="float: left; width: 200px; background-color: #D1C4E9">&nbsp;</span>
+    static constexpr uint32_t DeepPurple200  = 0xB39DDB; ///< <span style="float: left; width: 200px; background-color: #B39DDB">&nbsp;</span>
+    static constexpr uint32_t DeepPurple300  = 0x9575CD; ///< <span style="float: left; width: 200px; background-color: #9575CD">&nbsp;</span>
+    static constexpr uint32_t DeepPurple400  = 0x7E57C2; ///< <span style="float: left; width: 200px; background-color: #7E57C2">&nbsp;</span>
+    static constexpr uint32_t DeepPurple500  = 0x673AB7; ///< <span style="float: left; width: 200px; background-color: #673AB7">&nbsp;</span>
+    static constexpr uint32_t DeepPurple600  = 0x5E35B1; ///< <span style="float: left; width: 200px; background-color: #5E35B1">&nbsp;</span>
+    static constexpr uint32_t DeepPurple700  = 0x512DA8; ///< <span style="float: left; width: 200px; background-color: #512DA8">&nbsp;</span>
+    static constexpr uint32_t DeepPurple800  = 0x4527A0; ///< <span style="float: left; width: 200px; background-color: #4527A0">&nbsp;</span>
+    static constexpr uint32_t DeepPurple900  = 0x311B92; ///< <span style="float: left; width: 200px; background-color: #311B92">&nbsp;</span>
+    static constexpr uint32_t DeepPurpleA100 = 0xB388FF; ///< <span style="float: left; width: 200px; background-color: #B388FF">&nbsp;</span>
+    static constexpr uint32_t DeepPurpleA200 = 0x7C4DFF; ///< <span style="float: left; width: 200px; background-color: #7C4DFF">&nbsp;</span>
+    static constexpr uint32_t DeepPurpleA400 = 0x651FFF; ///< <span style="float: left; width: 200px; background-color: #651FFF">&nbsp;</span>
+    static constexpr uint32_t DeepPurpleA700 = 0x6200EA; ///< <span style="float: left; width: 200px; background-color: #6200EA">&nbsp;</span>
+
+    static constexpr uint32_t Indigo50       = 0xE8EAF6; ///< <span style="float: left; width: 200px; background-color: #E8EAF6">&nbsp;</span>
+    static constexpr uint32_t Indigo100      = 0xC5CAE9; ///< <span style="float: left; width: 200px; background-color: #C5CAE9">&nbsp;</span>
+    static constexpr uint32_t Indigo200      = 0x9FA8DA; ///< <span style="float: left; width: 200px; background-color: #9FA8DA">&nbsp;</span>
+    static constexpr uint32_t Indigo300      = 0x7986CB; ///< <span style="float: left; width: 200px; background-color: #7986CB">&nbsp;</span>
+    static constexpr uint32_t Indigo400      = 0x5C6BC0; ///< <span style="float: left; width: 200px; background-color: #5C6BC0">&nbsp;</span>
+    static constexpr uint32_t Indigo500      = 0x3F51B5; ///< <span style="float: left; width: 200px; background-color: #3F51B5">&nbsp;</span>
+    static constexpr uint32_t Indigo600      = 0x3949AB; ///< <span style="float: left; width: 200px; background-color: #3949AB">&nbsp;</span>
+    static constexpr uint32_t Indigo700      = 0x303F9F; ///< <span style="float: left; width: 200px; background-color: #303F9F">&nbsp;</span>
+    static constexpr uint32_t Indigo800      = 0x283593; ///< <span style="float: left; width: 200px; background-color: #283593">&nbsp;</span>
+    static constexpr uint32_t Indigo900      = 0x1A237E; ///< <span style="float: left; width: 200px; background-color: #1A237E">&nbsp;</span>
+    static constexpr uint32_t IndigoA100     = 0x8C9EFF; ///< <span style="float: left; width: 200px; background-color: #8C9EFF">&nbsp;</span>
+    static constexpr uint32_t IndigoA200     = 0x536DFE; ///< <span style="float: left; width: 200px; background-color: #536DFE">&nbsp;</span>
+    static constexpr uint32_t IndigoA400     = 0x3D5AFE; ///< <span style="float: left; width: 200px; background-color: #3D5AFE">&nbsp;</span>
+    static constexpr uint32_t IndigoA700     = 0x304FFE; ///< <span style="float: left; width: 200px; background-color: #304FFE">&nbsp;</span>
+
+    static constexpr uint32_t Blue50         = 0xE3F2FD; ///< <span style="float: left; width: 200px; background-color: #E3F2FD">&nbsp;</span>
+    static constexpr uint32_t Blue100        = 0xBBDEFB; ///< <span style="float: left; width: 200px; background-color: #BBDEFB">&nbsp;</span>
+    static constexpr uint32_t Blue200        = 0x90CAF9; ///< <span style="float: left; width: 200px; background-color: #90CAF9">&nbsp;</span>
+    static constexpr uint32_t Blue300        = 0x64B5F6; ///< <span style="float: left; width: 200px; background-color: #64B5F6">&nbsp;</span>
+    static constexpr uint32_t Blue400        = 0x42A5F5; ///< <span style="float: left; width: 200px; background-color: #42A5F5">&nbsp;</span>
+    static constexpr uint32_t Blue500        = 0x2196F3; ///< <span style="float: left; width: 200px; background-color: #2196F3">&nbsp;</span>
+    static constexpr uint32_t Blue600        = 0x1E88E5; ///< <span style="float: left; width: 200px; background-color: #1E88E5">&nbsp;</span>
+    static constexpr uint32_t Blue700        = 0x1976D2; ///< <span style="float: left; width: 200px; background-color: #1976D2">&nbsp;</span>
+    static constexpr uint32_t Blue800        = 0x1565C0; ///< <span style="float: left; width: 200px; background-color: #1565C0">&nbsp;</span>
+    static constexpr uint32_t Blue900        = 0x0D47A1; ///< <span style="float: left; width: 200px; background-color: #0D47A1">&nbsp;</span>
+    static constexpr uint32_t BlueA100       = 0x82B1FF; ///< <span style="float: left; width: 200px; background-color: #82B1FF">&nbsp;</span>
+    static constexpr uint32_t BlueA200       = 0x448AFF; ///< <span style="float: left; width: 200px; background-color: #448AFF">&nbsp;</span>
+    static constexpr uint32_t BlueA400       = 0x2979FF; ///< <span style="float: left; width: 200px; background-color: #2979FF">&nbsp;</span>
+    static constexpr uint32_t BlueA700       = 0x2962FF; ///< <span style="float: left; width: 200px; background-color: #2962FF">&nbsp;</span>
+
+    static constexpr uint32_t LightBlue50    = 0xE1F5FE; ///< <span style="float: left; width: 200px; background-color: #E1F5FE">&nbsp;</span>
+    static constexpr uint32_t LightBlue100   = 0xB3E5FC; ///< <span style="float: left; width: 200px; background-color: #B3E5FC">&nbsp;</span>
+    static constexpr uint32_t LightBlue200   = 0x81D4FA; ///< <span style="float: left; width: 200px; background-color: #81D4FA">&nbsp;</span>
+    static constexpr uint32_t LightBlue300   = 0x4FC3F7; ///< <span style="float: left; width: 200px; background-color: #4FC3F7">&nbsp;</span>
+    static constexpr uint32_t LightBlue400   = 0x29B6F6; ///< <span style="float: left; width: 200px; background-color: #29B6F6">&nbsp;</span>
+    static constexpr uint32_t LightBlue500   = 0x03A9F4; ///< <span style="float: left; width: 200px; background-color: #03A9F4">&nbsp;</span>
+    static constexpr uint32_t LightBlue600   = 0x039BE5; ///< <span style="float: left; width: 200px; background-color: #039BE5">&nbsp;</span>
+    static constexpr uint32_t LightBlue700   = 0x0288D1; ///< <span style="float: left; width: 200px; background-color: #0288D1">&nbsp;</span>
+    static constexpr uint32_t LightBlue800   = 0x0277BD; ///< <span style="float: left; width: 200px; background-color: #0277BD">&nbsp;</span>
+    static constexpr uint32_t LightBlue900   = 0x01579B; ///< <span style="float: left; width: 200px; background-color: #01579B">&nbsp;</span>
+    static constexpr uint32_t LightBlueA100  = 0x80D8FF; ///< <span style="float: left; width: 200px; background-color: #80D8FF">&nbsp;</span>
+    static constexpr uint32_t LightBlueA200  = 0x40C4FF; ///< <span style="float: left; width: 200px; background-color: #40C4FF">&nbsp;</span>
+    static constexpr uint32_t LightBlueA400  = 0x00B0FF; ///< <span style="float: left; width: 200px; background-color: #00B0FF">&nbsp;</span>
+    static constexpr uint32_t LightBlueA700  = 0x0091EA; ///< <span style="float: left; width: 200px; background-color: #0091EA">&nbsp;</span>
+
+    static constexpr uint32_t Cyan50         = 0xE0F7FA; ///< <span style="float: left; width: 200px; background-color: #E0F7FA">&nbsp;</span>
+    static constexpr uint32_t Cyan100        = 0xB2EBF2; ///< <span style="float: left; width: 200px; background-color: #B2EBF2">&nbsp;</span>
+    static constexpr uint32_t Cyan200        = 0x80DEEA; ///< <span style="float: left; width: 200px; background-color: #80DEEA">&nbsp;</span>
+    static constexpr uint32_t Cyan300        = 0x4DD0E1; ///< <span style="float: left; width: 200px; background-color: #4DD0E1">&nbsp;</span>
+    static constexpr uint32_t Cyan400        = 0x26C6DA; ///< <span style="float: left; width: 200px; background-color: #26C6DA">&nbsp;</span>
+    static constexpr uint32_t Cyan500        = 0x00BCD4; ///< <span style="float: left; width: 200px; background-color: #00BCD4">&nbsp;</span>
+    static constexpr uint32_t Cyan600        = 0x00ACC1; ///< <span style="float: left; width: 200px; background-color: #00ACC1">&nbsp;</span>
+    static constexpr uint32_t Cyan700        = 0x0097A7; ///< <span style="float: left; width: 200px; background-color: #0097A7">&nbsp;</span>
+    static constexpr uint32_t Cyan800        = 0x00838F; ///< <span style="float: left; width: 200px; background-color: #00838F">&nbsp;</span>
+    static constexpr uint32_t Cyan900        = 0x006064; ///< <span style="float: left; width: 200px; background-color: #006064">&nbsp;</span>
+    static constexpr uint32_t CyanA100       = 0x84FFFF; ///< <span style="float: left; width: 200px; background-color: #84FFFF">&nbsp;</span>
+    static constexpr uint32_t CyanA200       = 0x18FFFF; ///< <span style="float: left; width: 200px; background-color: #18FFFF">&nbsp;</span>
+    static constexpr uint32_t CyanA400       = 0x00E5FF; ///< <span style="float: left; width: 200px; background-color: #00E5FF">&nbsp;</span>
+    static constexpr uint32_t CyanA700       = 0x00B8D4; ///< <span style="float: left; width: 200px; background-color: #00B8D4">&nbsp;</span>
+
+    static constexpr uint32_t Teal50         = 0xE0F2F1; ///< <span style="float: left; width: 200px; background-color: #E0F2F1">&nbsp;</span>
+    static constexpr uint32_t Teal100        = 0xB2DFDB; ///< <span style="float: left; width: 200px; background-color: #B2DFDB">&nbsp;</span>
+    static constexpr uint32_t Teal200        = 0x80CBC4; ///< <span style="float: left; width: 200px; background-color: #80CBC4">&nbsp;</span>
+    static constexpr uint32_t Teal300        = 0x4DB6AC; ///< <span style="float: left; width: 200px; background-color: #4DB6AC">&nbsp;</span>
+    static constexpr uint32_t Teal400        = 0x26A69A; ///< <span style="float: left; width: 200px; background-color: #26A69A">&nbsp;</span>
+    static constexpr uint32_t Teal500        = 0x009688; ///< <span style="float: left; width: 200px; background-color: #009688">&nbsp;</span>
+    static constexpr uint32_t Teal600        = 0x00897B; ///< <span style="float: left; width: 200px; background-color: #00897B">&nbsp;</span>
+    static constexpr uint32_t Teal700        = 0x00796B; ///< <span style="float: left; width: 200px; background-color: #00796B">&nbsp;</span>
+    static constexpr uint32_t Teal800        = 0x00695C; ///< <span style="float: left; width: 200px; background-color: #00695C">&nbsp;</span>
+    static constexpr uint32_t Teal900        = 0x004D40; ///< <span style="float: left; width: 200px; background-color: #004D40">&nbsp;</span>
+    static constexpr uint32_t TealA100       = 0xA7FFEB; ///< <span style="float: left; width: 200px; background-color: #A7FFEB">&nbsp;</span>
+    static constexpr uint32_t TealA200       = 0x64FFDA; ///< <span style="float: left; width: 200px; background-color: #64FFDA">&nbsp;</span>
+    static constexpr uint32_t TealA400       = 0x1DE9B6; ///< <span style="float: left; width: 200px; background-color: #1DE9B6">&nbsp;</span>
+    static constexpr uint32_t TealA700       = 0x00BFA5; ///< <span style="float: left; width: 200px; background-color: #00BFA5">&nbsp;</span>
+
+    static constexpr uint32_t Green50        = 0xE8F5E9; ///< <span style="float: left; width: 200px; background-color: #E8F5E9">&nbsp;</span>
+    static constexpr uint32_t Green100       = 0xC8E6C9; ///< <span style="float: left; width: 200px; background-color: #C8E6C9">&nbsp;</span>
+    static constexpr uint32_t Green200       = 0xA5D6A7; ///< <span style="float: left; width: 200px; background-color: #A5D6A7">&nbsp;</span>
+    static constexpr uint32_t Green300       = 0x81C784; ///< <span style="float: left; width: 200px; background-color: #81C784">&nbsp;</span>
+    static constexpr uint32_t Green400       = 0x66BB6A; ///< <span style="float: left; width: 200px; background-color: #66BB6A">&nbsp;</span>
+    static constexpr uint32_t Green500       = 0x4CAF50; ///< <span style="float: left; width: 200px; background-color: #4CAF50">&nbsp;</span>
+    static constexpr uint32_t Green600       = 0x43A047; ///< <span style="float: left; width: 200px; background-color: #43A047">&nbsp;</span>
+    static constexpr uint32_t Green700       = 0x388E3C; ///< <span style="float: left; width: 200px; background-color: #388E3C">&nbsp;</span>
+    static constexpr uint32_t Green800       = 0x2E7D32; ///< <span style="float: left; width: 200px; background-color: #2E7D32">&nbsp;</span>
+    static constexpr uint32_t Green900       = 0x1B5E20; ///< <span style="float: left; width: 200px; background-color: #1B5E20">&nbsp;</span>
+    static constexpr uint32_t GreenA100      = 0xB9F6CA; ///< <span style="float: left; width: 200px; background-color: #B9F6CA">&nbsp;</span>
+    static constexpr uint32_t GreenA200      = 0x69F0AE; ///< <span style="float: left; width: 200px; background-color: #69F0AE">&nbsp;</span>
+    static constexpr uint32_t GreenA400      = 0x00E676; ///< <span style="float: left; width: 200px; background-color: #00E676">&nbsp;</span>
+    static constexpr uint32_t GreenA700      = 0x00C853; ///< <span style="float: left; width: 200px; background-color: #00C853">&nbsp;</span>
+
+    static constexpr uint32_t LightGreen50   = 0xF1F8E9; ///< <span style="float: left; width: 200px; background-color: #F1F8E9">&nbsp;</span>
+    static constexpr uint32_t LightGreen100  = 0xDCEDC8; ///< <span style="float: left; width: 200px; background-color: #DCEDC8">&nbsp;</span>
+    static constexpr uint32_t LightGreen200  = 0xC5E1A5; ///< <span style="float: left; width: 200px; background-color: #C5E1A5">&nbsp;</span>
+    static constexpr uint32_t LightGreen300  = 0xAED581; ///< <span style="float: left; width: 200px; background-color: #AED581">&nbsp;</span>
+    static constexpr uint32_t LightGreen400  = 0x9CCC65; ///< <span style="float: left; width: 200px; background-color: #9CCC65">&nbsp;</span>
+    static constexpr uint32_t LightGreen500  = 0x8BC34A; ///< <span style="float: left; width: 200px; background-color: #8BC34A">&nbsp;</span>
+    static constexpr uint32_t LightGreen600  = 0x7CB342; ///< <span style="float: left; width: 200px; background-color: #7CB342">&nbsp;</span>
+    static constexpr uint32_t LightGreen700  = 0x689F38; ///< <span style="float: left; width: 200px; background-color: #689F38">&nbsp;</span>
+    static constexpr uint32_t LightGreen800  = 0x558B2F; ///< <span style="float: left; width: 200px; background-color: #558B2F">&nbsp;</span>
+    static constexpr uint32_t LightGreen900  = 0x33691E; ///< <span style="float: left; width: 200px; background-color: #33691E">&nbsp;</span>
+    static constexpr uint32_t LightGreenA100 = 0xCCFF90; ///< <span style="float: left; width: 200px; background-color: #CCFF90">&nbsp;</span>
+    static constexpr uint32_t LightGreenA200 = 0xB2FF59; ///< <span style="float: left; width: 200px; background-color: #B2FF59">&nbsp;</span>
+    static constexpr uint32_t LightGreenA400 = 0x76FF03; ///< <span style="float: left; width: 200px; background-color: #76FF03">&nbsp;</span>
+    static constexpr uint32_t LightGreenA700 = 0x64DD17; ///< <span style="float: left; width: 200px; background-color: #64DD17">&nbsp;</span>
+
+    static constexpr uint32_t Lime50         = 0xF9FBE7; ///< <span style="float: left; width: 200px; background-color: #F9FBE7">&nbsp;</span>
+    static constexpr uint32_t Lime100        = 0xF0F4C3; ///< <span style="float: left; width: 200px; background-color: #F0F4C3">&nbsp;</span>
+    static constexpr uint32_t Lime200        = 0xE6EE9C; ///< <span style="float: left; width: 200px; background-color: #E6EE9C">&nbsp;</span>
+    static constexpr uint32_t Lime300        = 0xDCE775; ///< <span style="float: left; width: 200px; background-color: #DCE775">&nbsp;</span>
+    static constexpr uint32_t Lime400        = 0xD4E157; ///< <span style="float: left; width: 200px; background-color: #D4E157">&nbsp;</span>
+    static constexpr uint32_t Lime500        = 0xCDDC39; ///< <span style="float: left; width: 200px; background-color: #CDDC39">&nbsp;</span>
+    static constexpr uint32_t Lime600        = 0xC0CA33; ///< <span style="float: left; width: 200px; background-color: #C0CA33">&nbsp;</span>
+    static constexpr uint32_t Lime700        = 0xAFB42B; ///< <span style="float: left; width: 200px; background-color: #AFB42B">&nbsp;</span>
+    static constexpr uint32_t Lime800        = 0x9E9D24; ///< <span style="float: left; width: 200px; background-color: #9E9D24">&nbsp;</span>
+    static constexpr uint32_t Lime900        = 0x827717; ///< <span style="float: left; width: 200px; background-color: #827717">&nbsp;</span>
+    static constexpr uint32_t LimeA100       = 0xF4FF81; ///< <span style="float: left; width: 200px; background-color: #F4FF81">&nbsp;</span>
+    static constexpr uint32_t LimeA200       = 0xEEFF41; ///< <span style="float: left; width: 200px; background-color: #EEFF41">&nbsp;</span>
+    static constexpr uint32_t LimeA400       = 0xC6FF00; ///< <span style="float: left; width: 200px; background-color: #C6FF00">&nbsp;</span>
+    static constexpr uint32_t LimeA700       = 0xAEEA00; ///< <span style="float: left; width: 200px; background-color: #AEEA00">&nbsp;</span>
+
+    static constexpr uint32_t Yellow50       = 0xFFFDE7; ///< <span style="float: left; width: 200px; background-color: #FFFDE7">&nbsp;</span>
+    static constexpr uint32_t Yellow100      = 0xFFF9C4; ///< <span style="float: left; width: 200px; background-color: #FFF9C4">&nbsp;</span>
+    static constexpr uint32_t Yellow200      = 0xFFF59D; ///< <span style="float: left; width: 200px; background-color: #FFF59D">&nbsp;</span>
+    static constexpr uint32_t Yellow300      = 0xFFF176; ///< <span style="float: left; width: 200px; background-color: #FFF176">&nbsp;</span>
+    static constexpr uint32_t Yellow400      = 0xFFEE58; ///< <span style="float: left; width: 200px; background-color: #FFEE58">&nbsp;</span>
+    static constexpr uint32_t Yellow500      = 0xFFEB3B; ///< <span style="float: left; width: 200px; background-color: #FFEB3B">&nbsp;</span>
+    static constexpr uint32_t Yellow600      = 0xFDD835; ///< <span style="float: left; width: 200px; background-color: #FDD835">&nbsp;</span>
+    static constexpr uint32_t Yellow700      = 0xFBC02D; ///< <span style="float: left; width: 200px; background-color: #FBC02D">&nbsp;</span>
+    static constexpr uint32_t Yellow800      = 0xF9A825; ///< <span style="float: left; width: 200px; background-color: #F9A825">&nbsp;</span>
+    static constexpr uint32_t Yellow900      = 0xF57F17; ///< <span style="float: left; width: 200px; background-color: #F57F17">&nbsp;</span>
+    static constexpr uint32_t YellowA100     = 0xFFFF8D; ///< <span style="float: left; width: 200px; background-color: #FFFF8D">&nbsp;</span>
+    static constexpr uint32_t YellowA200     = 0xFFFF00; ///< <span style="float: left; width: 200px; background-color: #FFFF00">&nbsp;</span>
+    static constexpr uint32_t YellowA400     = 0xFFEA00; ///< <span style="float: left; width: 200px; background-color: #FFEA00">&nbsp;</span>
+    static constexpr uint32_t YellowA700     = 0xFFD600; ///< <span style="float: left; width: 200px; background-color: #FFD600">&nbsp;</span>
+
+    static constexpr uint32_t Amber50        = 0xFFF8E1; ///< <span style="float: left; width: 200px; background-color: #FFF8E1">&nbsp;</span>
+    static constexpr uint32_t Amber100       = 0xFFECB3; ///< <span style="float: left; width: 200px; background-color: #FFECB3">&nbsp;</span>
+    static constexpr uint32_t Amber200       = 0xFFE082; ///< <span style="float: left; width: 200px; background-color: #FFE082">&nbsp;</span>
+    static constexpr uint32_t Amber300       = 0xFFD54F; ///< <span style="float: left; width: 200px; background-color: #FFD54F">&nbsp;</span>
+    static constexpr uint32_t Amber400       = 0xFFCA28; ///< <span style="float: left; width: 200px; background-color: #FFCA28">&nbsp;</span>
+    static constexpr uint32_t Amber500       = 0xFFC107; ///< <span style="float: left; width: 200px; background-color: #FFC107">&nbsp;</span>
+    static constexpr uint32_t Amber600       = 0xFFB300; ///< <span style="float: left; width: 200px; background-color: #FFB300">&nbsp;</span>
+    static constexpr uint32_t Amber700       = 0xFFA000; ///< <span style="float: left; width: 200px; background-color: #FFA000">&nbsp;</span>
+    static constexpr uint32_t Amber800       = 0xFF8F00; ///< <span style="float: left; width: 200px; background-color: #FF8F00">&nbsp;</span>
+    static constexpr uint32_t Amber900       = 0xFF6F00; ///< <span style="float: left; width: 200px; background-color: #FF6F00">&nbsp;</span>
+    static constexpr uint32_t AmberA100      = 0xFFE57F; ///< <span style="float: left; width: 200px; background-color: #FFE57F">&nbsp;</span>
+    static constexpr uint32_t AmberA200      = 0xFFD740; ///< <span style="float: left; width: 200px; background-color: #FFD740">&nbsp;</span>
+    static constexpr uint32_t AmberA400      = 0xFFC400; ///< <span style="float: left; width: 200px; background-color: #FFC400">&nbsp;</span>
+    static constexpr uint32_t AmberA700      = 0xFFAB00; ///< <span style="float: left; width: 200px; background-color: #FFAB00">&nbsp;</span>
+
+    static constexpr uint32_t Orange50       = 0xFFF3E0; ///< <span style="float: left; width: 200px; background-color: #FFF3E0">&nbsp;</span>
+    static constexpr uint32_t Orange100      = 0xFFE0B2; ///< <span style="float: left; width: 200px; background-color: #FFE0B2">&nbsp;</span>
+    static constexpr uint32_t Orange200      = 0xFFCC80; ///< <span style="float: left; width: 200px; background-color: #FFCC80">&nbsp;</span>
+    static constexpr uint32_t Orange300      = 0xFFB74D; ///< <span style="float: left; width: 200px; background-color: #FFB74D">&nbsp;</span>
+    static constexpr uint32_t Orange400      = 0xFFA726; ///< <span style="float: left; width: 200px; background-color: #FFA726">&nbsp;</span>
+    static constexpr uint32_t Orange500      = 0xFF9800; ///< <span style="float: left; width: 200px; background-color: #FF9800">&nbsp;</span>
+    static constexpr uint32_t Orange600      = 0xFB8C00; ///< <span style="float: left; width: 200px; background-color: #FB8C00">&nbsp;</span>
+    static constexpr uint32_t Orange700      = 0xF57C00; ///< <span style="float: left; width: 200px; background-color: #F57C00">&nbsp;</span>
+    static constexpr uint32_t Orange800      = 0xEF6C00; ///< <span style="float: left; width: 200px; background-color: #EF6C00">&nbsp;</span>
+    static constexpr uint32_t Orange900      = 0xE65100; ///< <span style="float: left; width: 200px; background-color: #E65100">&nbsp;</span>
+    static constexpr uint32_t OrangeA100     = 0xFFD180; ///< <span style="float: left; width: 200px; background-color: #FFD180">&nbsp;</span>
+    static constexpr uint32_t OrangeA200     = 0xFFAB40; ///< <span style="float: left; width: 200px; background-color: #FFAB40">&nbsp;</span>
+    static constexpr uint32_t OrangeA400     = 0xFF9100; ///< <span style="float: left; width: 200px; background-color: #FF9100">&nbsp;</span>
+    static constexpr uint32_t OrangeA700     = 0xFF6D00; ///< <span style="float: left; width: 200px; background-color: #FF6D00">&nbsp;</span>
+
+    static constexpr uint32_t DeepOrange50   = 0xFBE9E7; ///< <span style="float: left; width: 200px; background-color: #FBE9E7">&nbsp;</span>
+    static constexpr uint32_t DeepOrange100  = 0xFFCCBC; ///< <span style="float: left; width: 200px; background-color: #FFCCBC">&nbsp;</span>
+    static constexpr uint32_t DeepOrange200  = 0xFFAB91; ///< <span style="float: left; width: 200px; background-color: #FFAB91">&nbsp;</span>
+    static constexpr uint32_t DeepOrange300  = 0xFF8A65; ///< <span style="float: left; width: 200px; background-color: #FF8A65">&nbsp;</span>
+    static constexpr uint32_t DeepOrange400  = 0xFF7043; ///< <span style="float: left; width: 200px; background-color: #FF7043">&nbsp;</span>
+    static constexpr uint32_t DeepOrange500  = 0xFF5722; ///< <span style="float: left; width: 200px; background-color: #FF5722">&nbsp;</span>
+    static constexpr uint32_t DeepOrange600  = 0xF4511E; ///< <span style="float: left; width: 200px; background-color: #F4511E">&nbsp;</span>
+    static constexpr uint32_t DeepOrange700  = 0xE64A19; ///< <span style="float: left; width: 200px; background-color: #E64A19">&nbsp;</span>
+    static constexpr uint32_t DeepOrange800  = 0xD84315; ///< <span style="float: left; width: 200px; background-color: #D84315">&nbsp;</span>
+    static constexpr uint32_t DeepOrange900  = 0xBF360C; ///< <span style="float: left; width: 200px; background-color: #BF360C">&nbsp;</span>
+    static constexpr uint32_t DeepOrangeA100 = 0xFF9E80; ///< <span style="float: left; width: 200px; background-color: #FF9E80">&nbsp;</span>
+    static constexpr uint32_t DeepOrangeA200 = 0xFF6E40; ///< <span style="float: left; width: 200px; background-color: #FF6E40">&nbsp;</span>
+    static constexpr uint32_t DeepOrangeA400 = 0xFF3D00; ///< <span style="float: left; width: 200px; background-color: #FF3D00">&nbsp;</span>
+    static constexpr uint32_t DeepOrangeA700 = 0xDD2C00; ///< <span style="float: left; width: 200px; background-color: #DD2C00">&nbsp;</span>
+
+    static constexpr uint32_t Brown50        = 0xEFEBE9; ///< <span style="float: left; width: 200px; background-color: #EFEBE9">&nbsp;</span>
+    static constexpr uint32_t Brown100       = 0xD7CCC8; ///< <span style="float: left; width: 200px; background-color: #D7CCC8">&nbsp;</span>
+    static constexpr uint32_t Brown200       = 0xBCAAA4; ///< <span style="float: left; width: 200px; background-color: #BCAAA4">&nbsp;</span>
+    static constexpr uint32_t Brown300       = 0xA1887F; ///< <span style="float: left; width: 200px; background-color: #A1887F">&nbsp;</span>
+    static constexpr uint32_t Brown400       = 0x8D6E63; ///< <span style="float: left; width: 200px; background-color: #8D6E63">&nbsp;</span>
+    static constexpr uint32_t Brown500       = 0x795548; ///< <span style="float: left; width: 200px; background-color: #795548">&nbsp;</span>
+    static constexpr uint32_t Brown600       = 0x6D4C41; ///< <span style="float: left; width: 200px; background-color: #6D4C41">&nbsp;</span>
+    static constexpr uint32_t Brown700       = 0x5D4037; ///< <span style="float: left; width: 200px; background-color: #5D4037">&nbsp;</span>
+    static constexpr uint32_t Brown800       = 0x4E342E; ///< <span style="float: left; width: 200px; background-color: #4E342E">&nbsp;</span>
+    static constexpr uint32_t Brown900       = 0x3E2723; ///< <span style="float: left; width: 200px; background-color: #3E2723">&nbsp;</span>
+
+    static constexpr uint32_t Grey50         = 0xFAFAFA; ///< <span style="float: left; width: 200px; background-color: #FAFAFA">&nbsp;</span>
+    static constexpr uint32_t Grey100        = 0xF5F5F5; ///< <span style="float: left; width: 200px; background-color: #F5F5F5">&nbsp;</span>
+    static constexpr uint32_t Grey200        = 0xEEEEEE; ///< <span style="float: left; width: 200px; background-color: #EEEEEE">&nbsp;</span>
+    static constexpr uint32_t Grey300        = 0xE0E0E0; ///< <span style="float: left; width: 200px; background-color: #E0E0E0">&nbsp;</span>
+    static constexpr uint32_t Grey400        = 0xBDBDBD; ///< <span style="float: left; width: 200px; background-color: #BDBDBD">&nbsp;</span>
+    static constexpr uint32_t Grey500        = 0x9E9E9E; ///< <span style="float: left; width: 200px; background-color: #9E9E9E">&nbsp;</span>
+    static constexpr uint32_t Grey600        = 0x757575; ///< <span style="float: left; width: 200px; background-color: #757575">&nbsp;</span>
+    static constexpr uint32_t Grey700        = 0x616161; ///< <span style="float: left; width: 200px; background-color: #616161">&nbsp;</span>
+    static constexpr uint32_t Grey800        = 0x424242; ///< <span style="float: left; width: 200px; background-color: #424242">&nbsp;</span>
+    static constexpr uint32_t Grey900        = 0x212121; ///< <span style="float: left; width: 200px; background-color: #212121">&nbsp;</span>
+
+    static constexpr uint32_t BlueGrey50     = 0xECEFF1; ///< <span style="float: left; width: 200px; background-color: #ECEFF1">&nbsp;</span>
+    static constexpr uint32_t BlueGrey100    = 0xCFD8DC; ///< <span style="float: left; width: 200px; background-color: #CFD8DC">&nbsp;</span>
+    static constexpr uint32_t BlueGrey200    = 0xB0BEC5; ///< <span style="float: left; width: 200px; background-color: #B0BEC5">&nbsp;</span>
+    static constexpr uint32_t BlueGrey300    = 0x90A4AE; ///< <span style="float: left; width: 200px; background-color: #90A4AE">&nbsp;</span>
+    static constexpr uint32_t BlueGrey400    = 0x78909C; ///< <span style="float: left; width: 200px; background-color: #78909C">&nbsp;</span>
+    static constexpr uint32_t BlueGrey500    = 0x607D8B; ///< <span style="float: left; width: 200px; background-color: #607D8B">&nbsp;</span>
+    static constexpr uint32_t BlueGrey600    = 0x546E7A; ///< <span style="float: left; width: 200px; background-color: #546E7A">&nbsp;</span>
+    static constexpr uint32_t BlueGrey700    = 0x455A64; ///< <span style="float: left; width: 200px; background-color: #455A64">&nbsp;</span>
+    static constexpr uint32_t BlueGrey800    = 0x37474F; ///< <span style="float: left; width: 200px; background-color: #37474F">&nbsp;</span>
+    static constexpr uint32_t BlueGrey900    = 0x263238; ///< <span style="float: left; width: 200px; background-color: #263238">&nbsp;</span>
+
+    static constexpr uint32_t Black          = 0x000000; ///< <span style="float: left; width: 200px; background-color: #000000">&nbsp;</span>
+    static constexpr uint32_t White          = 0xFFFFFF; ///< <span style="float: left; width: 200px; background-color: #FFFFFF">&nbsp;</span>
+};
+
+} // namespace cc::color

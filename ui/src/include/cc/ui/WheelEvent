@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,34 +10,61 @@
 
 #include <cc/ui/types>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class WheelEvent: public Object
+/** \class WheelEvent cc/ui/WheelEvent
+  * \ingroup ui
+  * \brief Mouse wheel event
+  */
+class WheelEvent final: public Object
 {
 public:
-    double time() const { return time_; }
-    Step wheelStep() const { return wheelStep_; }
-    Point mousePos() const { return mousePos_; }
-
-    String toString() const;
-
-private:
-    friend class Object;
-
-    WheelEvent(
-        double time,
-        const Step &wheelStep,
-        const Point &mousePos
-    ):
-        time_(time),
-        wheelStep_(wheelStep),
-        mousePos_(mousePos)
+    /** Create a new wheel event
+      * \param time \copydoc time()
+      * \param wheelStep \copydoc wheelStep()
+      * \param mousePos \copydoc mousePos()
+      */
+    WheelEvent(double time, const Step &wheelStep, const Point &mousePos):
+        Object{new State{time, wheelStep, mousePos}}
     {}
 
-    double time_;
-    Step wheelStep_;
-    Point mousePos_;
+    /** Event time
+      */
+    double time() const { return me().time_; }
+
+    /** Angular distance the wheel has been moved
+      */
+    Step wheelStep() const { return me().wheelStep_; }
+
+    /** Mouse position
+      */
+    Point mousePos() const { return me().mousePos_; }
+
+private:
+    struct State: public Object::State
+    {
+        State(double time, Step wheelStep, Point mousePos):
+            time_{time},
+            wheelStep_{wheelStep},
+            mousePos_{mousePos}
+        {}
+
+        double time_;
+        Step wheelStep_;
+        Point mousePos_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+inline String str(const WheelEvent &event)
+{
+    return Format{}
+        << "WheelEvent {" << nl
+        << "  time: " << event.time() << nl
+        << "  wheelStep: " << event.wheelStep() << nl
+        << "  mousePos: " << event.mousePos() << nl
+        << "}";
+}
+
+} // namespace cc::ui

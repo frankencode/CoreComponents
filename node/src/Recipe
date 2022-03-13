@@ -1,4 +1,0 @@
-Library {
-    name: ccnode
-    use: [ core, syntax, glob, meta, net, http ]
-}

@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/SyntaxNode>
+
+namespace cc {
+
+class Token;
+
+/** \class SyntaxRule cc/SyntaxRule
+  * \ingroup syntax
+  * \brief Syntactic rule within a syntax definition.
+  */
+class SyntaxRule: public syntax::SyntaxNode
+{
+public:
+    /** Create a null syntax rule
+      */
+    SyntaxRule() = default;
+
+    /** Create a syntax rule
+      */
+    explicit SyntaxRule(const SyntaxNode &entry);
+
+    SyntaxNode entry() const; ///< %Root node
+
+    Object metaData() const; ///< %Application data associated with this rule
+    void setMetaData(const Object &newValue); ///< %Set application data assocaited with this rule
+
+protected:
+    struct State;
+
+    explicit SyntaxRule(State *newState);
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

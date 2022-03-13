@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,9 +9,12 @@
 #pragma once
 
 #include <cc/String>
+#include <cc/Cow>
 
 namespace cc {
 
+/** Day of week
+  */
 enum Weekday {
     Sun = 0,
     Mon = 1,
@@ -27,123 +30,156 @@ enum {
     SecondsPerDay  = 24 * SecondsPerHour
 };
 
-inline double hours(double n) { return n * SecondsPerHour; } ///< translate hours to seconds
-inline double days(double n) { return n * SecondsPerDay; } ///< translate days to seconds
+/** Convenience method to translate hours to seconds
+  */
+inline double hours(double n) { return n * +SecondsPerHour; }
+
+/** Convenience method to translate days to seconds
+  */
+inline double days(double n) { return n * +SecondsPerDay; }
 
 /** \class Date cc/Date
   * \ingroup misc
-  * \brief Calendar dates
+  * \brief Calendar date and time
   */
 class Date
 {
 public:
-    class Instance: public Object
-    {
-    public:
-        bool isValid() const { return time_ != cc::nan();} ///< false for Date{}, true otherwise
-
-        int year() const { return year_; } ///< year number since introduction of the calender (1, 2,..., 2020, etc.)
-        int month() const { return month_; } ///< month number (1..12)
-        int day() const { return day_; } ///< day of month (1..31)
-        int weekDay() const { return weekDay_; } ///< day of the week (0..6)
-        int yearDay() const { return yearDay_; } ///< day of the year (1..365)
-        int hour() const { return hour_; } ///< current hour of the day (0..23)
-        int minutes() const { return minutes_; } ///< current minutes (0..60)
-        int seconds() const { return seconds_; } ///< current seconds (0..60)
-        int offset() const { return offset_; } ///< timezone offset in hours
-
-        double time() const; ///< seconds since 1st Jan 1970 00:00:00
-        String toString() const; ///< convert this date object into a String representation
-
-        String monthName() const; ///< name of the month ("Jan", "Feb", ..., "Dec")
-        String dayName() const; ///< name of the weekday ("Sun", "Mon", ..., "Sat")
-
-    private:
-        friend class Date;
-        friend class Cow;
-
-        Instance();
-        Instance(const Instance &b) = default;
-        Instance(double time, int offset);
-        Instance(int year, int month, int day, int hour, int minutes, int seconds, int offset);
-
-        Ref<Instance> copy() { return new Instance{*this}; }
-
-        int year_;
-        int month_;
-        int day_;
-        int weekDay_;
-        int yearDay_;
-        int hour_;
-        int minutes_;
-        int seconds_;
-        int offset_;
-
-        double time_;
-    };
-
-    /** Create invalid Date
+    /** Create an invalid date
       */
-    Date():
-        instance_{new Instance}
-    {}
+    Date();
 
-    /** Breakdown Unix timestamp
-      * \param time \copydoc Date::Instance::time()
-      * \param offset \copydoc Date::Instance::offset()
-      * \see System::now()
+    /** Create a calendar date by breaking down a timestamp
+      * \param time \copydoc time()
+      * \param offset \copydoc offset()
       */
-    Date(double time, int offset = 0):
-        instance_{new Instance{time, offset}}
-    {}
+    explicit Date(double time, int offset = 0);
 
-    /** Compose a Date from calendar components
-      * \param year \copydoc Date::Instance::year()
-      * \param month \copydoc Date::Instance::month()
-      * \param day \copydoc Date::Instance::day()
-      * \param hour \copydoc Date::Instance::hour()
-      * \param minutes \copydoc Date::Instance::minutes()
-      * \param seconds \copydoc Date::Instance::seconds()
-      * \param offset \copydoc Date::Instance::offset()
+    /** Compose a calendar date from calendar components
+      * \param year \copydoc year()
+      * \param month \copydoc month()
+      * \param day \copydoc day()
+      * \param hour \copydoc hour()
+      * \param minutes \copydoc minutes()
+      * \param seconds \copydoc seconds()
+      * \param offset \copydoc offset()
       */
-    Date(int year, int month, int day, int hour = 0, int minutes = 0, int seconds = 0, int offset = 0):
-        instance_{new Instance{year, month, day, hour, minutes, seconds, offset}}
-    {}
+    Date(int year, int month, int day, int hour = 0, int minutes = 0, int seconds = 0, int offset = 0);
 
-    /** Member access
-      * @{
+    /** Seconds since the begin of Epoch (1st Jan 1970 00:00:00)
       */
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return Cow::get(instance_); }
-    /** @}
-      */
+    double time() const { return me().time; }
 
-    /** Explicit conversion to bool: true if Date is valid
+    /** Tell if this is a date is valid
       */
-    explicit operator bool() const { return instance_; }
+    bool isValid() const;
 
-    /** Automatic conversion to double: return seconds since 1st Jan 1970 00:00:00
+    /** \copydoc isValid()
       */
-    operator double() const { return instance_->time(); }
+    explicit operator bool() const { return isValid(); }
 
-    /** Difference between two Dates: return difference in number of seconds
+    /** \copydoc time() const
       */
-    double operator-(const Date &other) const { return instance_->time_ - other.instance_->time_; }
+    operator double() const { return me().time; }
 
-    /** Comparism operators
-      * @{
+    /** Timezone offset in hours
       */
-    bool operator==(const Date &other) const { return instance_->time_ == other.instance_->time_; }
-    bool operator!=(const Date &other) const { return instance_->time_ != other.instance_->time_; }
-    bool operator<=(const Date &other) const { return instance_->time_ <= other.instance_->time_; }
-    bool operator>=(const Date &other) const { return instance_->time_ >= other.instance_->time_; }
-    bool operator< (const Date &other) const { return instance_->time_ <  other.instance_->time_; }
-    bool operator> (const Date &other) const { return instance_->time_ >  other.instance_->time_; }
-    /** @}
+    int offset() const { return me().offset; }
+
+    /** Year number (1, 2,..., 2020, etc.)
       */
+    int year() const { return me().year; }
+
+    /** Month number (1..12)
+      */
+    int month() const { return me().month; }
+
+    /** Day of month (1..31)
+      */
+    int day() const { return me().day; }
+
+    /** Day of the week (0..6)
+      */
+    int weekDay() const { return me().weekDay; }
+
+    /** Day of the year (1..365)
+      */
+    int yearDay() const { return me().yearDay; }
+
+    /** Hour of the day (0..23)
+      */
+    int hour() const { return me().hour; }
+
+    /** Minutes (0..60)
+      */
+    int minutes() const { return me().minutes; }
+
+    /** Seconds (0..60)
+      */
+    int seconds() const { return me().seconds; }
+
+    /** Name of the month ("Jan", "Feb", ..., "Dec")
+      */
+    String monthName() const;
+
+    /** Name of the weekday ("Sun", "Mon", ..., "Sat")
+      */
+    String dayName() const;
+
+    /** %Return textual representation of this date
+      */
+    String toString() const;
+
+    /** Time difference in number of seconds
+      */
+    double operator-(const Date &other) const { return time() - other.time(); }
+
+    /** Equal to operator
+      */
+    bool operator==(const Date &other) const { return time() == other.time(); }
+
+    /** Not equal to operator
+      */
+    bool operator!=(const Date &other) const { return time() != other.time(); }
+
+    /** Less than operator
+      */
+    bool operator< (const Date &other) const { return time() <  other.time(); }
+
+    /** Greater than operator
+      */
+    bool operator> (const Date &other) const { return time() >  other.time(); }
+
+    /** Less than or equal to operator
+      */
+    bool operator<=(const Date &other) const { return time() <= other.time(); }
+
+    /** Greater than or equal to operator
+      */
+    bool operator>=(const Date &other) const { return time() >= other.time(); }
 
 private:
-    Ref<Instance> instance_;
+    struct State
+    {
+        double time { 0 };
+        int offset { 0 };
+        int year { 0 };
+        int month { 0 };
+        int day { 0 };
+        int weekDay { 0 };
+        int yearDay { 0 };
+        int hour { 0 };
+        int minutes { 0 };
+        int seconds { 0 };
+
+        void timeToCalendar();
+        void calendarToTime();
+        String toString() const;
+    };
+
+    Cow<State> me;
 };
+
+inline String str(const Date &date) { return date.toString(); }
 
 } // namespace cc

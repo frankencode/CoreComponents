@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -14,9 +14,9 @@ namespace cc {
 
 /** \class Utf16Source cc/Utf16Source
   * \ingroup unicode
-  * \brief %Unicode UTF-16 decoding data source
+  * \brief UTF-16 decoding data source
   *
-  * A Byte-Order-Mark (BOM) at the start of the stream automatically sets
+  * A Byte Order Mark (BOM) at the start of the stream automatically sets
   * endianess. The decoder is designed to be as strict as possible. It checks
   * if the input streams delivers full 16-bit words and it requires a high
   * surrogate to be followed by a low surrogate.
@@ -24,58 +24,49 @@ namespace cc {
 class Utf16Source
 {
 public:
-    class Instance
-    {
-    public:
-        /** Read the next %Unicode character
-          * \param ch returns the %Unicode character read if any
-          * \return true if not end of information, false otherwise
-          */
-        bool read(uchar_t *ch);
-
-    private:
-        friend class Utf16Source;
-
-        class DecodingError: public UnicodeError {
-        public:
-            String message() const override;
-        };
-
-        Instance(const Stream &stream, CharArray *buffer, ByteOrder endian):
-            byteSource_{stream, buffer, endian},
-            firstTime_{true}
-        {}
-
-        Instance(const CharArray *buffer, ByteOrder endian):
-            byteSource_{buffer, endian},
-            firstTime_{true}
-        {}
-
-        ByteSource byteSource_;
-        bool firstTime_;
-    };
-
-    /** Open a new UTF-16 decoding data source
-      * \param stream underlying data stream
-      * \param buffer input buffer (optional)
-      * \param endian endianess of the 16 bit words transmitted
+    /** Create a new UTF-16 decoding data source
+      * \param stream Underlying data stream
+      * \param endian Byte order of the 16-bit words transmitted
       */
-    Utf16Source(const Stream &stream, CharArray *buffer = nullptr, ByteOrder endian = ByteOrder::BigEndian):
-        instance_{stream, buffer, endian}
+    Utf16Source(const Stream &stream, ByteOrder endian = ByteOrder::BigEndian):
+        byteSource_{stream},
+        endian_{endian}
     {}
 
-    /** Open a new UTF-16 decoding data source
-      * \param buffer input buffer
-      * \param endian endianess of the 16 bit words transmitted
+    /** Create a new UTF-16 decoding data source
+      * \param stream Underlying data stream
+      * \param buffer Input buffer
+      * \param endian Byte order of the 16-bit words transmitted
       */
-    Utf16Source(const CharArray *buffer, ByteOrder endian = ByteOrder::BigEndian):
-        instance_{buffer, endian}
+    Utf16Source(const Stream &stream, const Bytes &buffer, ByteOrder endian = ByteOrder::BigEndian):
+        byteSource_{stream, buffer},
+        endian_{endian}
     {}
 
-    Instance *operator->() { return &instance_; }
+    /** Create a new UTF-16 decoding data source
+      * \param buffer Input buffer
+      * \param endian Byte order of the 16-bit words transmitted
+      */
+    Utf16Source(const Bytes &buffer, ByteOrder endian = ByteOrder::BigEndian):
+        byteSource_{buffer},
+        endian_{endian}
+    {}
+
+    /** Read the next %Unicode character
+      * \param ch Returns the %Unicode character read if any
+      * \return True if not end of information, false otherwise
+      */
+    bool read(Out<char32_t> ch);
 
 private:
-    Instance instance_;
+    class DecodingError: public UnicodeError {
+    public:
+        String message() const override;
+    };
+
+    ByteSource byteSource_;
+    ByteOrder endian_;
+    bool firstTime_ { true };
 };
 
 } // namespace cc

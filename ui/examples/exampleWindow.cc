@@ -1,35 +1,52 @@
 #include <cc/ui/Application>
+#include <cc/DEBUG>
 
-int main(int argc, char **argv)
+int main()
 {
     using namespace cc;
     using namespace cc::ui;
 
-    View view;
-    view->size = Size{640, 480};
-    view->paper = Color::White;
-    view->paint >>[=]{
-        Painter p{view};
+    View view, sub4;
 
-        p->translate(view->center());
+    View{&view}
+    .size(320, 200)
+    .add(
+        View{}
+        .size([=]{ return view.size() / 4; })
+        .paper(Color::Red)
+    )
+    .add(
+        View{}
+        .size([=]{ return view.size() / 4; })
+        .topRight([=]{ return view.topRight(); })
+        .paper(Color::Green)
+    )
+    .add(
+        View{}
+        .size([=]{ return view.size() / 4; })
+        .bottomLeft([=]{ return view.bottomLeft(); })
+        .paper(Color::Blue)
+    )
+    .add(
+        View{&sub4}
+        .size([=]{ return view.size() / 4; })
+        .bottomRight([=]{ return view.bottomRight(); })
+        .paper(Color::Black)
+        .add(
+            View{}
+            .size([=]{ return sub4.size() / 2; })
+            .centerInParent()
+            .paper(Color::White)
+        )
+    );
 
-        p->setSource(Color{"#FF000080"});
-        p->circle(-Point{30, 0}, 60);
-        p->fill();
+    Window window{view};
+    window.title([=]{ return str(view.size()); });
+    window.show();
 
-        p->setSource(Color{"#00FF0080"});
-        p->circle(Point{0, 0}, 60);
-        p->fill();
+    Monitor monitorGeometry{[=]{ CC_DEBUG << "pos = " << window.pos() << ", size = " << view.size() << ", isHandheld() = " << view.isHandheld(); }};
 
-        p->setSource(Color{"#0000FF80"});
-        p->circle(Point{30, 0}, 60);
-        p->fill();
-    };
+    view.onMouseMoved([=](auto event){ CC_DEBUG << event.pos(); return true; });
 
-    auto window = Window::open(view);
-    window->title <<[=]{
-        return "Test window " + str(window->size()) + " at " + str(window->pos());
-    };
-
-    return Application{}->run();
+    return Application{}.run();
 }

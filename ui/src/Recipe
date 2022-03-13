@@ -1,5 +1,5 @@
 Library {
-    name: ccui
+    name: cc_ui
     use: core
     depends: [ cairo, freetype2 ]
 }

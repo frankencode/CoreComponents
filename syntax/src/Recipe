@@ -1,4 +1,4 @@
 Library {
-    name: ccsyntax
+    name: cc_syntax
     use: core
 }

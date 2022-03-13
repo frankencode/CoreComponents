@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaPrototype>
+#include <cc/MetaProtocol>
+
+namespace cc {
+
+/** \class HttpLoggingServiceConfigPrototype cc/HttpLoggingServiceConfigPrototype
+  * \ingroup http_server
+  * \brief %HTTP logging service configuration prototype
+  */
+class HttpLoggingServiceConfigPrototype: public MetaPrototype
+{
+public:
+    HttpLoggingServiceConfigPrototype(const String &className, const MetaProtocol &protocol = MetaProtocol{}):
+        MetaPrototype{className, protocol}
+    {
+        establish("verbosity", "");
+    }
+};
+
+} // namespace cc

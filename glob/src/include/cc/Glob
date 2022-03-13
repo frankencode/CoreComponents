@@ -1,0 +1,65 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+#include <cc/SourceIterator>
+
+namespace cc {
+
+/** \class Glob cc/Glob
+  * \ingroup glob
+  * \brief Collect file names matching a pattern
+  * \see DirWalker
+  * \exception TextError
+  */
+class Glob final: public Object
+{
+public:
+    using Item = String; ///< Item type
+
+    /** Create a null globbing pattern
+      */
+    Glob() = default;
+
+    /** Create a new globbing pattern from a regular expression \a text
+      */
+    explicit Glob(const String &text);
+
+    /** Get the next matching path
+      * \param path Returns the next path
+      * \return True if another matching path could be read
+      */
+    bool read(Out<String> path);
+
+    /** %Return a textual representation of the compiled pattern expression
+      */
+    List<String> explain() const;
+
+    /** The regular expression text this pattern was created from
+      */
+    String text() const;
+
+    /** Iteration start
+      */
+    SourceIterator<Glob> begin() { return SourceIterator<Glob>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<Glob> end() { return SourceIterator<Glob>{}; }
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

@@ -1,152 +1,136 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/http/HttpClient>
-#include <cc/http/HttpClientSocket>
-#include <cc/http/HttpClientConnection>
-#include <cc/http/HttpRequestGenerator>
+#include <cc/HttpClient>
+#include <cc/HttpResponseParser>
+#include <cc/TlsClientStream>
+#include <cc/HttpStream>
+#include <cc/TapBuffer>
+#include <cc/ClientSocket>
+#include <cc/Uri>
+#include <cc/StreamTap>
 #include <cc/KernelInfo>
-#include <cc/Format>
 
 namespace cc {
-namespace http {
 
-Ref<HttpResponse> HttpClient::get(const Uri &uri)
+struct HttpClient::State: public Object::State
 {
-    return HttpClient::connect(uri)->query("GET", uri->requestPath());
-}
-
-Ref<HttpResponse> HttpClient::head(const Uri &uri)
-{
-    return HttpClient::connect(uri)->query("HEAD", uri->requestPath());
-}
-
-Ref<HttpResponse> HttpClient::put(const Uri &uri, const String &payload)
-{
-    return HttpClient::connect(uri)->query("PUT", uri->requestPath(),
-        [=](HttpGenerator *request) { request->transmit(payload); }
-    );
-}
-
-Ref<HttpResponse> HttpClient::put(const Uri &uri, const Stream &source)
-{
-    return HttpClient::connect(uri)->query("PUT", uri->requestPath(),
-        [=](HttpGenerator *request) { request->transmit(source); }
-    );
-}
-
-Ref<HttpResponse> HttpClient::post(const Uri &uri, const String &payload)
-{
-    return HttpClient::connect(uri)->query("POST", uri->requestPath(),
-        [=](HttpGenerator *request) { request->transmit(payload); }
-    );
-}
-
-Ref<HttpResponse> HttpClient::post(const Uri &uri, const Stream &source)
-{
-    return HttpClient::connect(uri)->query("POST", uri->requestPath(),
-        [=](HttpGenerator *request) { request->transmit(source); }
-    );
-}
-
-Ref<HttpResponse> HttpClient::postForm(const Uri &uri, const Map<String> &form)
-{
-    return HttpClient::connect(uri)->query("POST", uri->requestPath(),
-        [=](HttpGenerator *request) {
-            request->setHeader("Content-Type", "application/x-www-form-urlencoded");
-            request->transmit(Uri::encodeForm(form));
-        }
-    );
-}
-
-Ref<HttpClient> HttpClient::connect(const Uri &uri, const HttpClientSecurity *security)
-{
-    return new HttpClient{uri, security};
-}
-
-HttpClient::HttpClient(const Uri &uri, const HttpClientSecurity *security):
-    address_{SocketAddress::resolveUri(uri)},
-    host_{uri->host()},
-    security_{security}
-{
-    if (uri->port() <= 0) address_->setPort(uri->scheme() == "https" ? 443 : 80);
-    if (!security_ && uri->scheme() == "https") security_ = HttpClientSecurity::createDefault();
-    connect();
-}
-
-void HttpClient::connect()
-{
-    connection_ = HttpClientConnection::open(
-        HttpClientSocket{address_, host_, security_}
-    );
-}
-
-Ref<HttpRequestGenerator> HttpClient::createRequest(const String &method, const String &path)
-{
-    auto request = HttpRequestGenerator::create(connection_);
-    request->setMethod(method);
-    request->setHost(host_);
-    request->setPath(path != "" ? path : "/");
+    State(const Uri &uri, const TlsClientOptions &tlsOptions):
+        address_{SocketAddress::resolveUri(uri)},
+        host_{uri.host()}
     {
-        String h = userAgent();
-        if (h != "") request->setHeader("User-Agent", h);
-    }
-    return request;
-}
-
-Ref<HttpResponse> HttpClient::query(const String &method, const String &path, const Generate &generate)
-{
-    Ref<HttpResponse> response;
-    for (int i = 0; retry(i); ++i) {
-        try {
-            generate(createRequest(method, path));
-            response = connection_->readResponse();
-            if (response->statusCode() != RequestTimeout::StatusCode) break;
+        const bool useTls = !(
+            uri.scheme() == "http" ||
+            (uri.scheme() == "" && (uri.port() == 80 || uri.port() == 8080))
+        );
+        if (uri.port() <= 0) {
+            address_.setPort(useTls ? 443 : 80);
         }
-        catch (CloseRequest &)
-        {}
-        catch (ConnectionResetByPeer &)
-        {}
-        connect();
+        initiate(useTls, tlsOptions);
     }
-    return response;
-}
 
-void HttpClient::pipeline(const String &method, const String &path, const Generate &generate)
+    State(const SocketAddress &address, const TlsClientOptions &tlsOptions):
+        address_{address},
+        host_{address.networkAddress()}
+    {
+        const bool useTls = !(address.port() == 80 || address.port() == 8080);
+        initiate(useTls, tlsOptions);
+    }
+
+    ~State()
+    {
+        try {
+            parser_ = HttpResponseParser{};
+            stream_ = Stream{};
+            socket_.shutdown();
+        }
+        catch (...)
+        {}
+    }
+
+    void initiate(bool useTls, TlsClientOptions tlsOptions)
+    {
+        socket_ = ClientSocket{address_};
+        stream_ = socket_;
+        if (useTls) {
+            TlsClientOptions options = tlsOptions;
+            options.setServerName(host_);
+            stream_ = TlsClientStream{stream_, options};
+        }
+        parser_ = HttpResponseParser{stream_};
+    }
+
+    HttpResponse query(const String &method, const String &path, const Generate &generate)
+    {
+        HttpRequestGenerator request{stream_};
+        request.setMethod(method);
+        request.setHost(host_);
+        request.setPath(path != "" ? path : "/");
+        request.setHeader("User-Agent", userAgent());
+        generate(request);
+        return parser_.readResponse();
+    }
+
+    static String userAgent()
+    {
+        KernelInfo kernel;
+
+        static String info =
+            Format{"cc_http 1.0 (%%; %%)"}
+                << kernel.name()
+                << kernel.machine();
+
+        return info;
+    }
+
+    static void generateDefault(HttpMessageGenerator &request)
+    {
+        request.transmit();
+    }
+
+    SocketAddress address_;
+    String host_;
+    ClientSocket socket_;
+    Stream stream_;
+    HttpResponseParser parser_;
+};
+
+HttpClient::HttpClient(const Uri &uri, const TlsClientOptions &tlsOptions):
+    Object{new State{uri, tlsOptions}}
+{}
+
+HttpClient::HttpClient(const SocketAddress &address, const TlsClientOptions &tlsOptions):
+    Object{new State{address, tlsOptions}}
+{}
+
+SocketAddress HttpClient::address() const
 {
-    generate(createRequest(method, path));
+    return me().address_;
 }
 
-Ref<HttpResponse> HttpClient::readResponse()
+bool HttpClient::waitEstablished(int timeout)
 {
-    return connection_->readResponse();
+    return me().stream_.waitEstablished(timeout);
 }
 
-String HttpClient::userAgent() const
+HttpResponse HttpClient::query(const String &method, const String &path, const Generate &generate)
 {
-    KernelInfo kernel;
-
-    static String s =
-        Format{"cchttp 1.0 (%%; %%)"}
-            << kernel->name()
-            << kernel->machine();
-
-    return s;
+    return me().query(method, path, generate ? generate : HttpClient::State::generateDefault);
 }
 
-bool HttpClient::retry(int i)
+HttpClient::State &HttpClient::me()
 {
-    return i < 3;
+    return Object::me.as<State>();
 }
 
-void HttpClient::generateDefault(HttpGenerator *request)
+const HttpClient::State &HttpClient::me() const
 {
-    request->transmit();
+    return Object::me.as<State>();
 }
 
-}} // namespace cc::http
+} // namespace cc

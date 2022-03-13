@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \class SourceIterator cc/SourceIterator
+  * \brief Data source iterator
+  */
+template<class T>
+class SourceIterator
+{
+public:
+    using Source = T;
+    using Item = typename Source::Item;
+
+    SourceIterator():
+        source_{nullptr}
+    {}
+
+    SourceIterator(Source *source):
+        source_{source}
+    {
+        ++(*this);
+    }
+
+    SourceIterator &operator++()
+    {
+        if (source_) {
+            if (!source_->read(&next_))
+                source_ = nullptr;
+        }
+        return *this;
+    }
+
+    const Item &operator*() const { return next_; }
+
+    bool operator!=(const SourceIterator &b) const { return source_ != b.source_; }
+
+private:
+    Source *source_;
+    Item next_;
+};
+
+} // namespace cc

@@ -8,75 +8,99 @@
 
 #pragma once
 
-#include <cc/types>
+#include <cc/chars>
 
 namespace cc {
 
 /** \class Casefree cc/Casefree
-  * \brief Convenience class for case insensitive string comparisms
   * \ingroup strings
-  * \see String
+  * \brief Case-insensitive string comparism
   */
 template<class String>
 class Casefree: public String
 {
 public:
-    using Index = typename String::Index;
-    using Item = typename String::Item;
-
+    /** Create an empty case-insensitive string
+      */
     Casefree() = default;
 
-    Casefree(const String &s):
-        String{s}
+    /** Create a case-insensitive string by wrapping \a b
+      */
+    Casefree(const String &b):
+        String{b}
     {}
 
-    Casefree(String &&s):
-        String{s}
+    /** Create a case-insensitive string by copying \a b
+      */
+    Casefree(const char *b):
+        String{b}
     {}
 
-    Casefree(const Item *s):
-        String{s}
-    {}
-
+    /** Equal to operator
+      */
     bool operator==(const Casefree &b) const
     {
-        Index n = (*this)->count();
-        if (n != b->count()) return false;
-        for (Index i = 0; i < n; ++i) {
-            if (toLower((*this)->at(i)) != toLower(b->at(i)))
+        long n = (*this).count();
+        if (n != b.count()) return false;
+        for (long i = 0; i < n; ++i) {
+            if (toLower((*this)[i]) != toLower(b[i]))
                 return false;
         }
         return true;
     }
 
+    /** Equal to operator
+      */
+    bool operator==(const char *b) const
+    {
+        long n = (*this).count();
+        if (n != static_cast<long>(std::strlen(b))) return false;
+        for (long i = 0; i < n; ++i) {
+            if (toLower((*this)[i]) != toLower(b[i]))
+                return false;
+        }
+        return true;
+    }
+
+    /** Lower than operator
+      */
     bool operator<(const Casefree &b) const
     {
-        Index n = (*this)->count();
-        Index m = b->count();
-        Index l = n < m ? m : n;
-        for (Index i = 0; i < l; ++i) {
-            Item x = (i < n) ? toLower((*this)->at(i)) : Item{0};
-            Item y = (i < m) ? toLower(b->at(i)) :  Item{0};
+        long n = (*this).count();
+        long m = b.count();
+        long l = n < m ? m : n;
+        for (long i = 0; i < l; ++i) {
+            auto x = (i < n) ? toLower((*this)[i]) : typename String::Item{0};
+            auto y = (i < m) ? toLower(b[i]) : typename String::Item{0};
             if (x < y) return true;
             else if (y < x) return false;
         }
         return false;
     }
 
+    /** Greater than operator
+      */
     bool operator>(const Casefree &b) const
     {
         return b < *this;
     }
 
+    /** Lower or equal operator
+      */
     bool operator<=(const Casefree &b) const
     {
         return !(b < *this);
     }
 
+    /** Greater or equal operator
+      */
     bool operator>=(const Casefree &b) const
     {
         return !(*this < b);
     }
 };
+
+template<class T>
+Casefree<T> casefree(const T &s) { return s; }
 
 } // namespace cc

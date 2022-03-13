@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,31 +9,127 @@
 #pragma once
 
 #include <cc/ui/ScaledFont>
-#include <cc/ui/Font>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \class GlyphRun cc/ui/GlyphRun
+  * \ingroup ui
+  * \brief Typeset sequence
+  */
 class GlyphRun: public Object
 {
 public:
-    static Ref<GlyphRun> typeset(const String &text, const Font &font = Font{}, const Point &origin = Point{});
+    /** Create a null glyph run
+      */
+    GlyphRun() = default;
 
-    virtual String text() const = 0;
-    virtual Font font() const = 0;
+    /** Create a new glyph run
+      * \param text %Text to typeset
+      * \param font %Font to use
+      * \param origin Starting point
+      */
+    GlyphRun(const String &text, const Font &font = Font{}, const Point &origin = Point{});
 
-    virtual Point origin() const = 0;
-    virtual Point advance() const = 0;
-    virtual Size size() const = 0;
-    virtual double maxAscender() const = 0;
-    virtual double minDescender() const = 0;
-    virtual int byteCount() const = 0;
-    virtual int lineCount() const = 0;
+    /** Check if this glyph run is empty (i.e. does not contain any glyphs)
+      */
+    bool isEmpty() const { return advance() == Point{}; }
 
-    virtual Ref<const GlyphRun> wrap(double maxWidth, TextAlign textAlign = TextAlign::Left, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const = 0;
-    virtual Ref<const GlyphRun> elide(double maxWidth) const = 0;
+    /** Text used to typeset this glyphrun
+      */
+    String text() const { return me().text_; }
 
-    virtual Ref<GlyphRun> copy() const = 0;
+    /** %Font used to generate this glyph run
+      */
+    Font font() const { return me().font_; }
+
+    /** Scaled font used to generate this glyph run
+      */
+    ScaledFont scaledFont() const { return me().scaledFont_; }
+
+    /** Font metrics used to generate thsi glyph run
+      */
+    FontMetrics metrics() const { return me().scaledFont_.metrics(); }
+
+    /** Position of this glyph run
+      */
+    Point origin() const { return me().origin_; }
+
+    /** Advance of this glyph run
+      */
+    Point advance() const { return me().advance_; }
+
+    /** %Size of this glyph run
+      */
+    Size size() const { return me().size_; }
+
+    /** Highest ascender
+      */
+    double maxAscender() const { return me().maxAscender_; }
+
+    /** Lowest descender
+      */
+    double minDescender() const { return me().minDescender_; }
+
+    /** %Number of lines
+      */
+    int lineCount() const { return me().lineCount_; }
+
+    /** %Number of bytes
+      */
+    int byteCount() const { return me().text_.count(); }
+
+    /** Wrap this glyph run into several lines if necessary
+      * \param maxWidth Maximum width of the wrapped text block
+      * \param textAlign %Alignment of the text within the wrapped text block
+      * \param lineHeight Wrap the text onto lines of given height
+      * \param wrapBehind \copydoc TextWrapBehind
+      * \return Wrapped glyph run
+      */
+    GlyphRun wrap(double maxWidth, TextAlign textAlign = TextAlign::Left, double lineHeight = 0, const TextWrapBehind &wrapBehind = textWrapBehindDefault) const
+    {
+        return me().wrap(maxWidth, textAlign, lineHeight, wrapBehind);
+    }
+
+    /** Elide this glyph run at \a maxWidth if necessary
+      */
+    GlyphRun elide(double maxWidth) const
+    {
+        return me().elide(maxWidth);
+    }
+
+protected:
+    struct State: public Object::State
+    {
+        State() = default;
+
+        State(const String &text, const Font &font, const Point &origin):
+            text_{text},
+            font_{font},
+            origin_{origin}
+        {}
+
+        virtual GlyphRun wrap(double maxWidth, TextAlign textAlign, double lineHeight, const TextWrapBehind &wrapBehind) const = 0;
+        virtual GlyphRun elide(double maxWidth) const = 0;
+
+        String text_;
+        Font font_;
+        Point origin_;
+
+        Point advance_;
+        Size size_;
+        double maxAscender_ { 0 };
+        double minDescender_ { 0 };
+        int lineCount_ { 1 };
+
+        ScaledFont scaledFont_;
+    };
+
+    explicit GlyphRun(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

@@ -1,4 +1,0 @@
-Application {
-    name: ccip
-    use: [ core, net ]
-}

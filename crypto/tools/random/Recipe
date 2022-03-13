@@ -1,4 +1,0 @@
-Application {
-    name: ccrandom
-    use: [ core, crypto ]
-}

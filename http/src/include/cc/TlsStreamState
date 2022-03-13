@@ -1,0 +1,133 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TlsStream>
+#include <cc/SystemError>
+#include <gnutls/gnutls.h>
+#include <sys/uio.h> // iovec
+#include <cassert>
+
+namespace cc {
+
+struct TlsStream::State: public Stream::State
+{
+    State(const Stream &stream):
+        stream_{stream}
+    {}
+
+    void initTransport()
+    {
+        gnutls_transport_set_ptr(session_, this);
+        gnutls_transport_set_pull_function(session_, pull);
+        gnutls_transport_set_vec_push_function(session_, pushVector);
+    }
+
+    long read(Out<Bytes> buffer, long maxFill = -1) override
+    {
+        if (maxFill < 0) maxFill = buffer().count();
+        if (maxFill == 0) return 0;
+        checkIoError();
+        ssize_t ret = 0;
+        do {
+            ret = gnutls_record_recv(session_, buffer().bytes(), maxFill);
+        } while (ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED);
+        checkIoError();
+        checkTlsError(ret);
+        assert(ret >= 0);
+        return ret;
+    }
+
+    void write(const Bytes &buffer, long fill = -1) override
+    {
+        if (fill < 0) fill = buffer.count();
+        checkIoError();
+        for (long offset = 0; fill > 0;) {
+            ssize_t ret = 0;
+            do {
+                ret = gnutls_record_send(session_, buffer.bytes() + offset, fill);
+            } while (ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED);
+            checkIoError();
+            checkTlsError(ret);
+            assert(ret > 0);
+            fill -= ret;
+            offset += ret;
+        }
+    }
+
+    void write(const List<Bytes> &buffers) override
+    {
+        write(buffers.join());
+    }
+
+    static bool checkTlsSuccess(int ret)
+    {
+        if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};
+        return true;
+    }
+
+    static void checkTlsError(int ret)
+    {
+        if (ret < 0) throw TlsError{ret};
+    }
+
+    void checkIoError()
+    {
+        if (ioErrorCode_ != 0) {
+            throw SystemError{ioErrorCode_};
+            ioErrorCode_ = 0;
+        }
+    }
+
+    static ssize_t pull(gnutls_transport_ptr_t ctx, void *data, size_t size)
+    {
+        State &me = *static_cast<State *>(ctx);
+        ssize_t n = -1;
+        try {
+            me.dummy_.wrapAround(data, size);
+            n = me.stream_.read(&me.dummy_);
+        }
+        catch (SystemError &error) {
+            me.ioErrorCode_ = error.errorCode();
+        }
+        catch (...) {
+            me.ioErrorCode_ = EIO;
+        }
+        return n;
+    }
+
+    static ssize_t pushVector(gnutls_transport_ptr_t ctx, const giovec_t *iov, int iovcnt)
+    {
+        State &me = *static_cast<State *>(ctx);
+        ssize_t n = -1;
+        try {
+            me.stream_.write(iov, iovcnt);
+            n = 0;
+            for (int i = 0; i < iovcnt; ++i) {
+                n += iov[i].iov_len;
+            }
+        }
+        catch (SystemError &error) {
+            me.ioErrorCode_ = error.errorCode();
+        }
+        catch (...) {
+            me.ioErrorCode_ = EIO;
+        }
+        return n;
+    }
+
+    Stream stream_;
+    int timeout_ { -1 };
+    int ioErrorCode_ { 0 };
+
+    Bytes dummy_;
+    gnutls_session_t session_;
+};
+
+} // namespace cc

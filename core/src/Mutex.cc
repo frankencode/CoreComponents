@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,17 +7,13 @@
  */
 
 #include <cc/Mutex>
-
-#ifndef NDEBUG
-#include <cc/check>
-#endif
-#include <cc/exceptions>
+#include <cassert>
 
 namespace cc {
 
-Mutex::Instance::Instance()
+Mutex::Mutex()
 {
-    pthread_mutexattr_t *pattr = 0;
+    pthread_mutexattr_t *pattr = nullptr;
     int ret;
     #ifndef NDEBUG
     pthread_mutexattr_t attr;
@@ -35,18 +31,18 @@ Mutex::Instance::Instance()
     #endif
 }
 
-Mutex::Instance::~Instance()
+Mutex::~Mutex()
 {
     #ifndef NDEBUG
     int ret =
     #endif
     pthread_mutex_destroy(&mutex_);
     #ifndef NDEBUG
-    check(ret == 0);
+    assert(ret == 0);
     #endif
 }
 
-bool Mutex::Instance::tryAcquire()
+bool Mutex::tryAcquire()
 {
     int ret = -1;
     while (true) {
@@ -58,7 +54,7 @@ bool Mutex::Instance::tryAcquire()
     return ret != EBUSY;
 }
 
-void Mutex::Instance::acquire()
+void Mutex::acquire()
 {
     int ret = -1;
     while (true) {
@@ -68,7 +64,7 @@ void Mutex::Instance::acquire()
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
 }
 
-void Mutex::Instance::release()
+void Mutex::release()
 {
     int ret = pthread_mutex_unlock(&mutex_);
     if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);

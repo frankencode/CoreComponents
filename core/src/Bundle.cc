@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,32 +7,38 @@
  */
 
 #include <cc/Bundle>
-#include <cc/File>
 #include <cc/Process>
-#include <cc/Singleton>
+#include <cc/File>
 
 namespace cc {
 
-String Bundle::lookup(const String &relPath, const StringList &dirs)
+Bundle &Bundle::instance()
+{
+    static Bundle instance_;
+    return instance_;
+}
+
+String Bundle::lookup(const String &relPath, const List<String> &dirs)
 {
     return File::locate(relPath, dirs, FileAccess::Exists);
 }
 
 String Bundle::prefix(const char *defaultPrefix)
 {
-    if (Singleton<Bundle>::instance()->overridePrefix_ != "")
-        return Singleton<Bundle>::instance()->overridePrefix_;
+    Bundle &bundle = instance();
+    if (bundle.overridePrefix_ != "")
+        return bundle.overridePrefix_;
     return defaultPrefix;
 }
 
 String Bundle::exePrefix()
 {
-    return Singleton<Bundle>::instance()->exePrefix_;
+    return Bundle::instance().exePrefix_;
 }
 
 Bundle::Bundle():
-    overridePrefix_{Process::getEnv("CC_BUNDLE_PREFIX_OVERRIDE")},
-    exePrefix_{Process::exePath()->reducePath()}
+    overridePrefix_{Process::env("CC_BUNDLE_PREFIX_OVERRIDE")},
+    exePrefix_{Process::execPath().cdUp()}
 {}
 
 } // namespace cc

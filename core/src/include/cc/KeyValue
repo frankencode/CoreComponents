@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,76 +8,73 @@
 
 #pragma once
 
-#include <cc/bucket>
-
 namespace cc {
 
-namespace bucket { template<class> class Leaf; }
-
 /** \class KeyValue cc/KeyValue
-  * \brief Key value pair
+  * \brief Key-value pair
   */
 template<class K, class V = K>
 class KeyValue
 {
 public:
-    typedef K Key;
-    typedef V Value;
+    using Key = K; ///< key type
+    using Value = V; ///< value type
 
-    class Instance {
-    public:
-        Key key() const { return key_; }
-        Value value() const { return value_; }
-        Value &value() { return value_; }
-        void setValue(const Value &newValue) { value_ = newValue; }
-
-    private:
-        friend class KeyValue;
-        Instance()
-        {}
-        Instance(const Key &key):
-            key_{key}, value_{Value{}}
-        {}
-        Instance(const Key &key, const Value &value):
-            key_{key}, value_{value}
-        {}
-        Key key_;
-        Value value_;
-    };
-
+    /** Create an undefined key-value pair
+      */
     KeyValue()
     {}
 
+    /** Create a search key
+      */
     KeyValue(const Key &key):
-        instance_{key}
+        key_{key}
     {}
 
+    /** Create a defined key-value pair
+      */
     KeyValue(const Key &key, const Value &value):
-        instance_{key, value}
+        key_{key},
+        value_{value}
     {}
 
-    bool operator< (const KeyValue &b) const { return instance_.key_ <  b.instance_.key_; }
-    bool operator> (const KeyValue &b) const { return instance_.key_ >  b.instance_.key_; }
-    bool operator==(const KeyValue &b) const { return instance_.key_ == b.instance_.key_; }
-    bool operator!=(const KeyValue &b) const { return instance_.key_ != b.instance_.key_; }
-    bool operator<=(const KeyValue &b) const { return instance_.key_ <= b.instance_.key_; }
-    bool operator>=(const KeyValue &b) const { return instance_.key_ >= b.instance_.key_; }
+    /** Get key
+      */
+    Key key() const { return key_; }
 
-    Instance *operator->() { return &instance_; }
-    const Instance *operator->() const { return &instance_; }
+    /** Get value
+      */
+    Value value() const { return value_; }
+
+    /** Get mutable value
+      */
+    Value &value() { return value_; }
+
+    /** Set new value
+      */
+    void setValue(const Value &newValue) { value_ = newValue; }
+
+    /** Comparism operators
+      * @{
+      */
+    bool operator< (const KeyValue &b) const { return key_ <  b.key_; }
+    bool operator> (const KeyValue &b) const { return key_ >  b.key_; }
+    bool operator==(const KeyValue &b) const { return key_ == b.key_; }
+    bool operator!=(const KeyValue &b) const { return key_ != b.key_; }
+    bool operator<=(const KeyValue &b) const { return key_ <= b.key_; }
+    bool operator>=(const KeyValue &b) const { return key_ >= b.key_; }
+    /** @}
+      */
 
 private:
-    friend class bucket::Leaf<KeyValue>;
-
-    KeyValue &operator=(const KeyValue &other) = default;
-
-    Instance instance_;
+    Key key_;
+    Value value_;
 };
 
-template<class K, class V>
-inline bool operator<(const KeyValue<K, V> &a, const K &b) { return a->key() < b; }
+template<class K, class V, class P>
+inline bool operator<(const KeyValue<K, V> &a, const P &b) { return a.key() < b; }
 
-template<class K, class V>
-inline bool operator<(const K &a, const KeyValue<K, V> &b) { return a < b->key(); }
+template<class K, class V, class P>
+inline bool operator<(const P &a, const KeyValue<K, V> &b) { return a < b.key(); }
 
-} // namespace cc
+} // namespac cc

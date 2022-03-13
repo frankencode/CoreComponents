@@ -1,0 +1,102 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Socket>
+
+namespace cc {
+
+/** \class HostUnreachable cc/DatagramSocket
+  * \brief An earlier datagram could not be delivered
+  *
+  * \see DatagramSocket::recvFrom()
+  */
+class HostUnreachable: public Exception
+{
+public:
+    String message() const override;
+};
+
+/** \class DatagramSocket cc/DatagramSocket
+  * \ingroup net
+  * \brief Datagram socket
+  */
+class DatagramSocket: public Socket
+{
+public:
+    /** Create a null datagram socket
+      */
+    DatagramSocket() = default;
+
+    /** Create a new datagram socket bound to \a address
+      */
+    explicit DatagramSocket(const SocketAddress &address):
+        Socket{new State{address}}
+    {}
+
+    /** Receive \a message from host \a address
+      * \param message %Message buffer
+      * \param address %Sender address
+      * \return Number of bytes received
+      * \exception HostUnreachable An ICMP error from an earlier send() has been received
+      */
+    int receive(Out<Bytes> message, Out<SocketAddress> address = None{})
+    {
+        return me().receive(message, address);
+    }
+
+    /** Send \a message to host \a address
+      * \param message %Message to send
+      * \param address %Destination address
+      * \return Number of bytes send
+      * \exception HostUnreachable An ICMP error from an earlier sendTo() has been received
+      */
+    int send(const Bytes &message, const SocketAddress &address = SocketAddress{})
+    {
+        return me().send(message, address);
+    }
+
+    /** Restrict communication on this socket to a single source
+      * \param address Peer address of which to receive datagrams from (unicast or multicast)
+      */
+    void connect(const SocketAddress &address)
+    {
+        me().connect(address);
+    }
+
+    /** Enable sending datagrams to broadcast addresses
+      * (disabled by default)
+      */
+    void broadcasting(bool on)
+    {
+        me().broadcasting(on);
+    }
+
+    /** Join multicast a group identified by \a address
+      */
+    void join(const SocketAddress &address)
+    {
+        me().join(address);
+    }
+
+protected:
+    struct State: public Socket::State
+    {
+        State(const SocketAddress &address);
+        int receive(Out<Bytes> message, Out<SocketAddress> address = None{});
+        int send(const Bytes &message, const SocketAddress &address);
+        void connect(const SocketAddress &address);
+        void broadcasting(bool on);
+        void join(const SocketAddress &address);
+    };
+
+    State &me() { return Object::me.as<State>(); }
+};
+
+} // namespace cc

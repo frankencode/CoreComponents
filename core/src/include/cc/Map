@@ -8,115 +8,440 @@
 
 #pragma once
 
+#include <cc/bucket/Vector>
+#include <cc/Iterator>
+#include <cc/Cow>
+#include <cc/InOut>
+#include <cc/KeyValue>
+#include <cc/container>
 #include <initializer_list>
-#include <cc/MapInstance>
+#include <utility>
+#include <cassert>
 
 namespace cc {
 
 /** \class Map cc/Map
-  * \ingroup container_highlevel
+  * \ingroup container
   * \brief %Map data container
-  * \tparam K key type
-  * \tparam T mapped type
-  * \see MultiMap, MultiSet
+  * \tparam K Key type
+  * \tparam T Value type
   */
 template<class K, class T = K>
 class Map {
 public:
-    typedef MapInstance<K, T> Instance;
+    using Key = K; ///< Key type
+    using Value = T; ///< Value type
+    using Item = KeyValue<K, T>; ///< Item type
 
-    typedef typename Instance::Item Item; ///< item type
-    typedef typename Instance::Index Index; ///< index type
-    typedef typename Instance::Key Key; ///< key type
-    typedef typename Instance::Value Value; ///< mapped value type
+    /** \name Construction and Assignment
+      */
+    ///@{
 
-    typedef typename Instance::Iterator Iterator; ///< iterator type
-    typedef typename Instance::ConstIterator ConstIterator; ///< constant iterator type
+    /** Construct an empty map
+      */
+    Map() = default;
 
-    typedef Iterator iterator; ///< \internal
-    typedef ConstIterator const_iterator; ///< \internal
+    /** Construct a copy of \a other
+      */
+    Map(const Map &other) = default;
 
-    Map():
-        instance_{new Instance}
-    {}
-
-    Map(std::initializer_list<KeyValue<K, T>> b):
-        instance_{new Instance}
+    /** Construct with initial \a items
+      */
+    Map(std::initializer_list<Item> items)
     {
-        for (auto &x: b) instance_->insert(x->key(), x->value());
+        for (const auto &x: items) insert(x.key(), x.value());
     }
 
-    Map(const Map &b) = default;
-
-    Map(Map &&b):
-        instance_{std::move(b.instance_)}
+    /** Take over the right-side map \a other
+      */
+    Map(Map &&other):
+        me{std::move(other.me)}
     {}
 
-    Map(Instance *b):
-        instance_{b ? b : new Instance}
-    {}
+    /** Assign map \a other
+      */
+    Map &operator=(const Map &other) = default;
 
-    Map &operator=(const Map &b) = default;
-
-    Map &operator=(Map &&b) {
-        instance_ = std::move(b.instance_);
+    /** Take over the right-side map \a other
+      */
+    Map &operator=(Map &&other)
+    {
+        me = std::move(other.me);
         return *this;
     }
 
-    Map &operator=(const Ref<Instance> &b) { // \todo make sure this is not needed
-        instance_ = b;
-        return *this;
+    ///@}
+
+    /** \name Item Access
+      */
+    ///@{
+
+    /** Get a locator pointing to the first item
+      */
+    Locator head() const { return me().head(); }
+
+    /** Get a locator pointing to the last item
+      */
+    Locator tail() const { return me().tail(); }
+
+    /** Get a locator pointing to the item at \a index
+      */
+    Locator from(long index) const { return me().from(index); }
+
+    /** Get the number of items stored in the map
+      */
+    long count() const { return me().count(); }
+
+    /** \copydoc count()
+      */
+    long size() const { return me().count(); }
+
+    /** Check if this map is non-empty
+      */
+    explicit operator bool() const { return count() > 0; }
+
+    /** \copydoc count()
+      */
+    long operator+() const { return me().count(); }
+
+    /** Get constant reference to the item at position \a pos
+      */
+    const Item &at(Locator pos) const
+    {
+        assert(pos);
+        return me().at(pos);
     }
 
-    Instance *operator->() { return Cow::get(instance_); }
-    const Instance *operator->() const { return instance_; }
+    /** Get constant reference to the item at \a index
+      */
+    const Item &at(long index) const
+    {
+        assert(0 <= index && index < count());
+        return me().at(index);
+    }
 
-    operator const Instance *() const { return instance_; }
-    operator Instance *() { return Cow::get(instance_); }
+    /** Get reference to the value at position \a pos
+      */
+    Value &valueAt(Locator pos)
+    {
+        assert(pos);
+        return me().at(pos).value();
+    }
 
-    const Item &operator[](Index i) const { return instance_->at(i); }
+    /** Get reference to the value at \a index
+      */
+    Value &valueAt(long index)
+    {
+        assert(0 <= index && index < count());
+        return me().at(index).value();
+    }
 
-    explicit operator bool() const { return instance_->count() > 0; } /// \todo provide this operator for all other containers, too
+    /** %Modify an item in place
+      * \tparam Modify %Function type (lambda or functor)
+      * \param pos %Position of item to modify
+      * \param modify %Function of type void(Item &)
+      */
+    template<class Modify>
+    void modifyAt(Locator pos, Modify modify)
+    {
+        assert(pos);
+        Item &item = me().at(pos);
+        #ifndef NDEBUG
+        Item oldItem = item;
+        #endif
+        modify(item);
+        assert(item == oldItem); // changing the value of an item results in undefined behavior
+    }
+
+    /** %Modify an item in place
+      * \tparam Modify %Function type (lambda or functor)
+      * \param index %Index of item to modify
+      * \param modify %Function of type void(Item &)
+      */
+    template<class Modify>
+    void modifyAt(long index, Modify modify)
+    {
+        assert(0 <= index && index < count());
+        Item &item = me().at(index);
+        #ifndef NDEBUG
+        Item oldItem = item;
+        #endif
+        modify(item);
+        assert(item == oldItem || index == count() || &at(index) != &item); // changing the value of an item results in undefined behavior
+    }
+
+    /** \copydoc at(long) const
+      */
+    const Item &operator[](long index) const { return at(index); }
+
+    /** Get constant reference to first item
+      */
+    const Item &first() const
+    {
+        assert(count() > 0);
+        return me().first();
+    }
+
+    /** Get constant reference to last item
+      */
+    const Item &last() const
+    {
+        assert(count() > 0);
+        return me().last();
+    }
+
+    /** Tell if \a item is the first item
+      */
+    bool first(const Item &item) const
+    {
+        return &item == &first();
+    }
+
+    /** Tell if \a item is the last item
+      */
+    bool last(const Item &item) const
+    {
+        return &item == &last();
+    }
+
+    /** Get constant reference to the first item
+      */
+    const Item &min() const
+    {
+        assert(count() > 0);
+        return me().first();
+    }
+
+    /** Get constant reference to the last item
+      */
+    const Item &max() const
+    {
+        assert(count() > 0);
+        return me().last();
+    }
+
+    ///@}
+
+    /** \name Map Operations
+      */
+    ///@{
+
+    /** Search for a key in the map
+      * \param key %Key to search for
+      * \param pos Returns the position of the item that was found
+      * \return True if key was found
+      */
+    bool find(const Key &key, Out<Locator> pos = None{}) const
+    {
+        return me().find(key, pos);
+    }
+
+    /** Convenience function to check if the map contains \a key
+      * \param key %Key to search for
+      * \return True if key was found
+      */
+    bool contains(const Key &key) const
+    {
+        return find(key);
+    }
+
+    /** Insert a new key-value pair if the map doesn't contain the key already
+      * \param key Search key
+      * \param value New value
+      * \param pos %Returns a locator pointing to the existing or newly inserted key-value pair
+      * \return True if the new key-value pair was inserted successfully
+      */
+    bool insert(const Key &key, const Value &value, Out<Locator> pos = None{})
+    {
+        return me().insertUnique(Item{key, value}, pos);
+    }
+
+    /** Insert a new or overwrite an existing key-value mapping
+      * \param key Search key
+      * \param value New value
+      */
+    void establish(const Key &key, const Value &value)
+    {
+        return me().establish(Item{key, value});
+    }
+
+    /** Remove the given \a key from the map
+      * \return True if a matching key-value pair was found and removed
+      */
+    bool remove(const Key &key)
+    {
+        return me().remove(key);
+    }
+
+    /** Search for \a key and return \a value
+      * \return True if key was found
+      */
+    bool lookup(const Key &key, Out<Value> value) const
+    {
+        Locator pos;
+        bool found = me().find(key, &pos);
+        if (found) value = at(pos).value();
+        return found;
+    }
+
+    /** Search for a key in the map
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
+      * \param pos Returns the position of the item that was found
+      * \return True if \a pattern was found
+      */
+    template<class Pattern>
+    bool findPattern(const Pattern &pattern, InOut<Locator> pos = None{}) const
+    {
+        return me().find(pattern, pos);
+    }
+
+    /** Convenience function to check if the map contains \a key
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
+      * \return True if \a pattern was found
+      */
+    template<class Pattern>
+    bool containsPattern(const Pattern &pattern) const
+    {
+        return find(pattern);
+    }
+
+    /** Search for \a pattern and return \a value
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \return True if pattern was found
+      */
+    template<class Pattern>
+    bool lookupPattern(const Pattern &pattern, Out<Value> value) const
+    {
+        Locator pos;
+        bool found = me().find(pattern, &pos);
+        if (found) value = at(pos).value();
+        return found;
+    }
+
+    /** %Map \a key to value (or return \a fallback value)
+      */
+    Value value(const Key &key, const Value &fallback) const
+    {
+        Locator pos;
+        return find(key, &pos) ? at(pos).value() : fallback;
+    }
+
+    /** %Map \a key to value
+      */
+    Value value(const Key &key) const
+    {
+        Locator pos;
+        return find(key, &pos) ? at(pos).value() : Value{};
+    }
+
+    /** \copydoc value(const Key &) const
+      */
+    Value operator()(const Key &key) const
+    {
+        return value(key);
+    }
+
+    /** %Make sure key exists and return a reference to its value
+      */
+    Value &operator()(const Key &key)
+    {
+        Locator pos;
+        insert(key, Value{}, &pos);
+        return valueAt(pos);
+    }
+
+    ///@}
+
+    /** \name Positional Operations
+      */
+    ///@{
+
+    /** Remove item at position \a pos (\a pos is automatically advanced to the next item)
+      */
+    void removeAt(Locator &pos)
+    {
+        me().popAndStep(pos);
+    }
+
+    /** Remove item at \a index
+      */
+    void removeAt(long index)
+    {
+        assert(0 <= index && index < count());
+        me().pop(index);
+    }
+
+    ///@}
+
+    /** \name Global Operations
+      */
+    ///@{
+
+    /** Call function \a f for each item
+      * \tparam F Function type (lambda or functor)
+      * \param f Unary function which gets called for each item
+      */
+    template<class F>
+    void forEach(F f) const
+    {
+        for (auto &x: *this) f(x);
+    }
+
+    /** Remove all items
+      */
+    void deplete()
+    {
+        me().deplete();
+    }
+
+    ///@}
+
+    using iterator = Iterator<bucket::Vector<Item>>; ///< \internal Value iterator
+    using const_iterator = Iterator<const bucket::Vector<Item>>; ///< \internal Readonly value iterator
+    using reverse_iterator = ReverseIterator<bucket::Vector<Item>>; ///< \internal Reverse value iterator
+    using const_reverse_iterator = ReverseIterator<const bucket::Vector<Item>>; ///< \internal Readonly reverse value iterator
+    using value_type = Item; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
+
+    /** \name Standard iterators
+      */
+    ///@{
+
+    iterator begin() { me(); return head(); } ///< %Return iterator pointing to the first item (if any)
+    iterator end  () { me(); return Locator{count()}; } ///< %Return iterator pointing behind the last item
+
+    const_iterator begin () const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+
+    reverse_iterator rbegin() { me(); return tail(); } ///< %Return reverse iterator pointing to the last item (if any)
+    reverse_iterator rend  () { me(); return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+
+    const_reverse_iterator rbegin () const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+
+    ///@}
+
+    /** \name Comparism Operators
+      */
+    ///@{
+
+    template<class B> bool operator==(const B &b) const { return container::equal(*this, b); } ///< %Return true if this container equals \a b
+    template<class B> bool operator!=(const B &b) const { return container::differ(*this, b); } ///< %Return true if this container differs from \a b
+    template<class B> bool operator< (const B &b) const { return container::below(*this, b); } ///< %Return true if this container is lower than \a b
+    template<class B> bool operator> (const B &b) const { return container::above(*this, b); } ///< %Return true if this container is greater than \a b
+    template<class B> bool operator<=(const B &b) const { return container::belowOrEqual(*this, b); } ///< %Return true if this container is lower or equal than b
+    template<class B> bool operator>=(const B &b) const { return container::aboveOrEqual(*this, b); } ///< %Return true if this container is greater or equal than b
+
+    ///@}
 
 private:
-    friend class Variant; // HACK
-    friend class VariantInstance; // HACK
-    operator Object *() const { return instance_; } // HACK
-
-    Ref<Instance> instance_;
+    Cow<bucket::Vector<Item>> me;
 };
-
-template<class K, class T>
-typename Map<K, T>::Index count(const Map<K, T> &a) { return a->count(); }
-
-template<class K, class T>
-typename Map<K, T>::ConstIterator begin(const Map<K, T> &a) { return a->begin(); }
-
-template<class K, class T>
-typename Map<K, T>::ConstIterator end(const Map<K, T> &a) { return a->end(); }
-
-template<class K, class T>
-typename Map<K, T>::Iterator begin(Map<K, T> &a) { return a->begin(); }
-
-template<class K, class T>
-typename Map<K, T>::Iterator end(Map<K, T> &a) { return a->end(); }
-
-template<class K, class T>
-bool operator==(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(a, b) == 0; }
-
-template<class K, class T>
-bool operator!=(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(a, b) != 0; }
-
-template<class K, class T>
-bool operator<(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(a, b) < 0; }
-
-template<class K, class T>
-bool operator>(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(a, b) > 0; }
-
-template<class K, class T>
-bool operator<=(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(a, b) <= 0; }
-
-template<class K, class T>
-bool operator>=(const Map<K, T> &a, const Map<K, T> &b) { return container::compare(a, b) >= 0; }
 
 } // namespace cc

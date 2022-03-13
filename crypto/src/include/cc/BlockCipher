@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Array>
+#include <cc/Object>
+
+namespace cc {
+
+/** \class BlockCipher cc/BlockCipher
+  * \ingroup crypto
+  * \brief Cryptographic block cipher
+  * \todo Change encode(), decode() interfaces to allow passing the current block, because block selection with Bytes::select() is to expensive.
+  */
+class BlockCipher: public Object
+{
+public:
+    /** Create a null block cipher
+      */
+    BlockCipher() = default;
+
+    /** Block size in bytes (required for encode() and decode())
+      */
+    int blockSize() const { return me().blockSize(); }
+
+    /** Encipher plaintext block \a p into ciphertext block \a c
+      * \note Both the plaintext block and the ciphertext block must have the proper block size.
+      */
+    void encode(const Bytes &p, Out<Bytes> c) { me().encode(p, c); }
+
+    /** Decipher ciphertext block \a c into plaintext block \a p
+      * \note Both the plaintext block and the ciphertext block must have the proper block size.
+      */
+    void decode(const Bytes &c, Out<Bytes> p) { me().decode(c, p); }
+
+protected:
+    /** \brief Internal state
+      */
+    struct State: public Object::State
+    {
+        /** Initialize with given \a blockSize
+          */
+        explicit State(int blockSize): blockSize_{blockSize} {}
+
+        /** \copydoc BlockCipher::blockSize()
+          */
+        int blockSize() const { return blockSize_; }
+
+        /** \copydoc BlockCipher::encode()
+          */
+        virtual void encode(const Bytes &p, Out<Bytes> c) = 0;
+
+        /** \copydoc BlockCipher::decode()
+          */
+        virtual void decode(const Bytes &c, Out<Bytes> p) = 0;
+
+    private:
+        int blockSize_ { 0 };
+    };
+
+    /** \brief Initialize with \a newState
+      */
+    explicit BlockCipher(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); } \
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

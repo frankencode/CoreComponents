@@ -1,17 +1,19 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
+#include <cc/ui/PlatformManager>
 #include <cc/ui/DisplayManager>
-#include <cc/ui/PlatformPlugin>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-DisplayManager *DisplayManager::instance() { return PlatformPlugin::instance()->displayManager(); }
+DisplayManager::DisplayManager()
+{
+    *this = PlatformManager{}.activePlugin().displayManager();
+}
 
-}} // namespace cc::ui
+} // namespace cc::ui

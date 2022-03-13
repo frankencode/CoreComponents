@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/HttpService>
+
+namespace cc {
+
+/** \internal
+  * \todo BUG: delivery of files with a space in the file name is not working
+  */
+class DirectoryService final: public HttpService
+{
+public:
+    static const char *name();
+
+    DirectoryService();
+
+private:
+    struct State;
+};
+
+} // namespace cc

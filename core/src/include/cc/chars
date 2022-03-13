@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \name Character Functions
+  */
+///@{
+
+/// \ingroup strings
+
+/** Convert character \a ch to the corresponding lower-case character
+  * \tparam T Character type
+  */
+template<class T>
+T toLower(T ch) {
+    if (('A' <= ch) && (ch <= 'Z'))
+        ch += 'a' - 'A';
+    return ch;
+}
+
+/** Convert character \a ch to the corresponding upper-case character
+  * \tparam T Character type
+  */
+template<class T>
+T toUpper(T ch) {
+    if (('a' <= ch) && (ch <= 'z'))
+        ch -= 'a' - 'A';
+    return ch;
+}
+
+/** Check if \a ch is a lower-case character
+  */
+template<class T>
+bool isLower(T ch) {
+    return ('a' <= ch) && (ch <= 'z');
+}
+
+/** Check if \a ch is an upper-case character
+  */
+template<class T>
+bool isUpper(T ch) {
+    return ('A' <= ch) && (ch <= 'Z');
+}
+
+/** Check if \a ch is a space character
+  */
+template<class T>
+bool isSpace(T ch) {
+    return (ch == ' ') || (ch == '\t');
+}
+
+///@}
+
+} // namespace cc

@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildOption>
+#include <cc/MetaObject>
+
+namespace cc::build {
+
+/** \brief Build parameters
+  */
+class BuildParameters: public Object
+{
+public:
+    BuildParameters() = default;
+
+    explicit BuildParameters(const MetaObject &object, const String &projectPath, BuildOption options):
+        Object{new State{object, projectPath, options}}
+    {}
+
+    String compiler() const { return me().compiler_; }
+    String optimize() const { return me().optimize_; }
+    bool linkStatic() const { return me().linkStatic_; }
+
+    const List<String> &includePaths() const { return me().includePaths_; }
+    const List<String> &libraryPaths() const { return me().libraryPaths_; }
+    const List<String> &libraries() const { return me().libraries_; }
+    const List<String> &customCompileFlags() const { return me().customCompileFlags_; }
+    const List<String> &customLinkFlags() const { return me().customLinkFlags_; }
+
+    List<String> &includePaths() { return me().includePaths_; }
+    List<String> &libraryPaths() { return me().libraryPaths_; }
+    List<String> &libraries() { return me().libraries_; }
+    List<String> &customCompileFlags() { return me().customCompileFlags_; }
+    List<String> &customLinkFlags() { return me().customLinkFlags_; }
+
+protected:
+    struct State: public Object::State
+    {
+        State() = default;
+        State(const MetaObject &object, const String &projectPath, BuildOption options);
+
+        void read(const MetaObject &object, const String &projectPath, BuildOption options);
+        void readSpecific(const MetaObject &object, const String &projectPath, BuildOption options);
+        void readSpecific(const BuildParameters &specific);
+
+        String compiler_;
+        String optimize_;
+        bool linkStatic_ { false };
+
+        List<String> includePaths_;
+        List<String> libraryPaths_;
+        List<String> libraries_;
+
+        List<String> customCompileFlags_;
+        List<String> customLinkFlags_;
+    };
+
+    BuildParameters(State *newState):
+        Object{newState}
+    {}
+
+    const State &me() const { return Object::me.as<State>(); }
+    State &me() { return Object::me.as<State>(); }
+};
+
+} // namespace cc::build

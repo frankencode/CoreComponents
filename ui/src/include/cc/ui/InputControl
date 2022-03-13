@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,35 +10,48 @@
 
 #include <cc/ui/Control>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
+/** \class InputControl cc/ui/InputControl
+  * \ingroup ui
+  * \brief Keyboard navigable input control
+  */
 class InputControl: public Control
 {
 public:
-    class Instance: public Control::Instance
+    /** Create a null input control
+      */
+    InputControl() = default;
+
+    InputControl &onAccepted(Call<void()> &&f) { me().onAccepted(std::move(f)); return *this; } ///< %Input accepted
+    InputControl &onRejected(Call<void()> &&f) { me().onRejected(std::move(f)); return *this; } ///< %Input rejected
+
+protected:
+    friend class Object;
+
+    struct State: public Control::State
     {
-    public:
-        virtual String text() const = 0;
-        virtual Point textPos() const = 0;
+        State();
 
-        Signal accepted;
-        Signal rejected;
-        Signal gotoNext;
-        Signal gotoPrevious;
+        virtual bool accept() const { return true; }
 
-    protected:
-        friend class InputControl;
+        void gotoNext();
+        void gotoPrevious();
 
-        Instance();
+        Trigger onAccepted; ///< \copydoc InputControl::accepted()
+        Trigger onRejected; ///< \copydoc InputControl::rejected()
     };
 
-    InputControl(Instance *instance):
-        Control{instance}
+    explicit InputControl(State *state):
+        Control{state}
     {}
 
-    Instance *operator->() const { return my<Instance>(); }
-    operator Instance *() const { return my<Instance>(); }
+    explicit InputControl(CreateState onDemand):
+        Control{onDemand}
+    {}
+
+    State &me() { return View::me().as<State>(); }
+    const State &me() const { return View::me().as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

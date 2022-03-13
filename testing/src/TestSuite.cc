@@ -1,61 +1,42 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <typeinfo>
-#include <cxxabi.h> // __cxa_demangle
-#include <stdlib.h> // free(3)
-#include <cc/exceptions>
-#include <cc/stdio>
-#include <cc/Singleton>
-#include <cc/File>
-#include <cc/TempFile>
+#include <cc/TestSuite>
+#include <cc/TxtTestReport>
+#include <cc/XmlTestReport>
 #include <cc/Arguments>
-#include <cc/testing/XmlTestReport>
-#include <cc/testing/TxtTestReport>
-#include <cc/testing/TestCase>
-#include <cc/testing/TestSuite>
+#include <cc/TempFile>
+#include <cc/stdio>
+#include <typeinfo> // typeid
+#include <cstdlib> // exit, free
+#include <cxxabi.h> // __cxa_demangle
 
 namespace cc {
-namespace testing {
 
-TestSuite *TestSuite::instance()
+Handle<TestSuite::State> TestSuite::me { new TestSuite::State };
+
+TestSuite::TestSuite(int argc, char *argv[])
 {
-    return Singleton<TestSuite>::instance();
-}
+    me().execPath = argv[0];
+    me().name = me().execPath.baseName();
 
-TestSuite::TestSuite():
-    testCaseFailureCount_{0},
-    testCaseSkipCount_{0},
-    totalFailureCount_{0}
-{}
-
-TestSuite::~TestSuite()
-{}
-
-bool TestSuite::init(int argc, char **argv)
-{
-    testCaseFailureCount_ = 0;
-    testCaseSkipCount_ = 0;
-    totalFailureCount_ = 0;
-    execPath_ = argv[0];
-    name_ = execPath_->baseName();
+    Map<String, Variant> options {
+        {"report", "txt"}
+    };
 
     try {
-        VariantMap options;
-        options->insert("report", "txt");
+        Arguments{argc, argv}.read(&options);
 
-        Arguments{argc, argv}->read(options);
-
-        String reportType = options->value("report");
+        String reportType = options.value("report");
         if (reportType == "txt")
-            report_ = TxtTestReport::create();
+            me().report = new TxtTestReport;
         else if (reportType == "xml")
-            report_ = XmlTestReport::create(stdOut());
+            me().report = new XmlTestReport;
         else {
             ferr("Unsupported report type \"%%\"\n\n") << reportType;
             throw HelpRequest{};
@@ -63,69 +44,63 @@ bool TestSuite::init(int argc, char **argv)
     }
     catch (HelpRequest &) {
         fout(
-            "Usage: TEST_CASE [OPTION]...\n"
-            "Execute test suite and generate test report.\n"
+            "Usage: %% [OPTION]...\n"
+            "Run test program.\n"
             "\n"
             "Options:\n"
-            "  -report=txt  select output format (\"xml\" or \"txt\")\n"
-        );
-        return false;
-    }
+            "  -report=[txt|xml]  Report type: plain text(txt) or JUnit(xml)\n"
+            "\n"
+        ) <<  me().name;
 
-    return true;
+        std::exit(1);
+    }
 }
 
-bool TestSuite::verify(bool condition, const String &description, const String &conditionText, const String &codePath, int codeLine)
+bool TestSuite::verify(bool condition, const String &conditionText, const String &codePath, int codeLine)
 {
     if (!condition) {
-        ++totalFailureCount_;
-        ++currentTestCase_->failureCount_;
+        ++me().failureCount;
+        ++me().currentTestCase.me().failureCount;
     }
-    report_->verify(currentTestCase_, condition, conditionText, codePath, codeLine);
+    me().report().verify(me().currentTestCase, condition, conditionText, codePath, codeLine);
     return condition;
 }
 
-int TestSuite::run(int argc, char **argv)
+int TestSuite::run()
 {
-    if (!init(argc, argv)) return 1;
+    bool interactive = IoStream::output().isInteractive();
 
-    bool interactive = stdOut()->isatty();
+    me().report().beginTestSuite(*this);
 
-    report_->beginTestSuite(this);
-
-    for (int i = 0; i < testCases_->count(); ++i)
+    for (TestCase &testCase: me().testCases)
     {
-        Ref<TestCase> testCase = testCases_->at(i);
-        testCase->assertionCount_ = 0;
-        testCase->failureCount_ = 0;
-
-        if (testCase->skip()) {
-            report_->skipTestCase(testCase);
-            ++testCaseSkipCount_;
+        if (testCase.skip()) {
+            me().report().skipTestCase(testCase);
+            ++me().skipCount;
             continue;
         }
 
-        report_->beginTestCase(testCase);
+        me().report().beginTestCase(testCase);
 
-        SystemStream outSaved, errSaved;
+        IoStream outSaved, errSaved;
         File outFile, errFile;
-        if (report_->captureOutput()) {
-            outSaved->duplicate(stdOut());
-            errSaved->duplicate(stdErr());
+        if (me().report().captureOutput()) {
+            outSaved = IoStream::output().duplicate();
+            errSaved = IoStream::error().duplicate();
             outFile = TempFile{};
             errFile = TempFile{};
-            outFile->duplicateTo(stdOut());
-            errFile->duplicateTo(stdErr());
+            outFile.duplicateTo(IoStream::output());
+            errFile.duplicateTo(IoStream::error());
         }
 
         if (interactive) {
-            currentTestCase_ = testCase;
-            testCase->run();
+            me().currentTestCase = testCase;
+            testCase.run();
         }
         else {
             try {
-                currentTestCase_ = testCase;
-                testCase->run();
+                me().currentTestCase = testCase;
+                testCase.run();
             }
             catch (Exception &ex) {
                 String typeName = typeid(ex).name();
@@ -133,33 +108,33 @@ int TestSuite::run(int argc, char **argv)
                     int status = 0;
                     char *buf = abi::__cxa_demangle(typeName, 0, 0, &status);
                     if (status == 0) typeName = buf;
-                    ::free(buf);
+                    std::free(buf);
                 }
-                testCase->caughtException_ = true;
-                report_->error(testCase, typeName, ex.message());
+                testCase.me().caughtException = true;
+                me().report().error(testCase, typeName, ex.message());
             }
             catch (...) {
-                testCase->caughtException_ = true;
-                report_->error(testCase, "", "");
+                testCase.me().caughtException = true;
+                me().report().error(testCase, "", "");
             }
         }
 
         String outText, errText;
-        if (report_->captureOutput()) {
-            outSaved->duplicateTo(stdOut());
-            errSaved->duplicateTo(stdErr());
-            outText = outFile->map();
-            errText = errFile->map();
+        if (me().report().captureOutput()) {
+            outSaved.duplicateTo(IoStream::output());
+            errSaved.duplicateTo(IoStream::error());
+            outText = outFile.map();
+            errText = errFile.map();
         }
 
-        report_->endTestCase(testCase, outText, errText);
+        me().report().endTestCase(testCase, outText, errText);
 
-        if (testCase->failureCount() > 0 || testCase->caughtException()) ++testCaseFailureCount_;
+        if (testCase.failureCount() > 0 || testCase.caughtException()) ++me().failureCount;
     }
 
-    report_->endTestSuite(this);
+    me().report().endTestSuite(*this);
 
-    return testCaseFailureCount_;
+    return me().failureCount;
 }
 
-}} // namespace cc::testing
+} // namespace cc

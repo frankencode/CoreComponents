@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpLoggingServiceConfigPrototype>
+#include <cc/HttpLoggingServiceInstance>
+
+namespace cc {
+
+/** \class HttpLoggingService cc/HttpLoggingService
+  * \ingroup http_server
+  * \brief Logging service
+  */
+class HttpLoggingService: public Object
+{
+public:
+    /** %Create a null logging service
+      */
+    HttpLoggingService() = default;
+
+    /** %Configuration prototype if this logging service
+      */
+    HttpLoggingServiceConfigPrototype configPrototype() const { return me().configPrototype(); }
+
+    /** %Create a new instance of this logging service
+      */
+    HttpLoggingServiceInstance createInstance(const MetaObject &config) const { return me().createInstance(config); }
+
+protected:
+    struct State: public Object::State
+    {
+        virtual HttpLoggingServiceConfigPrototype configPrototype() const = 0;
+        virtual HttpLoggingServiceInstance createInstance(const MetaObject &config) const = 0;
+    };
+
+    HttpLoggingService(State *newState):
+        Object{newState}
+    {}
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

@@ -1,0 +1,158 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Variant>
+#include <cc/Object>
+#include <cc/InOut>
+
+namespace cc {
+
+/** \class MetaObject cc/MetaObject
+  * \ingroup meta
+  * \brief Duck-typed objects
+  */
+class MetaObject: public Object
+{
+public:
+    /** Create a null meta-object
+      */
+    MetaObject() = default;
+
+    /** Create meta-object of class \a className
+      */
+    explicit MetaObject(const String &className):
+        Object{new State{className}}
+    {}
+
+    String className() const { return me().className_; } ///< %Class name
+
+    List<MetaObject> &children() { return me().children_; } ///< %List of children
+    const List<MetaObject> &children() const { return me().children_; } ///< %Constant list of children
+
+    Map<String, Variant> &members() { return me().members_; } ///< %Key-value map of object properties
+    const Map<String, Variant> &members() const { return me().members_; } ///< %Constant key-value map of object properties
+
+    bool insert(const String &name, const Variant &value) { return me().members_.insert(name, value); } ///< Convenience method to add a new member
+    void establish(const String &name, const Variant &value) { return me().members_.establish(name, value); } ///< Convenience method to establish a new member
+    bool contains(const String &name) const { return me().members_.contains(name); } ///< Convenience method to check if a member of \a name exists
+    bool lookup(const String &name, Out<Variant> value) const { return me().members_.lookup(name, value); } ///< Convenience method to lookup the \a value of member \a name
+
+    Variant operator()(const String &name) const { return me().members_(name); } ///< %Convenience method to get the value of member \a name
+    Variant &operator()(const String &name) { return me().members_(name); } ///< %Convenience method to get/set the value of member \a name
+
+    long count() const { return me().children_.count(); } ///< %Convenience method to get the number of children
+    const MetaObject &operator[](long index) const { return me().children_[index]; } ///< %Convenience method to get the child at \a index
+    MetaObject &operator[](long index) { return me().children_[index]; } ///< %Convenience method to get the child at \a index
+
+    /** %Produce a meta-object using this meta-object as blueprint
+      */
+    MetaObject produce() const { return me().produce(); }
+
+    /** %Add all members of this meta-object to \a target, which are missing in \a target and
+      * also append all children of this meta-object to \a target
+      */
+    void autocomplete(InOut<MetaObject> target) const;
+
+    /** Create clone of this meta-object
+      */
+    MetaObject clone() const;
+
+    /** Realize a new object after deserialization
+      * \exception MetaError
+      */
+    void realize() { me().realize(); }
+
+    /** Compare for equality with \a other
+      */
+    bool operator==(const MetaObject &other) const
+    {
+        return
+            (this == &other) || (
+                className() == other.className() &&
+                members() == other.members() &&
+                children() == other.children()
+            );
+    }
+
+protected:
+    friend class Object;
+
+    struct State: public Object::State
+    {
+        explicit State(const String &className):
+            className_{className}
+        {}
+
+        virtual MetaObject produce() const
+        {
+            return MetaObject{className_};
+        }
+
+        virtual void realize()
+        {}
+
+        String className_;
+        Map<String, Variant> members_;
+        List<MetaObject> children_;
+    };
+
+    explicit MetaObject(State *newState):
+        Object{newState}
+    {}
+
+    State &me() {
+        if (!Object::me) *this = MetaObject{new State{""}};
+        return Object::me.as<State>();
+    }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+template<>
+struct VariantType<MetaObject>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, const MetaObject &x)
+    {
+        static_assert(sizeof(MetaObject) <= 8);
+
+        new(bytes)MetaObject{x};
+    }
+
+    static MetaObject retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<MetaObject>::info); // expected type 'MetaObject'
+
+        return *static_cast<const MetaObject *>(bytes);
+    }
+};
+
+inline Variant Variant::operator()(const String &key) const
+{
+    return to<MetaObject>().members().value(key);
+}
+
+inline Variant &Variant::operator()(const String &key)
+{
+    if (!is<MetaObject>()) *this = MetaObject{""};
+    return to<MetaObject>()(key);
+}
+
+inline Variant Variant::operator[](long index) const
+{
+    return to<MetaObject>().children()[index];
+}
+
+inline long Variant::count() const
+{
+    return to<MetaObject>().children().count();
+}
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -14,70 +14,59 @@ namespace cc {
 
 /** \class Utf8Source cc/Utf8Source
   * \ingroup unicode
-  * \brief %Unicode UTF-8 decoding data source
+  * \brief UTF-8 decoding data source
+  * \exception UnicodeError
   */
 class Utf8Source
 {
 public:
-    class Instance
+    /** Create a new UTF-8 decoding data source
+      * \param stream Underlying data stream
+      */
+    Utf8Source(const Stream &stream):
+        byteSource_{stream}
+    {}
+
+    /** Create a new UTF-8 decoding data source
+      * \param stream Underlying data stream
+      * \param buffer Input buffer
+      */
+    Utf8Source(const Stream &stream, const Bytes &buffer):
+        byteSource_{stream, buffer}
+    {}
+
+    /** Create a new UTF-8 decoding data source
+      * \param buffer Input buffer
+      */
+    Utf8Source(const Bytes &buffer):
+        byteSource_{buffer}
+    {}
+
+    /** Read the next %Unicode character
+      * \param ch Returns the %Unicode character read if any
+      * \return True if not end of information, false otherwise
+      */
+    bool read(Out<char32_t> ch)
     {
-    public:
-        /** Read the next %Unicode character
-          * \param ch returns the %Unicode character read if any
-          * \return true if not end of information, false otherwise
-          * \exception UnicodeError
-          */
-        bool read(uchar_t *ch)
-        {
-            bool more = byteSource_->hasMore();
-            if (more) {
-                *ch = byteSource_->readUInt8();
-                if ((*ch & 0x80) != 0) // distinguish 7 bit ASCII from multibyte sequence
-                    *ch = readMultiByte(*ch);
-            }
-            return more;
+        bool hasMore = byteSource_.prefetch();
+        if (hasMore) {
+            char32_t w = byteSource_.readUInt8();
+            if ((w & 0x80) != 0) // distinguish 7 bit ASCII from multibyte sequence
+                w = readMultiByte(w);
+            ch << w;
         }
-
-    private:
-        friend class Utf8Source;
-
-        class DecodingError: public UnicodeError {
-        public:
-            String message() const override;
-        };
-
-        Instance(const Stream &stream, CharArray *buffer):
-            byteSource_{stream, buffer}
-        {}
-
-        Instance(const CharArray *buffer):
-            byteSource_{buffer}
-        {}
-
-        char32_t readMultiByte(char32_t ch);
-
-        ByteSource byteSource_;
-    };
-
-    /** Open a new UTF-8 decoding data source
-      * \param stream underlying data stream
-      * \param buffer input buffer (optional)
-      */
-    Utf8Source(const Stream &stream, CharArray *buffer = nullptr):
-        instance_{stream, buffer}
-    {}
-
-    /** Open a new UTF-8 decoding data source
-      * \param buffer input buffer
-      */
-    Utf8Source(const CharArray *buffer):
-        instance_{buffer}
-    {}
-
-    Instance *operator->() { return &instance_; }
+        return hasMore;
+    }
 
 private:
-    Instance instance_;
+    class DecodingError: public UnicodeError {
+    public:
+        String message() const override;
+    };
+
+    char32_t readMultiByte(char32_t ch);
+
+    ByteSource byteSource_;
 };
 
 } // namespace cc

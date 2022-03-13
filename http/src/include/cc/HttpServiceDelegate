@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/httpLogging>
+#include <cc/HttpRequest>
+#include <cc/HttpResponseGenerator>
+#include <cc/Format>
+
+namespace cc {
+
+class HttpServerConfig;
+class HttpServiceWorker;
+class HttpServiceWorkerState;
+class HttpClientConnection;
+class HttpServiceInstance;
+class HttpLoggingServiceInstance;
+
+/** \class HttpServiceDelegate cc/HttpServiceDelegate
+  * \ingroup http_server
+  * \brief %Delegate used by the worker threads to process HTTP requests
+  */
+class HttpServiceDelegate: public Object
+{
+public:
+    /** Create null delivery delegate
+      */
+    HttpServiceDelegate() = default;
+
+    /** %Process a HTTP request
+      */
+    void process(const HttpRequest &request)
+    {
+        me().process(request);
+    }
+
+protected:
+    friend class HttpServiceWorkerState;
+
+    /** \brief Internal state
+      */
+    struct State: public Object::State
+    {
+        State() = default;
+
+        virtual void process(const HttpRequest &request) = 0;
+
+        const HttpServerConfig &nodeConfig() const;
+        const HttpServiceInstance &serviceInstance() const;
+        const HttpLoggingServiceInstance &errorLoggingInstance() const;
+
+        HttpClientConnection &client();
+        HttpResponseGenerator &response();
+
+    private:
+        friend class HttpServiceWorkerState;
+
+        HttpServiceWorkerState *workerState_ { nullptr };
+    };
+
+    explicit HttpServiceDelegate(State *newState):
+        Object{newState}
+    {}
+
+    State *operator->() { return &me(); }
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

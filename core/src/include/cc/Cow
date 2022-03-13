@@ -1,0 +1,126 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Use>
+
+namespace cc {
+
+/** \class Cow cc/basics
+  * \ingroup basics
+  * \brief Copy-on-write aggregate
+  * \tparam T Value type
+  */
+template<class T>
+class Cow
+{
+    using Data = typename Use<T>::Data;
+
+public:
+    Cow():
+        data{new Data}
+    {
+        // printf("Cow::Cow()\n");
+    }
+
+    /** Initial construction of the aggregate
+      * \param args construction arguments for the aggregate value
+      */
+    template<class... Args>
+    explicit Cow(Args... args):
+        data{new Data{args...}}
+    {
+        // printf("Cow::Cow(Args...)\n");
+    }
+
+    /** Initialize by aggregate \a other
+      */
+    Cow(const Cow &other):
+        data{other.data}
+    {
+        // printf("Cow::Cow(const Cow &): data->refCount() = %d\n", int(data->useCount()));
+        data->acquire();
+    }
+
+    /** Initialize by right-side aggregate \a other
+      */
+    Cow(Cow &&other):
+        data{other.data}
+    {
+        // printf("Cow::Cow(const Cow &&)\n");
+        other.data = nullptr;
+    }
+
+    /** Cleanup
+      */
+    ~Cow()
+    {
+        // printf("Cow::~Cow()\n");
+        if (data) data->release();
+    }
+
+    /** Assign aggregate \a other
+      */
+    Cow &operator=(const Cow &other)
+    {
+        // printf("Cow::operator=(const Cow &)\n");
+        data->release();
+        data = other.data;
+        data->acquire();
+        return *this;
+    }
+
+    /** Assign right-side aggregate \a other
+      */
+    Cow &operator=(Cow &&other)
+    {
+        // printf("Cow::operator=(const Cow &&)\n");
+        data->release();
+        data = other.data;
+        other.data = nullptr;
+        return *this;
+    }
+
+    /** Get constant reference to aggregate value
+      */
+    const T &operator()() const { return value(); }
+
+    /** Get reference to aggregate value
+      */
+    T &operator()() { return touch(); }
+
+    /** Get constant reference to aggregate value
+      */
+    const T &value() const { return Use<T>::value(data); }
+
+    /** Get reference to aggregate value
+      */
+    T &touch()
+    {
+        if (data->useCount() > 1) {
+            Data *oldData = data;
+            data = new Data{value()};
+            oldData->release();
+        }
+
+        return Use<T>::value(data);
+    }
+
+    /** %Return the usage count for this aggregate
+      */
+    long useCount() const { return data->useCount(); }
+
+private:
+    template<class>
+    friend class Use;
+
+    Data *data;
+};
+
+} // namespace cc

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2019 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,36 +10,26 @@
 #include <cc/ui/TimeMaster>
 #include <cc/System>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-Timer::Instance::Instance(double interval):
-    interval_{interval}
-{}
-
-void Timer::Instance::start()
+void Timer::startAt(double startTime)
 {
-    startIn(interval_);
+    me().isActive_ = true;
+    me().firstTime_ = me().startTime_ = startTime;
+    TimeMaster{}.startTimer(*this);
 }
 
-void Timer::Instance::startAt(double startTime)
+void Timer::startIn(double delayTime)
 {
-    isActive_ = true;
-    firstTime_ = startTime_ = startTime;
-    TimeMaster::instance()->startTimer(this);
+    me().isActive_ = true;
+    me().startTime_ = System::now();
+    me().firstTime_ = me().startTime_ + delayTime;
+    TimeMaster{}.startTimer(*this);
 }
 
-void Timer::Instance::startIn(double delayTime)
+void Timer::stop()
 {
-    isActive_ = true;
-    startTime_ = System::now();
-    firstTime_ = startTime_ + delayTime;
-    TimeMaster::instance()->startTimer(this);
+    me().isActive_ = false;
 }
 
-void Timer::Instance::stop()
-{
-    isActive_ = false;
-}
-
-}} // namespace cc::ui
+} // namespace cc::ui

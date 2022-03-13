@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/Module>
+#include <cc/build/ToolChain>
+
+namespace cc::build {
+
+class BuildShell;
+class BuildPlan;
+
+class DependencyCache: public Object
+{
+public:
+    explicit DependencyCache(const BuildPlan &plan);
+
+    double cacheTime() const;
+
+    List<String> previousSources() const;
+
+    bool lookup(const String &source, Out<Module> module);
+    void insert(const String &source, const Module &module);
+
+private:
+    struct State;
+
+    const State &me() const;
+    State &me();
+};
+
+} // namespace cc::build

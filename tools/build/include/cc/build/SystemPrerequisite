@@ -1,0 +1,80 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildParameters>
+#include <cc/Version>
+
+namespace cc::build {
+
+/** \brief Prerequisites provided by the build system
+  */
+class SystemPrerequisite: public BuildParameters
+{
+public:
+    explicit SystemPrerequisite(const String &name):
+        BuildParameters{new State{name}}
+    {}
+
+    SystemPrerequisite(const MetaObject &object, const String &projectPath, BuildOption options):
+        BuildParameters{new State{object, projectPath, options}}
+    {}
+
+    String name() const { return me().name_; }
+    String origName() const { return me().origName_; }
+    bool optional() const { return me().optional_; }
+    bool cascade() const { return me().cascade_; }
+    void setCascade(bool newValue) { me().cascade_ = newValue; }
+
+    String compileFlagsConfigure() const { return me().compileFlagsConfigure_; }
+    String linkFlagsConfigure() const { return me().linkFlagsConfigure_; }
+
+    String versionConfigure() const { return me().versionConfigure_; }
+    Version versionMin() const { return me().versionMin_; }
+    void setVersionMin(Version newValue) { me().versionMin_ = newValue; }
+    Version versionMax() const { return me().versionMax_; }
+    void setVersionMax(Version newValue) { me().versionMax_ = newValue; }
+
+    String probe() const { return me().probe_; }
+    String configure() const { return me().configure_; }
+
+    bool autoConfigure() const { return me().autoConfigure_; }
+
+private:
+    struct State: public BuildParameters::State
+    {
+        State(const String &name):
+            name_{name},
+            origName_{name}
+        {}
+
+        State(const MetaObject &object, const String &projectPath, BuildOption options);
+
+        String name_;
+        String origName_;
+        bool optional_ { false };
+        bool cascade_ { false };
+
+        String compileFlagsConfigure_;
+        String linkFlagsConfigure_;
+
+        String versionConfigure_;
+        Version versionMin_;
+        Version versionMax_;
+
+        String probe_;
+        String configure_;
+        bool autoConfigure_ { true };
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::build

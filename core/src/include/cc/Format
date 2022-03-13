@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,142 +8,99 @@
 
 #pragma once
 
-#include <cc/String>
-#include <cc/Variant>
-#include <cc/QueueInstance>
 #include <cc/Stream>
+#include <cc/Queue>
 #include <cc/str>
 
 namespace cc {
 
-template<class> class QueueInstance;
-
-/** \addtogroup formatted_io
-  * \{
-  */
-
-/** \class FormatSignal cc/Format
-  * \brief Type for formatting signals
-  */
 class FormatSignal {};
+class NewLine: public FormatSignal {};
+class Flush: public FormatSignal {};
 
-extern FormatSignal nl; ///< The newline formatting signal causes a newline but no output flushing.
-extern FormatSignal flush; ///< The flush formatting signal causes the aggregated text to be flushed and written to the associated output stream (if any).
+extern NewLine nl; ///< Newline formatting signal: causes a newline character to be added
+extern Flush flush; ///< Flush formatting signal: causes the formatting list to be flushed
+
+template<class T, bool isObject = std::is_base_of<Object, T>::value >
+class Stringify {
+public:
+    static String stringify(const T &x) { return str(x); }
+};
+
+template<class T>
+class Stringify<T, true> {
+public:
+    static String stringify(const T &x) { return x.toString(); }
+};
 
 /** \class Format cc/Format
-  * \brief Text formatting helper
+  * \ingroup streams
+  * \brief Generate formatted text
+  * \see IoStream::stdOut(), IoStream::stdErr()
   */
-class Format: public StringList
+class Format: public List<Bytes>
 {
 public:
-    /** Construct a new String formatting helper
-      * \param pattern formatting pattern containing injection placeholders ("%%")
-      * \param stream output stream to write the resulting text to (optional)
+    /** Create a new formatted output text
+      * \param pattern Output format with zero or more placeholders ("%%")
+      * \param stream Output stream to write the resulting text to (optional)
       */
     Format(const String &pattern, const Stream &stream = Stream{});
 
-    /** Construct a new String formatting helper
-      * \param stream output stream to write the resulting text to (optional)
+    /** Create a new formatted output text
+      * \param stream Output stream to write the resulting text to (optional)
       */
     Format(const Stream &stream = Stream{});
 
-    /// Low-level destructor
+    /** Cleanup: flush the output text
+      */
     ~Format();
 
-    /// Copy-constructor
-    Format(const Format &b) = default;
+    /** Add string \a s to the output text
+      */
+    Format &operator<<(const String &s) { return *this << s.asBytes(); }
 
-    /// Assignment operator
-    Format &operator=(const Format &b) = default;
+    /** Add string \a s to the output text
+      */
+    Format &operator<<(const Bytes &s);
 
-    /// Append or inject a string to the output text
-    Format &operator<<(const String &s);
-
-    /// Automatically join a stringlist and append or inject it to the output text
-    Format &operator<<(const StringList &l) {
-        return *this << l->join();
+    /** Merge and add string list \a l to the output text
+      */
+    Format &operator<<(const List<String> &l) {
+        return (*this) << String{l};
     }
 
-    /** %Process a special formatting signal
-      * \param s formatting signal (nl or flush)
-      */
-    Format &operator<<(const FormatSignal &s);
-
-    /** Append or inject an element x to the output text
-      * \param x anything which can be converted to a String via str(x)
+    /** Add \a x to the output text
+      * \tparam T Type of \a x
+      * \param x Variable to be stringified
       */
     template<class T>
     Format &operator<<(const T &x) {
-        if (isNull_) return *this;
-        return *this << str(x);
+        if (me().discardMode) return *this;
+        return (*this) << Stringify<T>::stringify(x);
     }
+
+    /** Append newline
+      */
+    Format &operator<<(const NewLine &);
+
+    /** Flush output
+      */
+    Format &operator<<(const Flush &);
 
 private:
     void flush();
 
-    Stream stream_;
-    bool isNull_;
-    Ref< QueueInstance<int> > placeHolder_;
-    String lastInsert_;
-    int lastPosition_;
+    struct State {
+        Stream stream;
+        bool discardMode;
+        bool injectionMode { false };
+        int lastPosition { 0 };
+        Bytes lastInsert;
+        Queue<int> placeHolder;
+    };
+
+    Shared<State> me;
 };
-
-/** \class NullFormat cc/Format
-  * \brief Zero storage formatting output sink
-  */
-class NullFormat {
-public:
-    /// Drop output
-    template<class T>
-    inline const NullFormat &operator<<(T) const { return *this; }
-};
-
-template<class T>
-String str(const List<T> &a)
-{
-    auto n = a->count();
-    if (n == 0) return "[]";
-    Format f;
-    f << "[ ";
-    for (const auto &x: a) {
-        f << x;
-        if (--n > 0) f << ", ";
-    }
-    f << " ]";
-    return f;
-}
-
-template<class K, class T>
-String str(const Map<K, T> &a)
-{
-    auto n = a->count();
-    if (n == 0) return "[]";
-    Format f;
-    f << "[ ";
-    for (const auto &x: a) {
-        f << "(" << x->key() << ": " << x->value() << ")";
-        if (--n > 0) f << ", ";
-    }
-    f << " ]";
-    return f;
-}
-
-template<class T>
-String str(const Set<T> &a)
-{
-    auto n = a->count();
-    if (n == 0) return "[]";
-    Format f;
-    f << "[ ";
-    for (const auto &x: a) {
-        f << x;
-        if (--n > 0) f << ", ";
-    }
-    f << " ]";
-    return f;
-}
-
-/** \}
-  */
 
 } // namespace cc

@@ -1,0 +1,63 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Utf16Iterator>
+#include <cc/String>
+
+namespace cc {
+
+/** \class Utf16 cc/Utf16
+  * \ingroup unicode
+  * \brief Iterate %Unicode code points of an UTF-16 encoded string
+  */
+class Utf16 {
+public:
+    /** Get encoded size of code point \a ch
+      */
+    static int encodedSize(char32_t ch)
+    {
+        return 2 * (1 + (0xFFFF < ch));
+    }
+
+    /** Create a UTF-16 facade for word sequence \a s of length \a n
+      */
+    Utf16(const std::uint16_t *s, long n):
+        s_{s},
+        n_{n}
+    {}
+
+    Utf16(const String &s):
+        s_{&s.item<std::uint16_t>(0)},
+        n_{s.count() / 2}
+    {}
+
+    /** Begin of iteration sequence
+      */
+    Utf16Iterator begin() const { return Utf16Iterator{s_, s_ + n_, s_ }; }
+
+    /** End of iteration sequence
+      */
+    Utf16Iterator end() const { return Utf16Iterator{s_, s_ + n_, s_ + n_ }; }
+
+    /** Count number of code points
+      */
+    long count() const
+    {
+        long n = 0;
+        for (auto it = begin(); it; ++it) ++n;
+        return n;
+    }
+
+private:
+    const std::uint16_t *s_;
+    long n_;
+};
+
+} // namespace cc

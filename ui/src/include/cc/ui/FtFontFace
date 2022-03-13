@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,48 +9,38 @@
 #pragma once
 
 #include <cc/ui/FontFace>
+#include <cc/ui/FtLibrary>
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include FT_GLYPH_H
+#include FT_TRUETYPE_TABLES_H
 
-typedef struct FT_FaceRec_ *FT_Face;
-typedef struct TT_OS2_ TT_OS2;
+namespace cc::ui {
 
-namespace cc {
-namespace ui {
-
-class FtLibrary;
-
+/** \internal
+  */
 class FtFontFace: public FontFace
 {
 public:
-    static Ref<FtFontFace> open(const String &path);
-
-    String path() const { return path_; }
-
-    String family() const { return family_; }
-    Weight weight() const { return weight_; }
-    Slant slant() const { return slant_; }
-    Stretch stretch() const { return stretch_; }
-    Pitch pitch() const { return pitch_; }
-
-    FT_Face ftFace() const { return face_; }
-
-    String toString() const;
-
-protected:
     FtFontFace(const String &path);
-    ~FtFontFace();
 
-    FtFontFace *open();
+    FT_Face ftFace() const;
 
-    Ref<FtLibrary> ftLibrary_;
+private:
+    friend class Object;
 
-    String path_;
-    FT_Face face_;
+    struct State: public FontFace::State
+    {
+        State(const String &path);
+        ~State();
 
-    String family_;
-    Weight weight_;
-    Slant slant_;
-    Stretch stretch_;
-    Pitch pitch_;
+        FtLibrary ftLibrary_;
+        FT_Face face_ { nullptr };
+    };
+
+    FtFontFace() = default;
+
+    const State &me() const;
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

@@ -1,0 +1,26 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildStage>
+
+namespace cc::build {
+
+/** \brief Prepare sources before starting the actual build process
+  */
+class PreparationStage: public BuildStage
+{
+public:
+    bool run();
+
+private:
+    String expandCommand(const String &command, const String &sourcePath, const String &targetPath) const;
+};
+
+} // namespace cc::build

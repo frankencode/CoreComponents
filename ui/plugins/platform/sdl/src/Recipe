@@ -1,5 +1,5 @@
 Plugin {
-    name: ccuisdlplugin
+    name: cc_ui_sdl_plugin
     group: platform
     extend: cc/ui
     depends: sdl2 >= 2.0.10

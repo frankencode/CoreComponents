@@ -1,0 +1,65 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TextError>
+#include <cc/Object>
+#include <cc/Range>
+
+namespace cc {
+
+/** \class Pattern cc/Pattern
+  * \ingroup glob
+  * \brief Regular expression pattern
+  * \exception TextError
+  */
+class Pattern final: public Object
+{
+public:
+    /** Create an invalid pattern
+      */
+    Pattern() = default;
+
+    /** Create a new pattern from a regular expression \a text
+      */
+    Pattern(const String &text);
+
+    /** %Match \a text against this pattern
+      * \param text %Candidate input text
+      * \param captures Matching %Range for each matching grouped subexpression (in brackets)
+      * \return True if \a text matches
+      */
+    bool match(const String &text, Out< List<Range> > captures = None{}) const;
+
+    /** Find the next occurance of this pattern
+      * \param text %Text to search in
+      * \param offset %Start and final offset
+      * \return True if a match could be found in \a text
+      */
+    bool findIn(const String &text, InOut<long> offset = None{}) const;
+
+    /** Break up \a text into the non-matching parts
+      */
+    List<String> breakUp(const String &text) const;
+
+    /** %Return a textual representation of the compiled pattern expression
+      */
+    List<String> explain() const;
+
+    /** The regular expression text this pattern was created from
+      */
+    String text() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

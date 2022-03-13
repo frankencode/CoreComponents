@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/LookAheadNode>
+
+namespace cc::syntax {
+
+/** \class AheadNode cc/syntax/AheadNode
+  * \brief Match a given sub-expression ahead of the current text position
+  */
+class AheadNode final: public LookAheadNode<0>
+{
+public:
+    /** \param entry Sub-expression to match
+      */
+    explicit AheadNode(const SyntaxNode &entry):
+        LookAheadNode<0>{entry}
+    {}
+};
+
+} // namespace cc::syntax

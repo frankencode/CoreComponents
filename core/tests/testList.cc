@@ -1,121 +1,67 @@
-/*
- * Copyright (C) 2007-2017 Frank Mertens.
- *
- * Distribution and use is allowed under the terms of the zlib license
- * (see cc/LICENSE-zlib).
- *
- */
+#include <cc/List>
+#include <cc/testing>
 
-#include <cc/testing/TestSuite>
-#include <cc/stdio>
-#include <cc/Random>
-#include <cc/ListInstance>
+namespace cc { template class List<int>; }
 
-using namespace cc;
-using namespace cc::testing;
-
-namespace cc { template class ListInstance<String>; }
-
-template<class T>
-void print(Ref< ListInstance<T> > list) {
-    fout("[");
-    for (int i = 0; i < list->count(); ++i) {
-        fout() << list->at(i);
-        if (i + 1 < list->count()) fout(", ");
-    }
-    fout("]\n");
-}
-
-typedef ListInstance<int> IntList;
-
-class InsertionIteration: public TestCase
+int main(int argc, char *argv[])
 {
-    void run() {
-        Ref<IntList> list = IntList::create();
-        for (int i = 0; i < 10; ++i)
-            list->append(i);
-        print(list);
-        for (int i = 0; i < 10; ++i)
-            CC_VERIFY(list->at(i) == i);
-    }
-};
+    using namespace cc;
 
-class InsertionRemoval: public TestCase
-{
-    void run() {
-        Ref<IntList> list = IntList::create();
-        for (int i = 0; i < 10; ++i)
-            list->append(i);
-        print(list);
-        for (int i = 0; i < list->count(); ++i)
-            if (list->at(i) % 2 != 0) list->removeAt(i);
-        print(list);
-        for (int i = 0; i < 10; ++i) {
-            if (i % 2 == 0) {
-                CC_VERIFY(list->front() == i);
-                list->popFront();
+    TestCase {
+        "Insertion",
+        []{
+            const int n = 20;
+
+            List<int> list;
+            for (int i = 0; i < n; ++i) list << i;
+
+            CC_CHECK(list.count() == n);
+
+            for (int i = 0; i < n; ++i)
+                CC_CHECK_EQUALS(list.at(i), i);
+        }
+    };
+
+    TestCase {
+        "SortingAscending",
+        []{
+            List<int> a;
+            Random random{0};
+            for (int i = 0; i < 20; ++i)
+                a.append(random.get(0, 99));
+
+            auto b = a.sorted();
+            CC_INSPECT(a);
+            CC_INSPECT(b);
+
+            CC_CHECK(a.count() == b.count());
+
+            for (int i = 0; i < b.count() - 1; ++i) {
+                CC_VERIFY(b.at(i) <= b.at(i + 1));
+                CC_VERIFY(a.find(b.at(i)));
             }
         }
-    }
-};
+    };
 
-class Sorting: public TestCase
-{
-    void run() {
-        Ref<IntList> list = IntList::create();
-        Random random;
-        for (int i = 0; i < 10; ++i)
-            list->append(random->get(0, 99));
-        print(list);
-        auto list2 = list->sort();
-        // print(list2);
-        CC_VERIFY(list2->count() == list->count());
-        for (int i = 0; i < list2->count() - 1; ++i)
-            CC_VERIFY(list2->at(i) <= list2->at(i + 1));
-        /*Ref<IntList> list3 = list->unique();
-        print(list3);
-        for (int i = 0; i < list3->count() - 1; ++i)
-            CC_VERIFY(list3->at(i) < list3->at(i + 1));*/
-    }
-};
+    TestCase {
+        "CopyOnWrite",
+        []{
+            List<int> a;
+            Random random{0};
+            for (int i = 0; i < 20; ++i)
+                a.append(random.get(0, 99));
+            // List<int> b { a };
+            List<int> b = a;
+            b.append(4);
+            CC_INSPECT(a);
+            CC_INSPECT(b);
+            CC_CHECK(a.count() + 1 == b.count());
+            for (auto pos = a.head(); pos; ++pos)
+                CC_VERIFY(a.at(pos) == b.at(+pos));
 
-class Cloning: public TestCase
-{
-    void run() {
-        Random random;
-        Ref<IntList> a = IntList::create();
-        for (int i = 0; i < 10; ++i)
-            a->append(random->get(0, 99));
-        Ref<IntList> b = IntList::copy(a);
-        print(a);
-        print(b);
-        CC_VERIFY(a->count() == b->count());
-        for (int i = 0; i < a->count(); ++i)
-            CC_VERIFY(a->at(i) == b->at(i));
-    }
-};
+            CC_CHECK(sizeof(List<int>) == sizeof(void *));
+        }
+    };
 
-class SyntaxSugar: public TestCase
-{
-    void printList(const IntList *l) {
-        for (auto x: l)
-            fout() << x << nl;
-    }
-
-    void run() {
-        for (auto x: IntList::create() << 1 << 2 << 3)
-            fout() << x << nl;
-        printList(IntList::create() << 1 << 2 << 3);
-    }
-};
-
-int main(int argc, char **argv)
-{
-    CC_TESTSUITE_ADD(InsertionIteration);
-    CC_TESTSUITE_ADD(InsertionRemoval);
-    CC_TESTSUITE_ADD(Sorting);
-    CC_TESTSUITE_ADD(Cloning);
-    CC_TESTSUITE_ADD(SyntaxSugar);
-
-    return TestSuite::instance()->run(argc, argv);
+    return TestSuite{argc, argv}.run();
 }

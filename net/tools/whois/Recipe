@@ -1,4 +1,0 @@
-Application {
-    name: ccwhois
-    use: [ core, net ]
-}

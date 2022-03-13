@@ -1,0 +1,42 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SyntaxDefinition>
+#include <cc/MetaPrototype>
+#include <cc/TextError>
+
+namespace cc {
+
+/** \class YasonSyntax cc/YasonSyntax
+  * \ingroup meta
+  * \brief %Yet another simple object notation
+  */
+class YasonSyntax final: public SyntaxDefinition
+{
+public:
+    /** Get an instance of this syntax definition
+      */
+    YasonSyntax();
+
+    /** Parse YASON message \a text according to \a protocol and return its value
+      */
+    Variant parse(const String &text, const MetaProtocol &protocol = MetaProtocol{}) const;
+
+    /** Read object from YASON message \a text according to given \a prototype
+      */
+    MetaObject readObject(const String &text, const Token &token, const MetaPrototype &prototype = MetaPrototype{}) const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

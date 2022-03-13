@@ -1,4 +1,4 @@
 Library {
-    name: cccrypto
+    name: cc_crypto
     use: core
 }

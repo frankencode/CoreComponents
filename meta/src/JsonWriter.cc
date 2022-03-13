@@ -1,130 +1,139 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/meta/JsonWriter>
+#include <cc/JsonWriter>
+#include <cc/Format>
 
 namespace cc {
-namespace meta {
 
-Ref<JsonWriter> JsonWriter::create(const Stream &sink, const String &indent)
+struct JsonWriter::State: public Object::State
 {
-    return new JsonWriter{sink, indent};
-}
+    State(const Stream &sink, const String &indent):
+        format_{sink},
+        indent_{indent}
+    {}
 
-JsonWriter::JsonWriter(const Stream &sink, const String &indent):
-    format_{sink},
-    indent_{indent}
-{}
-
-void JsonWriter::write(Variant value)
-{
-    writeValue(value, 0);
-    format_ << nl;
-}
-
-void JsonWriter::writeValue(Variant value, int depth)
-{
-    if (
-        value->type() == VariantType::Int  ||
-        value->type() == VariantType::Bool ||
-        value->type() == VariantType::Float
-    ) {
-        format_ << value;
-    }
-    else if (value->type() == VariantType::String) {
-        String s = value;
-        if (s->contains("\""))
-            s = s->replace("\"", "\\\"");
-        s = s->escape();
-        format_ << "\"" << s << "\"";
-    }
-    else if (value->type() == VariantType::List) {
-        writeList(value, depth);
-    }
-    else if (value->type() == VariantType::Object) {
-        writeObject(value, StringList{}, depth);
-    }
-    else {
-        format_ << "\"" << str(value) << "\"";
-    }
-}
-
-void JsonWriter::writeList(Variant value, int depth)
-{
-    if (value->itemType() == VariantType::Int)
-        writeTypedList<int>(value, depth);
-    else if (value->itemType() == VariantType::Bool)
-        writeTypedList<bool>(value, depth);
-    else if (value->itemType() == VariantType::Float)
-        writeTypedList<float>(value, depth);
-    else if (value->itemType() == VariantType::String)
-        writeTypedList<String>(value, depth);
-    else
-        writeTypedList<Variant>(value, depth);
-}
-
-void JsonWriter::writeObject(Variant value, const StringList &names, int depth)
-{
-    Ref<MetaObject> object = Variant::cast<MetaObject *>(value);
-    if (object->count() == 0) {
-        format_ << "{}";
-        return;
-    }
-    format_ << "{\n";
-    writeIndent(depth + 1);
-    if (names->count() == 0) {
-        for (int i = 0; i < object->count(); ++i)
-            writeMember(object->at(i)->key(), object->at(i)->value(), i == object->count() - 1, depth);
-    }
-    else {
-        int i = 0;
-        for (String name: names) {
-            writeMember(name, object->value(name), i == names->count() - 1, depth);
-            ++i;
+    void writeValue(const Variant &value, int depth = 0)
+    {
+        if (value.is<long>() || value.is<bool>() || value.is<double>())
+        {
+            format_ << value;
+        }
+        else if (value.is<String>())
+        {
+            String s = value;
+            if (s.find('\"')) s = s.replaced("\"", "\\\"");
+            s = s.escaped();
+            format_ << "\"" << s << "\"";
+        }
+        else if (value.is<MetaObject>()) {
+            writeObject(value.to<MetaObject>(), List<String>{}, depth);
+        }
+        else if (value.is<List<String>>()) {
+            writeList(value.to<List<String>>(), depth);
+        }
+        else if (value.is<List<Variant>>()) {
+            writeList(value.to<List<Variant>>(), depth);
+        }
+        else if (value.is<List<long>>()) {
+            writeList(value.to<List<long>>(), depth);
+        }
+        else if (value.is<List<bool>>()) {
+            writeList(value.to<List<bool>>(), depth);
+        }
+        else if (value.is<List<double>>()) {
+            writeList(value.to<List<double>>(), depth);
+        }
+        else {
+            format_ << "\"" << str(value) << "\"";
         }
     }
-    format_ << "}";
-}
 
-void JsonWriter::writeMember(const String &memberName, Variant memberValue, bool isLast, int depth)
-{
-    format_ << "\"" << memberName << "\": ";
-    writeValue(memberValue, depth + 1);
-    if (!isLast) {
-        format_ << ",\n";
+    template<class T>
+    void writeList(const List<T> &list, int depth = 0)
+    {
+        if (list.count() == 0) {
+            format_ << "[]";
+            return;
+        }
+
+        format_ << "[ ";
+
+        for (const T &item: list) {
+            writeValue(item, depth);
+            if (&item != &list.last())
+                format_ << ", ";
+        }
+
+        format_ << " ]";
+    }
+
+    void writeObject(const MetaObject &object, const List<String> &names, int depth = 0)
+    {
+        if (object.members().count() == 0) {
+            format_ << "{}";
+            return;
+        }
+        format_ << "{\n";
         writeIndent(depth + 1);
+        if (names.count() == 0) {
+            for (const auto &pair: object.members()) {
+                writeMember(pair.key(), pair.value(), &pair == &object.members().last(), depth);
+            }
+        }
+        else {
+            for (const String &name: names) {
+                writeMember(name, object.members().value(name), &name == &names.last(), depth);
+            }
+        }
+        format_ << "}";
     }
-    else {
-        format_ << "\n";
-        writeIndent(depth);
-    }
-}
 
-void JsonWriter::writeIndent(int depth)
+    void writeMember(const String &name, const Variant &value, bool isLast, int depth)
+    {
+        format_ << "\"" << name << "\": ";
+        writeValue(value, depth + 1);
+        if (!isLast) {
+            format_ << ",\n";
+            writeIndent(depth + 1);
+        }
+        else {
+            format_ << "\n";
+            writeIndent(depth);
+        }
+    }
+
+    void writeIndent(int depth)
+    {
+        for (int i = 0; i < depth; ++i) format_ << indent_;
+    }
+
+    Format format_;
+    String indent_;
+};
+
+JsonWriter::JsonWriter(const Stream &sink, const String &indent):
+    Object{new State{sink, indent}}
+{}
+
+void JsonWriter::write(const Variant &value)
 {
-    for (int i = 0; i < depth; ++i) format_ << indent_;
+    me().writeValue(value);
 }
 
-template<class T>
-void JsonWriter::writeTypedList(Variant value, int depth)
+void JsonWriter::writeObject(const MetaObject &object, const List<String> &names)
 {
-    List<T> list = Variant::cast< List<T> >(value);
-    if (list->count() == 0) {
-        format_ << "[]";
-        return;
-    }
-    format_ << "[ ";
-    for (int i = 0; i < list->count(); ++i) {
-        writeValue(list->at(i), depth);
-        if (i < list->count() - 1)
-            format_ << ", ";
-    }
-    format_ << " ]";
+    me().writeObject(object, names);
 }
 
-}} // namespace cc::meta
+JsonWriter::State &JsonWriter::me()
+{
+    return Object::me.as<State>();
+}
+
+} // namespace cc

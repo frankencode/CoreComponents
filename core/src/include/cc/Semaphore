@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,81 +8,180 @@
 
 #pragma once
 
-#include <cc/Mutex>
 #include <cc/WaitCondition>
+#include <cc/Mutex>
+#include <cc/Object>
+#include <limits>
+#include <cassert>
 
 namespace cc {
 
 /** \class Semaphore cc/Semaphore
   * \ingroup concurrency
   * \brief Waiting for a limited resource
-  * \todo mark as low-level
+  * \see Guard
+  * \tparam T Value type
   */
-class Semaphore
+template<class T>
+class Semaphore final
 {
 public:
-    class Instance: public Object {
-    public:
-        /** Acquire a certain amount of a limited resource
-          * \param amount number of items to acquire
-          */
-        void acquire(int amount = 1);
-
-        /** Release a certain amount of a limited resource
-          * \param amount number of items to acquire
-          */
-        void release(int amount = 1);
-
-        /** Acquire all items of a limited resource
-          * \param minAmount minimum number of items to acquire
-          * \return number of items acquired
-          */
-        int acquireAll(int minAmount = 1);
-
-        /** Release items of a limited resource on demand
-          * \param maxAmount maximum number of items to release
-          * \return number of items released
-          */
-        int releaseOnDemand(int maxAmount = intMax);
-
-        /** Try to acquire a certain amount of a limited resource
-          * \param amount number of items to acquire
-          * \return number of items released
-          */
-        bool tryAcquire(int amount = 1);
-
-        /** Try to acquire a certain amount of a limited resource for a giving timeout
-          * \param timeout seconds elapsed since the begin of Epoch
-          * \param amount number of items to acquire
-          * \see System::now()
-          */
-        bool acquireBefore(double timeout, int amount = 1);
-
-        /** Current supply of the limited resource
-          */
-        int getCurrentValue() const;
-
-    private:
-        friend class Semaphore;
-
-        Instance(int value);
-
-        WaitCondition notEmpty_;
-        Mutex mutex_;
-        int supply_, demand_;
-    };
-
-    /** Create a new semaphore
-      * \param value initial value
+    /** Create a new semaphore with initial \a supply of the limited ressource
       */
-    Semaphore(int value = 0):
-        instance_{new Instance{value}}
-    {}
+    Semaphore(T supply = 0):
+        me{supply}
+    {
+        assert(supply >= 0);
+    }
 
-    Instance *operator->() const { return instance_; }
+    /** Acquire a certain \a amount of a limited resource
+      */
+    void acquire(T amount = 1)
+    {
+        assert(amount > 0);
+        me().acquire(amount);
+    }
+
+    /** Release a certain \a amount of a limited resource
+      */
+    void release(T amount = 1)
+    {
+        assert(amount > 0);
+        me().release(amount);
+    }
+
+    /** Acquire all items of a limited resource
+      * \param minAmount Minimum number of items to acquire
+      * \return Number of items acquired
+      */
+    T acquireAll(T minAmount = 1)
+    {
+        assert(minAmount >= 0);
+        return me().acquireAll(minAmount);
+    }
+
+    /** Release items of a limited resource on demand
+      * \param maxAmount Maximum number of items to release
+      * \return Number of items released
+      */
+    T releaseOnDemand(T maxAmount = std::numeric_limits<T>::max())
+    {
+        assert(maxAmount > 0);
+        return me().releaseOnDemand(maxAmount);
+    }
+
+    /** Try to acquire a certain amount of a limited resource
+      * \param amount Number of items to acquire
+      * \return Number of items acquired
+      */
+    bool tryAcquire(T amount = 1)
+    {
+        assert(amount >= 0);
+        return me().tryAcquire(amount);
+    }
+
+    /** Try to acquire a certain amount of a limited resource for a limited time
+      * \param time Seconds elapsed since the begin of Epoch
+      * \param amount Number of items to acquire
+      * \see System::now()
+      */
+    bool acquireBefore(double time, T amount = 1)
+    {
+        assert(amount > 0);
+        return me().acquireBefore(time, amount);
+    }
+
+    /** Current supply of the limited resource
+      */
+    T currentSupply() const
+    {
+        return me().currentSupply();
+    }
 
 private:
-    Ref<Instance> instance_;
+    struct State
+    {
+        State(T supply):
+            supply_{supply}
+        {}
+
+        void acquire(T amount)
+        {
+            Guard<Mutex> guard{mutex_};
+            demand_ += amount;
+            while (supply_ < amount)
+                notEmpty_.wait(mutex_);
+            demand_ -= amount;
+            supply_ -= amount;
+        }
+
+        void release(T amount)
+        {
+            Guard<Mutex> guard{mutex_};
+            supply_ += amount;
+            notEmpty_.broadcast();
+        }
+
+        T acquireAll(T minAmount)
+        {
+            Guard<Mutex> guard{mutex_};
+            while (supply_ < minAmount)
+                notEmpty_.wait(mutex_);
+            int amount = supply_;
+            supply_ = 0;
+            return amount;
+        }
+
+        T releaseOnDemand(T maxAmount)
+        {
+            Guard<Mutex> guard{mutex_};
+            int amount = demand_;
+            if (amount > maxAmount) amount = maxAmount;
+            if (amount > 0) {
+                supply_ += amount;
+                notEmpty_.broadcast();
+            }
+            return amount;
+        }
+
+        bool tryAcquire(T amount)
+        {
+            bool success = false;
+            Guard<Mutex> guard{mutex_};
+            if (supply_ >= amount) {
+                supply_ -= amount;
+                success = true;
+            }
+            return success;
+        }
+
+        bool acquireBefore(double time, T amount)
+        {
+            bool success = true;
+            Guard<Mutex> guard{mutex_};
+            demand_ += amount;
+            while (supply_ < amount) {
+                success = notEmpty_.waitUntil(time, mutex_);
+                if (!success) break;
+            }
+            demand_ -= amount;
+            if (success) supply_ -= amount;
+            return success;
+        }
+
+        T currentSupply() const
+        {
+            Guard<Mutex> guard{mutex_};
+            return supply_;
+        }
+
+        T supply_;
+        T demand_ { 0 };
+        WaitCondition notEmpty_;
+        mutable Mutex mutex_;
+    };
+
+    Shared<State> me;
 };
 
 } // namespace cc

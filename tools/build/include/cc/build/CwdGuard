@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildShell>
+#include <cc/Process>
+
+namespace cc::build {
+
+class CwdGuard
+{
+public:
+    CwdGuard(const String &dirPath, const BuildShell &shell):
+        shell_{shell},
+        cwdSaved_{Process::cwd()}
+    {
+        shell.cd(dirPath);
+    }
+
+    ~CwdGuard()
+    {
+        shell_.cd(cwdSaved_);
+    }
+
+private:
+    const BuildShell &shell_;
+    String cwdSaved_;
+};
+
+} // namespace cc::build

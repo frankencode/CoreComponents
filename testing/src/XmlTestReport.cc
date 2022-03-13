@@ -1,84 +1,69 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/testing/XmlTestReport>
-#include <cc/Format>
-#include <cc/Stream>
+#include <cc/XmlTestReport>
+#include <cc/TestSuite>
+#include <cc/stdio>
+#include <cc/input>
 
 namespace cc {
-namespace testing {
-
-XmlTestReport::XmlTestReport(const Stream &stream):
-    stream_{stream}
-{}
 
 bool XmlTestReport::captureOutput() const
 {
     return true;
 }
 
-void XmlTestReport::beginTestSuite(TestSuite *testSuite)
+void XmlTestReport::beginTestSuite(const TestSuite &testSuite)
 {
-    Format{"<testsuite name=\"%%\" tests=\"%%\">\n", stream_} << testSuite->name() << testSuite->testCaseCount();
+    fout("<testsuite name=\"%%\" tests=\"%%\">\n") << testSuite.name() << testSuite.testCaseCount();
 }
 
-void XmlTestReport::beginTestCase(TestCase *testCase)
+void XmlTestReport::beginTestCase(const TestCase &testCase)
 {
-    Format{"<testcase name=\"%%\">\n", stream_} << testCase->name();
+    fout("<testcase name=\"%%\">\n") << testCase.name();
 }
 
-void XmlTestReport::verify(TestCase *testCase, bool condition, const String &message, const String &codePath, int codeLine)
+void XmlTestReport::verify(const TestCase &testCase, bool condition, const String &message, const String &codePath, int codeLine)
 {
     if (!condition)
-        Format{"<failure message=\"%%\">%%:%%</failure>\n", stream_} << message << codePath << codeLine;
+        fout("<failure message=\"%%\">%%:%%</failure>\n") << message << codePath << codeLine;
 }
 
-void XmlTestReport::error(TestCase *testCase, const String &type, const String &message)
+void XmlTestReport::error(const TestCase &testCase, const String &type, const String &message)
 {
-    Format{"<error type=\"%%\" message=\"%%\"></error>\n", stream_} << type << message;
+    fout("<error type=\"%%\" message=\"%%\"></error>\n") << type << message;
 }
 
-void XmlTestReport::endTestCase(TestCase *testCase, const String &outText, const String &errText)
+void XmlTestReport::endTestCase(const TestCase &testCase, const String &outText, const String &errText)
 {
-    if (testCase->skip()) {
-        Format{"<skipped/>\n", stream_};
+    if (testCase.skip()) {
+        fout() << "<skipped/>\n";
     }
     else {
-        Format{stream_}
+        fout()
             << "<system-out>" << xmlEscape(outText) << "</system-out>\n"
             << "<system-err>" << xmlEscape(errText) << "</system-err>\n";
     }
-    Format{stream_}
-        << "</testcase>\n";
+    fout() << "</testcase>\n";
 }
 
-void XmlTestReport::skipTestCase(TestCase *testCase)
+void XmlTestReport::skipTestCase(const TestCase &testCase)
 {
-    Format{
+    fout(
         "<testcase name=\"%%\">\n"
         "<skipped/>\n"
-        "</testcase>\n",
-        stream_
-    } << testCase->name();
+        "</testcase>\n"
+    ) << testCase.name();
 }
 
-void XmlTestReport::endTestSuite(TestSuite *testSuite)
+void XmlTestReport::endTestSuite(const TestSuite &testSuite)
 {
-    Format{"</testsuite>\n", stream_};
+    fout() << "</testsuite>\n";
 }
 
-String XmlTestReport::xmlEscape(const String &text)
-{
-    String h = text;
-    if (h->contains('<')) h = h->replace("<", "&lt;");
-    if (h->contains('>')) h = h->replace(">", "&gt;");
-    if (h->contains('&')) h = h->replace("?", "&amp;");
-    return h;
-}
-
-}} // namespace cc::testing
+} // namespace cc

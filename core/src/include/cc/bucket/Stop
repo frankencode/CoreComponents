@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+namespace bucket {
+
+static constexpr unsigned Capacity = 16;
+static constexpr unsigned HalfCapacity = Capacity >> 1;
+static constexpr unsigned MinFill = HalfCapacity;
+
+class Stop
+{
+public:
+    Stop() = default;
+
+    Stop(Stop *pred, Stop *succ):
+        succ_{succ},
+        pred_{pred}
+    {
+        if (pred) pred->succ_ = this;
+        if (succ) succ->pred_ = this;
+    }
+
+    Stop *succ_ { nullptr };
+    Stop *pred_ { nullptr };
+    unsigned fill_ { 0 };
+    unsigned slotIndex_ { 0 };
+};
+
+}} // namespace cc::bucket

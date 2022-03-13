@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpServiceConfigPrototype>
+#include <cc/HttpServiceInstance>
+
+namespace cc {
+
+/** \class HttpService cc/HttpService
+  * \ingroup http_server
+  * \brief %Web service
+  */
+class HttpService: public Object
+{
+public:
+    /** Create a null delivery service
+      */
+    HttpService() = default;
+
+    HttpServiceConfigPrototype configPrototype() const { return me().configPrototype(); }
+
+    HttpServiceInstance createInstance(const MetaObject &config) const { return me().createInstance(config); }
+
+protected:
+    struct State: public Object::State
+    {
+        /** Provides the service's custom configuration prototype
+          */
+        virtual HttpServiceConfigPrototype configPrototype() const = 0;
+
+        /** Creates a new service instance with given \a config
+          */
+        virtual HttpServiceInstance createInstance(const MetaObject &config) const = 0;
+    };
+
+    explicit HttpService(State *newState):
+        Object{newState}
+    {}
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

@@ -1,0 +1,78 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Utf8Iterator>
+#include <cc/String>
+#include <cstring>
+
+namespace cc {
+
+/** \class Utf8 cc/Utf8
+  * \ingroup unicode
+  * \brief Iterate %Unicode code points of an UTF-8 encoded string
+  */
+class Utf8 {
+public:
+    /** Get encoded size of code point \a ch
+      */
+    static int encodedSize(char32_t ch)
+    {
+        int n = 0;
+        if (ch < 0x80)         n = 1; // ASCII codes : 0xxxxxxx
+        else if (ch < 0x800)   n = 2; // 2-byte codes: 110yyyxx | 10xxxxx
+        else if (ch < 0x10000) n = 3; // 3-byte codes: 1110yyyy | 10yyyyxx | 10xxxxxx
+        else if (ch < 0x11000) n = 4; // 4-byte codes: 11110zzz | 10zzyyyy | 10yyyyxx | 10xxxxxx
+        return n;
+    }
+
+    /** Create a UTF-8 facade for byte string \a s
+      */
+    Utf8(const char *s):
+        s_{s},
+        n_{static_cast<long>(std::strlen(s))}
+    {}
+
+    /** Create a UTF-8 facade for byte string \a s of length \a n
+      */
+    Utf8(const char *s, long n):
+        s_{s},
+        n_{n}
+    {}
+
+    /** Create a UTF-8 facade for byte string \a s
+      */
+    Utf8(const String &s):
+        s_{s.chars()},
+        n_{s.count()}
+    {}
+
+    /** Begin of iteration sequence
+      */
+    Utf8Iterator begin() const { return Utf8Iterator{s_, s_ + n_, s_ }; }
+
+    /** End of iteration sequence
+      */
+    Utf8Iterator end() const { return Utf8Iterator{s_, s_ + n_, s_ + n_ }; }
+
+    /** Count number of code points
+      */
+    long count() const
+    {
+        long n = 0;
+        for (auto it = begin(); it; ++it) ++n;
+        return n;
+    }
+
+private:
+    const char *s_;
+    long n_;
+};
+
+} // namespace cc

@@ -1,4 +1,0 @@
-Library {
-    name: cccan
-    use: cc/core
-}

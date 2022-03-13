@@ -1,51 +1,72 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
-#include <cc/glob/PatternSyntax>
-#include <cc/glob/Pattern>
+#include <cc/Pattern>
+#include <cc/PatternSyntax>
 
 namespace cc {
-namespace glob {
 
-Pattern::Pattern() { *this = String{}; }
-Pattern::Pattern(const char *text) { *this = String{text}; }
-Pattern::Pattern(const String &text) { *this = text; }
-Pattern::Pattern(const Variant &text) { *this = String(text); }
-
-const Pattern &Pattern::operator=(const char *text)
+struct Pattern::State: public Object::State
 {
-    return *this = String{text};
-}
+    State(const String &text):
+        definition_{&rule_},
+        rule_{PatternSyntax{}.compile(text)},
+        text_{text}
+    {}
 
-const Pattern &Pattern::operator=(const String &text)
+    SyntaxDefinition definition_;
+    SyntaxRule rule_;
+    String text_;
+};
+
+Pattern::Pattern(const String &text):
+    Object{new State{text}}
+{}
+
+bool Pattern::match(const String &text, Out< List<Range> > captures) const
 {
-    if (text_ != text || !get()) {
-        text_ = text;
-        auto definition =
-            SyntaxDefinition::create(
-                #ifndef NDEBUG
-                SyntaxDebugger::create()
-                #endif
-            );
-        PatternSyntax::instance()->compile(text_, definition);
-        set(definition);
+    Token token = me().definition_.match(text);
+    if (captures.requested()) {
+        captures = List<Range>{};
+        if (token) {
+            for (const Token &child: token.children()) {
+                captures().append(child.range());
+            }
+        }
     }
-    return *this;
+    return token;
 }
 
-const Pattern &Pattern::operator=(const Variant &text)
+bool Pattern::findIn(const String &text, Out<long> offset) const
 {
-    return *this = String{text};
+    Token token = me().definition_.findIn(text, offset());
+    if (token) offset = token.i0();
+    return token;
 }
 
-String str(const Pattern &pattern)
+List<String> Pattern::breakUp(const String &text) const
 {
-    return pattern.text_;
+    return me().definition_.breakUp(text);
 }
 
-}} // namespace cc::glob
+List<String> Pattern::explain() const
+{
+    return me().rule_.explain();
+}
+
+String Pattern::text() const
+{
+    return me().text_;
+}
+
+const Pattern::State &Pattern::me() const
+{
+    return Object::me.as<State>();
+}
+
+} // namespace cc

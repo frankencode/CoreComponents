@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bitmask>
+
+namespace cc::build {
+
+enum class BuildOption: int
+{
+    Application   = 1 << 0,
+    Library       = 1 << 1,
+    Plugin        = 1 << 2,
+    Test          = 1 << 3,
+    Tools         = 1 << 4,
+    Package       = 1 << 5,
+    Debug         = 1 << 6,
+    Release       = 1 << 7,
+    Simulate      = 1 << 8,
+    Blindfold     = 1 << 9,
+    Bootstrap     = 1 << 10,
+    BuildTests    = 1 << 11,
+    Verbose       = 1 << 12,
+    Configure     = 1 << 13,
+    Clean         = 1 << 14,
+    None          = 0,
+    Unspecified   = -1,
+    GlobalOptions = Debug|
+                    Release|
+                    Simulate|
+                    Blindfold|
+                    Bootstrap|
+                    BuildTests|
+                    Verbose|
+                    Configure
+};
+
+CC_BITMASK(BuildOption)
+
+} // namespace cc::build

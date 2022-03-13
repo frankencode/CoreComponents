@@ -1,0 +1,24 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaProtocol>
+
+namespace cc::build {
+
+class RecipeProtocol: public MetaProtocol
+{
+public:
+    RecipeProtocol();
+
+private:
+    struct State;
+};
+
+} // namespace cc::build

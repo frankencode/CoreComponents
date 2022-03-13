@@ -1,0 +1,59 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Shared>
+#include <cc/String>
+#include <functional>
+
+namespace cc {
+
+/** \class TestCase cc/TestCase
+  * \ingroup testing
+  * \brief Defines a test case
+  */
+class TestCase
+{
+public:
+    TestCase() = default;
+
+    /** Create a new test case
+      * \param name Name used to identify this test case in test reports
+      * \param run Test function to run
+      * \param skip Skip switch
+      */
+    TestCase(const String &name, const std::function<void()> &run = nullptr, bool skip = false);
+
+    String name() const { return me().name; }
+    bool skip() const { return me().skip; }
+    int assertionCount() const { return me().assertionCount; }
+    int failureCount() const { return me().failureCount; }
+    bool caughtException() const { return me().caughtException; }
+    bool passed() const { return me().failureCount == 0 && !me().caughtException; }
+
+    virtual void run() { me().run(); }
+
+private:
+    friend class TestSuite;
+
+    void done() { me().run = nullptr; }
+
+    struct State {
+        String name;
+        std::function<void()> run;
+        bool skip;
+        int assertionCount { 0 };
+        int failureCount { 0 };
+        bool caughtException { false };
+    };
+
+    Shared<State> me;
+};
+
+} // namespace cc

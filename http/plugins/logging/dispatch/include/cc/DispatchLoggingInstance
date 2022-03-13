@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpLoggingServiceInstance>
+
+namespace cc {
+
+/** \class DispatchLoggingInstance cc/DispatchLoggingInstance
+  * \ingroup http_server
+  * \brief %An instance of the DispatchLoggingService
+  */
+class DispatchLoggingInstance final: public HttpLoggingServiceInstance
+{
+public:
+    DispatchLoggingInstance(const MetaObject &config);
+
+private:
+    struct State;
+};
+
+} // namespace cc

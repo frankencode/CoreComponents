@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/LookAheadNode>
+
+namespace cc::syntax {
+
+/** \class NotNode cc/syntax/NotNode
+  * \brief Do not match a given sub-expression ahead of the current text position
+  */
+class NotNode final: public LookAheadNode<1>
+{
+public:
+    /** \param entry Sub-expression to not match
+      */
+    explicit NotNode(const SyntaxNode &entry):
+        LookAheadNode<1>{entry}
+    {}
+};
+
+} // namespace cc::syntax

@@ -1,3 +1,0 @@
-Tests {
-    use: [ core, testing, syntax, glob, meta, net, http, node ]
-}

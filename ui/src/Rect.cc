@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,32 +7,30 @@
  */
 
 #include <cc/ui/Rect>
-#include <cc/Format>
 
 namespace cc {
-namespace ui {
 
-String str(const Rect &rect)
+String str(const cc::ui::Rect &rect)
 {
     return Format{}
         << "Rect {\n"
-        << "  pos: " << rect->pos() << nl
-        << "  size: " << rect->size() << nl
+        << "  pos: " << rect.pos() << nl
+        << "  size: " << rect.size() << nl
         << "}";
 }
 
-String fixed(const Rect &rect, int ni, int nf)
+String fixed(const cc::ui::Rect &rect, int ni, int nf)
 {
     return Format{}
         << "Rect {\n"
-        << "  pos: " << fixed(rect->pos(), ni, nf) << nl
-        << "  size: " << fixed(rect->size(), ni, nf) << nl
+        << "  pos: " << fixed(rect.pos(), ni, nf) << nl
+        << "  size: " << fixed(rect.size(), ni, nf) << nl
         << "}";
 }
 
-String fixed(const Rect &rect, int nf)
+String fixed(const cc::ui::Rect &rect, int nf)
 {
     return fixed(rect, 0, nf);
 }
 
-}} // namespace cc::ui
+} // namespace cc

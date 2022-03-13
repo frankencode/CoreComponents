@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/StringNode>
+
+namespace cc::syntax {
+
+/** \class LiteralNode cc/syntax/LiteralNode
+  * \brief %Match a case-sensitive multi-character literal
+  */
+class LiteralNode final: public StringNode<0>
+{
+public:
+    /** \param literal The multi-character literal to match against
+      */
+    explicit LiteralNode(const String &literal):
+        StringNode{literal}
+    {}
+};
+
+inline SyntaxNode::SyntaxNode(const char *s)
+{
+    *this = LiteralNode{s};
+}
+
+} // namespace cc::syntax

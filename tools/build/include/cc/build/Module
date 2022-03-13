@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+
+namespace cc::build {
+
+class Module: public Object
+{
+public:
+    Module() = default;
+
+    explicit Module(const String &analyseCommand, const String &modulePath, const List<String> &dependencyPaths, bool dirty):
+        Object{new State{analyseCommand, modulePath, dependencyPaths, dirty}}
+    {}
+
+    String analyseCommand() const { return me().analyseCommand_; }
+    String modulePath() const { return me().modulePath_; }
+    String sourcePath() const { return me().dependencyPaths_.at(0); }
+    String toolName() const { return sourcePath().baseName(); }
+    List<String> dependencyPaths() const { return me().dependencyPaths_; }
+    bool dirty() const { return me().dirty_; }
+
+private:
+    struct State: public Object::State
+    {
+        State(const String &analyseCommand, const String &modulePath, const List<String> &dependencyPaths, bool dirty):
+            analyseCommand_{analyseCommand},
+            modulePath_{modulePath},
+            dependencyPaths_{dependencyPaths},
+            dirty_{dirty}
+        {}
+
+        String analyseCommand_;
+        String modulePath_;
+        List<String> dependencyPaths_;
+        bool dirty_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::build

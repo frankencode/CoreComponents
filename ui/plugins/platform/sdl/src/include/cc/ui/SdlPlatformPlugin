@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,22 +9,17 @@
 #pragma once
 
 #include <cc/ui/PlatformPlugin>
+#include <cc/ui/SdlPlatformError>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
 class SdlPlatformPlugin: public PlatformPlugin
 {
 public:
-    ApplicationInstance *application() const override;
-    TimeMaster *timeMaster() const override;
-    DisplayManager *displayManager() const override;
-    TouchDeviceManager *touchDeviceManager() const override;
+    SdlPlatformPlugin();
 
 private:
-    friend class Object;
-
-    SdlPlatformPlugin();
+    struct State;
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

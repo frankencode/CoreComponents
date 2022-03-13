@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,73 +8,66 @@
 
 #pragma once
 
-#include <cc/iterators>
+#include <iterator>
 
 namespace cc {
 
-template<class Container>
-class ConstArrayIterator:
-    public std::iterator<
-        /*iterator_category*/ std::bidirectional_iterator_tag,
-        /*value_type*/        typename Container::Item,
-        /*difference_type*/   int,
-        /*pointer*/           void,
-        /*reference*/         typename Container::Item
-    >
-{
-public:
-    ConstArrayIterator(const Container *c, int i):
-        c_{c},
-        i_{i}
-    {}
-
-    typename Container::Item operator*() const { return c_->at(i_); }
-    ConstArrayIterator &operator++() { ++i_; return *this; }
-    ConstArrayIterator &operator--() { --i_; return *this; }
-    ConstArrayIterator operator+(int delta) { return ConstArrayIterator{c_, i_ + delta}; }
-    ConstArrayIterator operator-(int delta) { return ConstArrayIterator{c_, i_ - delta}; }
-    int operator-(const ConstArrayIterator &b) const { return i_ - b.i_; }
-    int operator<(const ConstArrayIterator &b) const { return i_ < b.i_; }
-    bool operator==(const ConstArrayIterator &b) const { return i_ == b.i_; }
-    bool operator!=(const ConstArrayIterator &b) const { return i_ != b.i_; }
-
-private:
-    const Container *c_;
-    int i_;
-};
-
-template<class Container>
+/** \class ArrayIterator cc/ArrayIterator
+  * \brief %Array iterator
+  */
+template<class Container, long dir>
 class ArrayIterator:
     public std::iterator<
         /*iterator_category*/ std::bidirectional_iterator_tag,
         /*value_type*/        typename Container::Item,
-        /*difference_type*/   int,
+        /*difference_type*/   long,
         /*pointer*/           typename Container::Item *,
         /*reference*/         typename Container::Item &
     >
 {
 public:
-    ArrayIterator(Container *c, int i):
+    /** Create an array iterator pointing to the \a i-th item of array \a c
+      */
+    ArrayIterator(Container &c, long i):
         c_{c},
         i_{i}
     {}
 
-    typename Container::Item &operator*() const { return c_->at(i_); }
-    typename Container::Item *operator->() const { return &c_->at(i_); }
-    ArrayIterator &operator++() { ++i_; return *this; }
-    ArrayIterator &operator--() { --i_; return *this; }
-    ArrayIterator operator+(int delta) { return ArrayIterator{c_, i_ + delta}; }
-    ArrayIterator operator-(int delta) { return ArrayIterator{c_, i_ - delta}; }
-    int operator-(const ArrayIterator &b) const { return i_ - b.i_; }
-    int operator<(const ArrayIterator &b) const { return i_ < b.i_; }
-    bool operator==(const ArrayIterator &b) const { return i_ == b.i_; }
-    bool operator!=(const ArrayIterator &b) const { return i_ != b.i_; }
+    /** Check if this iterator is valid (explicitly cast to bool)
+      */
+    explicit operator bool() const { return i_ < c_.count() && 0 <= i_; }
 
-    operator ConstArrayIterator<Container>() const { return ConstArrayIterator<Container>{c_, i_}; }
+    /** Get access to current item value
+      */
+    auto &operator*() const { return c_.at(i_); }
+
+    /** Step to the next item and return the old iterator value (postfix increment operator)
+      */
+    ArrayIterator &operator++() { i_ += dir; return *this; }
+
+    /** Step to the previous item and return the old iterator value (postfix decrement operator)
+      */
+    ArrayIterator &operator--() { i_ -= dir; return *this; }
+
+    /** Get iterator value stepped \a delta items forward (addition operator)
+      */
+    ArrayIterator operator+(long delta) { return ArrayIterator{c_, i_ + dir * delta}; }
+
+    /** Get iterator value stepped \a delta items backward (substraction operator)
+      */
+    ArrayIterator operator-(long delta) { return ArrayIterator{c_, i_ - dir * delta}; }
+
+    /** Get distance between this and another iterator (substraction operator)
+      */
+    int operator-(const ArrayIterator &b) const { return i_ - b.i_; }
+
+    int operator<(const ArrayIterator &b) const { return i_ < b.i_; } ///< Less than operator
+    bool operator==(const ArrayIterator &b) const { return i_ == b.i_; } ///< Equal to operator
+    bool operator!=(const ArrayIterator &b) const { return i_ != b.i_; } ///< Not equal to operator
 
 private:
-    Container *c_;
-    int i_;
+    Container &c_;
+    long i_;
 };
 
 } // namespace cc

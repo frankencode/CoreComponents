@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpLoggingService>
+
+namespace cc {
+
+/** \class DispatchLoggingService cc/DispatchLoggingService
+  * \ingroup http_server
+  * \brief Write log messages to several other logging facilities simultanously
+  */
+class DispatchLoggingService final: public HttpLoggingService
+{
+public:
+    /** Name under which this service is registered in the HttpLoggingServiceRegistry
+      */
+    static const char *name();
+
+private:
+    friend class DispatchLoggingServiceAnnouncer;
+
+    struct State;
+
+    DispatchLoggingService();
+};
+
+} // namespace cc

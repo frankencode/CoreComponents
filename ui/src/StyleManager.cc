@@ -1,57 +1,41 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
  *
  */
 
+#include <cc/ui/PlatformManager>
 #include <cc/ui/StyleManager>
-#include <cc/Singleton>
-#include <cc/ValueSource>
 #include <cc/Process>
-#include <cc/assert>
+#include <cc/DEBUG>
 
-namespace cc {
-namespace ui {
-
-StyleManager *StyleManager::instance()
-{
-    return Singleton<StyleManager>::instance();
-}
+namespace cc::ui {
 
 StyleManager::StyleManager():
-    defaultStyleName_{Process::getEnv("CCUI_STYLE", "Industrial")}
+    Singleton{instance<State>()}
 {}
 
-void StyleManager::registerPlugin(StylePlugin *plugin)
+StyleManager::State::State():
+    defaultStyleName_{Process::env("CCUI_STYLE", "Industrial")}
 {
-    if (plugins_->insert(plugin->name(), plugin)) {
-        if (plugin->name() == defaultStyleName_)
-            activatePlugin(plugin);
+    PlatformManager{};
+}
+
+void StyleManager::setActivePlugin(const StylePlugin &plugin)
+{
+    CC_DEBUG << plugin.name();
+    StylePlugin{plugin}.me().activate();
+    me().activePlugin_ = plugin;
+}
+
+void StyleManager::registerPlugin(const StylePlugin &plugin)
+{
+    if (me().plugins_.insert(plugin.name(), plugin)) {
+        if (plugin.name() == me().defaultStyleName_)
+            setActivePlugin(plugin);
     }
 }
 
-bool StyleManager::getPlugin(const String &name, Ref<StylePlugin> *plugin) const
-{
-    return plugins_->lookup(name, plugin);
-}
-
-Ref< Source<StylePlugin *> > StyleManager::getAllPlugins() const
-{
-    return ValueSource<Plugins::Instance, StylePlugin *>::open(plugins_);
-}
-
-StylePlugin *StyleManager::activePlugin() const
-{
-    CC_ASSERT2(activePlugin_ != nullptr, "No style plugin activated!");
-    return activePlugin_;
-}
-
-void StyleManager::activatePlugin(StylePlugin *plugin)
-{
-    plugin->activate();
-    activePlugin_ = plugin;
-}
-
-}} // namespace cc::ui
+} // namespace cc::ui

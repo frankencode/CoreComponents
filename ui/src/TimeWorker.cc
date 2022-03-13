@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,79 +8,170 @@
 
 #include <cc/ui/TimeWorker>
 #include <cc/ui/TimeMaster>
+#include <cc/ui/Timer>
 #include <cc/System>
+#include <cc/Semaphore>
+#include <cc/Channel>
+#include <cc/Thread>
+#include <cc/MultiSet>
 #include <cmath>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-Ref<TimeWorker> TimeWorker::create(TimeMaster *master)
+class TimeoutRequest: public Object
 {
-    return new TimeWorker{master};
+public:
+    TimeoutRequest() = default;
+
+    TimeoutRequest(uint64_t id, Timer timer):
+        Object{new State{id, timer}}
+    {
+        timer.me().requestId_ = id;
+    }
+
+    bool isActive() const
+    {
+        return me().timer_.isActive() && me().timer_.me().requestId_ == me().id_;
+    }
+
+    Timer timer() const { return me().timer_; }
+
+    double nextTime() const { return me().nextTime_; }
+
+    double &nextTime() { return me().nextTime_; }
+
+    double interval() const { return me().interval_; }
+
+    void deactivate()
+    {
+        me().timer_.me().isActive_ = false;
+    }
+
+    bool operator<(const TimeoutRequest &other) const
+    {
+        return nextTime() < other.nextTime();
+    }
+
+private:
+    struct State: public Object::State
+    {
+        State(uint64_t id, const Timer &timer):
+            id_{id},
+            timer_{timer},
+            nextTime_{timer.firstTime()},
+            interval_{timer.interval()}
+        {}
+
+        uint64_t id_;
+        Timer timer_;
+        double nextTime_;
+        double interval_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+struct TimeWorker::State: public Object::State
+{
+    State():
+        thread_{[this]{ run(); }}
+    {}
+
+    void start()
+    {
+        thread_.start();
+    }
+
+    void run()
+    {
+        while (true)
+        {
+            TimeoutRequest request;
+
+            if (timeoutRequests_.count() > 0) {
+                TimeoutRequest timeout = timeoutRequests_.min();
+
+                if (!startRequests_.popFrontBefore(timeout.nextTime(), &request))
+                {
+                    if (!timeout.isActive()) {
+                        timeoutRequests_.removeAt(0);
+                        continue;
+                    }
+
+                    TimeMaster{}.triggerTimer(timeout.timer());
+
+                    if (timeout.interval() == 0) {
+                        timeout.deactivate();
+                        timeoutRequests_.removeAt(0);
+                        continue;
+                    }
+
+                    {
+                        double t = System::now();
+                        double &tn = timeout.nextTime();
+                        double T = timeout.interval();
+                        if (T < t - tn) tn += std::floor((t - tn) / T) * T;
+                        tn += T;
+                    }
+                    timeoutRequests_.removeAt(0);
+                    ack_.acquire();
+                    timeoutRequests_.insert(timeout);
+                    continue;
+                }
+            }
+            else {
+                startRequests_.popFront(&request);
+            }
+
+            if (!request) break;
+            timeoutRequests_.insert(request);
+        }
+    }
+
+    uint64_t nextRequestId_ { 0 };
+    Channel<TimeoutRequest> startRequests_;
+    MultiSet<TimeoutRequest> timeoutRequests_;
+    Semaphore<int> ack_;
+    Thread thread_;
+};
+
+TimeWorker::TimeWorker():
+    Object{new State}
+{
+    me().start();
 }
 
-TimeWorker::TimeWorker(TimeMaster *master):
-    master_{master}
+TimeWorker::~TimeWorker()
 {}
 
-void TimeWorker::startTimer(Timer::Instance *timer)
+void TimeWorker::startTimer(const Timer &timer)
 {
-    startRequests_->pushBack(Timeout::create(timer));
+    me().startRequests_.emplaceBack(
+        ++me().nextRequestId_, timer
+    );
 }
 
 void TimeWorker::ack()
 {
-    ack_->release();
+    me().ack_.release();
 }
 
 void TimeWorker::shutdown()
 {
-    startRequests_->pushBack(Ref<Timeout>());
-    ack_->release();
+    me().startRequests_.emplaceBack();
+    me().ack_.release();
+    me().thread_.wait();
 }
 
-void TimeWorker::run()
+TimeWorker::State &TimeWorker::me()
 {
-    for (uint64_t nextSerial = 0; true;)
-    {
-        Ref<Timeout> request;
-
-        if (timeouts_->count() > 0) {
-            Ref<Timeout> timeout = timeouts_->at(0)->value();
-
-            if (!startRequests_->popBackBefore(timeout->nextTime_, &request))
-            {
-                if (!timeout->isActive()) {
-                    timeouts_->removeAt(0);
-                    continue;
-                }
-
-                master_->triggerTimer(timeout->timer_);
-                if (timeout->interval_ == 0) {
-                    timeout->timer_->isActive_ = false;
-                    timeouts_->removeAt(0);
-                    continue;
-                }
-
-                {
-                    double t = System::now();
-                    double &tn = timeout->nextTime_;
-                    double T = timeout->interval_;
-                    if (T < t - tn) tn += std::floor((t - tn) / T) * T;
-                    tn += T;
-                }
-                timeouts_->removeAt(0);
-                ack_->acquire();
-                timeouts_->insert(TimeKey{timeout->nextTime_, ++nextSerial}, timeout);
-                continue;
-            }
-        }
-        else
-            startRequests_->popBack(&request);
-
-        if (!request) break;
-        timeouts_->insert(TimeKey{request->nextTime_, ++nextSerial}, request);
-    }
+    return Object::me.as<State>();
 }
 
-}} // namespace cc::ui
+const TimeWorker::State &TimeWorker::me() const
+{
+    return Object::me.as<State>();
+}
+
+} // namespace cc::ui

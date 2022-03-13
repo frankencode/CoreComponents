@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpMessage>
+
+namespace cc {
+
+/** \class HttpResponse cc/HttpResponse
+  * \ingroup http_protocol
+  * \brief HTTP response message
+  */
+class HttpResponse final: public HttpMessage
+{
+public:
+    /** Create a null HTTP response message
+      */
+    HttpResponse() = default;
+
+    /** HTTP version
+      */
+    String version() const { return me().version_; }
+
+    /** HTTP status code
+      */
+    HttpStatus status() const { return me().status_; }
+
+    /** HTTP reason phrase
+      */
+    String reasonPhrase() const { return me().reasonPhrase_; }
+
+private:
+    friend class Object;
+    friend class HttpResponseParser;
+
+    struct State: public HttpMessage::State
+    {
+        String version_;
+        HttpStatus status_ { 0 };
+        String reasonPhrase_;
+    };
+
+    explicit HttpResponse(New):
+        HttpMessage{new State}
+    {}
+
+    State *operator->() { return &me(); }
+
+    State &me() { return Object::me.as<State>(); }
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

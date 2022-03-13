@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpLoggingServiceInstance>
+
+namespace cc {
+
+/** \class ForegroundLoggingInstance cc/ForegroundLoggingInstance
+  * \ingroup http_server
+  * \brief An instance of the ForegroundLoggingService
+  */
+class ForegroundLoggingInstance final: public HttpLoggingServiceInstance
+{
+public:
+    explicit ForegroundLoggingInstance(const MetaObject &config);
+
+private:
+    struct State;
+};
+
+} // namespace cc

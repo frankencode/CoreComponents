@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,89 +10,107 @@
 
 namespace cc {
 
-LineSource::Instance::Instance(const Stream &stream, CharArray *buffer):
-    stream_{stream},
-    buffer_{buffer},
-    eoi_{false},
-    bufferOffset_{0},
-    i0_{0}, i_{0}, n_{(buffer && !stream) ? buffer->count() : 0}
+struct LineSource::State: public Object::State
 {
-    if (!buffer_) buffer_ = String::allocate(0x1000);
-}
+    State(const Stream &stream, const String &buffer):
+        stream_{stream},
+        buffer_{buffer},
+        eoi_{false},
+        bufferOffset_{0},
+        i0_{0},
+        i_{0},
+        n_{(stream) ? 0 : buffer.count()}
+    {}
 
-bool LineSource::Instance::read(String *line)
-{
-    if (eoi_) {
-        *line = String{};
+    bool read(Out<String> line)
+    {
+        if (eoi_) {
+            line << String{};
+            return false;
+        }
+
+        List<String> backlog;
+
+        while (true) {
+            if (i_ < n_) {
+                i0_ = i_;
+                i_ = findEol(buffer_, n_, i_);
+                if (i_ < n_) {
+                    if (backlog.count() > 0) {
+                        backlog.append(buffer_.copy(i0_, i_));
+                        line << backlog;
+                    }
+                    else {
+                        line << buffer_.copy(i0_, i_);
+                    }
+                    i_ = skipEol(buffer_, n_, i_);
+                    return true;
+                }
+                backlog.append(buffer_.copy(i0_, i_));
+            }
+
+            if (!stream_) break;
+
+            bufferOffset_ += n_;
+            n_ = stream_.read(&buffer_);
+            if (n_ == 0) break;
+            i_ = 0;
+        }
+
+        eoi_ = true;
+        if (backlog.count() > 0) {
+            line << backlog;
+            return true;
+        }
+        line << String{};
         return false;
     }
 
-    StringList backlog;
-
-    while (true) {
-        if (i_ < n_) {
-            i0_ = i_;
-            i_ = findEol(buffer_, n_, i_);
-            if (i_ < n_) {
-                if (backlog) {
-                    backlog->append(buffer_->copy(i0_, i_));
-                    *line = backlog->join();
-                }
-                else {
-                    *line = buffer_->copy(i0_, i_);
-                }
-                i_ = skipEol(buffer_, n_, i_);
-                return true;
-            }
-            backlog->append(buffer_->copy(i0_, i_));
+    static long findEol(const Bytes &buffer, long n, long i)
+    {
+        for (; i < n; ++i) {
+            char ch = buffer.at(i);
+            if (ch == '\n' || ch == '\r' || ch == '\0')
+                break;
         }
-
-        if (!stream_) break;
-
-        bufferOffset_ += n_;
-        n_ = stream_->read(mutate(buffer_));
-        if (n_ == 0) break;
-        i_ = 0;
+        return i;
     }
 
-    eoi_ = true;
-    if (backlog->count() > 0) {
-        *line = backlog->join();
-        return true;
+    static long skipEol(const Bytes &buffer, long n, long i)
+    {
+        if (i < n) if (buffer.at(i) == '\r') ++i;
+        if (i < n) if (buffer.at(i) == '\n') ++i;
+        if (i < n) if (buffer.at(i) == '\0') ++i;
+        return i;
     }
-    *line = String{};
-    return false;
+
+    Stream stream_;
+    String buffer_;
+    bool eoi_;
+    long bufferOffset_;
+    long i0_, i_, n_;
+};
+
+LineSource::LineSource(const String &buffer):
+    Object{new State{Stream{}, buffer}}
+{}
+
+LineSource::LineSource(const Stream &stream):
+    Object{new State{stream, String::allocate(0x1000)}}
+{}
+
+LineSource::LineSource(const Stream &stream, const String &buffer):
+    Object{new State{stream, buffer}}
+{}
+
+bool LineSource::read(Out<String> line)
+{
+    return me().read(line);
 }
 
-String LineSource::Instance::readLine()
+LineSource::State &LineSource::me()
 {
-    String s;
-    read(&s);
-    return s;
-}
-
-String LineSource::Instance::pendingData() const
-{
-    if (eoi_) return String{};
-    return buffer_->copy(i_, n_);
-}
-
-int LineSource::Instance::findEol(const CharArray *buffer, int n, int i)
-{
-    for (; i < n; ++i) {
-        char ch = buffer->at(i);
-        if (ch == '\n' || ch == '\r' || ch == '\0')
-            break;
-    }
-    return i;
-}
-
-int LineSource::Instance::skipEol(const CharArray *buffer, int n, int i)
-{
-    if (i < n) if (buffer->at(i) == '\r') ++i;
-    if (i < n) if (buffer->at(i) == '\n') ++i;
-    if (i < n) if (buffer->at(i) == '\0') ++i;
-    return i;
+    return Object::me.as<State>();
 }
 
 } // namespace cc

@@ -1,0 +1,84 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/MetaObject>
+#include <cc/MetaProtocol>
+
+namespace cc {
+
+// class MetaProtocol;
+
+/** \class MetaPrototype cc/MetaPrototype
+  * \ingroup meta
+  * \brief %Member definitions, default values and child protocol
+  * \see MetaProtocol
+  */
+class MetaPrototype: public MetaObject
+{
+public:
+    /** Create a meta-prototype for the class \a className
+      */
+    explicit MetaPrototype(const String &className);
+
+    /** Create a meta-prototype
+      * \param className %Name of the object class
+      * \param protocol \copydoc protocol()
+      */
+    MetaPrototype(const String &className, const MetaProtocol &protocol);
+
+    /** Create a null meta-prototype
+      */
+    MetaPrototype() = default;
+
+    const MetaProtocol &protocol() const; ///< %Children protocol: allowed types for children
+
+protected:
+    friend class Object;
+
+    struct State: public MetaObject::State
+    {
+        explicit State(const String &className):
+            MetaObject::State{className}
+        {}
+
+        State(const String &className, const MetaProtocol &protocol):
+            MetaObject::State{className},
+            protocol_{protocol}
+        {}
+
+        MetaProtocol protocol_;
+    };
+
+    explicit MetaPrototype(State *newState);
+
+    const State &me() const;
+};
+
+template<>
+struct VariantType<MetaPrototype>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, const MetaPrototype &x)
+    {
+        static_assert(sizeof(MetaPrototype) <= 8);
+
+        new(bytes)MetaPrototype{x};
+    }
+
+    static MetaPrototype retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<MetaPrototype>::info); // expected type 'MetaPrototype'
+
+        return *static_cast<const MetaPrototype *>(bytes);
+    }
+};
+
+} // namespace cc

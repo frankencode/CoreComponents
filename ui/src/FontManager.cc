@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,101 +7,65 @@
  */
 
 #include <cc/ui/FontManager>
-#include <cc/ui/PlatformPlugin>
-#include <cc/ui/StylePlugin>
-#include <cc/ui/Application>
-#include <cc/ValueSource>
+#include <cc/ui/PlatformManager>
 #include <cc/DirWalker>
-#include <cc/debug>
+#include <cc/input>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-FontManager *FontManager::instance()
-{
-    return PlatformPlugin::instance()->fontManager();
-}
-
-void FontManager::addPath(const String &dirPath, const String &namePrefix)
-{
-    DirWalker walker{dirPath};
-    String path;
-    bool isDir = false;
-    while (walker->read(&path, &isDir)) {
-        if (!isDir && isFontFace(path)) {
-            if (namePrefix != "" && !path->fileName()->startsWith(namePrefix))
-                continue;
-            addFontFace(openFontFace(path));
-        }
-    }
-}
-
-Ref< Source<const FontFamily *> > FontManager::getFontFamilies() const
-{
-    return ValueSource<FontFamilies::Instance, const FontFamily *>::open(fontFamilies_);
-}
-
-const FontFamily *FontManager::selectFontFamily(const String &family) const
-{
-    String key = family->normalize();
-    Ref<FontFamily> fontFamily;
-    if (fontFamilies_->lookup(key, &fontFamily))
-        return fontFamily;
-
-    return selectNearestFontFamily(family);
-}
-
-Font FontManager::fixup(const Font &font)
+Font FontManager::State::fixup(Font font)
 {
     Font f = font;
-    if (!f->family_) f->family_ = StylePlugin::instance()->defaultFont()->family();
-    if (f->size_ <= 0) f->size_ = StylePlugin::instance()->defaultFont()->size();
-    if (f->smoothing() == FontSmoothing::Default)
-        f->smoothing_ = static_cast<uint8_t>(Application{}->fontSmoothing());
+    if (f.family() == "") f.family(style().defaultFont().family());
+    if (f.size() <= 0) f.size(style().defaultFont().size());
+    if (f.smoothing() == FontSmoothing::Default)
+        f.smoothing(app().fontSmoothing());
     return f;
 }
 
-FontManager::FontManager()
-{}
-
-FontManager::~FontManager()
-{}
-
-bool FontManager::isFontFace(const String &path) const
+List<String> FontManager::State::familySearchPattern(const String &name)
 {
-    String suffix = path->fileSuffix();
-    mutate(suffix)->downcaseInsitu();
+    List<String> searchPattern;
+    for (String component: name.downcased().split(' ')) {
+        if (component != "") searchPattern.append(component);
+    }
+    return searchPattern;
+}
+
+bool FontManager::State::isFontFace(const String &path) const
+{
+    String suffix = path.fileSuffix();
+    suffix.downcase();
     return suffix == "ttf" || suffix == "woff" || suffix == "otf" || suffix == "ttc";
 }
 
-void FontManager::addFontFace(const FontFace *fontFace)
+FontFamily FontManager::State::selectFontFamily(const String &name) const
 {
-    Ref<FontFamily> fontFamily;
-    String key = fontFace->family()->normalize();
-    if (!fontFamilies_->lookup(key, &fontFamily)) {
-        fontFamily = FontFamily::create(fontFace->family(), fontFace->pitch());
-        fontFamilies_->insert(key, fontFamily);
-    }
-    fontFamily->fontFaces_->append(fontFace);
+    String key = normalize(name);
+    FontFamily fontFamily;
+    if (fontFamilies_.lookup(key, &fontFamily))
+        return fontFamily;
+
+    return selectNearestFontFamily(name);
 }
 
-const FontFamily *FontManager::selectNearestFontFamily(const String &name) const
+FontFamily FontManager::State::selectNearestFontFamily(const String &name) const
 {
-    StringList searchPattern = familySearchPattern(name);
+    List<String> searchPattern = familySearchPattern(name);
 
-    const FontFamily *bestMatch = 0;
+    FontFamily bestMatch;
     int bestMatchRank = 0;
 
-    for (const FontFamily *candidate: getFontFamilies()) {
-        StringList candidatePattern = familySearchPattern(candidate->name());
+    for (const FontFamily &candidate: fontFamilies_) {
+        List<String> candidatePattern = familySearchPattern(candidate.name());
         int matchRank = 0;
-        for (String component: searchPattern) {
-            if (candidatePattern->contains(component)) {
+        for (const String &component: searchPattern) {
+            if (candidatePattern.find(component)) {
                 matchRank += 2;
             }
             else {
-                for (String candidateComponent: candidatePattern) {
-                    if (candidateComponent->contains(component)) {
+                for (const String &candidateComponent: candidatePattern) {
+                    if (candidateComponent.find(component)) {
                         ++matchRank;
                         break;
                     }
@@ -110,7 +74,7 @@ const FontFamily *FontManager::selectNearestFontFamily(const String &name) const
         }
         if (matchRank >= bestMatchRank) {
             if (matchRank == bestMatchRank && bestMatch) {
-                if (bestMatch->name()->count() < candidate->name()->count())
+                if (bestMatch.name().count() < candidate.name().count())
                     continue;
             }
             bestMatch = candidate;
@@ -121,13 +85,31 @@ const FontFamily *FontManager::selectNearestFontFamily(const String &name) const
     return bestMatch;
 }
 
-StringList FontManager::familySearchPattern(const String &name)
+FontManager::FontManager()
 {
-    StringList searchPattern;
-    for (String component: name->toLower()->split(' ')) {
-        if (component != String{}) searchPattern->append(component);
-    }
-    return searchPattern;
+    *this = PlatformManager{}.activePlugin().fontManager();
 }
 
-}} // namespace cc::ui
+void FontManager::addPath(const String &dirPath, const String &namePrefix)
+{
+    DirWalker walker{dirPath};
+    bool isDir = false;
+    for (String path; walker.read(&path, &isDir);) {
+        if (!isDir && me().isFontFace(path)) {
+            if (namePrefix != "" && !path.fileName().startsWith(namePrefix)) continue;
+            addFontFace(me().openFontFace(path));
+        }
+    }
+}
+
+void FontManager::addFontFace(const FontFace &fontFace)
+{
+    FontFamily fontFamily;
+    if (!me().fontFamilies_.lookup(fontFace.family(), &fontFamily)) {
+        fontFamily = FontFamily{fontFace.family(), fontFace.pitch()};
+        me().fontFamilies_.insert(fontFamily);
+    }
+    fontFamily.me().fontFaces_.append(fontFace);
+}
+
+} // namespace cc::ui

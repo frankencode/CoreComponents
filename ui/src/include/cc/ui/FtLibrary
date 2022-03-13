@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,37 +8,29 @@
 
 #pragma once
 
-#include <cc/Object>
+#include <cc/ThreadLocalSingleton>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_SYSTEM_H
 
-namespace cc { template<class> class ThreadLocalSingleton; }
+namespace cc::ui {
 
-namespace cc {
-namespace ui {
-
-class FtLibrary: public Object
+class FtLibrary final: public ThreadLocalSingleton
 {
 public:
-    static FtLibrary *instance();
-    FT_Library ftLibrary();
+    FtLibrary();
+
+    static FT_Library ftLibrary() { return FtLibrary{}->library_; }
 
 private:
-    friend class ThreadLocalSingleton<FtLibrary>;
+    struct State final: public ThreadLocalSingleton::State
+    {
+        State();
+        ~State();
+        FT_Library library_;
+    };
 
-    FtLibrary();
-    ~FtLibrary();
-
-    #if 0
-    static void *alloc(FT_Memory  memory, long size);
-    static void free(FT_Memory memory, void *block);
-    static void *realloc(FT_Memory memory, long currentSize, long newSize, void *block);
-    #endif
-
-    FT_Library library_;
-    FT_Memory memory_;
-    struct FT_MemoryRec_ memoryRec_;
+    State *operator->() { return &Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

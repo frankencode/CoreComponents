@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/Job>
+#include <cc/Thread>
+#include <cc/Channel>
+
+namespace cc::build {
+
+class JobServer: public Object
+{
+public:
+    JobServer(const Channel<Job> &requestChannel, const Channel<Job> &replyChannel);
+
+private:
+    struct State;
+};
+
+
+} // namespace cc::build

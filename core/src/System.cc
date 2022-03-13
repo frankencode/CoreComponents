@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -7,8 +7,7 @@
  */
 
 #include <cc/System>
-#include <cc/exceptions>
-#include <unistd.h> // sysconf(3), alarm(2)
+#include <unistd.h> // sysconf(3)
 #ifndef __linux
 #include <sys/types.h>
 #ifdef __OpenBSD__
@@ -16,7 +15,6 @@
 #endif
 #include <sys/sysctl.h>
 #endif
-#include <sys/mount.h>
 #include <time.h>
 
 namespace cc {
@@ -60,40 +58,18 @@ double System::now()
 
 String System::hostName()
 {
-    const int bufSize = 1024;
+    const int bufSize = 256;
     char buf[bufSize + 1];
-    String name;
     if (::gethostname(buf, bufSize) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
     buf[bufSize] = 0;
-    name = buf;
-    return name;
+    return buf;
 }
 
 void System::setHostName(const String &newName)
 {
-    if (::sethostname(newName->chars(), newName->count()) == -1)
+    if (::sethostname(newName, newName.count()) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
-}
-
-void System::mount(const String &source, const String &target, const String &type, const String &options)
-{
-#ifdef __linux
-    if (::mount(source, target, type, 0, options->bytes()) == -1) // TODO: parse flags from options
-        CC_SYSTEM_DEBUG_ERROR(errno);
-#else
-    // TODO
-#endif
-}
-
-void System::unmount(const String &target)
-{
-#ifdef __linux
-    if (::umount2(target, MNT_DETACH) == -1)
-        CC_SYSTEM_DEBUG_ERROR(errno);
-#else
-    // TODO
-#endif
 }
 
 } // namespace cc

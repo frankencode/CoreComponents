@@ -8,11 +8,13 @@
 
 #pragma once
 
-#include <cc/utf8>
-#include <cc/utf16>
+#include <cc/Utf8>
 
 namespace cc {
 
-typedef utf8 Unicode;
+/** Convenience alias
+  * \ingroup unicode
+  */
+using Unicode = Utf8;
 
 } // namespace cc

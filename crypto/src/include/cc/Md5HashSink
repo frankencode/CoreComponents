@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/CryptoHashSink>
+
+namespace cc {
+
+/** \class Md5HashSink cc/Md5HashSink
+  * \ingroup crypto
+  * \brief Message Digest 5 (MD5) one-way hash function
+  */
+class Md5HashSink final: public CryptoHashSink
+{
+public:
+    static constexpr int HashSize = 16; ///< %Size of the hashsum in bytes
+
+    /** Create a new hash sink for computing the MD5 sum of all written data
+      */
+    Md5HashSink();
+
+private:
+    struct State;
+};
+
+/** %Compute the MD5 sum of byte array \a data
+  */
+Bytes md5(const Bytes &data);
+
+} // namespace cc

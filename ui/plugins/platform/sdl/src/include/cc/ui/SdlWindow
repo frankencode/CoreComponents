@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,45 +8,66 @@
 
 #pragma once
 
-#include <SDL2/SDL.h>
 #include <cc/ui/Window>
+#include <SDL2/SDL.h>
 
-namespace cc {
-namespace ui {
-
-class SdlApplicationInstance;
-class SdlContext;
+namespace cc::ui {
 
 class SdlWindow: public Window
 {
+public:
+    SdlWindow() = default;
+
+    explicit SdlWindow(const View &view):
+        Window{new State{view}}
+    {}
+
+    uint32_t id() const { return me().id_; }
+    SDL_Window *sdlWindow() const { return me().sdlWindow_; }
+
 private:
-    friend class SdlApplicationInstance;
+    friend class Object;
+    friend class SdlApplication;
 
-    static Ref<SdlWindow> open(const View &view, const String &title = String{}, WindowMode mode = WindowMode::Default);
+    struct State: public Window::State
+    {
+        State(const View &view);
 
-    SdlWindow(const View &view, const String &title);
-    ~SdlWindow();
+        void onWindowResized(Size newSize);
+        void onWindowMoved(Point newPos);
+        void onWindowShown();
+        void onWindowHidden();
 
-    SdlWindow *open(WindowMode mode = WindowMode::Default);
+        void show(int display) override;
+        void hide() override;
+        void raise() override;
+        void setOpacity(double opacity) override;
 
-    void onWindowResized(Size newSize);
-    void onWindowMoved(Point newPos);
-    void onWindowShown();
-    void onWindowHidden();
+        void setMinSize(Size size);
+        void setMaxSize(Size size);
 
-    void renderFrame(Frame *frame) override;
+        void renderFrame(const Frame &frame) override;
 
-    static void updateTexture(SDL_Renderer *sdlRenderer, View::Instance *view);
-    void renderCascade(SDL_Renderer *sdlRenderer, View::Instance *view);
-    void renderTexture(SDL_Renderer *sdlRenderer, View::Instance *view);
+        void updateTexture(SDL_Renderer *sdlRenderer, View view);
+        void updateOpacity(View view);
+        void renderCascade(SDL_Renderer *sdlRenderer, View &view);
+        void renderTexture(SDL_Renderer *sdlRenderer, const View &view);
 
-    static SdlContext *sdlContext(View::Instance *view);
+        Monitor minSizeMonitor;
+        Monitor maxSizeMonitor;
 
-    uint32_t id_;
-    SDL_Window *sdlWindow_;
-    SDL_Renderer *sdlRenderer_;
-    Size currentSize_;
-    Point currentPos_;
+        bool exposed_ { false };
+        bool primordial_ { true };
+        uint32_t id_;
+        uint32_t gainFocusTime_ { 0 };
+        SDL_Window *sdlWindow_;
+        SDL_Renderer *sdlRenderer_;
+        Size currentSize_;
+        Point currentPos_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

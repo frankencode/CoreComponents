@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,20 +8,10 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <cc/String>
-
-#ifdef major
-#undef major
-#endif
-
-#ifdef minor
-#undef minor
-#endif
+#include <cc/VariantType>
+#include <cc/Composite>
 
 namespace cc {
-
-class Variant;
 
 /** \class Version cc/Version
   * \ingroup misc
@@ -30,94 +20,130 @@ class Variant;
 class Version
 {
 public:
-    /// Construct an invalid version version tuple (0, 0, 0)
+    /** Create an invalid version
+      */
     Version()
     {}
 
-    /// Construct a new version software version tuple (\a major, \a minor, \a patch)
+    /** Create new version
+      * \param major \copydoc major()
+      * \param minor \copydoc minor()
+      * \param patch \copydoc patch()
+      */
     Version(int major, int minor, int patch = 0):
-        instance_{major, minor, patch}
+        me{
+            static_cast<std::uint8_t>(major),
+            static_cast<std::uint8_t>(minor),
+            static_cast<std::uint16_t>(patch)
+        }
     {}
 
-    /// Construct a version from a C-String \a s
+    /** Parse version \a s
+      */
     Version(const char* s):
-        instance_{String{s}}
+        Version{String{s}}
     {}
 
-    /// Construct a version by parsing a String \a s
-    Version(const String &s):
-        instance_{s}
+    /** Parse version \a s
+      */
+    Version(const String &s);
+
+    /** Read version encoded as 32-bit word \a x
+      */
+    explicit Version(std::uint32_t x):
+        me{
+            static_cast<std::uint8_t>(x >> 24),
+            static_cast<std::uint8_t>((x >> 16) & 0xFFu),
+            static_cast<std::uint16_t>(x & 0xFFFFu)
+        }
     {}
 
-    /// Construct a version by parsing a Variant \a v
-    Version(const Variant &v);
-
-    static Version fromWord(uint32_t x)
-    {
-        return Version(x >> 24, (x >> 16) & 0xFF, x & 0xFFFF);
-    }
-
-    class Instance
-    {
-    public:
-         /// Check if this version is valid
-        bool isValid() const { return major_ > 0 || minor_ > 0; }
-
-        /// Return the major version
-        int major() const { return major_; }
-
-        /// Return the minor version
-        int minor() const { return minor_; }
-
-        /// Return the patch version
-        int patch() const { return patch_; }
-
-        uint32_t toWord() const { return (uint32_t(major_) << 24) | (uint32_t(minor_) << 16) | uint32_t(patch_); }
-
-        /// Stringify this version
-        String toString() const;
-
-    private:
-        friend class Version;
-
-        Instance() = default;
-
-        Instance(int major, int minor, int patch):
-            major_{uint8_t(major)},
-            minor_{uint8_t(minor)},
-            patch_{uint16_t(patch)}
-        {}
-
-        Instance(const String &s);
-
-        uint8_t major_ { 0 };
-        uint8_t minor_ { 0 };
-        uint16_t patch_ { 0 };
-    };
-
-    const Instance *operator->() const { return &instance_; }
-    Instance *operator->() { return &instance_; }
-
-    /** Comparism operators
-      * @{
+    /** Convert to word value
       */
-    bool operator< (const Version &b) { return (*this)->toWord() <  b->toWord(); }
-    bool operator<=(const Version &b) { return (*this)->toWord() <= b->toWord(); }
-    bool operator> (const Version &b) { return (*this)->toWord() >  b->toWord(); }
-    bool operator>=(const Version &b) { return (*this)->toWord() >= b->toWord(); }
-    bool operator==(const Version &b) { return (*this)->toWord() == b->toWord(); }
-    bool operator!=(const Version &b) { return (*this)->toWord() != b->toWord(); }
-    /** @}
-      */
+    std::uint32_t toWord() const { return (uint32_t(major()) << 24) | (uint32_t(minor()) << 16) | uint32_t(patch()); }
 
-    /// Conversion to String operator
-    operator String() const { return (*this)->toString(); }
+    /** \copydoc toWord()
+      */
+    operator std::uint32_t() const { return toWord(); }
+
+    /** Check if this version is valid
+      */
+    bool isValid() const { return major() > 0 || minor() > 0; }
+
+    /** \copydoc isValid()
+      */
+    explicit operator bool() const { return isValid(); }
+
+    /** Major version number (0..255)
+      */
+    int major() const { return me().major; }
+
+    /** Minor version number (0..255)
+      */
+    int minor() const { return me().minor; }
+
+    /** Patch version number (0..65535)
+      */
+    int patch() const { return me().patch; }
+
+    /** Convert to string
+      */
+    String toString() const;
+
+    /** Equal to operator
+      */
+    bool operator==(const Version &b) { return toWord() == b.toWord(); }
+
+    /** Not equal to operator
+      */
+    bool operator!=(const Version &b) { return toWord() != b.toWord(); }
+
+    /** Less than operator
+      */
+    bool operator< (const Version &b) { return toWord() <  b.toWord(); }
+
+    /** Greater than operator
+      */
+    bool operator> (const Version &b) { return toWord() >  b.toWord(); }
+
+    /** Less than or equal to operator
+      */
+    bool operator<=(const Version &b) { return toWord() <= b.toWord(); }
+
+    /** Greater than or equal to operator
+      */
+    bool operator>=(const Version &b) { return toWord() >= b.toWord(); }
 
 private:
-    Instance instance_;
+    struct State {
+        std::uint8_t major { 0 };
+        std::uint8_t minor { 0 };
+        std::uint16_t patch { 0 };
+    };
+
+    Composite<State> me;
 };
 
-/// Stringify a software version tuple \a v
-inline String str(Version v) { return v->toString(); }
+inline String str(const Version &version) { return version.toString(); }
+
+template<>
+struct VariantType<Version>
+{
+    static const TypeInfo info;
+
+    static void store(void *bytes, const Version &x)
+    {
+        static_assert(sizeof(Version) <= 8);
+
+        new(bytes)Version{x};
+    }
+
+    static Version retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    {
+        assert(&typeInfo == &VariantType<Version>::info); // expected type 'Version'
+
+        return *static_cast<const Version *>(bytes);
+    }
+};
 
 } // namespace cc

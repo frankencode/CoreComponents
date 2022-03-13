@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,42 +9,50 @@
 #pragma once
 
 #include <cc/String>
+#include <cc/SystemError>
+#include <cc/Object>
 
 namespace cc {
-
-template<class> class Singleton;
 
 /** \class KernelInfo cc/KernelInfo
   * \ingroup sysinfo
   * \brief Query information about the operating system kernel
-  * \see System
+  * \exception SystemError
   */
-class KernelInfo
+class KernelInfo: public Object
 {
 public:
-    class Instance: public Object
-    {
-    public:
-        String name() const { return name_; } ///< operating system name
-        String release() const { return release_; } ///< release version
-        String version() const { return version_; } ///< detailed build information
-        String machine() const { return machine_; } ///< system architecture
+    /** Obtain kernel information
+      */
+    KernelInfo();
 
-    private:
-        friend class Singleton<Instance>;
-        Instance();
+    /** Operating system name
+      */
+    String name() const { return me().name; }
 
-        String name_;
-        String release_;
-        String version_;
-        String machine_;
-    };
+    /** Release version
+      */
+    String release() const { return me().release; }
 
-    KernelInfo() = default;
-    const Instance *operator->() const;
+    /** Detailed build information
+      */
+    String version() const { return me().version; }
+
+    /** %System architecture
+      */
+    String machine() const { return me().machine; }
 
 private:
-    Ref<Instance> instance_;
+    struct State: public Object::State
+    {
+        State();
+        String name;
+        String release;
+        String version;
+        String machine;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
 };
 
 } // namespace cc

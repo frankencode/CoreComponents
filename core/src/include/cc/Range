@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,86 +8,88 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cassert>
 
 namespace cc {
 
-/** \brief index range
+/** \class Range cc/Range
+  * \ingroup misc
+  * \brief Index range
   */
 class Range
 {
 public:
-    class Instance {
-    public:
-        bool isValid() const { return i0_ <= i1_; }
-        bool isEmpty() const { return i0_ == i1_; }
-
-        int i0() const { return i0_; }
-        int i1() const { return i1_; }
-        int begin() const { return i0_; }
-        int end() const { return i1_; }
-        int count() const { return isValid() ? i1_ - i0_ : 0; }
-
-    private:
-        friend class Range;
-
-        Instance(int i0, int i1):
-            i0_{i0},
-            i1_{i1}
-        {
-            if (0 <= i1_ && i1_ < i0_) {
-                int h = i0_;
-                i0_ = i1_;
-                i1_ = h;
-            }
-        }
-
-        int i0_;
-        int i1_;
-    };
-
+    /** Create an invalid range
+      */
     Range():
-        instance_{0, -1}
+        i_{0, -1}
     {}
 
-    Range(int i0):
-        instance_{i0, i0}
+    /** Create an empty range starting and ending at \a i
+      */
+    Range(long i):
+        i_{i, i}
     {}
 
-    Range(int i0, int i1):
-        instance_{i0, i1}
-    {}
-
-    const Instance *operator->() const { return &instance_; }
-
-    bool operator==(const Range &b) const {
-        return
-            (*this)->i0_ == b->i0_ &&
-            (*this)->i1_ == b->i1_;
+    /** Create a range starting at \a i0 and ending at \a i1
+      */
+    Range(long i0, long i1):
+        i_{i0, i1}
+    {
+        if (0 <= i_[1] && i_[1] < i_[0]) {
+            long h = i_[0];
+            i_[0] = i_[1];
+            i_[1] = h;
+        }
     }
 
-    bool operator!=(const Range &b) const {
-        return
-            (*this)->i0_ != b->i0_ ||
-            (*this)->i1_ != b->i1_;
+    /** Check if valid
+      */
+    bool isValid() const { return i_[0] <= i_[1]; }
+
+    /** Check if valid
+      */
+    explicit operator bool() const { return isValid(); }
+
+    long i0() const { return i_[0]; } ///< Begin of range
+    long i1() const { return i_[1]; } ///< End of range
+    long begin() const { return i_[0]; } ///< Begin of range
+    long end() const { return i_[1]; } ///< End of range
+    long count() const { return *this ? i_[1] - i_[0] : 0; } ///< Size of the range
+
+    long operator[](int k) const { assert(0 <= k && k <= 1); return i_[k]; } ///< Syntax sugar
+    long &operator[](int k) { assert(0 <= k && k <= 1); return i_[k]; } ///< Syntax sugar
+
+    /** Equal to operator
+      */
+    bool operator==(const Range &b) const
+    {
+        return i_[0] == b.i_[0] && i_[1] == b.i_[1];
     }
 
-    Range operator+(int j) const {
-        return Range{ (*this)->i0_ + j, (*this)->i1_ + j };
+    /** Not equal to operator
+      */
+    bool operator!=(const Range &b) const
+    {
+        return i_[0] != b.i_[0] || i_[1] != b.i_[1];
     }
 
-    Range &operator+=(int j) {
+    /** Add \a j to the begin and end of this range and return the result
+      */
+    Range operator+(long j) const
+    {
+        return Range{i_[0] + j, i_[1] + j};
+    }
+
+    /** Add \a j to the begin and end of this range
+      */
+    Range &operator+=(long j)
+    {
         return *this = (*this) + j;
     }
 
-    explicit operator bool() const {
-        return (*this)->isValid();
-    }
-
 private:
-    Instance instance_;
+    long i_[2];
 };
-
-String str(Range range);
 
 } // namespace cc

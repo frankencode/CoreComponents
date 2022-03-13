@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -9,85 +9,29 @@
 #pragma once
 
 #include <cc/ui/Timer>
-#include <cc/Thread>
-#include <cc/Channel>
-#include <cc/Semaphore>
-#include <cc/Map>
+#include <cc/Object>
 
-namespace cc {
-namespace ui {
+namespace cc::ui {
 
-class TimeMaster;
-
-class TimeWorker: public Thread
+/** \internal
+  * \brief Background worker thread of the TimeMaster
+  * The %TimeWorker runs in a background thread and generates the timeouts of all Timer instances.
+  */
+class TimeWorker: public Object
 {
 public:
-    static Ref<TimeWorker> create(TimeMaster *master);
-    void startTimer(Timer::Instance *timer);
+    TimeWorker();
+    ~TimeWorker();
+
+    void startTimer(const Timer &timer);
     void ack();
     void shutdown();
 
-protected:
-    TimeWorker(TimeMaster *master);
+private:
+    struct State;
 
-    void run() override;
-
-    class TimeoutOrder;
-
-    class Timeout: public Object {
-    public:
-        static Ref<Timeout> create(Timer::Instance *timer) {
-            return new Timeout{timer};
-        }
-
-        bool isActive() const {
-            return timer_->isActive_ && timer_->timeout_ == static_cast<const void *>(this);
-        }
-
-        Ref<const Timer::Instance> timer_;
-        double nextTime_;
-        double interval_;
-
-    private:
-        Timeout(Timer::Instance *timer):
-            timer_{timer},
-            nextTime_{timer->firstTime()},
-            interval_{timer->interval()}
-        {
-            timer->timeout_ = this;
-        }
-    };
-
-    class TimeKey {
-    public:
-        TimeKey():
-            nextTime_{0},
-            serial_{0}
-        {}
-
-        TimeKey(double nextTime, uint64_t serial):
-            nextTime_{nextTime},
-            serial_{serial}
-        {}
-
-        bool operator<(const TimeKey &b) const {
-            return
-                (nextTime_ < b.nextTime_) ||
-                (nextTime_ == b.nextTime_ && serial_ < b.serial_);
-        }
-
-    private:
-        double nextTime_;
-        uint64_t serial_;
-    };
-
-    TimeMaster *master_;
-
-    Channel< Ref<Timeout> > startRequests_;
-
-    Map<TimeKey, Ref<Timeout> > timeouts_;
-
-    Semaphore ack_;
+    State &me();
+    const State &me() const;
 };
 
-}} // namespace cc::ui
+} // namespace cc::ui

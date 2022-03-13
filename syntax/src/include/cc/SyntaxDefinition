@@ -1,0 +1,232 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax/CharNode>
+#include <cc/syntax/OtherNode>
+#include <cc/syntax/MatchNode>
+#include <cc/syntax/AnyNode>
+#include <cc/syntax/RangeNode>
+#include <cc/syntax/OutOfRangeNode>
+#include <cc/syntax/OneOfNode>
+#include <cc/syntax/NoneOfNode>
+#include <cc/syntax/LiteralNode>
+#include <cc/syntax/CasefreeNode>
+#include <cc/syntax/KeywordNode>
+#include <cc/syntax/SequenceNode>
+#include <cc/syntax/ChoiceNode>
+#include <cc/syntax/LongestChoiceNode>
+#include <cc/syntax/RepeatNode>
+#include <cc/syntax/FindNode>
+#include <cc/syntax/FindLastNode>
+#include <cc/syntax/AheadNode>
+#include <cc/syntax/BehindNode>
+#include <cc/syntax/NotNode>
+#include <cc/syntax/NotBehindNode>
+#include <cc/syntax/RefNode>
+#include <cc/syntax/InlineNode>
+#include <cc/syntax/BoiNode>
+#include <cc/syntax/EoiNode>
+#include <cc/syntax/LengthNode>
+#include <cc/syntax/PassNode>
+#include <cc/syntax/FailNode>
+#include <cc/syntax/ExpectNode>
+#include <cc/syntax/CaptureNode>
+#include <cc/syntax/ReplayNode>
+#include <cc/syntax/ContextNode>
+#include <cc/syntax/DebugNode>
+#include <cc/syntax/VoidRule>
+#include <cc/SyntaxRule>
+#include <cc/TextError>
+
+namespace cc {
+
+/** \class SyntaxDefinition cc/SyntaxDefinition
+  * \ingroup syntax
+  * \brief Computer language syntax definition
+  */
+class SyntaxDefinition: public Object
+{
+public:
+    using SyntaxNode = syntax::SyntaxNode;
+
+    /** \name Syntax Rules
+      */
+    ///@{
+    using SyntaxRule = cc::SyntaxRule; ///< \copybrief cc::SyntaxRule
+    using VoidRule = syntax::VoidRule; ///< \copybrief cc::syntax::VoidRule
+    ///@}
+
+    /** Create a null syntax definition
+      */
+    SyntaxDefinition() = default;
+
+    /** Create a new syntax definition
+      * \param entry Top-level rule
+      */
+    SyntaxDefinition(const SyntaxRule *entry):
+        Object{new State{entry}}
+    {}
+
+    /** %Match this syntax definition against \a text
+      * \return Root node of the syntax production tree
+      */
+    Token match(const String &text) const
+    {
+        return me().match(text);
+    }
+
+    /** \copydoc match()
+      * \exception TextError Text does not match this syntax definition
+      */
+    Token parse(const String &text) const
+    {
+        Token token = me().match(text);
+        if (!token) throw TextError{text};
+        return token;
+    }
+
+    /** Find the next occurance of this pattern in \a text starting from \a offset
+      */
+    Token findIn(const String &text, long offset = 0) const
+    {
+        Token token;
+        if (offset >= 0) {
+            for (; !token && offset < text.count(); ++offset) {
+                token = me().match(text, offset);
+            }
+        }
+        return token;
+    }
+
+    /** Break up \a text into the non-matching parts
+      */
+    List<String> breakUp(const String &text) const
+    {
+        List<String> parts;
+
+        for (long i = 0; i < text.count();)
+        {
+            Token token = findIn(text, i);
+            if (token) {
+                parts.append(text.copy(i, token.i0()));
+                i = token.i1();
+            }
+            else {
+                parts.append(text.copy(i, text.count()));
+                break;
+            }
+        }
+
+        return parts;
+    }
+
+    /** Allow use this definition as a syntax rule within another definition
+      */
+    operator SyntaxRule() const
+    {
+        assert(me().entry_);
+        return *me().entry_;
+    }
+
+    /** \name Single Character Literals
+      */
+    ///@{
+    using Char = syntax::CharNode; ///< \copybrief cc::syntax::CharNode
+    using Other = syntax::OtherNode; ///< \copybrief cc::syntax::OtherNode
+    using Match = syntax::MatchNode; ///< \copybrief cc::syntax::MatchNode
+    using Any = syntax::AnyNode; ///< \copybrief cc::syntax::AnyNode
+
+    using Within = syntax::RangeNode; ///< \copybrief cc::syntax::RangeNode
+    using Outside = syntax::OutOfRangeNode; ///< \copybrief cc::syntax::OutOfRangeNode
+    using OneOf = syntax::OneOfNode; ///< \copybrief cc::syntax::OneOfNode
+    using NoneOf = syntax::NoneOfNode; ///< \copybrief cc::syntax::NoneOfNode
+    ///@}
+
+    /** \name Multi-Character Literals
+      */
+    ///@{
+    using Literal = syntax::LiteralNode; ///< \copybrief cc::syntax::LiteralNode
+    using Casefree = syntax::CasefreeNode; ///< \copybrief cc::syntax::CasefreeNode
+    using Keyword = syntax::KeywordNode; ///< \copybrief cc::syntax::KeywordNode
+    ///@}
+
+    /** \name Structural Elements
+      */
+    ///@{
+    using Sequence = syntax::SequenceNode; ///< \copybrief cc::syntax::SequenceNode
+    using Choice = syntax::ChoiceNode; ///< \copybrief cc::syntax::ChoiceNode
+    using LongestChoice = syntax::ChoiceNode; ///< \copybrief cc::syntax::LongestChoiceNode
+    using Repeat = syntax::RepeatNode; ///< \copybrief cc::syntax::RepeatNode
+    using Find = syntax::FindNode; ///< \copybrief cc::syntax::FindNode
+    using FindLast = syntax::FindLastNode; ///< \copybrief cc::syntax::FindLastNode
+    using Ahead = syntax::AheadNode; ///< \copybrief cc::syntax::AheadNode
+    using Behind = syntax::BehindNode; ///< \copybrief cc::syntax::BehindNode
+    using Not = syntax::NotNode; ///< \copybrief cc::syntax::NotNode
+    using NotBehind = syntax::NotBehindNode; ///< \copybrief cc::syntax::NotBehindNode
+    using Ref = syntax::RefNode; ///< \copybrief cc::syntax::RefNode
+    using Inline = syntax::InlineNode; ///< \copybrief cc::syntax::InlineNode
+    ///@}
+
+    /** \name Constraints
+      */
+    ///@{
+    using Boi = syntax::BoiNode; ///< \copybrief cc::syntax::BoiNode
+    using Eoi = syntax::EoiNode; ///< \copybrief cc::syntax::EoiNode
+    using Length = syntax::LengthNode; ///< \copybrief cc::syntax::LengthNode
+    using Pass = syntax::PassNode; ///< \copybrief cc::syntax::PassNode
+    using Fail = syntax::FailNode; ///< \copybrief cc::syntax::FailNode
+    using Expect = syntax::ExpectNode; ///< \copybrief cc::syntax::ExpectNode
+    ///@}
+
+    /** \name Context Awareness
+      */
+    ///@{
+    using Capture = syntax::CaptureNode; ///< \copybrief cc::syntax::CaptureNode
+    using Replay = syntax::ReplayNode; ///< \copybrief cc::syntax::ReplayNode
+    using Context = syntax::ContextNode; ///< \copybrief cc::syntax::ContextNode
+    using Debug = syntax::DebugNode; ///< \copybrief cc::syntax::DebugNode
+    ///@}
+
+protected:
+    class State: public Object::State
+    {
+    public:
+        State(const SyntaxRule *entry):
+            entry_{entry}
+        {}
+
+        Token match(const String &text, long start = 0) const
+        {
+            Token result;
+            Token dummy;
+
+            long offset = entry_ ? entry_->matchNext(text, start, dummy) : -1;
+            if (offset != -1 && dummy.children().count() == 1) {
+                result = dummy.children().first();
+            }
+
+            return result;
+        }
+
+    private:
+        friend class SyntaxDefinition;
+
+        const SyntaxRule *entry_ { nullptr };
+    };
+
+    explicit SyntaxDefinition(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

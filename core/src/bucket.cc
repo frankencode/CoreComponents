@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/bucket>
+#include <cc/bucket/Tree>
 
 namespace cc {
 namespace bucket {
 
-Node *Tree::stepDownTo(Weight index, unsigned *egress) const
+Node *Tree::stepDownTo(long index, unsigned *egress) const
 {
     assert(0 <= index && index <= root_.weight_);
 
@@ -53,7 +53,7 @@ Node *Tree::stepDownTo(Weight index, unsigned *egress) const
 
 void Tree::joinSucc(Node *node, Node *newNode)
 {
-    Node *oldSucc = node->succ_;
+    Node *oldSucc = node->succ();
 
     if (oldSucc) {
         newNode->succ_ = oldSucc;
@@ -87,22 +87,18 @@ void Tree::unlink(Node *node)
     Branch *parent = node->parent_;
     parent->pop(parent->indexOf(node));
 
-    Node *succ = node->succ_;
-    Node *pred = node->pred_;
+    Node *succ = node->succ();
+    Node *pred = node->pred();
     if (pred) pred->succ_ = succ;
     if (succ) succ->pred_ = pred;
-    else if (!node->isBranch_) {
-        lastLeaf_ = pred;
-        // lastLeaf_ = getMaxNode(); // FIXME
-    }
+    else if (!node->isBranch_) lastLeaf_ = pred;
 
-    // if (!node->isBranch_) --leafCount_;
     delete node;
 
     relieve(parent);
 }
 
-void Tree::shiftWeights(Node *from, Node *to, Weight delta)
+void Tree::shiftWeights(Node *from, Node *to, long delta)
 {
     while (from != to) {
         weight(from) -= delta;
@@ -112,7 +108,7 @@ void Tree::shiftWeights(Node *from, Node *to, Weight delta)
     }
 }
 
-void Tree::updateWeights(Node *node, Weight delta)
+void Tree::updateWeights(Node *node, long delta)
 {
     while (node != root_.node_) {
         weight(node) += delta;
@@ -133,5 +129,12 @@ void Tree::reduce()
         root_.node_->parent_ = nullptr;
     }
 }
+
+template void Tree::dissipate<Branch>(Branch *&node, unsigned &egress);
+template void Tree::relieve<Branch>(Branch *node, bool recursive);
+template void Tree::dissipateForward<Branch>(Branch *from, Branch *to);
+template void Tree::dissipateBackward<Branch>(Branch *to, Branch *from);
+template void Tree::distributeForward<Branch>(Branch *from, Branch *to);
+template void Tree::collapseSucc<Branch>(Branch *node, Branch *succ);
 
 }} // namespace cc::bucket

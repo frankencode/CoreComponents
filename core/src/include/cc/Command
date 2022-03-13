@@ -8,168 +8,73 @@
 
 #pragma once
 
-#include <sys/types.h> // pid_t
-#include <spawn.h>
-#include <cc/exceptions>
-#include <cc/SignalSet>
-#include <cc/EnvMap>
 #include <cc/IoChannel>
-#include <cc/List>
+#include <cc/SignalSet>
+#include <cc/Process>
+#include <cc/String>
+#include <cc/Map>
+#include <cc/Object>
 
 namespace cc {
 
-class Process;
-
-/** \brief Sub-process process staging helper
-  * \see Process
+/** \class Command cc/Command
+  * \brief Parameters for process creation
+  * \exception SystemError
   */
-class Command
+class Command: public Object
 {
 public:
-    class Instance: public Object
-    {
-    public:
-        /** \brief Set command line arguments
-          * \param args Argument list, first entry is the executable name
-          * \return pointer to this object
-          */
-        Instance *setArgs(const StringList &args);
+    /** Create a new command
+      */
+    Command();
 
-        /** \brief Set environment map
-          * \param envMap The environment map to use for the new child process (or zero pointer to inherit the parents environment map)
-          * \return pointer to this object
-          */
-        Instance *setEnvMap(const EnvMap &envMap);
+    /** Create a new command with executable name and arguments extracted from \a command
+      */
+    explicit Command(const String &command);
 
-        /** \brief Set the process group
-          * \param groupId Group ID of the process group to join or 0 to make the new process lead a new group
-          * \return pointer to this object
-          */
-        Instance *setProcessGroup(pid_t groupId = 0);
+    /** %Set command line arguments to \a args (args[0] provides the executable name)
+      */
+    Command &args(const List<String> &args);
 
-        /** \brief Set the signal mask
-          * \param mask Initial signal mask for the new child process
-          * \return pointer to this object
-          */
-        Instance *setSignalMask(const SignalSet &mask);
+    /** %Set environment map to \a map
+      */
+    Command &env(const Map<String> &map);
 
-        /** \brief Reset signal handling strategy to the default for specific signals
-          * \param set Set of signals to reset to default signal handling behavior
-          * \return pointer to this object
-          */
-        Instance *setSignalDefault(const SignalSet &set);
+    /** %Set the process group to \a groupId (pass zero to start a new process group)
+      */
+    Command &group(int groupId = 0);
 
-        /** \brief Set initial working directory
-          * \param path directory path
-          * \return pointer to this object
-          * \warning This method is not thread-safe on all platforms! This is especially true on glibc before v2.29.
-          */
-        Instance *setWorkingDirectory(const String &path);
+    /** %Set the signal mask to \a mask
+      */
+    Command &signalMask(const SignalSet &mask);
 
-        /** \brief Set standard input channel
-          * \param channel IoChannel to use for standard input
-          * \return pointer to this object
-          * \see SocketPair
-          */
-        Instance *setInputChannel(const IoChannel &channel);
+    /** Reset signal handling strategy to the default for the signals in \a set
+      */
+    Command &signalDefault(const SignalSet &set);
 
-        /** \brief Set standard output channel
-          * \param channel IoChannel to use for standard output
-          * \return pointer to this object
-          * \see SocketPair
-          */
-        Instance *setOutputChannel(const IoChannel &channel);
+    /** %Set initial working directory to \a path
+      * \warning This method is not thread-safe on all platforms! This is especially true on glibc before v2.29.
+      */
+    Command &workDir(const String &path);
 
-        /** \brief Set standard error channel
-          * \param channel IoChannel to use for standard error
-          * \return pointer to this object
-          * \see SocketPair
-          */
-        Instance *setErrorChannel(const IoChannel &channel);
+    /** Setup I/O channel \a channel to appear in the child's files descriptor table under \a fd
+      */
+    Command &io(int fd, const IoChannel &channel);
 
-        /** \brief Attach an I/O channel
-          * \param channel IoChannel to attach
-          * \param targetFd target file descriptor in the child's file descriptor table
-          * \return pointer to this object
-          */
-        Instance *attachChannel(const IoChannel &channel, int targetFd);
-
-        /** \brief Set standard input
-          * \param stream SystemStream to use for standard input
-          * \return pointer to this objects
-          */
-        Instance *setInput(const SystemStream &stream);
-
-        /** \brief Set standard input
-          * \param stream SystemStream to use for standard output
-          * \return pointer to this objects
-          */
-        Instance *setOutput(const SystemStream &stream);
-
-        /** \brief Set standard input
-          * \param stream SystemStream to use for standard error
-          * \return pointer to this objects
-          */
-        Instance *setError(const SystemStream &stream);
-
-        /** \brief Attach an I/O stream
-          * \param stream SystemStream to attach
-          * \param targetFd target file descriptor in the child's file descriptor table
-          * \return pointer to this object
-          */
-        Instance *attach(const SystemStream &stream, int targetFd);
-
-        /** \brief Convenience function to setup standard I/O redirection
-          * \return pointer to this object
-          */
-        Instance *simpleRedirection();
-
-    private:
-        friend class Command;
-        friend class Process;
-
-        Instance(const String &command = String{});
-        ~Instance();
-
-        void startDone();
-
-        void enableSpawnFlag(short flag);
-
-        String command_;
-        String execPath_;
-        StringList args_;
-        bool customEnvMap_ { false };
-        EnvMap envMap_;
-
-        int spawnFlags_ { 0 };
-        posix_spawnattr_t spawnAttributes_;
-        posix_spawn_file_actions_t fileActions_;
-        bool groupLead_ { false };
-        List<IoChannel> ioChannels_;
-        SystemStream standardStreams_[3];
-
-        #ifdef __GLIBC__
-        #if __GLIBC_PREREQ(2, 29)
-        #else
-        String cwd_;
-        #endif
-        #endif
-    };
-
-    Command():
-        instance_{new Instance}
-    {}
-
-    Command(const String &command):
-        instance_{new Instance{command}}
-    {}
-
-    Instance *operator->() { return instance_; }
+    /** Setup I/O stream \a stream to appear in the child's files descriptor table under \a fd
+      */
+    Command &io(int fd, const IoStream &stream);
 
 private:
     friend class Process;
 
-    Ref<Instance> instance_;
+    void start(Process &process);
+    void open(Process &process);
+
+    struct State;
+
+    State &me();
+    const State &me() const;
 };
 
 } // namespace cc

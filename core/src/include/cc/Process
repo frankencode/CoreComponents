@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Frank Mertens.
+ * Copyright (C) 2020 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -8,183 +8,195 @@
 
 #pragma once
 
+#include <cc/Signal>
+#include <cc/IoStream>
+#include <cc/Map>
+#include <cc/String>
+#include <cc/Object>
 #include <cc/files>
-#include <cc/Command>
 
 namespace cc {
 
+class Command;
+
 /** \class Process cc/Process
   * \ingroup concurrency
-  * \brief Child process creation and current process state
+  * \brief %Process creation and current process state
+  * \exception SystemError
   */
-class Process
+class Process: public Object
 {
 public:
-    using Stage = Command;
-
-    class Instance: public Object
-    {
-    public:
-        /// %Process ID of the child process
-        pid_t id() const;
-
-        /** \brief Send signal to the child process
-          * \param signal the signal to deliver
-          */
-        void kill(SystemSignal signal = SystemSignal::Terminate);
-
-        /** \brief Wait for child process termination
-          * \return exit status of child process (<0 if signaled, exit status = -signal number)
-          */
-        int wait();
-
-        /// Attached standard input channel/stream
-        SystemStream input() const;
-
-        /// Attached standard output channel/stream
-        SystemStream output() const;
-
-        /// Attached standard error channel/stream
-        SystemStream error() const;
-
-    private:
-        friend class Process;
-
-        Instance(Command &command);
-        Instance(Command::Instance *command);
-        ~Instance();
-
-        pid_t pid_;
-        bool groupLead_ { false };
-        int exitStatus_ { 0 };
-        SystemStream standardStreams_[3];
-    };
-
+    /** Create a null sub-process
+      */
     Process() = default;
 
-    /** \brief Spawn a new child process
-      * \param command Executable path plus command line arguments
+    /** Start a new sub-process executing \a command (executable path + arguments)
       */
-    Process(const String &command)
-    {
-        Command c{command};
-        instance_ = new Instance{c};
-    }
+    explicit Process(const String &command);
 
-   /** \brief Spawn a new child process
-      * \param command Sub-process staging instructions
+   /** Start a new sub-process executing \a command
       */
-    Process(Command::Instance *command):
-        instance_{new Instance{command}}
-    {}
+    explicit Process(const Command &command);
 
-    const Instance *operator->() const { return instance_; }
-    Instance *operator->() { return instance_; }
-
-    explicit operator bool() const { return instance_; }
-
-    /** Change the current working directory of this process
-      * \param path new directory path to enter
+    /** Start process and wait for its completion
       */
-    static void setWorkingDirectory(const String &path);
+    static int exec(const String &command);
 
-    /// Current working directory of this process
-    static String getWorkingDirectory();
-
-    /// Actual pathname of the executed command
-    static String exePath();
-
-    /** Set the file mode creation mask
-      * \param newMask the new file mode mask
-      * \param oldMask optionally return the old mask
+    /** %Process ID of the sub-process
       */
-    static void setUserMask(FileMode newMask, FileMode *oldMask = nullptr);
+    int id() const;
 
-    /// Return the real user ID
-    static uid_t getRealUserId();
-
-    /// Return the real group ID
-    static gid_t getRealGroupId();
-
-    /// Return the effective user ID
-    static uid_t getEffectiveUserId();
-
-    /// Return the effective group ID
-    static gid_t getEffectiveGroupId();
-
-    /// Return true if this process runs as super-user
-    static bool isSuperUser();
-
-    /// Set the user ID
-    static void setUserId(uid_t uid);
-
-    /// Set the group ID
-    static void setGroupId(gid_t gid);
-
-    /// Set the effective user ID
-    static void setEffectiveUserId(uid_t uid);
-
-    /// Set the effective group ID
-    static void setEffectiveGroupId(gid_t gid);
-
-    /** Read an environment variable
-      * \param name name of the environment variable
-      * \return value of the environment variable or "" if no value is set
+    /** Wait for sub-process termination and return exit status
       */
-    static String getEnv(const String &name);
+    int wait();
 
-    /** Read an environment variable
-      * \param name name of the environment variable
-      * \param defaultValue default value
-      * \return value of the environment variable or \a defaultValue if no value is set
+    /** Standard input of sub-process
       */
-    static String getEnv(const String &name, const String &defaultValue);
+    IoStream input() const;
 
-    /** Set an environment variable
-      * \param name name of the environment variable
-      * \param value value to set
+    /** Standard output of sub-process
+      */
+    IoStream output() const;
+
+    /** Standard error of sub-process
+      */
+    IoStream error() const;
+
+    /** Check if exit status indicates termination by an unhandled signal
+      */
+    static bool isSignaled(int status) { return status < 0; }
+
+    /** Translate \a status to signal number
+      */
+    static Signal signalNumber(int status) { return static_cast<Signal>(-status); }
+
+    /** Send \a signal to process with ID \a pid
+      */
+    static void kill(int pid, Signal signal = Signal::Terminate);
+
+    /** Send \a signal to process group with ID \a gid
+      */
+    static void killGroup(int gid, Signal signal = Signal::Terminate);
+
+    /** Send a signal to the calling process
+      */
+    static void raise(Signal signal);
+
+    /** Terminate this process with exit code \a status [0, 255]
+      */
+    static void exit(int status);
+
+    /** Get current process ID
+      */
+    static int currentId();
+
+    /** Get parent process ID
+      */
+    static int parentId();
+
+    /** Get the file path of the currently running executable
+      */
+    static String execPath();
+
+    /** Get environment variable by \a name
+      */
+    static String env(const String &name);
+
+    /** Get environment variable by \a name and if undefined return \a fallback
+      */
+    static String env(const String &name, const String &fallback);
+
+    /** %Set environment variable \a name to \a value
       */
     static void setEnv(const String &name, const String &value);
 
-    /// Unset an environment variable
+    /** Unset environment variable \a name to an undefined value
+      */
     static void unsetEnv(const String &name);
 
-    /// Return the current environment of this process
-    static EnvMap getEnvMap();
-
-    /// Get the process ID of calling process
-    static pid_t getId();
-
-    /// Get the process ID of the parent process of the calling process
-    static pid_t getParentId();
-
-    /// Send a signal to a process
-    static void kill(pid_t processId, SystemSignal signal = SystemSignal::Terminate);
-
-    /// Send a signal to a process group
-    static void killGroup(pid_t processGroupId, SystemSignal signal = SystemSignal::Terminate);
-
-    /// Raise a signal against the calling process
-    static void raise(SystemSignal signal);
-
-    /** Terminate this process
-      * \param exitCode exit code (0..255)
+    /** Get the current environment map
       */
-    static void exit(int exitCode);
+    static Map<String> envMap();
 
-    /// Daemonize this process
+    /** Get the current working directory
+      */
+    static String cwd();
+
+    /** %Set the current working directory to \a path
+      */
+    static void cd(const String &path);
+
+    /** %Set the file mode creation mask to \a newMask and optionally return the old mask in \a oldMask
+      */
+    static void setUserMask(FileMode newMask, Out<FileMode> oldMask = None{});
+
+    /** Get the real user ID
+      */
+    static int realUserId();
+
+    /** Get the real group ID
+      */
+    static int realGroupId();
+
+    /** Get the effective user ID
+      */
+    static int effectiveUserId();
+
+    /** Get the effective group ID
+      */
+    static int effectiveGroupId();
+
+    /** Check for super-user
+      */
+    static bool isSuperUser();
+
+    /** %Set user ID to \a uid
+      */
+    static void setUserId(int uid);
+
+    /** %Set the group ID to \a gid
+      */
+    static void setGroupId(int gid);
+
+    /** %Set the effective user ID to \a uid
+      */
+    static void setEffectiveUserId(int uid);
+
+    /** %Set the effective group ID to \a gid
+      */
+    static void setEffectiveGroupId(int gid);
+
+    /** Daemonize this process
+      */
     static void daemonize();
 
-    /// Returns true if this process is daemonized
+    /** Check if daemonized
+      */
     static bool isDaemonized();
 
-    /// Make this process a leader of a new login session if the this process is not already a process group leader
-    static pid_t makeSessionLeader();
+    /** Start a new login session
+      */
+    static void startSession();
 
 private:
+    friend class Command;
+
     static char **&environ();
 
-    Ref<Instance> instance_;
+    struct State: public Object::State
+    {
+        ~State();
+        int wait();
+
+        int pid_ { -1 };
+        bool groupLead_ { false };
+        int exitStatus_ { 0 };
+        IoStream standardStreams_[3];
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
 } // namespace cc

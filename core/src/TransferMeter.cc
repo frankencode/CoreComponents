@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2017 Frank Mertens.
+ * Copyright (C) 2021 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -10,30 +10,65 @@
 
 namespace cc {
 
-TransferMeter::Instance::Instance(const Stream &stream):
-    stream_{stream},
-    totalRead_{0},
-    totalWritten_{0}
+struct TransferMeter::State: public Stream::State
+{
+    State(const Stream &stream):
+        stream_{stream}
+    {}
+
+    bool waitEstablished(int timeout) override
+    {
+        return stream_.waitEstablished(timeout);
+    }
+
+    bool wait(IoEvent event, int timeout) override
+    {
+        return stream_.wait(event, timeout);
+    }
+
+    long read(Out<Bytes> buffer, long maxFill) override
+    {
+        long n = stream_.read(buffer, maxFill);
+        totalRead_ += n;
+        return n;
+    }
+
+    void write(const Bytes &buffer, long fill) override
+    {
+        totalWritten_ += fill > 0 ? fill : buffer.count();
+        stream_.write(buffer, fill);
+    }
+
+    void write(const List<Bytes> &buffers) override
+    {
+        for (const Bytes &buffer: buffers) {
+            totalWritten_ += buffer.count();
+        }
+        stream_.write(buffers);
+    }
+
+    Stream stream_;
+    long long totalRead_ { 0 };
+    long long totalWritten_ { 0 };
+};
+
+TransferMeter::TransferMeter(const Stream &stream):
+    Stream{new State{stream}}
 {}
 
-int TransferMeter::Instance::read(CharArray *buf)
+long long TransferMeter::totalRead() const
 {
-    int n = stream_->read(buf);
-    totalRead_ += n;
-    return n;
+    return me().totalRead_;
 }
 
-void TransferMeter::Instance::write(const CharArray *buf)
+long long TransferMeter::totalWritten() const
 {
-    stream_->write(buf);
-    totalWritten_ += buf->count();
+    return me().totalWritten_;
 }
 
-void TransferMeter::Instance::write(const StringList &parts)
+const TransferMeter::State &TransferMeter::me() const
 {
-    stream_->write(parts);
-    for (const String &s: parts)
-        totalWritten_ += s->count();
+    return Object::me.as<State>();
 }
 
 } // namespace cc
