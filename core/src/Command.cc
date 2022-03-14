@@ -63,6 +63,8 @@ struct Command::State: public Object::State
     #else
     String cwd_;
     #endif
+    #else
+    String cwd_;
     #endif
 };
 
@@ -115,10 +117,10 @@ Command &Command::workDir(const String &path)
     #if __GLIBC_PREREQ(2, 29)
     CC_SPAWN_CALL(posix_spawn_file_actions_addchdir_np(&me().fileActions_, path));
     #else
-    cwd_ = path;
+    me().cwd_ = path;
     #endif
     #else
-    CC_SPAWN_CALL(posix_spawn_file_actions_addchdir_np(&me().fileActions_, path));
+    me().cwd_ = path;
     #endif
     return *this;
 }

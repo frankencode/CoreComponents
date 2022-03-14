@@ -65,6 +65,9 @@ void BuildParameters::State::read(const MetaObject &object, const String &projec
             #ifdef __hpux
             if (child.className() == "HPUX") readSpecific(child, projectPath, options);
             #endif
+            #ifdef __CYGWIN32__
+            if (child.className() == "Cygwin") readSpecific(child, projectPath, options);
+            #endif
         }
     }
 }

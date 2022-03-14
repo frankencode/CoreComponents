@@ -43,7 +43,7 @@ public:
                 const char *paramClasses[] = {
                     "Debug", "Release",
                     "Linux", "OpenBSD", "FreeBSD", "NetBSD", "DragonFly",
-                    "MacOSX", "Solaris", "Mach", "HPUX"
+                    "MacOSX", "Solaris", "Mach", "HPUX", "Cygwin"
                 };
 
                 for (const char *className: paramClasses) {

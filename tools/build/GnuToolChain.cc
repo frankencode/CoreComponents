@@ -181,18 +181,27 @@ struct GnuToolChain::State: public ToolChain::State
     String targetName(const BuildPlan &plan) const override
     {
         String name = plan.name();
+        #if ! defined __MSYS__
         if (plan.options() & BuildOption::Library) {
-            if (!plan.name().startsWith("lib"))
+            if (!plan.name().startsWith("lib")) {
                 name = "lib" + name;
+            }
         }
+        #endif
         return name;
     }
 
     String linkName(const BuildPlan &plan) const override
     {
         String name = targetName(plan);
-        if (plan.options() & BuildOption::Library)
+
+        if (plan.options() & BuildOption::Library) {
+            #if ! defined __MSYS__
             name = name + ".so." + str(plan.version());
+            #else
+            name = name + ".dll";
+            #endif
+        }
         return name;
     }
 
@@ -519,7 +528,18 @@ struct GnuToolChain::State: public ToolChain::State
         }
 
         rpaths << "-rpath-link=" + Process::cwd();
-        args << "-Wl,--enable-new-dtags," + rpaths.join(',');
+
+        const bool enableNewDTags =
+        #if defined __MSYS__
+            false;
+        #else
+            !(plan.options() & BuildOption::Bootstrap);
+        #endif
+
+        if (enableNewDTags)
+            args << "-Wl,--enable-new-dtags," + rpaths.join(',');
+        else
+            args << "-Wl," + rpaths.join(',');
     }
 
     static void appendRelocationMode(Format &args, const BuildPlan &plan)

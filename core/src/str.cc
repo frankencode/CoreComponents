@@ -9,7 +9,7 @@
 #include <cc/str>
 #include <cc/Queue>
 #include <cc/Utf8Sink>
-#include <cc/bytes>
+#include <cc/binary>
 #include <cc/math>
 
 namespace cc {

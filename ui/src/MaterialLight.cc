@@ -7,7 +7,7 @@
  */
 
 #include <cc/ui/MaterialLight>
-#include <cc/color/Material>
+#include <cc/colors/Material>
 
 namespace cc::ui {
 

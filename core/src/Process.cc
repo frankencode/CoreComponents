@@ -129,7 +129,7 @@ int Process::parentId()
 String Process::execPath()
 {
     String path;
-    #ifdef __linux
+    #if defined __linux || defined __MSYS__
     path = File::readlink("/proc/self/exe");
     #elif __OpenBSD__
     path = File::readlink("/proc/curproc/file");
@@ -145,7 +145,7 @@ String Process::execPath()
     path = buf;
     ::free(buf);
     #else
-    #error "Missing implementation for Process::execPath()"
+    #warning "Missing implementation for Process::execPath()"
     #endif
     return path;
 }

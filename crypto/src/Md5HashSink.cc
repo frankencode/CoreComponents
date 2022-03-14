@@ -7,7 +7,7 @@
  */
 
 #include <cc/Md5HashSink>
-#include <cc/bytes>
+#include <cc/binary>
 #include <cstring>
 
 namespace cc {

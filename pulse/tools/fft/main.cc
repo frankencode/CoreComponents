@@ -7,9 +7,9 @@
 #include <cc/Complex>
 #include <cc/CircularBuffer>
 #include <cc/Color>
+#include <cc/HexDump>
 #include <cc/fft>
 #include <cc/stdio>
-#include <cc/hexdump>
 #include <cc/DEBUG>
 
 int main(int argc, char *argv[])

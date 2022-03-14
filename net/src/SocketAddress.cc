@@ -10,7 +10,7 @@
 #include <cc/Socket>
 #include <cc/Uri>
 #include <cc/Format>
-#include <cc/bytes>
+#include <cc/binary>
 #include <cc/exceptions>
 #include <netinet/in.h> // sockaddr_in, etc.
 #include <sys/socket.h> // connect

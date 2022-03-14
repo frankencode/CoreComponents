@@ -1,7 +1,7 @@
 #include <cc/pulse/Context>
 #include <cc/pulse/InputStream>
 #include <cc/stdio>
-#include <cc/hexdump>
+#include <cc/HexDump>
 #include <cc/DEBUG>
 
 int main(int argc, char *argv[])

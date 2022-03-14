@@ -10,5 +10,9 @@ Library {
         compile-flags: -DCC_VALGRIND
         cascade: true
     }
+    Dependency {
+        compile-flags: -D_GNU_SOURCE
+        cascade: true
+    }
     link: dl
 }

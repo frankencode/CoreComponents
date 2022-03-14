@@ -8,7 +8,7 @@
 
 #include <cc/System>
 #include <unistd.h> // sysconf(3)
-#ifndef __linux
+#if !defined __linux && !defined __MSYS__
 #include <sys/types.h>
 #ifdef __OpenBSD__
 #include <sys/param.h>

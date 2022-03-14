@@ -4,14 +4,14 @@ CoreComponents
 About
 -----
 
-CoreComponents provides a small set of libraries and tools for Unix system programming.
+CoreComponents provides a common system abstraction layer on top of POSIX for C++ developers.
 
 Features
 --------
 
- * fully incrementally garbage collected
  * highlevel/safe-to-use data countainers
  * powerful string processing and pattern matching
+ * safe memory management idioms
  * designed for multi-threading from ground up
  * fast compile times
  * transparent API: full access to low-level system primitives

@@ -29,7 +29,7 @@
 */
 
 #include <cc/ui/shadowBlur>
-#include <cc/bytes>
+#include <cc/binary>
 
 namespace cc::ui {
 
