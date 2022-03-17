@@ -43,6 +43,7 @@ public:
 
     String targetName(const BuildPlan &plan) const { return me().targetName(plan); }
     String linkName(const BuildPlan &plan) const { return me().linkName(plan); }
+    String linkName(const Module &module) const { return me().linkName(module); }
     String linkCommand(const BuildPlan &plan) const { return me().linkCommand(plan); }
     Job createLinkJob(const BuildPlan &plan) const { return me().createLinkJob(plan); }
     bool link(const BuildPlan &plan) const { return me().link(plan); }
@@ -94,6 +95,7 @@ protected:
 
         virtual String targetName(const BuildPlan &plan) const = 0;
         virtual String linkName(const BuildPlan &plan) const = 0;
+        virtual String linkName(const Module &module) const = 0;
         virtual String linkCommand(const BuildPlan &plan) const = 0;
         virtual Job createLinkJob(const BuildPlan &plan) const = 0;
         virtual bool link(const BuildPlan &plan) const = 0;

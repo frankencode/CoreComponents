@@ -11,6 +11,7 @@ Library {
         cascade: true
     }
     Dependency {
+        probe: probe/cygwin.cc
         compile-flags: -D_GNU_SOURCE
         cascade: true
     }

@@ -8,11 +8,9 @@
 
 #include <cc/System>
 #include <unistd.h> // sysconf(3)
-#if !defined __linux && !defined __MSYS__
-#include <sys/types.h>
 #ifdef __OpenBSD__
+#include <sys/types.h>
 #include <sys/param.h>
-#endif
 #include <sys/sysctl.h>
 #endif
 #include <time.h>

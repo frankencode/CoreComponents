@@ -16,7 +16,7 @@ namespace cc {
   * \ingroup net
   * \brief Simplified network configuration state
   */
-class NetworkState: public Object
+class NetworkState final: public Object
 {
 public:
     /** Get the current network configuration state

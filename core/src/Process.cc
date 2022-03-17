@@ -129,7 +129,7 @@ int Process::parentId()
 String Process::execPath()
 {
     String path;
-    #if defined __linux || defined __MSYS__
+    #if defined __linux || defined __CYGWIN32__ || defined __CYGWIN__
     path = File::readlink("/proc/self/exe");
     #elif __OpenBSD__
     path = File::readlink("/proc/curproc/file");

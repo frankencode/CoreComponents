@@ -50,6 +50,9 @@ long IoStream::State::read(Out<Bytes> buffer, long maxFill)
     if (m == -1) {
         if (errno == EWOULDBLOCK) throw Timeout{};
         if (errno == ECONNRESET || errno == EPIPE) throw InputExhaustion{};
+        #if defined __CYGWIN__ || defined __CYGWIN32__
+        if (errno == ECONNABORTED) return 0;
+        #endif
         CC_SYSTEM_DEBUG_ERROR(errno);
     }
     return m;

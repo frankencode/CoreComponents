@@ -48,7 +48,7 @@ bool InstallStage::run()
 
 bool InstallStage::installTool(const Module &module)
 {
-    String product = module.toolName();
+    String product = toolChain().linkName(module);
     return shell().install(product, toolChain().installDirPath(plan()) / product);
 }
 

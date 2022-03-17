@@ -71,8 +71,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
     {
         bool moduleDirty = module.dirty();
 
-        if (plan().options() & BuildOption::Tools)
-            moduleDirty = moduleDirty || !shell().fileStatus(module.toolName());
+        if (plan().options() & BuildOption::Tools) {
+            moduleDirty = moduleDirty || !shell().fileStatus(toolChain().linkName(module));
+        }
 
         if (moduleDirty)
         {

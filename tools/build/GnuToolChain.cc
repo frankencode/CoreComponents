@@ -34,6 +34,12 @@ struct GnuToolChain::State: public ToolChain::State
         if (ccPath_ == "") ccPath_ = "gcc";
         if (cxxPath_ == "") cxxPath_ = "g++";
 
+        #if defined __CYGWIN32__ || defined __CYGWIN__
+        cygwin_ = true;
+        #else
+        cygwin_ = cxxPath_.contains("cygwin") || cxxPath_.contains("mingw");
+        #endif
+
         Process::setEnv("CC", ccPath_);
         Process::setEnv("CXX", cxxPath_);
 
@@ -138,10 +144,13 @@ struct GnuToolChain::State: public ToolChain::State
         List<String> parts = dependencySplitPattern_.breakUp(job.outputText());
         String modulePath = parts.first();
         parts.popFront();
-        if (plan.options() & BuildOption::Tools)
+        if (plan.options() & BuildOption::Tools) {
             modulePath = modulePath.baseName();
-        else
+            if (cygwin_) modulePath = modulePath + ".exe";
+        }
+        else {
             modulePath = plan.modulePath(modulePath);
+        }
         return Module{job.command(), modulePath, parts, true};
     }
 
@@ -159,7 +168,7 @@ struct GnuToolChain::State: public ToolChain::State
     {
         Format args;
         args << compiler(module.sourcePath());
-        args << "-o" << module.toolName();
+        args << "-o" << linkName(module);
         appendCompileOptions(args, plan);
         if (plan.linkStatic()) args << "-static";
         args << "-pthread";
@@ -181,13 +190,15 @@ struct GnuToolChain::State: public ToolChain::State
     String targetName(const BuildPlan &plan) const override
     {
         String name = plan.name();
-        #if ! defined __MSYS__
+
         if (plan.options() & BuildOption::Library) {
-            if (!plan.name().startsWith("lib")) {
-                name = "lib" + name;
+            if (cygwin_);
+            else {
+                if (!plan.name().startsWith("lib")) {
+                    name = "lib" + name;
+                }
             }
         }
-        #endif
         return name;
     }
 
@@ -196,12 +207,33 @@ struct GnuToolChain::State: public ToolChain::State
         String name = targetName(plan);
 
         if (plan.options() & BuildOption::Library) {
-            #if ! defined __MSYS__
-            name = name + ".so." + str(plan.version());
-            #else
-            name = name + ".dll";
-            #endif
+            if (cygwin_) {
+                name = name + ".dll";
+            }
+            else {
+                name = name + ".so." + str(plan.version());
+            }
         }
+        else if (
+            plan.options() & BuildOption::Application ||
+            plan.options() & BuildOption::Test
+        ) {
+            if (cygwin_) {
+                name = name + ".exe";
+            }
+        }
+
+        return name;
+    }
+
+    String linkName(const Module &module) const override
+    {
+        String name = module.sourcePath().baseName();
+
+        if (cygwin_) {
+            name = name + ".exe";
+        }
+
         return name;
     }
 
@@ -306,6 +338,8 @@ struct GnuToolChain::State: public ToolChain::State
 
     void createLibrarySymlinks(const BuildPlan &plan, const String &libName) const override
     {
+        if (cygwin_) return;
+
         cleanLibrarySymlinks(plan, libName);
 
         List<String> parts = libName.split('.');
@@ -317,6 +351,8 @@ struct GnuToolChain::State: public ToolChain::State
 
     void cleanLibrarySymlinks(const BuildPlan &plan, const String &libName) const override
     {
+        if (cygwin_) return;
+
         List<String> parts = libName.split('.');
         while (parts.last() != "so") {
             parts.popBack();
@@ -529,17 +565,10 @@ struct GnuToolChain::State: public ToolChain::State
 
         rpaths << "-rpath-link=" + Process::cwd();
 
-        const bool enableNewDTags =
-        #if defined __MSYS__
-            false;
-        #else
-            !(plan.options() & BuildOption::Bootstrap);
-        #endif
-
-        if (enableNewDTags)
-            args << "-Wl,--enable-new-dtags," + rpaths.join(',');
-        else
+        if (cygwin_)
             args << "-Wl," + rpaths.join(',');
+        else
+            args << "-Wl,--enable-new-dtags," + rpaths.join(',');
     }
 
     static void appendRelocationMode(Format &args, const BuildPlan &plan)
@@ -566,6 +595,7 @@ struct GnuToolChain::State: public ToolChain::State
     String cFlags_;
     String cxxFlags_;
     String lFlags_;
+    bool cygwin_ { false };
 };
 
 GnuToolChain::GnuToolChain(const String &compiler, const String &libInstallPath):

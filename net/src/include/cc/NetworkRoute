@@ -16,7 +16,7 @@ namespace cc {
   * \ingroup net
   * \brief %Network routing table access
   */
-class NetworkRoute: public Object
+class NetworkRoute final: public Object
 {
 public:
     /** Read the systems's routing table

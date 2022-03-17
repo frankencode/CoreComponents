@@ -44,7 +44,7 @@ bool UninstallStage::run()
 
 bool UninstallStage::uninstallTool(const Module &module)
 {
-    String product = module.toolName();
+    String product = toolChain().linkName(module);
     return shell().unlink(toolChain().installDirPath(plan()) / product);
 }
 

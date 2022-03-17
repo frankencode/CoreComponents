@@ -1,4 +1,4 @@
-#ifndef __CYGWIN32__
+#if !defined __CYGWIN32__ && !defined __CYGWIN__
 #include <stophere>
 #endif
 

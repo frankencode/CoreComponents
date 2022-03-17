@@ -88,7 +88,13 @@ String Dir::createUnique(const String &path, FileMode mode, char placeHolder)
 
 String Dir::createTemp(FileMode mode)
 {
-    return createUnique("/tmp/" + str(::getpid()) + "_########", mode, '#');
+    const char *tmpPrefix =
+    #if defined __CYGWIN__ || defined __CYGWIN32__
+        getenv("TMP");
+    #else
+         "/tmp/";
+    #endif
+    return createUnique(tmpPrefix + str(::getpid()) + "_########", mode, '#');
 }
 
 void Dir::remove(const String &path)

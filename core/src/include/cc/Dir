@@ -20,7 +20,7 @@ namespace cc {
   * \ingroup file_system
   * \brief %File system directories
   */
-class Dir: public Object
+class Dir final: public Object
 {
 public:
     using Item = String; ///< Item type

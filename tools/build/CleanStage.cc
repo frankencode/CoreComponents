@@ -50,7 +50,7 @@ bool CleanStage::run()
 
     if (plan().options() & BuildOption::Tools) {
         for (const Module &module: plan().modules())
-            shell().unlink(module.toolName());
+            shell().unlink(toolChain().linkName(module));
     }
 
     return success_ = true;

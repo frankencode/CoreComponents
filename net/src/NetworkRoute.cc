@@ -26,6 +26,7 @@ List<NetworkRoute> NetworkRoute::queryAll()
 {
     List<NetworkRoute> list;
 
+    #ifdef __linux
     int fd = ::socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
     if (fd == -1) CC_SYSTEM_DEBUG_ERROR(errno);
 
@@ -174,6 +175,9 @@ List<NetworkRoute> NetworkRoute::queryAll()
             }
         }
     }
+    #else
+    #warning "NetworkRoute is not implemented"
+    #endif
 
     return list;
 }

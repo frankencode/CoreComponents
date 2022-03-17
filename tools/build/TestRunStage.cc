@@ -57,7 +57,7 @@ void TestRunStage::scheduleJobs(JobScheduler &scheduler)
 
     if (plan().options() & BuildOption::Tools) {
         for (Module &module: plan().modules()) {
-            String command = "./" + module.toolName();
+            String command = "./" + toolChain().linkName(module);
             if (plan().testArgs() != "") command += " " + plan().testArgs();
             scheduler.schedule(Job{command});
         }
