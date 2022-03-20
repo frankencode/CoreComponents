@@ -31,7 +31,7 @@ public:
 #define CC_PLUGIN_LOADER \
 inline const char *getLibraryPath() \
 { \
-    Dl_info info; \
+    static Dl_info info; \
     dladdr((void *)getLibraryPath, &info); \
     return info.dli_fname; \
 } \
@@ -42,7 +42,7 @@ namespace { \
 #define CC_PLUGIN_GROUP_LOADER(group) \
 inline const char *group ## getLibraryPath() \
 { \
-    Dl_info info; \
+    static Dl_info info; \
     dladdr((void *)group ## getLibraryPath, &info); \
     return info.dli_fname; \
 } \
@@ -53,7 +53,7 @@ namespace { \
 #define CC_PLUGIN_TARGET \
 inline const char *pluginTarget() \
 { \
-    Dl_info info; \
+    static Dl_info info; \
     dladdr((void *)pluginTarget, &info); \
     return info.dli_fname; \
 }
