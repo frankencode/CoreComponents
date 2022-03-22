@@ -135,6 +135,13 @@ public:
         return *me().entry_;
     }
 
+    /** Get the entry rule of this definition
+      */
+    SyntaxRule entry() const
+    {
+        return *me().entry_;
+    }
+
     /** \name Single Character Literals
       */
     ///@{

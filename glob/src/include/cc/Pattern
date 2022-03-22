@@ -22,7 +22,7 @@ namespace cc {
 class Pattern final: public Object
 {
 public:
-    /** Create an invalid pattern
+    /** Create a null pattern
       */
     Pattern() = default;
 
@@ -39,14 +39,18 @@ public:
 
     /** Find the next occurance of this pattern
       * \param text %Text to search in
-      * \param offset %Start and final offset
-      * \return True if a match could be found in \a text
+      * \param offset Provide start offset and return final offset
+      * \return Valid range if a match could be found in \a text
       */
-    bool findIn(const String &text, InOut<long> offset = None{}) const;
+    Range findIn(const String &text, InOut<long> offset = None{}) const;
 
     /** Break up \a text into the non-matching parts
       */
     List<String> breakUp(const String &text) const;
+
+    /** Exact length of a match if not variable
+      */
+    long matchLength() const;
 
     /** %Return a textual representation of the compiled pattern expression
       */

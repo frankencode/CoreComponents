@@ -11,7 +11,7 @@
 
 namespace cc {
 
-struct Pattern::State: public Object::State
+struct Pattern::State final: public Object::State
 {
     State(const String &text):
         definition_{&rule_},
@@ -42,16 +42,25 @@ bool Pattern::match(const String &text, Out< List<Range> > captures) const
     return token;
 }
 
-bool Pattern::findIn(const String &text, Out<long> offset) const
+Range Pattern::findIn(const String &text, Out<long> offset) const
 {
     Token token = me().definition_.findIn(text, offset());
-    if (token) offset = token.i0();
-    return token;
+    Range range;
+    if (token) {
+        offset = token.i0();
+        range = token.range();
+    }
+    return range;
 }
 
 List<String> Pattern::breakUp(const String &text) const
 {
     return me().definition_.breakUp(text);
+}
+
+long Pattern::matchLength() const
+{
+    return me().definition_.entry().matchLength();
 }
 
 List<String> Pattern::explain() const
