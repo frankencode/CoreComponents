@@ -25,8 +25,13 @@ echo "Update bootstrap file..."
 rm -rf /tmp/cc_bootstrap
 mkdir -p /tmp/cc_bootstrap
 pushd /tmp/cc_bootstrap
-cc_build -bootstrap -jobs=1 -release $SOURCE/tools/build > $SOURCE/tools/build/bootstrap
-chmod +x $SOURCE/tools/build/bootstrap
+if uname -o|grep Cygwin; then
+    BOOTSTRAP=bootstrap-cygwin
+else
+    BOOTSTRAP=bootstrap
+fi
+cc_build -bootstrap -release $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
+chmod +x $SOURCE/tools/build/$BOOTSTRAP
 popd
 
 echo "Create source tarball..."
@@ -34,7 +39,9 @@ pushd $SOURCE/..
 rm -rf $PACKAGE-$VERSION
 cp -a $PACKAGE $PACKAGE-$VERSION
 rm -rf $PACKAGE-$VERSION/.git || true
-tar -cv $PACKAGE-$VERSION | gzip --best > $PACKAGE-$VERSION.tar.gz
-# printf "md5\t$(cc_md5 $PACKAGE-$VERSION.tar.gz)\n" > $PACKAGE-$VERSION.hash
-# printf "sha1\t$(cc_sha1 $PACKAGE-$VERSION.tar.gz)\n" >> $PACKAGE-$VERSION.hash
+ARCHIVE=$PACKAGE-$VERSION.tar.gz
+HASHES=$PACKAGE-$VERSION.hash
+tar -cv $PACKAGE-$VERSION | gzip --best > $ARCHIVE
+printf "md5\t$(cc_md5 $ARCHIVE)\n" > $HASHES
+printf "sha1\t$(cc_sha1 $ARCHIVE)\n" >> $HASHES
 popd

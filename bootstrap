@@ -12,4 +12,9 @@ if [ -f $PWD/Recipe ]; then
     exit 1
 fi
 
-$(dirname $0)/tools/build/bootstrap $(dirname $0)
+if uname -o|grep Cygwin; then
+    BOOTSTRAP=bootstrap-cygwin
+else
+    BOOTSTRAP=bootstrap
+fi
+$(dirname $0)/tools/build/$BOOTSTRAP $(dirname $0)
