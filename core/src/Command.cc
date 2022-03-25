@@ -9,6 +9,7 @@
 #include <cc/Command>
 #include <cc/LocalChannel>
 #include <cc/Process>
+#include <cc/Thread>
 #include <cc/File>
 #include <cstring>
 #include <spawn.h>
@@ -244,8 +245,17 @@ void Command::start(Process &process)
     #endif
 
     process.me().pid_ = -1;
-    int ret = ::posix_spawn(&process.me().pid_, execPath, &me().fileActions_, &me().spawnAttributes_, argv, envp ? envp : ::environ);
-    if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
+    do {
+        int ret = ::posix_spawn(&process.me().pid_, execPath, &me().fileActions_, &me().spawnAttributes_, argv, envp ? envp : ::environ);
+        if (ret != 0) {
+            if (ret == EAGAIN) {
+                Thread::sleep(1);
+                continue;
+            }
+            CC_SYSTEM_DEBUG_ERROR(ret);
+        }
+    }
+    while (false);
 
     delete[] argv;
     if (envp) {

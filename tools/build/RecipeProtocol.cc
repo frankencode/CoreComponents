@@ -97,6 +97,7 @@ protected:
         insert("debug", false);
         insert("release", false);
 
+        insert("setup", false);
         insert("configure", false);
         insert("configure-list", false);
         insert("prepare", false);

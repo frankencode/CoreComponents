@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
             "  -optimize        optimization level / strategy (0, 1, 2, 3, 4, s, g)\n"
             "  -root            file system root for installation (default: \"/\")\n"
             "  -prefix          installation prefix (default: '/usr/local')\n"
+            "  -setup           setup convenience Makefile and scripts\n"
             "  -configure       configure the dependencies and show results\n"
             "  -configure-list  list all system dependencies\n"
             "  -prepare         evaluate predicate rules\n"

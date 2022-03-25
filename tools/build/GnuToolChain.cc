@@ -471,6 +471,7 @@ struct GnuToolChain::State: public ToolChain::State
 
     bool refreshLinkerCache(const BuildPlan &plan) const override
     {
+        if (cygwin_) return true;
         if (plan.installRoot() != "/") return true;
         String libInstallPath = plan.installPath("lib");
         if (isMultiArch_) libInstallPath = libInstallPath / machine_;

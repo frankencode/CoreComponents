@@ -14,6 +14,18 @@
 
 namespace cc {
 
+long long File::State::transferTo(const Stream &sink, long long count, const Bytes &buffer)
+{
+    if (!sink && count > 0) {
+        off_t ret = 0;
+        if (count > 0) ret = ::lseek(fd_, count, SEEK_CUR);
+        else ret = ::lseek(fd_, 0, SEEK_END);
+        if (ret != -1) return count;
+    }
+    //! \todo make use of memory mapped I/O if applicable
+    return IoStream::State::transferTo(sink, count, buffer);
+}
+
 bool File::access(const String &path, FileAccess mode)
 {
     return (path != "") && ::access(path, +mode) == 0;
@@ -260,18 +272,6 @@ void File::close()
             CC_SYSTEM_DEBUG_ERROR(errno);
         me().fd_ = -1;
     }
-}
-
-long long File::State::transferTo(const Stream &sink, long long count, const Bytes &buffer)
-{
-    if (!sink && count > 0) {
-        off_t ret = 0;
-        if (count > 0) ret = ::lseek(fd_, count, SEEK_CUR);
-        else ret = ::lseek(fd_, 0, SEEK_END);
-        if (ret != -1) return count;
-    }
-    //! \todo make use of memory mapped I/O if applicable
-    return IoStream::State::transferTo(sink, count, buffer);
 }
 
 } // namespace cc

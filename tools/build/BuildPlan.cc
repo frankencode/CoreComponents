@@ -536,6 +536,89 @@ struct BuildPlan::State:
         return installRoot_ / installPrefix_ / relativeInstallPath;
     }
 
+    void setupBuildDir()
+    {
+        String options;
+        {
+            Format f;
+            if (options_ & BuildOption::Debug) f << "-debug";
+            if (options_ & BuildOption::Release) f << "-release";
+            if (options_ & BuildOption::BuildTests) f << "-test";
+            if (options_ & BuildOption::Verbose) f << "-verbose";
+            if (recipe_("optimize") != "") f << ("-optimize=" + optimize_);
+            if (recipe_("prefix") != "") f << ("-prefix=" + installPrefix_);
+            if (recipe_("root") != "/") f << ("-root=" + installRoot_);
+            f << projectPath_;
+            options = f.join<String>(' ');
+        }
+
+        Dir::establish(".setup");
+
+        Format{
+            File{".setup/configure", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
+        }
+            << "#!/bin/sh -ex" << nl
+            << "clear && cc_build -configure " << options << nl;
+
+        Format{
+            File{".setup/build", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
+        }
+            << "#!/bin/sh -ex" << nl
+            << "clear && cc_build " << options << nl;
+
+        Format{
+            File{".setup/test_run", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
+        }
+            << "#!/bin/sh -ex" << nl
+            << "clear && cc_build -test-run " << options << nl;
+
+
+        Format{
+            File{".setup/clean", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
+        }
+            << "#!/bin/sh -ex" << nl
+            << "clear && cc_build -clean " << options << nl;
+
+        Format{
+            File{".setup/install", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
+        }
+            << "#!/bin/sh -ex" << nl
+            << "clear && cc_build -install " << options << nl;
+
+        Format{
+            File{".setup/uninstall", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
+        }
+            << "#!/bin/sh -ex" << nl
+            << "clear && cc_build -uninstall " << options << nl;
+
+        File::unlink("build");
+        File::symlink(".setup/build", "build");
+
+        File{"Makefile", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
+        .write(
+            ".PHONY: build clean configure install uninstall\n"
+            "\n"
+            "build:\n"
+            "\t./.setup/build\n"
+            "\n"
+            "test:\n"
+            "\t./.setup/test_run\n"
+            "\n"
+            "clean:\n"
+            "\t./.setup/clean\n"
+            "\n"
+            "configure:\n"
+            "\t./.setup/configure\n"
+            "\n"
+            "install:\n"
+            "\t./.setup/install\n"
+            "\n"
+            "uninstall:\n"
+            "\t./.setup/uninstall\n"
+            "\n"
+        );
+    }
+
     BuildPlan plan() const override { return Object::alias<BuildPlan>(this); }
 
     const BuildShell &shell() const { return *this; }
@@ -614,6 +697,11 @@ BuildPlan BuildPlan::loadChild(const String &projectPath)
 int BuildPlan::run()
 {
     readPrerequisites();
+
+    if (recipe("setup")) {
+        me().setupBuildDir();
+        return 0;
+    }
 
     if (recipe("configure-list")) {
         Set<String> names;
