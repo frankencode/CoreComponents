@@ -12,10 +12,10 @@ namespace cc {
 
 /** \class Bits cc/Bits
   * \ingroup bits
-  * \brief Select the bits \a i to \a j from a word of type \a T.
-  * \tparam T Unsigned integer type
-  * \tparam j High bit position
-  * \tparam i Low bit position
+  * \brief %Select the bits \a i to \a j from a word of type \a T.
+  * \tparam T %Unsigned integer type
+  * \tparam j %High bit position
+  * \tparam i %Low bit position
   */
 template<class T, unsigned j, unsigned i>
 class Bits
@@ -24,7 +24,7 @@ class Bits
 
 public:
     /** Create a new bit selector
-      * \param word word to select bits from
+      * \param word %Word to select bits from
       */
     explicit Bits(T &word):
         word_{word}
@@ -75,8 +75,8 @@ private:
 
 /** \brief Select bit \a i from a word of type \a T
   * \ingroup bits
-  * \tparam T Unsigned integer type
-  * \tparam i Bit position
+  * \tparam T %Unsigned integer type
+  * \tparam i %Bit position
   */
 template<class T, unsigned i>
 using Bit = Bits<T, i, i>;
