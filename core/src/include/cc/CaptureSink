@@ -16,7 +16,7 @@ namespace cc {
   * \ingroup streams
   * \brief Capture output in memory
   */
-class CaptureSink: public Stream
+class CaptureSink final: public Stream
 {
 public:
     /** Create a new capture sink
