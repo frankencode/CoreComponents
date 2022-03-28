@@ -145,6 +145,7 @@ struct BuildPlan::State:
         if (recipe_("verbose"))     options_ |= BuildOption::Verbose;
         if (recipe_("configure"))   options_ |= BuildOption::Configure;
         else if (recipe_("clean"))  options_ |= BuildOption::Clean;
+        if (recipe_("insight"))     options_ |= BuildOption::Insight;
 
         concurrency_ = recipe_("jobs").to<long>();
         testRunConcurrency_ = recipe_("test-run-jobs").to<long>();
@@ -545,6 +546,7 @@ struct BuildPlan::State:
             if (options_ & BuildOption::Release) f << "-release";
             if (options_ & BuildOption::BuildTests) f << "-test";
             if (options_ & BuildOption::Verbose) f << "-verbose";
+            if (options_ & BuildOption::Insight) f << "-insight";
             if (recipe_("optimize") != "") f << ("-optimize=" + optimize_);
             if (recipe_("prefix") != "") f << ("-prefix=" + installPrefix_);
             if (recipe_("root") != "/") f << ("-root=" + installRoot_);
@@ -591,7 +593,7 @@ struct BuildPlan::State:
             << "#!/bin/sh -ex" << nl
             << "clear && cc_build -uninstall " << options << nl;
 
-        File::unlink("build");
+        try { File::unlink("build"); } catch (...) {};
         File::symlink(".setup/build", "build");
 
         File{"Makefile", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}

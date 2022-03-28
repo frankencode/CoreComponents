@@ -1,0 +1,63 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/List>
+#include <cc/String>
+
+namespace cc::build {
+
+/** \brief %Track compile statements to support code insight services
+  *
+  * This class generates a "compilation database" as needed for clangd.
+  *
+  * See the following links for more details:
+  *  - https://clangd.llvm.org/installation
+  *  - https://clang.llvm.org/docs/JSONCompilationDatabase.html
+  */
+class InsightDatabase final: public Object
+{
+public:
+    /** Create a null compile database
+      */
+    InsightDatabase() = default;
+
+    /** Load a compile database from \a projectPath
+      */
+    explicit InsightDatabase(const String &projectPath);
+
+    /** Insert a new compile command into the compile database
+      * \param sourcePath %Absolute path of the source file
+      * \param command %Compile command
+      * \param outputPath %Path of generated object file
+      */
+    void insert(const String &sourcePath, const String &command, const String &outputPath);
+
+    /** Tell the database that the path is still in use
+      */
+    void touch(const String &outputPath);
+
+    /** Write compile database back to disk
+      */
+    void sync();
+
+    /** File path of the compile_commands.json
+      */
+    String path() const;
+
+private:
+    struct State;
+    struct Entry;
+
+    const State &me() const;
+    State &me();
+};
+
+} // namespace cc::build

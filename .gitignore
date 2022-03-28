@@ -1,3 +1,4 @@
 doc/html
 *.xx
 tools/tests
+compile_commands.json

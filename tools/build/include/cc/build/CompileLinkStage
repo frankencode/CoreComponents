@@ -23,5 +23,4 @@ private:
     void scheduleJobs(JobScheduler &scheduler);
 };
 
-
 } // namespace cc::build

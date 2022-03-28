@@ -29,6 +29,7 @@ enum class BuildOption: int
     Verbose       = 1 << 12,
     Configure     = 1 << 13,
     Clean         = 1 << 14,
+    Insight       = 1 << 15,
     None          = 0,
     Unspecified   = -1,
     GlobalOptions = Debug|
@@ -38,7 +39,8 @@ enum class BuildOption: int
                     Bootstrap|
                     BuildTests|
                     Verbose|
-                    Configure
+                    Configure |
+                    Insight
 };
 
 CC_BITMASK(BuildOption)

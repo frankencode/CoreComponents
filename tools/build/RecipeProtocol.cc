@@ -98,6 +98,8 @@ protected:
         insert("release", false);
 
         insert("setup", false);
+        insert("insight", false);
+
         insert("configure", false);
         insert("configure-list", false);
         insert("prepare", false);

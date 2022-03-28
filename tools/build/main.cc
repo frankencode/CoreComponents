@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
             "  -root            file system root for installation (default: \"/\")\n"
             "  -prefix          installation prefix (default: '/usr/local')\n"
             "  -setup           setup convenience Makefile and scripts\n"
+            "  -insight         generate compile_commands.json files (e.g. for clangd)\n"
             "  -configure       configure the dependencies and show results\n"
             "  -configure-list  list all system dependencies\n"
             "  -prepare         evaluate predicate rules\n"

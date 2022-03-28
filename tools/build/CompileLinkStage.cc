@@ -11,6 +11,7 @@
 #include <cc/build/BuildStageGuard>
 #include <cc/build/BuildShell>
 #include <cc/build/ToolChain>
+#include <cc/build/InsightDatabase>
 #include <cc/File>
 #include <cc/stdio>
 
@@ -65,6 +66,11 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
     if (!(plan().options() & BuildOption::Tools))
         linkJob = toolChain().createLinkJob(plan());
 
+    InsightDatabase insightDatabase;
+    if (plan().options() & BuildOption::Insight) {
+        insightDatabase = InsightDatabase{plan().projectPath()};
+    }
+
     bool dirty = false;
 
     for (const Module &module: plan().modules())
@@ -90,10 +96,27 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
                 job.registerDerivative(linkJob);
             }
 
-            if (plan().options() & BuildOption::Simulate)
+            if (plan().options() & BuildOption::Simulate) {
                 fout() << plan().shell().beautify(job.command()) << ((plan().concurrency() == 1) ? "\n" : " &\n");
-            else
+            }
+            else {
                 scheduler.schedule(job);
+            }
+
+            if (insightDatabase) {
+                insightDatabase.insert(module.sourcePath(), job.command(), module.modulePath());
+            }
+        }
+        else if (insightDatabase) {
+            insightDatabase.touch(module.modulePath());
+        }
+    }
+
+    if (insightDatabase) {
+        insightDatabase.sync();
+
+        if (plan().options() & BuildOption::Verbose) {
+            ferr() << "Updated insight database " << insightDatabase.path() << nl;
         }
     }
 
@@ -110,6 +133,7 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
     {
         FileStatus productStatus = shell().fileStatus(toolChain().linkName(plan()));
         if (!productStatus) dirty = true;
+
         else {
             String previousLinkCommandPath = plan().previousLinkCommandPath();
             String previousLinkCommand = File::load(previousLinkCommandPath);
