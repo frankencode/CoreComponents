@@ -23,7 +23,7 @@ class FileLock
 {
 public:
     /** Create an advisory file lock for a file area
-      * \param file File to lock
+      * \param file %File to lock
       * \param type Type of lock
       * \param start Start offset of the file area
       * \param length Length of the file area
@@ -32,7 +32,7 @@ public:
     FileLock(const File &file, FileContention type, long long start = 0, long long length = 0, Seek whence = Seek::Begin);
 
     /** Create an advisory file lock for a file area
-      * \param file File to lock
+      * \param file %File to lock
       * \param type Type of lock
       * \param start Start offset of the file area
       * \param whence Interpretation of \a start offset
@@ -66,7 +66,7 @@ class ReadLock: public FileLock
 {
 public:
     /** Create a shared file lock for a file area
-      * \param file File to lock
+      * \param file %File to lock
       * \param start Start offset of the file area
       * \param length Length of the file area
       * \param whence Interpretation of \a start offset
@@ -76,7 +76,7 @@ public:
     {}
 
     /** Create a shared file lock for a file area
-      * \param file File to lock
+      * \param file %File to lock
       * \param start Start offset of the file area
       * \param whence Interpretation of \a start offset
       */
@@ -92,7 +92,7 @@ class WriteLock: public FileLock
 {
 public:
     /** Create an exclusive file lock for a file area
-      * \param file File to lock
+      * \param file %File to lock
       * \param start Start offset of the file area
       * \param length Length of the file area
       * \param whence Interpretation of \a start offset
@@ -102,7 +102,7 @@ public:
     {}
 
     /** Create an exclusive file lock for a file area
-      * \param file File to lock
+      * \param file %File to lock
       * \param start Start offset of the file area
       * \param whence Interpretation of \a start offset
       */

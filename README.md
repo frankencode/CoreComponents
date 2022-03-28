@@ -9,7 +9,7 @@ CoreComponents provides a common system abstraction layer on top of POSIX for C+
 Features
 --------
 
- * highlevel/safe-to-use data countainers
+ * high-level / safe-to-use data containers
  * powerful string processing and pattern matching
  * safe memory management idioms
  * designed for multi-threading from ground up
@@ -17,14 +17,14 @@ Features
  * transparent API: full access to low-level system primitives
  * batteries included:
    * easy to use build system (cc_build)
-   * built-in web server (cc_http)
+   * built-in web server and client (cc_http)
    * many more useful tools
 
 Installation
 ------------
 
-Prequisites:
- * gcc or compatible compiler (e.g.: gcc, clang/llvm, suncc)
+Prerequisites:
+ * gcc or compatible compiler (e.g.: gcc, clang/llvm)
  * POSIX compatible shell (e.g.: ksh, bash)
  * pkg-config and gnureadline (optional)
 
