@@ -32,12 +32,12 @@ public:
 
     /** %Match \a text against this pattern
       * \param text %Candidate input text
-      * \param captures Matching %Range for each matching grouped subexpression (in brackets)
+      * \param captures Matching %Range for each matching grouped sub-expression (in brackets)
       * \return True if \a text matches
       */
     bool match(const String &text, Out< List<Range> > captures = None{}) const;
 
-    /** Find the next occurance of this pattern
+    /** Find the next occurrence of this pattern
       * \param text %Text to search in
       * \param offset Provide start offset and return final offset
       * \return Valid range if a match could be found in \a text

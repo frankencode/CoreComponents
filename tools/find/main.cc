@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
         Pattern textPattern { options.value("text").to<String>().expanded() };
         if (options.value("word").to<String>() != "") {
             textPattern = String {
-                Format{"(?<!:[a..z]|[A..Z]|[0..9]|_)%%(?>!:[a..z]|[A..Z]|[0..9]|_)"}
+                Format{"(^<[a..z]|[A..Z]|[0..9]|_)%%(^>:[a..z]|[A..Z]|[0..9]|_)"}
                 << options.value("word").to<String>()
             };
         }

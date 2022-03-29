@@ -9,3 +9,5 @@ suncc
 pkg-config
 gnureadline
 github
+symlink
+fifo
