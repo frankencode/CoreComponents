@@ -208,7 +208,7 @@ struct GnuToolChain::State: public ToolChain::State
 
         if (plan.options() & BuildOption::Library) {
             if (cygwin_) {
-                name = name + ".dll";
+                name = "cyg" + name + ".dll";
             }
             else {
                 name = name + ".so." + str(plan.version());
@@ -297,9 +297,15 @@ struct GnuToolChain::State: public ToolChain::State
     {
         String relativePath;
         if (plan.options() & BuildOption::Library) {
-            relativePath = "lib";
-            if (isMultiArch_)
-                relativePath = relativePath / machine_;
+            if (cygwin_) {
+                relativePath = "bin";
+            }
+            else {
+                relativePath = "lib";
+                if (isMultiArch_) {
+                    relativePath = relativePath / machine_;
+                }
+            }
         }
         else {
             relativePath = "bin";

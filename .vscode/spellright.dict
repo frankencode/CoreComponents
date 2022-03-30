@@ -11,3 +11,10 @@ gnureadline
 github
 symlink
 fifo
+pthread
+soname
+args
+pkgconfig
+http
+crypto
+ui

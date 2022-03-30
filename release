@@ -38,7 +38,12 @@ echo "Create source tarball..."
 pushd $SOURCE/..
 rm -rf $PACKAGE-$VERSION
 cp -a $PACKAGE $PACKAGE-$VERSION
-rm -rf $PACKAGE-$VERSION/.git || true
+pushd $PACKAGE-$VERSION
+rm -rf .git || true
+rm -rf .vscode || true
+rm -rf $(find . -name 'compile_commands.json') || true
+rm -rf $(find . -name '.cache') || true
+popd
 ARCHIVE=$PACKAGE-$VERSION.tar.gz
 HASHES=$PACKAGE-$VERSION.hash
 tar -cv $PACKAGE-$VERSION | gzip --best > $ARCHIVE
