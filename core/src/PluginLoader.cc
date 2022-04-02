@@ -13,7 +13,7 @@ namespace cc {
 
 PluginLoader::PluginLoader(const String &libraryPath, const String &group)
 {
-    String libraryName = libraryPath.fileName().split('.').at(0);
+    String libraryName = libraryPath.baseName();
     String libraryInstallPath = libraryPath.cdUp();
     String pluginPath = libraryPath.cdUp() / libraryName / "plugins";
     if (group != "") pluginPath = pluginPath / group;

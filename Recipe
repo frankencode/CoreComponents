@@ -1,4 +1,4 @@
 Package {
-    version: 2.0.4
+    version: 2.0.5
     include: [ core, syntax, glob, meta, net, http, crypto, tools, ui, pulse, testing ]
 }

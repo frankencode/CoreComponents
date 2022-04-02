@@ -330,15 +330,15 @@ struct GnuToolChain::State: public ToolChain::State
 
     bool createSymlinks(const BuildPlan &plan) const override
     {
-        if ((plan.options() & BuildOption::Library) && !plan.linkStatic())
+        if ((plan.options() & BuildOption::Library) && !plan.linkStatic()) {
             createLibrarySymlinks(plan, linkName(plan));
-
-        if (plan.options() & BuildOption::Plugin)
-            createPluginSymlinks(plan, targetName(plan.extensionTarget()), linkName(plan));
-
-        if (plan.options() & BuildOption::Application)
+        }
+        if (plan.options() & BuildOption::Plugin) {
+            createPluginSymlinks(plan, linkName(plan.extensionTarget()).baseName(), linkName(plan));
+        }
+        if (plan.options() & BuildOption::Application) {
             createAliasSymlinks(plan, linkName(plan));
-
+        }
         return true;
     }
 
