@@ -1,0 +1,7 @@
+Library {
+    name: cc_can
+    use: cc/core
+    Dependency {
+        probe: probe/linux.cc
+    }
+}

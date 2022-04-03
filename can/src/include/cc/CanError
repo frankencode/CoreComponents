@@ -1,0 +1,126 @@
+/*
+ * Copyright (C) 2019-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/CanFrame>
+#include <cc/bitmask>
+
+namespace cc {
+
+/** \class CanError cc/CanError
+  * \brief Read CAN error frames
+  */
+class CanError
+{
+public:
+    /** Read error frame \a frame
+      */
+    explicit CanError(const CanFrame &frame):
+        frame_{frame}
+    {}
+
+    /** Check if working on an error frame
+      */
+    explicit operator bool() const
+    {
+        return frame_.isError() && frame_.size() == 8;
+    }
+
+    /** Error type
+      */
+    enum class Type: uint32_t {
+        None              = 0,
+        TxTimeout         = 1,
+        LostArbitration   = 2, ///< Lost arbiration (see bitPos())
+        ControllerError   = 4, ///< Controller problem reported (see status())
+        ProtocolViolation = 8,
+        TxStatus          = 16,
+        AckMissing        = 32,
+        BusOff            = 64,
+        BusError          = 128,
+        Restarted         = 256
+    };
+
+    /** Get error type
+      */
+    Type type() const;
+
+    /** Bit position at which arbitration was lost
+      */
+    int bitPos() const { return frame_[0]; }
+
+    /** Controller status
+      */
+    enum class Controller: uint8_t {
+        Unspec      = 0, ///< Unspecified
+        RxOverflow  = 1, ///< RX buffer overflow
+        TxOverflow  = 2, ///< TX buffer overflow
+        RxWarning   = 4, ///< RX errors reached warning level
+        TxWarning   = 8, ///< TX errors reached warning level
+        RxPassive   = 16, ///< RX errors reached passive level
+        TxPassive   = 32, ///< TX errors reached passive level
+        ErrorActive = 64  ///< Recovered to active state
+    };
+
+    /** Get controller status
+      */
+    Controller controller() const { return static_cast<Controller>(frame_[1]); }
+
+    /** Protocl error
+      */
+    enum class Protocol: uint8_t {
+        Unspec      = 0, ///< Unspecified
+        SingleBit   = 1, ///< Single bit error
+        FrameFormat = 2, ///< Illegal frame format
+        BitStuffing = 4, ///< Bit stuffing error
+        Bit0        = 8, ///< Failed to send dominat bit
+        Bit1        = 16, ///< Failed to send recessive bit
+        Overload    = 32, ///< Bus overload
+        Active      = 64, ///< Error active announcement
+        Tx          = 128 ///< Error occured during transmission
+    };
+
+    /** Get protocl error
+      */
+    Protocol protocol() const { return static_cast<Protocol>(frame_[2]); }
+
+    /** Transceiver wire status
+      */
+    enum class Wire: uint8_t {
+        Unspec         = 0x00,
+        DisconnectHigh = 0x04,
+        DisconnectLow  = 0x40,
+        ShortHighToBat = 0x05,
+        ShortLowToBat  = 0x50,
+        ShortHighToVcc = 0x06,
+        ShortLowToVcc  = 0x60,
+        ShortHighToGnd = 0x07,
+        ShortLowToGnd  = 0x70,
+        ShortLowToHigh = 0x80
+    };
+
+    /** Get transceiver wire status
+      */
+    Wire wire() const { return static_cast<Wire>(frame_[4]); }
+
+private:
+    const CanFrame &frame_;
+};
+
+CC_BITMASK(CanError::Type);
+CC_BITMASK(CanError::Controller);
+CC_BITMASK(CanError::Protocol);
+CC_BITMASK(CanError::Wire);
+
+String str(CanError::Type type);
+String str(CanError::Controller status);
+String str(CanError::Protocol status);
+String str(CanError::Wire status);
+
+} // namespace cc

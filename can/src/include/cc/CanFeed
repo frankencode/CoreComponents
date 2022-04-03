@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) 2019-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/CanMedia>
+#include <cc/Channel>
+#include <cc/System>
+
+namespace cc {
+
+/** \internal
+  * \class CanFeed cc/CanFeed
+  * \brief A CAN feed buffer on the VirtualCanBus
+  */
+class CanFeed: public CanMedia
+{
+public:
+    /** Create a null CAN feed
+      */
+    CanFeed() = default;
+
+    void feedFrame(const CanFrame &frame)
+    {
+        me().feedFrame(frame);
+    }
+
+    void shutdown()
+    {
+        me().shutdown();
+    }
+
+protected:
+    struct State: public CanMedia::State
+    {
+        bool waitFrame(int timeout) override
+        {
+            if (timeout <= 0) return channel_.wait();
+            return channel_.waitUntil(System::now() + 0.001 * timeout);
+        }
+
+        bool readFrame(Out<CanFrame> frame) override
+        {
+            return channel_.read(frame);
+        }
+
+        void feedFrame(const CanFrame &frame)
+        {
+            channel_.write(frame);
+        }
+
+        void shutdown()
+        {
+            channel_.close();
+        }
+
+        Channel<CanFrame> channel_;
+    };
+
+    explicit CanFeed(State *newState):
+        CanMedia{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

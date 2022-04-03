@@ -38,6 +38,6 @@ constexpr EnumType operator~(EnumType x) { return static_cast<EnumType>(~static_
 inline EnumType& operator&=(EnumType& x, EnumType y) { x = x & y; return x; } \
 inline EnumType& operator|=(EnumType& x, EnumType y) { x = x | y; return x; } \
 inline EnumType& operator^=(EnumType& x, EnumType y) { x = x ^ y; return x; } \
-inline std::underlying_type<EnumType>::type operator+(const EnumType &x) { return static_cast<std::underlying_type<EnumType>::type>(x); }
+inline constexpr std::underlying_type<EnumType>::type operator+(const EnumType &x) { return static_cast<std::underlying_type<EnumType>::type>(x); }
 
 } // namespace cc

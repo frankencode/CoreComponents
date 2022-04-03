@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2019-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/CanMedia>
+#include <cc/IoStream>
+
+namespace cc {
+
+/** \class CanSocket cc/CanSocket
+  * \brief CAN bus socket
+  */
+class CanSocket final: public CanMedia
+{
+public:
+    /** Create a null socket
+      */
+    CanSocket() = default;
+
+    /** Open CAN bus interface \a interface
+      */
+    explicit CanSocket(const String &interface);
+
+    /** Enable reception of frames send on this socket
+      */
+    void enableLoopback(bool on = true);
+
+    /** Enable reception of error frames
+      */
+    void enableError(bool on = true);
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

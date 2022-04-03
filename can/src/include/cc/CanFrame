@@ -1,0 +1,163 @@
+/*
+ * Copyright (C) 2019-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/Bytes>
+#include <cc/String>
+
+namespace cc {
+
+/** \class CanFrame cc/CanFrame
+  * \brief CAN bus frame
+  */
+class CanFrame final: public Object
+{
+public:
+    /** Create a new CAN frame
+      */
+    CanFrame();
+
+    /** Create a new CAN frame with CAN ID \a id
+      */
+    CanFrame(uint32_t id);
+
+    /** Check if this is a valid frame
+      */
+    bool isValid() const;
+
+    /** Get CAN frame ID
+      */
+    uint32_t id() const;
+
+    /** Set CAN frame ID
+      */
+    void setId(uint32_t newValue);
+
+    /** Get size of the payload in number of bytes
+      */
+    int size() const;
+
+    /** Set the size of the payload to \a n bytes
+      */
+    void resize(int n);
+
+    /** Get payload byte at \a i
+      */
+    uint8_t at(int i) const;
+
+    /** Access payload byte at \a i
+      */
+    uint8_t &at(int i);
+
+    /** \copydoc at(int) const
+      */
+    uint8_t operator[](int i) const { return at(i); }
+
+    /** \copydoc at(int)
+      */
+    uint8_t &operator[](int i) { return at(i); }
+
+    /** Get a copy of the payload bytes
+      */
+    Bytes data() const;
+
+    /** Set the payload bytes to \a data
+      */
+    void setData(const Bytes &data);
+
+    /** Read the data bytes from \a i to \a j as a little-endian word
+      */
+    template<class Word = unsigned>
+    Word data(int i, int j = sizeof(Word) - 1) const
+    {
+        int i0 = i;
+        int i1 = j + 1;
+
+        if (i1 > size()) i1 = size();
+        if (i0 < 0) i = 0;
+
+        Word value = 0U;
+        for (int i = i1 - 1; i >= i0; --i) {
+            value <<= 8U;
+            value |= at(i);
+        }
+
+        return value;
+    }
+
+    /** Set the data bytes from \a i to \a j to the little-endian serialization of \a value
+      */
+    template<class Word = unsigned>
+    void setData(int i, int j, Word value)
+    {
+        int i0 = i;
+        int i1 = j + 1;
+
+        if (i1 > size()) i1 = size();
+        if (i0 < 0) i0 = 0;
+
+        for (int i = i0; i < i1; ++i) {
+            at(i) = value;
+            value >>= 8U;
+        }
+    }
+
+    /** Check if this is a Remote Transmission Request (RTR)
+      */
+    bool isRemoteTransmissionRequest() const;
+
+    /** Set Remote Transmission Request (RTR) flag to \a on
+      */
+    void setRemoteTransmissionRequest(bool on);
+
+    /** Check if this is an error frame
+      */
+    bool isError() const;
+
+    /** Check if this is an extended frame
+      */
+    bool isExtended() const;
+
+    /** Compare for equality (id, size and data)
+      */
+    bool operator==(const CanFrame &other) const;
+
+    /** Compare for inequality (id, size and data)
+      */
+    bool operator!=(const CanFrame &other) const;
+
+    /** Get a human-readable version of this frame
+      */
+    String toString() const;
+
+    /** Access to underlying system's CAN frame structure
+      */
+    void *frame();
+
+    /** Access to underlying system's CAN frame structure
+      */
+    const void *frame() const;
+
+    /** Size of the underlying system's CAN frame structure
+      */
+    size_t frameSize() const;
+
+protected:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+/** Get a human readable serialization of \a frame
+  */
+String str(const CanFrame &frame);
+
+} // namespace cc

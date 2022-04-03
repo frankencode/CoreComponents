@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) 2019-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/CanFrame>
+
+namespace cc {
+
+/** \class CanMedia cc/CanMedia
+  * \brief Generic CAN bus communication media
+  */
+class CanMedia: public Object
+{
+public:
+    /** Create a null CAN media
+      */
+    CanMedia() = default;
+
+    /** Wait for a frame to be received
+      * \param timeout Number of milliseconds to wait (<0 for infinite)
+      * \return True if a frame has become available before timeout
+      */
+    bool waitFrame(int timeout = -1)
+    {
+        return me().waitFrame(timeout);
+    }
+
+    /** Read frame
+      * \param frame Return next frame
+      * \return True if a frame could be read
+      */
+    bool readFrame(Out<CanFrame> frame)
+    {
+        return me().readFrame(frame);
+    }
+
+    /** Write frame
+      * \param frame Frame to write
+      */
+    void writeFrame(const CanFrame &frame)
+    {
+        return me().writeFrame(frame);
+    }
+
+protected:
+    /** Internal state
+      */
+    struct State: public Object::State
+    {
+        /** \copydoc CanMedia::waitFrame()
+          */
+        virtual bool waitFrame(int timeout = -1) = 0;
+
+        /** \copydoc CanMedia::readFrame()
+          */
+        virtual bool readFrame(Out<CanFrame> frame) = 0;
+
+        /** \copydoc CanMedia::writeFrame()
+          */
+        virtual void writeFrame(const CanFrame &frame) = 0;
+    };
+
+    explicit CanMedia(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc
