@@ -18,3 +18,12 @@ pkgconfig
 http
 crypto
 ui
+copydoc
+const
+big-endian
+little-endian
+RTR
+Tx
+Vcc
+Unspec
+Gnd
