@@ -12,6 +12,10 @@ namespace cc::claim {
 
 class ShHeaderStyle final: public HeaderStyle
 {
+public:
+    ShHeaderStyle();
+
+private:
     struct State;
 };
 

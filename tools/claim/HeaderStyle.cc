@@ -7,6 +7,7 @@
  */
 
 #include <cc/claim/HeaderStyle>
+#include <cc/claim/Registry>
 
 namespace cc::claim {
 
@@ -34,7 +35,7 @@ String HeaderStyle::trimHeader(const String &text, const char *space)
 HeaderStyle::HeaderStyle(State *newState):
     Object{newState}
 {
-    /* TODO... */
+    Registry{}.registerHeaderStyle(*this);
 }
 
 } // namespace cc::claim

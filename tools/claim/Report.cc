@@ -42,6 +42,7 @@ Report::State::State(const List<String> &dirPaths, const Pattern &works, int wor
                     }
                 }
             }
+
             if (notice) {
                 coverage_.insert(path, notice);
                 {

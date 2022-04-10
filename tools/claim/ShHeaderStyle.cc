@@ -82,7 +82,7 @@ private:
     };
 };
 
-class ShHeaderStyle::State final: public HeaderStyle::State
+struct ShHeaderStyle::State final: public HeaderStyle::State
 {
     State():
         HeaderStyle::State{"sh"}
@@ -126,6 +126,10 @@ class ShHeaderStyle::State final: public HeaderStyle::State
     ShHeaderSyntax headerSyntax_;
     ShMagicSyntax magicSyntax_;
 };
+
+ShHeaderStyle::ShHeaderStyle():
+    HeaderStyle{new State}
+{}
 
 CC_REGISTRATION(ShHeaderStyle);
 

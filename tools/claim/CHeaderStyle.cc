@@ -84,6 +84,10 @@ struct CHeaderStyle::State final: public HeaderStyle::State
     CHeaderSyntax headerSyntax_;
 };
 
+CHeaderStyle::CHeaderStyle():
+    HeaderStyle{new State}
+{}
+
 CC_REGISTRATION(CHeaderStyle);
 
 } // namespace cc::claim

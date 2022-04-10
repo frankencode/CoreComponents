@@ -140,7 +140,7 @@ struct NoticeSyntax::State final: public SyntaxDefinition::State
     {
         assert(token.rule() == copyright_);
         auto it = token.children().begin();
-        assert(token.rule() == yearStart_);
+        assert(it->rule() == yearStart_);
         int yearStart = message.copy(*it).toInt();
         int yearEnd = yearStart;
         ++it;

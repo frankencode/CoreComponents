@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
                     for (const auto &pair: coverage) {
                         Notice notice = pair.value();
                         Format line{IoStream::output()};
-                        line << pair.key() << " (";
+                        line << "  " << pair.key() << " (";
                         for (const Copyright &copyright: notice.copyrights()) {
                             if (copyright.holder() == holder) {
                                 if (copyright.yearStart() < copyright.yearEnd())
