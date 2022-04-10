@@ -68,6 +68,9 @@ void BuildParameters::State::read(const MetaObject &object, const String &projec
             #ifdef __CYGWIN32__
             if (child.className() == "Cygwin") readSpecific(child, projectPath, options);
             #endif
+            #ifdef __MINGW32__
+            if (child.className() == "MinGW") readSpecific(child, projectPath, options);
+            #endif
         }
     }
 }

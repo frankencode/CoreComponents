@@ -11,10 +11,9 @@
 
 namespace cc {
 
-KernelInfo::KernelInfo()
-{
-    initOnce<State>();
-}
+KernelInfo::KernelInfo():
+    Singleton{instance<State>()}
+{}
 
 KernelInfo::State::State()
 {
@@ -22,10 +21,10 @@ KernelInfo::State::State()
     if (::uname(&data) == -1)
         CC_SYSTEM_DEBUG_ERROR(errno);
 
-    name = data.sysname;
-    release = data.release;
-    version = data.version;
-    machine = data.machine;
+    name_ = data.sysname;
+    release_ = data.release;
+    version_ = data.version;
+    machine_ = data.machine;
 }
 
 } // namespace cc

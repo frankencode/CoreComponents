@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/toki/HighlightingSyntax>
+
+namespace cc::toki {
+
+class CxxSyntax final: public HighlightingSyntax
+{
+public:
+    CxxSyntax();
+
+    const SyntaxRule &commentLine() const;
+    const SyntaxRule &commentText() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc::toki

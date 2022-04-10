@@ -29,9 +29,6 @@
 
 namespace cc {
 
-template<class>
-class Singleton;
-
 /** \class Bundle cc/Bundle
   * \ingroup sysinfo
   * \brief Lookup files in installation directories

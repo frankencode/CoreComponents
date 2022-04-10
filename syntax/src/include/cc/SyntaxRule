@@ -29,6 +29,13 @@ public:
       */
     explicit SyntaxRule(const SyntaxNode &entry);
 
+    /** Create a syntax rule
+      */
+    SyntaxRule(const String &name, const SyntaxNode &entry);
+
+    String name() const; ///< Rule name
+    void setName(const String &newName); ///< Set the rule name
+
     SyntaxNode entry() const; ///< %Root node
 
     Object metaData() const; ///< %Application data associated with this rule

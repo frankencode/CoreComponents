@@ -1,0 +1,24 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/toki/HighlightingSyntax>
+
+namespace cc::toki {
+
+class ShSyntax final: public HighlightingSyntax
+{
+public:
+    ShSyntax();
+
+private:
+    struct State;
+};
+
+} // namespace cc::toki

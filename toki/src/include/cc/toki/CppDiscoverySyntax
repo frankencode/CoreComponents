@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SyntaxDefinition>
+
+namespace cc::toki {
+
+/** \internal
+  * \brief Discovery syntax for C preprocessor headers
+  */
+class CppDiscoverySyntax final: public SyntaxDefinition
+{
+public:
+    CppDiscoverySyntax();
+
+private:
+    struct State;
+};
+
+} // namespace cc::toki

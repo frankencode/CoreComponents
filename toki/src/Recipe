@@ -1,0 +1,5 @@
+Library {
+    name: cc_toki
+    bundle: themes/*
+    use: [ core, syntax, glob, meta ]
+}

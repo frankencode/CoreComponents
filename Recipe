@@ -1,4 +1,4 @@
 Package {
-    version: 2.0.5
-    include: [ core, syntax, glob, meta, net, http, crypto, tools, ui, pulse, can, testing ]
+    version: 2.0.6
+    include: [ core, syntax, glob, meta, net, http, crypto, toki, tools, ui, pulse, can, testing ]
 }

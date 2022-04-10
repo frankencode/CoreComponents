@@ -169,7 +169,7 @@ struct SdlApplication::State: public Application::State
             };
 
             for (const auto &pair: windows_)
-                pair.value().me().commitFrame();
+                SdlWindow{pair.value()}.me().commitFrame();
         }
         while (event.type != SDL_QUIT);
 

@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/toki/Palette>
+
+namespace cc::toki {
+
+/** \internal
+  * \brief Syntax highlighting theme
+  */
+class Theme final: public Object
+{
+public:
+    /** Load color theme from \a path
+      * \param path Relative or absolute directory path
+      */
+    explicit Theme(const String &path);
+
+    /** Directory path of this theme
+      */
+    String path() const;
+
+    /** Name of this theme
+      */
+    String name() const;
+
+    /** Get the default palette
+      */
+    Palette defaultPalette() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc::toki

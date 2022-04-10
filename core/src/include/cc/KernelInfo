@@ -10,7 +10,7 @@
 
 #include <cc/String>
 #include <cc/SystemError>
-#include <cc/Object>
+#include <cc/Singleton>
 
 namespace cc {
 
@@ -19,7 +19,7 @@ namespace cc {
   * \brief Query information about the operating system kernel
   * \exception SystemError
   */
-class KernelInfo: public Object
+class KernelInfo final: public Singleton
 {
 public:
     /** Obtain kernel information
@@ -28,28 +28,28 @@ public:
 
     /** Operating system name
       */
-    String name() const { return me().name; }
+    String name() const { return me().name_; }
 
     /** Release version
       */
-    String release() const { return me().release; }
+    String release() const { return me().release_; }
 
     /** Detailed build information
       */
-    String version() const { return me().version; }
+    String version() const { return me().version_; }
 
     /** %System architecture
       */
-    String machine() const { return me().machine; }
+    String machine() const { return me().machine_; }
 
 private:
-    struct State: public Object::State
+    struct State: public Singleton::State
     {
         State();
-        String name;
-        String release;
-        String version;
-        String machine;
+        String name_;
+        String release_;
+        String version_;
+        String machine_;
     };
 
     const State &me() const { return Object::me.as<State>(); }

@@ -37,7 +37,7 @@ struct GnuToolChain::State: public ToolChain::State
         #if defined __CYGWIN32__ || defined __CYGWIN__
         cygwin_ = true;
         #else
-        cygwin_ = cxxPath_.contains("cygwin") || cxxPath_.contains("mingw");
+        cygwin_ = cxxPath_.contains("cygwin");
         #endif
 
         Process::setEnv("CC", ccPath_);

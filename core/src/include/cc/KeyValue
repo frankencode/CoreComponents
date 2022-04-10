@@ -40,17 +40,17 @@ public:
 
     /** Get key
       */
-    Key key() const { return key_; }
+    const Key &key() const { return key_; }
 
     /** Get value
       */
-    Value value() const { return value_; }
+    const Value &value() const { return value_; }
 
     /** Get mutable value
       */
     Value &value() { return value_; }
 
-    /** Set new value
+    /** %Set new value
       */
     void setValue(const Value &newValue) { value_ = newValue; }
 

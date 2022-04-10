@@ -136,6 +136,22 @@ public:
         return me().at(index).value();
     }
 
+    /** Get const reference to the value at position \a pos
+      */
+    const Value &valueAt(Locator pos) const
+    {
+        assert(pos);
+        return me().at(pos).value();
+    }
+
+    /** Get const reference to the value at \a index
+      */
+    const Value &valueAt(long index) const
+    {
+        assert(0 <= index && index < count());
+        return me().at(index).value();
+    }
+
     /** %Modify an item in place
       * \tparam Modify %Function type (lambda or functor)
       * \param pos %Position of item to modify

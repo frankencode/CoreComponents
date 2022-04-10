@@ -20,7 +20,7 @@ class TokenScreen;
   * \ingroup syntax
   * \brief Syntax production
   */
-class Token: public Object
+class Token final: public Object
 {
 public:
     /** Create an invalid token
@@ -49,6 +49,7 @@ public:
     operator Range() const { return range(); } ///< Coverage range
     long i0() const { return range()[0]; } ///< Start index of coverage range
     long i1() const { return range()[1]; } ///< End index of coverage range
+    long operator[](int i) const { return range()[i]; } ///< Syntax sugar
 
     using Children = AppendList<Token>; ///< Type of the children list
 
@@ -72,9 +73,7 @@ public:
 
     /** %Project this token tree onto \a screen
       */
-    bool project(TokenScreen &screen) const;
-
-    // static std::size_t sizeOfState() { return sizeof(State); }
+    bool project(const TokenScreen &screen) const;
 
 private:
     friend class SyntaxRule;
@@ -93,6 +92,8 @@ private:
     {
         me().range_ = newValue;
     }
+
+    bool projectCascade(TokenScreen &screen) const;
 
     struct MatchState;
 

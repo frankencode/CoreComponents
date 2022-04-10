@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2019-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/MetaPrototype>
+
+namespace cc::toki {
+
+/** \internal
+  * \brief Meta-prototype for Palette
+  */
+class PalettePrototype final: public MetaPrototype
+{
+public:
+    /** Create a new palette prototype
+      */
+    PalettePrototype();
+
+private:
+    struct State;
+};
+
+} // namespace cc::toki

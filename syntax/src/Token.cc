@@ -36,7 +36,13 @@ void Token::State::deleteMatchState()
     delete matchState_;
 }
 
-bool Token::project(TokenScreen &screen) const
+bool Token::project(const TokenScreen &screen) const
+{
+    TokenScreen target = screen;
+    return projectCascade(target);
+}
+
+bool Token::projectCascade(TokenScreen &screen) const
 {
     long i = range()[0];
 
@@ -47,7 +53,7 @@ bool Token::project(TokenScreen &screen) const
                 return false;
             i = child.range()[0];
         }
-        if (!child.project(screen))
+        if (!child.projectCascade(screen))
             return false;
 
         i = child.range()[1];

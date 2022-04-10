@@ -42,6 +42,8 @@ public:
 protected:
     friend class Object;
 
+    /** \brief Internal state
+      */
     struct State: public MetaObject::State
     {
         explicit State(const String &className):
@@ -56,6 +58,8 @@ protected:
         MetaProtocol protocol_;
     };
 
+    /** Initialize internal state
+      */
     explicit MetaPrototype(State *newState);
 
     const State &me() const;

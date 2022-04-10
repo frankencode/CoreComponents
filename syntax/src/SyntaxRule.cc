@@ -18,6 +18,11 @@ struct SyntaxRule::State: public SyntaxNode::State
         entry_{entry}
     {}
 
+    State(const String &name, const SyntaxNode &entry):
+        entry_{entry},
+        name_{name}
+    {}
+
     long matchNext(const String &text, long offset, Token &production) const override
     {
         Token token{&production};
@@ -46,15 +51,30 @@ struct SyntaxRule::State: public SyntaxNode::State
 
     SyntaxNode entry_;
     Object metaData_;
+    String name_;
 };
 
 SyntaxRule::SyntaxRule(const SyntaxNode &entry):
     SyntaxNode{new State{entry}}
 {}
 
+SyntaxRule::SyntaxRule(const String &name, const SyntaxNode &entry):
+    SyntaxNode{new State{name, entry}}
+{}
+
 SyntaxRule::SyntaxRule(State *newState):
     SyntaxNode{newState}
 {}
+
+String SyntaxRule::name() const
+{
+    return me().name_;
+}
+
+void SyntaxRule::setName(const String &newName)
+{
+    me().name_ = newName;
+}
 
 syntax::SyntaxNode SyntaxRule::entry() const
 {
@@ -93,7 +113,10 @@ struct VoidRule::State: public SyntaxRule::State
 
     long matchNext(const String &text, long offset, Token &production) const override
     {
-        return entry_.matchNext(text, offset, production);
+        Token::Children::Transaction transaction { production.children() };
+        long newOffset = entry_.matchNext(text, offset, production);
+        transaction.rollback();
+        return newOffset;
     }
 
     List<String> explain() const override

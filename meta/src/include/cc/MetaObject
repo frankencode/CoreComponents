@@ -84,9 +84,11 @@ public:
 protected:
     friend class Object;
 
+    /** \brief Internal state
+      */
     struct State: public Object::State
     {
-        explicit State(const String &className):
+        explicit State(const String &className = String{}):
             className_{className}
         {}
 
@@ -98,11 +100,16 @@ protected:
         virtual void realize()
         {}
 
+        Variant value(const String &name) const { return members_(name); } ///< %Convenience method to get the value of member \a name
+        Variant &value(const String &name) { return members_(name); } ///< %Convenience method to get/set the value of member \a name
+
         String className_;
         Map<String, Variant> members_;
         List<MetaObject> children_;
     };
 
+    /** Initialize internal state
+      */
     explicit MetaObject(State *newState):
         Object{newState}
     {}
