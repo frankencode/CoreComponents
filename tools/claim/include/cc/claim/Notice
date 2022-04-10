@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/claim/Copyright>
+#include <cc/claim/Header>
+
+namespace cc::claim {
+
+class Notice final: public Object
+{
+public:
+    Notice() = default;
+
+    Notice(const List<Copyright> &copyrights, const String &statement, const Header &header = Header{}):
+        Object{new State{copyrights, statement, header}}
+    {}
+
+    List<Copyright> copyrights() const { return me().copyrights_; }
+    String statement() const { return me().statement_; }
+    Header header() const { return me().header_; }
+
+private:
+    struct State final: public Object::State
+    {
+        State(const List<Copyright> &copyrights, const String &statement, const Header &header):
+            copyrights_{copyrights},
+            statement_{statement},
+            header_{header}
+        {}
+
+        List<Copyright> copyrights_;
+        String statement_;
+        Header header_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::claim

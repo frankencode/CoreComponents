@@ -273,6 +273,14 @@ public:
       */
     T &operator*() { assert(node_); return node_->item_; }
 
+    /** Readonly member access to current item value
+      */
+    const T *operator->() const { return &node_->item_; }
+
+    /** Member access to current item value
+      */
+    T *operator->() { return &node_->item_; }
+
     /** Step to the next item (prefix increment operator)
       */
     AppendListIterator &operator++()

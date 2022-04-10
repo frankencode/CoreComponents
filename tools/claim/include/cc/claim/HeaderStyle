@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/claim/Header>
+#include <cc/claim/Notice>
+
+namespace cc::claim {
+
+class HeaderStyle: public Object
+{
+public:
+    HeaderStyle() = default;
+
+    String language() const { return me().language_; }
+
+    Header scan(const String &path) const { return me().scan(path); }
+    String str(const Notice &notice) const { return me().str(notice); }
+    int magicCount(const String &text) const { return me().magicCount(text); }
+
+protected:
+    static String trimHeader(const String &text, const char *space);
+
+    struct State: public Object::State
+    {
+        explicit State(const String &language):
+            language_{language}
+        {}
+
+        virtual Header scan(const String &path) const = 0;
+        virtual String str(const Notice &notice) const = 0;
+        virtual long magicCount(const String &text) const { return 0; }
+
+        String language_;
+    };
+
+    explicit HeaderStyle(State *newState);
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::claim

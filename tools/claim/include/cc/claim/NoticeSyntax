@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/claim/Notice>
+#include <cc/SyntaxDefinition>
+
+namespace cc::claim {
+
+class NoticeSyntax final: public SyntaxDefinition
+{
+public:
+    NoticeSyntax();
+
+    Notice readNotice(const Header &header) const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc::claim

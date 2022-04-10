@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/SyntaxDefinition>
+#include <cc/Token>
+
+namespace cc::claim {
+
+class Header final: public Object
+{
+public:
+    Header() = default;
+
+    Header(const String &path, const Token &token, const String &text, const String &message):
+        Object{new State{path, token, text, message}}
+    {}
+
+    String path() const { return me().path_; }
+    Token token() const { return me().token_; }
+    String text() const { return me().text_; }
+    String message() const { return me().message_; }
+
+private:
+    struct State final: public Object::State
+    {
+        State(const String &path, const Token &token, const String &text, const String &message):
+            path_{path},
+            token_{token},
+            text_{text},
+            message_{message}
+        {}
+
+        String path_;
+        Token token_;
+        String text_;
+        String message_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::claim

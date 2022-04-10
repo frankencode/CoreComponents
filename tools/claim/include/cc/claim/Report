@@ -1,0 +1,54 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/claim/Notice>
+#include <cc/Pattern>
+#include <cc/Map>
+#include <cc/Set>
+
+namespace cc::claim {
+
+using Coverage = Map<String, Notice>;
+
+class Report final: public Object
+{
+public:
+    Report(const List<String> &dirPaths, const Pattern &works, int worksMinLines):
+        Object{new State{dirPaths, works, worksMinLines}}
+    {}
+
+    List<String> dirPaths() const { return me().dirPaths_; }
+    Pattern works() const { return me().works_; }
+    int worksMinLines() const { return me().worksMinLines_; }
+    Coverage coverage() const { return me().coverage_; }
+    Set<String> exposure() const { return me().exposure_; }
+    Map<Bytes, Coverage> coverageByDigest() const { return me().coverageByDigest_; }
+    Map<String, Coverage> coverageByHolder() const { return me().coverageByHolder_; }
+    Map<Bytes, String> statementByDigest() const { return me().statementByDigest_; }
+
+private:
+    struct State final: public Object::State
+    {
+        State(const List<String> &dirPaths, const Pattern &works, int worksMinLines);
+
+        List<String> dirPaths_;
+        Pattern works_;
+        int worksMinLines_;
+        Coverage coverage_;
+        Set<String> exposure_;
+        Map<Bytes, Coverage> coverageByDigest_;
+        Map<String, Coverage> coverageByHolder_;
+        Map<Bytes, String> statementByDigest_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::claim

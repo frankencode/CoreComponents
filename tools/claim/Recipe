@@ -1,0 +1,4 @@
+Application {
+    name: cc_claim
+    use: [ core, syntax, glob, meta, crypto, toki ]
+}

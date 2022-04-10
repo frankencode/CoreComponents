@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+
+namespace cc::claim {
+
+class Copyright final: public Object
+{
+public:
+    Copyright() = default;
+
+    Copyright(const String &holder, int yearStart, int yearEnd):
+        Object{new State{holder, yearStart, yearEnd}}
+    {}
+
+    String holder() const { return me().holder_; }
+    int yearStart() const { return me().yearStart_; }
+    int yearEnd() const { return me().yearEnd_; }
+
+private:
+    struct State final: public Object::State
+    {
+        State(const String &holder, int yearStart, int yearEnd):
+            holder_{holder},
+            yearStart_{yearStart},
+            yearEnd_{yearEnd}
+        {}
+
+        String holder_;
+        int yearStart_;
+        int yearEnd_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::claim

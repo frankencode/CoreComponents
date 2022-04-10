@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/claim/HeaderStyle>
+#include <cc/Singleton>
+
+namespace cc::claim {
+
+class Registry final: public Singleton
+{
+public:
+    Registry();
+
+    long headerStyleCount() const;
+    const HeaderStyle &headerStyleAt(long i) const;
+
+    bool detectHeaderStyle(const String &path, const String &text, Out<HeaderStyle> style) const;
+
+private:
+    friend class HeaderStyle;
+
+    struct State;
+
+    void registerHeaderStyle(const HeaderStyle &style);
+
+    State &me();
+    const State &me() const;
+};
+
+
+} // namespace cc::claim
