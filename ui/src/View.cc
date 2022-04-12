@@ -197,12 +197,16 @@ void View::State::insertAt(Locator target, View child)
 void View::State::insertChild(View child)
 {
     child.me().parent_ = this;
-    if (std::isnan(child.me().id_))
+    if (std::isnan(child.me().id_)) {
         child.me().id_ = nextId();
+    }
     children_.insert(child);
-    if (!visible()) child.visible(false);
-    if (child.visible())
+    if (!visible()) {
+        child.visible(false);
+    }
+    else if (child.visible()) {
         visibleChildren_.insert(child);
+    }
     childReady(&child);
     ++childrenCount;
 }
@@ -210,8 +214,10 @@ void View::State::insertChild(View child)
 void View::State::removeChild(View child)
 {
     children_.remove(child);
-    if (child.visible())
+    if (child.visible()) {
         visibleChildren_.remove(child);
+        child.visible(false);
+    }
     child.me().id_ = 0;
     childDone(&child);
     --childrenCount;

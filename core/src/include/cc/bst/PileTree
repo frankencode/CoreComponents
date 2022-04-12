@@ -1,0 +1,288 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bst/OrdinalTree>
+#include <functional>
+
+namespace cc::bst {
+
+template<class ItemType, class ExtentType>
+class PileNode final: public OrdinalNode
+{
+public:
+    using Item = ItemType;
+    using Extent = ExtentType;
+
+    PileNode():
+        treeExtent_{0},
+        itemExtent_{0},
+        item_{Item{}}
+    {}
+
+    PileNode(Extent extent, const Item &item):
+        treeExtent_{extent},
+        itemExtent_{extent},
+        item_{item}
+    {
+        activate(this);
+    }
+
+    inline ~PileNode() { deactivate(this); }
+
+    Extent treeExtent_;
+    Extent itemExtent_;
+    Item item_;
+};
+
+/** \internal
+  * \brief Pile tree
+  * A Pile tree is binary search tree which stores and maintains in each node the
+  * physical extent of the stored item and the combined physical extent of all the
+  * stored items of the sub-tree spanned by each particular node.
+  * Thereby the Pile tree allows to query the physical position of an item stored
+  * in the tree. Furthermore it supports range queries to get all items located in
+  * certain distance range.
+  */
+template<class Item, class Extent>
+class PileTree final: public OrdinalTree
+{
+public:
+    using Node = PileNode<Item, Extent>;
+
+    void insertAt(long index, const Item &item, Extent extent);
+    void updateAt(long index, const Item &item, Extent extent);
+    void removeAt(long index, Out<Item> item = None{});
+
+    static int getIndexOf(void *handle) { return getIndexOf(reinterpret_cast<OrdinalNode *>(handle)); }
+
+    Extent extent() const;
+
+    Extent extentAt(long index) const;
+    bool updateExtentAt(long index, Extent extent);
+    Extent updateExtentAt(long index, const std::function<Extent(Extent)> &f);
+
+    void getItemExtentAt(long index, Out<Item> item, Out<Extent> extent = None{}) const;
+    void getView(Extent pos0, Extent pos1, Out<long> index0, Out<long> index1, Out<Extent> itemPos0) const;
+    bool lookup(Extent pos, Out<Item> item = None{}, Out<long> index = None{}, Out<Extent> itemPos = None{}) const;
+    Extent getPosAt(long index) const;
+
+    Item &at(long index);
+    const Item &at(long index) const;
+
+private:
+    inline static long treeExtent(Node *k) { return (k) ? k->treeExtent_ : 0; }
+
+    inline static void establishTreeExtent(Node *k)
+    {
+        k->treeExtent_ =
+            treeExtent(static_cast<Node *>(k->left_)) +
+            treeExtent(static_cast<Node *>(k->right_)) +
+            k->itemExtent_;
+    }
+
+    Node *find(Extent x, Out<long> index = nullptr, Out<Extent> x0 = nullptr) const;
+
+    void changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached) override;
+    void rotated(OrdinalNode *k1, bool left) override;
+};
+
+template<class Item, class Extent>
+void PileTree<Item, Extent>::insertAt(long index, const Item &item, Extent extent)
+{
+    Node *kn = new Node{extent, item};
+    attachAt(index, kn);
+}
+
+template<class Item, class Extent>
+void PileTree<Item, Extent>::updateAt(long index, const Item &item, Extent extent)
+{
+    Node *k = static_cast<Node *>(getNodeAt(index));
+    Extent delta = extent - k->itemExtent_;
+    k->item_ = item;
+    k->itemExtent_ = extent;
+    k->treeExtent_ += delta;
+    for (; k; k = static_cast<Node *>(k->parent_))
+        k->treeExtent_ += delta;
+}
+
+template<class Item, class Extent>
+void PileTree<Item, Extent>::removeAt(long index, Out<Item> item)
+{
+    Node *ko = static_cast<Node *>(unlinkAt(index));
+    item = ko->item_;
+    delete ko;
+}
+
+template<class Item, class Extent>
+Extent PileTree<Item, Extent>::extent() const
+{
+    if (!root_) return 0;
+    return treeExtent(static_cast<Node *>(root_));
+}
+
+template<class Item, class Extent>
+Extent PileTree<Item, Extent>::extentAt(long index) const
+{
+    return static_cast<Node *>(getNodeAt(index))->itemExtent_;
+}
+
+template<class Item, class Extent>
+bool PileTree<Item, Extent>::updateExtentAt(long index, Extent extent)
+{
+    Node *k = static_cast<Node *>(getNodeAt(index));
+    if (extent == k->itemExtent_) return false;
+    Extent delta = extent - k->itemExtent_;
+    k->itemExtent_ = extent;
+    for (; k; k = static_cast<Node *>(k->parent_))
+        k->treeExtent_ += delta;
+    return true;
+}
+
+template<class Item, class Extent>
+Extent PileTree<Item, Extent>::updateExtentAt(long index, const std::function<Extent(Extent)> &f)
+{
+    Node *k = static_cast<Node *>(getNodeAt(index));
+    Extent extent = f(k->itemExtent_);
+    if (extent == k->itemExtent_) return extent;
+    Extent delta = extent - k->itemExtent_;
+    k->itemExtent_ = extent;
+    for (; k; k = static_cast<Node *>(k->parent_))
+        k->treeExtent_ += delta;
+    return extent;
+}
+
+template<class Item, class Extent>
+void PileTree<Item, Extent>::getItemExtentAt(long index, Out<Item> item, Out<Extent> extent) const
+{
+    Node *k = static_cast<Node *>(getNodeAt(index));
+    item = k->item_;
+    extent = k->itemExtent_;
+}
+
+template<class Item, class Extent>
+void PileTree<Item, Extent>::getView(Extent pos0, Extent pos1, Out<long> index0, Out<long> index1, Out<Extent> itemPos0) const
+{
+    if (
+        !root_ ||
+        pos1 <= pos0 ||
+        pos1 <= 0 ||
+        extent() <= pos0
+    ) {
+        index0 = 0;
+        index1 = 0;
+        return;
+    }
+
+    if (index0 != None{}) find(pos0, index0, itemPos0);
+
+    if (index1 != None{}) {
+        Extent item1Pos0 = 0;
+        find(pos1, index1, &item1Pos0);
+        index1 += (item1Pos0 < pos1);
+    }
+}
+
+template<class Item, class Extent>
+bool PileTree<Item, Extent>::lookup(Extent pos, Out<Item> item, Out<long> index, Out<Extent> itemPos) const
+{
+    Node *node = find(pos, index, itemPos);
+    if (node) item = node->item_;
+    return node;
+}
+
+template<class Item, class Extent>
+Extent PileTree<Item, Extent>::getPosAt(long index) const
+{
+    OrdinalNode *k = root_;
+    Extent y = 0;
+    Extent y0 = 0;
+    int j0 = 0;
+    while (k) {
+        y = y0 + treeExtent(static_cast<Node *>(k->left_));
+        int j = j0 + weight(k->left_);
+        if (index < j) {
+            k = k->left_;
+        }
+        else if (j < index) {
+            y0 = y + static_cast<Node *>(k)->itemExtent_;
+            j0 = j + 1;
+            k = k->right_;
+        }
+        else // index == j
+            break;
+    }
+    return y;
+}
+
+template<class Item, class Extent>
+Item &PileTree<Item, Extent>::at(long index)
+{
+    return static_cast<Node *>(getNodeAt(index))->item_;
+}
+
+template<class Item, class Extent>
+const Item &PileTree<Item, Extent>::at(long index) const
+{
+    return static_cast<Node *>(getNodeAt(index))->item_;
+}
+
+template<class Item, class Extent>
+typename PileTree<Item, Extent>::Node *PileTree<Item, Extent>::find(Extent x, Out<long> index, Out<Extent> x0) const
+{
+    if (!root_) return nullptr;
+    Node *k = static_cast<Node *>(root_);
+    Extent z0 = 0;
+    Extent z1 = 0;
+    Extent y0 = 0;
+    int j0 = 0;
+    int j = 0;
+    while (true) {
+        z0 = y0 + (k->left_ ? static_cast<Node *>(k->left_)->treeExtent_ : Extent{});
+        z1 = z0 + k->itemExtent_;
+        j = j0 + weight(k->left_);
+        if (x < z0) {
+            if (!k->left_) break;
+            k = static_cast<Node *>(k->left_);
+        }
+        else if (z1 <= x) {
+            if (!k->right_) break;
+            y0 = z1;
+            j0 = j + 1;
+            k = static_cast<Node *>(k->right_);
+        }
+        else break;
+    }
+    index = j;
+    x0 = z0;
+    return k;
+}
+
+template<class Item, class Extent>
+void PileTree<Item, Extent>::changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached)
+{
+    Extent delta = static_cast<Node *>(kc)->itemExtent_;
+    if (!attached) delta = -delta;
+
+    for (OrdinalNode *k = kp; k; k = k->parent_)
+        static_cast<Node *>(k)->treeExtent_ += delta;
+
+    OrdinalTree::changed(kp, kc, left, attached);
+}
+
+template<class Item, class Extent>
+void PileTree<Item, Extent>::rotated(OrdinalNode *k1, bool left)
+{
+    establishTreeExtent(static_cast<Node *>(k1));
+    establishTreeExtent(static_cast<Node *>(k1->parent_));
+
+    OrdinalTree::rotated(k1, left);
+}
+
+} // namespace cc::bst

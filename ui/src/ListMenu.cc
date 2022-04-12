@@ -10,12 +10,12 @@
 
 namespace cc::ui {
 
-class ListMenu::Carrier: public View
+class ListMenu::Carrier final: public View
 {
     friend class Object;
     friend class ListMenu;
 
-    struct State: public View::State
+    struct State final: public View::State
     {
         State()
         {
@@ -96,29 +96,52 @@ class ListMenu::Carrier: public View
     const State &me() const { return View::me().as<State>(); }
 };
 
-ListMenu::State::State():
-    Flickable::State{Carrier{}}
+struct ListMenu::State final: public Flickable::State
 {
-    Carrier carrier = Flickable::State::carrier().as<Carrier>();
+    State():
+        Flickable::State{Carrier{}}
+    {
+        Carrier carrier = Flickable::State::carrier().as<Carrier>();
 
-    carrier.me().leadSpace([this]{
-        return header() ? header().height() : gu(2);
-    });
+        carrier.me().leadSpace([this]{
+            return header() ? header().height() : gu(2);
+        });
 
-    carrier.me().tailSpace([this]{
-        return footer() ? footer().height() : gu(2);
-    });
-}
+        carrier.me().tailSpace([this]{
+            return footer() ? footer().height() : gu(2);
+        });
+    }
 
-void ListMenu::State::insertChild(View child)
-{
-    child.visible(false);
-    Flickable::State::insertChild(child);
-}
+    void insertChild(View child) override
+    {
+        child.visible(false);
+        Flickable::State::insertChild(child);
+    }
+
+    Property<View> header;
+    Property<View> footer;
+};
 
 ListMenu::ListMenu():
     Flickable{onDemand<State>}
 {}
+
+ListMenu::ListMenu(Out<ListMenu> self):
+    Flickable{new State}
+{
+    self = *this;
+}
+
+ListMenu::ListMenu(double width, double height):
+    ListMenu{}
+{
+    size(width, height);
+}
+
+View ListMenu::header() const
+{
+    return me().header();
+}
 
 ListMenu &ListMenu::header(const View &newValue)
 {
@@ -129,6 +152,11 @@ ListMenu &ListMenu::header(const View &newValue)
     return *this;
 }
 
+View ListMenu::footer() const
+{
+    return me().footer();
+}
+
 ListMenu &ListMenu::footer(const View &newValue)
 {
     if (me().footer()) remove(me().footer());
@@ -136,6 +164,16 @@ ListMenu &ListMenu::footer(const View &newValue)
     me().View::State::insertChild(me().footer());
     me().footer().pos([this]{ return me().carrier().pos() + Point{0, me().carrier().height() - me().footer().height()}; });
     return *this;
+}
+
+ListMenu::State &ListMenu::me()
+{
+    return View::me().as<State>();
+}
+
+const ListMenu::State &ListMenu::me() const
+{
+    return View::me().as<State>();
 }
 
 } // namespace cc::ui

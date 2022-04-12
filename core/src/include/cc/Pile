@@ -1,0 +1,178 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bst/PileTree>
+#include <cc/ArrayIterator>
+#include <cc/Cow>
+#include <cc/container>
+#include <cassert>
+
+namespace cc {
+
+template<class Item, class Extent>
+class PileStop;
+
+template<class Item, class Extent>
+class PileSource;
+
+/** \class Pile cc/Pile
+  * \ingroup container
+  * \brief Pile container
+  * \tparam T Item type
+  * \tparam E Extent type
+  */
+template<class T, class E>
+class Pile
+{
+public:
+    using Item = T; ///< Item type
+    using Extent = E; ///< Item extent type
+
+    /** Create an empty pile
+      */
+    Pile() = default;
+
+    /** Insert at \a index the \a item with given \a extent
+      */
+    void insertAt(long index, const Item &item, Extent extent)
+    {
+        assert(0 <= index && index <= count());
+        me().insertAt(index, item, extent);
+    }
+
+    /** Update the given \a item and \a extent at \a index
+      */
+    void updateAt(long index, const Item &item, Extent extent)
+    {
+        assert(has(index));
+        me().updateAt(index, item, extent);
+    }
+
+    /** Remove the item at \a index and optionally return a copy in \a item
+      */
+    void removeAt(long index, Out<Item> item = None{})
+    {
+        assert(has(index));
+        me().removeAt(index, item);
+    }
+
+    /** Append \a item to the end of the list
+      */
+    void append(const Item &item, Extent extent)
+    {
+        me().insertAt(me().count(), item, extent);
+    }
+
+    /** Number of items stored in the pile
+      */
+    long count() const { return me().count(); }
+
+    /** Total extent of all items stored in the pile
+      */
+    Extent extent() const { return me().extent(); }
+
+    /** Get the extent of the item at \a index
+      */
+    Extent extentAt(long index) const
+    {
+        assert(has(index));
+        return me().extentAt(index);
+    }
+
+    /** Set the extent ot the item at \a index
+      * \return True if extent was changed
+      * \return False if extent didn't change (i.e. didn't differ from stored value)
+      */
+    bool updateExtentAt(long index, Extent extent)
+    {
+        assert(has(index));
+        return me().updateExtentAt(index, extent);
+    }
+
+    /** Update the extent at \a index using function \a f
+      */
+    Extent updateExtentAt(long index, const std::function<Extent(Extent)> &f)
+    {
+        assert(has(index));
+        return me().updateExtentAt(index, f);
+    }
+
+    /** Get the \a item and \a extent at \a index
+      */
+    void getItemExtentAt(long index, Out<Item> item, Out<Extent> extent) const
+    {
+        assert(has(index));
+        me().getItemExtentAt(index, item, extent);
+    }
+
+    /** Get the index range [\a index0, \a index1) covering the extent range \a [pos0, pos1) and return the physical position \a itemPos0 of the first item
+      */
+    void getView(Extent pos0, Extent pos1, Out<long> index0, Out<long> index1, Out<Extent> itemPos0) const
+    {
+        me().getView(pos0, pos1, index0, index1, itemPos0);
+    }
+
+    /** Get the \a item covering extent position \a pos
+      */
+    bool lookup(Extent pos, Out<Item> item = None{}, Out<long> index = None{}, Out<Extent> itemPos = None{}) const
+    {
+        return me().lookup(pos, item, index, itemPos);
+    }
+
+    /** Get extent position of item at \a index
+      */
+    Extent getPosAt(long index) const
+    {
+        assert(has(index));
+        return me().getPosAt(index);
+    }
+
+    /** Check if \a index is valid
+      */
+    bool has(long index) const
+    {
+        return index < me().count() && 0 <= index;
+    }
+
+    /** Access item at \a index
+      */
+    Item &at(long index)
+    {
+        assert(has(index));
+        return me().at(index);
+    }
+
+    /** Access item at \a index
+      */
+    const Item &at(long index) const
+    {
+        assert(has(index));
+        return me().at(index);
+    }
+
+    using iterator = ArrayIterator<Pile>;
+    using const_iterator = ArrayIterator<const Pile>;
+
+    /** \name Standard iterators
+      * @{
+      */
+    iterator begin() { return iterator{*this, 0}; }
+    iterator end() { return iterator{*this, count()}; }
+
+    const_iterator begin() const { return const_iterator{*this, 0}; }
+    const_iterator end() const { return const_iterator{*this, count()}; }
+    /** @} */
+
+private:
+    using Tree = bst::PileTree<Item, Extent>;
+    Cow<Tree> me;
+};
+
+} // namespace cc

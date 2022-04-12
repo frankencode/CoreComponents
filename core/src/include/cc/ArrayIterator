@@ -14,8 +14,10 @@ namespace cc {
 
 /** \class ArrayIterator cc/ArrayIterator
   * \brief %Array iterator
+  * \tparam Container Container type
+  * \tparm Dir Direction (1 for forward iterator, -1 for backward iterator)
   */
-template<class Container, long dir>
+template<class Container, long Dir = 1>
 class ArrayIterator:
     public std::iterator<
         /*iterator_category*/ std::bidirectional_iterator_tag,
@@ -43,19 +45,19 @@ public:
 
     /** Step to the next item and return the old iterator value (postfix increment operator)
       */
-    ArrayIterator &operator++() { i_ += dir; return *this; }
+    ArrayIterator &operator++() { i_ += Dir; return *this; }
 
     /** Step to the previous item and return the old iterator value (postfix decrement operator)
       */
-    ArrayIterator &operator--() { i_ -= dir; return *this; }
+    ArrayIterator &operator--() { i_ -= Dir; return *this; }
 
     /** Get iterator value stepped \a delta items forward (addition operator)
       */
-    ArrayIterator operator+(long delta) { return ArrayIterator{c_, i_ + dir * delta}; }
+    ArrayIterator operator+(long delta) { return ArrayIterator{c_, i_ + Dir * delta}; }
 
     /** Get iterator value stepped \a delta items backward (substraction operator)
       */
-    ArrayIterator operator-(long delta) { return ArrayIterator{c_, i_ - dir * delta}; }
+    ArrayIterator operator-(long delta) { return ArrayIterator{c_, i_ - Dir * delta}; }
 
     /** Get distance between this and another iterator (substraction operator)
       */

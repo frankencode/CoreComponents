@@ -1,0 +1,47 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Flickable>
+
+namespace cc::ui {
+
+/** \class ListView qh/ui/ListView
+  * \ingroup ui
+  * \brief List view
+  */
+class ListView final: public Flickable
+{
+public:
+    /** \brief Factory which produces view delegates for individual items
+      */
+    class DelegateFactory: public Object
+    {
+    public:
+        View createDelegate(long itemIndex) { return me().createDelegate(itemIndex); }
+
+    protected:
+        struct State: public Object::State
+        {
+            virtual View createDelegate(long itemIndex) = 0;
+        };
+
+        State &me() { return Object::me.as<State>(); }
+    };
+
+    /** Create a primordial list view
+      */
+    ListView();
+
+private:
+    struct State;
+    class Carrier;
+};
+
+} // namespace cc::ui

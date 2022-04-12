@@ -1,0 +1,199 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/bst/AvlTree>
+#include <cc/ConversionFromTo>
+#include <cc/InOut>
+#include <cassert>
+
+namespace cc::bst {
+
+/** \todo use modern C++ atomics
+  */
+class ExclusiveSection
+{
+public:
+    inline ExclusiveSection(): access_{0} {}
+
+private:
+    friend class ExclusiveAccess;
+
+    inline bool acquire() { return __sync_bool_compare_and_swap(&access_, 0, 1); }
+    inline void release() { access_ = 0; }
+
+    bool access_;
+};
+
+class OrdinalNode;
+class IndexTrackingAccess;
+
+class IndexTracking {
+public:
+    IndexTracking(): node_{nullptr} {}
+
+    long getIndex() const;
+
+private:
+    friend class IndexTrackingAccess;
+    OrdinalNode *node_;
+};
+
+class IndexTrackingAccess {
+public:
+    template<class Node>
+    static void activate(Node *node) {
+        IndexTracking *item = static_cast<IndexTracking *>(node->item_);
+        if (item->node_ == nullptr)
+            item->node_ = node;
+    }
+
+    template<class Node>
+    static void deactivate(Node *node) {
+        IndexTracking *item = static_cast<IndexTracking *>(node->item_);
+        if (item->node_ == node) item->node_ = nullptr;
+    }
+};
+
+template<class Node, int HasActiveItem>
+class OrdinalNodeActivation {
+public:
+    static void activate(Node *) {}
+    static void deactivate(Node *) {}
+};
+
+template<class Node>
+class OrdinalNodeActivation<Node, 1>: public IndexTrackingAccess {};
+
+class OrdinalNode
+{
+public:
+    OrdinalNode():
+        balance_{0},
+        weight_{1}
+    {}
+
+    template<class Node>
+    static void activate(Node *node) {
+        OrdinalNodeActivation<
+            Node,
+            ConversionFromTo<
+                typename DerefPointerType<typename Node::Item>::DerefType *,
+                IndexTracking *
+            >::Exists
+        >::activate(node);
+    }
+
+    template<class Node>
+    static void deactivate(Node *node) {
+        OrdinalNodeActivation<
+            Node,
+            ConversionFromTo<
+                typename DerefPointerType<typename Node::Item>::DerefType *,
+                IndexTracking *
+            >::Exists
+        >::deactivate(node);
+    }
+
+    void takeOver(const OrdinalNode *other)
+    {
+        *this = *other;
+    }
+
+    OrdinalNode *left_;
+    OrdinalNode *right_;
+    OrdinalNode *parent_;
+    long balance_ : 8;
+    long weight_ : 46;
+};
+
+#ifndef NDEBUG
+class OrdinalTreeTester;
+#endif
+
+/** \internal
+  * \brief Ordinal tree
+  * An Ordinal tree is a balanced binary tree that stores in each node the
+  * weight of the sub-tree of which the node is the root node.
+  * Ordinal AVL trees allow to access each node by index in at least 1.44*ld(N)
+  * steps. Stored items can also query their position by walking from their
+  * storage node to the root.
+  */
+class OrdinalTree: public AvlTree<OrdinalNode>
+{
+public:
+    long count() const { return weight(); }
+
+    static long getIndexOf(OrdinalNode *k);
+
+protected:
+    long weight() const { return weight(root_); }
+    static long weight(OrdinalNode *k) { return (k) ? k->weight_ : 0; }
+
+    OrdinalNode *getNodeAt(long i) const;
+    void attachAt(long i, OrdinalNode *kn);
+    OrdinalNode *unlinkAt(long i);
+
+    OrdinalTree(): cachedNode_{nullptr} {}
+    void populate(OrdinalNode **v, long n);
+
+    template<class UserNode>
+    void deplete() {
+        depleteTree<UserNode>(static_cast<UserNode *>(root_));
+        root_ = nullptr;
+        cachedNode_ = nullptr;
+    }
+
+    void changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached) override;
+    void rotated(OrdinalNode *k1, bool /*left*/) override;
+
+private:
+    friend class AvlBalance;
+    #ifndef NDEBUG
+    friend class OrdinalTreeTester;
+    #endif
+
+    void attachBefore(OrdinalNode *kb, OrdinalNode *kn);
+
+    static void establishWeight(OrdinalNode *k) { k->weight_ = weight(k->left_) + weight(k->right_) + 1; }
+
+    static bool testWeight(OrdinalNode *k);
+
+    mutable ExclusiveSection cacheExclusive_;
+    mutable OrdinalNode *cachedNode_;
+    mutable int cachedIndex_;
+};
+
+inline long IndexTracking::getIndex() const
+{
+    if (!node_) return -1;
+    return OrdinalTree::getIndexOf(node_);
+}
+
+#ifndef NDEBUG
+
+class OrdinalTreeTester {
+protected:
+    static bool testStructure(const OrdinalTree *tree) { return tree->testStructure(tree->root_); }
+    static bool testWeight(const OrdinalTree *tree) { return tree->testWeight(tree->root_); }
+    static bool testIteration(const OrdinalTree *tree) { return tree->testIteration(tree->root_); }
+    static bool testBalance(const OrdinalTree *tree) { return tree->testBalance(tree->root_); }
+
+    static bool test(const OrdinalTree *tree) {
+        return
+            testStructure(tree) &&
+            testWeight(tree) &&
+            testIteration(tree) &&
+            testBalance(tree);
+    }
+};
+
+#endif
+
+} // namespace cc::bst
