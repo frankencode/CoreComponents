@@ -17,8 +17,7 @@
 
 namespace cc {
 
-/** \internal
-  * \class Layout cc/Layout
+/** \class Layout cc/Layout
   * \ingroup container
   * \brief Layout data container
   * \tparam T Item type
@@ -31,7 +30,7 @@ public:
     using Item = T; ///< Item type
     using Extent = E; ///< Extent type
 
-    /** Create an empty pile
+    /** Create an empty layout
       */
     Layout() = default;
 
@@ -43,14 +42,6 @@ public:
         me().insertAt(index, item, extent);
     }
 
-    /** Update the given \a item and \a extent at \a index
-      */
-    void updateAt(long index, const Item &item, Extent extent)
-    {
-        assert(has(index));
-        me().updateAt(index, item, extent);
-    }
-
     /** Remove the item at \a index and optionally return a copy in \a item
       */
     void removeAt(long index, Out<Item> item = None{})
@@ -59,76 +50,64 @@ public:
         me().removeAt(index, item);
     }
 
-    /** Append \a item to the end of the list
+    /** Insert \a item at the front
       */
-    void append(const Item &item, Extent extent)
+    void pushFront(const Item &item, Extent extent)
+    {
+        me().insertAt(0, item, extent);
+    }
+
+    /** Insert \a item at the back
+      */
+    void pushBack(const Item &item, Extent extent)
     {
         me().insertAt(me().count(), item, extent);
     }
 
-    /** Number of items stored in the pile
-      */
-    long count() const { return me().count(); }
-
-    /** Total extent of all items stored in the pile
+    /** Sum of all item extents
       */
     Extent extent() const { return me().extent(); }
 
-    /** Get the extent of the item at \a index
+    /** \brief Access item value and associated layout properties
       */
-    Extent extentAt(long index) const
+    class Access
     {
-        assert(has(index));
-        return me().extentAt(index);
-    }
+    public:
+        /** Create a null item access
+          */
+        Access() = default;
 
-    /** Set the extent ot the item at \a index
-      * \return True if extent was changed
-      * \return False if extent didn't change (i.e. didn't differ from stored value)
-      */
-    bool updateExtentAt(long index, Extent extent)
-    {
-        assert(has(index));
-        return me().updateExtentAt(index, extent);
-    }
+        /** Get access to the current item value
+          */
+        const Item &item() const { return node_->item_; }
 
-    /** Update the extent at \a index using function \a f
-      */
-    Extent updateExtentAt(long index, const std::function<Extent(Extent)> &f)
-    {
-        assert(has(index));
-        return me().updateExtentAt(index, f);
-    }
+        /** Get access to the current item value
+          */
+        Item &item() { return node_->item_; }
 
-    /** Get the \a item and \a extent at \a index
-      */
-    void getItemExtentAt(long index, Out<Item> item, Out<Extent> extent) const
-    {
-        assert(has(index));
-        me().getItemExtentAt(index, item, extent);
-    }
+        /** Get the current item's extent
+          */
+        const Extent &extent() const { return node_->itemExtent_; }
 
-    /** Get the index range [\a index0, \a index1) covering the view range \a [pos0, pos1) and return the view position \a itemPos0 of the first item
-      */
-    void getView(Extent pos0, Extent pos1, Out<long> index0, Out<long> index1, Out<Extent> itemPos0) const
-    {
-        me().getView(pos0, pos1, index0, index1, itemPos0);
-    }
+        /** Set the current item's extent
+          */
+        void setExtent(Extent newValue) { node_->setItemExtent(newValue); }
 
-    /** Get the \a item covering view position \a pos
-      */
-    bool lookup(Extent pos, Out<Item> item = None{}, Out<long> index = None{}, Out<Extent> itemPos = None{}) const
-    {
-        return me().lookup(pos, item, index, itemPos);
-    }
+        /** Get the current item's layout position
+          */
+        Extent pos() const { return node_->getPos(); }
 
-    /** Get view position of item at \a index
+    private:
+        friend class Layout;
+        Access(Layout::Tree::Node *node):
+            node_{node}
+        {}
+        Layout::Tree::Node *node_ { nullptr };
+    };
+
+    /** Number of items
       */
-    Extent getPosAt(long index) const
-    {
-        assert(has(index));
-        return me().getPosAt(index);
-    }
+    long count() const { return me().count(); }
 
     /** Check if \a index is valid
       */
@@ -137,21 +116,17 @@ public:
         return index < me().count() && 0 <= index;
     }
 
-    /** Access item at \a index
+    /** Get access to the item at \a index
       */
-    Item &at(long index)
+    Access at(long index) const
     {
         assert(has(index));
-        return me().at(index);
+        return me().getNodeAt(index);
     }
 
-    /** Access item at \a index
+    /** Get access to the item at \a index
       */
-    const Item &at(long index) const
-    {
-        assert(has(index));
-        return me().at(index);
-    }
+    Access operator[](long index) const { return at(index); }
 
     using iterator = ArrayIterator<Layout>; ///< \internal Value Iterator
     using const_iterator = ArrayIterator<const Layout>; ///< \internal Readonly value iterator
@@ -168,42 +143,42 @@ public:
     const_iterator end() const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
     /** @} */
 
-    /** \brief Layout stop
+    /** \brief Layout stop (item access with precomputed layout position)
       */
-    class Stop {
+    class Stop: public Access
+    {
     public:
+        /** Create a null layout stop
+          */
         Stop() = default;
 
-        Stop(Extent pos, Extent extent, const Item &item):
-            pos_{pos},
-            extent_{extent},
-            item_{item}
-        {}
-
-        Extent pos() const { return pos_; } ///< View position of this item
-        Extent extent() const { return extent_; } ///< Extent of this item
-        const Item &item() const { return item_; } ///< The stored item
-        Item &item() { return item_; } ///< The stored item
+        Extent pos() const { return pos_; } ///< Layout position of this item
 
     private:
-        friend class Layout::Source;
+        friend class Layout::Range;
+        friend class Layout;
+
+        Stop(Layout::Tree::Node *node, Extent pos):
+            Access{node},
+            pos_{pos}
+        {}
+
         Extent pos_;
-        Extent extent_;
-        Item item_;
     };
 
-    /** \brief Source for reading item within a view range
+    /** \brief Range for reading all layout stops within a given layout range
       */
-    class Source {
+    class Range
+    {
     public:
         using Item = Stop;
 
         /** Create a new view source for \a layout in range [\a pos0, \a pos1)
           */
-        Source(const Layout &layout, Extent pos0, Extent pos1):
+        Range(const Layout &layout, Extent pos0, Extent pos1):
             layout_{layout}
         {
-            layout.getView(pos0, pos1, &i_, &i1_, &x_);
+            layout->getView(pos0, pos1, &i_, &i1_, &y_);
         }
 
         /** Read the next layout stop \a stop
@@ -211,18 +186,15 @@ public:
         bool read(Out<Stop> stop)
         {
             if (i_ < i1_) {
-                Extent extent;
-                layout_.getItemExtentAt(i_, &stop->item_, &extent);
-                stop->pos_ = x_;
-                stop->extent_ = extent;
+                stop = Stop{layout_->getNodeAt(i_), y_};
                 ++i_;
-                x_ += extent;
+                y_ += stop->extent();
                 return true;
             }
             return false;
         }
 
-        using iterator = SourceIterator<Source>; ///< \internal Value iterator
+        using iterator = SourceIterator<Range>; ///< \internal Value iterator
         using value_type = Stop; ///< \internal Item value type
         using size_type = long; ///< \internal Type of the container capacity
 
@@ -232,12 +204,21 @@ public:
     private:
         Layout layout_;
         long i_, i1_;
-        Extent x_;
+        Extent y_;
     };
 
-    /** Get a iterateable source for reading all items in view range [\a pos0, \a pos1)
+    /** Get a iterateable source for reading all layout stops in layout range [\a pos0, \a pos1)
       */
-    Source view(Extent pos0, Extent pos1) const { return Source{*this, pos0, pos1}; }
+    Range view(Extent pos0, Extent pos1) const { return Range{*this, pos0, pos1}; }
+
+    /** Find the item covering layout position \a target
+      */
+    Stop find(Extent target) const
+    {
+        Extent itemPos = 0;
+        auto node = me().find(target, None{}, &itemPos);
+        return Stop{node, itemPos};
+    }
 
 private:
     friend void testLayout(const auto &layout);

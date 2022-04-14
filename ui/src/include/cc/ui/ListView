@@ -19,22 +19,6 @@ namespace cc::ui {
 class ListView final: public Flickable
 {
 public:
-    /** \brief Factory which produces view delegates for individual items
-      */
-    class DelegateFactory: public Object
-    {
-    public:
-        View createDelegate(long itemIndex) { return me().createDelegate(itemIndex); }
-
-    protected:
-        struct State: public Object::State
-        {
-            virtual View createDelegate(long itemIndex) = 0;
-        };
-
-        State &me() { return Object::me.as<State>(); }
-    };
-
     /** Create a primordial list view
       */
     ListView();

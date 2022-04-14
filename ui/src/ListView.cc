@@ -7,6 +7,7 @@
  */
 
 #include <cc/ui/ListView>
+#include <cc/Layout>
 
 namespace cc::ui {
 
