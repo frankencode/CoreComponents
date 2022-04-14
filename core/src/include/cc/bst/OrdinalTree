@@ -11,25 +11,10 @@
 #include <cc/bst/AvlTree>
 #include <cc/ConversionFromTo>
 #include <cc/InOut>
+#include <thread>
 #include <cassert>
 
 namespace cc::bst {
-
-/** \todo use modern C++ atomics
-  */
-class ExclusiveSection
-{
-public:
-    inline ExclusiveSection(): access_{0} {}
-
-private:
-    friend class ExclusiveAccess;
-
-    inline bool acquire() { return __sync_bool_compare_and_swap(&access_, 0, 1); }
-    inline void release() { access_ = 0; }
-
-    bool access_;
-};
 
 class OrdinalNode;
 class IndexTrackingAccess;
@@ -132,6 +117,10 @@ public:
 
     static long getIndexOf(OrdinalNode *k);
 
+#ifndef NDEBUG
+    bool testWeights() const { return testWeight(this->root_); }
+#endif
+
 protected:
     long weight() const { return weight(root_); }
     static long weight(OrdinalNode *k) { return (k) ? k->weight_ : 0; }
@@ -155,19 +144,18 @@ protected:
 
 private:
     friend class AvlBalance;
-    #ifndef NDEBUG
-    friend class OrdinalTreeTester;
-    #endif
 
     void attachBefore(OrdinalNode *kb, OrdinalNode *kn);
 
     static void establishWeight(OrdinalNode *k) { k->weight_ = weight(k->left_) + weight(k->right_) + 1; }
 
+#ifndef NDEBUG
     static bool testWeight(OrdinalNode *k);
+#endif
 
-    mutable ExclusiveSection cacheExclusive_;
+    std::thread::id owner_ { std::this_thread::get_id() };
     mutable OrdinalNode *cachedNode_;
-    mutable int cachedIndex_;
+    mutable long cachedIndex_;
 };
 
 inline long IndexTracking::getIndex() const
@@ -175,25 +163,5 @@ inline long IndexTracking::getIndex() const
     if (!node_) return -1;
     return OrdinalTree::getIndexOf(node_);
 }
-
-#ifndef NDEBUG
-
-class OrdinalTreeTester {
-protected:
-    static bool testStructure(const OrdinalTree *tree) { return tree->testStructure(tree->root_); }
-    static bool testWeight(const OrdinalTree *tree) { return tree->testWeight(tree->root_); }
-    static bool testIteration(const OrdinalTree *tree) { return tree->testIteration(tree->root_); }
-    static bool testBalance(const OrdinalTree *tree) { return tree->testBalance(tree->root_); }
-
-    static bool test(const OrdinalTree *tree) {
-        return
-            testStructure(tree) &&
-            testWeight(tree) &&
-            testIteration(tree) &&
-            testBalance(tree);
-    }
-};
-
-#endif
 
 } // namespace cc::bst

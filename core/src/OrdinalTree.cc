@@ -10,26 +10,6 @@
 
 namespace cc::bst {
 
-class ExclusiveAccess
-{
-public:
-    explicit ExclusiveAccess(ExclusiveSection *section):
-        section_{section},
-        access_{section->acquire()}
-    {}
-
-    ~ExclusiveAccess()
-    {
-        section_->release();
-    }
-
-    operator bool() const { return access_; }
-
-private:
-    ExclusiveSection *section_;
-    const bool access_;
-};
-
 long OrdinalTree::getIndexOf(OrdinalNode *k)
 {
     long i = weight(k->left_);
@@ -88,23 +68,21 @@ OrdinalNode *OrdinalTree::getNodeAt(long i) const
 {
     assert(0 <= i && i < weight());
 
-    ExclusiveAccess cacheAccess{&cacheExclusive_};
-    if (cacheAccess) {
-        if (cachedNode_) {
-            const long d = i - cachedIndex_;
-            if (d == 1) {
-                ++cachedIndex_;
-                cachedNode_ = succ(cachedNode_);
-                return cachedNode_;
-            }
-            else if (d == 0) {
-                return cachedNode_;
-            }
-            else if (d == -1) {
-                --cachedIndex_;
-                cachedNode_ = pred(cachedNode_);
-                return cachedNode_;
-            }
+    const bool cacheAccess = (owner_ == std::this_thread::get_id());
+    if (cacheAccess && cachedNode_) {
+        const long d = i - cachedIndex_;
+        if (d == 1) {
+            ++cachedIndex_;
+            cachedNode_ = succ(cachedNode_);
+            return cachedNode_;
+        }
+        else if (d == 0) {
+            return cachedNode_;
+        }
+        else if (d == -1) {
+            --cachedIndex_;
+            cachedNode_ = pred(cachedNode_);
+            return cachedNode_;
         }
     }
 

@@ -16,24 +16,26 @@ namespace cc::bst {
   * \brief AVL balanced binary tree
   * AVL balancing guarantees a worst-case path length from root to leaf of 1.44*ld(N).
   * Tree lookups are therefore faster in AVL trees compared to Red-Black trees.
-  * For weight maintaining trees (Ordinal and Pile trees) the costs for updating the
+  * For weight maintaining trees (Ordinal and Layout trees) the costs for updating the
   * weights is much reduced due to the shallower tree structure.
-  * \see OrdinalTree, PileTree
+  * \see OrdinalTree, LayoutTree
   */
 template<class Node>
 class AvlTree: public BinaryTree<Node>
 {
+public:
+#ifndef NDEBUG
+    bool testBalance() const { return testBalance(this->root_) ;}
+#endif
+
 protected:
     void restoreBalance(Node *kp, bool left, bool attached);
 
 private:
     Node *rebalance(Node *k1);
 
-public:
-#ifndef NDEBUG
     static int height(const Node *k);
     static bool testBalance(const Node *k);
-#endif
 };
 
 template<class Node>

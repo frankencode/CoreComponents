@@ -14,19 +14,19 @@
 namespace cc::bst {
 
 template<class ItemType, class ExtentType>
-class PileNode final: public OrdinalNode
+class LayoutNode final: public OrdinalNode
 {
 public:
     using Item = ItemType;
     using Extent = ExtentType;
 
-    PileNode():
+    LayoutNode():
         treeExtent_{0},
         itemExtent_{0},
         item_{Item{}}
     {}
 
-    PileNode(Extent extent, const Item &item):
+    LayoutNode(Extent extent, const Item &item):
         treeExtent_{extent},
         itemExtent_{extent},
         item_{item}
@@ -34,7 +34,7 @@ public:
         activate(this);
     }
 
-    inline ~PileNode() { deactivate(this); }
+    inline ~LayoutNode() { deactivate(this); }
 
     Extent treeExtent_;
     Extent itemExtent_;
@@ -42,19 +42,19 @@ public:
 };
 
 /** \internal
-  * \brief Pile tree
-  * A Pile tree is binary search tree which stores and maintains in each node the
+  * \brief Layout tree
+  * A Layout tree is binary search tree which stores and maintains in each node the
   * physical extent of the stored item and the combined physical extent of all the
   * stored items of the sub-tree spanned by each particular node.
-  * Thereby the Pile tree allows to query the physical position of an item stored
+  * Thereby the Layout tree allows to query the physical position of an item stored
   * in the tree. Furthermore it supports range queries to get all items located in
   * certain distance range.
   */
 template<class Item, class Extent>
-class PileTree final: public OrdinalTree
+class LayoutTree final: public OrdinalTree
 {
 public:
-    using Node = PileNode<Item, Extent>;
+    using Node = LayoutNode<Item, Extent>;
 
     void insertAt(long index, const Item &item, Extent extent);
     void updateAt(long index, const Item &item, Extent extent);
@@ -94,14 +94,14 @@ private:
 };
 
 template<class Item, class Extent>
-void PileTree<Item, Extent>::insertAt(long index, const Item &item, Extent extent)
+void LayoutTree<Item, Extent>::insertAt(long index, const Item &item, Extent extent)
 {
     Node *kn = new Node{extent, item};
     attachAt(index, kn);
 }
 
 template<class Item, class Extent>
-void PileTree<Item, Extent>::updateAt(long index, const Item &item, Extent extent)
+void LayoutTree<Item, Extent>::updateAt(long index, const Item &item, Extent extent)
 {
     Node *k = static_cast<Node *>(getNodeAt(index));
     Extent delta = extent - k->itemExtent_;
@@ -113,7 +113,7 @@ void PileTree<Item, Extent>::updateAt(long index, const Item &item, Extent exten
 }
 
 template<class Item, class Extent>
-void PileTree<Item, Extent>::removeAt(long index, Out<Item> item)
+void LayoutTree<Item, Extent>::removeAt(long index, Out<Item> item)
 {
     Node *ko = static_cast<Node *>(unlinkAt(index));
     item = ko->item_;
@@ -121,20 +121,20 @@ void PileTree<Item, Extent>::removeAt(long index, Out<Item> item)
 }
 
 template<class Item, class Extent>
-Extent PileTree<Item, Extent>::extent() const
+Extent LayoutTree<Item, Extent>::extent() const
 {
     if (!root_) return 0;
     return treeExtent(static_cast<Node *>(root_));
 }
 
 template<class Item, class Extent>
-Extent PileTree<Item, Extent>::extentAt(long index) const
+Extent LayoutTree<Item, Extent>::extentAt(long index) const
 {
     return static_cast<Node *>(getNodeAt(index))->itemExtent_;
 }
 
 template<class Item, class Extent>
-bool PileTree<Item, Extent>::updateExtentAt(long index, Extent extent)
+bool LayoutTree<Item, Extent>::updateExtentAt(long index, Extent extent)
 {
     Node *k = static_cast<Node *>(getNodeAt(index));
     if (extent == k->itemExtent_) return false;
@@ -146,7 +146,7 @@ bool PileTree<Item, Extent>::updateExtentAt(long index, Extent extent)
 }
 
 template<class Item, class Extent>
-Extent PileTree<Item, Extent>::updateExtentAt(long index, const std::function<Extent(Extent)> &f)
+Extent LayoutTree<Item, Extent>::updateExtentAt(long index, const std::function<Extent(Extent)> &f)
 {
     Node *k = static_cast<Node *>(getNodeAt(index));
     Extent extent = f(k->itemExtent_);
@@ -159,7 +159,7 @@ Extent PileTree<Item, Extent>::updateExtentAt(long index, const std::function<Ex
 }
 
 template<class Item, class Extent>
-void PileTree<Item, Extent>::getItemExtentAt(long index, Out<Item> item, Out<Extent> extent) const
+void LayoutTree<Item, Extent>::getItemExtentAt(long index, Out<Item> item, Out<Extent> extent) const
 {
     Node *k = static_cast<Node *>(getNodeAt(index));
     item = k->item_;
@@ -167,7 +167,7 @@ void PileTree<Item, Extent>::getItemExtentAt(long index, Out<Item> item, Out<Ext
 }
 
 template<class Item, class Extent>
-void PileTree<Item, Extent>::getView(Extent pos0, Extent pos1, Out<long> index0, Out<long> index1, Out<Extent> itemPos0) const
+void LayoutTree<Item, Extent>::getView(Extent pos0, Extent pos1, Out<long> index0, Out<long> index1, Out<Extent> itemPos0) const
 {
     if (
         !root_ ||
@@ -190,7 +190,7 @@ void PileTree<Item, Extent>::getView(Extent pos0, Extent pos1, Out<long> index0,
 }
 
 template<class Item, class Extent>
-bool PileTree<Item, Extent>::lookup(Extent pos, Out<Item> item, Out<long> index, Out<Extent> itemPos) const
+bool LayoutTree<Item, Extent>::lookup(Extent pos, Out<Item> item, Out<long> index, Out<Extent> itemPos) const
 {
     Node *node = find(pos, index, itemPos);
     if (node) item = node->item_;
@@ -198,7 +198,7 @@ bool PileTree<Item, Extent>::lookup(Extent pos, Out<Item> item, Out<long> index,
 }
 
 template<class Item, class Extent>
-Extent PileTree<Item, Extent>::getPosAt(long index) const
+Extent LayoutTree<Item, Extent>::getPosAt(long index) const
 {
     OrdinalNode *k = root_;
     Extent y = 0;
@@ -222,19 +222,19 @@ Extent PileTree<Item, Extent>::getPosAt(long index) const
 }
 
 template<class Item, class Extent>
-Item &PileTree<Item, Extent>::at(long index)
+Item &LayoutTree<Item, Extent>::at(long index)
 {
     return static_cast<Node *>(getNodeAt(index))->item_;
 }
 
 template<class Item, class Extent>
-const Item &PileTree<Item, Extent>::at(long index) const
+const Item &LayoutTree<Item, Extent>::at(long index) const
 {
     return static_cast<Node *>(getNodeAt(index))->item_;
 }
 
 template<class Item, class Extent>
-typename PileTree<Item, Extent>::Node *PileTree<Item, Extent>::find(Extent x, Out<long> index, Out<Extent> x0) const
+typename LayoutTree<Item, Extent>::Node *LayoutTree<Item, Extent>::find(Extent x, Out<long> index, Out<Extent> x0) const
 {
     if (!root_) return nullptr;
     Node *k = static_cast<Node *>(root_);
@@ -265,7 +265,7 @@ typename PileTree<Item, Extent>::Node *PileTree<Item, Extent>::find(Extent x, Ou
 }
 
 template<class Item, class Extent>
-void PileTree<Item, Extent>::changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached)
+void LayoutTree<Item, Extent>::changed(OrdinalNode *kp, OrdinalNode *kc, bool left, bool attached)
 {
     Extent delta = static_cast<Node *>(kc)->itemExtent_;
     if (!attached) delta = -delta;
@@ -277,7 +277,7 @@ void PileTree<Item, Extent>::changed(OrdinalNode *kp, OrdinalNode *kc, bool left
 }
 
 template<class Item, class Extent>
-void PileTree<Item, Extent>::rotated(OrdinalNode *k1, bool left)
+void LayoutTree<Item, Extent>::rotated(OrdinalNode *k1, bool left)
 {
     establishTreeExtent(static_cast<Node *>(k1));
     establishTreeExtent(static_cast<Node *>(k1->parent_));

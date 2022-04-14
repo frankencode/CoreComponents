@@ -8,36 +8,32 @@
 
 #pragma once
 
-#include <cc/bst/PileTree>
+#include <cc/bst/LayoutTree>
 #include <cc/ArrayIterator>
+#include <cc/SourceIterator>
 #include <cc/Cow>
 #include <cc/container>
 #include <cassert>
 
 namespace cc {
 
-template<class Item, class Extent>
-class PileStop;
-
-template<class Item, class Extent>
-class PileSource;
-
-/** \class Pile cc/Pile
+/** \internal
+  * \class Layout cc/Layout
   * \ingroup container
-  * \brief Pile container
+  * \brief Layout data container
   * \tparam T Item type
   * \tparam E Extent type
   */
 template<class T, class E>
-class Pile
+class Layout
 {
 public:
     using Item = T; ///< Item type
-    using Extent = E; ///< Item extent type
+    using Extent = E; ///< Extent type
 
     /** Create an empty pile
       */
-    Pile() = default;
+    Layout() = default;
 
     /** Insert at \a index the \a item with given \a extent
       */
@@ -112,21 +108,21 @@ public:
         me().getItemExtentAt(index, item, extent);
     }
 
-    /** Get the index range [\a index0, \a index1) covering the extent range \a [pos0, pos1) and return the physical position \a itemPos0 of the first item
+    /** Get the index range [\a index0, \a index1) covering the view range \a [pos0, pos1) and return the view position \a itemPos0 of the first item
       */
     void getView(Extent pos0, Extent pos1, Out<long> index0, Out<long> index1, Out<Extent> itemPos0) const
     {
         me().getView(pos0, pos1, index0, index1, itemPos0);
     }
 
-    /** Get the \a item covering extent position \a pos
+    /** Get the \a item covering view position \a pos
       */
     bool lookup(Extent pos, Out<Item> item = None{}, Out<long> index = None{}, Out<Extent> itemPos = None{}) const
     {
         return me().lookup(pos, item, index, itemPos);
     }
 
-    /** Get extent position of item at \a index
+    /** Get view position of item at \a index
       */
     Extent getPosAt(long index) const
     {
@@ -157,21 +153,99 @@ public:
         return me().at(index);
     }
 
-    using iterator = ArrayIterator<Pile>;
-    using const_iterator = ArrayIterator<const Pile>;
+    using iterator = ArrayIterator<Layout>; ///< \internal Value Iterator
+    using const_iterator = ArrayIterator<const Layout>; ///< \internal Readonly value iterator
+    using value_type = Item; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
 
     /** \name Standard iterators
       * @{
       */
-    iterator begin() { return iterator{*this, 0}; }
-    iterator end() { return iterator{*this, count()}; }
+    iterator begin() { return iterator{*this, 0}; } ///< %Return iterator pointing to the first item (if any)
+    iterator end() { return iterator{*this, count()}; } ///< %Return iterator pointing behind the last item
 
-    const_iterator begin() const { return const_iterator{*this, 0}; }
-    const_iterator end() const { return const_iterator{*this, count()}; }
+    const_iterator begin() const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end() const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
     /** @} */
 
+    /** \brief Layout stop
+      */
+    class Stop {
+    public:
+        Stop() = default;
+
+        Stop(Extent pos, Extent extent, const Item &item):
+            pos_{pos},
+            extent_{extent},
+            item_{item}
+        {}
+
+        Extent pos() const { return pos_; } ///< View position of this item
+        Extent extent() const { return extent_; } ///< Extent of this item
+        const Item &item() const { return item_; } ///< The stored item
+        Item &item() { return item_; } ///< The stored item
+
+    private:
+        friend class Layout::Source;
+        Extent pos_;
+        Extent extent_;
+        Item item_;
+    };
+
+    /** \brief Source for reading item within a view range
+      */
+    class Source {
+    public:
+        using Item = Stop;
+
+        /** Create a new view source for \a layout in range [\a pos0, \a pos1)
+          */
+        Source(const Layout &layout, Extent pos0, Extent pos1):
+            layout_{layout}
+        {
+            layout.getView(pos0, pos1, &i_, &i1_, &x_);
+        }
+
+        /** Read the next layout stop \a stop
+          */
+        bool read(Out<Stop> stop)
+        {
+            if (i_ < i1_) {
+                Extent extent;
+                layout_.getItemExtentAt(i_, &stop->item_, &extent);
+                stop->pos_ = x_;
+                stop->extent_ = extent;
+                ++i_;
+                x_ += extent;
+                return true;
+            }
+            return false;
+        }
+
+        using iterator = SourceIterator<Source>; ///< \internal Value iterator
+        using value_type = Stop; ///< \internal Item value type
+        using size_type = long; ///< \internal Type of the container capacity
+
+        iterator begin() { return iterator{this}; }
+        iterator end() { return iterator{}; }
+
+    private:
+        Layout layout_;
+        long i_, i1_;
+        Extent x_;
+    };
+
+    /** Get a iterateable source for reading all items in view range [\a pos0, \a pos1)
+      */
+    Source view(Extent pos0, Extent pos1) const { return Source{*this, pos0, pos1}; }
+
 private:
-    using Tree = bst::PileTree<Item, Extent>;
+    friend void testLayout(const auto &layout);
+
+    using Tree = bst::LayoutTree<Item, Extent>;
+
+    const Tree *operator->() const { return &me(); }
+
     Cow<Tree> me;
 };
 

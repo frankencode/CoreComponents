@@ -30,6 +30,11 @@ public:
     template<class UserNode>
     static void depleteTree(UserNode *k);
 
+#ifndef NDEBUG
+    bool testStructure() const { return testStructure(root_); }
+    bool testIteration() const { return testIteration(root_); }
+#endif
+
 protected:
     Node *detach(Node *k);
     void replace(Node *ki, Node *kl);
