@@ -22,15 +22,19 @@ private:
         {
             child.pos({0, height()});
             View::State::insertChild(child);
-            size(size() + Size{0, child.height()});
+            layout_.pushBack(child, child.height());
+            size(Size{width(), layout_.extent()});
         }
 
         void removeChild(View child) override
         {
+            layout_.remove(child);
             View::State::removeChild(child);
+            size(Size{width(), layout_.extent()});
         }
 
         Property<double> grayExtent;
+        cc::Layout<View, double> layout_;
     };
 };
 

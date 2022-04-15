@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \class IndexTracking cc/IndexTracking
+  * \brief Index tracking support
+  * \tparam T Item type
+  */
+template<class T>
+class IndexTracking
+{
+public:
+    /** Set index tracking handle
+      */
+    static void setHandle(T &item, void *handle) {}
+
+    /** Get index tracking handle
+      */
+    static void *handle(const T &item) { return nullptr; }
+};
+
+} // namespace cc

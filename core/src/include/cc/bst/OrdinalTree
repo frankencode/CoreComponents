@@ -9,52 +9,12 @@
 #pragma once
 
 #include <cc/bst/AvlTree>
-#include <cc/ConversionFromTo>
+#include <cc/IndexTracking>
 #include <cc/InOut>
 #include <thread>
 #include <cassert>
 
 namespace cc::bst {
-
-class OrdinalNode;
-class IndexTrackingAccess;
-
-class IndexTracking {
-public:
-    IndexTracking(): node_{nullptr} {}
-
-    long getIndex() const;
-
-private:
-    friend class IndexTrackingAccess;
-    OrdinalNode *node_;
-};
-
-class IndexTrackingAccess {
-public:
-    template<class Node>
-    static void activate(Node *node) {
-        IndexTracking *item = static_cast<IndexTracking *>(node->item_);
-        if (item->node_ == nullptr)
-            item->node_ = node;
-    }
-
-    template<class Node>
-    static void deactivate(Node *node) {
-        IndexTracking *item = static_cast<IndexTracking *>(node->item_);
-        if (item->node_ == node) item->node_ = nullptr;
-    }
-};
-
-template<class Node, int HasActiveItem>
-class OrdinalNodeActivation {
-public:
-    static void activate(Node *) {}
-    static void deactivate(Node *) {}
-};
-
-template<class Node>
-class OrdinalNodeActivation<Node, 1>: public IndexTrackingAccess {};
 
 class OrdinalNode
 {
@@ -63,28 +23,6 @@ public:
         balance_{0},
         weight_{1}
     {}
-
-    template<class Node>
-    static void activate(Node *node) {
-        OrdinalNodeActivation<
-            Node,
-            ConversionFromTo<
-                typename DerefPointerType<typename Node::Item>::DerefType *,
-                IndexTracking *
-            >::Exists
-        >::activate(node);
-    }
-
-    template<class Node>
-    static void deactivate(Node *node) {
-        OrdinalNodeActivation<
-            Node,
-            ConversionFromTo<
-                typename DerefPointerType<typename Node::Item>::DerefType *,
-                IndexTracking *
-            >::Exists
-        >::deactivate(node);
-    }
 
     void takeOver(const OrdinalNode *other)
     {
@@ -115,7 +53,7 @@ class OrdinalTree: public AvlTree<OrdinalNode>
 public:
     long count() const { return weight(); }
 
-    static long getIndexOf(OrdinalNode *k);
+    long getIndexOf(OrdinalNode *k) const;
 
 #ifndef NDEBUG
     bool testWeights() const { return testWeight(this->root_); }
@@ -157,11 +95,5 @@ private:
     mutable OrdinalNode *cachedNode_;
     mutable long cachedIndex_;
 };
-
-inline long IndexTracking::getIndex() const
-{
-    if (!node_) return -1;
-    return OrdinalTree::getIndexOf(node_);
-}
 
 } // namespace cc::bst

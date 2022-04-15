@@ -31,12 +31,12 @@ public:
         itemExtent_{extent},
         item_{item}
     {
-        activate(this);
+        IndexTracking<T>::setHandle(item_, this);
     }
 
     ~LayoutNode()
     {
-        deactivate(this);
+        IndexTracking<T>::setHandle(item_, nullptr);
     }
 
     static Extent treeExtent(const OrdinalNode *k)
@@ -90,11 +90,16 @@ class LayoutTree final: public OrdinalTree
 public:
     using Node = LayoutNode<Item, Extent>;
 
+    long getIndexOf(const Item &item) const
+    {
+        void *handle = IndexTracking<Item>::handle(item);
+        if (!handle) return -1;
+        return OrdinalTree::getIndexOf(static_cast<OrdinalNode *>(handle));
+    }
+
     void insertAt(long index, const Item &item, Extent extent);
     void updateAt(long index, const Item &item, Extent extent);
     void removeAt(long index, Out<Item> item = None{});
-
-    static int getIndexOf(void *handle) { return getIndexOf(reinterpret_cast<OrdinalNode *>(handle)); }
 
     Extent extent() const;
 

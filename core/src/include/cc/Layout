@@ -220,6 +220,20 @@ public:
         return Stop{node, itemPos};
     }
 
+    /** Get index of \a item (if \a Item supports IndexTracking)
+      */
+    long indexOf(const Item &item) const
+    {
+        return me().getIndexOf(item);
+    }
+
+    /** Remove \a item from the layout (if \a Item supports IndexTracking)
+      */
+    void remove(const Item &item)
+    {
+        removeAt(indexOf(item));
+    }
+
 private:
     friend void testLayout(const auto &layout);
 

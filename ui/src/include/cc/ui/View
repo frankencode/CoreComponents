@@ -19,6 +19,7 @@
 #include <cc/ui/Padding>
 #include <cc/Trigger>
 #include <cc/Map>
+#include <cc/IndexTracking>
 #include <limits>
 #include <cassert>
 
@@ -230,11 +231,11 @@ public:
 
     /** Get all children views
       */
-    const Set<View> children() const { return me().children_; }
+    const Set<View> &children() const { return me().children_; }
 
     /** Get visible children views
       */
-    const Set<View> visibleChildren() const { return me().visibleChildren_; }
+    const Set<View> &visibleChildren() const { return me().visibleChildren_; }
 
     /** %Map view coordinates \a l to window coordinates
       */
@@ -453,6 +454,7 @@ protected:
     friend class Control;
     friend class Flickable;
     friend class Painter;
+    friend class IndexTracking<View>;
 
     /** \brief Internal state
       */
@@ -594,6 +596,7 @@ protected:
         friend class View;
         friend class Application;
         friend class Window;
+        friend class IndexTracking<View>;
 
         Id nextId() const { return children_.count() == 0 ? 1 : children_.max().id() + 1; }
 
@@ -625,6 +628,7 @@ protected:
         Image image_;
         Layout layout_;
         Object context_;
+        void *trackingHandle_;
     };
 
     /** Initialize view
@@ -661,3 +665,14 @@ protected:
 };
 
 } // namespace cc::ui
+
+namespace cc {
+
+template<>
+class IndexTracking<ui::View> {
+public:
+    static void setHandle(ui::View &view, void *handle) { if (view) view->trackingHandle_ = handle; }
+    static void *handle(const ui::View &view) { return (view) ? view->trackingHandle_ : nullptr; }
+};
+
+} // namespace cc

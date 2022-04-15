@@ -10,7 +10,7 @@
 
 namespace cc::bst {
 
-long OrdinalTree::getIndexOf(OrdinalNode *k)
+long OrdinalTree::getIndexOf(OrdinalNode *k) const
 {
     long i = weight(k->left_);
     while (true) {
@@ -20,6 +20,7 @@ long OrdinalTree::getIndexOf(OrdinalNode *k)
             i += weight(kp->left_) + 1;
         k = kp;
     }
+    assert(k == root_);
     return i;
 }
 
