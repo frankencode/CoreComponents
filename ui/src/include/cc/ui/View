@@ -91,6 +91,7 @@ public:
     bool visible() const { return me().visible(); } ///< Get visible
     View &visible(bool newValue) { me().visible(newValue); return *this; } ///< %Set visible
     View &visible(Definition<bool> &&f) { me().visible(std::move(f)); return *this; } ///< Define visible
+    View &onVisibleChanged(Call<void()> &&f) { me().visible.onChanged(std::move(f)); return *this; } ///< \todo remove this method
 
     double opacity() const { return me().opacity(); } ///< Get opacity
     View &opacity(double newValue) { me().opacity(newValue); return *this; } ///< %Set opacity

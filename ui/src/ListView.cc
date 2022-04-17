@@ -22,7 +22,6 @@ class ListView::Carrier final: public View
         {
             itemVisibility([this]{
                 if (!hasParent()) return;
-                if (children_.count() == 0) return;
 
                 if (height() <= parent().height()) {
                     for (auto stop: layout_()) {

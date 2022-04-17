@@ -8,10 +8,12 @@ template class Layout<None, double>;
 
 void testLayout(const auto &layout)
 {
+    #ifndef NDEBUG
     CC_VERIFY(layout->testStructure());
     CC_VERIFY(layout->testIteration());
     CC_VERIFY(layout->testBalance());
     CC_VERIFY(layout->testWeights());
+    #endif
 }
 
 } // namespace cc
