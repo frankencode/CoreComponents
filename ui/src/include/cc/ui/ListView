@@ -15,6 +15,7 @@ namespace cc::ui {
 /** \class ListView qh/ui/ListView
   * \ingroup ui
   * \brief List view
+  * A ListView shows a vertically scollable list of items of various dimensions.
   */
 class ListView final: public Flickable
 {
@@ -23,9 +24,21 @@ public:
       */
     ListView();
 
+    /** Create a new list view
+      */
+    explicit ListView(Out<ListView> self);
+
+    /** Create a new list view of size (\a width, \a height)
+      */
+    ListView(double width, double height);
+
 private:
-    struct State;
     class Carrier;
+
+    struct State;
+
+    State &me();
+    const State &me() const;
 };
 
 } // namespace cc::ui

@@ -42,7 +42,7 @@ class ListMenu::Carrier final: public View
                     }
                 }
                 else {
-                    const double y0 = -pos().y();
+                    const double y0 = -y();
                     const double y1 = y0 + parent().height();
                     long i0 = std::floor((y0 - ls) / hi);
                     long i1 = std::ceil ((y1 - ls) / hi);
@@ -133,7 +133,7 @@ ListMenu::ListMenu(Out<ListMenu> self):
 }
 
 ListMenu::ListMenu(double width, double height):
-    ListMenu{}
+    Flickable{new State}
 {
     size(width, height);
 }

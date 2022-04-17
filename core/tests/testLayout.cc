@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
 
             CC_CHECK(layout.count() == 5);
 
+
             {
                 for (long i = 0; i < layout.count(); ++i) {
                     auto stop = layout[i];
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
             }
 
             {
-                for (auto stop: layout.view(3, 10)) {
+                for (auto stop: layout(3, 10)) {
                     fout()
                         << stop.item() << " (" << stop.extent() << "): "
                         << stop.pos() << ".." << stop.pos() + stop.extent() - 1 << nl;
@@ -55,7 +56,6 @@ int main(int argc, char *argv[])
         }
     };
 
-    #if 0
     TestCase {
         "LayoutTreeTest",
         []{
@@ -70,7 +70,6 @@ int main(int argc, char *argv[])
             }
         }
     };
-    #endif
 
     return TestSuite{argc, argv}.run();
 }

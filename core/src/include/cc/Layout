@@ -17,7 +17,8 @@
 
 namespace cc {
 
-/** \class Layout cc/Layout
+/** \internal
+  * \class Layout cc/Layout
   * \ingroup container
   * \brief Layout data container
   * \tparam T Item type
@@ -128,21 +129,6 @@ public:
       */
     Access operator[](long index) const { return at(index); }
 
-    using iterator = ArrayIterator<Layout>; ///< \internal Value Iterator
-    using const_iterator = ArrayIterator<const Layout>; ///< \internal Readonly value iterator
-    using value_type = Item; ///< \internal Item value type
-    using size_type = long; ///< \internal Type of the container capacity
-
-    /** \name Standard iterators
-      * @{
-      */
-    iterator begin() { return iterator{*this, 0}; } ///< %Return iterator pointing to the first item (if any)
-    iterator end() { return iterator{*this, count()}; } ///< %Return iterator pointing behind the last item
-
-    const_iterator begin() const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
-    const_iterator end() const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
-    /** @} */
-
     /** \brief Layout stop (item access with precomputed layout position)
       */
     class Stop: public Access
@@ -173,7 +159,16 @@ public:
     public:
         using Item = Stop;
 
-        /** Create a new view source for \a layout in range [\a pos0, \a pos1)
+        /** Create a new view range for all stops of \a layout
+          */
+        explicit Range(const Layout &layout):
+            layout_{layout},
+            i_{0},
+            i1_{layout.count()},
+            y_{0}
+        {}
+
+        /** Create a new view range for \a layout in range [\a pos0, \a pos1)
           */
         Range(const Layout &layout, Extent pos0, Extent pos1):
             layout_{layout}
@@ -209,7 +204,11 @@ public:
 
     /** Get a iterateable source for reading all layout stops in layout range [\a pos0, \a pos1)
       */
-    Range view(Extent pos0, Extent pos1) const { return Range{*this, pos0, pos1}; }
+    Range operator()(Extent pos0, Extent pos1) const { return Range{*this, pos0, pos1}; }
+
+    /** Get a iterateable source for reading all layout stops
+      */
+    Range operator()() const { return Range{*this}; }
 
     /** Find the item covering layout position \a target
       */

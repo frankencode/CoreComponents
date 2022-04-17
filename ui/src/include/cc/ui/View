@@ -191,7 +191,7 @@ public:
 
     /** Number of children
       */
-    int childrenCount() const { return me().childrenCount(); }
+    long childrenCount() const { return me().childrenCount(); }
 
     /** Check if there are any children
       */
@@ -348,6 +348,14 @@ public:
 
     View &layout(const Layout &newValue) { me().layout(newValue); return *this; } ///< %Set layout
 
+    /** Attach a non-visual object (e.g. a Monitor)
+      */
+    void attach(const Object &other) { me().attachments_.insert(other); }
+
+    /** Detach a non-visual object
+      */
+    void detach(const Object &other) { me().attachments_.remove(other); }
+
     ///@}
 
     /** \name Positional Anchors
@@ -475,7 +483,7 @@ protected:
         Property<double> angle { 0 }; ///< %Rotation angle
         Property<double> scale { 1 }; ///< %Zoom factor
 
-        Property<int> childrenCount { 0 }; ///< %Number of children
+        Property<long> childrenCount { 0 }; ///< %Number of children
 
         Property<View> decoration;
 
@@ -624,11 +632,12 @@ protected:
 
         Set<View> children_;
         Set<View> visibleChildren_;
+        Set<Object> attachments_;
 
         Image image_;
         Layout layout_;
         Object context_;
-        void *trackingHandle_;
+        void *trackingHandle_ { nullptr };
     };
 
     /** Initialize view

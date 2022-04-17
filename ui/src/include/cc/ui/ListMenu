@@ -16,7 +16,7 @@ namespace cc::ui {
 /** \class ListMenu cc/ui/ListMenu
   * \ingroup ui
   * \brief %List menu
-  * A ListMenu shows a veritcal scollable list of items which are all of the same width and height.
+  * A ListMenu shows a vertically scollable list of items which are all of the same size.
   */
 class ListMenu final: public Flickable
 {
