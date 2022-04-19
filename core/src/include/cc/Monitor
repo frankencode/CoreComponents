@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/Property>
+
+namespace cc {
+
+/** \class Monitor cc/Monitor
+  * \ingroup misc
+  * \brief Object with a single void property definition
+  */
+class Monitor final: public Object
+{
+public:
+    explicit Monitor(std::function<void()> &&f):
+        Object{new State{std::move(f)}}
+    {}
+
+private:
+    struct State final: public Object::State
+    {
+        State(std::function<void()> &&f)
+        {
+            p_(std::move(f));
+        }
+
+        Property<void> p_;
+    };
+};
+
+class OnEndOfLife final: public Object
+{
+public:
+    OnEndOfLife(std::function<void()> &&f):
+        Object{new State{std::move(f)}}
+    {}
+
+private:
+    struct State final: public Object::State
+    {
+        State(std::function<void()> &&f):
+            f_{std::move(f)}
+        {}
+
+        ~State()
+        {
+            f_();
+        }
+
+        std::function<void()> f_;
+    };
+};
+
+} // namespace cc

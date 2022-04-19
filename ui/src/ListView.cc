@@ -14,6 +14,7 @@ namespace cc::ui {
 
 class ListView::Carrier final: public View
 {
+    friend class Object;
     friend class ListView;
 
     struct State final: public View::State
@@ -31,12 +32,13 @@ class ListView::Carrier final: public View
                     }
                 }
                 else {
-                    const double y0 = -y();
+                    const double ls = leadSpace();
+                    const double y0 = -y() - ls;
                     const double y1 = y0 + parent().height();
 
                     for (auto stop: layout_(y0, y1)) {
                         View &child = stop.item();
-                        child.pos(Point{0, stop.pos()});
+                        child.pos(Point{0, ls + stop.pos()});
                         child.visible(true);
                     }
                     for (long i = 0; i < visibleChildren_.count();) {
@@ -62,17 +64,16 @@ class ListView::Carrier final: public View
                                 stop.setExtent(view.height());
                             }
                         }
-                        // TODO... logic for smartly moving the carrier (keep view at end or first item in view, etc.)
                         layoutExtent(layout_.extent());
                     });
                 }
-                return Size{parent().width(), layoutExtent()};
+                return Size{parent().width(), leadSpace() + layoutExtent() + tailSpace()};
             });
         }
 
         void insertChild(View child) override
         {
-            child.pos(Point{0, layout_.extent()});
+            child.pos(Point{0, leadSpace() + layout_.extent()});
             child.size(Size{width(), child.height()});
             View::State::insertChild(child);
             layout_.pushBack(child, child.height());
@@ -88,6 +89,8 @@ class ListView::Carrier final: public View
 
         Property<void> itemVisibility;
         Property<double> layoutExtent;
+        Property<double> leadSpace;
+        Property<double> tailSpace;
         cc::Layout<View, double> layout_;
     };
 
@@ -103,7 +106,20 @@ struct ListView::State final: public Flickable::State
 {
     State():
         Flickable::State{Carrier{}}
-    {}
+    {
+        Carrier carrier = Flickable::State::carrier().as<Carrier>();
+
+        carrier.me().leadSpace([this]{
+            return header() ? header().height() : gu(2);
+        });
+
+        carrier.me().tailSpace([this]{
+            return footer() ? footer().height() : gu(2);
+        });
+    }
+
+    Property<View> header;
+    Property<View> footer;
 };
 
 ListView::ListView():
@@ -120,6 +136,46 @@ ListView::ListView(double width, double height):
     Flickable{new State}
 {
     size(width, height);
+}
+
+View ListView::header() const
+{
+    return me().header();
+}
+
+ListView &ListView::header(const View &newValue)
+{
+    if (me().header()) remove(me().header());
+    me().header(newValue);
+    me().View::State::insertChild(me().header());
+    me().header().pos([this]{ return carrier().pos(); });
+    me().header().visible([this]{ return header().height() >= -carrier().pos()[1]; });
+    return *this;
+}
+
+View ListView::footer() const
+{
+    return me().footer();
+}
+
+ListView &ListView::footer(const View &newValue)
+{
+    if (me().footer()) remove(me().footer());
+    me().footer(newValue);
+    me().View::State::insertChild(me().footer());
+    me().footer().pos([this]{ return carrier().pos() + Point{0, carrier().height() - footer().height()}; });
+    me().footer().visible([this]{ return footer().pos()[1] < height(); });
+    return *this;
+}
+
+ListView::State &ListView::me()
+{
+    return Object::me.as<State>();
+}
+
+const ListView::State &ListView::me() const
+{
+    return Object::me.as<State>();
 }
 
 } // namespace cc::ui

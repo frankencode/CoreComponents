@@ -19,13 +19,25 @@ namespace cc {
 class Singleton: public Object
 {
 protected:
+    template<class T>
+    static Handle<T> &handle()
+    {
+        static Handle<T> handle_ { new T };
+        return handle_;
+    }
+
+    template<class T>
+    static void destroy()
+    {
+        handle<T>() = Handle<T>{};
+    }
+
     /** Get access to the singleton instance
       */
     template<class T>
     static T *instance()
     {
-        static Handle<T> handle { new T };
-        return &handle();
+        return &handle<T>()();
     }
 
     /** Create a null singleton

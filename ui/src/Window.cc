@@ -51,6 +51,11 @@ Window::State::State(View view):
     });
 }
 
+Window::State::~State()
+{
+    if (view_) view_.detachAll();
+}
+
 void Window::State::addToFrame(const UpdateRequest &request)
 {
     if (nextFrame_.count() > 0) {

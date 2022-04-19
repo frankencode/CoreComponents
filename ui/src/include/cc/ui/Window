@@ -96,6 +96,7 @@ protected:
     struct State: public Object::State
     {
         State(View view);
+        ~State();
 
         virtual void show(int display) = 0;
         virtual void hide() = 0;

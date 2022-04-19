@@ -32,6 +32,12 @@ public:
       */
     ListView(double width, double height);
 
+    View header() const; ///< Get the header
+    ListView &header(const View &newValue); ///< %Set the header
+
+    View footer() const; ///< Get the footer
+    ListView &footer(const View &newValue); ///< %Set the footer
+
 private:
     class Carrier;
 

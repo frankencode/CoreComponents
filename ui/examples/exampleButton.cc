@@ -19,7 +19,7 @@ int main()
         )
     }.show();
 
-    Monitor monitor {[button]{
+    Property<void> debug {[button]{
         CC_INSPECT(button.height());
     }};
 

@@ -44,7 +44,7 @@ int main()
     window.title([=]{ return str(view.size()); });
     window.show();
 
-    Monitor monitorGeometry{[=]{ CC_DEBUG << "pos = " << window.pos() << ", size = " << view.size() << ", isHandheld() = " << view.isHandheld(); }};
+    Property<void> debug {[=]{ CC_DEBUG << "pos = " << window.pos() << ", size = " << view.size() << ", isHandheld() = " << view.isHandheld(); }};
 
     view.onMouseMoved([=](auto event){ CC_DEBUG << event.pos(); return true; });
 

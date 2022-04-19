@@ -15,7 +15,7 @@ namespace cc::ui {
 
 class SdlWindow;
 
-class SdlApplication: public Application
+class SdlApplication final: public Application
 {
 public:
     SdlApplication();

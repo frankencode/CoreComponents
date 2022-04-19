@@ -20,6 +20,7 @@
 #include <cc/Trigger>
 #include <cc/Map>
 #include <cc/IndexTracking>
+#include <cc/Monitor>
 #include <limits>
 #include <cassert>
 
@@ -349,14 +350,6 @@ public:
 
     View &layout(const Layout &newValue) { me().layout(newValue); return *this; } ///< %Set layout
 
-    /** Attach a non-visual object (e.g. a Monitor)
-      */
-    void attach(const Object &other) { me().attachments_.insert(other); }
-
-    /** Detach a non-visual object
-      */
-    void detach(const Object &other) { me().attachments_.remove(other); }
-
     ///@}
 
     /** \name Positional Anchors
@@ -452,6 +445,24 @@ public:
     /** %Handle key released event
       */
     View &onKeyReleased(Filter<KeyEvent> &&f) { me().onKeyReleased(std::move(f)); return *this; }
+
+    /** Get notified when the View's lifetime ends
+      */
+    View &onEndOfLife(Call<void()> &&f) { return attach(OnEndOfLife{std::move(f)}); }
+
+    ///@}
+
+    /** \name Triggers and Events
+      */
+    ///@{
+
+    /** Attach a non-visual object (e.g. a Monitor)
+      */
+    View &attach(const Object &other) { me().attachments_.append(other); return *this; }
+
+    /** Convenience method for attaching a monitor
+      */
+    View &attach(Call<void()> &&f) { return attach(Monitor{std::move(f)}); }
 
     ///@}
 
@@ -633,7 +644,7 @@ protected:
 
         Set<View> children_;
         Set<View> visibleChildren_;
-        Set<Object> attachments_;
+        List<Object> attachments_;
 
         Image image_;
         Layout layout_;
@@ -649,13 +660,11 @@ protected:
 
     using CreateState = State *();
 
-    static State *createState() { return new State; }
-
     template<class T>
     static View::State *onDemand() { return new T; }
 
-    CreateState *onDemand_ { &createState };
-
+    /** Initialize view
+      */
     explicit View(CreateState onDemand):
         onDemand_{onDemand}
     {}
@@ -668,6 +677,20 @@ protected:
     const State &me() const {
         if (!Object::me) Object::me = onDemand_();
         return Object::me.as<State>();
+    }
+
+private:
+    static State *createState() { return new State; }
+
+    CreateState *onDemand_ { &createState };
+
+    /** \internal
+      * Detach all non-visual objects
+      */
+    void detachAll()
+    {
+        for (const View &child: me().children_) const_cast<View &>(child).detachAll();
+        me().attachments_.deplete();
     }
 
     State *operator->() { return &me(); }

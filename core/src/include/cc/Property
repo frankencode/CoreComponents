@@ -379,10 +379,6 @@ private:
     Handle<State> me;
 };
 
-/** Convenience alias
-  */
-using Monitor = Property<void>;
-
 template<class T>
 class PropertyMutator {
 protected:

@@ -105,8 +105,8 @@ struct SliderField::State: public View::State
     Property<View> trailing;
     Slider slider_;
     NumberCell cell_;
-    Monitor sliderFeed;
-    Monitor cellFeed;
+    Property<void> sliderFeed;
+    Property<void> cellFeed;
 };
 
 SliderField::SliderField():

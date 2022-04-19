@@ -53,8 +53,8 @@ private:
         void renderCascade(SDL_Renderer *sdlRenderer, View &view);
         void renderTexture(SDL_Renderer *sdlRenderer, const View &view);
 
-        Monitor minSizeMonitor;
-        Monitor maxSizeMonitor;
+        Property<void> minSizeMonitor;
+        Property<void> maxSizeMonitor;
 
         bool exposed_ { false };
         bool primordial_ { true };

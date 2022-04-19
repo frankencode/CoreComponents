@@ -196,7 +196,7 @@ struct Slider::State: public InputControl::State
     Property<double> inactiveTrackRadius;
     Property<Point> thumbCenter;
 
-    Monitor outputValueMonitor;
+    Property<void> outputValueMonitor;
 
     DragArea dragArea_;
     View thumb_;

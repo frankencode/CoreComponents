@@ -148,7 +148,8 @@ ListMenu &ListMenu::header(const View &newValue)
     if (me().header()) remove(me().header());
     me().header(newValue);
     me().View::State::insertChild(me().header());
-    me().header().pos([this]{ return me().carrier().pos(); });
+    me().header().pos([this]{ return carrier().pos(); });
+    me().header().visible([this]{ return header().height() >= -carrier().pos()[1]; });
     return *this;
 }
 
@@ -162,7 +163,8 @@ ListMenu &ListMenu::footer(const View &newValue)
     if (me().footer()) remove(me().footer());
     me().footer(newValue);
     me().View::State::insertChild(me().footer());
-    me().footer().pos([this]{ return me().carrier().pos() + Point{0, me().carrier().height() - me().footer().height()}; });
+    me().footer().pos([this]{ return carrier().pos() + Point{0, carrier().height() - footer().height()}; });
+    me().footer().visible([this]{ return footer().pos()[1] < height(); });
     return *this;
 }
 

@@ -16,13 +16,22 @@ int main()
 
     for (int i = 0; i < 32; ++i)
     {
+        ListItem item;
         menu.add(
-            ListItem{}
+            ListItem{&item}
             .icon(Picture{Ideographic::AccessPoint, 28})
             .text(Format{"Access point %%"} << i)
-            .onClicked([=]{
+            .onClicked([i]{
                 CC_INSPECT(i);
             })
+            #if 0
+            .attach([i,item]{
+                ferr() << i << ": " << (item.visible() ? "show" : "hide") << nl;
+            })
+            .onEndOfLife([i]{
+                ferr() << i << ": EOL" << nl;
+            })
+            #endif
         );
     }
 

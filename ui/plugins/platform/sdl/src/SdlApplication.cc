@@ -108,6 +108,8 @@ struct SdlApplication::State: public Application::State
             if (!SDL_WaitEvent(&event))
                 throw SdlPlatformError{};
 
+            // CC_INSPECT(event.type);
+
             if (event.type == timerEvent_) {
                 Timer *p = reinterpret_cast<Timer *>(&event.user.data1);
                 notifyTimer(*p);
@@ -172,6 +174,8 @@ struct SdlApplication::State: public Application::State
                 SdlWindow{pair.value()}.me().commitFrame();
         }
         while (event.type != SDL_QUIT);
+
+        Singleton::destroy<State>();
 
         return 0;
     }
