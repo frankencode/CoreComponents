@@ -16,11 +16,13 @@ namespace cc::ui {
 /** \class Text cc/ui/Text
   * \ingroup ui
   * \brief %Descriptive text displays
-  * \see Label
+  * \see Label, TextView
   *
-  * A text view show descriptive texts, which might span over multiple lines.
-  * The text() property supports basic HTML tags (&lt;b&gt;, &lt;i&gt;, &lt;u&gt; and &lt;strike&gt;).
+  * A text view shows descriptive texts, which might be wrapped into multiple lines.
   * When maxWidth() is set the text will be automatically wrapped if necessary.
+  * \todo create a specialized HtmlText
+  * \internal
+  * The text() property supports basic HTML tags (&lt;b&gt;, &lt;i&gt;, &lt;u&gt; and &lt;strike&gt;).
   */
 class Text final: public View
 {
@@ -35,10 +37,17 @@ public:
     explicit Text(Out<Text> self);
 
     /** Create a new text
-      * \param text %Text text
+      * \param text Initial text
       * \param self %Reference to newly created object
       */
     explicit Text(const String &text, Out<Text> self = None{});
+
+    /** Create a new text
+      * \param text Initial text
+      * \param font Initial font
+      * \param self %Reference to newly created object
+      */
+    explicit Text(const String &text, Font font, Out<Text> self = None{});
 
     String text() const; ///< Get text
     Text &text(const String &newValue); ///< %Set text

@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/ListView>
+
+namespace cc::ui {
+
+/** \class TextView qh/ui/TextView
+  * \ingroup ui
+  * \brief Text view
+  * A TextView shows a vertically scollable text.
+  */
+class TextView final: public ListView
+{
+public:
+    /** Create a primordial text view
+      */
+    TextView();
+
+    /** Create a new text view
+      */
+    explicit TextView(Out<TextView> self);
+
+    /** Create a new text view of size (\a width, \a height)
+      */
+    TextView(double width, double height);
+
+    /** Create a new text view
+      * \param text %Text text
+      * \param self %Reference to newly created object
+      */
+    explicit TextView(const String &text, Out<TextView> self = None{});
+
+    String text() const; ///< Get text
+    TextView &text(const String &newValue); ///< %Set text
+    TextView &text(Definition<String> &&f); ///< Define text
+
+    Font font() const; ///< Get font
+    TextView &font(Font newValue); ///< %Set font
+    TextView &font(Definition<Font> &&f); ///< Define font
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::ui

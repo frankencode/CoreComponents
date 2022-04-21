@@ -14,21 +14,26 @@ namespace cc::ui {
 
 struct Text::State: public View::State
 {
-    State(const String &initialText = String{}):
-       text{initialText}
+    State(const String &initialText = String{}, Font initialFont = Font{}):
+       text{initialText},
+       font{initialFont}
     {
-        font([this]{ return style().defaultFont(); });
+        if (!initialFont) font([this]{ return style().defaultFont(); });
         paper([this]{ return basePaper(); });
 
         textRun([this]{
-            return TextRun::fromHtml(text(), font());
+            return TextRun{text, font()};
+            // return TextRun::fromHtml(text(), font());
         });
 
         wrappedRun([this]{
             TextRun run = textRun();
+            #if 0
             double maxLineWidth = size()[0];
             if (0 < maxWidth() && maxWidth() < maxLineWidth) maxLineWidth = maxWidth();
             maxLineWidth -=  2 * margin()[0];
+            #endif
+            double maxLineWidth = maxWidth() - 2 * margin()[0];
             if (0 < maxLineWidth && maxLineWidth < run.size()[0]) {
                 run = run.wrap(maxLineWidth, textAlign());
             }
@@ -99,6 +104,12 @@ Text::Text(Out<Text> self):
 
 Text::Text(const String &text, Out<Text> self):
     View{new State{text}}
+{
+    self = *this;
+}
+
+Text::Text(const String &text, Font font, Out<Text> self):
+    View{new State{text, font}}
 {
     self = *this;
 }

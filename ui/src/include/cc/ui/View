@@ -157,7 +157,9 @@ public:
     const char *objectName() const { return me().objectName_; } ///< Get the object name (for debugging)
     View &objectName(const char *name) { me().objectName_ = name; return *this; } ///< %Set the object name
 
+    bool hasWindow() const { return me().hasWindow(); } ///< Check if this view is already shown in a window
     Window window() const; ///< Get the window this view is shown in
+
     bool isHandheld() const { return me().isHandheld(); } ///< Get window().display().isHandheld()
 
     ///@}
@@ -222,6 +224,10 @@ public:
         me().removeChild(child);
         return *this;
     }
+
+    /** Remove all children
+      */
+    void deplete() { me().deplete(); }
 
     /** Make this view be visible above any other visible sibling
       */
@@ -529,8 +535,16 @@ protected:
 
         View parent() const { return Object::alias<View>(parent_()); } ///< Get the parent
 
-        const Set<View> children() const { return children_; } ///< Get set of all children
-        const Set<View> visibleChildren() const { return visibleChildren_; } ///< Get set of visible children
+        const Set<View> &children() const { return children_; } ///< Get set of all children
+        const Set<View> &visibleChildren() const { return visibleChildren_; } ///< Get set of visible children
+
+        /** Remove all children
+          */
+        void deplete()
+        {
+            visibleChildren_.deplete();
+            children_.deplete();
+        }
 
         double x() const { return pos()[0]; } ///< Get pos().x()
         double y() const { return pos()[1]; } ///< Get pos().y()
@@ -603,6 +617,7 @@ protected:
         void image(const Image &newValue) { image_ = newValue; } ///< %Set painting target
 
         View self() const; ///< Get a view from this state
+        bool hasWindow() const { return window_(); } /// \copydoc View::hasWindow()
         Window window() const; ///< \copydoc View::window()
 
         bool isHandheld() const; ///< \copydoc View::isHandheld()

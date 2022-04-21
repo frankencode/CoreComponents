@@ -15,9 +15,9 @@ namespace cc::ui {
 /** \class ListView qh/ui/ListView
   * \ingroup ui
   * \brief List view
-  * A ListView shows a vertically scollable list of items of various dimensions.
+  * A ListView shows a vertically scrollable list of items of various dimensions.
   */
-class ListView final: public Flickable
+class ListView: public Flickable
 {
 public:
     /** Create a primordial list view
@@ -38,10 +38,28 @@ public:
     View footer() const; ///< Get the footer
     ListView &footer(const View &newValue); ///< %Set the footer
 
-private:
+    void deplete(); ///< Remove all children (list items)
+
+protected:
     class Carrier;
 
-    struct State;
+    struct State: public Flickable::State
+    {
+        State();
+
+        void deplete();
+
+        Property<View> header;
+        Property<View> footer;
+    };
+
+    explicit ListView(State *newState):
+        Flickable{newState}
+    {}
+
+    explicit ListView(CreateState onDemand):
+        Flickable{onDemand}
+    {}
 
     State &me();
     const State &me() const;

@@ -64,7 +64,7 @@ public:
     {
         if (itemExtent_ == newValue) return;
         Extent delta = newValue - itemExtent_;
-        for (OrdinalNode *k = parent_; k; k = k->parent_) {
+        for (OrdinalNode *k = this; k; k = k->parent_) {
             static_cast<LayoutNode *>(k)->treeExtent_ += delta;
         }
         itemExtent_ = newValue;

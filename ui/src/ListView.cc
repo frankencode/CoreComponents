@@ -41,15 +41,17 @@ class ListView::Carrier final: public View
                         child.pos(Point{0, ls + stop.pos()});
                         child.visible(true);
                     }
+
                     for (long i = 0; i < visibleChildren_.count();) {
                         const View &child = visibleChildren_.at(i);
                         auto stop = layout_.at(layout_.indexOf(child));
-                        if (child.y() + stop.extent() < y0 || y1 <= stop.pos())
-                            visibleChildren_.modifyAt(i, [](View &child){
-                                child.visible(false);
-                            });
-                        else
+                        const double yc = stop.pos();
+                        if (yc + stop.extent() < y0 || y1 <= yc) {
+                            const_cast<View &>(child).visible(false);
+                        }
+                        else {
                             ++i;
+                        }
                     }
                 }
             });
@@ -67,6 +69,7 @@ class ListView::Carrier final: public View
                         layoutExtent(layout_.extent());
                     });
                 }
+
                 return Size{parent().width(), leadSpace() + layoutExtent() + tailSpace()};
             });
         }
@@ -74,7 +77,6 @@ class ListView::Carrier final: public View
         void insertChild(View child) override
         {
             child.pos(Point{0, leadSpace() + layout_.extent()});
-            child.size(Size{width(), child.height()});
             View::State::insertChild(child);
             layout_.pushBack(child, child.height());
             layoutExtent(layout_.extent());
@@ -85,6 +87,14 @@ class ListView::Carrier final: public View
             layout_.remove(child);
             View::State::removeChild(child);
             layoutExtent(layout_.extent());
+        }
+
+        void deplete()
+        {
+            if (layout_.count() == 0) return;
+
+            layout_ = cc::Layout<View, double>{};
+            View::State::deplete();
         }
 
         Property<void> itemVisibility;
@@ -100,27 +110,28 @@ class ListView::Carrier final: public View
 
     State &me() { return View::me().as<State>(); }
     const State &me() const { return View::me().as<State>(); }
+
+    State *operator->() { return &me(); }
 };
 
-struct ListView::State final: public Flickable::State
+ListView::State::State():
+    Flickable::State{Carrier{}}
 {
-    State():
-        Flickable::State{Carrier{}}
-    {
-        Carrier carrier = Flickable::State::carrier().as<Carrier>();
+    Carrier carrier = Flickable::State::carrier().as<Carrier>();
 
-        carrier.me().leadSpace([this]{
-            return header() ? header().height() : gu(2);
-        });
+    carrier.me().leadSpace([this]{
+        return header() ? header().height() : gu(2);
+    });
 
-        carrier.me().tailSpace([this]{
-            return footer() ? footer().height() : gu(2);
-        });
-    }
+    carrier.me().tailSpace([this]{
+        return footer() ? footer().height() : gu(2);
+    });
+}
 
-    Property<View> header;
-    Property<View> footer;
-};
+void ListView::State::deplete()
+{
+    carrier().as<Carrier>()->deplete();
+}
 
 ListView::ListView():
     Flickable{onDemand<State>}
@@ -166,6 +177,11 @@ ListView &ListView::footer(const View &newValue)
     me().footer().pos([this]{ return carrier().pos() + Point{0, carrier().height() - footer().height()}; });
     me().footer().visible([this]{ return footer().pos()[1] < height(); });
     return *this;
+}
+
+void ListView::deplete()
+{
+    me().deplete();
 }
 
 ListView::State &ListView::me()
