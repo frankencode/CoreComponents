@@ -6,91 +6,9 @@
  *
  */
 
-#include <cc/ui/Text>
-#include <cc/ui/TextRun>
-#include <cc/ui/FontMetrics>
+#include <cc/ui/TextState>
 
 namespace cc::ui {
-
-struct Text::State: public View::State
-{
-    State(const String &initialText = String{}, Font initialFont = Font{}):
-       text{initialText},
-       font{initialFont}
-    {
-        if (!initialFont) font([this]{ return style().defaultFont(); });
-        paper([this]{ return basePaper(); });
-
-        textRun([this]{
-            return TextRun{text, font()};
-            // return TextRun::fromHtml(text(), font());
-        });
-
-        wrappedRun([this]{
-            TextRun run = textRun();
-            #if 0
-            double maxLineWidth = size()[0];
-            if (0 < maxWidth() && maxWidth() < maxLineWidth) maxLineWidth = maxWidth();
-            maxLineWidth -=  2 * margin()[0];
-            #endif
-            double maxLineWidth = maxWidth() - 2 * margin()[0];
-            if (0 < maxLineWidth && maxLineWidth < run.size()[0]) {
-                run = run.wrap(maxLineWidth, textAlign());
-            }
-            return run;
-        });
-
-        size([this]{ return preferredSize(); });
-
-        if (font().color())
-            color(font().color());
-        else
-            color([this]{ return theme().primaryTextColor(); });
-
-        textPos([this]{
-            if (textAlign() == TextAlign::Left || textAlign() == TextAlign::Justify)
-                return margin() + Point{0, metrics().ascender()};
-            else if (textAlign() == TextAlign::Right)
-                return Point{width() - margin()[0], margin()[1]} - wrappedRun().size()[0] + Point{0, metrics().ascender()};
-            else
-                return (size() - wrappedRun().size()) / 2 + Point{0, metrics().ascender()};
-        });
-
-        metrics([this]{ return FontMetrics{font()}; });
-
-        paint([this]{
-            Painter p{this};
-            p.setPen(color());
-            p.showTextRun(textPos().round(), wrappedRun());
-        });
-    }
-
-    Size preferredSize() const override
-    {
-        return (0 < maxWidth() ? wrappedRun().size() : textRun().size()) + 2 * margin();
-    }
-
-    Size minSize() const override
-    {
-        return Size{0, wrappedRun().size()[1]} + 2 * margin();
-    }
-
-    void baselineStart(Definition<Point> &&a)
-    {
-        pos([this, a]{ return a() - textPos(); });
-    }
-
-    Property<String> text;
-    Property<Font> font;
-    Property<Color> color;
-    Property<Size> margin;
-    Property<double> maxWidth;
-    Property<TextAlign> textAlign { TextAlign::Left };
-    Property<Point> textPos;
-    Property<FontMetrics> metrics;
-    Property<TextRun> textRun;
-    Property<TextRun> wrappedRun;
-};
 
 Text::Text():
     View{onDemand<State>}
@@ -113,6 +31,20 @@ Text::Text(const String &text, Font font, Out<Text> self):
 {
     self = *this;
 }
+
+Text::Text(const String &text, Font font, bool html, Out<Text> self):
+    View{new State{text, font, html}}
+{
+    self = *this;
+}
+
+Text::Text(State *newState):
+    View{newState}
+{}
+
+Text::Text(CreateState onDemand):
+    View{onDemand}
+{}
 
 String Text::text() const
 {
@@ -237,4 +169,4 @@ const Text::State &Text::me() const
     return Object::me.as<State>();
 }
 
-}
+} // namespace cc::ui

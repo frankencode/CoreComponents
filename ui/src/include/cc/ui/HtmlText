@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ui/Text>
+
+namespace cc::ui {
+
+/** \class HtmlText cc/ui/HtmlText
+  * \ingroup ui
+  * \brief %Descriptive text displays
+  * \see HtmlText, Label, TextView
+  *
+  * A HtmlText shows descriptive texts, which might be wrapped into multiple lines.
+  * When maxWidth() is set the text will be automatically wrapped if necessary.
+  * The text() property supports basic HTML tags (&lt;b&gt;, &lt;i&gt;, &lt;u&gt; and &lt;strike&gt;).
+  */
+class HtmlText final: public Text
+{
+public:
+    /** Create a primordial HTML text
+      */
+    HtmlText();
+
+    /** Create a new text
+      * \param self %Reference to newly created object
+      */
+    explicit HtmlText(Out<Text> self);
+
+    /** Create a new HTML text
+      * \param text Initial text
+      * \param self %Reference to newly created object
+      */
+    explicit HtmlText(const String &text, Out<Text> self = None{});
+
+    /** Create a new HTML text
+      * \param text Initial text
+      * \param font Initial font
+      * \param self %Reference to newly created object
+      */
+    explicit HtmlText(const String &text, Font font, Out<Text> self = None{});
+
+private:
+    struct State;
+};
+
+} // namespace cc::ui
