@@ -13,7 +13,7 @@ namespace cc::ui {
 
 void ColumnLayout::State::updateLayout()
 {
-    if (!hasView() || !view().window()) return;
+    if (!hasView() || !view().hasWindow()) return;
 
     view().childrenCount();
 

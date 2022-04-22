@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/Carrier>
+#include <cc/ui/Pane>
 
 namespace cc::ui {
 
-Size Carrier::State::preferredSize() const
+Size Pane::State::preferredSize() const
 {
     return hasParent() ? parent().size() : View::State::preferredSize();
 }

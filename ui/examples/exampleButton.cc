@@ -16,12 +16,11 @@ int main()
             .icon(Ideographic::Face, sp(28))
             .text("Press me!")
             .centerInParent()
+            .attach([button]{
+                CC_INSPECT(button.height());
+            })
         )
     }.show();
-
-    Property<void> debug {[button]{
-        CC_INSPECT(button.height());
-    }};
 
     return Application{}.run();
 }

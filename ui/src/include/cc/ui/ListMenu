@@ -40,7 +40,8 @@ public:
     ListMenu &footer(const View &newValue); ///< %Set the footer
 
 private:
-    class Carrier;
+    class Object;
+    class Pane;
 
     struct State;
 

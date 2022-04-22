@@ -12,7 +12,8 @@
 
 namespace cc::ui {
 
-/** \class ManagedColumnLayout cc/ui/ManagedColumnLayout
+/** \internal
+  * \class ManagedColumnLayout cc/ui/ManagedColumnLayout
   * \ingroup ui_layout
   * \brief Layout children views in a column and smartly adjust sizes as needed
   * \see ColumnLayout

@@ -24,4 +24,9 @@ SdlTimeMaster::SdlTimeMaster():
     TimeMaster{instance<State>()}
 {}
 
+void SdlTimeMaster::shutdown()
+{
+    Singleton::destroy<State>();
+}
+
 } // namespace cc::ui

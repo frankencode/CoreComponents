@@ -15,25 +15,25 @@ int main()
         View{}
         .centerInParent()
         .paper(0xD0D0FF)
+        .layout(
+            ManagedColumnLayout{}
+            .spacing(gap)
+            .margin(gap)
+        )
         .add(Text{"• Item 1"})
         .add(Text{"• Item 2"})
         .add(Text{"• Item 3"})
         .add(
             View{}
             .paper(0xD0FFD0)
-            .add(Text{"◦ Item A B C"})
-            .add(Text{"◦ Item B D E"})
-            .add(Text{"◦ Item C D F"})
             .layout(
                 ManagedRowLayout{}
                 .spacing(gap)
                 .margin(gap)
             )
-        )
-        .layout(
-            ManagedColumnLayout{}
-            .spacing(gap)
-            .margin(gap)
+            .add(Text{"◦ Item A B C"})
+            .add(Text{"◦ Item B D E"})
+            .add(Text{"◦ Item C D F"})
         )
     }.show();
 

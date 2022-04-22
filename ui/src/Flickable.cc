@@ -16,8 +16,8 @@
 
 namespace cc::ui {
 
-Flickable::State::State(const View &carrier):
-    carrier_{carrier},
+Flickable::State::State(const View &pane):
+    pane_{pane},
     timer_{1./DisplayManager{}.refreshRate()}
 {
     size([this]{ return hasParent() ? parent().size() : Size{}; });
@@ -41,7 +41,7 @@ Flickable::State::State(const View &carrier):
         keepFocusControlInView();
     });
 
-    if (!carrier_.hasParent()) View::State::insertChild(carrier_);
+    if (!pane_.hasParent()) View::State::insertChild(pane_);
 
     onPointerClicked([this](const PointerEvent &event)
     {
@@ -57,7 +57,7 @@ Flickable::State::State(const View &carrier):
         if (timer_.isActive()) {
             wasFlying_ = true;
             timerStop();
-            carrier_.moving(false);
+            pane_.moving(false);
             Application{}.pressedControl(self());
         }
         else {
@@ -65,7 +65,7 @@ Flickable::State::State(const View &carrier):
             return false;
         }
 
-        overwrittenControl_ = carrier_.findControl(mapToChild(carrier_, event.pos()));
+        overwrittenControl_ = pane_.findControl(mapToChild(pane_, event.pos()));
         if (overwrittenControl_) overwrittenControl_.me().pressedOverwrite(true);
 
        return true;
@@ -99,7 +99,7 @@ Flickable::State::State(const View &carrier):
     {
         if (!isDragged_ && Application{}.pointerIsDragged(event, dragStart_)) {
             isDragged_ = true;
-            carrierOrigin_ = carrier_.pos();
+            carrierOrigin_ = pane_.pos();
             lastDragTime_ = 0;
             Application{}.pressedControl(self());
         }
@@ -115,7 +115,7 @@ Flickable::State::State(const View &carrier):
             Step d = event.pos() - dragStart_;
             Point p = carrierOrigin_ + d;
 
-            carrier_.pos(carrierStep(p, boundary()));
+            pane_.pos(carrierStep(p, boundary()));
         }
 
         return true;
@@ -132,7 +132,7 @@ Flickable::State::State(const View &carrier):
         if (timerMode_ != TimerMode::Stopped)
             return true;
 
-        carrier_.pos(carrierStep(carrier_.pos() + event.wheelStep() * wheelGranularity(), wheelBouncing() ? boundary() : 0));
+        pane_.pos(carrierStep(pane_.pos() + event.wheelStep() * wheelGranularity(), wheelBouncing() ? boundary() : 0));
 
         if (carrierInsideBoundary())
             carrierBounceStart();
@@ -141,30 +141,20 @@ Flickable::State::State(const View &carrier):
     });
 }
 
-void Flickable::State::insertChild(View child)
-{
-    carrier_.me().insertChild(child);
-}
-
-void Flickable::State::layout(const Layout &layout)
-{
-    carrier_.layout(layout);
-}
-
 void Flickable::State::preheat()
 {}
 
 void Flickable::State::positionCarrierOnResize()
 {
-    carrier_.pos(carrierStep(carrier_.pos()));
+    pane_.pos(carrierStep(pane_.pos()));
 }
 
 void Flickable::State::keepFocusControlInView()
 {
-    if (!carrier_) return;
+    if (!pane_) return;
     View target;
     for (View view = focusControl(); view; view = view.parent()) {
-        if (view.parent() == carrier_) {
+        if (view.parent() == pane_) {
             target = view;
             break;
         }
@@ -199,10 +189,10 @@ void Flickable::State::keepFocusControlInView()
 
 bool Flickable::State::carrierInsideBoundary() const
 {
-    double x = carrier_.pos()[0];
-    double y = carrier_.pos()[1];
-    double w = carrier_.size()[0];
-    double h = carrier_.size()[1];
+    double x = pane_.pos()[0];
+    double y = pane_.pos()[1];
+    double w = pane_.size()[0];
+    double h = pane_.size()[1];
 
     return
         (w > size()[0] && (x > 0 || x + w < size()[0])) ||
@@ -213,8 +203,8 @@ Point Flickable::State::carrierStep(Point p, double b)
 {
     double x = p[0];
     double y = p[1];
-    double w = carrier_.size()[0];
-    double h = carrier_.size()[1];
+    double w = pane_.size()[0];
+    double h = pane_.size()[1];
 
     if (w > size()[0]) {
         if (x > b) x = b;
@@ -239,31 +229,31 @@ void Flickable::State::carrierFlyStart()
     double v = speed_.abs();
     if (v > maxSpeed()) speed_ *= maxSpeed() / v;
     releaseSpeedMagnitude_ = speed_.abs();
-    carrier_.moving(true);
+    pane_.moving(true);
 }
 
 void Flickable::State::carrierBounceStart()
 {
     timerMode_ = TimerMode::Bouncing;
     timer_.start();
-    startPos_ = carrier_.pos();
-    finalPos_ = carrierStep(carrier_.pos());
-    carrier_.moving(true);
+    startPos_ = pane_.pos();
+    finalPos_ = carrierStep(pane_.pos());
+    pane_.moving(true);
 }
 
 void Flickable::State::carrierTraverseStart(Step distance)
 {
     timerMode_ = TimerMode::Traversing;
     timer_.start();
-    startPos_ = carrier_.pos();
-    finalPos_ = carrierStep(carrier_.pos() + distance);
-    carrier_.moving(true);
+    startPos_ = pane_.pos();
+    finalPos_ = carrierStep(pane_.pos() + distance);
+    pane_.moving(true);
 }
 
 void Flickable::State::carrierStop()
 {
-    carrier_.moving(false);
-    carrier_.pos(finalPos_);
+    pane_.moving(false);
+    pane_.pos(finalPos_);
     timerStop();
     carrierStopped();
 }
@@ -299,20 +289,20 @@ void Flickable::State::carrierFly()
     if (vb <= 0) vb = 0;
     speed_ *= vb / va;
 
-    Point pa = carrier_.pos();
-    Point pb = carrierStep(carrier_.pos() + d, boundary());
+    Point pa = pane_.pos();
+    Point pb = carrierStep(pane_.pos() + d, boundary());
     if (pa == pb || speed_ == Step{}) {
         timerStop();
         if (carrierInsideBoundary()) {
             carrierBounceStart();
         }
         else {
-            carrier_.moving(false);
+            pane_.moving(false);
             carrierStopped();
         }
     }
     else
-        carrier_.pos(pb);
+        pane_.pos(pb);
 }
 
 void Flickable::State::carrierBounce()
@@ -327,7 +317,7 @@ void Flickable::State::carrierBounce()
     }
 
     double s = Easing::OutBounce((t - t0) / (t1 - t0));
-    carrier_.pos((1 - s) * startPos_ + s * finalPos_);
+    pane_.pos((1 - s) * startPos_ + s * finalPos_);
 }
 
 void Flickable::State::carrierTraverse()
@@ -342,7 +332,7 @@ void Flickable::State::carrierTraverse()
     }
 
     double s = Easing::InQuad((t - t0) / (t1 - t0));
-    carrier_.pos((1 - s) * startPos_ + s * finalPos_);
+    pane_.pos((1 - s) * startPos_ + s * finalPos_);
 }
 
 void Flickable::State::carrierStopped()

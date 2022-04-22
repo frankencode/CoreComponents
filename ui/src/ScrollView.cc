@@ -10,8 +10,8 @@
 
 namespace cc::ui {
 
-ScrollView::State::State(const View &carrier):
-    flickable_{carrier}
+ScrollView::State::State(const View &pane):
+    flickable_{pane}
 {
     vScroll_.orientation(Orientation::Vertical);
     hScroll_.orientation(Orientation::Horizontal);
@@ -33,8 +33,8 @@ ScrollView::State::State(const View &carrier):
         };
     });
 
-    vScroll_.totalExtent([this]{ return flickable_.carrier().height(); });
-    hScroll_.totalExtent([this]{ return flickable_.carrier().width(); });
+    vScroll_.totalExtent([this]{ return flickable_.pane().height(); });
+    hScroll_.totalExtent([this]{ return flickable_.pane().width(); });
 
     flickable_.size([this]{
         return Size{
@@ -46,7 +46,7 @@ ScrollView::State::State(const View &carrier):
     flickable_.clip(true);
 
     scrollMonitor([this]{
-        flickable_.carrier().pos(
+        flickable_.pane().pos(
             Point{
                 hScroll_.visibleOffset(),
                 vScroll_.visibleOffset()
@@ -55,7 +55,7 @@ ScrollView::State::State(const View &carrier):
     });
 
     carrierMonitor([this]{
-        Point offset = flickable_.carrier().pos();
+        Point offset = flickable_.pane().pos();
         hScroll_.visibleOffset(offset.x());
         vScroll_.visibleOffset(offset.y());
     });

@@ -10,7 +10,7 @@
 
 namespace cc::ui {
 
-class ListMenu::Carrier final: public View
+class ListMenu::Pane final: public View
 {
     friend class Object;
     friend class ListMenu;
@@ -82,13 +82,19 @@ class ListMenu::Carrier final: public View
 
         bool isPainted() const override { return false; }
 
+        void insertChild(View child) override
+        {
+            child.visible(false);
+            View::State::insertChild(child);
+        }
+
         Property<void> itemVisibility;
         Property<void> itemHighlighting;
         Property<double> leadSpace;
         Property<double> tailSpace;
     };
 
-    Carrier():
+    Pane():
         View{new State}
     {}
 
@@ -99,23 +105,17 @@ class ListMenu::Carrier final: public View
 struct ListMenu::State final: public Flickable::State
 {
     State():
-        Flickable::State{Carrier{}}
+        Flickable::State{Pane{}}
     {
-        Carrier carrier = Flickable::State::carrier().as<Carrier>();
+        Pane pane = Flickable::State::pane().as<Pane>();
 
-        carrier.me().leadSpace([this]{
+        pane.me().leadSpace([this]{
             return header() ? header().height() : gu(2);
         });
 
-        carrier.me().tailSpace([this]{
+        pane.me().tailSpace([this]{
             return footer() ? footer().height() : gu(2);
         });
-    }
-
-    void insertChild(View child) override
-    {
-        child.visible(false);
-        Flickable::State::insertChild(child);
     }
 
     Property<View> header;
@@ -148,8 +148,8 @@ ListMenu &ListMenu::header(const View &newValue)
     if (me().header()) remove(me().header());
     me().header(newValue);
     me().View::State::insertChild(me().header());
-    me().header().pos([this]{ return carrier().pos(); });
-    me().header().visible([this]{ return header().height() >= -carrier().pos()[1]; });
+    me().header().pos([this]{ return pane().pos(); });
+    me().header().visible([this]{ return header().height() >= -pane().pos()[1]; });
     return *this;
 }
 
@@ -163,7 +163,7 @@ ListMenu &ListMenu::footer(const View &newValue)
     if (me().footer()) remove(me().footer());
     me().footer(newValue);
     me().View::State::insertChild(me().footer());
-    me().footer().pos([this]{ return carrier().pos() + Point{0, carrier().height() - footer().height()}; });
+    me().footer().pos([this]{ return pane().pos() + Point{0, pane().height() - footer().height()}; });
     me().footer().visible([this]{ return footer().pos()[1] < height(); });
     return *this;
 }

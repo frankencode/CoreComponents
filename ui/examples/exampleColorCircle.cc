@@ -12,7 +12,7 @@ int main()
         View{&view}
         .size(640, 480)
         .paper(Color::White)
-        .paint([=]{
+        .paint([view]{
             Painter p{view};
             Point center = view.size() / 2;
             const double step = 10;

@@ -8,43 +8,45 @@ int main()
     using namespace cc;
     using namespace cc::ui;
 
-    struct CursorControl: public Control
-    {
-        CursorControl(CursorShape shape)
-        {
-            auto self = me();
-            paper([=]{ return self.hover() ? "DeepSkyBlue" : "LightSkyBlue"; });
-            cursor(shape);
-            layout(
-                ColumnLayout{}
-                .margin(style().defaultFont().size())
-            );
-            add(Label{str(shape)});
-        }
-    };
-
     Window{
-        View{640, 480}
+        View{gu(80), gu(80)}
         .paper(Color::White)
         .add(
             View{}
+            .setup([](View &self){
+                const double gap = style().defaultFont().size();
+                for (auto shape: List<CursorShape>{
+                    CursorShape::Arrow,
+                    CursorShape::IBeam,
+                    CursorShape::Wait,
+                    CursorShape::CrossHair,
+                    CursorShape::WaitArrow,
+                    CursorShape::ResizeNorthWestSouthEast,
+                    CursorShape::ResizeNorthEastSouthWest,
+                    CursorShape::ResizeWestEast,
+                    CursorShape::ResizeNorthSouth,
+                    CursorShape::ResizeCross,
+                    CursorShape::Forbidden,
+                    CursorShape::Hand
+                }) {
+                    Control c;
+                    self.add(
+                        Control{&c}
+                        .cursor(shape)
+                        .paper([c]{ return c.hover() ? "DeepSkyBlue" : "LightSkyBlue"; })
+                        .layout(
+                            ColumnLayout{}
+                            .margin(gap)
+                        )
+                        .add(Label{str(shape)})
+                    );
+                }
+            })
             .layout(
                 ColumnLayout{}
                 .spacing(dp(2))
             )
             .centerInParent()
-            .add(CursorControl{CursorShape::Arrow})
-            .add(CursorControl{CursorShape::IBeam})
-            .add(CursorControl{CursorShape::Wait})
-            .add(CursorControl{CursorShape::CrossHair})
-            .add(CursorControl{CursorShape::WaitArrow})
-            .add(CursorControl{CursorShape::ResizeNorthWestSouthEast})
-            .add(CursorControl{CursorShape::ResizeNorthEastSouthWest})
-            .add(CursorControl{CursorShape::ResizeWestEast})
-            .add(CursorControl{CursorShape::ResizeNorthSouth})
-            .add(CursorControl{CursorShape::ResizeCross})
-            .add(CursorControl{CursorShape::Forbidden})
-            .add(CursorControl{CursorShape::Hand})
         )
     }.show();
 

@@ -10,6 +10,7 @@
 #include <cc/ui/SdlWindow>
 #include <cc/ui/SdlCursor>
 #include <cc/ui/SdlPlatformError>
+#include <cc/ui/SdlTimeMaster>
 #include <cc/DEBUG>
 #include <SDL2/SDL.h>
 
@@ -175,6 +176,7 @@ struct SdlApplication::State: public Application::State
         }
         while (event.type != SDL_QUIT);
 
+        SdlTimeMaster::shutdown();
         Singleton::destroy<State>();
 
         return 0;

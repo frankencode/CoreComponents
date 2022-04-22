@@ -12,7 +12,8 @@
 
 namespace cc::ui {
 
-/** \class ManagedRowLayout cc/ui/ManagedRowLayout
+/** \internal
+  * \class ManagedRowLayout cc/ui/ManagedRowLayout
   * \ingroup ui_layout
   * \brief Layout children views in a row and smartly adjust sizes as needed
   */

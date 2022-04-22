@@ -16,6 +16,7 @@ class SdlTimeMaster final: public TimeMaster
 {
 public:
     SdlTimeMaster();
+    static void shutdown();
 
 private:
     struct State;

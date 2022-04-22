@@ -10,14 +10,14 @@ int main()
 
     ScrollView scrollView{640, 480};
 
-    scrollView.carrier().size(Size{1280, 960});
-    scrollView.carrier().add(
+    scrollView.pane().size(Size{1280, 960});
+    scrollView.pane().add(
         View{400, 400}
         .centerInParent()
         .paper(Color::Red)
     );
 
-    scrollView.carrier().add(
+    scrollView.pane().add(
         Label{"Test 1, 2, 3"}
         .pos(100, 100)
     );

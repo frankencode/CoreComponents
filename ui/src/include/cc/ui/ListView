@@ -41,7 +41,7 @@ public:
     void deplete(); ///< Remove all children (list items)
 
 protected:
-    class Carrier;
+    class Pane;
 
     struct State: public Flickable::State
     {

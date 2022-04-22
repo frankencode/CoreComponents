@@ -8,21 +8,23 @@ int main()
     using namespace cc;
     using namespace cc::ui;
 
-    const double gap = Font::defaultSize();
-
-    Flickable pane{640, 480};
-
-    pane.layout(
-        ColumnLayout{}
-        .spacing(gap)
-        .margin(gap)
-    );
-
-    for (int i = 0; i < 100; ++i) {
-        pane.add(Label{"Item " + str(i + 1)});
-    }
-
-    Window{pane}.show();
+    Window{
+        Flickable{
+            640, 480,
+            Pane{}
+            .setup([](auto &self) {
+                for (int i = 0; i < 100; ++i) {
+                    self.add(Label{"Item " + str(i + 1)});
+                }
+                const double gap = Font::defaultSize();
+                self.layout(
+                    ColumnLayout{}
+                    .spacing(gap)
+                    .margin(gap)
+                );
+            })
+        }
+    }.show();
 
     return Application{}.run();
 }

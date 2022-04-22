@@ -16,10 +16,10 @@
 
 namespace cc::ui {
 
-class SdlContext: public Object
+class SdlContext final: public Object
 {
 public:
-    struct State: public Object::State
+    struct State final: public Object::State
     {
         ~State() {
             if (sdlTexture_) SDL_DestroyTexture(sdlTexture_);
@@ -192,13 +192,27 @@ void SdlWindow::State::setOpacity(double opacity)
 
 void SdlWindow::State::setMinSize(Size size)
 {
-    SDL_SetWindowMinimumSize(sdlWindow_, static_cast<int>(std::ceil(size[0])), static_cast<int>(std::ceil(size[1])));
+    if (
+        size[0] == 0 ||
+        size[1] == 0
+    ) {
+        return;
+    }
+    const int minWidth = static_cast<int>(std::ceil(size[0]));
+    const int minHeight = static_cast<int>(std::ceil(size[1]));
+    SDL_SetWindowMinimumSize(sdlWindow_, minWidth, minHeight);
 }
 
 void SdlWindow::State::setMaxSize(Size size)
 {
-    int maxWidth = size[0] < std::numeric_limits<double>::max() ? static_cast<int>(std::ceil(size[0])) : std::numeric_limits<int>::max();
-    int maxHeight = size[1] < std::numeric_limits<double>::max() ? static_cast<int>(std::ceil(size[1])) : std::numeric_limits<int>::max();
+    if (
+        size[0] == std::numeric_limits<double>::max() ||
+        size[1] == std::numeric_limits<double>::max()
+    ) {
+        return;
+    }
+    const int maxWidth = static_cast<int>(std::ceil(size[0]));
+    const int maxHeight = static_cast<int>(std::ceil(size[1]));
     SDL_SetWindowMaximumSize(sdlWindow_, maxWidth, maxHeight);
 }
 

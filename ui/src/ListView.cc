@@ -12,7 +12,7 @@
 
 namespace cc::ui {
 
-class ListView::Carrier final: public View
+class ListView::Pane final: public View
 {
     friend class Object;
     friend class ListView;
@@ -104,7 +104,7 @@ class ListView::Carrier final: public View
         cc::Layout<View, double> layout_;
     };
 
-    Carrier():
+    Pane():
         View{new State}
     {}
 
@@ -115,22 +115,22 @@ class ListView::Carrier final: public View
 };
 
 ListView::State::State():
-    Flickable::State{Carrier{}}
+    Flickable::State{Pane{}}
 {
-    Carrier carrier = Flickable::State::carrier().as<Carrier>();
+    Pane pane = Flickable::State::pane().as<Pane>();
 
-    carrier.me().leadSpace([this]{
+    pane.me().leadSpace([this]{
         return header() ? header().height() : gu(2);
     });
 
-    carrier.me().tailSpace([this]{
+    pane.me().tailSpace([this]{
         return footer() ? footer().height() : gu(2);
     });
 }
 
 void ListView::State::deplete()
 {
-    carrier().as<Carrier>()->deplete();
+    pane().as<Pane>()->deplete();
 }
 
 ListView::ListView():
@@ -159,8 +159,8 @@ ListView &ListView::header(const View &newValue)
     if (me().header()) remove(me().header());
     me().header(newValue);
     me().View::State::insertChild(me().header());
-    me().header().pos([this]{ return carrier().pos(); });
-    me().header().visible([this]{ return header().height() >= -carrier().pos()[1]; });
+    me().header().pos([this]{ return pane().pos(); });
+    me().header().visible([this]{ return header().height() >= -pane().pos()[1]; });
     return *this;
 }
 
@@ -174,7 +174,7 @@ ListView &ListView::footer(const View &newValue)
     if (me().footer()) remove(me().footer());
     me().footer(newValue);
     me().View::State::insertChild(me().footer());
-    me().footer().pos([this]{ return carrier().pos() + Point{0, carrier().height() - footer().height()}; });
+    me().footer().pos([this]{ return pane().pos() + Point{0, pane().height() - footer().height()}; });
     me().footer().visible([this]{ return footer().pos()[1] < height(); });
     return *this;
 }

@@ -17,7 +17,7 @@ int main()
     for (int i = 0; i < 32; ++i)
     {
         ListItem item;
-        menu.add(
+        menu.pane().add(
             ListItem{&item}
             .icon(Picture{Ideographic::AccessPoint, 28})
             .text(Format{"Access point %%"} << i)

@@ -10,7 +10,7 @@
 
 #include <cc/ui/Control>
 #include <cc/ui/Timer>
-#include <cc/ui/Carrier>
+#include <cc/ui/Pane>
 
 namespace cc::ui {
 
@@ -42,31 +42,43 @@ public:
         size(Size{width, height});
     }
 
-    /** Create a new flickable with custom \a carrier
+    /** Create a new flickable of given size (\a width, \a height) and with a custom \a pane
       */
-    explicit Flickable(const View &carrier):
-        Control{new State{carrier}}
+    Flickable(double width, double height, const View &pane):
+        Control{new State{pane}}
+    {
+        size(Size{width, height});
+    }
+
+    /** Create a new flickable with a custom \a pane
+      */
+    explicit Flickable(const View &pane):
+        Control{new State{pane}}
     {}
 
-    /** Get the carrier
+    /** Get the access to the contained pane
       */
-    View carrier() const { return me().carrier(); }
+    View &pane() { return me().pane_; }
+
+    /** Get the access to the contained pane
+      */
+    const View &pane() const { return me().pane_; }
 
 protected:
+    friend class Object;
+
     struct State: public Control::State
     {
-        State(const View &carrier = Carrier{});
+        State(const View &pane = Pane{});
 
-        View carrier() const { return carrier_; }
-
-        void insertChild(View child) override;
-
-        void layout(const Layout &layout) override;
+        View pane() const { return pane_; }
 
         virtual void preheat();
         virtual void positionCarrierOnResize();
 
     protected:
+        friend class Flickable;
+
         void keepFocusControlInView();
 
         bool carrierInsideBoundary() const;
@@ -97,7 +109,7 @@ protected:
 
         Property<Control> focusControl;
 
-        View carrier_;
+        View pane_;
         Control overwrittenControl_;
         bool isDragged_ { false };
         Point dragStart_;

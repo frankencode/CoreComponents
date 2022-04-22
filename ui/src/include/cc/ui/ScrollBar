@@ -30,13 +30,13 @@ public:
     Orientation orientation() const; ///< Get orientation
     ScrollBar &orientation(Orientation newValue); ///< %Set orientation
 
-    double visibleOffset() const; ///< Get carrier position
-    ScrollBar &visibleOffset(double newValue); ///< %Set carrier position
-    ScrollBar &visibleOffset(Definition<double> &&f); ///< Define carrier position
+    double visibleOffset() const; ///< Get pane position
+    ScrollBar &visibleOffset(double newValue); ///< %Set pane position
+    ScrollBar &visibleOffset(Definition<double> &&f); ///< Define pane position
 
-    double totalExtent() const; ///< Get carrier size
-    ScrollBar &totalExtent(double newValue); ///< %Set carrier size
-    ScrollBar &totalExtent(Definition<double> &&f); ///< Define carrier size
+    double totalExtent() const; ///< Get pane size
+    ScrollBar &totalExtent(double newValue); ///< %Set pane size
+    ScrollBar &totalExtent(Definition<double> &&f); ///< Define pane size
 
     double autoHide() const; ///< Get auto hide
     ScrollBar &autoHide(bool newValue); ///< %Set auto hide

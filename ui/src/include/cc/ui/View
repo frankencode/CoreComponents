@@ -225,6 +225,14 @@ public:
         return *this;
     }
 
+    /** Invoke custom setup function \a f
+      */
+    View &setup(const std::function<void(View &)> &&f)
+    {
+        f(*this);
+        return *this;
+    }
+
     /** Remove all children
       */
     void deplete() { me().deplete(); }
@@ -554,12 +562,12 @@ protected:
         double innerWidth() const { return width() - (layout_ ? 2 * layout_.margin()[0] : 0); } ///< Get inner width
         double innerHeight() const { return height() - (layout_ ? 2 * layout_.margin()[1] : 0); } ///< Get inner height
 
-        virtual Layout layout() const { return layout_; } ///< Get the layout
+        Layout layout() const { return layout_; } ///< Get the layout
         double expandableWidth(double width) const; ///< Get the expandable width of this view within its parent layout
 
         /** %Set the layout
           */
-        virtual void layout(const Layout &newValue)
+        void layout(const Layout &newValue)
         {
             layout_ = newValue;
             layout_.me().view_ = this;

@@ -12,36 +12,38 @@
 
 namespace cc::ui {
 
-/** \class Carrier cc/ui/Carrier
+/** \class Pane cc/ui/Pane
   * \ingroup ui
-  * \brief Default carrier type for flickables
+  * \brief A view contained in another view, e.g. inside a Flickable
   */
-class Carrier: public View
+class Pane: public View
 {
 public:
-    /** Create a primordial carrier
+    /** Create a primordial pane
       */
-    Carrier():
+    Pane():
         View{onDemand<State>}
     {}
 
-    /** Create a new carrier
+    /** Create a new pane
       */
-    explicit Carrier(Out<Carrier> self):
+    explicit Pane(Out<Pane> self):
         View{new State}
     {
         self = *this;
     }
 
-    /** Create a new carrier of size (\a width, \a height)
+    /** Create a new pane of size (\a width, \a height)
       */
-    Carrier(double width, double height):
+    Pane(double width, double height):
         View{new State}
     {
         size({width, height});
     }
 
 protected:
+    friend class Object;
+
     struct State: public View::State
     {
         State() = default;

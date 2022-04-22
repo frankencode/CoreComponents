@@ -19,7 +19,7 @@ int main()
     {
         ListItem item;
 
-        listView.add(
+        listView.pane().add(
             ListItem{&item}
             .icon(Picture{Ideographic::AccessPoint, 28})
             .text(Format{"Access point %%"} << i)

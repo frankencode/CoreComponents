@@ -16,27 +16,26 @@ int main()
     Window{
         View{&view}
         .paper(0xD0D0FF)
+        .layout(
+            ManagedColumnLayout{}
+            .spacing(gap)
+            .margin(gap)
+        )
         .add(Text{"• Item 1"})
         .add(Text{"• Item 2"})
         .add(Text{"• Item 3"})
         .add(
             View{}
             .paper(0xD0FFD0)
-            .add(Text{"◦ Item A B C"})
-            .add(Text{"◦ Item B C D"})
-            .add(Text{"◦ Item C D E"})
             .layout(
                 ManagedColumnLayout{}
                 .indent(gap)
                 .spacing(gap)
                 .margin(gap)
             )
-        )
-        .centerInParent()
-        .layout(
-            ManagedColumnLayout{}
-            .spacing(gap)
-            .margin(gap)
+            .add(Text{"◦ Item A B C"})
+            .add(Text{"◦ Item B C D"})
+            .add(Text{"◦ Item C D E"})
         )
     }.show();
 
