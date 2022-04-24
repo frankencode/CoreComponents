@@ -21,12 +21,12 @@ class TestReport;
   * \ingroup testing
   * \brief Defines a test suite
   */
-class TestSuite
+class TestSuite final: public Object
 {
 public:
     /** \internal
       */
-    TestSuite() = default;
+    TestSuite();
 
     /** Create a test suite with command line arguments \a argc, \a argv
       */
@@ -34,15 +34,15 @@ public:
 
     /** Path of the test program
       */
-    String execPath() const { return me().execPath; }
+    String execPath() const;
 
     /** Name of the test program
       */
-    String name() const { return me().name; }
+    String name() const;
 
     /** Number of test cases
       */
-    long testCaseCount() const { return me().testCases.count(); }
+    long testCaseCount() const;
 
     /** \internal
       */
@@ -56,19 +56,12 @@ public:
 private:
     friend class TestCase;
 
-    struct State: public Object::State
-    {
-        String execPath;
-        String name;
-        Handle<TestReport> report;
-        List<TestCase> testCases;
-        TestCase currentTestCase;
-        int failureCount { 0 };
-        int skipCount { 0 };
-        int totalFailureCount { 0 };
-    };
+    struct State ;
 
-    static Handle<State> me;
+    void appendTestCase(const TestCase &testCase);
+
+    State &me();
+    const State &me() const;
 };
 
 } // namespace cc

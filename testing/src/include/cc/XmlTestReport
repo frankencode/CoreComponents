@@ -12,17 +12,13 @@
 
 namespace cc {
 
-class XmlTestReport: public TestReport
+class XmlTestReport final: public TestReport
 {
-    bool captureOutput() const override;
+public:
+    XmlTestReport();
 
-    void beginTestSuite(const TestSuite &testSuite) override;
-    void beginTestCase(const TestCase &testCase) override;
-    void verify(const TestCase &testCase, bool condition, const String &message, const String &codePath, int codeLine) override;
-    void error(const TestCase &testCase, const String &type, const String &message) override;
-    void endTestCase(const TestCase &testCase, const String &outText = "", const String &errText = "") override;
-    void skipTestCase(const TestCase &testCase) override;
-    void endTestSuite(const TestSuite &testSuite) override;
+private:
+    struct State;
 };
 
 } // namespace cc

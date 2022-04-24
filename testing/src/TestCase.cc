@@ -14,7 +14,7 @@ namespace cc {
 TestCase::TestCase(const String &name, const std::function<void()> &run, bool skip):
     me{name, run, skip}
 {
-    TestSuite{}.me().testCases.append(*this);
+    TestSuite{}.appendTestCase(*this);
 }
 
 } // namespace cc

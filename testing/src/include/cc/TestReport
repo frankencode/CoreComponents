@@ -16,18 +16,39 @@ namespace cc {
 class TestCase;
 class TestSuite;
 
-class TestReport: public Object::State
+class TestReport: public Object
 {
 public:
-    virtual bool captureOutput() const = 0;
+    TestReport() = default;
 
-    virtual void beginTestSuite(const TestSuite &testSuite) = 0;
-    virtual void beginTestCase(const TestCase &testCase) = 0;
-    virtual void verify(const TestCase &testCase, bool condition, const String &message, const String &codePath, int codeLine) = 0;
-    virtual void error(const TestCase &testCase, const String &type, const String &message) = 0;
-    virtual void endTestCase(const TestCase &testCase, const String &outText = "", const String &errText = "") = 0;
-    virtual void skipTestCase(const TestCase &testCase) = 0;
-    virtual void endTestSuite(const TestSuite &testSuite) = 0;
+    bool captureOutput() const { return me().captureOutput(); }
+    void beginTestSuite(const TestSuite &testSuite) { me().beginTestSuite(testSuite); }
+    void beginTestCase(const TestCase &testCase) { me().beginTestCase(testCase); }
+    void verify(const TestCase &testCase, bool condition, const String &message, const String &codePath, int codeLine) { me().verify(testCase, condition, message, codePath, codeLine); }
+    void error(const TestCase &testCase, const String &type, const String &message) { me().error(testCase, type, message); }
+    void endTestCase(const TestCase &testCase, const String &outText = "", const String &errText = "") { me().endTestCase(testCase, outText, errText); }
+    void skipTestCase(const TestCase &testCase) { me().skipTestCase(testCase); }
+    void endTestSuite(const TestSuite &testSuite) { me().endTestSuite(testSuite); }
+
+protected:
+    struct State: public Object::State
+    {
+        virtual bool captureOutput() const = 0;
+        virtual void beginTestSuite(const TestSuite &testSuite) = 0;
+        virtual void beginTestCase(const TestCase &testCase) = 0;
+        virtual void verify(const TestCase &testCase, bool condition, const String &message, const String &codePath, int codeLine) = 0;
+        virtual void error(const TestCase &testCase, const String &type, const String &message) = 0;
+        virtual void endTestCase(const TestCase &testCase, const String &outText = "", const String &errText = "") = 0;
+        virtual void skipTestCase(const TestCase &testCase) = 0;
+        virtual void endTestSuite(const TestSuite &testSuite) = 0;
+    };
+
+    explicit TestReport(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
 };
 
 } // namespace cc

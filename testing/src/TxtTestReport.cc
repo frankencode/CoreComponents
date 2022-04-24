@@ -12,43 +12,50 @@
 
 namespace cc {
 
-bool TxtTestReport::captureOutput() const
+struct TxtTestReport::State: public TestReport::State
 {
-    return false;
-}
-
-void TxtTestReport::beginTestSuite(const TestSuite &testSuite)
-{}
-
-void TxtTestReport::beginTestCase(const TestCase &testCase)
-{
-    fout("%%: %%::run()\n") << TestSuite{}.name() << testCase.name();
-    fout("...........................................................\n");
-}
-
-void TxtTestReport::verify(const TestCase &testCase, bool condition, const String &message, const String &codePath, int codeLine)
-{
-    if (!condition) {
-        fout("FAILED: %%:%%: CC_VERIFY(%%)\n")
-            << codePath.fileName() << codeLine << message;
+    bool captureOutput() const override
+    {
+        return false;
     }
-}
 
-void TxtTestReport::error(const TestCase &, const String &type, const String &message)
-{
-    fout("CAUGHT EXCEPTION %%: %%\n") << type << message;
-}
+    void beginTestSuite(const TestSuite &testSuite) override
+    {}
 
-void TxtTestReport::endTestCase(const TestCase &testCase, const String &, const String &)
-{
-    fout("...........................................................\n");
-    fout("%%\n\n") << (testCase.passed() ? "PASSED" : "FAILED");
-}
+    void beginTestCase(const TestCase &testCase) override
+    {
+        fout("%%: %%::run()\n") << TestSuite{}.name() << testCase.name();
+        fout("...........................................................\n");
+    }
 
-void TxtTestReport::skipTestCase(const TestCase &testCase)
-{}
+    void verify(const TestCase &testCase, bool condition, const String &message, const String &codePath, int codeLine) override
+    {
+        if (!condition) {
+            fout("FAILED: %%:%%: CC_VERIFY(%%)\n")
+                << codePath.fileName() << codeLine << message;
+        }
+    }
 
-void TxtTestReport::endTestSuite(const TestSuite &testSuite)
+    void error(const TestCase &testCase, const String &type, const String &message) override
+    {
+        fout("CAUGHT EXCEPTION %%: %%\n") << type << message;
+    }
+
+    void endTestCase(const TestCase &testCase, const String &outText = "", const String &errText = "") override
+    {
+        fout("...........................................................\n");
+        fout("%%\n\n") << (testCase.passed() ? "PASSED" : "FAILED");
+    }
+
+    void skipTestCase(const TestCase &testCase) override
+    {}
+
+    void endTestSuite(const TestSuite &testSuite) override
+    {}
+};
+
+TxtTestReport::TxtTestReport():
+    TestReport{new State}
 {}
 
 } // namespace cc

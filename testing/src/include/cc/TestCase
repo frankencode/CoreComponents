@@ -37,7 +37,7 @@ public:
     bool caughtException() const { return me().caughtException; }
     bool passed() const { return me().failureCount == 0 && !me().caughtException; }
 
-    virtual void run() { me().run(); }
+    void run() { me().run(); }
 
 private:
     friend class TestSuite;
@@ -52,6 +52,8 @@ private:
         int failureCount { 0 };
         bool caughtException { false };
     };
+
+    State *operator->() { return &me(); }
 
     Shared<State> me;
 };

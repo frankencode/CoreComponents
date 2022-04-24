@@ -158,9 +158,10 @@ protected:
         }
     };
 
-public:
+protected:
+    friend class PropertyBinding;
+
     /** \brief Reference counted object state
-      * \todo Object::State should be protected
       */
     class State
     {
@@ -241,7 +242,6 @@ public:
         std::atomic<long> useCount_ { 1 };
     };
 
-protected:
     /** Create an alias object for the given \a state
       * \tparam T %Type of object
       */
