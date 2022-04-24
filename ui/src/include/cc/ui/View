@@ -68,6 +68,14 @@ public:
         size(Size{width, height});
     }
 
+    /** Invoke custom setup function \a f
+      */
+    View &setup(const std::function<void(View &)> &&f)
+    {
+        f(*this);
+        return *this;
+    }
+
     /** Materialize a primordial view
       */
     void touch()
@@ -222,14 +230,6 @@ public:
     View &remove(const View &child)
     {
         me().removeChild(child);
-        return *this;
-    }
-
-    /** Invoke custom setup function \a f
-      */
-    View &setup(const std::function<void(View &)> &&f)
-    {
-        f(*this);
         return *this;
     }
 

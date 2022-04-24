@@ -13,7 +13,7 @@ int main()
         .paper(Color::White)
         .add(
             View{}
-            .setup([](View &self){
+            .setup([](auto &self){
                 const double gap = style().defaultFont().size();
                 for (auto shape: List<CursorShape>{
                     CursorShape::Arrow,
