@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Entity>
+#include <cc/Object>
 
 typedef struct _cairo_surface cairo_surface_t;
 
@@ -20,7 +20,7 @@ class Painter;
   * \ingroup ui
   * \brief Painting surface
   */
-class Surface: public Entity
+class Surface: public Object
 {
 public:
     /** Create a null surface
@@ -44,14 +44,14 @@ protected:
     friend class Object;
     friend class Painter;
 
-    struct State: public Entity::State
+    struct State: public Object::State
     {
         virtual cairo_surface_t *cairoSurface() = 0;
         virtual void polish();
     };
 
     explicit Surface(State *newState):
-        Entity{newState}
+        Object{newState}
     {}
 
     State &me() { return Object::me.as<State>(); }
