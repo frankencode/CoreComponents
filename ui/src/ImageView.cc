@@ -32,13 +32,13 @@ ImageView::ImageView():
 ImageView::ImageView(Out<ImageView> self):
     View{new ImageView::State}
 {
-    self = *this;
+    self = weak<ImageView>();
 }
 
 ImageView::ImageView(const Image &displayImage, Out<ImageView> self):
     View{new ImageView::State{displayImage}}
 {
-    self = *this;
+    self = weak<ImageView>();
 }
 
 } // namespace cc::ui

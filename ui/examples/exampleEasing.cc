@@ -1,8 +1,10 @@
 #include <cc/ui/Application>
 #include <cc/ui/Easing>
+#include <cc/DEBUG>
 
 int main()
 {
+    using namespace cc;
     using namespace cc::ui;
 
     View box;
@@ -16,7 +18,7 @@ int main()
             .centerInParent()
             .paper("dodgerblue")
             .angleEasing(Easing::Bezier{0.5, -0.4, 0.5, 1.4}, 0.5)
-            .onPointerReleased([&](auto){
+            .onPointerReleased([=](auto) mutable {
                 box.angle(box.angle() + 45);
                 return true;
             })

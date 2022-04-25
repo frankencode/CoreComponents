@@ -59,6 +59,13 @@ public:
         return alias<T>(&me.as<typename T::State>());
     }
 
+    /** Check if the underlying object reference is weak
+      */
+    bool isWeak() const
+    {
+        return me.isWeak();
+    }
+
     /** Equal to operator
       */
     bool operator==(const Object &b) const { return me == b.me; }
@@ -76,90 +83,10 @@ public:
     long useCount() const { return me ? me().useCount() : 0; }
 
 protected:
+    friend class PropertyBinding;
+
     template<class T, bool>
     friend class ObjectAs;
-
-    /** \ingroup objects
-      * \brief Policy to provide a thread-local default state for Object{}
-      */
-    class Defined
-    {
-        template<class>
-        friend class Handle;
-
-        template<class T>
-        static T *get() {
-            static thread_local T default_;
-            return &default_;
-        };
-    };
-
-    /** \ingroup objects
-      * \brief Policy to not provide a default state for Object{}
-      */
-    class Undefined
-    {
-        template<class>
-        friend class Handle;
-
-        template<class>
-        static constexpr std::nullptr_t get() { return nullptr; }
-    };
-
-    /** \ingroup objects
-      * \brief Policy for shared object access
-      */
-    class SharedAccess
-    {
-        template<class>
-        friend class Handle;
-
-        static void touch(void *) {}
-    };
-
-    /** \ingroup object
-      * \brief Policy for state duplication used by the copy-on-write policy
-      * \see CopyOnWrite
-      */
-    class Duplicate
-    {
-        template<class>
-        friend class Handle;
-
-        template<class T>
-        static T *copy(T *state)
-        {
-            static_assert(std::is_final<T>::value, "Default Object::Duplicate policy is only applicable on final classes");
-            assert(state);
-            return new T{*state};
-        }
-    };
-
-    /** \ingroup objects
-      * \brief Policy for copy-on-write object access
-      * \tparam T Object::State type
-      * \see Object::Duplicate
-      * \note You also have to implement your curstom Duplicate policy for virtual base classes.
-      */
-    class CopyOnWrite
-    {
-        template<class>
-        friend class Handle;
-
-        template<class T>
-        static void touch(T *&state)
-        {
-            assert(state);
-            if (state->useCount() > 1) {
-                T *oldState = state;
-                state = Duplicate::copy(state);
-                state->release();
-            }
-        }
-    };
-
-protected:
-    friend class PropertyBinding;
 
     /** \brief Reference counted object state
       */
@@ -215,19 +142,10 @@ protected:
             return static_cast<const T &>(*this);
         }
 
-    protected:
-        template<class> friend class Handle;
-        friend class CopyOnWrite;
-
-        /** Policy for dereferencing undefined references (Handle<T>{})
-          */
-        using Default = Undefined;
-
-        /** Policy for accessing objects references
-          */
-        using Access = SharedAccess;
-
     private:
+        template<class>
+        friend class Handle;
+
         void acquire()
         {
             useCount_.fetch_add(1, std::memory_order_release);
@@ -249,7 +167,21 @@ protected:
     static T alias(const State *state)
     {
         T target;
-        if (state) target.Object::me = Handle<State>::alias(state);
+        if (state) target.Object::me = Handle<State>{state, Alias{}};
+        return target;
+    }
+
+    template<class T>
+    T weak() const
+    {
+        return weak<T>(&Object::me());
+    }
+
+    template<class T>
+    static T weak(const State *state)
+    {
+        T target;
+        if (state) target.Object::me = Handle<State>{state, Weak{}};
         return target;
     }
 
@@ -279,6 +211,10 @@ protected:
 
     explicit Object(State *state, Alias):
         me{state, Alias{}}
+    {}
+
+    explicit Object(State *state, Weak):
+        me{state, Weak{}}
     {}
 
     Object &operator=(std::nullptr_t)

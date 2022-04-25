@@ -7,16 +7,16 @@ int main()
     using namespace cc;
     using namespace cc::ui;
 
-    Control control{gu(80), gu(60)};
-
-    ScrollBar scroll;
-    // scroll.orientation(Orientation::Horizontal);
-    scroll.visibleOffset(-gu(30));
-    scroll.totalExtent(gu(120));
-    scroll.autoHide(true);
-    control.add(scroll);
-
-    Window{control}.show();
+    Window{
+        Control{gu(80), gu(60)}
+        .add(
+            ScrollBar{}
+            // .orientation(Orientation::Horizontal)
+            .visibleOffset(-gu(30))
+            .totalExtent(gu(120))
+            .autoHide(true)
+        )
+    }.show();
 
     return Application{}.run();
 }

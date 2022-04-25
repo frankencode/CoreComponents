@@ -78,7 +78,7 @@ ListItem::ListItem():
 ListItem::ListItem(Out<ListItem> self):
     Control{new State}
 {
-    self = *this;
+    self = weak<ListItem>();
 }
 
 ListItem &ListItem::icon(const View &newValue)

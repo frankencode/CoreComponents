@@ -40,31 +40,34 @@ int main()
         if (run.text()[i] == ' ') fg = Color{};
     }
 
-    View view{640, 480};
-    view.paper(Color::White);
-    view.paint([=]{
-        GlyphRun wrappedRun = run.wrap(view.size()[0] - 2 * margins, TextAlign::Justify);
-        Painter p{view};
-        p.setPen(0xE0F0FF);
-        p.rectangle(Point{0, 0}, Size{margins, view.size()[1]});
-        p.rectangle(Point{view.size()[0]-margins, 0}, Size{margins, view.size()[1]});
-        p.fill();
-        p.setPen(0x000000);
-        p.showGlyphRun(
-            Point{margins, margins + fontSize},
-            wrappedRun,
-            [=](int i) {
-                if (fgColors.has(i)) return fgColors[i];
-                return Color{};
-            },
-            [=](int i) {
-                if (bgColors.has(i)) return bgColors[i];
-                return Color{};
-            }
-        );
-    });
+    View view;
 
-    Window{view}.show();
+    Window{
+        View{&view}
+        .size(640, 480)
+        .paper(Color::White)
+        .paint([=]{
+            GlyphRun wrappedRun = run.wrap(view.size()[0] - 2 * margins, TextAlign::Justify);
+            Painter p{view};
+            p.setPen(0xE0F0FF);
+            p.rectangle(Point{0, 0}, Size{margins, view.size()[1]});
+            p.rectangle(Point{view.size()[0]-margins, 0}, Size{margins, view.size()[1]});
+            p.fill();
+            p.setPen(0x000000);
+            p.showGlyphRun(
+                Point{margins, margins + fontSize},
+                wrappedRun,
+                [=](int i) {
+                    if (fgColors.has(i)) return fgColors[i];
+                    return Color{};
+                },
+                [=](int i) {
+                    if (bgColors.has(i)) return bgColors[i];
+                    return Color{};
+                }
+            );
+        })
+    }.show();
 
     return Application{}.run();
 }

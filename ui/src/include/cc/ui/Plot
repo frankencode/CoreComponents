@@ -32,7 +32,7 @@ public:
     explicit Plot(Out<Plot> self):
         View{new State}
     {
-        self = *this;
+        self = weak<Plot>();
     }
 
     /** Create a new plot of size (\a width, \a height)
@@ -41,7 +41,7 @@ public:
         View{new State}
     {
         size(Size{width, height});
-        self = *this;
+        self = weak<Plot>();
     }
 
     Rect scope() const { return me().scope(); } ///< %Get plot extents

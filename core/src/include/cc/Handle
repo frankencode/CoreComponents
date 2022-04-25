@@ -10,13 +10,21 @@
 
 #include <type_traits>
 #include <cstddef>
+#include <cstdint>
 #include <cassert>
 
 namespace cc {
 
+/** \internal
+  */
 struct Alias {};
 
-/** \class Handle cc/Handle
+/** \internal
+  */
+struct Weak {};
+
+/** \internal
+  * \class Handle cc/Handle
   * \ingroup objects
   * \brief Reference to an object state
   * \tparam T %Internal state type (needs to be inherited from Object::State)
@@ -25,50 +33,51 @@ template<class T>
 class Handle
 {
 public:
-    /** Create an default reference
+    /** Create a null reference
       */
-    Handle():
-        state_{T::Default::template get<T>()}
-    {}
+    Handle() = default;
 
     /** Create a null reference
       */
-    Handle(std::nullptr_t):
-        state_{nullptr}
-    {}
+    Handle(std::nullptr_t) {}
 
     /** Initialize with a newly created object state \a newState
       */
     Handle(T *newState):
-        state_{newState}
+        state_{encode(newState)}
     {
         assert(newState && newState->useCount() == 1);
     }
 
-    Handle(T *newState, Alias):
-        state_{newState}
-    {
-        newState->acquire();
-    }
-
-    /** Create an alias to an existing object state \a state
-      */
-    static Handle alias(const T *state)
+    Handle(T *state, Alias):
+        state_{encode(state)}
     {
         assert(state);
-
-        Handle b{AliasParam{}};
-        b.state_ = const_cast<T *>(state);
-        b.state_->acquire();
-        return b;
+        state->acquire();
     }
+
+    Handle(const T *state, Alias):
+        Handle{const_cast<T *>(state), Alias{}}
+    {}
+
+    Handle(T *state, Weak):
+        state_{encode(state, true)}
+    {
+        assert(state);
+    }
+
+    Handle(const T *state, Weak):
+        Handle{const_cast<T* >(state), Weak{}}
+    {}
 
     /** Initialize by reference \a other
       */
     Handle(const Handle &other):
         state_{other.state_}
     {
-        if (state_) state_->acquire();
+        if (state_) {
+            decode(state_)->acquire();
+        }
     }
 
     /** Initialize by right-side reference \a other
@@ -83,19 +92,23 @@ public:
       */
     ~Handle()
     {
-        if (state_) state_->release();
-        #ifndef NDEBUG
-        state_ = nullptr;
-        #endif
+        if (state_) {
+            if (!isWeak(state_)) {
+                decode(state_)->release();
+            }
+            #ifndef NDEBUG
+            state_ = nullptr;
+            #endif
+        }
     }
 
     /** Assign reference \a other
       */
     Handle &operator=(const Handle &other)
     {
-        if (state_) state_->release();
+        if (state_ && !isWeak(state_)) decode(state_)->release();
         state_ = other.state_;
-        if (state_) state_->acquire();
+        if (state_ && !isWeak(state_)) decode(state_)->acquire();
         return *this;
     }
 
@@ -103,7 +116,7 @@ public:
       */
     Handle &operator=(Handle &&other)
     {
-        if (state_) state_->release();
+        if (state_ && !isWeak(state_)) decode(state_)->release();
         state_ = other.state_;
         other.state_ = nullptr;
         return *this;
@@ -113,7 +126,7 @@ public:
       */
     Handle &operator=(std::nullptr_t)
     {
-        if (state_) state_->release();
+        if (state_ && !isWeak(state_)) decode(state_)->release();
         state_ = nullptr;
         return *this;
     }
@@ -122,8 +135,8 @@ public:
       */
     T &operator()()
     {
-        T::Access::touch(state_);
-        assert(state_);
+        T *state = decode(state_);
+        assert(state);
         return *state_;
     }
 
@@ -139,28 +152,28 @@ public:
       */
     operator bool() const
     {
-        return state_ != T::Default::template get<T>();
+        return state_;
     }
 
     /** Lower than operator
       */
     bool operator<(const Handle &b) const
     {
-        return state_ < b.state_;
+        return state() < b.state();
     }
 
     /** Equal to operator
       */
     bool operator==(const Handle &b) const
     {
-        return state_ == b.state_;
+        return state() == b.state();
     }
 
     /** Not equal to operator
       */
     bool operator!=(const Handle &b) const
     {
-        return state_ != b.state_;
+        return state() != b.state();
     }
 
     /** Statically cast to a different state type \a T2
@@ -176,7 +189,7 @@ public:
     template<class T2>
     T2 &as() {
         assert(state_);
-        return static_cast<T2 &>(*state_);
+        return static_cast<T2 &>(*decode(state_));
     }
 
     /** Check if this handle points to an object state of type T2
@@ -184,29 +197,59 @@ public:
     template<class T2>
     bool is() const
     {
-        return std::is_base_of<T2, T>::value || (state_ && dynamic_cast<const T2 *>(state_));
+        return std::is_base_of<T2, T>::value || (state_ && dynamic_cast<const T2 *>(decode(state_)));
     }
 
-    /** Explicitly break constness
+    /** Check if this handle is a weak reference
+      */
+    bool isWeak() const
+    {
+        return isWeak(state_);
+    }
+
+    /** \internal
+      * Explicitly break constness
       */
     T &mutate() const
     {
         assert(state_);
-        return *state_;
+        return *decode(state_);
     }
 
 private:
+    static T *encode(T *state, bool weak = false)
+    {
+        if (weak && state) {
+            return
+                reinterpret_cast<T *>(
+                    reinterpret_cast<uintptr_t>(state) | 1
+                );
+        }
+        return state;
+    }
+
+    static T *decode(T *state)
+    {
+        return
+            reinterpret_cast<T *>(
+                reinterpret_cast<uintptr_t>(state) & ~uintptr_t(1)
+            );
+    }
+
+    static bool isWeak(T *state)
+    {
+        return reinterpret_cast<uintptr_t>(state) & 1;
+    }
+
     template<class T2>
     friend bool operator<(const Handle<T2> &a, const T2 *b);
 
     template<class T2>
     friend bool operator<(const T2 *a, const Handle<T2> &b);
 
-    struct AliasParam {};
+    const T *state() const { return decode(state_); }
 
-    Handle(const AliasParam &) {}
-
-    T *state_;
+    T *state_ { nullptr };
 };
 
 /** Lower than operator
@@ -214,7 +257,7 @@ private:
 template<class T>
 inline bool operator<(const Handle<T> &a, const T *b)
 {
-    return a.state_ < b;
+    return a.state() < b;
 }
 
 /** Lower than operator
@@ -222,7 +265,7 @@ inline bool operator<(const Handle<T> &a, const T *b)
 template<class T>
 inline bool operator<(const T *a, const Handle<T> &b)
 {
-    return a < b.state_;
+    return a < b.state();
 }
 
 } // namespace cc

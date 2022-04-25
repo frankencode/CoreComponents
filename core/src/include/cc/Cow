@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \class Cow cc/basics
+/** \internal
+  * \class Cow cc/basics
   * \ingroup basics
   * \brief Copy-on-write aggregate
   * \tparam T Value type

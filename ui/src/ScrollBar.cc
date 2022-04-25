@@ -210,7 +210,7 @@ ScrollBar::ScrollBar():
 ScrollBar::ScrollBar(Out<ScrollBar> self):
     DragArea{new State}
 {
-    self = *this;
+    self = weak<ScrollBar>();
 }
 
 Orientation ScrollBar::orientation() const

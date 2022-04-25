@@ -15,7 +15,7 @@ namespace cc::ui {
 PasswordField::PasswordField(const String &label, Out<PasswordField> self):
     TextField{PasswordInput{}, label}
 {
-    self = *this;
+    self = weak<PasswordField>();
 }
 
 String PasswordField::password() const

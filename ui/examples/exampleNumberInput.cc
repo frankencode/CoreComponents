@@ -26,5 +26,5 @@ int main()
 
     input.focus(true);
 
-    return app().run();
+    return Application{}.run();
 }

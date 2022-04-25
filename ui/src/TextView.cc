@@ -48,7 +48,7 @@ TextView::TextView():
 TextView::TextView(Out<TextView> self):
     ListView{new State}
 {
-    self = *this;
+    self = weak<TextView>();
 }
 
 TextView::TextView(double width, double height):
@@ -60,7 +60,7 @@ TextView::TextView(double width, double height):
 TextView::TextView(const String &text, Out<TextView> self):
     ListView{new State{text}}
 {
-    self = *this;
+    self = weak<TextView>();
 }
 
 String TextView::text() const

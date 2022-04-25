@@ -23,6 +23,11 @@ int main()
         Flickable{
             sp(400), sp(500),
             Pane{}
+            .layout(
+                ColumnLayout{}
+                .margin(gap)
+                .spacing(gap)
+            )
             .add(TextField{"First name"})
             .add(TextField{"Middle name"})
             .add(TextField{"Last name"})
@@ -50,11 +55,6 @@ int main()
                 .trailing(Icon{Ideographic::VolumeHigh})
             )
             .add(TextField{"Country"})
-            .layout(
-                ColumnLayout{}
-                .margin(gap)
-                .spacing(gap)
-            )
         }
     }.show();
 

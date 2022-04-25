@@ -25,19 +25,19 @@ HtmlText::HtmlText():
 HtmlText::HtmlText(Out<Text> self):
     Text{new State}
 {
-    self = *this;
+    self = weak<HtmlText>();
 }
 
 HtmlText::HtmlText(const String &text, Out<Text> self):
     Text{new State{text}}
 {
-    self = *this;
+    self = weak<HtmlText>();
 }
 
 HtmlText::HtmlText(const String &text, Font font, Out<Text> self):
     Text{new State{text, font}}
 {
-    self = *this;
+    self = weak<HtmlText>();
 }
 
 } // namespace cc::ui

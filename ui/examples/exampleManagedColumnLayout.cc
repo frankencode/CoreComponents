@@ -37,10 +37,12 @@ int main()
             .add(Text{"◦ Item B C D"})
             .add(Text{"◦ Item C D E"})
         )
+        .attach([=]{
+            CC_INSPECT(view.minSize());
+            CC_INSPECT(view.maxSize());
+        })
     }.show();
 
-    CC_INSPECT(view.minSize());
-    CC_INSPECT(view.maxSize());
 
     return Application{}.run();
 }

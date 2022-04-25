@@ -140,7 +140,7 @@ ListView::ListView():
 ListView::ListView(Out<ListView> self):
     Flickable{new State}
 {
-    self = *this;
+    self = weak<ListView>();
 }
 
 ListView::ListView(double width, double height):

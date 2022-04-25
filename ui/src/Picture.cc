@@ -32,19 +32,19 @@ Picture::Picture():
 Picture::Picture(Out<Picture> self):
     View{new State}
 {
-    self = *this;
+    self = weak<Picture>();
 }
 
 Picture::Picture(const Visual &visual, Color color, Out<Picture> self):
     View{new State{visual, color}}
 {
-    self = *this;
+    self = weak<Picture>();
 }
 
 Picture::Picture(Ideographic ch, double size, Color color, Out<Picture> self):
     View{new State{style().ideograph(ch, size), color}}
 {
-    self = *this;
+    self = weak<Picture>();
 }
 
 } // namespace cc::ui

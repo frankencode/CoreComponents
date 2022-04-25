@@ -145,7 +145,7 @@ Switch::Switch():
 Switch::Switch(Out<Switch> self):
     InputControl{new State}
 {
-    self = *this;
+    self = weak<Switch>();
 }
 
 bool Switch::value() const

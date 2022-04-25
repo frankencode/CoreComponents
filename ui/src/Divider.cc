@@ -51,7 +51,7 @@ Divider::Divider():
 Divider::Divider(Out<Divider> self):
     View{new State}
 {
-    self = *this;
+    self = weak<Divider>();
 }
 
 } // namespace cc::ui

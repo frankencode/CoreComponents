@@ -470,7 +470,7 @@ TextInput::TextInput(Out<TextInput> self):
 TextInput::TextInput(const String &text, Out<TextInput> self):
     InputControl{new State{TextLineEditor{text}}}
 {
-    self = *this;
+    self = weak<TextInput>();
 }
 
 TextInput::TextInput(const TextEditor &editor):

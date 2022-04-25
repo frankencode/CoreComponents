@@ -1,5 +1,6 @@
 #include <cc/ui/Application>
 #include <cc/ui/Painter>
+#include <cc/DEBUG>
 
 int main()
 {
@@ -25,6 +26,8 @@ int main()
             }
         })
     }.show();
+
+    CC_INSPECT(view.isWeak());
 
     return Application{}.run();
 }

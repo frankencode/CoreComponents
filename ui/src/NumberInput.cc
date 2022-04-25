@@ -116,7 +116,7 @@ NumberInput::NumberInput():
 NumberInput::NumberInput(Out<NumberInput> self):
     TextInput{new State}
 {
-    self = *this;
+    self = weak<NumberInput>();
 }
 
 double NumberInput::min() const

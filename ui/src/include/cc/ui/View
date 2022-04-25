@@ -57,7 +57,7 @@ public:
     explicit View(Out<View> self):
         View{new State}
     {
-        self = *this;
+        self = weak<View>();
     }
 
     /** Create a new view of size (\a width, \a height)
@@ -358,6 +358,8 @@ public:
 
         State &me() { return Object::me.as<State>(); }
         const State &me() const { return Object::me.as<State>(); }
+
+        State *operator->() { return &me(); }
     };
 
     Layout layout() const { return me().layout(); } ///< Get layout
@@ -559,18 +561,18 @@ protected:
         double width() const { return width_(); } ///< Get width
         double height() const { return height_(); } ///< Get height
 
-        double innerWidth() const { return width() - (layout_ ? 2 * layout_.margin()[0] : 0); } ///< Get inner width
-        double innerHeight() const { return height() - (layout_ ? 2 * layout_.margin()[1] : 0); } ///< Get inner height
+        double innerWidth() const { return width() - (layout_() ? 2 * layout_().margin()[0] : 0); } ///< Get inner width
+        double innerHeight() const { return height() - (layout_() ? 2 * layout_().margin()[1] : 0); } ///< Get inner height
 
-        Layout layout() const { return layout_; } ///< Get the layout
+        Layout layout() const { return layout_(); } ///< Get the layout
         double expandableWidth(double width) const; ///< Get the expandable width of this view within its parent layout
 
         /** %Set the layout
           */
         void layout(const Layout &newValue)
         {
-            layout_ = newValue;
-            layout_.me().view_ = this;
+            layout_(newValue);
+            layout_()->view_ = this;
         }
 
         Point mapToGlobal(Point l) const; ///< \copydoc View::mapToGlobal()
@@ -661,6 +663,7 @@ protected:
 
         Property<View::State *> parent_ { nullptr };
         Property<Object::State *> window_ { [this]{ return parent_() ? parent_()->window_() : nullptr; } };
+        Property<Layout> layout_;
 
         Property<double> width_ { [this]{ return size()[0]; } };
         Property<double> height_ { [this]{ return size()[1]; } };
@@ -670,7 +673,6 @@ protected:
         List<Object> attachments_;
 
         Image image_;
-        Layout layout_;
         Object context_;
         void *trackingHandle_ { nullptr };
     };

@@ -91,7 +91,7 @@ void Button::State::setText(const String &newValue)
     }
     else {
         Label newLabel;
-        Label{&newLabel}
+        newLabel
             .color([this]{
                 return focus() ?
                     theme().buttonTextColor(pressed()) :
@@ -117,7 +117,7 @@ void Button::State::defineText(Definition<String> &&f)
     }
     else {
         Label newLabel;
-        Label{&newLabel}
+        newLabel
             .color([this]{
                 return focus() ?
                     theme().buttonTextColor(pressed()) :
@@ -165,7 +165,7 @@ Button::Button():
 Button::Button(Out<Button> self):
     InputControl{new State}
 {
-    self = *this;
+    self = weak<Button>();
 }
 
 String Button::text() const

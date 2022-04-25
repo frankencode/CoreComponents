@@ -58,7 +58,7 @@ Shadow::Shadow():
 Shadow::Shadow(Out<Shadow> self):
     View{new State}
 {
-    self = *this;
+    self = weak<Shadow>();
 }
 
 Step Shadow::offset() const

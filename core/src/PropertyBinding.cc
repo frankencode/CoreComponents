@@ -53,8 +53,8 @@ void PropertyBinding::preAccess() const
 
     PropertyBinding *activeBinding = PropertyActivator::activeBinding();
     if (activeBinding && (activeBinding != this)) {
-        if (activeBinding->dependencies_.insert(Handle<PropertyBinding>::alias(const_cast<PropertyBinding *>(this))))
-            subscribers_.insert(Handle<PropertyBinding>::alias(activeBinding));
+        if (activeBinding->dependencies_.insert(Handle<PropertyBinding>{this, Alias{}}))
+            subscribers_.insert(Handle<PropertyBinding>{activeBinding, Alias{}});
     }
 }
 

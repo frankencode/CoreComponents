@@ -129,7 +129,7 @@ ListMenu::ListMenu():
 ListMenu::ListMenu(Out<ListMenu> self):
     Flickable{new State}
 {
-    self = *this;
+    self = weak<ListMenu>();
 }
 
 ListMenu::ListMenu(double width, double height):

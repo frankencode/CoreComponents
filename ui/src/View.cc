@@ -60,9 +60,9 @@ View::State::State()
 
 View::State::~State()
 {
-    if (layout_) {
+    if (layout_()) {
         // destroy the layout before releasing the children for efficiency
-        layout_ = Layout{};
+        layout_(Layout{});
     }
 }
 
@@ -265,12 +265,12 @@ Image View::State::image()
 
 View View::State::self() const
 {
-    return Object::alias<View>(this);
+    return alias<View>(this);
 }
 
 Window View::State::window() const
 {
-    return window_() ? Object::alias<Window>(window_()) : Window{};
+    return window_() ? alias<Window>(window_()) : Window{};
 }
 
 bool View::State::isHandheld() const

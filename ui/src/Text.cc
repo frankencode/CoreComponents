@@ -17,25 +17,25 @@ Text::Text():
 Text::Text(Out<Text> self):
     View{new State}
 {
-    self = *this;
+    self = weak<Text>();
 }
 
 Text::Text(const String &text, Out<Text> self):
     View{new State{text}}
 {
-    self = *this;
+    self = weak<Text>();
 }
 
 Text::Text(const String &text, Font font, Out<Text> self):
     View{new State{text, font}}
 {
-    self = *this;
+    self = weak<Text>();
 }
 
 Text::Text(const String &text, Font font, bool html, Out<Text> self):
     View{new State{text, font, html}}
 {
-    self = *this;
+    self = weak<Text>();
 }
 
 Text::Text(State *newState):

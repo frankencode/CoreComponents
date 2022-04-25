@@ -78,8 +78,6 @@ String InvalidAddressSyntax::message() const
 
 struct SocketAddress::State: public Object::State
 {
-    using Access = CopyOnWrite;
-
     static ProtocolFamily guessFamily(const String &address)
     {
         ProtocolFamily family = ProtocolFamily::Unspec;

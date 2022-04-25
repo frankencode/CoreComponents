@@ -31,7 +31,7 @@ public:
     explicit Control(Out<Control> self):
         View{new State}
     {
-        self = *this;
+        self = weak<Control>();
     }
 
     /** Create a new top-level control of size (\a width, \a height)

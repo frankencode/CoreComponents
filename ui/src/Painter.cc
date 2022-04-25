@@ -137,6 +137,7 @@ Rect Painter::fillExtents() const
 void Painter::showGlyphRun(Point pos, const GlyphRun &glyphRun)
 {
     FtGlyphRun ftGlyphRun = glyphRun.as<FtGlyphRun>();
+    if (!glyphRun.scaledFont()) return;
     auto ftScaledFont = glyphRun.scaledFont().as<FtScaledFont>();
 
     if (ftGlyphRun.text().count() == 0) return;

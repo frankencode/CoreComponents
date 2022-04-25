@@ -4,7 +4,6 @@
 #include <cc/ui/SliderField>
 #include <cc/ui/NumberCell>
 #include <cc/ui/Icon>
-#include <cc/stdio>
 
 int main()
 {

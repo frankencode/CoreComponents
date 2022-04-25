@@ -27,7 +27,7 @@ struct Slider::State: public InputControl::State
         size([this]{ return preferredSize(); });
         updateTrackWidth();
 
-        DragArea{&dragArea_}
+        dragArea_
         .cursor([this]{
             return
                 thumb_.containsLocal(dragArea_.mapToChild(thumb_, dragArea_.pointerPos())) ?
@@ -212,7 +212,7 @@ Slider::Slider():
 Slider::Slider(Out<Slider> self):
     InputControl{new State}
 {
-    self = *this;
+    self = weak<Slider>();
 }
 
 double Slider::min() const

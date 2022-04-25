@@ -120,8 +120,6 @@ void Dir::deplete(const String &path)
 
 struct Dir::State: public Object::State
 {
-    using Default = Defined;
-
     String path;
     DIR *dir { nullptr };
 

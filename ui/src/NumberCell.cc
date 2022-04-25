@@ -67,7 +67,7 @@ NumberCell::NumberCell():
 NumberCell::NumberCell(Out<NumberCell> self):
     Control{new State}
 {
-    self = *this;
+    self = weak<NumberCell>();
 }
 
 double NumberCell::min() const

@@ -32,14 +32,14 @@ public:
       */
     TextRun(const String &text, const Font &font = Font{});
 
-    /** Typeset \a text (plain text) with \a font and append glyphs to this text run
+    /** Typeset \a text (plain text) with \a font
       */
     void append(const String &text, const Font &font = Font{})
     {
         me().append(text, font);
     }
 
-    /** Typeset \a text (HTML text) with \a font and append glyphs to this text run
+    /** Typeset \a text (HTML text) with \a font
       */
     void appendHtml(const String &text, const Font &font = Font{});
 

@@ -308,13 +308,13 @@ TextField::TextField():
 TextField::TextField(Out<TextField> self):
     Control{new State}
 {
-    self = *this;
+    self = weak<TextField>();
 }
 
 TextField::TextField(const String &label, Out<TextField> self):
     Control{new State{label}}
 {
-    self = *this;
+    self = weak<TextField>();
 }
 
 TextField::TextField(const TextInput &input, const String &title):

@@ -31,7 +31,7 @@ public:
     explicit Flickable(Out<Flickable> self):
         Control{new State}
     {
-        self = *this;
+        self = weak<Flickable>();
     }
 
     /** Create a new flickable of given size (\a width, \a height)

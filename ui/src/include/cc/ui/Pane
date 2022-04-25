@@ -30,7 +30,7 @@ public:
     explicit Pane(Out<Pane> self):
         View{new State}
     {
-        self = *this;
+        self = weak<Pane>();
     }
 
     /** Create a new pane of size (\a width, \a height)

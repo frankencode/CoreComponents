@@ -65,7 +65,7 @@ SwitchField::SwitchField():
 SwitchField::SwitchField(Out<SwitchField> self):
     View{new State}
 {
-    self = *this;
+    self = weak<SwitchField>();
 }
 
 String SwitchField::text() const

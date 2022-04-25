@@ -21,10 +21,11 @@ int main()
         .add(Label{"Temperature"})
         .add(Slider{})
         .add(Label{"Degree Celsius"})
+        .attach([=]{
+            CC_INSPECT(view.minSize());
+            CC_INSPECT(view.maxSize());
+        })
     }.show();
 
-    CC_INSPECT(view.minSize());
-    CC_INSPECT(view.maxSize());
-
-    return app().run();
+    return Application{}.run();
 }

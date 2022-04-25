@@ -31,7 +31,7 @@ public:
     explicit DragArea(Out<DragArea> self):
         Control{new State}
     {
-        self = *this;
+        self = weak<DragArea>();
     }
 
     /** Create a new drag area of given size (\a width, \a height)

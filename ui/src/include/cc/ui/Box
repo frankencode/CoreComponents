@@ -30,7 +30,7 @@ public:
     explicit Box(Out<Box> self):
         View{new State}
     {
-        self = *this;
+        self = weak<Box>();
     }
 
     /** Create a box of size (\a width, \a height)

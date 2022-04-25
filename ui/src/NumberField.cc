@@ -15,7 +15,7 @@ namespace cc::ui {
 NumberField::NumberField(const String &label, Out<NumberField> self):
     TextField{NumberInput{}, label}
 {
-    self = *this;
+    self = weak<NumberField>();
 }
 
 double NumberField::min() const

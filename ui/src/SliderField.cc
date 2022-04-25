@@ -116,7 +116,7 @@ SliderField::SliderField():
 SliderField::SliderField(Out<SliderField> self):
     View{new State}
 {
-    self = *this;
+    self = weak<SliderField>();
 }
 
 SliderField &SliderField::leading(const View &view)

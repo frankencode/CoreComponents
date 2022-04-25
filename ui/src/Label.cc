@@ -132,19 +132,19 @@ Label::Label():
 Label::Label(Out<Label> self):
     View{new State}
 {
-    self = *this;
+    self = weak<Label>();
 }
 
 Label::Label(const String &text, Out<Label> self):
     View{new State{text}}
 {
-    self = *this;
+    self = weak<Label>();
 }
 
 Label::Label(const String &text, const Font &font, Out<Label> self):
     View{new State{text, font}}
 {
-    self = *this;
+    self = weak<Label>();
 }
 
 String Label::text() const

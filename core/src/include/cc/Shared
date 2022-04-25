@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \class Shared cc/basics
+/** \internal
+  * \class Shared cc/basics
   * \ingroup basics
   * \brief %Shared aggregate
   * \tparam T Type of shared data structure
