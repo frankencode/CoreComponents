@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/ui/SdlWindow>
-#include <cc/ui/SdlApplication>
-#include <cc/ui/SdlPlatformError>
+#include <cc/SdlWindow>
+#include <cc/SdlApplication>
+#include <cc/SdlPlatformError>
 #ifndef NDEBUG
 #include <cc/stdio>
 #endif
 #include <cassert>
 
-namespace cc::ui {
+namespace cc {
 
 class SdlContext final: public Object
 {
@@ -403,4 +403,4 @@ void SdlWindow::State::renderTexture(SDL_Renderer *sdlRenderer, const View &view
     }
 }
 
-} // namespace cc::ui
+} // namespace cc

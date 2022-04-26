@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Visual>
+#include <cc/Font>
+
+namespace cc {
+
+/** \class GlyphVisual cc/GlyphVisual
+  * \ingroup ui
+  * \brief %Visual representation of a single glyph
+  */
+class GlyphVisual final: public Visual
+{
+public:
+    /** Create a new glyph visual
+      * \param ch %Unicode point
+      * \param font %Font to use
+      */
+    explicit GlyphVisual(uint32_t ch, const Font &font = Font{});
+
+protected:
+    struct State;
+};
+
+} // namespace cc

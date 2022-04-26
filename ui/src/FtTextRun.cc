@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/FtTextRun>
-#include <cc/ui/FtFontManager>
-#include <cc/ui/FtTextCursor>
+#include <cc/FtTextRun>
+#include <cc/FtFontManager>
+#include <cc/FtTextCursor>
 
-namespace cc::ui {
+namespace cc {
 
 FtTextRun FtTextRun::State::self() const
 {
@@ -321,4 +321,4 @@ Point FtTextRun::State::advance(const FtTextCursor &cursor) const
     return advance_;
 }
 
-} // namespace cc::ui
+} // namespace cc

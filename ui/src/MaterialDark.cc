@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/MaterialDark>
+#include <cc/MaterialDark>
 #include <cc/colors/Material>
 
-namespace cc::ui {
+namespace cc {
 
 using color::Material;
 
@@ -71,4 +71,4 @@ MaterialDark::MaterialDark():
     Theme{new State}
 {}
 
-} // namespace cc::ui
+} // namespace cc

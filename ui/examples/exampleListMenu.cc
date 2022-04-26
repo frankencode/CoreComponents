@@ -1,14 +1,13 @@
-#include <cc/ui/Application>
-#include <cc/ui/Picture>
-#include <cc/ui/ListMenu>
-#include <cc/ui/Label>
+#include <cc/Application>
+#include <cc/Picture>
+#include <cc/ListMenu>
+#include <cc/Label>
 #include <cc/Format>
 #include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     ListMenu menu{640, 480};
     // menu.header(Label{"Test 1, 2, 3, ..."}.margin(sp(16)));

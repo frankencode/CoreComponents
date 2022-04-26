@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/PasswordEditor>
+#include <cc/PasswordEditor>
 #include <cc/Unicode>
 
-namespace cc::ui {
+namespace cc {
 
 PasswordEditor::State::State(const String &bullet):
     bullet_{bullet}
@@ -100,4 +100,4 @@ const PasswordEditor::State &PasswordEditor::me() const
     return Object::me.as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

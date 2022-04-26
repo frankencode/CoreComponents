@@ -1,0 +1,92 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Timer>
+#include <cc/DisplayManager>
+#include <cc/Property>
+#include <cc/System>
+
+namespace cc {
+
+using EasingCurve = std::function<double(double)>;
+
+/** \internal
+  * \todo specialize for Color
+  */
+template<class T>
+class Transition: public Object, private PropertyMutator<T>
+{
+public:
+    Transition(Property<T> &property, const EasingCurve &curve, double duration):
+        Object{new State{property, curve, duration}}
+    {
+        property.restrict(*this);
+    }
+
+    bool operator()(T &newValue, T oldValue)
+    {
+        if (oldValue != newValue) {
+            if (me().timer_.isActive()) {
+                me().timer_.stop();
+                return true;
+            }
+            me().oldValue_ = oldValue;
+            me().newValue_ = newValue;
+            me().timer_.start();
+        }
+        return false;
+    }
+
+private:
+    struct State: public Object::State
+    {
+        State(Property<T> &property, const EasingCurve &curve, double duration):
+            alias_{&property},
+            curve_{curve},
+            duration_{duration},
+            timer_{1./DisplayManager{}.refreshRate()}
+        {
+            timer_.onTimeout([this]{timeout();});
+        }
+
+        void timeout()
+        {
+            const double t0 = timer_.startTime();
+            const double t1 = t0 + duration_;
+            const double t = System::now();
+
+            if (t >= t1) {
+                PropertyMutator<T>::store(alias_, newValue_);
+                timer_.stop();
+            }
+            else {
+                const T &a = oldValue_;
+                const T &b = newValue_;
+                double s = curve_((t - t0) / (t1 - t0));
+                PropertyMutator<T>::store(
+                    alias_,
+                    a * (1 - s) + b * s
+                );
+            }
+        }
+
+        Property<T> alias_;
+        EasingCurve curve_;
+        double duration_;
+        Timer timer_;
+        T oldValue_;
+        T newValue_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

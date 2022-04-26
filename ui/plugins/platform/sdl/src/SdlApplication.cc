@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/ui/SdlApplication>
-#include <cc/ui/SdlWindow>
-#include <cc/ui/SdlCursor>
-#include <cc/ui/SdlPlatformError>
-#include <cc/ui/SdlTimeMaster>
+#include <cc/SdlApplication>
+#include <cc/SdlWindow>
+#include <cc/SdlCursor>
+#include <cc/SdlPlatformError>
+#include <cc/SdlTimeMaster>
 #include <cc/DEBUG>
 #include <SDL2/SDL.h>
 
-namespace cc::ui {
+namespace cc {
 
 struct SdlApplication::State: public Application::State
 {
@@ -414,4 +414,4 @@ SdlApplication::State &SdlApplication::me()
     return Object::me.as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/ui/Image>
-#include <cc/ui/shadowBlur>
+#include <cc/Image>
+#include <cc/shadowBlur>
 #include <cairo/cairo.h>
 #include <algorithm>
 #include <cassert>
 
-namespace cc::ui {
+namespace cc {
 
 Image::State::~State()
 {
@@ -105,7 +105,7 @@ bool Image::checkOpaque() const
 
 void Image::shadowBlur(int radius, Color shadowColor)
 {
-    cc::ui::shadowBlur(*this, radius, shadowColor);
+    cc::shadowBlur(*this, radius, shadowColor);
 }
 
-} // namespace cc::ui
+} // namespace cc

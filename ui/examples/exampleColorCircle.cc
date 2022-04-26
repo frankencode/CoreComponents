@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/Painter>
+#include <cc/Application>
+#include <cc/Painter>
 #include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     View view;
 

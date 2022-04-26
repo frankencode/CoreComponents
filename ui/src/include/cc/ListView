@@ -1,0 +1,68 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Flickable>
+
+namespace cc {
+
+/** \class ListView qh/ui/ListView
+  * \ingroup ui
+  * \brief List view
+  * A ListView shows a vertically scrollable list of items of various dimensions.
+  */
+class ListView: public Flickable
+{
+public:
+    /** Create a primordial list view
+      */
+    ListView();
+
+    /** Create a new list view
+      */
+    explicit ListView(Out<ListView> self);
+
+    /** Create a new list view of size (\a width, \a height)
+      */
+    ListView(double width, double height);
+
+    View header() const; ///< Get the header
+    ListView &header(const View &newValue); ///< %Set the header
+
+    View footer() const; ///< Get the footer
+    ListView &footer(const View &newValue); ///< %Set the footer
+
+    void deplete(); ///< Remove all children (list items)
+
+protected:
+    class Pane;
+
+    struct State: public Flickable::State
+    {
+        State();
+
+        void deplete();
+
+        Property<View> header;
+        Property<View> footer;
+    };
+
+    explicit ListView(State *newState):
+        Flickable{newState}
+    {}
+
+    explicit ListView(CreateState onDemand):
+        Flickable{onDemand}
+    {}
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/ManagedColumnLayout>
-#include <cc/ui/Window>
+#include <cc/ManagedColumnLayout>
+#include <cc/Window>
 
-namespace cc::ui {
+namespace cc {
 
 struct ManagedColumnLayout::State final: public View::Layout::State
 {
@@ -307,4 +307,4 @@ const ManagedColumnLayout::State& ManagedColumnLayout::me() const
     return Object::me.as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

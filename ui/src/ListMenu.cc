@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/ListMenu>
+#include <cc/ListMenu>
 
-namespace cc::ui {
+namespace cc {
 
 class ListMenu::Pane final: public View
 {
@@ -178,4 +178,4 @@ const ListMenu::State &ListMenu::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

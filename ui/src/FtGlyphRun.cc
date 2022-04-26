@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/FtGlyphRun>
+#include <cc/FtGlyphRun>
 
-namespace cc::ui {
+namespace cc {
 
 FtGlyphRun::State::State(const State &other):
     GlyphRun::State{other},
@@ -271,4 +271,4 @@ FtGlyphRun::FtGlyphRun(const String &text, const Font &font, const Point &origin
     GlyphRun{new State{text, font, origin}}
 {}
 
-} // namespace cc::ui
+} // namespace cc

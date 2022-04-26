@@ -8,9 +8,9 @@
 
 #include <cc/PluginLoader>
 
-namespace cc::ui {
+namespace cc {
 
 CC_PLUGIN_GROUP_LOADER(platform)
 CC_PLUGIN_GROUP_LOADER(style)
 
-} // namespace cc::ui
+} // namespace cc

@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/Divider>
+#include <cc/Divider>
 
-namespace cc::ui {
+namespace cc {
 
 Divider::State::State()
 {
@@ -54,4 +54,4 @@ Divider::Divider(Out<Divider> self):
     self = weak<Divider>();
 }
 
-} // namespace cc::ui
+} // namespace cc

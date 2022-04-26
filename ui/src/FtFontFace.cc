@@ -6,11 +6,10 @@
  *
  */
 
-#include <cc/ui/FtFontFace>
-#include <cc/ui/exceptions>
+#include <cc/FtFontFace>
 #include <cc/input>
 
-namespace cc::ui {
+namespace cc {
 
 class FtFontError: public FontError
 {
@@ -67,4 +66,4 @@ const FtFontFace::State &FtFontFace::me() const
     return Object::me.as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

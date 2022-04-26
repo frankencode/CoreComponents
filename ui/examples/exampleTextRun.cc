@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/Painter>
-#include <cc/ui/TextRun>
+#include <cc/Application>
+#include <cc/Painter>
+#include <cc/TextRun>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     const double margins = 20;
 

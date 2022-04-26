@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/ImageView>
+#include <cc/ImageView>
 
-namespace cc::ui {
+namespace cc {
 
 ImageView::State::State(const Image &initImage):
     displayImage{initImage}
@@ -41,4 +41,4 @@ ImageView::ImageView(const Image &displayImage, Out<ImageView> self):
     self = weak<ImageView>();
 }
 
-} // namespace cc::ui
+} // namespace cc

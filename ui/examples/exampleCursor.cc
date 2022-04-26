@@ -1,12 +1,11 @@
-#include <cc/ui/Application>
-#include <cc/ui/ColumnLayout>
-#include <cc/ui/Label>
-#include <cc/ui/Control>
+#include <cc/Application>
+#include <cc/ColumnLayout>
+#include <cc/Label>
+#include <cc/Control>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Window{
         View{gu(80), gu(80)}

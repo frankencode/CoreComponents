@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/TextState>
+#include <cc/TextState>
 
-namespace cc::ui {
+namespace cc {
 
 Text::Text():
     View{onDemand<State>}
@@ -169,4 +169,4 @@ const Text::State &Text::me() const
     return Object::me.as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

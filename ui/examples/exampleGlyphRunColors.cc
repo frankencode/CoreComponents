@@ -1,12 +1,11 @@
-#include <cc/ui/Application>
-#include <cc/ui/GlyphRun>
-#include <cc/ui/Painter>
+#include <cc/Application>
+#include <cc/GlyphRun>
+#include <cc/Painter>
 #include <cc/Random>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     // Application{}.fontSmoothing(FontSmoothing::RgbSubpixel);
 

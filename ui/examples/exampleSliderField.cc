@@ -1,14 +1,13 @@
-#include <cc/ui/Application>
-#include <cc/ui/ColumnLayout>
-#include <cc/ui/Divider>
-#include <cc/ui/SliderField>
-#include <cc/ui/NumberCell>
-#include <cc/ui/Icon>
+#include <cc/Application>
+#include <cc/ColumnLayout>
+#include <cc/Divider>
+#include <cc/SliderField>
+#include <cc/NumberCell>
+#include <cc/Icon>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Window{
         View{sp(400), sp(500)}

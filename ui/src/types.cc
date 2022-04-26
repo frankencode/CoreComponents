@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/types>
-#include <cc/ui/DisplayManager>
-#include <cc/ui/Application>
+#include <cc/types>
+#include <cc/DisplayManager>
+#include <cc/Application>
 #include <cc/Unicode>
 
-namespace cc::ui {
+namespace cc {
 
 bool textWrapBehindDefault(const String &text, long byteOffset, long byteCount)
 {
@@ -61,4 +61,4 @@ double gu(int n)
     return style().gridUnit() * n;
 }
 
-} // namespace cc::ui
+} // namespace cc

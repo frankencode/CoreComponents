@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/Rect>
+#include <cc/Rect>
 
 namespace cc {
 
-String str(const cc::ui::Rect &rect)
+String str(const cc::Rect &rect)
 {
     return Format{}
         << "Rect {\n"
@@ -19,7 +19,7 @@ String str(const cc::ui::Rect &rect)
         << "}";
 }
 
-String fixed(const cc::ui::Rect &rect, int ni, int nf)
+String fixed(const cc::Rect &rect, int ni, int nf)
 {
     return Format{}
         << "Rect {\n"
@@ -28,7 +28,7 @@ String fixed(const cc::ui::Rect &rect, int ni, int nf)
         << "}";
 }
 
-String fixed(const cc::ui::Rect &rect, int nf)
+String fixed(const cc::Rect &rect, int nf)
 {
     return fixed(rect, 0, nf);
 }

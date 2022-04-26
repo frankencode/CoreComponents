@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/TimeMaster>
-#include <cc/ui/PlatformPlugin>
+#include <cc/TimeMaster>
+#include <cc/PlatformPlugin>
 
-namespace cc::ui {
+namespace cc {
 
 TimeMaster::TimeMaster()
 {
@@ -31,4 +31,4 @@ TimeMaster::State::~State()
     worker_.shutdown();
 }
 
-} // namespace cc::ui
+} // namespace cc

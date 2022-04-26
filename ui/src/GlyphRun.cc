@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/ui/GlyphRun>
-#include <cc/ui/FontManager>
+#include <cc/GlyphRun>
+#include <cc/FontManager>
 
-namespace cc::ui {
+namespace cc {
 
 GlyphRun::GlyphRun(const String &text, const Font &font, const Point &origin)
 {
     *this = FontManager{}.typeset(text, font, origin);
 }
 
-} // namespace cc::ui
+} // namespace cc

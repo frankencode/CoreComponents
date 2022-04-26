@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/TextRun>
-#include <cc/ui/FontManager>
+#include <cc/TextRun>
+#include <cc/FontManager>
 #include <cc/Queue>
 #include <limits>
 
-namespace cc::ui {
+namespace cc {
 
 TextRun::TextRun()
 {

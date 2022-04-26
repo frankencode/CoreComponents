@@ -6,17 +6,17 @@
  *
  */
 
-#include <cc/ui/IndustrialStylePlugin>
-#include <cc/ui/FontManager>
-#include <cc/ui/MaterialLight>
-#include <cc/ui/GlyphVisual>
+#include <cc/IndustrialStylePlugin>
+#include <cc/FontManager>
+#include <cc/MaterialLight>
+#include <cc/GlyphVisual>
 #include <cc/File>
 #include <cc/Dir>
 #include <cc/Bundle>
 #include <cc/Registration>
 #include <cc/DEBUG>
 
-namespace cc::ui {
+namespace cc {
 
 struct IndustrialStylePlugin::State: public StylePlugin::State
 {
@@ -105,4 +105,4 @@ IndustrialStylePlugin::IndustrialStylePlugin():
 
 CC_REGISTRATION(IndustrialStylePlugin);
 
-} // namespace cc::ui
+} // namespace cc

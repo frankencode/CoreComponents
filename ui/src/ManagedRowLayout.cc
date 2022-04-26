@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/ManagedRowLayout>
-#include <cc/ui/Window>
+#include <cc/ManagedRowLayout>
+#include <cc/Window>
 
-namespace cc::ui {
+namespace cc {
 
 struct ManagedRowLayout::State final: public View::Layout::State
 {

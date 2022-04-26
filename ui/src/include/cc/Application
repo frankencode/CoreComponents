@@ -1,0 +1,144 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Timer>
+#include <cc/Window>
+#include <cc/Cursor>
+#include <cc/Control>
+#include <cc/Singleton>
+#include <cc/Call>
+
+namespace cc {
+
+class Flickable;
+
+/** \class Application cc/Application
+  * \ingroup ui
+  * \brief Global application state
+  */
+class Application: public Singleton
+{
+public:
+    Application(); ///< Get global application state (initializes on first call)
+    Application(int argc, char *argv[]); ///< Initialize global application state
+
+    int run() { return me().run(); } ///< Run the application's event loop
+
+    Control hoverControl() const { return me().hoverControl(); } ///< The control the pointer is currently hovering over
+    Control pressedControl() const { return me().pressedControl(); } ///< The control which is currently pressed by the user
+    Control focusControl() const { return me().focusControl(); } ///< The control which currently holds the input focus
+
+    Window focusWindow() const { return me().focusWindow(); } ///< The window which currently holds the input focus
+
+    double textZoom() const { return me().textZoom(); } ///< Get the text zoom factor
+    Application &textZoom(Definition<double> &&f) { me().textZoom(std::move(f)); return *this; } ///< Define the text zoom factor
+    Application &textZoom(double newValue) { me().textZoom = newValue; return *this; } ///< %Set the text zoom factor
+
+    FontSmoothing fontSmoothing() const; ///< Get the application default font smoothing
+    Application &fontSmoothing(FontSmoothing newValue) { me().fontSmoothing_ = newValue; return *this; } ///< %Set the application default font smoothing
+
+    String clipboardText() const { return me().getClipboardText(); } ///< Get the current clipboard text
+    Application &clipboardText(const String &text) { me().setClipboardText(text); return *this; } ///< %Set the current clipboard text
+
+    double minMouseDragDistance() const { return me().minMouseDragDistance(); } ///< Get the minimal mouse drag distance
+    Application &minMouseDragDistance(double newValue) { me().minMouseDragDistance(newValue); return *this; } ///< %Set the minimal mouse drag distance
+
+    double minFingerDragDistance() const { return me().minFingerDragDistance(); } ///< Get the minimal touch input drag distance
+    Application &minFingerDragDistance(double newValue) { me().minFingerDragDistance(newValue); return *this; } ///< %Set the minimal touch input drag distance
+
+    bool pointerIsDragged(const PointerEvent &event, Point dragStart) const; ///< %Check if this is a drag operation
+
+    /** Push a custom event to the application's event loop
+      * \param doNext %Function which will be evaluated in the application's foreground thread
+      * \note This function is thread-safe.
+      */
+    void postEvent(Call<void()> &&doNext);
+
+protected:
+    friend class Window;
+    friend class Control;
+    friend class Flickable;
+    friend class Cursor;
+
+    struct State: public Object::State
+    {
+        static void notifyTimer(const Timer &timer);
+
+        State();
+
+        bool feedFingerEvent(const Window &window, FingerEvent &event);
+        bool feedMouseEvent(const Window &window, MouseEvent &event);
+        bool feedWheelEvent(const Window &window, WheelEvent &event);
+        bool feedKeyEvent(const Window &window, KeyEvent &event);
+        bool feedExposedEvent(const Window &window);
+        bool feedEnterEvent(const Window &window);
+        bool feedLeaveEvent(const Window &window);
+
+        bool feedTextEditingEvent(const String &text, int start, int length);
+        bool feedTextInputEvent(const String &text);
+
+        virtual void init(int argc, char *argv[]) {}
+
+        virtual Window createWindow(const View &view) = 0;
+
+        virtual void captureMouse(bool on) = 0;
+
+        virtual Cursor createCursor(CursorShape shape) = 0;
+        virtual void setCursor(const Cursor &cursor) = 0;
+        virtual void unsetCursor() = 0;
+
+        virtual String getClipboardText() const = 0;
+        virtual void setClipboardText(const String &text) = 0;
+
+        virtual void startTextInput(const Window &window) = 0;
+        virtual void setTextInputArea(const Rect &inputArea) = 0;
+        virtual void stopTextInput() = 0;
+
+        virtual void postEvent(Call<void()> &&doNext) = 0;
+
+        virtual int run() = 0;
+
+        Property<Control> hoverControl;
+        Property<Control> pressedControl;
+        Property<Control> focusControl;
+
+        Property<Window> focusWindow;
+
+        Property<Control> cursorControl;
+        Property<Cursor> cursor;
+
+        Property<Rect> textInputArea;
+
+        Property<double> minMouseDragDistance { []{ return dp(6); } };
+        Property<double> minFingerDragDistance { []{ return dp(10); } };
+
+        Map<TouchFingerId, Control> touchTargets_;
+
+        Property<double> textZoom { 1 };
+        FontSmoothing fontSmoothing_ { FontSmoothing::Default };
+        Control focusControlSaved_;
+    };
+
+    Application(State *state):
+        Singleton{state}
+    {}
+
+    void pressedControl(const Control &control) { me().pressedControl(control); }
+    void focusControl(const Control &control) { me().focusControl(control); }
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+
+    State *operator->() { return &me(); }
+};
+
+Application app();
+
+} // namespace cc

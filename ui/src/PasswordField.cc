@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/PasswordField>
-#include <cc/ui/PasswordInput>
-#include <cc/ui/PasswordInputState>
+#include <cc/PasswordField>
+#include <cc/PasswordInput>
+#include <cc/PasswordInputState>
 
-namespace cc::ui {
+namespace cc {
 
 PasswordField::PasswordField(const String &label, Out<PasswordField> self):
     TextField{PasswordInput{}, label}
@@ -23,4 +23,4 @@ String PasswordField::password() const
     return input().as<PasswordInput>().password();
 }
 
-} // namespace cc::ui
+} // namespace cc

@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/Surface>
+#include <cc/Surface>
 #include <cairo/cairo.h>
 
-namespace cc::ui {
+namespace cc {
 
 void Surface::State::polish()
 {}
@@ -22,4 +22,4 @@ void Surface::nextPage(bool clear)
         cairo_surface_copy_page(me().cairoSurface());
 }
 
-} // namespace cc::ui
+} // namespace cc

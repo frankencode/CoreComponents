@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/Switch>
-#include <cc/ui/DragArea>
-#include <cc/ui/Box>
-#include <cc/ui/Shadow>
+#include <cc/Switch>
+#include <cc/DragArea>
+#include <cc/Box>
+#include <cc/Shadow>
 
-namespace cc::ui {
+namespace cc {
 
 struct Switch::State final: public InputControl::State
 {
@@ -175,4 +175,4 @@ const Switch::State &Switch::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

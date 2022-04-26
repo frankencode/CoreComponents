@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/ColumnLayout>
-#include <cc/ui/Window>
+#include <cc/ColumnLayout>
+#include <cc/Window>
 
-namespace cc::ui {
+namespace cc {
 
 void ColumnLayout::State::updateLayout()
 {
@@ -60,4 +60,4 @@ void ColumnLayout::State::updateLayout()
     }
 }
 
-} // namespace cc::ui
+} // namespace cc

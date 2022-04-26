@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/FtLibrary>
+#include <cc/FtLibrary>
 #include <cc/DEBUG>
 #include <freetype/ftlcdfil.h>
 #include <cassert>
 
-namespace cc::ui {
+namespace cc {
 
 FtLibrary::FtLibrary():
     ThreadLocalSingleton{instance<State>()}
@@ -34,4 +34,4 @@ FtLibrary::State::~State()
     FT_Done_FreeType(library_);
 }
 
-} // namespace cc::ui
+} // namespace cc

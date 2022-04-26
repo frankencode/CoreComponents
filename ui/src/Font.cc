@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/Font>
-#include <cc/ui/StylePlugin>
+#include <cc/Font>
+#include <cc/StylePlugin>
 
-namespace cc::ui {
+namespace cc {
 
 Font::Font(Pitch pitch)
 {
@@ -21,4 +21,4 @@ double Font::defaultSize(Pitch pitch)
     return ((pitch == Pitch::Fixed) ? style().defaultFixedFont() : style().defaultFont()).size();
 }
 
-} // namespace cc::ui
+} // namespace cc

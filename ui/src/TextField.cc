@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/ui/TextField>
-#include <cc/ui/TextInput>
-#include <cc/ui/Label>
-#include <cc/ui/Text>
-#include <cc/ui/Icon>
-#include <cc/ui/Painter>
+#include <cc/TextField>
+#include <cc/TextInput>
+#include <cc/Label>
+#include <cc/Text>
+#include <cc/Icon>
+#include <cc/Painter>
 
-namespace cc::ui {
+namespace cc {
 
 struct TextField::State: public Control::State
 {
@@ -474,4 +474,4 @@ const TextField::State &TextField::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

@@ -1,4 +1,4 @@
-#include <cc/ui/Application>
+#include <cc/Application>
 #include <cc/System>
 #include <cc/stdio>
 #include <cmath>
@@ -6,7 +6,6 @@
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Timer timer{1};
     timer.onTimeout([=]{

@@ -1,12 +1,11 @@
-#include <cc/ui/Application>
-#include <cc/ui/ScrollView>
-#include <cc/ui/Label>
+#include <cc/Application>
+#include <cc/ScrollView>
+#include <cc/Label>
 #include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     ScrollView scrollView{640, 480};
     scrollView.pane()

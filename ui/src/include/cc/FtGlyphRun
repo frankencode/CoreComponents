@@ -1,0 +1,81 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/GlyphRun>
+#include <cc/Array>
+#include <cairo/cairo.h>
+#include <cairo/cairo-ft.h>
+
+namespace cc {
+
+class FtFontManager;
+class FtTextRun;
+
+class FtGlyphRun: public GlyphRun
+{
+public:
+    FtGlyphRun() = default;
+
+    FtGlyphRun(const String &text, const Font &font, const Point &origin);
+
+    using CairoGlyphs = Array<cairo_glyph_t>;
+    using CairoTextClusters = Array<cairo_text_cluster_t>;
+    using GlyphAdvances = Array<double>;
+
+    CairoGlyphs cairoGlyphs() const { return me().cairoGlyphs_; }
+    CairoTextClusters cairoTextClusters() const { return me().cairoTextClusters_; }
+    GlyphAdvances glyphAdvances() const { return me().glyphAdvances_; }
+
+private:
+    friend class Object;
+    friend class FtFontManager;
+    friend class FtTextRun;
+
+    struct State: public GlyphRun::State
+    {
+        State() = default;
+
+        State(const State &other);
+
+        State(const String &text, const Font &font, const Point &origin):
+            GlyphRun::State{text, font, origin}
+        {}
+
+        GlyphRun wrap(double maxWidth, TextAlign textAlign, double lineHeight, const TextWrapBehind &wrapBehind) const override;
+
+        void lineJustify(
+            double spaceDelta,
+            int byteOffset0, int glyphOffset0, int clusterIndex0,
+            int byteOffset1, int glyphOffset1, int clusterIndex1
+        );
+
+        void lineShift(int glyphOffset0, int glyphOffset1, double shiftX);
+
+        void lineShift(double shiftX);
+
+        GlyphRun elide(double maxWidth) const override;
+
+        FtGlyphRun self() const;
+
+        CairoGlyphs cairoGlyphs_;
+        CairoTextClusters cairoTextClusters_;
+        GlyphAdvances glyphAdvances_;
+        Step finalGlyphAdvance_;
+    };
+
+    explicit FtGlyphRun(State *newState):
+        GlyphRun{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

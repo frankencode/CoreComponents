@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/ui/Pane>
+#include <cc/Pane>
 
-namespace cc::ui {
+namespace cc {
 
 Size Pane::State::preferredSize() const
 {
     return hasParent() ? parent().size() : View::State::preferredSize();
 }
 
-} // namespace cc::ui
+} // namespace cc

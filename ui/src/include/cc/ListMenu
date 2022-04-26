@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Flickable>
+#include <cc/ListItem>
+
+namespace cc {
+
+/** \class ListMenu cc/ListMenu
+  * \ingroup ui
+  * \brief %List menu
+  * A ListMenu shows a vertically scollable list of items which are all of the same size.
+  */
+class ListMenu final: public Flickable
+{
+public:
+    /** Create a primodrial list menu
+      */
+    ListMenu();
+
+    /** Create a new list menu
+      */
+    explicit ListMenu(Out<ListMenu> self);
+
+    /** Create a new list menu of size (\a width, \a height)
+      */
+    ListMenu(double width, double height);
+
+    View header() const; ///< Get the header
+    ListMenu &header(const View &newValue); ///< %Set the header
+
+    View footer() const; ///< Get the footer
+    ListMenu &footer(const View &newValue); ///< %Set the footer
+
+private:
+    class Object;
+    class Pane;
+
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

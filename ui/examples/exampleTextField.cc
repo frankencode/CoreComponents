@@ -1,14 +1,13 @@
-#include <cc/ui/Application>
-#include <cc/ui/TextField>
-#include <cc/ui/Ideographic>
-#include <cc/ui/Icon>
+#include <cc/Application>
+#include <cc/TextField>
+#include <cc/Ideographic>
+#include <cc/Icon>
 #include <cc/Format>
 #include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     // Application{}.fontSmoothing(FontSmoothing::RgbSubpixel);
 

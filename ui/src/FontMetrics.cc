@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/FontMetrics>
-#include <cc/ui/FontManager>
-#include <cc/ui/Font>
+#include <cc/FontMetrics>
+#include <cc/FontManager>
+#include <cc/Font>
 
-namespace cc::ui {
+namespace cc {
 
 FontMetrics::FontMetrics():
     Object{new State}
@@ -22,4 +22,4 @@ FontMetrics::FontMetrics(const Font &font):
     *this = FontManager{}.selectFont(font).metrics();
 }
 
-} // namespace cc::ui
+} // namespace cc

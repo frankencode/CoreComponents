@@ -1,0 +1,70 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/types>
+
+namespace cc {
+
+/** \class Cursor cc/Cursor
+  * \ingroup ui
+  * \brief %Cursor of the pointing device
+  */
+class Cursor: public Object
+{
+public:
+    /** Create a null cursor
+      */
+    Cursor() = default;
+
+    /** Create a cursor of given \a shape
+      */
+    Cursor(CursorShape shape);
+
+    /** Get the cursor shape
+      */
+    CursorShape shape() const
+    {
+        return isNull() ? CursorShape::Arrow : me().shape_;
+    }
+
+    /** Equal to operator
+      */
+    bool operator==(const Cursor &other) const
+    {
+        return shape() == other.shape();
+    }
+
+    /** Not equal to operator
+      */
+    bool operator!=(const Cursor &other) const
+    {
+        return shape() != other.shape();
+    }
+
+protected:
+    friend class Object;
+
+    struct State: public Object::State
+    {
+        State(CursorShape shape):
+            shape_{shape}
+        {}
+
+        CursorShape shape_;
+    };
+
+    explicit Cursor(State *newState):
+        Object{newState}
+    {}
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

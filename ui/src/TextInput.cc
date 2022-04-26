@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/ui/TextInput>
-#include <cc/ui/TextInputState>
-#include <cc/ui/TextLineEditor>
-#include <cc/ui/TextRun>
-#include <cc/ui/FontMetrics>
-#include <cc/ui/Painter>
-#include <cc/ui/Application>
+#include <cc/TextInput>
+#include <cc/TextInputState>
+#include <cc/TextLineEditor>
+#include <cc/TextRun>
+#include <cc/FontMetrics>
+#include <cc/Painter>
+#include <cc/Application>
 
-namespace cc::ui {
+namespace cc {
 
 TextInput::State::State():
     State{TextLineEditor{}}
@@ -578,4 +578,4 @@ const TextInput::State &TextInput::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

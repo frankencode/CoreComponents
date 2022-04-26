@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/PlatformManager>
-#include <cc/ui/StyleManager>
+#include <cc/PlatformManager>
+#include <cc/StyleManager>
 #include <cc/Process>
 #include <cc/DEBUG>
 
-namespace cc::ui {
+namespace cc {
 
 StyleManager::StyleManager():
     Singleton{instance<State>()}
@@ -38,4 +38,4 @@ void StyleManager::registerPlugin(const StylePlugin &plugin)
     }
 }
 
-} // namespace cc::ui
+} // namespace cc

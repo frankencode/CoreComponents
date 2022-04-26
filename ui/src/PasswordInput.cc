@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/PasswordInput>
-#include <cc/ui/PasswordInputState>
+#include <cc/PasswordInput>
+#include <cc/PasswordInputState>
 
-namespace cc::ui {
+namespace cc {
 
 PasswordInput::PasswordInput():
     TextInput{onDemand<State>}
@@ -20,4 +20,4 @@ String PasswordInput::password() const
     return editor().as<PasswordEditor>().password();
 }
 
-} // namespace cc::ui
+} // namespace cc

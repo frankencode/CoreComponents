@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/Timer>
-#include <cc/ui/TimeMaster>
+#include <cc/Timer>
+#include <cc/TimeMaster>
 #include <cc/System>
 
-namespace cc::ui {
+namespace cc {
 
 void Timer::startAt(double startTime)
 {
@@ -32,4 +32,4 @@ void Timer::stop()
     me().isActive_ = false;
 }
 
-} // namespace cc::ui
+} // namespace cc

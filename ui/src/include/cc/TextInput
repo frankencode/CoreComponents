@@ -1,0 +1,81 @@
+/*
+ * Copyright (C) 2020-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/InputControl>
+#include <cc/TextEditor>
+
+namespace cc {
+
+/** \class TextInput cc/TextInput
+  * \ingroup ui
+  * \brief %Single-line text input control
+  */
+class TextInput: public InputControl
+{
+public:
+    /** Create a primordial text input control
+      */
+    TextInput();
+
+    /** Create a new text input control
+      */
+    explicit TextInput(Out<TextInput> self);
+
+    /** Create a new text input control
+      */
+    explicit TextInput(const String &text, Out<TextInput> self = None{});
+
+    String text() const; ///< Get current input text
+    TextInput &text(const String &newValue); ///< %Set current input text
+
+    TextAlign textAlign() const; ///< Get text alignment
+    TextInput &textAlign(TextAlign newValue); ///< %Set text alignment
+
+    Point textPos() const; ///< Get the baseline start position of the input text
+
+    Font font() const; ///< Get the font
+    TextInput &font(Font newValue); ///< %Set the font
+    TextInput &font(Definition<Font> &&f); ///< Define the font
+
+    String sizerText() const; ///< Get sizer text
+    TextInput &sizerText(const String &newValue); ///< %Set sizer text
+    TextInput &sizerText(Definition<String> &&f); ///< %Define sizer text
+
+    TextInput &accept(Call<bool()> &&f); ///< Define acceptable input text
+    TextInput &filter(Call<bool(Range range, InOut<String>)> &&f); ///< Define text input filter
+
+    void selectAll();
+
+protected:
+    /** Internal state
+      */
+    struct State;
+
+    /** Initialize text input control
+      */
+    explicit TextInput(const TextEditor &editor);
+
+    /** Initialize primordial text input control
+      */
+    explicit TextInput(CreateState onDemand);
+
+    /** Initialize text input with \a newState
+      */
+    explicit TextInput(State *newState);
+
+    /** Get the underlying editor
+      */
+    TextEditor editor() const;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

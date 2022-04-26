@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/Picture>
+#include <cc/Picture>
 
-namespace cc::ui {
+namespace cc {
 
 Picture::State::State(const Visual &initVisual, Color initColor):
     visual{initVisual},
@@ -47,4 +47,4 @@ Picture::Picture(Ideographic ch, double size, Color color, Out<Picture> self):
     self = weak<Picture>();
 }
 
-} // namespace cc::ui
+} // namespace cc

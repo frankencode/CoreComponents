@@ -1,10 +1,10 @@
-#include <cc/ui/DisplayManager>
+#include <cc/DisplayManager>
 #include <cc/testing>
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
-    using namespace cc::ui;
+    using namespace cc;
 
     List<Display> displays = DisplayManager{}.displays();
     for (Display display: displays) {

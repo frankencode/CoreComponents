@@ -1,0 +1,98 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/Trigger>
+#include <atomic>
+
+namespace cc {
+
+class Application;
+class TimeoutRequest;
+
+/** \class Timer cc/Timer
+  * \ingroup ui
+  * \brief Inverval timer
+  */
+class Timer: public Object
+{
+public:
+    /** Create a single-shot timer
+      */
+    Timer() = default;
+
+    /** Create a repeating interval timer
+      * \param interval %Interval in which the timeout signal is triggered
+      */
+    explicit Timer(double interval):
+        Object{new State{interval}}
+    {}
+
+    /** Start timer
+      */
+    void start()
+    {
+        startIn(me().interval_);
+    }
+
+    /** Start timer at a later \a startTime
+      */
+    void startAt(double startTime);
+
+    /** Start timer after a giving \a delayTime
+      */
+    void startIn(double delayTime);
+
+    /** Stop the timer
+      */
+    void stop();
+
+    /** Timer is active an generates timeout signals
+      */
+    bool isActive() const { return me().isActive_; }
+
+    /** The first time the timer emits the timeout signal
+      */
+    double firstTime() const { return me().firstTime_; }
+
+    /** Beginning of the first timeout interval
+      */
+    double startTime() const { return me().startTime_; }
+
+    /** %Time between two timeout signal emissions
+      */
+    double interval() const { return me().interval_; }
+
+    /** Register function \a f to be called on timeout
+      */
+    void onTimeout(std::function<void()> &&f) { me().timeout_(std::move(f)); }
+
+private:
+    friend class Application;
+    friend class TimeoutRequest;
+
+    struct State: public Object::State
+    {
+        State(double interval):
+            interval_{interval}
+        {}
+        double interval_;
+        Trigger timeout_;
+        mutable std::atomic<bool> isActive_ { false };
+        double firstTime_ { 0 };
+        double startTime_ { 0 };
+        std::atomic<uint64_t> requestId_ { 0 };
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

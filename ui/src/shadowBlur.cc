@@ -28,10 +28,10 @@
   THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cc/ui/shadowBlur>
+#include <cc/shadowBlur>
 #include <cc/binary>
 
-namespace cc::ui {
+namespace cc {
 
 static constexpr int BlurSumShift = 15;
 
@@ -145,4 +145,4 @@ void shadowBlur(Image &image, int radius, Color shadowColor)
     }
 }
 
-} // namespace cc::ui
+} // namespace cc

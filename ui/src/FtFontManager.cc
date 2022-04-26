@@ -6,16 +6,16 @@
  *
  */
 
-#include <cc/ui/FtFontManager>
-#include <cc/ui/FtFontFace>
-#include <cc/ui/FtScaledFont>
-#include <cc/ui/FtGlyphRun>
-#include <cc/ui/FtTextRun>
+#include <cc/FtFontManager>
+#include <cc/FtFontFace>
+#include <cc/FtScaledFont>
+#include <cc/FtGlyphRun>
+#include <cc/FtTextRun>
 #include <cc/Utf8>
 #include <cc/Map>
 #include <cc/CircularBuffer>
 
-namespace cc::ui {
+namespace cc {
 
 struct FtFontManager::State final: public FontManager::State
 {
@@ -328,4 +328,4 @@ const FtFontManager::State &FtFontManager::me() const
     return Object::me.as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

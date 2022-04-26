@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/ui/SdlPlatformPlugin>
-#include <cc/ui/SdlDisplayManager>
-#include <cc/ui/SdlTimeMaster>
-#include <cc/ui/SdlApplication>
+#include <cc/SdlPlatformPlugin>
+#include <cc/SdlDisplayManager>
+#include <cc/SdlTimeMaster>
+#include <cc/SdlApplication>
 #include <cc/Registration>
 #include <SDL2/SDL.h>
 
-namespace cc::ui {
+namespace cc {
 
 struct SdlPlatformPlugin::State: public PlatformPlugin::State
 {
@@ -66,4 +66,4 @@ SdlPlatformPlugin::SdlPlatformPlugin():
 
 CC_REGISTRATION(SdlPlatformPlugin);
 
-} // namespace cc::ui
+} // namespace cc

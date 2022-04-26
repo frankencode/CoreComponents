@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/FtTextCursor>
-#include <cc/ui/FtTextRun>
+#include <cc/FtTextCursor>
+#include <cc/FtTextRun>
 
-namespace cc::ui {
+namespace cc {
 
 FtTextCursor FtTextCursor::State::self() const
 {
@@ -69,4 +69,4 @@ int FtTextCursor::State::lineStep(int steps)
     return stepsMoved;
 }
 
-} // namespace cc::ui
+} // namespace cc

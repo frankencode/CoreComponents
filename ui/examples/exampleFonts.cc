@@ -1,13 +1,12 @@
-#include <cc/ui/Application>
-#include <cc/ui/FontManager>
-#include <cc/ui/Painter>
-#include <cc/ui/StylePlugin>
+#include <cc/Application>
+#include <cc/FontManager>
+#include <cc/Painter>
+#include <cc/StylePlugin>
 #include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     CC_INSPECT(style().defaultFont());
     CC_INSPECT(style().defaultFixedFont());

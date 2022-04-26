@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Display>
+#include <cc/Singleton>
+
+namespace cc {
+
+class DisplayManager: public Singleton
+{
+public:
+    DisplayManager();
+
+    List<Display> displays() const { return me().displays_; }
+
+    double displayDensityRatio() const { return me().displayDensityRatio_; }
+
+    FontSmoothing defaultFontSmoothing() const { return me().defaultFontSmoothing_; }
+
+    double refreshRate() const { return me().refreshRate_; }
+
+protected:
+    struct State: public Singleton::State
+    {
+        List<Display> displays_;
+        double displayDensityRatio_ { 1 };
+        double refreshRate_ { 60 };
+        FontSmoothing defaultFontSmoothing_ { FontSmoothing::Grayscale };
+    };
+
+    explicit DisplayManager(State *state):
+        Singleton{state}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

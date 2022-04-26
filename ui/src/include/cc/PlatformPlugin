@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/FontManager>
+#include <cc/DisplayManager>
+#include <cc/TimeMaster>
+#include <cc/Application>
+
+namespace cc {
+
+/** \internal
+  * \class PlatformPlugin cc/PlatformPlugin
+  * \ingroup ui
+  * \brief Application platform support
+  */
+class PlatformPlugin: public Object
+{
+public:
+    /** Create a null platform plugin
+      */
+    PlatformPlugin() = default;
+
+    /** %Plugin name
+      */
+    String name() const { return me().name_; }
+
+    /** If this is the system's default platform plugin
+      */
+    bool isPlatformDefault() const { return me().isPlatformDefault_; }
+
+    /** Get the platform's font manager
+      */
+    FontManager fontManager() const { return me().fontManager(); }
+
+    /** Get the platform's display manager
+      */
+    DisplayManager displayManager() const { return me().displayManager(); }
+
+    /** Get the platform's time master
+      */
+    TimeMaster timeMaster() const { return me().timeMaster(); }
+
+    /** Get the platform's application event loop
+      */
+    Application application() const { return me().application(); }
+
+protected:
+    struct State: public Object::State
+    {
+        State(const String &name, bool isPlatformDefault = false):
+            name_{name},
+            isPlatformDefault_{isPlatformDefault}
+        {}
+
+        virtual FontManager fontManager() const;
+        virtual DisplayManager displayManager() const = 0;
+        virtual TimeMaster timeMaster() const = 0;
+        virtual Application application() const = 0;
+
+        String name_;
+        bool isPlatformDefault_;
+    };
+
+    explicit PlatformPlugin(State *newState);
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+PlatformPlugin platform();
+
+} // namespace cc

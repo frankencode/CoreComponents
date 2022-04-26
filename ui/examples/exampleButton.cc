@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/Button>
+#include <cc/Application>
+#include <cc/Button>
 #include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Button button;
 

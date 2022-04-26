@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/NumberField>
-#include <cc/ui/NumberInput>
-#include <cc/ui/NumberInputState>
+#include <cc/NumberField>
+#include <cc/NumberInput>
+#include <cc/NumberInputState>
 
-namespace cc::ui {
+namespace cc {
 
 NumberField::NumberField(const String &label, Out<NumberField> self):
     TextField{NumberInput{}, label}
@@ -97,4 +97,4 @@ NumberField &NumberField::value(double newValue)
     return *this;
 }
 
-} // namespace cc::ui
+} // namespace cc

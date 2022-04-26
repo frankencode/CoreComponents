@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/NumberCell>
+#include <cc/NumberInput>
+#include <cc/Box>
+
+namespace cc {
+
+struct NumberCell::State final: public Control::State
+{
+    State();
+
+    Size preferredSize() const override;
+    Size minSize() const override;
+    Size maxSize() const override;
+
+    Control delegate() const override;
+
+    Box box_;
+    NumberInput input_;
+    Property<double> radius { sp(8) };
+    Property<Size> margin { sp(8), sp(4) };
+    bool autoConnect_ { true };
+};
+
+} // namspace cc

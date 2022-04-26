@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/ui/PlatformManager>
-#include <cc/ui/DisplayManager>
+#include <cc/PlatformManager>
+#include <cc/DisplayManager>
 
-namespace cc::ui {
+namespace cc {
 
 DisplayManager::DisplayManager()
 {
     *this = PlatformManager{}.activePlugin().displayManager();
 }
 
-} // namespace cc::ui
+} // namespace cc

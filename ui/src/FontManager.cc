@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/FontManager>
-#include <cc/ui/PlatformManager>
+#include <cc/FontManager>
+#include <cc/PlatformManager>
 #include <cc/DirWalker>
 #include <cc/input>
 
-namespace cc::ui {
+namespace cc {
 
 Font FontManager::State::fixup(Font font)
 {
@@ -112,4 +112,4 @@ void FontManager::addFontFace(const FontFace &fontFace)
     fontFamily.me().fontFaces_.append(fontFace);
 }
 
-} // namespace cc::ui
+} // namespace cc

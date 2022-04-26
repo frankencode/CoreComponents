@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/ui/View>
-#include <cc/ui/Window>
-#include <cc/ui/Control>
-#include <cc/ui/PosGuard>
+#include <cc/View>
+#include <cc/Window>
+#include <cc/Control>
+#include <cc/PosGuard>
 #include <cc/DEBUG>
 
-namespace cc::ui {
+namespace cc {
 
 View::State::State()
 {

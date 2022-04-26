@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/FontFamily>
+#include <cc/FontFamily>
 
-namespace cc::ui {
+namespace cc {
 
 FontFace FontFamily::selectFontFace(Weight weight, Slant slant, Stretch stretch) const
 {
@@ -47,4 +47,4 @@ FontFace FontFamily::selectFontFace(Weight weight, Slant slant, Stretch stretch)
     return fallbackChoice;
 }
 
-} // namespace cc::ui
+} // namespace cc

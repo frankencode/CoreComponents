@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/ui/ElevatedButton>
-#include <cc/ui/Label>
-#include <cc/ui/Icon>
-#include <cc/ui/Box>
-#include <cc/ui/Shadow>
+#include <cc/ElevatedButton>
+#include <cc/Label>
+#include <cc/Icon>
+#include <cc/Box>
+#include <cc/Shadow>
 #include <cc/DEBUG>
 
-namespace cc::ui {
+namespace cc {
 
 struct ElevatedButton::State final: public InputControl::State
 {
@@ -136,4 +136,4 @@ const ElevatedButton::State &ElevatedButton::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

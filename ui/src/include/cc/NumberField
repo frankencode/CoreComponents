@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TextField>
+
+namespace cc {
+
+/** \class NumberField cc/NumberField
+  * \ingroup ui
+  * \brief %Number input field
+  */
+class NumberField final: public TextField
+{
+public:
+    /** Create a primordial number input field
+      */
+    NumberField() = default;
+
+    /** Create a new number input field
+      * \param label %Label text
+      * \param self Returns newly created object
+      */
+    explicit NumberField(const String &label, Out<NumberField> self = None{});
+
+    double min() const; ///< Get minimum value
+    NumberField &min(double newValue); ///< %Set minimum value
+    NumberField &min(Definition<double> &&f); ///< Define minimum value
+
+    double max() const; ///< Get maximum value
+    NumberField &max(double newValue); ///< %Set maximum value
+    NumberField &max(Definition<double> &&f); ///< Define maximum slider value
+
+    double precision() const; ///< Get precision
+    NumberField &precision(double newValue); ///< %Set precision
+    NumberField &precision(Definition<double> &&f); ///< Define precision
+
+    char decimalPoint() const; ///< Get decimal point character (defaults to '.')
+    NumberField &decimalPoint(char newValue); ///< %Set decimal point character
+    NumberField &decimalPoint(Definition<char> &&f); ///< Define decimal point character
+
+    double value() const; ///< Get current value
+    NumberField &value(double newValue); ///< %Set current value
+};
+
+} // namespace cc

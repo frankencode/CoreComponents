@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/ListItem>
-#include <cc/ui/ImageView>
-#include <cc/ui/Label>
+#include <cc/ListItem>
+#include <cc/ImageView>
+#include <cc/Label>
 #include <cmath>
 
-namespace cc::ui {
+namespace cc {
 
 ListItem::State::State()
 {
@@ -120,4 +120,4 @@ ListItem &ListItem::indicator(const Image &newValue)
     return indicator(ImageView{newValue});
 }
 
-} // namespace cc::ui
+} // namespace cc

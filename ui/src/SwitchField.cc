@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/SwitchField>
-#include <cc/ui/Text>
-#include <cc/ui/Switch>
+#include <cc/SwitchField>
+#include <cc/Text>
+#include <cc/Switch>
 
-namespace cc::ui {
+namespace cc {
 
 struct SwitchField::State final: public View::State
 {
@@ -112,4 +112,4 @@ const SwitchField::State &SwitchField::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

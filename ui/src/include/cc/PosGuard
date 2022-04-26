@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/PointerEvent>
+
+namespace cc {
+
+/** \internal
+  */
+class PosGuard
+{
+public:
+    PosGuard(PointerEvent &event, Point newPos):
+        pos_{event.me().pos_},
+        origPos_{event.me().pos_}
+    {
+        pos_ = newPos;
+    }
+
+    ~PosGuard() {
+        pos_ = origPos_;
+    }
+
+    Point origPos() const { return origPos_; }
+
+private:
+    Point &pos_;
+    Point origPos_;
+};
+
+} // namespace cc

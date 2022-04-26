@@ -1,0 +1,142 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Font>
+#include <cc/Theme>
+#include <cc/Ideographic>
+#include <cc/Visual>
+
+namespace cc {
+
+/** \class StylePlugin cc/StylePlugin
+  * \ingroup ui
+  * \brief Default fonts, metrics and colors
+  */
+class StylePlugin: public Object
+{
+public:
+    /** Create a null style plugin
+      */
+    StylePlugin() = default;
+
+    /** %Plugin name
+      */
+    String name() const { return me().name_; }
+
+    /** Default font
+      */
+    Font defaultFont() const { return me().defaultFont_; }
+
+    /** %Set default font
+      */
+    StylePlugin &defaultFont(const Font &font)
+    {
+        me().defaultFont_ = font;
+        return *this;
+    }
+
+    /** Default fixed font
+      */
+    Font defaultFixedFont() const { return me().defaultFixedFont_; }
+
+    /** %Set default fixed font
+      */
+    StylePlugin &defaultFixedFont(const Font &font)
+    {
+        me().defaultFixedFont_ = font;
+        return *this;
+    }
+
+    /** Default small font
+      */
+    Font defaultSmallFont() const
+    {
+        Font font = me().defaultFont_;
+        font.size(theme().smallFontSize());
+        return font;
+    }
+
+    /** %Set default small font
+      */
+    StylePlugin &defaultSmallFont(const Font &font)
+    {
+        me().defaultSmallFont_ = font;
+        return *this;
+    }
+
+    double gridUnit() const { return me().gridUnit_; } ///< %Grid unit
+    double dividerThickness() const { return me().dividerThickness_; } ///< %Thickness of horizontal rulers
+    double itemHeight1() const { return me().itemHeight1_; } ///< %Item height 1
+    double itemHeight2() const { return me().itemHeight2_; } ///< %Item height 2
+    double itemHeight3() const { return me().itemHeight3_; } ///< %Item height 3
+
+    double scrollBarThickness() const { return me().scrollBarThickness_; } ///< Thickness of scroll bars
+    double scrollHandleMargin() const { return me().scrollHandleMargin_; } ///< Margin around scroll bar handles
+    double scrollBarAutoHideTimeout() const { return me().scrollBarAutoHideTimeout_; } ///< %Timeout for an unneeded scroll bar to automatically hide
+    double scrollBarFadeOutDuration() const { return me().scrollBarFadeOutDuration_; } ///< Duration of the fade-out/fade-in animation when the visibility of a scroll bar changes
+
+    bool wheelInversion() const { return me().wheelInversion_; } ///< %Mouse wheel direction (touch mouse vs. wheel mouse)
+
+    String passwordBullet() const { return me().passwordBullet_; } ///< Mask character for password input
+
+    /** Get a visual for the given ideograph \a ch
+      */
+    Visual ideograph(Ideographic ch, double size = 0) const { return me().ideograph(ch, size); }
+
+    /** Styling theme
+      */
+    Theme theme() const { return me().theme_; }
+
+protected:
+    friend class StyleManager;
+
+    struct State: public Object::State
+    {
+        State(const String &name):
+            name_{name}
+        {}
+
+        String name_;
+        Font defaultFont_;
+        Font defaultFixedFont_;
+        Font defaultSmallFont_;
+        double gridUnit_ { sp(8) };
+        double dividerThickness_ { dp(1) };
+        double itemHeight1_ { sp(48) };
+        double itemHeight2_ { sp(56) };
+        double itemHeight3_ { sp(64) };
+        double scrollBarThickness_ { sp(14) };
+        double scrollHandleMargin_ { sp(4) };
+        double scrollBarAutoHideTimeout_ { 2 };
+        double scrollBarFadeOutDuration_ { 0.1 };
+        bool wheelInversion_ { true };
+        String passwordBullet_ { "•" };
+
+        Property<Theme> theme_;
+
+        virtual void activate() = 0;
+        virtual Visual ideograph(Ideographic ch, double size) const = 0;
+    };
+
+    explicit StylePlugin(State *newState);
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+/** Convenience function to get the currently active user interface style
+  */
+StylePlugin style();
+
+/** Convenience function to get the currently active color theme
+  */
+Theme theme();
+
+} // namespace cc

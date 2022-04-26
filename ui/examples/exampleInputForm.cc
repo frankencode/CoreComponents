@@ -1,19 +1,18 @@
-#include <cc/ui/Application>
-#include <cc/ui/Flickable>
-#include <cc/ui/ColumnLayout>
-#include <cc/ui/TextField>
-#include <cc/ui/NumberField>
-#include <cc/ui/PasswordField>
-#include <cc/ui/SliderField>
-#include <cc/ui/SwitchField>
-#include <cc/ui/Icon>
-#include <cc/ui/Divider>
+#include <cc/Application>
+#include <cc/Flickable>
+#include <cc/ColumnLayout>
+#include <cc/TextField>
+#include <cc/NumberField>
+#include <cc/PasswordField>
+#include <cc/SliderField>
+#include <cc/SwitchField>
+#include <cc/Icon>
+#include <cc/Divider>
 #include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     const double gap = sp(16);
 

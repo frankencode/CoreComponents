@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/GlyphRun>
-#include <cc/ui/Painter>
+#include <cc/Application>
+#include <cc/GlyphRun>
+#include <cc/Painter>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     GlyphRun run{"Hello, world!"};
 

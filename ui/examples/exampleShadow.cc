@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/Box>
-#include <cc/ui/Shadow>
+#include <cc/Application>
+#include <cc/Box>
+#include <cc/Shadow>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Window{
         View{640, 480}

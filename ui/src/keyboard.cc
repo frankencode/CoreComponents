@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/keyboard>
+#include <cc/keyboard>
 #include <cc/Format>
 
-namespace cc::ui {
+namespace cc {
 
 String str(ScanCode scanCode)
 {
@@ -335,4 +335,4 @@ String str(KeyModifier modifiers)
     return parts.join('|');
 }
 
-} // namespace cc::ui
+} // namespace cc

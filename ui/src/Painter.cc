@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/ui/Painter>
-#include <cc/ui/FtScaledFont>
-#include <cc/ui/FtGlyphRun>
-#include <cc/ui/FtTextRun>
-#include <cc/ui/Surface>
+#include <cc/Painter>
+#include <cc/FtScaledFont>
+#include <cc/FtGlyphRun>
+#include <cc/FtTextRun>
+#include <cc/Surface>
 #include <cairo/cairo.h>
 #include <cmath>
 
-namespace cc::ui {
+namespace cc {
 
 static_assert(+LineJoin::Miter == CAIRO_LINE_JOIN_MITER);
 static_assert(+LineJoin::Round == CAIRO_LINE_JOIN_ROUND);
@@ -554,4 +554,4 @@ String PainterError::message() const
     return cairo_status_to_string(cairo_status_t(errorStatus_));
 }
 
-} // namespace cc::ui
+} // namespace cc

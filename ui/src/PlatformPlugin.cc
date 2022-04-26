@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/PlatformPlugin>
-#include <cc/ui/PlatformManager>
-#include <cc/ui/FtFontManager>
+#include <cc/PlatformPlugin>
+#include <cc/PlatformManager>
+#include <cc/FtFontManager>
 
-namespace cc::ui {
+namespace cc {
 
 FontManager PlatformPlugin::State::fontManager() const
 {
@@ -28,4 +28,4 @@ PlatformPlugin platform()
     return PlatformManager{}.activePlugin();
 }
 
-} // namespace cc::ui
+} // namespace cc

@@ -1,0 +1,88 @@
+/*
+ * Copyright (C) 2020-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TextInput>
+
+namespace cc {
+
+enum class Ideographic: uint32_t;
+
+/** \class TextField cc/TextField
+  * \ingroup ui
+  * \brief %Text input field
+  */
+class TextField: public Control
+{
+public:
+    /** Create a primordial text input field
+      */
+    TextField();
+
+    /** Create a new text input field
+      */
+    explicit TextField(Out<TextField> self);
+
+    /** Create a new text input field
+      * \param title %Label text
+      * \param self Reference to newly created object
+      */
+    explicit TextField(const String &title, Out<TextField> self = None{});
+
+    String title() const; ///< Get title
+    TextField &title(const String &newValue); ///< %Set title
+
+    String text() const; ///< Get current text
+    TextField &text(const String &newValue); ///< %Set current text
+
+    String placeholder() const; ///< Get placeholder text
+    TextField &placeholder(const String &newValue); ///< %Set placeholder text
+
+    String help() const; ///< Get help text
+    TextField &help(const String &newValue); ///< %Set help text
+    TextField &help(Definition<String> &&f); ///< Define help text
+
+    String error() const; ///< Get error text
+    TextField &error(const String &newValue); ///< %Set error text
+    TextField &error(Definition<String> &&f); ///< Define error text
+
+    String status() const; ///< Get status text
+    TextField &status(const String &newValue); ///< %Set status text
+    TextField &status(Definition<String> &&f); ///< Define status text
+
+    TextField &icon(Ideographic ch); ///< %Set leading decoration icon
+    TextField &alertIcon(); ///< %Add an optionally visible alert icon
+
+    TextField &leading(const View &view); ///< %Set leading decoration
+    TextField &trailing(const View &view); ///< %Set trailing decoration
+
+    TextField &onAccepted(Call<void()> &&f); ///< %Handle input accepted event
+    TextField &onRejected(Call<void()> &&f); ///< %Handle input rejected event
+
+    TextField &accept(Call<bool()> &&f); ///< %Define acceptable input text
+    TextField &filter(Call<bool(Range range, InOut<String>)> &&f); ///< %Define text input restrictions
+
+protected:
+    struct State;
+
+    /** Create a text field with a custom input control
+      * \param input %Custom input control
+      * \param title %Title of this text field
+      */
+    explicit TextField(const TextInput &input, const String &title = String{});
+
+    /** Get the input control
+      */
+    TextInput input() const;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

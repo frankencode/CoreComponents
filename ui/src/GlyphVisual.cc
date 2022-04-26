@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/GlyphVisual>
-#include <cc/ui/GlyphRun>
+#include <cc/GlyphVisual>
+#include <cc/GlyphRun>
 #include <cc/Utf8Sink>
 
-namespace cc::ui {
+namespace cc {
 
 struct GlyphVisual::State: public Visual::State
 {
@@ -52,4 +52,4 @@ GlyphVisual::GlyphVisual(uint32_t ch, const Font &font):
     Visual{new State{ch, font}}
 {}
 
-} // namespace cc::ui
+} // namespace cc

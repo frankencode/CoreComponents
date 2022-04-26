@@ -1,10 +1,9 @@
-#include <cc/ui/Application>
-#include <cc/ui/Switch>
+#include <cc/Application>
+#include <cc/Switch>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Window{
         View{sp(640), sp(480)}

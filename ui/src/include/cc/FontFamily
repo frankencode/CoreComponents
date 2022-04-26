@@ -1,0 +1,102 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/FontFace>
+
+namespace cc {
+
+class FontManager;
+
+/** \class FontFamily cc/FontFamily
+  * \ingroup ui
+  * \brief %Font family
+  */
+class FontFamily: public Object
+{
+public:
+    /** Create a null font family
+      */
+    FontFamily() = default;
+
+    /** %Font name
+      */
+    String name() const { return me().name_; }
+
+    /** %Font pitch
+      */
+    Pitch pitch() const { return me().pitch_; }
+
+    /** %List of font faces
+      */
+    List<FontFace> fontFaces() const { return me().fontFaces_; }
+
+    /** %Select font face based on \a weight, \a slant and \a stretch
+      */
+    FontFace selectFontFace(
+        Weight weight = Weight::Normal,
+        Slant slant = Slant::Normal,
+        Stretch stretch = Stretch::Normal
+    ) const;
+
+    /** Lower than operator
+      */
+    bool operator<(const FontFamily &other) const
+    {
+        return name() < other.name();
+    }
+
+    /** Equal to operator
+      */
+    bool operator==(const FontFamily &other) const
+    {
+        return name() == other.name();
+    }
+
+    /** Not equal to operator
+      */
+    bool operator!=(const FontFamily &other) const
+    {
+        return name() != other.name();
+    }
+
+private:
+    friend class FontManager;
+
+    struct State: public Object::State
+    {
+        State(const String &name, Pitch pitch):
+            name_{name},
+            pitch_{pitch}
+        {}
+
+        String name_;
+        Pitch pitch_;
+        List<FontFace> fontFaces_;
+    };
+
+    FontFamily(const String &name, Pitch pitch):
+        Object{new State{name, pitch}}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+inline bool operator<(const FontFamily &family, const String &familyName)
+{
+    return family.name() < familyName;
+}
+
+inline bool operator<(const String &familyName, const FontFamily &family)
+{
+    return familyName < family.name();
+}
+
+} // namespace cc

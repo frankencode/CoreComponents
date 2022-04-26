@@ -1,0 +1,80 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Control>
+
+namespace cc {
+
+/** \class DragArea cc/DragArea
+  * \ingroup ui
+  * \brief Area with dragable child views
+  * \todo Create another related control MultiDragArea which supports multi-touch
+  */
+class DragArea: public Control
+{
+public:
+    /** Create a primordial drag area
+      */
+    DragArea():
+        Control{onDemand<DragArea::State>}
+    {}
+
+    /** Create a new drag area
+      */
+    explicit DragArea(Out<DragArea> self):
+        Control{new State}
+    {
+        self = weak<DragArea>();
+    }
+
+    /** Create a new drag area of given size (\a width, \a height)
+      */
+    DragArea(double width, double height):
+        Control{new State}
+    {
+        size(Size{width, height});
+    }
+
+    bool isDragged() const { return !me().dragTarget().isNull(); } ///< Some child view is currently dragged
+    View dragTarget() const { return me().dragTarget(); } ///< Get the currently dragged child view
+
+    Rect dragZone() const { return me().dragZone(); } ///< Get the allowed drag area
+    DragArea &dragZone(const Rect &newValue) { me().dragZone(newValue); return *this; } ///< %Set the allowed drag area
+    DragArea &dragZone(Definition<Rect> &&f) { me().dragZone(std::move(f)); return *this; } ///< Define the allowed drag area
+
+protected:
+    struct State: public Control::State
+    {
+        State();
+
+        virtual bool dragStart(const PointerEvent &event, Point dragStart) const;
+        virtual Step dragDistance(const PointerEvent &event, Point dragStart) const;
+        virtual void drag(Point newPos);
+
+        bool isDragged_ { false };
+        Point dragStart_;
+        Point dragOrigin_;
+        Property<Rect> dragZone;
+        Property<View> dragTarget;
+    };
+
+    explicit DragArea(CreateState *onDemand):
+        Control{onDemand}
+    {}
+
+    explicit DragArea(State *newState):
+        Control{newState}
+    {}
+
+    State &me() { return View::me().as<State>(); }
+    const State &me() const { return View::me().as<State>(); }
+};
+
+} // namespace cc

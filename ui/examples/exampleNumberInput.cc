@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/NumberInput>
+#include <cc/Application>
+#include <cc/NumberInput>
 #include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     NumberInput input;
 

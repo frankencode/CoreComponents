@@ -1,0 +1,89 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/View>
+#include <cc/FontMetrics>
+
+namespace cc {
+
+/** \class Label cc/Label
+  * \ingroup ui
+  * \brief %Single line text view for name tags and value displays
+  * \see Text
+  *
+  * Labels show single line texts with minimum pixel coverage.
+  * When maxWidth() is set the text will be automatically elided if necessary.
+  * A Label is more performant than a Text, but it does not perform full font shaping under its hood.
+  * This means that all glyphs are drawn from the same font face without falling back to another font face if a glyph is missing.
+  */
+class Label final: public View
+{
+public:
+    /** Create a primordial label
+      */
+    Label();
+
+    /** Create a new label
+      * \param self %Reference to newly created object
+      */
+    explicit Label(Out<Label> self);
+
+    /** Create a new label
+      * \param text %Label text
+      * \param self %Reference to newly created object
+      */
+    explicit Label(const String &text, Out<Label> self = None{});
+
+    /** Create a new label
+      * \param text %Label text
+      * \param font %Label font
+      * \param self %Reference to newly create object
+      */
+    Label(const String &text, const Font &font, Out<Label> self = None{});
+
+    String text() const; ///< Get label text
+    Label &text(const String &newValue); ///< %Set label text
+    Label &text(Definition<String> &&f); ///< Define label text
+
+    Font font() const; ///< Get label font
+    Label &font(Font newValue); ///< %Set label font
+    Label &font(Definition<Font> &&f); ///< Define label font
+    Label &fontEasing(const EasingCurve &easing, double duration); ///< %Set easing on font
+
+    Color color() const; ///< Get text color
+    Label &color(Color newValue); ///< %Set text color
+    Label &color(Definition<Color> &&f); ///< Define text color
+    Label &colorEasing(const EasingCurve &easing, double duration); ///< %Set easing on color
+
+    Size margin() const; ///< Get inside margins
+    Label &margin(Size newValue); ///< %Set inside margins
+    Label &margin(Definition<Size> &&f); ///< Define inside margins
+
+    double maxWidth() const; ///< Get maximum width
+    Label &maxWidth(double newValue); ///< %Set maximum width
+    Label &maxWidth(Definition<double> &&f); ///< Define maximum width
+
+    Point textPos() const;
+    Point textCenterLeft() const; ///< Center-left of the display text
+
+    Label &baselineStart(Definition<Point> &&a); ///< %Anchor the label with its text display baseline start to \a a
+    Label &baselineEnd(Definition<Point> &&a); ///<  %Anchor the label with its text display baseline end to \a a
+    Label &textCenterLeft(Definition<Point> &&a); ///< %Anchor the label with its center-left of the display text to \a a
+
+    FontMetrics fontMetrics() const; ///< %Current font metrics
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

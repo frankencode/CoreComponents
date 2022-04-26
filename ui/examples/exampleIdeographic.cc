@@ -1,9 +1,9 @@
-#include <cc/ui/Application>
-#include <cc/ui/Picture>
+#include <cc/Application>
+#include <cc/Picture>
 
 int main()
 {
-    using namespace cc::ui;
+    using namespace cc;
 
     Window{
         // Picture{Ideographic::AccessPoint, 50}

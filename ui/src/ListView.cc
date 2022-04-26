@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/ListView>
-#include <cc/ui/Application>
+#include <cc/ListView>
+#include <cc/Application>
 #include <cc/Layout>
 
-namespace cc::ui {
+namespace cc {
 
 class ListView::Pane final: public View
 {
@@ -24,15 +24,16 @@ class ListView::Pane final: public View
             itemVisibility([this]{
                 if (!hasParent()) return;
 
+                const double ls = leadSpace();
+
                 if (height() <= parent().height()) {
                     for (auto stop: layout_()) {
                         View &child = stop.item();
-                        child.pos(Point{0, stop.pos()});
+                        child.pos(Point{0, ls + stop.pos()});
                         child.visible(true);
                     }
                 }
                 else {
-                    const double ls = leadSpace();
                     const double y0 = -y() - ls;
                     const double y1 = y0 + parent().height();
 
@@ -194,4 +195,4 @@ const ListView::State &ListView::me() const
     return Object::me.as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/ui/Slider>
-#include <cc/ui/DragArea>
-#include <cc/ui/Box>
-#include <cc/ui/Shadow>
+#include <cc/Slider>
+#include <cc/DragArea>
+#include <cc/Box>
+#include <cc/Shadow>
 #include <cc/DEBUG>
 
-namespace cc::ui {
+namespace cc {
 
 struct Slider::State: public InputControl::State
 {
@@ -287,4 +287,4 @@ const Slider::State &Slider::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

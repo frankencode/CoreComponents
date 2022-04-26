@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/FontFace>
+#include <cc/FtLibrary>
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include FT_GLYPH_H
+#include FT_TRUETYPE_TABLES_H
+
+namespace cc {
+
+/** \internal
+  */
+class FtFontFace: public FontFace
+{
+public:
+    FtFontFace(const String &path);
+
+    FT_Face ftFace() const;
+
+private:
+    friend class Object;
+
+    struct State: public FontFace::State
+    {
+        State(const String &path);
+        ~State();
+
+        FtLibrary ftLibrary_;
+        FT_Face face_ { nullptr };
+    };
+
+    FtFontFace() = default;
+
+    const State &me() const;
+};
+
+} // namespace cc

@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/HtmlText>
-#include <cc/ui/TextState>
+#include <cc/HtmlText>
+#include <cc/TextState>
 
-namespace cc::ui {
+namespace cc {
 
 struct HtmlText::State final: public Text::State
 {
@@ -40,4 +40,4 @@ HtmlText::HtmlText(const String &text, Font font, Out<Text> self):
     self = weak<HtmlText>();
 }
 
-} // namespace cc::ui
+} // namespace cc

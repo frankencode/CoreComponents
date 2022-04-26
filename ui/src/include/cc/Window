@@ -1,0 +1,140 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/UpdateRequest>
+#include <cc/Display>
+#include <cc/Object>
+#include <cc/Queue>
+#include <cc/bitmask>
+
+namespace cc {
+
+using Frame = Queue<UpdateRequest>;
+
+/** Window mode flags
+  */
+enum class WindowMode: unsigned
+{
+    Default           = 0,          ///< %Default window mode
+    Fullscreen        = 1u << 0u,   ///< Fullscreen window
+    FullscreenDesktop = 1u << 1u,   ///< Fullscreen window at desktop resolution
+    OpenGl            = 1u << 2u,   ///< Enable OpenGL for this window
+    Vulkan            = 1u << 3u,   ///< Enable Vulkan for this window
+    Borderless        = 1u << 4u,   ///< %Window without window decorations
+    FixedSize         = 1u << 5u,   ///< %Window cannot be resized
+    Minimized         = 1u << 6u,   ///< %Window is minimized
+    Maximized         = 1u << 7u,   ///< %Window is maximized
+    InputGrabbed      = 1u << 8u,   ///< %Window has grabbed input focus
+    InputFocus        = 1u << 9u,   ///< %Window has input focus
+    MouseFocus        = 1u << 10u,  ///< %Window has mouse focus
+    AllowHighDpi      = 1u << 11u,  ///< Enable High-DPI mode if supported
+    MouseCapture      = 1u << 12u,  ///< %Window has captured the mouse input
+    AlwaysOnTop       = 1u << 13u,  ///< %Window should always stay on top
+    SkipTaskBar       = 1u << 14u,  ///< Omit window from the task bar
+    Utility           = 1u << 15u,  ///< %Utility window
+    Tooltip           = 1u << 16u,  ///< %Tooltip window
+    PopupMenu         = 1u << 17u,  ///< %Window for a popup menu
+    VSync             = 1u << 18u,  ///< Enable VSync
+    Accelerated       = 1u << 19u,  ///< Enable HW accelerated composition
+};
+
+CC_BITMASK(WindowMode)
+
+/** \class Window cc/Window
+  * \ingroup ui
+  * \brief %Display window
+  */
+class Window: public Object
+{
+public:
+    /** Create a null window
+      */
+    Window() = default;
+
+    /** Open a new window for \a view
+      */
+    explicit Window(const View &view);
+
+    String title() const { return me().title(); } ///< Get window title
+    Window &title(Definition<String> &&f) { me().title.define(std::move(f)); return *this; } ///< Define window title
+    Window &title(const String &newValue) { me().title = newValue; return *this; } ///< %Set window title
+
+    Point pos() const { return me().pos(); } ///< Get window position
+    Window &pos(Point newValue) { me().pos = newValue; return *this; } ///< %Set window position
+
+    Size size() const { return me().size(); } ///< Get window size
+    Window &size(Size newValue) { me().size = newValue; return *this; } ///< %Set window size
+
+    WindowMode mode() const { return me().mode_; } ///< Get window mode
+    Window &mode(WindowMode newValue) { me().mode_ = newValue; return *this; } ///< %Set window mode
+
+    double opacity() const { return me().opacity(); } ///< Get opacity
+    Window &opacity(double newValue) { me().opacity(newValue); me().setOpacity(newValue); return *this; } ///< %Set opacity
+
+    void show(int display = 0) { me().show(display); } ///< Show window on \a display
+    void hide() { me().hide(); } ///< Hide window
+    void raise() { me().raise(); } ///< Raise window and acquire input focus
+
+    bool visible() const { return me().visible(); } ///< Check if window is shown
+    View view() const { return me().view_; } ///< Get window's root view
+
+    Control findControl(Point pos) const; ///< Get control at \a pos
+
+    Display display() const { return me().display(); } ///< Get the display this window is shown on
+
+protected:
+    friend class Object;
+    friend class View;
+
+    struct State: public Object::State
+    {
+        State(View view);
+        ~State();
+
+        virtual void show(int display) = 0;
+        virtual void hide() = 0;
+        virtual void raise() = 0;
+        virtual void setOpacity(double alpha) = 0;
+
+        virtual void renderFrame(const Frame &frame) = 0;
+
+        static View::State &viewState(View &view) { return view.me(); }
+        static const View::State &viewState(const View &view) { return view.me(); }
+        static const View::State *parent(const View &view) { return view->parent_(); }
+        static const View::State *parent(const View::State *&view) { return view->parent_(); }
+
+        static Object &viewContext(View &view) { return view.me().context_; }
+        static const Object &viewContext(const View &view) { return view.me().context_; }
+
+        void addToFrame(const UpdateRequest &request);
+        void commitFrame();
+
+        Property<bool> visible { false };
+        Property<bool> focus { false };
+        Property<String> title;
+        Property<Point> pos;
+        Property<Size> size;
+        Property<double> opacity { 1. };
+        Property<Display> display;
+
+        WindowMode mode_ { WindowMode::Default };
+        View view_;
+        Frame nextFrame_;
+    };
+
+    explicit Window(State *state):
+        Object{state}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

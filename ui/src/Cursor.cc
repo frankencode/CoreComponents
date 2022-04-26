@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/ui/Cursor>
-#include <cc/ui/Application>
+#include <cc/Cursor>
+#include <cc/Application>
 
-namespace cc::ui {
+namespace cc {
 
 Cursor::Cursor(CursorShape shape)
 {
     *this = Application{}.me().createCursor(shape);
 }
 
-} // namespace cc::ui
+} // namespace cc

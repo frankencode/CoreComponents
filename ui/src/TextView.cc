@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/TextView>
-#include <cc/ui/Text>
+#include <cc/TextView>
+#include <cc/Text>
 #include <cc/LineSource>
 #include <cc/Format>
 
-namespace cc::ui {
+namespace cc {
 
 struct TextView::State final: public ListView::State
 {
@@ -107,4 +107,4 @@ const TextView::State &TextView::me() const
     return Object::me.as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

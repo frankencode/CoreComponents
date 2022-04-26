@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ThreadLocalSingleton>
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include FT_SYSTEM_H
+
+namespace cc {
+
+class FtLibrary final: public ThreadLocalSingleton
+{
+public:
+    FtLibrary();
+
+    static FT_Library ftLibrary() { return FtLibrary{}->library_; }
+
+private:
+    struct State final: public ThreadLocalSingleton::State
+    {
+        State();
+        ~State();
+        FT_Library library_;
+    };
+
+    State *operator->() { return &Object::me.as<State>(); }
+};
+
+} // namespace cc

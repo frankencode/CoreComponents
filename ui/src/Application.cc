@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/ui/Application>
-#include <cc/ui/TimeMaster>
-#include <cc/ui/PlatformPlugin>
-#include <cc/ui/PosGuard>
-#include <cc/ui/InputControl>
+#include <cc/Application>
+#include <cc/TimeMaster>
+#include <cc/PlatformPlugin>
+#include <cc/PosGuard>
+#include <cc/InputControl>
 
-namespace cc::ui {
+namespace cc {
 
 void Application::State::notifyTimer(const Timer &timer)
 {
@@ -273,4 +273,4 @@ Application app()
     return platform().application();
 }
 
-} // namespace cc::ui
+} // namespace cc

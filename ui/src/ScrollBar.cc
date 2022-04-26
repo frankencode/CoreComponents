@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/ScrollBar>
-#include <cc/ui/Box>
-#include <cc/ui/Application>
-#include <cc/ui/Easing>
+#include <cc/ScrollBar>
+#include <cc/Box>
+#include <cc/Application>
+#include <cc/Easing>
 
-namespace cc::ui {
+namespace cc {
 
 struct ScrollBar::State: public DragArea::State
 {
@@ -290,4 +290,4 @@ const ScrollBar::State &ScrollBar::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

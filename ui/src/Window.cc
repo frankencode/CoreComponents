@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/Window>
-#include <cc/ui/Application>
-#include <cc/ui/DisplayManager>
+#include <cc/Window>
+#include <cc/Application>
+#include <cc/DisplayManager>
 #include <cc/DEBUG>
 
-namespace cc::ui {
+namespace cc {
 
 Window::Window(const View &view)
 {
@@ -72,4 +72,4 @@ void Window::State::commitFrame()
     nextFrame_ = Frame{};
 }
 
-} // namespace cc::ui
+} // namespace cc

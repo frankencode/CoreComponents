@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ScaledFont>
+#include <cc/FtFontFace>
+#include <cairo/cairo.h>
+#include <cairo/cairo-ft.h>
+
+namespace cc {
+
+/** \internal
+  * \brief Cairo scaled font instance for a Freetype font
+  */
+class FtScaledFont: public ScaledFont
+{
+public:
+    FtScaledFont() = default;
+
+    FtScaledFont(const FtFontFace &fontFace, const Font &font);
+
+    FtFontFace ftFontFace() const { return me().fontFace_; }
+    cairo_scaled_font_t *cairoScaledFont() const { return me().cairoScaledFont_; }
+
+private:
+    friend class Object;
+
+    struct State: public ScaledFont::State
+    {
+        State(const FtFontFace &fontFace, const Font &font);
+        ~State();
+
+        FontFace fontFace() const override { return fontFace_; }
+
+        FtFontFace fontFace_;
+        cairo_font_face_t *cairoFontFace_;
+        cairo_scaled_font_t *cairoScaledFont_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+/** \internal
+  * \brief Obtain a scaled version of a Freetype font from a scaled cairo font instance
+  */
+class FtFaceGuard
+{
+public:
+    FtFaceGuard(const FtScaledFont &ftScaledFont):
+        ftScaledFont_{ftScaledFont},
+        ftFace_{cairo_ft_scaled_font_lock_face(ftScaledFont_.cairoScaledFont())}
+    {}
+
+    ~FtFaceGuard() {
+        cairo_ft_scaled_font_unlock_face(ftScaledFont_.cairoScaledFont());
+    }
+
+    FT_Face ftFace() const { return ftFace_; }
+
+private:
+    FtScaledFont ftScaledFont_;
+    FT_Face ftFace_;
+};
+
+} // namespace cc

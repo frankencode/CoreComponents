@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Application>
+#include <cc/Timer>
+
+namespace cc {
+
+class SdlWindow;
+
+class SdlApplication final: public Application
+{
+public:
+    SdlApplication();
+
+    void triggerTimer(const Timer &timer);
+
+private:
+    friend class SdlWindow;
+
+    struct State;
+
+    void registerWindow(const SdlWindow &window);
+
+    const State &me() const;
+    State &me();
+};
+
+} // namespace cc

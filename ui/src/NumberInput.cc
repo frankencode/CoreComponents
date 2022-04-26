@@ -6,13 +6,13 @@
  *
  */
 
-#include <cc/ui/NumberInput>
-#include <cc/ui/NumberInputState>
-#include <cc/ui/FontMetrics>
+#include <cc/NumberInput>
+#include <cc/NumberInputState>
+#include <cc/FontMetrics>
 #include <cc/str>
 #include <cmath>
 
-namespace cc::ui {
+namespace cc {
 
 NumberInput::State::State()
 {
@@ -208,4 +208,4 @@ const NumberInput::State &NumberInput::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

@@ -1,12 +1,11 @@
-#include <cc/ui/Application>
-#include <cc/ui/Flickable>
-#include <cc/ui/ColumnLayout>
-#include <cc/ui/Label>
+#include <cc/Application>
+#include <cc/Flickable>
+#include <cc/ColumnLayout>
+#include <cc/Label>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Window{
         Flickable{

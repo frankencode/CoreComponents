@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/StylePlugin>
-#include <cc/ui/StyleManager>
+#include <cc/StylePlugin>
+#include <cc/StyleManager>
 
-namespace cc::ui {
+namespace cc {
 
 StylePlugin::StylePlugin(State *state):
     Object{state}
@@ -27,4 +27,4 @@ Theme theme()
     return StyleManager{}.activePlugin().theme();
 }
 
-} // namespace cc::ui
+} // namespace cc

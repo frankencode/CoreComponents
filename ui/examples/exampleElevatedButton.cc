@@ -1,10 +1,9 @@
-#include <cc/ui/Application>
-#include <cc/ui/ElevatedButton>
+#include <cc/Application>
+#include <cc/ElevatedButton>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Window{
         View{sp(640), sp(480)}

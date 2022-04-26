@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/DragArea>
-#include <cc/ui/Box>
+#include <cc/Application>
+#include <cc/DragArea>
+#include <cc/Box>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Window{
         DragArea{gu(80), gu(60)}

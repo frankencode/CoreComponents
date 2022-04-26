@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/FtScaledFont>
+#include <cc/FtScaledFont>
 
-namespace cc::ui {
+namespace cc {
 
 FtScaledFont::State::State(const FtFontFace &fontFace, const Font &font):
     ScaledFont::State{font},
@@ -118,4 +118,4 @@ FtScaledFont::FtScaledFont(const FtFontFace &fontFace, const Font &font):
     state.underlineThickness_ = scale * ftFace->underline_thickness;
 }
 
-} // namespace cc::ui
+} // namespace cc

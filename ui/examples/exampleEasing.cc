@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/Easing>
+#include <cc/Application>
+#include <cc/Easing>
 #include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     View box;
 

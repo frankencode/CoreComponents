@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/NumberCellState>
+#include <cc/NumberCellState>
 #include <cc/DEBUG>
 
-namespace cc::ui {
+namespace cc {
 
 NumberCell::State::State()
 {
@@ -170,4 +170,4 @@ const NumberCell::State *NumberCell::operator->() const
     return &me();
 }
 
-} // namespace cc::ui
+} // namespace cc

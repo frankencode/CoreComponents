@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/Picture>
-#include <cc/ui/ListItem>
+#include <cc/Application>
+#include <cc/Picture>
+#include <cc/ListItem>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Window{
         ListItem{}

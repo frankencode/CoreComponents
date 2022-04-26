@@ -1,10 +1,9 @@
-#include <cc/ui/Application>
-#include <cc/ui/Plot>
+#include <cc/Application>
+#include <cc/Plot>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Window{
         Plot{gu(80), gu(60)}

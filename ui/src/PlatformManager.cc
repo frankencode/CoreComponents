@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/PlatformManager>
+#include <cc/PlatformManager>
 #include <cc/DEBUG>
 
-namespace cc::ui {
+namespace cc {
 
 PlatformManager::PlatformManager():
     Singleton{instance<State>()}
@@ -29,4 +29,4 @@ void PlatformManager::registerPlugin(const PlatformPlugin &plugin)
     }
 }
 
-} // namespace cc::ui
+} // namespace cc

@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/TextLineEditor>
+#include <cc/TextLineEditor>
 #include <cc/Property>
 
-namespace cc::ui {
+namespace cc {
 
 struct TextLineEditor::State: public TextEditorWithHistory::State
 {
@@ -45,4 +45,4 @@ TextLineEditor::TextLineEditor(const String &text):
     TextEditorWithHistory{new State{text}}
 {}
 
-} // namespace cc::ui
+} // namespace cc

@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Picture>
+
+namespace cc {
+
+/** \class Icon cc/Icon
+  * \ingroup ui
+  * \brief Convenience class to load an icon
+  */
+class Icon: public Picture
+{
+public:
+    /** Create a primordial icon
+      */
+    Icon() = default;
+
+    /** Create a new icon
+      * \param ch %Ideographic code
+      * \param size %Size in pixel
+      * \param color %Foreground color
+      */
+    explicit Icon(Ideographic ch, double size = sp(24), Color color = Color{}):
+        Picture{ch, size, color ? color : theme().secondaryTextColor()}
+    {}
+
+    /** Create a new icon
+      * \param ch %Ideographic code
+      * \param color %Foreground color
+      */
+    Icon(Ideographic ch, Color color):
+        Picture{ch, sp(24), color}
+    {}
+};
+
+} // namespace cc

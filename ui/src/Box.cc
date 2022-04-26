@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/Box>
+#include <cc/Box>
 
-namespace cc::ui {
+namespace cc {
 
 Box::State::State()
 {
@@ -58,4 +58,4 @@ Box::State::State()
     });
 }
 
-} // namespace cc::ui
+} // namespace cc

@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/Label>
-#include <cc/ui/Painter>
-#include <cc/ui/GlyphRun>
+#include <cc/Label>
+#include <cc/Painter>
+#include <cc/GlyphRun>
 
-namespace cc::ui {
+namespace cc {
 
 struct Label::State: public View::State
 {
@@ -287,4 +287,4 @@ const Label::State &Label::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

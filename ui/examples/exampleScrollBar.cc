@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/ScrollBar>
-#include <cc/ui/Label>
+#include <cc/Application>
+#include <cc/ScrollBar>
+#include <cc/Label>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Window{
         Control{gu(80), gu(60)}

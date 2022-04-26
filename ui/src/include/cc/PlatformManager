@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/PlatformPlugin>
+#include <cc/Map>
+
+namespace cc {
+
+class PlatformManager final: public Singleton
+{
+public:
+    PlatformManager();
+
+    PlatformPlugin activePlugin() const { return me().activePlugin_; }
+    void setActivePlugin(const PlatformPlugin &plugin);
+
+    Map<String, PlatformPlugin> plugins() const { return me().plugins_; }
+
+private:
+    friend class PlatformPlugin;
+
+    struct State: public Singleton::State
+    {
+        Map<String, PlatformPlugin> plugins_;
+        PlatformPlugin activePlugin_;
+    };
+
+    void registerPlugin(const PlatformPlugin &plugin);
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

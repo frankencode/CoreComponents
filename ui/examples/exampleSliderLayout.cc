@@ -1,13 +1,12 @@
-#include <cc/ui/Application>
-#include <cc/ui/ManagedRowLayout>
-#include <cc/ui/Label>
-#include <cc/ui/Slider>
+#include <cc/Application>
+#include <cc/ManagedRowLayout>
+#include <cc/Label>
+#include <cc/Slider>
 #include <cc/DEBUG>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     View view;
 

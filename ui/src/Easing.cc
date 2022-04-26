@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/Easing>
+#include <cc/Easing>
 
-namespace cc::ui {
+namespace cc {
 
 double Easing::Linear(double t)
 {
@@ -227,4 +227,4 @@ Point Easing::Bezier::point(double s) const
     return 3 * (s3 - 2 * s2 + s) * p1_ + 3 * (-s3 + s2) * p2_ + s3 * Point{1., 1.};
 }
 
-} // namespace cc::ui
+} // namespace cc

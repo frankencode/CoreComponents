@@ -6,12 +6,12 @@
  *
  */
 
-#include <cc/ui/SdlDisplayManager>
-#include <cc/ui/SdlPlatformError>
+#include <cc/SdlDisplayManager>
+#include <cc/SdlPlatformError>
 #include <SDL2/SDL.h>
 #include <cc/DEBUG>
 
-namespace cc::ui {
+namespace cc {
 
 struct SdlDisplayManager::State final: public DisplayManager::State
 {
@@ -87,4 +87,4 @@ Display SdlDisplayManager::getDisplay(int index)
     return Display{pos, size, dpi, nativeMode};
 }
 
-} // namespace cc::ui
+} // namespace cc

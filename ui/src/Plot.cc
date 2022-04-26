@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/Plot>
+#include <cc/Plot>
 #include <cc/math>
 #include <cmath>
 
-namespace cc::ui {
+namespace cc {
 
 Plot::State::State()
 {
@@ -85,4 +85,4 @@ double Plot::log10(double x)
     return x > 0 ? std::log10(x) : 0;
 }
 
-} // namespace cc::ui
+} // namespace cc

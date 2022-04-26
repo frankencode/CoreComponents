@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Theme>
+
+namespace cc {
+
+/** \class MaterialLight cc/MaterialLight
+  * \brief %Material %Design daylight theme
+  */
+class MaterialLight: public Theme
+{
+public:
+    MaterialLight();
+
+protected:
+    struct State;
+};
+
+} // namespace cc

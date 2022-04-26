@@ -6,14 +6,14 @@
  *
  */
 
-#include <cc/ui/SdlPlatformError>
+#include <cc/SdlPlatformError>
 #include <SDL2/SDL.h>
 
-namespace cc::ui {
+namespace cc {
 
 String SdlPlatformError::message() const
 {
     return SDL_GetError();
 }
 
-} // namespace cc::ui
+} // namespace cc

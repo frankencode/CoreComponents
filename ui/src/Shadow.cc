@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/Shadow>
-#include <cc/ui/shadowBlur>
+#include <cc/Shadow>
+#include <cc/shadowBlur>
 #include <cmath>
 
-namespace cc::ui {
+namespace cc {
 
 struct Shadow::State: public View::State
 {
@@ -122,4 +122,4 @@ const Shadow::State &Shadow::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

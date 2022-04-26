@@ -1,5 +1,5 @@
-#include <cc/ui/Application>
-#include <cc/ui/Plot>
+#include <cc/Application>
+#include <cc/Plot>
 #include <cc/pulse/Context>
 #include <cc/pulse/InputStream>
 #include <cc/Thread>
@@ -15,7 +15,6 @@
 int main(int argc, char *argv[])
 {
     using namespace cc;
-    using namespace cc::ui;
 
     String toolName = String{argv[0]}.baseName();
 

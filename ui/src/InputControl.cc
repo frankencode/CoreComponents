@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/InputControl>
+#include <cc/InputControl>
 #include <cc/DEBUG>
 
-namespace cc::ui {
+namespace cc {
 
 InputControl::State::State()
 {
@@ -95,4 +95,4 @@ void InputControl::State::gotoPrevious()
     }*/
 }
 
-} // namespace cc::ui
+} // namespace cc

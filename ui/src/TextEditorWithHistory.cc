@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/TextEditorWithHistory>
+#include <cc/TextEditorWithHistory>
 
-namespace cc::ui {
+namespace cc {
 
 String TextEditorWithHistory::State::filterChunk(const String &chunk) const
 {
@@ -62,4 +62,4 @@ Range TextEditorWithHistory::State::redo()
     return delta.newRange();
 }
 
-} // namespace cc::ui
+} // namespace cc

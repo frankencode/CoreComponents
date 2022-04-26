@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/TimeWorker>
-#include <cc/ui/TimeMaster>
-#include <cc/ui/Timer>
+#include <cc/TimeWorker>
+#include <cc/TimeMaster>
+#include <cc/Timer>
 #include <cc/System>
 #include <cc/Semaphore>
 #include <cc/Channel>
@@ -16,7 +16,7 @@
 #include <cc/MultiSet>
 #include <cmath>
 
-namespace cc::ui {
+namespace cc {
 
 class TimeoutRequest: public Object
 {
@@ -174,4 +174,4 @@ const TimeWorker::State &TimeWorker::me() const
     return Object::me.as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

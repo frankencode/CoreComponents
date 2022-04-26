@@ -1,0 +1,71 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TextRun>
+#include <cc/FtGlyphRun>
+
+namespace cc {
+
+class FtTextCursor;
+
+/** \internal
+  */
+class FtTextRun: public TextRun
+{
+public:
+    FtTextRun():
+        TextRun{new State}
+    {}
+
+    Point advance(const FtTextCursor &cursor) const
+    {
+        return me().advance(cursor);
+    }
+
+    int moveTextCursor(FtTextCursor &cursor, int steps) const
+    {
+        return me().moveTextCursor(cursor, steps);
+    }
+
+    List<FtGlyphRun> glyphRuns() const { return me().glyphRuns_; }
+
+private:
+    friend class Object;
+    friend class FtTextCursor;
+
+    struct State: public TextRun::State
+    {
+        FtTextRun self() const;
+
+        void append(const String &text, const Font &font) override;
+        TextRun wrap(double maxWidth, TextAlign textAlign, double lineHeight, const TextWrapBehind &wrapBehind) const override;
+
+        static double maxLineHeight(const List<FtGlyphRun> &glyphRuns);
+
+        FtGlyphRun fold(const List<FtGlyphRun> &glyphRuns) const;
+        FtTextRun unfold(FtGlyphRun &metaBlock, const List<FtGlyphRun> &glyphRuns) const;
+
+        TextCursor getTextCursor(int byteOffset) const override;
+        int moveTextCursor(FtTextCursor &cursor, int steps) const;
+
+        Point advance(const FtTextCursor &cursor) const;
+
+        List<FtGlyphRun> glyphRuns_;
+    };
+
+    explicit FtTextRun(State *newState):
+        TextRun{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

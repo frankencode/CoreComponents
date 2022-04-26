@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/ui/ScrollView>
+#include <cc/ScrollView>
 
-namespace cc::ui {
+namespace cc {
 
 ScrollView::State::State(const View &pane):
     flickable_{pane}
@@ -65,4 +65,4 @@ ScrollView::State::State(const View &pane):
     add(hScroll_);
 }
 
-} // namespace cc::ui
+} // namespace cc

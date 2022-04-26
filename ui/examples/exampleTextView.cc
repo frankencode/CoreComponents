@@ -1,12 +1,11 @@
-#include <cc/ui/Application>
-#include <cc/ui/TextView>
+#include <cc/Application>
+#include <cc/TextView>
 #include <cc/File>
 #include <cc/DEBUG>
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
-    using namespace cc::ui;
 
     String text;
     if (argc > 1) {

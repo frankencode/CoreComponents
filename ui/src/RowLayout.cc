@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/RowLayout>
-#include <cc/ui/Window>
+#include <cc/RowLayout>
+#include <cc/Window>
 
-namespace cc::ui {
+namespace cc {
 
 void RowLayout::State::updateLayout()
 {
@@ -56,4 +56,4 @@ void RowLayout::State::updateLayout()
     }
 }
 
-} // namespace cc::ui
+} // namespace cc

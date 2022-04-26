@@ -1,10 +1,9 @@
-#include <cc/ui/Application>
-#include <cc/ui/Slider>
+#include <cc/Application>
+#include <cc/Slider>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Slider slider;
 

@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/SliderField>
-#include <cc/ui/Slider>
-#include <cc/ui/NumberCellState>
+#include <cc/SliderField>
+#include <cc/Slider>
+#include <cc/NumberCellState>
 
-namespace cc::ui {
+namespace cc {
 
 struct SliderField::State: public View::State
 {
@@ -203,4 +203,4 @@ const SliderField::State &SliderField::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

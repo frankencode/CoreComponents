@@ -6,15 +6,15 @@
  *
  */
 
-#include <cc/ui/Flickable>
-#include <cc/ui/Application>
-#include <cc/ui/InputControl>
-#include <cc/ui/PosGuard>
-#include <cc/ui/Timer>
-#include <cc/ui/DisplayManager>
+#include <cc/Flickable>
+#include <cc/Application>
+#include <cc/InputControl>
+#include <cc/PosGuard>
+#include <cc/Timer>
+#include <cc/DisplayManager>
 #include <cc/System>
 
-namespace cc::ui {
+namespace cc {
 
 Flickable::State::State(const View &pane):
     pane_{pane},
@@ -344,4 +344,4 @@ Flickable::Flickable():
     Control{onDemand<State>}
 {}
 
-} // namespace cc::ui
+} // namespace cc

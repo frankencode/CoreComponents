@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Timer>
+#include <cc/Object>
+
+namespace cc {
+
+/** \internal
+  * \brief Background worker thread of the TimeMaster
+  * The %TimeWorker runs in a background thread and generates the timeouts of all Timer instances.
+  */
+class TimeWorker: public Object
+{
+public:
+    TimeWorker();
+    ~TimeWorker();
+
+    void startTimer(const Timer &timer);
+    void ack();
+    void shutdown();
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

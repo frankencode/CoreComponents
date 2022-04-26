@@ -1,14 +1,13 @@
-#include <cc/ui/Application>
-#include <cc/ui/Label>
-#include <cc/ui/Timer>
-#include <cc/ui/Easing>
+#include <cc/Application>
+#include <cc/Label>
+#include <cc/Timer>
+#include <cc/Easing>
 #include <cc/System>
 #include <cc/Date>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     Property<double> time = System::now();
     Label label;

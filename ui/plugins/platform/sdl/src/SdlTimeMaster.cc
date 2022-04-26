@@ -6,11 +6,11 @@
  *
  */
 
-#include <cc/ui/SdlTimeMaster>
-#include <cc/ui/SdlApplication>
+#include <cc/SdlTimeMaster>
+#include <cc/SdlApplication>
 #include <SDL2/SDL.h>
 
-namespace cc::ui {
+namespace cc {
 
 struct SdlTimeMaster::State final: public TimeMaster::State
 {
@@ -29,4 +29,4 @@ void SdlTimeMaster::shutdown()
     Singleton::destroy<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

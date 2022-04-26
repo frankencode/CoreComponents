@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/Control>
-#include <cc/ui/Application>
+#include <cc/Control>
+#include <cc/Application>
 
-namespace cc::ui {
+namespace cc {
 
 Control::Control():
     View{createState}
@@ -79,4 +79,4 @@ void Control::State::onTextEdited(const String &text, int start, int length)
 void Control::State::onTextInput(const String &text)
 {}
 
-} // namespace cc::ui
+} // namespace cc

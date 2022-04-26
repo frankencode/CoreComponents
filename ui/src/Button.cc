@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/ButtonState>
-#include <cc/ui/Icon>
+#include <cc/ButtonState>
+#include <cc/Icon>
 
-namespace cc::ui {
+namespace cc {
 
 Button::State::State()
 {
@@ -334,4 +334,4 @@ const Button::State &Button::me() const
     return View::me().as<State>();
 }
 
-} // namespace cc::ui
+} // namespace cc

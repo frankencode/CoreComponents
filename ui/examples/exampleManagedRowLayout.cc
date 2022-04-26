@@ -1,13 +1,12 @@
-#include <cc/ui/Application>
-#include <cc/ui/ManagedColumnLayout>
-#include <cc/ui/ManagedRowLayout>
-#include <cc/ui/Text>
-#include <cc/ui/Label>
+#include <cc/Application>
+#include <cc/ManagedColumnLayout>
+#include <cc/ManagedRowLayout>
+#include <cc/Text>
+#include <cc/Label>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     double gap = Font::defaultSize() * 1.5;
 

@@ -1,11 +1,10 @@
-#include <cc/ui/Application>
-#include <cc/ui/GlyphRun>
-#include <cc/ui/Painter>
+#include <cc/Application>
+#include <cc/GlyphRun>
+#include <cc/Painter>
 
 int main()
 {
     using namespace cc;
-    using namespace cc::ui;
 
     const double margins = 30;
     const double fontSize = 20;

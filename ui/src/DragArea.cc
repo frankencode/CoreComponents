@@ -6,10 +6,10 @@
  *
  */
 
-#include <cc/ui/DragArea>
-#include <cc/ui/Application>
+#include <cc/DragArea>
+#include <cc/Application>
 
-namespace cc::ui {
+namespace cc {
 
 DragArea::State::State()
 {
@@ -90,4 +90,4 @@ void DragArea::State::drag(Point newPos)
     dragTarget().pos(newPos);
 }
 
-} // namespace cc::ui
+} // namespace cc
