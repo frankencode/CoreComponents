@@ -82,6 +82,8 @@ public:
     void hide() { me().hide(); } ///< Hide window
     void raise() { me().raise(); } ///< Raise window and acquire input focus
 
+    int run(); /// Convenience method to show this window and run the application loop
+
     bool visible() const { return me().visible(); } ///< Check if window is shown
     View view() const { return me().view_; } ///< Get window's root view
 

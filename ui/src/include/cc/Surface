@@ -50,6 +50,10 @@ protected:
         virtual void polish();
     };
 
+    #ifndef NDEBUG
+    static State *paintTarget(State *newTarget = nullptr);
+    #endif
+
     explicit Surface(State *newState):
         Object{newState}
     {}

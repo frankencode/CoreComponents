@@ -9,27 +9,35 @@
 #include <cc/Timer>
 #include <cc/TimeMaster>
 #include <cc/System>
+#include <cc/Application>
 
 namespace cc {
 
-void Timer::startAt(double startTime)
+Timer &Timer::startAt(double startTime)
 {
     me().isActive_ = true;
     me().firstTime_ = me().startTime_ = startTime;
     TimeMaster{}.startTimer(*this);
+    return *this;
 }
 
-void Timer::startIn(double delayTime)
+Timer &Timer::startIn(double delayTime)
 {
     me().isActive_ = true;
     me().startTime_ = System::now();
     me().firstTime_ = me().startTime_ + delayTime;
     TimeMaster{}.startTimer(*this);
+    return *this;
 }
 
 void Timer::stop()
 {
     me().isActive_ = false;
+}
+
+int Timer::run()
+{
+    return Application{}.run();
 }
 
 } // namespace cc

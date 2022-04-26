@@ -1,7 +1,6 @@
-#include <cc/Application>
-#include <cc/Picture>
 #include <cc/ListView>
 #include <cc/ListItem>
+#include <cc/Picture>
 #include <cc/Label>
 #include <cc/Format>
 #include <cc/DEBUG>
@@ -10,33 +9,32 @@ int main()
 {
     using namespace cc;
 
-    ListView listView{640, 480};
-    // listView.header(Label{"Test 1, 2, 3, ..."}.margin(sp(16)));
-    // listView.footer(Label{"Fin."}.margin(sp(16)));
+    ListView menu;
 
-    for (int i = 0; i < 32; ++i)
-    {
-        ListItem item;
-
-        listView.pane().add(
-            ListItem{&item}
-            .icon(Picture{Ideographic::AccessPoint, 28})
-            .text(Format{"Access point %%"} << i)
-            .onClicked([=]{
-                CC_INSPECT(i);
+    return
+        ListView{sp(500), sp(500), &menu}
+        .header(
+            Label{}
+            .margin(sp(16))
+            .text([=]{
+                return Format{"%% networks available"}.arg(menu.pane().count());
             })
-            #if 0
-            .attach([i,item]{
-                ferr() << i << ": " << (item.visible() ? "show" : "hide") << nl;
-            })
-            .onEndOfLife([i]{
-                ferr() << i << ": EOL" << nl;
-            })
-            #endif
-        );
-    }
-
-    Window{listView}.show();
-
-    return Application{}.run();
+        )
+        .footer(
+            Label{"End of list"}
+            .margin(sp(16))
+        )
+        .populate([](auto target) {
+            for (int i = 0; i < 32; ++i) {
+                target.pane().add(
+                    ListItem{}
+                    .icon(Picture{Ideographic::AccessPoint, 28})
+                    .text(Format{"Access point %%"}.arg(i))
+                    .onClicked([=]{
+                        CC_INSPECT(i);
+                    })
+                );
+            }
+        })
+        .run();
 }

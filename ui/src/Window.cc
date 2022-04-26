@@ -72,4 +72,10 @@ void Window::State::commitFrame()
     nextFrame_ = Frame{};
 }
 
+int Window::run()
+{
+    show();
+    return Application{}.run();
+}
+
 } // namespace cc

@@ -1,6 +1,4 @@
-#include <cc/Application>
-#include <cc/Painter>
-#include <cc/DEBUG>
+#include <cc/View>
 
 int main()
 {
@@ -8,25 +6,22 @@ int main()
 
     View view;
 
-    Window{
+    return
         View{&view}
-        .size(640, 480)
+        .size(sp(500), sp(500))
         .paper(Color::White)
-        .paint([view]{
-            Painter p{view};
+        .paint([=]{
+            Painter painter{view};
             Point center = view.size() / 2;
             const double step = 10;
             const double radius = view.size().min() / 3;
             for (double angle = 0; angle < 360; angle += step) {
-                p.moveTo(center);
-                p.arcNegative(center, radius, -degree(angle), -degree(angle + step));
-                p.setPen(Color::fromHue(angle));
-                p.fill();
+                painter
+                .moveTo(center)
+                .arcNegative(center, radius, -degree(angle), -degree(angle + step))
+                .setPen(Color::fromHue(angle))
+                .fill();
             }
         })
-    }.show();
-
-    CC_INSPECT(view.isWeak());
-
-    return Application{}.run();
+        .run();
 }

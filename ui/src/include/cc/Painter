@@ -41,34 +41,32 @@ public:
       */
     explicit Painter(Surface::State *state);
 
-    void save(); ///< Save painter state to the top of the state stack
-    void restore(); ///< Restore painter state from the top of the state stack
+    Painter &save(); ///< Save painter state to the top of the state stack
+    Painter &restore(); ///< Restore painter state from the top of the state stack
 
     /** Emit current page
       * \param clear Start with clean page
       */
-    void nextPage(bool clear = true);
-
+    Painter &nextPage(bool clear = true);
     ///@}
 
     /** \name Path Creation
       */
 
     ///@{
-
-    void newPath(); ///< Start a new path
-    void newSubPath(); ///< Start a new sub-path without setting an initial current point
-    void closePath(); ///< Close path with a line segment
+    Painter &newPath(); ///< Start a new path
+    Painter &newSubPath(); ///< Start a new sub-path without setting an initial current point
+    Painter &closePath(); ///< Close path with a line segment
 
     bool hasCurrentPoint() const; ///< Check if there is a current point
     Point currentPoint() const; ///< Get the current point
-    void moveTo(Point c); ///< Start a new sub-path starting at \a c
-    void lineTo(Point c); ///< Add a line segment to the path from the current point to the new current point \a c
-    void curveTo(Point a, Point b, Point c); ///< Add a cubic Bézier spline starting in the current point, spanning over control points \a a, \a b and ending in the new current point \a c
-    void arc(Point m, double r, double alpha0 = 0, double alpha1 = 2 * M_PI); ///< Add a circular arc of radius \a r centered at \a m starting at angle \a alpha0 and ending at angle \a alpha1 (in radians)
-    void arcNegative(Point m, double r, double alpha0, double alpha1); ///< Add a circular arc with \a alpha1 < \a alpha0
+    Painter &moveTo(Point c); ///< Start a new sub-path starting at \a c
+    Painter &lineTo(Point c); ///< Add a line segment to the path from the current point to the new current point \a c
+    Painter &curveTo(Point a, Point b, Point c); ///< Add a cubic Bézier spline starting in the current point, spanning over control points \a a, \a b and ending in the new current point \a c
+    Painter &arc(Point m, double r, double alpha0 = 0, double alpha1 = 2 * M_PI); ///< Add a circular arc of radius \a r centered at \a m starting at angle \a alpha0 and ending at angle \a alpha1 (in radians)
+    Painter &arcNegative(Point m, double r, double alpha0, double alpha1); ///< Add a circular arc with \a alpha1 < \a alpha0
 
-    void rectangle(Point pos, Size size); ///< Add a closed sub-path in form of a rectangle with top-left at \a pos and given dimensions \a size
+    Painter &rectangle(Point pos, Size size); ///< Add a closed sub-path in form of a rectangle with top-left at \a pos and given dimensions \a size
 
     Rect pathExtents() const; ///< Get the current path's extents
     Rect fillExtents() const; ///< Get the current path's exact rasterization extents
@@ -85,7 +83,7 @@ public:
       * \param pos %Baseline position
       * \param run %Glyph run
       */
-    void showGlyphRun(Point pos, const GlyphRun &run);
+    Painter &showGlyphRun(Point pos, const GlyphRun &run);
 
     /** Show glyph run with additional colors
       * \param pos %Baseline position
@@ -93,13 +91,13 @@ public:
       * \param ink %Foreground colors
       * \param paper %Background colors
       */
-    void showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, const GetColor &paper = GetColor{});
+    Painter &showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, const GetColor &paper = GetColor{});
 
     /** Show text run
       * \param pos %Baseline position
       * \param run %Text run
       */
-    void showTextRun(Point pos, const TextRun &run);
+    Painter &showTextRun(Point pos, const TextRun &run);
 
     /** Show text run with additional colors
       * \param pos %Baseline position
@@ -107,7 +105,7 @@ public:
       * \param ink %Foreground colors
       * \param paper %Background colors
       */
-    void showTextRun(Point pos, const TextRun &run, const GetColor &ink, const GetColor &paper);
+    Painter &showTextRun(Point pos, const TextRun &run, const GetColor &ink, const GetColor &paper);
 
     ///@}
 
@@ -115,9 +113,9 @@ public:
       */
     ///@{
 
-    void translate(Step step); ///< Move coordinate system by \a step
-    void scale(Scale ratio); ///< Scale coordinate system by \a ratio
-    void rotate(double angle); ///< Rotate coordinate system by \a angle (in radians)
+    Painter &translate(Step step); ///< Move coordinate system by \a step
+    Painter &scale(Scale ratio); ///< Scale coordinate system by \a ratio
+    Painter &rotate(double angle); ///< Rotate coordinate system by \a angle (in radians)
 
     ///@}
 
@@ -125,8 +123,8 @@ public:
       */
     ///@{
 
-    void setPen(Color color); ///< %Set source color
-    void setPen(const Pen &pen); ///< %Set source color and line style in one go
+    Painter &setPen(Color color); ///< %Set source color
+    Painter &setPen(const Pen &pen); ///< %Set source color and line style in one go
 
     /** Tells if to delete the current path after a stroke or fill operation
       */
@@ -138,12 +136,12 @@ public:
     /** Fill the current path
       * \param mode \copydoc CurrentPath
       */
-    void fill(CurrentPath mode = CurrentPath::Clear);
+    Painter &fill(CurrentPath mode = CurrentPath::Clear);
 
     /** Stroke the outline of the current path
       * \param mode \copydoc CurrentPath
       */
-    void stroke(CurrentPath mode = CurrentPath::Clear);
+    Painter &stroke(CurrentPath mode = CurrentPath::Clear);
 
     ///@}
 

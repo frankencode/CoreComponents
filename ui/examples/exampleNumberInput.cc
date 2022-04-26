@@ -1,4 +1,3 @@
-#include <cc/Application>
 #include <cc/NumberInput>
 #include <cc/DEBUG>
 
@@ -8,7 +7,7 @@ int main()
 
     NumberInput input;
 
-    Window{
+    return
         View{sp(320), sp(240)}
         .add(
             NumberInput{&input}
@@ -18,12 +17,9 @@ int main()
             .onAccepted([input]{
                 CC_INSPECT(input.value());
             })
+            .focus(true)
             .paper(theme().inputFieldFillColor())
             .centerInParent()
         )
-    }.show();
-
-    input.focus(true);
-
-    return Application{}.run();
+        .run();
 }

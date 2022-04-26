@@ -1,4 +1,3 @@
-#include <cc/Application>
 #include <cc/Flickable>
 #include <cc/ColumnLayout>
 #include <cc/TextField>
@@ -18,7 +17,7 @@ int main()
 
     PasswordField passwordField;
 
-    Window{
+    return
         Flickable{
             sp(400), sp(500),
             Pane{}
@@ -39,7 +38,7 @@ int main()
             .add(Divider{})
             .add(
                 PasswordField{"Enter password", &passwordField}
-                .onAccepted([&]{
+                .onAccepted([=]{
                     CC_INSPECT(passwordField.password());
                 })
             )
@@ -55,7 +54,5 @@ int main()
             )
             .add(TextField{"Country"})
         }
-    }.show();
-
-    return Application{}.run();
+        .run();
 }

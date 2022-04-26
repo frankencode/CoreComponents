@@ -1,4 +1,3 @@
-#include <cc/Application>
 #include <cc/TextView>
 #include <cc/File>
 #include <cc/DEBUG>
@@ -19,10 +18,8 @@ int main(int argc, char *argv[])
             "(3) Einmal war die Kugel gar hoch geflogen, sie hatte die Hand schon ausgestreckt und die Finger gekrümmt, um sie wieder zufangen, da schlug sie neben vorbei auf die Erde, rollte und rollte und geradezu in das Wasser hinein.\n";
     }
 
-    Window{
-        TextView{648, 480}
+    return
+        TextView{sp(500), sp(500)}
         .text(text)
-    }.show();
-
-    return Application{}.run();
+        .run();
 }

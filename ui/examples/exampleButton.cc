@@ -1,6 +1,5 @@
-#include <cc/Application>
 #include <cc/Button>
-#include <cc/DEBUG>
+#include <cc/Format>
 
 int main()
 {
@@ -8,18 +7,17 @@ int main()
 
     Button button;
 
-    Window{
+    return
         View{sp(640), sp(480)}
         .add(
             Button{&button}
             .icon(Ideographic::Face, sp(28))
             .text("Press me!")
-            .centerInParent()
-            .attach([button]{
-                CC_INSPECT(button.height());
+            .onClicked([=]() mutable {
+                static int n = 1;
+                button.text(Format{"Pressed (%%)"}.arg(n++));
             })
+            .centerInParent()
         )
-    }.show();
-
-    return Application{}.run();
+        .run();
 }

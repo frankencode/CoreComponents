@@ -118,6 +118,24 @@ struct ListMenu::State final: public Flickable::State
         });
     }
 
+    void setHeader(const View &newValue)
+    {
+        if (header()) remove(header());
+        header(newValue);
+        View::State::insertChild(header());
+        header().pos([this]{ return pane().pos(); });
+        header().visible([this]{ return header().height() >= -pane().pos()[1]; });
+    }
+
+    void setFooter(const View &newValue)
+    {
+        if (footer()) remove(footer());
+        footer(newValue);
+        View::State::insertChild(footer());
+        footer().pos([this]{ return pane().pos() + Point{0, pane().height() - footer().height()}; });
+        footer().visible([this]{ return footer().pos()[1] < height(); });
+    }
+
     Property<View> header;
     Property<View> footer;
 };
@@ -132,10 +150,11 @@ ListMenu::ListMenu(Out<ListMenu> self):
     self = weak<ListMenu>();
 }
 
-ListMenu::ListMenu(double width, double height):
+ListMenu::ListMenu(double width, double height, Out<ListMenu> self):
     Flickable{new State}
 {
     size(width, height);
+    self = weak<ListMenu>();
 }
 
 View ListMenu::header() const
@@ -145,11 +164,7 @@ View ListMenu::header() const
 
 ListMenu &ListMenu::header(const View &newValue)
 {
-    if (me().header()) remove(me().header());
-    me().header(newValue);
-    me().View::State::insertChild(me().header());
-    me().header().pos([this]{ return pane().pos(); });
-    me().header().visible([this]{ return header().height() >= -pane().pos()[1]; });
+    me().setHeader(newValue);
     return *this;
 }
 
@@ -160,11 +175,7 @@ View ListMenu::footer() const
 
 ListMenu &ListMenu::footer(const View &newValue)
 {
-    if (me().footer()) remove(me().footer());
-    me().footer(newValue);
-    me().View::State::insertChild(me().footer());
-    me().footer().pos([this]{ return pane().pos() + Point{0, pane().height() - footer().height()}; });
-    me().footer().visible([this]{ return footer().pos()[1] < height(); });
+    me().setFooter(newValue);
     return *this;
 }
 

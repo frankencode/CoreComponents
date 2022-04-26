@@ -1,7 +1,5 @@
-#include <cc/Application>
 #include <cc/ManagedColumnLayout>
 #include <cc/Text>
-#include <cc/Label>
 #include <cc/DEBUG>
 
 int main()
@@ -12,7 +10,7 @@ int main()
 
     View view;
 
-    Window{
+    return
         View{&view}
         .paper(0xD0D0FF)
         .layout(
@@ -40,8 +38,5 @@ int main()
             CC_INSPECT(view.minSize());
             CC_INSPECT(view.maxSize());
         })
-    }.show();
-
-
-    return Application{}.run();
+        .run();
 }

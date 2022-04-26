@@ -30,41 +30,51 @@ Painter::Painter(const Surface &surface):
 
 Painter::Painter(Surface::State *state)
 {
+    #ifndef NDEBUG
+    assert(Surface::paintTarget() == state);
+    #endif
     state->polish();
     cr_ = cairo_create(state->cairoSurface());
 }
 
-void Painter::save()
+Painter &Painter::save()
 {
     cairo_save(cr_);
+    return *this;
 }
 
-void Painter::restore()
+Painter &Painter::restore()
 {
     cairo_restore(cr_);
+    return *this;
 }
 
-void Painter::nextPage(bool clear)
+Painter &Painter::nextPage(bool clear)
 {
     if (clear)
         cairo_show_page(cr_);
     else
         cairo_copy_page(cr_);
+
+    return *this;
 }
 
-void Painter::newPath()
+Painter &Painter::newPath()
 {
     cairo_new_path(cr_);
+    return *this;
 }
 
-void Painter::newSubPath()
+Painter &Painter::newSubPath()
 {
     cairo_new_sub_path(cr_);
+    return *this;
 }
 
-void Painter::closePath()
+Painter &Painter::closePath()
 {
     cairo_close_path(cr_);
+    return *this;
 }
 
 bool Painter::hasCurrentPoint() const
@@ -79,17 +89,19 @@ Point Painter::currentPoint() const
     return c;
 }
 
-void Painter::moveTo(Point c)
+Painter &Painter::moveTo(Point c)
 {
     cairo_move_to(cr_, c[0], c[1]);
+    return *this;
 }
 
-void Painter::lineTo(Point c)
+Painter &Painter::lineTo(Point c)
 {
     cairo_line_to(cr_, c[0], c[1]);
+    return *this;
 }
 
-void Painter::curveTo(Point a, Point b, Point c)
+Painter &Painter::curveTo(Point a, Point b, Point c)
 {
     cairo_curve_to(
         cr_,
@@ -97,21 +109,25 @@ void Painter::curveTo(Point a, Point b, Point c)
         b[0], b[1],
         c[0], c[1]
     );
+    return *this;
 }
 
-void Painter::arc(Point m, double r, double alpha0, double alpha1)
+Painter &Painter::arc(Point m, double r, double alpha0, double alpha1)
 {
     cairo_arc(cr_, m[0], m[1], r, alpha0, alpha1);
+    return *this;
 }
 
-void Painter::arcNegative(Point m, double r, double alpha0, double alpha1)
+Painter &Painter::arcNegative(Point m, double r, double alpha0, double alpha1)
 {
     cairo_arc_negative(cr_, m[0], m[1], r, alpha0, alpha1);
+    return *this;
 }
 
-void Painter::rectangle(Point pos, Size size)
+Painter &Painter::rectangle(Point pos, Size size)
 {
     cairo_rectangle(cr_, pos[0], pos[1], size[0], size[1]);
+    return *this;
 }
 
 Rect Painter::pathExtents() const
@@ -134,14 +150,14 @@ Rect Painter::fillExtents() const
     return Rect{Point{x0, y0}, Size{x1-x0, y1-y0}};
 }
 
-void Painter::showGlyphRun(Point pos, const GlyphRun &glyphRun)
+Painter &Painter::showGlyphRun(Point pos, const GlyphRun &glyphRun)
 {
     FtGlyphRun ftGlyphRun = glyphRun.as<FtGlyphRun>();
-    if (!glyphRun.scaledFont()) return;
+    if (!glyphRun.scaledFont()) return *this;
     auto ftScaledFont = glyphRun.scaledFont().as<FtScaledFont>();
 
-    if (ftGlyphRun.text().count() == 0) return;
-    if (ftGlyphRun.cairoGlyphs().count() == 0) return;
+    if (ftGlyphRun.text().count() == 0) return *this;
+    if (ftGlyphRun.cairoGlyphs().count() == 0) return *this;
 
     cairo_set_scaled_font(cr_, ftScaledFont.cairoScaledFont());
 
@@ -241,15 +257,16 @@ void Painter::showGlyphRun(Point pos, const GlyphRun &glyphRun)
     }
 
     cairo_set_matrix(cr_, &matrixSaved);
+    return *this;
 }
 
-void Painter::showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, const GetColor &paper)
+Painter &Painter::showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, const GetColor &paper)
 {
     auto ftGlyphRun = run.as<FtGlyphRun>();
     auto ftScaledFont = run.scaledFont().as<FtScaledFont>();
 
-    if (ftGlyphRun.text().count() == 0) return;
-    if (ftGlyphRun.cairoGlyphs().count() == 0) return;
+    if (ftGlyphRun.text().count() == 0) return *this;
+    if (ftGlyphRun.cairoGlyphs().count() == 0) return *this;
 
     cairo_set_scaled_font(cr_, ftScaledFont.cairoScaledFont());
 
@@ -375,15 +392,18 @@ void Painter::showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, 
     cairo_pattern_destroy(sourceSaved);
 
     cairo_set_matrix(cr_, &matrixSaved);
+    return *this;
 }
 
-void Painter::showTextRun(Point pos, const TextRun &run)
+Painter &Painter::showTextRun(Point pos, const TextRun &run)
 {
-    for (const GlyphRun &glyphRun: run.as<FtTextRun>().glyphRuns())
+    for (const GlyphRun &glyphRun: run.as<FtTextRun>().glyphRuns()) {
         showGlyphRun(pos, glyphRun);
+    }
+    return *this;
 }
 
-void Painter::showTextRun(Point pos, const TextRun &run, const GetColor &ink, const GetColor &paper)
+Painter &Painter::showTextRun(Point pos, const TextRun &run, const GetColor &ink, const GetColor &paper)
 {
     FtTextRun ftTextRun = run.as<FtTextRun>();
     int i0 = 0;
@@ -395,6 +415,7 @@ void Painter::showTextRun(Point pos, const TextRun &run, const GetColor &ink, co
         showGlyphRun(pos, glyphRun, ink_, paper_);
         i0 += glyphRun.text().count();
     }
+    return *this;
 }
 
 void Painter::fillGlyphRunBackground(const FtGlyphRun &ftGlyphRun)
@@ -439,24 +460,27 @@ void Painter::fillGlyphRunBackground(const FtGlyphRun &ftGlyphRun)
     }
 }
 
-void Painter::translate(Step step)
+Painter &Painter::translate(Step step)
 {
     cairo_translate(cr_, step[0], step[1]);
+    return *this;
 }
 
-void Painter::scale(Scale ratio)
+Painter &Painter::scale(Scale ratio)
 {
     cairo_scale(cr_, ratio[0], ratio[1]);
+    return *this;
 }
 
-void Painter::rotate(double angle)
+Painter &Painter::rotate(double angle)
 {
     cairo_rotate(cr_, angle);
+    return *this;
 }
 
-void Painter::setPen(Color color)
+Painter &Painter::setPen(Color color)
 {
-    if (!color) return;
+    if (!color) return *this;
 
     if (color.isOpaque()) {
         cairo_set_source_rgb(
@@ -475,9 +499,11 @@ void Painter::setPen(Color color)
             color.alpha() / 255.
         );
     }
+
+    return *this;
 }
 
-void Painter::setPen(const Pen &pen)
+Painter &Painter::setPen(const Pen &pen)
 {
     setPen(pen.color());
     setLineWidth(pen.lineWidth());
@@ -485,6 +511,7 @@ void Painter::setPen(const Pen &pen)
     setLineJoin(pen.lineJoin());
     setMiterLimit(pen.miterLimit());
     setLineDash(pen.lineDash(), pen.lineDashOffset());
+    return *this;
 }
 
 void Painter::setLineWidth(double width)
@@ -521,7 +548,7 @@ void Painter::setLineDash(const Array<double> &pattern, double offset)
     }
 }
 
-void Painter::fill(CurrentPath mode)
+Painter &Painter::fill(CurrentPath mode)
 {
     if (mode == CurrentPath::Clear)
         cairo_fill(cr_);
@@ -529,11 +556,12 @@ void Painter::fill(CurrentPath mode)
         cairo_fill_preserve(cr_);
 
     cairo_status_t status = cairo_status(cr_);
-    if (status != CAIRO_STATUS_SUCCESS)
-        throw PainterError{int(status)};
+    if (status != CAIRO_STATUS_SUCCESS) throw PainterError{int(status)};
+
+    return *this;
 }
 
-void Painter::stroke(CurrentPath mode)
+Painter &Painter::stroke(CurrentPath mode)
 {
     if (mode == CurrentPath::Clear)
         cairo_stroke(cr_);
@@ -541,8 +569,9 @@ void Painter::stroke(CurrentPath mode)
         cairo_stroke_preserve(cr_);
 
     cairo_status_t status = cairo_status(cr_);
-    if (status != CAIRO_STATUS_SUCCESS)
-        throw PainterError{int(status)};
+    if (status != CAIRO_STATUS_SUCCESS) throw PainterError{int(status)};
+
+    return *this;
 }
 
 PainterError::PainterError(int errorStatus):

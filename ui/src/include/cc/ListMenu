@@ -25,13 +25,21 @@ public:
       */
     ListMenu();
 
-    /** Create a new list menu
+    /** Create a new list menu and return a weak reference to itself
       */
     explicit ListMenu(Out<ListMenu> self);
 
-    /** Create a new list menu of size (\a width, \a height)
+    /** Create a new list menu of given size (\a width, \a height)
       */
-    ListMenu(double width, double height);
+    ListMenu(double width, double height, Out<ListMenu> self = None{});
+
+    /** Invoke custom initialization function \a f
+      */
+    ListMenu &populate(std::function<void(ListMenu)> &&f)
+    {
+        f(grab<ListMenu>());
+        return *this;
+    }
 
     View header() const; ///< Get the header
     ListMenu &header(const View &newValue); ///< %Set the header

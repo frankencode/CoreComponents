@@ -30,7 +30,15 @@ public:
 
     /** Create a new list view of size (\a width, \a height)
       */
-    ListView(double width, double height);
+    ListView(double width, double height, Out<ListView> self = None{});
+
+    /** Invoke custom initialization function \a f
+      */
+    ListView &populate(std::function<void(ListView)> &&f)
+    {
+        f(grab<ListView>());
+        return *this;
+    }
 
     View header() const; ///< Get the header
     ListView &header(const View &newValue); ///< %Set the header
@@ -48,6 +56,9 @@ protected:
         State();
 
         void deplete();
+
+        void setHeader(const View &newValue);
+        void setFooter(const View &newValue);
 
         Property<View> header;
         Property<View> footer;

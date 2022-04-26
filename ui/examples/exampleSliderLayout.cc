@@ -1,7 +1,6 @@
-#include <cc/Application>
 #include <cc/ManagedRowLayout>
-#include <cc/Label>
 #include <cc/Slider>
+#include <cc/Label>
 #include <cc/DEBUG>
 
 int main()
@@ -10,7 +9,7 @@ int main()
 
     View view;
 
-    Window{
+    return
         View{&view}
         .size(sp(480), sp(48))
         .layout(
@@ -24,7 +23,5 @@ int main()
             CC_INSPECT(view.minSize());
             CC_INSPECT(view.maxSize());
         })
-    }.show();
-
-    return Application{}.run();
+        .run();
 }

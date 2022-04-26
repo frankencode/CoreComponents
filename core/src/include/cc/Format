@@ -70,9 +70,7 @@ public:
         return (*this) << String{l};
     }
 
-    /** Add \a x to the output text
-      * \tparam T Type of \a x
-      * \param x Variable to be stringified
+    /** \copydoc arg()
       */
     template<class T>
     Format &operator<<(const T &x) {
@@ -87,6 +85,15 @@ public:
     /** Flush output
       */
     Format &operator<<(const Flush &);
+
+    /** Add \a x to the output text
+      * \tparam T Type of \a x
+      * \param x Variable to be stringified
+      */
+    template<class T>
+    Format &arg(const T &x) {
+        return *this << x;
+    }
 
 private:
     void flush();

@@ -31,7 +31,7 @@ TextRun TextRun::fromHtml(const String &text, const Font &font)
     return textRun;
 }
 
-void TextRun::appendHtml(const String &text, const Font &font)
+TextRun &TextRun::appendHtml(const String &text, const Font &font)
 {
     struct StylePlugin {
         StylePlugin(const Font &font, const String &tagName = String{}):
@@ -81,6 +81,8 @@ void TextRun::appendHtml(const String &text, const Font &font)
     }
 
     if (i0 < i) append(replaceEntities(text.copy(i0, i)), styling.last().font_);
+
+    return *this;
 }
 
 TextCursor TextRun::getNearestTextCursor(Point pointerPos) const

@@ -120,11 +120,11 @@ ListView::State::State():
 {
     Pane pane = Flickable::State::pane().as<Pane>();
 
-    pane.me().leadSpace([this]{
+    pane->leadSpace([this]{
         return header() ? header().height() : gu(2);
     });
 
-    pane.me().tailSpace([this]{
+    pane->tailSpace([this]{
         return footer() ? footer().height() : gu(2);
     });
 }
@@ -132,6 +132,24 @@ ListView::State::State():
 void ListView::State::deplete()
 {
     pane().as<Pane>()->deplete();
+}
+
+void ListView::State::setHeader(const View &newValue)
+{
+    if (header()) remove(header());
+    header(newValue);
+    View::State::insertChild(header());
+    header().pos([this]{ return pane().pos(); });
+    header().visible([this]{ return header().height() >= -pane().pos()[1]; });
+}
+
+void ListView::State::setFooter(const View &newValue)
+{
+    if (footer()) remove(footer());
+    footer(newValue);
+    View::State::insertChild(footer());
+    footer().pos([this]{ return pane().pos() + Point{0, pane().height() - footer().height()}; });
+    footer().visible([this]{ return footer().pos()[1] < height(); });
 }
 
 ListView::ListView():
@@ -144,10 +162,11 @@ ListView::ListView(Out<ListView> self):
     self = weak<ListView>();
 }
 
-ListView::ListView(double width, double height):
+ListView::ListView(double width, double height, Out<ListView> self):
     Flickable{new State}
 {
     size(width, height);
+    self = weak<ListView>();
 }
 
 View ListView::header() const
@@ -157,11 +176,7 @@ View ListView::header() const
 
 ListView &ListView::header(const View &newValue)
 {
-    if (me().header()) remove(me().header());
-    me().header(newValue);
-    me().View::State::insertChild(me().header());
-    me().header().pos([this]{ return pane().pos(); });
-    me().header().visible([this]{ return header().height() >= -pane().pos()[1]; });
+    me().setHeader(newValue);
     return *this;
 }
 
@@ -172,11 +187,7 @@ View ListView::footer() const
 
 ListView &ListView::footer(const View &newValue)
 {
-    if (me().footer()) remove(me().footer());
-    me().footer(newValue);
-    me().View::State::insertChild(me().footer());
-    me().footer().pos([this]{ return pane().pos() + Point{0, pane().height() - footer().height()}; });
-    me().footer().visible([this]{ return footer().pos()[1] < height(); });
+    me().setFooter(newValue);
     return *this;
 }
 

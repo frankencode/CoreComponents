@@ -1,6 +1,5 @@
-#include <cc/Application>
 #include <cc/GlyphRun>
-#include <cc/Painter>
+#include <cc/View>
 
 int main()
 {
@@ -8,15 +7,14 @@ int main()
 
     GlyphRun run{"Hello, world!"};
 
-    View view{640, 480};
-    view.paper(Color::White);
-    view.paint([=]{
-        Painter p{view};
-        Point pos = 0.5 * (view.size() - Point{run.advance()[0], -run.maxAscender()});
-        p.showGlyphRun(pos.round(), run);
-    });
+    View view;
 
-    Window{view}.show();
-
-    return Application{}.run();
+    return
+        View{640, 480, &view}
+        .paper(Color::White)
+        .paint([=]{
+            Point pos = 0.5 * (view.size() - Point{run.advance()[0], -run.maxAscender()});
+            Painter{view}.showGlyphRun(pos.round(), run);
+        })
+        .run();
 }

@@ -49,7 +49,14 @@ void Control::State::grabFocus()
         delegate()->grabFocus();
     }
     else if (Application{}.focusControl() != self()) {
-        Application{}.focusControl(self());
+        if (hasWindow()) {
+            Application{}.focusControl(self());
+        }
+        else {
+            Application{}.postEvent([target=self()]{
+                Application{}.focusControl(target);
+            });
+        }
     }
 }
 

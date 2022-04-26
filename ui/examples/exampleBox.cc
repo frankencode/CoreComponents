@@ -1,4 +1,3 @@
-#include <cc/Application>
 #include <cc/DragArea>
 #include <cc/Box>
 
@@ -6,7 +5,7 @@ int main()
 {
     using namespace cc;
 
-    Window{
+    return
         DragArea{gu(80), gu(60)}
         .add(
             Box{gu(20), gu(20)}
@@ -14,7 +13,5 @@ int main()
             .color("darkcyan")
             .centerInParent()
         )
-    }.show();
-
-    return Application{}.run();
+        .run();
 }

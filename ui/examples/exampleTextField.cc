@@ -1,4 +1,3 @@
-#include <cc/Application>
 #include <cc/TextField>
 #include <cc/Ideographic>
 #include <cc/Icon>
@@ -9,12 +8,10 @@ int main()
 {
     using namespace cc;
 
-    // Application{}.fontSmoothing(FontSmoothing::RgbSubpixel);
-
     TextField field;
 
-    Window{
-        View{640, 480}
+    return
+        View{sp(640), sp(480)}
         .add(
             TextField{&field}
             .title("Username")
@@ -43,7 +40,5 @@ int main()
             })
             .pos(dp(16), dp(16))
         )
-    }.show();
-
-    return Application{}.run();
+        .run();
 }

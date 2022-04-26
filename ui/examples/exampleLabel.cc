@@ -1,7 +1,5 @@
-#include <cc/Application>
 #include <cc/Label>
 #include <cc/Timer>
-#include <cc/Easing>
 #include <cc/System>
 #include <cc/Date>
 
@@ -12,8 +10,8 @@ int main()
     Property<double> time = System::now();
     Label label;
 
-    Window{
-        View{640, 480}
+    return
+        View{sp(500), sp(500)}
         .paper(Color::White)
         .add(
             Label{&label}
@@ -28,14 +26,13 @@ int main()
             .angleEasing(Easing::Bezier{0.5, -0.4, 0.5, 1.4}, 0.5)
             .centerInParent()
         )
-    }.show();
-
-    Timer timer{1};
-    timer.onTimeout([&time, &label]{
-        time = System::now();
-        label.angle(label.angle() + 45);
-    });
-    timer.startAt(std::ceil(time));
-
-    return Application{}.run();
+        .attach(
+            Timer{1}
+            .onTimeout([&time, &label]{
+                time = System::now();
+                label.angle(label.angle() + 45);
+            })
+            .startAt(std::ceil(time))
+        )
+        .run();
 }

@@ -1,8 +1,6 @@
-#include <cc/Application>
 #include <cc/ManagedColumnLayout>
 #include <cc/ManagedRowLayout>
 #include <cc/Text>
-#include <cc/Label>
 
 int main()
 {
@@ -10,9 +8,8 @@ int main()
 
     double gap = Font::defaultSize() * 1.5;
 
-    Window{
+    return
         View{}
-        .centerInParent()
         .paper(0xD0D0FF)
         .layout(
             ManagedColumnLayout{}
@@ -34,7 +31,5 @@ int main()
             .add(Text{"◦ Item B D E"})
             .add(Text{"◦ Item C D F"})
         )
-    }.show();
-
-    return Application{}.run();
+        .run();
 }

@@ -26,7 +26,7 @@ public:
         View{onDemand<State>}
     {}
 
-    /** Create a new scroll view
+    /** Create a new scroll view and return a weak reference to itself
       */
     explicit ScrollView(Out<ScrollView> self):
         View{new State}
@@ -48,6 +48,15 @@ public:
     explicit ScrollView(const View &pane, Out<ScrollView> self = None{}):
         View{new State{pane}}
     {
+        self = weak<ScrollView>();
+    }
+
+    /** Create a new scroll view of size (\a width, \a height) with custom \a pane
+      */
+    ScrollView(double width, double height, const View &pane, Out<ScrollView> self = None{}):
+        View{new State{pane}}
+    {
+        size(Size{width, height});
         self = weak<ScrollView>();
     }
 

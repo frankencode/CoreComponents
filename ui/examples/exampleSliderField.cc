@@ -1,4 +1,3 @@
-#include <cc/Application>
 #include <cc/ColumnLayout>
 #include <cc/Divider>
 #include <cc/SliderField>
@@ -9,7 +8,7 @@ int main()
 {
     using namespace cc;
 
-    Window{
+    return
         View{sp(400), sp(500)}
         .layout(
             ColumnLayout{}
@@ -29,7 +28,5 @@ int main()
             .leading(Icon{Ideographic::Thermometer})
             .trailing(NumberCell{})
         )
-    }.show();
-
-    return Application{}.run();
+        .run();
 }

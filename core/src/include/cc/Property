@@ -316,6 +316,7 @@ public:
         if (me && me().owner_ == this) {
             me().disband();
             me().f_ = nullptr;
+            me().g_ = nullptr;
         }
     }
 
@@ -339,6 +340,13 @@ public:
     void operator()(std::function<void()> &&f)
     {
         return define(std::move(f));
+    }
+
+    /** Setup restrictor function \a g
+      */
+    void restrict(std::function<bool()> &&g)
+    {
+        me().g_ = g;
     }
 
     /** Register function \a f to be called when the property value has been reevaluated
@@ -368,12 +376,14 @@ private:
         void evaluate() override
         {
             if (f_) {
+                if (g_ && !g_()) return;
                 f_();
                 emit();
             }
         }
 
         std::function<void()> f_;
+        std::function<bool()> g_;
     };
 
     Handle<State> me;

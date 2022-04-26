@@ -1,6 +1,5 @@
-#include <cc/Application>
 #include <cc/FontManager>
-#include <cc/Painter>
+#include <cc/View>
 #include <cc/StylePlugin>
 #include <cc/DEBUG>
 
@@ -28,13 +27,13 @@ int main()
 
             Font font{family.name()};
             // font.smoothing(FontSmoothing::RgbSubpixel);
-            glyphRuns << GlyphRun{text, font};
+            glyphRuns.emplaceBack(text, font);
 
             font.weight(Weight::Bold);
-            glyphRuns << GlyphRun{text, font};
+            glyphRuns.emplaceBack(text, font);
 
             font.weight(Weight::Normal).slant(Slant::Italic);
-            glyphRuns << GlyphRun{text, font};
+            glyphRuns.emplaceBack(text, font);
 
             for (const FontFace &face: family.fontFaces()) {
                 CC_INSPECT(face);
@@ -43,20 +42,19 @@ int main()
         }
     }
 
-    View view{640, 480};
+    View view;
 
-    view.paint([=]{
-        Painter p{view};
-        p.setPen(Color::Black);
-        double y = 0;
-        for (const GlyphRun &run: glyphRuns) {
-            Point pos{30, 30 + run.size()[1] + y};
-            p.showGlyphRun(pos.round(),run);
-            y += 2 * run.metrics().lineHeight();
-        }
-    });
-
-    Window{view}.show();
-
-    return Application{}.run();
+    return
+        View{640, 480, &view}
+        .paint([=]{
+            Painter p{view};
+            p.setPen(Color::Black);
+            double y = 0;
+            for (const GlyphRun &run: glyphRuns) {
+                Point pos{30, 30 + run.size()[1] + y};
+                p.showGlyphRun(pos.round(),run);
+                y += 2 * run.metrics().lineHeight();
+            }
+        })
+        .run();
 }

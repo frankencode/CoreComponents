@@ -52,7 +52,7 @@ public:
       */
     View() = default;
 
-    /** Create a new view and return a copy of itself
+    /** Create a new view and return a weak reference to itself
       */
     explicit View(Out<View> self):
         View{new State}
@@ -62,26 +62,35 @@ public:
 
     /** Create a new view of size (\a width, \a height)
       */
-    explicit View(double width, double height):
+    View(double width, double height, Out<View> self = None{}):
         View{new State}
     {
         size(Size{width, height});
+        self = weak<View>();
     }
 
-    /** Invoke custom setup function \a f
+    /** Invoke custom initialization function \a f
       */
-    View &setup(const std::function<void(View &)> &&f)
+    View &populate(const std::function<void(View)> &&f)
     {
-        f(*this);
+        f(grab<View>());
         return *this;
     }
 
-    /** Materialize a primordial view
+    /** Materialize if this view is still primordial
       */
     void touch()
     {
         me();
     }
+
+    /** Convenience method to show this view
+      */
+    void show();
+
+    /** Convenience method to show this view and run the application loop
+      */
+    int run();
 
     ///@}
 
@@ -204,6 +213,10 @@ public:
     /** Number of children
       */
     long childrenCount() const { return me().childrenCount(); }
+
+    /** Number of children
+      */
+    long count() const { return me().childrenCount(); }
 
     /** Check if there are any children
       */
@@ -694,6 +707,14 @@ protected:
         onDemand_{onDemand}
     {}
 
+    /** Get a weak reference version of this object
+      */
+    template<class T>
+    T grab() {
+        me();
+        return weak<T>();
+    }
+
     State &me() {
         if (!Object::me) Object::me = onDemand_();
         return Object::me.as<State>();
@@ -705,6 +726,8 @@ protected:
     }
 
 private:
+    friend class Painter;
+
     static State *createState() { return new State; }
 
     CreateState *onDemand_ { &createState };

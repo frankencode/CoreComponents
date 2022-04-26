@@ -21,7 +21,7 @@ class TimeoutRequest;
   * \ingroup ui
   * \brief Inverval timer
   */
-class Timer: public Object
+class Timer final: public Object
 {
 public:
     /** Create a single-shot timer
@@ -35,20 +35,29 @@ public:
         Object{new State{interval}}
     {}
 
+    /** Register function \a f to be called on timeout
+      */
+    Timer &onTimeout(std::function<void()> &&f)
+    {
+        me().timeout_(std::move(f));
+        return *this;
+    }
+
     /** Start timer
       */
-    void start()
+    Timer &start()
     {
         startIn(me().interval_);
+        return *this;
     }
 
     /** Start timer at a later \a startTime
       */
-    void startAt(double startTime);
+    Timer &startAt(double startTime);
 
     /** Start timer after a giving \a delayTime
       */
-    void startIn(double delayTime);
+    Timer &startIn(double delayTime);
 
     /** Stop the timer
       */
@@ -70,15 +79,15 @@ public:
       */
     double interval() const { return me().interval_; }
 
-    /** Register function \a f to be called on timeout
+    /** Convenience method to run the application loop
       */
-    void onTimeout(std::function<void()> &&f) { me().timeout_(std::move(f)); }
+    int run();
 
 private:
     friend class Application;
     friend class TimeoutRequest;
 
-    struct State: public Object::State
+    struct State final: public Object::State
     {
         State(double interval):
             interval_{interval}

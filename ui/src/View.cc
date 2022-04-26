@@ -7,6 +7,7 @@
  */
 
 #include <cc/View>
+#include <cc/Application>
 #include <cc/Window>
 #include <cc/Control>
 #include <cc/PosGuard>
@@ -55,6 +56,11 @@ View::State::State()
 
     paint.onChanged([this]{
         update(UpdateReason::Changed);
+    });
+
+    paint.restrict([this]{
+        paintTarget(this);
+        return true;
     });
 }
 
@@ -438,6 +444,23 @@ bool View::State::feedKeyEvent(KeyEvent &event) const
     }
 
     return false;
+}
+
+void View::show()
+{
+    if (!hasParent()) {
+        if (!hasWindow()) Window{*this}.show();
+        else window().show();
+    }
+    else {
+        if (!visible()) visible(true);
+    }
+}
+
+int View::run()
+{
+    show();
+    return Application{}.run();
 }
 
 Control View::findControl(Point l) const

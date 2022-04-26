@@ -1,4 +1,3 @@
-#include <cc/Application>
 #include <cc/ColumnLayout>
 #include <cc/Label>
 #include <cc/Control>
@@ -7,12 +6,12 @@ int main()
 {
     using namespace cc;
 
-    Window{
+    return
         View{gu(80), gu(80)}
         .paper(Color::White)
         .add(
             View{}
-            .setup([](auto &self){
+            .populate([](auto target){
                 const double gap = style().defaultFont().size();
                 for (auto shape: List<CursorShape>{
                     CursorShape::Arrow,
@@ -28,11 +27,11 @@ int main()
                     CursorShape::Forbidden,
                     CursorShape::Hand
                 }) {
-                    Control c;
-                    self.add(
-                        Control{&c}
+                    Control control;
+                    target.add(
+                        Control{&control}
                         .cursor(shape)
-                        .paper([c]{ return c.hover() ? "DeepSkyBlue" : "LightSkyBlue"; })
+                        .paper([control]{ return control.hover() ? "DeepSkyBlue" : "LightSkyBlue"; })
                         .layout(
                             ColumnLayout{}
                             .margin(gap)
@@ -47,7 +46,5 @@ int main()
             )
             .centerInParent()
         )
-    }.show();
-
-    return Application{}.run();
+        .run();
 }

@@ -34,14 +34,15 @@ public:
 
     /** Typeset \a text (plain text) with \a font
       */
-    void append(const String &text, const Font &font = Font{})
+    TextRun &append(const String &text, const Font &font = Font{})
     {
         me().append(text, font);
+        return *this;
     }
 
     /** Typeset \a text (HTML text) with \a font
       */
-    void appendHtml(const String &text, const Font &font = Font{});
+    TextRun &appendHtml(const String &text, const Font &font = Font{});
 
     /** Wrap this text run
       * \param maxWidth Maximum width of the wrapped text run

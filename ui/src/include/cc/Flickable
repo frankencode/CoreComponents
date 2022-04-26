@@ -34,27 +34,30 @@ public:
         self = weak<Flickable>();
     }
 
-    /** Create a new flickable of given size (\a width, \a height)
+    /** Create a new flickable of given size (\a width, \a height) and optionally with a custom \a pane
       */
-    Flickable(double width, double height):
-        Control{new State}
-    {
-        size(Size{width, height});
-    }
-
-    /** Create a new flickable of given size (\a width, \a height) and with a custom \a pane
-      */
-    Flickable(double width, double height, const View &pane):
+    Flickable(double width, double height, const View &pane = Pane{}, Out<Flickable> self = None{}):
         Control{new State{pane}}
     {
         size(Size{width, height});
+        self = weak<Flickable>();
     }
 
     /** Create a new flickable with a custom \a pane
       */
-    explicit Flickable(const View &pane):
+    explicit Flickable(const View &pane, Out<Flickable> self = None{}):
         Control{new State{pane}}
-    {}
+    {
+        self = weak<Flickable>();
+    }
+
+    /** Invoke custom initialization function \a f
+      */
+    Flickable &init(std::function<void(Flickable)> &&f)
+    {
+        f(grab<Flickable>());
+        return *this;
+    }
 
     /** Get the access to the contained pane
       */

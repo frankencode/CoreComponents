@@ -23,9 +23,13 @@ public:
       */
     ScrollBar();
 
-    /** Create a new scroll bar
+    /** Create a new vertical scroll bar
       */
     explicit ScrollBar(Out<ScrollBar> self);
+
+    /** Create a new scroll bar of given \a orientation
+      */
+    explicit ScrollBar(Orientation orientation, Out<ScrollBar> self = None{});
 
     Orientation orientation() const; ///< Get orientation
     ScrollBar &orientation(Orientation newValue); ///< %Set orientation

@@ -1,7 +1,6 @@
-#include <cc/Application>
 #include <cc/GlyphRun>
-#include <cc/Painter>
 #include <cc/Random>
+#include <cc/View>
 
 int main()
 {
@@ -41,19 +40,19 @@ int main()
 
     View view;
 
-    Window{
+    return
         View{&view}
         .size(640, 480)
         .paper(Color::White)
         .paint([=]{
             GlyphRun wrappedRun = run.wrap(view.size()[0] - 2 * margins, TextAlign::Justify);
-            Painter p{view};
-            p.setPen(0xE0F0FF);
-            p.rectangle(Point{0, 0}, Size{margins, view.size()[1]});
-            p.rectangle(Point{view.size()[0]-margins, 0}, Size{margins, view.size()[1]});
-            p.fill();
-            p.setPen(0x000000);
-            p.showGlyphRun(
+            Painter{view}
+            .setPen(0xE0F0FF)
+            .rectangle(Point{0, 0}, Size{margins, view.size()[1]})
+            .rectangle(Point{view.size()[0]-margins, 0}, Size{margins, view.size()[1]})
+            .fill()
+            .setPen(0x000000)
+            .showGlyphRun(
                 Point{margins, margins + fontSize},
                 wrappedRun,
                 [=](int i) {
@@ -65,8 +64,5 @@ int main()
                     return Color{};
                 }
             );
-        })
-    }.show();
-
-    return Application{}.run();
+        }).run();
 }

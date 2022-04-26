@@ -15,7 +15,8 @@ namespace cc {
 
 struct ScrollBar::State: public DragArea::State
 {
-    State()
+    State(Orientation initialOrientation = Orientation::Vertical):
+        orientation{initialOrientation}
     {
         margin([this]{
             return style().scrollHandleMargin();
@@ -208,7 +209,13 @@ ScrollBar::ScrollBar():
 {}
 
 ScrollBar::ScrollBar(Out<ScrollBar> self):
-    DragArea{new State}
+    DragArea{new State{Orientation::Vertical}}
+{
+    self = weak<ScrollBar>();
+}
+
+ScrollBar::ScrollBar(Orientation orientation, Out<ScrollBar> self):
+    DragArea{new State{orientation}}
 {
     self = weak<ScrollBar>();
 }
