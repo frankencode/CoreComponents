@@ -19,8 +19,17 @@ View::State::State()
 {
     opacity([this]{ return hasParent() ? parent().opacity() : 1.; });
 
+    angle([this]{
+        return (hasParent() && parent().angle() != 0) ? parent().angle() : 0;
+    });
+
+    pivot([this]{
+        return (hasParent() && parent().angle() != 0) ? parent().pivot() - pos() : size() / 2;
+    });
+
     pos.onChanged([this]{ update(UpdateReason::Moved); });
     angle.onChanged([this]{ update(UpdateReason::Moved); });
+    pivot.onChanged([this]{ update(UpdateReason::Moved); });
     scale.onChanged([this]{ update(UpdateReason::Moved); });
     opacity.onChanged([this]{ update(UpdateReason::Faded); });
 

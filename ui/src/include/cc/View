@@ -520,7 +520,7 @@ protected:
         Property<Size> size; ///< %Size of this view
         Property<Padding> padding; ///< %Padding to apply when adding this view to a layout
 
-        Property<Point> pivot { [this]{ return size() / 2; } }; ///< %Rotation center
+        Property<Point> pivot; ///< %Rotation center
         Property<double> angle { 0 }; ///< %Rotation angle
         Property<double> scale { 1 }; ///< %Zoom factor
 
