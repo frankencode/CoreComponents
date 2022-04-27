@@ -285,7 +285,7 @@ View View::State::self() const
 
 Window View::State::window() const
 {
-    return window_() ? alias<Window>(window_()) : Window{};
+    return window_() ? weak<Window>(window_()) : Window{};
 }
 
 bool View::State::isHandheld() const
