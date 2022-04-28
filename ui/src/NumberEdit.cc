@@ -6,92 +6,92 @@
  *
  */
 
-#include <cc/NumberField>
+#include <cc/NumberEdit>
 #include <cc/NumberInput>
 #include <cc/NumberInputState>
 
 namespace cc {
 
-NumberField::NumberField(const String &label, Out<NumberField> self):
-    TextField{NumberInput{}, label}
+NumberEdit::NumberEdit(const String &label, Out<NumberEdit> self):
+    LineEdit{NumberInput{}, label}
 {
-    self = weak<NumberField>();
+    self = weak<NumberEdit>();
 }
 
-double NumberField::min() const
+double NumberEdit::min() const
 {
     return input().as<NumberInput>().min();
 }
 
-NumberField &NumberField::min(double newValue)
+NumberEdit &NumberEdit::min(double newValue)
 {
     input().as<NumberInput>().min(newValue);
     return *this;
 }
 
-NumberField &NumberField::min(Definition<double> &&f)
+NumberEdit &NumberEdit::min(Definition<double> &&f)
 {
     input().as<NumberInput>().min(std::move(f));
     return *this;
 }
 
-double NumberField::max() const
+double NumberEdit::max() const
 {
     return input().as<NumberInput>().max();
 }
 
-NumberField &NumberField::max(double newValue)
+NumberEdit &NumberEdit::max(double newValue)
 {
     input().as<NumberInput>().max(newValue);
     return *this;
 }
 
-NumberField &NumberField::max(Definition<double> &&f)
+NumberEdit &NumberEdit::max(Definition<double> &&f)
 {
     input().as<NumberInput>().max(std::move(f));
     return *this;
 }
 
-double NumberField::precision() const
+double NumberEdit::precision() const
 {
     return input().as<NumberInput>().precision();
 }
 
-NumberField &NumberField::precision(double newValue)
+NumberEdit &NumberEdit::precision(double newValue)
 {
     input().as<NumberInput>().precision(newValue);
     return *this;
 }
 
-NumberField &NumberField::precision(Definition<double> &&f)
+NumberEdit &NumberEdit::precision(Definition<double> &&f)
 {
     input().as<NumberInput>().precision(std::move(f));
     return *this;
 }
 
-char NumberField::decimalPoint() const
+char NumberEdit::decimalPoint() const
 {
     return input().as<NumberInput>().decimalPoint();
 }
 
-NumberField &NumberField::decimalPoint(char newValue)
+NumberEdit &NumberEdit::decimalPoint(char newValue)
 {
     input().as<NumberInput>().decimalPoint(newValue);
     return *this;
 }
 
-NumberField &NumberField::decimalPoint(Definition<char> &&f)
+NumberEdit &NumberEdit::decimalPoint(Definition<char> &&f)
 {
     input().as<NumberInput>().decimalPoint(std::move(f));
     return *this;
 }
 
-double NumberField::value() const
+double NumberEdit::value() const
 {
     return input().as<NumberInput>().value();
 }
 
-NumberField &NumberField::value(double newValue)
+NumberEdit &NumberEdit::value(double newValue)
 {
     input().as<NumberInput>().value(newValue);
     return *this;

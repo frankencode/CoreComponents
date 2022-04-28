@@ -2122,7 +2122,7 @@ enum class Ideographic: uint32_t
     SwapVertical                        = 0xF4E2, ///< &nbsp;
     SwapVerticalVariant                 = 0xF8C1, ///< &nbsp;
     Swim                                = 0xF4E3, ///< &nbsp;
-    Switch                              = 0xF4E4, ///< &nbsp;
+    SwitchControl                              = 0xF4E4, ///< &nbsp;
     Sword                               = 0xF4E5, ///< &nbsp;
     SwordCross                          = 0xF786, ///< &nbsp;
     Sync                                = 0xF4E6, ///< &nbsp;
@@ -2502,8 +2502,8 @@ enum class Ideographic: uint32_t
     YoutubeGaming                       = 0xF847, ///< &nbsp;
     YoutubeTv                           = 0xF448, ///< &nbsp;
     ZipBox                              = 0xF5C4, ///< &nbsp;
-    FirstIcon                           = AccessPoint, ///< &nbsp;
-    LastIcon                            = ZipBox ///< &nbsp;
+    First                               = AccessPoint, ///< &nbsp;
+    Last                                = ZipBox ///< &nbsp;
 };
 
 /** Static cast to underlying %Unicode code point

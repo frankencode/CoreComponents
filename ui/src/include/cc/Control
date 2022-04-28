@@ -36,10 +36,11 @@ public:
 
     /** Create a new top-level control of size (\a width, \a height)
       */
-    Control(double width, double height):
+    Control(double width, double height, Out<Control> self = None{}):
         View{new State}
     {
         size(Size{width, height});
+        self = weak<Control>();
     }
 
     Control delegate() const; ///< Delegate for handling user input
@@ -60,9 +61,7 @@ public:
       */
     Control &onClicked(Call<void()> &&f)
     {
-        me().onPointerClicked(
-            [=](const PointerEvent &){ f(); return true; }
-        );
+        me().onClicked(std::move(f));
         return *this;
     }
 
@@ -98,6 +97,13 @@ protected:
         virtual void onTextInput(const String &text);
 
         Control self() const { return Object::alias<Control>(this); }
+
+        void onClicked(Call<void()> &&f) ///< \copydoc Control::onClicked()
+        {
+            onPointerClicked(
+                [=](const PointerEvent &){ f(); return true; }
+            );
+        }
 
         Property<Cursor> cursor; ///< %Pointer cursor when the pointer is over this control
 

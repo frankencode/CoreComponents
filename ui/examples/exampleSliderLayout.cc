@@ -1,5 +1,5 @@
 #include <cc/ManagedRowLayout>
-#include <cc/Slider>
+#include <cc/SliderControl>
 #include <cc/Label>
 #include <cc/DEBUG>
 
@@ -17,7 +17,7 @@ int main()
             .align(RowAlign::Center)
         )
         .add(Label{"Temperature"})
-        .add(Slider{})
+        .add(SliderControl{})
         .add(Label{"Degree Celsius"})
         .attach([=]{
             CC_INSPECT(view.minSize());

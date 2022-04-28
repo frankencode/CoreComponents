@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/LineEdit>
+
+namespace cc {
+
+/** \class NumberEdit cc/NumberEdit
+  * \ingroup ui
+  * \brief %Number input field
+  */
+class NumberEdit final: public LineEdit
+{
+public:
+    /** Create a primordial number input field
+      */
+    NumberEdit() = default;
+
+    /** Create a new number input field
+      * \param label %Label text
+      * \param self Returns newly created object
+      */
+    explicit NumberEdit(const String &label, Out<NumberEdit> self = None{});
+
+    double min() const; ///< Get minimum value
+    NumberEdit &min(double newValue); ///< %Set minimum value
+    NumberEdit &min(Definition<double> &&f); ///< Define minimum value
+
+    double max() const; ///< Get maximum value
+    NumberEdit &max(double newValue); ///< %Set maximum value
+    NumberEdit &max(Definition<double> &&f); ///< Define maximum slider value
+
+    double precision() const; ///< Get precision
+    NumberEdit &precision(double newValue); ///< %Set precision
+    NumberEdit &precision(Definition<double> &&f); ///< Define precision
+
+    char decimalPoint() const; ///< Get decimal point character (defaults to '.')
+    NumberEdit &decimalPoint(char newValue); ///< %Set decimal point character
+    NumberEdit &decimalPoint(Definition<char> &&f); ///< Define decimal point character
+
+    double value() const; ///< Get current value
+    NumberEdit &value(double newValue); ///< %Set current value
+};
+
+} // namespace cc

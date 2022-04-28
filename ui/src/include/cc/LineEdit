@@ -1,0 +1,88 @@
+/*
+ * Copyright (C) 2020-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TextInput>
+
+namespace cc {
+
+enum class Ideographic: uint32_t;
+
+/** \class LineEdit cc/LineEdit
+  * \ingroup ui
+  * \brief %Text input field
+  */
+class LineEdit: public Control
+{
+public:
+    /** Create a primordial text input field
+      */
+    LineEdit();
+
+    /** Create a new text input field
+      */
+    explicit LineEdit(Out<LineEdit> self);
+
+    /** Create a new text input field
+      * \param title %Label text
+      * \param self Reference to newly created object
+      */
+    explicit LineEdit(const String &title, Out<LineEdit> self = None{});
+
+    String title() const; ///< Get title
+    LineEdit &title(const String &newValue); ///< %Set title
+
+    String text() const; ///< Get current text
+    LineEdit &text(const String &newValue); ///< %Set current text
+
+    String placeholder() const; ///< Get placeholder text
+    LineEdit &placeholder(const String &newValue); ///< %Set placeholder text
+
+    String help() const; ///< Get help text
+    LineEdit &help(const String &newValue); ///< %Set help text
+    LineEdit &help(Definition<String> &&f); ///< Define help text
+
+    String error() const; ///< Get error text
+    LineEdit &error(const String &newValue); ///< %Set error text
+    LineEdit &error(Definition<String> &&f); ///< Define error text
+
+    String status() const; ///< Get status text
+    LineEdit &status(const String &newValue); ///< %Set status text
+    LineEdit &status(Definition<String> &&f); ///< Define status text
+
+    LineEdit &icon(Ideographic ch); ///< %Set leading decoration icon
+    LineEdit &alertIcon(); ///< %Add an optionally visible alert icon
+
+    LineEdit &leading(const View &view); ///< %Set leading decoration
+    LineEdit &trailing(const View &view); ///< %Set trailing decoration
+
+    LineEdit &onAccepted(Call<void()> &&f); ///< %Handle input accepted event
+    LineEdit &onRejected(Call<void()> &&f); ///< %Handle input rejected event
+
+    LineEdit &accept(Call<bool()> &&f); ///< %Define acceptable input text
+    LineEdit &filter(Call<bool(Range range, InOut<String>)> &&f); ///< %Define text input restrictions
+
+protected:
+    struct State;
+
+    /** Create a text field with a custom input control
+      * \param input %Custom input control
+      * \param title %Title of this text field
+      */
+    explicit LineEdit(const TextInput &input, const String &title = String{});
+
+    /** Get the input control
+      */
+    TextInput input() const;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

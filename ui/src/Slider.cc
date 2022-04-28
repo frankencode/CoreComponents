@@ -7,273 +7,189 @@
  */
 
 #include <cc/Slider>
-#include <cc/DragArea>
-#include <cc/Box>
-#include <cc/Shadow>
-#include <cc/DEBUG>
+#include <cc/SliderControl>
+#include <cc/NumberCellState>
 
 namespace cc {
 
-struct Slider::State: public InputControl::State
+struct Slider::State: public View::State
 {
     State()
     {
-        thumbRadius([]{ return sp(24); });
-        knobRadius([]{ return sp(10); });
-        activeTrackRadius([]{ return sp(3); });
-        inactiveTrackRadius([]{ return sp(2); });
-        thumbCenter([this]{ return Point{ thumbRadius() + trackWidth() * (value() - min()) / (max() - min()), height() / 2 }; });
+        add(
+            SliderControl{&slider_}
+            .pos([this]{
+                return Point{
+                    margin() + (leading() ? leading().width()  : 0.) + spacing(),
+                    0.
+                };
+            })
+            .size([this]{
+                return Size{
+                    width()
+                        - (leading() ? leading().width() : 0.)
+                        - (trailing() ? trailing().width() : 0.)
+                        - 2 * spacing()
+                        - 2 * margin(),
+                    height()
+                };
+            })
+        );
 
         size([this]{ return preferredSize(); });
-        updateTrackWidth();
-
-        dragArea_
-        .cursor([this]{
-            return
-                thumb_.containsLocal(dragArea_.mapToChild(thumb_, dragArea_.pointerPos())) ?
-                Cursor{CursorShape::Hand} :
-                Cursor{};
-        })
-        .onPointerPressed([this](const PointerEvent &){
-            dragArea_.focus(true);
-            return false;
-        })
-        .onKeyPressed([this](const KeyEvent &event){
-            if (
-                event.keyCode() == KeyCode::Key_Plus ||
-                event.keyCode() == KeyCode::KeyPad_Plus ||
-                event.keyCode() == KeyCode::Key_Right ||
-                event.keyCode() == KeyCode::Key_Up
-            ) {
-                const double delta = (max() - min()) / 10;
-                setValue(outputValue() + delta);
-                return true;
-            }
-            else if (
-                event.keyCode() == KeyCode::Key_Minus ||
-                event.keyCode() == KeyCode::KeyPad_Minus ||
-                event.keyCode() == KeyCode::Key_Left ||
-                event.keyCode() == KeyCode::Key_Down
-            ) {
-                const double delta = (max() - min()) / 10;
-                setValue(outputValue() - delta);
-                return true;
-            }
-            return onKeyPressed(event);
-        })
-        .size([this]{ return size(); })
-        .add(
-            View{&thumb_}
-            .size([this]{ return Size{2 * thumbRadius()}; })
-            .add(
-                Box{}
-                .color([this]{ return theme().sliderFocusColor(); })
-                .radius([this]{ return thumbRadius(); })
-                .size([this]{ return thumb_.size(); })
-                .opacity([this]{
-                    double o = 0;
-                    if (dragArea_.isDragged()) o = 0.1;
-                    else if (focus()) o = 0.08;
-                    else if (dragArea_.hover() || dragArea_.pressed()) o = 0.05;
-                    return o;
-                })
-            )
-            .add(
-                Box{}
-                .color([this]{ return theme().sliderKnobColor(); })
-                .radius([this]{ return knobRadius(); })
-                .size([this]{ return Size{2 * knobRadius()}; })
-                .centerInParent()
-                .decorate(
-                    Shadow{}
-                    .color([this]{ return theme().sliderKnobShadowColor(); })
-                    .offset(Step{0, sp(2)})
-                    .blurRadius(sp(3))
-                )
-            )
-        );
-
-        add(
-            Box{}
-            .color([this]{ return theme().sliderInactiveTrackColor(); })
-            .radius([this]{ return inactiveTrackRadius(); })
-            .size([this]{ return Size{ trackWidth() + 2 * inactiveTrackRadius(), 2 * inactiveTrackRadius() }; })
-            .centerRight([this]{ return Point{ width() - thumbRadius() + inactiveTrackRadius(), height() / 2 }; })
-        );
-
-        add(
-            View{}
-            .size([this]{ return Size{ thumb_.pos().x() + 2 * activeTrackRadius(), 2 * activeTrackRadius() + 1 }; })
-            .centerLeft([this]{ return Point{ thumbRadius() - activeTrackRadius(), height() / 2 }; })
-            .clip(true)
-            .add(
-                Box{}
-                .color([this]{ return theme().sliderActiveTrackColor(); })
-                .radius([this]{ return activeTrackRadius(); })
-                .size([this]{ return Size{ trackWidth() + 2 * activeTrackRadius(), 2 * activeTrackRadius() }; })
-            )
-        );
-
-        add(
-            dragArea_
-        );
-
-        outputValue(
-            [this]{
-                if (resizing_) return valueSaved_;
-                double value = (thumb_.pos().x() / trackWidth()) * (max() - min()) + min();
-                if (precision() > 0) {
-                    double fraction = std::fmod(value, precision());
-                    double half = precision() / 2;
-                    if (fraction > 0) {
-                        value -= fraction;
-                        if (fraction > half) value += precision();
-                    }
-                    else {
-                        value -= fraction;
-                        if (fraction < -half) value -= precision();
-                    }
-                    if (value < min()) value = min();
-                    else if (value > max()) value = max();
-                }
-                return value;
-            }
-        );
-
-        size.onChanged([this]{
-            double valueSaved = outputValue();
-            updateTrackWidth();
-            setValue(valueSaved);
-        });
-    }
-
-    void updateTrackWidth()
-    {
-        valueSaved_ = outputValue();
-        resizing_ = true;
-        trackWidth = width() - 2 * thumbRadius();
-        resizing_ = false;
     }
 
     Size preferredSize() const override
     {
-        return Size{
-            expandableWidth(sp(280)),
-            minSize()[1]
-        };
+        Size s = slider_.preferredSize();
+        s[0] += 2 * spacing();
+        s[0] += 2 * margin();
+        if (leading()) s[0] += leading().preferredSize()[0];
+        if (trailing()) s[0] += trailing().preferredSize()[0];
+        if (hasParent() && parent().layout() && !parent().layout().isManaged()) s[0] = parent().innerWidth();
+        return s;
     }
 
     Size minSize() const override
     {
-        return { 4 * thumbRadius(), 2 * thumbRadius() };
+        Size s = slider_.minSize();
+        s[0] += 2 * spacing();
+        s[0] += 2 * margin();
+        if (leading()) s[0] += leading().preferredSize()[0];
+        if (trailing()) s[0] += trailing().preferredSize()[0];
+        return s;
     }
 
-    Size maxSize() const override
+    void setLeading(View view)
     {
-        return { std::numeric_limits<double>::max(), preferredSize()[1] };
+        assert(!leading());
+        if (leading()) return;
+        view.touch();
+        add(view);
+        view.centerLeft([this]{ return Point{margin(), height()/2}; });
+        leading(view);
+        autoConnectNumberCell(view);
     }
 
-    Control delegate() const override { return dragArea_; }
-
-    void setValue(double newValue)
+    void setTrailing(View view)
     {
-        if (newValue < min()) newValue = min();
-        else if (newValue > max()) newValue = max();
-        value(newValue);
-        thumb_.pos(thumbCenter() - thumb_.size() / 2);
+        assert(!trailing());
+        if (trailing()) return;
+        view.touch();
+        add(view);
+        view.centerRight([this]{ return Point{width() - margin(), height()/2}; });
+        trailing(view);
+        autoConnectNumberCell(view);
     }
 
-    Property<double> min { 0 };
-    Property<double> max { 100 };
-    Property<double> precision { 1 };
-    Property<double> value { 0 };
-    Property<double> outputValue { 0 };
+    void autoConnectNumberCell(View view)
+    {
+        if (view.is<NumberCell>()) {
+            assert(!cell_);
+            if (!cell_) {
+                cell_ = view.as<NumberCell>();
+                if (cell_->autoConnect_) {
+                    cell_.min([this]{ return slider_.min(); });
+                    cell_.max([this]{ return slider_.max(); });
+                    cell_.precision([this]{ return slider_.precision(); });
+                    sliderFeed([this]{ slider_.value(cell_.value()); });
+                    cellFeed([this]{ cell_.value(slider_.value()); });
+                }
+            }
+        }
+    }
 
-    Property<double> thumbRadius;
-    Property<double> knobRadius;
-    Property<double> trackWidth;
-    Property<double> activeTrackRadius;
-    Property<double> inactiveTrackRadius;
-    Property<Point> thumbCenter;
-
-    Property<void> outputValueMonitor;
-
-    DragArea dragArea_;
-    View thumb_;
-
-    bool resizing_ { false };
-    double valueSaved_ { 0 };
+    Property<double> spacing { sp(4) };
+    Property<double> margin { sp(8) };
+    Property<View> leading;
+    Property<View> trailing;
+    SliderControl slider_;
+    NumberCell cell_;
+    Property<void> sliderFeed;
+    Property<void> cellFeed;
 };
 
 Slider::Slider():
-    InputControl{onDemand<Slider::State>}
+    View{onDemand<State>}
 {}
 
 Slider::Slider(Out<Slider> self):
-    InputControl{new State}
+    View{new State}
 {
     self = weak<Slider>();
 }
 
+Slider &Slider::leading(const View &view)
+{
+    me().setLeading(view);
+    return *this;
+}
+
+Slider &Slider::trailing(const View &view)
+{
+    me().setTrailing(view);
+    return *this;
+}
+
 double Slider::min() const
 {
-    return me().min();
+    return me().slider_.min();
 }
 
 Slider &Slider::min(double newValue)
 {
-    me().min(newValue);
+    me().slider_.min(newValue);
     return *this;
 }
 
 Slider &Slider::min(Definition<double> &&f)
 {
-    me().min(std::move(f));
+    me().slider_.min(std::move(f));
     return *this;
 }
 
 double Slider::max() const
 {
-    return me().max();
+    return me().slider_.max();
 }
 
 Slider &Slider::max(double newValue)
 {
-    me().max(newValue);
+    me().slider_.max(newValue);
     return *this;
 }
 
 Slider &Slider::max(Definition<double> &&f)
 {
-    me().max(std::move(f));
+    me().slider_.max(std::move(f));
     return *this;
 }
 
 double Slider::precision() const
 {
-    return me().precision();
+    return me().slider_.precision();
 }
 
 Slider &Slider::precision(double newValue)
 {
-    me().precision(newValue);
+    me().slider_.precision(newValue);
     return *this;
 }
 
 Slider &Slider::precision(Definition<double> &&f)
 {
-    me().precision(std::move(f));
+    me().slider_.precision(std::move(f));
     return *this;
 }
 
 double Slider::value() const
 {
-    return me().outputValue();
+    return me().slider_.value();
 }
 
 Slider &Slider::value(double newValue)
 {
-    me().setValue(newValue);
+    me().slider_.value(newValue);
     return *this;
 }
 

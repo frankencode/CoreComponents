@@ -6,25 +6,25 @@
  *
  */
 
-#include <cc/Switch>
-#include <cc/SwitchControl>
+#include <cc/Checkbox>
+#include <cc/CheckboxControl>
 #include <cc/Text>
 
 namespace cc {
 
-struct Switch::State final: public Control::State
+struct Checkbox::State final: public Control::State
 {
     State(const String &text = ""):
         text_{text}
     {
         add(
-            text_
+            checkbox_
             .centerLeft([this]{ return Point{sp(m), sp(h/2)}; })
         );
 
         add(
-            switch_
-            .centerRight([this]{ return Point{width(), sp(h/2)}; })
+            text_
+            .centerLeft([this]{ return checkbox_.centerRight() + Step{sp(m), 0}; })
         );
 
         size([this]{ return preferredSize(); });
@@ -32,7 +32,7 @@ struct Switch::State final: public Control::State
 
     Control delegate() const override
     {
-        return switch_;
+        return checkbox_;
     }
 
     Size preferredSize() const override
@@ -44,7 +44,7 @@ struct Switch::State final: public Control::State
 
     Size minSize() const override
     {
-        return Size{sp(m) + text_.width() + sp(m) + switch_.width(), sp(h)};
+        return Size{sp(m) + checkbox_.width() + sp(m) + text_.width(), sp(h)};
     }
 
     Size maxSize() const override
@@ -54,66 +54,67 @@ struct Switch::State final: public Control::State
 
     static constexpr double m = 8;
     static constexpr double h = 48;
+
+    CheckboxControl checkbox_;
     Text text_;
-    SwitchControl switch_;
 };
 
-Switch::Switch():
+Checkbox::Checkbox():
     Control{onDemand<State>}
 {}
 
-Switch::Switch(Out<Switch> self):
+Checkbox::Checkbox(Out<Checkbox> self):
     Control{new State}
 {
-    self = weak<Switch>();
+    self = weak<Checkbox>();
 }
 
-Switch::Switch(const String & text, Out<Switch> self):
+Checkbox::Checkbox(const String &text, Out<Checkbox> self):
     Control{new State{text}}
 {
-    self = weak<Switch>();
+    self = weak<Checkbox>();
 }
 
-String Switch::text() const
+String Checkbox::text() const
 {
     return me().text_.text();
 }
 
-Switch &Switch::text(const String &newValue)
+Checkbox &Checkbox::text(const String &newValue)
 {
     me().text_.text(newValue);
     return *this;
 }
 
-Switch &Switch::text(Definition<String> &&f)
+Checkbox &Checkbox::text(Definition<String> &&f)
 {
     me().text_.text(std::move(f));
     return *this;
 }
 
-bool Switch::value() const
+bool Checkbox::value() const
 {
-    return me().switch_.value();
+    return me().checkbox_.value();
 }
 
-Switch &Switch::value(bool newValue)
+Checkbox &Checkbox::value(bool newValue)
 {
-    me().switch_.value(newValue);
+    me().checkbox_.value(newValue);
     return *this;
 }
 
-Switch &Switch::value(Definition<bool> &&f)
+Checkbox &Checkbox::value(Definition<bool> &&f)
 {
-    me().switch_.value(std::move(f));
+    me().checkbox_.value(std::move(f));
     return *this;
 }
 
-Switch::State &Switch::me()
+Checkbox::State &Checkbox::me()
 {
     return View::me().as<State>();
 }
 
-const Switch::State &Switch::me() const
+const Checkbox::State &Checkbox::me() const
 {
     return View::me().as<State>();
 }

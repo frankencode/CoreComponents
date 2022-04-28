@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/IndustrialStylePlugin>
+#include <cc/MaterialistPlugin>
 #include <cc/FontManager>
 #include <cc/MaterialLight>
 #include <cc/GlyphVisual>
@@ -18,7 +18,7 @@
 
 namespace cc {
 
-struct IndustrialStylePlugin::State: public StylePlugin::State
+struct MaterialistPlugin::State: public StylePlugin::State
 {
     State():
         StylePlugin::State{"Industrial"}
@@ -99,10 +99,10 @@ struct IndustrialStylePlugin::State: public StylePlugin::State
     Font iconFont_{"Icons", sp(24)};
 };
 
-IndustrialStylePlugin::IndustrialStylePlugin():
+MaterialistPlugin::MaterialistPlugin():
     StylePlugin{new State}
 {}
 
-CC_REGISTRATION(IndustrialStylePlugin);
+CC_REGISTRATION(MaterialistPlugin);
 
 } // namespace cc

@@ -1,6 +1,6 @@
 #include <cc/ColumnLayout>
 #include <cc/Divider>
-#include <cc/SliderField>
+#include <cc/Slider>
 #include <cc/NumberCell>
 #include <cc/Icon>
 
@@ -16,7 +16,7 @@ int main()
             .spacing(sp(8))
         )
         .add(
-            SliderField{}
+            Slider{}
             .leading(Icon{Ideographic::VolumeLow})
             .trailing(Icon{Ideographic::VolumeHigh})
         )
@@ -24,7 +24,7 @@ int main()
             Divider{}
         )
         .add(
-            SliderField{}
+            Slider{}
             .leading(Icon{Ideographic::Thermometer})
             .trailing(NumberCell{})
         )

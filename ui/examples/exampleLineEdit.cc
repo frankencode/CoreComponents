@@ -1,4 +1,4 @@
-#include <cc/TextField>
+#include <cc/LineEdit>
 #include <cc/Ideographic>
 #include <cc/Icon>
 #include <cc/Format>
@@ -8,35 +8,35 @@ int main()
 {
     using namespace cc;
 
-    TextField field;
+    LineEdit edit;
 
     return
         View{sp(640), sp(480)}
         .add(
-            TextField{&field}
+            LineEdit{&edit}
             .title("Username")
             .icon(Ideographic::AccountPlus)
             .alertIcon()
             .placeholder("JohnDoe")
             .help("Allowed characters include uppercase letters, lowercase letters, minus and underscore")
-            .status([&]{ return dec(field.text().count(), 2) + "/20"; })
-            .accept([&]{
-                if (field.text().count() == 0) {
-                    field.error("The username cannot be empty");
+            .status([=]{ return dec(edit.text().count(), 2) + "/20"; })
+            .accept([=]() mutable {
+                if (edit.text().count() == 0) {
+                    edit.error("The username cannot be empty");
                     return false;
                 }
-                for (char ch: field.text()) {
+                for (char ch: edit.text()) {
                     if ('a' <= ch && ch <= 'z') continue;
                     if ('A' <= ch && ch <= 'Z') continue;
                     if (ch == '-' || ch == '_') continue;
-                    field.error(Format{"Character '%%' is not allowed"} << ch);
+                    edit.error(Format{"Character '%%' is not allowed"} << ch);
                     return false;
                 }
-                field.error("");
+                edit.error("");
                 return true;
             })
-            .onAccepted([&]{
-                CC_INSPECT(field.text());
+            .onAccepted([=]{
+                CC_INSPECT(edit.text());
             })
             .pos(dp(16), dp(16))
         )

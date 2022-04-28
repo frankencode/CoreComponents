@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Control>
+
+namespace cc {
+
+/** \class Checkbox cc/Checkbox
+  * \ingroup ui
+  * \brief %CheckboxControl with associated label
+  */
+class Checkbox final: public Control
+{
+public:
+    /** Create primordial checkbox field
+      */
+    Checkbox();
+
+    /** Create a new switch field
+      */
+    explicit Checkbox(Out<Checkbox> self);
+
+    /** Create a new switch field
+      */
+    explicit Checkbox(const String &text, Out<Checkbox> self = None{});
+
+    String text() const; ///< Get text
+    Checkbox &text(const String &newValue); ///< %Set text
+    Checkbox &text(Definition<String> &&f); ///< Define text
+
+    bool value() const; ///< Get current state
+    Checkbox &value(bool newValue); ///< %Set current state
+    Checkbox &value(Definition<bool> &&f); ///< Define current state
+
+    //! \todo have proper operators for primary function
+    // bool operator()() const { return value(); }
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

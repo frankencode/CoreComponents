@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/TextField>
+#include <cc/LineEdit>
 #include <cc/TextInput>
 #include <cc/Label>
 #include <cc/Text>
@@ -15,7 +15,7 @@
 
 namespace cc {
 
-struct TextField::State: public Control::State
+struct LineEdit::State: public Control::State
 {
     explicit State(const String &title = String{});
     State(const TextInput &input, const String &title);
@@ -64,11 +64,11 @@ struct TextField::State: public Control::State
     Label statusView_;
 };
 
-TextField::State::State(const String &title):
+LineEdit::State::State(const String &title):
     State{TextInput{}, title}
 {}
 
-TextField::State::State(const TextInput &input, const String &initialTitle):
+LineEdit::State::State(const TextInput &input, const String &initialTitle):
     title{initialTitle},
     input_{input}
 {
@@ -179,7 +179,7 @@ TextField::State::State(const TextInput &input, const String &initialTitle):
     });
 }
 
-void TextField::State::settled()
+void LineEdit::State::settled()
 {
     Easing::Bezier curve{0.5, 0.0, 0.5, 1.0};
     const double duration = 0.1;
@@ -188,12 +188,12 @@ void TextField::State::settled()
         .posEasing(curve, duration);
 }
 
-void TextField::State::polish()
+void LineEdit::State::polish()
 {
     clear(polishPaper());
 }
 
-void TextField::State::setLeading(const View &newView)
+void LineEdit::State::setLeading(const View &newView)
 {
     if (leading()) {
         leading().visible(false);
@@ -205,7 +205,7 @@ void TextField::State::setLeading(const View &newView)
     add(leading());
 }
 
-void TextField::State::setTrailing(const View &newView)
+void LineEdit::State::setTrailing(const View &newView)
 {
     if (trailing()) {
         trailing().visible(false);
@@ -216,7 +216,7 @@ void TextField::State::setTrailing(const View &newView)
     add(trailing());
 }
 
-void TextField::State::setAlertIcon()
+void LineEdit::State::setAlertIcon()
 {
     setTrailing(
         Icon{Ideographic::AlertCircle}
@@ -225,7 +225,7 @@ void TextField::State::setAlertIcon()
     );
 }
 
-void TextField::State::editPlus()
+void LineEdit::State::editPlus()
 {
     if (editPlus_) return;
     editPlus_ = true;
@@ -279,197 +279,197 @@ void TextField::State::editPlus()
     text.onChanged([this]{ error = String{}; });
 }
 
-Control TextField::State::delegate() const
+Control LineEdit::State::delegate() const
 {
     return input_;
 }
 
-Size TextField::State::preferredSize() const
+Size LineEdit::State::preferredSize() const
 {
     Size s = input_.preferredSize() + Size{dp(28), dp(32) + messageHeight()}.ceil();
     s[0] = expandableWidth(s[0]);
     return s;
 }
 
-Size TextField::State::minSize() const
+Size LineEdit::State::minSize() const
 {
     return input_.minSize() + Size{dp(28), dp(32)}.ceil();
 }
 
-Size TextField::State::maxSize() const
+Size LineEdit::State::maxSize() const
 {
     return input_.maxSize() + Size{dp(28), dp(32)}.ceil();
 }
 
-TextField::TextField():
+LineEdit::LineEdit():
     Control{onDemand<State>}
 {}
 
-TextField::TextField(Out<TextField> self):
+LineEdit::LineEdit(Out<LineEdit> self):
     Control{new State}
 {
-    self = weak<TextField>();
+    self = weak<LineEdit>();
 }
 
-TextField::TextField(const String &label, Out<TextField> self):
+LineEdit::LineEdit(const String &label, Out<LineEdit> self):
     Control{new State{label}}
 {
-    self = weak<TextField>();
+    self = weak<LineEdit>();
 }
 
-TextField::TextField(const TextInput &input, const String &title):
+LineEdit::LineEdit(const TextInput &input, const String &title):
     Control{new State{input, title}}
 {}
 
-String TextField::title() const
+String LineEdit::title() const
 {
     return me().title();
 }
 
-TextField &TextField::title(const String &newValue)
+LineEdit &LineEdit::title(const String &newValue)
 {
     me().title(newValue);
     return *this;
 }
 
-String TextField::text() const
+String LineEdit::text() const
 {
     return me().text();
 }
 
-TextField &TextField::text(const String &newValue)
+LineEdit &LineEdit::text(const String &newValue)
 {
     me().input_.text(newValue);
     return *this;
 }
 
-String TextField::placeholder() const
+String LineEdit::placeholder() const
 {
     return me().placeholder();
 }
 
-TextField &TextField::placeholder(const String &newValue)
+LineEdit &LineEdit::placeholder(const String &newValue)
 {
     me().placeholder(newValue);
     return *this;
 }
 
-String TextField::help() const
+String LineEdit::help() const
 {
     return me().help();
 }
 
-TextField &TextField::help(const String &newValue)
+LineEdit &LineEdit::help(const String &newValue)
 {
     me().editPlus();
     me().help(newValue);
     return *this;
 }
 
-TextField &TextField::help(Definition<String> &&f)
+LineEdit &LineEdit::help(Definition<String> &&f)
 {
     me().editPlus();
     me().help(std::move(f));
     return *this;
 }
 
-String TextField::error() const
+String LineEdit::error() const
 {
     return me().error();
 }
 
-TextField &TextField::error(const String &newValue)
+LineEdit &LineEdit::error(const String &newValue)
 {
     me().editPlus();
     me().error(newValue);
     return *this;
 }
 
-TextField &TextField::error(Definition<String> &&f)
+LineEdit &LineEdit::error(Definition<String> &&f)
 {
     me().editPlus();
     me().error(std::move(f));
     return *this;
 }
 
-String TextField::status() const
+String LineEdit::status() const
 {
     return me().status();
 }
 
-TextField &TextField::status(const String &newValue)
+LineEdit &LineEdit::status(const String &newValue)
 {
     me().editPlus();
     me().status(newValue);
     return *this;
 }
 
-TextField &TextField::status(Definition<String> &&f)
+LineEdit &LineEdit::status(Definition<String> &&f)
 {
     me().editPlus();
     me().status(std::move(f));
     return *this;
 }
 
-TextField &TextField::icon(Ideographic ch)
+LineEdit &LineEdit::icon(Ideographic ch)
 {
     me().setLeading(Icon{ch});
     return *this;
 }
 
-TextField &TextField::alertIcon()
+LineEdit &LineEdit::alertIcon()
 {
     me().setAlertIcon();
     return *this;
 }
 
-TextField &TextField::leading(const View &view)
+LineEdit &LineEdit::leading(const View &view)
 {
     me().setLeading(view);
     return *this;
 }
 
-TextField &TextField::trailing(const View &view)
+LineEdit &LineEdit::trailing(const View &view)
 {
     me().setTrailing(view);
     return *this;
 }
 
-TextField &TextField::onAccepted(Call<void()> &&f)
+LineEdit &LineEdit::onAccepted(Call<void()> &&f)
 {
     me().input_.onAccepted(std::move(f));
     return *this;
 }
 
-TextField &TextField::onRejected(Call<void()> &&f)
+LineEdit &LineEdit::onRejected(Call<void()> &&f)
 {
     me().input_.onRejected(std::move(f));
     return *this;
 }
 
-TextField &TextField::accept(Call<bool()> &&f)
+LineEdit &LineEdit::accept(Call<bool()> &&f)
 {
     me().input_.accept(std::move(f));
     return *this;
 }
 
-TextField &TextField::filter(Call<bool(Range range, InOut<String>)> &&f)
+LineEdit &LineEdit::filter(Call<bool(Range range, InOut<String>)> &&f)
 {
     me().input_.filter(std::move(f));
     return *this;
 }
 
-TextInput TextField::input() const
+TextInput LineEdit::input() const
 {
     return me().input_;
 }
 
-TextField::State &TextField::me()
+LineEdit::State &LineEdit::me()
 {
     return View::me().as<State>();
 }
 
-const TextField::State &TextField::me() const
+const LineEdit::State &LineEdit::me() const
 {
     return View::me().as<State>();
 }

@@ -10,10 +10,10 @@
 
 namespace cc {
 
-class IndustrialStylePlugin: public StylePlugin
+class MaterialistPlugin final: public StylePlugin
 {
 public:
-    IndustrialStylePlugin();
+    MaterialistPlugin();
 
 private:
     struct State;

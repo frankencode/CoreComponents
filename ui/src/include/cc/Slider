@@ -8,39 +8,42 @@
 
 #pragma once
 
-#include <cc/InputControl>
+#include <cc/Control>
 
 namespace cc {
 
 /** \class Slider cc/Slider
   * \ingroup ui
-  * \brief %Slider control
+  * \brief %Slider with leading and trailing decoration
   */
-class Slider final: public InputControl
+class Slider final: public View
 {
 public:
-    /** Create a primordial slider
+    /** Create a primordial slider field
       */
     Slider();
 
-    /** Create a slider and return a copy of itself
+    /** Create a new slider field and return itself
       */
     explicit Slider(Out<Slider> self);
 
-    double min() const; ///< Get the minimum slider value
-    Slider &min(double newValue); ///< %Set the minimum slider value
-    Slider &min(Definition<double> &&f); ///< Define the minimum slider value
+    Slider &leading(const View &view); ///< %Set leading decoration
+    Slider &trailing(const View &view); ///< %Set trailing decoration
 
-    double max() const; ///< Get the maximum slider value
-    Slider &max(double newValue); ///< %Set the maximum slider value
-    Slider &max(Definition<double> &&f); ///< Define the maximum slider value
+    double min() const; ///< Get minimum slider value
+    Slider &min(double newValue); ///< %Set minimum slider value
+    Slider &min(Definition<double> &&f); ///< Define minimum slider value
 
-    double precision() const; ///< Get the precision
-    Slider &precision(double newValue); ///< %Set the precision
-    Slider &precision(Definition<double> &&f); ///< Define the precision
+    double max() const; ///< Get maximum slider value
+    Slider &max(double newValue); ///< %Set maximum slider value
+    Slider &max(Definition<double> &&f); ///< Define maximum slider value
 
-    double value() const; ///< Get the current slider value
-    Slider &value(double newValue); ///< %Set the current slider value
+    double precision() const; ///< Get precision
+    Slider &precision(double newValue); ///< %Set precision
+    Slider &precision(Definition<double> &&f); ///< Define precision
+
+    double value() const; ///< Get current slider value
+    Slider &value(double newValue); ///< %Set current slider value
 
 private:
     struct State;

@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/InputControl>
+
+namespace cc {
+
+/** \class SwitchControl cc/SwitchControl
+  * \ingroup ui
+  * \brief On/off switch
+  */
+class SwitchControl final: public InputControl
+{
+public:
+    /** Create a primordial on/off switch
+      */
+    SwitchControl();
+
+    /** Create a new switch and return weak reference of itself
+      */
+    explicit SwitchControl(Out<SwitchControl> self);
+
+    bool value() const; ///< Get current state
+    SwitchControl &value(bool newValue); ///< %Set current state
+    SwitchControl &value(Definition<bool> &&f); ///< Define current state
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

@@ -1,4 +1,4 @@
-#include <cc/SwitchControl>
+#include <cc/SliderControl>
 
 int main()
 {
@@ -7,7 +7,7 @@ int main()
     return
         View{sp(640), sp(480)}
         .add(
-            SwitchControl{}
+            SliderControl{}
             .centerInParent()
         )
         .run();

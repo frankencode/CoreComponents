@@ -6,19 +6,19 @@
  *
  */
 
-#include <cc/PasswordField>
+#include <cc/PasswordEdit>
 #include <cc/PasswordInput>
 #include <cc/PasswordInputState>
 
 namespace cc {
 
-PasswordField::PasswordField(const String &label, Out<PasswordField> self):
-    TextField{PasswordInput{}, label}
+PasswordEdit::PasswordEdit(const String &label, Out<PasswordEdit> self):
+    LineEdit{PasswordInput{}, label}
 {
-    self = weak<PasswordField>();
+    self = weak<PasswordEdit>();
 }
 
-String PasswordField::password() const
+String PasswordEdit::password() const
 {
     return input().as<PasswordInput>().password();
 }

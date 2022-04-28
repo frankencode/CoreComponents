@@ -71,13 +71,13 @@ DragArea::State::State()
             }
         }
 
-        return true;
+        return isDragged_;
     });
 }
 
 bool DragArea::State::dragStart(const PointerEvent &event, Point dragStart) const
 {
-    return Application{}.pointerIsDragged(event, dragStart);
+    return !dragInhibit() && Application{}.pointerIsDragged(event, dragStart);
 }
 
 Step DragArea::State::dragDistance(const PointerEvent &event, Point dragStart) const

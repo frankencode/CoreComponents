@@ -8,24 +8,32 @@
 
 #pragma once
 
-#include <cc/InputControl>
+#include <cc/Control>
 
 namespace cc {
 
 /** \class Switch cc/Switch
   * \ingroup ui
-  * \brief On/off switch
+  * \brief On-off switch with associated label
   */
-class Switch final: public InputControl
+class Switch final: public Control
 {
 public:
-    /** Create a primordial on/off switch
+    /** Create primordial switch field
       */
     Switch();
 
-    /** Create a new switch and return it in \a self
+    /** Create a new switch field
       */
     explicit Switch(Out<Switch> self);
+
+    /** Create a new switch field
+      */
+    explicit Switch(const String & text, Out<Switch> self = None{});
+
+    String text() const; ///< Get text
+    Switch &text(const String &newValue); ///< %Set text
+    Switch &text(Definition<String> &&f); ///< Define text
 
     bool value() const; ///< Get current state
     Switch &value(bool newValue); ///< %Set current state

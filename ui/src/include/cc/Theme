@@ -61,6 +61,8 @@ public:
     Color switchTrackColor(bool on) const { return me().switchTrackColor(on); }
     Color switchFocusColor() const { return me().switchFocusColor(); }
 
+    Color checkboxColor(bool on) const { return me().checkboxColor(on); }
+
     Color buttonColor(bool pressed) const { return me().buttonColor(pressed); }
     Color buttonFocusColor(bool pressed) const { return me().buttonFocusColor(pressed); }
     Color buttonTextColor(bool pressed) const { return me().buttonTextColor(pressed); }
@@ -120,6 +122,8 @@ protected:
         virtual Color switchKnobShadowColor(bool on) const = 0;
         virtual Color switchTrackColor(bool on) const = 0;
         virtual Color switchFocusColor() const = 0;
+
+        virtual Color checkboxColor(bool on) const { return on ? primaryColor() : secondaryTextColor(); }
 
         virtual Color buttonColor(bool pressed) const = 0;
         virtual Color buttonFocusColor(bool pressed) const = 0;
