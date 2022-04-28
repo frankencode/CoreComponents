@@ -191,6 +191,18 @@ public:
     template<class T2>
     Property &operator/=(const T2 &b) { me().setValue(me().value() / b); return *this; }
 
+    /** Shift left the current value by \a b (and break prior bindings)
+      * \tparam T2 Shift distance type
+      */
+    template<class T2>
+    Property &operator<<=(const T2 &b) { me().setValue(me().value() << b); return *this; }
+
+    /** Shift right the current value by \a b (and break prior bindings)
+      * \tparam T2 Shift distance type
+      */
+    template<class T2>
+    Property &operator>>=(const T2 &b) { me().setValue(me().value() >> b); return *this; }
+
     /** Prefix increment operator: Add 1 to the current value and return the new value
       */
     Property &operator++() { return *this += 1; }

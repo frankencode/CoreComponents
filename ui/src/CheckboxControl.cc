@@ -9,7 +9,6 @@
 #include <cc/CheckboxControl>
 #include <cc/Picture>
 #include <cc/Box>
-#include <cc/DEBUG>
 
 namespace cc {
 
@@ -73,26 +72,6 @@ struct CheckboxControl::State final: public InputControl::State
         });
 
         size([this]{ return preferredSize(); });
-
-        #if 0
-        attach([this]{
-            if (groupMembers().count() > 0) {
-                int n = 0;
-                for (const CheckboxControl &member: groupMembers()) {
-                    n += member.value();
-                }
-                if (n == groupMembers().count()) {
-                    state = Marked;
-                }
-                else if (n > 0) {
-                    state = Intermediate;
-                }
-                else {
-                    state = Blank;
-                }
-            }
-        });
-        #endif
     }
 
     bool getValue() const
@@ -166,8 +145,9 @@ CheckboxControl &CheckboxControl::value(bool newValue)
 CheckboxControl &CheckboxControl::groupUnder(CheckboxControl &groupLeader)
 {
     me().groupLeader = groupLeader;
-    groupLeader->groupMembers = groupLeader->groupMembers() << *this;
-    CC_INSPECT(groupLeader->groupMembers().count());
+    auto members = groupLeader->groupMembers();
+    members << *this;
+    groupLeader->groupMembers = members;
     return *this;
 }
 
