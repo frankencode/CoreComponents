@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class CheckboxControl cc/SwitchControl
   * \ingroup ui
-  * \brief %CheckboxControl
+  * \brief %Checkbox control
   */
 class CheckboxControl final: public InputControl
 {
@@ -29,13 +29,24 @@ public:
 
     bool value() const; ///< Get current state
     CheckboxControl &value(bool newValue); ///< %Set current state
-    CheckboxControl &value(Definition<bool> &&f); ///< Define current state
 
 private:
+    friend class Checkbox;
+
     struct State;
+
+    /** Group this checkbox under another checkbox \a groupLeader
+      */
+    CheckboxControl &groupUnder(CheckboxControl &groupLeader);
+
+    /** Tell if this checkbox is grouped under another checkbox
+      */
+    bool isGrouped() const;
 
     State &me();
     const State &me() const;
+    State *operator->();
+    const State *operator->() const;
 };
 
 } // namespace cc

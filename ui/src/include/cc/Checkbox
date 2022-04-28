@@ -37,16 +37,17 @@ public:
 
     bool value() const; ///< Get current state
     Checkbox &value(bool newValue); ///< %Set current state
-    Checkbox &value(Definition<bool> &&f); ///< Define current state
 
-    //! \todo have proper operators for primary function
-    // bool operator()() const { return value(); }
+    /** Group this checkbox under \a groupLeader
+      */
+    Checkbox &groupUnder(const Checkbox &groupLeader);
 
 private:
     struct State;
 
     State &me();
     const State &me() const;
+    State *operator->();
 };
 
 } // namespace cc

@@ -19,7 +19,7 @@ struct Checkbox::State final: public Control::State
     {
         add(
             checkbox_
-            .centerLeft([this]{ return Point{sp(m), sp(h/2)}; })
+            .centerLeft([this]{ return Point{sp(checkbox_.isGrouped() ? 4 * m : m), sp(h / 2)}; })
         );
 
         add(
@@ -103,9 +103,9 @@ Checkbox &Checkbox::value(bool newValue)
     return *this;
 }
 
-Checkbox &Checkbox::value(Definition<bool> &&f)
+Checkbox &Checkbox::groupUnder(const Checkbox &groupLeader)
 {
-    me().checkbox_.value(std::move(f));
+    me().checkbox_.groupUnder(Checkbox{groupLeader}->checkbox_);
     return *this;
 }
 
@@ -117,6 +117,11 @@ Checkbox::State &Checkbox::me()
 const Checkbox::State &Checkbox::me() const
 {
     return View::me().as<State>();
+}
+
+Checkbox::State *Checkbox::operator->()
+{
+    return &me();
 }
 
 } // namespace cc

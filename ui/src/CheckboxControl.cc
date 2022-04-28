@@ -9,6 +9,7 @@
 #include <cc/CheckboxControl>
 #include <cc/Picture>
 #include <cc/Box>
+#include <cc/DEBUG>
 
 namespace cc {
 
@@ -34,17 +35,23 @@ struct CheckboxControl::State final: public InputControl::State
         add(
             Picture{Ideographic::CheckboxMarked, d_, theme().checkboxColor(true)}
             .centerInParent()
-            .visible([this]{ return checked(); })
+            .visible([this]{ return state() == Marked; })
+        );
+
+        add(
+            Picture{Ideographic::CheckboxIntermediate, d_, theme().checkboxColor(true)}
+            .centerInParent()
+            .visible([this]{ return state() == Intermediate; })
         );
 
         add(
             Picture{Ideographic::CheckboxBlankOutline, d_, theme().checkboxColor(false)}
             .centerInParent()
-            .visible([this]{ return !checked(); })
+            .visible([this]{ return state() == Blank; })
         );
 
         onClicked([this]{
-            checked(!checked());
+            setValue(!getValue());
         });
 
         onKeyPressed([this](const KeyEvent &event){
@@ -59,13 +66,62 @@ struct CheckboxControl::State final: public InputControl::State
                 event.keyCode() == KeyCode::Key_Down ||
                 event.keyCode() == KeyCode::Key_Space
             ) {
-                checked(!checked());
+                setValue(!getValue());
                 return true;
             }
             return false;
         });
 
         size([this]{ return preferredSize(); });
+
+        #if 0
+        attach([this]{
+            if (groupMembers().count() > 0) {
+                int n = 0;
+                for (const CheckboxControl &member: groupMembers()) {
+                    n += member.value();
+                }
+                if (n == groupMembers().count()) {
+                    state = Marked;
+                }
+                else if (n > 0) {
+                    state = Intermediate;
+                }
+                else {
+                    state = Blank;
+                }
+            }
+        });
+        #endif
+    }
+
+    bool getValue() const
+    {
+        return state() != Blank;
+    }
+
+    void setValue(bool newValue)
+    {
+        if (state() == State::Blank) {
+            state = Marked;
+        }
+        else {
+            state = Blank;
+        }
+
+        for (CheckboxControl &member: groupMembers()) {
+            member->state = state();
+        }
+
+        if (!groupLeader().isNull()) {
+            int n = 0;
+            for (const CheckboxControl &member: groupLeader()->groupMembers()) {
+                n += (member->state != Blank);
+            }
+            if (n == 0) groupLeader()->state = Blank;
+            else if (n == groupLeader()->groupMembers().count()) groupLeader()->state = Marked;
+            else groupLeader()->state = Intermediate;
+        }
     }
 
     Size preferredSize() const override { return 2 * Size{d_, d_}; }
@@ -74,7 +130,16 @@ struct CheckboxControl::State final: public InputControl::State
 
     const double d_ { sp(24) };
 
-    Property<bool> checked { false };
+    enum Value {
+        Blank,
+        Marked,
+        Intermediate
+    };
+
+    Property<Value> state { Blank };
+
+    Property<CheckboxControl> groupLeader;
+    Property<List<CheckboxControl>> groupMembers;
 };
 
 CheckboxControl::CheckboxControl():
@@ -89,19 +154,26 @@ CheckboxControl::CheckboxControl(Out<CheckboxControl> self):
 
 bool CheckboxControl::value() const
 {
-    return me().checked();
+    return me().getValue();
 }
 
 CheckboxControl &CheckboxControl::value(bool newValue)
 {
-    me().checked(newValue);
+    me().setValue(newValue);
     return *this;
 }
 
-CheckboxControl &CheckboxControl::value(Definition<bool> &&f)
+CheckboxControl &CheckboxControl::groupUnder(CheckboxControl &groupLeader)
 {
-    me().checked(std::move(f));
+    me().groupLeader = groupLeader;
+    groupLeader->groupMembers = groupLeader->groupMembers() << *this;
+    CC_INSPECT(groupLeader->groupMembers().count());
     return *this;
+}
+
+bool CheckboxControl::isGrouped() const
+{
+    return !me().groupLeader().isNull();
 }
 
 CheckboxControl::State &CheckboxControl::me()
@@ -112,6 +184,16 @@ CheckboxControl::State &CheckboxControl::me()
 const CheckboxControl::State &CheckboxControl::me() const
 {
     return View::me().as<State>();
+}
+
+CheckboxControl::State *CheckboxControl::operator->()
+{
+    return &me();
+}
+
+const CheckboxControl::State *CheckboxControl::operator->() const
+{
+    return &me();
 }
 
 } // namespace cc

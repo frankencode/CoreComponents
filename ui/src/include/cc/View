@@ -487,11 +487,11 @@ public:
 
     /** Attach a non-visual object (e.g. a Monitor)
       */
-    View &attach(const Object &other) { me().attachments_.append(other); return *this; }
+    View &attach(const Object &other) { me().attach(other); return *this; }
 
     /** Convenience method for attaching a monitor
       */
-    View &attach(Call<void()> &&f) { return attach(Monitor{std::move(f)}); }
+    View &attach(Call<void()> &&f) { me().attach(std::move(f)); return *this; }
 
     ///@}
 
@@ -560,6 +560,20 @@ protected:
 
         const Set<View> &children() const { return children_; } ///< Get set of all children
         const Set<View> &visibleChildren() const { return visibleChildren_; } ///< Get set of visible children
+
+        /** \copydoc View::attach(const Object &)
+          */
+        void attach(const Object &other)
+        {
+            attachments_.append(other);
+        }
+
+        /** \copydoc View::attach(Call<void()> &&)
+          */
+        void attach(Call<void()> &&f)
+        {
+            attachments_.append(Monitor{std::move(f)});
+        }
 
         /** Remove all children
           */

@@ -17,6 +17,7 @@ int main()
     const double gap = sp(16);
 
     PasswordEdit passwordField;
+    Checkbox dessert;
 
     return
         Flickable{
@@ -28,17 +29,18 @@ int main()
                 .spacing(gap)
             )
             .add(LineEdit{"First name"})
-            // .add(LineEdit{"Middle name"})
-            .add(LineEdit{"Last name"})
+            .add(LineEdit{"Family name"})
             .add(
                 NumberEdit{"Age"}
                 .value(-1)
                 .min(0)
                 .max(1000)
+                //! \todo allow to step focus, when left empty
             )
             .add(Divider{})
-            .add(Checkbox{"Apples"})
-            .add(Checkbox{"Bananas"})
+            .add(Checkbox{"Dessert", &dessert})
+            .add(Checkbox{"Apple"}.groupUnder(dessert))
+            .add(Checkbox{"Banana"}.groupUnder(dessert))
             .add(Divider{})
             .add(
                 PasswordEdit{"Enter password", &passwordField}
