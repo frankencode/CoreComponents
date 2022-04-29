@@ -91,6 +91,13 @@ public:
 
     Display display() const { return me().display(); } ///< Get the display this window is shown on
 
+    /** Render \a view into user allocated \a image
+      */
+    void renderViewToImage(const View &view, Image &image)
+    {
+        me().renderViewToImage(view, image);
+    }
+
 protected:
     friend class Object;
     friend class View;
@@ -106,6 +113,7 @@ protected:
         virtual void setOpacity(double alpha) = 0;
 
         virtual void renderFrame(const Frame &frame) = 0;
+        virtual void renderViewToImage(const View &view, Image &image) = 0;
 
         static View::State &viewState(View &view) { return view.me(); }
         static const View::State &viewState(const View &view) { return view.me(); }

@@ -47,6 +47,7 @@ private:
         void setMaxSize(Size size);
 
         void renderFrame(const Frame &frame) override;
+        void renderViewToImage(const View &view, Image &image) override;
 
         void updateTexture(SDL_Renderer *sdlRenderer, View view);
         void updateOpacity(View view);

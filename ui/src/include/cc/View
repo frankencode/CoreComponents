@@ -379,6 +379,11 @@ public:
 
     View &layout(const Layout &newValue) { me().layout(newValue); return *this; } ///< %Set layout
 
+    /** Capture a rendered image of this view (including its children) as rendered on the screen
+      * \param f Callback function to call when the screen capture is ready
+      */
+    void renderTo(Image &image);
+
     ///@}
 
     /** \name Positional Anchors

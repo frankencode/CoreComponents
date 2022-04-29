@@ -237,6 +237,33 @@ void SdlWindow::State::renderFrame(const Frame &frame)
     SDL_RenderPresent(sdlRenderer_);
 }
 
+void SdlWindow::State::renderViewToImage(const View &view, Image &image)
+{
+    assert(!image.isNull());
+
+    renderCascade(sdlRenderer_, view_);
+
+    Point origin = view.mapToGlobal(Point{});
+    SDL_Rect rect;
+    rect.x = std::floor(origin[0]);
+    rect.y = std::floor(origin[1]);
+    rect.w = image.width();
+    rect.h = image.height();
+    if (
+        SDL_RenderReadPixels(
+            sdlRenderer_,
+            &rect,
+            SDL_PIXELFORMAT_ARGB32,
+            image.data().bytes(),
+            image.pitch()
+        ) != 0
+    ) {
+        throw SdlPlatformError{};
+    }
+
+    SDL_RenderPresent(sdlRenderer_);
+}
+
 void SdlWindow::State::updateTexture(SDL_Renderer *sdlRenderer, View view)
 {
     if (!viewContext(view)) viewContext(view) = SdlContext{};

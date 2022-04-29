@@ -482,4 +482,10 @@ Window View::window() const
     return me().window();
 }
 
+void View::renderTo(Image &image)
+{
+    assert(hasWindow());
+    if (hasWindow()) window().renderViewToImage(*this, image);
+}
+
 } // namespace cc::u
