@@ -33,6 +33,18 @@ public:
         Surface{new State{width, height}}
     {}
 
+    /** Create an image for user allocated image data
+      */
+    Image(int width, int height, const Bytes &data):
+        Surface{new State{width, height, data}}
+    {}
+
+    /** Convenience method to create an image of \a size.ceil() pixels
+      */
+    explicit Image(Size size):
+        Surface{new State{static_cast<int>(std::ceil(size[0])), static_cast<int>(std::ceil(size[1]))}}
+    {}
+
     /** Width of the image in pixels
       */
     int width() const { return me().width_; }
@@ -116,6 +128,12 @@ private:
             width_{width > 0 ? width : 1},
             height_{height > 0 ? height : 1},
             data_{Bytes::allocate(width_ * height_ * static_cast<long>(sizeof(Color)))}
+        {}
+
+        State(int width, int height, const Bytes &data):
+            width_{width},
+            height_{height},
+            data_{data}
         {}
 
         ~State();

@@ -254,10 +254,7 @@ void Application::State::takeScreenshot(const Window &window)
 {
     View view = window.view();
 
-    Image image{
-        static_cast<int>(std::ceil(view.width())),
-        static_cast<int>(std::ceil(view.height()))
-    };
+    Image image{view.size()};
 
     String path = Format{"%%.bmp"}.arg(fixed(System::now(), 0));
     view.renderTo(image);

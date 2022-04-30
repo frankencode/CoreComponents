@@ -22,7 +22,27 @@ class ImageFile final: public Object
 public:
     static void write(const Stream &stream, const Image &image);
     static void save(const String &path, const Image &image);
-    // static Image load(const String &path);
+
+    /** Map bitmap image file into memory
+      * \param path %File path of the image to load
+      * \exception ImageFileError
+      * \exception SystemResourceError
+      */
+    static Image map(const String &path);
+};
+
+/** \class ImageFileError cc/ImageFile
+  * \brief Failed to load an image file because of unexpected or unsupported file format
+  */
+class ImageFileError: public Exception
+{
+public:
+    explicit ImageFileError(const char *reason);
+
+    virtual String message() const override;
+
+private:
+    const char *reason_;
 };
 
 } // namespace cc
