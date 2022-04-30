@@ -51,7 +51,11 @@ public:
 
     /** Directly access image data
       */
-    Bytes data() { return me().data_; }
+    Bytes &data() { return me().data_; }
+
+    /** Directly access image data
+      */
+    const Bytes &data() const { return me().data_; }
 
     /** Get a reference to the \a i-th pixel
       */

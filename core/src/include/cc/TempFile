@@ -16,7 +16,7 @@ namespace cc {
   * \ingroup file_system
   * \brief Temporary files
   */
-class TempFile: public File
+class TempFile final: public File
 {
 public:
     /** Open a new temporary file

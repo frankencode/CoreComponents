@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/View>
+
+namespace cc {
+
+/** \class StackView cc/StackView
+  * \ingroup ui
+  * \brief Screen navigation stack
+  */
+class StackView final: public View
+{
+public:
+    /** Create a primordial stack view
+      */
+    StackView();
+
+    /** Create a new stack view and return a weak reference to itself
+      */
+    explicit StackView(Out<StackView> self);
+
+    /** Push a new screen onto the stack
+      */
+    StackView &push(const View &screen);
+
+    /** %Set easing for screen transition
+      */
+    StackView &easing(const EasingCurve &easing, double duration);
+
+    /** Remove the current screen from the stack
+      */
+    void pop();
+
+    /** Go to the first screen push onto the stack and remove all other screens thereafter
+      */
+    void home();
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

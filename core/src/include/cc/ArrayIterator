@@ -15,7 +15,7 @@ namespace cc {
 /** \class ArrayIterator cc/ArrayIterator
   * \brief %Array iterator
   * \tparam Container Container type
-  * \tparm Dir Direction (1 for forward iterator, -1 for backward iterator)
+  * \tparam Dir Direction (1 for forward iterator, -1 for backward iterator)
   */
 template<class Container, long Dir = 1>
 class ArrayIterator:

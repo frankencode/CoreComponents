@@ -58,6 +58,13 @@ public:
       */
     void write(char ch) { writeUInt8((uint8_t)ch); }
 
+    /** Write all characters of \a s
+      */
+    void write(const char *s)
+    {
+        for (const char *p = s; *p; ++p) write(*p);
+    }
+
     /** Write string \a s
       */
     void write(const Bytes &s);

@@ -44,13 +44,13 @@ public:
       * \param path File path pattern
       * \param mode Initial file permissions
       * \param placeHolder Place holder character in \a path to be replaced with random characters
-      * \return File path to the newly created file
+      * \return %File path to the newly created file
       */
     static String createUnique(const String &path, FileMode mode = FileMode::Default, char placeHolder = '#');
 
     /** Create a temporary file and return its path
       * \param mode Initial file permissions
-      * \return File path of the newly created file
+      * \return %File path of the newly created file
       */
     static String createTemp(FileMode mode = FileMode::Default);
 

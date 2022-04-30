@@ -11,6 +11,9 @@
 #include <cc/PlatformPlugin>
 #include <cc/PosGuard>
 #include <cc/InputControl>
+#include <cc/Process>
+#include <cc/ImageFile>
+#include <cc/stdio>
 
 namespace cc {
 
@@ -182,12 +185,21 @@ bool Application::State::feedWheelEvent(const Window &window, WheelEvent &event)
 
 bool Application::State::feedKeyEvent(const Window &window, KeyEvent &event)
 {
+    if (
+        event.scanCode() == ScanCode::Key_ScrollLock &&
+        event.action() == KeyAction::Pressed
+    ) {
+        takeScreenshot(window);
+        return true;
+    }
+
     if (focusControl()) {
         return focusControl().me().feedKeyEvent(event);
     }
 
     if (
         event.scanCode() == ScanCode::Key_Tab &&
+        event.action() == KeyAction::Pressed &&
         !(event.modifiers() & KeyModifier::Shift) &&
         !(event.modifiers() & KeyModifier::Alt) &&
         !(event.modifiers() & KeyModifier::Control)
@@ -236,6 +248,23 @@ bool Application::State::feedTextInputEvent(const String &text)
     }
 
     return false;
+}
+
+void Application::State::takeScreenshot(const Window &window)
+{
+    View view = window.view();
+
+    Image image{
+        static_cast<int>(std::ceil(view.width())),
+        static_cast<int>(std::ceil(view.height()))
+    };
+
+    String path = Format{"%%.bmp"}.arg(fixed(System::now(), 0));
+    view.renderTo(image);
+
+    ImageFile::save(path, image);
+
+    ferr() << "Written screenshot to file://" << Process::cwd() << "/" << path << nl;
 }
 
 Application::Application()

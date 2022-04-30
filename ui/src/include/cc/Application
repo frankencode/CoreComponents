@@ -105,6 +105,8 @@ protected:
 
         virtual int run() = 0;
 
+        void takeScreenshot(const Window &window);
+
         Property<Control> hoverControl;
         Property<Control> pressedControl;
         Property<Control> focusControl;
