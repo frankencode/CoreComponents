@@ -12,7 +12,7 @@
 
 namespace cc::color {
 
-/** \class Web cc/color/Web
+/** \class Web cc/colors/Web
   * \ingroup color
   * \brief CSS color palette
   */

@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class TextError cc/TextError
   * \ingroup strings
-  * \brief Text error
+  * \brief %Text error
   */
 class TextError: public Exception
 {

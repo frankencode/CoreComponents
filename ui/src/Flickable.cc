@@ -66,7 +66,7 @@ Flickable::State::State(const View &pane):
         }
 
         overwrittenControl_ = pane_.findControl(mapToChild(pane_, event.pos()));
-        if (overwrittenControl_) overwrittenControl_.me().pressedOverwrite(true);
+        if (overwrittenControl_) overwrittenControl_->pressedOverwrite(true);
 
        return true;
     });
@@ -74,7 +74,7 @@ Flickable::State::State(const View &pane):
     onPointerReleased([this](const PointerEvent &event)
     {
         if (overwrittenControl_) {
-            overwrittenControl_.me().pressedOverwrite(false);
+            overwrittenControl_->pressedOverwrite(false);
             overwrittenControl_ = Control{};
         }
 
@@ -341,7 +341,7 @@ void Flickable::State::carrierStopped()
 }
 
 Flickable::Flickable():
-    Control{onDemand<State>}
+    Organizer{onDemand<State>}
 {}
 
 } // namespace cc

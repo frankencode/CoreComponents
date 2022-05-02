@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Control>
+#include <cc/Organizer>
 #include <cc/Timer>
 #include <cc/Pane>
 
@@ -19,7 +19,7 @@ namespace cc {
   * \brief %Control with variable sized movable contents
   * \todo make the style plugin deliver the behavioral parameters for the flickable
   */
-class Flickable: public Control
+class Flickable: public Organizer
 {
 public:
     /** Create a primordial flickable
@@ -29,7 +29,7 @@ public:
     /** Create a new flickable
       */
     explicit Flickable(Out<Flickable> self):
-        Control{new State}
+        Organizer{new State}
     {
         self = weak<Flickable>();
     }
@@ -37,7 +37,7 @@ public:
     /** Create a new flickable of given size (\a width, \a height) and optionally with a custom \a pane
       */
     Flickable(double width, double height, const View &pane = Pane{}, Out<Flickable> self = None{}):
-        Control{new State{pane}}
+        Organizer{new State{pane}}
     {
         size(Size{width, height});
         self = weak<Flickable>();
@@ -46,7 +46,7 @@ public:
     /** Create a new flickable with a custom \a pane
       */
     explicit Flickable(const View &pane, Out<Flickable> self = None{}):
-        Control{new State{pane}}
+        Organizer{new State{pane}}
     {
         self = weak<Flickable>();
     }
@@ -70,7 +70,7 @@ public:
 protected:
     friend class Object;
 
-    struct State: public Control::State
+    struct State: public Organizer::State
     {
         State(const View &pane = Pane{});
 
@@ -137,11 +137,11 @@ protected:
     };
 
     explicit Flickable(State *newState):
-        Control{newState}
+        Organizer{newState}
     {}
 
     explicit Flickable(CreateState createState):
-        Control{createState}
+        Organizer{createState}
     {}
 
     State &me() { return View::me().as<State>(); }

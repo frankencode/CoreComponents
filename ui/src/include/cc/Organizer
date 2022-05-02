@@ -1,0 +1,40 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Control>
+
+namespace cc {
+
+/** \class Organizer cc/Organizer
+  * \ingroup ui
+  * \brief Controls that organize the layout of other controls
+  */
+class Organizer: public Control
+{
+public:
+    /** Create a null organizer
+      */
+    Organizer() = default;
+
+protected:
+    friend class Object;
+
+    struct State: public Control::State {};
+
+    explicit Organizer(State *newState):
+        Control{newState}
+    {}
+
+    explicit Organizer(CreateState onDemand):
+        Control{onDemand}
+    {}
+};
+
+} // namespace cc

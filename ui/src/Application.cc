@@ -120,10 +120,11 @@ bool Application::State::feedFingerEvent(const Window &window, FingerEvent &even
 
 bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
 {
-    Control topControl = window.findControl(window.view().mapToLocal(event.pos()));
+    Control topControl = window.findControl(event.pos());
 
-    if (topControl)
-        topControl.me().pointerPos = topControl.mapToLocal(event.pos());
+    if (topControl) {
+        topControl->pointerPos = topControl.mapToLocal(event.pos());
+    }
 
     if (event.action() == PointerAction::Moved)
     {
@@ -150,25 +151,27 @@ bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
 
     if (pressedControl())
     {
-        eaten = pressedControl().me().feedMouseEvent(event);
+        eaten = pressedControl()->feedMouseEvent(event);
 
         if (event.action() == PointerAction::Released)
         {
             PosGuard guard{event, pressedControl().mapToLocal(event.pos())};
 
             if (
-                pressedControl().me().onPointerClicked(event) ||
-                pressedControl().me().onMouseClicked(event)
-            )
+                pressedControl()->onPointerClicked(event) ||
+                pressedControl()->onMouseClicked(event)
+            ) {
                 eaten = true;
+            }
 
             pressedControl = Control{};
             captureMouse(false);
         }
     }
 
-    if (!eaten)
-        eaten = window.view().me().feedMouseEvent(event);
+    if (!eaten) {
+        eaten = window.view()->feedMouseEvent(event);
+    }
 
     cursorControl = topControl;
 

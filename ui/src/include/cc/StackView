@@ -23,17 +23,17 @@ public:
       */
     StackView();
 
-    /** Create a new stack view and return a weak reference to itself
+    /** Create a new stack view and return a weak reference to it
       */
     explicit StackView(Out<StackView> self);
 
+    /** Create a new stack view of given size and return a weak reference to it
+      */
+    StackView(double width, double height, Out<StackView> self = None{});
+
     /** Push a new screen onto the stack
       */
-    StackView &push(const View &screen);
-
-    /** %Set easing for screen transition
-      */
-    StackView &easing(const EasingCurve &easing, double duration);
+    StackView &push(View screen);
 
     /** Remove the current screen from the stack
       */
@@ -42,6 +42,12 @@ public:
     /** Go to the first screen push onto the stack and remove all other screens thereafter
       */
     void home();
+
+    /** %Set easing for screen transition
+      */
+    StackView &easing(const EasingCurve &easing, double duration);
+
+    const View &carrier() const;
 
 private:
     struct State;

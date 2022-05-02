@@ -380,9 +380,9 @@ public:
     View &layout(const Layout &newValue) { me().layout(newValue); return *this; } ///< %Set layout
 
     /** Capture a rendered image of this view (including its children) as rendered on the screen
-      * \param f Callback function to call when the screen capture is ready
+      * \param image %Output image (needs to be allocated by the caller)
       */
-    void renderTo(Image &image);
+    void renderTo(Image &image) const;
 
     ///@}
 
@@ -655,7 +655,7 @@ protected:
         void moveToTop(View child); ///< Make \a child visible above all its siblings
         void moveToBottom(View child); ///< Make \a child visible beneath all its siblings
 
-        Image image(); ///< Painting target
+        Image &image(); ///< Painting target
         void image(const Image &newValue) { image_ = newValue; } ///< %Set painting target
 
         View self() const; ///< Get a view from this state

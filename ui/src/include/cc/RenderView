@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/View>
+
+namespace cc {
+
+/** \class RenderView cc/RenderView
+  * \ingroup ui
+  * \brief Show dynamically rendered images
+  */
+class RenderView final: public View
+{
+public:
+    /** Create a primordial render view
+      */
+    RenderView();
+
+    /** Create a new render view and return a weak reference to it
+      */
+    RenderView(Out<RenderView> self);
+
+    /** Access rendered image to show
+      */
+    Image &image();
+
+    /** Manually show next image
+      */
+    void update();
+
+private:
+    struct State;
+
+    State &me();
+};
+
+} // namespace cc

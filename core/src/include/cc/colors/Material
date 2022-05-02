@@ -12,7 +12,7 @@
 
 namespace cc::color {
 
-/** \class Material cc/color/Material
+/** \class Material cc/colors/Material
   * \ingroup color
   * \brief The %Material %Design color palette
   */

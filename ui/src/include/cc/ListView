@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class ListView qh/ui/ListView
+/** \class ListView cc/ListView
   * \ingroup ui
   * \brief %List view
   * A ListView shows a vertically scrollable list of items of various dimensions.

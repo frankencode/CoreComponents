@@ -12,7 +12,7 @@
 
 namespace cc::color {
 
-/** \class Elementary cc/color/Elementary
+/** \class Elementary cc/colors/Elementary
   * \ingroup color
   * \brief %Color palette of %Elementary OS
   */

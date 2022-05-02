@@ -17,9 +17,11 @@ ImageView::State::State(const Image &initImage):
     size([this]{ return displayImage() ? displayImage().size() : Size{}; });
     paint([this]{
         Image source = displayImage();
-        if (!source.checkOpaque()) {
-            source = source.copy();
-            source.applyOver(paper());
+        if (paper().isOpaque()) {
+            if (!source.checkOpaque()) {
+                source = source.copy();
+                source.applyOver(paper());
+            }
         }
         image(source);
     });

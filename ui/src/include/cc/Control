@@ -26,7 +26,7 @@ public:
       */
     Control();
 
-    /** Create a new control and return a reference to itself
+    /** Create a new control and return a weak reference to it
       */
     explicit Control(Out<Control> self):
         View{new State}

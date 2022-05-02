@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Control>
+#include <cc/Organizer>
 
 namespace cc {
 
@@ -17,19 +17,19 @@ namespace cc {
   * \brief Area with dragable child views
   * \todo Create another related control MultiDragArea which supports multi-touch
   */
-class DragArea: public Control
+class DragArea: public Organizer
 {
 public:
     /** Create a primordial drag area
       */
     DragArea():
-        Control{onDemand<DragArea::State>}
+        Organizer{onDemand<DragArea::State>}
     {}
 
     /** Create a new drag area
       */
     explicit DragArea(Out<DragArea> self):
-        Control{new State}
+        Organizer{new State}
     {
         self = weak<DragArea>();
     }
@@ -37,7 +37,7 @@ public:
     /** Create a new drag area of given size (\a width, \a height)
       */
     DragArea(double width, double height):
-        Control{new State}
+        Organizer{new State}
     {
         size(Size{width, height});
     }
@@ -54,7 +54,7 @@ public:
     DragArea &dragInhibit(Definition<bool> &&f) { me().dragInhibit(std::move(f)); return *this; } ///< Define if dragging is disabled
 
 protected:
-    struct State: public Control::State
+    struct State: public Organizer::State
     {
         State();
 
@@ -71,11 +71,11 @@ protected:
     };
 
     explicit DragArea(CreateState *onDemand):
-        Control{onDemand}
+        Organizer{onDemand}
     {}
 
     explicit DragArea(State *newState):
-        Control{newState}
+        Organizer{newState}
     {}
 
     State &me() { return View::me().as<State>(); }

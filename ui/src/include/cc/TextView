@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class TextView qh/ui/TextView
+/** \class TextView cc/TextView
   * \ingroup ui
   * \brief Text view
   * A TextView shows a vertically scollable text.

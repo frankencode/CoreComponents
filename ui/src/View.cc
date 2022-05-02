@@ -11,6 +11,7 @@
 #include <cc/Window>
 #include <cc/Control>
 #include <cc/PosGuard>
+#include <cc/Organizer>
 #include <cc/DEBUG>
 
 namespace cc {
@@ -138,15 +139,15 @@ Control View::State::findControl(Point l) const
         View candidate = visibleChildren_.at(pos);
         Point lc = mapToChild(candidate, l);
         if (candidate.containsLocal(lc)) {
-            if (candidate.is<Control>()) {
+            if (candidate.is<Control>() && !candidate.is<Organizer>()) {
                 control = candidate.as<Control>();
-                if (control.delegate()) {
-                    while (control.delegate())
-                        control = control.delegate();
+                while (control.delegate()) {
+                    control = control.delegate();
                 }
             }
-            else
+            else {
                 control = candidate.findControl(lc);
+            }
             break;
         }
     }
@@ -267,14 +268,14 @@ cairo_surface_t *View::State::cairoSurface()
     return image().cairoSurface();
 }
 
-Image View::State::image()
+Image &View::State::image()
 {
     if (!image_ || (
         image_.width()  != std::ceil(size()[0]) ||
         image_.height() != std::ceil(size()[1])
-    ))
-        image_ = Image{int(std::ceil(size()[0])), int(std::ceil(size()[1]))};
-
+    )) {
+        image_ = Image{size()};
+    }
     return image_;
 }
 
@@ -482,7 +483,7 @@ Window View::window() const
     return me().window();
 }
 
-void View::renderTo(Image &image)
+void View::renderTo(Image &image) const
 {
     assert(hasWindow());
     if (hasWindow()) window().renderViewToImage(*this, image);
