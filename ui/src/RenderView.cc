@@ -12,6 +12,11 @@ namespace cc {
 
 struct RenderView::State final: public View::State
 {
+    State()
+    {
+        paper(Color::Red);
+    }
+
     bool isPainted() const override { return width() * height() > 0; }
     bool isStatic() const override { return false; }
     void update() { View::State::update(UpdateReason::Changed); }
@@ -34,6 +39,7 @@ Image &RenderView::image()
 
 void RenderView::update()
 {
+    // me().image().premultiply();
     me().update();
 }
 

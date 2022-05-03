@@ -23,7 +23,7 @@ struct Easing
     /** Setup easing behavior for a property
       * \param property %Property for which to ease value changes
       * \param curve %Easing curve to apply
-      * \param duration %Duration of the transition
+      * \param duration %Duration of the transition in seconds
       * \tparam T %Property value type
       */
     template<class T>

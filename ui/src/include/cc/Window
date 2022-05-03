@@ -145,6 +145,8 @@ protected:
 
     State &me() { return Object::me.as<State>(); }
     const State &me() const { return Object::me.as<State>(); }
+
+    State *operator->() { return &me(); }
 };
 
 } // namespace cc

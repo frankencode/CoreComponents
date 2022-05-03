@@ -21,16 +21,16 @@ View::State::State()
     opacity([this]{ return hasParent() ? parent().opacity() : 1.; });
 
     angle([this]{
-        return (hasParent() && parent().angle() != 0) ? parent().angle() : 0;
+        return (parent_() && parent_()->angle() != 0) ? parent_()->angle() : 0;
     });
 
     pivot([this]{
-        return (hasParent() && parent().angle() != 0) ? parent().pivot() - pos() : size() / 2;
+        return (parent_() && parent_()->angle() != 0) ? parent_()->pivot() - pos() : size() / 2;
     });
 
     pos.onChanged([this]{ update(UpdateReason::Moved); });
     angle.onChanged([this]{ update(UpdateReason::Moved); });
-    pivot.onChanged([this]{ update(UpdateReason::Moved); });
+    // pivot.onChanged([this]{ update(UpdateReason::Moved); }); // FIXME
     scale.onChanged([this]{ update(UpdateReason::Moved); });
     opacity.onChanged([this]{ update(UpdateReason::Faded); });
 
@@ -212,9 +212,9 @@ void View::State::insertAt(Locator target, View child)
 
 void View::State::insertChild(View child)
 {
-    child.me().parent_ = this;
+    child->parent_ = this;
     if (std::isnan(child.me().id_)) {
-        child.me().id_ = nextId();
+        child->id_ = nextId();
     }
     children_.insert(child);
     if (!visible()) {
@@ -225,6 +225,9 @@ void View::State::insertChild(View child)
     }
     childReady(&child);
     ++childrenCount;
+    /*if (hasWindow() && child.visible()) {
+        child->feedExposedEvent();
+    }*/
 }
 
 void View::State::removeChild(View child)
@@ -284,8 +287,17 @@ View View::State::self() const
     return alias<View>(this);
 }
 
+bool View::State::hasWindow() const
+{
+    // if (!parent_()) return window_();
+    // if (!window_()) return parent_()->window_();
+    return window_();
+}
+
+
 Window View::State::window() const
 {
+    // if (!window_() && parent_()) return parent_()->window();
     return window_() ? weak<Window>(window_()) : Window{};
 }
 
@@ -300,7 +312,7 @@ void View::State::update(UpdateReason reason)
 
     if (!visible() && reason != UpdateReason::Hidden) return;
 
-    window().me().addToFrame(UpdateRequest{reason, self()});
+    window()->addToFrame(UpdateRequest{reason, self()});
 }
 
 bool View::State::feedExposedEvent() const

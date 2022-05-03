@@ -8,6 +8,7 @@
 
 #include <cc/StackView>
 #include <cc/RenderView>
+#include <cc/DEBUG>
 
 namespace cc {
 
@@ -16,6 +17,8 @@ struct StackView::State: public View::State
     State(Size initialSize = Size{})
     {
         size(initialSize);
+
+        carrier_.touch();
 
         add(
             carrier_
@@ -34,6 +37,11 @@ struct StackView::State: public View::State
                     return size();
                 })
             )
+            /*.attach([this]{
+                CC_INSPECT(carrier_.size());
+                CC_INSPECT(carrier_.pos());
+                CC_INSPECT(screensCount());
+            })*/
         );
 
         attach([this]{
@@ -42,32 +50,42 @@ struct StackView::State: public View::State
         });
     }
 
-    int screensCount() const { return carrier_.count() - 1/*postmortem_*/; }
+    int screensCount() const { return carrier_.childrenCount() - 1/*postmortem_*/; }
 
     void settled() override
     {
-        carrier_.posEasing(Easing::Bezier{0.5, 0.0, 0.5, 1.0}, 0.2);
+        carrier_.posEasing(Easing::Linear, 1);
     }
 
     void push(View screen)
     {
-        int screenIndex = stack_.count();
+        int screenIndex = screensCount();
         carrier_.add(
             screen
             .pos([this,screenIndex]{ return Point{screenIndex * width(), 0}; })
             .size([this]{ return size(); })
         );
+        CC_INSPECT(screen.fullId());
         stack_.pushBack(screen);
+        // screen.update();
+        // screen.expose();
+        //screen.visible(false);
+        // screen.visible(true);
     }
 
     void pop()
     {
         const View &topView = stack_.last();
-        stack_.popBack();
         if (!postmortem_.visible()) postmortem_.visible(true);
+        // postmortem_.image().clear(topView.paper());
+        postmortem_.image().clear(basePaper());
         topView.renderTo(postmortem_.image());
+        // postmortem_.image().premultiply();
         postmortem_.update();
+        CC_INSPECT(carrier_.childrenCount());
         carrier_.remove(topView);
+        CC_INSPECT(carrier_.childrenCount());
+        stack_.popBack();
     }
 
     void home()

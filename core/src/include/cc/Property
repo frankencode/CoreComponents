@@ -209,7 +209,7 @@ public:
 
     /** Prefix decrement operator: Subtract 1 from the current value and return the new value
       */
-    Property &operator--() { return *this += 1; }
+    Property &operator--() { return *this -= 1; }
 
     /** Postfix increment operator: Add 1 to the current value and return the old value
       */
