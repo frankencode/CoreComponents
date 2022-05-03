@@ -36,7 +36,7 @@ Window::State::State(View view):
 {
     if (!view_.paper()) view_.paper([this]{ return theme().windowColor(); });
     view_->window_ = this;
-    // view_->settled();
+    view_->settled();
 
     display([this]{
         List<Display> displays = DisplayManager{}.displays();

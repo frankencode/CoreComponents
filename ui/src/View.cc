@@ -225,9 +225,9 @@ void View::State::insertChild(View child)
     }
     childReady(&child);
     ++childrenCount;
-    /*if (hasWindow() && child.visible()) {
+    if (hasWindow() && child.visible()) {
         child->feedExposedEvent();
-    }*/
+    }
 }
 
 void View::State::removeChild(View child)
@@ -289,15 +289,15 @@ View View::State::self() const
 
 bool View::State::hasWindow() const
 {
-    // if (!parent_()) return window_();
-    // if (!window_()) return parent_()->window_();
+    if (!parent_()) return window_();
+    if (!window_()) return parent_()->window_();
     return window_();
 }
 
 
 Window View::State::window() const
 {
-    // if (!window_() && parent_()) return parent_()->window();
+    if (!window_() && parent_()) return parent_()->window();
     return window_() ? weak<Window>(window_()) : Window{};
 }
 
