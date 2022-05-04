@@ -41,6 +41,10 @@ int main()
                                     stack.pop();
                                 })
                                 .add(Label{"Hello"}.centerInParent())
+                                .add(View{100, 100}.pos(10, 10).paper(Color::Red))
+                                .add(View{100, 100}.pos(120, 10).paper(Color::Green))
+                                .add(View{100, 100}.pos(230, 10).paper(Color::Blue))
+                                .add(View{100, 100}.pos(340, 10).paper(Color::Black))
                             );
                         })
                     );

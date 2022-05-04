@@ -47,10 +47,10 @@ void ImageFile::write(const Stream &stream, const Image &image)
           */
         sink.setEndian(ByteOrder::BigEndian);
     }
-    sink.writeUInt32(0x00FF0000u); // red mask
-    sink.writeUInt32(0x0000FF00u); // green mask
-    sink.writeUInt32(0x000000FFu); // blue mask
-    sink.writeUInt32(0xFF000000u); // alpha mask
+    sink.writeUInt32(0x0000FF00u); // red mask
+    sink.writeUInt32(0x00FF0000u); // green mask
+    sink.writeUInt32(0xFF000000u); // blue mask
+    sink.writeUInt32(0x000000FFu); // alpha mask
     if (sink.endian() != ByteOrder::LittleEndian) {
         sink.setEndian(ByteOrder::LittleEndian);
     }
@@ -97,14 +97,14 @@ Image ImageFile::map(const String &path)
 
     if (!(
         (
-            targetEndian == ByteOrder::LittleEndian &&
+            targetEndian == ByteOrder::BigEndian &&
             redMask   == 0x0000FF00u &&
             greenMask == 0x00FF0000u &&
             blueMask  == 0xFF000000u &&
             alphaMask == 0x000000FFu
         ) ||
         (
-            targetEndian == ByteOrder::BigEndian &&
+            targetEndian == ByteOrder::LittleEndian &&
             redMask   == 0x00FF0000u &&
             greenMask == 0x0000FF00u &&
             blueMask  == 0x000000FFu &&

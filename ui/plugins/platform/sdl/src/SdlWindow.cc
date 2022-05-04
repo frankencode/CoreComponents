@@ -253,7 +253,7 @@ void SdlWindow::State::renderViewToImage(const View &view, Image &image)
         SDL_RenderReadPixels(
             sdlRenderer_,
             &rect,
-            SDL_PIXELFORMAT_ARGB32,
+            SDL_PIXELFORMAT_ARGB8888,
             image.data().bytes(),
             image.pitch()
         ) != 0
@@ -289,11 +289,7 @@ void SdlWindow::State::updateTexture(SDL_Renderer *sdlRenderer, View view)
     if (!context.sdlTexture_) {
         context.sdlTexture_ = SDL_CreateTexture(
             sdlRenderer,
-            #ifdef SDL_PIXELFORMAT_ARGB32
-            SDL_PIXELFORMAT_ARGB32,
-            #else
             SDL_PIXELFORMAT_ARGB8888,
-            #endif
             viewState(view).isStatic() ? SDL_TEXTUREACCESS_STATIC : SDL_TEXTUREACCESS_STREAMING,
             image.width(),
             image.height()

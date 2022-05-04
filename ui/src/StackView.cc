@@ -54,7 +54,8 @@ struct StackView::State: public View::State
 
     void settled() override
     {
-        carrier_.posEasing(Easing::Linear, 1);
+        carrier_.posEasing(Easing::Bezier{0.5, 0.0, 0.5, 1.0}, 0.3);
+        // carrier_.posEasing(Easing::Linear, 0.2);
     }
 
     void push(View screen)
