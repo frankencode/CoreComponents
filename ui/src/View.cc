@@ -12,7 +12,6 @@
 #include <cc/Control>
 #include <cc/PosGuard>
 #include <cc/Organizer>
-#include <cc/DEBUG>
 
 namespace cc {
 
@@ -35,26 +34,25 @@ View::State::State()
     opacity.onChanged([this]{ update(UpdateReason::Faded); });
 
     visible.onChanged([this]{
-        for (View child: children_) child.me().visible = visible();
+        for (View child: children_) child->visible = visible();
 
         if (decoration()) {
-            decoration().visible(visible());
+            decoration()->visible = visible();
         }
 
         if (!visible()) {
             context_ = Object{};
             image_ = Image{};
             if (hasParent()) {
-                parent().me().visibleChildren_.remove(self());
+                parent()->visibleChildren_.remove(self());
             }
             update(UpdateReason::Hidden);
         }
         else {
             if (hasParent()) {
-                parent().me().visibleChildren_.insert(self());
+                parent()->visibleChildren_.insert(self());
             }
             paint();
-            if (decoration()) decoration()->paint();
         }
     });
 
@@ -66,11 +64,6 @@ View::State::State()
 
     paint.onChanged([this]{
         update(UpdateReason::Changed);
-    });
-
-    paint.restrict([this]{
-        paintTarget(this);
-        return true;
     });
 }
 
@@ -205,7 +198,7 @@ void View::State::insertAt(Locator target, View child)
             newId = (newId + sibling2.id()) / 2;
         else
             --newId;
-        child.me().id_ = newId;
+        child->id_ = newId;
     }
     insertChild(child);
 }
@@ -217,10 +210,7 @@ void View::State::insertChild(View child)
         child->id_ = nextId();
     }
     children_.insert(child);
-    if (!visible()) {
-        child.visible(false);
-    }
-    else if (child.visible()) {
+    if (child.visible()) {
         visibleChildren_.insert(child);
     }
     childReady(&child);
@@ -235,9 +225,10 @@ void View::State::removeChild(View child)
     children_.remove(child);
     if (child.visible()) {
         visibleChildren_.remove(child);
-        child.visible(false);
     }
-    child.me().id_ = 0;
+    Application{}.disengage(child);
+    child->parent_ = nullptr;
+    child->id_ = std::numeric_limits<double>::quiet_NaN();
     childDone(&child);
     --childrenCount;
 }
@@ -324,7 +315,7 @@ bool View::State::feedExposedEvent() const
 
     for (const View &child: visibleChildren_)
     {
-        if (child.me().feedExposedEvent())
+        if (child->feedExposedEvent())
             return true;
     }
 

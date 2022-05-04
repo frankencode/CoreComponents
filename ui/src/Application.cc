@@ -144,7 +144,7 @@ bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
         if (focusControl() != pressedControl())
             focusControl = Control{};
 
-        hoverControl = topControl;
+        if (topControl.hasParent()) hoverControl = topControl;
     }
 
     bool eaten = false;
@@ -173,7 +173,8 @@ bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
         eaten = window.view()->feedMouseEvent(event);
     }
 
-    cursorControl = topControl;
+    if (topControl.hasParent()) cursorControl = topControl;
+    else cursorControl = Control{};
 
     return eaten;
 }
@@ -265,6 +266,25 @@ void Application::State::takeScreenshot(const Window &window)
     ImageFile::save(path, image);
 
     ferr() << "Written screenshot to file://" << Process::cwd() << "/" << path << nl;
+}
+
+void Application::State::disengage(const View &view)
+{
+    if (hoverControl() == view) {
+        hoverControl(Control{});
+    }
+    if (pressedControl() == view) {
+        pressedControl(Control{});
+    }
+    if (focusControl() == view) {
+        focusControl(Control{});
+    }
+    if (cursorControl() == view) {
+        cursorControl(Control{});
+    }
+    if (focusControlSaved_ == view) {
+        focusControlSaved_ = Control{};
+    }
 }
 
 Application::Application()

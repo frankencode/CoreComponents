@@ -63,6 +63,7 @@ public:
 
 protected:
     friend class Window;
+    friend class View;
     friend class Control;
     friend class Flickable;
     friend class Cursor;
@@ -107,6 +108,8 @@ protected:
 
         void takeScreenshot(const Window &window);
 
+        void disengage(const View &view);
+
         Property<Control> hoverControl;
         Property<Control> pressedControl;
         Property<Control> focusControl;
@@ -132,8 +135,14 @@ protected:
         Singleton{state}
     {}
 
+    void hoverControl(const Control &control) { me().hoverControl(control); }
     void pressedControl(const Control &control) { me().pressedControl(control); }
     void focusControl(const Control &control) { me().focusControl(control); }
+
+    void disengage(const View &view)
+    {
+        me().disengage(view);
+    }
 
     State &me() { return Object::me.as<State>(); }
     const State &me() const { return Object::me.as<State>(); }

@@ -14,16 +14,6 @@ namespace cc {
 void Surface::State::polish()
 {}
 
-#ifndef NDEBUG
-Surface::State *Surface::paintTarget(Surface::State *newTarget)
-{
-    static State *target_ = nullptr;
-    State *targetSaved = target_;
-    target_ = newTarget;
-    return targetSaved;
-}
-#endif
-
 void Surface::nextPage(bool clear)
 {
     if (clear)

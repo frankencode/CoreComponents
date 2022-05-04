@@ -55,7 +55,6 @@ struct StackView::State: public View::State
     void settled() override
     {
         carrier_.posEasing(Easing::Bezier{0.5, 0.0, 0.5, 1.0}, 0.3);
-        // carrier_.posEasing(Easing::Linear, 0.2);
     }
 
     void push(View screen)
@@ -66,26 +65,17 @@ struct StackView::State: public View::State
             .pos([this,screenIndex]{ return Point{screenIndex * width(), 0}; })
             .size([this]{ return size(); })
         );
-        CC_INSPECT(screen.fullId());
         stack_.pushBack(screen);
-        // screen.update();
-        // screen.expose();
-        //screen.visible(false);
-        // screen.visible(true);
     }
 
     void pop()
     {
         const View &topView = stack_.last();
         if (!postmortem_.visible()) postmortem_.visible(true);
-        // postmortem_.image().clear(topView.paper());
         postmortem_.image().clear(basePaper());
         topView.renderTo(postmortem_.image());
-        // postmortem_.image().premultiply();
         postmortem_.update();
-        CC_INSPECT(carrier_.childrenCount());
         carrier_.remove(topView);
-        CC_INSPECT(carrier_.childrenCount());
         stack_.popBack();
     }
 

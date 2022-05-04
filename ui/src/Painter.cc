@@ -30,9 +30,6 @@ Painter::Painter(const Surface &surface):
 
 Painter::Painter(Surface::State *state)
 {
-    #ifndef NDEBUG
-    assert(Surface::paintTarget() == state);
-    #endif
     state->polish();
     cr_ = cairo_create(state->cairoSurface());
 }
