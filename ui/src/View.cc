@@ -17,7 +17,9 @@ namespace cc {
 
 View::State::State()
 {
-    opacity([this]{ return hasParent() ? parent().opacity() : 1.; });
+    visible([this]{ return parent_() ? parent_()->visible() : true; });
+
+    opacity([this]{ return parent_() ? parent_()->opacity() : 1.; });
 
     angle([this]{
         return (parent_() && parent_()->angle() != 0) ? parent_()->angle() : 0;
@@ -34,8 +36,6 @@ View::State::State()
     opacity.onChanged([this]{ update(UpdateReason::Faded); });
 
     visible.onChanged([this]{
-        for (View child: children_) child->visible = visible();
-
         if (decoration()) {
             decoration()->visible = visible();
         }
