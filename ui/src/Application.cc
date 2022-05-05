@@ -270,19 +270,19 @@ void Application::State::takeScreenshot(const Window &window)
 
 void Application::State::disengage(const View &view)
 {
-    if (hoverControl() == view) {
+    if (view.isParentOf(hoverControl())) {
         hoverControl(Control{});
     }
-    if (pressedControl() == view) {
+    if (view.isParentOf(pressedControl())) {
         pressedControl(Control{});
     }
-    if (focusControl() == view) {
+    if (view.isParentOf(focusControl())) {
         focusControl(Control{});
     }
-    if (cursorControl() == view) {
+    if (view.isParentOf(cursorControl())) {
         cursorControl(Control{});
     }
-    if (focusControlSaved_ == view) {
+    if (view.isParentOf(focusControlSaved_)) {
         focusControlSaved_ = Control{};
     }
 }

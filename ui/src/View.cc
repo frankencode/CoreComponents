@@ -92,26 +92,25 @@ double View::State::expandableWidth(double width) const
 
 Point View::State::mapToGlobal(Point l) const
 {
-    for (View h = self(); h.hasParent(); h = h.parent()) l += h.pos();
+    for (const View::State *h = this; h->parent_(); h = h->parent_()) l += h->pos();
     return l;
 }
 
 Point View::State::mapToLocal(Point g) const
 {
-    for (View h = self(); h.hasParent(); h = h.parent()) g -= h.pos();
+    for (const View::State *h = this; h->parent_(); h = h->parent_()) g -= h->pos();
     return g;
 }
 
 Point View::State::mapToParent(const View &parent, Point l) const
 {
-    for (View h = self(); h != parent && h.hasParent(); h = h.parent()) l += h.pos();
+    for (const View::State *h = this; h != &parent.me() && h->parent_(); h = h->parent_()) l += h->pos();
     return l;
 }
 
 Point View::State::mapToChild(const View &child, Point l) const
 {
-    View s = self();
-    for (View h = child; h != s && h.hasParent(); h = h.parent()) l -= h.pos();
+    for (const View::State *h = &child.me(); h != this && h->parent_(); h = h->parent_()) l -= h->pos();
     return l;
 }
 
@@ -167,9 +166,8 @@ bool View::State::laysInsideOf(const View &other, double margin) const
 
 Color View::State::basePaper() const
 {
-    for (View h = parent(); h; h = h.parent()) {
-        if (h.paper())
-            return h.paper();
+    for (const View::State *h = parent_(); h; h = h->parent_()) {
+        if (h->paper()) return h->paper();
     }
 
     return theme().windowColor();
@@ -231,6 +229,7 @@ void View::State::removeChild(View child)
     child->id_ = std::numeric_limits<double>::quiet_NaN();
     childDone(&child);
     --childrenCount;
+    Application{}.postEvent([child]() mutable {});
 }
 
 void View::State::moveToTop(View child)
@@ -275,7 +274,7 @@ Image &View::State::image()
 
 View View::State::self() const
 {
-    return alias<View>(this);
+    return Object::weak<View>(this);
 }
 
 bool View::State::hasWindow() const

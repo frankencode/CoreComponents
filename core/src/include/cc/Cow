@@ -64,6 +64,9 @@ public:
     {
         // printf("Cow::~Cow()\n");
         if (data) data->release();
+        #ifndef NDEBUG
+        data = nullptr;
+        #endif
     }
 
     /** Assign aggregate \a other

@@ -360,7 +360,7 @@ void SdlWindow::State::renderCascade(SDL_Renderer *sdlRenderer, View &view)
         SDL_RenderSetClipRect(sdlRenderer_, &clipRect);
     }
 
-    for (View child: view.visibleChildren())
+    for (View child: view.visibleChildren()) // FIXME: performance
         renderCascade(sdlRenderer, child);
 
     if (clip)

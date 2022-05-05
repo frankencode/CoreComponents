@@ -81,6 +81,13 @@ int main()
                         .onClicked([=]() mutable {
                             CC_INSPECT(i);
                             stack.push(screen);
+                            /*stack.push(
+                                Control{}
+                                .onClicked([=]() mutable {
+                                    stack.pop();
+                                })
+                                .paper("aliceblue")
+                            );*/
                         })
                     );
                 }
