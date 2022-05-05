@@ -137,18 +137,19 @@ public:
     {
         T *state = decode(state_);
         assert(state);
-        return *state_;
+        return *state;
     }
 
     /** Get access to the object state
       */
     const T &operator()() const
     {
-        assert(state_);
-        return *state_;
+        const T *state = decode(state_);
+        assert(state);
+        return *state;
     }
 
-    /** Check if this reference points to a non-default object state
+    /** Check if this reference points to a non-null object state
       */
     operator bool() const
     {
