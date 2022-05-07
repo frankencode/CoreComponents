@@ -34,7 +34,6 @@ int main()
     View screen;
 
     screen
-    .size(screenWidth, screenHeight)
     .add(
         Flickable{
             screenWidth, screenHeight - appBarHeight,
@@ -77,6 +76,7 @@ int main()
             )
             .add(LineEdit{"Country"})
         }
+        .size([&]{ return screen.size() - Size{0, appBarHeight}; })
         .pos(0, appBarHeight)
     )
     .add(
@@ -88,7 +88,7 @@ int main()
     return
         StackView{screenWidth, screenHeight, &stack}
         .push(
-            View{screenWidth, screenHeight}
+            View{}
             .add(
                 ListMenu{&menu}
                 .populate([=](auto target) mutable {
@@ -113,7 +113,7 @@ int main()
                 })
                 .clip(true)
                 .pos(0, appBarHeight)
-                .size(screenWidth, screenHeight - appBarHeight)
+                .size([=]{ return stack.size() - Size{0, appBarHeight}; })
             )
             .add(
                 AppBar{&appBar}
