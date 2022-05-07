@@ -19,6 +19,7 @@ namespace cc {
   * \ingroup ui
   * \brief 2-dimensional color matrix
   * \todo move internal state to implementation file
+  * \todo add support in SDL2 for premultiplied alpha (to match cairo;)
   */
 class Image: public Surface
 {
@@ -71,11 +72,11 @@ public:
 
     /** Get a reference to the \a i-th pixel
       */
-    Color &pixel(int i) { return me().data_.item<Color>(i); }
+    Color &pixel(long i) { return me().data_.item<Color>(i); }
 
     /** Get a constant reference to the \a i-th pixel
       */
-    const Color &pixel(int i) const { return me().data_.item<Color>(i); }
+    const Color &pixel(long i) const { return me().data_.item<Color>(i); }
 
     /** Number of pixels
       */
@@ -87,11 +88,11 @@ public:
 
     /** Convert the entire image from normal alpha to pre-multiplied alpha
       */
-    void premultiply();
+    void premultiply() { me().premultiply(); }
 
     /** Convert the entire image from pre-multiplied alpha to normal alpha
       */
-    void normalize();
+    void normalize() { me().normalize(); }
 
     /** Create a deep copy of this image
       */
@@ -140,7 +141,16 @@ private:
 
         cairo_surface_t *cairoSurface() override;
 
+        void finish() override;
+
         int pitch() const { return width_ * sizeof(Color); }
+
+        Color &pixel(long i) { return data_.item<Color>(i); }
+        const Color &pixel(long i) const { return data_.item<Color>(i); }
+        long count() const { return data_.count() / sizeof(Color); }
+
+        void premultiply();
+        void normalize();
 
         int width_ { 0 };
         int height_ { 0 };

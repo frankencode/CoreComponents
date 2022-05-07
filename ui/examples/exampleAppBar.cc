@@ -15,6 +15,7 @@ int main()
             AppBar{&appBar}
             .title("Hello, world!")
             .onDismissed([]{ ferr() << "Back!" << nl; })
+            // .onNavigate([]{ ferr() << "Navigate!" << nl; })
         )
         .run();
 }

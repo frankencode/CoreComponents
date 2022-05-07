@@ -309,8 +309,6 @@ void SdlWindow::State::updateTexture(SDL_Renderer *sdlRenderer, View view)
         }
     }
 
-    if (!viewState(view).isOpaque()) image.normalize();
-
     if (viewState(view).isStatic()) {
         if (SDL_UpdateTexture(context.sdlTexture_, 0, image.data(), image.pitch()) != 0)
             throw SdlPlatformError{};

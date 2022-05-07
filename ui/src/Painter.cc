@@ -28,10 +28,16 @@ Painter::Painter(const Surface &surface):
     Painter{&const_cast<Surface &>(surface).me()}
 {}
 
-Painter::Painter(Surface::State *state)
+Painter::Painter(Surface::State *state):
+    state_{state}
 {
-    state->polish();
+    state_->polish();
     cr_ = cairo_create(state->cairoSurface());
+}
+
+Painter::~Painter()
+{
+    state_->finish();
 }
 
 Painter &Painter::save()

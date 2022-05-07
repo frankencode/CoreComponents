@@ -48,6 +48,7 @@ protected:
     {
         virtual cairo_surface_t *cairoSurface() = 0;
         virtual void polish();
+        virtual void finish();
     };
 
     explicit Surface(State *newState):

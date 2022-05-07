@@ -15,9 +15,9 @@ int main()
         .centerInParent()
         .decoration(
             Shadow{}
-            .color(0x80000000u) //! \todo FIXME: 0x80008090
-            .blurRadius(10)
-            .offset({0, 5})
+            .color(0x80004048)
+            .blurRadius(8)
+            .offset({0, 8})
         )
     )
     .run();

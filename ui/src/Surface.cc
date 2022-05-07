@@ -14,6 +14,9 @@ namespace cc {
 void Surface::State::polish()
 {}
 
+void Surface::State::finish()
+{}
+
 void Surface::nextPage(bool clear)
 {
     if (clear)

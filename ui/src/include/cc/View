@@ -417,21 +417,17 @@ public:
     Point centerLeft () const { return pos() + Step{0, size()[1] / 2}; } ///< Get this view's center-left point
     Point centerRight() const { return pos() + Step{size()[0], size()[1] / 2}; } ///< Get this view's center-right point
 
-    View &topLeft    (Definition<Point> &&a) { pos(std::move(a));                                                               return *this; } ///< %Anchor the top-left corner to \a a
-    View &topRight   (Definition<Point> &&a) { pos([self = me(), a]{ return a() - Step{self.size()[0], 0};                  }); return *this; } ///< %Anchor the top-right corner to \a a
-    View &bottomLeft (Definition<Point> &&a) { pos([self = me(), a]{ return a() - Step{0, self.size()[1]};                  }); return *this; } ///< %Anchor the bottom-left corner to \a a
-    View &bottomRight(Definition<Point> &&a) { pos([self = me(), a]{ return a() - self.size();                              }); return *this; } ///< %Anchor the bottom-right corner to \a a
-    View &centerLeft (Definition<Point> &&a) { pos([self = me(), a]{ return a() - Step{0, self.size()[1] / 2};              }); return *this; } ///< %Anchor the center-left to \a a
-    View &centerRight(Definition<Point> &&a) { pos([self = me(), a]{ return a() - Step{self.size()[0], self.size()[1] / 2}; }); return *this; } ///< %Anchor the center-right to \a a
-    View &center     (Definition<Point> &&a) { pos([self = me(), a]{ return a() - self.size() / 2;                          }); return *this; } ///< %Anchor the center to \a a
+    View &topLeft    (Definition<Point> &&a) { pos(std::move(a)); return *this; } ///< %Anchor the top-left corner to \a a
+    View &topRight   (Definition<Point> &&a) { me().topRight(std::move(a)); return *this; } ///< %Anchor the top-right corner to \a a
+    View &bottomLeft (Definition<Point> &&a) { me().bottomLeft(std::move(a)); return *this; } ///< %Anchor the bottom-left corner to \a a
+    View &bottomRight(Definition<Point> &&a) { me().bottomRight(std::move(a)); return *this; } ///< %Anchor the bottom-right corner to \a a
+    View &centerLeft (Definition<Point> &&a) { me().centerLeft(std::move(a)); return *this; } ///< %Anchor the center-left to \a a
+    View &centerRight(Definition<Point> &&a) { me().centerRight(std::move(a)); return *this; } ///< %Anchor the center-right to \a a
+    View &center     (Definition<Point> &&a) { me().center(std::move(a)); return *this; } ///< %Anchor the center to \a a
 
     /** Anchor this view's center to its parent's center
       */
-    View &centerInParent()
-    {
-        pos([self = me()]{ return self.parent() ? (self.parent().size() - self.size()) / 2 : Point{}; });
-        return *this;
-    }
+    View &centerInParent() { me().centerInParent(); return *this; }
 
     ///@}
 
@@ -614,6 +610,21 @@ protected:
         Layout layout() const { return layout_(); } ///< Get the layout
         double expandableWidth(double width) const; ///< Get the expandable width of this view within its parent layout
 
+        void topLeft    (Definition<Point> &&a) { pos(std::move(a));                                              } ///< \copydoc View::topLeft()
+        void topRight   (Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], 0};             }); } ///< \copydoc View::topRight()
+        void bottomLeft (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1]};             }); } ///< \copydoc View::bottomLeft()
+        void bottomRight(Definition<Point> &&a) { pos([this, a]{ return a() - size();                         }); } ///< \copydoc View::bottomRight()
+        void centerLeft (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1] / 2};         }); } ///< \copydoc View::centerLeft()
+        void centerRight(Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], size()[1] / 2}; }); } ///< \copydoc View::centerRight()
+        void center     (Definition<Point> &&a) { pos([this, a]{ return a() - size() / 2;                     }); } ///< \copydoc View::center()
+
+        /** \copydoc View::centerInParent()
+          */
+        void centerInParent()
+        {
+            pos([this]{ return hasParent() ? (parent().size() - size()) / 2 : Point{}; });
+        }
+
         /** %Set the layout
           */
         void layout(const Layout &newValue)
@@ -639,6 +650,7 @@ protected:
         virtual bool isOpaque() const { return paper().isOpaque(); } ///< Tells the graphics engine if all pixels of this view are fully opaque
         virtual bool isPainted() const { return paper().isValid() && size()[0] > 0 && size()[1] > 0; } ///< Tells the graphics engine if this view has visible pixels
         virtual bool isStatic() const { return true; } ///< Tells the graphics engine if this view is static (i.e. is not changing with each frame)
+        virtual bool isPremultiplied() const { return !isOpaque(); } ///< Tells the underlying image contains a color tuple with premultiplied alpha
 
         Color basePaper() const; ///< %Search upwards in the view hierarchy for the first valid background color
 

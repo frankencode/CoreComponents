@@ -19,6 +19,10 @@ namespace cc {
 class AppBar final: public View
 {
 public:
+    /** Get the default application bar height
+      */
+    static double height();
+
     /** Create a primordial top bar
       */
     AppBar();

@@ -5,7 +5,7 @@ int main()
     using namespace cc;
 
     return
-        View{sp(640), sp(480)}
+        View{sp(500), sp(500)}
         .add(
             SwitchControl{}
             .centerInParent()

@@ -40,14 +40,13 @@ struct Shadow::State final: public View::State
             image_.clear(Color::Transparent);
             int r = std::round(blurRadius());
             parent_()->image().copyToXy(&image_, r, r);
-            if (!parent_()->isOpaque()) image_.normalize();
             image_.shadowBlur(r, color());
-            image_.premultiply();
         });
     }
 
     bool isOpaque() const override { return false; }
     bool isPainted() const override { return true; }
+    bool isPremultiplied() const override { return false; }
 
     Property<Step> offset;
     Property<double> blurRadius { sp(5) };

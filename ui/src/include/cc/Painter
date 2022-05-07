@@ -41,6 +41,8 @@ public:
       */
     explicit Painter(Surface::State *state);
 
+    ~Painter();
+
     Painter &save(); ///< Save painter state to the top of the state stack
     Painter &restore(); ///< Restore painter state from the top of the state stack
 
@@ -157,6 +159,7 @@ private:
     void setLineDash(const Array<double> &pattern, double offset = 0); ///< %Set line dash pattern
 
     cairo_t *cr_;
+    Surface::State *state_;
 };
 
 /** \class PainterError cc/Painter

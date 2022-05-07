@@ -108,11 +108,11 @@ struct ListMenu::State final: public Flickable::State
         Pane pane = Flickable::State::pane().as<Pane>();
 
         pane.me().leadSpace([this]{
-            return header() ? header().height() : gu(2);
+            return header() ? header().height() : 0;
         });
 
         pane.me().tailSpace([this]{
-            return footer() ? footer().height() : gu(2);
+            return footer() ? footer().height() : 0;
         });
     }
 

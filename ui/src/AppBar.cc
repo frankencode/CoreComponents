@@ -25,10 +25,10 @@ struct AppBar::State final: public View::State
             .text([this]{ return title(); })
             .font(sp(20))
             .color([this]{ return theme().appBarTextColor(); })
-            .baselineStart([this]{
+            .centerLeft([this]{
                 return Point{
                     showNavButton * (sp(16) + sp(24)) + sp(32),
-                    height() - sp(20)
+                    sp(28)
                 };
             })
         );
@@ -92,6 +92,11 @@ struct AppBar::State final: public View::State
     Trigger onNavButtonClicked;
     Control navButton_;
 };
+
+double AppBar::height()
+{
+    return sp(56);
+}
 
 AppBar::AppBar():
     View{onDemand<State>}

@@ -30,23 +30,32 @@ cairo_surface_t *Image::State::cairoSurface()
     return cairoSurface_;
 }
 
+void Image::State::finish()
+{
+    // normalize();
+}
+
+void Image::State::premultiply()
+{
+    const long n = count();
+    Color *p = &pixel(0);
+    for (long i = 0; i < n; ++i) {
+        p[i].premultiply();
+    }
+}
+
+void Image::State::normalize()
+{
+    const long n = count();
+    Color *p = &pixel(0);
+    for (long i = 0; i < n; ++i) {
+        p[i].normalize();
+    }
+}
+
 void Image::clear(Color c)
 {
     std::fill_n(&pixel(0), count(), c);
-}
-
-void Image::premultiply()
-{
-    const long n = count();
-    for (long i = 0; i < n; ++i)
-        pixel(i).premultiply();
-}
-
-void Image::normalize()
-{
-    const long n = count();
-    for (long i = 0; i < n; ++i)
-        pixel(i).normalize();
 }
 
 void Image::copyToXy(Out<Image> target, int x, int y) const
