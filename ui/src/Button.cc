@@ -314,13 +314,13 @@ Button &Button::preferredHeight(Definition<double> &&f)
 
 Button &Button::decorate(const View &newValue)
 {
-    me().box_.decorate(newValue);
+    me().box_.decoration(newValue);
     return *this;
 }
 
 Button &Button::decorate(Definition<View> &&f)
 {
-    me().box_.decorate(std::move(f));
+    me().box_.decoration(std::move(f));
     return *this;
 }
 

@@ -20,9 +20,12 @@ struct MaterialDark::State: public Theme::State
     Color alertColor() const override { return Material::RedA400; }
 
     Color statusBarColor() const override { return Material::Black; }
-    Color appBarColor() const override { return Material::Grey900; }
     Color windowColor() const override { return 0x303030; }
     Color popupColor() const override { return Material::Grey800; }
+
+    Color appBarColor(bool pressed) const override { return pressed ? primaryColor() : primaryColor().lighter(10); }
+    Color appBarTextColor() const override { return Color::White; }
+    Color appBarShadowColor() const override { return 0xAFFFFFFu; }
 
     Color titleTextColor() const override { return Color::White; }
     Color focusTextColor() const override { return primaryColor(); }

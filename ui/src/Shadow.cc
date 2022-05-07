@@ -12,7 +12,7 @@
 
 namespace cc {
 
-struct Shadow::State: public View::State
+struct Shadow::State final: public View::State
 {
     State()
     {
@@ -32,14 +32,17 @@ struct Shadow::State: public View::State
             return parent_()->size() + Size{d, d};
         });
 
+        size.onChanged([this]{ image(); });
+
         paint([this]{
             if (!parent_()) return;
-            Image target = image();
-            target.clear(Color::Transparent);
+            if (!image_) return;
+            image_.clear(Color::Transparent);
             int r = std::round(blurRadius());
-            parent_()->image().copyToXy(&target, r, r);
-            target.shadowBlur(r, color());
-            target.premultiply();
+            parent_()->image().copyToXy(&image_, r, r);
+            if (!parent_()->isOpaque()) image_.normalize();
+            image_.shadowBlur(r, color());
+            image_.premultiply();
         });
     }
 
@@ -48,7 +51,7 @@ struct Shadow::State: public View::State
 
     Property<Step> offset;
     Property<double> blurRadius { sp(5) };
-    Property<Color> color { 0x80000000 };
+    Property<Color> color { 0x80000000u };
 };
 
 Shadow::Shadow():

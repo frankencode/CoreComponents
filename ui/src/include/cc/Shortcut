@@ -1,0 +1,74 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/keyboard>
+
+namespace cc {
+
+/** \class Shortcut cc/Shortcut
+  * \ingroup ui
+  * \brief Keyboard shortcut
+  */
+class Shortcut final: public Object
+{
+public:
+    /** Create a null shortcut
+      */
+    Shortcut() = default;
+
+    /** Create a new shortcut
+      */
+    Shortcut(KeyCode key, KeyModifier modifier = KeyModifier::None):
+        Object{new State{key, modifier}}
+    {}
+
+    /** Device independent key code
+      */
+    KeyCode key() const { return me().key_; }
+
+    /** Keyboard modifiers
+      */
+    KeyModifier modifier() const { return me().modifier_; }
+
+    /** Equals-to operator
+      */
+    bool operator==(const Shortcut &other) const
+    {
+        return
+            key() == other.key() &&
+            modifier() == other.modifier();
+    }
+
+    /** Lower-than operator
+      */
+    bool operator<(const Shortcut &other) const
+    {
+        return
+            (key() < other.key()) ||
+            (key() == other.key() && modifier() < other.modifier());
+    }
+
+private:
+    struct State final: public Object::State
+    {
+        State(KeyCode key, KeyModifier modifier):
+            key_{key},
+            modifier_{modifier}
+        {}
+
+
+        KeyCode key_;
+        KeyModifier modifier_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

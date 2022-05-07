@@ -52,7 +52,7 @@ ElevatedButton::State::State()
             .pos([this]{ return Point{sp(20) + (leading() ? leading().width() : 0) + sp(10), sp(20) - label_.height() / 2}; })
         )
         .size([this]{ return size(); })
-        .decorate(
+        .decoration(
             Shadow{}
             .color([this]{ return theme().elevatedButtonShadowColor(); })
             .offset(Step{0, sp(2)})

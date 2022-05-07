@@ -84,7 +84,7 @@ struct SliderControl::State: public InputControl::State
                 .radius([this]{ return knobRadius(); })
                 .size([this]{ return Size{2 * knobRadius()}; })
                 .centerInParent()
-                .decorate(
+                .decoration(
                     Shadow{}
                     .color([this]{ return theme().sliderKnobShadowColor(); })
                     .offset(Step{0, sp(2)})

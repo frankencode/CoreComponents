@@ -60,9 +60,7 @@ class ListMenu::Pane final: public View
                     for (long i = 0; i < visibleChildren_.count();) {
                         const View &child = visibleChildren_.at(i);
                         if (child.y() + hi < y0 || y1 <= child.y())
-                            visibleChildren_.modifyAt(i, [](View &child){
-                                child.visible(false);
-                            });
+                            const_cast<View &>(child).visible(false);
                         else
                             ++i;
                     }

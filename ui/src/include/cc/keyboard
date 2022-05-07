@@ -24,7 +24,7 @@ namespace cc {
   * The list of scan codes is based on SDL2/SDL_scancode.h.
   */
 enum class ScanCode: int32_t {
-    Unknown                  = 0,
+    None                     = 0,
     Key_A                    = 4,
     Key_B                    = 5,
     Key_C                    = 6,
@@ -281,7 +281,7 @@ String str(ScanCode scanCode);
 /** Hardware independent key code
   */
 enum class KeyCode: int32_t {
-    Unknown                  = 0,
+    None                     = 0,
     Key_Return               = '\r',
     Key_Escape               = '\033',
     Key_Backspace            = '\b',

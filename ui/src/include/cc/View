@@ -162,8 +162,8 @@ public:
     View &scaleEasing(const EasingCurve &easing, double duration) { Easing{me().scale, easing, duration}; return *this; } ///< %Set easing on scale
 
     View decoration() const { return me().decoration(); } ///< Get decoration
-    View &decorate(const View &newValue) { me().decoration(newValue); return *this; } ///< %Set decoration \see Shadow
-    View &decorate(Definition<View> &&f) { me().decoration(std::move(f)); return *this; } ///< Define decoration \see Shadow
+    View &decoration(const View &newValue) { me().decoration(newValue); return *this; } ///< %Set decoration \see Shadow
+    View &decoration(Definition<View> &&f) { me().decoration(std::move(f)); return *this; } ///< Define decoration \see Shadow
 
     Size preferredSize() const { return me().preferredSize(); } ///< Get preferred size
     Size minSize() const { return me().minSize(); } ///< Get minimal size

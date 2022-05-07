@@ -63,6 +63,7 @@ View::State::State()
     paint([this]{ if (isPainted()) polish(); });
 
     paint.onChanged([this]{
+        if (decoration()) decoration()->paint(); //! fixme: decoration is also painted when its parent size changes
         update(UpdateReason::Changed);
     });
 }

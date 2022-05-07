@@ -25,9 +25,12 @@ public:
     Color secondaryColor() const { return me().secondaryColor(); } ///< Secondary application color
     Color alertColor() const { return me().alertColor(); } ///< %Warning/error color
     Color statusBarColor() const { return me().statusBarColor(); } ///< Status bar background color
-    Color appBarColor() const { return me().appBarColor(); } ///< %Application bar background color
     Color windowColor() const { return me().windowColor(); } ///< %Window background color
     Color popupColor() const { return me().popupColor(); } ///< %Popup window background color
+
+    Color appBarColor(bool pressed = false) const { return me().appBarColor(pressed); } ///< Application bar background color
+    Color appBarTextColor() const { return me().appBarTextColor(); } ///< Application bar foreground color
+    Color appBarShadowColor() const { return me().appBarShadowColor(); } ///< Color of the drop shadow under the application bar
 
     Color titleTextColor() const { return me().titleTextColor(); } ///< %Title text color
     Color focusTextColor() const { return me().focusTextColor(); } ///< %Text color for an item with active input focus
@@ -87,9 +90,12 @@ protected:
         virtual Color alertColor() const = 0;
 
         virtual Color statusBarColor() const = 0;
-        virtual Color appBarColor() const = 0;
         virtual Color windowColor() const = 0;
         virtual Color popupColor() const = 0;
+
+        virtual Color appBarColor(bool pressed) const = 0;
+        virtual Color appBarTextColor() const { return titleTextColor(); }
+        virtual Color appBarShadowColor() const = 0;
 
         virtual Color titleTextColor() const = 0;
         virtual Color focusTextColor() const = 0;

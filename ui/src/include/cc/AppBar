@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/View>
+
+namespace cc {
+
+/** \class AppBar cc/AppBar
+  * \ingroup ui
+  * \brief Application title and navigation bar
+  */
+class AppBar final: public View
+{
+public:
+    /** Create a primordial top bar
+      */
+    AppBar();
+
+    /** Create a new top bar and return a weak reference to it
+      */
+    explicit AppBar(Out<AppBar> self);
+
+    String title() const; ///< Get page title
+    AppBar &title(const String &newValue); ///< Set page title
+    AppBar &title(Definition<String> &&f); ///< Define page title
+
+    /** Register function to call when user requests to navigate the application
+      */
+    AppBar &onNavigate(Call<void()> &&f);
+
+    /** Register function to call when user requests to leave screen
+      */
+    AppBar &onDismissed(Call<void()> &&f);
+
+protected:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc
