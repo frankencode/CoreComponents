@@ -173,8 +173,6 @@ bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
         eaten = window.view()->feedMouseEvent(event);
     }
 
-    if (topControl && !topControl.hasWindow()) topControl = Control{};
-
     cursorControl = topControl;
 
     return eaten;

@@ -233,7 +233,6 @@ void View::State::removeChild(View child)
         }
     );
     child->parent_ = nullptr;
-    child->window_ = nullptr;
     child->id_ = std::numeric_limits<double>::quiet_NaN();
     childDone(&child);
     --childrenCount;
