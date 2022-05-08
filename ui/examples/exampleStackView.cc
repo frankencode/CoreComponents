@@ -83,7 +83,8 @@ int main()
         AppBar{}
         .title("Edit user")
         .onDismissed([&]{ stack.pop(); })
-    );
+    )
+    .onEndOfLife([]{ CC_DEBUG << "FIN.2" << nl; });
 
     return
         StackView{screenWidth, screenHeight, &stack}
@@ -97,15 +98,23 @@ int main()
                             ListItem{}
                             .icon(Picture{Ideographic::AccessPoint, 28})
                             .text(Format{"User %%"}.arg(i))
-                            .onClicked([=]() mutable {
+                            .onClicked([=]() mutable { // FIXME: [stack, i, &screen]
                                 CC_INSPECT(i);
                                 stack.push(screen);
-                                /*stack.push(
-                                    Control{}
-                                    .onClicked([=]() mutable {
+                                /*stack.push( //! \todo resolve issue with this screen, clicking on the red square causes issues
+                                    View{}
+                                    .add(
+                                        Control{}
+                                        .pos(20, 20)
+                                        .size(100, 100)
+                                        .paper("darkred")
+                                        .onEndOfLife([]{ CC_DEBUG << "FIN.1.2" << nl; })
+                                    )
+                                    .onPointerReleased([=](auto) mutable{
                                         stack.pop();
+                                        return true;
                                     })
-                                    .paper("aliceblue")
+                                    .onEndOfLife([]{ CC_DEBUG << "FIN.1" << nl; })
                                 );*/
                             })
                         );

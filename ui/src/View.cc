@@ -63,7 +63,7 @@ View::State::State()
     paint([this]{ if (isPainted()) polish(); });
 
     paint.onChanged([this]{
-        if (isPremultiplied() && image_) image_.normalize();
+        if (isPremultiplied() && isPainted() && image_) image_.normalize();
         if (decoration()) decoration()->paint();
         update(UpdateReason::Changed);
     });
@@ -150,9 +150,9 @@ Control View::State::findControl(Point l) const
 
 bool View::State::isParentOf(const View &other) const
 {
-    View s = self();
-    for (View h = other; h; h = h.parent()) {
-        if (h == s) return true;
+    if (!other) return false;
+    for (const View::State *h = &other.me(); h; h = h->parent_()) {
+        if (h == this) return true;
     }
     return false;
 }
@@ -226,12 +226,17 @@ void View::State::removeChild(View child)
     if (child.visible()) {
         visibleChildren_.remove(child);
     }
-    Application{}.disengage(child);
+    Application{}.postEvent(
+        [child]() mutable {
+            Application{}.disengage(child);
+            child = Control{};
+        }
+    );
     child->parent_ = nullptr;
+    child->window_ = nullptr;
     child->id_ = std::numeric_limits<double>::quiet_NaN();
     childDone(&child);
     --childrenCount;
-    Application{}.postEvent([child]() mutable {});
 }
 
 void View::State::moveToTop(View child)
@@ -240,7 +245,7 @@ void View::State::moveToTop(View child)
     {
         child.visible(false);
         children_.remove(child);
-        child.me().id_ = children_.max().id() + 1;
+        child->id_ = children_.max().id() + 1;
         children_.insert(child);
         child.visible(true);
     }
@@ -252,7 +257,7 @@ void View::State::moveToBottom(View child)
     {
         child.visible(false);
         children_.remove(child);
-        child.me().id_ = children_.min().id() - 1;
+        child->id_ = children_.min().id() - 1;
         children_.insert(child);
         child.visible(true);
     }
@@ -276,7 +281,7 @@ Image &View::State::image()
 
 View View::State::self() const
 {
-    return Object::weak<View>(this);
+    return Object::alias<View>(this);
 }
 
 bool View::State::hasWindow() const
@@ -290,7 +295,7 @@ bool View::State::hasWindow() const
 Window View::State::window() const
 {
     if (!window_() && parent_()) return parent_()->window();
-    return window_() ? weak<Window>(window_()) : Window{};
+    return window_() ? Object::weak<Window>(window_()) : Window{};
 }
 
 bool View::State::isHandheld() const

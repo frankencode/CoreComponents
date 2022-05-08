@@ -311,7 +311,11 @@ public:
 
     /** Check if this view is parent of \a other
       */
-    bool isParentOf(const View &other) const { return me().isParentOf(other); }
+    bool isParentOf(const View &other) const
+    {
+        if (isNull()) return false;
+        return me().isParentOf(other);
+    }
 
     /** Check if this view is fully visible inside \a other with given surrounding \a margin
       */

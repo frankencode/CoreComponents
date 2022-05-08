@@ -11,37 +11,15 @@
 
 namespace cc {
 
-Control::Control():
-    View{createState}
-{}
-
-Control &Control::focus(bool newValue)
-{
-    if (focus() != newValue)
-    {
-        if (delegate()) {
-            delegate().focus(newValue);
-        }
-        else {
-            if (newValue) me().grabFocus();
-            else me().releaseFocus();
-        }
-    }
-
-    return *this;
-}
-
-Control Control::delegate() const
-{
-    return me().delegate();
-}
-
 Control::State::State()
 {
     hover([this]{ return isParentOf(Application{}.hoverControl()); });
     pressed([this]{ return pressedOverwrite() || isParentOf(Application{}.pressedControl()); });
     focus([this]{ return isParentOf(Application{}.focusControl()) && window() == Application{}.focusWindow(); });
 }
+
+Control::State::~State()
+{}
 
 void Control::State::grabFocus()
 {
@@ -85,5 +63,30 @@ void Control::State::onTextEdited(const String &text, int start, int length)
 
 void Control::State::onTextInput(const String &text)
 {}
+
+Control::Control():
+    View{createState}
+{}
+
+Control &Control::focus(bool newValue)
+{
+    if (focus() != newValue)
+    {
+        if (delegate()) {
+            delegate().focus(newValue);
+        }
+        else {
+            if (newValue) me().grabFocus();
+            else me().releaseFocus();
+        }
+    }
+
+    return *this;
+}
+
+Control Control::delegate() const
+{
+    return me().delegate();
+}
 
 } // namespace cc

@@ -12,7 +12,7 @@
 
 namespace cc {
 
-struct StackView::State: public View::State
+struct StackView::State final: public View::State
 {
     State(Size initialSize = Size{})
     {
@@ -70,13 +70,14 @@ struct StackView::State: public View::State
 
     void pop()
     {
-        const View &topView = stack_.last();
+        View topView = stack_.last();
         if (!postmortem_.visible()) postmortem_.visible(true);
         postmortem_.image().clear(basePaper());
         topView.renderTo(postmortem_.image());
         postmortem_.update();
         carrier_.remove(topView);
         stack_.popBack();
+        CC_INSPECT(topView.useCount());
     }
 
     void home()

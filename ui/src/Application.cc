@@ -141,10 +141,10 @@ bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
     }
     else if (event.action() == PointerAction::Released)
     {
-        if (focusControl() != pressedControl())
+        if (focusControl() != pressedControl()) {
             focusControl = Control{};
-
-        if (topControl.hasParent()) hoverControl = topControl;
+        }
+        hoverControl = topControl;
     }
 
     bool eaten = false;
@@ -173,8 +173,9 @@ bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
         eaten = window.view()->feedMouseEvent(event);
     }
 
-    if (topControl.hasParent()) cursorControl = topControl;
-    else cursorControl = Control{};
+    if (topControl && !topControl.hasWindow()) topControl = Control{};
+
+    cursorControl = topControl;
 
     return eaten;
 }

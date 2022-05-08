@@ -32,15 +32,14 @@ struct Shadow::State final: public View::State
             return parent_()->size() + Size{d, d};
         });
 
-        size.onChanged([this]{ image(); });
-
         paint([this]{
             if (!parent_()) return;
-            if (!image_) return;
-            image_.clear(Color::Transparent);
+            Image target = image();
+            if (!target) return;
+            target.clear(Color::Transparent);
             int r = std::round(blurRadius());
-            parent_()->image().copyToXy(&image_, r, r);
-            image_.shadowBlur(r, color());
+            parent_()->image().copyToXy(&target, r, r);
+            target.shadowBlur(r, color());
         });
     }
 

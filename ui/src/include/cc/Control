@@ -87,6 +87,8 @@ protected:
     struct State: public View::State
     {
         State();
+        ~State();
+
         void grabFocus();
         void releaseFocus();
 
@@ -101,7 +103,7 @@ protected:
         void onClicked(Call<void()> &&f) ///< \copydoc Control::onClicked()
         {
             onPointerClicked(
-                [=](const PointerEvent &){ f(); return true; }
+                [f](const PointerEvent &){ f(); return true; }
             );
         }
 
