@@ -21,11 +21,11 @@ using EasingCurve = std::function<double(double)>;
   * \todo specialize for Color
   */
 template<class T>
-class Transition: public Object, private PropertyMutator<T>
+class Transition final: public Object, private PropertyMutator<T>
 {
 public:
-    Transition(Property<T> &property, const EasingCurve &curve, double duration):
-        Object{new State{property, curve, duration}}
+    Transition(Property<T> &property, const EasingCurve &curve, double duration, std::function<bool()> &&direct = nullptr):
+        Object{new State{property, curve, std::move(direct), duration}}
     {
         property.restrict(*this);
     }
@@ -37,6 +37,9 @@ public:
                 me().timer_.stop();
                 return true;
             }
+            if (me().direct_ && me().direct_()) {
+                return true;
+            }
             me().oldValue_ = oldValue;
             me().newValue_ = newValue;
             me().timer_.start();
@@ -45,11 +48,12 @@ public:
     }
 
 private:
-    struct State: public Object::State
+    struct State final: public Object::State
     {
-        State(Property<T> &property, const EasingCurve &curve, double duration):
+        State(Property<T> &property, const EasingCurve &curve, std::function<bool()> &&direct, double duration):
             alias_{&property},
             curve_{curve},
+            direct_{direct},
             duration_{duration},
             timer_{1./DisplayManager{}.refreshRate()}
         {
@@ -79,6 +83,7 @@ private:
 
         Property<T> alias_;
         EasingCurve curve_;
+        std::function<bool()> direct_;
         double duration_;
         Timer timer_;
         T oldValue_;

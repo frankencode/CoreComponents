@@ -71,6 +71,7 @@ public:
 
     Size size() const { return me().size(); } ///< Get window size
     Window &size(Size newValue) { me().size = newValue; return *this; } ///< %Set window size
+    bool sizing() const { return me().sizing(); } ///< Window size is currently undergoing a change
 
     WindowMode mode() const { return me().mode_; } ///< Get window mode
     Window &mode(WindowMode newValue) { me().mode_ = newValue; return *this; } ///< %Set window mode
@@ -131,6 +132,7 @@ protected:
         Property<String> title;
         Property<Point> pos;
         Property<Size> size;
+        Property<bool> sizing { false };
         Property<double> opacity { 1. };
         Property<Display> display;
 

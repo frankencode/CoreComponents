@@ -52,8 +52,10 @@ SdlWindow::State::State(const View &view):
 
 void SdlWindow::State::onWindowResized(Size newSize)
 {
+    sizing = true;
     currentSize_ = newSize;
     size = newSize;
+    sizing = false;
 }
 
 void SdlWindow::State::onWindowMoved(Point newPos)

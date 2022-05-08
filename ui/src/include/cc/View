@@ -109,7 +109,7 @@ public:
     bool visible() const { return me().visible(); } ///< Get visible
     View &visible(bool newValue) { me().visible(newValue); return *this; } ///< %Set visible
     View &visible(Definition<bool> &&f) { me().visible(std::move(f)); return *this; } ///< Define visible
-    View &onVisibleChanged(Call<void()> &&f) { me().visible.onChanged(std::move(f)); return *this; } ///< \todo remove this method
+    // View &onVisibleChanged(Call<void()> &&f) { me().visible.onChanged(std::move(f)); return *this; } ///< \todo remove this method
 
     double opacity() const { return me().opacity(); } ///< Get opacity
     View &opacity(double newValue) { me().opacity(newValue); return *this; } ///< %Set opacity
@@ -128,7 +128,7 @@ public:
     View &pos(Point newValue) { me().pos(newValue); return *this; } ///< %Set position
     View &pos(double x, double y) { me().pos(Point{x, y}); return *this; } ///< %Set position
     View &pos(Definition<Point> &&f) { me().pos(std::move(f)); return *this; } ///< Define position
-    View &posEasing(const EasingCurve &easing, double duration) { Easing{me().pos, easing, duration}; return *this; } ///< %Set easing on position
+    View &posEasing(const EasingCurve &easing, double duration, std::function<bool()> &&direct = nullptr) { Easing{me().pos, easing, duration, std::move(direct)}; return *this; } ///< %Set easing on position
 
     Size size() const { return me().size(); } ///< Get size
     double x() const { return me().pos()[0]; } ///< Get pos()[0]
@@ -692,6 +692,7 @@ protected:
         View self() const; ///< Get a view from this state
         bool hasWindow() const; /// \copydoc View::hasWindow()
         Window window() const; ///< \copydoc View::window()
+        bool sizing() const; ///< %Window is currently undergoing size change
 
         bool isHandheld() const; ///< \copydoc View::isHandheld()
 

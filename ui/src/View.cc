@@ -298,6 +298,11 @@ Window View::State::window() const
     return window_() ? Object::weak<Window>(window_()) : Window{};
 }
 
+bool View::State::sizing() const
+{
+    return !hasWindow() || window().sizing();
+}
+
 bool View::State::isHandheld() const
 {
     return (window_() && window().display()) ? window().display().isHandheld() : true;

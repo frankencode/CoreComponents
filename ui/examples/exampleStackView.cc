@@ -32,19 +32,15 @@ int main()
 
     AppBar appBar;
     View screen;
+    LineEdit edit;
 
     screen
     .add(
         Flickable{
             screenWidth, screenHeight - appBarHeight,
             Pane{}
-            .layout(
-                ColumnLayout{}
-                .margin(gap) //! \todo should have a sensible non-zero default
-                .spacing(gap)
-            )
             // .add(Button{}.text("OK").onClicked([&]() mutable { stack.pop(); }))
-            .add(LineEdit{"First name"})
+            .add(LineEdit{"First name", &edit})
             .add(LineEdit{"Family name"})
             .add(
                 NumberEdit{"Age"}
@@ -75,6 +71,11 @@ int main()
                 .trailing(Icon{Ideographic::VolumeHigh})
             )
             .add(LineEdit{"Country"})
+            .layout(
+                ColumnLayout{}
+                .margin(gap) //! \todo should have a sensible non-zero default
+                .spacing(gap)
+            )
         }
         .size([&]{ return screen.size() - Size{0, appBarHeight}; })
         .pos(0, appBarHeight)

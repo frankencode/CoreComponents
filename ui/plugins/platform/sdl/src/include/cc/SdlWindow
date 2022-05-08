@@ -13,7 +13,7 @@
 
 namespace cc {
 
-class SdlWindow: public Window
+class SdlWindow final: public Window
 {
 public:
     SdlWindow() = default;
@@ -29,7 +29,7 @@ private:
     friend class Object;
     friend class SdlApplication;
 
-    struct State: public Window::State
+    struct State final: public Window::State
     {
         State(const View &view);
 
