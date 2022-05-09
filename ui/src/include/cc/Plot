@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/View>
-#include <cc/Call>
+#include <cc/Fun>
 
 namespace cc {
 
@@ -46,7 +46,7 @@ public:
 
     Rect scope() const { return me().scope(); } ///< %Get plot extents
     Plot &scope(const Rect &newValue) { me().scope(newValue); return *this; } ///< %Set plot extents
-    Plot &scope(Definition<Rect> &&f) { me().scope(std::move(f)); return *this; } ///< %Define plot extents
+    Plot &scope(Definition<Rect> &&f) { me().scope(move(f)); return *this; } ///< %Define plot extents
 
     Plot &points(const Array<Point> &newValue) { return points<Array>(newValue); } ///< %Set points of the plot
 
@@ -56,17 +56,17 @@ public:
     template<template<class> class Array>
     Plot &points(const Array<Point> &newValue) { me().retrieval(PointArrayRetrieval<Array>{newValue}); return *this; }
 
-    Plot &xScaling(const Call<double(double)> &scaleX) { me().scaling(PointScaling{scaleX, Call<double(double)>{}}); return *this; }
-    Plot &yScaling(const Call<double(double)> &scaleY) { me().scaling(PointScaling{Call<double(double)>{}, scaleY}); return *this; }
-    Plot &scaling(const Call<double(double)> &scaleY) { me().scaling(PointScaling{Call<double(double)>{}, scaleY}); return *this; }
-    Plot &scaling(const Call<double(double)> &scaleX, const Call<double(double)> &scaleY) { me().scaling(PointScaling{scaleX, scaleY}); return *this; }
+    Plot &xScaling(const Fun<double(double)> &scaleX) { me().scaling(PointScaling{scaleX, Fun<double(double)>{}}); return *this; }
+    Plot &yScaling(const Fun<double(double)> &scaleY) { me().scaling(PointScaling{Fun<double(double)>{}, scaleY}); return *this; }
+    Plot &scaling(const Fun<double(double)> &scaleY) { me().scaling(PointScaling{Fun<double(double)>{}, scaleY}); return *this; }
+    Plot &scaling(const Fun<double(double)> &scaleX, const Fun<double(double)> &scaleY) { me().scaling(PointScaling{scaleX, scaleY}); return *this; }
 
     static double symLog(double x);
     static double log10(double x);
 
     Pen pen() const { return me().pen(); } ///< %Get pen style
     Plot &pen(const Pen &newValue) { me().pen(newValue); return *this; } ///< %Set pen style
-    Plot &pen(Definition<Pen> &&f) { me().pen(std::move(f)); return *this; } ///< %Define pen style
+    Plot &pen(Definition<Pen> &&f) { me().pen(move(f)); return *this; } ///< %Define pen style
 
 private:
     class PointRetrieval: public Object
@@ -118,7 +118,7 @@ private:
     public:
         PointScaling() = default;
 
-        PointScaling(const Call<double(double)> &scaleX, const Call<double(double)> &scaleY):
+        PointScaling(const Fun<double(double)> &scaleX, const Fun<double(double)> &scaleY):
             Object{new State{scaleX, scaleY}}
         {}
 
@@ -127,7 +127,7 @@ private:
     private:
         struct State final: public Object::State
         {
-            State(const Call<double(double)> &scaleX, const Call<double(double)> &scaleY):
+            State(const Fun<double(double)> &scaleX, const Fun<double(double)> &scaleY):
                 scaleX_{scaleX},
                 scaleY_{scaleY}
             {}
@@ -140,8 +140,8 @@ private:
                 return a;
             }
 
-            Call<double(double)> scaleX_;
-            Call<double(double)> scaleY_;
+            Fun<double(double)> scaleX_;
+            Fun<double(double)> scaleY_;
         };
 
         const State &me() const { return Object::me.as<State>(); }

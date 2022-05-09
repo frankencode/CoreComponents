@@ -75,7 +75,7 @@ public:
 
     ///@}
 
-    using GetColor = std::function<Color(int)> ; ///< Get color for a given byte offset
+    using GetColor = Fun<Color(int)> ; ///< Get color for a given byte offset
 
     /** \name Text Rendering
       */

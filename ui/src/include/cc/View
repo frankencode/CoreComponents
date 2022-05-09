@@ -71,7 +71,7 @@ public:
 
     /** Invoke custom initialization function \a f
       */
-    View &populate(const std::function<void(View)> &&f)
+    View &populate(const Fun<void(View)> &&f)
     {
         f(grab<View>());
         return *this;
@@ -100,35 +100,34 @@ public:
 
     /** Define foreground
       */
-    View &paint(Definition<void> &&f) { me().paint(std::move(f)); return *this; }
+    View &paint(Definition<void> &&f) { me().paint(move(f)); return *this; }
 
     Color paper() const { return me().paper(); } ///< Get background color
     View &paper(Color newValue) { me().paper(newValue); return *this; } ///< %Set background color
-    View &paper(Definition<Color> &&f) { me().paper(std::move(f)); return *this; } ///< Define background color
+    View &paper(Definition<Color> &&f) { me().paper(move(f)); return *this; } ///< Define background color
 
     bool visible() const { return me().visible(); } ///< Get visible
     View &visible(bool newValue) { me().visible(newValue); return *this; } ///< %Set visible
-    View &visible(Definition<bool> &&f) { me().visible(std::move(f)); return *this; } ///< Define visible
-    // View &onVisibleChanged(Call<void()> &&f) { me().visible.onChanged(std::move(f)); return *this; } ///< \todo remove this method
+    View &visible(Definition<bool> &&f) { me().visible(move(f)); return *this; } ///< Define visible
 
     double opacity() const { return me().opacity(); } ///< Get opacity
     View &opacity(double newValue) { me().opacity(newValue); return *this; } ///< %Set opacity
-    View &opacity(Definition<double> &&f) { me().opacity(std::move(f)); return *this; } ///< Define opacity
+    View &opacity(Definition<double> &&f) { me().opacity(move(f)); return *this; } ///< Define opacity
     View &opacityEasing(const EasingCurve &easing, double duration) { Easing{me().opacity, easing, duration}; return *this; } ///< %Set easing on opacity
 
     bool clip() const { return me().clip(); } ///< Get clip
     View &clip(bool newValue) { me().clip(newValue); return *this; } ///< %Set clip
-    View &clip(Definition<bool> &&f) { me().clip(std::move(f)); return *this; } ///< Define clip
+    View &clip(Definition<bool> &&f) { me().clip(move(f)); return *this; } ///< Define clip
 
     bool moving() const { return me().moving(); } ///< Get moving
     View &moving(bool newValue) { me().moving(newValue); return *this; } ///< %Set moving
-    View &moving(Definition<bool> &&f) { me().moving(std::move(f)); return *this; } ///< Define moving
+    View &moving(Definition<bool> &&f) { me().moving(move(f)); return *this; } ///< Define moving
 
     Point pos() const { return me().pos(); } ///< Get position
     View &pos(Point newValue) { me().pos(newValue); return *this; } ///< %Set position
     View &pos(double x, double y) { me().pos(Point{x, y}); return *this; } ///< %Set position
-    View &pos(Definition<Point> &&f) { me().pos(std::move(f)); return *this; } ///< Define position
-    View &posEasing(const EasingCurve &easing, double duration, std::function<bool()> &&direct = nullptr) { Easing{me().pos, easing, duration, std::move(direct)}; return *this; } ///< %Set easing on position
+    View &pos(Definition<Point> &&f) { me().pos(move(f)); return *this; } ///< Define position
+    View &posEasing(const EasingCurve &easing, double duration, Fun<bool()> &&direct = nullptr) { Easing{me().pos, easing, duration, move(direct)}; return *this; } ///< %Set easing on position
 
     Size size() const { return me().size(); } ///< Get size
     double x() const { return me().pos()[0]; } ///< Get pos()[0]
@@ -139,31 +138,31 @@ public:
     double innerHeight() const { return me().innerHeight(); } ///< Get inner height
     View &size(Size newValue) { me().size(newValue); return *this; } ///< %Set size to \a newValue
     View &size(double width, double height) { me().size = Size{width, height}; return *this; } ///< %Set size to Size{\a width, \a height}
-    View &size(Definition<Size> &&f) { me().size(std::move(f)); return *this; } ///< Define size
+    View &size(Definition<Size> &&f) { me().size(move(f)); return *this; } ///< Define size
     View &sizeEasing(const EasingCurve &easing, double duration) { Easing{me().size, easing, duration}; return *this; } ///< %Set easing on size
 
     Padding padding() const { return me().padding(); } ///< Get padding
     View &padding(const Padding &newValue) { me().padding(newValue); return *this; } ///< %Set padding
-    View &padding(Definition<Padding> &&f) { me().padding(std::move(f)); return *this; } ///< Define padding
+    View &padding(Definition<Padding> &&f) { me().padding(move(f)); return *this; } ///< Define padding
 
     Point pivot() const { return me().pivot(); } ///< Get rotation center
     View &pivot(Point newValue) { me().pivot(newValue); return *this; } ///< %Set rotation center
-    View &pivot(Definition<Point> &&f) { me().pivot(std::move(f)); return *this; } ///< Define rotation center
+    View &pivot(Definition<Point> &&f) { me().pivot(move(f)); return *this; } ///< Define rotation center
     View &pivotEasing(const EasingCurve &easing, double duration) { Easing{me().pivot, easing, duration}; return *this; } ///< %Set easing on rotation center
 
     double angle() const { return me().angle(); } ///< Get rotation angle
     View &angle(double newValue) { me().angle(newValue); return *this; } ///< %Set rotation angle
-    View &angle(Definition<double> &&f) { me().angle(std::move(f)); return *this; } ///< Define rotation angle
+    View &angle(Definition<double> &&f) { me().angle(move(f)); return *this; } ///< Define rotation angle
     View &angleEasing(const EasingCurve &easing, double duration) { Easing{me().angle, easing, duration}; return *this; } ///< %Set easing on rotation angle
 
     double scale() const { return me().scale(); } ///< Get scale factor
     View &scale(double newValue) { me().scale(newValue); return *this; } ///< %Set scale factor
-    View &scale(Definition<double> &&f) { me().scale(std::move(f)); return *this; } ///< Define scale factor
+    View &scale(Definition<double> &&f) { me().scale(move(f)); return *this; } ///< Define scale factor
     View &scaleEasing(const EasingCurve &easing, double duration) { Easing{me().scale, easing, duration}; return *this; } ///< %Set easing on scale
 
     View decoration() const { return me().decoration(); } ///< Get decoration
     View &decoration(const View &newValue) { me().decoration(newValue); return *this; } ///< %Set decoration \see Shadow
-    View &decoration(Definition<View> &&f) { me().decoration(std::move(f)); return *this; } ///< Define decoration \see Shadow
+    View &decoration(Definition<View> &&f) { me().decoration(move(f)); return *this; } ///< Define decoration \see Shadow
 
     Size preferredSize() const { return me().preferredSize(); } ///< Get preferred size
     Size minSize() const { return me().minSize(); } ///< Get minimal size
@@ -421,13 +420,13 @@ public:
     Point centerLeft () const { return pos() + Step{0, size()[1] / 2}; } ///< Get this view's center-left point
     Point centerRight() const { return pos() + Step{size()[0], size()[1] / 2}; } ///< Get this view's center-right point
 
-    View &topLeft    (Definition<Point> &&a) { pos(std::move(a)); return *this; } ///< %Anchor the top-left corner to \a a
-    View &topRight   (Definition<Point> &&a) { me().topRight(std::move(a)); return *this; } ///< %Anchor the top-right corner to \a a
-    View &bottomLeft (Definition<Point> &&a) { me().bottomLeft(std::move(a)); return *this; } ///< %Anchor the bottom-left corner to \a a
-    View &bottomRight(Definition<Point> &&a) { me().bottomRight(std::move(a)); return *this; } ///< %Anchor the bottom-right corner to \a a
-    View &centerLeft (Definition<Point> &&a) { me().centerLeft(std::move(a)); return *this; } ///< %Anchor the center-left to \a a
-    View &centerRight(Definition<Point> &&a) { me().centerRight(std::move(a)); return *this; } ///< %Anchor the center-right to \a a
-    View &center     (Definition<Point> &&a) { me().center(std::move(a)); return *this; } ///< %Anchor the center to \a a
+    View &topLeft    (Definition<Point> &&a) { pos(move(a)); return *this; } ///< %Anchor the top-left corner to \a a
+    View &topRight   (Definition<Point> &&a) { me().topRight(move(a)); return *this; } ///< %Anchor the top-right corner to \a a
+    View &bottomLeft (Definition<Point> &&a) { me().bottomLeft(move(a)); return *this; } ///< %Anchor the bottom-left corner to \a a
+    View &bottomRight(Definition<Point> &&a) { me().bottomRight(move(a)); return *this; } ///< %Anchor the bottom-right corner to \a a
+    View &centerLeft (Definition<Point> &&a) { me().centerLeft(move(a)); return *this; } ///< %Anchor the center-left to \a a
+    View &centerRight(Definition<Point> &&a) { me().centerRight(move(a)); return *this; } ///< %Anchor the center-right to \a a
+    View &center     (Definition<Point> &&a) { me().center(move(a)); return *this; } ///< %Anchor the center to \a a
 
     /** Anchor this view's center to its parent's center
       */
@@ -441,63 +440,63 @@ public:
 
     /** %Handle window enter event
       */
-    View &onWindowEntered(Call<void()> &&f) { me().onWindowEntered(std::move(f)); return *this; }
+    View &onWindowEntered(Fun<void()> &&f) { me().onWindowEntered(move(f)); return *this; }
 
     /** %Handle window leave event
       */
-    View &onWindowLeft(Call<void()> &&f) { me().onWindowLeft(std::move(f)); return *this; }
+    View &onWindowLeft(Fun<void()> &&f) { me().onWindowLeft(move(f)); return *this; }
 
     /** %Handle pointer pressed event
       */
-    View &onPointerPressed(Filter<PointerEvent> &&f) { me().onPointerPressed(std::move(f)); return *this; }
+    View &onPointerPressed(Filter<PointerEvent> &&f) { me().onPointerPressed(move(f)); return *this; }
 
     /** %Handle pointer release event
       */
-    View &onPointerReleased(Filter<PointerEvent> &&f) { me().onPointerReleased(std::move(f)); return *this; }
+    View &onPointerReleased(Filter<PointerEvent> &&f) { me().onPointerReleased(move(f)); return *this; }
 
     /** %Handle pointer moved event
       */
-    View &onPointerMoved(Filter<PointerEvent> &&f) { me().onPointerMoved(std::move(f)); return *this; }
+    View &onPointerMoved(Filter<PointerEvent> &&f) { me().onPointerMoved(move(f)); return *this; }
 
     /** %Handle move pressed event
       */
-    View &onMousePressed(Filter<MouseEvent> &&f) { me().onMousePressed(std::move(f)); return *this; }
+    View &onMousePressed(Filter<MouseEvent> &&f) { me().onMousePressed(move(f)); return *this; }
 
     /** %Handle mouse release event
       */
-    View &onMouseReleased(Filter<MouseEvent> &&f) { me().onMouseReleased(std::move(f)); return *this; }
+    View &onMouseReleased(Filter<MouseEvent> &&f) { me().onMouseReleased(move(f)); return *this; }
 
     /** %Handle move moved event
       */
-    View &onMouseMoved(Filter<MouseEvent> &&f) { me().onMouseMoved(std::move(f)); return *this; }
+    View &onMouseMoved(Filter<MouseEvent> &&f) { me().onMouseMoved(move(f)); return *this; }
 
     /** %Handle finger pressed event
       */
-    View &onFingerPressed(Filter<FingerEvent> &&f) { me().onFingerPressed(std::move(f)); return *this; }
+    View &onFingerPressed(Filter<FingerEvent> &&f) { me().onFingerPressed(move(f)); return *this; }
 
     /** %Handle finger released event
       */
-    View &onFingerReleased(Filter<FingerEvent> &&f) { me().onFingerReleased(std::move(f)); return *this; }
+    View &onFingerReleased(Filter<FingerEvent> &&f) { me().onFingerReleased(move(f)); return *this; }
 
     /** %Handle finger moved event
       */
-    View &onFingerMoved(Filter<FingerEvent> &&f) { me().onFingerMoved(std::move(f)); return *this; }
+    View &onFingerMoved(Filter<FingerEvent> &&f) { me().onFingerMoved(move(f)); return *this; }
 
     /** %Handle mouse wheel moved event
       */
-    View &onWheelMoved(Filter<WheelEvent> &&f) { me().onWheelMoved(std::move(f)); return *this; }
+    View &onWheelMoved(Filter<WheelEvent> &&f) { me().onWheelMoved(move(f)); return *this; }
 
     /** %Handle key pressed event
       */
-    View &onKeyPressed(Filter<KeyEvent> &&f) { me().onKeyPressed(std::move(f)); return *this; }
+    View &onKeyPressed(Filter<KeyEvent> &&f) { me().onKeyPressed(move(f)); return *this; }
 
     /** %Handle key released event
       */
-    View &onKeyReleased(Filter<KeyEvent> &&f) { me().onKeyReleased(std::move(f)); return *this; }
+    View &onKeyReleased(Filter<KeyEvent> &&f) { me().onKeyReleased(move(f)); return *this; }
 
     /** Get notified when the View's lifetime ends
       */
-    View &onEndOfLife(Call<void()> &&f) { return attach(OnEndOfLife{std::move(f)}); }
+    View &onEndOfLife(Fun<void()> &&f) { return attach(OnEndOfLife{move(f)}); }
 
     ///@}
 
@@ -511,7 +510,7 @@ public:
 
     /** Convenience method for attaching a monitor
       */
-    View &attach(Call<void()> &&f) { me().attach(std::move(f)); return *this; }
+    View &attach(Fun<void()> &&f) { me().attach(move(f)); return *this; }
 
     ///@}
 
@@ -588,11 +587,11 @@ protected:
             attachments_.append(other);
         }
 
-        /** \copydoc View::attach(Call<void()> &&)
+        /** \copydoc View::attach(Fun<void()> &&)
           */
-        void attach(Call<void()> &&f)
+        void attach(Fun<void()> &&f)
         {
-            attachments_.append(Monitor{std::move(f)});
+            attachments_.append(Monitor{move(f)});
         }
 
         /** Remove all children
@@ -614,13 +613,13 @@ protected:
         Layout layout() const { return layout_(); } ///< Get the layout
         double expandableWidth(double width) const; ///< Get the expandable width of this view within its parent layout
 
-        void topLeft    (Definition<Point> &&a) { pos(std::move(a));                                              } ///< \copydoc View::topLeft()
-        void topRight   (Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], 0};             }); } ///< \copydoc View::topRight()
-        void bottomLeft (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1]};             }); } ///< \copydoc View::bottomLeft()
-        void bottomRight(Definition<Point> &&a) { pos([this, a]{ return a() - size();                         }); } ///< \copydoc View::bottomRight()
-        void centerLeft (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1] / 2};         }); } ///< \copydoc View::centerLeft()
+        void topLeft    (Definition<Point> &&a) { pos(move(a)); } ///< \copydoc View::topLeft()
+        void topRight   (Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], 0}; }); } ///< \copydoc View::topRight()
+        void bottomLeft (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1]}; }); } ///< \copydoc View::bottomLeft()
+        void bottomRight(Definition<Point> &&a) { pos([this, a]{ return a() - size(); }); } ///< \copydoc View::bottomRight()
+        void centerLeft (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1] / 2}; }); } ///< \copydoc View::centerLeft()
         void centerRight(Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], size()[1] / 2}; }); } ///< \copydoc View::centerRight()
-        void center     (Definition<Point> &&a) { pos([this, a]{ return a() - size() / 2;                     }); } ///< \copydoc View::center()
+        void center     (Definition<Point> &&a) { pos([this, a]{ return a() - size() / 2; }); } ///< \copydoc View::center()
 
         /** \copydoc View::centerInParent()
           */

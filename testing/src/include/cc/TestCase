@@ -10,7 +10,7 @@
 
 #include <cc/Shared>
 #include <cc/String>
-#include <functional>
+#include <cc/Fun>
 
 namespace cc {
 
@@ -28,7 +28,7 @@ public:
       * \param run Test function to run
       * \param skip Skip switch
       */
-    TestCase(const String &name, const std::function<void()> &run = nullptr, bool skip = false);
+    TestCase(const String &name, const Fun<void()> &run = nullptr, bool skip = false);
 
     String name() const { return me().name; }
     bool skip() const { return me().skip; }
@@ -46,7 +46,7 @@ private:
 
     struct State {
         String name;
-        std::function<void()> run;
+        Fun<void()> run;
         bool skip;
         int assertionCount { 0 };
         int failureCount { 0 };

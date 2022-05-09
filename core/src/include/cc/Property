@@ -18,7 +18,7 @@ namespace cc {
   * \tparam T %Property value type
   */
 template<class T>
-using Definition = std::function<T()>;
+using Definition = Fun<T()>;
 
 template<class T>
 class PropertyMutator;
@@ -53,10 +53,10 @@ public:
 
     /** Create property with defining function \a f
       */
-    explicit Property(std::function<T()> &&f):
+    explicit Property(Fun<T()> &&f):
         me{new State{this}}
     {
-        define(std::move(f));
+        define(move(f));
     }
 
     /** \internal
@@ -82,7 +82,7 @@ public:
     /** \internal
       */
     Property(Property &&b):
-        me{std::move(b.me)}
+        me{move(b.me)}
     {
         if (me().owner_ == &b)
             me().owner_ = this;
@@ -92,7 +92,7 @@ public:
       */
     Property &operator=(Property &&b)
     {
-        me = std::move(b.me);
+        me = move(b.me);
         if (me().owner_ == &b)
             me().owner_ = this;
         return *this;
@@ -111,7 +111,7 @@ public:
 
     /** Set a new defining function \a f
       */
-    void define(std::function<T()> &&f)
+    void define(Fun<T()> &&f)
     {
         me().clearDependencies();
         me().f_ = f;
@@ -129,24 +129,24 @@ public:
 
     /** \copydoc define()
       */
-    void operator()(std::function<T()> &&f)
+    void operator()(Fun<T()> &&f)
     {
-        return define(std::move(f));
+        return define(move(f));
     }
 
     /** Setup restrictor function \a g
       */
-    void restrict(std::function<bool(T&, T)> &&g)
+    void restrict(Fun<bool(T&, T)> &&g)
     {
         me().g_ = g;
     }
 
     /** Register function \a f to be called when the property value changes
       */
-    void onChanged(std::function<void()> &&f) const
+    void onChanged(Fun<void()> &&f) const
     {
         if (me().dirty_) me.mutate().cascade();
-        return me().changed.connect(std::move(f));
+        return me().changed.connect(move(f));
     }
 
     /** Evaluate current property value
@@ -239,7 +239,7 @@ private:
         {
             if (f_) {
                 clearDependencies();
-                f_ = std::function<T()>{};
+                f_ = Fun<T()>{};
             }
             establish(newValue);
         }
@@ -266,8 +266,8 @@ private:
         }
 
         mutable T value_;
-        std::function<T()> f_;
-        std::function<bool(T&, T)> g_;
+        Fun<T()> f_;
+        Fun<bool(T&, T)> g_;
     };
 
     Handle<State> me;
@@ -305,7 +305,7 @@ public:
     /** \internal
       */
     Property(Property &&b):
-        me{std::move(b.me)}
+        me{move(b.me)}
     {
         if (me().owner_ == &b)
             me().owner_ = this;
@@ -315,7 +315,7 @@ public:
       */
     Property &operator=(Property &&b)
     {
-        me = std::move(b.me);
+        me = move(b.me);
         if (me().owner_ == &b)
             me().owner_ = this;
         return *this;
@@ -334,7 +334,7 @@ public:
 
     /** Set a new defining function \a f
       */
-    void define(std::function<void()> &&f)
+    void define(Fun<void()> &&f)
     {
         me().clearDependencies();
 
@@ -349,24 +349,24 @@ public:
 
     /** \copydoc define()
       */
-    void operator()(std::function<void()> &&f)
+    void operator()(Fun<void()> &&f)
     {
-        return define(std::move(f));
+        return define(move(f));
     }
 
     /** Setup restrictor function \a g
       */
-    void restrict(std::function<bool()> &&g)
+    void restrict(Fun<bool()> &&g)
     {
         me().g_ = g;
     }
 
     /** Register function \a f to be called when the property value has been reevaluated
       */
-    void onChanged(std::function<void()> &&f) const
+    void onChanged(Fun<void()> &&f) const
     {
         if (me().dirty_) me.mutate().cascade();
-        me.mutate().changed.connect(std::move(f));
+        me.mutate().changed.connect(move(f));
     }
 
     /** Evaluate current property value
@@ -394,8 +394,8 @@ private:
             }
         }
 
-        std::function<void()> f_;
-        std::function<bool()> g_;
+        Fun<void()> f_;
+        Fun<bool()> g_;
     };
 
     Handle<State> me;
@@ -409,10 +409,10 @@ protected:
 
 class OnScopeExit {
 public:
-    OnScopeExit (const std::function<void()> &f): f_{f} {}
+    OnScopeExit (const Fun<void()> &f): f_{f} {}
     ~OnScopeExit() { f_(); }
 private:
-    std::function<void()> f_;
+    Fun<void()> f_;
 };
 
 template<class T>

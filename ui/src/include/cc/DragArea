@@ -47,11 +47,11 @@ public:
 
     Rect dragZone() const { return me().dragZone(); } ///< Get the allowed drag area
     DragArea &dragZone(const Rect &newValue) { me().dragZone(newValue); return *this; } ///< %Set the allowed drag area
-    DragArea &dragZone(Definition<Rect> &&f) { me().dragZone(std::move(f)); return *this; } ///< Define the allowed drag area
+    DragArea &dragZone(Definition<Rect> &&f) { me().dragZone(move(f)); return *this; } ///< Define the allowed drag area
 
     bool dragInhibit() const { return me().dragInhibit(); } ///< Check if dragging is disabled
     DragArea &dragInhibit(bool on = true) { me().dragInhibit(on); return *this; } ///< %Set if dragging is disabled
-    DragArea &dragInhibit(Definition<bool> &&f) { me().dragInhibit(std::move(f)); return *this; } ///< Define if dragging is disabled
+    DragArea &dragInhibit(Definition<bool> &&f) { me().dragInhibit(move(f)); return *this; } ///< Define if dragging is disabled
 
 protected:
     struct State: public Organizer::State

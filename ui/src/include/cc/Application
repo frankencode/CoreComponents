@@ -13,7 +13,7 @@
 #include <cc/Cursor>
 #include <cc/Control>
 #include <cc/Singleton>
-#include <cc/Call>
+#include <cc/Fun>
 
 namespace cc {
 
@@ -38,7 +38,7 @@ public:
     Window focusWindow() const { return me().focusWindow(); } ///< The window which currently holds the input focus
 
     double textZoom() const { return me().textZoom(); } ///< Get the text zoom factor
-    Application &textZoom(Definition<double> &&f) { me().textZoom(std::move(f)); return *this; } ///< Define the text zoom factor
+    Application &textZoom(Definition<double> &&f) { me().textZoom(move(f)); return *this; } ///< Define the text zoom factor
     Application &textZoom(double newValue) { me().textZoom = newValue; return *this; } ///< %Set the text zoom factor
 
     FontSmoothing fontSmoothing() const; ///< Get the application default font smoothing
@@ -59,7 +59,7 @@ public:
       * \param doNext %Function which will be evaluated in the application's foreground thread
       * \note This function is thread-safe.
       */
-    void postEvent(Call<void()> &&doNext);
+    void postEvent(Fun<void()> &&doNext);
 
 protected:
     friend class Window;
@@ -102,7 +102,7 @@ protected:
         virtual void setTextInputArea(const Rect &inputArea) = 0;
         virtual void stopTextInput() = 0;
 
-        virtual void postEvent(Call<void()> &&doNext) = 0;
+        virtual void postEvent(Fun<void()> &&doNext) = 0;
 
         virtual int run() = 0;
 

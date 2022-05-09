@@ -63,7 +63,7 @@ public:
       */
     AppendList(AppendList &&other)
     {
-        *this = std::move(other);
+        *this = move(other);
     }
 
     /** Take over \a other

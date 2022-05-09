@@ -13,6 +13,8 @@
 namespace cc {
 
 template<class T>
-using Call = std::function<T>;
+using Fun = std::function<T>;
+
+using std::move;
 
 } // namespace cc

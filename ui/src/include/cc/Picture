@@ -47,11 +47,11 @@ public:
 
     Visual visual() const { return me().visual(); } ///< Get the visual
     Picture &visual(const Visual &newValue) { me().visual(newValue); return *this; } ///< %Set the visual
-    Picture &visual(Definition<Visual> &&f) { me().visual(std::move(f)); return *this; } ///< %Define the visual
+    Picture &visual(Definition<Visual> &&f) { me().visual(move(f)); return *this; } ///< %Define the visual
 
     Color color() const { return me().color(); } ///< Get the foreground color
     Picture &color(const Color &newValue) { me().color(newValue); return *this; } ///< %Set the foreground color
-    Picture &color(Definition<Color> &&f) { me().color(std::move(f)); return *this; } ///< %Define the foreground color
+    Picture &color(Definition<Color> &&f) { me().color(move(f)); return *this; } ///< %Define the foreground color
 
 private:
     struct State: public View::State

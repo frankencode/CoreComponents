@@ -51,7 +51,7 @@ public:
     /** Take over the right-side \a other
       */
     Queue(Queue &&other):
-        me{std::move(other.me)}
+        me{move(other.me)}
     {}
 
     /** Assign queue \a other
@@ -62,7 +62,7 @@ public:
       */
     Queue &operator=(Queue &&other)
     {
-        me = std::move(other.me);
+        me = move(other.me);
         return *this;
     }
 

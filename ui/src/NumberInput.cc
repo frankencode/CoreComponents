@@ -132,7 +132,7 @@ NumberInput &NumberInput::min(double newValue)
 
 NumberInput &NumberInput::min(Definition<double> &&f)
 {
-    me().min(std::move(f));
+    me().min(move(f));
     return *this;
 }
 
@@ -149,7 +149,7 @@ NumberInput &NumberInput::max(double newValue)
 
 NumberInput &NumberInput::max(Definition<double> &&f)
 {
-    me().max(std::move(f));
+    me().max(move(f));
     return *this;
 }
 
@@ -166,7 +166,7 @@ NumberInput &NumberInput::precision(double newValue)
 
 NumberInput &NumberInput::precision(Definition<double> &&f)
 {
-    me().precision(std::move(f));
+    me().precision(move(f));
     return *this;
 }
 
@@ -183,7 +183,7 @@ NumberInput &NumberInput::decimalPoint(char newValue)
 
 NumberInput &NumberInput::decimalPoint(Definition<char> &&f)
 {
-    me().decimalPoint(std::move(f));
+    me().decimalPoint(move(f));
     return *this;
 }
 

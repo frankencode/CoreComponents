@@ -162,7 +162,7 @@ SwitchControl &SwitchControl::value(bool newValue)
 
 SwitchControl &SwitchControl::value(Definition<bool> &&f)
 {
-    me().on(std::move(f));
+    me().on(move(f));
     return *this;
 }
 

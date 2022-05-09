@@ -53,29 +53,29 @@ public:
 
     Cursor cursor() const { return me().cursor(); } ///< Get cursor
     Control &cursor(Cursor newValue) { me().cursor(newValue); return *this; } ///< %Set cursor
-    Control &cursor(Definition<Cursor> &&f) { me().cursor(std::move(f)); return *this; } ///< %Define cursor
+    Control &cursor(Definition<Cursor> &&f) { me().cursor(move(f)); return *this; } ///< %Define cursor
 
     Point pointerPos() const { return me().pointerPos(); } ///< %Pointer position when hovered, pressed or clicked
 
     /** %Handle clicked event
       */
-    Control &onClicked(Call<void()> &&f)
+    Control &onClicked(Fun<void()> &&f)
     {
-        me().onClicked(std::move(f));
+        me().onClicked(move(f));
         return *this;
     }
 
     /** %Handle pointer clicked event
       */
-    Control &onPointerClicked(Filter<PointerEvent> &&f) { me().onPointerClicked(std::move(f)); return *this; }
+    Control &onPointerClicked(Filter<PointerEvent> &&f) { me().onPointerClicked(move(f)); return *this; }
 
     /** %Handle mouse clicked event
       */
-    Control &onMouseClicked(Filter<MouseEvent> &&f) { me().onMouseClicked(std::move(f)); return *this; }
+    Control &onMouseClicked(Filter<MouseEvent> &&f) { me().onMouseClicked(move(f)); return *this; }
 
     /** %Handle finger clicked event
       */
-    Control &onFingerClicked(Filter<FingerEvent> &&f) { me().onFingerClicked(std::move(f)); return *this; }
+    Control &onFingerClicked(Filter<FingerEvent> &&f) { me().onFingerClicked(move(f)); return *this; }
 
 protected:
     friend class Object;
@@ -100,7 +100,7 @@ protected:
 
         Control self() const { return Object::alias<Control>(this); }
 
-        void onClicked(Call<void()> &&f) ///< \copydoc Control::onClicked()
+        void onClicked(Fun<void()> &&f) ///< \copydoc Control::onClicked()
         {
             onPointerClicked(
                 [f](const PointerEvent &){ f(); return true; }

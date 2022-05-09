@@ -113,7 +113,7 @@ void Button::State::setText(const String &newValue)
 void Button::State::defineText(Definition<String> &&f)
 {
     if (label()) {
-        label().text(std::move(f));
+        label().text(move(f));
     }
     else {
         Label newLabel;
@@ -123,7 +123,7 @@ void Button::State::defineText(Definition<String> &&f)
                     theme().buttonTextColor(pressed()) :
                     theme().buttonTextFocusColor(pressed());
             })
-            .text(std::move(f))
+            .text(move(f))
             .paper([this]{ return box_.color(); });
         label(newLabel);
         label().pos([this]{
@@ -181,7 +181,7 @@ Button &Button::text(const String &newValue)
 
 Button &Button::text(Definition<String> &&f)
 {
-    me().defineText(std::move(f));
+    me().defineText(move(f));
     return *this;
 }
 
@@ -210,7 +210,7 @@ Button &Button::color(Color newValue)
 
 Button &Button::color(Definition<Color> &&f)
 {
-    me().box_.color(std::move(f));
+    me().box_.color(move(f));
     return *this;
 }
 
@@ -228,7 +228,7 @@ Button &Button::textColor(Color newValue)
 
 Button &Button::textColor(Definition<Color> &&f)
 {
-    me().label().color(std::move(f));
+    me().label().color(move(f));
     return *this;
 }
 
@@ -245,7 +245,7 @@ Button &Button::radius(double newValue)
 
 Button &Button::radius(Definition<double> &&f)
 {
-    me().radius(std::move(f));
+    me().radius(move(f));
     return *this;
 }
 
@@ -262,7 +262,7 @@ Button &Button::leadingSpacing(double newValue)
 
 Button &Button::leadingSpacing(Definition<double> &&f)
 {
-    me().leadingSpacing(std::move(f));
+    me().leadingSpacing(move(f));
     return *this;
 }
 
@@ -279,7 +279,7 @@ Button &Button::trailingSpacing(double newValue)
 
 Button &Button::trailingSpacing(Definition<double> &&f)
 {
-    me().trailingSpacing(std::move(f));
+    me().trailingSpacing(move(f));
     return *this;
 }
 
@@ -296,7 +296,7 @@ Button &Button::innerSpacing(double newValue)
 
 Button &Button::innerSpacing(Definition<double> &&f)
 {
-    me().innerSpacing(std::move(f));
+    me().innerSpacing(move(f));
     return *this;
 }
 
@@ -308,7 +308,7 @@ Button &Button::preferredHeight(double newValue)
 
 Button &Button::preferredHeight(Definition<double> &&f)
 {
-    me().preferredHeight(std::move(f));
+    me().preferredHeight(move(f));
     return *this;
 }
 
@@ -320,7 +320,7 @@ Button &Button::decorate(const View &newValue)
 
 Button &Button::decorate(Definition<View> &&f)
 {
-    me().box_.decoration(std::move(f));
+    me().box_.decoration(move(f));
     return *this;
 }
 

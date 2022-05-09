@@ -525,7 +525,7 @@ TextInput &TextInput::font(Font newValue)
 
 TextInput &TextInput::font(Definition<Font> &&f)
 {
-    me().font(std::move(f));
+    me().font(move(f));
     return *this;
 }
 
@@ -542,19 +542,19 @@ TextInput &TextInput::sizerText(const String &newValue)
 
 TextInput &TextInput::sizerText(Definition<String> &&f)
 {
-    me().sizerText(std::move(f));
+    me().sizerText(move(f));
     return *this;
 }
 
-TextInput &TextInput::accept(Call<bool()> &&f)
+TextInput &TextInput::accept(Fun<bool()> &&f)
 {
-    me().accept_ = std::move(f);
+    me().accept_ = move(f);
     return *this;
 }
 
-TextInput &TextInput::filter(Call<bool(Range range, InOut<String>)> &&f)
+TextInput &TextInput::filter(Fun<bool(Range range, InOut<String>)> &&f)
 {
-    me().filter_ = std::move(f);
+    me().filter_ = move(f);
     return *this;
 }
 

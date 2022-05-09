@@ -138,7 +138,7 @@ GlyphRun FtGlyphRun::State::wrap(double maxWidth, TextAlign textAlign, double li
     targetState.maxAscender_ = maxAscender_;
     targetState.minDescender_ = minDescender_;
 
-    return std::move(targetRun);
+    return move(targetRun);
 }
 
 void FtGlyphRun::State::lineJustify(
@@ -207,7 +207,7 @@ GlyphRun FtGlyphRun::State::elide(double maxWidth) const
         targetState.size_ = Size{0, size_[1]};
         targetState.maxAscender_ = maxAscender_;
         targetState.minDescender_ = minDescender_;
-        return std::move(targetRun);
+        return move(targetRun);
     }
 
     FtGlyphRun targetRun{text_, font_, origin_};
@@ -259,7 +259,7 @@ GlyphRun FtGlyphRun::State::elide(double maxWidth) const
     targetState.minDescender_ = minDescender_;
     targetState.scaledFont_ = scaledFont_;
 
-    return std::move(targetRun);
+    return move(targetRun);
 }
 
 FtGlyphRun FtGlyphRun::State::self() const

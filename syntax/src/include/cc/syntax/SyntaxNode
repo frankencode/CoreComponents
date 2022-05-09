@@ -10,7 +10,7 @@
 
 #include <cc/Object>
 #include <cc/String>
-#include <functional>
+#include <cc/Fun>
 
 namespace cc { class SyntaxRule; }
 namespace cc { class Token; }
@@ -33,7 +33,7 @@ public:
 
     SyntaxNode(const SyntaxRule *rule);
 
-    SyntaxNode(std::function<bool(char)> &&match);
+    SyntaxNode(Fun<bool(char)> &&match);
 
     /** Match \a text at \a offset against this node
       */

@@ -75,7 +75,7 @@ Shadow &Shadow::offset(const Step &newValue)
 
 Shadow &Shadow::offset(Definition<Step> &&f)
 {
-    me().offset(std::move(f));
+    me().offset(move(f));
     return *this;
 }
 
@@ -92,7 +92,7 @@ Shadow &Shadow::blurRadius(double newValue)
 
 Shadow &Shadow::blurRadius(Definition<double> &&f)
 {
-    me().blurRadius(std::move(f));
+    me().blurRadius(move(f));
     return *this;
 }
 
@@ -109,7 +109,7 @@ Shadow &Shadow::color(Color newValue)
 
 Shadow &Shadow::color(Definition<Color> &&f)
 {
-    me().color(std::move(f));
+    me().color(move(f));
     return *this;
 }
 

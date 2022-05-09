@@ -12,7 +12,7 @@ namespace cc::syntax {
 
 struct MatchNode::State: public SyntaxNode::State
 {
-    State(std::function<bool(char)> &&match):
+    State(Fun<bool(char)> &&match):
         match_{match}
     {}
 
@@ -38,11 +38,11 @@ struct MatchNode::State: public SyntaxNode::State
         return List<String>{} << "Match{...}";
     }
 
-    const std::function<bool(char)> match_;
+    const Fun<bool(char)> match_;
 };
 
-MatchNode::MatchNode(std::function<bool(char)> &&match):
-    SyntaxNode{new State{std::move(match)}}
+MatchNode::MatchNode(Fun<bool(char)> &&match):
+    SyntaxNode{new State{move(match)}}
 {}
 
 } // namespace cc::syntax

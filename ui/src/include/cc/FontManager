@@ -70,7 +70,7 @@ public:
 
     /** Inform about fonts covering ranges of text
       */
-    using FontRange = std::function<void(const Font &font, long i0, long i1)> ;
+    using FontRange = Fun<void(const Font &font, long i0, long i1)> ;
 
     /** Select a proper font for each range of \a text
       * \param text %Text to find covering fonts for

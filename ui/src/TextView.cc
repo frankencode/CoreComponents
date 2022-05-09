@@ -76,7 +76,7 @@ TextView &TextView::text(const String &newValue)
 
 TextView &TextView::text(Definition<String> &&f)
 {
-    me().text(std::move(f));
+    me().text(move(f));
     return *this;
 }
 
@@ -93,7 +93,7 @@ TextView &TextView::font(Font newValue)
 
 TextView &TextView::font(Definition<Font> &&f)
 {
-    me().font(std::move(f));
+    me().font(move(f));
     return *this;
 }
 

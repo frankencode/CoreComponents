@@ -144,7 +144,7 @@ Slider &Slider::min(double newValue)
 
 Slider &Slider::min(Definition<double> &&f)
 {
-    me().slider_.min(std::move(f));
+    me().slider_.min(move(f));
     return *this;
 }
 
@@ -161,7 +161,7 @@ Slider &Slider::max(double newValue)
 
 Slider &Slider::max(Definition<double> &&f)
 {
-    me().slider_.max(std::move(f));
+    me().slider_.max(move(f));
     return *this;
 }
 
@@ -178,7 +178,7 @@ Slider &Slider::precision(double newValue)
 
 Slider &Slider::precision(Definition<double> &&f)
 {
-    me().slider_.precision(std::move(f));
+    me().slider_.precision(move(f));
     return *this;
 }
 

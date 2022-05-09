@@ -192,7 +192,7 @@ TextCursor FtTextRun::State::getTextCursor(int offset) const
         cursorState.glyphIndex_ = run.me().cairoGlyphs_.count();
         cursorState.posA_ = Point { advance_[0], advance_[1] - run.metrics().ascender()  };
         cursorState.posB_ = Point { advance_[0], advance_[1] - run.metrics().descender() };
-        return std::move(cursor);
+        return move(cursor);
     }
 
     int byteOffset0 = 0;
@@ -218,7 +218,7 @@ TextCursor FtTextRun::State::getTextCursor(int offset) const
                     const cairo_glyph_t &glyph = run.me().cairoGlyphs_[glyphIndex];
                     cursorState.posA_ = Point { glyph.x, glyph.y - run.metrics().ascender()  };
                     cursorState.posB_ = Point { glyph.x, glyph.y - run.metrics().descender() };
-                    return std::move(cursor);
+                    return move(cursor);
                 }
 
                 byteOffset0 = byteOffset1;

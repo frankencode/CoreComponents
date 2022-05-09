@@ -15,7 +15,7 @@ struct TlsHelloContext::State: public Object::State
     void init(const SocketAddress &peerAddress, TlsServiceSelector &&serviceSelector)
     {
         peerAddress_ = peerAddress;
-        serviceSelector_ = std::move(serviceSelector);
+        serviceSelector_ = move(serviceSelector);
     }
 
     TlsServerOptions selectService(const String &serverName)
@@ -39,7 +39,7 @@ SocketAddress TlsHelloContext::peerAddress() const
 
 void TlsHelloContext::init(const SocketAddress &peerAddress, TlsServiceSelector &&serviceSelector)
 {
-    me().init(peerAddress, std::move(serviceSelector));
+    me().init(peerAddress, move(serviceSelector));
 }
 
 TlsServerOptions TlsHelloContext::selectService(const String &serverName)

@@ -228,7 +228,7 @@ SliderControl &SliderControl::min(double newValue)
 
 SliderControl &SliderControl::min(Definition<double> &&f)
 {
-    me().min(std::move(f));
+    me().min(move(f));
     return *this;
 }
 
@@ -245,7 +245,7 @@ SliderControl &SliderControl::max(double newValue)
 
 SliderControl &SliderControl::max(Definition<double> &&f)
 {
-    me().max(std::move(f));
+    me().max(move(f));
     return *this;
 }
 
@@ -262,7 +262,7 @@ SliderControl &SliderControl::precision(double newValue)
 
 SliderControl &SliderControl::precision(Definition<double> &&f)
 {
-    me().precision(std::move(f));
+    me().precision(move(f));
     return *this;
 }
 

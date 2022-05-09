@@ -17,7 +17,7 @@ namespace cc {
 
 struct TlsSessionCache::State: public Object::State
 {
-    State(double refreshInterval, Call<void(const Bytes)> &&onKeyRefresh):
+    State(double refreshInterval, Fun<void(const Bytes)> &&onKeyRefresh):
         refreshInterval_{refreshInterval},
         onKeyRefresh_{onKeyRefresh}
     {
@@ -75,15 +75,15 @@ struct TlsSessionCache::State: public Object::State
 
     Thread worker_;
     double refreshInterval_;
-    Call<void(const Bytes)> onKeyRefresh_;
+    Fun<void(const Bytes)> onKeyRefresh_;
     ReadWriteLock lock_;
     Semaphore<int> shutdown_;
     gnutls_datum_t key_;
     Bytes keyBytes_;
 };
 
-TlsSessionCache::TlsSessionCache(double refreshInterval, Call<void(const Bytes)> &&onKeyRefresh):
-    Object{new State{refreshInterval, std::move(onKeyRefresh)}}
+TlsSessionCache::TlsSessionCache(double refreshInterval, Fun<void(const Bytes)> &&onKeyRefresh):
+    Object{new State{refreshInterval, move(onKeyRefresh)}}
 {}
 
 void TlsSessionCache::prepareSessionResumption(gnutls_session_t session)

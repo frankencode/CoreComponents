@@ -110,7 +110,7 @@ ElevatedButton &ElevatedButton::text(const String &newValue)
 
 ElevatedButton &ElevatedButton::text(Definition<String> &&f)
 {
-    me().label_.text(std::move(f));
+    me().label_.text(move(f));
     return *this;
 }
 

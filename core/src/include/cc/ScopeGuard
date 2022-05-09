@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <functional>
+#include <cc/Fun>
 
 namespace cc {
 
@@ -21,14 +21,14 @@ class ScopeGuard
 public:
     /** Post scope guard \a cleanup function
       */
-    ScopeGuard(std::function<void()> &&cleanup): cleanup_{cleanup} {}
+    ScopeGuard(Fun<void()> &&cleanup): cleanup_{move(cleanup)} {}
 
     /** Disband scope guard: call \a cleanup function
       */
     ~ScopeGuard() { cleanup_(); }
 
 private:
-    std::function<void()> cleanup_;
+    Fun<void()> cleanup_;
 };
 
 } // namespace cc

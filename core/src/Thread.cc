@@ -25,7 +25,7 @@ struct Thread::State: public Object::State
         return self;
     }
 
-    State(std::function<void()> &&f, long stackSize):
+    State(Fun<void()> &&f, long stackSize):
         f_{f}
     {
         {
@@ -48,11 +48,11 @@ struct Thread::State: public Object::State
 
     pthread_attr_t attr_;
     pthread_t tid_;
-    std::function<void()> f_;
+    Fun<void()> f_;
 };
 
-Thread::Thread(std::function<void()> &&f, long stackSize):
-    Object{new State{std::move(f), stackSize}}
+Thread::Thread(Fun<void()> &&f, long stackSize):
+    Object{new State{move(f), stackSize}}
 {}
 
 void Thread::start()

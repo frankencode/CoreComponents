@@ -22,9 +22,9 @@ public:
 
     int sampleRate() const;
 
-    void incoming(Call<void(const Bytes &data)> &&sample);
+    void incoming(Fun<void(const Bytes &data)> &&sample);
 
-    void connect(const String &target = String{}, Call<void()> &&ready = Call<void()>{});
+    void connect(const String &target = String{}, Fun<void()> &&ready = Fun<void()>{});
 
 private:
     struct State;

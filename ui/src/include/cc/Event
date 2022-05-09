@@ -14,7 +14,7 @@ namespace cc {
   * \tparam T %Event type
   */
 template<class T>
-using Filter = std::function<bool(const T &)>;
+using Filter = Fun<bool(const T &)>;
 
 /** \internal
   * \class Event cc/Event
@@ -28,9 +28,9 @@ class Event
 public:
     /** Subscribe a new consumer \a f
       */
-    void subscribe(std::function<bool(const T &)> &&f) const
+    void subscribe(Fun<bool(const T &)> &&f) const
     {
-        queue_.emplaceFront(std::move(f));
+        queue_.emplaceFront(move(f));
     }
 
     /** Propagate \a event to all consumers
@@ -53,7 +53,7 @@ public:
 
     /** \copydoc subscribe()
       */
-    void operator()(std::function<bool(const T &)> &&f) const { subscribe(std::move(f)); }
+    void operator()(Fun<bool(const T &)> &&f) const { subscribe(move(f)); }
 
     /** \copydoc propagate()
       */
@@ -62,7 +62,7 @@ public:
 private:
     friend class PropertyBinding;
 
-    mutable Queue<std::function<bool(const T &)>> queue_;
+    mutable Queue<Fun<bool(const T &)>> queue_;
 };
 
 } // namespace cc

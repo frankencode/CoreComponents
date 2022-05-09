@@ -31,7 +31,7 @@ NumberEdit &NumberEdit::min(double newValue)
 
 NumberEdit &NumberEdit::min(Definition<double> &&f)
 {
-    input().as<NumberInput>().min(std::move(f));
+    input().as<NumberInput>().min(move(f));
     return *this;
 }
 
@@ -48,7 +48,7 @@ NumberEdit &NumberEdit::max(double newValue)
 
 NumberEdit &NumberEdit::max(Definition<double> &&f)
 {
-    input().as<NumberInput>().max(std::move(f));
+    input().as<NumberInput>().max(move(f));
     return *this;
 }
 
@@ -65,7 +65,7 @@ NumberEdit &NumberEdit::precision(double newValue)
 
 NumberEdit &NumberEdit::precision(Definition<double> &&f)
 {
-    input().as<NumberInput>().precision(std::move(f));
+    input().as<NumberInput>().precision(move(f));
     return *this;
 }
 
@@ -82,7 +82,7 @@ NumberEdit &NumberEdit::decimalPoint(char newValue)
 
 NumberEdit &NumberEdit::decimalPoint(Definition<char> &&f)
 {
-    input().as<NumberInput>().decimalPoint(std::move(f));
+    input().as<NumberInput>().decimalPoint(move(f));
     return *this;
 }
 

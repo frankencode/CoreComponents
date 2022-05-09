@@ -20,15 +20,15 @@ class MatchNode final: public SyntaxNode
 public:
     /** \param match Function to use to match the next character (returns true if matches)
       */
-    explicit MatchNode(std::function<bool(char)> &&match);
+    explicit MatchNode(Fun<bool(char)> &&match);
 
 private:
     struct State;
 };
 
-inline SyntaxNode::SyntaxNode(std::function<bool(char)> &&match)
+inline SyntaxNode::SyntaxNode(Fun<bool(char)> &&match)
 {
-    *this = MatchNode{std::move(match)};
+    *this = MatchNode{move(match)};
 }
 
 } // namespace cc::syntax

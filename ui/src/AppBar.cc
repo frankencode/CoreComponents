@@ -75,16 +75,16 @@ struct AppBar::State final: public View::State
         return true;
     }
 
-    void onNavigate(Call<void()> &&f)
+    void onNavigate(Fun<void()> &&f)
     {
         addNavButton(Ideographic::Menu);
-        onNavButtonClicked(std::move(f));
+        onNavButtonClicked(move(f));
     }
 
-    void onDismissed(Call<void()> &&f)
+    void onDismissed(Fun<void()> &&f)
     {
         addNavButton(Ideographic::ArrowLeft);
-        onNavButtonClicked(std::move(f));
+        onNavButtonClicked(move(f));
     }
 
     Property<String> title;
@@ -121,19 +121,19 @@ AppBar &AppBar::title(const String &newValue)
 
 AppBar &AppBar::title(Definition<String> &&f)
 {
-    me().title(std::move(f));
+    me().title(move(f));
     return *this;
 }
 
-AppBar &AppBar::onNavigate(Call<void()> &&f)
+AppBar &AppBar::onNavigate(Fun<void()> &&f)
 {
-    me().onNavigate(std::move(f));
+    me().onNavigate(move(f));
     return *this;
 }
 
-AppBar &AppBar::onDismissed(Call<void()> &&f)
+AppBar &AppBar::onDismissed(Fun<void()> &&f)
 {
-    me().onDismissed(std::move(f));
+    me().onDismissed(move(f));
     return *this;
 }
 

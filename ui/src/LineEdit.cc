@@ -369,7 +369,7 @@ LineEdit &LineEdit::help(const String &newValue)
 LineEdit &LineEdit::help(Definition<String> &&f)
 {
     me().editPlus();
-    me().help(std::move(f));
+    me().help(move(f));
     return *this;
 }
 
@@ -388,7 +388,7 @@ LineEdit &LineEdit::error(const String &newValue)
 LineEdit &LineEdit::error(Definition<String> &&f)
 {
     me().editPlus();
-    me().error(std::move(f));
+    me().error(move(f));
     return *this;
 }
 
@@ -407,7 +407,7 @@ LineEdit &LineEdit::status(const String &newValue)
 LineEdit &LineEdit::status(Definition<String> &&f)
 {
     me().editPlus();
-    me().status(std::move(f));
+    me().status(move(f));
     return *this;
 }
 
@@ -435,27 +435,27 @@ LineEdit &LineEdit::trailing(const View &view)
     return *this;
 }
 
-LineEdit &LineEdit::onAccepted(Call<void()> &&f)
+LineEdit &LineEdit::onAccepted(Fun<void()> &&f)
 {
-    me().input_.onAccepted(std::move(f));
+    me().input_.onAccepted(move(f));
     return *this;
 }
 
-LineEdit &LineEdit::onRejected(Call<void()> &&f)
+LineEdit &LineEdit::onRejected(Fun<void()> &&f)
 {
-    me().input_.onRejected(std::move(f));
+    me().input_.onRejected(move(f));
     return *this;
 }
 
-LineEdit &LineEdit::accept(Call<bool()> &&f)
+LineEdit &LineEdit::accept(Fun<bool()> &&f)
 {
-    me().input_.accept(std::move(f));
+    me().input_.accept(move(f));
     return *this;
 }
 
-LineEdit &LineEdit::filter(Call<bool(Range range, InOut<String>)> &&f)
+LineEdit &LineEdit::filter(Fun<bool(Range range, InOut<String>)> &&f)
 {
-    me().input_.filter(std::move(f));
+    me().input_.filter(move(f));
     return *this;
 }
 

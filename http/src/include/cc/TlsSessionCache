@@ -10,7 +10,7 @@
 
 #include <cc/Object>
 #include <cc/Array>
-#include <cc/Call>
+#include <cc/Fun>
 #include <gnutls/gnutls.h>
 
 namespace cc {
@@ -27,7 +27,7 @@ class TlsSessionCache final: public Object
 public:
     TlsSessionCache() = default;
 
-    explicit TlsSessionCache(double refreshInterval, Call<void(const Bytes)> &&onKeyRefresh);
+    explicit TlsSessionCache(double refreshInterval, Fun<void(const Bytes)> &&onKeyRefresh);
 
     void prepareSessionResumption(gnutls_session_t session);
 

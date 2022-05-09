@@ -72,10 +72,10 @@ struct InputStream::State: public Object::State
         }
     }
 
-    void connect(const String &target, Call<void()> &&ready)
+    void connect(const String &target, Fun<void()> &&ready)
     {
         if (ready) {
-            onReady_ = std::move(ready);
+            onReady_ = move(ready);
         }
 
         const char *device = nullptr;
@@ -90,8 +90,8 @@ struct InputStream::State: public Object::State
     pa_stream *stream_ { nullptr };
     pa_sample_spec sampleSpec_ {};
     String name_;
-    Call<void()> onReady_;
-    Call<void(const Bytes &data)> sample_;
+    Fun<void()> onReady_;
+    Fun<void(const Bytes &data)> sample_;
     Bytes wrapping_;
 };
 
@@ -104,14 +104,14 @@ int InputStream::sampleRate() const
     return me().sampleSpec_.rate;
 }
 
-void InputStream::incoming(Call<void(const Bytes &data)> &&sample)
+void InputStream::incoming(Fun<void(const Bytes &data)> &&sample)
 {
-    me().sample_ = std::move(sample);
+    me().sample_ = move(sample);
 }
 
-void InputStream::connect(const String &target, Call<void()> &&ready)
+void InputStream::connect(const String &target, Fun<void()> &&ready)
 {
-    me().connect(target, std::move(ready));
+    me().connect(target, move(ready));
 }
 
 InputStream::State &InputStream::me()

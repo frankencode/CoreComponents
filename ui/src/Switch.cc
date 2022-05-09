@@ -87,7 +87,7 @@ Switch &Switch::text(const String &newValue)
 
 Switch &Switch::text(Definition<String> &&f)
 {
-    me().text_.text(std::move(f));
+    me().text_.text(move(f));
     return *this;
 }
 
@@ -104,7 +104,7 @@ Switch &Switch::value(bool newValue)
 
 Switch &Switch::value(Definition<bool> &&f)
 {
-    me().switch_.value(std::move(f));
+    me().switch_.value(move(f));
     return *this;
 }
 

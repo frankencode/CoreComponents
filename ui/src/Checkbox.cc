@@ -88,7 +88,7 @@ Checkbox &Checkbox::text(const String &newValue)
 
 Checkbox &Checkbox::text(Definition<String> &&f)
 {
-    me().text_.text(std::move(f));
+    me().text_.text(move(f));
     return *this;
 }
 

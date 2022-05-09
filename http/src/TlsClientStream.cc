@@ -79,7 +79,7 @@ struct TlsClientStream::State: public TlsStream::State
     }
 
     TlsClientOptions options_;
-    Call<void(const char *errorName)> tlsWarning_;
+    Fun<void(const char *errorName)> tlsWarning_;
     bool established_ { false };
 };
 
@@ -87,7 +87,7 @@ TlsClientStream::TlsClientStream(const Stream &stream, const TlsClientOptions &o
     TlsStream{new State{stream, options}}
 {}
 
-void TlsClientStream::onTlsWarning(Call<void(const char *errorName)> &&f)
+void TlsClientStream::onTlsWarning(Fun<void(const char *errorName)> &&f)
 {
     me().tlsWarning_ = f;
 }

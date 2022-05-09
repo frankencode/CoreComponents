@@ -54,8 +54,8 @@ struct TextInput::State: public InputControl::State
     Property<bool> textCursorVisible;
     Property<Range> selection;
 
-    Call<bool()> accept_;
-    Call<bool(Range range, InOut<String>)> filter_;
+    Fun<bool()> accept_;
+    Fun<bool(Range range, InOut<String>)> filter_;
     TextEditor editor_;
     Timer timer_ { 0.5 };
     bool shiftKey_ { false };

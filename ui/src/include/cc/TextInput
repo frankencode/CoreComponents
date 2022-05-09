@@ -48,8 +48,8 @@ public:
     TextInput &sizerText(const String &newValue); ///< %Set sizer text
     TextInput &sizerText(Definition<String> &&f); ///< %Define sizer text
 
-    TextInput &accept(Call<bool()> &&f); ///< Define acceptable input text
-    TextInput &filter(Call<bool(Range range, InOut<String>)> &&f); ///< Define text input filter
+    TextInput &accept(Fun<bool()> &&f); ///< Define acceptable input text
+    TextInput &filter(Fun<bool(Range range, InOut<String>)> &&f); ///< Define text input filter
 
     void selectAll();
 

@@ -60,41 +60,41 @@ struct Context::State: public Object::State
         static_cast<State *>(userData)->serverInfoReceived_(ServerInfo{serverInfo});
     }
 
-    void requestServerInfo(Call<void(const ServerInfo &)> &&handler)
+    void requestServerInfo(Fun<void(const ServerInfo &)> &&handler)
     {
-        serverInfoReceived_ = std::move(handler);
+        serverInfoReceived_ = move(handler);
 
         pa_operation_unref(
             pa_context_get_server_info(context_, &serverInfoReceived, this)
         );
     }
 
-    void connect(Call<void()> &&ready)
+    void connect(Fun<void()> &&ready)
     {
         CC_PULSE(pa_context_connect(context_, nullptr, PA_CONTEXT_NOFLAGS, nullptr));
-        onReady_ = std::move(ready);
+        onReady_ = move(ready);
     }
 
     MainLoop mainLoop_;
     String appName_;
     pa_context *context_ { nullptr };
 
-    Call<void()> onReady_;
-    Call<void(const ServerInfo &)> serverInfoReceived_;
+    Fun<void()> onReady_;
+    Fun<void(const ServerInfo &)> serverInfoReceived_;
 };
 
 Context::Context(const MainLoop &mainLoop, const String &appName):
     Object{new State{mainLoop, appName}}
 {}
 
-void Context::connect(Call<void()> &&ready)
+void Context::connect(Fun<void()> &&ready)
 {
-    me().connect(std::move(ready));
+    me().connect(move(ready));
 }
 
-void Context::requestServerInfo(Call<void(const ServerInfo &)> &&handler)
+void Context::requestServerInfo(Fun<void(const ServerInfo &)> &&handler)
 {
-    me().requestServerInfo(std::move(handler));
+    me().requestServerInfo(move(handler));
 }
 
 Context::operator pa_context *()

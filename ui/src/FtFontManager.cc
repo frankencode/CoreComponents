@@ -47,7 +47,7 @@ struct FtFontManager::State final: public FontManager::State
                 candidate.font().outlineHinting() == target.outlineHinting() &&
                 candidate.font().metricsHinting() == target.metricsHinting()
             )
-                return std::move(candidate);
+                return move(candidate);
         }
 
         FtFontFace fontFace =
@@ -58,7 +58,7 @@ struct FtFontManager::State final: public FontManager::State
         FtScaledFont scaledFont = FtScaledFont{fontFace, target};
         recentFonts.pushBack(scaledFont);
 
-        return std::move(scaledFont);
+        return move(scaledFont);
     }
 
     GlyphRun typeset(const String &text, const Font &font, const Point &origin) const override
@@ -218,7 +218,7 @@ struct FtFontManager::State final: public FontManager::State
         ftGlyphRun.me().glyphAdvances_ = glyphAdvances;
         ftGlyphRun.me().finalGlyphAdvance_ = glyphAdvance;
 
-        return std::move(ftGlyphRun);
+        return move(ftGlyphRun);
     }
 
     TextRun createTextRun() const override

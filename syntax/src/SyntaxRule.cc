@@ -33,7 +33,7 @@ struct SyntaxRule::State: public SyntaxNode::State
 
         if (range[1] != -1) {
             token.setRange(range);
-            production.children().emplaceBack(std::move(token));
+            production.children().emplaceBack(move(token));
         }
 
         return range[1];

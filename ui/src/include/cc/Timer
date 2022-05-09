@@ -37,9 +37,9 @@ public:
 
     /** Register function \a f to be called on timeout
       */
-    Timer &onTimeout(std::function<void()> &&f)
+    Timer &onTimeout(Fun<void()> &&f)
     {
-        me().timeout_(std::move(f));
+        me().timeout_(move(f));
         return *this;
     }
 

@@ -12,6 +12,7 @@
 #include <cc/Signal>
 #include <cc/SystemError>
 #include <cc/Object>
+#include <cc/Fun>
 #include <functional>
 #include <sched.h>
 
@@ -43,7 +44,7 @@ public:
       * \param f Entry point for thread execution
       * \param stackSize Size of stack to allocate for the new thread (-1 for system default)
       */
-    explicit Thread(std::function<void()> &&f, long stackSize = -1);
+    explicit Thread(Fun<void()> &&f, long stackSize = -1);
 
     /** Start the thread
       */

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/bst/OrdinalTree>
-#include <functional>
+#include <cc/Fun>
 
 namespace cc::bst {
 
@@ -105,7 +105,7 @@ public:
 
     Extent extentAt(long index) const;
     bool updateExtentAt(long index, Extent extent);
-    Extent updateExtentAt(long index, const std::function<Extent(Extent)> &f);
+    Extent updateExtentAt(long index, const Fun<Extent(Extent)> &f);
 
     void getItemExtentAt(long index, Out<Item> item, Out<Extent> extent = None{}) const;
     void getView(Extent pos0, Extent pos1, Out<long> index0, Out<long> index1, Out<Extent> itemPos0) const;
@@ -186,7 +186,7 @@ bool LayoutTree<Item, Extent>::updateExtentAt(long index, Extent extent)
 }
 
 template<class Item, class Extent>
-Extent LayoutTree<Item, Extent>::updateExtentAt(long index, const std::function<Extent(Extent)> &f)
+Extent LayoutTree<Item, Extent>::updateExtentAt(long index, const Fun<Extent(Extent)> &f)
 {
     Node *k = getNodeAt(index);
     Extent extent = f(k->itemExtent_);

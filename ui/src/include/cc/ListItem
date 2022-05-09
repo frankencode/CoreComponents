@@ -43,7 +43,7 @@ public:
 
     bool enabled() const { return me().enabled(); } ///< Tell if enabled
     ListItem &enabled(bool newValue) { me().enabled(newValue); return *this; } ///< %Set enabled
-    ListItem &enabled(Definition<bool> &&f) { me().enabled(std::move(f)); return *this; } ///< Define enabled
+    ListItem &enabled(Definition<bool> &&f) { me().enabled(move(f)); return *this; } ///< Define enabled
 
 private:
     friend class Object;

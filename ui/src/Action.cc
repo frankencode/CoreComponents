@@ -53,7 +53,7 @@ Action &Action::title(const String &newValue)
 
 Action &Action::title(Definition<String> &&f)
 {
-    me().title(std::move(f));
+    me().title(move(f));
     return *this;
 }
 
@@ -70,7 +70,7 @@ Action &Action::shortcut(const Shortcut &newValue)
 
 Action &Action::shortcut(Definition<Shortcut> &&f)
 {
-    me().shortcut(std::move(f));
+    me().shortcut(move(f));
     return *this;
 }
 
@@ -87,7 +87,7 @@ Action &Action::icon(const View &newValue)
 
 Action &Action::icon(Definition<View> &&f)
 {
-    me().icon(std::move(f));
+    me().icon(move(f));
     return *this;
 }
 

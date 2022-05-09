@@ -311,9 +311,9 @@ bool Application::pointerIsDragged(const PointerEvent &event, Point dragStart) c
     return (event.pos() - dragStart).absPow2() >= minDragDistance * minDragDistance;
 }
 
-void Application::postEvent(Call<void()> &&doNext)
+void Application::postEvent(Fun<void()> &&doNext)
 {
-    me().postEvent(std::move(doNext));
+    me().postEvent(move(doNext));
 }
 
 Application app()

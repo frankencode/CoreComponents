@@ -36,7 +36,7 @@ public:
 
     Image displayImage() const { return me().displayImage(); } ///< Get display image
     ImageView &displayImage(const Image &newValue) { me().displayImage(newValue); return *this; } ///< %Set display image
-    ImageView &displayImage(Definition<Image> &&f) { me().displayImage(std::move(f)); return *this; } ///< %Define display image
+    ImageView &displayImage(Definition<Image> &&f) { me().displayImage(move(f)); return *this; } ///< %Define display image
 
 private:
     struct State: public View::State

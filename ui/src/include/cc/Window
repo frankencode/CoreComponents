@@ -63,7 +63,7 @@ public:
     explicit Window(const View &view);
 
     String title() const { return me().title(); } ///< Get window title
-    Window &title(Definition<String> &&f) { me().title.define(std::move(f)); return *this; } ///< Define window title
+    Window &title(Definition<String> &&f) { me().title.define(move(f)); return *this; } ///< Define window title
     Window &title(const String &newValue) { me().title = newValue; return *this; } ///< %Set window title
 
     Point pos() const { return me().pos(); } ///< Get window position

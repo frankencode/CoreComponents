@@ -59,7 +59,7 @@ Text &Text::text(const String &newValue)
 
 Text &Text::text(Definition<String> &&f)
 {
-    me().text(std::move(f));
+    me().text(move(f));
     return *this;
 }
 
@@ -76,7 +76,7 @@ Text &Text::font(Font newValue)
 
 Text &Text::font(Definition<Font> &&f)
 {
-    me().font(std::move(f));
+    me().font(move(f));
     return *this;
 }
 
@@ -93,7 +93,7 @@ Text &Text::color(Color newValue)
 
 Text &Text::color(Definition<Color> &&f)
 {
-    me().color(std::move(f));
+    me().color(move(f));
     return *this;
 }
 
@@ -110,7 +110,7 @@ Text &Text::margin(Size newValue)
 
 Text &Text::margin(Definition<Size> &&f)
 {
-    me().margin(std::move(f));
+    me().margin(move(f));
     return *this;
 }
 
@@ -127,7 +127,7 @@ Text &Text::maxWidth(double newValue)
 
 Text &Text::maxWidth(Definition<double> &&f)
 {
-    me().maxWidth(std::move(f));
+    me().maxWidth(move(f));
     return *this;
 }
 
@@ -144,13 +144,13 @@ Text &Text::textAlign(TextAlign newValue)
 
 Text &Text::textAlign(Definition<TextAlign> &&f)
 {
-    me().textAlign(std::move(f));
+    me().textAlign(move(f));
     return *this;
 }
 
 Text &Text::baselineStart(Definition<Point> &&a)
 {
-    me().baselineStart(std::move(a));
+    me().baselineStart(move(a));
     return *this;
 }
 

@@ -244,7 +244,7 @@ ScrollBar &ScrollBar::visibleOffset(double newValue)
 
 ScrollBar &ScrollBar::visibleOffset(Definition<double> &&f)
 {
-    me().visibleOffset(std::move(f));
+    me().visibleOffset(move(f));
     return *this;
 }
 
@@ -261,7 +261,7 @@ ScrollBar &ScrollBar::totalExtent(double newValue)
 
 ScrollBar &ScrollBar::totalExtent(Definition<double> &&f)
 {
-    me().totalExtent(std::move(f));
+    me().totalExtent(move(f));
     return *this;
 }
 
@@ -278,7 +278,7 @@ ScrollBar &ScrollBar::autoHide(bool newValue)
 
 ScrollBar &ScrollBar::autoHide(Definition<bool> &&f)
 {
-    me().autoHide(std::move(f));
+    me().autoHide(move(f));
     return *this;
 }
 

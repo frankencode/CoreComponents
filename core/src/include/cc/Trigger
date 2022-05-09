@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Queue>
-#include <cc/Call>
+#include <cc/Fun>
 
 namespace cc {
 
@@ -22,7 +22,7 @@ class Trigger
 public:
     /** Connect a new listener \a f
       */
-    void connect(Call<void()> &&f) const { queue_.emplaceBack(std::move(f)); }
+    void connect(Fun<void()> &&f) const { queue_.emplaceBack(move(f)); }
 
     /** Report state change to all listeners
       */
@@ -38,7 +38,7 @@ public:
 
     /** \copydoc connect()
       */
-    void operator()(Call<void()> &&f) const { connect(std::move(f)); }
+    void operator()(Fun<void()> &&f) const { connect(move(f)); }
 
     /** \copydoc emit()
       */
@@ -47,7 +47,7 @@ public:
 private:
     friend struct PropertyBinding;
 
-    mutable Queue<Call<void()>> queue_;
+    mutable Queue<Fun<void()>> queue_;
 };
 
 } // namespace cc

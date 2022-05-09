@@ -43,11 +43,11 @@ public:
 
     double radius() const { return me().radius(); } ///< Get radius
     Box &radius(double newValue) { me().radius(newValue); return *this; } ///< %Set radius
-    Box &radius(Definition<double> &&f) { me().radius(std::move(f)); return *this; } ///< %Define radius
+    Box &radius(Definition<double> &&f) { me().radius(move(f)); return *this; } ///< %Define radius
 
     Color color() const { return me().color(); } ///< Get color
     Box &color(Color newValue) { me().color(newValue); return *this; } ///< %Set color
-    Box &color(Definition<Color> &&f) { me().color(std::move(f)); return *this; } ///< %Define color
+    Box &color(Definition<Color> &&f) { me().color(move(f)); return *this; } ///< %Define color
 
 protected:
     struct State: public View::State

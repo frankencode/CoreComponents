@@ -85,7 +85,7 @@ NumberCell &NumberCell::min(double newValue)
 NumberCell &NumberCell::min(Definition<double> &&f)
 {
     me().autoConnect_ = false;
-    me().input_.min(std::move(f));
+    me().input_.min(move(f));
     return *this;
 }
 
@@ -104,7 +104,7 @@ NumberCell &NumberCell::max(double newValue)
 NumberCell &NumberCell::max(Definition<double> &&f)
 {
     me().autoConnect_ = false;
-    me().input_.max(std::move(f));
+    me().input_.max(move(f));
     return *this;
 }
 
@@ -123,7 +123,7 @@ NumberCell &NumberCell::precision(double newValue)
 NumberCell &NumberCell::precision(Definition<double> &&f)
 {
     me().autoConnect_ = false;
-    me().input_.precision(std::move(f));
+    me().input_.precision(move(f));
     return *this;
 }
 
@@ -140,7 +140,7 @@ NumberCell &NumberCell::decimalPoint(char newValue)
 
 NumberCell &NumberCell::decimalPoint(Definition<char> &&f)
 {
-    me().input_.decimalPoint(std::move(f));
+    me().input_.decimalPoint(move(f));
     return *this;
 }
 

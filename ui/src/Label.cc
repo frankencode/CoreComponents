@@ -160,7 +160,7 @@ Label &Label::text(const String &newValue)
 
 Label &Label::text(Definition<String> &&f)
 {
-    me().text(std::move(f));
+    me().text(move(f));
     return *this;
 }
 
@@ -177,7 +177,7 @@ Label &Label::font(Font newValue)
 
 Label &Label::font(Definition<Font> &&f)
 {
-    me().font(std::move(f));
+    me().font(move(f));
     return *this;
 }
 
@@ -200,7 +200,7 @@ Label &Label::color(Color newValue)
 
 Label &Label::color(Definition<Color> &&f)
 {
-    me().color(std::move(f));
+    me().color(move(f));
     return *this;
 }
 
@@ -223,7 +223,7 @@ Label &Label::margin(Size newValue)
 
 Label &Label::margin(Definition<Size> &&f)
 {
-    me().margin(std::move(f));
+    me().margin(move(f));
     return *this;
 }
 
@@ -240,7 +240,7 @@ Label &Label::maxWidth(double newValue)
 
 Label &Label::maxWidth(Definition<double> &&f)
 {
-    me().maxWidth(std::move(f));
+    me().maxWidth(move(f));
     return *this;
 }
 
@@ -256,19 +256,19 @@ Point Label::textCenterLeft() const
 
 Label &Label::baselineStart(Definition<Point> &&a)
 {
-    me().baselineStart(std::move(a));
+    me().baselineStart(move(a));
     return *this;
 }
 
 Label &Label::baselineEnd(Definition<Point> &&a)
 {
-    me().baselineEnd(std::move(a));
+    me().baselineEnd(move(a));
     return *this;
 }
 
 Label &Label::textCenterLeft(Definition<Point> &&a)
 {
-    me().textCenterLeft(std::move(a));
+    me().textCenterLeft(move(a));
     return *this;
 }
 

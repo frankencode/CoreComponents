@@ -37,11 +37,11 @@ public:
 
     /** Register function to call when user requests to navigate the application
       */
-    AppBar &onNavigate(Call<void()> &&f);
+    AppBar &onNavigate(Fun<void()> &&f);
 
     /** Register function to call when user requests to leave screen
       */
-    AppBar &onDismissed(Call<void()> &&f);
+    AppBar &onDismissed(Fun<void()> &&f);
 
 protected:
     struct State;

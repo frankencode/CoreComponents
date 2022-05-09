@@ -20,16 +20,16 @@ namespace cc {
 class Monitor final: public Object
 {
 public:
-    explicit Monitor(std::function<void()> &&f):
-        Object{new State{std::move(f)}}
+    explicit Monitor(Fun<void()> &&f):
+        Object{new State{move(f)}}
     {}
 
 private:
     struct State final: public Object::State
     {
-        State(std::function<void()> &&f)
+        State(Fun<void()> &&f)
         {
-            p_(std::move(f));
+            p_(move(f));
         }
 
         Property<void> p_;
@@ -39,15 +39,15 @@ private:
 class OnEndOfLife final: public Object
 {
 public:
-    OnEndOfLife(std::function<void()> &&f):
-        Object{new State{std::move(f)}}
+    OnEndOfLife(Fun<void()> &&f):
+        Object{new State{move(f)}}
     {}
 
 private:
     struct State final: public Object::State
     {
-        State(std::function<void()> &&f):
-            f_{std::move(f)}
+        State(Fun<void()> &&f):
+            f_{move(f)}
         {}
 
         ~State()
@@ -55,7 +55,7 @@ private:
             f_();
         }
 
-        std::function<void()> f_;
+        Fun<void()> f_;
     };
 };
 

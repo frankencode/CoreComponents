@@ -34,7 +34,7 @@ public:
 
     /** Invoke custom initialization function \a f
       */
-    ListView &populate(std::function<void(ListView)> &&f)
+    ListView &populate(Fun<void(ListView)> &&f)
     {
         f(grab<ListView>());
         return *this;

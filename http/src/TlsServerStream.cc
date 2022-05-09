@@ -40,7 +40,7 @@ struct TlsServerStream::State: public TlsStream::State
 
     void handshake(TlsServiceSelector &&serviceSelector, int timeout)
     {
-        TlsHelloContext{}.init(peerAddress_, std::move(serviceSelector));
+        TlsHelloContext{}.init(peerAddress_, move(serviceSelector));
         timeout_ = timeout;
 
         while (true) {
@@ -92,7 +92,7 @@ TlsServerStream::TlsServerStream(const Stream &stream, const SocketAddress &peer
 
 void TlsServerStream::handshake(TlsServiceSelector &&serviceSelector, int timeout)
 {
-    me().handshake(std::move(serviceSelector), timeout);
+    me().handshake(move(serviceSelector), timeout);
 }
 
 TlsServerStream::State &TlsServerStream::me()
