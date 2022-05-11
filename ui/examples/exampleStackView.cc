@@ -34,6 +34,7 @@ int main()
     View screen;
     LineEdit edit;
 
+    #if 1
     screen
     .add(
         Flickable{
@@ -85,7 +86,24 @@ int main()
         .title("Edit user")
         .onDismissed([&]{ stack.pop(); })
     )
-    .onEndOfLife([]{ CC_DEBUG << "FIN.2" << nl; });
+    .onEndOfLife([]{ ferr() << "FIN.2" << nl; });
+    #endif
+
+    #if 0
+    screen
+    .add(
+        Control{}
+        .pos(20, 20)
+        .size(100, 100)
+        .paper("darkred")
+        .onEndOfLife([]{ CC_DEBUG << "FIN.1.2" << nl; })
+    )
+    .onPointerReleased([&](auto) mutable{
+        stack.pop();
+        return true;
+    })
+    .onEndOfLife([]{ CC_DEBUG << "FIN.1" << nl; });
+    #endif
 
     return
         StackView{screenWidth, screenHeight, &stack}
@@ -99,13 +117,18 @@ int main()
                             ListItem{}
                             .icon(Picture{Ideographic::AccessPoint, 28})
                             .text(Format{"User %%"}.arg(i))
-                            .onClicked([=]() mutable { // FIXME: [stack, i, &screen]
+                            .onClicked([stack, i, &screen]() mutable {
                                 CC_INSPECT(i);
                                 stack.push(screen);
-                                /*stack.push( //! \todo resolve issue with this screen, clicking on the red square causes issues
+                                #if 0
+                                stack.push( //!\todo FIXME on-demand created/destroyed screens cause severe issues
                                     View{}
                                     .add(
                                         Control{}
+                                        .onClicked([=]() mutable {
+                                            CC_DEBUG;
+                                            stack.pop();
+                                        })
                                         .pos(20, 20)
                                         .size(100, 100)
                                         .paper("darkred")
@@ -115,8 +138,9 @@ int main()
                                         stack.pop();
                                         return true;
                                     })
-                                    .onEndOfLife([]{ CC_DEBUG << "FIN.1" << nl; })
-                                );*/
+                                    .onEndOfLife([]{ ferr() << "FIN.1" << nl; })
+                                );
+                                #endif
                             })
                         );
                     }
@@ -131,5 +155,6 @@ int main()
                 .onNavigate([]{ ferr() << "Navigate!" << nl; })
             )
         )
+        .onEndOfLife([]{ ferr() << "FIN.0" << nl; })
         .run();
 }

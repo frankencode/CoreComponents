@@ -223,19 +223,12 @@ void View::State::insertChild(View child)
 void View::State::removeChild(View child)
 {
     children_.remove(child);
-    if (child.visible()) {
-        visibleChildren_.remove(child);
-    }
-    Application{}.postEvent(
-        [child]() mutable {
-            Application{}.disengage(child);
-            child = Control{};
-        }
-    );
-    child->parent_ = nullptr;
-    child->id_ = std::numeric_limits<double>::quiet_NaN();
     childDone(&child);
     --childrenCount;
+    Application{}.postEvent([parent=alias<View>(this), child]() mutable {
+        if (child.visible()) parent->visibleChildren_.remove(child);
+        Application{}.disengage(child);
+    });
 }
 
 void View::State::moveToTop(View child)
@@ -421,7 +414,7 @@ bool View::State::feedMouseEvent(MouseEvent &event) const
     {
         if (child.containsGlobal(event.pos()))
         {
-            if (child.me().feedMouseEvent(event))
+            if (child->feedMouseEvent(event))
                 return true;
         }
     }
@@ -441,7 +434,7 @@ bool View::State::feedWheelEvent(WheelEvent &event) const
     {
         if (child.me().containsGlobal(event.mousePos()))
         {
-            if (child.me().feedWheelEvent(event))
+            if (child->feedWheelEvent(event))
                 return true;
         }
     }
@@ -462,7 +455,7 @@ bool View::State::feedKeyEvent(KeyEvent &event) const
 
     for (const View &child: visibleChildren_)
     {
-        if (child.me().feedKeyEvent(event))
+        if (child->feedKeyEvent(event))
             return true;
     }
 

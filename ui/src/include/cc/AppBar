@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class AppBar cc/AppBar
   * \ingroup ui
-  * \brief Application title and navigation bar
+  * \brief %Application title and navigation bar
   */
 class AppBar final: public View
 {

@@ -8,6 +8,7 @@
 
 #include <cc/StackView>
 #include <cc/RenderView>
+#include <cc/Application>
 #include <cc/DEBUG>
 
 namespace cc {
@@ -79,9 +80,10 @@ struct StackView::State final: public View::State
         postmortem_.image().clear(basePaper());
         topView.renderTo(postmortem_.image());
         postmortem_.update();
-        carrier_.remove(topView);
         stack_.popBack();
-        CC_INSPECT(topView.useCount());
+        Application{}.postEvent([carrier=carrier_, topView]() mutable {
+            carrier.remove(topView);
+        });
     }
 
     void home()

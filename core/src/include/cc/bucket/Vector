@@ -65,6 +65,9 @@ public:
     template<class Access = Item>
     static Access &value(const Locator &target)
     {
+        assert(*target.revisionPtr_ == target.revisionSaved_); // cannot access container with undefined locator
+        assert(target); // locator needs to be valid
+
         return static_cast<Leaf *>(target.stop_)->at(target.egress_);
     }
 
