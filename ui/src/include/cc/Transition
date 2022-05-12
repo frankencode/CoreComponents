@@ -60,8 +60,15 @@ private:
             timer_.onTimeout([this]{timeout();});
         }
 
+        ~State()
+        {
+            timer_.stop();
+        }
+
         void timeout()
         {
+            if (!timer_) return;
+
             const double t0 = timer_.startTime();
             const double t1 = t0 + duration_;
             const double t = System::now();

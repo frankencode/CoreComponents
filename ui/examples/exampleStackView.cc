@@ -34,77 +34,6 @@ int main()
     View screen;
     LineEdit edit;
 
-    #if 1
-    screen
-    .add(
-        Flickable{
-            screenWidth, screenHeight - appBarHeight,
-            Pane{}
-            // .add(Button{}.text("OK").onClicked([&]() mutable { stack.pop(); }))
-            .add(LineEdit{"First name", &edit})
-            .add(LineEdit{"Family name"})
-            .add(
-                NumberEdit{"Age"}
-                .value(-1)
-                .min(0)
-                .max(1000)
-                //! \todo allow to step focus, when left empty
-            )
-            .add(Divider{})
-            .add(Checkbox{"Dessert", &dessert})
-            .add(Checkbox{"Apple"}.groupUnder(dessert))
-            .add(Checkbox{"Banana"}.groupUnder(dessert))
-            .add(Divider{})
-            .add(
-                PasswordEdit{"Enter password", &passwordField}
-                .onAccepted([=]{
-                    CC_INSPECT(passwordField.password());
-                })
-            )
-            .add(PasswordEdit{"Repeat password"})
-            .add(Switch{"Super user"})
-            .add(Switch{"Tutorial mode"})
-            .add(LineEdit{"Street address"})
-            .add(LineEdit{"Zip code"})
-            .add(
-                Slider{}
-                .leading(Icon{Ideographic::VolumeLow})
-                .trailing(Icon{Ideographic::VolumeHigh})
-            )
-            .add(LineEdit{"Country"})
-            .layout(
-                ColumnLayout{}
-                .margin(gap) //! \todo should have a sensible non-zero default
-                .spacing(gap)
-            )
-        }
-        .size([&]{ return screen.size() - Size{0, appBarHeight}; })
-        .pos(0, appBarHeight)
-    )
-    .add(
-        AppBar{}
-        .title("Edit user")
-        .onDismissed([&]{ stack.pop(); })
-    )
-    .onEndOfLife([]{ ferr() << "FIN.2" << nl; });
-    #endif
-
-    #if 0
-    screen
-    .add(
-        Control{}
-        .pos(20, 20)
-        .size(100, 100)
-        .paper("darkred")
-        .onEndOfLife([]{ CC_DEBUG << "FIN.1.2" << nl; })
-    )
-    .onPointerReleased([&](auto) mutable{
-        stack.pop();
-        return true;
-    })
-    .onEndOfLife([]{ CC_DEBUG << "FIN.1" << nl; });
-    #endif
-
     return
         StackView{screenWidth, screenHeight, &stack}
         .push(
@@ -117,30 +46,63 @@ int main()
                             ListItem{}
                             .icon(Picture{Ideographic::AccessPoint, 28})
                             .text(Format{"User %%"}.arg(i))
-                            .onClicked([stack, i, &screen]() mutable {
+                            .onClicked([=]() mutable {
                                 CC_INSPECT(i);
-                                stack.push(screen);
-                                #if 0
-                                stack.push( //!\todo FIXME on-demand created/destroyed screens cause severe issues
-                                    View{}
+                                stack.push(
+                                    View{&screen}
                                     .add(
-                                        Control{}
-                                        .onClicked([=]() mutable {
-                                            CC_DEBUG;
-                                            stack.pop();
+                                        Flickable{
+                                            screenWidth, screenHeight - appBarHeight,
+                                            Pane{}
+                                            .add(LineEdit{"First name", &edit})
+                                            .add(LineEdit{"Family name"})
+                                            .add(
+                                                NumberEdit{"Age"}
+                                                .value(-1)
+                                                .min(0)
+                                                .max(1000)
+                                                //! \todo allow to step focus, when left empty
+                                            )
+                                            .add(Divider{})
+                                            .add(Checkbox{"Dessert", &dessert})
+                                            .add(Checkbox{"Apple"}.groupUnder(dessert))
+                                            .add(Checkbox{"Banana"}.groupUnder(dessert))
+                                            .add(Divider{})
+                                            .add(
+                                                PasswordEdit{"Enter password", &passwordField}
+                                                .onAccepted([=]{
+                                                    CC_INSPECT(passwordField.password());
+                                                })
+                                            )
+                                            .add(PasswordEdit{"Repeat password"})
+                                            .add(Switch{"Super user"})
+                                            .add(Switch{"Tutorial mode"})
+                                            .add(LineEdit{"Street address"})
+                                            .add(LineEdit{"Zip code"})
+                                            .add(
+                                                Slider{}
+                                                .leading(Icon{Ideographic::VolumeLow})
+                                                .trailing(Icon{Ideographic::VolumeHigh})
+                                            )
+                                            .add(LineEdit{"Country"})
+                                            .layout(
+                                                ColumnLayout{}
+                                                .margin(gap) //! \todo should have a sensible non-zero default
+                                                .spacing(gap)
+                                            )
+                                        }
+                                        .size([=,&screen]() { //! \todo FIXME not using "&screen" causes memory bleed?!
+                                            return screen.size() - Size{0, appBarHeight};
                                         })
-                                        .pos(20, 20)
-                                        .size(100, 100)
-                                        .paper("darkred")
-                                        .onEndOfLife([]{ CC_DEBUG << "FIN.1.2" << nl; })
+                                        .pos(0, appBarHeight)
                                     )
-                                    .onPointerReleased([=](auto) mutable{
-                                        stack.pop();
-                                        return true;
-                                    })
-                                    .onEndOfLife([]{ ferr() << "FIN.1" << nl; })
+                                    .add(
+                                        AppBar{}
+                                        .title(Format{"Edit User %%"}.arg(i))
+                                        .onDismissed([=]() mutable { stack.pop(); })
+                                    )
+                                    .onEndOfLife([]{ ferr() << "screen destroyed" << nl; })
                                 );
-                                #endif
                             })
                         );
                     }
@@ -155,6 +117,6 @@ int main()
                 .onNavigate([]{ ferr() << "Navigate!" << nl; })
             )
         )
-        .onEndOfLife([]{ ferr() << "FIN.0" << nl; })
+        .onEndOfLife([]{ ferr() << "stack destroyed" << nl; })
         .run();
 }

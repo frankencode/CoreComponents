@@ -390,6 +390,8 @@ SdlApplication::SdlApplication():
 
 void SdlApplication::triggerTimer(const Timer &timer)
 {
+    if (!timer) return;
+
     SDL_Event event;
     SDL_memset(&event, 0, sizeof(event));
     event.type = me().timerEvent_;

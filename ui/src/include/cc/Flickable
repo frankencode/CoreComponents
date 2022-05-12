@@ -73,6 +73,7 @@ protected:
     struct State: public Organizer::State
     {
         State(const View &pane = Pane{});
+        ~State();
 
         View pane() const { return pane_; }
 

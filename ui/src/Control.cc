@@ -13,13 +13,32 @@ namespace cc {
 
 Control::State::State()
 {
-    hover([this]{ return isParentOf(Application{}.hoverControl()); });
-    pressed([this]{ return pressedOverwrite() || isParentOf(Application{}.pressedControl()); });
-    focus([this]{ return isParentOf(Application{}.focusControl()) && window() == Application{}.focusWindow(); });
-}
+    hover([this]{
+        if (Application{}.hoverControl() == this) return true;
+        for (Control d = delegate(); d; d = d->delegate()) {
+            if (Application{}.hoverControl() == d) return true;
+        }
+        return false;
+    });
 
-Control::State::~State()
-{}
+    focus([this]{
+        if (window() != Application{}.focusWindow()) return false;
+        if (Application{}.focusControl() == this) return true;
+        for (Control d = delegate(); d; d = d->delegate()) {
+            if (Application{}.focusControl() == d) return true;
+        }
+        return false;
+    });
+
+    pressed([this]{
+        if (pressedOverwrite()) return true;
+        if (Application{}.pressedControl() == this) return true;
+        for (Control d = delegate(); d; d = d->delegate()) {
+            if (Application{}.pressedControl() == d) return true;
+        }
+        return false;
+    });
+}
 
 void Control::State::grabFocus()
 {

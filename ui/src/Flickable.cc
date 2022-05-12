@@ -141,6 +141,11 @@ Flickable::State::State(const View &pane):
     });
 }
 
+Flickable::State::~State()
+{
+    timer_.stop();
+}
+
 void Flickable::State::preheat()
 {}
 

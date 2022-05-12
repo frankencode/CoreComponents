@@ -514,6 +514,8 @@ public:
 
     ///@}
 
+    bool operator==(const View &other) const { return Object::me == other.Object::me; }
+
 protected:
     friend class Object;
     friend class Application;
@@ -774,6 +776,8 @@ protected:
         if (!Object::me) Object::me = onDemand_();
         return Object::me.as<State>();
     }
+
+    bool operator==(const State *other) const { return Object::me && &me() == other; }
 
 private:
     friend class Painter;

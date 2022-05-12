@@ -151,7 +151,13 @@ Control View::State::findControl(Point l) const
 bool View::State::isParentOf(const View &other) const
 {
     if (!other) return false;
-    for (const View::State *h = &other.me(); h; h = h->parent_()) {
+    if (other == this) return true;
+
+    for (
+        const View::State *h = &other.me();
+        h;
+        h = h->parent_()
+    ) {
         if (h == this) return true;
     }
     return false;
@@ -225,9 +231,10 @@ void View::State::removeChild(View child)
     children_.remove(child);
     childDone(&child);
     --childrenCount;
+
     Application{}.postEvent([parent=alias<View>(this), child]() mutable {
-        if (child.visible()) parent->visibleChildren_.remove(child);
         Application{}.disengage(child);
+        if (child.visible()) parent->visibleChildren_.remove(child);
     });
 }
 
@@ -273,7 +280,7 @@ Image &View::State::image()
 
 View View::State::self() const
 {
-    return Object::alias<View>(this);
+    return Object::alias<View>(this); // FIXME: weak?!
 }
 
 bool View::State::hasWindow() const

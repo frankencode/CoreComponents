@@ -19,6 +19,7 @@ namespace cc {
 
 void Application::State::notifyTimer(const Timer &timer)
 {
+    if (!timer) return;
     if (timer.interval() > 0) {
         TimeMaster{}.ack();
     }

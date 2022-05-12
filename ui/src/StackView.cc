@@ -9,7 +9,6 @@
 #include <cc/StackView>
 #include <cc/RenderView>
 #include <cc/Application>
-#include <cc/DEBUG>
 
 namespace cc {
 
@@ -38,17 +37,9 @@ struct StackView::State final: public View::State
                     return size();
                 })
             )
-            /*.attach([this]{
-                CC_INSPECT(carrier_.size());
-                CC_INSPECT(carrier_.pos());
-                CC_INSPECT(screensCount());
-            })*/
         );
 
-        attach([this]{
-            size();
-            postmortem_.visible(false);
-        });
+        size.onChanged([this]{ postmortem_.visible(false); });
     }
 
     int screensCount() const { return carrier_.childrenCount() - 1/*postmortem_*/; }
