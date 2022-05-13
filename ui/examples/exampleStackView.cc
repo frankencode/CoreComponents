@@ -20,8 +20,6 @@ int main()
     using namespace cc;
 
     const double gap = sp(16);
-    const double screenWidth = sp(480);
-    const double screenHeight = sp(800);
     const double appBarHeight = AppBar::height();
 
     StackView stack;
@@ -35,7 +33,7 @@ int main()
     LineEdit edit;
 
     return
-        StackView{screenWidth, screenHeight, &stack}
+        StackView{sp(480), sp(800), &stack}
         .push(
             View{}
             .add(
@@ -52,7 +50,6 @@ int main()
                                     View{&screen}
                                     .add(
                                         Flickable{
-                                            screenWidth, screenHeight - appBarHeight,
                                             Pane{}
                                             .add(LineEdit{"First name", &edit})
                                             .add(LineEdit{"Family name"})
@@ -91,7 +88,7 @@ int main()
                                                 .spacing(gap)
                                             )
                                         }
-                                        .size([=,&screen]() { //! \todo FIXME not using "&screen" causes memory bleed?!
+                                        .size([=]{
                                             return screen.size() - Size{0, appBarHeight};
                                         })
                                         .pos(0, appBarHeight)

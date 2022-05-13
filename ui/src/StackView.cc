@@ -49,7 +49,7 @@ struct StackView::State final: public View::State
         carrier_.posEasing(
             Easing::Bezier{0.5, 0.0, 0.5, 1.0},
             0.3,
-            [this]{ return sizing(); }
+            [this]{ return sizing() || homing(); }
         );
     }
 
@@ -79,15 +79,18 @@ struct StackView::State final: public View::State
 
     void home()
     {
+        homing(true);
         while (stack_.count() > 1) {
             carrier_.remove(stack_.last());
             stack_.popBack();
         }
+        homing(false);
     }
 
     View carrier_;
     RenderView postmortem_;
     List<View> stack_;
+    Property<bool> homing { false };
 };
 
 StackView::StackView():
@@ -125,7 +128,14 @@ void StackView::pop()
 
 void StackView::home()
 {
-    me().home();
+    Application{}.postEvent([s=*this]() mutable {
+        s.home();
+    });
+}
+
+int StackView::count() const
+{
+    return me().carrier_.childrenCount() - 1;
 }
 
 const View &StackView::carrier() const

@@ -76,7 +76,9 @@ public:
         state_{other.state_}
     {
         if (state_) {
-            decode(state_)->acquire();
+            if (!isWeak(state_)) {
+                decode(state_)->acquire();
+            }
         }
     }
 

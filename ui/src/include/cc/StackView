@@ -43,14 +43,18 @@ public:
       */
     void home();
 
+    /** Current number of screens
+      */
+    int count() const;
+
     /** %Set easing for screen transition
       */
     StackView &easing(const EasingCurve &easing, double duration);
 
-    const View &carrier() const;
-
 private:
     struct State;
+
+    const View &carrier() const;
 
     State &me();
     const State &me() const;
