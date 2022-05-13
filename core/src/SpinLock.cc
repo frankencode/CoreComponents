@@ -30,29 +30,28 @@ SpinLock::~SpinLock()
 bool SpinLock::tryAcquire()
 {
     VALGRIND_HG_MUTEX_LOCK_PRE(&flag_, 1);
-    bool ok = __sync_bool_compare_and_swap(&flag_, 0, 1);
+    bool gotIt = !flag_.test_and_set(std::memory_order_acquire);
     VALGRIND_HG_MUTEX_LOCK_POST(&flag_);
-    return ok;
+    return gotIt;
 }
 
 void SpinLock::acquire()
 {
     VALGRIND_HG_MUTEX_LOCK_PRE(&flag_, 0);
-    while (!__sync_bool_compare_and_swap(&flag_, 0, 1)) yield();
+    while (flag_.test_and_set(std::memory_order_acquire)) yield();
     VALGRIND_HG_MUTEX_LOCK_POST(&flag_);
 }
 
 void SpinLock::release()
 {
     VALGRIND_HG_MUTEX_UNLOCK_PRE(&flag_);
-    __sync_bool_compare_and_swap(&flag_, 1, 0);
+    flag_.clear(std::memory_order_release);
     VALGRIND_HG_MUTEX_UNLOCK_POST(&flag_);
 }
 
 #else
 
 SpinLock::SpinLock():
-    flag_{0}
 {}
 
 SpinLock::~SpinLock()
@@ -60,17 +59,17 @@ SpinLock::~SpinLock()
 
 bool SpinLock::tryAcquire()
 {
-    return __sync_bool_compare_and_swap(&flag_, 0, 1);
+    return !flag_.test_and_set(std::memory_order_acquire);
 }
 
 void SpinLock::acquire()
 {
-    while (!__sync_bool_compare_and_swap(&flag_, 0, 1)) yield();
+    while (flag_.test_and_set(std::memory_order_acquire)) yield();
 }
 
 void SpinLock::release()
 {
-    flag_ = 0;
+    flag_.clear(std::memory_order_release);
 }
 #endif // def CC_VALGRIND
 

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/Guard>
+#include <atomic>
 
 namespace cc {
 
@@ -44,7 +45,7 @@ public:
 
 private:
     void yield();
-    volatile char flag_;
+    std::atomic_flag flag_;
 };
 
 } // namespace cc
