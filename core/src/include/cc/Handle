@@ -122,6 +122,7 @@ public:
       */
     Handle &operator=(Handle &&other)
     {
+        release();
         state_ = other.state_;
         #ifndef NDEBUG
         if (isWeak(other.state_)) {
@@ -164,7 +165,6 @@ public:
       */
     operator bool() const
     {
-        // assert(!isWeak(state_)); // Nullness is much uncertain for non-null weak references
         return state_;
     }
 

@@ -17,10 +17,17 @@ struct PointerIntegrity::State
 {
     using PointerSetByTarget = Map<void *, Set<void **> >;
 
+    static State *instance()
+    {
+        static State *instance = new State;
+            /** Bleeding here on purpose to keep service available until the very end of program.
+              */
+        return instance;
+    }
+
     void addPointer(void *target, void **pointer)
     {
         Guard<SpinLock> guard{lock_};
-
         Locator locator;
         if (!pointerSetByTarget_.find(target, &locator)) {
             pointerSetByTarget_.insert(target, Set<void **>{}, &locator);
@@ -41,7 +48,7 @@ struct PointerIntegrity::State
         }
     }
 
-    void onEndOfLife(void *target)
+    void endOfLife(void *target)
     {
         Guard<SpinLock> guard{lock_};
         Locator locator;
@@ -68,21 +75,15 @@ void PointerIntegrity::dropPointer(void *&pointer)
     me().dropPointer(pointer, &pointer);
 }
 
-void PointerIntegrity::onEndOfLife(void *target)
+void PointerIntegrity::endOfLife(void *target)
 {
-    me().onEndOfLife(target);
-}
-
-PointerIntegrity::State &PointerIntegrity::slowMe()
-{
-    static State instance;
-    return instance;
+    me().endOfLife(target);
 }
 
 PointerIntegrity::State &PointerIntegrity::me()
 {
-    thread_local State &instance = slowMe();
-    return instance;
+    thread_local State *localInstance = State::instance();
+    return *localInstance;
 }
 
 } // namespace cc

@@ -105,7 +105,11 @@ protected:
         /** Virtual destructor
           */
         virtual ~State()
-        {}
+        {
+            #ifndef NDEBUG
+            PointerIntegrity::endOfLife(this);
+            #endif
+        }
 
         /** Reference count
           */

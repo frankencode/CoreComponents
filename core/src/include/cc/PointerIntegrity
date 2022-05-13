@@ -20,12 +20,12 @@ public:
     static void addPointer(void *&pointer);
     static void dropPointer(void *&pointer);
 
-    static void onEndOfLife(void *target);
+    static void endOfLife(void *target);
 
 private:
     struct State;
 
-    static State &slowMe();
+    static State *slowMe();
     static State &me();
 };
 
