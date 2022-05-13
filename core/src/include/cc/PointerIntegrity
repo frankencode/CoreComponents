@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \internal
+  * \class PointerIntegrity cc/PointerIntegrity
+  * \brief Process-wide singleton to track weak pointers
+  */
+class PointerIntegrity
+{
+public:
+    static void addPointer(void *&pointer);
+    static void dropPointer(void *&pointer);
+
+    static void onEndOfLife(void *target);
+
+private:
+    struct State;
+
+    static State &slowMe();
+    static State &me();
+};
+
+} // namespace cc

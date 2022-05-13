@@ -12,6 +12,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <cassert>
+#ifndef NDEBUG
+#include <cc/PointerIntegrity>
+#endif
 
 namespace cc {
 
@@ -64,6 +67,9 @@ public:
         state_{encode(state, true)}
     {
         assert(state);
+        #ifndef NDEBUG
+        PointerIntegrity::addPointer(pointer_);
+        #endif
     }
 
     Handle(const T *state, Weak):
@@ -75,11 +81,7 @@ public:
     Handle(const Handle &other):
         state_{other.state_}
     {
-        if (state_) {
-            if (!isWeak(state_)) {
-                decode(state_)->acquire();
-            }
-        }
+        acquire();
     }
 
     /** Initialize by right-side reference \a other
@@ -87,6 +89,12 @@ public:
     Handle(Handle &&other):
         state_{other.state_}
     {
+        #ifndef NDEBUG
+        if (isWeak(other.state_)) {
+            PointerIntegrity::addPointer(pointer_);
+            PointerIntegrity::dropPointer(other.pointer_);
+        }
+        #endif
         other.state_ = nullptr;
     }
 
@@ -94,23 +102,19 @@ public:
       */
     ~Handle()
     {
-        if (state_) {
-            if (!isWeak(state_)) {
-                decode(state_)->release();
-            }
-            #ifndef NDEBUG
-            state_ = nullptr;
-            #endif
-        }
+        release();
+        #ifndef NDEBUG
+        if (state_) state_ = nullptr;
+        #endif
     }
 
     /** Assign reference \a other
       */
     Handle &operator=(const Handle &other)
     {
-        if (state_ && !isWeak(state_)) decode(state_)->release();
+        release();
         state_ = other.state_;
-        if (state_ && !isWeak(state_)) decode(state_)->acquire();
+        acquire();
         return *this;
     }
 
@@ -118,8 +122,13 @@ public:
       */
     Handle &operator=(Handle &&other)
     {
-        if (state_ && !isWeak(state_)) decode(state_)->release();
         state_ = other.state_;
+        #ifndef NDEBUG
+        if (isWeak(other.state_)) {
+            PointerIntegrity::addPointer(pointer_);
+            PointerIntegrity::dropPointer(other.pointer_);
+        }
+        #endif
         other.state_ = nullptr;
         return *this;
     }
@@ -128,7 +137,7 @@ public:
       */
     Handle &operator=(std::nullptr_t)
     {
-        if (state_ && !isWeak(state_)) decode(state_)->release();
+        release();
         state_ = nullptr;
         return *this;
     }
@@ -155,6 +164,7 @@ public:
       */
     operator bool() const
     {
+        // assert(!isWeak(state_)); // Nullness is much uncertain for non-null weak references
         return state_;
     }
 
@@ -244,6 +254,34 @@ private:
         return reinterpret_cast<uintptr_t>(state) & 1;
     }
 
+    void acquire()
+    {
+        if (state_) {
+            if (!isWeak(state_)) {
+                decode(state_)->acquire();
+            }
+            #ifndef NDEBUG
+            else {
+                PointerIntegrity::addPointer(pointer_);
+            }
+            #endif
+        }
+    }
+
+    void release()
+    {
+        if (state_) {
+            if (!isWeak(state_)) {
+                decode(state_)->release();
+            }
+            #ifndef NDEBUG
+            else {
+                PointerIntegrity::dropPointer(pointer_);
+            }
+            #endif
+        }
+    }
+
     template<class T2>
     friend bool operator<(const Handle<T2> &a, const T2 *b);
 
@@ -252,7 +290,10 @@ private:
 
     const T *state() const { return decode(state_); }
 
-    T *state_ { nullptr };
+    union {
+        T *state_ { nullptr };
+        void *pointer_;
+    };
 };
 
 /** Lower than operator

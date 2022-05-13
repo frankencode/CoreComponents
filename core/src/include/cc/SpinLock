@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Guard>
+
+namespace cc {
+
+/** \class SpinLock cc/SpinLock
+  * \ingroup concurrency
+  * \brief Spinning lock mutex
+  * \see Guard
+  * \todo make use of std:: primitives instead of gcc builtins
+  */
+class SpinLock
+{
+public:
+    /** Create a new spinning lock
+      */
+    SpinLock();
+
+    /** \internal
+      */
+    ~SpinLock();
+
+    /** Try to acquire the spinning lock
+      * \return True if successful
+      */
+    bool tryAcquire();
+
+    /** Aquire the spinning lock
+      */
+    void acquire();
+
+    /** Release the spinning lock
+      */
+    void release();
+
+private:
+    void yield();
+    volatile char flag_;
+};
+
+} // namespace cc
