@@ -11,7 +11,8 @@ int main()
     View view;
 
     return
-        View{&view}
+        View{}
+        .associate(&view)
         .paper(0xD0D0FF)
         .layout(
             ManagedColumnLayout{}

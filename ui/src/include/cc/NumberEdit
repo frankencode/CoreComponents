@@ -23,11 +23,13 @@ public:
       */
     NumberEdit() = default;
 
-    /** Create a new number input field
-      * \param label %Label text
-      * \param self Returns newly created object
+    /** Create a new number input field with given \a label
       */
-    explicit NumberEdit(const String &label, Out<NumberEdit> self = None{});
+    explicit NumberEdit(const String &label);
+
+    /** Get a weak reference in \a self
+      */
+    NumberEdit &associate(Out<NumberEdit> self);
 
     double min() const; ///< Get minimum value
     NumberEdit &min(double newValue); ///< %Set minimum value

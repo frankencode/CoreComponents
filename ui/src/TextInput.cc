@@ -463,15 +463,9 @@ TextInput::TextInput():
     InputControl{onDemand<State>}
 {}
 
-TextInput::TextInput(Out<TextInput> self):
-    TextInput{String{}, self}
-{}
-
-TextInput::TextInput(const String &text, Out<TextInput> self):
+TextInput::TextInput(const String &text):
     InputControl{new State{TextLineEditor{text}}}
-{
-    self = weak<TextInput>();
-}
+{}
 
 TextInput::TextInput(const TextEditor &editor):
     InputControl{new State{editor}}
@@ -484,6 +478,11 @@ TextInput::TextInput(CreateState onDemand):
 TextInput::TextInput(State *newState):
     InputControl{newState}
 {}
+
+TextInput &TextInput::associate(Out<TextInput> self)
+{
+    return View::associate<TextInput>(self);
+}
 
 String TextInput::text() const
 {

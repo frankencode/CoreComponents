@@ -23,17 +23,17 @@ public:
       */
     StackView();
 
-    /** Create a new stack view and return a weak reference to it
-      */
-    explicit StackView(Out<StackView> self);
-
     /** Create a new stack view of given size and return a weak reference to it
       */
-    StackView(double width, double height, Out<StackView> self = None{});
+    StackView(double width, double height);
+
+    /** Get a weak reference in \a self
+      */
+    StackView &associate(Out<StackView> self);
 
     /** Push a new screen onto the stack
       */
-    StackView &push(View screen);
+    StackView &push(const View &screen);
 
     /** Remove the current screen from the stack
       */

@@ -113,10 +113,9 @@ NumberInput::NumberInput():
     TextInput{onDemand<State>}
 {}
 
-NumberInput::NumberInput(Out<NumberInput> self):
-    TextInput{new State}
+NumberInput &NumberInput::associate(Out<NumberInput> self)
 {
-    self = weak<NumberInput>();
+    return View::associate<NumberInput>(self);
 }
 
 double NumberInput::min() const

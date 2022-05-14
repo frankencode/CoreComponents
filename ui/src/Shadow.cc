@@ -56,10 +56,9 @@ Shadow::Shadow():
     View{onDemand<State>}
 {}
 
-Shadow::Shadow(Out<Shadow> self):
-    View{new State}
+Shadow &Shadow::associate(Out<Shadow> self)
 {
-    self = weak<Shadow>();
+    return View::associate<Shadow>(self);
 }
 
 Step Shadow::offset() const

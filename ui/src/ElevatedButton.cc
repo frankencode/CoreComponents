@@ -34,7 +34,8 @@ struct ElevatedButton::State final: public InputControl::State
 ElevatedButton::State::State()
 {
     add(
-        Box{&box_}
+        Box{}
+        .associate(&box_)
         .radius([this]{ return sp(20); })
         .color([this]{
             return focus() ?
@@ -42,7 +43,8 @@ ElevatedButton::State::State()
                 theme().elevatedButtonColor(pressed());
         })
         .add(
-            Label{&label_}
+            Label{}
+            .associate(&label_)
             .color([this]{
                 return focus() ?
                     theme().elevatedButtonTextColor(pressed()) :
@@ -93,9 +95,10 @@ ElevatedButton::ElevatedButton():
     InputControl{onDemand<State>}
 {}
 
-ElevatedButton::ElevatedButton(Out<ElevatedButton> self):
-    InputControl{new State}
-{}
+ElevatedButton &ElevatedButton::associate(Out<ElevatedButton> self)
+{
+    return View::associate<ElevatedButton>(self);
+}
 
 String ElevatedButton::text() const
 {

@@ -7,15 +7,16 @@ int main()
     using namespace cc;
 
     Control box;
-    Property<double> targeAngle;
+    Property<double> targetAngle;
 
     return
         View{sp(500), sp(500)}
         .paper(Color::White)
         .add(
-            Control{&box}
+            Control{}
+            .associate(&box)
             .onClicked([=]() mutable {
-                box.angle((targeAngle += 45)());
+                box.angle((targetAngle += 45)());
             })
             .size(sp(200), sp(200))
             .centerInParent()

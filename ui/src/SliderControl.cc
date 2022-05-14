@@ -209,10 +209,9 @@ SliderControl::SliderControl():
     InputControl{onDemand<SliderControl::State>}
 {}
 
-SliderControl::SliderControl(Out<SliderControl> self):
-    InputControl{new State}
+SliderControl &SliderControl::associate(Out<SliderControl> self)
 {
-    self = weak<SliderControl>();
+    return View::associate<SliderControl>(self);
 }
 
 double SliderControl::min() const

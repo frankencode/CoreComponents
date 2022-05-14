@@ -12,10 +12,13 @@
 
 namespace cc {
 
-NumberEdit::NumberEdit(const String &label, Out<NumberEdit> self):
+NumberEdit::NumberEdit(const String &label):
     LineEdit{NumberInput{}, label}
+{}
+
+NumberEdit &NumberEdit::associate(Out<NumberEdit> self)
 {
-    self = weak<NumberEdit>();
+    return View::associate(self);
 }
 
 double NumberEdit::min() const

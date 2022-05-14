@@ -97,19 +97,16 @@ StackView::StackView():
     View{onDemand<State>}
 {}
 
-StackView::StackView(Out<StackView> self):
-    View{new State}
-{
-    self = *this;
-}
-
-StackView::StackView(double width, double height, Out<StackView> self):
+StackView::StackView(double width, double height):
     View{new State{Size{width, height}}}
+{}
+
+StackView &StackView::associate(Out<StackView> self)
 {
-    self = *this;
+    return View::associate<StackView>(self);
 }
 
-StackView &StackView::push(View screen)
+StackView &StackView::push(const View &screen)
 {
     me().push(screen);
     return *this;

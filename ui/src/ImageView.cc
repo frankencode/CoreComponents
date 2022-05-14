@@ -31,16 +31,13 @@ ImageView::ImageView():
     View{onDemand<State>}
 {}
 
-ImageView::ImageView(Out<ImageView> self):
-    View{new ImageView::State}
-{
-    self = weak<ImageView>();
-}
-
-ImageView::ImageView(const Image &displayImage, Out<ImageView> self):
+ImageView::ImageView(const Image &displayImage):
     View{new ImageView::State{displayImage}}
+{}
+
+ImageView &ImageView::associate(Out<ImageView> self)
 {
-    self = weak<ImageView>();
+    return View::associate<ImageView>(self);
 }
 
 } // namespace cc

@@ -129,22 +129,13 @@ Label::Label():
     View{onDemand<State>}
 {}
 
-Label::Label(Out<Label> self):
-    View{new State}
-{
-    self = weak<Label>();
-}
-
-Label::Label(const String &text, Out<Label> self):
-    View{new State{text}}
-{
-    self = weak<Label>();
-}
-
-Label::Label(const String &text, const Font &font, Out<Label> self):
+Label::Label(const String &text, const Font &font):
     View{new State{text, font}}
+{}
+
+Label &Label::associate(Out<Label> self)
 {
-    self = weak<Label>();
+    return View::associate<Label>(self);
 }
 
 String Label::text() const

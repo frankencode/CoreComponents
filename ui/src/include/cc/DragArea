@@ -22,25 +22,15 @@ class DragArea: public Organizer
 public:
     /** Create a primordial drag area
       */
-    DragArea():
-        Organizer{onDemand<DragArea::State>}
-    {}
-
-    /** Create a new drag area
-      */
-    explicit DragArea(Out<DragArea> self):
-        Organizer{new State}
-    {
-        self = weak<DragArea>();
-    }
+    DragArea();
 
     /** Create a new drag area of given size (\a width, \a height)
       */
-    DragArea(double width, double height):
-        Organizer{new State}
-    {
-        size(Size{width, height});
-    }
+    DragArea(double width, double height);
+
+    /** Get a weak reference in \a self
+      */
+    DragArea &associate(Out<DragArea> self);
 
     bool isDragged() const { return !me().dragTarget().isNull(); } ///< Some child view is currently dragged
     View dragTarget() const { return me().dragTarget(); } ///< Get the currently dragged child view

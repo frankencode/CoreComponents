@@ -24,9 +24,9 @@ public:
       */
     ElevatedButton();
 
-    /** Create a new elevated button
+    /** Get a weak reference in \a self
       */
-    explicit ElevatedButton(Out<ElevatedButton> self);
+    ElevatedButton &associate(Out<ElevatedButton> self);
 
     String text() const; ///< Get the button's label text
     ElevatedButton &text(const String &newValue); ///< %Set the button's label text

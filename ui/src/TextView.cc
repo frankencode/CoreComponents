@@ -45,22 +45,19 @@ TextView::TextView():
     ListView{onDemand<State>}
 {}
 
-TextView::TextView(Out<TextView> self):
-    ListView{new State}
-{
-    self = weak<TextView>();
-}
-
 TextView::TextView(double width, double height):
     ListView{new State}
 {
     size(width, height);
 }
 
-TextView::TextView(const String &text, Out<TextView> self):
+TextView::TextView(const String &text):
     ListView{new State{text}}
+{}
+
+TextView &TextView::associate(Out<TextView> self)
 {
-    self = weak<TextView>();
+    return View::associate<TextView>(self);
 }
 
 String TextView::text() const

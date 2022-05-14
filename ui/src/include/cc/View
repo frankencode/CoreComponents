@@ -52,21 +52,21 @@ public:
       */
     View() = default;
 
-    /** Create a new view and return a weak reference to itself
+    /** Create a new view of initial size (\a width, \a height)
       */
-    explicit View(Out<View> self):
-        View{new State}
-    {
-        self = weak<View>();
-    }
-
-    /** Create a new view of size (\a width, \a height)
-      */
-    View(double width, double height, Out<View> self = None{}):
+    View(double width, double height):
         View{new State}
     {
         size(Size{width, height});
+    }
+
+    /** Get a weak reference in \a self
+      */
+    View &associate(Out<View> self)
+    {
+        me();
         self = weak<View>();
+        return *this;
     }
 
     /** Invoke custom initialization function \a f
@@ -760,11 +760,22 @@ protected:
     {}
 
     /** Get a weak reference version of this object
+      * \todo FIXME Still needed?
       */
     template<class T>
     T grab() {
         me();
         return weak<T>();
+    }
+
+    /** \todo move to Entity after resettling the View hierarchy to Entity
+      */
+    template<class T>
+    T &associate(Out<T> self)
+    {
+        me();
+        self = weak<T>();
+        return static_cast<T &>(*this);
     }
 
     State &me() {

@@ -31,22 +31,14 @@ public:
     Label();
 
     /** Create a new label
-      * \param self %Reference to newly created object
-      */
-    explicit Label(Out<Label> self);
-
-    /** Create a new label
-      * \param text %Label text
-      * \param self %Reference to newly created object
-      */
-    explicit Label(const String &text, Out<Label> self = None{});
-
-    /** Create a new label
       * \param text %Label text
       * \param font %Label font
-      * \param self %Reference to newly create object
       */
-    Label(const String &text, const Font &font, Out<Label> self = None{});
+    Label(const String &text, const Font &font = Font{});
+
+    /** Get a weak reference in \a self
+      */
+    Label &associate(Out<Label> self);
 
     String text() const; ///< Get label text
     Label &text(const String &newValue); ///< %Set label text

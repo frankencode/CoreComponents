@@ -12,10 +12,13 @@
 
 namespace cc {
 
-PasswordEdit::PasswordEdit(const String &label, Out<PasswordEdit> self):
+PasswordEdit::PasswordEdit(const String &label):
     LineEdit{PasswordInput{}, label}
+{}
+
+PasswordEdit &PasswordEdit::associate(Out<PasswordEdit> self)
 {
-    self = weak<PasswordEdit>();
+    return View::associate<PasswordEdit>(self);
 }
 
 String PasswordEdit::password() const

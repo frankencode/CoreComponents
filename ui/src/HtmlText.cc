@@ -22,22 +22,13 @@ HtmlText::HtmlText():
     Text{onDemand<State>}
 {}
 
-HtmlText::HtmlText(Out<Text> self):
-    Text{new State}
-{
-    self = weak<HtmlText>();
-}
-
-HtmlText::HtmlText(const String &text, Out<Text> self):
-    Text{new State{text}}
-{
-    self = weak<HtmlText>();
-}
-
-HtmlText::HtmlText(const String &text, Font font, Out<Text> self):
+HtmlText::HtmlText(const String &text, Font font):
     Text{new State{text, font}}
+{}
+
+HtmlText &HtmlText::associate(Out<HtmlText> self)
 {
-    self = weak<HtmlText>();
+    return View::associate<HtmlText>(self);
 }
 
 } // namespace cc

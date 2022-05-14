@@ -21,25 +21,15 @@ class Box final: public View
 public:
     /** Create a primordial box
       */
-    Box():
-        View{onDemand<Box::State>}
-    {}
+    Box();
 
-    /** Create a box and return a copy of itself
+    /** Create a new box of size (\a width, \a height)
       */
-    explicit Box(Out<Box> self):
-        View{new State}
-    {
-        self = weak<Box>();
-    }
+    Box(double width, double height);
 
-    /** Create a box of size (\a width, \a height)
+    /** Get a weak reference in \a self
       */
-    explicit Box(double width, double height):
-        View{new State}
-    {
-        size(Size{width, height});
-    }
+    Box &associate(Out<Box> self);
 
     double radius() const { return me().radius(); } ///< Get radius
     Box &radius(double newValue) { me().radius(newValue); return *this; } ///< %Set radius

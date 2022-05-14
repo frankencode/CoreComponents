@@ -25,9 +25,9 @@ public:
       */
     ListItem();
 
-    /** Create a new list item
+    /** Get a weak reference in \a self
       */
-    explicit ListItem(Out<ListItem> self);
+    ListItem &associate(Out<ListItem> self);
 
     View icon() const { return me().icon(); } ///< Get icon
     ListItem &icon(const View &newValue); ///< %Set icon

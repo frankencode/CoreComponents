@@ -63,16 +63,13 @@ Checkbox::Checkbox():
     Control{onDemand<State>}
 {}
 
-Checkbox::Checkbox(Out<Checkbox> self):
-    Control{new State}
-{
-    self = weak<Checkbox>();
-}
-
-Checkbox::Checkbox(const String &text, Out<Checkbox> self):
+Checkbox::Checkbox(const String &text):
     Control{new State{text}}
+{}
+
+Checkbox &Checkbox::associate(Out<Checkbox> self)
 {
-    self = weak<Checkbox>();
+    return View::associate<Checkbox>(self);
 }
 
 String Checkbox::text() const

@@ -23,9 +23,9 @@ public:
       */
     Button();
 
-    /** Create a new button
+    /** Get a weak reference in \a self
       */
-    explicit Button(Out<Button> self);
+    Button &associate(Out<Button> self);
 
     String text() const; ///< Get the button's label text
     Button &text(const String &newValue); ///< %Set the button's label text

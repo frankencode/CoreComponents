@@ -23,16 +23,13 @@ public:
       */
     ImageView();
 
-    /** Create a new image view
-      * \param self Reference to newly created object
+    /** Create a new image view for \a displayImage
       */
-    explicit ImageView(Out<ImageView> self);
+    ImageView(const Image &displayImage);
 
-    /** Create a new image view
-      * \param displayImage Initial image to display
-      * \param self Reference to newly created object
+    /** Get a weak reference in \a self
       */
-    ImageView(const Image &displayImage, Out<ImageView> self = None{});
+    ImageView &associate(Out<ImageView> self);
 
     Image displayImage() const { return me().displayImage(); } ///< Get display image
     ImageView &displayImage(const Image &newValue) { me().displayImage(newValue); return *this; } ///< %Set display image

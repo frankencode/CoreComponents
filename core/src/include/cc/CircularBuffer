@@ -39,6 +39,10 @@ public:
       */
     T at(int i) const { return front(i); }
 
+    /** \copydoc front()
+      */
+    T operator[](int i) const { return front(i); }
+
     /** Get the first item
       */
     T first() const

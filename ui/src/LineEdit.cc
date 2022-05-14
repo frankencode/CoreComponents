@@ -86,7 +86,8 @@ LineEdit::State::State(const TextInput &input, const String &initialTitle):
     size([this]{ return preferredSize(); });
 
     add(
-        Label{&smallLabel_}
+        Label{}
+        .associate(&smallLabel_)
         .text([this]{ return title(); })
         .font([this]{ return style().defaultSmallFont(); })
         .pos([]{ return Point{dp(16), dp(12)}; })
@@ -94,7 +95,8 @@ LineEdit::State::State(const TextInput &input, const String &initialTitle):
     );
 
     add(
-        Label{&bigLabel_}
+        Label{}
+        .associate(&bigLabel_)
         .text([this]{ return title(); })
         .font([this]{ return style().defaultFont(); })
         .pos([this]{
@@ -104,7 +106,8 @@ LineEdit::State::State(const TextInput &input, const String &initialTitle):
     );
 
     add(
-        Label{&titleLabel_}
+        Label{}
+        .associate(&titleLabel_)
         .text([this]{ return title(); })
         .color([this]{
             return (pressed() || input_.focus()) ? theme().focusTextColor() : theme().secondaryTextColor();
@@ -122,7 +125,8 @@ LineEdit::State::State(const TextInput &input, const String &initialTitle):
     );
 
     input_.add(
-        Label{&placeholderOverlay_}
+        Label{}
+        .associate(&placeholderOverlay_)
         .text([this]{ return placeholder(); })
         .color([this]{ return theme().inactiveTextColor(); })
         .visible([this]{ return input_.focus() && placeholder().count() > 0 && text().count() == 0 && titleLabel_.pos() == smallLabel_.pos(); })
@@ -145,7 +149,8 @@ LineEdit::State::State(const TextInput &input, const String &initialTitle):
         });
 
         add(
-            View{&underline_}
+            View{}
+            .associate(&underline_)
             .paper([this]{ return paper(); })
             .size([this]{
                 return Size{size()[0], std::ceil(dp(2))};
@@ -234,7 +239,8 @@ void LineEdit::State::editPlus()
         View{}
         .bottomLeft([this]{ return Size{dp(16), height()}; })
         .add(
-            Label{&statusView_}
+            Label{}
+            .associate(&statusView_)
             .text([this]{ return status(); })
             .font([this]{ return style().defaultSmallFont(); })
             .baselineEnd([this]{ return Point{width() - dp(24), dp(16)}; })
@@ -243,7 +249,8 @@ void LineEdit::State::editPlus()
             .visible([this]{ return status() != ""; })
         )
         .add(
-            Text{&helpView_}
+            Text{}
+            .associate(&helpView_)
             .text([this]{ return help(); })
             .font([this]{ return style().defaultSmallFont(); })
             .maxWidth([this]{ return width() - dp(28) - (statusView_.visible() ? statusView_.width() + dp(8) : 0); })
@@ -253,7 +260,8 @@ void LineEdit::State::editPlus()
             .visible([this]{ return help() != "" && error() == ""; })
         )
         .add(
-            Text{&errorView_}
+            Text{}
+            .associate(&errorView_)
             .text([this]{ return error(); })
             .font([this]{ return style().defaultSmallFont(); })
             .maxWidth([this]{ return width() - dp(28) - (statusView_.visible() ? statusView_.width() + dp(8) : 0); })
@@ -305,21 +313,18 @@ LineEdit::LineEdit():
     Control{onDemand<State>}
 {}
 
-LineEdit::LineEdit(Out<LineEdit> self):
-    Control{new State}
-{
-    self = weak<LineEdit>();
-}
-
-LineEdit::LineEdit(const String &label, Out<LineEdit> self):
+LineEdit::LineEdit(const String &label):
     Control{new State{label}}
-{
-    self = weak<LineEdit>();
-}
+{}
 
 LineEdit::LineEdit(const TextInput &input, const String &title):
     Control{new State{input, title}}
 {}
+
+LineEdit &LineEdit::associate(Out<LineEdit> self)
+{
+    return View::associate<LineEdit>(self);
+}
 
 String LineEdit::title() const
 {

@@ -26,11 +26,11 @@ public:
 
     /** Create a new text input control
       */
-    explicit TextInput(Out<TextInput> self);
+    explicit TextInput(const String &text);
 
-    /** Create a new text input control
+    /** Get a weak reference in \a self
       */
-    explicit TextInput(const String &text, Out<TextInput> self = None{});
+    TextInput &associate(Out<TextInput> self);
 
     String text() const; ///< Get current input text
     TextInput &text(const String &newValue); ///< %Set current input text

@@ -10,7 +10,8 @@ int main()
     return
         View{sp(640), sp(480)}
         .add(
-            Button{&button}
+            Button{}
+            .associate(&button)
             .icon(Ideographic::Face, sp(28))
             .text("Press me!")
             .onClicked([=]() mutable {

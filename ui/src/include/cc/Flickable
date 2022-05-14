@@ -26,38 +26,17 @@ public:
       */
     Flickable();
 
-    /** Create a new flickable
-      */
-    explicit Flickable(Out<Flickable> self):
-        Organizer{new State}
-    {
-        self = weak<Flickable>();
-    }
-
     /** Create a new flickable of given size (\a width, \a height) and optionally with a custom \a pane
       */
-    Flickable(double width, double height, const View &pane = Pane{}, Out<Flickable> self = None{}):
-        Organizer{new State{pane}}
-    {
-        size(Size{width, height});
-        self = weak<Flickable>();
-    }
+    Flickable(double width, double height, const View &pane = Pane{});
 
     /** Create a new flickable with a custom \a pane
       */
-    explicit Flickable(const View &pane, Out<Flickable> self = None{}):
-        Organizer{new State{pane}}
-    {
-        self = weak<Flickable>();
-    }
+    explicit Flickable(const View &pane);
 
-    /** Invoke custom initialization function \a f
+    /** Get a weak reference in \a self
       */
-    Flickable &init(Fun<void(Flickable)> &&f)
-    {
-        f(grab<Flickable>());
-        return *this;
-    }
+    Flickable &associate(Out<Flickable> self);
 
     /** Get the access to the contained pane
       */

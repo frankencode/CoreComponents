@@ -29,22 +29,17 @@ Picture::Picture():
     View{onDemand<State>}
 {}
 
-Picture::Picture(Out<Picture> self):
-    View{new State}
-{
-    self = weak<Picture>();
-}
-
-Picture::Picture(const Visual &visual, Color color, Out<Picture> self):
+Picture::Picture(const Visual &visual, Color color):
     View{new State{visual, color}}
-{
-    self = weak<Picture>();
-}
+{}
 
-Picture::Picture(Ideographic ch, double size, Color color, Out<Picture> self):
+Picture::Picture(Ideographic ch, double size, Color color):
     View{new State{style().ideograph(ch, size), color}}
+{}
+
+Picture &Picture::associate(Out<Picture> self)
 {
-    self = weak<Picture>();
+    return View::associate<Picture>(self);
 }
 
 } // namespace cc

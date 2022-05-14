@@ -30,7 +30,11 @@ public:
 
     /** Create a new list view of size (\a width, \a height)
       */
-    ListView(double width, double height, Out<ListView> self = None{});
+    ListView(double width, double height);
+
+    /** Get a weak reference in \a self
+      */
+    ListView &associate(Out<ListView> self);
 
     /** Invoke custom initialization function \a f
       */

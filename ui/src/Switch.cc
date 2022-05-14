@@ -62,16 +62,13 @@ Switch::Switch():
     Control{onDemand<State>}
 {}
 
-Switch::Switch(Out<Switch> self):
-    Control{new State}
-{
-    self = weak<Switch>();
-}
-
-Switch::Switch(const String & text, Out<Switch> self):
+Switch::Switch(const String &text):
     Control{new State{text}}
+{}
+
+Switch &Switch::associate(Out<Switch> self)
 {
-    self = weak<Switch>();
+    return View::associate<Switch>(self);
 }
 
 String Switch::text() const

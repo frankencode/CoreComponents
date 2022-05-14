@@ -26,22 +26,13 @@ public:
       */
     Control();
 
-    /** Create a new control and return a weak reference to it
-      */
-    explicit Control(Out<Control> self):
-        View{new State}
-    {
-        self = weak<Control>();
-    }
-
     /** Create a new top-level control of size (\a width, \a height)
       */
-    Control(double width, double height, Out<Control> self = None{}):
-        View{new State}
-    {
-        size(Size{width, height});
-        self = weak<Control>();
-    }
+    Control(double width, double height);
+
+    /** Get a weak reference in \a self
+      */
+    Control &associate(Out<Control> self);
 
     Control delegate() const; ///< Delegate for handling user input
 

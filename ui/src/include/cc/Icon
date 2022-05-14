@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Frank Mertens.
+ * Copyright (C) 2022 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the zlib license
  * (see cc/LICENSE-zlib).
@@ -28,17 +28,17 @@ public:
       * \param size %Size in pixel
       * \param color %Foreground color
       */
-    explicit Icon(Ideographic ch, double size = sp(24), Color color = Color{}):
-        Picture{ch, size, color ? color : theme().secondaryTextColor()}
-    {}
+    explicit Icon(Ideographic ch, double size = sp(24), Color color = Color{});
 
     /** Create a new icon
       * \param ch %Ideographic code
       * \param color %Foreground color
       */
-    Icon(Ideographic ch, Color color):
-        Picture{ch, sp(24), color}
-    {}
+    Icon(Ideographic ch, Color color);
+
+    /** Get a weak reference in \a self
+      */
+    Icon &associate(Out<Icon> self);
 };
 
 } // namespace cc

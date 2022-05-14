@@ -24,9 +24,9 @@ public:
       */
     NumberCell();
 
-    /** Create a new number cell and return the new object in \a self
+    /** Get a weak reference in \a self
       */
-    explicit NumberCell(Out<NumberCell> self);
+    NumberCell &associate(Out<NumberCell> self);
 
     double min() const; ///< Get minimum value
     NumberCell &min(double newValue); ///< %Set minimum value

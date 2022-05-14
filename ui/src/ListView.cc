@@ -156,17 +156,15 @@ ListView::ListView():
     Flickable{onDemand<State>}
 {}
 
-ListView::ListView(Out<ListView> self):
-    Flickable{new State}
-{
-    self = weak<ListView>();
-}
-
-ListView::ListView(double width, double height, Out<ListView> self):
+ListView::ListView(double width, double height):
     Flickable{new State}
 {
     size(width, height);
-    self = weak<ListView>();
+}
+
+ListView &ListView::associate(Out<ListView> self)
+{
+    return View::associate<ListView>(self);
 }
 
 View ListView::header() const

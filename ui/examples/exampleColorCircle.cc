@@ -7,8 +7,8 @@ int main()
     View view;
 
     return
-        View{&view}
-        .size(sp(500), sp(500))
+        View{sp(500), sp(500)}
+        .associate(&view)
         .paper(Color::White)
         .paint([=]{
             Painter painter{view};

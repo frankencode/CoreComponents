@@ -21,9 +21,9 @@ public:
       */
     Divider();
 
-    /** Create a new divider
+    /** Get a weak reference in \a self
       */
-    explicit Divider(Out<Divider> self);
+    Divider &associate(Out<Divider> self);
 
     Color color() const { return me().color(); } ///< Get color
     Divider &color(Color newValue) { me().color(newValue); return *this; } ///< %Set color
@@ -32,7 +32,7 @@ public:
     Divider &thickness(double newValue) { me().thickness(newValue); return *this; } ///< %Set thickness
 
 private:
-    struct State: public View::State
+    struct State final: public View::State
     {
         State();
 

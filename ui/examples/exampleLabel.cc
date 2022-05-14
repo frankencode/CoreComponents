@@ -14,7 +14,8 @@ int main()
         View{sp(500), sp(500)}
         .paper(Color::White)
         .add(
-            Label{&label}
+            Label{}
+            .associate(&label)
             .font(Font{Pitch::Fixed, sp(40)})
             .text([=]{
                 Date date{time};

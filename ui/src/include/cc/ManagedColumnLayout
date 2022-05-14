@@ -17,7 +17,7 @@ namespace cc {
   * \ingroup ui_layout
   * \brief Layout children views in a column and smartly adjust sizes as needed
   * \see ColumnLayout
-  * \note Do not use a ManagedColumnLayout when a ColumnLayout suffices!
+  * \todo rename to SmartColumnLayout
   */
 class ManagedColumnLayout final: public View::Layout
 {

@@ -15,4 +15,9 @@ Size Pane::State::preferredSize() const
     return hasParent() ? parent().size() : View::State::preferredSize();
 }
 
+Pane &Pane::associate(Out<Pane> self)
+{
+    return View::associate<Pane>(self);
+}
+
 } // namespace cc

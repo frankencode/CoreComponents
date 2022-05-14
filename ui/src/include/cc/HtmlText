@@ -28,23 +28,15 @@ public:
       */
     HtmlText();
 
-    /** Create a new text
-      * \param self %Reference to newly created object
-      */
-    explicit HtmlText(Out<Text> self);
-
-    /** Create a new HTML text
-      * \param text Initial text
-      * \param self %Reference to newly created object
-      */
-    explicit HtmlText(const String &text, Out<Text> self = None{});
-
     /** Create a new HTML text
       * \param text Initial text
       * \param font Initial font
-      * \param self %Reference to newly created object
       */
-    explicit HtmlText(const String &text, Font font, Out<Text> self = None{});
+    explicit HtmlText(const String &text, Font font = Font{});
+
+    /** Get a weak reference in \a self
+      */
+    HtmlText &associate(Out<HtmlText> self);
 
 private:
     struct State;

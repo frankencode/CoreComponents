@@ -25,11 +25,11 @@ public:
 
     /** Create a new switch field
       */
-    explicit Switch(Out<Switch> self);
+    explicit Switch(const String &text);
 
-    /** Create a new switch field
+    /** Get a weak reference in \a self
       */
-    explicit Switch(const String & text, Out<Switch> self = None{});
+    Switch &associate(Out<Switch> self);
 
     String text() const; ///< Get text
     Switch &text(const String &newValue); ///< %Set text

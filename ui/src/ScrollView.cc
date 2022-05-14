@@ -65,4 +65,29 @@ ScrollView::State::State(const View &pane):
     add(hScroll_);
 }
 
+ScrollView::ScrollView():
+    View{onDemand<State>}
+{}
+
+ScrollView::ScrollView(double width, double height):
+    View{new State}
+{
+    size(Size{width, height});
+}
+
+ScrollView::ScrollView(const View &pane):
+    View{new State{pane}}
+{}
+
+ScrollView::ScrollView(double width, double height, const View &pane):
+    View{new State{pane}}
+{
+    size(Size{width, height});
+}
+
+ScrollView &ScrollView::associate(Out<ScrollView> self)
+{
+    return View::associate<ScrollView>(self);
+}
+
 } // namespace cc

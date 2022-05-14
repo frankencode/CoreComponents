@@ -15,6 +15,11 @@ PasswordInput::PasswordInput():
     TextInput{onDemand<State>}
 {}
 
+PasswordInput &PasswordInput::associate(Out<PasswordInput> self)
+{
+    return View::associate<PasswordInput>(self);
+}
+
 String PasswordInput::password() const
 {
     return editor().as<PasswordEditor>().password();

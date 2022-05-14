@@ -22,7 +22,8 @@ int main()
     View view;
 
     return
-        View{&view}
+        View{}
+        .associate(&view)
         .size(sp(500), sp(500))
         .paint([=]{
             GlyphRun elidedRun = glyphRun.elide(view.size()[0] - 2 * margins);

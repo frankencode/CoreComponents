@@ -125,10 +125,9 @@ CheckboxControl::CheckboxControl():
     InputControl{onDemand<State>}
 {}
 
-CheckboxControl::CheckboxControl(Out<CheckboxControl> self):
-    InputControl{new State}
+CheckboxControl &CheckboxControl::associate(Out<CheckboxControl> self)
 {
-    self = weak<CheckboxControl>();
+    return View::associate<CheckboxControl>(self);
 }
 
 bool CheckboxControl::value() const

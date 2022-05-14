@@ -30,7 +30,8 @@ Button::State::State()
     });
 
     add(
-        Box{&box_}
+        Box{}
+        .associate(&box_)
         .radius([this]{ return radius(); })
         .color([this]{
             return focus() ?
@@ -162,10 +163,9 @@ Button::Button():
     InputControl{onDemand<State>}
 {}
 
-Button::Button(Out<Button> self):
-    InputControl{new State}
+Button &Button::associate(Out<Button> self)
 {
-    self = weak<Button>();
+    return View::associate<Button>(self);
 }
 
 String Button::text() const

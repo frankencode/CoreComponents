@@ -90,4 +90,19 @@ void DragArea::State::drag(Point newPos)
     dragTarget().pos(newPos);
 }
 
+DragArea::DragArea():
+    Organizer{onDemand<DragArea::State>}
+{}
+
+DragArea::DragArea(double width, double height):
+    Organizer{new State}
+{
+    size(Size{width, height});
+}
+
+DragArea &DragArea::associate(Out<DragArea> self)
+{
+    return View::associate<DragArea>(self);
+}
+
 } // namespace cc

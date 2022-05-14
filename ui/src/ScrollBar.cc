@@ -208,16 +208,13 @@ ScrollBar::ScrollBar():
     DragArea{onDemand<State>}
 {}
 
-ScrollBar::ScrollBar(Out<ScrollBar> self):
-    DragArea{new State{Orientation::Vertical}}
-{
-    self = weak<ScrollBar>();
-}
-
-ScrollBar::ScrollBar(Orientation orientation, Out<ScrollBar> self):
+ScrollBar::ScrollBar(Orientation orientation):
     DragArea{new State{orientation}}
+{}
+
+ScrollBar &ScrollBar::associate(Out<ScrollBar> self)
 {
-    self = weak<ScrollBar>();
+    return View::associate<ScrollBar>(self);
 }
 
 Orientation ScrollBar::orientation() const

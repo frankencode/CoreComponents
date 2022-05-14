@@ -23,9 +23,9 @@ public:
       */
     SliderControl();
 
-    /** Create a slider and return a copy of itself
+    /** Get a weak reference in \a self
       */
-    explicit SliderControl(Out<SliderControl> self);
+    SliderControl &associate(Out<SliderControl> self);
 
     double min() const; ///< Get the minimum slider value
     SliderControl &min(double newValue); ///< %Set the minimum slider value

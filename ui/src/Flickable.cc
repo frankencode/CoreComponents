@@ -349,4 +349,19 @@ Flickable::Flickable():
     Organizer{onDemand<State>}
 {}
 
+Flickable::Flickable(double width, double height, const View &pane):
+    Organizer{new State{pane}}
+{
+    size(Size{width, height});
+}
+
+Flickable::Flickable(const View &pane):
+    Organizer{new State{pane}}
+{}
+
+Flickable &Flickable::associate(Out<Flickable> self)
+{
+    return View::associate<Flickable>(self);
+}
+
 } // namespace cc

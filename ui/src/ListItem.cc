@@ -75,10 +75,9 @@ ListItem::ListItem():
     Control{onDemand<State>}
 {}
 
-ListItem::ListItem(Out<ListItem> self):
-    Control{new State}
+ListItem &ListItem::associate(Out<ListItem> self)
 {
-    self = weak<ListItem>();
+    return View::associate<ListItem>(self);
 }
 
 ListItem &ListItem::icon(const View &newValue)

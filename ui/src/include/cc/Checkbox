@@ -19,17 +19,17 @@ namespace cc {
 class Checkbox final: public Control
 {
 public:
-    /** Create primordial checkbox field
+    /** Create primordial checkbox
       */
     Checkbox();
 
-    /** Create a new switch field
+    /** Create a new checkbox
       */
-    explicit Checkbox(Out<Checkbox> self);
+    explicit Checkbox(const String &text);
 
-    /** Create a new switch field
+    /** Get a weak reference in \a self
       */
-    explicit Checkbox(const String &text, Out<Checkbox> self = None{});
+    Checkbox &associate(Out<Checkbox> self);
 
     String text() const; ///< Get text
     Checkbox &text(const String &newValue); ///< %Set text

@@ -8,11 +8,10 @@ int main()
     AppBar appBar;
 
     return
-        View{
-            sp(500), sp(500)
-        }
+        View{sp(500), sp(500)}
         .add(
-            AppBar{&appBar}
+            AppBar{}
+            .associate(&appBar)
             .title("Hello, world!")
             .onDismissed([]{ ferr() << "Back!" << nl; })
             // .onNavigate([]{ ferr() << "Navigate!" << nl; })

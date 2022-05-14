@@ -87,6 +87,17 @@ Control::Control():
     View{createState}
 {}
 
+Control::Control(double width, double height):
+    View{new State}
+{
+    size(Size{width, height});
+}
+
+Control &Control::associate(Out<Control> self)
+{
+    return View::associate<Control>(self);
+}
+
 Control &Control::focus(bool newValue)
 {
     if (focus() != newValue)

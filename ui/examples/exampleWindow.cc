@@ -9,7 +9,8 @@ int main()
 
     return
         Window{
-            View{&view}
+            View{}
+            .associate(&view)
             .size(320, 200)
             .add(
                 View{}
@@ -29,7 +30,8 @@ int main()
                 .paper(Color::Blue)
             )
             .add(
-                View{&sub4}
+                View{}
+                .associate(&sub4)
                 .size([=]{ return view.size() / 4; })
                 .bottomRight([=]{ return view.bottomRight(); })
                 .paper(Color::Black)

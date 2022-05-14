@@ -30,7 +30,8 @@ int main()
     View view;
 
     return
-        View{&view}
+        View{}
+        .associate(&view)
         .size(sp(500), sp(500))
         .paper(Color::White)
         .paint([=]{

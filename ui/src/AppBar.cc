@@ -102,10 +102,9 @@ AppBar::AppBar():
     View{onDemand<State>}
 {}
 
-AppBar::AppBar(Out<AppBar> self):
-    View{new State}
+AppBar &AppBar::associate(Out<AppBar> self)
 {
-    self = *this;
+    return View::associate<AppBar>(self);
 }
 
 String AppBar::title() const

@@ -142,17 +142,15 @@ ListMenu::ListMenu():
     Flickable{onDemand<State>}
 {}
 
-ListMenu::ListMenu(Out<ListMenu> self):
-    Flickable{new State}
-{
-    self = weak<ListMenu>();
-}
-
-ListMenu::ListMenu(double width, double height, Out<ListMenu> self):
+ListMenu::ListMenu(double width, double height):
     Flickable{new State}
 {
     size(width, height);
-    self = weak<ListMenu>();
+}
+
+ListMenu &ListMenu::associate(Out<ListMenu> self)
+{
+    return View::associate<ListMenu>(self);
 }
 
 View ListMenu::header() const

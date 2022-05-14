@@ -22,27 +22,15 @@ class Plot final: public View
 public:
     /** Create a primordial plot
       */
-    Plot():
-        View{onDemand<State>}
-    {}
-
-    /** Create a new plot
-      * \param self Reference to newly created object
-      */
-    explicit Plot(Out<Plot> self):
-        View{new State}
-    {
-        self = weak<Plot>();
-    }
+    Plot();
 
     /** Create a new plot of size (\a width, \a height)
       */
-    Plot(double width, double height, Out<Plot> self = None{}):
-        View{new State}
-    {
-        size(Size{width, height});
-        self = weak<Plot>();
-    }
+    Plot(double width, double height);
+
+    /** Get a weak reference in \a self
+      */
+    Plot &associate(Out<Plot> self);
 
     Rect scope() const { return me().scope(); } ///< %Get plot extents
     Plot &scope(const Rect &newValue) { me().scope(newValue); return *this; } ///< %Set plot extents

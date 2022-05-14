@@ -23,9 +23,9 @@ public:
       */
     SwitchControl();
 
-    /** Create a new switch and return weak reference of itself
+    /** Get a weak reference in \a self
       */
-    explicit SwitchControl(Out<SwitchControl> self);
+    SwitchControl &associate(Out<SwitchControl> self);
 
     bool value() const; ///< Get current state
     SwitchControl &value(bool newValue); ///< %Set current state

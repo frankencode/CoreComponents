@@ -48,10 +48,9 @@ Divider::Divider():
     View{onDemand<State>}
 {}
 
-Divider::Divider(Out<Divider> self):
-    View{new State}
+Divider &Divider::associate(Out<Divider> self)
 {
-    self = weak<Divider>();
+    return View::associate<Divider>(self);
 }
 
 } // namespace cc

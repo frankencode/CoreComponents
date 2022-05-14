@@ -17,7 +17,8 @@ struct Slider::State: public View::State
     State()
     {
         add(
-            SliderControl{&slider_}
+            SliderControl{}
+            .associate(&slider_)
             .pos([this]{
                 return Point{
                     margin() + (leading() ? leading().width()  : 0.) + spacing(),

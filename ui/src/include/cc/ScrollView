@@ -16,49 +16,30 @@ namespace cc {
 /** \class ScrollView cc/ScrollView
   * \ingroup ui
   * \brief Scrollable view
+  * \todo rename to ScrollArea
   */
 class ScrollView: public View
 {
 public:
     /** Create a primordial scroll view
       */
-    ScrollView():
-        View{onDemand<State>}
-    {}
-
-    /** Create a new scroll view and return a weak reference to itself
-      */
-    explicit ScrollView(Out<ScrollView> self):
-        View{new State}
-    {
-        self = weak<ScrollView>();
-    }
+    ScrollView();
 
     /** Create a new scroll view of size (\a width, \a height)
       */
-    ScrollView(double width, double height, Out<ScrollView> self = None{}):
-        View{new State}
-    {
-        size(Size{width, height});
-        self = weak<ScrollView>();
-    }
+    ScrollView(double width, double height);
 
     /** Create a new scroll view with custom \a pane
       */
-    explicit ScrollView(const View &pane, Out<ScrollView> self = None{}):
-        View{new State{pane}}
-    {
-        self = weak<ScrollView>();
-    }
+    explicit ScrollView(const View &pane);
 
     /** Create a new scroll view of size (\a width, \a height) with custom \a pane
       */
-    ScrollView(double width, double height, const View &pane, Out<ScrollView> self = None{}):
-        View{new State{pane}}
-    {
-        size(Size{width, height});
-        self = weak<ScrollView>();
-    }
+    ScrollView(double width, double height, const View &pane);
+
+    /** Get a weak reference in \a self
+      */
+    ScrollView &associate(Out<ScrollView> self);
 
     /** Get the pane
       */

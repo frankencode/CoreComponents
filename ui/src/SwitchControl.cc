@@ -143,10 +143,9 @@ SwitchControl::SwitchControl():
     InputControl{onDemand<State>}
 {}
 
-SwitchControl::SwitchControl(Out<SwitchControl> self):
-    InputControl{new State}
+SwitchControl &SwitchControl::associate(Out<SwitchControl> self)
 {
-    self = weak<SwitchControl>();
+    return View::associate<SwitchControl>(self);
 }
 
 bool SwitchControl::value() const

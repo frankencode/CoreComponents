@@ -14,11 +14,13 @@ namespace cc {
 NumberCell::State::State()
 {
     add(
-        Box{&box_}
+        Box{}
+        .associate(&box_)
         .color([this]{ return theme().inputFieldFillColor(pressed()); })
         .radius([this]{ return sp(6); })
         .add(
-            NumberInput{&input_}
+            NumberInput{}
+            .associate(&input_)
             .textAlign(TextAlign::Center)
             .paper([this]{ return box_.color(); })
             .centerInParent()
@@ -64,10 +66,9 @@ NumberCell::NumberCell():
     Control{onDemand<State>}
 {}
 
-NumberCell::NumberCell(Out<NumberCell> self):
-    Control{new State}
+NumberCell &NumberCell::associate(Out<NumberCell> self)
 {
-    self = weak<NumberCell>();
+    return View::associate<NumberCell>(self);
 }
 
 double NumberCell::min() const

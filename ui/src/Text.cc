@@ -14,29 +14,13 @@ Text::Text():
     View{onDemand<State>}
 {}
 
-Text::Text(Out<Text> self):
-    View{new State}
-{
-    self = weak<Text>();
-}
-
-Text::Text(const String &text, Out<Text> self):
-    View{new State{text}}
-{
-    self = weak<Text>();
-}
-
-Text::Text(const String &text, Font font, Out<Text> self):
+Text::Text(const String &text, Font font):
     View{new State{text, font}}
-{
-    self = weak<Text>();
-}
+{}
 
-Text::Text(const String &text, Font font, bool html, Out<Text> self):
+Text::Text(const String &text, Font font, bool html):
     View{new State{text, font, html}}
-{
-    self = weak<Text>();
-}
+{}
 
 Text::Text(State *newState):
     View{newState}
@@ -45,6 +29,11 @@ Text::Text(State *newState):
 Text::Text(CreateState onDemand):
     View{onDemand}
 {}
+
+Text &Text::associate(Out<Text> self)
+{
+    return View::associate<Text>(self);
+}
 
 String Text::text() const
 {

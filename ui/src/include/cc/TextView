@@ -24,19 +24,18 @@ public:
       */
     TextView();
 
-    /** Create a new text view
-      */
-    explicit TextView(Out<TextView> self);
-
     /** Create a new text view of size (\a width, \a height)
       */
     TextView(double width, double height);
 
     /** Create a new text view
-      * \param text %Text text
-      * \param self %Reference to newly created object
+      * \param text Initial text to display
       */
-    explicit TextView(const String &text, Out<TextView> self = None{});
+    explicit TextView(const String &text);
+
+    /** Get a weak reference in \a self
+      */
+    TextView &associate(Out<TextView> self);
 
     String text() const; ///< Get text
     TextView &text(const String &newValue); ///< %Set text

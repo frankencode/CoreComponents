@@ -38,12 +38,13 @@ int main()
                 //! \todo allow to step focus, when left empty
             )
             .add(Divider{})
-            .add(Checkbox{"Dessert", &dessert})
+            .add(Checkbox{"Dessert"}.associate(&dessert))
             .add(Checkbox{"Apple"}.groupUnder(dessert))
             .add(Checkbox{"Banana"}.groupUnder(dessert))
             .add(Divider{})
             .add(
-                PasswordEdit{"Enter password", &passwordField}
+                PasswordEdit{"Enter password"}
+                .associate(&passwordField)
                 .onAccepted([=]{
                     CC_INSPECT(passwordField.password());
                 })

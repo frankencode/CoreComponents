@@ -16,7 +16,7 @@ namespace cc {
 /** \class ListMenu cc/ListMenu
   * \ingroup ui
   * \brief %List menu
-  * A ListMenu shows a vertically scollable list of items which are all of the same size.
+  * A ListMenu shows a vertically scrollable list of items which are all of the same size.
   */
 class ListMenu final: public Flickable
 {
@@ -25,13 +25,13 @@ public:
       */
     ListMenu();
 
-    /** Create a new list menu and return a weak reference to itself
-      */
-    explicit ListMenu(Out<ListMenu> self);
-
     /** Create a new list menu of given size (\a width, \a height)
       */
-    ListMenu(double width, double height, Out<ListMenu> self = None{});
+    ListMenu(double width, double height);
+
+    /** Get a weak reference in \a self
+      */
+    ListMenu &associate(Out<ListMenu> self);
 
     /** Invoke custom initialization function \a f
       */

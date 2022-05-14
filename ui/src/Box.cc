@@ -58,4 +58,19 @@ Box::State::State()
     });
 }
 
+Box::Box():
+    View{onDemand<Box::State>}
+{}
+
+Box::Box(double width, double height):
+    View{new State}
+{
+    size(Size{width, height});
+}
+
+Box &Box::associate(Out<Box> self)
+{
+    return View::associate<Box>(self);
+}
+
 } // namespace cc

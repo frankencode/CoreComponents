@@ -25,15 +25,13 @@ public:
       */
     LineEdit();
 
-    /** Create a new text input field
+    /** Create a new text input field with given \a title
       */
-    explicit LineEdit(Out<LineEdit> self);
+    explicit LineEdit(const String &title);
 
-    /** Create a new text input field
-      * \param title %Label text
-      * \param self Reference to newly created object
+    /** Get a weak reference in \a self
       */
-    explicit LineEdit(const String &title, Out<LineEdit> self = None{});
+    LineEdit &associate(Out<LineEdit> self);
 
     String title() const; ///< Get title
     LineEdit &title(const String &newValue); ///< %Set title

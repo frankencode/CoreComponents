@@ -23,9 +23,9 @@ public:
       */
     NumberInput();
 
-    /** Create a new number input and return a reference to itself
+    /** Get a weak reference in \a self
       */
-    explicit NumberInput(Out<NumberInput> self);
+    NumberInput &associate(Out<NumberInput> self);
 
     double min() const; ///< Get minimum value
     NumberInput &min(double newValue); ///< %Set minimum value

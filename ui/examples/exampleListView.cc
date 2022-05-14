@@ -12,7 +12,8 @@ int main()
     ListView menu;
 
     return
-        ListView{sp(500), sp(500), &menu}
+        ListView{sp(500), sp(500)}
+        .associate(&menu)
         .header(
             Label{}
             .margin(sp(16))

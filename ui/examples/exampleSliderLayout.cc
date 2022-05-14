@@ -10,7 +10,8 @@ int main()
     View view;
 
     return
-        View{&view}
+        View{}
+        .associate(&view)
         .size(sp(480), sp(48))
         .layout(
             ManagedRowLayout{}

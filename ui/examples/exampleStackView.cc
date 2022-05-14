@@ -30,14 +30,15 @@ int main()
 
     AppBar appBar;
     View screen;
-    LineEdit edit;
 
     return
-        StackView{sp(480), sp(800), &stack}
+        StackView{sp(480), sp(800)}
+        .associate(&stack)
         .push(
             View{}
             .add(
-                ListMenu{&menu}
+                ListMenu{}
+                .associate(&menu)
                 .populate([=](auto target) mutable {
                     for (int i = 0; i < 32; ++i) {
                         target.pane().add(
@@ -47,11 +48,12 @@ int main()
                             .onClicked([=]() mutable {
                                 CC_INSPECT(i);
                                 stack.push(
-                                    View{&screen}
+                                    View{}
+                                    .associate(&screen)
                                     .add(
                                         Flickable{
                                             Pane{}
-                                            .add(LineEdit{"First name", &edit})
+                                            .add(LineEdit{"First name"})
                                             .add(LineEdit{"Family name"})
                                             .add(
                                                 NumberEdit{"Age"}
@@ -61,12 +63,13 @@ int main()
                                                 //! \todo allow to step focus, when left empty
                                             )
                                             .add(Divider{})
-                                            .add(Checkbox{"Dessert", &dessert})
+                                            .add(Checkbox{"Dessert"}.associate(&dessert))
                                             .add(Checkbox{"Apple"}.groupUnder(dessert))
                                             .add(Checkbox{"Banana"}.groupUnder(dessert))
                                             .add(Divider{})
                                             .add(
-                                                PasswordEdit{"Enter password", &passwordField}
+                                                PasswordEdit{"Enter password"}
+                                                .associate(&passwordField)
                                                 .onAccepted([=]{
                                                     CC_INSPECT(passwordField.password());
                                                 })
@@ -109,7 +112,8 @@ int main()
                 .size([=]{ return stack.size() - Size{0, appBarHeight}; })
             )
             .add(
-                AppBar{&appBar}
+                AppBar{}
+                .associate(&appBar)
                 .title("User Manager")
                 .onNavigate([]{ ferr() << "Navigate!" << nl; })
             )

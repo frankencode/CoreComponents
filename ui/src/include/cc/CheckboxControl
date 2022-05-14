@@ -19,13 +19,13 @@ namespace cc {
 class CheckboxControl final: public InputControl
 {
 public:
-    /** Create a primordial checkbox
+    /** Create a primordial checkbox control
       */
     CheckboxControl();
 
-    /** Create a new switch and return weak reference of itself
+    /** Get a weak reference in \a self
       */
-    explicit CheckboxControl(Out<CheckboxControl> self);
+    CheckboxControl &associate(Out<CheckboxControl> self);
 
     bool value() const; ///< Get current state
     CheckboxControl &value(bool newValue); ///< %Set current state

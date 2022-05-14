@@ -29,7 +29,8 @@ int main()
                 }) {
                     Control control;
                     target.add(
-                        Control{&control}
+                        Control{}
+                        .associate(&control)
                         .cursor(shape)
                         .paper([control]{ return control.hover() ? "DeepSkyBlue" : "LightSkyBlue"; })
                         .layout(
@@ -42,7 +43,7 @@ int main()
             })
             .layout(
                 ColumnLayout{}
-                .spacing(dp(2))
+                .spacing(sp(2))
             )
             .centerInParent()
         )

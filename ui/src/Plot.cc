@@ -74,6 +74,21 @@ Plot::State::State()
     });
 }
 
+Plot::Plot():
+    View{onDemand<State>}
+{}
+
+Plot::Plot(double width, double height):
+    View{new State}
+{
+    size(Size{width, height});
+}
+
+Plot &Plot::associate(Out<Plot> self)
+{
+    return View::associate<Plot>(self);
+}
+
 double Plot::symLog(double x)
 {
     static constexpr double C = 1 / std::log(10);

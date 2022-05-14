@@ -10,7 +10,8 @@ int main()
     return
         View{sp(320), sp(240)}
         .add(
-            NumberInput{&input}
+            NumberInput{}
+            .associate(&input)
             .min(-100)
             .max(100)
             .precision(0.1)

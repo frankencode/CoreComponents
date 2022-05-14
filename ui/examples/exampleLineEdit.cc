@@ -13,7 +13,8 @@ int main()
     return
         View{sp(640), sp(480)}
         .add(
-            LineEdit{&edit}
+            LineEdit{}
+            .associate(&edit)
             .title("Username")
             .icon(Ideographic::AccountPlus)
             .alertIcon()

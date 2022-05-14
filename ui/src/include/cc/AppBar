@@ -23,13 +23,13 @@ public:
       */
     static double height();
 
-    /** Create a primordial top bar
+    /** Create a primordial application bar
       */
     AppBar();
 
-    /** Create a new top bar and return a weak reference to it
+    /** Get a weak reference in \a self
       */
-    explicit AppBar(Out<AppBar> self);
+    AppBar &associate(Out<AppBar> self);
 
     String title() const; ///< Get page title
     AppBar &title(const String &newValue); ///< Set page title
