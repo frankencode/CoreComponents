@@ -1,0 +1,5 @@
+Plugin {
+    name: CoreComponentsHttpForegroundLoggingPlugin
+    group: logging
+    extend: HTTP
+}

@@ -1,0 +1,4 @@
+Application {
+    name: ccget
+    use: [ Core, Glob, Network, HTTP ]
+}

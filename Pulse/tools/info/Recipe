@@ -1,0 +1,4 @@
+Application {
+    name: ccpulse-info
+    use: [ Core, Pulse ]
+}

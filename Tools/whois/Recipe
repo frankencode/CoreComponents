@@ -1,0 +1,4 @@
+Application {
+    name: ccwhois
+    use: [ Core, Network ]
+}

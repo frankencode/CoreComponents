@@ -1,4 +1,0 @@
-Library {
-    name: cc_syntax
-    use: core
-}

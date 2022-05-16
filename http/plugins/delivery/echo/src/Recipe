@@ -1,5 +1,0 @@
-Plugin {
-    name: cc_http_echo_plugin
-    group: delivery
-    extend: cc/http
-}

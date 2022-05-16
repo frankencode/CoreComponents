@@ -1,0 +1,4 @@
+Application {
+    name: ccfind
+    use: [ Core, Syntax, Glob ]
+}

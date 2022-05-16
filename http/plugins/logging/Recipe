@@ -1,3 +1,0 @@
-Package {
-    include: [ syslog, file, foreground, dispatch ]
-}

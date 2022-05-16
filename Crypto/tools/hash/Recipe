@@ -1,0 +1,5 @@
+Application {
+    name: ccsha1
+    alias: ccmd5
+    use: [ Core, Crypto ]
+}

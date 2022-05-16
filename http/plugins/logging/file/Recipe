@@ -1,5 +1,0 @@
-Plugin {
-    name: cc_http_file_logging_plugin
-    group: logging
-    extend: cc/http
-}

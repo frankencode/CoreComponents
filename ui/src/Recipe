@@ -1,5 +1,0 @@
-Library {
-    name: cc_ui
-    use: core
-    depends: [ cairo, freetype2 ]
-}

@@ -1,6 +1,0 @@
-Plugin {
-    name: cc_ui_materialist_plugin
-    group: style
-    extend: cc/ui
-    bundle: icons
-}

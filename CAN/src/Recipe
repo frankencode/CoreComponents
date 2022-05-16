@@ -1,0 +1,7 @@
+Library {
+    name: CoreComponentsCan
+    use: Core
+    Dependency {
+        probe: probe/linux.cc
+    }
+}

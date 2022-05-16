@@ -2,10 +2,6 @@
   * \brief %Core components
   */
 
-/** \namespace cc::ui
-  * \brief %User interface components
-  */
-
 /** \internal
   * \namespace cc::bucket
   * \brief Bucket Trees
@@ -125,7 +121,7 @@
   */
 
 /** \defgroup ui User Interface
-  * User interface building blocks
+  * Building blocks for graphical user interfaces
   */
 
 /** \defgroup ui_layout Layouts

@@ -1,0 +1,4 @@
+Application {
+    name: ccbuild
+    use: [ Core, Glob, Meta ]
+}

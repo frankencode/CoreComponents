@@ -1,0 +1,5 @@
+Library {
+    name: CoreComponentsUx
+    use: Core
+    depends: [ cairo, freetype2 ]
+}

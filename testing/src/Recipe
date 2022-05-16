@@ -1,4 +1,0 @@
-Library {
-    name: cc_testing
-    use: core
-}

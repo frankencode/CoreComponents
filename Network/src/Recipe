@@ -1,0 +1,4 @@
+Library {
+    name: CoreComponentsNetwork
+    use: [ Core, Syntax, Glob ]
+}

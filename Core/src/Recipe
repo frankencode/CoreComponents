@@ -1,0 +1,19 @@
+Library {
+    name: CoreComponentsCore
+    Dependency {
+        probe: probe/cxx20.cc
+        compile-flags: -std=c++20
+        cascade: true
+    }
+    Dependency {
+        probe: probe/valgrind.cc
+        compile-flags: -DCC_VALGRIND
+        cascade: true
+    }
+    Dependency {
+        // probe: probe/cygwin.cc
+        compile-flags: -D_GNU_SOURCE
+        cascade: true
+    }
+    link: dl
+}

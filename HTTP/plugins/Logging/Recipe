@@ -1,0 +1,3 @@
+Package {
+    include: [ Syslog, File, Foreground, Dispatch ]
+}

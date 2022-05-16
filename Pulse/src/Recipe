@@ -1,0 +1,5 @@
+Library {
+    name: CoreComponentsPulse
+    use: CoreComponents/Core
+    depends: libpulse
+}

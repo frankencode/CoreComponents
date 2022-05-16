@@ -1,0 +1,4 @@
+Application {
+    name: ccpulse-fft
+    use: [ Core, Pulse, UX ]
+}

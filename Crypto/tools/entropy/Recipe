@@ -1,0 +1,4 @@
+Application {
+    name: ccentropy
+    use: [ Core, Crypto ]
+}

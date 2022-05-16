@@ -1,0 +1,5 @@
+Plugin {
+    name: CoreComponentsHttpDispatchLoggingPlugin
+    group: logging
+    extend: HTTP
+}

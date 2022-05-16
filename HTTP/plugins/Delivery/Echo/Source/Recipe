@@ -1,0 +1,5 @@
+Plugin {
+    name: CoreComponentsHttpEchoPlugin
+    group: delivery
+    extend: HTTP
+}

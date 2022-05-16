@@ -1,0 +1,6 @@
+Application {
+    name: ccaes
+    alias: ccunaes
+    use: [ Core, Crypto ]
+    depends: readline
+}

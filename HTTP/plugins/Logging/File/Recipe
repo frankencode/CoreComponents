@@ -1,0 +1,5 @@
+Plugin {
+    name: CoreComponentsHttpFileLoggingPlugin
+    group: logging
+    extend: HTTP
+}

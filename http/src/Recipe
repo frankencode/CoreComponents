@@ -1,5 +1,0 @@
-Library {
-    name: cc_http
-    use: [ core, glob, net, meta ]
-    depends: gnutls >= 3.3.5
-}

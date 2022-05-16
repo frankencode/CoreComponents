@@ -1,0 +1,6 @@
+Plugin {
+    name: CoreComponentsUxSdlPlugin
+    group: platform
+    extend: UX
+    depends: sdl2 >= 2.0.10
+}

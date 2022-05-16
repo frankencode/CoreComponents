@@ -1,5 +1,0 @@
-Library {
-    name: cc_pulse
-    use: cc/core
-    depends: libpulse
-}

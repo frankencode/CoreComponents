@@ -1,0 +1,4 @@
+Application {
+    name: ccpulse-dump
+    use: [ Core, Pulse ]
+}

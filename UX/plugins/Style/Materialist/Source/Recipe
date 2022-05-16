@@ -1,0 +1,6 @@
+Plugin {
+    name: CoreComponentsUxMaterialistPlugin
+    group: style
+    extend: UX
+    bundle: icons
+}

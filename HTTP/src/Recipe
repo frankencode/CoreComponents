@@ -1,0 +1,5 @@
+Library {
+    name: CoreComponentsHttp
+    use: [ Core, Glob, Network, Meta ]
+    depends: gnutls >= 3.3.5
+}

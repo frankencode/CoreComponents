@@ -1,0 +1,4 @@
+Library {
+    name: CoreComponentsMeta
+    use: [ Core, Syntax ]
+}
