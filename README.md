@@ -16,8 +16,8 @@ Features
  * fast compile times
  * transparent API: full access to low-level system primitives
  * batteries included:
-   * easy to use build system (cc_build)
-   * built-in web server and client (cc_http)
+   * easy to use build system (ccbuild)
+   * built-in web server and client (ccget, ccnode)
    * many more useful tools
 
 Installation
