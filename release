@@ -30,7 +30,7 @@ if uname -o|grep Cygwin; then
 else
     BOOTSTRAP=bootstrap
 fi
-cc_build -bootstrap -release $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
+ccbuild -bootstrap -release $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
 chmod +x $SOURCE/tools/build/$BOOTSTRAP
 popd
 
@@ -47,6 +47,6 @@ popd
 ARCHIVE=$PACKAGE-$VERSION.tar.gz
 HASHES=$PACKAGE-$VERSION.hash
 tar -cv $PACKAGE-$VERSION | gzip --best > $ARCHIVE
-printf "md5\t$(cc_md5 $ARCHIVE)\n" > $HASHES
-printf "sha1\t$(cc_sha1 $ARCHIVE)\n" >> $HASHES
+printf "md5\t$(ccmd5 $ARCHIVE)\n" > $HASHES
+printf "sha1\t$(ccsha1 $ARCHIVE)\n" >> $HASHES
 popd

@@ -34,24 +34,24 @@ Install required development packages:
 sudo apt-get install g++ pkg-config git curl
 ```
 
-Download the latest stable version from github:
+Download the latest stable version:
 ```
 mkdir -p ~/src
 cd ~/src
-curl -L https://www.corecomponents.io/download/cc-2.0.0.tar.gz | tar xzv
-ln -s ../cc-2.0.0 cc
+curl -L https://www.corecomponents.io/download/CoreComponents-2.0.6.tar.gz | tar xzv
+ln -s ../CoreComponents-2.0.6 CoreComponents
 ```
 
 Thereafter bootstrap the build system:
 ```
-mkdir -p ~/build/cc_release
-cd ~/build/cc_release
-~/src/cc/bootstrap
+mkdir -p ~/build/CoreComponents_release
+cd ~/build/CoreComponents_release
+~/src/CoreComponents/bootstrap
 ```
 
 Finally, build the entire toolkit:
 ```
-./ccbuild -release -test ~/src/cc
+./ccbuild -release -test ~/src/CoreComponents
 ```
 
 Optionally add the build directory to your environment:
