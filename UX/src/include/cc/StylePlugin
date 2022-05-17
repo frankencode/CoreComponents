@@ -77,6 +77,9 @@ public:
     double itemHeight2() const { return me().itemHeight2_; } ///< %Item height 2
     double itemHeight3() const { return me().itemHeight3_; } ///< %Item height 3
 
+    Size defaultLayoutMargin() const { return me().defaultLayoutMargin_; } ///< Default layout margin
+    double defaultLayoutSpacing() const { return me().defaultLayoutSpacing_; } ///< Default layout spacing
+
     double scrollBarThickness() const { return me().scrollBarThickness_; } ///< Thickness of scroll bars
     double scrollHandleMargin() const { return me().scrollHandleMargin_; } ///< Margin around scroll bar handles
     double scrollBarAutoHideTimeout() const { return me().scrollBarAutoHideTimeout_; } ///< %Timeout for an unneeded scroll bar to automatically hide
@@ -112,6 +115,8 @@ protected:
         double itemHeight1_ { sp(48) };
         double itemHeight2_ { sp(56) };
         double itemHeight3_ { sp(64) };
+        Size defaultLayoutMargin_ { Size{sp(16), sp(16)} };
+        double defaultLayoutSpacing_ { sp(16) };
         double scrollBarThickness_ { sp(14) };
         double scrollHandleMargin_ { sp(4) };
         double scrollBarAutoHideTimeout_ { 2 };

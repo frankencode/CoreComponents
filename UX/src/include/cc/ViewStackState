@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/StackView>
+#include <cc/RenderView>
+
+namespace cc {
+
+struct StackView::State: public View::State
+{
+    State(Size initialSize = Size{});
+
+    int screensCount() const;
+    void settled() override;
+    void push(View screen);
+    void pop();
+    void home();
+
+    View carrier_;
+    RenderView postmortem_;
+    List<View> stack_;
+    Property<bool> homing { false };
+};
+
+} // namespace cc

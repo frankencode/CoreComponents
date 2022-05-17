@@ -31,7 +31,7 @@ Control Window::findControl(Point pos) const
 }
 
 Window::State::State(View view):
-    size{&view.me().size},
+    size{&view->size},
     view_{view}
 {
     if (!view_.paper()) view_.paper([this]{ return theme().windowColor(); });

@@ -192,6 +192,12 @@ void View::State::childDone(InOut<View> child)
 void View::State::settled()
 {}
 
+void View::State::addBelow(const View &child)
+{
+    View{child}->id_ = nextBelowId();
+    insertChild(child);
+}
+
 void View::State::insertAt(Locator target, View child)
 {
     if (target) {
@@ -212,8 +218,8 @@ void View::State::insertAt(Locator target, View child)
 void View::State::insertChild(View child)
 {
     child->parent_ = this;
-    if (std::isnan(child.me().id_)) {
-        child->id_ = nextId();
+    if (std::isnan(child->id_)) {
+        child->id_ = nextAboveId();
     }
     children_.insert(child);
     if (child.visible()) {

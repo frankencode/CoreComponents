@@ -6,92 +6,86 @@
  *
  */
 
-#include <cc/StackView>
-#include <cc/RenderView>
+#include <cc/ViewStackState>
 #include <cc/Application>
 
 namespace cc {
 
-struct StackView::State final: public View::State
+StackView::State::State(Size initialSize)
 {
-    State(Size initialSize = Size{})
-    {
-        size(initialSize);
+    size(initialSize);
 
-        carrier_.touch();
+    carrier_.touch();
 
-        add(
-            carrier_
+    add(
+        carrier_
+        .pos([this]{
+            return Point{-width() * (screensCount() - 1), 0.};
+        })
+        .size([this]{
+            return Size{width() * (screensCount() + 1), height()};
+        })
+        .add(
+            postmortem_
             .pos([this]{
-                return Point{-width() * (screensCount() - 1), 0.};
+                return Point{width() * screensCount(), 0.};
             })
             .size([this]{
-                return Size{width() * (screensCount() + 1), height()};
+                return size();
             })
-            .add(
-                postmortem_
-                .pos([this]{
-                    return Point{width() * screensCount(), 0.};
-                })
-                .size([this]{
-                    return size();
-                })
-            )
-        );
+        )
+    );
 
-        size.onChanged([this]{ postmortem_.visible(false); });
-    }
+    size.onChanged([this]{ postmortem_.visible(false); });
+}
 
-    int screensCount() const { return carrier_.childrenCount() - 1/*postmortem_*/; }
+int StackView::State::screensCount() const
+{
+    return carrier_.childrenCount() - 1/*postmortem_*/;
+}
 
-    void settled() override
-    {
-        carrier_.posEasing(
-            Easing::Bezier{0.5, 0.0, 0.5, 1.0},
-            0.3,
-            [this]{ return sizing() || homing(); }
-        );
-    }
+void StackView::State::settled()
+{
+    carrier_.posEasing(
+        Easing::Bezier{0.5, 0.0, 0.5, 1.0},
+        0.3,
+        [this]{ return sizing() || homing(); }
+    );
+}
 
-    void push(View screen)
-    {
-        int screenIndex = screensCount();
-        carrier_.add(
-            screen
-            .pos([this,screenIndex]{ return Point{screenIndex * width(), 0}; })
-            .size([this]{ return size(); })
-        );
-        stack_.pushBack(screen);
-    }
+void StackView::State::push(View screen)
+{
+    int screenIndex = screensCount();
+    carrier_.add(
+        screen
+        .pos([this,screenIndex]{ return Point{screenIndex * width(), 0}; })
+        .size([this]{ return size(); })
+    );
+    stack_.pushBack(screen);
+}
 
-    void pop()
-    {
-        View topView = stack_.last();
-        if (!postmortem_.visible()) postmortem_.visible(true);
-        postmortem_.image().clear(basePaper());
-        topView.renderTo(postmortem_.image());
-        postmortem_.update();
+void StackView::State::pop()
+{
+    View topView = stack_.last();
+    if (!postmortem_.visible()) postmortem_.visible(true);
+    postmortem_.image().clear(basePaper());
+    topView.renderTo(postmortem_.image());
+    postmortem_.update();
+    stack_.popBack();
+    Application{}.postEvent([carrier=carrier_, topView]() mutable {
+        carrier.remove(topView);
+    });
+}
+
+void StackView::State::home()
+{
+    homing(true);
+    while (stack_.count() > 1) {
+        carrier_.remove(stack_.last());
         stack_.popBack();
-        Application{}.postEvent([carrier=carrier_, topView]() mutable {
-            carrier.remove(topView);
-        });
     }
-
-    void home()
-    {
-        homing(true);
-        while (stack_.count() > 1) {
-            carrier_.remove(stack_.last());
-            stack_.popBack();
-        }
-        homing(false);
-    }
-
-    View carrier_;
-    RenderView postmortem_;
-    List<View> stack_;
-    Property<bool> homing { false };
-};
+    homing(false);
+}
 
 StackView::StackView():
     View{onDemand<State>}
@@ -101,14 +95,22 @@ StackView::StackView(double width, double height):
     View{new State{Size{width, height}}}
 {}
 
+StackView::StackView(CreateState onDemand):
+    View{onDemand}
+{}
+
+StackView::StackView(State *newState):
+    View{newState}
+{}
+
 StackView &StackView::associate(Out<StackView> self)
 {
     return View::associate<StackView>(self);
 }
 
-StackView &StackView::push(const View &screen)
+StackView &StackView::push(const View &view)
 {
-    me().push(screen);
+    me().push(view);
     return *this;
 }
 

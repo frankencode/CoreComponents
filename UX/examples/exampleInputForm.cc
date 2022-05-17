@@ -14,8 +14,6 @@ int main()
 {
     using namespace cc;
 
-    const double gap = sp(16);
-
     PasswordEdit passwordField;
     Checkbox dessert;
 
@@ -23,11 +21,7 @@ int main()
         Flickable{
             sp(400), sp(600),
             Pane{}
-            .layout(
-                ColumnLayout{}
-                .margin(gap)
-                .spacing(gap)
-            )
+            .layout(ColumnLayout{})
             .add(LineEdit{"First name"})
             .add(LineEdit{"Family name"})
             .add(

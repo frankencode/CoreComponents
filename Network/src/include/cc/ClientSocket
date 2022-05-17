@@ -14,12 +14,12 @@ namespace cc {
 
 /** \class ClientSocket cc/ClientSocket
   * \ingroup net
-  * \brief Client socket
+  * \brief TCP client socket
   */
 class ClientSocket final: public StreamSocket
 {
 public:
-    /** Createa a null client socket
+    /** Create a null client socket
       */
     ClientSocket() = default;
 

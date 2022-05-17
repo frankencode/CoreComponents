@@ -19,9 +19,6 @@ int main()
 {
     using namespace cc;
 
-    const double gap = sp(16);
-    const double appBarHeight = AppBar::height();
-
     StackView stack;
     ListMenu menu;
 
@@ -37,6 +34,12 @@ int main()
         .push(
             View{}
             .add(
+                AppBar{}
+                .associate(&appBar)
+                .title("User Manager")
+                .onNavigate([]{ ferr() << "Navigate!" << nl; })
+            )
+            .addBelow(
                 ListMenu{}
                 .associate(&menu)
                 .populate([=](auto target) mutable {
@@ -53,6 +56,7 @@ int main()
                                     .add(
                                         Flickable{
                                             Pane{}
+                                            .layout(ColumnLayout{})
                                             .add(LineEdit{"First name"})
                                             .add(LineEdit{"Family name"})
                                             .add(
@@ -85,16 +89,11 @@ int main()
                                                 .trailing(Icon{Ideographic::VolumeHigh})
                                             )
                                             .add(LineEdit{"Country"})
-                                            .layout(
-                                                ColumnLayout{}
-                                                .margin(gap) //! \todo should have a sensible non-zero default
-                                                .spacing(gap)
-                                            )
                                         }
                                         .size([=]{
-                                            return screen.size() - Size{0, appBarHeight};
+                                            return screen.size() - Size{0, appBar.height()};
                                         })
-                                        .pos(0, appBarHeight)
+                                        .pos(0, appBar.height())
                                     )
                                     .add(
                                         AppBar{}
@@ -107,14 +106,8 @@ int main()
                         );
                     }
                 })
-                .pos(0, appBarHeight)
-                .size([=]{ return stack.size() - Size{0, appBarHeight}; })
-            )
-            .add(
-                AppBar{}
-                .associate(&appBar)
-                .title("User Manager")
-                .onNavigate([]{ ferr() << "Navigate!" << nl; })
+                .pos(0, appBar.height())
+                .size([=]{ return stack.size() - Size{0, appBar.height()}; })
             )
         )
         .onEndOfLife([]{ ferr() << "stack destroyed" << nl; })

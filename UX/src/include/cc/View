@@ -232,11 +232,27 @@ public:
       */
     bool hasChildren() const { return me().childrenCount() > 0; }
 
-    /** Add a new \a child
+    /** \copydoc addAbove()
       */
     View &add(const View &child)
     {
         me().insertChild(child);
+        return *this;
+    }
+
+    /** Add new \a child placed visually above all existing children
+      */
+    View &addAbove(const View &child)
+    {
+        me().insertChild(child);
+        return *this;
+    }
+
+    /** Add \a child place visually below all existing children
+      */
+    View &addBelow(const View &child)
+    {
+        me().addBelow(child);
         return *this;
     }
 
@@ -375,8 +391,8 @@ public:
 
             View::State &view() { return *view_(); }
 
-            Property<Size> margin;
-            Property<double> spacing { 0 };
+            Property<Size> margin { style().defaultLayoutMargin() };
+            Property<double> spacing { style().defaultLayoutSpacing() };
             Property<Size> minSize;
             Property<Size> maxSize { Size{std::numeric_limits<double>::max()} };
             Property<Size> preferredSize;
@@ -676,6 +692,8 @@ protected:
         virtual void settled(); ///< Called on the child after it has been added (ideal place for setting up easing behavior / transitions)
 
         void add(const View &child) { insertChild(child); } ///< \copydoc View::add()
+        void addAbove(const View &child) { insertChild(child); } ///< \copydoc View::addAbove()
+        void addBelow(const View &child); ///< \copydoc View::addBelow()
         void insertAt(Locator pos, View child); ///< \copydoc View::insertAt()
         void remove(const View &child) { removeChild(child); } ///< \copydoc View::remove()
 
@@ -708,7 +726,8 @@ protected:
         friend class Window;
         friend class IndexTracking<View>;
 
-        Id nextId() const { return children_.count() == 0 ? 1 : children_.max().id() + 1; }
+        Id nextAboveId() const { return children_.count() == 0 ? 1 : children_.max().id() + 1; }
+        Id nextBelowId() const { return children_.count() == 0 ? -1 : children_.min().id() - 1; }
 
         cairo_surface_t *cairoSurface() override;
 

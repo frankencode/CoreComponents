@@ -14,16 +14,16 @@ namespace cc {
 
 /** \class StackView cc/StackView
   * \ingroup ui
-  * \brief Screen navigation stack
+  * \brief View stack
   */
-class StackView final: public View
+class StackView: public View
 {
 public:
-    /** Create a primordial stack view
+    /** Create a primordial view stack
       */
     StackView();
 
-    /** Create a new stack view of given size and return a weak reference to it
+    /** Create a new view stack of given size
       */
     StackView(double width, double height);
 
@@ -31,28 +31,31 @@ public:
       */
     StackView &associate(Out<StackView> self);
 
-    /** Push a new screen onto the stack
+    /** Push a new view onto the stack
       */
-    StackView &push(const View &screen);
+    StackView &push(const View &view);
 
-    /** Remove the current screen from the stack
+    /** Remove the current view from the stack
       */
     void pop();
 
-    /** Go to the first screen push onto the stack and remove all other screens thereafter
+    /** Go to the first view pushed onto the stack and remove all other views thereafter
       */
     void home();
 
-    /** Current number of screens
+    /** Current number of views
       */
     int count() const;
 
-    /** %Set easing for screen transition
+    /** %Set easing for push/pop transition
       */
     StackView &easing(const EasingCurve &easing, double duration);
 
-private:
+protected:
     struct State;
+
+    explicit StackView(CreateState onDemand);
+    explicit StackView(State *newState);
 
     const View &carrier() const;
 
