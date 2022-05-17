@@ -16,7 +16,7 @@ namespace cc {
 /** \class IoActivity cc/IoMonitor
   * \brief Entry on the I/O watch list of an I/O monitor
   */
-class IoActivity: public Object
+class IoActivity final: public Object
 {
 public:
     /** \internal
@@ -34,7 +34,7 @@ public:
 private:
     friend class IoMonitor;
 
-    struct State: public Object::State
+    struct State final: public Object::State
     {
         State(const IoStream &target, IoEvent mask):
             target_{target},
@@ -62,7 +62,7 @@ private:
   * \ingroup streams
   * \brief Wait for I/O events
   */
-class IoMonitor: public Object
+class IoMonitor final: public Object
 {
 public:
     /** Create a new I/O monitor

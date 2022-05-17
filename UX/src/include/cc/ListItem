@@ -35,7 +35,7 @@ public:
 
     View title() const { return me().title(); } ///< Get title
     ListItem &title(const View &newValue); ///< %Set title
-    ListItem &text(const String &newValue); ///< %Set title text
+    ListItem &title(const String &newValue); ///< %Set title text
 
     View indicator() const { return me().indicator(); } ///< Get indicator
     ListItem &indicator(const View &newValue); ///< %Set indicator

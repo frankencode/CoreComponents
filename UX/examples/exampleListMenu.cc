@@ -17,7 +17,7 @@ int main()
             Label{}
             .margin(sp(16))
             .text([=]{
-                return Format{"%% networks available"}.arg(menu.pane().count());
+                return Format{"%% networks available"}.arg(menu.carrier().count());
             })
         )
         .footer(
@@ -26,10 +26,10 @@ int main()
         )
         .populate([](auto target){
             for (int i = 0; i < 32; ++i) {
-                target.pane().add(
+                target.carrier().add(
                     ListItem{}
                     .icon(Picture{Ideographic::AccessPoint, 28})
-                    .text(Format{"Access point %%"}.arg(i))
+                    .title(Format{"Access point %%"}.arg(i))
                     .onClicked([i]{
                         CC_INSPECT(i);
                     })

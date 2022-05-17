@@ -30,7 +30,7 @@ struct TextView::State final: public ListView::State
     {
         ListView::State::deplete();
         for (const String &line: LineSource{text()}) {
-            pane().add(
+            carrier().add(
                 Text{line}
                 .maxWidth([this]{ return width(); })
             );

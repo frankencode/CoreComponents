@@ -44,10 +44,10 @@ int main()
                 .associate(&menu)
                 .populate([=](auto target) mutable {
                     for (int i = 0; i < 32; ++i) {
-                        target.pane().add(
+                        target.carrier().add(
                             ListItem{}
                             .icon(Picture{Ideographic::AccessPoint, 28})
-                            .text(Format{"User %%"}.arg(i))
+                            .title(Format{"User %%"}.arg(i))
                             .onClicked([=]() mutable {
                                 CC_INSPECT(i);
                                 stack.push(

@@ -12,7 +12,7 @@
 
 namespace cc {
 
-struct IoMonitor::State: public Object::State
+struct IoMonitor::State final: public Object::State
 {
     Map<int, IoActivity> subjects;
     Array<struct pollfd> fds;

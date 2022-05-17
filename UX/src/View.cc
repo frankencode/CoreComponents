@@ -215,6 +215,12 @@ void View::State::insertAt(Locator target, View child)
     insertChild(child);
 }
 
+void View::State::insertAt(long index, const View &child)
+{
+    if (children_.count() == 0) insertChild(child);
+    else insertAt(children_.from(index), child);
+}
+
 void View::State::insertChild(View child)
 {
     child->parent_ = this;

@@ -17,7 +17,6 @@ namespace cc {
 /** \class Flickable cc/Flickable
   * \ingroup ui
   * \brief %Control with variable sized movable contents
-  * \todo make the style plugin deliver the behavioral parameters for the flickable
   */
 class Flickable: public Organizer
 {
@@ -26,35 +25,35 @@ public:
       */
     Flickable();
 
-    /** Create a new flickable of given size (\a width, \a height) and optionally with a custom \a pane
+    /** Create a new flickable of given size (\a width, \a height) and optionally with a custom \a carrier
       */
-    Flickable(double width, double height, const View &pane = Pane{});
+    Flickable(double width, double height, const View &carrier = Pane{});
 
-    /** Create a new flickable with a custom \a pane
+    /** Create a new flickable with a custom \a carrier
       */
-    explicit Flickable(const View &pane);
+    explicit Flickable(const View &carrier);
 
     /** Get a weak reference in \a self
       */
     Flickable &associate(Out<Flickable> self);
 
-    /** Get the access to the contained pane
+    /** Get the access to the carrier
       */
-    View &pane() { return me().pane_; }
+    View &carrier() { return me().carrier_; }
 
-    /** Get the access to the contained pane
+    /** Get the access to the carrier
       */
-    const View &pane() const { return me().pane_; }
+    const View &carrier() const { return me().carrier_; }
 
 protected:
     friend class Object;
 
     struct State: public Organizer::State
     {
-        State(const View &pane = Pane{});
+        State(const View &carrier = Pane{});
         ~State();
 
-        View pane() const { return pane_; }
+        View carrier() const { return carrier_; }
 
         virtual void preheat();
         virtual void positionCarrierOnResize();
@@ -92,7 +91,7 @@ protected:
 
         Property<Control> focusControl;
 
-        View pane_;
+        View carrier_;
         Control overwrittenControl_;
         bool isDragged_ { false };
         Point dragStart_;

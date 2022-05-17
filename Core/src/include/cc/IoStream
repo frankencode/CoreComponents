@@ -62,7 +62,6 @@ public:
       */
     int fd() const { return me().fd_; }
 
-
     /** Manually close this I/O stream
       */
     void close() { shutdown(IoShutdown::Write); }

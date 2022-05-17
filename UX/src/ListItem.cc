@@ -101,7 +101,7 @@ ListItem &ListItem::title(const View &newValue)
     return *this;
 }
 
-ListItem &ListItem::text(const String &newValue)
+ListItem &ListItem::title(const String &newValue)
 {
     return title(Label{newValue});
 }

@@ -29,21 +29,21 @@ public:
       */
     ScrollView(double width, double height);
 
-    /** Create a new scroll view with custom \a pane
+    /** Create a new scroll view with custom \a carrier
       */
-    explicit ScrollView(const View &pane);
+    explicit ScrollView(const View &carrier);
 
-    /** Create a new scroll view of size (\a width, \a height) with custom \a pane
+    /** Create a new scroll view of size (\a width, \a height) with custom \a carrier
       */
-    ScrollView(double width, double height, const View &pane);
+    ScrollView(double width, double height, const View &carrier);
 
     /** Get a weak reference in \a self
       */
     ScrollView &associate(Out<ScrollView> self);
 
-    /** Get the pane
+    /** Get the carrier
       */
-    View pane() const { return me().flickable_.pane(); }
+    View carrier() const { return me().flickable_.carrier(); }
 
     /** Get scroll bar auto hide mode
       */
@@ -56,7 +56,7 @@ public:
 protected:
     struct State: public View::State
     {
-        State(const View &pane = Pane{});
+        State(const View &carrier = Pane{});
 
         Property<bool> scrollBarAutoHide { true };
         Property<void> scrollMonitor;

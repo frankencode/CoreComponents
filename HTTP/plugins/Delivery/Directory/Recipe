@@ -1,5 +1,5 @@
 Plugin {
     name: CoreComponentsHttpDirectoryPlugin
-    group: Delivery
+    group: delivery
     extend: HTTP
 }

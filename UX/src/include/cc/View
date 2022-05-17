@@ -256,11 +256,19 @@ public:
         return *this;
     }
 
-    /** Insert a new \a child at position \a pos
+    /** Insert new \a child at \a target
       */
-    View &insertAt(Locator pos, const View &child)
+    View &insertAt(Locator target, const View &child)
     {
-        me().insertAt(pos, child);
+        me().insertAt(target, child);
+        return *this;
+    }
+
+    /** Insert new \a child at \a index
+      */
+    View &insertAt(long index, const View &child)
+    {
+        me().insertAt(index, child);
         return *this;
     }
 
@@ -694,7 +702,8 @@ protected:
         void add(const View &child) { insertChild(child); } ///< \copydoc View::add()
         void addAbove(const View &child) { insertChild(child); } ///< \copydoc View::addAbove()
         void addBelow(const View &child); ///< \copydoc View::addBelow()
-        void insertAt(Locator pos, View child); ///< \copydoc View::insertAt()
+        void insertAt(Locator target, View child); ///< \copydoc View::insertAt(Locator, View)
+        void insertAt(long index, const View &child); ///< \copydov View::insertAt(long, const View &)
         void remove(const View &child) { removeChild(child); } ///< \copydoc View::remove()
 
         virtual void insertChild(View child); ///< Handles the insertion of new children

@@ -118,20 +118,20 @@ class ListView::Pane final: public View
 ListView::State::State():
     Flickable::State{Pane{}}
 {
-    Pane pane = Flickable::State::pane().as<Pane>();
+    Pane carrier = Flickable::State::carrier().as<Pane>();
 
-    pane->leadSpace([this]{
+    carrier->leadSpace([this]{
         return header() ? header().height() : gu(2);
     });
 
-    pane->tailSpace([this]{
+    carrier->tailSpace([this]{
         return footer() ? footer().height() : gu(2);
     });
 }
 
 void ListView::State::deplete()
 {
-    pane().as<Pane>()->deplete();
+    carrier().as<Pane>()->deplete();
 }
 
 void ListView::State::setHeader(const View &newValue)
@@ -139,8 +139,8 @@ void ListView::State::setHeader(const View &newValue)
     if (header()) remove(header());
     header(newValue);
     View::State::insertChild(header());
-    header().pos([this]{ return pane().pos(); });
-    header().visible([this]{ return header().height() >= -pane().pos()[1]; });
+    header().pos([this]{ return carrier().pos(); });
+    header().visible([this]{ return header().height() >= -carrier().pos()[1]; });
 }
 
 void ListView::State::setFooter(const View &newValue)
@@ -148,7 +148,7 @@ void ListView::State::setFooter(const View &newValue)
     if (footer()) remove(footer());
     footer(newValue);
     View::State::insertChild(footer());
-    footer().pos([this]{ return pane().pos() + Point{0, pane().height() - footer().height()}; });
+    footer().pos([this]{ return carrier().pos() + Point{0, carrier().height() - footer().height()}; });
     footer().visible([this]{ return footer().pos()[1] < height(); });
 }
 

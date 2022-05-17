@@ -17,7 +17,7 @@ int main()
             Label{}
             .margin(sp(16))
             .text([=]{
-                return Format{"%% icons..."}.arg(menu.pane().count());
+                return Format{"%% icons..."}.arg(menu.carrier().count());
             })
         )
         .populate([](auto target){
@@ -2509,10 +2509,10 @@ int main()
                 { Ideographic::YoutubeTv, "YoutubeTv" },
                 { Ideographic::ZipBox, "ZipBox" },
             }) {
-                target.pane().add(
+                target.carrier().add(
                     ListItem{}
                     .icon(Picture{item.ideographic, sp(24)})
-                    .text(item.name)
+                    .title(item.name)
                     .onClicked([=]{
                         CC_INSPECT(+item.ideographic);
                     })

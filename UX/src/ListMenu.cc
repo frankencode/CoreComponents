@@ -105,13 +105,13 @@ struct ListMenu::State final: public Flickable::State
     State():
         Flickable::State{Pane{}}
     {
-        Pane pane = Flickable::State::pane().as<Pane>();
+        Pane carrier = Flickable::State::carrier().as<Pane>();
 
-        pane.me().leadSpace([this]{
+        carrier.me().leadSpace([this]{
             return header() ? header().height() : 0;
         });
 
-        pane.me().tailSpace([this]{
+        carrier.me().tailSpace([this]{
             return footer() ? footer().height() : 0;
         });
     }
@@ -121,8 +121,8 @@ struct ListMenu::State final: public Flickable::State
         if (header()) remove(header());
         header(newValue);
         View::State::insertChild(header());
-        header().pos([this]{ return pane().pos(); });
-        header().visible([this]{ return header().height() >= -pane().pos()[1]; });
+        header().pos([this]{ return carrier().pos(); });
+        header().visible([this]{ return header().height() >= -carrier().pos()[1]; });
     }
 
     void setFooter(const View &newValue)
@@ -130,7 +130,7 @@ struct ListMenu::State final: public Flickable::State
         if (footer()) remove(footer());
         footer(newValue);
         View::State::insertChild(footer());
-        footer().pos([this]{ return pane().pos() + Point{0, pane().height() - footer().height()}; });
+        footer().pos([this]{ return carrier().pos() + Point{0, carrier().height() - footer().height()}; });
         footer().visible([this]{ return footer().pos()[1] < height(); });
     }
 

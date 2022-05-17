@@ -10,8 +10,8 @@
 
 namespace cc {
 
-ScrollView::State::State(const View &pane):
-    flickable_{pane}
+ScrollView::State::State(const View &carrier):
+    flickable_{carrier}
 {
     vScroll_.orientation(Orientation::Vertical);
     hScroll_.orientation(Orientation::Horizontal);
@@ -33,8 +33,8 @@ ScrollView::State::State(const View &pane):
         };
     });
 
-    vScroll_.totalExtent([this]{ return flickable_.pane().height(); });
-    hScroll_.totalExtent([this]{ return flickable_.pane().width(); });
+    vScroll_.totalExtent([this]{ return flickable_.carrier().height(); });
+    hScroll_.totalExtent([this]{ return flickable_.carrier().width(); });
 
     flickable_.size([this]{
         return Size{
@@ -46,7 +46,7 @@ ScrollView::State::State(const View &pane):
     flickable_.clip(true);
 
     scrollMonitor([this]{
-        flickable_.pane().pos(
+        flickable_.carrier().pos(
             Point{
                 hScroll_.visibleOffset(),
                 vScroll_.visibleOffset()
@@ -55,7 +55,7 @@ ScrollView::State::State(const View &pane):
     });
 
     carrierMonitor([this]{
-        Point offset = flickable_.pane().pos();
+        Point offset = flickable_.carrier().pos();
         hScroll_.visibleOffset(offset.x());
         vScroll_.visibleOffset(offset.y());
     });
@@ -75,12 +75,12 @@ ScrollView::ScrollView(double width, double height):
     size(Size{width, height});
 }
 
-ScrollView::ScrollView(const View &pane):
-    View{new State{pane}}
+ScrollView::ScrollView(const View &carrier):
+    View{new State{carrier}}
 {}
 
-ScrollView::ScrollView(double width, double height, const View &pane):
-    View{new State{pane}}
+ScrollView::ScrollView(double width, double height, const View &carrier):
+    View{new State{carrier}}
 {
     size(Size{width, height});
 }
