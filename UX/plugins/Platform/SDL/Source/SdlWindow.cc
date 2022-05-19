@@ -74,6 +74,12 @@ void SdlWindow::State::onWindowHidden()
     visible = false;
 }
 
+void SdlWindow::State::redraw()
+{
+    renderCascade(sdlRenderer_, view_);
+    SDL_RenderPresent(sdlRenderer_);
+}
+
 void SdlWindow::State::show(int display)
 {
     if (primordial_) {
@@ -163,8 +169,9 @@ void SdlWindow::State::show(int display)
         });
 
         pos.onChanged([this]{
-            if (pos() != currentPos_)
+            if (pos() != currentPos_) {
                 SDL_SetWindowPosition(sdlWindow_, pos()[0], pos()[1]);
+            }
         });
 
         primordial_ = false;

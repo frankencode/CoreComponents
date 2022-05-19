@@ -106,10 +106,9 @@ struct SdlApplication::State: public Application::State
         SDL_Event event;
 
         do {
-            if (!SDL_WaitEvent(&event))
+            if (!SDL_WaitEvent(&event)) {
                 throw SdlPlatformError{};
-
-            // CC_INSPECT(event.type);
+            }
 
             if (event.type == timerEvent_) {
                 Timer *p = reinterpret_cast<Timer *>(&event.user.data1);
@@ -167,14 +166,18 @@ struct SdlApplication::State: public Application::State
                 case SDL_TEXTINPUT:
                     handleTextInputEvent(event.text);
                     break;
+                /*case SDL_RENDER_TARGETS_RESET:
+                    break;*/
                 default:
                     break;
             };
 
-            for (const auto &pair: windows_)
-                SdlWindow{pair.value()}.me().commitFrame();
+            for (const auto &pair: windows_) {
+                SdlWindow{pair.value()}->commitFrame();
+            }
         }
         while (event.type != SDL_QUIT);
+
 
         SdlTimeMaster::shutdown();
         Singleton::destroy<State>();
@@ -305,8 +308,10 @@ struct SdlApplication::State: public Application::State
             case SDL_WINDOWEVENT_SIZE_CHANGED: {
                 SdlWindow window;
                 if (windows_.lookup(e.windowID, &window)) {
-                    int w = 0, h = 0;
-                    SDL_GetWindowSize(window->sdlWindow_, &w, &h);
+                    // int w = 0, h = 0;
+                    // SDL_GetWindowSize(window->sdlWindow_, &w, &h);
+                    // CC_INSPECT(w);
+                    // CC_INSPECT(h);
                     window->onWindowResized(Size{double(e.data1), double(e.data2)});
                 }
                 break;
@@ -331,6 +336,9 @@ struct SdlApplication::State: public Application::State
                     if (!window->exposed_) {
                         feedExposedEvent(window);
                         window->exposed_ = true;
+                    }
+                    else {
+                        window->redraw();
                     }
                 }
                 break;

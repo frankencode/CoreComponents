@@ -37,6 +37,7 @@ private:
         void onWindowMoved(Point newPos);
         void onWindowShown();
         void onWindowHidden();
+        void redraw();
 
         void show(int display) override;
         void hide() override;
