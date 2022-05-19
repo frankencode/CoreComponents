@@ -18,7 +18,7 @@ class ListMenu;
   * \ingroup ui
   * \brief %Item in a list menu
   */
-class ListItem final: public Control
+class ListItem: public Control
 {
 public:
     /** Create a primordial list item
@@ -45,11 +45,11 @@ public:
     ListItem &enabled(bool newValue) { me().enabled(newValue); return *this; } ///< %Set enabled
     ListItem &enabled(Definition<bool> &&f) { me().enabled(move(f)); return *this; } ///< Define enabled
 
-private:
+protected:
     friend class Object;
     friend class ListMenu;
 
-    struct State final: public Control::State
+    struct State: public Control::State
     {
         State();
 
@@ -64,6 +64,10 @@ private:
         Property<View> indicator;
         Property<bool> enabled;
     };
+
+    explicit ListItem(CreateState onDemand):
+        Control{onDemand}
+    {}
 
     explicit ListItem(State *newState):
         Control{newState}

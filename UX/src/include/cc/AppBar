@@ -32,7 +32,7 @@ public:
     AppBar &associate(Out<AppBar> self);
 
     String title() const; ///< Get page title
-    AppBar &title(const String &newValue); ///< Set page title
+    AppBar &title(const String &newValue); ///< %Set page title
     AppBar &title(Definition<String> &&f); ///< Define page title
 
     /** Register function to call when user requests to navigate the application

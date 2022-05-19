@@ -114,10 +114,9 @@ Slider::Slider():
     View{onDemand<State>}
 {}
 
-Slider::Slider(Out<Slider> self):
-    View{new State}
+Slider &Slider::associate(Out<Slider> self)
 {
-    self = weak<Slider>();
+    return View::associate<Slider>(self);
 }
 
 Slider &Slider::leading(const View &view)

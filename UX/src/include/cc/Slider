@@ -23,9 +23,9 @@ public:
       */
     Slider();
 
-    /** Create a new slider field and return itself
+    /** Get a weak reference in \a self
       */
-    explicit Slider(Out<Slider> self);
+    Slider &associate(Out<Slider> self);
 
     Slider &leading(const View &view); ///< %Set leading decoration
     Slider &trailing(const View &view); ///< %Set trailing decoration
