@@ -38,6 +38,13 @@ struct SliderControl::State: public InputControl::State
             dragArea_.focus(true);
             return false;
         })
+        .onPointerReleased([this](const PointerEvent &event){
+            if (thumb_.containsLocal(mapToChild(thumb_, event.pos()))) return false;
+            double xr = (event.pos().x() - thumb_.width() / 2) / (dragArea_.width() - thumb_.width());
+            double newValue = (max() - min()) * xr + min();
+            setValue(newValue);
+            return true;
+        })
         .onKeyPressed([this](const KeyEvent &event){
             if (
                 event.keyCode() == KeyCode::Key_Plus ||
