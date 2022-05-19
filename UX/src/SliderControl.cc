@@ -276,6 +276,12 @@ SliderControl &SliderControl::value(double newValue)
     return *this;
 }
 
+SliderControl &SliderControl::onValueChanged(Fun<void()> &&f)
+{
+    me().outputValue.onChanged(move(f));
+    return *this;
+}
+
 SliderControl::State &SliderControl::me()
 {
     return View::me().as<State>();

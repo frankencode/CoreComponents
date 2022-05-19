@@ -39,6 +39,8 @@ public:
     Switch &value(bool newValue); ///< %Set current state
     Switch &value(Definition<bool> &&f); ///< Define current state
 
+    Switch &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
+
 private:
     struct State;
 

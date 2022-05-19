@@ -165,6 +165,12 @@ SwitchControl &SwitchControl::value(Definition<bool> &&f)
     return *this;
 }
 
+SwitchControl &SwitchControl::onValueChanged(Fun<void()> &&f)
+{
+    me().on.onChanged(move(f));
+    return *this;
+}
+
 SwitchControl::State &SwitchControl::me()
 {
     return View::me().as<State>();

@@ -41,6 +41,7 @@ public:
 
     double value() const; ///< Get the current slider value
     SliderControl &value(double newValue); ///< %Set the current slider value
+    SliderControl &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
 
 private:
     struct State;

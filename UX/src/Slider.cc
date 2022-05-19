@@ -193,6 +193,12 @@ Slider &Slider::value(double newValue)
     return *this;
 }
 
+Slider &Slider::onValueChanged(Fun<void()> &&f)
+{
+    me().slider_.onValueChanged(move(f));
+    return *this;
+}
+
 Slider::State &Slider::me()
 {
     return View::me().as<State>();

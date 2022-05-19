@@ -105,6 +105,12 @@ Switch &Switch::value(Definition<bool> &&f)
     return *this;
 }
 
+Switch &Switch::onValueChanged(Fun<void()> &&f)
+{
+    me().switch_.onValueChanged(move(f));
+    return *this;
+}
+
 Switch::State &Switch::me()
 {
     return View::me().as<State>();
