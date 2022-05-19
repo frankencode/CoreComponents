@@ -93,8 +93,12 @@ struct Slider::State: public View::State
                     cell_.min([this]{ return slider_.min(); });
                     cell_.max([this]{ return slider_.max(); });
                     cell_.precision([this]{ return slider_.precision(); });
-                    sliderFeed([this]{ slider_.value(cell_.value()); });
-                    cellFeed([this]{ cell_.value(slider_.value()); });
+                    cellFeed([this]{
+                        cell_.value(slider_.value());
+                    });
+                    sliderFeed([this]{
+                        slider_.value(cell_.value());
+                    });
                 }
             }
         }
@@ -190,6 +194,7 @@ double Slider::value() const
 Slider &Slider::value(double newValue)
 {
     me().slider_.value(newValue);
+    if (me().cell_) me().cell_.value(newValue);
     return *this;
 }
 

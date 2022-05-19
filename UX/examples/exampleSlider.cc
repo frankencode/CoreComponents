@@ -27,6 +27,7 @@ int main()
             Slider{}
             .leading(Icon{Ideographic::Thermometer})
             .trailing(NumberCell{})
+            .value(50)
         )
         .run();
 }
