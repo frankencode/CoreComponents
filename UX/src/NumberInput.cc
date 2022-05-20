@@ -197,6 +197,12 @@ NumberInput &NumberInput::value(double newValue)
     return *this;
 }
 
+NumberInput &NumberInput::onValueChanged(Fun<void()> &&f)
+{
+    me().value.onChanged(move(f));
+    return *this;
+}
+
 NumberInput::State &NumberInput::me()
 {
     return View::me().as<State>();

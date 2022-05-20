@@ -46,6 +46,7 @@ public:
 
     double value() const; ///< Get current value
     NumberCell &value(double newValue); ///< %Set current value
+    NumberCell &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
 
 private:
     friend class Object;

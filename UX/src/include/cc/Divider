@@ -32,6 +32,8 @@ public:
     Divider &thickness(double newValue) { me().thickness(newValue); return *this; } ///< %Set thickness
 
 private:
+    friend class Object;
+
     struct State final: public View::State
     {
         State();

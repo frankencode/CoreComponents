@@ -156,6 +156,12 @@ NumberCell &NumberCell::value(double newValue)
     return *this;
 }
 
+NumberCell &NumberCell::onValueChanged(Fun<void()> &&f)
+{
+    me().input_.onValueChanged(move(f));
+    return *this;
+}
+
 NumberCell::State &NumberCell::me()
 {
     return View::me().as<State>();

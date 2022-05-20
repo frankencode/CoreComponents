@@ -10,7 +10,6 @@
 #include <cc/DragArea>
 #include <cc/Box>
 #include <cc/Shadow>
-#include <cc/DEBUG>
 
 namespace cc {
 
@@ -42,7 +41,9 @@ struct SliderControl::State: public InputControl::State
             if (thumb_.containsLocal(mapToChild(thumb_, event.pos()))) return false;
             double xr = (event.pos().x() - thumb_.width() / 2) / (dragArea_.width() - thumb_.width());
             double newValue = (max() - min()) * xr + min();
+            jumped(true);
             setValue(newValue);
+            jumped(false);
             return true;
         })
         .onKeyPressed([this](const KeyEvent &event){
@@ -204,6 +205,7 @@ struct SliderControl::State: public InputControl::State
     Property<Point> thumbCenter;
 
     Property<void> outputValueMonitor;
+    Property<bool> jumped;
 
     DragArea dragArea_;
     View thumb_;
@@ -275,6 +277,11 @@ SliderControl &SliderControl::precision(Definition<double> &&f)
 double SliderControl::value() const
 {
     return me().outputValue();
+}
+
+bool SliderControl::jumped() const
+{
+    return me().jumped();
 }
 
 SliderControl &SliderControl::value(double newValue)

@@ -43,6 +43,7 @@ public:
     Slider &precision(Definition<double> &&f); ///< Define precision
 
     double value() const; ///< Get current slider value
+    bool jumped() const; ///< Current value change is due to tap or click
     Slider &value(double newValue); ///< %Set current slider value
     Slider &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
 
