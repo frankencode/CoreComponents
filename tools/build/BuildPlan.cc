@@ -58,6 +58,7 @@ struct BuildPlan::State:
     public BuildShell
 {
     State(int argc, char *argv[]):
+        argv0_{argv[0]},
         projectPath_{"."}
     {
         Arguments arguments{argc, argv};
@@ -556,42 +557,45 @@ struct BuildPlan::State:
 
         Dir::establish(".setup");
 
+        String toolPath = Process::execPath();
+        if (toolPath == "") toolPath = "ccbuild";
+
         Format{
             File{".setup/configure", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
         }
             << "#!/bin/sh -ex" << nl
-            << "clear && ccbuild -configure " << options << nl;
+            << "clear && " << toolPath << " -configure " << options << nl;
 
         Format{
             File{".setup/build", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
         }
             << "#!/bin/sh -ex" << nl
-            << "clear && ccbuild " << options << nl;
+            << "clear && " << toolPath << " " << options << nl;
 
         Format{
             File{".setup/test_run", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
         }
             << "#!/bin/sh -ex" << nl
-            << "clear && ccbuild -test-run " << options << nl;
+            << "clear && " << toolPath << " -test-run " << options << nl;
 
 
         Format{
             File{".setup/clean", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
         }
             << "#!/bin/sh -ex" << nl
-            << "clear && ccbuild -clean " << options << nl;
+            << "clear && " << toolPath << " -clean " << options << nl;
 
         Format{
             File{".setup/install", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
         }
             << "#!/bin/sh -ex" << nl
-            << "clear && ccbuild -install " << options << nl;
+            << "clear && " << toolPath << " -install " << options << nl;
 
         Format{
             File{".setup/uninstall", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
         }
             << "#!/bin/sh -ex" << nl
-            << "clear && ccbuild -uninstall " << options << nl;
+            << "clear && " << toolPath << " -uninstall " << options << nl;
 
         try { File::unlink("build"); } catch (...) {};
         File::symlink(".setup/build", "build");
@@ -625,6 +629,7 @@ struct BuildPlan::State:
 
     const BuildShell &shell() const { return *this; }
 
+    const char *argv0_ { nullptr };
     ToolChain toolChain_;
 
     String projectPath_;

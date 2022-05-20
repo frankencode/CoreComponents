@@ -287,7 +287,7 @@ struct GnuToolChain::State: public ToolChain::State
         args << compiler(sourcePath);
         args << "-o" << binPath;
         // appendCompileOptions(args, plan);
-        args << "-pthread";
+        args << "-DNDEBUG" << "-pthread";
         args << sourcePath;
         // appendLinkOptions(args, plan);
         return args.join<String>(' ');
