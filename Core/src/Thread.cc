@@ -82,7 +82,7 @@ bool Thread::isRunning() const
 
 uint64_t Thread::id()
 {
-    return reinterpret_cast<uint64_t>(pthread_self());
+    return static_cast<uint64_t>(pthread_self());
 }
 
 void Thread::sleep(double duration)

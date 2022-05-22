@@ -59,7 +59,7 @@ String File::createUnique(const String &path, FileMode mode, char placeHolder)
 
     for (Random random; true;) {
         candidate = path.copy();
-        for (int i = 0, n = candidate.count(); i < n; ++i) {
+        for (long i = 0, n = candidate.count(); i < n; ++i) {
             if (candidate[i] == placeHolder) {
                 char r = static_cast<char>(random.get(0, 61));
                 if ((0 <= r) && (r <= 9))
@@ -262,7 +262,7 @@ String File::map(off_t i0, off_t i1)
     if (p == MAP_FAILED)
         CC_SYSTEM_DEBUG_ERROR(errno);
 
-    return String{static_cast<char *>(p), len, 1};
+    return String{static_cast<char *>(p), static_cast<long>(len), 1};
 }
 
 void File::close()

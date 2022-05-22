@@ -52,6 +52,7 @@ void SpinLock::release()
 #else
 
 SpinLock::SpinLock():
+    flag_{0}
 {}
 
 SpinLock::~SpinLock()

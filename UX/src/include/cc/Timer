@@ -97,7 +97,7 @@ private:
         mutable std::atomic<bool> isActive_ { false };
         double firstTime_ { 0 };
         double startTime_ { 0 };
-        std::atomic<uint64_t> requestId_ { 0 };
+        std::atomic<long> requestId_ { 0 };
     };
 
     State &me() { return Object::me.as<State>(); }

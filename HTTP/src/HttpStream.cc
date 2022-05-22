@@ -190,7 +190,7 @@ void HttpStream::nextHeader()
     me().nextHeader();
 }
 
-void HttpStream::nextPayload(int64_t length)
+void HttpStream::nextPayload(long length)
 {
     me().nextPayload(length);
 }

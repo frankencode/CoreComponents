@@ -540,14 +540,14 @@ void Painter::setMiterLimit(double limit)
 void Painter::setLineDash(const Array<double> &pattern, double offset)
 {
     if (pattern.count() > 0) {
-        cairo_set_dash(cr_, pattern, pattern.count(), offset);
+        cairo_set_dash(cr_, pattern.items(), pattern.count(), offset);
 
         cairo_status_t status = cairo_status(cr_);
         if (status != CAIRO_STATUS_SUCCESS)
             throw PainterError{int(status)};
     }
     else if (cairo_get_dash_count(cr_) > 0) {
-        cairo_set_dash(cr_, pattern, pattern.count(), offset);
+        cairo_set_dash(cr_, pattern.items(), pattern.count(), offset);
     }
 }
 

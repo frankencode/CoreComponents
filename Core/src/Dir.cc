@@ -62,7 +62,7 @@ String Dir::createUnique(const String &path, FileMode mode, char placeHolder)
 
     for (Random random; true;) {
         candidate = path.copy();
-        for (int i = 0, n = candidate.count(); i < n; ++i) {
+        for (long i = 0, n = candidate.count(); i < n; ++i) {
             if (candidate[i] == placeHolder) {
                 char r = static_cast<char>(random.get(0, 61));
                 if ((0 <= r) && (r <= 9))

@@ -30,7 +30,7 @@ if uname -o|grep Cygwin; then
 else
     BOOTSTRAP=bootstrap
 fi
-ccbuild -bootstrap -release $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
+ccbuild -bootstrap -release -jobs=1 $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
 chmod +x $SOURCE/tools/build/$BOOTSTRAP
 popd
 

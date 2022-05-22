@@ -10,7 +10,6 @@
 #include <cc/Map>
 #include <cc/Casefree>
 #include <cc/str>
-#include <algorithm>
 #include <limits>
 #include <cmath>
 
@@ -390,13 +389,28 @@ bool Color::lookup(const String &name, Out<Color> color)
     return svgPalette.lookup(name, &color);
 }
 
+template<class T>
+T min(T a, T b, T c)
+{
+    T min = a;
+    if (b < min) min = b;
+    if (c < min) min = c;
+    return min;
+}
+
+template<class T>
+T max(T a, T b, T c)
+{
+    T max = a;
+    if (max < b) max = b;
+    if (max < c) max = c;
+    return max;
+}
+
 void rgbToHsv(double r, double g, double b, Out<double> h, Out<double> s, Out<double> v)
 {
-    double min, max; {
-        auto pair = std::minmax<double>({r, g, b});
-        min = pair.first;
-        max = pair.second;
-    }
+    double min = cc::min(r, g, b);
+    double max = cc::max(r, g, b);
 
     v = max;
     s = (max != 0.) ? ((max - min) / max) : 0.;
@@ -448,11 +462,8 @@ void hsvToRgb(double h, double s, double v, Out<double> r, Out<double> g, Out<do
 
 void rgbToHsl(double r, double g, double b, Out<double> h, Out<double> s, Out<double> l)
 {
-    double min, max; {
-        auto pair = std::minmax<double>({r, g, b});
-        min = pair.first;
-        max = pair.second;
-    }
+    double min = cc::min(r, g, b);
+    double max = cc::max(r, g, b);
 
     l = (min + max) / 2.;
     if (min == max) {

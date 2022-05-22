@@ -32,8 +32,8 @@ public:
     OrdinalNode *left_;
     OrdinalNode *right_;
     OrdinalNode *parent_;
-    long balance_ : 8;
-    long weight_ : 46;
+    long balance_ : sizeof(long);
+    long weight_ : (8 * sizeof(long)) - sizeof(long);
 };
 
 #ifndef NDEBUG

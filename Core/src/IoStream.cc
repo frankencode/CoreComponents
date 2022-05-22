@@ -60,7 +60,7 @@ long IoStream::State::read(Out<Bytes> buffer, long maxFill)
 
 void IoStream::State::write(const Bytes &buffer, long fill)
 {
-    const uint8_t *p = buffer;
+    const uint8_t *p = buffer.bytes();
     long n = (0 < fill && fill < buffer.count()) ? fill : buffer.count();
 
     while (n > 0) {

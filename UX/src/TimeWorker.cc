@@ -23,7 +23,7 @@ class TimeoutRequest: public Object
 public:
     TimeoutRequest() = default;
 
-    TimeoutRequest(uint64_t id, Timer timer):
+    TimeoutRequest(long id, Timer timer):
         Object{new State{id, timer}}
     {
         timer.me().requestId_ = id;
@@ -55,14 +55,14 @@ public:
 private:
     struct State: public Object::State
     {
-        State(uint64_t id, const Timer &timer):
+        State(long id, const Timer &timer):
             id_{id},
             timer_{timer},
             nextTime_{timer.firstTime()},
             interval_{timer.interval()}
         {}
 
-        uint64_t id_;
+        long id_;
         Timer timer_;
         double nextTime_;
         double interval_;
@@ -129,7 +129,7 @@ struct TimeWorker::State: public Object::State
         }
     }
 
-    uint64_t nextRequestId_ { 0 };
+    long nextRequestId_ { 0 };
     Channel<TimeoutRequest> startRequests_;
     MultiSet<TimeoutRequest> timeoutRequests_;
     Semaphore<int> ack_;

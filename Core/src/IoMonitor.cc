@@ -54,7 +54,7 @@ bool IoMonitor::wait(const Fun<void(const IoActivity &)> &onReady, int timeout)
     }
 
     int n = -1;
-    do n = ::poll(me().fds, me().fds.count(), (timeout < 0) ? -1 : timeout);
+    do n = ::poll(me().fds.items(), me().fds.count(), (timeout < 0) ? -1 : timeout);
     while (n == -1 && errno == EINTR);
     if (n < 0) CC_SYSTEM_DEBUG_ERROR(errno);
 

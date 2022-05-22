@@ -292,7 +292,7 @@ NetworkInterface NetworkInterface::getLink(Out<List<NetworkInterface>> list, int
 
                         if ((attrType == IFLA_ADDRESS) || (attrType == IFLA_BROADCAST)) {
                             if (attrType == IFLA_ADDRESS)
-                                interface->hardwareAddress_ = String{(const char *)RTA_DATA(attr), attrLen};
+                                interface->hardwareAddress_ = String{(const char *)RTA_DATA(attr), static_cast<long>(attrLen)};
                             //else if (attrType == IFLA_BROADCAST)
                             //  interface->broadcastAddress_ = h;
                         }

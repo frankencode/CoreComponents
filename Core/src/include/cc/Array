@@ -680,21 +680,21 @@ public:
       */
     uint32_t *words() { return static_cast<uint32_t *>(static_cast<void *>(me().items)); }
 
-    /** Automatic conversion to low-level pointer
+    /** Explicit conversion to low-level pointer
       */
-    operator Item *() { return me().items; }
+    explicit operator Item *() { return me().items; }
 
-    /** Automatic conversion to constant low-level pointer
+    /** Explicit conversion to constant low-level pointer
       */
-    operator const Item *() const { return me().items; }
+    explicit operator const Item *() const { return me().items; }
 
-    /** Automatic conversion to low-level data pointer
+    /** Implicit conversion to low-level data pointer
       */
-    explicit operator void *() { return me().items; }
+    operator void *() { return me().items; }
 
-    /** Automatic conversion to constant low-level data pointer
+    /** Implicit conversion to constant low-level data pointer
       */
-    explicit operator const void *() const { return me().items; }
+    operator const void *() const { return me().items; }
 
     /** Wrap this array around the low-level memory vector \a data of \a count items.
       * \note This only works if this array is empty or has been used for wrapping before.
