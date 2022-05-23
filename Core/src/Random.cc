@@ -12,11 +12,12 @@
 namespace cc {
 
 Random::Random(int seed):
-    x_{static_cast<unsigned>(seed)}
+    x_{static_cast<uint32_t>(seed)}
 {
     if (seed < 0) {
-        while (x_ <= 1)
-            x_ = static_cast<int>(::clock());
+        while (x_ <= 1) {
+            x_ = static_cast<uint32_t>(::clock());
+        }
     }
     else {
         x_ = seed + 2;

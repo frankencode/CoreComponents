@@ -10,6 +10,7 @@
 
 #include <utility> // std::swap()
 #include <cassert>
+#include <cstdint>
 
 namespace cc {
 
@@ -35,16 +36,16 @@ public:
 
     /** Maximum random number
       */
-    int max() const { return m_ - 1; }
+    int max() const { return m - 1; }
 
     /** Number of random numbers until the series repeats itself
       */
-    int period() const { return m_ - 1; }
+    int period() const { return max(); }
 
     /** Generate another random number in the range [min(), max()]
       */
     int get() {
-        x_ = (16807 * x_) % m_; /* 7^5 == 16807 */
+        x_ = (16807 * x_) % m; /* 7^5 == 16807 */
         return x_;
     }
 
@@ -52,9 +53,10 @@ public:
       */
     int get(int a, int b)
     {
-        assert(b <= m_ - 1);
+        assert(min() <= a);
+        assert(b <= max());
         assert(a <= b);
-        return (static_cast<long>(get()) * (b - a)) / (m_ - 1) + a;
+        return (static_cast<int64_t>(get()) * (b - a)) / (m - 1) + a;
     }
 
     /** Scramble items in \a container
@@ -71,8 +73,8 @@ public:
     }
 
 private:
-    enum { m_ = (1u << 31u) - 1 };
-    unsigned x_;
+    static constexpr uint32_t m = 2147483647; // 2^31 - 1 == 2147483647
+    uint32_t x_;
 };
 
 } // namespace cc
