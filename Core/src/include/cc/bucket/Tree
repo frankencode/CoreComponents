@@ -26,9 +26,11 @@ public:
     Node *succ() const { return static_cast<Node *>(succ_); }
     Node *pred() const { return static_cast<Node *>(pred_); }
     Branch *parent_ { nullptr };
-    Map<Capacity> map_;
     bool isBranch_ { false };
+    Map<Capacity> map_;
 };
+
+static_assert(sizeof(Node) % 16 == 0, "Bucket data alignment must be a multiple of 16 bytes due to SIMD types");
 
 class Head {
 public:

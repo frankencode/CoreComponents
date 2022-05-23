@@ -7,7 +7,9 @@ int main(int argc, char *argv[])
     TestCase {
         "IntegerSizes",
         []{
+            CC_INSPECT(sizeof(int));
             CC_INSPECT(sizeof(long));
+            CC_INSPECT(sizeof(double));
         }
     };
 
