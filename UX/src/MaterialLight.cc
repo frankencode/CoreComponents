@@ -47,9 +47,9 @@ struct MaterialLight::State: public Theme::State
 
     Color dividerColor() const override { return Color::Black(21); }
 
-    Color inputFieldFillColor() const override { return windowColor().darker(5); }
-    Color inputFieldFillColor(bool pressed) const override { return windowColor().darker(pressed ? 10 : 5); }
-    Color itemHighlightColor() const override { return windowColor().darker(3); }
+    Color inputFieldFillColor() const override { return windowColor().darker(7); }
+    Color inputFieldFillColor(bool pressed) const override { return windowColor().darker(pressed ? 10 : 7); }
+    Color itemHighlightColor() const override { return windowColor().darker(7); }
 
     Color sliderKnobColor() const override { return primaryDarkColor(); }
     Color sliderKnobShadowColor() const override { return 0x30000000u; }

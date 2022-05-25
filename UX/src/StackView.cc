@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/ViewStackState>
+#include <cc/StackViewState>
 #include <cc/Application>
 
 namespace cc {

@@ -76,7 +76,7 @@ bool Application::State::feedFingerEvent(const Window &window, FingerEvent &even
 
     if (event.action() == PointerAction::Pressed) {
         Point pos = window.size() * event.pos();
-        Control topControl = window.findControl(window.view().mapToLocal(pos));
+        Control topControl = window.findControl(pos);
         if (topControl) {
             touchTargets_.establish(event.fingerId(), topControl);
             pressedControl = topControl;
@@ -96,27 +96,26 @@ bool Application::State::feedFingerEvent(const Window &window, FingerEvent &even
 
     if (pressedControl()) {
         Point pos = window.size() * event.pos();
-        pressedControl().me().pointerPos = pressedControl().mapToLocal(pos);
-        bool eaten = pressedControl().me().feedFingerEvent(event);
+        pressedControl()->pointerPos = pressedControl().mapToLocal(pos);
+        bool eaten = pressedControl()->feedFingerEvent(event);
         if (event.action() == PointerAction::Released) {
             PosGuard guard{event, pressedControl().mapToLocal(window.size() * event.pos())};
-            if (pressedControl().containsLocal(event.pos())) {
-                if (
-                    pressedControl().me().onPointerClicked.propagate(event) ||
-                    pressedControl().me().onFingerClicked.propagate(event)
-                )
-                    eaten = true;
+            if (
+                pressedControl()->onPointerClicked.propagate(event) ||
+                pressedControl()->onFingerClicked.propagate(event)
+            ) {
+                eaten = true;
             }
             pressedControl = Control{};
         }
         if (eaten) return true;
     }
     else if (touchTarget) {
-        if (touchTarget.me().feedFingerEvent(event))
+        if (touchTarget->feedFingerEvent(event))
             return true;
     }
 
-    return window.view().me().feedFingerEvent(event);
+    return window.view()->feedFingerEvent(event);
 }
 
 bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
