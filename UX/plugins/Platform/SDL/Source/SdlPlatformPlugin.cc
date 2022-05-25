@@ -29,15 +29,15 @@ struct SdlPlatformPlugin::State: public PlatformPlugin::State
             // therefore we might force nearest-neighbor filtering, which looks quite OK at the higher framerate
 
         //#ifdef SDL_HINT_MOUSE_TOUCH_EVENTS
-        //SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
+        SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
         //#endif
 
         //#ifdef SDL_HINT_TOUCH_MOUSE_EVENTS
-        //SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+        SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
         //#endif
 
         // SDL_SetHint(SDL_HINT_EVENT_LOGGING, "1");
-        // SDL_SetHint(SDL_HINT_XINPUT_ENABLED, "1");
+        SDL_SetHint(SDL_HINT_XINPUT_ENABLED, "1");
 
         SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
 

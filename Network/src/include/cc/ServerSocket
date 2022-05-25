@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class ServerSocket cc/ServerSocket
   * \ingroup net
-  * \brief Server socket
+  * \brief TCP server socket
   */
 class ServerSocket: public StreamSocket
 {

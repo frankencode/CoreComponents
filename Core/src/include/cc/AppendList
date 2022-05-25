@@ -243,16 +243,15 @@ private:
   * \brief Value iterator type for the AppendList
   */
 template<class T>
-class AppendListIterator:
-    public std::iterator<
-        /*iterator_category*/ std::forward_iterator_tag,
-        /*value_type*/        T,
-        /*difference_type*/   unsigned,
-        /*pointer*/           T *,
-        /*reference*/         T &
-    >
+class AppendListIterator
 {
 public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = T;
+    using difference_type = unsigned;
+    using pointer = T *;
+    using reference = T &;
+
     using Node = AppendListNode<T>;
 
     /** Create a null iterator

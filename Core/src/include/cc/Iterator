@@ -18,14 +18,7 @@ namespace cc {
   * \tparam Container %Container type
   */
 template<class Container>
-class Iterator:
-    public std::iterator<
-        /*iterator_category*/ std::bidirectional_iterator_tag,
-        /*value_type*/        typename Container::Item,
-        /*difference_type*/   long,
-        /*pointer*/           typename Container::Item *,
-        /*reference*/         typename Container::Item &
-    >
+class Iterator
 {
     template<class T, bool addConst>
     struct MakeAccessType {};
@@ -37,6 +30,12 @@ class Iterator:
     struct MakeAccessType<T, false> { using Type = T; };
 
 public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = typename Container::Item;
+    using difference_type = long;
+    using pointer = typename Container::Item *;
+    using reference = typename Container::Item &;
+
     using Item = typename Container::Item; ///< Item type
     using Access = typename MakeAccessType<Item, std::is_const<Container>::value>::Type; ///< Item access type
 
@@ -106,15 +105,14 @@ private:
   * \tparam Container %Container type
   */
 template<class Container>
-class ReverseIterator:
-    public std::iterator<
-        /*iterator_category*/ std::bidirectional_iterator_tag,
-        /*value_type*/        typename Container::Item,
-        /*difference_type*/   long,
-        /*pointer*/           typename Container::Item *,
-        /*reference*/         typename Container::Item &
-    >
+class ReverseIterator
 {
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = typename Container::Item;
+    using difference_type = long;
+    using pointer = typename Container::Item *;
+    using reference = typename Container::Item &;
+
     template<class T, bool addConst>
     struct MakeAccessType {};
 

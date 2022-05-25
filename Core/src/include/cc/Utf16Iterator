@@ -31,16 +31,15 @@ namespace cc {
   *
   * \todo create a test harness
   */
-class Utf16Iterator:
-    public std::iterator<
-        /*iterator_category*/ std::bidirectional_iterator_tag,
-        /*value_type*/        char32_t,
-        /*difference_type*/   std::ptrdiff_t,
-        /*pointer*/           void,
-        /*reference*/         char32_t
-    >
+class Utf16Iterator
 {
 public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = char32_t;
+    using difference_type = std::ptrdiff_t;
+    using pointer = void;
+    using reference = char32_t;
+
     /** Create an invalid iterator
       */
     Utf16Iterator():

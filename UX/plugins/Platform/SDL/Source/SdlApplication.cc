@@ -101,6 +101,33 @@ struct SdlApplication::State: public Application::State
         SDL_PushEvent(&event);
     }
 
+    const char *sdlEventTypeName(unsigned eventType) const
+    {
+        const char *name = "<Unknown event type>";
+        #ifndef NDEBUG
+        if (eventType == timerEvent_) name = "<Timer event>";
+        else if (eventType == userEvent_) name = "<User event>";
+        else
+        switch (eventType) {
+            case SDL_FINGERMOTION        : name = "SDL_FINGERMOTION"; break;
+            case SDL_MOUSEMOTION         : name = "SDL_MOUSEMOTION"; break;
+            case SDL_FINGERDOWN          : name = "SDL_FINGERDOWN"; break;
+            case SDL_FINGERUP            : name = "SDL_FINGERUP"; break;
+            case SDL_MOUSEBUTTONDOWN     : name = "SDL_MOUSEBUTTONDOWN"; break;
+            case SDL_MOUSEBUTTONUP       : name = "SDL_MOUSEBUTTONUP"; break;
+            case SDL_MOUSEWHEEL          : name = "SDL_MOUSEWHEEL"; break;
+            case SDL_KEYDOWN             : name = "SDL_KEYDOWN"; break;
+            case SDL_KEYUP               : name = "SDL_KEYUP"; break;
+            case SDL_WINDOWEVENT         : name = "SDL_WINDOWEVENT"; break;
+            case SDL_TEXTEDITING         : name = "SDL_TEXTEDITING"; break;
+            case SDL_TEXTINPUT           : name = "SDL_TEXTINPUT"; break;
+            case SDL_RENDER_TARGETS_RESET: name = "SDL_RENDER_TARGETS_RESET"; break;
+            default:;
+        };
+        #endif
+        return name;
+    }
+
     int run() override
     {
         SDL_Event event;
@@ -109,6 +136,10 @@ struct SdlApplication::State: public Application::State
             if (!SDL_WaitEvent(&event)) {
                 throw SdlPlatformError{};
             }
+
+            #ifndef NDEBUG
+            CC_INSPECT(sdlEventTypeName(event.type));
+            #endif
 
             if (event.type == timerEvent_) {
                 Timer *p = reinterpret_cast<Timer *>(&event.user.data1);
@@ -237,6 +268,7 @@ struct SdlApplication::State: public Application::State
 
     void handleMouseButtonEvent(const SDL_MouseButtonEvent &e)
     {
+        CC_INSPECT(e.which == SDL_TOUCH_MOUSEID);
         if (e.which == SDL_TOUCH_MOUSEID) return;
 
         PointerAction action =

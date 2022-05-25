@@ -30,16 +30,15 @@ namespace cc {
   * delivered -- with one exception: switching to all bits zero (a zero byte is always string
   * terminating).
   */
-class Utf8Iterator:
-    public std::iterator<
-        /*iterator_category*/ std::bidirectional_iterator_tag,
-        /*value_type*/        char32_t,
-        /*difference_type*/   std::ptrdiff_t,
-        /*pointer*/           void,
-        /*reference*/         char32_t
-    >
+class Utf8Iterator
 {
 public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = char32_t;
+    using difference_type = std::ptrdiff_t;
+    using pointer = void;
+    using reference = char32_t;
+
     /** Create an invalid iterator
       */
     Utf8Iterator():
