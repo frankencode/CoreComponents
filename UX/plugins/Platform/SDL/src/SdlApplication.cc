@@ -20,7 +20,8 @@ struct SdlApplication::State: public Application::State
 {
     State():
         timerEvent_{SDL_RegisterEvents(2)},
-        userEvent_{timerEvent_ + 1}
+        userEvent_{timerEvent_ + 1},
+        cursorVisible_{SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE}
     {}
 
     ~State()
@@ -53,7 +54,7 @@ struct SdlApplication::State: public Application::State
         SDL_SetCursor(SDL_GetDefaultCursor());
     }
 
-    bool showCursor(bool on) override
+    void showCursor(bool on) override
     {
         if (cursorVisible_ != on) {
             SDL_ShowCursor(on ? SDL_ENABLE : SDL_DISABLE);

@@ -66,7 +66,7 @@ NumberInput::State::State()
         bool ok = false;
         double x = t.toDouble(&ok);
         if (!ok) {
-            bool h = (text().count() == 0);
+            bool h = text().count() > 0 && focus();
             updateText();
             if (h) selectAll();
             return false;
@@ -89,6 +89,8 @@ NumberInput::State::State()
             updateText();
             selectAll();
         }
+        else
+            accept_();
     });
 
     text(str(value()));

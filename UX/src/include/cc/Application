@@ -94,7 +94,7 @@ protected:
         virtual Cursor createCursor(CursorShape shape) = 0;
         virtual void setCursor(const Cursor &cursor) = 0;
         virtual void unsetCursor() = 0;
-        virtual bool showCursor(bool on) = 0;
+        virtual void showCursor(bool on) = 0;
 
         virtual String getClipboardText() const = 0;
         virtual void setClipboardText(const String &text) = 0;
