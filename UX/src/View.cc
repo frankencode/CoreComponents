@@ -133,7 +133,7 @@ Control View::State::findControl(Point l) const
         View candidate = visibleChildren_.at(pos);
         Point lc = mapToChild(candidate, l);
         if (candidate.containsLocal(lc)) {
-            if (candidate.is<Control>() && !candidate.is<Organizer>()) {
+            if (candidate.is<Control>() && !candidate.is<Organizer>()) { // FIXME candidate.is<Organizer>() ?!
                 control = candidate.as<Control>();
                 while (control.delegate()) {
                     control = control.delegate();
@@ -372,31 +372,32 @@ bool View::State::feedLeaveEvent() const
 
 bool View::State::feedFingerEvent(FingerEvent &event) const
 {
+    Point eventPos = window().size() * event.pos();
     {
-        PosGuard guard{event, mapToLocal(window().size() * event.pos())};
+        PosGuard guard{event, mapToLocal(eventPos)};
 
         if (event.action() == PointerAction::Pressed)
         {
-            if (onPointerPressed.propagate(event) || onFingerPressed.propagate(event))
+            if (onPointerPressed(event) || onFingerPressed(event))
                 return true;
         }
         else if (event.action() == PointerAction::Released)
         {
-            if (onPointerReleased.propagate(event) || onFingerReleased.propagate(event))
+            if (onPointerReleased(event) || onFingerReleased(event))
                 return true;
         }
         else if (event.action() == PointerAction::Moved)
         {
-            if (onPointerMoved.propagate(event) || onFingerMoved.propagate(event))
+            if (onPointerMoved(event) || onFingerMoved(event))
                 return true;
         }
     }
 
     for (const View &child: visibleChildren_)
     {
-        if (child.containsGlobal(event.pos()))
+        if (child.containsGlobal(eventPos))
         {
-            if (child.me().feedFingerEvent(event))
+            if (child->feedFingerEvent(event))
                 return true;
         }
     }
@@ -411,19 +412,19 @@ bool View::State::feedMouseEvent(MouseEvent &event) const
 
         if (event.action() == PointerAction::Pressed)
         {
-            if (onPointerPressed.propagate(event) || onMousePressed.propagate(event))
+            if (onPointerPressed(event) || onMousePressed(event))
                 return true;
         }
         else if (event.action() == PointerAction::Released)
         {
-            if (onPointerReleased.propagate(event) || onMouseReleased.propagate(event))
+            if (onPointerReleased(event) || onMouseReleased(event))
                 return true;
         }
         else if (event.action() == PointerAction::Moved)
         {
             if (
-                (event.button() != MouseButton::None && onPointerMoved.propagate(event)) ||
-                onMouseMoved.propagate(event)
+                (event.button() != MouseButton::None && onPointerMoved(event)) ||
+                onMouseMoved(event)
             )
                 return true;
         }

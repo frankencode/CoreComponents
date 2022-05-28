@@ -38,6 +38,10 @@ public:
       */
     Step step() const { return me().step_; }
 
+    /** Convert into a human-reable form
+      */
+    String toString() const { return me().toString(); }
+
 protected:
     friend class Object;
     friend class PosGuard;
@@ -81,7 +85,7 @@ protected:
 
 inline String str(const PointerEvent &event)
 {
-    return event.me().toString();
+    return event.toString();
 }
 
 } // namespace cc

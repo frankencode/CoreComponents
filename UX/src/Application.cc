@@ -71,51 +71,59 @@ Application::State::State()
 
 bool Application::State::feedFingerEvent(const Window &window, FingerEvent &event)
 {
-    cursorControl = Control{};
-    hoverControl = Control{};
+    if (cursorControl()) cursorControl = Control{};
+    if (hoverControl()) hoverControl = Control{};
 
-    if (event.action() == PointerAction::Pressed) {
-        Point pos = window.size() * event.pos();
-        Control topControl = window.findControl(pos);
-        if (topControl) {
-            touchTargets_.establish(event.fingerId(), topControl);
+    showCursor(false);
+
+    Point eventPos = window.size() * event.pos();
+    Control topControl = window.findControl(eventPos);
+
+    if (topControl) {
+        topControl->pointerPos = topControl.mapToLocal(eventPos);
+    }
+
+    if (event.action() == PointerAction::Moved)
+    ;
+    else if (event.action() == PointerAction::Pressed)
+    {
+        if (!pressedControl()) {
             pressedControl = topControl;
         }
     }
-
-    if (event.action() == PointerAction::Released) {
-        if (focusControl() != pressedControl())
+    else if (event.action() == PointerAction::Released)
+    {
+        if (focusControl() != pressedControl()) {
             focusControl = Control{};
+        }
     }
 
-    Control touchTarget;
-    if (touchTargets_.lookup(event.fingerId(), &touchTarget)) {
+    bool eaten = false;
+
+    if (pressedControl())
+    {
+        eaten = pressedControl()->feedFingerEvent(event);
+
         if (event.action() == PointerAction::Released)
-            touchTargets_.remove(event.fingerId());
-    }
+        {
+            PosGuard guard{event, pressedControl().mapToLocal(eventPos)};
 
-    if (pressedControl()) {
-        Point pos = window.size() * event.pos();
-        pressedControl()->pointerPos = pressedControl().mapToLocal(pos);
-        bool eaten = pressedControl()->feedFingerEvent(event);
-        if (event.action() == PointerAction::Released) {
-            PosGuard guard{event, pressedControl().mapToLocal(window.size() * event.pos())};
             if (
-                pressedControl()->onPointerClicked.propagate(event) ||
-                pressedControl()->onFingerClicked.propagate(event)
+                pressedControl()->onPointerClicked(event) ||
+                pressedControl()->onFingerClicked(event)
             ) {
                 eaten = true;
             }
+
             pressedControl = Control{};
         }
-        if (eaten) return true;
-    }
-    else if (touchTarget) {
-        if (touchTarget->feedFingerEvent(event))
-            return true;
     }
 
-    return window.view()->feedFingerEvent(event);
+    if (!eaten) {
+        eaten = window.view()->feedFingerEvent(event);
+    }
+
+    return eaten;
 }
 
 bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
@@ -136,7 +144,6 @@ bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
             pressedControl = topControl;
             if (topControl) captureMouse(true);
         }
-
         hoverControl = Control{};
     }
     else if (event.action() == PointerAction::Released)
@@ -174,6 +181,7 @@ bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
     }
 
     cursorControl = topControl;
+    showCursor(true);
 
     return eaten;
 }

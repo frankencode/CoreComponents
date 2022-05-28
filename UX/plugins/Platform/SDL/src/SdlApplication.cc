@@ -53,6 +53,14 @@ struct SdlApplication::State: public Application::State
         SDL_SetCursor(SDL_GetDefaultCursor());
     }
 
+    bool showCursor(bool on) override
+    {
+        if (cursorVisible_ != on) {
+            SDL_ShowCursor(on ? SDL_ENABLE : SDL_DISABLE);
+            cursorVisible_ = on;
+        }
+    }
+
     String getClipboardText() const override
     {
         if (!SDL_HasClipboardText()) return String{};
@@ -96,6 +104,7 @@ struct SdlApplication::State: public Application::State
     void postEvent(Fun<void()> &&doNext) override
     {
         SDL_Event event;
+        ::memset(&event, 0, sizeof(SDL_Event));
         event.type = userEvent_;
         event.user.data1 = new Fun<void()>{move(doNext)};
         SDL_PushEvent(&event);
@@ -386,6 +395,8 @@ struct SdlApplication::State: public Application::State
     uint32_t userEvent_;
 
     Map<uint32_t, SdlWindow> windows_;
+
+    bool cursorVisible_ { true };
 };
 
 SdlApplication::SdlApplication():

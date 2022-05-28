@@ -18,6 +18,7 @@ class Flickable;
 /** \class Control cc/Control
   * \ingroup ui
   * \brief %User interaction control
+  * \todo implement proper multi-touch control logic (e.g. Application::pressedControls() -> Set<Control>, Control::trackingId: int), needed for instance for music application
   */
 class Control: public View
 {
