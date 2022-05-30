@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Image>
+
+namespace cc {
+
+/** \class WebP cc/WebP
+  * \ingroup ui
+  * \brief Read and write WebP image files
+  */
+class WebP final: public Object
+{
+public:
+    /** Check if \a data is a WebP file and optionally return its \a width and \a height (in pixel)
+      */
+    static bool check(const Bytes &data, Out<int> width = None{}, Out<int> height = None{});
+
+    /** Load image from \a data
+      */
+    static Image load(const Bytes &data);
+
+    /** Load image from \a data
+      * \param image Image to load the image data into
+      * \param data &WebP data
+      * \return true if image could be loaded successfully
+      */
+    static bool loadInto(InOut<Image> image, const Bytes &data);
+};
+
+} // namespace cc

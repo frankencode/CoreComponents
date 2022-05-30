@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class Color cc/Color
   * \ingroup misc
-  * \brief ARGB color tuple (32-bit)
+  * \brief ARGB color tuple (32 bit)
   */
 class Color
 {
@@ -25,6 +25,16 @@ public:
     static const Color Red; ///< Red color constant
     static const Color Green; ///< Green color constant
     static const Color Blue; ///< Blue color constant
+
+    static constexpr int AlphaShift = 24; ///< Bit position of the alpha component within the 32 bit color word
+    static constexpr int RedShift   = 16; ///< Bit position of the red component within the 32 bit color word
+    static constexpr int GreenShift =  8; ///< Bit position of the green component within the 32 bit color word
+    static constexpr int BlueShift  =  0; ///< Bit position of the blue component within the 32 bit color word
+
+    static constexpr uint32_t RedMask = uint32_t(0xFF) << RedShift; ///< Bitmask for the red component of the 32 bit color word
+    static constexpr uint32_t GreenMask = uint32_t(0xFF) << GreenShift; ///< Bitmask for the green component of the 32 bit color word
+    static constexpr uint32_t BlueMask = uint32_t(0xFF) << BlueShift; ///< Bitmask for the blue component of the 32 bit color word
+    static constexpr uint32_t AlphaMask = uint32_t(0xFF) << AlphaShift; ///< Bitmask for the alpha component of the 32 bit color word
 
     /** Get the full color of hue \a h
       * \param h Hue in range [0, 360]
@@ -60,6 +70,7 @@ public:
     {}
 
     /** Create a color from word \a w
+      * \see RedMask, GreenMask, BlueMask, AlphaMask
       */
     Color(uint32_t w):
         me{w | (w < 0x1000000u ? 0xFF000000u : 0u)}
@@ -260,11 +271,6 @@ public:
 private:
     static Color parse(const char *s);
     static bool lookup(const String &name, Out<Color> color);
-
-    static constexpr int AlphaShift = 24;
-    static constexpr int RedShift   = 16;
-    static constexpr int GreenShift =  8;
-    static constexpr int BlueShift  =  0;
 
     template<int Shift, class T = uint32_t>
     T component() const { return component<Shift, T>(me); }

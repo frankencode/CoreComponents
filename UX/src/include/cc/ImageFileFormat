@@ -1,0 +1,65 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Image>
+
+namespace cc {
+
+/** \class ImageFileFormat cc/ImageFileFormat
+  * \group ui
+  * \brief Description of an image file format
+  * \see ImageFileFormatManager
+  */
+class ImageFileFormat: public Object
+{
+public:
+    /** \copydoc State::fileNameExtensions()
+      */
+    List<String> fileNameExtensions() const
+    {
+        return me().fileNameExtensions();
+    }
+
+    /** \copydoc State::check()
+      */
+    bool check(const Bytes &data, Out<int> width = None{}, Out<int> height = None{}) const
+    {
+        return me().check(data, &width, &height);
+    }
+
+    /** \copydoc State::load
+      */
+    Image load(const Bytes &data) const
+    {
+        return me().load(data);
+    }
+
+protected:
+    struct State: public Object::State
+    {
+        /** A list of common file name extensions (case-insensitive)
+          */
+        virtual List<String> fileNameExtensions() const = 0;
+
+        /** Check if \a data is of this image file format and optionally return the \a width and \a height of the image
+          */
+        virtual bool check(const Bytes &data, Out<int> width, Out<int> height) const = 0;
+
+        /** Load the image from given \a data
+          * \return Loaded image if decoding \a data was successful
+          * \return A null image if decoding \a data failed
+          */
+        virtual Image load(const Bytes &data) const = 0;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

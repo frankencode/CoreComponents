@@ -32,6 +32,7 @@ private:
     struct State final: public Window::State
     {
         State(const View &view);
+        ~State();
 
         void onWindowResized(Size newSize);
         void onWindowMoved(Point newPos);
@@ -42,6 +43,8 @@ private:
         void show(int display) override;
         void hide() override;
         void raise() override;
+
+        void setWindowIcon(const Image &image);
         void setOpacity(double opacity) override;
 
         void setMinSize(Size size);
@@ -66,6 +69,7 @@ private:
         SDL_Renderer *sdlRenderer_;
         Size currentSize_;
         Point currentPos_;
+        SDL_Surface *sdlIcon_ { nullptr };
     };
 
     State &me() { return Object::me.as<State>(); }

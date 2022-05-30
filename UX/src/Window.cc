@@ -10,7 +10,6 @@
 #include <cc/Application>
 #include <cc/DisplayManager>
 #include <cc/Organizer>
-#include <cc/DEBUG>
 
 namespace cc {
 
@@ -32,13 +31,6 @@ Control Window::findControl(Point pos) const
         else {
             control = view().findControl(pos);
         }
-
-        #if 0
-        Control control = view().findControl(pos);
-        if (!control && view().containsLocal(pos) && view().is<Control>()) {
-            control = view().as<Control>();
-        }
-        #endif
     }
     return control;
 }

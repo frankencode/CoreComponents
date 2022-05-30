@@ -63,8 +63,12 @@ public:
     explicit Window(const View &view);
 
     String title() const { return me().title(); } ///< Get window title
-    Window &title(Definition<String> &&f) { me().title.define(move(f)); return *this; } ///< Define window title
-    Window &title(const String &newValue) { me().title = newValue; return *this; } ///< %Set window title
+    Window &title(const String &newValue) { me().title(newValue); return *this; } ///< %Set window title
+    Window &title(Definition<String> &&f) { me().title(move(f)); return *this; } ///< Define window title
+
+    Image icon() const { return me().icon(); } ///< Get window icon
+    Window &icon(const Image &newValue) { me().icon(newValue); return *this; } ///< %Set window icon
+    Window &icon(Definition<Image> &&f) { me().icon(move(f)); return *this; } ///< Define window icon
 
     Point pos() const { return me().pos(); } ///< Get window position
     Window &pos(Point newValue) { me().pos = newValue; return *this; } ///< %Set window position
@@ -111,6 +115,7 @@ protected:
         virtual void show(int display) = 0;
         virtual void hide() = 0;
         virtual void raise() = 0;
+
         virtual void setOpacity(double alpha) = 0;
 
         virtual void renderFrame(const Frame &frame) = 0;
@@ -130,6 +135,7 @@ protected:
         Property<bool> visible { false };
         Property<bool> focus { false };
         Property<String> title;
+        Property<Image> icon;
         Property<Point> pos;
         Property<Size> size;
         Property<bool> sizing { false };

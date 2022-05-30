@@ -9,6 +9,7 @@
 #include <cc/SdlWindow>
 #include <cc/SdlApplication>
 #include <cc/SdlPlatformError>
+#include <cc/DEBUG>
 #ifndef NDEBUG
 #include <cc/stdio>
 #endif
@@ -48,6 +49,13 @@ SdlWindow::State::State(const View &view):
     maxSizeMonitor([this]{
         if (visible()) setMaxSize(view_.maxSize());
     });
+}
+
+SdlWindow::State::~State()
+{
+    if (sdlIcon_) {
+        SDL_FreeSurface(sdlIcon_);
+    }
 }
 
 void SdlWindow::State::onWindowResized(Size newSize)
@@ -162,6 +170,9 @@ void SdlWindow::State::show(int display)
 
         title.onChanged([this]{ SDL_SetWindowTitle(sdlWindow_, title()); });
 
+        if (icon()) setWindowIcon(icon());
+        icon.onChanged([this]{ setWindowIcon(icon()); });
+
         size.onChanged([this]{
             if (size() != currentSize_) {
                 SDL_SetWindowSize(sdlWindow_, size()[0], size()[1]);
@@ -192,6 +203,39 @@ void SdlWindow::State::raise()
 {
     if (!primordial_ && visible())
         SDL_RaiseWindow(sdlWindow_);
+}
+
+void SdlWindow::State::setWindowIcon(const Image &image)
+{
+    SDL_Surface *oldIcon = sdlIcon_;
+
+    CC_INSPECT(image.width());
+    CC_INSPECT(image.height());
+    CC_INSPECT(image.data().size());
+    CC_INSPECT(sizeof(Color) * 8);
+    CC_INSPECT(image.pitch());
+    CC_INSPECT(hex(Color::RedMask));
+    CC_INSPECT(hex(Color::GreenMask));
+    CC_INSPECT(hex(Color::BlueMask));
+    CC_INSPECT(hex(Color::AlphaMask));
+
+    sdlIcon_ = SDL_CreateRGBSurfaceFrom(
+        const_cast<uint8_t *>(image.data().bytes()),
+        image.width(),
+        image.height(),
+        sizeof(Color) * 8,
+        image.pitch(),
+        Color::RedMask,
+        Color::GreenMask,
+        Color::BlueMask,
+        Color::AlphaMask
+    );
+
+    if (!sdlIcon_) throw SdlPlatformError{};
+
+    SDL_SetWindowIcon(sdlWindow_, sdlIcon_);
+
+    if (oldIcon) SDL_FreeSurface(oldIcon);
 }
 
 void SdlWindow::State::setOpacity(double opacity)

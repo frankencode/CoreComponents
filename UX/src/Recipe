@@ -1,5 +1,5 @@
 Library {
     name: CoreComponentsUx
     use: Core
-    depends: [ cairo, freetype2 ]
+    depends: [ cairo, freetype2, libwebp ]
 }
