@@ -27,7 +27,7 @@ public:
 
     /** Create a case-insensitive string by wrapping \a b
       */
-    explicit Casefree(const String &b):
+    Casefree(const String &b):
         String{b}
     {}
 
@@ -43,19 +43,6 @@ public:
     {
         long n = (*this).count();
         if (n != b.count()) return false;
-        for (long i = 0; i < n; ++i) {
-            if (toLower((*this)[i]) != toLower(b[i]))
-                return false;
-        }
-        return true;
-    }
-
-    /** Equal to operator
-      */
-    bool operator==(const char *b) const
-    {
-        long n = (*this).count();
-        if (n != static_cast<long>(std::strlen(b))) return false;
         for (long i = 0; i < n; ++i) {
             if (toLower((*this)[i]) != toLower(b[i]))
                 return false;
@@ -100,6 +87,51 @@ public:
         return !(*this < b);
     }
 };
+
+template<class String>
+inline bool operator<(const Casefree<String> &a, const String &b) { return a < Casefree<String>{b}; }
+
+template<class String>
+inline bool operator<(const String &a, const Casefree<String> &b) { return Casefree<String>{a} < b; }
+
+inline bool operator==(const Casefree<String> &a, const char *b)
+{
+    long n = a.count();
+    if (n != static_cast<long>(std::strlen(b))) return false;
+    for (long i = 0; i < n; ++i) {
+        if (toLower(a[i]) != toLower(b[i]))
+            return false;
+    }
+    return true;
+}
+
+inline bool operator<(const Casefree<String> &a, const char *b)
+{
+    long n = a.count();
+    long m = static_cast<long>(std::strlen(b));
+    long l = n < m ? m : n;
+    for (long i = 0; i < l; ++i) {
+        auto x = (i < n) ? toLower(a[i]) : '\0';
+        auto y = (i < m) ? toLower(b[i]) : '\0';
+        if (x < y) return true;
+        else if (y < x) return false;
+    }
+    return false;
+}
+
+inline bool operator<(const char *a, const Casefree<String> &b)
+{
+    long n = static_cast<long>(std::strlen(a));
+    long m = b.count();
+    long l = n < m ? m : n;
+    for (long i = 0; i < l; ++i) {
+        auto x = (i < n) ? toLower(a[i]) : '\0';
+        auto y = (i < m) ? toLower(b[i]) : '\0';
+        if (x < y) return true;
+        else if (y < x) return false;
+    }
+    return false;
+}
 
 template<class T>
 Casefree<T> casefree(const T &s) { return s; }
