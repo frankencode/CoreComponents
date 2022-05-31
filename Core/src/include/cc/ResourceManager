@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Singleton>
+#include <cc/String>
+
+namespace cc {
+
+/** \class ResourceManager cc/ResourceManager
+  * \ingroup misc
+  * \brief Keep track of application resource directories
+  */
+class ResourceManager final: public Singleton
+{
+public:
+    /** Get access to the resource manager singleton
+      */
+    ResourceManager();
+
+    /** Add directory for resource lookups
+      * \param realPrefix Absolute file system directory path
+      * \param resourcePrefix Virtual resource path (defaults to top-level component of \a realPrefix)
+      * \note It is possible to override an existing resource prefix.
+      */
+    ResourceManager &addDirectory(const String &realPrefix, const String &resourcePrefix = "");
+
+    /** Map a resource path to the absolute file system path
+      * \param resourcePath %Resource path (e.g. ":/icons/app.webp")
+      * \param realPath Returns the absolute file system path
+      * \return True if a matching resource directory was found.
+      */
+    bool lookup(const String &resourcePath, Out<String> realPath) const;
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

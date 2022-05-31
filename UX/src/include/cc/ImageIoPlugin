@@ -12,14 +12,21 @@
 
 namespace cc {
 
-/** \class ImageFileFormat cc/ImageFileFormat
+/** \class ImageIoPlugin cc/ImageIoPlugin
   * \group ui
   * \brief Description of an image file format
-  * \see ImageFileFormatManager
+  * \see ImageIoPluginManager
   */
-class ImageFileFormat: public Object
+class ImageIoPlugin: public Object
 {
 public:
+    /** \copydoc State::name()
+      */
+    String name() const
+    {
+        return me().name();
+    }
+
     /** \copydoc State::fileNameExtensions()
       */
     List<String> fileNameExtensions() const
@@ -41,9 +48,27 @@ public:
         return me().load(data);
     }
 
+    /** \copydoc State::loadInto()
+      */
+    bool loadInto(InOut<Image> image, const Bytes &data) const
+    {
+        return me().loadInto(&image, data);
+    }
+
 protected:
     struct State: public Object::State
     {
+        /** Initialize plugin
+          * \param name \copybrief State::name()
+          */
+        State(const String &name):
+            name_{name}
+        {}
+
+        /** Unqiue name identifying this plugin
+          */
+        String name() const { return name_; }
+
         /** A list of common file name extensions (case-insensitive)
           */
         virtual List<String> fileNameExtensions() const = 0;
@@ -57,7 +82,19 @@ protected:
           * \return A null image if decoding \a data failed
           */
         virtual Image load(const Bytes &data) const = 0;
+
+        /** Load image from \a data
+          * \param image Image to load the image data into
+          * \param data Encoded image data
+          * \return true if image could be loaded successfully
+          */
+        virtual bool loadInto(InOut<Image> image, const Bytes &data) const = 0;
+
+    private:
+        String name_;
     };
+
+    explicit ImageIoPlugin(State *newState);
 
     const State &me() const { return Object::me.as<State>(); }
 };

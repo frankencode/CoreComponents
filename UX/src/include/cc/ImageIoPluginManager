@@ -1,0 +1,47 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ImageIoPlugin>
+#include <cc/MultiMap>
+#include <cc/Map>
+#include <cc/Singleton>
+
+namespace cc {
+
+/** \class ImageIoPluginManager cc/ImageIoPluginManager
+  * \ingroup ui
+  * \brief Keep information about available image file formats
+  */
+class ImageIoPluginManager final: public Singleton
+{
+public:
+    ImageIoPluginManager();
+
+private:
+    friend class ImageIoPlugin;
+
+    struct State final: public Singleton::State
+    {
+        void registerPlugin(const ImageIoPlugin &plugin);
+
+        MultiMap<String, ImageIoPlugin> pluginByExtension_;
+        Map<String, ImageIoPlugin> pluginByName_;
+    };
+
+    void registerPlugin(const ImageIoPlugin &plugin)
+    {
+        me().registerPlugin(plugin);
+    }
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

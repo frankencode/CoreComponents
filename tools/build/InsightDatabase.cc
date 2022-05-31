@@ -76,7 +76,7 @@ struct InsightDatabase::State final: public Object::State
     {
         Locator pos;
         if (entries_.find(outputPath, &pos)) {
-            entries_.valueAt(pos).inUse = true;
+            entries_.at(pos).value().inUse = true;
         }
     }
 

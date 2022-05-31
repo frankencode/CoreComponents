@@ -49,7 +49,7 @@ struct HttpConnectionManager::State: public Object::State
                 if (!connectionCounts_.find(origin, &target)) continue;
 
                 if (connectionCounts_.at(target).value() == 1) connectionCounts_.removeAt(target);
-                else --connectionCounts_.valueAt(target);
+                else --connectionCounts_.at(target).value();
             }
         }
     }
@@ -60,12 +60,12 @@ struct HttpConnectionManager::State: public Object::State
         Locator target;
         if (!connectionCounts_.insert(origin, 1, &target)) {
             if (connectionLimit_ > 0) {
-                if (connectionCounts_.valueAt(target) >= connectionLimit_)
+                if (connectionCounts_.at(target).value() >= connectionLimit_)
                     return false;
             }
-            ++connectionCounts_.valueAt(target);
+            ++connectionCounts_.at(target).value();
         }
-        client->setPriority(connectionCounts_.valueAt(target) < 8 ? 0 : -connectionCounts_.valueAt(target));
+        client->setPriority(connectionCounts_.at(target).value() < 8 ? 0 : -connectionCounts_.at(target).value());
         return true;
     }
 

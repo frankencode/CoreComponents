@@ -25,6 +25,7 @@ namespace cc {
   * \brief Multi-map data container
   * \tparam K Key type
   * \tparam T Value type
+  * \todo Support for range queries
   */
 template<class K, class T = K>
 class MultiMap {
@@ -120,55 +121,22 @@ public:
         return me().at(index);
     }
 
-    /** Get reference to the value at position \a pos
+    /** Get reference to the item at position \a pos
       */
-    Value &valueAt(Locator pos)
+    Item &at(Locator pos)
     {
         assert(pos);
-        return me().at(pos).value();
+        return me().at(pos);
     }
 
-    /** Get reference to the value at \a index
+    /** Get reference to the item at \a index
       */
-    Value &valueAt(long index)
+    Item &at(long index)
     {
         assert(0 <= index && index < count());
-        return me().at(index).value();
+        return me().at(index);
     }
 
-    /** %Modify an item in place
-      * \tparam Modify %Function type (lambda or functor)
-      * \param pos %Position of item to modify
-      * \param modify %Function of type void(Item &)
-      */
-    template<class Modify>
-    void modifyAt(Locator pos, Modify modify)
-    {
-        assert(pos);
-        Item &item = me().at(pos);
-        #ifndef NDEBUG
-        Item oldItem = item;
-        #endif
-        modify(item);
-        assert(item == oldItem); // changing the value of an item results in undefined behavior
-    }
-
-    /** %Modify an item in place
-      * \tparam Modify %Function type (lambda or functor)
-      * \param index %Index of item to modify
-      * \param modify %Function of type void(Item &)
-      */
-    template<class Modify>
-    void modifyAt(long index, Modify modify)
-    {
-        assert(0 <= index && index < count());
-        Item &item = me().at(index);
-        #ifndef NDEBUG
-        Item oldItem = item;
-        #endif
-        modify(item);
-        assert(item == oldItem || index == count() || &at(index) != &item); // changing the value of an item results in undefined behavior
-    }
 
     /** \copydoc at(long) const
       */

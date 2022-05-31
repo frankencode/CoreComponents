@@ -46,7 +46,7 @@ struct HttpMediaTypeDatabase::State: public Object::State
                     return value;
             }
         }
-        if (mediaTypeByContentPrefix_.lookupPattern(Prefix{content}, &value)) {
+        if (mediaTypeByContentPrefix_.lookup(Prefix{content}, &value)) {
             return value;
         }
 

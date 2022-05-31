@@ -26,7 +26,7 @@ public:
     TimeoutRequest(long id, Timer timer):
         Object{new State{id, timer}}
     {
-        timer.me().requestId_ = id;
+        timer->requestId_ = id;
     }
 
     bool isActive() const

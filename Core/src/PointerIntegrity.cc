@@ -32,7 +32,7 @@ struct PointerIntegrity::State
         if (!pointerSetByTarget_.find(target, &locator)) {
             pointerSetByTarget_.insert(target, Set<void **>{}, &locator);
         }
-        pointerSetByTarget_.valueAt(locator).insert(pointer);
+        pointerSetByTarget_.at(locator).value().insert(pointer);
     }
 
     void dropPointer(void *target, void **pointer)
@@ -40,7 +40,7 @@ struct PointerIntegrity::State
         Guard<SpinLock> guard{lock_};
         Locator locator;
         if (pointerSetByTarget_.find(target, &locator)) {
-            Set<void **> &set = pointerSetByTarget_.valueAt(locator);
+            Set<void **> &set = pointerSetByTarget_.at(locator).value();
             if (set.count() == 1)
                 pointerSetByTarget_.removeAt(locator);
             else
@@ -53,7 +53,7 @@ struct PointerIntegrity::State
         Guard<SpinLock> guard{lock_};
         Locator locator;
         if (pointerSetByTarget_.find(target, &locator)) {
-            const Set<void **> &set = pointerSetByTarget_.valueAt(locator);
+            const Set<void **> &set = pointerSetByTarget_.at(locator).value();
             for (void **p: set) {
                 *p = nullptr;
             }

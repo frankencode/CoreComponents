@@ -23,6 +23,7 @@ namespace cc {
   * \ingroup container
   * \brief %Set data container
   * \tparam T Item type
+  * \todo Support for range queries
   */
 template<class T>
 class Set {
@@ -120,38 +121,20 @@ public:
         return me().at(index);
     }
 
-    /** %Modify an item in place
-      * \tparam Modify %Function type (lambda or functor)
-      * \param pos %Position of item to modify
-      * \param modify %Function of type void(Item &)
+    /** Get to the item at position \a pos
       */
-    template<class Modify>
-    void modifyAt(Locator pos, Modify modify)
+    Item &at(Locator pos)
     {
         assert(pos);
-        Item &item = me().at(pos);
-        #ifndef NDEBUG
-        Item oldItem = item;
-        #endif
-        modify(item);
-        assert(item == oldItem); // changing the value of an item results in undefined behavior
+        return me().at(pos);
     }
 
-    /** %Modify an item in place
-      * \tparam Modify %Function type (lambda or functor)
-      * \param index %Index of item to modify
-      * \param modify %Function of type void(Item &)
+    /** Get references to the item at \a index
       */
-    template<class Modify>
-    void modifyAt(long index, Modify modify)
+    Item &at(long index)
     {
         assert(0 <= index && index < count());
-        Item &item = me().at(index);
-        #ifndef NDEBUG
-        Item oldItem = item;
-        #endif
-        modify(item);
-        assert(item == oldItem || index == count() || &at(index) != &item); // changing the value of an item results in undefined behavior
+        return me().at(index);
     }
 
     /** \copydoc at(long) const
@@ -216,10 +199,33 @@ public:
       * \param pos Returns the position of the item that was found
       * \return True if \a a matching item was found
       */
-    template<class Key>
+    template<class Key = Item>
     bool find(const Key &key, Out<Locator> pos = None{}) const
     {
         return me().find(key, pos);
+    }
+
+    /** Search for \a key and return \a item
+      * \tparam Key Search pattern type
+      * \return True if key was found
+      */
+    template<class Key = Item>
+    bool lookup(const Key &key, Out<Item> item) const
+    {
+        Locator pos;
+        bool found = find(key, &pos);
+        if (found) item = at(pos);
+        return found;
+    }
+
+    /** Convenience function to check if the set contains \a key
+      * \param key %Key to search for
+      * \return True if key was found
+      */
+    template<class Key = Item>
+    bool contains(const Key &key) const
+    {
+        return find(key);
     }
 
     /** Insert a new item to the set
@@ -241,19 +247,6 @@ public:
     bool remove(const Key &key)
     {
         return me().remove(key);
-    }
-
-    /** Search for \a key and return \a item
-      * \tparam Key Search pattern type
-      * \return True if key was found
-      */
-    template<class Key>
-    bool lookup(const Key &key, Out<Item> item) const
-    {
-        Locator pos;
-        bool found = find(key, &pos);
-        if (found) item = at(pos);
-        return found;
     }
 
     /** Insert \a item to the set

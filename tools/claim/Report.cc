@@ -53,7 +53,7 @@ Report::State::State(const List<String> &dirPaths, const Pattern &works, int wor
                         coverageByDigest_.insert(digest, Coverage{}, &pos);
                         statementByDigest_.insert(digest, notice.statement());
                     }
-                    coverageByDigest_.valueAt(pos).insert(path, notice);
+                    coverageByDigest_.at(pos).value().insert(path, notice);
                 }
                 {
                     List<Copyright> copyrights = notice.copyrights();
@@ -63,7 +63,7 @@ Report::State::State(const List<String> &dirPaths, const Pattern &works, int wor
                         if (!coverageByHolder_.find(holder, &pos)) {
                             coverageByHolder_.insert(holder, Coverage{}, &pos);
                         }
-                        coverageByHolder_.valueAt(pos).insert(path, notice);
+                        coverageByHolder_.at(pos).value().insert(path, notice);
                     }
                 }
             }

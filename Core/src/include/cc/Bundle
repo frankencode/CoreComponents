@@ -32,6 +32,7 @@ namespace cc {
 /** \class Bundle cc/Bundle
   * \ingroup sysinfo
   * \brief Lookup files in installation directories
+  * \todo CC_BUNDLE_LOOKUP is slow and combersome, need build system support for BundleInfo.cc (and BundleData.cc?-) and a ResourceManager to manage resource paths (e.g. ":/icons/app.webp")
   */
 class Bundle
 {

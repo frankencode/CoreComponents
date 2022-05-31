@@ -156,7 +156,7 @@ void SdlWindow::State::show(int display)
                 ((mode_ & WindowMode::VSync      ) ? SDL_RENDERER_PRESENTVSYNC : 0)
             );
         else
-            sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, SDL_RENDERER_SOFTWARE);
+            sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, 0 /*SDL_RENDERER_SOFTWARE*/);
 
         if (!sdlRenderer_) throw SdlPlatformError{};
 

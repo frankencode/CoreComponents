@@ -27,7 +27,7 @@ public:
 
     /** Create a case-insensitive string by wrapping \a b
       */
-    Casefree(const String &b):
+    explicit Casefree(const String &b):
         String{b}
     {}
 

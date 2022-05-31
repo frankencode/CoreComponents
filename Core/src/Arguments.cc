@@ -68,10 +68,10 @@ void Arguments::validate(const Map<String, Variant> &prototype)
             if (value.is<long>() && defaultValue.is<bool>()) {
                 long intValue = long(value);
                 if (intValue == 0 || intValue == 1)
-                    me().options.valueAt(pos) = (intValue == 1);
+                    me().options.at(pos).value() = (intValue == 1);
             }
             else if (value.is<long>() && defaultValue.is<double>()) {
-                me().options.valueAt(pos) = double(long(value));
+                me().options.at(pos).value() = double(long(value));
             }
             else {
                 throw UsageError{

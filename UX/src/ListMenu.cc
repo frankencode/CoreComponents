@@ -33,11 +33,10 @@ class ListMenu::Pane final: public View
                 if (hc <= parent().height()) {
                     double y = ls;
                     for (Locator pos = children_.head(); pos; ++pos) {
-                        children_.modifyAt(pos, [=](View &child){
-                            child.pos(Point{0, y});
-                            child.size(itemSize);
-                            child.visible(true);
-                        });
+                        children_.at(pos)
+                            .pos(Point{0, y})
+                            .size(itemSize)
+                            .visible(true);
                         y += hi;
                     }
                 }
@@ -50,17 +49,16 @@ class ListMenu::Pane final: public View
                     if (ni < i1) i1 = ni;
                     double y = i0 * hi + ls;
                     for (Locator pos = children_.from(i0); pos && +pos < i1; ++pos) {
-                        children_.modifyAt(pos, [=](View &child){
-                            child.pos(Point{0, y});
-                            child.size(itemSize);
-                            child.visible(true);
-                        });
+                        children_.at(pos)
+                            .pos(Point{0, y})
+                            .size(itemSize)
+                            .visible(true);
                         y += hi;
                     }
                     for (long i = 0; i < visibleChildren_.count();) {
-                        const View &child = visibleChildren_.at(i);
+                        View &child = visibleChildren_.at(i);
                         if (child.y() + hi < y0 || y1 <= child.y())
-                            const_cast<View &>(child).visible(false);
+                            child.visible(false);
                         else
                             ++i;
                     }
