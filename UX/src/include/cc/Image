@@ -18,8 +18,6 @@ namespace cc {
 /** \class Image cc/Image
   * \ingroup ui
   * \brief 2-dimensional color matrix
-  * \todo Add a high-quality image scaling method using the WebP library.
-  * \todo Add save() method.
   */
 class Image: public Surface
 {
@@ -127,6 +125,15 @@ public:
       * \param shadowColor Replacement color
       */
     void shadowBlur(int radius, Color shadowColor);
+
+    /** Scaled image to new size (\a scaledWidth, \a scaledHeight)
+      */
+    Image scale(int scaledWidth, int scaledHeight) const;
+
+    /** Save image to \a path using given \a mediaType
+      * \warning Any existing file under \a path will be silently overwritten.
+      */
+    void save(const String &path, const String &mediaType = "");
 
 private:
     struct State final: public Surface::State

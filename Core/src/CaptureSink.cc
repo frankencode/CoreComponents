@@ -34,6 +34,12 @@ List<Bytes> CaptureSink::collect() const
     return me().parts;
 }
 
+Bytes CaptureSink::writtenData() const
+{
+    List<Bytes> parts = me().parts;
+    return (parts.count() == 1) ? parts.at(0) : parts.join();
+}
+
 const CaptureSink::State &CaptureSink::me() const
 {
     return Object::me.as<State>();

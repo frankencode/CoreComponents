@@ -10,6 +10,8 @@
 #include <cc/ResourceManager>
 #include <cc/ImageIoPlugin>
 #include <cc/File>
+#include <cc/WebP>
+#include <cc/CaptureSink>
 #include <cc/shadowBlur>
 #include <cairo/cairo.h>
 #include <algorithm>
@@ -135,6 +137,24 @@ bool Image::checkOpaque() const
 void Image::shadowBlur(int radius, Color shadowColor)
 {
     cc::shadowBlur(*this, radius, shadowColor);
+}
+
+Image Image::scale(int scaledWidth, int scaledHeight) const
+{
+    if (scaledWidth <= 0 || scaledHeight <= 0) return Image{0, 0};
+    if (width() == 0 || height() == 0) return Image{0, 0};
+    CaptureSink sink;
+    WebP::encode(sink, *this);
+    Bytes essence = sink.writtenData();
+    Image image { scaledWidth, scaledHeight };
+    WebP::decodeInto(&image, essence);
+    return image;
+}
+
+void Image::save(const String &path, const String &mediaType)
+{
+    ImageIoPlugin{mediaType, path.fileSuffix()}
+    .encode(File{path, FileOpen::Overwrite}, *this);
 }
 
 } // namespace cc

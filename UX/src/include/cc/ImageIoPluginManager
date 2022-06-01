@@ -28,6 +28,10 @@ public:
       */
     ImageIoPlugin pluginByMediaType(const String &mediaType) const;
 
+    /** Get image I/O plugin for \a fileSuffix
+      */
+    ImageIoPlugin pluginByFileSuffix(const String &fileSuffix) const;
+
     /** Detect image file format
       */
     ImageIoPlugin detect(const String &path, const Bytes &data, Out<int> width = None{}, Out<int> height = None{}) const;

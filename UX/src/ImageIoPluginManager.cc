@@ -55,6 +55,15 @@ ImageIoPlugin ImageIoPluginManager::pluginByMediaType(const String &mediaType) c
     return me().pluginByMediaType_(mediaType);
 }
 
+ImageIoPlugin ImageIoPluginManager::pluginByFileSuffix(const String &fileSuffix) const
+{
+    Locator target;
+    if (me().pluginBySuffix_.find(fileSuffix, &target)) {
+        return me().pluginBySuffix_.at(target).value();
+    }
+    return ImageIoPlugin{};
+}
+
 ImageIoPlugin ImageIoPluginManager::detect(const String &path, const Bytes &data, Out<int> width, Out<int> height) const
 {
     return me().detect(path, data, &width, &height);

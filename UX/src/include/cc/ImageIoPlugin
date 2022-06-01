@@ -33,6 +33,10 @@ public:
       */
     ImageIoPlugin() = default;
 
+    /** Get access to an image I/O plugin for given \a mediaType and/or \a fileSuffix
+      */
+    explicit ImageIoPlugin(const String &mediaType, const String &fileSuffix = "");
+
     /** Unqiue name identifying this plugin
       */
     String mediaType() const

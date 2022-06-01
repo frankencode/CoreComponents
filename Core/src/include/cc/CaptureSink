@@ -27,6 +27,10 @@ public:
       */
     List<Bytes> collect() const;
 
+    /** Get all bytes that have been written to this sink up to this point
+      */
+    Bytes writtenData() const;
+
 private:
     struct State;
 

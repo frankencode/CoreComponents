@@ -16,6 +16,16 @@ ImageIoPlugin ImageIoPlugin::detect(const String &path, const Bytes &data, Out<i
     return ImageIoPluginManager{}.detect(path, data, &width, &height);
 }
 
+ImageIoPlugin::ImageIoPlugin(const String &mediaType, const String &fileSuffix)
+{
+    if (mediaType != "") {
+        *this = ImageIoPluginManager{}.pluginByMediaType(mediaType);
+    }
+    else if (fileSuffix != "") {
+        *this = ImageIoPluginManager{}.pluginByFileSuffix(fileSuffix);
+    }
+}
+
 ImageIoPlugin::ImageIoPlugin(State *newState):
     Object{newState}
 {
