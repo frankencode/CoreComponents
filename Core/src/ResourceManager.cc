@@ -29,7 +29,7 @@ struct ResourceManager::State final: public Singleton::State
         if (found) {
             String resourcePrefix = pathMap_.at(target).key();
             String realPrefix = pathMap_.at(target).value();
-            String realSuffix = resourcePath.copy(resourcePrefix.count(), resourcePath.count());
+            String realSuffix = resourcePath.copy(2 + resourcePrefix.count(), resourcePath.count());
             realPath = realPrefix + realSuffix;
         }
 
@@ -52,6 +52,13 @@ ResourceManager &ResourceManager::addDirectory(const String &realPrefix, const S
 bool ResourceManager::lookup(const String &resourcePath, Out<String> realPath) const
 {
     return me().lookup(resourcePath, &realPath);
+}
+
+String ResourceManager::realPath(const String &resourcePath) const
+{
+    String realPath;
+    lookup(resourcePath, &realPath);
+    return realPath;
 }
 
 ResourceManager::State &ResourceManager::me()

@@ -9,8 +9,6 @@
 #pragma once
 
 #include <cc/ImageIoPlugin>
-#include <cc/MultiMap>
-#include <cc/Map>
 #include <cc/Singleton>
 
 namespace cc {
@@ -22,26 +20,27 @@ namespace cc {
 class ImageIoPluginManager final: public Singleton
 {
 public:
+    /** Get access to the image I/O plugin manager singleton
+      */
     ImageIoPluginManager();
+
+    /** Get image I/O plugin by \a mediaType
+      */
+    ImageIoPlugin pluginByMediaType(const String &mediaType) const;
+
+    /** Detect image file format
+      */
+    ImageIoPlugin detect(const String &path, const Bytes &data, Out<int> width = None{}, Out<int> height = None{}) const;
 
 private:
     friend class ImageIoPlugin;
 
-    struct State final: public Singleton::State
-    {
-        void registerPlugin(const ImageIoPlugin &plugin);
+    struct State;
 
-        MultiMap<String, ImageIoPlugin> pluginByExtension_;
-        Map<String, ImageIoPlugin> pluginByName_;
-    };
+    void registerPlugin(const ImageIoPlugin &plugin);
 
-    void registerPlugin(const ImageIoPlugin &plugin)
-    {
-        me().registerPlugin(plugin);
-    }
-
-    State &me() { return Object::me.as<State>(); }
-    const State &me() const { return Object::me.as<State>(); }
+    State &me();
+    const State &me() const;
 };
 
 } // namespace cc

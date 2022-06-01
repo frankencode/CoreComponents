@@ -7,7 +7,11 @@
  */
 
 #include <cc/Image>
+#include <cc/ResourceManager>
+#include <cc/ImageIoPlugin>
+#include <cc/File>
 #include <cc/shadowBlur>
+#include <cc/DEBUG>
 #include <cairo/cairo.h>
 #include <algorithm>
 #include <cassert>
@@ -31,9 +35,7 @@ cairo_surface_t *Image::State::cairoSurface()
 }
 
 void Image::State::finish()
-{
-    // normalize();
-}
+{}
 
 void Image::State::premultiply()
 {
@@ -50,6 +52,25 @@ void Image::State::normalize()
     Color *p = &pixel(0);
     for (long i = 0; i < n; ++i) {
         p[i].normalize();
+    }
+}
+
+Image::Image(const String &path, const Bytes &data)
+{
+    String realPath = ResourceManager{}.realPath(path);
+    int width = 0, height = 0;
+    Bytes source = data;
+    if (source.count() == 0) source = File{realPath}.map();
+    ImageIoPlugin plugin = ImageIoPlugin::detect(
+        realPath,
+        source,
+        &width, &height
+    );
+    if (plugin) {
+        Image image;
+        if (plugin.loadInto(&image, source)) {
+            *this = image;
+        }
     }
 }
 

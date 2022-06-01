@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Bundle>
+
+namespace cc {
+
+class ResourceRegistration {
+public:
+    explicit ResourceRegistration(const String &realPrefix);
+};
+
+/** Register bundled resource directory
+  */
+#define CC_RESOURCE(resourcePrefix) \
+namespace { cc::ResourceRegistration registration { CC_BUNDLE_LOOKUP(resourcePrefix) }; }
+
+} // namespace cc

@@ -12,7 +12,7 @@
 #include <cc/PosGuard>
 #include <cc/InputControl>
 #include <cc/Process>
-#include <cc/ImageFile>
+#include <cc/Bmp>
 #include <cc/stdio>
 
 namespace cc {
@@ -270,7 +270,7 @@ void Application::State::takeScreenshot(const Window &window)
     String path = Format{"%%.bmp"}.arg(fixed(System::now(), 0));
     view.renderTo(image);
 
-    ImageFile::save(path, image);
+    Bmp::save(path, image);
 
     ferr() << "Written screenshot to file://" << Process::cwd() << "/" << path << nl;
 }

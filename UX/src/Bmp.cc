@@ -6,14 +6,57 @@
  *
  */
 
-#include <cc/ImageFile>
+#include <cc/Bmp>
 #include <cc/ByteSink>
 #include <cc/ByteSource>
 #include <cc/File>
 
 namespace cc {
 
-void ImageFile::write(const Stream &stream, const Image &image)
+bool Bmp::detect(const Bytes &data, Out<int> width, Out<int> height)
+{
+    bool ok = true;
+    try {
+        readHeader(ByteSource{data, ByteOrder::LittleEndian}, &width, &height);
+    }
+    catch (BmpError &) {
+        ok = false;
+    }
+    return ok;
+}
+
+Image Bmp::map(const String &path)
+{
+    File file{path, FileOpen::ReadOnly};
+    ByteSource source{file, ByteOrder::LittleEndian};
+
+    int width = 0, height = 0;
+    uint32_t fileSize = 0, dataOffset = 0;
+    readHeader(source, &width, &height, &fileSize, &dataOffset);
+
+    return Image{width, -height, file.map(dataOffset, fileSize)};
+}
+
+Image Bmp::load(const Bytes &data)
+{
+    int width = 0, height = 0;
+    uint32_t fileSize = 0, dataOffset = 0;
+
+    try {
+        ByteSource source{data, ByteOrder::LittleEndian};
+        readHeader(source, &width, &height, &fileSize, &dataOffset);
+    }
+    catch (BmpError &) {
+        return Image{};
+    }
+
+    Bytes pixelData = data;;
+    pixelData.shift(dataOffset);
+
+    return Image{width, -height, pixelData};
+}
+
+void Bmp::write(const Stream &stream, const Image &image)
 {
     const uint32_t preludeSize = 14;
     const uint32_t headerSize = 108;
@@ -63,29 +106,27 @@ void ImageFile::write(const Stream &stream, const Image &image)
     sink.write(image.data());
 }
 
-void ImageFile::save(const String &path, const Image &image)
+void Bmp::save(const String &path, const Image &image)
 {
     write(File{path, FileOpen::Overwrite}, image);
 }
 
-Image ImageFile::map(const String &path)
+void Bmp::readHeader(ByteSource source, Out<int> width, Out<int> height, Out<uint32_t> fileSize, Out<uint32_t> dataOffset)
 {
-    File file{path, FileOpen::ReadOnly};
-    ByteSource source{file, ByteOrder::LittleEndian};
     char bm[2];
     source.readChar(&bm[0]);
     source.readChar(&bm[1]);
-    if (bm[0] != 'B' || bm[1] != 'M') throw ImageFileError{"not a BMP file"};
-    const uint32_t fileSize = source.readUInt32();
+    if (bm[0] != 'B' || bm[1] != 'M') throw BmpError{"not a BMP file"};
+    fileSize = source.readUInt32();
     source.readUInt32();
-    const uint32_t dataOffset = source.readUInt32();
+    dataOffset = source.readUInt32();
     /*const uint32_t headerSize =*/ source.readUInt32();
-    const int32_t width = source.readInt32();
-    const int32_t height = source.readInt32();
-    if (width <= 0 || height >= 0) throw ImageFileError{"unsupported image orientation"};
+    width = source.readInt32();
+    height = source.readInt32();
+    if (width() <= 0 || height() >= 0) throw BmpError{"unsupported image orientation"};
     source.readUInt16(); // number of planes
-    if (source.readUInt16() != 32) throw ImageFileError{"not a 32-bit ARGB image"};
-    if (source.readUInt32() != 3) throw ImageFileError{"unsupported compression method"};
+    if (source.readUInt16() != 32) throw BmpError{"not a 32-bit ARGB image"};
+    if (source.readUInt32() != 3) throw BmpError{"unsupported compression method"};
     /*const uint32_t dataSize =*/ source.readUInt32();
     for (int i = 0; i < 4; ++i) source.readUInt32();
 
@@ -111,17 +152,15 @@ Image ImageFile::map(const String &path)
             alphaMask == 0xFF000000u
         )
     )) {
-       throw ImageFileError{"image data not mapable"};
+       throw BmpError{"image data not mapable"};
     }
-
-    return Image{width, -height, file.map(dataOffset, fileSize)};
 }
 
-ImageFileError::ImageFileError(const char *reason):
+BmpError::BmpError(const char *reason):
     reason_{reason}
 {}
 
-String ImageFileError::message() const
+String BmpError::message() const
 {
     return Format{"Unexpected image file format: %%"}.arg(reason_);
 }

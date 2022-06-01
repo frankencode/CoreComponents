@@ -20,35 +20,53 @@ namespace cc {
 class ImageIoPlugin: public Object
 {
 public:
-    /** \copydoc State::name()
+    /** Detect image I/O plugin for loading an image
+      * \param path %File path
+      * \param data %File contents
+      * \param width Returns the image width
+      * \param height Returns the image height
+      * \return ImageIoPlugin needed to load the image
       */
-    String name() const
+    static ImageIoPlugin detect(const String &path, const Bytes &data, Out<int> width = None{}, Out<int> height = None{});
+
+    /** Create a null image plugin
+      */
+    ImageIoPlugin() = default;
+
+    /** Unqiue name identifying this plugin
+      */
+    String mediaType() const
     {
-        return me().name();
+        return me().mediaType();
     }
 
-    /** \copydoc State::fileNameExtensions()
+    /** Common file name extensions used for this image format
       */
-    List<String> fileNameExtensions() const
+    List<String> fileSuffix() const
     {
-        return me().fileNameExtensions();
+        return me().fileSuffix();
     }
 
-    /** \copydoc State::check()
+    /** Check if \a data is of this image file format and optionally return the \a width and \a height of the image
       */
-    bool check(const Bytes &data, Out<int> width = None{}, Out<int> height = None{}) const
+    bool detect(const Bytes &data, Out<int> width = None{}, Out<int> height = None{}) const
     {
-        return me().check(data, &width, &height);
+        return me().detect(data, &width, &height);
     }
 
-    /** \copydoc State::load
+    /** Load the image from given \a data
+      * \return Loaded image if decoding \a data was successful
+      * \return A null image if decoding \a data failed
       */
     Image load(const Bytes &data) const
     {
         return me().load(data);
     }
 
-    /** \copydoc State::loadInto()
+    /** Load image from \a data
+      * \param image Image to load the image data into
+      * \param data Encoded image data
+      * \return true if image could be loaded successfully
       */
     bool loadInto(InOut<Image> image, const Bytes &data) const
     {
@@ -59,39 +77,37 @@ protected:
     struct State: public Object::State
     {
         /** Initialize plugin
-          * \param name \copybrief State::name()
+          * \param name \copybrief ImageIoPlugin::name()
+          * \param exts \copybrief ImageIoPlugin::fileSuffix()
           */
-        State(const String &name):
-            name_{name}
+        State(const String &mediaType, const List<String> &fileSuffix):
+            mediaType_{mediaType},
+            fileSuffix_{fileSuffix}
         {}
 
-        /** Unqiue name identifying this plugin
+        /** \copydoc ImageIoPlugin::mediaType()
           */
-        String name() const { return name_; }
+        String mediaType() const { return mediaType_; }
 
-        /** A list of common file name extensions (case-insensitive)
+        /** \copydoc ImageIoPlugin::fileSuffix()
           */
-        virtual List<String> fileNameExtensions() const = 0;
+        List<String> fileSuffix() const { return fileSuffix_; }
 
-        /** Check if \a data is of this image file format and optionally return the \a width and \a height of the image
+        /** \copydoc ImageIoPlugin::detect()
           */
-        virtual bool check(const Bytes &data, Out<int> width, Out<int> height) const = 0;
+        virtual bool detect(const Bytes &data, Out<int> width, Out<int> height) const = 0;
 
-        /** Load the image from given \a data
-          * \return Loaded image if decoding \a data was successful
-          * \return A null image if decoding \a data failed
+        /** \copydoc ImageIoPlugin::load()
           */
         virtual Image load(const Bytes &data) const = 0;
 
-        /** Load image from \a data
-          * \param image Image to load the image data into
-          * \param data Encoded image data
-          * \return true if image could be loaded successfully
+        /** \copydoc ImageIoPlugin::loadInto()
           */
         virtual bool loadInto(InOut<Image> image, const Bytes &data) const = 0;
 
     private:
-        String name_;
+        String mediaType_;
+        List<String> fileSuffix_;
     };
 
     explicit ImageIoPlugin(State *newState);

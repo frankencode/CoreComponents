@@ -11,6 +11,11 @@
 
 namespace cc {
 
+ImageIoPlugin ImageIoPlugin::detect(const String &path, const Bytes &data, Out<int> width, Out<int> height)
+{
+    return ImageIoPluginManager{}.detect(path, data, &width, &height);
+}
+
 ImageIoPlugin::ImageIoPlugin(State *newState):
     Object{newState}
 {

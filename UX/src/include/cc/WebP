@@ -21,7 +21,7 @@ class WebP final: public Object
 public:
     /** Check if \a data is a WebP file and optionally return its \a width and \a height (in pixel)
       */
-    static bool check(const Bytes &data, Out<int> width = None{}, Out<int> height = None{});
+    static bool detect(const Bytes &data, Out<int> width = None{}, Out<int> height = None{});
 
     /** Load image from \a data
       */

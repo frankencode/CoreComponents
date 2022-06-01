@@ -16,7 +16,7 @@
 #define CC_BUNDLE_LOOKUP(relPath) \
     cc::Bundle::lookup( \
         relPath, \
-        cc::List<String>{ \
+        cc::List<cc::String>{ \
             cc::Bundle::prefix(CC_XSTR(CCBUILD_BUNDLE_PREFIX)), \
             cc::Bundle::exePrefix(), \
             cc::String{__FILE__}.cdUp() \

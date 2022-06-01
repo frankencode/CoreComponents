@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+
+namespace cc {
+
+/** \class ResourcePath cc/ResourcePath
+  * \ingroup misc
+  * \brief Automatically map resource paths to real file system paths
+  */
+class ResourcePath
+{
+public:
+    ResourcePath(const String &path);
+    operator String() const;
+
+private:
+    String path_;
+};
+
+} // namespace cc

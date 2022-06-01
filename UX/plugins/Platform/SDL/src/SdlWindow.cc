@@ -209,16 +209,6 @@ void SdlWindow::State::setWindowIcon(const Image &image)
 {
     SDL_Surface *oldIcon = sdlIcon_;
 
-    CC_INSPECT(image.width());
-    CC_INSPECT(image.height());
-    CC_INSPECT(image.data().size());
-    CC_INSPECT(sizeof(Color) * 8);
-    CC_INSPECT(image.pitch());
-    CC_INSPECT(hex(Color::RedMask));
-    CC_INSPECT(hex(Color::GreenMask));
-    CC_INSPECT(hex(Color::BlueMask));
-    CC_INSPECT(hex(Color::AlphaMask));
-
     sdlIcon_ = SDL_CreateRGBSurfaceFrom(
         const_cast<uint8_t *>(image.data().bytes()),
         image.width(),

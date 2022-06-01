@@ -1,0 +1,26 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ImageIoPlugin>
+
+namespace cc {
+
+/** \internal
+  */
+class BmpPlugin final: public ImageIoPlugin
+{
+public:
+    BmpPlugin();
+
+private:
+    struct State;
+};
+
+} // namespace cc

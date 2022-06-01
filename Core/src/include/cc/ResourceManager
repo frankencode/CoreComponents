@@ -38,6 +38,10 @@ public:
       */
     bool lookup(const String &resourcePath, Out<String> realPath) const;
 
+    /** Convenience function: map \a resourcePath to a file system path
+      */
+    String realPath(const String &resourcePath) const;
+
 private:
     struct State;
 

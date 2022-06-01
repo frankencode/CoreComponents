@@ -9,17 +9,15 @@
 #pragma once
 
 #include <cc/Surface>
-#include <cc/types>
 #include <cc/Color>
 #include <cc/Array>
+#include <cc/types>
 
 namespace cc {
 
 /** \class Image cc/Image
   * \ingroup ui
   * \brief 2-dimensional color matrix
-  * \todo move internal state to implementation file
-  * \todo add support in SDL2 for premultiplied alpha (to match cairo;)
   */
 class Image: public Surface
 {
@@ -45,6 +43,18 @@ public:
     explicit Image(Size size):
         Surface{new State{static_cast<int>(std::ceil(size[0])), static_cast<int>(std::ceil(size[1]))}}
     {}
+
+    /** Load image from \a path
+      * \param path %File system or resource path
+      * \param data Optionally pass already loaded image data
+      * \note If loading of the image data fails a null image is created instead.
+      */
+    Image(const String &path, const Bytes &data = Bytes{});
+
+    /** Convenience method to load an image from \a path
+      * \see Image(const String &, const Bytes &)
+      */
+    Image(const char *path): Image{String{path}} {}
 
     /** Width of the image in pixels
       */
@@ -117,7 +127,7 @@ public:
     void shadowBlur(int radius, Color shadowColor);
 
 private:
-    struct State: public Surface::State
+    struct State final: public Surface::State
     {
         State(const State &other):
             width_{other.width_},
