@@ -33,9 +33,9 @@ public:
 
     /** Load image from BMP encoded \a data
       */
-    static Image load(const Bytes &data);
+    static Image decode(const Bytes &data);
 
-    static void write(const Stream &stream, const Image &image);
+    static void encode(const Stream &stream, const Image &image);
     static void save(const String &path, const Image &image);
 
 private:

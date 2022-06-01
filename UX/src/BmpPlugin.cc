@@ -23,20 +23,29 @@ struct BmpPlugin::State final: public ImageIoPlugin::State
         return Bmp::detect(data, &width, &height);
     }
 
-    Image load(const Bytes &data) const override
+    Image decode(const Bytes &data) const override
     {
-        return Bmp::load(data);
+        return Bmp::decode(data);
     }
 
-    bool loadInto(InOut<Image> image, const Bytes &data) const override
+    bool decodeInto(InOut<Image> image, const Bytes &data) const override
     {
         if (!image()) {
-            image = load(data);
+            image = decode(data);
             return !image->isNull();
         }
         return false;
     }
+
+    void encode(const Stream &sink, const Image &image) const override
+    {
+        Bmp::encode(sink, image);
+    }
 };
+
+BmpPlugin::BmpPlugin():
+    ImageIoPlugin{new State}
+{}
 
 CC_REGISTRATION(BmpPlugin)
 

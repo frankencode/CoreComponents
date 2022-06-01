@@ -23,16 +23,21 @@ public:
       */
     static bool detect(const Bytes &data, Out<int> width = None{}, Out<int> height = None{});
 
-    /** Load image from \a data
+    /** Decode WebP image \a data
       */
-    static Image load(const Bytes &data);
+    static Image decode(const Bytes &data);
 
-    /** Load image from \a data
-      * \param image Image to load the image data into
-      * \param data &WebP data
-      * \return true if image could be loaded successfully
+    /** Decode WebP image \a data
+      * \param image Target image (output is scaled to match the user-defined size)
+      * \param data &WebP encoded data
+      * \return true if image could be decoded successfully
       */
-    static bool loadInto(InOut<Image> image, const Bytes &data);
+    static bool decodeInto(InOut<Image> image, const Bytes &data);
+
+    /** WebP encode \a image (lossless mode)
+      * \todo improve performance by using libwebp's advanced API
+      */
+    static void encode(const Stream &sink, const Image &image);
 };
 
 } // namespace cc

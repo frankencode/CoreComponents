@@ -10,6 +10,7 @@
 #include <cc/binary>
 #include <cc/DEBUG>
 #include <webp/decode.h>
+#include <webp/encode.h>
 #include <cassert>
 
 namespace cc {
@@ -19,7 +20,7 @@ bool WebP::detect(const Bytes &data, Out<int> width, Out<int> height)
     return WebPGetInfo(data.bytes(), data.size(), &width, &height);
 }
 
-Image WebP::load(const Bytes &data)
+Image WebP::decode(const Bytes &data)
 {
     int width = 0;
     int height = 0;
@@ -51,10 +52,10 @@ Image WebP::load(const Bytes &data)
     return ok ? image : Image{};
 }
 
-bool WebP::loadInto(InOut<Image> image, const Bytes &data)
+bool WebP::decodeInto(InOut<Image> image, const Bytes &data)
 {
     if (!image()) {
-        image = load(data);
+        image = decode(data);
         return !image->isNull();
     }
 
@@ -81,6 +82,18 @@ bool WebP::loadInto(InOut<Image> image, const Bytes &data)
     config.output.is_external_memory = 1;
 
     return WebPDecode(data.bytes(), data.size(), &config) == VP8_STATUS_OK;
+}
+
+void WebP::encode(const Stream &sink, const Image &image)
+{
+    uint8_t *data = nullptr;
+    size_t dataSize = 0;
+    if (localEndian() == ByteOrder::LittleEndian)
+        dataSize = WebPEncodeLosslessBGRA(image.data().bytes(), image.width(), image.height(), image.pitch(), &data);
+    else /* if (localEndian() == ByteOrder::BigEndian) */
+        dataSize = WebPEncodeLosslessRGBA(image.data().bytes(), image.width(), image.height(), image.pitch(), &data);
+
+    Stream{sink}.write(Bytes::wrap(data, static_cast<long>(dataSize)));
 }
 
 } // namespace cc

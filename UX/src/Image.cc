@@ -11,7 +11,6 @@
 #include <cc/ImageIoPlugin>
 #include <cc/File>
 #include <cc/shadowBlur>
-#include <cc/DEBUG>
 #include <cairo/cairo.h>
 #include <algorithm>
 #include <cassert>
@@ -68,7 +67,7 @@ Image::Image(const String &path, const Bytes &data)
     );
     if (plugin) {
         Image image;
-        if (plugin.loadInto(&image, source)) {
+        if (plugin.decodeInto(&image, source)) {
             *this = image;
         }
     }

@@ -58,19 +58,28 @@ public:
       * \return Loaded image if decoding \a data was successful
       * \return A null image if decoding \a data failed
       */
-    Image load(const Bytes &data) const
+    Image decode(const Bytes &data) const
     {
-        return me().load(data);
+        return me().decode(data);
     }
 
     /** Load image from \a data
-      * \param image Image to load the image data into
+      * \param image Target image (output is scaled to match the user-defined size)
       * \param data Encoded image data
       * \return true if image could be loaded successfully
       */
-    bool loadInto(InOut<Image> image, const Bytes &data) const
+    bool decodeInto(InOut<Image> image, const Bytes &data) const
     {
-        return me().loadInto(&image, data);
+        return me().decodeInto(&image, data);
+    }
+
+    /** Write encoded image to \a sink
+      * \param sink Output sink to write the encoded image to
+      * \param image Source image
+      */
+    void encode(const Stream &sink, const Image &image) const
+    {
+        return me().encode(sink, image);
     }
 
 protected:
@@ -97,13 +106,17 @@ protected:
           */
         virtual bool detect(const Bytes &data, Out<int> width, Out<int> height) const = 0;
 
-        /** \copydoc ImageIoPlugin::load()
+        /** \copydoc ImageIoPlugin::decode()
           */
-        virtual Image load(const Bytes &data) const = 0;
+        virtual Image decode(const Bytes &data) const = 0;
 
-        /** \copydoc ImageIoPlugin::loadInto()
+        /** \copydoc ImageIoPlugin::decodeInto()
           */
-        virtual bool loadInto(InOut<Image> image, const Bytes &data) const = 0;
+        virtual bool decodeInto(InOut<Image> image, const Bytes &data) const = 0;
+
+        /** \copydoc ImageIoPlugin::encode()
+          */
+        virtual void encode(const Stream &sink, const Image &image) const = 0;
 
     private:
         String mediaType_;

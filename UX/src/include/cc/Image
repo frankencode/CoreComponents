@@ -18,6 +18,8 @@ namespace cc {
 /** \class Image cc/Image
   * \ingroup ui
   * \brief 2-dimensional color matrix
+  * \todo Add a high-quality image scaling method using the WebP library.
+  * \todo Add save() method.
   */
 class Image: public Surface
 {

@@ -23,14 +23,19 @@ struct WebPPlugin::State final: public ImageIoPlugin::State
         return WebP::detect(data, &width, &height);
     }
 
-    Image load(const Bytes &data) const override
+    Image decode(const Bytes &data) const override
     {
-        return WebP::load(data);
+        return WebP::decode(data);
     }
 
-    bool loadInto(InOut<Image> image, const Bytes &data) const override
+    bool decodeInto(InOut<Image> image, const Bytes &data) const override
     {
-        return WebP::loadInto(&image, data);
+        return WebP::decodeInto(&image, data);
+    }
+
+    void encode(const Stream &sink, const Image &image) const override
+    {
+        WebP::encode(sink, image);
     }
 };
 

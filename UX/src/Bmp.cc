@@ -37,7 +37,7 @@ Image Bmp::map(const String &path)
     return Image{width, -height, file.map(dataOffset, fileSize)};
 }
 
-Image Bmp::load(const Bytes &data)
+Image Bmp::decode(const Bytes &data)
 {
     int width = 0, height = 0;
     uint32_t fileSize = 0, dataOffset = 0;
@@ -56,7 +56,7 @@ Image Bmp::load(const Bytes &data)
     return Image{width, -height, pixelData};
 }
 
-void Bmp::write(const Stream &stream, const Image &image)
+void Bmp::encode(const Stream &stream, const Image &image)
 {
     const uint32_t preludeSize = 14;
     const uint32_t headerSize = 108;
@@ -108,7 +108,7 @@ void Bmp::write(const Stream &stream, const Image &image)
 
 void Bmp::save(const String &path, const Image &image)
 {
-    write(File{path, FileOpen::Overwrite}, image);
+    encode(File{path, FileOpen::Overwrite}, image);
 }
 
 void Bmp::readHeader(ByteSource source, Out<int> width, Out<int> height, Out<uint32_t> fileSize, Out<uint32_t> dataOffset)
