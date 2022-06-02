@@ -206,6 +206,12 @@ Slider &Slider::onValueChanged(Fun<void()> &&f)
     return *this;
 }
 
+Slider &Slider::onUserInput(Fun<void()> &&f)
+{
+    me().slider_.onUserInput(move(f));
+    return *this;
+}
+
 Slider::State &Slider::me()
 {
     return View::me().as<State>();

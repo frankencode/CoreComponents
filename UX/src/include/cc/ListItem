@@ -29,13 +29,13 @@ public:
       */
     ListItem &associate(Out<ListItem> self);
 
-    View icon() const { return me().icon(); } ///< Get icon
+    View icon() const { return me().icon_(); } ///< Get icon
     ListItem &icon(const View &newValue); ///< %Set icon
-    ListItem &iconImage(const Image &newValue); ///< %Set icon image
+    ListItem &icon(const Image &newValue); ///< %Set icon
 
-    View title() const { return me().title(); } ///< Get title
+    View title() const { return me().title_(); } ///< Get title
     ListItem &title(const View &newValue); ///< %Set title
-    ListItem &title(const String &newValue); ///< %Set title text
+    ListItem &title(const String &newValue); ///< %Set title
 
     View indicator() const { return me().indicator(); } ///< Get indicator
     ListItem &indicator(const View &newValue); ///< %Set indicator
@@ -53,16 +53,29 @@ protected:
     {
         State();
 
+        View icon() const { return icon_(); }
+        void icon(const View &newValue);
+
+        View title() const { return title_(); }
+        void title(const View &newValue);
+
+        View indicator() const { return indicator_(); }
+        void indicator(const View &newValue);
+
+        Property<bool> enabled;
+
+    private:
+        friend class ListItem;
+
         Size minSize() const override;
 
         void bindIcon();
         void bindTitle();
         void bindIndicator();
 
-        Property<View> icon;
-        Property<View> title;
-        Property<View> indicator;
-        Property<bool> enabled;
+        Property<View> icon_;
+        Property<View> title_;
+        Property<View> indicator_;
     };
 
     explicit ListItem(CreateState onDemand):

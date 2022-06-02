@@ -40,6 +40,7 @@ public:
     Switch &value(Definition<bool> &&f); ///< Define current state
 
     Switch &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
+    Switch &onUserInput(Fun<void()> &&f); ///< Get notified when value changes due to user interaction
 
 private:
     struct State;

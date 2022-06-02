@@ -25,7 +25,10 @@ struct SwitchControl::State final: public InputControl::State
 
     Control delegate() const override;
 
+    void toggle();
+
     Property<bool> on { false };
+    Trigger userInput;
 
     Property<double> trackRadius;
     Property<double> trackLength;
@@ -56,7 +59,7 @@ SwitchControl::State::State()
         .dragInhibit(true) //! \todo create an Apple style safety switch which makes use of dragging (SafetySwitch)
         // .cursor(CursorShape::Hand)
         .onClicked([this]{ // a SafetySwitch would have no clicked event
-            on(!on);
+            toggle();
             thumb_.pos([this]{ return Point{on() ? trackLength() : 0., 0.}; });
             return true;
         })
@@ -72,7 +75,7 @@ SwitchControl::State::State()
                 event.keyCode() == KeyCode::Key_Down ||
                 event.keyCode() == KeyCode::Key_Space
             ) {
-                on(!on);
+                toggle();
                 return true;
             }
             return onKeyPressed(event);
@@ -139,6 +142,12 @@ Control SwitchControl::State::delegate() const
     return dragArea_;
 }
 
+void SwitchControl::State::toggle()
+{
+    on(!on());
+    userInput();
+}
+
 SwitchControl::SwitchControl():
     InputControl{onDemand<State>}
 {}
@@ -168,6 +177,12 @@ SwitchControl &SwitchControl::value(Definition<bool> &&f)
 SwitchControl &SwitchControl::onValueChanged(Fun<void()> &&f)
 {
     me().on.onChanged(move(f));
+    return *this;
+}
+
+SwitchControl &SwitchControl::onUserInput(Fun<void()> &&f)
+{
+    me().userInput.connect(move(f));
     return *this;
 }
 

@@ -24,49 +24,73 @@ ListItem::State::State()
     });
 }
 
+void ListItem::State::icon(const View &newValue)
+{
+    if (icon_()) remove(icon_());
+    icon_(newValue);
+    add(icon_());
+    bindIcon();
+}
+
+void ListItem::State::title(const View &newValue)
+{
+    if (title_()) remove(title_());
+    title_(newValue);
+    add(title_());
+    bindTitle();
+}
+
+void ListItem::State::indicator(const View &newValue)
+{
+    if (indicator_()) remove(indicator_());
+    indicator_(newValue);
+    add(indicator_());
+    bindIndicator();
+}
+
 Size ListItem::State::minSize() const
 {
     return Size{
         sp(16) +
-        (icon() ? icon().width() + sp(16) : 0) +
-        (title() ? title().minSize()[0] + sp(16) : 0) +
-        (indicator() ? indicator().width() + sp(16) : 0),
+        (icon_() ? icon_().width() + sp(16) : 0) +
+        (title_() ? title_().minSize()[0] + sp(16) : 0) +
+        (indicator_() ? indicator_().width() + sp(16) : 0),
         style().itemHeight2()
     };
 }
 
 void ListItem::State::bindIcon()
 {
-    icon().pos([this]{
+    icon_().pos([this]{
         return Point{
             sp(16),
-            (height() - icon().height()) / 2
+            (height() - icon_().height()) / 2
         };
     });
 }
 
 void ListItem::State::bindTitle()
 {
-    title().pos([this]{
+    title_().pos([this]{
         return Point{
-            (icon() ? icon().right() : 0) + sp(16),
-            std::round((height() - title().height()) / 2)
+            (icon_() ? icon_().right() : 0) + sp(16),
+            std::round((height() - title_().height()) / 2)
         };
     });
 
-    title().size([this]{
+    title_().size([this]{
         Size minItemSize = minSize();
-        if (minItemSize[0] <= size()[0]) return title().minSize();
-        return title().minSize() - Size{minItemSize[0] - size()[0], 0};
+        if (minItemSize[0] <= size()[0]) return title_().minSize();
+        return title_().minSize() - Size{minItemSize[0] - size()[0], 0};
     });
 }
 
 void ListItem::State::bindIndicator()
 {
-    indicator().pos([this]{
+    indicator_().pos([this]{
         return Point{
-            width() - indicator().width() - sp(16),
-            std::round((height() - indicator().height()) / 2)
+            width() - indicator_().width() - sp(16),
+            std::round((height() - indicator_().height()) / 2)
         };
     });
 }
@@ -82,22 +106,18 @@ ListItem &ListItem::associate(Out<ListItem> self)
 
 ListItem &ListItem::icon(const View &newValue)
 {
-    if (me().icon()) remove(me().icon());
-    add(me().icon = newValue);
-    me().bindIcon();
+    me().icon(newValue);
     return *this;
 }
 
-ListItem &ListItem::iconImage(const Image &newValue)
+ListItem &ListItem::icon(const Image &newValue)
 {
     return icon(ImageView{newValue});
 }
 
 ListItem &ListItem::title(const View &newValue)
 {
-    if (me().title()) remove(me().title());
-    add(me().title = newValue);
-    me().bindTitle();
+    me().title(newValue);
     return *this;
 }
 
@@ -108,9 +128,7 @@ ListItem &ListItem::title(const String &newValue)
 
 ListItem &ListItem::indicator(const View &newValue)
 {
-    if (me().indicator()) remove(me().indicator());
-    add(me().indicator = newValue);
-    me().bindIndicator();
+    me().indicator(newValue);
     return *this;
 }
 

@@ -111,6 +111,12 @@ Switch &Switch::onValueChanged(Fun<void()> &&f)
     return *this;
 }
 
+Switch &Switch::onUserInput(Fun<void()> &&f)
+{
+    me().switch_.onUserInput(move(f));
+    return *this;
+}
+
 Switch::State &Switch::me()
 {
     return View::me().as<State>();

@@ -59,6 +59,7 @@ ElevatedButton::State::State()
             .color([this]{ return theme().elevatedButtonShadowColor(); })
             .offset(Step{0, sp(2)})
             .blurRadius(sp(3))
+            .opacity([this]{ return !pressed(); })
         )
     );
 

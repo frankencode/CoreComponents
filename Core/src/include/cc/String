@@ -814,7 +814,7 @@ public:
     }
 
     /** Read this string as a boolean value
-      * \param ok Returns true if this string can be completely read as an boolean value literal
+      * \param ok Returns true if this string can be completely read as a boolean value literal
       * \return Parsed boolean value
       */
     bool toBool(Out<bool> ok = None{}) const;
@@ -826,7 +826,7 @@ public:
     int toInt(Out<bool> ok = None{}) const;
 
     /** Read this string as an long integer number
-      * \param ok Returns true if this string can be completely read as an long integer number literal
+      * \param ok Returns true if this string can be completely read as a long integer number literal
       * \return Parsed long integer value
       */
     long toLong(Out<bool> ok = None{}) const;

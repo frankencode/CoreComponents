@@ -46,6 +46,7 @@ public:
     bool jumped() const; ///< Current value change is due to tap or click
     Slider &value(double newValue); ///< %Set current slider value
     Slider &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
+    Slider &onUserInput(Fun<void()> &&f); ///< Get notified when value changes due to user interaction
 
 private:
     struct State;

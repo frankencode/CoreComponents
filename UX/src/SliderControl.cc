@@ -151,7 +151,7 @@ struct SliderControl::State: public InputControl::State
         size.onChanged([this]{
             double valueSaved = outputValue();
             updateTrackWidth();
-            setValue(valueSaved);
+            setValue(valueSaved, false);
         });
     }
 
@@ -183,12 +183,13 @@ struct SliderControl::State: public InputControl::State
 
     Control delegate() const override { return dragArea_; }
 
-    void setValue(double newValue)
+    void setValue(double newValue, bool interactive = true)
     {
         if (newValue < min()) newValue = min();
         else if (newValue > max()) newValue = max();
         value(newValue);
         thumb_.pos(thumbCenter() - thumb_.size() / 2);
+        if (interactive) userInput();
     }
 
     Property<double> min { 0 };
@@ -206,6 +207,7 @@ struct SliderControl::State: public InputControl::State
 
     Property<void> outputValueMonitor;
     Property<bool> jumped;
+    Trigger userInput;
 
     DragArea dragArea_;
     View thumb_;
@@ -286,13 +288,19 @@ bool SliderControl::jumped() const
 
 SliderControl &SliderControl::value(double newValue)
 {
-    me().setValue(newValue);
+    me().setValue(newValue, false);
     return *this;
 }
 
 SliderControl &SliderControl::onValueChanged(Fun<void()> &&f)
 {
     me().outputValue.onChanged(move(f));
+    return *this;
+}
+
+SliderControl &SliderControl::onUserInput(Fun<void()> &&f)
+{
+    me().userInput.connect(move(f));
     return *this;
 }
 

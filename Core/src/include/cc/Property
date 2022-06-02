@@ -109,7 +109,7 @@ public:
         }
     }
 
-    /** Set a new defining function \a f
+    /** %Set a new defining function \a f
       */
     void define(Fun<T()> &&f)
     {
@@ -147,6 +147,16 @@ public:
     {
         if (me().dirty_) me.mutate().cascade();
         return me().changed.connect(move(f));
+    }
+
+    /** Read value from \a text
+      */
+    bool readFrom(const String &text)
+    {
+        T x;
+        bool ok = text.read<T>(&x);
+        *this = x;
+        return ok;
     }
 
     /** Evaluate current property value
@@ -203,11 +213,11 @@ public:
     template<class T2>
     Property &operator>>=(const T2 &b) { me().setValue(me().value() >> b); return *this; }
 
-    /** Prefix increment operator: Add 1 to the current value and return the new value
+    /** %Prefix increment operator: Add 1 to the current value and return the new value
       */
     Property &operator++() { return *this += 1; }
 
-    /** Prefix decrement operator: Subtract 1 from the current value and return the new value
+    /** %Prefix decrement operator: Subtract 1 from the current value and return the new value
       */
     Property &operator--() { return *this -= 1; }
 
