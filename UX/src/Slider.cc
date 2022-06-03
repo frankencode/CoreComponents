@@ -193,6 +193,11 @@ bool Slider::jumped() const
     return me().slider_.jumped();
 }
 
+bool Slider::isDragged() const
+{
+    return me().slider_.isDragged();
+}
+
 Slider &Slider::value(double newValue)
 {
     me().slider_.value(newValue);

@@ -96,6 +96,8 @@ class ListMenu::Pane final: public View
 
     State &me() { return View::me().as<State>(); }
     const State &me() const { return View::me().as<State>(); }
+
+    State *operator->() { return &me(); }
 };
 
 struct ListMenu::State final: public Flickable::State
@@ -105,12 +107,12 @@ struct ListMenu::State final: public Flickable::State
     {
         Pane carrier = Flickable::State::carrier().as<Pane>();
 
-        carrier.me().leadSpace([this]{
-            return header() ? header().height() : 0;
+        carrier->leadSpace([this]{
+            return header() ? header().height() : leadSpace();
         });
 
-        carrier.me().tailSpace([this]{
-            return footer() ? footer().height() : 0;
+        carrier->tailSpace([this]{
+            return footer() ? footer().height() : tailSpace();
         });
     }
 
@@ -134,6 +136,8 @@ struct ListMenu::State final: public Flickable::State
 
     Property<View> header;
     Property<View> footer;
+    Property<double> leadSpace { sp(8) };
+    Property<double> tailSpace { sp(8) };
 };
 
 ListMenu::ListMenu():
@@ -170,6 +174,28 @@ View ListMenu::footer() const
 ListMenu &ListMenu::footer(const View &newValue)
 {
     me().setFooter(newValue);
+    return *this;
+}
+
+double ListMenu::leadSpace() const
+{
+    return me().leadSpace();
+}
+
+ListMenu &ListMenu::leadSpace(double newValue)
+{
+    me().leadSpace(newValue);
+    return *this;
+}
+
+double ListMenu::tailSpace() const
+{
+    return me().tailSpace();
+}
+
+ListMenu &ListMenu::tailSpace(double newValue)
+{
+    me().tailSpace(newValue);
     return *this;
 }
 

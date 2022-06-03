@@ -47,6 +47,12 @@ public:
     View footer() const; ///< Get the footer
     ListMenu &footer(const View &newValue); ///< %Set the footer
 
+    double leadSpace() const; ///< Leading spacing if no header is present
+    ListMenu &leadSpace(double newValue); ///< Set leading spacing
+
+    double tailSpace() const; ///< Trailing spacing if no footer is present
+    ListMenu &tailSpace(double newValue); ///< set trailing spacing
+
 private:
     class Object;
     class Pane;

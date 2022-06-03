@@ -153,6 +153,10 @@ struct SliderControl::State: public InputControl::State
             updateTrackWidth();
             setValue(valueSaved, false);
         });
+
+        outputValue.onChanged([this]{
+            if (dragArea_.isDragged()) userInput();
+        });
     }
 
     void updateTrackWidth()
@@ -284,6 +288,11 @@ double SliderControl::value() const
 bool SliderControl::jumped() const
 {
     return me().jumped();
+}
+
+bool SliderControl::isDragged() const
+{
+    return me().dragArea_.isDragged();
 }
 
 SliderControl &SliderControl::value(double newValue)

@@ -41,6 +41,7 @@ public:
 
     double value() const; ///< Get the current slider value
     bool jumped() const; ///< Current value change is due to tap or click (but not drag)
+    bool isDragged() const; ///< The slider is currently being dragged by the user
     SliderControl &value(double newValue); ///< %Set the current slider value
     SliderControl &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
     SliderControl &onUserInput(Fun<void()> &&f); ///< Get notified when value changes due to user interaction

@@ -150,12 +150,12 @@ FontMetrics Text::fontMetrics() const
 
 Text::State &Text::me()
 {
-    return Object::me.as<State>();
+    return get<State>();
 }
 
 const Text::State &Text::me() const
 {
-    return Object::me.as<State>();
+    return get<State>();
 }
 
 } // namespace cc
