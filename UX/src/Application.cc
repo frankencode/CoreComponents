@@ -8,6 +8,7 @@
 
 #include <cc/Application>
 #include <cc/TimeMaster>
+#include <cc/TimerState>
 #include <cc/PlatformPlugin>
 #include <cc/PosGuard>
 #include <cc/InputControl>
@@ -23,7 +24,7 @@ void Application::State::notifyTimer(const Timer &timer)
     if (timer.interval() > 0) {
         TimeMaster{}.ack();
     }
-    timer.me().timeout_.emit();
+    timer->timeout_.emit();
 }
 
 Application::State::State()

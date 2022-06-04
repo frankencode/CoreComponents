@@ -9,6 +9,7 @@
 #include <cc/TimeWorker>
 #include <cc/TimeMaster>
 #include <cc/Timer>
+#include <cc/TimerState>
 #include <cc/System>
 #include <cc/Semaphore>
 #include <cc/Channel>
@@ -31,7 +32,7 @@ public:
 
     bool isActive() const
     {
-        return me().timer_.isActive() && me().timer_.me().requestId_ == me().id_;
+        return me().timer_.isActive() && me().timer_->requestId_ == me().id_;
     }
 
     Timer timer() const { return me().timer_; }
@@ -44,7 +45,7 @@ public:
 
     void deactivate()
     {
-        me().timer_.me().isActive_ = false;
+        me().timer_->isActive_ = false;
     }
 
     bool operator<(const TimeoutRequest &other) const

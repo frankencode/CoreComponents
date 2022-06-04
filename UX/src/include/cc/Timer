@@ -9,8 +9,7 @@
 #pragma once
 
 #include <cc/Object>
-#include <cc/Trigger>
-#include <atomic>
+#include <cc/Fun>
 
 namespace cc {
 
@@ -24,32 +23,22 @@ class TimeoutRequest;
 class Timer final: public Object
 {
 public:
-    /** Create a single-shot timer
+    /** Create a null timer
       */
     Timer() = default;
 
     /** Create a repeating interval timer
       * \param interval %Interval in which the timeout signal is triggered
       */
-    explicit Timer(double interval):
-        Object{new State{interval}}
-    {}
+    explicit Timer(double interval);
 
     /** Register function \a f to be called on timeout
       */
-    Timer &onTimeout(Fun<void()> &&f)
-    {
-        me().timeout_(move(f));
-        return *this;
-    }
+    Timer &onTimeout(Fun<void()> &&f);
 
     /** Start timer
       */
-    Timer &start()
-    {
-        startIn(me().interval_);
-        return *this;
-    }
+    Timer &start();
 
     /** Start timer at a later \a startTime
       */
@@ -65,19 +54,19 @@ public:
 
     /** %Timer is active and generates timeout signals
       */
-    bool isActive() const { return me().isActive_; }
+    bool isActive() const;
 
     /** The first time the timer emits the timeout signal
       */
-    double firstTime() const { return me().firstTime_; }
+    double firstTime() const;
 
     /** Beginning of the first timeout interval
       */
-    double startTime() const { return me().startTime_; }
+    double startTime() const;
 
     /** %Time between two timeout signal emissions
       */
-    double interval() const { return me().interval_; }
+    double interval() const;
 
     /** Convenience method to run the application loop
       */
@@ -87,24 +76,13 @@ private:
     friend class Application;
     friend class TimeoutRequest;
 
-    struct State final: public Object::State
-    {
-        State(double interval):
-            interval_{interval}
-        {}
-        double interval_;
-        Trigger timeout_;
-        mutable std::atomic<bool> isActive_ { false };
-        double firstTime_ { 0 };
-        double startTime_ { 0 };
-        std::atomic<long> requestId_ { 0 };
-    };
+    struct State;
 
-    State &me() { return Object::me.as<State>(); }
-    const State &me() const { return Object::me.as<State>(); }
+    State &me();
+    const State &me() const;
 
-    State *operator->() { return &me(); }
-    const State *operator->() const { return &me(); }
+    State *operator->();
+    const State *operator->() const;
 };
 
 } // namespace cc
