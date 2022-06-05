@@ -94,7 +94,7 @@ struct Slider::State: public View::State
                     cell_.max([this]{ return slider_.max(); });
                     cell_.precision([this]{ return slider_.precision(); });
                     cell_.value(slider_.value());
-                    cell_.onValueChanged([this]{ slider_.value(cell_.value()); });
+                    cell_.onValueChanged([this]{ slider_.feed(cell_.value()); });
                     slider_.onValueChanged([this]{ cell_.value(slider_.value()); });
                 }
             }

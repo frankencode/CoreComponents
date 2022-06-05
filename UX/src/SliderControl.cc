@@ -313,6 +313,12 @@ SliderControl &SliderControl::onUserInput(Fun<void()> &&f)
     return *this;
 }
 
+SliderControl &SliderControl::feed(double newValue)
+{
+    me().setValue(newValue);
+    return *this;
+}
+
 SliderControl::State &SliderControl::me()
 {
     return View::me().as<State>();

@@ -47,7 +47,11 @@ public:
     SliderControl &onUserInput(Fun<void()> &&f); ///< Get notified when value changes due to user interaction
 
 private:
+    friend class Slider;
+
     struct State;
+
+    SliderControl &feed(double newValue); ///< Feed user input
 
     State &me();
     const State &me() const;
