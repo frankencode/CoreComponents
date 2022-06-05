@@ -17,80 +17,71 @@ namespace cc {
 
 struct ElevatedButton::State final: public InputControl::State
 {
-    State();
+    State()
+    {
+        add(
+            Box{}
+            .associate(&box_)
+            .radius([this]{ return sp(20); })
+            .color([this]{
+                return focus() ?
+                    theme().elevatedButtonFocusColor(pressed()) :
+                    theme().elevatedButtonColor(pressed());
+            })
+            .add(
+                Label{}
+                .associate(&label_)
+                .color([this]{
+                    return focus() ?
+                        theme().elevatedButtonTextColor(pressed()) :
+                        theme().elevatedButtonFocusTextColor(pressed());
+                })
+                .paper([this]{ return box_.color(); })
+                .pos([this]{ return Point{sp(20) + (leading() ? leading().width() : 0) + sp(10), sp(20) - label_.height() / 2}; })
+            )
+            .size([this]{ return size(); })
+            .decoration(
+                Shadow{}
+                .color([this]{ return theme().elevatedButtonShadowColor(); })
+                .offset(Step{0, sp(2)})
+                .blurRadius(sp(3))
+                .opacity([this]{ return !pressed(); })
+            )
+        );
 
-    void setLeading(View view);
+        size([this]{ return preferredSize(); });
+    }
 
-    Size preferredSize() const override;
-    Size minSize() const override;
-    Size maxSize() const override;
+    void setLeading(View view)
+    {
+        if (leading() == view) return;
+        if (leading()) remove(leading());
+        view
+            .centerLeft([this]{ return Point{sp(20)}; })
+            .paper([this]{ return box_.color(); });
+        add(view);
+        leading(view);
+    }
+
+    Size preferredSize() const
+    {
+        return Size{label_.size()[0] + (leading() ? leading().size()[0] + sp(10) : 0) + sp(40) + sp(leading() ? 5 : 10) , sp(40)};
+    }
+
+    Size minSize() const
+    {
+        return preferredSize();
+    }
+
+    Size maxSize() const
+    {
+        return Size{ std::numeric_limits<double>::max(), sp(40) };
+    }
 
     Property<View> leading;
     Box box_;
-    View leading_;
     Label label_;
 };
-
-ElevatedButton::State::State()
-{
-    add(
-        Box{}
-        .associate(&box_)
-        .radius([this]{ return sp(20); })
-        .color([this]{
-            return focus() ?
-                theme().elevatedButtonFocusColor(pressed()) :
-                theme().elevatedButtonColor(pressed());
-        })
-        .add(
-            Label{}
-            .associate(&label_)
-            .color([this]{
-                return focus() ?
-                    theme().elevatedButtonTextColor(pressed()) :
-                    theme().elevatedButtonFocusTextColor(pressed());
-            })
-            .paper([this]{ return box_.color(); })
-            .pos([this]{ return Point{sp(20) + (leading() ? leading().width() : 0) + sp(10), sp(20) - label_.height() / 2}; })
-        )
-        .size([this]{ return size(); })
-        .decoration(
-            Shadow{}
-            .color([this]{ return theme().elevatedButtonShadowColor(); })
-            .offset(Step{0, sp(2)})
-            .blurRadius(sp(3))
-            .opacity([this]{ return !pressed(); })
-        )
-    );
-
-    size([this]{ return preferredSize(); });
-}
-
-void ElevatedButton::State::setLeading(View view)
-{
-    if (leading() == view) return;
-    if (leading()) remove(leading());
-    view
-        .centerLeft([this]{ return Point{sp(20)}; })
-        .paper([this]{ return box_.color(); });
-    add(view);
-    leading(view);
-}
-
-Size ElevatedButton::State::preferredSize() const
-{
-    return Size{label_.size()[0] + (leading() ? leading().size()[0] + sp(10) : 0) + sp(40) + sp(leading() ? 5 : 10) , sp(40)};
-}
-
-Size ElevatedButton::State::minSize() const
-{
-    return preferredSize();
-}
-
-Size ElevatedButton::State::maxSize() const
-{
-    return Size{ std::numeric_limits<double>::max(), sp(40) };
-}
 
 ElevatedButton::ElevatedButton():
     InputControl{onDemand<State>}
@@ -124,7 +115,7 @@ ElevatedButton &ElevatedButton::icon(Ideographic ch)
     return *this;
 }
 
-ElevatedButton &ElevatedButton::leading(const View &view)
+ElevatedButton &ElevatedButton::icon(const View &view)
 {
     me().setLeading(view);
     return *this;

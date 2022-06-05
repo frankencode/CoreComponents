@@ -9,7 +9,7 @@ int main()
         .add(
             ElevatedButton{}
             .icon(Ideographic::Face)
-            .text("Press me!")
+            // .text("Press me!")
             .centerInParent()
         )
         .run();

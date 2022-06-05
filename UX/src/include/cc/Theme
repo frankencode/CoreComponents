@@ -71,6 +71,11 @@ public:
     Color buttonTextColor(bool pressed) const { return me().buttonTextColor(pressed); }
     Color buttonTextFocusColor(bool pressed) const { return me().buttonTextFocusColor(pressed); }
 
+    Color floatingActionButtonColor(bool pressed) const { return me().floatingActionButtonColor(pressed); }
+    Color floatingActionButtonTextColor(bool pressed) const { return me().floatingActionButtonTextColor(pressed); }
+    Color floatingActionButtonShadowColor() const { return me().floatingActionButtonShadowColor(); }
+    Color floatingActionButtonGlowColor(bool focus) const { return me().floatingActionButtonGlowColor(focus); }
+
     Color elevatedButtonColor(bool pressed) const { return me().elevatedButtonColor(pressed); }
     Color elevatedButtonFocusColor(bool pressed) const { return me().elevatedButtonFocusColor(pressed); }
     Color elevatedButtonTextColor(bool pressed) const { return me().elevatedButtonTextColor(pressed); }
@@ -135,6 +140,11 @@ protected:
         virtual Color buttonFocusColor(bool pressed) const = 0;
         virtual Color buttonTextColor(bool pressed) const = 0;
         virtual Color buttonTextFocusColor(bool pressed) const = 0;
+
+        virtual Color floatingActionButtonColor(bool pressed) const { return buttonColor(pressed); }
+        virtual Color floatingActionButtonTextColor(bool pressed) const { return buttonTextColor(pressed); }
+        virtual Color floatingActionButtonShadowColor() const { return elevatedButtonShadowColor(); }
+        virtual Color floatingActionButtonGlowColor(bool focus) const { return Color{}; }
 
         virtual Color elevatedButtonColor(bool pressed) const = 0;
         virtual Color elevatedButtonFocusColor(bool pressed) const = 0;

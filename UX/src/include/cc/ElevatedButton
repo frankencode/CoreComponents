@@ -32,8 +32,8 @@ public:
     ElevatedButton &text(const String &newValue); ///< %Set the button's label text
     ElevatedButton &text(Definition<String> &&f); ///< Define the button's label text
 
-    ElevatedButton &icon(Ideographic ch); ///< %Set leading decoration icon
-    ElevatedButton &leading(const View &view); ///< %Set leading decoration
+    ElevatedButton &icon(Ideographic ch); ///< %Set icon
+    ElevatedButton &icon(const View &view); ///< %Set icon
 
 private:
     struct State;
