@@ -39,14 +39,15 @@ struct FloatingActionButton::State final: public InputControl::State
         d_{sp(flavorHeight(flavor))},
         s_{d_, d_}
     {
-        textColor([this]{ return theme().floatingActionButtonTextColor(pressed()); });
+        textColor([this]{ return theme().floatingActionButtonTextColor(); });
 
         add(
             Box{}
             .associate(&box_)
-            .color([this]{ return theme().floatingActionButtonColor(pressed()); })
+            .color([this]{ return theme().floatingActionButtonColor(); })
             .radius(d_ / 2)
             .size(s_)
+            .pos([this]{ return pressed() ? Point{0, sp(3)} : Point{0, 0}; })
         );
 
         if (flavor == Flavor::Extended) {
@@ -54,7 +55,7 @@ struct FloatingActionButton::State final: public InputControl::State
             .add(
                 Label{text}
                 .associate(&label_)
-                .color([this]{ return theme().floatingActionButtonTextColor(pressed()); })
+                .color([this]{ return theme().floatingActionButtonTextColor(); })
                 .centerLeft([this]{ return Point{sp(48), sp(24)}; })
             )
             .size(fixedSize());
@@ -65,8 +66,8 @@ struct FloatingActionButton::State final: public InputControl::State
         .decoration(
             Shadow{}
             .color([this]{ return theme().floatingActionButtonShadowColor(); })
-            .offset(Step{0, sp(2)})
-            .blurRadius(sp(3))
+            .offset(Step{0, sp(3)})
+            .blurRadius(sp(4))
             .opacity([this]{ return !pressed(); })
         );
 

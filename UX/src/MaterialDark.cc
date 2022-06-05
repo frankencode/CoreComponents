@@ -63,10 +63,10 @@ struct MaterialDark::State: public Theme::State
     Color buttonTextColor(bool pressed) const override { return Color::White; }
     Color buttonTextFocusColor(bool pressed) const override { return Color::White; }
 
-    Color elevatedButtonColor(bool pressed) const override { return secondaryColor().lighter(pressed ? 10 : 0); }
-    Color elevatedButtonFocusColor(bool pressed) const override { return elevatedButtonColor(pressed).lighter(10); }
-    Color elevatedButtonTextColor(bool pressed) const override { return Color::White; }
-    Color elevatedButtonFocusTextColor(bool pressed) const override { return Color::White; }
+    Color elevatedButtonColor() const override { return secondaryColor(); }
+    Color elevatedButtonFocusColor() const override { return elevatedButtonColor().lighter(10); }
+    Color elevatedButtonTextColor() const override { return Color::White; }
+    Color elevatedButtonFocusTextColor() const override { return Color::White; }
     Color elevatedButtonShadowColor() const override { return sliderKnobShadowColor(); }
 };
 

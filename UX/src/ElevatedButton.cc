@@ -25,26 +25,27 @@ struct ElevatedButton::State final: public InputControl::State
             .radius([this]{ return sp(20); })
             .color([this]{
                 return focus() ?
-                    theme().elevatedButtonFocusColor(pressed()) :
-                    theme().elevatedButtonColor(pressed());
+                    theme().elevatedButtonFocusColor() :
+                    theme().elevatedButtonColor();
             })
             .add(
                 Label{}
                 .associate(&label_)
                 .color([this]{
                     return focus() ?
-                        theme().elevatedButtonTextColor(pressed()) :
-                        theme().elevatedButtonFocusTextColor(pressed());
+                        theme().elevatedButtonTextColor() :
+                        theme().elevatedButtonFocusTextColor();
                 })
                 .paper([this]{ return box_.color(); })
                 .pos([this]{ return Point{sp(20) + (leading() ? leading().width() : 0) + sp(10), sp(20) - label_.height() / 2}; })
             )
             .size([this]{ return size(); })
+            .pos([this]{ return pressed() ? Point{0, sp(3)} : Point{0, 0}; })
             .decoration(
                 Shadow{}
                 .color([this]{ return theme().elevatedButtonShadowColor(); })
-                .offset(Step{0, sp(2)})
-                .blurRadius(sp(3))
+                .offset(Step{0, sp(3)})
+                .blurRadius(sp(4))
                 .opacity([this]{ return !pressed(); })
             )
         );
@@ -59,7 +60,7 @@ struct ElevatedButton::State final: public InputControl::State
         view
             .centerLeft([this]{ return Point{sp(20)}; })
             .paper([this]{ return box_.color(); });
-        add(view);
+        box_.add(view);
         leading(view);
     }
 
