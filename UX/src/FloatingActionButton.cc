@@ -74,7 +74,7 @@ struct FloatingActionButton::State final: public InputControl::State
         size(box_.size());
     }
 
-    Size fixedSize() const { return s_ + Size{label_ ? sp(32) + label_.width()  : 0., 0.}; }
+    Size fixedSize() const { return s_ + Size{label_ ? sp(20) + label_.width()  : 0., 0.}; }
     Size minSize() const override { return fixedSize(); }
     Size maxSize() const override { return fixedSize(); }
 

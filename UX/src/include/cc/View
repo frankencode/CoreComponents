@@ -432,25 +432,29 @@ public:
       */
     ///@{
 
-    double top   () const { return pos()[1]; } ///< Get y-coordinate of this view's top border
-    double bottom() const { return pos()[1] + size()[1]; } ///< Get y-coordinate of this view's bottom border
-    double left  () const { return pos()[0]; } ///< Get x-coordinate of this view's left border
-    double right () const { return pos()[0] + size()[0]; } ///< Get x-coordinate of this view's right border
+    double top   () const { return me().top(); } ///< Get y-coordinate of this view's top border
+    double bottom() const { return me().bottom(); } ///< Get y-coordinate of this view's bottom border
+    double left  () const { return me().left(); } ///< Get x-coordinate of this view's left border
+    double right () const { return me().right(); } ///< Get x-coordinate of this view's right border
 
-    Point topLeft    () const { return pos(); } ///< Get this view's top-left corner
-    Point topRight   () const { return pos() + Step{size()[0], 0}; } ///< Get this view's top-right corner
-    Point bottomLeft () const { return pos() + Step{0, size()[1]}; } ///< Get this view's bottom-left corner
-    Point bottomRight() const { return pos() + size(); } ///< Get this view's bottom-right corner
-    Point centerLeft () const { return pos() + Step{0, size()[1] / 2}; } ///< Get this view's center-left point
-    Point centerRight() const { return pos() + Step{size()[0], size()[1] / 2}; } ///< Get this view's center-right point
+    Point topLeft     () const { return me().topLeft(); } ///< Get this view's top-left corner
+    Point topCenter   () const { return me().topCenter(); } ///< Get this view's top-center point
+    Point topRight    () const { return me().topRight(); } ///< Get this view's top-right corner
+    Point bottomLeft  () const { return me().bottomLeft(); } ///< Get this view's bottom-left corner
+    Point bottomCenter() const { return me().bottomCenter(); } ///< Get this view's bottom-center point
+    Point bottomRight () const { return me().bottomRight(); } ///< Get this view's bottom-right corner
+    Point centerLeft  () const { return me().centerLeft(); } ///< Get this view's center-left point
+    Point centerRight () const { return me().centerRight(); } ///< Get this view's center-right point
 
-    View &topLeft    (Definition<Point> &&a) { pos(move(a)); return *this; } ///< %Anchor the top-left corner to \a a
-    View &topRight   (Definition<Point> &&a) { me().topRight(move(a)); return *this; } ///< %Anchor the top-right corner to \a a
-    View &bottomLeft (Definition<Point> &&a) { me().bottomLeft(move(a)); return *this; } ///< %Anchor the bottom-left corner to \a a
-    View &bottomRight(Definition<Point> &&a) { me().bottomRight(move(a)); return *this; } ///< %Anchor the bottom-right corner to \a a
-    View &centerLeft (Definition<Point> &&a) { me().centerLeft(move(a)); return *this; } ///< %Anchor the center-left to \a a
-    View &centerRight(Definition<Point> &&a) { me().centerRight(move(a)); return *this; } ///< %Anchor the center-right to \a a
-    View &center     (Definition<Point> &&a) { me().center(move(a)); return *this; } ///< %Anchor the center to \a a
+    View &topLeft     (Definition<Point> &&a) { pos(move(a)); return *this; } ///< %Anchor the top-left corner to \a a
+    View &topCenter   (Definition<Point> &&a) { me().topCenter(move(a)); return *this; } ///< %Anchor the top-center corner to \a a
+    View &topRight    (Definition<Point> &&a) { me().topRight(move(a)); return *this; } ///< %Anchor the top-right corner to \a a
+    View &bottomLeft  (Definition<Point> &&a) { me().bottomLeft(move(a)); return *this; } ///< %Anchor the bottom-left corner to \a a
+    View &bottomCenter(Definition<Point> &&a) { me().bottomCenter(move(a)); return *this; } ///< %Anchor the bottom-center corner to \a a
+    View &bottomRight (Definition<Point> &&a) { me().bottomRight(move(a)); return *this; } ///< %Anchor the bottom-right corner to \a a
+    View &centerLeft  (Definition<Point> &&a) { me().centerLeft(move(a)); return *this; } ///< %Anchor the center-left to \a a
+    View &centerRight (Definition<Point> &&a) { me().centerRight(move(a)); return *this; } ///< %Anchor the center-right to \a a
+    View &center      (Definition<Point> &&a) { me().center(move(a)); return *this; } ///< %Anchor the center to \a a
 
     /** Anchor this view's center to its parent's center
       */
@@ -639,13 +643,29 @@ protected:
         Layout layout() const { return layout_(); } ///< Get the layout
         double expandableWidth(double width) const; ///< Get the expandable width of this view within its parent layout
 
-        void topLeft    (Definition<Point> &&a) { pos(move(a)); } ///< \copydoc View::topLeft()
-        void topRight   (Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], 0}; }); } ///< \copydoc View::topRight()
-        void bottomLeft (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1]}; }); } ///< \copydoc View::bottomLeft()
-        void bottomRight(Definition<Point> &&a) { pos([this, a]{ return a() - size(); }); } ///< \copydoc View::bottomRight()
-        void centerLeft (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1] / 2}; }); } ///< \copydoc View::centerLeft()
-        void centerRight(Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], size()[1] / 2}; }); } ///< \copydoc View::centerRight()
-        void center     (Definition<Point> &&a) { pos([this, a]{ return a() - size() / 2; }); } ///< \copydoc View::center()
+        double top   () const { return pos()[1]; } ///< \copydoc View::top()
+        double bottom() const { return pos()[1] + size()[1]; } ///< \copydoc View::bottom()
+        double left  () const { return pos()[0]; } ///< \copydoc View::left()
+        double right () const { return pos()[0] + size()[0]; } ///< \copydoc View::right()
+
+        Point topLeft     () const { return pos(); } ///< \copydoc View::topLeft()
+        Point topCenter   () const { return pos() + Step{size()[0] / 2, 0}; } ///< \copydoc View::topCenter()
+        Point topRight    () const { return pos() + Step{size()[0], 0}; } ///< \copydoc View::topRight()
+        Point bottomLeft  () const { return pos() + Step{0, size()[1]}; } ///< \copydoc View::bottomLeft()
+        Point bottomCenter() const { return pos() + Step{size()[0] / 2, size()[1]}; } ////< \copydoc View::bottomCenter()
+        Point bottomRight () const { return pos() + size(); } ///< \copydoc View::bottomRight()
+        Point centerLeft  () const { return pos() + Step{0, size()[1] / 2}; } ///< \copydoc View::centerLeft()
+        Point centerRight () const { return pos() + Step{size()[0], size()[1] / 2}; } ///< \copydoc View::centerRight()
+
+        void topLeft     (Definition<Point> &&a) { pos(move(a)); } ///< \copydoc View::topLeft()
+        void topCenter   (Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0] / 2, 0}; }); } ///< \copydoc View::topCenter()
+        void topRight    (Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], 0}; }); } ///< \copydoc View::topRight()
+        void bottomLeft  (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1]}; }); } ///< \copydoc View::bottomLeft()
+        void bottomCenter(Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0]/2, size()[1]}; }); } ///< \copydoc View::bottomCenter()
+        void bottomRight (Definition<Point> &&a) { pos([this, a]{ return a() - size(); }); } ///< \copydoc View::bottomRight()
+        void centerLeft  (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1] / 2}; }); } ///< \copydoc View::centerLeft()
+        void centerRight (Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], size()[1] / 2}; }); } ///< \copydoc View::centerRight()
+        void center      (Definition<Point> &&a) { pos([this, a]{ return a() - size() / 2; }); } ///< \copydoc View::center()
 
         /** \copydoc View::centerInParent()
           */
