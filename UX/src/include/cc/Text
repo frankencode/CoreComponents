@@ -69,7 +69,7 @@ public:
 protected:
     struct State;
 
-    Text(const String &text, Font font, bool html = false);
+    Text(const String &text, Font font, bool html);
 
     explicit Text(State *newState);
     explicit Text(CreateState onDemand);

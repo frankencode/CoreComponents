@@ -91,11 +91,11 @@ void DragArea::State::drag(Point newPos)
 }
 
 DragArea::DragArea():
-    Organizer{onDemand<DragArea::State>}
+    Control{onDemand<DragArea::State>}
 {}
 
 DragArea::DragArea(double width, double height):
-    Organizer{new State}
+    Control{new State}
 {
     size(Size{width, height});
 }

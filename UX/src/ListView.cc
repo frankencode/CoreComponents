@@ -121,11 +121,11 @@ ListView::State::State():
     Pane carrier = Flickable::State::carrier().as<Pane>();
 
     carrier->leadSpace([this]{
-        return header() ? header().height() : gu(2);
+        return header() ? header().height() : leadSpace();
     });
 
     carrier->tailSpace([this]{
-        return footer() ? footer().height() : gu(2);
+        return footer() ? footer().height() : tailSpace();
     });
 }
 
@@ -186,6 +186,28 @@ View ListView::footer() const
 ListView &ListView::footer(const View &newValue)
 {
     me().setFooter(newValue);
+    return *this;
+}
+
+double ListView::leadSpace() const
+{
+    return me().leadSpace();
+}
+
+ListView &ListView::leadSpace(double newValue)
+{
+    me().leadSpace(newValue);
+    return *this;
+}
+
+double ListView::tailSpace() const
+{
+    return me().tailSpace();
+}
+
+ListView &ListView::tailSpace(double newValue)
+{
+    me().tailSpace(newValue);
     return *this;
 }
 

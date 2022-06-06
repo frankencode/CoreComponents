@@ -1,0 +1,63 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/ListView>
+
+namespace cc {
+
+/** \class LogView cc/LogView
+  * \ingroup ui
+  * \brief Text log view
+  *
+  * \todo Add support for line spacing.
+  */
+class LogView final: public ListView
+{
+public:
+    /** Create a primordial text view
+      */
+    LogView();
+
+    /** Create a new text view of size (\a width, \a height)
+      */
+    LogView(double width, double height);
+
+    /** Get a weak reference in \a self
+      */
+    LogView &associate(Out<LogView> self);
+
+    Font font() const; ///< Get font
+    LogView &font(Font newValue); ///< %Set font
+    LogView &font(Definition<Font> &&f); ///< Define font
+
+    Size margin() const; ///< Get inside margin
+    LogView &margin(Size newValue); ///< %Set inside margin
+    LogView &margin(Definition<Size> &&f); ///< Define inside margin
+
+    /** Append \a text to the text log
+      */
+    LogView &appendText(const String &text);
+
+    /** Clear the text log
+      */
+    void clearText();
+
+    /** Get the list of all text lines
+      */
+    List<String> textLines() const;
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

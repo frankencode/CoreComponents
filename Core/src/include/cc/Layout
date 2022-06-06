@@ -23,6 +23,7 @@ namespace cc {
   * \brief Layout data container
   * \tparam T Item type
   * \tparam E Extent type
+  * \todo add support for item spacing
   */
 template<class T, class E>
 class Layout

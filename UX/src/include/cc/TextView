@@ -17,6 +17,8 @@ namespace cc {
   * \brief %Text view
   *
   * A TextView shows a vertically scollable text.
+  *
+  * \todo Add support for line spacing.
   */
 class TextView final: public ListView
 {
@@ -45,6 +47,10 @@ public:
     Font font() const; ///< Get font
     TextView &font(Font newValue); ///< %Set font
     TextView &font(Definition<Font> &&f); ///< Define font
+
+    Size margin() const; ///< Get inside margin
+    TextView &margin(Size newValue); ///< %Set inside margin
+    TextView &margin(Definition<Size> &&f); ///< Define inside margin
 
 private:
     struct State;

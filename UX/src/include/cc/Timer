@@ -19,6 +19,7 @@ class TimeoutRequest;
 /** \class Timer cc/Timer
   * \ingroup ui
   * \brief Inverval timer
+  * \see System::now(), Date
   */
 class Timer final: public Object
 {

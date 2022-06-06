@@ -5,7 +5,7 @@ int main()
     using namespace cc;
 
     return
-        Control{gu(80), gu(60)}
+        View{gu(80), gu(60)}
         .add(
             ScrollBar{}
             .visibleOffset(-gu(30))

@@ -16,6 +16,7 @@ namespace cc {
   * \ingroup ui
   * \brief %List view
   * A ListView shows a vertically scrollable list of items of various dimensions.
+  * \todo Add support for item spacing.
   */
 class ListView: public Flickable
 {
@@ -50,6 +51,12 @@ public:
     View footer() const; ///< Get the footer
     ListView &footer(const View &newValue); ///< %Set the footer
 
+    double leadSpace() const; ///< Leading spacing if no header is present
+    ListView &leadSpace(double newValue); ///< Set leading spacing
+
+    double tailSpace() const; ///< Trailing spacing if no footer is present
+    ListView &tailSpace(double newValue); ///< set trailing spacing
+
     void deplete(); ///< Remove all children (list items)
 
 protected:
@@ -66,6 +73,8 @@ protected:
 
         Property<View> header;
         Property<View> footer;
+        Property<double> leadSpace { sp(8) };
+        Property<double> tailSpace { sp(8) };
     };
 
     explicit ListView(State *newState):

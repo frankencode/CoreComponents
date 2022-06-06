@@ -17,6 +17,7 @@ namespace cc {
   * \ingroup ui
   * \brief %List menu
   * A ListMenu shows a vertically scrollable list of items which are all of the same size.
+  * \todo Add support for item spacing.
   */
 class ListMenu final: public Flickable
 {

@@ -45,6 +45,8 @@ inline double days(double n) { return n * +SecondsPerDay; }
 class Date
 {
 public:
+    static Date now();
+
     /** Create an invalid date
       */
     Date();
@@ -81,6 +83,10 @@ public:
     /** \copydoc time() const
       */
     operator double() const { return me().time; }
+
+    /** \copydoc toString() const
+      */
+    operator String() const { return toString(); }
 
     /** Timezone offset in hours
       */

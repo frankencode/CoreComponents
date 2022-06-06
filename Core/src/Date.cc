@@ -7,6 +7,7 @@
  */
 
 #include <cc/Date>
+#include <cc/System>
 #include <cc/str>
 #include <limits>
 #include <cmath>
@@ -146,6 +147,11 @@ void Date::State::calendarToTime()
 
     ++day;
     ++month;
+}
+
+Date Date::now()
+{
+    return Date{System::now()};
 }
 
 Date::Date():

@@ -20,6 +20,9 @@ struct TextView::State final: public ListView::State
     {
         font([this]{ return style().defaultFont(); });
 
+        leadSpace([this]{ return margin()[1]; });
+        tailSpace([this]{ return margin()[1]; });
+
         text.onChanged([this]{ reload(); });
         font.onChanged([this]{ reload(); });
 
@@ -31,7 +34,8 @@ struct TextView::State final: public ListView::State
         ListView::State::deplete();
         for (const String &line: LineSource{text()}) {
             carrier().add(
-                Text{line}
+                Text{line, font()}
+                .margin([this]{ return Size{margin()[0], 0}; })
                 .maxWidth([this]{ return width(); })
             );
         }
@@ -39,6 +43,7 @@ struct TextView::State final: public ListView::State
 
     Property<String> text;
     Property<Font> font;
+    Property<Size> margin { sp(8), sp(8) };
 };
 
 TextView::TextView():
@@ -91,6 +96,23 @@ TextView &TextView::font(Font newValue)
 TextView &TextView::font(Definition<Font> &&f)
 {
     me().font(move(f));
+    return *this;
+}
+
+Size TextView::margin() const
+{
+    return me().margin();
+}
+
+TextView &TextView::margin(Size newValue)
+{
+    me().margin(newValue);
+    return *this;
+}
+
+TextView &TextView::margin(Definition<Size> &&f)
+{
+    me().margin(move(f));
     return *this;
 }
 
