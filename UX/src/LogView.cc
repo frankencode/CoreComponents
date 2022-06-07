@@ -70,7 +70,7 @@ struct LogView::State final: public ListView::State
     }
 
     Property<Font> font;
-    Property<Size> margin { sp(8), sp(8) };
+    Property<Size> margin;
 
     List<String> lines_;
 };

@@ -160,7 +160,7 @@ struct FlickableIndicator::State final: public View::State
     }
 
     Property<Orientation> orientation { Orientation::Vertical };
-    Property<bool> autoHide;
+    Property<bool> autoHide { true };
     Property<double> margin;
     Property<double> thickness;
     Property<double> visibleOffset;

@@ -20,6 +20,11 @@ struct TextView::State final: public ListView::State
     {
         font([this]{ return style().defaultFont(); });
 
+        margin([this]{
+            double m = style().flickableIndicatorThickness();
+            return Size{m, m};
+        });
+
         leadSpace([this]{ return margin()[1]; });
         tailSpace([this]{ return margin()[1]; });
 
@@ -43,7 +48,7 @@ struct TextView::State final: public ListView::State
 
     Property<String> text;
     Property<Font> font;
-    Property<Size> margin { sp(8), sp(8) };
+    Property<Size> margin;
 };
 
 TextView::TextView():

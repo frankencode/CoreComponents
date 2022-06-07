@@ -13,7 +13,7 @@ int main()
     return
         LogView{sp(500), sp(500)}
         .associate(&log)
-        .add(FlickableIndicator{}.autoHide(true))
+        .add(FlickableIndicator{})
         .attach(
             Timer{0.5}
             .onTimeout([log] mutable {
