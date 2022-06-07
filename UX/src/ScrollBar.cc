@@ -51,7 +51,7 @@ struct ScrollBar::State: public DragArea::State
         });
 
         paper([this]{
-            return theme().inputFieldFillColor();
+            return theme().flickableIndicatorColor();
         });
 
         needToShow([this]{
@@ -95,9 +95,9 @@ struct ScrollBar::State: public DragArea::State
         {
             Box handleBar;
             handleBar.color([this]{
-                if (handlePressed()) return theme().focusInputLineColor();
-                if (handleHover()) return theme().secondaryTextColor();
-                return theme().inactiveTextColor();
+                if (handlePressed()) return theme().focusInputLineColor(); // FIXME
+                if (handleHover()) return theme().secondaryTextColor(); // FIXME
+                return theme().flickableIndicatorHandleColor();
             });
             handleBar.pos([this]{
                 return margin();

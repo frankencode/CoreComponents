@@ -82,6 +82,9 @@ public:
     Color elevatedButtonFocusTextColor() const { return me().elevatedButtonFocusTextColor(); }
     Color elevatedButtonShadowColor() const { return me().elevatedButtonShadowColor(); }
 
+    Color flickableIndicatorColor() const { return me().flickableIndicatorColor(); }
+    Color flickableIndicatorHandleColor() const { return me().flickableIndicatorHandleColor(); }
+
     double defaultFontSize() const { return me().defaultFontSize(); } ///< Default font size
     double defaultFixedFontSize() const { return me().defaultFixedFontSize(); } ///< Default font size for the default fixed pitch fonts
     double smallFontSize() const { return me().smallFontSize(); } ///< Secondary small font size
@@ -151,6 +154,9 @@ protected:
         virtual Color elevatedButtonTextColor() const = 0;
         virtual Color elevatedButtonFocusTextColor() const = 0;
         virtual Color elevatedButtonShadowColor() const = 0;
+
+        virtual Color flickableIndicatorColor() const { return inputFieldFillColor(); }
+        virtual Color flickableIndicatorHandleColor() const { return sliderKnobColor(); }
 
         virtual double defaultFontSize() const { return 16; }
         virtual double defaultFixedFontSize() const { return 16; }

@@ -47,6 +47,7 @@ public:
 
 protected:
     friend class Object;
+    friend class FlickableIndicator;
 
     struct State: public Organizer::State
     {
@@ -60,6 +61,7 @@ protected:
 
     protected:
         friend class Flickable;
+        friend class FlickableIndicator;
 
         void keepFocusControlInView();
 

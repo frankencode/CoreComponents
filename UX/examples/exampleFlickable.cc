@@ -1,4 +1,5 @@
 #include <cc/Flickable>
+#include <cc/FlickableIndicator>
 #include <cc/ColumnLayout>
 #include <cc/Label>
 
@@ -22,5 +23,7 @@ int main()
                     target.add(Label{"Item " + str(i + 1)});
                 }
             })
-        }.run();
+        }
+        .add(FlickableIndicator{})
+        .run();
 }

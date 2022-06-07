@@ -19,6 +19,11 @@ struct LogView::State final: public ListView::State
     {
         font([this]{ return style().defaultFont(); });
 
+        margin([this]{
+            double m = style().flickableIndicatorThickness();
+            return Size{m, m};
+        });
+
         leadSpace([this]{ return margin()[1]; });
         tailSpace([this]{ return margin()[1]; });
 

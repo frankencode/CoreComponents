@@ -85,6 +85,9 @@ public:
     double scrollBarAutoHideTimeout() const { return me().scrollBarAutoHideTimeout_; } ///< %Timeout for an unneeded scroll bar to automatically hide
     double scrollBarFadeOutDuration() const { return me().scrollBarFadeOutDuration_; } ///< Duration of the fade-out/fade-in animation when the visibility of a scroll bar changes
 
+    double flickableIndicatorThickness() const { return me().flickableIndicatorThickness_; } //< Thickness of a flickable indicator
+    double flickableIndicatorHandleMargin() const { return me().flickableIndicatorHandleMargin_; } //<  Margin around flickable indicator handles
+
     bool wheelInversion() const { return me().wheelInversion_; } ///< %Mouse wheel direction (touch mouse vs. wheel mouse)
 
     String passwordBullet() const { return me().passwordBullet_; } ///< Mask character for password input
@@ -121,6 +124,8 @@ protected:
         double scrollHandleMargin_ { sp(4) };
         double scrollBarAutoHideTimeout_ { 2 };
         double scrollBarFadeOutDuration_ { 0.1 };
+        double flickableIndicatorThickness_ { sp(10) };
+        double flickableIndicatorHandleMargin_ { sp(3) };
         bool wheelInversion_ { true };
         String passwordBullet_ { "•" };
 
