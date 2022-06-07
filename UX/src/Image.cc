@@ -134,6 +134,19 @@ bool Image::checkOpaque() const
     return true;
 }
 
+void Image::tone(Color color)
+{
+    const long n = count();
+    const uint32_t a = color.value() & ~Color::AlphaMask;
+    for (long i = 0; i < n; ++i) {
+        uint32_t &v = pixel(i).value();
+        if ((v & Color::AlphaMask) != 0) {
+            v &= ~Color::AlphaMask;
+            v |= a;
+        }
+    }
+}
+
 void Image::shadowBlur(int radius, Color shadowColor)
 {
     cc::shadowBlur(*this, radius, shadowColor);

@@ -6,161 +6,144 @@
  *
  */
 
-#include <cc/ButtonState>
+#include <cc/Button>
+#include <cc/ImageView>
 #include <cc/Icon>
+#include <cc/Label>
+#include <cc/Box>
+#include <cc/Shadow>
+#include <cc/DEBUG>
 
 namespace cc {
 
-Button::State::State()
+struct Button::State final: public InputControl::State
 {
-    preferredHeight([this]{ return sp(40); });
-
-    radius([this]{ return preferredHeight() / 2; });
-
-    leadingSpacing([this]{
-        return radius();
-    });
-
-    innerSpacing([this]{ return sp(10); });
-
-    trailingSpacing([this]{
-        if (label() && icon()) return sp(5) + radius();
-        if (!label() || label().text() == "") return radius();
-        return radius();
-    });
-
-    add(
-        Box{}
-        .associate(&box_)
-        .radius([this]{ return radius(); })
-        .color([this]{
-            return focus() ?
-                theme().buttonFocusColor(pressed()) :
-                theme().buttonColor(pressed());
-        })
-        .size([this]{ return size(); })
-    );
-
-    size([this]{ return preferredSize(); });
-
-    padding([this]{ return Padding{sp(8)}; });
-
-    onKeyPressed([this](const KeyEvent &event)
+    static int flavorHeight(ButtonStyle flavor)
     {
-        if (
-            event.keyCode() == KeyCode::Key_Return ||
-            event.keyCode() == KeyCode::Key_Space
-        ) {
-            pressedOverwrite(true);
-            return true;
-        }
-        return false;
-    });
+        int height = 56;
+        switch (flavor) {
+        case ButtonStyle::Regular:
+        case ButtonStyle::TinyFAB:
+            height = 40;
+            break;
+        case ButtonStyle::ExtendedFAB:
+            height = 48;
+            break;
+        case ButtonStyle::FAB:
+        default:;
+        };
+        return height;
+    }
 
-    onKeyReleased([this](const KeyEvent &event)
+    State(ButtonStyle flavor = ButtonStyle::Regular, const String &text = String{}):
+        flavor_{flavor},
+        d_{sp(flavorHeight(flavor))},
+        s_{d_, d_}
     {
-        if (
-            event.keyCode() == KeyCode::Key_Return ||
-            event.keyCode() == KeyCode::Key_Space
-        ) {
-            pressedOverwrite(false);
-            if (accept()) {
-                onAccepted();
-                gotoNext();
-            }
-            return true;
+        textColor([this]{ return theme().floatingActionButtonTextColor(flavor_); });
+
+        add(
+            Box{}
+            .associate(&box_)
+            .color([this]{ return theme().floatingActionButtonColor(flavor_); })
+            .radius(d_ / 2)
+            .size(s_)
+            .pos([this]{ return pressed() ? Point{0, sp(3)} : Point{0, 0}; })
+        );
+
+        if (flavor == ButtonStyle::ExtendedFAB || flavor == ButtonStyle::Regular) {
+            box_
+            .add(
+                Label{text}
+                .associate(&label_)
+                .color([this]{ return theme().floatingActionButtonTextColor(flavor_); })
+                .centerLeft([this]{ return Point{sp(flavorHeight() / (iconView_().isNull() ? 2 : 1)), sp(flavorHeight() / 2)}; })
+            )
+            .size(fixedSize());
         }
-        return false;
-    });
-}
 
-void Button::State::setIcon(View view)
-{
-    if (icon() == view) return;
-    if (icon()) remove(icon());
-    view
-        .centerLeft([this]{ return Point{leadingSpacing(), height() / 2 - 1}; })
-        .paper([this]{ return box_.color(); });
-    add(view);
-    icon(view);
-}
+        box_
+        .size([this]{ return fixedSize(); })
+        .decoration(
+            Shadow{}
+            .color([this]{ return theme().floatingActionButtonShadowColor(flavor_); })
+            .offset(Step{0, sp(3)})
+            .blurRadius(sp(4))
+            .opacity([this]{ return !pressed(); })
+        );
 
-void Button::State::setText(const String &newValue)
-{
-    if (label()) {
-        label().text(newValue);
+        size(box_.size());
     }
-    else {
-        Label newLabel;
-        newLabel
-            .color([this]{
-                return focus() ?
-                    theme().buttonTextColor(pressed()) :
-                    theme().buttonTextFocusColor(pressed());
-            })
-            .text(newValue)
-            .paper([this]{ return box_.color(); });
-        label(newLabel);
-        label().pos([this]{
-            return Point{
-                leadingSpacing() + (icon() ? icon().width() + innerSpacing() : 0.),
-                (height() - label().height()) / 2 - 1
+
+    int flavorHeight() const
+    {
+        return flavorHeight(flavor_);
+    }
+
+    Size fixedSize() const {
+        return s_
+            + Size{
+                (label_ ? sp(flavorHeight() / 2) + label_.width() : 0.) +
+                (iconView_().isNull() ? -sp(flavorHeight() / 2) : 0.),
+                0.
             };
-        });
-        add(label());
     }
-}
+    Size minSize() const override { return fixedSize(); }
+    Size maxSize() const override { return fixedSize(); }
 
-void Button::State::defineText(Definition<String> &&f)
-{
-    if (label()) {
-        label().text(move(f));
+    void iconPicture(const Picture &picture)
+    {
+        iconView(
+            Picture{picture}
+            .color([this]{ return textColor(); })
+        );
     }
-    else {
-        Label newLabel;
-        newLabel
-            .color([this]{
-                return focus() ?
-                    theme().buttonTextColor(pressed()) :
-                    theme().buttonTextFocusColor(pressed());
-            })
-            .text(move(f))
-            .paper([this]{ return box_.color(); });
-        label(newLabel);
-        label().pos([this]{
-            return Point{
-                leadingSpacing() + (icon() ? icon().width() + innerSpacing() : 0.),
-                (height() - label().height()) / 2 - 1
-            };
-        });
-        add(label());
+
+    void iconView(const View &view)
+    {
+        if (iconView_() == view) return;
+        if (!iconView_().isNull()) box_.remove(iconView_());
+        iconView_(view);
+        box_.add(
+            iconView_()
+            .center([this]{ return s_ / 2; })
+            .paper([this]{ return box_.color(); })
+        );
     }
-}
 
-Size Button::State::preferredSize() const
-{
-    return Size{
-        leadingSpacing() +
-        (icon() ? icon().width() : 0.) +
-        ((icon() && label() && label().text() != "") ? innerSpacing() : 0.) +
-        (label() ? label().width() : 0.) +
-        trailingSpacing(),
-        preferredHeight()
-    };
-}
+    Color color() const { return box_.color(); }
+    void color(Color newValue) { box_.color(newValue); }
+    void color(Definition<Color> &&f) { box_.color(move(f)); }
 
-Size Button::State::minSize() const
-{
-    return preferredSize();
-}
-
-Size Button::State::maxSize() const
-{
-    return Size{ std::numeric_limits<double>::max(), sp(40) };
-}
+    const ButtonStyle flavor_;
+    const double d_;
+    Size s_;
+    Property<Color> textColor;
+    Property<View> iconView_;
+    Box box_;
+    Label label_;
+};
 
 Button::Button():
     InputControl{onDemand<State>}
+{}
+
+Button::Button(ButtonStyle flavor, const String &text, const Picture &icon):
+    InputControl{new State{flavor, text}}
+{
+    if (!icon.isNull()) this->icon(icon);
+}
+
+Button::Button(ButtonStyle flavor, const Picture &icon):
+    Button{flavor, String{}, icon}
+{}
+
+Button::Button(const String &text, const Picture &icon):
+    Button{ButtonStyle::Regular, text, icon}
+{}
+
+Button::Button(const Picture &icon):
+    Button{ButtonStyle::Regular, String{}, icon}
 {}
 
 Button &Button::associate(Out<Button> self)
@@ -168,170 +151,54 @@ Button &Button::associate(Out<Button> self)
     return View::associate<Button>(self);
 }
 
-String Button::text() const
+Button &Button::icon(const Picture &newValue)
 {
-    return me().label() ? me().label().text() : String{};
-}
-
-Button &Button::text(const String &newValue)
-{
-    me().setText(newValue);
-    return *this;
-}
-
-Button &Button::text(Definition<String> &&f)
-{
-    me().defineText(move(f));
-    return *this;
-}
-
-Button &Button::icon(Ideographic ch, double size)
-{
-    me().setIcon(Icon{ch, size > 0 ? size : sp(20), textColor()});
-    return *this;
-}
-
-Button &Button::icon(const View &view)
-{
-    me().setIcon(view);
+    me().iconPicture(newValue);
     return *this;
 }
 
 Color Button::color() const
 {
-    return me().box_.color();
+    return me().color();
 }
 
 Button &Button::color(Color newValue)
 {
-    me().box_.color(newValue);
+    me().color(newValue);
     return *this;
 }
 
 Button &Button::color(Definition<Color> &&f)
 {
-    me().box_.color(move(f));
+    me().color(move(f));
     return *this;
 }
 
 Color Button::textColor() const
 {
-    if (!me().label()) return theme().buttonTextColor(pressed());
-    return me().label().color();
+    return me().textColor();
 }
 
 Button &Button::textColor(Color newValue)
 {
-    me().label().color(newValue);
+    me().textColor(newValue);
     return *this;
 }
 
 Button &Button::textColor(Definition<Color> &&f)
 {
-    me().label().color(move(f));
-    return *this;
-}
-
-double Button::radius() const
-{
-    return me().radius();
-}
-
-Button &Button::radius(double newValue)
-{
-    me().radius(newValue);
-    return *this;
-}
-
-Button &Button::radius(Definition<double> &&f)
-{
-    me().radius(move(f));
-    return *this;
-}
-
-double Button::leadingSpacing() const
-{
-    return me().leadingSpacing();
-}
-
-Button &Button::leadingSpacing(double newValue)
-{
-    me().leadingSpacing(newValue);
-    return *this;
-}
-
-Button &Button::leadingSpacing(Definition<double> &&f)
-{
-    me().leadingSpacing(move(f));
-    return *this;
-}
-
-double Button::trailingSpacing() const
-{
-    return me().trailingSpacing();
-}
-
-Button &Button::trailingSpacing(double newValue)
-{
-    me().trailingSpacing(newValue);
-    return *this;
-}
-
-Button &Button::trailingSpacing(Definition<double> &&f)
-{
-    me().trailingSpacing(move(f));
-    return *this;
-}
-
-double Button::innerSpacing() const
-{
-    return me().innerSpacing();
-}
-
-Button &Button::innerSpacing(double newValue)
-{
-    me().innerSpacing(newValue);
-    return *this;
-}
-
-Button &Button::innerSpacing(Definition<double> &&f)
-{
-    me().innerSpacing(move(f));
-    return *this;
-}
-
-Button &Button::preferredHeight(double newValue)
-{
-    me().preferredHeight(newValue);
-    return *this;
-}
-
-Button &Button::preferredHeight(Definition<double> &&f)
-{
-    me().preferredHeight(move(f));
-    return *this;
-}
-
-Button &Button::decorate(const View &newValue)
-{
-    me().box_.decoration(newValue);
-    return *this;
-}
-
-Button &Button::decorate(Definition<View> &&f)
-{
-    me().box_.decoration(move(f));
+    me().textColor(move(f));
     return *this;
 }
 
 Button::State &Button::me()
 {
-    return View::me().as<State>();
+    return get<State>();
 }
 
 const Button::State &Button::me() const
 {
-    return View::me().as<State>();
+    return get<State>();
 }
 
 } // namespace cc

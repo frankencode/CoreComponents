@@ -12,7 +12,6 @@
 #include <cc/Checkbox>
 #include <cc/Icon>
 #include <cc/Divider>
-#include <cc/Button>
 #include <cc/DEBUG>
 
 int main()

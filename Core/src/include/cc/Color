@@ -260,6 +260,10 @@ public:
       */
     uint32_t value() const { return me; }
 
+    /** Access underlying unsigned 32-bit word
+      */
+    uint32_t &value() { return me; }
+
     /** \copydoc value()
       */
     operator uint32_t() const { return me; }

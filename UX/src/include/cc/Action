@@ -27,7 +27,7 @@ public:
 
     /** Create a new action with given \a title
       */
-    Action(const String &title);
+    explicit Action(const String &title);
 
     /** Create a new action with given \a title and \a shortcut
       */

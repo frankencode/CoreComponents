@@ -22,6 +22,8 @@ namespace cc {
   * When maxWidth() is set the text will be automatically elided if necessary.
   * A Label is more performant than a Text, but it does not perform full font shaping under its hood.
   * This means that all glyphs are drawn from the same font face without falling back to another font face if a glyph is missing.
+  *
+  * \todo rename Label::color to Label::textColor
   */
 class Label final: public View
 {

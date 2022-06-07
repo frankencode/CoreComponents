@@ -120,6 +120,10 @@ public:
       */
     bool checkOpaque() const;
 
+    /** Replace the red, green and blue of all non-transparent pixels by red, green and blue of \a color
+      */
+    void tone(Color color);
+
     /** Replace this image by a low-pass monochrome version of itself
       * \param radius Blur radius
       * \param shadowColor Replacement color

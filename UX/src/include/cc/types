@@ -409,6 +409,27 @@ inline String str(Orientation orientation)
     return String{};
 }
 
+/** %Button style
+  */
+enum class ButtonStyle {
+    Regular, ///< Regular button
+    FAB, ///< Floating Action Button
+    TinyFAB, ///< Tiny Floating Action Button
+    ExtendedFAB ///< Extended Floating Action Button (with label)
+};
+
+inline String str(ButtonStyle style)
+{
+    switch (style) {
+        case ButtonStyle::Regular: return "ButtonStyle::Regular";
+        case ButtonStyle::FAB: return "ButtonStyle::FAB";
+        case ButtonStyle::TinyFAB: return "ButtonStyle::TinyFAB";
+        case ButtonStyle::ExtendedFAB: return "ButtonStyle::ExtendedFAB";
+    };
+
+    return String{};
+}
+
 /** %Point delta type
   */
 using Step = Vector<double, 2>;

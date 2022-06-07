@@ -1,4 +1,4 @@
-#include <cc/Button>
+#include <cc/FloatingButton>
 #include <cc/Format>
 #include <cc/DEBUG>
 
@@ -6,12 +6,12 @@ int main()
 {
     using namespace cc;
 
-    Button button;
+    FloatingButton button;
 
     return
         View{sp(640), sp(480)}
         .add(
-            Button{"USER", Ideographic::Plus}
+            FloatingButton{"USER", Ideographic::Plus}
             .associate(&button)
             .onClicked([=]{
                 CC_DEBUG;

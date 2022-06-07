@@ -9,13 +9,14 @@
 #pragma once
 
 #include <cc/ListView>
+#include <cc/FlickableIndicator>
 
 namespace cc {
 
 /** \class LogView cc/LogView
   * \ingroup ui
   * \brief Text log view
-  *
+  * \see FlickableIndicator
   * \todo Add support for line spacing.
   */
 class LogView final: public ListView

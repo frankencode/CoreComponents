@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Button>
+
+namespace cc {
+
+/** \class FloatingButton cc/FloatingButton
+  * \ingroup ui
+  * \brief Convenience class to construct a floating button
+  */
+class FloatingButton: public Button
+{
+public:
+    /** Create a primordial floating button
+      */
+    FloatingButton() = default;
+
+    /** Create a regular floating button
+      */
+    explicit FloatingButton(const Picture &icon):
+        Button{ButtonStyle::FAB, icon}
+    {}
+
+    /** Create a floating button with a text label
+      */
+    explicit FloatingButton(const String &text, const Picture &icon = Picture{}):
+        Button{text == "" ? ButtonStyle::FAB : ButtonStyle::ExtendedFAB, text, icon}
+    {}
+};
+
+} // namespace cc

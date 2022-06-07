@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Button>
+
+namespace cc {
+
+/** \class TinyFloatingButton cc/TinyFloatingButton
+  * \ingroup ui
+  * \brief Convenience class to construct a tiny floating button
+  */
+class TinyFloatingButton: public Button
+{
+public:
+    /** Create a primordial tiny floating button
+      */
+    TinyFloatingButton() = default;
+
+    /** Create a tiny floating button
+      */
+    explicit TinyFloatingButton(const Picture &icon):
+        Button{ButtonStyle::TinyFAB, icon}
+    {}
+};
+
+} // namespace cc

@@ -15,8 +15,8 @@ namespace cc {
 
 /** \class Picture cc/Picture
   * \ingroup ui
-  * \brief A view showing a static visual
-  * \see Icon
+  * \brief Glyph visual or other user-defined image optionally toned to specifc foreground color
+  * \see GlyphVisual, Ideographic, Image
   */
 class Picture: public View
 {
@@ -38,6 +38,10 @@ public:
       */
     Picture(Ideographic ch, double size = 0, Color color = Color{});
 
+    /** Create a new picture from \a image toned to color \a color
+      */
+    Picture(const Image &image, Color color = Color{});
+
     /** Get a weak reference in \a self
       */
     Picture &associate(Out<Picture> self);
@@ -54,6 +58,7 @@ private:
     struct State: public View::State
     {
         State(const Visual &initVisual = Visual{}, Color initColor = Color{});
+        explicit State(const Image &image, Color initColor = Color{});
 
         Property<Visual> visual;
         Property<Color> color;

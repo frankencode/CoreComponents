@@ -9,62 +9,53 @@
 #pragma once
 
 #include <cc/InputControl>
+#include <cc/Picture>
 
 namespace cc {
 
 /** \class Button cc/Button
   * \ingroup ui
-  * \brief %Button with rounded edges
+  * \brief Floating action button (FAB)
+  * \todo field definition or negative touch margins ("activeMargin"?-)
   */
 class Button: public InputControl
 {
 public:
-    /** Create an primordial button
+    /** Create a primordial button
       */
     Button();
+
+    /** Create a new button
+      */
+    explicit Button(ButtonStyle flavor, const String &text = String{}, const Picture &icon = Picture{});
+
+    /** Create a new button
+      */
+    Button(ButtonStyle flavor, const Picture &icon);
+
+    /** Create a regular button
+      */
+    Button(const String &text, const Picture &icon = Picture{});
+
+    /** Create a regular button
+      */
+    explicit Button(const Picture &icon);
 
     /** Get a weak reference in \a self
       */
     Button &associate(Out<Button> self);
 
-    String text() const; ///< Get the button's label text
-    Button &text(const String &newValue); ///< %Set the button's label text
-    Button &text(Definition<String> &&f); ///< Define the button's label text
-
-    Button &icon(const View &view); ///< %Set leading decoration
-    Button &icon(Ideographic ch, double size = -1); ///< %Set leading decoration icon
+    Button &icon(const Picture &newValue); ///< %Set icon
 
     Color color() const; ///< Get button fill color
     Button &color(Color newValue); ///< %Set button fill color
     Button &color(Definition<Color> &&f); ///< Define button fill color
 
-    Color textColor() const; ///< Get text color
-    Button &textColor(Color newValue); ///< %Set text color
-    Button &textColor(Definition<Color> &&f); ///< Define text color
+    Color textColor() const; ///< Get foreground color
+    Button &textColor(Color newValue); ///< %Set foreground color
+    Button &textColor(Definition<Color> &&f); ///< Define foreground color
 
-    double radius() const; ///< Get corner radius
-    Button &radius(double newValue); ///< %Set corner radius
-    Button &radius(Definition<double> &&f); ///< Define corner radius
-
-    double leadingSpacing() const; ///< Get leading spacing (before leading decoration)
-    Button &leadingSpacing(double newValue); ///< %Set leading spacing
-    Button &leadingSpacing(Definition<double> &&f); ///< %Define leading spacing
-
-    double trailingSpacing() const; ///< Get trailing spacing (after label text)
-    Button &trailingSpacing(double newValue); ///< %Set trailing spacing
-    Button &trailingSpacing(Definition<double> &&f); ///< Define trailing spacing
-
-    double innerSpacing() const; ///< Get inner spacing (between leading decoration and label text)
-    Button &innerSpacing(double newValue); ///< %Set inner spacing
-    Button &innerSpacing(Definition<double> &&f); ///< Define inner spacing
-
-    Button &preferredHeight(double newValue); ///< %Set preferred button height
-    Button &preferredHeight(Definition<double> &&f); ///< Define preferred button height
-
-    Button &decorate(const View &newValue); ///< %Set button decoration (e.g. Shadow)
-    Button &decorate(Definition<View> &&f); ///< Define button decoration
-
-protected:
+private:
     struct State;
 
     State &me();

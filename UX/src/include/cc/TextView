@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/ListView>
+#include <cc/FlickableIndicator>
 
 namespace cc {
 
@@ -18,6 +19,7 @@ namespace cc {
   *
   * A TextView shows a vertically scollable text.
   *
+  * \see FlickableIndicator
   * \todo Add support for line spacing.
   */
 class TextView final: public ListView

@@ -71,10 +71,10 @@ public:
     Color buttonTextColor(bool pressed) const { return me().buttonTextColor(pressed); }
     Color buttonTextFocusColor(bool pressed) const { return me().buttonTextFocusColor(pressed); }
 
-    Color floatingActionButtonColor() const { return me().floatingActionButtonColor(); }
-    Color floatingActionButtonTextColor() const { return me().floatingActionButtonTextColor(); }
-    Color floatingActionButtonShadowColor() const { return me().floatingActionButtonShadowColor(); }
-    Color floatingActionButtonGlowColor(bool focus) const { return me().floatingActionButtonGlowColor(focus); }
+    Color floatingActionButtonColor(ButtonStyle style) const { return me().floatingActionButtonColor(style); }
+    Color floatingActionButtonTextColor(ButtonStyle style) const { return me().floatingActionButtonTextColor(style); }
+    Color floatingActionButtonShadowColor(ButtonStyle style) const { return me().floatingActionButtonShadowColor(style); }
+    Color floatingActionButtonFocusColor(ButtonStyle style) const { return me().floatingActionButtonFocusColor(style); }
 
     Color elevatedButtonColor() const { return me().elevatedButtonColor(); }
     Color elevatedButtonFocusColor() const { return me().elevatedButtonFocusColor(); }
@@ -144,10 +144,10 @@ protected:
         virtual Color buttonTextColor(bool pressed) const = 0;
         virtual Color buttonTextFocusColor(bool pressed) const = 0;
 
-        virtual Color floatingActionButtonColor() const { return buttonColor(false); }
-        virtual Color floatingActionButtonTextColor() const { return buttonTextColor(false); }
-        virtual Color floatingActionButtonShadowColor() const { return elevatedButtonShadowColor(); }
-        virtual Color floatingActionButtonGlowColor(bool focus) const { return Color{}; }
+        virtual Color floatingActionButtonColor(ButtonStyle style) const = 0;
+        virtual Color floatingActionButtonTextColor(ButtonStyle style) const = 0;
+        virtual Color floatingActionButtonShadowColor(ButtonStyle style) const = 0;
+        virtual Color floatingActionButtonFocusColor(ButtonStyle style) const { return Color{}; }
 
         virtual Color elevatedButtonColor() const = 0;
         virtual Color elevatedButtonFocusColor() const = 0;
