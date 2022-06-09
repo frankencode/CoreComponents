@@ -8,7 +8,7 @@
 
 #include <cc/AppBar>
 #include <cc/Control>
-#include <cc/Icon>
+#include <cc/Picture>
 #include <cc/Label>
 #include <cc/Shadow>
 
@@ -63,7 +63,7 @@ struct AppBar::State final: public View::State
             .paper([this]{ return theme().appBarColor(navButton_.pressed()); })
             .visible([this]{ return showNavButton(); })
             .add(
-                Icon{ideographic}
+                Picture{ideographic}
                 .color([this]{ return theme().appBarTextColor(); })
                 // .pos([this]{ return Point{sp(16), sp(16)}; })
                 .centerLeft([]{ return Point{sp(16), sp(28)}; })

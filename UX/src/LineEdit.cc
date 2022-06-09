@@ -10,7 +10,6 @@
 #include <cc/TextInput>
 #include <cc/Label>
 #include <cc/Text>
-#include <cc/Icon>
 #include <cc/Painter>
 
 namespace cc {
@@ -224,7 +223,7 @@ void LineEdit::State::setTrailing(const View &newView)
 void LineEdit::State::setAlertIcon()
 {
     setTrailing(
-        Icon{Ideographic::AlertCircle}
+        Picture{Ideographic::AlertCircle}
         .color([this]{ return theme().alertColor(); })
         .visible([this]{ return error() != ""; })
     );
@@ -416,9 +415,9 @@ LineEdit &LineEdit::status(Definition<String> &&f)
     return *this;
 }
 
-LineEdit &LineEdit::icon(Ideographic ch)
+LineEdit &LineEdit::icon(const Picture &picture)
 {
-    me().setLeading(Icon{ch});
+    me().setLeading(picture);
     return *this;
 }
 

@@ -9,12 +9,14 @@
 #pragma once
 
 #include <cc/Control>
+#include <cc/Picture>
 
 namespace cc {
 
 /** \class Slider cc/Slider
   * \ingroup ui
   * \brief %Slider with leading and trailing decoration
+  * \see Picture
   */
 class Slider final: public View
 {
@@ -28,7 +30,10 @@ public:
     Slider &associate(Out<Slider> self);
 
     Slider &leading(const View &view); ///< %Set leading decoration
+    Slider &leading(const Picture &picture); ///< %Set leading decoration
+
     Slider &trailing(const View &view); ///< %Set trailing decoration
+    Slider &trailing(const Picture &picture); ///< %Set trailing decoration
 
     double min() const; ///< Get minimum slider value
     Slider &min(double newValue); ///< %Set minimum slider value

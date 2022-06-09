@@ -8,7 +8,6 @@
 
 #include <cc/Button>
 #include <cc/ImageView>
-#include <cc/Icon>
 #include <cc/Label>
 #include <cc/Box>
 #include <cc/Shadow>

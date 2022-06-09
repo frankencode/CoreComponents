@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class ImageIoPlugin cc/ImageIoPlugin
-  * \group ui
+  * \ingroup ui
   * \brief Description of an image file format
   * \see ImageIoPluginManager
   */

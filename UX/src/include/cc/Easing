@@ -24,6 +24,7 @@ struct Easing
       * \param property %Property for which to ease value changes
       * \param curve %Easing curve to apply
       * \param duration %Duration of the transition in seconds
+      * \param direct Pass a function to decide when to omit easing and go for direct property transition
       * \tparam T %Property value type
       */
     template<class T>

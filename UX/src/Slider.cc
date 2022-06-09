@@ -126,9 +126,21 @@ Slider &Slider::leading(const View &view)
     return *this;
 }
 
+Slider &Slider::leading(const Picture &picture)
+{
+    me().setLeading(picture);
+    return *this;
+}
+
 Slider &Slider::trailing(const View &view)
 {
     me().setTrailing(view);
+    return *this;
+}
+
+Slider &Slider::trailing(const Picture &picture)
+{
+    me().setTrailing(picture);
     return *this;
 }
 

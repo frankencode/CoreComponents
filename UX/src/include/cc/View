@@ -723,7 +723,7 @@ protected:
         void addAbove(const View &child) { insertChild(child); } ///< \copydoc View::addAbove()
         void addBelow(const View &child); ///< \copydoc View::addBelow()
         void insertAt(Locator target, View child); ///< \copydoc View::insertAt(Locator, View)
-        void insertAt(long index, const View &child); ///< \copydov View::insertAt(long, const View &)
+        void insertAt(long index, const View &child); ///< \copydoc View::insertAt(long, const View &)
         void remove(const View &child) { removeChild(child); } ///< \copydoc View::remove()
 
         virtual void insertChild(View child); ///< Handles the insertion of new children

@@ -10,7 +10,6 @@
 #include <cc/Slider>
 #include <cc/Switch>
 #include <cc/Checkbox>
-#include <cc/Icon>
 #include <cc/Divider>
 #include <cc/DEBUG>
 
@@ -84,8 +83,8 @@ int main()
                                             .add(LineEdit{"Zip code"})
                                             .add(
                                                 Slider{}
-                                                .leading(Icon{Ideographic::VolumeLow})
-                                                .trailing(Icon{Ideographic::VolumeHigh})
+                                                .leading(Ideographic::VolumeLow)
+                                                .trailing(Ideographic::VolumeHigh)
                                             )
                                             .add(LineEdit{"Country"})
                                         }

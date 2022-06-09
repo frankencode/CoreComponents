@@ -1,6 +1,5 @@
 #include <cc/LineEdit>
 #include <cc/Ideographic>
-#include <cc/Icon>
 #include <cc/Format>
 #include <cc/DEBUG>
 

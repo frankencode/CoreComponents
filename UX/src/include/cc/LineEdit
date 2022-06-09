@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/TextInput>
+#include <cc/Picture>
 
 namespace cc {
 
@@ -54,7 +55,7 @@ public:
     LineEdit &status(const String &newValue); ///< %Set status text
     LineEdit &status(Definition<String> &&f); ///< Define status text
 
-    LineEdit &icon(Ideographic ch); ///< %Set leading decoration icon
+    LineEdit &icon(const Picture &picture); ///< %Set leading decoration icon
     LineEdit &alertIcon(); ///< %Add an optionally visible alert icon
 
     LineEdit &leading(const View &view); ///< %Set leading decoration

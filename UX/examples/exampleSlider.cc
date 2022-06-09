@@ -2,7 +2,6 @@
 #include <cc/Divider>
 #include <cc/Slider>
 #include <cc/NumberCell>
-#include <cc/Icon>
 
 int main()
 {
@@ -17,15 +16,15 @@ int main()
         )
         .add(
             Slider{}
-            .leading(Icon{Ideographic::VolumeLow})
-            .trailing(Icon{Ideographic::VolumeHigh})
+            .leading(Ideographic::VolumeLow)
+            .trailing(Ideographic::VolumeHigh)
         )
         .add(
             Divider{}
         )
         .add(
             Slider{}
-            .leading(Icon{Ideographic::Thermometer})
+            .leading(Ideographic::Thermometer)
             .trailing(NumberCell{})
             .value(50)
         )
