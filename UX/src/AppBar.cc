@@ -50,6 +50,32 @@ struct AppBar::State final: public View::State
         };
     }
 
+    void settled() override
+    {
+        /** TODO: logic for adding the overflow/context menu button
+          */
+
+        double right = sp(12);
+        const double step = sp(48);
+        for (const Action &action: actions_) {
+            Control button;
+            right += step;
+            add(
+                Control{}
+                .associate(&button)
+                .onClicked([action]{ action(); })
+                .paper([this, button]{ return theme().appBarColor(button.pressed()); })
+                .size(sp(48), sp(56))
+                .pos([this,right]{ return Point{width() - right, 0}; })
+                .add(
+                    action.icon()
+                    .color([this]{ return theme().appBarTextColor(); })
+                    .centerInParent()
+                )
+            );
+        }
+    }
+
     //! \todo min and max size
 
     bool addNavButton(Ideographic ideographic)
@@ -65,7 +91,6 @@ struct AppBar::State final: public View::State
             .add(
                 Picture{ideographic}
                 .color([this]{ return theme().appBarTextColor(); })
-                // .pos([this]{ return Point{sp(16), sp(16)}; })
                 .centerLeft([]{ return Point{sp(16), sp(28)}; })
             )
         );
@@ -91,6 +116,7 @@ struct AppBar::State final: public View::State
     Property<bool> showNavButton { false };
     Trigger onNavButtonClicked;
     Control navButton_;
+    List<Action> actions_;
 };
 
 double AppBar::height()
@@ -121,6 +147,13 @@ AppBar &AppBar::title(const String &newValue)
 AppBar &AppBar::title(Definition<String> &&f)
 {
     me().title(move(f));
+    return *this;
+}
+
+AppBar &AppBar::addAction(const Action &action)
+{
+    assert(!hasParent()); // Actions needs to be added before the AppBar is settled.
+    me().actions_.append(action);
     return *this;
 }
 

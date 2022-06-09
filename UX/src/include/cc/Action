@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/View>
+#include <cc/Picture>
 #include <cc/Shortcut>
 #include <cc/Entity>
 
@@ -25,30 +25,20 @@ public:
       */
     Action();
 
-    /** Create a new action with given \a title
-      */
-    explicit Action(const String &title);
-
-    /** Create a new action with given \a title and \a shortcut
-      */
-    Action(const String &title, Shortcut shortcut);
-
-    /** Create a new action with given \a icon
-      * \see Picture, ImageView
-      */
-    Action(const View &icon);
-
     String title() const; ///< Get title
-    Action &title(const String &newValue); ///< Set title
+    Action &title(const String &newValue); ///< %Set title
     Action &title(Definition<String> &&f); ///< Define title
 
     Shortcut shortcut() const; ///< Get shortcut
-    Action &shortcut(const Shortcut &newValue); ///< Set shortcut
+    Action &shortcut(const Shortcut &newValue); ///< %Set shortcut
     Action &shortcut(Definition<Shortcut> &&f); ///< Define shortcut
 
-    View icon() const; ///< Get icon
-    Action &icon(const View &newValue); ///< Set icon
-    Action &icon(Definition<View> &&f); ///< Define icon
+    Picture icon() const; ///< Get icon
+    Action &icon(const Picture &newValue); ///< %Set icon
+
+    Action &onTriggered(Fun<void()> &&action); ///< %Set callback
+
+    void operator()() const; ///< Invoke the action's callback
 
 private:
     struct State;

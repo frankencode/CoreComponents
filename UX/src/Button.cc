@@ -22,13 +22,13 @@ struct Button::State final: public InputControl::State
         int height = 56;
         switch (flavor) {
         case ButtonStyle::Regular:
-        case ButtonStyle::TinyFAB:
+        case ButtonStyle::TinyFloating:
             height = 40;
             break;
-        case ButtonStyle::ExtendedFAB:
+        case ButtonStyle::FloatingWithLabel:
             height = 48;
             break;
-        case ButtonStyle::FAB:
+        case ButtonStyle::Floating:
         default:;
         };
         return height;
@@ -50,7 +50,7 @@ struct Button::State final: public InputControl::State
             .pos([this]{ return pressed() ? Point{0, sp(3)} : Point{0, 0}; })
         );
 
-        if (flavor == ButtonStyle::ExtendedFAB || flavor == ButtonStyle::Regular) {
+        if (flavor == ButtonStyle::FloatingWithLabel || flavor == ButtonStyle::Regular) {
             box_
             .add(
                 Label{text}

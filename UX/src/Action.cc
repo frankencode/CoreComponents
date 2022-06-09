@@ -12,33 +12,19 @@ namespace cc {
 
 struct Action::State final: public Entity::State
 {
+    void invoke() const {
+        if (action_) action_();
+    }
+
     Property<String> title;
     Property<Shortcut> shortcut;
-    Property<View> icon;
+    Picture icon_;
+    Fun<void()> action_;
 };
 
 Action::Action():
     Entity{onDemand<State>}
 {}
-
-Action::Action(const String &title):
-    Entity{new State}
-{
-    me().title(title);
-}
-
-Action::Action(const String &title, Shortcut shortcut):
-    Entity{new State}
-{
-    me().title(title);
-    me().shortcut(shortcut);
-}
-
-Action::Action(const View &icon):
-    Entity{new State}
-{
-    me().icon(icon);
-}
 
 String Action::title() const
 {
@@ -74,21 +60,26 @@ Action &Action::shortcut(Definition<Shortcut> &&f)
     return *this;
 }
 
-View Action::icon() const
+Picture Action::icon() const
 {
-    return me().icon();
+    return me().icon_;
 }
 
-Action &Action::icon(const View &newValue)
+Action &Action::icon(const Picture &newValue)
 {
-    me().icon(newValue);
+    me().icon_ = newValue;
     return *this;
 }
 
-Action &Action::icon(Definition<View> &&f)
+Action &Action::onTriggered(Fun<void()> &&action)
 {
-    me().icon(move(f));
+    me().action_ = move(action);
     return *this;
+}
+
+void Action::operator()() const
+{
+    me().invoke();
 }
 
 Action::State &Action::me()

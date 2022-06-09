@@ -26,13 +26,13 @@ public:
     /** Create a regular floating button
       */
     explicit FloatingButton(const Picture &icon):
-        Button{ButtonStyle::FAB, icon}
+        Button{ButtonStyle::Floating, icon}
     {}
 
     /** Create a floating button with a text label
       */
     explicit FloatingButton(const String &text, const Picture &icon = Picture{}):
-        Button{text == "" ? ButtonStyle::FAB : ButtonStyle::ExtendedFAB, text, icon}
+        Button{text == "" ? ButtonStyle::Floating : ButtonStyle::FloatingWithLabel, text, icon}
     {}
 };
 

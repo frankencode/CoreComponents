@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/View>
+#include <cc/Action>
 
 namespace cc {
 
@@ -34,6 +35,8 @@ public:
     String title() const; ///< Get page title
     AppBar &title(const String &newValue); ///< %Set page title
     AppBar &title(Definition<String> &&f); ///< Define page title
+
+    AppBar &addAction(const Action &action); ///< %Add a primary action presented on the application bar
 
     /** Register function to call when user requests to navigate the application
       */
