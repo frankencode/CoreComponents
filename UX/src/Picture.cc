@@ -12,7 +12,7 @@ namespace cc {
 
 Picture::State::State(const Visual &initialVisual, Color initialColor):
     visual{initialVisual},
-    color{initialColor.isValid() ? initialColor : theme().primaryTextColor()}
+    color{initialColor.isValid() ? initialColor : theme().secondaryTextColor()}
 {
     size([this]{ return visual() ? visual().size() : Size{}; });
     paper([this]{ return visual() ? basePaper() : Color{}; });

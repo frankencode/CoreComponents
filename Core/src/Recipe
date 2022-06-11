@@ -2,7 +2,7 @@ Library {
     name: CoreComponentsCore
     Dependency {
         probe: probe/cxx20.cc
-        compile-flags: [ -std=c++2b, -Wno-psabi ] // -std=c++20, -Wall, -Wextra, -pedantic
+        compile-flags: [ -std=c++20, -Wno-psabi ] // -std=c++2b, -Wall, -Wextra, -pedantic
         cascade: true
     }
     Dependency {
