@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Transition>
-#include <cc/types>
+#include <cc/uiTypes>
 
 namespace cc {
 

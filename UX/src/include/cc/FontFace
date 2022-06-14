@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/types>
+#include <cc/uiTypes>
 #include <cc/Exception>
 #include <cc/Object>
 

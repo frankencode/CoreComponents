@@ -430,14 +430,6 @@ inline String str(ButtonStyle style)
     return String{};
 }
 
-/** %Point delta type
-  */
-using Step = Vector<double, 2>;
-
-/** Scaling type
-  */
-using Scale = Vector<double, 2>;
-
 /** Check if a text can be wrapped behind a certain text fragment
   */
 using TextWrapBehind = Fun<bool(const String &/*text*/, long /*byteOffset*/, long /*byteCount*/)>;

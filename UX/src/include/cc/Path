@@ -1,0 +1,207 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/Point>
+
+namespace cc {
+
+/** \class Path cc/Path
+  * \ingroup ui
+  * \brief A painter path
+  * \see Painter
+  */
+class Path: public Object
+{
+public:
+    /** Create a null path
+      */
+    Path();
+
+    /** Create a path starting at point \a o
+      */
+    explicit Path(const Point &o):
+        Object{new State{o}}
+    {}
+
+    /** Starting point of the path
+      */
+    Point startPoint() const { return me().o_; }
+
+    /** The current point
+      */
+    Point currentPoint() const { return me().a_; }
+
+    /** Add a line segment to point \a b
+      */
+    Path &lineTo(Point b)
+    {
+        me().lineTo(b);
+        return *this;
+    }
+
+    /** Add a cubic Bézier spline spanning over control points \a b, \a c and ending at point \a d
+      */
+    Path &curveTo(Point b, Point c, Point d)
+    {
+        me().curveTo(b, c, d);
+        return *this;
+    }
+
+    class Segment: public Object
+    {
+    public:
+        /** %Type of a path segment
+          */
+        enum class Type {
+            Line, ///< %Line segment
+            Curve ///< %Cubic bezier curve segment
+        };
+
+        /** Create a null path segment
+          */
+        Segment() = default;
+
+        /** %Type of a path segment
+          */
+        Type type() const { return me().type(); }
+
+        /** %Length of a path segment
+          */
+        double length() const { return me().length(); }
+
+    protected:
+        struct State: public Object::State
+        {
+            virtual Type type() const = 0;
+            virtual double length() const = 0;
+        };
+
+        explicit Segment(State *newState):
+            Object{newState}
+        {}
+
+        const State &me() const { return Object::me.as<State>(); }
+    };
+
+    class Line final: public Segment
+    {
+    public:
+        Line(Point a, Point b):
+            Segment{new State{a, b}}
+        {}
+
+        Line(const Segment &segment)
+        {
+            if (segment.type() == Type::Line) {
+                *this = segment;
+            }
+        }
+
+        Point a() const { return me().a_; }
+        Point b() const { return me().b_; }
+
+    private:
+        struct State final: public Segment::State
+        {
+            State(Point a, Point b):
+                a_{a}, b_{b}
+            {}
+
+            Type type() const override
+            {
+                return Type::Line;
+            }
+
+            double length() const override
+            {
+                return (a_ - b_).abs();
+            }
+
+            Point a_;
+            Point b_;
+        };
+
+        const State &me() const { return Object::me.as<State>(); }
+    };
+
+    class Curve final: public Segment
+    {
+    public:
+        Curve(Point a, Point b, Point c, Point d):
+            Segment{new State{a, b, c, d}}
+        {}
+
+        Curve(const Segment &segment)
+        {
+            if (segment.type() == Type::Curve) {
+                *this = segment;
+            }
+        }
+
+        Point a() const { return me().a_; }
+        Point b() const { return me().b_; }
+        Point c() const { return me().c_; }
+        Point d() const { return me().d_; }
+
+    private:
+        struct State final: public Segment::State
+        {
+            State(Point a, Point b, Point c, Point d):
+                a_{a}, b_{b}, c_{c}, d_{d}
+            {}
+
+            Type type() const override
+            {
+                return Type::Curve;
+            }
+
+            double length() const override;
+
+            Point a_, b_, c_, d_;
+        };
+
+        const State &me() const { return Object::me.as<State>(); }
+    };
+
+    /** Get the list of all path segments
+      */
+    List<Segment> segments() const { return me().segments_; }
+
+protected:
+    struct State: public Object::State
+    {
+        State(Point o):
+            o_{o},
+            a_{o}
+        {}
+
+        void lineTo(Point b)
+        {
+            segments_.append(Line{a_, b});
+            a_ = b;
+        }
+
+        void curveTo(Point b, Point c, Point d)
+        {
+            segments_.append(Curve{a_, b, c, d});
+            a_ = d;
+        }
+
+
+        Point o_, a_;
+        List<Segment> segments_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/keyboard>
-#include <cc/types>
+#include <cc/uiTypes>
 
 namespace cc {
 

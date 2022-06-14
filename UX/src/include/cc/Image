@@ -11,7 +11,7 @@
 #include <cc/Surface>
 #include <cc/Color>
 #include <cc/Array>
-#include <cc/types>
+#include <cc/uiTypes>
 
 namespace cc {
 

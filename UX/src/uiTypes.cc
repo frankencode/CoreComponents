@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/types>
+#include <cc/uiTypes>
 #include <cc/DisplayManager>
 #include <cc/Application>
 #include <cc/Unicode>

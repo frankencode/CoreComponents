@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Point>
+
+namespace cc {
+
+/** \class CubicBezier cc\CubicBezier
+  * \ingroup ui
+  * \brief Cubic berzier curves
+  */
+class CubicBezier
+{
+public:
+    /** Create a cubic bezier curve
+      * \param a Starting point
+      * \param b First control point
+      * \param c Second control point
+      * \param d End point
+      */
+    CubicBezier(Point a, Point b, Point c, Point d);
+
+    /** Compute the parametric curve at relative distance \a t
+      */
+    Point operator()(double t) const;
+
+    /** Estimate the length of the curve
+      * \param steps %umber of line segments to use in the quadrature of the curve
+      */
+    double length(long steps = 20) const;
+
+private:
+    Point a_, b_, c_, d_;
+};
+
+} // namespace cc

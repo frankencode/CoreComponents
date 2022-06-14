@@ -10,7 +10,7 @@
 
 #include <cc/Surface>
 #include <cc/Pen>
-#include <cc/types>
+#include <cc/uiTypes>
 #include <cc/Exception>
 
 typedef struct _cairo cairo_t;

@@ -8,12 +8,9 @@
 
 #pragma once
 
-#include <cc/Vector>
+#include <cc/Point>
 
 namespace cc {
-
-using Point = Vector<double, 2>;
-using Size = Vector<double, 2>;
 
 /** \class Rect cc/Rect
   * \ingroup ui
