@@ -449,13 +449,6 @@ using TouchDeviceId = std::int64_t;
   */
 using TouchFingerId = std::int64_t;
 
-/** Translate \a angle in degree (0..360) to radians (0..2*M_PI)
-  */
-constexpr double degree(double angle)
-{
-    return M_PI * angle / 180;
-}
-
 /** Translate design units (\a x) to pixels
   */
 double dp(double x);

@@ -17,6 +17,8 @@ namespace cc {
   * \ingroup ui
   * \brief A painter path
   * \see Painter
+  * \todo Test/debug Path::arcAround()
+  * \todo API doc strings for the Segment classes
   */
 class Path: public Object
 {
@@ -55,6 +57,14 @@ public:
         return *this;
     }
 
+    /** Add an arc that starts at the current point and circles around point \a b alpha radians (-2*pi to +2*pi)
+      */
+    Path &arcAround(Point b, double alpha)
+    {
+        me().arcAround(b, alpha);
+        return *this;
+    }
+
     class Segment: public Object
     {
     public:
@@ -62,7 +72,8 @@ public:
           */
         enum class Type {
             Line, ///< %Line segment
-            Curve ///< %Cubic bezier curve segment
+            Curve, ///< %Cubic bezier curve segment
+            Arc ///< %Arc segment
         };
 
         /** Create a null path segment
@@ -101,7 +112,7 @@ public:
         Line(const Segment &segment)
         {
             if (segment.type() == Type::Line) {
-                *this = segment;
+                static_cast<Object &>(*this) = segment;
             }
         }
 
@@ -142,7 +153,7 @@ public:
         Curve(const Segment &segment)
         {
             if (segment.type() == Type::Curve) {
-                *this = segment;
+                static_cast<Object &>(*this) = segment;
             }
         }
 
@@ -171,6 +182,50 @@ public:
         const State &me() const { return Object::me.as<State>(); }
     };
 
+    class Arc final: public Segment
+    {
+    public:
+        Arc(Point a, Point b, double alpha):
+            Segment{new State{a, b, alpha}}
+        {}
+
+        Arc(const Segment &segment)
+        {
+            if (segment.type() == Type::Arc) {
+                static_cast<Object &>(*this) = segment;
+            }
+        }
+
+        Point a() const { return me().a_; }
+        Point b() const { return me().b_; }
+        Point c() const { return me().c_; }
+        double r() const { return me().r_; }
+        double alpha() const { return me().alpha_; }
+        double alpha0() const { return me().alpha0_; }
+        double alpha1() const { return me().alpha1_; }
+
+    private:
+        struct State final: public Segment::State
+        {
+            State(Point a, Point b, double alpha);
+
+            Type type() const override
+            {
+                return Type::Arc;
+            }
+
+            double length() const override;
+
+            Point a_, b_, c_;
+            double r_;
+            double alpha_;
+            double alpha0_;
+            double alpha1_;
+        };
+
+        const State &me() const { return Object::me.as<State>(); }
+    };
+
     /** Get the list of all path segments
       */
     List<Segment> segments() const { return me().segments_; }
@@ -193,6 +248,13 @@ protected:
         {
             segments_.append(Curve{a_, b, c, d});
             a_ = d;
+        }
+
+        void arcAround(Point b, double alpha)
+        {
+            Arc arc{a_, b, alpha};
+            segments_.append(arc);
+            a_ = arc.c();
         }
 
 

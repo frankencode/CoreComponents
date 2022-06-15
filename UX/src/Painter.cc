@@ -11,6 +11,7 @@
 #include <cc/FtGlyphRun>
 #include <cc/FtTextRun>
 #include <cc/Surface>
+#include <cc/Path>
 #include <cairo/cairo.h>
 #include <cmath>
 
@@ -115,6 +116,20 @@ Painter &Painter::curveTo(Point a, Point b, Point c)
     return *this;
 }
 
+Painter &Painter::arcAround(Point b, double alpha)
+{
+    Point a = currentPoint();
+    double alpha0 = angle(a - b);
+    double alpha1 = alpha0 + alpha;
+    double r = 0;
+    if (b[0] == a[0]) r = std::abs(a[1] - b[1]);
+    else if (b[1] == a[1]) r = std::abs(a[0] - b[0]);
+    else r = (a - b).abs();
+    if (alpha0 < alpha1) cairo_arc(cr_, b[0], b[1], r, alpha0, alpha1);
+    else cairo_arc_negative(cr_, b[0], b[1], r, alpha0, alpha1);
+    return *this;
+}
+
 Painter &Painter::arc(Point m, double r, double alpha0, double alpha1)
 {
     cairo_arc(cr_, m[0], m[1], r, alpha0, alpha1);
@@ -151,6 +166,35 @@ Rect Painter::fillExtents() const
     double y1 = 0;
     cairo_fill_extents(cr_, &x0, &y0, &x1, &y1);
     return Rect{Point{x0, y0}, Size{x1-x0, y1-y0}};
+}
+
+Painter &Painter::addPath(const Path &path)
+{
+    moveTo(path.startPoint());
+    for (const Path::Segment &segment: path.segments()) {
+        switch (segment.type()) {
+            case Path::Segment::Type::Line: {
+                lineTo(Path::Line{segment}.b());
+                break;
+            }
+            case Path::Segment::Type::Curve: {
+                Path::Curve curve{segment};
+                curveTo(curve.b(), curve.c(), curve.d());
+                break;
+            }
+            case Path::Segment::Type::Arc: {
+                Path::Arc arc{segment};
+                if (arc.alpha() > 0) {
+                    this->arc(arc.b(), arc.r(), arc.alpha0(), arc.alpha1());
+                }
+                else if (arc.alpha() < 0) {
+                    this->arcNegative(arc.b(), arc.r(), arc.alpha0(), arc.alpha1());
+                }
+                break;
+            }
+        };
+    }
+    return *this;
 }
 
 Painter &Painter::showGlyphRun(Point pos, const GlyphRun &glyphRun)

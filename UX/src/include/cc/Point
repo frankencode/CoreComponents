@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/Vector>
+#include <numbers>
 
 namespace cc {
 
@@ -27,5 +28,27 @@ using Step = Vector<double, 2>;
 /** Scaling type
   */
 using Scale = Vector<double, 2>;
+
+/** Get positive angle of vector \a v in range [0, 2*PI)
+  */
+double angle(Point v);
+
+/** Get magnitude of vector \a v
+  */
+double abs(Point v);
+
+/** Translate \a angle in degree (0..360) to radian (0..2*M_PI)
+  */
+constexpr double rad(double angle)
+{
+    return std::numbers::pi * angle / 180;
+}
+
+/** Translate \a angle in radian (0..2*M_PI) to degree (0..360)
+  */
+constexpr double deg(double angle)
+{
+    return 180 * angle / std::numbers::pi;
+}
 
 } // namespace cc

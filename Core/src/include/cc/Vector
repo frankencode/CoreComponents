@@ -101,9 +101,9 @@ public:
       */
     const T &operator[](int i) const { return at(i); }
 
-    T x() const { static_assert(2 <= N); return v[0]; } ///< Get value of the first component
-    T y() const { static_assert(2 <= N); return v[1]; } ///< Get value of the second component
-    T z() const { static_assert(3 <= N); return v[2]; } ///< Get value of the third component
+    T x() const { assert(2 <= N); return v[0]; } ///< Get value of the first component
+    T y() const { assert(2 <= N); return v[1]; } ///< Get value of the second component
+    T z() const { assert(3 <= N); return v[2]; } ///< Get value of the third component
 
     ///@}
 

@@ -29,29 +29,29 @@ Box::State::State()
             ;
         else if (r == w / 2) {
             p.moveTo(Point{0, r});
-            p.arc(Point{r, r}, r, degree(180), degree(360));
+            p.arc(Point{r, r}, r, rad(180), rad(360));
             p.lineTo(Point{w, h - r});
-            p.arc(Point{r, h - r}, r, degree(0), degree(180));
+            p.arc(Point{r, h - r}, r, rad(0), rad(180));
             p.setPen(color());
             p.fill();
         }
         else if (r == h / 2) {
             p.moveTo(Point{r, h});
-            p.arc(Point{r, r}, r, degree(90), degree(270));
+            p.arc(Point{r, r}, r, rad(90), rad(270));
             p.lineTo(Point{w - r, 0});
-            p.arc(Point{w - r, r}, r, degree(270), degree(90));
+            p.arc(Point{w - r, r}, r, rad(270), rad(90));
             p.setPen(color());
             p.fill();
         }
         else {
             p.moveTo(Point{w - r, 0});
-            p.arc(Point{w - r, r}, r, degree(270), degree(360));
+            p.arc(Point{w - r, r}, r, rad(270), rad(360));
             p.lineTo(Point{w, h - r});
-            p.arc(Point{w - r, h - r}, r, degree(0), degree(90));
+            p.arc(Point{w - r, h - r}, r, rad(0), rad(90));
             p.lineTo(Point{r, h});
-            p.arc(Point{r, h - r}, r, degree(90), degree(180));
+            p.arc(Point{r, h - r}, r, rad(90), rad(180));
             p.lineTo(Point{0, r});
-            p.arc(Point{r, r}, r, degree(180), degree(270));
+            p.arc(Point{r, r}, r, rad(180), rad(270));
             p.setPen(color());
             p.fill();
         }

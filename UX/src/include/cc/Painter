@@ -20,6 +20,7 @@ namespace cc {
 class GlyphRun;
 class TextRun;
 class FtGlyphRun;
+class Path;
 
 /** \class Painter cc/Painter
   * \ingroup ui
@@ -62,17 +63,41 @@ public:
 
     bool hasCurrentPoint() const; ///< Check if there is a current point
     Point currentPoint() const; ///< Get the current point
-    Painter &moveTo(Point c); ///< Start a new sub-path starting at \a c
-    Painter &lineTo(Point c); ///< Add a line segment to the path from the current point to the new current point \a c
-    Painter &curveTo(Point a, Point b, Point c); ///< Add a cubic Bézier spline starting in the current point, spanning over control points \a a, \a b and ending in the new current point \a c
-    Painter &arc(Point m, double r, double alpha0 = 0, double alpha1 = 2 * M_PI); ///< Add a circular arc of radius \a r centered at \a m starting at angle \a alpha0 and ending at angle \a alpha1 (in radians)
-    Painter &arcNegative(Point m, double r, double alpha0, double alpha1); ///< Add a circular arc with \a alpha1 < \a alpha0
 
-    Painter &rectangle(Point pos, Size size); ///< Add a closed sub-path in form of a rectangle with top-left at \a pos and given dimensions \a size
+    /** Start a new sub-path starting at \a c
+      */
+    Painter &moveTo(Point c);
+
+    /** Add a line segment to the path from the current point to the new current point \a c
+      */
+    Painter &lineTo(Point c);
+
+    /** Add a cubic Bézier spline starting in the current point, spanning over control points \a a, \a b and ending in the new current point \a c
+      */
+    Painter &curveTo(Point a, Point b, Point c);
+
+    /** Add an arc that starts at the current point and circles around point \a b alpha radians (-2*pi to +2*pi)
+      */
+    Painter &arcAround(Point b, double alpha);
+
+    /** \internal
+      * Add a circular arc of radius \a r centered at \a m starting at angle \a alpha0 and ending at angle \a alpha1 (in radians)
+      */
+    Painter &arc(Point m, double r, double alpha0 = 0, double alpha1 = 2 * M_PI);
+
+    /** \internal
+      * Add a circular arc with \a alpha1 < \a alpha0
+      */
+    Painter &arcNegative(Point m, double r, double alpha0, double alpha1);
+
+    /** Add a closed sub-path in form of a rectangle with top-left at \a pos and given dimensions \a size
+      */
+    Painter &rectangle(Point pos, Size size);
 
     Rect pathExtents() const; ///< Get the current path's extents
     Rect fillExtents() const; ///< Get the current path's exact rasterization extents
 
+    Painter &addPath(const Path &path); ///< Add \a path
     ///@}
 
     using GetColor = Fun<Color(int)> ; ///< Get color for a given byte offset
@@ -115,9 +140,17 @@ public:
       */
     ///@{
 
-    Painter &translate(Step step); ///< Move coordinate system by \a step
-    Painter &scale(Scale ratio); ///< Scale coordinate system by \a ratio
-    Painter &rotate(double angle); ///< Rotate coordinate system by \a angle (in radians)
+    /** Move coordinate system by \a step
+      */
+    Painter &translate(Step step);
+
+    /** %Scale coordinate system by \a ratio
+      */
+    Painter &scale(Scale ratio);
+
+    /** Rotate coordinate system by \a angle (in radian)
+      */
+    Painter &rotate(double angle);
 
     ///@}
 

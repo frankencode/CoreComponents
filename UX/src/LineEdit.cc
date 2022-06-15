@@ -174,9 +174,9 @@ LineEdit::State::State(const TextInput &input, const String &initialTitle):
         Painter p{this};
         p.moveTo(Point{0, h});
         p.lineTo(Point{0, r});
-        p.arc(Point{r, r}, r, degree(180), degree(270));
+        p.arc(Point{r, r}, r, rad(180), rad(270));
         p.lineTo(Point{w - r, 0});
-        p.arc(Point{w - r, r}, r, degree(270), degree(360));
+        p.arc(Point{w - r, r}, r, rad(270), rad(360));
         p.lineTo(Point{w, h});
         p.setPen(paper());
         p.fill();
