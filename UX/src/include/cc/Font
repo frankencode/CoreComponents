@@ -8,8 +8,9 @@
 
 #pragma once
 
-#include <cc/uiTypes>
 #include <cc/Composite>
+#include <cc/Color>
+#include <cc/typography>
 
 namespace cc {
 
@@ -160,7 +161,12 @@ private:
     Composite<State> me;
 };
 
+/** Scale size of \a font by a factor of \a scale
+  */
 inline Font operator*(const Font &font, double scale) { Font target = font; return target *= scale; }
+
+/** Scale size of \a font by a factor of \a scale
+  */
 inline Font operator*(double scale, const Font &font) { return font * scale; }
 
 inline Font operator+(const Font &a, const Font &b)
@@ -168,22 +174,8 @@ inline Font operator+(const Font &a, const Font &b)
     return Font{a.family(), a.size() + b.size()};
 }
 
-inline String str(const Font &font)
-{
-    return Format{}
-        << "Font {" << nl
-        << "  family: " << font.family() << nl
-        << "  size: " << font.size() << nl
-        << "  weight: " << font.weight() << nl
-        << "  slant: " << font.slant() << nl
-        << "  stretch: " << font.stretch() << nl
-        << "  decoration: " << font.decoration() << nl
-        << "  smoothing: " << font.smoothing() << nl
-        << "  outlineHinting: " << font.outlineHinting() << nl
-        << "  metricsHinting: " << font.metricsHinting() << nl
-        << "  color: " << font.color() << nl
-        << "  paper: " << font.paper() << nl
-        << "}";
-}
+/** Stringify font for debugging purposes
+  */
+String str(const Font &font);
 
 } // namespace cc

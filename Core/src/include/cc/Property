@@ -135,6 +135,9 @@ public:
     }
 
     /** Setup restrictor function \a g
+      * The restrictor gets the new and the old value passed.
+      * It returns true if the value change is allowed to take place.
+      * The restrictor function can also modify the new value.
       */
     void restrict(Fun<bool(T&, T)> &&g)
     {

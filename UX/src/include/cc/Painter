@@ -26,6 +26,8 @@ class Path;
   * \ingroup ui
   * \brief Drawing 2D vector graphics
   * \exception PainterError
+  * \todo make showGlyphRun() and showTextRun() use the currentPoint() as baseline start
+  * \todo remove arcNegative() (automatically select the proper method)
   */
 class Painter
 {
@@ -42,6 +44,8 @@ public:
       */
     explicit Painter(Surface::State *state);
 
+    /** Finish painting
+      */
     ~Painter();
 
     Painter &save(); ///< Save painter state to the top of the state stack
@@ -76,17 +80,15 @@ public:
       */
     Painter &curveTo(Point a, Point b, Point c);
 
-    /** Add an arc that starts at the current point and circles around point \a b alpha radians (-2*pi to +2*pi)
+    /** Add an arc that starts at the current point and circles around point \a b \a alpha radians (-2*pi to +2*pi)
       */
     Painter &arcAround(Point b, double alpha);
 
-    /** \internal
-      * Add a circular arc of radius \a r centered at \a m starting at angle \a alpha0 and ending at angle \a alpha1 (in radians)
+    /** Add a circular arc of radius \a r centered at \a m starting at angle \a alpha0 and ending at angle \a alpha1 (in radians)
       */
     Painter &arc(Point m, double r, double alpha0 = 0, double alpha1 = 2 * M_PI);
 
-    /** \internal
-      * Add a circular arc with \a alpha1 < \a alpha0
+    /** Add a circular arc with \a alpha1 < \a alpha0
       */
     Painter &arcNegative(Point m, double r, double alpha0, double alpha1);
 

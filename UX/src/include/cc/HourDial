@@ -1,0 +1,40 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/InputControl>
+
+namespace cc {
+
+/** \class HourDial cc/HourDial
+  * \ingroup ui
+  * \brief Interactive clock face allowing to input the hour [1..12]
+  */
+class HourDial final: public Control
+{
+public:
+    /** Create a primordial hour dial
+      */
+    HourDial();
+
+    Size margin() const; ///< Margins around the clock face
+    HourDial &margin(Size newValue); ///< Set margins around the clock face
+    HourDial &margin(Definition<Size> &&f); ///< Define margins around the clock face
+
+    int value() const; ///< Get hour [1..12]
+    HourDial &value(int newValue); ///< %Set hour [1..12]
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

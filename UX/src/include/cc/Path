@@ -57,7 +57,7 @@ public:
         return *this;
     }
 
-    /** Add an arc that starts at the current point and circles around point \a b alpha radians (-2*pi to +2*pi)
+    /** Add an arc that starts at the current point and circles around point \a b \a alpha radians (-2*pi to +2*pi)
       */
     Path &arcAround(Point b, double alpha)
     {

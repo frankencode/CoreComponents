@@ -128,6 +128,23 @@ NumberCell &NumberCell::precision(Definition<double> &&f)
     return *this;
 }
 
+int NumberCell::digits() const
+{
+    return me().input_.digits();
+}
+
+NumberCell &NumberCell::digits(int newValue)
+{
+    me().input_.digits(newValue);
+    return *this;
+}
+
+NumberCell &NumberCell::digits(Definition<int> &&f)
+{
+    me().input_.digits(move(f));
+    return *this;
+}
+
 char NumberCell::decimalPoint() const
 {
     return me().input_.decimalPoint();
@@ -142,6 +159,23 @@ NumberCell &NumberCell::decimalPoint(char newValue)
 NumberCell &NumberCell::decimalPoint(Definition<char> &&f)
 {
     me().input_.decimalPoint(move(f));
+    return *this;
+}
+
+Font NumberCell::font() const
+{
+    return me().input_.font();
+}
+
+NumberCell &NumberCell::font(Font newValue)
+{
+    me().input_.font(newValue);
+    return *this;
+}
+
+NumberCell &NumberCell::font(Definition<Font> &&f)
+{
+    me().input_.font(move(f));
     return *this;
 }
 

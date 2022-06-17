@@ -36,8 +36,12 @@ public:
     NumberInput &max(Definition<double> &&f); ///< Define maximum slider value
 
     double precision() const; ///< Get precision
-    NumberInput &precision(double newValue); ///< %Set precision
+    NumberInput &precision(double newValue); ///< %Set precision (defaults to 1)
     NumberInput &precision(Definition<double> &&f); ///< Define precision
+
+    int digits() const; ///< Get number of digits
+    NumberInput &digits(int newValue); ///< %Set number of digits
+    NumberInput &digits(Definition<int> &&f); ///< Define number of digits
 
     char decimalPoint() const; ///< Get decimal point character (defaults to '.')
     NumberInput &decimalPoint(char newValue); ///< %Set decimal point character

@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/View>
+
+namespace cc {
+
+/** \class TimePicker cc/TimePicker
+  * \ingroup ui
+  * \brief Select a time
+  */
+class TimePicker final: public View
+{
+public:
+    /** Create a primordial time picker
+      */
+    TimePicker();
+
+    /** Create a new time picker
+      */
+    explicit TimePicker(int initialHour, int initialMinute);
+
+    TimePicker &hour(double newValue); ///< %Set hour [0..23]
+    int hour() const; ///< Get hour [0..23]
+
+    TimePicker &minute(double newValue); ///< %Set minute [0..59]
+    int minute() const; ///< Get minute [0..59]
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

@@ -348,15 +348,17 @@ public:
       */
     void update() { me().update(UpdateReason::Changed); }
 
-    template<class ViewType>
-    void collectVisible(InOut<List<ViewType>> collection) const
+    /** Get a list of all visible children in this view tree which are of type \a T
+      */
+    template<class T>
+    void collectVisible(InOut<List<T>> collection) const
     {
         for (const View &child: visibleChildren()) {
-            child.collectVisible<ViewType>(collection);
+            child.collectVisible<T>(collection);
         }
 
-        if (is<ViewType>()) {
-            collection->append(as<ViewType>());
+        if (is<T>()) {
+            collection->append(as<T>());
         }
     }
 

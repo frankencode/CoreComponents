@@ -358,7 +358,7 @@ Size TextInput::State::preferredSize() const
         s[0] = sp(280);
     }
     else {
-        s[0] = TextRun{sizerText()}.size()[0] + sp(1);
+        s[0] = TextRun{sizerText(), font()}.size()[0] + sp(1);
     }
 
     if (textRun().lineCount() < 2) {

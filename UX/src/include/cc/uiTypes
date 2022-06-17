@@ -12,248 +12,33 @@
 #include <cc/Color>
 #include <cc/Property>
 #include <cc/Object>
+#include <cc/typography>
 #include <cc/bitmask>
 #include <cc/str>
 #include <cmath>
 
 namespace cc {
 
-/** \internal
+/** %Alignment within a RowLayout
   */
-enum class UpdateReason {
-    Moved,
-    Changed,
-    Resized,
-    Exposed,
-    // Shown,
-    Hidden,
-    Faded
+enum class RowAlign {
+    Top,    ///< %Align top
+    Bottom, ///< %Align bottom
+    Center  ///< %Align center
 };
 
-/** %Text anti-aliasing strategy
-  */
-enum class FontSmoothing: uint8_t {
-    Default      = 0, ///< %Use platform default font anti-aliasing strategy
-    None         = 1, ///< Do not perform any anti-aliasing
-    Grayscale    = 2, ///< Smooth font outlines with shades of gray
-    RgbSubpixel  = 3, ///< Smooth font outlines with shades of gray taking advantage of the arragement of the LCD cells of an horizontal RGB display
-    BgrSubpixel  = 4, ///< Smooth font outlines with shades of gray taking advantage of the arragement of the LCD cells of an horizontal RGB display
-    VrgbSubpixel = 5, ///< Smooth font outlines with shades of gray taking advantage of the arragement of the LCD cells of an vertical RGB display
-    VbgrSubpixel = 6  ///< Smooth font outlines with shades of gray taking advantage of the arragement of the LCD cells of an vertical BGR display
-};
-
-inline uint8_t operator+(FontSmoothing smoothing) { return static_cast<uint8_t>(smoothing); }
-
-inline String str(FontSmoothing smoothing)
-{
-    switch (smoothing) {
-        case FontSmoothing::Default     : return "FontSmoothing::Default";
-        case FontSmoothing::None        : return "FontSmoothing::None";
-        case FontSmoothing::Grayscale   : return "FontSmoothing::Grayscale";
-        case FontSmoothing::RgbSubpixel : return "FontSmoothing::RgbSubpixel";
-        case FontSmoothing::BgrSubpixel : return "FontSmoothing::BgrSubpixel";
-        case FontSmoothing::VrgbSubpixel: return "FontSmoothing::VrgbSubpixel";
-        case FontSmoothing::VbgrSubpixel: return "FontSmoothing::VbgrSubpixel";
-    }
-
-    return String{};
-}
-
-/** %Glyph outline hinting strategy
-  */
-enum class OutlineHinting: uint8_t {
-    Default = 0, ///< %Use platform default outline hinting strategy
-    None    = 1, ///< Do not perform any outline hinting
-    Slight  = 2, ///< Hint the glyph outlines slightly towards the pixel raster
-    Medium  = 3, ///< Hint the glyph outlines slightly more towards the pixel raster
-    Full    = 4, ///< Hint the glyph outlines fully with the pixel raster
-};
-
-inline uint8_t operator+(OutlineHinting hinting) { return static_cast<uint8_t>(hinting); }
-
-inline String str(OutlineHinting outlineHinting)
-{
-    switch (outlineHinting) {
-        case OutlineHinting::Default: return "OutlineHinting::Default";
-        case OutlineHinting::None   : return "OutlineHinting::None";
-        case OutlineHinting::Slight : return "OutlineHinting::Slight";
-        case OutlineHinting::Medium : return "OutlineHinting::Medium";
-        case OutlineHinting::Full   : return "OutlineHinting::Full";
-    }
-
-    return String {};
-}
-
-/** %Font metrics hinting mode
-  */
-enum class MetricsHinting: uint8_t {
-    Default = 0, ///< %Use platform default metrics hinting mode
-    Off     = 1, ///< Disable metrics hinting
-    On      = 2  ///< Enable metrics hinting
-};
-
-inline uint8_t operator+(MetricsHinting hinting) { return static_cast<uint8_t>(hinting); }
-
-inline String str(MetricsHinting metricsHinting)
-{
-    switch (metricsHinting) {
-        case MetricsHinting::Default: return "MetricsHinting::Default";
-        case MetricsHinting::On     : return "MetricsHinting::On";
-        case MetricsHinting::Off    : return "MetricsHinting::Off";
-    }
-
-    return String{};
-};
-
-/** %Font slant
-  */
-enum class Slant: uint8_t {
-    Normal = 0, ///< Regular font slant
-    Italic = 1, ///< Cursive font slant
-    Oblique = Italic ///< Cursive font slant
-};
-
-inline uint8_t operator+(Slant slant) { return static_cast<uint8_t>(slant); }
-
-inline String str(Slant slant)
-{
-    switch (slant) {
-        case Slant::Normal : return "Slant::Normal";
-        case Slant::Italic : return "Slant::Italic";
-        // case Slant::Oblique: return "Oblique";
-    }
-
-    return String{};
-}
-
-/** %Visual thickness of a font
-  */
-enum class Weight: uint8_t {
-    Thin       = 1, ///< Thinnest thickness
-    ExtraLight = 2, ///< Extra-light thickness
-    Light      = 3, ///< Light thickness
-    Normal     = 4, ///< Regular thickness
-    Medium     = 5, ///< Medium thickness
-    SemiBold   = 6, ///< Semi-bold thickness
-    Bold       = 7, ///< Bold thickness
-    ExtraBold  = 8, ///< Extra-bold thickness
-    Black      = 9  ///< Black thickness
-};
-
-inline uint8_t operator+(Weight weight) { return static_cast<uint8_t>(weight); }
-
-inline String str(Weight weight)
-{
-    switch (weight) {
-        case Weight::Thin      : return "Weight::Thin";
-        case Weight::ExtraLight: return "Weight::ExtraLight";
-        case Weight::Light     : return "Weight::Light";
-        case Weight::Normal    : return "Weight::Normal";
-        case Weight::Medium    : return "Weight::Medium";
-        case Weight::SemiBold  : return "Weight::SemiBold";
-        case Weight::Bold      : return "Weight::Bold";
-        case Weight::ExtraBold : return "Weight::ExtraBold";
-        case Weight::Black     : return "Weight::Black";
-    }
-
-    return String{};
-}
-
-/** %Font width to height ratio
-  */
-enum class Stretch: uint8_t {
-    UltraCondensed = 1, ///< Ultra-condensed stretch
-    ExtraCondensed = 2, ///< Extra-condensed stretch
-    Condensed      = 3, ///< Condensed stretch
-    SemiCondensed  = 4, ///< Semi-condensed stretch
-    Normal         = 5, ///< Regular stretch
-    SemiExpanded   = 6, ///< Semi-expanded stretch
-    Expanded       = 7, ///< Expanded stretch
-    ExtraExpanded  = 8, ///< Extra-expanded stretch
-    UltraExpanded  = 9  ///< Ultra-expanded stretch
-};
-
-inline uint8_t operator+(Stretch stretch) { return static_cast<uint8_t>(stretch); }
-
-inline String str(Stretch stretch)
-{
-    switch (stretch) {
-        case Stretch::UltraCondensed: return "Stretch::UltraCondensed";
-        case Stretch::ExtraCondensed: return "Stretch::ExtraCondensed";
-        case Stretch::Condensed     : return "Stretch::Condensed";
-        case Stretch::SemiCondensed : return "Stretch::SemiCondensed";
-        case Stretch::Normal        : return "Stretch::Normal";
-        case Stretch::SemiExpanded  : return "Stretch::SemiExpanded";
-        case Stretch::Expanded      : return "Stretch::Expaned";
-        case Stretch::ExtraExpanded : return "Stretch::ExtraExpanded";
-        case Stretch::UltraExpanded : return "Stretch::UltraExpanded";
-    }
-
-    return String{};
-}
-
-/** %Font pitch
-  */
-enum class Pitch: uint8_t {
-    Fixed    = 0, ///< All glyphs have same width
-    Variable = 1  ///< Glyphs have varying widths
-};
-
-inline uint8_t operator+(Pitch pitch) { return static_cast<uint8_t>(pitch); }
-
-inline String str(Pitch pitch)
-{
-    switch (pitch) {
-        case Pitch::Fixed:    return "Pitch::Fixed";
-        case Pitch::Variable: return "Pitch::Variable";
-    }
-
-    return String{};
-}
-
-/** %Text alignment
-  */
-enum class TextAlign: uint8_t {
-    Left,   ///< %Align left
-    Right,  ///< %Align right
-    Center, ///< %Align center
-    Justify ///< %Align justify
-};
-
-inline uint8_t operator+(TextAlign align) { return static_cast<uint8_t>(align); }
-
-inline String str(TextAlign align)
+inline String str(RowAlign align)
 {
     switch (align) {
-        case TextAlign::Left:    return "TextAlign::Left";
-        case TextAlign::Right:   return "TextAlign::Right";
-        case TextAlign::Center:  return "TextAlign::Center";
-        case TextAlign::Justify: return "TextAlign::Justify";
+        case RowAlign::Top:    return "RowAlign::Top";
+        case RowAlign::Bottom: return "RowAlign::Bottom";
+        case RowAlign::Center: return "RowAlign::Center";
     }
 
     return String{};
 }
 
-/** %Text decoration
-  */
-enum class Decoration: uint8_t {
-    None      = 0, ///< No text decoration
-    Underline = 1, ///< Underline decoration
-    StrikeOut = 2  ///< Strike-out decoration
-};
-
-CC_BITMASK(Decoration)
-
-inline String str(Decoration decoration)
-{
-    if (decoration == Decoration::None) return "Decoration::None";
-    List<String> parts;
-    if (decoration & Decoration::Underline) parts << "Decoration::Underline";
-    if (decoration & Decoration::StrikeOut) parts << "Decoration::StrikeOut";
-    return parts.join('|');
-}
-
-/** %Alignment within a ManagedColumnLayout
+/** %Alignment within a ManagedColumn
   */
 enum class ColumnAlign {
     Auto,  ///< %Align according to language preference
@@ -274,24 +59,17 @@ inline String str(ColumnAlign align)
     return String{};
 }
 
-/** %Alignment within a ManagedRowLayout
+/** \internal
   */
-enum class RowAlign {
-    Top,    ///< %Align top
-    Bottom, ///< %Align bottom
-    Center  ///< %Align center
+enum class UpdateReason {
+    Moved,
+    Changed,
+    Resized,
+    Exposed,
+    // Shown,
+    Hidden,
+    Faded
 };
-
-inline String str(RowAlign align)
-{
-    switch (align) {
-        case RowAlign::Top:    return "RowAlign::Top";
-        case RowAlign::Bottom: return "RowAlign::Bottom";
-        case RowAlign::Center: return "RowAlign::Center";
-    }
-
-    return String{};
-}
 
 /** %Mouse button flags
   */

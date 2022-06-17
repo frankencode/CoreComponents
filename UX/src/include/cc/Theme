@@ -28,8 +28,8 @@ public:
     Color windowColor() const { return me().windowColor(); } ///< %Window background color
     Color popupColor() const { return me().popupColor(); } ///< %Popup window background color
 
-    Color appBarColor(bool pressed = false) const { return me().appBarColor(pressed); } ///< Application bar background color
-    Color appBarTextColor() const { return me().appBarTextColor(); } ///< Application bar foreground color
+    Color appBarColor(bool pressed = false) const { return me().appBarColor(pressed); } ///< %Application bar background color
+    Color appBarTextColor() const { return me().appBarTextColor(); } ///< %Application bar foreground color
     Color appBarShadowColor() const { return me().appBarShadowColor(); } ///< Color of the drop shadow under the application bar
 
     Color titleTextColor() const { return me().titleTextColor(); } ///< %Title text color
@@ -84,6 +84,11 @@ public:
 
     Color flickableIndicatorColor() const { return me().flickableIndicatorColor(); }
     Color flickableIndicatorHandleColor() const { return me().flickableIndicatorHandleColor(); }
+
+    Color hourDialClockFaceColor(bool pressed) const { return me().hourDialClockFaceColor(pressed); }
+    Color hourDialClockFaceTextColor(bool pressed) const { return me().hourDialClockFaceTextColor(pressed); }
+    Color hourDialCurrentHourColor(bool pressed) const { return me().hourDialCurrentHourColor(pressed); }
+    Color hourDialCurrentHourTextColor(bool pressed) const { return me().hourDialCurrentHourTextColor(pressed); }
 
     double defaultFontSize() const { return me().defaultFontSize(); } ///< Default font size
     double defaultFixedFontSize() const { return me().defaultFixedFontSize(); } ///< Default font size for the default fixed pitch fonts
@@ -157,6 +162,11 @@ protected:
 
         virtual Color flickableIndicatorColor() const { return inputFieldFillColor(); }
         virtual Color flickableIndicatorHandleColor() const { return sliderKnobColor(); }
+
+        virtual Color hourDialClockFaceColor(bool pressed) const { return inputFieldFillColor(); }
+        virtual Color hourDialClockFaceTextColor(bool pressed) const { return primaryTextColor(); }
+        virtual Color hourDialCurrentHourColor(bool pressed) const { return sliderKnobColor(); }
+        virtual Color hourDialCurrentHourTextColor(bool pressed) const { return titleTextColor(); }
 
         virtual double defaultFontSize() const { return 16; }
         virtual double defaultFixedFontSize() const { return 16; }

@@ -37,12 +37,20 @@ public:
     NumberCell &max(Definition<double> &&f); ///< Define maximum slider value
 
     double precision() const; ///< Get precision
-    NumberCell &precision(double newValue); ///< %Set precision
+    NumberCell &precision(double newValue); ///< %Set precision (defaults to 1)
     NumberCell &precision(Definition<double> &&f); ///< Define precision
+
+    int digits() const; ///< Get number of digits
+    NumberCell &digits(int newValue); ///< %Set number of digits
+    NumberCell &digits(Definition<int> &&f); ///< Define number of digits
 
     char decimalPoint() const; ///< Get decimal point character (defaults to '.')
     NumberCell &decimalPoint(char newValue); ///< %Set decimal point character
     NumberCell &decimalPoint(Definition<char> &&f); ///< Define decimal point character
+
+    Font font() const; ///< Get the font
+    NumberCell &font(Font newValue); ///< %Set the font
+    NumberCell &font(Definition<Font> &&f); ///< Define the font
 
     double value() const; ///< Get current value
     NumberCell &value(double newValue); ///< %Set current value

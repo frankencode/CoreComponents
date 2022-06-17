@@ -33,6 +33,10 @@ NumberInput::State::State()
         updateText();
     });
 
+    digits.onChanged([this]{
+        updateText();
+    });
+
     filter_ = [this](Range range, InOut<String> chunk){
         if (
             text().count() + chunk->count() - selection().count() >
@@ -106,8 +110,9 @@ void NumberInput::State::updateText()
 
 String NumberInput::State::str(double x) const
 {
-    String t = fixed(x, nf());
-    if (decimalPoint() != '.') t.replace('.', decimalPoint());
+    String t = fixed(x, digits(), nf());
+    if (t.contains(' ')) t.replace(' ', '0');
+    if (decimalPoint() != '.' && t.contains('.')) t.replace('.', decimalPoint());
     return t;
 }
 
@@ -171,6 +176,23 @@ NumberInput &NumberInput::precision(Definition<double> &&f)
     return *this;
 }
 
+int NumberInput::digits() const
+{
+    return me().digits();
+}
+
+NumberInput &NumberInput::digits(int newValue)
+{
+    me().digits(move(newValue));
+    return *this;
+}
+
+NumberInput &NumberInput::digits(Definition<int> &&f)
+{
+    me().digits(move(f));
+    return *this;
+}
+
 char NumberInput::decimalPoint() const
 {
     return me().decimalPoint();
@@ -207,12 +229,12 @@ NumberInput &NumberInput::onValueChanged(Fun<void()> &&f)
 
 NumberInput::State &NumberInput::me()
 {
-    return View::me().as<State>();
+    return get<State>();
 }
 
 const NumberInput::State &NumberInput::me() const
 {
-    return View::me().as<State>();
+    return get<State>();
 }
 
 } // namespace cc

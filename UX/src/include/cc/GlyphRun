@@ -34,7 +34,7 @@ public:
       */
     bool isEmpty() const { return advance() == Point{}; }
 
-    /** Text used to typeset this glyphrun
+    /** %Text used to typeset this glyphrun
       */
     String text() const { return me().text_; }
 
@@ -46,7 +46,7 @@ public:
       */
     ScaledFont scaledFont() const { return me().scaledFont_; }
 
-    /** Font metrics used to generate thsi glyph run
+    /** %Font metrics used to generate thsi glyph run
       */
     FontMetrics metrics() const { return me().scaledFont_.metrics(); }
 

@@ -22,6 +22,7 @@ struct NumberInput::State final: public TextInput::State
     Property<double> min { 0. };
     Property<double> max { 100. };
     Property<double> precision { 1. };
+    Property<int> digits { 0 };
     Property<char> decimalPoint { '.' };
     Property<double> value;
 

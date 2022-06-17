@@ -8,6 +8,7 @@
 
 #include <cc/Font>
 #include <cc/StylePlugin>
+#include <cc/Format>
 
 namespace cc {
 
@@ -19,6 +20,24 @@ Font::Font(Pitch pitch)
 double Font::defaultSize(Pitch pitch)
 {
     return ((pitch == Pitch::Fixed) ? style().defaultFixedFont() : style().defaultFont()).size();
+}
+
+String str(const Font &font)
+{
+    return Format{}
+        << "Font {" << nl
+        << "  family: " << font.family() << nl
+        << "  size: " << font.size() << nl
+        << "  weight: " << font.weight() << nl
+        << "  slant: " << font.slant() << nl
+        << "  stretch: " << font.stretch() << nl
+        << "  decoration: " << font.decoration() << nl
+        << "  smoothing: " << font.smoothing() << nl
+        << "  outlineHinting: " << font.outlineHinting() << nl
+        << "  metricsHinting: " << font.metricsHinting() << nl
+        << "  color: " << font.color() << nl
+        << "  paper: " << font.paper() << nl
+        << "}";
 }
 
 } // namespace cc
