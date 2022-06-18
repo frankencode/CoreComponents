@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/InputControl>
+#include <cc/RadioButtonGroup>
+
+namespace cc {
+
+/** \class RadioButtonControl cc/RadioButtonControl
+  * \ingroup ui
+  * \brief %Radio button control
+  * \see RadioButton
+  */
+class RadioButtonControl final: public InputControl
+{
+public:
+    /** Create a primordial radio button control
+      */
+    RadioButtonControl();
+
+    /** Get a weak reference in \a self
+      */
+    RadioButtonControl &associate(Out<RadioButtonControl> self);
+
+    /** Group this radio button together with other radio buttons of \a group
+      */
+    RadioButtonControl &join(Out<RadioButtonGroup> group);
+
+    bool value() const; ///< Get value
+    RadioButtonControl &value(bool newValue); ///< %Set value
+
+    /** %Set callback to invoke if value() switches to true
+      */
+    RadioButtonControl &onSelected(Fun<void()> &&f);
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

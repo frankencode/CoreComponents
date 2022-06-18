@@ -1,7 +1,6 @@
 #include <cc/HourDial>
 
-int main()
-{
+int main() {
     using namespace cc;
     return HourDial{}.run();
 }

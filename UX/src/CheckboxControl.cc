@@ -16,6 +16,8 @@ struct CheckboxControl::State final: public InputControl::State
 {
     State()
     {
+        size(preferredSize());
+
         Box highlight;
 
         add(
@@ -24,7 +26,7 @@ struct CheckboxControl::State final: public InputControl::State
                 int percent = 0;
                 if (focus() || pressed()) percent = 8;
                 else if (hover()) percent = 5;
-                return basePaper().mixedWith(theme().switchFocusColor(), percent);
+                return basePaper().mixedWith(theme().checkboxFocusColor(), percent);
             })
             .radius([this]{ return d_; })
             .size([this]{ return size(); })
@@ -70,8 +72,6 @@ struct CheckboxControl::State final: public InputControl::State
             }
             return false;
         });
-
-        size([this]{ return preferredSize(); });
     }
 
     bool getValue() const
@@ -157,12 +157,12 @@ bool CheckboxControl::isGrouped() const
 
 CheckboxControl::State &CheckboxControl::me()
 {
-    return View::me().as<State>();
+    return get<State>();
 }
 
 const CheckboxControl::State &CheckboxControl::me() const
 {
-    return View::me().as<State>();
+    return get<State>();
 }
 
 CheckboxControl::State *CheckboxControl::operator->()

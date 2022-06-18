@@ -6,34 +6,34 @@
  *
  */
 
-#include <cc/HourDial>
+#include <cc/MinuteDial>
 
 namespace cc {
 
-struct HourDial::State final: public ClockDial::State
+struct MinuteDial::State final: public ClockDial::State
 {
     State():
-        ClockDial::State{12}
+        ClockDial::State{0}
     {}
 
-    int minValue() const override { return 1; }
+    int minValue() const override { return 0; }
 
-    int maxValue() const override { return 12; }
+    int maxValue() const override { return 55; }
 
     int faceIndexToValue(int i) const override
     {
         int hour = i + 3;
-        if (hour > 12) hour -= 12;
-        return hour;
+        if (hour >= 12) hour -= 12;
+        return 5 * hour;
     }
 
     String faceValueToString(int value) const override
     {
-        return str(value);
+        return dec(value, 2).replaced(" ", "0");
     }
 };
 
-HourDial::HourDial():
+MinuteDial::MinuteDial():
     ClockDial{onDemand<State>}
 {}
 

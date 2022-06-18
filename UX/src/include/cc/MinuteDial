@@ -12,16 +12,16 @@
 
 namespace cc {
 
-/** \class HourDial cc/HourDial
+/** \class MinuteDial cc/MinuteDial
   * \ingroup ui
-  * \brief Interactive clock face allowing to input the hour [1..12]
+  * \brief Interactive clock face allowing to input the minute [0..59]
   */
-class HourDial final: public ClockDial
+class MinuteDial final: public ClockDial
 {
 public:
-    /** Create a primordial hour dial
+    /** Create a primordial minute dial
       */
-    HourDial();
+    MinuteDial();
 
 private:
     struct State;

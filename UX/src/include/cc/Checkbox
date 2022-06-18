@@ -35,8 +35,8 @@ public:
     Checkbox &text(const String &newValue); ///< %Set text
     Checkbox &text(Definition<String> &&f); ///< Define text
 
-    bool value() const; ///< Get current state
-    Checkbox &value(bool newValue); ///< %Set current state
+    bool value() const; ///< Get value
+    Checkbox &value(bool newValue); ///< %Set value
 
     /** Group this checkbox under \a groupLeader
       */

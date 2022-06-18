@@ -6,6 +6,7 @@
 #include <cc/Slider>
 #include <cc/Switch>
 #include <cc/Checkbox>
+#include <cc/RadioButton>
 #include <cc/Divider>
 #include <cc/DEBUG>
 
@@ -15,6 +16,8 @@ int main()
 
     PasswordEdit passwordField;
     Checkbox dessert;
+
+    RadioButton::Group userType;
 
     return
         Flickable{
@@ -43,7 +46,23 @@ int main()
                 })
             )
             .add(PasswordEdit{"Repeat password"})
-            .add(Switch{"Super user"})
+            .add(Divider{})
+            .add(
+                RadioButton{"Admin"}
+                .join(&userType)
+                .onSelected([]{ ferr() << "admin" << nl; })
+            )
+            .add(
+                RadioButton{"User"}
+                .join(&userType)
+                .onSelected([]{ ferr() << "user" << nl; })
+            )
+            .add(
+                RadioButton{"Guest"}
+                .join(&userType)
+                .onSelected([]{ ferr() << "guest" << nl; })
+            )
+            .add(Divider{})
             .add(Switch{"Tutorial mode"})
             .add(LineEdit{"Street address"})
             .add(LineEdit{"Zip code"})

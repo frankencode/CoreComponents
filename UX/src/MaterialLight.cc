@@ -63,6 +63,7 @@ struct MaterialLight::State: public Theme::State
     Color switchFocusColor() const override { return primaryColor(); }
 
     Color checkboxColor(bool on) const override { return on ? primaryDarkColor() : secondaryTextColor(); }
+    Color radioboxColor(bool on) const override { return on ? primaryDarkColor() : secondaryTextColor(); }
 
     Color buttonColor(bool pressed) const override { return primaryDarkColor().darker(pressed ? 20 : 0); }
     Color buttonFocusColor(bool pressed) const override { return buttonColor(pressed).darker(20); }

@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class CheckboxControl cc/SwitchControl
+/** \class CheckboxControl cc/CheckboxControl
   * \ingroup ui
   * \brief %Checkbox control
   */
@@ -27,8 +27,8 @@ public:
       */
     CheckboxControl &associate(Out<CheckboxControl> self);
 
-    bool value() const; ///< Get current state
-    CheckboxControl &value(bool newValue); ///< %Set current state
+    bool value() const; ///< Get value
+    CheckboxControl &value(bool newValue); ///< %Set value
 
 private:
     friend class Checkbox;

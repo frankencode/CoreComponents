@@ -1,0 +1,57 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Control>
+#include <cc/RadioButtonGroup>
+
+namespace cc {
+
+/** \class RadioButton cc/RadioButton
+  * \ingroup ui
+  * \brief %RadioButtonControl with associated label
+  */
+class RadioButton final: public Control
+{
+public:
+    /** \copybrief RadioButtonGroup
+      */
+    using Group = RadioButtonGroup;
+
+    /** Create a primordial radio button
+      */
+    RadioButton();
+
+    /** Create a new radio button
+      */
+    explicit RadioButton(const String &text);
+
+    /** Group this radio button together with other radio buttons of \a group
+      */
+    RadioButton &join(Out<RadioButtonGroup> group);
+
+    String text() const; ///< Get text
+    RadioButton &text(const String &newValue); ///< %Set text
+    RadioButton &text(Definition<String> &&f); ///< Define text
+
+    bool value() const; ///< Get value
+    RadioButton &value(bool newValue); ///< %Set value
+
+    /** %Set callback to invoke if value() switches to true
+      */
+    RadioButton &onSelected(Fun<void()> &&f);
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc
