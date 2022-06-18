@@ -10,7 +10,7 @@
 
 #include <cc/Font>
 #include <cc/Theme>
-#include <cc/Ideographic>
+#include <cc/Icon>
 #include <cc/Visual>
 
 namespace cc {
@@ -94,7 +94,7 @@ public:
 
     /** Get a visual for the given ideograph \a ch
       */
-    Visual ideograph(Ideographic ch, double size = 0) const { return me().ideograph(ch, size); }
+    Visual ideograph(Icon ch, double size = 0) const { return me().ideograph(ch, size); }
 
     /** Styling theme
       */
@@ -132,7 +132,7 @@ protected:
         Property<Theme> theme_;
 
         virtual void activate() = 0;
-        virtual Visual ideograph(Ideographic ch, double size) const = 0;
+        virtual Visual ideograph(Icon ch, double size) const = 0;
     };
 
     explicit StylePlugin(State *newState);

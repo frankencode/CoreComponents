@@ -78,7 +78,7 @@ struct AppBar::State final: public View::State
 
     //! \todo min and max size
 
-    bool addNavButton(Ideographic ideographic)
+    bool addNavButton(Icon ideographic)
     {
         if (navButton_) return false;
 
@@ -102,13 +102,13 @@ struct AppBar::State final: public View::State
 
     void onNavigate(Fun<void()> &&f)
     {
-        addNavButton(Ideographic::Menu);
+        addNavButton(Icon::Menu);
         onNavButtonClicked(move(f));
     }
 
     void onDismissed(Fun<void()> &&f)
     {
-        addNavButton(Ideographic::ArrowLeft);
+        addNavButton(Icon::ArrowLeft);
         onNavButtonClicked(move(f));
     }
 

@@ -13,7 +13,7 @@
 
 namespace cc {
 
-enum class Ideographic: uint32_t;
+enum class Icon: uint32_t;
 
 /** \class LineEdit cc/LineEdit
   * \ingroup ui

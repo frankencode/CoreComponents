@@ -16,7 +16,7 @@ namespace cc {
 /** \class Picture cc/Picture
   * \ingroup ui
   * \brief Glyph visual or other user-defined image optionally toned to specifc foreground color
-  * \see GlyphVisual, Ideographic, Image
+  * \see GlyphVisual, Icon, Image
   */
 class Picture: public View
 {
@@ -32,11 +32,11 @@ public:
     explicit Picture(const Visual &visual, Color color = Color{});
 
     /** Create a new picture
-      * \param ch %Ideographic code
+      * \param ch %Icon code
       * \param size %Size in pixel
       * \param color %Foreground color
       */
-    Picture(Ideographic ch, double size = 0, Color color = Color{});
+    Picture(Icon ch, double size = 0, Color color = Color{});
 
     /** Create a new picture from \a image toned to color \a color
       */

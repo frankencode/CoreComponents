@@ -15,7 +15,7 @@ namespace cc {
 /** \brief %Unicode code points of common ideographs
   * \ingroup ui
   */
-enum class Ideographic: uint32_t
+enum class Icon: uint32_t
 {
     AccessPoint                         = 0xF002, ///< &nbsp;
     AccessPointNetwork                  = 0xF003, ///< &nbsp;
@@ -2508,6 +2508,6 @@ enum class Ideographic: uint32_t
 
 /** Static cast to underlying %Unicode code point
   */
-inline uint32_t operator+(Ideographic ch) { return static_cast<uint32_t>(ch); }
+inline uint32_t operator+(Icon ch) { return static_cast<uint32_t>(ch); }
 
 } // namespace cc

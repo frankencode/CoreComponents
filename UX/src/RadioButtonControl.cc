@@ -34,14 +34,14 @@ struct RadioButtonControl::State final: public InputControl::State
         );
 
         add(
-            Picture{Ideographic::RadioboxMarked, d_, theme().radioboxColor(true)}
+            Picture{Icon::RadioboxMarked, d_, theme().radioboxColor(true)}
             .paper(Color::Transparent)
             .centerInParent()
             .visible([this]{ return value(); })
         );
 
         add(
-            Picture{Ideographic::RadioboxBlank, d_, theme().radioboxColor(false)}
+            Picture{Icon::RadioboxBlank, d_, theme().radioboxColor(false)}
             .paper(Color::Transparent)
             .centerInParent()
             .visible([this]{ return !value(); })

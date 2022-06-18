@@ -223,7 +223,7 @@ void LineEdit::State::setTrailing(const View &newView)
 void LineEdit::State::setAlertIcon()
 {
     setTrailing(
-        Picture{Ideographic::AlertCircle}
+        Picture{Icon::AlertCircle}
         .color([this]{ return theme().alertColor(); })
         .visible([this]{ return error() != ""; })
     );

@@ -48,7 +48,7 @@ Picture::Picture(const Visual &visual, Color color):
     View{new State{visual, color}}
 {}
 
-Picture::Picture(Ideographic ch, double size, Color color):
+Picture::Picture(Icon ch, double size, Color color):
     View{new State{style().ideograph(ch, size), color}}
 {}
 

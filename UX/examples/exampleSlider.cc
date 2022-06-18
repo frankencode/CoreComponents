@@ -16,15 +16,15 @@ int main()
         )
         .add(
             Slider{}
-            .leading(Ideographic::VolumeLow)
-            .trailing(Ideographic::VolumeHigh)
+            .leading(Icon::VolumeLow)
+            .trailing(Icon::VolumeHigh)
         )
         .add(
             Divider{}
         )
         .add(
             Slider{}
-            .leading(Ideographic::Thermometer)
+            .leading(Icon::Thermometer)
             .trailing(NumberCell{})
             .value(50)
         )

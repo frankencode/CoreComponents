@@ -44,7 +44,7 @@ int main()
                     for (int i = 0; i < 32; ++i) {
                         target.carrier().add(
                             ListItem{}
-                            .icon(Picture{Ideographic::AccessPoint, 28})
+                            .icon(Picture{Icon::AccessPoint, 28})
                             .title(Format{"User %%"}.arg(i))
                             .onClicked([=]() mutable {
                                 CC_INSPECT(i);
@@ -83,8 +83,8 @@ int main()
                                             .add(LineEdit{"Zip code"})
                                             .add(
                                                 Slider{}
-                                                .leading(Ideographic::VolumeLow)
-                                                .trailing(Ideographic::VolumeHigh)
+                                                .leading(Icon::VolumeLow)
+                                                .trailing(Icon::VolumeHigh)
                                             )
                                             .add(LineEdit{"Country"})
                                         }

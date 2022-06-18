@@ -68,8 +68,8 @@ int main()
             .add(LineEdit{"Zip code"})
             .add(
                 Slider{}
-                .leading(Ideographic::VolumeLow)
-                .trailing(Ideographic::VolumeHigh)
+                .leading(Icon::VolumeLow)
+                .trailing(Icon::VolumeHigh)
             )
             .add(LineEdit{"Country"})
         }

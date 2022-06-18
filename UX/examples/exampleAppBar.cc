@@ -18,7 +18,7 @@ int main()
             })
             .addAction(
                 Action{}
-                .icon(Ideographic::Information)
+                .icon(Icon::Information)
                 .onTriggered([]{
                     ferr() << "Info!" << nl;
                 })

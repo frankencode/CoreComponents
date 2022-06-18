@@ -11,7 +11,7 @@ int main()
     return
         View{sp(640), sp(480)}
         .add(
-            TinyFloatingButton{Ideographic::Plus}
+            TinyFloatingButton{Icon::Plus}
             .associate(&button)
             .onClicked([=]{
                 CC_DEBUG;

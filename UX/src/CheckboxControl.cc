@@ -34,19 +34,19 @@ struct CheckboxControl::State final: public InputControl::State
         );
 
         add(
-            Picture{Ideographic::CheckboxMarked, d_, theme().checkboxColor(true)}
+            Picture{Icon::CheckboxMarked, d_, theme().checkboxColor(true)}
             .centerInParent()
             .visible([this]{ return state() == Marked; })
         );
 
         add(
-            Picture{Ideographic::CheckboxIntermediate, d_, theme().checkboxColor(true)}
+            Picture{Icon::CheckboxIntermediate, d_, theme().checkboxColor(true)}
             .centerInParent()
             .visible([this]{ return state() == Intermediate; })
         );
 
         add(
-            Picture{Ideographic::CheckboxBlankOutline, d_, theme().checkboxColor(false)}
+            Picture{Icon::CheckboxBlankOutline, d_, theme().checkboxColor(false)}
             .centerInParent()
             .visible([this]{ return state() == Blank; })
         );

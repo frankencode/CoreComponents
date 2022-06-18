@@ -28,7 +28,7 @@ int main()
             for (int i = 0; i < 32; ++i) {
                 target.carrier().add(
                     ListItem{}
-                    .icon(Picture{Ideographic::AccessPoint, 28})
+                    .icon(Picture{Icon::AccessPoint, 28})
                     .title(Format{"Access point %%"}.arg(i))
                     .onClicked([i]{
                         CC_INSPECT(i);

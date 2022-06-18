@@ -7,7 +7,7 @@ int main()
 
     return
         ListItem{}
-        .icon(Picture{Ideographic::AccessPoint, 28})
+        .icon(Picture{Icon::AccessPoint, 28})
         .title("Access point")
         .paper(Color::White)
         .run();

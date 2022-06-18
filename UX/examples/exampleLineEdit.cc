@@ -1,5 +1,5 @@
 #include <cc/LineEdit>
-#include <cc/Ideographic>
+#include <cc/Icon>
 #include <cc/Format>
 #include <cc/DEBUG>
 
@@ -15,7 +15,7 @@ int main()
             LineEdit{}
             .associate(&edit)
             .title("Username")
-            .icon(Ideographic::AccountPlus)
+            .icon(Icon::AccountPlus)
             .alertIcon()
             .placeholder("JohnDoe")
             .help("Allowed characters include uppercase letters, lowercase letters, minus and underscore")
