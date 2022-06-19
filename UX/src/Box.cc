@@ -7,6 +7,7 @@
  */
 
 #include <cc/Box>
+#include <cc/DEBUG>
 
 namespace cc {
 
@@ -19,41 +20,63 @@ Box::State::State()
     });
 
     paint([this]{
-        Painter p{this};
+        Painter painter{this};
 
-        const double w = size()[0];
-        const double h = size()[1];
-        const double r = radius();
+        const double b2 = std::ceil(border().isNull() ? 0 : border().lineWidth() / 2);
+        const double b = 2 * b2;
+        const double x = b2;
+        const double y = b2;
+        const double w = size()[0] - b;
+        const double h = size()[1] - b;
+        const double r = radius() - b2;
 
-        if (r == 0)
-            ;
+        if (x != 0 || y != 0) {
+            painter.translate(Point{x, y});
+        }
+
+        if (r == 0) {
+            return;
+        }
         else if (r == w / 2) {
-            p.moveTo(Point{0, r});
-            p.arc(Point{r, r}, r, rad(180), rad(360));
-            p.lineTo(Point{w, h - r});
-            p.arc(Point{r, h - r}, r, rad(0), rad(180));
-            p.setPen(color());
-            p.fill();
+            painter
+            .moveTo({0, r})
+            .arc({r, r}, r, rad(180), rad(360))
+            .lineTo({w, h - r})
+            .arc({r, h - r}, r, rad(0), rad(180))
+            .lineTo({0, r});
         }
         else if (r == h / 2) {
-            p.moveTo(Point{r, h});
-            p.arc(Point{r, r}, r, rad(90), rad(270));
-            p.lineTo(Point{w - r, 0});
-            p.arc(Point{w - r, r}, r, rad(270), rad(90));
-            p.setPen(color());
-            p.fill();
+            painter
+            .moveTo({r, h})
+            .arc({r, r}, r, rad(90), rad(270))
+            .lineTo({w - r, 0})
+            .arc({w - r, r}, r, rad(270), rad(90))
+            .lineTo({r, h});
         }
         else {
-            p.moveTo(Point{w - r, 0});
-            p.arc(Point{w - r, r}, r, rad(270), rad(360));
-            p.lineTo(Point{w, h - r});
-            p.arc(Point{w - r, h - r}, r, rad(0), rad(90));
-            p.lineTo(Point{r, h});
-            p.arc(Point{r, h - r}, r, rad(90), rad(180));
-            p.lineTo(Point{0, r});
-            p.arc(Point{r, r}, r, rad(180), rad(270));
-            p.setPen(color());
-            p.fill();
+            painter
+            .moveTo({w - r, 0})
+            .arc({w - r, r}, r, rad(270), rad(360))
+            .lineTo({w, h - r})
+            .arc({w - r, h - r}, r, rad(0), rad(90))
+            .lineTo({r, h})
+            .arc({r, h - r}, r, rad(90), rad(180))
+            .lineTo({0, r})
+            .arc({r, r}, r, rad(180), rad(270))
+            .lineTo({w - r, 0});
+        }
+
+        if (border().isNull()) {
+            painter
+            .setPen(color())
+            .fill();
+        }
+        else {
+            painter
+            .setPen(color())
+            .fill(Painter::CurrentPath::Preserve)
+            .setPen(border())
+            .stroke();
         }
     });
 }

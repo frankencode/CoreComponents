@@ -70,21 +70,13 @@ public:
     Color radioboxColor(bool on) const { return me().radioboxColor(on); }
     Color radioboxFocusColor() const { return me().radioboxFocusColor(); }
 
-    Color buttonColor(bool pressed) const { return me().buttonColor(pressed); }
-    Color buttonFocusColor(bool pressed) const { return me().buttonFocusColor(pressed); }
-    Color buttonTextColor(bool pressed) const { return me().buttonTextColor(pressed); }
-    Color buttonTextFocusColor(bool pressed) const { return me().buttonTextFocusColor(pressed); }
+    Color pushButtonColor(PushButtonStyle style) const { return me().pushButtonColor(style); }
+    Color pushButtonTextColor(PushButtonStyle style) const { return me().pushButtonTextColor(style); }
+    Color pushButtonShadowColor(PushButtonStyle style) const { return me().pushButtonShadowColor(style); }
+    Color pushButtonFocusColor(PushButtonStyle style) const { return me().pushButtonFocusColor(style); }
 
-    Color floatingActionButtonColor(ButtonStyle style) const { return me().floatingActionButtonColor(style); }
-    Color floatingActionButtonTextColor(ButtonStyle style) const { return me().floatingActionButtonTextColor(style); }
-    Color floatingActionButtonShadowColor(ButtonStyle style) const { return me().floatingActionButtonShadowColor(style); }
-    Color floatingActionButtonFocusColor(ButtonStyle style) const { return me().floatingActionButtonFocusColor(style); }
-
-    Color elevatedButtonColor() const { return me().elevatedButtonColor(); }
-    Color elevatedButtonFocusColor() const { return me().elevatedButtonFocusColor(); }
-    Color elevatedButtonTextColor() const { return me().elevatedButtonTextColor(); }
-    Color elevatedButtonFocusTextColor() const { return me().elevatedButtonFocusTextColor(); }
-    Color elevatedButtonShadowColor() const { return me().elevatedButtonShadowColor(); }
+    Color touchButtonColor(TouchButtonStyle style, bool pressed) const { return me().touchButtonColor(style, pressed); }
+    Color touchButtonTextColor(TouchButtonStyle style, bool pressed) const { return me().touchButtonTextColor(style, pressed); }
 
     Color flickableIndicatorColor() const { return me().flickableIndicatorColor(); }
     Color flickableIndicatorHandleColor() const { return me().flickableIndicatorHandleColor(); }
@@ -152,21 +144,13 @@ protected:
         virtual Color radioboxColor(bool on) const { return on ? primaryColor() : secondaryTextColor(); }
         virtual Color radioboxFocusColor() const { return switchFocusColor(); }
 
-        virtual Color buttonColor(bool pressed) const = 0;
-        virtual Color buttonFocusColor(bool pressed) const = 0;
-        virtual Color buttonTextColor(bool pressed) const = 0;
-        virtual Color buttonTextFocusColor(bool pressed) const = 0;
+        virtual Color pushButtonColor(PushButtonStyle style) const = 0;
+        virtual Color pushButtonTextColor(PushButtonStyle style) const = 0;
+        virtual Color pushButtonShadowColor(PushButtonStyle style) const = 0;
+        virtual Color pushButtonFocusColor(PushButtonStyle style) const { return Color{}; }
 
-        virtual Color floatingActionButtonColor(ButtonStyle style) const = 0;
-        virtual Color floatingActionButtonTextColor(ButtonStyle style) const = 0;
-        virtual Color floatingActionButtonShadowColor(ButtonStyle style) const = 0;
-        virtual Color floatingActionButtonFocusColor(ButtonStyle style) const { return Color{}; }
-
-        virtual Color elevatedButtonColor() const = 0;
-        virtual Color elevatedButtonFocusColor() const = 0;
-        virtual Color elevatedButtonTextColor() const = 0;
-        virtual Color elevatedButtonFocusTextColor() const = 0;
-        virtual Color elevatedButtonShadowColor() const = 0;
+        virtual Color touchButtonColor(TouchButtonStyle style, bool pressed) const = 0;
+        virtual Color touchButtonTextColor(TouchButtonStyle style, bool pressed) const = 0;
 
         virtual Color flickableIndicatorColor() const { return inputFieldFillColor(); }
         virtual Color flickableIndicatorHandleColor() const { return sliderKnobColor(); }

@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/InputControl>
+#include <cc/Picture>
+
+namespace cc {
+
+/** \class TouchButton cc/TouchButton
+  * \ingroup ui
+  * \brief %Touch button (a button that changes color when touched)
+  */
+class TouchButton final: public InputControl
+{
+public:
+    /** \copybrief TouchButtonStyle
+      */
+    using Style = TouchButtonStyle;
+
+    /** Create a primordial touch button
+      */
+    TouchButton();
+
+    /** Create a new touch button
+      */
+    TouchButton(Style style, const String &text, const Picture &icon = Picture{});
+
+    /** Create a new touch button
+      */
+    explicit TouchButton(const String &text, const Picture &icon = Picture{});
+
+    /** Get a weak reference in \a self
+      */
+    TouchButton &associate(Out<TouchButton> self);
+
+    String text() const; ///< Get text
+    TouchButton &text(const String &newValue); ///< %Set text
+    TouchButton &text(Definition<String> &&f); ///< Define text
+
+    TouchButton &autoExpand(bool on = true); ///< Automatically expand to full when placed in a layout
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

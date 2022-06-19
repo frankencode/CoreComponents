@@ -1,0 +1,63 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/InputControl>
+#include <cc/Picture>
+
+namespace cc {
+
+/** \class PushButton cc/PushButton
+  * \ingroup ui
+  * \brief Push button (a button that is pressed down)
+  * \todo field definition or negative touch margins ("activeMargin"?-)
+  */
+class PushButton: public InputControl
+{
+public:
+    /** \copybrief PushButtonStyle
+      */
+    using Style = PushButtonStyle;
+
+    /** Create a primordial button
+      */
+    PushButton();
+
+    /** Create a new button
+      */
+    explicit PushButton(Style style, const String &text = String{}, const Picture &icon = Picture{});
+
+    /** Create a new button
+      */
+    PushButton(Style style, const Picture &icon);
+
+    /** Create a new button
+      */
+    explicit PushButton(const String &text, const Picture &icon = Picture{});
+
+    /** Create a new button
+      */
+    explicit PushButton(const Picture &icon);
+
+    /** Get a weak reference in \a self
+      */
+    PushButton &associate(Out<PushButton> self);
+
+    String text() const; ///< Get text
+    PushButton &text(const String &newValue); ///< %Set text
+    PushButton &text(Definition<String> &&f); ///< %Define text
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

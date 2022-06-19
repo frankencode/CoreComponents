@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Button>
+#include <cc/PushButton>
 
 namespace cc {
 
@@ -16,7 +16,7 @@ namespace cc {
   * \ingroup ui
   * \brief Convenience class to construct a tiny floating button
   */
-class TinyFloatingButton: public Button
+class TinyFloatingButton: public PushButton
 {
 public:
     /** Create a primordial tiny floating button
@@ -26,7 +26,7 @@ public:
     /** Create a tiny floating button
       */
     explicit TinyFloatingButton(const Picture &icon):
-        Button{ButtonStyle::TinyFloating, icon}
+        PushButton{PushButtonStyle::TinyFloating, icon}
     {}
 };
 

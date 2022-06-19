@@ -39,6 +39,10 @@ public:
     Box &color(Color newValue) { me().color(newValue); return *this; } ///< %Set color
     Box &color(Definition<Color> &&f) { me().color(move(f)); return *this; } ///< %Define color
 
+    Pen border() const { return me().border(); } ///< Get border pen
+    Box &border(const Pen &newValue) { me().border(newValue); return *this; } ///< %Set border pen
+    Box &border(Definition<Pen> &&f) { me().border(move(f)); return *this; } ///< %Define border pen
+
 protected:
     struct State: public View::State
     {
@@ -49,6 +53,7 @@ protected:
 
         Property<double> radius;
         Property<Color> color;
+        Property<Pen> border;
     };
 
     explicit Box(State *newState):

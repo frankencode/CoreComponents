@@ -1,4 +1,4 @@
-#include <cc/Button>
+#include <cc/PushButton>
 #include <cc/Format>
 #include <cc/DEBUG>
 
@@ -6,12 +6,12 @@ int main()
 {
     using namespace cc;
 
-    Button button;
+    PushButton button;
 
     return
         View{sp(640), sp(480)}
         .add(
-            Button{"USER", Icon::Plus}
+            PushButton{"USER", Icon::Plus}
             .associate(&button)
             .onClicked([=]{
                 CC_DEBUG;

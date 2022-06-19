@@ -65,28 +65,27 @@ struct MaterialLight::State: public Theme::State
     Color checkboxColor(bool on) const override { return on ? primaryDarkColor() : secondaryTextColor(); }
     Color radioboxColor(bool on) const override { return on ? primaryDarkColor() : secondaryTextColor(); }
 
-    Color buttonColor(bool pressed) const override { return primaryDarkColor().darker(pressed ? 20 : 0); }
-    Color buttonFocusColor(bool pressed) const override { return buttonColor(pressed).darker(20); }
-    Color buttonTextColor(bool pressed) const override { return Color::White; }
-    Color buttonTextFocusColor(bool pressed) const override { return Color::White; }
-
-    Color floatingActionButtonColor(ButtonStyle style) const override
+    Color pushButtonColor(PushButtonStyle style) const override
     {
-        return (style == ButtonStyle::Regular) ? Color{Material::Blue50} : primaryDarkColor();
+        return (style == PushButtonStyle::Elevated) ? Color{Material::Blue50} : primaryDarkColor();
     }
 
-    Color floatingActionButtonTextColor(ButtonStyle style) const override
+    Color pushButtonTextColor(PushButtonStyle style) const override
     {
-        return (style == ButtonStyle::Regular) ? Color{Material::Blue900} : Color::White;
+        return (style == PushButtonStyle::Elevated) ? Color{Material::Blue900} : Color::White;
     }
 
-    Color floatingActionButtonShadowColor(ButtonStyle style) const override { return 0x60000000u; }
+    Color pushButtonShadowColor(PushButtonStyle style) const override { return 0x60000000u; }
 
-    Color elevatedButtonColor() const override { return Material::Blue50; }
-    Color elevatedButtonFocusColor() const override { return elevatedButtonColor().darker(5); }
-    Color elevatedButtonTextColor() const override { return Material::Blue900; }
-    Color elevatedButtonFocusTextColor() const override { return Material::Blue900; }
-    Color elevatedButtonShadowColor() const override { return 0x60000000u; }
+    Color touchButtonColor(TouchButtonStyle style, bool pressed) const override
+    {
+        return primaryDarkColor().lighter(pressed ? 10 : 0);
+    }
+
+    Color touchButtonTextColor(TouchButtonStyle style, bool pressed) const override
+    {
+        return Color::White;
+    }
 };
 
 MaterialLight::MaterialLight():

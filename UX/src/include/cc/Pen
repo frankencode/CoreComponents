@@ -53,6 +53,10 @@ public:
         Object{new State{color}}
     {}
 
+    Pen(Color color, double lineWidth):
+        Object{new State{color, lineWidth}}
+    {}
+
     Color color() const { return me().color_; } ///< %Get pen color
     Pen &color(Color newValue) { me().color_ = newValue; return *this; } ///< %Set pen color
 
@@ -81,6 +85,11 @@ private:
 
         State(Color color):
             color_{color}
+        {}
+
+        State(Color color, double lineWidth):
+            color_{color},
+            lineWidth_{lineWidth}
         {}
 
         Color color_;

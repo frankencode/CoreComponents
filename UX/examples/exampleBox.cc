@@ -10,7 +10,8 @@ int main()
         .add(
             Box{gu(20), gu(20)}
             .radius(gu(2))
-            .color("darkcyan")
+            .color("yellow")
+            .border(Pen{"darkgray", sp(2)})
             .centerInParent()
         )
         .run();

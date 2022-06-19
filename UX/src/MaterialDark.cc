@@ -58,31 +58,30 @@ struct MaterialDark::State: public Theme::State
     Color switchTrackColor(bool on) const override { return on ? windowColor().mixedWith(secondaryColor(), 38) : Color{Material::Grey500}; }
     Color switchFocusColor() const override { return primaryColor(); }
 
-    Color buttonColor(bool pressed) const override { return primaryColor().lighter(pressed ? 10 : 0); }
-    Color buttonFocusColor(bool pressed) const override { return buttonColor(pressed).lighter(10); }
-    Color buttonTextColor(bool pressed) const override { return Color::White; }
-    Color buttonTextFocusColor(bool pressed) const override { return Color::White; }
-
-    Color floatingActionButtonColor(ButtonStyle style) const override
+    Color pushButtonColor(PushButtonStyle style) const override
     {
-        return (style == ButtonStyle::Regular) ? secondaryColor() : primaryColor();
+        return (style == PushButtonStyle::Elevated) ? secondaryColor() : primaryColor();
     }
 
-    Color floatingActionButtonTextColor(ButtonStyle style) const override
+    Color pushButtonTextColor(PushButtonStyle style) const override
     {
         return Color::White;
     }
 
-    Color floatingActionButtonShadowColor(ButtonStyle style) const override
+    Color pushButtonShadowColor(PushButtonStyle style) const override
     {
         return sliderKnobShadowColor();
     }
 
-    Color elevatedButtonColor() const override { return secondaryColor(); }
-    Color elevatedButtonFocusColor() const override { return elevatedButtonColor().lighter(10); }
-    Color elevatedButtonTextColor() const override { return Color::White; }
-    Color elevatedButtonFocusTextColor() const override { return Color::White; }
-    Color elevatedButtonShadowColor() const override { return sliderKnobShadowColor(); }
+    Color touchButtonColor(TouchButtonStyle style, bool pressed) const override
+    {
+        return primaryColor().lighter(pressed ? 10 : 0);
+    }
+
+    Color touchButtonTextColor(TouchButtonStyle style, bool pressed) const override
+    {
+        return Color::White;
+    }
 };
 
 MaterialDark::MaterialDark():

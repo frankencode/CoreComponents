@@ -187,24 +187,45 @@ inline String str(Orientation orientation)
     return String{};
 }
 
-/** %Button style
+/** Push button style
   */
-enum class ButtonStyle {
-    Regular, ///< Regular button
+enum class PushButtonStyle {
+    Elevated, ///< Elevated Button
     Floating, ///< Floating Action Button (FAB)
     TinyFloating, ///< Tiny Floating Action Button (FAB)
-    FloatingWithLabel ///< Extended Floating Action Button (FAB with label)
+    FloatingWithLabel, ///< Extended Floating Action Button (FAB with label)
+    Default = Elevated ///< Default push button style
 };
 
-inline String str(ButtonStyle style)
+inline String str(PushButtonStyle style)
 {
     switch (style) {
-        case ButtonStyle::Regular: return "ButtonStyle::Regular";
-        case ButtonStyle::Floating: return "ButtonStyle::Floating";
-        case ButtonStyle::TinyFloating: return "ButtonStyle::TinyFloating";
-        case ButtonStyle::FloatingWithLabel: return "ButtonStyle::FloatingWithLabel";
+        case PushButtonStyle::Elevated: return "PushButtonStyle::Elevated";
+        case PushButtonStyle::Floating: return "PushButtonStyle::Floating";
+        case PushButtonStyle::TinyFloating: return "PushButtonStyle::TinyFloating";
+        case PushButtonStyle::FloatingWithLabel: return "PushButtonStyle::FloatingWithLabel";
     };
+    return String{};
+}
 
+/** %Touch button style
+  */
+enum class TouchButtonStyle {
+    Filled, ///< Filled with a prominent color
+    Tonal, ///< Filled with a more subtle color
+    Outlined, ///< Outlined, not filled
+    Text, ///< Just a touchable text
+    Default = Filled ///< Default touch button style
+};
+
+inline String str(TouchButtonStyle style)
+{
+    switch (style) {
+        case TouchButtonStyle::Filled: return "TouchButtonStyle::Filled";
+        case TouchButtonStyle::Tonal: return "TouchButtonStyle::Tonal";
+        case TouchButtonStyle::Outlined: return "TouchButtonStyle::Outlined";
+        case TouchButtonStyle::Text: return "TouchButtonStyle::Text";
+    };
     return String{};
 }
 

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Button>
+#include <cc/PushButton>
 
 namespace cc {
 
@@ -16,7 +16,7 @@ namespace cc {
   * \ingroup ui
   * \brief Convenience class to construct a floating button
   */
-class FloatingButton: public Button
+class FloatingButton: public PushButton
 {
 public:
     /** Create a primordial floating button
@@ -26,13 +26,13 @@ public:
     /** Create a regular floating button
       */
     explicit FloatingButton(const Picture &icon):
-        Button{ButtonStyle::Floating, icon}
+        PushButton{PushButtonStyle::Floating, icon}
     {}
 
     /** Create a floating button with a text label
       */
     explicit FloatingButton(const String &text, const Picture &icon = Picture{}):
-        Button{text == "" ? ButtonStyle::Floating : ButtonStyle::FloatingWithLabel, text, icon}
+        PushButton{text == "" ? PushButtonStyle::Floating : PushButtonStyle::FloatingWithLabel, text, icon}
     {}
 };
 

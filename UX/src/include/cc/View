@@ -448,6 +448,16 @@ public:
     Point centerLeft  () const { return me().centerLeft(); } ///< Get this view's center-left point
     Point centerRight () const { return me().centerRight(); } ///< Get this view's center-right point
 
+    View &topLeft      (Point newValue) { me().topLeft(newValue); return *this; } ///< Make this view's top-left match \a newValue
+    View &topCenter    (Point newValue) { me().topCenter(newValue); return *this; } ///< Make this view's top-center match \a newValue
+    View &topRight     (Point newValue) { me().topRight(newValue); return *this; } ///< Make this view's top-right match \a newValue
+    View &bottomLeft   (Point newValue) { me().bottomLeft(newValue); return *this; } ///< Make this view's bottom-left match \a newValue
+    View &bottomCenter (Point newValue) { me().bottomCenter(newValue); return *this; } ///< Make this view's bottom-center match \a newValue
+    View &bottomRight  (Point newValue) { me().bottomRight(newValue); return *this; } ///< Make this view's bottom-right match \a newValue
+    View &centerLeft   (Point newValue) { me().centerLeft(newValue); return *this; } ///< Make this view's center-left match \a newValue
+    View &centerRight  (Point newValue) { me().centerRight(newValue); return *this; } ///< Make this view's center-right match \a newValue
+    View &center       (Point newValue) { me().center(newValue); return *this; } ///< Make this view's center match \a newValue
+
     View &topLeft     (Definition<Point> &&a) { pos(move(a)); return *this; } ///< %Anchor the top-left corner to \a a
     View &topCenter   (Definition<Point> &&a) { me().topCenter(move(a)); return *this; } ///< %Anchor the top-center corner to \a a
     View &topRight    (Definition<Point> &&a) { me().topRight(move(a)); return *this; } ///< %Anchor the top-right corner to \a a
@@ -646,27 +656,37 @@ protected:
         double expandableWidth(double width) const; ///< Get the expandable width of this view within its parent layout
 
         double top   () const { return pos()[1]; } ///< \copydoc View::top()
-        double bottom() const { return pos()[1] + size()[1]; } ///< \copydoc View::bottom()
+        double bottom() const { return pos()[1] + height(); } ///< \copydoc View::bottom()
         double left  () const { return pos()[0]; } ///< \copydoc View::left()
-        double right () const { return pos()[0] + size()[0]; } ///< \copydoc View::right()
+        double right () const { return pos()[0] + width(); } ///< \copydoc View::right()
 
         Point topLeft     () const { return pos(); } ///< \copydoc View::topLeft()
-        Point topCenter   () const { return pos() + Step{size()[0] / 2, 0}; } ///< \copydoc View::topCenter()
-        Point topRight    () const { return pos() + Step{size()[0], 0}; } ///< \copydoc View::topRight()
-        Point bottomLeft  () const { return pos() + Step{0, size()[1]}; } ///< \copydoc View::bottomLeft()
-        Point bottomCenter() const { return pos() + Step{size()[0] / 2, size()[1]}; } ////< \copydoc View::bottomCenter()
+        Point topCenter   () const { return pos() + Step{width() / 2, 0}; } ///< \copydoc View::topCenter()
+        Point topRight    () const { return pos() + Step{width(), 0}; } ///< \copydoc View::topRight()
+        Point bottomLeft  () const { return pos() + Step{0, height()}; } ///< \copydoc View::bottomLeft()
+        Point bottomCenter() const { return pos() + Step{width() / 2, height()}; } ////< \copydoc View::bottomCenter()
         Point bottomRight () const { return pos() + size(); } ///< \copydoc View::bottomRight()
-        Point centerLeft  () const { return pos() + Step{0, size()[1] / 2}; } ///< \copydoc View::centerLeft()
-        Point centerRight () const { return pos() + Step{size()[0], size()[1] / 2}; } ///< \copydoc View::centerRight()
+        Point centerLeft  () const { return pos() + Step{0, height() / 2}; } ///< \copydoc View::centerLeft()
+        Point centerRight () const { return pos() + Step{width(), height() / 2}; } ///< \copydoc View::centerRight()
+
+        void topLeft      (Point newValue) { pos(newValue); } ///< \copydoc View::topLeft()
+        void topCenter    (Point newValue) { pos(newValue - Step{width() / 2, 0}); } ///< \copydoc View::topCenter()
+        void topRight     (Point newValue) { pos(newValue - Step{width(), 0}); } ///< \copydoc View::topRight()
+        void bottomLeft   (Point newValue) { pos(newValue - Step{0, height()}); } ///< \copydoc View::bottomLeft()
+        void bottomCenter (Point newValue) { pos(newValue - Step{width() / 2, 0}); } ///< \copydoc View::bottomCenter()
+        void bottomRight  (Point newValue) { pos(newValue - size()); } ///< \copydoc View::bottomRight()
+        void centerLeft   (Point newValue) { pos(newValue - Step{0, height() / 2}); } ///< \copydoc View::centerLeft()
+        void centerRight  (Point newValue) { pos(newValue - Step{width(), height() / 2}); } ///< \copydoc View::centerRight()
+        void center       (Point newValue) { pos(newValue - size() / 2); } ///< \copydoc View::center()
 
         void topLeft     (Definition<Point> &&a) { pos(move(a)); } ///< \copydoc View::topLeft()
-        void topCenter   (Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0] / 2, 0}; }); } ///< \copydoc View::topCenter()
-        void topRight    (Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], 0}; }); } ///< \copydoc View::topRight()
-        void bottomLeft  (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1]}; }); } ///< \copydoc View::bottomLeft()
-        void bottomCenter(Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0]/2, size()[1]}; }); } ///< \copydoc View::bottomCenter()
+        void topCenter   (Definition<Point> &&a) { pos([this, a]{ return a() - Step{width() / 2, 0}; }); } ///< \copydoc View::topCenter()
+        void topRight    (Definition<Point> &&a) { pos([this, a]{ return a() - Step{width(), 0}; }); } ///< \copydoc View::topRight()
+        void bottomLeft  (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, height()}; }); } ///< \copydoc View::bottomLeft()
+        void bottomCenter(Definition<Point> &&a) { pos([this, a]{ return a() - Step{width() / 2, height()}; }); } ///< \copydoc View::bottomCenter()
         void bottomRight (Definition<Point> &&a) { pos([this, a]{ return a() - size(); }); } ///< \copydoc View::bottomRight()
-        void centerLeft  (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, size()[1] / 2}; }); } ///< \copydoc View::centerLeft()
-        void centerRight (Definition<Point> &&a) { pos([this, a]{ return a() - Step{size()[0], size()[1] / 2}; }); } ///< \copydoc View::centerRight()
+        void centerLeft  (Definition<Point> &&a) { pos([this, a]{ return a() - Step{0, height() / 2}; }); } ///< \copydoc View::centerLeft()
+        void centerRight (Definition<Point> &&a) { pos([this, a]{ return a() - Step{width(), height() / 2}; }); } ///< \copydoc View::centerRight()
         void center      (Definition<Point> &&a) { pos([this, a]{ return a() - size() / 2; }); } ///< \copydoc View::center()
 
         /** \copydoc View::centerInParent()
