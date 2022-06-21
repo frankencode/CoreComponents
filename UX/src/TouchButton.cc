@@ -20,6 +20,7 @@ struct TouchButton::State final: public InputControl::State
         icon_{icon}
     {
         size([this]{ return preferredSize(); });
+        extraMargin([this]{ return (size()[0] - minSize()[0]) / 2; });
 
         add(
             box_
@@ -43,7 +44,7 @@ struct TouchButton::State final: public InputControl::State
                 return basePaper();
             })
             .centerRight([this]{
-                return size() - Size{icon_.isNull() ? d_/2 : sp(20), d_/2};
+                return size() - Size{(icon_.isNull() ? d_/2 : sp(20)) + extraMargin(), d_/2};
             })
         );
 
@@ -52,7 +53,7 @@ struct TouchButton::State final: public InputControl::State
                 icon_
                 .color([this]{ return label_.color(); })
                 .paper([this]{ return label_.paper(); })
-                .centerLeft([this]{ return Point{sp(12), d_/2}; })
+                .centerLeft([this]{ return Point{sp(12) + extraMargin(), d_/2}; })
             );
         }
     }
@@ -80,6 +81,7 @@ struct TouchButton::State final: public InputControl::State
     const double d_ { sp(40) };
     Style style_;
     Property<bool> autoExpand { true };
+    Property<double> extraMargin;
     Box box_;
     Label label_;
     Picture icon_;
