@@ -17,7 +17,7 @@ namespace cc {
   * \ingroup ui
   * \brief %Touch button (a button that changes color when touched)
   */
-class TouchButton final: public InputControl
+class TouchButton: public InputControl
 {
 public:
     /** \copybrief TouchButtonStyle

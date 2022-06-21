@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/Pen>
 #include <cc/uiTypes>
 
 namespace cc {
@@ -77,6 +78,7 @@ public:
 
     Color touchButtonColor(TouchButtonStyle style, bool pressed) const { return me().touchButtonColor(style, pressed); }
     Color touchButtonTextColor(TouchButtonStyle style, bool pressed) const { return me().touchButtonTextColor(style, pressed); }
+    Pen touchButtonBorder(TouchButtonStyle style, bool pressed) const { return me().touchButtonBorder(style, pressed); }
 
     Color flickableIndicatorColor() const { return me().flickableIndicatorColor(); }
     Color flickableIndicatorHandleColor() const { return me().flickableIndicatorHandleColor(); }
@@ -103,7 +105,7 @@ protected:
         virtual Color popupColor() const = 0;
 
         virtual Color appBarColor(bool pressed) const = 0;
-        virtual Color appBarTextColor() const { return titleTextColor(); }
+        virtual Color appBarTextColor() const;
         virtual Color appBarShadowColor() const = 0;
 
         virtual Color titleTextColor() const = 0;
@@ -123,7 +125,7 @@ protected:
         virtual Color dividerColor() const = 0;
 
         virtual Color inputFieldFillColor() const = 0;
-        virtual Color inputFieldFillColor(bool pressed) const { return inputFieldFillColor(); }
+        virtual Color inputFieldFillColor(bool pressed) const;
 
         virtual Color itemHighlightColor() const = 0;
 
@@ -138,32 +140,33 @@ protected:
         virtual Color switchTrackColor(bool on) const = 0;
         virtual Color switchFocusColor() const = 0;
 
-        virtual Color checkboxColor(bool on) const { return on ? primaryColor() : secondaryTextColor(); }
-        virtual Color checkboxFocusColor() const { return switchFocusColor(); }
+        virtual Color checkboxColor(bool on) const;
+        virtual Color checkboxFocusColor() const;
 
-        virtual Color radioboxColor(bool on) const { return on ? primaryColor() : secondaryTextColor(); }
-        virtual Color radioboxFocusColor() const { return switchFocusColor(); }
+        virtual Color radioboxColor(bool on) const;
+        virtual Color radioboxFocusColor() const;
 
         virtual Color pushButtonColor(PushButtonStyle style) const = 0;
         virtual Color pushButtonTextColor(PushButtonStyle style) const = 0;
         virtual Color pushButtonShadowColor(PushButtonStyle style) const = 0;
-        virtual Color pushButtonFocusColor(PushButtonStyle style) const { return Color{}; }
+        virtual Color pushButtonFocusColor(PushButtonStyle style) const;
 
         virtual Color touchButtonColor(TouchButtonStyle style, bool pressed) const = 0;
-        virtual Color touchButtonTextColor(TouchButtonStyle style, bool pressed) const = 0;
+        virtual Color touchButtonTextColor(TouchButtonStyle style, bool pressed) const;
+        virtual Pen touchButtonBorder(TouchButtonStyle style, bool pressed) const;
 
-        virtual Color flickableIndicatorColor() const { return inputFieldFillColor(); }
-        virtual Color flickableIndicatorHandleColor() const { return sliderKnobColor(); }
+        virtual Color flickableIndicatorColor() const;
+        virtual Color flickableIndicatorHandleColor() const;
 
-        virtual Color clockDialClockFaceColor(bool pressed) const { return inputFieldFillColor(); }
-        virtual Color clockDialClockFaceTextColor(bool pressed) const { return primaryTextColor(); }
-        virtual Color clockDialCurrentValueColor(bool pressed) const { return sliderKnobColor(); }
-        virtual Color clockDialCurrentValueTextColor(bool pressed) const { return titleTextColor(); }
+        virtual Color clockDialClockFaceColor(bool pressed) const;
+        virtual Color clockDialClockFaceTextColor(bool pressed) const;
+        virtual Color clockDialCurrentValueColor(bool pressed) const;
+        virtual Color clockDialCurrentValueTextColor(bool pressed) const;
 
-        virtual double defaultFontSize() const { return 16; }
-        virtual double defaultFixedFontSize() const { return 16; }
-        virtual double smallFontSize() const { return 12; }
-        virtual double textCursorWidth() const { return dp(1); }
+        virtual double defaultFontSize() const;
+        virtual double defaultFixedFontSize() const;
+        virtual double smallFontSize() const;
+        virtual double textCursorWidth() const;
     };
 
     explicit Theme(State *newState):

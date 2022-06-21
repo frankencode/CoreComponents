@@ -1,4 +1,4 @@
-#include <cc/TouchButton>
+#include <cc/OutlineButton>
 #include <cc/Format>
 #include <cc/DEBUG>
 
@@ -6,12 +6,12 @@ int main()
 {
     using namespace cc;
 
-    TouchButton button;
+    OutlineButton button;
 
     return
         View{sp(640), sp(480)}
         .add(
-            TouchButton{"User", Icon::Plus}
+            OutlineButton{"User", Icon::Plus}
             .associate(&button)
             .onClicked([=]{
                 CC_DEBUG;

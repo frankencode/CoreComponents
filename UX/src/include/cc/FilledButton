@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TouchButton>
+
+namespace cc {
+
+/** \class FilledButton cc/FilledButton
+  * \ingroup ui
+  * \brief Convenience class to create filled buttons
+  */
+class FilledButton final: public TouchButton
+{
+public:
+    /** Create a primordial filled button
+      */
+    FilledButton() = default;
+
+    /** Create a new filled button
+      */
+    explicit FilledButton(const String &text, const Picture &icon = Picture{}):
+        TouchButton{TouchButton::Style::Filled, text, icon}
+    {}
+};
+
+} // namespace cc

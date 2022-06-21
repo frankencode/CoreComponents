@@ -23,7 +23,14 @@ struct TouchButton::State final: public InputControl::State
 
         add(
             box_
-            .color([this]{ return theme().touchButtonColor(style_, pressed()); })
+            .color([this]{
+                Color c = theme().touchButtonColor(style_, pressed());
+                if (!c.isValid()) c = basePaper();
+                return c;
+            })
+            .border([this]{
+                return theme().touchButtonBorder(style_, pressed());
+            })
             .radius(d_ / 2)
             .size([this]{ return size(); })
         );
@@ -31,7 +38,10 @@ struct TouchButton::State final: public InputControl::State
         add(
             label_
             .color([this]{ return theme().touchButtonTextColor(style_, pressed()); })
-            .paper([this]{ return box_.color(); })
+            .paper([this]{
+                if (box_.color().isValid()) return box_.color();
+                return basePaper();
+            })
             .centerRight([this]{
                 return size() - Size{icon_.isNull() ? d_/2 : sp(20), d_/2};
             })
@@ -41,7 +51,7 @@ struct TouchButton::State final: public InputControl::State
             box_.add(
                 icon_
                 .color([this]{ return label_.color(); })
-                .paper([this]{ return box_.color(); })
+                .paper([this]{ return label_.paper(); })
                 .centerLeft([this]{ return Point{sp(12), d_/2}; })
             );
         }

@@ -14,9 +14,9 @@ namespace cc {
 Box::State::State()
 {
     paper([this]{
-        return radius() > 0 ?
-            (decoration() ? Color::Transparent : basePaper()) :
-            color();
+        Color c = radius() > 0 ? (decoration() ? Color::Transparent : basePaper()) : color();
+        if (!c.isValid()) c = basePaper();
+        return c;
     });
 
     paint([this]{

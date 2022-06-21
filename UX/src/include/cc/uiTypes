@@ -213,7 +213,7 @@ inline String str(PushButtonStyle style)
 enum class TouchButtonStyle {
     Filled, ///< Filled with a prominent color
     Tonal, ///< Filled with a more subtle color
-    Outlined, ///< Outlined, not filled
+    Outline, ///< Outline, not filled
     Text, ///< Just a touchable text
     Default = Filled ///< Default touch button style
 };
@@ -223,7 +223,7 @@ inline String str(TouchButtonStyle style)
     switch (style) {
         case TouchButtonStyle::Filled: return "TouchButtonStyle::Filled";
         case TouchButtonStyle::Tonal: return "TouchButtonStyle::Tonal";
-        case TouchButtonStyle::Outlined: return "TouchButtonStyle::Outlined";
+        case TouchButtonStyle::Outline: return "TouchButtonStyle::Outline";
         case TouchButtonStyle::Text: return "TouchButtonStyle::Text";
     };
     return String{};

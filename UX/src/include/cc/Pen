@@ -25,6 +25,17 @@ enum class LineCap: short {
 
 inline constexpr short operator+(LineCap style) { return static_cast<int>(style); }
 
+inline String str(LineCap style)
+{
+    switch (style) {
+        case LineCap::Butt: return "LineCap::Butt";
+        case LineCap::Round: return "LineCap::Round";
+        case LineCap::Square: return "LineCap::Square";
+        case LineCap::Undef: return "LineCap::Undef";
+    };
+    return String{};
+}
+
 /** %Line join rendering style
   */
 enum class LineJoin: short {
@@ -35,6 +46,17 @@ enum class LineJoin: short {
 };
 
 inline constexpr short operator+(LineJoin style) { return static_cast<int>(style); }
+
+inline String str(LineJoin style)
+{
+    switch (style) {
+        case LineJoin::Miter: return "LineJoin::Miter";
+        case LineJoin::Round: return "LineJoin::Round";
+        case LineJoin::Bevel: return "LineJoin::Bevel";
+        case LineJoin::Undef: return "LineJoin::Undef";
+    };
+    return String{};
+}
 
 /** \class Pen cc/Pen
   * \brief %Source color and line style
@@ -78,6 +100,10 @@ public:
     double lineDashOffset() const { return me().lineDashOffset_; } ///< %Get line dash offset
     Pen &lineDashOffset(double newValue) { me().lineDashOffset_ = newValue; return *this; } ///< %Set line dash offset
 
+    /** Stringify into a human-reable form
+      */
+    String toString() const;
+
 private:
     struct State: public Object::State
     {
@@ -91,6 +117,8 @@ private:
             color_{color},
             lineWidth_{lineWidth}
         {}
+
+        String toString() const;
 
         Color color_;
         LineCap lineCap_ { LineCap::Undef };

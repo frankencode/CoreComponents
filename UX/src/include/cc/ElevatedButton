@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/PushButton>
+
+namespace cc {
+
+/** \class ElevatedButton cc/ElevatedButton
+  * \ingroup ui
+  * \brief Convenience class to construct an elevated button
+  */
+class ElevatedButton: public PushButton
+{
+public:
+    /** Create a primordial elevated button
+      */
+    ElevatedButton() = default;
+
+    /** Create an elevated button
+      */
+    explicit ElevatedButton(const Picture &icon):
+        PushButton{PushButtonStyle::Floating, icon}
+    {}
+
+    /** Create an elevated button with a text label
+      */
+    explicit ElevatedButton(const String &text, const Picture &icon = Picture{}):
+        PushButton{PushButtonStyle::Elevated, text, icon}
+    {}
+};
+
+} // namespace cc

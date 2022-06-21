@@ -48,7 +48,7 @@ protected:
     {
         State();
 
-        bool isPainted() const override { return color().isValid() && width() > 0 && height() > 0; }
+        bool isPainted() const override { return (color().isValid() || !border().isNull()) && width() > 0 && height() > 0; }
         // bool isOpaque() const override { return color().isValid() && color().isOpaque() && radius() == 0; }
 
         Property<double> radius;

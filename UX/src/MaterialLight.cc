@@ -79,11 +79,28 @@ struct MaterialLight::State: public Theme::State
 
     Color touchButtonColor(TouchButtonStyle style, bool pressed) const override
     {
-        return primaryDarkColor().lighter(pressed ? 10 : 0);
+        if (style == TouchButtonStyle::Filled) {
+            return primaryDarkColor().darker(pressed ? 10 : 0);
+        }
+        else if (style == TouchButtonStyle::Tonal) {
+            return windowColor().mixedWith(secondaryDarkColor(), 38).darker(pressed ? 10 : 0);
+        }
+        else if (style == TouchButtonStyle::Outline || style == TouchButtonStyle::Text) {
+            if (pressed) {
+                return itemHighlightColor();
+            }
+        }
+        return Color{};
     }
 
     Color touchButtonTextColor(TouchButtonStyle style, bool pressed) const override
     {
+        if (style == TouchButtonStyle::Outline || style == TouchButtonStyle::Text) {
+            return primaryDarkColor();
+        }
+        else if (style == TouchButtonStyle::Tonal) {
+            return primaryTextColor();
+        }
         return Color::White;
     }
 };

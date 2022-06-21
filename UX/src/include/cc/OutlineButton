@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TouchButton>
+
+namespace cc {
+
+/** \class OutlineButton cc/OutlineButton
+  * \ingroup ui
+  * \brief Convenience class to create outline buttons
+  */
+class OutlineButton final: public TouchButton
+{
+public:
+    /** Create a primordial outline button
+      */
+    OutlineButton() = default;
+
+    /** Create a new outline button
+      */
+    explicit OutlineButton(const String &text, const Picture &icon = Picture{}):
+        TouchButton{TouchButton::Style::Outline, text, icon}
+    {}
+};
+
+} // namespace cc
