@@ -69,6 +69,14 @@ struct TouchButton::State final: public InputControl::State
         };
     }
 
+    Size maxSize() const override
+    {
+        return Size{
+            std::numeric_limits<double>::max(),
+            d_
+        };
+    }
+
     Size preferredSize() const override
     {
         Size s = minSize();
