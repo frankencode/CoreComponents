@@ -274,11 +274,21 @@ public:
 
     /** Remove a child
       */
-    View &remove(const View &child)
+    void remove(const View &child)
     {
         me().removeChild(child);
-        return *this;
     }
+
+    /** \copydoc addAbove
+      */
+    View &push(const View &child)
+    {
+        return addAbove(child);
+    }
+
+    /** Remove the top-most visible child
+      */
+    void pop();
 
     /** Remove all children
       */

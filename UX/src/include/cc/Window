@@ -75,7 +75,7 @@ public:
 
     Size size() const { return me().size(); } ///< Get window size
     Window &size(Size newValue) { me().size = newValue; return *this; } ///< %Set window size
-    bool sizing() const { return me().sizing(); } ///< Window size is currently undergoing a change
+    bool sizing() const { return me().sizing(); } ///< %Window size is currently undergoing a change
 
     WindowMode mode() const { return me().mode_; } ///< Get window mode
     Window &mode(WindowMode newValue) { me().mode_ = newValue; return *this; } ///< %Set window mode

@@ -33,6 +33,9 @@ public:
     Color appBarTextColor() const { return me().appBarTextColor(); } ///< %Application bar foreground color
     Color appBarShadowColor() const { return me().appBarShadowColor(); } ///< Color of the drop shadow under the application bar
 
+    Color dialogScrimColor() const { return me().dialogScrimColor(); } ///< %Color of semi-transparent background overlay
+    Color dialogColor() const { return me().dialogColor(); } ///< %Color of the dialog window background
+
     Color titleTextColor() const { return me().titleTextColor(); } ///< %Title text color
     Color focusTextColor() const { return me().focusTextColor(); } ///< %Text color for an item with active input focus
     Color primaryTextColor() const { return me().primaryTextColor(); } ///< %Default text color
@@ -107,6 +110,9 @@ protected:
         virtual Color appBarColor(bool pressed) const = 0;
         virtual Color appBarTextColor() const;
         virtual Color appBarShadowColor() const = 0;
+
+        virtual Color dialogScrimColor() const;
+        virtual Color dialogColor() const;
 
         virtual Color titleTextColor() const = 0;
         virtual Color focusTextColor() const = 0;

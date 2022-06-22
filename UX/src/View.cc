@@ -482,6 +482,17 @@ bool View::State::feedKeyEvent(KeyEvent &event) const
     return false;
 }
 
+void View::pop()
+{
+    Application{}.postEvent([view=*this]() mutable {
+        if (!view) return;
+        View target = view.visibleChildren().last();
+        if (!target) return;
+        target.visible(false);
+        view.remove(target);
+    });
+}
+
 void View::show()
 {
     if (!hasParent()) {

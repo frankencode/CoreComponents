@@ -126,8 +126,9 @@ public:
         return isValid();
     }
 
-    /** Check if valid
-      * A Color is considered invalid, if alpha is zero and either red, green or blue is non-zero.
+    /** \brief Check if valid
+      *
+      * A color is considered invalid, if alpha is zero and either red, green or blue is non-zero.
       */
     bool isValid() const {
         return !(

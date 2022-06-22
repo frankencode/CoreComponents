@@ -16,6 +16,7 @@ Box::State::State()
     paper([this]{
         Color c = radius() > 0 ? (decoration() ? Color::Transparent : basePaper()) : color();
         if (!c.isValid()) c = basePaper();
+        if (!c.isOpaque()) return Color::Transparent; // FIXME
         return c;
     });
 

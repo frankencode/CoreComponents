@@ -15,6 +15,16 @@ Color Theme::State::appBarTextColor() const
     return titleTextColor();
 }
 
+Color Theme::State::dialogScrimColor() const
+{
+    return Color::Black(32);
+}
+
+Color Theme::State::dialogColor() const
+{
+    return popupColor();
+}
+
 Color Theme::State::inputFieldFillColor(bool pressed) const
 {
     return inputFieldFillColor();
