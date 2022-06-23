@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Dialog>
+
+namespace cc {
+
+/** \class AlertDialog cc/AlertDialog
+  * \ingroup ui
+  * \brief Make the user confirm an immediate action to be taken
+  */
+class AlertDialog final: public Dialog
+{
+public:
+    /** Create a primordial alert dialog
+      */
+    AlertDialog();
+
+    /** Create an alert dialog
+      */
+    explicit AlertDialog(const String &text);
+
+    String text() const; ///< Get text
+    AlertDialog &text(const String &newValue); ///< %Set text
+    AlertDialog &text(Definition<String> &&f); ///< %Define text
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

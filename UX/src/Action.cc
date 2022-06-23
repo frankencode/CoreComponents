@@ -12,6 +12,10 @@ namespace cc {
 
 struct Action::State final: public Entity::State
 {
+    State(const String &initialTitle = String{}):
+        title{initialTitle}
+    {}
+
     void invoke() const {
         if (action_) action_();
     }
@@ -24,6 +28,10 @@ struct Action::State final: public Entity::State
 
 Action::Action():
     Entity{onDemand<State>}
+{}
+
+Action::Action(const String &title):
+    Entity{new State{title}}
 {}
 
 String Action::title() const

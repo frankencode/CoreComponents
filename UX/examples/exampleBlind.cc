@@ -6,8 +6,8 @@ int main()
 {
     using namespace cc;
 
-    Blind blind;
     View view;
+    Blind blind;
 
     return
         View{sp(640), sp(480)}

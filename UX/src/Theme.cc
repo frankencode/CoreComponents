@@ -106,17 +106,22 @@ Color Theme::State::clockDialCurrentValueTextColor(bool pressed) const
 
 double Theme::State::defaultFontSize() const
 {
-    return 16;
+    return sp(16);
 }
 
 double Theme::State::defaultFixedFontSize() const
 {
-    return 16;
+    return sp(16);
 }
 
 double Theme::State::smallFontSize() const
 {
-    return 12;
+    return sp(12);
+}
+
+double Theme::State::mediumFontSize() const
+{
+    return sp(14);
 }
 
 double Theme::State::textCursorWidth() const

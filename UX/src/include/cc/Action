@@ -25,6 +25,10 @@ public:
       */
     Action();
 
+    /** Create a new action
+      */
+    Action(const String &title);
+
     String title() const; ///< Get title
     Action &title(const String &newValue); ///< %Set title
     Action &title(Definition<String> &&f); ///< Define title

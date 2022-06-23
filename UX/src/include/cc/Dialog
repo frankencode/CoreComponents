@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Action>
+#include <cc/View>
+
+namespace cc {
+
+/** \class Dialog cc/Dialog
+  * \ingroup ui
+  * \brief Generic dialog
+  */
+class Dialog: public View
+{
+public:
+    /** Create a primordial dialog
+      */
+    Dialog();
+
+    /** Add an action to this dialog
+      */
+    Dialog &addAction(const Action &action);
+
+protected:
+    /** Internal state
+      */
+    struct State: public View::State
+    {
+        State();
+
+        void addAction(const Action &action);
+
+        View buttonArea() const { return buttonArea_; }
+
+    private:
+        View buttonArea_;
+    };
+
+    explicit Dialog(CreateState onDemand):
+        View{onDemand}
+    {}
+
+    explicit Dialog(State *newState):
+        View{newState}
+    {}
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

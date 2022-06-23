@@ -63,12 +63,13 @@ public:
         return font;
     }
 
-    /** %Set default small font
+    /** Default small font
       */
-    StylePlugin &defaultSmallFont(const Font &font)
+    Font defaultMediumFont() const
     {
-        me().defaultSmallFont_ = font;
-        return *this;
+        Font font = me().defaultFont_;
+        font.size(theme().mediumFontSize());
+        return font;
     }
 
     double gridUnit() const { return me().gridUnit_; } ///< %Grid unit
@@ -112,7 +113,6 @@ protected:
         String name_;
         Font defaultFont_;
         Font defaultFixedFont_;
-        Font defaultSmallFont_;
         double gridUnit_ { sp(8) };
         double dividerThickness_ { dp(1) };
         double itemHeight1_ { sp(48) };

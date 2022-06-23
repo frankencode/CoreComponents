@@ -32,13 +32,16 @@ struct TouchButton::State final: public InputControl::State
             .border([this]{
                 return theme().touchButtonBorder(style_, pressed());
             })
-            .radius(d_ / 2)
+            .radius((style != Style::Text) ? d_ / 2 : 0.)
             .size([this]{ return size(); })
         );
 
         add(
             label_
             .color([this]{ return theme().touchButtonTextColor(style_, pressed()); })
+            .font([this,style]{
+                return (style != Style::Text) ? cc::style().defaultFont() : cc::style().defaultMediumFont();
+            })
             .paper([this]{
                 if (box_.color().isValid()) return box_.color();
                 return basePaper();

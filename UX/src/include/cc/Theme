@@ -94,6 +94,7 @@ public:
     double defaultFontSize() const { return me().defaultFontSize(); } ///< Default font size
     double defaultFixedFontSize() const { return me().defaultFixedFontSize(); } ///< Default font size for the default fixed pitch fonts
     double smallFontSize() const { return me().smallFontSize(); } ///< Secondary small font size
+    double mediumFontSize() const { return me().mediumFontSize(); } ///< Medium font size
     double textCursorWidth() const { return me().textCursorWidth(); } ///< Width of the text cursor in text input controls
 
 protected:
@@ -172,6 +173,7 @@ protected:
         virtual double defaultFontSize() const;
         virtual double defaultFixedFontSize() const;
         virtual double smallFontSize() const;
+        virtual double mediumFontSize() const;
         virtual double textCursorWidth() const;
     };
 
