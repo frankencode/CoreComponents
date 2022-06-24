@@ -20,6 +20,8 @@ struct TouchButton::State final: public InputControl::State
         icon_{icon}
     {
         size([this]{ return preferredSize(); });
+        padding(sp(8));
+
         extraMargin([this]{ return (size()[0] - minSize()[0]) / 2; });
 
         add(

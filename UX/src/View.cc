@@ -350,7 +350,7 @@ bool View::State::feedEnterEvent() const
 
     for (const View &child: visibleChildren_)
     {
-        if (child.me().feedEnterEvent())
+        if (child->feedEnterEvent())
             return true;
     }
 
@@ -363,7 +363,7 @@ bool View::State::feedLeaveEvent() const
 
     for (const View &child: visibleChildren_)
     {
-        if (child.me().feedLeaveEvent())
+        if (child->feedLeaveEvent())
             return true;
     }
 
@@ -395,7 +395,7 @@ bool View::State::feedFingerEvent(FingerEvent &event) const
 
     for (const View &child: visibleChildren_)
     {
-        if (child.containsGlobal(eventPos))
+        if (child->containsGlobal(eventPos))
         {
             if (child->feedFingerEvent(event))
                 return true;
@@ -432,7 +432,7 @@ bool View::State::feedMouseEvent(MouseEvent &event) const
 
     for (const View &child: visibleChildren_)
     {
-        if (child.containsGlobal(event.pos()))
+        if (child->containsGlobal(event.pos()))
         {
             if (child->feedMouseEvent(event))
                 return true;
@@ -452,7 +452,7 @@ bool View::State::feedWheelEvent(WheelEvent &event) const
 
     for (const View &child: visibleChildren_)
     {
-        if (child.me().containsGlobal(event.mousePos()))
+        if (child->containsGlobal(event.mousePos()))
         {
             if (child->feedWheelEvent(event))
                 return true;

@@ -141,7 +141,7 @@ public:
     View &size(Definition<Size> &&f) { me().size(move(f)); return *this; } ///< Define size
     View &sizeEasing(const EasingCurve &easing, double duration) { Easing{me().size, easing, duration}; return *this; } ///< %Set easing on size
 
-    Padding padding() const { return me().padding(); } ///< Get padding
+    Padding padding() const { return me().padding(); } ///< \copydoc View::State::padding
     View &padding(const Padding &newValue) { me().padding(newValue); return *this; } ///< %Set padding
     View &padding(Definition<Padding> &&f) { me().padding(move(f)); return *this; } ///< Define padding
 
@@ -589,7 +589,13 @@ protected:
 
         Property<Point> pos; ///< %Position within its parent
         Property<Size> size; ///< %Size of this view
-        Property<Padding> padding; ///< %Padding to apply when adding this view to a layout
+
+        /** \brief %Padding to apply when adding this view to a layout
+          *
+          * The padding also extends the views bounds in terms of event propagation.
+          * \see View::containsLocal(), View::containsGlobal()
+          */
+        Property<Padding> padding;
 
         Property<Point> pivot; ///< %Rotation center
         Property<double> angle { 0 }; ///< %Rotation angle
@@ -740,8 +746,8 @@ protected:
         virtual bool withinBounds(Point l) const
         {
             return
-                0 <= l[1] && l[1] < size()[1] &&
-                0 <= l[0] && l[0] < size()[0];
+                -padding().top() <= l[1] && l[1] < size()[1] + padding().bottom() &&
+                -padding().left() <= l[0] && l[0] < size()[0] + padding().right();
         }
 
         bool containsLocal(Point l) const { return withinBounds(l); } ///< \copydoc View::containsLocal()

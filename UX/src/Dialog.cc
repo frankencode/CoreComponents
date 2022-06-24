@@ -27,11 +27,11 @@ Dialog::State::State()
             buttonArea_
             .layout(
                 RowLayout{}
-                .margin(Size{sp(8), sp(8)})
+                .margin(Size{})
                 .spacing(0)
             )
             .bottomRight(
-                [this]{ return size(); }
+                [this]{ return size() - Point{sp(8), 0}; }
             )
         )
     );
@@ -42,6 +42,11 @@ void Dialog::State::addAction(const Action &action)
     buttonArea_.add(
         TextButton{action.title().upcased(), action.icon()}
         .onClicked([=]{ action(); })
+        .padding(
+            Padding{}
+            .top(sp(8))
+            .bottom(sp(8))
+        )
     );
 }
 

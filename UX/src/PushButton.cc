@@ -71,7 +71,8 @@ struct PushButton::State final: public InputControl::State
             .opacity([this]{ return !pressed(); })
         );
 
-        size([this]{ return getSize();});
+        size([this]{ return getSize(); });
+        padding(sp(8));
     }
 
     int styleHeight() const
