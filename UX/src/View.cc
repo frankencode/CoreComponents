@@ -72,8 +72,8 @@ View::State::State()
 View::State::~State()
 {
     if (layout_()) {
-        // destroy the layout before releasing the children for efficiency
-        layout_(Layout{});
+        // Disengage the layout before destroying the children for efficiency.
+        layout_()->view_(nullptr);
     }
 }
 

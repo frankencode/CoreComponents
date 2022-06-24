@@ -27,6 +27,10 @@ public:
       */
     explicit AlertDialog(const String &text);
 
+    /** Get a weak reference in \a self
+      */
+    AlertDialog &associate(Out<AlertDialog> self);
+
     String text() const; ///< Get text
     AlertDialog &text(const String &newValue); ///< %Set text
     AlertDialog &text(Definition<String> &&f); ///< %Define text

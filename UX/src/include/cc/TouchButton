@@ -16,6 +16,7 @@ namespace cc {
 /** \class TouchButton cc/TouchButton
   * \ingroup ui
   * \brief %Touch button (a button that changes color when touched)
+  * \todo Some onPressed() is needed to be triggered when the button is pressed by keyboard or mouse/pointer.
   */
 class TouchButton: public InputControl
 {
@@ -45,6 +46,8 @@ public:
     TouchButton &text(Definition<String> &&f); ///< Define text
 
     TouchButton &autoExpand(bool on = true); ///< Automatically expand to full when placed in a layout
+
+    TouchButton &operator()(Fun<void()> &&f); ///< Setup callback to be called when the button is pressed
 
 private:
     struct State;

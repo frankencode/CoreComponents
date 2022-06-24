@@ -138,6 +138,12 @@ TouchButton &TouchButton::autoExpand(bool on)
     return *this;
 }
 
+TouchButton &TouchButton::operator()(Fun<void()> &&f)
+{
+    me().onClicked(move(f));
+    return *this;
+}
+
 TouchButton::State &TouchButton::me()
 {
     return get<State>();

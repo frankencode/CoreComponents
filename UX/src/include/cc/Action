@@ -40,9 +40,10 @@ public:
     Picture icon() const; ///< Get icon
     Action &icon(const Picture &newValue); ///< %Set icon
 
-    Action &onTriggered(Fun<void()> &&action); ///< %Set callback
+    Action &onTriggered(Fun<void()> &&f); ///< %Set callback
 
     void operator()() const; ///< Invoke the action's callback
+    Action &operator()(Fun<void()> &&f); ///< %Set callback
 
 private:
     struct State;

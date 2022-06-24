@@ -13,23 +13,24 @@ namespace cc {
 
 struct AlertDialog::State final: public Dialog::State
 {
-    State()
+    State(const String &initialText = String{})
     {
         add(
             Text{}
             .associate(&text_)
+            .text(initialText)
             .maxWidth(sp(280-48))
-            .margin(Size{sp(24), sp(24)})
             .color([this]{ return theme().primaryTextColor(); })
             .paper([this]{ return theme().dialogColor(); })
+            .topLeft({sp(24), sp(24)})
         );
 
-        size(getSize());
+        size([this]{ return getSize(); });
     }
 
     Size getSize() const
     {
-        return Size{sp(280), text_.height() + buttonArea().height() + text_.fontMetrics().descender() };
+        return Size{sp(280), text_.height() + sp(48) + buttonArea().height() + text_.fontMetrics().descender() };
     }
 
     Size preferredSize() const override
@@ -53,6 +54,15 @@ struct AlertDialog::State final: public Dialog::State
 AlertDialog::AlertDialog():
     Dialog{onDemand<State>}
 {}
+
+AlertDialog::AlertDialog(const String &text):
+    Dialog{new State{text}}
+{}
+
+AlertDialog &AlertDialog::associate(Out<AlertDialog> self)
+{
+    return View::associate<AlertDialog>(self);
+}
 
 String AlertDialog::text() const
 {

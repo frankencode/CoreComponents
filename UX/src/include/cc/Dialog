@@ -16,6 +16,7 @@ namespace cc {
 /** \class Dialog cc/Dialog
   * \ingroup ui
   * \brief Generic dialog
+  * \todo Add support for Dialog::open() to open a modal dialog in a separate window on non-handheld systems.
   */
 class Dialog: public View
 {
@@ -24,9 +25,21 @@ public:
       */
     Dialog();
 
+    /** Get a weak reference in \a self
+      */
+    Dialog &associate(Out<Dialog> self);
+
     /** Add an action to this dialog
       */
     Dialog &addAction(const Action &action);
+
+    /** Open this dialog
+      */
+    Dialog &open();
+
+    /** Close this dialog
+      */
+    void close();
 
 protected:
     /** Internal state

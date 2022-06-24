@@ -34,6 +34,20 @@ struct SdlApplication::State: public Application::State
         return SdlWindow{view};
     }
 
+    Window appWindow() const override
+    {
+        Window window = focusWindow();
+        if (!window) {
+            for (const auto &pair: windows_) {
+                if (pair.value().visible()) {
+                    window = pair.value();
+                    break;
+                }
+            }
+        }
+        return window;
+    }
+
     void captureMouse(bool on) override
     {
         SDL_CaptureMouse(on ? SDL_TRUE : SDL_FALSE);

@@ -167,6 +167,12 @@ PushButton &PushButton::text(Definition<String> &&f)
     return *this;
 }
 
+PushButton &PushButton::operator()(Fun<void()> &&f)
+{
+    me().onClicked(move(f));
+    return *this;
+}
+
 PushButton::State &PushButton::me()
 {
     return get<State>();

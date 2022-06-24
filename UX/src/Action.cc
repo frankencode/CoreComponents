@@ -16,14 +16,10 @@ struct Action::State final: public Entity::State
         title{initialTitle}
     {}
 
-    void invoke() const {
-        if (action_) action_();
-    }
-
     Property<String> title;
     Property<Shortcut> shortcut;
     Picture icon_;
-    Fun<void()> action_;
+    Trigger action_;
 };
 
 Action::Action():
@@ -79,15 +75,21 @@ Action &Action::icon(const Picture &newValue)
     return *this;
 }
 
-Action &Action::onTriggered(Fun<void()> &&action)
+Action &Action::onTriggered(Fun<void()> &&f)
 {
-    me().action_ = move(action);
+    me().action_(move(f));
+    return *this;
+}
+
+Action &Action::operator()(Fun<void()> &&f)
+{
+    me().action_(move(f));
     return *this;
 }
 
 void Action::operator()() const
 {
-    me().invoke();
+    me().action_();
 }
 
 Action::State &Action::me()

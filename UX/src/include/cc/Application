@@ -36,6 +36,7 @@ public:
     Control focusControl() const { return me().focusControl(); } ///< The control which currently holds the input focus
 
     Window focusWindow() const { return me().focusWindow(); } ///< The window which currently holds the input focus
+    Window appWindow() const { return me().appWindow(); } ///< Get the applications primary window
 
     double textZoom() const { return me().textZoom(); } ///< Get the text zoom factor
     Application &textZoom(Definition<double> &&f) { me().textZoom(move(f)); return *this; } ///< Define the text zoom factor
@@ -88,6 +89,7 @@ protected:
         virtual void init(int argc, char *argv[]) {}
 
         virtual Window createWindow(const View &view) = 0;
+        virtual Window appWindow() const = 0;
 
         virtual void captureMouse(bool on) = 0;
 

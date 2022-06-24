@@ -10,6 +10,8 @@
 #include <cc/Box>
 #include <cc/TextButton>
 #include <cc/RowLayout>
+#include <cc/Blind>
+#include <cc/Application>
 
 namespace cc {
 
@@ -39,6 +41,7 @@ void Dialog::State::addAction(const Action &action)
 {
     buttonArea_.add(
         TextButton{action.title().upcased(), action.icon()}
+        .onClicked([=]{ action(); })
     );
 }
 
@@ -46,10 +49,38 @@ Dialog::Dialog():
     View{onDemand<State>}
 {}
 
+Dialog &Dialog::associate(Out<Dialog> self)
+{
+    return View::associate<Dialog>(self);
+}
+
 Dialog &Dialog::addAction(const Action &action)
 {
     me().addAction(action);
     return *this;
+}
+
+Dialog &Dialog::open()
+{
+    assert(!hasParent());
+    if (hasParent()) return *this;
+    Window window = Application{}.appWindow();
+    assert(window);
+    if (!window) return *this;
+    window.view().push(
+        Blind{}
+        .add(
+            (*this)
+            .centerInParent()
+        )
+    );
+    return *this;
+}
+
+void Dialog::close()
+{
+    assert(hasParent());
+    parent().parent().pop();
 }
 
 Dialog::State &Dialog::me()

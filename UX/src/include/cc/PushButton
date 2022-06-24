@@ -17,6 +17,7 @@ namespace cc {
   * \ingroup ui
   * \brief Push button (a button that is pressed down)
   * \todo field definition or negative touch margins ("activeMargin"?-)
+  * \todo Some onPressed() is needed to be triggered when the button is pressed by keyboard or mouse/pointer.
   */
 class PushButton: public InputControl
 {
@@ -52,6 +53,8 @@ public:
     String text() const; ///< Get text
     PushButton &text(const String &newValue); ///< %Set text
     PushButton &text(Definition<String> &&f); ///< %Define text
+
+    PushButton &operator()(Fun<void()> &&f); ///< Setup callback to be called when the button is pressed
 
 private:
     struct State;
