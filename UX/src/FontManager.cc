@@ -97,6 +97,7 @@ void FontManager::addPath(const String &dirPath, const String &namePrefix)
     for (String path; walker.read(&path, &isDir);) {
         if (!isDir && me().isFontFace(path)) {
             if (namePrefix != "" && !path.fileName().startsWith(namePrefix)) continue;
+            if (path.endsWith("ttc")) continue;
             addFontFace(me().openFontFace(path));
         }
     }

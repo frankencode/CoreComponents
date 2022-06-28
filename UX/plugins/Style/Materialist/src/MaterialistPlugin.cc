@@ -35,22 +35,6 @@ struct MaterialistPlugin::State: public StylePlugin::State
             defaultFixedFont_ = Font{"Roboto Mono", sp(16)};
         }
 
-        if (File::exists("/usr/share/fonts/TTF/DejaVuSans.ttf")) {
-            // Arch
-            FontManager{}.addPath("/usr/share/fonts/TTF", "DejaVu");
-            if (!defaultFont_) defaultFont_ = Font{"DejaVu Sans", sp(16)};
-            defaultFixedFont_ = Font{"DejaVu Sans Mono", sp(16)};
-        }
-        else if (File::exists("/usr/share/fonts/truetype/dejavu")) {
-            // Debian
-            String dejavuPath = "/usr/share/fonts/truetype/dejavu";
-            if (Dir::exists(dejavuPath)) {
-                FontManager{}.addPath(dejavuPath);
-                defaultFont_ = Font{"DejaVu Sans", sp(16)};
-                defaultFixedFont_ = Font{"DejaVu Sans Mono", sp(16)};
-            }
-        }
-
         if (!defaultFont_) {
             const char *notoPaths[] = {
                 "/usr/share/fonts/noto", // Arch
@@ -72,8 +56,25 @@ struct MaterialistPlugin::State: public StylePlugin::State
             };
 
             for (auto path: notoCjkPaths) {
-                if (Dir::exists(path))
+                if (Dir::exists(path)) {
                     FontManager{}.addPath(path);
+                }
+            }
+        }
+
+        if (File::exists("/usr/share/fonts/TTF/DejaVuSans.ttf")) {
+            // Arch
+            FontManager{}.addPath("/usr/share/fonts/TTF", "DejaVu");
+            if (!defaultFont_) defaultFont_ = Font{"DejaVu Sans", sp(16)};
+            defaultFixedFont_ = Font{"DejaVu Sans Mono", sp(16)};
+        }
+        else if (File::exists("/usr/share/fonts/truetype/dejavu")) {
+            // Debian
+            String dejavuPath = "/usr/share/fonts/truetype/dejavu";
+            if (Dir::exists(dejavuPath)) {
+                FontManager{}.addPath(dejavuPath);
+                if (!defaultFont_) defaultFont_ = Font{"DejaVu Sans", sp(16)};
+                defaultFixedFont_ = Font{"DejaVu Sans Mono", sp(16)};
             }
         }
 

@@ -24,6 +24,7 @@ TextInput::State::State(const TextEditor &editor):
     editor_{editor}
 {
     paper([this]{ return basePaper(); });
+    textColor([this]{ return theme().primaryTextColor(); });
 
     font([this]{ return style().defaultFont(); });
 
@@ -74,7 +75,7 @@ TextInput::State::State(const TextEditor &editor):
     {
         Painter p{this};
 
-        p.setPen(theme().primaryTextColor());
+        p.setPen(textColor());
 
         if (selection() && focus()) {
             long s0 = selection().i0();
@@ -503,6 +504,23 @@ TextAlign TextInput::textAlign() const
 TextInput &TextInput::textAlign(TextAlign newValue)
 {
     me().textAlign(newValue);
+    return *this;
+}
+
+Color TextInput::textColor() const
+{
+    return me().textColor();
+}
+
+TextInput &TextInput::textColor(Color newValue)
+{
+    me().textColor(newValue);
+    return *this;
+}
+
+TextInput &TextInput::textColor(Definition<Color> &&f)
+{
+    me().textColor(move(f));
     return *this;
 }
 

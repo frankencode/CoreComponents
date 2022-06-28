@@ -137,6 +137,11 @@ Text &Text::textAlign(Definition<TextAlign> &&f)
     return *this;
 }
 
+Point Text::baselineStart() const
+{
+    return me().baselineStart();
+}
+
 Text &Text::baselineStart(Definition<Point> &&a)
 {
     me().baselineStart(move(a));

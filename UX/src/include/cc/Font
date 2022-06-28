@@ -111,6 +111,10 @@ public:
     Color paper() const { return me().paper_; } ///< Get background color
     Font &paper(Color newValue) { me().paper_ = newValue; return *this; } ///< %Set background color
 
+    /** Obtain the path of the font file this font would select
+      */
+    String path() const;
+
     Font &operator*=(double scale)
     {
         return size(

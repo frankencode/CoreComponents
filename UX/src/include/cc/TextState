@@ -69,6 +69,11 @@ struct Text::State: public View::State
         return Size{0, wrappedRun().size()[1]} + 2 * margin();
     }
 
+    Point baselineStart() const
+    {
+        return pos() + textPos();
+    }
+
     void baselineStart(Definition<Point> &&a)
     {
         pos([this, a]{ return a() - textPos(); });

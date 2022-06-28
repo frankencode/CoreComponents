@@ -16,6 +16,7 @@ namespace cc {
 /** \class Theme cc/Theme
   * \ingroup ui
   * \brief User interface styling theme
+  * \todo Add missing doc strings.
   */
 class Theme: public Object
 {
@@ -31,10 +32,11 @@ public:
 
     Color appBarColor(bool pressed = false) const { return me().appBarColor(pressed); } ///< %Application bar background color
     Color appBarTextColor() const { return me().appBarTextColor(); } ///< %Application bar foreground color
-    Color appBarShadowColor() const { return me().appBarShadowColor(); } ///< Color of the drop shadow under the application bar
+    Color appBarShadowColor() const { return me().appBarShadowColor(); } ///< %Color of the drop shadow under the application bar
 
     Color dialogScrimColor() const { return me().dialogScrimColor(); } ///< %Color of semi-transparent background overlay
     Color dialogColor() const { return me().dialogColor(); } ///< %Color of the dialog window background
+    Color dialogShadowColor() const { return me().dialogShadowColor(); } ///< %Color of the drop shadow under simple picker/alert dialogs
 
     Color titleTextColor() const { return me().titleTextColor(); } ///< %Title text color
     Color focusTextColor() const { return me().focusTextColor(); } ///< %Text color for an item with active input focus
@@ -114,6 +116,7 @@ protected:
 
         virtual Color dialogScrimColor() const;
         virtual Color dialogColor() const;
+        virtual Color dialogShadowColor() const = 0;
 
         virtual Color titleTextColor() const = 0;
         virtual Color focusTextColor() const = 0;

@@ -7,16 +7,19 @@
  */
 
 #include <cc/NumberCellState>
-#include <cc/DEBUG>
 
 namespace cc {
 
 NumberCell::State::State()
 {
+    color([this]{
+        return theme().inputFieldFillColor(pressed());
+    });
+
     add(
         Box{}
         .associate(&box_)
-        .color([this]{ return theme().inputFieldFillColor(pressed()); })
+        .color([this]{ return color(); })
         .radius([this]{ return sp(6); })
         .add(
             NumberInput{}
@@ -28,7 +31,7 @@ NumberCell::State::State()
         .size([this]{
             Size s = input_.size();
             s[0] += sp(24);
-            s[1] += sp(12);
+            s[1] += sp(16);
             return s;
         })
     );
@@ -36,6 +39,8 @@ NumberCell::State::State()
     size([this]{
         return preferredSize();
     });
+
+    padding(sp(8));
 
     input_.onAccepted([this]{
         input_.focus(false);
@@ -59,6 +64,7 @@ Size NumberCell::State::maxSize() const
 
 Control NumberCell::State::delegate() const
 {
+    if (!textInput()) return Control{};
     return input_;
 }
 
@@ -193,6 +199,57 @@ NumberCell &NumberCell::value(double newValue)
 NumberCell &NumberCell::onValueChanged(Fun<void()> &&f)
 {
     me().input_.onValueChanged(move(f));
+    return *this;
+}
+
+bool NumberCell::textInput() const
+{
+    return me().textInput();
+}
+
+NumberCell &NumberCell::textInput(bool newValue)
+{
+    me().textInput(newValue);
+    return *this;
+}
+
+NumberCell &NumberCell::textInput(Definition<bool> &&f)
+{
+    me().textInput(move(f));
+    return *this;
+}
+
+Color NumberCell::textColor() const
+{
+    return me().input_.textColor();
+}
+
+NumberCell &NumberCell::textColor(Color newValue)
+{
+    me().input_.textColor(newValue);
+    return *this;
+}
+
+NumberCell &NumberCell::textColor(Definition<Color> &&f)
+{
+    me().input_.textColor(move(f));
+    return *this;
+}
+
+Color NumberCell::color() const
+{
+    return me().color();
+}
+
+NumberCell& NumberCell::color(Color newValue)
+{
+    me().color(newValue);
+    return *this;
+}
+
+NumberCell& NumberCell::color(Definition<Color> &&f)
+{
+    me().color(move(f));
     return *this;
 }
 

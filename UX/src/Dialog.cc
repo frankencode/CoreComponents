@@ -12,6 +12,7 @@
 #include <cc/RowLayout>
 #include <cc/Blind>
 #include <cc/Application>
+#include <cc/Shadow>
 
 namespace cc {
 
@@ -30,9 +31,17 @@ Dialog::State::State()
                 .margin(Size{})
                 .spacing(0)
             )
-            .bottomRight(
-                [this]{ return size() - Point{sp(8), 0}; }
-            )
+            .bottomRight([this]{
+                return size() - Point{sp(8), 0};
+            })
+        )
+        .decoration(
+            Shadow{}
+            .color([this]{
+                return theme().dialogShadowColor();
+            })
+            .blurRadius(sp(6))
+            .offset({0, sp(2)})
         )
     );
 }
@@ -40,7 +49,8 @@ Dialog::State::State()
 void Dialog::State::addAction(const Action &action)
 {
     buttonArea_.add(
-        TextButton{action.title().upcased(), action.icon()}
+        TextButton{action.title(), action.icon()}
+        .text([=]{ return action.title(); })
         .onClicked([=]{ action(); })
         .padding(
             Padding{}
@@ -48,6 +58,13 @@ void Dialog::State::addAction(const Action &action)
             .bottom(sp(8))
         )
     );
+}
+
+void Dialog::State::close()
+{
+    if (hasParent()) {
+        parent().parent().pop();
+    }
 }
 
 Dialog::Dialog():
@@ -84,8 +101,9 @@ Dialog &Dialog::open()
 
 void Dialog::close()
 {
-    assert(hasParent());
-    parent().parent().pop();
+    if (hasParent()) {
+        parent().parent().pop();
+    }
 }
 
 Dialog::State &Dialog::me()

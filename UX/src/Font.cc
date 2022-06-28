@@ -7,6 +7,7 @@
  */
 
 #include <cc/Font>
+#include <cc/FontManager>
 #include <cc/StylePlugin>
 #include <cc/Format>
 
@@ -20,6 +21,11 @@ Font::Font(Pitch pitch)
 double Font::defaultSize(Pitch pitch)
 {
     return ((pitch == Pitch::Fixed) ? style().defaultFixedFont() : style().defaultFont()).size();
+}
+
+String Font::path() const
+{
+    return FontManager{}.selectFont(*this).fontFace().path();
 }
 
 String str(const Font &font)

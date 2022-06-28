@@ -8,30 +8,33 @@
 
 #pragma once
 
-#include <cc/View>
+#include <cc/Dialog>
 
 namespace cc {
 
 /** \class TimePicker cc/TimePicker
   * \ingroup ui
-  * \brief Select a time
+  * \brief Dialog to select a time of the day
   */
-class TimePicker final: public View
+class TimePicker final: public Dialog
 {
 public:
     /** Create a primordial time picker
       */
     TimePicker();
 
-    /** Create a new time picker
+    /** Get a weak reference in \a self
       */
-    explicit TimePicker(int initialHour, int initialMinute);
+    TimePicker &associate(Out<TimePicker> self);
 
     TimePicker &hour(double newValue); ///< %Set hour [0..23]
     int hour() const; ///< Get hour [0..23]
 
     TimePicker &minute(double newValue); ///< %Set minute [0..59]
     int minute() const; ///< Get minute [0..59]
+
+    TimePicker &onAccepted(Fun<void()> &&f); ///< %Handle input accepted event
+    TimePicker &onRejected(Fun<void()> &&f); ///< %Handle input accepted event
 
 private:
     struct State;

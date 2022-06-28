@@ -45,6 +45,7 @@ struct TextInput::State: public InputControl::State
     void selectAll();
 
     Property<Font> font;
+    Property<Color> textColor;
     Property<String> sizerText;
     Property<List<String>> imeChunks;
     Property<TextRun> unwrappedTextRun;

@@ -31,6 +31,8 @@ public:
 
     int run() { return me().run(); } ///< Run the application's event loop
 
+    void quit() { return me().quit(); } ///< Exit the application's event loop
+
     Control hoverControl() const { return me().hoverControl(); } ///< The control the pointer is currently hovering over
     Control pressedControl() const { return me().pressedControl(); } ///< The control which is currently pressed by the user
     Control focusControl() const { return me().focusControl(); } ///< The control which currently holds the input focus
@@ -87,6 +89,7 @@ protected:
         bool feedTextInputEvent(const String &text);
 
         virtual void init(int argc, char *argv[]) {}
+        virtual void quit() = 0;
 
         virtual Window createWindow(const View &view) = 0;
         virtual Window appWindow() const = 0;

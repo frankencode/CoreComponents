@@ -28,6 +28,12 @@ public:
     explicit TextButton(const String &text, const Picture &icon = Picture{}):
         TouchButton{TouchButton::Style::Text, text, icon}
     {}
+
+    /** Create a new text button
+      */
+    explicit TextButton(const Picture &icon):
+        TouchButton{TouchButton::Style::Text, String{}, icon}
+    {}
 };
 
 } // namespace cc

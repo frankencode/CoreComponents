@@ -63,6 +63,7 @@ public:
     Text &textAlign(TextAlign newValue); ///< %Set text alignment
     Text &textAlign(Definition<TextAlign> &&f); ///< Define text alignment
 
+    Point baselineStart() const; ///< Get baseline start
     Text &baselineStart(Definition<Point> &&a); ///< %Anchor the text with its first baseline start to \a a
     FontMetrics fontMetrics() const; ///< %Current font metrics
 

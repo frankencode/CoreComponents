@@ -1,0 +1,68 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Control>
+
+namespace cc {
+
+/** \class ClockFace cc/ClockFace
+  * \ingroup ui
+  * \brief Interactive clock face
+  */
+class ClockFace final: public Control
+{
+public:
+    enum class Mode {
+        DisplayTime,
+        SetHour,
+        SetMinute,
+        SetSecond
+    };
+
+    /** Create a primordial clock face
+      */
+    ClockFace();
+
+    /** Get a weak reference in \a self
+      */
+    ClockFace &associate(Out<ClockFace> self);
+
+    Size margin() const; ///< Margins around the clock face
+    ClockFace &margin(Size newValue); ///< %Set margins around the clock face
+    ClockFace &margin(Definition<Size> &&f); ///< Define margins around the clock face
+
+    Mode mode() const; ///< Get mode
+    ClockFace &mode(Mode newValue); ///< %Set mode
+    ClockFace &mode(Definition<Mode> &&f); ///< Define mode
+
+    bool pm() const; ///< Get post meridiem (+12 hours)
+    ClockFace &pm(bool newValue); ///< %Set post meridiem (+12 hours)
+    ClockFace &pm(Definition<bool> &&f); ///< Define post meridiem (+12 hours)
+
+    int hour() const; ///< Get current hour [0..23]
+    ClockFace &hour(int newValue); ///< %Set current hour
+    ClockFace &onHourChanged(Fun<void()> &&f); ///< Get notified when current hour changes
+
+    int minute() const; ///< Get current minute [0..59]
+    ClockFace &minute(int newValue); ///< %Set current minute
+    ClockFace &onMinuteChanged(Fun<void()> &&f); ///< Get notified when current minute changes
+
+    int second() const; ///< Get current second [0..59]
+    ClockFace &second(int newValue); ///< %Set current second
+    ClockFace &onSecondChanged(Fun<void()> &&f); ///< Get notified when current second changes
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

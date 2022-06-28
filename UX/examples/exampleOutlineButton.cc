@@ -11,7 +11,7 @@ int main()
     return
         View{sp(640), sp(480)}
         .add(
-            OutlineButton{"User", Icon::Plus}
+            OutlineButton{"12", Icon::Plus}
             .associate(&button)
             .onClicked([=]{
                 CC_DEBUG;

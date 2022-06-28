@@ -56,6 +56,18 @@ public:
     NumberCell &value(double newValue); ///< %Set current value
     NumberCell &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
 
+    bool textInput() const; ///< Tell if text input is enabled (enabled by default)
+    NumberCell &textInput(bool newValue); ///< Enable/disable text input
+    NumberCell &textInput(Definition<bool> &&f); ///< Define when text input should be enabled
+
+    Color textColor() const; ///< Get text color
+    NumberCell &textColor(Color newValue); ///< %Set text color
+    NumberCell &textColor(Definition<Color> &&f); ///< Define text color
+
+    Color color() const; ///< Get cell color
+    NumberCell& color(Color newValue); ///< %Set cell color
+    NumberCell& color(Definition<Color> &&f); ///< Define cell color
+
 private:
     friend class Object;
     friend class Slider;

@@ -31,6 +31,8 @@ struct MaterialLight::State: public Theme::State
     Color appBarTextColor() const override { return Color::White; }
     Color appBarShadowColor() const override { return 0xA0000000u; }
 
+    Color dialogShadowColor() const override { return 0x50000000u; }
+
     Color titleTextColor() const override { return Color::White; }
     Color focusTextColor() const override { return primaryDarkColor()(87); }
     Color primaryTextColor() const override { return Color::Black(87); }

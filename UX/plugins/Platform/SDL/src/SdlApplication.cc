@@ -29,6 +29,11 @@ struct SdlApplication::State: public Application::State
         SDL_Quit();
     }
 
+    void quit() override
+    {
+        SDL_Quit();
+    }
+
     Window createWindow(const View &view) override
     {
         return SdlWindow{view};
@@ -131,7 +136,8 @@ struct SdlApplication::State: public Application::State
 
         do {
             if (!SDL_WaitEvent(&event)) {
-                throw SdlPlatformError{};
+                // throw SdlPlatformError{};
+                break;
             }
 
             if (event.type == timerEvent_) {

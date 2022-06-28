@@ -38,6 +38,10 @@ public:
     TextAlign textAlign() const; ///< Get text alignment
     TextInput &textAlign(TextAlign newValue); ///< %Set text alignment
 
+    Color textColor() const; ///< Get text color
+    TextInput &textColor(Color newValue); ///< %Set text color
+    TextInput &textColor(Definition<Color> &&f); ///< Define text color
+
     Point textPos() const; ///< Get the baseline start position of the input text
 
     Font font() const; ///< Get the font

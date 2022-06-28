@@ -26,6 +26,8 @@ struct NumberCell::State final: public Control::State
     NumberInput input_;
     Property<double> radius { sp(8) };
     Property<Size> margin { sp(8), sp(4) };
+    Property<Color> color;
+    Property<bool> textInput { true };
     bool autoConnect_ { true };
 };
 

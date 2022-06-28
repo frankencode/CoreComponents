@@ -40,10 +40,10 @@ struct TouchButton::State final: public InputControl::State
 
         add(
             label_
-            .color([this]{ return theme().touchButtonTextColor(style_, pressed()); })
             .font([this,style]{
                 return (style != Style::Text) ? cc::style().defaultFont() : cc::style().defaultMediumFont();
             })
+            .color([this]{ return theme().touchButtonTextColor(style_, pressed()); })
             .paper([this]{
                 if (box_.color().isValid()) return box_.color();
                 return basePaper();
@@ -51,13 +51,19 @@ struct TouchButton::State final: public InputControl::State
             .centerRight([this]{
                 return size() - Size{(icon_.isNull() ? d_/2 : sp(20)) + extraMargin(), d_/2};
             })
+            .visible([this]{
+                return label_.text() != "";
+            })
         );
 
         if (!icon_.isNull()) {
             box_.add(
                 icon_
-                .color([this]{ return label_.color(); })
-                .paper([this]{ return label_.paper(); })
+                .color([this]{ return theme().touchButtonTextColor(style_, pressed()); })
+                .paper([this]{
+                    if (box_.color().isValid()) return box_.color();
+                    return basePaper();
+                })
                 .centerLeft([this]{ return Point{sp(12) + extraMargin(), d_/2}; })
             );
         }
@@ -69,7 +75,7 @@ struct TouchButton::State final: public InputControl::State
             return Size{d_ + label_.width(), d_};
 
         return Size{
-            sp(12) + icon_.width() + sp(8) + label_.width() + sp(20),
+            sp(12) + icon_.width() + (label_.visible() ? sp(8) + label_.width() + sp(20) : sp(12)),
             d_
         };
     }

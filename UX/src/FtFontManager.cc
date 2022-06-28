@@ -14,6 +14,7 @@
 #include <cc/Utf8>
 #include <cc/Map>
 #include <cc/CircularBuffer>
+#include <cc/DEBUG>
 
 namespace cc {
 
