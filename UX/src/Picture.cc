@@ -49,7 +49,7 @@ Picture::Picture(const Visual &visual, Color color):
 {}
 
 Picture::Picture(Icon ch, double size, Color color):
-    View{new State{style().ideograph(ch, size), color}}
+    View{new State{style().icon(ch, size), color}}
 {}
 
 Picture::Picture(const Image &image, Color color):

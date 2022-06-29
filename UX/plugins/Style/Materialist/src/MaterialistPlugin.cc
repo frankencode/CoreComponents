@@ -87,7 +87,7 @@ struct MaterialistPlugin::State: public StylePlugin::State
             CC_DEBUG << "Failed to locate icons directory";
     }
 
-    Visual ideograph(Icon ch, double size) const override
+    Visual icon(Icon ch, double size) const override
     {
         if (size <= 0)
             return GlyphVisual{+ch, iconFont_};

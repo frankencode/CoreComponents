@@ -18,7 +18,7 @@ struct Action::State final: public Entity::State
 
     Property<String> title;
     Property<Shortcut> shortcut;
-    Picture icon_;
+    Property<Picture> icon;
     Trigger action_;
 };
 
@@ -66,12 +66,18 @@ Action &Action::shortcut(Definition<Shortcut> &&f)
 
 Picture Action::icon() const
 {
-    return me().icon_;
+    return me().icon();
 }
 
 Action &Action::icon(const Picture &newValue)
 {
-    me().icon_ = newValue;
+    me().icon(newValue);
+    return *this;
+}
+
+Action &Action::icon(Definition<Picture> &&f)
+{
+    me().icon(move(f));
     return *this;
 }
 

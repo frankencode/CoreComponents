@@ -28,6 +28,7 @@ struct TouchButton::State final: public InputControl::State
             box_
             .color([this]{
                 Color c = theme().touchButtonColor(style_, pressed());
+                if (!c.isValid()) c = paper();
                 if (!c.isValid()) c = basePaper();
                 return c;
             })
@@ -143,6 +144,12 @@ TouchButton &TouchButton::text(Definition<String> &&f)
 TouchButton &TouchButton::autoExpand(bool on)
 {
     me().autoExpand(on);
+    return *this;
+}
+
+TouchButton &TouchButton::onTriggered(Fun<void()> &&f)
+{
+    me().onClicked(move(f));
     return *this;
 }
 

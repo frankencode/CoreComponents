@@ -245,7 +245,7 @@ bool Application::State::feedLeaveEvent(const Window &window)
 bool Application::State::feedTextEditingEvent(const String &text, int start, int length)
 {
     if (focusControl()) {
-        focusControl().me().onTextEdited(text, start, length);
+        focusControl()->onTextEdited(text, start, length);
         return true;
     }
 
@@ -255,7 +255,7 @@ bool Application::State::feedTextEditingEvent(const String &text, int start, int
 bool Application::State::feedTextInputEvent(const String &text)
 {
     if (focusControl()) {
-        focusControl().me().onTextInput(text);
+        focusControl()->onTextInput(text);
         return true;
     }
 

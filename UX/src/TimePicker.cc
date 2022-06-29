@@ -13,6 +13,8 @@
 #include <cc/Checkbox>
 #include <cc/Label>
 #include <cc/ClockFace>
+#include <cc/TextButton>
+#include <cc/Window>
 #include <cc/DEBUG>
 
 namespace cc {
@@ -53,13 +55,13 @@ struct TimePicker::State final: public Dialog::State
                 })
                 .textColor([this]{
                     return
-                        clockMode() == ClockFace::Mode::SetHour ?
+                        clockMode() == ClockFace::Mode::SetHour && !textInput() ?
                         theme().clockDialCurrentValueTextColor(false) :
                         theme().primaryTextColor();
                 })
                 .color([this]{
                     return
-                        clockMode() == ClockFace::Mode::SetHour ?
+                        clockMode() == ClockFace::Mode::SetHour && !textInput() ?
                         theme().clockDialCurrentValueColor(false) :
                         theme().inputFieldFillColor(hourInput_.pressed());
                 })
@@ -70,6 +72,9 @@ struct TimePicker::State final: public Dialog::State
                 .textInput([this]{
                     return textInput();
                 })
+                /*.onRejected([this]{ // FIXME
+                    onRejected();
+                })*/
                 .onClicked([this]{
                     clockMode(ClockFace::Mode::SetHour);
                 })
@@ -96,13 +101,13 @@ struct TimePicker::State final: public Dialog::State
                 .font([this]{ return hourInput_.font(); })
                 .textColor([this]{
                     return
-                        clockMode() == ClockFace::Mode::SetMinute ?
+                        clockMode() == ClockFace::Mode::SetMinute && !textInput() ?
                         theme().clockDialCurrentValueTextColor(false) :
                         theme().primaryTextColor();
                 })
                 .color([this]{
                     return
-                        clockMode() == ClockFace::Mode::SetMinute ?
+                        clockMode() == ClockFace::Mode::SetMinute && !textInput() ?
                         theme().clockDialCurrentValueColor(false) :
                         theme().inputFieldFillColor(minuteInput_.pressed());
                 })
@@ -113,6 +118,9 @@ struct TimePicker::State final: public Dialog::State
                 .textInput([this]{
                     return textInput();
                 })
+                /*.onAccepted([this]{
+                    onAccepted();
+                })*/
                 .onClicked([this]{
                     clockMode(ClockFace::Mode::SetMinute);
                 })
@@ -140,6 +148,9 @@ struct TimePicker::State final: public Dialog::State
                     width()
                 };
             })
+            .visible([this]{
+                return !textInput();
+            })
             .add(
                 ClockFace{}
                 .associate(&clockFace_)
@@ -164,11 +175,43 @@ struct TimePicker::State final: public Dialog::State
             #endif
         );
 
-        addAction(
-            Action{}
-            .icon(
+        add(
+            TextButton{
+                Picture{Icon::ClockOutline, sp(18)}
+            }
+            .onTriggered([this]{
+                textInput(false);
+            })
+            .bottomLeft([this]{
+                return Point{sp(8), height() - sp(8)};
+            })
+            .paper([this]{
+                return theme().dialogColor();
+            })
+            .padding(sp(8))
+            .visible([this]{
+                return textInput();
+            })
+        );
+
+        add(
+            TextButton{
                 Picture{Icon::KeyboardOutline, sp(18)}
-            )
+            }
+            .onTriggered([this]{
+                textInput(true);
+                hourInput_.focus(true);
+            })
+            .bottomLeft([this]{
+                return Point{sp(8), height() - sp(8)};
+            })
+            .paper([this]{
+                return theme().dialogColor();
+            })
+            .padding(sp(8))
+            .visible([this]{
+                return !textInput();
+            })
         );
 
         addAction(
@@ -195,11 +238,27 @@ struct TimePicker::State final: public Dialog::State
         );
 
         size([this]{ return preferredSize(); });
+
+        attach([this]{ // FIXME: why needed?
+            if (!hasParent() && hasWindow()) {
+                window().size(getSize());
+            }
+        });
     }
 
     Size getSize() const
     {
-        return Size{sp(300), dialArea_.bottom() + -sp(8) + buttonArea().height()};
+        return Size{sp(300), inputArea_.bottom() + (textInput() ? 0 : (dialArea_.height() - sp(8))) + buttonArea().height()};
+    }
+
+    Size minSize() const override
+    {
+        return getSize();
+    }
+
+    Size maxSize() const override
+    {
+        return getSize();
     }
 
     Size preferredSize() const override

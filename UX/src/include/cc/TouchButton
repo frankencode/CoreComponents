@@ -47,7 +47,8 @@ public:
 
     TouchButton &autoExpand(bool on = true); ///< Automatically expand to full when placed in a layout
 
-    TouchButton &operator()(Fun<void()> &&f); ///< Setup callback to be called when the button is pressed
+    TouchButton &onTriggered(Fun<void()> &&f); ///< Setup callback to be called when the button is pressed
+    TouchButton &operator()(Fun<void()> &&f); ///< \copydoc onTriggered()
 
 private:
     struct State;

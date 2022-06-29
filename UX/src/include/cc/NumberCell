@@ -68,6 +68,9 @@ public:
     NumberCell& color(Color newValue); ///< %Set cell color
     NumberCell& color(Definition<Color> &&f); ///< Define cell color
 
+    NumberCell &onAccepted(Fun<void()> &&f); ///< %Input accepted
+    NumberCell &onRejected(Fun<void()> &&f); ///< %Input rejected
+
 private:
     friend class Object;
     friend class Slider;

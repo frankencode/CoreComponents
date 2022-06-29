@@ -529,7 +529,7 @@ inline bool operator!=(KeyCode keyCode, char ch) { return +keyCode != ch; }
 
 String str(KeyCode keyCode);
 
-/** Shortcut keys
+/** %Shortcut keys
   */
 enum class KeyModifier: int32_t
 {

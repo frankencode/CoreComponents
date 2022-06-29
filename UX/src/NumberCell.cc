@@ -253,6 +253,18 @@ NumberCell& NumberCell::color(Definition<Color> &&f)
     return *this;
 }
 
+NumberCell &NumberCell::onAccepted(Fun<void()> &&f)
+{
+    me().input_.onAccepted(move(f));
+    return *this;
+}
+
+NumberCell &NumberCell::onRejected(Fun<void()> &&f)
+{
+    me().input_.onAccepted(move(f));
+    return *this;
+}
+
 NumberCell::State &NumberCell::me()
 {
     return View::me().as<State>();

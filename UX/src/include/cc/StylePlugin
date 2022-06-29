@@ -93,9 +93,9 @@ public:
 
     String passwordBullet() const { return me().passwordBullet_; } ///< Mask character for password input
 
-    /** Get a visual for the given ideograph \a ch
+    /** Get a visual for the given icon code \a ch
       */
-    Visual ideograph(Icon ch, double size = 0) const { return me().ideograph(ch, size); }
+    Visual icon(Icon ch, double size = 0) const { return me().icon(ch, size); }
 
     /** Styling theme
       */
@@ -132,7 +132,7 @@ protected:
         Property<Theme> theme_;
 
         virtual void activate() = 0;
-        virtual Visual ideograph(Icon ch, double size) const = 0;
+        virtual Visual icon(Icon ch, double size) const = 0;
     };
 
     explicit StylePlugin(State *newState);
