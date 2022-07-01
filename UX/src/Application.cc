@@ -70,6 +70,22 @@ Application::State::State()
     });
 }
 
+void Application::State::initAppName(const char *exePath)
+{
+    if (appName() == "") {
+        appName(String{exePath}.baseName());
+    }
+}
+
+String Application::State::userDataPath()
+{
+    if (userDataPath_ == "") {
+        userDataPath_ = getUserDataPath();
+    }
+    return userDataPath_;
+}
+
+
 bool Application::State::feedFingerEvent(const Window &window, FingerEvent &event)
 {
     if (cursorControl()) cursorControl = Control{};
@@ -303,7 +319,35 @@ Application::Application()
 Application::Application(int argc, char *argv[])
 {
     *this = platform().application();
+    me().initAppName(argv[0]);
     me().init(argc, argv);
+}
+
+String Application::orgName() const
+{
+    return me().orgName();
+}
+
+Application &Application::orgName(const String &newValue)
+{
+    me().orgName(newValue);
+    return *this;
+}
+
+String Application::appName() const
+{
+    return me().appName();
+}
+
+Application &Application::appName(const String &newValue)
+{
+    me().appName(newValue);
+    return *this;
+}
+
+String Application::userDataPath()
+{
+    return me().userDataPath();
 }
 
 FontSmoothing Application::fontSmoothing() const

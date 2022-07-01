@@ -29,6 +29,16 @@ public:
     Application(); ///< Get global application state (initializes on first call)
     Application(int argc, char *argv[]); ///< Initialize global application state
 
+    String orgName() const; ///< Get organization name
+    Application &orgName(const String &newValue); ///< Set organization name
+
+    String appName() const; ///< Get application name
+    Application &appName(const String &newValue); ///< Set application name
+
+    /** Get platform specific path for application specfic user data
+      */
+    String userDataPath();
+
     int run() { return me().run(); } ///< Run the application's event loop
 
     void quit() { return me().quit(); } ///< Exit the application's event loop
@@ -77,6 +87,8 @@ protected:
 
         State();
 
+        String userDataPath();
+
         bool feedFingerEvent(const Window &window, FingerEvent &event);
         bool feedMouseEvent(const Window &window, MouseEvent &event);
         bool feedWheelEvent(const Window &window, WheelEvent &event);
@@ -109,12 +121,16 @@ protected:
         virtual void stopTextInput() = 0;
 
         virtual void postEvent(Fun<void()> &&doNext) = 0;
-
         virtual int run() = 0;
+
+        virtual String getUserDataPath() const = 0;
 
         void takeScreenshot(const Window &window);
 
         void disengage(const View &view);
+
+        Property<String> orgName { "CoreComponents" };
+        Property<String> appName;
 
         Property<Control> hoverControl;
         Property<Control> pressedControl;
@@ -131,8 +147,16 @@ protected:
         Property<double> minFingerDragDistance { []{ return dp(10); } };
 
         Property<double> textZoom { 1 };
+
         FontSmoothing fontSmoothing_ { FontSmoothing::Default };
         Control focusControlSaved_;
+
+    private:
+        friend class Application;
+
+        void initAppName(const char *exePath);
+
+        String userDataPath_;
     };
 
     Application(State *state):

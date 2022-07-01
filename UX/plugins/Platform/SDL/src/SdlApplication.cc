@@ -412,6 +412,14 @@ struct SdlApplication::State: public Application::State
         feedTextInputEvent(e.text);
     }
 
+    String getUserDataPath() const override
+    {
+        char *s = SDL_GetPrefPath(orgName(), appName());
+        String path{s};
+        SDL_free(s);
+        return path;
+    }
+
     uint32_t timerEvent_;
     uint32_t userEvent_;
 

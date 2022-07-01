@@ -4,7 +4,6 @@
 int main(int argc, char *argv[])
 {
     using namespace cc;
-    using namespace cc;
 
     Set<FontFamily> families = FontManager{}.fontFamilies();
     for (const FontFamily &family: families) {

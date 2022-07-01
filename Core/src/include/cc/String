@@ -284,13 +284,11 @@ public:
       */
     const char &operator[](long i) const { return at(i); }
 
-    /** \internal
-      * Help the C++ compiler to not fall back to operator char*() for index access.
+    /** Help the C++ compiler to not fall back to operator char*() for index access.
       */
     char &operator[](int i) { return at(i); }
 
-    /** \internal
-      * Help the C++ compiler to not fall back to operator char*() for index access.
+    /** Help the C++ compiler to not fall back to operator char*() for index access.
       */
     const char &operator[](int i) const { return at(i); }
 
