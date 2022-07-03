@@ -23,7 +23,6 @@ namespace cc {
   * \ingroup container
   * \brief %Set data container
   * \tparam T Item type
-  * \todo Support for range queries
   */
 template<class T>
 class Set {

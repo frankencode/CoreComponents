@@ -16,7 +16,7 @@ int main()
         .add(FlickableIndicator{})
         .attach(
             Timer{0.5}
-            .onTimeout([log] mutable {
+            .onTimeout([log]() mutable {
                 log.appendText(Date::now());
             })
             .start()

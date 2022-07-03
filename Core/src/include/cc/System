@@ -29,6 +29,7 @@ public:
     static int pageSize();
 
     /** Get the current system time (in seconds since start of Epoch, starting at 1st Jan 1970 00:00:00)
+      * \see Date, Timezone
       */
     static double now();
 

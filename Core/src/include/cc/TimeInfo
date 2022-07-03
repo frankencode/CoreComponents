@@ -1,0 +1,63 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+
+namespace cc {
+
+/** \class TimeInfo cc/TimeInfo
+  * \brief %Timezone information record
+  * \see Timezone
+  */
+class TimeInfo final: public Object
+{
+public:
+    /** Create a null timezone information record
+      */
+    TimeInfo() = default;
+
+    /** Name of the timezone
+      */
+    String timezone() const { return me().timezone_; }
+
+    /** %Time offset from UTC in seconds
+      */
+    int offset() const { return me().offset_; }
+
+    /** This is a daylight savings time
+      */
+    bool isDaylightSaving() const { return me().isDaylightSaving_; }
+
+    /** Start time
+      */
+    double startTime() const { return me().startTime_; }
+
+private:
+    friend class Timezone;
+
+    struct State final: public Object::State
+    {
+        String timezone_;
+        int offset_ { 0 };
+        bool isDaylightSaving_ { 0 };
+        double startTime_ { 0 };
+    };
+
+    TimeInfo(New):
+        Object{new State}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+
+    State *operator->() { return &me(); }
+};
+
+} // namespace cc

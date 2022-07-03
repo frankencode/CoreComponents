@@ -41,11 +41,22 @@ inline double days(double n) { return n * +SecondsPerDay; }
 /** \class Date cc/Date
   * \ingroup misc
   * \brief Calendar date and time
+  * \todo toString(): fully enable ms resolution (ss.fraction in String output)
   */
 class Date
 {
 public:
+    /** Get the current UTC date and time
+      */
     static Date now();
+
+    /** Get the current local date and time
+      */
+    static Date localTime();
+
+    /** Create a local calendar date by breaking down \a time
+      */
+    static Date local(double time);
 
     /** Create an invalid date
       */
@@ -88,7 +99,8 @@ public:
       */
     operator String() const { return toString(); }
 
-    /** Timezone offset in hours
+    /** Time zone offset in seconds
+      * \see TimeZone
       */
     int offset() const { return me().offset; }
 

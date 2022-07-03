@@ -119,7 +119,7 @@ struct FlickableIndicator::State final: public View::State
                 flickableState->carrier_.width();
         });
 
-        attach(Monitor{[this,handle] mutable {
+        attach(Monitor{[this,handle]() mutable {
             if (orientation() == Orientation::Vertical) {
                 const double h = handle.height();
                 double y = (visibleOffset() < 0) * (-visibleOffset() / totalExtent()) * height();

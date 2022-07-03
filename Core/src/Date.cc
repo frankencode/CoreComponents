@@ -8,6 +8,7 @@
 
 #include <cc/Date>
 #include <cc/System>
+#include <cc/Timezone>
 #include <cc/str>
 #include <limits>
 #include <cmath>
@@ -64,7 +65,7 @@ void Date::State::timeToCalendar()
     const int C400 =  4 * C100 + 1;
     const int N0   = 719528; // linear day number of Jan 1st year 0
 
-    std::int64_t t = std::int64_t(time) + std::int64_t(N0) * 86400;
+    std::int64_t t = std::int64_t(time) + offset + std::int64_t(N0) * 86400;
     int n = t / 86400;
     if (n < 0) n = 0;
 
@@ -124,8 +125,6 @@ void Date::State::calendarToTime()
     else if (minutes < 0) minutes = 0;
     if (seconds > 59) seconds = 59;
     else if (seconds < 0) seconds = 0;
-    if (offset > 600) offset = 600;
-    else if (offset < -600) offset = -600;
 
     --day;
     --month;
@@ -143,7 +142,7 @@ void Date::State::calendarToTime()
     weekDay = (719528 + t + 6) % 7;
     t *= 86400;
     t += 3600 * hour + 60 * minutes + seconds;
-    time = t;
+    time = t - offset;
 
     ++day;
     ++month;
@@ -152,6 +151,16 @@ void Date::State::calendarToTime()
 Date Date::now()
 {
     return Date{System::now()};
+}
+
+Date Date::localTime()
+{
+    return local(System::now());
+}
+
+Date Date::local(double time)
+{
+    return Date{time, Timezone::offset(time)};
 }
 
 Date::Date():
@@ -195,9 +204,6 @@ String Date::dayName() const
 
 String Date::toString() const
 {
-    //! \todo fully enable ms resolution (ss.fraction in String output)
-    //! \todo local time Formatting
-
     String tz = "Z";
     int offset = me().offset / 60;
     if (offset > 0)

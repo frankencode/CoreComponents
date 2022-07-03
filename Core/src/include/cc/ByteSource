@@ -66,6 +66,10 @@ public:
       */
     Bytes readSpan(int n);
 
+    /** Read a zero-terminated C-string
+      */
+    String readCString();
+
     /** Fill input buffer and return true if more bytes can be read
       */
     bool prefetch() { return me().prefetch(); }
@@ -106,7 +110,7 @@ public:
       */
     Stream source() const { return me().source; }
 
-    /** The output buffer
+    /** The input buffer
       */
     const Bytes &buffer() const { return me().buffer; }
 

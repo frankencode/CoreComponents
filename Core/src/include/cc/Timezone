@@ -1,0 +1,115 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+#include <cc/TextError>
+#include <cc/TimeInfo>
+#include <cc/ArrayIterator>
+
+namespace cc {
+
+/** \class Timezone cc/Timezone
+  * \ingroup sysinfo
+  * \brief %Timezone information
+  */
+class Timezone final: public Object
+{
+public:
+    /** Create a null timezone file
+      */
+    Timezone() = default;
+
+    /** Get local timezone information
+      */
+    static Timezone local();
+
+    /** Get UTC offset for \a time
+      */
+    static int offset(double time) { return local()(time); }
+
+    /** Load timezone information from \a path
+      * \exception SystemError
+      * \exception FormatError
+      * \exception InputExhaustion
+      */
+    static Timezone loadFromFile(const String &path);
+
+    /** Load timezone information from \a data (RFC 8536 format)
+      * \exception FormatError
+      * \exception InputExhaustion
+      */
+    explicit Timezone(const String &data);
+
+    /** %Number of time information entries
+      */
+    long count() const;
+
+    /** Get time information entry at \a i
+      */
+    const TimeInfo &at(long i) const;
+
+    /** \copydoc at()
+      */
+    const TimeInfo &operator[](long i) const { return at(i); }
+
+    /** Get time zone information for \a time
+      */
+    const TimeInfo &infoForTime(double time) const;
+
+    /** Get UTF offset for \a time
+      */
+    int operator()(double time) const;
+
+    using Item = TimeInfo; ///< %Timezone information record
+
+    using const_iterator = ArrayIterator<const Timezone, 1>; ///< \internal Readonly value iterator
+    using const_reverse_iterator = ArrayIterator<const Timezone, -1>; ///< \internal Readonly reverse value iterator
+    using iterator = const_iterator; ///< \internal Value iterator
+    using reverse_iterator = const_reverse_iterator; ///< \internal Reverse value iterator
+    using value_type = TimeInfo; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
+
+    /** \name Standard iterators
+      */
+    ///@{
+
+    const_iterator begin () const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
+
+    const_reverse_iterator rbegin () const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return const_reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const { return const_reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
+
+    ///@}
+
+    /** \brief Failed to parse timezone information file
+      */
+    class FormatError final: public TextError
+    {
+    public:
+        explicit FormatError(const String &data, long offset, const String &reason = String{}):
+            TextError{data, offset, reason}
+        {}
+    };
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+
+    class LocalCache;
+};
+
+} // namespace cc

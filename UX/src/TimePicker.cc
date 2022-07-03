@@ -15,6 +15,7 @@
 #include <cc/ClockFace>
 #include <cc/TextButton>
 #include <cc/Window>
+#include <cc/Date>
 #include <cc/DEBUG>
 
 namespace cc {
@@ -266,6 +267,21 @@ struct TimePicker::State final: public Dialog::State
         return getSize();
     }
 
+    double nextTime() const
+    {
+        Date n = Date::now();
+        Date h{n.year(), n.month(), n.day(), hour(), minute()};
+
+        return static_cast<double>(h) + SecondsPerDay * (h < n);
+    }
+
+    double todayTime() const
+    {
+        Date n{System::now()};
+        Date h{n.year(), n.month(), n.day(), hour(), minute()};
+        return static_cast<double>(h);
+    }
+
     Text title_;
     View inputArea_;
     NumberCell hourInput_;
@@ -284,6 +300,16 @@ struct TimePicker::State final: public Dialog::State
 TimePicker::TimePicker():
     Dialog{onDemand<State>}
 {}
+
+TimePicker::TimePicker(int hour, int minute):
+    Dialog{new State{hour, minute}}
+{}
+
+TimePicker::TimePicker(double time)
+{
+    Date date{time};
+    *this = TimePicker{date.hour(), date.minutes()};
+}
 
 TimePicker &TimePicker::associate(Out<TimePicker> self)
 {
@@ -310,6 +336,16 @@ TimePicker &TimePicker::minute(double newValue)
 int TimePicker::minute() const
 {
     return me().minute();
+}
+
+double TimePicker::nextTime() const
+{
+    return me().nextTime();
+}
+
+double TimePicker::todayTime() const
+{
+    return me().todayTime();
 }
 
 TimePicker &TimePicker::onAccepted(Fun<void()> &&f)
