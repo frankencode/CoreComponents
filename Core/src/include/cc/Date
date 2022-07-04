@@ -16,30 +16,30 @@ namespace cc {
 /** Day of week
   */
 enum Weekday {
-    Sun = 0,
-    Mon = 1,
-    Tue = 2,
-    Wed = 3,
-    Thu = 4,
-    Fri = 5,
-    Sat = 6
+    Sun = 0, ///< Sunday
+    Mon = 1, ///< Monday
+    Tue = 2, ///< Tuesday
+    Wed = 3, ///< Wednesday
+    Thu = 4, ///< Thursday
+    Fri = 5, ///< Friday
+    Sat = 6  ///< Saturday
 };
 
 enum {
-    SecondsPerHour = 3600,
-    SecondsPerDay  = 24 * SecondsPerHour
+    SecondsPerHour = 3600, ///< %Number of seconds per hour
+    SecondsPerDay  = 24 * SecondsPerHour ///< %Number of seconds per day
 };
 
 /** Convenience method to translate hours to seconds
   */
-inline double hours(double n) { return n * +SecondsPerHour; }
+inline constexpr double hours(double n) { return n * +SecondsPerHour; }
 
 /** Convenience method to translate days to seconds
   */
-inline double days(double n) { return n * +SecondsPerDay; }
+inline constexpr double days(double n) { return n * +SecondsPerDay; }
 
 /** \class Date cc/Date
-  * \ingroup misc
+  * \ingroup sysinfo
   * \brief Calendar date and time
   * \todo toString(): fully enable ms resolution (ss.fraction in String output)
   */
@@ -50,11 +50,11 @@ public:
       */
     static Date now();
 
-    /** Get the current local date and time
+    /** Create the local calendar date of the current system time
       */
-    static Date localTime();
+    static Date localNow();
 
-    /** Create a local calendar date by breaking down \a time
+    /** Create the local calendar date by breaking down \a time
       */
     static Date local(double time);
 
@@ -100,7 +100,7 @@ public:
     operator String() const { return toString(); }
 
     /** Time zone offset in seconds
-      * \see TimeZone
+      * \see Timezone::offset()
       */
     int offset() const { return me().offset; }
 

@@ -15,11 +15,14 @@ namespace cc {
 
 /** \class Monitor cc/Monitor
   * \ingroup misc
-  * \brief Object with a single void property definition
+  * \brief %Object with a single void property definition
+  * \see Property
   */
 class Monitor final: public Object
 {
 public:
+    /** Create a new monitor with binding function \a f
+      */
     explicit Monitor(Fun<void()> &&f):
         Object{new State{move(f)}}
     {}

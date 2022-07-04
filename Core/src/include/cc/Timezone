@@ -19,6 +19,7 @@ namespace cc {
 /** \class Timezone cc/Timezone
   * \ingroup sysinfo
   * \brief %Timezone information
+  * \see Date
   */
 class Timezone final: public Object
 {
@@ -31,7 +32,7 @@ public:
       */
     static Timezone local();
 
-    /** Get UTC offset for \a time
+    /** Get UTC offset for \a time (in seconds)
       */
     static int offset(double time) { return local()(time); }
 

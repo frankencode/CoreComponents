@@ -16,6 +16,7 @@
 #include <cc/TextButton>
 #include <cc/Window>
 #include <cc/Date>
+#include <cc/Timezone>
 #include <cc/DEBUG>
 
 namespace cc {
@@ -269,16 +270,16 @@ struct TimePicker::State final: public Dialog::State
 
     double nextTime() const
     {
-        Date n = Date::now();
-        Date h{n.year(), n.month(), n.day(), hour(), minute()};
+        Date n = Date::localNow();
+        Date h{n.year(), n.month(), n.day(), hour(), minute(), 0, n.offset()};
 
         return static_cast<double>(h) + SecondsPerDay * (h < n);
     }
 
     double todayTime() const
     {
-        Date n{System::now()};
-        Date h{n.year(), n.month(), n.day(), hour(), minute()};
+        Date n = Date::localNow();
+        Date h{n.year(), n.month(), n.day(), hour(), minute(), 0, n.offset()};
         return static_cast<double>(h);
     }
 
@@ -307,7 +308,7 @@ TimePicker::TimePicker(int hour, int minute):
 
 TimePicker::TimePicker(double time)
 {
-    Date date{time};
+    Date date{time, Timezone::offset(time)};
     *this = TimePicker{date.hour(), date.minutes()};
 }
 

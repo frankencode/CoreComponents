@@ -17,10 +17,9 @@
 
 namespace cc {
 
-/** \internal
-  * \class Layout cc/Layout
+/** \class Layout cc/Layout
   * \ingroup container
-  * \brief Layout data container
+  * \brief %Layout data container
   * \tparam T Item type
   * \tparam E Extent type
   * \todo add support for item spacing
@@ -70,7 +69,7 @@ public:
       */
     Extent extent() const { return me().extent(); }
 
-    /** \brief Access item value and associated layout properties
+    /** \brief %Access item value and associated layout properties
       */
     class Access
     {
@@ -130,7 +129,7 @@ public:
       */
     Access operator[](long index) const { return at(index); }
 
-    /** \brief Layout stop (item access with precomputed layout position)
+    /** \brief %Layout stop (item access with precomputed layout position)
       */
     class Stop: public Access
     {
@@ -153,7 +152,7 @@ public:
         Extent pos_;
     };
 
-    /** \brief Range for reading all layout stops within a given layout range
+    /** \brief %Range for reading all layout stops within a given layout range
       */
     class Range
     {

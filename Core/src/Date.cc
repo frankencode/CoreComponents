@@ -153,7 +153,7 @@ Date Date::now()
     return Date{System::now()};
 }
 
-Date Date::localTime()
+Date Date::localNow()
 {
     return local(System::now());
 }
