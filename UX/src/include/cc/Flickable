@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/Organizer>
+#include <cc/Control>
 #include <cc/Timer>
 #include <cc/Pane>
 
@@ -18,7 +18,7 @@ namespace cc {
   * \ingroup ui
   * \brief %Control with variable sized movable contents
   */
-class Flickable: public Organizer
+class Flickable: public Control
 {
 public:
     /** Create a primordial flickable
@@ -49,7 +49,7 @@ protected:
     friend class Object;
     friend class FlickableIndicator;
 
-    struct State: public Organizer::State
+    struct State: public Control::State
     {
         State(const View &carrier = Pane{});
         ~State();
@@ -118,11 +118,11 @@ protected:
     };
 
     explicit Flickable(State *newState):
-        Organizer{newState}
+        Control{newState}
     {}
 
     explicit Flickable(CreateState createState):
-        Organizer{createState}
+        Control{createState}
     {}
 
     State &me() { return View::me().as<State>(); }

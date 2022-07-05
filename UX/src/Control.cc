@@ -119,4 +119,9 @@ Control Control::delegate() const
     return me().delegate();
 }
 
+bool Control::cascade() const
+{
+    return me().cascade();
+}
+
 } // namespace cc

@@ -35,7 +35,13 @@ public:
       */
     Control &associate(Out<Control> self);
 
-    Control delegate() const; ///< Delegate for handling user input
+    /** Specific child control to cascade all input events to
+      */
+    Control delegate() const;
+
+    /** Allow input events to cascade to any child control
+      */
+    bool cascade() const;
 
     bool hover() const { return me().hover(); } ///< %Pointer is currently hovering over this control
     bool pressed() const { return me().pressed(); } ///< %Control is currently pressed by the user
@@ -85,7 +91,13 @@ protected:
         void grabFocus();
         void releaseFocus();
 
+        /** \copydoc Control::delegate()
+          */
         virtual Control delegate() const;
+
+        /** \copydoc Control::cascade()
+          */
+        virtual bool cascade() const { return delegate().isNull(); }
 
         virtual Rect textInputArea() const;
         virtual void onTextEdited(const String &text, int start, int length);

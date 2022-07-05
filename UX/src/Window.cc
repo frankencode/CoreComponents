@@ -9,7 +9,6 @@
 #include <cc/Window>
 #include <cc/Application>
 #include <cc/DisplayManager>
-#include <cc/Organizer>
 
 namespace cc {
 
@@ -22,10 +21,15 @@ Control Window::findControl(Point pos) const
 {
     Control control;
     if (view()) {
-        if (view().is<Control>() && !view().is<Organizer>() && view().containsLocal(pos)) {
+        if (view().is<Control>()) {
             control = view().as<Control>();
-            while (control.delegate()) {
-                control = control.delegate();
+            if (control.delegate()) {
+                while (control.delegate()) {
+                    control = control.delegate();
+                }
+            }
+            else if (control.cascade()) {
+                control = control.findControl(pos);
             }
         }
         else {

@@ -11,7 +11,6 @@
 #include <cc/Window>
 #include <cc/Control>
 #include <cc/PosGuard>
-#include <cc/Organizer>
 
 namespace cc {
 
@@ -134,15 +133,18 @@ Control View::State::findControl(Point l) const
         Point lc = mapToChild(candidate, l);
         if (candidate.containsLocal(lc)) {
             if (candidate.is<Control>()) {
-                if (candidate.is<Organizer>()) {
-                    control = candidate.findControl(lc);
-                    if (!control) control = candidate.as<Control>();
-                }
-                else {
+                if (candidate.as<Control>().delegate()) {
                     control = candidate.as<Control>();
                     while (control.delegate()) {
                         control = control.delegate();
                     }
+                }
+                else if (candidate.as<Control>().cascade()) {
+                        control = candidate.findControl(lc);
+                        if (!control) control = candidate.as<Control>();
+                }
+                else {
+                    control = candidate.as<Control>();
                 }
             }
             else {

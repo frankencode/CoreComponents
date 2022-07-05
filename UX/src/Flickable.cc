@@ -346,17 +346,17 @@ void Flickable::State::carrierStopped()
 }
 
 Flickable::Flickable():
-    Organizer{onDemand<State>}
+    Control{onDemand<State>}
 {}
 
 Flickable::Flickable(double width, double height, const View &carrier):
-    Organizer{new State{carrier}}
+    Control{new State{carrier}}
 {
     size(Size{width, height});
 }
 
 Flickable::Flickable(const View &carrier):
-    Organizer{new State{carrier}}
+    Control{new State{carrier}}
 {}
 
 Flickable &Flickable::associate(Out<Flickable> self)

@@ -68,6 +68,11 @@ Control NumberCell::State::delegate() const
     return input_;
 }
 
+bool NumberCell::State::cascade() const
+{
+    return false;
+}
+
 NumberCell::NumberCell():
     Control{onDemand<State>}
 {}

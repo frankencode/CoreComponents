@@ -20,6 +20,7 @@ struct NumberCell::State final: public Control::State
     Size minSize() const override;
     Size maxSize() const override;
 
+    bool cascade() const override;
     Control delegate() const override;
 
     Box box_;
