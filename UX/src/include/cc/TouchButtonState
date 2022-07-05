@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/TouchButton>
+#include <cc/Label>
+#include <cc/Box>
+
+namespace cc {
+
+struct TouchButton::State: public InputControl::State
+{
+    explicit State(Style style = Style::Default, const String &text = String{}, const Picture &icon = Picture{});
+
+    Size minSize() const override;
+    Size maxSize() const override;
+    Size preferredSize() const override;
+
+    const double d_ { sp(40) };
+    Style style_;
+    Property<bool> autoExpand { true };
+    Property<double> extraMargin;
+    Box box_;
+    Label label_;
+    Picture icon_;
+};
+
+} // namespace cc

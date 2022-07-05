@@ -21,9 +21,9 @@ namespace cc {
 class Dialog: public View
 {
 public:
-    /** Create a primordial dialog
+    /** Create a null dialog
       */
-    Dialog();
+    Dialog() = default;
 
     /** Get a weak reference in \a self
       */
@@ -46,22 +46,34 @@ protected:
       */
     struct State: public View::State
     {
+        /** Create new internal state
+          */
         State();
 
+        /** Add action to the button area
+          */
         void addAction(const Action &action);
 
+        /** %Button area at the bottom
+          */
         View buttonArea() const { return buttonArea_; }
 
+        /** Close this dialog
+          */
         void close();
 
     private:
         View buttonArea_;
     };
 
+    /** Create a primordial dialog
+      */
     explicit Dialog(CreateState onDemand):
         View{onDemand}
     {}
 
+    /** Create new dialog
+      */
     explicit Dialog(State *newState):
         View{newState}
     {}

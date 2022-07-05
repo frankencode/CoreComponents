@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class TimePicker cc/TimePicker
   * \ingroup ui
-  * \brief Dialog to select a time of the day
+  * \brief %Dialog to select a time of the day
   * \todo improve keyboard navigation (possibly focus support needed for TextButton)
   * \todo automatically allow to tab into keyboard input mode
   */
@@ -29,10 +29,6 @@ public:
       */
     TimePicker(int hour, int minute);
 
-    /** Create a new time picker showing \a time
-      */
-    explicit TimePicker(double time);
-
     /** Get a weak reference in \a self
       */
     TimePicker &associate(Out<TimePicker> self);
@@ -42,14 +38,6 @@ public:
 
     TimePicker &minute(double newValue); ///< %Set minute [0..59]
     int minute() const; ///< Get minute [0..59]
-
-    /** Get the next time matching the currently selected hour and minute
-      */
-    double nextTime() const;
-
-    /** Get todays time matching selected hour and minute
-      */
-    double todayTime() const;
 
     TimePicker &onAccepted(Fun<void()> &&f); ///< %Handle input accepted event
     TimePicker &onRejected(Fun<void()> &&f); ///< %Handle input accepted event

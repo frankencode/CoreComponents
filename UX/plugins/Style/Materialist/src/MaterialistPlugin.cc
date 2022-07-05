@@ -80,6 +80,12 @@ struct MaterialistPlugin::State: public StylePlugin::State
 
         if (!defaultFont_) CC_DEBUG << "Failed to locate default font";
 
+        defaultSmallFont_ = defaultFont_;
+        defaultSmallFont_.size(sp(12));
+
+        defaultMediumFont_ = defaultFont_;
+        defaultMediumFont_.size(sp(14));
+
         String iconsPath = CC_BUNDLE_LOOKUP("icons");
         if (iconsPath != "")
             FontManager{}.addPath(iconsPath);

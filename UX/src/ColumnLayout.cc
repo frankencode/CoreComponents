@@ -43,8 +43,10 @@ void ColumnLayout::State::updateLayout()
 
     double y = 0;
 
-    for (View child: view().visibleChildren())
+    for (View child: view().children())
     {
+        if (!child.visible()) continue;
+
         y += child.padding().top();
 
         if (align() == ColumnAlign::Auto || align() == ColumnAlign::Left)

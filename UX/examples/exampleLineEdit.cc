@@ -15,6 +15,7 @@ int main()
             LineEdit{}
             .associate(&edit)
             .title("Username")
+            .text("Nobody123")
             .icon(Icon::AccountPlus)
             .alertIcon()
             .placeholder("JohnDoe")

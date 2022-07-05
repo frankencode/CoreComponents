@@ -14,9 +14,8 @@ namespace cc {
 
 /** \class RowLayout cc/RowLayout
   * \ingroup ui_layout
-  * \brief Layout children views in a row
+  * \brief %Layout children views in a row
   * \see RowLayout
-  * \note Do not use a ManagedRowLayout when a RowLayout suffices!
   */
 class RowLayout final: public View::Layout
 {

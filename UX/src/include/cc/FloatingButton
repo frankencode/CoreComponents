@@ -13,27 +13,30 @@
 namespace cc {
 
 /** \class FloatingButton cc/FloatingButton
-  * \ingroup ui
-  * \brief Convenience class to construct a floating button
+  * \ingroup ui_buttons
+  * \brief Floating button
   */
-class FloatingButton: public PushButton
+class FloatingButton final: public PushButton
 {
 public:
     /** Create a primordial floating button
       */
-    FloatingButton() = default;
+    FloatingButton();
 
     /** Create a regular floating button
       */
-    explicit FloatingButton(const Picture &icon):
-        PushButton{PushButtonStyle::Floating, icon}
-    {}
+    explicit FloatingButton(const Picture &icon);
 
     /** Create a floating button with a text label
       */
-    explicit FloatingButton(const String &text, const Picture &icon = Picture{}):
-        PushButton{text == "" ? PushButtonStyle::Floating : PushButtonStyle::FloatingWithLabel, text, icon}
-    {}
+    explicit FloatingButton(const String &text, const Picture &icon = Picture{});
+
+    /** Get a weak reference in \a self
+      */
+    FloatingButton &associate(Out<FloatingButton> self);
+
+private:
+    struct State;
 };
 
 } // namespace cc

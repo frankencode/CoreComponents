@@ -25,18 +25,17 @@ enum Weekday {
     Sat = 6  ///< Saturday
 };
 
-enum {
-    SecondsPerHour = 3600, ///< %Number of seconds per hour
-    SecondsPerDay  = 24 * SecondsPerHour ///< %Number of seconds per day
-};
+
+static constexpr int SecondsPerHour = 3600; ///< %Number of seconds per hour
+static constexpr int SecondsPerDay = 24 * SecondsPerHour; ///< %Number of seconds per day
 
 /** Convenience method to translate hours to seconds
   */
-inline constexpr double hours(double n) { return n * +SecondsPerHour; }
+inline constexpr double hours(double n) { return n * SecondsPerHour; }
 
 /** Convenience method to translate days to seconds
   */
-inline constexpr double days(double n) { return n * +SecondsPerDay; }
+inline constexpr double days(double n) { return n * SecondsPerDay; }
 
 /** \class Date cc/Date
   * \ingroup sysinfo
@@ -79,13 +78,24 @@ public:
       */
     Date(int year, int month, int day, int hour = 0, int minutes = 0, int seconds = 0, int offset = 0);
 
+    /** Tell if this is a date is valid
+      */
+    bool isValid() const;
+
     /** Seconds since the begin of Epoch (1st Jan 1970 00:00:00)
       */
     double time() const { return me().time; }
 
-    /** Tell if this is a date is valid
+    /** Get the next time matching the given day time
+      * \param hour \copydoc hour()
+      * \param minutes \copydoc minutes()
+      * \param seconds \copydoc seconds()
+      * \return The next time the local time hits the given day time
+      *
+      * This method computes the next time at which the local time hits the giving \a hour, \a minutes and \a seconds. The method takes into account the local timezone and eventual change in daylight saving time.
+      * \note The date object this method is called upon needs to refer to a date in the local timezone.
       */
-    bool isValid() const;
+    double nextTime(int hour, int minutes, int seconds = 0) const;
 
     /** \copydoc isValid()
       */

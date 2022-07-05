@@ -184,6 +184,27 @@ bool Date::isValid() const
     return !std::isnan(me().time);
 }
 
+double Date::nextTime(int hour, int minutes, int seconds) const
+{
+    assert(offset() == Timezone::offset(time()));
+
+    Date n {
+        year(),
+        month(),
+        day(),
+        hour,
+        minutes,
+        seconds,
+        offset()
+    };
+
+    double t = n.time();
+    if (n <= *this) t += SecondsPerDay;
+    t += n.offset() - Timezone::offset(t);
+
+    return t;
+}
+
 String Date::monthName() const
 {
     const char *names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };

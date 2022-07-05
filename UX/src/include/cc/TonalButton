@@ -13,21 +13,26 @@
 namespace cc {
 
 /** \class TonalButton cc/TonalButton
-  * \ingroup ui
-  * \brief Convenience class to create tonal buttons
+  * \ingroup ui_buttons
+  * \brief Filed tonal button
   */
 class TonalButton final: public TouchButton
 {
 public:
     /** Create a primordial tonal button
       */
-    TonalButton() = default;
+    TonalButton();
 
     /** Create a new tonal button
       */
-    explicit TonalButton(const String &text, const Picture &icon = Picture{}):
-        TouchButton{TouchButton::Style::Tonal, text, icon}
-    {}
+    explicit TonalButton(const String &text, const Picture &icon = Picture{});
+
+    /** Get a weak reference in \a self
+      */
+    TonalButton &associate(Out<TonalButton> self);
+
+private:
+    struct State;
 };
 
 } // namespace cc

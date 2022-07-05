@@ -373,7 +373,7 @@ public:
     }
 
     /** \brief %Automatic geometry for children views
-      * \ingroup ui_layout
+      * \ingroup ui
       */
     class Layout: public Object
     {

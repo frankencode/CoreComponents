@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#include <cc/PushButton>
+#include <cc/Label>
+#include <cc/Box>
+
+namespace cc {
+
+struct PushButton::State: public InputControl::State
+{
+    static int styleHeight(Style style);
+
+    explicit State(Style style = Style::Default, const String &text = String{}, const Picture &icon = Picture{});
+
+    int styleHeight() const;
+
+    Size getSize() const;
+    Size minSize() const override;
+    Size maxSize() const override;
+
+    void iconPicture(const Picture &picture);
+
+    void iconView(const View &view);
+
+    Color color() const { return box_.color(); }
+    void color(Color newValue) { box_.color(newValue); }
+    void color(Definition<Color> &&f) { box_.color(move(f)); }
+
+    const Style style_;
+    const double d_;
+    Size s_;
+    Property<Color> textColor;
+    Property<View> iconView_;
+    Box box_;
+    Label label_;
+};
+
+} // namespace cc

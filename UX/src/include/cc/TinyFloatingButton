@@ -13,21 +13,26 @@
 namespace cc {
 
 /** \class TinyFloatingButton cc/TinyFloatingButton
-  * \ingroup ui
+  * \ingroup ui_buttons
   * \brief Convenience class to construct a tiny floating button
   */
-class TinyFloatingButton: public PushButton
+class TinyFloatingButton final: public PushButton
 {
 public:
     /** Create a primordial tiny floating button
       */
-    TinyFloatingButton() = default;
+    TinyFloatingButton();
 
     /** Create a tiny floating button
       */
-    explicit TinyFloatingButton(const Picture &icon):
-        PushButton{PushButtonStyle::TinyFloating, icon}
-    {}
+    explicit TinyFloatingButton(const Picture &icon);
+
+    /** Get a weak reference in \a self
+      */
+    TinyFloatingButton &associate(Out<TinyFloatingButton> self);
+
+private:
+    struct State;
 };
 
 } // namespace cc

@@ -13,21 +13,26 @@
 namespace cc {
 
 /** \class FilledButton cc/FilledButton
-  * \ingroup ui
-  * \brief Convenience class to create filled buttons
+  * \ingroup ui_buttons
+  * \brief Filled button
   */
 class FilledButton final: public TouchButton
 {
 public:
     /** Create a primordial filled button
       */
-    FilledButton() = default;
+    FilledButton();
 
     /** Create a new filled button
       */
-    explicit FilledButton(const String &text, const Picture &icon = Picture{}):
-        TouchButton{TouchButton::Style::Filled, text, icon}
-    {}
+    explicit FilledButton(const String &text, const Picture &icon = Picture{});
+
+    /** Get a weak reference in \a self
+      */
+    FilledButton &associate(Out<FilledButton> self);
+
+private:
+    struct State;
 };
 
 } // namespace cc

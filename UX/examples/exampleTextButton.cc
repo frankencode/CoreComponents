@@ -6,7 +6,7 @@ int main()
 {
     using namespace cc;
 
-    TouchButton button;
+    TextButton button;
 
     return
         View{sp(640), sp(480)}

@@ -133,10 +133,16 @@ Control View::State::findControl(Point l) const
         View candidate = visibleChildren_.at(pos);
         Point lc = mapToChild(candidate, l);
         if (candidate.containsLocal(lc)) {
-            if (candidate.is<Control>() && !candidate.is<Organizer>()) {
-                control = candidate.as<Control>();
-                while (control.delegate()) {
-                    control = control.delegate();
+            if (candidate.is<Control>()) {
+                if (candidate.is<Organizer>()) {
+                    control = candidate.findControl(lc);
+                    if (!control) control = candidate.as<Control>();
+                }
+                else {
+                    control = candidate.as<Control>();
+                    while (control.delegate()) {
+                        control = control.delegate();
+                    }
                 }
             }
             else {

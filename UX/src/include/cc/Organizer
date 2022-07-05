@@ -15,6 +15,11 @@ namespace cc {
 /** \class Organizer cc/Organizer
   * \ingroup ui
   * \brief Controls that organize the layout of other controls
+  *
+  * Organizer controls do not catch all input events, but only those that
+  * are not handled by one of its child controls.
+  *
+  * \todo introduce a virtual function Control::State::isControlProxy() const -> bool with opposite semantic and remove the Organizer class
   */
 class Organizer: public Control
 {

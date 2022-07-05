@@ -13,27 +13,30 @@
 namespace cc {
 
 /** \class TextButton cc/TextButton
-  * \ingroup ui
-  * \brief Convenience class to create text buttons
+  * \ingroup ui_buttons
+  * \brief %Text button
   */
 class TextButton final: public TouchButton
 {
 public:
     /** Create a primordial text button
       */
-    TextButton() = default;
+    TextButton();
 
     /** Create a new text button
       */
-    explicit TextButton(const String &text, const Picture &icon = Picture{}):
-        TouchButton{TouchButton::Style::Text, text, icon}
-    {}
+    explicit TextButton(const String &text, const Picture &icon = Picture{});
 
     /** Create a new text button
       */
-    explicit TextButton(const Picture &icon):
-        TouchButton{TouchButton::Style::Text, String{}, icon}
-    {}
+    explicit TextButton(const Picture &icon);
+
+    /** Get a weak reference in \a self
+      */
+    TextButton &associate(Out<TextButton> self);
+
+private:
+    struct State;
 };
 
 } // namespace cc

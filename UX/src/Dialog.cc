@@ -67,10 +67,6 @@ void Dialog::State::close()
     }
 }
 
-Dialog::Dialog():
-    View{onDemand<State>}
-{}
-
 Dialog &Dialog::associate(Out<Dialog> self)
 {
     return View::associate<Dialog>(self);

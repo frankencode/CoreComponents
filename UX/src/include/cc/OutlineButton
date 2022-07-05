@@ -13,21 +13,26 @@
 namespace cc {
 
 /** \class OutlineButton cc/OutlineButton
-  * \ingroup ui
-  * \brief Convenience class to create outline buttons
+  * \ingroup ui_buttons
+  * \brief %Outlined button
   */
 class OutlineButton final: public TouchButton
 {
 public:
     /** Create a primordial outline button
       */
-    OutlineButton() = default;
+    OutlineButton();
 
     /** Create a new outline button
       */
-    explicit OutlineButton(const String &text, const Picture &icon = Picture{}):
-        TouchButton{TouchButton::Style::Outline, text, icon}
-    {}
+    explicit OutlineButton(const String &text, const Picture &icon = Picture{});
+
+    /** Get a weak reference in \a self
+      */
+    OutlineButton &associate(Out<OutlineButton> self);
+
+private:
+    struct State;
 };
 
 } // namespace cc

@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class ColumnLayout cc/ColumnLayout
   * \ingroup ui_layout
-  * \brief Layout children views in a column
+  * \brief %Layout children views in a column
   */
 class ColumnLayout final: public View::Layout
 {

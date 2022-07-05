@@ -39,8 +39,10 @@ void RowLayout::State::updateLayout()
 
     double x = 0;
 
-    for (View child: view().visibleChildren())
+    for (View child: view().children())
     {
+        if (!child.visible()) continue;
+
         x += child.padding().left();
 
         if (align() == RowAlign::Top)

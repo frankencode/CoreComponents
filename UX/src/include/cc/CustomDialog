@@ -1,0 +1,66 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the zlib license
+ * (see cc/LICENSE-zlib).
+ *
+ */
+
+#pragma once
+
+#include <cc/Dialog>
+
+namespace cc {
+
+/** \class CustomDialog cc/CustomDialog
+  * \ingroup ui
+  * \brief Convenience class to create custom dialogs
+  */
+class CustomDialog: public Dialog
+{
+public:
+    /** Create a primordial custom dialog
+      */
+    CustomDialog();
+
+    /** Get a weak reference in \a self
+      */
+    CustomDialog &associate(Out<CustomDialog> self);
+
+    /** Add content to this dialog
+      */
+    CustomDialog &addContent(const View &view);
+
+protected:
+    /** Internal state
+      */
+    struct State: public Dialog::State
+    {
+    public:
+        State();
+
+        virtual double preferredWidth() const;
+
+    private:
+        friend class CustomDialog;
+
+        Size getSize() const;
+        Size preferredSize() const override;
+        Size minSize() const override;
+
+        View contentArea_;
+    };
+
+    explicit CustomDialog(CreateState onDemand):
+        Dialog{onDemand}
+    {}
+
+    explicit CustomDialog(State *newState):
+        Dialog{newState}
+    {}
+
+    State &me() { return get<State>(); };
+    const State &me() const { return get<State>(); };
+};
+
+} // namespace cc

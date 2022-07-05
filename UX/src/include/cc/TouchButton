@@ -50,8 +50,11 @@ public:
     TouchButton &onTriggered(Fun<void()> &&f); ///< Setup callback to be called when the button is pressed
     TouchButton &operator()(Fun<void()> &&f); ///< \copydoc onTriggered()
 
-private:
+protected:
     struct State;
+
+    explicit TouchButton(State *newState);
+    explicit TouchButton(CreateState onDemand);
 
     State &me();
     const State &me() const;

@@ -356,7 +356,7 @@ Size TextInput::State::preferredSize() const
     Size s;
 
     if (sizerText().count() == 0) {
-        s[0] = sp(280);
+        s[0] = sp(240);
     }
     else {
         s[0] = TextRun{sizerText(), font()}.size()[0] + sp(1);

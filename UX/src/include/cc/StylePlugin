@@ -58,18 +58,14 @@ public:
       */
     Font defaultSmallFont() const
     {
-        Font font = me().defaultFont_;
-        font.size(theme().smallFontSize());
-        return font;
+        return me().defaultSmallFont_;
     }
 
     /** Default small font
       */
     Font defaultMediumFont() const
     {
-        Font font = me().defaultFont_;
-        font.size(theme().mediumFontSize());
-        return font;
+        return me().defaultMediumFont_;
     }
 
     double gridUnit() const { return me().gridUnit_; } ///< %Grid unit
@@ -113,6 +109,8 @@ protected:
         String name_;
         Font defaultFont_;
         Font defaultFixedFont_;
+        Font defaultSmallFont_;
+        Font defaultMediumFont_;
         double gridUnit_ { sp(8) };
         double dividerThickness_ { dp(1) };
         double itemHeight1_ { sp(48) };

@@ -343,7 +343,7 @@ String LineEdit::text() const
 
 LineEdit &LineEdit::text(const String &newValue)
 {
-    me().input_.text(newValue);
+    me().input_.text(newValue).selectAll(); // FIXME move selectAll() to TextInput
     return *this;
 }
 

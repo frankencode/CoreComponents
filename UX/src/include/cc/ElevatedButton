@@ -13,27 +13,30 @@
 namespace cc {
 
 /** \class ElevatedButton cc/ElevatedButton
-  * \ingroup ui
-  * \brief Convenience class to construct an elevated button
+  * \ingroup ui_buttons
+  * \brief Elevated button
   */
-class ElevatedButton: public PushButton
+class ElevatedButton final: public PushButton
 {
 public:
     /** Create a primordial elevated button
       */
-    ElevatedButton() = default;
+    ElevatedButton();
 
     /** Create an elevated button
       */
-    explicit ElevatedButton(const Picture &icon):
-        PushButton{PushButtonStyle::Floating, icon}
-    {}
+    explicit ElevatedButton(const Picture &icon);
 
     /** Create an elevated button with a text label
       */
-    explicit ElevatedButton(const String &text, const Picture &icon = Picture{}):
-        PushButton{PushButtonStyle::Elevated, text, icon}
-    {}
+    explicit ElevatedButton(const String &text, const Picture &icon = Picture{});
+
+    /** Get a weak reference in \a self
+      */
+    ElevatedButton &associate(Out<ElevatedButton> self);
+
+private:
+    struct State;
 };
 
 } // namespace cc
