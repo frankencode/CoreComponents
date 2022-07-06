@@ -131,7 +131,7 @@ Control View::State::findControl(Point l) const
     for (auto pos = visibleChildren_.tail(); pos; --pos) {
         View candidate = visibleChildren_.at(pos);
         Point lc = mapToChild(candidate, l);
-        if (candidate.containsLocal(lc)) {
+        if (candidate.childrenRect().contains(lc)) {
             if (candidate.is<Control>()) {
                 if (candidate.as<Control>().delegate()) {
                     control = candidate.as<Control>();
@@ -499,6 +499,33 @@ void View::pop()
         target.visible(false);
         view.remove(target);
     });
+}
+
+Rect View::childrenRect() const
+{
+    double x0 = 0, x1 = width();
+    double y0 = 0, y1 = height();
+
+    for (const View &child: visibleChildren()) {
+        Rect rect = child.childrenRect();
+        rect.pos(
+            child.pos()
+            - Point{child.padding().left(), child.padding().top()}
+        );
+        rect.size(
+            rect.size()
+            + Size{
+                child.padding().left() + child.padding().right(),
+                child.padding().top() + child.padding().bottom()
+            }
+        );
+        if (rect.x0() < x0) x0 = rect.x0();
+        if (x1 < rect.x1()) x1 = rect.x1();
+        if (rect.y0() < y0) y0 = rect.y0();
+        if (y1 < rect.y1()) y1 = rect.y1();
+    }
+
+    return Rect{x0, y0, x1, y1};
 }
 
 void View::show()

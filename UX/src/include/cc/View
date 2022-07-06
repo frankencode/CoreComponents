@@ -302,13 +302,17 @@ public:
       */
     void moveToBottom() { me().moveToBottom(); }
 
-    /** Get all children views
+    /** Get all child views
       */
     const Set<View> &children() const { return me().children_; }
 
-    /** Get visible children views
+    /** Get visible child views
       */
     const Set<View> &visibleChildren() const { return me().visibleChildren_; }
+
+    /** Get bounding box containing all visible child views including their paddings
+      */
+    Rect childrenRect() const;
 
     /** %Map view coordinates \a l to window coordinates
       */
