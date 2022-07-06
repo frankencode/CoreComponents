@@ -11,7 +11,7 @@
 
 namespace cc {
 
-class Blind::State final: public View::State
+class Blind::State final: public Control::State
 {
 public:
     State()
@@ -19,10 +19,34 @@ public:
         size([this]{ return hasParent() ? parent().size() : Size{}; });
         paper([this]{ return theme().dialogScrimColor(); });
     }
+
+    bool feedFingerEvent(FingerEvent &event) const override
+    {
+        Control::State::feedFingerEvent(event);
+        return true;
+    }
+
+    bool feedMouseEvent(MouseEvent &event) const override
+    {
+        Control::State::feedMouseEvent(event);
+        return true;
+    }
+
+    bool feedWheelEvent(WheelEvent &event) const override
+    {
+        Control::State::feedWheelEvent(event);
+        return true;
+    }
+
+    bool feedKeyEvent(KeyEvent &event) const override
+    {
+        Control::State::feedKeyEvent(event);
+        return true;
+    }
 };
 
 Blind::Blind():
-    View{onDemand<State>}
+    Control{onDemand<State>}
 {}
 
 Blind &Blind::associate(Out<Blind> self)

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/View>
+#include <cc/Control>
 
 namespace cc {
 
@@ -16,7 +16,7 @@ namespace cc {
   * \ingroup ui
   * \brief Semi-transparent screen overlay (blocks the screen behind a modal dialog)
   */
-class Blind final: public View
+class Blind final: public Control
 {
 public:
     /** Create primordial blind
