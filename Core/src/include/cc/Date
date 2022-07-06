@@ -29,6 +29,10 @@ enum Weekday {
 static constexpr int SecondsPerHour = 3600; ///< %Number of seconds per hour
 static constexpr int SecondsPerDay = 24 * SecondsPerHour; ///< %Number of seconds per day
 
+/** Convenience method to translate minutes to seconds
+  */
+inline constexpr double minutes(double n) { return n * 60; }
+
 /** Convenience method to translate hours to seconds
   */
 inline constexpr double hours(double n) { return n * SecondsPerHour; }
@@ -194,11 +198,11 @@ private:
         int year { 0 };
         int month { 0 };
         int day { 0 };
-        int weekDay { 0 };
-        int yearDay { 0 };
         int hour { 0 };
         int minutes { 0 };
         int seconds { 0 };
+        int weekDay { 0 };
+        int yearDay { 0 };
 
         void timeToCalendar();
         void calendarToTime();

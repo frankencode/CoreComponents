@@ -156,6 +156,8 @@ struct TimePicker::State final: public Dialog::State
                 ClockFace{}
                 .associate(&clockFace_)
                 .mode([this]{ return clockMode(); })
+                .hour(initialHour)
+                .minute(initialMinute)
                 .onHourChanged([this]{
                     hourInput_.value(clockFace_.hour());
                 })
@@ -267,6 +269,20 @@ struct TimePicker::State final: public Dialog::State
         return getSize();
     }
 
+    void setHour(int newValue)
+    {
+        hour(newValue);
+        hourInput_.value(newValue);
+        clockFace_.hour(newValue);
+    }
+
+    void setMinute(int newValue)
+    {
+        minute(newValue);
+        minuteInput_.value(newValue);
+        clockFace_.minute(newValue);
+    }
+
     Text title_;
     View inputArea_;
     NumberCell hourInput_;
@@ -297,7 +313,7 @@ TimePicker &TimePicker::associate(Out<TimePicker> self)
 
 TimePicker &TimePicker::hour(double newValue)
 {
-    me().hour(newValue);
+    me().setHour(newValue);
     return *this;
 }
 
@@ -308,7 +324,7 @@ int TimePicker::hour() const
 
 TimePicker &TimePicker::minute(double newValue)
 {
-    me().minute(newValue);
+    me().setMinute(newValue);
     return *this;
 }
 
