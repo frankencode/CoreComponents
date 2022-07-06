@@ -30,6 +30,8 @@ public:
     bool value() const; ///< Get value
     CheckboxControl &value(bool newValue); ///< %Set value
 
+    CheckboxControl &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
+
 private:
     friend class Checkbox;
 

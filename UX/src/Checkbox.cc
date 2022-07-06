@@ -100,6 +100,12 @@ Checkbox &Checkbox::value(bool newValue)
     return *this;
 }
 
+Checkbox &Checkbox::onValueChanged(Fun<void()> &&f)
+{
+    me().checkbox_.onValueChanged(move(f));
+    return *this;
+}
+
 Checkbox &Checkbox::groupUnder(const Checkbox &groupLeader)
 {
     me().checkbox_.groupUnder(Checkbox{groupLeader}->checkbox_);

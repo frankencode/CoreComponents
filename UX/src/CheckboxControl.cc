@@ -81,7 +81,7 @@ struct CheckboxControl::State final: public InputControl::State
 
     void setValue(bool newValue)
     {
-        if (state() == State::Blank) {
+        if (newValue) {
             state = Marked;
         }
         else {
@@ -138,6 +138,12 @@ bool CheckboxControl::value() const
 CheckboxControl &CheckboxControl::value(bool newValue)
 {
     me().setValue(newValue);
+    return *this;
+}
+
+CheckboxControl &CheckboxControl::onValueChanged(Fun<void()> &&f)
+{
+    me().state.onChanged(move(f));
     return *this;
 }
 

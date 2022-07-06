@@ -140,10 +140,12 @@ Control View::State::findControl(Point l) const
                     }
                 }
                 else if (candidate.as<Control>().cascade()) {
-                        control = candidate.findControl(lc);
-                        if (!control) control = candidate.as<Control>();
+                    control = candidate.findControl(lc);
+                    if (!control && candidate.containsLocal(lc)) {
+                        control = candidate.as<Control>();
+                    }
                 }
-                else {
+                else if (candidate.containsLocal(lc)) {
                     control = candidate.as<Control>();
                 }
             }
