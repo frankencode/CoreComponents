@@ -25,7 +25,9 @@ StyleManager::State::State():
 
 void StyleManager::setActivePlugin(const StylePlugin &plugin)
 {
+    #ifndef NDEBUG
     CC_DEBUG << plugin.name();
+    #endif
     StylePlugin{plugin}.me().activate();
     me().activePlugin_ = plugin;
 }

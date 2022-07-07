@@ -17,7 +17,9 @@ PlatformManager::PlatformManager():
 
 void PlatformManager::setActivePlugin(const PlatformPlugin &plugin)
 {
+    #ifndef NDEBUG
     CC_DEBUG << plugin.name();
+    #endif
     me().activePlugin_ = plugin;
 }
 

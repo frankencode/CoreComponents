@@ -28,12 +28,20 @@ struct MaterialistPlugin::State: public StylePlugin::State
 
     void activate() override
     {
+        #if 0
         if (File::exists("/usr/share/fonts/TTF/Roboto-Regular.ttf")) {
             // Arch
             FontManager{}.addPath("/usr/share/fonts/TTF", "Roboto");
             defaultFont_ = Font{"Roboto", sp(16)};
             defaultFixedFont_ = Font{"Roboto Mono", sp(16)};
         }
+        else if (File::exists("/usr/share/fonts/truetype/roboto/unhinted/RobotoCondensed-Regular.ttf")) {
+            // Debian
+            FontManager{}.addPath("/usr/share/fonts/truetype/roboto/unhinted", "RobotoCondensed");
+            defaultFont_ = Font{"RobotoCondensed", sp(16)};
+            defaultFixedFont_ = Font{"Roboto Mono", sp(16)};
+        }
+        #endif
 
         if (!defaultFont_) {
             const char *notoPaths[] = {
@@ -45,7 +53,7 @@ struct MaterialistPlugin::State: public StylePlugin::State
                 if (Dir::exists(path)) {
                     FontManager{}.addPath(path);
                     defaultFont_ = Font{"Noto Sans", sp(16)};
-                    // defaultFixedFont_ = Font{"Noto Mono", sp(16)};
+                    if (!defaultFixedFont_) defaultFixedFont_ = Font{"Noto Mono", sp(16)};
                     break;
                 }
             }
@@ -66,7 +74,7 @@ struct MaterialistPlugin::State: public StylePlugin::State
             // Arch
             FontManager{}.addPath("/usr/share/fonts/TTF", "DejaVu");
             if (!defaultFont_) defaultFont_ = Font{"DejaVu Sans", sp(16)};
-            defaultFixedFont_ = Font{"DejaVu Sans Mono", sp(16)};
+            if (!defaultFixedFont_) defaultFixedFont_ = Font{"DejaVu Sans Mono", sp(16)};
         }
         else if (File::exists("/usr/share/fonts/truetype/dejavu")) {
             // Debian
@@ -74,7 +82,7 @@ struct MaterialistPlugin::State: public StylePlugin::State
             if (Dir::exists(dejavuPath)) {
                 FontManager{}.addPath(dejavuPath);
                 if (!defaultFont_) defaultFont_ = Font{"DejaVu Sans", sp(16)};
-                defaultFixedFont_ = Font{"DejaVu Sans Mono", sp(16)};
+                if (!defaultFixedFont_) defaultFixedFont_ = Font{"DejaVu Sans Mono", sp(16)};
             }
         }
 
@@ -91,6 +99,11 @@ struct MaterialistPlugin::State: public StylePlugin::State
             FontManager{}.addPath(iconsPath);
         else
             CC_DEBUG << "Failed to locate icons directory";
+
+        #ifndef NDEBUG
+        CC_INSPECT(defaultFont_.path());
+        CC_INSPECT(defaultFixedFont_.path());
+        #endif
     }
 
     Visual icon(Icon ch, double size) const override
