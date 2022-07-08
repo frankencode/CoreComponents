@@ -38,7 +38,7 @@ Download the latest stable version:
 ```
 mkdir -p ~/src
 cd ~/src
-curl -L https://www.corecomponents.io/download/CoreComponents-2.10.tar.gz | tar xzv
+curl -L https://www.corecomponents.io/download/CoreComponents-2.1.0.tar.gz | tar xzv
 ln -s ../CoreComponents-2.1.0 CoreComponents
 ```
 
