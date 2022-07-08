@@ -293,6 +293,11 @@ struct BuildPlan::State:
             if (File::exists(recipePath(candidatePath))) {
                 candidatePath = candidatePath.canonicalPath();
                 if (candidatePath == projectPath_) continue;
+                if (!(options_ & BuildOption::Package)) {
+                    if (File::exists(candidatePath / "src" / "Recipe")) {
+                        candidatePath = candidatePath / "src";
+                    }
+                }
                 return candidatePath;
             }
         }
