@@ -717,8 +717,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
 
     if (outOfScope()) return;
 
-    for (BuildPlan &prerequisite: plan().prerequisites())
+    for (BuildPlan &prerequisite: plan().prerequisites()) {
         prerequisite.compileLinkStage().scheduleJobs(scheduler);
+    }
 
     if (plan().options() & BuildOption::Package) return;
 
@@ -748,8 +749,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
             Job job;
             if (plan().options() & BuildOption::Tools) {
                 job = toolChain().createCompileLinkJob(plan(), module);
-                if (!(plan().options() & BuildOption::Simulate))
+                if (!(plan().options() & BuildOption::Simulate)) {
                     plan().registerLinkDerivative(job);
+                }
             }
             else {
                 job = toolChain().createCompileJob(plan(), module);
@@ -784,8 +786,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
         plan().modules().count() > 0 &&
         (plan().options() & BuildOption::Simulate) &&
         plan().concurrency() != 1
-    )
+    ) {
         fout() << "wait" << nl;
+    }
 
     if (plan().options() & BuildOption::Tools) return;
 
@@ -828,9 +831,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
     }
     else {
         plan().registerLinkDerivative(linkJob);
-        if (plan().options() & BuildOption::Library)
+        if (plan().options() & BuildOption::Library) {
             plan().setLibraryLinkJob(linkJob);
-
+        }
         scheduler.schedule(linkJob);
     }
 }
@@ -3027,12 +3030,18 @@ struct GnuToolChain::State: public ToolChain::State
             << "-D_FILE_OFFSET_BITS=64"
             << "-fvisibility-inlines-hidden";
 
+        if (plan.options() & BuildOption::Release) {
+            args << "-ffile-prefix-map=" + plan.sourcePrefix() + "=.";
+        }
+
         if (cFlags_ != "" && args.at(0) == ccPath_) args << cFlags_;
         if (cxxFlags_ != "" && args.at(0) == cxxPath_) args << cxxFlags_;
-        if (plan.bundle().count() > 0)
+        if (plan.bundle().count() > 0) {
             args << "-DCCBUILD_BUNDLE_PREFIX=" + bundlePrefix(plan);
-        if (plan.name() != "")
+        }
+        if (plan.name() != "") {
             args << "-DCCBUILD_BUNDLE_VERSION=" + plan.version().toString();
+        }
         for (const String &flags: plan.customCompileFlags()) {
             if (flags.contains("c++") && args.at(0) != cxxPath_) continue;
                 // FIXME: workaround hack to prevent passing "-std=c++11" to the C compiler
@@ -3088,7 +3097,8 @@ struct GnuToolChain::State: public ToolChain::State
                 rpaths << "-rpath=" + path.absolutePathRelativeTo(Process::cwd());
         }
 
-        rpaths << "-rpath-link=" + Process::cwd();
+        // rpaths << "-rpath-link=" + Process::cwd();
+        rpaths << "-rpath-link=$ORIGIN";
 
         if (cygwin_)
             args << "-Wl," + rpaths.join(',');
@@ -3722,82 +3732,6 @@ struct BuildPlan::State:
         return projectPath_ / source;
     }
 
-    #if 0
-    List<String> globSources(const List<String> &patternList) const
-    {
-        List<String> sources;
-        for (const String &pattern: patternList) {
-            Glob glob{sourcePath(pattern)};
-            for (String path; glob.read(&path);) {
-                try {
-                    DirWalker walker{path};
-                    bool isDir = false;
-                    for (String path; walker.read(&path, &isDir);) {
-                        if (!isDir) sources.append(path);
-                    }
-                }
-                catch (...) {
-                    sources.append(path);
-                }
-            }
-        }
-        if (!(options_ & BuildOption::Bootstrap)) {
-            for (const String &pattern: patternList) {
-                Glob glob{prestagePath(pattern)};
-                for (String path; glob.read(&path);) {
-                    try {
-                        DirWalker walker{path};
-                        bool isDir = false;
-                        for (String path; walker.read(&path, &isDir);) {
-                            if (!isDir) sources.append(path);
-                        }
-                    }
-                    catch (...) {
-                        if (path.startsWith("./")) { // \todo FIXME, why?!
-                            path = path.copy(2, path.count());
-                        }
-                        sources.append(path);
-                    }
-                }
-            }
-        }
-
-        return sources;
-    }
-
-    void globSources()
-    {
-        if (sources_.count() > 0) return;
-
-        if ((options_ & BuildOption::Test) && !(options_ & BuildOption::BuildTests)) return;
-
-        if (recipe_.contains("source")) {
-            sources_ = globSources(recipe_("source").to<List<String>>());
-        }
-
-        sourcePrefix_ = BuildMap{}.commonPrefix();
-        if (sourcePrefix_ == "") sourcePrefix_ = projectPath_;
-        else sourcePrefix_ = sourcePrefix_.canonicalPath();
-
-        containsCPlusPlus_ = false;
-        for (const String &source: sources_) {
-            String suffix = source.fileSuffix();
-            if (suffix == "cc" || suffix == "cpp" || suffix == "cxx" || suffix == "mm") {
-                containsCPlusPlus_ = true;
-                break;
-            }
-        }
-
-        if (recipe_.contains("bundle")) {
-            bundle_ = globSources(recipe_("bundle").to<List<String>>());
-        }
-
-        for (BuildPlan &plan: prerequisites_) {
-            plan->globSources();
-        }
-    }
-    #endif
-
     void initModules()
     {
         if (modulesInitialized_) return;
@@ -4373,14 +4307,16 @@ void BuildPlan::registerLinkDerivative(Job &linkJob)
         if (prerequisite.options() & BuildOption::Package) {
             for (BuildPlan &child: prerequisite.prerequisites()) {
                 if (child.options() & BuildOption::Library) {
-                    if (child.libraryLinkJob())
+                    if (child.libraryLinkJob()) {
                         child.libraryLinkJob().registerDerivative(linkJob);
+                    }
                 }
             }
         }
         else if (prerequisite.options() & BuildOption::Library) {
-            if (prerequisite.libraryLinkJob())
+            if (prerequisite.libraryLinkJob()) {
                 prerequisite.libraryLinkJob().registerDerivative(linkJob);
+            }
         }
     }
 }
