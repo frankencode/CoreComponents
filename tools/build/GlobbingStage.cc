@@ -35,7 +35,8 @@ bool GlobbingStage::run()
         (
             (plan().options() & BuildOption::Application) ||
             (plan().options() & BuildOption::Library) ||
-            (plan().options() & BuildOption::Plugin)
+            (plan().options() & BuildOption::Plugin) ||
+            (plan().options() & BuildOption::Tools)
         )
     ) {
         List<String> sources = globSources(plan().recipe("source").to<List<String>>());

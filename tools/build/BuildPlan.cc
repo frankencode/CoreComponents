@@ -151,6 +151,7 @@ struct BuildPlan::State:
         else if (recipe_("clean"))  options_ |= BuildOption::Clean;
         if (recipe_("insight"))     options_ |= BuildOption::Insight;
         if (recipe_("lump"))        options_ |= BuildOption::Lump;
+        if (recipe_("strip"))       options_ |= BuildOption::Strip;
 
         concurrency_ = recipe_("jobs").to<long>();
         testRunConcurrency_ = recipe_("test-run-jobs").to<long>();

@@ -121,6 +121,7 @@ protected:
         insert("simulate", false);
         insert("blindfold", false);
         insert("bootstrap", false);
+        insert("strip", false);
 
         insert("query", "");
         insert("query-all", false);

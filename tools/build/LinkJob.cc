@@ -24,6 +24,7 @@ struct LinkJob::State: public Job::State
         if (!plan().toolChain().createSymlinks(plan())) return false;
         if (plan().options() & BuildOption::Library) plan().toolChain().generatePkgConfig(plan());
         if (!Job::State::run()) return false;
+        if (plan().options() & BuildOption::Strip) plan().toolChain().strip(plan());
         File::save(plan().previousLinkCommandPath(), command_);
         return true;
     }

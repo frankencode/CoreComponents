@@ -121,7 +121,7 @@ struct GnuToolChain::State: public ToolChain::State
     String defaultOptimization(BuildOption options) const override
     {
         /*if ((options & BuildOption::Debug) && (options & BuildOption::Release)) return "g";*/
-        if (options & BuildOption::Release) return "3";
+        if (options & BuildOption::Release) return "2";
         else return "";
     }
 
@@ -499,16 +499,40 @@ struct GnuToolChain::State: public ToolChain::State
         return plan.shell().run(command);
     }
 
+    bool strip(const BuildPlan &plan) const override
+    {
+        if (!(
+            (plan.options() & BuildOption::Library) ||
+            (plan.options() & BuildOption::Application) ||
+            (plan.options() & BuildOption::Plugin)
+        )) {
+            return true;
+        }
+        Format attr;
+        attr << "strip";
+        attr << linkName(plan);
+        String command = attr.join<String>(' ');
+        return plan.shell().run(command);
+    }
+
     void appendCompileOptions(Format &args, const BuildPlan &plan) const
     {
         if (plan.options() & BuildOption::Debug) args << "-g";
-        if (plan.options() & BuildOption::Release) args << "-DNDEBUG";
+        if (plan.options() & BuildOption::Release) {
+            args << "-DNDEBUG";
+        }
         if (plan.optimize() != "") {
             if (plan.optimize() == "4")
                 args << "-O3" << "-flto";
             else
                 args << "-O" + plan.optimize();
         }
+        if (plan.options() & BuildOption::Release) {
+            if (plan.optimize() != "0") {
+                args << "-mtune=generic" << "-fno-plt";
+            }
+        }
+
         if (plan.linkStatic()) args << "-static";
         else appendRelocationMode(args, plan);
 

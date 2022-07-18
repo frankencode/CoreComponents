@@ -75,6 +75,8 @@ public:
 
     bool refreshLinkerCache(const BuildPlan &plan) const { return me().refreshLinkerCache(plan); }
 
+    bool strip(const BuildPlan &plan) const { return me().strip(plan); }
+
 protected:
     struct State: public Object::State
     {
@@ -127,6 +129,7 @@ protected:
         virtual void generatePkgConfig(const BuildPlan &plan) const = 0;
 
         virtual bool refreshLinkerCache(const BuildPlan &plan) const = 0;
+        virtual bool strip(const BuildPlan &plan) const = 0;
     };
 
     explicit ToolChain(State *newState):
