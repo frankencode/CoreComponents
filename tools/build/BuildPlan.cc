@@ -119,7 +119,10 @@ struct BuildPlan::State:
         else if (recipe_.className() == "Test")    options_ |= BuildOption::Application | BuildOption::Test;
         else if (recipe_.className() == "Tools")   options_ |= BuildOption::Tools;
         else if (recipe_.className() == "Tests")   options_ |= BuildOption::Tools | BuildOption::Test;
-        else if (recipe_.className() == "Package") options_ |= BuildOption::Package;
+        else if (recipe_.className() == "Package") {
+            options_ |= BuildOption::Package;
+            if (!parentPlan) options_ |= BuildOption::Deploy;
+        }
 
         name_ = recipe_("name").to<String>();
         if (name_ == "") name_ = projectPath_.baseName();

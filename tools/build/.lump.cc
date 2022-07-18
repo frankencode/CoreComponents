@@ -1378,10 +1378,12 @@ bool InstallStage::run()
 
     BuildStageGuard guard{this};
 
-    for (BuildPlan &prerequisite: plan().prerequisites()) {
-        if (!prerequisite.installStage().run())
-            return success_ = false;
-        linkerCacheDirty_ = linkerCacheDirty_ || prerequisite.installStage().linkerCacheDirty_;
+    if (plan().options() & BuildOption::Deploy) {
+        for (BuildPlan &prerequisite: plan().prerequisites()) {
+            if (!prerequisite.installStage().run())
+                return success_ = false;
+            linkerCacheDirty_ = linkerCacheDirty_ || prerequisite.installStage().linkerCacheDirty_;
+        }
     }
 
     if (plan().options() & BuildOption::Package) return success_ = true;
@@ -2814,7 +2816,7 @@ struct GnuToolChain::State: public ToolChain::State
         return args.join<String>(' ');
     }
 
-    String installDirPath(const BuildPlan &plan) const override
+    String relativeInstallDirPath(const BuildPlan &plan) const
     {
         String relativePath;
         if (plan.options() & BuildOption::Library) {
@@ -2831,7 +2833,17 @@ struct GnuToolChain::State: public ToolChain::State
         else {
             relativePath = "bin";
         }
-        return plan.installPath(relativePath);
+        return relativePath;
+    }
+
+    String installDirPath(const BuildPlan &plan) const override
+    {
+        return plan.installPath(relativeInstallDirPath(plan));
+    }
+
+    String installedDirPath(const BuildPlan &plan) const override
+    {
+        return plan.installedPath(relativeInstallDirPath(plan));
     }
 
     String includePrefix(const BuildPlan &plan) const override
@@ -2938,7 +2950,7 @@ struct GnuToolChain::State: public ToolChain::State
         Format f;
         f << "prefix=" << plan.installPrefix() << nl;
         f << "exec_prefix=${prefix}" << nl;
-        f << "libdir=" << installDirPath(plan) << nl;
+        f << "libdir=" << installedDirPath(plan) << nl;
         f << "includedir=${prefix}/include" << nl;
         if (hasLibInclude)
             f << "libincludedir=${libdir}/" << targetName(plan) << "/include" << nl;
@@ -3426,7 +3438,10 @@ struct BuildPlan::State:
         else if (recipe_.className() == "Test")    options_ |= BuildOption::Application | BuildOption::Test;
         else if (recipe_.className() == "Tools")   options_ |= BuildOption::Tools;
         else if (recipe_.className() == "Tests")   options_ |= BuildOption::Tools | BuildOption::Test;
-        else if (recipe_.className() == "Package") options_ |= BuildOption::Package;
+        else if (recipe_.className() == "Package") {
+            options_ |= BuildOption::Package;
+            if (!parentPlan) options_ |= BuildOption::Deploy;
+        }
 
         name_ = recipe_("name").to<String>();
         if (name_ == "") name_ = projectPath_.baseName();
@@ -3775,6 +3790,11 @@ struct BuildPlan::State:
     String installPath(const String &relativeInstallPath) const
     {
         return installRoot_ / installPrefix_ / relativeInstallPath;
+    }
+
+    String installedPath(const String &relativeInstallPath) const
+    {
+        return installPrefix_ / relativeInstallPath;
     }
 
     void setupBuildDir()
@@ -4275,6 +4295,11 @@ String BuildPlan::installPrefix() const
 String BuildPlan::installPath(const String &relativeInstallPath) const
 {
     return me().installPath(relativeInstallPath);
+}
+
+String BuildPlan::installedPath(const String &relativeInstallPath) const
+{
+    return me().installedPath(relativeInstallPath);
 }
 
 String BuildPlan::pluginPath(const String &targetLibName) const
