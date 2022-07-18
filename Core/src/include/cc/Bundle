@@ -23,7 +23,7 @@
         } \
     )
 
-/** Version of this application or library bundle (low-level C String)
+/** Version of this application or library bundle (low-level C string)
   */
 #define CC_BUNDLE_VERSION CC_XSTR(CCBUILD_BUNDLE_VERSION)
 
@@ -32,7 +32,6 @@ namespace cc {
 /** \class Bundle cc/Bundle
   * \ingroup sysinfo
   * \brief Lookup files in installation directories
-  * \todo CC_BUNDLE_LOOKUP is slow and combersome, need build system support for BundleInfo.cc (and BundleData.cc?-) and a ResourceManager to manage resource paths (e.g. ":/icons/app.webp")
   */
 class Bundle
 {

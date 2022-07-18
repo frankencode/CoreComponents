@@ -479,7 +479,7 @@ struct BuildPlan::State:
         return installPrefix_ / relativeInstallPath;
     }
 
-    void setupBuildDir()
+    void setupBuildDir() const
     {
         String options;
         {
@@ -564,6 +564,9 @@ struct BuildPlan::State:
             "\t./.setup/uninstall\n"
             "\n"
         );
+
+        try { File::unlink("src"); } catch (...) {}
+        File::symlink(BuildMap{}.commonPrefix(), "src");
     }
 
     BuildPlan plan() const override { return Object::alias<BuildPlan>(this); }

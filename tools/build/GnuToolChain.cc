@@ -541,11 +541,8 @@ struct GnuToolChain::State: public ToolChain::State
             << "-pthread"
             << "-pipe"
             << "-D_FILE_OFFSET_BITS=64"
-            << "-fvisibility-inlines-hidden";
-
-        if (plan.options() & BuildOption::Release) {
-            args << "-ffile-prefix-map=" + plan.sourcePrefix() + "=.";
-        }
+            << "-fvisibility-inlines-hidden"
+            << "-ffile-prefix-map=" + plan.sourcePrefix() + "=src";
 
         if (cFlags_ != "" && args.at(0) == ccPath_) args << cFlags_;
         if (cxxFlags_ != "" && args.at(0) == cxxPath_) args << cxxFlags_;
