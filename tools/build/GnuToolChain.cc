@@ -293,7 +293,7 @@ struct GnuToolChain::State: public ToolChain::State
         return args.join<String>(' ');
     }
 
-    String installDirPath(const BuildPlan &plan) const override
+    String relativeInstallDirPath(const BuildPlan &plan) const
     {
         String relativePath;
         if (plan.options() & BuildOption::Library) {
@@ -310,7 +310,17 @@ struct GnuToolChain::State: public ToolChain::State
         else {
             relativePath = "bin";
         }
-        return plan.installPath(relativePath);
+        return relativePath;
+    }
+
+    String installDirPath(const BuildPlan &plan) const override
+    {
+        return plan.installPath(relativeInstallDirPath(plan));
+    }
+
+    String installedDirPath(const BuildPlan &plan) const override
+    {
+        return plan.installedPath(relativeInstallDirPath(plan));
     }
 
     String includePrefix(const BuildPlan &plan) const override
@@ -417,7 +427,7 @@ struct GnuToolChain::State: public ToolChain::State
         Format f;
         f << "prefix=" << plan.installPrefix() << nl;
         f << "exec_prefix=${prefix}" << nl;
-        f << "libdir=" << installDirPath(plan) << nl;
+        f << "libdir=" << installedDirPath(plan) << nl;
         f << "includedir=${prefix}/include" << nl;
         if (hasLibInclude)
             f << "libincludedir=${libdir}/" << targetName(plan) << "/include" << nl;

@@ -470,6 +470,11 @@ struct BuildPlan::State:
         return installRoot_ / installPrefix_ / relativeInstallPath;
     }
 
+    String installedPath(const String &relativeInstallPath) const
+    {
+        return installPrefix_ / relativeInstallPath;
+    }
+
     void setupBuildDir()
     {
         String options;
@@ -968,6 +973,11 @@ String BuildPlan::installPrefix() const
 String BuildPlan::installPath(const String &relativeInstallPath) const
 {
     return me().installPath(relativeInstallPath);
+}
+
+String BuildPlan::installedPath(const String &relativeInstallPath) const
+{
+    return me().installedPath(relativeInstallPath);
 }
 
 String BuildPlan::pluginPath(const String &targetLibName) const

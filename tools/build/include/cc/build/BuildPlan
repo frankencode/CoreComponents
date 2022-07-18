@@ -89,6 +89,7 @@ public:
     String installRoot() const;
     String installPrefix() const;
     String installPath(const String &relativeInstallPath) const;
+    String installedPath(const String &relativeInstallPath) const;
 
     String pluginPath(const String &targetLibName) const;
     String pluginReversePath() const;

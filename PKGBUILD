@@ -10,7 +10,7 @@ pkgname=(
     'corecomponents_crypto'
     'corecomponents_crypto_tools'
 )
-pkgver=2.1.0
+pkgver=2.1.1
 pkgrel=1
 pkgdesc="Toolkit for C++ application development"
 url="https://www.corecomponents.io"
@@ -21,7 +21,7 @@ source=(
     "https://www.corecomponents.io/download/CoreComponents-$pkgver.hash"
 )
 sha1sums=(
-    '1faaf1c323cb700b7ece7564a1fe00adcb9d29e7'
+    '1db9ee8ca661567e35d07c4f51abe269242d56e1'
     'SKIP'
 )
 

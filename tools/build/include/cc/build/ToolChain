@@ -51,6 +51,7 @@ public:
     String configureCompileCommand(const BuildPlan &plan, const String &sourcePath, const String &binPath) const { return me().configureCompileCommand(plan, sourcePath, binPath); }
 
     String installDirPath(const BuildPlan &plan) const { return me().installDirPath(plan); }
+    String installedDirPath(const BuildPlan &plan) const { return me().installedDirPath(plan); }
     String includePrefix(const BuildPlan &plan) const { return me().includePrefix(plan); }
     String libIncludePrefix(const BuildPlan &plan) const { return me().libIncludePrefix(plan); }
     String bundlePrefix(const BuildPlan &plan) const { return me().bundlePrefix(plan); }
@@ -103,6 +104,7 @@ protected:
         virtual String configureCompileCommand(const BuildPlan &plan, const String &sourcePath, const String &binPath) const = 0;
 
         virtual String installDirPath(const BuildPlan &plan) const = 0;
+        virtual String installedDirPath(const BuildPlan &plan) const = 0;
         virtual String includePrefix(const BuildPlan &plan) const = 0;
         virtual String libIncludePrefix(const BuildPlan &plan) const = 0;
         virtual String bundlePrefix(const BuildPlan &plan) const = 0;
