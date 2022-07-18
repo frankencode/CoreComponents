@@ -8,7 +8,6 @@
 
 #include <cc/build/GnuToolChain>
 #include <cc/build/LinkJob>
-#include <cc/build/BuildMap>
 #include <cc/Pattern>
 #include <cc/Format>
 #include <cc/Process>
@@ -511,7 +510,7 @@ struct GnuToolChain::State: public ToolChain::State
             << "-fvisibility-inlines-hidden";
 
         if (plan.options() & BuildOption::Release) {
-            args << "-fmacro-prefix-map=" + BuildMap{}.commonPrefix() + "=.";
+            args << "-ffile-prefix-map=" + plan.sourcePrefix() + "=.";
         }
 
         if (cFlags_ != "" && args.at(0) == ccPath_) args << cFlags_;
