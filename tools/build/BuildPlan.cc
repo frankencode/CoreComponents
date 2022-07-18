@@ -489,6 +489,7 @@ struct BuildPlan::State:
             if (options_ & BuildOption::BuildTests) f << "-test";
             if (options_ & BuildOption::Verbose) f << "-verbose";
             if (options_ & BuildOption::Insight) f << "-insight";
+            if (options_ & BuildOption::Strip) f << "-strip";
             if (recipe_("optimize") != "") f << ("-optimize=" + optimize_);
             if (recipe_("prefix") != "") f << ("-prefix=" + installPrefix_);
             if (recipe_("root") != "/") f << ("-root=" + installRoot_);
