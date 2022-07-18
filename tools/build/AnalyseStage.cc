@@ -22,8 +22,10 @@ bool AnalyseStage::run()
 
     if (!plan().goForBuild()) return success_ = true;
 
-    if ( (plan().options() & BuildOption::Test) &&
-         !(plan().options() & BuildOption::BuildTests)) {
+    if (
+        (plan().options() & BuildOption::Test) &&
+        !(plan().options() & BuildOption::BuildTests)
+    ) {
         return success_ = true;
     }
 

@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/BuildStage>
+
+namespace cc::build {
+
+/** \brief Gather the list of source and package files (and optionally generate lumps)
+  */
+class GlobbingStage: public BuildStage
+{
+public:
+    bool run();
+
+private:
+    static void appendPath(const String &path, Out<List<String>> sources);
+    List<String> globSources(const List<String> &patternList) const;
+};
+
+} // namespace cc::build

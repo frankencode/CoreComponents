@@ -24,6 +24,7 @@ class Job;
 class PreparationStage;
 class ConfigureStage;
 class AnalyseStage;
+class GlobbingStage;
 class PreprocessStage;
 class CompileLinkStage;
 class TestRunStage;
@@ -44,6 +45,9 @@ public:
     const ToolChain &toolChain() const;
     const BuildShell &shell() const;
 
+    const MetaObject &recipe() const;
+    Variant recipe(const String &name) const;
+
     BuildOption options() const;
     int concurrency() const;
     int testRunConcurrency() const;
@@ -55,9 +59,14 @@ public:
     Version version() const;
     String description() const;
     bool containsCPlusPlus() const;
+    bool &containsCPlusPlus();
 
     const List<String> &sources() const;
+    List<String> &sources();
+
     const List<String> &bundle() const;
+    List<String> &bundle();
+
     const List<Module> &modules() const;
     List<Module> &modules();
 
@@ -75,6 +84,8 @@ public:
     String prestagePath(const String &precursor) const;
 
     String sourcePrefix() const;
+    String &sourcePrefix();
+
     String installRoot() const;
     String installPrefix() const;
     String installPath(const String &relativeInstallPath) const;
@@ -100,6 +111,7 @@ public:
     PreparationStage &preparationStage();
     ConfigureStage &configureStage();
     const ConfigureStage &configureStage() const;
+    GlobbingStage &globbingStage();
     AnalyseStage &analyseStage();
     PreprocessStage &preprocessStage();
     CompileLinkStage &compileLinkStage();
@@ -117,8 +129,6 @@ private:
     static bool lookupCache(const String &projectPath, Out<BuildPlan> plan);
     BuildPlan loadChild(const String &projectPath);
     void readPrerequisites();
-
-    Variant recipe(const String &name) const;
 
     static List<String> queryableVariableNames();
     void queryVariables(const List<String> &names) const;

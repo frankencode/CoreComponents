@@ -35,6 +35,7 @@ protected:
 
     virtual BuildPlan plan() const = 0;
     const BuildShell &shell() const;
+    const MetaObject &recipe() const;
     const ToolChain &toolChain() const;
     JobScheduler createScheduler() const;
 

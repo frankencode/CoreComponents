@@ -73,6 +73,9 @@ void Arguments::validate(const Map<String, Variant> &prototype)
             else if (value.is<long>() && defaultValue.is<double>()) {
                 me().options.at(pos).value() = double(long(value));
             }
+            else if (value.is<long>() && defaultValue.is<String>()) {
+                me().options.at(pos).value() = str(value);
+            }
             else {
                 throw UsageError{
                     Format{"Option \"%%\" expects type %% (got %%: %%)"}

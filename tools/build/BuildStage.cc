@@ -19,6 +19,11 @@ const BuildShell &BuildStage::shell() const
     return plan().shell();
 }
 
+const MetaObject &BuildStage::recipe() const
+{
+    return plan().recipe();
+}
+
 const ToolChain &BuildStage::toolChain() const
 {
     return plan().toolChain();

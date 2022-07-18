@@ -21,18 +21,18 @@ PACKAGE=$(basename $SOURCE)
 #    exit 1
 #fi
 
-echo "Update bootstrap file..."
-rm -rf /tmp/cc_bootstrap
-mkdir -p /tmp/cc_bootstrap
-pushd /tmp/cc_bootstrap
-if uname -o|grep Cygwin; then
-    BOOTSTRAP=bootstrap-cygwin
-else
-    BOOTSTRAP=bootstrap
-fi
-ccbuild -bootstrap -release -jobs=1 $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
-chmod +x $SOURCE/tools/build/$BOOTSTRAP
-popd
+# echo "Update bootstrap file..."
+# rm -rf /tmp/cc_bootstrap
+# mkdir -p /tmp/cc_bootstrap
+# pushd /tmp/cc_bootstrap
+# if uname -o|grep Cygwin; then
+#     BOOTSTRAP=bootstrap-cygwin
+# else
+#     BOOTSTRAP=bootstrap
+# fi
+# ccbuild -bootstrap -release -optimize=\"0\" -lump $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
+# chmod +x $SOURCE/tools/build/$BOOTSTRAP
+# popd
 
 echo "Create source tarball..."
 pushd $SOURCE/..

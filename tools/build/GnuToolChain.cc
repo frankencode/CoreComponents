@@ -570,7 +570,8 @@ struct GnuToolChain::State: public ToolChain::State
                 rpaths << "-rpath=" + path.absolutePathRelativeTo(Process::cwd());
         }
 
-        rpaths << "-rpath-link=" + Process::cwd();
+        // rpaths << "-rpath-link=" + Process::cwd();
+        rpaths << "-rpath-link=$ORIGIN";
 
         if (cygwin_)
             args << "-Wl," + rpaths.join(',');

@@ -10,6 +10,7 @@
 #include <cc/build/RecipeProtocol>
 #include <cc/build/PreparationStage>
 #include <cc/build/ConfigureStage>
+#include <cc/build/GlobbingStage>
 #include <cc/build/AnalyseStage>
 #include <cc/build/PreprocessStage>
 #include <cc/build/CompileLinkStage>
@@ -33,8 +34,6 @@
 #include <cc/Process>
 #include <cc/File>
 #include <cc/Dir>
-#include <cc/DirWalker>
-#include <cc/Glob>
 #include <cc/Crc32Sink>
 #include <cc/JsonWriter>
 #include <cc/ResourceGuard>
@@ -48,6 +47,7 @@ struct BuildPlan::State:
     public BuildParameters::State,
     public PreparationStage,
     public ConfigureStage,
+    public GlobbingStage,
     public AnalyseStage,
     public PreprocessStage,
     public CompileLinkStage,
@@ -147,6 +147,7 @@ struct BuildPlan::State:
         if (recipe_("configure"))   options_ |= BuildOption::Configure;
         else if (recipe_("clean"))  options_ |= BuildOption::Clean;
         if (recipe_("insight"))     options_ |= BuildOption::Insight;
+        if (recipe_("lump"))        options_ |= BuildOption::Lump;
 
         concurrency_ = recipe_("jobs").to<long>();
         testRunConcurrency_ = recipe_("test-run-jobs").to<long>();
@@ -424,6 +425,7 @@ struct BuildPlan::State:
         return projectPath_ / source;
     }
 
+    #if 0
     List<String> globSources(const List<String> &patternList) const
     {
         List<String> sources;
@@ -497,6 +499,7 @@ struct BuildPlan::State:
             plan->globSources();
         }
     }
+    #endif
 
     void initModules()
     {
@@ -756,9 +759,8 @@ int BuildPlan::run()
             return 1;
         }
     }
-    if (recipe("prepare").to<bool>()) {
-        return 0;
-    }
+
+    if (recipe("prepare").to<bool>()) return 0;
 
     String defaultIncludePath = projectPath() / "include";
     if (Dir::exists(defaultIncludePath)) {
@@ -766,7 +768,9 @@ int BuildPlan::run()
             me().includePaths_.append(defaultIncludePath);
     }
 
-    me().globSources();
+    if (!globbingStage().run()) return 1;
+
+    if (recipe("glob").to<bool>()) return 0;
 
     if (recipe("pkg-config").to<bool>()) {
         if (options() & BuildOption::Package) {
@@ -829,11 +833,6 @@ void BuildPlan::readPrerequisites()
     return me().readPrerequisites(*this);
 }
 
-Variant BuildPlan::recipe(const String &name) const
-{
-    return me().recipe_(name);
-}
-
 List<String> BuildPlan::queryableVariableNames()
 {
     return List<String> {
@@ -871,6 +870,16 @@ const ToolChain &BuildPlan::toolChain() const
 const BuildShell &BuildPlan::shell() const
 {
     return me().shell();
+}
+
+const MetaObject &BuildPlan::recipe() const
+{
+    return me().recipe_;
+}
+
+Variant BuildPlan::recipe(const String &name) const
+{
+    return me().recipe_(name);
 }
 
 BuildOption BuildPlan::options() const
@@ -918,12 +927,26 @@ bool BuildPlan::containsCPlusPlus() const
     return me().containsCPlusPlus_;
 }
 
+bool &BuildPlan::containsCPlusPlus()
+{
+    return me().containsCPlusPlus_;
+}
 const List<String> &BuildPlan::sources() const
 {
     return me().sources_;
 }
 
+List<String> &BuildPlan::sources()
+{
+    return me().sources_;
+}
+
 const List<String> &BuildPlan::bundle() const
+{
+    return me().bundle_;
+}
+
+List<String> &BuildPlan::bundle()
 {
     return me().bundle_;
 }
@@ -1003,6 +1026,11 @@ String BuildPlan::sourcePrefix() const
     return me().sourcePrefix_;
 }
 
+String &BuildPlan::sourcePrefix()
+{
+    return me().sourcePrefix_;
+}
+
 String BuildPlan::installRoot() const
 {
     return me().installRoot_;
@@ -1048,14 +1076,16 @@ void BuildPlan::registerLinkDerivative(Job &linkJob)
         if (prerequisite.options() & BuildOption::Package) {
             for (BuildPlan &child: prerequisite.prerequisites()) {
                 if (child.options() & BuildOption::Library) {
-                    if (child.libraryLinkJob())
+                    if (child.libraryLinkJob()) {
                         child.libraryLinkJob().registerDerivative(linkJob);
+                    }
                 }
             }
         }
         else if (prerequisite.options() & BuildOption::Library) {
-            if (prerequisite.libraryLinkJob())
+            if (prerequisite.libraryLinkJob()) {
                 prerequisite.libraryLinkJob().registerDerivative(linkJob);
+            }
         }
     }
 }
@@ -1106,6 +1136,11 @@ ConfigureStage &BuildPlan::configureStage()
 }
 
 const ConfigureStage &BuildPlan::configureStage() const
+{
+    return me();
+}
+
+GlobbingStage &BuildPlan::globbingStage()
 {
     return me();
 }

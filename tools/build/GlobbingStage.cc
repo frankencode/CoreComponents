@@ -1,0 +1,143 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/build/GlobbingStage>
+#include <cc/build/ToolChain>
+#include <cc/build/BuildMap>
+#include <cc/DirWalker>
+#include <cc/Glob>
+#include <cc/File>
+#include <cc/stdio>
+
+namespace cc::build {
+
+bool GlobbingStage::run()
+{
+    if (complete_) return success_;
+    complete_ = true;
+
+    if (!plan().goForBuild()) return success_ = true;
+
+    if (
+        (plan().options() & BuildOption::Test) &&
+        !(plan().options() & BuildOption::BuildTests)
+    ) {
+        return success_ = true;
+    }
+
+    if (
+        recipe().contains("source") && // FIXME: that is always the case?
+        (
+            (plan().options() & BuildOption::Application) ||
+            (plan().options() & BuildOption::Library) ||
+            (plan().options() & BuildOption::Plugin)
+        )
+    ) {
+        List<String> sources = globSources(plan().recipe("source").to<List<String>>());
+        bool containsCPlusPlus = false;
+
+        for (const String &source: sources) {
+            String suffix = source.fileSuffix();
+            if (suffix == "cc" || suffix == "cpp" || suffix == "cxx" || suffix == "mm") {
+                containsCPlusPlus = true;
+                break;
+            }
+        }
+
+        if (
+            (plan().options() & BuildOption::Lump) &&
+            sources.count() > 1
+        ) {
+            String lumpPath = plan().projectPath() / (containsCPlusPlus ? ".lump.cc" : ".lump.c");
+            {
+                File lump{lumpPath, FileOpen::Overwrite};
+                for (const String &source: sources) {
+                    File{source}.transferTo(lump);
+                }
+            }
+            if (plan().options() & BuildOption::Verbose) {
+                ferr() << "cat \\\n  " << sources.join(" \\\n  ") << "\\\n  > " << lumpPath << nl;
+            }
+            sources = List<String>{lumpPath};
+        }
+
+        plan().containsCPlusPlus() = containsCPlusPlus;
+        plan().sources() = sources;
+    }
+
+    {
+        String sourcePrefix = BuildMap{}.commonPrefix();
+        if (sourcePrefix == "") sourcePrefix = plan().projectPath();
+        else sourcePrefix = sourcePrefix.canonicalPath();
+        plan().sourcePrefix() = sourcePrefix;
+    }
+
+    if (recipe().contains("bundle")) {
+        plan().bundle() = globSources(plan().recipe("bundle").to<List<String>>());
+    }
+
+    for (BuildPlan &prerequisite: plan().prerequisites()) {
+        if (!prerequisite.globbingStage().run())
+            return success_ = false;
+    }
+
+    return success_ = true;
+}
+
+void GlobbingStage::appendPath(const String &path, Out<List<String>> sources)
+{
+    if(
+        !path.endsWith(".lump.cc") &&
+        !path.endsWith(".lump.c")
+    )
+        sources->append(path);
+}
+
+List<String> GlobbingStage::globSources(const List<String> &patternList) const
+{
+    List<String> sources;
+    for (const String &pattern: patternList) {
+        Glob glob{plan().sourcePath(pattern)};
+        for (String path; glob.read(&path);) {
+            try {
+                DirWalker walker{path};
+                bool isDir = false;
+                for (String path; walker.read(&path, &isDir);) {
+                    if (!isDir) appendPath(path, &sources);
+                }
+            }
+            catch (...) {
+                appendPath(path, &sources);
+            }
+        }
+    }
+    if (!(plan().options() & BuildOption::Bootstrap)) {
+        for (const String &pattern: patternList) {
+            Glob glob{plan().prestagePath(pattern)};
+            for (String path; glob.read(&path);) {
+                try {
+                    DirWalker walker{path};
+                    bool isDir = false;
+                    for (String path; walker.read(&path, &isDir);) {
+                        if (!isDir) appendPath(path, &sources);
+                    }
+                }
+                catch (...) {
+                    if (path.startsWith("./")) { // \todo FIXME, why?!
+                        path = path.copy(2, path.count());
+                    }
+                    appendPath(path, &sources);
+                }
+            }
+        }
+    }
+
+    return sources;
+}
+
+} // namespace cc::build

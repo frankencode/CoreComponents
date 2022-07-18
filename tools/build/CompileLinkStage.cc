@@ -57,8 +57,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
 
     if (outOfScope()) return;
 
-    for (BuildPlan &prerequisite: plan().prerequisites())
+    for (BuildPlan &prerequisite: plan().prerequisites()) {
         prerequisite.compileLinkStage().scheduleJobs(scheduler);
+    }
 
     if (plan().options() & BuildOption::Package) return;
 
@@ -88,8 +89,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
             Job job;
             if (plan().options() & BuildOption::Tools) {
                 job = toolChain().createCompileLinkJob(plan(), module);
-                if (!(plan().options() & BuildOption::Simulate))
+                if (!(plan().options() & BuildOption::Simulate)) {
                     plan().registerLinkDerivative(job);
+                }
             }
             else {
                 job = toolChain().createCompileJob(plan(), module);
@@ -124,8 +126,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
         plan().modules().count() > 0 &&
         (plan().options() & BuildOption::Simulate) &&
         plan().concurrency() != 1
-    )
+    ) {
         fout() << "wait" << nl;
+    }
 
     if (plan().options() & BuildOption::Tools) return;
 
@@ -168,9 +171,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
     }
     else {
         plan().registerLinkDerivative(linkJob);
-        if (plan().options() & BuildOption::Library)
+        if (plan().options() & BuildOption::Library) {
             plan().setLibraryLinkJob(linkJob);
-
+        }
         scheduler.schedule(linkJob);
     }
 }

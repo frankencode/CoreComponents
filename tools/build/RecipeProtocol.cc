@@ -99,10 +99,12 @@ protected:
 
         insert("setup", false);
         insert("insight", false);
+        insert("lump", false);
 
         insert("configure", false);
         insert("configure-list", false);
         insert("prepare", false);
+        insert("glob", false);
         insert("preprocess", false);
         insert("clean", false);
         insert("install", false);
