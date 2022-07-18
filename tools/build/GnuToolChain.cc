@@ -8,6 +8,7 @@
 
 #include <cc/build/GnuToolChain>
 #include <cc/build/LinkJob>
+#include <cc/build/BuildMap>
 #include <cc/Pattern>
 #include <cc/Format>
 #include <cc/Process>
@@ -509,12 +510,18 @@ struct GnuToolChain::State: public ToolChain::State
             << "-D_FILE_OFFSET_BITS=64"
             << "-fvisibility-inlines-hidden";
 
+        if (plan.options() & BuildOption::Release) {
+            args << "-fmacro-prefix-map=" + BuildMap{}.commonPrefix() + "=.";
+        }
+
         if (cFlags_ != "" && args.at(0) == ccPath_) args << cFlags_;
         if (cxxFlags_ != "" && args.at(0) == cxxPath_) args << cxxFlags_;
-        if (plan.bundle().count() > 0)
+        if (plan.bundle().count() > 0) {
             args << "-DCCBUILD_BUNDLE_PREFIX=" + bundlePrefix(plan);
-        if (plan.name() != "")
+        }
+        if (plan.name() != "") {
             args << "-DCCBUILD_BUNDLE_VERSION=" + plan.version().toString();
+        }
         for (const String &flags: plan.customCompileFlags()) {
             if (flags.contains("c++") && args.at(0) != cxxPath_) continue;
                 // FIXME: workaround hack to prevent passing "-std=c++11" to the C compiler
