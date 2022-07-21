@@ -10,7 +10,7 @@ pkgname=(
     'corecomponents_crypto'
     'corecomponents_crypto_tools'
 )
-pkgver=2.1.1
+pkgver=2.2.0
 pkgrel=1
 pkgdesc="Toolkit for C++ application development"
 url="https://www.corecomponents.io"
@@ -21,7 +21,7 @@ source=(
     "https://www.corecomponents.io/download/CoreComponents-$pkgver.hash"
 )
 sha1sums=(
-    '1db9ee8ca661567e35d07c4f51abe269242d56e1'
+    'c460637181e5fa243c12b36e3801aab4913f27a6'
     'SKIP'
 )
 
@@ -40,40 +40,40 @@ build() {
     rm -rf core_release
     mkdir core_release
     cd core_release
-    ../bootstrap/ccbuild -prefix=/usr -release -test -insight ../CoreComponents
+    ../bootstrap/ccbuild -prefix=/usr -release -test ../CoreComponents
 }
 
 package_corecomponents_core() {
     cd core_release
-    ../bootstrap/ccbuild -root=$pkgdir -install -release -test -insight ../CoreComponents/Core/src
+    ../bootstrap/ccbuild -root=$pkgdir -install -release -test ../CoreComponents/Core/src
 }
 
 package_corecomponents_core_tools() {
     cd core_release
-    ../bootstrap/ccbuild -root=$pkgdir -install -release -test -insight ../CoreComponents/Core/tools
+    ../bootstrap/ccbuild -root=$pkgdir -install -release -test ../CoreComponents/Core/tools
 }
 
 package_corecomponents_syntax() {
     cd core_release
-    ../bootstrap/ccbuild -root=$pkgdir -install -release -test -insight ../CoreComponents/Syntax/src
+    ../bootstrap/ccbuild -root=$pkgdir -install -release -test ../CoreComponents/Syntax/src
 }
 
 package_corecomponents_glob() {
     cd core_release
-    ../bootstrap/ccbuild -root=$pkgdir -install -release -test -insight ../CoreComponents/Glob/src
+    ../bootstrap/ccbuild -root=$pkgdir -install -release -test ../CoreComponents/Glob/src
 }
 
 package_corecomponents_meta() {
     cd core_release
-    ../bootstrap/ccbuild -root=$pkgdir -install -release -test -insight ../CoreComponents/Meta/src
+    ../bootstrap/ccbuild -root=$pkgdir -install -release -test ../CoreComponents/Meta/src
 }
 
 package_corecomponents_crypto() {
     cd core_release
-    ../bootstrap/ccbuild -root=$pkgdir -install -release -test -insight ../CoreComponents/Meta/src
+    ../bootstrap/ccbuild -root=$pkgdir -install -release -test ../CoreComponents/Crypto/src
 }
 
 package_corecomponents_crypto_tools() {
     cd core_release
-    ../bootstrap/ccbuild -root=$pkgdir -install -release -test -insight ../CoreComponents/Meta/src
+    ../bootstrap/ccbuild -root=$pkgdir -install -release -test ../CoreComponents/Crypto/tools
 }
