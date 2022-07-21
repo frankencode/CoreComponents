@@ -520,7 +520,8 @@ bool GlobbingStage::run()
         (
             (plan().options() & BuildOption::Application) ||
             (plan().options() & BuildOption::Library) ||
-            (plan().options() & BuildOption::Plugin)
+            (plan().options() & BuildOption::Plugin) ||
+            (plan().options() & BuildOption::Tools)
         )
     ) {
         List<String> sources = globSources(plan().recipe("source").to<List<String>>());
@@ -1032,6 +1033,7 @@ struct LinkJob::State: public Job::State
         if (!plan().toolChain().createSymlinks(plan())) return false;
         if (plan().options() & BuildOption::Library) plan().toolChain().generatePkgConfig(plan());
         if (!Job::State::run()) return false;
+        if (plan().options() & BuildOption::Strip) plan().toolChain().strip(plan());
         File::save(plan().previousLinkCommandPath(), command_);
         return true;
     }
@@ -1169,6 +1171,7 @@ protected:
         insert("simulate", false);
         insert("blindfold", false);
         insert("bootstrap", false);
+        insert("strip", false);
 
         insert("query", "");
         insert("query-all", false);
@@ -1378,12 +1381,10 @@ bool InstallStage::run()
 
     BuildStageGuard guard{this};
 
-    if (plan().options() & BuildOption::Deploy) {
-        for (BuildPlan &prerequisite: plan().prerequisites()) {
-            if (!prerequisite.installStage().run())
-                return success_ = false;
-            linkerCacheDirty_ = linkerCacheDirty_ || prerequisite.installStage().linkerCacheDirty_;
-        }
+    for (BuildPlan &prerequisite: plan().prerequisites()) {
+        if (!prerequisite.projectPath().startsWith(plan().projectPath())) continue;
+        if (!prerequisite.installStage().run()) return success_ = false;
+        linkerCacheDirty_ = linkerCacheDirty_ || prerequisite.installStage().linkerCacheDirty_;
     }
 
     if (plan().options() & BuildOption::Package) return success_ = true;
@@ -2476,8 +2477,6 @@ int main(int argc, char *argv[])
             "  -root            file system root for installation (default: \"/\")\n"
             "  -prefix          installation prefix (default: '/usr/local')\n"
             "  -setup           setup convenience Makefile and scripts\n"
-            "  -insight         generate compile_commands.json files (e.g. for clangd)\n"
-            "  -lump            handle all sources of a target as a single source file\n"
             "\n"
             "Build Stage Options:\n"
             "  -configure       configure the dependencies and show results\n"
@@ -2500,6 +2499,9 @@ int main(int argc, char *argv[])
             "  -simulate        print build commands without executing them\n"
             "  -blindfold       do not see any existing files\n"
             "  -bootstrap       write bootstrap script\n"
+            "  -insight         generate compile_commands.json files (e.g. for clangd)\n"
+            "  -lump            handle all sources of a target as a single source file\n"
+            "  -strip           strip targets automatically after linking\n"
             "  -query           query given properties (e.g. 'name' or 'version')\n"
             "  -query-all       query all properties\n"
             "  -pkg-config      print package configuration (*.pc)\n"
@@ -2644,7 +2646,7 @@ struct GnuToolChain::State: public ToolChain::State
     String defaultOptimization(BuildOption options) const override
     {
         /*if ((options & BuildOption::Debug) && (options & BuildOption::Release)) return "g";*/
-        if (options & BuildOption::Release) return "3";
+        if (options & BuildOption::Release) return "2";
         else return "";
     }
 
@@ -3022,16 +3024,40 @@ struct GnuToolChain::State: public ToolChain::State
         return plan.shell().run(command);
     }
 
+    bool strip(const BuildPlan &plan) const override
+    {
+        if (!(
+            (plan.options() & BuildOption::Library) ||
+            (plan.options() & BuildOption::Application) ||
+            (plan.options() & BuildOption::Plugin)
+        )) {
+            return true;
+        }
+        Format attr;
+        attr << "strip";
+        attr << linkName(plan);
+        String command = attr.join<String>(' ');
+        return plan.shell().run(command);
+    }
+
     void appendCompileOptions(Format &args, const BuildPlan &plan) const
     {
         if (plan.options() & BuildOption::Debug) args << "-g";
-        if (plan.options() & BuildOption::Release) args << "-DNDEBUG";
+        if (plan.options() & BuildOption::Release) {
+            args << "-DNDEBUG";
+        }
         if (plan.optimize() != "") {
             if (plan.optimize() == "4")
                 args << "-O3" << "-flto";
             else
                 args << "-O" + plan.optimize();
         }
+        if (plan.options() & BuildOption::Release) {
+            if (plan.optimize() != "0") {
+                args << "-mtune=generic" << "-fno-plt";
+            }
+        }
+
         if (plan.linkStatic()) args << "-static";
         else appendRelocationMode(args, plan);
 
@@ -3040,11 +3066,8 @@ struct GnuToolChain::State: public ToolChain::State
             << "-pthread"
             << "-pipe"
             << "-D_FILE_OFFSET_BITS=64"
-            << "-fvisibility-inlines-hidden";
-
-        if (plan.options() & BuildOption::Release) {
-            args << "-ffile-prefix-map=" + plan.sourcePrefix() + "=.";
-        }
+            << "-fvisibility-inlines-hidden"
+            << "-ffile-prefix-map=" + plan.sourcePrefix() + "=src";
 
         if (cFlags_ != "" && args.at(0) == ccPath_) args << cFlags_;
         if (cxxFlags_ != "" && args.at(0) == cxxPath_) args << cxxFlags_;
@@ -3438,10 +3461,7 @@ struct BuildPlan::State:
         else if (recipe_.className() == "Test")    options_ |= BuildOption::Application | BuildOption::Test;
         else if (recipe_.className() == "Tools")   options_ |= BuildOption::Tools;
         else if (recipe_.className() == "Tests")   options_ |= BuildOption::Tools | BuildOption::Test;
-        else if (recipe_.className() == "Package") {
-            options_ |= BuildOption::Package;
-            if (!parentPlan) options_ |= BuildOption::Deploy;
-        }
+        else if (recipe_.className() == "Package") options_ |= BuildOption::Package;
 
         name_ = recipe_("name").to<String>();
         if (name_ == "") name_ = projectPath_.baseName();
@@ -3470,6 +3490,7 @@ struct BuildPlan::State:
         else if (recipe_("clean"))  options_ |= BuildOption::Clean;
         if (recipe_("insight"))     options_ |= BuildOption::Insight;
         if (recipe_("lump"))        options_ |= BuildOption::Lump;
+        if (recipe_("strip"))       options_ |= BuildOption::Strip;
 
         concurrency_ = recipe_("jobs").to<long>();
         testRunConcurrency_ = recipe_("test-run-jobs").to<long>();
@@ -3758,12 +3779,12 @@ struct BuildPlan::State:
         String suffix;
         {
             Format f;
-            String absoulteProjectPath = projectPath_.absolutePathRelativeTo(Process::cwd());
+            String absoluteProjectPath = projectPath_.absolutePathRelativeTo(Process::cwd());
             {
                 Format h;
                 String topLevel = sourcePrefix_.absolutePathRelativeTo(Process::cwd());
                 for (
-                    String path = absoulteProjectPath;
+                    String path = absoluteProjectPath;
                     path != topLevel && path != "/" && path != toolChain_.systemRoot();
                     path = path.cdUp()
                 ) {
@@ -3776,7 +3797,7 @@ struct BuildPlan::State:
                 f << "$MACHINE";
             else
                 f << toolChain_.machine();
-            f << absoulteProjectPath.cdUp().fileName() + "_" + absoulteProjectPath.fileName();
+            f << absoluteProjectPath.cdUp().fileName() + "_" + absoluteProjectPath.fileName();
             suffix = f.join<String>('-');
         }
         modulePath_ = ".modules-" + suffix;
@@ -3797,7 +3818,7 @@ struct BuildPlan::State:
         return installPrefix_ / relativeInstallPath;
     }
 
-    void setupBuildDir()
+    void setupBuildDir() const
     {
         String options;
         {
@@ -3807,6 +3828,7 @@ struct BuildPlan::State:
             if (options_ & BuildOption::BuildTests) f << "-test";
             if (options_ & BuildOption::Verbose) f << "-verbose";
             if (options_ & BuildOption::Insight) f << "-insight";
+            if (options_ & BuildOption::Strip) f << "-strip";
             if (recipe_("optimize") != "") f << ("-optimize=" + optimize_);
             if (recipe_("prefix") != "") f << ("-prefix=" + installPrefix_);
             if (recipe_("root") != "/") f << ("-root=" + installRoot_);
@@ -3882,6 +3904,9 @@ struct BuildPlan::State:
             "\t./.setup/uninstall\n"
             "\n"
         );
+
+        try { File::unlink("src"); } catch (...) {}
+        File::symlink(BuildMap{}.commonPrefix(), "src");
     }
 
     BuildPlan plan() const override { return Object::alias<BuildPlan>(this); }

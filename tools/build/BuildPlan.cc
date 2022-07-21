@@ -119,10 +119,7 @@ struct BuildPlan::State:
         else if (recipe_.className() == "Test")    options_ |= BuildOption::Application | BuildOption::Test;
         else if (recipe_.className() == "Tools")   options_ |= BuildOption::Tools;
         else if (recipe_.className() == "Tests")   options_ |= BuildOption::Tools | BuildOption::Test;
-        else if (recipe_.className() == "Package") {
-            options_ |= BuildOption::Package;
-            if (!parentPlan) options_ |= BuildOption::Deploy;
-        }
+        else if (recipe_.className() == "Package") options_ |= BuildOption::Package;
 
         name_ = recipe_("name").to<String>();
         if (name_ == "") name_ = projectPath_.baseName();
@@ -440,12 +437,12 @@ struct BuildPlan::State:
         String suffix;
         {
             Format f;
-            String absoulteProjectPath = projectPath_.absolutePathRelativeTo(Process::cwd());
+            String absoluteProjectPath = projectPath_.absolutePathRelativeTo(Process::cwd());
             {
                 Format h;
                 String topLevel = sourcePrefix_.absolutePathRelativeTo(Process::cwd());
                 for (
-                    String path = absoulteProjectPath;
+                    String path = absoluteProjectPath;
                     path != topLevel && path != "/" && path != toolChain_.systemRoot();
                     path = path.cdUp()
                 ) {
@@ -458,7 +455,7 @@ struct BuildPlan::State:
                 f << "$MACHINE";
             else
                 f << toolChain_.machine();
-            f << absoulteProjectPath.cdUp().fileName() + "_" + absoulteProjectPath.fileName();
+            f << absoluteProjectPath.cdUp().fileName() + "_" + absoluteProjectPath.fileName();
             suffix = f.join<String>('-');
         }
         modulePath_ = ".modules-" + suffix;

@@ -27,12 +27,10 @@ bool InstallStage::run()
 
     BuildStageGuard guard{this};
 
-    if (plan().options() & BuildOption::Deploy) {
-        for (BuildPlan &prerequisite: plan().prerequisites()) {
-            if (!prerequisite.installStage().run())
-                return success_ = false;
-            linkerCacheDirty_ = linkerCacheDirty_ || prerequisite.installStage().linkerCacheDirty_;
-        }
+    for (BuildPlan &prerequisite: plan().prerequisites()) {
+        if (!prerequisite.projectPath().startsWith(plan().projectPath())) continue;
+        if (!prerequisite.installStage().run()) return success_ = false;
+        linkerCacheDirty_ = linkerCacheDirty_ || prerequisite.installStage().linkerCacheDirty_;
     }
 
     if (plan().options() & BuildOption::Package) return success_ = true;
