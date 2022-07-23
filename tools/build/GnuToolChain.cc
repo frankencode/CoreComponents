@@ -436,7 +436,11 @@ struct GnuToolChain::State: public ToolChain::State
         f << "Name: " << targetName(plan) << nl;
         f << "Description: " << plan.description() << nl;
         f << "Version: " << plan.version() << nl;
-        f << "Libs: -L${libdir} -l" << plan.name() << nl;
+        f << "Libs: -L${libdir} -l" << plan.name();
+        for (const String &flag: plan.customLinkFlags()) {
+            f << " " << flag;
+        }
+        f << nl;
 
         {
             List<String> requiresList;
@@ -474,8 +478,10 @@ struct GnuToolChain::State: public ToolChain::State
         }
 
         f << "Cflags: -I${includedir}";
-        if (hasLibInclude)
-            f << " -I${libincludedir}";
+        if (hasLibInclude) f << " -I${libincludedir}";
+        for (const String &flag: plan.customCompileFlags()) {
+            f << " " << flag;
+        }
         f << nl;
         return f;
     }
