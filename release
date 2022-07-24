@@ -30,9 +30,9 @@ if uname -o|grep Cygwin; then
 else
     BOOTSTRAP=bootstrap
 fi
-ccbuild -bootstrap -release -optimize=\"0\" -lump $SOURCE/tools/build
-# ccbuild -bootstrap -release -optimize=\"0\" -lump $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
-# chmod +x $SOURCE/tools/build/$BOOTSTRAP
+# ccbuild -bootstrap -release -optimize=0 -lump $SOURCE/tools/build
+ccbuild -bootstrap -release -optimize=0 -lump $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
+chmod +x $SOURCE/tools/build/$BOOTSTRAP
 popd
 
 echo "Create source tarball..."

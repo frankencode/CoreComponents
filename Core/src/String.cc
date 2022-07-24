@@ -56,6 +56,8 @@ bool String::find(const char *b, long bn, InOut<long> i0) const
 
 void String::replace(const char *b, const char *s, long bn, long sn)
 {
+    if (!b || !s) return;
+
     if (bn < sn) {
         if (find(b)) {
             (*this) = String{split(b, bn), s, sn};

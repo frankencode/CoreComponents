@@ -30,6 +30,14 @@ bool GlobbingStage::run()
         return success_ = true;
     }
 
+    // FIXME: move out of the globbing stage?
+    {
+        String sourcePrefix = BuildMap{}.commonPrefix();
+        if (sourcePrefix == "") sourcePrefix = plan().projectPath();
+        else sourcePrefix = sourcePrefix.canonicalPath();
+        plan().sourcePrefix() = sourcePrefix;
+    }
+
     if (
         recipe().contains("source") && // FIXME: that is always the case?
         (
@@ -56,26 +64,21 @@ bool GlobbingStage::run()
         ) {
             String lumpPath = plan().projectPath() / (containsCPlusPlus ? ".lump.cc" : ".lump.c");
             {
+                String command = Format{} << "cat " << sources.join(' ') << " > " << lumpPath;
+                fout() << shell().beautify(command) << nl;
+            }
+            {
                 File lump{lumpPath, FileOpen::Overwrite};
-                for (const String &source: sources) {
-                    File{source}.transferTo(lump);
+                for (const String &path: sources) {
+                    File{path}.transferTo(lump);
                 }
             }
-            if (plan().options() & BuildOption::Verbose) {
-                ferr() << "cat \\\n  " << sources.join(" \\\n  ") << "\\\n  > " << lumpPath << nl;
-            }
-            sources = List<String>{lumpPath};
+            sources.deplete();
+            sources.append(lumpPath);
         }
 
         plan().containsCPlusPlus() = containsCPlusPlus;
         plan().sources() = sources;
-    }
-
-    {
-        String sourcePrefix = BuildMap{}.commonPrefix();
-        if (sourcePrefix == "") sourcePrefix = plan().projectPath();
-        else sourcePrefix = sourcePrefix.canonicalPath();
-        plan().sourcePrefix() = sourcePrefix;
     }
 
     if (recipe().contains("bundle")) {

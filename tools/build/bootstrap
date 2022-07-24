@@ -1,44 +1,49 @@
 #!/bin/sh -ex
 SOURCE=$1
 MACHINE=$(gcc -dumpmachine)
+cat $SOURCE/tools/build/BuildParameters.cc $SOURCE/tools/build/JobServer.cc $SOURCE/tools/build/ConfigureStage.cc $SOURCE/tools/build/GlobbingStage.cc $SOURCE/tools/build/BuildStageGuard.cc $SOURCE/tools/build/CompileLinkStage.cc $SOURCE/tools/build/BuildStage.cc $SOURCE/tools/build/PreprocessStage.cc $SOURCE/tools/build/CleanStage.cc $SOURCE/tools/build/LinkJob.cc $SOURCE/tools/build/RecipeProtocol.cc $SOURCE/tools/build/InstallStage.cc $SOURCE/tools/build/JobScheduler.cc $SOURCE/tools/build/Job.cc $SOURCE/tools/build/BuildShell.cc $SOURCE/tools/build/SystemPrerequisite.cc $SOURCE/tools/build/BuildMap.cc $SOURCE/tools/build/InsightDatabase.cc $SOURCE/tools/build/TestRunStage.cc $SOURCE/tools/build/PreparationStage.cc $SOURCE/tools/build/main.cc $SOURCE/tools/build/GnuToolChain.cc $SOURCE/tools/build/DependencyCache.cc $SOURCE/tools/build/BuildPlan.cc $SOURCE/tools/build/ConfigureShell.cc $SOURCE/tools/build/UninstallStage.cc $SOURCE/tools/build/AnalyseStage.cc > $SOURCE/tools/build/.lump.cc
+cat $SOURCE/Core/src/DirWalker.cc $SOURCE/Core/src/TransferLimiter.cc $SOURCE/Core/src/Version.cc $SOURCE/Core/src/Date.cc $SOURCE/Core/src/Timezone.cc $SOURCE/Core/src/PseudoTerminal.cc $SOURCE/Core/src/Utf8Source.cc $SOURCE/Core/src/SignalMaster.cc $SOURCE/Core/src/SignalNumber.cc $SOURCE/Core/src/MemoryStream.cc $SOURCE/Core/src/Variant.cc $SOURCE/Core/src/Process.cc $SOURCE/Core/src/ByteSource.cc $SOURCE/Core/src/ReplaySource.cc $SOURCE/Core/src/input.cc $SOURCE/Core/src/Format.cc $SOURCE/Core/src/String.cc $SOURCE/Core/src/Color.cc $SOURCE/Core/src/ResourceContext.cc $SOURCE/Core/src/bucket.cc $SOURCE/Core/src/LineSource.cc $SOURCE/Core/src/Bundle.cc $SOURCE/Core/src/Resource.cc $SOURCE/Core/src/TextError.cc $SOURCE/Core/src/PropertyBinding.cc $SOURCE/Core/src/Stream.cc $SOURCE/Core/src/Crc32Sink.cc $SOURCE/Core/src/NullStream.cc $SOURCE/Core/src/PointerIntegrity.cc $SOURCE/Core/src/File.cc $SOURCE/Core/src/TempFile.cc $SOURCE/Core/src/Arguments.cc $SOURCE/Core/src/StreamTap.cc $SOURCE/Core/src/ResourcePath.cc $SOURCE/Core/src/TapBuffer.cc $SOURCE/Core/src/FileLock.cc $SOURCE/Core/src/Dir.cc $SOURCE/Core/src/GroupInfo.cc $SOURCE/Core/src/WaitCondition.cc $SOURCE/Core/src/IoStream.cc $SOURCE/Core/src/PluginDir.cc $SOURCE/Core/src/exceptions.cc $SOURCE/Core/src/Utf16Source.cc $SOURCE/Core/src/Utf8Sink.cc $SOURCE/Core/src/KernelInfo.cc $SOURCE/Core/src/FileStatus.cc $SOURCE/Core/src/ByteSink.cc $SOURCE/Core/src/Utf16Sink.cc $SOURCE/Core/src/ResourceGuard.cc $SOURCE/Core/src/MountTable.cc $SOURCE/Core/src/Command.cc $SOURCE/Core/src/HexDump.cc $SOURCE/Core/src/IoMonitor.cc $SOURCE/Core/src/Thread.cc $SOURCE/Core/src/Random.cc $SOURCE/Core/src/Mutex.cc $SOURCE/Core/src/Entity.cc $SOURCE/Core/src/ResourceManager.cc $SOURCE/Core/src/LocalChannel.cc $SOURCE/Core/src/str.cc $SOURCE/Core/src/SystemError.cc $SOURCE/Core/src/PluginLoader.cc $SOURCE/Core/src/CaptureSink.cc $SOURCE/Core/src/UserInfo.cc $SOURCE/Core/src/OrdinalTree.cc $SOURCE/Core/src/System.cc $SOURCE/Core/src/LineBuffer.cc $SOURCE/Core/src/Plugin.cc $SOURCE/Core/src/Exception.cc $SOURCE/Core/src/TransferMeter.cc $SOURCE/Core/src/SpinLock.cc $SOURCE/Core/src/ReadWriteLock.cc > $SOURCE/Core/src/.lump.cc
+cat $SOURCE/Glob/src/PatternSyntax.cc $SOURCE/Glob/src/Pattern.cc $SOURCE/Glob/src/Uri.cc $SOURCE/Glob/src/Glob.cc > $SOURCE/Glob/src/.lump.cc
+cat $SOURCE/Syntax/src/LongestChoiceNode.cc $SOURCE/Syntax/src/LookAheadNode.cc $SOURCE/Syntax/src/AnyNode.cc $SOURCE/Syntax/src/ChoiceNode.cc $SOURCE/Syntax/src/ReplayNode.cc $SOURCE/Syntax/src/EoiNode.cc $SOURCE/Syntax/src/RepeatNode.cc $SOURCE/Syntax/src/InetAddressSyntax.cc $SOURCE/Syntax/src/RangeMinMaxNode.cc $SOURCE/Syntax/src/RefNode.cc $SOURCE/Syntax/src/LengthNode.cc $SOURCE/Syntax/src/UriSyntax.cc $SOURCE/Syntax/src/ExpectNode.cc $SOURCE/Syntax/src/SequenceNode.cc $SOURCE/Syntax/src/MatchNode.cc $SOURCE/Syntax/src/SyntaxRule.cc $SOURCE/Syntax/src/IntegerSyntax.cc $SOURCE/Syntax/src/FindNode.cc $SOURCE/Syntax/src/PassNode.cc $SOURCE/Syntax/src/Token.cc $SOURCE/Syntax/src/InlineNode.cc $SOURCE/Syntax/src/DebugNode.cc $SOURCE/Syntax/src/FindLastNode.cc $SOURCE/Syntax/src/StringNode.cc $SOURCE/Syntax/src/ContextNode.cc $SOURCE/Syntax/src/FloatSyntax.cc $SOURCE/Syntax/src/SyntaxNode.cc $SOURCE/Syntax/src/CharCompareNode.cc $SOURCE/Syntax/src/KeywordNode.cc $SOURCE/Syntax/src/FailNode.cc $SOURCE/Syntax/src/RangeExplicitNode.cc $SOURCE/Syntax/src/BoiNode.cc $SOURCE/Syntax/src/CaptureNode.cc > $SOURCE/Syntax/src/.lump.cc
+cat $SOURCE/Meta/src/MetaError.cc $SOURCE/Meta/src/yason.cc $SOURCE/Meta/src/MetaProtocol.cc $SOURCE/Meta/src/MetaObject.cc $SOURCE/Meta/src/YasonWriter.cc $SOURCE/Meta/src/json.cc $SOURCE/Meta/src/MetaPrototype.cc $SOURCE/Meta/src/YasonSyntax.cc $SOURCE/Meta/src/JsonWriter.cc > $SOURCE/Meta/src/.lump.cc
 mkdir -p .modules-5CF18B7A-$MACHINE-Core_src
 mkdir -p .modules-13029BBC-$MACHINE-Syntax_src
 mkdir -p .modules-E43B5248-$MACHINE-Glob_src
 mkdir -p .modules-CED283DB-$MACHINE-Meta_src
 mkdir -p .modules-46002B89-$MACHINE-tools_build
-g++ -c -o .modules-5CF18B7A-$MACHINE-Core_src/.lump.o -DNDEBUG -O0 -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=2.1.1 -D_GNU_SOURCE -Wno-psabi -std=c++20 -I$SOURCE/Core/src/include $SOURCE/Core/src/.lump.cc &
-g++ -c -o .modules-13029BBC-$MACHINE-Syntax_src/.lump.o -DNDEBUG -O0 -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=2.1.1 -D_GNU_SOURCE -std=c++20 -Wno-psabi -I$SOURCE/Syntax/src/include -I$SOURCE/Core/src/include $SOURCE/Syntax/src/.lump.cc &
-g++ -c -o .modules-E43B5248-$MACHINE-Glob_src/.lump.o -DNDEBUG -O0 -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=2.1.1 -D_GNU_SOURCE -std=c++20 -Wno-psabi -I$SOURCE/Glob/src/include -I$SOURCE/Core/src/include -I$SOURCE/Syntax/src/include $SOURCE/Glob/src/.lump.cc &
-g++ -c -o .modules-CED283DB-$MACHINE-Meta_src/.lump.o -DNDEBUG -O0 -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=2.1.1 -D_GNU_SOURCE -std=c++20 -Wno-psabi -I$SOURCE/Meta/src/include -I$SOURCE/Core/src/include -I$SOURCE/Syntax/src/include $SOURCE/Meta/src/.lump.cc &
-g++ -c -o .modules-46002B89-$MACHINE-tools_build/.lump.o -DNDEBUG -O0 -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=2.1.1 -D_GNU_SOURCE -std=c++20 -Wno-psabi -I$SOURCE/tools/build/include -I$SOURCE/Core/src/include -I$SOURCE/Glob/src/include -I$SOURCE/Meta/src/include $SOURCE/tools/build/.lump.cc &
+g++ -c -o .modules-5CF18B7A-$MACHINE-Core_src/.lump.o -DNDEBUG -O0 -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fvisibility-inlines-hidden -ffile-prefix-map=$SOURCE=src -DCCBUILD_BUNDLE_VERSION=2.2.0 -D_GNU_SOURCE -Wno-psabi -std=c++20 -I$SOURCE/Core/src/include $SOURCE/Core/src/.lump.cc &
+g++ -c -o .modules-13029BBC-$MACHINE-Syntax_src/.lump.o -DNDEBUG -O0 -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fvisibility-inlines-hidden -ffile-prefix-map=$SOURCE=src -DCCBUILD_BUNDLE_VERSION=2.2.0 -D_GNU_SOURCE -std=c++20 -Wno-psabi -I$SOURCE/Syntax/src/include -I$SOURCE/Core/src/include $SOURCE/Syntax/src/.lump.cc &
+g++ -c -o .modules-E43B5248-$MACHINE-Glob_src/.lump.o -DNDEBUG -O0 -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fvisibility-inlines-hidden -ffile-prefix-map=$SOURCE=src -DCCBUILD_BUNDLE_VERSION=2.2.0 -D_GNU_SOURCE -std=c++20 -Wno-psabi -I$SOURCE/Glob/src/include -I$SOURCE/Core/src/include -I$SOURCE/Syntax/src/include $SOURCE/Glob/src/.lump.cc &
+g++ -c -o .modules-CED283DB-$MACHINE-Meta_src/.lump.o -DNDEBUG -O0 -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fvisibility-inlines-hidden -ffile-prefix-map=$SOURCE=src -DCCBUILD_BUNDLE_VERSION=2.2.0 -D_GNU_SOURCE -std=c++20 -Wno-psabi -I$SOURCE/Meta/src/include -I$SOURCE/Core/src/include -I$SOURCE/Syntax/src/include $SOURCE/Meta/src/.lump.cc &
+g++ -c -o .modules-46002B89-$MACHINE-tools_build/.lump.o -DNDEBUG -O0 -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fvisibility-inlines-hidden -ffile-prefix-map=$SOURCE=src -DCCBUILD_BUNDLE_VERSION=2.2.0 -D_GNU_SOURCE -std=c++20 -Wno-psabi -I$SOURCE/tools/build/include -I$SOURCE/Core/src/include -I$SOURCE/Glob/src/include -I$SOURCE/Meta/src/include $SOURCE/tools/build/.lump.cc &
 wait
-g++ -o libCoreComponentsCore.so.2.1.1 -shared -pthread -Wl,-soname,libCoreComponentsCore.so.2 .modules-5CF18B7A-$MACHINE-Core_src/.lump.o -fPIC -O0 -L. -ldl -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'
-rm -f libCoreComponentsCore.so.2.1
+g++ -o libCoreComponentsCore.so.2.2.0 -shared -pthread -Wl,-soname,libCoreComponentsCore.so.2 .modules-5CF18B7A-$MACHINE-Core_src/.lump.o -fPIC -O0 -L. -ldl -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'
+rm -f libCoreComponentsCore.so.2.2
 rm -f libCoreComponentsCore.so.2
 rm -f libCoreComponentsCore.so
-ln -sf libCoreComponentsCore.so.2.1.1 libCoreComponentsCore.so.2.1
-ln -sf libCoreComponentsCore.so.2.1.1 libCoreComponentsCore.so.2
-ln -sf libCoreComponentsCore.so.2.1.1 libCoreComponentsCore.so
-g++ -o libCoreComponentsSyntax.so.2.1.1 -shared -pthread -Wl,-soname,libCoreComponentsSyntax.so.2 .modules-13029BBC-$MACHINE-Syntax_src/.lump.o -fPIC -O0 -L. -lCoreComponentsCore -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'
-rm -f libCoreComponentsSyntax.so.2.1
+ln -sf libCoreComponentsCore.so.2.2.0 libCoreComponentsCore.so.2.2
+ln -sf libCoreComponentsCore.so.2.2.0 libCoreComponentsCore.so.2
+ln -sf libCoreComponentsCore.so.2.2.0 libCoreComponentsCore.so
+g++ -o libCoreComponentsSyntax.so.2.2.0 -shared -pthread -Wl,-soname,libCoreComponentsSyntax.so.2 .modules-13029BBC-$MACHINE-Syntax_src/.lump.o -fPIC -O0 -L. -lCoreComponentsCore -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'
+rm -f libCoreComponentsSyntax.so.2.2
 rm -f libCoreComponentsSyntax.so.2
 rm -f libCoreComponentsSyntax.so
-ln -sf libCoreComponentsSyntax.so.2.1.1 libCoreComponentsSyntax.so.2.1
-ln -sf libCoreComponentsSyntax.so.2.1.1 libCoreComponentsSyntax.so.2
-ln -sf libCoreComponentsSyntax.so.2.1.1 libCoreComponentsSyntax.so
-g++ -o libCoreComponentsMeta.so.2.1.1 -shared -pthread -Wl,-soname,libCoreComponentsMeta.so.2 .modules-CED283DB-$MACHINE-Meta_src/.lump.o -fPIC -O0 -L. -lCoreComponentsCore -lCoreComponentsSyntax -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN' &
-rm -f libCoreComponentsMeta.so.2.1
-rm -f libCoreComponentsMeta.so.2
-rm -f libCoreComponentsMeta.so
-ln -sf libCoreComponentsMeta.so.2.1.1 libCoreComponentsMeta.so.2.1
-ln -sf libCoreComponentsMeta.so.2.1.1 libCoreComponentsMeta.so.2
-ln -sf libCoreComponentsMeta.so.2.1.1 libCoreComponentsMeta.so
-g++ -o libCoreComponentsGlob.so.2.1.1 -shared -pthread -Wl,-soname,libCoreComponentsGlob.so.2 .modules-E43B5248-$MACHINE-Glob_src/.lump.o -fPIC -O0 -L. -lCoreComponentsCore -lCoreComponentsSyntax -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN' &
-rm -f libCoreComponentsGlob.so.2.1
+ln -sf libCoreComponentsSyntax.so.2.2.0 libCoreComponentsSyntax.so.2.2
+ln -sf libCoreComponentsSyntax.so.2.2.0 libCoreComponentsSyntax.so.2
+ln -sf libCoreComponentsSyntax.so.2.2.0 libCoreComponentsSyntax.so
+g++ -o libCoreComponentsGlob.so.2.2.0 -shared -pthread -Wl,-soname,libCoreComponentsGlob.so.2 .modules-E43B5248-$MACHINE-Glob_src/.lump.o -fPIC -O0 -L. -lCoreComponentsCore -lCoreComponentsSyntax -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN' &
+g++ -o libCoreComponentsMeta.so.2.2.0 -shared -pthread -Wl,-soname,libCoreComponentsMeta.so.2 .modules-CED283DB-$MACHINE-Meta_src/.lump.o -fPIC -O0 -L. -lCoreComponentsCore -lCoreComponentsSyntax -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN' &
+wait
+rm -f libCoreComponentsGlob.so.2.2
 rm -f libCoreComponentsGlob.so.2
 rm -f libCoreComponentsGlob.so
-ln -sf libCoreComponentsGlob.so.2.1.1 libCoreComponentsGlob.so.2.1
-ln -sf libCoreComponentsGlob.so.2.1.1 libCoreComponentsGlob.so.2
-ln -sf libCoreComponentsGlob.so.2.1.1 libCoreComponentsGlob.so
-wait
+ln -sf libCoreComponentsGlob.so.2.2.0 libCoreComponentsGlob.so.2.2
+ln -sf libCoreComponentsGlob.so.2.2.0 libCoreComponentsGlob.so.2
+ln -sf libCoreComponentsGlob.so.2.2.0 libCoreComponentsGlob.so
+rm -f libCoreComponentsMeta.so.2.2
+rm -f libCoreComponentsMeta.so.2
+rm -f libCoreComponentsMeta.so
+ln -sf libCoreComponentsMeta.so.2.2.0 libCoreComponentsMeta.so.2.2
+ln -sf libCoreComponentsMeta.so.2.2.0 libCoreComponentsMeta.so.2
+ln -sf libCoreComponentsMeta.so.2.2.0 libCoreComponentsMeta.so
 g++ -o ccbuild -pthread .modules-46002B89-$MACHINE-tools_build/.lump.o -fPIC -pie -O0 -L. -lCoreComponentsCore -lCoreComponentsGlob -lCoreComponentsMeta -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'

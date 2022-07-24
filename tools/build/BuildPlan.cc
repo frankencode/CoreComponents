@@ -647,6 +647,15 @@ int BuildPlan::run()
 {
     readPrerequisites();
 
+    if (recipe("install").to<bool>()) {
+        if (!installStage().run()) return 1;
+        if (installStage().linkerCacheDirty()) {
+            if (!toolChain().refreshLinkerCache(*this))
+                return 1;
+        }
+        return 0;
+    }
+
     if (recipe("setup")) {
         me().setupBuildDir();
         return 0;
@@ -748,14 +757,6 @@ int BuildPlan::run()
         if (testReport) Process::setEnv("TEST_REPORT", "1");
         if (!testRunStage().run()) {
             return testRunStage().status();
-        }
-    }
-
-    if (recipe("install").to<bool>()) {
-        if (!installStage().run()) return 1;
-        if (installStage().linkerCacheDirty()) {
-            if (!toolChain().refreshLinkerCache(*this))
-                return 1;
         }
     }
 

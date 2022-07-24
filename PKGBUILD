@@ -7,6 +7,7 @@ pkgname=(
     'corecomponents_syntax'
     'corecomponents_glob'
     'corecomponents_meta'
+    'corecomponents_testing'
     'corecomponents_crypto'
     'corecomponents_crypto_tools'
     'corecomponents_network'
@@ -18,6 +19,7 @@ pkgname=(
     'corecomponents_toki_tools'
     'corecomponents_ux'
     'corecomponents_ux_plugins'
+    'corecomponents_tools'
 )
 pkgver=2.2.0
 pkgrel=1
@@ -27,18 +29,16 @@ arch=('x86_64')
 license=('GPL3')
 source=(
     "https://www.corecomponents.io/download/CoreComponents-$pkgver.tar.gz"
-    "https://www.corecomponents.io/download/CoreComponents-$pkgver.hash"
 )
 md5sums=(
-    '6e5a27c6587faea6514caaf4a6f395d2'
-    'SKIP'
+    '73204baab8c21435950457e333d25749'
 )
 sha1sums=(
-    '9bcc40dfe4445f3634e95eb11a287078012ff7fd'
-    'SKIP'
+    'd8c79f1d8936f8eccc4a536ef9f7fcd91e2e0c04'
 )
 
 makedepends=(
+    'gcc>=10.0.0'
     'readline'
     'gnutls>=3.3.5'
     'cairo'
@@ -96,6 +96,13 @@ package_corecomponents_meta() {
     depends=('corecomponents_syntax')
     cd core_release
     ./ccbuild -root=$pkgdir -install -release -test ../CoreComponents/Meta/src
+}
+
+package_corecomponents_testing() {
+    pkgdesc="$pkgdesc: unit testing and test automation"
+    depends=('corecomponents_testing')
+    cd core_release
+    ./ccbuild -root=$pkgdir -install -release -test ../CoreComponents/Testing/src
 }
 
 package_corecomponents_crypto() {
@@ -173,4 +180,11 @@ package_corecomponents_ux_plugins() {
     depends=('corecomponents_ux' 'sdl2>=2.0.10')
     cd core_release
     ./ccbuild -root=$pkgdir -install -release -test ../CoreComponents/UX/plugins
+}
+
+package_corecomponents_tools() {
+    pkgdesc="$pkgdesc: common developer tools (build system, etc.)"
+    depends=('corecomponents_tools')
+    cd core_release
+    ./ccbuild -root=$pkgdir -install -release -test ../CoreComponents/tools
 }
