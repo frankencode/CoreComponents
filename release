@@ -30,9 +30,8 @@ if uname -o|grep Cygwin; then
 else
     BOOTSTRAP=bootstrap
 fi
-# ccbuild -bootstrap -release -optimize=0 -lump $SOURCE/tools/build
-ccbuild -bootstrap -release -optimize=0 -lump $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
-chmod +x $SOURCE/tools/build/$BOOTSTRAP
+# ccbuild -bootstrap -release -optimize=0 -lump $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
+# chmod +x $SOURCE/tools/build/$BOOTSTRAP
 popd
 
 echo "Create source tarball..."
@@ -44,6 +43,7 @@ rm -rf .git || true
 rm -rf .vscode || true
 rm -rf $(find . -name 'compile_commands.json') || true
 rm -rf $(find . -name '.cache') || true
+rm -rf $(find . -name '.lump.cc') || true
 popd
 ARCHIVE=$PACKAGE-$VERSION.tar.gz
 HASHES=$PACKAGE-$VERSION.hash

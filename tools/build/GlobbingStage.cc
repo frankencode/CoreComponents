@@ -81,10 +81,6 @@ bool GlobbingStage::run()
         plan().sources() = sources;
     }
 
-    if (recipe().contains("bundle")) {
-        plan().bundle() = globSources(plan().recipe("bundle").to<List<String>>());
-    }
-
     for (BuildPlan &prerequisite: plan().prerequisites()) {
         if (!prerequisite.globbingStage().run())
             return success_ = false;

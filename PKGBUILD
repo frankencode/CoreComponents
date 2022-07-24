@@ -31,10 +31,10 @@ source=(
     "https://www.corecomponents.io/download/CoreComponents-$pkgver.tar.gz"
 )
 md5sums=(
-    '73204baab8c21435950457e333d25749'
+    '8c82fc143b17bd0bb905e8d8f4aab07d'
 )
 sha1sums=(
-    'd8c79f1d8936f8eccc4a536ef9f7fcd91e2e0c04'
+    '7ba060f9edf88eba6e553984fd764ff40ed31421'
 )
 
 makedepends=(
@@ -170,14 +170,14 @@ package_corecomponents_toki_tools() {
 
 package_corecomponents_ux() {
     pkgdesc="$pkgdesc: graphical user interfaces"
-    depends=('corecomponents_core' 'cairo' 'freetype2' 'libwebp')
+    depends=('corecomponents_core' 'corecomponents_ux_plugins' 'cairo' 'freetype2' 'libwebp')
     cd core_release
     ./ccbuild -root=$pkgdir -install -release -test ../CoreComponents/UX/src
 }
 
 package_corecomponents_ux_plugins() {
     pkgdesc="$pkgdesc: graphical user interface style and platform plugins"
-    depends=('corecomponents_ux' 'sdl2>=2.0.10')
+    depends=('sdl2>=2.0.10')
     cd core_release
     ./ccbuild -root=$pkgdir -install -release -test ../CoreComponents/UX/plugins
 }

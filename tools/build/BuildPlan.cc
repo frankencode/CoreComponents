@@ -34,12 +34,15 @@
 #include <cc/Process>
 #include <cc/File>
 #include <cc/Dir>
+#include <cc/DirWalker>
+#include <cc/Glob>
 #include <cc/Crc32Sink>
 #include <cc/JsonWriter>
 #include <cc/ResourceGuard>
 #include <cc/Format>
 #include <cc/yason>
 #include <cc/stdio>
+#include <cc/DEBUG>
 
 namespace cc::build {
 
@@ -646,6 +649,7 @@ BuildPlan BuildPlan::loadChild(const String &projectPath)
 int BuildPlan::run()
 {
     readPrerequisites();
+    globResources();
 
     if (recipe("install").to<bool>()) {
         if (!installStage().run()) return 1;
@@ -766,6 +770,34 @@ int BuildPlan::run()
 void BuildPlan::readPrerequisites()
 {
     return me().readPrerequisites(*this);
+}
+
+void BuildPlan::globResources()
+{
+    for (BuildPlan &prerequisite: prerequisites()) {
+        prerequisite.globResources();
+    }
+
+    if (!recipe().contains("bundle")) return;
+    List<String> patternList = recipe("bundle").to<List<String>>();
+    if (patternList.count() == 0) return;
+    List<String> resources;
+    for (const String &pattern: patternList) {
+        Glob glob{sourcePath(pattern)};
+        for (String path; glob.read(&path);) {
+            try {
+                DirWalker walker{path};
+                bool isDir = false;
+                for (String path; walker.read(&path, &isDir);) {
+                    if (!isDir) resources.append(path);
+                }
+            }
+            catch (...) {
+                resources.append(path);
+            }
+        }
+    }
+    bundle() = resources;
 }
 
 List<String> BuildPlan::queryableVariableNames()
