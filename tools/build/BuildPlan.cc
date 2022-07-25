@@ -40,6 +40,7 @@
 #include <cc/JsonWriter>
 #include <cc/ResourceGuard>
 #include <cc/Format>
+#include <cc/System>
 #include <cc/yason>
 #include <cc/stdio>
 #include <cc/DEBUG>
@@ -82,6 +83,7 @@ struct BuildPlan::State:
         arguments.override(&recipe_.members());
 
         readRecipe();
+        readMakeFlags();
 
         Process::setEnv("PREFIX", installPrefix_);
 
@@ -249,6 +251,37 @@ struct BuildPlan::State:
         if (parentPlan) {
             optimize_ = parentPlan->optimize_;
             linkStatic_ = parentPlan->linkStatic_;
+        }
+    }
+
+    /** Respect MAKEFLAGS environment variable commonly used by meta build systems
+      * (e.g. to effectively support distcc builds).
+      */
+    void readMakeFlags()
+    {
+        String flags = Process::env("MAKEFLAGS");
+        if (flags == "") return;
+        long k = 0;
+        if (flags.find("--jobs=", &k)) {
+            k += 7;
+        }
+        else {
+            k = 0;
+            if (flags.find("-j", &k))
+                k += 2;
+            else
+                k = 0;
+        }
+        if (k > 0) {
+            while (k < flags.count() && flags.at(k) == ' ') ++k;
+            long l = k;
+            while (l < flags.count() && flags.at(l) != ' ') ++l;
+            bool ok = false;
+            int jobs = flags.copy(k, l).toInt(&ok);
+            if (ok && jobs > 0) {
+                jobs -= (jobs > 1 && jobs == System::concurrency());
+                concurrency_ = jobs;
+            }
         }
     }
 
