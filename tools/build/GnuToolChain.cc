@@ -50,7 +50,7 @@ struct GnuToolChain::State: public ToolChain::State
 
         cFlags_ = Process::env("CFLAGS");
         cxxFlags_ = Process::env("CXXFLAGS");
-        lFlags_ = Process::env("LFLAGS");
+        ldFlags_ = Process::env("LDFLAGS");
     }
 
     static String queryMachine(const String &compiler)
@@ -589,7 +589,7 @@ struct GnuToolChain::State: public ToolChain::State
                 args << "-O" + plan.optimize();
         }
 
-        if (lFlags_ != "") args << lFlags_;
+        if (ldFlags_ != "") args << ldFlags_;
 
         List<String> libraryPaths = plan.libraryPaths();
         List<String> libraries = plan.libraries();
@@ -648,7 +648,7 @@ struct GnuToolChain::State: public ToolChain::State
     bool isMultiArch_ { true };
     String cFlags_;
     String cxxFlags_;
-    String lFlags_;
+    String ldFlags_;
     bool cygwin_ { false };
 };
 
