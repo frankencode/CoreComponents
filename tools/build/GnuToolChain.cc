@@ -588,8 +588,7 @@ struct GnuToolChain::State: public ToolChain::State
 
         if (ldFlags_ != "") {
             args << ldFlags_;
-
-            if ((plan.options() & BuildOption::Plugin) && ldFlags_.contains("--as-needed")) {
+            if (ldFlags_.contains("--as-needed")) {
                 args << "-Wl,--no-as-needed";
             }
         }
