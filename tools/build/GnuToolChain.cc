@@ -579,9 +579,6 @@ struct GnuToolChain::State: public ToolChain::State
         appendRelocationMode(args, plan);
         if (!(plan.options() & BuildOption::Library)) args << "-pie";
 
-        //if (plan.options() & BuildOption::Plugin)
-        //    args << "-Wl,--no-as-needed";
-
         if (plan.optimize() != "") {
             if (plan.optimize() == "4")
                 args << "-O3" << "-flto";
@@ -589,7 +586,13 @@ struct GnuToolChain::State: public ToolChain::State
                 args << "-O" + plan.optimize();
         }
 
-        if (ldFlags_ != "") args << ldFlags_;
+        if (ldFlags_ != "") {
+            args << ldFlags_;
+
+            if ((plan.options() & BuildOption::Plugin) && ldFlags_.contains("--as-needed")) {
+                args << "-Wl,--no-as-needed";
+            }
+        }
 
         List<String> libraryPaths = plan.libraryPaths();
         List<String> libraries = plan.libraries();
