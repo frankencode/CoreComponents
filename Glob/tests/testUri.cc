@@ -57,5 +57,13 @@ int main(int argc, char *argv[])
         }
     };
 
+    TestCase {
+        "UriDecode",
+        []{
+            CC_INSPECT(Uri::decode("x%2Fy%2Fz"));
+            CC_INSPECT(Uri::decode("x%2Fy%2Fz").count());
+        }
+    };
+
     return TestSuite{argc, argv}.run();
 }

@@ -64,7 +64,7 @@ String Uri::State::requestPath() const
     if (query_ == "" && fragment_ == "") return path_;
     List<String> parts;
     parts << path_;
-    if (query_ != "") parts << "?" << query_;
+    if (query_ != "") parts << "?" << Uri::encodeReserved(query_, "/; ");
     if (fragment_ != "") parts << "#" << fragment_;
     return parts;
 }
@@ -83,10 +83,10 @@ String Uri::State::toString() const
             text << userInfo_;
         }
         if (host_ != "") {
-            text << "@";
+            if (userInfo_ != "") text << "@";
             text << host_;
         }
-        if (port_ != -1) {
+        if (port_ > 0) {
             text << ":" << str(port_);
         }
     }
@@ -114,20 +114,20 @@ String Uri::State::encoded() const
     if (host_ != "") {
         text << "//";
         if (userInfo_ != "") {
-            text << Uri::encodeReserved(userInfo_, "/?#[]@!$&'()*+,;=");
+            text << Uri::encodeReserved(userInfo_, "/?#[]@!$&'()*+,;= ");
         }
         if (host_ != "") {
-            text << "@";
+            if (userInfo_ != "")  text << "@";
             text << Uri::encode(host_);
         }
-        if (port_ != -1) {
+        if (port_ > 0) {
             text << ":" << str(port_);
         }
     }
-    text << Uri::encodeReserved(path_, ":?#[]@!$&'()*+,;=");
+    text << Uri::encodeReserved(path_, ":?#[]@!$&'()*+,;= ");
     if (query_ != "") {
         text << "?";
-        text << Uri::encodeReserved(query_, ":/?#[]@!$&'()*+,;");
+        text << Uri::encodeReserved(query_, ":/?#[]@!$&'()*+,; ");
     }
     if (fragment_ != "") {
         text << "#";
@@ -233,14 +233,14 @@ void Uri::decode(InOut<String> text)
             bool match = true;
             if (('0' <= d) && (d <= '9')) x = d - '0';
             else if (('a' <= d) && (d <= 'f')) x = d - 'a' + 10;
-            // else if (('A' <= d) && (d <= 'F')) x = d - 'F' + 10;
+            else if (('A' <= d) && (d <= 'F')) x = d - 'A' + 10;
             else match = false;
             if (match) {
                 x *= 16;
                 d = text->at(i + 2);
                 if (('0' <= d) && (d <= '9')) x += d - '0';
                 else if (('a' <= d) && (d <= 'f')) x += d - 'a' + 10;
-                // else if (('A' <= d) && (d <= 'F')) x = d - 'F' + 10;
+                else if (('A' <= d) && (d <= 'F')) x += d - 'A' + 10;
                 else match = false;
                 if (match) {
                     i += 2;

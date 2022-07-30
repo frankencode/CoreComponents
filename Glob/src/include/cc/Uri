@@ -174,7 +174,7 @@ private:
         String encoded() const;
     };
 
-    static String encodeReserved(const String &text, const char *reserved = ":/?#[]@!$&'()*+,;=");
+    static String encodeReserved(const String &text, const char *reserved = ":/?#[]@!$&'()*+,;= ");
 
     Cow<State> me;
 };
