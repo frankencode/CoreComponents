@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
             HttpServer server{
                 "Node {\n"
                 "    address: \"127.0.0.1\"\n"
-                "    port: 8080\n"
+                "    port: 8787\n"
                 "    family: IPv4\n"
                 "    concurrency: 1\n"
                 "    Echo {\n"
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
                     Format{
                         "Node {\n"
                         "    address: \"127.0.0.1\"\n"
-                        "    port: 4443\n"
+                        "    port: 4447\n"
                         "    family: IPv4\n"
                         "    concurrency: 1\n"
                         "    Echo {\n"
