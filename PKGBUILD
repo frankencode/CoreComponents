@@ -31,10 +31,10 @@ source=(
     "$pkgbase-$pkgver.tar.gz::https://www.corecomponents.io/download/CoreComponents-$pkgver.tar.gz"
 )
 md5sums=(
-    'aabf6cbf9292def618cb4f6d4990cb59'
+    '302e7921752136ceb4b45ffcdae37b03'
 )
 sha1sums=(
-    '63fabcd6e225d66b04f9428e6199504446f6a84b'
+    'f01d0dc1699dd82bf27ae137322286726e241420'
 )
 
 makedepends=(
@@ -65,7 +65,12 @@ prepare() {
 
 build() {
     cd CoreComponents-$pkgver-build
-    ./ccbuild -prefix=/usr -release -test ../CoreComponents
+    ./ccbuild -prefix=/usr -release ../CoreComponents
+}
+
+check() {
+    cd CoreComponents-$pkgver-build
+    ./ccbuild -prefix=/usr -release -test-run ../CoreComponents
 }
 
 package_corecomponents_core() {
