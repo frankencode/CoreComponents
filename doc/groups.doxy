@@ -133,3 +133,12 @@
   * \ingroup ui
   * Automatic placement and sizing of UI elements
   */
+
+/** \defgroup can CAN Bus
+  * Controller Area Network (CAN) bus communication
+  */
+
+/** \defgroup cia CAN in Automation
+  * \ingroup can
+  * CANopen standard: messaging logic, object dictionaries, etc.
+  */

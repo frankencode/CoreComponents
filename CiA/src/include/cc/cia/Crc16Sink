@@ -12,7 +12,8 @@
 
 namespace cc::cia {
 
-/** \class Crc16Sink cc/Crc16Sink
+/** \class Crc16Sink cc/cia/Crc16Sink
+  * \ingroup cia
   * \brief CRC-16 check sum generator
   */
 class Crc16Sink final: public HashSink
