@@ -15,7 +15,7 @@ namespace cc::cia {
 
 /** \class Selector cc/cia/Selector
   * \ingroup cia
-  * \brief Object dictionary address (index, sub-index)
+  * \brief %Object dictionary address (index, sub-index)
   * \todo API docs
   */
 class Selector
