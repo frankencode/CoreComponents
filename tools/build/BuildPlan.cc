@@ -649,6 +649,7 @@ struct BuildPlan::State:
     Job libraryLinkJob_;
 
     bool configureListComplete_ { false };
+    bool globbingResourcesComplete_ { false };
 };
 
 BuildPlan::BuildPlan(int argc, char *argv[]):
@@ -807,6 +808,10 @@ void BuildPlan::readPrerequisites()
 
 void BuildPlan::globResources()
 {
+    if (me().globbingResourcesComplete_) return;
+
+    me().globbingResourcesComplete_ = true;
+
     for (BuildPlan &prerequisite: prerequisites()) {
         prerequisite.globResources();
     }
