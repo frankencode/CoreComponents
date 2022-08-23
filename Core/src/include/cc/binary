@@ -12,15 +12,19 @@
 
 namespace cc {
 
-using uint8_t = std::uint8_t;
-using uint16_t = std::uint16_t;
-using uint32_t = std::uint32_t;
-using uint64_t = std::uint64_t;
+/** \addtogroup binary
+  * @{
+  */
 
-using int8_t = std::int8_t;
-using int16_t = std::int16_t;
-using int32_t = std::int32_t;
-using int64_t = std::int64_t;
+using uint8_t = std::uint8_t; ///< 8 bit unsigned word
+using uint16_t = std::uint16_t; ///< 16 bit unsigned word
+using uint32_t = std::uint32_t; ///< 32 bit unsigned word
+using uint64_t = std::uint64_t; ///< 64 bit unsigned word
+
+using int8_t = std::int8_t; ///< 8 bit signed word
+using int16_t = std::int16_t; ///< 16 bit signed word
+using int32_t = std::int32_t; ///< 32 bit signed word
+using int64_t = std::int64_t; ///< 64 bit signed word
 
 /** Optimization safe raw type casting
   */
@@ -34,30 +38,28 @@ inline B union_cast(A a)
 }
 
 /** Byte order
-  * \ingroup bits
   */
 enum class ByteOrder {
     LittleEndian = 1, ///< Low order byte precedes the high order byte
     BigEndian    = 0  ///< High order byte precedes the low order byte
 };
 
-/** %Return current system byte order
-  * \ingroup bits
+/** %Return the current system byte order
   */
 inline ByteOrder localEndian()
 {
     return static_cast<ByteOrder>(union_cast<std::uint8_t, unsigned>(1));
 }
 
-/** Swap endianess from channel byte order to system byte order
-  * \ingroup bits
+/** Swap endianess of \a x from \a channelByteOrder to system byte order
+  * \tparam T Unsigned integer type
   */
-template<class UInt>
-inline UInt endianGate(UInt x, const ByteOrder channelByteOrder = ByteOrder::BigEndian)
+template<class T>
+inline T endianGate(T x, const ByteOrder channelByteOrder = ByteOrder::BigEndian)
 {
     if (localEndian() != channelByteOrder) {
         const int n = sizeof(x);
-        UInt z = 0;
+        T z = 0;
         for (int i = 0; i < n; ++i) {
             z <<= 8;
             z |= (x >> (i * 8)) & 0xFF;
@@ -66,5 +68,135 @@ inline UInt endianGate(UInt x, const ByteOrder channelByteOrder = ByteOrder::Big
     }
     return x;
 }
+
+/** \class Bit cc/binary
+  * \brief Select the bits \a i to \a j from a word of type \a T.
+  * \tparam T %Unsigned integer type
+  * \tparam j %High bit position
+  * \tparam i %Low bit position
+  * \see bit
+  */
+template<class T, unsigned j, unsigned i = j>
+class Bit
+{
+    static const T Mask { (~T{}) >> (8 * sizeof(T) - (j - i + 1)) };
+
+public:
+    /** Create a new bit selector
+      * \param word %Word to select bits from
+      */
+    Bit(T &word):
+        word_{word}
+    {
+        static_assert(j < 8 * sizeof(T), "invalid bit range");
+        static_assert(i <= j, "invalid bit range");
+    }
+
+    /** Delete copy constructor
+      */
+    Bit(const Bit &) = delete;
+
+    /** Delete copy operator
+      */
+    Bit &operator=(const Bit &) = delete;
+
+    /** %Return value of selection
+      */
+    operator T() const { return (word_ >> i) & Mask; }
+
+    /** Assign a new value to the bit selection
+      */
+    template<class Value>
+    Bit &operator=(Value value)
+    {
+        word_ &= ~(Mask << i);
+        word_ |= (static_cast<T>(value) & Mask) << i;
+        return *this;
+    }
+
+    /** Combine a new value to the bit selection using the or operator
+      */
+    template<class Value>
+    Bit &operator|=(Value value)
+    {
+        word_ |= (static_cast<T>(value) & Mask) << i;
+        return *this;
+    }
+
+    /** Combine a new value to the bit selection using the xor operator
+      */
+    template<class Value>
+    Bit &operator^=(Value value)
+    {
+        word_ ^= (static_cast<T>(value) & Mask) << i;
+        return *this;
+    }
+
+    /** Combine a new value to the bit selection using the and operator
+      */
+    template<class Value>
+    Bit &operator&=(Value value)
+    {
+        word_ &= (static_cast<T>(value) & Mask) << i;
+        return *this;
+    }
+
+private:
+    T &word_;
+};
+
+/** \internal
+  * \class Bit cc/binary
+  * \brief Specialization of Bit for const words
+  * \see bit
+  */
+template<class T, unsigned j, unsigned i>
+class Bit<const T, j, i>
+{
+    static const T Mask { (~T{}) >> (8 * sizeof(T) - (j - i + 1)) };
+
+public:
+    /** Create a new bit selector
+      * \param word %Word to select bits from
+      */
+    explicit Bit(const T &word):
+        word_{word}
+    {
+        static_assert(j < 8 * sizeof(T), "invalid bit range");
+        static_assert(i <= j, "invalid bit range");
+    }
+
+    /** Delete copy constructor
+      */
+    Bit(const Bit &) = delete;
+
+    /** Delete copy operator
+      */
+    Bit &operator=(const Bit &) = delete;
+
+    /** Return value of selection
+      */
+    operator T() const { return (word_ >> i) & Mask; }
+
+private:
+    const T word_;
+};
+
+/** Get bits \a i to \a j in \a word
+  */
+template<unsigned j, unsigned i = j, class T>
+Bit<T, j, i> bit(T &word) {
+    return Bit<T, j, i>{word};
+}
+
+/** Get bits \a i to \a j in \a word
+  */
+template<unsigned j, unsigned i = j, class T>
+Bit<const T, j, i> bit(const T &word) {
+    return Bit<const T, j, i>{word};
+}
+
+/** @}
+  */
 
 } // namespace cc
