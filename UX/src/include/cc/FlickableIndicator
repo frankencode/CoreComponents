@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class FlickableIndicator qh/FlickableIndicator
+/** \class FlickableIndicator cc/FlickableIndicator
   * \ingroup ui
   * \brief Positional indicator for a flickable pane
   * \see FlickableIndicator

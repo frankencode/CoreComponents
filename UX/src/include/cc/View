@@ -764,7 +764,7 @@ protected:
         void add(const View &child) { insertChild(child); } ///< \copydoc View::add()
         void addAbove(const View &child) { insertChild(child); } ///< \copydoc View::addAbove()
         void addBelow(const View &child); ///< \copydoc View::addBelow()
-        void insertAt(Locator target, View child); ///< \copydoc View::insertAt(Locator, View)
+        void insertAt(Locator target, View child); ///< \copydoc View::insertAt(Locator, const View &)
         void insertAt(long index, const View &child); ///< \copydoc View::insertAt(long, const View &)
         void remove(const View &child) { removeChild(child); } ///< \copydoc View::remove()
 
