@@ -528,14 +528,11 @@ struct GnuToolChain::State: public ToolChain::State
             args << "-DNDEBUG";
         }
         if (plan.optimize() != "") {
-            if (plan.optimize() == "4")
-                args << "-O3" << "-flto";
-            else
-                args << "-O" + plan.optimize();
+            args << "-O" + plan.optimize();
         }
         if (plan.options() & BuildOption::Release) {
             if (plan.optimize() != "0") {
-                args << "-mtune=generic" << "-fno-plt";
+                args << "-flto" << "-mtune=generic" << "-fno-plt";
             }
         }
 
@@ -571,6 +568,8 @@ struct GnuToolChain::State: public ToolChain::State
         }
     }
 
+    /** \todo Make '-flto' work properly without overcommiting beyond BuildPlan::concurrency().
+      */
     void appendLinkOptions(Format &args, const BuildPlan &plan) const
     {
         for (const String &flag: plan.customLinkFlags())
@@ -580,10 +579,7 @@ struct GnuToolChain::State: public ToolChain::State
         if (!(plan.options() & BuildOption::Library)) args << "-pie";
 
         if (plan.optimize() != "") {
-            if (plan.optimize() == "4")
-                args << "-O3" << "-flto";
-            else
-                args << "-O" + plan.optimize();
+            args << "-flto=" + str(plan.concurrency()) << "-O" + plan.optimize();
         }
 
         if (ldFlags_ != "") {

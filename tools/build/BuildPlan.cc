@@ -172,8 +172,11 @@ struct BuildPlan::State:
             ConfigureShell{}.setVerbose(options_ & BuildOption::Verbose);
         }
 
-        if (concurrency_ > 0 && testRunConcurrency_ < 0)
+        if (concurrency_ > 0 && testRunConcurrency_ < 0) {
             testRunConcurrency_ = concurrency_;
+        }
+
+        if (concurrency_ <= 0) concurrency_ = System::concurrency();
 
         BuildParameters::State::read(recipe_, projectPath_, options_);
 
