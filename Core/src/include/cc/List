@@ -107,6 +107,10 @@ public:
       */
     long size() const { return me().count(); }
 
+    /** Check if \a i is a valid index
+      */
+    bool has(long i) const { return i < me().count() && 0 <= i; }
+
     /** Check if this list is non-empty
       */
     explicit operator bool() const { return count() > 0; }
@@ -154,6 +158,13 @@ public:
     /** \copydoc mutableAt(long)
       */
     Item &operator[](long index) { return mutableAt(index); }
+
+    /** Get value at \a index if 0 <= index && index < count(), otherwise return \a fallback
+      */
+    Item operator()(long index, const Item &fallback = Item{}) const
+    {
+        return has(index) ? at(index) : fallback;
+    }
 
     /** Get constant reference to first item
       */

@@ -292,6 +292,13 @@ public:
       */
     const char &operator[](int i) const { return at(i); }
 
+    /** Get value at \a i if 0 <= i && i < count(), otherwise return \a fallback
+      */
+    char operator()(long i, char fallback = '\0') const
+    {
+        return has(i) ? at(i) : fallback;
+    }
+
     /** Check if the first character of this string equals \a b
       */
     bool startsWith(char b) const

@@ -97,6 +97,10 @@ public:
       */
     long size() const { return me().count(); }
 
+    /** Check if \a i is a valid index
+      */
+    bool has(long i) const { return i < me().count() && 0 <= i; }
+
     /** Check if this multi-map is non-empty
       */
     explicit operator bool() const { return count() > 0; }
