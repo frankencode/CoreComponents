@@ -68,8 +68,8 @@
   * Utility classes and helper functions
   */
 
-/** \defgroup bits Bits and Bytes
-  * Bit coding and byte order
+/** \defgroup binary Bits and Bytes
+  * %Bit coding and byte order
   */
 
 /** \defgroup testing Unit Testing
