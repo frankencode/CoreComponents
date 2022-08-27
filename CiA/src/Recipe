@@ -1,4 +1,0 @@
-Library {
-    name: CoreComponentsCiA
-    use: [ Core, CAN ]
-}

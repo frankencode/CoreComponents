@@ -1,3 +1,0 @@
-Tests {
-    use: [ Core, CAN, CiA, Testing ]
-}
