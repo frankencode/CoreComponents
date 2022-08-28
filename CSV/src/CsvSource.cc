@@ -15,7 +15,9 @@ struct CsvSource::State final: public Object::State
 {
     explicit State(const String &text):
         text_{text}
-    {}
+    {
+        text_.trimBom();
+    }
 
     bool read(Out<List<String>> record)
     {
