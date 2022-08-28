@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
                 for (const String &item: record) {
                     ferr() << item << (record.isLast(item) ? "\n" : ", ");
                 }
+                CC_CHECK(record.count() == 4);
             }
 
             CC_CHECK(table(0)(0) == "name");
