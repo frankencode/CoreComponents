@@ -34,7 +34,7 @@ public:
     SyntaxRule(const String &name, const SyntaxNode &entry);
 
     String name() const; ///< Rule name
-    void setName(const String &newName); ///< Set the rule name
+    void setName(const String &newName); ///< %Set the rule name
 
     SyntaxNode entry() const; ///< %Root node
 

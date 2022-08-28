@@ -64,7 +64,7 @@ public:
         return me().capturedValue(name);
     }
 
-    /** Set captured value
+    /** %Set captured value
       */
     void setCapturedValue(const String &name, const String &value)
     {

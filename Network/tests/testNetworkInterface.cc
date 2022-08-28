@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
         []{
             List<NetworkInterface> interfaceList = NetworkInterface::queryAll();
             for (const NetworkInterface &interface: interfaceList) {
-                if (!interfaceList.first(interface)) fout() << nl;
+                if (!interfaceList.isFirst(interface)) fout() << nl;
                 fout() << interface.name() << ":" << nl;
                 fout() << "  Flags: ";
                 NetworkInterfaceFlags flags = interface.flags();

@@ -74,57 +74,34 @@ public:
         Object{new State{entry}}
     {}
 
-    /** %Match this syntax definition against \a text
+    /** %Match this syntax definition against \a text starting at \a offset
       * \return Root node of the syntax production tree
       */
-    Token match(const String &text) const
+    Token match(const String &text, long offset = 0) const
     {
-        return me().match(text);
+        return me().match(text, offset);
     }
 
     /** \copydoc match()
-      * \exception TextError Text does not match this syntax definition
+      * \exception TextError %Text does not match this syntax definition
       */
-    Token parse(const String &text) const
+    Token parse(const String &text, long offset = 0) const
     {
-        Token token = me().match(text);
-        if (!token) throw TextError{text};
-        return token;
+        return me().parse(text, offset);
     }
 
     /** Find the next occurance of this pattern in \a text starting from \a offset
       */
     Token findIn(const String &text, long offset = 0) const
     {
-        Token token;
-        if (offset >= 0) {
-            for (; !token && offset < text.count(); ++offset) {
-                token = me().match(text, offset);
-            }
-        }
-        return token;
+        return me().findIn(text, offset);
     }
 
     /** Break up \a text into the non-matching parts
       */
     List<String> breakUp(const String &text) const
     {
-        List<String> parts;
-
-        for (long i = 0; i < text.count();)
-        {
-            Token token = findIn(text, i);
-            if (token) {
-                parts.append(text.copy(i, token.i0()));
-                i = token.i1();
-            }
-            else {
-                parts.append(text.copy(i, text.count()));
-                break;
-            }
-        }
-
-        return parts;
+        return me().breakUp(text);
     }
 
     /** Allow use this definition as a syntax rule within another definition
@@ -202,13 +179,20 @@ public:
     ///@}
 
 protected:
+    /** \brief Internal state
+      */
     class State: public Object::State
     {
     public:
+        /** Initialize internal state
+          * \param entry %Entry point for syntax production
+          */
         State(const SyntaxRule *entry):
             entry_{entry}
         {}
 
+        /** \copydoc SyntaxDefinition::match()
+          */
         Token match(const String &text, long start = 0) const
         {
             Token result;
@@ -220,6 +204,50 @@ protected:
             }
 
             return result;
+        }
+
+        /** \copydoc SyntaxDefinition::parse()
+          */
+        Token parse(const String &text, long offset = 0) const
+        {
+            Token token = match(text, offset);
+            if (!token) throw TextError{text};
+            return token;
+        }
+
+        /** \copydoc SyntaxDefinition::findIn()
+          */
+        Token findIn(const String &text, long offset = 0) const
+        {
+            Token token;
+            if (offset >= 0) {
+                for (; !token && offset < text.count(); ++offset) {
+                    token = match(text, offset);
+                }
+            }
+            return token;
+        }
+
+        /** \copydoc SyntaxDefinition::breakUp()
+          */
+        List<String> breakUp(const String &text) const
+        {
+            List<String> parts;
+
+            for (long i = 0; i < text.count();)
+            {
+                Token token = findIn(text, i);
+                if (token) {
+                    parts.append(text.copy(i, token.i0()));
+                    i = token.i1();
+                }
+                else {
+                    parts.append(text.copy(i, text.count()));
+                    break;
+                }
+            }
+
+            return parts;
         }
 
     private:

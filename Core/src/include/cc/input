@@ -69,11 +69,6 @@ String xmlSanitize(const String &text);
   */
 String indent(const String &text, const String &prefix);
 
-/** Scan a line of comma separated values (CSV format)
-  * \see LineSource
-  */
-List<String> scanCsv(const String &line);
-
 ///@}
 
 } // namespace cc

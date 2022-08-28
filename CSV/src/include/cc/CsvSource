@@ -1,0 +1,54 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/SourceIterator>
+#include <cc/String>
+#include <cc/Object>
+
+namespace cc {
+
+/** \class CsvSource cc/CsvSource
+  * \brief Read records from a CSV formatted input text
+  * \ingroup misc
+  * \see CsvSyntax
+  */
+class CsvSource final: public Object
+{
+public:
+    /** %Item type for iteration
+      */
+    using Item = List<String>;
+
+    /** Create a new CSV source
+      * \param text CSV formatted input text
+      */
+    explicit CsvSource(const String &text);
+
+    /** Read next record
+      * \param record Returns the next record (if not end of input)
+      * \return True if not end of input
+      */
+    bool read(Out<List<String>> record);
+
+    /** Iteration start
+      */
+    SourceIterator<CsvSource> begin() { return SourceIterator<CsvSource>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<CsvSource> end() { return SourceIterator<CsvSource>{}; }
+
+private:
+    struct State;
+
+    State &me();
+};
+
+} /// namespace cc

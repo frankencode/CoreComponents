@@ -679,6 +679,20 @@ public:
         trim(ls.chars(), ts.chars());
     }
 
+    /** Remove a UTF-8 encoded Byte Order Mark (BOM) if present
+      */
+    void trimBom()
+    {
+        if (
+            count() >= 3 &&
+            byteAt(0) == 0xEF &&
+            byteAt(1) == 0xBB &&
+            byteAt(2) == 0xBF
+        ) {
+            *this = selectTail(count() - 3);
+        }
+    }
+
     /** Obtain a copy of this string with leading and trailing whitespace removed
       * \param ls %Set of characters to detect as leading whitespace
       * \param ts %Set of characters to detect as trailing whitespace

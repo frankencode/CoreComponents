@@ -2,7 +2,6 @@
 #include <cc/Casefree>
 #include <cc/Unicode>
 #include <cc/Utf16>
-#include <cc/input>
 #include <cc/testing>
 
 int main(int argc, char *argv[])
@@ -52,17 +51,6 @@ int main(int argc, char *argv[])
         []{
             String s = "\\u041F\\u0440\\u0438\\u0432\\u0435\\u0442!";
             CC_CHECK_EQUALS(s.expanded(), "Привет!");
-        }
-    };
-
-    TestCase {
-        "TestScanCsv",
-        []{
-            List<String> items = scanCsv("1,\"Hans \\\"im Glück\\\"\",abc");
-            CC_CHECK(items.count() == 3);
-            CC_CHECK(items(0) == "1");
-            CC_CHECK(items(1) == "Hans \"im Glück\"");
-            CC_CHECK(items(2) == "abc");
         }
     };
 

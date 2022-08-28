@@ -26,6 +26,7 @@ const char *httpReasonPhrase(HttpStatus status)
         case HttpStatus::PartialContent:              s = "Partial Content"; break;
         case HttpStatus::MultipleChoices:             s = "Multiple Choices"; break;
         case HttpStatus::MovedPermanently:            s = "Moved Permanently"; break;
+        case HttpStatus::TemporaryRedirect:
         case HttpStatus::MovedTemporarily:            s = "Moved Temporarily"; break;
         case HttpStatus::SeeOther:                    s = "See Other"; break;
         case HttpStatus::NotModified:                 s = "Not Modified"; break;

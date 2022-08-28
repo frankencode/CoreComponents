@@ -1,4 +1,3 @@
-#include <cc/TestSuite>
 #include <cc/testing>
 #include <cc/stdio>
 #include <cc/System>

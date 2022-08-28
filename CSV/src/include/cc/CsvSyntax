@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/SyntaxDefinition>
+
+namespace cc {
+
+/** \class CsvSyntax cc/CsvSyntax
+  * \brief CSV syntax definition
+  *
+  * The CSV syntax follows closely the CSV syntax definition of RFC 4180, but is more relaxed in
+  * several ways. Firtly it also supports text data beyond the printable ASCII range and thereby
+  * fully supports national code pages and UTF-8 encoding. Secondly it accepts any form of newline
+  * encoding ("\n", "\f", "\n\f" or "\f\n").
+  */
+class CsvSyntax final: public SyntaxDefinition
+{
+public:
+    CsvSyntax();
+
+    /** Parse the next record from the CSV encoded \a text starting and ending at \a offset
+      * \exception TextError %Text does not match this syntax definition at \a offset
+      */
+    List<String> parse(const String &text, InOut<long> offset) const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc
