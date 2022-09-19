@@ -62,6 +62,10 @@ public:
       */
     bool isRunning() const;
 
+    /** Set the thread's name for debugging
+      */
+    void setName(const char *name);
+
     /** Get an unique ID indentifying the calling thread
       */
     static uint64_t id();

@@ -80,6 +80,14 @@ bool Thread::isRunning() const
     return (ret == 0);
 }
 
+void Thread::setName(const char *name)
+{
+    #ifdef _GNU_SOURCE
+    int ret = pthread_setname_np(me().tid_, name);
+    if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
+    #endif
+}
+
 uint64_t Thread::id()
 {
     return static_cast<uint64_t>(pthread_self());
