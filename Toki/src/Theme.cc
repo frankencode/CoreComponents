@@ -54,6 +54,11 @@ struct Theme::State final: public Object::State
     Palette defaultPalette_;
 };
 
+String Theme::locate(const String &name)
+{
+    return Theme::State::locate(name);
+}
+
 Theme::Theme(const String &path):
     Object{new State{path}}
 {}

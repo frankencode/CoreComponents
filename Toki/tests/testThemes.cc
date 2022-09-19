@@ -17,7 +17,18 @@ int main(int argc, char *argv[])
     TestCase {
         "ThemeLoading",
         []{
-            Theme theme{"ClassicWhite"};
+            const char *themeName = "ClassicWhite";
+            String themePath;
+            try {
+                themePath = Theme::locate(themeName);
+            }
+            catch (...)
+            {
+                CC_DEBUG << "Failed to locate theme " << themeName;
+                return;
+            }
+            CC_INSPECT(themePath);
+            Theme theme{themePath};
             CC_INSPECT(theme.defaultPalette().textStyle().ink());
             CC_INSPECT(theme.defaultPalette().textStyle().paper());
         }

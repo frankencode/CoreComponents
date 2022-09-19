@@ -18,6 +18,10 @@ namespace cc::toki {
 class Theme final: public Object
 {
 public:
+    /** Locate the installation path of theme of given \a name
+      */
+    static String locate(const String &name);
+
     /** Load color theme from \a path
       * \param path Relative or absolute directory path
       */
