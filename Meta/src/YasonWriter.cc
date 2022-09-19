@@ -73,7 +73,7 @@ struct YasonWriter::State: public Object::State
 
         for (const T &item: list) {
             writeValue(item, depth);
-            if (!list.isLast(item))
+            if (!list.lastIs(item))
                 format_ << ", ";
         }
 
@@ -96,12 +96,12 @@ struct YasonWriter::State: public Object::State
         writeIndent(depth + 1);
         if (names.count() == 0) {
             for (const auto &pair: object.members()) {
-                writeMember(pair.key(), pair.value(), object.members().isLast(pair), depth);
+                writeMember(pair.key(), pair.value(), object.members().lastIs(pair), depth);
             }
         }
         else {
             for (const String &name: names) {
-                writeMember(name, object.members().value(name), names.isLast(name), depth);
+                writeMember(name, object.members().value(name), names.lastIs(name), depth);
             }
         }
         writeChildren(object.children(), depth);
@@ -128,7 +128,7 @@ struct YasonWriter::State: public Object::State
             for (const MetaObject &child: children) {
                 writeObject(child, depth + 1);
                 format_ << "\n";
-                if (!children.isLast(child))
+                if (!children.lastIs(child))
                     writeIndent(depth + 1);
             }
         }

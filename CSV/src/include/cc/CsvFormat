@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Format>
+
+namespace cc {
+
+/** \class CsvFormat cc/CsvFormat
+  * \ingroup misc
+  * \brief CSV line output formatter
+  */
+class CsvFormat final: public List<String>
+{
+public:
+    /** Create a new CSV line output formatter
+      */
+    CsvFormat(const Stream &stream = Stream{}):
+        sink_{stream}
+    {}
+
+    ~CsvFormat();
+
+    /** Add a string item
+      */
+    CsvFormat &operator<<(const String &s)
+    {
+        String h = s.replaced("\"", "\"\"");
+        if (h.contains(' ') || h.contains('"')) h = "\"" + h + "\"";
+        append(h);
+        return *this;
+    }
+
+    /** Add an item of a non-string string
+      */
+    template<class T>
+    CsvFormat &operator<<(const T &x)
+    {
+        append(str(x));
+        return *this;
+    }
+
+    /** \copydoc join()
+      */
+    operator String() const { return join(); }
+
+    /** Gather the CSV formatted output line
+      */
+    String join() const { return List<String>::join(',') + "\n"; }
+
+private:
+    Stream sink_;
+};
+
+} // namespace cc

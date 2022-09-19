@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
             for (const List<String> &record: source) {
                 table.append(record);
                 for (const String &item: record) {
-                    ferr() << item << (record.isLast(item) ? "\n" : ", ");
+                    ferr() << item << (record.lastIs(item) ? "\n" : ", ");
                 }
                 CC_CHECK(record.count() == 4);
             }

@@ -109,7 +109,7 @@ struct DependencyCache::State: public Object::State
             const List<String> &dependencyPaths = module.dependencyPaths();
             for (const String &path: dependencyPaths) {
                 text << indent << indent << indent << "\"" << path;
-                if (!dependencyPaths.isLast(path))
+                if (!dependencyPaths.lastIs(path))
                     text << "\",\n";
                 else
                     text << "\"\n";

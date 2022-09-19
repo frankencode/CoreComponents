@@ -162,15 +162,16 @@ public:
     }
 
     /** Tell if \a item is the first item
+      * \todo needs unit test
       */
-    bool isFirst(const Item &item) const
+    bool firstIs(const Item &item) const
     {
         return &item == &first();
     }
 
     /** Tell if \a item is the last item
       */
-    bool isLast(const Item &item) const
+    bool lastIs(const Item &item) const
     {
         return &item == &last();
     }
