@@ -20,8 +20,8 @@ Features
    * built-in web server and client (ccget, ccnode)
    * many more useful tools
 
-Installation
-------------
+Installation from Source
+------------------------
 
 Prerequisites:
  * gcc or compatible compiler (e.g.: gcc, clang/llvm)
@@ -38,8 +38,8 @@ Download the latest stable version:
 ```
 mkdir -p ~/src
 cd ~/src
-curl -L https://www.corecomponents.io/download/CoreComponents-2.1.1.tar.gz | tar xzv
-ln -s ../CoreComponents-2.1.1 CoreComponents
+curl -L https://www.corecomponents.io/download/CoreComponents-2.2.3.tar.gz | tar xzv
+ln -s ../CoreComponents-2.2.3 CoreComponents
 ```
 
 Thereafter bootstrap the build system:

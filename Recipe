@@ -1,4 +1,4 @@
 Package {
-    version: 2.2.2
+    version: 2.2.3
     include: [ Core, Syntax, Glob, Meta, CSV, Network, HTTP, Crypto, Toki, UX, Pulse, Testing, tools ]
 }
