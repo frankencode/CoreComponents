@@ -28,7 +28,7 @@ public:
       * \param run Test function to run
       * \param skip Skip switch
       */
-    TestCase(const String &name, const Fun<void()> &run = nullptr, bool skip = false);
+    explicit TestCase(const String &name, Fun<void()> &&run, bool skip = false);
 
     String name() const { return me().name; }
     bool skip() const { return me().skip; }

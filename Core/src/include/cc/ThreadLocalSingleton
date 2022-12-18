@@ -12,9 +12,9 @@
 
 namespace cc {
 
-/** \class Singleton cc/Singleton
+/** \class ThreadLocalSingleton cc/ThreadLocalSingleton
   * \ingroup objects
-  * \brief %Process-wide singletons
+  * \brief %Thread-local singletons
   */
 class ThreadLocalSingleton: public Object
 {

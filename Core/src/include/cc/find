@@ -23,6 +23,7 @@ public:
       * \param finalIndex return the final index of the search
       * \param order ordering function
       * \return true if a matching item was found, false otherwise
+      * \todo Using the spaceship operator for defining order should improve performance in many cases, especially when comparing strings.
       */
     template<
         class Order = Asc,

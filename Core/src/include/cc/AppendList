@@ -23,7 +23,7 @@ template<class T>
 struct AppendListNode
 {
     T item_;
-    AppendListNode *next_;
+    AppendListNode *next_ { nullptr };
 };
 
 /** \class AppendList cc/AppendList
@@ -236,7 +236,7 @@ public:
 private:
     using Node = typename AppendList<T>::Node;
     AppendList<T> &list_;
-    Node *tailSaved_;
+    Node *tailSaved_ { nullptr };
 };
 
 /** \class AppendListIterator cc/AppendList

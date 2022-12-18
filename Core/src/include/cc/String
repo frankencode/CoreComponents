@@ -409,6 +409,14 @@ public:
         return String{me, i0, i1};
     }
 
+    /** %Return a selection of \a range
+      */
+    String select(Range range)
+    {
+        assert(0 <= range[0] && range[1] <= count());
+        return select(range[0], range[1]);
+    }
+
     /** Select the first \a n characters or less (if \a n > count())
       */
     String selectHead(long n)
@@ -875,7 +883,7 @@ public:
     using value_type = Item; ///< \internal Item value type
     using size_type = long; ///< \internal Type of the container capacity
 
-    /** \name Standard iterators
+    /** \name Standard Iterators
       */
     ///@{
 
@@ -1192,6 +1200,20 @@ inline List<String> operator+(const char *a, const String &b)
 inline List<String> operator+(const String &a, const char *b)
 {
     return a + String{b};
+}
+
+/** %String concatenation operator
+  */
+inline List<String> operator+(const String &a, char b)
+{
+    return a + String::allocate(1, b);
+}
+
+/** %String concatenation operator
+  */
+inline List<String> operator+(char a, const String &b)
+{
+    return String::allocate(1, a) + b;
 }
 
 inline String &String::operator+=(char b)

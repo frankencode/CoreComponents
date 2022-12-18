@@ -11,8 +11,8 @@
 
 namespace cc {
 
-TestCase::TestCase(const String &name, const Fun<void()> &run, bool skip):
-    me{name, run, skip}
+TestCase::TestCase(const String &name, Fun<void()> &&run, bool skip):
+    me{name, std::move(run), skip}
 {
     TestSuite{}.appendTestCase(*this);
 }

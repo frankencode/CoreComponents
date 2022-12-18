@@ -38,7 +38,7 @@ public:
     Node *node_;
 };
 
-class Branch: public Node
+class Branch final: public Node
 {
 public:
     Branch() { isBranch_ = true; }
@@ -70,7 +70,7 @@ private:
 };
 
 template<class Item>
-class Leaf: public Node
+class Leaf final: public Node
 {
 public:
     Leaf() = default;

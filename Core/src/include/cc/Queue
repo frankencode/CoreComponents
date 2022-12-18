@@ -217,7 +217,7 @@ public:
     using value_type = Item; ///< \internal Item value type
     using size_type = long; ///< \internal Type of the container capacity
 
-    /** \name Standard iterators
+    /** \name Standard Iterators
       */
     ///@{
 

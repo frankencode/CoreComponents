@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cassert>
 
 namespace cc {
 
@@ -185,15 +186,34 @@ private:
 /** Get bits \a i to \a j in \a word
   */
 template<unsigned j, unsigned i = j, class T>
-Bit<T, j, i> bit(T &word) {
+inline Bit<T, j, i> bit(T &word)
+{
     return Bit<T, j, i>{word};
 }
 
 /** Get bits \a i to \a j in \a word
   */
 template<unsigned j, unsigned i = j, class T>
-Bit<const T, j, i> bit(const T &word) {
+inline Bit<const T, j, i> bit(const T &word)
+{
     return Bit<const T, j, i>{word};
+}
+
+/** Get bitmask of \a n bits
+  */
+template<class T>
+inline T bitmask(unsigned n)
+{
+    return (~T{}) >> (8 * sizeof(T) - n);
+}
+
+/** Get bits \a i to \a j in \a word
+  */
+template<class T>
+inline T bit(unsigned i, unsigned j, const T &word)
+{
+    assert(i <= j);
+    return (word >> i) & bitmask<T>(j - i + 1);
 }
 
 /** @}

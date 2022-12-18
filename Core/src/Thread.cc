@@ -108,8 +108,7 @@ void Thread::sleep(double duration)
 void Thread::sleepUntil(double time)
 {
     double now = System::now();
-    if (time <= now) return;
-    sleep(now - time);
+    if (time > now) sleep(time - now);
 }
 
 void Thread::blockSignals(const SignalSet &set)

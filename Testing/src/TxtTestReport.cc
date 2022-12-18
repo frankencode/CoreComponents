@@ -24,7 +24,7 @@ struct TxtTestReport::State: public TestReport::State
 
     void beginTestCase(const TestCase &testCase) override
     {
-        fout("%%: %%::run()\n") << TestSuite{}.name() << testCase.name();
+        fout("%%.%%\n") << TestSuite{}.name() << testCase.name();
         fout("...........................................................\n");
     }
 

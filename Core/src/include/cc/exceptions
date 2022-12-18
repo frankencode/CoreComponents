@@ -161,6 +161,9 @@ private:
 #define CC_DEBUG_ERROR(reason) \
     throw DebugError(reason, __FILE__, __LINE__)
 
+#define CC_ASSERT(condition) \
+    if (!(condition)) CC_DEBUG_ERROR(#condition);
+
 /** \class Error cc/exceptions
   * \ingroup exceptions
   * \brief Generic application error

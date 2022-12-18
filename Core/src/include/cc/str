@@ -324,6 +324,15 @@ inline String str(const Range &range)
     return f;
 }
 
+template<class T, unsigned j, unsigned i>
+class Bit;
+
+template<class T, unsigned j, unsigned i = j>
+inline String str(const Bit<T, j, i> & bit)
+{
+    return str(static_cast<T>(bit));
+}
+
 ///@}
 
 } // namespace cc

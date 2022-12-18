@@ -187,7 +187,7 @@ protected:
         /** Initialize internal state
           * \param entry %Entry point for syntax production
           */
-        State(const SyntaxRule *entry):
+        explicit State(const SyntaxRule *entry):
             entry_{entry}
         {}
 

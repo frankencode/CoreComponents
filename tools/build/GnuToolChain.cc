@@ -149,6 +149,19 @@ struct GnuToolChain::State: public ToolChain::State
             if (cygwin_) modulePath = modulePath + ".exe";
         }
         else {
+            // disambiguate same source file names in different sub-directories
+            {
+                String sourcePath = parts.at(0);
+                if (sourcePath.startsWith(plan.projectPath())) {
+                    sourcePath = sourcePath.copy(plan.projectPath().count() + 1, sourcePath.count());
+                    if (sourcePath.contains('/')) {
+                        sourcePath = sourcePath.cdUp();
+                        sourcePath.replace('/', '_');
+                        modulePath = sourcePath + '_' + modulePath;
+                    }
+                }
+            }
+
             modulePath = plan.modulePath(modulePath);
         }
         return Module{job.command(), modulePath, parts, true};
