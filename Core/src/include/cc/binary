@@ -183,20 +183,13 @@ private:
     const T word_;
 };
 
-/** Get bits \a i to \a j in \a word
+/** Access bits \a i to \a j in \a word
   */
-template<unsigned j, unsigned i = j, class T>
-inline Bit<T, j, i> bit(T &word)
+template<unsigned j, unsigned i = j, class T, class V>
+inline void bitAssign(T &word, V newValue)
 {
-    return Bit<T, j, i>{word};
-}
-
-/** Get bits \a i to \a j in \a word
-  */
-template<unsigned j, unsigned i = j, class T>
-inline Bit<const T, j, i> bit(const T &word)
-{
-    return Bit<const T, j, i>{word};
+    static_assert(sizeof(V) * 8 >= j - i + 1, "bit range to small for given value type");
+    Bit<T, j, i>{word} = newValue;
 }
 
 /** Get bitmask of \a n bits
@@ -210,10 +203,20 @@ inline T bitmask(unsigned n)
 /** Get bits \a i to \a j in \a word
   */
 template<class T>
-inline T bit(unsigned i, unsigned j, const T &word)
+inline T bit(unsigned j, unsigned i, const T &word)
 {
     assert(i <= j);
     return (word >> i) & bitmask<T>(j - i + 1);
+}
+
+/** Get bits \a i to \a j in \a word
+  */
+template<unsigned j, unsigned i = j, class T>
+inline T bit(const T &word)
+{
+    static_assert(j < 8 * sizeof(T), "invalid bit range");
+    static_assert(i <= j, "invalid bit range");
+    return bit(j, i, word);
 }
 
 /** @}

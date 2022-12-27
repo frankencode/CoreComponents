@@ -569,6 +569,25 @@ public:
         return Array{me, i0, i1};
     }
 
+    /** %Return a selection of range [\a i0, \a i1) in \a target
+      * \note This method is more efficient than select().
+      */
+    Array &selectAs(long i0, long i1, Out<Array> target)
+    {
+        assert(0 <= i0 && i0 <= i1 && i1 <= count());
+        if (i0 == 0 && i1 == count()) return *this;
+
+        State &targetState = target->me();
+        targetState.~State();
+        targetState.count = i1 - i0;
+        targetState.isMapped = 0;
+        targetState.isWrapped = 0;
+        targetState.items = me().items + i0;
+        targetState.parent = me;
+
+        return *target;
+    }
+
     /** Select the first \a n items or less (if \a n > count())
       */
     Array selectHead(long n)

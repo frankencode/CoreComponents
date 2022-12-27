@@ -1,0 +1,126 @@
+/*
+ * Copyright (C) 2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Shared>
+#include <cstdint>
+#include <cassert>
+#include <cstring>
+
+namespace cc {
+
+class BitArray;
+
+/** \class BitArray cc/BitArray
+  * \brief Array of bits
+  */
+class BitArray final
+{
+public:
+    /** Create a new bit array of \a n bits preset to \a on
+      */
+    explicit BitArray(long n, bool on = false):
+        me{n, on}
+    {}
+
+    /** Set all bits to \a on
+      */
+    void fill(bool on)
+    {
+        me().fill(on);
+    }
+
+    /** \brief Provide access to a single bit in a BitArray
+      */
+    class Access
+    {
+    public:
+        void operator=(bool on) const
+        {
+            if (value() != on) toggle();
+        }
+
+        void toggle() const
+        {
+            *byte_ ^= (1u << shift_);
+        }
+
+        operator bool() const
+        {
+            return value();
+        }
+
+    private:
+        friend class BitArray;
+
+        Access(uint8_t *const byte, const unsigned shift):
+            byte_{byte}, shift_{shift}
+        {}
+
+        bool value() const
+        {
+            return *byte_ & (1u << shift_);
+        }
+
+        uint8_t *const byte_;
+        const unsigned shift_;
+    };
+
+    /** Read the bit at index \a i
+      */
+    bool operator[](long i) const
+    {
+        assert(0 <= i && i < me().n_);
+        return me().bytes_[i >> 3] & (1u << (i & 7));
+    }
+
+    /** Access the bit at index \a i
+      */
+    Access operator[](long i)
+    {
+        assert(0 <= i && i < me().n_);
+        return Access{me().bytes_ + (i >> 3), static_cast<unsigned>(i & 7)};
+    }
+
+    /** Number of bits
+      */
+    long count() const
+    {
+        return me().n_;
+    }
+
+private:
+    struct State
+    {
+        uint8_t *bytes_;
+        long n_;
+
+        State(long n, bool on):
+            n_{n}
+        {
+            long m = (n + 7) >> 3;
+            bytes_ = new uint8_t[m];
+            std::memset(bytes_, on ? 0xFF : 0, m);
+        }
+
+        ~State()
+        {
+            delete[] bytes_;
+        }
+
+        void fill(bool on)
+        {
+            std::memset(bytes_, on ? 0xFF : 0, (n_ + 7) >> 3);
+        }
+    };
+
+    Shared<State> me;
+};
+
+} // namespace cc
