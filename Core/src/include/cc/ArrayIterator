@@ -12,6 +12,24 @@
 
 namespace cc {
 
+/** \brief Policy for selecting the item access type
+  */
+template<class Container>
+class ArrayIteratorItemAccess
+{
+public:
+    /** Item access type
+      */
+    using Type = typename Container::Item &;
+};
+
+template<class Container>
+class ArrayIteratorItemAccess<const Container>
+{
+public:
+    using Type = const typename Container::Item &;
+};
+
 /** \class ArrayIterator cc/ArrayIterator
   * \brief %Array iterator
   * \tparam Container Container type
@@ -40,7 +58,7 @@ public:
 
     /** Get access to current item value
       */
-    auto &operator*() const { return c_.at(i_); }
+    ArrayIteratorItemAccess<Container>::Type operator*() const { return c_.at(i_); }
 
     /** Step to the next item and return the old iterator value (postfix increment operator)
       */

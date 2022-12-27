@@ -8,49 +8,60 @@
 
 #pragma once
 
+#include <cc/ArrayIterator>
 #include <cc/Shared>
 #include <cstdint>
-#include <cassert>
 #include <cstring>
+#include <cassert>
 
 namespace cc {
 
 class BitArray;
 
+template<>
+class ArrayIteratorItemAccess<BitArray>;
+
 /** \class BitArray cc/BitArray
-  * \brief Array of bits
+  * \brief %Array of bits
+  * \ingroup container_lowlevel
   */
 class BitArray final
 {
 public:
+    using Item = bool; ///< Item type
+
+    /** Create an empty bit array
+      */
+    BitArray()
+    {}
+
     /** Create a new bit array of \a n bits preset to \a on
       */
     explicit BitArray(long n, bool on = false):
         me{n, on}
     {}
 
-    /** Set all bits to \a on
-      */
-    void fill(bool on)
-    {
-        me().fill(on);
-    }
-
     /** \brief Provide access to a single bit in a BitArray
       */
     class Access
     {
     public:
+        /** %Set bit to \a on
+          */
         void operator=(bool on) const
         {
             if (value() != on) toggle();
         }
 
+        /** Toggle bit and return its new value
+          */
         void toggle() const
         {
             *byte_ ^= (1u << shift_);
         }
 
+        /** Get bit value
+          */
         operator bool() const
         {
             return value();
@@ -72,22 +83,6 @@ public:
         const unsigned shift_;
     };
 
-    /** Read the bit at index \a i
-      */
-    bool operator[](long i) const
-    {
-        assert(0 <= i && i < me().n_);
-        return me().bytes_[i >> 3] & (1u << (i & 7));
-    }
-
-    /** Access the bit at index \a i
-      */
-    Access operator[](long i)
-    {
-        assert(0 <= i && i < me().n_);
-        return Access{me().bytes_ + (i >> 3), static_cast<unsigned>(i & 7)};
-    }
-
     /** Number of bits
       */
     long count() const
@@ -95,18 +90,142 @@ public:
         return me().n_;
     }
 
+    /** Check if \a i is a valid index
+      */
+    bool has(long i) const
+    {
+        return i < count() && 0 <= i;
+    }
+
+    /** Check if this bit array is non-empty
+      */
+    explicit operator bool() const { return count() > 0; }
+
+    /** \copydoc count()
+      */
+    long operator+() const { return count(); }
+
+    /** Read the bit at index \a i
+      */
+    bool at(long i) const
+    {
+        assert(has(i));
+        return me().bytes_[i >> 3] & (1u << (i & 7));
+    }
+
+    /** %Access the bit at index \a i
+      */
+    Access at(long i)
+    {
+        assert(has(i));
+        return {me().bytes_ + (i >> 3), static_cast<unsigned>(i & 7)};
+    }
+
+    /** \copydoc at(long) const
+      */
+    bool operator[](long i) const
+    {
+        assert(has(i));
+        return me().bytes_[i >> 3] & (1u << (i & 7));
+    }
+
+    /** \copydoc at(long)
+      */
+    Access operator[](long i)
+    {
+        assert(has(i));
+        return {me().bytes_ + (i >> 3), static_cast<unsigned>(i & 7)};
+    }
+
+    /** %Set all bits to \a on
+      */
+    void fill(bool on)
+    {
+        me().fill(on);
+    }
+
+    /** Create a deep copy of this array
+      */
+    BitArray copy() const
+    {
+        return BitArray{*this, CopyHint{}};
+    }
+
+    using iterator = ArrayIterator<BitArray, 1>; ///< \internal Value iterator
+    using const_iterator = ArrayIterator<const BitArray, 1>; ///< \internal Readonly value iterator
+    using reverse_iterator = ArrayIterator<BitArray, -1>; ///< \internal Reverse value iterator
+    using const_reverse_iterator = ArrayIterator<const BitArray, -1>; ///< \internal Readonly reverse value iterator
+    using value_type = Item; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
+
+    /** \name Standard Iterators
+      */
+    ///@{
+
+    iterator begin(); ///< %Return iterator pointing to the first item (if any)
+    iterator end  (); ///< %Return iterator pointing behind the last item
+
+    const_iterator begin () const; ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const; ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const; ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const; ///< %Return readonly iterator pointing behind the last item
+
+    reverse_iterator rbegin(); ///< %Return reverse iterator pointing to the last item (if any)
+    reverse_iterator rend  (); ///< %Return reverse iterator pointing before the first item
+
+    const_reverse_iterator rbegin () const; ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const; ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const; ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const; ///< %Return reverse iterator pointing before the first item
+
+    ///@}
+
+    /** \name Comparism Operators
+      */
+    ///@{
+
+    /** Equal to operator
+      */
+    bool operator==(const BitArray &other) const
+    {
+        const State &a = me();
+        const State &b = other.me();
+        return a.n_ == b.n_ && std::memcmp(a.bytes_, b.bytes_, a.n_ >> 3) == 0;
+    }
+
+    /** Not equal to operator
+      */
+    bool operator!=(const BitArray &other) const
+    {
+        const State &a = me();
+        const State &b = other.me();
+        return a.n_ != b.n_ || std::memcmp(a.bytes_, b.bytes_, a.n_ >> 3) != 0;
+    }
+    ///@}
+
 private:
     struct State
     {
         uint8_t *bytes_;
         long n_;
 
+        State():
+            bytes_ { nullptr },
+            n_ { 0 }
+        {}
+
         State(long n, bool on):
+            bytes_{new uint8_t[(n + 7) >> 3]},
             n_{n}
         {
-            long m = (n + 7) >> 3;
-            bytes_ = new uint8_t[m];
-            std::memset(bytes_, on ? 0xFF : 0, m);
+            fill(on);
+        }
+
+        State(const State &other):
+            bytes_{new uint8_t[(other.n_ + 7) >> 3]},
+            n_{other.n_}
+        {
+            std::memcpy(bytes_, other.bytes_, (n_ + 7) >> 3);
         }
 
         ~State()
@@ -116,11 +235,43 @@ private:
 
         void fill(bool on)
         {
-            std::memset(bytes_, on ? 0xFF : 0, (n_ + 7) >> 3);
+            if (n_ > 0) {
+                std::memset(bytes_, on ? 0xFF : 0, (n_ + 7) >> 3);
+                if (on) bytes_[((n_ + 7) >> 3) - 1] >>= (7 - (n_ & 7u));
+            }
         }
     };
 
+    struct CopyHint {};
+
+    explicit BitArray(const BitArray &other, CopyHint):
+        me{other.me()}
+    {}
+
     Shared<State> me;
 };
+
+template<>
+class ArrayIteratorItemAccess<BitArray>
+{
+public:
+    using Type = typename BitArray::Access;
+};
+
+inline BitArray::iterator BitArray::begin() { return iterator{*this, 0}; }
+inline BitArray::iterator BitArray::end  () { return iterator{*this, count()}; }
+
+inline BitArray::const_iterator BitArray::begin () const { return const_iterator{*this, 0}; }
+inline BitArray::const_iterator BitArray::cbegin() const { return const_iterator{*this, 0}; }
+inline BitArray::const_iterator BitArray::end   () const { return const_iterator{*this, count()}; }
+inline BitArray::const_iterator BitArray::cend  () const { return const_iterator{*this, count()}; }
+
+inline BitArray::reverse_iterator BitArray::rbegin() { return reverse_iterator{*this, count() - 1}; }
+inline BitArray::reverse_iterator BitArray::rend  () { return reverse_iterator{*this, -1}; }
+
+inline BitArray::const_reverse_iterator BitArray::rbegin () const { return const_reverse_iterator{*this, count() - 1}; }
+inline BitArray::const_reverse_iterator BitArray::crbegin() const { return const_reverse_iterator{*this, count() - 1}; }
+inline BitArray::const_reverse_iterator BitArray::rend   () const { return const_reverse_iterator{*this, -1}; }
+inline BitArray::const_reverse_iterator BitArray::crend  () const { return const_reverse_iterator{*this, -1}; }
 
 } // namespace cc
