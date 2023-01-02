@@ -439,25 +439,25 @@ LineEdit &LineEdit::trailing(const View &view)
     return *this;
 }
 
-LineEdit &LineEdit::onAccepted(Fun<void()> &&f)
+LineEdit &LineEdit::onAccepted(Function<void()> &&f)
 {
     me().input_.onAccepted(move(f));
     return *this;
 }
 
-LineEdit &LineEdit::onRejected(Fun<void()> &&f)
+LineEdit &LineEdit::onRejected(Function<void()> &&f)
 {
     me().input_.onRejected(move(f));
     return *this;
 }
 
-LineEdit &LineEdit::accept(Fun<bool()> &&f)
+LineEdit &LineEdit::accept(Function<bool()> &&f)
 {
     me().input_.accept(move(f));
     return *this;
 }
 
-LineEdit &LineEdit::filter(Fun<bool(Range range, InOut<String>)> &&f)
+LineEdit &LineEdit::filter(Function<bool(Range range, InOut<String>)> &&f)
 {
     me().input_.filter(move(f));
     return *this;

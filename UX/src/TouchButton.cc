@@ -144,13 +144,13 @@ TouchButton &TouchButton::autoExpand(bool on)
     return *this;
 }
 
-TouchButton &TouchButton::onTriggered(Fun<void()> &&f)
+TouchButton &TouchButton::onTriggered(Function<void()> &&f)
 {
     me().onClicked(move(f));
     return *this;
 }
 
-TouchButton &TouchButton::operator()(Fun<void()> &&f)
+TouchButton &TouchButton::operator()(Function<void()> &&f)
 {
     me().onClicked(move(f));
     return *this;

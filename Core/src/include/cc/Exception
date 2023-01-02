@@ -13,11 +13,13 @@
 
 namespace cc {
 
+using StdException = std::exception;
+
 /** \class Exception cc/Exception
   * \ingroup exceptions
   * \brief %Abstract base class for exceptions
   */
-class Exception: public std::exception
+class Exception: public StdException
 {
 public:
     /** Generate error message for debug output

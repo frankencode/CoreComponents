@@ -12,7 +12,7 @@
 #include <cc/Signal>
 #include <cc/SystemError>
 #include <cc/Object>
-#include <cc/Fun>
+#include <cc/Function>
 #include <functional>
 #include <sched.h>
 
@@ -44,11 +44,16 @@ public:
       * \param f Entry point for thread execution
       * \param stackSize Size of stack to allocate for the new thread (-1 for system default)
       */
-    explicit Thread(Fun<void()> &&f, long stackSize = -1);
+    explicit Thread(Function<void()> &&f, long stackSize = -1);
 
     /** Start the thread
       */
     void start();
+
+    /** Tell if the thread has been started
+      * \note It is safe to invoke this method on a null thread, in which case it returns false.
+      */
+    bool started() const;
 
     /** Wait for the thread to finish its execution
       */

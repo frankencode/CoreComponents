@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/String>
-#include <cc/Fun>
+#include <cc/Function>
 #include <cstdint>
 
 namespace cc {
@@ -21,15 +21,15 @@ struct VariantType
 struct TypeInfo {
     const char *typeName;
 
-    Fun<String(const void *)> str;
+    Function<String(const void *)> str;
 
-    Fun<void(void *)> cleanup = [](void *){};
+    Function<void(void *)> cleanup = [](void *){};
 
-    Fun<void(void *, const void *)> assign = [](void *dst, const void *src){
+    Function<void(void *, const void *)> assign = [](void *dst, const void *src){
         *static_cast<uint64_t *>(dst) = *static_cast<const uint64_t *>(src);
     };
 
-    Fun<bool(const void *, const void *)> equal = [](const void *, const void *) {
+    Function<bool(const void *, const void *)> equal = [](const void *, const void *) {
         return false;
     };
 };

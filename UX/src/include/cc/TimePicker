@@ -39,8 +39,8 @@ public:
     TimePicker &minute(double newValue); ///< %Set minute [0..59]
     int minute() const; ///< Get minute [0..59]
 
-    TimePicker &onAccepted(Fun<void()> &&f); ///< %Handle input accepted event
-    TimePicker &onRejected(Fun<void()> &&f); ///< %Handle input accepted event
+    TimePicker &onAccepted(Function<void()> &&f); ///< %Handle input accepted event
+    TimePicker &onRejected(Function<void()> &&f); ///< %Handle input accepted event
 
 private:
     struct State;

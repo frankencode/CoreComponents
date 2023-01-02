@@ -11,7 +11,7 @@
 #include <cc/TlsClientOptions>
 #include <cc/TlsStream>
 #include <cc/TlsCertificateError>
-#include <cc/Fun>
+#include <cc/Function>
 
 namespace cc {
 
@@ -38,7 +38,7 @@ public:
 
     /** %Set TLS warning callback to \a f
       */
-    void onTlsWarning(Fun<void(const char *errorName)> &&f);
+    void onTlsWarning(Function<void(const char *errorName)> &&f);
 
 private:
     struct State;

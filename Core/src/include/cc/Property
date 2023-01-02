@@ -18,7 +18,7 @@ namespace cc {
   * \tparam T %Property value type
   */
 template<class T>
-using Definition = Fun<T()>;
+using Definition = Function<T()>;
 
 template<class T>
 class PropertyMutator;
@@ -53,7 +53,7 @@ public:
 
     /** Create property with defining function \a f
       */
-    explicit Property(Fun<T()> &&f):
+    explicit Property(Function<T()> &&f):
         me{new State{this}}
     {
         define(move(f));
@@ -111,7 +111,7 @@ public:
 
     /** %Set a new defining function \a f
       */
-    void define(Fun<T()> &&f)
+    void define(Function<T()> &&f)
     {
         me().clearDependencies();
         me().f_ = f;
@@ -129,7 +129,7 @@ public:
 
     /** \copydoc define()
       */
-    void operator()(Fun<T()> &&f)
+    void operator()(Function<T()> &&f)
     {
         return define(move(f));
     }
@@ -139,14 +139,14 @@ public:
       * It returns true if the value change is allowed to take place.
       * The restrictor function can also modify the new value.
       */
-    void restrict(Fun<bool(T&, T)> &&g)
+    void restrict(Function<bool(T&, T)> &&g)
     {
         me().g_ = g;
     }
 
     /** Register function \a f to be called when the property value changes
       */
-    void onChanged(Fun<void()> &&f) const
+    void onChanged(Function<void()> &&f) const
     {
         if (me().dirty_) me.mutate().cascade();
         return me().changed.connect(move(f));
@@ -252,7 +252,7 @@ private:
         {
             if (f_) {
                 clearDependencies();
-                f_ = Fun<T()>{};
+                f_ = Function<T()>{};
             }
             establish(newValue);
         }
@@ -279,8 +279,8 @@ private:
         }
 
         mutable T value_;
-        Fun<T()> f_;
-        Fun<bool(T&, T)> g_;
+        Function<T()> f_;
+        Function<bool(T&, T)> g_;
     };
 
     Handle<State> me;
@@ -347,7 +347,7 @@ public:
 
     /** Set a new defining function \a f
       */
-    void define(Fun<void()> &&f)
+    void define(Function<void()> &&f)
     {
         me().clearDependencies();
 
@@ -362,21 +362,21 @@ public:
 
     /** \copydoc define()
       */
-    void operator()(Fun<void()> &&f)
+    void operator()(Function<void()> &&f)
     {
         return define(move(f));
     }
 
     /** Setup restrictor function \a g
       */
-    void restrict(Fun<bool()> &&g)
+    void restrict(Function<bool()> &&g)
     {
         me().g_ = g;
     }
 
     /** Register function \a f to be called when the property value has been reevaluated
       */
-    void onChanged(Fun<void()> &&f) const
+    void onChanged(Function<void()> &&f) const
     {
         if (me().dirty_) me.mutate().cascade();
         me.mutate().changed.connect(move(f));
@@ -407,8 +407,8 @@ private:
             }
         }
 
-        Fun<void()> f_;
-        Fun<bool()> g_;
+        Function<void()> f_;
+        Function<bool()> g_;
     };
 
     Handle<State> me;
@@ -422,10 +422,10 @@ protected:
 
 class OnScopeExit {
 public:
-    OnScopeExit (const Fun<void()> &f): f_{f} {}
+    OnScopeExit (const Function<void()> &f): f_{f} {}
     ~OnScopeExit() { f_(); }
 private:
-    Fun<void()> f_;
+    Function<void()> f_;
 };
 
 template<class T>

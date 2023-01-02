@@ -54,7 +54,7 @@ public:
 
     double value() const; ///< Get current value
     NumberCell &value(double newValue); ///< %Set current value
-    NumberCell &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
+    NumberCell &onValueChanged(Function<void()> &&f); ///< Get notified when value changes
 
     bool textInput() const; ///< Tell if text input is enabled (enabled by default)
     NumberCell &textInput(bool newValue); ///< Enable/disable text input
@@ -68,8 +68,8 @@ public:
     NumberCell& color(Color newValue); ///< %Set cell color
     NumberCell& color(Definition<Color> &&f); ///< Define cell color
 
-    NumberCell &onAccepted(Fun<void()> &&f); ///< %Input accepted
-    NumberCell &onRejected(Fun<void()> &&f); ///< %Input rejected
+    NumberCell &onAccepted(Function<void()> &&f); ///< %Input accepted
+    NumberCell &onRejected(Function<void()> &&f); ///< %Input rejected
 
 private:
     friend class Object;

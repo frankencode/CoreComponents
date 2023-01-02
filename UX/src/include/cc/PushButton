@@ -57,11 +57,11 @@ public:
 
     /** %Setup callback to be called when the button is pressed
       */
-    PushButton &onTriggered(Fun<void()> &&f);
+    PushButton &onTriggered(Function<void()> &&f);
 
     /** \copydoc onTriggered()
       */
-    PushButton &operator()(Fun<void()> &&f);
+    PushButton &operator()(Function<void()> &&f);
 
 protected:
     struct State;

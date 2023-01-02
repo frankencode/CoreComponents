@@ -231,7 +231,7 @@ inline String str(TouchButtonStyle style)
 
 /** Check if a text can be wrapped behind a certain text fragment
   */
-using TextWrapBehind = Fun<bool(const String &/*text*/, long /*byteOffset*/, long /*byteCount*/)>;
+using TextWrapBehind = Function<bool(const String &/*text*/, long /*byteOffset*/, long /*byteCount*/)>;
 
 /** Check if \a text can be wrapped behind a text fragment
   * \param text Text to be wrapped

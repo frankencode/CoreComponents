@@ -28,7 +28,7 @@ struct Easing
       * \tparam T %Property value type
       */
     template<class T>
-    Easing(Property<T> &property, const EasingCurve &curve, double duration, Fun<bool()> &&direct = nullptr)
+    Easing(Property<T> &property, const EasingCurve &curve, double duration, Function<bool()> &&direct = nullptr)
     {
         Transition<T>{property, curve, duration, move(direct)};
     }

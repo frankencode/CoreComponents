@@ -221,7 +221,7 @@ NumberInput &NumberInput::value(double newValue)
     return *this;
 }
 
-NumberInput &NumberInput::onValueChanged(Fun<void()> &&f)
+NumberInput &NumberInput::onValueChanged(Function<void()> &&f)
 {
     me().value.onChanged(move(f));
     return *this;

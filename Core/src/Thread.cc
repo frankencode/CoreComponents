@@ -11,11 +11,14 @@
 #include <cmath> // std::modf(3)
 #include <utility>
 #include <cassert>
+#include <type_traits>
 #include <limits.h> // PTHREAD_STACK_*
 #include <time.h> // nanosleep(2)
 #include <pthread.h>
 
 namespace cc {
+
+static_assert(std::is_fundamental<pthread_t>());
 
 struct Thread::State: public Object::State
 {
@@ -25,7 +28,7 @@ struct Thread::State: public Object::State
         return self;
     }
 
-    State(Fun<void()> &&f, long stackSize):
+    State(Function<void()> &&f, long stackSize):
         f_{f}
     {
         {
@@ -40,18 +43,18 @@ struct Thread::State: public Object::State
         }
     }
 
-    inline void start()
+    void start()
     {
         int ret = pthread_create(&tid_, &attr_, &bootstrap, static_cast<void *>(this));
         if (ret != 0) CC_SYSTEM_DEBUG_ERROR(ret);
     }
 
     pthread_attr_t attr_;
-    pthread_t tid_;
-    Fun<void()> f_;
+    pthread_t tid_ = pthread_t{};
+    Function<void()> f_;
 };
 
-Thread::Thread(Fun<void()> &&f, long stackSize):
+Thread::Thread(Function<void()> &&f, long stackSize):
     Object{new State{move(f), stackSize}}
 {}
 
@@ -59,6 +62,11 @@ void Thread::start()
 {
     assert(!isNull());
     me().start();
+}
+
+bool Thread::started() const
+{
+    return !isNull() && me().tid_ != pthread_t{};
 }
 
 void Thread::wait()

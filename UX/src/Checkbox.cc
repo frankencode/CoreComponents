@@ -100,7 +100,7 @@ Checkbox &Checkbox::value(bool newValue)
     return *this;
 }
 
-Checkbox &Checkbox::onValueChanged(Fun<void()> &&f)
+Checkbox &Checkbox::onValueChanged(Function<void()> &&f)
 {
     me().checkbox_.onValueChanged(move(f));
     return *this;

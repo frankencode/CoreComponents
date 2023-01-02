@@ -563,13 +563,13 @@ TextInput &TextInput::sizerText(Definition<String> &&f)
     return *this;
 }
 
-TextInput &TextInput::accept(Fun<bool()> &&f)
+TextInput &TextInput::accept(Function<bool()> &&f)
 {
     me().accept_ = move(f);
     return *this;
 }
 
-TextInput &TextInput::filter(Fun<bool(Range range, InOut<String>)> &&f)
+TextInput &TextInput::filter(Function<bool(Range range, InOut<String>)> &&f)
 {
     me().filter_ = move(f);
     return *this;

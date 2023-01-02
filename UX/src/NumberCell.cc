@@ -201,7 +201,7 @@ NumberCell &NumberCell::value(double newValue)
     return *this;
 }
 
-NumberCell &NumberCell::onValueChanged(Fun<void()> &&f)
+NumberCell &NumberCell::onValueChanged(Function<void()> &&f)
 {
     me().input_.onValueChanged(move(f));
     return *this;
@@ -258,13 +258,13 @@ NumberCell& NumberCell::color(Definition<Color> &&f)
     return *this;
 }
 
-NumberCell &NumberCell::onAccepted(Fun<void()> &&f)
+NumberCell &NumberCell::onAccepted(Function<void()> &&f)
 {
     me().input_.onAccepted(move(f));
     return *this;
 }
 
-NumberCell &NumberCell::onRejected(Fun<void()> &&f)
+NumberCell &NumberCell::onRejected(Function<void()> &&f)
 {
     me().input_.onAccepted(move(f));
     return *this;

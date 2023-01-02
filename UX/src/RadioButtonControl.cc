@@ -106,7 +106,7 @@ RadioButtonControl &RadioButtonControl::value(bool newValue)
     return *this;
 }
 
-RadioButtonControl &RadioButtonControl::onSelected(Fun<void()> &&f)
+RadioButtonControl &RadioButtonControl::onSelected(Function<void()> &&f)
 {
     me().onSelected(move(f));
     return *this;

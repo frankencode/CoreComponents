@@ -35,7 +35,7 @@ void IoMonitor::unwatch(const IoStream &target)
     me().subjects.remove(target.fd());
 }
 
-bool IoMonitor::wait(const Fun<void(const IoActivity &)> &onReady, int timeout)
+bool IoMonitor::wait(const Function<void(const IoActivity &)> &onReady, int timeout)
 {
     assert(me().subjects.count() > 0);
 

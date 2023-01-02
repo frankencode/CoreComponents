@@ -364,7 +364,7 @@ bool Application::pointerIsDragged(const PointerEvent &event, Point dragStart) c
     return (event.pos() - dragStart).absPow2() >= minDragDistance * minDragDistance;
 }
 
-void Application::postEvent(Fun<void()> &&doNext)
+void Application::postEvent(Function<void()> &&doNext)
 {
     me().postEvent(move(doNext));
 }

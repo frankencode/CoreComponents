@@ -23,8 +23,8 @@ public:
       */
     InputControl() = default;
 
-    InputControl &onAccepted(Fun<void()> &&f) { me().onAccepted(move(f)); return *this; } ///< %Input accepted
-    InputControl &onRejected(Fun<void()> &&f) { me().onRejected(move(f)); return *this; } ///< %Input rejected
+    InputControl &onAccepted(Function<void()> &&f) { me().onAccepted(move(f)); return *this; } ///< %Input accepted
+    InputControl &onRejected(Function<void()> &&f) { me().onRejected(move(f)); return *this; } ///< %Input rejected
 
 protected:
     friend class Object;

@@ -39,7 +39,7 @@ public:
 
     /** Invoke custom initialization function \a f
       */
-    ListView &populate(Fun<void(ListView)> &&f)
+    ListView &populate(Function<void(ListView)> &&f)
     {
         f(grab<ListView>());
         return *this;

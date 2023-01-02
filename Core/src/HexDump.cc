@@ -45,7 +45,7 @@ struct HexDump::State final: public Stream::State
     void flush()
     {
         Format f{sink_};
-        f << hex(offset_, 8) << "  ";
+        f << indent_ << hex(offset_, 8) << "  ";
         for (long j = 0; j < buffer_.count(); ++j) {
             if (j < i_) {
                 uint8_t &ch = buffer_.at(j);
@@ -64,11 +64,23 @@ struct HexDump::State final: public Stream::State
     Bytes buffer_;
     long i_ { 0 };
     long long offset_ { 0 };
+    String indent_;
 };
 
 HexDump::HexDump(const Stream &sink):
     Stream{new State{sink}}
 {}
+
+HexDump &HexDump::indent(const String &prefix)
+{
+    me().indent_ = prefix;
+    return *this;
+}
+
+HexDump::State &HexDump::me()
+{
+    return Object::me.as<State>();
+}
 
 String hexdump(const Bytes &data)
 {

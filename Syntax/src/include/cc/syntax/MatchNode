@@ -20,13 +20,13 @@ class MatchNode final: public SyntaxNode
 public:
     /** \param match Function to use to match the next character (returns true if matches)
       */
-    explicit MatchNode(Fun<bool(char)> &&match);
+    explicit MatchNode(Function<bool(char)> &&match);
 
 private:
     struct State;
 };
 
-inline SyntaxNode::SyntaxNode(Fun<bool(char)> &&match)
+inline SyntaxNode::SyntaxNode(Function<bool(char)> &&match)
 {
     *this = MatchNode{move(match)};
 }

@@ -237,6 +237,14 @@ public:
         return me().insertUnique(item, pos);
     }
 
+    /** Insert an item to the set replacing any pre-existing same value item
+      * \param item Item to add
+      */
+    void establish(const Item &item)
+    {
+        return me().establish(item);
+    }
+
     /** Remove an item from the set
       * \tparam Key Search pattern type
       * \param key Key to search for

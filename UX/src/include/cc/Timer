@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/Object>
-#include <cc/Fun>
+#include <cc/Function>
 
 namespace cc {
 
@@ -35,7 +35,7 @@ public:
 
     /** Register function \a f to be called on timeout
       */
-    Timer &onTimeout(Fun<void()> &&f);
+    Timer &onTimeout(Function<void()> &&f);
 
     /** Start timer
       */

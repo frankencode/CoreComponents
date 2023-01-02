@@ -12,7 +12,7 @@
 #include <cc/pulse/ServerInfo>
 #include <cc/pulse/Error>
 #include <cc/String>
-#include <cc/Fun>
+#include <cc/Function>
 
 namespace cc::pulse {
 
@@ -24,9 +24,9 @@ class Context final: public Object
 public:
     Context(const MainLoop &mainLoop, const String &appName);
 
-    void connect(Fun<void()> &&ready);
+    void connect(Function<void()> &&ready);
 
-    void requestServerInfo(Fun<void(const ServerInfo &)> &&handler);
+    void requestServerInfo(Function<void(const ServerInfo &)> &&handler);
 
     operator pa_context *();
 

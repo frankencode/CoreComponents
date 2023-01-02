@@ -60,7 +60,7 @@ struct Context::State: public Object::State
         static_cast<State *>(userData)->serverInfoReceived_(ServerInfo{serverInfo});
     }
 
-    void requestServerInfo(Fun<void(const ServerInfo &)> &&handler)
+    void requestServerInfo(Function<void(const ServerInfo &)> &&handler)
     {
         serverInfoReceived_ = move(handler);
 
@@ -69,7 +69,7 @@ struct Context::State: public Object::State
         );
     }
 
-    void connect(Fun<void()> &&ready)
+    void connect(Function<void()> &&ready)
     {
         CC_PULSE(pa_context_connect(context_, nullptr, PA_CONTEXT_NOFLAGS, nullptr));
         onReady_ = move(ready);
@@ -79,20 +79,20 @@ struct Context::State: public Object::State
     String appName_;
     pa_context *context_ { nullptr };
 
-    Fun<void()> onReady_;
-    Fun<void(const ServerInfo &)> serverInfoReceived_;
+    Function<void()> onReady_;
+    Function<void(const ServerInfo &)> serverInfoReceived_;
 };
 
 Context::Context(const MainLoop &mainLoop, const String &appName):
     Object{new State{mainLoop, appName}}
 {}
 
-void Context::connect(Fun<void()> &&ready)
+void Context::connect(Function<void()> &&ready)
 {
     me().connect(move(ready));
 }
 
-void Context::requestServerInfo(Fun<void(const ServerInfo &)> &&handler)
+void Context::requestServerInfo(Function<void(const ServerInfo &)> &&handler)
 {
     me().requestServerInfo(move(handler));
 }

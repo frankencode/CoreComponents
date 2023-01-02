@@ -57,7 +57,7 @@ public:
 
     /** %Handle clicked event
       */
-    Control &onClicked(Fun<void()> &&f)
+    Control &onClicked(Function<void()> &&f)
     {
         me().onClicked(move(f));
         return *this;
@@ -105,7 +105,7 @@ protected:
 
         Control self() const { return Object::alias<Control>(this); }
 
-        void onClicked(Fun<void()> &&f) ///< \copydoc Control::onClicked()
+        void onClicked(Function<void()> &&f) ///< \copydoc Control::onClicked()
         {
             onPointerClicked(
                 [f](const PointerEvent &){ f(); return true; }

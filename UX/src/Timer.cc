@@ -17,7 +17,7 @@ Timer::Timer(double interval):
     Object{new State{interval}}
 {}
 
-Timer &Timer::onTimeout(Fun<void()> &&f)
+Timer &Timer::onTimeout(Function<void()> &&f)
 {
     me().timeout_(move(f));
     return *this;

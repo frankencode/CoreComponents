@@ -13,7 +13,7 @@
 #include <cc/SocketAddress>
 #include <cc/HttpRequestGenerator>
 #include <cc/HttpResponse>
-#include <cc/Fun>
+#include <cc/Function>
 
 namespace cc {
 
@@ -50,7 +50,7 @@ public:
 
     /** User-defined generator function
       */
-    using Generate = Fun<void(HttpMessageGenerator &)>;
+    using Generate = Function<void(HttpMessageGenerator &)>;
 
     /** Send out HTTP request and wait for the response
       * \param method HTTP method ("GET", "HEAD", "PUT", "POST" or "DELETE")

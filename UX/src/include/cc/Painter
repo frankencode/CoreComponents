@@ -102,7 +102,7 @@ public:
     Painter &addPath(const Path &path); ///< Add \a path
     ///@}
 
-    using GetColor = Fun<Color(int)> ; ///< Get color for a given byte offset
+    using GetColor = Function<Color(int)> ; ///< Get color for a given byte offset
 
     /** \name Text Rendering
       */

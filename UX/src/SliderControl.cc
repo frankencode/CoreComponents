@@ -301,13 +301,13 @@ SliderControl &SliderControl::value(double newValue)
     return *this;
 }
 
-SliderControl &SliderControl::onValueChanged(Fun<void()> &&f)
+SliderControl &SliderControl::onValueChanged(Function<void()> &&f)
 {
     me().outputValue.onChanged(move(f));
     return *this;
 }
 
-SliderControl &SliderControl::onUserInput(Fun<void()> &&f)
+SliderControl &SliderControl::onUserInput(Function<void()> &&f)
 {
     me().userInput.connect(move(f));
     return *this;

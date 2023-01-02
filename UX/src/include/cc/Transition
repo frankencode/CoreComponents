@@ -15,7 +15,7 @@
 
 namespace cc {
 
-using EasingCurve = Fun<double(double)>;
+using EasingCurve = Function<double(double)>;
 
 /** \internal
   * \todo specialize for Color
@@ -24,7 +24,7 @@ template<class T>
 class Transition final: public Object, private PropertyMutator<T>
 {
 public:
-    Transition(Property<T> &property, const EasingCurve &curve, double duration, Fun<bool()> &&direct = nullptr):
+    Transition(Property<T> &property, const EasingCurve &curve, double duration, Function<bool()> &&direct = nullptr):
         Object{new State{property, curve, move(direct), duration}}
     {
         property.restrict(*this);
@@ -50,7 +50,7 @@ public:
 private:
     struct State final: public Object::State
     {
-        State(Property<T> &property, const EasingCurve &curve, Fun<bool()> &&direct, double duration):
+        State(Property<T> &property, const EasingCurve &curve, Function<bool()> &&direct, double duration):
             alias_{&property},
             curve_{curve},
             direct_{direct},
@@ -90,7 +90,7 @@ private:
 
         Property<T> alias_;
         EasingCurve curve_;
-        Fun<bool()> direct_;
+        Function<bool()> direct_;
         double duration_;
         Timer timer_;
         T oldValue_;

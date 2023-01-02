@@ -121,12 +121,12 @@ struct SdlApplication::State: public Application::State
         SDL_StopTextInput();
     }
 
-    void postEvent(Fun<void()> &&doNext) override
+    void postEvent(Function<void()> &&doNext) override
     {
         SDL_Event event;
         ::memset(&event, 0, sizeof(SDL_Event));
         event.type = userEvent_;
-        event.user.data1 = new Fun<void()>{move(doNext)};
+        event.user.data1 = new Function<void()>{move(doNext)};
         SDL_PushEvent(&event);
     }
 
@@ -146,7 +146,7 @@ struct SdlApplication::State: public Application::State
                 p->~Timer();
             }
             else if (event.type == userEvent_) {
-                Fun<void()> *f = static_cast<Fun<void()> *>(event.user.data1);
+                Function<void()> *f = static_cast<Function<void()> *>(event.user.data1);
                 (*f)();
                 delete f;
             }

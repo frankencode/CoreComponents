@@ -167,13 +167,13 @@ PushButton &PushButton::text(Definition<String> &&f)
     return *this;
 }
 
-PushButton &PushButton::onTriggered(Fun<void()> &&f)
+PushButton &PushButton::onTriggered(Function<void()> &&f)
 {
     me().onClicked(move(f));
     return *this;
 }
 
-PushButton &PushButton::operator()(Fun<void()> &&f)
+PushButton &PushButton::operator()(Function<void()> &&f)
 {
     return onTriggered(move(f));
 }

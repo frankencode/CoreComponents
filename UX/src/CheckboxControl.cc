@@ -141,7 +141,7 @@ CheckboxControl &CheckboxControl::value(bool newValue)
     return *this;
 }
 
-CheckboxControl &CheckboxControl::onValueChanged(Fun<void()> &&f)
+CheckboxControl &CheckboxControl::onValueChanged(Function<void()> &&f)
 {
     me().state.onChanged(move(f));
     return *this;

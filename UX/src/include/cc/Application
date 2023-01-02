@@ -13,7 +13,7 @@
 #include <cc/Cursor>
 #include <cc/Control>
 #include <cc/Singleton>
-#include <cc/Fun>
+#include <cc/Function>
 
 namespace cc {
 
@@ -72,7 +72,7 @@ public:
       * \param doNext %Function which will be evaluated in the application's foreground thread
       * \note This function is thread-safe.
       */
-    void postEvent(Fun<void()> &&doNext);
+    void postEvent(Function<void()> &&doNext);
 
 protected:
     friend class Window;
@@ -120,7 +120,7 @@ protected:
         virtual void setTextInputArea(const Rect &inputArea) = 0;
         virtual void stopTextInput() = 0;
 
-        virtual void postEvent(Fun<void()> &&doNext) = 0;
+        virtual void postEvent(Function<void()> &&doNext) = 0;
         virtual int run() = 0;
 
         virtual String getUserDataPath() const = 0;

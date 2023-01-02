@@ -11,13 +11,13 @@
 #include <cc/TlsServerOptions>
 #include <cc/TlsSessionCache>
 #include <cc/TlsStream>
-#include <cc/Fun>
+#include <cc/Function>
 
 namespace cc {
 
 /** %Function used to select service after TLS client hello
   */
-using TlsServiceSelector = Fun<TlsServerOptions(const String &serverName, const SocketAddress &peerAddress)>;
+using TlsServiceSelector = Function<TlsServerOptions(const String &serverName, const SocketAddress &peerAddress)>;
 
 /** \class TlsServerStream cc/TlsServerStream
   * \ingroup tls

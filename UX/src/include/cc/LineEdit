@@ -61,11 +61,11 @@ public:
     LineEdit &leading(const View &view); ///< %Set leading decoration
     LineEdit &trailing(const View &view); ///< %Set trailing decoration
 
-    LineEdit &onAccepted(Fun<void()> &&f); ///< %Handle input accepted event
-    LineEdit &onRejected(Fun<void()> &&f); ///< %Handle input rejected event
+    LineEdit &onAccepted(Function<void()> &&f); ///< %Handle input accepted event
+    LineEdit &onRejected(Function<void()> &&f); ///< %Handle input rejected event
 
-    LineEdit &accept(Fun<bool()> &&f); ///< %Define acceptable input text
-    LineEdit &filter(Fun<bool(Range range, InOut<String>)> &&f); ///< %Define text input restrictions
+    LineEdit &accept(Function<bool()> &&f); ///< %Define acceptable input text
+    LineEdit &filter(Function<bool(Range range, InOut<String>)> &&f); ///< %Define text input restrictions
 
 protected:
     struct State;

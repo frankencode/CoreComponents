@@ -48,15 +48,15 @@ public:
 
     int hour() const; ///< Get current hour [0..23]
     ClockFace &hour(int newValue); ///< %Set current hour
-    ClockFace &onHourChanged(Fun<void()> &&f); ///< Get notified when current hour changes
+    ClockFace &onHourChanged(Function<void()> &&f); ///< Get notified when current hour changes
 
     int minute() const; ///< Get current minute [0..59]
     ClockFace &minute(int newValue); ///< %Set current minute
-    ClockFace &onMinuteChanged(Fun<void()> &&f); ///< Get notified when current minute changes
+    ClockFace &onMinuteChanged(Function<void()> &&f); ///< Get notified when current minute changes
 
     int second() const; ///< Get current second [0..59]
     ClockFace &second(int newValue); ///< %Set current second
-    ClockFace &onSecondChanged(Fun<void()> &&f); ///< Get notified when current second changes
+    ClockFace &onSecondChanged(Function<void()> &&f); ///< Get notified when current second changes
 
 private:
     struct State;

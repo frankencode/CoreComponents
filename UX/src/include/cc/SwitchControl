@@ -31,8 +31,8 @@ public:
     SwitchControl &value(bool newValue); ///< %Set current state
     SwitchControl &value(Definition<bool> &&f); ///< Define current state
 
-    SwitchControl &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
-    SwitchControl &onUserInput(Fun<void()> &&f); ///< Get notified when value changes due to user interaction
+    SwitchControl &onValueChanged(Function<void()> &&f); ///< Get notified when value changes
+    SwitchControl &onUserInput(Function<void()> &&f); ///< Get notified when value changes due to user interaction
 
 private:
     struct State;

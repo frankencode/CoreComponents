@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/IoStream>
-#include <cc/Fun>
+#include <cc/Function>
 
 namespace cc {
 
@@ -85,7 +85,7 @@ public:
       * \param onReady %Callback function to handle I/O events
       * \param timeout %Timeout in milliseconds (or infinite if < 0)
       */
-    bool wait(const Fun<void(const IoActivity &)> &onReady, int timeout = -1);
+    bool wait(const Function<void(const IoActivity &)> &onReady, int timeout = -1);
 
 private:
     struct State;

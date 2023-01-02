@@ -45,7 +45,7 @@ public:
 
     /** %Set callback to invoke if value() switches to true
       */
-    RadioButton &onSelected(Fun<void()> &&f);
+    RadioButton &onSelected(Function<void()> &&f);
 
 private:
     struct State;

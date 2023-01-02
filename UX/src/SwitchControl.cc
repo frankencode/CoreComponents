@@ -174,13 +174,13 @@ SwitchControl &SwitchControl::value(Definition<bool> &&f)
     return *this;
 }
 
-SwitchControl &SwitchControl::onValueChanged(Fun<void()> &&f)
+SwitchControl &SwitchControl::onValueChanged(Function<void()> &&f)
 {
     me().on.onChanged(move(f));
     return *this;
 }
 
-SwitchControl &SwitchControl::onUserInput(Fun<void()> &&f)
+SwitchControl &SwitchControl::onUserInput(Function<void()> &&f)
 {
     me().userInput.connect(move(f));
     return *this;

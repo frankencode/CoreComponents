@@ -333,13 +333,13 @@ int TimePicker::minute() const
     return me().minute();
 }
 
-TimePicker &TimePicker::onAccepted(Fun<void()> &&f)
+TimePicker &TimePicker::onAccepted(Function<void()> &&f)
 {
     me().onAccepted(move(f));
     return *this;
 }
 
-TimePicker &TimePicker::onRejected(Fun<void()> &&f)
+TimePicker &TimePicker::onRejected(Function<void()> &&f)
 {
     me().onRejected(move(f));
     return *this;

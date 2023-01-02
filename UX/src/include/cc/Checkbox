@@ -38,7 +38,7 @@ public:
     bool value() const; ///< Get value
     Checkbox &value(bool newValue); ///< %Set value
 
-    Checkbox &onValueChanged(Fun<void()> &&f); ///< Get notified when value changes
+    Checkbox &onValueChanged(Function<void()> &&f); ///< Get notified when value changes
 
     /** Group this checkbox under \a groupLeader
       */

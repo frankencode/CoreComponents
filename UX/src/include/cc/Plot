@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/View>
-#include <cc/Fun>
+#include <cc/Function>
 
 namespace cc {
 
@@ -44,10 +44,10 @@ public:
     template<template<class> class Array>
     Plot &points(const Array<Point> &newValue) { me().retrieval(PointArrayRetrieval<Array>{newValue}); return *this; }
 
-    Plot &xScaling(const Fun<double(double)> &scaleX) { me().scaling(PointScaling{scaleX, Fun<double(double)>{}}); return *this; }
-    Plot &yScaling(const Fun<double(double)> &scaleY) { me().scaling(PointScaling{Fun<double(double)>{}, scaleY}); return *this; }
-    Plot &scaling(const Fun<double(double)> &scaleY) { me().scaling(PointScaling{Fun<double(double)>{}, scaleY}); return *this; }
-    Plot &scaling(const Fun<double(double)> &scaleX, const Fun<double(double)> &scaleY) { me().scaling(PointScaling{scaleX, scaleY}); return *this; }
+    Plot &xScaling(const Function<double(double)> &scaleX) { me().scaling(PointScaling{scaleX, Function<double(double)>{}}); return *this; }
+    Plot &yScaling(const Function<double(double)> &scaleY) { me().scaling(PointScaling{Function<double(double)>{}, scaleY}); return *this; }
+    Plot &scaling(const Function<double(double)> &scaleY) { me().scaling(PointScaling{Function<double(double)>{}, scaleY}); return *this; }
+    Plot &scaling(const Function<double(double)> &scaleX, const Function<double(double)> &scaleY) { me().scaling(PointScaling{scaleX, scaleY}); return *this; }
 
     static double symLog(double x);
     static double log10(double x);
@@ -106,7 +106,7 @@ private:
     public:
         PointScaling() = default;
 
-        PointScaling(const Fun<double(double)> &scaleX, const Fun<double(double)> &scaleY):
+        PointScaling(const Function<double(double)> &scaleX, const Function<double(double)> &scaleY):
             Object{new State{scaleX, scaleY}}
         {}
 
@@ -115,7 +115,7 @@ private:
     private:
         struct State final: public Object::State
         {
-            State(const Fun<double(double)> &scaleX, const Fun<double(double)> &scaleY):
+            State(const Function<double(double)> &scaleX, const Function<double(double)> &scaleY):
                 scaleX_{scaleX},
                 scaleY_{scaleY}
             {}
@@ -128,8 +128,8 @@ private:
                 return a;
             }
 
-            Fun<double(double)> scaleX_;
-            Fun<double(double)> scaleY_;
+            Function<double(double)> scaleX_;
+            Function<double(double)> scaleY_;
         };
 
         const State &me() const { return Object::me.as<State>(); }

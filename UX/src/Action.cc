@@ -81,13 +81,13 @@ Action &Action::icon(Definition<Picture> &&f)
     return *this;
 }
 
-Action &Action::onTriggered(Fun<void()> &&f)
+Action &Action::onTriggered(Function<void()> &&f)
 {
     me().action_(move(f));
     return *this;
 }
 
-Action &Action::operator()(Fun<void()> &&f)
+Action &Action::operator()(Function<void()> &&f)
 {
     me().action_(move(f));
     return *this;

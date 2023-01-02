@@ -289,7 +289,7 @@ public:
         me().emplaceLast(args...);
     }
 
-    /** Insert a new first item
+    /** Emplace a new first item
       * \param args construction arguments
       */
     template<class... Args>

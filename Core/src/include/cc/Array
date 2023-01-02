@@ -11,7 +11,7 @@
 #include <cc/ArrayIterator>
 #include <cc/List>
 #include <cc/Shared>
-#include <cc/Fun>
+#include <cc/Function>
 #include <sys/mman.h> // munmap
 #include <type_traits>
 #include <cstring>

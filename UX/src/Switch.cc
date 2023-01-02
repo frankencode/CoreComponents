@@ -105,13 +105,13 @@ Switch &Switch::value(Definition<bool> &&f)
     return *this;
 }
 
-Switch &Switch::onValueChanged(Fun<void()> &&f)
+Switch &Switch::onValueChanged(Function<void()> &&f)
 {
     me().switch_.onValueChanged(move(f));
     return *this;
 }
 
-Switch &Switch::onUserInput(Fun<void()> &&f)
+Switch &Switch::onUserInput(Function<void()> &&f)
 {
     me().switch_.onUserInput(move(f));
     return *this;

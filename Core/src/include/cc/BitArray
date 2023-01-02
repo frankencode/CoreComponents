@@ -21,6 +21,9 @@ class BitArray;
 template<>
 class ArrayIteratorItemAccess<BitArray>;
 
+template<>
+class ArrayIteratorItemAccess<const BitArray>;
+
 /** \class BitArray cc/BitArray
   * \brief %Array of bits
   * \ingroup container_lowlevel
@@ -135,6 +138,13 @@ public:
     {
         assert(has(i));
         return {me().bytes_ + (i >> 3), static_cast<unsigned>(i & 7)};
+    }
+
+    /** Get value at \a index if 0 <= index && index < count(), otherwise return \a fallback
+      */
+    bool operator()(long i, bool fallback = false) const
+    {
+        return has(i) ? at(i) : fallback;
     }
 
     /** %Set all bits to \a on
@@ -256,6 +266,13 @@ class ArrayIteratorItemAccess<BitArray>
 {
 public:
     using Type = typename BitArray::Access;
+};
+
+template<>
+class ArrayIteratorItemAccess<const BitArray>
+{
+public:
+    using Type = bool;
 };
 
 inline BitArray::iterator BitArray::begin() { return iterator{*this, 0}; }

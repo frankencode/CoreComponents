@@ -30,9 +30,14 @@ public:
       */
     explicit HexDump(const Stream &sink = Stream{});
 
+    /** Set line indentation to \a prefix
+      */
+    HexDump &indent(const String &prefix);
 
 private:
     struct State;
+
+    State &me();
 };
 
 /** Generate a readable hexadecimal dump of \a data

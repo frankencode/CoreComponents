@@ -217,13 +217,13 @@ Slider &Slider::value(double newValue)
     return *this;
 }
 
-Slider &Slider::onValueChanged(Fun<void()> &&f)
+Slider &Slider::onValueChanged(Function<void()> &&f)
 {
     me().slider_.onValueChanged(move(f));
     return *this;
 }
 
-Slider &Slider::onUserInput(Fun<void()> &&f)
+Slider &Slider::onUserInput(Function<void()> &&f)
 {
     me().slider_.onUserInput(move(f));
     return *this;

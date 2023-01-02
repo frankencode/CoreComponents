@@ -45,10 +45,10 @@ public:
     Action &icon(const Picture &newValue); ///< %Set icon
     Action &icon(Definition<Picture> &&f); ///< Define icon
 
-    Action &onTriggered(Fun<void()> &&f); ///< %Set callback
+    Action &onTriggered(Function<void()> &&f); ///< %Set callback
 
     void operator()() const; ///< Invoke the action's callback
-    Action &operator()(Fun<void()> &&f); ///< %Set callback
+    Action &operator()(Function<void()> &&f); ///< %Set callback
 
 private:
     struct State;

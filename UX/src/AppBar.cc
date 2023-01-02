@@ -100,13 +100,13 @@ struct AppBar::State final: public View::State
         return true;
     }
 
-    void onNavigate(Fun<void()> &&f)
+    void onNavigate(Function<void()> &&f)
     {
         addNavButton(Icon::Menu);
         onNavButtonClicked(move(f));
     }
 
-    void onDismissed(Fun<void()> &&f)
+    void onDismissed(Function<void()> &&f)
     {
         addNavButton(Icon::ArrowLeft);
         onNavButtonClicked(move(f));
@@ -157,13 +157,13 @@ AppBar &AppBar::addAction(const Action &action)
     return *this;
 }
 
-AppBar &AppBar::onNavigate(Fun<void()> &&f)
+AppBar &AppBar::onNavigate(Function<void()> &&f)
 {
     me().onNavigate(move(f));
     return *this;
 }
 
-AppBar &AppBar::onDismissed(Fun<void()> &&f)
+AppBar &AppBar::onDismissed(Function<void()> &&f)
 {
     me().onDismissed(move(f));
     return *this;

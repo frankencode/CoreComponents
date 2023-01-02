@@ -347,7 +347,7 @@ ClockFace &ClockFace::hour(int newValue)
     return *this;
 }
 
-ClockFace &ClockFace::onHourChanged(Fun<void()> &&f)
+ClockFace &ClockFace::onHourChanged(Function<void()> &&f)
 {
     me().hourOfDay.onChanged(move(f));
     return *this;
@@ -366,7 +366,7 @@ ClockFace &ClockFace::minute(int newValue)
     return *this;
 }
 
-ClockFace &ClockFace::onMinuteChanged(Fun<void()> &&f)
+ClockFace &ClockFace::onMinuteChanged(Function<void()> &&f)
 {
     me().minute.onChanged(move(f));
     return *this;
@@ -383,7 +383,7 @@ ClockFace &ClockFace::second(int newValue)
     return *this;
 }
 
-ClockFace &ClockFace::onSecondChanged(Fun<void()> &&f)
+ClockFace &ClockFace::onSecondChanged(Function<void()> &&f)
 {
     me().second.onChanged(move(f));
     return *this;
