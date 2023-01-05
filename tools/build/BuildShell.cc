@@ -8,7 +8,7 @@
 
 #include <cc/build/BuildShell>
 #include <cc/Process>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/File>
 #include <cc/Dir>
 #include <cc/DirWalker>
@@ -34,10 +34,10 @@ bool BuildShell::run(const String &command) const
     return Process{command}.wait() == 0;
 }
 
-FileStatus BuildShell::fileStatus(const String &path) const
+FileInfo BuildShell::fileStatus(const String &path) const
 {
-    if (plan().options() & BuildOption::Blindfold) return FileStatus{};
-    return FileStatus{path, false};
+    if (plan().options() & BuildOption::Blindfold) return FileInfo{};
+    return FileInfo{path, false};
 }
 
 void BuildShell::mkdir(const String &path) const
@@ -95,7 +95,7 @@ bool BuildShell::install(const String &sourcePath, const String &destPath) const
     try {
         if (destDirMissing) Dir::establish(destDirPath);
         File source{sourcePath};
-        FileStatus sourceStatus{sourcePath};
+        FileInfo sourceStatus{sourcePath};
         File sink{destPath, FileOpen::WriteOnly|FileOpen::Create|FileOpen::Truncate, sourceStatus.mode()};
         sink.write(source.map());
     }

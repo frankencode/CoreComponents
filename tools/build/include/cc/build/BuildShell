@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/build/BuildPlan>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 
 namespace cc::build {
 
@@ -21,7 +21,7 @@ public:
     String beautify(const String &command) const;
     bool run(const String &command) const;
 
-    FileStatus fileStatus(const String &path) const;
+    FileInfo fileStatus(const String &path) const;
 
     void mkdir(const String &path) const;
     void rmdir(const String &path) const;

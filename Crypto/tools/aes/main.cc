@@ -6,7 +6,7 @@
 #include <cc/Arguments>
 #include <cc/ByteSink>
 #include <cc/ByteSource>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/File>
 #include <cc/stdio>
 #include <stdio.h>
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
                     header.writeUInt32(crc32(challenge));
                     header.writeInt32(fileName.count());
                     header.write(fileName);
-                    header.writeUInt64(FileStatus{path}.size());
+                    header.writeUInt64(FileInfo{path}.size());
                 }
                 source.transferTo(cipherSink);
 

@@ -8,7 +8,7 @@
 
 #include <cc/PluginDir>
 #include <cc/Dir>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/File>
 #include <cc/stdio>
 
@@ -21,7 +21,7 @@ PluginDir::PluginDir(const String &path):
     for (const String &name: dir) {
         String path = me().path_ / name;
         try {
-            FileStatus status{path, false};
+            FileInfo status{path, false};
             if (status.type() == FileType::Symlink) {
                 path = File::readlink(path);
                 if (path.isRelativePath())

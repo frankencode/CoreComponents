@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2020-2023 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -7,7 +7,7 @@
  */
 
 #include <cc/File>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/Dir>
 #include <cc/Random>
 #include <cc/str>
@@ -137,7 +137,7 @@ String File::readlink(const String &path)
 
 void File::clean(const String &path)
 {
-    FileStatus status{path};
+    FileInfo status{path};
     if (status.isValid()) {
         if (status.type() == FileType::Directory) {
             Dir::deplete(path);
@@ -171,6 +171,20 @@ void File::save(const String &path, const String &text)
 {
     File::establish(path);
     File{path, FileOpen::WriteOnly|FileOpen::Truncate}.write(text);
+}
+
+void File::setTimes(const String &path, double lastAccess, double lastModified, bool followSymlink)
+{
+    struct timespec tv[2];
+    double sec;
+    tv[0].tv_nsec = std::modf(lastAccess, &sec) * 1e9;
+    tv[0].tv_sec = sec;
+    tv[1].tv_nsec = std::modf(lastModified, &sec) * 1e9;
+    tv[1].tv_sec = sec;
+
+    if (::utimensat(AT_FDCWD, path, tv, AT_SYMLINK_NOFOLLOW * (!followSymlink)) == -1) {
+        CC_SYSTEM_ERROR(errno, path);
+    }
 }
 
 File::File(const String &path, FileOpen flags, FileMode mode):

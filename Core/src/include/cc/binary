@@ -197,7 +197,7 @@ inline void bitAssign(T &word, V newValue)
 template<class T>
 inline T bitmask(unsigned n)
 {
-    return (~T{}) >> (8 * sizeof(T) - n);
+    return static_cast<T>(~T{}) >> (8 * sizeof(T) - n);
 }
 
 /** Get bits \a i to \a j in \a word

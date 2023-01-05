@@ -24,7 +24,7 @@ String String::alignedRight(int w, char blank) const
 
 bool String::find(const char *b, long bn, InOut<long> i0) const
 {
-    assert(0 <= i0 && i0 <= count());
+    assert(0 <= i0);
 
     if (bn < 0) bn = len(b);
 
@@ -315,7 +315,7 @@ bool String::toBool(Out<bool> ok) const
 int String::toInt(Out<bool> ok) const
 {
     int okCount = 0;
-    int value = readNumber<int>(*this, &okCount);
+    int value = cc::readNumber<int>(*this, &okCount);
     ok = (okCount == 1);
     return value;
 }
@@ -323,7 +323,7 @@ int String::toInt(Out<bool> ok) const
 long String::toLong(Out<bool> ok) const
 {
     int okCount = 0;
-    long value = readNumber<long>(*this, &okCount);
+    long value = cc::readNumber<long>(*this, &okCount);
     ok = (okCount == 1);
     return value;
 }
@@ -331,7 +331,7 @@ long String::toLong(Out<bool> ok) const
 double String::toDouble(Out<bool> ok) const
 {
     int okCount = 0;
-    double value = readNumber<double>(*this, &okCount);
+    double value = cc::readNumber<double>(*this, &okCount);
     ok = (okCount == 1);
     return value;
 }

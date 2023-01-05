@@ -9,7 +9,7 @@
 #include <cc/DirectoryInstance>
 #include <cc/DirectoryDelegate>
 #include <cc/File>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/exceptions>
 
 namespace cc {
@@ -28,7 +28,7 @@ DirectoryInstance::State::State(const MetaObject &config):
             Format{"DirectoryInstance: Directory path \"%%\" does not exist"} << path_
         };
     }
-    if (FileStatus{path_}.type() != FileType::Directory) {
+    if (FileInfo{path_}.type() != FileType::Directory) {
         throw UsageError{
             Format{"DirectoryInstance: Path \"%%\" does not point to a directory"} << path_
         };

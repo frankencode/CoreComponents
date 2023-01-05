@@ -10,7 +10,7 @@
 #include <cc/claim/NoticeSyntax>
 #include <cc/claim/Registry>
 #include <cc/DirWalker>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/File>
 #include <cc/sha1>
 
@@ -28,7 +28,7 @@ Report::State::State(const List<String> &dirPaths, const Pattern &works, int wor
 
         for (const String &path: dirWalker)
         {
-            if (FileStatus{path}.type() != FileType::Regular) continue;
+            if (FileInfo{path}.type() != FileType::Regular) continue;
 
             if (!works.match(path.fileName())) continue;
 

@@ -134,7 +134,7 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
 
     if (!dirty)
     {
-        FileStatus productStatus = shell().fileStatus(toolChain().linkName(plan()));
+        FileInfo productStatus = shell().fileStatus(toolChain().linkName(plan()));
         if (!productStatus) dirty = true;
 
         else {
@@ -146,14 +146,14 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
             else {
                 double productTime = productStatus.lastModified();
                 for (const Module &module: plan().modules()) {
-                    FileStatus moduleStatus = shell().fileStatus(module.modulePath());
+                    FileInfo moduleStatus = shell().fileStatus(module.modulePath());
                     if (moduleStatus.lastModified() > productTime) {
                         dirty = true;
                         break;
                     }
                 }
                 if (!dirty) {
-                    FileStatus recipeStatus = shell().fileStatus(plan().recipePath());
+                    FileInfo recipeStatus = shell().fileStatus(plan().recipePath());
                     if (recipeStatus) {
                         if (recipeStatus.lastModified() > productTime)
                             dirty = true;

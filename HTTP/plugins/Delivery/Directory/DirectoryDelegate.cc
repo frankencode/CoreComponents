@@ -12,7 +12,7 @@
 #include <cc/httpDate>
 #include <cc/Dir>
 #include <cc/File>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/Date>
 
 namespace cc {
@@ -94,7 +94,7 @@ struct DirectoryDelegate::State: public HttpServiceDelegate::State
 
         if (!service.showHidden() && path.baseName().startsWith('.')) throw HttpNotFound{};
 
-        FileStatus fileStatus{path};
+        FileInfo fileStatus{path};
 
         if (!fileStatus) throw HttpNotFound{};
 

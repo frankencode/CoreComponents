@@ -19,9 +19,13 @@ namespace cc {
   * \ingroup sysinfo
   * \brief Query information about system users
   */
-class UserInfo: public Object
+class UserInfo final: public Object
 {
 public:
+    /** Create null user info
+      */
+    UserInfo() = default;
+
     /** Lookup user information by user ID
       * \param id System user ID
       */

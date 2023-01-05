@@ -10,7 +10,7 @@
 #include <cc/DirWalker>
 #include <cc/Arguments>
 #include <cc/File>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/stdio>
 
 using namespace cc;
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
                 if (typePattern.text() != "") {
                     bool shortMode = (typePattern.matchLength() == 1);
                     String typeString;
-                    switch (FileStatus{path, false}.type()) {
+                    switch (FileInfo{path, false}.type()) {
                         case FileType::Regular    : typeString = shortMode ? "r" : "regular file"; break;
                         case FileType::Directory  : typeString = shortMode ? "d" : "directory"; break;
                         case FileType::Symlink    : typeString = shortMode ? "l" : "symlink"; break;
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
                     if (!typePattern.findIn(typeString)) continue;
                 }
                 if (textPattern.text() != "") {
-                    if (FileStatus{path}.type() != FileType::Regular)
+                    if (FileInfo{path}.type() != FileType::Regular)
                         continue;
 
                     String text = File{path}.map();

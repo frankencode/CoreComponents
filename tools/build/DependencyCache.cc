@@ -8,7 +8,7 @@
 
 #include <cc/build/DependencyCache>
 #include <cc/build/Module>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/File>
 #include <cc/Format>
 #include <cc/yason>
@@ -21,7 +21,7 @@ struct DependencyCache::State: public Object::State
         cachePath_{plan.modulePath("DependencyCache")}
     {
         File::establish(cachePath_);
-        cacheTime_ = FileStatus{cachePath_}.lastModified();
+        cacheTime_ = FileInfo{cachePath_}.lastModified();
 
         MetaObject dependencyCache;
         try {
@@ -55,12 +55,12 @@ struct DependencyCache::State: public Object::State
 
             bool dirty = false;
 
-            FileStatus objectStatus = plan.shell().fileStatus(modulePath);
+            FileInfo objectStatus = plan.shell().fileStatus(modulePath);
             double objectTime = objectStatus.lastModified();
 
             for (const String &source: dependencyPaths)
             {
-                FileStatus sourceStatus = plan.shell().fileStatus(source);
+                FileInfo sourceStatus = plan.shell().fileStatus(source);
                 if (!sourceStatus) {
                     dirty = true;
                     break;

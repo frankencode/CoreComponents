@@ -22,9 +22,13 @@ class UserInfo;
   * \ingroup sysinfo
   * \brief Query information about system groups
   */
-class GroupInfo: public Object
+class GroupInfo final: public Object
 {
 public:
+    /** Create null group info
+      */
+    GroupInfo() = default;
+
     /** Lookup group information by group ID
       * \param id System group ID
       */

@@ -1,0 +1,107 @@
+/*
+ * Copyright (C) 2020-2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/SystemError>
+#include <cc/Object>
+#include <cc/files>
+
+namespace cc {
+
+/** \class FileInfo cc/FileInfo
+  * \ingroup file_system
+  * \brief %File status information
+  */
+class FileInfo final: public Object
+{
+public:
+    /** Create null file info
+      */
+    FileInfo() = default;
+
+    /** Query the status of the file or directory under \a path
+      */
+    explicit FileInfo(const String &path, bool followSymlink = true);
+
+    /** %File or directory path
+      */
+    String path() const;
+
+    /** Returns true if file exists otherwise false
+      */
+    bool isValid() const;
+
+    /** \copydoc isValid()
+      */
+    explicit operator bool() const { return isValid(); }
+
+    /** %File type
+      */
+    FileType type() const;
+
+    /** %File access mask
+      */
+    FileMode mode() const;
+
+    /** %File size in number of bytes
+      */
+    long long size() const;
+
+    /** %File size in number of blocks
+      */
+    long long blockCount() const;
+
+    /** Block size
+      */
+    long blockSize() const;
+
+    /** %File owner user ID
+      */
+    int ownerId() const;
+
+    /** %File owner group ID
+      */
+    int groupId() const;
+
+    /** Last time when file was accessed
+      */
+    double lastAccess() const;
+
+    /** Last time when file was modified
+      */
+    double lastModified() const;
+
+    /** Last time when file meta information was modified
+      */
+    double lastChanged() const;
+
+    /** Storage device number
+      */
+    int storageId() const;
+
+    /** I-node number
+      */
+    long iNodeNumber() const;
+
+    /** Number of hard links
+      */
+    long linkCount() const;
+
+    /** Device ID (only for device files)
+      */
+    int deviceId() const;
+
+private:
+    struct State;
+
+    const State &fallback() const;
+    const State &me() const;
+};
+
+} // namespace cc

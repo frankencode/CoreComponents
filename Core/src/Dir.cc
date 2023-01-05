@@ -8,7 +8,7 @@
 
 #include <cc/Dir>
 #include <cc/DirWalker>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/File>
 #include <cc/Random>
 #include <cc/str>
@@ -19,12 +19,12 @@ namespace cc {
 
 bool Dir::access(const String &path, FileAccess mode)
 {
-    return ::access(path, +mode) == 0 && FileStatus{path}.type() == FileType::Directory;
+    return ::access(path, +mode) == 0 && FileInfo{path}.type() == FileType::Directory;
 }
 
 bool Dir::exists(const String &path)
 {
-    return FileStatus{path}.type() == FileType::Directory;
+    return FileInfo{path}.type() == FileType::Directory;
 }
 
 void Dir::create(const String &path, FileMode mode)

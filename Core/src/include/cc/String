@@ -43,9 +43,14 @@ long scanNumber(const Text &text, Out<Number> value, int base = -1, long i0 = 0,
     if (i1 < 0) i1 = text.count();
     if (i > i1) i = i1;
     int sign = 1;
-    if (Number(-1) < Number() && i < i1) {
-        if (text.at(i) == '-') sign = -1;
-        i += (text.at(i) == '-' || text.at(i) == '+');
+    if (Number(-1) < Number()) {
+        if (i < i1) {
+            if (text.at(i) == '-') sign = -1;
+            i += (text.at(i) == '-' || text.at(i) == '+');
+        }
+    }
+    else if (i < i1) {
+        i += text.at(i) == '+';
     }
     if (std::is_floating_point<Number>::value && i + 2 < i1) {
         if (text.at(i) == 'n' && text.at(i + 1) == 'a' && text.at(i + 2) == 'n') {
@@ -435,6 +440,32 @@ public:
         return select(count() - n, count());
     }
 
+    /** %Return a selection of range [\a i0, \a i1) in \a target
+      * \return Reference to this string
+      */
+    String &selectAs(long i0, long i1, Out<String> target)
+    {
+        assert(0 <= i0 && i0 <= i1 && i1 <= count());
+
+        State &targetState = target->me();
+        targetState.~State();
+        targetState.count = i1 - i0;
+        targetState.isMapped = 0;
+        targetState.isWrapped = 0;
+        targetState.items = me().items + i0;
+        targetState.parent = me;
+
+        return *target;
+    }
+
+    /** %Return a selection of \a range in \a target
+      * \return Reference to this string
+      */
+    String &selectAs(Range range, Out<String> target)
+    {
+        return selectAs(range[0], range[1], &target);
+    }
+
     /** Align text to the left
       * \param w Width of display field
       * \param blank Fill character
@@ -476,7 +507,7 @@ public:
       */
     bool find(char b, InOut<long> i0 = None{}) const
     {
-        assert(0 <= i0 && i0 <= count());
+        assert(0 <= i0);
         long n = count();
         long i = i0;
         const char *a = chars();
@@ -874,6 +905,30 @@ public:
         return StringParser<T>::read(value, *this);
     }
 
+    /** Read this string as a number of type \a T
+      * \tparam base Number base
+      * \param value Returns the parsed value, if successful
+      * \return True if successful
+      */
+    template<class T, int base = -1>
+    bool readNumber(Out<T> value) const
+    {
+        return scanNumber<T>(*this, &value, base) == count();
+    }
+
+    /** Read the sub-string in range [i0, i1) as a number of type \a T
+      * \tparam base Number base
+      * \param i0 Begin of sub-string (index of first selected character)
+      * \param i1 End of sub-string (index behind the last selected charater)
+      * \param value Returns the parsed value, if successful
+      * \return True if successful
+      */
+    template<class T, int base = -1>
+    bool readNumberInRange(long i0, long i1, Out<T> value) const
+    {
+        return scanNumber<T>(*this, &value, base, i0, i1) == i1;
+    }
+
     ///@}
 
     using iterator = ArrayIterator<String, 1>; ///< \internal Value iterator
@@ -1265,26 +1320,26 @@ T commonPrefix(const T &a, const T &b)
 /** Read \a text as a number literal
   * \param text Input text
   * \param fallback Fallback value if parsing of the number literal fails
-  * \param ok %Return value which is incremented when the text could be completely interpreted as a number literal
+  * \param check %Return value which is incremented when the text could be completely interpreted as a number literal
   * \return Parsed value
   */
 template<class T>
-T readNumber(const String &text, T fallback = T{}, Out<int> ok = None{})
+T readNumber(const String &text, T fallback = T{}, Out<int> check = None{})
 {
     T value = fallback;
-    ok += (scanNumber<T>(text, &value) == text.count() && text.count() > 0);
+    check += (scanNumber<T>(text, &value) == text.count() && text.count() > 0);
     return value;
 }
 
 /** Read \a text as a number literal
   * \param text Input text
-  * \param ok %Return value which is incremented when the text could be completely interpreted as a number literal
+  * \param check %Return value which is incremented when the text could be completely interpreted as a number literal
   * \return Parsed value
   */
 template<class T>
-T readNumber(const String &text, Out<int> ok)
+T readNumber(const String &text, Out<int> check)
 {
-    return readNumber(text, T{}, ok);
+    return readNumber(text, T{}, check);
 }
 
 template<>

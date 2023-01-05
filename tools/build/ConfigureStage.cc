@@ -11,7 +11,7 @@
 #include <cc/build/ConfigureShell>
 #include <cc/build/BuildShell>
 #include <cc/build/ToolChain>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/Dir>
 #include <cc/Process>
 #include <cc/Version>
@@ -236,7 +236,7 @@ void ConfigureStage::makeUseOf(const BuildPlan &other)
 bool ConfigureStage::probeBuild(const String &name, const String &probe) const
 {
     String probePath = plan().projectPath() / probe;
-    FileStatus sourceStatus{probePath};
+    FileInfo sourceStatus{probePath};
 
     if (!sourceStatus) {
         ferr() << plan().recipePath() << ": " << name << ":" << nl;
@@ -251,7 +251,7 @@ bool ConfigureStage::probeBuild(const String &name, const String &probe) const
     String binPath = plan().configPath() / baseName;
 
     bool dirty = true;
-    FileStatus binStatus = plan().shell().fileStatus(binPath);
+    FileInfo binStatus = plan().shell().fileStatus(binPath);
     if (binStatus.isValid()) {
         if (binStatus.lastModified() > sourceStatus.lastModified())
             dirty = false;
@@ -279,7 +279,7 @@ bool ConfigureStage::runConfigure(const String &name, const String &configure, O
 {
     String configurePath = plan().projectPath() / configure;
 
-    FileStatus sourceStatus = FileStatus{configurePath};
+    FileInfo sourceStatus = FileInfo{configurePath};
     if (!sourceStatus.isValid()) {
         ferr() << plan().recipePath() << ": " << name << ":" << nl;
         ferr() << "  " << configure << ": no such file" << nl;
@@ -300,7 +300,7 @@ bool ConfigureStage::runConfigure(const String &name, const String &configure, O
         binPath = plan().configPath() / baseName;
 
         bool dirty = true;
-        FileStatus binStatus = plan().shell().fileStatus(binPath);
+        FileInfo binStatus = plan().shell().fileStatus(binPath);
         if (binStatus.isValid()) {
             if (binStatus.lastModified() > sourceStatus.lastModified())
                 dirty = false;

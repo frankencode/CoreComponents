@@ -10,7 +10,7 @@
 #include <cc/build/JobScheduler>
 #include <cc/build/BuildStageGuard>
 #include <cc/build/BuildShell>
-#include <cc/FileStatus>
+#include <cc/FileInfo>
 #include <cc/Glob>
 #include <cc/Pattern>
 #include <cc/stdio>
