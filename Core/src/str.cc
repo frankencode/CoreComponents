@@ -26,9 +26,9 @@ String hex(const Bytes &data)
         int d0 = (ch >> 4) & 0xf;
         int d1 = ch & 0xf;
         if ((0 <= d0) && (d0 < 10)) s2[j++] = d0 + '0';
-        else s2[j++] = (d0 - 10) + 'a';
+        else s2[j++] = (d0 - 10) + 'A';
         if ((0 <= d1) && (d1 < 10)) s2[j++] = d1 + '0';
-        else s2[j++] = (d1 - 10) + 'a';
+        else s2[j++] = (d1 - 10) + 'A';
     }
 
     return s2;

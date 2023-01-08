@@ -80,7 +80,7 @@ inline T endianGate(T x, const ByteOrder channelByteOrder = ByteOrder::BigEndian
 template<class T, unsigned j, unsigned i = j>
 class Bit
 {
-    static const T Mask { (~T{}) >> (8 * sizeof(T) - (j - i + 1)) };
+    static const T Mask { static_cast<T>(~T{}) >> (8 * sizeof(T) - (j - i + 1)) };
 
 public:
     /** Create a new bit selector
@@ -154,7 +154,7 @@ private:
 template<class T, unsigned j, unsigned i>
 class Bit<const T, j, i>
 {
-    static const T Mask { (~T{}) >> (8 * sizeof(T) - (j - i + 1)) };
+    static const T Mask { static_cast<T>(~T{}) >> (8 * sizeof(T) - (j - i + 1)) };
 
 public:
     /** Create a new bit selector
