@@ -12,7 +12,7 @@
 #include <cc/Stream>
 #include <cc/Array>
 #include <cc/exceptions>
-#include <cc/binary>
+#include <cc/bits>
 
 namespace cc {
 

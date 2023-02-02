@@ -9,4 +9,4 @@
 #pragma once
 
 #include <cc/Array>
-#include <cc/binary>
+#include <cc/bits>

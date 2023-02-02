@@ -1,4 +1,4 @@
-#include <cc/binary>
+#include <cc/bits>
 #include <cc/testing>
 
 int main(int argc, char *argv[])

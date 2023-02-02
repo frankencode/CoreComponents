@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
             for (int i = 0; i < tests.count(); ++i) {
                 Sha1HashSink hashSink;
                 for (int j = 0; j < repeatCount[i]; ++j) hashSink.write(tests.at(i));
-                String requiredSum = results.at(i).replaced(" ", "").downcased();
+                String requiredSum = results.at(i).replaced(" ", "");
                 String sum = hex(hashSink.finish());
                 fout("SHA-1 of \"%%\" repeated %% time(s):") << tests.at(i) << repeatCount[i] << nl;
                 fout() << "  " << requiredSum << " (required)" << nl;

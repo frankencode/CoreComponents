@@ -7,8 +7,7 @@
  */
 
 #include <cc/WebP>
-#include <cc/binary>
-#include <cc/DEBUG>
+#include <cc/bits>
 #include <webp/decode.h>
 #include <webp/encode.h>
 #include <cassert>

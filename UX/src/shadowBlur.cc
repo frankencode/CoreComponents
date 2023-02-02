@@ -29,7 +29,7 @@
 */
 
 #include <cc/shadowBlur>
-#include <cc/binary>
+#include <cc/bits>
 
 namespace cc {
 

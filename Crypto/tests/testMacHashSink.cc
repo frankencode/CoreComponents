@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
                 MacHashSink<Md5HashSink> macSink{key};
                 macSink.write(text);
-                String mac = hex(macSink.finish());
+                String mac = hex(macSink.finish(), 'a');
 
                 fout() << "HMAC-MD5_0 = 0x" << mac << nl;
 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
                 MacHashSink<Md5HashSink> macSink{key};
                 macSink.write(text);
-                String mac = hex(macSink.finish());
+                String mac = hex(macSink.finish(), 'a');
 
                 fout() << "HMAC-MD5_1 = 0x" << mac << nl;
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 
                 MacHashSink<Sha1HashSink> macSink{key};
                 macSink.write(text);
-                String mac = hex(macSink.finish());
+                String mac = hex(macSink.finish(), 'a');
 
                 fout() << "HMAC-SHA1_0 = 0x" << mac << nl;
 
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 
                 MacHashSink<Sha1HashSink> macSink{key};
                 macSink.write(text);
-                String mac = hex(macSink.finish());
+                String mac = hex(macSink.finish(), 'a');
 
                 fout() << "HMAC-SHA1_1 = 0x" << mac << nl;
 

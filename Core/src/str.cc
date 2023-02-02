@@ -9,13 +9,15 @@
 #include <cc/str>
 #include <cc/Queue>
 #include <cc/Utf8Sink>
-#include <cc/binary>
+#include <cc/bits>
 #include <cc/math>
 
 namespace cc {
 
-String hex(const Bytes &data)
+String hex(const Bytes &data, char a)
 {
+    assert(a == 'A' || a == 'a');
+
     long n = data.count();
     if (n == 0) return String{};
 
@@ -26,9 +28,9 @@ String hex(const Bytes &data)
         int d0 = (ch >> 4) & 0xf;
         int d1 = ch & 0xf;
         if ((0 <= d0) && (d0 < 10)) s2[j++] = d0 + '0';
-        else s2[j++] = (d0 - 10) + 'A';
+        else s2[j++] = (d0 - 10) + a;
         if ((0 <= d1) && (d1 < 10)) s2[j++] = d1 + '0';
-        else s2[j++] = (d1 - 10) + 'A';
+        else s2[j++] = (d1 - 10) + a;
     }
 
     return s2;

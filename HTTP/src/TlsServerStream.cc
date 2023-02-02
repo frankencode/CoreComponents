@@ -64,7 +64,7 @@ struct TlsServerStream::State: public TlsStream::State
         if (type == GNUTLS_NAME_DNS) {
             assert(ret == GNUTLS_E_SHORT_MEMORY_BUFFER);
             String serverName = String::allocate(size);
-            ret = gnutls_server_name_get(session, serverName.bytes(), &size, &type, 0);
+            ret = gnutls_server_name_get(session, serverName, &size, &type, 0);
             if (ret != GNUTLS_E_SUCCESS) serverName = "";
             if (serverName.count() > 0) {
                 if (serverName.at(serverName.count() - 1) == 0) {

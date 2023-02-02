@@ -1,0 +1,102 @@
+/*
+ * Copyright (C) 2020-2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Bytes>
+#include <cc/bits>
+#include <type_traits>
+
+namespace cc {
+
+/** \class Binary cc/Binary
+  * \brief Read and write binary data structures
+  * \ingroup binary
+  * \tparam byteOrder Byte order for reading words
+  * \todo Add support for readiung floating point values of <stdfloat>
+  */
+template<ByteOrder byteOrder = ByteOrder::LittleEndian>
+class Binary final
+{
+public:
+    /** Create an interpretation of \a bytes
+      */
+    explicit Binary(const Bytes &bytes):
+        bytes_{bytes}
+    {}
+
+    /** Read the value ranging from byte \a i to byte \a j
+      * \tparam T Value type (e.g. int32_t)
+      * \tparam i Index of first byte
+      * \tparam j Index of last byte
+      * \return Decoded value
+      */
+    template<class T>
+    T value(long i, long j) const
+    {
+        assert(i <= j);
+        assert(sizeof(T) >= static_cast<size_t>(j - i) + 1);
+
+        using Word = typename std::make_unsigned<T>::type;
+        Word w = 0;
+
+        if (byteOrder == ByteOrder::LittleEndian) {
+            for (long k = i; k <= j; ++k) {
+                w |= static_cast<Word>(bytes_.at(k)) << ((k - i) * 8);
+            }
+        }
+        else {
+            for (long k = i; k <= j; ++k) {
+                w |= bytes_.at(k);
+                w <<= 8;
+            }
+        }
+
+        return static_cast<T>(w);
+    }
+
+    /** Read the value of type \a T starting at byte \a i
+      * \tparam T Value type (e.g. int32_t)
+      * \return Decoded value
+      */
+    template<class T>
+    T value(long i) const
+    {
+        return value<T>(i, i + sizeof(T) - 1);
+    }
+
+    /** Read the value ranging from byte \a i to byte \a j
+      * \tparam T Value type (e.g. int32_t)
+      * \tparam I Index of first byte provided at compile time
+      * \tparam J Index of last byte provided at compile time
+      * \return Decoded value
+      */
+    template<class T, long I, long J>
+    T value() const
+    {
+        static_assert(I <= J);
+        static_assert(sizeof(T) >= static_cast<size_t>(J - I) + 1);
+        return value<T>(I, J);
+    }
+
+    /** Read the value ranging from byte \a i to byte \a j
+      * \tparam T Value type (e.g. int32_t)
+      * \tparam I Index of first byte provided at compile time
+      * \return Decoded value
+      */
+    template<class T, long I>
+    T value() const
+    {
+        return value<T>(I, I + sizeof(T) - 1);
+    }
+
+private:
+    Bytes bytes_;
+};
+
+} // namespace cc

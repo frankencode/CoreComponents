@@ -82,7 +82,7 @@ String hex(T x, int n = -1) { return inum(x, 16, n); }
 
 /** Convert \a data to hexadecimal
   */
-String hex(const Bytes &data);
+String hex(const Bytes &data, char a = 'A');
 
 /** Convert hexadecimal literal \a hex to a byte array
   */
@@ -90,7 +90,7 @@ Bytes readHex(const String &hex);
 
 /** Convert \a data to hexadecimal
   */
-inline String hex(const String &data) { return hex(data.asBytes()); }
+inline String hex(const String &data, char a = 'A') { return hex(data.bytes(), a); }
 
 /** Convert an integer to an octal string
   * \param x Integer value

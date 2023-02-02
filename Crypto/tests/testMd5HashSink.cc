@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
             };
 
             for (int i = 0; i < tests.count(); ++i) {
-                String requiredSum = results.at(i);
+                String requiredSum = results.at(i).upcased();
                 String sum = hex(md5(tests.at(i)));
                 fout("MD5 of \"%%\":") << tests.at(i) << nl;
                 fout() << "  " << requiredSum << " (required)" << nl;

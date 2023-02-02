@@ -40,12 +40,6 @@ private:
     std::uint64_t map_ { UINT64_C(0x0123456789ABCDEF) };
 };
 
-#if 0
-template<>
-class Map<8>: public Map<16>
-{};
-#endif
-
 inline unsigned Map<16>::mapToSlot(unsigned bucketIndex, unsigned fill) const
 {
     assert(bucketIndex < fill);
@@ -55,28 +49,9 @@ inline unsigned Map<16>::mapToSlot(unsigned bucketIndex, unsigned fill) const
 
 inline unsigned Map<16>::mapToBucket(unsigned slotIndex, unsigned fill) const
 {
-    #if 0
-    unsigned bucketIndex = 0;
-    for (; bucketIndex < fill; ++bucketIndex) {
-        if (mapToSlot(bucketIndex, fill) == slotIndex) break;
-    }
-    return bucketIndex;
-    #endif
-    #if 1
     unsigned i = 0;
     for (std::uint64_t m = map_; (m & 0xFu) ^ slotIndex; m >>= 4) ++i;
     return i;
-    #endif
-    #if 0
-    unsigned bucketIndex = fill - 1;
-    while (mapToSlot(bucketIndex, fill) != slotIndex) --bucketIndex;
-    return bucketIndex;
-    #endif
-    #if 0
-    unsigned i = fill - 1;
-    for (unsigned s = (fill - 1) << 2; ((map_ >> s) & 0xFu) ^ slotIndex; s -= 4) --i;
-    return i;
-    #endif
 }
 
 inline unsigned Map<16>::pushEntry(unsigned bucketIndex, unsigned *fill)

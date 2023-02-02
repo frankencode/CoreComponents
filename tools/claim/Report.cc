@@ -46,7 +46,7 @@ Report::State::State(const List<String> &dirPaths, const Pattern &works, int wor
             if (notice) {
                 coverage_.insert(path, notice);
                 {
-                    Bytes digest = cc::sha1(notice.statement().asBytes());
+                    Bytes digest = cc::sha1(notice.statement().bytes());
 
                     Locator pos;
                     if (!coverageByDigest_.find(digest, &pos)) {

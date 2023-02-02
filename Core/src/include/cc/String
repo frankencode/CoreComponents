@@ -1045,7 +1045,7 @@ public:
 
     /** %Return this string as byte array
       */
-    const Bytes &asBytes() const { return *this; }
+    const Bytes &bytes() const { return *this; }
 
     /** Automatic conversion to low-level C-string
       */
