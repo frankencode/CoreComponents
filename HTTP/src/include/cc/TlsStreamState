@@ -36,7 +36,7 @@ struct TlsStream::State: public Stream::State
         checkIoError();
         ssize_t ret = 0;
         do {
-            ret = gnutls_record_recv(session_, buffer().bytes(), maxFill);
+            ret = gnutls_record_recv(session_, *buffer, maxFill);
         } while (ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED);
         checkIoError();
         checkTlsError(ret);

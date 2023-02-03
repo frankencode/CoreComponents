@@ -707,11 +707,13 @@ public:
 
     /** Explicit conversion to low-level pointer
       */
-    explicit operator Item *() { return me().items; }
+    template<class OtherItem>
+    explicit operator OtherItem *() { return static_cast<OtherItem *>(static_cast<void *>(me().items)); }
 
     /** Explicit conversion to constant low-level pointer
       */
-    explicit operator const Item *() const { return me().items; }
+    template<class OtherItem>
+    explicit operator const OtherItem *() const { return static_cast<const OtherItem *>(static_cast<const void *>(me().items)); }
 
     /** Implicit conversion to low-level data pointer
       */

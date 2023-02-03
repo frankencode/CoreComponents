@@ -68,7 +68,7 @@ void shadowBlur(Image &image, int radius, Color shadowColor)
     // Two stages: horizontal and vertical
     for (int k = 0; k < 2; ++k) {
 
-        unsigned char* pixels = image.data().bytes();
+        uint8_t *pixels = image.data().bytes();
         int stride = (k == 0) ? 4 : image.pitch();
         int delta = (k == 0) ? image.pitch() : 4;
         int jfinal = (k == 0) ? image.height() : image.width();
@@ -90,9 +90,9 @@ void shadowBlur(Image &image, int radius, Color shadowColor)
                 int ofs = 1 + side2;
                 int alpha1 = pixels[channels[step]];
                 int alpha2 = pixels[(dim - 1) * stride + channels[step]];
-                unsigned char* ptr = pixels + channels[step + 1];
-                unsigned char* prev = pixels + stride + channels[step];
-                unsigned char* next = pixels + ofs * stride + channels[step];
+                uint8_t* ptr = pixels + channels[step + 1];
+                uint8_t* prev = pixels + stride + channels[step];
+                uint8_t* next = pixels + ofs * stride + channels[step];
 
                 int i;
                 int sum = side1 * alpha1 + alpha1;

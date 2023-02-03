@@ -58,7 +58,7 @@ public:
 
     /** Add string \a s to the output text
       */
-    Format &operator<<(const String &s) { return *this << s.bytes(); }
+    Format &operator<<(const String &s) { return *this << s.asBytes(); }
 
     /** Add string \a s to the output text
       */
