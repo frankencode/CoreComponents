@@ -26,11 +26,7 @@ public:
     Node *succ() const { return static_cast<Node *>(succ_); }
     Node *pred() const { return static_cast<Node *>(pred_); }
     Branch *parent_ { nullptr };
-    bool isBranch_ { false };
-    Map<Capacity> map_;
 };
-
-static_assert(sizeof(Node) % 16 == 0, "Bucket data alignment must be a multiple of 16 bytes due to SIMD types");
 
 class Head {
 public:
@@ -41,8 +37,6 @@ public:
 class Branch final: public Node
 {
 public:
-    Branch() { isBranch_ = true; }
-
     Head &at(unsigned egress) { return slots_[map_.mapToSlot(egress, fill_)]; }
     const Head &at(unsigned egress) const { return slots_[map_.mapToSlot(egress, fill_)]; }
 
@@ -66,6 +60,7 @@ public:
     unsigned indexOf(const Node *child) const { return map_.mapToBucket(child->slotIndex_, fill_); }
 
 private:
+    Map<Capacity> map_;
     Head slots_[Capacity];
 };
 
@@ -125,7 +120,8 @@ private:
         return reinterpret_cast<const Item *>(data_)[slotIndex];
     }
 
-    std::uint8_t data_[Capacity * sizeof(Item)];
+    Map<Capacity> map_;
+    std::uint8_t data_[Capacity * sizeof(Item)] alignas(Item);
 };
 
 class Tree
@@ -141,7 +137,7 @@ public:
     Node *idealLeafAt(long idealIndex) const
     {
         Node *node = root_.node_;
-        for (unsigned h = height_; h > 0; --h) {
+        for (int h = height_; h > 0; --h) {
             unsigned i = (idealIndex >> ((h - 1) << 2)) & 0xFu;
             if (node->fill_ <= i) i = node->fill_ - 1;
             node = static_cast<const Branch *>(node)->at(i).node_;
@@ -152,10 +148,8 @@ public:
     Node *getMinNode() const
     {
         Node *node = root_.node_;
-        if (node) {
-            while (node->isBranch_) {
-                node = static_cast<const Branch *>(node)->at(0).node_;
-            }
+        for (int h = height_; h > 0; --h) {
+            node = static_cast<const Branch *>(node)->at(0).node_;
         }
         return node;
     }
@@ -163,10 +157,8 @@ public:
     Node *getMaxNode() const
     {
         Node *node = root_.node_;
-        if (node) {
-            while (node->isBranch_) {
-                node = static_cast<const Branch *>(node)->at(node->fill_ - 1).node_;
-            }
+        for (int h = height_; h > 0; --h) {
+            node = static_cast<const Branch *>(node)->at(node->fill_ - 1).node_;
         }
         return node;
     }
@@ -195,12 +187,24 @@ protected:
     template<class Node>
     void distributeForward(Node *from, Node *to);
 
-    void joinSucc(Node *node, Node *newNode);
+    template<class Node>
+    void joinSucc(Node *node, Node *newNode)
+    {
+        joinSucc(node, newNode, std::is_same<Node, Branch>());
+    }
+
+    void joinSucc(Node *node, Node *newNode, bool isBranch);
 
     template<class Node>
     void collapseSucc(Node *node, Node *succ);
 
-    void unlink(Node *node);
+    template<class Node>
+    void unlink(Node *node)
+    {
+        unlink(node, std::is_same<Node, Branch>());
+    }
+
+    void unlink(Node *node, bool isBranch);
 
     static long &weight(Node *child) {
         assert(child->parent_);
@@ -230,33 +234,86 @@ protected:
     Node *lastLeaf_ { nullptr };
     // Node *firstLeaf_ { nullptr };
     bool isDense_ { true };
-    unsigned height_ { 0 };
+    int height_ { -1 };
 };
 
 template<class Node>
 void Tree::dissipate(Node *&node, unsigned &egress)
 {
-    if (node->fill_ == Capacity)
-    {
-        Node *succ = static_cast<Node *>(node->succ_);
+    if (node->fill_ < Capacity) return;
 
-        if (!succ || succ->fill_ >= HalfCapacity) {
-            succ = new Node;
-            joinSucc(node, succ);
-        }
+    Node *succ = static_cast<Node *>(node->succ_);
+    Node *pred = static_cast<Node *>(node->pred_);
 
-        if (egress < Capacity)
-        {
-            distributeForward(node, succ);
-            if (egress > HalfCapacity) {
-                node = succ;
-                egress -= HalfCapacity;
+    #if 1
+    if (succ && pred) {
+        if (succ->fill_ < pred->fill_) {
+            if (egress != Capacity) {
+                dissipateForward(node, succ);
             }
+            else {
+                node = succ;
+                egress = 0;
+            }
+            return;
         }
-        else {
+        if (pred->fill_ < succ->fill_) {
+            if (egress != 0) {
+                dissipateBackward(pred, node);
+                --egress;
+            }
+            else {
+                node = pred;
+                egress = pred->fill_;
+            }
+            return;
+        }
+    }
+    #endif
+
+    if (pred) {
+        if (pred->fill_ < Capacity) {
+            if (egress != 0) {
+                dissipateBackward(pred, node);
+                --egress;
+            }
+            else {
+                node = pred;
+                egress = pred->fill_;
+            }
+            return;
+        }
+    }
+
+    #if 1
+    if (succ) {
+        if (succ->fill_ < Capacity) {
+            if (egress != Capacity) {
+                dissipateForward(node, succ);
+            }
+            else {
+                node = succ;
+                egress = 0;
+            }
+            return;
+        }
+    }
+    #endif
+
+    succ = new Node;
+    joinSucc(node, succ);
+
+    if (egress < Capacity)
+    {
+        distributeForward(node, succ);
+        if (egress > HalfCapacity) {
             node = succ;
-            egress = 0;
+            egress -= HalfCapacity;
         }
+    }
+    else {
+        node = succ;
+        egress = 0;
     }
 }
 

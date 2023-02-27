@@ -19,8 +19,6 @@ namespace cc {
   * \brief Pseudo-random number generator
   *
   * The Random class provides a simple and fast pseudo-random number generator.
-  * The generated numbers lay in the range min() to max(). The series will repeat
-  * after period() numbers. Any choosen seed value will yield the same period.
   */
 class Random
 {
@@ -28,35 +26,38 @@ public:
     /** Create a new random number generator
       * \param seed Seed number
       */
-    Random(int seed = -1);
+    explicit Random(uint32_t seed = 0):
+        x_{seed}
+    {}
 
-    /** Minimum random number
+    /** Generate another random number
       */
-    int min() const { return 0; }
-
-    /** Maximum random number
-      */
-    int max() const { return m - 1; }
-
-    /** Number of random numbers until the series repeats itself
-      */
-    int period() const { return max(); }
-
-    /** Generate another random number in the range [min(), max()]
-      */
-    int get() {
-        x_ = (16807 * x_) % m; /* 7^5 == 16807 */
+    uint32_t get()
+    {
+        x_ = (1664525ul * x_) + 1013904223ul;
         return x_;
     }
 
-    /** Get another random number in the range [\a a, \a b]
+    /** Get another random number in range [a, b]
       */
-    int get(int a, int b)
+    uint32_t get(uint32_t a, uint32_t b)
     {
-        assert(min() <= a);
-        assert(b <= max());
         assert(a <= b);
-        return (static_cast<int64_t>(get()) * (b - a)) / (m - 1) + a;
+        return (static_cast<uint64_t>(get()) * (b - a) >> 32) + a;
+    }
+
+    /** \copydoc get()
+      */
+    uint32_t operator()()
+    {
+        return get();
+    }
+
+    /** \copydoc get(uint32_t, uint32_t)
+      */
+    uint32_t operator()(uint32_t a, uint32_t b)
+    {
+        return get(a, b);
     }
 
     /** Scramble items in \a container
@@ -73,7 +74,6 @@ public:
     }
 
 private:
-    static constexpr uint32_t m = 2147483647; // 2^31 - 1 == 2147483647
     uint32_t x_;
 };
 

@@ -323,6 +323,7 @@ void Vector<T>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... args)
         root_.weight_ = 1;
         root_.node_ = target;
         lastLeaf_ = target;
+        ++height_;
         // firstLeaf_ = leaf;
         // leafCount_ = 1;
     }
@@ -343,6 +344,7 @@ void Vector<T>::pushAndTell(Leaf *&target, unsigned &egress, const Item &item)
         root_.weight_ = 1;
         root_.node_ = target;
         lastLeaf_ = target;
+        ++height_;
         // firstLeaf_ = leaf;
         // leafCount_ = 1;
     }
@@ -373,6 +375,7 @@ void Vector<T>::pop(Node *target, unsigned egress)
         root_.weight_ = 0;
         lastLeaf_ = nullptr;
         // leafCount_ = 0;
+        --height_;
         isDense_ = true;
     }
 }
@@ -436,38 +439,35 @@ template<class Search, class Order, class Pattern>
 bool Vector<T>::lookup(const Pattern &pattern, long *finalIndex, Leaf **target, unsigned *egress, Order order) const
 {
     bool found = false;
-    Node *root = root_.node_;
-    if (root) {
-        if (!root->isBranch_) {
-            Leaf *leaf = static_cast<Leaf *>(root);
-            long i = 0;
-            found = Search::find(leaf, pattern, &i, order);
-            if (finalIndex) *finalIndex = i;
+    if (height_ == 0) {
+        Leaf *leaf = static_cast<Leaf *>(root_.node_);
+        long i = 0;
+        found = Search::find(leaf, pattern, &i, order);
+        if (finalIndex) *finalIndex = i;
+        if (target) *target = leaf;
+        if (egress) *egress = i;
+    }
+    else if (height_ > 0) {
+        Leaf *leaf = static_cast<Leaf *>(lastLeaf_);
+        if (leaf->at(leaf->fill_ - 1) < pattern) {
+            if (finalIndex) *finalIndex = root_.weight_;
             if (target) *target = leaf;
-            if (egress) *egress = i;
+            if (egress) *egress = leaf->fill_;
         }
         else {
-            Leaf *leaf = static_cast<Leaf *>(lastLeaf_);
-            if (leaf->at(leaf->fill_ - 1) < pattern) {
-                if (finalIndex) *finalIndex = root_.weight_;
-                if (target) *target = leaf;
-                if (egress) *egress = leaf->fill_;
+            SearchShim<Item> shim{this};
+            long i = 0, j = 0;
+            bool lookInside = Search::find(&shim, pattern, &j, SearchShimOrder<Pattern, Item, Order>{order});
+            leaf = static_cast<Leaf *>(idealLeafAt(j));
+            unsigned k = 0;
+            if (lookInside) {
+                found = Search::find(leaf, pattern, &k, order);
+                i = k;
             }
-            else {
-                SearchShim<Item> shim{this};
-                long i = 0, j = 0;
-                bool lookInside = Search::find(&shim, pattern, &j, SearchShimOrder<Pattern, Item, Order>{order});
-                leaf = static_cast<Leaf *>(idealLeafAt(j));
-                unsigned k = 0;
-                if (lookInside) {
-                    found = Search::find(leaf, pattern, &k, order);
-                    i = k;
-                }
-                i += nodeOffset(leaf);
-                if (finalIndex) *finalIndex = i;
-                if (target) *target = leaf;
-                if (egress) *egress = k;
-            }
+            i += nodeOffset(leaf);
+            if (finalIndex) *finalIndex = i;
+            if (target) *target = leaf;
+            if (egress) *egress = k;
         }
     }
     else if (finalIndex) {

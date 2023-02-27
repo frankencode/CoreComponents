@@ -38,6 +38,11 @@ public:
         value_{value}
     {}
 
+    KeyValue(const Key &&key, const Value &&value):
+        key_{move(key)},
+        value_{move(value)}
+    {}
+
     /** Get key
       */
     const Key &key() const { return key_; }

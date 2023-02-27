@@ -22,17 +22,17 @@ Node *Tree::stepDownTo(long index, unsigned *egress) const
         *egress = (node) ? node->fill_ - (index < root_.weight_) : 0;
     }
     else if (index <= 0) {
-        while (node->isBranch_) node = static_cast<const Branch *>(node)->at(0).node_;
+        for (int h = height_; h > 0; --h) node = static_cast<const Branch *>(node)->at(0).node_;
         *egress = 0;
     }
     else if (isDense_ && Capacity == 16) {
         *egress = index & 0xFu;
-        for (unsigned h = height_; h > 0; --h) {
+        for (int h = height_; h > 0; --h) {
             node = static_cast<const Branch *>(node)->at((index >> (h << 2)) & 0xFu).node_;
         }
     }
     else {
-        while (node->isBranch_) {
+        for (int h = height_; h > 0; --h) {
             const Branch *branch = static_cast<const Branch *>(node);
             const unsigned n = branch->fill_;
             for (unsigned i = 0; i < n; ++i) {
@@ -51,7 +51,7 @@ Node *Tree::stepDownTo(long index, unsigned *egress) const
     return node;
 }
 
-void Tree::joinSucc(Node *node, Node *newNode)
+void Tree::joinSucc(Node *node, Node *newNode, bool isBranch)
 {
     Node *oldSucc = node->succ();
 
@@ -60,7 +60,7 @@ void Tree::joinSucc(Node *node, Node *newNode)
         oldSucc->pred_ = newNode;
         isDense_ = false;
     }
-    else if (!newNode->isBranch_) {
+    else if (!isBranch) {
         lastLeaf_ = newNode;
     }
 
@@ -82,7 +82,7 @@ void Tree::joinSucc(Node *node, Node *newNode)
     }
 }
 
-void Tree::unlink(Node *node)
+void Tree::unlink(Node *node, bool isBranch)
 {
     Branch *parent = node->parent_;
     parent->pop(parent->indexOf(node));
@@ -91,7 +91,7 @@ void Tree::unlink(Node *node)
     Node *pred = node->pred();
     if (pred) pred->succ_ = succ;
     if (succ) succ->pred_ = pred;
-    else if (!node->isBranch_) lastLeaf_ = pred;
+    else if (!isBranch) lastLeaf_ = pred;
 
     delete node;
 
@@ -110,7 +110,7 @@ void Tree::shiftWeights(Node *from, Node *to, long delta)
 
 void Tree::updateWeights(Node *node, long delta)
 {
-    while (node != root_.node_) {
+    for (int h = height_; h > 0; --h) {
         weight(node) += delta;
         node = node->parent_;
     }
@@ -120,7 +120,7 @@ void Tree::updateWeights(Node *node, long delta)
 void Tree::reduce()
 {
     if (root_.node_) {
-        while (root_.node_->isBranch_ && root_.node_->fill_ == 1) {
+        while (height_ > 0 && root_.node_->fill_ == 1) {
             Branch *branch = static_cast<Branch *>(root_.node_);
             root_.node_ = branch->at(0).node_;
             delete branch;
