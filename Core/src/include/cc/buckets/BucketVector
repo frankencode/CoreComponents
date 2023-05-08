@@ -52,6 +52,13 @@ public:
             new (p) Item{args...};
         }
 
+        void push(unsigned egress, Item &&item)
+        {
+            unsigned slotIndex = map_.pushEntry(egress, fill_);
+            ++fill_;
+            new (&slotAt(slotIndex)) Item{std::move(item)};
+        }
+
         void push(unsigned egress, const Item &item)
         {
             unsigned slotIndex = map_.pushEntry(egress, fill_);
@@ -61,14 +68,11 @@ public:
             else *p = item;
         }
 
-        void pop(unsigned egress)
+        Item &drop(unsigned egress)
         {
             unsigned slotIndex = map_.popEntry(egress, fill_);
             --fill_;
-            if (!std::is_trivial<Item>::value) {
-                Item *p = &slotAt(slotIndex);
-                p->~Item();
-            }
+            return slotAt(slotIndex);
         }
 
         static long weightAt(unsigned egress) { return 1; }
@@ -79,8 +83,7 @@ public:
             assert(dest->fill_ <= HalfCapacity);
 
             for (unsigned i = 0; i < HalfCapacity; ++i) {
-                dest->push(i, at(HalfCapacity));
-                pop(HalfCapacity);
+                dest->push(i, std::move(drop(HalfCapacity)));
             }
 
             return HalfCapacity;
@@ -488,7 +491,7 @@ void BucketVector<T>::pop(Node *target, unsigned egress)
 {
     if (root_.weight_ > 1) {
         Leaf *leaf = static_cast<Leaf *>(target);
-        leaf->pop(egress);
+        leaf->drop(egress).~Item();
         updateWeights(leaf, -1);
         if (leaf->succ_) isDense_ = false;
         relieve(leaf);

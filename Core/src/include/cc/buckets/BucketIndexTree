@@ -13,6 +13,7 @@
 #include <cc/find>
 #include <type_traits>
 #include <limits>
+#include <utility>
 #include <cassert>
 
 namespace cc::buckets {
@@ -67,10 +68,11 @@ public:
             head.node_->parent_ = this;
         }
 
-        void pop(unsigned egress) // TODO: return reference to deallocated item
+        Head &drop(unsigned egress)
         {
-            map_.popEntry(egress, fill_);
+            unsigned slotIndex = map_.popEntry(egress, fill_);
             --fill_;
+            return slots_[slotIndex];
         }
 
         long weightAt(unsigned egress) const { return at(egress).weight_; }
@@ -87,8 +89,7 @@ public:
             long delta = 0;
             for (unsigned i = 0; i < HalfCapacity; ++i) {
                 delta += weightAt(HalfCapacity);
-                succ->push(i, at(HalfCapacity));
-                pop(HalfCapacity);
+                succ->push(i, std::move(drop(HalfCapacity)));
             }
 
             return delta;
@@ -292,8 +293,7 @@ void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
             long delta = 0;
             for (unsigned k = Node::Capacity - 1; k >= Node::Capacity - Node::QuarterCapacity; --k) {
                 delta += pred->weightAt(k);
-                node->push(0, pred->at(k));
-                pred->pop(k);
+                node->push(0, std::move(pred->drop(k)));
             }
             shiftWeights(pred, node, delta);
         }
@@ -303,8 +303,7 @@ void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
             long delta = 0;
             for (unsigned k = Node::HalfCapacity; k < Node::HalfCapacity + Node::QuarterCapacity; ++k) {
                 delta += succ->weightAt(0);
-                newSucc->push(k, succ->at(0));
-                succ->pop(0);
+                newSucc->push(k, std::move(succ->drop(0)));
             }
             shiftWeights(succ, newSucc, delta);
         }
@@ -352,8 +351,7 @@ void BucketIndexTree::dissipateForward(NodeType *from, NodeType *to)
     assert(to->fill_ < Node::Capacity);
 
     long delta = from->weightAt(from->fill_ - 1);
-    to->push(0, from->at(from->fill_ - 1));
-    from->pop(from->fill_ - 1);
+    to->push(0, std::move(from->drop(from->fill_ - 1)));
     shiftWeights(from, to, delta);
 }
 
@@ -364,8 +362,7 @@ void BucketIndexTree::dissipateBackward(NodeType *to, NodeType *from)
     assert(to->fill_ < Node::Capacity);
 
     long delta = from->weightAt(0);
-    to->push(to->fill_, from->at(0));
-    from->pop(0);
+    to->push(to->fill_, std::move(from->drop(0)));
     shiftWeights(from, to, delta);
 }
 

@@ -51,7 +51,7 @@ public:
     /** Take over the right-side set \a other
       */
     Set(Set &&other):
-        me{move(other.me)}
+        me{std::move(other.me)}
     {}
 
     /** Assign set \a other
@@ -62,7 +62,7 @@ public:
       */
     Set &operator=(Set &&other)
     {
-        me = move(other.me);
+        me = std::move(other.me);
         return *this;
     }
 

@@ -51,7 +51,7 @@ public:
     /** Take over the right-side multi-set \a other
       */
     MultiSet(MultiSet &&other):
-        me{move(other.me)}
+        me{std::move(other.me)}
     {}
 
     /** Assign multi-set \a other
@@ -62,7 +62,7 @@ public:
       */
     MultiSet &operator=(MultiSet &&other)
     {
-        me = move(other.me);
+        me = std::move(other.me);
         return *this;
     }
 

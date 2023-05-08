@@ -84,7 +84,7 @@ void BucketIndexTree::joinSucc(Node *node, Node *newNode, bool isBranch)
 void BucketIndexTree::unlink(Node *node, bool isBranch)
 {
     Branch *parent = node->parent_;
-    parent->pop(parent->indexOf(node));
+    parent->drop(parent->indexOf(node));
 
     Node *succ = node->succ();
     Node *pred = node->pred();

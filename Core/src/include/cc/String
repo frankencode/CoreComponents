@@ -1025,6 +1025,36 @@ public:
 
     ///@}
 
+    #if 0
+    /** \name Comparism operators
+      */
+    ///@{
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const String &other) const
+    {
+        auto &a = me();
+        auto &b = other.me();
+        std::strong_ordering ordering = std::strncmp(a.chars(), b.chars(), a.count < b.count ? a.count : b.count) <=> 0;
+        if (ordering == std::strong_ordering::equal) return a.count <=> b.count;
+        return ordering;
+    }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const char *other) const
+    {
+        auto &a = me();
+        const char *b = other;
+        std::strong_ordering ordering = std::strncmp(a.chars(), b, a.count) <=> 0;
+        if (ordering == std::strong_ordering::equal) return a.count <=> static_cast<long>(std::strlen(b));
+        return ordering;
+    }
+
+    ///@}
+    #endif
+
     /** \name Type Compatibility
       */
     ///@{
@@ -1169,6 +1199,7 @@ inline bool operator==(const char *a, const String &b)
     return static_cast<long>(std::strlen(a)) == b.count() && std::strncmp(a, b.chars(), b.count()) == 0;
 }
 
+#if 1
 /** Lower than operator
   */
 inline bool operator<(const String &a, const String &b)
@@ -1216,11 +1247,13 @@ inline bool operator<=(const char *a, const String &b)
     int r = std::strncmp(a, b.chars(), b.count());
     return r < 0 || (r == 0 && static_cast<long>(std::strlen(a)) <= b.count());
 }
+#endif
 
 inline bool operator!=(const String &a, const String &b) { return !(a == b); } ///< Not equal to operator
 inline bool operator!=(const String &a, const char *b) { return !(a == b); } ///< Not equal to operator
 inline bool operator!=(const char *a, const String &b) { return !(a == b); } ///< Not equal to operator
 
+#if 1
 inline bool operator>(const String &a, const String &b) { return b < a; } ///< Greater than operator
 inline bool operator>(const String &a, const char *b) { return b < a; } ///< Greater than operator
 inline bool operator>(const char *a, const String &b) { return b < a; } ///< Greater than operator
@@ -1228,6 +1261,7 @@ inline bool operator>(const char *a, const String &b) { return b < a; } ///< Gre
 inline bool operator>=(const String &a, const String &b) { return b <= a; } ///< Greater than or equal to operator
 inline bool operator>=(const String &a, const char *b) { return b <= a; } ///< Greater than or equal to operator
 inline bool operator>=(const char *a, const String &b) { return b <= a; } ///< Greater than or equal to operator
+#endif
 
 /** %String concatenation operator
   */
