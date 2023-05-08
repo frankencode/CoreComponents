@@ -56,6 +56,16 @@ private:
             innerHashSink_.write(data, fill);
         }
 
+        void write(const struct iovec *iov, int iovcnt) override
+        {
+            CryptoHashSink::State::write(iov, iovcnt);
+        }
+
+        void write(const List<Bytes> &buffers) override
+        {
+            CryptoHashSink::State::write(buffers);
+        }
+
         Bytes finish() override
         {
             outerHashSink_.write(innerHashSink_.finish());
