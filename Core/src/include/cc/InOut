@@ -13,17 +13,16 @@
 
 namespace cc {
 
-/** \class InOut cc/basics
+/** \class InOut cc/InOut
   * \ingroup basics
   * \brief Call by reference function arguments
   * \tparam T return value type
-  * \todo rename to InOut and differentiate from strictly Out
   */
 template<class T>
 class InOut
 {
 public:
-    /** Construct an call by reference argument
+    /** Construct a call by reference argument
       */
     InOut(T *x): p{x} {}
 

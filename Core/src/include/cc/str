@@ -29,7 +29,7 @@ struct SignBit<false> {
 };
 
 template<class T>
-int signBit(T x) { return SignBit<std::is_signed<T>::value>::get(x); }
+inline int signBit(T x) { return SignBit<std::is_signed<T>::value>::get(x); }
 
 /** \name Number Formatting Functions
   */
@@ -44,7 +44,7 @@ int signBit(T x) { return SignBit<std::is_signed<T>::value>::get(x); }
   * \return Text representation of x
   */
 template<class T>
-String inum(T x, int base = 10, int n = -1)
+inline String inum(T x, int base = 10, int n = -1)
 {
     int sign = signBit(x);
     if (sign) x = -x;
@@ -70,7 +70,7 @@ String inum(T x, int base = 10, int n = -1)
   * \return Text representation of x
   */
 template<class T>
-String dec(T x, int n = -1) { return inum(x, 10, n); }
+inline String dec(T x, int n = -1) { return inum(x, 10, n); }
 
 /** Convert an integer to a hexadecimal string
   * \param x Integer value
@@ -78,7 +78,7 @@ String dec(T x, int n = -1) { return inum(x, 10, n); }
   * \return Text representation of x
   */
 template<class T>
-String hex(T x, int n = -1) { return inum(x, 16, n); }
+inline String hex(T x, int n = -1) { return inum(x, 16, n); }
 
 /** Convert \a data to hexadecimal
   */
@@ -98,7 +98,7 @@ inline String hex(const String &data, char a = 'A') { return hex(data.asBytes(),
   * \return Text representation of x
   */
 template<class T>
-String oct(T x, int n = -1) { return inum(x, 8, n); }
+inline String oct(T x, int n = -1) { return inum(x, 8, n); }
 
 /** Convert an integer to a binary string
   * \param x Integer value
@@ -106,7 +106,7 @@ String oct(T x, int n = -1) { return inum(x, 8, n); }
   * \return Text representation of x
   */
 template<class T>
-String bin(T x, int n = -1) { return inum(x, 2, n); }
+inline String bin(T x, int n = -1) { return inum(x, 2, n); }
 
 /** Convert a floating-point number to string
   * \param x Floating-point value
@@ -218,7 +218,7 @@ inline String str(double x) { return dec(x); }
 /** Convert \a list to string
   */
 template<class T>
-String str(const List<T> &list)
+inline String str(const List<T> &list)
 {
     if (list.count() == 0) return "[]";
     List<String> f;
@@ -238,7 +238,7 @@ class Map;
 /** Convert \a map to string
   */
 template<class K, class T>
-String str(const Map<K, T> &map)
+inline String str(const Map<K, T> &map)
 {
     auto n = map.count();
     if (n == 0) return "[]";
@@ -258,7 +258,7 @@ class MultiMap;
 /** Convert \a map to string
   */
 template<class K, class T>
-String str(const MultiMap<K, T> &map)
+inline String str(const MultiMap<K, T> &map)
 {
     auto n = map.count();
     if (n == 0) return "[]";
@@ -278,7 +278,7 @@ class Set;
 /** Convert \a set to string
   */
 template<class T>
-String str(const Set<T> &set)
+inline String str(const Set<T> &set)
 {
     auto n = set.count();
     if (n == 0) return "[]";
@@ -298,7 +298,7 @@ class MultiSet;
 /** Convert \a set to string
   */
 template<class T>
-String str(const MultiSet<T> &set)
+inline String str(const MultiSet<T> &set)
 {
     auto n = set.count();
     if (n == 0) return "[]";

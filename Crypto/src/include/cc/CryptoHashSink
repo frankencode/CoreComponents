@@ -35,7 +35,6 @@ protected:
           */
         virtual int blockSize() const = 0;
 
-    private:
         void write(const List<Bytes> &buffers) override;
         void write(const struct iovec *iov, int iovcnt) override;
     };

@@ -412,7 +412,8 @@ void SdlWindow::State::renderTexture(SDL_Renderer *sdlRenderer, const View &view
 {
     if (!viewContext(view)) return;
 
-    const SdlContext::State &context = viewContext(view).as<SdlContext>().me();
+    auto sdlContext = viewContext(view).as<SdlContext>(); // FIXME: slightly costly;)
+    const SdlContext::State &context = sdlContext.me();
     SDL_Texture *sdlTexture = context.sdlTexture_;
 
     if (!sdlTexture) return;

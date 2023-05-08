@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/bucket/Chain>
+#include <cc/buckets/BucketChain>
 #include <cc/Iterator>
 #include <cc/Shared>
 #include <cc/container>
@@ -212,8 +212,8 @@ public:
 
     ///@}
 
-    using const_iterator = Iterator<const bucket::Chain<Item>>; ///< \internal Readonly value iterator
-    using const_reverse_iterator = ReverseIterator<const bucket::Chain<Item>>; ///< \internal Readonly reverse value iterator
+    using const_iterator = Iterator<const buckets::BucketChain<Item>>; ///< \internal Readonly value iterator
+    using const_reverse_iterator = ReverseIterator<const buckets::BucketChain<Item>>; ///< \internal Readonly reverse value iterator
     using value_type = Item; ///< \internal Item value type
     using size_type = long; ///< \internal Type of the container capacity
 
@@ -247,7 +247,7 @@ public:
     ///@}
 
 private:
-    Access<bucket::Chain<Item>> me;
+    Access<buckets::BucketChain<Item>> me;
 };
 
 } // namespace cc

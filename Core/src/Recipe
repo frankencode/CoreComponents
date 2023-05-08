@@ -16,4 +16,5 @@ Library {
         cascade: true
     }
     link: dl
+    source: [ *.cc, buckets/*.cc ]
 }

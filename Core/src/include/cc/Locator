@@ -8,14 +8,13 @@
 
 #pragma once
 
-#include <cc/bucket/Stop>
+#include <cc/buckets/BucketStop>
 #include <cassert>
 
-namespace cc {
-namespace bucket {
-template<class T> class Vector;
-template<class T> class Chain;
-}};
+namespace cc::buckets {
+template<class T> class BucketVector;
+template<class T> class BucketChain;
+};
 
 namespace cc {
 
@@ -91,15 +90,15 @@ public:
     explicit operator bool() const { return stop_; }
 
 protected:
-    using Stop = bucket::Stop;
+    using BucketStop = buckets::BucketStop;
 
     template<class>
-    friend class cc::bucket::Vector;
+    friend class cc::buckets::BucketVector;
 
     template<class>
-    friend class cc::bucket::Chain;
+    friend class cc::buckets::BucketChain;
 
-    explicit Locator(const long *revision, long index, Stop *stop, unsigned egress):
+    explicit Locator(const long *revision, long index, BucketStop *stop, unsigned egress):
         #ifndef NDEBUG
         revisionSaved_{*revision},
         revisionPtr_{revision},
@@ -141,7 +140,7 @@ protected:
     const long *revisionPtr_ { &revisionSaved_ };
     #endif
     long index_;
-    Stop *stop_;
+    BucketStop *stop_;
     unsigned egress_;
 };
 

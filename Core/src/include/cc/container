@@ -8,8 +8,7 @@
 
 #pragma once
 
-namespace cc {
-namespace container {
+namespace cc::container {
 
 /** \internal
   * Comparism result
@@ -88,4 +87,4 @@ bool aboveOrEqual(const A &a, const B &b)
     return result == Compares::Above || result == Compares::Equal;
 }
 
-}} // namespace cc::container
+} // namespace cc::container

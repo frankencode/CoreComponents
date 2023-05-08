@@ -25,6 +25,16 @@ struct Sha1HashSink::State: public CryptoHashSink::State
 
     int blockSize() const override { return BlockSize; }
 
+    void write(const List<Bytes> &buffers) override
+    {
+        CryptoHashSink::State::write(buffers);
+    }
+
+    void write(const struct iovec *iov, int iovcnt) override
+    {
+        CryptoHashSink::State::write(iov, iovcnt);
+    }
+
     void write(const Bytes &data, long fill = -1) override
     {
         if (fill < 0) fill = data.count();

@@ -1,0 +1,395 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/buckets/BucketSlotMap>
+#include <cc/buckets/BucketStop>
+#include <cc/find>
+#include <type_traits>
+#include <limits>
+#include <cassert>
+
+namespace cc::buckets {
+
+/** \internal
+  * \brief Purely counted B-tree
+  *
+  * The BucketIndexTree is a B-tree which contains only sub-tree weights as keys in the inner nodes.
+  * The levels of the tree are comprised of double linked bucket chains, with each bucket holding
+  * up to 16 keys (inner nodes) or 16 items (leaf nodes). Item storage and retrieval has to be defined
+  * in a derived class. This class provides only part of the tree logic which is independent of the
+  * item type.
+  *
+  * \see BucketVector
+  */
+class BucketIndexTree
+{
+public:
+    class Branch;
+
+    class Node: public BucketStop
+    {
+    public:
+        static constexpr unsigned Capacity = 16;
+        static constexpr unsigned HalfCapacity = Capacity >> 1;
+        static constexpr unsigned QuarterCapacity = Capacity >> 2;
+
+        Node *succ() const { return static_cast<Node *>(succ_); }
+        Node *pred() const { return static_cast<Node *>(pred_); }
+        Branch *parent_ { nullptr };
+    };
+
+    class Head
+    {
+    public:
+        long weight_;
+        Node *node_;
+    };
+
+    class Branch final: public Node
+    {
+    public:
+        Head &at(unsigned egress) { return slots_[map_.mapToSlot(egress)]; }
+        const Head &at(unsigned egress) const { return slots_[map_.mapToSlot(egress)]; }
+
+        void push(unsigned egress, const Head &head)
+        {
+            unsigned slotIndex = map_.pushEntry(egress, fill_);
+            ++fill_;
+            slots_[slotIndex] = head;
+            head.node_->slotIndex_ = slotIndex;
+            head.node_->parent_ = this;
+        }
+
+        void pop(unsigned egress) // TODO: return reference to deallocated item
+        {
+            map_.popEntry(egress, fill_);
+            --fill_;
+        }
+
+        long weightAt(unsigned egress) const { return at(egress).weight_; }
+
+        long &weightOf(const Node *child) { return slots_[child->slotIndex_].weight_; }
+
+        unsigned indexOf(const Node *child) const { return map_.mapToBucket(child->slotIndex_); }
+
+        long distributeTo(Branch *succ)
+        {
+            assert(fill_ == Capacity);
+            assert(succ->fill_ <= HalfCapacity);
+
+            long delta = 0;
+            for (unsigned i = 0; i < HalfCapacity; ++i) {
+                delta += weightAt(HalfCapacity);
+                succ->push(i, at(HalfCapacity));
+                pop(HalfCapacity);
+            }
+
+            return delta;
+        }
+
+    private:
+        BucketSlotMap<Capacity> map_;
+        Head slots_[Capacity];
+    };
+
+    long count() const { return root_.weight_; }
+
+    long idealLeafCount() const
+    {
+        return (height_ > 0) ? root_.node_->fill_ << ((height_ - 1) << 2) : 1;
+    }
+
+    Node *idealLeafAt(long idealIndex) const
+    {
+        Node *node = root_.node_;
+        for (int h = height_; h > 0; --h) {
+            unsigned i = (idealIndex >> ((h - 1) << 2)) & 0xFu;
+            if (node->fill_ <= i) i = node->fill_ - 1;
+            node = static_cast<const Branch *>(node)->at(i).node_;
+        }
+        return node;
+    }
+
+    Node *locateIdealLeaf(long idealIndex, long *offset) const
+    {
+        Node *node = root_.node_;
+        long predWeight = 0;
+        for (int h = height_; h > 0; --h) {
+            unsigned i = (idealIndex >> ((h - 1) << 2)) & 0xFu;
+            if (node->fill_ <= i) i = node->fill_ - 1;
+            const Branch *branch = static_cast<const Branch *>(node);
+            for (unsigned k = 0; k < i; ++k) {
+                predWeight += branch->weightAt(k);
+            }
+            node = branch->at(i).node_;
+        }
+        *offset = predWeight;
+        return node;
+    }
+
+    Node *getMinNode() const
+    {
+        Node *node = root_.node_;
+        for (int h = height_; h > 0; --h) {
+            node = static_cast<const Branch *>(node)->at(0).node_;
+        }
+        return node;
+    }
+
+    Node *getMaxNode() const
+    {
+        Node *node = root_.node_;
+        for (int h = height_; h > 0; --h) {
+            node = static_cast<const Branch *>(node)->at(node->fill_ - 1).node_;
+        }
+        return node;
+    }
+
+    const Head *root() const { return &root_; }
+
+    bool isDense() const { return isDense_; }
+
+    #ifndef NDEBUG
+    long revision() const { return root_.weight_; }
+    #endif
+
+    Node *stepDownTo(long index, unsigned *egress) const;
+
+protected:
+    template<class>
+    friend class SearchShim;
+
+    template<class NodeType>
+    void dissipate(NodeType *&node, unsigned &egress)
+    {
+        if (node->fill_ == Node::Capacity) dissipateSlow(node, egress);
+    }
+
+    template<class NodeType>
+    void dissipateSlow(NodeType *&node, unsigned &egress);
+
+    template<class NodeType>
+    void relieve(NodeType *node, bool recursive = false);
+
+    template<class NodeType>
+    void dissipateForward(NodeType *from, NodeType *to);
+
+    template<class NodeType>
+    void dissipateBackward(NodeType *to, NodeType *from);
+
+    template<class NodeType>
+    void distributeForward(NodeType *from, NodeType *to);
+
+    template<class NodeType>
+    void joinSucc(NodeType *node, NodeType *newNode)
+    {
+        joinSucc(node, newNode, std::is_same<NodeType, Branch>());
+    }
+
+    void joinSucc(Node *node, Node *newNode, bool isBranch);
+
+    template<class NodeType>
+    void collapseSucc(NodeType *node, NodeType *succ);
+
+    template<class NodeType>
+    void unlink(NodeType *node)
+    {
+        unlink(node, std::is_same<NodeType, Branch>());
+    }
+
+    void unlink(Node *node, bool isBranch);
+
+    static long &weight(Node *child) {
+        assert(child->parent_);
+        return child->parent_->weightOf(child);
+    }
+
+    static void shiftWeights(Node *from, Node *to, long delta);
+    void updateWeights(Node *node, long delta);
+
+    void reduce();
+
+    Head root_ { .weight_ = 0, .node_ = nullptr };
+    Node *lastLeaf_ { nullptr };
+    bool isDense_ { true };
+    int height_ { -1 };
+};
+
+template<class NodeType>
+void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
+{
+    NodeType *succ = static_cast<NodeType *>(node->succ_);
+    NodeType *pred = static_cast<NodeType *>(node->pred_);
+
+    if (succ && pred) {
+        if (succ->fill_ < pred->fill_) {
+            if (egress != Node::Capacity) {
+                dissipateForward(node, succ);
+            }
+            else {
+                node = succ;
+                egress = 0;
+            }
+            return;
+        }
+        if (pred->fill_ < succ->fill_) {
+            if (egress != 0) {
+                dissipateBackward(pred, node);
+                --egress;
+            }
+            else {
+                node = pred;
+                egress = pred->fill_;
+            }
+            return;
+        }
+    }
+
+    if (pred) {
+        if (pred->fill_ < Node::Capacity) {
+            if (egress != 0) {
+                dissipateBackward(pred, node);
+                --egress;
+            }
+            else {
+                node = pred;
+                egress = pred->fill_;
+            }
+            return;
+        }
+    }
+
+    if (succ) {
+        if (succ->fill_ < Node::Capacity) {
+            if (egress != Node::Capacity) {
+                dissipateForward(node, succ);
+            }
+            else {
+                node = succ;
+                egress = 0;
+            }
+            return;
+        }
+    }
+
+    NodeType *newSucc = new NodeType;
+    joinSucc(node, newSucc);
+
+    if (egress < Node::Capacity)
+    {
+        distributeForward(node, newSucc);
+
+        #if 1
+        if (pred) {
+            assert(pred->fill_ == Node::Capacity);
+            long delta = 0;
+            for (unsigned k = Node::Capacity - 1; k >= Node::Capacity - Node::QuarterCapacity; --k) {
+                delta += pred->weightAt(k);
+                node->push(0, pred->at(k));
+                pred->pop(k);
+            }
+            shiftWeights(pred, node, delta);
+        }
+
+        if (succ) {
+            assert(succ->fill_ == Node::Capacity);
+            long delta = 0;
+            for (unsigned k = Node::HalfCapacity; k < Node::HalfCapacity + Node::QuarterCapacity; ++k) {
+                delta += succ->weightAt(0);
+                newSucc->push(k, succ->at(0));
+                succ->pop(0);
+            }
+            shiftWeights(succ, newSucc, delta);
+        }
+        #endif
+
+        if (egress > Node::HalfCapacity) {
+            node = newSucc;
+            egress -= Node::HalfCapacity;
+        }
+        #if 1
+        else if (pred) {
+            egress += Node::QuarterCapacity;
+        }
+
+        assert(egress <= node->fill_);
+        #endif
+    }
+    else {
+        node = newSucc;
+        egress = 0;
+    }
+}
+
+template<class NodeType>
+void BucketIndexTree::relieve(NodeType *node, bool recursive)
+{
+    NodeType *succ = static_cast<NodeType *>(node->succ_);
+    if (node->fill_ < Node::HalfCapacity) {
+        if (succ) {
+            if (succ->fill_ > Node::HalfCapacity)
+                dissipateBackward(node, succ);
+            else
+                collapseSucc(node, succ);
+        }
+        else if (node->fill_ == 0) {
+            unlink(node);
+        }
+    }
+}
+
+template<class NodeType>
+void BucketIndexTree::dissipateForward(NodeType *from, NodeType *to)
+{
+    assert(from->fill_ > 0);
+    assert(to->fill_ < Node::Capacity);
+
+    long delta = from->weightAt(from->fill_ - 1);
+    to->push(0, from->at(from->fill_ - 1));
+    from->pop(from->fill_ - 1);
+    shiftWeights(from, to, delta);
+}
+
+template<class NodeType>
+void BucketIndexTree::dissipateBackward(NodeType *to, NodeType *from)
+{
+    assert(from->fill_ > 0);
+    assert(to->fill_ < Node::Capacity);
+
+    long delta = from->weightAt(0);
+    to->push(to->fill_, from->at(0));
+    from->pop(0);
+    shiftWeights(from, to, delta);
+}
+
+template<class NodeType>
+void BucketIndexTree::distributeForward(NodeType *from, NodeType *to)
+{
+    assert(from->fill_ == Node::Capacity);
+    assert(to->fill_ <= Node::HalfCapacity);
+
+    shiftWeights(from, to, from->distributeTo(to));
+
+    isDense_ = false;
+}
+
+template<class NodeType>
+void BucketIndexTree::collapseSucc(NodeType *node, NodeType *succ)
+{
+    assert(node->fill_ + succ->fill_ <= Node::Capacity);
+
+    for (unsigned i = 0; i < succ->fill_; ++i) {
+        node->push(node->fill_, succ->at(i));
+    }
+    shiftWeights(succ, node, weight(succ));
+    unlink(succ);
+}
+
+} // namespace cc::buckets

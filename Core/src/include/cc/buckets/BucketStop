@@ -8,19 +8,14 @@
 
 #pragma once
 
-namespace cc {
-namespace bucket {
+namespace cc::buckets {
 
-static constexpr unsigned Capacity = 16;
-static constexpr unsigned HalfCapacity = Capacity >> 1;
-static constexpr unsigned MinFill = HalfCapacity;
-
-class Stop
+class BucketStop
 {
 public:
-    Stop() = default;
+    BucketStop() = default;
 
-    Stop(Stop *pred, Stop *succ):
+    BucketStop(BucketStop *pred, BucketStop *succ):
         succ_{succ},
         pred_{pred}
     {
@@ -28,10 +23,10 @@ public:
         if (succ) succ->pred_ = this;
     }
 
-    Stop *succ_ { nullptr };
-    Stop *pred_ { nullptr };
+    BucketStop *succ_ { nullptr };
+    BucketStop *pred_ { nullptr };
     unsigned fill_ { 0 };
     unsigned slotIndex_ { 0 };
 };
 
-}} // namespace cc::bucket
+} // namespace cc::buckets

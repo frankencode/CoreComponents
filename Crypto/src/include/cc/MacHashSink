@@ -51,7 +51,7 @@ private:
 
         int blockSize() const override { return innerHashSink_.blockSize(); }
 
-        void write(const Bytes &data, long fill = -1) override
+        void write(const Bytes &data, long fill) override
         {
             innerHashSink_.write(data, fill);
         }

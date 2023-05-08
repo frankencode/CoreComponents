@@ -6,12 +6,11 @@
  *
  */
 
-#include <cc/bucket/Tree>
+#include <cc/buckets/BucketIndexTree>
 
-namespace cc {
-namespace bucket {
+namespace cc::buckets {
 
-Node *Tree::stepDownTo(long index, unsigned *egress) const
+BucketIndexTree::Node *BucketIndexTree::stepDownTo(long index, unsigned *egress) const
 {
     assert(0 <= index && index <= root_.weight_);
 
@@ -25,7 +24,7 @@ Node *Tree::stepDownTo(long index, unsigned *egress) const
         for (int h = height_; h > 0; --h) node = static_cast<const Branch *>(node)->at(0).node_;
         *egress = 0;
     }
-    else if (isDense_ && Capacity == 16) {
+    else if (isDense_ && Node::Capacity == 16) {
         *egress = index & 0xFu;
         for (int h = height_; h > 0; --h) {
             node = static_cast<const Branch *>(node)->at((index >> (h << 2)) & 0xFu).node_;
@@ -51,7 +50,7 @@ Node *Tree::stepDownTo(long index, unsigned *egress) const
     return node;
 }
 
-void Tree::joinSucc(Node *node, Node *newNode, bool isBranch)
+void BucketIndexTree::joinSucc(Node *node, Node *newNode, bool isBranch)
 {
     Node *oldSucc = node->succ();
 
@@ -69,7 +68,7 @@ void Tree::joinSucc(Node *node, Node *newNode, bool isBranch)
 
     Branch *parent = node->parent_;
     if (parent) {
-        unsigned newNodeIndex = node->parent_->indexOf(node) + 1;
+        unsigned newNodeIndex = parent->indexOf(node) + 1;
         dissipate(parent, newNodeIndex);
         parent->push(newNodeIndex, Head{.weight_ = 0, .node_ = newNode});
     }
@@ -82,7 +81,7 @@ void Tree::joinSucc(Node *node, Node *newNode, bool isBranch)
     }
 }
 
-void Tree::unlink(Node *node, bool isBranch)
+void BucketIndexTree::unlink(Node *node, bool isBranch)
 {
     Branch *parent = node->parent_;
     parent->pop(parent->indexOf(node));
@@ -98,7 +97,7 @@ void Tree::unlink(Node *node, bool isBranch)
     relieve(parent);
 }
 
-void Tree::shiftWeights(Node *from, Node *to, long delta)
+void BucketIndexTree::shiftWeights(Node *from, Node *to, long delta)
 {
     while (from != to) {
         weight(from) -= delta;
@@ -108,7 +107,7 @@ void Tree::shiftWeights(Node *from, Node *to, long delta)
     }
 }
 
-void Tree::updateWeights(Node *node, long delta)
+void BucketIndexTree::updateWeights(Node *node, long delta)
 {
     for (int h = height_; h > 0; --h) {
         weight(node) += delta;
@@ -117,7 +116,7 @@ void Tree::updateWeights(Node *node, long delta)
     root_.weight_ += delta;
 }
 
-void Tree::reduce()
+void BucketIndexTree::reduce()
 {
     if (root_.node_) {
         while (height_ > 0 && root_.node_->fill_ == 1) {
@@ -130,11 +129,11 @@ void Tree::reduce()
     }
 }
 
-template void Tree::dissipate<Branch>(Branch *&node, unsigned &egress);
-template void Tree::relieve<Branch>(Branch *node, bool recursive);
-template void Tree::dissipateForward<Branch>(Branch *from, Branch *to);
-template void Tree::dissipateBackward<Branch>(Branch *to, Branch *from);
-template void Tree::distributeForward<Branch>(Branch *from, Branch *to);
-template void Tree::collapseSucc<Branch>(Branch *node, Branch *succ);
+template void BucketIndexTree::dissipateSlow<BucketIndexTree::Branch>(Branch *&node, unsigned &egress);
+template void BucketIndexTree::relieve<BucketIndexTree::Branch>(Branch *node, bool recursive);
+template void BucketIndexTree::dissipateForward<BucketIndexTree::Branch>(Branch *from, Branch *to);
+template void BucketIndexTree::dissipateBackward<BucketIndexTree::Branch>(Branch *to, Branch *from);
+template void BucketIndexTree::distributeForward<BucketIndexTree::Branch>(Branch *from, Branch *to);
+template void BucketIndexTree::collapseSucc<BucketIndexTree::Branch>(Branch *node, Branch *succ);
 
-}} // namespace cc::bucket
+} // namespace cc::buckets

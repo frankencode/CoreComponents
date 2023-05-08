@@ -8,27 +8,100 @@
 
 #pragma once
 
-#include <cc/bucket/Tree>
+#include <cc/buckets/BucketIndexTree>
 #include <cc/Locator>
 #include <cc/InOut>
 #include <cc/order>
 
-namespace cc {
-namespace bucket {
+namespace cc::buckets {
 
 /** \internal
-  * \brief Unified internal data structure
+  * \brief Implementation of a variable length vector on top of \a BucketIndexTree
   */
 template<class T>
-class Vector: public Tree
+class BucketVector final: public BucketIndexTree
 {
 public:
     using Item = T;
-    using Leaf = bucket::Leaf<T>;
 
-    Vector() = default;
+    class Leaf final: public Node
+    {
+    public:
+        Leaf() = default;
 
-    Vector(const Vector &other)
+        ~Leaf() {
+            if (!std::is_trivial<Item>::value) {
+                for (unsigned i = 0; i < fill_; ++i) {
+                    Item *p = &at(i);
+                    p->~Item();
+                }
+            }
+        }
+
+        Item &at(unsigned egress) { return slotAt(map_.mapToSlot(egress)); }
+        const Item &at(unsigned egress) const { return slotAt(map_.mapToSlot(egress)); }
+
+        unsigned count() const { return fill_; }
+
+        template<class... Args>
+        void emplace(unsigned egress, Args... args)
+        {
+            unsigned slotIndex = map_.pushEntry(egress, fill_);
+            ++fill_;
+            Item *p = &slotAt(slotIndex);
+            new (p) Item{args...};
+        }
+
+        void push(unsigned egress, const Item &item)
+        {
+            unsigned slotIndex = map_.pushEntry(egress, fill_);
+            ++fill_;
+            Item *p = &slotAt(slotIndex);
+            if (!std::is_trivial<Item>::value) new (p) Item{item};
+            else *p = item;
+        }
+
+        void pop(unsigned egress)
+        {
+            unsigned slotIndex = map_.popEntry(egress, fill_);
+            --fill_;
+            if (!std::is_trivial<Item>::value) {
+                Item *p = &slotAt(slotIndex);
+                p->~Item();
+            }
+        }
+
+        static long weightAt(unsigned egress) { return 1; }
+
+        long distributeTo(Leaf *dest)
+        {
+            assert(fill_ == Capacity);
+            assert(dest->fill_ <= HalfCapacity);
+
+            for (unsigned i = 0; i < HalfCapacity; ++i) {
+                dest->push(i, at(HalfCapacity));
+                pop(HalfCapacity);
+            }
+
+            return HalfCapacity;
+        }
+
+    private:
+        Item &slotAt(unsigned slotIndex) {
+            return reinterpret_cast<Item *>(data_)[slotIndex];
+        }
+
+        const Item &slotAt(unsigned slotIndex) const {
+            return reinterpret_cast<const Item *>(data_)[slotIndex];
+        }
+
+        BucketSlotMap<Capacity> map_;
+        std::uint8_t data_[Capacity * sizeof(Item)] alignas(Item);
+    };
+
+    BucketVector() = default;
+
+    BucketVector(const BucketVector &other)
     {
         // \todo performance: optimize tree built-up
 
@@ -36,7 +109,7 @@ public:
             pushBack(other.at(pos));
     }
 
-    ~Vector()
+    ~BucketVector()
     {
         deplete();
     }
@@ -198,9 +271,61 @@ public:
                     branch = succ;
                 }
             }
-            *this = Vector{};
+            *this = BucketVector{};
         }
     }
+
+    class SearchNode
+    {
+    public:
+        SearchNode(const Leaf *leaf):
+            leaf_{leaf}
+        {}
+
+        const Leaf *leaf_;
+    };
+
+    template<class Pattern, class Order>
+    class SearchShimOrder
+    {
+    public:
+        SearchShimOrder(const Order &order): order_{order} {}
+
+        bool operator()(const SearchNode &searchNode, const Pattern &pattern) const
+        {
+            const Leaf *leaf = searchNode.leaf_;
+            return order_(leaf->at(leaf->fill_ - 1), pattern);
+        }
+
+        bool operator()(const Pattern &pattern, const SearchNode &searchNode) const
+        {
+            const Leaf *leaf = searchNode.leaf_;
+            return order_(pattern, leaf->at(0));
+        }
+
+    private:
+        const Order order_;
+    };
+
+    class SearchShim
+    {
+    public:
+        SearchShim(const BucketIndexTree *tree):
+            tree_{tree},
+            idealLeafCount_{tree->idealLeafCount()}
+        {}
+
+        SearchNode at(long index) const
+        {
+            return static_cast<const Leaf *>(tree_->idealLeafAt(index));
+        }
+
+        long count() const { return idealLeafCount_; }
+
+    private:
+        const BucketIndexTree *tree_;
+        long idealLeafCount_;
+    };
 
     template<class Search = FindAny, class Order = Asc, class Pattern = Item>
     bool lookup(const Pattern &pattern, long *finalIndex = nullptr, Leaf **target = nullptr, unsigned *egress = nullptr, Order order = Order{}) const;
@@ -274,7 +399,7 @@ public:
 
 template<class T>
 template<class... Args>
-void Vector<T>::emplaceAt(Locator &target, Args... args)
+void BucketVector<T>::emplaceAt(Locator &target, Args... args)
 {
     assert(target);
     assert(target.revisionPtr_ == &root_.weight_); // locator needs to belong to this container
@@ -292,7 +417,7 @@ void Vector<T>::emplaceAt(Locator &target, Args... args)
 
 template<class T>
 template<class... Args>
-void Vector<T>::emplaceAt(long index, Args... args)
+void BucketVector<T>::emplaceAt(long index, Args... args)
 {
     unsigned egress = 0;
     Node *node = stepDownTo(index, &egress);
@@ -300,7 +425,7 @@ void Vector<T>::emplaceAt(long index, Args... args)
 }
 
 template<class T>
-void Vector<T>::push(long index, const Item &item)
+void BucketVector<T>::push(long index, const Item &item)
 {
     unsigned egress = 0;
     Node *node = stepDownTo(index, &egress);
@@ -309,7 +434,7 @@ void Vector<T>::push(long index, const Item &item)
 
 template<class T>
 template<class... Args>
-void Vector<T>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... args)
+void BucketVector<T>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... args)
 {
     if (target) {
         dissipate(target, egress);
@@ -330,7 +455,7 @@ void Vector<T>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... args)
 }
 
 template<class T>
-void Vector<T>::pushAndTell(Leaf *&target, unsigned &egress, const Item &item)
+void BucketVector<T>::pushAndTell(Leaf *&target, unsigned &egress, const Item &item)
 {
     if (target) {
         dissipate(target, egress);
@@ -351,7 +476,7 @@ void Vector<T>::pushAndTell(Leaf *&target, unsigned &egress, const Item &item)
 }
 
 template<class T>
-void Vector<T>::pop(long index)
+void BucketVector<T>::pop(long index)
 {
     unsigned egress = 0;
     Leaf *target = static_cast<Leaf *>(stepDownTo(index, &egress));
@@ -359,7 +484,7 @@ void Vector<T>::pop(long index)
 }
 
 template<class T>
-void Vector<T>::pop(Node *target, unsigned egress)
+void BucketVector<T>::pop(Node *target, unsigned egress)
 {
     if (root_.weight_ > 1) {
         Leaf *leaf = static_cast<Leaf *>(target);
@@ -380,63 +505,9 @@ void Vector<T>::pop(Node *target, unsigned egress)
     }
 }
 
-template<class Item>
-class SearchNode
-{
-public:
-    SearchNode(const Leaf<Item> *leaf):
-        leaf_{leaf}
-    {}
-
-    const Leaf<Item> *leaf_;
-};
-
-template<class Pattern, class Item, class Order>
-class SearchShimOrder
-{
-public:
-    SearchShimOrder(const Order &order): order_{order} {}
-
-    bool operator()(const SearchNode<Item> &searchNode, const Pattern &pattern) const
-    {
-        const Leaf<Item> *leaf = searchNode.leaf_;
-        return order_(leaf->at(leaf->fill_ - 1), pattern);
-    }
-
-    bool operator()(const Pattern &pattern, const SearchNode<Item> &searchNode) const
-    {
-        const Leaf<Item> *leaf = searchNode.leaf_;
-        return order_(pattern, leaf->at(0));
-    }
-
-private:
-    const Order order_;
-};
-
-template<class Item>
-class SearchShim
-{
-public:
-    SearchShim(const Tree *tree):
-        tree_{tree},
-        idealLeafCount_{tree->idealLeafCount()}
-    {}
-
-    SearchNode<Item> at(long index) const
-    {
-        return static_cast<const Leaf<Item> *>(tree_->idealLeafAt(index));
-    }
-
-    long count() const { return idealLeafCount_; }
-
-private:
-    const Tree *tree_;
-    long idealLeafCount_;
-};
-
 template<class T>
 template<class Search, class Order, class Pattern>
-bool Vector<T>::lookup(const Pattern &pattern, long *finalIndex, Leaf **target, unsigned *egress, Order order) const
+bool BucketVector<T>::lookup(const Pattern &pattern, long *finalIndex, Leaf **target, unsigned *egress, Order order) const
 {
     bool found = false;
     if (height_ == 0) {
@@ -455,19 +526,19 @@ bool Vector<T>::lookup(const Pattern &pattern, long *finalIndex, Leaf **target, 
             if (egress) *egress = leaf->fill_;
         }
         else {
-            SearchShim<Item> shim{this};
-            long i = 0, j = 0;
-            bool lookInside = Search::find(&shim, pattern, &j, SearchShimOrder<Pattern, Item, Order>{order});
-            leaf = static_cast<Leaf *>(idealLeafAt(j));
-            unsigned k = 0;
+            SearchShim shim{this};
+            long j = 0;
+            bool lookInside = Search::find(&shim, pattern, &j, SearchShimOrder<Pattern, Order>{order});
+            long i = 0;
+            leaf = static_cast<Leaf *>(locateIdealLeaf(j, &i));
             if (lookInside) {
+                unsigned k = 0;
                 found = Search::find(leaf, pattern, &k, order);
-                i = k;
+                i += k;
+                if (egress) *egress = k;
             }
-            i += nodeOffset(leaf);
             if (finalIndex) *finalIndex = i;
             if (target) *target = leaf;
-            if (egress) *egress = k;
         }
     }
     else if (finalIndex) {
@@ -476,4 +547,4 @@ bool Vector<T>::lookup(const Pattern &pattern, long *finalIndex, Leaf **target, 
     return found;
 }
 
-}} // namespace cc::bucket
+} // namespace cc::buckets

@@ -844,6 +844,8 @@ private:
                     delete[] items;
             }
         }
+
+        const char *chars() const { return reinterpret_cast<const char *>(items); }
     };
 
     explicit Array(T *items, long count, bool isMapped):

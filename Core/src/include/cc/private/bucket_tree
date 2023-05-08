@@ -1,0 +1,689 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/private/ShiftInsert>
+#include <cc/None>
+#include <cc/find>
+#include <cc/DEBUG>
+#include <cstdint>
+#include <cassert>
+
+#define CC_BUCKET_TREE_PARANOID
+
+namespace cc::bucket_tree {
+
+enum class InsertionMode { Preserve, Overwrite, Multiple };
+
+template<class Key, class Pattern>
+static bool findIn(const Key *keys, unsigned count, const Pattern &pattern, unsigned *index)
+{
+    #ifdef CC_BUCKET_TREE_PARANOID
+    assert(count > 0);
+    #endif
+
+    if (keys[count - 1] < pattern) {
+        *index = count;
+        return false;
+    }
+
+    bool found = false;
+    unsigned i = 0;
+    for (; i < count; ++i) {
+        if (keys[i] < pattern) continue;
+        found = !(pattern < keys[i]);
+        break;
+    }
+    *index = i;
+    return found;
+}
+
+enum ChildSelect { LowerChild = 0, GreaterChild = 1 };
+
+template<class Key, unsigned Granularity>
+struct Branch final
+{
+    static constexpr unsigned Capacity = 1 << Granularity;
+    static constexpr unsigned HalfCapacity = 1 << (Granularity - 1);
+
+    ~Branch()
+    {
+        for (unsigned index = 0; index + 1 < fill_; ++index) keys()[index].~Key();
+    }
+
+    Key *keys() { return reinterpret_cast<Key *>(keys_); }
+    const Key *keys() const { return reinterpret_cast<const Key *>(keys_); }
+
+    template<ChildSelect childSelect = GreaterChild>
+    void insertAt(unsigned index, const Key &key, void *child)
+    {
+        #ifdef CC_BUCKET_TREE_PARANOID
+        assert(index < fill_ && fill_ < Capacity);
+        #endif
+
+        ShiftInsert<Key>::call(keys(), fill_ - 1, index, key);
+        ShiftInsert<void *>::call(children_, fill_, index + childSelect, child);
+
+        ++fill_;
+    }
+
+    template<ChildSelect childSelect = GreaterChild>
+    void emplaceAt(unsigned index, Key &&key, void *child)
+    {
+        #ifdef CC_BUCKET_TREE_PARANOID
+        assert(index < fill_ && fill_ < Capacity);
+        #endif
+
+        ShiftEmplace<Key>::call(keys(), fill_ - 1, index, move(key));
+        ShiftInsert<void *>::call(children_, fill_, index + childSelect, child);
+
+        ++fill_;
+    }
+
+    void removeAt(unsigned index)
+    {
+        #ifdef CC_BUCKET_TREE_PARANOID
+        assert(index + 1 < fill_);
+        #endif
+
+        keys()[index].~Key();
+
+        ShiftRemove<Key>::call(keys(), fill_ - 1, index);
+        ShiftRemove<void *>::call(children_, fill_, index);
+
+        --fill_;
+    }
+
+    template<class Pattern>
+    bool find(const Pattern &pattern, unsigned *index) const
+    {
+        return findIn(keys(), fill_ - 1, pattern, index);
+    }
+
+    unsigned fill_;
+    uint8_t keys_ [ sizeof(Key) * (Capacity - 1) ] alignas(Key);
+    void *children_ [ Capacity ];
+};
+
+template<class Key, class Value, unsigned Granularity>
+struct Leaf final
+{
+    static constexpr unsigned Capacity = 1 << Granularity;
+    static constexpr unsigned HalfCapacity = 1 << (Granularity - 1);
+
+    using Branch = bucket_tree::Branch<Key, Granularity>;
+
+    ~Leaf()
+    {
+        for (unsigned index = 0; index < fill_; ++index) keys()[index].~Key();
+        for (unsigned index = 0; index < fill_; ++index) values()[index].~Value();
+    }
+
+    Key *keys() { return reinterpret_cast<Key *>(keys_); }
+    const Key *keys() const { return reinterpret_cast<const Key *>(keys_); }
+    Value *values() { return reinterpret_cast<Value *>(values_); }
+    const Value *values() const { return reinterpret_cast<const Value *>(values_); }
+
+    void insertAt(unsigned index, const Key &key, const Value &value)
+    {
+        #ifdef CC_BUCKET_TREE_PARANOID
+        assert(index <= fill_ && fill_ < Capacity);
+        #endif
+
+        ShiftInsert<Key>::call(keys(), fill_, index, key);
+        ShiftInsert<Value>::call(values(), fill_, index, value);
+
+        ++fill_;
+    }
+
+    void emplaceAt(unsigned index, const Key &key, Value &&value)
+    {
+        #ifdef CC_BUCKET_TREE_PARANOID
+        assert(index <= fill_ && fill_ < Capacity);
+        #endif
+
+        ShiftInsert<Key>::call(keys(), fill_, index, key);
+        ShiftEmplace<Value>::call(values(), fill_, index, move(value));
+
+        ++fill_;
+    }
+
+    void removeAt(unsigned index)
+    {
+        #ifdef CC_BUCKET_TREE_PARANOID
+        assert(index < fill_);
+        #endif
+
+        keys()[index].~Key();
+        values()[index].~Value();
+
+        ShiftRemove<Key>::call(keys(), fill_, index);
+        ShiftRemove<Value>::call(values(), fill_, index);
+
+        --fill_;
+    }
+
+    template<class Pattern>
+    bool find(const Pattern &pattern, unsigned *index) const
+    {
+        return findIn(keys(), fill_, pattern, index);
+    }
+
+    Leaf *pred_;
+    Leaf *succ_;
+    unsigned fill_;
+    uint8_t keys_ [ sizeof(Key) * Capacity ] alignas(Key);
+    uint8_t values_ [ sizeof(Value) * Capacity ] alignas(Value);
+};
+
+template<class Key, class Value, unsigned Granularity = 4>
+struct Tree
+{
+    static constexpr int MaxDepth = 64 / Granularity;
+
+    using Branch = bucket_tree::Branch<Key, Granularity>;
+    using Leaf = bucket_tree::Leaf<Key, Value, Granularity>;
+
+    ~Tree()
+    {
+        if (depth_ == 1) delete static_cast<Leaf *>(root_);
+        else if (depth_ > 1) destroy(static_cast<Branch *>(root_), depth_);
+    }
+
+    static void destroy(Branch *branch, int dive)
+    {
+        if (dive > 2) {
+            for (unsigned egress = 0; egress < branch->fill_; ++egress) {
+                destroy(static_cast<Branch *>(branch->children_[egress]), dive - 1);
+            }
+        }
+        else if (dive == 2) {
+            for (unsigned egress = 0; egress < branch->fill_; ++egress) {
+                delete static_cast<Leaf *>(branch->children_[egress]);
+            }
+        }
+        delete branch;
+    }
+
+    template<class Pattern>
+    bool find(const Pattern &pattern, Leaf **leaf = nullptr, unsigned *index = nullptr) const
+    {
+        void *node = root_;
+        unsigned egress = 0;
+
+        for (int dive = depth_; dive > 1; --dive)
+        {
+            Branch *branch = static_cast<Branch *>(node);
+            branch->find(pattern, &egress);
+            node = branch->children_[egress];
+        }
+
+        bool found = false;
+        if (node) {
+            found = static_cast<Leaf *>(node)->find(pattern, &egress);
+            if (found) {
+                if (leaf) *leaf = static_cast<Leaf *>(node);
+                if (index) *index = egress;
+            }
+        }
+
+        return found;
+    }
+
+    template<class Pattern>
+    bool remove(const Pattern &pattern)
+    {
+        Branch *parent = nullptr;
+        Leaf *leaf = nullptr;
+        unsigned egress = 0;
+        {
+            void *node = root_;
+
+            for (int dive = depth_; dive > 1; --dive)
+            {
+                Branch *branch = static_cast<Branch *>(node);
+
+                CC_INSPECT(dive);
+
+                if (parent && branch->fill_ == Branch::HalfCapacity)
+                {
+                    CC_DEBUG;
+
+                    if (egress + 1 < parent->fill_)
+                    {
+                        CC_DEBUG;
+
+                        Branch *succ = static_cast<Branch *>(parent->children_[egress + 1]);
+                        if (succ->fill_ > Branch::HalfCapacity) {
+                            CC_DEBUG;
+                            new(branch->keys() + Branch::HalfCapacity - 1) Key(move(parent->keys()[egress]));
+                            new(parent->keys() + egress) Key(move(succ->keys()[0]));
+                            branch->children_[Branch::HalfCapacity] = succ->children_[0];
+                            ShiftRemove<Key>::call(succ->keys(), succ->fill_ - 1, 0);
+                            ShiftRemove<void *>::call(succ->children_, succ->fill_, 0);
+                            ++branch->fill_;
+                            --succ->fill_;
+                        }
+                        else {
+                            CC_DEBUG;
+                            new(branch->keys() + Branch::HalfCapacity - 1) Key(move(parent->keys()[egress]));
+                            ShiftRemove<Key>::call(parent->keys(), parent->fill_ - 1, egress);
+                            ShiftRemove<void *>::call(parent->children_, parent->fill_, egress + 1);
+                            Move<Key>::call(branch->keys() + Branch::HalfCapacity, succ->keys(), Branch::HalfCapacity - 1);
+                            Move<void *>::call(branch->children_ + Branch::HalfCapacity, succ->children_, Branch::HalfCapacity);
+                            delete succ;
+                            branch->fill_ += Branch::HalfCapacity;
+                            --parent->fill_;
+                            if (parent->fill_ == 1) {
+                                CC_DEBUG;
+                                --depth_;
+                                root_ = branch;
+                                delete parent;
+                            }
+                        }
+                    }
+                    else {
+                        CC_DEBUG;
+
+                        Branch *pred = static_cast<Branch *>(parent->children_[egress - 1]);
+                        if (pred->fill_ > Branch::HalfCapacity) {
+                            CC_DEBUG;
+                            ShiftEmplace<Key>::call(branch->keys(), branch->fill_ - 1, 0, move(pred->keys()[pred->fill_ - 2]));
+                            ShiftEmplace<void *>::call(branch->children_, branch->fill_, 0, move(pred->children_[pred->fill_ - 1]));
+                            ++branch->fill_;
+                            --pred->fill_;
+                        }
+                        else {
+                            CC_DEBUG;
+                            new(pred->keys() + pred->fill_ - 1) Key(move(parent->keys()[egress - 1]));
+                            ShiftRemove<Key>::call(parent->keys(), parent->fill_ - 1, egress - 1);
+                            ShiftRemove<void *>::call(parent->children_, parent->fill_, egress);
+                            Move<Key>::call(pred->keys() + Branch::HalfCapacity, branch->keys(), Branch::HalfCapacity - 1);
+                            Move<void *>::call(pred->children_ + Branch::HalfCapacity, branch->children_, Branch::HalfCapacity);
+                            delete branch;
+                            pred->fill_ += Branch::HalfCapacity;
+                            branch = pred;
+                            --parent->fill_;
+                            if (parent->fill_ == 1) {
+                                --depth_;
+                                root_ = branch;
+                                delete parent;
+                            }
+                        }
+                    }
+                }
+
+                parent = branch;
+                branch->find(pattern, &egress);
+                node = branch->children_[egress];
+            }
+
+            leaf = static_cast<Leaf *>(node);
+        }
+
+        unsigned index = 0;
+        if (leaf && leaf->find(pattern, &index)) {
+            leaf->removeAt(index);
+            if (!parent) {
+                CC_DEBUG;
+                if (leaf->fill_ == 0) {
+                    --depth_;
+                    delete leaf;
+                    root_ = nullptr;
+                }
+            }
+            else if (leaf->fill_ < Leaf::HalfCapacity) {
+                CC_DEBUG;
+                if (egress == 0) {
+                    if (leaf->fill_ == 0) {
+                        CC_DEBUG;
+                        parent->keys()[0].~Key();
+                        ShiftRemove<Key>::call(parent->keys(), parent->fill_ - 1, 0);
+                        ShiftRemove<void *>::call(parent->children_, parent->fill_, 0);
+                        Leaf *const pred = leaf->pred_;
+                        Leaf *const succ = leaf->succ_;
+                        succ->pred_ = pred;
+                        if (pred) pred->succ_ = succ;
+                        delete leaf;
+                        --parent->fill_;
+                        if (parent->fill_ == 1) {
+                            CC_DEBUG;
+                            --depth_;
+                            root_ = succ;
+                            delete parent;
+                        }
+                    }
+                }
+                else if (egress == parent->fill_ - 1) {
+                    if (leaf->fill_ == 0) {
+                        CC_DEBUG;
+                        parent->keys()[parent->fill_ - 2].~Key();
+                        ShiftRemove<Key>::call(parent->keys(), parent->fill_ - 1, parent->fill_ - 2);
+                        ShiftRemove<void *>::call(parent->children_, parent->fill_, parent->fill_ - 1);
+                        Leaf *const pred = leaf->pred_;
+                        Leaf *const succ = leaf->succ_;
+                        pred->succ_ = leaf->succ_;
+                        if (succ) succ->pred_ = pred;
+                        delete leaf;
+                        --parent->fill_;
+                        if (parent->fill_ == 1) {
+                            CC_DEBUG;
+                            --depth_;
+                            root_ = pred;
+                            delete parent;
+                        }
+                    }
+                }
+                else {
+                    Leaf *succ = static_cast<Leaf *>(parent->children_[egress + 1]);
+                    if (succ->fill_ > Leaf::HalfCapacity) { // FIXME: borrowing from the predecessor would be cheaper
+                        CC_DEBUG;
+                        new(leaf->keys() + leaf->fill_) Key(move(succ->keys()[0]));
+                        new(leaf->values() + leaf->fill_) Key(move(succ->values()[0]));
+                        ShiftRemove<Key>::call(succ->keys(), succ->fill_, 0);
+                        ShiftRemove<Value>::call(succ->values(), succ->fill_, 0);
+                        ++leaf->fill_;
+                        --succ->fill_;
+                    }
+                    else {
+                        CC_DEBUG;
+                        Move<Key>::call(leaf->keys() + leaf->fill_, succ->keys(), succ->fill_);
+                        Move<Value>::call(leaf->values() + leaf->fill_, succ->values(), succ->fill_);
+                        parent->keys()[egress].~Key();
+                        ShiftRemove<Key>::call(parent->keys(), parent->fill_ - 1, egress);
+                        ShiftRemove<void *>::call(parent->children_, parent->fill_, egress + 1);
+                        leaf->fill_ += succ->fill_;
+                        leaf->succ_ = succ->succ_;
+                        if (succ->succ_) succ->succ_->pred_ = leaf;
+                        delete succ;
+                        --parent->fill_;
+                        if (parent->fill_ == 1) {
+                            CC_DEBUG;
+                            --depth_;
+                            root_ = leaf;
+                            delete parent;
+                        }
+                    }
+                }
+            }
+            --count_;
+            return true;
+        }
+
+        return false;
+    }
+
+    template<InsertionMode mode = InsertionMode::Preserve>
+    bool emplace(const Key &key, Value &&value)
+    {
+        Branch *parent = nullptr;
+        Leaf *leaf = nullptr;
+        unsigned egress = 0;
+        {
+            void *node = root_;
+
+            for (int dive = depth_; dive > 1; --dive)
+            {
+                unsigned parentEgress = egress;
+                Branch *branch = static_cast<Branch *>(node);
+                branch->find(key, &egress);
+
+                if (branch->fill_ == Branch::Capacity)
+                {
+                    Branch *newBranch = new Branch;
+                    newBranch->fill_ = Branch::HalfCapacity;
+                    branch->fill_ = Branch::HalfCapacity;
+                    if (parent) {
+                        parent->emplaceAt(
+                            parentEgress,
+                            move(branch->keys()[Branch::HalfCapacity - 1]),
+                            newBranch
+                        );
+                    }
+                    else {
+                        parent = new Branch;
+                        parent->fill_ = 2;
+                        new(parent->keys_) Key(move(branch->keys()[Branch::HalfCapacity - 1]));
+                        parent->children_[0] = branch;
+                        parent->children_[1] = newBranch;
+                        root_ = parent;
+                        ++depth_;
+                    }
+
+                    SplitMove<Key, Branch::Capacity, 1>::call(branch->keys(), newBranch->keys());
+                    SplitMove<void *, Branch::Capacity>::call(branch->children_, newBranch->children_);
+
+                    if (egress >= Branch::HalfCapacity) {
+                        egress -= Branch::HalfCapacity;
+                        branch = newBranch;
+                    }
+                }
+
+                parent = branch;
+                node = branch->children_[egress];
+            }
+
+            leaf = static_cast<Leaf *>(node);
+        }
+
+        if (!leaf) {
+            leaf = new Leaf;
+            leaf->pred_ = nullptr;
+            leaf->succ_ = nullptr;
+            leaf->fill_ = 1;
+            new (leaf->keys()) Key(key);
+            new (leaf->values()) Value(move(value));
+            root_ = leaf;
+            ++depth_;
+            ++count_;
+            return true;
+        }
+
+        unsigned index = 0;
+        bool found = leaf->find(key, &index);
+
+        if (mode == InsertionMode::Preserve) {
+            if (found) return false;
+        }
+
+        if (mode == InsertionMode::Overwrite) {
+            if (found) {
+                leaf->keys()[index] = key;
+                leaf->values()[index] = move(value);
+                return true;
+            }
+        }
+
+        if (leaf->fill_ == Leaf::Capacity)
+        {
+            Leaf *newLeaf = new Leaf;
+
+            if (!parent)
+            {
+                parent = new Branch;
+                parent->fill_ = 2;
+                root_ = parent;
+                ++depth_;
+
+                if (index == Leaf::Capacity)
+                {
+                    parent->keys()[0] = leaf->keys()[Leaf::Capacity - 1];
+                    parent->children_[0] = leaf;
+                    parent->children_[1] = newLeaf;
+                    leaf->succ_ = newLeaf;
+                    newLeaf->pred_ = leaf;
+                    newLeaf->succ_ = nullptr;
+                    newLeaf->fill_ = 0;
+
+                    leaf = newLeaf;
+                    index = 0;
+                }
+                else if (index == 0)
+                {
+                    parent->keys()[0] = key;
+                    parent->children_[0] = newLeaf;
+                    parent->children_[1] = leaf;
+                    newLeaf->pred_ = nullptr;
+                    newLeaf->succ_ = leaf;
+                    newLeaf->fill_ = 0;
+                    leaf->pred_ = newLeaf;
+
+                    leaf = newLeaf;
+                }
+                else {
+                    parent->keys()[0] = leaf->keys()[Leaf::HalfCapacity - 1];
+                    parent->children_[0] = leaf;
+                    parent->children_[1] = newLeaf;
+                    newLeaf->pred_ = leaf;
+                    newLeaf->succ_ = nullptr;
+                    leaf->succ_ = newLeaf;
+                    leaf->fill_ = Leaf::HalfCapacity;
+                    newLeaf->fill_ = Leaf::HalfCapacity;
+                    SplitMove<Key, Leaf::Capacity>::call(leaf->keys(), newLeaf->keys());
+                    SplitMove<Value, Leaf::Capacity>::call(leaf->values(), newLeaf->values());
+
+                    if (index >= Leaf::HalfCapacity) {
+                        leaf = newLeaf;
+                        index -= Leaf::HalfCapacity;
+                    }
+                }
+            }
+            else if (index == Leaf::Capacity && egress == parent->fill_ - 1)
+            {
+                newLeaf->pred_ = leaf;
+                newLeaf->succ_ = leaf->succ_;
+                newLeaf->fill_ = 0;
+                if (leaf->succ_) leaf->succ_->pred_ = newLeaf;
+                leaf->succ_ = newLeaf;
+                parent->insertAt(egress, leaf->keys()[Leaf::Capacity - 1], newLeaf);
+
+                leaf = newLeaf;
+                index = 0;
+            }
+            else if (index == 0 && egress == 0)
+            {
+                newLeaf->pred_ = leaf->pred_;
+                newLeaf->succ_ = leaf;
+                newLeaf->fill_ = 0;
+                if (leaf->pred_) leaf->pred_->succ_ = newLeaf;
+                leaf->pred_ = newLeaf;
+                parent->template insertAt<ChildSelect::LowerChild>(0, key, newLeaf);
+
+                leaf = newLeaf;
+            }
+            else {
+                newLeaf->pred_ = leaf;
+                newLeaf->succ_ = leaf->succ_;
+                newLeaf->fill_ = Leaf::HalfCapacity;
+                if (leaf->succ_) leaf->succ_->pred_ = newLeaf;
+                leaf->succ_ = newLeaf;
+                leaf->fill_ = Leaf::HalfCapacity;
+                SplitMove<Key, Leaf::Capacity>::call(leaf->keys(), newLeaf->keys());
+                SplitMove<Value, Leaf::Capacity>::call(leaf->values(), newLeaf->values());
+                parent->insertAt(egress, leaf->keys()[Leaf::HalfCapacity - 1], newLeaf);
+
+                if (index >= Leaf::HalfCapacity) {
+                    leaf = newLeaf;
+                    index -= Leaf::HalfCapacity;
+                }
+            }
+        }
+
+        leaf->emplaceAt(index, key, move(value));
+        ++count_;
+
+        return true;
+    }
+
+    Leaf *min() const
+    {
+        void *node = root_;
+
+        for (int dive = depth_; dive > 1; --dive)
+        {
+            Branch *branch = static_cast<Branch *>(node);
+            node = branch->children_[0];
+        }
+
+        return static_cast<Leaf *>(node);
+    }
+
+    Leaf *max() const
+    {
+        void *node = root_;
+
+        for (int dive = depth_; dive > 1; --dive)
+        {
+            Branch *branch = static_cast<Branch *>(node);
+            node = branch->children_[branch->fill_ - 1];
+        }
+
+        return static_cast<Leaf *>(node);
+    }
+
+    void *root_ { nullptr };
+    long count_ { 0 };
+    int depth_ { 0 };
+};
+
+template<class K, class V = K, unsigned Granularity = 4>
+class Map
+{
+public:
+    using Key = K;
+    using Value = V;
+
+    template<class Pattern>
+    const Value &operator()(const Pattern &key) const
+    {
+        Leaf *leaf = nullptr;
+        unsigned index = 0;
+        if (tree_.find(key, &leaf, &index)) {
+            return leaf->values()[index];
+        }
+        thread_local Value fallback;
+        return fallback;
+    }
+
+    bool insert(const Key &key, const Value &value)
+    {
+        return tree_.template emplace<InsertionMode::Preserve>(key, Value(value));
+    }
+
+    bool emplace(const Key &key, Value &&value)
+    {
+        return tree_.template emplace<InsertionMode::Preserve>(key, move(value));
+    }
+
+    template<class Pattern>
+    bool contains(const Pattern &pattern) const
+    {
+        return tree_.find(pattern);
+    }
+
+    template<class Pattern>
+    bool remove(const Pattern &pattern)
+    {
+        return tree_.remove(pattern);
+    }
+
+    long count() const
+    {
+        return tree_.count_;
+    }
+
+    using Tree = bucket_tree::Tree<Key, Value, Granularity>;
+    const Tree &tree() const { return tree_; }
+
+private:
+    using Leaf = Tree::Leaf;
+    Tree tree_;
+};
+
+} // namespace cc::bucket_tree
