@@ -1025,10 +1025,18 @@ public:
 
     ///@}
 
-    #if 0
     /** \name Comparism operators
       */
     ///@{
+
+    /** Equality operator
+      */
+    bool operator==(const String &other) const
+    {
+        auto &a = me();
+        auto &b = other.me();
+        return a.count == b.count && std::strncmp(a.chars(), b.chars(), a.count) == 0;
+    }
 
     /** Ordering operator
       */
@@ -1053,7 +1061,6 @@ public:
     }
 
     ///@}
-    #endif
 
     /** \name Type Compatibility
       */
@@ -1180,13 +1187,6 @@ inline String::operator QString() const
 
 /** Equal to operator
   */
-inline bool operator==(const String &a, const String &b)
-{
-    return a.count() == b.count() && std::strncmp(a.chars(), b.chars(), a.count()) == 0;
-}
-
-/** Equal to operator
-  */
 inline bool operator==(const String &a, const char *b)
 {
     return a.count() == static_cast<long>(std::strlen(b)) && std::strncmp(a.chars(), b, a.count()) == 0;
@@ -1198,70 +1198,6 @@ inline bool operator==(const char *a, const String &b)
 {
     return static_cast<long>(std::strlen(a)) == b.count() && std::strncmp(a, b.chars(), b.count()) == 0;
 }
-
-#if 1
-/** Lower than operator
-  */
-inline bool operator<(const String &a, const String &b)
-{
-    int r = std::strncmp(a.chars(), b.chars(), a.count() < b.count() ? a.count() : b.count());
-    return r < 0 || (r == 0 && a.count() < b.count());
-}
-
-/** Lower than operator
-  */
-inline bool operator<(const String &a, const char *b)
-{
-    int r = std::strncmp(a.chars(), b, a.count());
-    return r < 0 || (r == 0 && a.count() < static_cast<long>(std::strlen(b)));
-}
-
-/** Lower than operator
-  */
-inline bool operator<(const char *a, const String &b)
-{
-    int r = std::strncmp(a, b.chars(), b.count());
-    return r < 0 || (r == 0 && static_cast<long>(std::strlen(a)) < b.count());
-}
-
-/** Less than or equal to operator
-  */
-inline bool operator<=(const String &a, const String &b)
-{
-    int r = std::strncmp(a.chars(), b.chars(), a.count() < b.count() ? a.count() : b.count());
-    return r < 0 || (r == 0 && a.count() <= b.count());
-}
-
-/** Less than or equal to operator
-  */
-inline bool operator<=(const String &a, const char *b)
-{
-    int r = std::strncmp(a.chars(), b, a.count());
-    return r < 0 || (r == 0 && a.count() <= static_cast<long>(std::strlen(b)));
-}
-
-/** Less than or equal to operator
-  */
-inline bool operator<=(const char *a, const String &b)
-{
-    int r = std::strncmp(a, b.chars(), b.count());
-    return r < 0 || (r == 0 && static_cast<long>(std::strlen(a)) <= b.count());
-}
-#endif
-
-inline bool operator!=(const String &a, const String &b) { return !(a == b); } ///< Not equal to operator
-inline bool operator!=(const String &a, const char *b) { return !(a == b); } ///< Not equal to operator
-inline bool operator!=(const char *a, const String &b) { return !(a == b); } ///< Not equal to operator
-
-#if 1
-inline bool operator>(const String &a, const String &b) { return b < a; } ///< Greater than operator
-inline bool operator>(const String &a, const char *b) { return b < a; } ///< Greater than operator
-inline bool operator>(const char *a, const String &b) { return b < a; } ///< Greater than operator
-
-inline bool operator>=(const String &a, const String &b) { return b <= a; } ///< Greater than or equal to operator
-inline bool operator>=(const String &a, const char *b) { return b <= a; } ///< Greater than or equal to operator
-inline bool operator>=(const char *a, const String &b) { return b <= a; } ///< Greater than or equal to operator
-#endif
 
 /** %String concatenation operator
   */

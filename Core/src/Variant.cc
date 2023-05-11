@@ -24,6 +24,9 @@ const TypeInfo VariantType<long>::info
     .str = [](const void *bytes) { return str(VariantType<long>::retrieve(bytes)); },
     .equal = [](const void *a, const void *b) {
         return VariantType<long>::retrieve(a) == VariantType<long>::retrieve(b);
+    },
+    .order = [](const void *a, const void *b) {
+        return VariantType<long>::retrieve(a) <=> VariantType<long>::retrieve(b);
     }
 };
 
@@ -33,6 +36,9 @@ const TypeInfo VariantType<bool>::info
     .str = [](const void *bytes) { return str(VariantType<bool>::retrieve(bytes)); },
     .equal = [](const void *a, const void *b) {
         return VariantType<bool>::retrieve(a) == VariantType<bool>::retrieve(b);
+    },
+    .order = [](const void *a, const void *b) {
+        return VariantType<bool>::retrieve(a) <=> VariantType<bool>::retrieve(b);
     }
 };
 
@@ -58,6 +64,9 @@ const TypeInfo VariantType<String>::info {
     },
     .equal = [](const void *a, const void *b) {
         return VariantType<String>::retrieve(a) == VariantType<String>::retrieve(b);
+    },
+    .order = [](const void *a, const void *b) {
+        return VariantType<String>::retrieve(a) <=> VariantType<String>::retrieve(b);
     }
 };
 
@@ -87,6 +96,9 @@ const TypeInfo VariantType<List<Variant>>::info {
     },
     .equal = [](const void *a, const void *b) {
         return VariantType<List<Variant>>::retrieve(a) == VariantType<List<Variant>>::retrieve(b);
+    },
+    .order = [](const void *a, const void *b) {
+        return VariantType<List<Variant>>::retrieve(a) <=> VariantType<List<Variant>>::retrieve(b);
     }
 };
 
@@ -105,6 +117,9 @@ const TypeInfo VariantType<List<String>>::info {
     },
     .equal = [](const void *a, const void *b) {
         return VariantType<List<String>>::retrieve(a) == VariantType<List<String>>::retrieve(b);
+    },
+    .order = [](const void *a, const void *b) {
+        return VariantType<List<String>>::retrieve(a) <=> VariantType<List<String>>::retrieve(b);
     }
 };
 
@@ -131,6 +146,9 @@ const TypeInfo VariantType<List<bool>>::info {
     },
     .equal = [](const void *a, const void *b) {
         return VariantType<List<bool>>::retrieve(a) == VariantType<List<bool>>::retrieve(b);
+    },
+    .order = [](const void *a, const void *b) {
+        return VariantType<List<bool>>::retrieve(a) <=> VariantType<List<bool>>::retrieve(b);
     }
 };
 
@@ -157,6 +175,9 @@ const TypeInfo VariantType<List<long>>::info {
     },
     .equal = [](const void *a, const void *b) {
         return VariantType<List<long>>::retrieve(a) == VariantType<List<long>>::retrieve(b);
+    },
+    .order = [](const void *a, const void *b) {
+        return VariantType<List<long>>::retrieve(a) <=> VariantType<List<long>>::retrieve(b);
     }
 };
 
@@ -212,6 +233,9 @@ const TypeInfo VariantType<Map<String, Variant>>::info {
     },
     .equal = [](const void *a, const void *b) {
         return VariantType<Map<String, Variant>>::retrieve(a) == VariantType<Map<String, Variant>>::retrieve(b);
+    },
+    .order = [](const void *a, const void *b) {
+        return VariantType<Map<String, Variant>>::retrieve(a) <=> VariantType<Map<String, Variant>>::retrieve(b);
     }
 };
 

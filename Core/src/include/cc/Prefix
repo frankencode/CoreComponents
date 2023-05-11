@@ -34,31 +34,44 @@ public:
         assert(offset <= text.count());
     }
 
+    /** Equality operator
+      */
+    bool operator==(const String &other) const
+    {
+        return (*this <=> other) == std::strong_ordering::equal;
+    }
+
 private:
-    friend bool operator<(const Prefix &a, const String &b);
-    friend bool operator<(const String &a, const Prefix &b);
+    friend std::strong_ordering operator<=>(const Prefix &a, const String &b);
+    friend std::strong_ordering operator<=>(const String &a, const Prefix &b);
 
     String text_;
     long offset_;
 };
 
-inline bool operator<(const Prefix &a, const String &b)
+/** Ordering operator
+  */
+inline std::strong_ordering operator<=>(const Prefix &a, const String &b)
 {
     const char *pa = a.text_.chars() + a.offset_;
     const char *pb = b.chars();
     const long na = a.text_.count() - a.offset_;
     const long nb = b.count();
     int r = std::strncmp(pa, pb, na < nb ? na : nb);
-    return r < 0 || (r == 0 && na < nb);
+    if (r < 0) return std::strong_ordering::less;
+    if (0 < r) return std::strong_ordering::greater;
+    return na <=> nb;
 }
 
-inline bool operator<(const String &a, const Prefix &b)
+/** Ordering operator
+  */
+inline std::strong_ordering operator<=>(const String &a, const Prefix &b)
 {
     const char *pa = a.chars();
     const char *pb = b.text_.chars() + b.offset_;
     const long na = a.count();
     const long nb = b.text_.count() - b.offset_;
-    return std::strncmp(pa, pb, na < nb ? na : nb) < 0;
+    return std::strncmp(pa, pb, na < nb ? na : nb) <=> 0;
 }
 
 } // namespace cc

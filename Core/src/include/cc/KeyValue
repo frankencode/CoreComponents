@@ -62,12 +62,25 @@ public:
     /** Comparism operators
       * @{
       */
-    bool operator< (const KeyValue &b) const { return key_ <  b.key_; }
-    bool operator> (const KeyValue &b) const { return key_ >  b.key_; }
-    bool operator==(const KeyValue &b) const { return key_ == b.key_; }
-    bool operator!=(const KeyValue &b) const { return key_ != b.key_; }
-    bool operator<=(const KeyValue &b) const { return key_ <= b.key_; }
-    bool operator>=(const KeyValue &b) const { return key_ >= b.key_; }
+
+    /** Equality operator
+      */
+    bool operator==(const KeyValue &other) const { return key_ == other.key_; }
+
+    /** Equality operator
+      */
+    template<class Pattern>
+    bool operator==(const Pattern &pattern) const { return key_ == pattern; }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const KeyValue &other) const { return key_ <=> other.key_; }
+
+    /** Ordering operator
+      */
+    template<class Pattern>
+    std::strong_ordering operator<=>(const Pattern &pattern) const { return key_ <=> pattern; }
+
     /** @}
       */
 

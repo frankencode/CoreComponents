@@ -9,6 +9,7 @@
 #pragma once
 
 #include <type_traits>
+#include <compare>
 #include <cstddef>
 #include <cstdint>
 #include <cassert>
@@ -168,25 +169,32 @@ public:
         return state_;
     }
 
-    /** Lower than operator
+    /** Equality operator
       */
-    bool operator<(const Handle &b) const
+    bool operator==(const Handle &other) const
     {
-        return state() < b.state();
+        return state() == other.state();
     }
 
-    /** Equal to operator
+    /** Equality operator
       */
-    bool operator==(const Handle &b) const
+    bool operator==(const T *other) const
     {
-        return state() == b.state();
+        return state() == other;
     }
 
-    /** Not equal to operator
+    /** Ordering operator
       */
-    bool operator!=(const Handle &b) const
+    std::strong_ordering operator<=>(const Handle &other) const
     {
-        return state() != b.state();
+        return state() <=> other.state();
+    }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const T *other) const
+    {
+        return state() <=> other;
     }
 
     /** Statically cast to a different state type \a T2

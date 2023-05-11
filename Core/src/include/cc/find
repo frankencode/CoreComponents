@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include <cc/order>
-
 namespace cc {
 
 /** \class FindAny cc/find
@@ -21,12 +19,9 @@ public:
       * \param items the sorted list of items
       * \param pattern pattern to search for
       * \param finalIndex return the final index of the search
-      * \param order ordering function
       * \return true if a matching item was found, false otherwise
-      * \todo Using the spaceship operator for defining order should improve performance in many cases, especially when comparing strings.
       */
     template<
-        class Order = Asc,
         class SortedItems,
         class Pattern = typename SortedItems::Item,
         class Index = long
@@ -34,18 +29,20 @@ public:
     static bool find(
         const SortedItems *items,
         const Pattern &pattern,
-        Index *finalIndex,
-        Order order = Order{}
+        Index *finalIndex
     ) {
         Index l = 0;
         Index r = items->count() - 1;
         while (l <= r) {
             Index m = (l + r) >> 1;
             const auto &candidate = items->at(m);
-            if (order(candidate, pattern))
+            auto order = candidate <=> pattern;
+            if (order == std::strong_ordering::less) {
                 l = m + 1;
-            else if (order(pattern, candidate))
+            }
+            else if (order == std::strong_ordering::greater) {
                 r = m - 1;
+            }
             else {
                 *finalIndex = m;
                 return true;
@@ -58,6 +55,7 @@ public:
 
 /** \class FindFirst cc/find
   * \brief Find left-most item which equals pattern
+  * \todo improve semantics to not perform a final equality comparism automatically
   */
 class FindFirst
 {
@@ -66,11 +64,9 @@ public:
       * \param items the sorted list of items
       * \param pattern pattern to search for
       * \param finalIndex return the final index of the search
-      * \param order ordering function
       * \return true if a matching item was found, false otherwise
       */
     template<
-        class Order = Asc,
         class SortedItems,
         class Pattern = typename SortedItems::Item,
         class Index = long
@@ -78,25 +74,25 @@ public:
     static bool find(
         const SortedItems *items,
         const Pattern &pattern,
-        Index *finalIndex,
-        Order order = Order{}
+        Index *finalIndex
     ) {
         Index l = 0;
         Index r = items->count();
         while (l < r) {
             Index m = (l + r) >> 1;
-            if (order(items->at(m), pattern))
+            if (items->at(m) < pattern)
                 l = m + 1;
             else
                 r = m;
         }
         *finalIndex = l;
-        return l < items->count() && !(order(items->at(l), pattern) || order(pattern, items->at(l)));
+        return l < items->count() && !(items->at(l) < pattern || pattern < items->at(l));
     }
 };
 
 /** \class FindLast cc/find
   * \brief Find right-most item which equals pattern
+  * \todo improve semantics to not perform a final equality comparism automatically
   */
 class FindLast
 {
@@ -105,11 +101,9 @@ public:
       * \param items the sorted list of items
       * \param pattern pattern to search for
       * \param finalIndex return the final index of the search
-      * \param order ordering function
       * \return true if a matching item was found, false otherwise
       */
     template<
-        class Order = Asc,
         class SortedItems,
         class Pattern = typename SortedItems::Item,
         class Index = long
@@ -117,20 +111,19 @@ public:
     static bool find(
         const SortedItems *items,
         const Pattern &pattern,
-        Index *finalIndex,
-        Order order = Order{}
+        Index *finalIndex
     ) {
         Index l = 0;
         Index r = items->count();
         bool found = false;
         while (l < r) {
             Index m = (l + r) >> 1;
-            if (order(pattern, items->at(m)))
+            if (pattern < items->at(m))
                 r = m;
             else
                 l = m + 1;
         }
-        found = (0 < l) && !(order(items->at(l - 1), pattern) || order(pattern, items->at(l - 1)));
+        found = (0 < l) && !(items->at(l - 1) < pattern || pattern < items->at(l - 1));
         *finalIndex = l - found;
         return found;
     }

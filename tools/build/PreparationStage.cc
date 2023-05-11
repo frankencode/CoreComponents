@@ -31,7 +31,9 @@ bool PreparationStage::run()
 
     BuildStageGuard guard{this};
 
-    for (BuildPlan &prerequisite: plan().prerequisites()) {
+    List<BuildPlan> prerequisites = plan().prerequisites();
+
+    for (BuildPlan &prerequisite: prerequisites) {
         if (!prerequisite.preparationStage().run())
             return success_ = false;
     }
@@ -40,7 +42,9 @@ bool PreparationStage::run()
 
     shell().mkdir(plan().prestagePath());
 
-    for (const Predicate &predicate: plan().predicates())
+    List<Predicate> predicates = plan().predicates();
+
+    for (const Predicate &predicate: predicates)
     {
         JobScheduler scheduler;
 

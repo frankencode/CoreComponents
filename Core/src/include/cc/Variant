@@ -431,18 +431,28 @@ public:
 
     /** Compare for equality with \a b
       */
-    bool operator==(const Variant &b) const
+    bool operator==(const Variant &other) const
     {
         return
-            me().typeInfo == b.me().typeInfo &&
-            me().typeInfo->equal(me().bytes, b.me().bytes);
+            me().typeInfo == other.me().typeInfo &&
+            me().typeInfo->equal(me().bytes, other.me().bytes);
     }
 
     /** Compare for equality with \a b
       */
-    bool operator==(const char *b) const
+    bool operator==(const char *other) const
     {
-        return static_cast<String>(*this) == b;
+        return static_cast<String>(*this) == other;
+    }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const Variant &other) const
+    {
+        const auto &a = me();
+        const auto &b = other.me();
+        if (a.typeInfo == b.typeInfo && a.typeInfo->order) return a.typeInfo->order(a.bytes, b.bytes);
+        return str(*this) <=> str(other);
     }
 
 private:
@@ -452,7 +462,7 @@ private:
 
     struct State {
         const TypeInfo *typeInfo;
-        char bytes[8];
+        char bytes[8]; // FIXME: use std::byte?
     };
     Composite<State> me;
 };

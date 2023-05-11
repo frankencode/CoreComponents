@@ -11,25 +11,30 @@
 namespace cc::container {
 
 /** \internal
-  * Comparism result
-  */
-enum class Compares: int
-{
-    Below = -1, ///< the first operand is below the second operand
-    Equal = 0, ///< the operands are equal
-    Above = 1 ///< the first operand is above the second operand
-};
-
-/** \internal
-  * Compare two container
-  * \tparam A type of first container
-  * \tparam B type of second container
-  * \param a first container
-  * \param b second container
-  * \return result of the comparism
+  * Convenience function to compare two containers for equality.
   */
 template<class A, class B>
-Compares compare(const A &a, const B &b)
+inline bool equal(const A &a, const B &b)
+{
+    if (a.count() != b.count()) return false;
+
+    auto i = a.begin();
+    auto j = b.begin();
+
+    while (i) {
+        if (*i != *j) return false;
+        ++i;
+        ++j;
+    }
+
+    return true;
+}
+
+/** \internal
+  * Convenience function to compare to establish the ordering of two containers
+  */
+template<class A, class B>
+inline std::strong_ordering order(const A &a, const B &b)
 {
     using X = typename A::Item;
     using Y = typename B::Item;
@@ -40,51 +45,14 @@ Compares compare(const A &a, const B &b)
     while (i || j) {
         X x = i ? *i : X{};
         Y y = j ? *j : Y{};
-        if (x < y) return Compares::Below;
-        if (y < x) return Compares::Above;
+        auto o = x <=> y;
+        if (o == std::strong_ordering::less) return std::strong_ordering::less;
+        if (o == std::strong_ordering::greater) return std::strong_ordering::greater;
         ++i;
         ++j;
     }
 
-    return Compares::Equal;
-}
-
-template<class A, class B>
-bool equal(const A &a, const B &b)
-{
-    return a.count() == b.count() && compare(a, b) == Compares::Equal;
-}
-
-template<class A, class B>
-bool differ(const A &a, const B &b)
-{
-    return a.count() != b.count() || compare(a, b) != Compares::Equal;
-}
-
-template<class A, class B>
-bool below(const A &a, const B &b)
-{
-    return compare(a, b) == Compares::Below;
-}
-
-template<class A, class B>
-bool above(const A &a, const B &b)
-{
-    return compare(a, b) == Compares::Above;
-}
-
-template<class A, class B>
-bool belowOrEqual(const A &a, const B &b)
-{
-    Compares result = compare(a, b);
-    return result == Compares::Below || result == Compares::Equal;
-}
-
-template<class A, class B>
-bool aboveOrEqual(const A &a, const B &b)
-{
-    Compares result = compare(a, b);
-    return result == Compares::Above || result == Compares::Equal;
+    return std::strong_ordering::equal;
 }
 
 } // namespace cc::container

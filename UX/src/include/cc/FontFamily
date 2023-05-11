@@ -45,25 +45,25 @@ public:
         Stretch stretch = Stretch::Normal
     ) const;
 
-    /** Lower than operator
-      */
-    bool operator<(const FontFamily &other) const
-    {
-        return name() < other.name();
-    }
-
-    /** Equal to operator
+    /** Equality operator
       */
     bool operator==(const FontFamily &other) const
     {
         return name() == other.name();
     }
 
-    /** Not equal to operator
+    /** Ordering operator
       */
-    bool operator!=(const FontFamily &other) const
+    std::strong_ordering operator<=>(const FontFamily &other) const
     {
-        return name() != other.name();
+        return name() <=> other.name();
+    }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const String &other) const
+    {
+        return name() <=> other;
     }
 
 private:
@@ -88,15 +88,5 @@ private:
     State &me() { return Object::me.as<State>(); }
     const State &me() const { return Object::me.as<State>(); }
 };
-
-inline bool operator<(const FontFamily &family, const String &familyName)
-{
-    return family.name() < familyName;
-}
-
-inline bool operator<(const String &familyName, const FontFamily &family)
-{
-    return familyName < family.name();
-}
 
 } // namespace cc

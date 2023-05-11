@@ -199,9 +199,14 @@ public:
         return ids;
     }
 
-    /** Lower than operator
+    /** Ordering operator
       */
-    bool operator<(const View &other) const { return id() < other.id(); }
+    std::strong_ordering operator<=>(const View &other) const
+    {
+        if (id() < other.id()) return std::strong_ordering::less;
+        if (other.id() < id()) return std::strong_ordering::greater;
+        return std::strong_ordering::equal;
+    }
 
     /** Check if this is a child view
       */

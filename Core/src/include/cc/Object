@@ -10,10 +10,11 @@
 
 #include <cc/Handle>
 #include <type_traits>
-#include <cstddef>
-#include <cassert>
 #include <utility>
 #include <atomic>
+#include <compare>
+#include <cstddef>
+#include <cassert>
 
 namespace cc {
 
@@ -66,17 +67,13 @@ public:
         return me.isWeak();
     }
 
-    /** Equal to operator
+    /** Equality operator
       */
     bool operator==(const Object &b) const { return me == b.me; }
 
-    /** Not equal to operator
+    /** Ordering operator
       */
-    bool operator!=(const Object &b) const { return me != b.me; }
-
-    /** Lower than operator
-      */
-    bool operator<(const Object &b) const { return me < b.me; }
+    std::strong_ordering operator<=>(const Object &b) const { return me <=> b.me; }
 
     /** Reference count
       */

@@ -458,38 +458,32 @@ public:
     }
 
     /** %Return a sorted copy of this list
-      * \tparam Order %Sorting order type
-      * \param order %Sorting order function
       * \return sorted copy of this list
       *
-      * Sorts the list of items according the given sorting order.
       * The order of equal elements is preserved.
       */
-    template<class Order = Asc>
-    List sorted(Order order = Order{}) const
+    List sorted() const
     {
         List result;
         auto &buffer = result.me.touch();
-        for (auto pos = head(); pos; ++pos)
-            buffer.insertLast(at(pos), order);
+        for (auto pos = head(); pos; ++pos) {
+            buffer.insertLast(at(pos));
+        }
         return result;
     }
 
     /** %Return a sorted copy of this list which does not contain repeated items
-      * \tparam Order %Sorting order type
-      * \param order %Sorting order function
       * \return sorted copy of this list
       *
-      * Sorts the list of items according the given sorting order.
       * For repeated items only the first occurance is added to the sorted list.
       */
-    template<class Order = Asc>
-    List sortedUnique(Order order = Order{}) const
+    List sortedUnique() const
     {
         List result;
         auto &buffer = result.me.touch();
-        for (auto pos = head(); pos; ++pos)
-            buffer.insertUnique(at(pos), None{}, order);
+        for (auto pos = head(); pos; ++pos) {
+            buffer.insertUnique(at(pos), None{});
+        }
         return result;
     }
 
@@ -506,8 +500,9 @@ public:
     {
         List result;
         auto &buffer = result.me.touch();
-        for (auto pos = tail(); pos; --pos)
+        for (auto pos = tail(); pos; --pos) {
             buffer.pushBack(at(pos));
+        }
         return result;
     }
 
@@ -584,12 +579,15 @@ public:
       */
     ///@{
 
-    template<class B> bool operator==(const B &b) const { return container::equal(*this, b); } ///< %Return true if this container equals \a b
-    template<class B> bool operator!=(const B &b) const { return container::differ(*this, b); } ///< %Return true if this container differs from \a b
-    template<class B> bool operator< (const B &b) const { return container::below(*this, b); } ///< %Return true if this container is lower than \a b
-    template<class B> bool operator> (const B &b) const { return container::above(*this, b); } ///< %Return true if this container is greater than \a b
-    template<class B> bool operator<=(const B &b) const { return container::belowOrEqual(*this, b); } ///< %Return true if this container is lower or equal than b
-    template<class B> bool operator>=(const B &b) const { return container::aboveOrEqual(*this, b); } ///< %Return true if this container is greater or equal than b
+    /** Equality operator
+      */
+    template<class Other>
+    bool operator==(const Other &other) const { return container::equal(*this, other); }
+
+    /** Ordering operator
+      */
+    template<class Other>
+    std::strong_ordering operator<=>(const Other &other) const { return container::order(*this, other); }
 
     ///@}
 

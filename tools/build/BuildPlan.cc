@@ -43,7 +43,6 @@
 #include <cc/System>
 #include <cc/yason>
 #include <cc/stdio>
-#include <cc/DEBUG>
 
 namespace cc::build {
 

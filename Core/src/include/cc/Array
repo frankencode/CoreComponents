@@ -781,12 +781,13 @@ public:
       */
     ///@{
 
-    bool operator==(const Array &b) const { return container::equal(*this, b); } ///< %Return true if this container equals \a b
-    bool operator!=(const Array &b) const { return container::differ(*this, b); } ///< %Return true if this container differs from \a b
-    bool operator< (const Array &b) const { return container::below(*this, b); } ///< %Return true if this container is lower than \a b
-    bool operator> (const Array &b) const { return container::above(*this, b); } ///< %Return true if this container is greater than \a b
-    bool operator<=(const Array &b) const { return container::belowOrEqual(*this, b); } ///< %Return true if this container is lower or equal than b
-    bool operator>=(const Array &b) const { return container::aboveOrEqual(*this, b); } ///< %Return true if this container is greater or equal than b
+    /** Equality operator
+      */
+    bool operator==(const Array &other) const { return container::equal(*this, other); }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const Array &other) const { return container::order(*this, other); }
 
     ///@}
 
@@ -870,41 +871,11 @@ using Bytes = Array<uint8_t>;
 namespace container {
 
 template<>
-inline bool equal<Bytes, Bytes>(const Bytes &a, const Bytes &b)
+inline std::strong_ordering order(const Array<uint8_t> &a, const Array<uint8_t> &b)
 {
-    return +a == +b && std::strncmp(a.chars(), b.chars(), a.count()) == 0;
-}
-
-template<>
-inline bool differ<Bytes, Bytes>(const Bytes &a, const Bytes &b)
-{
-    return !(a == b);
-}
-
-template<>
-inline bool below<Bytes, Bytes>(const Bytes &a, const Bytes &b)
-{
-    int r = std::strncmp(a.chars(), b.chars(), a.count() < b.count() ? a.count() : b.count());
-    return r < 0 || (r == 0 && a.count() < b.count());
-}
-
-template<>
-inline bool above<Bytes, Bytes>(const Bytes &a, const Bytes &b)
-{
-    return b < a;
-}
-
-template<>
-inline bool belowOrEqual<Bytes, Bytes>(const Bytes &a, const Bytes &b)
-{
-    int r = std::strncmp(a.chars(), b.chars(), a.count() < b.count() ? a.count() : b.count());
-    return r < 0 || (r == 0 && a.count() <= b.count());
-}
-
-template<>
-inline bool aboveOrEqual<Bytes, Bytes>(const Bytes &a, const Bytes &b)
-{
-    return b <= a;
+    std::strong_ordering ordering = std::strncmp(a.chars(), b.chars(), a.count() < b.count() ? a.count() : b.count()) <=> 0;
+    if (ordering == std::strong_ordering::equal) return a.count() <=> b.count();
+    return ordering;
 }
 
 } // namespace container

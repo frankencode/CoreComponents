@@ -32,6 +32,10 @@ struct TypeInfo {
     Function<bool(const void *, const void *)> equal = [](const void *, const void *) {
         return false;
     };
+
+    Function<std::strong_ordering(const void *, const void *)> order = [](const void *a, const void *b) {
+        return a <=> b;
+    };
 };
 
 } // namespace cc

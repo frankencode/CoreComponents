@@ -37,33 +37,69 @@ public:
         String{b}
     {}
 
-    /** Equal to operator
+    /** Equality operator
       */
-    bool operator==(const Casefree &b) const
+    bool operator==(const Casefree &other) const
     {
         long n = (*this).count();
-        if (n != b.count()) return false;
+        if (n != other.count()) return false;
         for (long i = 0; i < n; ++i) {
-            if (toLower((*this)[i]) != toLower(b[i]))
+            if (toLower((*this)[i]) != toLower(other[i]))
                 return false;
         }
         return true;
     }
 
-    /** Lower than operator
+    /** Equality operator
       */
-    bool operator<(const Casefree &b) const
+    bool operator==(const char *other) const
     {
         long n = (*this).count();
-        long m = b.count();
+        if (n != static_cast<long>(std::strlen(other))) return false;
+        for (long i = 0; i < n; ++i) {
+            if (toLower((*this)[i]) != toLower(other[i]))
+                return false;
+        }
+        return true;
+    }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const Casefree &other) const
+    {
+        long n = (*this).count();
+        long m = other.count();
         long l = n < m ? m : n;
         for (long i = 0; i < l; ++i) {
             auto x = (i < n) ? toLower((*this)[i]) : typename String::Item{0};
-            auto y = (i < m) ? toLower(b[i]) : typename String::Item{0};
-            if (x < y) return true;
-            else if (y < x) return false;
+            auto y = (i < m) ? toLower(other[i]) : typename String::Item{0};
+            if (x < y) return std::strong_ordering::less;
+            else if (y < x) return std::strong_ordering::greater;
         }
-        return false;
+        return n <=> m;
+    }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const String &other) const
+    {
+        return *this <=> Casefree{other};
+    }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const char *other) const
+    {
+        long n = (*this).count();
+        long m = static_cast<long>(std::strlen(other));
+        long l = n < m ? m : n;
+        for (long i = 0; i < l; ++i) {
+            auto x = (i < n) ? toLower((*this)[i]) : '\0';
+            auto y = (i < m) ? toLower(other[i]) : '\0';
+            if (x < y) return std::strong_ordering::less;
+            else if (y < x) return std::strong_ordering::greater;
+        }
+        return n <=> m;
     }
 
     /** Greater than operator
@@ -87,51 +123,6 @@ public:
         return !(*this < b);
     }
 };
-
-template<class String>
-inline bool operator<(const Casefree<String> &a, const String &b) { return a < Casefree<String>{b}; }
-
-template<class String>
-inline bool operator<(const String &a, const Casefree<String> &b) { return Casefree<String>{a} < b; }
-
-inline bool operator==(const Casefree<String> &a, const char *b)
-{
-    long n = a.count();
-    if (n != static_cast<long>(std::strlen(b))) return false;
-    for (long i = 0; i < n; ++i) {
-        if (toLower(a[i]) != toLower(b[i]))
-            return false;
-    }
-    return true;
-}
-
-inline bool operator<(const Casefree<String> &a, const char *b)
-{
-    long n = a.count();
-    long m = static_cast<long>(std::strlen(b));
-    long l = n < m ? m : n;
-    for (long i = 0; i < l; ++i) {
-        auto x = (i < n) ? toLower(a[i]) : '\0';
-        auto y = (i < m) ? toLower(b[i]) : '\0';
-        if (x < y) return true;
-        else if (y < x) return false;
-    }
-    return false;
-}
-
-inline bool operator<(const char *a, const Casefree<String> &b)
-{
-    long n = static_cast<long>(std::strlen(a));
-    long m = b.count();
-    long l = n < m ? m : n;
-    for (long i = 0; i < l; ++i) {
-        auto x = (i < n) ? toLower(a[i]) : '\0';
-        auto y = (i < m) ? toLower(b[i]) : '\0';
-        if (x < y) return true;
-        else if (y < x) return false;
-    }
-    return false;
-}
 
 template<class T>
 Casefree<T> casefree(const T &s) { return s; }
