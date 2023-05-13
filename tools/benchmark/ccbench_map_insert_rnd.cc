@@ -3,6 +3,7 @@
 #include <cc/Random>
 #include <cc/File>
 #include <cc/stdio>
+#include <cc/DEBUG>
 #include <cmath>
 
 int main(int argc, char *argv[])
@@ -24,6 +25,19 @@ int main(int argc, char *argv[])
         t = System::now() - t;
         fout() << std::round(t * 1000) << " ms\n";
     }
+
+    std::function checkFill {[](const buckets::BucketIndexTree::Node *node) -> bool {
+        /*if (node->fill_ < 12) {
+            CC_INSPECT(node->fill_);
+            CC_INSPECT(node->parent_ != nullptr);
+            CC_INSPECT(node->pred_ != nullptr);
+            CC_INSPECT(node->succ_ != nullptr);
+            CC_DEBUG;
+        }*/
+        return node->fill_ >= 12 || !node->parent_  || !node->pred_ || !node->succ_;
+    }};
+
+    CC_INSPECT(numbers.tree().check(checkFill));
 
     fout() << n << " random lookups... ";
     {

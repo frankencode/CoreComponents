@@ -392,6 +392,8 @@ public:
 
     ///@}
 
+    const auto &tree() const { return me(); }
+
 private:
     Cow<buckets::BucketVector<Item>> me;
 };

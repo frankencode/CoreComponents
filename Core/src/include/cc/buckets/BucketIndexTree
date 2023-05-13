@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <limits>
 #include <utility>
+#include <functional>
 #include <cassert>
 
 namespace cc::buckets {
@@ -101,16 +102,34 @@ public:
 
     long count() const { return root_.weight_; }
 
+    #if 1
     long idealLeafCount() const
     {
         return (height_ > 0) ? root_.node_->fill_ << ((height_ - 1) << 2) : 1;
     }
+    #endif
+
+    #if 0
+    long idealLeafCount() const
+    {
+        Node *node = root_.node_;
+        uint64_t n = 0;
+        for (int h = height_; h > 0; --h) {
+            unsigned i = node->fill_ - 1;
+            n <<= 4;
+            n |= i;
+            node = static_cast<const Branch *>(node)->at(i).node_;
+        }
+        return n + 1;
+    }
+    #endif
 
     Node *idealLeafAt(long idealIndex) const
     {
         Node *node = root_.node_;
         for (int h = height_; h > 0; --h) {
-            unsigned i = (idealIndex >> ((h - 1) << 2)) & 0xFu;
+            const int shift = (h - 1) << 2;
+            unsigned i = (idealIndex >> shift) & 0xFu;
             if (node->fill_ <= i) i = node->fill_ - 1;
             node = static_cast<const Branch *>(node)->at(i).node_;
         }
@@ -122,7 +141,8 @@ public:
         Node *node = root_.node_;
         long predWeight = 0;
         for (int h = height_; h > 0; --h) {
-            unsigned i = (idealIndex >> ((h - 1) << 2)) & 0xFu;
+            const int shift = (h - 1) << 2;
+            unsigned i = (idealIndex >> shift) & 0xFu;
             if (node->fill_ <= i) i = node->fill_ - 1;
             const Branch *branch = static_cast<const Branch *>(node);
             for (unsigned k = 0; k < i; ++k) {
@@ -161,6 +181,34 @@ public:
     #endif
 
     Node *stepDownTo(long index, unsigned *egress) const;
+
+    bool check(const std::function<bool(const Node *)> &f) const
+    {
+        return check(f, root_.node_, height_);
+    }
+
+    static bool check(const std::function<bool(const Node *)> &f, const Node *node, int h)
+    {
+        bool ok = true;
+        if (h > 0) {
+            const Branch *branch = static_cast<const Branch *>(node);
+            for (unsigned i = 0; i < branch->fill_; ++i) {
+                ok = ok && check(f, branch->at(i).node_, h - 1);
+            }
+        }
+        if (h > -1) ok = ok && f(node);
+        return ok;
+    }
+
+    /*static uint64_t path(const Node *node)
+    {
+        uint64_t trace = 0;
+        int shift = 0;
+        while (node) {
+
+        }
+        return trace;
+    }*/
 
 protected:
     template<class>
@@ -282,48 +330,49 @@ void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
     NodeType *newSucc = new NodeType;
     joinSucc(node, newSucc);
 
-    if (egress < Node::Capacity)
-    {
-        distributeForward(node, newSucc);
-
-        #if 1
-        if (pred) {
-            assert(pred->fill_ == Node::Capacity);
-            long delta = 0;
-            for (unsigned k = Node::Capacity - 1; k >= Node::Capacity - Node::QuarterCapacity; --k) {
-                delta += pred->weightAt(k);
-                node->push(0, std::move(pred->drop(k)));
-            }
-            shiftWeights(pred, node, delta);
-        }
-
-        if (succ) {
-            assert(succ->fill_ == Node::Capacity);
-            long delta = 0;
-            for (unsigned k = Node::HalfCapacity; k < Node::HalfCapacity + Node::QuarterCapacity; ++k) {
-                delta += succ->weightAt(0);
-                newSucc->push(k, std::move(succ->drop(0)));
-            }
-            shiftWeights(succ, newSucc, delta);
-        }
-        #endif
-
-        if (egress > Node::HalfCapacity) {
-            node = newSucc;
-            egress -= Node::HalfCapacity;
-        }
-        #if 1
-        else if (pred) {
-            egress += Node::QuarterCapacity;
-        }
-
-        assert(egress <= node->fill_);
-        #endif
-    }
-    else {
+    #if 1
+    if (egress == Node::Capacity && !succ) {
         node = newSucc;
         egress = 0;
+        return;
     }
+    #endif
+
+    distributeForward(node, newSucc);
+
+    #if 1
+    if (pred) {
+        assert(pred->fill_ == Node::Capacity);
+        long delta = 0;
+        for (unsigned k = Node::Capacity - 1; k >= Node::Capacity - Node::QuarterCapacity; --k) {
+            delta += pred->weightAt(k);
+            node->push(0, std::move(pred->drop(k)));
+        }
+        shiftWeights(pred, node, delta);
+    }
+
+    if (succ) {
+        assert(succ->fill_ == Node::Capacity);
+        long delta = 0;
+        for (unsigned k = Node::HalfCapacity; k < Node::HalfCapacity + Node::QuarterCapacity; ++k) {
+            delta += succ->weightAt(0);
+            newSucc->push(k, std::move(succ->drop(0)));
+        }
+        shiftWeights(succ, newSucc, delta);
+    }
+    #endif
+
+    if (egress > Node::HalfCapacity) {
+        node = newSucc;
+        egress -= Node::HalfCapacity;
+    }
+    #if 1
+    else if (pred) {
+        egress += Node::QuarterCapacity;
+    }
+
+    assert(egress <= node->fill_);
+    #endif
 }
 
 template<class NodeType>
