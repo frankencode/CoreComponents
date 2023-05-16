@@ -20,7 +20,7 @@
   * ~~~~~~~~~~~~~
   */
 #define CC_DEBUG \
-  cc::ferr("%%\n") << String{__FILE__}.fileName() << ":" << __LINE__ << ": "
+  cc::ferr("%%\n") << cc::String{__FILE__}.fileName() << ":" << __LINE__ << ": "
 
 /** \ingroup streams
   * \brief Generate a debug message for \a expression

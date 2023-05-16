@@ -136,18 +136,19 @@ public:
 
     Locator head() const
     {
-        return Locator{&count_, 0, head_, 0};
+        return Locator{revision(), 0, head_, 0};
     }
 
     Locator tail() const
     {
-        return Locator{&count_, count_ - 1, tail_, tail_ ? tail_->fill_ - 1 : 0};
+        return Locator{revision(), count_ - 1, tail_, tail_ ? tail_->fill_ - 1 : 0};
     }
 
-    T &at(Locator target) const
+    T &at(const Locator &target) const
     {
         assert(target);
-        assert(target.revisionPtr_ == &count_); // locator needs to belong to this container
+        assert(target.revisionPtr_ == &revision_); // locator needs to belong to this container
+        assert(target.revisionSaved_ == revision_); // locator needs to be up-to-date
 
         return static_cast<Node *>(target.stop_)->at(target.egress_);
     }
@@ -172,6 +173,9 @@ public:
         tail_->emplaceBack(args...);
 
         ++count_;
+        #ifndef NDEBUG
+        ++revision_;
+        #endif
     }
 
     template<class... Args>
@@ -188,6 +192,9 @@ public:
         head_->emplaceFront(args...);
 
         ++count_;
+        #ifndef NDEBUG
+        ++revision_;
+        #endif
     }
 
     void pushBack(const T &item)
@@ -203,6 +210,9 @@ public:
         tail_->pushBack(item);
 
         ++count_;
+        #ifndef NDEBUG
+        ++revision_;
+        #endif
     }
 
     void pushFront(const T &item)
@@ -218,6 +228,9 @@ public:
         head_->pushFront(item);
 
         ++count_;
+        #ifndef NDEBUG
+        ++revision_;
+        #endif
     }
 
     void popBack(Out<T> item)
@@ -234,6 +247,9 @@ public:
         }
 
         --count_;
+        #ifndef NDEBUG
+        ++revision_;
+        #endif
     }
 
     void popFront(Out<T> item)
@@ -250,6 +266,9 @@ public:
         }
 
         --count_;
+        #ifndef NDEBUG
+        ++revision_;
+        #endif
     }
 
     void deplete()
@@ -267,14 +286,29 @@ public:
         head_ = nullptr;
         tail_ = nullptr;
         count_ = 0;
+        #ifndef NDEBUG
+        ++revision_;
+        #endif
     }
 
 private:
     using Node = Link;
 
+    const unsigned *revision() const
+    {
+    #ifndef NDEBUG
+        return &revision_;
+    #else
+        return nullptr;
+    #endif
+    }
+
     Node *head_ { nullptr };
     Node *tail_ { nullptr };
     long count_ { 0 };
+    #ifndef NDEBUG
+    unsigned revision_ { 0 };
+    #endif
 };
 
 } // namespace cc::buckets

@@ -57,7 +57,7 @@ void BucketIndexTree::joinSucc(Node *node, Node *newNode, bool isBranch)
     if (oldSucc) {
         newNode->succ_ = oldSucc;
         oldSucc->pred_ = newNode;
-        isDense_ = false;
+        isDense_ = 0;
     }
     else if (!isBranch) {
         lastLeaf_ = newNode;

@@ -1,0 +1,369 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/buckets/BucketSlotMap>
+#include <cc/buckets/BucketStop>
+#include <cc/Locator>
+#include <cc/find>
+#include <utility>
+#include <cstddef>
+#include <cassert>
+
+namespace cc::buckets {
+
+template<class K, class T = K>
+class BucketTree
+{
+public:
+    using Key = K;
+    using Value = T;
+
+    class Branch;
+
+    class Node: public BucketStop
+    {
+    public:
+        static constexpr unsigned Capacity = 16;
+        static constexpr unsigned HalfCapacity = Capacity >> 1;
+        static constexpr unsigned QuarterCapacity = Capacity >> 2;
+
+        bool isRoot() const { return parent_ == nullptr; }
+        bool isFull() const { return Node::fill_ == Node::Capacity; }
+        bool isInternal() const { return parent_ && succ_ && pred_; }
+
+        Node *succ() const { return static_cast<Node *>(succ_); }
+        Node *pred() const { return static_cast<Node *>(pred_); }
+        Branch *parent_ { nullptr };
+    };
+
+    class Branch final: public Node
+    {
+    public:
+        explicit Branch(const Key &midKey, Node *minLeaf, Node *maxLeaf):
+            maxChild_{maxLeaf}
+        {
+            push(0, midKey, minLeaf);
+        }
+
+        const Key &at(unsigned egress) const
+        {
+            assert(egress < Branch::fill_);
+            return keySlotAt(map_.mapToSlot(egress));
+        }
+
+        Node *childAt(unsigned egress) const
+        {
+            assert(egress < Branch::fill_);
+            return child_[map_.mapToSlot(egress)];
+        }
+
+        unsigned count() const { return Branch::fill_; }
+
+        void push(unsigned egress, const Key &key, Node *child)
+        {
+            unsigned slotIndex = map_.pushEntry(egress, Node::fill_);
+            ++Node::fill_;
+            new (&keySlotAt(slotIndex)) Key{key};
+            child_[slotIndex] = child;
+        }
+
+        void drop(unsigned egress)
+        {
+            unsigned slotIndex = map_.popEntry(egress, Node::fill_);
+            --Node::fill_;
+            keySlotAt(slotIndex).~Key();
+        }
+
+    private:
+        const Key &keySlotAt(unsigned slotIndex) const
+        {
+            return reinterpret_cast<const Key *>(key_)[slotIndex];
+        }
+
+        Key &keySlotAt(unsigned slotIndex)
+        {
+            return reinterpret_cast<Key *>(key_)[slotIndex];
+        }
+
+        BucketSlotMap<Branch::Capacity> map_;
+        std::byte key_[Branch::Capacity * sizeof(Key)] alignas(Key);
+        Node *maxChild_;
+        Node *child_[Branch::Capacity];
+    };
+
+    class Leaf final: public Node
+    {
+    public:
+        const Key &at(unsigned egress) const
+        {
+            assert(egress < Node::fill_);
+            return keySlotAt(map_.mapToSlot(egress));
+        }
+
+        unsigned count() const { return Node::fill_; }
+
+        void push(unsigned egress, Key &&key, Value &&value)
+        {
+            unsigned slotIndex = map_.pushEntry(egress, Node::fill_);
+            ++Node::fill_;
+            new (&keySlotAt(slotIndex)) Key{std::move(key)};
+            new (&valueSlotAt(slotIndex)) Value{std::move(value)};
+        }
+
+        void push(unsigned egress, const Key &key, const Value &value)
+        {
+            unsigned slotIndex = map_.pushEntry(egress, Node::fill_);
+            ++Node::fill_;
+            new (&keySlotAt(slotIndex)) Key{key};
+            new (&valueSlotAt(slotIndex)) Value{value};
+        }
+
+        void drop(unsigned egress)
+        {
+            unsigned slotIndex = map_.popEntry(egress, Node::fill_);
+            --Node::fill_;
+            keySlotAt(slotIndex).~Key();
+            valueSlotAt(slotIndex).~Value();
+        }
+
+    private:
+        const Key &keySlotAt(unsigned slotIndex) const
+        {
+            return reinterpret_cast<const Key *>(key_)[slotIndex];
+        }
+
+        Key &keySlotAt(unsigned slotIndex)
+        {
+            return reinterpret_cast<Key *>(key_)[slotIndex];
+        }
+
+        const Value &valueSlotAt(unsigned slotIndex) const
+        {
+            return reinterpret_cast<const Value *>(value_)[slotIndex];
+        }
+
+        Value &valueSlotAt(unsigned slotIndex)
+        {
+            return reinterpret_cast<Value *>(value_)[slotIndex];
+        }
+
+        BucketSlotMap<Leaf::Capacity> map_;
+        std::byte key_[Leaf::Capacity * sizeof(Key)] alignas(Key);
+        std::byte value_[Leaf::Capacity * sizeof(Value)] alignas(Value);
+    };
+
+    ~BucketTree()
+    {
+        deplete();
+    }
+
+    template<class Pattern, class Find = FindAny>
+    bool lookup(const Pattern &pattern, Leaf **target, unsigned *egress) const
+    {
+        if (height_ == -1) return false;
+
+        {
+            auto ordering = maxLeaf_->at(maxLeaf_->fill_ - 1) <=> pattern;
+            if (ordering != std::strong_ordering::greater) {
+                const bool found = (ordering == std::strong_ordering::equal);
+                *target = maxLeaf_;
+                *egress = maxLeaf_->fill_ - found;
+                return found;
+            }
+        }
+
+        Node *node = root_;
+
+        for (int h = height_; h > 0; --h) {
+            Branch *branch = static_cast<Branch *>(node);
+            unsigned k = 0;
+            Find::find(branch, pattern, &k);
+            node = branch->childAt(k);
+        }
+
+        Leaf *leaf = static_cast<Leaf *>(node);
+        *target = leaf;
+
+        return Find::find(leaf, pattern, egress);
+    }
+
+    template<class Pattern>
+    bool contains(const Pattern &pattern) const
+    {
+        Leaf *target;
+        unsigned egress;
+        return lookup(pattern, &target, &egress);
+    }
+
+    void insert(Leaf *&target, unsigned &egress, const Key &key, const Value &value)
+    {
+        if (target) {
+            dissipate(target, egress);
+        }
+        else {
+            assert(height_ == -1);
+            target = new Leaf;
+            egress = 0;
+            root_ = target;
+            maxLeaf_ = target;
+            height_ = 0;
+        }
+
+        target->push(egress, key, value);
+        ++revision_;
+    }
+
+    void deplete()
+    {
+        if (height_ >= 0) {
+            Node *leaf = maxLeaf_;
+            Branch *parent = leaf->parent_;
+            while (leaf) {
+                Node *pred = leaf->pred();
+                delete static_cast<Leaf *>(leaf);
+                leaf = pred;
+            }
+            while (parent) {
+                Node *branch = parent;
+                parent = parent->parent_;
+                while (branch) {
+                    Node *pred = branch->pred();
+                    delete branch;
+                    branch = pred;
+                }
+            }
+            *this = BucketTree{};
+            #ifndef NDEBUG
+            ++revision_;
+            #endif
+        }
+    }
+
+private:
+    template<class NodeType>
+    void dissipate(NodeType *&target, unsigned &egress)
+    {
+        // if (node->fill_ == Node::Capacity) dissipateSlow(node, egress);
+    }
+
+    #if 0
+    template<class NodeType>
+    void dissipateSlow(NodeType *&target, unsigned &egress)
+    {
+        NodeType *succ = static_cast<NodeType *>(node->succ_);
+        NodeType *pred = static_cast<NodeType *>(node->pred_);
+
+        if (succ && pred) {
+            if (succ->fill_ < pred->fill_) {
+                if (egress != Node::Capacity) {
+                    dissipateForward(node, succ);
+                }
+                else {
+                    node = succ;
+                    egress = 0;
+                }
+                return;
+            }
+            if (pred->fill_ < succ->fill_) {
+                if (egress != 0) {
+                    dissipateBackward(pred, node);
+                    --egress;
+                }
+                else {
+                    node = pred;
+                    egress = pred->fill_;
+                }
+                return;
+            }
+        }
+
+        if (pred) {
+            if (pred->fill_ < Node::Capacity) {
+                if (egress != 0) {
+                    dissipateBackward(pred, node);
+                    --egress;
+                }
+                else {
+                    node = pred;
+                    egress = pred->fill_;
+                }
+                return;
+            }
+        }
+
+        if (succ) {
+            if (succ->fill_ < Node::Capacity) {
+                if (egress != Node::Capacity) {
+                    dissipateForward(node, succ);
+                }
+                else {
+                    node = succ;
+                    egress = 0;
+                }
+                return;
+            }
+        }
+
+        NodeType *newSucc = new NodeType;
+        joinSucc(node, newSucc);
+
+        #if 1
+        if (egress == Node::Capacity && !succ) {
+            node = newSucc;
+            egress = 0;
+            return;
+        }
+        #endif
+
+        distributeForward(node, newSucc);
+
+        #if 1
+        if (pred) {
+            assert(pred->fill_ == Node::Capacity);
+            long delta = 0;
+            for (unsigned k = Node::Capacity - 1; k >= Node::Capacity - Node::QuarterCapacity; --k) {
+                delta += pred->weightAt(k);
+                node->push(0, std::move(pred->drop(k)));
+            }
+            shiftWeights(pred, node, delta);
+        }
+
+        if (succ) {
+            assert(succ->fill_ == Node::Capacity);
+            long delta = 0;
+            for (unsigned k = Node::HalfCapacity; k < Node::HalfCapacity + Node::QuarterCapacity; ++k) {
+                delta += succ->weightAt(0);
+                newSucc->push(k, std::move(succ->drop(0)));
+            }
+            shiftWeights(succ, newSucc, delta);
+        }
+        #endif
+
+        if (egress > Node::HalfCapacity) {
+            node = newSucc;
+            egress -= Node::HalfCapacity;
+        }
+        #if 1
+        else if (pred) {
+            egress += Node::QuarterCapacity;
+        }
+
+        assert(egress <= node->fill_);
+        #endif
+    }
+    #endif
+
+    Node *root_ { nullptr };
+    Leaf *maxLeaf_ { nullptr };
+    int height_ { -1 };
+    unsigned revision_ { 0 };
+};
+
+} // namespace cc::buckets

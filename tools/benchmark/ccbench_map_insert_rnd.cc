@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     }
 
     std::function checkFill {[](const buckets::BucketIndexTree::Node *node) -> bool {
+        // CC_INSPECT(node->fill_);
         /*if (node->fill_ < 12) {
             CC_INSPECT(node->fill_);
             CC_INSPECT(node->parent_ != nullptr);

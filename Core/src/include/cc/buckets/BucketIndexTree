@@ -21,7 +21,7 @@ namespace cc::buckets {
 /** \internal
   * \brief Purely counted B-tree
   *
-  * The BucketIndexTree is a B-tree which contains only sub-tree weights as keys in the inner nodes.
+  * The BucketIndexTree is a B-tree which contains sub-tree weights as keys in the inner nodes.
   * The levels of the tree are comprised of double linked bucket chains, with each bucket holding
   * up to 16 keys (inner nodes) or 16 items (leaf nodes). Item storage and retrieval has to be defined
   * in a derived class. This class provides only part of the tree logic which is independent of the
@@ -176,10 +176,6 @@ public:
 
     bool isDense() const { return isDense_; }
 
-    #ifndef NDEBUG
-    long revision() const { return root_.weight_; }
-    #endif
-
     Node *stepDownTo(long index, unsigned *egress) const;
 
     bool check(const std::function<bool(const Node *)> &f) const
@@ -199,16 +195,6 @@ public:
         if (h > -1) ok = ok && f(node);
         return ok;
     }
-
-    /*static uint64_t path(const Node *node)
-    {
-        uint64_t trace = 0;
-        int shift = 0;
-        while (node) {
-
-        }
-        return trace;
-    }*/
 
 protected:
     template<class>
@@ -264,10 +250,22 @@ protected:
 
     void reduce();
 
+    const unsigned *revision() const
+    {
+        #ifdef NDEBUG
+        return nullptr;
+        #else
+        return &revision_;
+        #endif
+    }
+
     Head root_ { .weight_ = 0, .node_ = nullptr };
-    Node *lastLeaf_ { nullptr };
-    bool isDense_ { true };
+    Node *lastLeaf_ { nullptr }; // FIXME: maxLeaf_;
     int height_ { -1 };
+    unsigned isDense_ { 1 };
+    #ifndef NDEBUG
+    unsigned revision_ { 0 };
+    #endif
 };
 
 template<class NodeType>
@@ -422,7 +420,7 @@ void BucketIndexTree::distributeForward(NodeType *from, NodeType *to)
 
     shiftWeights(from, to, from->distributeTo(to));
 
-    isDense_ = false;
+    isDense_ = 0;
 }
 
 template<class NodeType>

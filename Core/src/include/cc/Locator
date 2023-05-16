@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/buckets/BucketStop>
+#include <compare>
 #include <cassert>
 
 namespace cc::buckets {
@@ -72,14 +73,15 @@ public:
 
     /** Get distance between this and another locator (substraction operator)
       */
-    long operator-(const Locator &b) const { return index_ - b.index_; }
+    long operator-(const Locator &other) const { return index_ - other.index_; }
 
-    bool operator==(const Locator &b) const { return index_ == b.index_; } ///< Equal to operator
-    bool operator!=(const Locator &b) const { return index_ != b.index_; } ///< Not equal to operator
-    bool operator< (const Locator &b) const { return index_ <  b.index_; } ///< Less than operator
-    bool operator> (const Locator &b) const { return index_ >  b.index_; } ///< Greater than operator
-    bool operator<=(const Locator &b) const { return index_ <= b.index_; } ///< Less than or equal to operator
-    bool operator>=(const Locator &b) const { return index_ >= b.index_; } ///< Greater than or equal to operator
+    /** Equality operator
+      */
+    bool operator==(const Locator &other) const { return index_ == other.index_; }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const Locator &other) const { return index_ <=> other.index_; }
 
     /** Check if this locator is valid
       */
@@ -98,14 +100,14 @@ protected:
     template<class>
     friend class cc::buckets::BucketChain;
 
-    explicit Locator(const long *revision, long index, BucketStop *stop, unsigned egress):
-        #ifndef NDEBUG
-        revisionSaved_{*revision},
-        revisionPtr_{revision},
-        #endif
+    explicit Locator(const unsigned *revision, long index, BucketStop *stop, unsigned egress):
         index_{index},
         stop_{stop},
-        egress_{egress}
+        egress_{egress},
+        #ifndef NDEBUG
+        revisionSaved_{*revision},
+        revisionPtr_{revision}
+        #endif
     {}
 
     void stepNext()
@@ -135,13 +137,13 @@ protected:
             --egress_;
     }
 
-    #ifndef NDEBUG
-    long revisionSaved_ { 0 };
-    const long *revisionPtr_ { &revisionSaved_ };
-    #endif
     long index_;
     BucketStop *stop_;
     unsigned egress_;
+    #ifndef NDEBUG
+    unsigned revisionSaved_ { 0 };
+    const unsigned *revisionPtr_ { &revisionSaved_ };
+    #endif
 };
 
 } // namespace cc
