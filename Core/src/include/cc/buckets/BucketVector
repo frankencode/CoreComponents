@@ -76,6 +76,15 @@ public:
             return slotAt(slotIndex);
         }
 
+        void adoptChildrenOfSucc(const Leaf *succ)
+        {
+            assert(fill_ + succ->fill_ <= Node::Capacity);
+
+            for (unsigned k = 0; k < succ->fill_; ++k) {
+                push(fill_, std::move(succ->slotAt(succ->map_.mapToSlot(k))));
+            }
+        }
+
         static long weightAt(unsigned egress) { return 1; }
 
         long dissipateForwardTo(Leaf *succ)
@@ -188,7 +197,7 @@ public:
     {
         unsigned egress = 0;
         Node *node = stepDownTo(index, &egress);
-        if (root_.weight_ <= index) node = nullptr;
+        if (weight_ <= index) node = nullptr;
         return Locator{revision(), index, node, egress};
     }
 
@@ -311,7 +320,7 @@ public:
 
     void deplete()
     {
-        if (root_.node_) {
+        if (root_) {
             Node *leaf = lastLeaf_;
             Branch *parent = leaf->parent_;
             while (leaf) {
@@ -446,7 +455,7 @@ void BucketVector<T>::emplaceAt(Locator &target, Args... args)
     target.egress_ = egress;
     target.stop_ = leaf;
     #ifndef NDEBUG
-    target.revisionSaved_ = root_.weight_;
+    target.revisionSaved_ = revision_;
     #endif
 }
 
@@ -480,8 +489,8 @@ void BucketVector<T>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... ar
         target = new Leaf;
         egress = 0;
         target->emplace(egress, args...);
-        root_.weight_ = 1;
-        root_.node_ = target;
+        weight_ = 1;
+        root_ = target;
         lastLeaf_ = target;
         ++height_;
         // firstLeaf_ = leaf;
@@ -504,8 +513,8 @@ void BucketVector<T>::pushAndTell(Leaf *&target, unsigned &egress, const Item &i
         target = new Leaf;
         egress = 0;
         target->push(egress, item);
-        root_.weight_ = 1;
-        root_.node_ = target;
+        weight_ = 1;
+        root_ = target;
         lastLeaf_ = target;
         ++height_;
         // firstLeaf_ = leaf;
@@ -527,7 +536,7 @@ void BucketVector<T>::pop(long index)
 template<class T>
 void BucketVector<T>::pop(Node *target, unsigned egress)
 {
-    if (root_.weight_ > 1) {
+    if (weight_ > 1) {
         Leaf *leaf = static_cast<Leaf *>(target);
         leaf->drop(egress).~Item();
         updateWeights(leaf, -1);
@@ -536,9 +545,9 @@ void BucketVector<T>::pop(Node *target, unsigned egress)
         reduce();
     }
     else {
-        delete static_cast<Leaf *>(root_.node_);
-        root_.node_ = nullptr;
-        root_.weight_ = 0;
+        delete static_cast<Leaf *>(root_);
+        root_ = nullptr;
+        weight_ = 0;
         lastLeaf_ = nullptr;
         // leafCount_ = 0;
         --height_;
@@ -555,7 +564,7 @@ bool BucketVector<T>::lookup(const Pattern &pattern, long *finalIndex, Leaf **ta
 {
     bool found = false;
     if (height_ == 0) {
-        Leaf *leaf = static_cast<Leaf *>(root_.node_);
+        Leaf *leaf = static_cast<Leaf *>(root_);
         long i = 0;
         found = Search::find(leaf, pattern, &i);
         if (finalIndex) *finalIndex = i;
@@ -565,7 +574,7 @@ bool BucketVector<T>::lookup(const Pattern &pattern, long *finalIndex, Leaf **ta
     else if (height_ > 0) {
         Leaf *leaf = static_cast<Leaf *>(lastLeaf_);
         if (leaf->at(leaf->fill_ - 1) < pattern) {
-            if (finalIndex) *finalIndex = root_.weight_;
+            if (finalIndex) *finalIndex = weight_;
             if (target) *target = leaf;
             if (egress) *egress = leaf->fill_;
         }

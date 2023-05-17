@@ -56,8 +56,25 @@ public:
     class Branch final: public Node
     {
     public:
-        Head &at(unsigned egress) { return slots_[map_.mapToSlot(egress)]; }
-        const Head &at(unsigned egress) const { return slots_[map_.mapToSlot(egress)]; }
+        Node *childAt(unsigned egress) const { return slots_[map_.mapToSlot(egress)].node_; }
+        long weightAt(unsigned egress) const { return slots_[map_.mapToSlot(egress)].weight_; }
+
+        Node *find(long &index) const
+        {
+            const unsigned n = fill_;
+
+            for (unsigned k = 0; k < n; ++k)
+            {
+                const unsigned slotIndex = map_.mapToSlot(k);
+                index -= slots_[slotIndex].weight_;
+                if (index < 0) {
+                    index += slots_[slotIndex].weight_;
+                    return slots_[slotIndex].node_;
+                }
+            }
+
+            return nullptr;
+        }
 
         void push(unsigned egress, const Head &head)
         {
@@ -75,7 +92,14 @@ public:
             return slotIndex;
         }
 
-        long weightAt(unsigned egress) const { return at(egress).weight_; }
+        void adoptChildrenOfSucc(const Branch *succ)
+        {
+            assert(fill_ + succ->fill_ <= Node::Capacity);
+
+            for (unsigned k = 0; k < succ->fill_; ++k) {
+                push(fill_, succ->slots_[succ->map_.mapToSlot(k)]);
+            }
+        }
 
         long &weightOf(const Node *child) { return slots_[child->slotIndex_].weight_; }
 
@@ -157,25 +181,25 @@ public:
         Head slots_[Capacity];
     };
 
-    long count() const { return root_.weight_; }
+    long count() const { return weight_; }
 
     #if 1
     long idealLeafCount() const
     {
-        return (height_ > 0) ? root_.node_->fill_ << ((height_ - 1) << 2) : 1;
+        return (height_ > 0) ? root_->fill_ << ((height_ - 1) << 2) : 1;
     }
     #endif
 
     #if 0
     long idealLeafCount() const
     {
-        Node *node = root_.node_;
+        Node *node = root_;
         uint64_t n = 0;
         for (int h = height_; h > 0; --h) {
             unsigned i = node->fill_ - 1;
             n <<= 4;
             n |= i;
-            node = static_cast<const Branch *>(node)->at(i).node_;
+            node = static_cast<const Branch *>(node)->childAt(i);
         }
         return n + 1;
     }
@@ -183,19 +207,19 @@ public:
 
     Node *idealLeafAt(long idealIndex) const
     {
-        Node *node = root_.node_;
+        Node *node = root_;
         for (int h = height_; h > 0; --h) {
             const int shift = (h - 1) << 2;
             unsigned i = (idealIndex >> shift) & 0xFu;
             if (node->fill_ <= i) i = node->fill_ - 1;
-            node = static_cast<const Branch *>(node)->at(i).node_;
+            node = static_cast<const Branch *>(node)->childAt(i);
         }
         return node;
     }
 
     Node *locateIdealLeaf(long idealIndex, long *offset) const
     {
-        Node *node = root_.node_;
+        Node *node = root_;
         long predWeight = 0;
         for (int h = height_; h > 0; --h) {
             const int shift = (h - 1) << 2;
@@ -205,7 +229,7 @@ public:
             for (unsigned k = 0; k < i; ++k) {
                 predWeight += branch->weightAt(k);
             }
-            node = branch->at(i).node_;
+            node = branch->childAt(i);
         }
         *offset = predWeight;
         return node;
@@ -213,23 +237,21 @@ public:
 
     Node *getMinNode() const
     {
-        Node *node = root_.node_;
+        Node *node = root_;
         for (int h = height_; h > 0; --h) {
-            node = static_cast<const Branch *>(node)->at(0).node_;
+            node = static_cast<const Branch *>(node)->childAt(0);
         }
         return node;
     }
 
     Node *getMaxNode() const
     {
-        Node *node = root_.node_;
+        Node *node = root_;
         for (int h = height_; h > 0; --h) {
-            node = static_cast<const Branch *>(node)->at(node->fill_ - 1).node_;
+            node = static_cast<const Branch *>(node)->childAt(node->fill_ - 1);
         }
         return node;
     }
-
-    const Head *root() const { return &root_; }
 
     bool isDense() const { return isDense_; }
 
@@ -237,7 +259,7 @@ public:
 
     bool check(const std::function<bool(const Node *)> &f) const
     {
-        return check(f, root_.node_, height_);
+        return check(f, root_, height_);
     }
 
     static bool check(const std::function<bool(const Node *)> &f, const Node *node, int h)
@@ -246,7 +268,7 @@ public:
         if (h > 0) {
             const Branch *branch = static_cast<const Branch *>(node);
             for (unsigned i = 0; i < branch->fill_; ++i) {
-                ok = ok && check(f, branch->at(i).node_, h - 1);
+                ok = ok && check(f, branch->childAt(i), h - 1);
             }
         }
         if (h > -1) ok = ok && f(node);
@@ -307,10 +329,11 @@ protected:
         #endif
     }
 
-    Head root_ { .weight_ = 0, .node_ = nullptr };
-    Node *lastLeaf_ { nullptr }; // FIXME: maxLeaf_;
     int height_ { -1 };
     bool isDense_ { true };
+    Node *root_ { nullptr };
+    long weight_ { 0 };
+    Node *lastLeaf_ { nullptr }; // FIXME: maxLeaf_;
     #ifndef NDEBUG
     unsigned revision_ { 0 };
     #endif
@@ -430,11 +453,7 @@ void BucketIndexTree::relieve(NodeType *node, bool recursive)
 template<class NodeType>
 void BucketIndexTree::collapseSucc(NodeType *node, NodeType *succ)
 {
-    assert(node->fill_ + succ->fill_ <= Node::Capacity);
-
-    for (unsigned i = 0; i < succ->fill_; ++i) {
-        node->push(node->fill_, succ->at(i));
-    }
+    node->adoptChildrenOfSucc(succ);
     shiftWeights(succ, node, weight(succ));
     unlink(succ);
 }

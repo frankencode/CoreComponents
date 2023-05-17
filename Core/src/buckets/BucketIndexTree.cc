@@ -12,38 +12,30 @@ namespace cc::buckets {
 
 BucketIndexTree::Node *BucketIndexTree::stepDownTo(long index, unsigned *egress) const
 {
-    assert(0 <= index && index <= root_.weight_);
+    assert(0 <= index && index <= weight_);
 
-    Node *node = root_.node_;
+    Node *node = root_;
 
-    if (index + 1 >= root_.weight_) {
+    if (index + 1 >= weight_) {
         node = lastLeaf_;
-        *egress = (node) ? node->fill_ - (index < root_.weight_) : 0;
+        *egress = (node) ? node->fill_ - (index < weight_) : 0;
     }
     else if (index <= 0) {
-        for (int h = height_; h > 0; --h) node = static_cast<const Branch *>(node)->at(0).node_;
+        for (int h = height_; h > 0; --h) node = static_cast<const Branch *>(node)->childAt(0);
         *egress = 0;
     }
     else if (isDense_ && Node::Capacity == 16) {
         *egress = index & 0xFu;
         for (int h = height_; h > 0; --h) {
-            node = static_cast<const Branch *>(node)->at((index >> (h << 2)) & 0xFu).node_;
+            node = static_cast<const Branch *>(node)->childAt((index >> (h << 2)) & 0xFu);
         }
     }
     else {
-        for (int h = height_; h > 0; --h) {
-            const Branch *branch = static_cast<const Branch *>(node);
-            const unsigned n = branch->fill_;
-            for (unsigned i = 0; i < n; ++i) {
-                const Head *head = &branch->at(i);
-                index -= head->weight_;
-                if (index < 0) {
-                    node = head->node_;
-                    index += head->weight_;
-                    break;
-                }
-            }
+        for (int h = height_; h > 0; --h)
+        {
+            node = static_cast<const Branch *>(node)->find(index);
         }
+
         *egress = index;
     }
 
@@ -74,9 +66,9 @@ void BucketIndexTree::joinSucc(Node *node, Node *newNode, bool isBranch)
     }
     else {
         Branch *branch = new Branch;
-        branch->push(0, root_);
+        branch->push(0, Head{.weight_ = weight_, .node_ = root_});
         branch->push(1, Head{.weight_ = 0, .node_ = newNode});
-        root_.node_ = branch;
+        root_ = branch;
         ++height_;
     }
 }
@@ -113,19 +105,19 @@ void BucketIndexTree::updateWeights(Node *node, long delta)
         weight(node) += delta;
         node = node->parent_;
     }
-    root_.weight_ += delta;
+    weight_ += delta;
 }
 
 void BucketIndexTree::reduce()
 {
-    if (root_.node_) {
-        while (height_ > 0 && root_.node_->fill_ == 1) {
-            Branch *branch = static_cast<Branch *>(root_.node_);
-            root_.node_ = branch->at(0).node_;
+    if (root_) {
+        while (height_ > 0 && root_->fill_ == 1) {
+            Branch *branch = static_cast<Branch *>(root_);
+            root_ = branch->childAt(0);
             delete branch;
             --height_;
         }
-        root_.node_->parent_ = nullptr;
+        root_->parent_ = nullptr;
     }
 }
 
