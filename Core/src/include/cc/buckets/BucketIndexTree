@@ -68,11 +68,11 @@ public:
             head.node_->parent_ = this;
         }
 
-        Head &drop(unsigned egress)
+        unsigned drop(unsigned egress)
         {
             unsigned slotIndex = map_.popEntry(egress, fill_);
             --fill_;
-            return slots_[slotIndex];
+            return slotIndex;
         }
 
         long weightAt(unsigned egress) const { return at(egress).weight_; }
@@ -81,15 +81,38 @@ public:
 
         unsigned indexOf(const Node *child) const { return map_.mapToBucket(child->slotIndex_); }
 
+        long dissipateForwardTo(Branch *succ)
+        {
+            assert(fill_ > 0);
+            assert(succ->fill_ < Capacity);
+
+            unsigned slotIndex = drop(fill_ - 1);
+            succ->push(0, slots_[slotIndex]);
+            return slots_[slotIndex].weight_;
+        }
+
+        long dissipateBackwardTo(Branch *pred)
+        {
+            assert(fill_ > 0);
+            assert(pred->fill_ < Capacity);
+
+            unsigned slotIndex = drop(0);
+            pred->push(pred->fill_, slots_[slotIndex]);
+            return slots_[slotIndex].weight_;
+        }
+
         long distributeHalfForwardTo(Branch *succ)
         {
             assert(fill_ == Capacity);
             assert(succ->fill_ <= HalfCapacity);
 
             long delta = 0;
-            for (unsigned i = 0; i < HalfCapacity; ++i) {
-                delta += weightAt(HalfCapacity);
-                succ->push(i, std::move(drop(HalfCapacity)));
+
+            for (unsigned i = 0; i < HalfCapacity; ++i)
+            {
+                unsigned slotIndex = drop(HalfCapacity);
+                delta += slots_[slotIndex].weight_;
+                succ->push(i, slots_[slotIndex]);
             }
 
             return delta;
@@ -101,9 +124,12 @@ public:
             assert(succ->fill_ <= Capacity - QuarterCapacity);
 
             long delta = 0;
-            for (unsigned k = Capacity - 1; k >= Capacity - QuarterCapacity; --k) {
-                delta += weightAt(k);
-                succ->push(0, std::move(drop(k)));
+
+            for (unsigned k = Capacity - 1; k >= Capacity - QuarterCapacity; --k)
+            {
+                unsigned slotIndex = drop(k);
+                delta += slots_[slotIndex].weight_;
+                succ->push(0, slots_[slotIndex]);
             }
 
             return delta;
@@ -115,9 +141,12 @@ public:
             assert(pred->fill_ == HalfCapacity);
 
             long delta = 0;
-            for (unsigned k = HalfCapacity; k < HalfCapacity + QuarterCapacity; ++k) {
-                delta += weightAt(0);
-                pred->push(k, std::move(drop(0)));
+
+            for (unsigned k = HalfCapacity; k < HalfCapacity + QuarterCapacity; ++k)
+            {
+                unsigned slotIndex = drop(0);
+                delta += slots_[slotIndex].weight_;
+                pred->push(k, slots_[slotIndex]);
             }
 
             return delta;
@@ -241,12 +270,6 @@ protected:
     void relieve(NodeType *node, bool recursive = false);
 
     template<class NodeType>
-    void dissipateForward(NodeType *from, NodeType *to);
-
-    template<class NodeType>
-    void dissipateBackward(NodeType *to, NodeType *from);
-
-    template<class NodeType>
     void joinSucc(NodeType *node, NodeType *newNode)
     {
         joinSucc(node, newNode, std::is_same<NodeType, Branch>());
@@ -302,7 +325,7 @@ void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
     if (succ && pred) {
         if (succ->fill_ < pred->fill_) {
             if (egress != Node::Capacity) {
-                dissipateForward(node, succ);
+                shiftWeights(node, succ, node->dissipateForwardTo(succ));
             }
             else {
                 node = succ;
@@ -312,7 +335,7 @@ void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
         }
         if (pred->fill_ < succ->fill_) {
             if (egress != 0) {
-                dissipateBackward(pred, node);
+                shiftWeights(node, pred, node->dissipateBackwardTo(pred));
                 --egress;
             }
             else {
@@ -326,7 +349,7 @@ void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
     if (pred) {
         if (pred->fill_ < Node::Capacity) {
             if (egress != 0) {
-                dissipateBackward(pred, node);
+                shiftWeights(node, pred, node->dissipateBackwardTo(pred));
                 --egress;
             }
             else {
@@ -340,7 +363,7 @@ void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
     if (succ) {
         if (succ->fill_ < Node::Capacity) {
             if (egress != Node::Capacity) {
-                dissipateForward(node, succ);
+                shiftWeights(node, succ, node->dissipateForwardTo(succ));
             }
             else {
                 node = succ;
@@ -394,7 +417,7 @@ void BucketIndexTree::relieve(NodeType *node, bool recursive)
     if (node->fill_ < Node::HalfCapacity) {
         if (succ) {
             if (succ->fill_ > Node::HalfCapacity)
-                dissipateBackward(node, succ);
+                shiftWeights(succ, node, succ->dissipateBackwardTo(node));
             else
                 collapseSucc(node, succ);
         }
@@ -402,28 +425,6 @@ void BucketIndexTree::relieve(NodeType *node, bool recursive)
             unlink(node);
         }
     }
-}
-
-template<class NodeType>
-void BucketIndexTree::dissipateForward(NodeType *from, NodeType *to)
-{
-    assert(from->fill_ > 0);
-    assert(to->fill_ < Node::Capacity);
-
-    long delta = from->weightAt(from->fill_ - 1);
-    to->push(0, std::move(from->drop(from->fill_ - 1)));
-    shiftWeights(from, to, delta);
-}
-
-template<class NodeType>
-void BucketIndexTree::dissipateBackward(NodeType *to, NodeType *from)
-{
-    assert(from->fill_ > 0);
-    assert(to->fill_ < Node::Capacity);
-
-    long delta = from->weightAt(0);
-    to->push(to->fill_, std::move(from->drop(0)));
-    shiftWeights(from, to, delta);
 }
 
 template<class NodeType>

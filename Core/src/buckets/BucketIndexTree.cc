@@ -131,8 +131,6 @@ void BucketIndexTree::reduce()
 
 template void BucketIndexTree::dissipateSlow<BucketIndexTree::Branch>(Branch *&node, unsigned &egress);
 template void BucketIndexTree::relieve<BucketIndexTree::Branch>(Branch *node, bool recursive);
-template void BucketIndexTree::dissipateForward<BucketIndexTree::Branch>(Branch *from, Branch *to);
-template void BucketIndexTree::dissipateBackward<BucketIndexTree::Branch>(Branch *to, Branch *from);
 template void BucketIndexTree::collapseSucc<BucketIndexTree::Branch>(Branch *node, Branch *succ);
 
 } // namespace cc::buckets

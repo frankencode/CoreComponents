@@ -78,6 +78,24 @@ public:
 
         static long weightAt(unsigned egress) { return 1; }
 
+        long dissipateForwardTo(Leaf *succ)
+        {
+            assert(fill_ > 0);
+            assert(succ->fill_ < Capacity);
+
+            succ->push(0, std::move(drop(fill_ - 1)));
+            return 1;
+        }
+
+        long dissipateBackwardTo(Leaf *pred)
+        {
+            assert(fill_ > 0);
+            assert(pred->fill_ < Capacity);
+
+            pred->push(pred->fill_, std::move(drop(0)));
+            return 1;
+        }
+
         long distributeHalfForwardTo(Leaf *succ)
         {
             assert(fill_ == Capacity);
