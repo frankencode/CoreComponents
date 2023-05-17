@@ -78,16 +78,43 @@ public:
 
         static long weightAt(unsigned egress) { return 1; }
 
-        long distributeTo(Leaf *dest)
+        long distributeHalfForwardTo(Leaf *succ)
         {
             assert(fill_ == Capacity);
-            assert(dest->fill_ <= HalfCapacity);
+            assert(succ->fill_ <= HalfCapacity);
 
-            for (unsigned i = 0; i < HalfCapacity; ++i) {
-                dest->push(i, std::move(drop(HalfCapacity)));
+            for (unsigned i = 0; i < HalfCapacity; ++i)
+            {
+                succ->push(i, std::move(drop(HalfCapacity)));
             }
 
             return HalfCapacity;
+        }
+
+        long distributeQuarterForwardTo(Leaf *succ)
+        {
+            assert(fill_ == Capacity);
+            assert(succ->fill_ <= Capacity - QuarterCapacity);
+
+            for (unsigned k = Capacity - 1; k >= Capacity - QuarterCapacity; --k)
+            {
+                succ->push(0, std::move(drop(k)));
+            }
+
+            return QuarterCapacity;
+        }
+
+        long distributeQuarterBackwardTo(Leaf *pred)
+        {
+            assert(fill_ == Capacity);
+            assert(pred->fill_ == HalfCapacity);
+
+            for (unsigned k = HalfCapacity; k < HalfCapacity + QuarterCapacity; ++k)
+            {
+                pred->push(k, std::move(drop(0)));
+            }
+
+            return QuarterCapacity;
         }
 
         template<class Pattern>

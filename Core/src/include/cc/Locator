@@ -103,8 +103,9 @@ protected:
     explicit Locator(const unsigned *revision, long index, BucketStop *stop, unsigned egress):
         index_{index},
         stop_{stop},
-        egress_{egress},
+        egress_{egress}
         #ifndef NDEBUG
+        ,
         revisionSaved_{*revision},
         revisionPtr_{revision}
         #endif

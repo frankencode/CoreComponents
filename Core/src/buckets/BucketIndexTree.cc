@@ -57,7 +57,7 @@ void BucketIndexTree::joinSucc(Node *node, Node *newNode, bool isBranch)
     if (oldSucc) {
         newNode->succ_ = oldSucc;
         oldSucc->pred_ = newNode;
-        isDense_ = 0;
+        isDense_ = false;
     }
     else if (!isBranch) {
         lastLeaf_ = newNode;
@@ -133,7 +133,6 @@ template void BucketIndexTree::dissipateSlow<BucketIndexTree::Branch>(Branch *&n
 template void BucketIndexTree::relieve<BucketIndexTree::Branch>(Branch *node, bool recursive);
 template void BucketIndexTree::dissipateForward<BucketIndexTree::Branch>(Branch *from, Branch *to);
 template void BucketIndexTree::dissipateBackward<BucketIndexTree::Branch>(Branch *to, Branch *from);
-template void BucketIndexTree::distributeForward<BucketIndexTree::Branch>(Branch *from, Branch *to);
 template void BucketIndexTree::collapseSucc<BucketIndexTree::Branch>(Branch *node, Branch *succ);
 
 } // namespace cc::buckets

@@ -81,7 +81,7 @@ public:
 
         unsigned indexOf(const Node *child) const { return map_.mapToBucket(child->slotIndex_); }
 
-        long distributeTo(Branch *succ)
+        long distributeHalfForwardTo(Branch *succ)
         {
             assert(fill_ == Capacity);
             assert(succ->fill_ <= HalfCapacity);
@@ -90,6 +90,34 @@ public:
             for (unsigned i = 0; i < HalfCapacity; ++i) {
                 delta += weightAt(HalfCapacity);
                 succ->push(i, std::move(drop(HalfCapacity)));
+            }
+
+            return delta;
+        }
+
+        long distributeQuarterForwardTo(Branch *succ)
+        {
+            assert(fill_ == Capacity);
+            assert(succ->fill_ <= Capacity - QuarterCapacity);
+
+            long delta = 0;
+            for (unsigned k = Capacity - 1; k >= Capacity - QuarterCapacity; --k) {
+                delta += weightAt(k);
+                succ->push(0, std::move(drop(k)));
+            }
+
+            return delta;
+        }
+
+        long distributeQuarterBackwardTo(Branch *pred)
+        {
+            assert(fill_ == Capacity);
+            assert(pred->fill_ == HalfCapacity);
+
+            long delta = 0;
+            for (unsigned k = HalfCapacity; k < HalfCapacity + QuarterCapacity; ++k) {
+                delta += weightAt(0);
+                pred->push(k, std::move(drop(0)));
             }
 
             return delta;
@@ -219,9 +247,6 @@ protected:
     void dissipateBackward(NodeType *to, NodeType *from);
 
     template<class NodeType>
-    void distributeForward(NodeType *from, NodeType *to);
-
-    template<class NodeType>
     void joinSucc(NodeType *node, NodeType *newNode)
     {
         joinSucc(node, newNode, std::is_same<NodeType, Branch>());
@@ -262,7 +287,7 @@ protected:
     Head root_ { .weight_ = 0, .node_ = nullptr };
     Node *lastLeaf_ { nullptr }; // FIXME: maxLeaf_;
     int height_ { -1 };
-    unsigned isDense_ { 1 };
+    bool isDense_ { true };
     #ifndef NDEBUG
     unsigned revision_ { 0 };
     #endif
@@ -336,27 +361,16 @@ void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
     }
     #endif
 
-    distributeForward(node, newSucc);
+    shiftWeights(node, newSucc, node->distributeHalfForwardTo(newSucc));
+    isDense_ = false;
 
     #if 1
     if (pred) {
-        assert(pred->fill_ == Node::Capacity);
-        long delta = 0;
-        for (unsigned k = Node::Capacity - 1; k >= Node::Capacity - Node::QuarterCapacity; --k) {
-            delta += pred->weightAt(k);
-            node->push(0, std::move(pred->drop(k)));
-        }
-        shiftWeights(pred, node, delta);
+        shiftWeights(pred, node, pred->distributeQuarterForwardTo(node));
     }
 
     if (succ) {
-        assert(succ->fill_ == Node::Capacity);
-        long delta = 0;
-        for (unsigned k = Node::HalfCapacity; k < Node::HalfCapacity + Node::QuarterCapacity; ++k) {
-            delta += succ->weightAt(0);
-            newSucc->push(k, std::move(succ->drop(0)));
-        }
-        shiftWeights(succ, newSucc, delta);
+        shiftWeights(succ, newSucc, succ->distributeQuarterBackwardTo(newSucc));
     }
     #endif
 
@@ -410,17 +424,6 @@ void BucketIndexTree::dissipateBackward(NodeType *to, NodeType *from)
     long delta = from->weightAt(0);
     to->push(to->fill_, std::move(from->drop(0)));
     shiftWeights(from, to, delta);
-}
-
-template<class NodeType>
-void BucketIndexTree::distributeForward(NodeType *from, NodeType *to)
-{
-    assert(from->fill_ == Node::Capacity);
-    assert(to->fill_ <= Node::HalfCapacity);
-
-    shiftWeights(from, to, from->distributeTo(to));
-
-    isDense_ = 0;
 }
 
 template<class NodeType>
