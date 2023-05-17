@@ -62,12 +62,12 @@ void BucketIndexTree::joinSucc(Node *node, Node *newNode, bool isBranch)
     if (parent) {
         unsigned newNodeIndex = parent->indexOf(node) + 1;
         dissipate(parent, newNodeIndex);
-        parent->push(newNodeIndex, Head{.weight_ = 0, .node_ = newNode});
+        parent->push(newNodeIndex, newNode, 0);
     }
     else {
         Branch *branch = new Branch;
-        branch->push(0, Head{.weight_ = weight_, .node_ = root_});
-        branch->push(1, Head{.weight_ = 0, .node_ = newNode});
+        branch->push(0, root_, weight_);
+        branch->push(1, newNode, 0);
         root_ = branch;
         ++height_;
     }

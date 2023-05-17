@@ -56,8 +56,8 @@ public:
     class Branch final: public Node
     {
     public:
-        Node *childAt(unsigned egress) const { return slots_[map_.mapToSlot(egress)].node_; }
-        long weightAt(unsigned egress) const { return slots_[map_.mapToSlot(egress)].weight_; }
+        Node *childAt(unsigned egress) const { return child_[map_.mapToSlot(egress)]; }
+        long weightAt(unsigned egress) const { return weight_[map_.mapToSlot(egress)]; }
 
         Node *find(long &index) const
         {
@@ -66,23 +66,24 @@ public:
             for (unsigned k = 0; k < n; ++k)
             {
                 const unsigned slotIndex = map_.mapToSlot(k);
-                index -= slots_[slotIndex].weight_;
+                index -= weight_[slotIndex];
                 if (index < 0) {
-                    index += slots_[slotIndex].weight_;
-                    return slots_[slotIndex].node_;
+                    index += weight_[slotIndex];
+                    return child_[slotIndex];
                 }
             }
 
             return nullptr;
         }
 
-        void push(unsigned egress, const Head &head)
+        void push(unsigned egress, Node *child, long weight)
         {
             unsigned slotIndex = map_.pushEntry(egress, fill_);
             ++fill_;
-            slots_[slotIndex] = head;
-            head.node_->slotIndex_ = slotIndex;
-            head.node_->parent_ = this;
+            child_[slotIndex] = child;
+            weight_[slotIndex] = weight;
+            child->slotIndex_ = slotIndex;
+            child->parent_ = this;
         }
 
         unsigned drop(unsigned egress)
@@ -92,16 +93,7 @@ public:
             return slotIndex;
         }
 
-        void adoptChildrenOfSucc(const Branch *succ)
-        {
-            assert(fill_ + succ->fill_ <= Node::Capacity);
-
-            for (unsigned k = 0; k < succ->fill_; ++k) {
-                push(fill_, succ->slots_[succ->map_.mapToSlot(k)]);
-            }
-        }
-
-        long &weightOf(const Node *child) { return slots_[child->slotIndex_].weight_; }
+        long &weightOf(const Node *child) { return weight_[child->slotIndex_]; }
 
         unsigned indexOf(const Node *child) const { return map_.mapToBucket(child->slotIndex_); }
 
@@ -111,8 +103,8 @@ public:
             assert(succ->fill_ < Capacity);
 
             unsigned slotIndex = drop(fill_ - 1);
-            succ->push(0, slots_[slotIndex]);
-            return slots_[slotIndex].weight_;
+            succ->push(0, child_[slotIndex], weight_[slotIndex]);
+            return weight_[slotIndex];
         }
 
         long dissipateBackwardTo(Branch *pred)
@@ -121,8 +113,8 @@ public:
             assert(pred->fill_ < Capacity);
 
             unsigned slotIndex = drop(0);
-            pred->push(pred->fill_, slots_[slotIndex]);
-            return slots_[slotIndex].weight_;
+            pred->push(pred->fill_, child_[slotIndex], weight_[slotIndex]);
+            return weight_[slotIndex];
         }
 
         long distributeHalfForwardTo(Branch *succ)
@@ -135,8 +127,8 @@ public:
             for (unsigned i = 0; i < HalfCapacity; ++i)
             {
                 unsigned slotIndex = drop(HalfCapacity);
-                delta += slots_[slotIndex].weight_;
-                succ->push(i, slots_[slotIndex]);
+                delta += weight_[slotIndex];
+                succ->push(i, child_[slotIndex], weight_[slotIndex]);
             }
 
             return delta;
@@ -152,8 +144,8 @@ public:
             for (unsigned k = Capacity - 1; k >= Capacity - QuarterCapacity; --k)
             {
                 unsigned slotIndex = drop(k);
-                delta += slots_[slotIndex].weight_;
-                succ->push(0, slots_[slotIndex]);
+                delta += weight_[slotIndex];
+                succ->push(0, child_[slotIndex], weight_[slotIndex]);
             }
 
             return delta;
@@ -169,16 +161,28 @@ public:
             for (unsigned k = HalfCapacity; k < HalfCapacity + QuarterCapacity; ++k)
             {
                 unsigned slotIndex = drop(0);
-                delta += slots_[slotIndex].weight_;
-                pred->push(k, slots_[slotIndex]);
+                delta += weight_[slotIndex];
+                pred->push(k, child_[slotIndex], weight_[slotIndex]);
             }
 
             return delta;
         }
 
+        void adoptChildrenOfSucc(const Branch *succ)
+        {
+            assert(fill_ + succ->fill_ <= Node::Capacity);
+
+            for (unsigned k = 0; k < succ->fill_; ++k)
+            {
+                unsigned slotIndex = succ->map_.mapToSlot(k);
+                push(fill_, succ->child_[slotIndex], succ->weight_[slotIndex]);
+            }
+        }
+
     private:
         BucketSlotMap<Capacity> map_;
-        Head slots_[Capacity];
+        Node *child_[Capacity];
+        long weight_[Capacity];
     };
 
     long count() const { return weight_; }

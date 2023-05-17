@@ -76,15 +76,6 @@ public:
             return slotAt(slotIndex);
         }
 
-        void adoptChildrenOfSucc(const Leaf *succ)
-        {
-            assert(fill_ + succ->fill_ <= Node::Capacity);
-
-            for (unsigned k = 0; k < succ->fill_; ++k) {
-                push(fill_, std::move(succ->slotAt(succ->map_.mapToSlot(k))));
-            }
-        }
-
         static long weightAt(unsigned egress) { return 1; }
 
         long dissipateForwardTo(Leaf *succ)
@@ -142,6 +133,15 @@ public:
             }
 
             return QuarterCapacity;
+        }
+
+        void adoptChildrenOfSucc(const Leaf *succ)
+        {
+            assert(fill_ + succ->fill_ <= Node::Capacity);
+
+            for (unsigned k = 0; k < succ->fill_; ++k) {
+                push(fill_, std::move(succ->slotAt(succ->map_.mapToSlot(k))));
+            }
         }
 
         template<class Pattern>
