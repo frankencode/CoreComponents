@@ -16,11 +16,62 @@ namespace cc::buckets {
 /** \internal
   * \brief Storage slot mapping table
   *
-  * The BucketSlotMap decides where individual items are stored on a bucket.
+  * The BucketSlotMap decides where individual items are stored in a bucket.
   */
-template<unsigned Capacity>
+template<unsigned N>
 class BucketSlotMap
-{};
+{
+public:
+    static constexpr unsigned Capacity = N;
+
+    BucketSlotMap()
+    {
+        for (unsigned k = 0; k < Capacity; ++k) map_[k] = Capacity - k - 1;
+    }
+
+    unsigned mapToSlot(unsigned bucketIndex) const
+    {
+        return map_[bucketIndex];
+    }
+
+    unsigned mapToBucket(unsigned slotIndex) const
+    {
+        unsigned k = 0;
+        while (map_[k] != slotIndex) ++k;
+        return k;
+    }
+
+    unsigned pushEntry(unsigned bucketIndex, unsigned fill)
+    {
+        assert(bucketIndex <= fill);
+        assert(fill < Capacity);
+
+        unsigned slotIndex = map_[Capacity - 1];
+
+        for (unsigned k = Capacity - 1; k > bucketIndex; --k) map_[k] = map_[k - 1];
+
+        map_[bucketIndex] = slotIndex;
+
+        return slotIndex;
+    }
+
+    unsigned popEntry(unsigned bucketIndex, unsigned fill)
+    {
+        assert(bucketIndex < fill);
+        assert(fill > 0);
+
+        unsigned slotIndex = map_[bucketIndex];
+
+        for (unsigned k = bucketIndex; k < Capacity - 1; ++k) map_[k] = map_[k + 1];
+
+        map_[Capacity - 1] = slotIndex;
+
+        return slotIndex;
+    }
+
+private:
+    uint8_t map_[Capacity];
+};
 
 template<>
 class BucketSlotMap<16>
@@ -35,15 +86,15 @@ public:
 
     unsigned mapToBucket(unsigned slotIndex) const
     {
-        unsigned i = 0;
-        for (uint64_t m = map_; (m & 0xFu) ^ slotIndex; m >>= 4) ++i;
-        return i;
+        unsigned k = 0;
+        for (uint64_t m = map_; (m & 0xFu) ^ slotIndex; m >>= 4) ++k;
+        return k;
     }
 
     unsigned pushEntry(unsigned bucketIndex, unsigned fill)
     {
         assert(bucketIndex <= fill);
-        assert(fill < BucketSlotMap::Capacity);
+        assert(fill < Capacity);
 
         const uint64_t slotIndex = map_ >> 60u;
 

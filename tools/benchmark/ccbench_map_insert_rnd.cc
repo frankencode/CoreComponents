@@ -12,20 +12,36 @@ int main(int argc, char *argv[])
 
     const int n = argc > 1 ? String{argv[1]}.toInt() : 100000;
 
-    Map<int> numbers;
+    Map<long> numbers;
 
-    fout() << n << " random insertions into cc::bucket::Map<int>... ";
+    fout() << n << " random insertions into cc::Map<long>... ";
     {
         double t = System::now();
         Random random { 0 };
         for (int i = 0; i < n; ++i) {
-            int r = random.get();
+            long r = random.get();
             numbers.insert(r, i);
         }
         t = System::now() - t;
         fout() << std::round(t * 1000) << " ms\n";
     }
 
+    fout() << n << " random lookups... ";
+    {
+        Random random { 0 };
+        double t = System::now();
+        for (int i = 0; i < n; ++i) {
+            long r = random();
+            if (!numbers.contains(r)) {
+                ferr() << "FAILED" << nl;
+                return 1;
+            }
+        }
+        t = System::now() - t;
+        fout() << std::round(t * 1000) << " ms\n";
+    }
+
+    #if 1
     std::function checkFill {[](const buckets::BucketIndexTree::Node *node) -> bool {
         // CC_INSPECT(node->fill_);
         /*if (node->fill_ < 12) {
@@ -39,21 +55,7 @@ int main(int argc, char *argv[])
     }};
 
     CC_INSPECT(numbers.tree().check(checkFill));
-
-    fout() << n << " random lookups... ";
-    {
-        Random random { 0 };
-        double t = System::now();
-        for (int i = 0; i < n; ++i) {
-            int r = random();
-            if (!numbers.contains(r)) {
-                ferr() << "FAILED" << nl;
-                return 1;
-            }
-        }
-        t = System::now() - t;
-        fout() << std::round(t * 1000) << " ms\n";
-    }
+    #endif
 
     return 0;
 }

@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 
     std::map<long, long> numbers;
 
-    fout() << n << " random insertion into std::map<int>... ";
+    fout() << n << " random insertions into std::map<long>... ";
     {
         Random random { 0 };
         double t = System::now();

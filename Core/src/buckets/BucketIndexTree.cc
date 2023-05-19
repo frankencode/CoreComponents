@@ -25,9 +25,9 @@ BucketIndexTree::Node *BucketIndexTree::stepDownTo(long index, unsigned *egress)
         *egress = 0;
     }
     else if (isDense_ && Node::Capacity == 16) {
-        *egress = index & 0xFu;
+        *egress = index & StepMask;
         for (int h = height_; h > 0; --h) {
-            node = static_cast<const Branch *>(node)->childAt((index >> (h << 2)) & 0xFu);
+            node = static_cast<const Branch *>(node)->childAt((index >> (h * StepBits)) & StepMask);
         }
     }
     else {

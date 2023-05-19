@@ -1,25 +1,23 @@
-#include <cc/private/bucket_tree>
 #include <cc/System>
 #include <cc/Random>
+#include <cc/Set>
 #include <cc/stdio>
-#include <cmath>
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
-    using bucket_tree::Map;
 
-    const int n = argc > 1 ? String{argv[1]}.toInt() : 1000000;
+    const int n = argc > 1 ? String{argv[1]}.toInt() : 100000;
 
-    Map<int> numbers;
+    Set<long> numbers;
 
-    fout() << n << " random insertion into cc::Map<int>... ";
+    fout() << n << " random insertios into cc::Set<int>... ";
     {
-        Random random;
+        Random random { 0 };
         double t = System::now();
         for (int i = 0; i < n; ++i) {
-            int r = random();
-            numbers.insert(r, i);
+            long r = random();
+            numbers.insert(r);
         }
         t = System::now() - t;
         fout() << std::round(t * 1000) << " ms\n";
@@ -27,11 +25,14 @@ int main(int argc, char *argv[])
 
     fout() << n << " random lookups... ";
     {
-        Random random;
+        Random random { 0 };
         double t = System::now();
         for (int i = 0; i < n; ++i) {
-            int r = random();
-            if (!numbers.contains(r)) return 1;
+            long r = random();
+            if (!numbers.contains(r)) {
+                ferr() << "FAILED" << nl;
+                return 1;
+            }
         }
         t = System::now() - t;
         fout() << std::round(t * 1000) << " ms\n";

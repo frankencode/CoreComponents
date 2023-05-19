@@ -14,6 +14,7 @@
 #include <limits>
 #include <utility>
 #include <functional>
+#include <bit>
 #include <cassert>
 
 namespace cc::buckets {
@@ -46,12 +47,8 @@ public:
         Branch *parent_ { nullptr };
     };
 
-    class Head
-    {
-    public:
-        long weight_;
-        Node *node_;
-    };
+    static constexpr unsigned StepBits = std::countr_zero(Node::Capacity);
+    static constexpr unsigned StepMask = Node::Capacity - 1;
 
     class Branch final: public Node
     {
@@ -170,7 +167,7 @@ public:
 
         void adoptChildrenOfSucc(const Branch *succ)
         {
-            assert(fill_ + succ->fill_ <= Node::Capacity);
+            assert(fill_ + succ->fill_ <= Capacity);
 
             for (unsigned k = 0; k < succ->fill_; ++k)
             {
@@ -190,7 +187,7 @@ public:
     #if 1
     long idealLeafCount() const
     {
-        return (height_ > 0) ? root_->fill_ << ((height_ - 1) << 2) : 1;
+        return (height_ > 0) ? root_->fill_ << ((height_ - 1) * StepBits) : 1;
     }
     #endif
 
@@ -201,7 +198,7 @@ public:
         uint64_t n = 0;
         for (int h = height_; h > 0; --h) {
             unsigned i = node->fill_ - 1;
-            n <<= 4;
+            n <<= StepBits;
             n |= i;
             node = static_cast<const Branch *>(node)->childAt(i);
         }
@@ -213,8 +210,8 @@ public:
     {
         Node *node = root_;
         for (int h = height_; h > 0; --h) {
-            const int shift = (h - 1) << 2;
-            unsigned i = (idealIndex >> shift) & 0xFu;
+            const int shift = (h - 1) * StepBits;
+            unsigned i = (idealIndex >> shift) & StepMask;
             if (node->fill_ <= i) i = node->fill_ - 1;
             node = static_cast<const Branch *>(node)->childAt(i);
         }
@@ -226,8 +223,8 @@ public:
         Node *node = root_;
         long predWeight = 0;
         for (int h = height_; h > 0; --h) {
-            const int shift = (h - 1) << 2;
-            unsigned i = (idealIndex >> shift) & 0xFu;
+            const int shift = (h - 1) * StepBits;
+            unsigned i = (idealIndex >> shift) & StepMask;
             if (node->fill_ <= i) i = node->fill_ - 1;
             const Branch *branch = static_cast<const Branch *>(node);
             for (unsigned k = 0; k < i; ++k) {
