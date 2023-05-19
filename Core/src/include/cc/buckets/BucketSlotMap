@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <cstring>
 
 namespace cc::buckets {
 
@@ -34,11 +35,18 @@ public:
         return map_[bucketIndex];
     }
 
+    #if 0
     unsigned mapToBucket(unsigned slotIndex) const
     {
         unsigned k = 0;
         while (map_[k] != slotIndex) ++k;
         return k;
+    }
+    #endif
+
+    unsigned mapToBucket(unsigned slotIndex) const
+    {
+        return static_cast<unsigned>(static_cast<const uint8_t *>(std::memchr(map_, slotIndex, Capacity)) - map_);
     }
 
     unsigned pushEntry(unsigned bucketIndex, unsigned fill)

@@ -169,10 +169,9 @@ public:
 
     BucketVector(const BucketVector &other)
     {
-        // \todo performance: optimize tree built-up
-
-        for (auto pos = other.head(); pos; ++pos)
+        for (auto pos = other.head(); pos; ++pos) {
             pushBack(other.at(pos));
+        }
     }
 
     ~BucketVector()

@@ -23,10 +23,10 @@ namespace cc::buckets {
   * \brief Purely counted B-tree
   *
   * The BucketIndexTree is a B-tree which contains sub-tree weights as keys in the inner nodes.
-  * The levels of the tree are comprised of double linked bucket chains, with each bucket holding
-  * up to 16 keys (inner nodes) or 16 items (leaf nodes). Item storage and retrieval has to be defined
-  * in a derived class. This class provides only part of the tree logic which is independent of the
-  * item type.
+  * The levels of the tree are comprised of double linked bucket chains.
+  *
+  * Item storage and retrieval has to be defined in a derived class.
+  * This class provides only part of the tree logic which is independent of the item type.
   *
   * \see BucketVector
   */
