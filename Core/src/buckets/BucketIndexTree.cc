@@ -21,18 +21,19 @@ BucketIndexTree::Node *BucketIndexTree::stepDownTo(long index, unsigned *egress)
         *egress = (node) ? node->fill_ - (index < weight_) : 0;
     }
     else if (index <= 0) {
-        for (int h = height_; h > 0; --h) node = static_cast<const Branch *>(node)->childAt(0);
+        for (int h = height_; h > 0; --h) {
+            node = static_cast<const Branch *>(node)->childAt(0);
+        }
         *egress = 0;
     }
-    else if (isDense_ && Node::Capacity == 16) {
+    else if (isDense_) {
         *egress = index & StepMask;
         for (int h = height_; h > 0; --h) {
             node = static_cast<const Branch *>(node)->childAt((index >> (h * StepBits)) & StepMask);
         }
     }
     else {
-        for (int h = height_; h > 0; --h)
-        {
+        for (int h = height_; h > 0; --h) {
             node = static_cast<const Branch *>(node)->find(index);
         }
 
