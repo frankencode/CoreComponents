@@ -27,16 +27,15 @@ BucketIndexTree::Node *BucketIndexTree::stepDownTo(long index, unsigned *egress)
         *egress = 0;
     }
     else if (isDense_) {
-        *egress = index & StepMask;
         for (int h = height_; h > 0; --h) {
             node = static_cast<const Branch *>(node)->childAt((index >> (h * StepBits)) & StepMask);
         }
+        *egress = index & StepMask;
     }
     else {
         for (int h = height_; h > 0; --h) {
             node = static_cast<const Branch *>(node)->find(index);
         }
-
         *egress = index;
     }
 

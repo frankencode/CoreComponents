@@ -37,5 +37,7 @@ int main(int argc, char *argv[])
         fout() << std::round(t * 1000) << " ms\n";
     }
 
+    CC_INSPECT(numbers.tree().isDense());
+
     return 0;
 }
