@@ -39,7 +39,7 @@ public:
     {
     public:
         static constexpr unsigned Capacity = 16;
-        static constexpr unsigned HalfCapacity = Capacity >> 1;
+        static constexpr unsigned HalfCapacity = Capacity >> 1; // FIXME: style!
         static constexpr unsigned QuarterCapacity = Capacity >> 2;
 
         Node *succ() const { return static_cast<Node *>(succ_); }
@@ -121,11 +121,11 @@ public:
 
             long delta = 0;
 
-            for (unsigned i = 0; i < HalfCapacity; ++i)
+            for (unsigned k = 0; k < HalfCapacity; ++k)
             {
                 unsigned slotIndex = drop(HalfCapacity);
                 delta += weight_[slotIndex];
-                succ->push(i, child_[slotIndex], weight_[slotIndex]);
+                succ->push(k, child_[slotIndex], weight_[slotIndex]);
             }
 
             return delta;
@@ -206,6 +206,61 @@ public:
     }
     #endif
 
+    /** more correct, but slower
+      */
+    #if 0
+    Node *idealLeafAt(long idealIndex) const
+    {
+        bool clamp = false;
+        Node *node = root_;
+        for (int h = height_; h > 0; --h) {
+            const Branch *branch = static_cast<const Branch *>(node);
+            if (!clamp) {
+                const int shift = (h - 1) * StepBits;
+                unsigned k = (idealIndex >> shift) & StepMask;
+                if (k >= node->fill_) {
+                    k = node->fill_ - 1;
+                    clamp = true;
+                }
+                node = branch->childAt(k);
+            }
+            else {
+                node = branch->childAt(branch->fill_ - 1);
+            }
+        }
+        return node;
+    }
+
+    Node *locateIdealLeaf(long idealIndex, long *offset) const
+    {
+        bool clamp = false;
+        Node *node = root_;
+        long predWeight = 0;
+        for (int h = height_; h > 0; --h) {
+            const Branch *branch = static_cast<const Branch *>(node);
+            unsigned i = 0;
+            if (!clamp) {
+                const int shift = (h - 1) * StepBits;
+                i = (idealIndex >> shift) & StepMask;
+                if (node->fill_ <= i) {
+                    i = node->fill_ - 1;
+                    clamp = true;
+                }
+            }
+            else {
+                i = node->fill_ - 1;
+            }
+            for (unsigned k = 0; k < i; ++k) {
+                predWeight += branch->weightAt(k);
+            }
+            node = branch->childAt(i);
+        }
+        *offset = predWeight;
+        return node;
+    }
+    #endif
+
+    #if 1
     Node *idealLeafAt(long idealIndex) const
     {
         Node *node = root_;
@@ -235,6 +290,7 @@ public:
         *offset = predWeight;
         return node;
     }
+    #endif
 
     Node *getMinNode() const
     {
@@ -254,7 +310,7 @@ public:
         return node;
     }
 
-    bool isDense() const { return isDense_; }
+    bool isDense() const { return revision_ & denseMask; }
 
     Node *stepDownTo(long index, unsigned *egress) const;
 
@@ -290,7 +346,7 @@ protected:
     void dissipateSlow(NodeType *&node, unsigned &egress);
 
     template<class NodeType>
-    void relieve(NodeType *node, bool recursive = false);
+    void relieve(NodeType *node);
 
     template<class NodeType>
     void joinSucc(NodeType *node, NodeType *newNode)
@@ -330,14 +386,38 @@ protected:
         #endif
     }
 
+    static constexpr unsigned denseMask = 1 << (sizeof(unsigned) * 8 - 1);
+
+    void touch()
+    {
+        #ifndef NDEBUG
+        revision_ = (revision_ + 1) & ~denseMask;
+        #endif
+    }
+
+    void setDenseOff()
+    {
+        #ifndef NDEBUG
+        revision_ &= ~denseMask;
+        #else
+        revision_ = 0;
+        #endif
+    }
+
+    void setDenseOn()
+    {
+        #ifndef NDEBUG
+        revision_ |= denseMask;
+        #else
+        revision_ = 1;
+        #endif
+    }
+
     int height_ { -1 };
-    bool isDense_ { true };
+    unsigned revision_ { denseMask };
     Node *root_ { nullptr };
     long weight_ { 0 };
-    Node *lastLeaf_ { nullptr }; // FIXME: maxLeaf_;
-    #ifndef NDEBUG
-    unsigned revision_ { 0 };
-    #endif
+    Node *lastLeaf_ { nullptr }; // burry in &root_->parent_
 };
 
 template<class NodeType>
@@ -409,7 +489,7 @@ void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
     #endif
 
     shiftWeights(node, newSucc, node->distributeHalfForwardTo(newSucc));
-    isDense_ = false;
+    setDenseOff();
 
     #if 1
     if (pred) {
@@ -435,7 +515,7 @@ void BucketIndexTree::dissipateSlow(NodeType *&node, unsigned &egress)
 }
 
 template<class NodeType>
-void BucketIndexTree::relieve(NodeType *node, bool recursive)
+void BucketIndexTree::relieve(NodeType *node)
 {
     NodeType *succ = static_cast<NodeType *>(node->succ_);
     if (node->fill_ < Node::HalfCapacity) {

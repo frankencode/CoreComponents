@@ -1,0 +1,746 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/buckets/BucketArray>
+#include <cc/find>
+#include <bit> // std::byte, std::countr_zero
+#include <type_traits> // std::is_trivially_copyable_v
+#include <utility> // std::move
+#include <compare> // std::strong_ordering
+#include <cstring> // std::memcpy, std::memove
+#include <cassert> // assert
+#include <cc/DEBUG>
+
+#define CC_BUCKETS_PARANOID
+
+namespace cc::buckets {
+
+template<class T, unsigned G>
+struct BucketPrefixTree final
+{
+    static_assert(G >= 4 && std::has_single_bit(G));
+
+    using Item = T;
+
+    static constexpr unsigned Granularity = G;
+    static constexpr unsigned StepBits = std::countr_zero(G);
+    static constexpr unsigned StepMask = G - 1;
+
+    struct Branch;
+
+    struct Node
+    {
+        Branch *parent_ { nullptr };
+    };
+
+    struct Branch final: public Node, public BucketArray<Node *>
+    {
+        Node *at(unsigned egress) const
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(egress < fill_);
+            #endif
+
+            return child_[egress];
+        }
+
+        unsigned count() const { return fill_; }
+
+        void push(unsigned egress, Node *child)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(egress <= fill_);
+            assert(fill_ < G);
+            #endif
+
+            if (egress < fill_) {
+                Branch::template shiftUp(child_ + egress, fill_ - egress);
+            }
+
+            child_[egress] = child;
+            child->parent_ = this;
+
+            ++fill_;
+        }
+
+        void drop(unsigned egress)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(egress < fill_);
+            #endif
+
+            --fill_;
+            if (egress < fill_) {
+                Branch::template shiftDown(child_ + egress + 1, fill_ - egress);
+            }
+        }
+
+        void moveOneToSucc(Branch *succ)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(fill_ > 0);
+            assert(succ->fill_ < G);
+            #endif
+
+            succ->push(0, child_[fill_ - 1]);
+            drop(fill_ - 1);
+        }
+
+        void moveOneToPred(Branch *pred)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(fill_ > 0);
+            assert(pred->fill_ < G);
+            #endif
+
+            pred->push(pred->fill_, child_[0]);
+            drop(0);
+        }
+
+        void moveHalfToSucc(Branch *succ)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(fill_ == G);
+            assert(succ->fill_ == 0);
+            #endif
+
+            Branch::template transfer<G / 2>(succ->child_, child_ + G / 2);
+
+            for (unsigned k = 0; k < G / 2; ++k) {
+                succ->child_[k]->parent_ = succ;
+            }
+
+            fill_ -= G / 2;
+            succ->fill_ += G / 2;
+        }
+
+        void moveQuarterToSucc(Branch *succ)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(fill_ == G);
+            assert(succ->fill_ == G / 2);
+            #endif
+
+            Branch::template shiftUp<G / 4>(succ->child_, G / 2);
+            Branch::template transfer<G / 4>(succ->child_, child_ + 3 * G / 4);
+
+            for (unsigned k = 0; k < G / 4; ++k) {
+                succ->child_[k]->parent_ = succ;
+            }
+
+            fill_ -= G / 4;
+            succ->fill_ += G / 4;
+        }
+
+        void moveQuarterToPred(Branch *pred)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(fill_ == G);
+            assert(pred->fill_ == G / 2);
+            #endif
+
+            for (unsigned k = 0; k < G / 4; ++k) {
+                child_[k]->parent_ = pred;
+            }
+
+            Branch::template transfer<G / 4>(pred->child_ + G / 2, child_);
+            Branch::template shiftDown<G / 4>(child_ + G / 4, (3 * G / 4));
+
+            fill_ -= G / 4;
+            pred->fill_ += G / 4;
+        }
+
+        void adoptChildrenOfSucc(const Branch *succ)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(succ->fill_ == G / 2);
+            assert(fill_ + succ->fill_ <= G);
+            #endif
+
+            for (unsigned k = 0; k < succ->fill_; ++k) {
+                succ->child_[k]->parent_ = this;
+            }
+
+            Branch::template transfer<G / 2>(child_ + fill_, succ->child_);
+
+            fill_ += succ->fill_;
+        }
+
+        unsigned indexOf(const Node *child) const
+        {
+            for (unsigned k = 0; k < G; ++k) {
+                if (child_[k] == child) return k;
+            }
+            return G;
+        }
+
+        Branch *succ_ { nullptr };
+        Branch *pred_ { nullptr };
+        unsigned fill_ { 0 };
+        Node *child_[G];
+    };
+
+    struct Leaf final: public Node, public BucketArray<Item>
+    {
+        template<class... Args>
+        void emplace(unsigned egress, Args... args)
+        {
+            new (this->open(egress)) Item{args...};
+        }
+
+        void push(unsigned egress, const Item &item)
+        {
+            new (this->open(egress)) Item{item};
+        }
+
+        void push(unsigned egress, Item &&item)
+        {
+            new (this->open(egress)) Item{std::move(item)};
+        }
+
+        Item &at(unsigned egress)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(egress < fill_);
+            #endif
+
+            return item()[egress];
+        }
+
+        const Item &at(unsigned egress) const
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(egress < fill_);
+            #endif
+
+            return item()[egress];
+        }
+
+        unsigned count() const { return fill_; }
+
+        Item *item() { return reinterpret_cast<Item *>(data_); }
+        const Item *item() const { return reinterpret_cast<const Item *>(data_); }
+
+        Item *open(unsigned egress)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(egress <= fill_);
+            assert(fill_ < G);
+            #endif
+
+            if (egress < fill_) {
+                Leaf::template shiftUp(item() + egress, fill_ - egress);
+            }
+
+            ++fill_;
+
+            return item() + egress;
+        }
+
+        void drop(unsigned egress)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(egress < fill_);
+            #endif
+
+            --fill_;
+
+            if (egress < fill_) {
+                Leaf::template shiftDown(item() + egress + 1, fill_ - egress);
+            }
+        }
+
+        void erase(unsigned egress)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(egress < fill_);
+            #endif
+
+            item()[egress].~Item();
+
+            drop(egress);
+        }
+
+        void moveOneToSucc(Leaf *succ)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(fill_ > 0);
+            assert(succ->fill_ < G);
+            #endif
+
+            succ->push(0, std::move(item()[fill_ - 1]));
+            drop(fill_ - 1);
+        }
+
+        void moveOneToPred(Leaf *pred)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(fill_ > 0);
+            assert(pred->fill_ < G);
+            #endif
+
+            pred->push(pred->fill_, std::move(item()[0]));
+            drop(0);
+        }
+
+        void moveHalfToSucc(Leaf *succ)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(fill_ == G);
+            assert(succ->fill_ == 0);
+            #endif
+
+            Leaf::template transfer<G / 2>(succ->item(), item() + G / 2);
+
+            fill_ -= G / 2;
+            succ->fill_ += G / 2;
+        }
+
+        void moveQuarterToSucc(Leaf *succ)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(fill_ == G);
+            assert(succ->fill_ == G / 2);
+            #endif
+
+            Leaf::template shiftUp<G / 4>(succ->item(), G / 2);
+            Leaf::template transfer<G / 4>(succ->item(), item() + 3 * G / 4);
+
+            fill_ -= G / 4;
+            succ->fill_ += G / 4;
+        }
+
+        void moveQuarterToPred(Leaf *pred)
+        {
+            #ifdef CC_BUCKETS_PARANOID
+            assert(fill_ == G);
+            assert(pred->fill_ == G / 2);
+            #endif
+
+            Leaf::template transfer<G / 4>(pred->item() + G / 2, item());
+            Leaf::template shiftDown<G / 4>(item() + G / 4, 3 * G / 4);
+
+            fill_ -= G / 4;
+            pred->fill_ += G / 4;
+        }
+
+        template<class Pattern>
+        std::strong_ordering operator<=>(const Pattern &pattern) const
+        {
+            if (this->at(this->fill_ - 1) < pattern) return std::strong_ordering::less;
+            if (pattern < this->at(0)) return std::strong_ordering::greater;
+            return std::strong_ordering::equal;
+        }
+
+        Leaf *succ_ { nullptr };
+        Leaf *pred_ { nullptr };
+        unsigned fill_ { 0 };
+        std::byte data_[sizeof(T) * G] alignas(Item);
+    };
+
+    ~BucketPrefixTree()
+    {
+        deplete();
+    }
+
+    template<class... Args>
+    bool insert(const Item &item)
+    {
+        Leaf *leaf = nullptr;
+        unsigned egress = 0;
+        bool found = lookup(item, &leaf, &egress);
+        if (!found) emplaceAndTell(leaf, egress, item);
+        return !found;
+    }
+
+    long idealLeafCount() const
+    {
+        return (height_ > 0) ? static_cast<const Branch *>(root_)->fill_ << ((height_ - 1) * StepBits) : 1;
+    }
+
+    Leaf &leafAt(long j) const
+    {
+        Node *node = root_;
+        for (int h = height_; h > 0; --h) {
+            const Branch *branch = static_cast<const Branch *>(node);
+            const int shift = (h - 1) * StepBits;
+            unsigned k = (j >> shift) & StepMask;
+            if (k >= branch->fill_) k = branch->fill_ - 1;
+            node = branch->at(k);
+        }
+        return *static_cast<Leaf *>(node);
+    }
+
+    #if 0
+    long idealLeafCount() const
+    {
+        Node *node = root_;
+        uint64_t n = 0;
+        for (int h = height_; h > 0; --h) {
+            const Branch *branch = static_cast<const Branch *>(node);
+            unsigned k = branch->fill_ - 1;
+            n <<= StepBits;
+            n |= k;
+            node = branch->at(k);
+        }
+        return n + 1;
+    }
+
+    Leaf &leafAt(long j) const
+    {
+        bool clamp = false;
+        Node *node = root_;
+        for (int h = height_; h > 0; --h) {
+            const Branch *branch = static_cast<const Branch *>(node);
+            if (!clamp) {
+                const int shift = (h - 1) * StepBits;
+                unsigned k = (j >> shift) & StepMask;
+                if (k >= branch->fill_) {
+                    k = branch->fill_ - 1;
+                    clamp = true;
+                }
+                node = branch->at(k);
+            }
+            else {
+                node = branch->at(branch->fill_ - 1);
+            }
+        }
+        return *static_cast<Leaf *>(node);
+    }
+    #endif
+
+    struct SearchShim
+    {
+        using Item = Leaf;
+
+        SearchShim(const BucketPrefixTree &tree):
+            tree_{tree}
+        {
+            // CC_INSPECT(count());
+            // CC_INSPECT(tree.height_);
+            // if (tree.height_ > 0) CC_INSPECT(static_cast<const Branch *>(tree.root_)->fill_);
+        }
+
+        long count() const { return tree_.idealLeafCount(); }
+
+        Leaf &at(long j) const {
+            // CC_INSPECT(oct(j));
+            return tree_.leafAt(j);
+        }
+
+        const BucketPrefixTree &tree_;
+    };
+
+    template<class Search = FindAny, class Pattern = Item>
+    bool lookup(const Pattern &pattern, Leaf **target = nullptr, unsigned *egress = nullptr) const
+    {
+        Leaf *leaf = nullptr;
+        bool found = false;
+        int k = 0;
+        if (height_ == 0) {
+            leaf = static_cast<Leaf *>(root_);
+            found = Search::find(leaf, pattern, &k);
+        }
+        else if (height_ > 0) {
+            if (maxLeaf_->at(maxLeaf_->fill_ - 1) < pattern) {
+                leaf = maxLeaf_;
+                k = maxLeaf_->fill_;
+            }
+            else {
+                long j = 0;
+                SearchShim shim{*this};
+                if (Search::find(&shim, pattern, &j, &leaf)) {
+                    found = Search::find(leaf, pattern, &k);
+                }
+                #if 0
+                else if (*leaf < pattern) {
+                    k = leaf->fill_;
+                }
+                #endif
+            }
+        }
+        if (target) *target = leaf;
+        if (egress) *egress = k;
+        return found;
+    }
+
+    template<class... Args>
+    void emplaceAndTell(Leaf *&target, unsigned &egress, Args... args)
+    {
+        if (target) {
+            dissipate(target, egress);
+            target->emplace(egress, args...);
+        }
+        else {
+            target = new Leaf;
+            egress = 0;
+            target->emplace(egress, args...);
+            root_ = target;
+            maxLeaf_ = target;
+            ++height_;
+        }
+        ++weight_;
+        #ifndef NDEBUG
+        ++revision_;
+        #endif
+    }
+
+    template<class NodeType>
+    void dissipate(NodeType *&node, unsigned &egress)
+    {
+        if (node->fill_ == G) dissipateSlow(node, egress);
+    }
+
+    template<class Node>
+    void dissipateSlow(Node *&node, unsigned &egress)
+    {
+        Node *succ = node->succ_;
+        Node *pred = node->pred_;
+
+        if (succ && pred) {
+            if (succ->fill_ < pred->fill_) {
+                if (egress != G) {
+                    node->moveOneToSucc(succ);
+                }
+                else {
+                    node = succ;
+                    egress = 0;
+                }
+                return;
+            }
+            if (pred->fill_ < succ->fill_) {
+                if (egress != 0) {
+                    node->moveOneToPred(pred);
+                    --egress;
+                }
+                else {
+                    node = pred;
+                    egress = pred->fill_;
+                }
+                return;
+            }
+        }
+
+        if (pred) {
+            if (pred->fill_ < G) {
+                if (egress != 0) {
+                    node->moveOneToPred(pred);
+                    --egress;
+                }
+                else {
+                    node = pred;
+                    egress = pred->fill_;
+                }
+                return;
+            }
+        }
+
+        if (succ) {
+            if (succ->fill_ < G) {
+                if (egress != G) {
+                    node->moveOneToSucc(succ);
+                }
+                else {
+                    node = succ;
+                    egress = 0;
+                }
+                return;
+            }
+        }
+
+        Node *newSucc = new Node;
+        joinSucc(node, newSucc);
+
+        #if 1
+        if (egress == G && !succ) {
+            node = newSucc;
+            egress = 0;
+            return;
+        }
+        #endif
+
+        node->moveHalfToSucc(newSucc);
+
+        #if 1
+        if (pred) {
+            pred->moveQuarterToSucc(node);
+        }
+
+        if (succ) {
+            succ->moveQuarterToPred(newSucc);
+        }
+        #endif
+
+        if (egress > G / 2) {
+            node = newSucc;
+            egress -= G / 2;
+        }
+        #if 1
+        else if (pred) {
+            egress += G / 4;
+        }
+
+        assert(egress <= node->fill_);
+        #endif
+    }
+
+    template<class Node>
+    void joinSucc(Node *node, Node *newNode)
+    {
+        Node *oldSucc = node->succ_;
+
+        if (oldSucc) {
+            newNode->succ_ = oldSucc;
+            oldSucc->pred_ = newNode;
+        }
+        else if (std::is_same_v<Node, Leaf>) {
+            maxLeaf_ = static_cast<Leaf *>(static_cast<BucketPrefixTree::Node *>(newNode));
+        }
+
+        newNode->pred_ = node;
+        node->succ_ = newNode;
+
+        if (node != root_) {
+            Branch *parent = node->parent_;
+            unsigned egress = parent->indexOf(node) + 1;
+            dissipate(parent, egress);
+            parent->push(egress, newNode);
+        }
+        else {
+            Branch *branch = new Branch;
+            branch->push(0, root_);
+            branch->push(1, newNode);
+            root_ = branch;
+            ++height_;
+       }
+    }
+
+    template<class F>
+    void forEach(F f) const
+    {
+        for (Leaf *leaf = getMinNode(); leaf; leaf = leaf->succ_) {
+            for (unsigned k = 0; k < leaf->fill_; ++k) {
+                f(leaf->at(k));
+            }
+        }
+    }
+
+    template<class Node>
+    static bool checkFill(const Node *node)
+    {
+        if (node->pred_ && node->succ_) {
+            return 3 * G / 4 <= node->fill_;
+        }
+        if (node->pred_ || node->succ_) {
+            return G / 2 <= node->fill_;
+        }
+        return true;
+    }
+
+    bool checkNodeFills() const
+    {
+        return
+            checkLeafs([](const Leaf *leaf){
+                return checkFill(leaf);
+            }) &&
+            checkBranches([](const Branch *branch){
+                return checkFill(branch);
+            });
+    }
+
+    template<class F>
+    bool checkLeafs(F check) const
+    {
+        bool ok = true;
+        for (Leaf *leaf = getMinNode(); leaf; leaf = leaf->succ_) {
+            ok = ok && check(leaf);
+        }
+        return ok;
+    }
+
+    template<class F>
+    bool checkBranches(F check) const
+    {
+        if (height_ < 1) return true;
+        return checkBranches(check, static_cast<const Branch *>(root_), height_);
+    }
+
+    template<class F>
+    static bool checkBranches(F check, const Branch *branch, int height)
+    {
+        bool ok = check(branch);
+        if (height > 1) {
+            for (unsigned i = 0; i < branch->fill_; ++i) {
+                ok = ok && checkBranches(check, static_cast<const Branch *>(branch->at(i)), height - 1);
+            }
+        }
+        return ok;
+    }
+
+    Leaf *getMinNode() const
+    {
+        Node *node = root_;
+        for (int h = height_; h > 0; --h) {
+            node = static_cast<const Branch *>(node)->at(0);
+        }
+        return static_cast<Leaf *>(node);
+    }
+
+    #if 0
+    Leaf *getMaxNode() const
+    {
+        Node *node = root_;
+        for (int h = height_; h > 0; --h) {
+            const Branch *branch = static_cast<const Branch *>(node);
+            node = branch->at(branch->fill_ - 1);
+        }
+        return static_cast<Leaf *>(node);
+    }
+    #endif
+
+    void deplete()
+    {
+        if (root_) {
+            Leaf *leaf = maxLeaf_;
+            Branch *parent = leaf->parent_;
+            while (leaf) {
+                Leaf *pred = leaf->pred_;
+                delete leaf;
+                leaf = pred;
+            }
+            for (int h = height_; h > 0; --h) {
+                Branch *branch = parent;
+                parent = parent->parent_;
+                while (branch) {
+                    Branch *pred = branch->pred_;
+                    delete branch;
+                    branch = pred;
+                }
+            }
+            weight_ = 0;
+            height_ = -1;
+            #ifndef NDEBUG
+            ++revision_;
+            #endif
+            root_ = nullptr;
+            maxLeaf_ = nullptr;
+        }
+    }
+
+    Node *root_ { nullptr };
+    Leaf *maxLeaf_ { nullptr }; // TODO: store in &root_->parent_
+    long weight_ { 0 };
+    int height_ { -1 };
+    #ifndef NDEBUG
+    unsigned revision_ { 0 };
+    #endif
+};
+
+} // namespace cc::buckets

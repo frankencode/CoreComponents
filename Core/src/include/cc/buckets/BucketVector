@@ -269,13 +269,11 @@ public:
     void push(Node *target, unsigned egress, const Item &item)
     {
         Leaf *leaf = target ? static_cast<Leaf *>(target) : nullptr;
-        pushAndTell(leaf, egress, item);
+        emplaceAndTell(leaf, egress, item);
     }
 
     template<class... Args>
     void emplaceAndTell(Leaf *&target, unsigned &egress, Args... args);
-
-    void pushAndTell(Leaf *&target, unsigned &egress, const Item &item);
 
     template<class... Args>
     void emplaceAndStep(Locator &target, Args... args)
@@ -301,7 +299,7 @@ public:
         assert(target);
         Leaf *leaf = static_cast<Leaf *>(target.stop_);
         unsigned egress = target.egress_;
-        pushAndTell(leaf, egress, item);
+        emplaceAndTell(leaf, egress, item);
         target.stop_ = leaf;
         target.egress_ = egress;
     }
@@ -327,7 +325,7 @@ public:
                 delete static_cast<Leaf *>(leaf);
                 leaf = pred;
             }
-            while (parent) {
+            while (parent) { // FIXME: use height stepping
                 Node *branch = parent;
                 parent = parent->parent_;
                 while (branch) {
@@ -341,7 +339,8 @@ public:
             #endif
             *this = BucketVector{};
             #ifndef NDEBUG
-            revision_ = revisionSaved + 1;
+            revision_ = revisionSaved;
+            touch();
             #endif
         }
     }
@@ -386,7 +385,7 @@ public:
         unsigned egress = 0;
         long index = 0;
         bool found = lookup(item, &index, &leaf, &egress);
-        if (!found) pushAndTell(leaf, egress, item);
+        if (!found) emplaceAndTell(leaf, egress, item);
         if (target.requested()) target = Locator{revision(), index, leaf, egress};
         return !found;
     }
@@ -422,19 +421,17 @@ public:
       */
     void reverse()
     {
-        using std::swap;
-
         if (count() > 2) {
             auto hi = head();
             auto ti = tail();
             while (hi < ti) {
-                swap(at(hi), at(ti));
+                std::swap(at(hi), at(ti));
                 ++hi;
                 --ti;
             }
 
             #ifndef NDEBUG
-            ++revision_;
+            touch();
             #endif
         }
     }
@@ -496,31 +493,7 @@ void BucketVector<T>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... ar
         // leafCount_ = 1;
     }
     #ifndef NDEBUG
-    ++revision_;
-    #endif
-}
-
-template<class T>
-void BucketVector<T>::pushAndTell(Leaf *&target, unsigned &egress, const Item &item)
-{
-    if (target) {
-        dissipate(target, egress);
-        target->push(egress, item);
-        updateWeights(target, 1);
-    }
-    else {
-        target = new Leaf;
-        egress = 0;
-        target->push(egress, item);
-        weight_ = 1;
-        root_ = target;
-        lastLeaf_ = target;
-        ++height_;
-        // firstLeaf_ = leaf;
-        // leafCount_ = 1;
-    }
-    #ifndef NDEBUG
-    ++revision_;
+    touch();
     #endif
 }
 
@@ -539,7 +512,7 @@ void BucketVector<T>::pop(Node *target, unsigned egress)
         Leaf *leaf = static_cast<Leaf *>(target);
         leaf->drop(egress).~Item();
         updateWeights(leaf, -1);
-        if (leaf->succ_) isDense_ = false;
+        if (leaf->succ_) setDenseOff();
         relieve(leaf);
         reduce();
     }
@@ -550,10 +523,10 @@ void BucketVector<T>::pop(Node *target, unsigned egress)
         lastLeaf_ = nullptr;
         // leafCount_ = 0;
         --height_;
-        isDense_ = true;
+        setDenseOn();
     }
     #ifndef NDEBUG
-    ++revision_;
+    touch();
     #endif
 }
 
@@ -580,9 +553,9 @@ bool BucketVector<T>::lookup(const Pattern &pattern, long *finalIndex, Leaf **ta
         else {
             SearchShim shim{this};
             long j = 0;
-            bool lookInside = Search::find(&shim, pattern, &j);
+            bool lookInside = Search::find(&shim, pattern, &j); // FIXME: use find() function that delivers the leaf directly
             long i = 0;
-            leaf = static_cast<Leaf *>(locateIdealLeaf(j, &i));
+            leaf = static_cast<Leaf *>(locateIdealLeaf(j, &i)); // FIXME: many times not needed
             if (lookInside) {
                 unsigned k = 0;
                 found = Search::find(leaf, pattern, &k);

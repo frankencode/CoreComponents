@@ -26,7 +26,7 @@ BucketIndexTree::Node *BucketIndexTree::stepDownTo(long index, unsigned *egress)
         }
         *egress = 0;
     }
-    else if (isDense_) {
+    else if (isDense()) {
         for (int h = height_; h > 0; --h) {
             node = static_cast<const Branch *>(node)->childAt((index >> (h * StepBits)) & StepMask);
         }
@@ -49,7 +49,7 @@ void BucketIndexTree::joinSucc(Node *node, Node *newNode, bool isBranch)
     if (oldSucc) {
         newNode->succ_ = oldSucc;
         oldSucc->pred_ = newNode;
-        isDense_ = false;
+        setDenseOff();
     }
     else if (!isBranch) {
         lastLeaf_ = newNode;
@@ -122,7 +122,7 @@ void BucketIndexTree::reduce()
 }
 
 template void BucketIndexTree::dissipateSlow<BucketIndexTree::Branch>(Branch *&node, unsigned &egress);
-template void BucketIndexTree::relieve<BucketIndexTree::Branch>(Branch *node, bool recursive);
+template void BucketIndexTree::relieve<BucketIndexTree::Branch>(Branch *node);
 template void BucketIndexTree::collapseSucc<BucketIndexTree::Branch>(Branch *node, Branch *succ);
 
 } // namespace cc::buckets

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <compare>
+
 namespace cc {
 
 /** \class FindAny cc/find
@@ -16,10 +18,10 @@ namespace cc {
 class FindAny {
 public:
     /** \brief Search in a sorted list of items
-      * \param items the sorted list of items
-      * \param pattern pattern to search for
-      * \param finalIndex return the final index of the search
-      * \return true if a matching item was found, false otherwise
+      * \param items The sorted list of items
+      * \param pattern Pattern to search for
+      * \param finalIndex Returns the final index of the search
+      * \return True if a matching item was found, false otherwise
       */
     template<
         class SortedItems,
@@ -51,6 +53,47 @@ public:
         *finalIndex = l;
         return false;
     }
+
+    /** \brief Search in a sorted list of items
+      * \param items The sorted list of items
+      * \param pattern Pattern to search for
+      * \param finalIndex Returns the final index of the search
+      * \param finalItem Returns the final item of the search
+      * \return True if a matching item was found, false otherwise
+      */
+    template<
+        class SortedItems,
+        class Pattern = typename SortedItems::Item,
+        class Index = long
+    >
+    static bool find(
+        SortedItems *items,
+        const Pattern &pattern,
+        Index *finalIndex = nullptr,
+        typename SortedItems::Item **finalItem = nullptr
+    ) {
+        Index l = 0;
+        Index r = items->count() - 1;
+        while (l <= r) {
+            Index m = (l + r) >> 1;
+            auto &candidate = items->at(m);
+            auto order = candidate <=> pattern;
+            if (order == std::strong_ordering::less) {
+                l = m + 1;
+            }
+            else if (order == std::strong_ordering::greater) {
+                r = m - 1;
+            }
+            else {
+                if (finalIndex) *finalIndex = m;
+                if (finalItem) *finalItem = &candidate;
+                return true;
+            }
+        }
+        if (finalIndex) *finalIndex = l;
+        if (finalItem) *finalItem = &items->at(l);
+        return false;
+    }
 };
 
 /** \class FindFirst cc/find
@@ -61,10 +104,10 @@ class FindFirst
 {
 public:
     /** \brief Search in a sorted list of items
-      * \param items the sorted list of items
-      * \param pattern pattern to search for
-      * \param finalIndex return the final index of the search
-      * \return true if a matching item was found, false otherwise
+      * \param items The sorted list of items
+      * \param pattern Pattern to search for
+      * \param finalIndex Returns the final index of the search
+      * \return True if a matching item was found, false otherwise
       */
     template<
         class SortedItems,
@@ -98,10 +141,10 @@ class FindLast
 {
 public:
     /** \brief Search in a sorted list of items
-      * \param items the sorted list of items
-      * \param pattern pattern to search for
-      * \param finalIndex return the final index of the search
-      * \return true if a matching item was found, false otherwise
+      * \param items The sorted list of items
+      * \param pattern Pattern to search for
+      * \param finalIndex Returns the final index of the search
+      * \return True if a matching item was found, false otherwise
       */
     template<
         class SortedItems,

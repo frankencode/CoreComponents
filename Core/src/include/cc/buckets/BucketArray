@@ -1,0 +1,85 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <type_traits> // std::is_trivially_copyable_v
+#include <utility> // std::move
+#include <cstring> // std::memcpy, std::memmove
+
+namespace cc::buckets {
+
+/** Helper methods for copying and shifting partially uninitialized arrays
+  */
+template<class T, bool trivial = std::is_trivially_copyable_v<T>>
+struct BucketArray
+{
+    /** Shift initialized items up and down within the otherwise uninitialized array
+      */
+    template<unsigned distance = 1>
+    static void shiftUp(T *items, unsigned count);
+
+    /** Copy items from one array to an uninitialized part of another array
+      */
+    template<unsigned count>
+    static void transfer(T *to, T *from);
+};
+
+template<class T>
+struct BucketArray<T, true>
+{
+    template<unsigned distance = 1>
+    static void shiftUp(T *items, unsigned count)
+    {
+        std::memmove(items + distance, items, count * sizeof(T));
+    }
+
+    template<unsigned distance = 1>
+    static void shiftDown(T *items, unsigned count)
+    {
+        std::memmove(items - distance, items, count * sizeof(T));
+    }
+
+    template<unsigned count>
+    static void transfer(T *to, const T *from)
+    {
+        std::memcpy(to, from, count * sizeof(T));
+    }
+};
+
+template<class T>
+struct BucketArray<T, false>
+{
+    template<unsigned distance = 1>
+    static void shiftUp(T *items, unsigned count)
+    {
+        for (unsigned k = count; k > 0;) {
+            --k;
+            new (items + distance + k) T{std::move(items[k])};
+        }
+    }
+
+    template<unsigned distance = 1>
+    static void shiftDown(T *items, unsigned count)
+    {
+        for (unsigned k = 0; k < count; ++k)
+        {
+            new (items - distance + k) T{std::move(items[k])};
+        }
+    }
+
+    template<unsigned count>
+    static void transfer(T *to, const T *from)
+    {
+        for (unsigned k = 0; k < count; ++k) {
+            new (to + k) T{std::move(from[k])};
+        }
+    }
+};
+
+} // namespace cc::buckets

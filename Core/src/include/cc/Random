@@ -60,16 +60,14 @@ public:
         return get(a, b);
     }
 
-    /** Scramble items in \a container
+    /** Randomly shuffle items in \a container
       */
     template<class Container>
-    void scramble(Container &container)
+    void shuffle(Container &container)
     {
-        using std::swap;
-
         for (long i = 0, n = container.count(); i < n; ++i) {
             long j = get(0, n - 1);
-            swap(container[i], container[j]);
+            std::swap(container[i], container[j]);
         }
     }
 
