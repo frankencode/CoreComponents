@@ -207,7 +207,7 @@ public:
     template<class Pattern>
     bool find(const Pattern &pattern, Out<Locator> pos = None{}) const
     {
-        return me().find(pattern, pos);
+        return me().find(pattern, &pos);
     }
 
     /** Search for \a pattern and return \a value
@@ -242,7 +242,7 @@ public:
       */
     bool insert(const Key &key, const Value &value, Out<Locator> pos = None{})
     {
-        return me().insertUnique(Item{key, value}, pos);
+        return me().insertUnique(Item{key, value}, &pos);
     }
 
     /** Insert a new or overwrite an existing key-value mapping

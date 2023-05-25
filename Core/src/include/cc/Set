@@ -201,7 +201,7 @@ public:
     template<class Key = Item>
     bool find(const Key &key, Out<Locator> pos = None{}) const
     {
-        return me().find(key, pos);
+        return me().find(key, &pos);
     }
 
     /** Search for \a key and return \a item
@@ -234,7 +234,7 @@ public:
       */
     bool insert(const Item &item, Out<Locator> pos = None{})
     {
-        return me().insertUnique(item, pos);
+        return me().insertUnique(item, &pos);
     }
 
     /** Insert an item to the set replacing any pre-existing same value item

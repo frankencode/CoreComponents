@@ -189,6 +189,14 @@ struct BucketPrefixTree final
 
     struct Leaf final: public Node, public BucketArray<Item>
     {
+        ~Leaf() {
+            if (!std::is_trivial_v<Item>) {
+                for (unsigned i = 0; i < fill_; ++i) {
+                    at(i).~Item();
+                }
+            }
+        }
+
         template<class... Args>
         void emplace(unsigned egress, Args... args)
         {

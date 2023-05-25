@@ -215,7 +215,7 @@ public:
     template<class Search = FindFirst>
     bool find(const Item &item, Out<Locator> pos = None{}) const
     {
-        return me().template find<Search>(item, pos);
+        return me().template find<Search>(item, &pos);
     }
 
     /** Add \a item to the multi-set

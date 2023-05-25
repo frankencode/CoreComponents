@@ -10,6 +10,7 @@
 
 #include <cc/buckets/BucketVector>
 #include <cc/Iterator>
+#include <cc/InOut>
 #include <cc/Cow>
 #include <cc/container>
 #include <cc/sort>
@@ -222,7 +223,7 @@ public:
       */
     void append(const Item &item)
     {
-        me().pushBack(item);
+        me().emplaceBack(item);
     }
 
     /** Insert \a item at the beginning of the list
@@ -254,7 +255,7 @@ public:
       */
     void pushBack(const Item &item)
     {
-        me().pushBack(item);
+        me().emplaceBack(item);
     }
 
     /** Insert \a item as a new first item
@@ -286,7 +287,7 @@ public:
     template<class... Args>
     void emplaceBack(Args... args)
     {
-        me().emplaceLast(args...);
+        me().emplaceBack(args...);
     }
 
     /** Emplace a new first item
@@ -327,7 +328,7 @@ public:
       */
     void insertAt(Locator &pos, const Item &item)
     {
-        me().pushAndStep(pos, item);
+        me().emplaceAndStep(pos, item);
     }
 
     /** Insert \a item at \a index
@@ -335,7 +336,7 @@ public:
     void insertAt(long index, const Item &item)
     {
         assert(0 <= index && index <= count());
-        me().push(index, item);
+        me().emplaceAt(index, item);
     }
 
     /** Remove item at position \a pos (and advance \a pos to the next item)
@@ -482,7 +483,7 @@ public:
         List result;
         auto &buffer = result.me.touch();
         for (auto pos = head(); pos; ++pos) {
-            buffer.insertUnique(at(pos), None{});
+            buffer.insertUnique(at(pos));
         }
         return result;
     }
@@ -501,7 +502,7 @@ public:
         List result;
         auto &buffer = result.me.touch();
         for (auto pos = tail(); pos; --pos) {
-            buffer.pushBack(at(pos));
+            buffer.emplaceBack(at(pos));
         }
         return result;
     }

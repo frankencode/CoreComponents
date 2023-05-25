@@ -207,7 +207,7 @@ public:
     template<class Search = FindFirst>
     bool find(const Key &key, Out<Locator> pos = None{}) const
     {
-        return me().template find<Search>(key, pos);
+        return me().template find<Search>(key, &pos);
     }
 
     /** Convenience function to check if the map contains \a pattern
