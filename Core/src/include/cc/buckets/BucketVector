@@ -17,21 +17,27 @@ namespace cc::buckets {
 /** \internal
   * \brief Implementation of a variable length vector on top of \a BucketIndexTree
   */
-template<class T>
-class BucketVector final: public BucketIndexTree
+template<class T, unsigned G = 16>
+class BucketVector final: public BucketIndexTree<G>
 {
 public:
     using Item = T;
 
+    using Tree = BucketIndexTree<G>;
+    using Node = Tree::Node;
+    using Branch = Tree::Branch;
+
     class Leaf final: public Node
     {
     public:
+        using Node::fill_;
+
         Leaf() = default;
 
         ~Leaf() {
             if (!std::is_trivial_v<Item>) {
-                for (unsigned i = 0; i < fill_; ++i) {
-                    at(i).~Item();
+                for (unsigned k = 0; k < fill_; ++k) {
+                    at(k).~Item();
                 }
             }
         }
@@ -78,7 +84,7 @@ public:
         long dissipateForwardTo(Leaf *succ)
         {
             assert(fill_ > 0);
-            assert(succ->fill_ < Capacity);
+            assert(succ->fill_ < G);
 
             succ->push(0, std::move(drop(fill_ - 1)));
             return 1;
@@ -87,7 +93,7 @@ public:
         long dissipateBackwardTo(Leaf *pred)
         {
             assert(fill_ > 0);
-            assert(pred->fill_ < Capacity);
+            assert(pred->fill_ < G);
 
             pred->push(pred->fill_, std::move(drop(0)));
             return 1;
@@ -95,48 +101,49 @@ public:
 
         long distributeHalfForwardTo(Leaf *succ)
         {
-            assert(fill_ == Capacity);
-            assert(succ->fill_ <= HalfCapacity);
+            assert(fill_ == G);
+            assert(succ->fill_ <= G / 2);
 
-            for (unsigned i = 0; i < HalfCapacity; ++i)
+            for (unsigned k = 0; k < G / 2; ++k)
             {
-                succ->push(i, std::move(drop(HalfCapacity)));
+                succ->push(k, std::move(drop(G / 2)));
             }
 
-            return HalfCapacity;
+            return G / 2;
         }
 
         long distributeQuarterForwardTo(Leaf *succ)
         {
-            assert(fill_ == Capacity);
-            assert(succ->fill_ <= Capacity - QuarterCapacity);
+            assert(fill_ == G);
+            assert(succ->fill_ <= G - G / 4);
 
-            for (unsigned k = Capacity - 1; k >= Capacity - QuarterCapacity; --k)
+            for (unsigned k = G - 1; k >= G - G / 4; --k)
             {
                 succ->push(0, std::move(drop(k)));
             }
 
-            return QuarterCapacity;
+            return G / 4;
         }
 
         long distributeQuarterBackwardTo(Leaf *pred)
         {
-            assert(fill_ == Capacity);
-            assert(pred->fill_ == HalfCapacity);
+            assert(fill_ == G);
+            assert(pred->fill_ == G / 2);
 
-            for (unsigned k = HalfCapacity; k < HalfCapacity + QuarterCapacity; ++k)
+            for (unsigned k = G / 2; k < G / 2 + G / 4; ++k)
             {
                 pred->push(k, std::move(drop(0)));
             }
 
-            return QuarterCapacity;
+            return G / 4;
         }
 
         void adoptChildrenOfSucc(const Leaf *succ)
         {
-            assert(fill_ + succ->fill_ <= Node::Capacity);
+            assert(fill_ + succ->fill_ <= G);
 
-            for (unsigned k = 0; k < succ->fill_; ++k) {
+            for (unsigned k = 0; k < succ->fill_; ++k)
+            {
                 push(fill_, std::move(succ->slotAt(succ->map_.mapToSlot(k))));
             }
         }
@@ -149,6 +156,9 @@ public:
             return std::strong_ordering::equal;
         }
 
+        Leaf *succ() const { return static_cast<Leaf *>(Node::succ_); }
+        Leaf *pred() const { return static_cast<Leaf *>(Node::pred_); }
+
     private:
         Item &slotAt(unsigned slotIndex) {
             return reinterpret_cast<Item *>(data_)[slotIndex];
@@ -158,8 +168,8 @@ public:
             return reinterpret_cast<const Item *>(data_)[slotIndex];
         }
 
-        BucketSlotMap<Capacity> map_;
-        std::byte data_[Capacity * sizeof(Item)] alignas(Item);
+        BucketSlotMap<G> map_;
+        std::byte data_[G * sizeof(Item)] alignas(Item);
     };
 
     BucketVector() = default;
@@ -178,23 +188,23 @@ public:
 
     Locator head() const
     {
-        return Locator{revision(), 0, getMinNode(), 0};
+        return Locator{Tree::revision(), 0, Tree::getMinNode(), 0};
     }
 
     Locator tail() const
     {
-        long index = count() - 1;
-        Node *node = lastLeaf_;
+        long index = Tree::weight_ - 1;
+        Node *node = Tree::lastLeaf_;
         unsigned egress = node ? node->fill_ - 1 : 0;
-        return Locator{revision(), index, node, egress};
+        return Locator{Tree::revision(), index, node, egress};
     }
 
     Locator from(long index) const
     {
         unsigned egress = 0;
-        Node *node = stepDownTo(index, &egress);
-        if (weight_ <= index) node = nullptr;
-        return Locator{revision(), index, node, egress};
+        Node *node = Tree::stepDownTo(index, &egress);
+        if (Tree::weight_ <= index) node = nullptr;
+        return Locator{Tree::revision(), index, node, egress};
     }
 
     template<class Access = Item>
@@ -208,7 +218,7 @@ public:
 
     Item &at(const Locator &target) const
     {
-        assert(target.revisionPtr_ == &revision_); // locator needs to belong to this container
+        assert(target.revisionPtr_ == Tree::revision()); // locator needs to belong to this container
         assert(*target.revisionPtr_ == target.revisionSaved_); // cannot access container with undefined locator
         assert(target); // locator needs to be valid
 
@@ -223,18 +233,18 @@ public:
     Item &at(long index) const
     {
         unsigned egress;
-        return static_cast<Leaf *>(stepDownTo(index, &egress))->at(egress);
+        return static_cast<Leaf *>(Tree::stepDownTo(index, &egress))->at(egress);
     }
 
     Item &first() const
     {
-        Node *firstLeaf = getMinNode();
+        Node *firstLeaf = Tree::getMinNode();
         return static_cast<Leaf *>(firstLeaf)->at(0);
     }
 
     Item &last() const
     {
-        return static_cast<Leaf *>(lastLeaf_)->at(lastLeaf_->fill_ - 1);
+        return static_cast<Leaf *>(Tree::lastLeaf_)->at(Tree::lastLeaf_->fill_ - 1);
     }
 
     template<class... Args>
@@ -244,14 +254,14 @@ public:
     void emplaceAt(long index, Args... args)
     {
         unsigned egress = 0;
-        Node *node = stepDownTo(index, &egress);
+        Node *node = Tree::stepDownTo(index, &egress);
         emplace(node, egress, args...);
     }
 
     template<class... Args>
     void emplaceBack(Args... args)
     {
-        emplace(lastLeaf_, lastLeaf_ ? lastLeaf_->fill_ : 0, args...);
+        emplace(Tree::lastLeaf_, Tree::lastLeaf_ ? Tree::lastLeaf_->fill_ : 0, args...);
     }
 
     template<class... Args>
@@ -267,7 +277,7 @@ public:
     template<class... Args>
     void emplaceAndStep(Locator &target, Args... args)
     {
-        if (count() == 0) {
+        if (Tree::weight_ == 0) {
             emplaceBack(args...);
             target = last();
         }
@@ -281,7 +291,7 @@ public:
     void pop(long index)
     {
         unsigned egress = 0;
-        Leaf *target = static_cast<Leaf *>(stepDownTo(index, &egress));
+        Leaf *target = static_cast<Leaf *>(Tree::stepDownTo(index, &egress));
         pop(target, egress);
     }
 
@@ -296,30 +306,30 @@ public:
 
     void deplete()
     {
-        if (root_) {
-            Node *leaf = lastLeaf_;
+        if (Tree::height_ >= 0) {
+            Leaf *leaf = static_cast<Leaf *>(Tree::lastLeaf_);
             Branch *parent = leaf->parent_;
             while (leaf) {
-                Node *pred = leaf->pred();
-                delete static_cast<Leaf *>(leaf);
+                Leaf *pred = leaf->pred();
+                delete leaf;
                 leaf = pred;
             }
-            while (parent) { // FIXME: use height stepping
-                Node *branch = parent;
+            for (int h = Tree::height_; h > 0; --h) {
+                Branch *branch = parent;
                 parent = parent->parent_;
                 while (branch) {
-                    Node *pred = branch->pred();
+                    Branch *pred = branch->pred();
                     delete branch;
                     branch = pred;
                 }
             }
             #ifndef NDEBUG
-            unsigned revisionSaved = revision_;
+            unsigned revisionSaved = Tree::revision_;
             #endif
             *this = BucketVector{};
             #ifndef NDEBUG
-            revision_ = revisionSaved;
-            touch();
+            Tree::revision_ = revisionSaved;
+            Tree::touch();
             #endif
         }
     }
@@ -327,7 +337,7 @@ public:
     class SearchShim
     {
     public:
-        explicit SearchShim(const BucketIndexTree *tree):
+        explicit SearchShim(const Tree *tree):
             tree_{tree},
             idealLeafCount_{tree->idealLeafCount()}
         {}
@@ -340,7 +350,7 @@ public:
         long count() const { return idealLeafCount_; }
 
     private:
-        const BucketIndexTree *tree_;
+        const Tree *tree_;
         long idealLeafCount_;
     };
 
@@ -354,7 +364,7 @@ public:
         Leaf *leaf = nullptr;
         unsigned egress = 0;
         bool found = lookup<Search, Pattern>(pattern, &index, &leaf, &egress);
-        if (found && target) *target = Locator{revision(), index, leaf, egress};
+        if (found && target) *target = Locator{Tree::revision(), index, leaf, egress};
         return found;
     }
 
@@ -365,7 +375,7 @@ public:
         long index = 0;
         bool found = lookup(item, &index, &leaf, &egress);
         if (!found) emplaceAndTell(leaf, egress, item);
-        if (target) *target = Locator{revision(), index, leaf, egress};
+        if (target) *target = Locator{Tree::revision(), index, leaf, egress};
         return !found;
     }
 
@@ -400,7 +410,7 @@ public:
       */
     void reverse()
     {
-        if (count() > 2) {
+        if (Tree::weight_ > 2) {
             auto hi = head();
             auto ti = tail();
             while (hi < ti) {
@@ -410,19 +420,19 @@ public:
             }
 
             #ifndef NDEBUG
-            touch();
+            Tree::touch();
             #endif
         }
     }
 };
 
-template<class T>
+template<class T, unsigned G>
 template<class... Args>
-void BucketVector<T>::emplaceAt(Locator &target, Args... args)
+void BucketVector<T, G>::emplaceAt(Locator &target, Args... args)
 {
     assert(target);
-    assert(target.revisionPtr_ == &revision_); // locator needs to belong to this container
-    assert(target.revisionSaved_ == revision_); // locator needs to be up-to-date
+    assert(target.revisionPtr_ == &Tree::revision_); // locator needs to belong to this container
+    assert(target.revisionSaved_ == Tree::revision_); // locator needs to be up-to-date
 
     unsigned egress = target.egress_;
     Leaf *leaf = static_cast<Leaf *>(target.stop_);
@@ -430,74 +440,74 @@ void BucketVector<T>::emplaceAt(Locator &target, Args... args)
     target.egress_ = egress;
     target.stop_ = leaf;
     #ifndef NDEBUG
-    target.revisionSaved_ = revision_;
+    target.revisionSaved_ = Tree::revision_;
     #endif
 }
 
-template<class T>
+template<class T, unsigned G>
 template<class... Args>
-void BucketVector<T>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... args)
+void BucketVector<T, G>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... args)
 {
     if (target) {
-        dissipate(target, egress);
+        Tree::dissipate(target, egress);
         target->emplace(egress, args...);
-        updateWeights(target, 1);
+        Tree::updateWeights(target, 1);
     }
     else {
         target = new Leaf;
         egress = 0;
         target->emplace(egress, args...);
-        weight_ = 1;
-        root_ = target;
-        lastLeaf_ = target;
-        ++height_;
+        Tree::weight_ = 1;
+        Tree::root_ = target;
+        Tree::lastLeaf_ = target;
+        ++Tree::height_;
     }
     #ifndef NDEBUG
-    touch();
+    Tree::touch();
     #endif
 }
 
-template<class T>
-void BucketVector<T>::pop(Node *target, unsigned egress)
+template<class T, unsigned G>
+void BucketVector<T, G>::pop(Node *target, unsigned egress)
 {
-    if (weight_ > 1) {
+    if (Tree::weight_ > 1) {
         Leaf *leaf = static_cast<Leaf *>(target);
         leaf->drop(egress).~Item();
-        updateWeights(leaf, -1);
-        if (leaf->succ_) setDenseOff();
-        relieve(leaf);
-        reduce();
+        Tree::updateWeights(leaf, -1);
+        if (leaf->succ_) Tree::setDenseOff();
+        Tree::relieve(leaf);
+        Tree::reduce();
     }
     else {
-        delete static_cast<Leaf *>(root_);
-        root_ = nullptr;
-        weight_ = 0;
-        lastLeaf_ = nullptr;
-        --height_;
-        setDenseOn();
+        delete static_cast<Leaf *>(Tree::root_);
+        Tree::root_ = nullptr;
+        Tree::weight_ = 0;
+        Tree::lastLeaf_ = nullptr;
+        --Tree::height_;
+        Tree::setDenseOn();
     }
     #ifndef NDEBUG
-    touch();
+    Tree::touch();
     #endif
 }
 
-template<class T>
+template<class T, unsigned G>
 template<class Search, class Pattern>
-bool BucketVector<T>::lookup(const Pattern &pattern, long *finalIndex, Leaf **target, unsigned *egress) const
+bool BucketVector<T, G>::lookup(const Pattern &pattern, long *finalIndex, Leaf **target, unsigned *egress) const
 {
     bool found = false;
-    if (height_ == 0) {
-        Leaf *leaf = static_cast<Leaf *>(root_);
+    if (Tree::height_ == 0) {
+        Leaf *leaf = static_cast<Leaf *>(Tree::root_);
         long i = 0;
         found = Search::find(leaf, pattern, &i);
         if (finalIndex) *finalIndex = i;
         if (target) *target = leaf;
         if (egress) *egress = i;
     }
-    else if (height_ > 0) {
-        Leaf *leaf = static_cast<Leaf *>(lastLeaf_);
+    else if (Tree::height_ > 0) {
+        Leaf *leaf = static_cast<Leaf *>(Tree::lastLeaf_);
         if (leaf->at(leaf->fill_ - 1) < pattern) {
-            if (finalIndex) *finalIndex = weight_;
+            if (finalIndex) *finalIndex = Tree::weight_;
             if (target) *target = leaf;
             if (egress) *egress = leaf->fill_;
         }
@@ -506,7 +516,7 @@ bool BucketVector<T>::lookup(const Pattern &pattern, long *finalIndex, Leaf **ta
             long j = 0;
             bool lookInside = Search::find(&shim, pattern, &j); // FIXME: use find() function that delivers the leaf directly
             long i = 0;
-            leaf = static_cast<Leaf *>(locateIdealLeaf(j, &i)); // FIXME: many times not needed
+            leaf = static_cast<Leaf *>(Tree::locateIdealLeaf(j, &i)); // FIXME: many times not needed
             if (lookInside) {
                 unsigned k = 0;
                 found = Search::find(leaf, pattern, &k);

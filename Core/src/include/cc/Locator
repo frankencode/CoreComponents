@@ -13,8 +13,8 @@
 #include <cassert>
 
 namespace cc::buckets {
-template<class T> class BucketVector;
-template<class T> class BucketChain;
+template<class, unsigned> class BucketVector;
+template<class> class BucketChain;
 };
 
 namespace cc {
@@ -94,7 +94,7 @@ public:
 protected:
     using BucketStop = buckets::BucketStop;
 
-    template<class>
+    template<class, unsigned>
     friend class cc::buckets::BucketVector;
 
     template<class>

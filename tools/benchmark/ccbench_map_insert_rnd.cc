@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
         fout() << std::round(t * 1000) << " ms\n";
     }
 
-    #if 1
+    #if 0 // FIXME: move to BucketIndexTree
     std::function checkFill {[](const buckets::BucketIndexTree::Node *node) -> bool {
         // CC_INSPECT(node->fill_);
         /*if (node->fill_ < 12) {
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
             CC_INSPECT(node->succ_ != nullptr);
             CC_DEBUG;
         }*/
-        return node->fill_ >= (3 * buckets::BucketIndexTree::Node::Capacity / 4) || !node->parent_  || !node->pred_ || !node->succ_;
+        return node->fill_ >= (3 * buckets::BucketIndexTree::Capacity / 4) || !node->parent_  || !node->pred_ || !node->succ_;
     }};
 
     CC_INSPECT(map.tree().check(checkFill));
