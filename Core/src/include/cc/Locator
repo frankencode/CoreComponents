@@ -12,12 +12,10 @@
 #include <compare>
 #include <cassert>
 
-namespace cc::buckets {
+namespace cc {
+
 template<class, unsigned> class BucketVector;
 template<class> class BucketChain;
-};
-
-namespace cc {
 
 /** \class Locator cc/Locator
   * \brief Locate items inside containers
@@ -92,13 +90,11 @@ public:
     explicit operator bool() const { return stop_; }
 
 protected:
-    using BucketStop = buckets::BucketStop;
-
     template<class, unsigned>
-    friend class cc::buckets::BucketVector;
+    friend class BucketVector;
 
     template<class>
-    friend class cc::buckets::BucketChain;
+    friend class BucketChain;
 
     explicit Locator(const unsigned *revision, long index, BucketStop *stop, unsigned egress):
         index_{index},

@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2020-2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cassert>
+
+/** Compile time option to enable sanity checks for BucketTree.
+  */
+// #define CC_BUCKETTREE_DEBUG
+
+#ifdef CC_BUCKETTREE_DEBUG
+#define CC_BUCKETTREE_ASSERT(x) assert(x);
+#else
+#define CC_BUCKETTREE_ASSERT(x)
+#endif
+
+namespace cc {
+
+/** Default bucket size / default branch factor for bucket trees.
+  */
+static constexpr unsigned DefaultGranularity = 16;
+
+} // namespace cc

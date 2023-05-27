@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace cc::buckets {
+namespace cc {
 
 class BucketStop
 {
@@ -29,4 +29,4 @@ public:
     unsigned slotIndex_ { 0 };
 };
 
-} // namespace cc::buckets
+} // namespace cc

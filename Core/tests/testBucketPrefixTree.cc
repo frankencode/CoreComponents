@@ -4,12 +4,12 @@
 #include <cc/Random>
 #include <cc/testing>
 
-namespace cc::buckets { template class BucketPrefixTree<long, 8>; }
-namespace cc::buckets { template class BucketPrefixTree<cc::String, 16>; }
+namespace cc { template class BucketPrefixTree<long, 8>; }
+namespace cc { template class BucketPrefixTree<cc::String, 16>; }
 
 int main(int argc, char *argv[])
 {
-    using namespace cc::buckets;
+    using namespace cc;
     using namespace cc;
 
     TestCase {
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     return TestSuite{argc, argv}.run();
 
     #if 0
-    using namespace cc::buckets;
+    using namespace cc;
     using namespace cc;
 
     BucketPrefixTree<long> tree;

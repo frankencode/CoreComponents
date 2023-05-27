@@ -8,27 +8,55 @@ int main(int argc, char *argv[])
     using namespace cc;
 
     TestCase {
-        "Insertion",
+        "InsertBack",
         []{
-            const int n = 20;
+            const int n = 1024;
 
             List<int> list;
             for (int i = 0; i < n; ++i) list << i;
 
             CC_CHECK(list.count() == n);
 
-            for (int i = 0; i < n; ++i)
-                CC_CHECK_EQUALS(list.at(i), i);
+            for (int i = 0; i < n; ++i) {
+                CC_VERIFY(list.at(i) == i);
+            }
+
+            CC_CHECK(list.tree().checkBalance());
         }
     };
 
     TestCase {
-        "SortingAscending",
+        "InsertFront",
         []{
+            const int n = 1024;
+
+            List<int> list;
+            for (int i = 0; i < n; ++i) list.pushFront(i);
+
+            CC_CHECK(list.count() == n);
+
+            for (int i = 0; i < n; ++i) {
+                CC_VERIFY(list.at(n - i - 1) == i);
+            }
+
+            CC_CHECK(list.tree().checkBalance());
+
+            list.tree().check([](auto *node){
+                CC_INSPECT(node->fill_);
+                return true;
+            });
+        }
+    };
+
+    TestCase {
+        "Sorting",
+        []{
+            const int n = 128;
+
             List<int> a;
             Random random{0};
-            for (int i = 0; i < 20; ++i)
-                a.append(random.get(0, 99));
+            for (int i = 0; i < n; ++i)
+                a.append(random.get(0, n));
 
             auto b = a.sorted();
             CC_INSPECT(a);
@@ -48,8 +76,9 @@ int main(int argc, char *argv[])
         []{
             List<int> a;
             Random random{0};
-            for (int i = 0; i < 20; ++i)
+            for (int i = 0; i < 20; ++i) {
                 a.append(random.get(0, 99));
+            }
             // List<int> b { a };
             List<int> b = a;
             b.append(4);

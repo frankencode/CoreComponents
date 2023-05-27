@@ -8,22 +8,22 @@
 
 #pragma once
 
-#include <cc/buckets/BucketIndexTree>
+#include <cc/buckets/BucketTree>
 #include <cc/Locator>
 #include <cc/find>
 
-namespace cc::buckets {
+namespace cc {
 
 /** \internal
-  * \brief Implementation of a variable length vector on top of \a BucketIndexTree
+  * \brief Implementation of a variable length vector on top of \a BucketTree
   */
-template<class T, unsigned G = 16>
-class BucketVector final: public BucketIndexTree<G>
+template<class T, unsigned G = DefaultGranularity>
+class BucketVector final: public BucketTree<G>
 {
 public:
     using Item = T;
 
-    using Tree = BucketIndexTree<G>;
+    using Tree = BucketTree<G>;
     using Node = Tree::Node;
     using Branch = Tree::Branch;
 
@@ -83,8 +83,8 @@ public:
 
         long dissipateForwardTo(Leaf *succ)
         {
-            assert(fill_ > 0);
-            assert(succ->fill_ < G);
+            CC_BUCKETTREE_ASSERT(fill_ > 0);
+            CC_BUCKETTREE_ASSERT(succ->fill_ < G);
 
             succ->push(0, std::move(drop(fill_ - 1)));
             return 1;
@@ -92,8 +92,8 @@ public:
 
         long dissipateBackwardTo(Leaf *pred)
         {
-            assert(fill_ > 0);
-            assert(pred->fill_ < G);
+            CC_BUCKETTREE_ASSERT(fill_ > 0);
+            CC_BUCKETTREE_ASSERT(pred->fill_ < G);
 
             pred->push(pred->fill_, std::move(drop(0)));
             return 1;
@@ -101,8 +101,8 @@ public:
 
         long distributeHalfForwardTo(Leaf *succ)
         {
-            assert(fill_ == G);
-            assert(succ->fill_ <= G / 2);
+            CC_BUCKETTREE_ASSERT(fill_ == G);
+            CC_BUCKETTREE_ASSERT(succ->fill_ <= G / 2);
 
             for (unsigned k = 0; k < G / 2; ++k)
             {
@@ -114,8 +114,8 @@ public:
 
         long distributeQuarterForwardTo(Leaf *succ)
         {
-            assert(fill_ == G);
-            assert(succ->fill_ <= G - G / 4);
+            CC_BUCKETTREE_ASSERT(fill_ == G);
+            CC_BUCKETTREE_ASSERT(succ->fill_ <= G - G / 4);
 
             for (unsigned k = G - 1; k >= G - G / 4; --k)
             {
@@ -127,8 +127,8 @@ public:
 
         long distributeQuarterBackwardTo(Leaf *pred)
         {
-            assert(fill_ == G);
-            assert(pred->fill_ == G / 2);
+            CC_BUCKETTREE_ASSERT(fill_ == G);
+            CC_BUCKETTREE_ASSERT(pred->fill_ == G / 2);
 
             for (unsigned k = G / 2; k < G / 2 + G / 4; ++k)
             {
@@ -140,7 +140,7 @@ public:
 
         void adoptChildrenOfSucc(const Leaf *succ)
         {
-            assert(fill_ + succ->fill_ <= G);
+            CC_BUCKETTREE_ASSERT(fill_ + succ->fill_ <= G);
 
             for (unsigned k = 0; k < succ->fill_; ++k)
             {
@@ -533,4 +533,4 @@ bool BucketVector<T, G>::lookup(const Pattern &pattern, long *finalIndex, Leaf *
     return found;
 }
 
-} // namespace cc::buckets
+} // namespace cc

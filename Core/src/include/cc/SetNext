@@ -42,7 +42,7 @@ public:
     const auto &tree() const { return tree_; }
 
 private:
-    buckets::BucketPrefixTree<T, G> tree_;
+    BucketPrefixTree<T, G> tree_;
 };
 
 } // namespace cc

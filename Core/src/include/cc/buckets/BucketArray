@@ -12,7 +12,7 @@
 #include <utility> // std::move
 #include <cstring> // std::memcpy, std::memmove
 
-namespace cc::buckets {
+namespace cc {
 
 /** Helper methods for copying and shifting partially uninitialized arrays
   */
@@ -82,4 +82,4 @@ struct BucketArray<T, false>
     }
 };
 
-} // namespace cc::buckets
+} // namespace cc

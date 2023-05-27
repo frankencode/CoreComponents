@@ -212,8 +212,8 @@ public:
 
     ///@}
 
-    using const_iterator = Iterator<const buckets::BucketChain<Item>>; ///< \internal Readonly value iterator
-    using const_reverse_iterator = ReverseIterator<const buckets::BucketChain<Item>>; ///< \internal Readonly reverse value iterator
+    using const_iterator = Iterator<const BucketChain<Item>>; ///< \internal Readonly value iterator
+    using const_reverse_iterator = ReverseIterator<const BucketChain<Item>>; ///< \internal Readonly reverse value iterator
     using value_type = Item; ///< \internal Item value type
     using size_type = long; ///< \internal Type of the container capacity
 
@@ -250,7 +250,7 @@ public:
     ///@}
 
 private:
-    Access<buckets::BucketChain<Item>> me;
+    Access<BucketChain<Item>> me;
 };
 
 } // namespace cc

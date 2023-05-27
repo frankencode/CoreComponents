@@ -26,7 +26,7 @@ namespace cc {
   * \tparam T Item type
   * \todo List::allocate(long)
   */
-template<class T>
+template<class T, unsigned G = 16>
 class List {
 public:
     using Item = T; ///< Item type
@@ -546,10 +546,10 @@ public:
 
     ///@}
 
-    using iterator = Iterator<buckets::BucketVector<Item>>; ///< \internal Value iterator
-    using const_iterator = Iterator<const buckets::BucketVector<Item>>; ///< \internal Readonly value iterator
-    using reverse_iterator = ReverseIterator<buckets::BucketVector<Item>>; ///< \internal Reverse value iterator
-    using const_reverse_iterator = ReverseIterator<const buckets::BucketVector<Item>>; ///< \internal Readonly reverse value iterator
+    using iterator = Iterator<BucketVector<Item>>; ///< \internal Value iterator
+    using const_iterator = Iterator<const BucketVector<Item>>; ///< \internal Readonly value iterator
+    using reverse_iterator = ReverseIterator<BucketVector<Item>>; ///< \internal Reverse value iterator
+    using const_reverse_iterator = ReverseIterator<const BucketVector<Item>>; ///< \internal Readonly reverse value iterator
     using value_type = Item; ///< \internal Item value type
     using size_type = long; ///< \internal Type of the container capacity
 
@@ -592,8 +592,12 @@ public:
 
     ///@}
 
+    /** \internal
+      */
+    const auto &tree() const { return me(); }
+
 private:
-    Cow<buckets::BucketVector<Item>> me;
+    Cow<BucketVector<Item, G>> me;
 };
 
 } // namespace cc

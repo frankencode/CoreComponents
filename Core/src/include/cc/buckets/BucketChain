@@ -16,7 +16,7 @@
 #include <iterator>
 #include <cassert>
 
-namespace cc::buckets {
+namespace cc {
 
 /** \internal
   * \brief Implemenation of a double-ended queue using interlinked buckets
@@ -311,4 +311,4 @@ private:
     #endif
 };
 
-} // namespace cc::buckets
+} // namespace cc

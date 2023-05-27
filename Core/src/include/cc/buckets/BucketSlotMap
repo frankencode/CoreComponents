@@ -8,22 +8,22 @@
 
 #pragma once
 
-#include <cassert>
+#include <cc/buckets/config>
 #include <cstdint>
 #include <cstring>
 
-namespace cc::buckets {
+namespace cc {
 
 /** \internal
-  * \brief Storage slot mapping table
+  * \brief Storage slot index mapping table
   *
   * The BucketSlotMap decides where individual items are stored in a bucket.
   */
-template<unsigned N>
+template<unsigned G>
 class BucketSlotMap
 {
 public:
-    static constexpr unsigned Capacity = N;
+    static constexpr unsigned Capacity = G;
 
     BucketSlotMap()
     {
@@ -51,8 +51,8 @@ public:
 
     unsigned pushEntry(unsigned bucketIndex, unsigned fill)
     {
-        assert(bucketIndex <= fill);
-        assert(fill < Capacity);
+        CC_BUCKETTREE_ASSERT(bucketIndex <= fill);
+        CC_BUCKETTREE_ASSERT(fill < Capacity);
 
         unsigned slotIndex = map_[Capacity - 1];
 
@@ -65,8 +65,8 @@ public:
 
     unsigned popEntry(unsigned bucketIndex, unsigned fill)
     {
-        assert(bucketIndex < fill);
-        assert(fill > 0);
+        CC_BUCKETTREE_ASSERT(bucketIndex < fill);
+        CC_BUCKETTREE_ASSERT(fill > 0);
 
         unsigned slotIndex = map_[bucketIndex];
 
@@ -101,8 +101,8 @@ public:
 
     unsigned pushEntry(unsigned bucketIndex, unsigned fill)
     {
-        assert(bucketIndex <= fill);
-        assert(fill < Capacity);
+        CC_BUCKETTREE_ASSERT(bucketIndex <= fill);
+        CC_BUCKETTREE_ASSERT(fill < Capacity);
 
         const uint64_t slotIndex = map_ >> 60u;
 
@@ -117,8 +117,8 @@ public:
 
     unsigned popEntry(unsigned bucketIndex, unsigned fill)
     {
-        assert(bucketIndex < fill);
-        assert(fill > 0);
+        CC_BUCKETTREE_ASSERT(bucketIndex < fill);
+        CC_BUCKETTREE_ASSERT(fill > 0);
 
         const uint64_t slotIndex = mapToSlot(bucketIndex);
 
@@ -135,4 +135,4 @@ private:
     uint64_t map_ { UINT64_C(0x0123456789ABCDEF) };
 };
 
-} // namespace cc::buckets
+} // namespace cc

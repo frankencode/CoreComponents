@@ -20,7 +20,7 @@
 
 #define CC_BUCKETS_PARANOID
 
-namespace cc::buckets {
+namespace cc {
 
 template<class T, unsigned G>
 struct BucketPrefixTree final
@@ -751,4 +751,4 @@ struct BucketPrefixTree final
     #endif
 };
 
-} // namespace cc::buckets
+} // namespace cc
