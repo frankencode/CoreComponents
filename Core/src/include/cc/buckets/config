@@ -12,7 +12,7 @@
 
 /** Compile time option to enable sanity checks for BucketTree.
   */
-// #define CC_BUCKETTREE_DEBUG
+#define CC_BUCKETTREE_DEBUG
 
 #ifdef CC_BUCKETTREE_DEBUG
 #define CC_BUCKETTREE_ASSERT(x) assert(x);

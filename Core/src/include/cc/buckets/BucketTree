@@ -246,8 +246,6 @@ public:
         return node;
     }
 
-    bool isDense() const { return revision_ & denseMask; }
-
     Node *stepDownTo(long index, unsigned *egress) const;
 
     bool check(const std::function<bool(const Node *)> &f) const
@@ -276,6 +274,8 @@ public:
             return true;
         });
     }
+
+    bool isDense() const { return dense_; }
 
 protected:
     template<class>
@@ -324,45 +324,21 @@ protected:
 
     const unsigned *revision() const
     {
-        #ifdef NDEBUG
-        return nullptr;
-        #else
+        #ifndef NDEBUG
         return &revision_;
-        #endif
-    }
-
-    static constexpr unsigned denseMask = 1 << (sizeof(unsigned) * 8 - 1);
-
-    void touch()
-    {
-        #ifndef NDEBUG
-        revision_ = (revision_ + 1) & ~denseMask;
-        #endif
-    }
-
-    void setDenseOff()
-    {
-        #ifndef NDEBUG
-        revision_ &= ~denseMask;
         #else
-        revision_ = 0;
+        return nullptr;
         #endif
     }
 
-    void setDenseOn()
-    {
-        #ifndef NDEBUG
-        revision_ |= denseMask;
-        #else
-        revision_ = 1;
-        #endif
-    }
-
-    int height_ { -1 };
-    unsigned revision_ { denseMask };
+    int64_t height_ : 15 { -1 };
+    int64_t dense_  : 1 { 1 };
+    int64_t weight_ : 48 { 0 };
     Node *root_ { nullptr };
-    long weight_ { 0 };
     Node *lastLeaf_ { nullptr }; // bury in &root_->parent_
+    #ifndef NDEBUG
+    unsigned revision_ { 0 };
+    #endif
 };
 
 template<unsigned G>
@@ -382,7 +358,7 @@ BucketTree<G>::Node *BucketTree<G>::stepDownTo(long index, unsigned *egress) con
         }
         *egress = 0;
     }
-    else if (isDense()) {
+    else if (dense_) {
         for (int h = height_; h > 0; --h) {
             node = static_cast<const Branch *>(node)->childAt((index >> (h * StepBits)) & StepMask);
         }
@@ -406,7 +382,7 @@ void BucketTree<G>::joinSucc(Node *node, Node *newNode, bool isBranch)
     if (oldSucc) {
         newNode->succ_ = oldSucc;
         oldSucc->pred_ = newNode;
-        setDenseOff();
+        dense_ = 0;
     }
     else if (!isBranch) {
         lastLeaf_ = newNode;
@@ -552,7 +528,7 @@ void BucketTree<G>::dissipateSlow(NodeType *&node, unsigned &egress)
     #endif
 
     shiftWeights(node, newSucc, node->distributeHalfForwardTo(newSucc));
-    setDenseOff();
+    dense_ = 0;
 
     #if 1
     if (pred) {

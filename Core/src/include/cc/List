@@ -594,7 +594,10 @@ public:
 
     /** \internal
       */
-    const auto &tree() const { return me(); }
+    ///@{
+    using Tree = BucketVector<Item, G>;
+    const Tree &tree() const { return me(); }
+    ///@}
 
 private:
     Cow<BucketVector<Item, G>> me;
