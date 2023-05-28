@@ -8,26 +8,19 @@
 
 #pragma once
 
+#include <compare>
+
 namespace cc {
 
-/** \class Asc cc/order
-  * \brief Ascending sort order
+/** Default sort order based on ordering operator<=>
   */
-class Asc
+struct DefaultOrder
 {
-public:
     template<class A, class B>
-    bool operator()(const A &a, const B &b) const { return a < b; }
-};
-
-/** \class Desc cc/order
-  * \brief Descending sort order
-  */
-class Desc
-{
-public:
-    template<class A, class B>
-    bool operator()(const A &a, const B &b) const { return b < a; }
+    static std::strong_ordering compare(const A &a, const B &b)
+    {
+        return a <=> b;
+    }
 };
 
 } // namespace cc

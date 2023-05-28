@@ -10,10 +10,10 @@
 
 #include <cc/buckets/BucketVector>
 #include <cc/Iterator>
+#include <cc/StableSort>
 #include <cc/InOut>
 #include <cc/Cow>
 #include <cc/container>
-#include <cc/sort>
 #include <initializer_list>
 #include <utility>
 #include <cassert>
@@ -418,37 +418,35 @@ public:
         }
     }
 
-    /** Sort the list
-      * \tparam Order %Sorting order type
-      * \param order %Sorting order function
+    /** Sort the list in-situ
+      * \tparam Order Sort ordering
       *
-      * Sorts the list of items according the given sorting order.
+      * Sorts the list according the given sort ordering.
       * The order of equal elements is preserved.
       */
-    template<class Order = Asc>
-    void sort(Order order = Order{})
+    template<class Order = DefaultOrder>
+    void sort()
     {
-        stableSort(me(), order);
+        StableSort<List::Tree, Order>::sort(me());
     }
 
-    /** Sort the list and remove all doubles
-      * \tparam Order %Sorting order type
-      * \param order %Sorting order function
+    /** Sorts the list and removes all doubles
+      * \tparam Order %Sorting order
       *
       * Sorts the list of items according the given sorting order and
       * removes all doubles thereafter.
       */
-    template<class Order = Asc>
-    void sortUnique(Order order = Order{})
+    template<class Order = DefaultOrder>
+    void sortUnique()
     {
-        if (count() <= 1) return;
         sort();
+        if (count() <= 1) return;
         Locator pos = head();
         Item x = at(pos);
         ++pos;
         while (pos) {
             const Item &y = at(pos);
-            if (order(x, y)) {
+            if (Order::compare(x, y) == std::strong_ordering::less) {
                 x = y;
                 ++pos;
             }

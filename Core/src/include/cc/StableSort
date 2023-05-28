@@ -1,0 +1,99 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/order>
+#include <utility> // std::swap
+
+namespace cc {
+
+template<class Container, class Order = DefaultOrder>
+class StableSort
+{
+public:
+    static void sort(Container &data)
+    {
+        const long n = data.count();
+
+        if (n < 2) return;
+
+        for (long fill = 2; fill <= n; ++fill)
+        {
+            shuffleUp(data, fill);
+        }
+
+        for (auto pos = data.tail(); pos; --pos)
+        {
+            std::swap(data.first(), data.at(pos));
+            shuffleDown(data, +pos);
+        }
+    }
+
+private:
+    using Item = Container::Item;
+
+    static bool less(const Item &a, const Item &b)
+    {
+        return Order::compare(a, b) == std::strong_ordering::less;
+    }
+
+    static void shuffleUp(Container &data, long fill)
+    {
+        using std::swap;
+
+        for (long i = fill - 1; i != 0;) {
+            long j = (i - 1) / 2;
+            Item &a = data[i];
+            Item &b = data[j];
+            if (!less(b, a)) break;
+            std::swap(a, b);
+            i = j;
+        }
+    }
+
+    static void shuffleDown(Container &data, long fill)
+    {
+        if (fill <= 0) return;
+
+        for (long i = 0; true;) {
+            const long l = 2 * i + 1;
+            const long r = 2 * i + 2;
+            if (r < fill) {
+                Item &a = data[i];
+                Item &b = data[l];
+                Item &c = data[r];
+                if (less(a, b)) {
+                    if (less(b, c)) {
+                        i = r;
+                        std::swap(a, c);
+                    }
+                    else {
+                        i = l;
+                        std::swap(a, b);
+                    }
+                }
+                else if (less(a, c)) {
+                    i = r;
+                    std::swap(a, c);
+                }
+                else break;
+            }
+            else if (l < fill) {
+                auto &a = data[i];
+                auto &b = data[l];
+                if (less(a, b)) std::swap(a, b);
+                break;
+            }
+            else
+                break;
+        }
+    }
+};
+
+} // namespace cc

@@ -1,6 +1,7 @@
 #include <cc/System>
 #include <cc/Random>
 #include <cc/stdio>
+#include <cc/DEBUG>
 #include <set>
 
 int main(int argc, char *argv[])
@@ -57,6 +58,8 @@ int main(int argc, char *argv[])
         t = System::now() - t;
         fout() << std::round(t * 1000) << " ms\n";
     }
+
+    CC_INSPECT(sizeof(numbers));
 
     return 0;
 }

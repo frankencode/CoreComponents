@@ -30,6 +30,7 @@ public:
     class Leaf final: public Node
     {
     public:
+        using Item = T;
         using Node::fill_;
 
         Leaf() = default;
@@ -336,6 +337,8 @@ public:
     class SearchShim
     {
     public:
+        using Item = const Leaf;
+
         explicit SearchShim(const Tree *tree):
             tree_{tree},
             idealLeafCount_{tree->idealLeafCount()}

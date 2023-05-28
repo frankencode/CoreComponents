@@ -76,11 +76,13 @@ bool AnalyseStage::run()
         plan().modules().append(module);
     }
 
-    plan().modules().sort(
-        [](const Module &a, const Module &b) {
-            return a.modulePath() < b.modulePath();
+    struct ByPath {
+        static auto compare(const Module &a, const Module &b) {
+            return a.modulePath() <=> b.modulePath();
         }
-    );
+    };
+
+    plan().modules().sort<ByPath>();
 
     return success_ = true;
 }

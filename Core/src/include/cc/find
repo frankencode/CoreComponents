@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <compare>
+#include <cc/order>
 
 namespace cc {
 
@@ -135,21 +135,15 @@ public:
 
 /** \class FindLast cc/find
   * \brief Find right-most item which equals pattern
-  * \todo improve semantics to not perform a final equality comparism automatically
   */
 class FindLast
 {
 public:
-    /** \brief Search in a sorted list of items
-      * \param items The sorted list of items
-      * \param pattern Pattern to search for
-      * \param finalIndex Returns the final index of the search
-      * \return True if a matching item was found, false otherwise
-      */
     template<
         class SortedItems,
         class Pattern = typename SortedItems::Item,
-        class Index = long
+        class Index = long,
+        class Order = DefaultOrder
     >
     static bool find(
         const SortedItems *items,
@@ -161,12 +155,12 @@ public:
         bool found = false;
         while (l < r) {
             Index m = (l + r) >> 1;
-            if (pattern < items->at(m))
+            if (Order::compare(pattern, items->at(m)) == std::strong_ordering::less)
                 r = m;
             else
                 l = m + 1;
         }
-        found = (0 < l) && !(items->at(l - 1) < pattern || pattern < items->at(l - 1));
+        found = 0 < l && Order::compare(pattern, items->at(l - 1)) == std::strong_ordering::equal;
         *finalIndex = l - found;
         return found;
     }
