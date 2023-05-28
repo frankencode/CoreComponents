@@ -26,7 +26,7 @@ namespace cc {
   * \tparam T Item type
   * \todo List::allocate(long)
   */
-template<class T, unsigned G = 16>
+template<class T, unsigned G = DefaultBucketSize>
 class List {
 public:
     using Item = T; ///< Item type

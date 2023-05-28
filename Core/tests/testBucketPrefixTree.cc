@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
             for (int i = 0; i < n; ++i) {
                 CC_VERIFY(set.contains(i));
             }
-            CC_INSPECT(set.tree().Granularity);
+            // CC_INSPECT(set.tree().Granularity);
             CC_INSPECT(set.tree().height_);
         }
     };
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
             for (int i = 0; i < n; ++i) {
                 CC_VERIFY(set.contains(i));
             }
-            CC_INSPECT(set.tree().Granularity);
+            // CC_INSPECT(set.tree().Granularity);
             CC_INSPECT(set.tree().height_);
         }
     };
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
             for (int i = 0; i < n; ++i) {
                 CC_VERIFY(set.contains(i));
             }
-            CC_INSPECT(set.tree().Granularity);
+            // CC_INSPECT(set.tree().Granularity);
             CC_INSPECT(set.tree().height_);
             CC_INSPECT(set.tree().checkNodeFills());
 

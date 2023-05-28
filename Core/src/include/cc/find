@@ -131,6 +131,32 @@ public:
         *finalIndex = l;
         return l < items->count() && !(items->at(l) < pattern || pattern < items->at(l));
     }
+
+    template<
+        class SortedItems,
+        class Pattern = typename SortedItems::Item,
+        class Index = long,
+        class Order = DefaultOrder
+    >
+    static bool find(
+        SortedItems *items,
+        const Pattern &pattern,
+        Index *finalIndex = nullptr,
+        typename SortedItems::Item **finalItem = nullptr
+    ) {
+        Index l = 0;
+        Index r = items->count();
+        while (l < r) {
+            Index m = (l + r) >> 1;
+            if (Order::compare(items->at(m), pattern) == std::strong_ordering::less)
+                l = m + 1;
+            else
+                r = m;
+        }
+        if (finalIndex) *finalIndex = l;
+        if (finalItem) *finalItem = &items->at(l);
+        return l < items->count() && Order::compare(items->at(l), pattern) == std::strong_ordering::equal;
+    }
 };
 
 /** \class FindLast cc/find
@@ -162,6 +188,35 @@ public:
         }
         found = 0 < l && Order::compare(pattern, items->at(l - 1)) == std::strong_ordering::equal;
         *finalIndex = l - found;
+        return found;
+    }
+
+    template<
+        class SortedItems,
+        class Pattern = typename SortedItems::Item,
+        class Index = long,
+        class Order = DefaultOrder
+    >
+    static bool find(
+        SortedItems *items,
+        const Pattern &pattern,
+        Index *finalIndex = nullptr,
+        typename SortedItems::Item **finalItem = nullptr
+    ) {
+        Index l = 0;
+        Index r = items->count();
+        bool found = false;
+        while (l < r) {
+            Index m = (l + r) >> 1;
+            if (Order::compare(pattern, items->at(m)) == std::strong_ordering::less)
+                r = m;
+            else
+                l = m + 1;
+        }
+        found = 0 < l && Order::compare(pattern, items->at(l - 1)) == std::strong_ordering::equal;
+        l -= found;
+        if (finalIndex) *finalIndex = l;
+        if (finalItem) *finalItem = &items->at(l);
         return found;
     }
 };

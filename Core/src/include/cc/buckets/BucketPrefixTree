@@ -29,7 +29,7 @@ struct BucketPrefixTree final
 
     using Item = T;
 
-    static constexpr unsigned Granularity = G;
+    // static constexpr unsigned Granularity = G;
     static constexpr unsigned StepBits = std::countr_zero(G);
     static constexpr unsigned StepMask = G - 1;
 

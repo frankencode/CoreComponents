@@ -17,7 +17,7 @@ namespace cc {
 /** \internal
   * \brief Implementation of a variable length vector on top of \a BucketTree
   */
-template<class T, unsigned G = DefaultGranularity>
+template<class T, unsigned G = DefaultBucketSize>
 class BucketVector final: public BucketTree<G>
 {
 public:
@@ -337,16 +337,16 @@ public:
     class SearchShim
     {
     public:
-        using Item = const Leaf;
+        using Item = Leaf;
 
         explicit SearchShim(const Tree *tree):
             tree_{tree},
             idealLeafCount_{tree->idealLeafCount()}
         {}
 
-        const Leaf &at(long index) const
+        Leaf &at(long index) const
         {
-            return *static_cast<const Leaf *>(tree_->idealLeafAt(index));
+            return *static_cast<Leaf *>(tree_->idealLeafAt(index));
         }
 
         long count() const { return idealLeafCount_; }
@@ -365,7 +365,7 @@ public:
         long index = 0;
         Leaf *leaf = nullptr;
         unsigned egress = 0;
-        bool found = lookup<Search, Pattern>(pattern, &index, &leaf, &egress);
+        bool found = lookup<Search, Pattern>(pattern, target ? &index : nullptr, &leaf, &egress);
         if (found && target) *target = Locator{Tree::revision(), index, leaf, egress};
         return found;
     }
@@ -375,7 +375,7 @@ public:
         Leaf *leaf = nullptr;
         unsigned egress = 0;
         long index = 0;
-        bool found = lookup(item, &index, &leaf, &egress);
+        bool found = lookup(item, target ? &index : nullptr, &leaf, &egress);
         if (!found) emplaceAndTell(leaf, egress, item);
         if (target) *target = Locator{Tree::revision(), index, leaf, egress};
         return !found;
@@ -516,9 +516,11 @@ bool BucketVector<T, G>::lookup(const Pattern &pattern, long *finalIndex, Leaf *
         else {
             SearchShim shim{this};
             long j = 0;
-            bool lookInside = Search::find(&shim, pattern, &j); // FIXME: use find() function that delivers the leaf directly
+            bool lookInside = Search::find(&shim, pattern, &j, &leaf);
             long i = 0;
-            leaf = static_cast<Leaf *>(Tree::locateIdealLeaf(j, &i)); // FIXME: many times not needed
+            if (finalIndex) {
+                Tree::locateIdealLeaf(j, &i);
+            }
             if (lookInside) {
                 unsigned k = 0;
                 found = Search::find(leaf, pattern, &k);

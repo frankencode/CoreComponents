@@ -29,15 +29,17 @@ int main(int argc, char *argv[])
         fout() << std::round(t * 1000) << " ms\n";
     }
 
-    SetNext<long, 256> numbers;
+    SetNext<long, 64> numbers;
 
     fout() << n << " random insertions into cc::SetNext<long>... ";
     {
         Random random { 0 };
         double t = System::now();
+
         for (int i = 0; i < n; ++i) {
             numbers.insert(items[i]);
         }
+
         t = System::now() - t;
         fout() << std::round(t * 1000) << " ms\n";
     }
@@ -45,12 +47,14 @@ int main(int argc, char *argv[])
     fout() << n << " random lookups... ";
     {
         double t = System::now();
+
         for (int i = 0; i < n; ++i) {
             if (!numbers.contains(items[i])) {
                 ferr() << "FAILED" << nl;
                 return 1;
             }
         }
+
         t = System::now() - t;
         fout() << std::round(t * 1000) << " ms\n";
     }

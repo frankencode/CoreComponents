@@ -12,7 +12,7 @@
 
 /** Compile time option to enable sanity checks for BucketTree.
   */
-// #define CC_BUCKETTREE_DEBUG
+#define CC_BUCKETTREE_DEBUG
 
 #ifdef CC_BUCKETTREE_DEBUG
 #define CC_BUCKETTREE_ASSERT(x) assert(x);
@@ -24,6 +24,6 @@ namespace cc {
 
 /** Default bucket size / default branch factor for bucket trees.
   */
-static constexpr unsigned DefaultGranularity = 16;
+static constexpr unsigned DefaultBucketSize = 16;
 
 } // namespace cc
