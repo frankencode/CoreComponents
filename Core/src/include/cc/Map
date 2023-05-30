@@ -20,7 +20,6 @@ namespace cc {
   * \tparam T Value type
   * \tparam O Search order
   * \tparam G Tree granularity
-  * \todo Support for range queries
   */
 template<class K, class T = K, class O = DefaultOrder, unsigned G = DefaultTreeGranularity>
 class Map {
@@ -210,6 +209,7 @@ public:
       * \param pattern %Pattern to search for
       * \param pos Returns the position of the item that was found
       * \return True if \a pattern was found
+      * \note The returned Locator \a pos will always point to the first element greater or equal \a pattern.
       */
     template<class Pattern>
     bool find(const Pattern &pattern, Out<Locator> pos = None{}) const
