@@ -10,9 +10,10 @@
 
 #include <cassert>
 
-/** Compile time option to enable sanity checks for BucketTree.
+/** Compile time option to enable sanity checks for bucket trees.
+  * \todo disable testing option
   */
-#define CC_BUCKETTREE_DEBUG
+// #define CC_BUCKETTREE_DEBUG
 
 #ifdef CC_BUCKETTREE_DEBUG
 #define CC_BUCKETTREE_ASSERT(x) assert(x);

@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
         fout() << std::round(t * 1000) << " ms\n";
     }
 
-    SetNext<long, 64> numbers;
+    SetNext<long> numbers;
 
     fout() << n << " random insertions into cc::SetNext<long>... ";
     {

@@ -18,15 +18,20 @@ namespace cc {
 class FindAny {
 public:
     /** \brief Search in a sorted list of items
+      * \tparam SortedItems %Array type
+      * \tparam Pattern %Pattern type
+      * \tparam Index %Index type
+      * \tparam Order %Sorting order
       * \param items The sorted list of items
-      * \param pattern Pattern to search for
+      * \param pattern %Pattern to search for
       * \param finalIndex Returns the final index of the search
       * \return True if a matching item was found, false otherwise
       */
     template<
         class SortedItems,
         class Pattern = typename SortedItems::Item,
-        class Index = long
+        class Index = long,
+        class Order = DefaultOrder
     >
     static bool find(
         const SortedItems *items,
@@ -38,11 +43,11 @@ public:
         while (l <= r) {
             Index m = (l + r) >> 1;
             const auto &candidate = items->at(m);
-            auto order = candidate <=> pattern;
-            if (order == std::strong_ordering::less) {
+            auto o = Order::compare(candidate, pattern);
+            if (o == std::strong_ordering::less) {
                 l = m + 1;
             }
-            else if (order == std::strong_ordering::greater) {
+            else if (o == std::strong_ordering::greater) {
                 r = m - 1;
             }
             else {
@@ -54,17 +59,13 @@ public:
         return false;
     }
 
-    /** \brief Search in a sorted list of items
-      * \param items The sorted list of items
-      * \param pattern Pattern to search for
-      * \param finalIndex Returns the final index of the search
-      * \param finalItem Returns the final item of the search
-      * \return True if a matching item was found, false otherwise
+    /** \internal
       */
     template<
         class SortedItems,
         class Pattern = typename SortedItems::Item,
-        class Index = long
+        class Index = long,
+        class Order = DefaultOrder
     >
     static bool find(
         SortedItems *items,
@@ -77,11 +78,11 @@ public:
         while (l <= r) {
             Index m = (l + r) >> 1;
             auto &candidate = items->at(m);
-            auto order = candidate <=> pattern;
-            if (order == std::strong_ordering::less) {
+            auto o = Order::compare(candidate, pattern);
+            if (o == std::strong_ordering::less) {
                 l = m + 1;
             }
-            else if (order == std::strong_ordering::greater) {
+            else if (o == std::strong_ordering::greater) {
                 r = m - 1;
             }
             else {
@@ -98,21 +99,25 @@ public:
 
 /** \class FindFirst cc/find
   * \brief Find left-most item which equals pattern
-  * \todo improve semantics to not perform a final equality comparism automatically
   */
 class FindFirst
 {
 public:
     /** \brief Search in a sorted list of items
+      * \tparam SortedItems %Array type
+      * \tparam Pattern %Pattern type
+      * \tparam Index %Index type
+      * \tparam Order %Sorting order
       * \param items The sorted list of items
-      * \param pattern Pattern to search for
+      * \param pattern %Pattern to search for
       * \param finalIndex Returns the final index of the search
       * \return True if a matching item was found, false otherwise
       */
     template<
         class SortedItems,
         class Pattern = typename SortedItems::Item,
-        class Index = long
+        class Index = long,
+        class Order = DefaultOrder
     >
     static bool find(
         const SortedItems *items,
@@ -123,15 +128,17 @@ public:
         Index r = items->count();
         while (l < r) {
             Index m = (l + r) >> 1;
-            if (items->at(m) < pattern)
+            if (Order::compare(items->at(m), pattern) == std::strong_ordering::less)
                 l = m + 1;
             else
                 r = m;
         }
         *finalIndex = l;
-        return l < items->count() && !(items->at(l) < pattern || pattern < items->at(l));
+        return l < items->count() && Order::compare(items->at(l), pattern) == std::strong_ordering::equal;
     }
 
+    /** \internal
+      */
     template<
         class SortedItems,
         class Pattern = typename SortedItems::Item,
@@ -160,11 +167,21 @@ public:
 };
 
 /** \class FindLast cc/find
-  * \brief Find right-most item which equals pattern
+  * \brief Find last item which equals pattern
   */
 class FindLast
 {
 public:
+    /** \brief Search in a sorted list of items
+      * \tparam SortedItems %Array type
+      * \tparam Pattern %Pattern type
+      * \tparam Index %Index type
+      * \tparam Order %Sorting order
+      * \param items The sorted list of items
+      * \param pattern %Pattern to search for
+      * \param finalIndex Returns the final index of the search
+      * \return True if a matching item was found, false otherwise
+      */
     template<
         class SortedItems,
         class Pattern = typename SortedItems::Item,
@@ -191,6 +208,8 @@ public:
         return found;
     }
 
+    /** \internal
+      */
     template<
         class SortedItems,
         class Pattern = typename SortedItems::Item,
