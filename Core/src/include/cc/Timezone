@@ -76,24 +76,22 @@ public:
       */
     ///@{
 
-    using value_type = TimeInfo; ///< Item value type
-    using size_type = long; ///< Type of the container capacity
+    using value_type = TimeInfo; ///< \internal Item value type
+    using size_type = long; ///< \internal Type of the container capacity
 
-    using const_iterator = ArrayIterator<const Timezone, 1>; ///< Readonly value iterator
-    // using iterator = const_iterator; ///< Value iterator
+    using const_iterator = ArrayIterator<const Timezone, 1>; ///< \internal Readonly value iterator
 
-    const_iterator begin () const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
-    const_iterator cbegin() const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
-    const_iterator end   () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
-    const_iterator cend  () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator begin () const { return const_iterator{*this, 0}; } ///< \internal %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return const_iterator{*this, 0}; } ///< \internal %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return const_iterator{*this, count()}; } ///< \internal %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return const_iterator{*this, count()}; } ///< \internal %Return readonly iterator pointing behind the last item
 
-    using const_reverse_iterator = ArrayIterator<const Timezone, -1>; ///< Readonly reverse value iterator
-    // using reverse_iterator = const_reverse_iterator; ///< Reverse value iterator
+    using const_reverse_iterator = ArrayIterator<const Timezone, -1>; ///< \internal Readonly reverse value iterator
 
-    const_reverse_iterator rbegin () const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
-    const_reverse_iterator crbegin() const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
-    const_reverse_iterator rend   () const { return const_reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
-    const_reverse_iterator crend  () const { return const_reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator rbegin () const { return const_reverse_iterator{*this, count() - 1}; } ///< \internal %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return const_reverse_iterator{*this, count() - 1}; } ///< \internal %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return const_reverse_iterator{*this, -1}; } ///< \internal %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const { return const_reverse_iterator{*this, -1}; } ///< \internal %Return reverse iterator pointing before the first item
 
     ///@}
 
