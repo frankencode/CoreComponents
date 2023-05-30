@@ -70,7 +70,7 @@ inline T endianGate(T x, const ByteOrder channelByteOrder = ByteOrder::BigEndian
     return x;
 }
 
-/** \class Bit cc/binary
+/** \class Bit cc/bits
   * \brief Select the bits \a i to \a j from a word of type \a T.
   * \tparam T %Unsigned integer type
   * \tparam j %High bit position
