@@ -71,21 +71,24 @@ public:
 
     using Item = TimeInfo; ///< %Timezone information record
 
-    using const_iterator = ArrayIterator<const Timezone, 1>; ///< \internal Readonly value iterator
-    using const_reverse_iterator = ArrayIterator<const Timezone, -1>; ///< \internal Readonly reverse value iterator
-    using iterator = const_iterator; ///< \internal Value iterator
-    using reverse_iterator = const_reverse_iterator; ///< \internal Reverse value iterator
-    using value_type = TimeInfo; ///< \internal Item value type
-    using size_type = long; ///< \internal Type of the container capacity
-
-    /** \name Standard Iterators
+    /** \internal
+      * \name Standard Iterators
       */
     ///@{
+
+    using value_type = TimeInfo; ///< Item value type
+    using size_type = long; ///< Type of the container capacity
+
+    using const_iterator = ArrayIterator<const Timezone, 1>; ///< Readonly value iterator
+    // using iterator = const_iterator; ///< Value iterator
 
     const_iterator begin () const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
     const_iterator cbegin() const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
     const_iterator end   () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
     const_iterator cend  () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
+
+    using const_reverse_iterator = ArrayIterator<const Timezone, -1>; ///< Readonly reverse value iterator
+    // using reverse_iterator = const_reverse_iterator; ///< Reverse value iterator
 
     const_reverse_iterator rbegin () const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
     const_reverse_iterator crbegin() const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)

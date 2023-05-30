@@ -80,9 +80,13 @@ public:
       */
     int operator-(const ArrayIterator &b) const { return i_ - b.i_; }
 
-    int operator<(const ArrayIterator &b) const { return i_ < b.i_; } ///< Less than operator
-    bool operator==(const ArrayIterator &b) const { return i_ == b.i_; } ///< Equal to operator
-    bool operator!=(const ArrayIterator &b) const { return i_ != b.i_; } ///< Not equal to operator
+    /** Equality operator
+      */
+    bool operator==(const ArrayIterator &b) const { return i_ == b.i_; }
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const ArrayIterator &b) const { return i_ <=> b.i_; }
 
 private:
     Container &c_;

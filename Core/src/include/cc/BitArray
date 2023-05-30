@@ -161,27 +161,32 @@ public:
         return BitArray{*this, CopyHint{}};
     }
 
-    using iterator = ArrayIterator<BitArray, 1>; ///< \internal Value iterator
-    using const_iterator = ArrayIterator<const BitArray, 1>; ///< \internal Readonly value iterator
-    using reverse_iterator = ArrayIterator<BitArray, -1>; ///< \internal Reverse value iterator
-    using const_reverse_iterator = ArrayIterator<const BitArray, -1>; ///< \internal Readonly reverse value iterator
-    using value_type = Item; ///< \internal Item value type
-    using size_type = long; ///< \internal Type of the container capacity
-
-    /** \name Standard Iterators
+    /** \internal
+      * \name Standard Iterators
       */
     ///@{
 
+    using value_type = Item; ///< Item value type
+    using size_type = long; ///< Type of the container capacity
+
+    using iterator = ArrayIterator<BitArray, 1>; ///< Value iterator
+
     iterator begin(); ///< %Return iterator pointing to the first item (if any)
     iterator end  (); ///< %Return iterator pointing behind the last item
+
+    using const_iterator = ArrayIterator<const BitArray, 1>; ///< Readonly value iterator
 
     const_iterator begin () const; ///< %Return readonly iterator pointing to the first item (if any)
     const_iterator cbegin() const; ///< %Return readonly iterator pointing to the first item (if any)
     const_iterator end   () const; ///< %Return readonly iterator pointing behind the last item
     const_iterator cend  () const; ///< %Return readonly iterator pointing behind the last item
 
+    using reverse_iterator = ArrayIterator<BitArray, -1>; ///< Reverse value iterator
+
     reverse_iterator rbegin(); ///< %Return reverse iterator pointing to the last item (if any)
     reverse_iterator rend  (); ///< %Return reverse iterator pointing before the first item
+
+    using const_reverse_iterator = ArrayIterator<const BitArray, -1>; ///< Readonly reverse value iterator
 
     const_reverse_iterator rbegin () const; ///< %Return readonly reverse iterator pointing to the last item (if any)
     const_reverse_iterator crbegin() const; ///< %Return readonly reverse iterator pointing to the last item (if any)

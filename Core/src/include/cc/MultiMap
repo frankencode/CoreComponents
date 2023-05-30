@@ -303,27 +303,32 @@ public:
 
     ///@}
 
-    using iterator = Iterator<BucketVector<Item>>; ///< \internal Value iterator
-    using const_iterator = Iterator<const BucketVector<Item>>; ///< \internal Readonly value iterator
-    using reverse_iterator = ReverseIterator<BucketVector<Item>>; ///< \internal Reverse value iterator
-    using const_reverse_iterator = ReverseIterator<const BucketVector<Item>>; ///< \internal Readonly reverse value iterator
-    using value_type = Item; ///< \internal Item value type
-    using size_type = long; ///< \internal Type of the container capacity
-
-    /** \name Standard Iterators
+    /** \internal
+      * \name Standard Iterators
       */
     ///@{
 
+    using value_type = Item; ///< Item value type
+    using size_type = long; ///< Type of the container capacity
+
+    using iterator = Iterator<BucketVector<Item>>; ///< Value iterator
+
     iterator begin() { me(); return head(); } ///< %Return iterator pointing to the first item (if any)
     iterator end  () { me(); return Locator{count()}; } ///< %Return iterator pointing behind the last item
+
+    using const_iterator = Iterator<const BucketVector<Item>>; ///< Readonly value iterator
 
     const_iterator begin () const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
     const_iterator cbegin() const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
     const_iterator end   () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
     const_iterator cend  () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
 
+    using reverse_iterator = ReverseIterator<BucketVector<Item>>; ///< Reverse value iterator
+
     reverse_iterator rbegin() { me(); return tail(); } ///< %Return reverse iterator pointing to the last item (if any)
     reverse_iterator rend  () { me(); return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+
+    using const_reverse_iterator = ReverseIterator<const BucketVector<Item>>; ///< Readonly reverse value iterator
 
     const_reverse_iterator rbegin () const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
     const_reverse_iterator crbegin() const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
