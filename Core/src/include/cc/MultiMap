@@ -8,15 +8,8 @@
 
 #pragma once
 
-#include <cc/buckets/BucketVector>
-#include <cc/Iterator>
-#include <cc/Cow>
-#include <cc/InOut>
+#include <cc/List>
 #include <cc/KeyValue>
-#include <cc/container>
-#include <initializer_list>
-#include <utility>
-#include <cassert>
 
 namespace cc {
 
@@ -25,14 +18,19 @@ namespace cc {
   * \brief Multi-map data container
   * \tparam K Key type
   * \tparam T Value type
+  * \tparam O Search order
+  * \tparam G Tree granularity
   * \todo Support for range queries
   */
-template<class K, class T = K>
+template<class K, class T = K, class O = DefaultOrder, unsigned G = DefaultTreeGranularity>
 class MultiMap {
 public:
     using Key = K; ///< Key type
     using Value = T; ///< Value type
     using Item = KeyValue<K, T>; ///< Item type
+    using Order = O; ///< Search order
+
+    static constexpr unsigned Granularity = G; ///< Tree granularity
 
     /** \name Construction and Assignment
       */
@@ -69,6 +67,15 @@ public:
     {
         me = std::move(other.me);
         return *this;
+    }
+
+    /** Get corresponding list representation
+      */
+    List<Item, Granularity> toList() const
+    {
+        List<Item, Granularity> list;
+        list.me = me;
+        return list;
     }
 
     ///@}
@@ -207,7 +214,7 @@ public:
     template<class Search = FindFirst>
     bool find(const Key &key, Out<Locator> pos = None{}) const
     {
-        return me().template find<Search>(key, &pos);
+        return me().template find<Order, Search>(key, &pos);
     }
 
     /** Convenience function to check if the map contains \a pattern
@@ -228,7 +235,7 @@ public:
       */
     void insert(const Key &key, const Value &value)
     {
-        return me().insertLast(Item{key, value});
+        return me().template insertLast<Order>(Item{key, value}); // FIXME: performance, needless copy
     }
 
     /** Remove all matching keys
@@ -334,15 +341,10 @@ public:
     template<class Other>
     bool operator==(const Other &other) const { return container::equal(*this, other); }
 
-    /** Ordering operator
-      */
-    template<class Other>
-    std::strong_ordering operator<=>(const Other &other) const { return container::order(*this, other); }
-
     ///@}
 
 private:
-    Cow<BucketVector<Item>> me;
+    Cow<BucketVector<Item, Granularity>> me;
 };
 
 } // namespace cc

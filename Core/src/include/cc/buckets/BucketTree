@@ -34,13 +34,12 @@ namespace cc {
   *
   * \see BucketVector
   */
-template<unsigned G = DefaultBucketSize>
+template<unsigned G = DefaultTreeGranularity>
 class BucketTree
 {
 public:
     class Branch;
 
-    // static constexpr unsigned Granularity = G;
     static constexpr unsigned StepBits = std::countr_zero(G);
     static constexpr unsigned StepMask = G - 1;
 

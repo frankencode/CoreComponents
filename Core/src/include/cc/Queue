@@ -22,9 +22,8 @@ class Array;
   * \ingroup container_lowlevel
   * \brief Double-ended queue data container
   * \tparam T Item type
-  * \tparam Access %Access policy
   */
-template<class T, template<class> class Access = Shared>
+template<class T>
 class Queue {
 public:
     using Item = T; ///< Item type
@@ -250,7 +249,7 @@ public:
     ///@}
 
 private:
-    Access<BucketChain<Item>> me;
+    Shared<BucketChain<Item>> me;
 };
 
 } // namespace cc

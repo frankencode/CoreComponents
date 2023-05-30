@@ -18,13 +18,16 @@ namespace cc {
   * \brief Priority queue data container
   * \tparam T Item type
   * \tparam P Priority type
+  * \tparam G Tree granularity
   */
-template<class T, class P = int>
+template<class T, class P = int, unsigned G = DefaultTreeGranularity>
 class PriorityQueue
 {
 public:
     using Item = T; ///< Item type
     using Priority = P; ///< Priority type
+
+    static constexpr unsigned Granularity = G; ///< Tree granularity
 
     /** \name Construction and Assignment
       */
@@ -140,11 +143,6 @@ public:
     template<class Other>
     bool operator==(const Other &other) const { return container::equal(*this, other); }
 
-    /** Ordering operator
-      */
-    template<class Other>
-    std::strong_ordering operator<=>(const Other &other) const { return container::order(*this, other); }
-
     ///@}
 
 private:
@@ -157,7 +155,7 @@ private:
         return me().template value<Access>(pos).value();
     }
 
-    Composite<MultiMap<Priority, Item>> me;
+    Composite<MultiMap<Priority, Item, DefaultOrder, Granularity>> me;
 };
 
 } // namespace cc

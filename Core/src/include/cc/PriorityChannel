@@ -19,18 +19,16 @@ namespace cc {
   * \brief Prioritized thread communication channel
   * \tparam T Item type
   * \tparam P Priority type
+  * \tparam G Tree granularity
   */
-template<class T, class P = int>
+template<class T, class P = int, unsigned G = DefaultTreeGranularity>
 class PriorityChannel
 {
 public:
-    /** Item type
-      */
-    using Item = T;
+    using Item = T; ///< Item type
+    using Priority = P; ///< Priority type
 
-    /** Priority type
-      */
-    using Priority = P;
+    static constexpr unsigned Granularity = G; ///< Tree granularity
 
     /** Create a new channel
       */
@@ -158,7 +156,7 @@ private:
     struct State {
         mutable Mutex mutex_;
         WaitCondition notEmpty_;
-        PriorityQueue<T> queue_;
+        PriorityQueue<Item, Priority, Granularity> queue_;
         bool close_ { false };
     };
     Shared<State> me;

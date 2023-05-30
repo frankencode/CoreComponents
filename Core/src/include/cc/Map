@@ -8,15 +8,8 @@
 
 #pragma once
 
-#include <cc/buckets/BucketVector>
-#include <cc/Iterator>
-#include <cc/Cow>
-#include <cc/InOut>
+#include <cc/List>
 #include <cc/KeyValue>
-#include <cc/container>
-#include <initializer_list>
-#include <utility>
-#include <cassert>
 
 namespace cc {
 
@@ -25,14 +18,19 @@ namespace cc {
   * \brief %Map data container
   * \tparam K Key type
   * \tparam T Value type
+  * \tparam O Search order
+  * \tparam G Tree granularity
   * \todo Support for range queries
   */
-template<class K, class T = K>
+template<class K, class T = K, class O = DefaultOrder, unsigned G = DefaultTreeGranularity>
 class Map {
 public:
     using Key = K; ///< Key type
     using Value = T; ///< Value type
     using Item = KeyValue<K, T>; ///< Item type
+    using Order = O; ///< Search order
+
+    static constexpr unsigned Granularity = G; ///< Tree granularity
 
     /** \name Construction and Assignment
       */
@@ -69,6 +67,15 @@ public:
     {
         me = std::move(other.me);
         return *this;
+    }
+
+    /** Get corresponding list representation
+      */
+    List<Item, Granularity> toList() const
+    {
+        List<Item, Granularity> list;
+        list.me = me;
+        return list;
     }
 
     ///@}
@@ -207,7 +214,7 @@ public:
     template<class Pattern>
     bool find(const Pattern &pattern, Out<Locator> pos = None{}) const
     {
-        return me().find(pattern, &pos);
+        return me().template find<Order>(pattern, &pos);
     }
 
     /** Search for \a pattern and return \a value
@@ -218,7 +225,7 @@ public:
     bool lookup(const Pattern &pattern, Out<Value> value) const
     {
         Locator pos;
-        bool found = me().find(pattern, &pos);
+        bool found = me().template find<Order>(pattern, &pos);
         if (found) value = at(pos).value();
         return found;
     }
@@ -242,7 +249,7 @@ public:
       */
     bool insert(const Key &key, const Value &value, Out<Locator> pos = None{})
     {
-        return me().insertUnique(Item{key, value}, &pos);
+        return me().template insertUnique<Order>(Item{key, value}, &pos); // FIXME: performance, needless copy
     }
 
     /** Insert a new or overwrite an existing key-value mapping
@@ -251,7 +258,7 @@ public:
       */
     void establish(const Key &key, const Value &value)
     {
-        return me().establish(Item{key, value});
+        return me().template establish<Order>(Item{key, value});
     }
 
     /** Remove the given \a key from the map
@@ -259,7 +266,7 @@ public:
       */
     bool remove(const Key &key)
     {
-        return me().remove(key);
+        return me().template remove<Order>(key);
     }
 
     /** %Map \a key to value (or return \a fallback value)
@@ -385,17 +392,12 @@ public:
     template<class Other>
     bool operator==(const Other &other) const { return container::equal(*this, other); }
 
-    /** Ordering operator
-      */
-    template<class Other>
-    std::strong_ordering operator<=>(const Other &other) const { return container::order(*this, other); }
-
     ///@}
 
     const auto &tree() const { return me(); }
 
 private:
-    Cow<BucketVector<Item>> me;
+    Cow<BucketVector<Item, Granularity>> me;
 };
 
 } // namespace cc

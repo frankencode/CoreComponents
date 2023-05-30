@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2020-2023 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -18,23 +18,23 @@ namespace cc {
 class FindAny {
 public:
     /** \brief Search in a sorted list of items
-      * \tparam SortedItems %Array type
+      * \tparam Order %Sorting order
+      * \tparam Container %Container type
       * \tparam Pattern %Pattern type
       * \tparam Index %Index type
-      * \tparam Order %Sorting order
       * \param items The sorted list of items
       * \param pattern %Pattern to search for
       * \param finalIndex Returns the final index of the search
       * \return True if a matching item was found, false otherwise
       */
     template<
-        class SortedItems,
-        class Pattern = typename SortedItems::Item,
-        class Index = long,
-        class Order = DefaultOrder
+        class Order = DefaultOrder,
+        class Container,
+        class Pattern = typename Container::Item,
+        class Index = long
     >
     static bool find(
-        const SortedItems *items,
+        const Container *items,
         const Pattern &pattern,
         Index *finalIndex
     ) {
@@ -62,16 +62,16 @@ public:
     /** \internal
       */
     template<
-        class SortedItems,
-        class Pattern = typename SortedItems::Item,
-        class Index = long,
-        class Order = DefaultOrder
+        class Order = DefaultOrder,
+        class Container,
+        class Pattern = typename Container::Item,
+        class Index = long
     >
     static bool find(
-        SortedItems *items,
+        Container *items,
         const Pattern &pattern,
         Index *finalIndex = nullptr,
-        typename SortedItems::Item **finalItem = nullptr
+        typename Container::Item **finalItem = nullptr
     ) {
         Index l = 0;
         Index r = items->count() - 1;
@@ -98,29 +98,29 @@ public:
 };
 
 /** \class FindFirst cc/find
-  * \brief Find left-most item which equals pattern
+  * \brief Find first item which equals pattern
   */
 class FindFirst
 {
 public:
     /** \brief Search in a sorted list of items
-      * \tparam SortedItems %Array type
+      * \tparam Order %Sorting order
+      * \tparam Container %Array type
       * \tparam Pattern %Pattern type
       * \tparam Index %Index type
-      * \tparam Order %Sorting order
       * \param items The sorted list of items
       * \param pattern %Pattern to search for
       * \param finalIndex Returns the final index of the search
       * \return True if a matching item was found, false otherwise
       */
     template<
-        class SortedItems,
-        class Pattern = typename SortedItems::Item,
-        class Index = long,
-        class Order = DefaultOrder
+        class Order = DefaultOrder,
+        class Container,
+        class Pattern = typename Container::Item,
+        class Index = long
     >
     static bool find(
-        const SortedItems *items,
+        const Container *items,
         const Pattern &pattern,
         Index *finalIndex
     ) {
@@ -140,16 +140,16 @@ public:
     /** \internal
       */
     template<
-        class SortedItems,
-        class Pattern = typename SortedItems::Item,
-        class Index = long,
-        class Order = DefaultOrder
+        class Order = DefaultOrder,
+        class Container,
+        class Pattern = typename Container::Item,
+        class Index = long
     >
     static bool find(
-        SortedItems *items,
+        Container *items,
         const Pattern &pattern,
         Index *finalIndex = nullptr,
-        typename SortedItems::Item **finalItem = nullptr
+        typename Container::Item **finalItem = nullptr
     ) {
         Index l = 0;
         Index r = items->count();
@@ -173,23 +173,23 @@ class FindLast
 {
 public:
     /** \brief Search in a sorted list of items
-      * \tparam SortedItems %Array type
+      * \tparam Order %Sorting order
+      * \tparam Container %Array type
       * \tparam Pattern %Pattern type
       * \tparam Index %Index type
-      * \tparam Order %Sorting order
       * \param items The sorted list of items
       * \param pattern %Pattern to search for
       * \param finalIndex Returns the final index of the search
       * \return True if a matching item was found, false otherwise
       */
     template<
-        class SortedItems,
-        class Pattern = typename SortedItems::Item,
-        class Index = long,
-        class Order = DefaultOrder
+        class Order = DefaultOrder,
+        class Container,
+        class Pattern = typename Container::Item,
+        class Index = long
     >
     static bool find(
-        const SortedItems *items,
+        const Container *items,
         const Pattern &pattern,
         Index *finalIndex
     ) {
@@ -211,16 +211,16 @@ public:
     /** \internal
       */
     template<
-        class SortedItems,
-        class Pattern = typename SortedItems::Item,
-        class Index = long,
-        class Order = DefaultOrder
+        class Order = DefaultOrder,
+        class Container,
+        class Pattern = typename Container::Item,
+        class Index = long
     >
     static bool find(
-        SortedItems *items,
+        Container *items,
         const Pattern &pattern,
         Index *finalIndex = nullptr,
-        typename SortedItems::Item **finalItem = nullptr
+        typename Container::Item **finalItem = nullptr
     ) {
         Index l = 0;
         Index r = items->count();

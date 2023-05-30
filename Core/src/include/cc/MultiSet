@@ -8,14 +8,7 @@
 
 #pragma once
 
-#include <cc/buckets/BucketVector>
-#include <cc/Iterator>
-#include <cc/Cow>
-#include <cc/InOut>
-#include <cc/container>
-#include <initializer_list>
-#include <utility>
-#include <cassert>
+#include <cc/List>
 
 namespace cc {
 
@@ -23,11 +16,16 @@ namespace cc {
   * \ingroup container
   * \brief Multi-set data container
   * \tparam T Item type
+  * \tparam O Search order
+  * \tparam G Tree granularity
   */
-template<class T>
+template<class T, class O = DefaultOrder, unsigned G = DefaultTreeGranularity>
 class MultiSet {
 public:
     using Item = T; ///< Item type
+    using Order = O; ///< Search order
+
+    static constexpr unsigned Granularity = G; ///< Tree granularity
 
     /** \name Construction and Assignment
       */
@@ -64,6 +62,15 @@ public:
     {
         me = std::move(other.me);
         return *this;
+    }
+
+    /** Get corresponding list representation
+      */
+    List<Item, Granularity> toList() const
+    {
+        List<Item, Granularity> list;
+        list.me = me;
+        return list;
     }
 
     ///@}
@@ -215,14 +222,14 @@ public:
     template<class Search = FindFirst>
     bool find(const Item &item, Out<Locator> pos = None{}) const
     {
-        return me().template find<Search>(item, &pos);
+        return me().template find<Order, Search>(item, &pos);
     }
 
     /** Add \a item to the multi-set
       */
     void insert(const Item &item)
     {
-        me().insertLast(item);
+        me().template insertLast<Order>(item);
     }
 
     /** Remove all matching items
@@ -319,15 +326,10 @@ public:
     template<class Other>
     bool operator==(const Other &other) const { return container::equal(*this, other); }
 
-    /** Ordering operator
-      */
-    template<class Other>
-    std::strong_ordering operator<=>(const Other &other) const { return container::order(*this, other); }
-
     ///@}
 
 private:
-    Cow<BucketVector<Item>> me;
+    Cow<BucketVector<Item, Granularity>> me;
 };
 
 } // namespace cc

@@ -24,12 +24,14 @@ namespace cc {
   * \ingroup container
   * \brief %List data container
   * \tparam T Item type
+  * \tparam G Tree granularity
   * \todo List::allocate(long)
   */
-template<class T, unsigned G = DefaultBucketSize>
+template<class T, unsigned G = DefaultTreeGranularity>
 class List {
 public:
     using Item = T; ///< Item type
+    static constexpr unsigned Granularity = G; ///< Tree granularity
 
     /** \name Construction and Assignment
       */
@@ -593,12 +595,24 @@ public:
     /** \internal
       */
     ///@{
-    using Tree = BucketVector<Item, G>;
+    using Tree = BucketVector<Item, Granularity>;
     const Tree &tree() const { return me(); }
     ///@}
 
 private:
-    Cow<BucketVector<Item, G>> me;
+    template<class, class, unsigned>
+    friend class Set;
+
+    template<class, class, unsigned>
+    friend class MultiSet;
+
+    template<class, class, class, unsigned>
+    friend class Map;
+
+    template<class, class, class, unsigned>
+    friend class MultiMap;
+
+    Cow<BucketVector<Item, Granularity>> me;
 };
 
 } // namespace cc

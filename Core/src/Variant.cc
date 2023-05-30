@@ -233,9 +233,6 @@ const TypeInfo VariantType<Map<String, Variant>>::info {
     },
     .equal = [](const void *a, const void *b) {
         return VariantType<Map<String, Variant>>::retrieve(a) == VariantType<Map<String, Variant>>::retrieve(b);
-    },
-    .order = [](const void *a, const void *b) {
-        return VariantType<Map<String, Variant>>::retrieve(a) <=> VariantType<Map<String, Variant>>::retrieve(b);
     }
 };
 

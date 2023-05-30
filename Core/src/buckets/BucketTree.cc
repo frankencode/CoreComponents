@@ -10,10 +10,10 @@
 
 namespace cc {
 
-template class BucketTree<DefaultBucketSize>;
+template class BucketTree<DefaultTreeGranularity>;
 
-template void BucketTree<DefaultBucketSize>::dissipateSlow<BucketTree<DefaultBucketSize>::Branch>(Branch *&node, unsigned &egress);
-template void BucketTree<DefaultBucketSize>::relieve<BucketTree<DefaultBucketSize>::Branch>(Branch *node);
-template void BucketTree<DefaultBucketSize>::collapseSucc<BucketTree<DefaultBucketSize>::Branch>(Branch *node, Branch *succ);
+template void BucketTree<DefaultTreeGranularity>::dissipateSlow<BucketTree<DefaultTreeGranularity>::Branch>(Branch *&node, unsigned &egress);
+template void BucketTree<DefaultTreeGranularity>::relieve<BucketTree<DefaultTreeGranularity>::Branch>(Branch *node);
+template void BucketTree<DefaultTreeGranularity>::collapseSucc<BucketTree<DefaultTreeGranularity>::Branch>(Branch *node, Branch *succ);
 
 } // namespace cc

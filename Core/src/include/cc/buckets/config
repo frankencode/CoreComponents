@@ -25,6 +25,6 @@ namespace cc {
 
 /** Default bucket size / default branch factor for bucket trees.
   */
-static constexpr unsigned DefaultBucketSize = 16;
+static constexpr unsigned DefaultTreeGranularity = 16;
 
 } // namespace cc
