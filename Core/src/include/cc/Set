@@ -200,38 +200,72 @@ public:
     ///@{
 
     /** Search for a matching key in the set
-      * \tparam Key Search pattern type
-      * \param key Key to search for
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
       * \param pos Returns the position of the item that was found
       * \return True if \a a matching item was found
       */
-    template<class Key = Item>
-    bool find(const Key &key, Out<Locator> pos = None{}) const
+    template<class Pattern = Item>
+    bool find(const Pattern &pattern, Out<Locator> pos = None{}) const
     {
-        return me().template find<Order>(key, &pos);
+        return me().template find<Order>(pattern, &pos);
     }
 
     /** Search for \a key and return \a item
-      * \tparam Key Search pattern type
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
+      * \param item Returns the item found (if any)
       * \return True if key was found
       */
-    template<class Key = Item>
-    bool lookup(const Key &key, Out<Item> item) const
+    template<class Pattern = Item>
+    bool lookup(const Pattern &pattern, Out<Item> item) const
     {
         Locator pos;
-        bool found = find(key, &pos);
+        bool found = find(pattern, &pos);
         if (found) item = at(pos);
         return found;
     }
 
     /** Convenience function to check if the set contains \a key
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
       * \param key %Key to search for
       * \return True if key was found
       */
-    template<class Key = Item>
-    bool contains(const Key &key) const
+    template<class Pattern = Item>
+    bool contains(const Pattern &pattern) const
     {
-        return find(key);
+        return find(pattern);
+    }
+
+    /** Convenience function to find the start of a search range
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
+      * \returns %Locator position
+      * \note \a pattern is included in the search range
+      * \see forEachInRange()
+      */
+    template<class Pattern>
+    Locator lowerBound(const Pattern &pattern) const
+    {
+        Locator pos;
+        find(pattern, &pos);
+        return pos;
+    }
+
+    /** Convenience function to find the end of a search range
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
+      * \returns %Locator position
+      * \note \a pattern is included in the search range
+      * \see forEachInRange()
+      */
+    template<class Pattern>
+    Locator upperBound(const Pattern &pattern) const
+    {
+        Locator pos;
+        if (!find(pattern, &pos)) --pos;
+        return pos;
     }
 
     /** Insert a new item to the set
@@ -318,6 +352,25 @@ public:
     void forEach(F f) const
     {
         for (auto &x: *this) f(x);
+    }
+
+    /** Call function \a f for each item in range [lower, upper]
+      * \tparam F Function type (lambda or functor)
+      * \param lower Lower boundary
+      * \param upper Upper boundary
+      * \param f Unary function which gets called for each item
+      * \note \a lower and \a upper are included in the iteration range.
+      */
+    template<class F>
+    void forEachInRange(const Item &lower, const Item &upper, F f) const
+    {
+        Locator pos;
+        find(lower, &pos);
+        for (; pos; ++pos) {
+            auto &item = at(pos);
+            if (upper < item) break;
+            f(item);
+        }
     }
 
     /** Remove all items

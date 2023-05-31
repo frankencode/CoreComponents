@@ -206,15 +206,14 @@ public:
 
     /** Search for a key in the multi-map
       * \tparam Search search strategy (FindFirst, FindLast or FindAny)
-      * \param key %Key to search for
+      * \param pattern %Key search pattern
       * \param pos Returns the position of the item that was found
       * \return True if key was found
-      * \note The returned Locator \a pos will always point to the first element greater or equal \a pattern if the search strategy is FindFirst.
       */
-    template<class Search = FindFirst>
-    bool find(const Key &key, Out<Locator> pos = None{}) const
+    template<class Search = FindFirst, class Pattern>
+    bool find(const Pattern &pattern, Out<Locator> pos = None{}) const
     {
-        return me().template find<Order, Search>(key, &pos);
+        return me().template find<Order, Search>(pattern, &pos);
     }
 
     /** Convenience function to check if the map contains \a pattern
@@ -226,6 +225,36 @@ public:
     bool contains(const Pattern &pattern) const
     {
         return find<FindAny>(pattern);
+    }
+
+    /** Convenience function to find the start of a search range
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
+      * \returns %Locator position
+      * \note \a pattern is included in the search range
+      * \see forEachInRange()
+      */
+    template<class Pattern>
+    Locator lowerBound(const Pattern &pattern) const
+    {
+        Locator pos;
+        find<FindFirst>(pattern, &pos);
+        return pos;
+    }
+
+    /** Convenience function to find the end of a search range
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
+      * \returns %Locator position
+      * \note \a pattern is included in the search range
+      * \see forEachInRange()
+      */
+    template<class Pattern>
+    Locator upperBound(const Pattern &pattern) const
+    {
+        Locator pos;
+        if (!find<FindLast>(pattern, &pos)) --pos;
+        return pos;
     }
 
     /** Insert a new key-value pair
@@ -292,6 +321,25 @@ public:
     void forEach(F f) const
     {
         for (auto &x: *this) f(x);
+    }
+
+    /** Call function \a f for each item in range [lower, upper]
+      * \tparam F Function type (lambda or functor)
+      * \param lower Lower boundary
+      * \param upper Upper boundary
+      * \param f Unary function which gets called for each item
+      * \note \a lower and \a upper are included in the iteration range.
+      */
+    template<class F, class Pattern>
+    void forEachInRange(const Pattern &lower, const Pattern &upper, F f) const
+    {
+        Locator pos;
+        find<FindFirst>(lower, &pos);
+        for (; pos; ++pos) {
+            auto &item = at(pos);
+            if (upper < item.key()) break;
+            f(item);
+        }
     }
 
     /** Remove all items

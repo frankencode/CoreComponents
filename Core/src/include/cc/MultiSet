@@ -215,14 +215,57 @@ public:
 
     /** Search for an item in the multi-set
       * \tparam Search %Search strategy (FindFirst, FindLast or FindAny)
-      * \param item Item to search for
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
       * \param pos Returns the position of the item that was found
       * \return True if item is found
       */
-    template<class Search = FindFirst>
-    bool find(const Item &item, Out<Locator> pos = None{}) const
+    template<class Search = FindFirst, class Pattern = Item>
+    bool find(const Pattern &pattern, Out<Locator> pos = None{}) const
     {
-        return me().template find<Order, Search>(item, &pos);
+        return me().template find<Order, Search>(pattern, &pos);
+    }
+
+    /** Convenience function to check if the set contains \a key
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
+      * \param key %Key to search for
+      * \return True if key was found
+      */
+    template<class Pattern = Item>
+    bool contains(const Pattern &pattern) const
+    {
+        return find(pattern);
+    }
+
+    /** Convenience function to find the lower bound of a search range
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
+      * \returns %Locator position
+      * \note \a pattern is included in the search range
+      * \see forEachInRange()
+      */
+    template<class Pattern>
+    Locator lowerBound(const Pattern &pattern) const
+    {
+        Locator pos;
+        find<FindFirst>(pattern, &pos);
+        return pos;
+    }
+
+    /** Convenience function to find the upper bound of a search range
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param pattern %Pattern to search for
+      * \returns %Locator position
+      * \note \a pattern is included in the search range
+      * \see forEachInRange()
+      */
+    template<class Pattern>
+    Locator upperBound(const Pattern &pattern) const
+    {
+        Locator pos;
+        if (find<FindLast>(pattern, &pos)) --pos;
+        return pos;
     }
 
     /** Add \a item to the multi-set
@@ -285,6 +328,26 @@ public:
     void forEach(F f) const
     {
         for (auto &x: *this) f(x);
+    }
+
+    /** Call function \a f for each item in range [lower, upper]
+      * \tparam F Function type (lambda or functor)
+      * \tparam Pattern %Pattern type (must be comparable with Key)
+      * \param lower Lower boundary
+      * \param upper Upper boundary
+      * \param f Unary function which gets called for each item
+      * \note \a lower and \a upper are included in the iteration range.
+      */
+    template<class F, class Pattern>
+    void forEachInRange(const Pattern &lower, const Pattern &upper, F f) const
+    {
+        Locator pos;
+        find<FindFirst>(lower, &pos);
+        for (; pos; ++pos) {
+            auto &item = at(pos);
+            if (upper < item) break;
+            f(item);
+        }
     }
 
     /** Remove all items
