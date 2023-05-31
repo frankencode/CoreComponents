@@ -15,20 +15,17 @@
 namespace cc {
 
 /** \class PriorityChannel cc/PriorityChannel
-  * \ingroup concurrency
+  * \ingroup threads
   * \brief Prioritized thread communication channel
   * \tparam T Item type
   * \tparam P Priority type
-  * \tparam G Tree granularity
   */
-template<class T, class P = int, unsigned G = DefaultTreeGranularity>
+template<class T, class P = int>
 class PriorityChannel
 {
 public:
     using Item = T; ///< Item type
     using Priority = P; ///< Priority type
-
-    static constexpr unsigned Granularity = G; ///< Tree granularity
 
     /** Create a new channel
       */
@@ -144,11 +141,11 @@ public:
         me().notEmpty_.broadcast();
     }
 
-    /** Iteration start
+    /** \internal Iteration start
       */
     SourceIterator<PriorityChannel> begin() { return SourceIterator<PriorityChannel>{this}; }
 
-    /** Iteration end
+    /** \internal Iteration end
       */
     SourceIterator<PriorityChannel> end() { return SourceIterator<PriorityChannel>{}; }
 
@@ -156,7 +153,7 @@ private:
     struct State {
         mutable Mutex mutex_;
         WaitCondition notEmpty_;
-        PriorityQueue<Item, Priority, Granularity> queue_;
+        PriorityQueue<Item, Priority> queue_;
         bool close_ { false };
     };
     Shared<State> me;

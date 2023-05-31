@@ -11,9 +11,12 @@
 #include <cassert>
 
 /** Compile time option to enable sanity checks for bucket trees.
-  * \todo disable testing option
   */
 // #define CC_BUCKETTREE_DEBUG
+
+#ifndef CC_BUCKETTREE_GRANULARITY
+#define CC_BUCKETTREE_GRANULARITY 16
+#endif
 
 #ifdef CC_BUCKETTREE_DEBUG
 #define CC_BUCKETTREE_ASSERT(x) assert(x);
@@ -25,6 +28,6 @@ namespace cc {
 
 /** Default bucket size / default branch factor for bucket trees.
   */
-static constexpr unsigned DefaultTreeGranularity = 16;
+static constexpr unsigned BucketTreeGranularity = CC_BUCKETTREE_GRANULARITY;
 
 } // namespace cc

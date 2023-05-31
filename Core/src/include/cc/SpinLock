@@ -14,7 +14,7 @@
 namespace cc {
 
 /** \class SpinLock cc/SpinLock
-  * \ingroup concurrency
+  * \ingroup threads
   * \brief Spinning lock mutex
   * \see Guard
   * \todo make use of std:: primitives instead of gcc builtins

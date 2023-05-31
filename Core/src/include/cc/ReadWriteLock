@@ -15,7 +15,7 @@ namespace cc {
 
 /** \class ReadWriteLock cc/ReadWriteLock
   * \brief Read-write lock
-  * \ingroup concurrency
+  * \ingroup threads
   * \see ReadGuard, WriteGuard
   */
 class ReadWriteLock final

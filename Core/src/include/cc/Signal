@@ -14,7 +14,7 @@
 namespace cc {
 
 /** System signal numbers
-  * \ingroup concurrency
+  * \ingroup process
   */
 enum class Signal: int {
     Abort       = SIGABRT, ///< %Abort signal (e.g. assert failed)
@@ -44,8 +44,8 @@ inline int operator+(Signal signal) { return static_cast<int>(signal); }
 String str(Signal signal);
 
 /** \class Signaled cc/Signal
-  * \ingroup concurrency
-  * \brief %Thread execution interrupted by system signal
+  * \ingroup process
+  * \brief %Process execution interrupted by system signal
   */
 class Signaled: public Exception
 {

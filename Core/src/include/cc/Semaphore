@@ -17,7 +17,7 @@
 namespace cc {
 
 /** \class Semaphore cc/Semaphore
-  * \ingroup concurrency
+  * \ingroup threads
   * \brief Waiting for a limited resource
   * \see Guard
   * \tparam T Value type

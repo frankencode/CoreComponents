@@ -15,7 +15,7 @@
 namespace cc {
 
 /** \class Channel cc/Channel
-  * \ingroup concurrency
+  * \ingroup threads
   * \brief %Thread communication channel
   * \tparam T Item type
   */

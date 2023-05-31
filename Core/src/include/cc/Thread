@@ -30,8 +30,9 @@ enum class SchedulingPolicy: int
 inline int operator+(SchedulingPolicy policy) { return static_cast<int>(policy); }
 
 /** \class Thread cc/Thread
-  * \ingroup concurrency
+  * \ingroup threads
   * \brief Single thread of execution
+  * \see System::concurrency()
   */
 class Thread final: public Object
 {

@@ -232,13 +232,13 @@ inline String str(const List<T> &list)
     return f;
 }
 
-template<class, class, class, unsigned>
+template<class, class, class>
 class Map;
 
 /** Convert \a map to string
   */
-template<class K, class T, class O, unsigned G>
-inline String str(const Map<K, T, O, G> &map)
+template<class K, class T, class O>
+inline String str(const Map<K, T, O> &map)
 {
     auto n = map.count();
     if (n == 0) return "[]";
@@ -252,13 +252,13 @@ inline String str(const Map<K, T, O, G> &map)
     return f;
 }
 
-template<class, class, class, unsigned>
+template<class, class, class>
 class MultiMap;
 
 /** Convert \a map to string
   */
-template<class K, class T, class O, unsigned G>
-inline String str(const MultiMap<K, T, O, G> &map)
+template<class K, class T, class O>
+inline String str(const MultiMap<K, T, O> &map)
 {
     auto n = map.count();
     if (n == 0) return "[]";
@@ -272,13 +272,13 @@ inline String str(const MultiMap<K, T, O, G> &map)
     return f;
 }
 
-template<class, class, unsigned>
+template<class, class>
 class Set;
 
 /** Convert \a set to string
   */
-template<class T, class O, unsigned G>
-inline String str(const Set<T, O, G> &set)
+template<class T, class O>
+inline String str(const Set<T, O> &set)
 {
     auto n = set.count();
     if (n == 0) return "[]";
@@ -292,13 +292,13 @@ inline String str(const Set<T, O, G> &set)
     return f;
 }
 
-template<class, class, unsigned>
+template<class, class>
 class MultiSet;
 
 /** Convert \a set to string
   */
-template<class T, class O, unsigned G>
-inline String str(const MultiSet<T, O, G> &set)
+template<class T, class O>
+inline String str(const MultiSet<T, O> &set)
 {
     auto n = set.count();
     if (n == 0) return "[]";

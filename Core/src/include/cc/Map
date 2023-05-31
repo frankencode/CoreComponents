@@ -19,17 +19,14 @@ namespace cc {
   * \tparam K Key type
   * \tparam T Value type
   * \tparam O Search order
-  * \tparam G Tree granularity
   */
-template<class K, class T = K, class O = DefaultOrder, unsigned G = DefaultTreeGranularity>
+template<class K, class T = K, class O = DefaultOrder>
 class Map {
 public:
     using Key = K; ///< Key type
     using Value = T; ///< Value type
     using Item = KeyValue<K, T>; ///< Item type
     using Order = O; ///< Search order
-
-    static constexpr unsigned Granularity = G; ///< Tree granularity
 
     /** \name Construction and Assignment
       */
@@ -70,11 +67,9 @@ public:
 
     /** Get corresponding list representation
       */
-    List<Item, Granularity> toList() const
+    List<Item> toList() const
     {
-        List<Item, Granularity> list;
-        list.me = me;
-        return list;
+        return List<Item>{me};
     }
 
     ///@}
@@ -451,7 +446,7 @@ public:
     const auto &tree() const { return me(); }
 
 private:
-    Cow<BucketVector<Item, Granularity>> me;
+    Cow<BucketVector<Item>> me;
 };
 
 } // namespace cc

@@ -40,8 +40,12 @@
   * Iteration and validation of Unicode encoded strings
   */
 
-/** \defgroup concurrency Concurrency
-  * Multi-threading, multi-processing and synchronization
+/** \defgroup threads Multi-threading
+  * Multi-threading, thread synchronization and scheduling
+  */
+
+/** \defgroup process Multi-processing
+  * Multi-processing, signalling and inter-process communication (IPC)
   */
 
 /** \defgroup exceptions Exceptions

@@ -17,15 +17,12 @@ namespace cc {
   * \brief %Set data container
   * \tparam T Item type
   * \tparam O Search order
-  * \tparam G Tree granularity
   */
-template<class T, class O = DefaultOrder, unsigned G = DefaultTreeGranularity>
+template<class T, class O = DefaultOrder>
 class Set {
 public:
     using Item = T; ///< Item type
     using Order = O; ///< Search order
-
-    static constexpr unsigned Granularity = G; ///< Tree granularity
 
     /** \name Construction and Assignment
       */
@@ -66,11 +63,9 @@ public:
 
     /** Get corresponding list representation
       */
-    List<Item, Granularity> toList() const
+    List<Item> toList() const
     {
-        List<Item, Granularity> list;
-        list.me = me;
-        return list;
+        return List<Item>{me};
     }
 
     ///@}
@@ -229,7 +224,6 @@ public:
     /** Convenience function to check if the set contains \a key
       * \tparam Pattern %Pattern type (must be comparable with Key)
       * \param pattern %Pattern to search for
-      * \param key %Key to search for
       * \return True if key was found
       */
     template<class Pattern = Item>
@@ -418,7 +412,7 @@ public:
     ///@}
 
 private:
-    Cow<BucketVector<Item, Granularity>> me;
+    Cow<BucketVector<Item>> me;
 };
 
 } // namespace cc

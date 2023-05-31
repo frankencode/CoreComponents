@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class LocalChannel cc/LocalChannel
-  * \ingroup concurrency
+  * \ingroup process
   * \brief Local socket communication channel
   * \exception SystemError
   */

@@ -20,7 +20,7 @@ namespace cc {
 class Command;
 
 /** \class Process cc/Process
-  * \ingroup concurrency
+  * \ingroup process
   * \brief %Process creation and current process state
   * \exception SystemError
   */

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/buckets/BucketTree>
+#include <cc/buckets/BucketStoragePolicy>
 #include <cc/Locator>
 #include <cc/find>
 
@@ -17,7 +18,7 @@ namespace cc {
 /** \internal
   * \brief Implementation of a variable length vector on top of \a BucketTree
   */
-template<class T, unsigned G = DefaultTreeGranularity>
+template<class T, unsigned G = BucketStoragePolicy<T>::Granularity>
 class BucketVector final: public BucketTree<G>
 {
 public:

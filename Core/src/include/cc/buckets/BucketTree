@@ -34,7 +34,7 @@ namespace cc {
   *
   * \see BucketVector
   */
-template<unsigned G = DefaultTreeGranularity>
+template<unsigned G = BucketTreeGranularity>
 class BucketTree
 {
 public:
