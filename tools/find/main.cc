@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
     try {
         Map<String, Variant> options;
         options.insert("path", "");
+        options.insert("exclude", "");
         options.insert("name", "");
         options.insert("type", "");
         options.insert("depth", -1);
@@ -67,7 +68,13 @@ int main(int argc, char *argv[])
         Arguments arguments{argc, argv};
         List<String> items = arguments.read(&options);
 
-        Pattern pathPattern { options.value("path").to<String>() };
+        String pathPatternText = options.value("path").to<String>();
+        String excludePatternText = options.value("exclude").to<String>();
+        if (excludePatternText != "") {
+            pathPatternText = Format{"(^>*%%)%%"} << excludePatternText << pathPatternText;
+        }
+
+        Pattern pathPattern { pathPatternText };
         Pattern namePattern { options.value("name").to<String>() };
         Pattern typePattern { options.value("type").to<String>() };
         long maxDepth = options.value("depth").to<long>();
@@ -167,6 +174,7 @@ int main(int argc, char *argv[])
             "Options:\n"
             "  -path     file path pattern\n"
             "  -name     file name pattern\n"
+            "  -exclude  exclude path pattern\n"
             "  -type     file type pattern\n"
             "              r .. regular file\n"
             "              d .. directory\n"
@@ -182,7 +190,7 @@ int main(int argc, char *argv[])
             "  -ranges   show line and byte range for each match\n"
             "  -replace  replace matches by given text\n"
             "  -paste    paste replacement from file\n"
-            "  -erase    replace matches by empty String\n"
+            "  -erase    replace matches by empty string\n"
         ) << toolName;
         return 1;
     }
