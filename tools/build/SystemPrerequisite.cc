@@ -38,6 +38,9 @@ SystemPrerequisite::State::State(const MetaObject &object, const String &project
         versionConfigure_           == "" &&
         customCompileFlags_.count() == 0  &&
         customLinkFlags_.count()    == 0  &&
+        includePaths_.count()       == 0  &&
+        libraryPaths_.count()       == 0  &&
+        libraries_.count()          == 0  &&
         probe_                      == "" &&
         configure_                  == "";
 }
