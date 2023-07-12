@@ -68,17 +68,20 @@ struct GnuToolChain::State: public ToolChain::State
 
     static String querySystemRoot(const String &compiler)
     {
-        if (compiler.contains("clang")) return String{}; //! \todo add support for sysroot detection with clang
+        String path = Process::env("SDKTARGETSYSROOT");
+        if (path == "") path = Process::env("PKG_CONFIG_SYSROOT_DIR");
 
-        String text =
-            Process{
-                Command{compiler + " -print-sysroot"}
-                .io(2, IoStream::error())
-            }.output().readAll();
+        if (path == "" && !compiler.contains("clang")) {
+            path =
+                Process{
+                    Command{compiler + " -print-sysroot"}
+                    .io(2, IoStream::error())
+                }.output().readAll();
+        }
 
-        text.trim();
+        path.trim();
 
-        return text;
+        return path;
     }
 
     String machine() const override
