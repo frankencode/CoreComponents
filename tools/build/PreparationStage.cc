@@ -200,6 +200,8 @@ bool PreparationStage::run()
         }
     }
 
+    plan().includePaths().append(plan().prestagePath());
+
     return true;
 }
 
