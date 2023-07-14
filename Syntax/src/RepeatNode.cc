@@ -55,8 +55,18 @@ struct RepeatNode::State: public SyntaxNode::State
 
     List<String> explain() const override
     {
-        return List<String>{}
-            << "Repeat{" << str(minRepeat_) << "," << str(maxRepeat_) << "," << entry_.explain() << "}";
+        List<String> parts;
+        parts << "Repeat{";
+        if (minRepeat_ == 0 && maxRepeat_ == std::numeric_limits<long>::max())
+            ;
+        else if (maxRepeat_ == std::numeric_limits<long>::max()) {
+            parts << str(minRepeat_) << ",";
+        }
+        else {
+            parts << str(minRepeat_) << "," << str(maxRepeat_) << ",";
+        }
+        parts << entry_.explain() << "}";
+        return parts;
     }
 
     long minRepeat_;

@@ -36,6 +36,7 @@ public:
     SyntaxNode(Function<bool(char)> &&match);
 
     /** Match \a text at \a offset against this node
+      * \return End of match (offset of next character beyond the match), or -1 if match failed
       */
     long matchNext(const String &text, long offset, Token &production) const
     {

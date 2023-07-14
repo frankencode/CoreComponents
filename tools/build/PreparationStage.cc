@@ -87,7 +87,7 @@ bool PreparationStage::run()
         {
             String sourceExpression =
                 plan().sourcePath(
-                    sourceText.replaced("%", "(>@*)")
+                    sourceText.replaced("%", "(*)")
                 );
             Pattern sourcePattern { sourceExpression };
             Glob glob{sourceExpression};
@@ -144,7 +144,7 @@ bool PreparationStage::run()
         if (predicate.remove() != "") {
             String targetExpression =
                 plan().sourcePath(
-                    predicate.target().replaced("%", "(>@*)")
+                    predicate.target().replaced("%", "(*)")
                 );
             Pattern targetPattern { targetExpression };
             Glob glob{targetExpression};

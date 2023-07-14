@@ -209,10 +209,10 @@ struct PatternSyntax::State: public SyntaxDefinition::State
 
     SyntaxNode compileSequence(const String &text, const Token &token) const
     {
-        return compileSequence(text, token, token.children().begin());
+        return compileSequence(text, token.children().begin());
     }
 
-    SyntaxNode compileSequence(const String &text, const Token &token, Token::Children::iterator head) const
+    SyntaxNode compileSequence(const String &text, Token::Children::iterator head) const
     {
         Queue<SyntaxNode> nodes;
 
@@ -224,7 +224,7 @@ struct PatternSyntax::State: public SyntaxDefinition::State
             else if (child.rule() == gap) {
                 auto succ = it + 1;
                 if (succ) {
-                    nodes.pushBack(FindLast{compileSequence(text, token, succ)});
+                    nodes.pushBack(FindLast{compileSequence(text, succ)});
                     break;
                 }
                 else nodes.pushBack(Repeat{Any{}});
@@ -234,7 +234,15 @@ struct PatternSyntax::State: public SyntaxDefinition::State
             else if (child.rule() == repeat) nodes.pushBack(compileRepeat(text, child));
             else if (child.rule() == boi) nodes.pushBack(Boi{});
             else if (child.rule() == eoi) nodes.pushBack(Eoi{});
-            else if (child.rule() == group) nodes.pushBack(compileGroup(text, child.children().first()));
+            else if (child.rule() == group) {
+                auto succ = it + 1;
+                if (succ && child.children().count() == 1 && child.children().first().children().first().children().first().rule() == gap) {
+                    nodes.pushBack(SyntaxRule{FindLast{Ahead{compileSequence(text, succ)}}});
+                }
+                else {
+                    nodes.pushBack(compileGroup(text, child.children().first()));
+                }
+            }
             else if (child.rule() == ahead) nodes.pushBack(compileAhead(text, child));
             else if (child.rule() == behind) nodes.pushBack(compileBehind(text, child));
         }

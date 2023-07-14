@@ -73,5 +73,17 @@ int main(int argc, char **argv)
         }
     };
 
+    TestCase {
+        "CapturingGap",
+        []{
+            Pattern pattern { "(*).h" };
+            CC_INSPECT(pattern.explain());
+            List<Range> captures;
+            bool matches = pattern.match("stdio.h", &captures);
+            CC_INSPECT(matches);
+            CC_INSPECT(captures.count());
+        }
+    };
+
     return TestSuite{argc, argv}.run();
 }
