@@ -66,7 +66,7 @@ public:
       */
     Utf16Iterator(const Utf16Iterator &b) = default;
 
-    /** Prefix increment operator: step one code point forward
+    /** %Prefix increment operator: step one code point forward
       */
     Utf16Iterator &operator++()
     {
@@ -83,7 +83,7 @@ public:
         return *this;
     }
 
-    /** Prefix decrement operator: step one code point backward
+    /** %Prefix decrement operator: step one code point backward
       */
     Utf16Iterator &operator--()
     {

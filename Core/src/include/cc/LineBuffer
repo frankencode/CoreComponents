@@ -20,8 +20,8 @@ class LineBuffer: public Stream
 {
 public:
     /** Create a new line output buffer
-      * \param sink Stream to write lines to
-      * \param prefix Prefix to prepend to each line
+      * \param sink %Stream to write lines to
+      * \param prefix %Prefix to prepend to each line
       */
     LineBuffer(const Stream &sink = Stream{}, const String &prefix = "");
 

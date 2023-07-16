@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class CsvFormat cc/CsvFormat
   * \ingroup misc
-  * \brief CSV line output formatter
+  * \brief CSV output formatter
   */
 class CsvFormat final: public List<String>
 {

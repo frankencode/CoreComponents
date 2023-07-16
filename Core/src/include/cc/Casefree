@@ -101,27 +101,6 @@ public:
         }
         return n <=> m;
     }
-
-    /** Greater than operator
-      */
-    bool operator>(const Casefree &b) const
-    {
-        return b < *this;
-    }
-
-    /** Lower or equal operator
-      */
-    bool operator<=(const Casefree &b) const
-    {
-        return !(b < *this);
-    }
-
-    /** Greater or equal operator
-      */
-    bool operator>=(const Casefree &b) const
-    {
-        return !(*this < b);
-    }
 };
 
 template<class T>
