@@ -1,0 +1,5 @@
+Library {
+    name: CoreComponentsSystem
+    use: Core
+    link: dl
+}
