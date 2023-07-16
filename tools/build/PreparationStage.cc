@@ -141,7 +141,7 @@ bool PreparationStage::run()
             }
         }
 
-        if (predicate.remove() != "") {
+        if (predicate.remove() != "" || predicate.source().count() > 0) {
             String targetExpression =
                 plan().sourcePath(
                     predicate.target().replaced("%", "(*)")
@@ -173,16 +173,21 @@ bool PreparationStage::run()
                     }
                 }
                 if (!sourceFound) {
-                    String command = expandCommand(predicate.remove(), "", targetPath);
-                    if (plan().options() & BuildOption::Simulate) {
-                        fout() << shell().beautify(command) << nl;
+                    if (predicate.remove() != "") {
+                        String command = expandCommand(predicate.remove(), "", targetPath);
+                        if (plan().options() & BuildOption::Simulate) {
+                            fout() << shell().beautify(command) << nl;
+                        }
+                        else {
+                            if (!scheduler) {
+                                scheduler = createScheduler();
+                                scheduler.start();
+                            }
+                            scheduler.schedule(Job{command});
+                        }
                     }
                     else {
-                        if (!scheduler) {
-                            scheduler = createScheduler();
-                            scheduler.start();
-                        }
-                        scheduler.schedule(Job{command});
+                        shell().unlink(targetPath);
                     }
                 }
             }
