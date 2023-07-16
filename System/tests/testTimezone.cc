@@ -30,5 +30,15 @@ int main(int argc, char *argv[])
         }
     };
 
+
+    TestCase {
+        "LocalDateAndTime",
+        []{
+            double t = System::now();
+            CC_INSPECT(Timezone::date(t));
+            CC_CHECK(Timezone::date(t) == Date{Timezone::date(t).time()}.time());
+        }
+    };
+
     return TestSuite{argc, argv}.run();
 }

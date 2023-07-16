@@ -66,14 +66,5 @@ int main(int argc, char *argv[])
         }
     };
 
-    TestCase {
-        "LocalDateAndTime",
-        []{
-            double t = System::now();
-            CC_INSPECT(Date::local(t));
-            CC_CHECK(Date::local(t) == Date{Date::local(t).time()}.time());
-        }
-    };
-
     return TestSuite{argc, argv}.run();
 }

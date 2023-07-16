@@ -8,7 +8,6 @@
 
 #include <cc/Date>
 #include <cc/System>
-#include <cc/Timezone>
 #include <cc/str>
 #include <limits>
 #include <cmath>
@@ -153,16 +152,6 @@ Date Date::now()
     return Date{System::now()};
 }
 
-Date Date::localNow()
-{
-    return local(System::now());
-}
-
-Date Date::local(double time)
-{
-    return Date{time, Timezone::offset(time)};
-}
-
 Date::Date():
     me{std::numeric_limits<double>::quiet_NaN()}
 {}
@@ -182,27 +171,6 @@ Date::Date(int year, int month, int day, int hour, int minutes, int seconds, int
 bool Date::isValid() const
 {
     return !std::isnan(me().time);
-}
-
-double Date::nextTime(int hour, int minutes, int seconds) const
-{
-    assert(offset() == Timezone::offset(time()));
-
-    Date n {
-        year(),
-        month(),
-        day(),
-        hour,
-        minutes,
-        seconds,
-        offset()
-    };
-
-    double t = n.time();
-    if (n <= *this) t += SecondsPerDay;
-    t += n.offset() - Timezone::offset(t);
-
-    return t;
 }
 
 String Date::monthName() const

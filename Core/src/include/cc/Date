@@ -45,6 +45,7 @@ inline constexpr double days(double n) { return n * SecondsPerDay; }
   * \ingroup sysinfo
   * \brief Calendar date and time
   * \todo toString(): fully enable ms resolution (ss.fraction in String output)
+  * \see Timezone
   */
 class Date
 {
@@ -52,14 +53,6 @@ public:
     /** Get the current UTC date and time
       */
     static Date now();
-
-    /** Create the local calendar date of the current system time
-      */
-    static Date localNow();
-
-    /** Create the local calendar date by breaking down \a time
-      */
-    static Date local(double time);
 
     /** Create an invalid date
       */
@@ -90,15 +83,6 @@ public:
       */
     double time() const { return me().time; }
 
-    /** Get the next time matching the given day time
-      * \param hour \copydoc hour()
-      * \param minutes \copydoc minutes()
-      * \param seconds \copydoc seconds()
-      * \return The next time the local time hits the given day time
-      *
-      * This method computes the next time at which the local time hits the giving \a hour, \a minutes and \a seconds. The method takes into account the local timezone and eventual change in daylight saving time.
-      * \note The date object this method is called upon needs to refer to a date in the local timezone.
-      */
     double nextTime(int hour, int minutes, int seconds = 0) const;
 
     /** \copydoc isValid()

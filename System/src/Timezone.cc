@@ -11,6 +11,7 @@
 #include <cc/ByteSource>
 #include <cc/Layout>
 #include <cc/Singleton>
+#include <cc/System>
 
 namespace cc {
 
@@ -162,6 +163,32 @@ private:
 Timezone Timezone::local()
 {
     return LocalCache{}.localZone();
+}
+
+Date Timezone::currentDate()
+{
+    return date(System::now());
+}
+
+double Timezone::nextTime(const Date &date, int hour, int minutes, int seconds)
+{
+    assert(date.offset() == Timezone::offset(date.time()));
+
+    Date n {
+        date.year(),
+        date.month(),
+        date.day(),
+        date.hour(),
+        date.minutes(),
+        date.seconds(),
+        date.offset()
+    };
+
+    double t = n.time();
+    if (n <= date) t += SecondsPerDay;
+    t += n.offset() - Timezone::offset(t);
+
+    return t;
 }
 
 Timezone Timezone::loadFromFile(const String &path)

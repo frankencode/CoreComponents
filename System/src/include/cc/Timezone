@@ -13,6 +13,7 @@
 #include <cc/TextError>
 #include <cc/TimeInfo>
 #include <cc/ArrayIterator>
+#include <cc/Date>
 
 namespace cc {
 
@@ -35,6 +36,26 @@ public:
     /** Get UTC offset for \a time (in seconds)
       */
     static int offset(double time) { return local()(time); }
+
+    /** Create the local calendar date by breaking down \a time
+      */
+    static Date date(double time) { return Date{time, offset(time)}; }
+
+    /** Create the local calendar date of the current system time
+      */
+    static Date currentDate();
+
+    /** Get the next time matching the given day time
+      * \paramt date %Date in the local timezone.
+      * \param hour \copydoc Date::hour()
+      * \param minutes \copydoc Date::minutes()
+      * \param seconds \copydoc Date::seconds()
+      * \return The next time the local time hits the given day time
+      *
+      * This method computes the next time at which the local time hits the giving \a hour, \a minutes and \a seconds.
+      * The local timezone and eventual change in daylight saving time is taken into account.
+      */
+    static double nextTime(const Date &date, int hour, int minutes, int seconds);
 
     /** Load timezone information from \a path
       * \exception SystemError
