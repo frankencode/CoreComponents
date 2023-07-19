@@ -30,7 +30,6 @@ bool GlobbingStage::run()
         return success_ = true;
     }
 
-    // FIXME: move out of the globbing stage?
     {
         String sourcePrefix = BuildMap{}.commonPrefix();
         if (sourcePrefix == "") sourcePrefix = plan().projectPath();
@@ -39,7 +38,7 @@ bool GlobbingStage::run()
     }
 
     if (
-        recipe().contains("source") && // FIXME: that is always the case?
+        recipe().contains("source") &&
         (
             (plan().options() & BuildOption::Application) ||
             (plan().options() & BuildOption::Library) ||
@@ -58,10 +57,8 @@ bool GlobbingStage::run()
             }
         }
 
-        if (
-            (plan().options() & BuildOption::Lump) &&
-            sources.count() > 1
-        ) {
+        if ((plan().options() & BuildOption::Lump) && sources.count() > 1)
+        {
             String lumpPath = plan().projectPath() / (containsCPlusPlus ? ".lump.cc" : ".lump.c");
             {
                 String command = Format{} << "cat " << sources.join(' ') << " > " << lumpPath;
@@ -81,9 +78,46 @@ bool GlobbingStage::run()
         plan().sources() = sources;
     }
 
+    const String currentCompileCommand = toolChain().compileCommand(plan(), "%.cc", "%.o");
+    const String previousCompileCommand = File::load(plan().previousCompileCommandPath());
+    const bool compileCommandChanged = currentCompileCommand != previousCompileCommand;
+    File::save(plan().previousCompileCommandPath(), currentCompileCommand);
+
+    for (const String &source: plan().sources()) {
+        const String objectFilePath = toolChain().objectFilePath(plan(), source);
+        const String compileCommand = toolChain().compileCommand(plan(), source, objectFilePath);
+        List<String> previousDependencyPaths;
+        if (toolChain().readObjectDependencies(objectFilePath, &previousDependencyPaths)) {
+            assert(previousDependencyPaths.at(0) == source);
+            bool dirty = compileCommandChanged;
+            do {
+                if (dirty) break;
+                FileInfo objectFileInfo = shell().fileStatus(objectFilePath);
+                if (!objectFileInfo) { dirty = true; break; }
+                for (const String &previousDependencyPath: previousDependencyPaths) {
+                    FileInfo previousDependencyInfo = shell().fileStatus(previousDependencyPath);
+                    if (!previousDependencyInfo) {
+                        dirty = true;
+                        break;
+                    }
+                    if (objectFileInfo.lastModified() < previousDependencyInfo.lastModified()) {
+                        dirty = true;
+                        break;
+                    }
+                }
+            }
+            while (false);
+            plan().objectFiles().emplaceBack(compileCommand, objectFilePath, previousDependencyPaths, dirty);
+        }
+        else {
+            plan().objectFiles().emplaceBack(compileCommand, objectFilePath, List<String>{source}, true);
+        }
+    }
+
     for (BuildPlan &prerequisite: plan().prerequisites()) {
-        if (!prerequisite.globbingStage().run())
+        if (!prerequisite.globbingStage().run()) {
             return success_ = false;
+        }
     }
 
     return success_ = true;

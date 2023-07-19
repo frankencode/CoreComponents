@@ -21,7 +21,7 @@ public:
     String beautify(const String &command) const;
     bool run(const String &command) const;
 
-    FileInfo fileStatus(const String &path) const;
+    FileInfo fileStatus(const String &path) const; //! \todo rename to fileInfo
 
     void mkdir(const String &path) const;
     void rmdir(const String &path) const;

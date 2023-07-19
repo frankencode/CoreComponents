@@ -11,16 +11,13 @@
 #include <cc/build/PreparationStage>
 #include <cc/build/ConfigureStage>
 #include <cc/build/GlobbingStage>
-#include <cc/build/AnalyseStage>
-#include <cc/build/PreprocessStage>
 #include <cc/build/CompileLinkStage>
 #include <cc/build/TestRunStage>
 #include <cc/build/InstallStage>
 #include <cc/build/UninstallStage>
-#include <cc/build/CleanStage>
 #include <cc/build/SystemPrerequisite>
 #include <cc/build/Predicate>
-#include <cc/build/Module>
+#include <cc/build/ObjectFile>
 #include <cc/build/GnuToolChain>
 #include <cc/build/BuildShell>
 #include <cc/build/ConfigureShell>
@@ -51,13 +48,10 @@ struct BuildPlan::State:
     public PreparationStage,
     public ConfigureStage,
     public GlobbingStage,
-    public AnalyseStage,
-    public PreprocessStage,
     public CompileLinkStage,
     public TestRunStage,
     public InstallStage,
     public UninstallStage,
-    public CleanStage,
     public BuildShell
 {
     State(int argc, char *argv[]):
@@ -146,10 +140,8 @@ struct BuildPlan::State:
         if (recipe_("test"))        options_ |= BuildOption::BuildTests;
         if (recipe_("test-run"))    options_ |= BuildOption::BuildTests;
         if (recipe_("test-report")) options_ |= BuildOption::BuildTests;
-        if (recipe_("clean"))       options_ |= BuildOption::BuildTests;
         if (recipe_("verbose"))     options_ |= BuildOption::Verbose;
         if (recipe_("configure"))   options_ |= BuildOption::Configure;
-        else if (recipe_("clean"))  options_ |= BuildOption::Clean;
         if (recipe_("insight"))     options_ |= BuildOption::Insight;
         if (recipe_("lump"))        options_ |= BuildOption::Lump;
         if (recipe_("strip"))       options_ |= BuildOption::Strip;
@@ -229,12 +221,6 @@ struct BuildPlan::State:
                 else if (object.className() == "PostBuild") {
                     CompileLinkStage::postCommands().append(object("execute").to<String>());
                 }
-                else if (object.className() == "PreClean") {
-                    CleanStage::preCommands().append(object("execute").to<String>());
-                }
-                else if (object.className() == "PostClean") {
-                    CleanStage::postCommands().append(object("execute").to<String>());
-                }
                 else if (object.className() == "PreInstall") {
                     InstallStage::preCommands().append(object("execute").to<String>());
                 }
@@ -257,7 +243,7 @@ struct BuildPlan::State:
     }
 
     /** Respect MAKEFLAGS environment variable commonly used by meta build systems
-      * (e.g. to effectively support distcc builds).
+      * (e.g. to support distcc builds).
       */
     void readMakeFlags()
     {
@@ -464,13 +450,13 @@ struct BuildPlan::State:
         return projectPath_ / source;
     }
 
-    void initModules()
+    void init()
     {
-        if (modulesInitialized_) return;
+        if (objectFilesInitialized_) return;
 
         if ((options_ & BuildOption::Test) && !(options_ & BuildOption::BuildTests)) return;
 
-        modulesInitialized_ = true;
+        objectFilesInitialized_ = true;
 
         String suffix;
         {
@@ -496,12 +482,13 @@ struct BuildPlan::State:
             f << absoluteProjectPath.cdUp().fileName() + "_" + absoluteProjectPath.fileName();
             suffix = f.join<String>('-');
         }
-        modulePath_ = ".modules-" + suffix;
+        objectsDirPath_ = ".objects-" + suffix;
         configPath_ = ".config-" + suffix;
         prestagePath_ = ".prestage-" + suffix;
 
-        for (BuildPlan &prerequisite: prerequisites_)
-            prerequisite->initModules();
+        for (BuildPlan &prerequisite: prerequisites_) {
+            prerequisite->init();
+        }
     }
 
     String installPath(const String &relativeInstallPath) const
@@ -557,12 +544,6 @@ struct BuildPlan::State:
 
 
         Format{
-            File{".setup/clean", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
-        }
-            << "#!/bin/sh -ex" << nl
-            << "clear && " << toolPath << " -clean " << options << nl;
-
-        Format{
             File{".setup/install", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
         }
             << "#!/bin/sh -ex" << nl
@@ -579,16 +560,13 @@ struct BuildPlan::State:
 
         File{"Makefile", FileOpen::Overwrite, FileMode::Default|FileMode::AnyExec}
         .write(
-            ".PHONY: build clean configure install uninstall\n"
+            ".PHONY: build configure install uninstall\n"
             "\n"
             "build:\n"
             "\t./.setup/build\n"
             "\n"
             "test:\n"
             "\t./.setup/test_run\n"
-            "\n"
-            "clean:\n"
-            "\t./.setup/clean\n"
             "\n"
             "configure:\n"
             "\t./.setup/configure\n"
@@ -615,7 +593,7 @@ struct BuildPlan::State:
     String projectPath_;
     String recipePath_;
     String scope_;
-    String modulePath_;
+    String objectsDirPath_;
     String configPath_;
     String prestagePath_;
     MetaObject recipe_;
@@ -631,8 +609,8 @@ struct BuildPlan::State:
 
     List<String> sources_;
     List<String> bundle_;
-    List<Module> modules_;
-    bool modulesInitialized_ { false };
+    List<ObjectFile> objectFiles_;
+    bool objectFilesInitialized_ { false };
     bool containsCPlusPlus_ { false };
 
     List<Predicate> predicates_;
@@ -687,19 +665,12 @@ int BuildPlan::run()
     readPrerequisites();
     globResources();
 
-    if (recipe("install").to<bool>()) {
-        if (!installStage().run()) return 1;
-        if (installStage().linkerCacheDirty()) {
-            if (!toolChain().refreshLinkerCache(*this))
-                return 1;
-        }
-        return 0;
-    }
-
     if (recipe("setup")) {
         me().setupBuildDir();
         return 0;
     }
+
+    me().init();
 
     if (recipe("configure-list")) {
         Set<String> names;
@@ -710,8 +681,6 @@ int BuildPlan::run()
     }
 
     Process::setEnv("SOURCE", projectPath());
-
-    me().initModules();
 
     configureStage().run();
 
@@ -770,24 +739,21 @@ int BuildPlan::run()
         return 0;
     }
 
-    if (!analyseStage().run()) {
-        return 1;
-    }
-
-    if (recipe("preprocess").to<bool>()) {
-        return preprocessStage().run();
-    }
-
-    if (options() & BuildOption::Clean) {
-        return !cleanStage().run();
-    }
-
     if (recipe("uninstall").to<bool>()) {
         return !uninstallStage().run();
     }
 
     if (!compileLinkStage().run()) {
         return 1;
+    }
+
+    if (recipe("install").to<bool>()) {
+        if (!installStage().run()) return 1;
+        if (installStage().linkerCacheDirty()) {
+            if (!toolChain().refreshLinkerCache(*this))
+                return 1;
+        }
+        return 0;
     }
 
     bool testRun = recipe("test-run").to<bool>();
@@ -958,14 +924,14 @@ List<String> &BuildPlan::bundle()
     return me().bundle_;
 }
 
-const List<Module> &BuildPlan::modules() const
+const List<ObjectFile> &BuildPlan::objectFiles() const
 {
-    return me().modules_;
+    return me().objectFiles_;
 }
 
-List<Module> &BuildPlan::modules()
+List<ObjectFile> &BuildPlan::objectFiles()
 {
-    return me().modules_;
+    return me().objectFiles_;
 }
 
 String BuildPlan::projectPath() const
@@ -1003,14 +969,14 @@ String BuildPlan::scope() const
     return me().scope_;
 }
 
-String BuildPlan::modulePath() const
+String BuildPlan::objectFilePath() const
 {
-    return me().modulePath_;
+    return me().objectsDirPath_;
 }
 
-String BuildPlan::modulePath(const String &objectName) const
+String BuildPlan::objectFilePath(const String &objectName) const
 {
-    return me().modulePath_ / objectName;
+    return me().objectsDirPath_ / objectName;
 }
 
 String BuildPlan::configPath() const
@@ -1072,9 +1038,14 @@ String BuildPlan::pluginReversePath() const
     return group != "" ? "../../.." : "../..";
 }
 
+String BuildPlan::previousCompileCommandPath() const
+{
+    return objectFilePath(".command-compile");
+}
+
 String BuildPlan::previousLinkCommandPath() const
 {
-    return modulePath("LinkCommand");
+    return objectFilePath(".command-link");
 }
 
 void BuildPlan::setLibraryLinkJob(const Job &linkJob)
@@ -1157,16 +1128,6 @@ GlobbingStage &BuildPlan::globbingStage()
     return me();
 }
 
-AnalyseStage &BuildPlan::analyseStage()
-{
-    return me();
-}
-
-PreprocessStage &BuildPlan::preprocessStage()
-{
-    return me();
-}
-
 CompileLinkStage &BuildPlan::compileLinkStage()
 {
     return me();
@@ -1183,11 +1144,6 @@ InstallStage &BuildPlan::installStage()
 }
 
 UninstallStage &BuildPlan::uninstallStage()
-{
-    return me();
-}
-
-CleanStage &BuildPlan::cleanStage()
 {
     return me();
 }

@@ -128,78 +128,83 @@ struct GnuToolChain::State: public ToolChain::State
         else return "";
     }
 
-    String analyseCommand(const BuildPlan &plan, const String &source) const override
+    String objectFilePath(const BuildPlan &plan, const String &sourcePath) const override
     {
-        Format args;
-        args << compiler(source);
-        appendCompileOptions(args, plan);
-        args << "-MM" << source;
-        return args.join<String>(' ');
-    }
-
-    Job createAnalyseJob(const BuildPlan &plan, const String &source) const override
-    {
-        return Job{analyseCommand(plan, source)};
-    }
-
-    Module finishAnalyseJob(const BuildPlan &plan, const Job &job) const override
-    {
-        List<String> parts = dependencySplitPattern_.breakUp(job.outputText());
-        String modulePath = parts.first();
-        parts.popFront();
+        String objectFilePath = sourcePath.baseName();
         if (plan.options() & BuildOption::Tools) {
-            modulePath = modulePath.baseName();
-            if (cygwin_) modulePath = modulePath + ".exe";
+            if (cygwin_) objectFilePath += ".exe";
         }
         else {
-            // disambiguate same source file names in different sub-directories
+            objectFilePath += ".o";
+
+            // disambiguate same source file names in different sub-directories belong to the same target
             {
-                String sourcePath = parts.at(0);
-                if (sourcePath.startsWith(plan.projectPath())) {
-                    sourcePath = sourcePath.copy(plan.projectPath().count() + 1, sourcePath.count());
-                    if (sourcePath.contains('/')) {
-                        sourcePath = sourcePath.cdUp();
-                        sourcePath.replace('/', '_');
-                        modulePath = sourcePath + '_' + modulePath;
+                String path = sourcePath;
+                if (path.startsWith(plan.projectPath())) {
+                    path = path.copy(plan.projectPath().count() + 1, path.count());
+                    if (path.contains('/')) {
+                        path = path.cdUp();
+                        path.replace('/', '_');
+                        objectFilePath = path + '_' + objectFilePath;
                     }
                 }
             }
 
-            modulePath = plan.modulePath(modulePath);
+            objectFilePath = plan.objectFilePath(objectFilePath);
         }
-        return Module{job.command(), modulePath, parts, true};
+
+        return objectFilePath;
     }
 
-    Job createCompileJob(const BuildPlan &plan, const Module &module) const override
+    bool readObjectDependencies(const String &objectFilePath, Out<List<String>> dependencies) const override
+    {
+        String dependenciesFilePath = objectFilePath.copy();
+        String suffix = dependenciesFilePath.fileSuffix();
+        if (suffix.count() > 0) {
+            dependenciesFilePath.truncate(dependenciesFilePath.count() - suffix.count());
+            dependenciesFilePath += 'd';
+        }
+        else {
+            dependenciesFilePath += ".d";
+        }
+        bool ok = true;
+        try {
+            dependencies = dependencySplitPattern_.breakUp(File{dependenciesFilePath}.map());
+            if (dependencies->count() > 0) dependencies->popFront();
+            ok = (dependencies->count() > 0);
+        }
+        catch (SystemResourceError &ex)
+        {
+            ok = false;
+        }
+        return ok;
+    }
+
+    String compileCommand(const BuildPlan &plan, const String &sourcePath, const String &objectFilePath) const override
     {
         Format args;
-        args << compiler(module.sourcePath());
-        args << "-c" << "-o" << module.modulePath();
+        args << compiler(sourcePath);
+        args << "-c" << "-o" << objectFilePath;
         appendCompileOptions(args, plan);
-        args << module.sourcePath();
-        return Job{args.join<String>(' ')};
+        args << sourcePath;
+        return args.join<String>(' ');
     }
 
-    Job createCompileLinkJob(const BuildPlan &plan, const Module &module) const override
+    Job createCompileJob(const BuildPlan &plan, const ObjectFile &objectFile) const override
+    {
+        return Job{compileCommand(plan, objectFile.sourcePath(), objectFile.objectFilePath())};
+    }
+
+    Job createCompileLinkJob(const BuildPlan &plan, const ObjectFile &objectFile) const override
     {
         Format args;
-        args << compiler(module.sourcePath());
-        args << "-o" << linkName(module);
+        args << compiler(objectFile.sourcePath());
+        args << "-o" << linkName(objectFile);
         appendCompileOptions(args, plan);
         if (plan.linkStatic()) args << "-static";
         args << "-pthread";
-        args << module.sourcePath();
+        args << objectFile.sourcePath();
         appendLinkOptions(args, plan);
-        return Job{args.join<String>(' ')};
-    }
-
-    Job createPreprocessJob(const BuildPlan &plan, const Module &module) const override
-    {
-        Format args;
-        args << compiler(module.sourcePath());
-        args << "-E";
-        appendCompileOptions(args, plan);
-        args << module.sourcePath();
         return Job{args.join<String>(' ')};
     }
 
@@ -242,9 +247,9 @@ struct GnuToolChain::State: public ToolChain::State
         return name;
     }
 
-    String linkName(const Module &module) const override
+    String linkName(const ObjectFile &objectFile) const override
     {
-        String name = module.sourcePath().baseName();
+        String name = objectFile.sourcePath().baseName();
 
         if (cygwin_) {
             name = name + ".exe";
@@ -257,7 +262,7 @@ struct GnuToolChain::State: public ToolChain::State
     {
         String name = plan.name();
         Version version = plan.version();
-        List<Module> modules = plan.modules();
+        List<ObjectFile> objectFiles = plan.objectFiles();
 
         Format args;
 
@@ -274,10 +279,10 @@ struct GnuToolChain::State: public ToolChain::State
             ).join<String>();
         }
 
-        List<String> modulePaths;
-        for (const Module &module: modules)
-            modulePaths << module.modulePath();
-        args.appendList(modulePaths.sorted());
+        List<String> objectFilePaths;
+        for (const ObjectFile &objectFile: objectFiles)
+            objectFilePaths << objectFile.objectFilePath();
+        args.appendList(objectFilePaths.sorted());
 
         appendLinkOptions(args, plan);
 
@@ -471,7 +476,7 @@ struct GnuToolChain::State: public ToolChain::State
                 else if (prerequisite.options() & BuildOption::Library) {
                     requiresList.append(targetName(prerequisite));
                 }
-            };
+            }
 
             if (requiresList.count() > 0) {
                 f << "Requires: " << requiresList.join(' ') << nl;
@@ -539,13 +544,11 @@ struct GnuToolChain::State: public ToolChain::State
 
     void appendCompileOptions(Format &args, const BuildPlan &plan) const
     {
+        args << "-MMD";
+
         if (plan.options() & BuildOption::Debug) args << "-g";
-        if (plan.options() & BuildOption::Release) {
-            args << "-DNDEBUG";
-        }
-        if (plan.optimize() != "") {
-            args << "-O" + plan.optimize();
-        }
+        if (plan.options() & BuildOption::Release) args << "-DNDEBUG";
+        if (plan.optimize() != "") args << "-O" + plan.optimize();
         if (plan.options() & BuildOption::Release) {
             if (plan.optimize() != "0") {
                 args << "-flto" << "-mtune=generic" << "-fno-plt";

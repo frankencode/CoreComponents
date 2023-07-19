@@ -74,27 +74,27 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
 
     bool dirty = false;
 
-    for (const Module &module: plan().modules())
+    for (const ObjectFile &objectFile: plan().objectFiles())
     {
-        bool moduleDirty = module.dirty();
+        bool objectFileDirty = objectFile.dirty();
 
         if (plan().options() & BuildOption::Tools) {
-            moduleDirty = moduleDirty || !shell().fileStatus(toolChain().linkName(module));
+            objectFileDirty = objectFileDirty || !shell().fileStatus(toolChain().linkName(objectFile));
         }
 
-        if (moduleDirty)
+        if (objectFileDirty)
         {
             dirty = true;
 
             Job job;
             if (plan().options() & BuildOption::Tools) {
-                job = toolChain().createCompileLinkJob(plan(), module);
+                job = toolChain().createCompileLinkJob(plan(), objectFile);
                 if (!(plan().options() & BuildOption::Simulate)) {
                     plan().registerLinkDerivative(job);
                 }
             }
             else {
-                job = toolChain().createCompileJob(plan(), module);
+                job = toolChain().createCompileJob(plan(), objectFile);
                 job.registerDerivative(linkJob);
             }
 
@@ -106,11 +106,11 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
             }
 
             if (insightDatabase) {
-                insightDatabase.insert(module.sourcePath(), job.command(), module.modulePath());
+                insightDatabase.insert(objectFile.sourcePath(), job.command(), objectFile.objectFilePath());
             }
         }
         else if (insightDatabase) {
-            insightDatabase.touch(module.modulePath());
+            insightDatabase.touch(objectFile.objectFilePath());
         }
     }
 
@@ -123,7 +123,7 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
     }
 
     if (
-        plan().modules().count() > 0 &&
+        plan().objectFiles().count() > 0 &&
         (plan().options() & BuildOption::Simulate) &&
         plan().concurrency() != 1
     ) {
@@ -145,9 +145,9 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
             if (newLinkCommand != previousLinkCommand) dirty = true;
             else {
                 double productTime = productStatus.lastModified();
-                for (const Module &module: plan().modules()) {
-                    FileInfo moduleStatus = shell().fileStatus(module.modulePath());
-                    if (moduleStatus.lastModified() > productTime) {
+                for (const ObjectFile &objectFile: plan().objectFiles()) {
+                    FileInfo objectFileStatus = shell().fileStatus(objectFile.objectFilePath());
+                    if (objectFileStatus.lastModified() > productTime) {
                         dirty = true;
                         break;
                     }

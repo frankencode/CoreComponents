@@ -17,20 +17,17 @@ namespace cc::build {
 
 class ToolChain;
 class BuildShell;
-class Module;
+class ObjectFile;
 class Predicate;
 class Job;
 
 class PreparationStage;
 class ConfigureStage;
-class AnalyseStage;
 class GlobbingStage;
-class PreprocessStage;
 class CompileLinkStage;
 class TestRunStage;
 class InstallStage;
 class UninstallStage;
-class CleanStage;
 
 /** \brief %Build instructions according to a %Recipe
   */
@@ -67,8 +64,8 @@ public:
     const List<String> &bundle() const;
     List<String> &bundle();
 
-    const List<Module> &modules() const;
-    List<Module> &modules();
+    const List<ObjectFile> &objectFiles() const;
+    List<ObjectFile> &objectFiles();
 
     String projectPath() const;
     String systemSourcePath() const;
@@ -77,8 +74,8 @@ public:
     String recipePath() const;
     String userPkgConfigPath() const;
     String scope() const;
-    String modulePath() const;
-    String modulePath(const String &objectName) const;
+    String objectFilePath() const;
+    String objectFilePath(const String &objectName) const;
     String configPath() const;
     String prestagePath() const;
     String prestagePath(const String &precursor) const;
@@ -94,6 +91,7 @@ public:
     String pluginPath(const String &targetLibName) const;
     String pluginReversePath() const;
 
+    String previousCompileCommandPath() const;
     String previousLinkCommandPath() const;
 
     void setLibraryLinkJob(const Job &linkJob);
@@ -113,13 +111,10 @@ public:
     ConfigureStage &configureStage();
     const ConfigureStage &configureStage() const;
     GlobbingStage &globbingStage();
-    AnalyseStage &analyseStage();
-    PreprocessStage &preprocessStage();
     CompileLinkStage &compileLinkStage();
     TestRunStage &testRunStage();
     InstallStage &installStage();
     UninstallStage &uninstallStage();
-    CleanStage &cleanStage();
 
 private:
     struct State;

@@ -10,7 +10,7 @@
 #include <cc/build/JobScheduler>
 #include <cc/build/BuildStageGuard>
 #include <cc/build/ToolChain>
-#include <cc/build/Module>
+#include <cc/build/ObjectFile>
 #include <cc/Process>
 #include <cc/stdio>
 
@@ -56,8 +56,8 @@ void TestRunStage::scheduleJobs(JobScheduler &scheduler)
     if (!(plan().options() & BuildOption::Test)) return;
 
     if (plan().options() & BuildOption::Tools) {
-        for (Module &module: plan().modules()) {
-            String command = "./" + toolChain().linkName(module);
+        for (ObjectFile &objectFile: plan().objectFiles()) {
+            String command = "./" + toolChain().linkName(objectFile);
             if (plan().testArgs() != "") command += " " + plan().testArgs();
             scheduler.schedule(Job{command});
         }

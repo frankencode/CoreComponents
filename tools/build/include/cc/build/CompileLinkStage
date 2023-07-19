@@ -12,7 +12,7 @@
 
 namespace cc::build {
 
-/** \brief Compile and link source code modules
+/** \brief Compile source files to object files and link object files to libraries and executables
   */
 class CompileLinkStage: public BuildStage
 {

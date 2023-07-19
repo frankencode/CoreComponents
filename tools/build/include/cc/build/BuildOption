@@ -28,7 +28,6 @@ enum class BuildOption: int
     BuildTests    = 1 << 11,
     Verbose       = 1 << 12,
     Configure     = 1 << 13,
-    Clean         = 1 << 14,
     Insight       = 1 << 15,
     Lump          = 1 << 16,
     Strip         = 1 << 17,

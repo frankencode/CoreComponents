@@ -50,22 +50,6 @@ bool PreparationStage::run()
 
         if (predicate.source().count() == 0) {
             String targetPath = plan().prestagePath(predicate.target().replaced("%", ""));
-            if (plan().options() & BuildOption::Clean) {
-                if (predicate.clean() != "") {
-                    String command = expandCommand(predicate.clean(), "", targetPath);
-                    if (plan().options() & BuildOption::Simulate) {
-                        fout() << shell().beautify(command) << nl;
-                    }
-                    else {
-                        if (!scheduler) {
-                            scheduler = createScheduler();
-                            scheduler.start();
-                        }
-                        scheduler.schedule(Job{command});
-                    }
-                }
-                continue;
-            }
             if (predicate.create() != "") {
                 if (!shell().fileStatus(targetPath)) {
                     String command = expandCommand(predicate.create(), "", targetPath);
@@ -91,7 +75,9 @@ bool PreparationStage::run()
                 );
             Pattern sourcePattern { sourceExpression };
             Glob glob{sourceExpression};
-            for (const String &sourcePath: glob) {
+
+            for (const String &sourcePath: glob)
+            {
                 String name;
                 if (sourceText.contains('%')) {
                     List<Range> captures;
@@ -104,24 +90,12 @@ bool PreparationStage::run()
                 else {
                     name = sourcePath.baseName();
                 }
+
                 String targetPath =
                     plan().prestagePath(
                         predicate.target().replaced("%", name)
                     );
-                if (plan().options() & BuildOption::Clean) {
-                    String command = expandCommand(predicate.clean(), sourcePath, targetPath);
-                    if (plan().options() & BuildOption::Simulate) {
-                        fout() << shell().beautify(command) << nl;
-                    }
-                    else {
-                        if (!scheduler) {
-                            scheduler = createScheduler();
-                            scheduler.start();
-                        }
-                        scheduler.schedule(Job{command});
-                    }
-                    continue;
-                }
+
                 if (
                     (plan().options() & BuildOption::Blindfold) ||
                     shell().fileStatus(targetPath).lastModified() < shell().fileStatus(sourcePath).lastModified()

@@ -12,7 +12,7 @@
 
 namespace cc::build {
 
-/** \brief Gather the list of source and package files (and optionally generate lumps)
+/** \brief Gather list of source files and decide which need to be compiled
   */
 class GlobbingStage: public BuildStage
 {

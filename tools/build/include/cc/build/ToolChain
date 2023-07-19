@@ -11,14 +11,12 @@
 #include <cc/build/BuildPlan>
 #include <cc/build/BuildOption>
 #include <cc/build/BuildShell>
-#include <cc/build/Module>
+#include <cc/build/ObjectFile>
 #include <cc/build/Job>
 #include <cc/Version>
 #include <functional>
 
 namespace cc::build {
-
-class DependencyCache;
 
 class ToolChain: public Object
 {
@@ -33,17 +31,16 @@ public:
     String machineCommand() const { return me().machineCommand(); }
     String defaultOptimization(BuildOption options) const { return me().defaultOptimization(options); }
 
-    String analyseCommand(const BuildPlan &plan, const String &source) const { return me().analyseCommand(plan, source); }
-    Job createAnalyseJob(const BuildPlan &plan, const String &source) const { return me().createAnalyseJob(plan, source); }
-    Module finishAnalyseJob(const BuildPlan &plan, const Job &job) const { return me().finishAnalyseJob(plan, job); }
+    String objectFilePath(const BuildPlan &plan, const String &source) const { return me().objectFilePath(plan, source); }
+    bool readObjectDependencies(const String &objectFilePath, Out<List<String>> dependencies) const { return me().readObjectDependencies(objectFilePath, dependencies); }
 
-    Job createCompileJob(const BuildPlan &plan, const Module &module) const { return me().createCompileJob(plan, module); }
-    Job createCompileLinkJob(const BuildPlan &plan, const Module &module) const { return me().createCompileLinkJob(plan, module); }
-    Job createPreprocessJob(const BuildPlan &plan, const Module &module) const { return me().createPreprocessJob(plan, module); }
+    String compileCommand(const BuildPlan &plan, const String &source, const String &objectFilePath) const { return me().compileCommand(plan, source, objectFilePath); }
+    Job createCompileJob(const BuildPlan &plan, const ObjectFile &objectFile) const { return me().createCompileJob(plan, objectFile); }
+    Job createCompileLinkJob(const BuildPlan &plan, const ObjectFile &objectFile) const { return me().createCompileLinkJob(plan, objectFile); }
 
     String targetName(const BuildPlan &plan) const { return me().targetName(plan); }
     String linkName(const BuildPlan &plan) const { return me().linkName(plan); }
-    String linkName(const Module &module) const { return me().linkName(module); }
+    String linkName(const ObjectFile &objectFile) const { return me().linkName(objectFile); }
     String linkCommand(const BuildPlan &plan) const { return me().linkCommand(plan); }
     Job createLinkJob(const BuildPlan &plan) const { return me().createLinkJob(plan); }
     bool link(const BuildPlan &plan) const { return me().link(plan); }
@@ -88,17 +85,16 @@ protected:
         virtual String machineCommand() const = 0;
         virtual String defaultOptimization(BuildOption options) const = 0;
 
-        virtual String analyseCommand(const BuildPlan &plan, const String &source) const = 0;
-        virtual Job createAnalyseJob(const BuildPlan &plan, const String &source) const = 0;
-        virtual Module finishAnalyseJob(const BuildPlan &plan, const Job &job) const = 0;
+        virtual String objectFilePath(const BuildPlan &plan, const String &source) const = 0;
+        virtual bool readObjectDependencies(const String &objectFilePath, Out<List<String>> dependencies) const = 0;
 
-        virtual Job createCompileJob(const BuildPlan &plan, const Module &module) const = 0;
-        virtual Job createCompileLinkJob(const BuildPlan &plan, const Module &module) const = 0;
-        virtual Job createPreprocessJob(const BuildPlan &plan, const Module &module) const = 0;
+        virtual String compileCommand(const BuildPlan &plan, const String &source, const String &objectFilePath) const = 0;
+        virtual Job createCompileJob(const BuildPlan &plan, const ObjectFile &objectFile) const = 0;
+        virtual Job createCompileLinkJob(const BuildPlan &plan, const ObjectFile &objectFile) const = 0;
 
         virtual String targetName(const BuildPlan &plan) const = 0;
         virtual String linkName(const BuildPlan &plan) const = 0;
-        virtual String linkName(const Module &module) const = 0;
+        virtual String linkName(const ObjectFile &objectFile) const = 0;
         virtual String linkCommand(const BuildPlan &plan) const = 0;
         virtual Job createLinkJob(const BuildPlan &plan) const = 0;
         virtual bool link(const BuildPlan &plan) const = 0;

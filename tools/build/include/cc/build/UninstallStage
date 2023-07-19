@@ -16,7 +16,7 @@ class UninstallStage: public BuildStage
 {
 public:
     bool run();
-    bool uninstallTool(const Module &module);
+    bool uninstallTool(const ObjectFile &objectFile);
     bool uninstallApplicationOrLibrary();
 };
 

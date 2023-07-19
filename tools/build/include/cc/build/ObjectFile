@@ -13,17 +13,17 @@
 
 namespace cc::build {
 
-class Module: public Object
+class ObjectFile: public Object
 {
 public:
-    Module() = default;
+    ObjectFile() = default;
 
-    explicit Module(const String &analyseCommand, const String &modulePath, const List<String> &dependencyPaths, bool dirty):
-        Object{new State{analyseCommand, modulePath, dependencyPaths, dirty}}
+    explicit ObjectFile(const String &compileCommand, const String &objectFilePath, const List<String> &dependencyPaths, bool dirty):
+        Object{new State{compileCommand, objectFilePath, dependencyPaths, dirty}}
     {}
 
-    String analyseCommand() const { return me().analyseCommand_; }
-    String modulePath() const { return me().modulePath_; }
+    String compileCommand() const { return me().compileCommand_; }
+    String objectFilePath() const { return me().objectFilePath_; }
     String sourcePath() const { return me().dependencyPaths_.at(0); }
 
     List<String> dependencyPaths() const { return me().dependencyPaths_; }
@@ -32,15 +32,15 @@ public:
 private:
     struct State: public Object::State
     {
-        State(const String &analyseCommand, const String &modulePath, const List<String> &dependencyPaths, bool dirty):
-            analyseCommand_{analyseCommand},
-            modulePath_{modulePath},
+        State(const String &compileCommand, const String &objectFilePath, const List<String> &dependencyPaths, bool dirty):
+            compileCommand_{compileCommand},
+            objectFilePath_{objectFilePath},
             dependencyPaths_{dependencyPaths},
             dirty_{dirty}
         {}
 
-        String analyseCommand_;
-        String modulePath_;
+        String compileCommand_;
+        String objectFilePath_;
         List<String> dependencyPaths_;
         bool dirty_;
     };

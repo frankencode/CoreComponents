@@ -105,8 +105,6 @@ protected:
         insert("configure-list", false);
         insert("prepare", false);
         insert("glob", false);
-        insert("preprocess", false);
-        insert("clean", false);
         insert("install", false);
         insert("uninstall", false);
         insert("test", false);
@@ -174,7 +172,6 @@ public:
         insert("create", "");
         insert("update", "");
         insert("remove", "");
-        insert("clean", "");
     }
 };
 

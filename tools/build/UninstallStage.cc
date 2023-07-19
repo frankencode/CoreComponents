@@ -32,8 +32,8 @@ bool UninstallStage::run()
     if (plan().options() & BuildOption::Package) return success_ = true;
 
     if (plan().options() & BuildOption::Tools) {
-        for (const Module &module: plan().modules()) {
-            if (!uninstallTool(module))
+        for (const ObjectFile &objectFile: plan().objectFiles()) {
+            if (!uninstallTool(objectFile))
                 return success_ = false;
         }
         return success_ = true;
@@ -42,9 +42,9 @@ bool UninstallStage::run()
     return success_ = uninstallApplicationOrLibrary();
 }
 
-bool UninstallStage::uninstallTool(const Module &module)
+bool UninstallStage::uninstallTool(const ObjectFile &objectFile)
 {
-    String product = toolChain().linkName(module);
+    String product = toolChain().linkName(objectFile);
     return shell().unlink(toolChain().installDirPath(plan()) / product);
 }
 
