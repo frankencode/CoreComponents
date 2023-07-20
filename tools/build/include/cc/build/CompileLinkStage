@@ -21,6 +21,7 @@ public:
 
 private:
     void scheduleJobs(JobScheduler &scheduler);
+    void gatherObjects();
 };
 
 } // namespace cc::build

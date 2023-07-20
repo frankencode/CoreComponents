@@ -74,7 +74,7 @@ public:
     String recipePath() const;
     String userPkgConfigPath() const;
     String scope() const;
-    String objectFilePath() const;
+    String objectsPath() const;
     String objectFilePath(const String &objectName) const;
     String configPath() const;
     String prestagePath() const;

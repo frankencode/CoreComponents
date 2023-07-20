@@ -280,8 +280,9 @@ struct GnuToolChain::State: public ToolChain::State
         }
 
         List<String> objectFilePaths;
-        for (const ObjectFile &objectFile: objectFiles)
+        for (const ObjectFile &objectFile: objectFiles) {
             objectFilePaths << objectFile.objectFilePath();
+        }
         args.appendList(objectFilePaths.sorted());
 
         appendLinkOptions(args, plan);

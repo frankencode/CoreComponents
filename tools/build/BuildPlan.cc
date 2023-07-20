@@ -482,7 +482,7 @@ struct BuildPlan::State:
             f << absoluteProjectPath.cdUp().fileName() + "_" + absoluteProjectPath.fileName();
             suffix = f.join<String>('-');
         }
-        objectsDirPath_ = ".objects-" + suffix;
+        objectsPath_ = ".objects-" + suffix;
         configPath_ = ".config-" + suffix;
         prestagePath_ = ".prestage-" + suffix;
 
@@ -593,7 +593,7 @@ struct BuildPlan::State:
     String projectPath_;
     String recipePath_;
     String scope_;
-    String objectsDirPath_;
+    String objectsPath_;
     String configPath_;
     String prestagePath_;
     MetaObject recipe_;
@@ -969,14 +969,14 @@ String BuildPlan::scope() const
     return me().scope_;
 }
 
-String BuildPlan::objectFilePath() const
+String BuildPlan::objectsPath() const
 {
-    return me().objectsDirPath_;
+    return me().objectsPath_;
 }
 
 String BuildPlan::objectFilePath(const String &objectName) const
 {
-    return me().objectsDirPath_ / objectName;
+    return me().objectsPath_ / objectName;
 }
 
 String BuildPlan::configPath() const

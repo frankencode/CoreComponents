@@ -78,42 +78,6 @@ bool GlobbingStage::run()
         plan().sources() = sources;
     }
 
-    const String currentCompileCommand = toolChain().compileCommand(plan(), "%.cc", "%.o");
-    const String previousCompileCommand = File::load(plan().previousCompileCommandPath());
-    const bool compileCommandChanged = currentCompileCommand != previousCompileCommand;
-    File::save(plan().previousCompileCommandPath(), currentCompileCommand);
-
-    for (const String &source: plan().sources()) {
-        const String objectFilePath = toolChain().objectFilePath(plan(), source);
-        const String compileCommand = toolChain().compileCommand(plan(), source, objectFilePath);
-        List<String> previousDependencyPaths;
-        if (toolChain().readObjectDependencies(objectFilePath, &previousDependencyPaths)) {
-            assert(previousDependencyPaths.at(0) == source);
-            bool dirty = compileCommandChanged;
-            do {
-                if (dirty) break;
-                FileInfo objectFileInfo = shell().fileStatus(objectFilePath);
-                if (!objectFileInfo) { dirty = true; break; }
-                for (const String &previousDependencyPath: previousDependencyPaths) {
-                    FileInfo previousDependencyInfo = shell().fileStatus(previousDependencyPath);
-                    if (!previousDependencyInfo) {
-                        dirty = true;
-                        break;
-                    }
-                    if (objectFileInfo.lastModified() < previousDependencyInfo.lastModified()) {
-                        dirty = true;
-                        break;
-                    }
-                }
-            }
-            while (false);
-            plan().objectFiles().emplaceBack(compileCommand, objectFilePath, previousDependencyPaths, dirty);
-        }
-        else {
-            plan().objectFiles().emplaceBack(compileCommand, objectFilePath, List<String>{source}, true);
-        }
-    }
-
     for (BuildPlan &prerequisite: plan().prerequisites()) {
         if (!prerequisite.globbingStage().run()) {
             return success_ = false;

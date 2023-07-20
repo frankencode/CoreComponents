@@ -63,9 +63,14 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
 
     if (plan().options() & BuildOption::Package) return;
 
+    shell().mkdir(plan().objectsPath());
+
+    gatherObjects();
+
     Job linkJob;
-    if (!(plan().options() & BuildOption::Tools))
+    if (!(plan().options() & BuildOption::Tools)) {
         linkJob = toolChain().createLinkJob(plan());
+    }
 
     InsightDatabase insightDatabase;
     if (plan().options() & BuildOption::Insight) {
@@ -175,6 +180,52 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
             plan().setLibraryLinkJob(linkJob);
         }
         scheduler.schedule(linkJob);
+    }
+}
+
+void CompileLinkStage::gatherObjects()
+{
+    const String currentCompileCommand = toolChain().compileCommand(plan(), "%.cc", "%.o");
+    String previousCompileCommand;
+    try {
+        previousCompileCommand = File{plan().previousCompileCommandPath()}.map();
+    }
+    catch (SystemResourceError &)
+    {}
+
+    File{plan().previousCompileCommandPath(), FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly}.write(currentCompileCommand);
+
+    const bool compileCommandChanged = currentCompileCommand != previousCompileCommand;
+
+    for (const String &source: plan().sources()) {
+        const String objectFilePath = toolChain().objectFilePath(plan(), source);
+        const String compileCommand = toolChain().compileCommand(plan(), source, objectFilePath);
+        List<String> previousDependencyPaths;
+        if (toolChain().readObjectDependencies(objectFilePath, &previousDependencyPaths)) {
+            assert(previousDependencyPaths.at(0) == source);
+            bool dirty = compileCommandChanged;
+            do {
+                if (dirty) break;
+                FileInfo objectFileInfo = shell().fileStatus(objectFilePath);
+                if (!objectFileInfo) { dirty = true; break; }
+                for (const String &previousDependencyPath: previousDependencyPaths) {
+                    FileInfo previousDependencyInfo = shell().fileStatus(previousDependencyPath);
+                    if (!previousDependencyInfo) {
+                        dirty = true;
+                        break;
+                    }
+                    if (objectFileInfo.lastModified() < previousDependencyInfo.lastModified()) {
+                        dirty = true;
+                        break;
+                    }
+                }
+            }
+            while (false);
+            plan().objectFiles().emplaceBack(compileCommand, objectFilePath, previousDependencyPaths, dirty);
+        }
+        else {
+            plan().objectFiles().emplaceBack(compileCommand, objectFilePath, List<String>{source}, true);
+        }
     }
 }
 

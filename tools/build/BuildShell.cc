@@ -42,8 +42,9 @@ FileInfo BuildShell::fileStatus(const String &path) const
 
 void BuildShell::mkdir(const String &path) const
 {
-    if (!fileStatus(path))
+    if (!fileStatus(path)) {
         fout("mkdir -p %%\n") << path;
+    }
     if (plan().options() & BuildOption::Simulate) return;
     Dir::establish(path);
 }

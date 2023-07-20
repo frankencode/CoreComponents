@@ -244,8 +244,9 @@ bool ConfigureStage::probeBuild(const String &name, const String &probe) const
         return false;
     }
 
-    if (!Dir::exists(plan().configPath()))
+    if (!Dir::exists(plan().configPath())) {
         Dir::create(plan().configPath());
+    }
 
     String baseName = probePath.baseName();
     String binPath = plan().configPath() / baseName;
