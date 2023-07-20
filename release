@@ -31,9 +31,10 @@ else
     BOOTSTRAP=bootstrap
 fi
 # echo "Generating bootstrap script... (don't forget to optimize for target!-)"
-# ccbuild -bootstrap -release -optimize=0 -lump $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
-# chmod +x $SOURCE/tools/build/$BOOTSTRAP
-echo "FIXME: bootstrap generation disabled!"
+ccbuild -bootstrap -release -lump $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
+# -optimize=0
+chmod +x $SOURCE/tools/build/$BOOTSTRAP
+#echo "FIXME: bootstrap generation disabled!"
 popd
 
 echo "Create source tarball..."
