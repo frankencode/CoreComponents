@@ -663,7 +663,6 @@ BuildPlan BuildPlan::loadChild(const String &projectPath)
 int BuildPlan::run()
 {
     readPrerequisites();
-    globResources();
 
     if (recipe("setup")) {
         me().setupBuildDir();
@@ -713,6 +712,8 @@ int BuildPlan::run()
     }
 
     if (recipe("prepare").to<bool>()) return 0;
+
+    globResources();
 
     String defaultIncludePath = projectPath() / "include";
     if (Dir::exists(defaultIncludePath)) {
@@ -774,6 +775,23 @@ void BuildPlan::readPrerequisites()
     return me().readPrerequisites(*this);
 }
 
+void BuildPlan::globResources(const String &pathPattern)
+{
+    Glob glob{pathPattern};
+    for (String path; glob.read(&path);) {
+        try {
+            DirWalker walker{path};
+            bool isDir = false;
+            for (String path; walker.read(&path, &isDir);) {
+                if (!isDir) bundle().append(path);
+            }
+        }
+        catch (...) {
+            bundle().append(path);
+        }
+    }
+}
+
 void BuildPlan::globResources()
 {
     if (me().globbingResourcesComplete_) return;
@@ -787,23 +805,10 @@ void BuildPlan::globResources()
     if (!recipe().contains("bundle")) return;
     List<String> patternList = recipe("bundle").to<List<String>>();
     if (patternList.count() == 0) return;
-    List<String> resources;
     for (const String &pattern: patternList) {
-        Glob glob{sourcePath(pattern)};
-        for (String path; glob.read(&path);) {
-            try {
-                DirWalker walker{path};
-                bool isDir = false;
-                for (String path; walker.read(&path, &isDir);) {
-                    if (!isDir) resources.append(path);
-                }
-            }
-            catch (...) {
-                resources.append(path);
-            }
-        }
+        globResources(sourcePath(pattern));
+        globResources(prestagePath(pattern));
     }
-    bundle() = resources;
 }
 
 List<String> BuildPlan::queryableVariableNames()

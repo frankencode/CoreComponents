@@ -125,6 +125,7 @@ private:
     static bool lookupCache(const String &projectPath, Out<BuildPlan> plan);
     BuildPlan loadChild(const String &projectPath);
     void readPrerequisites();
+    void globResources(const String &pathPattern);
     void globResources();
 
     static List<String> queryableVariableNames();
