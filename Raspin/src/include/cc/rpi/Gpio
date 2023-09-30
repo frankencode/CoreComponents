@@ -1,0 +1,207 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Singleton>
+#include <cstdint>
+
+namespace cc::rpi {
+
+/** \class Gpio cc/pi/Gpio
+  * \brief GPIO register access
+  */
+class Gpio final: public Singleton
+{
+public:
+    /** Obtain access to the GPIO registers
+      */
+    Gpio();
+
+    /** GPIO Voltage level
+      */
+    enum class Level {
+        Low = 0,
+        High = 1
+    };
+
+    /** GPIO mode
+      */
+    enum class Mode: uint32_t {
+        Input = 0, ///< Sense input
+        Output = 1, ///< Generate output
+        Alt1 = 2, ///< Alternative function
+        Alt2 = 3, ///< Alternative function
+        Alt3 = 4, ///< Alternative function
+        Alt4 = 5, ///< Alternative function
+        Alt5 = 6, ///< Alternative function
+        Alt6 = 7 ///< Alternative function
+    };
+
+    /** A single GPIO pin
+      */
+    class Pin
+    {
+    public:
+        /** Configure GPIO pin
+          */
+        void setup(Mode mode)
+        {
+            const int bank = index_ / 10;
+            const int shift = 3 * (index_ % 10);
+            io_[bank] &= ~(UINT32_C(7) << shift);
+            io_[bank] |= static_cast<uint32_t>(mode) << shift;
+        }
+
+        /** Read GPIO pin
+          */
+        operator Level() const
+        {
+            const int bank = index_ / 32;
+            const int shift = index_ % 32;
+            return static_cast<Level>(((io_ + 13)[bank] >> shift) & 1);
+        }
+
+        Mode mode() const
+        {
+            const int bank = index_ / 10;
+            const int shift = 3 * (index_ % 10);
+            return static_cast<Mode>((io_[bank] >> shift) & 7);
+        }
+
+        /** Write GPIO pin
+          */
+        Pin &operator=(Level level)
+        {
+            if (level == Level::High) set(); else clear();
+            return *this;
+        }
+
+    private:
+        friend class Gpio;
+
+        Pin(uint32_t *io, int index):
+            io_{io},
+            index_{index}
+        {}
+
+        void set()
+        {
+            const int bank = index_ / 32;
+            const int shift = index_ % 32;
+            (io_ + 7)[bank] = UINT32_C(1) << shift;
+        }
+
+        void clear()
+        {
+            const int bank = index_ / 32;
+            const int shift = index_ % 32;
+            (io_ + 10)[bank] = UINT32_C(1) << shift;
+        }
+
+        uint32_t *io_;
+        int index_;
+    };
+
+    /** A set of GPIO pins
+      */
+    class Set
+    {
+    public:
+        /** Add another GPIO pin to the set
+          */
+        void add(int index)
+        {
+            pins_ |= UINT64_C(1) << index;
+        }
+
+        /** Configure GPIO pins
+          */
+        void setup(Mode mode)
+        {
+            /*if (mode != Mode::Input) {
+                setup(Mode::Input);
+            }*/
+            uint32_t modes[6] = { 0, 0, 0, 0, 0, 0 };
+            for (int bank = 0; bank < 6; ++bank) {
+                if (((pins_ >> (bank * 10)) & 1023) == 0) continue;
+                modes[bank] = io_[bank];
+            }
+            for (int index = 0; index < 64; ++index) {
+                if ((pins_ & (UINT64_C(1) << index)) == 0) continue;
+                setup(modes, index, mode);
+            }
+            for (int bank = 0; bank < 6; ++bank) {
+                if (((pins_ >> (bank * 10)) & 1023) == 0) continue;
+                io_[bank] = modes[bank];
+            }
+        }
+
+        /** Write the GPIO pins
+          */
+        Set &operator=(Level level)
+        {
+            if (level == Level::High) set(); else clear();
+            return *this;
+        }
+
+    private:
+        friend class Gpio;
+
+        Set(uint32_t *io, std::initializer_list<int> pins):
+            io_{io}
+        {
+            for (int pin: pins) {
+                assert(0 <= pin && pin < 64);
+                pins_ |= UINT64_C(1) << pin;
+            }
+        }
+
+        static void setup(uint32_t* modes, int index, Mode mode)
+        {
+            const int bank = index / 10;
+            const int shift = 3 * (index % 10);
+            modes[bank] &= ~(UINT64_C(7) << shift);
+            modes[bank] |= static_cast<uint32_t>(mode) << shift;
+        }
+
+        void set()
+        {
+            uint32_t bank1 = static_cast<uint32_t>(pins_ & 0xFFFF);
+            uint32_t bank2 = static_cast<uint32_t>(pins_ >> 32);
+            if (bank1 != 0) io_[7] = bank1;
+            if (bank2 != 0) io_[8] = bank2;
+        }
+
+        void clear()
+        {
+            uint32_t bank1 = static_cast<uint32_t>(pins_ & 0xFFFF);
+            uint32_t bank2 = static_cast<uint32_t>(pins_ >> 32);
+            if (bank1 != 0) io_[10] = bank1;
+            if (bank2 != 0) io_[11] = bank2;
+        }
+
+        uint32_t *io_;
+        uint64_t pins_ { 0 };
+    };
+
+    /** Select a single GPIO pin
+      */
+    Pin operator[](int index);
+
+    /** Select a set of GPIO pins
+      */
+    Set select(std::initializer_list<int> pins);
+
+private:
+    struct State;
+
+    State &me();
+};
+
+} // namespace cc::rpi
