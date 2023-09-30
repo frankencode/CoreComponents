@@ -40,6 +40,7 @@ enum class FileOpen: int {
     Create    = O_CREAT,  ///< Create file if not exists
     Truncate  = O_TRUNC,  ///< Truncate file to size zero
     Virgin    = O_EXCL,   ///< Fail to open if file exists already
+    Sync      = O_SYNC,   ///< Write data and meta-data synchronously
     Temporary = 1 << (sizeof(int) * 8 - 2), ///< Automatically unlink the file when done
     Overwrite = FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate ///< Convenience shorthand for \code{.cpp}FileOpen::Create|FileOpen::WriteOnly|FileOpen::Truncate\endcode
 };
