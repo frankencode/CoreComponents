@@ -39,8 +39,8 @@ public:
     {}
 
     KeyValue(const Key &&key, const Value &&value):
-        key_{move(key)},
-        value_{move(value)}
+        key_{std::move(key)},
+        value_{std::move(value)}
     {}
 
     /** Get key
