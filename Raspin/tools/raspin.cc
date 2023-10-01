@@ -49,11 +49,11 @@ int main(int argc, char *argv[])
                 ferr("Invalid invocation syntax, see \"%% -help\"\n") << toolName;
                 return 1;
             }
-            Gpio::Set set = gpio.select({});
+            Gpio::Group group = gpio.select({});
             for (int index: pins) {
-                set.add(index);
+                group.add(index);
             }
-            set.setup(mode);
+            group.setup(mode);
         }
 
         if (options("level").to<String>() == "?")
@@ -69,11 +69,11 @@ int main(int argc, char *argv[])
         else if (options("level").to<String>() != "")
         {
             Gpio::Level level = options("level").to<String>() == "H" ? Gpio::Level::High : Gpio::Level::Low;
-            Gpio::Set set = gpio.select({});
+            Gpio::Group group = gpio.select({});
             for (int index: pins) {
-                set.add(index);
+                group.add(index);
             }
-            set = level;
+            group = level;
         }
     }
     catch (HelpRequest &)
@@ -84,11 +84,11 @@ int main(int argc, char *argv[])
             "\n"
             "Options:\n"
             "  -setup=[I|O]    setup function\n"
-            "  -level=[?|L|H]  get or set level\n"
+            "  -level=[?|L|H]  get or group level\n"
             "\n"
             "Examples:\n"
             "  %% -setup=O 3 4  # Setup GPIO3 and GPIO4 for output\n"
-            "  %% -level=H 3 4  # Set levels of GPIO3 and GPIO4 to high\n"
+            "  %% -level=H 3 4  # Group levels of GPIO3 and GPIO4 to high\n"
             "  %% -level=? 3 4  # Get levels of GPIO3 and GPIO4\n"
         ) << toolName << toolName << toolName << toolName;
         return 1;

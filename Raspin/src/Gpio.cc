@@ -29,9 +29,9 @@ Gpio::Pin Gpio::operator[](int index)
     return Pin{static_cast<uint32_t *>(me().io_), index};
 }
 
-Gpio::Set Gpio::select(std::initializer_list<int> pins)
+Gpio::Group Gpio::select(std::initializer_list<int> pins)
 {
-    return Set{static_cast<uint32_t *>(me().io_), pins};
+    return Group{static_cast<uint32_t *>(me().io_), pins};
 }
 
 Gpio::State &Gpio::me()
