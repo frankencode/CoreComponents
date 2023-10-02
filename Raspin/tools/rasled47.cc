@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 
         for (int i = 0; i < 4; ++i)
         {
-            const int displayTime = 1; // display duration of a single cell
+            const int displayTime = 4; // display duration of a single cell
 
             if (IoStream::input().wait(IoEvent::ReadyRead, displayTime)) {
                 String buffer = String::allocate(64);
@@ -177,6 +177,8 @@ int main(int argc, char *argv[])
     allGroup.setup(Gpio::Mode::Input);
 
     signalMaster.wait();
+
+    fout() << nl;
 
     return 0;
 }
