@@ -174,17 +174,12 @@ void Command::start(Process &process)
         }
     }
 
-    if (execPath == "" && args.count() > 0) execPath = args.at(0);
+    if (execPath.count() == 0 && args.count() > 0) execPath = args.at(0);
 
-    if (execPath != "") {
-        if (execPath.find('/')) {
-            if (!File::access(execPath, FileAccess::Execute)) throw CommandNotFound{execPath};
-        }
-        else {
-            String path = File::locate(execPath, Process::env("PATH").split(':'), FileAccess::Execute);
-            if (path == "") throw CommandNotFound{execPath};
-            execPath = path;
-        }
+    if (execPath.count() > 0 && !execPath.find('/')) {
+        String path = File::locate(execPath, Process::env("PATH").split(':'), FileAccess::Execute);
+        if (path == "") throw CommandNotFound{execPath};
+        execPath = path;
     }
 
     /// prepare argument list and environment map
@@ -245,14 +240,12 @@ void Command::start(Process &process)
     #endif
 
     process.me().pid_ = -1;
+    int ret = 0;
     do {
-        int ret = ::posix_spawn(&process.me().pid_, execPath, &me().fileActions_, &me().spawnAttributes_, argv, envp ? envp : ::environ);
-        if (ret != 0) {
-            if (ret == EAGAIN) {
-                Thread::sleep(1);
-                continue;
-            }
-            CC_SYSTEM_DEBUG_ERROR(ret);
+        ret = ::posix_spawn(&process.me().pid_, execPath, &me().fileActions_, &me().spawnAttributes_, argv, envp ? envp : ::environ);
+        if (ret == EAGAIN) {
+            Thread::sleep(1);
+            continue;
         }
     }
     while (false);
@@ -262,6 +255,11 @@ void Command::start(Process &process)
         for (int i = 0; envp[i]; ++i)
             ::free(envp[i]);
         delete[] envp;
+    }
+
+    if (ret != 0) {
+        if (ret == 127 && File::access(execPath, FileAccess::Execute)) throw CommandNotFound{execPath};
+        CC_SYSTEM_DEBUG_ERROR(ret);
     }
 
     process.me().groupLead_ = me().groupLead_;
