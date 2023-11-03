@@ -7,6 +7,7 @@
  */
 
 #include <cc/Sha1HashSink>
+#include <bit>
 
 namespace cc {
 
@@ -59,12 +60,15 @@ struct Sha1HashSink::State: public CryptoHashSink::State
 
         consume();
 
-        for (int t = 0; t < 5; ++t) {
-            uint32_t h = h_.wordAt(t);
-            h_.byteAt(4 * t) = h >> 24;
-            h_.byteAt(4 * t + 1) = (h >> 16) & 0xFF;
-            h_.byteAt(4 * t + 2) = (h >> 8) & 0xFF;
-            h_.byteAt(4 * t + 3) = h & 0xFF;
+        if (std::endian::native != std::endian::big)
+        {
+            for (int t = 0; t < 5; ++t) {
+                uint32_t h = h_.wordAt(t);
+                h_[4 * t] = h >> 24;
+                h_[4 * t + 1] = (h >> 16) & 0xFF;
+                h_[4 * t + 2] = (h >> 8) & 0xFF;
+                h_[4 * t + 3] = h & 0xFF;
+            }
         }
 
         return h_;
@@ -85,7 +89,7 @@ struct Sha1HashSink::State: public CryptoHashSink::State
         }
 
         for (int t = 16; t < 80; ++t) {
-            w[t] = rol(w[t - 3] ^ w[t - 8] ^ w[t - 14] ^ w[t - 16], 1);
+            w[t] = std::rotl(w[t - 3] ^ w[t - 8] ^ w[t - 14] ^ w[t - 16], 1);
         }
 
         uint32_t *h = h_.words();
@@ -93,10 +97,10 @@ struct Sha1HashSink::State: public CryptoHashSink::State
         uint32_t a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
 
         for (int t = 0; t < 80; ++t) {
-            uint32_t temp = rol(a, 5) + f(t, b, c, d) + e + w[t] + K(t);
+            uint32_t temp = std::rotl(a, 5) + f(t, b, c, d) + e + w[t] + K(t);
             e = d;
             d = c;
-            c = rol(b, 30);
+            c = std::rotl(b, 30);
             b = a;
             a = temp;
         }
@@ -106,11 +110,6 @@ struct Sha1HashSink::State: public CryptoHashSink::State
         h[2] += c;
         h[3] += d;
         h[4] += e;
-    }
-
-    inline uint32_t rol(uint32_t x, int n)
-    {
-        return (x << n) | (x >> (32 - n));
     }
 
     inline uint32_t K(int t)

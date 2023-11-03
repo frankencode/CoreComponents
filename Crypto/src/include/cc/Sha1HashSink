@@ -14,14 +14,14 @@ namespace cc {
 
 /** \class Sha1HashSink cc/Sha1HashSink
   * \ingroup crypto
-  * \brief Secure Hash 1 (SHA1) one-way hash function
+  * \brief Secure Hash 1 (SHA-1) one-way hash function
   */
 class Sha1HashSink final: public CryptoHashSink
 {
 public:
     static constexpr int HashSize = 20; ///< %Size of the hashsum in bytes
 
-    /** Create a new hash sink for computing the SHA1 sum of all written data
+    /** Create a new hash sink for computing the SHA-1 sum of all written data
       */
     Sha1HashSink();
 
@@ -29,7 +29,7 @@ private:
     struct State;
 };
 
-/** %Compute the SHA1 sum of byte array \a data
+/** %Compute the SHA-1 sum of \a data
   */
 Bytes sha1(const Bytes &data);
 

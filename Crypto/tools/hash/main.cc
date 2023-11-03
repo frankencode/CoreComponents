@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/Sha256HashSink>
 #include <cc/Sha1HashSink>
 #include <cc/Md5HashSink>
 #include <cc/File>
@@ -24,7 +25,8 @@ int main(int argc, char *argv[])
 
         for (String path: items) {
             HashSink hashSink;
-            if (toolName.contains("sha1")) hashSink = Sha1HashSink{};
+            if (toolName.contains("sha256")) hashSink = Sha256HashSink{};
+            else if (toolName.contains("sha1")) hashSink = Sha1HashSink{};
             else hashSink = Md5HashSink{};
             Stream source;
             if (path != "") source = File{path};
@@ -34,10 +36,14 @@ int main(int argc, char *argv[])
         }
     }
     catch (HelpRequest &) {
+        const char *hashName = "?";
+        if (toolName.contains("sha256")) hashName = "SHA-256";
+        else if (toolName.contains("sha1")) hashName = "SHA-1";
+        else hashName = "MD5";
         fout(
             "Usage: %% [FILE]...\n"
             "Computes %% sums of files.\n"
-        ) << toolName << (toolName.contains("sha1") ? "SHA1" : "MD5");
+        ) << toolName << hashName;
     }
     catch (Exception &ex) {
         ferr() << toolName << ": " << ex << nl;
