@@ -12,7 +12,7 @@
 
 namespace cc {
 
-struct Sha256HashSink::State: public CryptoHashSink::State
+struct Sha256HashSink::State final: public CryptoHashSink::State
 {
     static constexpr int BlockSize = 64;
 

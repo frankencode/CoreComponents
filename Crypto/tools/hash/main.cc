@@ -6,6 +6,7 @@
  *
  */
 
+#include <cc/Sha512HashSink>
 #include <cc/Sha256HashSink>
 #include <cc/Sha1HashSink>
 #include <cc/Md5HashSink>
@@ -25,7 +26,8 @@ int main(int argc, char *argv[])
 
         for (String path: items) {
             HashSink hashSink;
-            if (toolName.contains("sha256")) hashSink = Sha256HashSink{};
+            if (toolName.contains("sha512")) hashSink = Sha512HashSink{};
+            else if (toolName.contains("sha256")) hashSink = Sha256HashSink{};
             else if (toolName.contains("sha1")) hashSink = Sha1HashSink{};
             else hashSink = Md5HashSink{};
             Stream source;
@@ -37,7 +39,8 @@ int main(int argc, char *argv[])
     }
     catch (HelpRequest &) {
         const char *hashName = "?";
-        if (toolName.contains("sha256")) hashName = "SHA-256";
+        if (toolName.contains("sha512")) hashName = "SHA-512";
+        else if (toolName.contains("sha256")) hashName = "SHA-256";
         else if (toolName.contains("sha1")) hashName = "SHA-1";
         else hashName = "MD5";
         fout(

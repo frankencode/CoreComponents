@@ -11,7 +11,7 @@
 
 namespace cc {
 
-struct Sha1HashSink::State: public CryptoHashSink::State
+struct Sha1HashSink::State final: public CryptoHashSink::State
 {
     static constexpr int BlockSize = 64;
 
@@ -55,9 +55,9 @@ struct Sha1HashSink::State: public CryptoHashSink::State
             m_.byteAt(j_++) = 0;
             if (j_ == 64) consume();
         }
-        for (int i = 7; i >= 0; --i)
+        for (int i = 7; i >= 0; --i) {
             m_.byteAt(j_++) = (l_ >> (i * 8)) & 0xFF;
-
+        }
         consume();
 
         if (std::endian::native != std::endian::big)
@@ -112,7 +112,7 @@ struct Sha1HashSink::State: public CryptoHashSink::State
         h[4] += e;
     }
 
-    inline uint32_t K(int t)
+    static uint32_t K(int t)
     {
         if (t < 20) return 0x5A827999;
         if (t < 40) return 0x6ED9EBA1;
@@ -120,7 +120,7 @@ struct Sha1HashSink::State: public CryptoHashSink::State
         return 0xCA62C1D6;
     }
 
-    inline uint32_t f(int t, uint32_t b, uint32_t c, uint32_t d)
+    static uint32_t f(int t, uint32_t b, uint32_t c, uint32_t d)
     {
         if (t < 20) return (b & c) | ((~b) & d);
         if (t < 40) return b ^ c ^ d;
