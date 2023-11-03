@@ -52,22 +52,28 @@ inline ByteOrder localEndian()
     return static_cast<ByteOrder>(union_cast<std::uint8_t, unsigned>(1));
 }
 
+/** Swap endianess of \a x
+  */
+template<class T>
+inline T byteSwap(T x)
+{
+    const int n = sizeof(x);
+    T z = 0;
+    for (int i = 0; i < n; ++i) {
+        z <<= 8;
+        z |= (x >> (i * 8)) & 0xFF;
+    }
+    return z;
+}
+
+
 /** Swap endianess of \a x from \a channelByteOrder to system byte order
   * \tparam T Unsigned integer type
   */
 template<class T>
 inline T endianGate(T x, const ByteOrder channelByteOrder = ByteOrder::BigEndian)
 {
-    if (localEndian() != channelByteOrder) {
-        const int n = sizeof(x);
-        T z = 0;
-        for (int i = 0; i < n; ++i) {
-            z <<= 8;
-            z |= (x >> (i * 8)) & 0xFF;
-        }
-        x = z;
-    }
-    return x;
+    return (localEndian() == channelByteOrder) ? x : byteSwap(x);
 }
 
 /** \class Bit cc/bits
