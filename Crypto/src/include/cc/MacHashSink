@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class MacHashSink cc/MacHashSink
   * \ingroup crypto
-  * \brief HMAC Message authentication hash sink
+  * \brief HMAC message authentication hash sink
   * \tparam T %Underlying cryptographic hash sink type
   * \internal
   * \see RFC 2104 for details
