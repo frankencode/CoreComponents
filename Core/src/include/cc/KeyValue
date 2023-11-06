@@ -89,10 +89,4 @@ private:
     Value value_;
 };
 
-template<class K, class V, class P>
-inline bool operator<(const KeyValue<K, V> &a, const P &b) { return a.key() < b; }
-
-template<class K, class V, class P>
-inline bool operator<(const P &a, const KeyValue<K, V> &b) { return a < b.key(); }
-
 } // namespac cc

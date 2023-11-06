@@ -33,7 +33,7 @@ public:
       */
     static Timezone local();
 
-    /** Get UTC offset for \a time (in seconds)
+    /** Get the local UTC offset for \a time (in seconds)
       */
     static int offset(double time) { return local()(time); }
 
@@ -55,7 +55,7 @@ public:
       * This method computes the next time at which the local time hits the giving \a hour, \a minutes and \a seconds.
       * The local timezone and eventual change in daylight saving time is taken into account.
       */
-    static double nextTime(const Date &date, int hour, int minutes, int seconds);
+    static double nextTime(const Date &date, int hour, int minutes = 0, int seconds = 0);
 
     /** Load timezone information from \a path
       * \exception SystemError

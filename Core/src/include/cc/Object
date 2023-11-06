@@ -69,11 +69,11 @@ public:
 
     /** Equality operator
       */
-    bool operator==(const Object &b) const { return me == b.me; }
+    bool operator==(const Object &other) const { return me == other.me; }
 
     /** Ordering operator
       */
-    std::strong_ordering operator<=>(const Object &b) const { return me <=> b.me; }
+    std::strong_ordering operator<=>(const Object &other) const { return me <=> other.me; }
 
     /** Reference count
       */

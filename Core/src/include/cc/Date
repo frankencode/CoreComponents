@@ -83,8 +83,6 @@ public:
       */
     double time() const { return me().time; }
 
-    double nextTime(int hour, int minutes, int seconds = 0) const;
-
     /** \copydoc isValid()
       */
     explicit operator bool() const { return isValid(); }
@@ -154,25 +152,14 @@ public:
       */
     bool operator==(const Date &other) const { return time() == other.time(); }
 
-    /** Not equal to operator
+    /** Ordering operator
       */
-    bool operator!=(const Date &other) const { return time() != other.time(); }
-
-    /** Less than operator
-      */
-    bool operator< (const Date &other) const { return time() <  other.time(); }
-
-    /** Greater than operator
-      */
-    bool operator> (const Date &other) const { return time() >  other.time(); }
-
-    /** Less than or equal to operator
-      */
-    bool operator<=(const Date &other) const { return time() <= other.time(); }
-
-    /** Greater than or equal to operator
-      */
-    bool operator>=(const Date &other) const { return time() >= other.time(); }
+    std::strong_ordering operator<=>(const Date &other) const
+    {
+        if (time() < other.time()) return std::strong_ordering::less;
+        else if (other.time() < time()) return std::strong_ordering::greater;
+        return std::strong_ordering::equal;
+    }
 
 private:
     struct State

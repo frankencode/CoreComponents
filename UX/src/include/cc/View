@@ -199,6 +199,13 @@ public:
         return ids;
     }
 
+    /** Equality operator
+      */
+    bool operator==(const View &other) const
+    {
+        return Object::me == other.Object::me;
+    }
+
     /** Ordering operator
       */
     std::strong_ordering operator<=>(const View &other) const
@@ -572,8 +579,6 @@ public:
     View &attach(Function<void()> &&f) { me().attach(move(f)); return *this; }
 
     ///@}
-
-    bool operator==(const View &other) const { return Object::me == other.Object::me; }
 
 protected:
     friend class Object;

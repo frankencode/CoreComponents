@@ -361,28 +361,28 @@ struct SocketAddress::State: public Object::State
         return false;
     }
 
-    bool operator<(const State &other) const
+    std::strong_ordering operator<=>(const State &other) const
     {
-        if (family() < other.family()) return true;
-        if (other.family() < family()) return false;
+        if (family() != other.family()) return +family() <=> +other.family();
 
         if (family() == ProtocolFamily::Inet4) {
-            return inet4Address_.sin_addr.s_addr < other.inet4Address_.sin_addr.s_addr;
+            return inet4Address_.sin_addr.s_addr <=> other.inet4Address_.sin_addr.s_addr;
         }
         else if (family() == ProtocolFamily::Inet6) {
             uint8_t const *x = inet6Address_.sin6_addr.s6_addr;
             uint8_t const *y = other.inet6Address_.sin6_addr.s6_addr;
             for (int i = 0; i < 8; ++i) {
-                if (x[i] < y[i]) return true;
-                else if (y[i] < x[i]) return false;
+                if (x[i] < y[i]) return std::strong_ordering::less;
+                else if (y[i] < x[i]) return std::strong_ordering::greater;
             }
-            return false;
         }
         else if (family() == ProtocolFamily::Local) {
-            return strcmp(localAddress_.sun_path, other.localAddress_.sun_path) < 0;
+            int ret = strcmp(localAddress_.sun_path, other.localAddress_.sun_path);
+            if (ret < 0) return std::strong_ordering::less;
+            else if (0 < ret) return std::strong_ordering::greater;
         }
 
-        return false;
+        return std::strong_ordering::equal;
     }
 
     union {
@@ -604,9 +604,9 @@ bool SocketAddress::operator==(const SocketAddress &other) const
     return me() == other.me();
 }
 
-bool SocketAddress::operator<(const SocketAddress &other) const
+std::strong_ordering SocketAddress::operator<=>(const SocketAddress &other) const
 {
-    return me() < other.me();
+    return me() <=> other.me();
 }
 
 ProtocolFamily SocketAddress::familyOf(const Uri &uri)

@@ -92,27 +92,12 @@ public:
 
     /** Equal to operator
       */
-    bool operator==(const Version &b) { return toWord() == b.toWord(); }
+    bool operator==(const Version &other) const { return toWord() == other.toWord(); }
 
-    /** Not equal to operator
-      */
-    bool operator!=(const Version &b) { return toWord() != b.toWord(); }
 
-    /** Less than operator
+    /** Ordering operator
       */
-    bool operator< (const Version &b) { return toWord() <  b.toWord(); }
-
-    /** Greater than operator
-      */
-    bool operator> (const Version &b) { return toWord() >  b.toWord(); }
-
-    /** Less than or equal to operator
-      */
-    bool operator<=(const Version &b) { return toWord() <= b.toWord(); }
-
-    /** Greater than or equal to operator
-      */
-    bool operator>=(const Version &b) { return toWord() >= b.toWord(); }
+    std::strong_ordering operator<=>(const Version &other) const { return toWord() <=> other.toWord(); }
 
 private:
     struct State {

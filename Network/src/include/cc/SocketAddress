@@ -274,9 +274,9 @@ public:
       */
     bool operator==(const SocketAddress &other) const;
 
-    /** Lower than operator
+    /** Ordering operator
       */
-    bool operator<(const SocketAddress &other) const;
+    std::strong_ordering operator<=>(const SocketAddress &other) const;
 
     /** Protocol family of \a uri (if \a uri contains a numeric host part)
       */

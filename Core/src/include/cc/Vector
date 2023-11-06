@@ -318,51 +318,16 @@ public:
         return true;
     }
 
-    /** Not equal to operator
+    /** Ordering operator
       */
-    bool operator!=(const Vector &b) const
-    {
-        return !(*this == b);
-    }
-
-    /** Lower than operator
-      */
-    bool operator<(const Vector &b) const
+    std::strong_ordering operator<=>(const Vector &b) const
     {
         for (unsigned i = 0; i < N; ++i) {
-            if (v[i] < b.v[i])
-                return true;
-            else if (b.v[i] < v[i])
-                break;
+            auto ordering = v[i] <=> b.v[i];
+            if (ordering < 0) return std::strong_ordering::less;
+            if (ordering > 0) return std::strong_ordering::greater;
         }
-        return false;
-    }
-
-    /** Lower or equal operator
-      */
-    bool operator<=(const Vector &b) const
-    {
-        for (unsigned i = 0; i < N; ++i) {
-            if (v[i] < b.v[i])
-                return true;
-            else if (b.v[i] < v[i])
-                break;
-        }
-        return true;
-    }
-
-    /** Greater than operator
-      */
-    bool operator>(const Vector &b) const
-    {
-        return b < *this;
-    }
-
-    /** Greater or equal operator
-      */
-    bool operator>=(const Vector &b) const
-    {
-        return b <= *this;
+        return std::strong_ordering::equal;
     }
 
     ///@}

@@ -48,9 +48,16 @@ public:
         me().timer_->isActive_ = false;
     }
 
-    bool operator<(const TimeoutRequest &other) const
+    bool operator==(const TimeoutRequest &other) const
     {
-        return nextTime() < other.nextTime();
+        return nextTime() == other.nextTime();
+    }
+
+    std::strong_ordering operator<=>(const TimeoutRequest &other) const
+    {
+        if (nextTime() < other.nextTime()) return std::strong_ordering::less;
+        if (other.nextTime() < nextTime()) return std::strong_ordering::greater;
+        return std::strong_ordering::equal;
     }
 
 private:
