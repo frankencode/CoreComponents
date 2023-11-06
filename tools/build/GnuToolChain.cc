@@ -433,7 +433,7 @@ struct GnuToolChain::State: public ToolChain::State
 
     String pkgConfigName(const BuildPlan &plan) const override
     {
-        return targetName(plan) + ".pc";
+        return plan.name() + ".pc";
     }
 
     String pkgConfigInstallDirPath(const BuildPlan &plan) const override

@@ -348,7 +348,15 @@ struct BuildPlan::State:
         for (const String &prerequisitePath: prerequisitePaths) {
             String path = findPrerequisite(prerequisitePath);
             if (path == "") {
-                throw UsageError{Format{} << recipePath_ << ": Failed to locate prerequisite '" << prerequisitePath << "'"};
+                if (prerequisitePath.isRelativePath()) {
+                    String name = prerequisitePath.replaced("/", "");
+                    SystemPrerequisite systemPrerequisite{name};
+                    systemPrerequisitesByName_.insert(name, systemPrerequisite);
+                    continue;
+                }
+                else {
+                    throw UsageError{Format{} << recipePath_ << ": Failed to locate prerequisite '" << prerequisitePath << "'"};
+                }
             }
             BuildPlan plan = self.loadChild(path);
             plan.readPrerequisites();
