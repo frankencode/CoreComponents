@@ -31,10 +31,10 @@ else
     BOOTSTRAP=bootstrap
 fi
 # echo "Generating bootstrap script... (don't forget to optimize for target!-)"
-ccbuild -bootstrap -release -lump $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
+#ccbuild -bootstrap -release -lump $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
 # -optimize=0
-chmod +x $SOURCE/tools/build/$BOOTSTRAP
-#echo "FIXME: bootstrap generation disabled!"
+#chmod +x $SOURCE/tools/build/$BOOTSTRAP
+echo "FIXME: bootstrap generation disabled!"
 popd
 
 echo "Create source tarball..."
@@ -51,6 +51,6 @@ popd
 ARCHIVE=$PACKAGE-$VERSION.tar.gz
 HASHES=$PACKAGE-$VERSION.hash
 tar -cv $PACKAGE-$VERSION | gzip --best > $ARCHIVE
-printf "md5\t$(ccmd5 $ARCHIVE)\n" > $HASHES
-printf "sha1\t$(ccsha1 $ARCHIVE)\n" >> $HASHES
+printf "SHA-256\t$(ccsha256 $ARCHIVE)\n" > $HASHES
+printf "SHA-512\t$(ccsha512 $ARCHIVE)\n" >> $HASHES
 popd

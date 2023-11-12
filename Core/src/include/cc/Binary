@@ -18,7 +18,7 @@ namespace cc {
   * \brief Read and write binary data structures
   * \ingroup binary
   * \tparam byteOrder Byte order for reading words
-  * \todo Add support for reading floating point values of <stdfloat>
+  * \todo Add support for reading floating point values of &lt;stdfloat&gt;
   */
 template<ByteOrder byteOrder = ByteOrder::LittleEndian>
 class Binary final

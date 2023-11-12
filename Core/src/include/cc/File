@@ -107,7 +107,6 @@ public:
       * \param lastAccess Last time when file was accessed
       * \param lastModified Last time when file was modified
       * \param followSymlink Resolve \a path if it points to a symlink
-      * \todo move to File class
       */
     static void setTimes(const String &path, double lastAccess, double lastModified, bool followSymlink = true);
 

@@ -193,7 +193,9 @@ void CompileLinkStage::gatherObjects()
     catch (SystemResourceError &)
     {}
 
-    File{plan().previousCompileCommandPath(), FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly}.write(currentCompileCommand);
+    if (!(plan().options() & BuildOption::Simulate)) {
+        File{plan().previousCompileCommandPath(), FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly}.write(currentCompileCommand);
+    }
 
     const bool compileCommandChanged = currentCompileCommand != previousCompileCommand;
 

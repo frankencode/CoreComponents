@@ -46,7 +46,7 @@ public:
     static Date currentDate();
 
     /** Get the next time matching the given day time
-      * \paramt date %Date in the local timezone.
+      * \param date %Date in the local timezone.
       * \param hour \copydoc Date::hour()
       * \param minutes \copydoc Date::minutes()
       * \param seconds \copydoc Date::seconds()

@@ -12,7 +12,7 @@
 
 namespace cc {
 
-/** \class Sha256HashSink cc/Sha256HashSink
+/** \class Sha512HashSink cc/Sha512HashSink
   * \ingroup crypto
   * \brief Secure Hash 512 (SHA-512) one-way hash function
   */

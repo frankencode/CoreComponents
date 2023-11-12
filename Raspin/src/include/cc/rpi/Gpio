@@ -13,7 +13,7 @@
 
 namespace cc::rpi {
 
-/** \class Gpio cc/pi/Gpio
+/** \class Gpio cc/rpi/Gpio
   * \brief GPIO register access
   */
 class Gpio final: public Singleton
