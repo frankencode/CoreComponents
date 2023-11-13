@@ -12,6 +12,7 @@
 #include <cc/File>
 #include <cc/FileInfo>
 #include <cc/stdio>
+#include <cc/DEBUG>
 
 using namespace cc;
 
@@ -215,18 +216,17 @@ List<TextMatch> findMatches(const String &text, const Pattern &pattern)
     List<TextMatch> matches;
     long ln = 1;
     for (long i = 0; i < text.count();) {
-        Range range = pattern.findIn(text, &i);
+        long j = i;
+        Range range = pattern.findIn(text, &j);
         if (!range) break;
-        long i0 = range[0];
-        long i1 = range[1];
-        for (;i < i0; ++i) {
+        for (;i < range[0]; ++i) {
             if (text.at(i) == '\n') ++ln;
         }
-        matches.append(TextMatch{ln, i0, i1});
-        for (;i < i1; ++i) {
+        matches.append(TextMatch{ln, range[0], range[1]});
+        for (;i < range[1]; ++i) {
             if (text.at(i) == '\n') ++ln;
         }
-        if (i0 == i1) ++i;
+        if (range[0] == range[1]) ++i;
     }
     return matches;
 }
@@ -259,10 +259,11 @@ void displayMatch(const String &path, const String &text, const TextMatch &match
             if (text.at(j1) == '\n') break;
         }
         Format line{IoStream::output()};
-        line << ln << ": ";
+        line << ln << ":";
         int k0 = j0, k1 = j1;
         if (j0 <= i0 && i0 < j1) k0 = i0;
         if (j0 < i1 && i1 < j1) k1 = i1;
+        line << k0 - j0 << ": ";
         if (j0 < k0) line << text.copy(j0, k0);
         if (k0 < k1) line << "\033[7m" << text.copy(k0, k1) << "\033[m";
         if (k1 < j1) line << text.copy(k1, j1);
