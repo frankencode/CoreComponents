@@ -68,7 +68,7 @@ public:
       */
     bool isRunning() const;
 
-    /** Set the thread's name for debugging
+    /** %Set the thread's name for debugging
       */
     void setName(const char *name);
 

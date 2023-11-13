@@ -21,7 +21,7 @@ namespace cc {
 /** %Scan for a sub-string up to a lexical termination
   * \param text Input text
   * \param token %Return the scanned sub-string
-  * \param lt Set of lexical termination characters
+  * \param lt %Set of lexical termination characters
   * \param i0 Begin of range to scan (index of first character)
   * \param i1 End of range to scan (index behind the last charater)
   * \return Final scan position

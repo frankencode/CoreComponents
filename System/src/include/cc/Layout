@@ -90,7 +90,7 @@ public:
           */
         const Extent &extent() const { return node_->itemExtent_; }
 
-        /** Set the current item's extent
+        /** %Set the current item's extent
           */
         void setExtent(Extent newValue) { node_->setItemExtent(newValue); }
 

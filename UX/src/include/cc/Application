@@ -30,10 +30,10 @@ public:
     Application(int argc, char *argv[]); ///< Initialize global application state
 
     String orgName() const; ///< Get organization name
-    Application &orgName(const String &newValue); ///< Set organization name
+    Application &orgName(const String &newValue); ///< %Set organization name
 
     String appName() const; ///< Get application name
-    Application &appName(const String &newValue); ///< Set application name
+    Application &appName(const String &newValue); ///< %Set application name
 
     /** Get platform specific path for application specfic user data
       */
