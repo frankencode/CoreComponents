@@ -1,0 +1,422 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Bytes>
+#include <cstring>
+#include <bit>
+
+namespace cc {
+
+/** Default padding policy for Keccak
+  */
+struct KeccakPadding {
+    static constexpr uint8_t Suffix = 0;
+    static constexpr int Length = 0;
+};
+
+/** Padding policy for NIST SHA3
+  */
+struct Sha3Padding {
+    static constexpr uint8_t Suffix = 0b10;
+    static constexpr int Length = 2;
+};
+
+/** Padding policy for NIST SHAKE128 and SHAKE256
+  */
+struct ShakePadding {
+    static constexpr uint8_t Suffix = 0b1111;
+    static constexpr int Length = 4;
+};
+
+/** Default policy for reading input bytes
+  */
+template<int Capacity, class Padding>
+class KeccakSource
+{
+public:
+    static constexpr int FeedRate = (1600 - Capacity) / 8; ///< Rate of the sponge function (in bytes)
+
+    static_assert(Padding::Length <= 6);
+
+    KeccakSource(const Bytes &data, long offset = 0):
+        data_{data},
+        offset_{offset}
+    {
+        assert(0 <= offset);
+    }
+
+    uint8_t readByte()
+    {
+        uint8_t ch = 0;
+        if (offset_ + i_ < data_.count()) {
+            ch = data_[offset_ + i_];
+        }
+        else {
+            if (offset_ + i_ == data_.count()) {
+                ch = Padding::Suffix;
+                ch |= 1 << Padding::Length;
+            }
+            if (i_ == FeedRate - 1) ch |= 1 << 7;
+        }
+        ++i_;
+        return ch;
+    }
+
+    bool eoi() const
+    {
+        return offset_ + i_ > data_.count();
+    }
+
+private:
+    const Bytes &data_;
+    long offset_;
+    int i_ { 0 };
+    bool eoi_ { false };
+};
+
+/** Default policy for writing output bytes
+  */
+class KeccakSink
+{
+public:
+    KeccakSink(Out<Bytes> data, long offset = 0):
+        data_{*data},
+        offset_{offset}
+    {
+        assert(0 <= offset);
+        assert(data != None{} && offset < data->count());
+    }
+
+    void writeByte(uint8_t ch)
+    {
+        if (offset_ < data_.count()) {
+            data_[offset_] = ch;
+            ++offset_;
+        }
+    }
+
+    bool eoi() const
+    {
+        return offset_ >= data_.count();
+    }
+
+private:
+    Bytes &data_;
+    long offset_;
+};
+
+/** \class Keccak cc/Keccak
+  * \ingroup crypto
+  * \brief Keccak sponge function
+  * \tparam Capacity %Capacity of the sponge function
+  * \tparam Padding Additional padding sequence to apply
+  * \tparam Source Policy of reading input bytes and automatically applying padding bytes
+  *
+  * The %Keccak template class implements the Keccak[c] sponge function according to NIST.FIPS.202, chapter 5.2.
+  */
+template<int Capacity = 1024, class Padding = KeccakPadding, class Source = KeccakSource<Capacity, Padding>, class Sink = KeccakSink >
+class Keccak
+{
+    static_assert(Capacity % 8 == 0);
+
+public:
+    static constexpr int FeedRate = (1600 - Capacity) / 8; ///< Rate of the sponge function (in bytes)
+
+    /** Create new Keccak instance
+      */
+    Keccak();
+
+    /** Create new Keccak instance
+      * \param key Initial state bytes
+      */
+    Keccak(const Bytes &key);
+
+    /** Absorb a chunk of input data (FeedRate bytes at a time)
+      * \param source %Source to read a single chunk of data from
+      * \return true if more data can be absorbed
+      */
+    bool absorb(Source source);
+
+    /** Generate output bytes out of the sponge (FeedRate bytes at a time)
+      * \param sink %Sink to write output bytes to
+      */
+    void squeeze(Sink sink);
+
+
+private:
+    static uint64_t roundWord(int ir);
+
+    #if 0
+    static uint64_t generateRoundWord(int ir);
+    static uint64_t rc(uint8_t t);
+    #endif
+
+    uint64_t state(int x, int y) const
+    {
+        assert(0 <= x && x <= 4);
+        assert(0 <= y && y <= 4);
+        return (*s_)[x][y];
+    }
+
+    uint64_t &state(int x, int y)
+    {
+        assert(0 <= x && x <= 4);
+        assert(0 <= y && y <= 4);
+        return (*s_)[x][y];
+    }
+
+    uint64_t &next(int x, int y)
+    {
+        assert(0 <= x && x <= 4);
+        assert(0 <= y && y <= 4);
+        return (*n_)[x][y];
+    }
+
+    void permutate();
+    void rnd(int ir);
+
+    void theta();
+    void rho();
+    void pi();
+    void chi();
+    void iota(int ir);
+
+    void flip()
+    {
+        auto h = s_;
+        s_ = n_;
+        n_ = h;
+    }
+
+    static int pred(int x)
+    {
+        --x;
+        if (x < 0) x = 4;
+        return x;
+    }
+
+    static int succ(int x, int delta = 1)
+    {
+        x += delta;
+        if (x > 4) x -= 5;
+        return x;
+    }
+
+    uint64_t state_[5][5];
+    uint64_t next_[5][5];
+    uint64_t (*s_)[5][5] { &state_ };
+    uint64_t (*n_)[5][5] { &next_ };
+};
+
+template<int Capacity, class Padding, class Source, class Sink>
+Keccak<Capacity, Padding, Source, Sink>::Keccak()
+{
+    ::memset(state_, 0, sizeof(state_));
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+Keccak<Capacity, Padding, Source, Sink>::Keccak(const Bytes &key)
+{
+    int i = 0;
+    for (int y = 0; y < 5 && i < FeedRate; ++y) {
+        for (int x = 0; x < 5 && i < FeedRate; ++x) {
+            uint64_t lane = 0;
+            for (int z = 0; z < 8 && i < FeedRate; ++z) {
+                lane |= key(i, 0);
+                ++i;
+            }
+            state(x, y) = lane;
+        }
+    }
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+bool Keccak<Capacity, Padding, Source, Sink>::absorb(Source source)
+{
+    int i = 0;
+    for (int y = 0; y < 5 && i < FeedRate; ++y) {
+        for (int x = 0; x < 5 && i < FeedRate; ++x) {
+            uint64_t lane = 0;
+            for (int z = 0; z < 8 && i < FeedRate; ++z) {
+                lane |= static_cast<uint64_t>(source.readByte()) << (8 * z);
+                ++i;
+            }
+            state(x, y) ^= lane;
+        }
+    }
+
+    permutate();
+
+    return !source.eoi();
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+void Keccak<Capacity, Padding, Source, Sink>::squeeze(Sink sink)
+{
+    while (!sink.eoi()) {
+        int i = 0;
+        for (int y = 0; y < 5 && i < FeedRate && !sink.eoi(); ++y) {
+            for (int x = 0; x < 5 && i < FeedRate && !sink.eoi(); ++x) {
+                uint64_t lane = state(x, y);
+                for (int z = 0; z < 8 && i < FeedRate && !sink.eoi(); ++z) {
+                    sink.writeByte(lane);
+                    lane >>= 8;
+                }
+            }
+        }
+        if (i == FeedRate) permutate();
+    }
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+void Keccak<Capacity, Padding, Source, Sink>::permutate()
+{
+    for (int ir = 0; ir < 24; ++ir) {
+        rnd(ir);
+    }
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+void Keccak<Capacity, Padding, Source, Sink>::rnd(int ir)
+{
+    theta();
+    rho();
+    pi();
+    chi();
+    iota(ir);
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+void Keccak<Capacity, Padding, Source, Sink>::theta()
+{
+    uint64_t c[5];
+    for (int x = 0; x < 5; ++x) {
+        c[x] = state(x, 0);
+        for (int y = 1; y < 5; ++y) {
+            c[x] ^= state(x, y);
+        }
+    }
+
+    uint64_t d[5];
+    for (int x = 0; x < 5; ++x) {
+        d[x] = c[pred(x)] ^ std::rotl(c[succ(x)], 1);
+    }
+
+    for (int y = 0; y < 5; ++y) {
+        for (int x = 0; x < 5; ++x) {
+            state(x, y) ^= d[x];
+        }
+    }
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+void Keccak<Capacity, Padding, Source, Sink>::rho()
+{
+    int x = 1, y = 0;
+    for (int t = 0; t < 24; ++t) {
+        state(x, y) = std::rotl(state(x, y), (t + 1) * (t + 2) / 2);
+        int h = x;
+        x = y;
+        y = (2 * h + 3 * y) % 5;
+    }
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+void Keccak<Capacity, Padding, Source, Sink>::pi()
+{
+    for (int y = 0; y < 5; ++y) {
+        for (int x = 0; x < 5; ++x) {
+            next(x, y) = state((x + 3 * y) % 5, x);
+        }
+    }
+    flip();
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+void Keccak<Capacity, Padding, Source, Sink>::chi()
+{
+    for (int y = 0; y < 5; ++y) {
+        for (int x = 0; x < 5; ++x) {
+            next(x, y) = state(x, y) ^ (~state(succ(x), y) & state(succ(x, 2), y));
+        }
+    }
+    flip();
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+void Keccak<Capacity, Padding, Source, Sink>::iota(int ir)
+{
+    state(0, 0) ^= roundWord(ir);
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+uint64_t Keccak<Capacity, Padding, Source, Sink>::roundWord(int ir)
+{
+    assert(0 <= ir && ir <= 23);
+
+    static constexpr uint64_t sugar[24] = {
+        0x1,
+        0x8082,
+        0x800000000000808A,
+        0x8000000080008000,
+        0x808B,
+        0x80000001,
+        0x8000000080008081,
+        0x8000000000008009,
+        0x8A,
+        0x88,
+        0x80008009,
+        0x8000000A,
+        0x8000808B,
+        0x800000000000008B,
+        0x8000000000008089,
+        0x8000000000008003,
+        0x8000000000008002,
+        0x8000000000000080,
+        0x800A,
+        0x800000008000000A,
+        0x8000000080008081,
+        0x8000000000008080,
+        0x80000001,
+        0x8000000080008008
+    };
+
+    return sugar[ir];
+}
+
+#if 0
+template<int Capacity, class Padding, class Source, class Sink>
+uint64_t Keccak<Capacity, Padding, Source, Sink>::generateRoundWord(int ir)
+{
+    uint64_t sugar = 0;
+    int ir7 = ir * 7;
+    for (int j = 0; j < 7; ++j) {
+        sugar ^= rc(j + ir7) << ((1 << j) - 1);
+    }
+    return sugar;
+}
+
+template<int Capacity, class Padding, class Source, class Sink>
+uint64_t Keccak<Capacity, Padding, Source, Sink>::rc(uint8_t t)
+{
+    uint8_t r = 1 << 7;
+    for (int i = 1; i <= t; ++i) {
+        const uint8_t r8 = r & 1;
+        r >>= 1;
+        r ^= (r8 << (7 - 0));
+        r ^= (r8 << (7 - 4));
+        r ^= (r8 << (7 - 5));
+        r ^= (r8 << (7 - 6));
+    }
+    return r >> 7;
+}
+#endif
+
+} // namespace cc
