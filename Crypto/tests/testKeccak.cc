@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     using namespace cc;
 
     TestCase {
-        "Keccak_Permutation_NIST_SHA3-512_1600",
+        "Keccak_NIST_SHA3-512_1600",
         []{
             Bytes data = Bytes::allocate(200);
             data.fill(0xA3);

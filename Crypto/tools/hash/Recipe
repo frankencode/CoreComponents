@@ -1,5 +1,5 @@
 Application {
     name: ccsha512
-    alias: [ ccsha256, ccsha1, ccmd5 ]
+    alias: [ ccsha3, ccsha256, ccsha1, ccmd5 ]
     use: [ Core, Crypto ]
 }
