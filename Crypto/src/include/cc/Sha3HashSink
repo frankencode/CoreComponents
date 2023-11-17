@@ -60,9 +60,10 @@ private:
 
         void consume()
         {
-            for (long offset = 0; offset < buffer_.count(); offset += keccak_.FeedRate) {
-                keccak_.absorb({buffer_, offset});
-            }
+            //for (long offset = 0; offset < buffer_.count(); offset += keccak_.FeedRate) {
+            //    keccak_.absorb({buffer_, offset});
+            //}
+            keccak_.absorb({buffer_});
             j_ = 0;
         }
 

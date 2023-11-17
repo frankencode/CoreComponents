@@ -10,7 +10,6 @@
 
 #include <cc/Bytes>
 #include <cstring>
-#include <bit>
 
 namespace cc {
 
@@ -55,30 +54,28 @@ public:
     uint8_t readByte()
     {
         uint8_t ch = 0;
-        if (offset_ + i_ < data_.count()) {
-            ch = data_[offset_ + i_];
+        if (offset_ < data_.count()) {
+            ch = data_[offset_];
         }
         else {
-            if (offset_ + i_ == data_.count()) {
+            if (offset_ == data_.count()) {
                 ch = Padding::Suffix;
                 ch |= 1 << Padding::Length;
             }
-            if (i_ == FeedRate - 1) ch |= 1 << 7;
+            if (offset_ % FeedRate == FeedRate - 1) ch |= 1 << 7;
         }
-        ++i_;
+        ++offset_;
         return ch;
     }
 
     bool eoi() const
     {
-        return offset_ + i_ > data_.count();
+        return offset_ > data_.count();
     }
 
 private:
     const Bytes &data_;
     long offset_;
-    int i_ { 0 };
-    bool eoi_ { false };
 };
 
 /** Default policy for writing output bytes
@@ -120,6 +117,8 @@ private:
   * \tparam Source Policy of reading input bytes and automatically applying padding bytes
   *
   * The %Keccak template class implements the Keccak[c] sponge function according to NIST.FIPS.202, chapter 5.2.
+  *
+  * \todo Optimize further, 2x speedup is plausible.
   */
 template<int Capacity = 1024, class Padding = KeccakPadding, class Source = KeccakSource<Capacity, Padding>, class Sink = KeccakSink >
 class Keccak
@@ -151,32 +150,21 @@ public:
 
 
 private:
-    static uint64_t roundWord(int ir);
-
     #if 0
     static uint64_t generateRoundWord(int ir);
     static uint64_t rc(uint8_t t);
     #endif
 
-    uint64_t state(int x, int y) const
+    uint64_t state(int l) const
     {
-        assert(0 <= x && x <= 4);
-        assert(0 <= y && y <= 4);
-        return (*s_)[x][y];
+        assert(0 <= l && l < 25);
+        return state_[l];
     }
 
-    uint64_t &state(int x, int y)
+    uint64_t &state(int l)
     {
-        assert(0 <= x && x <= 4);
-        assert(0 <= y && y <= 4);
-        return (*s_)[x][y];
-    }
-
-    uint64_t &next(int x, int y)
-    {
-        assert(0 <= x && x <= 4);
-        assert(0 <= y && y <= 4);
-        return (*n_)[x][y];
+        assert(0 <= l && l < 25);
+        return state_[l];
     }
 
     void permutate();
@@ -188,31 +176,37 @@ private:
     void chi();
     void iota(int ir);
 
-    void flip()
-    {
-        auto h = s_;
-        s_ = n_;
-        n_ = h;
-    }
+    uint64_t state_[25];
 
-    static int pred(int x)
-    {
-        --x;
-        if (x < 0) x = 4;
-        return x;
-    }
+    static constexpr uint_fast8_t shuffle_[25] = { 1, 10, 7, 11, 17, 18, 3, 5, 16, 8, 21, 24, 4, 15, 23, 19, 13, 12, 2, 20, 14, 22, 9, 6, 1 };
+    static constexpr uint_fast8_t shift_[25] = { 0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14 };
 
-    static int succ(int x, int delta = 1)
-    {
-        x += delta;
-        if (x > 4) x -= 5;
-        return x;
-    }
-
-    uint64_t state_[5][5];
-    uint64_t next_[5][5];
-    uint64_t (*s_)[5][5] { &state_ };
-    uint64_t (*n_)[5][5] { &next_ };
+    static constexpr uint64_t roundWord_[24] = {
+        0x1ull,
+        0x8082ull,
+        0x800000000000808Aull,
+        0x8000000080008000ull,
+        0x808Bull,
+        0x80000001ull,
+        0x8000000080008081ull,
+        0x8000000000008009ull,
+        0x8Aull,
+        0x88ull,
+        0x80008009ull,
+        0x8000000Aull,
+        0x8000808Bull,
+        0x800000000000008Bull,
+        0x8000000000008089ull,
+        0x8000000000008003ull,
+        0x8000000000008002ull,
+        0x8000000000000080ull,
+        0x800Aull,
+        0x800000008000000Aull,
+        0x8000000080008081ull,
+        0x8000000000008080ull,
+        0x80000001ull,
+        0x8000000080008008ull
+    };
 };
 
 template<int Capacity, class Padding, class Source, class Sink>
@@ -224,32 +218,26 @@ Keccak<Capacity, Padding, Source, Sink>::Keccak()
 template<int Capacity, class Padding, class Source, class Sink>
 Keccak<Capacity, Padding, Source, Sink>::Keccak(const Bytes &key)
 {
-    int i = 0;
-    for (int y = 0; y < 5 && i < FeedRate; ++y) {
-        for (int x = 0; x < 5 && i < FeedRate; ++x) {
-            uint64_t lane = 0;
-            for (int z = 0; z < 8 && i < FeedRate; ++z) {
-                lane |= key(i, 0);
-                ++i;
-            }
-            state(x, y) = lane;
-        }
+    for (int i = 0; i < FeedRate;) {
+        uint64_t lane = 0;
+        do {
+            lane |= static_cast<uint64_t>(key(i, 0)) << ((i & 7) << 3);
+            ++i;
+        } while ((i & 7) != 0 && i < FeedRate);
+        state((i - 1) >> 3) ^= lane;
     }
 }
 
 template<int Capacity, class Padding, class Source, class Sink>
 bool Keccak<Capacity, Padding, Source, Sink>::absorb(Source source)
 {
-    int i = 0;
-    for (int y = 0; y < 5 && i < FeedRate; ++y) {
-        for (int x = 0; x < 5 && i < FeedRate; ++x) {
-            uint64_t lane = 0;
-            for (int z = 0; z < 8 && i < FeedRate; ++z) {
-                lane |= static_cast<uint64_t>(source.readByte()) << (8 * z);
-                ++i;
-            }
-            state(x, y) ^= lane;
-        }
+    for (int i = 0; i < FeedRate;) {
+        uint64_t lane = 0;
+        do {
+            lane |= static_cast<uint64_t>(source.readByte()) << ((i & 7) << 3);
+            ++i;
+        } while ((i & 7) != 0 && i < FeedRate);
+        state((i - 1) >> 3) ^= lane;
     }
 
     permutate();
@@ -262,13 +250,11 @@ void Keccak<Capacity, Padding, Source, Sink>::squeeze(Sink sink)
 {
     while (!sink.eoi()) {
         int i = 0;
-        for (int y = 0; y < 5 && i < FeedRate && !sink.eoi(); ++y) {
-            for (int x = 0; x < 5 && i < FeedRate && !sink.eoi(); ++x) {
-                uint64_t lane = state(x, y);
-                for (int z = 0; z < 8 && i < FeedRate && !sink.eoi(); ++z) {
-                    sink.writeByte(lane);
-                    lane >>= 8;
-                }
+        for (int l = 0; l < 25 && i < FeedRate && !sink.eoi(); ++l) {
+            uint64_t lane = state(l);
+            for (int z = 0; z < 8 && i < FeedRate && !sink.eoi(); ++z) {
+                sink.writeByte(lane);
+                lane >>= 8;
             }
         }
         if (i == FeedRate) permutate();
@@ -296,99 +282,94 @@ void Keccak<Capacity, Padding, Source, Sink>::rnd(int ir)
 template<int Capacity, class Padding, class Source, class Sink>
 void Keccak<Capacity, Padding, Source, Sink>::theta()
 {
-    uint64_t c[5];
-    for (int x = 0; x < 5; ++x) {
-        c[x] = state(x, 0);
-        for (int y = 1; y < 5; ++y) {
-            c[x] ^= state(x, y);
-        }
+    uint64_t work[5];
+
+    for (int l = 0; l < 5; ++l) {
+        work[l] = state(l);
+        work[l] ^= state(l + 5);
+        work[l] ^= state(l + 10);
+        work[l] ^= state(l + 15);
+        work[l] ^= state(l + 20);
     }
 
-    uint64_t d[5];
-    for (int x = 0; x < 5; ++x) {
-        d[x] = c[pred(x)] ^ std::rotl(c[succ(x)], 1);
+    for (int l = 0; l < 25;) {
+        state(l) ^= work[4];
+        ++l;
+        state(l) ^= work[0];
+        ++l;
+        state(l) ^= work[1];
+        ++l;
+        state(l) ^= work[2];
+        ++l;
+        state(l) ^= work[3];
+        ++l;
     }
 
-    for (int y = 0; y < 5; ++y) {
-        for (int x = 0; x < 5; ++x) {
-            state(x, y) ^= d[x];
-        }
+    for (int l = 0; l < 5; ++l) {
+        work[l] = std::rotl(work[l], 1);
+    }
+
+    for (int l = 0; l < 25;) {
+        state(l) ^= work[1];
+        ++l;
+        state(l) ^= work[2];
+        ++l;
+        state(l) ^= work[3];
+        ++l;
+        state(l) ^= work[4];
+        ++l;
+        state(l) ^= work[0];
+        ++l;
     }
 }
 
 template<int Capacity, class Padding, class Source, class Sink>
 void Keccak<Capacity, Padding, Source, Sink>::rho()
 {
-    int x = 1, y = 0;
-    for (int t = 0; t < 24; ++t) {
-        state(x, y) = std::rotl(state(x, y), (t + 1) * (t + 2) / 2);
-        int h = x;
-        x = y;
-        y = (2 * h + 3 * y) % 5;
+    for (int t = 1; t < 25; ++t) {
+        state(t) = std::rotl(state(t), shift_[t]);
     }
 }
 
 template<int Capacity, class Padding, class Source, class Sink>
 void Keccak<Capacity, Padding, Source, Sink>::pi()
 {
-    for (int y = 0; y < 5; ++y) {
-        for (int x = 0; x < 5; ++x) {
-            next(x, y) = state((x + 3 * y) % 5, x);
-        }
+    uint64_t work[2];
+
+    work[0] = state(1);
+    for (int i = 1; i < 25; ++i) {
+        int g = shuffle_[i];
+        work[1] = state(g);
+        state(g) = work[0];
+        work[0] = work[1];
     }
-    flip();
 }
 
 template<int Capacity, class Padding, class Source, class Sink>
 void Keccak<Capacity, Padding, Source, Sink>::chi()
 {
-    for (int y = 0; y < 5; ++y) {
-        for (int x = 0; x < 5; ++x) {
-            next(x, y) = state(x, y) ^ (~state(succ(x), y) & state(succ(x, 2), y));
-        }
+    uint64_t work[2];
+
+    for (int l = 0; l < 25;) {
+        work[0] = state(l + 0);
+        work[1] = state(l + 1);
+        state(l) ^= (~state(l + 1) & state(l + 2));
+        ++l;
+        state(l) ^= (~state(l + 1) & state(l + 2));
+        ++l;
+        state(l) ^= (~state(l + 1) & state(l + 2));
+        ++l;
+        state(l) ^= (~state(l + 1) & work[0]     );
+        ++l;
+        state(l) ^= (~work[0]      & work[1]     );
+        ++l;
     }
-    flip();
 }
 
 template<int Capacity, class Padding, class Source, class Sink>
 void Keccak<Capacity, Padding, Source, Sink>::iota(int ir)
 {
-    state(0, 0) ^= roundWord(ir);
-}
-
-template<int Capacity, class Padding, class Source, class Sink>
-uint64_t Keccak<Capacity, Padding, Source, Sink>::roundWord(int ir)
-{
-    assert(0 <= ir && ir <= 23);
-
-    static constexpr uint64_t sugar[24] = {
-        0x1,
-        0x8082,
-        0x800000000000808A,
-        0x8000000080008000,
-        0x808B,
-        0x80000001,
-        0x8000000080008081,
-        0x8000000000008009,
-        0x8A,
-        0x88,
-        0x80008009,
-        0x8000000A,
-        0x8000808B,
-        0x800000000000008B,
-        0x8000000000008089,
-        0x8000000000008003,
-        0x8000000000008002,
-        0x8000000000000080,
-        0x800A,
-        0x800000008000000A,
-        0x8000000080008081,
-        0x8000000000008080,
-        0x80000001,
-        0x8000000080008008
-    };
-
-    return sugar[ir];
+    state(0) ^= roundWord_[ir];
 }
 
 #if 0

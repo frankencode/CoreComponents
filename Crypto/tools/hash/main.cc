@@ -27,9 +27,12 @@ int main(int argc, char *argv[])
 
         for (String path: items) {
             HashSink hashSink;
-            if (toolName.contains("sha3")) hashSink = Sha3HashSink<512>{};
-            else if (toolName.contains("sha512")) hashSink = Sha512HashSink{};
-            else if (toolName.contains("sha256")) hashSink = Sha256HashSink{};
+            if (toolName.contains("sha3-")) hashSink = Sha3HashSink<512>{};
+            else if (toolName.contains("sha3-384")) hashSink = Sha3HashSink<384>{};
+            else if (toolName.contains("sha3-256")) hashSink = Sha3HashSink<256>{};
+            else if (toolName.contains("sha3-224")) hashSink = Sha3HashSink<224>{};
+            else if (toolName.contains("sha2-512")) hashSink = Sha512HashSink{};
+            else if (toolName.contains("sha2-256")) hashSink = Sha256HashSink{};
             else if (toolName.contains("sha1")) hashSink = Sha1HashSink{};
             else hashSink = Md5HashSink{};
             Stream source;
@@ -41,10 +44,13 @@ int main(int argc, char *argv[])
     }
     catch (HelpRequest &) {
         const char *hashName = "?";
-        if (toolName.contains("sha3")) hashName = "SHA3-512";
-        else if (toolName.contains("sha512")) hashName = "SHA-512";
-        else if (toolName.contains("sha256")) hashName = "SHA-256";
-        else if (toolName.contains("sha1")) hashName = "SHA-1";
+        if (toolName.contains("sha3-512")) hashName = "SHA3-512";
+        else if (toolName.contains("sha3-384")) hashName = "SHA3-384";
+        else if (toolName.contains("sha3-256")) hashName = "SHA3-256";
+        else if (toolName.contains("sha3-224")) hashName = "SHA3-224";
+        else if (toolName.contains("sha2-512")) hashName = "SHA2-512";
+        else if (toolName.contains("sha2-256")) hashName = "SHA2-256";
+        else if (toolName.contains("sha1")) hashName = "SHA1";
         else hashName = "MD5";
         fout(
             "Usage: %% [FILE]...\n"
