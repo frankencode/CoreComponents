@@ -10,6 +10,7 @@
 
 #include <cc/Bytes>
 #include <cstring>
+#include <bit>
 
 namespace cc {
 
@@ -293,32 +294,15 @@ void Keccak<Capacity, Padding, Source, Sink>::theta()
     }
 
     for (int l = 0; l < 25;) {
-        state(l) ^= work[4];
+        state(l) ^= work[4] ^ std::rotl(work[1], 1);
         ++l;
-        state(l) ^= work[0];
+        state(l) ^= work[0] ^ std::rotl(work[2], 1);
         ++l;
-        state(l) ^= work[1];
+        state(l) ^= work[1] ^ std::rotl(work[3], 1);
         ++l;
-        state(l) ^= work[2];
+        state(l) ^= work[2] ^ std::rotl(work[4], 1);
         ++l;
-        state(l) ^= work[3];
-        ++l;
-    }
-
-    for (int l = 0; l < 5; ++l) {
-        work[l] = std::rotl(work[l], 1);
-    }
-
-    for (int l = 0; l < 25;) {
-        state(l) ^= work[1];
-        ++l;
-        state(l) ^= work[2];
-        ++l;
-        state(l) ^= work[3];
-        ++l;
-        state(l) ^= work[4];
-        ++l;
-        state(l) ^= work[0];
+        state(l) ^= work[3] ^ std::rotl(work[0], 1);
         ++l;
     }
 }
