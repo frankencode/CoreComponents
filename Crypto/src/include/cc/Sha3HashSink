@@ -37,7 +37,7 @@ public:
 private:
     struct State final: public CryptoHashSink::State
     {
-        int blockSize() const override { return HashSize; }
+        int blockSize() const override { return keccak_.FeedRate; }
 
         void write(const List<Bytes> &buffers) override
         {

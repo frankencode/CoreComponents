@@ -11,6 +11,7 @@
 #include <cc/Sha1HashSink>
 #include <cc/Sha256HashSink>
 #include <cc/Sha512HashSink>
+#include <cc/Sha3HashSink>
 #include <cc/testing>
 
 int main(int argc, char *argv[])
@@ -178,6 +179,204 @@ int main(int argc, char *argv[])
             fout("HMAC_SHA512(\"%%\", \"%%\") = 0x%%") << key << text << mac << nl;
 
             CC_VERIFY(mac == "b42af09057bac1e2d41708e48a902e09b5ff7f12ab428a4fe86653c73dd248fb82f948a549f7b791a5b41915ee4d1ec3935357e4e2317250d0372afa2ebeeb3a");
+        }
+    };
+
+    TestCase {
+        "MacHashSha3512Nist1",
+        []{
+            Bytes key { Bytes::allocate(64) };
+            for (int i = 0; i < key.count(); ++i) key[i] = i;
+
+            String text { "Sample message for keylen<blocklen" };
+
+            MacHashSink<Sha3HashSink<512>> macSink{key};
+            macSink.write(text);
+
+            String mac = hex(macSink.finish(), 'a').breakUp(8).join(" ");
+
+            fout() << "MAC = " << mac << nl;
+
+            CC_VERIFY(
+                mac
+                ==
+                "4efd629d 6c71bf86 162658f2 9943b1c3 "
+                "08ce27cd fa6db0d9 c3ce8176 3f9cbce5 "
+                "f7ebe986 8031db1a 8f8eb7b6 b95e5c5e "
+                "3f657a89 96c86a2f 6527e307 f0213196"
+            );
+        }
+    };
+
+    TestCase {
+        "MacHashSha3512Nist2",
+        []{
+            Bytes key { Bytes::allocate(72) };
+            for (int i = 0; i < key.count(); ++i) key[i] = i;
+
+            String text { "Sample message for keylen=blocklen" };
+
+            MacHashSink<Sha3HashSink<512>> macSink{key};
+            macSink.write(text);
+
+            String mac = hex(macSink.finish(), 'a').breakUp(8).join(" ");
+
+            fout() << "MAC = " << mac << nl;
+
+            CC_VERIFY(
+                mac
+                ==
+                "544e257e a2a3e5ea 19a590e6 a24b724c "
+                "e6327757 723fe275 1b75bf00 7d80f6b3 "
+                "60744bf1 b7a88ea5 85f9765b 47911976 "
+                "d3191cf8 3c039f5f fab0d29c c9d9b6da"
+            );
+        }
+    };
+
+    TestCase {
+        "MacHashSha3384Nist1",
+        []{
+            Bytes key { Bytes::allocate(48) };
+            for (int i = 0; i < key.count(); ++i) key[i] = i;
+
+            String text { "Sample message for keylen<blocklen" };
+
+            MacHashSink<Sha3HashSink<384>> macSink{key};
+            macSink.write(text);
+
+            String mac = hex(macSink.finish(), 'a').breakUp(8).join(" ");
+
+            fout() << "MAC = " << mac << nl;
+
+            CC_VERIFY(
+                mac
+                ==
+                "d588a3c5 1f3f2d90 6e8298c1 199aa8ff "
+                "62962181 27f6b38a 90b6afe2 c5617725 "
+                "bc99987f 79b22a55 7b6520db 710b7f42"
+            );
+        }
+    };
+
+    TestCase {
+        "MacHashSha3384Nist2",
+        []{
+            Bytes key { Bytes::allocate(104) };
+            for (int i = 0; i < key.count(); ++i) key[i] = i;
+
+            String text { "Sample message for keylen=blocklen" };
+
+            MacHashSink<Sha3HashSink<384>> macSink{key};
+            macSink.write(text);
+
+            String mac = hex(macSink.finish(), 'a').breakUp(8).join(" ");
+
+            fout() << "MAC = " << mac << nl;
+
+            CC_VERIFY(
+                mac
+                ==
+                "a27d24b5 92e8c8cb f6d4ce6f c5bf62d8 "
+                "fc98bf2d 486640d9 eb8099e2 4047837f "
+                "5f3bffbe 92dcce90 b4ed5b1e 7e44fa90"
+            );
+        }
+    };
+
+    TestCase {
+        "MacHashSha3256Nist1",
+        []{
+            Bytes key { Bytes::allocate(32) };
+            for (int i = 0; i < key.count(); ++i) key[i] = i;
+
+            String text { "Sample message for keylen<blocklen" };
+
+            MacHashSink<Sha3HashSink<256>> macSink{key};
+            macSink.write(text);
+
+            String mac = hex(macSink.finish(), 'a').breakUp(8).join(" ");
+
+            fout() << "MAC = " << mac << nl;
+
+            CC_VERIFY(
+                mac
+                ==
+                "4fe8e202 c4f058e8 dddc23d8 c34e4673 "
+                "43e23555 e24fc2f0 25d598f5 58f67205"
+            );
+        }
+    };
+
+    TestCase {
+        "MacHashSha3256Nist2",
+        []{
+            Bytes key { Bytes::allocate(136) };
+            for (int i = 0; i < key.count(); ++i) key[i] = i;
+
+            String text { "Sample message for keylen=blocklen" };
+
+            MacHashSink<Sha3HashSink<256>> macSink{key};
+            macSink.write(text);
+
+            String mac = hex(macSink.finish(), 'a').breakUp(8).join(" ");
+
+            fout() << "MAC = " << mac << nl;
+
+            CC_VERIFY(
+                mac
+                ==
+                "68b94e2e 538a9be4 103bebb5 aa016d47 "
+                "961d4d1a a9060613 13b557f8 af2c3faa"
+            );
+        }
+    };
+
+    TestCase {
+        "MacHashSha3224Nist1",
+        []{
+            Bytes key { Bytes::allocate(28) };
+            for (int i = 0; i < key.count(); ++i) key[i] = i;
+
+            String text { "Sample message for keylen<blocklen" };
+
+            MacHashSink<Sha3HashSink<224>> macSink{key};
+            macSink.write(text);
+
+            String mac = hex(macSink.finish(), 'a').breakUp(8).join(" ");
+
+            fout() << "MAC = " << mac << nl;
+
+            CC_VERIFY(
+                mac
+                ==
+                "332cfd59 347fdb8e 576e7726 0be4aba2 "
+                "d6dc5311 7b3bfb52 c6d18c04"
+            );
+        }
+    };
+
+    TestCase {
+        "MacHashSha3224Nist2",
+        []{
+            Bytes key { Bytes::allocate(144) };
+            for (int i = 0; i < key.count(); ++i) key[i] = i;
+
+            String text { "Sample message for keylen=blocklen" };
+
+            MacHashSink<Sha3HashSink<224>> macSink{key};
+            macSink.write(text);
+
+            String mac = hex(macSink.finish(), 'a').breakUp(8).join(" ");
+
+            fout() << "MAC = " << mac << nl;
+
+            CC_VERIFY(
+                mac
+                ==
+                "d8b733bc f66c644a 12323d56 4e24dcf3 "
+                "fc75f231 f3b67968 359100c7"
+            );
         }
     };
 

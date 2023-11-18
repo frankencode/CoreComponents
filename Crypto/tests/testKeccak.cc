@@ -42,37 +42,6 @@ int main(int argc, char *argv[])
             fout() << nl;
 
             CC_CHECK(expectedHashText == outHashText);
-
-
-            static constexpr uint8_t shuffle_[25] = { 1, 10, 7, 11, 17, 18, 3, 5, 16, 8, 21, 24, 4, 15, 23, 19, 13, 12, 2, 20, 14, 22, 9, 6, 1 };
-
-            Map<int,int> shifts;
-
-            for (int t = 0; t < 24; ++t) {
-                shifts.insert(shuffle_[t], (t + 1) * (t + 2) / 2);
-            }
-
-            for (int t = 0; t < 24; ++t) {
-                fout("%%, ") << shifts[t].value() % 64;
-            }
-            fout("\n");
-
-            /*int l = 0;
-            Map<int, int> map;
-            for (int y = 0; y < 5; ++y) {
-                for (int x = 0; x < 5; ++x) {
-                    int xs = (x + 3 * y) % 5;
-                    int ls = xs + 5 * x;
-                    // fout() << ls << ", ";
-                    if (l != ls) {
-                        fout("%% => %%;\n") << ls << l;
-                        map.insert(ls, l);
-                    }
-                    ++l;
-                }
-            }
-
-            fout() << nl;*/
         }
     };
 
