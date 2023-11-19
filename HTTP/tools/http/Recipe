@@ -1,4 +1,4 @@
 Application {
-    name: ccget
+    name: cchttp
     use: [ Core, Glob, Network, HTTP ]
 }

@@ -15,6 +15,7 @@ namespace cc {
 /** \class StreamTap cc/StreamTap
   * \ingroup streams
   * \brief Bi-directional traffic redirection and duplication
+  * \see StreamMultiplexer
   */
 class StreamTap final: public Stream
 {

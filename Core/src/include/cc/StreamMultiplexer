@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Stream>
+
+namespace cc {
+
+/** \class StreamMultiplexer cc/StreamMultiplexer
+  * \ingroup Streams
+  * \brief Parallel output to several data sinks
+  * \see StreamTap
+  */
+class StreamMultiplexer final: public Stream
+{
+public:
+    /** Create a new stream multiplexer
+      * \param sinks %Data sinks
+      */
+    StreamMultiplexer(const List<Stream> &sinks);
+
+    /** Create a new stream multiplexer
+      * \param sinks %Data sinks
+      */
+    StreamMultiplexer(std::initializer_list<Stream> sinks);
+
+private:
+    struct State;
+};
+
+} // namespace cc

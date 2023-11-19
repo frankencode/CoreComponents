@@ -55,7 +55,12 @@ struct HexDump::State final: public Stream::State
             else f << "  ";
             f << (((j + 1) % 8 == 0) ? "  " : " ");
         }
-        f << "|" << buffer_.select(0, i_) << "|" << nl;
+        if (ascii_) {
+            f << "|" << buffer_.select(0, i_) << "|" << nl;
+        }
+        else {
+            f << nl;
+        }
         offset_ += i_;
         i_ = 0;
     }
@@ -65,7 +70,35 @@ struct HexDump::State final: public Stream::State
     long i_ { 0 };
     long long offset_ { 0 };
     String indent_;
+    bool ascii_ { true };
 };
+
+Bytes HexDump::read(const String &text)
+{
+    long l = 0;
+    for (char ch: text) {
+        l +=
+            ('0' <= ch && ch <= '9') ||
+            ('A' <= ch && ch <= 'F') ||
+            ('a' <= ch && ch <= 'f');
+    }
+    Bytes data = Bytes::allocate((l >> 1) + (l & 1));
+    data.fill(0);
+    long j = l & 1;
+    bool skip = false;
+    for (char ch: text) {
+        if ('0' <= ch && ch <= '9') ch -= '0';
+        else if ('A' <= ch && ch <= 'F') ch -= 'A';
+        else if ('a' <= ch && ch <= 'f') ch -= 'a';
+        else if (!skip && ch == '|') skip = true;
+        else if (skip && ch == '\n') skip = false;
+        else continue;
+        if (skip) continue;
+        data[j >> 1] |= static_cast<uint8_t>(ch) << (!(j & 1) << 2);
+        ++j;
+    }
+    return data;
+}
 
 HexDump::HexDump(const Stream &sink):
     Stream{new State{sink}}
@@ -74,6 +107,12 @@ HexDump::HexDump(const Stream &sink):
 HexDump &HexDump::indent(const String &prefix)
 {
     me().indent_ = prefix;
+    return *this;
+}
+
+HexDump &HexDump::ascii(bool on)
+{
+    me().ascii_ = on;
     return *this;
 }
 

@@ -112,7 +112,7 @@ private:
 
 /** \class Keccak cc/Keccak
   * \ingroup crypto
-  * \brief Keccak sponge function
+  * \brief %Keccak sponge function
   * \tparam Capacity %Capacity of the sponge function
   * \tparam Padding Additional padding sequence to apply
   * \tparam Source %Policy of reading input bytes and automatically applying padding bytes
@@ -129,11 +129,11 @@ class Keccak
 public:
     static constexpr int FeedRate = (1600 - Capacity) / 8; ///< Rate of the sponge function (in bytes)
 
-    /** Create new Keccak instance
+    /** Create new instance
       */
     Keccak();
 
-    /** Create new Keccak instance
+    /** Create new instance
       * \param key Initial state bytes
       */
     Keccak(const Bytes &key);

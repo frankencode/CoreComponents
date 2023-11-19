@@ -1,13 +1,14 @@
 #include <cc/HttpClient>
 #include <cc/IoStream>
 #include <cc/File>
+#include <cc/CryptoHash>
+#include <cc/StreamMultiplexer>
 #include <cc/exceptions>
 #include <cc/stdio>
-#include <cc/DEBUG>
 
 using namespace cc;
 
-int get(const String &location, const String &fileName)
+int fetch(const String &location, const String &fileName, const CryptoHash &hash)
 {
     Uri uri{location};
     HttpClient client{uri};
@@ -27,11 +28,26 @@ int get(const String &location, const String &fileName)
 
         response.payload().transferTo(IoStream::error());
 
-        return get(newLocation, fileName);
+        return fetch(newLocation, fileName, hash);
     }
 
     File file{fileName, FileOpen::Overwrite};
-    response.payload().transferTo(file);
+    Stream sink = file;
+
+    if (hash.isValid()) {
+        CryptoHashSink hashSink = hash.openSink();
+        response.payload().transferTo(
+            StreamMultiplexer{file, hashSink}
+        );
+        Bytes sum = hashSink.finish();
+        if (sum != hash.sum()) {
+            ferr() << "Invalid hash sum, got: " << hex(sum) << ", expected: " << hex(hash.sum()) << nl;
+            return 2;
+        }
+    }
+    else {
+        response.payload().transferTo(file);
+    }
 
     return +response.status() >= 300 ? +response.status() / 100 : 0;
 }
@@ -41,15 +57,24 @@ int main(int argc, char *argv[])
     auto toolName = String{argv[0]}.baseName();
 
     try {
-        if (argc != 2) throw HelpRequest{};
-        String location = argv[1];
-        String fileName = location.fileName();
-        return get(location, fileName);
+        String location;
+        CryptoHash hash;
+        if (argc == 2) {
+            location = argv[1];
+        }
+        else if (argc == 3) {
+            location = argv[1];
+            hash = CryptoHash{argv[2]};
+            if (!hash.isValid()) throw HelpRequest{};
+        }
+        else throw HelpRequest{};
+
+        return fetch(location, location.fileName(), hash);
     }
     catch (HelpRequest &) {
         ferr(
-            "Usage: %% <URI>\n"
-            "Simple HTTP(S) client\n"
+            "Usage: %% <URI> [MD5|SHA1|SHA2|SHA3|...:<HASH>]\n"
+            "Fetch file from a web server (and verify checksum on-the-fly)\n"
             "\n"
         ) << toolName;
         return 1;

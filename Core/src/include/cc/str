@@ -81,6 +81,7 @@ template<class T>
 inline String hex(T x, int n = -1) { return inum(x, 16, n); }
 
 /** Convert \a data to hexadecimal
+  * \todo Introduce Byte->Array<uint8_t> and move this function to Bytes::hex()
   */
 String hex(const Bytes &data, char a = 'A');
 

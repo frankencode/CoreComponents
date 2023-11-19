@@ -25,6 +25,13 @@ namespace cc {
 class HexDump final: public Stream
 {
 public:
+    /** Read \a text as a hexdump
+      * \return Parsed bytes
+      * \todo Move to Bytes::readHex()
+      * \see hex(const Bytes &)
+      */
+    static Bytes read(const String &text);
+
     /** Create a new hexdump sink
       * \param sink %Where the hexdump is written to (defaults to IoStream::output())
       */
@@ -34,6 +41,10 @@ public:
       */
     HexDump &indent(const String &prefix);
 
+    /** Enable/disable ASCII annotations
+      */
+    HexDump &ascii(bool on);
+
 private:
     struct State;
 
@@ -41,6 +52,7 @@ private:
 };
 
 /** Generate a readable hexadecimal dump of \a data
+  * \todo rename to hexDump
   */
 String hexdump(const Bytes &data);
 

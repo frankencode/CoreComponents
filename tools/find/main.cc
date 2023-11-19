@@ -12,7 +12,6 @@
 #include <cc/File>
 #include <cc/FileInfo>
 #include <cc/stdio>
-#include <cc/DEBUG>
 
 using namespace cc;
 

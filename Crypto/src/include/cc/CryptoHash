@@ -1,0 +1,162 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/CryptoHashSink>
+#include <cc/String>
+
+namespace cc {
+
+/** \class CryptoHash cc/CryptoHash
+  * \ingroup crypto
+  * \brief Cryptographic hash sum
+  */
+class CryptoHash final
+{
+public:
+    /** %Type of algorithm used to compute the hash sum
+      */
+    enum class Method: uint32_t {
+        Invalid  = 0,        ///< Invalid hash sum
+        Md5      = 0x00080,  ///< MD5 hash sum
+        Sha1     = 0x100A0,  ///< SHA1 hash sum
+        Sha2_256 = 0x20100,  ///< SHA2-256 hash sum
+        Sha2_512 = 0x20200,  ///< SHA2-512 hash sum
+        Sha3_224 = 0x300E0,  ///< SHA3-224 hash sum
+        Sha3_256 = 0x30100,  ///< SHA3-256 hash sum
+        Sha3_384 = 0x30180,  ///< SHA3-384 hash sum
+        Sha3_512 = 0x30200,  ///< SHA3-512 hash sum
+        Sha256   = Sha2_256, ///< Alt. name for SHA2-256
+        Sha512   = Sha2_512, ///< Alt. name for SHA2-512
+        Default  = Sha3_512  ///< Default hash method to use
+    };
+
+    /** %Size of the hash sum (in bytes)
+      */
+    static int hashSize(Method method)
+    {
+        return static_cast<uint32_t>(method) & 0xFFFF;
+    }
+
+    /** Convert \a method to human-reable hash name
+      */
+    static String methodName(Method method)
+    {
+        String name;
+        switch (method) {
+            case Method::Sha3_512: name = "SHA3-512"; break;
+            case Method::Sha3_384: name = "SHA3-384"; break;
+            case Method::Sha3_256: name = "SHA3-256"; break;
+            case Method::Sha3_224: name = "SHA3-224"; break;
+            case Method::Sha2_512: name = "SHA2-512"; break;
+            case Method::Sha2_256: name = "SHA2-256"; break;
+            case Method::Sha1: name = "SHA1"; break;
+            case Method::Md5: name = "MD5"; break;
+            case Method::Invalid: break;
+        };
+        return name;
+    }
+
+    /** Read hash name
+      */
+    static Method readMethodName(const String &name)
+    {
+        if (name == "SHA3-512") return Method::Sha3_512;
+        else if (name == "SHA2-512") return Method::Sha2_512;
+        else if (name == "SHA3-384") return Method::Sha3_384;
+        else if (name == "SHA3-256") return Method::Sha3_256;
+        else if (name == "SHA3-224") return Method::Sha3_224;
+        else if (name == "SHA2-256") return Method::Sha2_256;
+        else if (name == "SHA512") return Method::Sha2_512;
+        else if (name == "SHA256") return Method::Sha2_256;
+        else if (name == "SHA3") return Method::Sha3_512;
+        else if (name == "SHA2") return Method::Sha2_512;
+        else if (name == "SHA1") return Method::Sha1;
+        else if (name == "MD5") return Method::Md5;
+        return Method::Invalid;
+    }
+
+    /** Create a cryptographic hash by parsing \a text
+      * \param text Text represenation of a cryptographic hash value, e.g. "MD5:B1946AC92492D2347C6235B4D2611184"
+      * \return Cryptographic hash (will return CryptoHash{} when parsing fails)
+      * \see isValid()
+      * \see toString()
+      */
+    static CryptoHash read(const String &text);
+
+    /** Open an appropriate CryptoHashSink for computing a cryptographic hash sum according to \a method
+      */
+    static CryptoHashSink openSink(Method method);
+
+    /** Compute the cryptogaphic hash sum from all bytes readable from \a source according to \a method
+      */
+    static CryptoHash compute(Method method, const Stream &source);
+
+    /** Create an invalid cryptographic hash
+      */
+    CryptoHash() = default;
+
+    /** Create a cryptographic hash sum by parsing \a text
+      * \param text Text represenation of a cryptographic hash value, e.g. "MD5:B1946AC92492D2347C6235B4D2611184"
+      * \see isValid()
+      * \see toString()
+      */
+    CryptoHash(const String &text):
+        CryptoHash{read(text)}
+    {}
+
+    /** Create a cryptographic hash sum
+      * \param method \copydoc Method
+      * \param sum \copydoc sum()
+      */
+    CryptoHash(Method method, const Bytes &sum):
+        method_{method},
+        sum_{sum}
+    {
+        assert(hashSize(method) == sum.count());
+    }
+
+    /** \copydoc Method
+      */
+    Method method() const { return method_; }
+
+    /** %Binary  representation of the cryptographic hash sum
+      */
+    Bytes sum() const { return sum_; }
+
+    /** Check is this is a valid cryptographic hash sum
+      */
+    bool isValid() const { return method_ != Method::Invalid; }
+
+    /** \copydoc isValid()
+      */
+    explicit operator bool() const { return isValid(); }
+
+    /** Open an appropriate CryptoHashSink for computing a cryptographic hash sum according to \a method()
+      */
+    CryptoHashSink openSink() const { return openSink(method()); }
+
+    /** Equality operator
+      */
+    bool operator==(const CryptoHash &other) const;
+
+    /** Ordering operator
+      */
+    std::strong_ordering operator<=>(const CryptoHash &other) const;
+
+    /** Stringify this cryptographic hash sum
+      */
+    String toString() const;
+
+private:
+    Method method_ { Method::Invalid };
+    Bytes sum_;
+};
+
+} // namepace cc
