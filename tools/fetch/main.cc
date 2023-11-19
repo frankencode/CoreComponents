@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
     }
     catch (HelpRequest &) {
         ferr(
-            "Usage: %% <URI> [MD5|SHA1|SHA2|SHA3|...:<HASH>]\n"
+            "Usage: %% <URI> [MD5|SHA1|SHA256|SHA512|...:<HASH>]\n"
             "Fetch file from a web server (and verify checksum on-the-fly)\n"
             "\n"
         ) << toolName;
