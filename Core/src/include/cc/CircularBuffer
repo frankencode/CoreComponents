@@ -27,6 +27,12 @@ public:
       */
     static CircularBuffer allocate(int size) { return CircularBuffer{size}; }
 
+    /** Allocate a new circular buffer of capacity \a dim[0]
+      */
+    CircularBuffer(Dim<1> dim):
+        CircularBuffer{static_cast<int>(dim[0])}
+    {}
+
     /** Buffer capacity
       */
     int size() const { return me().size_; }

@@ -11,6 +11,7 @@
 #include <cc/buckets/BucketVector>
 #include <cc/Iterator>
 #include <cc/StableSort>
+#include <cc/Dim>
 #include <cc/InOut>
 #include <cc/Cow>
 #include <cc/container>

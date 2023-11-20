@@ -113,6 +113,13 @@ public:
         }
     {}
 
+    /** Create a array of \a dim[0] items
+      * \note For performance reasons the items are not initialized if the item type is a fundamental type (e.g. char).
+      */
+    Array(Dim<1> dim):
+        Array{dim[0], Allocate{}}
+    {}
+
     /** Construct a copy of \a other
       */
     Array(const Array &other) = default;
