@@ -60,9 +60,6 @@ private:
 
         void consume()
         {
-            //for (long offset = 0; offset < buffer_.count(); offset += keccak_.FeedRate) {
-            //    keccak_.absorb({buffer_, offset});
-            //}
             keccak_.absorb({buffer_});
             j_ = 0;
         }
@@ -80,7 +77,7 @@ private:
         }
 
         Keccak<HashBitSize * 2, Sha3Padding> keccak_;
-        Bytes buffer_ { Bytes::allocate(keccak_.FeedRate) };
+        Bytes buffer_ { Dim<>{keccak_.FeedRate} };
         long j_ { 0 };
     };
 };

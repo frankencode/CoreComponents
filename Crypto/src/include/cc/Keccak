@@ -149,7 +149,6 @@ public:
       */
     void squeeze(Sink sink);
 
-
 private:
     #if 0
     static uint64_t generateRoundWord(int ir);
@@ -168,46 +167,12 @@ private:
         return state_[l];
     }
 
-    void permutate();
-    void rnd(int ir);
-
-    void theta_rho();
-    void pi();
-    void chi();
-    void iota(int ir);
+    static void permutate(uint64_t *state);
 
     uint64_t state_[25];
-
-    static constexpr uint_fast8_t shuffle_[25] = { 0, 10, 7, 11, 17, 18, 3, 5, 16, 8, 21, 24, 4, 15, 23, 19, 13, 12, 2, 20, 14, 22, 9, 6, 1 };
-    static constexpr uint_fast8_t shift_[25] = { 0, 1, 62, 28, 27, 36, 44, 6, 55, 20, 3, 10, 43, 25, 39, 41, 45, 15, 21, 8, 18, 2, 61, 56, 14 };
-
-    static constexpr uint64_t roundWord_[24] = {
-        0x1ull,
-        0x8082ull,
-        0x800000000000808Aull,
-        0x8000000080008000ull,
-        0x808Bull,
-        0x80000001ull,
-        0x8000000080008081ull,
-        0x8000000000008009ull,
-        0x8Aull,
-        0x88ull,
-        0x80008009ull,
-        0x8000000Aull,
-        0x8000808Bull,
-        0x800000000000008Bull,
-        0x8000000000008089ull,
-        0x8000000000008003ull,
-        0x8000000000008002ull,
-        0x8000000000000080ull,
-        0x800Aull,
-        0x800000008000000Aull,
-        0x8000000080008081ull,
-        0x8000000000008080ull,
-        0x80000001ull,
-        0x8000000080008008ull
-    };
 };
+
+void keccak_permutate(uint64_t *state);
 
 template<int Capacity, class Padding, class Source, class Sink>
 Keccak<Capacity, Padding, Source, Sink>::Keccak()
@@ -240,7 +205,7 @@ bool Keccak<Capacity, Padding, Source, Sink>::absorb(Source source)
         state((i - 1) >> 3) ^= lane;
     }
 
-    permutate();
+    keccak_permutate(state_);
 
     return !source.eoi();
 }
@@ -257,116 +222,10 @@ void Keccak<Capacity, Padding, Source, Sink>::squeeze(Sink sink)
                 lane >>= 8;
             }
         }
-        if (i == FeedRate) permutate();
+        if (i == FeedRate) keccak_permutate(state_);
     }
 }
 
-template<int Capacity, class Padding, class Source, class Sink>
-void Keccak<Capacity, Padding, Source, Sink>::permutate()
-{
-    for (int ir = 0; ir < 24; ++ir) {
-        rnd(ir);
-    }
-}
 
-template<int Capacity, class Padding, class Source, class Sink>
-void Keccak<Capacity, Padding, Source, Sink>::rnd(int ir)
-{
-    theta_rho();
-    pi();
-    chi();
-    iota(ir);
-}
-
-template<int Capacity, class Padding, class Source, class Sink>
-void Keccak<Capacity, Padding, Source, Sink>::theta_rho()
-{
-    uint64_t work[5];
-
-    for (int l = 0; l < 5; ++l) {
-        work[l] = state(l);
-        work[l] ^= state(l + 5);
-        work[l] ^= state(l + 10);
-        work[l] ^= state(l + 15);
-        work[l] ^= state(l + 20);
-    }
-
-    for (int l = 0; l < 25;) {
-        state(l) = std::rotl(state(l) ^ work[4] ^ std::rotl(work[1], 1), shift_[l]);
-        ++l;
-        state(l) = std::rotl(state(l) ^ work[0] ^ std::rotl(work[2], 1), shift_[l]);
-        ++l;
-        state(l) = std::rotl(state(l) ^ work[1] ^ std::rotl(work[3], 1), shift_[l]);
-        ++l;
-        state(l) = std::rotl(state(l) ^ work[2] ^ std::rotl(work[4], 1), shift_[l]);
-        ++l;
-        state(l) = std::rotl(state(l) ^ work[3] ^ std::rotl(work[0], 1), shift_[l]);
-        ++l;
-    }
-}
-
-template<int Capacity, class Padding, class Source, class Sink>
-void Keccak<Capacity, Padding, Source, Sink>::pi()
-{
-    uint64_t a = state(1);
-    for (int i = 1; i < 25; ++i) {
-        const uint64_t b = state(shuffle_[i]);
-        state(shuffle_[i]) = a;
-        a = b;
-    }
-}
-
-template<int Capacity, class Padding, class Source, class Sink>
-void Keccak<Capacity, Padding, Source, Sink>::chi()
-{
-    for (int l = 0; l < 25;) {
-        const uint64_t a = state(l + 0);
-        const uint64_t b = state(l + 1);
-        state(l) ^= (~state(l + 1) & state(l + 2));
-        ++l;
-        state(l) ^= (~state(l + 1) & state(l + 2));
-        ++l;
-        state(l) ^= (~state(l + 1) & state(l + 2));
-        ++l;
-        state(l) ^= (~state(l + 1) & a           );
-        ++l;
-        state(l) ^= (~a            & b           );
-        ++l;
-    }
-}
-
-template<int Capacity, class Padding, class Source, class Sink>
-void Keccak<Capacity, Padding, Source, Sink>::iota(int ir)
-{
-    state(0) ^= roundWord_[ir];
-}
-
-#if 0
-template<int Capacity, class Padding, class Source, class Sink>
-uint64_t Keccak<Capacity, Padding, Source, Sink>::generateRoundWord(int ir)
-{
-    uint64_t sugar = 0;
-    int ir7 = ir * 7;
-    for (int j = 0; j < 7; ++j) {
-        sugar ^= rc(j + ir7) << ((1 << j) - 1);
-    }
-    return sugar;
-}
-
-template<int Capacity, class Padding, class Source, class Sink>
-uint64_t Keccak<Capacity, Padding, Source, Sink>::rc(uint8_t t)
-{
-    uint8_t r = 1 << 7;
-    for (int i = 1; i <= t; ++i) {
-        const uint8_t r8 = r & 1;
-        r >>= 1;
-        r ^= (r8 << (7 - 0));
-        r ^= (r8 << (7 - 4));
-        r ^= (r8 << (7 - 5));
-        r ^= (r8 << (7 - 6));
-    }
-    return r >> 7;
-}
-#endif
 
 } // namespace cc
