@@ -118,8 +118,6 @@ private:
   * \tparam Source %Policy of reading input bytes and automatically applying padding bytes
   *
   * The %Keccak template class implements the Keccak[c] sponge function according to NIST.FIPS.202, chapter 5.2.
-  *
-  * \todo Optimize further, 2x speedup is plausible.
   */
 template<int Capacity = 1024, class Padding = KeccakPadding, class Source = KeccakSource<Capacity, Padding>, class Sink = KeccakSink >
 class Keccak
