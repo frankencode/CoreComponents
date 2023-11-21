@@ -32,6 +32,7 @@ struct SdlPlatformPlugin::State: public PlatformPlugin::State
         SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
 
         SDL_SetHint(SDL_HINT_XINPUT_ENABLED, "1");
+        SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 
         SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
 
