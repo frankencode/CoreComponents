@@ -363,6 +363,14 @@ struct BuildPlan::State:
             BuildPlan plan = self.loadChild(path);
             plan.readPrerequisites();
             prerequisites_.append(plan);
+
+            if (plan.options() & BuildOption::Library) {
+                if (File::exists(plan.projectPath() / ".." / "plugins" / "Recipe")) {
+                    BuildPlan pluginsPlan = plan.loadChild((String{".."} / "plugins").absolutePathRelativeTo(plan.projectPath()));
+                    pluginsPlan.readPrerequisites();
+                    prerequisites_.append(pluginsPlan);
+                }
+            }
         }
 
         if (options_ & BuildOption::Plugin) {
