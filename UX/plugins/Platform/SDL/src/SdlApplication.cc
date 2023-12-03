@@ -203,7 +203,7 @@ struct SdlApplication::State: public Application::State
             };
 
             for (const auto &pair: windows_) {
-                SdlWindow{pair.value()}->commitFrame();
+                SdlWindow{pair.value()}.me().commitFrame();
             }
         }
         while (event.type != SDL_QUIT);
@@ -327,7 +327,7 @@ struct SdlApplication::State: public Application::State
 
         SdlWindow window;
         if (windows_.lookup(e.windowID, &window)) {
-            if (e.timestamp - window->gainFocusTime_ > 100) // workaround: SDL sometimes slips window change keyboard combinations
+            if (e.timestamp - window.me().gainFocusTime_ > 100) // workaround: SDL sometimes slips window change keyboard combinations
                 feedKeyEvent(window, event);
         }
     }
@@ -338,33 +338,33 @@ struct SdlApplication::State: public Application::State
             case SDL_WINDOWEVENT_SIZE_CHANGED: {
                 SdlWindow window;
                 if (windows_.lookup(e.windowID, &window)) {
-                    window->onWindowResized(Size{double(e.data1), double(e.data2)});
+                    window.me().onWindowResized(Size{double(e.data1), double(e.data2)});
                 }
                 break;
             }
             case SDL_WINDOWEVENT_SHOWN: {
                 SdlWindow window;
                 if (windows_.lookup(e.windowID, &window))
-                    window->onWindowShown();
+                    window.me().onWindowShown();
                 break;
             }
             case SDL_WINDOWEVENT_HIDDEN: {
                 SdlWindow window;
                 if (windows_.lookup(e.windowID, &window)) {
-                    window->exposed_ = false;
-                    window->onWindowHidden();
+                    window.me().exposed_ = false;
+                    window.me().onWindowHidden();
                 }
                 break;
             }
             case SDL_WINDOWEVENT_EXPOSED: {
                 SdlWindow window;
                 if (windows_.lookup(e.windowID, &window)) {
-                    if (!window->exposed_) {
+                    if (!window.me().exposed_) {
                         feedExposedEvent(window);
-                        window->exposed_ = true;
+                        window.me().exposed_ = true;
                     }
                     else {
-                        window->redraw();
+                        window.me().redraw();
                     }
                 }
                 break;
@@ -372,7 +372,7 @@ struct SdlApplication::State: public Application::State
             case SDL_WINDOWEVENT_MOVED: {
                 SdlWindow window;
                 if (windows_.lookup(e.windowID, &window))
-                    window->onWindowMoved(Point{double(e.data1), double(e.data2)});
+                    window.me().onWindowMoved(Point{double(e.data1), double(e.data2)});
                 break;
             }
             case SDL_WINDOWEVENT_ENTER: {
@@ -391,7 +391,7 @@ struct SdlApplication::State: public Application::State
                 SdlWindow window;
                 if (windows_.lookup(e.windowID, &window)) {
                     focusWindow = window;
-                    window->gainFocusTime_ = e.timestamp;
+                    window.me().gainFocusTime_ = e.timestamp;
                 }
                 break;
             }

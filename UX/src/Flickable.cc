@@ -66,7 +66,7 @@ Flickable::State::State(const View &carrier):
         }
 
         overwrittenControl_ = carrier_.findControl(mapToChild(carrier_, event.pos()));
-        if (overwrittenControl_) overwrittenControl_->pressedOverwrite(true);
+        if (overwrittenControl_) overwrittenControl_.me().pressedOverwrite(true);
 
         return true;
     });
@@ -74,7 +74,7 @@ Flickable::State::State(const View &carrier):
     onPointerReleased([this](const PointerEvent &event)
     {
         if (overwrittenControl_) {
-            overwrittenControl_->pressedOverwrite(false);
+            overwrittenControl_.me().pressedOverwrite(false);
             overwrittenControl_ = Control{};
         }
 

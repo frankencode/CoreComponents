@@ -280,9 +280,4 @@ const NumberCell::State &NumberCell::me() const
     return View::me().as<State>();
 }
 
-const NumberCell::State *NumberCell::operator->() const
-{
-    return &me();
-}
-
 } // namespace cc

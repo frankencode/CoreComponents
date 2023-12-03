@@ -108,7 +108,7 @@ Checkbox &Checkbox::onValueChanged(Function<void()> &&f)
 
 Checkbox &Checkbox::groupUnder(const Checkbox &groupLeader)
 {
-    me().checkbox_.groupUnder(Checkbox{groupLeader}->checkbox_);
+    me().checkbox_.groupUnder(Checkbox{groupLeader}.me().checkbox_);
     return *this;
 }
 
@@ -120,11 +120,6 @@ Checkbox::State &Checkbox::me()
 const Checkbox::State &Checkbox::me() const
 {
     return View::me().as<State>();
-}
-
-Checkbox::State *Checkbox::operator->()
-{
-    return &me();
 }
 
 } // namespace cc

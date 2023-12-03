@@ -7,5 +7,6 @@
         "latex",
         "plaintext",
         "cpp"
-    ]
+    ],
+    "editor.inlayHints.enabled": "off"
 }

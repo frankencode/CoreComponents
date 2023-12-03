@@ -81,9 +81,6 @@ private:
 
     State &me();
     const State &me() const;
-
-    State *operator->();
-    const State *operator->() const;
 };
 
 } // namespace cc

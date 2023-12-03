@@ -89,17 +89,17 @@ struct CheckboxControl::State final: public InputControl::State
         }
 
         for (CheckboxControl &member: groupMembers()) {
-            member->state = state();
+            member.me().state = state();
         }
 
         if (!groupLeader().isNull()) {
             int n = 0;
-            for (const CheckboxControl &member: groupLeader()->groupMembers()) {
-                n += (member->state != Blank);
+            for (const CheckboxControl &member: groupLeader().me().groupMembers()) {
+                n += (member.me().state != Blank);
             }
-            if (n == 0) groupLeader()->state = Blank;
-            else if (n == groupLeader()->groupMembers().count()) groupLeader()->state = Marked;
-            else groupLeader()->state = Intermediate;
+            if (n == 0) groupLeader().me().state = Blank;
+            else if (n == groupLeader().me().groupMembers().count()) groupLeader().me().state = Marked;
+            else groupLeader().me().state = Intermediate;
         }
     }
 
@@ -150,9 +150,9 @@ CheckboxControl &CheckboxControl::onValueChanged(Function<void()> &&f)
 CheckboxControl &CheckboxControl::groupUnder(CheckboxControl &groupLeader)
 {
     me().groupLeader = groupLeader;
-    auto members = groupLeader->groupMembers();
+    auto members = groupLeader.me().groupMembers();
     members << *this;
-    groupLeader->groupMembers = members;
+    groupLeader.me().groupMembers = members;
     return *this;
 }
 
@@ -169,16 +169,6 @@ CheckboxControl::State &CheckboxControl::me()
 const CheckboxControl::State &CheckboxControl::me() const
 {
     return get<State>();
-}
-
-CheckboxControl::State *CheckboxControl::operator->()
-{
-    return &me();
-}
-
-const CheckboxControl::State *CheckboxControl::operator->() const
-{
-    return &me();
 }
 
 } // namespace cc

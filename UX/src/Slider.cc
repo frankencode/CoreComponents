@@ -89,7 +89,7 @@ struct Slider::State: public View::State
             assert(!cell_);
             if (!cell_) {
                 cell_ = view.as<NumberCell>();
-                if (cell_->autoConnect_) {
+                if (cell_.me().autoConnect_) {
                     cell_.min([this]{ return slider_.min(); });
                     cell_.max([this]{ return slider_.max(); });
                     cell_.precision([this]{ return slider_.precision(); });

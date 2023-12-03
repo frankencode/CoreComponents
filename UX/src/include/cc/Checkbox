@@ -49,7 +49,6 @@ private:
 
     State &me();
     const State &me() const;
-    State *operator->();
 };
 
 } // namespace cc

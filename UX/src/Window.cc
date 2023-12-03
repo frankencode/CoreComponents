@@ -14,7 +14,7 @@ namespace cc {
 
 Window::Window(const View &view)
 {
-    *this = Application{}->createWindow(view);
+    *this = Application{}.me().createWindow(view);
 }
 
 Control Window::findControl(Point pos) const
@@ -40,12 +40,12 @@ Control Window::findControl(Point pos) const
 }
 
 Window::State::State(View view):
-    size{&view->size},
+    size{&view.me().size},
     view_{view}
 {
     if (!view_.paper()) view_.paper([this]{ return theme().windowColor(); });
-    view_->window_ = this;
-    view_->settled();
+    view_.me().window_ = this;
+    view_.me().settled();
 
     display([this]{
         List<Display> displays = DisplayManager{}.displays();

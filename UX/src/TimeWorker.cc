@@ -27,12 +27,12 @@ public:
     TimeoutRequest(long id, Timer timer):
         Object{new State{id, timer}}
     {
-        timer->requestId_ = id;
+        timer.me().requestId_ = id;
     }
 
     bool isActive() const
     {
-        return me().timer_.isActive() && me().timer_->requestId_ == me().id_;
+        return me().timer_.isActive() && me().timer_.me().requestId_ == me().id_;
     }
 
     Timer timer() const { return me().timer_; }
@@ -45,7 +45,7 @@ public:
 
     void deactivate()
     {
-        me().timer_->isActive_ = false;
+        me().timer_.me().isActive_ = false;
     }
 
     bool operator==(const TimeoutRequest &other) const

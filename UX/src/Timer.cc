@@ -34,7 +34,7 @@ Timer &Timer::startAt(double startTime)
     if (me().startTime_ > 0) {
         me().isActive_ = false;
         Timer newTimer{me().interval_};
-        newTimer->timeout_ = me().timeout_;
+        newTimer.me().timeout_ = me().timeout_;
         *this = newTimer;
     }
     me().isActive_ = true;
@@ -48,7 +48,7 @@ Timer &Timer::startIn(double delayTime)
     if (me().startTime_ > 0) {
         me().isActive_ = false;
         Timer newTimer{me().interval_};
-        newTimer->timeout_ = me().timeout_;
+        newTimer.me().timeout_ = me().timeout_;
         *this = newTimer;
     }
     me().isActive_ = true;
@@ -96,16 +96,6 @@ Timer::State &Timer::me()
 const Timer::State &Timer::me() const
 {
     return Object::me.as<State>();
-}
-
-Timer::State *Timer::operator->()
-{
-    return &me();
-}
-
-const Timer::State *Timer::operator->() const
-{
-    return &me();
 }
 
 } // namespace cc

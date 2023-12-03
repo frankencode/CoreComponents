@@ -123,7 +123,7 @@ protected:
 
         static View::State &viewState(View &view) { return view.me(); }
         static const View::State &viewState(const View &view) { return view.me(); }
-        static const View::State *parent(const View &view) { return view->parent_(); }
+        static const View::State *parent(const View &view) { return view.me().parent_(); }
         static const View::State *parent(const View::State *&view) { return view->parent_(); }
 
         static Object &viewContext(View &view) { return view.me().context_; }
@@ -153,8 +153,6 @@ protected:
 
     State &me() { return Object::me.as<State>(); }
     const State &me() const { return Object::me.as<State>(); }
-
-    State *operator->() { return &me(); }
 };
 
 } // namespace cc

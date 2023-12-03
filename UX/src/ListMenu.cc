@@ -96,8 +96,6 @@ class ListMenu::Pane final: public View
 
     State &me() { return View::me().as<State>(); }
     const State &me() const { return View::me().as<State>(); }
-
-    State *operator->() { return &me(); }
 };
 
 struct ListMenu::State final: public Flickable::State
@@ -107,11 +105,11 @@ struct ListMenu::State final: public Flickable::State
     {
         Pane carrier = Flickable::State::carrier().as<Pane>();
 
-        carrier->leadSpace([this]{
+        carrier.me().leadSpace([this]{
             return header() ? header().height() : leadSpace();
         });
 
-        carrier->tailSpace([this]{
+        carrier.me().tailSpace([this]{
             return footer() ? footer().height() : tailSpace();
         });
     }

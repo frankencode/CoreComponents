@@ -111,8 +111,6 @@ class ListView::Pane final: public View
 
     State &me() { return View::me().as<State>(); }
     const State &me() const { return View::me().as<State>(); }
-
-    State *operator->() { return &me(); }
 };
 
 ListView::State::State():
@@ -120,18 +118,18 @@ ListView::State::State():
 {
     Pane carrier = Flickable::State::carrier().as<Pane>();
 
-    carrier->leadSpace([this]{
+    carrier.me().leadSpace([this]{
         return header() ? header().height() : leadSpace();
     });
 
-    carrier->tailSpace([this]{
+    carrier.me().tailSpace([this]{
         return footer() ? footer().height() : tailSpace();
     });
 }
 
 void ListView::State::deplete()
 {
-    carrier().as<Pane>()->deplete();
+    carrier().as<Pane>().me().deplete();
 }
 
 void ListView::State::setHeader(const View &newValue)

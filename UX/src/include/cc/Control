@@ -148,9 +148,6 @@ protected:
     const State &me() const {
         return View::me().as<State>();
     }
-
-    State *operator->() { return &me(); }
-    const State *operator->() const { return &me(); }
 };
 
 } // namespace cc

@@ -441,8 +441,6 @@ public:
 
         State &me() { return Object::me.as<State>(); }
         const State &me() const { return Object::me.as<State>(); }
-
-        State *operator->() { return &me(); }
     };
 
     Layout layout() const { return me().layout(); } ///< Get layout
@@ -731,7 +729,7 @@ protected:
         void layout(const Layout &newValue)
         {
             layout_(newValue);
-            layout_()->view_ = this;
+            layout_().me().view_ = this;
         }
 
         Point mapToGlobal(Point l) const; ///< \copydoc View::mapToGlobal()
@@ -920,16 +918,13 @@ private:
         for (const View &child: me().children_) const_cast<View &>(child).detachAll();
         me().attachments_.deplete();
     }
-
-    State *operator->() { return &me(); }
-    const State *operator->() const { return &me(); }
 };
 
 template<>
 class IndexTracking<View> {
 public:
-    static void setHandle(View &view, void *handle) { if (view) view->trackingHandle_ = handle; }
-    static void *handle(const View &view) { return (view) ? view->trackingHandle_ : nullptr; }
+    static void setHandle(View &view, void *handle) { if (view) view.me().trackingHandle_ = handle; }
+    static void *handle(const View &view) { return (view) ? view.me().trackingHandle_ : nullptr; }
 };
 
 } // namespace cc

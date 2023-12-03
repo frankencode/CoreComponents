@@ -36,34 +36,34 @@ View::State::State()
 
     visible.onChanged([this]{
         if (decoration()) {
-            decoration()->visible = visible();
+            decoration().me().visible = visible();
         }
 
         if (!visible()) {
             context_ = Object{};
             image_ = Image{};
             if (hasParent()) {
-                parent()->visibleChildren_.remove(self());
+                parent().me().visibleChildren_.remove(self());
             }
             update(UpdateReason::Hidden);
         }
         else {
             if (hasParent()) {
-                parent()->visibleChildren_.insert(self());
+                parent().me().visibleChildren_.insert(self());
             }
             paint();
         }
     });
 
     decoration.onChanged([this]{
-        decoration()->parent_ = this;
+        decoration().me().parent_ = this;
     });
 
     paint([this]{ if (isPainted()) polish(); });
 
     paint.onChanged([this]{
         if (isPremultiplied() && isPainted() && image_) image_.normalize();
-        if (decoration()) decoration()->paint();
+        if (decoration()) decoration().me().paint();
         update(UpdateReason::Changed);
     });
 }
@@ -72,7 +72,7 @@ View::State::~State()
 {
     if (layout_()) {
         // Disengage the layout before destroying the children for efficiency.
-        layout_()->view_(nullptr);
+        layout_().me().view_(nullptr);
     }
 }
 
@@ -193,7 +193,7 @@ Color View::State::basePaper() const
 
 void View::State::childReady(InOut<View> child)
 {
-    child()->settled();
+    child().me().settled();
 }
 
 void View::State::childDone(InOut<View> child)
@@ -204,7 +204,7 @@ void View::State::settled()
 
 void View::State::addBelow(const View &child)
 {
-    View{child}->id_ = nextBelowId();
+    View{child}.me().id_ = nextBelowId();
     insertChild(child);
 }
 
@@ -220,7 +220,7 @@ void View::State::insertAt(Locator target, View child)
             newId = (newId + sibling2.id()) / 2;
         else
             --newId;
-        child->id_ = newId;
+        child.me().id_ = newId;
     }
     insertChild(child);
 }
@@ -233,9 +233,9 @@ void View::State::insertAt(long index, const View &child)
 
 void View::State::insertChild(View child)
 {
-    child->parent_ = this;
-    if (std::isnan(child->id_)) {
-        child->id_ = nextAboveId();
+    child.me().parent_ = this;
+    if (std::isnan(child.me().id_)) {
+        child.me().id_ = nextAboveId();
     }
     children_.insert(child);
     if (child.visible()) {
@@ -244,7 +244,7 @@ void View::State::insertChild(View child)
     childReady(&child);
     ++childrenCount;
     if (hasWindow() && child.visible()) {
-        child->feedExposedEvent();
+        child.me().feedExposedEvent();
     }
 }
 
@@ -256,7 +256,7 @@ void View::State::removeChild(View child)
 
     Application{}.postEvent([parent=alias<View>(this), child]() mutable {
         Application{}.disengage(child);
-        if (child.visible()) parent->visibleChildren_.remove(child);
+        if (child.visible()) parent.me().visibleChildren_.remove(child);
     });
 }
 
@@ -266,7 +266,7 @@ void View::State::moveToTop(View child)
     {
         child.visible(false);
         children_.remove(child);
-        child->id_ = children_.max().id() + 1;
+        child.me().id_ = children_.max().id() + 1;
         children_.insert(child);
         child.visible(true);
     }
@@ -278,7 +278,7 @@ void View::State::moveToBottom(View child)
     {
         child.visible(false);
         children_.remove(child);
-        child->id_ = children_.min().id() - 1;
+        child.me().id_ = children_.min().id() - 1;
         children_.insert(child);
         child.visible(true);
     }
@@ -335,19 +335,19 @@ void View::State::update(UpdateReason reason)
 
     if (!visible() && reason != UpdateReason::Hidden) return;
 
-    window()->addToFrame(UpdateRequest{reason, self()});
+    window().me().addToFrame(UpdateRequest{reason, self()});
 }
 
 bool View::State::feedExposedEvent() const
 {
     if (isPainted()) {
         paint();
-        if (decoration()) decoration()->paint();
+        if (decoration()) decoration().me().paint();
     }
 
     for (const View &child: visibleChildren_)
     {
-        if (child->feedExposedEvent())
+        if (child.me().feedExposedEvent())
             return true;
     }
 
@@ -360,7 +360,7 @@ bool View::State::feedEnterEvent() const
 
     for (const View &child: visibleChildren_)
     {
-        if (child->feedEnterEvent())
+        if (child.me().feedEnterEvent())
             return true;
     }
 
@@ -373,7 +373,7 @@ bool View::State::feedLeaveEvent() const
 
     for (const View &child: visibleChildren_)
     {
-        if (child->feedLeaveEvent())
+        if (child.me().feedLeaveEvent())
             return true;
     }
 
@@ -405,9 +405,9 @@ bool View::State::feedFingerEvent(FingerEvent &event) const
 
     for (const View &child: visibleChildren_)
     {
-        if (child->containsGlobal(eventPos))
+        if (child.me().containsGlobal(eventPos))
         {
-            if (child->feedFingerEvent(event))
+            if (child.me().feedFingerEvent(event))
                 return true;
         }
     }
@@ -442,9 +442,9 @@ bool View::State::feedMouseEvent(MouseEvent &event) const
 
     for (const View &child: visibleChildren_)
     {
-        if (child->containsGlobal(event.pos()))
+        if (child.me().containsGlobal(event.pos()))
         {
-            if (child->feedMouseEvent(event))
+            if (child.me().feedMouseEvent(event))
                 return true;
         }
     }
@@ -462,9 +462,9 @@ bool View::State::feedWheelEvent(WheelEvent &event) const
 
     for (const View &child: visibleChildren_)
     {
-        if (child->containsGlobal(event.mousePos()))
+        if (child.me().containsGlobal(event.mousePos()))
         {
-            if (child->feedWheelEvent(event))
+            if (child.me().feedWheelEvent(event))
                 return true;
         }
     }
@@ -485,7 +485,7 @@ bool View::State::feedKeyEvent(KeyEvent &event) const
 
     for (const View &child: visibleChildren_)
     {
-        if (child->feedKeyEvent(event))
+        if (child.me().feedKeyEvent(event))
             return true;
     }
 

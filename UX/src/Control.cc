@@ -15,7 +15,7 @@ Control::State::State()
 {
     hover([this]{
         if (Application{}.hoverControl() == this) return true;
-        for (Control d = delegate(); d; d = d->delegate()) {
+        for (Control d = delegate(); d; d = d.me().delegate()) {
             if (Application{}.hoverControl() == d) return true;
         }
         return false;
@@ -24,7 +24,7 @@ Control::State::State()
     focus([this]{
         if (window() != Application{}.focusWindow()) return false;
         if (Application{}.focusControl() == this) return true;
-        for (Control d = delegate(); d; d = d->delegate()) {
+        for (Control d = delegate(); d; d = d.me().delegate()) {
             if (Application{}.focusControl() == d) return true;
         }
         return false;
@@ -33,7 +33,7 @@ Control::State::State()
     pressed([this]{
         if (pressedOverwrite()) return true;
         if (Application{}.pressedControl() == this) return true;
-        for (Control d = delegate(); d; d = d->delegate()) {
+        for (Control d = delegate(); d; d = d.me().delegate()) {
             if (Application{}.pressedControl() == d) return true;
         }
         return false;
@@ -43,7 +43,7 @@ Control::State::State()
 void Control::State::grabFocus()
 {
     if (delegate()) {
-        delegate()->grabFocus();
+        delegate().me().grabFocus();
     }
     else if (Application{}.focusControl() != self()) {
         if (hasWindow()) {
@@ -60,7 +60,7 @@ void Control::State::grabFocus()
 void Control::State::releaseFocus()
 {
     if (delegate()) {
-        delegate()->releaseFocus();
+        delegate().me().releaseFocus();
     }
     else if (Application{}.focusControl() == self()) {
         Application{}.focusControl(Control{});
