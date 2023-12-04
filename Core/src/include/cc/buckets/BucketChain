@@ -104,7 +104,7 @@ public:
         const T& slotAt(unsigned nodeIndex) const { return reinterpret_cast<const T *>(data_)[nodeIndex]; }
 
         BucketSlotMap<Capacity> map_;
-        std::uint8_t data_[Capacity * sizeof(T)] alignas(T);
+        alignas(T) std::uint8_t data_[Capacity * sizeof(T)];
     };
 
     BucketChain() = default;
