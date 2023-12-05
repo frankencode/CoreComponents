@@ -100,7 +100,7 @@ String fnum(double x, int precision, int base, int screen)
         bool normalized = (0 < e) && (e < 0x7FF);
         int eb = e - 1023 + int(!normalized); // exponent with bias applied
 
-        int eba = int(roundPoor(log(pow(double(2.), eb)) / log(double(base)))); // exponent in user defined base
+        int eba = int(roundNearestOrIn(log(pow(double(2.), eb)) / log(double(base)))); // exponent in user defined base
         double cba = pow(double(2.),double(eb)) / pow(double(base),double(eba)); // correction factor of user defined base
 
         uint64_t m = (uint64_t(normalized) << 52) | f; // mantissa

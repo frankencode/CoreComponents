@@ -17,22 +17,42 @@ namespace cc {
 ///@{
 /// \ingroup math
 
-/** Round \a x towards nearest integral number or if ambigious towards +-inifinity (commercial rounding)
+/** Round \a x towards nearest integral number or if ambigious towards +-infinity
   */
-inline double roundRich(double x)
+inline double roundNearestOrOut(double x)
 {
     double ip; // integral part
     double fp = std::modf(x, &ip); // fractional part;
     return ip - int(fp <= -0.5) + int(0.5 <= fp);
 }
 
-/** Round \a x towards nearest integral number or if ambigious towards zero (pessimitic rounding)
+/** Round \a x towards nearest integral number or if ambigious towards zero
   */
-inline double roundPoor(double x)
+inline double roundNearestOrIn(double x)
 {
     double ip; // integral part
     double fp = std::modf(x, &ip); // fractional part;
     return ip - int(fp < -0.5) + int(0.5 < fp);
+}
+
+/** Round \a x towards the nearest multiple of \a y or if ambiguous towards zero
+  */
+inline double roundNearestOrIn(double x, double y)
+{
+    double r = std::fmod(x, y);
+    double a = x - r;
+    double b = (x >= 0) ? a + y : a - y;
+    return std::fabs(x - a) <= std::fabs(x - b) ? a : b;
+}
+
+/** Round \a x towards the nearest multiple of \a y or if ambiguous towards +-infinity
+  */
+inline double roundNearestOrOut(double x, double y)
+{
+    double r = std::fmod(x, y);
+    double a = x - r;
+    double b = (x >= 0) ? a + y : a - y;
+    return std::fabs(x - a) < std::fabs(x - b) ? a : b;
 }
 
 /** Round \a x towards next integral number towards +-infinity
