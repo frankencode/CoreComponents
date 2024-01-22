@@ -96,7 +96,11 @@ struct DirectoryDelegate::State: public HttpServiceDelegate::State
 
         FileInfo fileStatus{path};
 
-        if (!fileStatus) throw HttpNotFound{};
+        if (!fileStatus) {
+            path.downcase();
+            fileStatus = FileInfo{path};
+            if (!fileStatus) throw HttpNotFound{};
+        }
 
         {
             String h;
