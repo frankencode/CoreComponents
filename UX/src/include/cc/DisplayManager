@@ -20,6 +20,8 @@ public:
 
     List<Display> displays() const { return me().displays_; }
 
+    /** Ratio of 160dpi and current display dpi (dpi = dots per 2.54cm)
+      */
     double displayDensityRatio() const { return me().displayDensityRatio_; }
 
     FontSmoothing defaultFontSmoothing() const { return me().defaultFontSmoothing_; }

@@ -16,7 +16,7 @@ int main()
         .add(
             Label{}
             .associate(&label)
-            .font(Font{Pitch::Fixed, sp(40)})
+            .font({Pitch::Fixed, sp(40)})
             .text([=]{
                 Date date{time};
                 return dec(date.hour(), 2) + "∶" + dec(date.minutes(), 2) + "∶" + dec(date.seconds(), 2);
