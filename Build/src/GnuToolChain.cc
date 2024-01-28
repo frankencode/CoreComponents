@@ -14,6 +14,7 @@
 #include <cc/Command>
 #include <cc/File>
 #include <cc/Dir>
+#include <cc/DEBUG>
 
 namespace cc::build {
 
@@ -169,9 +170,20 @@ struct GnuToolChain::State: public ToolChain::State
         }
         bool ok = true;
         try {
-            dependencies = dependencySplitPattern_.breakUp(File{dependenciesFilePath}.map());
-            if (dependencies->count() > 0) dependencies->popFront();
-            ok = (dependencies->count() > 0);
+            List<String> parts = dependencySplitPattern_.breakUp(File{dependenciesFilePath}.map());
+            List<String> deps;
+            for (const String &s: parts) { // FIXME: simplistic workaround for modules support
+                if (
+                    s.endsWith(".cc") ||
+                    s.endsWith(".cxx") ||
+                    s.endsWith(".cpp")
+                ) {
+                    deps.append(s);
+                    continue;
+                }
+            }
+            dependencies = deps;
+            ok = (deps.count() > 0);
         }
         catch (SystemResourceError &ex)
         {
@@ -661,7 +673,7 @@ struct GnuToolChain::State: public ToolChain::State
     String cxxPath_;
     String machine_;
     String systemRoot_;
-    Pattern dependencySplitPattern_ { "{1..:[\\:\\\\\n\r ]}" };
+    Pattern dependencySplitPattern_ { "{1..:[\\:\\\\\n\r \\|]}" };
     String rpathOverride_;
     bool isMultiArch_ { true };
     String cFlags_;

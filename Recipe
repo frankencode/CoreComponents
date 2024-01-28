@@ -1,4 +1,4 @@
 Package {
     version: 2.4.1
-    include: [ Core, System, Syntax, Glob, Meta, CSV, Network, HTTP, Crypto, Toki, UX, Pulse, Raspin, Testing, tools ]
+    include: [ Core, System, Syntax, Glob, Meta, CSV, Network, HTTP, Crypto, Toki, UX, Pulse, Raspin, Build, Testing, tools ]
 }
