@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2007-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Stream>
+#include <cc/SourceIterator>
+
+namespace cc {
+
+/** \class ZipFile ZipFile.h cc/zip/ZipFile
+  * \brief Read the contents of ZIP archives
+  * \todo rename to ZipStream
+  */
+class ZipFile final: public Object
+{
+public:
+    using Item = String; ///< Item type
+
+    /** Open a ZIP archive
+      * \param path file path of a ZIP archive
+      */
+    explicit ZipFile(const String &path);
+
+    /** Return the ZIP archive's file path
+      */
+    String path() const;
+
+    /** Read next file name from the ZIP archive
+      * \param name return name of next entry
+      * \return false if no more entries, else true
+      */
+    bool read(Out<String> name);
+
+    /** Open a file from this ZIP archive
+      * \param name name of the file to open
+      * \return new content stream
+      * \todo rename to open()
+      */
+    Stream open(const String &name);
+
+    /** Iteration start
+      */
+    SourceIterator<ZipFile> begin() { return SourceIterator<ZipFile>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<ZipFile> end() { return SourceIterator<ZipFile>{}; }
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

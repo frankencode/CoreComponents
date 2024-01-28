@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2007-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/ZipStream>
+#include <zip.h>
+
+namespace cc {
+
+struct ZipStream::State final: public Stream::State
+{
+    explicit State(const String &path):
+        path_{path}
+    {}
+
+    long read(Out<Bytes> buffer, long maxFill = -1) override
+    {
+        zip_int64_t ret = zip_fread(file_, buffer->bytes(), buffer->count());
+        if (ret < 0) throw ZipError{zip_get_error(archive_)->zip_err, zipPath_};
+        return ret;
+    }
+
+    String zipPath_;
+    zip_t *archive_ { nullptr };
+    zip_file_t *file_ { nullptr };
+    String path_;
+};
+
+} // namespace cc

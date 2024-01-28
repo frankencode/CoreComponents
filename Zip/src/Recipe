@@ -1,0 +1,5 @@
+Library {
+    name: CoreComponentsZip
+    use: Core
+    depends: libzip >= 1.2.0
+}
