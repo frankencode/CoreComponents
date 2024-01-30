@@ -350,7 +350,7 @@ struct BucketPrefixTree final
         Leaf *succ_ { nullptr };
         Leaf *pred_ { nullptr };
         unsigned fill_ { 0 };
-        std::byte data_[sizeof(T) * G] alignas(Item);
+        alignas(Item) std::byte data_[sizeof(T) * G];
     };
 
     ~BucketPrefixTree()

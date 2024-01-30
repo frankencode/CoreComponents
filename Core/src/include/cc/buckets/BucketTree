@@ -331,7 +331,7 @@ protected:
     }
 
     int64_t height_ : 15 { -1 };
-    int64_t dense_  : 1 { 1 };
+    int64_t dense_  : 1 { -1 };
     int64_t weight_ : 48 { 0 };
     Node *root_ { nullptr };
     Node *lastLeaf_ { nullptr }; // bury in &root_->parent_

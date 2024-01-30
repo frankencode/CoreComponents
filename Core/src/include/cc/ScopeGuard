@@ -21,7 +21,7 @@ class ScopeGuard
 public:
     /** Post scope guard \a cleanup function
       */
-    ScopeGuard(Function<void()> &&cleanup): cleanup_{move(cleanup)} {}
+    ScopeGuard(Function<void()> &&cleanup): cleanup_{std::move(cleanup)} {}
 
     /** Disband scope guard: call \a cleanup function
       */

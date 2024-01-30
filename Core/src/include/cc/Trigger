@@ -22,7 +22,7 @@ class Trigger
 public:
     /** Connect a new listener \a f
       */
-    void connect(Function<void()> &&f) const { queue_.emplaceBack(move(f)); }
+    void connect(Function<void()> &&f) const { queue_.emplaceBack(std::move(f)); }
 
     /** Report state change to all listeners
       */
@@ -38,7 +38,7 @@ public:
 
     /** \copydoc connect()
       */
-    void operator()(Function<void()> &&f) const { connect(move(f)); }
+    void operator()(Function<void()> &&f) const { connect(std::move(f)); }
 
     /** \copydoc emit()
       */

@@ -24,7 +24,7 @@ public:
     /** Create a new monitor with binding function \a f
       */
     explicit Monitor(Function<void()> &&f):
-        Object{new State{move(f)}}
+        Object{new State{std::move(f)}}
     {}
 
 private:
@@ -32,7 +32,7 @@ private:
     {
         State(Function<void()> &&f)
         {
-            p_(move(f));
+            p_(std::move(f));
         }
 
         Property<void> p_;
@@ -43,14 +43,14 @@ class OnEndOfLife final: public Object
 {
 public:
     OnEndOfLife(Function<void()> &&f):
-        Object{new State{move(f)}}
+        Object{new State{std::move(f)}}
     {}
 
 private:
     struct State final: public Object::State
     {
         State(Function<void()> &&f):
-            f_{move(f)}
+            f_{std::move(f)}
         {}
 
         ~State()

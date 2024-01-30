@@ -17,7 +17,7 @@ namespace cc {
   * \brief Local socket communication channel
   * \exception SystemError
   */
-class LocalChannel: public IoChannel
+class LocalChannel final: public IoChannel
 {
 public:
     /** Create a local socket communication channel
@@ -25,7 +25,7 @@ public:
     LocalChannel();
 
 private:
-    struct State: public IoChannel::State
+    struct State final: public IoChannel::State
     {
         State();
         ~State();

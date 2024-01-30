@@ -149,7 +149,7 @@ public:
     void onChanged(Function<void()> &&f) const
     {
         if (me().dirty_) me.mutate().cascade();
-        return me().changed.connect(move(f));
+        return me().changed.connect(std::move(f));
     }
 
     /** Read value from \a text
@@ -318,7 +318,7 @@ public:
     /** \internal
       */
     Property(Property &&b):
-        me{move(b.me)}
+        me{std::move(b.me)}
     {
         if (me().owner_ == &b)
             me().owner_ = this;
@@ -328,7 +328,7 @@ public:
       */
     Property &operator=(Property &&b)
     {
-        me = move(b.me);
+        me = std::move(b.me);
         if (me().owner_ == &b)
             me().owner_ = this;
         return *this;
@@ -364,7 +364,7 @@ public:
       */
     void operator()(Function<void()> &&f)
     {
-        return define(move(f));
+        return define(std::move(f));
     }
 
     /** Setup restrictor function \a g
@@ -379,7 +379,7 @@ public:
     void onChanged(Function<void()> &&f) const
     {
         if (me().dirty_) me.mutate().cascade();
-        me.mutate().changed.connect(move(f));
+        me.mutate().changed.connect(std::move(f));
     }
 
     /** Evaluate current property value

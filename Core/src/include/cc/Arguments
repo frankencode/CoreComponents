@@ -6,6 +6,8 @@
  *
  */
 
+#pragma once
+
 #include <cc/Variant>
 #include <cc/Composite>
 #include <cc/exceptions>

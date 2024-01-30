@@ -127,7 +127,7 @@ public:
     /** Construct from right-side \a b
       */
     Array(Array &&b):
-        me{move(b.me)}
+        me{std::move(b.me)}
     {}
 
     /** Construct with initial \a items
@@ -223,7 +223,7 @@ public:
       */
     Array &operator=(Array &&b)
     {
-        me = move(b.me);
+        me = std::move(b.me);
         return *this;
     }
 
