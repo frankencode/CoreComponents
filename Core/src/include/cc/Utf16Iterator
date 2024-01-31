@@ -74,7 +74,7 @@ public:
             std::uint16_t ch = endianGate(*p_, endian_);
             ++p_;
             // take another step if reading a surrogate pair
-            if (((0xD800 <= ch) || (ch < 0xDC00)) && (p_ < e_)) {
+            if (((0xD800 <= ch) && (ch < 0xDC00)) && (p_ < e_)) {
                 ch = endianGate(*(p_ + 1), endian_);
                 if ((0xDC00 <= ch) && (ch < 0xE000))
                     ++p_;

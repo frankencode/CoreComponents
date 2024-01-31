@@ -80,7 +80,7 @@ public:
     long useCount() const { return me ? me().useCount() : 0; }
 
 protected:
-    friend class PropertyBinding;
+    friend struct PropertyBinding;
 
     template<class T, bool>
     friend class ObjectAs;
