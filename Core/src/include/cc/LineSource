@@ -44,7 +44,7 @@ public:
       */
     LineSource(const Stream &stream, const String &buffer);
 
-    /** Read next line
+    /** Read next line (excluding the end of line marker)
       * \param line Returns the next line (if not end of input)
       * \return True if not end of input
       */

@@ -21,7 +21,7 @@ namespace cc {
 struct HttpClient::State: public Object::State
 {
     State(const Uri &uri, const TlsClientOptions &tlsOptions):
-        address_{SocketAddress::resolveUri(uri)},
+        address_{uri.resolve()},
         host_{uri.host()}
     {
         const bool useTls = !(

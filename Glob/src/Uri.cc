@@ -137,6 +137,36 @@ String Uri::State::encoded() const
     return text;
 }
 
+SocketAddress Uri::State::resolve(int port) const
+{
+    SocketAddress address;
+
+    if (scheme_ == "local") {
+        address = SocketAddress{ProtocolFamily::Local, requestPath()};
+    }
+    else {
+        if (hostIsNumeric_) {
+            address = SocketAddress{family(), host_, port_ > 0 ? port_ : port};
+        }
+        else {
+            auto addressList = SocketAddress::queryConnectionInfo(host_);
+            if (addressList.count() > 0) {
+                address = addressList.at(0);
+                address.setPort(port_ > 0 ? port_ : port);
+            }
+            else throw HostNameResolutionError{host_};
+        }
+    }
+
+    return address;
+}
+
+ProtocolFamily Uri::State::family() const
+{
+    if (!hostIsNumeric_) return ProtocolFamily::Unspec;
+    return host_.contains(':') ? ProtocolFamily::Inet6 : ProtocolFamily::Inet4;
+}
+
 Uri::Uri(const String &text)
 {
     UriSyntax syntax;

@@ -17,7 +17,7 @@
 namespace cc {
 
 /** Network interface flags
-  * \ingroup net
+  * \ingroup sysinfo
   */
 enum class NetworkInterfaceFlags: unsigned {
     Up           = IFF_UP,         ///< Network interface is in up state

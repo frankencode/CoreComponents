@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class NetworkState cc/NetworkState
-  * \ingroup net
+  * \ingroup sysinfo
   * \brief Simplified network configuration state
   */
 class NetworkState final: public Object
@@ -22,7 +22,7 @@ public:
     /** Get the current network configuration state
       * \param interfaceName %Name of the primary network interface (optional)
       */
-    NetworkState(const String &interfaceName = "");
+    explicit NetworkState(const String &interfaceName = "");
 
     /** Name of the network interface
       */

@@ -8,7 +8,6 @@
 
 #include <cc/SocketAddress>
 #include <cc/Socket>
-#include <cc/Uri>
 #include <cc/Format>
 #include <cc/bits>
 #include <cc/exceptions>
@@ -396,30 +395,6 @@ struct SocketAddress::State: public Object::State
     InternetProtocol protocol_ { InternetProtocol::Unspec };
 };
 
-SocketAddress SocketAddress::resolveUri(const Uri &uri, int port)
-{
-    SocketAddress address;
-
-    if (uri.scheme() == "local") {
-        address = SocketAddress{ProtocolFamily::Local, uri.requestPath()};
-    }
-    else {
-        if (uri.hostIsNumeric()) {
-            address = SocketAddress{familyOf(uri), uri.host(), uri.port() > 0 ? uri.port() : port};
-        }
-        else {
-            auto addressList = SocketAddress::queryConnectionInfo(uri.host());
-            if (addressList.count() > 0) {
-                address = addressList.at(0);
-                address.setPort(uri.port() > 0 ? uri.port() : port);
-            }
-            else throw HostNameResolutionError{uri.host()};
-        }
-    }
-
-    return address;
-}
-
 SocketAddress SocketAddress::resolveHostName(const String &hostName, int port)
 {
     auto addressList = SocketAddress::queryConnectionInfo(hostName);
@@ -485,11 +460,6 @@ List<SocketAddress> SocketAddress::queryConnectionInfo(const String &hostName, c
 SocketAddress::SocketAddress(New):
     Object{new State}
 {}
-
-SocketAddress::SocketAddress(const Uri &uri, int port)
-{
-    *this = SocketAddress::resolveUri(uri, port);
-}
 
 SocketAddress::SocketAddress(const String &address, int port):
     Object{new State{address, port}}
@@ -607,12 +577,6 @@ bool SocketAddress::operator==(const SocketAddress &other) const
 std::strong_ordering SocketAddress::operator<=>(const SocketAddress &other) const
 {
     return me() <=> other.me();
-}
-
-ProtocolFamily SocketAddress::familyOf(const Uri &uri)
-{
-    if (!uri.hostIsNumeric()) return ProtocolFamily::Unspec;
-    return uri.host().contains(':') ? ProtocolFamily::Inet6 : ProtocolFamily::Inet4;
 }
 
 SocketAddress::State &SocketAddress::me()

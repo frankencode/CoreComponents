@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/String>
+#include <cc/SocketAddress>
 #include <cc/Cow>
 #include <cc/Map>
 
@@ -152,6 +152,17 @@ public:
       */
     static Map<String> decodeForm(const String &payload);
 
+    /** Resolve internet address of \a uri
+      * \param uri %Uri providing numeric address or domain name of target host
+      * \param port %Port number to set (if not provided by \a uri)
+      * \exception HostNameResolutionError
+      */
+    SocketAddress resolve(int port = 0) const { return me().resolve(port); }
+
+    /** Protocol family of \a uri (if \a uri contains a numeric host part)
+      */
+    ProtocolFamily family() const { return me().family(); }
+
 private:
     struct State
     {
@@ -167,6 +178,9 @@ private:
 
         void readUri(const UriSyntax &syntax, const String &text, const Token &token);
         void readAuthority(const UriSyntax &syntax, const String &text, const Token &token);
+
+        SocketAddress resolve(int port) const;
+        ProtocolFamily family() const;
 
         String requestHost() const;
         String requestPath() const;

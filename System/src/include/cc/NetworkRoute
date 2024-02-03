@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class NetworkRoute cc/NetworkRoute
-  * \ingroup net
+  * \ingroup sysinfo
   * \brief %Network routing table access
   */
 class NetworkRoute final: public Object

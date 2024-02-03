@@ -78,10 +78,10 @@ String str(InternetProtocol protocol);
 /** \class HostNameResolutionError cc/SocketAddress
   * \brief Failed to resolve a host name
   */
-class HostNameResolutionError: public Exception
+class HostNameResolutionError final: public Exception
 {
 public:
-    HostNameResolutionError(const String &hostName):
+    explicit HostNameResolutionError(const String &hostName):
         hostName_{hostName}
     {}
 
@@ -96,10 +96,10 @@ private:
 /** \class HostNameResolutionError cc/SocketAddress
   * \brief Failed to resolve a host name
   */
-class HostNameLookupError: public Exception
+class HostNameLookupError final: public Exception
 {
 public:
-    HostNameLookupError(int errorCode):
+    explicit HostNameLookupError(int errorCode):
         errorCode_{errorCode}
     {}
 
@@ -112,10 +112,10 @@ private:
 /** \class ServiceNameLookupError cc/SocketAddress
   * \brief Failed to resolve a service name
   */
-class ServiceNameLookupError: public Exception
+class ServiceNameLookupError final: public Exception
 {
 public:
-    ServiceNameLookupError(int errorCode):
+    explicit ServiceNameLookupError(int errorCode):
         errorCode_{errorCode}
     {}
 
@@ -128,10 +128,10 @@ private:
 /** \class InvalidAddressSyntax cc/SocketAddress
   * \brief Failed to parse textual representation of a socket address
   */
-class InvalidAddressSyntax: public Exception
+class InvalidAddressSyntax final: public Exception
 {
 public:
-    InvalidAddressSyntax(const String &address);
+    explicit InvalidAddressSyntax(const String &address);
     String address() const;
     String message() const override;
 
@@ -139,24 +139,16 @@ private:
     String address_;
 };
 
-class Uri;
-
 class Socket;
 
 /** \class SocketAddress cc/SocketAddress
   * \ingroup net
   * \brief %Socket address
+  * \see Uri
   */
 class SocketAddress: public Object
 {
 public:
-    /** Resolve Internet address of \a uri
-      * \param uri %Uri providing numeric address or domain name of target host
-      * \param port %Port number to set (if not provided by \a uri)
-      * \exception HostNameResolutionError
-      */
-    static SocketAddress resolveUri(const Uri &uri, int port = 0);
-
     /** Resolve Internet address of a host
       * \param hostName %Host or domain name to resolve
       * \param port %Port number to set
@@ -203,13 +195,6 @@ public:
     /** Create a new socket address
       */
     explicit SocketAddress(New);
-
-    /** \brief Create a new socket address from \a uri
-      * \param uri Host address, which will be automatically resolved if the host part is non-numerical
-      * \param port %Service port (fallback if not provided in \a uri)
-      * \exception HostNameResolutionError
-      */
-    explicit SocketAddress(const Uri &uri, int port = 0);
 
     /** \brief Create a socket address
       * \param address %Numerical host address, wildcard ("*", "::") or file path
@@ -277,10 +262,6 @@ public:
     /** Ordering operator
       */
     std::strong_ordering operator<=>(const SocketAddress &other) const;
-
-    /** Protocol family of \a uri (if \a uri contains a numeric host part)
-      */
-    static ProtocolFamily familyOf(const Uri &uri);
 
 private:
     friend class NetworkInterface;
