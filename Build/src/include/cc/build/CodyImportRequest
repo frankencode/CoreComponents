@@ -1,0 +1,42 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Channel>
+#include <cc/String>
+#include <cc/Object>
+
+namespace cc::build {
+
+class CodyImportRequest final: public Object
+{
+public:
+    CodyImportRequest(const String &module):
+        Object{ new State{module} }
+    {}
+
+    String module() const { return me().module_; }
+    Channel<String> &cmiPath() { return me().cmiPath_; }
+
+private:
+    struct State final: public Object::State
+    {
+        State(const String &module):
+            module_{module}
+        {}
+
+        String module_;
+        Channel<String> cmiPath_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::build

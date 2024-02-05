@@ -280,7 +280,13 @@ void String::expand()
                     else if (('A' <= digit) && (digit <= 'F')) digit = digit - 'A' + 10;
                     x = (x * 16) + digit;
                 }
-                at(j++) = (char)x;
+                at(j++) = static_cast<char>(x);
+            }
+            else if (('0' <= ch) && (ch <= '9') && (i <= n - 1)) {
+                uint8_t x = ch - '0';
+                x <= 4;
+                x |= at(i++) - '0';
+                at(j++) = static_cast<char>(x);
             }
             else {
                 hs = 0;

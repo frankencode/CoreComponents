@@ -13,7 +13,7 @@
 
 namespace cc {
 
-/** \class ZipFile ZipFile.h cc/zip/ZipFile
+/** \class ZipFile ZipFile cc/ZipFile
   * \brief Read the contents of ZIP archives
   * \todo rename to ZipStream
   */

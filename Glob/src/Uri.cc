@@ -164,7 +164,7 @@ SocketAddress Uri::State::resolve(int port) const
 ProtocolFamily Uri::State::family() const
 {
     if (!hostIsNumeric_) return ProtocolFamily::Unspec;
-    return host_.contains(':') ? ProtocolFamily::Inet6 : ProtocolFamily::Inet4;
+    return host_.contains(':') ? ProtocolFamily::InternetV6 : ProtocolFamily::InternetV4;
 }
 
 Uri::Uri(const String &text)

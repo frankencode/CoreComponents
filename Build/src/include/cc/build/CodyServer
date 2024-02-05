@@ -1,0 +1,24 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/CodyMessage>
+
+namespace cc::build {
+
+class CodyServer final: public Object
+{
+public:
+    explicit CodyServer(CodyMessage::Flags flags = CodyMessage::Flags::None);
+
+private:
+    struct State;
+};
+
+} // namespaec cc::build

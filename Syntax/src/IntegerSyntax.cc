@@ -11,7 +11,7 @@
 
 namespace cc {
 
-struct IntegerSyntax::State: public SyntaxDefinition::State
+struct IntegerSyntax::State final: public SyntaxDefinition::State
 {
     SyntaxRule plusMinus {
         OneOf{'+', '-'}

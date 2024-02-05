@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/CodyMessage>
+#include <cc/build/CodyError>
+#include <cc/build/CodyImportRequest>
+#include <cc/Stream>
+#include <cc/Channel>
+
+namespace cc::build {
+
+class CodyWorker final: public Object
+{
+public:
+    explicit CodyWorker(
+        const Stream &stream,
+        const String &cmiCachePath,
+        const Channel<String> &modulesCompiled,
+        const Channel<CodyImportRequest> &importRequest
+    );
+
+    void wait(Out<CodyError> error);
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::build

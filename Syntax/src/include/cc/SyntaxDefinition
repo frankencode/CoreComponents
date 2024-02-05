@@ -119,71 +119,70 @@ public:
         return *me().entry_;
     }
 
-    /** \name Single Character Literals
-      */
-    ///@{
-    using Char = syntax::CharNode; ///< \copybrief cc::syntax::CharNode
-    using Other = syntax::OtherNode; ///< \copybrief cc::syntax::OtherNode
-    using Match = syntax::MatchNode; ///< \copybrief cc::syntax::MatchNode
-    using Any = syntax::AnyNode; ///< \copybrief cc::syntax::AnyNode
-
-    using Within = syntax::RangeNode; ///< \copybrief cc::syntax::RangeNode
-    using Outside = syntax::OutOfRangeNode; ///< \copybrief cc::syntax::OutOfRangeNode
-    using OneOf = syntax::OneOfNode; ///< \copybrief cc::syntax::OneOfNode
-    using NoneOf = syntax::NoneOfNode; ///< \copybrief cc::syntax::NoneOfNode
-    ///@}
-
-    /** \name Multi-Character Literals
-      */
-    ///@{
-    using Literal = syntax::LiteralNode; ///< \copybrief cc::syntax::LiteralNode
-    using Casefree = syntax::CasefreeNode; ///< \copybrief cc::syntax::CasefreeNode
-    using Keyword = syntax::KeywordNode; ///< \copybrief cc::syntax::KeywordNode
-    ///@}
-
-    /** \name Structural Elements
-      */
-    ///@{
-    using Sequence = syntax::SequenceNode; ///< \copybrief cc::syntax::SequenceNode
-    using Choice = syntax::ChoiceNode; ///< \copybrief cc::syntax::ChoiceNode
-    using LongestChoice = syntax::ChoiceNode; ///< \copybrief cc::syntax::LongestChoiceNode
-    using Repeat = syntax::RepeatNode; ///< \copybrief cc::syntax::RepeatNode
-    using Find = syntax::FindNode; ///< \copybrief cc::syntax::FindNode
-    using FindLast = syntax::FindLastNode; ///< \copybrief cc::syntax::FindLastNode
-    using Ahead = syntax::AheadNode; ///< \copybrief cc::syntax::AheadNode
-    using Behind = syntax::BehindNode; ///< \copybrief cc::syntax::BehindNode
-    using Not = syntax::NotNode; ///< \copybrief cc::syntax::NotNode
-    using NotBehind = syntax::NotBehindNode; ///< \copybrief cc::syntax::NotBehindNode
-    using Ref = syntax::RefNode; ///< \copybrief cc::syntax::RefNode
-    using Inline = syntax::InlineNode; ///< \copybrief cc::syntax::InlineNode
-    ///@}
-
-    /** \name Constraints
-      */
-    ///@{
-    using Boi = syntax::BoiNode; ///< \copybrief cc::syntax::BoiNode
-    using Eoi = syntax::EoiNode; ///< \copybrief cc::syntax::EoiNode
-    using Length = syntax::LengthNode; ///< \copybrief cc::syntax::LengthNode
-    using Pass = syntax::PassNode; ///< \copybrief cc::syntax::PassNode
-    using Fail = syntax::FailNode; ///< \copybrief cc::syntax::FailNode
-    using Expect = syntax::ExpectNode; ///< \copybrief cc::syntax::ExpectNode
-    ///@}
-
-    /** \name Context Awareness
-      */
-    ///@{
-    using Capture = syntax::CaptureNode; ///< \copybrief cc::syntax::CaptureNode
-    using Replay = syntax::ReplayNode; ///< \copybrief cc::syntax::ReplayNode
-    using Context = syntax::ContextNode; ///< \copybrief cc::syntax::ContextNode
-    using Debug = syntax::DebugNode; ///< \copybrief cc::syntax::DebugNode
-    ///@}
-
-protected:
     /** \brief Internal state
       */
     class State: public Object::State
     {
     public:
+        /** \name Single Character Literals
+          */
+        ///@{
+        using Char = syntax::CharNode; ///< \copybrief cc::syntax::CharNode
+        using Other = syntax::OtherNode; ///< \copybrief cc::syntax::OtherNode
+        using Match = syntax::MatchNode; ///< \copybrief cc::syntax::MatchNode
+        using Any = syntax::AnyNode; ///< \copybrief cc::syntax::AnyNode
+
+        using Within = syntax::RangeNode; ///< \copybrief cc::syntax::RangeNode
+        using Outside = syntax::OutOfRangeNode; ///< \copybrief cc::syntax::OutOfRangeNode
+        using OneOf = syntax::OneOfNode; ///< \copybrief cc::syntax::OneOfNode
+        using NoneOf = syntax::NoneOfNode; ///< \copybrief cc::syntax::NoneOfNode
+        ///@}
+
+        /** \name Multi-Character Literals
+          */
+        ///@{
+        using Literal = syntax::LiteralNode; ///< \copybrief cc::syntax::LiteralNode
+        using Casefree = syntax::CasefreeNode; ///< \copybrief cc::syntax::CasefreeNode
+        using Keyword = syntax::KeywordNode; ///< \copybrief cc::syntax::KeywordNode
+        ///@}
+
+        /** \name Structural Elements
+          */
+        ///@{
+        using Sequence = syntax::SequenceNode; ///< \copybrief cc::syntax::SequenceNode
+        using Choice = syntax::ChoiceNode; ///< \copybrief cc::syntax::ChoiceNode
+        using LongestChoice = syntax::ChoiceNode; ///< \copybrief cc::syntax::LongestChoiceNode
+        using Repeat = syntax::RepeatNode; ///< \copybrief cc::syntax::RepeatNode
+        using Find = syntax::FindNode; ///< \copybrief cc::syntax::FindNode
+        using FindLast = syntax::FindLastNode; ///< \copybrief cc::syntax::FindLastNode
+        using Ahead = syntax::AheadNode; ///< \copybrief cc::syntax::AheadNode
+        using Behind = syntax::BehindNode; ///< \copybrief cc::syntax::BehindNode
+        using Not = syntax::NotNode; ///< \copybrief cc::syntax::NotNode
+        using NotBehind = syntax::NotBehindNode; ///< \copybrief cc::syntax::NotBehindNode
+        using Ref = syntax::RefNode; ///< \copybrief cc::syntax::RefNode
+        using Inline = syntax::InlineNode; ///< \copybrief cc::syntax::InlineNode
+        ///@}
+
+        /** \name Constraints
+          */
+        ///@{
+        using Boi = syntax::BoiNode; ///< \copybrief cc::syntax::BoiNode
+        using Eoi = syntax::EoiNode; ///< \copybrief cc::syntax::EoiNode
+        using Length = syntax::LengthNode; ///< \copybrief cc::syntax::LengthNode
+        using Pass = syntax::PassNode; ///< \copybrief cc::syntax::PassNode
+        using Fail = syntax::FailNode; ///< \copybrief cc::syntax::FailNode
+        using Expect = syntax::ExpectNode; ///< \copybrief cc::syntax::ExpectNode
+        ///@}
+
+        /** \name Context Awareness
+          */
+        ///@{
+        using Capture = syntax::CaptureNode; ///< \copybrief cc::syntax::CaptureNode
+        using Replay = syntax::ReplayNode; ///< \copybrief cc::syntax::ReplayNode
+        using Context = syntax::ContextNode; ///< \copybrief cc::syntax::ContextNode
+        using Debug = syntax::DebugNode; ///< \copybrief cc::syntax::DebugNode
+        ///@}
+
         /** Initialize internal state
           * \param entry %Entry point for syntax production
           */
@@ -256,6 +255,7 @@ protected:
         const SyntaxRule *entry_ { nullptr };
     };
 
+protected:
     explicit SyntaxDefinition(State *newState):
         Object{newState}
     {}

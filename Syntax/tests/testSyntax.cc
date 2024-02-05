@@ -20,7 +20,7 @@ public:
     }
 
 private:
-    struct State: public SyntaxDefinition::State
+    struct State final: public SyntaxDefinition::State
     {
         SyntaxRule number {
             Sequence{

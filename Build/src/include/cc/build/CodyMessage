@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+
+namespace cc::build {
+
+class CodyMessage
+{
+public:
+    enum Flags {
+        None = 0,
+        NameOnly = 1
+    };
+
+    static CodyMessage read(const String &line);
+
+    CodyMessage() = default;
+
+    explicit CodyMessage(const List<String> &words):
+        words_{words}
+    {}
+
+    const String &operator()(long i) const
+    {
+        return words_.has(i) ? words_[i] : dummy_;
+    }
+
+    long count() const
+    {
+        return words_.count();
+    }
+
+    String toString() const
+    {
+        return words_.join(' ');
+    }
+
+private:
+    List<String> words_;
+    String dummy_;
+};
+
+} // namespace cc::build

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Frank Mertens.
+ * Copyright (C) 2021-2024 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -152,9 +152,8 @@ public:
       */
     static Map<String> decodeForm(const String &payload);
 
-    /** Resolve internet address of \a uri
-      * \param uri %Uri providing numeric address or domain name of target host
-      * \param port %Port number to set (if not provided by \a uri)
+    /** Resolve internet address of this URI
+      * \param port %Port number to set (if this URI does not provide a port number)
       * \exception HostNameResolutionError
       */
     SocketAddress resolve(int port = 0) const { return me().resolve(port); }

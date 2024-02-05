@@ -33,6 +33,7 @@ inline int operator+(SchedulingPolicy policy) { return static_cast<int>(policy);
   * \ingroup threads
   * \brief Single thread of execution
   * \see System::concurrency()
+  * \todo simplify to autostart and remove start()/started()
   */
 class Thread final: public Object
 {

@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class StreamMultiplexer cc/StreamMultiplexer
-  * \ingroup Streams
+  * \ingroup streams
   * \brief Parallel output to several data sinks
   * \see StreamTap
   */

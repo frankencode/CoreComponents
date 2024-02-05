@@ -30,8 +30,8 @@ struct HttpServerConfig::State: public Object::State
         ProtocolFamily family = ProtocolFamily::Unspec;
         {
             String s = config("family").to<String>().downcased();
-            if (s == "ipv6") family = ProtocolFamily::Inet6;
-            else if (s == "ipv4") family = ProtocolFamily::Inet4;
+            if (s == "ipv6") family = ProtocolFamily::InternetV6;
+            else if (s == "ipv4") family = ProtocolFamily::InternetV4;
             else if (s == "local" || address.contains('/')) family = ProtocolFamily::Local;
         }
 
@@ -53,8 +53,8 @@ struct HttpServerConfig::State: public Object::State
             else {
                 for (int p: ports) {
                     if (family == ProtocolFamily::Unspec) {
-                        address_.append(SocketAddress{ProtocolFamily::Inet4, "*", p});
-                        address_.append(SocketAddress{ProtocolFamily::Inet6, "*", p});
+                        address_.append(SocketAddress{ProtocolFamily::InternetV4, "*", p});
+                        address_.append(SocketAddress{ProtocolFamily::InternetV6, "*", p});
                     }
                     else
                         address_.append(SocketAddress{family, "*", p});

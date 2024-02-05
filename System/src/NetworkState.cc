@@ -28,7 +28,7 @@ struct NetworkState::State: public Object::State
         interface_ = NetworkInterface::query(interfaceName_, ProtocolFamily::Unspec);
         if (!gateway_) {
             for (const NetworkLabel &label: interface_.labels()) {
-                if (label.address().family() != ProtocolFamily::Inet6) continue;
+                if (label.address().family() != ProtocolFamily::InternetV6) continue;
                 address_ = label.address();
                 networkMask_ = label.networkMask();
                 return;

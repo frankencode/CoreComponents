@@ -1,4 +1,4 @@
 Library {
     name: CoreComponentsBuild
-    use: [ Core, Glob, Meta ]
+    use: [ Core, Syntax, Glob, Meta ]
 }

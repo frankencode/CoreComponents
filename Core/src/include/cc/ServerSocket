@@ -15,8 +15,9 @@ namespace cc {
 /** \class ServerSocket cc/ServerSocket
   * \ingroup net
   * \brief TCP server socket
+  * \todo rename to ListenSocket
   */
-class ServerSocket: public StreamSocket
+class ServerSocket final: public StreamSocket
 {
 public:
     /** Create a null server socket

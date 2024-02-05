@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 
                 for (const NetworkLabel &label: interface.labels()) {
                     fout() << "  Addr:   " << label.address();
-                    if (label.address().family() == ProtocolFamily::Inet4) {
+                    if (label.address().family() == ProtocolFamily::InternetV4) {
                         bool comma = false;
                         bool delim = true;
                         if (label.networkMask() > 0)

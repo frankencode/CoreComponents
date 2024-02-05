@@ -20,9 +20,9 @@ namespace cc {
 enum class ProtocolFamily: int
 {
     Unspec = PF_UNSPEC, ///< %Protocol family is not specified
-    Inet4  = PF_INET,   ///< %Internet %Protocol %Version 4
-    Inet6  = PF_INET6,  ///< %Internet %Protocol %Version 6
-    Local  = PF_LOCAL   ///< %Unix %Domain %Protocol
+    InternetV4 = PF_INET,   ///< %Internet %Protocol %Version 4
+    InternetV6 = PF_INET6,  ///< %Internet %Protocol %Version 6
+    Local  = PF_LOCAL,  ///< %Unix %Domain %Protocol
 };
 
 /** %Prefix plus operator: shorthand to convert ProtocolFamily to int

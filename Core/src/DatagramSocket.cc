@@ -23,7 +23,7 @@ DatagramSocket::State::State(const SocketAddress &address):
         int on = 1;
         CC_SYSCALL(::setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)));
 
-        if (address.family() == ProtocolFamily::Inet6) {
+        if (address.family() == ProtocolFamily::InternetV6) {
             int on = 1;
             CC_SYSCALL(::setsockopt(fd_, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on)));
         }

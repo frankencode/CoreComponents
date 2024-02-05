@@ -331,7 +331,7 @@ struct BuildPlan::State:
         return String{};
     }
 
-    /** \todo allow to specify version constraints for build-tree prerequisites
+    /** \todo allow to specify version constrains for build-tree prerequisites
       */
     void readPrerequisites(BuildPlan &self)
     {

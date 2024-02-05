@@ -81,8 +81,8 @@ struct SocketAddress::State: public Object::State
     {
         ProtocolFamily family = ProtocolFamily::Unspec;
         if (address.contains(":/"));
-        else if (address.count(':') > 1) family = ProtocolFamily::Inet6;
-        else if (address.count('.') > 0 || address == "*") family = ProtocolFamily::Inet4;
+        else if (address.count(':') > 1) family = ProtocolFamily::InternetV6;
+        else if (address.count('.') > 0 || address == "*") family = ProtocolFamily::InternetV4;
         else if (address.count() > 0) family = ProtocolFamily::Local;
         return family;
     }
@@ -96,7 +96,7 @@ struct SocketAddress::State: public Object::State
         void *addr = nullptr;
 
         switch (family) {
-            case ProtocolFamily::Inet4: {
+            case ProtocolFamily::InternetV4: {
                 std::memset(&inet4Address_, 0, sizeof(inet4Address_));
                 // inet4Address_.sin_len = sizeof(addr);
                 *(uint8_t *)&inet4Address_ = sizeof(inet4Address_); // uggly for BSD4.4
@@ -106,7 +106,7 @@ struct SocketAddress::State: public Object::State
                 addr = &inet4Address_.sin_addr;
                 break;
             }
-            case ProtocolFamily::Inet6: {
+            case ProtocolFamily::InternetV6: {
                 std::memset(&inet6Address_, 0, sizeof(inet6Address_));
                 #ifdef SIN6_LEN
                 inet6Address_.sin6_len = sizeof(inet6Address_);
@@ -252,9 +252,9 @@ struct SocketAddress::State: public Object::State
     {
         if (family() == ProtocolFamily::Local || port() == 0 || port() == 0xFFFF) return networkAddress();
         Format s;
-        if (family() == ProtocolFamily::Inet4)
+        if (family() == ProtocolFamily::InternetV4)
             s << networkAddress() << ":" << port();
-        else if (family() == ProtocolFamily::Inet6)
+        else if (family() == ProtocolFamily::InternetV6)
             s << "[" << networkAddress() << "]:" << port();
         return s;
     }
@@ -293,10 +293,10 @@ struct SocketAddress::State: public Object::State
     uint64_t networkPrefix() const
     {
         uint64_t prefix = 0;
-        if (family() == ProtocolFamily::Inet4) {
+        if (family() == ProtocolFamily::InternetV4) {
             prefix = endianGate(inet4Address_.sin_addr.s_addr);
         }
-        else if (family() == ProtocolFamily::Inet6) {
+        else if (family() == ProtocolFamily::InternetV6) {
             uint8_t const *a = inet6Address_.sin6_addr.s6_addr;
             for (int i = 0; i < 8; ++i) {
                 prefix <<= 8;
@@ -319,9 +319,9 @@ struct SocketAddress::State: public Object::State
     int addrLen() const
     {
         int len = 0;
-        if (family() == ProtocolFamily::Inet4)
+        if (family() == ProtocolFamily::InternetV4)
             len = sizeof(sockaddr_in);
-        else if (family() == ProtocolFamily::Inet6)
+        else if (family() == ProtocolFamily::InternetV6)
             len = sizeof(sockaddr_in6);
         else if (family() == ProtocolFamily::Local)
             len = sizeof(sockaddr_un);
@@ -335,17 +335,17 @@ struct SocketAddress::State: public Object::State
 
     int level() const
     {
-        return (family() == ProtocolFamily::Inet4) ? IPPROTO_IP : IPPROTO_IPV6;
+        return (family() == ProtocolFamily::InternetV4) ? IPPROTO_IP : IPPROTO_IPV6;
     }
 
     bool operator==(const State &other) const
     {
         if (family() != other.family()) return false;
 
-        if (family() == ProtocolFamily::Inet4) {
+        if (family() == ProtocolFamily::InternetV4) {
             return inet4Address_.sin_addr.s_addr == other.inet4Address_.sin_addr.s_addr;
         }
-        else if (family() == ProtocolFamily::Inet6) {
+        else if (family() == ProtocolFamily::InternetV6) {
             uint8_t const *x = inet6Address_.sin6_addr.s6_addr;
             uint8_t const *y = other.inet6Address_.sin6_addr.s6_addr;
             for (int i = 0; i < 8; ++i) {
@@ -364,10 +364,10 @@ struct SocketAddress::State: public Object::State
     {
         if (family() != other.family()) return +family() <=> +other.family();
 
-        if (family() == ProtocolFamily::Inet4) {
+        if (family() == ProtocolFamily::InternetV4) {
             return inet4Address_.sin_addr.s_addr <=> other.inet4Address_.sin_addr.s_addr;
         }
-        else if (family() == ProtocolFamily::Inet6) {
+        else if (family() == ProtocolFamily::InternetV6) {
             uint8_t const *x = inet6Address_.sin6_addr.s6_addr;
             uint8_t const *y = other.inet6Address_.sin6_addr.s6_addr;
             for (int i = 0; i < 8; ++i) {
