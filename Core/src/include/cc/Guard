@@ -24,10 +24,19 @@ public:
 
     /** Disband guard: release \a mutex
       */
-    ~Guard() { mutex_.release(); }
+    ~Guard() { if (onDuty_) mutex_.release(); }
+
+    /** Unlock the mutex early
+      */
+    void dismiss()
+    {
+        onDuty_ = false;
+        mutex_.release();
+    }
 
 private:
     T &mutex_;
+    bool onDuty_ { true };
 };
 
 } // namespace cc

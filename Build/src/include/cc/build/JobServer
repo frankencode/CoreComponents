@@ -17,9 +17,13 @@ namespace cc::build {
 class JobServer: public Object
 {
 public:
-    JobServer(const Channel<Job> &requestChannel, const Channel<Job> &replyChannel);
+    JobServer() = default;
+
+    JobServer(const Channel<Message> &requestChannel, const Channel<Message> &replyChannel);
 
 private:
+    friend class Object;
+
     struct State;
 };
 

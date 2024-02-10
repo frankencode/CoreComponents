@@ -15,8 +15,9 @@ namespace cc::build {
 /** \brief Background job scheduler
   * \note The JobScheduler itself is not meant to be shared between threads
   * \todo Establish a clean shutdown logic in case a signal is received (e.g. with a SignalMaster).
+  * \todo There should be only one job scheduler used by all stages (and used by LTO/CodyServer).
   */
-class JobScheduler: public Object
+class JobScheduler final: public Object
 {
 public:
     JobScheduler() = default;
@@ -37,6 +38,9 @@ public:
       * \return true if \a finishedJob is returned otherwise return false (end of operation)
       */
     bool collect(Out<Job> finishedJob);
+
+    void reportJobSuspension();
+    void reportJobResumption();
 
     /** Exit status of the first unsuccessfully finished job, or 0 if all jobs completed successully
       */

@@ -12,7 +12,7 @@
 
 namespace cc::build {
 
-struct LinkJob::State: public Job::State
+struct LinkJob::State final: public Job::State
 {
     State(const BuildPlan &plan):
         Job::State{plan.toolChain().linkCommand(plan)},

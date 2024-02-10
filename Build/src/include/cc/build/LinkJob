@@ -16,7 +16,7 @@ namespace cc::build {
 
 class BuildPlan;
 
-class LinkJob: public Job
+class LinkJob final: public Job
 {
 public:
     explicit LinkJob(const BuildPlan &plan);

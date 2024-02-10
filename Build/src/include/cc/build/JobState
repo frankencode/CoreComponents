@@ -15,9 +15,10 @@
 
 namespace cc::build {
 
-struct Job::State: public Object::State
+struct Job::State: public Message::State
 {
-    State(const String &command):
+    explicit State(const String &command):
+        Message::State{Message::Type::Job},
         command_{command}
     {}
 

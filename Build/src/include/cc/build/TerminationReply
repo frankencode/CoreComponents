@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/build/Message>
+#include <cc/build/JobServer>
+
+namespace cc::build {
+
+class TerminationReply final: public Message
+{
+public:
+    TerminationReply() = default;
+
+    explicit TerminationReply(const JobServer &server):
+        Message{new State{server}}
+    {}
+
+    const JobServer &server() const { return me().server_; }
+
+private:
+    friend class Object;
+
+    struct State final: public Message::State
+    {
+        explicit State(const JobServer &server):
+            Message::State{Type::TerminationReply},
+            server_{server}
+        {}
+
+        JobServer server_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::build

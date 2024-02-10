@@ -79,4 +79,9 @@ List<String> CodyMessageSyntax::read(const String &line) const
     return me().read(line);
 }
 
+const CodyMessageSyntax::State &CodyMessageSyntax::me() const
+{
+    return Object::me.as<State>();
+}
+
 } // namespace cc::build

@@ -68,6 +68,18 @@ int Process::exec(const String &command)
     return process.wait();
 }
 
+int Process::exec(const List<String> &args)
+{
+    Process process {
+        Command{args}
+        .io(0, IoStream::input())
+        .io(1, IoStream::output())
+        .io(2, IoStream::error())
+    };
+
+    return process.wait();
+}
+
 int Process::id() const
 {
     return me().pid_;

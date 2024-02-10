@@ -44,6 +44,11 @@ public:
         return words_.join(' ');
     }
 
+    List<String> &words()
+    {
+        return words_;
+    }
+
 private:
     List<String> words_;
     String dummy_;

@@ -8,12 +8,12 @@
 
 #pragma once
 
+#include <cc/build/Message>
 #include <cc/String>
-#include <cc/Object>
 
 namespace cc::build {
 
-class Job: public Object
+class Job: public Message
 {
 public:
     Job() = default;
@@ -34,6 +34,8 @@ public:
     bool finish();
 
 protected:
+    friend class Object;
+
     struct State;
 
     explicit Job(State *newState);

@@ -36,12 +36,16 @@ public:
     explicit Process(const String &command);
 
    /** Start a new sub-process executing \a command
-      */
+     */
     explicit Process(const Command &command);
 
-    /** Start process and wait for its completion
+    /** Start process and wait for its completion (convenience method)
       */
     static int exec(const String &command);
+
+    /** Start process wand wait for its completion (convenience method)
+      */
+    static int exec(const List<String> &args);
 
     /** %Process ID of the sub-process
       */

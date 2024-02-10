@@ -9,16 +9,24 @@
 #pragma once
 
 #include <cc/build/CodyMessage>
+#include <cc/build/CodyError>
 
 namespace cc::build {
+
+class JobScheduler;
 
 class CodyServer final: public Object
 {
 public:
-    explicit CodyServer(CodyMessage::Flags flags = CodyMessage::Flags::None);
+    explicit CodyServer(const JobScheduler &scheduler);
+    void start();
+    void shutdown(Out<CodyError> error);
 
 private:
     struct State;
+
+    State &me();
+    const State &me() const;
 };
 
 } // namespaec cc::build

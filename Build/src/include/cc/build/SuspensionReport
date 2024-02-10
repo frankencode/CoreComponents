@@ -1,0 +1,21 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/build/Message>
+
+namespace cc::build {
+
+class SuspensionReport final: public Message
+{
+public:
+    SuspensionReport():
+        Message{new State{Type::SuspensionReport}}
+    {}
+};
+
+} // namespace cc::build

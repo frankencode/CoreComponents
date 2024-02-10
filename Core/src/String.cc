@@ -284,7 +284,7 @@ void String::expand()
             }
             else if (('0' <= ch) && (ch <= '9') && (i <= n - 1)) {
                 uint8_t x = ch - '0';
-                x <= 4;
+                x <<= 4;
                 x |= at(i++) - '0';
                 at(j++) = static_cast<char>(x);
             }

@@ -12,6 +12,7 @@
 #include <cc/build/BuildShell>
 #include <cc/build/ToolChain>
 #include <cc/build/InsightDatabase>
+#include <cc/build/CodyServer>
 #include <cc/File>
 #include <cc/stdio>
 
@@ -22,6 +23,10 @@ bool CompileLinkStage::run()
     BuildStageGuard guard{this};
 
     JobScheduler scheduler = createScheduler();
+
+    CodyServer codyServer{scheduler};
+    codyServer.start();
+
     scheduleJobs(scheduler);
 
     for (Job job; scheduler.collect(&job);) {
@@ -39,7 +44,14 @@ bool CompileLinkStage::run()
         }
     }
 
-    return success_ = true;
+    CodyError error;
+    codyServer.shutdown(&error);
+
+    if (error) {
+        ferr() << error << nl;
+    }
+
+    return success_ = !error;
 }
 
 void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)

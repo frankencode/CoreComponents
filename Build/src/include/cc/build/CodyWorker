@@ -10,9 +10,8 @@
 
 #include <cc/build/CodyMessage>
 #include <cc/build/CodyError>
-#include <cc/build/CodyImportRequest>
 #include <cc/Stream>
-#include <cc/Channel>
+#include <cc/Function>
 
 namespace cc::build {
 
@@ -21,9 +20,11 @@ class CodyWorker final: public Object
 public:
     explicit CodyWorker(
         const Stream &stream,
-        const String &cmiCachePath,
-        const Channel<String> &modulesCompiled,
-        const Channel<CodyImportRequest> &importRequest
+        const String &cachePrefix,
+        Function<String(const String &)> &&onModuleExport,
+        Function<void(const String &)> &&onModuleCompiled,
+        Function<bool(const String &, const String &, Out<String>)> &&onModuleImport,
+        Function<int(const List<String> &)> &&onInvoke
     );
 
     void wait(Out<CodyError> error);

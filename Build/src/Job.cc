@@ -11,11 +11,11 @@
 namespace cc::build {
 
 Job::Job(const String &command):
-    Object{new State{command}}
+    Message{new State{command}}
 {}
 
 Job::Job(State *newState):
-    Object{newState}
+    Message{newState}
 {}
 
 String Job::command() const

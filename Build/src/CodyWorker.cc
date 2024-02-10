@@ -18,14 +18,18 @@ struct CodyWorker::State final: public Object::State
 {
     explicit State(
         const Stream &stream,
-        const String &cmiCachePath,
-        const Channel<String> &modulesCompiled,
-        const Channel<CodyImportRequest> &importRequest
+        const String &cachePrefix,
+        Function<String(const String &)> &&onModuleExport,
+        Function<void(const String &)> &&onModuleCompiled,
+        Function<bool(const String &, const String &, Out<String>)> &&onModuleImport,
+        Function<int(const List<String> &)> &&onInvoke
     ):
         stream_{stream},
-        cmiCachePath_{cmiCachePath},
-        modulesCompiled_{modulesCompiled},
-        importRequest_{importRequest}
+        cachePrefix_{cachePrefix},
+        onModuleExport_{onModuleExport},
+        onModuleCompiled_{onModuleCompiled},
+        onModuleImport_{onModuleImport},
+        onInvoke_{onInvoke}
     {}
 
     void start()
@@ -56,7 +60,7 @@ struct CodyWorker::State final: public Object::State
                             stream_.write("ERROR Unsupported protocol version\n");
                             throw CodyError{Format{"Unsupported protocol version (expected 1): \"%%\""} << message.toString()};
                         }
-                        String reply = Format{"HELLO 1 ccbuild %%\n"} << flags_;
+                        String reply = "HELLO 1 ccbuild 0\n";
                         CC_INSPECT(reply);
                         stream_.write(reply);
                         established_ = true;
@@ -64,44 +68,55 @@ struct CodyWorker::State final: public Object::State
                     continue;
                 }
                 if (message(0) == "MODULE-REPO") {
-                    String reply = Format{"PATHNAME '%%'\n"} << cmiCachePath_;
+                    // String reply = Format{"PATHNAME '%%'\n"} << cachePrefix_;
+                    String reply { "PATHNAME ''\n" };
                     CC_INSPECT(reply);
                     stream_.write(reply);
                 }
                 else if (message(0) == "MODULE-EXPORT") {
                     module_ = message(1);
-                    String cmiPath = module_;
-                    if (cmiPath.contains('/')) {
-                        cmiPath.replace("./", ",/");
-                        cmiPath.replace("../", ",,/");
-                    }
-                    cmiPath += ".gcm";
-                    String reply = Format{"PATHNAME '%%'\n"} << cmiPath;
+                    String cachePath = onModuleExport_(message(1));
+                    String reply = Format{"PATHNAME '%%'\n"} << cachePath;
                     CC_INSPECT(reply);
                     stream_.write(reply);
                 }
                 else if (message(0) == "MODULE-COMPILED") {
-                    modulesCompiled_ << message(1);
+                    onModuleCompiled_(message(1));
                     String reply = "OK\n";
                     CC_INSPECT(reply);
                     stream_.write(reply);
                 }
                 else if (message(0) == "MODULE-IMPORT") {
-                    String module = message(1);
-                    CodyImportRequest request { module };
-                    importRequest_.pushBack(request);
+                    String importModule = message(1);
+                    String importCachePath;
                     String reply;
-                    String cmiPath;
-                    if (request.cmiPath().popFront(&cmiPath)) {
-                        reply = Format{"PATHNAME '%%'\n"} << cmiPath;
+                    if (onModuleImport_(module_, importModule, &importCachePath)) {
+                        reply = Format{"PATHNAME '%%'\n"} << importCachePath;
                     }
                     else {
-                        reply = Format{"ERROR 'Compilation of module \'%%\' failed'"} << module;
+                        reply = Format{"ERROR 'Import of module \'%%\' failed'\n"} << importModule;
                     }
                     CC_INSPECT(reply);
                     stream_.write(reply);
                 }
-
+                else if (message(0) == "INCLUDE-TRANSLATE") {
+                    String reply { "BOOL TRUE\n" };
+                    CC_INSPECT(reply);
+                    stream_.write(reply);
+                }
+                else if (message(0) == "INVOKE") {
+                    message.words().popFront();
+                    int ret = onInvoke_(message.words());
+                    String reply;
+                    if (ret == 0) {
+                        reply = "OK\n";
+                    }
+                    else {
+                        reply = Format{"ERROR %%\n"} << ret;
+                    }
+                    CC_INSPECT(reply);
+                    stream_.write(reply);
+                }
             }
         }
         catch (CodyError &error)
@@ -115,29 +130,34 @@ struct CodyWorker::State final: public Object::State
     }
 
     Stream stream_;
-    String cmiCachePath_;
-    CodyMessage::Flags flags_;
+    String cachePrefix_;
     Thread thread_;
     CodyError error_;
     int compilerProtocolVersion_ { 0 };
     bool established_ { false };
     String module_;
-    Channel<String> modulesCompiled_;
-    Channel<CodyImportRequest> importRequest_;
+    Function<String(const String &)> onModuleExport_;
+    Function<void(const String &)> onModuleCompiled_;
+    Function<bool(const String &, const String &, Out<String>)> onModuleImport_;
+    Function<int(const List<String> &)> onInvoke_;
 };
 
 CodyWorker::CodyWorker(
     const Stream &stream,
-    const String &cmiCachePath,
-    const Channel<String> &modulesCompiled,
-    const Channel<CodyImportRequest> &importRequest
+    const String &cachePrefix,
+    Function<String(const String &)> &&onModuleExport,
+    Function<void(const String &)> &&onModuleCompiled,
+    Function<bool(const String &, const String &, Out<String>)> &&onModuleImport,
+    Function<int(const List<String> &)> &&onInvoke
 ):
     Object{
         new State{
             stream,
-            cmiCachePath,
-            modulesCompiled,
-            importRequest
+            cachePrefix,
+            std::move(onModuleExport),
+            std::move(onModuleCompiled),
+            std::move(onModuleImport),
+            std::move(onInvoke)
         }
     }
 {

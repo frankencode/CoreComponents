@@ -9,14 +9,18 @@
 #include <cc/build/JobScheduler>
 #include <cc/build/JobServer>
 #include <cc/build/Job>
+#include <cc/build/JobState>
+#include <cc/build/SuspensionReport>
+#include <cc/build/ResumptionReport>
+#include <cc/build/TerminationRequest>
+#include <cc/build/TerminationReply>
 #include <cc/System>
 #include <cc/Channel>
-#include <cc/AppendList>
 #include <cc/Set>
 
 namespace cc::build {
 
-struct JobScheduler::State: public Object::State
+struct JobScheduler::State final: public Object::State
 {
     State(int concurrency):
         concurrency_{concurrency > 0 ? concurrency : System::concurrency()}
@@ -28,7 +32,7 @@ struct JobScheduler::State: public Object::State
         started_ = true;
 
         for (int i = 0; i < concurrency_; ++i) {
-            serverPool_.pushBack(JobServer{requestChannel_, replyChannel_});
+            serverPool_.insert(JobServer{requestChannel_, replyChannel_});
         }
     }
 
@@ -42,27 +46,41 @@ struct JobScheduler::State: public Object::State
         ++totalCount_;
     }
 
-    bool collect(Out<Job> finishedJob)
+    bool collect(Out<Job> job)
     {
         if (totalCount_ == 0) {
-            finishedJob = Job{};
+            job = Job{};
             return false;
         }
 
         start();
 
         if (finishCount_ == totalCount_) {
-            finishedJob = Job{};
+            job = Job{};
             return false;
         }
 
-        Job job;
-        if (!replyChannel_.popFront(&job)) return false;
+        while (true) {
+            Message message;
+            if (!replyChannel_.popFront(&message)) return false;
+            if (message.type() == Message::Type::Job) {
+                job = message.as<Job>();
+                break;
+            }
+            if (message.type() == Message::Type::SuspensionReport) {
+                serverPool_.insert(JobServer{requestChannel_, replyChannel_});
+            }
+            else if (message.type() == Message::Type::ResumptionReport) {
+                requestChannel_.pushFront(TerminationRequest{});
+            }
+            else if (message.type() == Message::Type::TerminationReply) {
+                serverPool_.remove(message.as<TerminationReply>().server());
+            }
+        }
 
-        finishedJob = job;
 
-        if (job.status() == 0) {
-            for (Job derivative; job.getNextDerivative(&derivative);) {
+        if (job->status() == 0) {
+            for (Job derivative; job->getNextDerivative(&derivative);) {
                 if (derivative.countDown() == 0) {
                     requestChannel_.pushBack(derivative);
                     derivatives_.remove(derivative);
@@ -70,7 +88,7 @@ struct JobScheduler::State: public Object::State
             }
         }
         else {
-            status_ = job.status();
+            status_ = job->status();
             serverPool_.deplete();
         }
 
@@ -81,10 +99,10 @@ struct JobScheduler::State: public Object::State
 
     int concurrency_ { -1 };
 
-    Channel<Job> requestChannel_;
-    Channel<Job> replyChannel_;
+    Channel<Message> requestChannel_;
+    Channel<Message> replyChannel_;
 
-    AppendList<JobServer> serverPool_;
+    Set<JobServer> serverPool_;
     Set<Job> derivatives_;
 
     bool started_ { false };
@@ -115,6 +133,16 @@ void JobScheduler::schedule(const Job &job)
 bool JobScheduler::collect(Out<Job> finishedJob)
 {
     return me().collect(finishedJob);
+}
+
+void JobScheduler::reportJobSuspension()
+{
+    me().replyChannel_.pushFront(SuspensionReport{});
+}
+
+void JobScheduler::reportJobResumption()
+{
+    me().replyChannel_.pushFront(ResumptionReport{});
 }
 
 int JobScheduler::status() const
