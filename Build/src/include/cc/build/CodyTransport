@@ -13,12 +13,14 @@
 
 namespace cc::build {
 
-class CodyMessageSource final: public Object
+class CodyTransport final: public Object
 {
 public:
-    explicit CodyMessageSource(const Stream &stream);
+    explicit CodyTransport(const Stream &stream);
 
     bool read(Out<CodyMessage> message);
+
+    void write(const String &message);
 
 private:
     struct State;

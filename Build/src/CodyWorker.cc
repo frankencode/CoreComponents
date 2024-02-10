@@ -7,7 +7,7 @@
  */
 
 #include <cc/build/CodyWorker>
-#include <cc/build/CodyMessageSource>
+#include <cc/build/CodyTransport>
 #include <cc/Thread>
 #include <cc/Format>
 #include <cc/DEBUG>
@@ -47,8 +47,8 @@ struct CodyWorker::State final: public Object::State
     void run()
     {
         try {
-            CodyMessageSource source { stream_ };
-            for (CodyMessage message; source.read(&message);) {
+            CodyTransport cody { stream_ };
+            for (CodyMessage message; cody.read(&message);) {
                 if (message.count() == 0) continue;
                 CC_INSPECT(message.toString());
                 if (!established_) {
@@ -57,65 +57,65 @@ struct CodyWorker::State final: public Object::State
                             throw CodyError { Format{"Expected protocol version number after HELLO: \"%%\""} << message.toString() };
                         }
                         if (compilerProtocolVersion_ != 1) {
-                            stream_.write("ERROR Unsupported protocol version\n");
+                            cody.write("ERROR Unsupported protocol version");
                             throw CodyError{Format{"Unsupported protocol version (expected 1): \"%%\""} << message.toString()};
                         }
-                        String reply = "HELLO 1 ccbuild 0\n";
+                        String reply = "HELLO 1 ccbuild 0";
                         CC_INSPECT(reply);
-                        stream_.write(reply);
+                        cody.write(reply);
                         established_ = true;
                     }
                     continue;
                 }
                 if (message(0) == "MODULE-REPO") {
-                    // String reply = Format{"PATHNAME '%%'\n"} << cachePrefix_;
-                    String reply { "PATHNAME ''\n" };
+                    String reply = Format{"PATHNAME '%%'"} << cachePrefix_;
+                    // String reply { "PATHNAME ''" };
                     CC_INSPECT(reply);
-                    stream_.write(reply);
+                    cody.write(reply);
                 }
                 else if (message(0) == "MODULE-EXPORT") {
                     module_ = message(1);
                     String cachePath = onModuleExport_(message(1));
-                    String reply = Format{"PATHNAME '%%'\n"} << cachePath;
+                    String reply = Format{"PATHNAME '%%'"} << cachePath;
                     CC_INSPECT(reply);
-                    stream_.write(reply);
+                    cody.write(reply);
                 }
                 else if (message(0) == "MODULE-COMPILED") {
                     onModuleCompiled_(message(1));
-                    String reply = "OK\n";
+                    String reply = "OK";
                     CC_INSPECT(reply);
-                    stream_.write(reply);
+                    cody.write(reply);
                 }
                 else if (message(0) == "MODULE-IMPORT") {
                     String importModule = message(1);
                     String importCachePath;
                     String reply;
                     if (onModuleImport_(module_, importModule, &importCachePath)) {
-                        reply = Format{"PATHNAME '%%'\n"} << importCachePath;
+                        reply = Format{"PATHNAME '%%'"} << importCachePath;
                     }
                     else {
-                        reply = Format{"ERROR 'Import of module \'%%\' failed'\n"} << importModule;
+                        reply = Format{"ERROR 'Import of module \'%%\' failed'"} << importModule;
                     }
                     CC_INSPECT(reply);
-                    stream_.write(reply);
+                    cody.write(reply);
                 }
                 else if (message(0) == "INCLUDE-TRANSLATE") {
-                    String reply { "BOOL TRUE\n" };
+                    String reply { "BOOL TRUE" };
                     CC_INSPECT(reply);
-                    stream_.write(reply);
+                    cody.write(reply);
                 }
                 else if (message(0) == "INVOKE") {
                     message.words().popFront();
                     int ret = onInvoke_(message.words());
                     String reply;
                     if (ret == 0) {
-                        reply = "OK\n";
+                        reply = "OK";
                     }
                     else {
-                        reply = Format{"ERROR %%\n"} << ret;
+                        reply = Format{"ERROR %%"} << ret;
                     }
                     CC_INSPECT(reply);
-                    stream_.write(reply);
+                    cody.write(reply);
                 }
             }
         }
