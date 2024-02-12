@@ -192,11 +192,23 @@ struct GnuToolChain::State: public ToolChain::State
         return ok;
     }
 
+    String headerUnitCompileCommand(const BuildPlan &plan, const String &source) const override
+    {
+        Format args;
+        args << cxxPath_;
+        args << "-fmodule-header";
+        args << "-xc++-header";
+        appendCompileOptions(args, plan);
+        args << source;
+        return args.join<String>(' ');
+    }
+
     String compileCommand(const BuildPlan &plan, const String &sourcePath, const String &objectFilePath) const override
     {
         Format args;
         args << compiler(sourcePath);
         args << "-c" << "-o" << objectFilePath;
+        args << "-MMD";
         appendCompileOptions(args, plan);
         args << sourcePath;
         return args.join<String>(' ');
@@ -212,6 +224,7 @@ struct GnuToolChain::State: public ToolChain::State
         Format args;
         args << compiler(objectFile.sourcePath());
         args << "-o" << linkName(objectFile);
+        args << "-MMD";
         appendCompileOptions(args, plan);
         if (plan.linkStatic()) args << "-static";
         args << "-pthread";
@@ -320,6 +333,7 @@ struct GnuToolChain::State: public ToolChain::State
         Format args;
         args << compiler(sourcePath);
         args << "-o" << binPath;
+        // args << "-MMD";
         // appendCompileOptions(args, plan);
         args << "-DNDEBUG" << "-pthread";
         args << sourcePath;
@@ -557,8 +571,6 @@ struct GnuToolChain::State: public ToolChain::State
 
     void appendCompileOptions(Format &args, const BuildPlan &plan) const
     {
-        args << "-MMD";
-
         if (plan.options() & BuildOption::Debug) args << "-g";
         if (plan.options() & BuildOption::Release) args << "-DNDEBUG";
         if (plan.optimize() != "") args << "-O" + plan.optimize();

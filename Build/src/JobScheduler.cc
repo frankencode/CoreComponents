@@ -78,7 +78,6 @@ struct JobScheduler::State final: public Object::State
             }
         }
 
-
         if (job->status() == 0) {
             for (Job derivative; job->getNextDerivative(&derivative);) {
                 if (derivative.countDown() == 0) {

@@ -10,7 +10,6 @@
 #include <cc/build/CodyTransport>
 #include <cc/Thread>
 #include <cc/Format>
-#include <cc/DEBUG>
 
 namespace cc::build {
 
@@ -50,7 +49,6 @@ struct CodyWorker::State final: public Object::State
             CodyTransport cody { stream_ };
             for (CodyMessage message; cody.read(&message);) {
                 if (message.count() == 0) continue;
-                CC_INSPECT(message.toString());
                 if (!established_) {
                     if (message(0) == "HELLO") {
                         if (!message(1).read<int>(&compilerProtocolVersion_)) {
@@ -61,7 +59,6 @@ struct CodyWorker::State final: public Object::State
                             throw CodyError{Format{"Unsupported protocol version (expected 1): \"%%\""} << message.toString()};
                         }
                         String reply = "HELLO 1 ccbuild 0";
-                        CC_INSPECT(reply);
                         cody.write(reply);
                         established_ = true;
                     }
@@ -70,20 +67,17 @@ struct CodyWorker::State final: public Object::State
                 if (message(0) == "MODULE-REPO") {
                     String reply = Format{"PATHNAME '%%'"} << cachePrefix_;
                     // String reply { "PATHNAME ''" };
-                    CC_INSPECT(reply);
                     cody.write(reply);
                 }
                 else if (message(0) == "MODULE-EXPORT") {
                     module_ = message(1);
                     String cachePath = onModuleExport_(message(1));
                     String reply = Format{"PATHNAME '%%'"} << cachePath;
-                    CC_INSPECT(reply);
                     cody.write(reply);
                 }
                 else if (message(0) == "MODULE-COMPILED") {
                     onModuleCompiled_(message(1));
                     String reply = "OK";
-                    CC_INSPECT(reply);
                     cody.write(reply);
                 }
                 else if (message(0) == "MODULE-IMPORT") {
@@ -96,12 +90,14 @@ struct CodyWorker::State final: public Object::State
                     else {
                         reply = Format{"ERROR 'Import of module \'%%\' failed'"} << importModule;
                     }
-                    CC_INSPECT(reply);
                     cody.write(reply);
                 }
                 else if (message(0) == "INCLUDE-TRANSLATE") {
+                    /*String header = message(1);
+                    String reply;
+                    if (header.fileName() == "iostream") reply = "PATHNAME 'iostream.gcm'";
+                    else reply = "BOOL TRUE";*/
                     String reply { "BOOL TRUE" };
-                    CC_INSPECT(reply);
                     cody.write(reply);
                 }
                 else if (message(0) == "INVOKE") {
@@ -114,7 +110,6 @@ struct CodyWorker::State final: public Object::State
                     else {
                         reply = Format{"ERROR %%"} << ret;
                     }
-                    CC_INSPECT(reply);
                     cody.write(reply);
                 }
             }

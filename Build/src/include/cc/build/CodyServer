@@ -10,6 +10,7 @@
 
 #include <cc/build/CodyMessage>
 #include <cc/build/CodyError>
+#include <cc/build/BuildPlan>
 
 namespace cc::build {
 
@@ -18,7 +19,10 @@ class JobScheduler;
 class CodyServer final: public Object
 {
 public:
-    explicit CodyServer(const JobScheduler &scheduler);
+    CodyServer() = default;
+
+    explicit CodyServer(const BuildPlan &plan, const JobScheduler &scheduler);
+
     void start();
     void shutdown(Out<CodyError> error);
 

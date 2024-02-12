@@ -6,9 +6,15 @@
  *
  */
 
+#define CCBUILD_CODY_DEBUG
+
 #include <cc/build/CodyTransport>
 #include <cc/build/CodyBlockSource>
-#include <cc/DEBUG>
+#include <cc/input>
+#ifdef CCBUILD_CODY_DEBUG
+#include <cc/Format>
+#include <cc/stdio>
+#endif
 
 namespace cc::build {
 
@@ -26,8 +32,10 @@ struct CodyTransport::State final: public Object::State
                 return false;
             }
             outCount_ = inBlock_.size();
-            CC_INSPECT(outCount_);
-            CC_INSPECT(inBlock_.join("\n"));
+            #ifdef CCBUILD_CODY_DEBUG
+            String prefix = Format{"(%%) >> "} << connectionNumber_;
+            ferr() << (prefix + inBlock_.join("\n" + prefix)) << nl;
+            #endif
         }
 
         message = CodyMessage::read(inBlock_.first());
@@ -43,17 +51,27 @@ struct CodyTransport::State final: public Object::State
         }
 
         --outCount_;
-        CC_INSPECT(outCount_);
-        CC_INSPECT(message);
         outBlock_.append(message);
         outBlock_.append((outCount_ == 0) ? "\n" : " ;\n");
         if (outCount_ == 0) {
-            CC_INSPECT(outBlock_.join());
+            #ifdef CCBUILD_CODY_DEBUG
+            String prefix = Format{"(%%) << "} << connectionNumber_;
+            ferr() << indent(outBlock_.join(), prefix) << nl;
+            #endif
             stream_.write(outBlock_.join());
             outBlock_.deplete();
         }
     }
 
+    static int getNextConnectionNumber()
+    {
+        static int n = 0;
+        return ++n;
+    }
+
+    #ifdef CCBUILD_CODY_DEBUG
+    int connectionNumber_ { getNextConnectionNumber() };
+    #endif
     Stream stream_;
     CodyBlockSource blockSource_;
     List<String> inBlock_;

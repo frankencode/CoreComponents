@@ -24,8 +24,12 @@ bool CompileLinkStage::run()
 
     JobScheduler scheduler = createScheduler();
 
-    CodyServer codyServer{scheduler};
-    codyServer.start();
+    CodyServer codyServer;
+
+    if (!(plan().options() & (BuildOption::Simulate | BuildOption::Blindfold | BuildOption::Bootstrap))) {
+        codyServer = CodyServer{plan(), scheduler};
+        codyServer.start();
+    }
 
     scheduleJobs(scheduler);
 
@@ -44,14 +48,14 @@ bool CompileLinkStage::run()
         }
     }
 
-    CodyError error;
-    codyServer.shutdown(&error);
-
-    if (error) {
-        ferr() << error << nl;
+    if (codyServer) {
+        CodyError error;
+        codyServer.shutdown(&error);
+        if (error) ferr() << error << nl;
+        return success_ = !error;
     }
 
-    return success_ = !error;
+    return success_ = true;
 }
 
 void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)

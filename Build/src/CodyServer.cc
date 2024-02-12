@@ -9,8 +9,10 @@
 #include <cc/build/CodyServer>
 #include <cc/build/CodyWorker>
 #include <cc/build/JobScheduler>
+#include <cc/build/ToolChain>
 #include <cc/ServerSocket>
 #include <cc/ClientSocket>
+#include <cc/FileInfo>
 #include <cc/Format>
 #include <cc/Process>
 #include <cc/Thread>
@@ -26,7 +28,8 @@ namespace cc::build {
 
 struct CodyServer::State final: public Object::State
 {
-    explicit State(const JobScheduler &scheduler):
+    explicit State(const BuildPlan &plan, const JobScheduler &scheduler):
+        plan_{plan},
         scheduler_{scheduler}
     {
         Process::setEnv("CXX_MODULE_MAPPER", Format{"localhost:%%"} << listenSocket_.address().port());
@@ -101,6 +104,7 @@ struct CodyServer::State final: public Object::State
         if (cachePath.contains('/')) {
             cachePath.replace("./", ",/");
             cachePath.replace("../", ",,/");
+            if (cachePath.startsWith('/')) cachePath = "." + cachePath;
         }
         cachePath += ".gcm";
         return cachePath;
@@ -111,8 +115,36 @@ struct CodyServer::State final: public Object::State
         return cachePath(module);
     }
 
+    static bool isCPlusPlusHeaderFile(const String &path)
+    {
+        const String ext = path.fileSuffix();
+
+        return
+            (ext == "" && path.contains("/include/")) ||
+            ext == "h" || ext == "hh" || ext == "hpp" || ext == "hxx" || ext == "h++" || ext == "H";
+    }
+
+    bool compileHeaderUnit(const String &headerSource, Out<String> importCachePath) const
+    {
+        String compiledHeaderCachePath = cachePath(headerSource);
+        FileInfo srcInfo { headerSource };
+        FileInfo modInfo { cachePrefix_ / compiledHeaderCachePath };
+        if (!srcInfo) return false;
+        importCachePath = compiledHeaderCachePath;
+        if (modInfo && srcInfo.lastModified() <= modInfo.lastModified()) {
+            return true;
+        }
+        String command = plan_.toolChain().headerUnitCompileCommand(plan_, headerSource);
+        fout() << command << nl;
+        return Process{command}.wait() == 0;
+    }
+
     bool onModuleImport(const String &module, const String &importModule, Out<String> importCachePath)
     {
+        if (isCPlusPlusHeaderFile(importModule)) {
+            return compileHeaderUnit(importModule, &importCachePath);
+        }
+
         Guard guard {mutex_};
         if (modulesReady_.contains(importModule)) {
             importCachePath = cachePath(module);
@@ -146,6 +178,7 @@ struct CodyServer::State final: public Object::State
     }
 
     const String cachePrefix_ { "gcm.cache" };
+    BuildPlan plan_;
     JobScheduler scheduler_;
     ServerSocket listenSocket_ { SocketAddress { ProtocolFamily::InternetV6, "::" } };
     Thread thread_;
@@ -158,8 +191,8 @@ struct CodyServer::State final: public Object::State
     CodyError error_;
 };
 
-CodyServer::CodyServer(const JobScheduler &scheduler):
-    Object{new State{scheduler}}
+CodyServer::CodyServer(const BuildPlan &plan, const JobScheduler &scheduler):
+    Object{new State{plan, scheduler}}
 {}
 
 void CodyServer::start()

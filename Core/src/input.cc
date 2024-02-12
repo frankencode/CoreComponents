@@ -163,7 +163,7 @@ String xmlSanitize(const String &text)
 
 String indent(const String &text, const String &prefix)
 {
-    return prefix + String{text.trailingTrimmed().split('\n'), prefix + "\n"};
+    return prefix + String{text.trailingTrimmed().split('\n'), "\n" + prefix};
 }
 
 } // namespace cc
