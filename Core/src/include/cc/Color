@@ -353,7 +353,7 @@ void hslToRgb(double h, double s, double l, Out<double> r, Out<double> g, Out<do
 template<>
 struct VariantType<Color>
 {
-    static const TypeInfo info;
+    static const TypeInfo &info();
 
     static void store(void *bytes, const Color &x)
     {
@@ -362,9 +362,9 @@ struct VariantType<Color>
         new(bytes)Color{x};
     }
 
-    static Color retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    static Color retrieve(const void *bytes, const TypeInfo &typeInfo = info())
     {
-        assert(&typeInfo == &VariantType<Color>::info); // expected type 'Color'
+        assert(&typeInfo == &VariantType<Color>::info()); // expected type 'Color'
 
         return *static_cast<const Color *>(bytes);
     }

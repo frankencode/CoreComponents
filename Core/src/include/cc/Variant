@@ -10,218 +10,10 @@
 
 #include <cc/VariantType>
 #include <cc/Composite>
-#include <cc/Map>
 #include <initializer_list>
 #include <cassert>
 
 namespace cc {
-
-template<>
-struct VariantType<void>
-{
-    static const TypeInfo info;
-};
-
-template<>
-struct VariantType<long>
-{
-    static const TypeInfo info;
-
-    static void store(void *bytes, long x)
-    {
-        static_assert(sizeof(long) <= 8);
-
-        *static_cast<std::int64_t *>(bytes) = x;
-    }
-
-    static long retrieve(const void *bytes, const TypeInfo &typeInfo = info)
-    {
-        assert(&typeInfo == &VariantType<long>::info); // expected type 'long'
-
-        return *static_cast<const std::int64_t *>(bytes);
-    }
-};
-
-template<>
-struct VariantType<bool>
-{
-    static const TypeInfo info;
-
-    static void store(void *bytes, bool x)
-    {
-        *static_cast<std::uint64_t *>(bytes) = x;
-    }
-
-    static bool retrieve(const void *bytes, const TypeInfo &typeInfo = info)
-    {
-        assert(&typeInfo == &VariantType<bool>::info || &typeInfo == &VariantType<long>::info); // expected type 'bool'
-
-        return *static_cast<const std::uint64_t *>(bytes);
-    }
-};
-
-template<>
-struct VariantType<double>
-{
-    static const TypeInfo info;
-
-    static void store(void *bytes, double x)
-    {
-        static_assert(sizeof(double) <= 8);
-
-        *static_cast<double *>(bytes) = x;
-    }
-
-    static double retrieve(const void *bytes, const TypeInfo &typeInfo = info)
-    {
-        if (&typeInfo == &VariantType<double>::info)
-            return *static_cast<const double *>(bytes);
-
-        if (&typeInfo == &VariantType<long>::info)
-            return static_cast<double>(VariantType<long>::retrieve(bytes));
-
-        assert(false); // expected type 'double'
-        return 0;
-    }
-};
-
-template<>
-struct VariantType<String>
-{
-    static const TypeInfo info;
-
-    static void store(void *bytes, const char *x)
-    {
-        static_assert(sizeof(String) <= 8);
-
-        new(bytes)String{x};
-    }
-
-    static void store(void *bytes, const String &x)
-    {
-        static_assert(sizeof(String) <= 8);
-
-        new(bytes)String{x};
-    }
-
-    static String retrieve(const void *bytes, const TypeInfo &typeInfo = info)
-    {
-        assert(&typeInfo == &VariantType<String>::info); // expected type 'String'
-
-        return *static_cast<const String *>(bytes);
-    }
-};
-
-class Variant;
-
-template<>
-struct VariantType<List<Variant>>
-{
-    static const TypeInfo info;
-
-    static void store(void *bytes, const List<Variant> &x)
-    {
-        static_assert(sizeof(List<Variant>) <= 8);
-
-        new(bytes)List<Variant>{x};
-    }
-
-    static List<Variant> retrieve(const void *bytes, const TypeInfo &typeInfo = info)
-    {
-        assert(&typeInfo == &VariantType<List<Variant>>::info); // expected type 'List<Variant>'
-
-        return *static_cast<const List<Variant> *>(bytes);
-    }
-};
-
-template<>
-struct VariantType<List<String>>
-{
-    static const TypeInfo info;
-
-    static void store(void *bytes, const List<String> &x)
-    {
-        static_assert(sizeof(List<String>) <= 8);
-
-        new(bytes)List<String>{x};
-    }
-
-    static List<String> retrieve(const void *bytes, const TypeInfo &typeInfo = info)
-    {
-        assert(&typeInfo == &VariantType<List<String>>::info);
-        return *static_cast<const List<String> *>(bytes);
-    }
-};
-
-template<>
-struct VariantType<List<bool>>
-{
-    static const TypeInfo info;
-
-    static void store(void *bytes, const List<bool> &x)
-    {
-        static_assert(sizeof(List<bool>) <= 8);
-
-        new(bytes)List<bool>{x};
-    }
-
-    static List<bool> retrieve(const void *bytes, const TypeInfo &typeInfo = info)
-    {
-        assert(&typeInfo == &VariantType<List<bool>>::info); // expected type 'List<bool>'
-
-        return *static_cast<const List<bool> *>(bytes);
-    }
-};
-
-template<>
-struct VariantType<List<long>>
-{
-    static const TypeInfo info;
-
-    static void store(void *bytes, const List<long> &x)
-    {
-        static_assert(sizeof(List<long>) <= 8);
-
-        new(bytes)List<long>{x};
-    }
-
-    static List<long> retrieve(const void *bytes, const TypeInfo &typeInfo = info)
-    {
-        assert(&typeInfo == &VariantType<List<long>>::info); // expected type 'List<long>'
-
-        return *static_cast<const List<long> *>(bytes);
-    }
-};
-
-template<>
-struct VariantType<List<double>>
-{
-    static const TypeInfo info;
-
-    static void store(void *bytes, const List<double> &x)
-    {
-        static_assert(sizeof(List<double>) <= 8);
-
-        new(bytes)List<double>{x};
-    }
-
-    static List<double> retrieve(const void *bytes, const TypeInfo &typeInfo = info)
-    {
-        assert(&typeInfo == &VariantType<List<double>>::info); // expected type 'List<double>'
-
-        return *static_cast<const List<double> *>(bytes);
-    }
-};
-
-template<>
-struct VariantType<Map<String, Variant>>
-{
-    static const TypeInfo info;
-
-    static void store(void *bytes, const Map<String, Variant> &x);
-
-    static Map<String, Variant> retrieve(const void *bytes, const TypeInfo &typeInfo = info);
-};
 
 /** \class Variant cc/Variant
   * \ingroup misc
@@ -239,14 +31,14 @@ public:
     /** Create a variant without an value
       */
     Variant():
-        me{&VariantType<void>::info}
+        me{&VariantType<void>::info()}
     {}
 
     /** Create a variant with \a value
       */
     template<class T>
     Variant(T value):
-        me{&VariantType<T>::info}
+        me{&VariantType<T>::info()}
     {
         VariantType<T>::store(me().bytes, value);
     }
@@ -254,7 +46,7 @@ public:
     /** Convenience function for calling Variant(long)
       */
     Variant(int value):
-        me{&VariantType<long>::info}
+        me{&VariantType<long>::info()}
     {
         VariantType<long>::store(me().bytes, static_cast<long>(value));
     }
@@ -262,7 +54,7 @@ public:
     /** Convenience function for calling Variant(double)
       */
     Variant(float value):
-        me{&VariantType<double>::info}
+        me{&VariantType<double>::info()}
     {
         VariantType<double>::store(me().bytes, static_cast<double>(value));
     }
@@ -270,7 +62,7 @@ public:
     /** Convenience function for calling Variant(const String &)
       */
     Variant(const char *value):
-        me{&VariantType<String>::info}
+        me{&VariantType<String>::info()}
     {
         VariantType<String>::store(me().bytes, String{value});
     }
@@ -280,11 +72,11 @@ public:
     Variant(std::initializer_list<const char *> values)
     {
         if (values.size() == 1) {
-            me().typeInfo = &VariantType<String>::info;
+            me().typeInfo = &VariantType<String>::info();
             VariantType<String>::store(me().bytes, String{*values.begin()});
         }
         else {
-            me().typeInfo = &VariantType<List<String>>::info;
+            me().typeInfo = &VariantType<List<String>>::info();
             List<String> list;
             for (const char *value: values) list.append(String{value});
             VariantType<List<String>>::store(me().bytes, list);
@@ -296,11 +88,11 @@ public:
     Variant(std::initializer_list<int> values)
     {
         if (values.size() == 1) {
-            me().typeInfo = &VariantType<long>::info;
+            me().typeInfo = &VariantType<long>::info();
             VariantType<long>::store(me().bytes, static_cast<long>(*values.begin()));
         }
         else {
-            me().typeInfo = &VariantType<List<long>>::info;
+            me().typeInfo = &VariantType<List<long>>::info();
             List<long> list;
             for (int value: values) list.append(value);
             VariantType<List<long>>::store(me().bytes, list);
@@ -312,11 +104,11 @@ public:
     Variant(std::initializer_list<long> values)
     {
         if (values.size() == 1) {
-            me().typeInfo = &VariantType<long>::info;
+            me().typeInfo = &VariantType<long>::info();
             VariantType<long>::store(me().bytes, *values.begin());
         }
         else {
-            me().typeInfo = &VariantType<List<long>>::info;
+            me().typeInfo = &VariantType<List<long>>::info();
             List<long> list;
             for (int value: values) list.append(value);
             VariantType<List<long>>::store(me().bytes, list);
@@ -326,10 +118,10 @@ public:
     /**  Create a variant storing a list of doubles
       */
     Variant(std::initializer_list<double> values):
-        me{&VariantType<List<double>>::info}
+        me{&VariantType<List<double>>::info()}
     {
         if (values.size() == 1) {
-            me().typeInfo = &VariantType<double>::info;
+            me().typeInfo = &VariantType<double>::info();
             VariantType<double>::store(me().bytes, *values.begin());
         }
         else {
@@ -352,7 +144,7 @@ public:
     Variant(Variant &&b):
         me{b.me}
     {
-        b.me().typeInfo = &VariantType<void>::info;
+        b.me().typeInfo = &VariantType<void>::info();
     }
 
     /** \internal
@@ -378,14 +170,14 @@ public:
     Variant &operator=(Variant &&b)
     {
         me() = b.me();
-        b.me().typeInfo = &VariantType<void>::info;
+        b.me().typeInfo = &VariantType<void>::info();
         return *this;
     }
 
     /** Check if stored value is of type \a T
       */
     template<class T>
-    bool is() const { return me().typeInfo == &VariantType<T>::info; }
+    bool is() const { return me().typeInfo == &VariantType<T>::info(); }
 
     /** Retrieve stored value of type \a T
       * \note The type of the stored value must be exactly of type T.
@@ -411,7 +203,7 @@ public:
 
     /** Get the type name of the store value
       */
-    const char *typeName() const { return me().typeInfo->typeName; }
+    const char *typeName() const { return me().typeInfo->typeName(); }
 
     /** Convenience method to get the value of a member of this meta-object value
       */
@@ -451,8 +243,7 @@ public:
     {
         const auto &a = me();
         const auto &b = other.me();
-        if (a.typeInfo == b.typeInfo && a.typeInfo->order) return a.typeInfo->order(a.bytes, b.bytes);
-        return str(*this) <=> str(other);
+        return a.typeInfo->order(a.bytes, b.bytes);
     }
 
 private:

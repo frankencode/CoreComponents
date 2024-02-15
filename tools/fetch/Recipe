@@ -1,4 +1,4 @@
 Application {
     name: ccfetch
-    use: [ Core, Glob, Network, HTTP, Crypto ]
+    use: [ Core, Glob, HTTP, Crypto ]
 }

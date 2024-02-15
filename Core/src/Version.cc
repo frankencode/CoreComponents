@@ -28,19 +28,22 @@ String Version::toString() const
     };
 }
 
-const TypeInfo VariantType<Version>::info
+struct VersionTypeInfo final: public TypeInfo
 {
-    .typeName = "Version",
-    .str = [](const void *bytes) {
-        return VariantType<Version>::retrieve(bytes).toString();
-    },
-    .cleanup = [](void *bytes){},
-    .assign = [](void *dst, const void *src) {
-        new(dst)Version{*static_cast<const Version *>(src)};
-    },
-    .equal = [](const void *a, const void *b) {
-        return VariantType<Version>::retrieve(a) == VariantType<Version>::retrieve(b);
-    }
+    const char *typeName() const override { return "Version"; };
+
+    String str(const void *bytes) const override { return VariantType<Version>::retrieve(bytes).toString(); }
+
+    void assign(void *dst, const void *src) const override { new(dst)Version{*static_cast<const Version *>(src)}; }
+
+    bool equal(const void *a, const void *b) const override { return VariantType<Version>::retrieve(a) == VariantType<Version>::retrieve(b); }
+
+    std::strong_ordering order(const void *a, const void *b) const override { return VariantType<Version>::retrieve(a) <=> VariantType<Version>::retrieve(b); }
 };
+
+const TypeInfo &VariantType<Version>::info()
+{
+    return global<VersionTypeInfo>();
+}
 
 } // namespace cc

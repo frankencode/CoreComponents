@@ -83,19 +83,23 @@ MetaProtocol::State &MetaProtocol::me()
     return Object::me.as<State>();
 }
 
-const TypeInfo VariantType<MetaProtocol>::info
+/** \internal
+  * \todo implement str()
+  */
+struct MetaProtocolTypeInfo final: public TypeInfo
 {
-    .typeName = "MetaProtocol",
-    .str = [](const void *bytes) {
-        //! \TODO
-        return String{};
-    },
-    .cleanup = [](void *bytes) {
-        static_cast<MetaProtocol *>(bytes)->~MetaProtocol();
-    },
-    .assign = [](void *dst, const void *src) {
-        new(dst)MetaProtocol{*static_cast<const MetaProtocol *>(src)};
-    }
+    const char *typeName() const { return "MetaProtocol"; }
+
+    String str(const void *bytes) const override { return {}; }
+
+    void cleanup(void *bytes) const override { static_cast<MetaProtocol *>(bytes)->~MetaProtocol(); }
+
+    void assign(void *dst, const void *src) const override { new(dst)MetaProtocol{*static_cast<const MetaProtocol *>(src)}; }
 };
+
+const TypeInfo &VariantType<MetaProtocol>::info()
+{
+    return global<MetaProtocolTypeInfo>();
+}
 
 } // namespace cc

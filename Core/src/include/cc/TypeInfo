@@ -1,0 +1,32 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/global>
+#include <cstdint>
+#include <compare>
+
+namespace cc {
+
+/** \brief Variant type information
+  * \todo Make builtin variant types share same TLS storage.
+  * \todo rename to VariantType::Info
+  */
+struct TypeInfo
+{
+    virtual const char *typeName() const = 0;
+    virtual String str(const void *bytes) const = 0;
+    virtual void cleanup(void *bytes) const {}
+    virtual void assign(void *dst, const void *src) const { *static_cast<uint64_t *>(dst) = *static_cast<const uint64_t *>(src); }
+    virtual bool equal(const void *a, const void *b) const { return false; }
+    virtual std::strong_ordering order(const void *a, const void *b) const { return a <=> b; }
+};
+
+} // namespace cc

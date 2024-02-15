@@ -32,19 +32,23 @@ const MetaPrototype::State &MetaPrototype::me() const
     return Object::me.as<State>();
 }
 
-const TypeInfo VariantType<MetaPrototype>::info
+/** \internal
+  * \todo implement str()
+  */
+struct MetaPrototypeTypeInfo final: public TypeInfo
 {
-    .typeName = "MetaPrototype",
-    .str = [](const void *bytes) {
-        //! \TODO
-        return String{};
-    },
-    .cleanup = [](void *bytes) {
-        static_cast<MetaPrototype *>(bytes)->~MetaPrototype();
-    },
-    .assign = [](void *dst, const void *src) {
-        new(dst)MetaPrototype{*static_cast<const MetaPrototype *>(src)};
-    }
+    const char *typeName() const override { return "MetaPrototype"; }
+
+    String str(const void *bytes) const override { return {}; }
+
+    void cleanup(void *bytes) const override { static_cast<MetaPrototype *>(bytes)->~MetaPrototype(); }
+
+    void assign(void *dst, const void *src) const override { new(dst)MetaPrototype{*static_cast<const MetaPrototype *>(src)}; }
 };
+
+const TypeInfo &VariantType<MetaPrototype>::info()
+{
+    return global<MetaPrototypeTypeInfo>();
+}
 
 } // namespace cc

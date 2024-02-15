@@ -504,19 +504,22 @@ void hslToRgb(double h, double s, double l, Out<double> r, Out<double> g, Out<do
     b = b1 + m;
 }
 
-const TypeInfo VariantType<Color>::info
+struct ColorTypeInfo final: public TypeInfo
 {
-    .typeName = "Color",
-    .str = [](const void *bytes) {
-        return VariantType<Color>::retrieve(bytes).toString();
-    },
-    .cleanup = [](void *bytes){},
-    .assign = [](void *dst, const void *src) {
-        new(dst)Color{*static_cast<const Color *>(src)};
-    },
-    .equal = [](const void *a, const void *b) {
-        return VariantType<Color>::retrieve(a) == VariantType<Color>::retrieve(b);
-    }
+    const char *typeName() const override { return "Color"; }
+
+    String str(const void *bytes) const override { return VariantType<Color>::retrieve(bytes).toString(); }
+
+    void assign(void *dst, const void *src) const override { new(dst)Color{*static_cast<const Color *>(src)}; }
+
+    bool equal(const void *a, const void *b) const override { return VariantType<Color>::retrieve(a).value() == VariantType<Color>::retrieve(b).value(); }
+
+    std::strong_ordering order(const void *a, const void *b) const override { return VariantType<Color>::retrieve(a).value() <=> VariantType<Color>::retrieve(b).value(); }
 };
+
+const TypeInfo &VariantType<Color>::info()
+{
+    return global<ColorTypeInfo>();
+}
 
 } // namespace cc

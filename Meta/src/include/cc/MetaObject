@@ -124,7 +124,7 @@ protected:
 template<>
 struct VariantType<MetaObject>
 {
-    static const TypeInfo info;
+    static const TypeInfo &info();
 
     static void store(void *bytes, const MetaObject &x)
     {
@@ -133,9 +133,9 @@ struct VariantType<MetaObject>
         new(bytes)MetaObject{x};
     }
 
-    static MetaObject retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    static MetaObject retrieve(const void *bytes, const TypeInfo &typeInfo = info())
     {
-        assert(&typeInfo == &VariantType<MetaObject>::info); // expected type 'MetaObject'
+        assert(&typeInfo == &VariantType<MetaObject>::info()); // expected type 'MetaObject'
 
         return *static_cast<const MetaObject *>(bytes);
     }

@@ -68,7 +68,7 @@ protected:
 template<>
 struct VariantType<MetaPrototype>
 {
-    static const TypeInfo info;
+    static const TypeInfo &info();
 
     static void store(void *bytes, const MetaPrototype &x)
     {
@@ -77,9 +77,9 @@ struct VariantType<MetaPrototype>
         new(bytes)MetaPrototype{x};
     }
 
-    static MetaPrototype retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    static MetaPrototype retrieve(const void *bytes, const TypeInfo &typeInfo = info())
     {
-        assert(&typeInfo == &VariantType<MetaPrototype>::info); // expected type 'MetaPrototype'
+        assert(&typeInfo == &VariantType<MetaPrototype>::info()); // expected type 'MetaPrototype'
 
         return *static_cast<const MetaPrototype *>(bytes);
     }

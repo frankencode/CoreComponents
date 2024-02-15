@@ -9,8 +9,8 @@
 #pragma once
 
 #include <cc/String>
-#include <cc/VariantType>
 #include <cc/Composite>
+#include <cc/VariantType>
 
 namespace cc {
 
@@ -115,7 +115,7 @@ inline String str(const Version &version) { return version.toString(); }
 template<>
 struct VariantType<Version>
 {
-    static const TypeInfo info;
+    static const TypeInfo &info();
 
     static void store(void *bytes, const Version &x)
     {
@@ -124,9 +124,9 @@ struct VariantType<Version>
         new(bytes)Version{x};
     }
 
-    static Version retrieve(const void *bytes, const TypeInfo &typeInfo = info)
+    static Version retrieve(const void *bytes, const TypeInfo &typeInfo = info())
     {
-        assert(&typeInfo == &VariantType<Version>::info); // expected type 'Version'
+        assert(&typeInfo == &VariantType<Version>::info()); // expected type 'Version'
 
         return *static_cast<const Version *>(bytes);
     }

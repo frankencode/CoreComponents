@@ -38,23 +38,36 @@ MetaObject MetaObject::clone() const
     return object;
 }
 
-const TypeInfo VariantType<MetaObject>::info
+struct MetaObjectTypeInfo final: public TypeInfo
 {
-    .typeName = "MetaObject",
-    .str = [](const void *bytes) {
+    const char *typeName() const override { return "MetaObject"; }
+
+    String str(const void *bytes) const override
+    {
         CaptureSink sink;
         YasonWriter{sink}.writeObject(*static_cast<const MetaObject *>(bytes));
         return sink.collect();
-    },
-    .cleanup = [](void *bytes) {
+    }
+
+    void cleanup(void *bytes) const override
+    {
         static_cast<MetaObject *>(bytes)->~MetaObject();
-    },
-    .assign = [](void *dst, const void *src) {
+    }
+
+    void assign(void *dst, const void *src) const override
+    {
         new(dst)MetaObject{*static_cast<const MetaObject *>(src)};
-    },
-    .equal = [](const void *a, const void *b) {
+    }
+
+    bool equal(const void *a, const void *b) const override
+    {
         return VariantType<MetaObject>::retrieve(a) == VariantType<MetaObject>::retrieve(b);
     }
 };
+
+const TypeInfo &VariantType<MetaObject>::info()
+{
+    return global<MetaObjectTypeInfo>();
+}
 
 } // namespace cc

@@ -1,4 +1,4 @@
 Application {
     name: cchttp
-    use: [ Core, Glob, Network, HTTP ]
+    use: [ Core, Glob, HTTP ]
 }

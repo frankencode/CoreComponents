@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2020-2024 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -8,9 +8,8 @@
 
 #pragma once
 
-#include <cc/String>
-#include <cc/Function>
-#include <cstdint>
+#include <cc/TypeInfo>
+#include <cc/Map>
 
 namespace cc {
 
@@ -18,24 +17,201 @@ template<class T>
 struct VariantType
 {};
 
-struct TypeInfo {
-    const char *typeName;
+template<>
+struct VariantType<void>
+{
+    static const TypeInfo &info();
+};
 
-    Function<String(const void *)> str;
+template<>
+struct VariantType<long>
+{
+    static const TypeInfo &info();
 
-    Function<void(void *)> cleanup = [](void *){};
+    static void store(void *bytes, long x)
+    {
+        static_assert(sizeof(long) <= 8);
 
-    Function<void(void *, const void *)> assign = [](void *dst, const void *src){
-        *static_cast<uint64_t *>(dst) = *static_cast<const uint64_t *>(src);
-    };
+        *static_cast<std::int64_t *>(bytes) = x;
+    }
 
-    Function<bool(const void *, const void *)> equal = [](const void *, const void *) {
-        return false;
-    };
+    static long retrieve(const void *bytes, const TypeInfo &typeInfo = info())
+    {
+        assert(&typeInfo == &VariantType<long>::info()); // expected type 'long'
 
-    Function<std::strong_ordering(const void *, const void *)> order = [](const void *a, const void *b) {
-        return a <=> b;
-    };
+        return *static_cast<const int64_t *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<bool>
+{
+    static const TypeInfo &info();
+
+    static void store(void *bytes, bool x)
+    {
+        *static_cast<std::uint64_t *>(bytes) = x;
+    }
+
+    static bool retrieve(const void *bytes, const TypeInfo &typeInfo = info())
+    {
+        assert(&typeInfo == &VariantType<bool>::info() || &typeInfo == &VariantType<long>::info()); // expected type 'bool'
+
+        return *static_cast<const uint64_t *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<double>
+{
+    static const TypeInfo &info();
+
+    static void store(void *bytes, double x)
+    {
+        static_assert(sizeof(double) <= 8);
+
+        *static_cast<double *>(bytes) = x;
+    }
+
+    static double retrieve(const void *bytes, const TypeInfo &typeInfo = info())
+    {
+        if (&typeInfo == &VariantType<double>::info())
+            return *static_cast<const double *>(bytes);
+
+        if (&typeInfo == &VariantType<long>::info())
+            return static_cast<double>(VariantType<long>::retrieve(bytes));
+
+        assert(false); // expected type 'double'
+        return 0;
+    }
+};
+
+template<>
+struct VariantType<String>
+{
+    static const TypeInfo &info();
+
+    static void store(void *bytes, const char *x)
+    {
+        static_assert(sizeof(String) <= 8);
+
+        new(bytes)String{x};
+    }
+
+    static void store(void *bytes, const String &x)
+    {
+        static_assert(sizeof(String) <= 8);
+
+        new(bytes)String{x};
+    }
+
+    static String retrieve(const void *bytes, const TypeInfo &typeInfo = info())
+    {
+        assert(&typeInfo == &VariantType<String>::info()); // expected type 'String'
+
+        return *static_cast<const String *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<List<bool>>
+{
+    static const TypeInfo &info();
+
+    static void store(void *bytes, const List<bool> &x)
+    {
+        static_assert(sizeof(List<bool>) <= 8);
+
+        new(bytes)List<bool>{x};
+    }
+
+    static List<bool> retrieve(const void *bytes, const TypeInfo &typeInfo = info())
+    {
+        assert(&typeInfo == &VariantType<List<bool>>::info()); // expected type 'List<bool>'
+
+        return *static_cast<const List<bool> *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<List<long>>
+{
+    static const TypeInfo &info();
+
+    static void store(void *bytes, const List<long> &x)
+    {
+        static_assert(sizeof(List<long>) <= 8);
+
+        new(bytes)List<long>{x};
+    }
+
+    static List<long> retrieve(const void *bytes, const TypeInfo &typeInfo = info())
+    {
+        assert(&typeInfo == &VariantType<List<long>>::info()); // expected type 'List<long>'
+
+        return *static_cast<const List<long> *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<List<double>>
+{
+    static const TypeInfo &info();
+
+    static void store(void *bytes, const List<double> &x)
+    {
+        static_assert(sizeof(List<double>) <= 8);
+
+        new(bytes)List<double>{x};
+    }
+
+    static List<double> retrieve(const void *bytes, const TypeInfo &typeInfo = info())
+    {
+        assert(&typeInfo == &VariantType<List<double>>::info()); // expected type 'List<double>'
+
+        return *static_cast<const List<double> *>(bytes);
+    }
+};
+
+template<>
+struct VariantType<List<String>>
+{
+    static const TypeInfo &info();
+
+    static void store(void *bytes, const List<String> &x)
+    {
+        static_assert(sizeof(List<String>) <= 8);
+
+        new(bytes)List<String>{x};
+    }
+
+    static List<String> retrieve(const void *bytes, const TypeInfo &typeInfo = info())
+    {
+        assert(&typeInfo == &VariantType<List<String>>::info());
+        return *static_cast<const List<String> *>(bytes);
+    }
+};
+
+class Variant;
+
+template<>
+struct VariantType<List<Variant>>
+{
+    static const TypeInfo &info();
+
+    static void store(void *bytes, const List<Variant> &x);
+
+    static List<Variant> retrieve(const void *bytes, const TypeInfo &typeInfo = info());
+};
+
+template<>
+struct VariantType<Map<String, Variant>>
+{
+    static const TypeInfo &info();
+
+    static void store(void *bytes, const Map<String, Variant> &x);
+
+    static Map<String, Variant> retrieve(const void *bytes, const TypeInfo &typeInfo = info());
 };
 
 } // namespace cc

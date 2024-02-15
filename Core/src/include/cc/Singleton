@@ -15,7 +15,7 @@ namespace cc {
 /** \class Singleton cc/Singleton
   * \ingroup objects
   * \brief %Process-wide singletons
-  * \see ThreadLocalSingleton, Object::initOnce(), Object::initOncePerThread()
+  * \see ThreadLocalSingleton, Object::initOnce(), Object::initOncePerThread(), global()
   */
 class Singleton: public Object
 {

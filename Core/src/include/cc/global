@@ -1,0 +1,47 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \internal
+  * \class InitOnce cc/InitOnce
+  * \brief Low-level pattern for fast singleton initialization
+  */
+template<class T>
+class InitOnce
+{
+    /** Slow initialization: usually requires a full memory barrier / lock for thread-safe initialization
+      */
+    static const T &getSlow()
+    {
+        static T state;
+        return state;
+    }
+
+public:
+    /** \copydoc initOnce()
+      */
+    static const T &get()
+    {
+        thread_local const T &state = getSlow();
+        return state;
+    }
+};
+
+/** Return reference to the singleton of type T without invoking a full memory barrier except the first time in each thread.
+  * \note Any new type instance of global() cost another Thread Local Storage (TLS) entry.
+  */
+template<class T>
+inline const T &global()
+{
+    return InitOnce<T>::get();
+}
+
+} // namespace cc
