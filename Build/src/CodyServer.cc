@@ -150,6 +150,9 @@ struct CodyServer::State final: public Object::State
             importCachePath = cachePath(module);
             return true;
         }
+
+        /* TODO: check if any prerequisite is actually providing a model of that name */
+
         Channel<String> waitChannel;
         pendingImportRequests_.insert(module, waitChannel);
         guard.dismiss();

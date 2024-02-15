@@ -17,6 +17,7 @@
 #include <cc/System>
 #include <cc/Channel>
 #include <cc/Set>
+#include <cc/DEBUG>
 
 namespace cc::build {
 

@@ -12,6 +12,8 @@
 #include <cc/DirWalker>
 #include <cc/Glob>
 #include <cc/File>
+#include <cc/Dir>
+#include <cc/DirWalker>
 #include <cc/stdio>
 
 namespace cc::build {
@@ -37,6 +39,61 @@ bool GlobbingStage::run()
         plan().sourcePrefix() = sourcePrefix;
     }
 
+    if (!(plan().options() & (BuildOption::Simulate | BuildOption::Blindfold | BuildOption::Bootstrap))) {
+        if (!globInterfaces()) {
+            return success_ = false;
+        }
+    }
+    globSources();
+
+    for (BuildPlan &prerequisite: plan().prerequisites()) {
+        if (!prerequisite.globbingStage().run()) {
+            return success_ = false;
+        }
+    }
+
+    return success_ = true;
+}
+
+bool GlobbingStage::globInterfaces()
+{
+    if (!(
+        (plan().options() & BuildOption::Application) ||
+        (plan().options() & BuildOption::Library) ||
+        (plan().options() & BuildOption::Plugin)
+    )) {
+        return true;
+    }
+
+    const String interfacePath = plan().projectPath() / "interface";
+
+    if (!Dir::exists(interfacePath)) return true;
+
+    String path;
+    bool isDir = false;
+
+    for (DirWalker walker{interfacePath}; walker.read(&path, &isDir) ;) {
+        if (isDir) continue;
+        String suffix = path.fileSuffix();
+        String moduleName = path.copy(interfacePath.count(), path.count() - suffix.count() - (suffix.count() > 0));
+        moduleName.replace('/', '.');
+        moduleName.replace("__", ".");
+        if (!plan().interfaces().insert(moduleName, path)) {
+            ferr() <<
+                "Ambiguous module definition for \"" << moduleName << "\", bailing out, see:\n"
+                "  " << plan().interfaces()(moduleName) << "\n"
+                "  " << path << "\n";
+            return false;
+        }
+
+        plan().sources().append(path);
+    }
+
+    return true;
+}
+
+void GlobbingStage::globSources()
+{
     if (
         recipe().contains("source") &&
         (
@@ -77,23 +134,6 @@ bool GlobbingStage::run()
         plan().containsCPlusPlus() = containsCPlusPlus;
         plan().sources() = sources;
     }
-
-    for (BuildPlan &prerequisite: plan().prerequisites()) {
-        if (!prerequisite.globbingStage().run()) {
-            return success_ = false;
-        }
-    }
-
-    return success_ = true;
-}
-
-void GlobbingStage::appendPath(const String &path, Out<List<String>> sources)
-{
-    if(
-        !path.endsWith(".lump.cc") &&
-        !path.endsWith(".lump.c")
-    )
-        sources->append(path);
 }
 
 List<String> GlobbingStage::globSources(const List<String> &patternList) const
@@ -136,6 +176,15 @@ List<String> GlobbingStage::globSources(const List<String> &patternList) const
     }
 
     return sources;
+}
+
+void GlobbingStage::appendPath(const String &path, Out<List<String>> sources)
+{
+    if(
+        !path.endsWith(".lump.cc") &&
+        !path.endsWith(".lump.c")
+    )
+        sources->append(path);
 }
 
 } // namespace cc::build

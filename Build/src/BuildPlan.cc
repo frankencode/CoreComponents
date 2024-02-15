@@ -625,6 +625,7 @@ struct BuildPlan::State:
     List<String> alias_;
     Version version_;
 
+    Map<String, String> interfaces_;
     List<String> sources_;
     List<String> bundle_;
     List<ObjectFile> objectFiles_;
@@ -927,6 +928,17 @@ bool &BuildPlan::containsCPlusPlus()
 {
     return me().containsCPlusPlus_;
 }
+
+const Map<String, String> &BuildPlan::interfaces() const
+{
+    return me().interfaces_;
+}
+
+Map<String, String> BuildPlan::interfaces()
+{
+    return me().interfaces_;
+}
+
 const List<String> &BuildPlan::sources() const
 {
     return me().sources_;

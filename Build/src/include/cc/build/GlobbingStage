@@ -20,8 +20,10 @@ public:
     bool run();
 
 private:
-    static void appendPath(const String &path, Out<List<String>> sources);
+    bool globInterfaces();
+    void globSources();
     List<String> globSources(const List<String> &patternList) const;
+    static void appendPath(const String &path, Out<List<String>> sources);
 };
 
 } // namespace cc::build
