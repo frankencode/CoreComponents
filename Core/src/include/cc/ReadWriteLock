@@ -51,6 +51,3 @@ private:
 };
 
 } // namespace cc
-
-#include <cc/ReadGuard>
-#include <cc/WriteGuard>

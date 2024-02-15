@@ -9,6 +9,8 @@
 #include <cc/TlsSessionCache>
 #include <cc/TlsError>
 #include <cc/ReadWriteLock>
+#include <cc/WriteGuard>
+#include <cc/ReadGuard>
 #include <cc/Semaphore>
 #include <cc/Thread>
 #include <cc/System>

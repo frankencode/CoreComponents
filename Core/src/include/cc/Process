@@ -24,7 +24,7 @@ class Command;
   * \brief %Process creation and current process state
   * \exception SystemError
   */
-class Process: public Object
+class Process final: public Object
 {
 public:
     /** Create a null sub-process
@@ -188,7 +188,7 @@ private:
 
     static char **&environ();
 
-    struct State: public Object::State
+    struct State final: public Object::State
     {
         ~State();
         int wait();
@@ -199,8 +199,8 @@ private:
         IoStream standardStreams_[3];
     };
 
-    State &me() { return Object::me.as<State>(); }
-    const State &me() const { return Object::me.as<State>(); }
+    State &me();
+    const State &me() const;
 };
 
 } // namespace cc

@@ -313,4 +313,14 @@ char **&Process::environ()
     #endif
 }
 
+Process::State &Process::me()
+{
+    return Object::me.as<State>();
+}
+
+const Process::State &Process::me() const
+{
+    return Object::me.as<State>();
+}
+
 } // namespace cc

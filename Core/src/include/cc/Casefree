@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/chars>
+#include <compare>
 #include <cstring>
 
 namespace cc {

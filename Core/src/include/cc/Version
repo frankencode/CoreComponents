@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/String>
 #include <cc/VariantType>
 #include <cc/Composite>
 
