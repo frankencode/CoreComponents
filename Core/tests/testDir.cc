@@ -1,5 +1,5 @@
 #include <cc/Dir>
-#include <cc/DirWalker>
+#include <cc/DirWalk>
 #include <cc/testing>
 
 int main(int argc, char *argv[])
@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     TestCase {
         "CwdTraverse",
         []{
-            for (auto name: DirWalker{"."})
+            for (auto name: DirWalk{"."})
                 fout() << name << nl;
         }
     };

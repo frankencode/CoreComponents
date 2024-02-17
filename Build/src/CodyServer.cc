@@ -151,7 +151,7 @@ struct CodyServer::State final: public Object::State
             return true;
         }
 
-        /* TODO: check if any prerequisite is actually providing a model of that name */
+        /* TODO: check if any prerequisite is actually providing a module of that name */
 
         Channel<String> waitChannel;
         pendingImportRequests_.insert(module, waitChannel);

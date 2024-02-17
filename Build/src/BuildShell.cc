@@ -11,7 +11,7 @@
 #include <cc/FileInfo>
 #include <cc/File>
 #include <cc/Dir>
-#include <cc/DirWalker>
+#include <cc/DirWalk>
 #include <cc/stdio>
 
 namespace cc::build {
@@ -129,15 +129,8 @@ bool BuildShell::unlink(const String &path) const
 
 bool BuildShell::installAll(const String &sourcePrefix, const String &installPrefix) const
 {
-    DirWalker walker;
-    try { walker = DirWalker{sourcePrefix}; }
-    catch (...) { return true; }
-
     try {
-        String sourcePath;
-        bool isDir = false;
-        while (walker.read(&sourcePath, &isDir)) {
-            if (isDir) continue;
+        for (const String &sourcePath: DirWalk{sourcePrefix, DirWalk::FilesOnly}) {
             if (
                 !install(
                     sourcePath,
@@ -157,15 +150,8 @@ bool BuildShell::installAll(const String &sourcePrefix, const String &installPre
 
 bool BuildShell::unlinkAll(const String &sourcePrefix, const String &installPrefix) const
 {
-    DirWalker walker;
-    try { walker = DirWalker{sourcePrefix}; }
-    catch (...) { return true; }
-
     try {
-        String sourcePath;
-        bool isDir = false;
-        while (walker.read(&sourcePath, &isDir)) {
-            if (isDir) continue;
+        for (const String &sourcePath: DirWalk{sourcePrefix, DirWalk::FilesOnly}) {
             if (!
                 clean(
                     installPrefix / sourcePath.copy(sourcePrefix.count() + 1, sourcePath.count())

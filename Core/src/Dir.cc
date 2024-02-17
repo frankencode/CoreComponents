@@ -7,7 +7,7 @@
  */
 
 #include <cc/Dir>
-#include <cc/DirWalker>
+#include <cc/DirWalk>
 #include <cc/FileInfo>
 #include <cc/File>
 #include <cc/Random>
@@ -105,14 +105,11 @@ void Dir::remove(const String &path)
 
 void Dir::deplete(const String &path)
 {
-    DirWalker walker{path};
-    walker.setIgnoreHidden(false);
-    walker.setFollowSymlink(false);
-    walker.setDeleteOrder(true);
+    DirWalk walk{path, DirWalk::DeleteOrder};
 
     String childPath;
     bool isDir = false;
-    while (walker.read(&childPath, &isDir)) {
+    while (walk.read(&childPath, &isDir)) {
         if (isDir) Dir::remove(childPath);
         else File::unlink(childPath);
     }

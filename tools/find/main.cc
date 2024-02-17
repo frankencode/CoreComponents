@@ -7,7 +7,7 @@
  */
 
 #include <cc/Pattern>
-#include <cc/DirWalker>
+#include <cc/DirWalk>
 #include <cc/Arguments>
 #include <cc/File>
 #include <cc/FileInfo>
@@ -114,11 +114,10 @@ int main(int argc, char *argv[])
         for (const String &item: items)
         {
             String dirPath = item.canonicalPath();
-            DirWalker dirWalker{dirPath};
-            dirWalker.setMaxDepth(maxDepth);
-            dirWalker.setIgnoreHidden(ignoreHidden);
+            DirWalk::Mode mode = DirWalk::Default;
+            if (ignoreHidden) mode |= DirWalk::IgnoreHidden;
 
-            for (const String &path: dirWalker)
+            for (const String &path: DirWalk{dirPath, mode, maxDepth})
             {
                 if (pathPattern.text() != "") {
                     if (!pathPattern.match(path)) continue;

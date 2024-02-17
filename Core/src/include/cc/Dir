@@ -19,6 +19,7 @@ namespace cc {
 /** \class Dir cc/Dir
   * \ingroup file_system
   * \brief %File system directories
+  * \see DirWalk
   */
 class Dir final: public Object
 {

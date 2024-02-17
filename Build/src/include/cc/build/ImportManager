@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+
+namespace cc::build {
+
+class ImportManager final: public Object
+{
+public:
+    ImportManager();
+
+    bool registerModule(const String &name, const String &source, Out<String> otherSource);
+    bool lookupModule(const String &name, Out<String> source);
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::build

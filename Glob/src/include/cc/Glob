@@ -17,7 +17,7 @@ namespace cc {
 /** \class Glob cc/Glob
   * \ingroup glob
   * \brief Collect file names matching a pattern
-  * \see DirWalker
+  * \see DirWalk
   * \exception TextError
   */
 class Glob final: public Object

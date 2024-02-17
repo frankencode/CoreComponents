@@ -8,7 +8,7 @@
 
 #include <cc/FontManager>
 #include <cc/PlatformManager>
-#include <cc/DirWalker>
+#include <cc/DirWalk>
 #include <cc/input>
 
 namespace cc {
@@ -92,14 +92,12 @@ FontManager::FontManager()
 
 void FontManager::addPath(const String &dirPath, const String &namePrefix)
 {
-    DirWalker walker{dirPath};
-    bool isDir = false;
-    for (String path; walker.read(&path, &isDir);) {
-        if (!isDir && me().isFontFace(path)) {
-            if (namePrefix != "" && !path.fileName().startsWith(namePrefix)) continue;
-            if (path.endsWith("ttc")) continue;
-            addFontFace(me().openFontFace(path));
-        }
+    for (const String &path: DirWalk{dirPath, DirWalk::FilesOnly})
+    {
+        if (!me().isFontFace(path)) continue;
+        if (namePrefix != "" && !path.fileName().startsWith(namePrefix)) continue;
+        if (path.endsWith("ttc")) continue;
+        addFontFace(me().openFontFace(path));
     }
 }
 

@@ -29,6 +29,7 @@ private:
 };
 
 /** Declare bitwise operators (&, |, ^, ~, &=, |=, ^=) for an enumeration class type
+  * \todo rename to CC_FLAGS
   */
 #define CC_BITMASK(EnumType) \
 inline EnumMask<EnumType> operator&(EnumType x, EnumType y) { return static_cast<EnumType>(static_cast<std::underlying_type<EnumType>::type>(x) & static_cast<std::underlying_type<EnumType>::type>(y)); } \

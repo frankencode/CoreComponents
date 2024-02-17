@@ -9,12 +9,12 @@
 #include <cc/build/GlobbingStage>
 #include <cc/build/ToolChain>
 #include <cc/build/BuildMap>
-#include <cc/DirWalker>
+#include <cc/DirWalk>
 #include <cc/Glob>
 #include <cc/File>
 #include <cc/Dir>
-#include <cc/DirWalker>
 #include <cc/stdio>
+#include <cc/DEBUG>
 
 namespace cc::build {
 
@@ -67,17 +67,16 @@ bool GlobbingStage::globInterfaces()
 
     const String interfacePath = plan().projectPath() / "interface";
 
-    if (!Dir::exists(interfacePath)) return true;
+    CC_INSPECT(interfacePath);
 
-    String path;
-    bool isDir = false;
-
-    for (DirWalker walker{interfacePath}; walker.read(&path, &isDir) ;) {
-        if (isDir) continue;
+    for (const String &path: DirWalk{interfacePath, DirWalk::FilesOnly})
+    {
+        CC_INSPECT(path);
         String suffix = path.fileSuffix();
-        String moduleName = path.copy(interfacePath.count(), path.count() - suffix.count() - (suffix.count() > 0));
+        String moduleName = path.copy(interfacePath.count() + 1, path.count() - suffix.count() - (suffix.count() > 0));
         moduleName.replace('/', '.');
         moduleName.replace("__", ".");
+        CC_INSPECT(moduleName);
         if (!plan().interfaces().insert(moduleName, path)) {
             ferr() <<
                 "Ambiguous module definition for \"" << moduleName << "\", bailing out, see:\n"
@@ -132,44 +131,31 @@ void GlobbingStage::globSources()
         }
 
         plan().containsCPlusPlus() = containsCPlusPlus;
-        plan().sources() = sources;
+
+        if (plan().sources().count() == 0)
+            plan().sources() = sources;
+        else
+            plan().sources().appendList(sources);
     }
 }
 
 List<String> GlobbingStage::globSources(const List<String> &patternList) const
 {
     List<String> sources;
+
     for (const String &pattern: patternList) {
-        Glob glob{plan().sourcePath(pattern)};
-        for (String path; glob.read(&path);) {
-            try {
-                DirWalker walker{path};
-                bool isDir = false;
-                for (String path; walker.read(&path, &isDir);) {
-                    if (!isDir) appendPath(path, &sources);
-                }
-            }
-            catch (...) {
-                appendPath(path, &sources);
+        for (const String &globbedPath: Glob{plan().sourcePath(pattern)}) {
+            for (const String &sourcePath: DirWalk{globbedPath, DirWalk::FilesOnly}) {
+                appendPath(sourcePath, &sources);
             }
         }
     }
+
     if (!(plan().options() & BuildOption::Bootstrap)) {
         for (const String &pattern: patternList) {
-            Glob glob{plan().prestagePath(pattern)};
-            for (String path; glob.read(&path);) {
-                try {
-                    DirWalker walker{path};
-                    bool isDir = false;
-                    for (String path; walker.read(&path, &isDir);) {
-                        if (!isDir) appendPath(path, &sources);
-                    }
-                }
-                catch (...) {
-                    if (path.startsWith("./")) { // \todo FIXME, why?!
-                        path = path.copy(2, path.count());
-                    }
-                    appendPath(path, &sources);
+            for (const String &globbedPath: Glob{plan().prestagePath(pattern)}) {
+                for (const String &sourcePath: DirWalk{globbedPath, DirWalk::FilesOnly}) {
+                    appendPath(sourcePath, &sources);
                 }
             }
         }
@@ -180,11 +166,9 @@ List<String> GlobbingStage::globSources(const List<String> &patternList) const
 
 void GlobbingStage::appendPath(const String &path, Out<List<String>> sources)
 {
-    if(
-        !path.endsWith(".lump.cc") &&
-        !path.endsWith(".lump.c")
-    )
+    if (!path.endsWith(".lump.cc") && !path.endsWith(".lump.c")) {
         sources->append(path);
+    }
 }
 
 } // namespace cc::build

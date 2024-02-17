@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/SourceIterator>
+#include <cc/Object>
+#include <cc/bitmask>
+
+namespace cc {
+
+/** \class DirWalk cc/DirWalk
+  * \ingroup file_system
+  * \brief Recursive directory tree traversal
+  */
+class DirWalk: public Object
+{
+public:
+    using Item = String; ///< Item type
+
+    /** Mode of operation
+      */
+    enum Mode {
+        Default       = 0, ///< Default options
+        FilesOnly     = 1, ///< Deliver paths of (non-directory) files, only
+        DirsOnly      = 2, ///< Deliver paths of directories, only
+        FollowSymlink = 8, ///< Follow symlinks
+        IgnoreHidden  = 16, ///< Ignore hidden files
+        DeleteOrder   = 32, ///< Iterate paths suitable for recursive deletion
+        NotADir       = 64 ///< \internal
+    };
+
+    /** Create a null object
+      */
+    DirWalk() = default;
+
+    /** Open directory at \a path for recursive tree traversal
+      */
+    explicit DirWalk(const String &path, Mode mode = Mode::Default, int maxDepth = -1);
+
+    /** Read next path
+      * \param path Returns the next path
+      * \return True if not end of information
+      */
+    bool read(Out<String> path);
+
+    /** Read next path
+      * \param path Returns the next path
+      * \param isDir True if the returned path points to a directory
+      * \return True if not end of information
+      */
+    bool read(Out<String> path, Out<bool> isDir);
+
+    /** Iteration start
+      */
+    SourceIterator<DirWalk> begin() { return SourceIterator<DirWalk>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<DirWalk> end() { return SourceIterator<DirWalk>{}; }
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+CC_BITMASK(DirWalk::Mode);
+
+} // namespace cc

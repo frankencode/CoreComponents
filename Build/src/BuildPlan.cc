@@ -31,7 +31,7 @@
 #include <cc/Process>
 #include <cc/File>
 #include <cc/Dir>
-#include <cc/DirWalker>
+#include <cc/DirWalk>
 #include <cc/Glob>
 #include <cc/Crc32Sink>
 #include <cc/JsonWriter>
@@ -798,14 +798,7 @@ void BuildPlan::globResources(const String &pathPattern)
 {
     Glob glob{pathPattern};
     for (String path; glob.read(&path);) {
-        try {
-            DirWalker walker{path};
-            bool isDir = false;
-            for (String path; walker.read(&path, &isDir);) {
-                if (!isDir) bundle().append(path);
-            }
-        }
-        catch (...) {
+        for (const String &path: DirWalk{path, DirWalk::FilesOnly}) {
             bundle().append(path);
         }
     }
