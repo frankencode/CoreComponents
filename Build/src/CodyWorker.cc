@@ -18,6 +18,7 @@ struct CodyWorker::State final: public Object::State
     explicit State(
         const Stream &stream,
         const String &cachePrefix,
+        Function<bool(const String &, const String &, Out<String>)> &&onIncludeTranslate,
         Function<String(const String &)> &&onModuleExport,
         Function<void(const String &)> &&onModuleCompiled,
         Function<bool(const String &, const String &, Out<String>)> &&onModuleImport,
@@ -25,6 +26,7 @@ struct CodyWorker::State final: public Object::State
     ):
         stream_{stream},
         cachePrefix_{cachePrefix},
+        onIncludeTranslate_{onIncludeTranslate},
         onModuleExport_{onModuleExport},
         onModuleCompiled_{onModuleCompiled},
         onModuleImport_{onModuleImport},
@@ -81,23 +83,29 @@ struct CodyWorker::State final: public Object::State
                     cody.write(reply);
                 }
                 else if (message(0) == "MODULE-IMPORT") {
-                    String importModule = message(1);
-                    String importCachePath;
+                    String srcModule = message(1);
+                    String cachePath;
                     String reply;
-                    if (onModuleImport_(module_, importModule, &importCachePath)) {
-                        reply = Format{"PATHNAME '%%'"} << importCachePath;
+                    if (onModuleImport_(module_, srcModule, &cachePath)) {
+                        reply = Format{"PATHNAME '%%'"} << cachePath;
                     }
                     else {
-                        reply = Format{"ERROR 'Import of module \'%%\' failed'"} << importModule;
+                        reply = Format{"ERROR 'Import of module \'%%\' failed'"} << srcModule;
                     }
                     cody.write(reply);
                 }
                 else if (message(0) == "INCLUDE-TRANSLATE") {
-                    /*String header = message(1);
                     String reply;
-                    if (header.fileName() == "iostream") reply = "PATHNAME 'iostream.gcm'";
-                    else reply = "BOOL TRUE";*/
-                    String reply { "BOOL TRUE" };
+                    String cachePath;
+                    if (onIncludeTranslate_(module_, message(1), &cachePath)) {
+                        if (cachePath != "")
+                            reply = Format{"PATHNAME '%%'"} << cachePath;
+                        else
+                            reply = "BOOL TRUE";
+                    }
+                    else {
+                        reply = "BOOL FALSE";
+                    }
                     cody.write(reply);
                 }
                 else if (message(0) == "INVOKE") {
@@ -131,6 +139,7 @@ struct CodyWorker::State final: public Object::State
     int compilerProtocolVersion_ { 0 };
     bool established_ { false };
     String module_;
+    Function<bool(const String &, const String &, Out<String>)> onIncludeTranslate_;
     Function<String(const String &)> onModuleExport_;
     Function<void(const String &)> onModuleCompiled_;
     Function<bool(const String &, const String &, Out<String>)> onModuleImport_;
@@ -140,6 +149,7 @@ struct CodyWorker::State final: public Object::State
 CodyWorker::CodyWorker(
     const Stream &stream,
     const String &cachePrefix,
+    Function<bool(const String &, const String &, Out<String>)>  &&onIncludeTranslate,
     Function<String(const String &)> &&onModuleExport,
     Function<void(const String &)> &&onModuleCompiled,
     Function<bool(const String &, const String &, Out<String>)> &&onModuleImport,
@@ -149,6 +159,7 @@ CodyWorker::CodyWorker(
         new State{
             stream,
             cachePrefix,
+            std::move(onIncludeTranslate),
             std::move(onModuleExport),
             std::move(onModuleCompiled),
             std::move(onModuleImport),

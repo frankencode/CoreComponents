@@ -32,7 +32,7 @@ class UninstallStage;
 
 /** \brief %Build instructions according to a %Recipe
   */
-class BuildPlan: public BuildParameters
+class BuildPlan final: public BuildParameters
 {
 public:
     BuildPlan() = default;

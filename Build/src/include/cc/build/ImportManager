@@ -13,15 +13,32 @@
 
 namespace cc::build {
 
+class BuildPlan;
+class JobScheduler;
+
 class ImportManager final: public Object
 {
 public:
     ImportManager();
 
-    bool registerModule(const String &name, const String &source, Out<String> otherSource);
+    void gatherModules(const String &importPrefix);
+
+    static String moduleName(const String &importPrefix, const String &source);
+
+    bool registerModule(const String &name, const String &source, Out<String> otherSource = None{});
+    void registerInclude(const String &name, const String &include);
+
     bool lookupModule(const String &name, Out<String> source);
 
-private:
+    String cachePrefix() const;
+
+    static String cachePath(const String &name);
+
+    bool compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath) const;
+
+    bool compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &name, Out<String> cachePath) const;
+
+protected:
     struct State;
 
     State &me();

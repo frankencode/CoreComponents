@@ -43,7 +43,7 @@
 
 namespace cc::build {
 
-struct BuildPlan::State:
+struct BuildPlan::State final:
     public BuildParameters::State,
     public PreparationStage,
     public ConfigureStage,

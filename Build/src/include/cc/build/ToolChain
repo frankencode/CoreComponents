@@ -35,6 +35,7 @@ public:
     bool readObjectDependencies(const String &objectFilePath, Out<List<String>> dependencies) const { return me().readObjectDependencies(objectFilePath, dependencies); }
 
     String headerUnitCompileCommand(const BuildPlan &plan, const String &source) const { return me().headerUnitCompileCommand(plan, source); }
+    String interfaceUnitCompileCommand(const BuildPlan &plan, const String &source) const { return me().interfaceUnitCompileCommand(plan, source); }
 
     String compileCommand(const BuildPlan &plan, const String &source, const String &objectFilePath) const { return me().compileCommand(plan, source, objectFilePath); }
     Job createCompileJob(const BuildPlan &plan, const ObjectFile &objectFile) const { return me().createCompileJob(plan, objectFile); }
@@ -91,6 +92,7 @@ protected:
         virtual bool readObjectDependencies(const String &objectFilePath, Out<List<String>> dependencies) const = 0;
 
         virtual String headerUnitCompileCommand(const BuildPlan &plan, const String &source) const = 0;
+        virtual String interfaceUnitCompileCommand(const BuildPlan &plan, const String &source) const = 0;
 
         virtual String compileCommand(const BuildPlan &plan, const String &source, const String &objectFilePath) const = 0;
         virtual Job createCompileJob(const BuildPlan &plan, const ObjectFile &objectFile) const = 0;

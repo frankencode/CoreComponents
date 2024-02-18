@@ -7,6 +7,7 @@
  */
 
 #include <cc/build/GlobbingStage>
+#include <cc/build/ImportManager>
 #include <cc/build/ToolChain>
 #include <cc/build/BuildMap>
 #include <cc/DirWalk>
@@ -39,12 +40,8 @@ bool GlobbingStage::run()
         plan().sourcePrefix() = sourcePrefix;
     }
 
-    if (!(plan().options() & (BuildOption::Simulate | BuildOption::Blindfold | BuildOption::Bootstrap))) {
-        if (!globInterfaces()) {
-            return success_ = false;
-        }
-    }
-    globSources();
+    if (!gatherImports()) return success_ = false;
+    gatherSources();
 
     for (BuildPlan &prerequisite: plan().prerequisites()) {
         if (!prerequisite.globbingStage().run()) {
@@ -55,8 +52,16 @@ bool GlobbingStage::run()
     return success_ = true;
 }
 
-bool GlobbingStage::globInterfaces()
+bool GlobbingStage::gatherImports() const
 {
+    if (
+        (plan().options() & BuildOption::Simulate) ||
+        (plan().options() & BuildOption::Blindfold) ||
+        (plan().options() & BuildOption::Bootstrap)
+    ) {
+        return true;
+    }
+
     if (!(
         (plan().options() & BuildOption::Application) ||
         (plan().options() & BuildOption::Library) ||
@@ -65,33 +70,37 @@ bool GlobbingStage::globInterfaces()
         return true;
     }
 
-    const String interfacePath = plan().projectPath() / "interface";
+    const String importPrefix = plan().projectPath() / "import";
 
-    CC_INSPECT(interfacePath);
+    CC_INSPECT(importPrefix);
 
-    for (const String &path: DirWalk{interfacePath, DirWalk::FilesOnly})
+    ImportManager manager;
+
+    for (const String &source: DirWalk{importPrefix, DirWalk::FilesOnly})
     {
-        CC_INSPECT(path);
-        String suffix = path.fileSuffix();
-        String moduleName = path.copy(interfacePath.count() + 1, path.count() - suffix.count() - (suffix.count() > 0));
-        moduleName.replace('/', '.');
-        moduleName.replace("__", ".");
-        CC_INSPECT(moduleName);
-        if (!plan().interfaces().insert(moduleName, path)) {
+        String name = manager.moduleName(importPrefix, source);
+        CC_INSPECT(source);
+        CC_INSPECT(name);
+
+        String otherSource;
+
+        if (!manager.registerModule(name, source, &otherSource))
+        {
             ferr() <<
-                "Ambiguous module definition for \"" << moduleName << "\", bailing out, see:\n"
-                "  " << plan().interfaces()(moduleName) << "\n"
-                "  " << path << "\n";
+                "Error, ambiguous definition for module \"" << name << "\":\n"
+                "  " << source << "\n"
+                "  " << otherSource << "\n";
+
             return false;
         }
 
-        plan().sources().append(path);
+        plan().sources().append(source);
     }
 
     return true;
 }
 
-void GlobbingStage::globSources()
+void GlobbingStage::gatherSources() const
 {
     if (
         recipe().contains("source") &&

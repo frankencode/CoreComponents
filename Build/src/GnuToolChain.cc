@@ -131,7 +131,7 @@ struct GnuToolChain::State: public ToolChain::State
 
     String objectFilePath(const BuildPlan &plan, const String &sourcePath) const override
     {
-        String objectFilePath = sourcePath.baseName();
+        String objectFilePath = sourcePath.longBaseName();
         if (plan.options() & BuildOption::Tools) {
             if (cygwin_) objectFilePath += ".exe";
         }
@@ -198,6 +198,18 @@ struct GnuToolChain::State: public ToolChain::State
         args << cxxPath_;
         args << "-fmodule-header";
         args << "-xc++-header";
+        appendCompileOptions(args, plan);
+        args << source;
+        return args.join<String>(' ');
+    }
+
+    String interfaceUnitCompileCommand(const BuildPlan &plan, const String &source) const override
+    {
+        Format args;
+        args << cxxPath_;
+        args << "-c";
+        args << "-fmodule-only";
+        args << "-xc++";
         appendCompileOptions(args, plan);
         args << source;
         return args.join<String>(' ');

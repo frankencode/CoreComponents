@@ -1006,12 +1006,24 @@ public:
     String fileName() const;
 
     /** %Return the file name of this path without the file type suffix
+      * \see longBaseName()
       */
     String baseName() const;
 
-    /** %Return the file type suffix of this path (everything after the first '.')
+    /** %Return the file type suffix of this path
+      * \see shortFileSuffix()
       */
     String fileSuffix() const;
+
+    /** %Return the file name of this path up to the last '.' or end of string
+      * \see baseName()
+      */
+    String longBaseName() const;
+
+    /** %Return the short file type suffix of this path
+      * \see fileSuffix
+      */
+    String shortFileSuffix() const;
 
     /** Extend this path by \a relativePath
       */

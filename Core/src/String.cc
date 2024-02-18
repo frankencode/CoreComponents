@@ -453,6 +453,23 @@ String String::fileSuffix() const
     return name.find('.', &i) ? name.copy(i + 1, name.count()) : String{};
 }
 
+String String::longBaseName() const
+{
+    String name = fileName();
+    long j = name.count();
+    for(long i = 0; name.find('.', &i); ++i) j = i;
+    if (j < name.count()) name.truncate(j);
+    return name;
+}
+
+String String::shortFileSuffix() const
+{
+    String suffix;
+    List<String> parts = split('.');
+    if (parts.count() > 1) suffix = parts.last();
+    return suffix;
+}
+
 String String::operator/(const String &relativePath) const
 {
     if (count() == 0/* || isHerePath()*/) return relativePath.copy();

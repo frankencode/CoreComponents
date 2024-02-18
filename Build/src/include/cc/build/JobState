@@ -10,22 +10,33 @@
 
 #include <cc/build/Job>
 #include <cc/Process>
+#include <cc/Command>
 #include <cc/Queue>
 #include <cc/stdio>
 
 namespace cc::build {
 
-struct Job::State: public Message::State
+struct Job::State: public Object::State
 {
     explicit State(const String &command):
-        Message::State{Message::Type::Job},
         command_{command}
+    {}
+
+    explicit State(const List<String> &args):
+        command_{args.join(' ')},
+        args_{args}
     {}
 
     virtual bool run()
     {
         try {
-            Process process{command_};
+            Process process;
+            if (args_.count() > 0) {
+                process = Process{Command{}.args(args_)};
+            }
+            else {
+                process = Process{command_};
+            }
             outputText_ = process.output().readAll();
             status_ = process.wait();
         }
@@ -43,6 +54,7 @@ struct Job::State: public Message::State
     }
 
     String command_;
+    List<String> args_;
 
     int status_ { -1 };
     String outputText_;

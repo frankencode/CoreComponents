@@ -74,8 +74,12 @@ int main(int argc, char *argv[])
             pathPatternText = Format{"(^>*%%)%%"} << excludePatternText << pathPatternText;
         }
 
+        String namePatternText = options.value("name").to<String>();
+        if (!namePatternText.startsWith('^')) namePatternText = "^" + namePatternText;
+        if (!namePatternText.endsWith('^')) namePatternText = namePatternText + "^";
+
         Pattern pathPattern { pathPatternText };
-        Pattern namePattern { options.value("name").to<String>() };
+        Pattern namePattern { namePatternText };
         Pattern typePattern { options.value("type").to<String>() };
         long maxDepth = options.value("depth").to<long>();
         bool ignoreHidden = !options.value("hidden").to<bool>();
@@ -117,7 +121,7 @@ int main(int argc, char *argv[])
             DirWalk::Mode mode = DirWalk::Default;
             if (ignoreHidden) mode |= DirWalk::IgnoreHidden;
 
-            for (const String &path: DirWalk{dirPath, mode, maxDepth})
+            for (const String &path: DirWalk{dirPath, mode, static_cast<int>(maxDepth)})
             {
                 if (pathPattern.text() != "") {
                     if (!pathPattern.match(path)) continue;

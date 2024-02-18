@@ -21,6 +21,7 @@ public:
     explicit CodyWorker(
         const Stream &stream,
         const String &cachePrefix,
+        Function<bool(const String &, const String &, Out<String>)> &&onIncludeTranslate,
         Function<String(const String &)> &&onModuleExport,
         Function<void(const String &)> &&onModuleCompiled,
         Function<bool(const String &, const String &, Out<String>)> &&onModuleImport,

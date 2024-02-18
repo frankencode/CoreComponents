@@ -10,14 +10,9 @@
 #include <cc/build/JobServer>
 #include <cc/build/Job>
 #include <cc/build/JobState>
-#include <cc/build/SuspensionReport>
-#include <cc/build/ResumptionReport>
-#include <cc/build/TerminationRequest>
-#include <cc/build/TerminationReply>
 #include <cc/System>
 #include <cc/Channel>
 #include <cc/Set>
-#include <cc/DEBUG>
 
 namespace cc::build {
 
@@ -61,23 +56,8 @@ struct JobScheduler::State final: public Object::State
             return false;
         }
 
-        while (true) {
-            Message message;
-            if (!replyChannel_.popFront(&message)) return false;
-            if (message.type() == Message::Type::Job) {
-                job = message.as<Job>();
-                break;
-            }
-            if (message.type() == Message::Type::SuspensionReport) {
-                serverPool_.insert(JobServer{requestChannel_, replyChannel_});
-            }
-            else if (message.type() == Message::Type::ResumptionReport) {
-                requestChannel_.pushFront(TerminationRequest{});
-            }
-            else if (message.type() == Message::Type::TerminationReply) {
-                serverPool_.remove(message.as<TerminationReply>().server());
-            }
-        }
+
+        if (!replyChannel_.popFront(&job)) return false;
 
         if (job->status() == 0) {
             for (Job derivative; job->getNextDerivative(&derivative);) {
@@ -99,8 +79,8 @@ struct JobScheduler::State final: public Object::State
 
     int concurrency_ { -1 };
 
-    Channel<Message> requestChannel_;
-    Channel<Message> replyChannel_;
+    Channel<Job> requestChannel_;
+    Channel<Job> replyChannel_;
 
     Set<JobServer> serverPool_;
     Set<Job> derivatives_;
@@ -130,19 +110,14 @@ void JobScheduler::schedule(const Job &job)
     me().schedule(job);
 }
 
+void JobScheduler::report(const Job &job)
+{
+    me().replyChannel_.pushFront(job);
+}
+
 bool JobScheduler::collect(Out<Job> finishedJob)
 {
     return me().collect(finishedJob);
-}
-
-void JobScheduler::reportJobSuspension()
-{
-    me().replyChannel_.pushFront(SuspensionReport{});
-}
-
-void JobScheduler::reportJobResumption()
-{
-    me().replyChannel_.pushFront(ResumptionReport{});
 }
 
 int JobScheduler::status() const

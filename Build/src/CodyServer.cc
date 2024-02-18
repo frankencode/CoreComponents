@@ -10,6 +10,7 @@
 #include <cc/build/CodyWorker>
 #include <cc/build/JobScheduler>
 #include <cc/build/ToolChain>
+#include <cc/build/ImportManager>
 #include <cc/ServerSocket>
 #include <cc/ClientSocket>
 #include <cc/FileInfo>
@@ -36,7 +37,6 @@ struct CodyServer::State final: public Object::State
         // Process::setEnv("CXX_MODULE_MAPPER", listenSocket_.address().toString());
         CC_INSPECT(listenSocket_.address());
         listenShutdown_.acquire();
-        Dir::establish(cachePrefix_);
     }
 
     void start()
@@ -77,15 +77,18 @@ struct CodyServer::State final: public Object::State
 
                 workers_.emplaceBack(
                     stream,
-                    cachePrefix_,
+                    importManager_.cachePrefix(),
+                    [this](const String &module, const String &include, Out<String> cachePath) {
+                        return onIncludeTranslate(module, include, &cachePath);
+                    },
                     [this](const String &module) {
                         return onModuleExport(module);
                     },
                     [this](const String &module){
                         onModuleCompiled(module);
                     },
-                    [this](const String &module, const String &importModule, Out<String> importCachePath){
-                        return onModuleImport(module, importModule, &importCachePath);
+                    [this](const String &dstModule, const String &srcModule, Out<String> cachePath){
+                        return onModuleImport(dstModule, srcModule, &cachePath);
                     },
                     [this](const List<String> &args){
                         return onInvoke(args);
@@ -98,98 +101,56 @@ struct CodyServer::State final: public Object::State
         }
     }
 
-    static String cachePath(const String &module)
+    bool onIncludeTranslate(const String &module, const String &include, Out<String> cachePath)
     {
-        String cachePath = module;
-        if (cachePath.contains('/')) {
-            cachePath.replace("./", ",/");
-            cachePath.replace("../", ",,/");
-            if (cachePath.startsWith('/')) cachePath = "." + cachePath;
+        if (include.startsWith(plan_.sourcePrefix())) {
+            importManager_.registerInclude(module, include);
         }
-        cachePath += ".gcm";
-        return cachePath;
+        return true;
     }
 
     String onModuleExport(const String &module) const
     {
-        return cachePath(module);
+        return importManager_.cachePath(module);
     }
 
-    static bool isCPlusPlusHeaderFile(const String &path)
+    bool onModuleImport(const String &destination, const String &source, Out<String> cachePath)
     {
-        const String ext = path.fileSuffix();
-
-        return
-            (ext == "" && path.contains("/include/")) ||
-            ext == "h" || ext == "hh" || ext == "hpp" || ext == "hxx" || ext == "h++" || ext == "H";
-    }
-
-    bool compileHeaderUnit(const String &headerSource, Out<String> importCachePath) const
-    {
-        String compiledHeaderCachePath = cachePath(headerSource);
-        FileInfo srcInfo { headerSource };
-        FileInfo modInfo { cachePrefix_ / compiledHeaderCachePath };
-        if (!srcInfo) return false;
-        importCachePath = compiledHeaderCachePath;
-        if (modInfo && srcInfo.lastModified() <= modInfo.lastModified()) {
-            return true;
-        }
-        String command = plan_.toolChain().headerUnitCompileCommand(plan_, headerSource);
-        fout() << command << nl;
-        return Process{command}.wait() == 0;
-    }
-
-    bool onModuleImport(const String &module, const String &importModule, Out<String> importCachePath)
-    {
-        if (isCPlusPlusHeaderFile(importModule)) {
-            return compileHeaderUnit(importModule, &importCachePath);
+        if (isCPlusPlusHeaderFile(source)) {
+            return importManager_.compileHeaderUnit(scheduler_, plan_, source, &cachePath);
         }
 
-        Guard guard {mutex_};
-        if (modulesReady_.contains(importModule)) {
-            importCachePath = cachePath(module);
-            return true;
-        }
-
-        /* TODO: check if any prerequisite is actually providing a module of that name */
-
-        Channel<String> waitChannel;
-        pendingImportRequests_.insert(module, waitChannel);
-        guard.dismiss();
-        scheduler_.reportJobSuspension();
-        bool ok = waitChannel.popFront(&importCachePath);
-        scheduler_.reportJobResumption();
-        return ok;
+        return importManager_.compileInterfaceUnit(scheduler_, plan_, source, &cachePath);
     }
 
     void onModuleCompiled(const String &module)
-    {
-        Guard guard{mutex_};
-        modulesReady_.insert(module);
-        Locator pos;
-        if (pendingImportRequests_.find(module, &pos)) {
-            do {
-                pendingImportRequests_.at(pos).value().pushBack(cachePath(module));
-                pendingImportRequests_.removeAt(pos);
-            } while (pos && pendingImportRequests_.at(pos).key() == module);
-        }
-    }
+    {}
 
     int onInvoke(const List<String> &args)
     {
-        return Process::exec(args);
+        Job job { args };
+        bool ok = job.run();
+        scheduler_.report(job);
+        return ok;
     }
 
-    const String cachePrefix_ { "gcm.cache" };
+    static bool isCPlusPlusHeaderFile(const String &source)
+    {
+        const String ext = source.fileSuffix();
+
+        return
+            (ext == "" && source.contains("/include/")) ||
+            ext == "h" || ext == "hh" || ext == "hpp" || ext == "hxx" || ext == "h++" || ext == "H";
+    }
+
     BuildPlan plan_;
     JobScheduler scheduler_;
+    ImportManager importManager_;
+
     ServerSocket listenSocket_ { SocketAddress { ProtocolFamily::InternetV6, "::" } };
     Thread thread_;
     SpinLock listenShutdown_;
     List<CodyWorker> workers_;
-    Mutex mutex_;
-    Set<String> modulesReady_;
-    MultiMap<String, Channel<String> > pendingImportRequests_;
 
     CodyError error_;
 };

@@ -20,8 +20,8 @@ public:
     bool run();
 
 private:
-    bool globInterfaces();
-    void globSources();
+    bool gatherImports() const;
+    void gatherSources() const;
     List<String> globSources(const List<String> &patternList) const;
     static void appendPath(const String &path, Out<List<String>> sources);
 };

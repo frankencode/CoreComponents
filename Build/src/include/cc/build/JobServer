@@ -19,7 +19,7 @@ class JobServer: public Object
 public:
     JobServer() = default;
 
-    JobServer(const Channel<Message> &requestChannel, const Channel<Message> &replyChannel);
+    JobServer(const Channel<Job> &requestChannel, const Channel<Job> &replyChannel);
 
 private:
     friend class Object;

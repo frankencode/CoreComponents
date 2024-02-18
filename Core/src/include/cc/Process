@@ -43,7 +43,7 @@ public:
       */
     static int exec(const String &command);
 
-    /** Start process wand wait for its completion (convenience method)
+    /** Start process and wait for its completion (convenience method)
       */
     static int exec(const List<String> &args);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2020-2024 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -83,13 +83,6 @@ public:
       * \return False if no more entries, else true
       */
     bool read(Out<String> name);
-
-    /** Open file
-      * \param path Relative file path
-      * \param flags File open flags
-      * \return New content stream
-      */
-    Stream openFile(const String &path, FileOpen flags = FileOpen::ReadOnly);
 
     /** Iteration start
       */

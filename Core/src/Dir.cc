@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2020-2024 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -156,12 +156,6 @@ bool Dir::read(Out<String> name)
     }
 
     return entry;
-}
-
-Stream Dir::openFile(const String &path, FileOpen flags)
-{
-    String targetPath = path.isRelativePath() ? (me().path / path) : path;
-    return File{targetPath, flags};
 }
 
 Dir::State &Dir::me()
