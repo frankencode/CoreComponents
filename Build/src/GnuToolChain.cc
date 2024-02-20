@@ -8,12 +8,13 @@
 
 #include <cc/build/GnuToolChain>
 #include <cc/build/LinkJob>
-#include <cc/Pattern>
+// #include <cc/Pattern>
 #include <cc/Format>
 #include <cc/Process>
 #include <cc/Command>
 #include <cc/File>
 #include <cc/Dir>
+#include <cc/LineSource>
 #include <cc/DEBUG>
 
 namespace cc::build {
@@ -157,17 +158,24 @@ struct GnuToolChain::State: public ToolChain::State
         return objectFilePath;
     }
 
-    bool readObjectDependencies(const String &objectFilePath, Out<List<String>> dependencies) const override
+    static String getDependenciesFilePath(const String &objectFilePath)
     {
-        String dependenciesFilePath = objectFilePath.copy();
-        String suffix = dependenciesFilePath.fileSuffix();
+        String path = objectFilePath.copy();
+        String suffix = path.shortFileSuffix();
         if (suffix.count() > 0) {
-            dependenciesFilePath.truncate(dependenciesFilePath.count() - suffix.count());
-            dependenciesFilePath += 'd';
+            path.truncate(path.count() - suffix.count());
+            path += 'd';
         }
         else {
-            dependenciesFilePath += ".d";
+            path += ".d";
         }
+        return path;
+    }
+
+    #if 0
+    bool readObjectDependencies(const BuildPlan &plan, const String &objectFilePath, Out<List<String>> dependencies) const override
+    {
+        const String dependenciesFilePath = getDependenciesFilePath(objectFilePath);
         bool ok = true;
         try {
             List<String> parts = dependencySplitPattern_.breakUp(File{dependenciesFilePath}.map());
@@ -189,6 +197,56 @@ struct GnuToolChain::State: public ToolChain::State
         {
             ok = false;
         }
+
+        CC_INSPECT(objectFilePath);
+        CC_INSPECT(dependencies->join(", "));
+
+        return ok;
+    }
+    #endif
+
+    bool readObjectDependencies(const BuildPlan &plan, const String &objectFilePath, Out<List<String>> dependencies) const override
+    {
+        bool ok = true;
+        try {
+            const String dependenciesFilePath = getDependenciesFilePath(objectFilePath);
+            // CC_INSPECT(dependenciesFilePath);
+            String text = File{dependenciesFilePath}.map().replaced("\\\n", "");
+            // CC_INSPECT(text);
+            List<String> deps;
+            for (const String &line: LineSource{text}) {
+                // CC_INSPECT(line);
+                List<String> parts = line.split(':');
+                if (parts.count() != 2) continue;
+                // CC_INSPECT(parts(0));
+                if (parts(0).contains(objectFilePath)) {
+                    // CC_INSPECT(parts(1));
+                    String value = parts(1);
+                    value.trim();
+                    value.simplify();
+                    List<String> list = value.split(' ');
+                    for (const String &item: list) {
+                        if (item.endsWith(".gcm")) continue;
+                        if (item.contains("gcm.cache/")) continue;
+                        if (!item.startsWith(plan.sourcePrefix())) continue;
+                        // CC_INSPECT(item);
+                        deps.append(item);
+                    }
+                }
+            }
+
+            dependencies = deps;
+            ok = (deps.count() > 0);
+        }
+        catch (SystemResourceError &ex)
+        {
+            ok = false;
+        }
+
+        CC_INSPECT(objectFilePath);
+        CC_INSPECT(ok);
+        CC_INSPECT(dependencies->join(", "));
+
         return ok;
     }
 
@@ -697,7 +755,7 @@ struct GnuToolChain::State: public ToolChain::State
     String cxxPath_;
     String machine_;
     String systemRoot_;
-    Pattern dependencySplitPattern_ { "{1..:[\\:\\\\\n\r \\|]}" };
+    // Pattern dependencySplitPattern_ { "{1..:[\\:\\\\\n\r \\|]}" };
     String rpathOverride_;
     bool isMultiArch_ { true };
     String cFlags_;

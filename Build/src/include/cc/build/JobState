@@ -48,11 +48,6 @@ struct Job::State: public Object::State
         return status_ == 0;
     }
 
-    virtual bool finish()
-    {
-        return true;
-    }
-
     String command_;
     List<String> args_;
 

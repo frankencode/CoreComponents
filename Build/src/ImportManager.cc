@@ -10,10 +10,13 @@
 #include <cc/build/BuildPlan>
 #include <cc/build/ToolChain>
 #include <cc/build/JobScheduler>
+#include <cc/build/WaitableJob>
 #include <cc/FileInfo>
+#include <cc/File>
 #include <cc/DirWalk>
 #include <cc/Dir>
 #include <cc/Map>
+#include <cc/Set>
 #include <cc/Mutex>
 #include <cc/Guard>
 #include <cc/DEBUG>
@@ -43,7 +46,7 @@ struct ImportManager::State final: public Object::State
 
         Locator pos;
         if (!modules_.insert(name, source, &pos)) {
-            otherSource = modules_.at(pos).value().source_;
+            otherSource = modules_.at(pos).value()->source_;
             return false;
         }
         return true;
@@ -55,7 +58,7 @@ struct ImportManager::State final: public Object::State
 
         Module module;
         if (modules_.lookup(name, &module)) {
-            module.includes_.append(include);
+            module->includes_.insert(include);
         }
     }
 
@@ -65,8 +68,141 @@ struct ImportManager::State final: public Object::State
 
         Module module;
         bool found = modules_.lookup(name, &module);
-        if (found) source = module.source_;
+        if (found) source = module->source_;
         return found;
+    }
+
+    bool compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath)
+    {
+        cachePath = State::cachePath(source);
+
+        Guard guard { mutex_ };
+
+        Module module;
+        if (!modules_.lookup(source, &module)) {
+            module = Module{source};
+            modules_.insert(source, module);
+        }
+        else if (module->job_) {
+            guard.dismiss();
+            module->job_.wait();
+            guard.reinstate();
+            return module->job_.status() == 0;
+        }
+
+        const String dstCachePath = cachePrefix_ / *cachePath;
+        const String depCachePath = dstCachePath + ".d";
+
+        module->includes_.deplete();
+        for (const String &s: File::load(depCachePath).split('\n')) module->includes_.insert(s);
+
+        CC_INSPECT(source);
+
+        FileInfo srcInfo { module->source_ };
+        if (!srcInfo) return false;
+
+        FileInfo dstInfo { dstCachePath };
+        bool dirty = !(dstInfo && srcInfo.lastModified() <= dstInfo.lastModified());
+        if (!dirty) {
+            for (const String &include: module->includes_) {
+                if (FileInfo{include}.lastModified() > dstInfo.lastModified()) {
+                    dirty = true;
+                    break;
+                }
+            }
+        }
+
+        module->job_ = WaitableJob { plan.toolChain().headerUnitCompileCommand(plan, source) };
+
+        guard.dismiss();
+
+        bool ok = true;
+
+        CC_INSPECT(dirty);
+
+        if (dirty) {
+            ok = module->job_.run();
+
+            if (!ok) {
+                fout() << module->job_.command() << nl;
+                ferr() << module->job_.outputText() << nl;
+            }
+            else {
+                scheduler.report(module->job_);
+
+                File::save(depCachePath, module->includes_.toList().join('\n'));
+            }
+        }
+        else {
+            module->job_.notify();
+        }
+
+        return ok;
+    }
+
+    bool compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &name, Out<String> cachePath)
+    {
+        cachePath = State::cachePath(name);
+
+        Guard guard { mutex_ };
+
+        Module module;
+        if (!modules_.lookup(name, &module)) return false;
+
+        CC_INSPECT(name);
+        CC_INSPECT(module->source_);
+
+        if (module->job_) {
+            guard.dismiss();
+            module->job_.wait();
+            guard.reinstate();
+            return module->job_.status() == 0;
+        }
+
+        const String dstCachePath = cachePrefix_ / *cachePath;
+        const String depCachePath = dstCachePath + ".d";
+
+        module->includes_.deplete();
+        for (const String &s: File::load(depCachePath).split('\n')) module->includes_.insert(s);
+
+        FileInfo srcInfo { module->source_ };
+        if (!srcInfo) return false;
+
+        FileInfo dstInfo { dstCachePath };
+        bool dirty = !(dstInfo && srcInfo.lastModified() <= dstInfo.lastModified());
+        if (!dirty) {
+            for (const String &include: module->includes_) {
+                if (FileInfo{include}.lastModified() > dstInfo.lastModified()) {
+                    dirty = true;
+                    break;
+                }
+            }
+        }
+
+        module->job_ = WaitableJob { plan.toolChain().interfaceUnitCompileCommand(plan, module->source_) };
+
+        guard.dismiss();
+
+        bool ok = true;
+
+        if (dirty) {
+            ok = module->job_.run();
+
+            if (!ok) {
+                fout() << module->job_.command() << nl;
+                ferr() << module->job_.outputText() << nl;
+            }
+            else {
+                scheduler.report(module->job_);
+
+                File::save(depCachePath, module->includes_.toList().join('\n'));
+            }
+        }
+        else {
+            module->job_.notify();
+        }
+
+        return ok;
     }
 
     static String cachePath(const String &module)
@@ -82,68 +218,28 @@ struct ImportManager::State final: public Object::State
         return path;
     }
 
-    bool compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath) const
+    class Module final: public Object
     {
-        FileInfo srcInfo { source };
-        if (!srcInfo) {
-            return false;
-        }
-        cachePath = State::cachePath(source);
-        FileInfo dstInfo { cachePrefix_ / *cachePath };
-        if (dstInfo && srcInfo.lastModified() <= dstInfo.lastModified()) {
-            return true;
-        }
-        Job job { plan.toolChain().headerUnitCompileCommand(plan, source) };
-        bool ok = job.run();
-        scheduler.report(job);
-        return ok;
-    }
-
-    bool compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &name, Out<String> cachePath) const
-    {
-        Guard guard { mutex_ };
-
-        Module module;
-        if (!modules_.lookup(name, &module)) return false;
-
-        CC_INSPECT(name);
-        CC_INSPECT(module.source_);
-
-        FileInfo srcInfo { module.source_ };
-        if (!srcInfo) return false;
-
-        cachePath = State::cachePath(name);
-        FileInfo dstInfo { cachePrefix_ / *cachePath };
-        if (dstInfo && srcInfo.lastModified() <= dstInfo.lastModified()) {
-            bool dirty = false;
-            for (const String &include: module.includes_) {
-                CC_INSPECT(include);
-                if (FileInfo{include}.lastModified() > dstInfo.lastModified()) {
-                    dirty = true;
-                    break;
-                }
-            }
-            if (!dirty) return true;
-        }
-
-        guard.dismiss();
-
-        Job job { plan.toolChain().interfaceUnitCompileCommand(plan, module.source_) };
-        bool ok = job.run();
-        scheduler.report(job);
-
-        if (!ok) {
-            ferr() << job.outputText() << nl;
-        }
-
-        return ok;
-    }
-
-    struct Module {
+    public:
         Module() = default;
-        Module(const String &source): source_{source} {}
-        String source_;
-        List<String> includes_;
+
+        Module(const String &source):
+            Object{new State{source}}
+        {}
+
+        struct State final: public Object::State
+        {
+            explicit State(const String &source):
+                source_{source}
+            {}
+
+            String source_;
+            Set<String> includes_;
+            WaitableJob job_;
+        };
+
+        State *operator->() { return &Object::me.as<State>(); }
+        const State *operator->() const { return &Object::me.as<State>(); }
     };
 
     mutable Mutex mutex_;
@@ -194,12 +290,12 @@ String ImportManager::cachePath(const String &name)
     return ImportManager::State::cachePath(name);
 }
 
-bool ImportManager::compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath) const
+bool ImportManager::compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath)
 {
     return me().compileHeaderUnit(scheduler, plan, source, &cachePath);
 }
 
-bool ImportManager::compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath) const
+bool ImportManager::compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath)
 {
     return me().compileInterfaceUnit(scheduler, plan, source, &cachePath);
 }

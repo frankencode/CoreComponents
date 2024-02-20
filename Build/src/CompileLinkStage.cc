@@ -36,13 +36,7 @@ bool CompileLinkStage::run()
     for (Job job; scheduler.collect(&job);) {
         fout() << shell().beautify(job.command()) << nl;
         ferr() << job.outputText();
-        if (job.status() == 0) {
-            if (!job.finish()) {
-                status_ = 1;
-                return success_ = false;
-            }
-        }
-        else {
+        if (job.status() != 0) {
             status_ = job.status();
             return success_ = false;
         }
@@ -219,7 +213,7 @@ void CompileLinkStage::gatherObjects()
         const String objectFilePath = toolChain().objectFilePath(plan(), source);
         const String compileCommand = toolChain().compileCommand(plan(), source, objectFilePath);
         List<String> previousDependencyPaths;
-        if (toolChain().readObjectDependencies(objectFilePath, &previousDependencyPaths)) {
+        if (toolChain().readObjectDependencies(plan(), objectFilePath, &previousDependencyPaths)) {
             assert(previousDependencyPaths.at(0) == source);
             bool dirty = compileCommandChanged;
             do {

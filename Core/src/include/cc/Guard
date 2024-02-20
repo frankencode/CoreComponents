@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <cassert>
+
 namespace cc {
 
 /** \class Guard cc/Guard
@@ -30,8 +32,18 @@ public:
       */
     void dismiss()
     {
+        assert(onDuty_);
         onDuty_ = false;
         mutex_.release();
+    }
+
+    /** Lock mutex, again
+      */
+    void reinstate()
+    {
+        assert(!onDuty_);
+        onDuty_ = true;
+        mutex_.acquire();
     }
 
 private:

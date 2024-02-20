@@ -68,7 +68,6 @@ struct CodyWorker::State final: public Object::State
                 }
                 if (message(0) == "MODULE-REPO") {
                     String reply = Format{"PATHNAME '%%'"} << cachePrefix_;
-                    // String reply { "PATHNAME ''" };
                     cody.write(reply);
                 }
                 else if (message(0) == "MODULE-EXPORT") {

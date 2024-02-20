@@ -42,10 +42,12 @@ public:
     bool waitUntil(double time, Mutex &mutex);
 
     /** Wake up one waiting thread
+      * \todo rename to "notifyOne"
       */
     void signal();
 
     /** Wake up all waiting threads
+      * \todo rename to "notifyAll"
       */
     void broadcast();
 

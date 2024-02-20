@@ -32,7 +32,7 @@ public:
     String defaultOptimization(BuildOption options) const { return me().defaultOptimization(options); }
 
     String objectFilePath(const BuildPlan &plan, const String &source) const { return me().objectFilePath(plan, source); }
-    bool readObjectDependencies(const String &objectFilePath, Out<List<String>> dependencies) const { return me().readObjectDependencies(objectFilePath, dependencies); }
+    bool readObjectDependencies(const BuildPlan &plan, const String &objectFilePath, Out<List<String>> dependencies) const { return me().readObjectDependencies(plan, objectFilePath, dependencies); }
 
     String headerUnitCompileCommand(const BuildPlan &plan, const String &source) const { return me().headerUnitCompileCommand(plan, source); }
     String interfaceUnitCompileCommand(const BuildPlan &plan, const String &source) const { return me().interfaceUnitCompileCommand(plan, source); }
@@ -89,7 +89,7 @@ protected:
         virtual String defaultOptimization(BuildOption options) const = 0;
 
         virtual String objectFilePath(const BuildPlan &plan, const String &source) const = 0;
-        virtual bool readObjectDependencies(const String &objectFilePath, Out<List<String>> dependencies) const = 0;
+        virtual bool readObjectDependencies(const BuildPlan &plan, const String &objectFilePath, Out<List<String>> dependencies) const = 0;
 
         virtual String headerUnitCompileCommand(const BuildPlan &plan, const String &source) const = 0;
         virtual String interfaceUnitCompileCommand(const BuildPlan &plan, const String &source) const = 0;

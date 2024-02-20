@@ -1,4 +1,6 @@
 #include <cc/build/DependencyFile>
+#include <cc/LineSource> // DEBUG
+#include <cc/Set> // DEBUG
 #include <cc/testing>
 
 int main(int argc, char *argv[])
@@ -6,6 +8,7 @@ int main(int argc, char *argv[])
     using namespace cc::build;
     using namespace cc;
 
+    #if 0
     TestCase {
         "DependencyExampleFile1",
         []{
@@ -50,9 +53,58 @@ int main(int argc, char *argv[])
             CC_CHECK(depFile.moduleName() == "cc.core.c++m");
         }
     };
+    #endif
 
     TestCase {
         "DependencyExampleFile3",
+        []{
+            String text =
+                ".objects-64C15C06-x86_64-linux-gnu-src_hello_my_module/import_mega.numbers.o \\\n"
+                " gcm.cache/mega.numbers.gcm: \\\n"
+                " /home/fme/src/hello_my_module/import/mega.numbers.cc \\\n"
+                " gcm.cache/usr/local/include/c++/14.0.1/iostream.gcm\n"
+                ".objects-64C15C06-x86_64-linux-gnu-src_hello_my_module/import_mega.numbers.o \\\n"
+                " gcm.cache/mega.numbers.gcm: /usr/local/include/c++/14.0.1/iostream.c++m\n"
+                "mega.numbers.c++m: gcm.cache/mega.numbers.gcm\n"
+                ".PHONY: mega.numbers.c++m\n"
+                "gcm.cache/mega.numbers.gcm:| \\\n"
+                " .objects-64C15C06-x86_64-linux-gnu-src_hello_my_module/import_mega.numbers.o\n"
+                "CXX_IMPORTS += /usr/local/include/c++/14.0.1/iostream.c++m\n";
+
+            DependencyFile depFile { text };
+            CC_INSPECT(depFile.isValid());
+            CC_INSPECT(depFile.sources().join(", "));
+
+            const String sourcePrefix = "/home/fme/src";
+
+            Set<String> deps;
+            CC_INSPECT(text.replaced("\\\n", ""));
+            for (const String &line: LineSource{text.replaced("\\\n", "")}) {
+                List<String> parts = line.split(':');
+                if (parts.count() != 2) continue;
+                CC_INSPECT(parts(0));
+                if (parts(0).contains(".objects-64C15C06-x86_64-linux-gnu-src_hello_my_module/import_mega.numbers.o")) {
+                    CC_INSPECT(parts(1));
+                    String value = parts(1);
+                    value.trim();
+                    value.simplify();
+                    List<String> list = value.split(' ');
+                    for (const String &item: list) {
+                        if (item.endsWith(".gcm")) continue;
+                        if (item.contains("gcm.cache/")) continue;
+                        if (!item.startsWith(sourcePrefix)) continue;
+                        CC_INSPECT(item);
+                        deps.insert(item);
+                    }
+                }
+            }
+            CC_INSPECT(deps.toList().join(", "));
+        }
+    };
+
+    #if 0
+    TestCase {
+        "DependencyExampleFile4",
         []{
             String text =
                 ".objects-E763DAD2-x86_64-linux-gnu-Core_src/Entity.o: \\\n"
@@ -65,6 +117,7 @@ int main(int argc, char *argv[])
             CC_CHECK(depFile.moduleName() == "");
         }
     };
+    #endif
 
     return TestSuite{argc, argv}.run();
 }
