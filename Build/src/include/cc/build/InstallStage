@@ -18,7 +18,7 @@ class InstallStage: public BuildStage
 {
 public:
     bool run();
-    bool installTool(const ObjectFile &objectFile);
+    bool installTool(const Unit &unit);
     bool installApplicationOrLibrary();
 
     bool linkerCacheDirty() const { return linkerCacheDirty_; }

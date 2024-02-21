@@ -8,17 +8,18 @@
 
 #pragma once
 
+#include <cc/build/Module>
 #include <cc/Object>
 #include <cc/String>
 
 namespace cc::build {
 
-class ObjectFile: public Object
+class Unit final: public Object
 {
 public:
-    ObjectFile() = default;
+    Unit() = default;
 
-    explicit ObjectFile(const String &compileCommand, const String &objectFilePath, const List<String> &dependencyPaths, bool dirty):
+    explicit Unit(const String &compileCommand, const String &objectFilePath, const List<String> &dependencyPaths, bool dirty):
         Object{new State{compileCommand, objectFilePath, dependencyPaths, dirty}}
     {}
 
@@ -29,8 +30,11 @@ public:
     List<String> dependencyPaths() const { return me().dependencyPaths_; }
     bool dirty() const { return me().dirty_; }
 
+    const Module &module() const { return me().module_; }
+    Module &module() { return me().module_; }
+
 private:
-    struct State: public Object::State
+    struct State final: public Object::State
     {
         State(const String &compileCommand, const String &objectFilePath, const List<String> &dependencyPaths, bool dirty):
             compileCommand_{compileCommand},
@@ -43,9 +47,11 @@ private:
         String objectFilePath_;
         List<String> dependencyPaths_;
         bool dirty_;
+        Module module_;
     };
 
     const State &me() const { return Object::me.as<State>(); }
+    State &me() { return Object::me.as<State>(); }
 };
 
 } // namespace cc::build

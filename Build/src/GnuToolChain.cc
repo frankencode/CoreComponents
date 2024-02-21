@@ -284,21 +284,21 @@ struct GnuToolChain::State: public ToolChain::State
         return args.join<String>(' ');
     }
 
-    Job createCompileJob(const BuildPlan &plan, const ObjectFile &objectFile) const override
+    Job createCompileJob(const BuildPlan &plan, const Unit &unit) const override
     {
-        return Job{compileCommand(plan, objectFile.sourcePath(), objectFile.objectFilePath())};
+        return Job{compileCommand(plan, unit.sourcePath(), unit.objectFilePath())};
     }
 
-    Job createCompileLinkJob(const BuildPlan &plan, const ObjectFile &objectFile) const override
+    Job createCompileLinkJob(const BuildPlan &plan, const Unit &unit) const override
     {
         Format args;
-        args << compiler(objectFile.sourcePath());
-        args << "-o" << linkName(objectFile);
+        args << compiler(unit.sourcePath());
+        args << "-o" << linkName(unit);
         args << "-MMD";
         appendCompileOptions(args, plan);
         if (plan.linkStatic()) args << "-static";
         args << "-pthread";
-        args << objectFile.sourcePath();
+        args << unit.sourcePath();
         appendLinkOptions(args, plan);
         return Job{args.join<String>(' ')};
     }
@@ -342,9 +342,9 @@ struct GnuToolChain::State: public ToolChain::State
         return name;
     }
 
-    String linkName(const ObjectFile &objectFile) const override
+    String linkName(const Unit &unit) const override
     {
-        String name = objectFile.sourcePath().baseName();
+        String name = unit.sourcePath().baseName();
 
         if (cygwin_) {
             name = name + ".exe";
@@ -357,7 +357,7 @@ struct GnuToolChain::State: public ToolChain::State
     {
         String name = plan.name();
         Version version = plan.version();
-        List<ObjectFile> objectFiles = plan.objectFiles();
+        List<Unit> units = plan.units();
 
         Format args;
 
@@ -375,8 +375,8 @@ struct GnuToolChain::State: public ToolChain::State
         }
 
         List<String> objectFilePaths;
-        for (const ObjectFile &objectFile: objectFiles) {
-            objectFilePaths << objectFile.objectFilePath();
+        for (const Unit &unit: units) {
+            objectFilePaths << unit.objectFilePath();
         }
         args.appendList(objectFilePaths.sorted());
 

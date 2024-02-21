@@ -12,6 +12,7 @@
 #include <cc/Process>
 #include <cc/Command>
 #include <cc/Queue>
+#include <cc/Semaphore>
 #include <cc/stdio>
 
 namespace cc::build {
@@ -45,7 +46,15 @@ struct Job::State: public Object::State
             status_ = -1;
         }
 
+        fin_.release();
+
         return status_ == 0;
+    }
+
+    void wait()
+    {
+        fin_.acquire();
+        fin_.release();
     }
 
     String command_;
@@ -57,6 +66,7 @@ struct Job::State: public Object::State
     int countDown_ { 0 };
 
     Queue<Job> derivatives_;
+    Semaphore<int> fin_;
 };
 
 } // namespace cc::build

@@ -70,30 +70,12 @@ bool GlobbingStage::gatherImports() const
         return true;
     }
 
-    const String importPrefix = plan().projectPath() / "import";
-
-    CC_INSPECT(importPrefix);
+    CC_INSPECT(plan().importPath());
 
     ImportManager manager;
 
-    for (const String &source: DirWalk{importPrefix, DirWalk::FilesOnly})
+    for (const String &source: DirWalk{plan().importPath(), DirWalk::FilesOnly})
     {
-        String name = manager.moduleName(importPrefix, source);
-        CC_INSPECT(source);
-        CC_INSPECT(name);
-
-        String otherSource;
-
-        if (!manager.registerModule(name, source, &otherSource))
-        {
-            ferr() <<
-                "Error, ambiguous definition for module \"" << name << "\":\n"
-                "  " << source << "\n"
-                "  " << otherSource << "\n";
-
-            return false;
-        }
-
         plan().sources().append(source);
     }
 

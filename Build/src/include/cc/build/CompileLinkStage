@@ -20,8 +20,8 @@ public:
     bool run();
 
 private:
-    void scheduleJobs(JobScheduler &scheduler);
-    void gatherObjects();
+    bool scheduleJobs(JobScheduler &scheduler);
+    bool gatherUnits();
 };
 
 } // namespace cc::build

@@ -10,7 +10,7 @@
 #include <cc/build/BuildPlan>
 #include <cc/build/ToolChain>
 #include <cc/build/JobScheduler>
-#include <cc/build/WaitableJob>
+#include <cc/build/Module>
 #include <cc/FileInfo>
 #include <cc/File>
 #include <cc/DirWalk>
@@ -40,16 +40,14 @@ struct ImportManager::State final: public Object::State
         }
     }
 
-    bool registerModule(const String &name, const String &source, Out<String> otherSource = None{})
+    bool registerModule(const String &name, const String &source, Out<Module> module = None{})
     {
         Guard guard { mutex_ };
 
         Locator pos;
-        if (!modules_.insert(name, source, &pos)) {
-            otherSource = modules_.at(pos).value()->source_;
-            return false;
-        }
-        return true;
+        bool ok = modules_.insert(name, source, &pos);
+        module = modules_.at(pos).value();
+        return ok;
     }
 
     void registerInclude(const String &name, const String &include)
@@ -62,14 +60,11 @@ struct ImportManager::State final: public Object::State
         }
     }
 
-    bool lookupModule(const String &name, Out<String> source)
+    bool lookupModule(const String &name, Out<Module> module)
     {
         Guard guard { mutex_ };
 
-        Module module;
-        bool found = modules_.lookup(name, &module);
-        if (found) source = module->source_;
-        return found;
+        return modules_.lookup(name, &module);
     }
 
     bool compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath)
@@ -112,7 +107,7 @@ struct ImportManager::State final: public Object::State
             }
         }
 
-        module->job_ = WaitableJob { plan.toolChain().headerUnitCompileCommand(plan, source) };
+        module->job_ = Job { plan.toolChain().headerUnitCompileCommand(plan, source) };
 
         guard.dismiss();
 
@@ -179,7 +174,7 @@ struct ImportManager::State final: public Object::State
             }
         }
 
-        module->job_ = WaitableJob { plan.toolChain().interfaceUnitCompileCommand(plan, module->source_) };
+        module->job_ = Job { plan.toolChain().interfaceUnitCompileCommand(plan, module->source_) };
 
         guard.dismiss();
 
@@ -218,30 +213,6 @@ struct ImportManager::State final: public Object::State
         return path;
     }
 
-    class Module final: public Object
-    {
-    public:
-        Module() = default;
-
-        Module(const String &source):
-            Object{new State{source}}
-        {}
-
-        struct State final: public Object::State
-        {
-            explicit State(const String &source):
-                source_{source}
-            {}
-
-            String source_;
-            Set<String> includes_;
-            WaitableJob job_;
-        };
-
-        State *operator->() { return &Object::me.as<State>(); }
-        const State *operator->() const { return &Object::me.as<State>(); }
-    };
-
     mutable Mutex mutex_;
     Map<String, Module> modules_;
     const String cachePrefix_ { "gcm.cache" };
@@ -265,9 +236,9 @@ String ImportManager::moduleName(const String &importPrefix, const String &sourc
     return name;
 }
 
-bool ImportManager::registerModule(const String &name, const String &source, Out<String> otherSource)
+bool ImportManager::registerModule(const String &name, const String &source, Out<Module> module)
 {
-    return me().registerModule(name, source, &otherSource);
+    return me().registerModule(name, source, &module);
 }
 
 void ImportManager::registerInclude(const String &name, const String &include)
@@ -275,9 +246,9 @@ void ImportManager::registerInclude(const String &name, const String &include)
     return me().registerInclude(name, include);
 }
 
-bool ImportManager::lookupModule(const String &name, Out<String> source)
+bool ImportManager::lookupModule(const String &name, Out<Module> module)
 {
-    return me().lookupModule(name, &source);
+    return me().lookupModule(name, &module);
 }
 
 String ImportManager::cachePrefix() const

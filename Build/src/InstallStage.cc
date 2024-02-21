@@ -36,8 +36,8 @@ bool InstallStage::run()
     if (plan().options() & BuildOption::Package) return success_ = true;
 
     if (plan().options() & BuildOption::Tools) {
-        for (const ObjectFile &objectFile: plan().objectFiles()) {
-            if (!installTool(objectFile))
+        for (const Unit &unit: plan().units()) {
+            if (!installTool(unit))
                 return success_ = false;
         }
         return success_ = true;
@@ -46,9 +46,9 @@ bool InstallStage::run()
     return success_ = installApplicationOrLibrary();
 }
 
-bool InstallStage::installTool(const ObjectFile &objectFile)
+bool InstallStage::installTool(const Unit &unit)
 {
-    String product = toolChain().linkName(objectFile);
+    String product = toolChain().linkName(unit);
     return shell().install(product, toolChain().installDirPath(plan()) / product);
 }
 

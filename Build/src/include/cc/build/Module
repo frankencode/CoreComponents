@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/build/Job>
+#include <cc/Set>
+
+namespace cc::build {
+
+class Module final: public Object
+{
+public:
+    Module() = default;
+
+    Module(const String &source):
+        Object{new State{source}}
+    {}
+
+    String source() const { return me().source_; }
+
+private:
+    friend class ImportManager;
+    friend class CompileLinkStage;
+
+    struct State final: public Object::State
+    {
+        explicit State(const String &source):
+            source_{source}
+        {}
+
+        String source_;
+        Set<String> includes_;
+        Job job_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+
+    State *operator->() { return &Object::me.as<State>(); }
+    const State *operator->() const { return &Object::me.as<State>(); }
+};
+
+} // namespace cc::build

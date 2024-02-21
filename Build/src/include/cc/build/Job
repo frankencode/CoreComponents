@@ -33,6 +33,9 @@ public:
 
     bool run();
 
+    void wait();
+    void notify();
+
 protected:
     struct State;
 

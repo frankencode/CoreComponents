@@ -11,7 +11,7 @@
 #include <cc/build/BuildPlan>
 #include <cc/build/BuildOption>
 #include <cc/build/BuildShell>
-#include <cc/build/ObjectFile>
+#include <cc/build/Unit>
 #include <cc/build/Job>
 #include <cc/Version>
 #include <functional>
@@ -38,12 +38,12 @@ public:
     String interfaceUnitCompileCommand(const BuildPlan &plan, const String &source) const { return me().interfaceUnitCompileCommand(plan, source); }
 
     String compileCommand(const BuildPlan &plan, const String &source, const String &objectFilePath) const { return me().compileCommand(plan, source, objectFilePath); }
-    Job createCompileJob(const BuildPlan &plan, const ObjectFile &objectFile) const { return me().createCompileJob(plan, objectFile); }
-    Job createCompileLinkJob(const BuildPlan &plan, const ObjectFile &objectFile) const { return me().createCompileLinkJob(plan, objectFile); }
+    Job createCompileJob(const BuildPlan &plan, const Unit &unit) const { return me().createCompileJob(plan, unit); }
+    Job createCompileLinkJob(const BuildPlan &plan, const Unit &unit) const { return me().createCompileLinkJob(plan, unit); }
 
     String targetName(const BuildPlan &plan) const { return me().targetName(plan); }
     String linkName(const BuildPlan &plan) const { return me().linkName(plan); }
-    String linkName(const ObjectFile &objectFile) const { return me().linkName(objectFile); }
+    String linkName(const Unit &unit) const { return me().linkName(unit); }
     String linkCommand(const BuildPlan &plan) const { return me().linkCommand(plan); }
     Job createLinkJob(const BuildPlan &plan) const { return me().createLinkJob(plan); }
     bool link(const BuildPlan &plan) const { return me().link(plan); }
@@ -95,12 +95,12 @@ protected:
         virtual String interfaceUnitCompileCommand(const BuildPlan &plan, const String &source) const = 0;
 
         virtual String compileCommand(const BuildPlan &plan, const String &source, const String &objectFilePath) const = 0;
-        virtual Job createCompileJob(const BuildPlan &plan, const ObjectFile &objectFile) const = 0;
-        virtual Job createCompileLinkJob(const BuildPlan &plan, const ObjectFile &objectFile) const = 0;
+        virtual Job createCompileJob(const BuildPlan &plan, const Unit &unit) const = 0;
+        virtual Job createCompileLinkJob(const BuildPlan &plan, const Unit &unit) const = 0;
 
         virtual String targetName(const BuildPlan &plan) const = 0;
         virtual String linkName(const BuildPlan &plan) const = 0;
-        virtual String linkName(const ObjectFile &objectFile) const = 0;
+        virtual String linkName(const Unit &unit) const = 0;
         virtual String linkCommand(const BuildPlan &plan) const = 0;
         virtual Job createLinkJob(const BuildPlan &plan) const = 0;
         virtual bool link(const BuildPlan &plan) const = 0;

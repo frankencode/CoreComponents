@@ -17,7 +17,7 @@
 #include <cc/build/UninstallStage>
 #include <cc/build/SystemPrerequisite>
 #include <cc/build/Predicate>
-#include <cc/build/ObjectFile>
+#include <cc/build/Unit>
 #include <cc/build/GnuToolChain>
 #include <cc/build/BuildShell>
 #include <cc/build/ConfigureShell>
@@ -69,6 +69,7 @@ struct BuildPlan::State final:
         }
 
         projectPath_ = projectPath_.absolutePathRelativeTo(Process::cwd()).canonicalPath();
+        importPath_ = importPath(projectPath_);
         recipePath_ = recipePath(projectPath_);
 
         recipe_ = yasonParse(File{recipePath_}.map(), RecipeProtocol{}).to<MetaObject>();
@@ -89,6 +90,7 @@ struct BuildPlan::State final:
     State(const String &projectPath, const BuildPlan& parentPlan):
         toolChain_{parentPlan->toolChain_},
         projectPath_{projectPath},
+        importPath_{importPath(projectPath)},
         recipePath_{recipePath(projectPath)},
         scope_{parentPlan->scope_},
         concurrency_{parentPlan->concurrency_},
@@ -97,6 +99,11 @@ struct BuildPlan::State final:
         ResourceGuard guard{recipePath_};
         recipe_ = yasonParse(File{recipePath_}.map(), RecipeProtocol{}).to<MetaObject>();
         readRecipe(parentPlan);
+    }
+
+    static String importPath(const String &projectPath)
+    {
+        return projectPath / "import";
     }
 
     static String recipePath(const String &projectPath)
@@ -470,11 +477,11 @@ struct BuildPlan::State final:
 
     void init()
     {
-        if (objectFilesInitialized_) return;
+        if (workDirsInitialized_) return;
 
         if ((options_ & BuildOption::Test) && !(options_ & BuildOption::BuildTests)) return;
 
-        objectFilesInitialized_ = true;
+        workDirsInitialized_ = true;
 
         String suffix;
         {
@@ -609,6 +616,7 @@ struct BuildPlan::State final:
     ToolChain toolChain_;
 
     String projectPath_;
+    String importPath_;
     String recipePath_;
     String scope_;
     String objectsPath_;
@@ -628,8 +636,8 @@ struct BuildPlan::State final:
     Map<String, String> interfaces_;
     List<String> sources_;
     List<String> bundle_;
-    List<ObjectFile> objectFiles_;
-    bool objectFilesInitialized_ { false };
+    List<Unit> units_;
+    bool workDirsInitialized_ { false };
     bool containsCPlusPlus_ { false };
 
     List<Predicate> predicates_;
@@ -922,16 +930,6 @@ bool &BuildPlan::containsCPlusPlus()
     return me().containsCPlusPlus_;
 }
 
-const Map<String, String> &BuildPlan::interfaces() const
-{
-    return me().interfaces_;
-}
-
-Map<String, String> BuildPlan::interfaces()
-{
-    return me().interfaces_;
-}
-
 const List<String> &BuildPlan::sources() const
 {
     return me().sources_;
@@ -952,14 +950,14 @@ List<String> &BuildPlan::bundle()
     return me().bundle_;
 }
 
-const List<ObjectFile> &BuildPlan::objectFiles() const
+const List<Unit> &BuildPlan::units() const
 {
-    return me().objectFiles_;
+    return me().units_;
 }
 
-List<ObjectFile> &BuildPlan::objectFiles()
+List<Unit> &BuildPlan::units()
 {
-    return me().objectFiles_;
+    return me().units_;
 }
 
 String BuildPlan::projectPath() const
@@ -980,6 +978,11 @@ bool BuildPlan::isSystemSource() const
 String BuildPlan::sourcePath(const String &source) const
 {
     return me().sourcePath(source);
+}
+
+String BuildPlan::importPath() const
+{
+    return me().importPath_;
 }
 
 String BuildPlan::recipePath() const

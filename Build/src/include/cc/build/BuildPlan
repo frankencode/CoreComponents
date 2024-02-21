@@ -18,7 +18,7 @@ namespace cc::build {
 
 class ToolChain;
 class BuildShell;
-class ObjectFile;
+class Unit;
 class Predicate;
 class Job;
 
@@ -59,22 +59,20 @@ public:
     bool containsCPlusPlus() const;
     bool &containsCPlusPlus();
 
-    const Map<String, String> &interfaces() const;
-    Map<String, String> interfaces();
-
     const List<String> &sources() const;
     List<String> &sources();
 
     const List<String> &bundle() const;
     List<String> &bundle();
 
-    const List<ObjectFile> &objectFiles() const;
-    List<ObjectFile> &objectFiles();
+    const List<Unit> &units() const;
+    List<Unit> &units();
 
     String projectPath() const;
     String systemSourcePath() const;
     bool isSystemSource() const;
     String sourcePath(const String &source) const;
+    String importPath() const;
     String recipePath() const;
     String userPkgConfigPath() const;
     String scope() const;

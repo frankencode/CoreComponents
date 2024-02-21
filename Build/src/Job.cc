@@ -61,6 +61,16 @@ bool Job::run()
     return me().run();
 }
 
+void Job::wait()
+{
+    me().wait();
+}
+
+void Job::notify()
+{
+    me().fin_.release();
+}
+
 const Job::State &Job::me() const
 {
     return Object::me.as<State>();

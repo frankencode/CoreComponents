@@ -13,6 +13,7 @@
 #include <cc/build/ToolChain>
 #include <cc/build/InsightDatabase>
 #include <cc/build/CodyServer>
+#include <cc/build/ImportManager>
 #include <cc/File>
 #include <cc/stdio>
 
@@ -31,7 +32,7 @@ bool CompileLinkStage::run()
         codyServer.start();
     }
 
-    scheduleJobs(scheduler);
+    if (!scheduleJobs(scheduler)) return success_ = false;
 
     for (Job job; scheduler.collect(&job);) {
         fout() << shell().beautify(job.command()) << nl;
@@ -52,30 +53,30 @@ bool CompileLinkStage::run()
     return success_ = true;
 }
 
-void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
+bool CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
 {
-    if (complete_) return;
+    if (complete_) return true;
     complete_ = true;
 
-    if (!plan().goForBuild()) return;
-    if (plan().isSystemSource()) return;
+    if (!plan().goForBuild()) return true;
+    if (plan().isSystemSource()) return true;
 
     if (plan().options() & BuildOption::Test) {
         if (!(plan().options() & BuildOption::BuildTests))
-            return;
+            return true;
     }
 
-    if (outOfScope()) return;
+    if (outOfScope()) return true;
 
     for (BuildPlan &prerequisite: plan().prerequisites()) {
         prerequisite.compileLinkStage().scheduleJobs(scheduler);
     }
 
-    if (plan().options() & BuildOption::Package) return;
+    if (plan().options() & BuildOption::Package) return true;
 
     shell().mkdir(plan().objectsPath());
 
-    gatherObjects();
+    if (!gatherUnits()) return false;
 
     Job linkJob;
     if (!(plan().options() & BuildOption::Tools)) {
@@ -89,27 +90,27 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
 
     bool dirty = false;
 
-    for (const ObjectFile &objectFile: plan().objectFiles())
+    for (Unit &unit: plan().units())
     {
-        bool objectFileDirty = objectFile.dirty();
+        bool unitDirty = unit.dirty();
 
         if (plan().options() & BuildOption::Tools) {
-            objectFileDirty = objectFileDirty || !shell().fileStatus(toolChain().linkName(objectFile));
+            unitDirty = unitDirty || !shell().fileStatus(toolChain().linkName(unit));
         }
 
-        if (objectFileDirty)
+        if (unitDirty)
         {
             dirty = true;
 
             Job job;
             if (plan().options() & BuildOption::Tools) {
-                job = toolChain().createCompileLinkJob(plan(), objectFile);
+                job = toolChain().createCompileLinkJob(plan(), unit);
                 if (!(plan().options() & BuildOption::Simulate)) {
                     plan().registerLinkDerivative(job);
                 }
             }
             else {
-                job = toolChain().createCompileJob(plan(), objectFile);
+                job = toolChain().createCompileJob(plan(), unit);
                 job.registerDerivative(linkJob);
             }
 
@@ -117,15 +118,16 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
                 fout() << plan().shell().beautify(job.command()) << ((plan().concurrency() == 1) ? "\n" : " &\n");
             }
             else {
+                if (unit.module()) unit.module()->job_ = job;
                 scheduler.schedule(job);
             }
 
             if (insightDatabase) {
-                insightDatabase.insert(objectFile.sourcePath(), job.command(), objectFile.objectFilePath());
+                insightDatabase.insert(unit.sourcePath(), job.command(), unit.objectFilePath());
             }
         }
         else if (insightDatabase) {
-            insightDatabase.touch(objectFile.objectFilePath());
+            insightDatabase.touch(unit.objectFilePath());
         }
     }
 
@@ -138,20 +140,19 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
     }
 
     if (
-        plan().objectFiles().count() > 0 &&
+        plan().units().count() > 0 &&
         (plan().options() & BuildOption::Simulate) &&
         plan().concurrency() != 1
     ) {
         fout() << "wait" << nl;
     }
 
-    if (plan().options() & BuildOption::Tools) return;
+    if (plan().options() & BuildOption::Tools) return true;
 
     if (!dirty)
     {
         FileInfo productStatus = shell().fileStatus(toolChain().linkName(plan()));
         if (!productStatus) dirty = true;
-
         else {
             String previousLinkCommandPath = plan().previousLinkCommandPath();
             String previousLinkCommand = File::load(previousLinkCommandPath);
@@ -160,8 +161,8 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
             if (newLinkCommand != previousLinkCommand) dirty = true;
             else {
                 double productTime = productStatus.lastModified();
-                for (const ObjectFile &objectFile: plan().objectFiles()) {
-                    FileInfo objectFileStatus = shell().fileStatus(objectFile.objectFilePath());
+                for (const Unit &unit: plan().units()) {
+                    FileInfo objectFileStatus = shell().fileStatus(unit.objectFilePath());
                     if (objectFileStatus.lastModified() > productTime) {
                         dirty = true;
                         break;
@@ -178,7 +179,7 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
         }
     }
 
-    if (!dirty) return;
+    if (!dirty) return true;
 
     if (plan().options() & BuildOption::Simulate) {
         fout() << plan().shell().beautify(linkJob.command()) << nl;
@@ -191,9 +192,11 @@ void CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
         }
         scheduler.schedule(linkJob);
     }
+
+    return true;
 }
 
-void CompileLinkStage::gatherObjects()
+bool CompileLinkStage::gatherUnits()
 {
     const String currentCompileCommand = toolChain().compileCommand(plan(), "%.cc", "%.o");
     String previousCompileCommand;
@@ -209,13 +212,27 @@ void CompileLinkStage::gatherObjects()
 
     const bool compileCommandChanged = currentCompileCommand != previousCompileCommand;
 
+    ImportManager importManager;
+
     for (const String &source: plan().sources()) {
         const String objectFilePath = toolChain().objectFilePath(plan(), source);
         const String compileCommand = toolChain().compileCommand(plan(), source, objectFilePath);
         List<String> previousDependencyPaths;
+        bool dirty = compileCommandChanged;
+        Module module;
+        if (source.startsWith(plan().importPath())) {
+            const String name = ImportManager::moduleName(plan().importPath(), source);
+            if (!importManager.registerModule(name, source, &module)) {
+                ferr() <<
+                    "Error, ambiguous definition for module \"" << name << "\":\n"
+                    "  " << source << "\n"
+                    "  " << module.source() << "\n";
+
+                return false;
+            }
+        }
         if (toolChain().readObjectDependencies(plan(), objectFilePath, &previousDependencyPaths)) {
             assert(previousDependencyPaths.at(0) == source);
-            bool dirty = compileCommandChanged;
             do {
                 if (dirty) break;
                 FileInfo objectFileInfo = shell().fileStatus(objectFilePath);
@@ -233,12 +250,14 @@ void CompileLinkStage::gatherObjects()
                 }
             }
             while (false);
-            plan().objectFiles().emplaceBack(compileCommand, objectFilePath, previousDependencyPaths, dirty);
+            plan().units().emplaceBack(compileCommand, objectFilePath, previousDependencyPaths, dirty);
         }
         else {
-            plan().objectFiles().emplaceBack(compileCommand, objectFilePath, List<String>{source}, true);
+            plan().units().emplaceBack(compileCommand, objectFilePath, List<String>{source}, true);
         }
     }
+
+    return true;
 }
 
 } // namespace cc::build
