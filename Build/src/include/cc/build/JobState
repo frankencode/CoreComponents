@@ -64,6 +64,7 @@ struct Job::State: public Object::State
     String outputText_;
 
     int countDown_ { 0 };
+    bool reported_ { false };
 
     Queue<Job> derivatives_;
     Semaphore<int> fin_;

@@ -35,7 +35,7 @@ public:
 
     /** Report completion of an externally executed job
       */
-    void report(const Job &job);
+    void report(Job &job);
 
     /** \brief Collect the next finished job (\a finishedJob)
       * \return true if \a finishedJob is returned otherwise return false (end of operation)

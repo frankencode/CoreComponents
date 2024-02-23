@@ -56,6 +56,16 @@ int Job::countDown() const
     return me().countDown_;
 }
 
+bool Job::reported() const
+{
+    return me().reported_;
+}
+
+void Job::setReported(bool on)
+{
+    me().reported_ = on;
+}
+
 bool Job::run()
 {
     return me().run();

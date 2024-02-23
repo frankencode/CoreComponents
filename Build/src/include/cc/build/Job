@@ -36,6 +36,9 @@ public:
     void wait();
     void notify();
 
+    bool reported() const;
+    void setReported(bool on);
+
 protected:
     struct State;
 

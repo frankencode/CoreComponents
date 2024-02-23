@@ -72,7 +72,7 @@ struct JobScheduler::State final: public Object::State
             serverPool_.deplete();
         }
 
-        ++finishCount_;
+        if (!job->reported()) ++finishCount_;
 
         return true;
     }
@@ -110,8 +110,9 @@ void JobScheduler::schedule(const Job &job)
     me().schedule(job);
 }
 
-void JobScheduler::report(const Job &job)
+void JobScheduler::report(Job &job)
 {
+    job.setReported(true);
     me().replyChannel_.pushFront(job);
 }
 
