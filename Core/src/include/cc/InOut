@@ -133,4 +133,9 @@ private:
 template<class T>
 using Out = InOut<T>;
 
+/** Convenience alias for InOut<T>
+  */
+template<class T>
+using In = InOut<T>;
+
 } // namespace cc
