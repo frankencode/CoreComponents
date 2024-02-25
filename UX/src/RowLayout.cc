@@ -11,6 +11,21 @@
 
 namespace cc {
 
+struct  RowLayout::State final: public View::Layout::State
+{
+    State() = default;
+
+    Orientation orientation() const override { return Orientation::Horizontal; }
+
+    void updateLayout();
+
+    Property<RowAlign> align { RowAlign::Top };
+
+    Property<void> update { [this]{ updateLayout(); } };
+    bool firstTime_ { true };
+    bool setViewSize_ { false };
+};
+
 void RowLayout::State::updateLayout()
 {
     if (!hasView() || !view().hasWindow()) return;
@@ -56,6 +71,31 @@ void RowLayout::State::updateLayout()
         x += child.padding().right();
         x += spacing();
     }
+}
+
+RowLayout::RowLayout():
+    Layout{new State}
+{}
+
+RowAlign RowLayout::align() const
+{
+    return me().align();
+}
+
+RowLayout &RowLayout::align(RowAlign newValue)
+{
+    me().align(newValue);
+    return *this;
+}
+
+RowLayout::State& RowLayout::me()
+{
+    return Object::me.as<State>();
+}
+
+const RowLayout::State& RowLayout::me() const
+{
+    return Object::me.as<State>();
 }
 
 } // namespace cc

@@ -14,7 +14,10 @@
 
 namespace cc {
 
-View::State::State()
+View::State::State():
+    window_{[this]{ return parent_() ? parent_()->window_() : nullptr; }},
+    width_{[this]{ return size()[0]; }},
+    height_{[this]{ return size()[1]; }}
 {
     visible([this]{ return parent_() ? parent_()->visible() : true; });
 
@@ -89,6 +92,11 @@ double View::State::expandableWidth(double width) const
     }
 
     return width < maxWidth ? maxWidth : width;
+}
+
+void View::State::centerInParent()
+{
+    pos([this]{ return hasParent() ? (parent().size() - size()) / 2 : Point{}; });
 }
 
 Point View::State::mapToGlobal(Point l) const

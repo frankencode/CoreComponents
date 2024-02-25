@@ -719,10 +719,7 @@ protected:
 
         /** \copydoc View::centerInParent()
           */
-        void centerInParent()
-        {
-            pos([this]{ return hasParent() ? (parent().size() - size()) / 2 : Point{}; });
-        }
+        void centerInParent();
 
         /** %Set the layout
           */
@@ -825,11 +822,11 @@ protected:
         const char *objectName_ { "" };
 
         Property<View::State *> parent_ { nullptr };
-        Property<Object::State *> window_ { [this]{ return parent_() ? parent_()->window_() : nullptr; } };
+        Property<Object::State *> window_;
         Property<Layout> layout_;
 
-        Property<double> width_ { [this]{ return size()[0]; } };
-        Property<double> height_ { [this]{ return size()[1]; } };
+        Property<double> width_;
+        Property<double> height_;
 
         Set<View> children_;
         Set<View> visibleChildren_;

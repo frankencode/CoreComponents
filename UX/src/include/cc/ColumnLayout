@@ -21,39 +21,19 @@ class ColumnLayout final: public View::Layout
 public:
     /** Create new column layout and assign it to \a view
       */
-    ColumnLayout():
-        Layout{new ColumnLayout::State}
-    {}
+    ColumnLayout();
 
-    ColumnAlign align() const { return me().align(); } ///< Get column alignment
-    ColumnLayout &align(ColumnAlign newValue) { me().align(newValue); return *this; } ///< %Set column alignment
+    ColumnAlign align() const; ///< Get column alignment
+    ColumnLayout &align(ColumnAlign newValue); ///< %Set column alignment
 
-    double indent() const { return me().indent(); } ///< Get horizontal indentation
-    ColumnLayout &indent(double newValue) { me().indent(newValue); return *this; } ///< %Set horizontal indentation
+    double indent() const; ///< Get horizontal indentation
+    ColumnLayout &indent(double newValue); ///< %Set horizontal indentation
 
 private:
-    class State final: public View::Layout::State
-    {
-    public:
-        Orientation orientation() const override { return Orientation::Vertical; }
+    struct State;
 
-        Property<ColumnAlign> align { ColumnAlign::Left };
-        Property<double> indent { 0 };
-
-    private:
-        friend class ColumnLayout;
-
-        State() = default;
-
-        void updateLayout();
-
-        Property<void> update { [this]{ updateLayout(); } };
-        bool firstTime_ { true };
-        bool setViewSize_ { false };
-    };
-
-    State& me() { return Object::me.as<State>(); }
-    const State& me() const { return Object::me.as<State>(); }
+    State& me();
+    const State& me() const;
 };
 
 } // namespace cc
