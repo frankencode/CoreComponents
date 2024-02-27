@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Frank Mertens.
+ * Copyright (C) 2021-2024 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -8,49 +8,55 @@
 
 #pragma once
 
-#include <cc/build/Module>
-#include <cc/Object>
-#include <cc/String>
+#include <cc/build/Job>
 
 namespace cc::build {
 
 class Unit final: public Object
 {
 public:
+    enum class Type {
+        Regular,
+        Module,
+        SystemModule
+    };
+
     Unit() = default;
 
-    explicit Unit(const String &compileCommand, const String &target, const String &source, bool dirty):
-        Object{new State{compileCommand, target, source, dirty}}
+    Unit(Type type, const String &source, const String &target = "", bool dirty = false):
+        Object{new State{type, source, target, dirty}}
     {}
 
-    String compileCommand() const { return me().compileCommand_; }
-    String target() const { return me().target_; }
+    Type type() const { return me().type_; }
     String source() const { return me().source_; }
-
+    String target() const { return me().target_; }
     bool dirty() const { return me().dirty_; }
 
-    const Module &module() const { return me().module_; }
-    Module &module() { return me().module_; }
-
 private:
+    friend class CompileLinkStage;
+    friend class ImportManager;
+
     struct State final: public Object::State
     {
-        State(const String &compileCommand, const String &target, const String &source, bool dirty):
-            compileCommand_{compileCommand},
-            target_{target},
+        State(Type type, const String &source, const String &target, bool dirty):
+            type_{type},
             source_{source},
+            target_{target},
             dirty_{dirty}
         {}
 
-        String compileCommand_;
-        String target_;
+        Type type_;
         String source_;
+        String target_;
         bool dirty_;
-        Module module_;
+        Job job_;
     };
 
-    const State &me() const { return Object::me.as<State>(); }
     State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+
+    State *operator->() { return &Object::me.as<State>(); }
+    const State *operator->() const { return &Object::me.as<State>(); }
 };
 
 } // namespace cc::build

@@ -119,7 +119,7 @@ bool CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
                 fout() << plan().shell().beautify(job.command()) << ((plan().concurrency() == 1) ? "\n" : " &\n");
             }
             else {
-                if (unit.module()) unit.module()->job_ = job;
+                if (unit.type() == Unit::Type::Module) unit->job_ = job;
                 scheduler.schedule(job);
             }
 
@@ -216,28 +216,14 @@ bool CompileLinkStage::gatherUnits()
     ImportManager importManager;
 
     for (const String &source: plan().sources()) {
-        const String objectFilePath = toolChain().objectFilePath(plan(), source);
-        const String compileCommand = toolChain().compileCommand(plan(), source, objectFilePath);
+        const String target = toolChain().objectFilePath(plan(), source);
         List<String> previousDependencyPaths;
         bool dirty = compileCommandChanged;
-        Unit unit;
-        Module module;
-        if (source.startsWith(plan().importPath())) {
-            const String name = ImportManager::moduleName(plan().importPath(), source);
-            if (!importManager.registerModule(name, source, &module)) {
-                ferr() <<
-                    "Error, ambiguous definition for module \"" << name << "\":\n"
-                    "  " << source << "\n"
-                    "  " << module.source() << "\n";
-
-                return false;
-            }
-        }
-        if (toolChain().readObjectDependencies(plan(), objectFilePath, &previousDependencyPaths)) {
+        if (toolChain().readObjectDependencies(plan(), target, &previousDependencyPaths)) {
             assert(previousDependencyPaths(0) == source);
             do {
                 if (dirty) break;
-                FileInfo objectFileInfo = shell().fileStatus(objectFilePath);
+                FileInfo objectFileInfo = shell().fileStatus(target);
                 if (!objectFileInfo) { dirty = true; break; }
                 for (const String &previousDependencyPath: previousDependencyPaths) {
                     FileInfo previousDependencyInfo = shell().fileStatus(previousDependencyPath);
@@ -252,15 +238,28 @@ bool CompileLinkStage::gatherUnits()
                 }
             }
             while (false);
-
-            unit = Unit{compileCommand, objectFilePath, previousDependencyPaths(0), dirty};
         }
         else {
-            unit = Unit{compileCommand, objectFilePath, List<String>{source}, true};
+            dirty = true;
         }
 
+        Unit::Type type = source.startsWith(plan().importPath()) ? Unit::Type::Module : Unit::Type::Regular;
+        Unit unit{type, source, target, dirty};
+
         plan().units().append(unit);
-        // if (module) module->unit_ = unit; // TODO...
+
+        if (type == Unit::Type::Module) {
+            const String name = ImportManager::moduleName(plan().importPath(), source);
+            Unit other;
+            if (!importManager.registerModule(name, unit, &other)) {
+                ferr() <<
+                    "Error, ambiguous definition for module \"" << name << "\":\n"
+                    "  " << source << "\n"
+                    "  " << other.source() << "\n";
+
+                return false;
+            }
+        }
     }
 
     return true;

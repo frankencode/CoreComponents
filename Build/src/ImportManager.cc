@@ -10,7 +10,6 @@
 #include <cc/build/BuildPlan>
 #include <cc/build/ToolChain>
 #include <cc/build/JobScheduler>
-#include <cc/build/Module>
 #include <cc/FileInfo>
 #include <cc/File>
 #include <cc/DirWalk>
@@ -36,21 +35,21 @@ struct ImportManager::State final: public Object::State
     void gatherModules(const String &importPrefix)
     {
         for (const String &source: DirWalk{importPrefix, DirWalk::FilesOnly}) {
-            registerModule(moduleName(importPrefix, source), source);
+            registerModule(moduleName(importPrefix, source), Unit{Unit::Type::SystemModule, source});
         }
     }
 
-    bool registerModule(const String &name, const String &source, Out<Module> module = None{})
+    bool registerModule(const String &name, const Unit &module, Out<Unit> other = None{})
     {
         Guard guard { mutex_ };
 
         Locator pos;
-        bool ok = modules_.insert(name, source, &pos);
-        module = modules_.at(pos).value();
+        bool ok = modules_.insert(name, module, &pos);
+        if (!ok) other = modules_.at(pos).value();
         return ok;
     }
 
-    bool lookupModule(const String &name, Out<Module> module)
+    bool lookupModule(const String &name, Out<Unit> module)
     {
         Guard guard { mutex_ };
 
@@ -63,9 +62,9 @@ struct ImportManager::State final: public Object::State
 
         Guard guard { mutex_ };
 
-        Module module;
+        Unit module;
         if (!modules_.lookup(source, &module)) {
-            module = Module{source};
+            module = Unit{Unit::Type::SystemModule, source};
             modules_.insert(source, module);
         }
         else if (module->job_) {
@@ -128,7 +127,7 @@ struct ImportManager::State final: public Object::State
 
         Guard guard { mutex_ };
 
-        Module module;
+        Unit module;
         if (!modules_.lookup(name, &module)) return false;
 
         CC_INSPECT(name);
@@ -200,7 +199,7 @@ struct ImportManager::State final: public Object::State
     }
 
     mutable Mutex mutex_;
-    Map<String, Module> modules_;
+    Map<String, Unit> modules_;
     const String cachePrefix_ { "gcm.cache" };
 };
 
@@ -222,12 +221,12 @@ String ImportManager::moduleName(const String &importPrefix, const String &sourc
     return name;
 }
 
-bool ImportManager::registerModule(const String &name, const String &source, Out<Module> module)
+bool ImportManager::registerModule(const String &name, const Unit &module, Out<Unit> other)
 {
-    return me().registerModule(name, source, &module);
+    return me().registerModule(name, module, &other);
 }
 
-bool ImportManager::lookupModule(const String &name, Out<Module> module)
+bool ImportManager::lookupModule(const String &name, Out<Unit> module)
 {
     return me().lookupModule(name, &module);
 }

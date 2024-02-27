@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/build/Module>
+#include <cc/build/Unit>
 
 namespace cc::build {
 
@@ -24,8 +24,8 @@ public:
 
     static String moduleName(const String &importPrefix, const String &source);
 
-    bool registerModule(const String &name, const String &source, Out<Module> module);
-    bool lookupModule(const String &name, Out<Module> module);
+    bool registerModule(const String &name, const Unit &module, Out<Unit> other);
+    bool lookupModule(const String &name, Out<Unit> module);
 
     String cachePrefix() const;
 
