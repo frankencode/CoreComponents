@@ -35,7 +35,6 @@ private:
         {}
 
         String source_;
-        Set<String> includes_;
         Job job_;
     };
 

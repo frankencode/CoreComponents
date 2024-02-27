@@ -130,6 +130,11 @@ struct GnuToolChain::State: public ToolChain::State
         else return "";
     }
 
+    void setCxxModuleMapper(const String &connectionInfo) override
+    {
+        cxxModuleMapper_ = connectionInfo;
+    }
+
     String objectFilePath(const BuildPlan &plan, const String &sourcePath) const override
     {
         String objectFilePath = sourcePath.longBaseName();
@@ -257,6 +262,7 @@ struct GnuToolChain::State: public ToolChain::State
         args << "-fmodule-header";
         args << "-xc++-header";
         appendCompileOptions(args, plan);
+        appendCxxModuleMapperOption(args, "");
         args << source;
         return args.join<String>(' ');
     }
@@ -269,6 +275,7 @@ struct GnuToolChain::State: public ToolChain::State
         args << "-fmodule-only";
         args << "-xc++";
         appendCompileOptions(args, plan);
+        appendCxxModuleMapperOption(args, "");
         args << source;
         return args.join<String>(' ');
     }
@@ -278,7 +285,8 @@ struct GnuToolChain::State: public ToolChain::State
         Format args;
         args << compiler(sourcePath);
         args << "-c" << "-o" << objectFilePath;
-        args << "-MMD";
+        appendCxxModuleMapperOption(args, objectFilePath);
+        args << "-MMD"; // FIXME: to be dropped in favor of CoDy dependencies
         appendCompileOptions(args, plan);
         args << sourcePath;
         return args.join<String>(' ');
@@ -286,19 +294,21 @@ struct GnuToolChain::State: public ToolChain::State
 
     Job createCompileJob(const BuildPlan &plan, const Unit &unit) const override
     {
-        return Job{compileCommand(plan, unit.sourcePath(), unit.objectFilePath())};
+        return Job{compileCommand(plan, unit.source(), unit.target())};
     }
 
     Job createCompileLinkJob(const BuildPlan &plan, const Unit &unit) const override
     {
+        String target = linkName(unit);
         Format args;
-        args << compiler(unit.sourcePath());
-        args << "-o" << linkName(unit);
-        args << "-MMD";
+        args << compiler(unit.source());
+        args << "-o" << target;
+        appendCxxModuleMapperOption(args, target);
+        args << "-MMD"; // FIXME: to be dropped in favor of CoDy dependencies
         appendCompileOptions(args, plan);
         if (plan.linkStatic()) args << "-static";
         args << "-pthread";
-        args << unit.sourcePath();
+        args << unit.source();
         appendLinkOptions(args, plan);
         return Job{args.join<String>(' ')};
     }
@@ -344,7 +354,7 @@ struct GnuToolChain::State: public ToolChain::State
 
     String linkName(const Unit &unit) const override
     {
-        String name = unit.sourcePath().baseName();
+        String name = unit.source().baseName();
 
         if (cygwin_) {
             name = name + ".exe";
@@ -376,7 +386,7 @@ struct GnuToolChain::State: public ToolChain::State
 
         List<String> objectFilePaths;
         for (const Unit &unit: units) {
-            objectFilePaths << unit.objectFilePath();
+            objectFilePaths << unit.target();
         }
         args.appendList(objectFilePaths.sorted());
 
@@ -673,13 +683,23 @@ struct GnuToolChain::State: public ToolChain::State
             args << "-DCCBUILD_BUNDLE_VERSION=" + plan.version().toString();
         }
         for (const String &flags: plan.customCompileFlags()) {
-            if (flags.contains("c++") && args.at(0) != cxxPath_) continue;
-                // FIXME: workaround hack to prevent passing "-std=c++11" to the C compiler
+            if (flags.contains("c++") && args.at(0) != cxxPath_) {
+                // workaround hack to prevent passing "-std=c++11" to the C compiler
+                continue;
+            }
             args << flags;
         }
         for (const String &path: plan.includePaths()) {
             args << "-I" + path;
         }
+    }
+
+    void appendCxxModuleMapperOption(Format &args, const String &target) const
+    {
+        if (cxxModuleMapper_ == "") return;
+
+        String option = Format{"-fmodule-mapper=%%?%%"} << cxxModuleMapper_ << target;
+        args << option;
     }
 
     /** \todo Make '-flto' work properly without overcommiting beyond BuildPlan::concurrency().
@@ -755,7 +775,8 @@ struct GnuToolChain::State: public ToolChain::State
     String cxxPath_;
     String machine_;
     String systemRoot_;
-    // Pattern dependencySplitPattern_ { "{1..:[\\:\\\\\n\r \\|]}" };
+    String cxxModuleMapper_;
+    // Pattern dependencySplitPattern_ { "{1..:[\\:\\\\\n\r \\|]}" }; // FIXME: cleanup
     String rpathOverride_;
     bool isMultiArch_ { true };
     String cFlags_;

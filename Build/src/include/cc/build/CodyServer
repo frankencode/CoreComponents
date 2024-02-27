@@ -23,6 +23,8 @@ public:
 
     explicit CodyServer(const BuildPlan &plan, const JobScheduler &scheduler);
 
+    String connectionInfo() const;
+
     void start();
     void shutdown(Out<CodyError> error);
 

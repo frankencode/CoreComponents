@@ -8,6 +8,7 @@
 
 #include <cc/build/CodyWorker>
 #include <cc/build/CodyTransport>
+#include <cc/build/ImportManager>
 #include <cc/Thread>
 #include <cc/Format>
 
@@ -18,10 +19,10 @@ struct CodyWorker::State final: public Object::State
     explicit State(
         const Stream &stream,
         const String &cachePrefix,
-        Function<bool(const String &, const String &, Out<String>)> &&onIncludeTranslate,
+        Function<bool(const String &, Out<String>, Out<bool>)> &&onIncludeTranslate,
         Function<String(const String &)> &&onModuleExport,
-        Function<void(const String &)> &&onModuleCompiled,
-        Function<bool(const String &, const String &, Out<String>)> &&onModuleImport,
+        Function<void(const String &, const List<String> &, const List<String> &)> &&onModuleCompiled,
+        Function<bool(const String &, Out<String>, Out<bool>)> &&onModuleImport,
         Function<int(const List<String> &)> &&onInvoke
     ):
         stream_{stream},
@@ -60,9 +61,10 @@ struct CodyWorker::State final: public Object::State
                             cody.write("ERROR Unsupported protocol version");
                             throw CodyError{Format{"Unsupported protocol version (expected 1): \"%%\""} << message.toString()};
                         }
-                        String reply = "HELLO 1 ccbuild 0";
+                        String reply = "HELLO 1 ccbuild 0"; // FIXME: omit "0" for efficiency
                         cody.write(reply);
                         established_ = true;
+                        target_ = message(3);
                     }
                     continue;
                 }
@@ -71,32 +73,38 @@ struct CodyWorker::State final: public Object::State
                     cody.write(reply);
                 }
                 else if (message(0) == "MODULE-EXPORT") {
+                    assert(module_ == "");
                     module_ = message(1);
-                    String cachePath = onModuleExport_(message(1));
+                    String cachePath = onModuleExport_(module_);
                     String reply = Format{"PATHNAME '%%'"} << cachePath;
                     cody.write(reply);
                 }
                 else if (message(0) == "MODULE-COMPILED") {
-                    onModuleCompiled_(message(1));
-                    String reply = "OK";
+                    const String module = message(1);
+                    onModuleCompiled_(module, includes_, imports_);
+                    const String reply = "OK";
                     cody.write(reply);
                 }
                 else if (message(0) == "MODULE-IMPORT") {
-                    String srcModule = message(1);
+                    const String import = message(1);
                     String cachePath;
                     String reply;
-                    if (onModuleImport_(module_, srcModule, &cachePath)) {
+                    bool inScope = true;
+                    if (onModuleImport_(import, &cachePath, &inScope)) {
                         reply = Format{"PATHNAME '%%'"} << cachePath;
                     }
                     else {
-                        reply = Format{"ERROR 'Import of module \'%%\' failed'"} << srcModule;
+                        reply = Format{"ERROR 'Import of module \'%%\' failed'"} << import;
                     }
                     cody.write(reply);
+                    if (inScope) imports_.append(import);
                 }
                 else if (message(0) == "INCLUDE-TRANSLATE") {
+                    String include = message(1);
                     String reply;
                     String cachePath;
-                    if (onIncludeTranslate_(module_, message(1), &cachePath)) {
+                    bool inScope = true;
+                    if (onIncludeTranslate_(include, &cachePath, &inScope)) {
                         if (cachePath != "")
                             reply = Format{"PATHNAME '%%'"} << cachePath;
                         else
@@ -106,6 +114,7 @@ struct CodyWorker::State final: public Object::State
                         reply = "BOOL FALSE";
                     }
                     cody.write(reply);
+                    if (inScope) includes_.append(include);
                 }
                 else if (message(0) == "INVOKE") {
                     message.words().popFront();
@@ -120,6 +129,9 @@ struct CodyWorker::State final: public Object::State
                     cody.write(reply);
                 }
             }
+
+            /** TODO: write <target>.includes and <target>.imports
+              */
         }
         catch (CodyError &error)
         {
@@ -137,21 +149,25 @@ struct CodyWorker::State final: public Object::State
     CodyError error_;
     int compilerProtocolVersion_ { 0 };
     bool established_ { false };
+    String target_;
     String module_;
-    Function<bool(const String &, const String &, Out<String>)> onIncludeTranslate_;
+    List<String> includes_;
+    List<String> imports_;
+    ImportManager importManager_;
+    Function<bool(const String &, Out<String>, Out<bool>)> onIncludeTranslate_;
     Function<String(const String &)> onModuleExport_;
-    Function<void(const String &)> onModuleCompiled_;
-    Function<bool(const String &, const String &, Out<String>)> onModuleImport_;
+    Function<void(const String &, const List<String> &, const List<String> &)> onModuleCompiled_;
+    Function<bool(const String &, Out<String>, Out<bool>)> onModuleImport_;
     Function<int(const List<String> &)> onInvoke_;
 };
 
 CodyWorker::CodyWorker(
     const Stream &stream,
     const String &cachePrefix,
-    Function<bool(const String &, const String &, Out<String>)>  &&onIncludeTranslate,
+    Function<bool(const String &, Out<String>, Out<bool>)>  &&onIncludeTranslate,
     Function<String(const String &)> &&onModuleExport,
-    Function<void(const String &)> &&onModuleCompiled,
-    Function<bool(const String &, const String &, Out<String>)> &&onModuleImport,
+    Function<void(const String &, const List<String> &, const List<String> &)> &&onModuleCompiled,
+    Function<bool(const String &, Out<String>, Out<bool>)> &&onModuleImport,
     Function<int(const List<String> &)> &&onInvoke
 ):
     Object{

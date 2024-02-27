@@ -860,6 +860,11 @@ void BuildPlan::queryVariables(const List<String> &names) const
     IoStream::output().write("\n");
 }
 
+ToolChain &BuildPlan::mutableToolChain()
+{
+    return me().toolChain_;
+}
+
 const ToolChain &BuildPlan::toolChain() const
 {
     return me().toolChain_;

@@ -40,6 +40,7 @@ public:
 
     int run();
 
+    ToolChain &mutableToolChain();
     const ToolChain &toolChain() const;
     const BuildShell &shell() const;
 

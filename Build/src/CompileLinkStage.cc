@@ -29,6 +29,7 @@ bool CompileLinkStage::run()
 
     if (!(plan().options() & (BuildOption::Simulate | BuildOption::Blindfold | BuildOption::Bootstrap))) {
         codyServer = CodyServer{plan(), scheduler};
+        plan().mutableToolChain().setCxxModuleMapper(codyServer.connectionInfo());
         codyServer.start();
     }
 
@@ -123,11 +124,11 @@ bool CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
             }
 
             if (insightDatabase) {
-                insightDatabase.insert(unit.sourcePath(), job.command(), unit.objectFilePath());
+                insightDatabase.insert(unit.source(), job.command(), unit.target());
             }
         }
         else if (insightDatabase) {
-            insightDatabase.touch(unit.objectFilePath());
+            insightDatabase.touch(unit.target());
         }
     }
 
@@ -162,7 +163,7 @@ bool CompileLinkStage::scheduleJobs(JobScheduler &scheduler)
             else {
                 double productTime = productStatus.lastModified();
                 for (const Unit &unit: plan().units()) {
-                    FileInfo objectFileStatus = shell().fileStatus(unit.objectFilePath());
+                    FileInfo objectFileStatus = shell().fileStatus(unit.target());
                     if (objectFileStatus.lastModified() > productTime) {
                         dirty = true;
                         break;
@@ -219,6 +220,7 @@ bool CompileLinkStage::gatherUnits()
         const String compileCommand = toolChain().compileCommand(plan(), source, objectFilePath);
         List<String> previousDependencyPaths;
         bool dirty = compileCommandChanged;
+        Unit unit;
         Module module;
         if (source.startsWith(plan().importPath())) {
             const String name = ImportManager::moduleName(plan().importPath(), source);
@@ -232,7 +234,7 @@ bool CompileLinkStage::gatherUnits()
             }
         }
         if (toolChain().readObjectDependencies(plan(), objectFilePath, &previousDependencyPaths)) {
-            assert(previousDependencyPaths.at(0) == source);
+            assert(previousDependencyPaths(0) == source);
             do {
                 if (dirty) break;
                 FileInfo objectFileInfo = shell().fileStatus(objectFilePath);
@@ -250,11 +252,15 @@ bool CompileLinkStage::gatherUnits()
                 }
             }
             while (false);
-            plan().units().emplaceBack(compileCommand, objectFilePath, previousDependencyPaths, dirty);
+
+            unit = Unit{compileCommand, objectFilePath, previousDependencyPaths(0), dirty};
         }
         else {
-            plan().units().emplaceBack(compileCommand, objectFilePath, List<String>{source}, true);
+            unit = Unit{compileCommand, objectFilePath, List<String>{source}, true};
         }
+
+        plan().units().append(unit);
+        // if (module) module->unit_ = unit; // TODO...
     }
 
     return true;

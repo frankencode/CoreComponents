@@ -50,16 +50,6 @@ struct ImportManager::State final: public Object::State
         return ok;
     }
 
-    void registerInclude(const String &name, const String &include)
-    {
-        Guard guard { mutex_ };
-
-        Module module;
-        if (modules_.lookup(name, &module)) {
-            module->includes_.insert(include);
-        }
-    }
-
     bool lookupModule(const String &name, Out<Module> module)
     {
         Guard guard { mutex_ };
@@ -86,10 +76,9 @@ struct ImportManager::State final: public Object::State
         }
 
         const String dstCachePath = cachePrefix_ / *cachePath;
-        const String depCachePath = dstCachePath + ".d";
 
-        module->includes_.deplete();
-        for (const String &s: File::load(depCachePath).split('\n')) module->includes_.insert(s);
+        List<String> includes = File::load(dstCachePath + ".includes").split('\n');
+        List<String> imports = File::load(dstCachePath + ".imports").split('\n');
 
         CC_INSPECT(source);
 
@@ -99,7 +88,7 @@ struct ImportManager::State final: public Object::State
         FileInfo dstInfo { dstCachePath };
         bool dirty = !(dstInfo && srcInfo.lastModified() <= dstInfo.lastModified());
         if (!dirty) {
-            for (const String &include: module->includes_) {
+            for (const String &include: includes) {
                 if (FileInfo{include}.lastModified() > dstInfo.lastModified()) {
                     dirty = true;
                     break;
@@ -124,8 +113,6 @@ struct ImportManager::State final: public Object::State
             }
             else {
                 scheduler.report(module->job_);
-
-                File::save(depCachePath, module->includes_.toList().join('\n'));
             }
         }
         else {
@@ -155,10 +142,9 @@ struct ImportManager::State final: public Object::State
         }
 
         const String dstCachePath = cachePrefix_ / *cachePath;
-        const String depCachePath = dstCachePath + ".d";
 
-        module->includes_.deplete();
-        for (const String &s: File::load(depCachePath).split('\n')) module->includes_.insert(s);
+        List<String> includes = File::load(dstCachePath + ".includes").split('\n');
+        List<String> imports = File::load(dstCachePath + ".imports").split('\n');
 
         FileInfo srcInfo { module->source_ };
         if (!srcInfo) return false;
@@ -166,7 +152,7 @@ struct ImportManager::State final: public Object::State
         FileInfo dstInfo { dstCachePath };
         bool dirty = !(dstInfo && srcInfo.lastModified() <= dstInfo.lastModified());
         if (!dirty) {
-            for (const String &include: module->includes_) {
+            for (const String &include: includes) {
                 if (FileInfo{include}.lastModified() > dstInfo.lastModified()) {
                     dirty = true;
                     break;
@@ -190,7 +176,7 @@ struct ImportManager::State final: public Object::State
             else {
                 scheduler.report(module->job_);
 
-                File::save(depCachePath, module->includes_.toList().join('\n'));
+                // File::save(depCachePath, module->includes_.toList().join('\n')); // FIXME
             }
         }
         else {
@@ -239,11 +225,6 @@ String ImportManager::moduleName(const String &importPrefix, const String &sourc
 bool ImportManager::registerModule(const String &name, const String &source, Out<Module> module)
 {
     return me().registerModule(name, source, &module);
-}
-
-void ImportManager::registerInclude(const String &name, const String &include)
-{
-    return me().registerInclude(name, include);
 }
 
 bool ImportManager::lookupModule(const String &name, Out<Module> module)

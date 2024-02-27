@@ -21,8 +21,7 @@
 #include <cc/Channel>
 #include <cc/Mutex>
 #include <cc/Dir>
-#include <cc/Set>
-#include <cc/MultiMap>
+#include <cc/File>
 #include <cc/DEBUG>
 
 namespace cc::build {
@@ -33,9 +32,9 @@ struct CodyServer::State final: public Object::State
         plan_{plan},
         scheduler_{scheduler}
     {
-        Process::setEnv("CXX_MODULE_MAPPER", Format{"localhost:%%"} << listenSocket_.address().port());
-        // Process::setEnv("CXX_MODULE_MAPPER", listenSocket_.address().toString());
-        CC_INSPECT(listenSocket_.address());
+        connectionInfo_ = Format{"localhost:%%"} << listenSocket_.address().port();
+        // Process::setEnv("CXX_MODULE_MAPPER", connectionInfo_);
+        // CC_INSPECT(Process::env("CXX_MODULE_MAPPER"));
         listenShutdown_.acquire();
     }
 
@@ -78,17 +77,17 @@ struct CodyServer::State final: public Object::State
                 workers_.emplaceBack(
                     stream,
                     importManager_.cachePrefix(),
-                    [this](const String &module, const String &include, Out<String> cachePath) {
-                        return onIncludeTranslate(module, include, &cachePath);
+                    [this](const String &include, Out<String> cachePath, Out<bool> inScope) {
+                        return onIncludeTranslate(include, &cachePath, &inScope);
                     },
                     [this](const String &module) {
                         return onModuleExport(module);
                     },
-                    [this](const String &module){
-                        onModuleCompiled(module);
+                    [this](const String &module, const List<String> &includes, const List<String> &imports){
+                        onModuleCompiled(module, includes, imports);
                     },
-                    [this](const String &dstModule, const String &srcModule, Out<String> cachePath){
-                        return onModuleImport(dstModule, srcModule, &cachePath);
+                    [this](const String &import, Out<String> cachePath, Out<bool> inScope){
+                        return onModuleImport(import, &cachePath, &inScope);
                     },
                     [this](const List<String> &args){
                         return onInvoke(args);
@@ -101,11 +100,9 @@ struct CodyServer::State final: public Object::State
         }
     }
 
-    bool onIncludeTranslate(const String &module, const String &include, Out<String> cachePath)
+    bool onIncludeTranslate(const String &include, Out<String> cachePath, Out<bool> inScope)
     {
-        if (include.startsWith(plan_.sourcePrefix())) {
-            importManager_.registerInclude(module, include);
-        }
+        inScope = include.startsWith(plan_.sourcePrefix());
         return true;
     }
 
@@ -114,17 +111,22 @@ struct CodyServer::State final: public Object::State
         return importManager_.cachePath(module);
     }
 
-    bool onModuleImport(const String &destination, const String &source, Out<String> cachePath)
+    bool onModuleImport(const String &import, Out<String> cachePath, Out<bool> inScope)
     {
-        if (isCPlusPlusHeaderFile(source)) {
-            return importManager_.compileHeaderUnit(scheduler_, plan_, source, &cachePath);
+        if (isHeaderFile(import)) {
+            inScope = import.startsWith(plan_.sourcePrefix());
+            return importManager_.compileHeaderUnit(scheduler_, plan_, import, &cachePath);
         }
-
-        return importManager_.compileInterfaceUnit(scheduler_, plan_, source, &cachePath);
+        inScope = true;
+        return importManager_.compileInterfaceUnit(scheduler_, plan_, import, &cachePath);
     }
 
-    void onModuleCompiled(const String &module)
-    {}
+    void onModuleCompiled(const String &module, const List<String> &includes, const List<String> &imports)
+    {
+        const String path = importManager_.cachePrefix() / importManager_.cachePath(module);
+        File::save(path + ".includes", includes.join('\n'));
+        File::save(path + ".imports", imports.join('\n'));
+    }
 
     int onInvoke(const List<String> &args)
     {
@@ -134,7 +136,7 @@ struct CodyServer::State final: public Object::State
         return ok;
     }
 
-    static bool isCPlusPlusHeaderFile(const String &source)
+    static bool isHeaderFile(const String &source)
     {
         const String ext = source.fileSuffix();
 
@@ -148,6 +150,7 @@ struct CodyServer::State final: public Object::State
     ImportManager importManager_;
 
     ServerSocket listenSocket_ { SocketAddress { ProtocolFamily::InternetV6, "::" } };
+    String connectionInfo_;
     Thread thread_;
     SpinLock listenShutdown_;
     List<CodyWorker> workers_;
@@ -158,6 +161,11 @@ struct CodyServer::State final: public Object::State
 CodyServer::CodyServer(const BuildPlan &plan, const JobScheduler &scheduler):
     Object{new State{plan, scheduler}}
 {}
+
+String CodyServer::connectionInfo() const
+{
+    return me().connectionInfo_;
+}
 
 void CodyServer::start()
 {

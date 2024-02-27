@@ -15,16 +15,18 @@
 
 namespace cc::build {
 
+class Module;
+
 class CodyWorker final: public Object
 {
 public:
     explicit CodyWorker(
         const Stream &stream,
         const String &cachePrefix,
-        Function<bool(const String &, const String &, Out<String>)> &&onIncludeTranslate,
+        Function<bool(const String &, Out<String>, Out<bool>)> &&onIncludeTranslate,
         Function<String(const String &)> &&onModuleExport,
-        Function<void(const String &)> &&onModuleCompiled,
-        Function<bool(const String &, const String &, Out<String>)> &&onModuleImport,
+        Function<void(const String &, const List<String> &, const List<String> &)> &&onModuleCompiled,
+        Function<bool(const String &, Out<String>, Out<bool>)> &&onModuleImport,
         Function<int(const List<String> &)> &&onInvoke
     );
 
