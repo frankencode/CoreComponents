@@ -8,7 +8,6 @@
 
 #include <cc/build/GnuToolChain>
 #include <cc/build/LinkJob>
-// #include <cc/Pattern>
 #include <cc/Format>
 #include <cc/Process>
 #include <cc/Command>
@@ -130,7 +129,7 @@ struct GnuToolChain::State: public ToolChain::State
         else return "";
     }
 
-    void setCxxModuleMapper(const String &connectionInfo) override
+    void setCodyServer(const String &connectionInfo) override
     {
         cxxModuleMapper_ = connectionInfo;
     }
@@ -210,11 +209,11 @@ struct GnuToolChain::State: public ToolChain::State
     }
     #endif
 
-    bool readObjectDependencies(const BuildPlan &plan, const String &objectFilePath, Out<List<String>> dependencies) const override
+    bool readObjectDependencies(const BuildPlan &plan, const String &target, Out<List<String>> includes) const override
     {
         bool ok = true;
         try {
-            const String dependenciesFilePath = getDependenciesFilePath(objectFilePath);
+            const String dependenciesFilePath = getDependenciesFilePath(target);
             // CC_INSPECT(dependenciesFilePath);
             String text = File{dependenciesFilePath}.map().replaced("\\\n", "");
             // CC_INSPECT(text);
@@ -224,7 +223,7 @@ struct GnuToolChain::State: public ToolChain::State
                 List<String> parts = line.split(':');
                 if (parts.count() != 2) continue;
                 // CC_INSPECT(parts(0));
-                if (parts(0).contains(objectFilePath)) {
+                if (parts(0).contains(target)) {
                     // CC_INSPECT(parts(1));
                     String value = parts(1);
                     value.trim();
@@ -240,7 +239,7 @@ struct GnuToolChain::State: public ToolChain::State
                 }
             }
 
-            dependencies = deps;
+            includes = deps;
             ok = (deps.count() > 0);
         }
         catch (SystemResourceError &ex)
@@ -248,9 +247,9 @@ struct GnuToolChain::State: public ToolChain::State
             ok = false;
         }
 
-        CC_INSPECT(objectFilePath);
+        CC_INSPECT(target);
         CC_INSPECT(ok);
-        CC_INSPECT(dependencies->join(", "));
+        CC_INSPECT(includes->join(", "));
 
         return ok;
     }
@@ -262,7 +261,8 @@ struct GnuToolChain::State: public ToolChain::State
         args << "-fmodule-header";
         args << "-xc++-header";
         appendCompileOptions(args, plan);
-        appendCxxModuleMapperOption(args, "");
+        if (plan.options() & BuildOption::Cody) appendCxxModuleMapperOption(args);
+        else args << "-MMD";
         args << source;
         return args.join<String>(' ');
     }
@@ -275,20 +275,21 @@ struct GnuToolChain::State: public ToolChain::State
         args << "-fmodule-only";
         args << "-xc++";
         appendCompileOptions(args, plan);
-        appendCxxModuleMapperOption(args, "");
+        if (plan.options() & BuildOption::Cody) appendCxxModuleMapperOption(args);
+        else args << "-MMD";
         args << source;
         return args.join<String>(' ');
     }
 
-    String compileCommand(const BuildPlan &plan, const String &sourcePath, const String &objectFilePath) const override
+    String compileCommand(const BuildPlan &plan, const String &source, const String &target) const override
     {
         Format args;
-        args << compiler(sourcePath);
-        args << "-c" << "-o" << objectFilePath;
-        appendCxxModuleMapperOption(args, objectFilePath);
-        args << "-MMD"; // FIXME: to be dropped in favor of CoDy dependencies
+        args << compiler(source);
+        args << "-c" << "-o" << target;
+        if (plan.options() & BuildOption::Cody) appendCxxModuleMapperOption(args, target);
+        else args << "-MMD";
         appendCompileOptions(args, plan);
-        args << sourcePath;
+        args << source;
         return args.join<String>(' ');
     }
 
@@ -303,8 +304,8 @@ struct GnuToolChain::State: public ToolChain::State
         Format args;
         args << compiler(unit.source());
         args << "-o" << target;
-        appendCxxModuleMapperOption(args, target);
-        args << "-MMD"; // FIXME: to be dropped in favor of CoDy dependencies
+        if (plan.options() & BuildOption::Cody) appendCxxModuleMapperOption(args, target);
+        else args << "-MMD";
         appendCompileOptions(args, plan);
         if (plan.linkStatic()) args << "-static";
         args << "-pthread";
@@ -413,7 +414,7 @@ struct GnuToolChain::State: public ToolChain::State
         Format args;
         args << compiler(sourcePath);
         args << "-o" << binPath;
-        // args << "-MMD";
+        // appendCxxModuleMapperOption(args, binPath); // TODO: allows detection of CoDy support
         // appendCompileOptions(args, plan);
         args << "-DNDEBUG" << "-pthread";
         args << sourcePath;
@@ -694,11 +695,17 @@ struct GnuToolChain::State: public ToolChain::State
         }
     }
 
-    void appendCxxModuleMapperOption(Format &args, const String &target) const
+    void appendCxxModuleMapperOption(Format &args, const String &target = String{}) const
     {
         if (cxxModuleMapper_ == "") return;
 
-        String option = Format{"-fmodule-mapper=%%?%%"} << cxxModuleMapper_ << target;
+        String option;
+
+        if (target != "")
+            option = Format{"-fmodule-mapper=%%?%%"} << cxxModuleMapper_ << target;
+        else
+            option = "-fmodule-mapper=" + cxxModuleMapper_;
+
         args << option;
     }
 
@@ -778,10 +785,10 @@ struct GnuToolChain::State: public ToolChain::State
     String cxxModuleMapper_;
     // Pattern dependencySplitPattern_ { "{1..:[\\:\\\\\n\r \\|]}" }; // FIXME: cleanup
     String rpathOverride_;
-    bool isMultiArch_ { true };
     String cFlags_;
     String cxxFlags_;
     String ldFlags_;
+    bool isMultiArch_ { true };
     bool cygwin_ { false };
 };
 

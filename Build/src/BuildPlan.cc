@@ -150,8 +150,9 @@ struct BuildPlan::State final:
         if (recipe_("verbose"))     options_ |= BuildOption::Verbose;
         if (recipe_("configure"))   options_ |= BuildOption::Configure;
         if (recipe_("insight"))     options_ |= BuildOption::Insight;
-        if (recipe_("lump"))        options_ |= BuildOption::Lump;
         if (recipe_("strip"))       options_ |= BuildOption::Strip;
+        if (recipe_("lump"))        options_ |= BuildOption::Lump;
+        if (recipe_("cody"))        options_ |= BuildOption::Cody;
 
         concurrency_ = recipe_("jobs").to<long>();
         testRunConcurrency_ = recipe_("test-run-jobs").to<long>();

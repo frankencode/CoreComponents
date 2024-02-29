@@ -31,6 +31,7 @@ enum class BuildOption: int
     Insight       = 1 << 15,
     Lump          = 1 << 16,
     Strip         = 1 << 17,
+    Cody          = 1 << 18,
     None          = 0,
     Unspecified   = -1,
     GlobalOptions = Debug|
@@ -43,7 +44,8 @@ enum class BuildOption: int
                     Configure|
                     Insight|
                     Lump|
-                    Strip
+                    Strip|
+                    Cody
 };
 
 CC_BITMASK(BuildOption)

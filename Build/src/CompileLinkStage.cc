@@ -27,9 +27,9 @@ bool CompileLinkStage::run()
 
     CodyServer codyServer;
 
-    if (!(plan().options() & (BuildOption::Simulate | BuildOption::Blindfold | BuildOption::Bootstrap))) {
+    if ((plan().options() & BuildOption::Cody) && !(plan().options() & (BuildOption::Simulate | BuildOption::Blindfold | BuildOption::Bootstrap))) {
         codyServer = CodyServer{plan(), scheduler};
-        plan().mutableToolChain().setCxxModuleMapper(codyServer.connectionInfo());
+        plan().mutableToolChain().setCodyServer(codyServer.connectionInfo());
         codyServer.start();
     }
 
@@ -215,23 +215,42 @@ bool CompileLinkStage::gatherUnits()
 
     ImportManager importManager;
 
-    for (const String &source: plan().sources()) {
+    for (const String &source: plan().sources())
+    {
         const String target = toolChain().objectFilePath(plan(), source);
-        List<String> previousDependencyPaths;
+        const String targetBase = target.sansFileSuffix();
+
         bool dirty = compileCommandChanged;
-        if (toolChain().readObjectDependencies(plan(), target, &previousDependencyPaths)) {
-            assert(previousDependencyPaths(0) == source);
+
+        List<String> includes;
+
+        bool foundTargetIncludes = false;
+
+        if (plan().options() & BuildOption::Cody) {
+            try {
+                includes = File{targetBase + ".include"}.map().split('\n');
+                includes.pushFront(source);
+                foundTargetIncludes = true;
+            }
+            catch (SystemError &)
+            {}
+        }
+        else {
+            foundTargetIncludes = toolChain().readObjectDependencies(plan(), target, &includes);
+        }
+
+        if (foundTargetIncludes) {
             do {
                 if (dirty) break;
-                FileInfo objectFileInfo = shell().fileStatus(target);
-                if (!objectFileInfo) { dirty = true; break; }
-                for (const String &previousDependencyPath: previousDependencyPaths) {
-                    FileInfo previousDependencyInfo = shell().fileStatus(previousDependencyPath);
-                    if (!previousDependencyInfo) {
+                FileInfo targetInfo = shell().fileStatus(target);
+                if (!targetInfo) { dirty = true; break; }
+                for (const String &include: includes) {
+                    FileInfo includeInfo = shell().fileStatus(include);
+                    if (!includeInfo) {
                         dirty = true;
                         break;
                     }
-                    if (objectFileInfo.lastModified() < previousDependencyInfo.lastModified()) {
+                    if (targetInfo.lastModified() < includeInfo.lastModified()) {
                         dirty = true;
                         break;
                     }
@@ -239,6 +258,10 @@ bool CompileLinkStage::gatherUnits()
             }
             while (false);
         }
+        // TODO
+        // if (foundTargetImports) {
+        // ...
+        // }
         else {
             dirty = true;
         }
@@ -252,10 +275,11 @@ bool CompileLinkStage::gatherUnits()
             const String name = ImportManager::moduleName(plan().importPath(), source);
             Unit other;
             if (!importManager.registerModule(name, unit, &other)) {
-                ferr() <<
-                    "Error, ambiguous definition for module \"" << name << "\":\n"
-                    "  " << source << "\n"
-                    "  " << other.source() << "\n";
+                ferr(
+                    "Error, ambiguous definition of module \"%%\":\n"
+                    "  %%\n"
+                    "  %%\n"
+                ) << name << source << other.source();
 
                 return false;
             }

@@ -20,7 +20,7 @@ class BuildParameters: public Object
 public:
     BuildParameters() = default;
 
-    explicit BuildParameters(const MetaObject &object, const String &projectPath, BuildOption options):
+    BuildParameters(const MetaObject &object, const String &projectPath, BuildOption options):
         Object{new State{object, projectPath, options}}
     {}
 
@@ -62,7 +62,7 @@ protected:
         List<String> customLinkFlags_;
     };
 
-    BuildParameters(State *newState):
+    explicit BuildParameters(State *newState):
         Object{newState}
     {}
 

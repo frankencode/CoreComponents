@@ -61,8 +61,14 @@ struct CodyMessageSyntax::State final: public SyntaxDefinition::State
         if (!token) throw CodyError{Format{"Invalid message syntax: \"%%\""} << line};
         List<String> message;
         for (const Token &token: token.children()) {
-            String word = line.copy(token.range());
-            if (token.rule() == quoutedWord) word.expand();
+            String word;
+            if (token.rule() == quoutedWord) {
+                word = line.copy(token.i0() + 1, token.i1() - 1);
+                word.expand();
+            }
+            else {
+                word = line.copy(token.i0(), token.i1());
+            }
             message.append(word);
         }
         return message;

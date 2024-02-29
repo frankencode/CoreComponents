@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
             "  -bootstrap       write bootstrap script\n"
             "  -insight         generate compile_commands.json files (e.g. for clangd)\n"
             "  -lump            handle all sources of a target as a single source file\n"
+            "  -cody            enable CoDy server\n"
             "  -strip           strip targets automatically after linking\n"
             "  -query           query given properties (e.g. 'name' or 'version')\n"
             "  -query-all       query all properties\n"

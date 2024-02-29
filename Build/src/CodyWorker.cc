@@ -11,6 +11,8 @@
 #include <cc/build/ImportManager>
 #include <cc/Thread>
 #include <cc/Format>
+#include <cc/File>
+#include <cc/DEBUG>
 
 namespace cc::build {
 
@@ -130,8 +132,13 @@ struct CodyWorker::State final: public Object::State
                 }
             }
 
-            /** TODO: write <target>.includes and <target>.imports
-              */
+            if (target_ != "") {
+                const String path = target_.sansFileSuffix();
+                CC_INSPECT(target_);
+                CC_INSPECT(path);
+                File::save(path + ".include", includes_.join('\n'));
+                File::save(path + ".import", imports_.join('\n'));
+            }
         }
         catch (CodyError &error)
         {

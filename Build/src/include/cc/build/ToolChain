@@ -31,7 +31,7 @@ public:
     String machineCommand() const { return me().machineCommand(); }
     String defaultOptimization(BuildOption options) const { return me().defaultOptimization(options); }
 
-    void setCxxModuleMapper(const String &connectionInfo) { me().setCxxModuleMapper(connectionInfo); }
+    void setCodyServer(const String &connectionInfo) { me().setCodyServer(connectionInfo); }
 
     String objectFilePath(const BuildPlan &plan, const String &source) const { return me().objectFilePath(plan, source); }
     bool readObjectDependencies(const BuildPlan &plan, const String &objectFilePath, Out<List<String>> dependencies) const { return me().readObjectDependencies(plan, objectFilePath, dependencies); }
@@ -90,15 +90,15 @@ protected:
         virtual String machineCommand() const = 0;
         virtual String defaultOptimization(BuildOption options) const = 0;
 
-        virtual void setCxxModuleMapper(const String &connectionInfo) = 0;
+        virtual void setCodyServer(const String &connectionInfo) = 0;
 
         virtual String objectFilePath(const BuildPlan &plan, const String &source) const = 0;
-        virtual bool readObjectDependencies(const BuildPlan &plan, const String &objectFilePath, Out<List<String>> dependencies) const = 0;
+        virtual bool readObjectDependencies(const BuildPlan &plan, const String &target, Out<List<String>> includes) const = 0; // FIXME: rename to readMakeDeps
 
         virtual String headerUnitCompileCommand(const BuildPlan &plan, const String &source) const = 0;
         virtual String interfaceUnitCompileCommand(const BuildPlan &plan, const String &source) const = 0;
 
-        virtual String compileCommand(const BuildPlan &plan, const String &source, const String &objectFilePath) const = 0;
+        virtual String compileCommand(const BuildPlan &plan, const String &source, const String &target) const = 0;
         virtual Job createCompileJob(const BuildPlan &plan, const Unit &unit) const = 0;
         virtual Job createCompileLinkJob(const BuildPlan &plan, const Unit &unit) const = 0;
 

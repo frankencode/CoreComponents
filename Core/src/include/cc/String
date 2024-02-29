@@ -1025,6 +1025,10 @@ public:
       */
     String shortFileSuffix() const;
 
+    /** %Return the same file path without the file name's suffix
+      */
+    String sansFileSuffix() const;
+
     /** Extend this path by \a relativePath
       */
     String operator/(const String &relativePath) const;

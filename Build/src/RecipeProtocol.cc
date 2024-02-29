@@ -100,6 +100,15 @@ protected:
         insert("setup", false);
         insert("insight", false);
         insert("lump", false);
+        insert("cody",
+#ifndef __GNUC__
+            false
+#elif __GNUC__ > 13
+            true
+#else
+            false
+#endif
+        );
 
         insert("configure", false);
         insert("configure-list", false);

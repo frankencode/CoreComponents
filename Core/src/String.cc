@@ -470,6 +470,15 @@ String String::shortFileSuffix() const
     return suffix;
 }
 
+String String::sansFileSuffix() const
+{
+    long j = 0;
+    for (long i = 0; find('/', &i);) j = ++i;
+    if (j >= count()) return *this;
+    if (find('.', &j)) return copy(0, j);
+    return *this;
+}
+
 String String::operator/(const String &relativePath) const
 {
     if (count() == 0/* || isHerePath()*/) return relativePath.copy();
