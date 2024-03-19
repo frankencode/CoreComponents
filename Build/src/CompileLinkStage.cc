@@ -220,49 +220,42 @@ bool CompileLinkStage::gatherUnits()
         const String target = toolChain().objectFilePath(plan(), source);
         const String targetBase = target.sansFileSuffix();
 
-        bool dirty = compileCommandChanged;
+        bool dirty = false;
 
-        List<String> includes;
+        try {
+            if (compileCommandChanged) throw true;
 
-        bool foundTargetIncludes = false;
+            List<String> includes;
+            List<String> imports;
 
-        if (plan().options() & BuildOption::Cody) {
-            try {
+            if (plan().options() & BuildOption::Cody) {
                 includes = File{targetBase + ".include"}.map().split('\n');
                 includes.pushFront(source);
-                foundTargetIncludes = true;
+                imports = File{targetBase + ".import"}.map().split('\n');
             }
-            catch (SystemError &)
-            {}
-        }
-        else {
-            foundTargetIncludes = toolChain().readObjectDependencies(plan(), target, &includes);
-        }
+            else {
+                includes = toolChain().readMakeDeps(plan(), target);
+            }
 
-        if (foundTargetIncludes) {
-            do {
-                if (dirty) break;
-                FileInfo targetInfo = shell().fileStatus(target);
-                if (!targetInfo) { dirty = true; break; }
-                for (const String &include: includes) {
-                    FileInfo includeInfo = shell().fileStatus(include);
-                    if (!includeInfo) {
-                        dirty = true;
-                        break;
-                    }
-                    if (targetInfo.lastModified() < includeInfo.lastModified()) {
-                        dirty = true;
-                        break;
-                    }
-                }
+            FileInfo targetInfo = shell().fileStatus(target);
+            if (!targetInfo) throw true;
+
+            for (const String &include: includes) {
+                FileInfo includeInfo = shell().fileStatus(include);
+                if (!includeInfo) throw true;
+                if (targetInfo.lastModified() < includeInfo.lastModified()) throw true;
             }
-            while (false);
+
+            for (const String &import: imports) {
+                Unit module;
+                if (!importManager.lookupModule(import, &module)) throw true;
+                if (module.dirty()) throw true;
+            }
         }
-        // TODO
-        // if (foundTargetImports) {
-        // ...
-        // }
-        else {
+        catch (SystemResourceError &error) {
+            dirty = true;
+        }
+        catch (bool) {
             dirty = true;
         }
 

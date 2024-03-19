@@ -31,9 +31,9 @@ public:
 
     static String cachePath(const String &name);
 
-    bool compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath);
+    bool compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &import, Out<String> cachePath);
 
-    bool compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &name, Out<String> cachePath);
+    bool compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &import, Out<String> cachePath, Out<String> source);
 
 protected:
     struct State;

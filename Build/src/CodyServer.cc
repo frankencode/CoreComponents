@@ -117,15 +117,18 @@ struct CodyServer::State final: public Object::State
             inScope = import.startsWith(plan_.sourcePrefix());
             return importManager_.compileHeaderUnit(scheduler_, plan_, import, &cachePath);
         }
-        inScope = true;
-        return importManager_.compileInterfaceUnit(scheduler_, plan_, import, &cachePath);
+
+        String source;
+        bool ok = importManager_.compileInterfaceUnit(scheduler_, plan_, import, &cachePath, &source);
+        if (ok) inScope = source.startsWith(plan_.sourcePrefix());
+        return ok;
     }
 
     void onModuleCompiled(const String &module, const List<String> &includes, const List<String> &imports)
     {
         const String path = importManager_.cachePrefix() / importManager_.cachePath(module);
-        File::save(path + ".includes", includes.join('\n'));
-        File::save(path + ".imports", imports.join('\n'));
+        File::save(path + ".include", includes.join('\n'));
+        File::save(path + ".import", imports.join('\n'));
     }
 
     int onInvoke(const List<String> &args)

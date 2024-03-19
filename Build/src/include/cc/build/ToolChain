@@ -34,7 +34,7 @@ public:
     void setCodyServer(const String &connectionInfo) { me().setCodyServer(connectionInfo); }
 
     String objectFilePath(const BuildPlan &plan, const String &source) const { return me().objectFilePath(plan, source); }
-    bool readObjectDependencies(const BuildPlan &plan, const String &objectFilePath, Out<List<String>> dependencies) const { return me().readObjectDependencies(plan, objectFilePath, dependencies); }
+    List<String> readMakeDeps(const BuildPlan &plan, const String &objectFilePath) const { return me().readMakeDeps(plan, objectFilePath); }
 
     String headerUnitCompileCommand(const BuildPlan &plan, const String &source) const { return me().headerUnitCompileCommand(plan, source); }
     String interfaceUnitCompileCommand(const BuildPlan &plan, const String &source) const { return me().interfaceUnitCompileCommand(plan, source); }
@@ -93,7 +93,7 @@ protected:
         virtual void setCodyServer(const String &connectionInfo) = 0;
 
         virtual String objectFilePath(const BuildPlan &plan, const String &source) const = 0;
-        virtual bool readObjectDependencies(const BuildPlan &plan, const String &target, Out<List<String>> includes) const = 0; // FIXME: rename to readMakeDeps
+        virtual List<String> readMakeDeps(const BuildPlan &plan, const String &target) const = 0;
 
         virtual String headerUnitCompileCommand(const BuildPlan &plan, const String &source) const = 0;
         virtual String interfaceUnitCompileCommand(const BuildPlan &plan, const String &source) const = 0;

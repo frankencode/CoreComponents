@@ -176,82 +176,38 @@ struct GnuToolChain::State: public ToolChain::State
         return path;
     }
 
-    #if 0
-    bool readObjectDependencies(const BuildPlan &plan, const String &objectFilePath, Out<List<String>> dependencies) const override
+    List<String> readMakeDeps(const BuildPlan &plan, const String &target) const override
     {
-        const String dependenciesFilePath = getDependenciesFilePath(objectFilePath);
-        bool ok = true;
-        try {
-            List<String> parts = dependencySplitPattern_.breakUp(File{dependenciesFilePath}.map());
-            List<String> deps;
-            for (const String &s: parts) { // FIXME: simplistic workaround for modules support
-                if (
-                    s.endsWith(".cc") ||
-                    s.endsWith(".cxx") ||
-                    s.endsWith(".cpp")
-                ) {
-                    deps.append(s);
-                    continue;
+        const String dependenciesFilePath = getDependenciesFilePath(target);
+        // CC_INSPECT(dependenciesFilePath);
+        String text = File{dependenciesFilePath}.map().replaced("\\\n", "");
+        // CC_INSPECT(text);
+        List<String> includes;
+        for (const String &line: LineSource{text}) {
+            // CC_INSPECT(line);
+            List<String> parts = line.split(':');
+            if (parts.count() != 2) continue;
+            // CC_INSPECT(parts(0));
+            if (parts(0).contains(target)) {
+                // CC_INSPECT(parts(1));
+                String value = parts(1);
+                value.trim();
+                value.simplify();
+                List<String> list = value.split(' ');
+                for (const String &item: list) {
+                    if (item.endsWith(".gcm")) continue;
+                    if (item.contains("gcm.cache/")) continue;
+                    if (!item.startsWith(plan.sourcePrefix())) continue;
+                    // CC_INSPECT(item);
+                    includes.append(item);
                 }
             }
-            dependencies = deps;
-            ok = (deps.count() > 0);
-        }
-        catch (SystemResourceError &ex)
-        {
-            ok = false;
-        }
-
-        CC_INSPECT(objectFilePath);
-        CC_INSPECT(dependencies->join(", "));
-
-        return ok;
-    }
-    #endif
-
-    bool readObjectDependencies(const BuildPlan &plan, const String &target, Out<List<String>> includes) const override
-    {
-        bool ok = true;
-        try {
-            const String dependenciesFilePath = getDependenciesFilePath(target);
-            // CC_INSPECT(dependenciesFilePath);
-            String text = File{dependenciesFilePath}.map().replaced("\\\n", "");
-            // CC_INSPECT(text);
-            List<String> deps;
-            for (const String &line: LineSource{text}) {
-                // CC_INSPECT(line);
-                List<String> parts = line.split(':');
-                if (parts.count() != 2) continue;
-                // CC_INSPECT(parts(0));
-                if (parts(0).contains(target)) {
-                    // CC_INSPECT(parts(1));
-                    String value = parts(1);
-                    value.trim();
-                    value.simplify();
-                    List<String> list = value.split(' ');
-                    for (const String &item: list) {
-                        if (item.endsWith(".gcm")) continue;
-                        if (item.contains("gcm.cache/")) continue;
-                        if (!item.startsWith(plan.sourcePrefix())) continue;
-                        // CC_INSPECT(item);
-                        deps.append(item);
-                    }
-                }
-            }
-
-            includes = deps;
-            ok = (deps.count() > 0);
-        }
-        catch (SystemResourceError &ex)
-        {
-            ok = false;
         }
 
         CC_INSPECT(target);
-        CC_INSPECT(ok);
-        CC_INSPECT(includes->join(", "));
+        CC_INSPECT(includes.join(", "));
 
-        return ok;
+        return includes;
     }
 
     String headerUnitCompileCommand(const BuildPlan &plan, const String &source) const override
@@ -783,7 +739,6 @@ struct GnuToolChain::State: public ToolChain::State
     String machine_;
     String systemRoot_;
     String cxxModuleMapper_;
-    // Pattern dependencySplitPattern_ { "{1..:[\\:\\\\\n\r \\|]}" }; // FIXME: cleanup
     String rpathOverride_;
     String cFlags_;
     String cxxFlags_;

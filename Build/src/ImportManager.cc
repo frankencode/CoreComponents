@@ -56,16 +56,16 @@ struct ImportManager::State final: public Object::State
         return modules_.lookup(name, &module);
     }
 
-    bool compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath)
+    bool compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &import, Out<String> cachePath)
     {
-        cachePath = State::cachePath(source);
+        cachePath = State::cachePath(import);
 
         Guard guard { mutex_ };
 
         Unit module;
-        if (!modules_.lookup(source, &module)) {
-            module = Unit{Unit::Type::SystemModule, source};
-            modules_.insert(source, module);
+        if (!modules_.lookup(import, &module)) {
+            module = Unit{Unit::Type::SystemModule, import};
+            modules_.insert(import, module);
         }
         else if (module->job_) {
             guard.dismiss();
@@ -76,10 +76,10 @@ struct ImportManager::State final: public Object::State
 
         const String dstCachePath = cachePrefix_ / *cachePath;
 
-        List<String> includes = File::load(dstCachePath + ".includes").split('\n');
-        List<String> imports = File::load(dstCachePath + ".imports").split('\n');
+        List<String> includes = File::load(dstCachePath + ".include").split('\n');
+        List<String> imports = File::load(dstCachePath + ".import").split('\n');
 
-        CC_INSPECT(source);
+        CC_INSPECT(import);
 
         FileInfo srcInfo { module->source_ };
         if (!srcInfo) return false;
@@ -95,7 +95,7 @@ struct ImportManager::State final: public Object::State
             }
         }
 
-        module->job_ = Job { plan.toolChain().headerUnitCompileCommand(plan, source) };
+        module->job_ = Job { plan.toolChain().headerUnitCompileCommand(plan, import) };
 
         guard.dismiss();
 
@@ -121,17 +121,19 @@ struct ImportManager::State final: public Object::State
         return ok;
     }
 
-    bool compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &name, Out<String> cachePath)
+    bool compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &import, Out<String> cachePath, Out<String> source)
     {
-        cachePath = State::cachePath(name);
+        cachePath = State::cachePath(import);
 
         Guard guard { mutex_ };
 
         Unit module;
-        if (!modules_.lookup(name, &module)) return false;
+        if (!modules_.lookup(import, &module)) return false;
 
-        CC_INSPECT(name);
+        CC_INSPECT(import);
         CC_INSPECT(module->source_);
+
+        source = module->source_;
 
         if (module->job_) {
             guard.dismiss();
@@ -142,8 +144,8 @@ struct ImportManager::State final: public Object::State
 
         const String dstCachePath = cachePrefix_ / *cachePath;
 
-        List<String> includes = File::load(dstCachePath + ".includes").split('\n');
-        List<String> imports = File::load(dstCachePath + ".imports").split('\n');
+        List<String> includes = File::load(dstCachePath + ".include").split('\n');
+        List<String> imports = File::load(dstCachePath + ".import").split('\n');
 
         FileInfo srcInfo { module->source_ };
         if (!srcInfo) return false;
@@ -241,14 +243,14 @@ String ImportManager::cachePath(const String &name)
     return ImportManager::State::cachePath(name);
 }
 
-bool ImportManager::compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath)
+bool ImportManager::compileHeaderUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &import, Out<String> cachePath)
 {
-    return me().compileHeaderUnit(scheduler, plan, source, &cachePath);
+    return me().compileHeaderUnit(scheduler, plan, import, &cachePath);
 }
 
-bool ImportManager::compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &source, Out<String> cachePath)
+bool ImportManager::compileInterfaceUnit(JobScheduler &scheduler, const BuildPlan &plan, const String &import, Out<String> cachePath, Out<String> source)
 {
-    return me().compileInterfaceUnit(scheduler, plan, source, &cachePath);
+    return me().compileInterfaceUnit(scheduler, plan, import, &cachePath, &source);
 }
 
 ImportManager::State &ImportManager::me()
