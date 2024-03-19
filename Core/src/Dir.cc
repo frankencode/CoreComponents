@@ -120,6 +120,12 @@ struct Dir::State: public Object::State
     String path;
     DIR *dir { nullptr };
 
+    State() = default;
+
+    State(const String &path, DIR *dir):
+        path{path}, dir{dir}
+    {}
+
     ~State()
     {
         if (dir) ::closedir(dir);
@@ -131,7 +137,20 @@ Dir::Dir(const String &path):
 {
     me().path = path;
     me().dir = ::opendir(path);
-    if (!me().dir) CC_SYSTEM_RESOURCE_ERROR(errno, path);
+    if (!me().dir) CC_SYSTEM_ERROR(errno, path);
+}
+
+Dir::Dir(State *newState):
+    Object{newState}
+{}
+
+bool Dir::tryOpen(const String &path, Out<Dir> dir)
+{
+    DIR *d = ::opendir(path);
+    if (d) {
+        dir = Dir{new State{path, d}};
+    }
+    return d;
 }
 
 String Dir::path() const

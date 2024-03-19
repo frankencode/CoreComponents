@@ -71,8 +71,15 @@ public:
     Dir() = default;
 
     /** Open directory at \a path
+      * \exception SystemResourceError
       */
-    Dir(const String &path);
+    explicit Dir(const String &path);
+
+    /** Try to open directory at \a path
+      * \param dir Returns the directory object if operation was successful
+      * \return True if successful
+      */
+    bool tryOpen(const String &path, Out<Dir> dir);
 
     /** Directory path used to open this directory
       */
@@ -94,6 +101,8 @@ public:
 
 private:
     struct State;
+
+    explicit Dir(State *newState);
 
     State &me();
     const State &me() const;

@@ -190,7 +190,14 @@ void File::setTimes(const String &path, double lastAccess, double lastModified, 
 File::File(const String &path, FileOpen flags, FileMode mode):
     File{new File::State{::open(path, +flags|O_CLOEXEC, +mode), path, flags}}
 {
-    if (fd() == -1) CC_SYSTEM_ERROR(errno, path);
+    if (fd() == -1) CC_SYSTEM_RESOURCE_ERROR(errno, path);
+}
+
+bool File::tryOpen(const String &path, Out<File> file, FileOpen flags, FileMode mode)
+{
+    int fd = ::open(path, +flags|O_CLOEXEC, +mode);
+    if (fd != -1) file = File{new File::State{fd, path, flags}};
+    return fd != -1;
 }
 
 void File::truncate(off_t length)

@@ -119,8 +119,19 @@ public:
       * \param path File path
       * \param flags File open flags
       * \param mode File permissions for new file (optional)
+      * \see tryOpen()
+      * \exception SystemError
       */
     explicit File(const String &path, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default);
+
+    /** Try to open/create a file
+      * \param path File path
+      * \param file File object is returned on success
+      * \param flags File open flags
+      * \param mode File permissions for new file (optional)
+      * \return True if successful
+      */
+    bool tryOpen(const String &path, Out<File> file, FileOpen flags = FileOpen::ReadOnly, FileMode mode = FileMode::Default);
 
     /** %File path this file was opened from
       */
