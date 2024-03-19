@@ -72,6 +72,7 @@ public:
 
     /** Open directory at \a path
       * \exception SystemResourceError
+      * \see tryOpen()
       */
     explicit Dir(const String &path);
 
