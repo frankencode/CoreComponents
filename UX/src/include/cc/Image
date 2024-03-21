@@ -139,6 +139,10 @@ public:
       */
     void save(const String &path, const String &mediaType = "");
 
+    /** \internal
+      */
+    cairo_surface_t *cairoSurface() { return me().cairoSurface(); }
+
 private:
     struct State final: public Surface::State
     {

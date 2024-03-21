@@ -1,0 +1,6 @@
+Plugin {
+    name: CoreComponentsRsvgPlugin
+    group: image
+    extend: UX
+    depends: librsvg-2.0
+}
