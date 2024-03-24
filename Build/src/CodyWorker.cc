@@ -24,7 +24,7 @@ struct CodyWorker::State final: public Object::State
         Function<bool(const String &, Out<String>, Out<bool>)> &&onIncludeTranslate,
         Function<String(const String &)> &&onModuleExport,
         Function<void(const String &, const List<String> &, const List<String> &)> &&onModuleCompiled,
-        Function<bool(const String &, Out<String>, Out<bool>)> &&onModuleImport,
+        Function<bool(const String &, Out<String>, Out<bool>, Out<bool>)> &&onModuleImport,
         Function<int(const List<String> &)> &&onInvoke
     ):
         stream_{stream},
@@ -92,14 +92,20 @@ struct CodyWorker::State final: public Object::State
                     String cachePath;
                     String reply;
                     bool inScope = true;
-                    if (onModuleImport_(import, &cachePath, &inScope)) {
+                    bool isHeader = false;
+                    if (onModuleImport_(import, &cachePath, &inScope, &isHeader)) {
                         reply = Format{"PATHNAME '%%'"} << cachePath;
                     }
                     else {
                         reply = Format{"ERROR 'Import of module \'%%\' failed'"} << import;
                     }
                     cody.write(reply);
-                    if (inScope) imports_.append(import);
+                    if (inScope) {
+                        if (isHeader)
+                            includes_.append(import);
+                        else
+                            imports_.append(import);
+                    }
                 }
                 else if (message(0) == "INCLUDE-TRANSLATE") {
                     String include = message(1);
@@ -164,7 +170,7 @@ struct CodyWorker::State final: public Object::State
     Function<bool(const String &, Out<String>, Out<bool>)> onIncludeTranslate_;
     Function<String(const String &)> onModuleExport_;
     Function<void(const String &, const List<String> &, const List<String> &)> onModuleCompiled_;
-    Function<bool(const String &, Out<String>, Out<bool>)> onModuleImport_;
+    Function<bool(const String &, Out<String>, Out<bool>, Out<bool>)> onModuleImport_;
     Function<int(const List<String> &)> onInvoke_;
 };
 
@@ -174,7 +180,7 @@ CodyWorker::CodyWorker(
     Function<bool(const String &, Out<String>, Out<bool>)>  &&onIncludeTranslate,
     Function<String(const String &)> &&onModuleExport,
     Function<void(const String &, const List<String> &, const List<String> &)> &&onModuleCompiled,
-    Function<bool(const String &, Out<String>, Out<bool>)> &&onModuleImport,
+    Function<bool(const String &, Out<String>, Out<bool>, Out<bool>)> &&onModuleImport,
     Function<int(const List<String> &)> &&onInvoke
 ):
     Object{

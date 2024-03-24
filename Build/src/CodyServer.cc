@@ -86,8 +86,8 @@ struct CodyServer::State final: public Object::State
                     [this](const String &module, const List<String> &includes, const List<String> &imports){
                         onModuleCompiled(module, includes, imports);
                     },
-                    [this](const String &import, Out<String> cachePath, Out<bool> inScope){
-                        return onModuleImport(import, &cachePath, &inScope);
+                    [this](const String &import, Out<String> cachePath, Out<bool> inScope, Out<bool> isHeader){
+                        return onModuleImport(import, &cachePath, &inScope, &isHeader);
                     },
                     [this](const List<String> &args){
                         return onInvoke(args);
@@ -111,16 +111,18 @@ struct CodyServer::State final: public Object::State
         return importManager_.cachePath(module);
     }
 
-    bool onModuleImport(const String &import, Out<String> cachePath, Out<bool> inScope)
+    bool onModuleImport(const String &import, Out<String> cachePath, Out<bool> inScope, Out<bool> isHeader)
     {
         if (isHeaderFile(import)) {
             inScope = import.startsWith(plan_.sourcePrefix());
+            isHeader = true;
             return importManager_.compileHeaderUnit(scheduler_, plan_, import, &cachePath);
         }
 
         String source;
         bool ok = importManager_.compileInterfaceUnit(scheduler_, plan_, import, &cachePath, &source);
         if (ok) inScope = source.startsWith(plan_.sourcePrefix());
+        isHeader = false;
         return ok;
     }
 

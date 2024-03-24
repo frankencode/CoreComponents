@@ -26,7 +26,7 @@ public:
         Function<bool(const String &, Out<String>, Out<bool>)> &&onIncludeTranslate,
         Function<String(const String &)> &&onModuleExport,
         Function<void(const String &, const List<String> &, const List<String> &)> &&onModuleCompiled,
-        Function<bool(const String &, Out<String>, Out<bool>)> &&onModuleImport,
+        Function<bool(const String &, Out<String>, Out<bool>, Out<bool>)> &&onModuleImport,
         Function<int(const List<String> &)> &&onInvoke
     );
 
