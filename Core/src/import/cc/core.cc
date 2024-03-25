@@ -1,7 +1,2 @@
 export module cc.core;
-
-export namespace cc {
-
-int getNine() { return 8+1; }
-
-}
+export import <cc/core>;
