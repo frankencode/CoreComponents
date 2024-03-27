@@ -1,54 +1,54 @@
-TokiPalette {
-    TokiStyle {
+Palette {
+    Style {
         rule: CommentLine
         ink: DarkGray
     }
-    TokiStyle {
+    Style {
         rule: CommentText
         ink: DarkGray
     }
-    TokiStyle {
+    Style {
         rule: Preprocessing
         ink: DarkGreen
     }
-    TokiStyle {
+    Style {
         rule: Text
         ink: Red
     }
-    TokiStyle {
+    Style {
         rule: EscapedChar
         ink: Magenta
     }
-    TokiStyle {
+    Style {
         rule: ObjcText
         ink: DarkGreen
     }
-    TokiStyle {
+    Style {
         rule: ObjcEscapedChar
         ink: Olive
     }
-    TokiStyle {
+    Style {
         rule: Keyword
         bold: true
     }
-    TokiStyle {
+    Style {
         rule: TypeKeyword
         ink: DarkRed
     }
-    TokiStyle {
+    Style {
         rule: ObjcKeyword
         ink: Blue
         bold: true
     }
-    TokiStyle {
+    Style {
         rule: Integer
         ink: Blue
     }
-    TokiStyle {
+    Style {
         rule: Float
         ink: DarkMagenta
     }
-    TokiStyle {
+    Style {
         rule: Char
         ink: Magenta
     }
