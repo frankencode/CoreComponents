@@ -27,10 +27,12 @@ void Application::State::notifyTimer(const Timer &timer)
     timer.me().timeout_.emit();
 }
 
-Application::State::State():
-    minMouseDragDistance { []{ return dp(6); } },
-    minFingerDragDistance { []{ return dp(10); } }
+Application::State::State()
 {
+    orgName("CoreComponents");
+    minMouseDragDistance([]{ return dp(6); });
+    minFingerDragDistance([]{ return dp(10); });
+
     textInputArea.onChanged([this]{
         if (focusControl())
             setTextInputArea(textInputArea());

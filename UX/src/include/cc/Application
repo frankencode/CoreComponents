@@ -129,7 +129,7 @@ protected:
 
         void disengage(const View &view);
 
-        Property<String> orgName { "CoreComponents" };
+        Property<String> orgName;
         Property<String> appName;
 
         Property<Control> hoverControl;
