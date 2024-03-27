@@ -3,7 +3,7 @@
 if [ $# -ne 0 ]; then
     echo "Usage: path/to/cc/bootstrap"
     echo
-    echo "Bootstraps the build system (cc_build)."
+    echo "Bootstraps the build system (ccbuild)."
     exit 1
 fi
 
@@ -17,4 +17,4 @@ if uname -o|grep Cygwin; then
 else
     BOOTSTRAP=bootstrap
 fi
-$(dirname $0)/tools/build/$BOOTSTRAP $(dirname $0)
+$(dirname $0)/Build/tools/$BOOTSTRAP $(dirname $0)
