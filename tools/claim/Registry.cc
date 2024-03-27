@@ -7,7 +7,7 @@
  */
 
 #include <cc/claim/Registry>
-#include <cc/toki/Registry>
+#include <cc/TokiRegistry>
 
 namespace cc::claim {
 
@@ -32,8 +32,8 @@ const HeaderStyle &Registry::headerStyleAt(long i) const
 
 bool Registry::detectHeaderStyle(const String &path, const String &text, Out<HeaderStyle> style) const
 {
-    toki::Language language;
-    if (toki::Registry{}.detectLanguage(path, text, &language)) {
+    TokiLanguage language;
+    if (TokiRegistry{}.detectLanguage(path, text, &language)) {
         if (me().headerStyleByLanguage_.lookup(language.name(), style)) {
             return true;
         }

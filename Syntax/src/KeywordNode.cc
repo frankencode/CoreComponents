@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/KeywordNode>
+#include <cc/syntax_node/KeywordNode>
 
 namespace cc::syntax {
 

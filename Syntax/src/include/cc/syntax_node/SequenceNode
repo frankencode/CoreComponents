@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax_node/SyntaxNode>
+#include <cc/Array>
+
+namespace cc::syntax {
+
+/** \class SequenceNode cc/syntax_node/SequenceNode
+  * \brief %Match a series of sub-expressions in sequence.
+  */
+class SequenceNode final: public SyntaxNode
+{
+public:
+    /** \param nodes Sub-expressions to match in sequence
+      */
+    explicit SequenceNode(std::initializer_list<SyntaxNode> nodes);
+
+    /** \param nodes Sub-expressions to match in sequence
+      */
+    explicit SequenceNode(const Array<SyntaxNode> &nodes);
+
+    Array<SyntaxNode> nodes() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc::syntax

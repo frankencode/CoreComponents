@@ -12,13 +12,10 @@
 
 namespace cc {
 
-/** \class CsvSyntax cc/CsvSyntax
+/** \internal
+  * \class CsvSyntax cc/CsvSyntax
   * \brief CSV syntax definition
-  *
-  * The CSV syntax follows closely the CSV syntax definition of RFC 4180, but is more relaxed in
-  * several ways. Firtly it also supports text data beyond the printable ASCII range and thereby
-  * fully supports national code pages and UTF-8 encoding. Secondly it accepts any form of newline
-  * encoding ("\n", "\f", "\n\f" or "\f\n").
+  * \see CsvSource
   */
 class CsvSyntax final: public SyntaxDefinition
 {

@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/LongestChoiceNode>
+#include <cc/syntax_node/LongestChoiceNode>
 #include <cc/Token>
 #include <limits>
 

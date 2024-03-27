@@ -1,0 +1,7 @@
+#pragma once
+
+#include <cc/IntegerSyntax>
+#include <cc/FloatSyntax>
+#include <cc/InetAddressSyntax>
+#include <cc/UriSyntax>
+#include <cc/SyntaxDefinition>

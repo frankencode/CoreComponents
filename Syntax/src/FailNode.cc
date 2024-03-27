@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/FailNode>
+#include <cc/syntax_node/FailNode>
 
 namespace cc::syntax {
 

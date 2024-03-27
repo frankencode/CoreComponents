@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/RepeatNode>
+#include <cc/syntax_node/RepeatNode>
 #include <cc/Token>
 #include <cc/str>
 

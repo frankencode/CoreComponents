@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/AnyNode>
+#include <cc/syntax_node/AnyNode>
 
 namespace cc::syntax {
 

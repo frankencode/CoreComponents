@@ -1,5 +1,5 @@
-#include <cc/pulse/Context>
-#include <cc/pulse/InputStream>
+#include <cc/PulseContext>
+#include <cc/PulseInputStream>
 #include <cc/stdio>
 #include <cc/HexDump>
 #include <cc/DEBUG>
@@ -7,17 +7,16 @@
 int main(int argc, char *argv[])
 {
     using namespace cc;
-    using namespace cc::pulse;
 
     String toolName = String{argv[0]}.baseName();
 
-    MainLoop mainLoop;
+    PulseMainLoop mainLoop;
 
-    Context context{mainLoop, toolName};
-    InputStream stream{context};
+    PulseContext context { mainLoop, toolName };
+    PulseInputStream stream { context };
 
     context.connect([&]{
-        context.requestServerInfo([&](const ServerInfo &info)
+        context.requestServerInfo([&](const PulseServerInfo &info)
         {
             String target = info.defaultSinkName() + ".monitor";
             CC_INSPECT(target);

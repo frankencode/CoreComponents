@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <cc/syntax/SyntaxNode>
+#include <cc/syntax_node/SyntaxNode>
 
 namespace cc {
 

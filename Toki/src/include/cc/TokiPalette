@@ -1,0 +1,42 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/TokiStyle>
+
+namespace cc {
+
+/** \internal
+  * \brief Syntax highlighting palette
+  */
+class TokiPalette final: public MetaObject
+{
+public:
+    TokiPalette() = default;
+    explicit TokiPalette(const String &path);
+
+    TokiStyle textStyle() const;
+
+    long count() const;
+    TokiStyle at(long i) const;
+
+    TokiStyle operator[](long i) const { return at(i); }
+
+private:
+    friend class Object;
+    friend class TokiPalettePrototype;
+
+    struct State;
+
+    explicit TokiPalette(New);
+
+    const State &me() const;
+};
+
+} // namespace cc

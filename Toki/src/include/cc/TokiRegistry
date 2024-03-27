@@ -1,0 +1,42 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/TokiLanguage>
+#include <cc/Singleton>
+
+namespace cc {
+
+/** \internal
+  * \brief TokiLanguage registry
+  */
+class TokiRegistry final: public Singleton
+{
+public:
+    TokiRegistry();
+
+    bool lookupLanguageByName(const String &name, Out<TokiLanguage> language) const;
+
+    bool detectLanguage(const String &path, const String &text, Out<TokiLanguage> language) const;
+
+    int languageCount() const;
+    const TokiLanguage &languageAt(int i) const;
+
+private:
+    friend class TokiLanguage;
+
+    struct State;
+
+    void registerLanguage(const TokiLanguage &language);
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

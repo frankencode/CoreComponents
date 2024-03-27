@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/SyntaxNode>
+#include <cc/syntax_node/SyntaxNode>
 #include <cc/Token>
 
 namespace cc::syntax {

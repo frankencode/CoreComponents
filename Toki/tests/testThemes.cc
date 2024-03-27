@@ -6,13 +6,12 @@
  *
  */
 
-#include <cc/toki/Theme>
+#include <cc/TokiTheme>
 #include <cc/testing>
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
-    using namespace cc::toki;
 
     TestCase {
         "ThemeLoading",
@@ -20,7 +19,7 @@ int main(int argc, char *argv[])
             const char *themeName = "ClassicWhite";
             String themePath;
             try {
-                themePath = Theme::locate(themeName);
+                themePath = TokiTheme::locate(themeName);
             }
             catch (...)
             {
@@ -28,7 +27,7 @@ int main(int argc, char *argv[])
                 return;
             }
             CC_INSPECT(themePath);
-            Theme theme{themePath};
+            TokiTheme theme{themePath};
             CC_INSPECT(theme.defaultPalette().textStyle().ink());
             CC_INSPECT(theme.defaultPalette().textStyle().paper());
         }

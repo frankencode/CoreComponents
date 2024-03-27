@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/FindNode>
+#include <cc/syntax_node/FindNode>
 #include <cc/Token>
 
 namespace cc::syntax {

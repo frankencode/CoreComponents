@@ -80,7 +80,7 @@ protected:
         void carrierStopped();
 
         Property<double> maxFlyTime { 1.5 };
-        Property<double> maxSpeed { [this]{ return 3 * size().max(); } };
+        Property<double> maxSpeed;
         Property<double> minHoldTime { 0.1 };
         Property<double> boundary { dp(60) };
         Property<double> maxBounceTime { 0.6 };

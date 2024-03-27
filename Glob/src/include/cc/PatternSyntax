@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \class PatternSyntax cc/PatternSyntax
+/** \internal
+  * \class PatternSyntax cc/PatternSyntax
   * \brief Regular expression pattern syntax
   */
 class PatternSyntax final: public SyntaxDefinition

@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/ReplayNode>
+#include <cc/syntax_node/ReplayNode>
 #include <cc/Token>
 
 namespace cc::syntax {

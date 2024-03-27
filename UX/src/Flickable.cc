@@ -22,6 +22,8 @@ Flickable::State::State(const View &carrier):
 {
     size([this]{ return hasParent() ? parent().size() : Size{}; });
 
+    maxSpeed([this]{ return 3 * size().max(); });
+
     size.onChanged([this]{
         positionCarrierOnResize();
         keepFocusControlInView();

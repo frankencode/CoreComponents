@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/TokiPalette>
+
+namespace cc {
+
+/** \internal
+  * \brief Syntax highlighting theme
+  */
+class TokiTheme final: public Object
+{
+public:
+    /** Locate the installation path of theme of given \a name
+      */
+    static String locate(const String &name);
+
+    /** Load color theme from \a path
+      * \param path Relative or absolute directory path
+      */
+    explicit TokiTheme(const String &path);
+
+    /** Directory path of this theme
+      */
+    String path() const;
+
+    /** Name of this theme
+      */
+    String name() const;
+
+    /** Get the default palette
+      */
+    TokiPalette defaultPalette() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

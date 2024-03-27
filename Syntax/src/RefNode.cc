@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/RefNode>
+#include <cc/syntax_node/RefNode>
 #include <cc/SyntaxRule>
 #include <cc/str>
 #include <cassert>

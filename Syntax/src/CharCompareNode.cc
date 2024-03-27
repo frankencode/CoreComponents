@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/CharCompareNode>
+#include <cc/syntax_node/CharCompareNode>
 
 namespace cc::syntax {
 

@@ -18,7 +18,7 @@ class Token;
 class UriSyntax;
 
 /** \class Uri cc/Uri
-  * \ingroup glob
+  * \ingroup net
   * \brief Uniform Resource Indentifier (URI)
   */
 class Uri

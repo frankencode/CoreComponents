@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/BoiNode>
+#include <cc/syntax_node/BoiNode>
 
 namespace cc::syntax {
 

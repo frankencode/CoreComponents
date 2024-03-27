@@ -6,9 +6,9 @@
  *
  */
 
-#include <cc/syntax/ExpectNode>
-#include <cc/syntax/CharNode>
-#include <cc/syntax/LiteralNode>
+#include <cc/syntax_node/ExpectNode>
+#include <cc/syntax_node/CharNode>
+#include <cc/syntax_node/LiteralNode>
 #include <cc/Format>
 
 namespace cc::syntax {

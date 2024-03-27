@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/TokiTheme>
+#include <cc/TokenScreen>
+#include <cc/Format>
+
+namespace cc {
+
+/** \internal
+  * \brief HTML generator screen
+  */
+class TokiHtmlScreen final: public TokenScreen
+{
+public:
+    /** Create HTML generator for source \a text writing to \a sink
+      */
+    TokiHtmlScreen(const String &text, const TokiTheme &theme, const Format &sink);
+
+private:
+    struct State;
+};
+
+} // namespace cc

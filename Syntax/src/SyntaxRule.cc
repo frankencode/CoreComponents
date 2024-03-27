@@ -7,7 +7,7 @@
  */
 
 #include <cc/SyntaxRule>
-#include <cc/syntax/VoidRule>
+#include <cc/syntax_node/VoidRule>
 #include <cc/Token>
 
 namespace cc {

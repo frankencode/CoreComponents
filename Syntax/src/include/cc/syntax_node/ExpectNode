@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax_node/SyntaxNode>
+#include <cc/TextError>
+
+namespace cc::syntax {
+
+/** \class ExpectNode cc/syntax_node/ExpectNode
+  * \brief Throw an expection if a sub-expression match fails
+  * \exception TextError
+  */
+class ExpectNode: public SyntaxNode
+{
+public:
+    /** \param entry Sub-expression to match
+      * \param error %Error message
+      */
+    ExpectNode(const SyntaxNode &entry, const String &error = String{});
+
+    ExpectNode(char ch, const String &error = String{});
+    ExpectNode(const String &s, const String &error = String{});
+
+private:
+    struct State;
+};
+
+} // namespace cc::syntax

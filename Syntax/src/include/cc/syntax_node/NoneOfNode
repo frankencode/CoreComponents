@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax_node/RangeExplicitNode>
+
+namespace cc::syntax {
+
+/** \class NoneOfNode cc/syntax_node/NoneOfNode
+  * \brief %Match the next character if it is not member of a set of characters
+  */
+class NoneOfNode final: public RangeExplicitNode<1>
+{
+public:
+    /** \param chars The set of characters to match against
+      */
+    explicit NoneOfNode(std::initializer_list<char> chars):
+        RangeExplicitNode<1>{chars}
+    {}
+
+    /** \param chars The set of characters to match against
+      */
+    explicit NoneOfNode(const String &chars):
+        RangeExplicitNode<1>{chars}
+    {}
+};
+
+} // namespace cc::syntax

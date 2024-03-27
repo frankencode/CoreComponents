@@ -1,7 +1,7 @@
 #include <cc/Application>
 #include <cc/Plot>
-#include <cc/pulse/Context>
-#include <cc/pulse/InputStream>
+#include <cc/PulseContext>
+#include <cc/PulseInputStream>
 #include <cc/Thread>
 #include <cc/Channel>
 #include <cc/Complex>
@@ -24,14 +24,12 @@ int main(int argc, char *argv[])
 
     Thread pulseWorker {
         [toolName, &tap, &exitCode]{
-            using namespace cc::pulse;
-
-            MainLoop mainLoop;
-            Context context{mainLoop, toolName};
-            InputStream stream{context};
+            PulseMainLoop mainLoop;
+            PulseContext context { mainLoop, toolName };
+            PulseInputStream stream { context };
 
             context.connect([&]{
-                context.requestServerInfo([&](const ServerInfo &info)
+                context.requestServerInfo([&](const PulseServerInfo &info)
                 {
                     String target = info.defaultSinkName() + ".monitor";
                     CC_INSPECT(target);

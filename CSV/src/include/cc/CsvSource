@@ -17,7 +17,11 @@ namespace cc {
 /** \class CsvSource cc/CsvSource
   * \brief Read records from a CSV formatted input text
   * \ingroup misc
-  * \see CsvSyntax
+  *
+  * The CSV syntax follows closely the CSV syntax definition of RFC 4180, but is more relaxed in
+  * several ways. Firstly it also supports text data beyond the printable ASCII range and thereby
+  * fully supports national code pages and UTF-8 encoding. Secondly it accepts any form of newline
+  * encoding ("\n", "\f", "\n\f" or "\f\n").
   */
 class CsvSource final: public Object
 {

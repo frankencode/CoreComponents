@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/PassNode>
+#include <cc/syntax_node/PassNode>
 
 namespace cc::syntax {
 

@@ -1,0 +1,230 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Singleton>
+#include <cstdint>
+
+namespace cc {
+
+/** \class Raspin cc/Raspin
+  * \brief Raspberry Pi GPIO register access
+  */
+class Raspin final: public Singleton
+{
+public:
+    /** Obtain access to the GPIO registers
+      */
+    Raspin();
+
+    /** GPIO Voltage level
+      */
+    enum class Level {
+        Low = 0,
+        High = 1
+    };
+
+    /** GPIO mode
+      */
+    enum class Mode: uint32_t {
+        Input  = 0, ///< Sense input
+        Output = 1, ///< Generate output
+        Alt0   = 2, ///< Alternative function
+        Alt1   = 3, ///< Alternative function
+        Alt2   = 4, ///< Alternative function
+        Alt3   = 5, ///< Alternative function
+        Alt4   = 6, ///< Alternative function
+        Alt5   = 7 ///< Alternative function
+    };
+
+    /** A single GPIO pin
+      */
+    class Pin
+    {
+    public:
+        /** Configure GPIO pin
+          */
+        void setup(Mode mode)
+        {
+            const int bank = index_ / 10;
+            const int shift = 3 * (index_ % 10);
+            io_[bank] &= ~(UINT32_C(7) << shift);
+            io_[bank] |= static_cast<uint32_t>(mode) << shift;
+        }
+
+        /** Get currently active GPIO mode
+          */
+        Mode mode() const
+        {
+            const int bank = index_ / 10;
+            const int shift = 3 * (index_ % 10);
+            return static_cast<Mode>((io_[bank] >> shift) & 7);
+        }
+
+        /** Get GPIO number
+          */
+        int index() const { return index_; }
+
+        /** Get GPIO level (either input or output level)
+          */
+        operator Level() const
+        {
+            const int bank = index_ / 32;
+            const int shift = index_ % 32;
+            return static_cast<Level>(((io_ + 13)[bank] >> shift) & 1);
+        }
+
+        /** Set GPIO output level
+          */
+        Pin &operator=(Level level)
+        {
+            if (level == Level::High) set(); else clear();
+            return *this;
+        }
+
+    private:
+        friend class Raspin;
+
+        Pin(uint32_t *io, int index):
+            io_{io},
+            index_{index}
+        {}
+
+        void set()
+        {
+            const int bank = index_ / 32;
+            const int shift = index_ % 32;
+            (io_ + 7)[bank] = UINT32_C(1) << shift;
+        }
+
+        void clear()
+        {
+            const int bank = index_ / 32;
+            const int shift = index_ % 32;
+            (io_ + 10)[bank] = UINT32_C(1) << shift;
+        }
+
+        uint32_t *io_;
+        int index_;
+    };
+
+    /** A group of GPIO pins
+      */
+    class Group
+    {
+    public:
+        /** Add another GPIO pin to the set
+          */
+        Group &add(int index)
+        {
+            pins_ |= UINT64_C(1) << index;
+            return *this;
+        }
+
+        /** Add another GPIO pin to the set (convenience method)
+          */
+        Group &operator<<(int index)
+        {
+            return add(index);
+        }
+
+        /** Configure GPIO pins
+          */
+        void setup(Mode mode)
+        {
+            uint32_t modes[6] = { 0, 0, 0, 0, 0, 0 };
+            for (int bank = 0; bank < 6; ++bank) {
+                if (((pins_ >> (bank * 10)) & 1023) == 0) continue;
+                modes[bank] = io_[bank];
+            }
+            for (int index = 0; index < 64; ++index) {
+                if ((pins_ & (UINT64_C(1) << index)) == 0) continue;
+                setup(modes, index, mode);
+            }
+            for (int bank = 0; bank < 6; ++bank) {
+                if (((pins_ >> (bank * 10)) & 1023) == 0) continue;
+                io_[bank] = modes[bank];
+            }
+        }
+
+        /** Write the GPIO pins
+          */
+        Group &operator=(Level level)
+        {
+            if (level == Level::High) set(); else clear();
+            return *this;
+        }
+
+    private:
+        friend class Raspin;
+
+        Group(uint32_t *io, std::initializer_list<int> pins):
+            io_{io}
+        {
+            for (int pin: pins) {
+                assert(0 <= pin && pin < 64);
+                pins_ |= UINT64_C(1) << pin;
+            }
+        }
+
+        static void setup(uint32_t* modes, int index, Mode mode)
+        {
+            const int bank = index / 10;
+            const int shift = 3 * (index % 10);
+            modes[bank] &= ~(UINT64_C(7) << shift);
+            modes[bank] |= static_cast<uint32_t>(mode) << shift;
+        }
+
+        void set()
+        {
+            uint32_t lower = static_cast<uint32_t>(pins_);
+            uint32_t upper = static_cast<uint32_t>(pins_ >> 32);
+            if (lower != 0) io_[7] = lower;
+            if (upper != 0) io_[8] = upper;
+        }
+
+        void clear()
+        {
+            uint32_t lower = static_cast<uint32_t>(pins_);
+            uint32_t upper = static_cast<uint32_t>(pins_ >> 32);
+            if (lower != 0) io_[10] = lower;
+            if (upper != 0) io_[11] = upper;
+        }
+
+        uint32_t *io_;
+        uint64_t pins_ { 0 };
+    };
+
+    /** Select a single GPIO pin
+      */
+    Pin operator[](int index);
+
+    /** Select a set of GPIO pins
+      */
+    Group select(std::initializer_list<int> pins);
+
+    /** Select a set of GPIO pins (convenience method)
+      */
+    template<template<class> class List>
+    Group select(List<int> pins)
+    {
+        Group group = select({});
+        for (int index: pins) {
+            group.add(index);
+        }
+        return group;
+    }
+
+private:
+    struct State;
+
+    State &me();
+};
+
+} // namespace cc

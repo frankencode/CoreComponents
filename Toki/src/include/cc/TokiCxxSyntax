@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/TokiHighlightingSyntax>
+
+namespace cc {
+
+class TokiCxxSyntax final: public TokiHighlightingSyntax
+{
+public:
+    TokiCxxSyntax();
+
+    const SyntaxRule &commentLine() const;
+    const SyntaxRule &commentText() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/ChoiceNode>
+#include <cc/syntax_node/ChoiceNode>
 #include <cc/Token>
 #include <limits>
 

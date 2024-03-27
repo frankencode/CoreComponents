@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/RangeExplicitNode>
+#include <cc/syntax_node/RangeExplicitNode>
 
 namespace cc::syntax {
 

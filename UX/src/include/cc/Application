@@ -143,8 +143,8 @@ protected:
 
         Property<Rect> textInputArea;
 
-        Property<double> minMouseDragDistance { []{ return dp(6); } };
-        Property<double> minFingerDragDistance { []{ return dp(10); } };
+        Property<double> minMouseDragDistance;
+        Property<double> minFingerDragDistance;
 
         Property<double> textZoom { 1 };
 

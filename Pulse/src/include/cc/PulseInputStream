@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/PulseContext>
+
+namespace cc {
+
+/** \class PulseInputStream cc/PulseInputStream
+  * \brief %Pulse %Audio recording stream
+  */
+class PulseInputStream: public Object
+{
+public:
+    explicit PulseInputStream(const PulseContext &context, int sampleRate = 8000, int channelCount = 1);
+
+    int sampleRate() const;
+
+    void incoming(Function<void(const Bytes &data)> &&sample);
+
+    void connect(const String &target = String{}, Function<void()> &&ready = Function<void()>{});
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

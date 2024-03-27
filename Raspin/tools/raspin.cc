@@ -1,15 +1,10 @@
 #include <cc/Arguments>
-#include <cc/rpi/Gpio>
+#include <cc/Raspin>
 #include <cc/exceptions>
 #include <cc/stdio>
 
-namespace cc::rpi {
-
-} // namespace  cc::rpi
-
 int main(int argc, char *argv[])
 {
-    using namespace cc::rpi;
     using namespace cc;
 
     String toolName = String{argv[0]}.fileName();
@@ -37,19 +32,19 @@ int main(int argc, char *argv[])
             }
         }
 
-        Gpio gpio;
+        Raspin gpio;
 
         if (options("setup").to<String>() != "")
         {
             String setup = options("setup").to<String>();
-            Gpio::Mode mode = Gpio::Mode::Input;
-            if (setup == "I" || setup == "input") mode = Gpio::Mode::Input;
-            else if (setup == "O" || setup == "output") mode = Gpio::Mode::Output;
+            Raspin::Mode mode = Raspin::Mode::Input;
+            if (setup == "I" || setup == "input") mode = Raspin::Mode::Input;
+            else if (setup == "O" || setup == "output") mode = Raspin::Mode::Output;
             else {
                 ferr("Invalid invocation syntax, see \"%% -help\"\n") << toolName;
                 return 1;
             }
-            Gpio::Group group = gpio.select({});
+            Raspin::Group group = gpio.select({});
             for (int index: pins) {
                 group.add(index);
             }
@@ -59,17 +54,17 @@ int main(int argc, char *argv[])
         if (options("level").to<String>() == "?")
         {
             for (int index: pins) {
-                Gpio::Pin pin = gpio[index];
-                Gpio::Level level = pin;
-                Gpio::Mode mode = pin.mode();
+                Raspin::Pin pin = gpio[index];
+                Raspin::Level level = pin;
+                Raspin::Mode mode = pin.mode();
                 const char *modeName[] = { "I", "O", "A1", "A2", "A3", "A4", "A5", "A7" };
-                fout() << modeName[static_cast<int>(mode)] << "(" << dec(index, 2) << "): " << (level == Gpio::Level::Low ? "L" : "H") << nl;
+                fout() << modeName[static_cast<int>(mode)] << "(" << dec(index, 2) << "): " << (level == Raspin::Level::Low ? "L" : "H") << nl;
             }
         }
         else if (options("level").to<String>() != "")
         {
-            Gpio::Level level = options("level").to<String>() == "H" ? Gpio::Level::High : Gpio::Level::Low;
-            Gpio::Group group = gpio.select({});
+            Raspin::Level level = options("level").to<String>() == "H" ? Raspin::Level::High : Raspin::Level::Low;
+            Raspin::Group group = gpio.select({});
             for (int index: pins) {
                 group.add(index);
             }

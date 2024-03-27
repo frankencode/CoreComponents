@@ -1,0 +1,40 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/PulseMainLoop>
+#include <cc/PulseServerInfo>
+#include <cc/PulseError>
+#include <cc/String>
+#include <cc/Function>
+
+namespace cc {
+
+/** \class Context cc/PulseContext
+  * \brief %Pulse %Audio client context
+  */
+class PulseContext final: public Object
+{
+public:
+    PulseContext(const PulseMainLoop &mainLoop, const String &appName);
+
+    void connect(Function<void()> &&ready);
+
+    void requestServerInfo(Function<void(const PulseServerInfo &)> &&handler);
+
+    operator pa_context *();
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::pulse

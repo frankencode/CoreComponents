@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/DebugNode>
+#include <cc/syntax_node/DebugNode>
 #include <cc/stdio>
 
 namespace cc::syntax {

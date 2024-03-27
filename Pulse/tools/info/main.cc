@@ -1,19 +1,18 @@
-#include <cc/pulse/Context>
+#include <cc/PulseContext>
 #include <cc/stdio>
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
-    using namespace cc::pulse;
 
     String toolName = String{argv[0]}.baseName();
 
-    MainLoop mainLoop;
+    PulseMainLoop mainLoop;
 
-    Context context{mainLoop, toolName};
+    PulseContext context { mainLoop, toolName };
 
     context.connect([&]{
-        context.requestServerInfo([&](const ServerInfo &info)
+        context.requestServerInfo([&](const PulseServerInfo &info)
         {
             fout()
                 << info.serverName() << nl

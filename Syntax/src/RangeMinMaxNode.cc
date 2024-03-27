@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/RangeMinMaxNode>
+#include <cc/syntax_node/RangeMinMaxNode>
 
 namespace cc::syntax {
 

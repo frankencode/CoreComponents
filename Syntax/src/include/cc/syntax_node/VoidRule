@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/SyntaxRule>
+
+namespace cc::syntax {
+
+/** \class VoidRule cc/syntax_node/VoidRule
+  * \ingroup syntax
+  * \brief Syntax rule which does not produce any token
+  */
+class VoidRule final: public SyntaxRule
+{
+public:
+    /** Create a non-producing syntax rule
+      */
+    explicit VoidRule(const SyntaxNode &entry);
+
+private:
+    struct State;
+};
+
+} // namespace cc::syntax

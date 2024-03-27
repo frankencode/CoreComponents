@@ -1,0 +1,33 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax_node/CharCompareNode>
+
+namespace cc::syntax {
+
+/** \class CharNode cc/syntax_node/CharNode
+  * \brief %Match the next character by comparing for equality
+  */
+class CharNode final: public CharCompareNode<Equal>
+{
+public:
+    /** \param ch Character to match
+      */
+    explicit CharNode(char ch):
+        CharCompareNode<Equal>{ch}
+    {}
+};
+
+inline SyntaxNode::SyntaxNode(char ch)
+{
+    *this = CharNode{ch};
+}
+
+} // namespace cc::syntax

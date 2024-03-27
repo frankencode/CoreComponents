@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Exception>
+
+namespace cc {
+
+class PulseError: public Exception
+{
+public:
+    static int check(int errorCode, const char *source, int line)
+    {
+        if (errorCode < 0) throw PulseError{errorCode, source, line};
+        return errorCode;
+    }
+
+    PulseError(int errorCode, const char *source, int line):
+        errorCode_{errorCode},
+        source_{source},
+        line_{line}
+    {}
+
+    String message() const override;
+
+    int errorCode() const { return errorCode_; }
+    const char *source() const { return source_; }
+    int line() const { return line_; }
+
+private:
+    int errorCode_;
+    const char *source_;
+    int line_;
+};
+
+#define CC_PULSE(expression) \
+    PulseError::check(expression, __FILE__, __LINE__);
+
+} // namespace cc

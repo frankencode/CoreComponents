@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/ContextNode>
+#include <cc/syntax_node/ContextNode>
 #include <cc/Token>
 #include <cc/str>
 

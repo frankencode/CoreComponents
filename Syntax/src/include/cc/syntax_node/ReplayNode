@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax_node/SyntaxNode>
+
+namespace cc::syntax {
+
+/** \class ReplayNode cc/syntax_node/ReplayNode
+  * \brief %Match a previously captured text
+  */
+class ReplayNode final: public SyntaxNode
+{
+public:
+     /** \param name Name of the capture variable
+       */
+    explicit ReplayNode(const String &name = String{});
+
+private:
+    struct State;
+};
+
+} // namespace cc::syntax

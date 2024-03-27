@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/StringNode>
+#include <cc/syntax_node/StringNode>
 
 namespace cc::syntax {
 

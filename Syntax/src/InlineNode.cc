@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/InlineNode>
+#include <cc/syntax_node/InlineNode>
 #include <cc/SyntaxRule>
 #include <cc/str>
 #include <cassert>

@@ -1,4 +1,4 @@
-#include <cc/rpi/Gpio>
+#include <cc/Raspin>
 #include <cc/Thread>
 #include <cc/SignalMaster>
 #include <cc/Arguments>
@@ -6,56 +6,51 @@
 #include <cc/Timezone>
 #include <cc/stdio>
 
-namespace cc::rpi {
-
-const uint8_t number[] {
-    0b11101011, // "0"
-    0b00101000, // "1"
-    0b10110011, // "2"
-    0b10111010, // "3"
-    0b01111000, // "4"
-    0b11011010, // "5"
-    0b11011011, // "6"
-    0b10101000, // "7"
-    0b11111011, // "8"
-    0b11111010, // "9"
-};
-
-const uint8_t letter[] {
-    0b11111001, // "A"
-    0b01011011, // "b"
-    0b11000011, // "C"
-    0b00111011, // "d"
-    0b11010011, // "E"
-    0b11010001, // "F"
-    0b11001011, // "G"
-    0b01111001, // "H"
-    0b00101000, // "I"
-    0b00101010, // "J"
-    0b11011001, // "K"
-    0b01000011, // "L"
-    0b10111010, // "M"
-    0b11101001, // "N"
-    0b11101011, // "O"
-    0b11110001, // "P"
-    0b11111000, // "q"
-    0b00010001, // "r"
-    0b11011010, // "S"
-    0b00111000, // "T"
-    0b01101011, // "U"
-    0b01101011, // "V"
-    0b10111010, // "W"
-    0b01101001, // "X"
-    0b01111000, // "Y"
-    0b10110011, // "Z"
-};
-
-} // namespace cc::rpi
-
 int main(int argc, char *argv[])
 {
-    using namespace cc::rpi;
     using namespace cc;
+
+    static const uint8_t number[] {
+        0b11101011, // "0"
+        0b00101000, // "1"
+        0b10110011, // "2"
+        0b10111010, // "3"
+        0b01111000, // "4"
+        0b11011010, // "5"
+        0b11011011, // "6"
+        0b10101000, // "7"
+        0b11111011, // "8"
+        0b11111010, // "9"
+    };
+
+    static const uint8_t letter[] {
+        0b11111001, // "A"
+        0b01011011, // "b"
+        0b11000011, // "C"
+        0b00111011, // "d"
+        0b11010011, // "E"
+        0b11010001, // "F"
+        0b11001011, // "G"
+        0b01111001, // "H"
+        0b00101000, // "I"
+        0b00101010, // "J"
+        0b11011001, // "K"
+        0b01000011, // "L"
+        0b10111010, // "M"
+        0b11101001, // "N"
+        0b11101011, // "O"
+        0b11110001, // "P"
+        0b11111000, // "q"
+        0b00010001, // "r"
+        0b11011010, // "S"
+        0b00111000, // "T"
+        0b01101011, // "U"
+        0b01101011, // "V"
+        0b10111010, // "W"
+        0b01101001, // "X"
+        0b01111000, // "Y"
+        0b10110011, // "Z"
+    };
 
     List<int> bcmAssign { 17, 27, 22, 5, 6, 12, 13, 16, 20, 19, 26, 21 };
 
@@ -75,13 +70,13 @@ int main(int argc, char *argv[])
         index = bcmAssign[index - 1];
     }
 
-    Gpio gpio;
-    Gpio::Group allGroup = gpio.select(bcmAssign);
-    Gpio::Group anGroup = gpio.select(anAssign);
-    Gpio::Group catGroup = gpio.select(catAssign);
+    Raspin gpio;
+    Raspin::Group allGroup = gpio.select(bcmAssign);
+    Raspin::Group anGroup = gpio.select(anAssign);
+    Raspin::Group catGroup = gpio.select(catAssign);
 
-    List<Gpio::Pin> an;
-    List<Gpio::Pin> cat;
+    List<Raspin::Pin> an;
+    List<Raspin::Pin> cat;
 
     for (int index: anAssign) {
         an << gpio[index];
@@ -90,9 +85,9 @@ int main(int argc, char *argv[])
         cat << gpio[index];
     }
 
-    allGroup.setup(Gpio::Mode::Output);
-    anGroup = Gpio::Level::Low;
-    catGroup = Gpio::Level::High;
+    allGroup.setup(Raspin::Mode::Output);
+    anGroup = Raspin::Level::Low;
+    catGroup = Raspin::Level::High;
 
     String inputLine;
     String display;
@@ -144,7 +139,7 @@ int main(int argc, char *argv[])
                 break;
             }
 
-            catGroup = Gpio::Level::High; // blank all cells
+            catGroup = Raspin::Level::High; // blank all cells
 
             /** prepare glyph output
               */
@@ -164,17 +159,17 @@ int main(int argc, char *argv[])
                 glyph |= 0b100;
             }
             for (int k = 0; k < 8; ++k) {
-                Gpio::Level level = ((glyph & (1 << k)) != 0) ? Gpio::Level::High : Gpio::Level::Low;
+                Raspin::Level level = ((glyph & (1 << k)) != 0) ? Raspin::Level::High : Raspin::Level::Low;
                 an[k] = level;
             }
 
-            cat[i] = Gpio::Level::Low; // light up current cell
+            cat[i] = Raspin::Level::Low; // light up current cell
         }
     }
 
-    anGroup = Gpio::Level::Low;
-    catGroup = Gpio::Level::Low;
-    allGroup.setup(Gpio::Mode::Input);
+    anGroup = Raspin::Level::Low;
+    catGroup = Raspin::Level::Low;
+    allGroup.setup(Raspin::Mode::Input);
 
     signalMaster.wait();
 

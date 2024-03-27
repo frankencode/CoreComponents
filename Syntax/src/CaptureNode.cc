@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/CaptureNode>
+#include <cc/syntax_node/CaptureNode>
 #include <cc/Token>
 
 namespace cc::syntax {

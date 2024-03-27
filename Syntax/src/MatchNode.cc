@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/MatchNode>
+#include <cc/syntax_node/MatchNode>
 
 namespace cc::syntax {
 

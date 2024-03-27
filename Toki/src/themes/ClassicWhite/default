@@ -1,33 +1,33 @@
-Palette {
-    Style {
+TokiPalette {
+    TokiStyle {
         rule: Text
         ink: Black
         paper: White
     }
-    Style {
+    TokiStyle {
         rule: CurrentLine
         paper: GhostWhite
     }
-    Style {
+    TokiStyle {
         rule: Cursor
         ink: Black
     }
-    Style {
+    TokiStyle {
         rule: Selection
         ink: White
         paper: DodgerBlue
     }
-    Style {
+    TokiStyle {
         rule: Match
         paper: Yellow
         bold: true
     }
-    Style {
+    TokiStyle {
         rule: LineNumber
         ink: Gray
         paper: #F0F0F0
     }
-    Style {
+    TokiStyle {
         rule: CurrentLineNumber
         ink: Black
         paper: #E8E8F0

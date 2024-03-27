@@ -1,0 +1,98 @@
+/*
+ * Copyright (C) 2007-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/TokiHighlightingSyntax>
+#include <cc/TokiPalette>
+#include <cc/Pattern>
+
+namespace cc {
+
+/** \brief Source code language definition
+  * \todo allow additional path patterns
+  */
+class TokiLanguage: public Object
+{
+public:
+    /** Create a null language
+      */
+    TokiLanguage() = default;
+
+    /** Create a new language
+      */
+    TokiLanguage(
+            const String &displayName,
+            const String &name,
+            const Pattern &pathPattern,
+            const TokiHighlightingSyntax &highlightingSyntax,
+            const SyntaxDefinition &discoverySyntax = SyntaxDefinition{}
+    ):
+        TokiLanguage{
+            new State{
+                displayName,
+                name,
+                pathPattern,
+                highlightingSyntax,
+                discoverySyntax
+            }
+        }
+    {}
+
+    /** Human readable name of the language
+      */
+    String displayName() const { return me().displayName_; }
+
+    /** TokiLanguage name
+      */
+    String name() const { return me().name_; }
+
+    /** Pattern used to identify a source file path
+      */
+    Pattern pathPattern() const { return me().pathPattern_; }
+
+    /** Syntax used to highlight a source file
+      */
+    const TokiHighlightingSyntax &highlightingSyntax() const { return me().highlightingSyntax_; }
+
+    /** Syntax used to identify a source text
+      */
+    const SyntaxDefinition &discoverySyntax() const { return me().discoverySyntax_; }
+
+protected:
+    friend class TokiPalette;
+
+    struct State: public Object::State
+    {
+        State(
+            const String &displayName,
+            const String &name,
+            const Pattern &pathPattern,
+            const TokiHighlightingSyntax &highlightingSyntax,
+            const SyntaxDefinition &discoverySyntax
+        ):
+            displayName_{displayName},
+            name_{name},
+            pathPattern_{pathPattern},
+            highlightingSyntax_{highlightingSyntax},
+            discoverySyntax_{discoverySyntax}
+        {}
+
+        String displayName_;
+        String name_;
+        Pattern pathPattern_;
+        TokiHighlightingSyntax highlightingSyntax_;
+        SyntaxDefinition discoverySyntax_;
+    };
+
+    explicit TokiLanguage(State *newState);
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

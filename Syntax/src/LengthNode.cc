@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/LengthNode>
+#include <cc/syntax_node/LengthNode>
 #include <cc/Token>
 #include <cc/str>
 

@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2021 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/syntax_node/SyntaxNode>
+#include <cc/Array>
+
+namespace cc::syntax {
+
+/** \class ChoiceNode cc/syntax_node/ChoiceNode
+  * \brief Try sub-expression choices until the first matches (without considering the rest of the expression).
+  * \note The ChoiceNode does not take into account the subsequent syntax nodes to resolve ambiguity in matching the entire text.
+  */
+class ChoiceNode final: public SyntaxNode
+{
+public:
+    /** \param choices Sub-expresssion choices
+      */
+    explicit ChoiceNode(std::initializer_list<SyntaxNode> choices);
+
+    /** \param choices Sub-expresssion choices
+      */
+    explicit ChoiceNode(const Array<SyntaxNode> &choices);
+
+    Array<SyntaxNode> choices() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc::syntax

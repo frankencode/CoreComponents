@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/syntax/FindLastNode>
+#include <cc/syntax_node/FindLastNode>
 #include <cc/Token>
 
 namespace cc::syntax {
