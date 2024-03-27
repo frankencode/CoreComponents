@@ -70,6 +70,10 @@ bool GlobbingStage::gatherImports() const
         return true;
     }
 
+    if (!(plan().options() & BuildOption::Cody)) {
+        return true;
+    }
+
     CC_INSPECT(plan().importPath());
 
     ImportManager manager;
