@@ -24,6 +24,8 @@ public:
     bool registerLibrary(const String &name, const String &recipePath, Out<String> existingRecipePath);
     bool registerApplication(const String &name, const String &recipePath, Out<String> existingRecipePath);
 
+    bool lookupPlanForHeader(const String &headerPath, Out<BuildPlan> plan) const;
+
 private:
     struct State;
 

@@ -79,6 +79,7 @@ struct ImportManager::State final: public Object::State
         List<String> includes = File::load(dstCachePath + ".include").split('\n');
         List<String> imports = File::load(dstCachePath + ".import").split('\n');
 
+        CC_INSPECT(plan.projectPath());
         CC_INSPECT(import);
 
         FileInfo srcInfo { module->source_ };

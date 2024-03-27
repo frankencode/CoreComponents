@@ -8,6 +8,7 @@
 
 #include <cc/build/BuildMap>
 #include <cc/Map>
+#include <cc/DEBUG>
 
 namespace cc::build {
 
@@ -61,6 +62,18 @@ bool BuildMap::registerApplication(const String &name, const String &recipePath,
         return false;
     }
     return true;
+}
+
+bool BuildMap::lookupPlanForHeader(const String &headerPath, Out<BuildPlan> plan) const
+{
+    List<String> parts = headerPath.split('/');
+    while (parts.count() > 0 && parts.last() != "include") {
+        parts.popBack();
+    }
+    if (parts.count() == 0) return false;
+    parts.popBack();
+    CC_INSPECT(parts.join('/'));
+    return lookupPlan(parts.join('/'), &plan);
 }
 
 const BuildMap::State &BuildMap::me() const

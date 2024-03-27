@@ -11,6 +11,7 @@
 #include <cc/build/JobScheduler>
 #include <cc/build/ToolChain>
 #include <cc/build/ImportManager>
+#include <cc/build/BuildMap>
 #include <cc/ServerSocket>
 #include <cc/ClientSocket>
 #include <cc/FileInfo>
@@ -116,7 +117,11 @@ struct CodyServer::State final: public Object::State
         if (isHeaderFile(import)) {
             inScope = import.startsWith(plan_.sourcePrefix());
             isHeader = true;
-            return importManager_.compileHeaderUnit(scheduler_, plan_, import, &cachePath);
+            BuildPlan plan = plan_;
+            if (inScope) {
+                if (!BuildMap{}.lookupPlanForHeader(import, &plan)) return false;
+            }
+            return importManager_.compileHeaderUnit(scheduler_, plan, import, &cachePath);
         }
 
         String source;
