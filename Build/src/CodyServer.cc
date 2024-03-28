@@ -36,7 +36,13 @@ struct CodyServer::State final: public Object::State
         connectionInfo_ = Format{"localhost:%%"} << listenSocket_.address().port();
         // Process::setEnv("CXX_MODULE_MAPPER", connectionInfo_);
         // CC_INSPECT(Process::env("CXX_MODULE_MAPPER"));
+        CC_INSPECT(connectionInfo_);
         listenShutdown_.acquire();
+    }
+
+    ~State()
+    {
+        shutdown();
     }
 
     void start()
@@ -45,13 +51,20 @@ struct CodyServer::State final: public Object::State
         thread_.start();
     }
 
-    void shutdown(Out<CodyError> error)
+    void shutdown()
     {
         if (thread_) {
             listenShutdown_.release();
             ClientSocket{listenSocket_.address()}.waitEstablished();
             thread_.wait();
             thread_ = Thread{};
+        }
+    }
+
+    void shutdown(Out<CodyError> error)
+    {
+        if (thread_) {
+            shutdown();
 
             for (CodyWorker &worker: workers_) {
                 CodyError workerError;
