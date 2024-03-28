@@ -75,7 +75,7 @@ public:
 
     /** Check if this is a non-null thread
       */
-    explicit operator bool() const { return isNull(); }
+    explicit operator bool() const { return !isNull(); }
 
     /** Get an unique ID indentifying the calling thread
       */
