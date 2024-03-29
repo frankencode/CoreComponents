@@ -1,3 +1,3 @@
 Tools {
-    use: [ Core, Syntax, Glob, Meta, Toki ]
+    use: [ Core, Syntax, Meta, Toki ]
 }

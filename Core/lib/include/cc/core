@@ -10,7 +10,7 @@
 #include <cc/BitArray>
 #include <cc/bitmask>
 #include <cc/bits>
-#include <cc/Bundle>
+#include <cc/bundling>
 #include <cc/Bytes>
 #include <cc/ByteSink>
 #include <cc/ByteSource>
@@ -29,7 +29,7 @@
 #include <cc/Crc32Sink>
 #include <cc/DatagramSocket>
 #include <cc/Date>
-#include <cc/DEBUG>
+#include <cc/debugging>
 #include <cc/Dim>
 #include <cc/Dir>
 #include <cc/DirWalk>
@@ -85,7 +85,6 @@
 #include <cc/Range>
 #include <cc/ReadGuard>
 #include <cc/ReadWriteLock>
-#include <cc/Registration>
 #include <cc/ReplaySource>
 #include <cc/Resource>
 #include <cc/ResourceContext>

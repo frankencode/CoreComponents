@@ -1,3 +1,0 @@
-Tests {
-    use: [ Core, Testing, Glob ]
-}

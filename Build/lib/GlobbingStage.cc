@@ -7,7 +7,7 @@
  */
 
 #include <cc/build/GlobbingStage>
-#include <cc/build/ImportManager>
+// #include <cc/build/ImportManager>
 #include <cc/build/ToolChain>
 #include <cc/build/BuildMap>
 #include <cc/DirWalk>
@@ -75,7 +75,7 @@ bool GlobbingStage::gatherImports() const
 
     CC_INSPECT(plan().importPath());
 
-    ImportManager manager;
+    // ImportManager manager;
 
     for (const String &source: DirWalk{plan().importPath(), DirWalk::FilesOnly})
     {
@@ -137,19 +137,59 @@ List<String> GlobbingStage::globSources(const List<String> &patternList) const
 {
     List<String> sources;
 
+    bool autoSubDir = true;
     for (const String &pattern: patternList) {
-        for (const String &globbedPath: Glob{plan().sourcePath(pattern)}) {
-            for (const String &sourcePath: DirWalk{globbedPath, DirWalk::FilesOnly}) {
-                appendPath(sourcePath, &sources);
-            }
+        if (pattern.contains('/')) {
+            autoSubDir = false;
+            break;
         }
     }
 
-    if (!(plan().options() & BuildOption::Bootstrap)) {
+    if (autoSubDir) {
+        List<String> dirs;
+        dirs.append(plan().projectPath());
+        for (const String &path: DirWalk{plan().projectPath(), DirWalk::DirsOnly}) {
+            List<String> parts = path.copy(plan().projectPath().count(), path.count()).split('/');
+            if (parts.contains("import") || parts.contains("include")) continue;
+            bool hidden = false;
+            for (const String &part: parts) {
+                if (part.startsWith('.')) {
+                    hidden = true;
+                    break;
+                }
+            }
+            if (hidden) continue;
+            CC_INSPECT(path);
+            dirs.append(path);
+        }
+
+        if (!(plan().options() & BuildOption::Bootstrap)) {
+            dirs.append(plan().prestagePath());
+        }
+
+        for (const String &dir: dirs) {
+            for (const String &pattern: patternList) {
+                for (const String &globbedPath: Glob{dir / pattern}) {
+                    appendPath(globbedPath, &sources);
+                }
+            }
+        }
+    }
+    else {
         for (const String &pattern: patternList) {
-            for (const String &globbedPath: Glob{plan().prestagePath(pattern)}) {
+            for (const String &globbedPath: Glob{plan().sourcePath(pattern)}) {
                 for (const String &sourcePath: DirWalk{globbedPath, DirWalk::FilesOnly}) {
                     appendPath(sourcePath, &sources);
+                }
+            }
+        }
+
+        if (!(plan().options() & BuildOption::Bootstrap)) {
+            for (const String &pattern: patternList) {
+                for (const String &globbedPath: Glob{plan().prestagePath(pattern)}) {
+                    for (const String &sourcePath: DirWalk{globbedPath, DirWalk::FilesOnly}) {
+                        appendPath(sourcePath, &sources);
+                    }
                 }
             }
         }

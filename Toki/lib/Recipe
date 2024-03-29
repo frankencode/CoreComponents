@@ -1,5 +1,5 @@
 Library {
     name: CoreComponentsToki
     bundle: themes/*
-    use: [ Core, Syntax, Glob, Meta ]
+    use: [ Core, Syntax, Meta ]
 }
