@@ -7,7 +7,7 @@
  */
 
 #include <cc/PlatformManager>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 namespace cc {
 

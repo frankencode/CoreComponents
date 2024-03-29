@@ -6,7 +6,7 @@
  *
  */
 
-#include <cc/Bundle>
+#include <cc/bundling>
 #include <cc/Process>
 #include <cc/File>
 

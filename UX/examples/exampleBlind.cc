@@ -1,6 +1,6 @@
 #include <cc/Blind>
 #include <cc/TonalButton>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

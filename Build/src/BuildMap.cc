@@ -8,7 +8,6 @@
 
 #include <cc/build/BuildMap>
 #include <cc/Map>
-#include <cc/DEBUG>
 
 namespace cc::build {
 
@@ -72,7 +71,6 @@ bool BuildMap::lookupPlanForHeader(const String &headerPath, Out<BuildPlan> plan
     }
     if (parts.count() == 0) return false;
     parts.popBack();
-    CC_INSPECT(parts.join('/'));
     return lookupPlan(parts.join('/'), &plan);
 }
 

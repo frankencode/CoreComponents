@@ -8,7 +8,7 @@
 
 #include <cc/WebPPlugin>
 #include <cc/WebP>
-#include <cc/Registration>
+#include <cc/REGISTRATION>
 
 namespace cc {
 

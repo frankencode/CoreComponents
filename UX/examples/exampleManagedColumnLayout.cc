@@ -1,6 +1,6 @@
 #include <cc/ManagedColumnLayout>
 #include <cc/Text>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

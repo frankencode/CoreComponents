@@ -2,7 +2,7 @@
 #include <cc/LineEdit>
 #include <cc/Text>
 #include <cc/TonalButton>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {
@@ -16,7 +16,7 @@ int main()
         .associate(&view)
         .add(
             TonalButton{"Continue"}
-            ([=]() mutable {
+            ([=] mutable {
                 CustomDialog{}
                 .associate(&dialog)
                 .addContent(
@@ -25,14 +25,14 @@ int main()
                 )
                 .addAction(
                     Action{"Cancel"}
-                    ([=]() mutable {
+                    ([=] mutable {
                         CC_DEBUG << "Cancel";
                         dialog.close();
                     })
                 )
                 .addAction(
                     Action{"OK"}
-                    ([=]() mutable {
+                    ([=] mutable {
                         CC_DEBUG << "OK";
                         dialog.close();
                     })

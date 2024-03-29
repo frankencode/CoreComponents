@@ -14,7 +14,7 @@
 #include <cc/File>
 #include <cc/Dir>
 #include <cc/LineSource>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 namespace cc::build {
 

@@ -23,7 +23,8 @@
 #include <cc/Mutex>
 #include <cc/Dir>
 #include <cc/File>
-#include <cc/DEBUG>
+
+#include <cc/debugging>
 
 namespace cc::build {
 

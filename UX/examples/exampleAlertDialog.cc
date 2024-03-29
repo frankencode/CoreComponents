@@ -1,6 +1,6 @@
 #include <cc/TonalButton>
 #include <cc/AlertDialog>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

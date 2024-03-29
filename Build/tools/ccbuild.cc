@@ -7,9 +7,9 @@
  */
 
 #include <cc/build/BuildPlan>
-#include <cc/Bundle>
 #include <cc/exceptions>
 #include <cc/stdio>
+#include <cc/BUNDLE>
 
 int main(int argc, char *argv[])
 {

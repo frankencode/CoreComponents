@@ -1,6 +1,5 @@
 #include <cc/FilledButton>
-#include <cc/Format>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

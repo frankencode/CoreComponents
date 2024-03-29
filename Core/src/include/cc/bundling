@@ -9,23 +9,7 @@
 #pragma once
 
 #include <cc/String>
-
-/** Lookup a path of a bundled ressource
-  * \ingroup sysinfo
-  */
-#define CC_BUNDLE_LOOKUP(relPath) \
-    cc::Bundle::lookup( \
-        relPath, \
-        cc::List<cc::String>{ \
-            cc::Bundle::prefix(CC_XSTR(CCBUILD_BUNDLE_PREFIX)), \
-            cc::Bundle::exePrefix(), \
-            cc::String{__FILE__}.cdUp() \
-        } \
-    )
-
-/** Version of this application or library bundle (low-level C string)
-  */
-#define CC_BUNDLE_VERSION CC_XSTR(CCBUILD_BUNDLE_VERSION)
+#include <cc/BUNDLE>
 
 namespace cc {
 

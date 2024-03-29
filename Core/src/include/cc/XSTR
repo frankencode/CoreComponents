@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2024 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -8,7 +8,9 @@
 
 #pragma once
 
-#include <cc/TestSuite>
-#include <cc/Random>
-#include <cc/debugging>
-#include <cc/TEST>
+/** Translate a macro expression into a C string
+  * \ingroup strings
+  */
+#define CC_XSTR(x) CC_STR(x)
+
+#define CC_STR(x) #x

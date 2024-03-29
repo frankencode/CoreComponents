@@ -14,8 +14,7 @@
 #include <cc/Glob>
 #include <cc/File>
 #include <cc/Dir>
-#include <cc/stdio>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 namespace cc::build {
 

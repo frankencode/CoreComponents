@@ -10,7 +10,8 @@
 
 namespace cc {
 
-/** \class Registration cc/Registration
+/** \internal
+  * \class Registration cc/REGISTRATION
   * \ingroup plugins
   * \brief Basic idiom for library initialization
   */
@@ -25,6 +26,10 @@ public:
     }
 };
 
-#define CC_REGISTRATION(Type) namespace { Registration<Type> registrationOf ## Type; }
-
 } // namespace cc
+
+/** Register a type
+  *
+  * Type will constructed once on initialization of the translation unit.
+  */
+#define CC_REGISTRATION(Type) namespace { cc::Registration<Type> registrationOf ## Type; }

@@ -11,7 +11,7 @@
 #include <cc/Switch>
 #include <cc/Checkbox>
 #include <cc/Divider>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

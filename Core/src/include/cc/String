@@ -14,18 +14,12 @@
 #include <cc/Utf8Iterator>
 #include <cc/InOut>
 #include <cc/chars>
+#include <cc/XSTR>
 #include <cmath>
 
 #ifdef QT_CORE_LIB
 #include <QString>
 #endif
-
-/** Translate a macro expression into a C string
-  * \ingroup strings
-  */
-#define CC_XSTR(x) CC_STR(x)
-
-#define CC_STR(x) #x
 
 namespace cc {
 

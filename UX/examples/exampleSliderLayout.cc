@@ -1,7 +1,7 @@
 #include <cc/ManagedRowLayout>
 #include <cc/SliderControl>
 #include <cc/Label>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

@@ -10,7 +10,7 @@
 #include <cc/SdlDisplayManager>
 #include <cc/SdlTimeMaster>
 #include <cc/SdlApplication>
-#include <cc/Registration>
+#include <cc/REGISTRATION>
 #include <SDL2/SDL.h>
 
 namespace cc {

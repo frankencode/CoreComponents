@@ -8,7 +8,7 @@
 
 #include <cc/BmpPlugin>
 #include <cc/Bmp>
-#include <cc/Registration>
+#include <cc/REGISTRATION>
 
 namespace cc {
 

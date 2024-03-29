@@ -1,7 +1,7 @@
 #include <cc/LineEdit>
 #include <cc/Icon>
 #include <cc/Format>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

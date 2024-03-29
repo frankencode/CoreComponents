@@ -12,7 +12,7 @@
 #include <cc/Thread>
 #include <cc/Format>
 #include <cc/File>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 namespace cc::build {
 

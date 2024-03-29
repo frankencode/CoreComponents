@@ -1,7 +1,7 @@
 #include <cc/FontManager>
 #include <cc/View>
 #include <cc/StylePlugin>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

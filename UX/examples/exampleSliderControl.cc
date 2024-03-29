@@ -1,5 +1,5 @@
 #include <cc/SliderControl>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

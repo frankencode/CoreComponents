@@ -7,7 +7,7 @@
  */
 
 #include <cc/RsvgPlugin>
-#include <cc/Registration>
+#include <cc/REGISTRATION>
 #include <librsvg/rsvg.h>
 #include <cmath>
 

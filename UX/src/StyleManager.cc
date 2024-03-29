@@ -9,7 +9,7 @@
 #include <cc/PlatformManager>
 #include <cc/StyleManager>
 #include <cc/Process>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 namespace cc {
 

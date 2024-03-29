@@ -2,8 +2,7 @@
 #include <cc/ListItem>
 #include <cc/Picture>
 #include <cc/Label>
-#include <cc/Format>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

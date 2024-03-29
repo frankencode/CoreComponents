@@ -9,7 +9,7 @@
 #include <cc/TokiLanguage>
 #include <cc/TokiCppDiscoverySyntax>
 #include <cc/TokiCxxSyntax>
-#include <cc/Registration>
+#include <cc/REGISTRATION>
 
 namespace cc {
 

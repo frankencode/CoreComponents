@@ -1,5 +1,5 @@
 #include <cc/Window>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

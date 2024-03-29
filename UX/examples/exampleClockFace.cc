@@ -1,5 +1,5 @@
 #include <cc/ClockFace>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main() {
     using namespace cc;

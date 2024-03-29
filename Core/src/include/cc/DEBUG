@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include <cc/stdio>
-
 /** \ingroup streams
   * \brief Generate a debug message on the standard error output stream
   *

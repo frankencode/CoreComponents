@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/XSTR>
+
+/** Lookup a path of a bundled ressource
+  * \ingroup sysinfo
+  */
+#define CC_BUNDLE_LOOKUP(relPath) \
+    cc::Bundle::lookup( \
+        relPath, \
+        cc::List<cc::String>{ \
+            cc::Bundle::prefix(CC_XSTR(CCBUILD_BUNDLE_PREFIX)), \
+            cc::Bundle::exePrefix(), \
+            cc::String{__FILE__}.cdUp() \
+        } \
+    )
+
+/** Version of this application or library bundle (low-level C string)
+  */
+#define CC_BUNDLE_VERSION CC_XSTR(CCBUILD_BUNDLE_VERSION)

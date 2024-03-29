@@ -7,9 +7,9 @@
  */
 
 #include <cc/TokiTheme>
-#include <cc/Bundle>
 #include <cc/Dir>
 #include <cc/Format>
+#include <cc/bundling>
 #include <cc/exceptions>
 
 namespace cc {

@@ -9,7 +9,7 @@
 #include <cc/build/DependencyFile>
 #include <cc/File>
 #include <cc/LineSource>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 namespace cc::build {
 

@@ -18,7 +18,7 @@
 #include <cc/Set>
 #include <cc/Mutex>
 #include <cc/Guard>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 namespace cc::build {
 

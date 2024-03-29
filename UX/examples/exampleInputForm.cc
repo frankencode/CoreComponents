@@ -8,7 +8,7 @@
 #include <cc/Checkbox>
 #include <cc/RadioButton>
 #include <cc/Divider>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

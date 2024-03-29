@@ -10,7 +10,7 @@
 #include <cc/SyntaxDefinition>
 #include <cc/File>
 #include <cc/Format>
-#include <cc/Registration>
+#include <cc/REGISTRATION>
 
 namespace cc::claim {
 

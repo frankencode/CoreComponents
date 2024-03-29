@@ -9,7 +9,7 @@
 #include <cc/SdlDisplayManager>
 #include <cc/SdlPlatformError>
 #include <SDL2/SDL.h>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 namespace cc {
 

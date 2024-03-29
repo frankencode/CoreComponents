@@ -12,8 +12,9 @@
 #include <cc/GlyphVisual>
 #include <cc/File>
 #include <cc/Dir>
-#include <cc/Bundle>
-#include <cc/Registration>
+#include <cc/bundling>
+#include <cc/stdio>
+#include <cc/REGISTRATION>
 #include <cc/DEBUG>
 
 namespace cc {

@@ -1,5 +1,5 @@
 #include <cc/NumberInput>
-#include <cc/DEBUG>
+#include <cc/debugging>
 
 int main()
 {

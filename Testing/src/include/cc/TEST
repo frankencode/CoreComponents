@@ -1,0 +1,23 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#define CC_VERIFY(condition) \
+    TestSuite{}.verify(condition, #condition, __FILE__, __LINE__)
+
+#define CC_CHECK(condition) { \
+    fout() << #condition << (bool(condition) ? ": OK" : ": FAILED") << nl; \
+    TestSuite{}.verify(condition, #condition, __FILE__, __LINE__); \
+}
+
+#define CC_CHECK_EQUALS(a, b) { \
+    bool equals__ = (a == b); \
+    fout() << a << " == " << b << (equals__ ? ": OK" : ": FAILED") << nl; \
+    TestSuite{}.verify(equals__, #a "==" #b, __FILE__, __LINE__); \
+}

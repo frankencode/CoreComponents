@@ -1,5 +1,5 @@
 #include <cc/AppBar>
-#include <cc/DEBUG>
+#include <cc/stdio>
 
 int main()
 {
