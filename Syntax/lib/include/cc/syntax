@@ -22,4 +22,7 @@
 #include <cc/TokenScreen>
 #include <cc/IntegerSyntax>
 #include <cc/InetAddressSyntax>
+#include <cc/json>
 #include <cc/FloatSyntax>
+#include <cc/yason>
+#include <cc/YasonSyntax>

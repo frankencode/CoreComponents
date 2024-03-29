@@ -1,4 +1,4 @@
 Application {
     name: ccclaim
-    use: [ Core, Syntax, Meta, Crypto, Toki ]
+    use: [ Core, Syntax, Crypto, Toki ]
 }

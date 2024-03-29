@@ -1,4 +1,4 @@
 Application {
     name: ccnode
-    use: [ Core, Meta, Glob, HTTP ]
+    use: [ Core, Syntax, HTTP ]
 }

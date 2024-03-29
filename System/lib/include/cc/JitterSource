@@ -23,7 +23,7 @@ public:
     /** Create a new jitter source
       * \param rate %Data rate (in bytes/second)
       */
-    JitterSource(double rate = 1);
+    explicit JitterSource(double rate = 1);
 
 private:
     struct State;

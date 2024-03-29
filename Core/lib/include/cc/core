@@ -55,6 +55,7 @@
 #include <cc/IoMonitor>
 #include <cc/IoStream>
 #include <cc/Iterator>
+#include <cc/JsonWriter>
 #include <cc/KeyValue>
 #include <cc/LineBuffer>
 #include <cc/LineSource>
@@ -64,6 +65,9 @@
 #include <cc/Map>
 #include <cc/math>
 #include <cc/MemoryStream>
+#include <cc/MetaProtocol>
+#include <cc/MetaProtocolState>
+#include <cc/MetaPrototype>
 #include <cc/Monitor>
 #include <cc/MultiMap>
 #include <cc/MultiSet>
@@ -140,3 +144,4 @@
 #include <cc/Version>
 #include <cc/WaitCondition>
 #include <cc/WriteGuard>
+#include <cc/YasonWriter>
