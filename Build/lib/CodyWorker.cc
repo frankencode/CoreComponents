@@ -140,8 +140,6 @@ struct CodyWorker::State final: public Object::State
 
             if (target_ != "") {
                 const String path = target_.sansFileSuffix();
-                CC_INSPECT(target_);
-                CC_INSPECT(path);
                 File::save(path + ".include", includes_.join('\n'));
                 File::save(path + ".import", imports_.join('\n'));
             }

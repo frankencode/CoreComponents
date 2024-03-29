@@ -79,9 +79,6 @@ struct ImportManager::State final: public Object::State
         List<String> includes = File::load(dstCachePath + ".include").split('\n');
         List<String> imports = File::load(dstCachePath + ".import").split('\n');
 
-        CC_INSPECT(plan.projectPath());
-        CC_INSPECT(import);
-
         FileInfo srcInfo { module->source_ };
         if (!srcInfo) return false;
 
@@ -101,8 +98,6 @@ struct ImportManager::State final: public Object::State
         guard.dismiss();
 
         bool ok = true;
-
-        CC_INSPECT(dirty);
 
         if (dirty) {
             ok = module->job_.run();
@@ -130,9 +125,6 @@ struct ImportManager::State final: public Object::State
 
         Unit module;
         if (!modules_.lookup(import, &module)) return false;
-
-        CC_INSPECT(import);
-        CC_INSPECT(module->source_);
 
         source = module->source_;
 
@@ -177,8 +169,6 @@ struct ImportManager::State final: public Object::State
             }
             else {
                 scheduler.report(module->job_);
-
-                // File::save(depCachePath, module->includes_.toList().join('\n')); // FIXME
             }
         }
         else {
@@ -194,7 +184,6 @@ struct ImportManager::State final: public Object::State
         if (path.contains('/')) {
             path.replace("./", ",/");
             path.replace("../", ",,/");
-            // if (path.startsWith('/')) path = "." + path;
             while (path.startsWith('/')) path = path.copy(1, path.count());
         }
         path += ".gcm";

@@ -73,10 +73,6 @@ bool GlobbingStage::gatherImports() const
         return true;
     }
 
-    CC_INSPECT(plan().importPath());
-
-    // ImportManager manager;
-
     for (const String &source: DirWalk{plan().importPath(), DirWalk::FilesOnly})
     {
         plan().sources().append(source);
@@ -159,7 +155,6 @@ List<String> GlobbingStage::globSources(const List<String> &patternList) const
                 }
             }
             if (hidden) continue;
-            CC_INSPECT(path);
             dirs.append(path);
         }
 

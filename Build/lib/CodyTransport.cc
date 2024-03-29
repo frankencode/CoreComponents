@@ -6,7 +6,9 @@
  *
  */
 
+#ifndef NDEBUG
 #define CCBUILD_CODY_DEBUG
+#endif
 
 #include <cc/build/CodyTransport>
 #include <cc/build/CodyBlockSource>

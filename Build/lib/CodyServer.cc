@@ -35,9 +35,9 @@ struct CodyServer::State final: public Object::State
         scheduler_{scheduler}
     {
         connectionInfo_ = Format{"localhost:%%"} << listenSocket_.address().port();
-        // Process::setEnv("CXX_MODULE_MAPPER", connectionInfo_);
-        // CC_INSPECT(Process::env("CXX_MODULE_MAPPER"));
+        #ifndef NDEBUG
         CC_INSPECT(connectionInfo_);
+        #endif
         listenShutdown_.acquire();
     }
 
@@ -87,7 +87,9 @@ struct CodyServer::State final: public Object::State
                     break;
                 }
 
+                #ifndef NDEBUG
                 CC_INSPECT(stream.address() /*CODY*/);
+                #endif
 
                 workers_.emplaceBack(
                     stream,

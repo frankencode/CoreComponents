@@ -179,17 +179,12 @@ struct GnuToolChain::State: public ToolChain::State
     List<String> readMakeDeps(const BuildPlan &plan, const String &target) const override
     {
         const String dependenciesFilePath = getDependenciesFilePath(target);
-        // CC_INSPECT(dependenciesFilePath);
         String text = File{dependenciesFilePath}.map().replaced("\\\n", "");
-        // CC_INSPECT(text);
         List<String> includes;
         for (const String &line: LineSource{text}) {
-            // CC_INSPECT(line);
             List<String> parts = line.split(':');
             if (parts.count() != 2) continue;
-            // CC_INSPECT(parts(0));
             if (parts(0).contains(target)) {
-                // CC_INSPECT(parts(1));
                 String value = parts(1);
                 value.trim();
                 value.simplify();
@@ -198,14 +193,10 @@ struct GnuToolChain::State: public ToolChain::State
                     if (item.endsWith(".gcm")) continue;
                     if (item.contains("gcm.cache/")) continue;
                     if (!item.startsWith(plan.sourcePrefix())) continue;
-                    // CC_INSPECT(item);
                     includes.append(item);
                 }
             }
         }
-
-        CC_INSPECT(target);
-        CC_INSPECT(includes.join(", "));
 
         return includes;
     }
