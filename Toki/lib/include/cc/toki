@@ -1,0 +1,23 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/TokiStylePrototype>
+#include <cc/TokiShDiscoverySyntax>
+#include <cc/TokiPalette>
+#include <cc/TokiPalettePrototype>
+#include <cc/TokiStyle>
+#include <cc/TokiTheme>
+#include <cc/TokiHtmlScreen>
+#include <cc/TokiLanguage>
+#include <cc/TokiShSyntax>
+#include <cc/TokiHighlightingSyntax>
+#include <cc/TokiCppDiscoverySyntax>
+#include <cc/TokiCxxSyntax>
+#include <cc/TokiRegistry>
