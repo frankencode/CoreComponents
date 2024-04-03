@@ -14,7 +14,7 @@
 namespace cc {
 
 template<class Container, class Order = DefaultOrder>
-class StableSort
+class HeapSort
 {
 public:
     static void sort(Container &data)
@@ -35,7 +35,7 @@ public:
         }
     }
 
-private:
+protected:
     using Item = Container::Item;
 
     static bool less(const Item &a, const Item &b)

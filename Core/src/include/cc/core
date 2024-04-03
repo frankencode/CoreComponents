@@ -109,7 +109,7 @@
 #include <cc/SocketAddress>
 #include <cc/SourceIterator>
 #include <cc/SpinLock>
-#include <cc/StableSort>
+#include <cc/HeapSort>
 #include <cc/stdio>
 #include <cc/str>
 #include <cc/Stream>

@@ -161,9 +161,4 @@ String xmlSanitize(const String &text)
     return parts;
 }
 
-String indent(const String &text, const String &prefix)
-{
-    return prefix + String{text.trailingTrimmed().split('\n'), "\n" + prefix};
-}
-
 } // namespace cc

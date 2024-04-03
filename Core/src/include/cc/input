@@ -65,10 +65,6 @@ String xmlEscape(const String &text);
   */
 String xmlSanitize(const String &text);
 
-/** Insert \a prefix at the beginning of each line of \a text
-  */
-String indent(const String &text, const String &prefix);
-
 ///@}
 
 } // namespace cc

@@ -311,6 +311,11 @@ void String::expand()
     truncate(j);
 }
 
+String String::indented(const String &prefix)
+{
+    return prefix + String{trailingTrimmed().split('\n'), "\n" + prefix};
+}
+
 bool String::toBool(Out<bool> ok) const
 {
     bool value = false;

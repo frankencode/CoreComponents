@@ -58,7 +58,7 @@ struct CodyTransport::State final: public Object::State
         if (outCount_ == 0) {
             #ifdef CCBUILD_CODY_DEBUG
             String prefix = Format{"(%%) << "} << connectionNumber_;
-            ferr() << indent(outBlock_.join(), prefix) << nl;
+            ferr() << outBlock_.join().indented(prefix) << nl;
             #endif
             stream_.write(outBlock_.join());
             outBlock_.deplete();

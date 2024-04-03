@@ -866,6 +866,10 @@ public:
         return b;
     }
 
+    /** Insert \a prefix at the beginning of each line of \a text
+      */
+    String indented(const String &prefix);
+
     /** Read this string as a boolean value
       * \param ok Returns true if this string can be completely read as a boolean value literal
       * \return Parsed boolean value

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Frank Mertens.
+ * Copyright (C) 2022-2024 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -7,7 +7,6 @@
  */
 
 #include <cc/build/GlobbingStage>
-// #include <cc/build/ImportManager>
 #include <cc/build/ToolChain>
 #include <cc/build/BuildMap>
 #include <cc/DirWalk>
@@ -146,7 +145,7 @@ List<String> GlobbingStage::globSources(const List<String> &patternList) const
         dirs.append(plan().projectPath());
         for (const String &path: DirWalk{plan().projectPath(), DirWalk::DirsOnly}) {
             List<String> parts = path.copy(plan().projectPath().count(), path.count()).split('/');
-            if (parts.contains("import") || parts.contains("include")) continue;
+            if (parts.contains("import") || parts.contains("include") || parts.contains("probe")) continue;
             bool hidden = false;
             for (const String &part: parts) {
                 if (part.startsWith('.')) {

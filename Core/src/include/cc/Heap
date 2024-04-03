@@ -1,0 +1,137 @@
+/*
+ * Copyright (C) 2007-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+
+#pragma once
+
+#include <cc/HeapSort>
+#include <cc/Array>
+
+namespace cc {
+
+/** \class Heap cc/Heap
+  * \ingroup container_lowlevel
+  * \brief %Fixed-size heap
+  * \tparam T Item type
+  * \tparam Order Sorting order
+  */
+template<class T, class Order = ReverseOrder>
+class Heap
+{
+public:
+    /** Create a new heap holding up to \a n items
+      */
+    Heap allocate(long n)
+    {
+        return Heap{Dim<>{n}};
+    }
+
+    /** Create a new heap holding up to \a n items
+      */
+    explicit Heap(Dim<> dim):
+        me{dim[0]}
+    {}
+
+    /** Heap is full
+      */
+    bool isFull() const { return me().isFull(); }
+
+    /** Heap is empty
+      */
+    bool isEmpty() const { return me().isEmpty(); }
+
+    /** Maximum number of items storable
+      */
+    long size() const { return me().size(); }
+
+    /** Current number of items stored
+      */
+    long fill() const { return me().fill_; }
+
+    /** Add new item to the heap
+      */
+    void push(const T &item)
+    {
+        assert(!isFull());
+        me().push(item);
+    }
+
+    /** Remove the top of the heap
+      */
+    void pop(Out<T> item)
+    {
+        assert(!isEmpty());
+        me().pop(&item);
+    }
+
+    /** Remove the top of the heap
+      */
+    T pop()
+    {
+        assert(!isEmpty());
+        T item; me().pop(&item);
+        return item;
+    }
+
+    /** Get the top of the heap (i.e. the minimum if Order is DefaultOrder)
+      */
+    const T &top()
+    {
+        assert(!isEmpty());
+        return me().items_[0];
+    }
+
+    /** Remove all items
+      */
+    void deplete() { me().fill_ = 0; }
+
+private:
+    class Allocate{};
+
+    struct State final: public HeapSort<Array<T>, Order>
+    {
+        explicit State(long n):
+            items_{Dim<>{n}},
+            fill_{0}
+        {}
+
+        long size() const { return items_.count(); }
+
+        bool isFull() const { return fill_ == size(); }
+
+        bool isEmpty() const { return fill_ == 0; }
+
+        void push(const T &item)
+        {
+            items_[fill_] = item;
+            ++fill_;
+           HeapSort<Array<T>, Order>::shuffleUp(items_, fill_);
+        }
+
+        void pop(Out<T> item)
+        {
+            *item = items_[0];
+            --fill_;
+            items_[0] = items_[fill_];
+            HeapSort<Array<T>, Order>::shuffleDown(items_, fill_);
+        }
+
+        Array<T> items_;
+        long fill_;
+    };
+
+    Shared<State> me;
+};
+
+template<class T>
+using MinHeap = Heap<T, ReverseOrder>;
+
+template<class T>
+using MaxHeap = Heap<T, DefaultOrder>;
+
+} // namespace cc

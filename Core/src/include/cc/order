@@ -23,4 +23,15 @@ struct DefaultOrder
     }
 };
 
+/** Reverse sort order based on ordering operator<=>
+  */
+struct ReverseOrder
+{
+    template<class A, class B>
+    static std::strong_ordering compare(const A &a, const B &b)
+    {
+        return b <=> a;
+    }
+};
+
 } // namespace cc

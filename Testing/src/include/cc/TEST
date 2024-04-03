@@ -12,8 +12,9 @@
     TestSuite{}.verify(condition, #condition, __FILE__, __LINE__)
 
 #define CC_CHECK(condition) { \
-    fout() << #condition << (bool(condition) ? ": OK" : ": FAILED") << nl; \
-    TestSuite{}.verify(condition, #condition, __FILE__, __LINE__); \
+    bool ok__ = (condition); \
+    fout() << #condition << (ok__ ? ": OK" : ": FAILED") << nl; \
+    TestSuite{}.verify(ok__, #condition, __FILE__, __LINE__); \
 }
 
 #define CC_CHECK_EQUALS(a, b) { \

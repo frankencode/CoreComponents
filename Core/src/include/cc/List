@@ -10,7 +10,7 @@
 
 #include <cc/buckets/BucketVector>
 #include <cc/Iterator>
-#include <cc/StableSort>
+#include <cc/HeapSort>
 #include <cc/Dim>
 #include <cc/InOut>
 #include <cc/Cow>
@@ -428,7 +428,7 @@ public:
     template<class Order = DefaultOrder>
     void sort()
     {
-        StableSort<List::Tree, Order>::sort(me());
+        HeapSort<List::Tree, Order>::sort(me());
     }
 
     /** Sorts the list and removes all doubles
