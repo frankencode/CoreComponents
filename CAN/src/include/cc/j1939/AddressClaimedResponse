@@ -1,0 +1,71 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/Message>
+
+namespace cc::j1939 {
+
+/** \class AddressClaimedResponse cc/j1939/AddressClaimedResponse
+  * \brief Message used by a node to inform about its address claim
+  */
+class AddressClaimedResponse final: public Message
+{
+public:
+    /** Create an interpretation of \a frame
+      */
+    explicit AddressClaimedResponse(const CanFrame &frame):
+        Message{frame}
+    {}
+
+    /** Message type name
+      */
+    static constexpr const char *shortName(uint8_t src = 1) { return src < 254 ? "j1939.address_claimed" : "j1939.address_failed_to_claim"; }
+
+    /** Message format
+      */
+    static constexpr uint8_t pf() { return 0xEE; } // 0xEE == 238
+
+    /** Create a new claimed address response frame
+      * \param src Claimed address
+      * \param name Function identifier (node name)
+      */
+    static CanFrame produce(uint8_t src, uint64_t name);
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            Message::isValid() &&
+            CanId{frame_.canId()}.pf() == pf() &&
+            CanId{frame_.canId()}.dst() == 0xFF &&
+            CanId{frame_.canId()}.src() < 255 &&
+            frame_.size() == 8;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Function ID in binary representation
+      */
+    uint64_t functionId() const;
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+};
+
+inline String str(const AddressClaimedResponse &message) { return message.toString(); }
+
+} // namespace cc::j1939

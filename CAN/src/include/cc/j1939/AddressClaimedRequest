@@ -1,0 +1,67 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/Message>
+
+namespace cc::j1939 {
+
+/** \class AddressClaimedRequest cc/j1939/AddressClaimedRequest
+  * \brief Inquire claimed address from individual nodes or the entire network segment
+  * \todo create a generic Request message class (see ISO 11783-3, 5.4.3)
+  */
+class AddressClaimedRequest final: public Message
+{
+public:
+    /** Create an interpretation of frame
+      */
+    explicit AddressClaimedRequest(const CanFrame &frame):
+        Message{frame}
+    {}
+
+    /** Message type name
+      */
+    static constexpr const char *shortName() { return "j1939.address_claimed_request"; }
+
+    /** Message format
+      */
+    static constexpr uint8_t pf() { return 0xEA; } // 0xEA == 234
+
+    /** Compose an claimed address request frame
+      * \param dst Destination address (0xFF for entire network segment)
+      * \param src Source address (0xFE for not yet claimed)
+      * \return the new frame
+      */
+    static CanFrame produce(uint8_t dst = 0xFF, uint8_t src = 0xFE);
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            Message::isValid() &&
+            CanId{frame_.canId()}.pf() == pf() &&
+            frame_.data<uint32_t>(0, 2) == 0xEE00; // 0xEE00 == 60928
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+};
+
+inline String str(const AddressClaimedRequest &message) { return message.toString(); }
+
+} // namespace cc::j1939

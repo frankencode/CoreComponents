@@ -1,0 +1,17 @@
+Library {
+    name: CoreComponentsCAN
+    use: [ CoreComponents/Core, CoreComponents/Syntax ]
+    source: [
+        isobus/pd/*.cc,
+        isobus/*.cc,
+        j1939/etp/*.cc,
+        j1939/tp/*.cc,
+        j1939/*.cc,
+        can_open/sdo/*.cc,
+        can_open/*.cc,
+        *.cc
+    ]
+    Dependency {
+        probe: probe/linux.cc
+    }
+}

@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/Message>
+
+namespace cc { class Format; }
+
+namespace cc::isobus::pd {
+
+/** \class ValueMessage cc/isobus/pd/ValueMessage
+  * \brief Process data value message
+  */
+class ValueMessage: public Message
+{
+public:
+    /** Create an interpretation of \a frame
+      */
+    explicit ValueMessage(const CanFrame &frame):
+        Message{frame}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            Message::isValid() &&
+            Type::RequestValue <= Message::type() && Message::type() <= Type::SetValue;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** %Element number (identifies a specific controllable device element)
+      */
+    uint16_t elementNumber() const
+    {
+        return frame_.data<uint16_t>(0, 1) >> 4;
+    }
+
+    /** %Type of process variable (aka DDI)
+      */
+    uint16_t valueType() const
+    {
+        return frame_.data<uint16_t>(2, 3);
+    }
+
+    /** %Value of process variable
+      */
+    template<class T = int32_t>
+    T value() const
+    {
+        return static_cast<T>(frame_.data<uint32_t>(4, 7));
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+
+protected:
+    virtual void printValue(Format &f) const;
+};
+
+/** Stringify \a message
+  */
+inline String str(const ValueMessage &message) { return message.toString(); }
+
+} // cc::isobus::pd

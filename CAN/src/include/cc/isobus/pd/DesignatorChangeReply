@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/DeviceDescriptionMessage>
+
+namespace cc::isobus::pd {
+
+/** \class DesignatorChangeReply cc/isobus/pd/DesignatorChangeReply
+  * \brief Reply to a designator change request
+  */
+class DesignatorChangeReply final: public DeviceDescriptionMessage
+{
+public:
+    /** Create an interpretation of \a frame
+      */
+    explicit DesignatorChangeReply(const CanFrame &frame):
+        DeviceDescriptionMessage{frame}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            DeviceDescriptionMessage::isValid() &&
+            DeviceDescriptionMessage::type() == Type::DesignatorChangeReply;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** %Object ID
+      */
+    uint16_t objectId() const
+    {
+        return frame_.data<uint16_t>(1, 2);
+    }
+
+    /** %Reply status
+      */
+    bool success() const
+    {
+        return frame_.at(3) == 0;
+    }
+
+private:
+    void printValue(Format &f) const override;
+};
+
+} // namespace cc::isobus::pd

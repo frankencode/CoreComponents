@@ -1,0 +1,88 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+
+namespace cc::isobus::pd {
+
+/** \class DataType cc/isobus/pd/DataType
+  * \brief Data type of a process data value
+  */
+class TypeInfo final: public Object
+{
+public:
+    TypeInfo() = default;
+
+    explicit TypeInfo(const String &text, long offset):
+        Object{new State{text, offset}}
+    {}
+
+    String text() const { return me().text_; }
+    long offset() const { return me().offset_; }
+
+    uint32_t typeId() const { return me().typeId_; }
+    void setTypeId(uint32_t newValue) { me().typeId_ = newValue; }
+
+    String typeName() const { return me().typeName_; }
+    void setTypeName(const String &newValue) { me().typeName_ = newValue; }
+
+    String definition() const { return me().definition_; }
+    void setDefinition(const String &newValue) { me().definition_ = newValue; }
+
+    String unit() const { return me().unit_;  }
+    void setUnit(const String &newValue) { me().unit_ = newValue; }
+
+    String unitName() const { return me().unitName_; }
+    void setUnitName(const String &newValue) { me().unitName_ = newValue; }
+
+    double scale() const { return me().scale_; }
+    void setScale(double newValue) { me().scale_ = newValue; }
+
+    double scaledValueMin() const { return me().scaledValueMin_; }
+    void setScaledValueMin(double newValue) { me().scaledValueMin_ = newValue; }
+
+    double scaledValueMax() const { return me().scaledValueMax_; }
+    void setScaledValueMax(double newValue) { me().scaledValueMax_ = newValue; }
+
+    int64_t busValueMin() const { return me().busValueMin_; }
+    void setBusValueMin(int64_t newValue) { me().busValueMin_ = newValue; }
+
+    int64_t busValueMax() const { return me().busValueMax_; }
+    void setBusValueMax(int64_t newValue) { me().busValueMax_ = newValue; }
+
+private:
+    struct State final: public Object::State
+    {
+        explicit State(const String &text, long offset):
+            text_{text},
+            offset_{offset}
+        {}
+
+        String text_;
+        long offset_ { 0 };
+        uint32_t typeId_ { 0 };
+        String typeName_;
+        String definition_;
+        String unit_;
+        String unitName_;
+        double scale_;
+        double scaledValueMin_ { 0. };
+        double scaledValueMax_ { 0. };
+        int64_t busValueMin_ { 0 };
+        int64_t busValueMax_ { 0 };
+        uint32_t vendorId_ { 0 };
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+    State &me() { return Object::me.as<State>(); }
+};
+
+} // namespace cc::isobus::pd

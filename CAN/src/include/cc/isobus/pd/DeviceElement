@@ -1,0 +1,132 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/Binary>
+
+namespace cc::isobus::pd {
+
+/** \class DeviceElement cc/isobus/pd/DeviceElement
+  * \brief Binary representation of a structural node in the device description
+  */
+class DeviceElement final
+{
+public:
+    /** %Object type name
+      */
+    static constexpr const char *shortName() { return "isobus.device.object.element"; }
+
+    /** Create an interpretation of \a data
+      */
+    explicit DeviceElement(const String &data):
+        data_{data}
+    {}
+
+    /** Check for validity
+      */
+    bool isValid() const
+    {
+        return data_.startsWith("DET");
+    }
+
+    /** Check for validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** %Object ID
+      */
+    uint16_t objectId() const
+    {
+        return Binary{data_}.value<uint16_t, 3>();
+    }
+
+    /** %Element type
+      */
+    enum class ElementType: uint8_t
+    {
+        Device    = 1,
+        Function  = 2,
+        Bin       = 3,
+        Section   = 4,
+        Unit      = 5,
+        Connector = 6,
+        NavRef    = 7,
+        Min       = Device,
+        Max       = NavRef
+    };
+
+    /** %Element type
+      */
+    ElementType elementType() const
+    {
+        return static_cast<ElementType>(data_.asBytes().at(5));
+    }
+
+    /** %Device element designator
+      */
+    String designator() const
+    {
+        return data_.copy(7, 7 + n());
+    }
+
+    /** %Element number
+      */
+    uint16_t elementNumber() const
+    {
+        return Binary{data_}.value<uint16_t>(7 + n());
+    }
+
+    /** %Object ID of the parent object
+      */
+    uint16_t parentId() const
+    {
+        return Binary{data_}.value<uint16_t>(9 + n());
+    }
+
+    /** Number of children object IDs
+      */
+    uint16_t childrenCount() const
+    {
+        return Binary{data_}.value<uint16_t>(11 + n());
+    }
+
+    /** %Object ID of child at \a index
+      */
+    uint16_t childIdAt(uint16_t index) const
+    {
+        return Binary{data_}.value<uint16_t>(13 + n() + 2 * index);
+    }
+
+    /** %Size in bytes
+      */
+    long byteSize() const
+    {
+        return 13 + n() + 2 * childrenCount();
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+
+private:
+    long n() const
+    {
+        return data_.asBytes().at(6);
+    }
+
+    String data_;
+};
+
+String str(DeviceElement::ElementType type);
+
+} // namespace cc::isobus::pd

@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/can_open/sdo/Reply>
+
+namespace cc::can_open::sdo {
+
+class WriteSegmentReply final: public Reply
+{
+public:
+    static const char *typeName() { return "can_open.sdo.write_segment_reply"; }
+
+    static CanFrame createFrame(int serverId, int offset);
+
+    explicit WriteSegmentReply(const CanFrame &frame):
+        Reply{frame}
+    {}
+
+    bool isValid() const
+    {
+        return
+            Reply::isValid() &&
+            Reply::specifier() == Reply::Specifier::WriteSegment;
+    }
+
+    explicit operator bool() const { return isValid(); }
+
+    bool toggle() const
+    {
+        return frame_(0) & 0x10;
+    }
+
+    String toString() const;
+};
+
+} // namespace cc::can_open::sdo

@@ -1,0 +1,86 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/Datagram>
+
+namespace cc::isobus::pd {
+
+/** \class Datagram cc/isobus/pd/Datagram
+  * \brief ISOBUS process data message
+  */
+class Datagram: public j1939::Datagram
+{
+public:
+    /** Create a null process data datagram
+      */
+    Datagram() = default;
+
+    /** Create an interpretation of \a message
+      */
+    explicit Datagram(const j1939::Datagram &message):
+        j1939::Datagram{message}
+    {}
+
+    /** Message type
+      */
+    enum class Type: uint8_t
+    {
+        QueryCapabilities                  = 0,
+        DeviceDescription                  = 1,
+        RequestValue                       = 2,
+        ValueUpdate                        = 3,
+        RequestValuePerTimeInterval        = 4,
+        RequestValuePerTravelDistance      = 5,
+        RequestValueWhenAboveThreshold     = 6,
+        RequestValueWhenBelowThreshold     = 7,
+        RequestValueWhenChangedByThreshold = 8,
+        AssignPeerControl                  = 9,
+        SetValue                           = 10,
+        Reserved1                          = 11,
+        Reserved2                          = 12,
+        SetValueAck                        = 13,
+        TaskControllerStatus               = 14,
+        ClientTaskStatus                   = 15
+    };
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return pgn() == 0xCB00u && bytes().count() >= 8;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Get message type
+      */
+    Type type() const
+    {
+        return static_cast<Type>(bytes().at(0) & 0xFu);
+    }
+
+    /** Get message sub-type
+      */
+    uint8_t subType() const
+    {
+        return bytes().at(0) >> 4;
+    }
+
+    /** %Message type name
+      */
+    const char *shortName() const;
+};
+
+} // namespace cc::isobus::pd

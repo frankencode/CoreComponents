@@ -1,0 +1,160 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/FunctionId>
+#include <cc/isobus/Locale>
+#include <cc/String>
+#include <cc/Binary>
+
+namespace cc::isobus::pd {
+
+/** \class DeviceObject cc/isobus/dev/DeviceObject
+  * \brief Binary representation of device objects
+  */
+class DeviceObject final
+{
+public:
+    /** %Object type name
+      */
+    static constexpr const char *shortName() { return "isobus.device.object.device"; }
+
+    /** Create an interpretation of \a data
+      */
+    explicit DeviceObject(const String &data):
+        data_{data}
+    {}
+
+    /** Check for validity
+      */
+    bool isValid() const
+    {
+        return data_.startsWith("DVC");
+    }
+
+    /** Check for validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** %Object ID
+      */
+    uint16_t objectId() const
+    {
+        return Binary{data_}.value<uint16_t, 3>();
+    }
+
+    /** %Device designator
+      */
+    String designator() const
+    {
+        return data_.copy(6, 6 + n());
+    }
+
+    /** %Software version
+      */
+    String softwareVersion() const
+    {
+        const long offset = 7 + n();
+        return data_.copy(offset, offset + m());
+    }
+
+    /** %Function ID of the client
+      */
+    j1939::FunctionId functionId() const
+    {
+        return Binary{data_}.value<uint64_t>(7 + n() + m());
+    }
+
+    /** %Device serial number
+      */
+    String serialNumber() const
+    {
+        const long offset = 16 + n() + m();
+        return data_.copy(offset, offset + o());
+    }
+
+    /** %Device structure label
+      */
+    String structureLabel() const
+    {
+        const long offset = 16 + n() + m() + o();
+        String label = data_.copy(offset, offset + 7);
+
+        const long offset2 = 31 + n() + m() + o();
+        if (data_.count() > offset2) {
+            const uint8_t len = p();
+            if (0 < len && len <= 'A') {
+                label += data_.copy(offset2, offset2 + len);
+            }
+        }
+
+        return label;
+    }
+
+    /** %Localization information
+      */
+    Locale locale() const
+    {
+        const long offset = 23 + n() + m() + o();
+        return Locale{data_.copy(offset, offset + 7)};
+    }
+
+    /** %Size in bytes
+      */
+    long byteSize() const
+    {
+        long size = 30 + n() + m() + o();
+        if (protocolVersion() > 3) {
+            size += 1 + p();
+        }
+        return size;
+    }
+
+    /** Detect protocol version
+      */
+    int protocolVersion() const
+    {
+        long size = 30 + n() + m() + o();
+        return 3 + (data_.count() > size && p() <= 'A');
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+
+private:
+    long n() const
+    {
+        return data_.asBytes().at(5);
+    }
+
+    long m() const
+    {
+        return data_.asBytes().at(6 + n());
+    }
+
+    long o() const
+    {
+        return data_.asBytes().at(15 + n() + m());
+    }
+
+    long p() const
+    {
+        return data_.asBytes().at(30 + n() + m() + o());
+    }
+
+    String data_;
+};
+
+inline String str(const DeviceObject &deviceObject) { return deviceObject.toString(); }
+
+} // namespace cc::isobus::pd

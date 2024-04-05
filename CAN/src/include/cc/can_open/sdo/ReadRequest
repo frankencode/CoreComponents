@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/can_open/sdo/Request>
+
+namespace cc::can_open::sdo {
+
+/** \brief SDO read request
+  */
+class ReadRequest final: public Request
+{
+public:
+    static constexpr const char *typeName() { return "can_open.sdo.read_request"; }
+
+    static CanFrame createFrame(int serverId, Selector selector);
+
+    explicit ReadRequest(const CanFrame &frame):
+        Request{frame}
+    {}
+
+    bool isValid() const
+    {
+        return
+            Request::isValid() &&
+            Request::specifier() == Request::Specifier::Read &&
+            frame_.size() >= 4;
+    }
+
+    explicit operator bool() const { return isValid(); }
+
+    uint16_t index() const
+    {
+        return frame_.data<uint16_t>(1, 2);
+    }
+
+    uint8_t subIndex() const
+    {
+        return frame_(3);
+    }
+
+    Selector selector() const
+    {
+        return (static_cast<uint32_t>(index()) << 8) | subIndex();
+    }
+
+    String toString() const;
+};
+
+} // namespace cc::can_open::sdo

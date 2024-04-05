@@ -1,0 +1,100 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Bytes>
+
+namespace cc::can_open {
+
+template<class T>
+class Payload
+{};
+
+template<>
+class Payload<uint8_t>
+{
+public:
+    static Bytes make(uint8_t x)
+    {
+        Bytes s { Dim<>{1} };
+        s[0] = x;
+        return s;
+    }
+
+    static uint8_t read(const Bytes &s, const uint8_t defaultValue = 0)
+    {
+        if (s.count() < 1) return defaultValue;
+        return s[0];
+    }
+
+    static void write(Out<Bytes> s, uint8_t x)
+    {
+        (*s)(0, x);
+    }
+};
+
+template<>
+class Payload<uint16_t>
+{
+public:
+    static Bytes make(uint16_t x)
+    {
+        Bytes s { Dim<>{2} };
+        write(&s, x);
+        return s;
+    }
+
+    static uint16_t read(const Bytes &s, const uint16_t defaultValue = 0)
+    {
+        if (s.count() < 2) return defaultValue;
+
+        return
+            static_cast<uint16_t>(s(0)) |
+            (static_cast<uint16_t>(s(1)) << 8);
+    }
+
+    static void write(Out<Bytes> s, uint16_t x)
+    {
+        (*s)(0, x);
+        (*s)(1, x >> 8);
+    }
+};
+
+template<>
+class Payload<uint32_t>
+{
+public:
+    static Bytes make(uint32_t x)
+    {
+        Bytes s { Dim<>{4} };
+        write(&s, x);
+        return s;
+    }
+
+    static uint32_t read(const Bytes &s, const uint32_t defaultValue = 0)
+    {
+        if (s.count() < 4) return defaultValue;
+
+        return
+            static_cast<uint32_t>(s(0)) |
+            (static_cast<uint32_t>(s(1)) << 8) |
+            (static_cast<uint32_t>(s(2)) << 16) |
+            (static_cast<uint32_t>(s(3)) << 24);
+    }
+
+    static void write(Out<Bytes> s, uint32_t x)
+    {
+        (*s)(0, x);
+        (*s)(1, x >> 8);
+        (*s)(2, x >> 16);
+        (*s)(3, x >> 24);
+    }
+};
+
+} // namespace cc::can_open

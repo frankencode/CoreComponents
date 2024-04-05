@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/CanMedia>
+#include <cc/CanAnnotator>
+#include <cc/Stream>
+
+namespace cc {
+
+/** \class CanLogger cc/CanLogger
+  * \brief Generate annotated hexdumps of CAN bus traffic
+  * \todo Switch to a monotonic time source
+  */
+class CanLogger final: public Object
+{
+public:
+    /** Create a new CAN bus traffic logger for \a media
+      */
+    explicit CanLogger(const CanMedia &media);
+
+    /** Add a CAN bus protocol annotator
+      */
+    CanLogger &addAnnotator(CanAnnotator &&annotator);
+
+    /** Set the output stream (defaults to the standard output stream of the current process)
+      */
+    CanLogger &setOutput(const Stream &output);
+
+    /** Start logging traffic
+      */
+    void start();
+
+private:
+    struct State;
+
+    State &me();
+};
+
+} // namespace cc

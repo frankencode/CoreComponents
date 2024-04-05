@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/can_open/sdo/BlockReply>
+
+namespace cc::can_open::sdo {
+
+class BlockReadEndReply final: public BlockReply
+{
+public:
+    static const char *typeName() { return "can_open.sdo.block_read_end_reply"; }
+
+    static CanFrame createFrame(int serverId, const Bytes &data, bool crcSupport = true);
+
+    explicit BlockReadEndReply(const CanFrame &frame):
+        BlockReply{frame}
+    {}
+
+    bool isValid() const
+    {
+        return
+            BlockReply::isValid() &&
+            BlockReply::specifier() == BlockReply::Specifier::BlockReadEnd &&
+            frame_.size() >= 3;
+    }
+
+    explicit operator bool() const { return isValid(); }
+
+    int finalSegmentSize() const
+    {
+        return 7 - ((frame_(0) & 0xCU) >> 2U);
+    }
+
+    uint16_t crc() const
+    {
+        return frame_.data<uint16_t>(1, 2);
+    }
+
+    String toString() const;
+};
+
+} // namespace cc::can_open::sdo

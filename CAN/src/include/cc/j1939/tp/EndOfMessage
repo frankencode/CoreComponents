@@ -1,0 +1,75 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/tp/ConnectionManagement>
+
+namespace cc::j1939::tp {
+
+class RequestToSend;
+
+/** \class EndOfMessage cc/j1939/tp/EndOfMessage
+  * \brief Confirmation of the full reception of a message
+  * \todo add toString(const MessageDictionary &)
+  */
+class EndOfMessage final: public ConnectionManagement
+{
+public:
+    /** Short name of this message
+      */
+    static constexpr const char *shortName() { return "j1939.tp.eoma"; }
+
+    /** Interpret \a frame as a confirmation for the full reception of a multi-packet data transfer
+      */
+    explicit EndOfMessage(const CanFrame &frame):
+        ConnectionManagement{frame}
+    {}
+
+    /** Create a confirmation message for the full reception of a multi-packet message
+      */
+    static CanFrame produce(const RequestToSend &request, uint8_t totalPacketCount);
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            ConnectionManagement::isValid() &&
+            messageType() == ConnectionManagement::Type::EndOfMessage;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Total number of bytes received
+      */
+    uint16_t totalSize() const
+    {
+        return frame_.data<uint16_t>(1, 2);
+    }
+
+    /** Total number of packets received
+      */
+    uint8_t packetCount() const
+    {
+        return frame_[3];
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+};
+
+inline String str(const EndOfMessage &message) { return message.toString(); }
+
+} // namespace cc::j1939::tp

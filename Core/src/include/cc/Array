@@ -339,11 +339,19 @@ public:
         return me().items[i];
     }
 
-    /** Get value at \a index if 0 <= index && index < count(), otherwise return \a fallback
+    /** Get value at \a index if 0 <= i && i < count(), otherwise return \a fallback
       */
-    Item operator()(long index, const Item &fallback = Item{}) const
+    Item operator()(long i) const
     {
-        return has(index) ? at(index) : fallback;
+        return has(i) ? at(i) : T{};
+    }
+
+    /** Set value at \a index if 0 <= i && i < count(), otherwise do nothing
+      */
+    Array &operator()(long i, const T &value)
+    {
+        if (has(i)) me().items[i] = value;
+        return *this;
     }
 
     /** Get constant reference to first item

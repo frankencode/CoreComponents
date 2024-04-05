@@ -1,0 +1,57 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/can_open/sdo/Request>
+
+namespace cc::can_open::sdo {
+
+class BlockRequest: public Request
+{
+public:
+    enum class Specifier: uint8_t
+    {
+        BlockWriteStreamInit = 0x60,
+        BlockWriteInit       = 0x62,
+        BlockWriteEnd        = 0x61,
+        BlockReadInit        = 0x50,
+        BlockReadEnd         = 0x51,
+        BlockReadAck         = 0x52,
+        BlockReadStart       = 0x53
+    };
+
+    explicit BlockRequest(const CanFrame &frame):
+        Request{frame}
+    {}
+
+    bool isValid() const
+    {
+        return
+            Request::isValid() && (
+                Request::specifier() == Request::Specifier::BlockRead ||
+                Request::specifier() == Request::Specifier::BlockWrite
+            );
+    }
+
+    explicit operator bool() const { return isValid(); }
+
+    Specifier specifier() const
+    {
+        return
+            static_cast<Specifier>(
+                ((frame_(0) & 0xE0U) >> 1) |
+                (frame_(0) & 3U)
+            );
+    }
+
+    String toString() const;
+};
+
+
+} // namespace cc::can_open::sdo

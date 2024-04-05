@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/VendorInfo>
+#include <cc/InOut>
+#include <cc/Map>
+
+namespace cc::j1939 {
+
+/** \class VendorDictionary cc/j1939/VendorDictionary
+  * \brief VendorInfo dictionary
+  */
+class VendorDictionary: public Object
+{
+public:
+    /** Create a null vendor list
+      */
+    VendorDictionary() = default;
+
+    /** Lookup \a vendorId and return \a vendor
+      * \return True if a matching vendor was found
+      */
+    bool lookup(uint32_t vendorId, Out<VendorInfo> vendor) const
+    {
+        return me().lookup(vendorId, vendor);
+    }
+
+    /** Get a map of all registered vendors
+      */
+    Map<uint32_t, VendorInfo> vendors() const
+    {
+        return me().vendors();
+    }
+
+protected:
+    struct State: public Object::State
+    {
+        virtual bool lookup(uint32_t vendorId, Out<VendorInfo> vendor) const = 0;
+        virtual Map<uint32_t, VendorInfo> vendors() const = 0;
+    };
+
+    explicit VendorDictionary(State *newState):
+        Object{newState}
+    {}
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::j1939

@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/can_open/sdo/BlockReply>
+
+namespace cc::can_open::sdo {
+
+class BlockWriteAckReply final: public BlockReply
+{
+public:
+    static const char *typeName() { return "can_open.sdo.block_write_ack_reply"; }
+
+    static CanFrame createFrame(int serverId, int sequenceNumber, int newBlockSize);
+
+    explicit BlockWriteAckReply(const CanFrame &frame):
+        BlockReply{frame}
+    {}
+
+    bool isValid() const
+    {
+        return
+            BlockReply::isValid() &&
+            BlockReply::specifier() == BlockReply::Specifier::BlockWriteAck &&
+            frame_.size() >= 2;
+    }
+
+    explicit operator bool() const { return isValid(); }
+
+    int sequenceNumber() const
+    {
+        return frame_(1);
+    }
+
+    int newBlockSize() const
+    {
+        return frame_(2);
+    }
+
+    String toString() const;
+};
+
+
+} // namespace cc::can_open::sdo

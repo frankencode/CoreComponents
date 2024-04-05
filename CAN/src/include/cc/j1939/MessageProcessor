@@ -1,0 +1,86 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CANgenie/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/CanId>
+#include <cc/CanMedia>
+#include <cc/Function>
+#include <cc/Exception>
+#include <cc/Set>
+
+namespace cc::j1939 {
+
+/** \class MessageProcessor cc/j1939/MessageProcessor
+  * \brief Background thread to receive arbitrary length messages
+  * \note A single MessageProcessor handles only a single connection at a time.
+  * Out of concurrently occuring multi-packet transmission request only the first one will be handled,
+  * the others will be silently dropped. To receive messages concurrently several MessageProcessors
+  * need to be instantiated.
+  * \see VirtualCanBus, MessageTap
+  */
+class MessageProcessor final: public Object
+{
+public:
+    /** Create a null message processor
+      */
+    MessageProcessor();
+
+    /** Create a new message processor
+      * \param media CAN bus media to receive messages on
+      */
+    explicit MessageProcessor(const CanMedia &media);
+
+    /** Set address to receive messages for
+      * \see src(const Set<uint8_t> &)
+      */
+    MessageProcessor &src(uint8_t address);
+
+    /** Set multiple addresses to receive messages for
+      * \note You have manually include 0xFF in the set of addresses to receive broadcasts.
+      */
+    MessageProcessor &src(const Set<uint8_t> &addresses);
+
+    /** Set the timeout for receiving data transfer packets (in ms)
+      */
+    MessageProcessor &timeout(int duration);
+
+    /** Provide function to accept new transmission requests
+      */
+    MessageProcessor &accept(Function<bool(uint32_t pgn, uint8_t src, uint8_t dst, uint32_t messageSize)> &&f);
+
+    /** Provide function to process fully received messages
+      * \note If no processing function is provided the MessageProcess will still drive the communication
+      * without depositing any messages somewhere.
+      */
+    MessageProcessor &process(Function<void(uint32_t pgn, uint8_t src, uint8_t dst, const String &message)> &&f);
+
+    /** Provide function to get notified on communication errors
+      */
+    MessageProcessor &error(Function<void(uint32_t pgn, uint8_t src, uint8_t dst, StdException &exception)> &&f);
+
+    /** Start the message processor
+      */
+    MessageProcessor &start();
+
+    /** Tell if the message processor has been started
+      */
+    bool started() const;
+
+    /** Wait for termination of the message processor
+      */
+    void wait();
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::j1939

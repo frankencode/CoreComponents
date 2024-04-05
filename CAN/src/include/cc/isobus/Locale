@@ -1,0 +1,252 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/i18n>
+#include <cc/bits>
+
+namespace cc::isobus {
+
+/** \class Locale cc/isobus/Locale
+  * \brief Localization settings
+  */
+class Locale final
+{
+public:
+    /** Create invalid localization settings
+      */
+    Locale():
+        data_{Bytes::allocate(6)}
+    {
+        data_.fill(0);
+    }
+
+    /** Extract localization settings from \a data
+      */
+    explicit Locale(const Bytes &data):
+        Locale{}
+    {
+        for (int i = 0; i < data_.count(); ++i) {
+            data_[i] = data(i);
+        }
+    }
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return data_[0] != 0;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** %Language code according to ISO 639 (e.g. "en", "de")
+      */
+    String languageCode() const
+    {
+        String s = String::allocate(2);
+        s.byteAt(0) = data_[0];
+        s.byteAt(1) = data_[1];
+        return s;
+    }
+
+    /** Set language code
+      */
+    Locale &languageCode(const String &newValue)
+    {
+        data_[0] = newValue(0);
+        data_[1] = newValue(1);
+        return *this;
+    }
+
+    /** Get decimal point
+      */
+    DecimalSymbol decimalSymbol() const
+    {
+        return static_cast<DecimalSymbol>(bit<7, 6>(data_[2]));
+    }
+
+    /** %Set decimal point
+      */
+    Locale &decimalSymbol(DecimalSymbol newValue)
+    {
+        bitAssign<7, 6>(data_[2], static_cast<uint8_t>(newValue));
+        return *this;
+    }
+
+    /** Get time format
+      */
+    TimeFormat timeFormat() const
+    {
+        return static_cast<TimeFormat>(bit<5, 4>(data_[2]));
+    }
+
+    /** %Set time format to \a newValue
+      */
+    Locale &timeFormat(TimeFormat newValue)
+    {
+        bitAssign<5, 4>(data_[2], static_cast<uint8_t>(newValue));
+        return *this;
+    }
+
+    /** Get date format
+      */
+    DateFormat dateFormat() const
+    {
+        return static_cast<DateFormat>(data_[3]);
+    }
+
+    /** %Set date format
+      */
+    Locale &dateFormat(DateFormat newValue)
+    {
+        data_[3] = static_cast<uint8_t>(newValue);
+        return *this;
+    }
+
+    /** Get type of distance units
+      */
+    Units distanceUnits() const
+    {
+        return static_cast<Units>(bit<7, 6>(data_[4]));
+    }
+
+    /** %Set type of distance units
+      */
+    Locale &distanceUnits(Units newValue)
+    {
+        bitAssign<7, 6>(data_[4], static_cast<uint8_t>(newValue));
+        return *this;
+    }
+
+    /** Get type of area units
+      */
+    Units areaUnits() const
+    {
+        return static_cast<Units>(bit<5, 4>(data_[4]));
+    }
+
+    /** %Set type of area units
+      */
+    Locale &areaUnits(Units newValue)
+    {
+        bitAssign<5, 4>(data_[4], static_cast<uint8_t>(newValue));
+        return *this;
+    }
+
+    /** Get type of volume units
+      */
+    Units volumeUnits() const
+    {
+        return static_cast<Units>(bit<3, 2>(data_[4]));
+    }
+
+    /** %Set type of volume units
+      */
+    Locale &volumeUnits(Units newValue)
+    {
+        bitAssign<3, 2>(data_[4], static_cast<uint8_t>(newValue));
+        return *this;
+    }
+
+    /** Get type of mass units
+      */
+    Units massUnits() const
+    {
+        return static_cast<Units>(bit<1, 0>(data_[4]));
+    }
+
+    /** %Set type of mass units
+      */
+    Locale &massUnits(Units newValue)
+    {
+        bitAssign<1, 0>(data_[4], static_cast<uint8_t>(newValue));
+        return *this;
+    }
+
+    /** Get type of temperature units
+      */
+    Units temperatureUnits() const
+    {
+        return static_cast<Units>(bit<7, 6>(data_[5]));
+    }
+
+    /** %Set type of temperature units
+      */
+    Locale &temperatureUnits(Units newValue)
+    {
+        bitAssign<7, 6>(data_[5], static_cast<uint8_t>(newValue));
+        return *this;
+    }
+
+    /** Get type of pressure units
+      */
+    Units pressureUnits() const
+    {
+        return static_cast<Units>(bit<5, 4>(data_[5]));
+    }
+
+    /** %Set type of pressure units
+      */
+    Locale &pressureUnits(Units newValue)
+    {
+        bitAssign<5, 4>(data_[5], static_cast<uint8_t>(newValue));
+        return *this;
+    }
+
+    /** Get type of force units
+      */
+    Units forceUnits() const
+    {
+        return static_cast<Units>(bit<3, 2>(data_[5]));
+    }
+
+    /** %Set type of force units
+      */
+    Locale &forceUnits(Units newValue)
+    {
+        bitAssign<3, 2>(data_[5], static_cast<uint8_t>(newValue));
+        return *this;
+    }
+
+    /** Get default units
+      */
+    Units defaultUnits() const
+    {
+        return static_cast<Units>(bit<1, 0>(data_[5]));
+    }
+
+    /** %Set default units
+      */
+    Locale &defaultUnits(Units newValue)
+    {
+        bitAssign<1, 0>(data_[5], static_cast<uint8_t>(newValue));
+        return *this;
+    }
+
+    /** Get underlying binary representation
+      */
+    Bytes data() const { return data_; }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+
+private:
+    Bytes data_;
+};
+
+inline String str(const Locale &locale) { return locale.toString(); }
+
+} // namespace cc::isobus

@@ -1,0 +1,83 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/tp/ConnectionManagement>
+
+namespace cc::j1939::tp {
+
+constexpr uint8_t WindowUnlimited = 0xFFu;
+
+/** \class RequestToSend cc/j1939/tp/RequestToSend
+  * \brief Request to send message
+  */
+class RequestToSend final: public ConnectionManagement
+{
+public:
+    /** Short name of this message
+      */
+    static constexpr const char *shortName() { return "j1939.tp.rts"; }
+
+    /** Create an interpretation of \a frame
+      */
+    explicit RequestToSend(const CanFrame &frame):
+        ConnectionManagement{frame}
+    {}
+
+    /** Create a Request to Send (RTS) for \a message of type \a payloadPgn originating from \a src and being directed at \a dst
+      */
+    static CanFrame produce(uint32_t payloadPgn, uint8_t src, uint8_t dst, const Bytes &message);
+
+    /** Check if the frame is a valid Request to Send (RTS)
+      */
+    bool isValid() const
+    {
+        return
+            ConnectionManagement::isValid() &&
+            messageType() == ConnectionManagement::Type::RequestToSend &&
+            (9 <= totalSize() && totalSize() <= 1785) &&
+            2 <= packetCount();
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Total number of bytes to be transferred
+      */
+    uint16_t totalSize() const
+    {
+        return frame_.data<uint16_t>(1, 2);
+    }
+
+    /** Total number of data packets to be transferred
+      */
+    uint8_t packetCount() const
+    {
+        return frame_[3];
+    }
+
+    /** Maximum number of packets that can be send in a response to a Clear To Send (CTS)
+      */
+    uint8_t batchSize() const
+    {
+        return frame_[4];
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+};
+
+inline String str(const RequestToSend &message) { return message.toString(); }
+
+} // namespace cc::j1939::tp

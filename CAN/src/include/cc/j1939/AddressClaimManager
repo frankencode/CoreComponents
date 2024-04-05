@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/FunctionId>
+#include <cc/Singleton>
+
+namespace cc::j1939 {
+
+/** \class AddressClaimManager cc/j1939/AddressClaimManager
+  * \brief Maintain the current set of address claims for a J1939 network
+  */
+class AddressClaimManager final: public Singleton
+{
+public:
+    /** Get access to the singleton object
+      */
+    AddressClaimManager();
+
+    /** Establish an address claim for function \a fid claiming \a address
+      */
+    void establishClaim(uint8_t address, const FunctionId &fid);
+
+    /** Lookup function ID \a fid claiming \a address
+      */
+    bool lookupClaim(uint8_t address, Out<FunctionId> fid);
+
+    /** Resolve \a name of \a address
+      */
+    bool resolveName(uint8_t address, Out<String> name);
+
+    /** Resolve \a name of \a address
+      */
+    String name(uint8_t address);
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::j1939

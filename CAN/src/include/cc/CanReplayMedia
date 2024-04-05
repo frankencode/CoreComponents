@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/CanMedia>
+
+namespace cc {
+
+/** \class CanReplayMedia cc/CanReplayMedia
+  * \brief Play back CAN frames from a prior recording
+  */
+class CanReplayMedia final: public CanMedia
+{
+public:
+    /** Create a null relay media
+      */
+    CanReplayMedia() = default;
+
+    /** Create a new replay media
+      * \param text Text comprising of stringified CAN frames separated by newlines
+      * \see CanFrame::toString()
+      */
+    explicit CanReplayMedia(const String &text);
+
+private:
+    struct State;
+};
+
+} // namespace cc

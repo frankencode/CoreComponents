@@ -1,0 +1,213 @@
+/*
+ * Copyright (C) 2019-2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+#include <cc/bits>
+
+namespace cc {
+
+/** \class CanFrame cc/CanFrame
+  * \brief CAN bus frame
+  */
+class CanFrame final: public Object
+{
+public:
+    /** Create a new CAN bus frame
+      */
+    CanFrame();
+
+    /** Create a new CAN bus frame with CAN ID \a id
+      */
+    explicit CanFrame(uint32_t id);
+
+    /** Read a stringified CAN frame from \a line
+      * \return True if \a line could be read as a stringified CAN frame
+      * \see toString()
+      */
+    static bool read(const String &line, Out<CanFrame> frame, Out<uint64_t> deltaTime = None{});
+
+    /** Check if this is a valid frame
+      */
+    bool isValid() const;
+
+    /** \copydoc isValid()
+      */
+    explicit operator bool() const { return isValid(); }
+
+    /** Get CAN frame ID
+      */
+    uint32_t canId() const;
+
+    /** Set CAN frame ID
+      */
+    CanFrame &canId(uint32_t newValue);
+
+    /** Get size of the payload in number of bytes
+      */
+    int size() const;
+
+    /** Set the size of the payload to \a n bytes
+      */
+    CanFrame &size(int n);
+
+    /** Get payload byte at \a i
+      */
+    uint8_t at(int i) const;
+
+    /** Access payload byte at \a i
+      */
+    uint8_t &at(int i);
+
+    /** \copydoc at(int) const
+      */
+    uint8_t operator[](int i) const { return at(i); }
+
+    /** \copydoc at(int)
+      */
+    uint8_t &operator[](int i) { return at(i); }
+
+    /** Savely get payload byte at \a i
+      */
+    uint8_t operator()(int i) const {
+        return (0 <= i && i < size()) ? at(i) : 0u;
+    }
+
+    /** Get a copy of the payload bytes
+      * \todo make it return Bytes?
+      */
+    String data() const;
+
+    /** Get a copy of the payload bytes in range [\a i, \a j]
+      * \todo make it return Bytes?
+      */
+    String data(int i, int j) const;
+
+    /** Set the payload bytes to \a data
+      */
+    void setData(const Bytes &data);
+
+    /** Read the payload bytes from \a i to \a j as a little-endian word
+      */
+    template<class Word = unsigned>
+    Word data(int i = 0, int j = sizeof(Word) - 1) const
+    {
+        int i0 = i;
+        int i1 = j + 1;
+
+        if (i1 > size()) i1 = size();
+        if (i0 < 0) i = 0;
+
+        Word value = 0U;
+        for (int i = i1 - 1; i >= i0; --i) {
+            value <<= 8U;
+            value |= at(i);
+        }
+
+        return value;
+    }
+
+    /** Set the payload bytes from \a i to \a j to the little-endian serialization of \a value
+      */
+    template<class Word = unsigned>
+    void setData(int i, int j, Word value)
+    {
+        int i0 = i;
+        int i1 = j + 1;
+
+        if (i1 > size()) i1 = size();
+        if (i0 < 0) i0 = 0;
+
+        for (int i = i0; i < i1; ++i) {
+            at(i) = value;
+            value >>= 8U;
+        }
+    }
+
+    /** Set payload byte at \a i to \a value
+      */
+    CanFrame &operator()(int i, uint8_t value)
+    {
+        at(i) = value;
+        return *this;
+    }
+
+    /** \copydoc setData()
+      */
+    template<class Word = unsigned>
+    CanFrame &operator()(int i, int j, Word value)
+    {
+        setData(i, j, value);
+        return *this;
+    }
+
+    template<int j, int i = j, class T = uint64_t>
+    T bit() const { return static_cast<T>(cc::bit<j, i>(data<uint64_t>())); }
+
+    /** Check if this is a Remote Transmission Request (RTR)
+      */
+    bool rtr() const;
+
+    /** Set Remote Transmission Request (RTR) flag to \a on
+      */
+    CanFrame &rtr(bool on);
+
+    /** Check if this is an error frame
+      */
+    bool err() const;
+
+    /** Set error bit to select error frame
+      */
+    CanFrame &err(bool on);
+
+    /** Check if frame has Extended Frame Format (EFF)
+      */
+    bool eff() const;
+
+    /** Set extended bit to selected Extened Frame Format (EFF)
+      */
+    CanFrame &eff(bool on);
+
+    /** Compare for equality (id, size and data)
+      */
+    bool operator==(const CanFrame &other) const;
+
+    /** Compare for inequality (id, size and data)
+      */
+    bool operator!=(const CanFrame &other) const;
+
+    /** Get a human-readable version of this frame
+      */
+    String toString(bool annotate = false) const;
+
+    /** Access to underlying system's CAN frame structure
+      */
+    void *frame();
+
+    /** Access to underlying system's CAN frame structure
+      */
+    const void *frame() const;
+
+    /** Size of the underlying system's CAN frame structure
+      */
+    size_t frameSize() const;
+
+protected:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+/** Get a human readable serialization of \a frame
+  */
+String str(const CanFrame &frame);
+
+} // namespace cc

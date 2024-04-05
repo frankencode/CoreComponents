@@ -310,12 +310,14 @@ public:
         return find(key, &pos) ? at(pos).value() : Value{};
     }
 
+    #if 0
     /** \copydoc value(const Key &, const Value &) const
       */
     Value operator()(const Key &key, const Value &fallback) const
     {
         return value(key, fallback);
     }
+    #endif
 
     /** \copydoc value(const Key &) const
       */

@@ -1,0 +1,64 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/String>
+
+namespace cc::isobus {
+
+/** Time format
+  */
+enum class TimeFormat: uint8_t
+{
+    Std24    = 0, ///< 24h time format
+    AmPm     = 1, ///< AM/PM time format
+    Reserved = 2, ///< Reserved
+    Unspec   = 3  ///< Unspecified
+};
+
+String str(TimeFormat timeFormat);
+
+/** Display format for dates
+  */
+enum class DateFormat: uint8_t
+{
+    DDMMYYYY = 0, ///< DDMMYYYY
+    DDYYYYMM = 1, ///< DDYYYYMM
+    MMYYYYDD = 2, ///< MMYYYYDD
+    MMDDYYYY = 3, ///< MMDDYYYY
+    YYYYMMDD = 4, ///< YYYYMMDD
+    YYYYDDMM = 5  ///< YYYYDDMM
+};
+
+String str(DateFormat dateFormat);
+
+/** Separator used between the decimal and fractional part for a number
+  */
+enum class DecimalSymbol: uint8_t
+{
+    Comma    = 0, ///< Comma separator (",")
+    Point    = 1, ///< Decimal point separator (".")
+    Reserved = 2, ///< Reserved
+    Unspec   = 3  ///< Unspecified
+};
+
+String str(DecimalSymbol decimalSymbol);
+
+/** Type of units
+  */
+enum class Units: uint8_t
+{
+    Metric   = 0,     ///< International standard units
+    Imperial = 1,     ///< %Imperial units
+    Other    = 2,     ///< %Other units, e.g. US units
+    US       = Other, ///< US units if different from imperial units
+    Unspec   = 3      ///< %Not specified
+};
+
+String str(Units units);
+
+} // cc::isobus

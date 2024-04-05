@@ -1,0 +1,24 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/CanAnnotator>
+
+namespace cc::can_open {
+
+class Annotator final: public CanAnnotator
+{
+public:
+    Annotator();
+
+private:
+    struct State;
+};
+
+} // namespace cc::can_open

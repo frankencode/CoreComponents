@@ -1,0 +1,74 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/DeviceDescription>
+#include <cc/isobus/pd/Datagram>
+
+namespace cc { class Format; }
+
+namespace cc::isobus::pd {
+
+/** \class DeviceDescriptionDatagram cc/isobus/pd/DeviceDescriptionDatagram
+  * \brief Device descriptor management message
+  */
+class DeviceDescriptionDatagram: public Datagram
+{
+public:
+    /** Create an interpretation of datagram \a message
+      */
+    explicit DeviceDescriptionDatagram(const j1939::Datagram &message):
+        Datagram{message}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            Datagram::isValid() &&
+            Datagram::type() == Datagram::Type::DeviceDescription;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Message type
+      */
+    using Type = DeviceDescription::MessageType;
+
+    /** Message type
+      */
+    Type type() const
+    {
+        return static_cast<Type>(subType());
+    }
+
+    /** Message type name
+      */
+    const char *shortName() const
+    {
+        return DeviceDescription::shortName(type());
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+
+protected:
+    virtual void printValue(Format &f) const;
+};
+
+inline String str(const DeviceDescriptionDatagram &message) { return message.toString(); }
+
+} // namespace cc::isobus::pd

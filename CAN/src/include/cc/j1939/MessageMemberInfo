@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+#include <cc/bits>
+
+namespace cc::j1939 {
+
+/** \class MessageMemberInfo cc/j1939/MessageMemberInfo
+  * \brief Message type member
+  */
+class MessageMemberInfo: public Object
+{
+public:
+    MessageMemberInfo():
+        Object{new State}
+    {}
+
+    String name() const { return me().name_; } ///< Unique name
+    String description() const { return me().description_; } ///< Description
+    String notes() const { return me().notes_; } ///< Additional notes
+    String dataRange() const { return me().dataRange_; } ///< Description of the value range
+    String operationalRange() const { return me().operationalRange_; } ///< Allowed range due to technical restrictions
+    String unit() const { return me().unit_; } ///< Measurement unit
+    String slotIndentifier() const { return me().slotIdentifier_; } ///< ISOBUS slot identifier
+    String slotName() const { return me().slotName_; } ///< ISOBUS slot name
+    String type() const { return me().type_; } ///< Nature of value (sensor readings, command, etc.)
+    int bitOffset() const { return me().bitOffset_; } ///< Bit offset in the 8 byte word data word
+    int bitLengthMin() const { return me().bitLengthMin_; } ///< Minimum bit length
+    int bitLengthMax() const { return me().bitLengthMax_; } ///< Maximum bit length
+    double scale() const { return me().scale_; } ///< Value scaling factor
+    double offset() const { return me().offset_; } ///< Value offset
+    double max() const { return me().max_; } ///< Maximum value
+
+protected:
+    friend class MessageDictionary;
+
+    struct State: public Object::State
+    {
+        String name_;
+        String description_;
+        String notes_;
+        String dataRange_;
+        String operationalRange_;
+        String unit_;
+        String slotIdentifier_;
+        String slotName_;
+        String type_;
+        int bitOffset_ { 0 };
+        int bitLengthMin_ { 0 };
+        int bitLengthMax_ { 0 };
+        double scale_ { 1 };
+        double offset_ { 0 };
+        double max_ { 0 };
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::j1939

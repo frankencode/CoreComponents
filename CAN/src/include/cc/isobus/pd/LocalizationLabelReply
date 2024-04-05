@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/LabelMessage>
+#include <cc/isobus/Locale>
+
+namespace cc::isobus::pd {
+
+/** \class LocalizationLabelReply cc/isobus/pd/LocalizationLabelReply
+  * \brief %Reply for the Localization Label
+  */
+class LocalizationLabelReply: public LabelMessage
+{
+public:
+    /** Create an interpretation of \a frame
+      */
+    explicit LocalizationLabelReply(const CanFrame &frame):
+        LabelMessage{frame}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            DeviceDescriptionMessage::isValid() &&
+            DeviceDescriptionMessage::type() == Type::LocalizationLabelReply;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Get locale information
+      */
+    Locale locale() const
+    {
+        return Locale{frame_.data(1, 6)};
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+};
+
+inline String str(const LocalizationLabelReply &message) { return message.toString(); }
+
+} // namespace cc::isobus::pd

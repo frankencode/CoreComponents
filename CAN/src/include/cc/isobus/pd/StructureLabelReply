@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/LabelMessage>
+
+namespace cc::isobus::pd {
+
+/** \class StructureLabelReply cc/isobus/pd/StructureLabelReply
+  * \brief Reply returning the Structure Label
+  */
+class StructureLabelReply final: public LabelMessage
+{
+public:
+    /** Create an interpretation of \a frame
+      */
+    explicit StructureLabelReply(const CanFrame &frame):
+        LabelMessage{frame}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            DeviceDescriptionMessage::isValid() &&
+            DeviceDescriptionMessage::type() == Type::StructureLabelReply;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+};
+
+} // namespace cc::isobus::pd

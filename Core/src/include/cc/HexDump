@@ -52,7 +52,6 @@ private:
 };
 
 /** Generate a readable hexadecimal dump of \a data
-  * \todo rename to hexDump
   */
 String hexdump(const Bytes &data);
 

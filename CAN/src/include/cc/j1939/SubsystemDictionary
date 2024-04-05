@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/SubsystemInfo>
+#include <cc/Map>
+#include <tuple>
+
+namespace cc::j1939 {
+
+/** \class SubsystemDictionary cc/j1939/SubsystemDictionary
+  * \brief Subsystem information dictionary
+  */
+class SubsystemDictionary: public Object
+{
+public:
+    /** Create a null object
+      */
+    SubsystemDictionary() = default;
+
+    bool lookup(int industry, int subsystem, Out<SubsystemInfo> info) const
+    {
+        return me().lookup(industry, subsystem, info);
+    }
+
+    using Key = std::tuple<int, int>;
+
+    const Map<Key, SubsystemInfo> subsystemInfos() const
+    {
+        return me().subsystemInfos();
+    }
+
+protected:
+    struct State: public Object::State
+    {
+        virtual bool lookup(int industry, int subsystem, Out<SubsystemInfo> info) const
+        {
+            return subsystemInfos().lookup(Key{industry, subsystem}, info);
+        }
+
+        virtual const Map<Key, SubsystemInfo> &subsystemInfos() const = 0;
+    };
+
+    explicit SubsystemDictionary(State *newState):
+        Object{newState}
+    {}
+
+    static SubsystemInfo::State *access(SubsystemInfo &info)
+    {
+        return &info.me();
+    }
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::j1939

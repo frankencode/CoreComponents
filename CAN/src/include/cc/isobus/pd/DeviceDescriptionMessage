@@ -1,0 +1,74 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/DeviceDescription>
+#include <cc/isobus/pd/Message>
+
+namespace cc { class Format; }
+
+namespace cc::isobus::pd {
+
+/** \class DeviceDescriptionMessage cc/isobus/pd/DeviceDescriptionMessage
+  * \brief Device descriptor management messages
+  */
+class DeviceDescriptionMessage: public Message
+{
+public:
+    /** Create an interpretation of \a frame
+      */
+    explicit DeviceDescriptionMessage(const CanFrame &frame):
+        Message{frame}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            Message::isValid() &&
+            Message::type() == Message::Type::DeviceDescription;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Message type
+      */
+    using Type = DeviceDescription::MessageType;
+
+    /** Message type
+      */
+    Type type() const
+    {
+        return static_cast<Type>(Message::subType());
+    }
+
+    /** Message type name
+      */
+    const char *shortName() const
+    {
+        return DeviceDescription::shortName(type());
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+
+protected:
+    virtual void printValue(Format &f) const;
+};
+
+inline String str(const DeviceDescriptionMessage &message) { return message.toString(); }
+
+} // namespace cc::isobus::pd

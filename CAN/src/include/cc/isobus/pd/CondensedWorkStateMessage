@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/ValueMessage>
+#include <cc/isobus/types>
+
+namespace cc::isobus::pd {
+
+/** \class ValueMessage cc/isobus/pd/ValueMessage
+  * \brief Process data value message
+  */
+class CondensedWorkStateMessage: public ValueMessage
+{
+public:
+    /** Create an interpretation of \a frame
+      */
+    explicit CondensedWorkStateMessage(const CanFrame &frame):
+        ValueMessage{frame}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            ValueMessage::isValid() &&
+            Message::type() == Message::Type::ValueUpdate &&
+            (
+                (161 <= valueType() && valueType() <= 176) ||
+                (290 <= valueType() && valueType() <= 305) ||
+                (367 <= valueType() && valueType() <= 382)
+            );
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Section offset
+      */
+    uint8_t sectionOffset() const
+    {
+        uint8_t offset = 0;
+        if (161 <= valueType() && valueType() <= 176) offset = valueType() - 161;
+        else if (290 <= valueType() && valueType() <= 305) offset = valueType() - 290;
+        else if (367 <= valueType() && valueType() <= 382) offset = valueType() - 367;
+        return offset;
+    }
+
+    SwitchState sectionState(int sectionIndex) const
+    {
+        const int i = 2 * sectionIndex;
+        return static_cast<SwitchState>(bit(i + 1, i, value<uint32_t>()));
+    }
+
+private:
+    void printValue(Format &f) const override;
+};
+
+inline String str(const CondensedWorkStateMessage &message) { return message.toString(); }
+
+} // namespace cc::isobus::pd

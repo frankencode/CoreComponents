@@ -1,0 +1,107 @@
+/*
+ * Copyright (C) 2019-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/CanFrame>
+#include <cc/SourceIterator>
+
+namespace cc {
+
+/** \class CanMedia cc/CanMedia
+  * \brief CAN bus communication media
+  */
+class CanMedia: public Object
+{
+public:
+    /** Create a null CAN bus
+      */
+    CanMedia() = default;
+
+    /** Wait for a frame to be received
+      * \param timeout Number of milliseconds to wait (<0 for infinite)
+      * \return True if a frame has become available before timeout (in ms)
+      */
+    bool wait(int timeout = -1)
+    {
+        return me().waitFrame(timeout);
+    }
+
+    /** Wait for a frame to be received before \a time
+      * \return True if a frame has become available before \a time (in seconds since start of Epoch)
+      * \see System::now()
+      */
+    bool waitUntil(double time);
+
+    /** Read frame
+      * \param frame Return next frame
+      * \return True if a frame could be read
+      */
+    bool read(Out<CanFrame> frame)
+    {
+        return me().read(frame);
+    }
+
+    /** Write frame
+      * \param frame CanFrame to write
+      */
+    void write(const CanFrame &frame)
+    {
+        return me().write(frame);
+    }
+
+    /** Current time
+      */
+    double time() const
+    {
+        return me().time();
+    }
+
+    /** Iteration item type
+      */
+    using Item = CanFrame;
+
+    /** Iteration start
+      */
+    SourceIterator<CanMedia> begin() { return SourceIterator<CanMedia>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<CanMedia> end() { return SourceIterator<CanMedia>{}; }
+
+protected:
+    /** Internal state
+      */
+    struct State: public Object::State
+    {
+        /** \copydoc CanMedia::waitFrame()
+          */
+        virtual bool waitFrame(int timeout = -1) = 0;
+
+        /** \copydoc CanMedia::read()
+          */
+        virtual bool read(Out<CanFrame> frame) = 0;
+
+        /** \copydoc CanMedia::write()
+          */
+        virtual void write(const CanFrame &frame) = 0;
+
+        /** \copydoc CanMedia::time()
+          */
+        virtual double time() const;
+    };
+
+    explicit CanMedia(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

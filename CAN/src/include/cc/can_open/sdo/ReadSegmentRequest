@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/can_open/sdo/Request>
+
+namespace cc::can_open::sdo {
+
+/** \brief Request to send next segment during segmented SDO transfer
+  */
+class ReadSegmentRequest final: public Request
+{
+public:
+    static constexpr const char *typeName() { return "can_open.sdo.read_segment_request"; }
+
+    static CanFrame createFrame(int serverId, bool toggle);
+
+    explicit ReadSegmentRequest(const CanFrame &frame):
+        Request{frame}
+    {}
+
+    bool isValid() const
+    {
+        return
+            Request::isValid() &&
+            Request::specifier() == Request::Specifier::ReadSegment;
+    }
+
+    explicit operator bool() const { return isValid(); }
+
+    bool toggle() const
+    {
+        return frame_(0) & 0x10;
+    }
+
+    String toString() const;
+};
+
+} // namespace cc::can_open::sdo

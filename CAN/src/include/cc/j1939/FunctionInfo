@@ -1,0 +1,55 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+
+namespace cc::j1939 {
+
+/** \class FunctionInfo cc/j1939/FunctionInfo
+  * \brief Information about a function
+  */
+class FunctionInfo final: public Object
+{
+public:
+    /** Create a null object
+      */
+    FunctionInfo() = default;
+
+    /** Create a function information
+      */
+    FunctionInfo(const String &name, const String &notes):
+        Object{new State{name, notes}}
+    {}
+
+    /** Get the function's name
+      */
+    String name() const { return me().name_; }
+
+    /** Get description of this function
+      */
+    String notes() const { return me().notes_; }
+
+private:
+    struct State final: public Object::State
+    {
+        State(const String &name, const String &notes):
+            name_{name},
+            notes_{notes}
+        {}
+
+        String name_;
+        String notes_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::j1939

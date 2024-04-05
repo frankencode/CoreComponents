@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+
+namespace cc::j1939 {
+
+/** \class Datagram cc/j1939/Datagram
+  * \brief Variable length J1939 message
+  */
+class Datagram
+{
+public:
+    /** Create an invalid datagram
+      */
+    Datagram() = default;
+
+    /** Create a new datagram
+      * \param pgn %Message type
+      * \param src %Address of sender
+      * \param dst %Address of recipient
+      * \param message %Message to be transmitted
+      */
+    Datagram(uint32_t pgn, uint8_t src, uint8_t dst, const String &data):
+        pgn_{pgn},
+        src_{src},
+        dst_{dst},
+        data_{data}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return pgn_ > 0;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** %Message type
+      */
+    uint32_t pgn() const { return pgn_; }
+
+    /** %Address of sender
+      */
+    uint8_t src() const { return src_; }
+
+    /** %Address of recipient
+      */
+    uint8_t dst() const { return dst_; }
+
+    /** %Message data
+      */
+    const Bytes &bytes() const { return data_; }
+
+    /** %Message data
+      */
+    const String &data() const { return data_; }
+
+private:
+    uint32_t pgn_ { 0 };
+    uint8_t src_ { 0 };
+    uint8_t dst_ { 0 };
+    String data_;
+};
+
+} // namespace cc::j1939

@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/Datagram>
+#include <cc/j1939/CanId>
+#include <cc/CanMedia>
+#include <cc/Function>
+#include <cc/Exception>
+
+namespace cc::j1939 {
+
+/** Check if \a pgn identifies a directed (i.e. not a broadcast) message
+  */
+inline bool pgnIsDirected(uint32_t pgn)
+{
+    return ((pgn >> 8) & 0xFF) < 240;
+}
+
+/** \class MessageTap cc/j1939/MessageTap
+  * \brief Background thread for passively listening into J1939 CAN bus communication
+  * \see MessageProcessor, VirtualCanBus
+  */
+class MessageTap final: public Object
+{
+public:
+    /** Create a null message tap
+      */
+    MessageTap();
+
+    /** Create a new message tap reading frames from \a media
+      */
+    explicit MessageTap(const CanMedia &media);
+
+    /** Create a new message tap reading frames using function \a f
+      */
+    explicit MessageTap(Function<bool(Out<CanFrame>)> &&f);
+
+    /** Provide function to accept incoming messages for processing
+      */
+    MessageTap &accept(Function<bool(uint32_t pgn, uint8_t src, uint8_t dst, uint32_t size)> &&f);
+
+    /** Provide function to process fully received messages
+      * \note Throwing an exception from the processing function \a f results in termination of the MessageTap.
+      */
+    MessageTap &process(Function<void(const Datagram &)> &&f);
+
+    /** Provide function to get notified on errors in the background thread
+      */
+    MessageTap &error(Function<void(StdException &)> &&f);
+
+    /** Start the message tap
+      */
+    MessageTap &start();
+
+    /** Tell if the message tap has been started
+      */
+    bool started() const;
+
+    /** Wait for termination of the message tap
+      */
+    void wait();
+
+private:
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc::j1939

@@ -1,0 +1,47 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/TypeInfo>
+#include <cc/SourceIterator>
+#include <cc/TextError>
+
+namespace cc::isobus::pd {
+
+/** \class TypeInfoSource cc/isobus/pd/TypeInfoSource
+  * \brief Parser for the ISOBUS data dictionary database dump
+  */
+class TypeInfoSource final: public Object
+{
+public:
+    using Item = TypeInfo; ///< Item type
+
+    /** Create a new parser for the database dump \a text
+      */
+    explicit TypeInfoSource(const String &text);
+
+    /** Read the next type information record
+      */
+    bool read(Out<TypeInfo> typeInfo);
+
+    /** Iteration start
+      */
+    SourceIterator<TypeInfoSource> begin() { return SourceIterator<TypeInfoSource>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<TypeInfoSource> end() { return SourceIterator<TypeInfoSource>{}; }
+
+private:
+    struct State;
+
+    State &me();
+};
+
+} // namespace cc::isobus::pd

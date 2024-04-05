@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Object>
+#include <cc/String>
+
+namespace cc::j1939 {
+
+class FunctionId;
+
+/** \class VendorInfo cc/j1939/VendorInfo
+  * \brief Manufacturer information
+  */
+class VendorInfo final: public Object
+{
+public:
+    /** Create a null object
+      */
+    VendorInfo() = default;
+
+    /** Create a new vendor with \a name located in \a location
+      */
+    VendorInfo(const String &name, const String &location):
+        Object{new State{name, location}}
+    {}
+
+    /** Read the manufacturer information of \a functionId
+      */
+    explicit VendorInfo(FunctionId functionId);
+
+    /** Company name
+      */
+    String name() const { return me().name_; }
+
+    /** City and world region
+      */
+    String location() const { return me().location_; }
+
+private:
+    struct State final: public Object::State
+    {
+        explicit State(const String &name, const String &location):
+            name_{name},
+            location_{location}
+        {}
+
+        String name_;
+        String location_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::j1939

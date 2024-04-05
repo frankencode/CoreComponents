@@ -1,0 +1,137 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/Binary>
+#include <cc/bitmask>
+
+namespace cc::isobus::pd {
+
+/** \class DeviceProcessData cc/isobus/pd/DeviceProcessData
+  * \brief Device process data
+  */
+class DeviceProcessData final
+{
+public:
+    /** %Object type name
+      */
+    static constexpr const char *shortName() { return "isobus.device.object.process_data"; }
+
+    /** Create an interpretation of \a data
+      */
+    explicit DeviceProcessData(const String &data):
+        data_{data}
+    {}
+
+    /** Check for validity
+      */
+    bool isValid() const
+    {
+        return data_.startsWith("DPD");
+    }
+
+    /** Check for validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** %Object ID
+      */
+    uint16_t objectId() const
+    {
+        return Binary{data_}.value<uint16_t, 3>();
+    }
+
+    /** %Type of process variable (aka DDI)
+      */
+    uint16_t valueType() const
+    {
+        return Binary{data_}.value<uint16_t, 5>();
+    }
+
+    /** %Process data properties
+      */
+    enum class Properties: uint8_t
+    {
+        MemberOfDefaultSet = 1,
+        Settable           = 2,
+        ControlSource      = 4
+    };
+
+    /** %Process data properties
+      */
+    Properties properties() const
+    {
+        return static_cast<Properties>(data_.asBytes().at(7));
+    }
+
+    /** Available process data trigger methods
+      */
+    enum class TriggerMethods: uint8_t
+    {
+        TimeInterval     = 1,
+        DistanceInterval = 2,
+        ThresholdLimits  = 4,
+        OnChange         = 8,
+        Total            = 16
+    };
+
+    /** Available process data trigger methods
+      */
+    TriggerMethods triggerMethods() const
+    {
+        return static_cast<TriggerMethods>(data_.asBytes().at(8));
+    }
+
+    /** %Process data designator
+      */
+    String designator() const
+    {
+        return data_.copy(10, 10 + n());
+    }
+
+    /** %Object ID of the value presentation object
+      */
+    uint16_t presentationId() const
+    {
+        return Binary{data_}.value<uint16_t>(10 + n());
+    }
+
+    /** %Size in bytes
+      */
+    long byteSize() const
+    {
+        return 10 + n() + 2;
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+
+private:
+    long n() const
+    {
+        return data_.asBytes().at(9);
+    }
+
+    String data_;
+};
+
+CC_BITMASK(DeviceProcessData::Properties);
+CC_BITMASK(DeviceProcessData::TriggerMethods);
+
+String str(DeviceProcessData::Properties properties);
+String str(DeviceProcessData::TriggerMethods methods);
+
+inline String str(const DeviceProcessData &object) { return object.toString(); }
+
+} // namespace cc::isobus::pd

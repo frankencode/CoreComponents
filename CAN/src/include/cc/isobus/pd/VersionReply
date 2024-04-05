@@ -1,0 +1,118 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/TechnicalMessage>
+#include <cc/bitmask>
+
+namespace cc::isobus::pd {
+
+/** \class VersionReply cc/isobus/pd/VersionReply
+  * \brief Information on protocol version and capabilities
+  */
+class VersionReply final: public TechnicalMessage
+{
+public:
+    /** Short name of this message
+      */
+    static constexpr const char *shortName() { return "isobus.pd.version_reply"; }
+
+    /** Create an interpretation of \a frame
+      */
+    explicit VersionReply(const CanFrame &frame):
+        TechnicalMessage{frame}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            TechnicalMessage::isValid() &&
+            TechnicalMessage::type() == TechnicalMessage::Type::VersionReply;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Protocol version
+      */
+    uint8_t protocolVersion() const
+    {
+        return frame_.at(1);
+    }
+
+    /** Time it takes a task controller or data logger to send its first status
+      * message after power-up (in seconds)
+      */
+    uint8_t bootTime() const
+    {
+        return frame_.at(2);
+    }
+
+    /** Tell if message contains a valid boot time
+      */
+    bool hasBootTime() const
+    {
+        return bootTime() != 0xFFu;
+    }
+
+    /** Provided functionalities
+      */
+    enum class Options: uint16_t {
+        Documentation     = 1,
+        PositionBasedLogging = 2,
+        PositionBasedControl = 4,
+        PeerControl       = 8,
+        SectionControl    = 16
+    };
+
+    /** \copydoc Options
+      */
+    Options options() const
+    {
+        return static_cast<Options>(frame_.data<uint16_t>(3, 4));
+    }
+
+    /** Number of booms supporting section control
+      * (for the client: number of booms available, for the task controller: max. number of booms)
+      */
+    uint8_t sectionControlBoomCount() const
+    {
+        return frame_.at(5);
+    }
+
+    /** Total number of all sections of all booms supporting section control
+      */
+    uint8_t sectionControlSectionCount() const
+    {
+        return frame_.at(6);
+    }
+
+    /** Number of control channels for position based control
+      */
+    uint8_t sectionControlChannelCount() const
+    {
+        return frame_.at(7);
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+};
+
+CC_BITMASK(VersionReply::Options);
+
+inline String str(const VersionReply &message) { return message.toString(); }
+
+} // namespace cc::isobus::pd

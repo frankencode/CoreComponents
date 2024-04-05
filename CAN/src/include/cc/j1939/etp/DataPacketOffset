@@ -1,0 +1,76 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/etp/ConnectionManagement>
+
+namespace cc::j1939::etp {
+
+class RequestToSend;
+
+/** \class DataPacketOffset cc/j1939/etp/DataPacketOffset
+  * \brief Byte offset for subsequent data packages
+  * \todo add toString(const MessageDictionary &)
+  */
+class DataPacketOffset final: public ConnectionManagement
+{
+public:
+    /** Short name of this message
+      */
+    static constexpr const char *shortName() { return "j1939.etp.dpo"; }
+
+    /** Create an interpretation of \a frame
+      */
+    explicit DataPacketOffset(const CanFrame &frame):
+        ConnectionManagement{frame}
+    {}
+
+    /** Create a Data Packet Offset (DPO) frame providing the \a packetOffset for \a packetCount subsequent packages
+      */
+    static CanFrame produce(uint32_t payloadPgn, uint8_t packetCount, uint32_t packetOffset, uint8_t src, uint8_t dst);
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            ConnectionManagement::isValid() &&
+            messageType() == ConnectionManagement::Type::DataPacketOffset &&
+            packetCount() > 0;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Number of subsequent data packets that follow
+      */
+    uint8_t packetCount() const
+    {
+        return frame_[1];
+    }
+
+    /** Packet number offset of the data packages that follow
+      */
+    uint32_t packetOffset() const
+    {
+        return frame_.data<uint32_t>(2, 4);
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+};
+
+inline String str(const DataPacketOffset &message) { return message.toString(); }
+
+} // namespace cc::j1939::etp

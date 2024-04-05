@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/etp/RequestToSend>
+#include <cc/j1939/tp/protocol>
+
+/** \brief Extended multi-packet data transfer (more than 1785 bytes)
+  */
+namespace cc::j1939::etp {
+
+using tp::Aborted;
+using tp::PacketError;
+using tp::ClosingNegative;
+
+/** Receive a directed multi-packet message
+  * \param media CAN bus media to communicate on
+  * \param request The Request To Send (RTS) the transmission was initiated with
+  * \param timeout Maximum timeout between two consecutive data packages (in ms)
+  * \param message Returns the complete data that has been read (optional)
+  * \exception Timeout
+  * \exception InputExhaustion
+  * \exception PacketError
+  */
+void receive(CanMedia &media, const RequestToSend &request, Out<String> message = None{}, int timeout = 750);
+
+/** Send a directed multi-packet message
+  * \param media CAN bus media to communicate on
+  * \param pgn Type of message to send
+  * \param message Complete payload data to be transmitted
+  * \param src Address of sender
+  * \param dst Address of recipient
+  * \param timeout Maximum timeout to wait for a Clear To Send (CTS) (in ms)
+  * \param request The Request To Send (RTS) the transmission was initiated with
+  * \exception Timeout
+  * \excpetion InputExhaustion
+  * \excpetion Aborted
+  * \exception ClosingNegative
+  */
+void send(CanMedia &media, uint32_t pgn, uint8_t src, uint8_t dst, const Bytes &message, int timeout = 750);
+
+} // namespace cc::j1939::etp

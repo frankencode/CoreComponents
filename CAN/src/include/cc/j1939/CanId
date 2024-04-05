@@ -1,0 +1,195 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/bits>
+
+namespace cc::j1939 {
+
+/** Method of communication
+  */
+enum class MessageMode {
+    Broadcast = 0, ///< Broadcast communication
+    Directed  = 1 ///< Destination specific method of communication
+};
+
+/** \class CanId cc/j1939/CanId
+  * \brief J1939 extended CAN ID (29 bit)
+  */
+class CanId final
+{
+public:
+    /** Default constructor
+      */
+    CanId():
+        canId_{0}
+    {}
+
+    /** Create an interpretation of \a canId
+      * \param canId 29 bit extended CAN bus frame identifier
+      */
+    explicit CanId(uint32_t canId):
+        canId_{canId}
+    {}
+
+    /** Create an interpretation of \a frame.id()
+      * \tparam T CAN bus frame type
+      * \param frame CAN bus frame (needs to have a id() method which returns the frame ID)
+      */
+    template<class T>
+    explicit CanId(T frame):
+        canId_{frame.canId()}
+    {}
+
+    /** Message priority (from 0 for highest to 7 for lowest)
+      */
+    uint8_t prio() const
+    {
+        return bit<28, 26>(canId_);
+    }
+
+    /** Set message priority (from 0 for highest to 7 for lowest)
+      */
+    CanId &prio(uint8_t newValue)
+    {
+        bitAssign<28, 26>(canId_, newValue);
+        return *this;
+    }
+
+    /** Parameter Group Number (PGN)
+      */
+    uint32_t pgn() const
+    {
+        uint32_t h = bit<25, 8>(canId_);
+        if (isDirected()) h &= 0x3FF00;
+        return h;
+    }
+
+    /** Set Parameter Group Number (PGN)
+      */
+    CanId &pgn(uint32_t newValue)
+    {
+        bitAssign<25, 8>(canId_, newValue);
+        return *this;
+    }
+
+    /** Extended Data Page (EDP) selector
+      */
+    bool edp() const
+    {
+        return bit<25>(canId_);
+    }
+
+    /** Set Extended Data Page (EDP) selector
+      */
+    CanId &edp(bool newValue)
+    {
+        bitAssign<25>(canId_, newValue);
+        return *this;
+    }
+
+    /** Data Dage (DP) selector
+      */
+    bool dp() const
+    {
+        return bit<24>(canId_);
+    }
+
+    /** Set Data Dage (DP) selector
+      */
+    CanId &dp(bool newValue)
+    {
+        bitAssign<24>(canId_, newValue);
+        return *this;
+    }
+
+    /** Protocol Data Unit Format (PF)
+      */
+    uint8_t pf() const
+    {
+        return bit<23, 16>(canId_);
+    }
+
+    /** Set Protocol Data Unit Format (PF)
+      */
+    CanId &pf(uint8_t newValue)
+    {
+        bitAssign<23, 16>(canId_, newValue);
+        return *this;
+    }
+
+    /** Protocol Data Unit Specific (PS)
+      */
+    uint8_t ps() const
+    {
+        return bit<15, 8>(canId_);
+    }
+
+    /** Set Protocol Data Unit Specific (PS)
+      */
+    CanId &ps(uint8_t newValue)
+    {
+        bitAssign<15, 8>(canId_, newValue);
+        return *this;
+    }
+
+    /** Destination address (only when using directed communication method)
+      */
+    uint8_t dst() const
+    {
+        return bit<15, 8>(canId_);
+    }
+
+    /** Set destination address (only when using directed communication method)
+      */
+    CanId &dst(uint8_t newValue)
+    {
+        bitAssign<15, 8>(canId_, newValue);
+        return *this;
+    }
+
+    /** Source address
+      */
+    uint8_t src() const
+    {
+        return bit<7, 0>(canId_);
+    }
+
+    /** Set source address
+      */
+    CanId &src(uint8_t newValue)
+    {
+        bitAssign<7, 0>(canId_, newValue);
+        return *this;
+    }
+
+    /** Check if message is directed at a particular host
+      */
+    bool isDirected() const
+    {
+        return pf() < 240;
+    }
+
+    /** Lower than operator
+      */
+    bool operator<(const CanId &other) const { return canId_ < other.canId_; }
+
+    /** Equal to operator
+      */
+    bool operator==(const CanId &other) const { return canId_ == other.canId_; }
+
+    /** Return the underlying CAN ID
+      */
+    operator uint32_t() const;
+
+private:
+    uint32_t canId_;
+};
+
+} // namespace cc::j1939

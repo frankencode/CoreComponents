@@ -1,0 +1,114 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/tp/BroadcastAnnounce>
+#include <cc/j1939/tp/RequestToSend>
+#include <cc/CanMedia>
+#include <cc/exceptions>
+
+/** \brief Multi-packet data transfer (up to 1785 bytes)
+  */
+namespace cc::j1939::tp {
+
+/** Receive a multi-packet broadcast message
+  * \param media CAN bus media to communicate on
+  * \param bam Broadcast Anouncement Message (BAM) that announced the transmission
+  * \param message Returns the complete data that has been read (optional)
+  * \param timeout Maximum timeout between two consecutive data packages (timeout <= 0 means: no timeout) (in ms)
+  * \exception Timeout
+  * \exception InputExhaustion
+  * \exception PacketError
+  */
+void receiveBroadcast(CanMedia &media, const BroadcastAnnounce &bam, Out<String> message = None{}, int timeout = 750);
+
+/** Broadcast a message as a single frame or a multi-packet transfer depending on the data size
+  * \param media CAN bus media to communicate on
+  * \param pgn Type of payload data (aka PGN)
+  * \param src Address of sender
+  * \param message Complete payload data to be transmitted
+  * \param delay Minimum delay between two consecutive data packages, delay <= 0 means: no delay (in ms)
+  */
+void broadcast(CanMedia &media, uint32_t pgn, uint8_t src, const Bytes &message, int delay = 10);
+
+/** Receive a directed multi-packet message
+  * \param media CAN bus media to communicate on
+  * \param request The Request To Send (RTS) the transmission was initiated with
+  * \param message Returns the complete data that has been read (optional)
+  * \param timeout Maximum timeout between two consecutive data packages (in ms)
+  * \exception Timeout
+  * \exception InputExhaustion
+  * \exception PacketError
+  */
+void receive(CanMedia &media, const RequestToSend &request, Out<String> message = None{}, int timeout = 750);
+
+/** Send a directed multi-packet message
+  * \param media CAN bus media to communicate on
+  * \param pgn Type of payload data
+  * \param message Complete payload data to be transmitted
+  * \param src Address of sender
+  * \param dst Address of recipient
+  * \param timeout Maximum timeout to wait for a Clear To Send (CTS) (in ms)
+  * \param request The Request To Send (RTS) the transmission was initiated with
+  * \exception Timeout
+  * \excpetion InputExhaustion
+  * \excpetion Aborted
+  * \exception ClosingNegative
+  */
+void send(CanMedia &media, uint32_t pgn, uint8_t src, uint8_t dst, const Bytes &message, int timeout = 750);
+
+/** \brief General data transmission error
+  */
+class Error: public cc::Exception
+{
+public:
+    String message() const override;
+};
+
+/** \brief Connection has timed out
+  */
+class Timeout: public Error
+{
+public:
+    String message() const override;
+};
+
+/** \brief Underlying CAN bus media has been closed prematurely
+  */
+class InputExhaustion: public Error
+{
+public:
+    String message() const override;
+};
+
+/** \brief Unexpected or bad data package received
+  */
+class PacketError: public Error
+{
+public:
+    String message() const override;
+};
+
+/** \brief Transmission was aborted by peer
+  */
+class Aborted: public Error
+{
+public:
+    String message() const override;
+};
+
+/** \brief End of transmission acknowledgement did not meet expectation
+  */
+class ClosingNegative: public Error
+{
+public:
+    String message() const override;
+};
+
+} // namespace cc::j1939::tp

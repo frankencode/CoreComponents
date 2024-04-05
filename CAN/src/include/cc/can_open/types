@@ -1,0 +1,150 @@
+/*
+ * Copyright (C) 2019-2022 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/can_open/Selector>
+#include <cc/String>
+#include <cc/bitmask>
+
+namespace cc::can_open {
+
+///@{
+/// \ingroup can_open
+
+/** \brief Operational state of a node
+  */
+enum class NodeState: uint8_t {
+    BootUp         = 0,   ///< Slave just went into pre-operational after boot-up
+    Stopped        = 4,   ///< Slave is stopped and not sending process data
+    Operational    = 5,   ///< Slave is operational and may send process data
+    PreOperational = 127, ///< Slave is ready to be started
+    Undefined      = 255
+};
+
+String str(NodeState status);
+
+inline uint8_t operator+(NodeState state) { return static_cast<uint8_t>(state); }
+
+/** \brief SDO transfer mode
+  */
+enum class TransferMode {
+    Segmented,
+    Expedited,
+    Block
+};
+
+String str(TransferMode mode);
+
+/** \brief %CanError register
+  */
+enum class ErrorRegister: uint8_t {
+    None          = 0,
+    Generic       = 1,
+    Current       = 2,
+    Voltage       = 4,
+    Temperature   = 8,
+    Communication = 16,
+    DeviceProfile = 32,
+    Reserved      = 64,
+    Custom        = 128
+};
+
+CC_BITMASK(ErrorRegister)
+
+String str(ErrorRegister flags);
+
+/** \brief Safety error
+  */
+enum class SafetyError {
+    DataValidation,
+    RefreshTimeout,
+    ValidationTimeout
+};
+
+String str(SafetyError error);
+
+/** \brief %Object dictionary data type
+  */
+enum class DataType: uint16_t {
+    Undefined            = 0x0000U,
+    Boolean              = 0x0001U,
+    Integer8             = 0x0002U,
+    Integer16            = 0x0003U,
+    Integer32            = 0x0004U,
+    Unsigned8            = 0x0005U,
+    Unsigned16           = 0x0006U,
+    Unsigned32           = 0x0007U,
+    Real32               = 0x0008U,
+    VisibleString        = 0x0009U,
+    OctetString          = 0x000AU,
+    UnicodeString        = 0x000BU,
+    TimeOfDay            = 0x000CU,
+    TimeDifference       = 0x000DU,
+    Domain               = 0x000FU,
+    Integer24            = 0x0010U,
+    Real64               = 0x0011U,
+    Unsigned40           = 0x0018U,
+    Unsigned48           = 0x0019U,
+    Unsigned56           = 0x001AU,
+    Unsigned64           = 0x001BU,
+    ProcessDataParameter = 0x0020U,
+    ProcessDataMapping   = 0x0021U,
+    DictionaryParameter  = 0x0022U,
+    Identity             = 0x0023U
+};
+
+String str(DataType type);
+
+/** \brief %Object code
+  */
+enum class ObjectCode: uint8_t {
+    Null      = 0,
+    Domain    = 2,
+    DefType   = 5,
+    DefStruct = 6,
+    Var       = 7,
+    Array     = 8,
+    Record    = 9
+};
+
+String str(ObjectCode code);
+
+/** \brief %Access type
+  */
+enum class AccessType {
+    Undefined     = 0,
+    ReadOnly      = 1,
+    WriteOnly     = 2,
+    ReadWrite     = 3,
+    ProcessInput  = 4,
+    ProcessOutput = 5
+};
+
+String str(AccessType access);
+
+/** \todo API docs
+  */
+enum class ObjectFlags: uint32_t {
+    None             = 0,
+    IgnoreOnNodeInit = 1,
+    IgnoreOnNodeScan = 2
+};
+
+CC_BITMASK(ObjectFlags)
+
+String str(ObjectFlags flags);
+
+/** \internal
+  * Create a line of hexadecimals for human consumption
+  */
+String hexLine(const Bytes &data);
+
+///@}
+
+} // namespace cc::can_open

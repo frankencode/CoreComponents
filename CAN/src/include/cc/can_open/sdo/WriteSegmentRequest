@@ -1,0 +1,76 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/can_open/sdo/Request>
+#include <cassert>
+
+namespace cc::can_open::sdo {
+
+/** \brief Data segment send during segmented SDO transfer
+  */
+class WriteSegmentRequest final: public Request
+{
+public:
+    static constexpr const char *typeName() { return "can_open.sdo.write_segment_request"; }
+
+    static CanFrame createFrame(int serverId, const Bytes &data, int offset);
+
+    explicit WriteSegmentRequest(const CanFrame &frame):
+        Request{frame}
+    {}
+
+    bool isValid() const
+    {
+        return
+            Request::isValid() &&
+            Request::specifier() == Request::Specifier::WriteSegment;
+    }
+
+    explicit operator bool() const { return isValid(); }
+
+    int serverId() const
+    {
+        return Request::serverId();
+    }
+
+    int dataCount() const
+    {
+        return 7 - ((frame_(0) & 0xE) >> 1);
+    }
+
+    uint8_t dataAt(int i) const
+    {
+        assert(0 <= i && i < dataCount());
+        return frame_(1 + i);
+    }
+
+    Bytes data() const
+    {
+        Bytes s = Bytes::allocate(dataCount());
+        for (int i = 0; i < s.count(); ++i) {
+            s[i] = dataAt(i);
+        }
+        return s;
+    }
+
+    bool toggle() const
+    {
+        return frame_(0) & 0x10;
+    }
+
+    bool isLast() const
+    {
+        return frame_(0) & 1;
+    }
+
+    String toString() const;
+};
+
+} // namespace cc::can_open::sdo

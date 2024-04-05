@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/TypeInfo>
+#include <cc/Map>
+
+namespace cc::isobus::pd {
+
+/** \class Dictionary cc/isobus/pd/Dictionary
+  * \brief Process data type dictionary
+  */
+class Dictionary final: public Object
+{
+public:
+    /** Create a null process data dictionary
+      */
+    Dictionary() = default;
+
+    /** Load process data dictionary from \a text
+      * \param text ISOBUS process data definition database text dump
+      * \exception TextError Something went wrong parsing \a text
+      */
+    explicit Dictionary(const String &text);
+
+    /** Tell if \a typeId falls into the proprietary range
+      */
+    static bool isProprietary(uint32_t typeId);
+
+    /** Lookup \a typeInfo by \a typeId (aka DDI)
+      */
+    bool lookup(uint32_t typeId, Out<TypeInfo> typeInfo) const;
+
+    /** Get the map of all process data types
+      */
+    Map<uint32_t, TypeInfo> typeInfos() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc::isobus::pd

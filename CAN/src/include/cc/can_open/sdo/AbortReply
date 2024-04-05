@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/can_open/sdo/Reply>
+#include <cc/can_open/sdo/ErrorCode>
+
+namespace cc::can_open::sdo {
+
+/** \brief SDO data transfer abort initiated by SDO server
+  */
+class AbortReply final: public Reply
+{
+public:
+    static const char *typeName() { return "can_open.sdo.abort_reply"; }
+
+    static CanFrame createFrame(int serverId, Selector selector, ErrorCode error);
+
+    explicit AbortReply(const CanFrame &frame):
+        Reply{frame}
+    {}
+
+    bool isValid() const
+    {
+        return
+            Reply::isValid() &&
+            Reply::specifier() == Reply::Specifier::Abort &&
+            frame_.size() == 8;
+    }
+
+    explicit operator bool() const { return isValid(); }
+
+    uint16_t index() const
+    {
+        return frame_.data<uint16_t>(1, 2);
+    }
+
+    uint8_t subIndex() const
+    {
+        return frame_(3);
+    }
+
+    Selector selector() const
+    {
+        return (static_cast<uint32_t>(index()) << 8) | subIndex();
+    }
+
+    ErrorCode error() const
+    {
+        return static_cast<ErrorCode>(frame_.data<uint32_t>(4, 7));
+    }
+
+    String toString() const;
+};
+
+String str(const AbortReply &message);
+
+} // namespace cc::can_open::sdo

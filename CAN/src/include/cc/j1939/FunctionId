@@ -1,0 +1,89 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/bits>
+
+namespace cc::j1939 {
+
+/** \class FunctionId cc/j1939/FunctionId
+  * \brief Function name of a control function (CF)
+  */
+class FunctionId final
+{
+public:
+    /** Create a new function ID
+      */
+    FunctionId():
+        data_{0}
+    {}
+
+    /** Create an interpretation of \a data
+      */
+    FunctionId(uint64_t data):
+        data_{data}
+    {}
+
+    /** Tells if the control function does support address self-configuration
+      */
+    Bit<uint64_t, 63> addressClaiming() { return data_; }
+
+    /** Industry group
+      * \see IndustryGroup
+      */
+    Bit<uint64_t, 62, 60> industry() { return data_; }
+
+    /** Subsystem instance
+      */
+    Bit<uint64_t, 59, 56> subsystemInstance() { return data_; }
+
+    /** Subsystem
+      */
+    Bit<uint64_t, 55, 49> subsystem() { return data_; }
+
+    /** Function
+      */
+    Bit<uint64_t, 47, 40> function() { return data_; }
+
+    /** Function instance
+      */
+    Bit<uint64_t, 39, 35> functionInstance() { return data_; }
+
+    /** ECU instance
+      */
+    Bit<uint64_t, 34, 32> ecuInstance() { return data_; }
+
+    /** Manufacturer code
+      */
+    Bit<uint64_t, 31, 21> vendor() { return data_; }
+
+    /** Unqiue identifier assigned by the manufacturer
+      */
+    Bit<uint64_t, 20, 0> serial() { return data_; }
+
+    /** Convenience method to lookup the function name
+      */
+    String functionName() const;
+
+    /** Get the underlying 64-bit data word
+      */
+    uint64_t operator()() const { return data_; }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+
+private:
+    uint64_t data_;
+};
+
+inline String str(FunctionId f) { return f.toString(); }
+
+} // namespace cc::j1939

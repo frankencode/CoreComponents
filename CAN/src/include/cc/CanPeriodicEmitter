@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/CanPeriodicEmission>
+
+namespace cc {
+
+/** \class CanPeriodicEmitter cc/CanPeriodicEmitter
+  * \brief Emit CAN frames in fixed time intervals
+  * \todo Switch to a monotonic time source.
+  */
+class CanPeriodicEmitter final: public Object
+{
+public:
+    /** Create a new periodic emitter
+      */
+    explicit CanPeriodicEmitter(const CanMedia &media);
+
+    /** Add a new periodic CAN frame emission
+      */
+    CanPeriodicEmitter &addEmission(const CanPeriodicEmission &emission);
+
+    /** Start emitting CAN frames
+      */
+    void start();
+
+    /** Stop emitting CAN frames
+      */
+    void shutdown();
+
+private:
+    struct State;
+
+    State &me();
+};
+
+} // namespace cc

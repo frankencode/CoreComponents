@@ -1,0 +1,81 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/Message>
+
+namespace cc::j1939::etp {
+
+/** \class ConnectionManagement cc/j1939/etp/ConnectionManagement
+  * \brief J1939 exteneded transport protocol message
+  */
+class ConnectionManagement: public Message
+{
+public:
+    /** Transport protocol message type
+      */
+    enum class Type: uint8_t
+    {
+        RequestToSend     = 0x14, ///< Request to send (RTS)
+        ClearToSend       = 0x15, ///< Clear to send (CTS)
+        DataPacketOffset  = 0x16, ///< Data Packet Offset (DPO)
+        EndOfMessage      = 0x17, ///< End of message acknowledgement (EOM_ACK)
+        Abort             = 0xFF ///< Connection abort (ABRT)
+    };
+
+    /** Short name of this message type
+      */
+    static constexpr const char *shortName() { return "j1939.etp.cm"; }
+
+    /** Protocol Data Unit Format (PF) of this message type
+      */
+    static constexpr uint8_t pf() { return 0xC8u; }
+
+    /** Create an interpretation of \a frame
+      */
+    explicit ConnectionManagement(const CanFrame &frame):
+        Message{frame}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            Message::isValid() &&
+            CanId{frame_.canId()}.pf() == ConnectionManagement::pf() &&
+            frame_.size() == 8 &&
+            payloadPgn() != 0;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Type of transport protocol message
+      */
+    Type messageType() const
+    {
+        return static_cast<Type>(frame_[0]);
+    }
+
+    /** Parameter Group Number (PGN) of the packeted message
+      */
+    uint32_t payloadPgn() const
+    {
+        return frame_.data<uint32_t>(5, 7);
+    }
+};
+
+inline uint8_t operator+(ConnectionManagement::Type type) { return static_cast<uint8_t>(type); }
+
+} // namespace cc::j1939::etp

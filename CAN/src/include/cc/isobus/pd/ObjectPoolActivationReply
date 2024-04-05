@@ -1,0 +1,101 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/DeviceDescriptionMessage>
+#include <cc/bitmask>
+
+namespace cc::isobus::pd {
+
+/** \class ObjectPoolActivationReply cc/isobus/pd/ObjectPoolActivationReply
+  * \brief Object pool activation reply
+  */
+class ObjectPoolActivationReply final: public DeviceDescriptionMessage
+{
+public:
+    /** Create an interpretation of \a frame
+      */
+    explicit ObjectPoolActivationReply(const CanFrame &frame):
+        DeviceDescriptionMessage{frame}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            DeviceDescriptionMessage::isValid() &&
+            DeviceDescriptionMessage::type() == Type::ObjectPoolActivationReply;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Error flags
+      */
+    enum class Errors: uint8_t
+    {
+        FaultyObjectPool        = 1, ///< Object pool has errors
+        OutOfMemory             = 2, ///< Task controller ran out of memory
+        AmbiguousStructureLabel = 4  ///< Object pool with same structure label exists already
+    };
+
+    /** Get the error flags
+      */
+    Errors errors() const
+    {
+        return static_cast<Errors>(frame_.at(1));
+    }
+
+    /** Object ID of parent object of faulty object
+      */
+    uint16_t faultyObjectParentId() const
+    {
+        return frame_.data<uint16_t>(2, 3);
+    }
+
+    /** Object ID of faulty object
+      */
+    uint16_t faultyObjectId() const
+    {
+        return frame_.data<uint16_t>(4, 5);
+    }
+
+    /** Object pool error flags
+      */
+    enum class ObjectPoolErrors: uint8_t
+    {
+        UnsupportedProperty = 1, ///< Method of attribute not supported
+        UndefinedReference  = 2, ///< Object reference points to unkown object
+        OtherError          = 4, ///< Some other error
+        PoolDeleted         = 8, ///< Object pool was deleted
+    };
+
+    /** Get the object pool error flags
+      */
+    ObjectPoolErrors objectPoolErrors() const
+    {
+        return static_cast<ObjectPoolErrors>(frame_.at(6));
+    }
+
+private:
+    void printValue(Format &f) const override;
+};
+
+CC_BITMASK(ObjectPoolActivationReply::Errors);
+CC_BITMASK(ObjectPoolActivationReply::ObjectPoolErrors);
+
+String str(const ObjectPoolActivationReply::Errors &errors);
+String str(const ObjectPoolActivationReply::ObjectPoolErrors &errors);
+
+} // namespace cc::isobus::pd

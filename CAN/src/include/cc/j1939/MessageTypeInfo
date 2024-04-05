@@ -1,0 +1,63 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/MessageMemberInfo>
+
+namespace cc::j1939 {
+
+/** \class MessageTypeInfo cc/j1939/MessageTypeInfo
+  * \brief Message type information
+  * \see MessageDictionary
+  */
+class MessageTypeInfo: public Object
+{
+public:
+    MessageTypeInfo():
+        Object{new State}
+    {}
+
+    String name() const { return me().name_; } ///< Get name
+    String label() const { return me().label_; } ///< Get label
+    String shortName() const { return me().shortName(); } ///< Get concise type name
+    String description() const { return me().description_; } ///< Get description
+    String notes() const { return me().notes_; } ///< Get notes
+    String transmissionRate() const { return me().transmissionRate_; } ///< Get transmission rate
+    String document() const { return me().document_; } ///< Get defining document
+    int defaultPriority() const { return me().defaultPriority_; } ///< Get default priority
+    bool isMultiPacket() const { return me().isMultiPacket_; } ///< Message is transmitted using multiple frames
+    List<MessageMemberInfo> members() const { return me().members_; } ///< Message data members
+
+protected:
+    friend class MessageDictionary;
+
+    struct State: public Object::State
+    {
+        String name_;
+        String label_;
+        String description_;
+        String notes_;
+        String transmissionRate_;
+        String document_;
+        int defaultPriority_ { 0 };
+        bool isMultiPacket_ { false };
+        List<MessageMemberInfo> members_;
+
+        String shortName() const
+        {
+            if (label_ != "") return "j1939." + label_.downcased().replaced(" ", "_");
+            return name_;
+        }
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::j1939

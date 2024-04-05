@@ -1,0 +1,126 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/can_open/sdo/ErrorCode>
+#include <cc/can_open/Selector>
+#include <cc/CanMedia>
+#include <cc/Function>
+#include <cc/Exception>
+
+namespace cc::can_open::sdo {
+
+/** Read data from a node on the bus
+  * \param media CAN bus media
+  * \param peerId ID of the peer node
+  * \param selector Object dictionary identifier
+  * \param timeout Timeout in miliseconds (<0 for infinite)
+  * \return Bytes read from the peer
+  * \exception Error
+  */
+Bytes read(CanMedia &media, int peerId, Selector selector, int timeout = -1);
+
+/** Write data into a node on the bus
+  * \param media CAN bus media
+  * \param peerId ID of the peer node
+  * \param selector Object dictionary identifier
+  * \param data Data to write
+  * \param timeout Timeout in miliseconds (<0 for infinite)
+  * \exception Error
+  */
+void write(CanMedia &media, int peerId, Selector selector, const Bytes &data, int timeout = -1);
+
+/** Read data from a node on the bus using block transfer mode
+  * \param media CAN bus media
+  * \param peerId ID of the peer node
+  * \param selector Object dictionary identifier
+  * \param timeout Timeout in miliseconds (<0 for infinite)
+  * \param blockSize Block size in bytes
+  * \param switchThreshold Threshold at which to switch to segmented or expedited transfer in bytes
+  * \return Bytes read from the peer
+  * \exception Error
+  */
+Bytes blockRead(CanMedia &media, int peerId, Selector selector, int timeout = -1, int blockSize = 127, int switchThreshold = 84);
+
+/** Write date into a node on the bus using block transfer mode
+  * \param media CAN bus media
+  * \param peerId ID of the peer node
+  * \param selector Object dictionary identifier
+  * \param data Data to write
+  * \param timeout Timeout in miliseconds (<0 for infinite)
+  * \exception Error
+  */
+void blockWrite(CanMedia &media, int peerId, Selector selector, const Bytes &data, int timeout = -1);
+
+/** \brief SDO transmission error
+  */
+class Error: public Exception
+{};
+
+/** \brief SDO data transfer was aborted
+  */
+class Aborted: public Error
+{
+public:
+    explicit Aborted(ErrorCode error):
+        error_{error}
+    {}
+
+    ErrorCode error() const { return error_; }
+    String message() const override;
+
+private:
+    ErrorCode error_;
+};
+
+/** \brief SDO data transfer was aborted by this node (and not its peer)
+  */
+class LocallyAborted final: public Aborted
+{
+public:
+    explicit LocallyAborted(ErrorCode error):
+        Aborted{error}
+    {}
+};
+
+/** \brief SDO data transfer was aborted by the peer node
+  */
+class RemotelyAborted final: public Aborted
+{
+public:
+    explicit RemotelyAborted(ErrorCode error):
+        Aborted{error}
+    {}
+};
+
+/** \brief Waiting for CAN frame timed out during data transfer
+  */
+class Timeout: public Error
+{
+public:
+    String message() const override;
+};
+
+/** \brief CAN media was lost before completion of data transfer
+  */
+class InputExhaustion: public Error
+{
+public:
+    String message() const override;
+};
+
+/** \brief Unexpected CAN frame received during data transfer
+  */
+class Unexpected: public Error
+{
+public:
+    String message() const override;
+};
+
+} // namespace cc::can_open::sdo

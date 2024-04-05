@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2019-2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/CanMedia>
+#include <cc/Mutex>
+
+namespace cc {
+
+/** \class CanPeriodicEmission cc/CanPeriodicEmission
+  * \brief Periodic emission of a CAN frame
+  * \see CanPeriodicEmitter
+  */
+class CanPeriodicEmission: public Object
+{
+public:
+    /** Create a null emission
+      */
+    CanPeriodicEmission() = default;
+
+    /** Create a new emission
+      */
+    CanPeriodicEmission(int canId, double interval, const Bytes &initialData);
+
+    int canId() const { return me().frame_.canId(); }
+    double interval() const { return me().interval_; }
+
+    void generate(CanMedia &media) { me().generate(media); }
+
+protected:
+    struct State: public Object::State
+    {
+        State(int canId, double interval):
+            frame_{static_cast<uint32_t>(canId)},
+            interval_{interval}
+        {}
+
+        virtual void updateData(const Bytes &data);
+        virtual void generate(CanMedia &media);
+
+        Mutex mutex_;
+        CanFrame frame_;
+        double interval_ { 0 };
+    };
+
+    explicit CanPeriodicEmission(State *newState):
+        Object{newState}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

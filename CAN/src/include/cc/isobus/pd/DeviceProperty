@@ -1,0 +1,103 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+#include <cc/Binary>
+
+namespace cc::isobus::pd {
+
+/** \class DeviceProperty cc/isobus/pd/DeviceProperty
+  * \brief Binary representation of a device property object
+  */
+class DeviceProperty final
+{
+public:
+    /** %Object type name
+      */
+    static constexpr const char *shortName() { return "isobus.device.object.property"; }
+
+    /** Create an interpretation of \a data
+      */
+    explicit DeviceProperty(const String &data):
+        data_{data}
+    {}
+
+    /** Check for validity
+      */
+    bool isValid() const
+    {
+        return data_.startsWith("DPT");
+    }
+
+    /** Check for validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** %Object ID
+      */
+    uint16_t objectId() const
+    {
+        return Binary{data_}.value<uint16_t, 3>();
+    }
+
+    /** %Type of process variable (aka DDI)
+      */
+    uint16_t valueType() const
+    {
+        return Binary{data_}.value<uint16_t, 5>();
+    }
+
+    /** %Property value
+      */
+    int32_t value() const
+    {
+        return Binary{data_}.value<int32_t, 7>();
+    }
+
+    /** %Property designator
+      */
+    String designator() const
+    {
+        return data_.copy(12, 12 + n());
+    }
+
+    /** %Device value presentation ID
+      */
+    uint16_t presentationId() const
+    {
+        return Binary{data_}.value<uint16_t>(12 + n());
+    }
+
+    /** %Size in bytes
+      */
+    long byteSize() const
+    {
+        return 14 + n();
+    }
+
+    /** Stringify to JSON
+      */
+    String toString() const;
+
+private:
+    long n() const
+    {
+        return data_.asBytes().at(11);
+    }
+
+    String data_;
+};
+
+inline String str(const DeviceProperty &object) { return object.toString(); }
+
+} // namespace cc::isobus::pd

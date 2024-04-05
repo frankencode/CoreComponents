@@ -1,0 +1,54 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/isobus/pd/DeviceDescriptionMessage>
+
+namespace cc::isobus::pd {
+
+/** \class ObjectPoolDeletionReply cc/isobus/pd/ObjectPoolDeletionReply
+  * \brief Object pool deletion reply
+  */
+class ObjectPoolDeletionReply final: public DeviceDescriptionMessage
+{
+public:
+    /** Create an interpretation of \a frame
+      */
+    explicit ObjectPoolDeletionReply(const CanFrame &frame):
+        DeviceDescriptionMessage{frame}
+    {}
+
+    /** Check validity
+      */
+    bool isValid() const
+    {
+        return
+            DeviceDescriptionMessage::isValid() &&
+            DeviceDescriptionMessage::type() == Type::ObjectPoolDeletionReply;
+    }
+
+    /** Check validity
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Reply state
+      */
+    bool success() const
+    {
+        return frame_.at(1) == 0;
+    }
+
+private:
+    void printValue(Format &f) const override;
+};
+
+} // namespace cc::isobus::pd

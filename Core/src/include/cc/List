@@ -163,9 +163,17 @@ public:
 
     /** Get value at \a index if 0 <= index && index < count(), otherwise return \a fallback
       */
-    Item operator()(long index, const Item &fallback = Item{}) const
+    Item operator()(long index) const
     {
-        return has(index) ? at(index) : fallback;
+        return has(index) ? at(index) : T{};
+    }
+
+    /** Set value at \a index if 0 <= i && i < count(), otherwise do nothing
+      */
+    List &operator()(long index, const T &value)
+    {
+        if (has(index)) mutableAt(index) = value;
+        return *this;
     }
 
     /** Get constant reference to first item

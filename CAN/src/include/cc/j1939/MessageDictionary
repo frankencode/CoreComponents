@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/MessageTypeInfo>
+#include <cc/InOut>
+#include <cc/Map>
+
+namespace cc::j1939 {
+
+/** \class MessageDictionary cc/j1939/MessageDictionary
+  * \brief Message type dictionary
+  */
+class MessageDictionary: public Object
+{
+public:
+    /** Create a null message type dictionary
+      */
+    MessageDictionary() = default;
+
+    /** Lookup CAN bus frame identifier and return the matching message type
+      * \param canId CAN bus frame identifier
+      * \param messageType Matching message type
+      * \return True if something was found, false otherwise
+      */
+    bool lookup(uint32_t canId, Out<MessageTypeInfo> messageType) const
+    {
+        return me().lookup(canId, messageType);
+    }
+
+    /** Get a map of all message types
+      */
+    Map<uint32_t, MessageTypeInfo> messageTypes() const
+    {
+        return me().messageTypes();
+    }
+
+protected:
+    struct State: public Object::State
+    {
+        /** \copydoc MessageDictionary::lookup()
+          */
+        virtual bool lookup(uint32_t canId, Out<MessageTypeInfo> entry) const = 0;
+
+        /** \copydoc MessageDictionary::members()
+          */
+        virtual Map<uint32_t, MessageTypeInfo> messageTypes() const = 0;
+    };
+
+    explicit MessageDictionary(State *newState):
+        Object{newState}
+    {}
+
+    static MessageTypeInfo::State *access(MessageTypeInfo &type)
+    {
+        return &type.me();
+    }
+
+    static MessageMemberInfo::State *access(MessageMemberInfo &member)
+    {
+        return &member.me();
+    }
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc::j1939

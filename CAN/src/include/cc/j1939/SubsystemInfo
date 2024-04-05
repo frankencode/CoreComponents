@@ -1,0 +1,63 @@
+/*
+ * Copyright (C) 2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/j1939/FunctionInfo>
+#include <cc/Map>
+
+namespace cc::j1939 {
+
+class FunctionId;
+
+/** \class SubsystemInfo cc/j1939/SubsystemInfo
+  * \brief Information about a subsystem
+  */
+class SubsystemInfo: public Object
+{
+public:
+    /** Create a null object
+      */
+    SubsystemInfo() = default;
+
+    /** Create new subsystem information
+      */
+    explicit SubsystemInfo(const String &name):
+        Object{new State{name}}
+    {}
+
+    /** Read subsystem information of \a functionId
+      */
+    explicit SubsystemInfo(FunctionId functionId);
+
+    /** Subsystem name
+      */
+    String name() const { return me().name_; }
+
+    /** Information about associated functions
+      */
+    const Map<int, FunctionInfo> &functionInfos() const { return me().functionInfos_; }
+
+private:
+    friend class SubsystemDictionary;
+
+    struct State: public Object::State
+    {
+        explicit State(const String &name):
+            name_{name}
+        {}
+
+        String name_;
+        Map<int, FunctionInfo> functionInfos_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+    State &me() { return Object::me.as<State>(); }
+};
+
+} // namespace cc::j1939
