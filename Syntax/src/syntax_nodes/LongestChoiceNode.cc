@@ -15,10 +15,8 @@ namespace cc::syntax {
 struct LongestChoiceNode::State: public SyntaxNode::State
 {
     explicit State(std::initializer_list<SyntaxNode> choices):
-        choices_{Array<SyntaxNode>::allocate(static_cast<long>(choices.size()))}
-    {
-        choices_ = choices;
-    }
+        choices_{choices}
+    {}
 
     explicit State(const Array<SyntaxNode> &choices):
         choices_{choices}

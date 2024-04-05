@@ -686,8 +686,11 @@ public:
       */
     String downcased() const
     {
-        String b = copy();
-        b.downcase();
+        String b;
+        if (count() > 0) {
+            b = copy();
+            b.downcase();
+        }
         return b;
     }
 

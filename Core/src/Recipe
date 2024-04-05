@@ -2,7 +2,12 @@ Library {
     name: CoreComponentsCore
     Dependency {
         probe: probe/cxx23.cc
-        compile-flags: [ -std=gnu++23, -Wno-psabi, -fmodules-ts ] // -fmodules-ts, -Wall, -Wextra, -pedantic
+        compile-flags: [ -std=gnu++23, -Wno-psabi ] // -Wall, -Wextra, -pedantic
+        cascade: true
+    }
+    Dependency {
+        probe: probe/gcc14.cc
+        compile-flags: [ -fmodules-ts ]
         cascade: true
     }
     Dependency {
