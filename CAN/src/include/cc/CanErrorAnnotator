@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class CanErrorAnnotator cc/CanErrorAnnotator
+  * \ingroup can
   * \brief Annotate CAN error frames
   *
   * The CanErrorAnnotator convert CAN error frames into human-readable form.

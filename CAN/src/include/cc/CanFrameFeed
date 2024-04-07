@@ -16,6 +16,7 @@ namespace cc {
 
 /** \internal
   * \class CanFrameFeed cc/CanFrameFeed
+  * \ingroup can
   * \brief CAN frame feed buffer
   */
 class CanFrameFeed: public CanMedia
@@ -38,7 +39,7 @@ public:
 protected:
     struct State: public CanMedia::State
     {
-        bool waitFrame(int timeout) override
+        bool wait(int timeout) override
         {
             if (timeout <= 0) return channel_.wait();
             return channel_.waitUntil(System::now() + 0.001 * timeout);

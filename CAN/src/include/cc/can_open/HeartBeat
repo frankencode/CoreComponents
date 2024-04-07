@@ -14,19 +14,29 @@
 
 namespace cc::can_open {
 
-/** \brief CANopen node status signal
+/** \class HeartBeat cc/can_open/HeartBeat
+  * \ingroup can_open
+  * \brief CANopen node status signal
   */
 class HeartBeat
 {
 public:
+    /** Unique message type name
+      */
     static const char *typeName() { return "can_open.heart_beat"; }
 
+    /** Create a new heart beat frame
+      */
     static CanFrame createFrame(int sourceId, NodeState nodeState);
 
+    /** Interpret \a frame as heart beat
+      */
     explicit HeartBeat(const CanFrame &frame):
         frame_{frame}
     {}
 
+    /** Interpretation is valid
+      */
     bool isValid() const
     {
         return
@@ -34,26 +44,36 @@ public:
             frame_.size() == 1;
     }
 
+    /** Interpretation is valid
+      */
     explicit operator bool() const
     {
         return isValid();
     }
 
+    /** CANopen Node ID of the originator of the heart beat
+      */
     int sourceId() const
     {
         return frame_.canId() - 0x700;
     }
 
+    /** Status of the node
+      */
     NodeState nodeState() const
     {
         return static_cast<NodeState>(frame_(0) & 0x7F);
     }
 
+    /** Toggle bit
+      */
     bool toggle() const
     {
         return frame_(0) & 0x80;
     }
 
+    /** Stringify this interpretation of a frame
+      */
     String toString() const;
 
 private:

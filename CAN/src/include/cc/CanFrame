@@ -15,6 +15,7 @@
 namespace cc {
 
 /** \class CanFrame cc/CanFrame
+  * \ingroup can
   * \brief CAN bus frame
   */
 class CanFrame final: public Object

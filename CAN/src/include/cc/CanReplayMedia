@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class CanReplayMedia cc/CanReplayMedia
+  * \ingroup can
   * \brief Play back CAN frames from a prior recording
   */
 class CanReplayMedia final: public CanMedia

@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class CanPeriodicEmitter cc/CanPeriodicEmitter
+  * \ingroup can
   * \brief Emit CAN frames in fixed time intervals
   * \todo Switch to a monotonic time source.
   */

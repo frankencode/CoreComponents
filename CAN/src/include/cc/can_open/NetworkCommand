@@ -10,14 +10,18 @@
 
 namespace cc::can_open {
 
-/** \brief Node state transition request
+/** \class NetworkCommand cc/can_open/NetworkCommand
+  * \ingroup can_open
+  * \brief %Node state transition request
   */
 class NetworkCommand final
 {
 public:
+    /** Unique message type name
+      */
     static constexpr const char *typeName() { return "can_open.network_command"; }
 
-    /** \brief Command specifier
+    /** Command specifier
       */
     enum class Specifier: uint8_t {
         Start  = 1,   ///< Request slave node(s) to enter Operational state
@@ -27,29 +31,46 @@ public:
         Reset  = 130  ///< Request slave node(s) to return to Initialization state (warm reset)
     };
 
+    /** Create a new node state transition request frame
+      */
     static CanFrame createFrame(Specifier command, int targetId = 0);
 
+    /** Create an interpreation of \a frame as network command
+      */
     explicit NetworkCommand(const CanFrame &frame):
         frame_{frame}
     {}
 
-    explicit operator bool() const { return isValid(); }
-
+    /** Interpretation is valid
+      */
     bool isValid() const
     {
         return frame_.canId() == 0 && frame_.size() == 2;
     }
 
+    /** Interpretation is valid
+      */
+    explicit operator bool() const
+    {
+        return isValid();
+    }
+
+    /** Command specifier
+      */
     Specifier specifier() const
     {
         return static_cast<Specifier>(frame_(0));
     }
 
+    /** Target node that is issued to transition its state
+      */
     int targetId() const
     {
         return frame_(1);
     }
 
+    /** Stringify this interpretation of a frame
+      */
     String toString() const;
 
 private:

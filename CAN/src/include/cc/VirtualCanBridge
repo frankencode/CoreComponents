@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class VirtualCanBridge cc/VirtualCanBridge
+  * \ingroup can
   * \brief Virtual CAN bridge
   */
 class VirtualCanBridge final: public Object

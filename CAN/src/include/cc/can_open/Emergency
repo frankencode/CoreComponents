@@ -13,9 +13,15 @@
 
 namespace cc::can_open {
 
+/** \class Emergency cc/can_open/Emergency
+  * \ingroup can_open
+  * \brief %Emergency messages
+  */
 class Emergency
 {
 public:
+    /** %Type of emergency
+      */
     enum class Type: uint16_t {
         None                = 0x0000, ///< No error or error reset
         Generic             = 0x1000, ///< Generic error
@@ -55,16 +61,22 @@ public:
         CanKeepAliveForNode = 0x8F00  ///< Node guarding or heart beat error monitoring a specific node being monitored
     };
 
+    /** Unique message type name
+      */
     static const char *typeName() { return "can_open.emergency"; }
 
+    /** Create a new emergency frame
+      */
     static CanFrame createFrame(int nodeId, Emergency::Type type, ErrorRegister errorRegister, uint64_t deviceError, int monitoredNodeId = 0);
 
+    /** Interpret \a frame as emergency
+      */
     explicit Emergency(const CanFrame &frame):
         frame_{frame}
     {}
 
-    explicit operator bool() const { return isValid(); }
-
+    /** Interpretation is valid
+      */
     bool isValid() const
     {
         return
@@ -72,16 +84,26 @@ public:
             frame_.size() == 8;
     }
 
+    /** Interpretation is valid
+      */
+    explicit operator bool() const { return isValid(); }
+
+    /** CANopen node ID of the originator of the emergency
+      */
     int nodeId() const
     {
         return frame_.canId() - 0x80;
     }
 
+    /** Type of emergency
+      */
     uint16_t typeCode() const
     {
         return frame_.data<uint16_t>(0, 1);
     }
 
+    /** Type of emergency
+      */
     Type type() const
     {
         uint16_t value = typeCode();
@@ -89,21 +111,29 @@ public:
         return static_cast<Type>(value);
     }
 
+    /** Copy of the node's error register
+      */
     ErrorRegister errorRegister() const
     {
         return static_cast<ErrorRegister>(frame_(2));
     }
 
+    /** Vendor-specific error code
+      */
     uint64_t vendorError() const
     {
         return frame_.data<uint64_t>(3, 7);
     }
 
+    /** CANopen node ID of the monitored node (if any)
+      */
     int monitoredNodeId() const
     {
         return (type() == Type::CanKeepAliveForNode) ? static_cast<uint16_t>(type()) - 0x8F00 : 0;
     }
 
+    /** Stringify this interpretation of a frame
+      */
     String toString() const;
 
 private:

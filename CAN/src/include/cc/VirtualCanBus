@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class VirtualCanBus cc/VirtualCanBus
+  * \ingroup can
   * \brief Virtual CAN bus
   * \see VirtualCanBridge
   */

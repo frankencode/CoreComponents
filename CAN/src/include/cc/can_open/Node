@@ -18,7 +18,9 @@
 namespace cc::can_open {
 
 /** \class Node cc/can_open/Node
-  * \brief Generic CANopen bus node
+  * \ingroup can_open
+  * \brief Abstract CANopen bus node
+  * \todo Add support for process data
   */
 class Node: public Object
 {

@@ -13,6 +13,7 @@
 namespace cc::can_open {
 
 /** \class EchoNode cc/can_open/EchoNode
+  * \ingroup can_open
   * \brief Simple CANopen test node
   */
 class EchoNode final: public Node

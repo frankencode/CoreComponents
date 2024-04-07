@@ -17,7 +17,7 @@ struct CanReplayMedia::State final: public CanMedia::State
         source_{text}
     {}
 
-    bool waitFrame(int timeout) override
+    bool wait(int timeout) override
     {
         return true;
     }

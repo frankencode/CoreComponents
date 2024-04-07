@@ -15,6 +15,7 @@
 namespace cc {
 
 /** \class CanLogger cc/CanLogger
+  * \ingroup can
   * \brief Generate annotated hexdumps of CAN bus traffic
   * \todo Switch to a monotonic time source
   */

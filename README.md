@@ -38,8 +38,8 @@ Download the latest stable version:
 ```
 mkdir -p ~/src
 cd ~/src
-curl -L https://www.corecomponents.io/download/CoreComponents-2.4.1.tar.gz | tar xzv
-ln -s ../CoreComponents-2.4.1 CoreComponents
+curl -L https://www.corecomponents.io/download/CoreComponents-3.0.0.tar.gz | tar xzv
+ln -s ../CoreComponents-3.0.0 CoreComponents
 ```
 
 Thereafter bootstrap the build system:

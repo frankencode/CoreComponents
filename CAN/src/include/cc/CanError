@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class CanError cc/CanError
+  * \ingroup can
   * \brief CAN error frames
   *
   * CAN error frames are special frames sent by the CAN bus driver to the user-level

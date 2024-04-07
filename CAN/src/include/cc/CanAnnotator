@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class CanAnnotator cc/CanAnnotator
+  * \ingroup can
   * \brief Annotate individual CAN frames
   */
 class CanAnnotator: public Object

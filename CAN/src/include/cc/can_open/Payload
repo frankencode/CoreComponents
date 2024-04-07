@@ -12,6 +12,10 @@
 
 namespace cc::can_open {
 
+/** \class Payload cc/can_open/Payload
+  * \ingroup can_open
+  * \brief Serialization/deserialization helper
+  */
 template<class T>
 class Payload
 {};

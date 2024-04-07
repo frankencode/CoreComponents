@@ -12,6 +12,11 @@
 
 namespace cc::can_open {
 
+/** \class Annotator cc/can_open/Annotator
+  * \ingroup can_open
+  * \brief CANopen frame annotator
+  * \see CanLogger
+  */
 class Annotator final: public CanAnnotator
 {
 public:

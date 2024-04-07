@@ -137,3 +137,21 @@
   * \ingroup ui
   * Automatic placement and sizing of UI elements
   */
+
+/** \defgroup can CAN bus
+  * Controller Area Network bus
+  */
+
+/** \defgroup can_open CANopen
+  * \ingroup can
+  * CANopen bus protocol
+  */
+
+/** \defgroup j1939 SAE J1939
+  * \ingroup can
+  * SAE J1939 bus protocol
+  */
+
+/** \defgroup isobus ISOBUS
+  * ISOBUS bus protocol
+  */

@@ -13,18 +13,32 @@
 
 namespace cc::can_open {
 
-/** \brief CANopen node status emitter
+/** \class HeartBeatGenerator cc/can_open/HeartBeatGenerator
+  * \ingroup can_open
+  * \brief CANopen node status emitter
   * \todo make use of a monotonic time source (without leap seconds or other discontinueties)
   */
 class HeartBeatGenerator final: public Object
 {
 public:
+    /** Create a new heart beat generator
+      */
     HeartBeatGenerator(int nodeId, const CanMedia &media);
 
+    /** Heart beat interval (in seconds)
+      */
     uint16_t interval() const;
+
+    /** Set the heart beat interval (in seconds)
+      */
     void setInterval(uint16_t newInterval);
 
+    /** Current node state
+      */
     NodeState nodeState() const;
+
+    /** Set current node state
+      */
     void setNodeState(NodeState newNodeState);
 
 private:

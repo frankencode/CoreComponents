@@ -35,7 +35,6 @@ public:
       */
     uint16_t sum() const;
 
-
 private:
     friend uint16_t crc16(const void *buffer, long size);
     friend uint16_t crc16(const char *buffer);

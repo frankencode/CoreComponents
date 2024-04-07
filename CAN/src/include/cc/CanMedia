@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class CanMedia cc/CanMedia
+  * \ingroup can
   * \brief CAN bus communication media
   */
 class CanMedia: public Object
@@ -29,7 +30,7 @@ public:
       */
     bool wait(int timeout = -1)
     {
-        return me().waitFrame(timeout);
+        return me().wait(timeout);
     }
 
     /** Wait for a frame to be received before \a time
@@ -79,9 +80,9 @@ protected:
       */
     struct State: public Object::State
     {
-        /** \copydoc CanMedia::waitFrame()
+        /** \copydoc CanMedia::wait()
           */
-        virtual bool waitFrame(int timeout = -1) = 0;
+        virtual bool wait(int timeout = -1) = 0;
 
         /** \copydoc CanMedia::read()
           */

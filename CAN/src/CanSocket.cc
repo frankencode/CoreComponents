@@ -60,7 +60,7 @@ struct CanSocket::State final: public CanMedia::State
         }
     }
 
-    bool waitFrame(int timeout = -1) override
+    bool wait(int timeout = -1) override
     {
         return socket_.wait(IoEvent::ReadyRead, timeout);
     }
