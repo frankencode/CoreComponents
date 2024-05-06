@@ -1,0 +1,97 @@
+/** \namespace cc
+  * \brief %Root namespace of all %CoreComponents libraries
+  */
+
+/** \internal
+  * \namespace cc::bucket
+  * \brief Bucket Trees
+  */
+
+/** \defgroup core Core Concepts
+  * Fundamental high-level language primitives
+  */
+
+/** \internal
+  * \defgroup basics Simple Objects
+  * Simple objects: ownership and life-cycle
+  */
+
+/** \defgroup objects Objects
+  * \ingroup core
+  * Objects with value semantics: ownership and life-cycle
+  */
+
+/** \defgroup container High-level Container
+  * \ingroup core
+  * High-level data structures for in-memory data organisation
+  */
+
+/** \defgroup container_lowlevel Low-level Container
+  * \ingroup core
+  * Low-level data structures for in-memory data organisation
+  */
+
+/** \defgroup strings String Processing
+  * \ingroup core
+  * String processing, number parsing and number formatting
+  */
+
+/** \defgroup streams I/O Streams
+  * \ingroup core
+  * Binary input/output streams and formatted text output
+  */
+
+/** \defgroup file_system File System
+  * \ingroup core
+  * Access files and directories
+  */
+
+/** \defgroup unicode Unicode
+  * \ingroup core
+  * Iteration and validation of Unicode encoded strings
+  */
+
+/** \defgroup threads Multi-threading
+  * \ingroup core
+  * Multi-threading, thread synchronization and scheduling
+  */
+
+/** \defgroup process Multi-processing
+  * \ingroup core
+  * Multi-processing, signalling and inter-process communication
+  */
+
+/** \defgroup net Networking
+  * \ingroup core
+  * Network sockets, status and routing information
+  */
+
+/** \defgroup exceptions Exceptions
+  * \ingroup core
+  * Exception classes and error handling convenience functions
+  */
+
+/** \defgroup math Math Utility
+  * \ingroup core
+  * Number rounding and other common utility functions
+  */
+
+/** \defgroup meta Meta Types
+  * \ingroup core
+  * %Object serialization, deserialization and validation
+  */
+
+/** \defgroup misc Miscellaneous
+  * \ingroup core
+  * Utility classes and helper functions
+  */
+
+/** \defgroup binary Bits and Bytes
+  * \ingroup core
+  * %Bit coding and byte order
+  */
+
+/** \module cc.core
+  * \ingroup core
+  * \copybrief core
+  */

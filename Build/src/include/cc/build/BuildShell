@@ -13,6 +13,9 @@
 
 namespace cc::build {
 
+/** \class BuildShell cc/build/BuildShell
+  * \brief %Delegate to handle file system related shell commands
+  */
 class BuildShell
 {
 public:

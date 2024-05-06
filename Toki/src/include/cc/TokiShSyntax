@@ -12,6 +12,10 @@
 
 namespace cc {
 
+/** \class TokiShSyntax cc/TokiShSyntax
+  * \ingroup toki
+  * \brief Bash shell highlighting syntax
+  */
 class TokiShSyntax final: public TokiHighlightingSyntax
 {
 public:

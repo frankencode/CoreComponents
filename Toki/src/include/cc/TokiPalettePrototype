@@ -10,7 +10,8 @@
 
 namespace cc {
 
-/** \internal
+/** \class TokiPalettePrototype cc/TokiPalettePrototype
+  * \ingroup toki
   * \brief Meta-prototype for TokiPalette
   */
 class TokiPalettePrototype final: public MetaPrototype

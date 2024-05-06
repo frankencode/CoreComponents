@@ -18,7 +18,8 @@ class BuildShell;
 class ToolChain;
 class JobScheduler;
 
-/** \brief %Stage of the multi-stage build process
+/** \class BuildStage cc/build/BuildStage
+  * \brief %Stage of the multi-stage build process
   */
 class BuildStage
 {

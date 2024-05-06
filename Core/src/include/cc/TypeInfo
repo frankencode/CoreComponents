@@ -15,7 +15,8 @@
 
 namespace cc {
 
-/** \brief Variant type information
+/** \class TypeInfo cc/TypeInfo
+  * \brief %Variant type information
   * \todo Make builtin variant types share same TLS storage.
   * \todo rename to VariantType::Info
   */

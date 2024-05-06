@@ -16,6 +16,9 @@ namespace cc::build {
 
 class BuildPlan;
 
+/** \class LinkJob cc/build/LinkJob
+  * \brief Link jobs are special and need a distinct description
+  */
 class LinkJob final: public Job
 {
 public:

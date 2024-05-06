@@ -17,7 +17,7 @@ namespace cc {
 class TokenScreen;
 
 /** \class Token cc/Token
-  * \ingroup syntax
+  * \ingroup syntax_def
   * \brief Syntax production
   */
 class Token final: public Object

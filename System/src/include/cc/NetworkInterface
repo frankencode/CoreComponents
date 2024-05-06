@@ -45,7 +45,7 @@ enum class NetworkInterfaceFlags: unsigned {
 CC_BITMASK(NetworkInterfaceFlags)
 
 /** \class NetworkLabel cc/NetworkInterface
-  * \ingroup net
+  * \ingroup sysinfo
   * \brief %Network interface address information
   */
 class NetworkLabel: public Object

@@ -12,6 +12,10 @@
 
 namespace cc {
 
+/** \class TokiCxxSyntax cc/TokiCxxSyntax
+  * \ingroup toki
+  * \brief C++ highlighting syntax
+  */
 class TokiCxxSyntax final: public TokiHighlightingSyntax
 {
 public:

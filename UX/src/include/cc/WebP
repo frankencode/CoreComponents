@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class WebP cc/WebP
   * \ingroup ui
-  * \brief Read and write WebP image files
+  * \brief Read and write %WebP image files
   */
 class WebP final: public Object
 {

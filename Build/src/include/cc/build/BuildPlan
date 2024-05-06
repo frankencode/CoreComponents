@@ -30,7 +30,8 @@ class TestRunStage;
 class InstallStage;
 class UninstallStage;
 
-/** \brief %Build instructions according to a %Recipe
+/** \class BuildPlan cc/build/BuildPlan
+  * \brief %Build instructions according to a %Recipe
   */
 class BuildPlan final: public BuildParameters
 {

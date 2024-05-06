@@ -16,6 +16,12 @@ namespace cc::build {
 
 class JobScheduler;
 
+/** \class CodyServer cc/build/CodyServer
+  * \brief CoDy protocol server
+  *
+  * The CoDy server is provided by the build system and allows the compiler
+  * to establish CoDy protocol communication.
+  */
 class CodyServer final: public Object
 {
 public:

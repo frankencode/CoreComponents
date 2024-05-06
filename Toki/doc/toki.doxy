@@ -1,0 +1,8 @@
+/** \defgroup toki Syntax Highlighting
+  * Syntax highlighting of C/C++ sourcecode files
+  */
+
+/** \module cc.toki
+  * \ingroup toki
+  * \copybrief toki
+  */

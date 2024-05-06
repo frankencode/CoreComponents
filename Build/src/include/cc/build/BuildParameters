@@ -13,7 +13,8 @@
 
 namespace cc::build {
 
-/** \brief Build parameters
+/** \class BuildParameters cc/build/BuildParameters
+  * \brief %Build parameters
   */
 class BuildParameters: public Object
 {

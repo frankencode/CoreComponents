@@ -12,7 +12,8 @@
 
 namespace cc::build {
 
-/** \brief Copy executables, libraries, headers and resources to default system directories
+/** \class InstallStage cc/build/InstallStage
+  * \brief Copy executables, libraries, headers and resources to default system directories
   */
 class InstallStage: public BuildStage
 {

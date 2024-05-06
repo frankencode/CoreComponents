@@ -1,0 +1,23 @@
+/** \defgroup system Operating System Specifics
+  * Operating system specific facilities
+  */
+
+/** \defgroup sysinfo System Information
+  * \ingroup system
+  * User database and other system information
+  */
+
+/** \defgroup plugins Plugin Libraries
+  * \ingroup system
+  * Locating and loading plugin libraries
+  */
+
+/** \defgroup ipc Inter-Process Communication
+  * \ingroup system
+  * Legacy Inter-Process Communication (IPC) facilities
+  */
+
+/** \module cc.system
+  * \ingroup system
+  * \copybrief system
+  */

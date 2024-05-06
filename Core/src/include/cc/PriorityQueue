@@ -110,27 +110,26 @@ public:
 
     ///@}
 
-    /** \internal
-      * \name Standard Iterators
+    /** \name Standard Iterators
       */
     ///@{
 
-    using value_type = Item; ///< \internal Item value type
-    using size_type = long; ///< \internal Type of the container capacity
+    using value_type = Item; ///< Item value type
+    using size_type = long; ///< Type of the container capacity
 
-    using const_iterator = Iterator<const PriorityQueue>; ///< \internal Readonly value iterator
+    using const_iterator = Iterator<const PriorityQueue>; ///< Readonly value iterator
 
-    const_iterator begin () const { return head(); } ///< \internal %Return readonly iterator pointing to the first item (if any)
-    const_iterator cbegin() const { return head(); } ///< \internal %Return readonly iterator pointing to the first item (if any)
-    const_iterator end   () const { return Locator{count()}; } ///< \internal %Return readonly iterator pointing behind the last item
-    const_iterator cend  () const { return Locator{count()}; } ///< \internal %Return readonly iterator pointing behind the last item
+    const_iterator begin () const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
 
-    using const_reverse_iterator = ReverseIterator<const PriorityQueue>; ///< \internal Readonly reverse value iterator
+    using const_reverse_iterator = ReverseIterator<const PriorityQueue>; ///< Readonly reverse value iterator
 
-    const_reverse_iterator rbegin () const { return tail(); } ///< \internal %Return readonly reverse iterator pointing to the last item (if any)
-    const_reverse_iterator crbegin() const { return tail(); } ///< \internal %Return readonly reverse iterator pointing to the last item (if any)
-    const_reverse_iterator rend   () const { return Locator{-1}; } ///< \internal %Return reverse iterator pointing before the first item
-    const_reverse_iterator crend  () const { return Locator{-1}; } ///< \internal %Return reverse iterator pointing before the first item
+    const_reverse_iterator rbegin () const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const { return Locator{-1}; } ///< %Return reverse iterator pointing before the first item
 
     ///@}
 

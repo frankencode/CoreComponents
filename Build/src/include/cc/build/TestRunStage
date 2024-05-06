@@ -12,7 +12,8 @@
 
 namespace cc::build {
 
-/** \brief Run unit test programs
+/** \class TestRunStage cc/build/TestRunStage
+  * \brief Run unit test programs
   */
 class TestRunStage: public BuildStage
 {

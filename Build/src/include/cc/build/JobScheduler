@@ -12,7 +12,8 @@
 
 namespace cc::build {
 
-/** \brief Background job scheduler
+/** \class JobScheduler cc/build/JobScheduler
+  * \brief Background job scheduler
   * \note The JobScheduler itself is not meant to be shared between threads
   * \todo Establish a clean shutdown logic in case a signal is received (e.g. with a SignalMaster).
   */

@@ -16,7 +16,8 @@
 
 namespace cc {
 
-/** \class Context cc/PulseContext
+/** \class PulseContext cc/PulseContext
+  * \ingroup pulse_audio
   * \brief %Pulse %Audio client context
   */
 class PulseContext final: public Object

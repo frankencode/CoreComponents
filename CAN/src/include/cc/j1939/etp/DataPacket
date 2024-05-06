@@ -12,7 +12,7 @@
 
 namespace cc::j1939::etp {
 
-/** \class DataTransfer cc/j1939/etp/DataPacket
+/** \class DataPacket cc/j1939/etp/DataPacket
   * \brief Data packet of a multi-packet message
   */
 class DataPacket final: public Message

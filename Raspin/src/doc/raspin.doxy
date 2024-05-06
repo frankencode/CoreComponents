@@ -1,0 +1,8 @@
+/** \defgroup raspin Raspberry Pi GPIOs
+  * Read/write GPIOs of the Raspberry Pi
+  */
+
+/** \module cc.raspin
+  * \ingroup raspin
+  * \copybrief raspin
+  */

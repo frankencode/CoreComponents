@@ -12,7 +12,8 @@
 
 namespace cc::build {
 
-/** \brief Gather list of source files and decide which need to be compiled
+/** \class GlobbingStage cc/build/GlobbingStage
+  * \brief Gather list of source files and decide which need to be compiled
   */
 class GlobbingStage: public BuildStage
 {

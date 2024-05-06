@@ -12,6 +12,9 @@
 
 namespace cc::build {
 
+/** \class CodyBlockSource cc/build/CodyBlockSource
+  * \brief Block-wise reception of CoDy protocol messages
+  */
 class CodyBlockSource final: public Object
 {
 public:

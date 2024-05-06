@@ -7,7 +7,6 @@
 #include <cc/CanFrameFeed>
 #include <cc/CanLogger>
 #include <cc/CanMedia>
-#include <cc/can_open>
 #include <cc/CanPeriodicEmission>
 #include <cc/CanPeriodicEmitter>
 #include <cc/CanReplayMedia>

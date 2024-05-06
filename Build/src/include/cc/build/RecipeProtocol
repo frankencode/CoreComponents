@@ -12,6 +12,9 @@
 
 namespace cc::build {
 
+/** \class RecipeProtocol cc/build/RecipeProtocol
+  * \brief %Protocol description of the %Recipe files
+  */
 class RecipeProtocol: public MetaProtocol
 {
 public:

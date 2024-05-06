@@ -1,0 +1,26 @@
+/** Namespace for application styling color palettes
+  */
+namespace cc::color {}
+
+/** \defgroup color Color Palettes
+  * Common color palettes
+  */
+
+/** \defgroup ui User Interface
+  * Graphical user-interfaces with windows, buttons, etc.
+  */
+
+/** \defgroup ui_buttons Buttons
+  * \ingroup ui
+  * Button of different styles and shapes
+  */
+
+/** \defgroup ui_layout Layouts
+  * \ingroup ui
+  * Automatic placement and sizing of UI elements
+  */
+
+/** \module cc.ux
+  * \ingroup ui
+  * \copybrief ui
+  */

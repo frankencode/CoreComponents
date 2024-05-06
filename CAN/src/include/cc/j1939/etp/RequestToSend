@@ -13,7 +13,7 @@
 namespace cc::j1939::etp {
 
 /** \class RequestToSend cc/j1939/etp/RequestToSend
-  * \brief Request to send message
+  * \brief %Request to send message
   */
 class RequestToSend final: public ConnectionManagement
 {

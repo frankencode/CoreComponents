@@ -14,6 +14,7 @@
 namespace cc {
 
 /** \class Raspin cc/Raspin
+  * \ingroup raspin
   * \brief Raspberry Pi GPIO register access
   */
 class Raspin final: public Singleton

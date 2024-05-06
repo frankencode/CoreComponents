@@ -134,6 +134,6 @@
 #include <cc/WebP>
 #include <cc/WebPPlugin>
 #include <cc/WheelEvent>
-#include <cc/colors/Elementary>
-#include <cc/colors/Material>
-#include <cc/colors/Web>
+#include <cc/color/Elementary>
+#include <cc/color/Material>
+#include <cc/color/Web>

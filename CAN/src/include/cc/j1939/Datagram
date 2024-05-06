@@ -26,7 +26,7 @@ public:
       * \param pgn %Message type
       * \param src %Address of sender
       * \param dst %Address of recipient
-      * \param message %Message to be transmitted
+      * \param data %Message to be transmitted
       */
     Datagram(uint32_t pgn, uint8_t src, uint8_t dst, const String &data):
         pgn_{pgn},

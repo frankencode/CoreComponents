@@ -13,7 +13,8 @@
 
 namespace cc {
 
-/** \internal
+/** \class TokiStyle cc/TokiStyle
+  * \ingroup toki
   * \brief Syntax highlighting style
   */
 class TokiStyle final: public MetaObject

@@ -1,2 +1,2 @@
-export module toki;
+export module cc.toki;
 export import <cc/toki>;

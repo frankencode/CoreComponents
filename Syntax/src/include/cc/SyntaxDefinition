@@ -48,7 +48,7 @@
 namespace cc {
 
 /** \class SyntaxDefinition cc/SyntaxDefinition
-  * \ingroup syntax
+  * \ingroup syntax_def
   * \brief Computer language syntax definition
   */
 class SyntaxDefinition: public Object

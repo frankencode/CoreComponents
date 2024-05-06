@@ -12,8 +12,8 @@
 
 namespace cc {
 
-/** \internal
-  * \class CsvSyntax cc/CsvSyntax
+/** \class CsvSyntax cc/CsvSyntax
+  * \ingroup csv
   * \brief CSV syntax definition
   * \see CsvSource
   */

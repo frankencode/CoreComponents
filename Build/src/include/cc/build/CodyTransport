@@ -13,6 +13,13 @@
 
 namespace cc::build {
 
+/** \class CodyTransport cc/build/CodyTransport
+  * \brief Block-wise CoDy message transport layer
+  *
+  * The CoDy protocol requires request send in blocks to be replied up in matching
+  * reply blocks. The CodyTransport layer keeps track of incoming message blocks and
+  * forms accordingly matching outgoing message blocks.
+  */
 class CodyTransport final: public Object
 {
 public:

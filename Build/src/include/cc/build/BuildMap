@@ -12,6 +12,9 @@
 
 namespace cc::build {
 
+/** \class BuildMap cc/build/BuildMap
+  * \brief Global map of all build plans loaded during a build
+  */
 class BuildMap: public Object
 {
 public:

@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class InetAddressSyntax cc/InetAddressSyntax
-  * \ingroup syntax
+  * \ingroup syntax_def
   * \brief Syntax of an internet address
   */
 class InetAddressSyntax final: public SyntaxDefinition

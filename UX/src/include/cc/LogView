@@ -15,7 +15,7 @@ namespace cc {
 
 /** \class LogView cc/LogView
   * \ingroup ui
-  * \brief Text log view
+  * \brief %Text log view
   * \see FlickableIndicator
   * \todo Add support for line spacing.
   */

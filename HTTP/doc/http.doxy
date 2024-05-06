@@ -1,0 +1,28 @@
+/** \defgroup http HTTP Protocol
+  * Hyper-Text Transfer Protocol
+  */
+
+/** \defgroup tls TLS
+  * \ingroup http
+  * Seemless encryption and authentification of data streams
+  */
+
+/** \defgroup http_protocol HTTP Protocol
+  * \ingroup http
+  * HTTP protocol building blocks
+  */
+
+/** \defgroup http_client HTTP Client
+  * \ingroup http
+  * HTTP client building blocks
+  */
+
+/** \defgroup http_server HTTP Server
+  * \ingroup http
+  * HTTP server building blocks
+  */
+
+/** \module cc.http
+  * \ingroup http
+  * \copybrief http
+  */

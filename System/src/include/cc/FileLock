@@ -14,7 +14,7 @@
 namespace cc {
 
 /** \class FileLock cc/FileLock
-  * \ingroup file_system
+  * \ingroup ipc
   * \brief Advisory file lock
   * \see Guard
   * \exception SystemError

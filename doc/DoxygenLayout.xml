@@ -40,7 +40,7 @@
       <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
     <tab type="pages" visible="yes" title="" intro=""/>
-    <tab type="user" url="download/" title="Download"/>
+    <!-- <tab type="user" url="download/" title="Download"/> -->
     <tab type="examples" visible="yes" title="" intro=""/>
   </navindex>
 

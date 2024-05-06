@@ -933,37 +933,36 @@ public:
 
     ///@}
 
-    /** \internal
-      * \name Standard Iterators
+    /** \name Standard Iterators
       */
     ///@{
 
-    using value_type = Item; ///< \internal Item value type
-    using size_type = long; ///< \internal Type of the container capacity
+    using value_type = Item; ///< Item value type
+    using size_type = long; ///< Type of the container capacity
 
-    using iterator = ArrayIterator<String, 1>; ///< \internal Value iterator
+    using iterator = ArrayIterator<String, 1>; ///< Value iterator
 
-    iterator begin() { return iterator{*this, 0}; } ///< \internal %Return iterator pointing to the first item (if any)
-    iterator end  () { return iterator{*this, count()}; } ///< \internal %Return iterator pointing behind the last item
+    iterator begin() { return iterator{*this, 0}; } ///< %Return iterator pointing to the first item (if any)
+    iterator end  () { return iterator{*this, count()}; } ///< %Return iterator pointing behind the last item
 
-    using const_iterator = ArrayIterator<const String, 1>; ///< \internal Readonly value iterator
+    using const_iterator = ArrayIterator<const String, 1>; ///< Readonly value iterator
 
-    const_iterator begin () const { return const_iterator{*this, 0}; } ///< \internal %Return readonly iterator pointing to the first item (if any)
-    const_iterator cbegin() const { return const_iterator{*this, 0}; } ///< \internal %Return readonly iterator pointing to the first item (if any)
-    const_iterator end   () const { return const_iterator{*this, count()}; } ///< \internal %Return readonly iterator pointing behind the last item
-    const_iterator cend  () const { return const_iterator{*this, count()}; } ///< \internal %Return readonly iterator pointing behind the last item
+    const_iterator begin () const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator cbegin() const { return const_iterator{*this, 0}; } ///< %Return readonly iterator pointing to the first item (if any)
+    const_iterator end   () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
+    const_iterator cend  () const { return const_iterator{*this, count()}; } ///< %Return readonly iterator pointing behind the last item
 
-    using reverse_iterator = ArrayIterator<String, -1>; ///< \internal Reverse value iterator
+    using reverse_iterator = ArrayIterator<String, -1>; ///< Reverse value iterator
 
-    reverse_iterator rbegin() { return reverse_iterator{*this, count() - 1}; } ///< \internal %Return reverse iterator pointing to the last item (if any)
-    reverse_iterator rend  () { return reverse_iterator{*this, -1}; } ///< \internal %Return reverse iterator pointing before the first item
+    reverse_iterator rbegin() { return reverse_iterator{*this, count() - 1}; } ///< %Return reverse iterator pointing to the last item (if any)
+    reverse_iterator rend  () { return reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
 
-    using const_reverse_iterator = ArrayIterator<const String, -1>; ///< \internal Readonly reverse value iterator
+    using const_reverse_iterator = ArrayIterator<const String, -1>; ///< Readonly reverse value iterator
 
-    const_reverse_iterator rbegin () const { return const_reverse_iterator{*this, count() - 1}; } ///< \internal %Return readonly reverse iterator pointing to the last item (if any)
-    const_reverse_iterator crbegin() const { return const_reverse_iterator{*this, count() - 1}; } ///< \internal %Return readonly reverse iterator pointing to the last item (if any)
-    const_reverse_iterator rend   () const { return const_reverse_iterator{*this, -1}; } ///< \internal %Return reverse iterator pointing before the first item
-    const_reverse_iterator crend  () const { return const_reverse_iterator{*this, -1}; } ///< \internal %Return reverse iterator pointing before the first item
+    const_reverse_iterator rbegin () const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator crbegin() const { return const_reverse_iterator{*this, count() - 1}; } ///< %Return readonly reverse iterator pointing to the last item (if any)
+    const_reverse_iterator rend   () const { return const_reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
+    const_reverse_iterator crend  () const { return const_reverse_iterator{*this, -1}; } ///< %Return reverse iterator pointing before the first item
 
     ///@}
 

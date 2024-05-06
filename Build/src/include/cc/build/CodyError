@@ -12,6 +12,9 @@
 
 namespace cc::build {
 
+/** \class CodyError cc/build/CodyError
+  * \brief CoDy related communication issue between compiler and build system
+  */
 class CodyError final: public Exception
 {
 public:

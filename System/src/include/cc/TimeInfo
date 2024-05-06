@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class TimeInfo cc/TimeInfo
+  * \ingroup sysinfo
   * \brief %Timezone information record
   * \see Timezone
   */

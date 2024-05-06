@@ -12,6 +12,9 @@
 
 namespace cc::build {
 
+/** \class GnuToolChain cc/build/GnuToolChain
+  * \brief GNU compatible toolchain interaction
+  */
 class GnuToolChain final: public ToolChain
 {
 public:

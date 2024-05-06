@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class IntegerSyntax cc/IntegerSyntax
-  * \ingroup syntax
+  * \ingroup syntax_def
   * \brief C-style integer literals
   * \see readNumber()
   */

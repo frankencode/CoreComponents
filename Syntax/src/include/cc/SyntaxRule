@@ -15,7 +15,7 @@ namespace cc {
 class Token;
 
 /** \class SyntaxRule cc/SyntaxRule
-  * \ingroup syntax
+  * \ingroup syntax_def
   * \brief Syntactic rule within a syntax definition.
   */
 class SyntaxRule: public syntax::SyntaxNode

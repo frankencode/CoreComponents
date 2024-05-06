@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \internal
+/** \class TokiTheme cc/TokiTheme
+  * \ingroup toki
   * \brief Syntax highlighting theme
   */
 class TokiTheme final: public Object

@@ -22,7 +22,7 @@ public:
       */
     enum class Type: uint8_t
     {
-        RequestToSend     = 0x14, ///< Request to send (RTS)
+        RequestToSend     = 0x14, ///< %Request to send (RTS)
         ClearToSend       = 0x15, ///< Clear to send (CTS)
         DataPacketOffset  = 0x16, ///< Data Packet Offset (DPO)
         EndOfMessage      = 0x17, ///< End of message acknowledgement (EOM_ACK)

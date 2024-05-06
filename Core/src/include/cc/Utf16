@@ -26,13 +26,16 @@ public:
         return 2 * (1 + (0xFFFF < ch));
     }
 
-    /** Create a UTF-16 facade for word sequence \a s of length \a n
+    /** Create an UTF-16 facade for the UTF-16 string \a s of length \a n
       */
     Utf16(const std::uint16_t *s, long n):
         s_{s},
         n_{n}
     {}
 
+    /** Create an UTF-16 facade for reading the UTF-16 encoded string \a s
+      * \todo FIXME argument type should be Bytes
+      */
     Utf16(const String &s):
         s_{&s.item<std::uint16_t>(0)},
         n_{s.count() / 2}

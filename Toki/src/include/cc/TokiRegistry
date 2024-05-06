@@ -13,8 +13,9 @@
 
 namespace cc {
 
-/** \internal
-  * \brief TokiLanguage registry
+/** \class TokiRegistry cc/TokiRegistry
+  * \ingroup toki
+  * \brief Toki language registry
   */
 class TokiRegistry final: public Singleton
 {

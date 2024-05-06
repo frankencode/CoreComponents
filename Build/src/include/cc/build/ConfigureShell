@@ -13,7 +13,10 @@
 
 namespace cc::build {
 
-class ConfigureShell: public Object
+/** \class ConfigureShell cc/build/ConfigureShell
+  * \brief %Singleton delegate to run configuration stage commands
+  */
+class ConfigureShell final: public Object
 {
 public:
     ConfigureShell();

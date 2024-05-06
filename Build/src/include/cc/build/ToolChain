@@ -18,6 +18,9 @@
 
 namespace cc::build {
 
+/** \class ToolChain cc/build/ToolChain
+  * \brief Generic interface of a C/C++ toolchain
+  */
 class ToolChain: public Object
 {
 public:

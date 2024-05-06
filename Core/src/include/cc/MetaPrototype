@@ -29,7 +29,7 @@ public:
 
     /** Create a meta-prototype
       * \param className %Name of the object class
-      * \param protocol \copydoc protocol()
+      * \param protocol Allowed types for children
       */
     MetaPrototype(const String &className, const MetaProtocol &protocol);
 
@@ -37,7 +37,9 @@ public:
       */
     MetaPrototype() = default;
 
-    const MetaProtocol &protocol() const; ///< %Children protocol: allowed types for children
+    /** %Children protocol: allowed types for children
+      */
+    const MetaProtocol &protocol() const;
 
 protected:
     friend class Object;

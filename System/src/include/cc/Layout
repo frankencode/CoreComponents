@@ -17,8 +17,9 @@
 
 namespace cc {
 
-/** \class Layout cc/Layout
-  * \ingroup misc
+/** \internal
+  * \class Layout cc/Layout
+  * \ingroup system
   * \brief %Layout data container
   * \tparam T Item type
   * \tparam E Extent type

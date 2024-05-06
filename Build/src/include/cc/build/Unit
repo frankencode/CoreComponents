@@ -12,6 +12,9 @@
 
 namespace cc::build {
 
+/** \class Unit cc/build/Unit
+  * \brief A C/C++ translation unit
+  */
 class Unit final: public Object
 {
 public:

@@ -99,7 +99,6 @@
 #include <cc/Semaphore>
 #include <cc/ServerSocket>
 #include <cc/Set>
-#include <cc/SetNext>
 #include <cc/Shared>
 #include <cc/Signal>
 #include <cc/SignalMaster>

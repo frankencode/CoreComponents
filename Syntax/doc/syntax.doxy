@@ -1,0 +1,28 @@
+/** \defgroup syntax Scanning, Matching and Parsing
+  * Recursive descent parsing, regular expression matching, file globbing and more
+  */
+
+/** \defgroup csv Comma Separated Values
+  * \ingroup syntax
+  * Standard formatting and parsing of CSV files
+  */
+
+/** \defgroup glob Pattern Matching
+  * \ingroup syntax
+  * String and file name pattern matching
+  */
+
+/** \defgroup syntax_def Syntax Definition
+  * \ingroup syntax
+  * Building blocks for building recursive descent parsers
+  */
+
+/** \brief Namespace of the CoreComponent syntax description framework.
+  * \ingroup syntax_def
+  */
+namespace cc::syntax {}
+
+/** \module cc.syntax
+  * \ingroup syntax
+  * \copybrief syntax
+  */

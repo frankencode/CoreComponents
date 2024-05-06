@@ -13,7 +13,10 @@
 
 namespace cc::build {
 
-class CodyMessage
+/** \class CodyMessage cc/build/CodyMessage
+  * \brief CoDy protocol message
+  */
+class CodyMessage final
 {
 public:
     enum Flags {

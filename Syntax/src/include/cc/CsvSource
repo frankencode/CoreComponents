@@ -16,7 +16,7 @@ namespace cc {
 
 /** \class CsvSource cc/CsvSource
   * \brief Read records from a CSV formatted input text
-  * \ingroup misc
+  * \ingroup csv
   *
   * The CSV syntax follows closely the CSV syntax definition of RFC 4180, but is more relaxed in
   * several ways. Firstly it also supports text data beyond the printable ASCII range and thereby

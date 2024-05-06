@@ -7,7 +7,7 @@
  */
 
 #include <cc/MaterialDark>
-#include <cc/colors/Material>
+#include <cc/color/Material>
 
 namespace cc {
 

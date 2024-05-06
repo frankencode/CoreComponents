@@ -12,6 +12,9 @@
 
 namespace cc::build {
 
+/** \class UninstallStage cc/build/UninstallStage
+  * \brief Remove installed files
+  */
 class UninstallStage: public BuildStage
 {
 public:

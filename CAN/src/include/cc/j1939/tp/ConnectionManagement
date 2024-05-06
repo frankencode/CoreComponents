@@ -22,7 +22,7 @@ public:
       */
     enum class Type: uint8_t
     {
-        RequestToSend     = 0x10, ///< Request to send (RTS)
+        RequestToSend     = 0x10, ///< %Request to send (RTS)
         ClearToSend       = 0x11, ///< Clear to send (CTS)
         EndOfMessage      = 0x13, ///< End of message acknowledgement (EOM_ACK)
         BroadcastAnnounce = 0x20, ///< Broadcast announce (BAM)

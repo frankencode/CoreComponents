@@ -13,6 +13,9 @@
 
 namespace cc::build {
 
+/** \class CodyMessageSyntax cc/build/CodyMessageSyntax
+  * \brief %Syntax of the CoDy messages
+  */
 class CodyMessageSyntax final: public Object
 {
 public:

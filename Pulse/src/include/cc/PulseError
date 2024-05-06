@@ -12,6 +12,10 @@
 
 namespace cc {
 
+/** \class PulseError cc/PulseError
+  * \ingroup pulse_audio
+  * \brief Something went wrong with PulseAudio
+  */
 class PulseError: public Exception
 {
 public:

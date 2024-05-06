@@ -1,0 +1,8 @@
+/** \defgroup pulse_audio PulseAudio Bindings
+  * Basic PulseAudio bindings
+  */
+
+/** \module cc.pulse
+  * \ingroup pulse_audio
+  * \copybrief pulse_audio
+  */

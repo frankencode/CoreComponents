@@ -154,22 +154,23 @@ struct CodyWorker::State final: public Object::State
         }
     }
 
-    Stream stream_;
-    String cachePrefix_;
-    Thread thread_;
-    CodyError error_;
-    int compilerProtocolVersion_ { 0 };
-    bool established_ { false };
-    String target_;
-    String module_;
-    List<String> includes_;
-    List<String> imports_;
-    ImportManager importManager_;
-    Function<bool(const String &, Out<String>, Out<bool>)> onIncludeTranslate_;
-    Function<String(const String &)> onModuleExport_;
-    Function<void(const String &, const List<String> &, const List<String> &)> onModuleCompiled_;
-    Function<bool(const String &, Out<String>, Out<bool>, Out<bool>)> onModuleImport_;
-    Function<int(const List<String> &)> onInvoke_;
+    private:
+        Stream stream_;
+        String cachePrefix_;
+        Thread thread_;
+        CodyError error_;
+        int compilerProtocolVersion_ { 0 };
+        bool established_ { false };
+        String target_;
+        String module_;
+        List<String> includes_;
+        List<String> imports_;
+        ImportManager importManager_;
+        Function<bool(const String &, Out<String>, Out<bool>)> onIncludeTranslate_;
+        Function<String(const String &)> onModuleExport_;
+        Function<void(const String &, const List<String> &, const List<String> &)> onModuleCompiled_;
+        Function<bool(const String &, Out<String>, Out<bool>, Out<bool>)> onModuleImport_;
+        Function<int(const List<String> &)> onInvoke_;
 };
 
 CodyWorker::CodyWorker(

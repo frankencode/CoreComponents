@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \internal
+/** \class TokiShDiscoverySyntax cc/TokiShDiscoverySyntax
+  * \ingroup toki
   * \brief Discovery syntax for shell scripts
   */
 class TokiShDiscoverySyntax final: public SyntaxDefinition

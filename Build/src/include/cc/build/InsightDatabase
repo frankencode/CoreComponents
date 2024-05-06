@@ -14,7 +14,8 @@
 
 namespace cc::build {
 
-/** \brief %Track compile statements to support code insight services
+/** \class InsightDatabase cc/build/InsightDatabase
+  * \brief %Track compile statements to support code insight services
   *
   * This class generates a "compilation database" as needed for clangd.
   *

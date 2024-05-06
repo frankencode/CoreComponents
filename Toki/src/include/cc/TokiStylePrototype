@@ -10,7 +10,8 @@
 
 namespace cc {
 
-/** \internal
+/** \class TokiStylePrototype cc/TokiStylePrototype
+  * \ingroup toki
   * \brief Meta-prototype definition for TokiStyle
   */
 class TokiStylePrototype final: public MetaPrototype

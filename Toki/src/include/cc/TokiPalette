@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \internal
+/** \class TokiPalette cc/TokiPalette
+  * \ingroup toki
   * \brief Syntax highlighting palette
   */
 class TokiPalette final: public MetaObject

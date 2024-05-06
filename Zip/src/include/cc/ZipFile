@@ -14,8 +14,9 @@
 namespace cc {
 
 /** \class ZipFile ZipFile cc/ZipFile
-  * \brief Read the contents of ZIP archives
-  * \todo rename to ZipStream
+  * \ingroup zip
+  * \brief Read the contents of a ZIP archive
+  * \todo Rename to ZipArchive
   */
 class ZipFile final: public Object
 {
@@ -23,7 +24,7 @@ public:
     using Item = String; ///< Item type
 
     /** Open a ZIP archive
-      * \param path file path of a ZIP archive
+      * \param path %File path of a ZIP archive
       */
     explicit ZipFile(const String &path);
 
@@ -40,7 +41,6 @@ public:
     /** Open a file from this ZIP archive
       * \param name name of the file to open
       * \return new content stream
-      * \todo rename to open()
       */
     Stream open(const String &name);
 

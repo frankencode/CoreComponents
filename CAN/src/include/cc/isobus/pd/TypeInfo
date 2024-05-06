@@ -13,7 +13,7 @@
 
 namespace cc::isobus::pd {
 
-/** \class DataType cc/isobus/pd/DataType
+/** \class TypeInfo cc/isobus/pd/TypeInfo
   * \brief Data type of a process data value
   */
 class TypeInfo final: public Object

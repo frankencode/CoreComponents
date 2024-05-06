@@ -1,0 +1,51 @@
+/** \defgroup can CAN Bus
+  * Controller Area Network bus
+  */
+
+/** \defgroup can_open CANopen
+  * \ingroup can
+  * CANopen bus protocol
+  */
+
+/** \defgroup j1939 SAE J1939
+  * \ingroup can
+  * SAE J1939 bus protocol
+  */
+
+/** \defgroup isobus ISOBUS
+  * \ingroup can
+  * ISOBUS bus protocol
+  */
+
+/** \brief Namespace of the CANopen protocol layer
+  */
+namespace cc::can_open {}
+
+/** \brief Namespace of the CANopen %Service %Data %Object protocol sub-set
+  */
+namespace cc::can_open::sdo {}
+
+/** \brief Namespace of the ISOBUS protocol layer
+  */
+namespace cc::isobus {}
+
+/** \brief Namespace of the ISOBUS PD protocol layer
+  */
+namespace cc::isobus::pd {}
+
+/** \brief Namespace of the SAE J1939 protocol layer
+  */
+namespace cc::j1939 {}
+
+/** \brief Namespace of the SAE J1939 ETP protocol layer
+  */
+namespace cc::j1939::etp {}
+
+/** \brief Namespace of the SAE J1939 TP protocol layer
+  */
+namespace cc::j1939::tp {}
+
+/** \module cc.can
+  * \ingroup can
+  * \brief CAN bus protocols and auxiliary classes.
+  */

@@ -13,6 +13,9 @@
 
 namespace cc::build {
 
+/** \class Job cc/build/Job
+  * \brief A single build command
+  */
 class Job: public Object
 {
 public:

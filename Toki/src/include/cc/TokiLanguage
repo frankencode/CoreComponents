@@ -14,7 +14,9 @@
 
 namespace cc {
 
-/** \brief Source code language definition
+/** \class TokiLanguage cc/TokiLanguage
+  * \ingroup toki
+  * \brief Source code language definition
   * \todo allow additional path patterns
   */
 class TokiLanguage: public Object

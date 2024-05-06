@@ -12,7 +12,7 @@
 
 namespace cc::can_open::sdo {
 
-/** \brief Request to send next segment during segmented SDO transfer
+/** \brief %Request to send next segment during segmented SDO transfer
   */
 class ReadSegmentRequest final: public Request
 {

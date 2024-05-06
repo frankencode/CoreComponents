@@ -13,6 +13,10 @@
 
 namespace cc {
 
+/** \class TokiHighlightingSyntax cc/TokiHighlightingSyntax
+  * \ingroup toki
+  * \brief Generic syntax highlighting syntax
+  */
 class TokiHighlightingSyntax: public SyntaxDefinition
 {
 public:

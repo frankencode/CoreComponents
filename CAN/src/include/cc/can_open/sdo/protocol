@@ -58,12 +58,14 @@ Bytes blockRead(CanMedia &media, int peerId, Selector selector, int timeout = -1
   */
 void blockWrite(CanMedia &media, int peerId, Selector selector, const Bytes &data, int timeout = -1);
 
-/** \brief SDO transmission error
+/** \class Error cc/can_open/sdo/protocol
+  * \brief SDO transmission error
   */
 class Error: public Exception
 {};
 
-/** \brief SDO data transfer was aborted
+/** \class Aborted cc/can_open/sdo/protocol
+  * \brief SDO data transfer was aborted
   */
 class Aborted: public Error
 {
@@ -79,7 +81,8 @@ private:
     ErrorCode error_;
 };
 
-/** \brief SDO data transfer was aborted by this node (and not its peer)
+/** \class LocallyAborted cc/can_open/sdo/protocol
+  * \brief SDO data transfer was aborted by this node (and not its peer)
   */
 class LocallyAborted final: public Aborted
 {
@@ -89,7 +92,8 @@ public:
     {}
 };
 
-/** \brief SDO data transfer was aborted by the peer node
+/** \class RemotelyAborted cc/can_open/sdo/protocol
+  * \brief SDO data transfer was aborted by the peer node
   */
 class RemotelyAborted final: public Aborted
 {
@@ -99,7 +103,8 @@ public:
     {}
 };
 
-/** \brief Waiting for CAN frame timed out during data transfer
+/** \class Timeout cc/can_open/sdo/protocol
+  * \brief Waiting for CAN frame timed out during data transfer
   */
 class Timeout: public Error
 {
@@ -107,7 +112,8 @@ public:
     String message() const override;
 };
 
-/** \brief CAN media was lost before completion of data transfer
+/** \class InputExhaustion cc/can_open/sdo/protocol
+  * \brief CAN media was lost before completion of data transfer
   */
 class InputExhaustion: public Error
 {
@@ -115,7 +121,8 @@ public:
     String message() const override;
 };
 
-/** \brief Unexpected CAN frame received during data transfer
+/** \class Unexpected cc/can_open/sdo/protocol
+  * \brief %Unexpected CAN frame received during data transfer
   */
 class Unexpected: public Error
 {

@@ -12,7 +12,8 @@
 
 namespace cc::build {
 
-/** \brief Prepare sources before starting the actual build process
+/** \class PreparationStage cc/build/PreparationStage
+  * \brief Prepare sources before starting the actual build process
   */
 class PreparationStage: public BuildStage
 {

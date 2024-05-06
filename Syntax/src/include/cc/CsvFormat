@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class CsvFormat cc/CsvFormat
-  * \ingroup misc
+  * \ingroup csv
   * \brief CSV output formatter
   */
 class CsvFormat final: public List<String>

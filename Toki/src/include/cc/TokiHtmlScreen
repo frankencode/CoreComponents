@@ -14,7 +14,8 @@
 
 namespace cc {
 
-/** \internal
+/** \class TokiHtmlScreen cc/TokiHtmlScreen
+  * \ingroup toki
   * \brief HTML generator screen
   */
 class TokiHtmlScreen final: public TokenScreen

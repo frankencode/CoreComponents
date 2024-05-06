@@ -12,6 +12,9 @@
 
 namespace cc::build {
 
+/** \class Predicate cc/build/Predicate
+  * \brief Source code generation rules
+  */
 class Predicate: public Object
 {
 public:

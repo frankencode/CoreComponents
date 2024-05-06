@@ -12,7 +12,8 @@
 
 namespace cc {
 
-/** \internal
+/** \class TokiCppDiscoverySyntax cc/TokiCppDiscoverySyntax
+  * \ingroup toki
   * \brief Discovery syntax for C preprocessor headers
   */
 class TokiCppDiscoverySyntax final: public SyntaxDefinition

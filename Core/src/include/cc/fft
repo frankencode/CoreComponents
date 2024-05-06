@@ -1,5 +1,16 @@
-/**
-  * The following source code is an optimized version of David Barina's uFFT library.
+#pragma once
+
+#include <cassert>
+#include <complex>
+#include <numbers>
+#include <bit>
+
+namespace cc {
+
+/** \class FFT cc/FFT
+  * \brief A simple, yet fast, DFT (Discrete Fourier Transform)
+  *
+  * The FFT class is a speed optimized version of David Barina's uFFT.
   *
   * -----------------------------------------------------------------------------
   *
@@ -24,15 +35,6 @@
   * SOFTWARE.
   *
   */
-#pragma once
-
-#include <cassert>
-#include <complex>
-#include <numbers>
-#include <bit>
-
-namespace cc {
-
 template<class Complex>
 class FFT
 {

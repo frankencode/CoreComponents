@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class FloatSyntax cc/FloatSyntax
-  * \ingroup syntax
+  * \ingroup syntax_def
   * \brief C-style floating point literals
   * \see readNumber()
   */

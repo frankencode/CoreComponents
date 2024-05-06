@@ -17,6 +17,7 @@
 namespace cc {
 
 /** \class PulseMainLoop cc/PulseMainLoop
+  * \ingroup pulse_audio
   * \brief %The %Pulse %Audio event loop
   */
 class PulseMainLoop final: public Object

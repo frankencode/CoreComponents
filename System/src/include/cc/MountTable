@@ -13,6 +13,7 @@
 namespace cc {
 
 /** \class MountPoint cc/MountTable
+  * \ingroup sysinfo
   * \brief Mount table entry
   */
 class MountPoint

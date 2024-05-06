@@ -12,10 +12,13 @@ namespace cc::build {
 
 class BuildStage;
 
-class BuildStageGuard
+/** \class BuildStageGuard cc/build/BuildStageGuard
+  * \brief Execute pre and post post commands
+  */
+class BuildStageGuard final
 {
 public:
-    BuildStageGuard(const BuildStage *stage);
+    explicit BuildStageGuard(const BuildStage *stage);
     ~BuildStageGuard();
 
 private:

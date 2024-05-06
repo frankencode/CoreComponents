@@ -21,14 +21,14 @@ struct KeccakPadding {
     static constexpr int Length = 0;
 };
 
-/** Padding policy for NIST SHA3
+/** %Padding policy for NIST SHA3
   */
 struct Sha3Padding {
     static constexpr uint8_t Suffix = 0b10;
     static constexpr int Length = 2;
 };
 
-/** Padding policy for NIST SHAKE128 and SHAKE256
+/** %Padding policy for NIST SHAKE128 and SHAKE256
   */
 struct ShakePadding {
     static constexpr uint8_t Suffix = 0b1111;
@@ -223,7 +223,5 @@ void Keccak<Capacity, Padding, Source, Sink>::squeeze(Sink sink)
         if (i == FeedRate) keccak_permutate(state_);
     }
 }
-
-
 
 } // namespace cc

@@ -13,8 +13,8 @@
 
 namespace cc {
 
-/** \class Bundle cc/Bundle
-  * \ingroup sysinfo
+/** \class Bundle cc/bundling
+  * \ingroup misc
   * \brief Lookup files in installation directories
   */
 class Bundle

@@ -17,6 +17,8 @@
 
 namespace cc::build {
 
+/** \internal
+  */
 struct Job::State: public Object::State
 {
     explicit State(const String &command):

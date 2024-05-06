@@ -12,7 +12,8 @@
 
 namespace cc::build {
 
-/** \brief Determine needed build flags by testing the build environment
+/** \class ConfigureStage cc/build/ConfigureStage
+  * \brief Determine needed build flags by testing the build environment
   */
 class ConfigureStage: public BuildStage
 {

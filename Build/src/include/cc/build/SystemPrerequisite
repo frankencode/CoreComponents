@@ -13,7 +13,8 @@
 
 namespace cc::build {
 
-/** \brief Prerequisites provided by the build system
+/** \class SystemPrerequisite cc/build/SystemPrerequisite
+  * \brief Prerequisites provided by the build system
   */
 class SystemPrerequisite: public BuildParameters
 {

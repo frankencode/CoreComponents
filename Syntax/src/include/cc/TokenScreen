@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class TokenScreen cc/TokenScreen
-  * \ingroup syntax
+  * \ingroup syntax_def
   * \brief Projection target for a token tree
   */
 class TokenScreen: public Object

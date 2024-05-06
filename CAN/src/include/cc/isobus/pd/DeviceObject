@@ -15,7 +15,7 @@
 
 namespace cc::isobus::pd {
 
-/** \class DeviceObject cc/isobus/dev/DeviceObject
+/** \class DeviceObject cc/isobus/pd/DeviceObject
   * \brief Binary representation of device objects
   */
 class DeviceObject final

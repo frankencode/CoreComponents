@@ -15,6 +15,9 @@ namespace cc::build {
 class BuildPlan;
 class JobScheduler;
 
+/** \class ImportManager cc/build/ImportManager
+  * \brief Keep track of C++ modules and on-demand compile header and interface units
+  */
 class ImportManager final: public Object
 {
 public:

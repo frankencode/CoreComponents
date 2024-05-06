@@ -17,7 +17,7 @@
 
 namespace cc::isobus {
 
-/** \class DictionaryManager cc/DictionaryManager
+/** \class DictionaryManager cc/isobus/DictionaryManager
   * \brief Provide centralized access to cached CAN dictionaries
   */
 class DictionaryManager final: public Singleton

@@ -13,6 +13,8 @@
 
 namespace cc::build {
 
+/** \internal
+  */
 class CwdGuard
 {
 public:

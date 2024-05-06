@@ -13,7 +13,7 @@
 namespace cc::syntax {
 
 /** \class VoidRule cc/syntax_node/VoidRule
-  * \ingroup syntax
+  * \ingroup syntax_def
   * \brief Syntax rule which does not produce any token
   */
 class VoidRule final: public SyntaxRule

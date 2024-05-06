@@ -16,8 +16,8 @@ namespace cc {
 class ZipFile;
 
 /** \class ZipStream cc/ZipStream
-  * \brief Read a file contained in a ZIP archive
-  * \todo rename to ZipStream
+  * \ingroup zip
+  * \brief Read a file within a ZIP archive
   */
 class ZipStream: public Stream
 {
@@ -32,6 +32,7 @@ private:
 };
 
 /** \class ZipError cc/ZipStream
+  * \ingroup zip
   * \brief Something went wrong processing a ZIP archive
   */
 class ZipError: public Exception

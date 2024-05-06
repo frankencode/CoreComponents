@@ -1,0 +1,8 @@
+/** \defgroup testing Unit Testing
+  * Defining unit tests and generating standardised test output
+  */
+
+/** \module cc.testing
+  * \ingroup testing
+  * \copybrief testing
+  */

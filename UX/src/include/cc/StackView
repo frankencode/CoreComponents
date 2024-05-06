@@ -14,7 +14,7 @@ namespace cc {
 
 /** \class StackView cc/StackView
   * \ingroup ui
-  * \brief View stack
+  * \brief %View stack
   */
 class StackView: public View
 {

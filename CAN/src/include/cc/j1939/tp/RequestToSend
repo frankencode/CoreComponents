@@ -15,7 +15,7 @@ namespace cc::j1939::tp {
 constexpr uint8_t WindowUnlimited = 0xFFu;
 
 /** \class RequestToSend cc/j1939/tp/RequestToSend
-  * \brief Request to send message
+  * \brief %Request to send message
   */
 class RequestToSend final: public ConnectionManagement
 {

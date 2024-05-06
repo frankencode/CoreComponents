@@ -14,6 +14,10 @@
 
 namespace cc::build {
 
+/** \class JobServer cc/build/JobServer
+  * \brief A single build job worker
+  * \todo Rename to BuildWorker
+  */
 class JobServer: public Object
 {
 public:
@@ -26,6 +30,5 @@ private:
 
     struct State;
 };
-
 
 } // namespace cc::build

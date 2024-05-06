@@ -1,0 +1,8 @@
+/** \defgroup crypto Cryptography
+  * Cryptographic ciphers, hashes and sinks
+  */
+
+/** \module cc.crypto
+  * \ingroup crypto
+  * \copybrief crypto
+  */

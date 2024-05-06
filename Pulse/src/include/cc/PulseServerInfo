@@ -14,7 +14,8 @@
 
 namespace cc {
 
-/** \class ServerInfo cc/PulseServerInfo
+/** \class PulseServerInfo cc/PulseServerInfo
+  * \ingroup pulse_audio
   * \brief %Pulse %Audio server information
   */
 class PulseServerInfo final: public Object

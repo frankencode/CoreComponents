@@ -1,0 +1,8 @@
+/** \defgroup zip ZIP Archives
+  * Listing and extracting files from ZIP archives
+  */
+
+/** \module cc.zip
+  * \ingroup zip
+  * \copybrief zip
+  */

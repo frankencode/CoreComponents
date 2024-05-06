@@ -1,0 +1,5 @@
+/** \brief %Namespace of the CoreComponents build system
+  *
+  * \todo Create a C++ module for the build system library.
+  */
+namespace cc::build {}
