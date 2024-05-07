@@ -46,11 +46,11 @@ rm -rf .git || true
 rm -rf .vscode || true
 rm -rf $(find . -name 'compile_commands.json') || true
 rm -rf $(find . -name '.cache') || true
-rm -rf $(find . -name '.lump.cc') || true
+rm -rf doc/doxygen-awesome-css/ || true
 popd
 ARCHIVE=$PACKAGE-$VERSION.tar.gz
 HASHES=$PACKAGE-$VERSION.hash
 tar -cv $PACKAGE-$VERSION | gzip --best > $ARCHIVE
-printf "SHA-256\t$(ccsha256 $ARCHIVE)\n" > $HASHES
-printf "SHA-512\t$(ccsha512 $ARCHIVE)\n" >> $HASHES
+printf "SHA-256\t$(ccsha2-256 $ARCHIVE)\n" > $HASHES
+printf "SHA-512\t$(ccsha2-512 $ARCHIVE)\n" >> $HASHES
 popd
