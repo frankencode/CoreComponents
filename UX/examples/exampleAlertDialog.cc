@@ -19,14 +19,14 @@ int main()
                 .associate(&dialog)
                 .addAction(
                     Action{"Cancel"}
-                    ([=]() mutable {
+                    ([=] mutable {
                         CC_DEBUG << "Cancel";
                         dialog.close();
                     })
                 )
                 .addAction(
                     Action{"Discard"}
-                    ([=]() mutable {
+                    ([=] mutable {
                         CC_DEBUG << "Discard";
                         dialog.close();
                     })

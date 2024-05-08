@@ -15,7 +15,7 @@ int main()
             .min(-100)
             .max(100)
             .precision(0.1)
-            .onAccepted([input]() mutable {
+            .onAccepted([input] mutable {
                 CC_INSPECT(input.value());
             })
             .focus(true)

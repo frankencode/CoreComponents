@@ -29,7 +29,7 @@ int main()
         )
         .attach(
             Timer{1}
-            .onTimeout([=]() mutable {
+            .onTimeout([=] mutable {
                 time = System::now();
                 label.angle(label.angle() + 45);
             })

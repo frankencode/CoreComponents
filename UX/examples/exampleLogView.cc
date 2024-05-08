@@ -4,6 +4,8 @@
 #include <cc/FlickableIndicator>
 #include <cc/Date>
 
+/** \todo Fix example, timer seems to not run?
+  */
 int main()
 {
     using namespace cc;

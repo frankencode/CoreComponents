@@ -16,7 +16,7 @@ int main()
     .pen(
         Pen{}
         .color({0x00, 0x00, 0x80})
-        .lineWidth(50)
+        .lineWidth(10)
         .lineCap(LineCap::Round)
         .lineJoin(LineJoin::Round)
     )
