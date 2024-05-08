@@ -30,7 +30,7 @@ CanFrame WriteRequest::createFrame(int serverId, Selector selector, const Bytes 
         (4, e ? data(0) : static_cast<uint8_t>(data.count()))
         (5, e ? data(1) : static_cast<uint8_t>(data.count() >> 8))
         (6, e ? data(2) : static_cast<uint8_t>(data.count() >> 16))
-        (7, e ? data(3) : static_cast<uint8_t>(data.count() >> 32));
+        (7, e ? data(3) : static_cast<uint8_t>(data.count() >> 24));
 }
 
 String WriteRequest::toString() const
