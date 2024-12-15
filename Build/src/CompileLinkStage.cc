@@ -213,7 +213,9 @@ bool CompileLinkStage::gatherUnits()
 
     const bool compileCommandChanged = currentCompileCommand != previousCompileCommand;
 
-    ImportManager importManager;
+    if (plan().options() & BuildOption::Cody) {
+        ImportManager{};
+    }
 
     for (const String &source: plan().sources())
     {
@@ -248,7 +250,7 @@ bool CompileLinkStage::gatherUnits()
 
             for (const String &import: imports) {
                 Unit module;
-                if (!importManager.lookupModule(import, &module)) throw true;
+                if (!ImportManager{}.lookupModule(import, &module)) throw true;
                 if (module.dirty()) throw true;
             }
         }
@@ -267,7 +269,7 @@ bool CompileLinkStage::gatherUnits()
         if (type == Unit::Type::Module) {
             const String name = ImportManager::moduleName(plan().importPath(), source);
             Unit other;
-            if (!importManager.registerModule(name, unit, &other)) {
+            if (!ImportManager{}.registerModule(name, unit, &other)) {
                 ferr(
                     "Error, ambiguous definition of module \"%%\":\n"
                     "  %%\n"

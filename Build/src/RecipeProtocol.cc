@@ -100,6 +100,9 @@ protected:
         insert("setup", false);
         insert("insight", false);
         insert("lump", false);
+#if 1
+        insert("cody", false);
+#else
         insert("cody",
 #ifndef __GNUC__
             false
@@ -109,6 +112,7 @@ protected:
             false
 #endif
         );
+#endif
 
         insert("configure", false);
         insert("configure-list", false);

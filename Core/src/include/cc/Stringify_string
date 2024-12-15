@@ -1,0 +1,16 @@
+#pragma once
+
+#include <string>
+
+namespace cc {
+
+template<>
+class Stringify<std::string> {
+public:
+    static String stringify(const std::string &s)
+    {
+        return { s.data(), static_cast<long>(s.size()) };
+    }
+};
+
+} // namespace cc
