@@ -33,28 +33,28 @@ enum class HttpStatus: int
     NotModified                 = 304, ///< Resource has not changed since last cached GET request
     UseProxy                    = 305, ///< Requested resource is only available from proxy server specified in the Location field
     TemporaryRedirect           = 307, ///< The requested resources as moved temporarily to a new location (see Location field, stay on method)
-    BadRequest                  = 400, ///< \copybrief HttpBadRequest
+    BadRequest                  = 400, ///< The client request has been rejected as invalid/erroneous
     Unauthorized                = 401, ///< Missing user authentication
     PaymentRequired             = 402, ///< No free beer
-    Forbidden                   = 403, ///< \copybrief HttpForbidden
-    NotFound                    = 404, ///< \copybrief HttpNotFound
+    Forbidden                   = 403, ///< Access to requested resource is not allowed
+    NotFound                    = 404, ///< Requested resource could not be found
     MethodNotAllowed            = 405, ///< Request method is not allowed on the indicated resource
     NotAcceptable               = 406, ///< Server-driven content negotiation failed
     ProxyAuthenticationRequired = 407, ///< Missing user authentication with a proxy server
-    RequestTimeout              = 408, ///< \copybrief HttpRequestTimeout
+    RequestTimeout              = 408, ///< The connection timed out
     Conflict                    = 409, ///< A user resolveable resource conflict occured
     Gone                        = 410, ///< The requested resource is marked as permanently deleted
     LengthRequired              = 411, ///< Content-Length header field was missing
     PreconditionFailed          = 412, ///< Server cannot fullfil the client indicated preconditions
-    PayloadTooLarge             = 413, ///< \copybrief HttpPayloadTooLarge
+    PayloadTooLarge             = 413, ///< The request payload exceeds server limits
     RequestUriTooLong           = 414, ///< The request URI exceeds the servers acceptable maximum URI length
     UnsupportedMediaType        = 415, ///< Requested media type is not available on the server
-    InternalServerError         = 500, ///< \copybrief HttpInternalServerError
-    NotImplemented              = 501, ///< \copybrief HttpNotImplemented
+    InternalServerError         = 500, ///< The server experienced an internal error
+    NotImplemented              = 501, ///< Function is not implemented by the server
     BadGateway                  = 502, ///< Response by an HTTP gateway which itself got an error requesting the resource from another server
     ServiceUnavailable          = 503, ///< The server is temporarily unavailable due to technical difficulties (e.g. overloading)
     GatewayTimeout              = 504, ///< The server timed out on a forwarded request
-    UnsupportedVersion          = 505, ///< \copybrief HttpUnsupportedVersion
+    UnsupportedVersion          = 505, ///< The requested HTTP protocol version is not supported
 };
 
 /** \ingroup http_protocol

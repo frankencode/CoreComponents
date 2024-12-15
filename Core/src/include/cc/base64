@@ -21,6 +21,7 @@ String base64Encode(const Bytes &source);
 /** Base-64 decode \a source
   * \ingroup net
   * \exception Base64DecodeError
+  * \todo return Bytes
   */
 String base64Decode(const String &source);
 

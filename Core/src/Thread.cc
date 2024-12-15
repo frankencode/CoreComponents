@@ -20,7 +20,7 @@ namespace cc {
 
 static_assert(std::is_fundamental<pthread_t>());
 
-struct Thread::State: public Object::State
+struct Thread::State final: public Object::State
 {
     static void *bootstrap(void *self)
     {

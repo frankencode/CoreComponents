@@ -7,7 +7,6 @@
  */
 
 #include <cc/base64>
-#include <cc/ByteSink>
 
 namespace cc {
 

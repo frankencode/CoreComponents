@@ -312,7 +312,7 @@ protected:
     void unlink(Node *node, bool isBranch);
 
     static long &weight(Node *child) {
-        CC_BUCKETTREE_ASSERT(child->parent_);
+        CC_BUCKETTREE_ASSERT(child->parent_); // FIXME: will become ineffective once lastLeaf_ is burried in root_->parent_
         return child->parent_->weightOf(child);
     }
 
@@ -334,7 +334,7 @@ protected:
     int64_t dense_  : 1 { -1 };
     int64_t weight_ : 48 { 0 };
     Node *root_ { nullptr };
-    Node *lastLeaf_ { nullptr }; // bury in &root_->parent_
+    Node *lastLeaf_ { nullptr }; // TODO: bury in &root_->parent_
     #ifndef NDEBUG
     unsigned revision_ { 0 };
     #endif
@@ -390,8 +390,8 @@ void BucketTree<G>::joinSucc(Node *node, Node *newNode, bool isBranch)
     newNode->pred_ = node;
     node->succ_ = newNode;
 
-    Branch *parent = node->parent_;
-    if (parent) {
+    if (node != root_) {
+        Branch *parent = node->parent_;
         unsigned newNodeIndex = parent->indexOf(node) + 1;
         dissipate(parent, newNodeIndex);
         parent->push(newNodeIndex, newNode, 0);
@@ -453,7 +453,7 @@ void BucketTree<G>::reduce()
             delete branch;
             --height_;
         }
-        root_->parent_ = nullptr;
+        root_->parent_ = nullptr; // TODO: eventually set to lastLeaf()
     }
 }
 

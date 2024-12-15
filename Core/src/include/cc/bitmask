@@ -36,6 +36,7 @@ inline EnumMask<EnumType> operator&(EnumType x, EnumType y) { return static_cast
 inline EnumMask<EnumType> operator|(EnumType x, EnumType y) { return static_cast<EnumType>(static_cast<std::underlying_type<EnumType>::type>(x) | static_cast<std::underlying_type<EnumType>::type>(y)); } \
 inline EnumMask<EnumType> operator^(EnumType x, EnumType y) { return static_cast<EnumType>(static_cast<std::underlying_type<EnumType>::type>(x) ^ static_cast<std::underlying_type<EnumType>::type>(y)); } \
 constexpr EnumType operator~(EnumType x) { return static_cast<EnumType>(~static_cast<std::underlying_type<EnumType>::type>(x)); } \
+inline EnumType operator~(const EnumMask<EnumType> &mask) { return ~static_cast<EnumType>(mask); } \
 inline EnumType& operator&=(EnumType& x, EnumType y) { x = x & y; return x; } \
 inline EnumType& operator|=(EnumType& x, EnumType y) { x = x | y; return x; } \
 inline EnumType& operator^=(EnumType& x, EnumType y) { x = x ^ y; return x; } \

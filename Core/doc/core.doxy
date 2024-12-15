@@ -18,7 +18,7 @@
 
 /** \defgroup objects Objects
   * \ingroup core
-  * Objects with value semantics: ownership and life-cycle
+  * Reference counted objects: ownership and life-cycle
   */
 
 /** \defgroup container High-level Container

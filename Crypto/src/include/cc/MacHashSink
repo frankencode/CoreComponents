@@ -16,7 +16,6 @@ namespace cc {
   * \ingroup crypto
   * \brief HMAC message authentication hash sink
   * \tparam T %Underlying cryptographic hash sink type
-  * \internal
   * \see RFC 2104 for details
   */
 template<class T>
@@ -24,13 +23,14 @@ class MacHashSink final: public CryptoHashSink
 {
 public:
     /** Create a new message authentification sink
+      * \param key Private key shared by the communication partners
       */
     explicit MacHashSink(const Bytes &key):
         CryptoHashSink{new State{key}}
     {}
 
 private:
-    struct State: public CryptoHashSink::State
+    struct State final: public CryptoHashSink::State
     {
         static Bytes preparedKey(const int blockSize, const Bytes &key, uint8_t blind)
         {

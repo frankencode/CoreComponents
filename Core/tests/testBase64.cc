@@ -29,5 +29,26 @@ int main(int argc, char* argv[])
         }
     };
 
+    TestCase {
+        "Base64_RFC4648",
+        []{
+            CC_CHECK_EQUALS(base64Encode(String{""}), String{""});
+            CC_CHECK_EQUALS(base64Encode(String{"f"}), String{"Zg=="});
+            CC_CHECK_EQUALS(base64Encode(String{"fo"}), String{"Zm8="});
+            CC_CHECK_EQUALS(base64Encode(String{"foo"}), String{"Zm9v"});
+            CC_CHECK_EQUALS(base64Encode(String{"foob"}), String{"Zm9vYg=="});
+            CC_CHECK_EQUALS(base64Encode(String{"fooba"}), String{"Zm9vYmE="});
+            CC_CHECK_EQUALS(base64Encode(String{"foobar"}), String{"Zm9vYmFy"});
+
+            CC_CHECK_EQUALS(base64Decode(String{""}), String{""});
+            CC_CHECK_EQUALS(base64Decode(String{"Zg=="}), String{"f"});
+            CC_CHECK_EQUALS(base64Decode(String{"Zm8="}), String{"fo"});
+            CC_CHECK_EQUALS(base64Decode(String{"Zm9v"}), String{"foo"});
+            CC_CHECK_EQUALS(base64Decode(String{"Zm9vYg=="}), String{"foob"});
+            CC_CHECK_EQUALS(base64Decode(String{"Zm9vYmE="}), String{"fooba"});
+            CC_CHECK_EQUALS(base64Decode(String{"Zm9vYmFy"}), String{"foobar"});
+        }
+    };
+
     return TestSuite{argc, argv}.run();
 }

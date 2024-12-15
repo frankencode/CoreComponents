@@ -72,6 +72,7 @@ public:
       * \param minutes \copydoc minutes()
       * \param seconds \copydoc seconds()
       * \param offset \copydoc offset()
+      * \todo improve interface by method chaining
       */
     Date(int year, int month, int day, int hour = 0, int minutes = 0, int seconds = 0, int offset = 0);
 
