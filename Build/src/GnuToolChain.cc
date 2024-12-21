@@ -615,11 +615,14 @@ struct GnuToolChain::State: public ToolChain::State
             << "-Wall"
             << "-pthread"
             << "-pipe"
-            << "-D_FILE_OFFSET_BITS=64"
-            << "-fvisibility-inlines-hidden";
+            << "-D_FILE_OFFSET_BITS=64";
+
+        if (plan.containsCPlusPlus()) {
+            args << "-fvisibility-inlines-hidden";
+        }
 
         if (plan.options() & BuildOption::Release) {
-            args << "-ffile-prefix-map=" + plan.sourcePrefix() + "=src";
+            args << "-ffile-prefix-map=" + plan.sourcePrefix() + "=";
         }
 
         if (cFlags_ != "" && args.at(0) == ccPath_) args << cFlags_;

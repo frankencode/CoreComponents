@@ -19,6 +19,6 @@
 
 #define CC_CHECK_EQUALS(a, b) { \
     bool equals__ = (a == b); \
-    fout() << a << " == " << b << (equals__ ? ": OK" : ": FAILED") << nl; \
+    fout() << #a << " == " << #b << (equals__ ? ": OK" : ": FAILED") << nl; \
     TestSuite{}.verify(equals__, #a "==" #b, __FILE__, __LINE__); \
 }

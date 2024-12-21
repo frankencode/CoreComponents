@@ -61,11 +61,11 @@ public:
       */
     ArrayIteratorItemAccess<Container>::Type operator*() const { return c_.at(i_); }
 
-    /** Step to the next item and return the old iterator value (postfix increment operator)
+    /** Step to the next item and return the old iterator value (prefix increment operator)
       */
     ArrayIterator &operator++() { i_ += Dir; return *this; }
 
-    /** Step to the previous item and return the old iterator value (postfix decrement operator)
+    /** Step to the previous item and return the old iterator value (prefix decrement operator)
       */
     ArrayIterator &operator--() { i_ -= Dir; return *this; }
 

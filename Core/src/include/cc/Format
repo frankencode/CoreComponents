@@ -15,8 +15,8 @@
 namespace cc {
 
 class FormatSignal {};
-class NewLine: public FormatSignal {};
-class Flush: public FormatSignal {};
+class NewLine final: public FormatSignal {};
+class Flush final: public FormatSignal {};
 
 extern NewLine nl; ///< Newline formatting signal: causes a newline character to be added
 extern Flush flush; ///< Flush formatting signal: causes the formatting list to be flushed
