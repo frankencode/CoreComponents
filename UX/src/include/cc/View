@@ -522,7 +522,7 @@ public:
       */
     View &onPointerMoved(Filter<PointerEvent> &&f) { me().onPointerMoved(move(f)); return *this; }
 
-    /** %Handle move pressed event
+    /** %Handle mouse pressed event
       */
     View &onMousePressed(Filter<MouseEvent> &&f) { me().onMousePressed(move(f)); return *this; }
 
@@ -530,7 +530,7 @@ public:
       */
     View &onMouseReleased(Filter<MouseEvent> &&f) { me().onMouseReleased(move(f)); return *this; }
 
-    /** %Handle move moved event
+    /** %Handle mouse moved event
       */
     View &onMouseMoved(Filter<MouseEvent> &&f) { me().onMouseMoved(move(f)); return *this; }
 
@@ -807,7 +807,7 @@ protected:
 
         cairo_surface_t *cairoSurface() override;
 
-        void update(UpdateReason reason);
+        void update(UpdateReason reason = UpdateReason::Changed);
 
         virtual bool feedExposedEvent() const;
         virtual bool feedEnterEvent() const;
