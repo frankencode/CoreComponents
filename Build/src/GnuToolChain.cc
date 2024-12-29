@@ -8,6 +8,7 @@
 
 #include <cc/build/GnuToolChain>
 #include <cc/build/LinkJob>
+#include <cc/build/BuildMap>
 #include <cc/Format>
 #include <cc/Process>
 #include <cc/Command>
@@ -622,7 +623,7 @@ struct GnuToolChain::State: public ToolChain::State
         }
 
         if (plan.options() & BuildOption::Release) {
-            args << "-ffile-prefix-map=" + plan.sourcePrefix() + "=";
+            args << "-ffile-prefix-map=" + BuildMap{}.commonPrefix() + "=src";
         }
 
         if (cFlags_ != "" && args.at(0) == ccPath_) args << cFlags_;
