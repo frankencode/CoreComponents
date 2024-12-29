@@ -88,8 +88,14 @@ struct DirWalk::State: public Object::State
             String h = name;
             if (dir_.path() != ".") h = dir_.path() / h;
 
-            try { child_ = new State{Dir{h}, mode_, maxDepth_}; }
-            catch (...) { child_ = nullptr; }
+            try {
+                if (!followSymlink() && File::readlink(h)) child_ = nullptr;
+                else child_ = new State{Dir{h}, mode_, maxDepth_};
+            }
+            catch (...)
+            {
+                child_ = nullptr;
+            }
             bool d = child_;
             if (child_) {
                 if (depth_ != maxDepth_) {
