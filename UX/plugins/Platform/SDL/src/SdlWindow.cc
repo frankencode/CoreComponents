@@ -9,11 +9,9 @@
 #include <cc/SdlWindow>
 #include <cc/SdlApplication>
 #include <cc/SdlPlatformError>
-#include <cc/DEBUG>
 #ifndef NDEBUG
-#include <cc/stdio>
+#include <cc/debugging>
 #endif
-#include <cassert>
 
 namespace cc {
 
@@ -160,13 +158,21 @@ void SdlWindow::State::show(int display)
 
         if (!sdlRenderer_) throw SdlPlatformError{};
 
-        #ifndef NDEBUG
         {
             SDL_RendererInfo info_, *info = &info_;
             if (SDL_GetRendererInfo(sdlRenderer_, info) != 0) throw SdlPlatformError{};
-            fout() << "SDL renderer: " << info->name << " (" << ((info->flags & SDL_RENDERER_ACCELERATED) ? "ACCELERATED" : "SOFTWARE") << ")" << nl;
+            waitVSync_ =
+                std::strcmp(info->name, "opengl") == 0 && (
+                    SDL_GL_SetSwapInterval(-1) != -1 ||
+                    SDL_GL_SetSwapInterval(1) != -1
+                );
+            #ifndef NDEBUG
+            fout() << "Renderer: " << info->name << " ("
+                << ((info->flags & SDL_RENDERER_ACCELERATED) ? "ACCELERATED" : "SOFTWARE")
+                << (waitVSync_ ? ", VSYNC" : "")
+                << ")" << nl;
+            #endif
         }
-        #endif
 
         title.onChanged([this]{ SDL_SetWindowTitle(sdlWindow_, title()); });
 

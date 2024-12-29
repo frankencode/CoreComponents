@@ -22,7 +22,7 @@ struct SdlDisplayManager::State final: public DisplayManager::State
         for (int i = 0; i < n; ++i) {
             Display display = getDisplay(i);
             displays_.append(display);
-            if (largestDisplay && display.diagonal() > largestDisplay.diagonal())
+            if (!largestDisplay || display.diagonal() > largestDisplay.diagonal())
                 largestDisplay = display;
         }
 

@@ -61,7 +61,7 @@ public:
     }
 
 private:
-    struct State: public Object::State
+    struct State final: public Object::State
     {
         State(long id, const Timer &timer):
             id_{id},
@@ -110,7 +110,7 @@ struct TimeWorker::State: public Object::State
                     TimeMaster{}.triggerTimer(timeout.timer());
 
                     if (timeout.interval() == 0) {
-                        timeout.deactivate();
+                        if (timeout.interval() == 0) timeout.deactivate();
                         timeoutRequests_.removeAt(0);
                         continue;
                     }

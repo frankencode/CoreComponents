@@ -17,7 +17,7 @@ namespace cc {
   * \brief Background worker thread of the TimeMaster
   * The %TimeWorker runs in a background thread and generates the timeouts of all Timer instances.
   */
-class TimeWorker: public Object
+class TimeWorker final: public Object
 {
 public:
     TimeWorker();
