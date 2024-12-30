@@ -363,7 +363,7 @@ void SdlWindow::State::updateOpacity(View view)
     }
 }
 
-void SdlWindow::State::renderCascade(SDL_Renderer *sdlRenderer, View &view)
+void SdlWindow::State::renderCascade(SDL_Renderer *sdlRenderer, const View &view)
 {
     if (!view.visible() || view.opacity() <= 0) return;
 
@@ -384,14 +384,16 @@ void SdlWindow::State::renderCascade(SDL_Renderer *sdlRenderer, View &view)
         size *= view.scale();
         clipRect.w = std::ceil(size[0]);
         clipRect.h = std::ceil(size[1]);
-        SDL_RenderSetClipRect(sdlRenderer_, &clipRect);
+        SDL_RenderSetClipRect(sdlRenderer, &clipRect);
     }
 
-    for (View child: view.visibleChildren()) // FIXME: performance
+    for (const View &child: view.visibleChildren()) {
         renderCascade(sdlRenderer, child);
+    }
 
-    if (clip)
-        SDL_RenderSetClipRect(sdlRenderer_, nullptr);
+    if (clip) {
+        SDL_RenderSetClipRect(sdlRenderer, nullptr);
+    }
 }
 
 void SdlWindow::State::renderTexture(SDL_Renderer *sdlRenderer, const View &view)

@@ -53,10 +53,10 @@ private:
         void renderFrame(const Frame &frame) override;
         void renderViewToImage(const View &view, Image &image) override;
 
-        void updateTexture(SDL_Renderer *sdlRenderer, View view);
-        void updateOpacity(View view);
-        void renderCascade(SDL_Renderer *sdlRenderer, View &view);
-        void renderTexture(SDL_Renderer *sdlRenderer, const View &view);
+        static void updateTexture(SDL_Renderer *sdlRenderer, View view);
+        static void updateOpacity(View view);
+        static void renderCascade(SDL_Renderer *sdlRenderer, const View &view);
+        static void renderTexture(SDL_Renderer *sdlRenderer, const View &view);
 
         Property<void> minSizeMonitor;
         Property<void> maxSizeMonitor;

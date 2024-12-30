@@ -23,7 +23,7 @@ public:
     {}
 
     UpdateReason reason() const { return reason_; }
-    View view() const { return view_; }
+    const View &view() const { return view_; }
 
     bool operator==(const UpdateRequest &other) const
     {
