@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Window>
+
+typedef struct SDL_Window SDL_Window;
+
+namespace cc {
+
+class Sdl3Window final: public Window
+{
+public:
+    Sdl3Window() = default;
+
+    explicit Sdl3Window(const View &view);
+
+    uint32_t id() const;
+    SDL_Window *sdlWindow() const;
+
+private:
+    friend class Object;
+    friend class Sdl3Application;
+
+    struct State;
+
+    State &me();
+    const State &me() const;
+};
+
+} // namespace cc

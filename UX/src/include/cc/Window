@@ -20,29 +20,31 @@ using Frame = Queue<UpdateRequest>;
 
 /** Window mode flags
   */
-enum class WindowMode: unsigned
+enum class WindowMode: uint64_t
 {
-    Default           = 0,          ///< %Default window mode
-    Fullscreen        = 1u << 0u,   ///< Fullscreen window
-    FullscreenDesktop = 1u << 1u,   ///< Fullscreen window at desktop resolution
-    OpenGl            = 1u << 2u,   ///< Enable OpenGL for this window
-    Vulkan            = 1u << 3u,   ///< Enable Vulkan for this window
-    Borderless        = 1u << 4u,   ///< %Window without window decorations
-    FixedSize         = 1u << 5u,   ///< %Window cannot be resized
-    Minimized         = 1u << 6u,   ///< %Window is minimized
-    Maximized         = 1u << 7u,   ///< %Window is maximized
-    InputGrabbed      = 1u << 8u,   ///< %Window has grabbed input focus
-    InputFocus        = 1u << 9u,   ///< %Window has input focus
-    MouseFocus        = 1u << 10u,  ///< %Window has mouse focus
-    AllowHighDpi      = 1u << 11u,  ///< Enable High-DPI mode if supported
-    MouseCapture      = 1u << 12u,  ///< %Window has captured the mouse input
-    AlwaysOnTop       = 1u << 13u,  ///< %Window should always stay on top
-    SkipTaskBar       = 1u << 14u,  ///< Omit window from the task bar
-    Utility           = 1u << 15u,  ///< %Utility window
-    Tooltip           = 1u << 16u,  ///< %Tooltip window
-    PopupMenu         = 1u << 17u,  ///< %Window for a popup menu
-    VSync             = 1u << 18u,  ///< Enable VSync
-    Accelerated       = 1u << 19u,  ///< Enable HW accelerated composition
+    Fullscreen        = UINT64_C(0x0000000000000001), ///< Fullscreen window
+    Borderless        = UINT64_C(0x0000000000000010), ///< %Window without window decorations
+    Resizable         = UINT64_C(0x0000000000000020), ///< %Window can be resized
+    Minimized         = UINT64_C(0x0000000000000040), ///< %Window is minimized
+    Maximized         = UINT64_C(0x0000000000000080), ///< %Window is maximized
+    MouseGrabbed      = UINT64_C(0x0000000000000100), ///< %Window has grabbed mouse input
+    KeyboardGrabbed   = UINT64_C(0x0000000000100000), ///< %Window has grabbed keyboard input
+    InputFocus        = UINT64_C(0x0000000000000200), ///< %Window has input focus
+    MouseFocus        = UINT64_C(0x0000000000000400), ///< %Window has mouse focus
+    HighDpi           = UINT64_C(0x0000000000002000), ///< Enable High-DPI mode if supported
+    MouseCapture      = UINT64_C(0x0000000000004000), ///< %Window has captured the mouse input
+    MouseRelativeMode = UINT64_C(0x0000000000008000), ///< Relative mouse input mode
+    AlwaysOnTop       = UINT64_C(0x0000000000010000), ///< %Window should always stay on top
+    Utility           = UINT64_C(0x0000000000020000), ///< %Utility window, omit window from taskbar
+    Tooltip           = UINT64_C(0x0000000000040000), ///< %Tooltip window
+    PopupMenu         = UINT64_C(0x0000000000080000), ///< %Window for a popup menu
+    Transparent       = UINT64_C(0x0000000040000000), ///< Window is transparent
+    Occluded          = UINT64_C(0x0000000000000004), ///< Window is partially obscured by other windows
+    NotFocusable      = UINT64_C(0x0000000080000000), ///< Window cannot acquire input focus
+    OpenGl            = UINT64_C(0x0000000000000002), ///< Enable OpenGL for this window
+    Vulkan            = UINT64_C(0x0000000010000000), ///< Enable Vulkan for this window
+    Metal             = UINT64_C(0x0000000020000000), ///< Enable Metal for this window
+    Default           = WindowMode::HighDpi|WindowMode::Resizable ///< %Default window mode
 };
 
 CC_BITMASK(WindowMode)

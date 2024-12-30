@@ -19,8 +19,6 @@ public:
 
 private:
     class State;
-
-    static Display getDisplay(int index);
 };
 
 } // namespace cc

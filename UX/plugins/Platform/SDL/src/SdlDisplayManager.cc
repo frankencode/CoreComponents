@@ -45,46 +45,46 @@ struct SdlDisplayManager::State final: public DisplayManager::State
         else
             defaultFontSmoothing_ = FontSmoothing::Grayscale;
     }
+
+    static Display getDisplay(int index)
+    {
+        Point pos;
+        Size size;
+        Size dpi;
+        DisplayMode nativeMode;
+
+        try {
+            float hdpi = 0;
+            float vdpi = 0;
+            if (SDL_GetDisplayDPI(index, NULL, &hdpi, &vdpi) != 0) throw SdlPlatformError{};
+            dpi = Size{ double(hdpi), double(vdpi) };
+        }
+        catch (Exception &error)
+        {
+            CC_INSPECT(error);
+            CC_INSPECT(index);
+            dpi = Size{150, 150};
+        }
+
+        {
+            SDL_Rect rect;
+            if (SDL_GetDisplayBounds(index, &rect) != 0) throw SdlPlatformError{};
+            pos = Point{ double(rect.x), double(rect.y) };
+            size = Size{ double(rect.w), double(rect.h) };
+        }
+
+        {
+            SDL_DisplayMode mode;
+            SDL_GetDesktopDisplayMode(index, &mode);
+            nativeMode = DisplayMode{ Size{ double(mode.w), double(mode.h) }, double(mode.refresh_rate) };
+        }
+
+        return Display{pos, size, dpi, nativeMode};
+    }
 };
 
 SdlDisplayManager::SdlDisplayManager():
     DisplayManager{instance<State>()}
 {}
-
-Display SdlDisplayManager::getDisplay(int index)
-{
-    Point pos;
-    Size size;
-    Size dpi;
-    DisplayMode nativeMode;
-
-    try {
-        float hdpi = 0;
-        float vdpi = 0;
-        if (SDL_GetDisplayDPI(index, NULL, &hdpi, &vdpi) != 0) throw SdlPlatformError{};
-        dpi = Size{ double(hdpi), double(vdpi) };
-    }
-    catch (Exception &error)
-    {
-        CC_INSPECT(error);
-        CC_INSPECT(index);
-        dpi = Size{150, 150};
-    }
-
-    {
-        SDL_Rect rect;
-        if (SDL_GetDisplayBounds(index, &rect) != 0) throw SdlPlatformError{};
-        pos = Point{ double(rect.x), double(rect.y) };
-        size = Size{ double(rect.w), double(rect.h) };
-    }
-
-    {
-        SDL_DisplayMode mode;
-        SDL_GetDesktopDisplayMode(index, &mode);
-        nativeMode = DisplayMode{ Size{ double(mode.w), double(mode.h) }, double(mode.refresh_rate) };
-    }
-
-    return Display{pos, size, dpi, nativeMode};
-}
 
 } // namespace cc

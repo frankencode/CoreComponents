@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2024 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -8,16 +8,17 @@
 
 #pragma once
 
-#include <cc/PlatformError>
+#include <cc/DisplayManager>
 
 namespace cc {
 
-/** \internal
-  */
-class SdlPlatformError final: public PlatformError
+class Sdl3DisplayManager final: public DisplayManager
 {
 public:
-    String message() const override;
+    Sdl3DisplayManager();
+
+private:
+    struct State;
 };
 
 } // namespace cc

@@ -1,0 +1,34 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Cursor>
+
+typedef struct SDL_Cursor SDL_Cursor;
+
+namespace cc {
+
+class Sdl3Cursor final: public Cursor
+{
+public:
+    Sdl3Cursor(CursorShape shape);
+
+    Sdl3Cursor(const Cursor &cursor);
+
+    SDL_Cursor *sdlCursor() const;
+
+private:
+    friend class Object;
+
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc

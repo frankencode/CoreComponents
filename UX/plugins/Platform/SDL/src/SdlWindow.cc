@@ -91,18 +91,17 @@ void SdlWindow::State::show(int display)
     if (primordial_) {
         Uint32 flags = 0;
         if (mode_ & WindowMode::Fullscreen)        flags |= SDL_WINDOW_FULLSCREEN;
-        if (mode_ & WindowMode::FullscreenDesktop) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
         if (mode_ & WindowMode::OpenGl)            flags |= SDL_WINDOW_OPENGL;
         if (mode_ & WindowMode::Vulkan)            flags |= SDL_WINDOW_VULKAN;
         if (mode_ & WindowMode::Borderless)        flags |= SDL_WINDOW_BORDERLESS;
-        if (!(mode_ & WindowMode::FixedSize))      flags |= SDL_WINDOW_RESIZABLE;
+        if (mode_ & WindowMode::Resizable)         flags |= SDL_WINDOW_RESIZABLE;
         if (mode_ & WindowMode::Minimized)         flags |= SDL_WINDOW_MINIMIZED;
         if (mode_ & WindowMode::Maximized)         flags |= SDL_WINDOW_MAXIMIZED;
-        if (mode_ & WindowMode::InputGrabbed)      flags |= SDL_WINDOW_INPUT_GRABBED;
+        if (mode_ & WindowMode::MouseGrabbed)      flags |= SDL_WINDOW_INPUT_GRABBED;
         if (mode_ & WindowMode::InputFocus)        flags |= SDL_WINDOW_INPUT_FOCUS;
         if (mode_ & WindowMode::MouseFocus)        flags |= SDL_WINDOW_MOUSE_FOCUS;
         #ifdef SDL_WINDOW_ALLOW_HIGHDPI
-        if (mode_ & WindowMode::AllowHighDpi)      flags |= SDL_WINDOW_ALLOW_HIGHDPI;
+        if (mode_ & WindowMode::HighDpi)           flags |= SDL_WINDOW_ALLOW_HIGHDPI;
         #endif
         #ifdef SDL_WINDOW_MOUSE_CAPTURE
         if (mode_ & WindowMode::MouseCapture)      flags |= SDL_WINDOW_MOUSE_CAPTURE;
@@ -124,13 +123,10 @@ void SdlWindow::State::show(int display)
         #endif
 
         {
-            int x = pos()[0], y = pos()[1], w = size()[0], h = size()[1];
-            if (pos() == Point{}) {
-                x = SDL_WINDOWPOS_UNDEFINED_DISPLAY(display);
-                y = SDL_WINDOWPOS_UNDEFINED_DISPLAY(display);
+            int w = size()[0], h = size()[1];
+            if (SDL_CreateWindowAndRenderer(w, h, flags, &sdlWindow_, &sdlRenderer_) == -1) {
+                throw SdlPlatformError{};
             }
-            sdlWindow_ = SDL_CreateWindow(title(), x, y, w, h, flags);
-            if (!sdlWindow_) throw SdlPlatformError{};
         }
 
         id_ = SDL_GetWindowID(sdlWindow_);
@@ -139,24 +135,8 @@ void SdlWindow::State::show(int display)
         {
             int x = 0, y = 0;
             SDL_GetWindowPosition(sdlWindow_, &x, &y);
-            pos = Point{double(x), double(y)};
+            pos = Point { static_cast<double>(x), static_cast<double>(y) };
         }
-
-        if (
-            (mode_ & WindowMode::Accelerated) ||
-            (mode_ & WindowMode::Fullscreen)  ||
-            (mode_ & WindowMode::FullscreenDesktop)
-        )
-            sdlRenderer_ = SDL_CreateRenderer(
-                sdlWindow_,
-                -1,
-                ((mode_ & WindowMode::Accelerated) ? SDL_RENDERER_ACCELERATED  : 0) |
-                ((mode_ & WindowMode::VSync      ) ? SDL_RENDERER_PRESENTVSYNC : 0)
-            );
-        else
-            sdlRenderer_ = SDL_CreateRenderer(sdlWindow_, -1, 0 /*SDL_RENDERER_SOFTWARE*/);
-
-        if (!sdlRenderer_) throw SdlPlatformError{};
 
         {
             SDL_RendererInfo info_, *info = &info_;
