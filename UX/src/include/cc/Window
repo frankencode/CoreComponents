@@ -44,6 +44,7 @@ enum class WindowMode: uint64_t
     OpenGl            = UINT64_C(0x0000000000000002), ///< Enable OpenGL for this window
     Vulkan            = UINT64_C(0x0000000010000000), ///< Enable Vulkan for this window
     Metal             = UINT64_C(0x0000000020000000), ///< Enable Metal for this window
+    VSync             = UINT64_C(0x8000000000000000), ///< Enable VSYNC for this window
     Default           = WindowMode::HighDpi|WindowMode::Resizable ///< %Default window mode
 };
 

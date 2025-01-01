@@ -125,9 +125,11 @@ void Sdl3Window::State::createWindow()
         throw Sdl3PlatformError{};
     }
 
-    waitVSync_ =
-        SDL_SetRenderVSync(renderer_, SDL_RENDERER_VSYNC_ADAPTIVE) ||
-        SDL_SetRenderVSync(renderer_, 1);
+    if (mode_ & WindowMode::VSync) {
+        waitVSync_ =
+            SDL_SetRenderVSync(renderer_, SDL_RENDERER_VSYNC_ADAPTIVE) ||
+            SDL_SetRenderVSync(renderer_, 1);
+    }
 
     id_ = SDL_GetWindowID(window_);
 
