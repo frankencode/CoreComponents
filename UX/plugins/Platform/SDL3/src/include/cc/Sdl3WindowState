@@ -1,0 +1,90 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/Sdl3Window>
+#include <cc/Sdl3PlatformError>
+#include <SDL3/SDL_video.h>
+#include <SDL3/SDL_render.h>
+#include <SDL3/SDL_surface.h>
+
+namespace cc {
+
+class Sdl3Context final: public Object
+{
+public:
+    struct State final: public Object::State
+    {
+        ~State() {
+            if (texture_) SDL_DestroyTexture(texture_);
+        }
+
+        SDL_Texture *texture_ { nullptr };
+        int textureWidth_ { 0 };
+        int textureHeight_ { 0 };
+    };
+
+    Sdl3Context():
+        Object{new State}
+    {}
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+struct Sdl3Window::State final: public Window::State
+{
+    State(const View &view);
+    ~State();
+
+    void setMinSize(Size size);
+    void setMaxSize(Size size);
+
+    void setWindowIcon(const Image &image);
+
+    void show(int display) override;
+    void hide() override;
+    void raise() override;
+
+    void setOpacity(double opacity) override;
+
+    void createWindow();
+
+    void onWindowResized(const Size &newSize);
+    void onWindowMoved(const Point &newPos);
+    void onWindowShown();
+    void onWindowHidden();
+    void redraw();
+
+    void renderViewToImage(const View &view, Image &image) override;
+
+    void renderFrame(const Frame &frame) override;
+
+    static void updateOpacity(View view);
+    static void renderCascade(SDL_Renderer *renderer, const View &view);
+    static void renderTexture(SDL_Renderer *renderer, const View &view);
+
+    void updateTexture(SDL_Renderer *sdlRenderer, View view);
+
+    Property<void> minSizeMonitor;
+    Property<void> maxSizeMonitor;
+
+    SDL_Window *window_ { nullptr };
+    SDL_Renderer *renderer_ { nullptr };
+    SDL_Surface *icon_ { nullptr };
+    Image iconImage_;
+
+    SDL_WindowID id_ { 0 };
+
+    Size currentSize_;
+    Point currentPos_;
+
+    bool exposed_ { false };
+    uint32_t gainFocusTime_ { 0 };
+};
+
+} // namespace cc

@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2024 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/Application>
+#include <cc/Timer>
+
+namespace cc {
+
+class Sdl3Window;
+
+class Sdl3Application final: public Application
+{
+public:
+    Sdl3Application();
+
+    void triggerTimer(const Timer &timer);
+
+private:
+    friend class Sdl3Window;
+
+    struct State;
+
+    void registerWindow(const Sdl3Window &window);
+
+    const State &me() const;
+    State &me();
+};
+
+} // namespace cc

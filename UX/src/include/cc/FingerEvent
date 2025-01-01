@@ -31,8 +31,8 @@ public:
     FingerEvent(
         PointerAction action,
         double time,
-        int64_t deviceId,
-        int64_t fingerId,
+        uint64_t deviceId,
+        uint64_t fingerId,
         const Point &pos,
         const Step &step,
         double pressure
@@ -52,11 +52,11 @@ public:
 
     /** Touch device ID
       */
-    int64_t deviceId() const { return me().deviceId_; }
+    uint64_t deviceId() const { return me().deviceId_; }
 
     /** Contact point tracking ID
       */
-    int64_t fingerId() const { return me().fingerId_; }
+    uint64_t fingerId() const { return me().fingerId_; }
 
     /** Contact pressure
       */
@@ -70,8 +70,8 @@ private:
         State(
             PointerAction action,
             double time,
-            int64_t deviceId,
-            int64_t fingerId,
+            uint64_t deviceId,
+            uint64_t fingerId,
             const Point &pos,
             const Step &step,
             double pressure
@@ -95,8 +95,8 @@ private:
                 << "}";
         }
 
-        int64_t deviceId_;
-        int64_t fingerId_;
+        uint64_t deviceId_;
+        uint64_t fingerId_;
         double pressure_;
     };
 

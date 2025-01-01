@@ -108,8 +108,9 @@ Flickable::State::State(const View &carrier):
 
         if (isDragged_) {
             double t = event.time();
-            if (lastDragTime_ > 0 && t != lastDragTime_)
+            if (lastDragTime_ > 0 && t != lastDragTime_) {
                 speed_ = (lastDragPos_ - event.pos()) / (t - lastDragTime_);
+            }
 
             lastDragTime_ = t;
             lastDragPos_ = event.pos();

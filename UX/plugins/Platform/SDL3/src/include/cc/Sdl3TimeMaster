@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2024 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -8,15 +8,15 @@
 
 #pragma once
 
-#include <cc/PlatformPlugin>
-#include <cc/SdlPlatformError>
+#include <cc/TimeMaster>
 
 namespace cc {
 
-class SdlPlatformPlugin final: public PlatformPlugin
+class Sdl3TimeMaster final: public TimeMaster
 {
 public:
-    SdlPlatformPlugin();
+    Sdl3TimeMaster();
+    static void shutdown();
 
 private:
     struct State;

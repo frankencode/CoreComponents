@@ -42,13 +42,16 @@ struct Sdl3DisplayManager::State final: public DisplayManager::State
             double dpi = largestDisplay.dpi().avg();
             displayDensityRatio_ = dpi / 160;
 
-            if (dpi < 200) {
+            // limit the minimal text size to a minimum of recognizable pixels
+            if (displayDensityRatio_ < 1) displayDensityRatio_ = 1;
+
+            /*if (dpi < 200) {
                 if (largestDisplay.size()[1] < largestDisplay.size()[0]) defaultFontSmoothing_ = FontSmoothing::RgbSubpixel;
                 else defaultFontSmoothing_ = FontSmoothing::VrgbSubpixel;
             }
-            else {
+            else {*/
                 defaultFontSmoothing_ = FontSmoothing::Grayscale;
-            }
+            //}
 
             refreshRate_ = largestDisplay.nativeMode().refreshRate();
         }

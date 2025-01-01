@@ -228,10 +228,16 @@ struct SdlApplication::State: public Application::State
         FingerEvent event {
             action,
             e.timestamp / 1000.,
-            e.touchId,
-            e.fingerId,
-            Point{double(e.x), double(e.y)},
-            Step{double(e.dx), double(e.dy)},
+            static_cast<uint64_t>(e.touchId),
+            static_cast<uint64_t>(e.fingerId),
+            Point {
+                static_cast<double>(e.x),
+                static_cast<double>(e.y)
+            },
+            Step {
+                static_cast<double>(e.dx),
+                static_cast<double>(e.dy)
+            },
             e.pressure
         };
 
@@ -256,8 +262,14 @@ struct SdlApplication::State: public Application::State
             e.timestamp / 1000.,
             button,
             0,
-            Point{double(e.x), double(e.y)},
-            Step{double(e.xrel), double(e.yrel)}
+            Point{
+                static_cast<double>(e.x),
+                static_cast<double>(e.y)
+            },
+            Step{
+                static_cast<double>(e.xrel),
+                static_cast<double>(e.yrel)
+            }
         };
 
         SdlWindow window;
@@ -289,13 +301,17 @@ struct SdlApplication::State: public Application::State
             e.timestamp / 1000.,
             button,
             e.clicks,
-            Point{double(e.x), double(e.y)},
+            Point{
+                static_cast<double>(e.x),
+                static_cast<double>(e.y)
+            },
             Step{}
         };
 
         SdlWindow window;
-        if (windows_.lookup(e.windowID, &window))
+        if (windows_.lookup(e.windowID, &window)) {
             feedMouseEvent(window, event);
+        }
     }
 
     void handleMouseWheelEvent(const SDL_MouseWheelEvent &e)
@@ -305,8 +321,14 @@ struct SdlApplication::State: public Application::State
 
         WheelEvent event {
             e.timestamp / 1000.,
-            Step{double(e.x), double(e.y)},
-            Point{double(mx), double(my)}
+            Step{
+                static_cast<double>(e.x),
+                static_cast<double>(e.y)
+            },
+            Point{
+                static_cast<double>(mx),
+                static_cast<double>(my)
+            }
         };
 
         SdlWindow window;

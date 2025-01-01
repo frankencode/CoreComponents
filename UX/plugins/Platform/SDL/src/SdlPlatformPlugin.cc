@@ -15,10 +15,10 @@
 
 namespace cc {
 
-struct SdlPlatformPlugin::State: public PlatformPlugin::State
+struct SdlPlatformPlugin::State final: public PlatformPlugin::State
 {
     State():
-        PlatformPlugin::State{"SDL", true}
+        PlatformPlugin::State{"SDL", false}
     {
         #ifdef SDL_HINT_RENDER_BATCHING
         SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
