@@ -89,7 +89,6 @@ String Application::State::userDataPath()
     return userDataPath_;
 }
 
-
 bool Application::State::feedFingerEvent(const Window &window, FingerEvent &event)
 {
     if (cursorControl()) cursorControl = Control{};
@@ -127,7 +126,7 @@ bool Application::State::feedFingerEvent(const Window &window, FingerEvent &even
 
         if (event.action() == PointerAction::Released)
         {
-            PosGuard guard{event, pressedControl().mapToLocal(eventPos)};
+            PosGuard<> guard{event, pressedControl().mapToLocal(eventPos)};
 
             if (
                 pressedControl().me().onPointerClicked(event) ||
@@ -183,7 +182,7 @@ bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
 
         if (event.action() == PointerAction::Released)
         {
-            PosGuard guard{event, pressedControl().mapToLocal(event.pos())};
+            PosGuard<> guard{event, pressedControl().mapToLocal(event.pos())};
 
             if (
                 pressedControl().me().onPointerClicked(event) ||
@@ -205,6 +204,12 @@ bool Application::State::feedMouseEvent(const Window &window, MouseEvent &event)
     showCursor(true);
 
     return eaten;
+}
+
+bool Application::State::feedPenEvent(const Window &window, PenEvent &event)
+{
+    // showCursor(false);
+    return window.view().me().feedPenEvent(event);
 }
 
 bool Application::State::feedWheelEvent(const Window &window, WheelEvent &event)

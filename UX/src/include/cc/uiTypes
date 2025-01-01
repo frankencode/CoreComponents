@@ -95,6 +95,56 @@ inline String str(MouseButton mask)
     return parts.join('|');
 }
 
+using PenId = uint32_t;
+
+/** Pressure-sensitive pen action
+  */
+enum class PenAction {
+    Moved, ///< Pen touched the surface or is moved on the surface
+    Hovered, ///< Pen lifted from the surface or is moved above the surface
+    Pressed, ///< Pen button is pressed
+    Released ///< Pen button is released
+};
+
+inline String str(PenAction action)
+{
+    switch (action) {
+        case PenAction::Moved : return "PenAction::Moved";
+        case PenAction::Hovered : return "PenAction::Hovered";
+        case PenAction::Pressed : return "PenAction::Pressed";
+        case PenAction::Released: return "PenAction::Released";
+    };
+    return String{};
+}
+
+/** Pressure-sensitive pen button flags
+  */
+enum class PenButton: uint32_t {
+    None     = 0,       ///< Empty set of buttons
+    InkTip   = 1u << 0, ///< Painting tip is touching the surface
+    Button1  = 1u << 1, ///< %Button 1 is pressed
+    Button2  = 1u << 2, ///< %Button 2 is pressed
+    Button3  = 1u << 3, ///< %Button 3 is pressed
+    Button4  = 1u << 4, ///< %Button 4 is pressed
+    Button5  = 1u << 5, ///< %Button 5 is pressed
+    EraseTip = 1u << 30 ///< Erase tip is touching the surface
+};
+
+CC_BITMASK(PenButton)
+
+inline String str(PenButton mask)
+{
+    List<String> parts;
+    if (mask & PenButton::InkTip) parts << "PenButton::InkTip";
+    if (mask & PenButton::Button1) parts << "PenButton::Button1";
+    if (mask & PenButton::Button2) parts << "PenButton::Button2";
+    if (mask & PenButton::Button3) parts << "PenButton::Button3";
+    if (mask & PenButton::Button4) parts << "PenButton::Button4";
+    if (mask & PenButton::Button5) parts << "PenButton::Button5";
+    if (mask & PenButton::EraseTip) parts << "PenButton::EraseTip";
+    return parts.join('|');
+}
+
 /** Type of input action
   */
 enum class PointerAction {

@@ -15,6 +15,7 @@
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_mouse.h>
+#include <SDL3/SDL_pen.h>
 #include <SDL3/SDL_clipboard.h>
 #include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_filesystem.h>
@@ -146,6 +147,79 @@ struct Sdl3Application::State: public Application::State
         event.type = userEvent_;
         event.user.data1 = new Function<void()>{move(doNext)};
         SDL_PushEvent(&event);
+    }
+
+    void handlePenMotionEvent(const SDL_PenMotionEvent &e)
+    {
+        PenState &pen = pens_(e.which);
+
+        PenEvent event {
+            pen.down_ ? PenAction::Moved : PenAction::Hovered,
+            e.which,
+            e.timestamp / 1e9,
+            static_cast<PenButton>(e.pen_state),
+            PenButton::None,
+            Point {
+                static_cast<double>(e.x),
+                static_cast<double>(e.y)
+            },
+            pen.down_ ? pen.pressure_ : 0.
+        };
+
+        for (const auto &pair: windows_) {
+            feedPenEvent(pair.value(), event);
+        }
+    }
+
+    void handlePenTouchEvent(const SDL_PenTouchEvent &e)
+    {
+        const bool down = (e.type == SDL_EVENT_PEN_DOWN);
+        PenState &pen = pens_(e.which);
+        pen.down_ = down;
+
+        PenEvent event {
+            down ? PenAction::Moved : PenAction::Hovered,
+            e.which,
+            e.timestamp / 1e9,
+            static_cast<PenButton>(e.pen_state),
+            PenButton::None,
+            Point {
+                static_cast<double>(e.x),
+                static_cast<double>(e.y)
+            },
+            down ? pen.pressure_ : 0.
+        };
+
+        for (const auto &pair: windows_) {
+            feedPenEvent(pair.value(), event);
+        }
+    }
+
+    void handlePenButtonEvent(const SDL_PenButtonEvent &e)
+    {
+        PenEvent event {
+            (e.type == SDL_EVENT_PEN_BUTTON_DOWN) ? PenAction::Pressed : PenAction::Released,
+            e.which,
+            e.timestamp / 1e9,
+            static_cast<PenButton>(e.pen_state),
+            static_cast<PenButton>(e.button),
+            Point {
+                static_cast<double>(e.x),
+                static_cast<double>(e.y)
+            },
+            pens_(e.which).pressure_
+        };
+
+        for (const auto &pair: windows_) {
+            feedPenEvent(pair.value(), event);
+        }
+    }
+
+    void handlePenAxisEvent(const SDL_PenAxisEvent &e)
+    {
+        if (e.axis == SDL_PEN_AXIS_PRESSURE) {
+            pens_(e.which).pressure_ = static_cast<double>(e.value);
+        }
     }
 
     void handleFingerEvent(const SDL_TouchFingerEvent &e)
@@ -386,27 +460,46 @@ struct Sdl3Application::State: public Application::State
                 delete f;
             }
             else switch(event.type) {
+                case SDL_EVENT_PEN_MOTION:
+                case SDL_EVENT_MOUSE_MOTION:
                 case SDL_EVENT_FINGER_MOTION:
+                case SDL_EVENT_PEN_AXIS:
                     do {
-                        handleFingerEvent(event.tfinger);
+                        if (event.type == SDL_EVENT_PEN_MOTION)
+                            handlePenMotionEvent(event.pmotion);
+                        else if (event.type == SDL_EVENT_MOUSE_MOTION)
+                            handleMouseMotionEvent(event.motion);
+                        else if (event.type == SDL_EVENT_FINGER_MOTION)
+                            handleFingerEvent(event.tfinger);
+                        else
+                            handlePenAxisEvent(event.paxis);
                     } while (
                         SDL_PeepEvents(
                             &event, 1, SDL_GETEVENT,
-                            SDL_EVENT_FINGER_MOTION, SDL_EVENT_FINGER_MOTION
-                        ) > 0
-                    );
-                    break;
-                case SDL_EVENT_MOUSE_MOTION: {
-                    do {
-                        handleMouseMotionEvent(event.motion);
-                    } while (
+                            SDL_EVENT_PEN_MOTION, SDL_EVENT_PEN_MOTION
+                        ) > 0 ||
                         SDL_PeepEvents(
                             &event, 1, SDL_GETEVENT,
                             SDL_EVENT_MOUSE_MOTION, SDL_EVENT_MOUSE_MOTION
+                        ) > 0 ||
+                        SDL_PeepEvents(
+                            &event, 1, SDL_GETEVENT,
+                            SDL_EVENT_FINGER_MOTION, SDL_EVENT_FINGER_MOTION
+                        ) > 0 ||
+                        SDL_PeepEvents(
+                            &event, 1, SDL_GETEVENT,
+                            SDL_EVENT_PEN_AXIS, SDL_EVENT_PEN_AXIS
                         ) > 0
                     );
                     break;
-                }
+                case SDL_EVENT_PEN_DOWN:
+                case SDL_EVENT_PEN_UP:
+                    handlePenTouchEvent(event.ptouch);
+                    break;
+                case SDL_EVENT_PEN_BUTTON_DOWN:
+                case SDL_EVENT_PEN_BUTTON_UP:
+                    handlePenButtonEvent(event.pbutton);
+                    break;
                 case SDL_EVENT_FINGER_DOWN:
                 case SDL_EVENT_FINGER_UP:
                     handleFingerEvent(event.tfinger);
@@ -450,6 +543,13 @@ struct Sdl3Application::State: public Application::State
     uint32_t userEvent_ { 0 };
 
     Map<uint32_t, Sdl3Window> windows_;
+
+    struct PenState {
+        double pressure_ { 0 };
+        bool down_ { false };
+    };
+
+    Map<uint32_t, PenState> pens_;
 
     SDL_Window *textInputWindow_ { nullptr };
 

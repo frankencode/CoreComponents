@@ -12,6 +12,7 @@
 #include <cc/MouseEvent>
 #include <cc/FingerEvent>
 #include <cc/WheelEvent>
+#include <cc/PenEvent>
 #include <cc/KeyEvent>
 #include <cc/Image>
 #include <cc/Event>
@@ -546,6 +547,22 @@ public:
       */
     View &onFingerMoved(Filter<FingerEvent> &&f) { me().onFingerMoved(move(f)); return *this; }
 
+    /** %Handle pen touched/moved event
+      */
+    View &onPenMoved(Filter<PenEvent> &&f) { me().onPenMoved(move(f)); return *this; }
+
+    /** %Handle pen hovered event
+      */
+    View &onPenHovered(Filter<PenEvent> &&f) { me().onPenHovered(move(f)); return *this; }
+
+    /** %Handle pen button pressed event
+      */
+    View &onPenPressed(Filter<PenEvent> &&f) { me().onPenPressed(move(f)); return *this; }
+
+    /** %Handle pen button released event
+      */
+    View &onPenReleased(Filter<PenEvent> &&f) { me().onPenReleased(move(f)); return *this; }
+
     /** %Handle mouse wheel moved event
       */
     View &onWheelMoved(Filter<WheelEvent> &&f) { me().onWheelMoved(move(f)); return *this; }
@@ -631,6 +648,11 @@ protected:
         Event<FingerEvent> onFingerPressed; ///< %Finger contact started over this view
         Event<FingerEvent> onFingerReleased; ///< %Finger contact ended over this view
         Event<FingerEvent> onFingerMoved; ///< %Finger contact moved over this view
+
+        Event<PenEvent> onPenMoved; ///< Pressure-sensitive pen touched the surface or moved on the surface
+        Event<PenEvent> onPenHovered; ///< Pressure-sensitive pen was lifted from the surface or was moved above the surface
+        Event<PenEvent> onPenPressed; ///< Pressure-sensitive pen's button was pressed
+        Event<PenEvent> onPenReleased; ///< Pressure-sensitive pen's button was released
 
         Event<WheelEvent> onWheelMoved; ///< %Mouse wheel is moved
 
@@ -815,6 +837,7 @@ protected:
 
         virtual bool feedFingerEvent(FingerEvent &event) const;
         virtual bool feedMouseEvent(MouseEvent &event) const;
+        virtual bool feedPenEvent(PenEvent &event) const;
         virtual bool feedWheelEvent(WheelEvent &event) const;
         virtual bool feedKeyEvent(KeyEvent &event) const;
 

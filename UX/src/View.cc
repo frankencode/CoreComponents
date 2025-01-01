@@ -392,7 +392,7 @@ bool View::State::feedFingerEvent(FingerEvent &event) const
 {
     Point eventPos = window().size() * event.pos();
     {
-        PosGuard guard{event, mapToLocal(eventPos)};
+        PosGuard<> guard{event, mapToLocal(eventPos)};
 
         if (event.action() == PointerAction::Pressed)
         {
@@ -426,7 +426,7 @@ bool View::State::feedFingerEvent(FingerEvent &event) const
 bool View::State::feedMouseEvent(MouseEvent &event) const
 {
     {
-        PosGuard guard{event, mapToLocal(event.pos())};
+        PosGuard<> guard{event, mapToLocal(event.pos())};
 
         if (event.action() == PointerAction::Pressed)
         {
@@ -453,6 +453,41 @@ bool View::State::feedMouseEvent(MouseEvent &event) const
         if (child.me().containsGlobal(event.pos()))
         {
             if (child.me().feedMouseEvent(event))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool View::State::feedPenEvent(PenEvent &event) const
+{
+    {
+        PosGuard<PenEvent> guard{event, mapToLocal(event.pos())};
+
+        if (event.action() == PenAction::Moved)
+        {
+            if (onPenMoved(event)) return true;
+        }
+        else if (event.action() == PenAction::Hovered)
+        {
+            if (onPenHovered(event)) return true;
+        }
+        else if (event.action() == PenAction::Pressed)
+        {
+            if (onPenPressed(event)) return true;
+        }
+        else if (event.action() == PenAction::Released)
+        {
+            if (onPenReleased(event)) return true;
+        }
+    }
+
+    for (const View &child: visibleChildren_)
+    {
+        if (child.me().containsGlobal(event.pos()))
+        {
+            if (child.me().feedPenEvent(event))
                 return true;
         }
     }

@@ -12,12 +12,12 @@
 
 namespace cc {
 
-class PosGuard;
+template<class> class PosGuard;
 class MouseEvent;
 
 /** \class PointerEvent cc/PointerEvent
   * \ingroup ui
-  * \brief Input event from a pointing device (e.g. mouse or pen)
+  * \brief Input event from a pointing device (e.g. mouse or touch screen)
   */
 class PointerEvent: public Object
 {
@@ -44,7 +44,7 @@ public:
 
 protected:
     friend class Object;
-    friend class PosGuard;
+    friend class PosGuard<PointerEvent>;
     friend class MouseEvent;
 
     friend String str(const PointerEvent &event);

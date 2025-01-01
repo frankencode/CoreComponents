@@ -91,6 +91,7 @@ protected:
 
         bool feedFingerEvent(const Window &window, FingerEvent &event);
         bool feedMouseEvent(const Window &window, MouseEvent &event);
+        bool feedPenEvent(const Window &window, PenEvent &event);
         bool feedWheelEvent(const Window &window, WheelEvent &event);
         bool feedKeyEvent(const Window &window, KeyEvent &event);
         bool feedExposedEvent(const Window &window);

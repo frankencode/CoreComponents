@@ -10,6 +10,11 @@ struct Canvas::State final: public View::State
         size(Size{width, height});
         paper(Color::White);
 
+        redPen_ = Pen{"darkred", sp(5)}.lineCap(LineCap::Round);
+        greenPen_ = Pen{"darkgreen", sp(5)}.lineCap(LineCap::Round);
+        bluePen_ = Pen{"darkblue", sp(5)}.lineCap(LineCap::Round);
+        erasePen_ = Pen{"white", sp(20)}.lineCap(LineCap::Round);
+
         onMousePressed(
             [this](const MouseEvent &event){
                 mousePressed_ = true;
@@ -29,10 +34,7 @@ struct Canvas::State final: public View::State
             [this](const MouseEvent &event){
                 if (mousePressed_) {
                     Painter{this}
-                    .setPen(
-                        Pen{"darkblue", sp(5)}
-                        .lineCap(LineCap::Round)
-                    )
+                    .setPen(greenPen_)
                     .moveTo(prevMousePos_)
                     .lineTo(event.pos())
                     .stroke();
@@ -40,6 +42,31 @@ struct Canvas::State final: public View::State
                     prevMousePos_ = event.pos();
                 }
                 return mousePressed_;
+            }
+        );
+
+        onPenMoved(
+            [this](const PenEvent &event){
+                if (penDown_) {
+                    Painter{this}
+                    .setPen((event.buttons() & PenButton::EraseTip) ? erasePen_ : bluePen_)
+                    .moveTo(prevPenPos_)
+                    .lineTo(event.pos())
+                    .stroke();
+                    update();
+                }
+                else {
+                    penDown_ = true;
+                }
+                prevPenPos_ = event.pos();
+                return true;
+            }
+        );
+
+        onPenHovered(
+            [this](const PenEvent &event){
+                penDown_ = false;
+                return true;
             }
         );
 
@@ -53,16 +80,12 @@ struct Canvas::State final: public View::State
         onFingerMoved(
             [this](const FingerEvent &event){
                 Painter{this}
-                .setPen(
-                    Pen{"darkred", sp(5)}
-                    .lineCap(LineCap::Round)
-                )
+                .setPen(redPen_)
                 .moveTo(prevFingerPos_)
                 .lineTo(event.pos())
                 .stroke();
                 update();
                 prevFingerPos_ = event.pos();
-                CC_INSPECT(event.pressure());
                 return true;
             }
         );
@@ -83,8 +106,14 @@ struct Canvas::State final: public View::State
 
     bool firstTime_ { true };
     bool mousePressed_ { false };
+    bool penDown_ { false };
     Point prevMousePos_;
     Point prevFingerPos_;
+    Point prevPenPos_;
+    Pen redPen_;
+    Pen greenPen_;
+    Pen bluePen_;
+    Pen erasePen_;
 };
 
 Canvas::Canvas(double width, double height):

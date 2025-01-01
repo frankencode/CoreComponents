@@ -14,10 +14,11 @@ namespace cc {
 
 /** \internal
   */
+template<class Event = PointerEvent>
 class PosGuard
 {
 public:
-    PosGuard(PointerEvent &event, Point newPos):
+    PosGuard(Event &event, Point newPos):
         pos_{event.me().pos_},
         origPos_{event.me().pos_}
     {

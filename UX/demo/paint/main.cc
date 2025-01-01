@@ -6,6 +6,6 @@ int main(int argc, char *argv[])
     using namespace cc;
 
     return
-        Canvas{sp(800), sp(600)}
+        Canvas{sp(1000), sp(800)}
         .run();
 }

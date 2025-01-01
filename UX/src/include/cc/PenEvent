@@ -1,0 +1,119 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/uiTypes>
+
+namespace cc {
+
+template<class> class PosGuard;
+
+/** \class PenEvent cc/PenEvent
+  * \ingroup ui
+  * \brief Pressure-senstive pen input event
+  */
+class PenEvent final: public Object
+{
+public:
+    /** Create a new pen input event
+      * \param action \copydoc action()
+      * \param penId \copydoc penId()
+      * \param time \copydoc time()
+      * \param buttons \copydoc buttons()
+      * \param button \copydoc button()
+      * \param pos \copydoc pos()
+      * \param pressure \copydoc pressure()
+      */
+    PenEvent(
+        PenAction action,
+        PenId penId,
+        double time,
+        PenButton buttons,
+        PenButton button,
+        const Point &pos,
+        double pressure
+    ):
+        Object{
+            new State{
+                action,
+                penId,
+                time,
+                buttons,
+                button,
+                pos,
+                pressure
+            }
+        }
+    {}
+
+    /** Type of event
+      */
+    PenAction action() const { return me().action_; }
+
+    /** Identifier of the pen
+      */
+    PenId penId() const { return me().penId_; }
+
+    /** Time the event occured
+      */
+    double time() const { return me().time_; }
+
+    /** Buttons that are currently pressed
+      */
+    PenButton buttons() const { return me().buttons_; }
+
+    /** Button that caused the event (if any)
+      */
+    PenButton button() const { return me().button_; }
+
+    /** Pen position
+      */
+    const Point &pos() const { return me().pos_; }
+
+    /** Relative pressure (0..1)
+      */
+    double pressure() const { return me().pressure_; }
+
+private:
+    friend class PosGuard<PenEvent>;
+
+    struct State final: public Object::State
+    {
+        State(
+            PenAction action,
+            PenId penId,
+            double time,
+            PenButton buttons,
+            PenButton button,
+            const Point &pos,
+            double pressure
+        ):
+            action_{action},
+            penId_{penId},
+            time_{time},
+            buttons_{buttons},
+            button_{button},
+            pos_{pos},
+            pressure_{pressure}
+        {}
+
+        PenAction action_;
+        PenId penId_;
+        double time_;
+        PenButton buttons_;
+        PenButton button_;
+        Point pos_;
+        double pressure_;
+    };
+
+    State &me() { return Object::me.as<State>(); }
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc
