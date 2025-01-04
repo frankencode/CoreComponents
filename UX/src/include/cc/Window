@@ -99,8 +99,6 @@ public:
 
     Display display() const { return me().display(); } ///< Get the display this window is shown on
 
-    bool waitVSync() const { return me().waitVSync_; } ///< Tell if rendered frame output waits for the display refresh signal
-
     /** Render \a view into user allocated \a image
       */
     void renderViewToImage(const View &view, Image &image)

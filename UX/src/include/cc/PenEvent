@@ -80,6 +80,8 @@ public:
       */
     double pressure() const { return me().pressure_; }
 
+    String toString() const { return me().toString(); }
+
 private:
     friend class PosGuard<PenEvent>;
 
@@ -103,6 +105,20 @@ private:
             pressure_{pressure}
         {}
 
+        inline String toString() const
+        {
+            return Format{}
+                << "PenEvent {" << nl
+                << "  action: " << action_ << nl
+                << "  penId: " << penId_ << nl
+                << "  time: " << time_ << nl
+                << "  buttons: " << buttons_ << nl
+                << "  button: " << button_ << nl
+                << "  pos: " << pos_ << nl
+                << "  pressure_: " << pressure_ << nl
+                << "}";
+        }
+
         PenAction action_;
         PenId penId_;
         double time_;
@@ -115,5 +131,7 @@ private:
     State &me() { return Object::me.as<State>(); }
     const State &me() const { return Object::me.as<State>(); }
 };
+
+inline String str(const PenEvent &event) { return event.toString(); }
 
 } // namespace cc

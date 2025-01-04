@@ -27,15 +27,19 @@ public:
 
     /** Create a new flickable of given size (\a width, \a height) and optionally with a custom \a carrier
       */
-    Flickable(double width, double height, const View &carrier = Pane{});
+    Flickable(double width, double height, const View &carrier = Pane{}, bool autoCenter = false);
 
     /** Create a new flickable with a custom \a carrier
       */
-    explicit Flickable(const View &carrier);
+    explicit Flickable(const View &carrier, bool autoCenter = false);
 
     /** Get a weak reference in \a self
       */
     Flickable &associate(Out<Flickable> self);
+
+    /** %Set option to automatically center the carrier when the flickable is larger than the carrier
+      */
+    Flickable &autoCenter(bool on) { me().autoCenter_ = on; return *this; }
 
     /** Get the access to the carrier
       */
@@ -51,7 +55,7 @@ protected:
 
     struct State: public Control::State
     {
-        State(const View &carrier = Pane{});
+        State(const View &carrier = Pane{}, bool autoCenter = false);
         ~State();
 
         View carrier() const { return carrier_; }
@@ -115,6 +119,8 @@ protected:
 
         bool wasFlying_ { false };
         bool carrierAtRest_ { true };
+        bool shiftPressed_ { false };
+        bool autoCenter_ { false };
     };
 
     explicit Flickable(State *newState):

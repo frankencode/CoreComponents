@@ -174,24 +174,28 @@ struct Sdl3Application::State: public Application::State
     void handlePenTouchEvent(const SDL_PenTouchEvent &e)
     {
         const bool down = (e.type == SDL_EVENT_PEN_DOWN);
+        penDown_ += 2 * down - 1;
+
         PenState &pen = pens_(e.which);
         pen.down_ = down;
 
-        PenEvent event {
-            down ? PenAction::Moved : PenAction::Hovered,
-            e.which,
-            e.timestamp / 1e9,
-            static_cast<PenButton>(e.pen_state),
-            PenButton::None,
-            Point {
-                static_cast<double>(e.x),
-                static_cast<double>(e.y)
-            },
-            down ? pen.pressure_ : 0.
-        };
+        if (!down) {
+            PenEvent event {
+                down ? PenAction::Moved : PenAction::Hovered,
+                e.which,
+                e.timestamp / 1e9,
+                static_cast<PenButton>(e.pen_state),
+                PenButton::None,
+                Point {
+                    static_cast<double>(e.x),
+                    static_cast<double>(e.y)
+                },
+                down ? pen.pressure_ : 0.
+            };
 
-        for (const auto &pair: windows_) {
-            feedPenEvent(pair.value(), event);
+            for (const auto &pair: windows_) {
+                feedPenEvent(pair.value(), event);
+            }
         }
     }
 
@@ -224,6 +228,8 @@ struct Sdl3Application::State: public Application::State
 
     void handleFingerEvent(const SDL_TouchFingerEvent &e)
     {
+        if (penDown_) return;
+
         PointerAction action; {
             switch (e.type) {
                 case SDL_EVENT_FINGER_MOTION: action = PointerAction::Moved; break;
@@ -353,6 +359,8 @@ struct Sdl3Application::State: public Application::State
             static_cast<KeyCode>(e.key),
             static_cast<KeyModifier>(e.mod)
         };
+
+        keyModifiers(event.modifiers());
 
         if (Sdl3Window window; windows_.lookup(e.windowID, &window)) {
             if (e.timestamp - window.me().gainFocusTime_ > 100) // workaround: SDL sometimes slips window change keyboard combinations
@@ -550,8 +558,11 @@ struct Sdl3Application::State: public Application::State
     };
 
     Map<uint32_t, PenState> pens_;
+    int penDown_ { 0 };
 
     SDL_Window *textInputWindow_ { nullptr };
+
+    KeyModifier modifiers_ { KeyModifier::None };
 
     bool cursorVisible_ { true };
 };

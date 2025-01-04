@@ -545,7 +545,7 @@ enum class KeyModifier: int32_t
     NumLock      = 0x1000, ///< Numeric lock is active (numpad)
     CapsLock     = 0x2000, ///< Capital letters lock is active
     ModeLock     = 0x4000, ///< Mode lock is active
-    Shift        = LeftShift | RightShift, ///< Convenience mask for both shift keys
+    Shift        = LeftShift | RightShift | CapsLock, ///< Convenience mask for both shift and the caplock key
     Control      = LeftControl | RightControl, ///< Convenience mask for both control keys
     Alt          = LeftAlt | RightAlt, ///< Convenience mask for both alt keys
     Meta         = LeftMeta | RightMeta ///< Convenience mask for both meta keys

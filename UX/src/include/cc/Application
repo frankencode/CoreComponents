@@ -50,6 +50,8 @@ public:
     Window focusWindow() const { return me().focusWindow(); } ///< The window which currently holds the input focus
     Window appWindow() const { return me().appWindow(); } ///< Get the applications primary window
 
+    KeyModifier keyModifiers() const { return me().keyModifiers(); } ///< Get the currently active keyboard modifiers
+
     double textZoom() const { return me().textZoom(); } ///< Get the text zoom factor
     Application &textZoom(Definition<double> &&f) { me().textZoom(move(f)); return *this; } ///< Define the text zoom factor
     Application &textZoom(double newValue) { me().textZoom = newValue; return *this; } ///< %Set the text zoom factor
@@ -143,6 +145,7 @@ protected:
         Property<Cursor> cursor;
 
         Property<Rect> textInputArea;
+        Property<KeyModifier> keyModifiers;
 
         Property<double> minMouseDragDistance;
         Property<double> minFingerDragDistance;

@@ -16,9 +16,10 @@
 
 namespace cc {
 
-Flickable::State::State(const View &carrier):
+Flickable::State::State(const View &carrier, bool autoCenter):
     carrier_{carrier},
-    timer_{1./DisplayManager{}.refreshRate()}
+    timer_{1./DisplayManager{}.refreshRate()},
+    autoCenter_{autoCenter}
 {
     size([this]{ return hasParent() ? parent().size() : Size{}; });
 
@@ -126,6 +127,19 @@ Flickable::State::State(const View &carrier):
 
     onWheelMoved([this](const WheelEvent &event)
     {
+        KeyModifier modifiers = Application{}.keyModifiers();
+        if (
+            (modifiers & KeyModifier::Alt) ||
+            (modifiers & KeyModifier::Control)
+        ) {
+            return false;
+        }
+
+        Step step = event.wheelStep();
+        if (modifiers & KeyModifier::Shift) {
+            std::swap(step[0], step[1]);
+        }
+
         if (Application{}.focusControl())
             Application{}.focusControl(Control{});
 
@@ -135,7 +149,7 @@ Flickable::State::State(const View &carrier):
         if (timerMode_ != TimerMode::Stopped)
             return true;
 
-        carrier_.pos(carrierStep(carrier_.pos() + event.wheelStep() * wheelGranularity(), wheelBouncing() ? boundary() : 0));
+        carrier_.pos(carrierStep(carrier_.pos() + step * wheelGranularity(), wheelBouncing() ? boundary() : 0));
 
         if (carrierInsideBoundary())
             carrierBounceStart();
@@ -154,7 +168,15 @@ void Flickable::State::preheat()
 
 void Flickable::State::positionCarrierOnResize()
 {
-    carrier_.pos(carrierStep(carrier_.pos()));
+    if (autoCenter_) {
+        carrier_.pos({
+            std::floor((width() - carrier_.width()) / 2),
+            std::floor((height() - carrier_.height()) / 2)
+        });
+    }
+    else {
+        carrier_.pos(carrierStep(carrier_.pos()));
+    }
 }
 
 void Flickable::State::keepFocusControlInView()
@@ -225,6 +247,11 @@ Point Flickable::State::carrierStep(Point p, double b)
         else if (y + h < size()[1] - b) y = size()[1] - b - h;
     }
     else y = 0;
+
+    if (autoCenter_) {
+        if (carrier_.height() < height()) y = std::floor((height() - carrier_.height()) / 2);
+        if (carrier_.width() < width()) x = std::floor((width() - carrier_.width()) / 2);
+    }
 
     return Point{x, y};
 }
@@ -352,14 +379,14 @@ Flickable::Flickable():
     Control{onDemand<State>}
 {}
 
-Flickable::Flickable(double width, double height, const View &carrier):
-    Control{new State{carrier}}
+Flickable::Flickable(double width, double height, const View &carrier, bool autoCenter):
+    Control{new State{carrier, autoCenter}}
 {
     size(Size{width, height});
 }
 
-Flickable::Flickable(const View &carrier):
-    Control{new State{carrier}}
+Flickable::Flickable(const View &carrier, bool autoCenter):
+    Control{new State{carrier, autoCenter}}
 {}
 
 Flickable &Flickable::associate(Out<Flickable> self)

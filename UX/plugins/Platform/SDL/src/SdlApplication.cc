@@ -347,6 +347,8 @@ struct SdlApplication::State: public Application::State
             static_cast<KeyModifier>(e.keysym.mod)
         };
 
+        keyModifiers(event.modifiers());
+
         SdlWindow window;
         if (windows_.lookup(e.windowID, &window)) {
             if (e.timestamp - window.me().gainFocusTime_ > 100) // workaround: SDL sometimes slips window change keyboard combinations

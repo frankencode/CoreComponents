@@ -11,7 +11,7 @@
 namespace cc {
 
 ScrollView::State::State(const View &carrier):
-    flickable_{carrier}
+    flickable_{carrier, /*autoCenter=*/true}
 {
     vScroll_.orientation(Orientation::Vertical);
     hScroll_.orientation(Orientation::Horizontal);
@@ -37,10 +37,7 @@ ScrollView::State::State(const View &carrier):
     hScroll_.totalExtent([this]{ return flickable_.carrier().width(); });
 
     flickable_.size([this]{
-        return Size{
-            width() - vScroll_.visible() * vScroll_.width(),
-            height() - hScroll_.visible() * hScroll_.height()
-        };
+        return size() - (!scrollBarAutoHide()) * Size { vScroll_.width(), hScroll_.height() };
     });
 
     flickable_.clip(true);

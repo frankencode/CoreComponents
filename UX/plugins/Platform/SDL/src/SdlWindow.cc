@@ -141,15 +141,16 @@ void SdlWindow::State::show(int display)
         {
             SDL_RendererInfo info_, *info = &info_;
             if (SDL_GetRendererInfo(sdlRenderer_, info) != 0) throw SdlPlatformError{};
-            waitVSync_ =
-                std::strcmp(info->name, "opengl") == 0 && (
-                    SDL_GL_SetSwapInterval(-1) != -1 ||
-                    SDL_GL_SetSwapInterval(1) != -1
-                );
+
+            if (mode_ & WindowMode::VSync) {
+                if (std::strcmp(info->name, "opengl") == 0) {
+                    if (SDL_GL_SetSwapInterval(-1) != -1) SDL_GL_SetSwapInterval(1);
+                }
+            }
+
             #ifndef NDEBUG
             fout() << "Renderer: " << info->name << " ("
                 << ((info->flags & SDL_RENDERER_ACCELERATED) ? "ACCELERATED" : "SOFTWARE")
-                << (waitVSync_ ? ", VSYNC" : "")
                 << ")" << nl;
             #endif
         }

@@ -1,4 +1,0 @@
-Application {
-    name: ccpaint
-    use: [ Core, UX, Testing ]
-}
