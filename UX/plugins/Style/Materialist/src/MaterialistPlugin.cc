@@ -96,6 +96,7 @@ struct MaterialistPlugin::State: public StylePlugin::State
         defaultMediumFont_.size(sp(14));
 
         String iconsPath = CC_BUNDLE_LOOKUP("icons");
+        // CC_INSPECT(iconsPath);
         if (iconsPath != "")
             FontManager{}.addPath(iconsPath);
         else

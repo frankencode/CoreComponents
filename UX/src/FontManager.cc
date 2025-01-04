@@ -36,7 +36,7 @@ bool FontManager::State::isFontFace(const String &path) const
 {
     String suffix = path.fileSuffix();
     suffix.downcase();
-    return suffix == "ttf" || suffix == "woff" || suffix == "otf" || suffix == "ttc";
+    return suffix == "ttf" || suffix == "woff2" || suffix == "woff" || suffix == "otf" || suffix == "ttc";
 }
 
 FontFamily FontManager::State::selectFontFamily(const String &name) const
