@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <cc/Image>
 #include <cc/uiTypes>
 
 namespace cc {
@@ -27,6 +28,10 @@ public:
       */
     Cursor(CursorShape shape);
 
+    /** Create a cursor of custom \a image and \a hotspot
+      */
+    Cursor(const Image &image, const Point &hotspot);
+
     /** Get the cursor shape
       */
     CursorShape shape() const
@@ -39,13 +44,6 @@ public:
     bool operator==(const Cursor &other) const
     {
         return shape() == other.shape();
-    }
-
-    /** Not equal to operator
-      */
-    bool operator!=(const Cursor &other) const
-    {
-        return shape() != other.shape();
     }
 
 protected:

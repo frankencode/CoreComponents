@@ -195,7 +195,8 @@ enum class CursorShape {
     ResizeNorthSouth,         ///< Resizing cursor (N to S)
     ResizeCross,              ///< Resiging cursor
     Forbidden,                ///< Forbidden action cursor
-    Hand                      ///< Grabbing hand cursor
+    Hand,                     ///< Grabbing hand cursor
+    Custom                    ///< Custom image
 };
 
 inline String str(CursorShape shape)
@@ -213,6 +214,7 @@ inline String str(CursorShape shape)
         case CursorShape::ResizeCross             : return "CursorShape::ResizeCross";
         case CursorShape::Forbidden               : return "CursorShape::Forbidden";
         case CursorShape::Hand                    : return "CursorShape::Hand";
+        case CursorShape::Custom                  : return "CursorShape::Custom";
     };
 
     return String{};

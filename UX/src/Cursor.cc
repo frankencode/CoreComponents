@@ -16,4 +16,9 @@ Cursor::Cursor(CursorShape shape)
     *this = Application{}.me().createCursor(shape);
 }
 
+Cursor::Cursor(const Image &image, const Point &hotspot)
+{
+    *this = Application{}.me().createCursor(image, hotspot);
+}
+
 } // namespace cc

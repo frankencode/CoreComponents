@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/Cursor>
+#include <cc/Image>
 
 typedef struct SDL_Cursor SDL_Cursor;
 
@@ -18,6 +19,7 @@ class Sdl3Cursor final: public Cursor
 {
 public:
     Sdl3Cursor(CursorShape shape);
+    Sdl3Cursor(const Image &image, const Point &hotspot);
 
     Sdl3Cursor(const Cursor &cursor);
 

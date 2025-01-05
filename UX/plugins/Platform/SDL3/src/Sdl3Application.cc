@@ -69,6 +69,11 @@ struct Sdl3Application::State: public Application::State
         return Sdl3Cursor{shape};
     }
 
+    Cursor createCursor(const Image &image, const Point &hotspot) override
+    {
+        return Sdl3Cursor{image, hotspot};
+    }
+
     void setCursor(const Cursor &cursor) override
     {
         SDL_SetCursor(Sdl3Cursor{cursor}.sdlCursor());

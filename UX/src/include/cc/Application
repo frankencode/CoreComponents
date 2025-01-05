@@ -112,6 +112,7 @@ protected:
         virtual void captureMouse(bool on) = 0;
 
         virtual Cursor createCursor(CursorShape shape) = 0;
+        virtual Cursor createCursor(const Image &image, const Point &hotspot) = 0;
         virtual void setCursor(const Cursor &cursor) = 0;
         virtual void unsetCursor() = 0;
         virtual void showCursor(bool on) = 0;
