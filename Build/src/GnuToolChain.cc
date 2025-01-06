@@ -126,7 +126,7 @@ struct GnuToolChain::State: public ToolChain::State
     String defaultOptimization(BuildOption options) const override
     {
         /*if ((options & BuildOption::Debug) && (options & BuildOption::Release)) return "g";*/
-        if (options & BuildOption::Release) return "2";
+        if (options & BuildOption::Release) return "3";
         else return "";
     }
 
@@ -598,14 +598,30 @@ struct GnuToolChain::State: public ToolChain::State
         return plan.shell().run(command);
     }
 
+    void appendTuningOptions(Format &args) const
+    {
+        #if defined(__x86_64__) || defined(_M_X64)
+            if (!cxxFlags_.contains(" -m")) {
+                #if 0
+                args << "-mtune=generic";
+                #else
+                args << "-march=x86-64-v3";
+                #endif
+            }
+        #endif
+    }
+
     void appendCompileOptions(Format &args, const BuildPlan &plan) const
     {
         if (plan.options() & BuildOption::Debug) args << "-g";
         if (plan.options() & BuildOption::Release) args << "-DNDEBUG";
-        if (plan.optimize() != "") args << "-O" + plan.optimize();
+        if (plan.optimize() != "") {
+            args << "-O" + plan.optimize();
+        }
         if (plan.options() & BuildOption::Release) {
-            if (plan.optimize() != "0") {
-                args << "-flto" << "-mtune=generic" << "-fno-plt";
+            if (plan.optimize()(0) != '0') {
+                appendTuningOptions(args);
+                args << "-flto" << "-fno-plt";
             }
         }
 
@@ -671,8 +687,11 @@ struct GnuToolChain::State: public ToolChain::State
         appendRelocationMode(args, plan);
         if (!(plan.options() & BuildOption::Library)) args << "-pie";
 
-        if (plan.optimize() != "") {
-            args << "-flto=" + str(plan.concurrency()) << "-O" + plan.optimize();
+        if (plan.options() & BuildOption::Release) {
+            if (plan.optimize()(0) != '0') {
+                appendTuningOptions(args);
+                args << "-flto=" + str(plan.concurrency()) << "-O" + plan.optimize();
+            }
         }
 
         if (ldFlags_ != "") {
