@@ -71,11 +71,18 @@ public:
         me{std::move(other.me)}
     {}
 
+    /** Morph \a other into a list
+      */
+    template<class Other>
+    explicit List(Other &&other):
+        me{std::move(other.me)}
+    {}
+
     /** Assign list \a other
       */
     List &operator=(const List &other) = default;
 
-    /** Assign right-side list \a other
+    /** Take-over right-side list \a other
       */
     List &operator=(List &&other)
     {

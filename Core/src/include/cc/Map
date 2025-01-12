@@ -447,6 +447,8 @@ public:
     const auto &tree() const { return me(); }
 
 private:
+    friend class List<Item>;
+
     Cow<BucketVector<Item>> me;
 };
 

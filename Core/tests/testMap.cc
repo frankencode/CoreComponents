@@ -52,5 +52,29 @@ int main(int argc, char *argv[])
         }
     };
 
+    TestCase {
+        "MorphToList",
+        []{
+            Map<int> map;
+            const int n = 5;
+            {
+                Random random { 0 };
+                for (int i = 0; i < n; ++i) {
+                    int key = random.get();
+                    int value = random.get();
+                    map.insert(key, value);
+                }
+            }
+
+            List<KeyValue<int>> list { std::move(map) };
+            {
+                Random random { 0 };
+                for (int i = 0; i < n; ++i) {
+                    CC_CHECK(list.find(KeyValue{random.get(), random.get()}));
+                }
+            }
+        }
+    };
+
     return TestSuite{argc, argv}.run();
 }

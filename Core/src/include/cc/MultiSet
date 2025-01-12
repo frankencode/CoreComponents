@@ -388,6 +388,8 @@ public:
     ///@}
 
 private:
+    friend class List<Item>;
+
     Cow<BucketVector<Item>> me;
 };
 
