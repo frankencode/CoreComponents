@@ -10,9 +10,9 @@ int main(int argc, char *argv[])
 
     const int n = argc > 1 ? String{argv[1]}.toInt() : 1000000;
 
-    MultiMap<int> numbers;
+    MultiMap<long> numbers;
 
-    fout() << n << " random insertion into cc::bucket::MultiMap<int>... ";
+    fout() << n << " random insertion into cc::bucket::MultiMap<long>... ";
     {
         double t = System::now();
         Random random { 0 };

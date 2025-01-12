@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 
     std::multimap<long, long> numbers;
 
-    fout() << n << " random insertions into std::multimap<int>... ";
+    fout() << n << " random insertions into std::multimap<long>... ";
     {
         Random random { 0 };
         double t = System::now();

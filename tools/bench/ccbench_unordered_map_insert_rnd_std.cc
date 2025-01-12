@@ -8,11 +8,11 @@ int main(int argc, char *argv[])
 {
     using namespace cc;
 
-    const int n = argc > 1 ? String{argv[1]}.toInt() : 1000000;
+    const int n = argc > 1 ? String{argv[1]}.toInt() : 100000;
 
-    std::unordered_map<int, int> numbers;
+    std::unordered_map<long, long> numbers;
 
-    fout() << n << " random insertion into std::unordered_map<int>... ";
+    fout() << n << " random insertion into std::unordered_map<long>... ";
     {
         Random random;
         double t = System::now();
