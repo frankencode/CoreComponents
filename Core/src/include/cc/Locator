@@ -8,14 +8,18 @@
 
 #pragma once
 
-#include <cc/buckets/BucketStop>
+#include <cc/blist/Stop>
 #include <compare>
 #include <cassert>
 
-namespace cc {
+namespace cc::blist {
 
-template<class, unsigned> class BucketVector;
-template<class> class BucketChain;
+template<class, unsigned> class Vector;
+template<class> class Chain;
+
+} // namespace cc::blist
+
+namespace cc {
 
 /** \class Locator cc/Locator
   * \brief Locate items inside containers
@@ -91,12 +95,12 @@ public:
 
 protected:
     template<class, unsigned>
-    friend class BucketVector;
+    friend class blist::Vector;
 
     template<class>
-    friend class BucketChain;
+    friend class blist::Chain;
 
-    explicit Locator(const unsigned *revision, long index, BucketStop *stop, unsigned egress):
+    explicit Locator(const unsigned *revision, long index, blist::Stop *stop, unsigned egress):
         index_{index},
         stop_{stop},
         egress_{egress}
@@ -135,7 +139,7 @@ protected:
     }
 
     long index_;
-    BucketStop *stop_;
+    blist::Stop *stop_;
     unsigned egress_;
     #ifndef NDEBUG
     unsigned revisionSaved_ { 0 };

@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <cc/buckets/BucketSlotMap>
-#include <cc/buckets/BucketStop>
-#include <cc/buckets/config>
+#include <cc/blist/SlotMap>
+#include <cc/blist/Stop>
+#include <cc/blist/config>
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -18,12 +18,12 @@
 #include <bit>
 #include <cassert>
 
-namespace cc {
+namespace cc::blist {
 
 /** \internal
   * \brief B+-tree that uses sub-tree weights as search keys.
   *
-  * The BucketTree is a B+-tree which contains sub-tree weights as keys in the inner nodes.
+  * The blist::Tree is a B+-tree which contains sub-tree weights as keys in the inner nodes.
   * The levels of the tree are comprised of double linked bucket chains.
   *
   * Item storage and retrieval has to be defined in a derived class.
@@ -32,10 +32,10 @@ namespace cc {
   * Keeping the logic in this class out of item type dependent template instantiations
   * reduces shared object size by a significiant amount.
   *
-  * \see BucketVector
+  * \see blist::Vector
   */
-template<unsigned G = BucketTreeGranularity>
-class BucketTree
+template<unsigned G = Granularity>
+class Tree
 {
 public:
     class Branch;
@@ -43,7 +43,7 @@ public:
     static constexpr unsigned StepBits = std::countr_zero(G);
     static constexpr unsigned StepMask = G - 1;
 
-    class Node: public BucketStop
+    class Node: public Stop
     {
     public:
         Node *succ() const { return static_cast<Node *>(succ_); }
@@ -101,8 +101,8 @@ public:
 
         long dissipateForwardTo(Branch *succ)
         {
-            CC_BUCKETTREE_ASSERT(fill_ > 0);
-            CC_BUCKETTREE_ASSERT(succ->fill_ < G);
+            CC_BLIST_ASSERT(fill_ > 0);
+            CC_BLIST_ASSERT(succ->fill_ < G);
 
             unsigned slotIndex = drop(fill_ - 1);
             succ->push(0, child_[slotIndex], weight_[slotIndex]);
@@ -111,8 +111,8 @@ public:
 
         long dissipateBackwardTo(Branch *pred)
         {
-            CC_BUCKETTREE_ASSERT(fill_ > 0);
-            CC_BUCKETTREE_ASSERT(pred->fill_ < G);
+            CC_BLIST_ASSERT(fill_ > 0);
+            CC_BLIST_ASSERT(pred->fill_ < G);
 
             unsigned slotIndex = drop(0);
             pred->push(pred->fill_, child_[slotIndex], weight_[slotIndex]);
@@ -121,8 +121,8 @@ public:
 
         long distributeHalfForwardTo(Branch *succ)
         {
-            CC_BUCKETTREE_ASSERT(fill_ == G);
-            CC_BUCKETTREE_ASSERT(succ->fill_ <= G / 2);
+            CC_BLIST_ASSERT(fill_ == G);
+            CC_BLIST_ASSERT(succ->fill_ <= G / 2);
 
             long delta = 0;
 
@@ -138,8 +138,8 @@ public:
 
         long distributeQuarterForwardTo(Branch *succ)
         {
-            CC_BUCKETTREE_ASSERT(fill_ == G);
-            CC_BUCKETTREE_ASSERT(succ->fill_ <= G - G / 4);
+            CC_BLIST_ASSERT(fill_ == G);
+            CC_BLIST_ASSERT(succ->fill_ <= G - G / 4);
 
             long delta = 0;
 
@@ -155,8 +155,8 @@ public:
 
         long distributeQuarterBackwardTo(Branch *pred)
         {
-            CC_BUCKETTREE_ASSERT(fill_ == G);
-            CC_BUCKETTREE_ASSERT(pred->fill_ == G / 2);
+            CC_BLIST_ASSERT(fill_ == G);
+            CC_BLIST_ASSERT(pred->fill_ == G / 2);
 
             long delta = 0;
 
@@ -172,7 +172,7 @@ public:
 
         void adoptChildrenOfSucc(const Branch *succ)
         {
-            CC_BUCKETTREE_ASSERT(fill_ + succ->fill_ <= G);
+            CC_BLIST_ASSERT(fill_ + succ->fill_ <= G);
 
             for (unsigned k = 0; k < succ->fill_; ++k)
             {
@@ -185,7 +185,7 @@ public:
         Branch *pred() const { return static_cast<Branch *>(pred_); }
 
     private:
-        BucketSlotMap<G> map_;
+        SlotMap<G> map_;
         Node *child_[G];
         long weight_[G];
     };
@@ -312,7 +312,7 @@ protected:
     void unlink(Node *node, bool isBranch);
 
     static long &weight(Node *child) {
-        CC_BUCKETTREE_ASSERT(child->parent_); // FIXME: will become ineffective once lastLeaf_ is burried in root_->parent_
+        CC_BLIST_ASSERT(child->parent_); // FIXME: will become ineffective once lastLeaf_ is burried in root_->parent_
         return child->parent_->weightOf(child);
     }
 
@@ -341,7 +341,7 @@ protected:
 };
 
 template<unsigned G>
-BucketTree<G>::Node *BucketTree<G>::stepDownTo(long index, unsigned *egress) const
+Tree<G>::Node *Tree<G>::stepDownTo(long index, unsigned *egress) const
 {
     assert(0 <= index && index <= weight_);
 
@@ -374,7 +374,7 @@ BucketTree<G>::Node *BucketTree<G>::stepDownTo(long index, unsigned *egress) con
 }
 
 template<unsigned G>
-void BucketTree<G>::joinSucc(Node *node, Node *newNode, bool isBranch)
+void Tree<G>::joinSucc(Node *node, Node *newNode, bool isBranch)
 {
     Node *oldSucc = node->succ();
 
@@ -406,7 +406,7 @@ void BucketTree<G>::joinSucc(Node *node, Node *newNode, bool isBranch)
 }
 
 template<unsigned G>
-void BucketTree<G>::unlink(Node *node, bool isBranch)
+void Tree<G>::unlink(Node *node, bool isBranch)
 {
     Branch *parent = node->parent_;
     parent->drop(parent->indexOf(node));
@@ -423,7 +423,7 @@ void BucketTree<G>::unlink(Node *node, bool isBranch)
 }
 
 template<unsigned G>
-void BucketTree<G>::shiftWeights(Node *from, Node *to, long delta)
+void Tree<G>::shiftWeights(Node *from, Node *to, long delta)
 {
     while (from != to) {
         weight(from) -= delta;
@@ -434,7 +434,7 @@ void BucketTree<G>::shiftWeights(Node *from, Node *to, long delta)
 }
 
 template<unsigned G>
-void BucketTree<G>::updateWeights(Node *node, long delta)
+void Tree<G>::updateWeights(Node *node, long delta)
 {
     for (int h = height_; h > 0; --h) {
         weight(node) += delta;
@@ -444,7 +444,7 @@ void BucketTree<G>::updateWeights(Node *node, long delta)
 }
 
 template<unsigned G>
-void BucketTree<G>::reduce()
+void Tree<G>::reduce()
 {
     if (root_) {
         while (height_ > 0 && root_->fill_ == 1) {
@@ -459,7 +459,7 @@ void BucketTree<G>::reduce()
 
 template<unsigned G>
 template<class NodeType>
-void BucketTree<G>::dissipateSlow(NodeType *&node, unsigned &egress)
+void Tree<G>::dissipateSlow(NodeType *&node, unsigned &egress)
 {
     NodeType *succ = static_cast<NodeType *>(node->succ_);
     NodeType *pred = static_cast<NodeType *>(node->pred_);
@@ -548,13 +548,13 @@ void BucketTree<G>::dissipateSlow(NodeType *&node, unsigned &egress)
         egress += G / 4;
     }
 
-    CC_BUCKETTREE_ASSERT(egress <= node->fill_);
+    CC_BLIST_ASSERT(egress <= node->fill_);
     #endif
 }
 
 template<unsigned G>
 template<class NodeType>
-void BucketTree<G>::relieve(NodeType *node)
+void Tree<G>::relieve(NodeType *node)
 {
     NodeType *succ = static_cast<NodeType *>(node->succ_);
     if (node->fill_ < G / 2) {
@@ -572,11 +572,11 @@ void BucketTree<G>::relieve(NodeType *node)
 
 template<unsigned G>
 template<class NodeType>
-void BucketTree<G>::collapseSucc(NodeType *node, NodeType *succ)
+void Tree<G>::collapseSucc(NodeType *node, NodeType *succ)
 {
     node->adoptChildrenOfSucc(succ);
     shiftWeights(succ, node, weight(succ));
     unlink(succ);
 }
 
-} // namespace cc
+} // namespace cc::blist

@@ -8,14 +8,17 @@
 
 #pragma once
 
-namespace cc {
+namespace cc::blist {
 
-class BucketStop
+/** \internal
+  * \brief Basic iteratable bucket stop
+  */
+class Stop
 {
 public:
-    BucketStop() = default;
+    Stop() = default;
 
-    BucketStop(BucketStop *pred, BucketStop *succ):
+    Stop(Stop *pred, Stop *succ):
         succ_{succ},
         pred_{pred}
     {
@@ -23,10 +26,10 @@ public:
         if (succ) succ->pred_ = this;
     }
 
-    BucketStop *succ_ { nullptr };
-    BucketStop *pred_ { nullptr };
+    Stop *succ_ { nullptr };
+    Stop *pred_ { nullptr };
     unsigned fill_ { 0 };
     unsigned slotIndex_ { 0 };
 };
 
-} // namespace cc
+} // namespace cc::blist

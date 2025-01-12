@@ -1,5 +1,5 @@
-#include <cc/buckets/BucketTree>
-#include <cc/buckets/BucketVector>
+#include <cc/blist/Tree>
+#include <cc/blist/Vector>
 #include <cc/testing>
 
 int main(int argc, char *argv[])
@@ -16,14 +16,14 @@ int main(int argc, char *argv[])
     };
 
     TestCase {
-        "BucketTypes",
+        "BlistTypes",
         []{
-            CC_INSPECT(sizeof(cc::BucketTree<16>::Node));
-            CC_INSPECT(sizeof(cc::BucketTree<16>::Branch));
-            CC_INSPECT(sizeof(cc::BucketVector<void*, 16>::Leaf));
-            CC_INSPECT(sizeof(cc::BucketTree<32>::Node));
-            CC_INSPECT(sizeof(cc::BucketTree<32>::Branch));
-            CC_INSPECT(sizeof(cc::BucketVector<void*, 32>::Leaf));
+            CC_INSPECT(sizeof(blist::Tree<16>::Node));
+            CC_INSPECT(sizeof(blist::Tree<16>::Branch));
+            CC_INSPECT(sizeof(blist::Vector<void*, 16>::Leaf));
+            CC_INSPECT(sizeof(blist::Tree<32>::Node));
+            CC_INSPECT(sizeof(blist::Tree<32>::Branch));
+            CC_INSPECT(sizeof(blist::Vector<void*, 32>::Leaf));
         }
     };
 

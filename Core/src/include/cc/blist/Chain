@@ -8,26 +8,26 @@
 
 #pragma once
 
-#include <cc/buckets/BucketSlotMap>
-#include <cc/buckets/BucketStop>
+#include <cc/blist/SlotMap>
+#include <cc/blist/Stop>
 #include <cc/Locator>
 #include <cc/InOut>
 #include <type_traits>
 #include <iterator>
 #include <cassert>
 
-namespace cc {
+namespace cc::blist {
 
 /** \internal
   * \brief Implemenation of a double-ended queue using interlinked buckets
   */
 template<class T>
-class BucketChain
+class Chain
 {
 public:
     using Item = T;
 
-    class Link final: public BucketStop
+    class Link final: public Stop
     {
     public:
         static constexpr unsigned Capacity = 16;
@@ -35,7 +35,7 @@ public:
         Link() = default;
 
         Link(Link *pred, Link *succ):
-            BucketStop{pred, succ}
+            Stop{pred, succ}
         {}
 
         ~Link()
@@ -103,19 +103,19 @@ public:
         T &slotAt(unsigned nodeIndex) { return reinterpret_cast<T *>(data_)[nodeIndex]; }
         const T& slotAt(unsigned nodeIndex) const { return reinterpret_cast<const T *>(data_)[nodeIndex]; }
 
-        BucketSlotMap<Capacity> map_;
+        SlotMap<Capacity> map_;
         alignas(T) std::uint8_t data_[Capacity * sizeof(T)];
     };
 
-    BucketChain() = default;
+    Chain() = default;
 
-    BucketChain(const BucketChain &other)
+    Chain(const Chain &other)
     {
         for (auto pos = other.head(); pos; ++pos)
             pushBack(other.at(pos));
     }
 
-    ~BucketChain()
+    ~Chain()
     {
         deplete();
     }
@@ -311,4 +311,4 @@ private:
     #endif
 };
 
-} // namespace cc
+} // namespace cc::blist

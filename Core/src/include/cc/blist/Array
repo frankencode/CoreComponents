@@ -12,12 +12,12 @@
 #include <utility> // std::move
 #include <cstring> // std::memcpy, std::memmove
 
-namespace cc {
+namespace cc::blist {
 
 /** Helper methods for copying and shifting partially uninitialized arrays
   */
 template<class T, bool trivial = std::is_trivially_copyable_v<T>>
-struct BucketArray
+struct Array
 {
     /** Shift initialized items up and down within the otherwise uninitialized array
       */
@@ -31,7 +31,7 @@ struct BucketArray
 };
 
 template<class T>
-struct BucketArray<T, true>
+struct Array<T, true>
 {
     template<unsigned distance = 1>
     static void shiftUp(T *items, unsigned count)
@@ -53,7 +53,7 @@ struct BucketArray<T, true>
 };
 
 template<class T>
-struct BucketArray<T, false>
+struct Array<T, false>
 {
     template<unsigned distance = 1>
     static void shiftUp(T *items, unsigned count)
@@ -82,4 +82,4 @@ struct BucketArray<T, false>
     }
 };
 
-} // namespace cc
+} // namespace cc::blist

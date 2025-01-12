@@ -383,14 +383,14 @@ public:
     using value_type = Item; ///< Item value type
     using size_type = long; ///< Type of the container capacity
 
-    using const_iterator = Iterator<const BucketVector<Item>>; ///< Readonly value iterator
+    using const_iterator = Iterator<const blist::Vector<Item>>; ///< Readonly value iterator
 
     const_iterator begin () const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
     const_iterator cbegin() const { return head(); } ///< %Return readonly iterator pointing to the first item (if any)
     const_iterator end   () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
     const_iterator cend  () const { return Locator{count()}; } ///< %Return readonly iterator pointing behind the last item
 
-    using const_reverse_iterator = ReverseIterator<const BucketVector<Item>>; ///< Readonly reverse value iterator
+    using const_reverse_iterator = ReverseIterator<const blist::Vector<Item>>; ///< Readonly reverse value iterator
 
     const_reverse_iterator rbegin () const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
     const_reverse_iterator crbegin() const { return tail(); } ///< %Return readonly reverse iterator pointing to the last item (if any)
@@ -413,7 +413,7 @@ public:
 private:
     friend class List<Item>;
 
-    Cow<BucketVector<Item>> me;
+    Cow<blist::Vector<Item>> me;
 };
 
 } // namespace cc

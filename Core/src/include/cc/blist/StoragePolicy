@@ -8,18 +8,18 @@
 
 #pragma once
 
-#include <cc/buckets/config>
+#include <cc/blist/config>
 
-namespace cc {
+namespace cc::blist {
 
 /** \internal
   * \brief Storage policy bucket tree based container
   * \tparam T Item type
   */
 template<class T>
-struct BucketStoragePolicy
+struct StoragePolicy
 {
-    static constexpr unsigned Granularity = BucketTreeGranularity;
+    static constexpr unsigned Granularity = blist::Granularity;
 };
 
-} // namespace cc
+} // namespace cc::blist

@@ -8,24 +8,24 @@
 
 #pragma once
 
-#include <cc/buckets/config>
+#include <cc/blist/config>
 #include <cstdint>
 #include <cstring>
 
-namespace cc {
+namespace cc::blist {
 
 /** \internal
   * \brief Storage slot index mapping table
   *
-  * The BucketSlotMap decides where individual items are stored in a bucket.
+  * The SlotMap decides where individual items are stored in a bucket.
   */
 template<unsigned G>
-class BucketSlotMap
+class SlotMap
 {
 public:
     static constexpr unsigned Capacity = G;
 
-    BucketSlotMap()
+    SlotMap()
     {
         for (unsigned k = 0; k < Capacity; ++k) map_[k] = Capacity - k - 1;
     }
@@ -35,24 +35,21 @@ public:
         return map_[bucketIndex];
     }
 
-    #if 0
     unsigned mapToBucket(unsigned slotIndex) const
     {
+    #if 0
         unsigned k = 0;
         while (map_[k] != slotIndex) ++k;
         return k;
-    }
     #else
-    unsigned mapToBucket(unsigned slotIndex) const
-    {
         return static_cast<unsigned>(static_cast<const uint8_t *>(std::memchr(map_, slotIndex, Capacity)) - map_);
-    }
     #endif
+    }
 
     unsigned pushEntry(unsigned bucketIndex, unsigned fill)
     {
-        CC_BUCKETTREE_ASSERT(bucketIndex <= fill);
-        CC_BUCKETTREE_ASSERT(fill < Capacity);
+        CC_BLIST_ASSERT(bucketIndex <= fill);
+        CC_BLIST_ASSERT(fill < Capacity);
 
         unsigned slotIndex = map_[Capacity - 1];
 
@@ -65,8 +62,8 @@ public:
 
     unsigned popEntry(unsigned bucketIndex, unsigned fill)
     {
-        CC_BUCKETTREE_ASSERT(bucketIndex < fill);
-        CC_BUCKETTREE_ASSERT(fill > 0);
+        CC_BLIST_ASSERT(bucketIndex < fill);
+        CC_BLIST_ASSERT(fill > 0);
 
         unsigned slotIndex = map_[bucketIndex];
 
@@ -82,7 +79,7 @@ private:
 };
 
 template<>
-class BucketSlotMap<16>
+class SlotMap<16>
 {
 public:
     static constexpr unsigned Capacity = 16;
@@ -101,8 +98,8 @@ public:
 
     unsigned pushEntry(unsigned bucketIndex, unsigned fill)
     {
-        CC_BUCKETTREE_ASSERT(bucketIndex <= fill);
-        CC_BUCKETTREE_ASSERT(fill < Capacity);
+        CC_BLIST_ASSERT(bucketIndex <= fill);
+        CC_BLIST_ASSERT(fill < Capacity);
 
         const uint64_t slotIndex = map_ >> 60u;
 
@@ -117,8 +114,8 @@ public:
 
     unsigned popEntry(unsigned bucketIndex, unsigned fill)
     {
-        CC_BUCKETTREE_ASSERT(bucketIndex < fill);
-        CC_BUCKETTREE_ASSERT(fill > 0);
+        CC_BLIST_ASSERT(bucketIndex < fill);
+        CC_BLIST_ASSERT(fill > 0);
 
         const uint64_t slotIndex = mapToSlot(bucketIndex);
 
@@ -135,4 +132,4 @@ private:
     uint64_t map_ { UINT64_C(0x0123456789ABCDEF) };
 };
 
-} // namespace cc
+} // namespace cc::blist

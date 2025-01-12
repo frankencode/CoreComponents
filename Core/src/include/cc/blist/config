@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2020-2023 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#ifdef CONFIG_CC_BLIST_DEBUG
+#include <cassert>
+#endif
+
+/** Compile time option to enable sanity checks for blist trees.
+  */
+// #define CC_BUCKETTREE_DEBUG
+
+#ifndef CONFIG_CC_BLIST_GRANULARITY
+#define CONFIG_CC_BLIST_GRANULARITY 32
+#endif
+
+#ifdef CONFIG_CC_BLIST_DEBUG
+#define CC_BLIST_ASSERT(x) assert(x);
+#else
+#define CC_BLIST_ASSERT(x)
+#endif
+
+namespace cc::blist {
+
+/** Default bucket size / default branch factor for blist trees.
+  */
+static constexpr unsigned Granularity = CONFIG_CC_BLIST_GRANULARITY;
+
+} // namespace cc::blist

@@ -8,23 +8,23 @@
 
 #pragma once
 
-#include <cc/buckets/BucketTree>
-#include <cc/buckets/BucketStoragePolicy>
+#include <cc/blist/Tree>
+#include <cc/blist/StoragePolicy>
 #include <cc/Locator>
 #include <cc/find>
 
-namespace cc {
+namespace cc::blist {
 
 /** \internal
-  * \brief Implementation of a variable length vector on top of \a BucketTree
+  * \brief Implementation of a variable length vector on top of \a Tree
   */
-template<class T, unsigned G = BucketStoragePolicy<T>::Granularity>
-class BucketVector final: public BucketTree<G>
+template<class T, unsigned G = StoragePolicy<T>::Granularity>
+class Vector final: public Tree<G>
 {
 public:
     using Item = T;
 
-    using Tree = BucketTree<G>;
+    using Tree = blist::Tree<G>;
     using Node = Tree::Node;
     using Branch = Tree::Branch;
 
@@ -85,8 +85,8 @@ public:
 
         long dissipateForwardTo(Leaf *succ)
         {
-            CC_BUCKETTREE_ASSERT(fill_ > 0);
-            CC_BUCKETTREE_ASSERT(succ->fill_ < G);
+            CC_BLIST_ASSERT(fill_ > 0);
+            CC_BLIST_ASSERT(succ->fill_ < G);
 
             succ->push(0, std::move(drop(fill_ - 1)));
             return 1;
@@ -94,8 +94,8 @@ public:
 
         long dissipateBackwardTo(Leaf *pred)
         {
-            CC_BUCKETTREE_ASSERT(fill_ > 0);
-            CC_BUCKETTREE_ASSERT(pred->fill_ < G);
+            CC_BLIST_ASSERT(fill_ > 0);
+            CC_BLIST_ASSERT(pred->fill_ < G);
 
             pred->push(pred->fill_, std::move(drop(0)));
             return 1;
@@ -103,8 +103,8 @@ public:
 
         long distributeHalfForwardTo(Leaf *succ)
         {
-            CC_BUCKETTREE_ASSERT(fill_ == G);
-            CC_BUCKETTREE_ASSERT(succ->fill_ <= G / 2);
+            CC_BLIST_ASSERT(fill_ == G);
+            CC_BLIST_ASSERT(succ->fill_ <= G / 2);
 
             for (unsigned k = 0; k < G / 2; ++k)
             {
@@ -116,8 +116,8 @@ public:
 
         long distributeQuarterForwardTo(Leaf *succ)
         {
-            CC_BUCKETTREE_ASSERT(fill_ == G);
-            CC_BUCKETTREE_ASSERT(succ->fill_ <= G - G / 4);
+            CC_BLIST_ASSERT(fill_ == G);
+            CC_BLIST_ASSERT(succ->fill_ <= G - G / 4);
 
             for (unsigned k = G - 1; k >= G - G / 4; --k)
             {
@@ -129,8 +129,8 @@ public:
 
         long distributeQuarterBackwardTo(Leaf *pred)
         {
-            CC_BUCKETTREE_ASSERT(fill_ == G);
-            CC_BUCKETTREE_ASSERT(pred->fill_ == G / 2);
+            CC_BLIST_ASSERT(fill_ == G);
+            CC_BLIST_ASSERT(pred->fill_ == G / 2);
 
             for (unsigned k = G / 2; k < G / 2 + G / 4; ++k)
             {
@@ -142,7 +142,7 @@ public:
 
         void adoptChildrenOfSucc(const Leaf *succ)
         {
-            CC_BUCKETTREE_ASSERT(fill_ + succ->fill_ <= G);
+            CC_BLIST_ASSERT(fill_ + succ->fill_ <= G);
 
             for (unsigned k = 0; k < succ->fill_; ++k)
             {
@@ -170,20 +170,20 @@ public:
             return reinterpret_cast<const Item *>(data_)[slotIndex];
         }
 
-        BucketSlotMap<G> map_;
+        SlotMap<G> map_;
         alignas(Item) std::byte data_[G * sizeof(Item)];
     };
 
-    BucketVector() = default;
+    Vector() = default;
 
-    BucketVector(const BucketVector &other)
+    Vector(const Vector &other)
     {
         for (auto pos = other.head(); pos; ++pos) {
             emplaceBack(other.at(pos));
         }
     }
 
-    ~BucketVector()
+    ~Vector()
     {
         deplete();
     }
@@ -328,7 +328,7 @@ public:
             #ifndef NDEBUG
             unsigned revisionSaved = Tree::revision_;
             #endif
-            *this = BucketVector{};
+            *this = Vector{};
             #ifndef NDEBUG
             Tree::revision_ = revisionSaved + 1;
             #endif
@@ -434,7 +434,7 @@ public:
 
 template<class T, unsigned G>
 template<class... Args>
-void BucketVector<T, G>::emplaceAt(Locator &target, Args... args)
+void Vector<T, G>::emplaceAt(Locator &target, Args... args)
 {
     assert(target);
     assert(target.revisionPtr_ == &Tree::revision_); // locator needs to belong to this container
@@ -452,7 +452,7 @@ void BucketVector<T, G>::emplaceAt(Locator &target, Args... args)
 
 template<class T, unsigned G>
 template<class... Args>
-void BucketVector<T, G>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... args)
+void Vector<T, G>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... args)
 {
     if (target) {
         Tree::dissipate(target, egress);
@@ -474,7 +474,7 @@ void BucketVector<T, G>::emplaceAndTell(Leaf *&target, unsigned &egress, Args...
 }
 
 template<class T, unsigned G>
-void BucketVector<T, G>::pop(Node *target, unsigned egress)
+void Vector<T, G>::pop(Node *target, unsigned egress)
 {
     if (Tree::weight_ > 1) {
         Leaf *leaf = static_cast<Leaf *>(target);
@@ -499,7 +499,7 @@ void BucketVector<T, G>::pop(Node *target, unsigned egress)
 
 template<class T, unsigned G>
 template<class Order, class Search, class Pattern>
-bool BucketVector<T, G>::lookup(const Pattern &pattern, long *finalIndex, Leaf **target, unsigned *egress) const
+bool Vector<T, G>::lookup(const Pattern &pattern, long *finalIndex, Leaf **target, unsigned *egress) const
 {
     bool found = false;
     if (Tree::height_ == 0) {
@@ -541,4 +541,4 @@ bool BucketVector<T, G>::lookup(const Pattern &pattern, long *finalIndex, Leaf *
     return found;
 }
 
-} // namespace cc
+} // namespace cc::blist

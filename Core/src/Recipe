@@ -20,5 +20,5 @@ Library {
         compile-flags: -D_GNU_SOURCE
         cascade: true
     }
-    source: [ *.cc, buckets/*.cc ]
+    source: [ *.cc, blist/*.cc ]
 }
