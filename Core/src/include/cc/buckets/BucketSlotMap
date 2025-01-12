@@ -42,12 +42,12 @@ public:
         while (map_[k] != slotIndex) ++k;
         return k;
     }
-    #endif
-
+    #else
     unsigned mapToBucket(unsigned slotIndex) const
     {
         return static_cast<unsigned>(static_cast<const uint8_t *>(std::memchr(map_, slotIndex, Capacity)) - map_);
     }
+    #endif
 
     unsigned pushEntry(unsigned bucketIndex, unsigned fill)
     {
