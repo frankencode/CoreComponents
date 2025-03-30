@@ -196,7 +196,7 @@ public:
     Locator tail() const
     {
         long index = Tree::weight_ - 1;
-        Node *node = Tree::lastLeaf_;
+        Node *node = Tree::root_ ? Tree::root_->lastLeaf_ : nullptr;
         unsigned egress = node ? node->fill_ - 1 : 0;
         return Locator{Tree::revision(), index, node, egress};
     }
@@ -246,7 +246,8 @@ public:
 
     Item &last() const
     {
-        return static_cast<Leaf *>(Tree::lastLeaf_)->at(Tree::lastLeaf_->fill_ - 1);
+        Leaf *lastLeaf = Tree::root_ ? static_cast<Leaf *>(Tree::root_->lastLeaf_) : nullptr;
+        return lastLeaf->at(lastLeaf->fill_ - 1);
     }
 
     template<class... Args>
@@ -263,7 +264,8 @@ public:
     template<class... Args>
     void emplaceBack(Args... args)
     {
-        emplace(Tree::lastLeaf_, Tree::lastLeaf_ ? Tree::lastLeaf_->fill_ : 0, args...);
+        Leaf *lastLeaf = Tree::root_ ? static_cast<Leaf *>(Tree::root_->lastLeaf_) : nullptr;
+        emplace(lastLeaf, lastLeaf ? lastLeaf->fill_ : 0, args...);
     }
 
     template<class... Args>
@@ -309,7 +311,7 @@ public:
     void deplete()
     {
         if (Tree::height_ >= 0) {
-            Leaf *leaf = static_cast<Leaf *>(Tree::lastLeaf_);
+            Leaf *leaf = static_cast<Leaf *>(Tree::root_->lastLeaf_);
             Branch *parent = leaf->parent_;
             while (leaf) {
                 Leaf *pred = leaf->pred();
@@ -465,7 +467,7 @@ void Vector<T, G>::emplaceAndTell(Leaf *&target, unsigned &egress, Args... args)
         target->emplace(egress, args...);
         Tree::weight_ = 1;
         Tree::root_ = target;
-        Tree::lastLeaf_ = target;
+        Tree::root_->lastLeaf_ = target;
         ++Tree::height_;
     }
     #ifndef NDEBUG
@@ -486,9 +488,9 @@ void Vector<T, G>::pop(Node *target, unsigned egress)
     }
     else {
         delete static_cast<Leaf *>(Tree::root_);
+        // Tree::root->lastLeaf_ = nullptr; // redundant
         Tree::root_ = nullptr;
         Tree::weight_ = 0;
-        Tree::lastLeaf_ = nullptr;
         --Tree::height_;
         Tree::dense_ = 1;
     }
@@ -511,7 +513,7 @@ bool Vector<T, G>::lookup(const Pattern &pattern, long *finalIndex, Leaf **targe
         if (egress) *egress = i;
     }
     else if (Tree::height_ > 0) {
-        Leaf *leaf = static_cast<Leaf *>(Tree::lastLeaf_);
+        Leaf *leaf = static_cast<Leaf *>(Tree::root_->lastLeaf_);
         if (leaf->at(leaf->fill_ - 1) < pattern) {
             if (finalIndex) *finalIndex = Tree::weight_;
             if (target) *target = leaf;

@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <cc/blist/SlotMap>
 #include <cc/blist/Stop>
 #include <cc/blist/config>
+#include <cc/SlotMap>
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -48,7 +48,10 @@ public:
     public:
         Node *succ() const { return static_cast<Node *>(succ_); }
         Node *pred() const { return static_cast<Node *>(pred_); }
-        Branch *parent_ { nullptr };
+        union {
+            Branch *parent_ { nullptr };
+            Node *lastLeaf_;
+        };
     };
 
     class Branch final: public Node
@@ -312,11 +315,11 @@ protected:
     void unlink(Node *node, bool isBranch);
 
     static long &weight(Node *child) {
-        CC_BLIST_ASSERT(child->parent_); // FIXME: will become ineffective once lastLeaf_ is burried in root_->parent_
+        // CC_BLIST_ASSERT(child->parent_); // ineffective since root_->parent_ overlaps with root_->lastLeaf_
         return child->parent_->weightOf(child);
     }
 
-    static void shiftWeights(Node *from, Node *to, long delta);
+    void shiftWeights(Node *from, Node *to, long delta);
     void updateWeights(Node *node, long delta);
 
     void reduce();
@@ -334,7 +337,6 @@ protected:
     int64_t dense_  : 1 { -1 };
     int64_t weight_ : 48 { 0 };
     Node *root_ { nullptr };
-    Node *lastLeaf_ { nullptr }; // TODO: bury in &root_->parent_
     #ifndef NDEBUG
     unsigned revision_ { 0 };
     #endif
@@ -348,7 +350,7 @@ Tree<G>::Node *Tree<G>::stepDownTo(long index, unsigned *egress) const
     Node *node = root_;
 
     if (index + 1 >= weight_) {
-        node = lastLeaf_;
+        node = root_ ? root_->lastLeaf_ : nullptr;
         *egress = (node) ? node->fill_ - (index < weight_) : 0;
     }
     else if (index <= 0) {
@@ -384,7 +386,7 @@ void Tree<G>::joinSucc(Node *node, Node *newNode, bool isBranch)
         dense_ = 0;
     }
     else if (!isBranch) {
-        lastLeaf_ = newNode;
+        root_->lastLeaf_ = newNode;
     }
 
     newNode->pred_ = node;
@@ -397,10 +399,12 @@ void Tree<G>::joinSucc(Node *node, Node *newNode, bool isBranch)
         parent->push(newNodeIndex, newNode, 0);
     }
     else {
+        Node *lastLeaf = root_->lastLeaf_;
         Branch *branch = new Branch;
         branch->push(0, root_, weight_);
         branch->push(1, newNode, 0);
         root_ = branch;
+        root_->lastLeaf_ = lastLeaf;
         ++height_;
     }
 }
@@ -415,7 +419,7 @@ void Tree<G>::unlink(Node *node, bool isBranch)
     Node *pred = node->pred();
     if (pred) pred->succ_ = succ;
     if (succ) succ->pred_ = pred;
-    else if (!isBranch) lastLeaf_ = pred;
+    else if (!isBranch) root_->lastLeaf_ = pred;
 
     delete node;
 
@@ -447,13 +451,14 @@ template<unsigned G>
 void Tree<G>::reduce()
 {
     if (root_) {
+        Node *lastLeaf = root_->lastLeaf_;
         while (height_ > 0 && root_->fill_ == 1) {
             Branch *branch = static_cast<Branch *>(root_);
             root_ = branch->childAt(0);
             delete branch;
             --height_;
         }
-        root_->parent_ = nullptr; // TODO: eventually set to lastLeaf()
+        root_->lastLeaf_ = lastLeaf;
     }
 }
 
@@ -529,7 +534,7 @@ void Tree<G>::dissipateSlow(NodeType *&node, unsigned &egress)
     shiftWeights(node, newSucc, node->distributeHalfForwardTo(newSucc));
     dense_ = 0;
 
-    #if 1
+    #ifdef CONFIG_CC_BLIST_SPILLBACK_ON_SPLIT
     if (pred) {
         shiftWeights(pred, node, pred->distributeQuarterForwardTo(node));
     }
@@ -543,7 +548,7 @@ void Tree<G>::dissipateSlow(NodeType *&node, unsigned &egress)
         node = newSucc;
         egress -= G / 2;
     }
-    #if 1
+    #ifdef CONFIG_CC_BLIST_SPILLBACK_ON_SPLIT
     else if (pred) {
         egress += G / 4;
     }

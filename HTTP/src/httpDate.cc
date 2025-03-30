@@ -26,9 +26,7 @@ Date httpDateFromString(const String &text, Out<bool> ok)
     if (parts.count() != 6) return Date{};
     int day = 0;
     {
-        String s = parts.at(1);
-        for (int i = 0; i < s.count(); ++i) {
-            char ch = s.at(i);
+        for (const char &ch: parts.at(1)) {
             day *= 10;
             if ('0' <= ch && ch <= '9') day += ch - '0';
             else return Date{0};
@@ -38,7 +36,7 @@ Date httpDateFromString(const String &text, Out<bool> ok)
     int month = 0;
     {
         const char *names[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-        String s = parts.at(2);
+        const String &s = parts.at(2);
         for (; month < 12; ++month) {
             if (s == names[month]) break;
         }
@@ -47,9 +45,7 @@ Date httpDateFromString(const String &text, Out<bool> ok)
     }
     int year = 0;
     {
-        String s = parts.at(3);
-        for (int i = 0; i < s.count(); ++i) {
-            char ch = s.at(i);
+        for (const char &ch: parts.at(3)) {
             year *= 10;
             if ('0' <= ch && ch <= '9') year += ch - '0';
             else return Date{};
@@ -57,10 +53,8 @@ Date httpDateFromString(const String &text, Out<bool> ok)
     }
     int hour = 0, minutes = 0, seconds = 0;
     {
-        String s = parts.at(4);
         int *p = &hour;
-        for (int i = 0; i < s.count(); ++i) {
-            char ch = s.at(i);
+        for (const char &ch: parts.at(4)) {
             if (ch == ':') {
                 if (p == &hour) p = &minutes;
                 else if (p == &minutes) p = &seconds;

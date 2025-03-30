@@ -14,6 +14,7 @@ namespace cc {
 
 /** \class FindAny cc/find
   * \brief Find a matching item
+  * \todo Make find() methods to take `const Container &` as first argument instead of a pointer type.
   */
 class FindAny {
 public:

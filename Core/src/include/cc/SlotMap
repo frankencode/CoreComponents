@@ -8,11 +8,10 @@
 
 #pragma once
 
-#include <cc/blist/config>
 #include <cstdint>
 #include <cstring>
 
-namespace cc::blist {
+namespace cc {
 
 /** \internal
   * \brief Storage slot index mapping table
@@ -48,9 +47,6 @@ public:
 
     unsigned pushEntry(unsigned bucketIndex, unsigned fill)
     {
-        CC_BLIST_ASSERT(bucketIndex <= fill);
-        CC_BLIST_ASSERT(fill < Capacity);
-
         unsigned slotIndex = map_[Capacity - 1];
 
         for (unsigned k = Capacity - 1; k > bucketIndex; --k) map_[k] = map_[k - 1];
@@ -62,9 +58,6 @@ public:
 
     unsigned popEntry(unsigned bucketIndex, unsigned fill)
     {
-        CC_BLIST_ASSERT(bucketIndex < fill);
-        CC_BLIST_ASSERT(fill > 0);
-
         unsigned slotIndex = map_[bucketIndex];
 
         for (unsigned k = bucketIndex; k < Capacity - 1; ++k) map_[k] = map_[k + 1];
@@ -98,9 +91,6 @@ public:
 
     unsigned pushEntry(unsigned bucketIndex, unsigned fill)
     {
-        CC_BLIST_ASSERT(bucketIndex <= fill);
-        CC_BLIST_ASSERT(fill < Capacity);
-
         const uint64_t slotIndex = map_ >> 60u;
 
         const unsigned bucketShift = bucketIndex << 2u;
@@ -114,9 +104,6 @@ public:
 
     unsigned popEntry(unsigned bucketIndex, unsigned fill)
     {
-        CC_BLIST_ASSERT(bucketIndex < fill);
-        CC_BLIST_ASSERT(fill > 0);
-
         const uint64_t slotIndex = mapToSlot(bucketIndex);
 
         const unsigned bucketShift = bucketIndex << 2u;
@@ -132,4 +119,4 @@ private:
     uint64_t map_ { UINT64_C(0x0123456789ABCDEF) };
 };
 
-} // namespace cc::blist
+} // namespace cc

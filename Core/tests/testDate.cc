@@ -66,5 +66,14 @@ int main(int argc, char *argv[])
         }
     };
 
+    TestCase {
+        "Conversions",
+        []{
+            Date date { 2025, 3, 2, 18, 29, 56 };
+            fout() << "time = " << static_cast<int64_t>(date.time()) << nl;
+            CC_VERIFY(static_cast<int64_t>(date.time()) == 1740940196);
+        }
+    };
+
     return TestSuite{argc, argv}.run();
 }

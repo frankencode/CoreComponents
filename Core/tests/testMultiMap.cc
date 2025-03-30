@@ -79,7 +79,9 @@ int main(int argc, char *argv[])
             {
                 Random random { 0 };
                 for (int i = 0; i < n; ++i) {
-                    CC_CHECK(list.find(KeyValue{random.get(), random.get()}));
+                    int key = random.get();
+                    int value = random.get();
+                    CC_CHECK(list.find(KeyValue{key, value}));
                 }
             }
         }

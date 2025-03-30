@@ -24,6 +24,8 @@ int main(int argc, char *argv[])
             CC_INSPECT(sizeof(blist::Tree<32>::Node));
             CC_INSPECT(sizeof(blist::Tree<32>::Branch));
             CC_INSPECT(sizeof(blist::Vector<void*, 32>::Leaf));
+            CC_INSPECT(sizeof(blist::Tree<32>));
+            CC_INSPECT(sizeof(blist::Vector<void*, 32>));
         }
     };
 

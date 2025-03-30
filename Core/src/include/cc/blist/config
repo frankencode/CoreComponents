@@ -26,6 +26,10 @@
 #define CC_BLIST_ASSERT(x)
 #endif
 
+#ifndef CONFIG_CC_BLIST_SPILLBACK_ON_SPLIT
+#define CONFIG_CC_BLIST_SPILLBACK_ON_SPLIT
+#endif
+
 namespace cc::blist {
 
 /** Default bucket size / default branch factor for blist trees.
