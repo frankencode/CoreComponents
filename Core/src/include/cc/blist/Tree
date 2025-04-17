@@ -10,7 +10,7 @@
 
 #include <cc/blist/Stop>
 #include <cc/blist/config>
-#include <cc/SlotMap>
+#include <cc/blist/SlotMap>
 #include <type_traits>
 #include <limits>
 #include <utility>
@@ -279,6 +279,8 @@ public:
 
     bool isDense() const { return dense_; }
 
+    static constexpr long maxCapacity() { return static_cast<long>(1) << (sizeof(void *) == 8 ? 56 : 27); }
+
 protected:
     template<class>
     friend class SearchShim;
@@ -333,9 +335,9 @@ protected:
         #endif
     }
 
-    int64_t height_ : 15 { -1 };
-    int64_t dense_  : 1 { -1 };
-    int64_t weight_ : 48 { 0 };
+    long height_ : sizeof(void *) == 8 ? 7 : 4 { -1 };
+    long dense_  : 1 { -1 };
+    long weight_ : sizeof(void *) == 8 ? 56 : 27 { 0 };
     Node *root_ { nullptr };
     #ifndef NDEBUG
     unsigned revision_ { 0 };

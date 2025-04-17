@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <cstring>
 
-namespace cc {
+namespace cc::blist {
 
 /** \internal
   * \brief Storage slot index mapping table
@@ -119,4 +119,4 @@ private:
     uint64_t map_ { UINT64_C(0x0123456789ABCDEF) };
 };
 
-} // namespace cc
+} // namespace cc::blist

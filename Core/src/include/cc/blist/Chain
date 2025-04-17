@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cc/blist/Stop>
-#include <cc/SlotMap>
+#include <cc/blist/SlotMap>
 #include <cc/Locator>
 #include <cc/InOut>
 #include <type_traits>
