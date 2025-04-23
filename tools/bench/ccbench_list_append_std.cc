@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     using namespace cc;
 
-    const int n = argc > 1 ? String{argv[1]}.toInt() : 1000000;
+    const int n = argc > 1 ? String{argv[1]}.toInt() : 10000000;
 
     std::list<long> numbers;
 

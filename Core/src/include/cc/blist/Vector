@@ -330,7 +330,7 @@ public:
             #ifndef NDEBUG
             unsigned revisionSaved = Tree::revision_;
             #endif
-            *this = Vector{};
+            new(this)Vector;
             #ifndef NDEBUG
             Tree::revision_ = revisionSaved + 1;
             #endif

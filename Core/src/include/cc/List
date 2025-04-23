@@ -25,7 +25,8 @@ namespace cc {
   * \ingroup container
   * \brief %List data container
   * \tparam T Item type
-  * \todo List::allocate(long)
+  * \todo List::allocate(long), List::resize(long)
+  * \todo add second template parameter O=Cow,Shared,Composite (ownership) ?!
   */
 template<class T>
 class List {

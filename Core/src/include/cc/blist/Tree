@@ -311,7 +311,20 @@ protected:
     template<class NodeType>
     void unlink(NodeType *node)
     {
-        unlink(node, std::is_same<NodeType, Branch>());
+        constexpr bool isBranch = std::is_same<NodeType, Branch>();
+
+        Branch *parent = node->parent_;
+        parent->drop(parent->indexOf(node));
+
+        Node *succ = node->succ();
+        Node *pred = node->pred();
+        if (pred) pred->succ_ = succ;
+        if (succ) succ->pred_ = pred;
+        else if (!isBranch) root_->lastLeaf_ = pred;
+
+        delete node;
+
+        relieve(parent);
     }
 
     void unlink(Node *node, bool isBranch);
@@ -409,23 +422,6 @@ void Tree<G>::joinSucc(Node *node, Node *newNode, bool isBranch)
         root_->lastLeaf_ = lastLeaf;
         ++height_;
     }
-}
-
-template<unsigned G>
-void Tree<G>::unlink(Node *node, bool isBranch)
-{
-    Branch *parent = node->parent_;
-    parent->drop(parent->indexOf(node));
-
-    Node *succ = node->succ();
-    Node *pred = node->pred();
-    if (pred) pred->succ_ = succ;
-    if (succ) succ->pred_ = pred;
-    else if (!isBranch) root_->lastLeaf_ = pred;
-
-    delete node;
-
-    relieve(parent);
 }
 
 template<unsigned G>

@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         "InsertionRemoval",
         []{
             MultiMap<int> map;
-            const int n = 20;
+            const int n = 42;
             {
                 Random random{0};
                 for (int i = 0; i < n; ++i) {
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
                     map.insert(key, value);
                 }
             }
-            CC_CHECK(map.count() == 20);
+            CC_CHECK(map.count() == n);
             {
                 Random random{0};
                 for (int i = 0; i < n; ++i) {
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
             }
             {
                 Random random{0};
-                for (int i = 0; i < n; ++i) {
+                while (map.count() > 0) {
                     int j = random.get(0, map.count() - 1);
                     map.remove(map.at(j).key());
                 }
