@@ -30,11 +30,10 @@ if uname -o|grep Cygwin; then
 else
     BOOTSTRAP=bootstrap
 fi
-# echo "Generating bootstrap script... (don't forget to optimize for target!-)"
-#ccbuild -bootstrap -release -lump $SOURCE/tools/build > $SOURCE/tools/build/$BOOTSTRAP
+echo "Generating bootstrap script... (don't forget to optimize for target!-)"
+ccbuild -bootstrap -release -optimize=1 -lump $SOURCE/Build/tools > $SOURCE/Build/tools/$BOOTSTRAP
 # -optimize=0
-#chmod +x $SOURCE/tools/build/$BOOTSTRAP
-echo "FIXME: bootstrap generation disabled!"
+chmod +x $SOURCE/Build/tools/$BOOTSTRAP
 popd
 
 echo "Create source tarball..."

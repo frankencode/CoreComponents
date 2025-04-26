@@ -33,6 +33,8 @@ struct GnuToolChain::State: public ToolChain::State
             cxxPath_ = Process::env("CXX");
         }
 
+        autoTune_ = (cxxPath_ == "" && ccPath_ == "");
+
         if (ccPath_ == "") ccPath_ = "gcc";
         if (cxxPath_ == "") cxxPath_ = "g++";
 
@@ -598,17 +600,19 @@ struct GnuToolChain::State: public ToolChain::State
         return plan.shell().run(command);
     }
 
-    void appendTuningOptions(Format &args) const
+    void appendTuningOptions(Format &args, const BuildPlan &plan) const
     {
-        #if defined(__x86_64__) || defined(_M_X64)
-            if (!cxxFlags_.contains(" -m")) {
-                #if 0
-                args << "-mtune=generic";
-                #else
-                args << "-march=x86-64-v3";
-                #endif
-            }
-        #endif
+        if (!(plan.options() & BuildOption::Bootstrap) && autoTune_) {
+            #if defined(__x86_64__) || defined(_M_X64)
+                if (!cxxFlags_.contains(" -m")) {
+                    #if 0
+                    args << "-mtune=generic";
+                    #else
+                    args << "-march=x86-64-v3";
+                    #endif
+                }
+            #endif
+        }
     }
 
     void appendCompileOptions(Format &args, const BuildPlan &plan) const
@@ -620,7 +624,7 @@ struct GnuToolChain::State: public ToolChain::State
         }
         if (plan.options() & BuildOption::Release) {
             if (plan.optimize()(0) != '0') {
-                appendTuningOptions(args);
+                appendTuningOptions(args, plan);
                 args << "-flto" << "-fno-plt";
             }
         }
@@ -630,9 +634,12 @@ struct GnuToolChain::State: public ToolChain::State
 
         args
             << "-Wall"
+            // << "-Wextra"
+            // << "-Wpedantic"
             << "-pthread"
             << "-pipe"
-            << "-D_FILE_OFFSET_BITS=64";
+            << "-D_FILE_OFFSET_BITS=64"
+            << "-fdiagnostics-color=always";
 
         if (plan.containsCPlusPlus()) {
             args << "-fvisibility-inlines-hidden";
@@ -689,7 +696,7 @@ struct GnuToolChain::State: public ToolChain::State
 
         if (plan.options() & BuildOption::Release) {
             if (plan.optimize()(0) != '0') {
-                appendTuningOptions(args);
+                appendTuningOptions(args, plan);
                 args << "-flto=" + str(plan.concurrency()) << "-O" + plan.optimize();
             }
         }
@@ -760,6 +767,7 @@ struct GnuToolChain::State: public ToolChain::State
     String ldFlags_;
     bool isMultiArch_ { true };
     bool cygwin_ { false };
+    bool autoTune_ { false };
 };
 
 GnuToolChain::GnuToolChain(const String &compiler, const String &libInstallPath):

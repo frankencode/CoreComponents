@@ -137,9 +137,10 @@ public:
             /*.count = */static_cast<long>(items.size()),
             /*.isMapped = */0u,
             /*.isWrapped = */0u,
-            /*.items = */(items.size() > 0) ? new T[items.size()] : nullptr
+            /*.items = */ nullptr
         }
     {
+        if (0 < items.size()) me().items = new T[items.size()];
         Item * const dst = me().items;
         long i = 0;
         for (const auto &x: items) dst[i++] = x;
@@ -855,7 +856,7 @@ private:
         unsigned long isMapped: 1;
         unsigned long isWrapped: 1;
         T *items;
-        Use<State> parent;
+        Use<State> parent {};
 
         ~State() {
             if (items && !parent) {

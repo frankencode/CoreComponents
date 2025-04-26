@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
         "BasicDateFormatting",
         []{
             double t = System::now();
-            fout() << t << nl;
+            fout() << static_cast<uint64_t>(t) << nl;
             Date d1{Date{t}.time()};
             Date d2{t};
 
