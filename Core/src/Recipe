@@ -6,7 +6,7 @@ Library {
         cascade: true
     }
     Dependency {
-        probe: probe/gcc14.cc
+        probe: probe/gcc15.cc
         compile-flags: [ -fmodules-ts ]
         cascade: true
     }
