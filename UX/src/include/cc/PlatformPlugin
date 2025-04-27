@@ -31,9 +31,9 @@ public:
       */
     String name() const { return me().name_; }
 
-    /** If this is the system's default platform plugin
+    /** Ranking of this platform plugin (highest ranked becomes default platform plugin)
       */
-    bool isPlatformDefault() const { return me().isPlatformDefault_; }
+    int ranking() const { return me().ranking_; }
 
     /** Get the platform's font manager
       */
@@ -54,9 +54,9 @@ public:
 protected:
     struct State: public Object::State
     {
-        State(const String &name, bool isPlatformDefault = false):
+        State(const String &name, int ranking = 0):
             name_{name},
-            isPlatformDefault_{isPlatformDefault}
+            ranking_{ranking}
         {}
 
         virtual FontManager fontManager() const;
@@ -65,7 +65,7 @@ protected:
         virtual Application application() const = 0;
 
         String name_;
-        bool isPlatformDefault_;
+        int ranking_ { 0 };
     };
 
     explicit PlatformPlugin(State *newState);

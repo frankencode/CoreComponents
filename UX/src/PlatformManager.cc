@@ -26,7 +26,7 @@ void PlatformManager::setActivePlugin(const PlatformPlugin &plugin)
 void PlatformManager::registerPlugin(const PlatformPlugin &plugin)
 {
     if (me().plugins_.insert(plugin.name(), plugin)) {
-        if (plugin.isPlatformDefault())
+        if (!me().activePlugin_ || me().activePlugin_.ranking() < plugin.ranking())
             setActivePlugin(plugin);
     }
 }

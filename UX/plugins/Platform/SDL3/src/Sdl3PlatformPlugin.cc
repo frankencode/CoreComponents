@@ -20,7 +20,7 @@ namespace cc {
 struct Sdl3PlatformPlugin::State final: public PlatformPlugin::State
 {
     State():
-        PlatformPlugin::State{"SDL3", true}
+        PlatformPlugin::State{"SDL3", 1}
     {
 
         SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
