@@ -27,6 +27,7 @@ namespace cc {
   * \tparam T Item type
   * \todo List::allocate(long), List::resize(long)
   * \todo add second template parameter O=Cow,Shared,Composite (ownership) ?!
+  * \todo Make sure the underlying blist effectively supports List<char> and List<bool>.
   */
 template<class T>
 class List {

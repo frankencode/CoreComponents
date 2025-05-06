@@ -23,4 +23,36 @@ inline Format fout(const String &pattern = "") { return Format{pattern, IoStream
   */
 inline Format ferr(const String &pattern = "") { return Format{pattern, IoStream::error()}; }
 
+inline void print(const String &message)
+{
+    IoStream::output().write(message);
+}
+
+inline void error(const String &message)
+{
+    IoStream::output().write(message);
+}
+
+template<typename... Args>
+inline void print(const String &pattern, Args... args)
+{
+    Format format { pattern, IoStream::output() };
+    (format << ... << args);
+}
+
+template<typename... Args>
+inline void error(const String &pattern, Args... args)
+{
+    Format format { pattern, IoStream::error() };
+    (format << ... << args);
+}
+
+template<typename... Args>
+inline Format format(const String &pattern, Args... args)
+{
+    Format format { pattern };
+    (format << ... << args);
+    return format;
+}
+
 } // namespace cc

@@ -28,6 +28,8 @@ public:
     using Node = Tree::Node;
     using Branch = Tree::Branch;
 
+    /** \todo Add specialization for KeyValuePair which stores keys and values in separate arrays for improve memory locality?!
+      */
     class Leaf final: public Node
     {
     public:

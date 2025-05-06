@@ -45,7 +45,7 @@ public:
     #endif
     }
 
-    unsigned pushEntry(unsigned bucketIndex, unsigned fill)
+    unsigned pushEntry(unsigned bucketIndex, unsigned /*fill*/)
     {
         unsigned slotIndex = map_[Capacity - 1];
 
@@ -56,7 +56,7 @@ public:
         return slotIndex;
     }
 
-    unsigned popEntry(unsigned bucketIndex, unsigned fill)
+    unsigned popEntry(unsigned bucketIndex, unsigned /*fill*/)
     {
         unsigned slotIndex = map_[bucketIndex];
 
@@ -89,7 +89,7 @@ public:
         return k;
     }
 
-    unsigned pushEntry(unsigned bucketIndex, unsigned fill)
+    unsigned pushEntry(unsigned bucketIndex, unsigned /*fill*/)
     {
         const uint64_t slotIndex = map_ >> 60u;
 
@@ -102,7 +102,7 @@ public:
         return slotIndex;
     }
 
-    unsigned popEntry(unsigned bucketIndex, unsigned fill)
+    unsigned popEntry(unsigned bucketIndex, unsigned /*fill*/)
     {
         const uint64_t slotIndex = mapToSlot(bucketIndex);
 

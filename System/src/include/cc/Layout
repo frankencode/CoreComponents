@@ -32,6 +32,10 @@ public:
     using Item = T; ///< Item type
     using Extent = E; ///< Extent type
 
+private:
+    using Tree = bst::LayoutTree<Item, Extent>;
+
+public:
     /** Create an empty layout
       */
     Layout() = default;
@@ -129,6 +133,8 @@ public:
     /** Get access to the item at \a index
       */
     Access operator[](long index) const { return at(index); }
+
+    class Range;
 
     /** \brief %Layout stop (item access with precomputed layout position)
       */
@@ -236,8 +242,6 @@ public:
 
 private:
     friend void testLayout(const auto &layout);
-
-    using Tree = bst::LayoutTree<Item, Extent>;
 
     const Tree *operator->() const { return &me(); }
 

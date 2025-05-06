@@ -17,6 +17,9 @@ namespace cc {
   * \brief %Set data container
   * \tparam T Item type
   * \tparam O Search order
+  *
+  * \todo Add spaceship operator?!
+  * \todo Add set operations (intersection &, difference -, union +, exclusion ^)
   */
 template<class T, class O = DefaultOrder>
 class Set {

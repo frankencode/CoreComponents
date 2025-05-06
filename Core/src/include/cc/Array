@@ -83,6 +83,7 @@ static_assert(sizeof(char) == sizeof(uint8_t));
   * \ingroup container_lowlevel
   * \brief An array of items within a contiguous chunk of memory
   * \tparam T Item type
+  * \todo Add specialization for Array<bool>.
   */
 template<class T>
 class Array
