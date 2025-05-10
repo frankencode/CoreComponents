@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
             return 7;
         }
         if (String{argv[1]} == "echo") {
-            IoStream::output().write(IoStream::input().readAll());
+            stdOutput().write(stdInput().readAll());
             return 11;
         }
     }

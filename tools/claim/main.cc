@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
                     fout() << "Copyright " << holder << ":" << nl;
                     for (const auto &pair: coverage) {
                         Notice notice = pair.value();
-                        Format line{IoStream::output()};
+                        Format line{stdOutput()};
                         line << "  " << pair.key() << " (";
                         for (const Copyright &copyright: notice.copyrights()) {
                             if (copyright.holder() == holder) {
@@ -151,6 +151,7 @@ int main(int argc, char *argv[])
                     if (magicCount > 0) {
                         magic = text.copy(0, magicCount);
                         text = text.copy(magicCount, text.count());
+                        if (magic.endsWith('\n')) magic.truncate(magic.count() - 1); // FIXME
                     }
                     text = magic + style.str(notice) + text.leadingTrimmed();
                     file.seek(0);

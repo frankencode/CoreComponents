@@ -260,7 +260,7 @@ void displayMatch(const String &path, const String &text, const TextMatch &match
         for (;j1 < text.count(); ++j1) {
             if (text.at(j1) == '\n') break;
         }
-        Format line{IoStream::output()};
+        Format line { stdOutput() };
         line << ln << ":";
         int k0 = j0, k1 = j1;
         if (j0 <= i0 && i0 < j1) k0 = i0;

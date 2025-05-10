@@ -131,9 +131,9 @@ int main(int argc, char *argv[])
         {
             const int displayTime = 4; // display duration of a single cell
 
-            if (IoStream::input().wait(IoEvent::ReadyRead, displayTime)) {
+            if (stdInput().wait(IoEvent::ReadyRead, displayTime)) {
                 String buffer = String::allocate(64);
-                buffer.truncate(IoStream::input().read(&buffer));
+                buffer.truncate(stdInput().read(&buffer));
                 inputLine = buffer;
                 display = "";
                 break;

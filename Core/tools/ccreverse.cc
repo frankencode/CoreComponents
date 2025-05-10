@@ -16,13 +16,13 @@ int main(int argc, char *argv[])
     try {
         if (argc > 1) {
             for (int i = 1; i < argc; ++i) {
-                IoStream::output().write(File{argv[i]}.map().reversed());
+                stdOutput().write(File{argv[i]}.map().reversed());
             }
         }
         else {
-            Bytes data = IoStream::input().readAll();
+            Bytes data = stdInput().readAll();
             data.reverse();
-            IoStream::output().write(data);
+            stdOutput().write(data);
         }
     }
     catch (IoExhaustion &)

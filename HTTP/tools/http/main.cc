@@ -18,14 +18,14 @@ int query(const String &method, const String &location)
 
     if (method == "PUT" || method == "POST") {
         generate = [](HttpMessageGenerator &generator) {
-            IoStream::input().transferTo(generator.payload());
+            stdInput().transferTo(generator.payload());
         };
     }
 
     HttpResponse response = client.query(method, uri.requestPath(), generate);
     ferr() << response.version() << " " << +response.status() << " " << response.reasonPhrase() << nl;
 
-    response.payload().transferTo(IoStream::output());
+    response.payload().transferTo(stdOutput());
 
     return +response.status() >= 300 ? +response.status() / 100 : 0;
 }

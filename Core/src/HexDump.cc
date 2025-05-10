@@ -19,7 +19,7 @@ struct HexDump::State final: public Stream::State
         sink_{sink},
         buffer_{Bytes::allocate(16)}
     {
-        if (!sink_) sink_ = IoStream::output();
+        if (!sink_) sink_ = stdOutput();
     }
 
     ~State()

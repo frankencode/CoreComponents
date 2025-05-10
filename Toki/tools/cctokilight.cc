@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     String toolName = String{argv[0]}.fileName();
     try {
         Map<String, Variant> options;
-        options.insert("verbose", IoStream::output().isInteractive());
+        options.insert("verbose", stdOutput().isInteractive());
         options.insert("theme", "");
         options.insert("language", "");
         options.insert("list-languages", false);
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
                 throw UsageError{"Please specify language (use -language option)"};
             }
             TokiLanguage language = defaultLanguage;
-            String text = IoStream::input().readAll();
+            String text = stdInput().readAll();
             Token token = language.highlightingSyntax().match(text);
             ferr() << language.name() << "," << token[0] << "," << token[1] << nl;
             if (!token) throw TextError{text, token[0]};

@@ -18,13 +18,13 @@ namespace cc {
 
 String getPassword(const String &prompt)
 {
-    IoStream::input().echo(false);
+    stdInput().echo(false);
 
     char *line = readline(prompt);
     String text { line };
     ::free((void *)line);
 
-    IoStream::input().echo(true);
+    stdInput().echo(true);
 
     return text;
 }
@@ -48,9 +48,9 @@ int main(int argc, char *argv[])
     try {
         List<String> items = Arguments{argc, argv}.read();
 
-        bool viewMode = IoStream::error().isInteractive() && !IoStream::output().isInteractive();
-        bool filterMode = items.count() == 0 && !IoStream::input().isInteractive();
-        if (items.count() == 0 && IoStream::input().isInteractive()) throw UsageError{"No input data"};
+        bool viewMode = stdError().isInteractive() && !stdOutput().isInteractive();
+        bool filterMode = items.count() == 0 && !stdInput().isInteractive();
+        if (items.count() == 0 && stdInput().isInteractive()) throw UsageError{"No input data"};
 
         if (encipher) {
             String password, retype;
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
                 Stream source = File{path};
                 Stream sink;
                 if (viewMode) {
-                    sink = IoStream::output();
+                    sink = stdOutput();
                 }
                 else {
                     sink = File{outPath, FileOpen::Create|FileOpen::Truncate|FileOpen::WriteOnly};
@@ -110,10 +110,10 @@ int main(int argc, char *argv[])
             IoStream outputSaved;
             if (items.count() == 0) {
                 items.append("");
-                inputSaved = IoStream::input().duplicate();
-                outputSaved = IoStream::output().duplicate();
-                IoStream::error().duplicateTo(IoStream::input());
-                IoStream::error().duplicateTo(IoStream::output());
+                inputSaved = stdInput().duplicate();
+                outputSaved = stdOutput().duplicate();
+                stdError().duplicateTo(stdInput());
+                stdError().duplicateTo(stdOutput());
             }
 
             String password = getPassword("Enter password: ");
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
                     if (outputSaved)
                         sink = outputSaved;
                     else
-                        sink = IoStream::output();
+                        sink = stdOutput();
                 }
                 else {
                     if (File::exists(origName)) {

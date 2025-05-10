@@ -60,9 +60,9 @@ int Process::exec(const String &command)
 {
     Process process {
         Command{command}
-        .io(0, IoStream::input())
-        .io(1, IoStream::output())
-        .io(2, IoStream::error())
+        .io(0, stdInput())
+        .io(1, stdOutput())
+        .io(2, stdError())
     };
 
     return process.wait();
@@ -72,9 +72,9 @@ int Process::exec(const List<String> &args)
 {
     Process process {
         Command{args}
-        .io(0, IoStream::input())
-        .io(1, IoStream::output())
-        .io(2, IoStream::error())
+        .io(0, stdInput())
+        .io(1, stdOutput())
+        .io(2, stdError())
     };
 
     return process.wait();

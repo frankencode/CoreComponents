@@ -14,14 +14,15 @@ int main()
     using namespace cc;
 
     List<String> list;
-    LineSource source{IoStream::input()};
-    for (const String &line: source)
+    for (const String &line: LineSource { stdInput() }) {
         list.append(line);
+    }
 
     list.sort();
 
-    for (const String &line: list)
+    for (const String &line: list) {
         fout() << line << nl;
+    }
 
     return 0;
 }

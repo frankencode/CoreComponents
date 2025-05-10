@@ -70,7 +70,7 @@ struct TestSuite::State final: public Object::State
 
     int run()
     {
-        bool interactive = IoStream::output().isInteractive();
+        bool interactive = stdOutput().isInteractive();
 
         report.beginTestSuite(TestSuite{});
 
@@ -87,12 +87,12 @@ struct TestSuite::State final: public Object::State
             IoStream outSaved, errSaved;
             File outFile, errFile;
             if (report.captureOutput()) {
-                outSaved = IoStream::output().duplicate();
-                errSaved = IoStream::error().duplicate();
+                outSaved = stdOutput().duplicate();
+                errSaved = stdError().duplicate();
                 outFile = TempFile{};
                 errFile = TempFile{};
-                outFile.duplicateTo(IoStream::output());
-                errFile.duplicateTo(IoStream::error());
+                outFile.duplicateTo(stdOutput());
+                errFile.duplicateTo(stdError());
             }
 
             if (interactive) {
@@ -123,8 +123,8 @@ struct TestSuite::State final: public Object::State
 
             String outText, errText;
             if (report.captureOutput()) {
-                outSaved.duplicateTo(IoStream::output());
-                errSaved.duplicateTo(IoStream::error());
+                outSaved.duplicateTo(stdOutput());
+                errSaved.duplicateTo(stdError());
                 outText = outFile.map();
                 errText = errFile.map();
             }

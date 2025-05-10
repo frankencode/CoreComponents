@@ -39,7 +39,7 @@ String whoisQuery(const SocketAddress &address, const String &request, const Str
         }
     }
     else {
-        client.transferTo(IoStream::output());
+        client.transferTo(stdOutput());
     }
 
     return result;

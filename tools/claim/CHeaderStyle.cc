@@ -70,7 +70,7 @@ struct CHeaderStyle::State final: public HeaderStyle::State
             if (c.yearStart() == c.yearEnd()) f << c.yearStart();
             else f << c.yearStart() << "-" << c.yearEnd();
             f << " " << c.holder() << ".";
-            if (!notice.copyrights().lastIs(c)) f << "\n";
+            // if (!notice.copyrights().lastIs(c)) f << "\n";
         }
         f << "\n"
             " *\n"

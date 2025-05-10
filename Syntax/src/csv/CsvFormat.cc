@@ -14,7 +14,7 @@ namespace cc {
 CsvFormat::~CsvFormat()
 {
     String line = join();
-    if (!sink_) IoStream::output().write(line);
+    if (!sink_) stdOutput().write(line);
     else sink_.write(line);
 }
 

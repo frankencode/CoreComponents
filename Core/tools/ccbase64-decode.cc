@@ -14,8 +14,8 @@ int main(int argc, char *argv[])
 {
     using namespace cc;
 
-    String data = IoStream::input().readAll().trimmed();
-    IoStream::output().write(base64Decode(data));
+    String data = stdInput().readAll().trimmed();
+    stdOutput().write(base64Decode(data));
 
     return 0;
 }

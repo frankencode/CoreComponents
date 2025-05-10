@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
         for (String path: items)
         {
             Stream source;
-            if (path == "") source = IoStream::input();
+            if (path == "") source = stdInput();
             else source = File{path};
             source.transferTo(HexDump{});
         }

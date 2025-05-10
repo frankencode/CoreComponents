@@ -18,7 +18,7 @@ int main()
 
     for (Bytes data { Dim<>{1} }; source.read(&data, 1);)
     {
-        IoStream::output().write(data);
+        stdOutput().write(data);
     }
 
     return 0;

@@ -16,34 +16,34 @@ namespace cc {
 /** \brief Generate formatted text on the standard output stream
   * \ingroup strings
   */
-inline Format fout(const String &pattern = "") { return Format{pattern, IoStream::output()}; }
+inline Format fout(const String &pattern = "") { return Format{pattern, stdOutput()}; }
 
 /** \brief Generate formatted text on the standard error stream
   * \ingroup strings
   */
-inline Format ferr(const String &pattern = "") { return Format{pattern, IoStream::error()}; }
+inline Format ferr(const String &pattern = "") { return Format{pattern, stdError()}; }
 
 inline void print(const String &message)
 {
-    IoStream::output().write(message);
+    stdOutput().write(message);
 }
 
 inline void error(const String &message)
 {
-    IoStream::output().write(message);
+    stdError().write(message);
 }
 
 template<typename... Args>
 inline void print(const String &pattern, Args... args)
 {
-    Format format { pattern, IoStream::output() };
+    Format format { pattern, stdOutput() };
     (format << ... << args);
 }
 
 template<typename... Args>
 inline void error(const String &pattern, Args... args)
 {
-    Format format { pattern, IoStream::error() };
+    Format format { pattern, stdError() };
     (format << ... << args);
 }
 

@@ -857,8 +857,8 @@ void BuildPlan::queryVariables(const List<String> &names) const
     variables("libraries") = libraries();
     variables("custom-compile-flags") = customCompileFlags();
     variables("custom-link-flags") = customLinkFlags();
-    JsonWriter{IoStream::output()}.writeObject(variables, names);
-    IoStream::output().write("\n");
+    JsonWriter{stdOutput()}.writeObject(variables, names);
+    stdOutput().write("\n");
 }
 
 ToolChain &BuildPlan::mutableToolChain()

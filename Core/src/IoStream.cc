@@ -133,24 +133,6 @@ void IoStream::State::write(const List<Bytes> &buffers)
     }
 }
 
-IoStream &IoStream::input()
-{
-    static thread_local IoStream stream{0};
-    return stream;
-}
-
-IoStream &IoStream::output()
-{
-    static thread_local IoStream stream{1};
-    return stream;
-}
-
-IoStream &IoStream::error()
-{
-    static thread_local IoStream stream{2};
-    return stream;
-}
-
 void IoStream::pair(Out<IoStream> a, Out<IoStream> b)
 {
     int fd[2] = { 0, 0 };
@@ -222,6 +204,24 @@ int IoStream::ioctl(int request, void *arg)
         CC_SYSTEM_DEBUG_ERROR(errno);
 
     return value;
+}
+
+IoStream &stdInput()
+{
+    static thread_local IoStream stream{0};
+    return stream;
+}
+
+IoStream &stdOutput()
+{
+    static thread_local IoStream stream{1};
+    return stream;
+}
+
+IoStream &stdError()
+{
+    static thread_local IoStream stream{2};
+    return stream;
 }
 
 } // namespace cc

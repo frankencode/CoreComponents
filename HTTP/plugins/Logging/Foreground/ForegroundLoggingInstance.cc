@@ -19,14 +19,14 @@ struct ForegroundLoggingInstance::State: public HttpLoggingServiceInstance::Stat
 
     void logDelivery(const HttpClientConnection &client, const HttpRequest &request, HttpStatus status, long long bytesWritten, const String &statusMessage) const override
     {
-        IoStream::output().write(
+        stdOutput().write(
             formatDeliveryNotice(client, request, status, bytesWritten, statusMessage)
         );
     }
 
     void logMessage(const String &message, LoggingLevel level) const override
     {
-        if (verbosity() >= level) IoStream::error().write(message);
+        if (verbosity() >= level) stdError().write(message);
     }
 };
 

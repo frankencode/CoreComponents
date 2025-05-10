@@ -26,7 +26,7 @@ int fetch(const String &location, const String &fileName, const CryptoHash &hash
         String newLocation = response.header("Location");
         ferr() << "Location: " << newLocation << nl;
 
-        response.payload().transferTo(IoStream::error());
+        response.payload().transferTo(stdError());
 
         return fetch(newLocation, fileName, hash);
     }

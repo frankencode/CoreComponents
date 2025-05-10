@@ -79,7 +79,7 @@ struct GnuToolChain::State: public ToolChain::State
             path =
                 Process{
                     Command{compiler + " -print-sysroot"}
-                    .io(2, IoStream::error())
+                    .io(2, stdError())
                 }.output().readAll();
         }
 

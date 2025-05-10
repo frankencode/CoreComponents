@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
             else hashSink = Md5HashSink{};
             Stream source;
             if (path != "") source = File{path};
-            else { source = IoStream::input(); path = "-"; }
+            else { source = stdInput(); path = "-"; }
             source.transferTo(hashSink);
             fout() << hex(hashSink.finish()) << "\t" << path << nl;
         }

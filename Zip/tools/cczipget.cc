@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    ZipFile{argv[1]}.open(argv[2]).transferTo(IoStream::output());
+    ZipFile{argv[1]}.open(argv[2]).transferTo(stdOutput());
 
     return 0;
 }

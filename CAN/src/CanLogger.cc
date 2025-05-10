@@ -45,7 +45,7 @@ struct CanLogger::State final: public Object::State
 
     void start()
     {
-        if (!output_) output_ = IoStream::output();
+        if (!output_) output_ = stdOutput();
 
         thread_ = Thread{[this]{ run(); }};
         thread_.start();

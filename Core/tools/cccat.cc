@@ -15,11 +15,11 @@ int main(int argc, char *argv[])
 
     if (argc > 1) {
         for (int i = 1; i < argc; ++i) {
-            IoStream::output().write(File{argv[i]}.map());
+            stdOutput().write(File{argv[i]}.map());
         }
     }
     else {
-        IoStream::input().transferTo(IoStream::output());
+        stdInput().transferTo(stdOutput());
     }
 
     return 0;

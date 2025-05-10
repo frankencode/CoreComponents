@@ -13,7 +13,7 @@ int main()
 {
     using namespace cc;
 
-    AesEntropySource{}.transferTo(IoStream::output());
+    AesEntropySource{}.transferTo(stdOutput());
 
     return 0;
 }

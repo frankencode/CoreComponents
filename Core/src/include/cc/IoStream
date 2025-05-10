@@ -34,18 +34,6 @@ inline int operator+(IoShutdown mode) { return static_cast<int>(mode); }
 class IoStream: public Stream
 {
 public:
-    /** Standard input stream
-      */
-    static IoStream &input();
-
-    /** Standard output stream
-      */
-    static IoStream &output();
-
-    /** Standard error stream
-      */
-    static IoStream &error();
-
     /** Establish a full-duplex communication channel between \a a and \a b
       */
     static void pair(Out<IoStream> a, Out<IoStream> b);
@@ -134,5 +122,17 @@ protected:
     State &me() { return Object::me.as<State>(); }
     const State &me() const { return Object::me.as<State>(); }
 };
+
+/** Standard input stream
+  */
+IoStream &stdInput();
+
+/** Standard output stream
+  */
+IoStream &stdOutput();
+
+/** Standard error stream
+  */
+IoStream &stdError();
 
 } // namespace cc
