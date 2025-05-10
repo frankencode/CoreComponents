@@ -1,15 +1,15 @@
 #include <cc/System>
 #include <cc/Random>
-#include <cc/Set>
 #include <cc/stdio>
 #include <array>
+#include <set>
 
 using namespace cc;
 
-int64_t benchmark(std::function<void()> &&run, std::function<void()> &&init = std::function<void()>{}, int repetition = 1)
+int64_t benchmark(std::function<void()> &&run, std::function<void()> &&init = std::function<void()>{})
 {
     double dt_min = 0;
-    for (int i = 0; i < repetition; ++i) {
+    for (int i = 0; i < 3; ++i) {
         if (init) init();
         double dt = System::now();
         run();
@@ -58,22 +58,28 @@ int main(int argc, char *argv[])
         fout() << std::round(t * 1000) << " ms\n";
     }
 
-    Set<long> numbers;
+    std::set<long> numbers;
 
     for (unsigned k = 0; k < counts.size(); ++k) {
         const int n = counts[k];
         int64_t dt = benchmark(
             [&]{
                 for (int i = 0; i < n; ++i) {
-                    numbers.insert(items[i]);
+                    if (!numbers.contains(items[i])) {
+                        ferr() << "FAILED" << nl;
+                        break;
+                    }
                 }
             },
             [&]{
-                numbers.deplete();
+                numbers.clear();
+                for (int i = 0; i < n; ++i) {
+                    numbers.insert(items[i]);
+                }
             }
         );
         durations[k] = dt;
-        fout() << n << "\trandom insertions to cc::Set<int> cost\t" << dt << " us\n";
+        fout() << n << "\trandom lookups to std::set<int> cost\t" << dt << " us\n";
     }
 
     printArray("x", counts);
