@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) 2020 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \brief Base class for all non-copyable types
+  */
+class NonCopyable
+{
+protected:
+    NonCopyable() = default;
+    ~NonCopyable() = default;
+
+    NonCopyable(const NonCopyable&) = delete;
+    NonCopyable& operator=(const NonCopyable&) = delete;
+};
+
+} // namespace cc

@@ -12,7 +12,7 @@
 
 namespace cc {
 
-struct HttpResponseGenerator::State: public HttpMessageGenerator::State
+struct HttpResponseGenerator::State final: public HttpMessageGenerator::State
 {
     State(const Stream &stream):
         HttpMessageGenerator::State{stream}

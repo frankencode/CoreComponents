@@ -13,7 +13,7 @@
 namespace cc {
 
 /** \class HexDump cc/HexDump
-  * \brief Generate a readable hexadecimal dump
+  * \brief Generate a human readable hexadecimal dump
   *
   * Example usage:
   * ~~~~~~~~~~~~~
@@ -51,7 +51,7 @@ private:
     State &me();
 };
 
-/** Generate a readable hexadecimal dump of \a data
+/** Generate a human readable hexadecimal dump of \a data
   */
 String hexdump(const Bytes &data);
 

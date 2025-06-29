@@ -7,6 +7,7 @@
  */
 
 #include <cc/System>
+#include <cc/Random>
 #include <unistd.h> // sysconf(3)
 #ifdef __OpenBSD__
 #include <sys/types.h>
@@ -14,6 +15,7 @@
 #include <sys/sysctl.h>
 #endif
 #include <time.h>
+#include <cstdint>
 
 namespace cc {
 
@@ -52,6 +54,13 @@ double System::now()
     struct timespec ts;
     ::clock_gettime(CLOCK_REALTIME, &ts);
     return double(ts.tv_sec) + double(ts.tv_nsec) / 1e9;
+}
+
+uint32_t System::noise()
+{
+    static struct timespec ts;
+    ::clock_gettime(CLOCK_MONOTONIC, &ts);
+    return Random{static_cast<uint32_t>(ts.tv_nsec)}.get();
 }
 
 String System::hostName()

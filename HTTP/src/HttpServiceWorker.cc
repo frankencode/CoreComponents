@@ -119,12 +119,12 @@ void HttpServiceWorkerState::initiate(Stream &stream)
 
 void HttpServiceWorkerState::serve(Stream &stream)
 {
-    HttpRequest request;
     int requestCount = 0;
 
-    try {
-        while (client_)
-        {
+    while (client_)
+    {
+        HttpRequest request;
+        try {
             // CCNODE_DEBUG() << "Reading request..." << nl;
 
             request = readRequest();
@@ -147,25 +147,33 @@ void HttpServiceWorkerState::serve(Stream &stream)
                 }
                 else break;
             }
+
             if (
+                response_.status() == HttpStatus::SwitchingProtocols ||
                 Casefree{request.header("Connection")} == "close" ||
                 requestCount >= serviceInstance_.requestLimit() ||
                 (request.majorVersion() == 1 && request.minorVersion() == 0)
             ) break;
         }
-    }
-    catch (HttpError &error)
-    {
-        if (requestCount > 0 || error.status() == HttpStatus::RequestTimeout) {
-            try {
-                Format{"HTTP/1.1 %% %%\r\n\r\n", stream}
-                    << +error.status()
-                    << error.message();
+        catch (HttpError &error)
+        {
+            if (requestCount > 0 || error.status() == HttpStatus::RequestTimeout) {
+                try {
+                    Format{"HTTP/1.1 %% %%\r\n\r\n", stream}
+                        << +error.status()
+                        << error.message();
+                }
+                catch(...)
+                {}
+                accessLoggingInstance().logDelivery(client_, request, error.status());
             }
-            catch(...)
-            {}
-            accessLoggingInstance().logDelivery(client_, request, error.status());
+            break;
         }
+    }
+
+    if (client_ && response_.status() == HttpStatus::SwitchingProtocols) {
+        response_ = HttpResponseGenerator{};
+        serviceDelegate_.upgrade(stream);
     }
 }
 
@@ -248,4 +256,4 @@ const HttpServiceWorker::State &HttpServiceWorker::me() const
     return Object::me.as<State>();
 }
 
-} //
+} // namespace cc

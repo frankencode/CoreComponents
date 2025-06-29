@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/WebSocketFrame>
+#include <cc/WebSocketStatus>
+#include <cc/bits>
+
+namespace cc {
+
+/** WebSocket control frame to perform connection closure
+  */
+class WebSocketClose final
+{
+public:
+    /** Create a WebSocket close control frame
+      */
+    static WebSocketFrame createFrame(WebSocketStatus status, const String &reason)
+    {
+        String payload = String::allocate(2 + reason.count());
+        payload.writeWord<uint16_t, ByteOrder::BigEndian>(static_cast<uint16_t>(status));
+        reason.copyToOffset(&payload, 2);
+        return WebSocketFrame { WebSocketFrame::Type::Close, payload };
+    }
+
+    /** Create a WebSocket close control frame
+      */
+    static WebSocketFrame createFrame(WebSocketStatus status)
+    {
+        String payload = String::allocate(2);
+        payload.writeWord<uint16_t, ByteOrder::BigEndian>(static_cast<uint16_t>(status));
+        return WebSocketFrame { WebSocketFrame::Type::Close, payload };
+    }
+
+    /** Create a WebSocket close control frame
+      */
+    static WebSocketFrame createFrame()
+    {
+        return WebSocketFrame { WebSocketFrame::Type::Close };
+    }
+
+    /** Interpret \a frame as a WebSocket close frame
+      */
+    explicit WebSocketClose(const WebSocketFrame &frame):
+        frame_{frame}
+    {}
+
+    /** Tell if this is a WebSocket close frame
+      */
+    explicit operator bool() const { return frame_.type() == WebSocketFrame::Type::Close; }
+
+    /** Get the WebSocket status code
+      */
+    WebSocketStatus status() const
+    {
+        if (frame_.payload().count() < 2) return WebSocketStatus::NotPresent;
+        uint16_t h = 0;
+        frame_.payload().readWord<uint16_t, ByteOrder::BigEndian>(&h);
+        return static_cast<WebSocketStatus>(h);
+    }
+
+    /** Get the WebSocket closure reason
+      */
+    String reason() const
+    {
+        return frame_.payload().count() > 2 ? frame_.payload().copy(2, frame_.payload().count() - 2) : String{};
+    }
+
+private:
+    const WebSocketFrame &frame_;
+};
+
+} // namespace cc

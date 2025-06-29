@@ -35,7 +35,7 @@ void HttpServer::loadPlugins()
     }
 }
 
-struct HttpServer::State: public Object::State
+struct HttpServer::State final: public Object::State
 {
     explicit State(const String &config):
         State{HttpServerConfig{config}}

@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/WebSocketFrame>
+
+namespace cc {
+
+/** WebSocket message
+  */
+class WebSocketMessage: public Object
+{
+public:
+    using Type = WebSocketFrame::Type;
+
+    WebSocketMessage(Type type, const String &payload):
+        Object{new State{type, payload}}
+    {}
+
+    Type type() const { return me().type_; }
+    String payload() const { return me().payload_; }
+
+protected:
+    struct State final: public Object::State
+    {
+        State(Type type, const String &payload):
+            type_{type},
+            payload_{payload}
+        {}
+
+        Type type_ { Type::Continuation };
+        String payload_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+};
+
+} // namespace cc

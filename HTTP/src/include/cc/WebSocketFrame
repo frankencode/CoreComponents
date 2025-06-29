@@ -1,0 +1,105 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/ByteSource>
+#include <cc/ByteSink>
+#include <limits>
+
+namespace cc {
+
+/** WebSocket frame
+  */
+class WebSocketFrame final: public Object
+{
+public:
+    /** Type of frame
+      */
+    enum class Type: uint8_t {
+        Continuation = 0,
+        Text         = 1,
+        Binary       = 2,
+        Close        = 8,
+        Ping         = 9,
+        Pong         = 10,
+        Unknown      = Continuation
+    };
+
+    /** Something went wrong processing a frame
+      */
+    class Error{};
+
+    /** %Payload length exceeds limit
+      */
+    class FrameToBig final: public Error{};
+
+    /** Create a null object
+      */
+    WebSocketFrame() = default;
+
+    /** Read frame from \a source
+      * \exception FrameToBig
+      */
+    explicit WebSocketFrame(ByteSource &source, long maxPayloadSize = std::numeric_limits<long>::max()):
+        Object{new State{source, maxPayloadSize}}
+    {}
+
+    /** Create a new WebSocket frame
+      */
+    WebSocketFrame(Type type, const String &payload = String{}, bool fin = true, uint8_t rsv = 0):
+        Object{new State{type, payload, fin, rsv}}
+    {}
+
+    /** Write this frame to \a sink automatically applying \a mask in the process (if mask != 0)
+      */
+    void writeTo(ByteSink &sink, uint32_t mask) { me().writeTo(sink, mask); }
+
+    /** Tell if this is the final frame of a message
+      */
+    bool fin() const { return me().fin_; }
+
+    /** %Frame type
+      */
+    Type type() const { return static_cast<Type>(me().type_); }
+
+    /** %Reserved bits
+      */
+    uint8_t rsv() const { return me().rsv_; }
+
+    /** %Payload data
+      */
+    const String &payload() const { return me().payload_; }
+
+private:
+    struct State final: public Object::State
+    {
+        State(ByteSource &source, long maxPayloadSize);
+
+        State(Type type, const String &payload, bool fin, uint8_t rsv):
+            fin_{static_cast<uint8_t>(fin)},
+            rsv_{rsv},
+            type_{static_cast<uint8_t>(type)},
+            payload_{payload}
+        {}
+
+        void xorPayloadWithMask(uint32_t mask);
+        void writeTo(ByteSink &sink, uint32_t mask);
+
+        uint8_t fin_ : 1 { 0 };
+        uint8_t rsv_ : 3 { 0 };
+        uint8_t type_: 4 { 0 };
+
+        String payload_;
+    };
+
+    const State &me() const { return Object::me.as<State>(); }
+    State &me() { return Object::me.as<State>(); }
+};
+
+} // namespace cc

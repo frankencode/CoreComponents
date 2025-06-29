@@ -40,6 +40,13 @@ public:
         me().process(request);
     }
 
+    /** %Run custom protocol
+      */
+    void upgrade(Stream &stream)
+    {
+        me().upgrade(stream);
+    }
+
 protected:
     friend class HttpServiceWorkerState;
 
@@ -50,6 +57,7 @@ protected:
         State() = default;
 
         virtual void process(const HttpRequest &request) = 0;
+        virtual void upgrade(Stream &stream) {}
 
         const HttpServerConfig &nodeConfig() const;
         const HttpServiceInstance &serviceInstance() const;

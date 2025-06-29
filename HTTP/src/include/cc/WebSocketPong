@@ -1,0 +1,52 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/WebSocketPing>
+
+namespace cc {
+
+/** WebSocket control frame to send out a life-signal
+  */
+class WebSocketPong final
+{
+public:
+    /** Creata a pong frame in response to \a ping
+      */
+    static WebSocketFrame createFrame(const WebSocketPing &ping)
+    {
+        return WebSocketFrame { WebSocketFrame::Type::Pong, ping.payload() };
+    }
+
+    /** Create an unsolicited pong frame
+      */
+    static WebSocketFrame createFrame(const String &payload = String{})
+    {
+        return WebSocketFrame { WebSocketFrame::Type::Pong, payload };
+    }
+
+    /** Interpret \a frame as a WebSocket pong frame
+      */
+    explicit WebSocketPong(const WebSocketFrame &frame):
+        frame_{frame}
+    {}
+
+    /** Tell is this is a WebSocket pong frame
+      */
+    explicit operator bool() const { return frame_.type() == WebSocketFrame::Type::Pong; }
+
+    /** %Payload data
+      */
+    const String &payload() const { return frame_.payload(); }
+
+private:
+    const WebSocketFrame &frame_;
+};
+
+} // namespace cc

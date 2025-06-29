@@ -39,6 +39,7 @@ inline B union_cast(A a)
 }
 
 /** Byte order
+  * \todo rename to Endian::Little and Endian::Big
   */
 enum class ByteOrder {
     LittleEndian = 1, ///< Low order byte precedes the high order byte
@@ -65,7 +66,6 @@ inline T byteSwap(T x)
     }
     return z;
 }
-
 
 /** Swap endianess of \a x from \a channelByteOrder to system byte order
   * \tparam T Unsigned integer type

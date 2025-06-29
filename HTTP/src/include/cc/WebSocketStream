@@ -1,0 +1,87 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/WebSocketMessage>
+#include <cc/WebSocketStatus>
+#include <cc/Stream>
+#include <cc/Function>
+
+namespace cc {
+
+/** \class WebSocketStream cc/WebSocketStream
+  * \ingroup http_protocol
+  * \brief WebSocket frame stream
+  */
+class WebSocketStream final: public Object
+{
+public:
+    /** Communication direction
+      */
+    enum Type {
+        ServerToClient = 0, ///< This WebSocketStream is used by the server
+        ClientToServer = 1  ///< This WebSocketStream is used by the client
+    };
+
+    /** Create a new frame stream
+      */
+    explicit WebSocketStream(const Stream &stream, Type type);
+
+    /** %Set the maximum frame payload size
+      */
+    WebSocketStream &maxOutgoingFramePayloadSize(long size);
+
+    /** %Set a limit for the maximum incoming message size
+      */
+    WebSocketStream &maxIncomingMessageSize(long size);
+
+    /** %Set a callback handler \a f to be invoked whenever a ping frame is received
+      */
+    WebSocketStream &onPingReceived(Function<void()> &&f);
+
+    /** %Set a callback handler \a f to be invoked whenever a pong frame is received
+      */
+    WebSocketStream &onPongReceived(Function<void()> &&f);
+
+    /** Receive a message
+      */
+    bool read(Out<String> message, Out<WebSocketMessage::Type> type = None{});
+
+    /** Send a message
+      */
+    bool write(const String &message, WebSocketMessage::Type type = WebSocketMessage::Type::Binary, uint32_t mask = 0);
+
+    /** Tell if this %WebSocket connection is still open
+      */
+    bool isOpen() const;
+
+    /** Close this %WebSocket connection
+      */
+    bool close(WebSocketStatus status);
+
+    /** %Status of this %WebSocket connection
+      */
+    WebSocketStatus status() const;
+
+    /** Send a ping frame
+      */
+    bool ping();
+
+    /** Send an unsolicited pong frame
+      */
+    bool pong();
+
+private:
+    struct State;
+
+    const State &me() const;
+    State &me();
+};
+
+} // namespace cc

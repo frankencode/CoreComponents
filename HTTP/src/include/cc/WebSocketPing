@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/WebSocketFrame>
+
+namespace cc {
+
+/** WebSocket control frame to request a life-signal from the peer
+  */
+class WebSocketPing final
+{
+public:
+    /** Create a WebSocket ping frame
+      */
+    static WebSocketFrame createFrame(const String &payload = String{})
+    {
+        return WebSocketFrame { WebSocketFrame::Type::Ping, payload };
+    }
+
+    /** Interpret \a frame as WebSocket ping frame
+      */
+    explicit WebSocketPing(const WebSocketFrame &frame):
+        frame_{frame}
+    {}
+
+    /** Tell if this is a ping frame
+      */
+    explicit operator bool() const { return frame_.type() == WebSocketFrame::Type::Ping; }
+
+    /** %Payload data
+      */
+    const String &payload() const { return frame_.payload(); }
+
+private:
+    const WebSocketFrame &frame_;
+};
+
+} // namespace cc

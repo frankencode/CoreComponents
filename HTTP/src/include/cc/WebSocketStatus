@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+namespace cc {
+
+/** \brief WebSocket status code
+  */
+enum class WebSocketStatus: uint16_t {
+    Ok                  = 0,    ///< The WebSocket has not been closed, yet, and therefore no status information is available
+    NormalClosure       = 1000, ///< Normal connection closure
+    GoingAway           = 1001, ///< Endpoint is going away (e.g. browser leaves a site)
+    ProtocolError       = 1002, ///< Protocol error
+    UnsupportedDataType = 1003, ///< Message data type is not supported
+    NotPresent          = 1005, ///< Close frame did not contain a status code
+    PrematureClosure    = 1006, ///< Connection was closed before exchange of Close frames
+    InvalidData         = 1007, ///< Connection was closed because message data does not conform to message data type
+    PolicyViolation     = 1008, ///< Generic error code
+    MessageToBig        = 1009, ///< Received message is to big
+    ExtensionsMissing   = 1010, ///< Used by the client when the server is lacking required extensions
+    UnexpectedError     = 1011, ///< Server hit an unexpected internal error
+    TlsHandshakeFailed  = 1015, ///< TLS handshake failed
+};
+
+/** Get the underlying numeric value of \a status
+  */
+inline uint16_t operator+(WebSocketStatus status) { return static_cast<uint16_t>(status); }
+
+} // namespace cc

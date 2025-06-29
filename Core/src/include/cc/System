@@ -33,6 +33,10 @@ public:
       */
     static double now();
 
+    /** Get some random bits from the system if available, otherwise return just a pseuo-random number
+      */
+    static uint32_t noise();
+
     /** Get the system's host name
       */
     static String hostName();

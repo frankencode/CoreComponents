@@ -13,6 +13,7 @@
 #include <cc/Shared>
 #include <cc/Function>
 #include <cc/InOut>
+#include <cc/bits>
 #include <sys/mman.h> // munmap
 #include <type_traits>
 #include <cstring>
@@ -323,6 +324,51 @@ public:
     const std::uint32_t &wordAt(long j) const
     {
         return item<std::uint32_t>(j);
+    }
+
+    /** Convenience function to deserialize a multi-byte word
+      * \param word Returns the deserialized word
+      * \param offset %Byte offset to start deserialization
+      * \return Advanced byte offset
+      */
+    template<class Word, ByteOrder endian = ByteOrder::LittleEndian>
+    long readWord(Out<Word> word, long offset = 0) const
+    {
+        Word h = 0;
+        if (endian == ByteOrder::LittleEndian) {
+            for (unsigned i = 0; i < sizeof(T); ++i) {
+                h |= static_cast<T>(byteAt(offset++)) << (8 * i);
+            }
+        }
+        else {
+            for (unsigned i = 0; i < sizeof(T); ++i) {
+                h <<= 8;
+                h |= byteAt(offset++);
+            }
+        }
+        *word = h;
+        return offset;
+    }
+
+    /** Convenience function to serialize a multi-byte word
+      * \
+      */
+    template<class Word, ByteOrder endian = ByteOrder::LittleEndian>
+    long writeWord(Word word, long offset = 0)
+    {
+        if (endian == ByteOrder::LittleEndian) {
+            for (unsigned i = 0; i < sizeof(T); ++i) {
+                byteAt(i) = static_cast<uint8_t>(word);
+                word >>= 8;
+            }
+        }
+        else {
+            for (unsigned i = 0; i < sizeof(T); ++i) {
+                unsigned j = sizeof(T) - i - 1;
+                byteAt(i) = static_cast<uint8_t>(word >> (8 * j));
+            }
+        }
+        return offset;
     }
 
     /** \copydoc at(long)
