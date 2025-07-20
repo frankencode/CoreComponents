@@ -16,6 +16,7 @@ namespace cc {
 /** \class HttpResponseGenerator cc/HttpResponseGenerator
   * \ingroup http_protocol
   * \brief HTTP response generator
+  * \todo improve interface to support builder pattern style message construction
   */
 class HttpResponseGenerator final: public HttpMessageGenerator
 {

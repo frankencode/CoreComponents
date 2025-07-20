@@ -16,7 +16,7 @@ namespace cc {
   * \ingroup http_protocol
   * \brief HTTP request message
   */
-class HttpRequest: public HttpMessage
+class HttpRequest final: public HttpMessage
 {
 public:
     /** %Create a null HTTP request message
@@ -63,7 +63,7 @@ private:
     friend class Object;
     friend class HttpRequestParser;
 
-    struct State: public HttpMessage::State
+    struct State final: public HttpMessage::State
     {
         String query() const
         {

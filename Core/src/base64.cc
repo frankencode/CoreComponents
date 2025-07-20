@@ -95,4 +95,25 @@ String base64Decode(const String &source)
     return sink;
 }
 
+long base64DecodedLength(const String &source)
+{
+    if (source.count() % 4 != 0) return -1;
+
+    const long m = source.count();
+    long p = 0;
+    while (m - p > 0) {
+        ++p;
+        if (source.at(m - p) != '=') {
+            --p;
+            break;
+        }
+    }
+
+    if (!(0 <= p && p <= 2)) return -1;
+
+    long n = 3 * (m / 4) - p;
+
+    return n;
+}
+
 } // namespace cc

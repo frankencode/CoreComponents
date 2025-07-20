@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/HttpServiceDelegate>
+#include <cc/WebSocketStream>
+
+namespace cc {
+
+class WebSocketDelegate: public HttpServiceDelegate
+{
+protected:
+    struct State: public HttpServiceDelegate::State
+    {
+        /** Callback invoked when the WebSocket connection has been established
+          */
+        virtual void onConnectionEstablished(const WebSocketStream &client);
+
+        /** Callback invoked when the WebSocket connection has been closed
+          */
+        virtual void onConnectionClosed(WebSocketStatus status);
+
+        /** Callback invoked when a new WebSocket message is received
+          *
+          * \note This method should return quickly. In particular it should return faster
+          *       than a client expects a reply to a WebSockect Ping or Close frame.
+          */
+        virtual void onMessageReceived(const String &message, WebSocketMessage::Type type);
+
+    private:
+        void process(const HttpRequest &request) override;
+        void upgrade(Stream &stream) override;
+    };
+
+    explicit WebSocketDelegate(State *newState):
+        HttpServiceDelegate{newState}
+    {}
+};
+
+} // namespace cc

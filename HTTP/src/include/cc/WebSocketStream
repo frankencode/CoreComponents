@@ -17,7 +17,7 @@ namespace cc {
 
 /** \class WebSocketStream cc/WebSocketStream
   * \ingroup http_protocol
-  * \brief WebSocket frame stream
+  * \brief WebSocket message stream
   */
 class WebSocketStream final: public Object
 {
