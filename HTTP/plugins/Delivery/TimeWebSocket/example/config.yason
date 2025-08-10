@@ -1,0 +1,9 @@
+Node {
+    address: "127.0.0.1"
+    port: 8080
+    family: IPv4
+    concurrency: 1
+    TimeWebSocket {
+        host: */time
+    }
+}

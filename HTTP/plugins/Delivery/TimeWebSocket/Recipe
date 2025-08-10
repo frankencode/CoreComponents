@@ -1,0 +1,6 @@
+Plugin {
+    name: CoreComponentsHttpTimeWebSocketPlugin
+    group: delivery
+    extend: HTTP
+    bundle: frontend
+}

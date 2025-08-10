@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Time Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .status {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .time-display {
+            margin-top: 20px;
+        }
+        .time-value {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Time Client</h1>
+
+    <div class="container">
+        <div id="status" class="status disconnected">
+            Disconnected from time service
+        </div>
+
+        <button id="connectBtn">Connect</button>
+        <button id="disconnectBtn" disabled>Disconnect</button>
+
+        <div class="time-display">
+            <h3>Current Time:</h3>
+            <p>Epoch timestamp: <span id="epoch" class="time-value">-</span></p>
+            <p>UTC: <span id="utc" class="time-value">-</span></p>
+            <p>Local: <span id="local" class="time-value">-</span></p>
+            <p>Date: <span id="date" class="time-value">-</span></p>
+            <p>Time: <span id="time" class="time-value">-</span></p>
+        </div>
+    </div>
+
+    <script>
+        let socket;
+        let intervalId;
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const statusDiv = document.getElementById('status');
+
+        // Update the time display with the received timestamp
+        function updateTimeDisplay(timestamp) {
+            const date = new Date(timestamp * 1000);
+
+            document.getElementById('epoch').textContent = timestamp;
+            document.getElementById('utc').textContent = date.toUTCString();
+            document.getElementById('local').textContent = date.toString();
+            document.getElementById('date').textContent = date.toDateString();
+            document.getElementById('time').textContent = date.toTimeString();
+        }
+
+        // Connect to WebSocket server
+        function connect() {
+            // Replace with your actual WebSocket server URL
+            socket = new WebSocket('ws://127.0.0.1:8080/time');
+
+            socket.onopen = function(e) {
+                statusDiv.textContent = "Connected to time service";
+                statusDiv.className = "status connected";
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+
+                // Start sending time requests every second
+                intervalId = setInterval(() => {
+                    socket.send(JSON.stringify({})); // Send empty JSON object
+                }, 1000);
+            };
+
+            socket.onmessage = function(event) {
+                console.log(event)
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.time) {
+                        updateTimeDisplay(data.time);
+                    }
+                } catch (e) {
+                    console.error("Error parsing message:", e);
+                }
+            };
+
+            socket.onclose = function(event) {
+                if (event.wasClean) {
+                    statusDiv.textContent = `Connection closed cleanly, code=${event.code}`;
+                } else {
+                    statusDiv.textContent = 'Connection died';
+                }
+                statusDiv.className = "status disconnected";
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                clearInterval(intervalId);
+            };
+
+            socket.onerror = function(error) {
+                statusDiv.textContent = `Error: ${error.message}`;
+                statusDiv.className = "status disconnected";
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                clearInterval(intervalId);
+            };
+        }
+
+        // Disconnect from WebSocket server
+        function disconnect() {
+            if (socket) {
+                socket.close();
+            }
+        }
+
+        // Event listeners for buttons
+        connectBtn.addEventListener('click', connect);
+        disconnectBtn.addEventListener('click', disconnect);
+    </script>
+</body>
+</html>

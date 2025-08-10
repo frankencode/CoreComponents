@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/HttpService>
+
+namespace cc {
+
+/** \internal
+  * \brief Simple WebSocket service to get the server's time and date
+  */
+class TimeWebSocketService final: public HttpService
+{
+public:
+    static const char *name();
+
+    TimeWebSocketService();
+
+private:
+    struct State;
+};
+
+} // namespace cc
