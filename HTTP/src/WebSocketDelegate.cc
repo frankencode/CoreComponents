@@ -11,6 +11,7 @@
 #include <cc/base64>
 #include <cc/sha1>
 #include <cc/Casefree>
+#include <cc/debugging>
 
 namespace cc {
 
@@ -19,7 +20,7 @@ void WebSocketDelegate::State::process(const HttpRequest &request)
     if (
         request.version() <= "1.0" ||
         casefree(request.header("Upgrade")) != "websocket" ||
-        casefree(request.header("Connection")) != "Upgrade" ||
+        !request.header("Connection").contains("Upgrade") ||
         base64DecodedLength(request.header("Sec-WebSocket-Key")) != 16 ||
         request.header("Sec-WebSocket-Version") != "13"
     ) {
@@ -45,19 +46,19 @@ void WebSocketDelegate::State::process(const HttpRequest &request)
 
 void WebSocketDelegate::State::upgrade(Stream &stream)
 {
-    WebSocketStream client { stream, WebSocketStream::ServerToClient };
-    onConnectionEstablished(client);
+    webSocket_ = WebSocketStream { stream, WebSocketStream::ServerToClient };
+    onConnectionEstablished();
     {
         String message;
         WebSocketMessage::Type type = WebSocketMessage::Type::Unknown;
-        while (client.read(&message, &type)) {
+        while (webSocket_.read(&message, &type)) {
             onMessageReceived(message, type);
         }
     }
-    onConnectionClosed(client.status());
+    onConnectionClosed(webSocket_.status());
 }
 
-void WebSocketDelegate::State::onConnectionEstablished(const WebSocketStream &client)
+void WebSocketDelegate::State::onConnectionEstablished()
 {}
 
 void WebSocketDelegate::State::onConnectionClosed(WebSocketStatus status)

@@ -120,6 +120,7 @@ void HttpServiceWorkerState::initiate(Stream &stream)
 void HttpServiceWorkerState::serve(Stream &stream)
 {
     int requestCount = 0;
+    bool upgrade = false;
 
     while (client_)
     {
@@ -130,26 +131,25 @@ void HttpServiceWorkerState::serve(Stream &stream)
             request = readRequest();
             ++requestCount;
 
-            {
-                ScopeGuard guard{[this]{ response_ = HttpResponseGenerator{}; }};
+            ScopeGuard guard{[this]{ response_ = HttpResponseGenerator{}; }};
 
-                response_ = HttpResponseGenerator{stream};
-                response_.setNodeVersion(nodeConfig_.version());
+            response_ = HttpResponseGenerator{stream};
+            response_.setNodeVersion(nodeConfig_.version());
 
-                serviceDelegate_.process(request);
+            serviceDelegate_.process(request);
 
-                response_.endTransmission();
+            response_.endTransmission();
 
-                if (response_.delivered()) {
-                    accessLoggingInstance().logDelivery(client_, request, response_.status(), response_.bytesWritten());
-                    if (!requestParser_.isPayloadConsumed())
-                        break;
-                }
-                else break;
+            if (response_.delivered()) {
+                accessLoggingInstance().logDelivery(client_, request, response_.status(), response_.bytesWritten());
+                if (!requestParser_.isPayloadConsumed()) break;
             }
+            else break;
+
+            upgrade = (response_.status() == HttpStatus::SwitchingProtocols);
 
             if (
-                response_.status() == HttpStatus::SwitchingProtocols ||
+                upgrade ||
                 Casefree{request.header("Connection")} == "close" ||
                 requestCount >= serviceInstance_.requestLimit() ||
                 (request.majorVersion() == 1 && request.minorVersion() == 0)
@@ -171,8 +171,7 @@ void HttpServiceWorkerState::serve(Stream &stream)
         }
     }
 
-    if (client_ && response_.status() == HttpStatus::SwitchingProtocols) {
-        response_ = HttpResponseGenerator{};
+    if (client_ && upgrade) {
         serviceDelegate_.upgrade(stream);
     }
 }

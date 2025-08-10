@@ -83,6 +83,7 @@ void WebSocketFrame::State::writeTo(ByteSink &sink, uint32_t mask)
     }
 
     sink.write(payload_);
+    sink.flush();
 }
 
 void WebSocketFrame::State::xorPayloadWithMask(uint32_t mask)

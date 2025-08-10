@@ -13,6 +13,15 @@
 
 namespace cc {
 
+/** \class WebSocketDelegate cc/WebSocketDelegate
+  * \ingroup http_server
+  * \brief WebSocket protocol worker delegate
+  *
+  * The WebSocketDelegate handles the upgrade of the HTTP protocol connection to WebSocket protocol.
+  * It actively reads incoming messages in the connection's worker thread. It seemingly handles the
+  * WebSocket message fragmentation and recomposition and all WebSocket related transport layer frames.
+  * Virtual methods are provided to react on high-level WebSocket protocol events.
+  */
 class WebSocketDelegate: public HttpServiceDelegate
 {
 protected:
@@ -20,7 +29,7 @@ protected:
     {
         /** Callback invoked when the WebSocket connection has been established
           */
-        virtual void onConnectionEstablished(const WebSocketStream &client);
+        virtual void onConnectionEstablished();
 
         /** Callback invoked when the WebSocket connection has been closed
           */
@@ -33,9 +42,15 @@ protected:
           */
         virtual void onMessageReceived(const String &message, WebSocketMessage::Type type);
 
+        /** Connected WebSocket stream
+          */
+        WebSocketStream &webSocket() { return webSocket_; }
+
     private:
         void process(const HttpRequest &request) override;
         void upgrade(Stream &stream) override;
+
+        WebSocketStream webSocket_;
     };
 
     explicit WebSocketDelegate(State *newState):

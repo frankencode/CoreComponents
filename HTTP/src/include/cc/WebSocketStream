@@ -29,6 +29,10 @@ public:
         ClientToServer = 1  ///< This WebSocketStream is used by the client
     };
 
+    /** Create a null object
+      */
+    WebSocketStream() = default;
+
     /** Create a new frame stream
       */
     explicit WebSocketStream(const Stream &stream, Type type);
@@ -54,6 +58,7 @@ public:
     bool read(Out<String> message, Out<WebSocketMessage::Type> type = None{});
 
     /** Send a message
+      * \todo Think about splitting into two overloaded methods for String message and Byte message.
       */
     bool write(const String &message, WebSocketMessage::Type type = WebSocketMessage::Type::Binary, uint32_t mask = 0);
 

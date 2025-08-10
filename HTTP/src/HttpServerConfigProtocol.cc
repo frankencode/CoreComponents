@@ -27,9 +27,9 @@ public:
         establish("tls", false);
         establish("user", "");
         establish("group", "");
-        establish("version", "cc_node");
+        establish("version", "ccnode");
         establish("daemon", false);
-        establish("daemon-name", "cc_node");
+        establish("daemon-name", "ccnode");
         establish("pid-file", "");
         establish("concurrency",
             #ifdef NDEBUG

@@ -10,7 +10,7 @@
 
 namespace cc {
 
-struct EchoDelegate::State: public HttpServiceDelegate::State
+struct EchoDelegate::State final: public HttpServiceDelegate::State
 {
     void process(const HttpRequest &request) override
     {
