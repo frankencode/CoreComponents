@@ -9,7 +9,6 @@
 #include <cc/HttpServiceWorkerState>
 #include <cc/httpDebug>
 #include <cc/HttpError>
-#include <cc/StreamTap>
 #include <cc/TapBuffer>
 #include <cc/ScopeGuard>
 #include <cc/Casefree>
@@ -60,6 +59,7 @@ void HttpServiceWorkerState::run()
             catch (HttpCloseRequest &)
             {}
 
+            if (tap_) tap_ = StreamTap{};
             closeConnection();
 
             serviceDelegate_ = HttpServiceDelegate{};
@@ -75,12 +75,13 @@ void HttpServiceWorkerState::run()
 
 void HttpServiceWorkerState::setupTap(Stream &stream)
 {
-    if (errorLoggingInstance().verbosity() >=  LoggingLevel::Debug) {
+    if (errorLoggingInstance().verbosity() >= LoggingLevel::Debug) {
         String label = client_.peerAddress().toString();
         Stream log = errorLoggingInstance().debugStream();
         TapBuffer inputBuffer{log, label + " >> "};
         TapBuffer outputBuffer{log, label + " << "};
-        stream = StreamTap{stream, inputBuffer, outputBuffer};
+        tap_ = StreamTap{stream, inputBuffer, outputBuffer};
+        stream = tap_;
     }
 }
 
@@ -101,7 +102,7 @@ void HttpServiceWorkerState::initiate(Stream &stream)
         );
         stream = tlsStream;
         setupTap(stream);
-        requestParser_ = HttpRequestParser{tlsStream};
+        requestParser_ = HttpRequestParser{stream};
     }
     else {
         setupTap(stream);
@@ -172,6 +173,7 @@ void HttpServiceWorkerState::serve(Stream &stream)
     }
 
     if (client_ && upgrade) {
+        if (tap_) stream = tap_.stream();
         serviceDelegate_.upgrade(stream);
     }
 }

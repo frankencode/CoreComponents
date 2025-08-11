@@ -13,6 +13,7 @@
 #include <cc/TlsServerStream>
 #include <cc/HttpRequestParser>
 #include <cc/HttpResponseGenerator>
+#include <cc/StreamTap>
 #include <cc/Thread>
 
 namespace cc {
@@ -64,6 +65,7 @@ struct HttpServiceWorkerState: public Object::State
     HttpRequestParser requestParser_;
     HttpRequest pendingRequest_;
     HttpResponseGenerator response_;
+    StreamTap tap_;
     Thread thread_;
 };
 

@@ -17,7 +17,7 @@ namespace cc {
   * \ingroup http_protocol
   * \brief HTTP server-side message parser
   */
-class HttpRequestParser: public HttpMessageParser
+class HttpRequestParser final: public HttpMessageParser
 {
 public:
     /** Create a null HTTP request message parser

@@ -20,15 +20,26 @@ namespace cc {
 class StreamTap final: public Stream
 {
 public:
+    /** Create a null object
+      */
+    StreamTap() = default;
+
     /** Create a new stream tap
       * \param stream Data stream to tap into
-      * \param inputTap %Input tap: receives everything read from \a stream as a write (pass Stream{} to omit tapping into the reads)
-      * \param outputTap %Output tap: receives everything written to \a stream as a write (pass Stream{} to omit tapping into the writes)
+      * \param inboundTap %Input tap: receives everything read from \a stream as a write (pass Stream{} to omit tapping into the reads)
+      * \param outboundTap %Output tap: receives everything written to \a stream as a write (pass Stream{} to omit tapping into the writes)
       */
-    StreamTap(const Stream &stream, const Stream &inputTap, const Stream &outputTap);
+    StreamTap(const Stream &stream, const Stream &inboundTap, const Stream &outboundTap);
+
+    /** Get the underlying stream
+      */
+    Stream stream() const;
 
 private:
     struct State;
+
+    State &me();
+    const State &me() const;
 };
 
 } // namespace cc

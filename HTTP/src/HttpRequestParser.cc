@@ -13,7 +13,7 @@
 
 namespace cc {
 
-struct HttpRequestParser::State: public HttpMessageParser::State
+struct HttpRequestParser::State final: public HttpMessageParser::State
 {
     State(const Stream &stream):
         HttpMessageParser::State{stream}
