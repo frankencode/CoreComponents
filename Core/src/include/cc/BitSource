@@ -1,0 +1,112 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/ByteSource>
+#include <cc/SourceIterator>
+
+namespace cc {
+
+/** \class BitSource cc/BitSource
+  * \ingroup binary
+  * \brief Read from a ByteSource bit-vise
+  */
+class BitSource final
+{
+public:
+    /** Item type
+      */
+    using Item = bool;
+
+    /** Create a new bit source
+      */
+    BitSource(const ByteSource &source):
+        source_{source}
+    {}
+
+    /** Create a new bit source
+      */
+    BitSource(const Bytes &bytes):
+        BitSource{ByteSource{bytes}}
+    {}
+
+    /** Read a single bit
+      * \exception InputExhaustion
+      */
+    bool readBit()
+    {
+        bool bit = false;
+        if (!read(&bit)) throw InputExhaustion{};
+        return bit;
+    }
+
+    /** Read n bits and return as word of type T
+      * \exception InputExhaustion
+      */
+    template<int n, class T>
+    T readBits() {
+        T x = 0;
+        if (!read<n>(&x)) throw InputExhaustion{};
+        return x;
+    }
+
+    /** Read a single bit
+      * \param bit Returns the bit
+      * \return True if successful, false otherwise
+      */
+    bool read(Out<bool> bit)
+    {
+        if (k_ == 0) {
+            if (!source_.readByte(&byte_)) return false;
+            k_ = 8;
+        }
+        --k_;
+        *bit = (byte_ >> k_) & 1;
+        return true;
+    }
+
+    /** Read n bits and return as word of type T
+      * \exception InputExhaustion
+      */
+    template<int n, class T>
+    bool read(Out<T> bits)
+    {
+        static_assert(8 * sizeof(T) >= n);
+        T x = 0;
+        for (int i = n; i > 0;) {
+            bool bit = 0;
+            if (!read(&bit)) {
+                if (i != n) {
+                    *bits = x;
+                    return true;
+                }
+                return false;
+            }
+            --i;
+            x |= (static_cast<T>(bit) << i);
+        }
+        *bits = x;
+        return true;
+    }
+
+    /** Iteration start
+      */
+    SourceIterator<BitSource> begin() { return SourceIterator<BitSource>{this}; }
+
+    /** Iteration end
+      */
+    SourceIterator<BitSource> end() { return SourceIterator<BitSource>{}; }
+
+private:
+    ByteSource source_;
+    uint8_t byte_ { 0 };
+    int k_ { 0 };
+};
+
+} // namespace cc

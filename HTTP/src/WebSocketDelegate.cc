@@ -8,7 +8,7 @@
 
 #include <cc/WebSocketDelegate>
 #include <cc/WebSocketStream>
-#include <cc/base64>
+#include <cc/Base64>
 #include <cc/sha1>
 #include <cc/Casefree>
 #include <cc/debugging>
@@ -21,7 +21,7 @@ void WebSocketDelegate::State::process(const HttpRequest &request)
         request.version() <= "1.0" ||
         casefree(request.header("Upgrade")) != "websocket" ||
         !request.header("Connection").contains("Upgrade") ||
-        base64DecodedLength(request.header("Sec-WebSocket-Key")) != 16 ||
+        Base64::decodedSize(request.header("Sec-WebSocket-Key")) != 16 ||
         request.header("Sec-WebSocket-Version") != "13"
     ) {
         response().setStatus(HttpStatus::BadRequest, "Bad Request");
@@ -33,7 +33,7 @@ void WebSocketDelegate::State::process(const HttpRequest &request)
         response().setHeader("Connection", "Upgrade");
         response().setHeader(
             "Sec-WebSocket-Accept",
-            base64Encode(sha1(
+            base64(sha1(
                 String {
                     request.header("Sec-WebSocket-Key") +
                     "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"

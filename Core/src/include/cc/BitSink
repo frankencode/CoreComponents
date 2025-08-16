@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/Bytes>
+
+namespace cc {
+
+/** \class BitSink cc/BitSink
+  * \ingroup binary
+  * \brief Bit-wise write to a ByteSink
+  * \exception OutputExhaustion
+  * \note It is up to the user to write padding bits. Only full bytes will be written to the output.
+  */
+class BitSink
+{
+public:
+    /** Create a new bit output sink
+      */
+    BitSink(const Bytes &buffer):
+        buffer_{buffer}
+    {}
+
+    /** Write a single bit
+      */
+    void writeBit(bool bit)
+    {
+        ++k_;
+        pending_ |= static_cast<uint8_t>(bit) << (8 - k_);
+        if (k_ == 8) {
+            if (i_ >= buffer_.count()) throw OutputExhaustion{};
+            buffer_[i_++] = pending_;
+            k_ = 0;
+            pending_ = 0;
+        }
+    }
+
+    /** Write n bits of \a word, starting from the n-th more significiant bit to the least significiant bit of \a word
+      */
+    template<int n, class T>
+    void writeBits(T word)
+    {
+        static_assert(n <= 8 * sizeof(T));
+        for (int i = n; i > 0; --i) {
+            writeBit((word >> (i - 1)) & 1);
+        }
+    }
+
+private:
+    Bytes buffer_;
+    long i_ { 0 };
+    int k_ { 0 };
+    uint8_t pending_ { 0 };
+};
+
+} // namespace cc

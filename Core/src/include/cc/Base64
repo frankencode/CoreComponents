@@ -1,0 +1,88 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/String>
+
+namespace cc {
+
+/** \class Base64 cc/Base64
+  * \ingroup binary
+  * \brief Base64 codec
+  */
+class Base64
+{
+public:
+    /** Padding mode
+      */
+    enum class Padding {
+        Auto = 0, ///< Automatically select a proper padding mode
+        Mime = 1, ///< Append up to 3 padding characters
+        None = 2, ///< Do not append any padding characters
+    };
+
+    /** Base64 alphabet
+      */
+    enum class Alphabet {
+        Mime    = 1, ///< Classical Base64 alphabet
+        UrlSafe = 2  ///< Url-safe Base64 alphabet
+    };
+
+    /** Base64 encode \a data
+      * \param data Binary data to be Base64 encoded
+      * \param alphabet Base64 alphabet
+      * \param padding Padding mode
+      * \return Base64 encoded result
+      */
+    static String encode(const Bytes &data, Alphabet alphabet = Alphabet::Mime, Padding padding = Padding::Auto);
+
+    /** Base64 decode \a text
+      * \param text Base64 encoded data
+      * \return Decoded binary data
+      */
+    static String decode(const Bytes &text);
+
+    /** Return the encoded size of \a data when using the giving padding mode
+      */
+    static long encodedSize(const Bytes &data, Padding padding = Padding::Mime);
+
+    /** Return the decoded size of the Base64 encoded data \a text
+      */
+    static long decodedSize(const Bytes &text);
+};
+
+/** Base64 encode \a data using the Mime alphabet and Mime padding mode
+  */
+inline String base64(const Bytes &data)
+{
+    return Base64::encode(data, Base64::Alphabet::Mime, Base64::Padding::Mime);
+}
+
+/** Base64 encode \a data using the Mime alphabet and Mime padding mode
+  */
+inline String base64(const char *data)
+{
+    return base64(String{data});
+}
+
+/** Base64 encode \a data using the url-safe alphabet (without appending padding characters)
+  */
+inline String base64UrlSafe(const Bytes &data)
+{
+    return Base64::encode(data, Base64::Alphabet::UrlSafe, Base64::Padding::None);
+}
+
+/** Decode Base64 encoded data
+  */
+inline String fromBase64(const String &text)
+{
+    return Base64::decode(text);
+}
+
+} // namespace cc

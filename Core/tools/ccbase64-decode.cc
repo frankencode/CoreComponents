@@ -7,15 +7,15 @@
  */
 
 #include <cc/IoStream>
-#include <cc/base64>
-#include <cc/DEBUG>
+#include <cc/Base64>
+#include <cc/stdio>
 
 int main(int argc, char *argv[])
 {
     using namespace cc;
 
     String data = stdInput().readAll().trimmed();
-    stdOutput().write(base64Decode(data));
+    stdOutput().write(base64(data));
 
     return 0;
 }

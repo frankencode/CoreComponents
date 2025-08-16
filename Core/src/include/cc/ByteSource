@@ -20,9 +20,8 @@ namespace cc {
   * \ingroup streams
   * \brief Byte decoding sink
   * \exception InputExhaustion
-  * \todo inherit from NonCopyable
   */
-class ByteSource
+class ByteSource final
 {
 public:
     /** Open a new ByteSource

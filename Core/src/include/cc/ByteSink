@@ -20,7 +20,6 @@ namespace cc {
   * \ingroup streams
   * \brief Byte encoding sink
   * \exception OutputExhaustion
-  * \todo inherit from NonCopyable
   */
 class ByteSink
 {
@@ -137,11 +136,11 @@ private:
 
         inline void flush()
         {
-            if (!sink) throw OutputExhaustion{};
-
-            sink.write(buffer, i);
-            i0 += i;
-            i = 0;
+            if (sink) {
+                sink.write(buffer, i);
+                i0 += i;
+                i = 0;
+            }
         }
 
         inline void write(uint8_t x)
