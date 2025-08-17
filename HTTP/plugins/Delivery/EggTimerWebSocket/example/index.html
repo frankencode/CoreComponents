@@ -9,7 +9,7 @@
     Sound effect: "Ticking Bomb" by Leszek Szary (https://freesound.org/people/Leszek_Szary/sounds/146735/)
 
     Based on original implementation by DeepSeek Chat.
---->
+-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -35,12 +35,6 @@
             background: white;
             border-radius: 50%;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .digital-display {
-            font-size: 2.5rem;
-            font-family: 'Courier New', monospace;
-            margin: 25px 0;
-            color: #333;
         }
         .controls {
             margin: 20px 0;
@@ -95,9 +89,17 @@
         button:hover {
             background-color: #45a049;
         }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
+        #toggleTimerBtn.running {
+            background-color: #f44336;
+        }
+        #toggleTimerBtn.running:hover {
+            background-color: #d32f2f;
+        }
+        #toggleTimerBtn.reset {
+            background-color: #ff9800;
+        }
+        #toggleTimerBtn.reset:hover {
+            background-color: #e68a00;
         }
         .notification {
             position: absolute;
@@ -142,9 +144,7 @@
                 <input type="number" id="secondsInput" min="0" max="59" value="0">
             </div>
         </div>
-        <button id="setTimerBtn">SET TIMER</button>
-        <button id="startTimerBtn" disabled>START TIMER</button>
-        <button id="stopTimerBtn" disabled>STOP TIMER</button>
+        <button id="toggleTimerBtn">START TIMER</button>
     </div>
 
     <audio id="alarmSound" src="https://www.cyblogic.com/146735__leszek_szary__ticking-bomb.wav" loop preload="auto"></audio>
@@ -156,9 +156,7 @@
         const timerContainer = document.getElementById('timerContainer');
         const minutesInput = document.getElementById('minutesInput');
         const secondsInput = document.getElementById('secondsInput');
-        const setTimerBtn = document.getElementById('setTimerBtn');
-        const startTimerBtn = document.getElementById('startTimerBtn');
-        const stopTimerBtn = document.getElementById('stopTimerBtn');
+        const toggleTimerBtn = document.getElementById('toggleTimerBtn');
         const notification = document.getElementById('notification');
         const alarmSound = document.getElementById('alarmSound');
 
@@ -170,6 +168,7 @@
         let animationFrameId = null;
         const wsUrl = 'ws://127.0.0.1:8080/timer';
         let socket;
+        let inputChangeTimeout = null;
 
         // Canvas drawing functions
         function drawTimer() {
@@ -273,13 +272,11 @@
 
             socket.onopen = function() {
                 console.log('WebSocket connected');
-                enableControls(true);
                 socket.send('GetTimer');
             };
 
             socket.onclose = function() {
                 console.log('WebSocket disconnected');
-                enableControls(false);
                 cancelAnimationFrame(animationFrameId);
                 stopAlarm();
                 setTimeout(initWebSocket, 1000);
@@ -310,15 +307,13 @@
             };
         }
 
-        function enableControls(connected) {
-            setTimerBtn.disabled = !connected;
-            const hasValidTime = getTotalSeconds() > 0;
-            startTimerBtn.disabled = !connected || !hasValidTime;
-            stopTimerBtn.disabled = !connected || !isTimerRunning;
-
-            // Make inputs readonly when timer is running
-            minutesInput.readOnly = isTimerRunning;
-            secondsInput.readOnly = isTimerRunning;
+        function updateTimer() {
+            const newDuration = getTotalSeconds();
+            if (newDuration > 0) {
+                socket.send(`SetTimer ${JSON.stringify({ duration: newDuration })}`);
+                socket.send('GetTimer');
+                stopAlarm();
+            }
         }
 
         function startPolling() {
@@ -327,8 +322,9 @@
                 socket.send('GetRemaining');
             }, 1000);
             isTimerRunning = true;
-            stopTimerBtn.disabled = false;
-            startTimerBtn.disabled = true;
+            toggleTimerBtn.textContent = 'STOP TIMER';
+            toggleTimerBtn.classList.add('running');
+            toggleTimerBtn.classList.remove('reset');
             stopAlarm();
 
             // Set inputs to readonly
@@ -342,8 +338,9 @@
             clearInterval(updateInterval);
             cancelAnimationFrame(animationFrameId);
             isTimerRunning = false;
-            stopTimerBtn.disabled = true;
-            startTimerBtn.disabled = false;
+            toggleTimerBtn.textContent = 'START TIMER';
+            toggleTimerBtn.classList.remove('running');
+            toggleTimerBtn.classList.remove('reset');
             stopAlarm();
 
             // Make inputs editable again
@@ -371,6 +368,9 @@
                 alarmSound.loop = true;
                 alarmSound.play().catch(e => console.log("Alarm sound failed:", e));
                 isAlarmPlaying = true;
+                toggleTimerBtn.textContent = 'RESET';
+                toggleTimerBtn.classList.remove('running');
+                toggleTimerBtn.classList.add('reset');
             }
         }
 
@@ -381,6 +381,8 @@
                 isAlarmPlaying = false;
                 hideNotification();
                 socket.send('GetTimer');
+                toggleTimerBtn.textContent = 'START TIMER';
+                toggleTimerBtn.classList.remove('reset');
             }
         }
 
@@ -392,25 +394,56 @@
             notification.style.display = 'none';
         }
 
-        // Event listeners
-        setTimerBtn.addEventListener('click', () => {
-            const duration = getTotalSeconds();
-            if (duration > 0) {
-                socket.send(`SetTimer ${JSON.stringify({ duration })}`);
-                socket.send('GetTimer');
-                startTimerBtn.disabled = false;
-                stopAlarm();
+        // Prevent non-numeric input
+        function preventNonNumericInput(e) {
+            // Allow: backspace, delete, tab, escape, enter
+            if ([46, 8, 9, 27, 13].includes(e.keyCode) ||
+                // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                (e.keyCode === 65 && e.ctrlKey === true) ||
+                (e.keyCode === 67 && e.ctrlKey === true) ||
+                (e.keyCode === 86 && e.ctrlKey === true) ||
+                (e.keyCode === 88 && e.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (e.keyCode >= 35 && e.keyCode <= 39)) {
+                    return;
             }
-        });
+            // Ensure it's a number and stop the keypress if not
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        }
 
-        startTimerBtn.addEventListener('click', () => {
-            socket.send('StartTimer');
-            startPolling();
-        });
+        // Auto-select input text when focused
+        function handleInputFocus(e) {
+            e.target.select();
+        }
 
-        stopTimerBtn.addEventListener('click', () => {
-            stopPolling();
-            socket.send('GetTimer');
+        // Event listeners
+        function handleInputChange() {
+            // Validate inputs
+            if (this.value > 59) this.value = 59;
+            if (this.value < 0) this.value = 0;
+
+            // Only update timer if it's not running
+            if (!isTimerRunning && !isAlarmPlaying) {
+                // Debounce to avoid sending too many messages
+                clearTimeout(inputChangeTimeout);
+                inputChangeTimeout = setTimeout(() => {
+                    updateTimer();
+                }, 300);
+            }
+        }
+
+        toggleTimerBtn.addEventListener('click', () => {
+            if (isAlarmPlaying) {
+                stopAlarm();
+            } else if (isTimerRunning) {
+                stopPolling();
+                socket.send('GetTimer');
+            } else {
+                socket.send('StartTimer');
+                startPolling();
+            }
         });
 
         // Click handlers for dismissing alarm
@@ -422,18 +455,15 @@
             }
         });
 
-        minutesInput.addEventListener('input', enableControls.bind(null, true));
-        secondsInput.addEventListener('input', enableControls.bind(null, true));
-
-        minutesInput.addEventListener('change', function() {
-            if (this.value > 59) this.value = 59;
-            if (this.value < 0) this.value = 0;
-        });
-
-        secondsInput.addEventListener('change', function() {
-            if (this.value > 59) this.value = 59;
-            if (this.value < 0) this.value = 0;
-        });
+        // Input event listeners
+        minutesInput.addEventListener('keydown', preventNonNumericInput);
+        secondsInput.addEventListener('keydown', preventNonNumericInput);
+        minutesInput.addEventListener('input', handleInputChange);
+        secondsInput.addEventListener('input', handleInputChange);
+        minutesInput.addEventListener('change', handleInputChange);
+        secondsInput.addEventListener('change', handleInputChange);
+        minutesInput.addEventListener('focus', handleInputFocus);
+        secondsInput.addEventListener('focus', handleInputFocus);
 
         // Initialize
         initWebSocket();
