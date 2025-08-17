@@ -42,9 +42,20 @@ protected:
           */
         virtual void onMessageReceived(const String &message, WebSocketMessage::Type type);
 
+        /** Callback invoked when the WebSocket connection did not receive a message for a certain time
+          * \see setIdleInterval()
+          */
+        virtual void onIdle();
+
         /** Connected WebSocket stream
           */
         WebSocketStream &webSocket() { return webSocket_; }
+
+        /** Set the idle interval to \a duration (in seconds)
+          * \see onIdle()
+          * \todo Implement the idle mechanism.
+          */
+        void setIdleInterval(double duration) {}
 
     private:
         void process(const HttpRequest &request) override;

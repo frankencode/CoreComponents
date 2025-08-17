@@ -67,4 +67,7 @@ void WebSocketDelegate::State::onConnectionClosed(WebSocketStatus status)
 void WebSocketDelegate::State::onMessageReceived(const String &message, WebSocketMessage::Type type)
 {}
 
+void WebSocketDelegate::State::onIdle()
+{}
+
 } // namespace cc

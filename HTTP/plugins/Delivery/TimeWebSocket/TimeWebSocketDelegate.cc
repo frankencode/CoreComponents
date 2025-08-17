@@ -16,7 +16,7 @@ struct TimeWebSocketDelegate::State final: public WebSocketDelegate::State
     void onMessageReceived(const String &message, WebSocketMessage::Type type) override
     {
         String response = Format{"{\"time\": %% }"} << static_cast<int64_t>(System::now());
-        webSocket().write(response, WebSocketMessage::Type::Text);
+        webSocket().write(response);
     }
 };
 

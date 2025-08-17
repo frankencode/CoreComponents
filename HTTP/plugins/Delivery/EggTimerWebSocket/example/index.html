@@ -1,0 +1,234 @@
+<!--
+  Egg Timer Web Interface
+  Copyright (c) 2024 Your Company Name. All rights reserved.
+
+  Licensed under the MIT License:
+  https://opensource.org/licenses/MIT
+
+  Sound effect: "Ticking Bomb" by Leszek Szary (https://freesound.org/people/Leszek_Szary/sounds/146735/)
+
+  Based on original implementation by DeepSeek Chat.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egg Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .timer-display {
+            font-size: 5rem;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 1rem;
+        }
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff4444;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+            animation: flash 0.5s infinite alternate;
+        }
+        @keyframes flash {
+            from { background-color: #ff4444; }
+            to { background-color: #ff0000; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Egg Timer</h1>
+    <div class="timer-display" id="timerDisplay">00:00</div>
+
+    <div class="controls">
+        <div>
+            <label for="durationInput">Set Duration (seconds):</label>
+            <input type="number" id="durationInput" min="1" value="180">
+            <button id="setTimerBtn">Set Timer</button>
+        </div>
+        <button id="startTimerBtn" disabled>Start Timer</button>
+        <button id="stopTimerBtn" disabled>Stop Timer</button>
+    </div>
+
+    <div class="notification" id="notification">
+        TIMER COMPLETE! CLICK TO DISMISS!
+    </div>
+
+    <audio id="alarmSound" src="https://www.cyblogic.com/146735__leszek_szary__ticking-bomb.wav" loop preload="auto"></audio>
+
+    <script>
+        // DOM elements
+        const timerDisplay = document.getElementById('timerDisplay');
+        const durationInput = document.getElementById('durationInput');
+        const setTimerBtn = document.getElementById('setTimerBtn');
+        const startTimerBtn = document.getElementById('startTimerBtn');
+        const stopTimerBtn = document.getElementById('stopTimerBtn');
+        const notification = document.getElementById('notification');
+        const alarmSound = document.getElementById('alarmSound');
+
+        // WebSocket connection
+        let socket;
+        let updateInterval;
+        let isTimerRunning = false;
+        let isAlarmPlaying = false;
+        const wsUrl = 'ws://127.0.0.1:8080/timer';
+
+        function initWebSocket() {
+            socket = new WebSocket(wsUrl);
+
+            socket.onopen = function() {
+                console.log('WebSocket connected');
+                enableControls(true);
+            };
+
+            socket.onclose = function() {
+                console.log('WebSocket disconnected');
+                enableControls(false);
+                clearInterval(updateInterval);
+                stopAlarm();
+                setTimeout(initWebSocket, 1000);
+            };
+
+            socket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+
+            socket.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+
+                    if (data.duration) {
+                        durationInput.value = data.duration;
+                        updateDisplay(data.duration);
+                    } else if (data.remaining !== undefined) {
+                        updateDisplay(data.remaining);
+                        if (data.remaining <= 0) {
+                            timerComplete();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error parsing message:', error);
+                }
+            };
+        }
+
+        function enableControls(connected) {
+            setTimerBtn.disabled = !connected;
+            startTimerBtn.disabled = !connected || !durationInput.value;
+            stopTimerBtn.disabled = !connected || !isTimerRunning;
+        }
+
+        function updateDisplay(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function startPolling() {
+            clearInterval(updateInterval);
+            updateInterval = setInterval(() => {
+                socket.send('GetRemaining');
+            }, 1000);
+            isTimerRunning = true;
+            stopTimerBtn.disabled = false;
+            startTimerBtn.disabled = true;
+            stopAlarm();
+        }
+
+        function stopPolling() {
+            clearInterval(updateInterval);
+            isTimerRunning = false;
+            stopTimerBtn.disabled = true;
+            startTimerBtn.disabled = false;
+            stopAlarm();
+        }
+
+        function timerComplete() {
+            stopPolling();
+            startAlarm();
+            showNotification();
+        }
+
+        function startAlarm() {
+            if (!isAlarmPlaying) {
+                alarmSound.currentTime = 0;
+                alarmSound.play().catch(e => console.log("Alarm sound failed:", e));
+                isAlarmPlaying = true;
+            }
+        }
+
+        function stopAlarm() {
+            if (isAlarmPlaying) {
+                alarmSound.pause();
+                isAlarmPlaying = false;
+                notification.style.display = 'none';
+            }
+        }
+
+        function showNotification() {
+            notification.style.display = 'block';
+            notification.onclick = stopAlarm;
+        }
+
+        // Event listeners
+        setTimerBtn.addEventListener('click', () => {
+            const duration = parseInt(durationInput.value);
+            if (duration > 0) {
+                socket.send(`SetTimer ${JSON.stringify({ duration })}`);
+                socket.send('GetTimer');
+                startTimerBtn.disabled = false;
+                stopAlarm();
+            }
+        });
+
+        startTimerBtn.addEventListener('click', () => {
+            socket.send('StartTimer');
+            startPolling();
+        });
+
+        stopTimerBtn.addEventListener('click', () => {
+            stopPolling();
+            socket.send('GetTimer');
+        });
+
+        durationInput.addEventListener('input', () => {
+            startTimerBtn.disabled = !durationInput.value || isTimerRunning;
+        });
+
+        // Initialize
+        initWebSocket();
+    </script>
+</body>
+</html>

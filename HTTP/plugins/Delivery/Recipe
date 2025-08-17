@@ -1,3 +1,3 @@
 Package {
-    include: [ Echo, Directory, TimeWebSocket ]
+    include: [ Echo, Directory, TimeWebSocket, EggTimerWebSocket ]
 }

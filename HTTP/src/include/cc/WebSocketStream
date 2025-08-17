@@ -18,6 +18,7 @@ namespace cc {
 /** \class WebSocketStream cc/WebSocketStream
   * \ingroup http_protocol
   * \brief WebSocket message stream
+  * \todo add a waitUntil();
   */
 class WebSocketStream final: public Object
 {
@@ -58,9 +59,12 @@ public:
     bool read(Out<String> message, Out<WebSocketMessage::Type> type = None{});
 
     /** Send a message
-      * \todo Think about splitting into two overloaded methods for String message and Byte message.
       */
-    bool write(const String &message, WebSocketMessage::Type type = WebSocketMessage::Type::Binary, uint32_t mask = 0);
+    bool write(const String &message, WebSocketMessage::Type type = WebSocketMessage::Type::Text, uint32_t mask = 0);
+
+    /** Send a message
+      */
+    bool write(const Bytes &message, WebSocketMessage::Type type = WebSocketMessage::Type::Binary, uint32_t mask = 0);
 
     /** Tell if this %WebSocket connection is still open
       */

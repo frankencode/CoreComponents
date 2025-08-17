@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2025 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/HttpServiceInstance>
+
+namespace cc {
+
+class EggTimerWebSocketInstance final: public HttpServiceInstance
+{
+public:
+    EggTimerWebSocketInstance() = default;
+    EggTimerWebSocketInstance(const MetaObject &config);
+
+private:
+    friend class Object;
+
+    struct State final: public HttpServiceInstance::State
+    {
+        State(const MetaObject &config);
+        HttpServiceDelegate createDelegate() const override;
+    };
+
+    const State &me() const;
+};
+
+} // namespace cc

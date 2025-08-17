@@ -1,5 +1,5 @@
 Plugin {
-    name: CoreComponentsHttpTimeWebSocketPlugin
+    name: CoreComponentsHttpEggTimerWebSocketPlugin
     group: delivery
     extend: HTTP
     bundle: example
