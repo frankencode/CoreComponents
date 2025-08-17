@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <!--
-  Egg Timer Web Interface
-  Copyright (c) 2024 Your Company Name. All rights reserved.
+    Egg Timer Web Interface
+    Copyright (c) 2025 Frank Mertens. All rights reserved.
 
-  Licensed under the MIT License:
-  https://opensource.org/licenses/MIT
+    Licensed under the MIT License:
+    https://opensource.org/licenses/MIT
 
-  Sound effect: "Ticking Bomb" by Leszek Szary (https://freesound.org/people/Leszek_Szary/sounds/146735/)
+    Sound effect: "Ticking Bomb" by Leszek Szary (https://freesound.org/people/Leszek_Szary/sounds/146735/)
 
-  Based on original implementation by DeepSeek Chat.
--->
+    Based on original implementation by DeepSeek Chat.
+--->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,28 +17,42 @@
     <title>Egg Timer</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             max-width: 500px;
             margin: 0 auto;
             padding: 20px;
             text-align: center;
+            background: #f9f9f9;
         }
-        .timer-display {
-            font-size: 5rem;
-            margin: 20px 0;
-            font-family: monospace;
+        .timer-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 30px;
+            cursor: pointer;
+        }
+        #timerCanvas {
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .digital-display {
+            font-size: 2.5rem;
+            font-family: 'Courier New', monospace;
+            margin: 25px 0;
+            color: #333;
         }
         .controls {
             margin: 20px 0;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
         }
         .time-inputs {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
         .time-input {
             display: flex;
@@ -47,77 +61,99 @@
         }
         .time-input label {
             font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-        input, button {
-            padding: 10px;
-            font-size: 1rem;
-            text-align: center;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
         }
         input {
-            width: 60px;
+            padding: 12px;
+            font-size: 1.2rem;
+            text-align: center;
+            width: 90px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s;
+        }
+        input:read-only {
+            background: #f5f5f5;
+            color: #333;
+            border-color: #ccc;
         }
         button {
+            padding: 12px;
+            font-size: 1rem;
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 4px;
-            min-width: 100px;
+            border-radius: 6px;
+            min-width: 120px;
+            margin: 5px auto;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
         }
         button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
         .notification {
-            position: fixed;
-            top: 20px;
+            position: absolute;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             background-color: #ff4444;
             color: white;
-            padding: 15px;
-            border-radius: 5px;
+            padding: 15px 25px;
+            border-radius: 50px;
             display: none;
             z-index: 1000;
-            animation: flash 0.5s infinite alternate;
+            animation: pulse 0.5s infinite alternate;
             cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            white-space: nowrap;
         }
-        @keyframes flash {
-            from { background-color: #ff4444; }
-            to { background-color: #ff0000; }
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            100% { transform: translate(-50%, -50%) scale(1.05); }
         }
     </style>
 </head>
 <body>
     <h1>Egg Timer</h1>
-    <div class="timer-display" id="timerDisplay">--:--</div>
+
+    <div class="timer-container" id="timerContainer">
+        <canvas id="timerCanvas" width="300" height="300"></canvas>
+        <div class="notification" id="notification">
+            TIME'S UP! CLICK TO DISMISS
+        </div>
+    </div>
 
     <div class="controls">
         <div class="time-inputs">
             <div class="time-input">
-                <label for="minutesInput">Minutes</label>
+                <label for="minutesInput">MINUTES</label>
                 <input type="number" id="minutesInput" min="0" max="59" value="3">
             </div>
             <div class="time-input">
-                <label for="secondsInput">Seconds</label>
+                <label for="secondsInput">SECONDS</label>
                 <input type="number" id="secondsInput" min="0" max="59" value="0">
             </div>
         </div>
-        <button id="setTimerBtn">Set Timer</button>
-        <button id="startTimerBtn" disabled>Start Timer</button>
-        <button id="stopTimerBtn" disabled>Stop Timer</button>
-    </div>
-
-    <div class="notification" id="notification">
-        TIMER COMPLETE! CLICK TO DISMISS!
+        <button id="setTimerBtn">SET TIMER</button>
+        <button id="startTimerBtn" disabled>START TIMER</button>
+        <button id="stopTimerBtn" disabled>STOP TIMER</button>
     </div>
 
     <audio id="alarmSound" src="https://www.cyblogic.com/146735__leszek_szary__ticking-bomb.wav" loop preload="auto"></audio>
 
     <script>
         // DOM elements
-        const timerDisplay = document.getElementById('timerDisplay');
+        const canvas = document.getElementById('timerCanvas');
+        const ctx = canvas.getContext('2d');
+        const timerContainer = document.getElementById('timerContainer');
         const minutesInput = document.getElementById('minutesInput');
         const secondsInput = document.getElementById('secondsInput');
         const setTimerBtn = document.getElementById('setTimerBtn');
@@ -126,52 +162,98 @@
         const notification = document.getElementById('notification');
         const alarmSound = document.getElementById('alarmSound');
 
-        // WebSocket connection
-        let socket;
-        let updateInterval;
+        // Timer state
+        let duration = 180;
+        let remaining = 0;
         let isTimerRunning = false;
         let isAlarmPlaying = false;
+        let animationFrameId = null;
         const wsUrl = 'ws://127.0.0.1:8080/timer';
+        let socket;
 
-        function initWebSocket() {
-            socket = new WebSocket(wsUrl);
+        // Canvas drawing functions
+        function drawTimer() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 10;
 
-            socket.onopen = function() {
-                console.log('WebSocket connected');
-                enableControls(true);
-                // Immediately request current timer state after connection
-                socket.send('GetTimer');
-            };
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            socket.onclose = function() {
-                console.log('WebSocket disconnected');
-                enableControls(false);
-                clearInterval(updateInterval);
-                stopAlarm();
-                setTimeout(initWebSocket, 1000);
-            };
+            // Save context before mirroring
+            ctx.save();
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
 
-            socket.onerror = function(error) {
-                console.error('WebSocket error:', error);
-            };
+            // Draw background circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#f8f8f8';
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.stroke();
 
-            socket.onmessage = function(event) {
-                try {
-                    const data = JSON.parse(event.data);
+            // Calculate progress (percentage of time remaining)
+            const progress = remaining / duration;
+            const startAngle = -Math.PI / 2;
+            const endAngle = Math.PI * 2 * progress - Math.PI / 2;
 
-                    if (data.duration) {
-                        updateTimeInputs(data.duration);
-                        updateDisplay(data.duration);
-                    } else if (data.remaining !== undefined) {
-                        updateDisplay(data.remaining);
-                        if (data.remaining <= 0) {
-                            timerComplete();
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error parsing message:', error);
-                }
-            };
+            // Draw full pie background (grayed out)
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius - 20, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(200, 200, 200, 0.2)';
+            ctx.fill();
+
+            // Draw shrinking pie (clockwise due to mirroring)
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius - 20, startAngle, endAngle, false);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(76, 175, 80, 0.7)';
+            ctx.fill();
+
+            // Draw progress outline
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius - 15, startAngle, endAngle, false);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#4CAF50';
+            ctx.stroke();
+
+            // Only draw clock handle when not in alarm state
+            if (!isAlarmPlaying) {
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(
+                    centerX + (radius - 30) * Math.cos(endAngle),
+                    centerY + (radius - 30) * Math.sin(endAngle)
+                );
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#ff5722';
+                ctx.stroke();
+            }
+
+            // Draw center dot
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#ff5722';
+            ctx.fill();
+
+            // Restore original context
+            ctx.restore();
+        }
+
+        function updateDisplay(totalSeconds) {
+            const mins = Math.floor(totalSeconds / 60);
+            const secs = totalSeconds % 60;
+
+            // Update input fields with remaining time
+            minutesInput.value = mins.toString().padStart(2, '0');
+            secondsInput.value = secs.toString().padStart(2, '0');
+
+            drawTimer();
         }
 
         function updateTimeInputs(totalSeconds) {
@@ -185,21 +267,62 @@
             return (parseInt(minutesInput.value) || 0) * 60 + (parseInt(secondsInput.value) || 0);
         }
 
+        // Timer control functions
+        function initWebSocket() {
+            socket = new WebSocket(wsUrl);
+
+            socket.onopen = function() {
+                console.log('WebSocket connected');
+                enableControls(true);
+                socket.send('GetTimer');
+            };
+
+            socket.onclose = function() {
+                console.log('WebSocket disconnected');
+                enableControls(false);
+                cancelAnimationFrame(animationFrameId);
+                stopAlarm();
+                setTimeout(initWebSocket, 1000);
+            };
+
+            socket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+
+            socket.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.duration) {
+                        duration = data.duration;
+                        remaining = data.duration;
+                        updateTimeInputs(duration);
+                        updateDisplay(duration);
+                    } else if (data.remaining !== undefined) {
+                        remaining = data.remaining;
+                        updateDisplay(remaining);
+                        if (remaining <= 0) {
+                            timerComplete();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error parsing message:', error);
+                }
+            };
+        }
+
         function enableControls(connected) {
             setTimerBtn.disabled = !connected;
             const hasValidTime = getTotalSeconds() > 0;
             startTimerBtn.disabled = !connected || !hasValidTime;
             stopTimerBtn.disabled = !connected || !isTimerRunning;
-        }
 
-        function updateDisplay(totalSeconds) {
-            const mins = Math.floor(totalSeconds / 60);
-            const secs = totalSeconds % 60;
-            timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            // Make inputs readonly when timer is running
+            minutesInput.readOnly = isTimerRunning;
+            secondsInput.readOnly = isTimerRunning;
         }
 
         function startPolling() {
-            clearInterval(updateInterval);
+            cancelAnimationFrame(animationFrameId);
             updateInterval = setInterval(() => {
                 socket.send('GetRemaining');
             }, 1000);
@@ -207,20 +330,39 @@
             stopTimerBtn.disabled = false;
             startTimerBtn.disabled = true;
             stopAlarm();
+
+            // Set inputs to readonly
+            minutesInput.readOnly = true;
+            secondsInput.readOnly = true;
+
+            animate();
         }
 
         function stopPolling() {
             clearInterval(updateInterval);
+            cancelAnimationFrame(animationFrameId);
             isTimerRunning = false;
             stopTimerBtn.disabled = true;
             startTimerBtn.disabled = false;
             stopAlarm();
+
+            // Make inputs editable again
+            minutesInput.readOnly = false;
+            secondsInput.readOnly = false;
+        }
+
+        function animate() {
+            drawTimer();
+            if (isTimerRunning) {
+                animationFrameId = requestAnimationFrame(animate);
+            }
         }
 
         function timerComplete() {
             stopPolling();
             startAlarm();
             showNotification();
+            drawTimer();
         }
 
         function startAlarm() {
@@ -238,6 +380,7 @@
                 alarmSound.currentTime = 0;
                 isAlarmPlaying = false;
                 hideNotification();
+                socket.send('GetTimer');
             }
         }
 
@@ -270,13 +413,18 @@
             socket.send('GetTimer');
         });
 
+        // Click handlers for dismissing alarm
         notification.addEventListener('click', stopAlarm);
+        timerContainer.addEventListener('click', function(e) {
+            if (notification.style.display === 'block') {
+                stopAlarm();
+                e.stopPropagation();
+            }
+        });
 
-        // Update controls whenever time inputs change
         minutesInput.addEventListener('input', enableControls.bind(null, true));
         secondsInput.addEventListener('input', enableControls.bind(null, true));
 
-        // Validate inputs
         minutesInput.addEventListener('change', function() {
             if (this.value > 59) this.value = 59;
             if (this.value < 0) this.value = 0;
@@ -289,6 +437,7 @@
 
         // Initialize
         initWebSocket();
+        drawTimer();
     </script>
 </body>
 </html>
