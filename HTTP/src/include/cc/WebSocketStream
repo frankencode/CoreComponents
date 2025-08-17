@@ -19,6 +19,8 @@ namespace cc {
   * \ingroup http_protocol
   * \brief WebSocket message stream
   * \todo add a waitUntil();
+  * \todo add configuration option and logic for websocket keep alive interval (two misses result in connection termination)
+  * \todo make sure WebSocket connections are brought down cleanly on server shutdown
   */
 class WebSocketStream final: public Object
 {

@@ -3,7 +3,6 @@ Node {
     port: 8080
     family: IPv4
     concurrency: 8
-    connection-timeout: 3600.
     EggTimerWebSocket {
         host: */timer
     }

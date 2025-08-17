@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!--
   Egg Timer Web Interface
   Copyright (c) 2024 Your Company Name. All rights reserved.
@@ -9,7 +10,6 @@
 
   Based on original implementation by DeepSeek Chat.
 -->
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -34,9 +34,28 @@
             flex-direction: column;
             gap: 10px;
         }
+        .time-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .time-input {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .time-input label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
         input, button {
             padding: 10px;
             font-size: 1rem;
+            text-align: center;
+        }
+        input {
+            width: 60px;
         }
         button {
             cursor: pointer;
@@ -44,6 +63,7 @@
             color: white;
             border: none;
             border-radius: 4px;
+            min-width: 100px;
         }
         button:disabled {
             background-color: #cccccc;
@@ -61,6 +81,7 @@
             display: none;
             z-index: 1000;
             animation: flash 0.5s infinite alternate;
+            cursor: pointer;
         }
         @keyframes flash {
             from { background-color: #ff4444; }
@@ -70,14 +91,20 @@
 </head>
 <body>
     <h1>Egg Timer</h1>
-    <div class="timer-display" id="timerDisplay">00:00</div>
+    <div class="timer-display" id="timerDisplay">--:--</div>
 
     <div class="controls">
-        <div>
-            <label for="durationInput">Set Duration (seconds):</label>
-            <input type="number" id="durationInput" min="1" value="180">
-            <button id="setTimerBtn">Set Timer</button>
+        <div class="time-inputs">
+            <div class="time-input">
+                <label for="minutesInput">Minutes</label>
+                <input type="number" id="minutesInput" min="0" max="59" value="3">
+            </div>
+            <div class="time-input">
+                <label for="secondsInput">Seconds</label>
+                <input type="number" id="secondsInput" min="0" max="59" value="0">
+            </div>
         </div>
+        <button id="setTimerBtn">Set Timer</button>
         <button id="startTimerBtn" disabled>Start Timer</button>
         <button id="stopTimerBtn" disabled>Stop Timer</button>
     </div>
@@ -91,7 +118,8 @@
     <script>
         // DOM elements
         const timerDisplay = document.getElementById('timerDisplay');
-        const durationInput = document.getElementById('durationInput');
+        const minutesInput = document.getElementById('minutesInput');
+        const secondsInput = document.getElementById('secondsInput');
         const setTimerBtn = document.getElementById('setTimerBtn');
         const startTimerBtn = document.getElementById('startTimerBtn');
         const stopTimerBtn = document.getElementById('stopTimerBtn');
@@ -111,6 +139,8 @@
             socket.onopen = function() {
                 console.log('WebSocket connected');
                 enableControls(true);
+                // Immediately request current timer state after connection
+                socket.send('GetTimer');
             };
 
             socket.onclose = function() {
@@ -130,7 +160,7 @@
                     const data = JSON.parse(event.data);
 
                     if (data.duration) {
-                        durationInput.value = data.duration;
+                        updateTimeInputs(data.duration);
                         updateDisplay(data.duration);
                     } else if (data.remaining !== undefined) {
                         updateDisplay(data.remaining);
@@ -144,15 +174,27 @@
             };
         }
 
+        function updateTimeInputs(totalSeconds) {
+            const mins = Math.floor(totalSeconds / 60);
+            const secs = totalSeconds % 60;
+            minutesInput.value = mins;
+            secondsInput.value = secs;
+        }
+
+        function getTotalSeconds() {
+            return (parseInt(minutesInput.value) || 0) * 60 + (parseInt(secondsInput.value) || 0);
+        }
+
         function enableControls(connected) {
             setTimerBtn.disabled = !connected;
-            startTimerBtn.disabled = !connected || !durationInput.value;
+            const hasValidTime = getTotalSeconds() > 0;
+            startTimerBtn.disabled = !connected || !hasValidTime;
             stopTimerBtn.disabled = !connected || !isTimerRunning;
         }
 
-        function updateDisplay(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
+        function updateDisplay(totalSeconds) {
+            const mins = Math.floor(totalSeconds / 60);
+            const secs = totalSeconds % 60;
             timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
         }
 
@@ -184,6 +226,7 @@
         function startAlarm() {
             if (!isAlarmPlaying) {
                 alarmSound.currentTime = 0;
+                alarmSound.loop = true;
                 alarmSound.play().catch(e => console.log("Alarm sound failed:", e));
                 isAlarmPlaying = true;
             }
@@ -192,19 +235,23 @@
         function stopAlarm() {
             if (isAlarmPlaying) {
                 alarmSound.pause();
+                alarmSound.currentTime = 0;
                 isAlarmPlaying = false;
-                notification.style.display = 'none';
+                hideNotification();
             }
         }
 
         function showNotification() {
             notification.style.display = 'block';
-            notification.onclick = stopAlarm;
+        }
+
+        function hideNotification() {
+            notification.style.display = 'none';
         }
 
         // Event listeners
         setTimerBtn.addEventListener('click', () => {
-            const duration = parseInt(durationInput.value);
+            const duration = getTotalSeconds();
             if (duration > 0) {
                 socket.send(`SetTimer ${JSON.stringify({ duration })}`);
                 socket.send('GetTimer');
@@ -223,8 +270,21 @@
             socket.send('GetTimer');
         });
 
-        durationInput.addEventListener('input', () => {
-            startTimerBtn.disabled = !durationInput.value || isTimerRunning;
+        notification.addEventListener('click', stopAlarm);
+
+        // Update controls whenever time inputs change
+        minutesInput.addEventListener('input', enableControls.bind(null, true));
+        secondsInput.addEventListener('input', enableControls.bind(null, true));
+
+        // Validate inputs
+        minutesInput.addEventListener('change', function() {
+            if (this.value > 59) this.value = 59;
+            if (this.value < 0) this.value = 0;
+        });
+
+        secondsInput.addEventListener('change', function() {
+            if (this.value > 59) this.value = 59;
+            if (this.value < 0) this.value = 0;
         });
 
         // Initialize

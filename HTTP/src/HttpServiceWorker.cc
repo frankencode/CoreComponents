@@ -174,6 +174,7 @@ void HttpServiceWorkerState::serve(Stream &stream)
 
     if (client_ && upgrade) {
         if (tap_) stream = tap_.stream();
+        client_.stream().setIncomingTimeout(0);
         serviceDelegate_.upgrade(stream);
     }
 }
