@@ -59,7 +59,7 @@ struct HttpClient::State: public Object::State
         stream_ = socket_;
         if (useTls) {
             TlsClientOptions options = tlsOptions;
-            options.setServerName(host_);
+            if (options.serverName() == "") options.setServerName(host_);
             stream_ = TlsClientStream{stream_, options};
         }
         parser_ = HttpResponseParser{stream_};

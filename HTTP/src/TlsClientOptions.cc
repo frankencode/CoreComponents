@@ -30,6 +30,11 @@ void TlsClientOptions::setCiphers(const String &ciphers)
     me().setCiphers(ciphers);
 }
 
+void TlsClientOptions::setPsk(const Bytes &key, const Bytes &identifier)
+{
+    me().setPsk(key, identifier);
+}
+
 String TlsClientOptions::serverName() const
 {
     return me().serverName_;
@@ -53,6 +58,16 @@ String TlsClientOptions::trustFilePath() const
 String TlsClientOptions::ciphers() const
 {
     return me().ciphers_;
+}
+
+Bytes TlsClientOptions::pskKey() const
+{
+    return me().pskKey_;
+}
+
+Bytes TlsClientOptions::pskIdentifier() const
+{
+    return me().pskIdentifier_;
 }
 
 const TlsClientOptions::State &TlsClientOptions::me() const

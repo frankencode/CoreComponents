@@ -1,4 +1,5 @@
 #include <cc/HttpClient>
+#include <cc/Arguments>
 #include <cc/IoStream>
 #include <cc/File>
 #include <cc/exceptions>
@@ -6,10 +7,31 @@
 
 using namespace cc;
 
-int query(const String &method, const String &location)
+int query(const Map<String, Variant> &options, const String &location)
 {
+    String method = options("method");
+
     Uri uri{location};
-    HttpClient client{uri};
+    TlsClientOptions tlsOptions;
+
+    if (options("ca") != "") {
+        tlsOptions.setTrustFilePath(options("ca"));
+    }
+    if (options("cn") != "") {
+        tlsOptions.setServerName(options("cn"));
+    }
+    if (options("cert") != "") {
+        if (options("key") == "") throw HelpRequest{};
+        tlsOptions.setCredentials(options("cert"), options("key"));
+    }
+    if (options("psk") != "") {
+        String psk = File{options("psk")}.readAll();
+        String pskId;
+        if (options("psk-id") != "") pskId = File{options("psk-id")}.readAll();
+        tlsOptions.setPsk(psk, pskId);
+    }
+
+    HttpClient client{uri, tlsOptions};
     if (!client.waitEstablished()) return 2;
 
     ferr() << "Connected to " << client.address() << nl;
@@ -35,20 +57,35 @@ int main(int argc, char *argv[])
     auto toolName = String{argv[0]}.baseName();
 
     try {
-        if (argc == 2) {
-            return query("GET", argv[1]);
-        }
-        else if (argc == 3) {
-            return query(String{argv[1]}.upcased(), argv[2]);
-        }
-        else {
-            throw HelpRequest{};
-        }
+        Map<String, Variant> options;
+        options.insert("method", "GET");
+        options.insert("ca", "");
+        options.insert("cn", "");
+        options.insert("cert", "");
+        options.insert("key", "");
+        options.insert("psk", "");
+        options.insert("psk-hex", "");
+        options.insert("psk-id", "");
+        options.insert("psk-id-hex", "");
+
+        List<String> items = Arguments{argc, argv}.read(&options);
+        if (items.count() != 1) throw HelpRequest{};
+
+        return query(options, items(0));
     }
     catch (HelpRequest &) {
         ferr(
-            "Usage: %% [GET|PUT|...] <URI>\n"
+            "Usage: %% [OPTION]... <URI>\n"
             "Simple HTTP(S) client\n"
+            "\n"
+            "Options:\n"
+            "  -method  query method (\"GET\", \"PUT\", \"POST\", \"HEAD\", etc.)\n"
+            "  -ca      server trust anchor(s) file (PEM format)\n"
+            "  -cn      expected server name (used for SNI and certificate CN check)\n"
+            "  -cert    client certificate file (PEM format)\n"
+            "  -key     client key file (PEM format)\n"
+            "  -psk     pre-shared key file\n"
+            "  -psk-id  pre-shared key identifier file (optional)\n"
             "\n"
         ) << toolName;
         return 1;

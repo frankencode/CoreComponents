@@ -28,7 +28,7 @@ public:
       */
     void setServerName(const String &serverName);
 
-    /** %Set client authetification credentials
+    /** %Set client authentification credentials
       * \param certPath %Certificate file path
       * \param keyPath %Private key file path
       */
@@ -41,6 +41,10 @@ public:
     /** %Set allowed ciphers
       */
     void setCiphers(const String &ciphers);
+
+    /** Set key and key identifier for TLS PSK authentication
+      */
+    void setPsk(const Bytes &key, const Bytes &identifier = {});
 
     /** Server name the client is expecting to connect to
       */
@@ -61,6 +65,14 @@ public:
     /** Allowed ciphers
       */
     String ciphers() const;
+
+    /** PSK key
+      */
+    Bytes pskKey() const;
+
+    /** PSK identifier
+      */
+    Bytes pskIdentifier() const;
 
 private:
     friend class TlsClientStream;
