@@ -1,0 +1,30 @@
+#pragma once
+
+#include <cc/IoStream>
+#include <cc/String>
+
+namespace cc {
+
+/** \class Uart cc/Uart
+  * \brief Serial I/O stream
+  */
+class Uart final: public IoStream
+{
+public:
+    /** Open a device \a path with given baud rate \a speed
+      * \exception SystemError Failed to open or configure device
+      * \exception DebugError Illegal baud rate used
+      */
+    explicit Uart(const String &path, int speed = 1152000);
+
+    /** Device path
+      */
+    const String &path() const;
+
+private:
+    struct State;
+
+    const State &me() const;
+};
+
+} // namespace cc
