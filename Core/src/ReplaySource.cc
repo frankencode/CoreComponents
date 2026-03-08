@@ -10,7 +10,7 @@
 
 namespace cc {
 
-struct ReplaySource::State: public Stream::State
+struct ReplaySource::State final: public Stream::State
 {
     State(const Bytes &buffer):
         recording_{buffer}

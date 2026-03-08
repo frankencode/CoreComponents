@@ -56,6 +56,13 @@ double System::now()
     return double(ts.tv_sec) + double(ts.tv_nsec) / 1e9;
 }
 
+int64_t System::uptime()
+{
+    struct timespec ts;
+    ::clock_gettime(CLOCK_MONOTONIC, &ts);
+    return 1000000 * static_cast<int64_t>(ts.tv_sec) + static_cast<int64_t>(ts.tv_nsec / 1000);
+}
+
 uint32_t System::noise()
 {
     static struct timespec ts;

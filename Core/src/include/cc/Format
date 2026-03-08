@@ -37,6 +37,7 @@ public:
   * \ingroup streams
   * \brief Generate formatted text
   * \see IoStream::stdOut(), IoStream::stdErr()
+  * \todo Review design idea: wrap all supported fundamental types (e.g. int by cc::Int) and let those wrappers provide the toString() method and drop the Stringify<T> policy.
   */
 class Format final: public List<Bytes>
 {

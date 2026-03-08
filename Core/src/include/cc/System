@@ -33,6 +33,10 @@ public:
       */
     static double now();
 
+    /** Monotonic system time (without leap second jumps) in microseconds
+      */
+    static int64_t uptime();
+
     /** Get some random bits from the system if available, otherwise return just a pseuo-random number
       */
     static uint32_t noise();

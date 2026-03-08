@@ -16,7 +16,7 @@ namespace cc {
   * \ingroup streams
   * \brief Feed data from an in-memory buffer
   */
-class ReplaySource: public Stream
+class ReplaySource final: public Stream
 {
 public:
     /** Create a new ReplaySource for \a buffer

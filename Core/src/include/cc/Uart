@@ -15,7 +15,7 @@ public:
       * \exception SystemError Failed to open or configure device
       * \exception DebugError Illegal baud rate used
       */
-    explicit Uart(const String &path, int speed = 1152000);
+    explicit Uart(const String &path, int speed = 115200);
 
     /** Device path
       */

@@ -25,7 +25,7 @@ class ByteSource final
 {
 public:
     /** Open a new ByteSource
-      * \param source Data source to write bytes from
+      * \param source Data source to read bytes from
       * \param buffer Input buffer to use
       * \param endian Endianess for reading multi-byte words
       */
