@@ -7,8 +7,9 @@
  */
 
 #include <cc/TlsClientOptions>
+#include <cc/debugging>
 #include <gnutls/gnutls.h>
-#include <gnutls/x509.h>
+// #include <gnutls/x509.h>
 
 namespace cc {
 
@@ -79,10 +80,16 @@ struct TlsClientOptions::State: public Object::State
         }
         gnutls_datum_t pskKeyDatum_ { pskKey_.bytes(), static_cast<unsigned>(pskKey_.size()) };
         gnutls_datum_t pskIdentifierDatum_ { pskIdentifier_.bytes(), static_cast<unsigned>(pskIdentifier_.size()) };
+
+        if (pskIdentifierDatum_.data == nullptr) {
+            static char *empty = "";
+            pskIdentifierDatum_.data = reinterpret_cast<unsigned char *>(empty);
+        }
+
         int ret = gnutls_psk_set_client_credentials2(
             psk_,
-            &pskKeyDatum_,
             &pskIdentifierDatum_,
+            &pskKeyDatum_,
             GNUTLS_PSK_KEY_RAW
         );
         if (ret != GNUTLS_E_SUCCESS) throw TlsError{ret};

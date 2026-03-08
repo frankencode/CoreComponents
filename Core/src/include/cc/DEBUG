@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <cc/XSTR>
+
 /** \ingroup streams
   * \brief Generate a debug message on the standard error output stream
   *

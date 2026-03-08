@@ -4,6 +4,7 @@
 #include <cc/File>
 #include <cc/exceptions>
 #include <cc/stdio>
+#include <cc/debugging>
 
 using namespace cc;
 
@@ -17,8 +18,8 @@ int query(const Map<String, Variant> &options, const String &location)
     if (options("ca") != "") {
         tlsOptions.setTrustFilePath(options("ca"));
     }
-    if (options("cn") != "") {
-        tlsOptions.setServerName(options("cn"));
+    if (options("sn") != "") {
+        tlsOptions.setServerName(options("sn"));
     }
     if (options("cert") != "") {
         if (options("key") == "") throw HelpRequest{};
@@ -28,6 +29,8 @@ int query(const Map<String, Variant> &options, const String &location)
         String psk = File{options("psk")}.readAll();
         String pskId;
         if (options("psk-id") != "") pskId = File{options("psk-id")}.readAll();
+        CC_INSPECT(psk.size());
+        CC_INSPECT(pskId.size());
         tlsOptions.setPsk(psk, pskId);
     }
 
@@ -60,13 +63,11 @@ int main(int argc, char *argv[])
         Map<String, Variant> options;
         options.insert("method", "GET");
         options.insert("ca", "");
-        options.insert("cn", "");
+        options.insert("sn", "");
         options.insert("cert", "");
         options.insert("key", "");
         options.insert("psk", "");
-        options.insert("psk-hex", "");
         options.insert("psk-id", "");
-        options.insert("psk-id-hex", "");
 
         List<String> items = Arguments{argc, argv}.read(&options);
         if (items.count() != 1) throw HelpRequest{};
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
             "Options:\n"
             "  -method  query method (\"GET\", \"PUT\", \"POST\", \"HEAD\", etc.)\n"
             "  -ca      server trust anchor(s) file (PEM format)\n"
-            "  -cn      expected server name (used for SNI and certificate CN check)\n"
+            "  -sn      expected server name (used for SNI and certificate CN check)\n"
             "  -cert    client certificate file (PEM format)\n"
             "  -key     client key file (PEM format)\n"
             "  -psk     pre-shared key file\n"
@@ -90,10 +91,12 @@ int main(int argc, char *argv[])
         ) << toolName;
         return 1;
     }
+    #if defined(NDEBUG)
     catch (Exception &other) {
         ferr() << other << nl;
         return 2;
     }
+    #endif
 
     return 0;
 }
