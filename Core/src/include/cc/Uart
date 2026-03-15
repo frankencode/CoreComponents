@@ -21,9 +21,12 @@ public:
       */
     const String &path() const;
 
+    void drain();
+
 private:
     struct State;
 
+    State &me();
     const State &me() const;
 };
 

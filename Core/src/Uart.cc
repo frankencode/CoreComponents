@@ -55,7 +55,7 @@ struct Uart::State final: public IoStream::State
         /** disable all teletype input/output processing logic, especially canonical mode
           */
         attr.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON|IXOFF|IXANY);
-        attr.c_oflag = ~OPOST;
+        attr.c_oflag &= ~(OPOST|OLCUC|OCRNL|ONOCR|ONLRET|OFILL|OFDEL|NLDLY|CRDLY|TABDLY|BSDLY|VTDLY|FFDLY);
         attr.c_lflag &= ~(ECHO|ECHONL|ICANON|ISIG|IEXTEN);
         attr.c_cflag &= ~PARENB;    // do not generate or check a parity bit
         attr.c_cflag &= ~CSTOPB;    // disable 2 stop bit option, 1 stop bit is enough
@@ -84,6 +84,11 @@ struct Uart::State final: public IoStream::State
         }
     }
 
+    void drain()
+    {
+        tcdrain(fd_);
+    }
+
     String path_;
 };
 
@@ -94,6 +99,16 @@ Uart::Uart(const String &path, int speed):
 const String &Uart::path() const
 {
     return me().path_;
+}
+
+void Uart::drain()
+{
+    me().drain();
+}
+
+Uart::State &Uart::me()
+{
+    return Object::me.as<State>();
 }
 
 const Uart::State &Uart::me() const
