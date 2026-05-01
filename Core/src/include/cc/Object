@@ -149,7 +149,7 @@ protected:
 
         void acquire()
         {
-            useCount_.fetch_add(1, std::memory_order_release);
+            useCount_.fetch_add(1, std::memory_order_relaxed);
         }
 
         void release()
