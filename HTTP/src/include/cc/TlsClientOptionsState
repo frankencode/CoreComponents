@@ -82,8 +82,8 @@ struct TlsClientOptions::State: public Object::State
         gnutls_datum_t pskIdentifierDatum_ { pskIdentifier_.bytes(), static_cast<unsigned>(pskIdentifier_.size()) };
 
         if (pskIdentifierDatum_.data == nullptr) {
-            static char *empty = "";
-            pskIdentifierDatum_.data = reinterpret_cast<unsigned char *>(empty);
+            static const char *empty = "";
+            pskIdentifierDatum_.data = reinterpret_cast<unsigned char *>(const_cast<char *>(empty));
         }
 
         int ret = gnutls_psk_set_client_credentials2(

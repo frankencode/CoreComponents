@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2020-2026 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -31,17 +31,29 @@ class New{};
 class Object
 {
 public:
+    /** Error thrown when trying to access a null object
+      */
+    using NullAccess = cc::NullAccess;
+
+    /** Error thrown when trying to initialize an object with a non-virgin state
+      */
+    using VirginityTestFailed = cc::VirginityTestFailed;
+
     /** Create a null object
       */
     Object() = default;
 
     /** Check if this is a non-null object
       */
-    explicit operator bool() const { return me; }
+    explicit operator bool() const { return useCount(); }
 
     /** Check if this is a null object
       */
-    bool isNull() const { return !me; }
+    bool isNull() const { return !useCount(); }
+
+    /** Reference count
+      */
+    int useCount() const { return me.useCount(); }
 
     /** Check if this object is of type \a T
       */
@@ -75,15 +87,8 @@ public:
       */
     std::strong_ordering operator<=>(const Object &other) const { return me <=> other.me; }
 
-    /** Reference count
-      */
-    long useCount() const { return me ? me().useCount() : 0; }
-
 protected:
     friend struct PropertyBinding;
-
-    template<class T, bool>
-    friend class ObjectAs;
 
     /** \brief Reference counted object state
       */
@@ -102,17 +107,20 @@ protected:
         /** Virtual destructor
           */
         virtual ~State()
-        {
-            #ifndef NDEBUG
-            PointerIntegrity::endOfLife(this);
-            #endif
-        }
+        {}
 
-        /** Reference count
+        /** Strong reference count
           */
-        long useCount() const
+        int useCount() const
         {
             return useCount_.load(std::memory_order_acquire);
+        }
+
+        /** Strong plus weak reference count
+          */
+        int refCount() const
+        {
+            return refCount_.load(std::memory_order_acquire);
         }
 
         /** \internal
@@ -150,15 +158,31 @@ protected:
         void acquire()
         {
             useCount_.fetch_add(1, std::memory_order_relaxed);
+            associate();
         }
 
         void release()
         {
-            if (useCount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
-                delete this;
+            if (useCount_.fetch_sub(1, std::memory_order_acq_rel) == 1) {
+                this->~State();
+            }
+            dissociate();
         }
 
-        std::atomic<long> useCount_ { 1 };
+        void associate()
+        {
+            refCount_.fetch_add(1, std::memory_order_relaxed);
+        }
+
+        void dissociate()
+        {
+            if (refCount_.fetch_sub(1, std::memory_order_acq_rel) == 1) {
+                ::operator delete(this);
+            }
+        }
+
+        std::atomic<int> useCount_ { 1 }; // strong reference count
+        std::atomic<int> refCount_ { 1 }; // strong plus weak reference count
     };
 
     /** Create an alias object for the given \a state

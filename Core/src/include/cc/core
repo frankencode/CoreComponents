@@ -77,7 +77,6 @@
 #include <cc/NullStream>
 #include <cc/Object>
 #include <cc/order>
-#include <cc/PointerIntegrity>
 #include <cc/Prefix>
 #include <cc/PriorityChannel>
 #include <cc/PriorityQueue>

@@ -7,14 +7,12 @@ int main()
     using namespace cc;
 
     AlertDialog dialog;
-    View view;
 
     return
         View{sp(360), sp(360)}
-        .associate(&view)
         .add(
             TonalButton{"Test"}
-            ([=]() mutable {
+            ([=] mutable {
                 AlertDialog{"Discard draft?"}
                 .associate(&dialog)
                 .addAction(

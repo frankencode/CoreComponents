@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Frank Mertens.
+ * Copyright (C) 2020-2026 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -13,11 +13,12 @@
 #include <cstddef>
 #include <cstdint>
 #include <cassert>
-#ifndef NDEBUG
-#include <cc/PointerIntegrity>
-#endif
 
 namespace cc {
+
+class NullAccess {};
+
+class VirginityTestFailed {};
 
 /** \internal
   */
@@ -50,13 +51,13 @@ public:
     Handle(T *newState):
         state_{encode(newState)}
     {
-        assert(newState && newState->useCount() == 1);
+        if (!newState || newState->useCount() != 1) throw VirginityTestFailed{};
     }
 
     Handle(T *state, Alias):
         state_{encode(state)}
     {
-        assert(state);
+        if (!state) throw NullAccess{};
         state->acquire();
     }
 
@@ -67,10 +68,8 @@ public:
     Handle(T *state, Weak):
         state_{encode(state, true)}
     {
-        assert(state);
-        #ifndef NDEBUG
-        PointerIntegrity::addPointer(pointer_);
-        #endif
+        if (!state) throw NullAccess{};
+        state->associate();
     }
 
     Handle(const T *state, Weak):
@@ -85,17 +84,11 @@ public:
         acquire();
     }
 
-    /** Initialize by right-side reference \a other
+    /** Take over right-side reference \a other
       */
     Handle(Handle &&other):
         state_{other.state_}
     {
-        #ifndef NDEBUG
-        if (isWeak(other.state_)) {
-            PointerIntegrity::addPointer(pointer_);
-            PointerIntegrity::dropPointer(other.pointer_);
-        }
-        #endif
         other.state_ = nullptr;
     }
 
@@ -125,12 +118,6 @@ public:
     {
         release();
         state_ = other.state_;
-        #ifndef NDEBUG
-        if (isWeak(other.state_)) {
-            PointerIntegrity::addPointer(pointer_);
-            PointerIntegrity::dropPointer(other.pointer_);
-        }
-        #endif
         other.state_ = nullptr;
         return *this;
     }
@@ -149,7 +136,7 @@ public:
     T &operator()()
     {
         T *state = decode(state_);
-        assert(state);
+        if (!state) throw NullAccess{};
         return *state;
     }
 
@@ -158,7 +145,7 @@ public:
     const T &operator()() const
     {
         const T *state = decode(state_);
-        assert(state);
+        if (!state) throw NullAccess{};
         return *state;
     }
 
@@ -166,7 +153,21 @@ public:
       */
     operator bool() const
     {
-        return state_;
+        return useCount();
+    }
+
+    /** Check if this handle points to a null object
+      */
+    bool isNull() const
+    {
+        return !useCount();
+    }
+
+    /** Strong reference count
+      */
+    int useCount() const
+    {
+        return state_ ? state_->useCount() : 0;
     }
 
     /** Equality operator
@@ -200,16 +201,18 @@ public:
     /** Statically cast to a different state type \a T2
       */
     template<class T2>
-    const T2 &as() const {
-        assert(state_);
+    const T2 &as() const
+    {
+        if (isNull()) throw NullAccess{};
         return static_cast<const T2 &>((*this)());
     }
 
     /** Statically cast to a different state type \a T2
       */
     template<class T2>
-    T2 &as() {
-        assert(state_);
+    T2 &as()
+    {
+        if (isNull()) throw NullAccess{};
         return static_cast<T2 &>(*decode(state_));
     }
 
@@ -233,7 +236,7 @@ public:
       */
     T &mutate() const
     {
-        assert(state_);
+        if (isNull()) throw NullAccess{};
         return *decode(state_);
     }
 
@@ -265,28 +268,24 @@ private:
     void acquire()
     {
         if (state_) {
-            if (!isWeak(state_)) {
+            if (isWeak(state_)) {
+                decode(state_)->associate();
+            }
+            else {
                 decode(state_)->acquire();
             }
-            #ifndef NDEBUG
-            else {
-                PointerIntegrity::addPointer(pointer_);
-            }
-            #endif
         }
     }
 
     void release()
     {
         if (state_) {
-            if (!isWeak(state_)) {
+            if (isWeak(state_)) {
+                decode(state_)->dissociate();
+            }
+            else {
                 decode(state_)->release();
             }
-            #ifndef NDEBUG
-            else {
-                PointerIntegrity::dropPointer(pointer_);
-            }
-            #endif
         }
     }
 
